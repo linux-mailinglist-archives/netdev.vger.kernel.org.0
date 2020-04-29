@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35FA71BE9FC
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 23:34:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3333A1BE9FE
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 23:35:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbgD2Vek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 17:34:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
+        id S1727822AbgD2Vex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 17:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727109AbgD2Vej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 17:34:39 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD20C03C1AE;
-        Wed, 29 Apr 2020 14:34:39 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id 19so3884634ioz.10;
-        Wed, 29 Apr 2020 14:34:39 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727109AbgD2Vew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 17:34:52 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2F2C03C1AE;
+        Wed, 29 Apr 2020 14:34:52 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id r2so3957232ilo.6;
+        Wed, 29 Apr 2020 14:34:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hBjtzzG9HNAoqA6KQtvnkfm7t9Ci0Pib7cBZWKdTPp0=;
-        b=XPMucEFG6NYmnwcO3dWK7A/tpFyK+JkHWHHlQSND2rT1DPONzDRc1ioq0Sqy9pPOXn
-         yV8v2WBpsPFunDVqEzb912JdcKI2PXdnvbW4PB3taQiaFqaE9lwS9UJpyhbxLyp6R52+
-         fZVTTtIJbQ9OVNiqBy94Gq40L8ijWdKVXP69BAAko2fyeppYyKwjcyKLtdmg0X16eZZc
-         22o6V4IPnvEoQjlfcK/luqTDcjY5FW0BN077Q9qncRgKOJwF5zgNDndYBRmjKgEMT1T4
-         OE5zJEM6NHEIND42BfMXf6t3JePItMRIVDqJhqEUXfnNYfJya3gFrUYxU9NxZSRafz3V
-         Cjyg==
+        bh=vGaPlsxtjtiibElET9HveDApMsjZUdihy9c7nbQ5N30=;
+        b=paIoyodWkdOU7AUNzIcqyfWkqzS7uADxU4dQb0+D7BghAvCjoKcuDc8T9Trtm9Ufvy
+         RW5aSjDtGd+VPqADnfvnbUCcGLnaGZopj5H3bRaVhpyTIj08kSD5UQbebodV0AWmhEh1
+         Cb512OpH50CQsoRqKlZkgFx5dEgn0562wKGPdZ72FdlI31AcqIMbkIPdMkvMzUZTYbP4
+         CxmGm8gzWwF6LCVf0coJAshYYwY5+6IMA6gOhImJNEGNaEtIH4oHCLpszcq/sn9O84UQ
+         ROUE86T2gyR670SWi+59AfZbbSZ0P/hQB2lVCvb8hjqSWkgX2qT64bCJnrLkT4zjQgeO
+         OQBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=hBjtzzG9HNAoqA6KQtvnkfm7t9Ci0Pib7cBZWKdTPp0=;
-        b=BpnMjZ+vZ1a6citkcNXlvXkoxrXP/mSotAwlg3PKFDC/FvHSp0+7/EZEofhHHgthb5
-         GM+vHLgFt9qrJtsAdME7uYj5UfK52KY5haz4tOGdrd1/2PBP8VH2gsXZ4e2wbPGiDpb+
-         RN3X8663y4r7T5I6ZpFuSjdG+fg6rNsFnu/WxpXBoZ/7w38h2g+/+rhMJzXLQSexk5Wg
-         IGNtZfXUkKP82nUMQLYqTP7MjMshgon2EBSW1cfLzKaI8qPWfz86pBSWlAeiayyBVeY/
-         eqeAxn8ESFrokg1Yr9r9sgMCpyAh8rbmp8yulhQZmfIG6VD3c+fbcEKr2jlrYpQt50gu
-         Gf2Q==
-X-Gm-Message-State: AGi0PuasRi0cNhB7XAd+XR7NOiNp09R8zLXNaRGvMUX6WO2BD+ij/PTk
-        gSfTLO7oeFtH7ZEZcncwfXoLUEom
-X-Google-Smtp-Source: APiQypLblPr+4pgGmbbp+M9VmdU5PWti1LyfR7CNzPO3ghP/Mc2lP/C+YFnmtSvf90JAebjm1VmDyg==
-X-Received: by 2002:a6b:ea16:: with SMTP id m22mr192605ioc.73.1588196078708;
-        Wed, 29 Apr 2020 14:34:38 -0700 (PDT)
+        bh=vGaPlsxtjtiibElET9HveDApMsjZUdihy9c7nbQ5N30=;
+        b=YVs9BYN/CMxemJhlF8QqR4SSaC9A6G/Q1nAG6cf3O7hqlbBE4ICNHxDTs66HcOuwLL
+         Oe1ayS/8zsbQOj4zWhlG4VEbjaNrmgMVnDyUd7AxT+VPZRmV/CJecGOl4mMGxjxVjmco
+         /CuaGGVI9OkYLwxl/cBGg07HxOaHRu3X8x+x592ZgAknXbY0FYBE0AygD80J4Zn9xZci
+         cnLVyKmiys4cFEHj7jhWqY0nVMvicnRUGP3tsi8vILMXv+JpTPjbEzmXC5g3+b7NvDXk
+         gX1HS/ZzbJhRH2iD1TnKg4Wtz9j+VyAQmYIgxefyE/QB3+7yOZTuddndR8WPRqwxvURB
+         nXzQ==
+X-Gm-Message-State: AGi0PuaLQQivh7h/07ZbLUy0xkQLkwPOEAF3H7Fs0RCmwhoIBF9ya9OW
+        q2F9dmcGV40rDvnnl7KZ9AF2c5jC
+X-Google-Smtp-Source: APiQypKKClQNs2lFbfm9k8LBp9AQ6p9dUdU/frFrXnJOpGCidNSrSTHfoynt/vzca3Etzn6awG6b4A==
+X-Received: by 2002:a92:794f:: with SMTP id u76mr370338ilc.269.1588196091401;
+        Wed, 29 Apr 2020 14:34:51 -0700 (PDT)
 Received: from [10.67.49.116] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a9sm1489309iln.66.2020.04.29.14.34.37
+        by smtp.googlemail.com with ESMTPSA id p10sm1482551ilp.29.2020.04.29.14.34.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 14:34:38 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 4/7] Revert "net: bcmgenet: remove unused
- function in bcmgenet.c"
+        Wed, 29 Apr 2020 14:34:50 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 5/7] net: bcmgenet: code movement
 To:     Doug Berger <opendmb@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
- <1588190526-2082-5-git-send-email-opendmb@gmail.com>
+ <1588190526-2082-6-git-send-email-opendmb@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -111,12 +110,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <29a5c3d2-c502-5838-9825-758199b57528@gmail.com>
-Date:   Wed, 29 Apr 2020 14:34:36 -0700
+Message-ID: <1427f410-2c11-ed9b-4637-648ba654eaf0@gmail.com>
+Date:   Wed, 29 Apr 2020 14:34:49 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <1588190526-2082-5-git-send-email-opendmb@gmail.com>
+In-Reply-To: <1588190526-2082-6-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,10 +125,11 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 4/29/20 1:02 PM, Doug Berger wrote:
-> This reverts commit e2072600a24161b7ddcfb26814f69f5fbc8ef85a.
+> The Hardware Filter Block code will be used by ethtool functions
+> when defining flow types so this commit moves the functions in the
+> file to prevent the need for prototype declarations.
 > 
-> This commit restores the previous implementation of Hardware Filter
-> Block functions to the file for use in subsequent commits.
+> This is broken out to facilitate review.
 > 
 > Signed-off-by: Doug Berger <opendmb@gmail.com>
 
