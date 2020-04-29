@@ -2,114 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 240DD1BE257
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 17:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 631B81BE273
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 17:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726836AbgD2PQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 11:16:14 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:24334 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726526AbgD2PQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 11:16:14 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03TF6Q5g018437;
-        Wed, 29 Apr 2020 11:16:00 -0400
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30mh9pwtq9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Apr 2020 11:16:00 -0400
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 03TFBWDb012661;
-        Wed, 29 Apr 2020 15:15:58 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma05fra.de.ibm.com with ESMTP id 30mcu51w2d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Apr 2020 15:15:58 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 03TFFucC64159790
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Apr 2020 15:15:56 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E70AEA4079;
-        Wed, 29 Apr 2020 15:15:55 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7DE61A4069;
-        Wed, 29 Apr 2020 15:15:55 +0000 (GMT)
-Received: from [9.145.35.37] (unknown [9.145.35.37])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 29 Apr 2020 15:15:55 +0000 (GMT)
-Subject: Re: [PATCH net-next] net/smc: remove unused inline function
- smc_curs_read
-To:     YueHaibing <yuehaibing@huawei.com>, ubraun@linux.ibm.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200429132623.48608-1-yuehaibing@huawei.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-Message-ID: <039d6d59-5dd5-c89a-c174-72f4de3d0098@linux.ibm.com>
-Date:   Wed, 29 Apr 2020 17:15:55 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726935AbgD2PWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 11:22:33 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59634 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726635AbgD2PWd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 11:22:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=5uO653nHnG/4hJnyU2CEzLdMTrPNF9NuNoUERL8DTQM=; b=IIPZvgod1VnhUzX/VKF2938Xd8
+        4RS5iXH7UYsJCPoyi1H6YGdmh7PKXSLlcuRT/wE16bMAXBBRPfiRec2BpcmEktz4OIdz1zjN1emTp
+        Q0VTQOId5fB+pKl/bjhq2FWk95Pok0qSj6qvM75p+VPXQLrEYs+tCY8N/xTcVV67sxgI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jToXY-000HjF-2Z; Wed, 29 Apr 2020 17:22:24 +0200
+Date:   Wed, 29 Apr 2020 17:22:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Christian Zigotzky <chzigotzky@xenosoft.de>
+Cc:     Darren Stevens <darren@stevens-zone.net>, madalin.bacur@nxp.com,
+        netdev@vger.kernel.org, mad skateman <madskateman@gmail.com>,
+        oss@buserror.net, linuxppc-dev@lists.ozlabs.org,
+        "R.T.Dickinson" <rtd2@xtra.co.nz>,
+        "contact@a-eon.com" <contact@a-eon.com>
+Subject: Re: [RFC PATCH dpss_eth] Don't initialise ports with no PHY
+Message-ID: <20200429152224.GA66424@lunn.ch>
+References: <20200429131253.GG30459@lunn.ch>
+ <77E4A243-F90A-45A9-B8D3-0F7785C158C7@xenosoft.de>
 MIME-Version: 1.0
-In-Reply-To: <20200429132623.48608-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-29_07:2020-04-29,2020-04-29 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 bulkscore=0
- spamscore=0 malwarescore=0 adultscore=0 suspectscore=0 mlxlogscore=843
- impostorscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004290122
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <77E4A243-F90A-45A9-B8D3-0F7785C158C7@xenosoft.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/04/2020 15:26, YueHaibing wrote:
-> commit bac6de7b6370 ("net/smc: eliminate cursor read and write calls")
-> left behind this.
+On Wed, Apr 29, 2020 at 03:55:28PM +0200, Christian Zigotzky wrote:
+> Hi Andrew,
 > 
-
-Thanks, good catch. Your patch will be part of our next patch submission.
-
-Regards, Karsten
-
-
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  net/smc/smc_cdc.h | 17 -----------------
->  1 file changed, 17 deletions(-)
+> You can find some dtb and source files in our kernel package.
 > 
-> diff --git a/net/smc/smc_cdc.h b/net/smc/smc_cdc.h
-> index 861dc24c588c..5a19e5e2280e 100644
-> --- a/net/smc/smc_cdc.h
-> +++ b/net/smc/smc_cdc.h
-> @@ -97,23 +97,6 @@ static inline void smc_curs_add(int size, union smc_host_cursor *curs,
->  	}
->  }
->  
-> -/* SMC cursors are 8 bytes long and require atomic reading and writing */
-> -static inline u64 smc_curs_read(union smc_host_cursor *curs,
-> -				struct smc_connection *conn)
-> -{
-> -#ifndef KERNEL_HAS_ATOMIC64
-> -	unsigned long flags;
-> -	u64 ret;
-> -
-> -	spin_lock_irqsave(&conn->acurs_lock, flags);
-> -	ret = curs->acurs;
-> -	spin_unlock_irqrestore(&conn->acurs_lock, flags);
-> -	return ret;
-> -#else
-> -	return atomic64_read(&curs->acurs);
-> -#endif
-> -}
-> -
->  /* Copy cursor src into tgt */
->  static inline void smc_curs_copy(union smc_host_cursor *tgt,
->  				 union smc_host_cursor *src,
-> 
+> Download: http://www.xenosoft.de/linux-image-5.7-rc3-X1000_X5000.tar.gz
+
+I have the tarball. Are we talking about
+linux-image-5.7-rc3-X1000_X5000/X5000_and_QEMU_e5500/dtbs/X5000_20/cyrus.eth.dtb
+
+I don't see any status = "disabled"; in the blob. So i would expect
+the driver to probe.
+
+    Andrew
+
+
