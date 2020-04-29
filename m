@@ -2,110 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0BA91BD735
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 10:24:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63DD91BD749
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 10:29:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgD2IYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 04:24:14 -0400
-Received: from ozlabs.org ([203.11.71.1]:36145 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726423AbgD2IYO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 04:24:14 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49Bs492gLvz9sSM;
-        Wed, 29 Apr 2020 18:24:08 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1588148651;
-        bh=syudK3ycUSJ0xlTm8LxvK+FlS93PkfQA7GEviu2GQjs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=egh/oqyIh5YrPqtO2x5VeYEiNFDrRaCxS9XLAKOdF2AiKaNEM5jaHt+Q+/iyvz3y7
-         GyHWi5UrTNttiPjwhzgNiYRx4dEuPcRyQsw5Yu7b1s1g3qImLmuhTSlFqMYhwxk5Eo
-         flrELQY+FKT+Zp9EXiYPEY4siEhOrKFdGxle8tamFRYtht3wgPPxQAAsVIiMQw8LIw
-         KqHVdZrPAR7mf3iDDla31yoxfM/eFnqjg/i7jQiNbZ0Ufz25z5BqRgVpepxX1xANFD
-         TOmOu1A9XlzU3+dgcGR1UOpwQN7rYbXPTTXm0zp2Lm9gXUpJEIeeWinaAzeYmNmLcN
-         /gePv+09WPyfQ==
-Date:   Wed, 29 Apr 2020 18:24:06 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        "Guilherme G. Piccoli" <gpiccoli@canonical.com>
-Subject: Re: linux-next: manual merge of the akpm-current tree with the
- bpf-next tree
-Message-ID: <20200429182406.67582a6a@canb.auug.org.au>
-In-Reply-To: <20200429065404.GA32139@lst.de>
-References: <20200429164507.35ac444b@canb.auug.org.au>
-        <20200429064702.GA31928@lst.de>
-        <CAADnVQJWLPpt6tEGo=KkLBaHLpwZFLBfZX7UB4Z6+hMf6g220w@mail.gmail.com>
-        <20200429065404.GA32139@lst.de>
+        id S1726546AbgD2I3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 04:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726355AbgD2I3j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 04:29:39 -0400
+X-Greylist: delayed 178 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Apr 2020 01:29:39 PDT
+Received: from mo6-p01-ob.smtp.rzone.de (mo6-p01-ob.smtp.rzone.de [IPv6:2a01:238:20a:202:5301::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8473EC03C1AD
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 01:29:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1588148978;
+        s=strato-dkim-0002; d=xenosoft.de;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=BfHXos+9450rpGvIhO6jrZq3f/TYqCe6XZMBD0vryCQ=;
+        b=mNRYkB3KL5KRcqz49DYr9bMePbzJJl3zxQxD3goMb/qwCz0yLXOPHXc81y13KM6jKW
+        U/9lt4KeVnucFQOIWeUpklnamgAqF2WSMdlaKxuGp+wWHpzy+raklYyIyGbTrghCf+L7
+        Pddu4Tfo3ei/GO0RD6fTgnakOLwExffYmLiIJoc1sOCzNEH+iN/jbkWgTsQBj057gO8D
+        3ywMI4n3uf01+hXybJOuRlJ54wA418crUnZKnE24NeRMQhM4CdgN0j9+sJC+3ZdlqEbc
+        OHZAI+QssxvHz4OQe6Y6jG+6ftUQg1PkFBypZ2fMX+UQeidbg22u6vyoH7TyweAHeABW
+        xUFw==
+X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPhSdWimbfxYLit+vlzeN0mUI0H8aQ=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a02:8109:89c0:ebfc:1c94:f1a9:15ea:cac1]
+        by smtp.strato.de (RZmta 46.6.2 AUTH)
+        with ESMTPSA id I01247w3T8QYYNW
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Wed, 29 Apr 2020 10:26:34 +0200 (CEST)
+Subject: Re: [RFC PATCH dpss_eth] Don't initialise ports with no PHY
+To:     Darren Stevens <darren@stevens-zone.net>, madalin.bacur@nxp.com,
+        netdev@vger.kernel.org, mad skateman <madskateman@gmail.com>
+Cc:     oss@buserror.net, linuxppc-dev@lists.ozlabs.org,
+        "R.T.Dickinson" <rtd2@xtra.co.nz>,
+        "contact@a-eon.com" <contact@a-eon.com>
+References: <20200424232938.1a85d353@Cyrus.lan>
+From:   Christian Zigotzky <chzigotzky@xenosoft.de>
+Message-ID: <ca95a1b2-1b16-008c-18ba-2cbd79f240e6@xenosoft.de>
+Date:   Wed, 29 Apr 2020 10:26:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/W8DO522oYpzojNSk.1B7cDm";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20200424232938.1a85d353@Cyrus.lan>
+Content-Type: multipart/mixed;
+ boundary="------------BF1782061CAC7863F4EF23B5"
+Content-Language: de-DE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/W8DO522oYpzojNSk.1B7cDm
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------BF1782061CAC7863F4EF23B5
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Christoph,
+Hi Darren,
 
-On Wed, 29 Apr 2020 08:54:04 +0200 Christoph Hellwig <hch@lst.de> wrote:
+Thanks a lot for your patch!
+
+I tested it with the RC3 today.
+
+Unfortunately it doesn't compile because a bracket is missing in the 
+following line:
+
++    if (prop && !strncmp(prop, "disabled", 8) {
+
+And a semicolon is missing in the following line:
+
++        goto _return
+
+I added the bracket and the semicolon and after that it compiled without 
+any problems. (New patch attached)
+
+Unfortunately I see more than 2 ethernet ports with the RC3 and your 
+patch on my Cyrus P5040. Maybe Skateman has an other result on his Cyrus 
+P5020.
+
+Maybe we have to modify the dtb file.
+
+Thanks,
+Christian
+
+
+On 25 April 2020 at 00:29 am, Darren Stevens wrote:
+> Since cbb961ca271e ("Use random MAC address when none is given")
+> Varisys Cyrus P5020 boards have been listing 5 ethernet ports instead of
+> the 2 the board has.This is because we were preventing the adding of the
+> unused ports by not suppling them a MAC address, which this patch now
+> supplies.
 >
-> On Tue, Apr 28, 2020 at 11:49:34PM -0700, Alexei Starovoitov wrote:
-> > On Tue, Apr 28, 2020 at 11:47 PM Christoph Hellwig <hch@lst.de> wrote: =
-=20
-> > >
-> > > On Wed, Apr 29, 2020 at 04:45:07PM +1000, Stephen Rothwell wrote: =20
-> > > >
-> > > > Today's linux-next merge of the akpm-current tree got a conflict in:
-> > > >
-> > > >   kernel/sysctl.c
-> > > >
-> > > > between commit:
-> > > >
-> > > >   f461d2dcd511 ("sysctl: avoid forward declarations")
-> > > >
-> > > > from the bpf-next tree and commits: =20
-> > >
-> > > Hmm, the above should have gone in through Al.. =20
-> >=20
-> > Al pushed them into vfs tree and we pulled that tag into bpf-next. =20
->=20
-> Ok.  And Stephen pulled your tree first.
+> Prevent them from appearing in the net devices list by checking for a
+> 'status="disabled"' entry during probe and skipping the port if we find
+> it.
+>
+> Signed-off-by: Darren Stevens <Darren@stevens-zone.net>
+>
+> ---
+>
+>   drivers/net/ethernet/freescale/fman/mac.c | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+> index 43427c5..c9ed411 100644
+> --- a/drivers/net/ethernet/freescale/fman/mac.c
+> +++ b/drivers/net/ethernet/freescale/fman/mac.c
+> @@ -606,6 +606,7 @@ static int mac_probe(struct platform_device *_of_dev)
+>   	struct resource		 res;
+>   	struct mac_priv_s	*priv;
+>   	const u8		*mac_addr;
+> +	const char 		*prop;
+>   	u32			 val;
+>   	u8			fman_id;
+>   	phy_interface_t          phy_if;
+> @@ -628,6 +629,16 @@ static int mac_probe(struct platform_device *_of_dev)
+>   	mac_dev->priv = priv;
+>   	priv->dev = dev;
+>   
+> +	/* check for disabled devices and skip them, as now a missing
+> +	 * MAC address will be replaced with a Random one rather than
+> +	 * disabling the port
+> +	 */
+> +	prop = of_get_property(mac_node, "status", NULL);
+> +	if (prop && !strncmp(prop, "disabled", 8) {
+> +		err = -ENODEV;
+> +		goto _return
+> +	}
+> +
+>   	if (of_device_is_compatible(mac_node, "fsl,fman-dtsec")) {
+>   		setup_dtsec(mac_dev);
+>   		priv->internal_phy_node = of_parse_phandle(mac_node,
 
-No, it is not in the branch I fetch from Al yet.
 
---=20
-Cheers,
-Stephen Rothwell
+--------------BF1782061CAC7863F4EF23B5
+Content-Type: text/x-patch; charset=UTF-8;
+ name="dpss_eth.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="dpss_eth.patch"
 
---Sig_/W8DO522oYpzojNSk.1B7cDm
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index 43427c5..c9ed411 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -606,6 +606,7 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	struct resource		 res;
+ 	struct mac_priv_s	*priv;
+ 	const u8		*mac_addr;
++	const char 		*prop;
+ 	u32			 val;
+ 	u8			fman_id;
+ 	phy_interface_t          phy_if;
+@@ -628,6 +629,16 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	mac_dev->priv = priv;
+ 	priv->dev = dev;
+ 
++	/* check for disabled devices and skip them, as now a missing
++	 * MAC address will be replaced with a Random one rather than
++	 * disabling the port
++	 */
++	prop = of_get_property(mac_node, "status", NULL);
++	if (prop && !strncmp(prop, "disabled", 8)) {
++		err = -ENODEV;
++		goto _return;
++	}
++
+ 	if (of_device_is_compatible(mac_node, "fsl,fman-dtsec")) {
+ 		setup_dtsec(mac_dev);
+ 		priv->internal_phy_node = of_parse_phandle(mac_node,
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6pOaYACgkQAVBC80lX
-0GyfPgf5AfDRR+uaAmpYyPjYWiIziyaXRfGhaZxYrS0542Jel2ojgZZlJOPKqEYJ
-UGHZgKYR8CYrHZzQg8/4+oSPk0qGhFz5tg8BjCQpaqTMTDSKeZ9WraDohke4CoJf
-8TyBurjmVASZqwiVBAJJSvIYyszdUmK1D1XzeZ7qb9snSADRKDT8wKkeSRzwdL8a
-MVRCdXbkXyI6jlBvqocsPe13WNaHMgNk/7iXRfpkoEclxylotRwhH7iBrl100pgw
-SkBQOKW1R8RQBAZDjPqXPAqIBYPzENFecb4NKKjWNsFEQ6dkqnz0dcjwEkCGLr3w
-ItdEZpCS//knWCcZnw1cc68FbPgEXw==
-=U/RL
------END PGP SIGNATURE-----
-
---Sig_/W8DO522oYpzojNSk.1B7cDm--
+--------------BF1782061CAC7863F4EF23B5--
