@@ -2,128 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BD061BE858
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:18:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCC721BE8A2
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbgD2URf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 16:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
+        id S1727047AbgD2Uga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 16:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727827AbgD2UR1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:17:27 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF7BC03C1AE;
-        Wed, 29 Apr 2020 13:17:26 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id b11so4113938wrs.6;
-        Wed, 29 Apr 2020 13:17:25 -0700 (PDT)
+        with ESMTP id S1726481AbgD2Ug3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:36:29 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB873C03C1AE;
+        Wed, 29 Apr 2020 13:36:29 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id n143so3491511qkn.8;
+        Wed, 29 Apr 2020 13:36:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0knvu8zyqVx4y2NkIr8lOmrEgshGQH0lpKJi3cjk2SI=;
-        b=QveB36T9cQfiMiI9HNOdZ7yQwlct6qNuNxJikrgRPBAt+IVOZQpzYY64/wICgNjMEE
-         hGkVzt4CRM/9icHJ7hoBYLj/RfsYzQr5i9OTVlJc328Utkbe6rku9I2AZD33/SCOwxdd
-         LvBWWSfiFVZszv6UUklwzPO0/bCoZ+IboL/FMLCIRy8ZBki4UlQWoszUwRM5B2qDj2jm
-         GD/sfTOz9Xz0ZYrdPkCpPJAsR2YJHJpdfSlWFV77DeMeuV4Si8xVTszKN9Ibf+rfxVkB
-         azePNdVax5XNLpUgEktsaqVBqJBI/lsZNEq7ARgbx9DCrbLcPxpuO+wxQpjrpSq6570r
-         EwSA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wa1e1Y92lYvZrPhLeN+VLU3x02Trx+J7qlyl+rZbDUU=;
+        b=mvj52mA/xDeZyh4CUMZzSUOlhh19TXjFKAujr/Pw2bcSm8jhF4MIsrYlxLBJIDBzQF
+         ECoRb6zvSZCVB8YCU4e3EMg6CmDBAOS2tKiII9yKK/LsUKzqajpRY5VF2hPsi7/vOeML
+         ZFhnWJ49pRJjcT+fn91yKO2K/9/KpFnNnN0+b9PpJYCk+ttzf5+UNyr4vd12VSSCaD6N
+         2erVi5RMOMMhfJRe6n/bSJn2OpxxkNo739fHiC/v8Pjoim5Ga1KNMjBOVNckG2MtxzlB
+         pJq5vuOQuTItE3xdT2BjknUqo9/pftJwNz1vZMAH5U5GF6oy+3PeoK1YZDnFvJAGFt7D
+         UPCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0knvu8zyqVx4y2NkIr8lOmrEgshGQH0lpKJi3cjk2SI=;
-        b=blpui7O3xV0YI9xVWTDf0DD6XvcrZl7doRHUWUz5ZAc1c8FUQPU12efHs2dXNrv16V
-         HQyQ1s8862wSogyQ7aKl3qXWwKfwfyFsRLrjuo/awX1FeFrDPZ3BeUETJxDLMRmNEB5l
-         zyrgx7Woko4Xbfwil3EFqZ6blmVjk1I9y73CeTgEHGadUwcnCfKoKX+TNAcAqUcnoTOM
-         gH93G5UZ8VDxLhhEbeiituCbyP3ck7qiXHl19hiEbvOJwO9VLI3SLpgpYIB9htdVnI9H
-         DPZjFJxWK9k0P/LjUXA4lDsqqC43oop+cU5hIwSkPG+ebGqzR0pK4MIAaE2IqV2bvdCY
-         3IZA==
-X-Gm-Message-State: AGi0PuYdmlAWod4F4ElRLyyAD556V8GhdIW/r9uFYTqEvOdMgSorp0tw
-        Y+OWnNhWsw3cVDItNyE4xa4=
-X-Google-Smtp-Source: APiQypI7/tFm351D0aZQ+OFBTov0tzQC4j8sVuoaGKjl8wXkEwEwydb01p0/bZVora7GdZbF0ZPmWA==
-X-Received: by 2002:adf:fe44:: with SMTP id m4mr43579867wrs.188.1588191444705;
-        Wed, 29 Apr 2020 13:17:24 -0700 (PDT)
-Received: from localhost.localdomain (p200300F137142E00428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:3714:2e00:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id q143sm9923623wme.31.2020.04.29.13.17.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2020 13:17:24 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org
-Cc:     jianxin.pan@amlogic.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH DO NOT MERGE v2 11/11] ARM: dts: meson: Switch existing boards with RGMII PHY to "rgmii-id"
-Date:   Wed, 29 Apr 2020 22:16:44 +0200
-Message-Id: <20200429201644.1144546-12-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
-References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wa1e1Y92lYvZrPhLeN+VLU3x02Trx+J7qlyl+rZbDUU=;
+        b=bgd1bliqVNiWbfuZVyHYOGyJYPJERHwhiYKrudvrfV+Bp7NMW91v9nKsOd6qPt2DqV
+         5Z/zP551kd+/qUFLY+4WmwhNJ76WtW5VQXgD7dbeQpeYjsEc3ox+0YXgcffw8JrtG3T2
+         KyolbeUe4RBBbzZz5yD+fEXrpyIbgmCoDHBDMWN9hgsvIhZxVztA3oAm7DMcgNeby12/
+         QkiojcIGa+Y2HLuYeKgJeInnT93Jveuo9rLrQAbIVC/b8VWWWtp63NV8paiPpbhl+UYI
+         hIuUNBdsVxKKIS0dri5vWIfEmeFRAUpqkoMMeRVxDt8HCkUDAvGTetsptX08WbJaIZZd
+         kysA==
+X-Gm-Message-State: AGi0PubTN+iansZ/kxNO6M6+YzBwmuhhU1QxthCWx3gPivvDM268T0qu
+        euQl28x+IQ7JbAkY9xtsAAYc6wGt7DtYAdJrERU=
+X-Google-Smtp-Source: APiQypK+ScNFRjviccmciq+hSgbQJQz0BvntvfGNdmkmNvKb+9q8VMEfGiSIBuE7+efgCn20i36lQOb2Fo5ytWh9By8=
+X-Received: by 2002:ae9:e854:: with SMTP id a81mr338783qkg.36.1588192588839;
+ Wed, 29 Apr 2020 13:36:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200429132217.1294289-1-arnd@arndb.de>
+In-Reply-To: <20200429132217.1294289-1-arnd@arndb.de>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 29 Apr 2020 13:36:17 -0700
+Message-ID: <CAEf4Bzahz15mGQC21Hr9dfCE6uDrgWvARr2_0f0i592keW3orQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf: fix unused variable warning
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let the PHY generate the RX and TX delay on the Odroid-C1 and MXIII
-Plus.
+On Wed, Apr 29, 2020 at 6:23 AM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> Hiding the only using of bpf_link_type_strs[] in an #ifdef causes
+> an unused-variable warning:
+>
+> kernel/bpf/syscall.c:2280:20: error: 'bpf_link_type_strs' defined but not used [-Werror=unused-variable]
+>  2280 | static const char *bpf_link_type_strs[] = {
+>
+> Move the definition into the same #ifdef.
+>
+> Fixes: f2e10bff16a0 ("bpf: Add support for BPF_OBJ_GET_INFO_BY_FD for bpf_link")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
 
-Previously we did not know that these boards used an RX delay. We
-assumed that setting the TX delay on the MAC side It turns out that
-these boards also require an RX delay of 2ns (verified on Odroid-C1,
-but the u-boot code uses the same setup on both boards). Ethernet only
-worked because u-boot added this RX delay on the MAC side.
+Thanks for the fix, LGTM.
 
-The 4ns TX delay was also wrong and the result of using an unsupported
-RGMII TX clock divider setting. This has been fixed in the driver with
-commit bd6f48546b9cb7 ("net: stmmac: dwmac-meson8b: Fix the RGMII TX
-delay on Meson8b/8m2 SoCs").
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Switch to phy-mode "rgmii-id" to let the PHY side handle all the delays,
-(as recommended by the Ethernet maintainers anyways) to correctly
-describe the need for a 2ns RX as well as 2ns TX delay on these boards.
-This fixes the Ethernet performance on Odroid-C1 where there was a huge
-amount of packet loss when transmitting data due to the incorrect TX
-delay.
-
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- arch/arm/boot/dts/meson8b-odroidc1.dts    | 3 +--
- arch/arm/boot/dts/meson8m2-mxiii-plus.dts | 4 +---
- 2 files changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/arch/arm/boot/dts/meson8b-odroidc1.dts b/arch/arm/boot/dts/meson8b-odroidc1.dts
-index a2a47804fc4a..cb21ac9f517c 100644
---- a/arch/arm/boot/dts/meson8b-odroidc1.dts
-+++ b/arch/arm/boot/dts/meson8b-odroidc1.dts
-@@ -202,9 +202,8 @@ &ethmac {
- 	pinctrl-0 = <&eth_rgmii_pins>;
- 	pinctrl-names = "default";
- 
--	phy-mode = "rgmii";
- 	phy-handle = <&eth_phy>;
--	amlogic,tx-delay-ns = <4>;
-+	phy-mode = "rgmii-id";
- 
- 	nvmem-cells = <&ethernet_mac_address>;
- 	nvmem-cell-names = "mac-address";
-diff --git a/arch/arm/boot/dts/meson8m2-mxiii-plus.dts b/arch/arm/boot/dts/meson8m2-mxiii-plus.dts
-index d54477b1001c..cc498191ddd1 100644
---- a/arch/arm/boot/dts/meson8m2-mxiii-plus.dts
-+++ b/arch/arm/boot/dts/meson8m2-mxiii-plus.dts
-@@ -69,9 +69,7 @@ &ethmac {
- 	pinctrl-names = "default";
- 
- 	phy-handle = <&eth_phy0>;
--	phy-mode = "rgmii";
--
--	amlogic,tx-delay-ns = <4>;
-+	phy-mode = "rgmii-id";
- 
- 	mdio {
- 		compatible = "snps,dwmac-mdio";
--- 
-2.26.2
-
+>  kernel/bpf/syscall.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 3cea7602de78..5e86d8749e6e 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -2274,6 +2274,7 @@ static int bpf_link_release(struct inode *inode, struct file *filp)
+>         return 0;
+>  }
+>
+> +#ifdef CONFIG_PROC_FS
+>  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
+>  #define BPF_MAP_TYPE(_id, _ops)
+>  #define BPF_LINK_TYPE(_id, _name) [_id] = #_name,
+> @@ -2285,7 +2286,6 @@ static const char *bpf_link_type_strs[] = {
+>  #undef BPF_MAP_TYPE
+>  #undef BPF_LINK_TYPE
+>
+> -#ifdef CONFIG_PROC_FS
+>  static void bpf_link_show_fdinfo(struct seq_file *m, struct file *filp)
+>  {
+>         const struct bpf_link *link = filp->private_data;
+> --
+> 2.26.0
+>
