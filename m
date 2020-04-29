@@ -2,163 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C2C1BD124
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 02:29:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC571BD133
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 02:33:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726608AbgD2A3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 20:29:49 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:6480 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726577AbgD2A3r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 20:29:47 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03T0EP8n025576
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 17:29:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=gwiwmKiyPtmPjqH+ES0OPdlZxrE8OLSrvz7H0LGHhoA=;
- b=ZeBXEdawj+3zj1Lhqajvx5R7p5lsDLzjylHYH5V6W5ued5V41g3p520u0SF2amxGvIQV
- /7NlwPJqlW3wfgPEd07O3FLhM8US+ChP5xuRoxZCGD4+QiukfKeHmIcIqvvwElheMh08
- lfs9wow9SHouM/rOOIgg+pQEqH53OudiU4s= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30n54ejywx-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 17:29:47 -0700
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 28 Apr 2020 17:29:45 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id B6FE562E4BF9; Tue, 28 Apr 2020 17:29:40 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v6 bpf-next 3/3] bpf: add selftest for BPF_ENABLE_STATS
-Date:   Tue, 28 Apr 2020 17:29:22 -0700
-Message-ID: <20200429002922.3064669-4-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200429002922.3064669-1-songliubraving@fb.com>
-References: <20200429002922.3064669-1-songliubraving@fb.com>
+        id S1726420AbgD2Ad3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 20:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726274AbgD2Ad2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 20:33:28 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC3DC03C1AC;
+        Tue, 28 Apr 2020 17:33:28 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id o185so172635pgo.3;
+        Tue, 28 Apr 2020 17:33:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6scFRPeF1FJKdxvlENRi3WSFxupq2F2QcqZVK0DBTU0=;
+        b=BubY9+h0FKrwer5J4NQZIm3Kc+DjxBbl6VGDJsG9zqKWyD727Ay2IEFMMiSTefkZ6O
+         WDMdsWEhNyegFvnPL8SbANLBGU/QxbuB4VzjLh31cVEgzOax6qBvbucJhaACZIVuszd1
+         a1GgGZzkHX9D1XbTkyp/s4pXVC2ZivyTB7Tflv90l4snHvtsruwGaFfrCb20cKGaVFsg
+         bDNNlmqvEWtUGzDY7tanadvrK/Qt/swJsiWDkxd5p6v9awkvYo6rCEoZAdQtNeZgSUgc
+         xvWb97JOM+SbTr6FEFrd0OZ77sezBXnz27lqUB6BV9wSn9spNH0Hztx5RVJo/RFJXNUa
+         Ctuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6scFRPeF1FJKdxvlENRi3WSFxupq2F2QcqZVK0DBTU0=;
+        b=gajDvS/oIVqEc3jgOXnYG0hSJEMJDaRxyU214FbzadtKtZRl0nIcSXG8FJavAV/9LG
+         qxfdbEYqfbDLRmPivsm5EI7H6b99yH5fKpWlMrqTPl0eaDvvlSKzBqF5/hIv1S6IlGuB
+         Gyrt8F/yQKo0uerDLzNEuNz0DTwiGWTl3ofxFLDufk1SYVBoK/LwRiupS3OB23/9TS0x
+         C+BmgVomINU6AYCuPPU6gRkFUUnS2LuYKQoZxfe1h4LO4i2OSEy5O3FW4tjVShjfJcPH
+         AE0vVvZViC0oaZ21JEDxwZfcz7NrdrhvNFWG8c5XfWETM+DikjBKTI5jJ0GpU9s3ZFXL
+         OtCw==
+X-Gm-Message-State: AGi0PuY0xkHpb+UplFOYWP5G00B4IRzlfe9/NRtw+R21IWirA9uRlMlM
+        +jbH3/dFbxEP8dKMJuMtc9c=
+X-Google-Smtp-Source: APiQypJBhqxFedDe5F7cMnZGiyuDRgwC4lgUfGy4nc6o3I9XycrG5PKd8ZrUcV8gDhu4oEOLFI8kqw==
+X-Received: by 2002:a63:651:: with SMTP id 78mr29534041pgg.129.1588120407876;
+        Tue, 28 Apr 2020 17:33:27 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9061])
+        by smtp.gmail.com with ESMTPSA id a16sm15978842pff.41.2020.04.28.17.33.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 17:33:27 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 17:33:24 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH v3 bpf-next 00/10] bpf_link observability APIs
+Message-ID: <20200429003324.afboiyqnxjxry6pg@ast-mbp.dhcp.thefacebook.com>
+References: <20200429001614.1544-1-andriin@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-28_15:2020-04-28,2020-04-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- priorityscore=1501 suspectscore=8 spamscore=0 impostorscore=0
- mlxlogscore=999 bulkscore=0 mlxscore=0 adultscore=0 malwarescore=0
- clxscore=1015 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004290000
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200429001614.1544-1-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test for  BPF_ENABLE_STATS, which should enable run_time_ns stats.
+On Tue, Apr 28, 2020 at 05:16:04PM -0700, Andrii Nakryiko wrote:
+> This patch series adds various observability APIs to bpf_link:
+>   - each bpf_link now gets ID, similar to bpf_map and bpf_prog, by which
+>     user-space can iterate over all existing bpf_links and create limited FD
+>     from ID;
+>   - allows to get extra object information with bpf_link general and
+>     type-specific information;
+>   - implements `bpf link show` command which lists all active bpf_links in the
+>     system;
+>   - implements `bpf link pin` allowing to pin bpf_link by ID or from other
+>     pinned path.
+> 
+> v2->v3:
+>   - improve spin locking around bpf_link ID (Alexei);
+>   - simplify bpf_link_info handling and fix compilation error on sh arch;
+> v1->v2:
+>   - simplified `bpftool link show` implementation (Quentin);
+>   - fixed formatting of bpftool-link.rst (Quentin);
+>   - fixed attach type printing logic (Quentin);
+> rfc->v1:
+>   - dropped read-only bpf_links (Alexei);
+>   - fixed bug in bpf_link_cleanup() not removing ID;
+>   - fixed bpftool link pinning search logic;
+>   - added bash-completion and man page.
 
-~/selftests/bpf# ./test_progs -t enable_stats  -v
-test_enable_stats:PASS:skel_open_and_load 0 nsec
-test_enable_stats:PASS:get_stats_fd 0 nsec
-test_enable_stats:PASS:attach_raw_tp 0 nsec
-test_enable_stats:PASS:get_prog_info 0 nsec
-test_enable_stats:PASS:check_stats_enabled 0 nsec
-Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
-
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../selftests/bpf/prog_tests/enable_stats.c   | 45 +++++++++++++++++++
- .../selftests/bpf/progs/test_enable_stats.c   | 21 +++++++++
- 2 files changed, 66 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/enable_stats.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_enable_stats.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/enable_stats.c b/tool=
-s/testing/selftests/bpf/prog_tests/enable_stats.c
-new file mode 100644
-index 000000000000..987fc743ab75
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/enable_stats.c
-@@ -0,0 +1,45 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <sys/mman.h>
-+#include "test_enable_stats.skel.h"
-+
-+void test_enable_stats(void)
-+{
-+	struct test_enable_stats *skel;
-+	struct bpf_prog_info info =3D {};
-+	__u32 info_len =3D sizeof(info);
-+	int stats_fd, err, prog_fd;
-+	int duration =3D 0;
-+
-+	skel =3D test_enable_stats__open_and_load();
-+
-+	if (CHECK(!skel, "skel_open_and_load", "skeleton open/load failed\n"))
-+		return;
-+
-+	stats_fd =3D bpf_enable_stats(BPF_STATS_RUNTIME_CNT);
-+
-+	if (CHECK(stats_fd < 0, "get_stats_fd", "failed %d\n", errno))
-+		goto cleanup;
-+
-+	err =3D test_enable_stats__attach(skel);
-+
-+	if (CHECK(err, "attach_raw_tp", "err %d\n", err))
-+		goto cleanup;
-+
-+	usleep(1000);
-+
-+	prog_fd =3D bpf_program__fd(skel->progs.test_enable_stats);
-+	err =3D bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
-+
-+	if (CHECK(err, "get_prog_info",
-+		  "failed to get bpf_prog_info for fd %d\n", prog_fd))
-+		goto cleanup;
-+
-+	CHECK(info.run_time_ns =3D=3D 0, "check_stats_enabled",
-+	      "failed to enable run_time_ns stats\n");
-+
-+cleanup:
-+	test_enable_stats__destroy(skel);
-+	if (stats_fd >=3D 0)
-+		close(stats_fd);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_enable_stats.c b/tool=
-s/testing/selftests/bpf/progs/test_enable_stats.c
-new file mode 100644
-index 000000000000..aa9626330a9e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_enable_stats.c
-@@ -0,0 +1,21 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Facebook
-+
-+#include <linux/bpf.h>
-+#include <stdint.h>
-+#include <bpf/bpf_helpers.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+static int val =3D 1;
-+
-+SEC("raw_tracepoint/sys_enter")
-+int test_enable_stats(void *ctx)
-+{
-+	__u32 key =3D 0;
-+	__u64 *val;
-+
-+	val +=3D 1;
-+
-+	return 0;
-+}
---=20
-2.24.1
-
+Applied, Thanks
