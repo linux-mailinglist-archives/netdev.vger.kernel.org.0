@@ -2,89 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 654F11BE21B
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 17:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 168011BE22B
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 17:12:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbgD2PJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 11:09:37 -0400
-Received: from mga04.intel.com ([192.55.52.120]:51891 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726530AbgD2PJg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 11:09:36 -0400
-IronPort-SDR: g/C3perDkehrVL4TL5JyXD+dzKmK3zHsRqslz72Mo64crlCsZMC54fUYld3VFvaXRy+1TmL6Vs
- GzVHMgtirgwA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2020 08:09:36 -0700
-IronPort-SDR: WQ7JPyqiixk3tjGBb+d8JzMARm8zJ3Z8nbI5rSzN27DzgvK5Ll2064gPOKVaXONKiJQl6SOnyi
- w440qNlrbDiw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,332,1583222400"; 
-   d="scan'208";a="293227924"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 29 Apr 2020 08:09:34 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 41993166; Wed, 29 Apr 2020 18:09:32 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH v1] stmmac: intel: Fix kernel crash due to wrong error path
-Date:   Wed, 29 Apr 2020 18:09:32 +0300
-Message-Id: <20200429150932.17927-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727098AbgD2PLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 11:11:38 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:26842 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726476AbgD2PLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 11:11:38 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03TF34Vg028626;
+        Wed, 29 Apr 2020 11:11:33 -0400
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 30q7qhsxtd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 29 Apr 2020 11:11:33 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 03TFAxHc015235;
+        Wed, 29 Apr 2020 15:11:32 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 30mcu70q0b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 29 Apr 2020 15:11:32 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 03TFBToQ63504530
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 29 Apr 2020 15:11:29 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2418AAE057;
+        Wed, 29 Apr 2020 15:11:29 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D07E0AE05F;
+        Wed, 29 Apr 2020 15:11:28 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 29 Apr 2020 15:11:28 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next 00/13] net/smc: preparations for SMC-R link failover
+Date:   Wed, 29 Apr 2020 17:10:36 +0200
+Message-Id: <20200429151049.49979-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-29_07:2020-04-29,2020-04-29 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
+ priorityscore=1501 bulkscore=0 malwarescore=0 suspectscore=1
+ mlxlogscore=947 lowpriorityscore=0 phishscore=0 adultscore=0
+ impostorscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004290126
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unfortunately sometimes ->probe() may fail. The commit b9663b7ca6ff
-("net: stmmac: Enable SERDES power up/down sequence")
-messed up with error handling and thus:
+This patch series prepares the SMC code for the implementation of SMC-R link 
+failover capabilities which are still missing to reach full compliance with 
+RFC 7609.
+The code changes are separated into 65 patches which together form the new
+functionality. I tried to create meaningful patches which allow to follow the 
+implementation.
 
-[   12.811311] ------------[ cut here ]------------
-[   12.811993] kernel BUG at net/core/dev.c:9937!
+Question: how to handle the remaining 52 patches? All of them are needed for 
+link failover to work and should make it into the same merge window. 
+Can I send them all together?
 
-Fix this by properly crafted error path.
+The SMC-R implementation will transparently make use of the link failover 
+feature when matching RoCE devices are available, no special setup is required.
+All RoCE devices with the same PNET ID as the TCP device (hardware-defined or 
+user-defined via the smc_pnet tool) are candidates to get used to form a link 
+in a link group. When at least 2 RoCE devices are available on both 
+communication endpoints then a symmetric link group is formed, meaning the link 
+group has 2 independent links. If one RoCE device goes down then all connections 
+on this link are moved to the surviving link. Upon recovery of the failing 
+device or availability of a new one, the symmetric link group will be restored.
 
-Fixes: b9663b7ca6ff ("net: stmmac: Enable SERDES power up/down sequence")
-Cc: Voon Weifeng <weifeng.voon@intel.com>
-Cc: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Karsten Graul (13):
+  net/smc: rework pnet table to support SMC-R failover
+  net/smc: separate function for link initialization
+  net/smc: introduce link_idx for link group array
+  net/smc: convert static link ID to dynamic references
+  net/smc: convert static link ID instances to support multiple links
+  net/smc: multi-link support for smc_rmb_rtoken_handling()
+  net/smc: add new link state and related helpers
+  net/smc: move testlink work to system work queue
+  net/smc: simplify link deactivation
+  net/smc: use worker to process incoming llc messages
+  net/smc: process llc responses in tasklet context
+  net/smc: use mutex instead of rwlock_t to protect buffers
+  net/smc: move llc layer related init and clear into smc_llc.c
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 565da6498c846e..ff22f274aa43d6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4991,7 +4991,7 @@ int stmmac_dvr_probe(struct device *device,
- 						 priv->plat->bsp_priv);
- 
- 		if (ret < 0)
--			return ret;
-+			goto error_serdes_powerup;
- 	}
- 
- #ifdef CONFIG_DEBUG_FS
-@@ -5000,6 +5000,8 @@ int stmmac_dvr_probe(struct device *device,
- 
- 	return ret;
- 
-+error_serdes_powerup:
-+	unregister_netdev(ndev);
- error_netdev_register:
- 	phylink_destroy(priv->phylink);
- error_phy_setup:
+ net/smc/af_smc.c   |  79 ++++---
+ net/smc/smc.h      |   1 +
+ net/smc/smc_cdc.c  |   8 +-
+ net/smc/smc_clc.c  |  12 +-
+ net/smc/smc_clc.h  |   1 +
+ net/smc/smc_core.c | 542 +++++++++++++++++++++++++++++----------------
+ net/smc/smc_core.h |  78 ++++---
+ net/smc/smc_ib.c   |  63 +++---
+ net/smc/smc_ib.h   |  10 +-
+ net/smc/smc_ism.c  |   3 +-
+ net/smc/smc_llc.c  | 396 ++++++++++++++++++---------------
+ net/smc/smc_llc.h  |  16 +-
+ net/smc/smc_pnet.c | 539 +++++++++++++++++++++++++-------------------
+ net/smc/smc_pnet.h |   2 +
+ net/smc/smc_tx.c   |  13 +-
+ net/smc/smc_wr.c   |   2 +-
+ 16 files changed, 1063 insertions(+), 702 deletions(-)
+
 -- 
-2.26.2
+2.17.1
 
