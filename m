@@ -2,187 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 508691BD40B
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 07:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2965E1BD412
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 07:38:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbgD2Fgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 01:36:50 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:9662 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725798AbgD2Fgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 01:36:50 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 03T5Tker031566;
-        Tue, 28 Apr 2020 22:36:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=QJ78uHbcXlBpHJszjwK9vp4OhUEmi/NiycTk2sp42G4=;
- b=gC48lbLx3Y7uRHClT3443/aBbzr8+bHiW2VbjzGYhPnWCfq4YZt51dvcLpTt7uBOXEiA
- QU6anpVrbp/JJYLS4imlu9L0/eXHC89s7LzvnukZ7BpUVSE3VOQAbVBbzrfi+CjEazXE
- SLtrp/3uTGAcEHDXt2Gdc/+4GNgfPxslduI= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 30ntjvxuuu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 28 Apr 2020 22:36:36 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 28 Apr 2020 22:36:35 -0700
+        id S1726530AbgD2FiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 01:38:13 -0400
+Received: from mail-vi1eur05on2059.outbound.protection.outlook.com ([40.107.21.59]:6236
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726472AbgD2FiN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 01:38:13 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SXf8LIggt7t5XonUr/UO7DTe+kOrkd3BX7l4kwFYHENhGUdnDD1y/k/u1cTjo5XaXw4ZNIEnd+KPfiINDoY7qeskNSoY/ySFYZQAr3vFM1gf/YeW/95wNq3AHRzG+tXuwBZOofT0EO+PlwkgkbL0KDV+K+/cSy0IaUo+ahD/6dtRVZaB6p7YFeE7dnrJ2jUKNPjHEOktjPUgU0DUUmhfdAl+Rl5Y5DaavGA8Y9gYoTupNvgINxiOlN4YBmhK3pcalsaVMSv16+rwfRfccZzvrNtl94MR5nHff1v6RM7p4m9MzI+qYHfKMBJ7/k1BzNlcSFsXkxzeVFBFOKI/c6lc0w==
+ b=G+Cb+/V1Br2/W+bFkkuIObVHynOg32Bu/+Rq7OrjslVWtId59wtsyMp8yDL5uRcE0hCOhT25BbPUmg5kWGIQpGyf66tHt5O0rfxzVRPTCwLR+pBbuezCKp5svPaIFSlHI2iW8J1ZOcrXGqWWKMmcBbNhSbz9lAAPPXrEfWmgbE2ZmnbegI/h/AXV59DQjxAoR8IIT2X47PC3/irSwToJ0fcDv+oNYvA4WWJPi8fU7hxKRb2Q90SefJRCuMjyl2QDN/O05daD8enZsNIWpsyThsSOufBClXDOfgR3bqZX02C/IG/Sq3RS53ginr3TJBgUkHfPwRMQIN8Gm4OBCOvz5w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QJ78uHbcXlBpHJszjwK9vp4OhUEmi/NiycTk2sp42G4=;
- b=PXBBzYWj7ikw0tV6iicfs3d8JycSt/sNkSjT/b4tsJZqao9CW7IexHkLjJ6/GgcVDloXBylSJxzGLAv2lIyyW6yhdUO8W9bNdd34SFvoqst2glaSUml4DqUillsL1ClCT7lsNtfIGuXnTJ9+8UlXeHFoZ0pV7Z6EytJzCEiGVk0CZRzEsdkmhZR8TKfjOPhf89biFpXo0U+/VVCKQMmgt8tQpSP5/PdIHwMhnNOVSCQmbI8jonlFWCyL5AO8qUuLiVWXx70EUSXCuPWdiX0UbZgSNxiFrS1v8y6TG6WEIREqA1kPBeCWI5Ne8q31My1pbjyNkaoplnF4Smn09PcfUA==
+ bh=tS/k56e3hRWL4sJxPHRQPtL/GBehb5Kq2UfTvVvtMDI=;
+ b=GrKG7BT/b+Ru7zr39sfpHhgL77mMtbhUPsLoByGxBZCjURJio8BDcOifgtEeEmn02mgzTjJV+kaz40cvLm2ksCW0wQQ4gWmr1Q7TDJ9VUPFpiuEWQL+gIBLxrNN0WQMSkyRlw2qFg8mGws2QHNq234M2DZxcj0sCP4MOj/nO+FFZuKuWjMg0uwB7qNoMUYwsgpAsF2YQuUhRK32E2bRf5tAufIDWGpXQcrd8Xb/DW2yratLA3khs881Gj+Kv2zb8qjFP69YoEb89meA006YH8cuEnvXu8x285zVan3K4PwybkWEAcksSAkJyIsBtWLT/HvJ2rkOFdDR+d3cZWNwdBw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QJ78uHbcXlBpHJszjwK9vp4OhUEmi/NiycTk2sp42G4=;
- b=JU7AjqXBReFz8hgRsCTQyOPmVpQKqA4ExSzKWdIm4bZ1/BeGJMNsp/6ygog1CyWdXmUcQDXbF4Iy6TdyJTaXHFzv8Cvg44rPgoIvANm1t+yreM9SLmhiAoqmHPmxRmq1s7G2lLPDNimob8kG+p/QJfjffdh7zlGYMBwPqSNBDAM=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB3365.namprd15.prod.outlook.com (2603:10b6:a03:111::24) with
+ bh=tS/k56e3hRWL4sJxPHRQPtL/GBehb5Kq2UfTvVvtMDI=;
+ b=Emwkccryy4E7r3I5+R+XjVd68dSqBIktIhDGHGPrpscW6gjf7fRzbAdfWweA6g1FkelsjtsfNhVqFdPj7Y9KxRdqIMf5EsBc6g2NIfY85x9eE/byjGonxBEkr2d4rRxszsgxvSlAGP/vQE9fyDOY9iRrTnqH6HtPgs1LeWoynxw=
+Authentication-Results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=oss.nxp.com;
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB4289.eurprd04.prod.outlook.com (2603:10a6:208:62::30) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Wed, 29 Apr
- 2020 05:36:34 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::bdf1:da56:867d:f8a2]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::bdf1:da56:867d:f8a2%7]) with mapi id 15.20.2937.026; Wed, 29 Apr 2020
- 05:36:34 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Kernel Team" <Kernel-team@fb.com>
-Subject: Re: [PATCH v7 bpf-next 2/3] libbpf: add support for command
- BPF_ENABLE_STATS
-Thread-Topic: [PATCH v7 bpf-next 2/3] libbpf: add support for command
- BPF_ENABLE_STATS
-Thread-Index: AQHWHdqFa4uLsAbzeE6NdAZI/bF/9qiPk4IAgAABEYA=
-Date:   Wed, 29 Apr 2020 05:36:34 +0000
-Message-ID: <CFA6B73B-32FF-4CFF-A953-7CF897A36868@fb.com>
-References: <20200429035841.3959159-1-songliubraving@fb.com>
- <20200429035841.3959159-3-songliubraving@fb.com>
- <CAEf4BzZsQxTW_aQp02cj3L3BofpQ3q76VOX_otA5q1v5EF7q6Q@mail.gmail.com>
-In-Reply-To: <CAEf4BzZsQxTW_aQp02cj3L3BofpQ3q76VOX_otA5q1v5EF7q6Q@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.60.0.2.5)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:b1c4]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 50d5a069-a01c-42a4-b6f6-08d7ebff474f
-x-ms-traffictypediagnostic: BYAPR15MB3365:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB3365B704FFFC47CD3359C5EEB3AD0@BYAPR15MB3365.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:561;
-x-forefront-prvs: 03883BD916
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(376002)(39860400002)(346002)(136003)(396003)(66946007)(66556008)(64756008)(66476007)(6506007)(53546011)(8936002)(6916009)(5660300002)(2906002)(76116006)(66446008)(91956017)(36756003)(71200400001)(86362001)(186003)(6486002)(2616005)(478600001)(8676002)(6512007)(54906003)(4326008)(33656002)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OhjepMs+bkjvV5ihqPty8fzG8B0o+pjuOKRzzTB7PL7b92YHmWp8LljCozwok1GU6+pEncVze8ObmSVg7exe5dqKZpymkUHvniOwokDMSB/GsmjI6HMAXF731K8V3VeB7X8vEa6vJf6WC+/DIKgtGSG2IxmvLJMRnVS4kcZhcht5+9d309aRpmd2bp2AkSsievnZ7im5neUNEotPk4SQDbE9qO7xsFzpVjN7mOt5EAk8HQeJAuGarXqpCZKS6N4koeZmWL4m6+THh52/L0pFfjNIHJPZDF+KccoWkltRzJ2pc7R5QeKRgMhwido2d+vjpS+mU+KH97Hs8Wx29pirYHIIHCgbBtz3Z6DyOHfTvd9ZTrVt1Vu0cXlVehhEvQ6gmbyeSgcyuqqW3io9PP4bcIIC7Ox6pidDqivkRr/KuV6R5+/lCPxLZWjzv5d89Sak
-x-ms-exchange-antispam-messagedata: jc6j1N8sniIko6BJDrJYd50weTwg34PKxdGLsY9aqRRGr2mWKClqyak4iEijAl45BXGcxEmJgudlcWfXyrbL7vIWyb7NEeP7iOJ5TOtTbiVjCK5FRNZSK9ndZWpGuWXhLKfu/wYgRVSCkFOF6h+z9V9YZW+yAhF8JLOd4Y3eSLb7NqLZxnLVrKu0+ZRHWIZis8U89RqBh60OBUUcwvaIKnts01PaMOtf2UdIHE74hPVIYxkJskxpRG5nYr+tFDsJz6AL9fFZ4LtMKXRKyjdymW1FI6MMeBHbc8OVb4p4q57SBU23HHsSxt+sNK0yJ8WF/ihwoKEddW/8wVTFl+8SeePneLhZYWqPwSc3pbo/BRexXEA2RaxhjidkGy/hqubJjKSTc6Iyrw1rifu3sGTrzi1s7X5nGNfACxGsjkT27qDStn8g63MuNj2FkIsQLg4UP90ypoxfbqK74qA352gyRbwnUv8+4JbQjIZboWr988thKRx97wVg5a+nfo+PNBDdpg5Zn5XdCuSW5nlGd6Xe3WwNHcS1S+GxLi/xyQeP4tATJ9KQ1lyL6gob6lIoAmWPwsKiC2WzxVq6vxtKcuZjAvqd+Whkxc7cpqIpvo0LBGWHoH85+CI66b3Mc6bEZkeHOfsAyYls54fSnDkS5LCHyNsuryHoWTtUJlMO3FORceVioTO7DcyRv1+s+BgzvpR9Y5piTyImgaHDn+aTrrh4BWjmmCtUVeifUehoIExiCEHVfNBUn5Dm99+dYrB8aUla9UOeclW/vJ9wqxGsaUgD5m77/zGFsOcfz2SRaC8X+s2yFvKyV9fTQM1Dy8v8HXRS5LYsebQydKwWYRltEtGA6Q==
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <D507B6F93A45C14692CC1221A7FFC16F@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Wed, 29 Apr
+ 2020 05:38:07 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2958.019; Wed, 29 Apr 2020
+ 05:38:07 +0000
+Date:   Wed, 29 Apr 2020 11:07:53 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>
+Cc:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-acpi@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Varun Sethi <V.Sethi@nxp.com>, linux-kernel@vger.kernel.org,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [net-next PATCH v2 0/3] Introduce new APIs to support phylink
+ and phy layers
+Message-ID: <20200429053753.GA12533@lsv03152.swis.in-blr01.nxp.com>
+References: <20200427132409.23664-1-calvin.johnson@oss.nxp.com>
+ <20200427135820.GH25745@shell.armlinux.org.uk>
+ <20200427143238.GA26436@lsv03152.swis.in-blr01.nxp.com>
+ <20200427144806.GI25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200427144806.GI25745@shell.armlinux.org.uk>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: SG2PR0601CA0008.apcprd06.prod.outlook.com (2603:1096:3::18)
+ To AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50d5a069-a01c-42a4-b6f6-08d7ebff474f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2020 05:36:34.1179
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR0601CA0008.apcprd06.prod.outlook.com (2603:1096:3::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Wed, 29 Apr 2020 05:38:00 +0000
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: bb74a273-cd8c-4f86-a5aa-08d7ebff7e69
+X-MS-TrafficTypeDiagnostic: AM0PR04MB4289:|AM0PR04MB4289:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB42898099225447D5E00C1920D2AD0@AM0PR04MB4289.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 03883BD916
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(366004)(346002)(396003)(376002)(16526019)(4326008)(6506007)(8676002)(186003)(44832011)(26005)(33656002)(8936002)(55236004)(956004)(1006002)(6666004)(7696005)(52116002)(478600001)(110136005)(1076003)(7416002)(5660300002)(66946007)(966005)(66556008)(66476007)(9686003)(2906002)(86362001)(316002)(55016002)(54906003)(110426005);DIR:OUT;SFP:1101;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mg+lIVCHYMIvWKB2x9J7SixmBXNiAyFxDOWYi9/TFrmNGVO5gMrMlV3gU7AFVe4g0KBsko1VB/LePer2F+42VxcqbChHq1bW6w0k4FpzdUFKo5Jr3qaGNCKC0FiR20P7yJl76OAoPYnQUDkSmsvsQyuditkSjk1cctLz924Vnrzqenm9IBJz1ax8QtxY5rJg0XIeYJU7iyzFQANqRYLzyhY3ALN5i8PaT62B/wyvnf3NSR4sKdFXXFNiOF67JGLAiEFv3JEywgAaDKMQk83Uzhr1zpGgyBm5ajepIFglMDgmsDQdHRAW5oFSvrrcIX/LZr8t4Lmju0woca87ULDPmDR2JoifbQQWCTLlbgOU+kS4TH4PfrKXydpHjLag4Az4dN1NMQuMHUSUWs8YHfg2vhewRKmHpHeF9ToiYU6OO+uDA3+u7zC3xoivBlMwm551Lk/0OyxTfZuDvu49l6HdQ8aPN23uQBeA28ySBbksf5j+AU5v8xSP/P+Dr+2gu6cQYkF8lvJOI7IjNUtiz4d59tQqq+g/6UM/YOy/onp3/scxrBgC5SgmPGCB1uDjV2RsIfLz1zvO0LyDV2r3WOqvpQ==
+X-MS-Exchange-AntiSpam-MessageData: UatfF4FxUcFTNpqZ3bQ7wleq39hdYuC6HpTH8j4lJ+CuYu7SGwqE+CtooMlFe59LjvImFTP9PtdTlnv78U1DoV14EtR4m/9lADDVwW/IS+RCBwqByv1Ziks9qphmZ1Szzauxcja3bHSRv+Cu6qvlOSMtbHDMisIYaOjYuUYWoWu5yGgn5DDid1oPxQOG596cX5RKd3cWSuco9KclTH3JaGuRhYZgAGuP3WZWeDbZev8HTr4kh7pWH0BcAJK/VGdOSRs3MGJQu0sm2vO28CoZKUbdEIBsSIJIbysRB0fQ69Q8mboMSPDlpj6DALel1G1QATFnSD/UVcNtaoyfThCzFZRyLncfI9FOqV2lw+mz8r8q9fkwk2fnUiHW0thWyZMlOVcUwx+Ibumfqv3n6ohPjR5I81TvPcnDyjIFAThG4LB2rVmDAUz4oWHJAJLDwIcxYrC19JABME/vv4Iz+LIt9rvJDpBF9BLvcWPWK6jPMCGYqQgd/6xTcgEp0oOu8GL34tzxnEFEYdeBzRMTNnZ9n3ff5EibFEwp0vovI4BmOCrbAhGGWBBf86etY6EL/e1a/OGNeVnqcqTdYA6lC5jB1CmVFlMMJrBgwKk0RucRFOqKVGY0hmARE5Slkc2GzTKqLkcXj+Q1BDX0eu9D1NgsEYR6+FG14zUpXSwTklk3030pR64vZQgDf2ENf+VK5kLFgzcPhC41mCeTlC4C0SFkp2VCP4gql9fZiGIPnsjGRCylBr4YfsCo5l4VGwp9uo1AA6x2p0aPR98kJkhfaeY+t8z1YxozlAEjDhXwk0QtvJI=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb74a273-cd8c-4f86-a5aa-08d7ebff7e69
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2020 05:38:07.4890
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3/zSjo4hSI0e+mqDi8mow5Z5mof71L/1TdEQIIhN7jSVyb6qwENm51iH52ZGj/D3TUHMgZAuI2A01MMdjbihEg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3365
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-29_01:2020-04-28,2020-04-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- priorityscore=1501 impostorscore=0 malwarescore=0 mlxscore=0
- suspectscore=0 phishscore=0 mlxlogscore=999 lowpriorityscore=0
- adultscore=0 spamscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004290043
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jvrMzby+8RThEKE7PsZZ78gZp9Qs/Zunl6ULXmE7qrfG2DkIquiPl3U1y9dHEFfN8LuEEED2xCDphPD+LwuRJQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4289
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Apr 27, 2020 at 03:48:07PM +0100, Russell King - ARM Linux admin wrote:
+> On Mon, Apr 27, 2020 at 08:02:38PM +0530, Calvin Johnson wrote:
+> > On Mon, Apr 27, 2020 at 02:58:20PM +0100, Russell King - ARM Linux admin wrote:
+> > > On Mon, Apr 27, 2020 at 06:54:06PM +0530, Calvin Johnson wrote:
+> > > > Following functions are defined:
+> > > >   phylink_fwnode_phy_connect()
+> > > >   phylink_device_phy_connect()
+> > > >   fwnode_phy_find_device()
+> > > >   device_phy_find_device()
+> > > >   fwnode_get_phy_node()
+> > > > 
+> > > > First two help in connecting phy to phylink instance.
+> > > > Next two help in finding a phy on a mdiobus.
+> > > > Last one helps in getting phy_node from a fwnode.
+> > > > 
+> > > > Changes in v2:
+> > > >   move phy code from base/property.c to net/phy/phy_device.c
+> > > >   replace acpi & of code to get phy-handle with fwnode_find_reference
+> > > >   replace of_ and acpi_ code with generic fwnode to get phy-handle.
+> > > > 
+> > > > Calvin Johnson (3):
+> > > >   device property: Introduce phy related fwnode functions
+> > > >   net: phy: alphabetically sort header includes
+> > > >   phylink: Introduce phylink_fwnode_phy_connect()
+> > > 
+> > > Thanks for this, but there's more work that needs to be done here.  I
+> > > also think that we must have an ack from ACPI people before this can be
+> > > accepted - you are in effect proposing a new way for representing PHYs
+> > > in ACPI.
+> > 
+> > Thanks for your review.
+> > 
+> > Agree that we need an ack from ACPI people.
+> > However, I don't think it is a completely new way as similar acpi approach to
+> > get phy-handle is already in place.
+> > Please see this:
+> > https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c#L832
+> 
+> That was added by:
+> 
+> commit 8089a96f601bdfe3e1b41d14bb703aafaf1b8f34
+> Author: Iyappan Subramanian <isubramanian@apm.com>
+> Date:   Mon Jul 25 17:12:41 2016 -0700
+> 
+>     drivers: net: xgene: Add backward compatibility
+> 
+>     This patch adds xgene_enet_check_phy_hanlde() function that checks whether
+>     MDIO driver is probed successfully and sets pdata->mdio_driver to true.
+>     If MDIO driver is not probed, ethernet driver falls back to backward
+>     compatibility mode.
+> 
+>     Since enum xgene_enet_cmd is used by MDIO driver, removing this from
+>     ethernet driver.
+> 
+>     Signed-off-by: Iyappan Subramanian <isubramanian@apm.com>
+>     Tested-by: Fushen Chen <fchen@apm.com>
+>     Tested-by: Toan Le <toanle@apm.com>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+> The commit message says nothing about adding ACPI stuff, and searching
+> the 'net for the posting of this patch seems to suggest that it wasn't
+> obviously copied to any ACPI people:
+> 
+>     https://lists.openwall.net/netdev/2016/07/26/11
+> 
+> Annoyingly, searching for:
+> 
+>     "drivers: net: xgene: Add backward compatibility" site:lore.kernel.org
+> 
+> doesn't find it on lore, so can't get the full headers and therefore
+> addresses.
+> 
+> So, yes, there's another driver using it, but the ACPI folk probably
+> never got a look-in on that instance.  Even if they had been copied,
+> the patch description is probably sufficiently poor that they wouldn't
+> have read the patch.
+> 
+> I'd say there's questions over whether ACPI people will find this an
+> acceptable approach.
+> 
+> Given that your patch moves this from one driver to a subsystem thing,
+> it needs to be ratified by ACPI people, because it's effectively
+> becoming a standardised way to represent a PHY in ACPI.
 
+How can we get attention/response from ACPI people? I've now added ACPI 
+maintainers in the To list.
 
-> On Apr 28, 2020, at 10:32 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
- wrote:
->=20
-> On Tue, Apr 28, 2020 at 8:59 PM Song Liu <songliubraving@fb.com> wrote:
->>=20
->> bpf_enable_stats() is added to enable given stats.
->>=20
->> Signed-off-by: Song Liu <songliubraving@fb.com>
->> ---
->> tools/lib/bpf/bpf.c      | 10 ++++++++++
->> tools/lib/bpf/bpf.h      |  1 +
->> tools/lib/bpf/libbpf.map |  5 +++++
->> 3 files changed, 16 insertions(+)
->>=20
->> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
->> index 5cc1b0785d18..17bb4ad06c0e 100644
->> --- a/tools/lib/bpf/bpf.c
->> +++ b/tools/lib/bpf/bpf.c
->> @@ -826,3 +826,13 @@ int bpf_task_fd_query(int pid, int fd, __u32 flags,=
- char *buf, __u32 *buf_len,
->>=20
->>        return err;
->> }
->> +
->> +int bpf_enable_stats(enum bpf_stats_type type)
->> +{
->> +       union bpf_attr attr;
->> +
->> +       memset(&attr, 0, sizeof(attr));
->> +       attr.enable_stats.type =3D type;
->> +
->> +       return sys_bpf(BPF_ENABLE_STATS, &attr, sizeof(attr));
->> +}
->> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
->> index 46d47afdd887..5996e64d324c 100644
->> --- a/tools/lib/bpf/bpf.h
->> +++ b/tools/lib/bpf/bpf.h
->> @@ -229,6 +229,7 @@ LIBBPF_API int bpf_load_btf(void *btf, __u32 btf_siz=
-e, char *log_buf,
->> LIBBPF_API int bpf_task_fd_query(int pid, int fd, __u32 flags, char *buf=
-,
->>                                 __u32 *buf_len, __u32 *prog_id, __u32 *f=
-d_type,
->>                                 __u64 *probe_offset, __u64 *probe_addr);
->> +LIBBPF_API int bpf_enable_stats(enum bpf_stats_type type);
->>=20
->> #ifdef __cplusplus
->> } /* extern "C" */
->> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
->> index bb8831605b25..ebd946faada5 100644
->> --- a/tools/lib/bpf/libbpf.map
->> +++ b/tools/lib/bpf/libbpf.map
->> @@ -254,3 +254,8 @@ LIBBPF_0.0.8 {
->>                bpf_program__set_lsm;
->>                bpf_set_link_xdp_fd_opts;
->> } LIBBPF_0.0.7;
->> +
->> +LIBBPF_0.0.9 {
->> +       global:
->=20
-> You forgot to pull and rebase. LIBBPF_0.0.9 is already in master.
-
-Hmm.. I pulled earlier today. Let me pull again..
-
-Thanks,
-Song
-
+Thanks
+Calvin
