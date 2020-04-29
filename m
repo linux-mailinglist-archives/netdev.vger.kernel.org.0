@@ -2,208 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3F8C1BE7C3
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABFB1BE801
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:02:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726852AbgD2Tw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 15:52:28 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60218 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726456AbgD2Tw1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 15:52:27 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 979CEADFF;
-        Wed, 29 Apr 2020 19:52:23 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 56810604EB; Wed, 29 Apr 2020 21:52:22 +0200 (CEST)
-Date:   Wed, 29 Apr 2020 21:52:22 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: Re: [PATCH net-next v3 1/2] ethtool: provide UAPI for PHY
- master/slave configuration.
-Message-ID: <20200429195222.GA17581@lion.mk-sys.cz>
-References: <20200428075308.2938-1-o.rempel@pengutronix.de>
- <20200428075308.2938-2-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200428075308.2938-2-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726955AbgD2UCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 16:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726456AbgD2UCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:02:11 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5A0C03C1AE;
+        Wed, 29 Apr 2020 13:02:11 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id a7so1196825pju.2;
+        Wed, 29 Apr 2020 13:02:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=FbKgYhNUuDOHJsHnW/KP1GDdDFu/iaKsEDkt0G2dvIM=;
+        b=PQJK8PYa3TgWlIlaOjhepDfffncYsNJM9d7nrGNG1YF74plyvZOHcwJF7i/cBAfit2
+         5qFNSGz9r5dsnXtEYnME3KPa7PnDIffdDqyyO3Cz+QmAjyIzMOxexw+Vc9Q8GLJz7wUw
+         TAi8oFs8gugm7P1Dl1rUDnP6Efeld1Va72gSTlTyiEdnXhCEexc4iQhBTbvbK9yp4vx8
+         p/hM42zhRZ+/GyuFWqJeDRyS/teI3rGX2O+ReuPlN5zIDMEVSjBhDsZqFSCOVT7+lrhR
+         1IlxSsZIsmBHkbfaAPal/IXJLAVyhA/rbc46+COdLzcXppIOaO8oOrVEuDgocdQIUBER
+         6LGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FbKgYhNUuDOHJsHnW/KP1GDdDFu/iaKsEDkt0G2dvIM=;
+        b=HXUah+S/caLEAVJD40CoZMFKZp1Z9mxDSn3Ndp/5n9PqM1Z3lUQGw9KG4gL0IK27DQ
+         qlDdRRTSTNIqpT9HhWpC7diXvcMgjCvyDtLZQGl10Y8CJ65EwylL8vYbSA17OwClKrLu
+         WGSycxO6YVR7ZDIJftKUzPZyNdwE/AwnxB+ZMxyavfxkBZv+hxw8M5sz3hB2w+L47XlQ
+         6ThTVmKZSASQ48fokKg/yESAk42PJEe1dbhfxPd5VMLwHswrDM/Ys2VviAvsV1nZr0z8
+         B5O7Z12F4UqPxIdHErIJJCDsJugEf5O2BR7S2R/BVEKQ4gV4xEUYx3Iw3Fz7mId1yFz1
+         Wm+A==
+X-Gm-Message-State: AGi0Pub2YQyLryXJI2OeDt49G7k7mThQR61aAaPnIz+VNN/P78ypkBIG
+        o2vHHBbj5VQwcTUDXc5EY74=
+X-Google-Smtp-Source: APiQypLd7oTlojrgKsENfngJ6kgBaUMRvE7QpUxCW/jUWLZXE09y+Qavjl2CYK9Uj4/lIYVdOn5qMA==
+X-Received: by 2002:a17:902:7d98:: with SMTP id a24mr24166plm.97.1588190530612;
+        Wed, 29 Apr 2020 13:02:10 -0700 (PDT)
+Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id r128sm1705817pfc.141.2020.04.29.13.02.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 Apr 2020 13:02:09 -0700 (PDT)
+From:   Doug Berger <opendmb@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
+Subject: [PATCH net-next v2 0/7] net: bcmgenet: add support for Wake on Filter
+Date:   Wed, 29 Apr 2020 13:01:59 -0700
+Message-Id: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 09:53:07AM +0200, Oleksij Rempel wrote:
-> This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
-> auto-negotiation support, we needed to be able to configure the
-> MASTER-SLAVE role of the port manually or from an application in user
-> space.
-> 
-> The same UAPI can be used for 1000BASE-T or MultiGBASE-T devices to
-> force MASTER or SLAVE role. See IEEE 802.3-2018:
-> 22.2.4.3.7 MASTER-SLAVE control register (Register 9)
-> 22.2.4.3.8 MASTER-SLAVE status register (Register 10)
-> 40.5.2 MASTER-SLAVE configuration resolution
-> 45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
-> 45.2.7.10 MultiGBASE-T AN control 1 register (Register 7.32)
-> 
-> The MASTER-SLAVE role affects the clock configuration:
-> 
-> -------------------------------------------------------------------------------
-> When the  PHY is configured as MASTER, the PMA Transmit function shall
-> source TX_TCLK from a local clock source. When configured as SLAVE, the
-> PMA Transmit function shall source TX_TCLK from the clock recovered from
-> data stream provided by MASTER.
-> 
-> iMX6Q                     KSZ9031                XXX
-> ------\                /-----------\        /------------\
->       |                |           |        |            |
->  MAC  |<----RGMII----->| PHY Slave |<------>| PHY Master |
->       |<--- 125 MHz ---+-<------/  |        | \          |
-> ------/                \-----------/        \------------/
->                                                ^
->                                                 \-TX_TCLK
-> 
-> -------------------------------------------------------------------------------
-> 
-> Since some clock or link related issues are only reproducible in a
-> specific MASTER-SLAVE-role, MAC and PHY configuration, it is beneficial
-> to provide generic (not 100BASE-T1 specific) interface to the user space
-> for configuration flexibility and trouble shooting.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
-[...]
-> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> index 72c69a9c8a98a..a6a774beb2f90 100644
-> --- a/drivers/net/phy/phy.c
-> +++ b/drivers/net/phy/phy.c
-> @@ -285,6 +285,9 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
->  	      duplex != DUPLEX_FULL)))
->  		return -EINVAL;
->  
-> +	if (!ethtool_validate_master_slave_cfg(cmd->base.master_slave_cfg))
-> +		return -EINVAL;
-> +
 
-Unless we can/want to pass extack down here, I would prefer to have the
-sanity check in ethtool_update_linkmodes() or ethtool_set_linkmodes() so
-that we can set meaningful error message and offending attribute in
-extack. (It could be even part of the policy.) Also, with the check only
-here, drivers/devices not calling phy_ethtool_set_link_ksettings()
-(directly or via phy_ethtool_set_link_ksettings()) and not handling the
-new members themselves would silently ignore any value from userspace.
+Changes in v2:
+	Corrected Signed-off-by for commit 3/7.
 
->  	phydev->autoneg = autoneg;
->  
->  	phydev->speed = speed;
-[...]
-> +static int genphy_setup_master_slave(struct phy_device *phydev)
-> +{
-> +	u16 ctl = 0;
-> +
-> +	if (!phydev->is_gigabit_capable)
-> +		return 0;
+This commit set adds support for waking from 'standby' using a
+Rx Network Flow Classification filter specified with ethtool.
 
-Shouldn't we rather return -EOPNOTSUPP if value different from
-CFG_UNKNOWN was requested?
+The first two commits are bug fixes that should be applied to the
+stable branches, but are included in this patch set to reduce merge
+conflicts that might occur if not applied before the other commits
+in this set.
 
-> +
-> +	switch (phydev->master_slave_set) {
-> +	case PORT_MODE_CFG_MASTER_PREFERRED:
-> +		ctl |= CTL1000_PREFER_MASTER;
-> +		break;
-> +	case PORT_MODE_CFG_SLAVE_PREFERRED:
-> +		break;
-> +	case PORT_MODE_CFG_MASTER_FORCE:
-> +		ctl |= CTL1000_AS_MASTER;
-> +		/* fallthrough */
-> +	case PORT_MODE_CFG_SLAVE_FORCE:
-> +		ctl |= CTL1000_ENABLE_MASTER;
-> +		break;
-> +	case PORT_MODE_CFG_UNKNOWN:
-> +		return 0;
-> +	default:
-> +		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-> +		return 0;
-> +	}
-[...]
-> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-> index 92f737f101178..eb680e3d6bda5 100644
-> --- a/include/uapi/linux/ethtool.h
-> +++ b/include/uapi/linux/ethtool.h
-> @@ -1666,6 +1666,31 @@ static inline int ethtool_validate_duplex(__u8 duplex)
->  	return 0;
->  }
->  
-> +/* Port mode */
-> +#define PORT_MODE_CFG_UNKNOWN		0
-> +#define PORT_MODE_CFG_MASTER_PREFERRED	1
-> +#define PORT_MODE_CFG_SLAVE_PREFERRED	2
-> +#define PORT_MODE_CFG_MASTER_FORCE	3
-> +#define PORT_MODE_CFG_SLAVE_FORCE	4
-> +#define PORT_MODE_STATE_UNKNOWN		0
-> +#define PORT_MODE_STATE_MASTER		1
-> +#define PORT_MODE_STATE_SLAVE		2
-> +#define PORT_MODE_STATE_ERR		3
+The next commit consolidates WoL clock managment as a part of the
+overall WoL configuration.
 
-You have "MASTER_SLAVE" or "master_slave" everywhere but "PORT_MODE" in
-these constants which is inconsistent.
+The next commit restores a set of functions that were removed from
+the driver just prior to the 4.9 kernel release.
 
-> +
-> +static inline int ethtool_validate_master_slave_cfg(__u8 cfg)
-> +{
-> +	switch (cfg) {
-> +	case PORT_MODE_CFG_MASTER_PREFERRED:
-> +	case PORT_MODE_CFG_SLAVE_PREFERRED:
-> +	case PORT_MODE_CFG_MASTER_FORCE:
-> +	case PORT_MODE_CFG_SLAVE_FORCE:
-> +	case PORT_MODE_CFG_UNKNOWN:
-> +		return 1;
-> +	}
-> +
-> +	return 0;
-> +}
+The following commit relocates the functions in the file to prevent
+the need for additional forward declarations.
 
-Should we really allow CFG_UNKNOWN in client requests? As far as I can
-see, this value is handled as no-op which should be rather expressed by
-absence of the attribute. Allowing the client to request a value,
-keeping current one and returning 0 (success) is IMHO wrong.
+Next, support for the Rx Network Flow Classification interface of
+ethtool is added.
 
-Also, should this function be in UAPI header?
+Finally, support for the WAKE_FILTER wol method is added.
 
-[...]
-> @@ -119,7 +123,12 @@ static int linkmodes_fill_reply(struct sk_buff *skb,
->  	}
->  
->  	if (nla_put_u32(skb, ETHTOOL_A_LINKMODES_SPEED, lsettings->speed) ||
-> -	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_DUPLEX, lsettings->duplex))
-> +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_DUPLEX, lsettings->duplex) ||
-> +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG,
-> +		       lsettings->master_slave_cfg) ||
-> +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE,
-> +		       lsettings->master_slave_state))
-> +
->  		return -EMSGSIZE;
+Doug Berger (7):
+  net: bcmgenet: set Rx mode before starting netif
+  net: bcmgenet: Fix WoL with password after deep sleep
+  net: bcmgenet: move clk_wol management to bcmgenet_wol
+  Revert "net: bcmgenet: remove unused function in bcmgenet.c"
+  net: bcmgenet: code movement
+  net: bcmgenet: add support for ethtool rxnfc flows
+  net: bcmgenet: add WAKE_FILTER support
 
-From the two handlers you introduced, it seems we only get CFG_UNKNOWN
-or STATE_UNKNOWN if driver or device does not support the feature at all
-so it would be IMHO more appropriate to omit the attribute in such case.
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 673 +++++++++++++++++++--
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  21 +-
+ drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c |  90 ++-
+ 3 files changed, 708 insertions(+), 76 deletions(-)
 
-Michal
+-- 
+2.7.4
 
->  
->  	return 0;
