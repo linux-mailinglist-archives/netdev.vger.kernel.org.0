@@ -2,153 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 030281BEB79
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 00:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36E821BEC34
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 00:55:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbgD2WHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 18:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726481AbgD2WHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 18:07:06 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A2BC03C1AE;
-        Wed, 29 Apr 2020 15:07:06 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id f7so1757551pfa.9;
-        Wed, 29 Apr 2020 15:07:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9ndRoPlpZBec4FKvvdG47QpHsR6Nba+z0J+SwIthjZk=;
-        b=C3D79jb7ilSAHTz9OU68LGMkmtVmvRhXcs9QnnUJuHYFVMI+CyP81stbxFpj4e+3lD
-         39eycotiG0E5RgJcWixUQuNFX4w5U5MR277EwljiB2PREOVxE+n9Kn4iFbb1tgpXAZSM
-         LntQvfLh1YvODX/pj7IW1w+rRaOh3vzFjFCTN1JrpG4ljUThPreehFIOq/MQXJ+kXsYS
-         G1QSh70hqoGxgxFr0kx80tITYSOQVDRxyDisc2056uUwF/eNvKsuMXKHcMQgLUAiX1WG
-         6QjNuiOA7g+qNd/Gqyy9cn91IdpZjxk0TEe7uLeoqWM1n1hCPSWdP09wPKS6ep5EwHlA
-         XZcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=9ndRoPlpZBec4FKvvdG47QpHsR6Nba+z0J+SwIthjZk=;
-        b=XPgVQP5nYoX321vHhPN6393FzjAZwqHQRM/AwgAe/YOo8uC9jyaL6AUwywloskDQLH
-         DTrowdJeE9ParFeNddD4Vz/qWUYhNWg6ljcPXG6OQDkZY6JK75RvROoKiO4HXcA+/zm/
-         bGWwOKpx5wqru+ni3jfwZRgqmcwiUXDGRySRZC7buDQoSv90Zxyeql7+3VCIXYkKR7U9
-         maL/7QmBB6SmLKOlg9Fnt5aQW9nqD41XWJKK5VI6Bh00kP9DY/sYkqPA/CiXk0FS3bjg
-         vCLp3YwMv1CtOtceJd4mjBcFkycn9M/kBoxEvRVRJpYZ1SaelKCgRUBqLXyogwiRVIDd
-         ID/Q==
-X-Gm-Message-State: AGi0PuZz4dqLMDeBAn7vByky6R5AWKsGUhnI8MyE86Woy20thnhhVTQt
-        60N2hMtDXX9mrePkoIWu3BUlSf5+
-X-Google-Smtp-Source: APiQypKr4XUJ7pjYbZmWvhtvPgRnCnwI49jHaohI3baAgQHs8YfpLCYz3duP8JmElF6h3RbRYXfK4g==
-X-Received: by 2002:a63:7c4:: with SMTP id 187mr317426pgh.59.1588198025793;
-        Wed, 29 Apr 2020 15:07:05 -0700 (PDT)
-Received: from [10.67.49.112] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 82sm1825658pfv.214.2020.04.29.15.07.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 15:07:05 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 0/7] net: bcmgenet: add support for Wake on
- Filter
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
-From:   Doug Berger <opendmb@gmail.com>
-Autocrypt: addr=opendmb@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- rQQYjNSD8+NSdOsIpGNCZ9xhWw==
-Message-ID: <8ebd11c0-97f5-dfd4-d194-009d4df99aa6@gmail.com>
-Date:   Wed, 29 Apr 2020 15:07:04 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726935AbgD2WzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 18:55:17 -0400
+Received: from mail-eopbgr10044.outbound.protection.outlook.com ([40.107.1.44]:62734
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726164AbgD2WzR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 18:55:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f8Ui4e0EUJL+biHyqm1y9k7Y2IEjCgqUlGSBh+1XjJnOEfVSghzk8AIK97mdOulfxClen1ZaYBl6HFOp5VC/DijAvWqtDGxSlwrAZXf82Kn81Y56//OX9/B++4STtWyp5sAVKEOJnyA6t39aukLBjtP+EUHNHR3y7Z22seleRw8+V7Bm7GHE3Oy6e8EvPCyABKVltdv7dBh7xTc1ZK3kTPVMlJ+vseAws0HsRrRpvxl0ByXFNo1phfTNnF7lbyMamAbVwkJSFM2VsL5dgfkxQ9tR2V4f04VXgtppP1vhqVpK/InjtMCazwn28U8lJpH3cSB9FzasZGLRwVIFbCyq4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JZto3LjIk9aGRKHJVZPV5t4f1O9ReACzeecRfel7hmw=;
+ b=d/HtMqvC3ejKSOj5Z5NEKyWlpAh1va93QcoDBC4erBTWOhU9T3SrOIy0YAQVdzPH4ZGmM9TElZiWCf8/PD+S+ADdD5k3efZgnsiQRNY/SVtNDWrthNSoCww6p9gh3l2hgauVTS3xoipTsQoldQuophGuYnTgyo7Z3k0WUj9flswuEkUalREQSL51IxpQUrZfCsCTNJLvHIngILmGos8dEDPsAYFAoMeKDzl8IrCqwqQrk0HRhKRQKBAWZEauGPP12wmF+OTOSPlFMtvEfLIW4yvJYfoqCwdifariZleiajUqkmQlO6vCXTFIxA4bvDcpWJxjM3iYB+eSst+Se/O9Hw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JZto3LjIk9aGRKHJVZPV5t4f1O9ReACzeecRfel7hmw=;
+ b=XAajUDOYw4XKuXcTko/NnyxuvqLr03QFrz6XCfOLBz6Roq/GCFvVxX8ujeNz7zUX7DrZvTBs/kyPWI52jxZOkxnqprgfmF7tljqzsspmO5H/Vz8UOSseJnQZWHiV/eVdmCxrvljXSLVbwlwjU0GwbKCjJFDizhWxXaNNnrlVKBo=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB5247.eurprd05.prod.outlook.com (2603:10a6:803:ae::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Wed, 29 Apr
+ 2020 22:55:11 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.028; Wed, 29 Apr 2020
+ 22:55:11 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 0/8] Mellanox, mlx5 fixes 2020-04-29
+Date:   Wed, 29 Apr 2020 15:54:41 -0700
+Message-Id: <20200429225449.60664-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.25.4
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR04CA0022.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::32) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
-In-Reply-To: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0022.namprd04.prod.outlook.com (2603:10b6:a03:1d0::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Wed, 29 Apr 2020 22:55:09 +0000
+X-Mailer: git-send-email 2.25.4
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 4ab9e81a-ec07-4ed0-cff4-08d7ec905eca
+X-MS-TrafficTypeDiagnostic: VI1PR05MB5247:|VI1PR05MB5247:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB524720516DDE4723CB505DBFBEAD0@VI1PR05MB5247.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-Forefront-PRVS: 03883BD916
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(366004)(136003)(346002)(376002)(478600001)(6512007)(2906002)(66556008)(6916009)(66476007)(316002)(107886003)(6486002)(52116002)(6506007)(66946007)(6666004)(2616005)(186003)(8676002)(16526019)(26005)(86362001)(8936002)(36756003)(1076003)(5660300002)(4326008)(956004)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: D6W4pGxZRRGkG0MXLHzV35bWnRFl+Bc7J2sYr+vJPpVRq9SDt/69yT/wsnk4mNWBAEgJhCmVjNQzRseOZgPWdXXqKRtcl6zsgqA2jknMVPtTbhm3nmut4WAPft/547eoEHMwI1OQ29dNYxr5LoS5avl6yh/t9js+PNGynMZDPSr7gWw4XBsGaQ2vmNNC2sGmxSSnllh/O5M/0vhvU0nK5QfetpmymDMzNPHEd/pqjUdW4TMkuN45NnYAMHDh1S2WK7nYdM9V6iGihqnxNZt+bAuSEOrqaWr/Mhfs9Bf6g5KgTa4LDqMh8n2MDCJWWvz6yOsBixLMZSP8xnW8TTym9yD2nas/DsglO/sHzL2Ma9rQHCM8xNVSeznSQ0qFzleNHp0vu5bWzN3s+vbbXcXANaitmQUIm6ZUl408sY++Ugj7aDGxEf9bncONWcWCE6BNgoKsoMe8fs/P1WqmCyCP1TEwuPye9K266K713qsKXOtrHNqQYckzZzfY0KFKJKdG
+X-MS-Exchange-AntiSpam-MessageData: wE/gC5bFlTAtpdD0VVyaD8dDQtm+OmftFoKe5i+xJeZ+SnTIvre5fAXWBc1t9cBSORhilVUV/cKIyMi7uL1syTjoff2ES7ssMCd4puS3QhAVOiQQO3MNALK2BGQ5jzXiuRfX71Wgo3MAp8LT9G7sqmXunQ+7553DT+Y/w7Q3WfPhy2OhgLQ4GE9hkUG6CC/8ahCi/GrgEgkFuh9bDUvfEWjkLt5iVl3+DHM6SNWMNRlwvSQCtlBNNrGQK09qqx0YHfqvFrAKlzG5KPM3gF+AudWswJaZ5OQWIkUpTwiL6g9f5ZWKUBQC/sKLZ4g4ohDRU5KHLK1HAIcqgtyv4+KJP8XTTzVGXJwKxrjXXNhsnGwdIRBqHQ2jGtHa0GVvhbJAk1Rr7278emV3yjQdeMsDiD0vpMajAESwelMgXIKipw8j18tFCfwvtgSeomnEpdPFCRTcMqdqxYU6Is99+jVRxp3DuTqxi55XSTO+FGE9FcMpiO+LtnBsZjRQok5dVGFWigsAVdOdZitHPmfj1eMTF2QW0uufWRUMwEKQrqMxOJzqtAdFJsNtYTWe7QMGW0VRdGND0mizeRL+BQisQYBn8iNrYCJuTUhgrGvd/XitS9JSGTwIpqcSFBhXTJZF+JzIamJCwedF2W2hMVh7kDUzFox76kcXcBu9m6EeQgBcansq9hcclRjGkq7w+y09AWT0+irKx66WmP0tBNPRdmGUBKaOpKp6f/HwzIDCDxNA3v5zJ6IH5e/PZaj3lucGKQa0WSguDHTkaEiUVWCcxkoKZYvojD9d2KLuN4cAtq/j7Rg=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ab9e81a-ec07-4ed0-cff4-08d7ec905eca
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2020 22:55:10.8528
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aQCJCXhOlNOwT4kRHVj/krYU4N+zJffguK3iJti1gItEDG3nL5/zUSCYYYY3sLMCtgaa3947AwyX8zPuPwB3ew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5247
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/29/20 1:01 PM, Doug Berger wrote:
-> Changes in v2:
-> 	Corrected Signed-off-by for commit 3/7.
-> 
-> This commit set adds support for waking from 'standby' using a
-> Rx Network Flow Classification filter specified with ethtool.
-> 
-> The first two commits are bug fixes that should be applied to the
-> stable branches, but are included in this patch set to reduce merge
-> conflicts that might occur if not applied before the other commits
-> in this set.
-> 
-> The next commit consolidates WoL clock managment as a part of the
-> overall WoL configuration.
-> 
-> The next commit restores a set of functions that were removed from
-> the driver just prior to the 4.9 kernel release.
-> 
-> The following commit relocates the functions in the file to prevent
-> the need for additional forward declarations.
-> 
-> Next, support for the Rx Network Flow Classification interface of
-> ethtool is added.
-> 
-> Finally, support for the WAKE_FILTER wol method is added.
-> 
-> Doug Berger (7):
->   net: bcmgenet: set Rx mode before starting netif
->   net: bcmgenet: Fix WoL with password after deep sleep
->   net: bcmgenet: move clk_wol management to bcmgenet_wol
->   Revert "net: bcmgenet: remove unused function in bcmgenet.c"
->   net: bcmgenet: code movement
->   net: bcmgenet: add support for ethtool rxnfc flows
->   net: bcmgenet: add WAKE_FILTER support
-> 
->  drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 673 +++++++++++++++++++--
->  drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  21 +-
->  drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c |  90 ++-
->  3 files changed, 708 insertions(+), 76 deletions(-)
-> 
-Please holdoff on this version as there is a bug here that I'd like to
-patch first.
+Hi Dave,
+
+This series introduces some fixes to mlx5 driver.
+
+Please pull and let me know if there is any problem.
+
+For -stable v4.12
+ ('net/mlx5: Fix forced completion access non initialized command entry')
+ ('net/mlx5: Fix command entry leak in Internal Error State')
+
+For -stable v5.4
+ ('net/mlx5: DR, On creation set CQ's arm_db member to right value')
+ ('net/mlx5e: kTLS, Add resiliency to zero-size record frags in TX resync flow')
+
+For -stable v5.6
+ ('net/mlx5e: Fix q counters on uplink representors')
 
 Thanks,
-    Doug
+Saeed.
+
+---
+The following changes since commit 42c556fef92361bbc58be22f91b1c49db0963c34:
+
+  mptcp: replace mptcp_disconnect with a stub (2020-04-29 12:39:49 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-04-29
+
+for you to fetch changes up to e77ccbe791c7e51db388a6e5a4f9f5b2ca484acf:
+
+  net/mlx5e: kTLS, Add resiliency to zero-size record frags in TX resync flow (2020-04-29 15:11:03 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-04-29
+
+----------------------------------------------------------------
+Erez Shitrit (1):
+      net/mlx5: DR, On creation set CQ's arm_db member to right value
+
+Moshe Shemesh (2):
+      net/mlx5: Fix forced completion access non initialized command entry
+      net/mlx5: Fix command entry leak in Internal Error State
+
+Parav Pandit (3):
+      net/mlx5: E-switch, Fix error unwinding flow for steering init failure
+      net/mlx5: E-switch, Fix printing wrong error value
+      net/mlx5: E-switch, Fix mutex init order
+
+Roi Dayan (1):
+      net/mlx5e: Fix q counters on uplink representors
+
+Tariq Toukan (1):
+      net/mlx5e: kTLS, Add resiliency to zero-size record frags in TX resync flow
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c          |  6 +++++-
+ .../net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c |  7 ++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c       |  9 ++-------
+ .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 18 +++++++++---------
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 14 +++++++++++++-
+ 5 files changed, 35 insertions(+), 19 deletions(-)
