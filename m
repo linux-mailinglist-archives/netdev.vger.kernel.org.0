@@ -2,64 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD4501BE0BF
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E11FD1BE0CB
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727933AbgD2OWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 10:22:53 -0400
-Received: from mga02.intel.com ([134.134.136.20]:2447 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726811AbgD2OWw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 10:22:52 -0400
-IronPort-SDR: ddIyjzvcB8w0uI64c2EH6wT5U6HAzdX8pFnDzATEN9YpqFwMK06TJMDvyQ99K4hpNFf6XvRbZn
- 6Ox1T/fxpvxQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2020 07:22:51 -0700
-IronPort-SDR: LewOahKZhx0sn+cAkxy5DPIPD5ioJPKN91mYfHiyAhJgNQqzdLT3xtPMdU0LITnlc0fXmK3I9L
- Ll8ufsaZ0K/Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,332,1583222400"; 
-   d="scan'208";a="293215157"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga002.fm.intel.com with ESMTP; 29 Apr 2020 07:22:49 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jTnbw-003jji-Bu; Wed, 29 Apr 2020 17:22:52 +0300
-Date:   Wed, 29 Apr 2020 17:22:52 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 1/5] stmmac: intel: Check return value of
- clk_prepare_enable()
-Message-ID: <20200429142252.GK185537@smile.fi.intel.com>
-References: <20200429140449.9484-1-andriy.shevchenko@linux.intel.com>
+        id S1728012AbgD2OX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 10:23:27 -0400
+Received: from mout.kundenserver.de ([212.227.126.130]:59573 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726661AbgD2OX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 10:23:26 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1N7iOw-1j8KpB09eU-014iMZ; Wed, 29 Apr 2020 16:23:19 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Tiwei Bie <tiwei.bie@intel.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] vhost: fix default for vhost_iotlb
+Date:   Wed, 29 Apr 2020 16:23:04 +0200
+Message-Id: <20200429142317.1847441-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200429140449.9484-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:b3pbp/XZSd+qFAXvZ9I7UjuleCw3GTy1vtyionbvaNjSrD6kYrH
+ y/IBPt43A5XriZwjpg/iVL+DG+MEIGNcDlWlMfkFbLwqZGn3pMma6Xx0viUdy8bDJdYLpx4
+ Lt9B3isKWwO+iGzLngj6QapH5GuypPJSDv//HUUaylj17ZdCqAsqXaqYgEDbLhcGG+xHkJk
+ FAgf2eV+mFETYygqDSJbA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:cHnxtw5s88I=:liybKe0ZyJzauaYbhV1tR4
+ v+detTxqBVhe77qXrhR+LJDZDMNMOV9mkaPORuAXHIO5xefWpUdkz7/jiaLp1rVYj2t2+IZXW
+ gshFy77aTRiWP9IpwdC7VXhAMHccPlBSLN3hOlCaY8AuVBKJbH4zlgAI6RriDPkTOroUsBhQu
+ Bub16qn/gv6uBFl5q8Mv6yfgOGbDoMBT+Iy59/H9BOg6yCTIBNZNaR0kKt55xjXZRFY9nCeIz
+ fprxjDfT8ScG5bD0YZXz8EpefMvdPdPekIcs/ntCx4f5Brr9ND7oq8cpkWPdCpSrI0gLsnpdi
+ oTc1r8Xe87uRzZXf8hQ6sjtoBmS7kj8RaIEsyERkpCXyoES858LWCSlfQHpSxkNVZ6XSAP7OY
+ Ir3zR49Q5LlOIx5i6GpH5DLsCrOpenvCyZ4SeKcBvwrZCMeXvJaMLqfCYo8MsTRSwKbPokI01
+ 1mNrqwi3kWN45VD/6TFDZ5fbTjlzmzwIz2/8aZhVjtSITAgicPam99N3mDGx0k6Vs8TFnhhcp
+ rO1P5mJi5QQhgvmGKXLkBJAIH7DfNPKIuzBL0GWXOQFAzMfM4W0BJbTQcSAhh8cShtglo/RsN
+ lAOvUduj4mF3d/+TzX8M/wA0ciSJd/K37cwbwyrSOXHTHwe9f/cwweHkCPwYBl4snwOFa7lKF
+ S+dQUFMv9GoCpx4RCmGtGm3hnL/EUd+moTge+fJmVdqv79d7rIx+kiZXeTay19bhIB4NWeB4K
+ HSJJK8hYrPtPyRvsAAH4oJnDSlMvq9s2gDZ8OGRC37fKsYgkiDOthoi3KmKJbELyTstVJ0w5c
+ tS93kyVDjAmyLIv1AtkY5kjjiIpVAnOkIKdLzwZcK39cVbgrKg=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 05:04:45PM +0300, Andy Shevchenko wrote:
-> clk_prepare_enable() might fail, we have to check its returned value.
-> 
-> While at it, remove leftover in stmmac_pci, also remove unneeded condition
-> for NULL-aware clk_unregister_fixed_rate() call and call it when
-> stmmac_dvr_probe() fails.
+During randconfig build testing, I ran into a configuration that has
+CONFIG_VHOST=m, CONFIG_VHOST_IOTLB=m and CONFIG_VHOST_RING=y, which
+makes the iotlb implementation left out from vhost_ring, and in turn
+leads to a link failure of the vdpa_sim module:
 
-Please, ignore this series. It appears that there is one more issue with proper
-error handling. I'll send v2 soon after additional testing.
+ERROR: modpost: "vringh_set_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
+ERROR: modpost: "vringh_init_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
+ERROR: modpost: "vringh_iov_push_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
+ERROR: modpost: "vringh_iov_pull_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
+ERROR: modpost: "vringh_complete_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
+ERROR: modpost: "vringh_getdesc_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
 
+Work around it by setting the default for VHOST_IOTLB to avoid this
+configuration.
+
+Fixes: e6faeaa12841 ("vhost: drop vring dependency on iotlb")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+I fixed this a while ago locally but never got around to sending the
+fix. If the problem has been addressed differently in the meantime,
+please ignore this one.
+---
+ drivers/vhost/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+index 2c75d164b827..ee5f85761024 100644
+--- a/drivers/vhost/Kconfig
++++ b/drivers/vhost/Kconfig
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config VHOST_IOTLB
+ 	tristate
++	default y if VHOST=m && VHOST_RING=y
+ 	help
+ 	  Generic IOTLB implementation for vhost and vringh.
+ 	  This option is selected by any driver which needs to support
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.26.0
 
