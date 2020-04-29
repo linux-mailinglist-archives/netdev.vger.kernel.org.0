@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A991BEC35
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 00:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C851BEC36
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 00:55:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727030AbgD2WzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 18:55:20 -0400
+        id S1727073AbgD2WzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 18:55:23 -0400
 Received: from mail-eopbgr10044.outbound.protection.outlook.com ([40.107.1.44]:62734
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726921AbgD2WzT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 18:55:19 -0400
+        id S1726164AbgD2WzW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 18:55:22 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TV66nJ6ieitJXLrjqWOl+uaBthEhdKpbgzDbg10s9tK8HKonqcokbr+uTKGhlCge4fErbIrG5DIiX55tDota2i/Y596D4XlP0bQqH+l0LlcC5IsJ4VXJIMtGy2vXqooTB22O0U+Ja2RlUqaQCOYJjc8fkaO4OCaQQI53Se8H/LfvYUy7swEK4ekg28+jKhJqcvJOyg/Hs3H7mZLOSbJyVfJn3kwKltytI+YHC1PsmzS0fTpGV/AKd5M7pfo29JEidixJCejbdSk+b1cWssWwzxjidPG73X20kd+jHK4iz93oiYGr4C2uW9CXN3o0fTUFGcd/b0N9dclTIHLmR0DExQ==
+ b=hKwCU0K9V53R5qodstJqfD+lv/jW0if86a70XXygswTpBM7qrRASHTgiIbhzSdtPcT3yaS7ifGs3bKQAUDu56cNnSy6f6KyURiqWQNNvahvWKssbfVus4sjjKcKsB65cHl1Oes18p2eyh1E4X126hAxBClMzLyaoNh/THcMNszoqzWgLJJZP1DOwfUhym3n8DBfJ0I9+sXSD5RqOeEIx+d5nBcwNgd3FE9t6/QEKhewHDcPtk7+HpRjBpd3PeRe3l4VD2d1/dw1Mli/ZUVErCtopnK9ruYQGrBiTdoC07L/dyyg5pPw4IcjwvSgERnDT4QeSYRwJA7CxhHD95yZFDA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SvHeERn0eXqOMzXM7akpVNlcZYNngzJx4qJAga6mxKA=;
- b=lfocPlP9Y7NWl13mVWXKOSOgLNcDk3gnTfcZVN13s0CTzb77P9kHrPELie3yRtx/qrS7oeDuh7I8hF/gtyQOrLqOuQXRpT9ggBTwqDalWg8hBIS3oY1VHFxCYI6ksOkap70gzGS5TzQzakWMycy9rdiw299ggi98QOHPeRccQOJ+A5njToZNNfthEZqGh2rkcPFZdq1SVqzY+9pwdgti2QiQLNBSFaDUnorn1hLUKHNObdUErA8BQQveti22bHrNiL7Gbv46X14JEmNMGsDvenG338lSkPxlOXNh2X8gcQawASgOqKt08QI6Zs8Pr2jykUQLt8c971xelhLzepTlDw==
+ bh=yUUfQGm9dEFRtllrurkLra+TvryAZHLiXCxBc7Xzj4I=;
+ b=TCRgjRJ11IWDsyMrfRemULXMkKyIvMShKNoiGjQY8z2c1YfsaeZiXWas+1a82WZjy2q5HDFo5P9jAzy9v6B9HtOjt5p+uJolj71oO17S59grxwLQSS385n6G/x58SW1HW4mCTMx4zwYhyTSYjLIkHtJFOD0YikHmJ3WsC8qnHangBTEMV5UbwVZ0Nty7yVnvZLZkOBLJVhFbLxLCgsBESqnBvZNPrpnW39A3XSaUfzP2fvKz/2/SklO5GDIT9514SlP/8hn+ZA8ipZG6odVf7Q+9JWchfm6xV8Vz2LCFSAMe/rzJzYV6Ca8CsYRoNw+ov3D1J5JNcHpEfoY6dQZdWQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SvHeERn0eXqOMzXM7akpVNlcZYNngzJx4qJAga6mxKA=;
- b=q1I9D04+MmBFE4nrjly0yOKJrlpWFF/xAwzktGJmCNqtRB36/O7WZgd+HByXbv6lQwY79wG2iMIsydz9yWsXfJPTakOswTkePpEUI5+jjWgAG3jSQd/OJbO2FQ1vbW9HYQnRfCsXQ3qbcnJs4UPlquHgOJZXIuqiIM6o+4z/Af0=
+ bh=yUUfQGm9dEFRtllrurkLra+TvryAZHLiXCxBc7Xzj4I=;
+ b=m9Ct25AynQgfdp7jt1eCQsoz5qipYF30KmGNBxWGcOWow842aJrwg+qO6rP6UExIhcKHTBt7vkTnLqKAVCIazwxI7KaDuWihhw3FcH7+ljpOCmcjvTHvtLFrznqn5RNd5ad3ETvrd34mWwF5uYbEt+hvlOglDBL/5zgQ6LNWN1Q=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB5247.eurprd05.prod.outlook.com (2603:10a6:803:ae::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Wed, 29 Apr
- 2020 22:55:12 +0000
+ 2020 22:55:15 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.028; Wed, 29 Apr 2020
- 22:55:12 +0000
+ 22:55:14 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Parav Pandit <parav@mellanox.com>,
         Roi Dayan <roid@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 1/8] net/mlx5: E-switch, Fix error unwinding flow for steering init failure
-Date:   Wed, 29 Apr 2020 15:54:42 -0700
-Message-Id: <20200429225449.60664-2-saeedm@mellanox.com>
+Subject: [net 2/8] net/mlx5: E-switch, Fix printing wrong error value
+Date:   Wed, 29 Apr 2020 15:54:43 -0700
+Message-Id: <20200429225449.60664-3-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200429225449.60664-1-saeedm@mellanox.com>
 References: <20200429225449.60664-1-saeedm@mellanox.com>
@@ -56,30 +56,30 @@ X-ClientProxiedBy: BY5PR04CA0022.namprd04.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0022.namprd04.prod.outlook.com (2603:10b6:a03:1d0::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Wed, 29 Apr 2020 22:55:11 +0000
+Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0022.namprd04.prod.outlook.com (2603:10b6:a03:1d0::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Wed, 29 Apr 2020 22:55:13 +0000
 X-Mailer: git-send-email 2.25.4
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d766c940-b92d-4193-a0cd-08d7ec905ff6
+X-MS-Office365-Filtering-Correlation-Id: 6c00ca15-ba2b-4491-6e72-08d7ec906112
 X-MS-TrafficTypeDiagnostic: VI1PR05MB5247:|VI1PR05MB5247:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB5247CD51B9FCDB6E879D1F3DBEAD0@VI1PR05MB5247.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:304;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB5247CF94020E5832ADDF1851BEAD0@VI1PR05MB5247.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:247;
 X-Forefront-PRVS: 03883BD916
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(366004)(136003)(346002)(376002)(54906003)(478600001)(6512007)(2906002)(66556008)(6916009)(66476007)(316002)(107886003)(6486002)(52116002)(6506007)(66946007)(6666004)(2616005)(186003)(8676002)(16526019)(26005)(86362001)(8936002)(36756003)(1076003)(5660300002)(4326008)(956004)(54420400002);DIR:OUT;SFP:1101;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: owkiFY35RLEuj+QrTOXuk9mpb4g0l/ATgWJgQs1kLEo+t9cQgulJWlbwdecuJdji5sFWWQ8sGCuR9Dq20bU9xHeFQxTBNV4ob5OL9ns/NVktZQbaplyijkxGQPv5wNtcEdeM9JFNRa2dliy82Oex4DZ0I4+xyyV8Js+UR3zWR616cy1x++KtocEYjRn9dDGMaqGmIlB/5fydP2wOM3tHauiZX7O5SIzsM3wTAlVJ8IjBq96UHayMFFljH9gapsDdm7XFq2WK0mEivfybwvwIjrfgd48KnkvlLDbtE4SuitbyXzgnG2plBInpAiFFQau1QSGgjqX793lZC69pMS62CTS4ULZ0k5yqkgLX3u1mONCylDARe62RAo3rBdhetsjVd1o83yCDNaClTNFTyk2GFS2vZjQWVEkBp+AD57umCBS6gGMAY1HwBwJM67OXbj3BreOYH3EfLbJ1f6eccXxMNmDOvCLP/W0V9d1skIQ5XYbyEhDG/FvrXMR6VUXINGbe
-X-MS-Exchange-AntiSpam-MessageData: G4KfxygI/3A2+l6+G4/O+ar+kLOK/MiXLlhX0pQppbNmAR+NIB8sSCooUf27OoTwcjWU6/XC0jh1/WAbEpccicEu1+VRKyf0bEcEQr/3BGntFSa60prQFW8cjRWtKYiUcui/GUNQBnbsoVaNVPPBdkBRHINgcH79NiAWXF1/LWqcXZgPKoimqcjBx+jCwYJZCF7VRhl+WfL6e0pAf7KKRuSUIvHr5/fZ4M1xBU0sN5zMRXqZ2En8IvA2skHCFStvvz9/yiM+LBq/dimCj8mP3HqSC349grEHB4q9ELoHZ0QnqiAEkxTmb8378pl9nEVxKdrBQtEzZgym9d6Ay9w/1h9LTgtWw+qWYjtrwGJAAVuqGApXx1jDnkDABxG6xybRXN1GU1Rze7dFS77/yPHvXsY6FhDYMa7Nun0ESZw6wCjGXdv/YGXvcsGrPLVvE0GXaYE/m8RO6iDJfOTBKfEm6gQtMVS1dLFDie5ix7gwhRDgIWjdW2dUP5311oykqaXVy/EcxPT8GFAqiXFhtZUGgBFnv3PUwNzW89IfuwAVTxeUUVG4523X8m5EHenEneyyeSVnHakhQ/CCR9/sHcnFvtV60Hhn9DYudtT2NKC+Pw2cy3O743T6Bk6BKI2nfe7Q5IM+cd18IkObrki++NRNjXIJIKvzta3ffrF4VdKNfoJWLcw0VNIUW0WsmLvVz64Enz1SrKZAEK52Df7c0cCuGNJgjQY2pyndQUI4QYuryog0gXqDKLOkBS2KSwF18D/6x7m3Rz4s8bmLf/n+yvwYeJIPmgNADFrZq9gkdlDmXOQ=
+X-Microsoft-Antispam-Message-Info: 237HhG5OiqSqSqDVkCq3X7rMKoJ9aRUigQvsuMoN9DYjngddpIyj6GXQsbRvvY4WYoMA1r6LoJYxIEd8g+/xF/+H9O6/zRiohONOhBW5yOufO72IrJ8m/op2V/6J8ZIoqoMwaDeBji2LaCqphCNbuBXUYWZKAm+XGhPyvmM90YEv6L188d2AmZoxPdKAstjm6X3yrRiVRt1Wsndq77j05daFhvj0NlDLglYGIWICbWmAFRav3JI3AnhTfNufrhySYywBM3zq6rEw1bS/wrecfHFyyWY0GhbmyY8HHDzEGYkcHfMatYX2xUtGLVWS6kS8UQmveBxv3xr1nYbNceRMRW3kqMucVWewp12GLcUJcW+qxknzIxnyg7Fr98cfDrGShzl42d/pRVgedJ41oeEtpSqanUuAD2kc84IlY8eDnKH+KZuxB0dtB1UisZvhdWKZAf+QYLbhk9Oozn1n2MSlEyOclMQrboZpj1GKrZILrcZK3TYpDboQKDFykEXImVvQ
+X-MS-Exchange-AntiSpam-MessageData: GCg9UgX1p4somihkmjmy0WWXXL7/LMseGMBaAxdg7BZtitT01nHxX+EHeCl/vRu1hG1pLTx6eo2MhYBSHqoAMxvZ/E7cX3o+odLeEjq0ola0qbnaa0zUHQs9QmZJpwgTjasE+4D7QaiKVIUigrViQBmYmzWgRX43dBiaS7+toBxgKegW4Vywdlx28E4OMPudRG/ZGvcm4x7IOfsWQcppa6WNz20JNwzdGbL45nS4BPvGueDqvuyUhtY7r4KSQNxV3s4RtHb5J2VFNhYZ3NQgqidGk3vEMn1YZifrW8D9h7mXYWktcvoKg694vWiW38GGVDNrTPfsMSXjL0kfUs6Qo+I0++p47KYcO/atz5WSoMrPoLkCBeE634208oCfGmhAFduB5Qdc1qnILmflx7jH+33+hABH0KAQInN0Il0HchkyuE9XEdOyu1Xhx++JTzC3m+tvzK4Owpk/aBgDI2nF4Al2DW3zu4ZE0Ipd4MpXXRkOb2cr5mSEO8qoHvXSY3hmcDQwSgPBeODj5Jyz8hhvITDlpygv6K0vzR3A20kAQdOEy+VoHoDynPJNIR+Cqidj+WMvzj/qRuCfmhDWPwjqJxCCben+Sa5HSFtvyNOQ+NJiDtzuqqSVE0UiciZaneE5OdtfBTCbCmJ9mQa2zh6oQVM94YGo3Yx/yjtht/bW6Weo3RgsJgRvAfYcPgVPIMTgLfFygmvs821duLnGTl1iXuEDjefp0mXxcdAhZnC4MRYkxlCYxxy8RkDfVZsqBm7z56Ta1s7triIcKpRbooKP7s+ytZgofo5ucdhEqaBi7uA=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d766c940-b92d-4193-a0cd-08d7ec905ff6
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2020 22:55:12.7987
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c00ca15-ba2b-4491-6e72-08d7ec906112
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2020 22:55:14.8465
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yPfSIj+4UDUMxkQdh+QCV09Z6Fkz719Zc5eJohl668cTqp7wUvBxS/FSUHflqwfw9bcdjmx7vG1At64YGlVBhg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: lBiO+Mu44VeXp9Q5dHvz14svKErIhlzzfYcV0Bu4hAPQ6Ga039ZVf/f3jt9P2DzF26Qy89LSWrpRn7gWdbUUKQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5247
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -88,52 +88,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@mellanox.com>
 
-Error unwinding is done incorrectly in the cited commit.
-When steering init fails, there is no need to perform steering cleanup.
-When vport error exists, error cleanup should be mirror of the setup
-routine, i.e. to perform steering cleanup before metadata cleanup.
+When mlx5_modify_header_alloc() fails, instead of printing the error
+value returned, current error log prints 0.
 
-This avoids the call trace in accessing uninitialized objects which are
-skipped during steering_init() due to failure in steering_init().
+Fix by printing correct error value returned by
+mlx5_modify_header_alloc().
 
-Call trace:
-mlx5_cmd_modify_header_alloc:805:(pid 21128): too many modify header
-actions 1, max supported 0
-E-Switch: Failed to create restore mod header
-
-BUG: kernel NULL pointer dereference, address: 00000000000000d0
-[  677.263079]  mlx5_destroy_flow_group+0x13/0x80 [mlx5_core]
-[  677.268921]  esw_offloads_steering_cleanup+0x51/0xf0 [mlx5_core]
-[  677.275281]  esw_offloads_enable+0x1a5/0x800 [mlx5_core]
-[  677.280949]  mlx5_eswitch_enable_locked+0x155/0x860 [mlx5_core]
-[  677.287227]  mlx5_devlink_eswitch_mode_set+0x1af/0x320
-[  677.293741]  devlink_nl_cmd_eswitch_set_doit+0x41/0xb0
-[  677.299217]  genl_rcv_msg+0x1eb/0x430
-
-Fixes: 7983a675ba65 ("net/mlx5: E-Switch, Enable chains only if regs loopback is enabled")
+Fixes: 6724e66b90ee ("net/mlx5: E-Switch, Get reg_c1 value on miss")
 Signed-off-by: Parav Pandit <parav@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index b2e38e0cde97..94d6c91a8612 100644
+index 94d6c91a8612..8289af360e8d 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2377,9 +2377,9 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
- err_vports:
- 	esw_offloads_unload_rep(esw, MLX5_VPORT_UPLINK);
- err_uplink:
--	esw_set_passing_vport_metadata(esw, false);
--err_steering_init:
- 	esw_offloads_steering_cleanup(esw);
-+err_steering_init:
-+	esw_set_passing_vport_metadata(esw, false);
- err_vport_metadata:
- 	mlx5_rdma_disable_roce(esw->dev);
- 	mutex_destroy(&esw->offloads.termtbl_mutex);
+@@ -1550,9 +1550,9 @@ static int esw_create_restore_table(struct mlx5_eswitch *esw)
+ 					   MLX5_FLOW_NAMESPACE_KERNEL, 1,
+ 					   modact);
+ 	if (IS_ERR(mod_hdr)) {
++		err = PTR_ERR(mod_hdr);
+ 		esw_warn(dev, "Failed to create restore mod header, err: %d\n",
+ 			 err);
+-		err = PTR_ERR(mod_hdr);
+ 		goto err_mod_hdr;
+ 	}
+ 
 -- 
 2.25.4
 
