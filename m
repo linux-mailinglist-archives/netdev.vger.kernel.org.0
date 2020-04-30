@@ -2,158 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F9601C0750
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 22:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B341C0754
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 22:04:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727060AbgD3UEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 16:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
+        id S1727068AbgD3UEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 16:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgD3UET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 16:04:19 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098D0C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 13:04:19 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id u11so2846825iow.4
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 13:04:19 -0700 (PDT)
+        with ESMTP id S1726338AbgD3UEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 16:04:46 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4974C035494;
+        Thu, 30 Apr 2020 13:04:45 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id q2so3704812qvd.1;
+        Thu, 30 Apr 2020 13:04:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rTaR7OmzxwLSx7av/gyEN4jCjt0jgWQlcAMd5tr0RCo=;
-        b=eCXQuoraI/jzQ/RQt091oaFywCbfUBwrzi6YjzXp+O/NiHxxb5khDOP9ESV5OyCA2F
-         Pg+E69fvvMuhf2pC7+2uuBBwVSUzPqEokRcv9yBJ90iGwVbvT2kPderuVVtEOOQQASa3
-         te2KzbuFxBb1r25VKEKBS4LoW150GcfHEQVJXYuDn/OZ1uphcK9vb9QMO8pgV27Zz+dt
-         iETwFmVh1gcjpBUJCmF66aLw+g+Qqd2MlpB/J/RvT0flhbp0sU9LOdyo0x6MT+KA4hPm
-         +5xySD/6qUO8JO8xQYEovqfUtaYvvcHXz43QE0NGZzKewnOjvw8RWPBXz1ELIVzYmNAh
-         wV0w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Vgf2SwLa/icc+Mda7sTpSzoCj9r0ixnHT/moZ9K+las=;
+        b=A6LyS5MeDk8qiAKyvE9IRqnEyvKHwjJIXz/rjOZXXwHyHqK7+go+/yh1eWvRGLLT1i
+         aYSWc/7023lyLi3O62MliMoSMhpixWqKObnjFAHGTwIP57/2PEYo1I0EfIU25l4c4QZJ
+         U0AVCl15veEVtZSl6SeeY5Cz6zAfmCQd6OgAllmYf9a4JV4R+TEgsfdaviFOBBQyLkQ5
+         y+vmEzGDcrpKu47hWjnHZxKWGN5bZUrKLqIK/Jd6sqivaSgppwZeqLhefxTFb/Y85B1a
+         pmf3TAqO+LKraukp7cska3IyjOG6jk2u9172qziDakfcTzh6RmAZ9xSqZV8m3hAg103c
+         Nw1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=rTaR7OmzxwLSx7av/gyEN4jCjt0jgWQlcAMd5tr0RCo=;
-        b=mdbWga3QTg41d/d0Pwje9C7CyS/zr+LNlg/l7W8L+KNU1pME5XF19XsOkJ3ySA/vug
-         Um36/HBuOSWPxCn9zA2AtkTLoPXEPZ2EpVle7p5jylpl1ESvzk7iXB1ORIgdc334SZ+d
-         WvH8FlxhFs/PHBwvG1oZu4H9taUy3yTB+TqX/rM2K+clizmC7Cuq5kaNPvSgmSN5Q4d0
-         KnJfJY8YMT4hPAfXqoLgSuZnsRjJjSCxwAQpiV/U5RGHAlpNdvoDJ+QsGMTfP6+kCNgj
-         cHRsgeWwRHaCmW2QhxhTCp1ZC0etdCPUWVz/EbRpIr/0KImdL4KVoHXmwiplM8lkHLN4
-         fiaQ==
-X-Gm-Message-State: AGi0Pubj6Mvfs0WU/JUegGFwhWVpwfXRiSRthMmWtqeUiAKuHnF9Uoo9
-        yoTpkNMldr7lmt6WZyrfyvum5TUX
-X-Google-Smtp-Source: APiQypIR4OMWqtlWcvhgr3ONRqdCvtA9XqckMLnEPeCL7m2mGICUN+tUBDElhjNSQD2/VQpCAM6h/w==
-X-Received: by 2002:a05:6602:34c:: with SMTP id w12mr540543iou.56.1588277057702;
-        Thu, 30 Apr 2020 13:04:17 -0700 (PDT)
-Received: from [10.67.49.116] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id v9sm162258iol.28.2020.04.30.13.04.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Apr 2020 13:04:16 -0700 (PDT)
-Subject: Re: [PATCH net-next v1 0/9] Ethernet Cable test support
-To:     Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>
-Cc:     cphealy@gmail.com, davem@davemloft.net, hkallweit1@gmail.com,
-        mkubecek@suse.cz, netdev@vger.kernel.org
-References: <20200425180621.1140452-1-andrew@lunn.ch>
- <20200429160213.21777-1-michael@walle.cc> <20200429163247.GC66424@lunn.ch>
- <c4363f2888192efc692e08cc1a4a9a57@walle.cc>
- <61eb35f8-3264-117d-59c2-22f0fdc36e96@gmail.com>
- <9caef9bbfaed5c75e72e083db8a552fd@walle.cc> <20200430194143.GF107658@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <0b157250-2b06-256f-5f48-533233b22d60@gmail.com>
-Date:   Thu, 30 Apr 2020 13:04:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Vgf2SwLa/icc+Mda7sTpSzoCj9r0ixnHT/moZ9K+las=;
+        b=FurY2o9C1/FymdV6NCuxcGjjxRLEZk5OQw+Jq/1CRz+7cvSS67E79zyPoWJ9/tmpFx
+         Lo05fMDKNeZvaLiwwy/kqH4ojRgX8UDNQXqzZMgm4ghgiKXDBZLVR1AMjkVxsV6/KZ6T
+         +EEra+m5ReMp0qg6ZQKtKv35J/MmP0lQ8mi7QnM8E8Y4l6pgypzJmjVnR6vOQRvYArNA
+         d63Toc75U+9VyjMcwKmFHMNaeMgTJ3fkwpoU99QWtaYW7/jgKKOt5ikuCEEiRg19Fdyo
+         oUTJCfQZgEuFMyd1h6p5tYFH5OlU2t5uPoA+Va3BJuoShkdKBCHQHN3Zso2ITDsyA48/
+         cynA==
+X-Gm-Message-State: AGi0PubUOl9UX+q4Un8gR1d+bUrjBA/pfbeEr0emlfJUxl3q8BsPfZh0
+        Y6ZS7UBjpT60MD1Lic+eotfb+IAUf3Von4hHTe4=
+X-Google-Smtp-Source: APiQypIOOqncD289yKoK280vyYMqVxFrx2S0w1ZOsvP4vuySo6lMQ4/e5LAGxCvzHuya074Rie/CZGNkIXifKnsaluk=
+X-Received: by 2002:a0c:eb09:: with SMTP id j9mr669376qvp.196.1588277084920;
+ Thu, 30 Apr 2020 13:04:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200430194143.GF107658@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200427201235.2994549-1-yhs@fb.com> <20200427201251.2995957-1-yhs@fb.com>
+In-Reply-To: <20200427201251.2995957-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 30 Apr 2020 13:04:33 -0700
+Message-ID: <CAEf4BzYxANRng+3JbYrrcgre-mM_BC_+kefYDHY1gG=r_emwBg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 14/19] bpf: support variable length array in
+ tracing programs
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/20 12:41 PM, Andrew Lunn wrote:
->> ECD. The registers looks exactly like the one from the Marvell PHYs,
->> which makes me wonder if both have the same building block or if one
->> imitated the registers of the other. There are subtle differences
->> like one bit in the broadcom PHY is "break link" and is self-clearing,
->> while the bit on the Marvell PHY is described as "perform diagnostics
->> on link break".
-> 
-> Should we be sharing code between the two drivers?
+On Mon, Apr 27, 2020 at 1:17 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> In /proc/net/ipv6_route, we have
+>   struct fib6_info {
+>     struct fib6_table *fib6_table;
+>     ...
+>     struct fib6_nh fib6_nh[0];
+>   }
+>   struct fib6_nh {
+>     struct fib_nh_common nh_common;
+>     struct rt6_info **rt6i_pcpu;
+>     struct rt6_exception_bucket *rt6i_exception_bucket;
+>   };
+>   struct fib_nh_common {
+>     ...
+>     u8 nhc_gw_family;
+>     ...
+>   }
+>
+> The access:
+>   struct fib6_nh *fib6_nh = &rt->fib6_nh;
+>   ... fib6_nh->nh_common.nhc_gw_family ...
+>
+> This patch ensures such an access is handled properly.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  kernel/bpf/btf.c | 33 ++++++++++++++++++++++++++++++++-
+>  1 file changed, 32 insertions(+), 1 deletion(-)
+>
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 2c098e6b1acc..22c69e1d5a56 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -3831,6 +3831,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
+>         const struct btf_type *mtype, *elem_type = NULL;
+>         const struct btf_member *member;
+>         const char *tname, *mname;
+> +       u32 vlen;
+>
+>  again:
+>         tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
+> @@ -3839,7 +3840,37 @@ int btf_struct_access(struct bpf_verifier_log *log,
+>                 return -EINVAL;
+>         }
+>
+> -       if (off + size > t->size) {
+> +       vlen = btf_type_vlen(t);
+> +       if (vlen > 0 && off + size > t->size) {
 
-Yes, I am amazed how how identical they are, nearly on a bit level
-identical, the coincidence is uncanny. The expansion registers are also
-0x10 - 0x15 just in the reverse order, you know, so as to make it not
-too obvious this looks about the same ;) I wonder if we managed to find
-something here.
+if vlen == 0, it will skip this entire check and will eventually go to:
 
-> 
->> What do you mean by calibrate it?
-> 
-> Some of the Marvell documentation talks about calibrating for losses
-> on the PCB. Run a diagnostics with no cable plugged in, and get the
-> cable length to the 'fault'. This gives you the distance to the RJ45
-> socket. You should then subtract that from all subsequent results.
-> But since this is board design specific, i decided to ignore it. I
-> suppose it could be stuffed into a DT property, but i got the feeling
-> it is not worth it, given the measurement granularity of 80cm.
+bpf_log(log, "struct %s doesn't have field at offset %d\n", tname, off);
+return -EINVAL;
 
-OK, accuracy is different here, they are said to be +/- 5m accurate for
-cable faults and +/- 10m accurate for good cables.
--- 
-Florian
+That's probably not right and we are better still reporting:
+
+bpf_log(log, "access beyond struct %s at off %u size %u\n"
+        tname, off, size);
+return -EACCESS;
+
+So this if (vlen > 0) check should be nested in this if?
+
+> +               /* If the last element is a variable size array, we may
+> +                * need to relax the rule.
+> +                */
+> +               struct btf_array *array_elem;
+> +
+> +               member = btf_type_member(t) + vlen - 1;
+> +               mtype = btf_type_skip_modifiers(btf_vmlinux, member->type,
+> +                                               NULL);
+> +               if (!btf_type_is_array(mtype))
+> +                       goto error;
+> +
+> +               array_elem = (struct btf_array *)(mtype + 1);
+> +               if (array_elem->nelems != 0)
+> +                       goto error;
+> +
+> +               moff = btf_member_bit_offset(t, member) / 8;
+> +               if (off < moff)
+> +                       goto error;
+> +
+> +               elem_type = btf_type_skip_modifiers(btf_vmlinux,
+> +                                                   array_elem->type, NULL);
+> +               if (!btf_type_is_struct(elem_type))
+> +                       goto error;
+
+What about array of primitive types or pointers? Do we want to
+explicitly disable such use cases?
+
+> +
+> +               off = (off - moff) % elem_type->size;
+> +               return btf_struct_access(log, elem_type, off, size, atype,
+> +                                        next_btf_id);
+> +
+> +error:
+>                 bpf_log(log, "access beyond struct %s at off %u size %u\n",
+>                         tname, off, size);
+>                 return -EACCES;
+> --
+> 2.24.1
+>
