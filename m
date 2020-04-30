@@ -2,87 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 437A81BFAC8
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:56:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1F711BFACE
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728029AbgD3Nz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 09:55:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38000 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729123AbgD3NzG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:55:06 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7923720774;
-        Thu, 30 Apr 2020 13:55:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254906;
-        bh=bVOLY6qCCBKUOcXkUwFbnUT2UzHZrxXpjThWje4InnE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fALPALQdzfyGpTWTdqc849x9ftUyaxtN7rfhTLcpHypm4dTMzqRG2hK8pMdoLYsHX
-         WtAWVWtbimO3H37T+4N60Zh+9REmp1r7FF+1aCF0pW2utkL9KTyJGzYucWkycmFc1w
-         UFrZBp64YEL3voKOJRqeOzDudbDHOG4Rf2hy72LA=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 11/11] net: systemport: suppress warnings on failed Rx SKB allocations
-Date:   Thu, 30 Apr 2020 09:54:53 -0400
-Message-Id: <20200430135453.21353-11-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200430135453.21353-1-sashal@kernel.org>
-References: <20200430135453.21353-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        id S1729199AbgD3N4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:56:12 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:65366 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728074AbgD3N4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 09:56:10 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03UDaqYF065752;
+        Thu, 30 Apr 2020 09:56:09 -0400
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 30mhqaw0ct-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Apr 2020 09:56:09 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 03UDmR2C031741;
+        Thu, 30 Apr 2020 13:56:07 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 30mcu72qdu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Apr 2020 13:56:06 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 03UDu4j251511568
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Apr 2020 13:56:04 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E904B4C044;
+        Thu, 30 Apr 2020 13:56:03 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A820D4C040;
+        Thu, 30 Apr 2020 13:56:03 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 30 Apr 2020 13:56:03 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next 00/14] net/smc: add event-based framework for LLC msgs
+Date:   Thu, 30 Apr 2020 15:55:37 +0200
+Message-Id: <20200430135551.26267-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-30_08:2020-04-30,2020-04-30 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 phishscore=0 clxscore=1015 adultscore=0 suspectscore=1
+ spamscore=0 lowpriorityscore=0 malwarescore=0 impostorscore=0
+ mlxlogscore=575 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004300111
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+These patches are the next step towards SMC-R link failover support. They add
+a new framework to handle Link Layer Control (LLC) messages and adapt the
+existing code to use the new framework.
 
-[ Upstream commit 3554e54a46125030c534820c297ed7f6c3907e24 ]
+Karsten Graul (14):
+  net/smc: add event-based llc_flow framework
+  net/smc: enqueue all received LLC messages
+  net/smc: introduce link group type
+  net/smc: add logic to evaluate CONFIRM_LINK messages to LLC layer
+  net/smc: adapt SMC server code to use the LLC flow
+  net/smc: adapt SMC client code to use the LLC flow
+  net/smc: multiple link support and LLC flow for
+    smc_llc_do_confirm_rkey
+  net/smc: multiple link support and LLC flow for smc_llc_do_delete_rkey
+  net/smc: move the TEST_LINK response processing into event handler
+  net/smc: new smc_rtoken_set functions for multiple link support
+  net/smc: adapt SMC remote CONFIRM_RKEY processing to use the LLC flow
+  net/smc: adapt SMC remote DELETE_RKEY processing to use the LLC flow
+  net/smc: remove handling of CONFIRM_RKEY_CONTINUE
+  net/smc: remove obsolete link state DELETING
 
-The driver is designed to drop Rx packets and reclaim the buffers
-when an allocation fails, and the network interface needs to safely
-handle this packet loss. Therefore, an allocation failure of Rx
-SKBs is relatively benign.
+ net/smc/af_smc.c   | 108 +++++----
+ net/smc/smc_clc.h  |   1 +
+ net/smc/smc_core.c |  63 +++++-
+ net/smc/smc_core.h |  50 ++++-
+ net/smc/smc_llc.c  | 535 ++++++++++++++++++++++++++++++---------------
+ net/smc/smc_llc.h  |  15 +-
+ 6 files changed, 525 insertions(+), 247 deletions(-)
 
-However, the output of the warning message occurs with a high
-scheduling priority that can cause excessive jitter/latency for
-other high priority processing.
-
-This commit suppresses the warning messages to prevent scheduling
-problems while retaining the failure count in the statistics of
-the network interface.
-
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/broadcom/bcmsysport.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 3cb99ce7325b7..d46ea7a5e0886 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -526,7 +526,8 @@ static struct sk_buff *bcm_sysport_rx_refill(struct bcm_sysport_priv *priv,
- 	dma_addr_t mapping;
- 
- 	/* Allocate a new SKB for a new packet */
--	skb = netdev_alloc_skb(priv->netdev, RX_BUF_LENGTH);
-+	skb = __netdev_alloc_skb(priv->netdev, RX_BUF_LENGTH,
-+				 GFP_ATOMIC | __GFP_NOWARN);
- 	if (!skb) {
- 		priv->mib.alloc_rx_buff_failed++;
- 		netif_err(priv, rx_err, ndev, "SKB alloc failed\n");
 -- 
-2.20.1
+2.17.1
 
