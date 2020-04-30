@@ -2,157 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 209B01BFE64
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:34:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 023EB1BFE77
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728141AbgD3Odh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 10:33:37 -0400
-Received: from www62.your-server.de ([213.133.104.62]:47190 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726853AbgD3Odh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 10:33:37 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jUAFo-0000Xz-Tz; Thu, 30 Apr 2020 16:33:33 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jUAFo-0001Sb-H9; Thu, 30 Apr 2020 16:33:32 +0200
-Subject: Re: KASAN: use-after-free Write in bpf_link_put
-To:     syzbot <syzbot+39b64425f91b5aab714d@syzkaller.appspotmail.com>,
-        andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-References: <0000000000006780dc05a47ed632@google.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2ae442cb-b6ab-0624-a2a0-0f98a5c217bf@iogearbox.net>
-Date:   Thu, 30 Apr 2020 16:33:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727781AbgD3Ohf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 10:37:35 -0400
+Received: from mout.kundenserver.de ([212.227.126.134]:58637 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726684AbgD3Ohe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 10:37:34 -0400
+Received: from mail-lj1-f181.google.com ([209.85.208.181]) by
+ mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MIdW9-1jR82b0yLl-00EeNQ; Thu, 30 Apr 2020 16:37:32 +0200
+Received: by mail-lj1-f181.google.com with SMTP id a21so6730895ljb.9;
+        Thu, 30 Apr 2020 07:37:32 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYVvNVD8LV5PFwVzTONFmFqc//D+YDUDLdl+S9QWhsRflIH1pIn
+        OMzUVei/m8W4oTN1kiWvgh9SNt9LQmGQj2xNE5w=
+X-Google-Smtp-Source: APiQypKy09PyZ77uDaKFQBZDXtEJTxnP/Uxzu/oGwEvoJF58LAwmPUjJ46HDG+QBqJFw4DyG+mO8+PH9i4BCelnxYMs=
+X-Received: by 2002:a2e:8999:: with SMTP id c25mr2478620lji.73.1588257451645;
+ Thu, 30 Apr 2020 07:37:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <0000000000006780dc05a47ed632@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25798/Thu Apr 30 14:03:33 2020)
+References: <20200428212357.2708786-1-arnd@arndb.de> <20200430052157.GD432386@unreal>
+In-Reply-To: <20200430052157.GD432386@unreal>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 30 Apr 2020 16:37:14 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a25MeyBgwZ9ZF2JbfpVChQuZ1wWc6VT1MFZ8-7haubVDw@mail.gmail.com>
+Message-ID: <CAK8P3a25MeyBgwZ9ZF2JbfpVChQuZ1wWc6VT1MFZ8-7haubVDw@mail.gmail.com>
+Subject: Re: [PATCH] net/mlx5: reduce stack usage in qp_read_field
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:xOfNUyzSsonNWZrgxw2ZjAzaywN26VV5YITBAqO/SEzxptoc19J
+ GDwPDqXISPWejg2N1f41nO/+NoHYrfbIfiyt3v+An3SjNKu8+GPlFesIo5AVyWNeCkoWLXH
+ t/6IYeX28aInOfD9D2yAJOjGLmr6/KyfW1owlIpoS35HJ6TYO50X5FyPQDYFGWHoZdPPnxe
+ LPqek/vnMZymJtaTydQxw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bupaEUd07sg=:mLlPlQmtDA1UEP9GIqDo+D
+ m+m9HDKSft6fPnYPjsu4r1Gq8+Zs/vyxShg9EgSDeuuuKj5s2Nmd6aE03nFzITkLRRlZVyWDJ
+ RQvu9NWySuas2jQNGAgOFXxSIY5UsdRqGy/pHC12Ev9zz2Z7ZOXjGVzrjlxWxFxLGNrenVusZ
+ z5dgMYm8OuqlCpvgcvSZS4K2bBYia5fYkwuXpf881x29qJp9NXLMPKWRywD8JU07PpD2/KHoG
+ 47jCULAeBaXq2M0Bc7ZGcdZfqL/cG/ZDw0U5x85ioxR1yeSS3PuNejN68dy9xXMex5w1UUY7Q
+ O14yC9UQWDvwcRaj9Clj/C8vRbN3SIQYA/0nj3A8DG4uXnstuqOWcXK3aEIdNxhbPmUiS6RKB
+ koPRx8upQSUcUO0TrjYdbJ/IjCeC1pj4JMst790+hpKxu7yTLh3mP5HhZeUJdfmHlZMdBpfMT
+ d/ipulafFmxtrb3oH/6ylJYNh54TC1cBqnOuV0NsR07f/im1PHC2CIQfXFzaXkdYU/ryOd5eb
+ NeN43GscgSJ48wRAkvjkTlyX0/MJcmzz5FG/fT9Iv5nDW67lvgpyn1Vby6QzPO1DyH5fDDmLb
+ BH9lBqucIdVh7Q2Bqgra4qYQGrLXMOiwvpOV6ur9KKpVINlkYP2Ha/8FnfIzsK12oPdtdtzHa
+ lqrJ4rBfuam3ZtoAEval+gCR0/ERVzln62azBxOx2pi47pUIH/qxZMBD5Gr/RLLkwGOyD7cvB
+ xubwL8afsVhMAnlOrssBhi/Vvu1ii9fFoAsuZLyAgA8rKDhqDaxHFCtG8rHnRxhFjwYqhDijX
+ 8OOTmJwsA3T1Md2Oj6D8a+rZE8NjV/na/haiWkgQkKw+ezEmDA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/20 11:39 AM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    449e14bf bpf: Fix unused variable warning
-> git tree:       bpf-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=109eb5f8100000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=16d87c420507d444
-> dashboard link: https://syzkaller.appspot.com/bug?extid=39b64425f91b5aab714d
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> 
-> Unfortunately, I don't have any reproducer for this crash yet.
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+39b64425f91b5aab714d@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: use-after-free in atomic64_dec_and_test include/asm-generic/atomic-instrumented.h:1557 [inline]
-> BUG: KASAN: use-after-free in bpf_link_put+0x19/0x1b0 kernel/bpf/syscall.c:2255
-> Write of size 8 at addr ffff8880a7248800 by task syz-executor.0/28011
+On Thu, Apr 30, 2020 at 7:22 AM Leon Romanovsky <leon@kernel.org> wrote:
+> On Tue, Apr 28, 2020 at 11:23:47PM +0200, Arnd Bergmann wrote:
+> > Moving the mlx5_ifc_query_qp_out_bits structure on the stack was a bit
+> > excessive and now causes the compiler to complain on 32-bit architectures:
+> >
+> > drivers/net/ethernet/mellanox/mlx5/core/debugfs.c: In function 'qp_read_field':
+> > drivers/net/ethernet/mellanox/mlx5/core/debugfs.c:274:1: error: the frame size of 1104 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+> >
+> > Revert the previous patch partially to use dynamically allocation as
+> > the code did before. Unfortunately there is no good error handling
+> > in case the allocation fails.
+> >
+> > Fixes: 57a6c5e992f5 ("net/mlx5: Replace hand written QP context struct with automatic getters")
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> > ---
+> >  drivers/net/ethernet/mellanox/mlx5/core/debugfs.c | 12 +++++++++---
+> >  1 file changed, 9 insertions(+), 3 deletions(-)
+>
+> Thanks Arnd, I'll pick it to mlx5-next.
+>
+> I was under impression that the frame size was increased a long
+> time ago. Is this 1K limit still effective for all archs?
+> Or is it is 32-bit leftover?
 
-Andrii, ptal, thanks!
+I got the output on a 32-bit build, but that doesn't make the code
+right on 64-bit.
 
-> CPU: 0 PID: 28011 Comm: syz-executor.0 Not tainted 5.7.0-rc2-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->   __dump_stack lib/dump_stack.c:77 [inline]
->   dump_stack+0x188/0x20d lib/dump_stack.c:118
->   print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:382
->   __kasan_report.cold+0x35/0x4d mm/kasan/report.c:511
->   kasan_report+0x33/0x50 mm/kasan/common.c:625
->   check_memory_region_inline mm/kasan/generic.c:187 [inline]
->   check_memory_region+0x141/0x190 mm/kasan/generic.c:193
->   atomic64_dec_and_test include/asm-generic/atomic-instrumented.h:1557 [inline]
->   bpf_link_put+0x19/0x1b0 kernel/bpf/syscall.c:2255
->   bpf_link_release+0x33/0x40 kernel/bpf/syscall.c:2270
->   __fput+0x33e/0x880 fs/file_table.c:280
->   task_work_run+0xf4/0x1b0 kernel/task_work.c:123
->   tracehook_notify_resume include/linux/tracehook.h:188 [inline]
->   exit_to_usermode_loop+0x2fa/0x360 arch/x86/entry/common.c:165
->   prepare_exit_to_usermode arch/x86/entry/common.c:196 [inline]
->   syscall_return_slowpath arch/x86/entry/common.c:279 [inline]
->   do_syscall_64+0x6b1/0x7d0 arch/x86/entry/common.c:305
->   entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> RIP: 0033:0x7fc891a66469
-> Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
-> RSP: 002b:00007fc892156db8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: fffffffffffffff4 RBX: 000000000042c4e0 RCX: 00007fc891a66469
-> RDX: 0000000000000010 RSI: 0000000020000040 RDI: 000000000000001c
-> RBP: 00000000006abf00 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000005
-> R13: 000000000000004f R14: 0000000000415473 R15: 00007fc8921575c0
-> 
-> Allocated by task 28011:
->   save_stack+0x1b/0x40 mm/kasan/common.c:49
->   set_track mm/kasan/common.c:57 [inline]
->   __kasan_kmalloc mm/kasan/common.c:495 [inline]
->   __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:468
->   kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
->   kmalloc include/linux/slab.h:555 [inline]
->   kzalloc include/linux/slab.h:669 [inline]
->   cgroup_bpf_link_attach+0x13d/0x5b0 kernel/bpf/cgroup.c:894
->   link_create kernel/bpf/syscall.c:3765 [inline]
->   __do_sys_bpf+0x238c/0x46d0 kernel/bpf/syscall.c:3987
->   do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
->   entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> 
-> Freed by task 28011:
->   save_stack+0x1b/0x40 mm/kasan/common.c:49
->   set_track mm/kasan/common.c:57 [inline]
->   kasan_set_free_info mm/kasan/common.c:317 [inline]
->   __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:456
->   __cache_free mm/slab.c:3426 [inline]
->   kfree+0x109/0x2b0 mm/slab.c:3757
->   cgroup_bpf_link_attach+0x2bc/0x5b0 kernel/bpf/cgroup.c:906
->   link_create kernel/bpf/syscall.c:3765 [inline]
->   __do_sys_bpf+0x238c/0x46d0 kernel/bpf/syscall.c:3987
->   do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
->   entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> 
-> The buggy address belongs to the object at ffff8880a7248800
->   which belongs to the cache kmalloc-128 of size 128
-> The buggy address is located 0 bytes inside of
->   128-byte region [ffff8880a7248800, ffff8880a7248880)
-> The buggy address belongs to the page:
-> page:ffffea00029c9200 refcount:1 mapcount:0 mapping:00000000a3d4ec31 index:0xffff8880a7248700
-> flags: 0xfffe0000000200(slab)
-> raw: 00fffe0000000200 ffffea00024ceac8 ffffea000251d3c8 ffff8880aa000700
-> raw: ffff8880a7248700 ffff8880a7248000 000000010000000f 0000000000000000
-> page dumped because: kasan: bad access detected
-> 
-> Memory state around the buggy address:
->   ffff8880a7248700: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->   ffff8880a7248780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->> ffff8880a7248800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                     ^
->   ffff8880a7248880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->   ffff8880a7248900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> ==================================================================
-> 
-> 
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
+While warning limit is generally 1024 bytes for 32-bit architectures,
+and 2048 bytes fro 64-bit architectures,  we should probably
+reduce the latter to something like 1280 bytes and fix up the
+warnings that introduces.
 
+Generally speaking, I'd say a function using more than a few hundred
+bytes tends to be a bad idea, but we can't warn about those without
+also warning about the handful of cases that do it for a good reason
+and using close to 1024 bytes on 32 bit systems or a little more on
+64-bit systems, in places that are known not to have deep call chains.
+
+       Arnd
