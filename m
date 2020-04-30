@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6361BFF83
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 17:03:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E6A1BFF79
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 17:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgD3PDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 11:03:01 -0400
+        id S1726689AbgD3PDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 11:03:00 -0400
 Received: from mga02.intel.com ([134.134.136.20]:23192 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726570AbgD3PC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726272AbgD3PC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Apr 2020 11:02:59 -0400
-IronPort-SDR: X8G+IQlGgGeek1BTLbaYWT0eaiUXITIL9S2T//tpNzlWaXCGH4/JUEkgVP1NHLFssFY9jnZirw
- CDfNJoSabmiA==
+IronPort-SDR: jJEpDsbM55D+8r6eQCZF25xdm0J3wrWRW3D/IAdQiY1ptgl6cX8imyMm46jjITdpQF4Dcf9BcQ
+ pMqryKgVn74A==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2020 08:02:59 -0700
-IronPort-SDR: qOTgd2rG5B3VMP8+O7z3JmfglDuSd+xH1ukTYiFtfZTXPSRZvGo5p1N2cXa44++1JAA9RMA1mk
- 1R20bW67k36w==
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2020 08:02:58 -0700
+IronPort-SDR: FWOsYAIC2NRGWTwjoW5xbGC8jQ1ujwb62GmdlZGtfWmPeaMnpfWu+Mu5z3eLyDa3eqLvAleZU2
+ sbmWnC/QwUWg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,336,1583222400"; 
-   d="scan'208";a="337329745"
+   d="scan'208";a="368167922"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 30 Apr 2020 08:02:56 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 30 Apr 2020 08:02:56 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 63F5E166; Thu, 30 Apr 2020 18:02:55 +0300 (EEST)
+        id 71F1E15C; Thu, 30 Apr 2020 18:02:55 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -34,9 +34,9 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Voon Weifeng <weifeng.voon@intel.com>
-Subject: [PATCH v3 2/7] stmmac: intel: Fix clock handling on error and remove paths
-Date:   Thu, 30 Apr 2020 18:02:49 +0300
-Message-Id: <20200430150254.34565-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 3/7] stmmac: intel: Remove unnecessary loop for PCI BARs
+Date:   Thu, 30 Apr 2020 18:02:50 +0300
+Message-Id: <20200430150254.34565-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200430150254.34565-1-andriy.shevchenko@linux.intel.com>
 References: <20200430150254.34565-1-andriy.shevchenko@linux.intel.com>
@@ -47,93 +47,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clk_prepare_enable() might fail, we have to check its returned value.
-Besides that we have to call clk_disable_unprepare() on the error and
-remove paths. Do above in the dwmac-intel driver.
-
-While at it, remove leftover in stmmac_pci and remove unneeded condition
-for NULL-aware clk_unregister_fixed_rate() call.
+Copy'n'paste without thinking is not a good idea and in this case it brought
+unnecessary loop over PCI BAR resources which was needed to workaround one of
+STMicro RVP boards. Remove unnecessary loops from Intel driver.
 
 Fixes: 58da0cfa6cf1 ("net: stmmac: create dwmac-intel.c to contain all Intel platform")
 Cc: Voon Weifeng <weifeng.voon@intel.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 20 +++++++++++++++----
- .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  5 -----
- 2 files changed, 16 insertions(+), 9 deletions(-)
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 23 ++++---------------
+ 1 file changed, 5 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 2e4aaedb93f580..d163c4b43da0fd 100644
+index d163c4b43da0fd..e9f94855949959 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -252,6 +252,7 @@ static void common_default_data(struct plat_stmmacenet_data *plat)
- static int intel_mgbe_common_data(struct pci_dev *pdev,
- 				  struct plat_stmmacenet_data *plat)
- {
-+	int ret;
- 	int i;
+@@ -606,7 +606,6 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+ 	struct intel_priv_data *intel_priv;
+ 	struct plat_stmmacenet_data *plat;
+ 	struct stmmac_resources res;
+-	int i;
+ 	int ret;
  
- 	plat->clk_csr = 5;
-@@ -324,7 +325,12 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 		dev_warn(&pdev->dev, "Fail to register stmmac-clk\n");
- 		plat->stmmac_clk = NULL;
+ 	intel_priv = devm_kzalloc(&pdev->dev, sizeof(*intel_priv),
+@@ -637,15 +636,9 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+ 		return ret;
  	}
--	clk_prepare_enable(plat->stmmac_clk);
-+
-+	ret = clk_prepare_enable(plat->stmmac_clk);
-+	if (ret) {
-+		clk_unregister_fixed_rate(plat->stmmac_clk);
-+		return ret;
-+	}
  
- 	/* Set default value for multicast hash bins */
- 	plat->multicast_filter_bins = HASH_TABLE_SIZE;
-@@ -657,7 +663,13 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+-	/* Get the base address of device */
+-	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
+-		if (pci_resource_len(pdev, i) == 0)
+-			continue;
+-		ret = pcim_iomap_regions(pdev, BIT(i), pci_name(pdev));
+-		if (ret)
+-			return ret;
+-		break;
+-	}
++	ret = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
++	if (ret)
++		return ret;
+ 
+ 	pci_set_master(pdev);
+ 
+@@ -659,7 +652,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+ 	pci_enable_msi(pdev);
+ 
+ 	memset(&res, 0, sizeof(res));
+-	res.addr = pcim_iomap_table(pdev)[i];
++	res.addr = pcim_iomap_table(pdev)[0];
  	res.wol_irq = pdev->irq;
  	res.irq = pdev->irq;
  
--	return stmmac_dvr_probe(&pdev->dev, plat, &res);
-+	ret = stmmac_dvr_probe(&pdev->dev, plat, &res);
-+	if (ret) {
-+		clk_disable_unprepare(plat->stmmac_clk);
-+		clk_unregister_fixed_rate(plat->stmmac_clk);
-+	}
-+
-+	return ret;
- }
- 
- /**
-@@ -675,8 +687,8 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
- 
- 	stmmac_dvr_remove(&pdev->dev);
- 
--	if (priv->plat->stmmac_clk)
--		clk_unregister_fixed_rate(priv->plat->stmmac_clk);
-+	clk_disable_unprepare(priv->plat->stmmac_clk);
-+	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
- 
- 	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
- 		if (pci_resource_len(pdev, i) == 0)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 3fb21f7ac9fbee..272cb47af9f2ea 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -217,15 +217,10 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
-  */
- static void stmmac_pci_remove(struct pci_dev *pdev)
+@@ -683,19 +676,13 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
  {
--	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
--	struct stmmac_priv *priv = netdev_priv(ndev);
- 	int i;
+ 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
+-	int i;
  
  	stmmac_dvr_remove(&pdev->dev);
  
--	if (priv->plat->stmmac_clk)
--		clk_unregister_fixed_rate(priv->plat->stmmac_clk);
--
- 	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
- 		if (pci_resource_len(pdev, i) == 0)
- 			continue;
+ 	clk_disable_unprepare(priv->plat->stmmac_clk);
+ 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+ 
+-	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
+-		if (pci_resource_len(pdev, i) == 0)
+-			continue;
+-		pcim_iounmap_regions(pdev, BIT(i));
+-		break;
+-	}
++	pcim_iounmap_regions(pdev, BIT(0));
+ 
+ 	pci_disable_device(pdev);
+ }
 -- 
 2.26.2
 
