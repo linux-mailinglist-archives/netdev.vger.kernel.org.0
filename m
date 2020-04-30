@@ -2,65 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F9F71BF7FA
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 14:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A006B1BF82F
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 14:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbgD3MPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 08:15:35 -0400
-Received: from cmccmta3.chinamobile.com ([221.176.66.81]:5142 "EHLO
-        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725280AbgD3MPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 08:15:35 -0400
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.9]) by rmmx-syy-dmz-app12-12012 (RichMail) with SMTP id 2eec5eaac1463c3-cd75d; Thu, 30 Apr 2020 20:15:04 +0800 (CST)
-X-RM-TRANSID: 2eec5eaac1463c3-cd75d
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from localhost.localdomain (unknown[112.1.172.204])
-        by rmsmtp-syy-appsvr05-12005 (RichMail) with SMTP id 2ee55eaac146994-cdc8f;
-        Thu, 30 Apr 2020 20:15:04 +0800 (CST)
-X-RM-TRANSID: 2ee55eaac146994-cdc8f
-From:   Tang Bin <tangbin@cmss.chinamobile.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tang Bin <tangbin@cmss.chinamobile.com>,
-        Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-Subject: [PATCH] net/faraday: Fix unnecessary check in ftmac100_probe()
-Date:   Thu, 30 Apr 2020 20:15:31 +0800
-Message-Id: <20200430121532.22768-1-tangbin@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.20.1.windows.1
+        id S1726636AbgD3MZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 08:25:55 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33934 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725280AbgD3MZz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 08:25:55 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 4ED94AB3D;
+        Thu, 30 Apr 2020 12:25:52 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id B49F960341; Thu, 30 Apr 2020 14:25:51 +0200 (CEST)
+Date:   Thu, 30 Apr 2020 14:25:51 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        mkl@pengutronix.de, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christian Herber <christian.herber@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v3 1/2] ethtool: provide UAPI for PHY
+ master/slave configuration.
+Message-ID: <20200430122551.GB8934@lion.mk-sys.cz>
+References: <20200428075308.2938-1-o.rempel@pengutronix.de>
+ <20200428075308.2938-2-o.rempel@pengutronix.de>
+ <20200429195222.GA17581@lion.mk-sys.cz>
+ <20200430050058.cetxv76pyboanbkz@pengutronix.de>
+ <20200430082020.GC17581@lion.mk-sys.cz>
+ <20200430120945.GA7370@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200430120945.GA7370@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function ftmac100_probe() is only called with an openfirmware
-platform device. Therefore there is no need to check that the passed
-in device is NULL.
+On Thu, Apr 30, 2020 at 02:09:45PM +0200, Oleksij Rempel wrote:
+> > > > > @@ -119,7 +123,12 @@ static int linkmodes_fill_reply(struct sk_buff *skb,
+> > > > >  	}
+> > > > >  
+> > > > >  	if (nla_put_u32(skb, ETHTOOL_A_LINKMODES_SPEED, lsettings->speed) ||
+> > > > > -	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_DUPLEX, lsettings->duplex))
+> > > > > +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_DUPLEX, lsettings->duplex) ||
+> > > > > +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG,
+> > > > > +		       lsettings->master_slave_cfg) ||
+> > > > > +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE,
+> > > > > +		       lsettings->master_slave_state))
+> > > > > +
+> > > > >  		return -EMSGSIZE;
+> > > > 
+> > > > From the two handlers you introduced, it seems we only get CFG_UNKNOWN
+> > > > or STATE_UNKNOWN if driver or device does not support the feature at all
+> > > > so it would be IMHO more appropriate to omit the attribute in such case.
+> > > 
+> > > STATE_UNKNOWN is returned if link is not active.
+> > 
+> > How about distinguishing the two cases then? Omitting both if CFG is
+> > CFG_UNKNOWN (i.e. driver does not support the feature) and sending
+> > STATE=STATE_UNKNOWN to userspace only if we know it's a meaningful value
+> > actually reported by the driver?
+> 
+> Hm... after thinking about it, we should keep state and config
+> separately. The TJA1102 PHY do not provide actual state. Even no error
+> related to Master/Master conflict. I reworked the code to have
+> unsupported and unknown values.  In case we know, that state or config
+> is not supported, it will not be exported to the user space.
 
-Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
----
- drivers/net/ethernet/faraday/ftmac100.c | 3 ---
- 1 file changed, 3 deletions(-)
+Sounds good to me, splitting "unsupported" and "unknown" states will be
+probably the best option.
 
-diff --git a/drivers/net/ethernet/faraday/ftmac100.c b/drivers/net/ethernet/faraday/ftmac100.c
-index 6c247cbbd..2be173b03 100644
---- a/drivers/net/ethernet/faraday/ftmac100.c
-+++ b/drivers/net/ethernet/faraday/ftmac100.c
-@@ -1059,9 +1059,6 @@ static int ftmac100_probe(struct platform_device *pdev)
- 	struct ftmac100 *priv;
- 	int err;
- 
--	if (!pdev)
--		return -ENODEV;
--
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res)
- 		return -ENXIO;
--- 
-2.20.1.windows.1
-
-
-
+Michal
