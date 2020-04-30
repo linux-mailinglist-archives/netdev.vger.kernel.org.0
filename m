@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6096A1C07EE
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 22:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A63A1C06FA
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 21:51:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbgD3Uav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 16:30:51 -0400
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:53491
-        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726338AbgD3Uau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 16:30:50 -0400
-X-IronPort-AV: E=Sophos;i="5.73,337,1583190000"; 
-   d="scan'208";a="347432591"
-Received: from palace.rsr.lip6.fr (HELO palace.lip6.fr) ([132.227.105.202])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/AES256-SHA256; 30 Apr 2020 22:30:48 +0200
-From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     kernel-janitors@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nic Volanschi <eugene.volanschi@inria.fr>
-Subject: [PATCH] dp83640: reverse arguments to list_add_tail
-Date:   Thu, 30 Apr 2020 21:51:32 +0200
-Message-Id: <1588276292-19166-1-git-send-email-Julia.Lawall@inria.fr>
-X-Mailer: git-send-email 1.9.1
+        id S1726488AbgD3Tvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 15:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726318AbgD3Tvs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 15:51:48 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76C3C035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 12:51:47 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 440621289FD3C;
+        Thu, 30 Apr 2020 12:51:47 -0700 (PDT)
+Date:   Thu, 30 Apr 2020 12:51:46 -0700 (PDT)
+Message-Id: <20200430.125146.1288195412515001021.davem@davemloft.net>
+To:     andriy.shevchenko@linux.intel.com
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-stm32@st-md-mailman.stormreply.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 0/7] stmmac: intel: Fixes and cleanups after
+ dwmac-intel split
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200430150254.34565-1-andriy.shevchenko@linux.intel.com>
+References: <20200430150254.34565-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 Apr 2020 12:51:47 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In this code, it appears that phyter_clocks is a list head, based on
-the previous list_for_each, and that clock->list is intended to be a
-list element, given that it has just been initialized in
-dp83640_clock_init.  Accordingly, switch the arguments to
-list_add_tail, which takes the list head as the second argument.
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date: Thu, 30 Apr 2020 18:02:47 +0300
 
-Fixes: cb646e2b02b27 ("ptp: Added a clock driver for the National Semiconductor PHYTER.")
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+> Seems the split of dwmac-intel didn't go well and on top of that new
+> functionality in the driver has not been properly tested.
+> 
+> Patch 1 fixes a nasty kernel crash due to missed error handling.
+> Patches 2 and 3 fix the incorrect split (clock and PCI bar handling).
+> 
+> Patch 4 converts driver to use new PCI IRQ allocation API.
+> 
+> The rest is a set of clean ups that may have been done in the initial
+> submission.
+> 
+> Series has been tested on couple of Elkhart Lake platforms with different
+> behaviour of ethernet hardware.
+> 
+> Changelog v3:
+> - added the cover letter (David)
+> - appended separate fix as a first patch
+> - marked patches 2 and 3 with Fixes tag
 
----
-Not tested.
-
- drivers/net/phy/dp83640.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
-index 415c27310982..ecbd5e0d685c 100644
---- a/drivers/net/phy/dp83640.c
-+++ b/drivers/net/phy/dp83640.c
-@@ -1120,7 +1120,7 @@ static struct dp83640_clock *dp83640_clock_get_bus(struct mii_bus *bus)
- 		goto out;
- 	}
- 	dp83640_clock_init(clock, bus);
--	list_add_tail(&phyter_clocks, &clock->list);
-+	list_add_tail(&clock->list, &phyter_clocks);
- out:
- 	mutex_unlock(&phyter_clocks_lock);
- 
-
+Series applied, thank you.
