@@ -2,153 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E8341BF444
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 11:39:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 136321BF495
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 11:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726743AbgD3JjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 05:39:15 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:53983 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbgD3JjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 05:39:14 -0400
-Received: by mail-il1-f197.google.com with SMTP id 9so667012ill.20
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 02:39:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=vIIPXuZlrFp+xo9o1bYGQn743Cw7J0PFty6YB+csSAs=;
-        b=Lvzg65xYzp26uE1T0KgXjm2cv7zamct4avsXxdYX0zTyabv3Pmd5jI+SxSJFl57uPl
-         WUhG/tEZZcK4rilkEQu2lrw128yf27kugf1rUR/6qvpq0F9bhp1nVUROi0k+TQDhAVF9
-         015zhLDbgiqZ8Qbq/FoRI0j6mNTO+Ike+1bwLYdtdW9LvJT0jhzh/91P7px6IArBpPR1
-         bdTgFu3nxvThQdT7xx3zUQBW3xoVmBPNLIs40rsV2tZRHo5hfQKAJCG/PpeyiZowfZIT
-         cTKj51S3LOCmdJNF9YClXdxLNBmi8hh8Q9ZQJuDObJ35VCw7z1Dq4Am8eGgYZNqQ1St+
-         FGAg==
-X-Gm-Message-State: AGi0PuaXdq7JGyoBc3xSLn5c8lj0f2qej3NyKpWxIHyc6MYmzSuxCZIc
-        zj/Rk/5YDtWYQPcRAHsFyPnSRrHdwZEZSt5AjvQTRc79G9iR
-X-Google-Smtp-Source: APiQypKKYdthYXw0O5GkI1I7af5y5d0o9AL7tkFs1a//unSQ2oRtOdcpPA8GxmMlfAy2fOhW3czeZfzNNjviHCduO1HO2K9C6QZP
+        id S1726757AbgD3Jyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 05:54:43 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:49441 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726378AbgD3Jym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 05:54:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588240481;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fCJ01yiDVJ+4nhB2iJa3qAXZnjlPnyq/CK4SQ/2FBPQ=;
+        b=bsC5S4fYDnJ+a6hp/AP7sFZYJ9bfZnRwtOG22hq9KcTC/CUbid9XHPE4fFvaCbZoYmFPFr
+        MA1MWPah0N0XORFmVc+Bd50wsOtd3BbQjACisww22C3MS+ih/6mPjgvyfAMeJQN8+eTfYq
+        0JyUi0KLrG/jK1NVnPZ2Rq8+kTTRwLI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-14-RpNZrXO-Or2_6MJUlyXBJQ-1; Thu, 30 Apr 2020 05:54:37 -0400
+X-MC-Unique: RpNZrXO-Or2_6MJUlyXBJQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1816245F;
+        Thu, 30 Apr 2020 09:54:35 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E991A5D787;
+        Thu, 30 Apr 2020 09:54:16 +0000 (UTC)
+Date:   Thu, 30 Apr 2020 11:54:15 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        steffen.klassert@secunet.com, brouer@redhat.com
+Subject: Re: [PATCH net-next 20/33] vhost_net: also populate XDP frame size
+Message-ID: <20200430115415.5e4c815e@carbon>
+In-Reply-To: <8ebbd5d8-e256-3d6b-7cc1-dd3d29be3504@redhat.com>
+References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
+        <158757174266.1370371.14475202001364271065.stgit@firesoul>
+        <8ebbd5d8-e256-3d6b-7cc1-dd3d29be3504@redhat.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:96c5:: with SMTP id r5mr936809iol.41.1588239553493;
- Thu, 30 Apr 2020 02:39:13 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 02:39:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006780dc05a47ed632@google.com>
-Subject: KASAN: use-after-free Write in bpf_link_put
-From:   syzbot <syzbot+39b64425f91b5aab714d@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, 27 Apr 2020 13:50:15 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-syzbot found the following crash on:
+> On 2020/4/23 =E4=B8=8A=E5=8D=8812:09, Jesper Dangaard Brouer wrote:
+> > In vhost_net_build_xdp() the 'buf' that gets queued via an xdp_buff
+> > have embedded a struct tun_xdp_hdr (located at xdp->data_hard_start)
+> > which contains the buffer length 'buflen' (with tailroom for
+> > skb_shared_info). Also storing this buflen in xdp->frame_sz, does not
+> > obsolete struct tun_xdp_hdr, as it also contains a struct
+> > virtio_net_hdr with other information.
+> >
+> > Cc: Jason Wang <jasowang@redhat.com>
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---
+> >   drivers/vhost/net.c |    1 +
+> >   1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> > index 87469d67ede8..69af007e22f4 100644
+> > --- a/drivers/vhost/net.c
+> > +++ b/drivers/vhost/net.c
+> > @@ -745,6 +745,7 @@ static int vhost_net_build_xdp(struct vhost_net_vir=
+tqueue *nvq,
+> >   	xdp->data =3D buf + pad;
+> >   	xdp->data_end =3D xdp->data + len;
+> >   	hdr->buflen =3D buflen;
+> > +	xdp->frame_sz =3D buflen;
+> >  =20
+> >   	--net->refcnt_bias;
+> >   	alloc_frag->offset +=3D buflen; =20
+>=20
+>=20
+> Tun_xdp_one() will use hdr->buflen as the frame_sz (patch 19), so it=20
+> looks to me there's no need to do this?
 
-HEAD commit:    449e14bf bpf: Fix unused variable warning
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=109eb5f8100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=16d87c420507d444
-dashboard link: https://syzkaller.appspot.com/bug?extid=39b64425f91b5aab714d
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+I was thinking to go the "other way", meaning let tun_xdp_one() use
+xdp->frame_sz, which gets set here.  This would allow us to refactor
+the code, and drop struct tun_xdp_hdr, as (see pahole below) it only
+carries 'buflen' and the remaining part comes from struct
+virtio_net_hdr, which could be used directly instead.
 
-Unfortunately, I don't have any reproducer for this crash yet.
+As this will be a code refactor, I would prefer we do it after this
+patchseries is agreed upon.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+39b64425f91b5aab714d@syzkaller.appspotmail.com
+$ pahole -C tun_xdp_hdr drivers/net/tap.o
+struct tun_xdp_hdr {
+	int                        buflen;               /*     0     4 */
+	struct virtio_net_hdr gso;                       /*     4    10 */
 
-==================================================================
-BUG: KASAN: use-after-free in atomic64_dec_and_test include/asm-generic/atomic-instrumented.h:1557 [inline]
-BUG: KASAN: use-after-free in bpf_link_put+0x19/0x1b0 kernel/bpf/syscall.c:2255
-Write of size 8 at addr ffff8880a7248800 by task syz-executor.0/28011
+	/* size: 16, cachelines: 1, members: 2 */
+	/* padding: 2 */
+	/* last cacheline: 16 bytes */
+};
 
-CPU: 0 PID: 28011 Comm: syz-executor.0 Not tainted 5.7.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:382
- __kasan_report.cold+0x35/0x4d mm/kasan/report.c:511
- kasan_report+0x33/0x50 mm/kasan/common.c:625
- check_memory_region_inline mm/kasan/generic.c:187 [inline]
- check_memory_region+0x141/0x190 mm/kasan/generic.c:193
- atomic64_dec_and_test include/asm-generic/atomic-instrumented.h:1557 [inline]
- bpf_link_put+0x19/0x1b0 kernel/bpf/syscall.c:2255
- bpf_link_release+0x33/0x40 kernel/bpf/syscall.c:2270
- __fput+0x33e/0x880 fs/file_table.c:280
- task_work_run+0xf4/0x1b0 kernel/task_work.c:123
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_usermode_loop+0x2fa/0x360 arch/x86/entry/common.c:165
- prepare_exit_to_usermode arch/x86/entry/common.c:196 [inline]
- syscall_return_slowpath arch/x86/entry/common.c:279 [inline]
- do_syscall_64+0x6b1/0x7d0 arch/x86/entry/common.c:305
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x7fc891a66469
-Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
-RSP: 002b:00007fc892156db8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: fffffffffffffff4 RBX: 000000000042c4e0 RCX: 00007fc891a66469
-RDX: 0000000000000010 RSI: 0000000020000040 RDI: 000000000000001c
-RBP: 00000000006abf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000005
-R13: 000000000000004f R14: 0000000000415473 R15: 00007fc8921575c0
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-Allocated by task 28011:
- save_stack+0x1b/0x40 mm/kasan/common.c:49
- set_track mm/kasan/common.c:57 [inline]
- __kasan_kmalloc mm/kasan/common.c:495 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:468
- kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
- kmalloc include/linux/slab.h:555 [inline]
- kzalloc include/linux/slab.h:669 [inline]
- cgroup_bpf_link_attach+0x13d/0x5b0 kernel/bpf/cgroup.c:894
- link_create kernel/bpf/syscall.c:3765 [inline]
- __do_sys_bpf+0x238c/0x46d0 kernel/bpf/syscall.c:3987
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-
-Freed by task 28011:
- save_stack+0x1b/0x40 mm/kasan/common.c:49
- set_track mm/kasan/common.c:57 [inline]
- kasan_set_free_info mm/kasan/common.c:317 [inline]
- __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:456
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x109/0x2b0 mm/slab.c:3757
- cgroup_bpf_link_attach+0x2bc/0x5b0 kernel/bpf/cgroup.c:906
- link_create kernel/bpf/syscall.c:3765 [inline]
- __do_sys_bpf+0x238c/0x46d0 kernel/bpf/syscall.c:3987
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-
-The buggy address belongs to the object at ffff8880a7248800
- which belongs to the cache kmalloc-128 of size 128
-The buggy address is located 0 bytes inside of
- 128-byte region [ffff8880a7248800, ffff8880a7248880)
-The buggy address belongs to the page:
-page:ffffea00029c9200 refcount:1 mapcount:0 mapping:00000000a3d4ec31 index:0xffff8880a7248700
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea00024ceac8 ffffea000251d3c8 ffff8880aa000700
-raw: ffff8880a7248700 ffff8880a7248000 000000010000000f 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880a7248700: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880a7248780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff8880a7248800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff8880a7248880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff8880a7248900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
