@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 166171BFF84
+	by mail.lfdr.de (Postfix) with ESMTP id 831A21BFF85
 	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 17:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbgD3PDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 11:03:03 -0400
-Received: from mga07.intel.com ([134.134.136.100]:16558 "EHLO mga07.intel.com"
+        id S1726870AbgD3PDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 11:03:06 -0400
+Received: from mga05.intel.com ([192.55.52.43]:13786 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726746AbgD3PDB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726762AbgD3PDB (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Apr 2020 11:03:01 -0400
-IronPort-SDR: 9rKUWiVcNxymxKYcj9TTdW6bXpqoB8Mh8ADFkCjPE+KhE2Daq5lQ+AVfvm61Xy3hGpxqxthXfu
- WQaaVkvv/guQ==
+IronPort-SDR: 6PrbYjDEVJqhtFwyqs6TQ22CV4Ciqn5rigzunq7oEagOO2u17hzcIvABiw3IiYVrGDahxZ+tkW
+ hzx4A3rouDMg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2020 08:03:00 -0700
-IronPort-SDR: J1c7Vhp58opc6KQ2W9CXLBlcHbpROVV6pGPv06C8zODZjbI4GP6UvOPTl0culVK6XX7OFWxKL/
- RCroMiO9qVkQ==
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2020 08:03:01 -0700
+IronPort-SDR: dqG4KRPQFU9Qc9a2WzmSQZ45J+T/1G5zQYgjc7ufSPkmE65T/sQeTCoW55esxvCVgc/TgUQbd8
+ V5raOPFoEAPA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,336,1583222400"; 
-   d="scan'208";a="276544761"
+   d="scan'208";a="293592056"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 30 Apr 2020 08:02:58 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 30 Apr 2020 08:02:59 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8B8D02A4; Thu, 30 Apr 2020 18:02:55 +0300 (EEST)
+        id 9A91F4B8; Thu, 30 Apr 2020 18:02:55 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -33,9 +33,9 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v3 6/7] stmmac: intel: Fix indentation to put on one line affected code
-Date:   Thu, 30 Apr 2020 18:02:53 +0300
-Message-Id: <20200430150254.34565-7-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 7/7] stmmac: intel: Place object in the Makefile according to the order
+Date:   Thu, 30 Apr 2020 18:02:54 +0300
+Message-Id: <20200430150254.34565-8-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200430150254.34565-1-andriy.shevchenko@linux.intel.com>
 References: <20200430150254.34565-1-andriy.shevchenko@linux.intel.com>
@@ -46,239 +46,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no competition to get more LOCs into the kernel, and driver can look
-better and have improved readability without those additional line breaks.
-
-While at it, shorten info structures that they are all PCI, at the end it's
-a PCI driver for Intel hardware.
+Follow the order for the platform drivers, i.e. generic object are going first.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 92 +++++++------------
- 1 file changed, 32 insertions(+), 60 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index b0d735e4c13ce2..2ac9dfb3462c69 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -83,13 +83,9 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
- 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
+index 5a6f265bc540fb..f9d024d6b69b58 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Makefile
++++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
+@@ -30,6 +30,6 @@ obj-$(CONFIG_DWMAC_GENERIC)	+= dwmac-generic.o
+ stmmac-platform-objs:= stmmac_platform.o
+ dwmac-altr-socfpga-objs := altr_tse_pcs.o dwmac-socfpga.o
  
- 	/* assert clk_req */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
--
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data |= SERDES_PLL_CLK;
--
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* check for clk_ack assertion */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -103,13 +99,9 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
- 	}
- 
- 	/* assert lane reset */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
--
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data |= SERDES_RST;
--
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* check for assert lane reset reflection */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -123,14 +115,12 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
- 	}
- 
- 	/*  move power state to P0 */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 
- 	data &= ~SERDES_PWR_ST_MASK;
- 	data |= SERDES_PWR_ST_P0 << SERDES_PWR_ST_SHIFT;
- 
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* Check for P0 state */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -159,14 +149,12 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
- 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
- 
- 	/*  move power state to P3 */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 
- 	data &= ~SERDES_PWR_ST_MASK;
- 	data |= SERDES_PWR_ST_P3 << SERDES_PWR_ST_SHIFT;
- 
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* Check for P3 state */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -180,13 +168,9 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
- 	}
- 
- 	/* de-assert clk_req */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
--
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data &= ~SERDES_PLL_CLK;
--
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* check for clk_ack de-assert */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -200,13 +184,9 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
- 	}
- 
- 	/* de-assert lane reset */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
--
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data &= ~SERDES_RST;
--
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* check for de-assert lane reset reflection */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -367,7 +347,7 @@ static int ehl_sgmii_data(struct pci_dev *pdev,
- 	return ehl_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_sgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_sgmii1g_info = {
- 	.setup = ehl_sgmii_data,
- };
- 
-@@ -381,7 +361,7 @@ static int ehl_rgmii_data(struct pci_dev *pdev,
- 	return ehl_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_rgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_rgmii1g_info = {
- 	.setup = ehl_rgmii_data,
- };
- 
-@@ -400,7 +380,7 @@ static int ehl_pse0_rgmii1g_data(struct pci_dev *pdev,
- 	return ehl_pse0_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_pse0_rgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_pse0_rgmii1g_info = {
- 	.setup = ehl_pse0_rgmii1g_data,
- };
- 
-@@ -413,7 +393,7 @@ static int ehl_pse0_sgmii1g_data(struct pci_dev *pdev,
- 	return ehl_pse0_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_pse0_sgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_pse0_sgmii1g_info = {
- 	.setup = ehl_pse0_sgmii1g_data,
- };
- 
-@@ -432,7 +412,7 @@ static int ehl_pse1_rgmii1g_data(struct pci_dev *pdev,
- 	return ehl_pse1_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_pse1_rgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_pse1_rgmii1g_info = {
- 	.setup = ehl_pse1_rgmii1g_data,
- };
- 
-@@ -445,7 +425,7 @@ static int ehl_pse1_sgmii1g_data(struct pci_dev *pdev,
- 	return ehl_pse1_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_pse1_sgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_pse1_sgmii1g_info = {
- 	.setup = ehl_pse1_sgmii1g_data,
- };
- 
-@@ -470,7 +450,7 @@ static int tgl_sgmii_data(struct pci_dev *pdev,
- 	return tgl_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info tgl_sgmii1g_pci_info = {
-+static struct stmmac_pci_info tgl_sgmii1g_info = {
- 	.setup = tgl_sgmii_data,
- };
- 
-@@ -573,7 +553,7 @@ static int quark_default_data(struct pci_dev *pdev,
- 	return 0;
- }
- 
--static const struct stmmac_pci_info quark_pci_info = {
-+static const struct stmmac_pci_info quark_info = {
- 	.setup = quark_default_data,
- };
- 
-@@ -598,8 +578,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 	struct stmmac_resources res;
- 	int ret;
- 
--	intel_priv = devm_kzalloc(&pdev->dev, sizeof(*intel_priv),
--				  GFP_KERNEL);
-+	intel_priv = devm_kzalloc(&pdev->dev, sizeof(*intel_priv), GFP_KERNEL);
- 	if (!intel_priv)
- 		return -ENOMEM;
- 
-@@ -736,26 +715,19 @@ static SIMPLE_DEV_PM_OPS(intel_eth_pm_ops, intel_eth_pci_suspend,
- #define PCI_DEVICE_ID_INTEL_TGL_SGMII1G_ID		0xa0ac
- 
- static const struct pci_device_id intel_eth_pci_id_table[] = {
--	{ PCI_DEVICE_DATA(INTEL, QUARK_ID, &quark_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_RGMII1G_ID, &ehl_rgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII1G_ID, &ehl_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII2G5_ID, &ehl_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_RGMII1G_ID,
--			  &ehl_pse0_rgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII1G_ID,
--			  &ehl_pse0_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII2G5_ID,
--			  &ehl_pse0_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_RGMII1G_ID,
--			  &ehl_pse1_rgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII1G_ID,
--			  &ehl_pse1_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII2G5_ID,
--			  &ehl_pse1_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_pci_info) },
-+	{ PCI_DEVICE_DATA(INTEL, QUARK_ID, &quark_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_RGMII1G_ID, &ehl_rgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII1G_ID, &ehl_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII2G5_ID, &ehl_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_RGMII1G_ID, &ehl_pse0_rgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII1G_ID, &ehl_pse0_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII2G5_ID, &ehl_pse0_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_RGMII1G_ID, &ehl_pse1_rgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII1G_ID, &ehl_pse1_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII2G5_ID, &ehl_pse1_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_info) },
- 	{}
- };
--
- MODULE_DEVICE_TABLE(pci, intel_eth_pci_id_table);
- 
- static struct pci_driver intel_eth_pci_driver = {
+-obj-$(CONFIG_DWMAC_INTEL) += dwmac-intel.o
+-obj-$(CONFIG_STMMAC_PCI) += stmmac-pci.o
++obj-$(CONFIG_STMMAC_PCI)	+= stmmac-pci.o
++obj-$(CONFIG_DWMAC_INTEL)	+= dwmac-intel.o
+ stmmac-pci-objs:= stmmac_pci.o
 -- 
 2.26.2
 
