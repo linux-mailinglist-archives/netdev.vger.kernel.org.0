@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 725B91C03D2
+	by mail.lfdr.de (Postfix) with ESMTP id DE10E1C03D3
 	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:22:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbgD3RWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 13:22:13 -0400
+        id S1727079AbgD3RWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 13:22:18 -0400
 Received: from mail-eopbgr70055.outbound.protection.outlook.com ([40.107.7.55]:6237
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727049AbgD3RWL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 13:22:11 -0400
+        id S1727064AbgD3RWR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 13:22:17 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eg6M9IDn7SIp9/2C5/3UpdX/AqiI3T5BOBJzHaPjtMqGJbpL0PLhfpo+atbpxB4L5/kyq18IvNMAqvmW6qX89HyJ6j0GzqNx5Bg/FQjZjXdW6m1nH6+Rd+VLZaFKbNPz/em/Ma5whgFzdHY2ba7ZKydHHDLnEHkDZffDTDJf2/OffE6aERvcupoJxeRQP4T+5Ikx/QobggFJQ6MKnVCUbblRBkHmZK2YMQDByZqeB8MVV77w/3tSwSPu9B3MNGS9PF1WlZvJkDvWMwHy93CxG0DOwy6qElGvv4MOAX31f8CdvHCjC4BXuWg7UhMx928HNEcQHULhZj6evt2hFZ4f4w==
+ b=SRt+rIqKpSV/MpwJtrFF/ZrCc1DmXnGOCQ5/lCNKqDJ1edokX/UlQlS/nsGAJ3EnCTkcWFPZrpc8eEGEahKaFH8RJLHSQMAfagFrAFJUtI92u1oLh+UNq4fPlWRvmpvq6U1K0TSZARlFHrndG7fPztaQAL5D3/Ro2z14/pfJMSwUYEgJ6dANOibJ7lNkk8FfPInkcgPIdJDAvENDpp40O7E8UiOEneov0R+HEYmFgBqAR/BuVMyJQ97eLT3Pj3a+yrtZtLL5NEkeF0rr7/apNMaJ0SqFicvLPq9GZYQQjWo+6uXd2KkTJu0k0BXvTLkfkhz4myCkORnnYvZ/7gRxhA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yiSyYGMdcfh9NNpXIZc2UrIx01sRnxyJam3NXL896vg=;
- b=EtQq0BlU+NWCVDPexqN2krc8IdYW1njxsdcCrmvGijFjRFQuiF8GnCtOqg+jvW0K7DMBtO5ju4lHnSIarbrPCV0JpkcfdEzpdCtNTP86hw6JHJje+0nmNSV8LuCHsUWWp+oGwkE45kSqaKfasClYuoxuGh1IIpnxfP0nIMSUStqg8ocLcO0Y1HqGvSE/uGyobK6lTLb2KHURAF8YgSf0sfG/NkkgivLarV1sHQTDSmwxdxeUWEmpXbH4E/fH3pWJHq5POHF7JI7i+MUChd5HwEMfgEVH0zUSasUp61O8Sd2Mgs4fq1mQjUb8OztGbIRbSOq361Deke+pbvG0rWrHPQ==
+ bh=FF91mLH2rQAQqijbay2T/TtTqHC+FHjbLPHD13OCcj8=;
+ b=iZWpaGxkRx5aUJHvOtAzPvbOLdxv8hmKPtoMFcGcS9sSLTAptkVnSKky4BpaqDY1VLCCkARplOZPFWwnYhpMe1EGWEjYD1e1NcY0IUgZftOwjuB6ywJY6g+H13CMPin9RT9LbIFY1aAxMjYKgBZEKjhfDQvamaP75jwMjFjCJddZfxq6GvNMgEyU01KrkAYtMi0JdJjRNdoLfkNyTNcfc97xNdWRycbq1OgWDNb6fotO0Ex5HDOG/Tsp2XbG/4N4lqSSU6VZ7HEKle0uikGsomp7A3tLV26lO8HJxlW7VgIuri1zXXfrQ67LqF4SIsIQs1euboTgRJbkEc0zEpw5Xg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yiSyYGMdcfh9NNpXIZc2UrIx01sRnxyJam3NXL896vg=;
- b=ZI5WwP7EpobtDrKekE2pG2qLqueb/LgRPEE4jQ16Q1a5jv9Foa0UQ5iwCYyhJ2qEF8eAfit0O2Bga8gY1sKg3EBW1NfBI8k61OMl0yhgKlw31JAV//+5YSBu13ezhyMTekQVvqUljkMAd61FnTuuIeAQgOBSSLVVJh8l/Crm05c=
+ bh=FF91mLH2rQAQqijbay2T/TtTqHC+FHjbLPHD13OCcj8=;
+ b=fEQrOvBr28I0YvuU1s4r08kx38+3rvSqHAgm7tfBTUzMbVUKFWDbtzuGwSaCXVNQBhKmkUjSiq/tX0p8OpVEZBSgYxb9Zb3aKrpvZ8RHOQdH4ZSLUixwUBK1FA4qKOmp6bFeziTPgBMTzIVnn9Mm7gefnTrqmwHHvApSjFz8X6c=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB3296.eurprd05.prod.outlook.com (2603:10a6:802:1c::29) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20; Thu, 30 Apr
- 2020 17:21:28 +0000
+ 2020 17:21:30 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.028; Thu, 30 Apr 2020
- 17:21:28 +0000
+ 17:21:30 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Maxim Mikityanskiy <maximmi@mellanox.com>,
         Tariq Toukan <tariqt@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 14/15] net/mlx5e: Rename ICOSQ WQE info struct and field
-Date:   Thu, 30 Apr 2020 10:18:34 -0700
-Message-Id: <20200430171835.20812-15-saeedm@mellanox.com>
+Subject: [net-next 15/15] net/mlx5e: Unify reserving space for WQEs
+Date:   Thu, 30 Apr 2020 10:18:35 -0700
+Message-Id: <20200430171835.20812-16-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200430171835.20812-1-saeedm@mellanox.com>
 References: <20200430171835.20812-1-saeedm@mellanox.com>
@@ -56,30 +56,30 @@ X-ClientProxiedBy: BY5PR17CA0030.namprd17.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR17CA0030.namprd17.prod.outlook.com (2603:10b6:a03:1b8::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Thu, 30 Apr 2020 17:21:26 +0000
+Received: from smtp.office365.com (73.15.39.150) by BY5PR17CA0030.namprd17.prod.outlook.com (2603:10b6:a03:1b8::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Thu, 30 Apr 2020 17:21:28 +0000
 X-Mailer: git-send-email 2.25.4
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 8356b027-8615-452a-7e1c-08d7ed2aeae8
+X-MS-Office365-Filtering-Correlation-Id: a9196076-35db-4a3e-ed1c-08d7ed2aec36
 X-MS-TrafficTypeDiagnostic: VI1PR05MB3296:|VI1PR05MB3296:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB3296986D413115A3D94BAA5BBEAA0@VI1PR05MB3296.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB3296943BF8F638928538F133BEAA0@VI1PR05MB3296.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
 X-Forefront-PRVS: 0389EDA07F
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ypsFiq9JB86b70OSL+vCwUvAcFEVxF9BnMo3zT8qVpd7P9H0voPADiTYPftlBnxyCaPrIXuTTXaAUqHmd0Og4A2gW0lmI1+TtLb4k5MxK1TT30wty6HRsuKf5+0d/WpQLQohHnns0QfP1Mwf4L/FEl/RQVp77MUIxILarrUutoS74LhIk0SEwWET+TyfolfYBK5fKGi7c/yTwhVCwYcP8cJBvVqBmUNZVyxYZ95SvRt0jffu3V4WSM9kfRxe5aSZAWfPavZr2wB9VYTOA69x7BTkQr/Kmc1enbX6/wJc4OhxfjxHfCU2BuO0ZX3oWp2/Au7EAikVdkNRRTWUvZ69JHeDYfn5Teg+YQk6pj5U7SzeMQJ7H71GLNrXdKkkdXiHGkCNjLtci7LncBbtaA4640SPzVzAdfmm5YmjSVI1VCsQxpS4ybegxaFkjalTm1W3haTTZ+nhhJUZTnvJRmJ5Eb33uurDhWOXYJ8nk7ry9DVYCLoV/a6u8XU5ff2PCblA
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(39860400002)(366004)(136003)(346002)(52116002)(6666004)(54906003)(2616005)(956004)(316002)(2906002)(478600001)(107886003)(4326008)(66946007)(86362001)(66476007)(66556008)(36756003)(6486002)(16526019)(186003)(26005)(8936002)(6512007)(8676002)(6506007)(1076003)(5660300002)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: JScHGE386fTk/pcbHUlCqJ5gVNqxodW6lC3/kLgjoNKEKHLzy4BNgqJwfgI0uHyer/kirbGCHx629wGljua+k7mHyRvrJC75Xx6rxeJSZOakFNiZknzBrTs3739YwtAnKVMiNmzZN1nMBwNxIYNx5uTZvH+bXcKuqQjbVL/Do9WhKcrHb9s4ijo7uS2Gf48EFkiV5tvdfB3lRJ8XRaTX+CpvU7KyBsyoEaJ+dBcOsZtDNKv1NjUtYyfy2OJymWlg6d+99+hD7nNAZIwCcVjka96lUOMBoJRsuDs96UF2FuRuEAVgtiQ5JkpMqeaAixtyURFxCFDwrs+8Ch5X6gBC4Gjwewg5F1BgCC4DIwBq7iEQQTZFQS4JByvRNZhNRZOFYG0XZvQ4bwk9zw7NrFSpTnrBfgx41K+zAMk+v55DR6GQ0zFrXCXFpR/Apg8WzD47ATOhEpsKnD4qBMsGTKl1yrk4YsYOqM0XNq7AeV4Xe35LGFS43azYDWUQbhBA07cp8wKaFpALS8/iqlzPhUhINMv3srrS5PoBbv8Y77qPCEydf/B+84n/HhZxjUfetm33kgoYnJ+EYRcE/9vVQ3pAU7V/o9VkYmNrh86Kprplacke4asczHoJHfGJGsLGd0z0unvRHLt4Oo0h1c52GsheJSl+7OxNFegQQPsQpII2D/1jO5nGlM+Pho2wkSPjiUwKHTCo2eKvAhh7jk2kYH3oIVVgwe2OJFTJZ23w44v8FCQ0l6pMNYu3s2TsGWY7mwJ/7HZQODNw8el5jxDNHFQiSXEtXbwLjdFMXs5nxaXxhTI=
+X-Microsoft-Antispam-Message-Info: prICEw7Cswqr0z4LO28tOMpz7ZfE7AlfprTXFPAajlA456y9FFti97hh2sNf+vKjPzy28rjdcReD1ascJ2Pa/Ub8ag+jdI4B3iCDjos/qlkvG2Gw0h+Z8wPa5lscFUWoE2vt38TReW2hjzwp4LMpTm3Rd5I7rharcjuKXaNXOLk3uSZqpGR3aSjlZ2+mIHQDDbeVJJF6uZ8YxNJeozFJxfqzhE82Vl7DWbmdaNmbuOOnuc4EuZvNwORZwcAD5ZFTq0Y5aRD5sjh+68sx/itic6TYHnjBRlTnrdl6TrJt+f0d+Zy+I0sPLpVN252PglCVzbmtVw0Yp8m0avL1XES9ZC2AmKWMoM96VCQoLnwQDISIDKUo2kL0SE9CTIaqUdopQsWfBymTDvNV2robl300cV8knNdeTIuSzBotOX239L9tzRmreHXyjuLBt/QBFvIxA3+qIuZF3BN2sZXK6K1bdtZq759+3yyfLBEIS9zxl6n5lF3HgRI9VdCQA/Dzwg7u
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(39860400002)(366004)(136003)(346002)(52116002)(6666004)(54906003)(2616005)(956004)(316002)(2906002)(478600001)(107886003)(4326008)(66946007)(86362001)(66476007)(66556008)(36756003)(6486002)(16526019)(186003)(26005)(8936002)(6512007)(8676002)(6506007)(1076003)(30864003)(5660300002)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 7gQzqVLZfHopUMFsw6eRlGBb9inKMP/WszmOKCE2f3FEScP7A8kxafZz/P4WfDXw0ZRiCE7eBNSIb9OQf+UqRByHgjAldBJs4ivDZ8xVqCp9u0FpklGcJonIc5TWAJRMHeYlE0MCTI7qyZf368MR8+DnEHk27iRDvARN3fwH3RYD/HPARJJMgbQ0dyepTNKZvdhHc5CAYvzYDMOhdGmMIVe16KF6TJ4XfNXS13KcUpUcaRchVCIFNNWlCPaP3a1VwG2kelEacgCNTIdlxe2ctr4saKSnKlPP4pVWy/9oBYCPLImshb+Bekk9A34Ig/zJTMOnPylIyfSHEnzVGtENTgoLZkcuGDPeVrhImP4A3Y36cA4QBimXhQDIbtgCTvk1Pik9S1HcaV/Gzyoa6M3PTD8th8jsq9ENltnITR8CNWZKV41L/mE+C0HV4oRqt6Fu8sKcJQpG3mf/U0YzvDVfNaqfv5jXe5J73xhywcGyYea0FvpAmVXXgBhFrZqkUBTeGp9XjmaUL9P3xu6FOM35MmjeQCdo8WxrRFChCd2YvqnZqvelsd+2571XdjLpQPC+F8qI4j9ZCLULAedaBxl9mLNpflRXGxJRZHPULi1qqOHIwuQ1VbWsrdhA9s+fKViHovFhDzQYF42LIEq85zdKtgYVvb6tNNp9J3fwz3GbBPX5Xrw800hx87GMeTqfw8dFL7KIudm0dHGr31zMIKd2SOo5+YyFE1V/uBcVhICKL5VBjNdJQuSFsWk7NfufX7ABvM+conkFwJSS0U34Tdl9UHZBUY4hqk0vRiQYHLy1z9I=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8356b027-8615-452a-7e1c-08d7ed2aeae8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 17:21:28.3797
+X-MS-Exchange-CrossTenant-Network-Message-Id: a9196076-35db-4a3e-ed1c-08d7ed2aec36
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 17:21:30.7094
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GBX6p3EyHSXK3v3g/r6bKVtq/cJATe702VT3gna3terYerpXGFp9fyNJ3xzpgC1keKXMyyWqywzglVa4SPlOLA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: RcBK1C/6wcDLsyeeA/S160RGpf+Q8vIBvXb99R+aYLrSypZ64Xuz3oUFtsSw/O/juH6XHCUh5woLdgbmi1SA2A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3296
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -88,129 +88,316 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-Structs mlx5e_txqsq and mlx5e_xdpsq contain wqe_info arrays to store
-supplementary information corresponding to WQEs in the queue. Struct
-mlx5e_icosq also has such an array, but it's called differently -
-ico_wqe. This patch renames it to unify with the other SQs.
+In our fast-path design, a WQE (Work Queue Element) must not cross the
+page boundary. To enforce that, for WQEs consisting of more than one BB
+(Basic Block), the driver checks the available contiguous space in the
+WQ in advance, and if it's not enough, it pads it with NOPs.
 
-In addition, rename the struct to emphasize its specific usage.
+This patch modifies the code that calculates the position of next WQE,
+considering the padding, and prepares the WQE. This code is common for
+all SQ types. In this patch it's reorganized in a way that makes the
+usage pattern unified for all SQ types, and makes the implementations
+self-contained and look almost the same, preparing the repeating code to
+further attempts to deduplicate it.
+
+One place is left as is: mlx5e_sq_xmit and mlx5e_fill_sq_frag_edge call
+inside, because it is special in a way that it may also copy WQE's cseg
+and eseg when reserving space. This will be eliminated in one of the
+following patches, and this place will be converted to the new approach,
+too.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h      |  4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 10 +++++-----
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   | 12 ++++++------
- drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c |  4 ++--
- 4 files changed, 15 insertions(+), 15 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/txrx.h | 56 +++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 31 ++++++++--
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.h  | 17 ------
+ .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 16 +-----
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 26 +--------
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 11 +---
+ 6 files changed, 88 insertions(+), 69 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index e8508c74eaa8..0864b76ca2c0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -370,7 +370,7 @@ enum {
- 	MLX5E_SQ_STATE_PENDING_XSK_TX,
- };
- 
--struct mlx5e_sq_wqe_info {
-+struct mlx5e_icosq_wqe_info {
- 	u8  opcode;
- 	u8 num_wqebbs;
- 
-@@ -552,7 +552,7 @@ struct mlx5e_icosq {
- 
- 	/* write@xmit, read@completion */
- 	struct {
--		struct mlx5e_sq_wqe_info *ico_wqe;
-+		struct mlx5e_icosq_wqe_info *wqe_info;
- 	} db;
- 
- 	/* read only */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index bf3fdbea1074..048a4f8601a8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -1027,17 +1027,17 @@ static void mlx5e_free_xdpsq(struct mlx5e_xdpsq *sq)
- 
- static void mlx5e_free_icosq_db(struct mlx5e_icosq *sq)
- {
--	kvfree(sq->db.ico_wqe);
-+	kvfree(sq->db.wqe_info);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+index 8682d9148ab9..89fe65593c16 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+@@ -81,6 +81,62 @@ mlx5e_post_nop_fence(struct mlx5_wq_cyc *wq, u32 sqn, u16 *pc)
+ 	return wqe;
  }
  
- static int mlx5e_alloc_icosq_db(struct mlx5e_icosq *sq, int numa)
++static inline u16 mlx5e_txqsq_get_next_pi(struct mlx5e_txqsq *sq, u16 size)
++{
++	struct mlx5_wq_cyc *wq = &sq->wq;
++	u16 pi, contig_wqebbs;
++
++	pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
++	contig_wqebbs = mlx5_wq_cyc_get_contig_wqebbs(wq, pi);
++	if (unlikely(contig_wqebbs < size)) {
++		struct mlx5e_tx_wqe_info *wi, *edge_wi;
++
++		wi = &sq->db.wqe_info[pi];
++		edge_wi = wi + contig_wqebbs;
++
++		/* Fill SQ frag edge with NOPs to avoid WQE wrapping two pages. */
++		for (; wi < edge_wi; wi++) {
++			*wi = (struct mlx5e_tx_wqe_info) {
++				.num_wqebbs = 1,
++			};
++			mlx5e_post_nop(wq, sq->sqn, &sq->pc);
++		}
++		sq->stats->nop += contig_wqebbs;
++
++		pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
++	}
++
++	return pi;
++}
++
++static inline u16 mlx5e_icosq_get_next_pi(struct mlx5e_icosq *sq, u16 size)
++{
++	struct mlx5_wq_cyc *wq = &sq->wq;
++	u16 pi, contig_wqebbs;
++
++	pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
++	contig_wqebbs = mlx5_wq_cyc_get_contig_wqebbs(wq, pi);
++	if (unlikely(contig_wqebbs < size)) {
++		struct mlx5e_icosq_wqe_info *wi, *edge_wi;
++
++		wi = &sq->db.wqe_info[pi];
++		edge_wi = wi + contig_wqebbs;
++
++		/* Fill SQ frag edge with NOPs to avoid WQE wrapping two pages. */
++		for (; wi < edge_wi; wi++) {
++			*wi = (struct mlx5e_icosq_wqe_info) {
++				.opcode = MLX5_OPCODE_NOP,
++				.num_wqebbs = 1,
++			};
++			mlx5e_post_nop(wq, sq->sqn, &sq->pc);
++		}
++
++		pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
++	}
++
++	return pi;
++}
++
+ static inline void
+ mlx5e_fill_sq_frag_edge(struct mlx5e_txqsq *sq, struct mlx5_wq_cyc *wq,
+ 			u16 pi, u16 nnops)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index cf089520c031..c4a7fb4ecd14 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -178,21 +178,42 @@ bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
+ 	}
+ }
+ 
+-static void mlx5e_xdp_mpwqe_session_start(struct mlx5e_xdpsq *sq)
++static u16 mlx5e_xdpsq_get_next_pi(struct mlx5e_xdpsq *sq, u16 size)
  {
- 	int wq_sz = mlx5_wq_cyc_get_size(&sq->wq);
-+	size_t size;
+-	struct mlx5e_xdp_mpwqe *session = &sq->mpwqe;
+-	struct mlx5e_xdpsq_stats *stats = sq->stats;
+ 	struct mlx5_wq_cyc *wq = &sq->wq;
+ 	u16 pi, contig_wqebbs;
  
--	sq->db.ico_wqe = kvzalloc_node(array_size(wq_sz,
--						  sizeof(*sq->db.ico_wqe)),
--				       GFP_KERNEL, numa);
--	if (!sq->db.ico_wqe)
-+	size = array_size(wq_sz, sizeof(*sq->db.wqe_info));
-+	sq->db.wqe_info = kvzalloc_node(size, GFP_KERNEL, numa);
-+	if (!sq->db.wqe_info)
- 		return -ENOMEM;
+ 	pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+ 	contig_wqebbs = mlx5_wq_cyc_get_contig_wqebbs(wq, pi);
++	if (unlikely(contig_wqebbs < size)) {
++		struct mlx5e_xdp_wqe_info *wi, *edge_wi;
++
++		wi = &sq->db.wqe_info[pi];
++		edge_wi = wi + contig_wqebbs;
++
++		/* Fill SQ frag edge with NOPs to avoid WQE wrapping two pages. */
++		for (; wi < edge_wi; wi++) {
++			*wi = (struct mlx5e_xdp_wqe_info) {
++				.num_wqebbs = 1,
++				.num_pkts = 0,
++			};
++			mlx5e_post_nop(wq, sq->sqn, &sq->pc);
++		}
++		sq->stats->nops += contig_wqebbs;
  
- 	return 0;
+-	if (unlikely(contig_wqebbs < MLX5_SEND_WQE_MAX_WQEBBS)) {
+-		mlx5e_fill_xdpsq_frag_edge(sq, wq, pi, contig_wqebbs);
+ 		pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+ 	}
+ 
++	return pi;
++}
++
++static void mlx5e_xdp_mpwqe_session_start(struct mlx5e_xdpsq *sq)
++{
++	struct mlx5e_xdp_mpwqe *session = &sq->mpwqe;
++	struct mlx5e_xdpsq_stats *stats = sq->stats;
++	u16 pi;
++
++	pi = mlx5e_xdpsq_get_next_pi(sq, MLX5_SEND_WQE_MAX_WQEBBS);
+ 	session->wqe = MLX5E_TX_FETCH_WQE(sq, pi);
+ 
+ 	prefetchw(session->wqe->data);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+index 4fd0ff47bdc3..ed6f045febeb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+@@ -137,23 +137,6 @@ mlx5e_xdp_no_room_for_inline_pkt(struct mlx5e_xdp_mpwqe *session)
+ 	       session->ds_count + MLX5E_XDP_INLINE_WQE_MAX_DS_CNT > MLX5E_XDP_MPW_MAX_NUM_DS;
+ }
+ 
+-static inline void
+-mlx5e_fill_xdpsq_frag_edge(struct mlx5e_xdpsq *sq, struct mlx5_wq_cyc *wq,
+-			   u16 pi, u16 nnops)
+-{
+-	struct mlx5e_xdp_wqe_info *edge_wi, *wi = &sq->db.wqe_info[pi];
+-
+-	edge_wi = wi + nnops;
+-	/* fill sq frag edge with nops to avoid wqe wrapping two pages */
+-	for (; wi < edge_wi; wi++) {
+-		wi->num_wqebbs = 1;
+-		wi->num_pkts   = 0;
+-		mlx5e_post_nop(wq, sq->sqn, &sq->pc);
+-	}
+-
+-	sq->stats->nops += nnops;
+-}
+-
+ static inline void
+ mlx5e_xdp_mpwqe_add_dseg(struct mlx5e_xdpsq *sq,
+ 			 struct mlx5e_xdp_xmit_data *xdptxd,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+index 717d36b45aa9..ba973937f0b5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+@@ -165,14 +165,8 @@ mlx5e_ktls_tx_post_param_wqes(struct mlx5e_txqsq *sq,
+ 			      bool skip_static_post, bool fence_first_post)
+ {
+ 	bool progress_fence = skip_static_post || !fence_first_post;
+-	struct mlx5_wq_cyc *wq = &sq->wq;
+-	u16 contig_wqebbs_room, pi;
+ 
+-	pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+-	contig_wqebbs_room = mlx5_wq_cyc_get_contig_wqebbs(wq, pi);
+-	if (unlikely(contig_wqebbs_room <
+-		     MLX5E_KTLS_STATIC_WQEBBS + MLX5E_KTLS_PROGRESS_WQEBBS))
+-		mlx5e_fill_sq_frag_edge(sq, wq, pi, contig_wqebbs_room);
++	mlx5e_txqsq_get_next_pi(sq, MLX5E_KTLS_STATIC_WQEBBS + MLX5E_KTLS_PROGRESS_WQEBBS);
+ 
+ 	if (!skip_static_post)
+ 		post_static_params(sq, priv_tx, fence_first_post);
+@@ -346,10 +340,8 @@ mlx5e_ktls_tx_handle_ooo(struct mlx5e_ktls_offload_context_tx *priv_tx,
+ 			 u32 seq)
+ {
+ 	struct mlx5e_sq_stats *stats = sq->stats;
+-	struct mlx5_wq_cyc *wq = &sq->wq;
+ 	enum mlx5e_ktls_sync_retval ret;
+ 	struct tx_sync_info info = {};
+-	u16 contig_wqebbs_room, pi;
+ 	u8 num_wqebbs;
+ 	int i = 0;
+ 
+@@ -380,11 +372,7 @@ mlx5e_ktls_tx_handle_ooo(struct mlx5e_ktls_offload_context_tx *priv_tx,
+ 	}
+ 
+ 	num_wqebbs = mlx5e_ktls_dumps_num_wqebbs(sq, info.nr_frags, info.sync_len);
+-	pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+-	contig_wqebbs_room = mlx5_wq_cyc_get_contig_wqebbs(wq, pi);
+-
+-	if (unlikely(contig_wqebbs_room < num_wqebbs))
+-		mlx5e_fill_sq_frag_edge(sq, wq, pi, contig_wqebbs_room);
++	mlx5e_txqsq_get_next_pi(sq, num_wqebbs);
+ 
+ 	for (; i < info.nr_frags; i++) {
+ 		unsigned int orig_fsz, frag_offset = 0, n = 0;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 4db1c92f0019..9f33a0e7dd9a 100644
+index 9f33a0e7dd9a..d9a5a669b84d 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -472,7 +472,7 @@ static inline void mlx5e_fill_icosq_frag_edge(struct mlx5e_icosq *sq,
- 					      struct mlx5_wq_cyc *wq,
- 					      u16 pi, u16 nnops)
- {
--	struct mlx5e_sq_wqe_info *edge_wi, *wi = &sq->db.ico_wqe[pi];
-+	struct mlx5e_icosq_wqe_info *edge_wi, *wi = &sq->db.wqe_info[pi];
- 
- 	edge_wi = wi + nnops;
- 
-@@ -527,9 +527,9 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 			    MLX5_OPCODE_UMR);
- 	umr_wqe->uctrl.xlt_offset = cpu_to_be16(xlt_offset);
- 
--	sq->db.ico_wqe[pi].opcode = MLX5_OPCODE_UMR;
--	sq->db.ico_wqe[pi].num_wqebbs = MLX5E_UMR_WQEBBS;
--	sq->db.ico_wqe[pi].umr.rq = rq;
-+	sq->db.wqe_info[pi].opcode = MLX5_OPCODE_UMR;
-+	sq->db.wqe_info[pi].num_wqebbs = MLX5E_UMR_WQEBBS;
-+	sq->db.wqe_info[pi].umr.rq = rq;
- 	sq->pc += MLX5E_UMR_WQEBBS;
- 
- 	sq->doorbell_cseg = &umr_wqe->ctrl;
-@@ -618,13 +618,13 @@ int mlx5e_poll_ico_cq(struct mlx5e_cq *cq)
- 		wqe_counter = be16_to_cpu(cqe->wqe_counter);
- 
- 		do {
--			struct mlx5e_sq_wqe_info *wi;
-+			struct mlx5e_icosq_wqe_info *wi;
- 			u16 ci;
- 
- 			last_wqe = (sqcc == wqe_counter);
- 
- 			ci = mlx5_wq_cyc_ctr2ix(&sq->wq, sqcc);
--			wi = &sq->db.ico_wqe[ci];
-+			wi = &sq->db.wqe_info[ci];
- 			sqcc += wi->num_wqebbs;
- 
- 			if (last_wqe && unlikely(get_cqe_opcode(cqe) != MLX5_CQE_REQ)) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index acb20215a33b..869fd58a6775 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -78,8 +78,8 @@ void mlx5e_trigger_irq(struct mlx5e_icosq *sq)
- 	struct mlx5e_tx_wqe *nopwqe;
- 	u16 pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
- 
--	sq->db.ico_wqe[pi].opcode = MLX5_OPCODE_NOP;
--	sq->db.ico_wqe[pi].num_wqebbs = 1;
-+	sq->db.wqe_info[pi].opcode = MLX5_OPCODE_NOP;
-+	sq->db.wqe_info[pi].num_wqebbs = 1;
- 	nopwqe = mlx5e_post_nop(wq, sq->sqn, &sq->pc);
- 	mlx5e_notify_hw(wq, sq->pc, sq->uar_map, &nopwqe->ctrl);
+@@ -468,22 +468,6 @@ static void mlx5e_post_rx_mpwqe(struct mlx5e_rq *rq, u8 n)
+ 	mlx5_wq_ll_update_db_record(wq);
  }
+ 
+-static inline void mlx5e_fill_icosq_frag_edge(struct mlx5e_icosq *sq,
+-					      struct mlx5_wq_cyc *wq,
+-					      u16 pi, u16 nnops)
+-{
+-	struct mlx5e_icosq_wqe_info *edge_wi, *wi = &sq->db.wqe_info[pi];
+-
+-	edge_wi = wi + nnops;
+-
+-	/* fill sq frag edge with nops to avoid wqe wrapping two pages */
+-	for (; wi < edge_wi; wi++) {
+-		wi->opcode = MLX5_OPCODE_NOP;
+-		wi->num_wqebbs = 1;
+-		mlx5e_post_nop(wq, sq->sqn, &sq->pc);
+-	}
+-}
+-
+ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ {
+ 	struct mlx5e_mpw_info *wi = &rq->mpwqe.info[ix];
+@@ -492,7 +476,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 	struct mlx5_wq_cyc *wq = &sq->wq;
+ 	struct mlx5e_umr_wqe *umr_wqe;
+ 	u16 xlt_offset = ix << (MLX5E_LOG_ALIGNED_MPWQE_PPW - 1);
+-	u16 pi, contig_wqebbs_room;
++	u16 pi;
+ 	int err;
+ 	int i;
+ 
+@@ -502,13 +486,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 		goto err;
+ 	}
+ 
+-	pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+-	contig_wqebbs_room = mlx5_wq_cyc_get_contig_wqebbs(wq, pi);
+-	if (unlikely(contig_wqebbs_room < MLX5E_UMR_WQEBBS)) {
+-		mlx5e_fill_icosq_frag_edge(sq, wq, pi, contig_wqebbs_room);
+-		pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+-	}
+-
++	pi = mlx5e_icosq_get_next_pi(sq, MLX5E_UMR_WQEBBS);
+ 	umr_wqe = mlx5_wq_cyc_get_wqe(wq, pi);
+ 	memcpy(umr_wqe, &rq->mpwqe.umr_wqe, offsetof(struct mlx5e_umr_wqe, inline_mtts));
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index ec1429596cb7..583e1b201b75 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -572,7 +572,6 @@ netdev_tx_t mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 			  struct mlx5_av *av, u32 dqpn, u32 dqkey,
+ 			  bool xmit_more)
+ {
+-	struct mlx5_wq_cyc *wq = &sq->wq;
+ 	struct mlx5i_tx_wqe *wqe;
+ 
+ 	struct mlx5_wqe_datagram_seg *datagram;
+@@ -582,9 +581,9 @@ netdev_tx_t mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 	struct mlx5e_tx_wqe_info *wi;
+ 
+ 	struct mlx5e_sq_stats *stats = sq->stats;
+-	u16 headlen, ihs, pi, contig_wqebbs_room;
+ 	u16 ds_cnt, ds_cnt_inl = 0;
+ 	u8 num_wqebbs, opcode;
++	u16 headlen, ihs, pi;
+ 	u32 num_bytes;
+ 	int num_dma;
+ 	__be16 mss;
+@@ -620,13 +619,7 @@ netdev_tx_t mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+ 	}
+ 
+ 	num_wqebbs = DIV_ROUND_UP(ds_cnt, MLX5_SEND_WQEBB_NUM_DS);
+-	pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+-	contig_wqebbs_room = mlx5_wq_cyc_get_contig_wqebbs(wq, pi);
+-	if (unlikely(contig_wqebbs_room < num_wqebbs)) {
+-		mlx5e_fill_sq_frag_edge(sq, wq, pi, contig_wqebbs_room);
+-		pi = mlx5_wq_cyc_ctr2ix(&sq->wq, sq->pc);
+-	}
+-
++	pi = mlx5e_txqsq_get_next_pi(sq, num_wqebbs);
+ 	wqe = MLX5I_SQ_FETCH_WQE(sq, pi);
+ 
+ 	/* fill wqe */
 -- 
 2.25.4
 
