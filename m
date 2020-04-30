@@ -2,161 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC7D11C03A6
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:12:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A67D1C03A7
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:12:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726421AbgD3RM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 13:12:26 -0400
-Received: from mail-eopbgr10075.outbound.protection.outlook.com ([40.107.1.75]:65155
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725844AbgD3RMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 13:12:25 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eZaQ3D1ccpIwm/mNTK1KuQnm/H6ovaqD+6Xbn5+4OAYCFJd/XRkV1H4bEWDyn591vISnWPjbFufeA8gjoyiSRlEtt/TYisFAR/7eoDjzxuF7lP3iADw6YLofGIauQLqU3LgZUDeIqVXmsCuNJacqMS862ety9p8DSBFzEYevXG3oGjDlvIHhrfwqLltUkSyUZiBBqs8coL4RUqMwZqgF/aCNSREahi8gnP8w6ReZ26K1uUmr48K9sQvUhcyX1395Mqd5ruviPSrV1sBjsfsaPhNWJJFyIrxD6Z1JsK/KHX0fsGKNVIPO65/wan3nBxeJzmLxRKcXixneEZG3RDU12A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n8JBGErz1D0kF8wqkmihDSJAZoYYVBQ/SdjjbSaD5Fs=;
- b=IZaKjF2iu1cY4/rXHySAdgjea1XZXzTyjebmdx9/YgfdK0/T1pW6yM9ETNlqEg1f2/SO6jWIneuyBHZvcsN5S0ct8l9kKlatQ/dOOsXgTUL5Z1YOodHBVKWYeFVyD+cmXTqDv0CBJuSNtQQjJLBbkUT3Gsh+1nZkbV/EG09uyEoAMNnOfVDal5XwEaffgf0TdHKicWbJYqzDn8Chtz3BokyjoTOu7ijTxWm11fuPhd5rN6SdzAFdudosKQMOXvARp/QNRbIbmo2itIqvTIEz3UxJk3U9uhNhTxQxpfEKBXobLie+0F8MaVALWyU2Y8vm9RP1EGnAFgDSi5pXpvUKMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n8JBGErz1D0kF8wqkmihDSJAZoYYVBQ/SdjjbSaD5Fs=;
- b=pmGfeM+wLhauoRnHgA5uM6L8rH4GGOTl/vk7E6emGA8vQW/33zVfVIn4oPmSAbiVp+lJFgv2eq0yLFZYq5CswEBhvHOFLHEaVDODmDzECSx4azcNJutik56ioMSF85rrK+Zv0uuxW9NZencVVrWFY+JS+3X1Lv90kHuBsGElPCA=
-Authentication-Results: secunet.com; dkim=none (message not signed)
- header.d=none;secunet.com; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
- (2603:10a6:800:2a::20) by VI1PR0501MB2655.eurprd05.prod.outlook.com
- (2603:10a6:800:a4::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Thu, 30 Apr
- 2020 17:12:17 +0000
-Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
- ([fe80::71d3:d6cf:eb7e:6a0e]) by VI1PR0501MB2205.eurprd05.prod.outlook.com
- ([fe80::71d3:d6cf:eb7e:6a0e%3]) with mapi id 15.20.2958.020; Thu, 30 Apr 2020
- 17:12:17 +0000
-Subject: Re: [PATCH net-next v2 28/33] mlx5: rx queue setup time determine
- frame_sz for XDP
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, sameehj@amazon.com
-Cc:     Saeed Mahameed <saeedm@mellanox.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, zorik@amazon.com, akiyano@amazon.com,
-        gtzalik@amazon.com,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        steffen.klassert@secunet.com
-References: <158824557985.2172139.4173570969543904434.stgit@firesoul>
- <158824576377.2172139.12065840702900641458.stgit@firesoul>
- <a5be329e-39e3-fdfc-500d-383953546d40@mellanox.com>
-From:   Tariq Toukan <tariqt@mellanox.com>
-Message-ID: <7e391f37-0db7-c034-cb97-2e8bf60fd33f@mellanox.com>
-Date:   Thu, 30 Apr 2020 20:12:11 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+        id S1726449AbgD3RMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 13:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725844AbgD3RMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 13:12:40 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E348C035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:12:39 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id w6so2095027ilg.1
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:12:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yuPRD/LyHJsGk1Xp4qc1ApJFqyKBP30De09F6ApYN+s=;
+        b=iUXH3vT9mN1OnpBOi7UQ8uZ/JSjFWhettuBetCaAfC2s+oHCQYU6agUvFnNoksrIxn
+         UuJXmDPdeKDCcP1OblEIMXaHV3vpmUVVpp42tP7pzfWR/8QbmI3y4I8+EobjlynAeY6e
+         xIYjNtCKY7uXuurw1JDzvFwOuJNb7+aElu6dybI2lzqhp3cp9NG4SurmsdcG/5biDNzd
+         mFxGKtpEhDVUnPW0HvII6qQdn/XueryJY4LG0JD+rsZKq7Efa527g761iRJ8dWn4+M7l
+         aZ06aezXYBn68q7ZI9KtJjSK58l6rix5oqX7OeNzFfWIOXo7AzPVl8VAYMu7+NCEo11V
+         BmQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yuPRD/LyHJsGk1Xp4qc1ApJFqyKBP30De09F6ApYN+s=;
+        b=PecVzSaSFgD8sM6TiVSX+KS3D7dg8Xgb/bPvvPN93EyK0fKt8xWjmFf55rtD01OS4w
+         5/Y8XTMDujsuRXftirIIzT+lQA1779CA3wqklrqHdSr+K5vOWFaJA6YsA7m4xTrJc57n
+         v9kp/MSPpNc4/AlQXIvhu3dhb41LA6TzBbo0vwr6WNB6UvNuAa2t2NKxUpivHH7vY1Zz
+         iRVEziszoO+6CqkKKfIv7RdloHOPn9qRAek7gHdVNK8wgmccTvY1+LSWzJy7VirCTf9a
+         KtEmvmkqggaapixOVXLjcv3/zOFa4grtDeUtn6uzbIOaNzESkThOB7PbAS7YaQV3sCbD
+         pCrA==
+X-Gm-Message-State: AGi0PuZl2b472q62rS/6agxbD8w6hMAVjTjqsol+Sl+WaNJthbBN8R6t
+        S+OfRCxVuo9jfH3UZ+JbSS8=
+X-Google-Smtp-Source: APiQypLmpzC8vqdOfAZPVahCJIxYaVqAvlRNyaRQSjQNaMHmh3s6jOpRuxg5ArtfsdXe2WAj/akMAQ==
+X-Received: by 2002:a92:390f:: with SMTP id g15mr3117516ila.72.1588266757672;
+        Thu, 30 Apr 2020 10:12:37 -0700 (PDT)
+Received: from [10.67.49.116] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id j2sm49909ioo.8.2020.04.30.10.12.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Apr 2020 10:12:36 -0700 (PDT)
+Subject: Re: Net: [DSA]: dsa-loop kernel panic
+To:     Allen <allen.pais@oracle.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <9d7ac811-f3c9-ff13-5b81-259daa8c424f@oracle.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz80nRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+wmYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSDOwU0EVxvH8AEQAOqv6agYuT4x3DgFIJNv9i0e
+ S443rCudGwmg+CbjXGA4RUe1bNdPHYgbbIaN8PFkXfb4jqg64SyU66FXJJJO+DmPK/t7dRNA
+ 3eMB1h0GbAHlLzsAzD0DKk1ARbjIusnc02aRQNsAUfceqH5fAMfs2hgXBa0ZUJ4bLly5zNbr
+ r0t/fqZsyI2rGQT9h1D5OYn4oF3KXpSpo+orJD93PEDeseho1EpmMfsVH7PxjVUlNVzmZ+tc
+ IDw24CDSXf0xxnaojoicQi7kzKpUrJodfhNXUnX2JAm/d0f9GR7zClpQMezJ2hYAX7BvBajb
+ Wbtzwi34s8lWGI121VjtQNt64mSqsK0iQAE6OYk0uuQbmMaxbBTT63+04rTPBO+gRAWZNDmQ
+ b2cTLjrOmdaiPGClSlKx1RhatzW7j1gnUbpfUl91Xzrp6/Rr9BgAZydBE/iu57KWsdMaqu84
+ JzO9UBGomh9eyBWBkrBt+Fe1qN78kM7JO6i3/QI56NA4SflV+N4PPgI8TjDVaxgrfUTV0gVa
+ cr9gDE5VgnSeSiOleChM1jOByZu0JTShOkT6AcSVW0kCz3fUrd4e5sS3J3uJezSvXjYDZ53k
+ +0GS/Hy//7PSvDbNVretLkDWL24Sgxu/v8i3JiYIxe+F5Br8QpkwNa1tm7FK4jOd95xvYADl
+ BUI1EZMCPI7zABEBAAHCwagEGBECAAkFAlcbx/ACGwICKQkQYVeZFbVjdg7BXSAEGQECAAYF
+ Alcbx/AACgkQh9CWnEQHBwSJBw//Z5n6IO19mVzMy/ZLU/vu8flv0Aa0kwk5qvDyvuvfiDTd
+ WQzq2PLs+obX0y1ffntluhvP+8yLzg7h5O6/skOfOV26ZYD9FeV3PIgR3QYF26p2Ocwa3B/k
+ P6ENkk2pRL2hh6jaA1Bsi0P34iqC2UzzLq+exctXPa07ioknTIJ09BT31lQ36Udg7NIKalnj
+ 5UbkRjqApZ+Rp0RAP9jFtq1n/gjvZGyEfuuo/G+EVCaiCt3Vp/cWxDYf2qsX6JxkwmUNswuL
+ C3duQ0AOMNYrT6Pn+Vf0kMboZ5UJEzgnSe2/5m8v6TUc9ZbC5I517niyC4+4DY8E2m2V2LS9
+ es9uKpA0yNcd4PfEf8bp29/30MEfBWOf80b1yaubrP5y7yLzplcGRZMF3PgBfi0iGo6kM/V2
+ 13iD/wQ45QTV0WTXaHVbklOdRDXDHIpT69hFJ6hAKnnM7AhqZ70Qi31UHkma9i/TeLLzYYXz
+ zhLHGIYaR04dFT8sSKTwTSqvm8rmDzMpN54/NeDSoSJitDuIE8givW/oGQFb0HGAF70qLgp0
+ 2XiUazRyRU4E4LuhNHGsUxoHOc80B3l+u3jM6xqJht2ZyMZndbAG4LyVA2g9hq2JbpX8BlsF
+ skzW1kbzIoIVXT5EhelxYEGqLFsZFdDhCy8tjePOWK069lKuuFSssaZ3C4edHtkZ8gCfWWtA
+ 8dMsqeOIg9Trx7ZBCDOZGNAAnjYQmSb2eYOAti3PX3Ex7vI8ZhJCzsNNBEjPuBIQEAC/6NPW
+ 6EfQ91ZNU7e/oKWK91kOoYGFTjfdOatp3RKANidHUMSTUcN7J2mxww80AQHKjr3Yu2InXwVX
+ SotMMR4UrkQX7jqabqXV5G+88bj0Lkr3gi6qmVkUPgnNkIBe0gaoM523ujYKLreal2OQ3GoJ
+ PS6hTRoSUM1BhwLCLIWqdX9AdT6FMlDXhCJ1ffA/F3f3nTN5oTvZ0aVF0SvQb7eIhGVFxrlb
+ WS0+dpyulr9hGdU4kzoqmZX9T/r8WCwcfXipmmz3Zt8o2pYWPMq9Utby9IEgPwultaP06MHY
+ nhda1jfzGB5ZKco/XEaXNvNYADtAD91dRtNGMwRHWMotIGiWwhEJ6vFc9bw1xcR88oYBs+7p
+ gbFSpmMGYAPA66wdDKGj9+cLhkd0SXGht9AJyaRA5AWB85yNmqcXXLkzzh2chIpSEawRsw8B
+ rQIZXc5QaAcBN2dzGN9UzqQArtWaTTjMrGesYhN+aVpMHNCmJuISQORhX5lkjeg54oplt6Zn
+ QyIsOCH3MfG95ha0TgWwyFtdxOdY/UY2zv5wGivZ3WeS0TtQf/BcGre2y85rAohFziWOzTaS
+ BKZKDaBFHwnGcJi61Pnjkz82hena8OmsnsBIucsz4N0wE+hVd6AbDYN8ZcFNIDyt7+oGD1+c
+ PfqLz2df6qjXzq27BBUboklbGUObNwADBQ//V45Z51Q4fRl/6/+oY5q+FPbRLDPlUF2lV6mb
+ hymkpqIzi1Aj/2FUKOyImGjbLAkuBQj3uMqy+BSSXyQLG3sg8pDDe8AJwXDpG2fQTyTzQm6l
+ OnaMCzosvALk2EOPJryMkOCI52+hk67cSFA0HjgTbkAv4Mssd52y/5VZR28a+LW+mJIZDurI
+ Y14UIe50G99xYxjuD1lNdTa/Yv6qFfEAqNdjEBKNuOEUQOlTLndOsvxOOPa1mRUk8Bqm9BUt
+ LHk3GDb8bfDwdos1/h2QPEi+eI+O/bm8YX7qE7uZ13bRWBY+S4+cd+Cyj8ezKYAJo9B+0g4a
+ RVhdhc3AtW44lvZo1h2iml9twMLfewKkGV3oG35CcF9mOd7n6vDad3teeNpYd/5qYhkopQrG
+ k2oRBqxyvpSLrJepsyaIpfrt5NNaH7yTCtGXcxlGf2jzGdei6H4xQPjDcVq2Ra5GJohnb/ix
+ uOc0pWciL80ohtpSspLlWoPiIowiKJu/D/Y0bQdatUOZcGadkywCZc/dg5hcAYNYchc8AwA4
+ 2dp6w8SlIsm1yIGafWlNnfvqbRBglSTnxFuKqVggiz2zk+1wa/oP+B96lm7N4/3Aw6uy7lWC
+ HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
+ TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <dd42f431-d555-fcd2-b25e-50aeecbb513b@gmail.com>
+Date:   Thu, 30 Apr 2020 10:12:34 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
-In-Reply-To: <a5be329e-39e3-fdfc-500d-383953546d40@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+MIME-Version: 1.0
+In-Reply-To: <9d7ac811-f3c9-ff13-5b81-259daa8c424f@oracle.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM0PR10CA0036.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:150::16) To VI1PR0501MB2205.eurprd05.prod.outlook.com
- (2603:10a6:800:2a::20)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.110] (77.125.37.56) by AM0PR10CA0036.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Thu, 30 Apr 2020 17:12:14 +0000
-X-Originating-IP: [77.125.37.56]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: b7f48ac4-2823-4b06-b380-08d7ed29a2a8
-X-MS-TrafficTypeDiagnostic: VI1PR0501MB2655:|VI1PR0501MB2655:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0501MB265581162139773BBD76B355AEAA0@VI1PR0501MB2655.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 0389EDA07F
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0501MB2205.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(346002)(376002)(136003)(39860400002)(396003)(316002)(186003)(478600001)(7416002)(2616005)(956004)(31686004)(6666004)(2906002)(5660300002)(16576012)(54906003)(26005)(31696002)(4326008)(8936002)(86362001)(8676002)(6486002)(16526019)(53546011)(52116002)(36756003)(66476007)(66556008)(66946007);DIR:OUT;SFP:1101;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZsRnLESng1hFhwUGXlX1qF5Qg0Oe83OWuvu+gho1SKPiuKaZ1wdA4QHb53C0CCuWbpgGsVfvKdCMToEbSNm4JDQerC4XBY2PLmiBhQXLGQcVKxn6SYB1PfNzgy1R5VAHxBSljDXXP18e9Gvun7NJXwz3KZ7Js5m0aEZuCeR1bEfWWbF7nuRmWeShY3x6RQndoL2YxFH0c2ByxuADER4ePqGwtCfRapr/GsycZ356iamKxSY6CzfQape6KWLC/FcsXl9d15ze20ZNMIJg8Zdi98CXVvizE05s+n5+Bzq860ILF59BzbUTkYJxRdNYUkyR3Ajxvh03Wqc0JRaqY0mFose+h/t7I/G47fojXOcEd91UzmMKo+h6ZoACWbG6lexCmiMyaZ5XKIAmAqj420QMfTTIB1ZTlZRlhviJWXXRyJyl8mNuZ2iZg3q3Dv3DRm5C
-X-MS-Exchange-AntiSpam-MessageData: +FGZM71LtnjgTtHn2uFAQpqrvWr2uI8FmCj0W1XkyWoyJj7dgQmdTBI4ywiGTtQ8YqIzXChTH1foa3Ito+57LAJt57HBDOjRleIHtdC+ycOwdPApGPL+54ao96GtehZVBDMpGgVRNIvsU6WAvuRgUReOfJgGRFEI1d44jdOQBi8ptmXTfzLBvJy32KKYHKLwt2/EbgQ4tXOSzIqR1VAE475MvCpbWPBerwBtCnHjVY2VETRTesktddRRREhVCloUNCynbgwRMNH4aa0nfEw0RbDvojfBZRBYBp6YMEWEl2m5aYfMSbJe6YeVoTdmYZf5UNdJIiXuVQakrsA+2JRyq17YtPw/zlXp9vIq/NFqafovNbX9IdIBULBzbMbR38GxiM7p42Tblvq8XZEsjNBo8/NUW8h7xWA6exGe0t93Bjruy0YvtYMGGCpZa/qBOc2lml7u5Ujwo5hUzf0ghhB83iWWaVFNrnTDH1PQEHKCXTAPnNx2W5WBkZipbQ+v/wiE73gm63FlsXI0PChKFdMIqTO3GT3NG0ALT6XQlcbp5YURnsKgYTe9+P2w3CAnpyHxNc11SKpUUqpJ4FSBK6vhQPnEsuefyR+/KWMc9B5xT+p91VnSB/w/ERr+e6l9UwWjUKZXPlW9bg8pnGsuAL2BRnE9b91Ih/Ybc2G2HSYIGmiViLcjbMlzSrwY9VZRWsuiRHvrQTRetK3rXaY6h8Ohh+yy1WYCUoAZ4HqUHzh5azwo36uX/bxfowCQJZ1mhFiCQwvEx01Fki5J/ti+IdEQvSIETIITbiimholsS5FxJoY=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7f48ac4-2823-4b06-b380-08d7ed29a2a8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 17:12:17.6660
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yi9vaRokMBpkF7I/Fy6i0vso7Upgwp0fMtWMc8dAZyNFU5LwUtT+nzQKrqxAxYWYmTNBgvGXhF5Obn4A5xcYtg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2655
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/30/2020 8:07 PM, Tariq Toukan wrote:
+On 4/29/20 11:24 PM, Allen wrote:
+> Hi,
 > 
+>   We ran into a kernel panic with dsa-loop.
+> Here are the details:
 > 
-> On 4/30/2020 2:22 PM, Jesper Dangaard Brouer wrote:
->> The mlx5 driver have multiple memory models, which are also changed
->> according to whether a XDP bpf_prog is attached.
->>
->> The 'rx_striding_rq' setting is adjusted via ethtool priv-flags e.g.:
->>   # ethtool --set-priv-flags mlx5p2 rx_striding_rq off
->>
->> On the general case with 4K page_size and regular MTU packet, then
->> the frame_sz is 2048 and 4096 when XDP is enabled, in both modes.
->>
->> The info on the given frame size is stored differently depending on the
->> RQ-mode and encoded in a union in struct mlx5e_rq union wqe/mpwqe.
->> In rx striding mode rq->mpwqe.log_stride_sz is either 11 or 12, which
->> corresponds to 2048 or 4096 (MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ).
->> In non-striding mode (MLX5_WQ_TYPE_CYCLIC) the frag_stride is stored
->> in rq->wqe.info.arr[0].frag_stride, for the first fragment, which is
->> what the XDP case cares about.
->>
->> To reduce effect on fast-path, this patch determine the frame_sz at
->> setup time, to avoid determining the memory model runtime. Variable
->> is named first_frame_sz to make it clear that this is only the frame
->> size of the first fragment.
->>
->> This mlx5 driver does a DMA-sync on XDP_TX action, but grow is safe
->> as it have done a DMA-map on the entire PAGE_SIZE. The driver also
->> already does a XDP length check against sq->hw_mtu on the possible
->> XDP xmit paths mlx5e_xmit_xdp_frame() + mlx5e_xmit_xdp_frame_mpwqe().
->>
->> V2: Fix that frag_size need to be recalc before creating SKB.
->>
->> Cc: Tariq Toukan <tariqt@mellanox.com>
->> Cc: Saeed Mahameed <saeedm@mellanox.com>
->> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->> ---
->>   drivers/net/ethernet/mellanox/mlx5/core/en.h      |    1 +
->>   drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c  |    1 +
->>   drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    6 ++++++
->>   drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   |    2 ++
->>   4 files changed, 10 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h 
->> b/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> index 23701c0e36ec..ba6a0ee297c6 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
->> @@ -652,6 +652,7 @@ struct mlx5e_rq {
->>       struct {
->>           u16            umem_headroom;
->>           u16            headroom;
->> +        u32            first_frame_sz;
+> VM: aarch64 kvm running 5.7.0-rc3+
+> 
+> $ modprobe dsa-loop
+> [   25.968427] dsa-loop fixed-0:1f: DSA mockup driver: 0x1f
+> [   25.978156] libphy: dsa slave smi: probed
+> [   25.979230] dsa-loop fixed-0:1f: nonfatal error -95 setting MTU on
+> port 0
+> [   25.980974] dsa-loop fixed-0:1f lan1 (uninitialized): PHY
+> [dsa-0.0:00] driver [Generic PHY] (irq=POLL)
+> [   25.983855] dsa-loop fixed-0:1f: nonfatal error -95 setting MTU on
+> port 1
+> [   25.985523] dsa-loop fixed-0:1f lan2 (uninitialized): PHY
+> [dsa-0.0:01] driver [Generic PHY] (irq=POLL)
+> [   25.988127] dsa-loop fixed-0:1f: nonfatal error -95 setting MTU on
+> port 2
+> [   25.989775] dsa-loop fixed-0:1f lan3 (uninitialized): PHY
+> [dsa-0.0:02] driver [Generic PHY] (irq=POLL)
+> [   25.992651] dsa-loop fixed-0:1f: nonfatal error -95 setting MTU on
+> port 3
+> [   25.994472] dsa-loop fixed-0:1f lan4 (uninitialized): PHY
+> [dsa-0.0:03] driver [Generic PHY] (irq=POLL)
+> [   25.997015] DSA: tree 0 setup
+> [root@localhost ~]# [   26.002672] dsa-loop fixed-0:1f lan1: configuring
+> for phy/gmii link mode
+> [   26.008264] dsa-loop fixed-0:1f lan1: Link is Up - 100Mbps/Full -
+> flow control off
+> [   26.010098] IPv6: ADDRCONF(NETDEV_CHANGE): lan1: link becomes ready
+> [   26.014539] dsa-loop fixed-0:1f lan3: configuring for phy/gmii link mode
+> [   26.021323] dsa-loop fixed-0:1f lan2: configuring for phy/gmii link mode
+> [   26.023274] dsa-loop fixed-0:1f lan3: Link is Up - 100Mbps/Full -
+> flow control off
+> [   26.028358] dsa-loop fixed-0:1f lan4: configuring for phy/gmii link mode
+> [   26.036157] dsa-loop fixed-0:1f lan2: Link is Up - 100Mbps/Full -
+> flow control off
+> [   26.037875] dsa-loop fixed-0:1f lan4: Link is Up - 100Mbps/Full -
+> flow control off
+> [   26.039858] IPv6: ADDRCONF(NETDEV_CHANGE): lan3: link becomes ready
+> [   26.041527] IPv6: ADDRCONF(NETDEV_CHANGE): lan2: link becomes ready
+> [   26.043219] IPv6: ADDRCONF(NETDEV_CHANGE): lan4: link becomes ready
 
-I also think that a better name would be: frame0_sz, or frag0_sz.
-
-Thanks.
+you have missed an important detail here which is the master device that
+was used for DSA. The current code defaults to whatever "eth0" is, what
+does this map to for your configuration?
+-- 
+Florian
