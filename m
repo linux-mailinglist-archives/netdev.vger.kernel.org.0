@@ -2,819 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDD841BF1A8
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 09:40:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCADB1BF1B7
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 09:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbgD3HkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 03:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726411AbgD3HkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 03:40:10 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2DDC035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 00:40:10 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id u15so5415258ljd.3
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 00:40:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YJV+rW/POdcXbMgLGZLMWul5Tj94GV5Q1XCZdNDjIlw=;
-        b=awaCiJx0QNdKtYDtScZFMycJIJLzRMaujUaFyrnKANhLT8GMuZPWta+sf/YYVm17+w
-         lv8+l0EmGaxJEkR4y+OD0jWz7Z6UAk1LwZ3+phL5DJ5MjYejZNrRy8JrJi267J+DRFkN
-         EiuWaOCg+omI9dpQ/DcqT5HKgf3xqUAXy/qGDS50Q/u5eiYyiaJZT1sfq7FzJq37ZLG9
-         XihgN4pFLoZb3xUbcYB2jaJwBotOb1uUI3qyDR21ma7Rhoh05SGNi40dvRls0bZHmT8E
-         jJDT7R2ixyQAHru0NoGkE5b+BYVTSvXNOr/UhLFxuOEX2Qezds54ApZfhAFfyryEGbC7
-         ow1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YJV+rW/POdcXbMgLGZLMWul5Tj94GV5Q1XCZdNDjIlw=;
-        b=ezRoFLRPySjSYkvzjmNmccw9QXDefUiCtVyawS/FWnDILcLRJvd3GmX9aTRyZ13KKM
-         Ri8E1GbP29vu/0Pxp8yCqeCczNyId2Y64Nsk1pI0ECei+YkU0xBKih52722BJhQGMY36
-         l4yp48ymIIJ/44IWVGKYVJ8MUogoKxXc4ez6q/LqZNKwwXN0S/J76Vfv47ycSDHDwd0N
-         Won74lpgLfrbW6z4yjPpqB1INaxRiWR5pO9JF5lj9lHAcB570aY8q4RxlPmsgXdMxkL9
-         lrqIUSKlYw1Z9gqYmc1nnaswN/cfncGEPR1nyG9b0lYX2SB0lqT/y4vUiujW+nkysUE8
-         iDPA==
-X-Gm-Message-State: AGi0PuZtsu4EGhtq0QJSTsyD+uFeaxaKozqBQvWs4JywT+CYrjj1R7YQ
-        H5G1JNce+MK3AjkL3WgLiyrkyEXmjGAvUPmmMXaI6N1u
-X-Google-Smtp-Source: APiQypKtL9yylIkBVcLeqAg8vmNJMyJ/b00YCPV4eGSzfBq+GhO1s2lbiQyEAKk2VsW44s4pVKDdS3rtFVjm8wdNWOw=
-X-Received: by 2002:a2e:8658:: with SMTP id i24mr1214058ljj.287.1588232408181;
- Thu, 30 Apr 2020 00:40:08 -0700 (PDT)
+        id S1726649AbgD3Hmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 03:42:32 -0400
+Received: from mail-eopbgr50082.outbound.protection.outlook.com ([40.107.5.82]:3100
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726626AbgD3Hmb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 03:42:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V5/x85cr0gLlnshSmo+seBBT1TqReDFlkD9OQPIMogCsL/AUa3Sjf+SQAF8e/ymmj5JAjmO7K+c4qLq5f7M/17WHGtr3+z8k0huImlkP4EpveuxY9I2RxfaSVT1D/7D7ZwrcOknJHY1/hpvjHm8bTh90CnqS6+E27UgcqZxQIDzRM0af10RUcFCzKm4f3+or3Z95fRCfdro6SLgocqk17arnqdeYhdmIhM7A2uOR1kVh+P470WRONwLQGa7W2J/EOkpRIUm6h95Gw/OXTlkzOJKqrhHFaZfi0+rHDGhT4URGsvmtxsZKDNmzJwOf4rNyRecFKKl+IX9wkQWn/hl6pg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5etUDfp5UbtX/2ZWp+/BaEdYl8KhMW4g2WBY44cadek=;
+ b=fdbXKMHmj6sLwulSyJzcS7MyY5dVqhYiI9VsVNBLo5A/jEA9A27mqN4wqznfOoBa/XtMlO2vtJA0qiPB7VkkzMUW+W8PluBVQXxV6Kvnpws+b/S1OfraQir5dKGCGo9u05ruiDCQSdhHb0QTBe4iWYKsAAtALkIH0mJs3I5xvYmoQ7VW76HAPTo/jNtmpun+jarddDLO5A82nelkPVAmUVJ62oLyutyp+9ZrW9QSyoVDQY6lUvAMeJNENN3Pi4HQ2h9T2Haavw2QWPfhk0YLeEchuwW38YdVQRzPKI4yJebDFqgp8ZV/eTSc8Av66mrk2+Tdx5jCfxyka2fWNi5R9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5etUDfp5UbtX/2ZWp+/BaEdYl8KhMW4g2WBY44cadek=;
+ b=NIkJq3LFiTVh/IzNTBkLSfU4tgWXBVSBxk7lWxoK7u1gtsmUS5rfKM/noa9Ee8CSFim8LWXuJXCH2GT7z8ImIowIWDUXcNOiNjJqU0rH20Y/kjedk709zkhQxyhxAtQBkBK07mkvTChxbXJ1PwGBt/9YWxP2zMcIvYRZ7QdO8BY=
+Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
+ by VE1PR04MB6765.eurprd04.prod.outlook.com (2603:10a6:803:126::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Thu, 30 Apr
+ 2020 07:42:25 +0000
+Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
+ ([fe80::1479:38ea:d4f7:a173]) by VE1PR04MB6496.eurprd04.prod.outlook.com
+ ([fe80::1479:38ea:d4f7:a173%7]) with mapi id 15.20.2937.023; Thu, 30 Apr 2020
+ 07:42:25 +0000
+From:   Po Liu <po.liu@nxp.com>
+To:     Vlad Buslov <vlad@buslov.dev>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "moshe@mellanox.com" <moshe@mellanox.com>,
+        "m-karicheri2@ti.com" <m-karicheri2@ti.com>,
+        "andre.guedes@linux.intel.com" <andre.guedes@linux.intel.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>
+Subject: RE: Re: [v4,net-next  2/4] net: schedule: add action gate offloading
+Thread-Topic: Re: [v4,net-next  2/4] net: schedule: add action gate offloading
+Thread-Index: AdYeonuyNGn5o5kdSNGQEHVK44KGyw==
+Date:   Thu, 30 Apr 2020 07:42:25 +0000
+Message-ID: <VE1PR04MB64960E8C8FE1863109EB91F192AA0@VE1PR04MB6496.eurprd04.prod.outlook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: buslov.dev; dkim=none (message not signed)
+ header.d=none;buslov.dev; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 9071a4b2-7c68-44e2-509d-08d7ecda06e1
+x-ms-traffictypediagnostic: VE1PR04MB6765:|VE1PR04MB6765:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB67654CF82AADF24CD54836BA92AA0@VE1PR04MB6765.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0389EDA07F
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(376002)(366004)(396003)(346002)(54906003)(52536014)(86362001)(8936002)(2906002)(6916009)(55016002)(316002)(7416002)(76116006)(6506007)(53546011)(64756008)(66556008)(66446008)(66476007)(44832011)(7696005)(66946007)(9686003)(33656002)(8676002)(71200400001)(4326008)(478600001)(5660300002)(26005)(186003);DIR:OUT;SFP:1101;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XwpQ0QNUKRtiiioWtfxKsydMYPcHk5ZA3HQuhvZQnqiP28xqXaHC3Bd4tUTlnC3aDuFkpAMABnc25/QMyRiFuOxmWZ+bl8VesEtNVEanGh7d9YLE5RHwNLdi5EemQPcAFVGBXxfpK22Ya2WYqAnWOsw2vp38Zrd8Q8voKu9cnrM8Hcvy33HwOaVRBIQ49jhp0Yo6CpV4p3IsaYloZS+nVCgRfyDM1IAQHG/npmSw5o7X8zYA1NtkaBmpVMND1dVO3SZNieZEHC4L9OpfJ64GZ+eXAOcOJpuOmmBqY4gBnPALxXfOGQau9qWxtFmc0J0kzHJvmDcD3CVxv+HcdLxoFWgNESZQCtkO2/vxkteZNLVLoe7rBtIx0BoNlWcZ7Am61266kod5asBOvuZlEto/uAAd4Hj9BSuytCfK5qfdbXeEVte0L1FFDpn0H8Rmbf0z
+x-ms-exchange-antispam-messagedata: XX1Yl97EzarEDL5/M+tzlIg9JDIwe7xsvmPv43h1RkVl683K6Oh7C7lEhrnPBN47vtuCPoigSNfWwLSnI7h0Y9P5xHiLQ4MwcVu48YN9YTCBE/yo0xz745d9Bd4knjTkh1uOiQfxobAiPwY0XBr0W/cnlbewMfhHaM57YYpMQ5fKdv44YD1CpIZDzsthV9OLLc25rJqqL1Zx4UKYLpRJI4ufmc6Vg3+opArxVLV0ix5KbH0cbo+cFdkHP5BwM4QkJFT0mwbatDSLrSR+WPu7IzzvjUsAUWNa51IEQyBWOhTFTgCwRluOGwI4c6VRM4Ar3lGCohbEOwrqa5afz7Cf6gapN5Npzi3gDh99X5osiEzvttr1DeL2Y5vi9d5QpZo9/4v/Jw604F7W3HHxFmzvGLGr7nauQcJV9VUjS+3X1nlrDrglTGW6nSDhGoP0K+hAIsMNXm9c6XiD65yE2nx8jCeH535y/BFPXBUs9JsrIxxU+LDI9XexfCaR5h3FXm0M5uIT/rUN3yOavQOzMOSaoaiIemv7vXRr7fdNY7MVGudKjXFKHXYysH2SNJJrlHM0Muk7BOVyDbG5UtNGYm+6svYJKMQP6m235/HZOOKEZ7UcuDoTeKsOk3HPBuuDchXbsAZJl3QuqXGnmt/Bz9Sr3/Yu85MUMWexridrqWQzYB4QcaIbz9+CiItzQGmC6yENQaPh6EMZuP2y6gX0NrXOYCPGCGVvWtlTiHL3tnJCjFPdbEhjmkgEPPiHeO/uafJi8XrHwkXuD3Hvs+vl1ifMnuBiWWL8za58dmK5AULfwrI=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200428060206.21814-1-xiyou.wangcong@gmail.com> <20200428060206.21814-2-xiyou.wangcong@gmail.com>
-In-Reply-To: <20200428060206.21814-2-xiyou.wangcong@gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Thu, 30 Apr 2020 16:39:56 +0900
-Message-ID: <CAMArcTU2r2undM5119_1W=pc2fu5AtUDp2RtizjVayRY=fGVEg@mail.gmail.com>
-Subject: Re: [Patch net-next 1/2] net: partially revert dynamic lockdep key changes
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        syzbot <syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9071a4b2-7c68-44e2-509d-08d7ecda06e1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Apr 2020 07:42:25.7160
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6yQjbFRViyeS90GhPWWyBqqe6RmJpEh+5Fywig0euKa9jzebkVt9dYPC+9po3iyV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6765
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Apr 2020 at 15:02, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-
-Hi Cong,
-Thank you so much for this work!
-
-> This patch reverts the folowing commits:
->
-> commit 064ff66e2bef84f1153087612032b5b9eab005bd
-> "bonding: add missing netdev_update_lockdep_key()"
->
-> commit 53d374979ef147ab51f5d632dfe20b14aebeccd0
-> "net: avoid updating qdisc_xmit_lock_key in netdev_update_lockdep_key()"
->
-> commit 1f26c0d3d24125992ab0026b0dab16c08df947c7
-> "net: fix kernel-doc warning in <linux/netdevice.h>"
->
-> commit ab92d68fc22f9afab480153bd82a20f6e2533769
-> "net: core: add generic lockdep keys"
->
-> but keeps the addr_list_lock_key because we still lock
-> addr_list_lock nestedly on stack devices, unlikely xmit_lock
-> this is safe because we don't take addr_list_lock on any fast
-> path.
->
-> Reported-and-tested-by: syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Cc: Taehee Yoo <ap420073@gmail.com>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> ---
->  drivers/net/bonding/bond_main.c               |  1 +
->  .../net/ethernet/netronome/nfp/nfp_net_repr.c | 16 ++++
->  drivers/net/hamradio/bpqether.c               | 20 +++++
->  drivers/net/hyperv/netvsc_drv.c               |  2 +
->  drivers/net/ipvlan/ipvlan_main.c              |  2 +
->  drivers/net/macsec.c                          |  2 +
->  drivers/net/macvlan.c                         |  2 +
->  drivers/net/ppp/ppp_generic.c                 |  2 +
->  drivers/net/team/team.c                       |  1 +
->  drivers/net/vrf.c                             |  1 +
->  .../net/wireless/intersil/hostap/hostap_hw.c  | 22 +++++
->  include/linux/netdevice.h                     | 27 ++++--
->  net/8021q/vlan_dev.c                          | 23 +++++
->  net/batman-adv/soft-interface.c               | 30 +++++++
->  net/bluetooth/6lowpan.c                       |  8 ++
->  net/core/dev.c                                | 90 +++++++++++++++----
->  net/dsa/slave.c                               | 12 +++
->  net/ieee802154/6lowpan/core.c                 |  8 ++
->  net/l2tp/l2tp_eth.c                           |  1 +
->  net/netrom/af_netrom.c                        | 21 +++++
->  net/rose/af_rose.c                            | 21 +++++
->  net/sched/sch_generic.c                       | 17 ++--
->  22 files changed, 296 insertions(+), 33 deletions(-)
->
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index 2e70e43c5df5..d01871321d22 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -4898,6 +4898,7 @@ static int bond_init(struct net_device *bond_dev)
->         spin_lock_init(&bond->stats_lock);
->         lockdep_register_key(&bond->stats_lock_key);
->         lockdep_set_class(&bond->stats_lock, &bond->stats_lock_key);
-> +       netdev_lockdep_set_classes(bond_dev);
->
->         list_add_tail(&bond->bond_list, &bn->dev_list);
->
-> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
-> index 79d72c88bbef..b3cabc274121 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
-> @@ -299,6 +299,20 @@ static void nfp_repr_clean(struct nfp_repr *repr)
->         nfp_port_free(repr->port);
->  }
->
-> +static struct lock_class_key nfp_repr_netdev_xmit_lock_key;
-> +
-> +static void nfp_repr_set_lockdep_class_one(struct net_device *dev,
-> +                                          struct netdev_queue *txq,
-> +                                          void *_unused)
-> +{
-> +       lockdep_set_class(&txq->_xmit_lock, &nfp_repr_netdev_xmit_lock_key);
-> +}
-> +
-> +static void nfp_repr_set_lockdep_class(struct net_device *dev)
-> +{
-> +       netdev_for_each_tx_queue(dev, nfp_repr_set_lockdep_class_one, NULL);
-> +}
-> +
->  int nfp_repr_init(struct nfp_app *app, struct net_device *netdev,
->                   u32 cmsg_port_id, struct nfp_port *port,
->                   struct net_device *pf_netdev)
-> @@ -308,6 +322,8 @@ int nfp_repr_init(struct nfp_app *app, struct net_device *netdev,
->         u32 repr_cap = nn->tlv_caps.repr_cap;
->         int err;
->
-> +       nfp_repr_set_lockdep_class(netdev);
-> +
->         repr->port = port;
->         repr->dst = metadata_dst_alloc(0, METADATA_HW_PORT_MUX, GFP_KERNEL);
->         if (!repr->dst)
-> diff --git a/drivers/net/hamradio/bpqether.c b/drivers/net/hamradio/bpqether.c
-> index fbea6f232819..206688154fdf 100644
-> --- a/drivers/net/hamradio/bpqether.c
-> +++ b/drivers/net/hamradio/bpqether.c
-> @@ -107,6 +107,25 @@ struct bpqdev {
->
->  static LIST_HEAD(bpq_devices);
->
-> +/*
-> + * bpqether network devices are paired with ethernet devices below them, so
-> + * form a special "super class" of normal ethernet devices; split their locks
-> + * off into a separate class since they always nest.
-> + */
-> +static struct lock_class_key bpq_netdev_xmit_lock_key;
-> +
-> +static void bpq_set_lockdep_class_one(struct net_device *dev,
-> +                                     struct netdev_queue *txq,
-> +                                     void *_unused)
-> +{
-> +       lockdep_set_class(&txq->_xmit_lock, &bpq_netdev_xmit_lock_key);
-> +}
-> +
-> +static void bpq_set_lockdep_class(struct net_device *dev)
-> +{
-> +       netdev_for_each_tx_queue(dev, bpq_set_lockdep_class_one, NULL);
-> +}
-> +
->  /* ------------------------------------------------------------------------ */
->
->
-> @@ -477,6 +496,7 @@ static int bpq_new_device(struct net_device *edev)
->         err = register_netdevice(ndev);
->         if (err)
->                 goto error;
-> +       bpq_set_lockdep_class(ndev);
->
->         /* List protected by RTNL */
->         list_add_rcu(&bpq->bpq_list, &bpq_devices);
-> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-> index d8e86bdbfba1..c0b647a4c893 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -2456,6 +2456,8 @@ static int netvsc_probe(struct hv_device *dev,
->                 NETIF_F_HW_VLAN_CTAG_RX;
->         net->vlan_features = net->features;
->
-> +       netdev_lockdep_set_classes(net);
-> +
->         /* MTU range: 68 - 1500 or 65521 */
->         net->min_mtu = NETVSC_MTU_MIN;
->         if (nvdev->nvsp_version >= NVSP_PROTOCOL_VERSION_2)
-> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-> index f195f278a83a..15e87c097b0b 100644
-> --- a/drivers/net/ipvlan/ipvlan_main.c
-> +++ b/drivers/net/ipvlan/ipvlan_main.c
-> @@ -131,6 +131,8 @@ static int ipvlan_init(struct net_device *dev)
->         dev->gso_max_segs = phy_dev->gso_max_segs;
->         dev->hard_header_len = phy_dev->hard_header_len;
->
-> +       netdev_lockdep_set_classes(dev);
-> +
->         ipvlan->pcpu_stats = netdev_alloc_pcpu_stats(struct ipvl_pcpu_stats);
->         if (!ipvlan->pcpu_stats)
->                 return -ENOMEM;
-> diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-> index 758baf7cb8a1..ea3f25cc79ef 100644
-> --- a/drivers/net/macsec.c
-> +++ b/drivers/net/macsec.c
-> @@ -4047,6 +4047,8 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
->         if (err < 0)
->                 return err;
->
-> +       netdev_lockdep_set_classes(dev);
-> +
->         err = netdev_upper_dev_link(real_dev, dev, extack);
->         if (err < 0)
->                 goto unregister;
-> diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-> index d45600e0a38c..34eb073cdd74 100644
-> --- a/drivers/net/macvlan.c
-> +++ b/drivers/net/macvlan.c
-> @@ -890,6 +890,8 @@ static int macvlan_init(struct net_device *dev)
->         dev->gso_max_segs       = lowerdev->gso_max_segs;
->         dev->hard_header_len    = lowerdev->hard_header_len;
->
-> +       netdev_lockdep_set_classes(dev);
-> +
->         vlan->pcpu_stats = netdev_alloc_pcpu_stats(struct vlan_pcpu_stats);
->         if (!vlan->pcpu_stats)
->                 return -ENOMEM;
-> diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-> index 22cc2cb9d878..7d005896a0f9 100644
-> --- a/drivers/net/ppp/ppp_generic.c
-> +++ b/drivers/net/ppp/ppp_generic.c
-> @@ -1410,6 +1410,8 @@ static int ppp_dev_init(struct net_device *dev)
->  {
->         struct ppp *ppp;
->
-> +       netdev_lockdep_set_classes(dev);
-> +
->         ppp = netdev_priv(dev);
->         /* Let the netdevice take a reference on the ppp file. This ensures
->          * that ppp_destroy_interface() won't run before the device gets
-> diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-> index 04845a4017f9..8c1e02752ff6 100644
-> --- a/drivers/net/team/team.c
-> +++ b/drivers/net/team/team.c
-> @@ -1647,6 +1647,7 @@ static int team_init(struct net_device *dev)
->
->         lockdep_register_key(&team->team_lock_key);
->         __mutex_init(&team->lock, "team->team_lock_key", &team->team_lock_key);
-> +       netdev_lockdep_set_classes(dev);
->
->         return 0;
->
-> diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-> index 56f8aab46f89..43928a1c2f2a 100644
-> --- a/drivers/net/vrf.c
-> +++ b/drivers/net/vrf.c
-> @@ -867,6 +867,7 @@ static int vrf_dev_init(struct net_device *dev)
->
->         /* similarly, oper state is irrelevant; set to up to avoid confusion */
->         dev->operstate = IF_OPER_UP;
-> +       netdev_lockdep_set_classes(dev);
->         return 0;
->
->  out_rth:
-> diff --git a/drivers/net/wireless/intersil/hostap/hostap_hw.c b/drivers/net/wireless/intersil/hostap/hostap_hw.c
-> index 58212c532c90..aadf3dec5bf3 100644
-> --- a/drivers/net/wireless/intersil/hostap/hostap_hw.c
-> +++ b/drivers/net/wireless/intersil/hostap/hostap_hw.c
-> @@ -3041,6 +3041,27 @@ static void prism2_clear_set_tim_queue(local_info_t *local)
->         }
->  }
->
-> +
-> +/*
-> + * HostAP uses two layers of net devices, where the inner
-> + * layer gets called all the time from the outer layer.
-> + * This is a natural nesting, which needs a split lock type.
-> + */
-> +static struct lock_class_key hostap_netdev_xmit_lock_key;
-> +
-> +static void prism2_set_lockdep_class_one(struct net_device *dev,
-> +                                        struct netdev_queue *txq,
-> +                                        void *_unused)
-> +{
-> +       lockdep_set_class(&txq->_xmit_lock,
-> +                         &hostap_netdev_xmit_lock_key);
-> +}
-> +
-> +static void prism2_set_lockdep_class(struct net_device *dev)
-> +{
-> +       netdev_for_each_tx_queue(dev, prism2_set_lockdep_class_one, NULL);
-> +}
-> +
->  static struct net_device *
->  prism2_init_local_data(struct prism2_helper_functions *funcs, int card_idx,
->                        struct device *sdev)
-> @@ -3199,6 +3220,7 @@ while (0)
->         if (ret >= 0)
->                 ret = register_netdevice(dev);
->
-> +       prism2_set_lockdep_class(dev);
->         rtnl_unlock();
->         if (ret < 0) {
->                 printk(KERN_WARNING "%s: register netdevice failed!\n",
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 5a8d40f1ffe2..7725efd6e48a 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1805,13 +1805,11 @@ enum netdev_priv_flags {
->   *     @phydev:        Physical device may attach itself
->   *                     for hardware timestamping
->   *     @sfp_bus:       attached &struct sfp_bus structure.
-> - *     @qdisc_tx_busylock_key: lockdep class annotating Qdisc->busylock
-> - *                             spinlock
-> - *     @qdisc_running_key:     lockdep class annotating Qdisc->running seqcount
-> - *     @qdisc_xmit_lock_key:   lockdep class annotating
-> - *                             netdev_queue->_xmit_lock spinlock
-> + *
->   *     @addr_list_lock_key:    lockdep class annotating
->   *                             net_device->addr_list_lock spinlock
-> + *     @qdisc_tx_busylock: lockdep class annotating Qdisc->busylock spinlock
-> + *     @qdisc_running_key: lockdep class annotating Qdisc->running seqcount
->   *
->   *     @proto_down:    protocol port state information can be sent to the
->   *                     switch driver and used to set the phys state of the
-> @@ -2112,10 +2110,9 @@ struct net_device {
->  #endif
->         struct phy_device       *phydev;
->         struct sfp_bus          *sfp_bus;
-> -       struct lock_class_key   qdisc_tx_busylock_key;
-> -       struct lock_class_key   qdisc_running_key;
-> -       struct lock_class_key   qdisc_xmit_lock_key;
->         struct lock_class_key   addr_list_lock_key;
-> +       struct lock_class_key   *qdisc_tx_busylock;
-> +       struct lock_class_key   *qdisc_running_key;
->         bool                    proto_down;
->         unsigned                wol_enabled:1;
->
-> @@ -2200,6 +2197,20 @@ static inline void netdev_for_each_tx_queue(struct net_device *dev,
->                 f(dev, &dev->_tx[i], arg);
->  }
->
-> +#define netdev_lockdep_set_classes(dev)                                \
-> +{                                                              \
-> +       static struct lock_class_key qdisc_tx_busylock_key;     \
-> +       static struct lock_class_key qdisc_running_key;         \
-> +       static struct lock_class_key qdisc_xmit_lock_key;       \
-> +       unsigned int i;                                         \
-> +                                                               \
-> +       (dev)->qdisc_tx_busylock = &qdisc_tx_busylock_key;      \
-> +       (dev)->qdisc_running_key = &qdisc_running_key;          \
-> +       for (i = 0; i < (dev)->num_tx_queues; i++)              \
-> +               lockdep_set_class(&(dev)->_tx[i]._xmit_lock,    \
-> +                                 &qdisc_xmit_lock_key);        \
-> +}
-> +
->  u16 netdev_pick_tx(struct net_device *dev, struct sk_buff *skb,
->                      struct net_device *sb_dev);
->  struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
-> diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-> index 990b9fde28c6..2efce9a07955 100644
-> --- a/net/8021q/vlan_dev.c
-> +++ b/net/8021q/vlan_dev.c
-> @@ -489,6 +489,27 @@ static void vlan_dev_set_rx_mode(struct net_device *vlan_dev)
->         dev_uc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
->  }
->
-> +/*
-> + * vlan network devices have devices nesting below it, and are a special
-> + * "super class" of normal network devices; split their locks off into a
-> + * separate class since they always nest.
-> + */
-> +static struct lock_class_key vlan_netdev_xmit_lock_key;
-> +
-> +static void vlan_dev_set_lockdep_one(struct net_device *dev,
-> +                                    struct netdev_queue *txq,
-> +                                    void *_subclass)
-> +{
-> +       lockdep_set_class_and_subclass(&txq->_xmit_lock,
-> +                                      &vlan_netdev_xmit_lock_key,
-> +                                      *(int *)_subclass);
-
-I think lockdep_set_class() is enough.
-How do you think about it?
-
-> +}
-> +
-> +static void vlan_dev_set_lockdep_class(struct net_device *dev, int subclass)
-> +{
-> +       netdev_for_each_tx_queue(dev, vlan_dev_set_lockdep_one, &subclass);
-> +}
-> +
->  static const struct header_ops vlan_header_ops = {
->         .create  = vlan_dev_hard_header,
->         .parse   = eth_header_parse,
-> @@ -579,6 +600,8 @@ static int vlan_dev_init(struct net_device *dev)
->
->         SET_NETDEV_DEVTYPE(dev, &vlan_type);
->
-> +       vlan_dev_set_lockdep_class(dev, dev->lower_level);
-> +
->         vlan->vlan_pcpu_stats = netdev_alloc_pcpu_stats(struct vlan_pcpu_stats);
->         if (!vlan->vlan_pcpu_stats)
->                 return -ENOMEM;
-> diff --git a/net/batman-adv/soft-interface.c b/net/batman-adv/soft-interface.c
-> index 5f05a728f347..822af540b854 100644
-> --- a/net/batman-adv/soft-interface.c
-> +++ b/net/batman-adv/soft-interface.c
-> @@ -739,6 +739,34 @@ static int batadv_interface_kill_vid(struct net_device *dev, __be16 proto,
->         return 0;
->  }
->
-> +/* batman-adv network devices have devices nesting below it and are a special
-> + * "super class" of normal network devices; split their locks off into a
-> + * separate class since they always nest.
-> + */
-> +static struct lock_class_key batadv_netdev_xmit_lock_key;
-> +
-> +/**
-> + * batadv_set_lockdep_class_one() - Set lockdep class for a single tx queue
-> + * @dev: device which owns the tx queue
-> + * @txq: tx queue to modify
-> + * @_unused: always NULL
-> + */
-> +static void batadv_set_lockdep_class_one(struct net_device *dev,
-> +                                        struct netdev_queue *txq,
-> +                                        void *_unused)
-> +{
-> +       lockdep_set_class(&txq->_xmit_lock, &batadv_netdev_xmit_lock_key);
-> +}
-> +
-> +/**
-> + * batadv_set_lockdep_class() - Set txq and addr_list lockdep class
-> + * @dev: network device to modify
-> + */
-> +static void batadv_set_lockdep_class(struct net_device *dev)
-> +{
-> +       netdev_for_each_tx_queue(dev, batadv_set_lockdep_class_one, NULL);
-> +}
-> +
->  /**
->   * batadv_softif_init_late() - late stage initialization of soft interface
->   * @dev: registered network device to modify
-> @@ -752,6 +780,8 @@ static int batadv_softif_init_late(struct net_device *dev)
->         int ret;
->         size_t cnt_len = sizeof(u64) * BATADV_CNT_NUM;
->
-> +       batadv_set_lockdep_class(dev);
-> +
->         bat_priv = netdev_priv(dev);
->         bat_priv->soft_iface = dev;
->
-> diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
-> index 4febc82a7c76..bb55d92691b0 100644
-> --- a/net/bluetooth/6lowpan.c
-> +++ b/net/bluetooth/6lowpan.c
-> @@ -571,7 +571,15 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
->         return err < 0 ? NET_XMIT_DROP : err;
->  }
->
-> +static int bt_dev_init(struct net_device *dev)
-> +{
-> +       netdev_lockdep_set_classes(dev);
-> +
-> +       return 0;
-> +}
-> +
->  static const struct net_device_ops netdev_ops = {
-> +       .ndo_init               = bt_dev_init,
->         .ndo_start_xmit         = bt_xmit,
->  };
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index afff16849c26..f8d83922a6af 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -398,6 +398,74 @@ static RAW_NOTIFIER_HEAD(netdev_chain);
->  DEFINE_PER_CPU_ALIGNED(struct softnet_data, softnet_data);
->  EXPORT_PER_CPU_SYMBOL(softnet_data);
->
-> +#ifdef CONFIG_LOCKDEP
-> +/*
-> + * register_netdevice() inits txq->_xmit_lock and sets lockdep class
-> + * according to dev->type
-> + */
-> +static const unsigned short netdev_lock_type[] = {
-> +        ARPHRD_NETROM, ARPHRD_ETHER, ARPHRD_EETHER, ARPHRD_AX25,
-> +        ARPHRD_PRONET, ARPHRD_CHAOS, ARPHRD_IEEE802, ARPHRD_ARCNET,
-> +        ARPHRD_APPLETLK, ARPHRD_DLCI, ARPHRD_ATM, ARPHRD_METRICOM,
-> +        ARPHRD_IEEE1394, ARPHRD_EUI64, ARPHRD_INFINIBAND, ARPHRD_SLIP,
-> +        ARPHRD_CSLIP, ARPHRD_SLIP6, ARPHRD_CSLIP6, ARPHRD_RSRVD,
-> +        ARPHRD_ADAPT, ARPHRD_ROSE, ARPHRD_X25, ARPHRD_HWX25,
-> +        ARPHRD_PPP, ARPHRD_CISCO, ARPHRD_LAPB, ARPHRD_DDCMP,
-> +        ARPHRD_RAWHDLC, ARPHRD_TUNNEL, ARPHRD_TUNNEL6, ARPHRD_FRAD,
-> +        ARPHRD_SKIP, ARPHRD_LOOPBACK, ARPHRD_LOCALTLK, ARPHRD_FDDI,
-> +        ARPHRD_BIF, ARPHRD_SIT, ARPHRD_IPDDP, ARPHRD_IPGRE,
-> +        ARPHRD_PIMREG, ARPHRD_HIPPI, ARPHRD_ASH, ARPHRD_ECONET,
-> +        ARPHRD_IRDA, ARPHRD_FCPP, ARPHRD_FCAL, ARPHRD_FCPL,
-> +        ARPHRD_FCFABRIC, ARPHRD_IEEE80211, ARPHRD_IEEE80211_PRISM,
-> +        ARPHRD_IEEE80211_RADIOTAP, ARPHRD_PHONET, ARPHRD_PHONET_PIPE,
-> +        ARPHRD_IEEE802154, ARPHRD_VOID, ARPHRD_NONE};
-> +
-> +static const char *const netdev_lock_name[] = {
-> +       "_xmit_NETROM", "_xmit_ETHER", "_xmit_EETHER", "_xmit_AX25",
-> +       "_xmit_PRONET", "_xmit_CHAOS", "_xmit_IEEE802", "_xmit_ARCNET",
-> +       "_xmit_APPLETLK", "_xmit_DLCI", "_xmit_ATM", "_xmit_METRICOM",
-> +       "_xmit_IEEE1394", "_xmit_EUI64", "_xmit_INFINIBAND", "_xmit_SLIP",
-> +       "_xmit_CSLIP", "_xmit_SLIP6", "_xmit_CSLIP6", "_xmit_RSRVD",
-> +       "_xmit_ADAPT", "_xmit_ROSE", "_xmit_X25", "_xmit_HWX25",
-> +       "_xmit_PPP", "_xmit_CISCO", "_xmit_LAPB", "_xmit_DDCMP",
-> +       "_xmit_RAWHDLC", "_xmit_TUNNEL", "_xmit_TUNNEL6", "_xmit_FRAD",
-> +       "_xmit_SKIP", "_xmit_LOOPBACK", "_xmit_LOCALTLK", "_xmit_FDDI",
-> +       "_xmit_BIF", "_xmit_SIT", "_xmit_IPDDP", "_xmit_IPGRE",
-> +       "_xmit_PIMREG", "_xmit_HIPPI", "_xmit_ASH", "_xmit_ECONET",
-> +       "_xmit_IRDA", "_xmit_FCPP", "_xmit_FCAL", "_xmit_FCPL",
-> +       "_xmit_FCFABRIC", "_xmit_IEEE80211", "_xmit_IEEE80211_PRISM",
-> +       "_xmit_IEEE80211_RADIOTAP", "_xmit_PHONET", "_xmit_PHONET_PIPE",
-> +       "_xmit_IEEE802154", "_xmit_VOID", "_xmit_NONE"};
-> +
-> +static struct lock_class_key netdev_xmit_lock_key[ARRAY_SIZE(netdev_lock_type)];
-> +
-> +static inline unsigned short netdev_lock_pos(unsigned short dev_type)
-> +{
-> +       int i;
-> +
-> +       for (i = 0; i < ARRAY_SIZE(netdev_lock_type); i++)
-> +               if (netdev_lock_type[i] == dev_type)
-> +                       return i;
-> +       /* the last key is used by default */
-> +       return ARRAY_SIZE(netdev_lock_type) - 1;
-> +}
-> +
-> +static inline void netdev_set_xmit_lockdep_class(spinlock_t *lock,
-> +                                                unsigned short dev_type)
-> +{
-> +       int i;
-> +
-> +       i = netdev_lock_pos(dev_type);
-> +       lockdep_set_class_and_name(lock, &netdev_xmit_lock_key[i],
-> +                                  netdev_lock_name[i]);
-> +}
-> +#else
-> +static inline void netdev_set_xmit_lockdep_class(spinlock_t *lock,
-> +                                                unsigned short dev_type)
-> +{
-> +}
-> +#endif
-> +
->  /*******************************************************************************
->   *
->   *             Protocol management and registration routines
-> @@ -9208,7 +9276,7 @@ static void netdev_init_one_queue(struct net_device *dev,
->  {
->         /* Initialize queue lock */
->         spin_lock_init(&queue->_xmit_lock);
-> -       lockdep_set_class(&queue->_xmit_lock, &dev->qdisc_xmit_lock_key);
-> +       netdev_set_xmit_lockdep_class(&queue->_xmit_lock, dev->type);
->         queue->xmit_lock_owner = -1;
->         netdev_queue_numa_node_write(queue, NUMA_NO_NODE);
->         queue->dev = dev;
-> @@ -9255,22 +9323,6 @@ void netif_tx_stop_all_queues(struct net_device *dev)
->  }
->  EXPORT_SYMBOL(netif_tx_stop_all_queues);
->
-> -static void netdev_register_lockdep_key(struct net_device *dev)
-> -{
-> -       lockdep_register_key(&dev->qdisc_tx_busylock_key);
-> -       lockdep_register_key(&dev->qdisc_running_key);
-> -       lockdep_register_key(&dev->qdisc_xmit_lock_key);
-> -       lockdep_register_key(&dev->addr_list_lock_key);
-> -}
-> -
-> -static void netdev_unregister_lockdep_key(struct net_device *dev)
-> -{
-> -       lockdep_unregister_key(&dev->qdisc_tx_busylock_key);
-> -       lockdep_unregister_key(&dev->qdisc_running_key);
-> -       lockdep_unregister_key(&dev->qdisc_xmit_lock_key);
-> -       lockdep_unregister_key(&dev->addr_list_lock_key);
-> -}
-> -
->  void netdev_update_lockdep_key(struct net_device *dev)
->  {
->         lockdep_unregister_key(&dev->addr_list_lock_key);
-> @@ -9837,7 +9889,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
->
->         dev_net_set(dev, &init_net);
->
-> -       netdev_register_lockdep_key(dev);
-> +       lockdep_register_key(&dev->addr_list_lock_key);
->
->         dev->gso_max_size = GSO_MAX_SIZE;
->         dev->gso_max_segs = GSO_MAX_SEGS;
-> @@ -9926,7 +9978,7 @@ void free_netdev(struct net_device *dev)
->         free_percpu(dev->xdp_bulkq);
->         dev->xdp_bulkq = NULL;
->
-> -       netdev_unregister_lockdep_key(dev);
-> +       lockdep_unregister_key(&dev->addr_list_lock_key);
->
->         /*  Compatibility with error handling in drivers */
->         if (dev->reg_state == NETREG_UNINITIALIZED) {
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index ba8bf90dc0cc..fa2634043751 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -1671,6 +1671,15 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
->         return ret;
->  }
->
-> +static struct lock_class_key dsa_slave_netdev_xmit_lock_key;
-> +static void dsa_slave_set_lockdep_class_one(struct net_device *dev,
-> +                                           struct netdev_queue *txq,
-> +                                           void *_unused)
-> +{
-> +       lockdep_set_class(&txq->_xmit_lock,
-> +                         &dsa_slave_netdev_xmit_lock_key);
-> +}
-> +
->  int dsa_slave_suspend(struct net_device *slave_dev)
->  {
->         struct dsa_port *dp = dsa_slave_to_port(slave_dev);
-> @@ -1754,6 +1763,9 @@ int dsa_slave_create(struct dsa_port *port)
->                 slave_dev->max_mtu = ETH_MAX_MTU;
->         SET_NETDEV_DEVTYPE(slave_dev, &dsa_type);
->
-> +       netdev_for_each_tx_queue(slave_dev, dsa_slave_set_lockdep_class_one,
-> +                                NULL);
-> +
->         SET_NETDEV_DEV(slave_dev, port->ds->dev);
->         slave_dev->dev.of_node = port->dn;
->         slave_dev->vlan_features = master->vlan_features;
-> diff --git a/net/ieee802154/6lowpan/core.c b/net/ieee802154/6lowpan/core.c
-> index c0b107cdd715..3297e7fa9945 100644
-> --- a/net/ieee802154/6lowpan/core.c
-> +++ b/net/ieee802154/6lowpan/core.c
-> @@ -58,6 +58,13 @@ static const struct header_ops lowpan_header_ops = {
->         .create = lowpan_header_create,
->  };
->
-> +static int lowpan_dev_init(struct net_device *ldev)
-> +{
-> +       netdev_lockdep_set_classes(ldev);
-> +
-> +       return 0;
-> +}
-> +
->  static int lowpan_open(struct net_device *dev)
->  {
->         if (!open_count)
-> @@ -89,6 +96,7 @@ static int lowpan_get_iflink(const struct net_device *dev)
->  }
->
->  static const struct net_device_ops lowpan_netdev_ops = {
-> +       .ndo_init               = lowpan_dev_init,
->         .ndo_start_xmit         = lowpan_xmit,
->         .ndo_open               = lowpan_open,
->         .ndo_stop               = lowpan_stop,
-> diff --git a/net/l2tp/l2tp_eth.c b/net/l2tp/l2tp_eth.c
-> index d3b520b9b2c9..fd5ac2788e45 100644
-> --- a/net/l2tp/l2tp_eth.c
-> +++ b/net/l2tp/l2tp_eth.c
-> @@ -56,6 +56,7 @@ static int l2tp_eth_dev_init(struct net_device *dev)
->  {
->         eth_hw_addr_random(dev);
->         eth_broadcast_addr(dev->broadcast);
-> +       netdev_lockdep_set_classes(dev);
->
->         return 0;
->  }
-> diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
-> index 7b1a74f74aad..eccc7d366e17 100644
-> --- a/net/netrom/af_netrom.c
-> +++ b/net/netrom/af_netrom.c
-> @@ -63,6 +63,26 @@ static DEFINE_SPINLOCK(nr_list_lock);
->
->  static const struct proto_ops nr_proto_ops;
->
-> +/*
-> + * NETROM network devices are virtual network devices encapsulating NETROM
-> + * frames into AX.25 which will be sent through an AX.25 device, so form a
-> + * special "super class" of normal net devices; split their locks off into a
-> + * separate class since they always nest.
-> + */
-> +static struct lock_class_key nr_netdev_xmit_lock_key;
-> +
-> +static void nr_set_lockdep_one(struct net_device *dev,
-> +                              struct netdev_queue *txq,
-> +                              void *_unused)
-> +{
-> +       lockdep_set_class(&txq->_xmit_lock, &nr_netdev_xmit_lock_key);
-> +}
-> +
-> +static void nr_set_lockdep_key(struct net_device *dev)
-> +{
-> +       netdev_for_each_tx_queue(dev, nr_set_lockdep_one, NULL);
-> +}
-> +
->  /*
->   *     Socket removal during an interrupt is now safe.
->   */
-> @@ -1394,6 +1414,7 @@ static int __init nr_proto_init(void)
->                         free_netdev(dev);
->                         goto fail;
->                 }
-> +               nr_set_lockdep_key(dev);
->                 dev_nr[i] = dev;
->         }
->
-> diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-> index 1e8eeb044b07..e7a872207b46 100644
-> --- a/net/rose/af_rose.c
-> +++ b/net/rose/af_rose.c
-> @@ -64,6 +64,26 @@ static const struct proto_ops rose_proto_ops;
->
->  ax25_address rose_callsign;
->
-> +/*
-> + * ROSE network devices are virtual network devices encapsulating ROSE
-> + * frames into AX.25 which will be sent through an AX.25 device, so form a
-> + * special "super class" of normal net devices; split their locks off into a
-> + * separate class since they always nest.
-> + */
-> +static struct lock_class_key rose_netdev_xmit_lock_key;
-> +
-> +static void rose_set_lockdep_one(struct net_device *dev,
-> +                                struct netdev_queue *txq,
-> +                                void *_unused)
-> +{
-> +       lockdep_set_class(&txq->_xmit_lock, &rose_netdev_xmit_lock_key);
-> +}
-> +
-> +static void rose_set_lockdep_key(struct net_device *dev)
-> +{
-> +       netdev_for_each_tx_queue(dev, rose_set_lockdep_one, NULL);
-> +}
-> +
->  /*
->   *     Convert a ROSE address into text.
->   */
-> @@ -1511,6 +1531,7 @@ static int __init rose_proto_init(void)
->                         free_netdev(dev);
->                         goto fail;
->                 }
-> +               rose_set_lockdep_key(dev);
->                 dev_rose[i] = dev;
->         }
->
-> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-> index 2efd5b61acef..06bb4203fb2b 100644
-> --- a/net/sched/sch_generic.c
-> +++ b/net/sched/sch_generic.c
-> @@ -794,6 +794,9 @@ struct Qdisc_ops pfifo_fast_ops __read_mostly = {
->  };
->  EXPORT_SYMBOL(pfifo_fast_ops);
->
-> +static struct lock_class_key qdisc_tx_busylock;
-> +static struct lock_class_key qdisc_running_key;
-> +
->  struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
->                           const struct Qdisc_ops *ops,
->                           struct netlink_ext_ack *extack)
-> @@ -846,9 +849,17 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
->         }
->
->         spin_lock_init(&sch->busylock);
-> +       lockdep_set_class(&sch->busylock,
-> +                         dev->qdisc_tx_busylock ?: &qdisc_tx_busylock);
-> +
->         /* seqlock has the same scope of busylock, for NOLOCK qdisc */
->         spin_lock_init(&sch->seqlock);
-> +       lockdep_set_class(&sch->busylock,
-> +                         dev->qdisc_tx_busylock ?: &qdisc_tx_busylock);
-> +
->         seqcount_init(&sch->running);
-> +       lockdep_set_class(&sch->running,
-> +                         dev->qdisc_running_key ?: &qdisc_running_key);
->
->         sch->ops = ops;
->         sch->flags = ops->static_flags;
-> @@ -859,12 +870,6 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
->         dev_hold(dev);
->         refcount_set(&sch->refcnt, 1);
->
-> -       if (sch != &noop_qdisc) {
-> -               lockdep_set_class(&sch->busylock, &dev->qdisc_tx_busylock_key);
-> -               lockdep_set_class(&sch->seqlock, &dev->qdisc_tx_busylock_key);
-> -               lockdep_set_class(&sch->running, &dev->qdisc_running_key);
-> -       }
-> -
->         return sch;
->  errout1:
->         kfree(p);
-> --
-> 2.26.1
->
+SGkgVmxhZCwNCg0KDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVmxh
+ZCBCdXNsb3YgPHZsYWRAYnVzbG92LmRldj4NCj4gU2VudDogMjAyMMTqNNTCMzDI1SAxOjQxDQo+
+IFRvOiBQbyBMaXUgPHBvLmxpdUBueHAuY29tPg0KPiBDYzogZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsg
+bGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsg
+dmluaWNpdXMuZ29tZXNAaW50ZWwuY29tOyBDbGF1ZGl1IE1hbm9pbA0KPiA8Y2xhdWRpdS5tYW5v
+aWxAbnhwLmNvbT47IFZsYWRpbWlyIE9sdGVhbiA8dmxhZGltaXIub2x0ZWFuQG54cC5jb20+Ow0K
+PiBBbGV4YW5kcnUgTWFyZ2luZWFuIDxhbGV4YW5kcnUubWFyZ2luZWFuQG54cC5jb20+Ow0KPiBt
+aWNoYWVsLmNoYW5AYnJvYWRjb20uY29tOyB2aXNoYWxAY2hlbHNpby5jb207DQo+IHNhZWVkbUBt
+ZWxsYW5veC5jb207IGxlb25Aa2VybmVsLm9yZzsgamlyaUBtZWxsYW5veC5jb207DQo+IGlkb3Nj
+aEBtZWxsYW5veC5jb207IGFsZXhhbmRyZS5iZWxsb25pQGJvb3RsaW4uY29tOw0KPiBVTkdMaW51
+eERyaXZlckBtaWNyb2NoaXAuY29tOyBrdWJhQGtlcm5lbC5vcmc7IGpoc0Btb2phdGF0dS5jb207
+DQo+IHhpeW91Lndhbmdjb25nQGdtYWlsLmNvbTsgc2ltb24uaG9ybWFuQG5ldHJvbm9tZS5jb207
+DQo+IHBhYmxvQG5ldGZpbHRlci5vcmc7IG1vc2hlQG1lbGxhbm94LmNvbTsgbS1rYXJpY2hlcmky
+QHRpLmNvbTsNCj4gYW5kcmUuZ3VlZGVzQGxpbnV4LmludGVsLmNvbTsgc3RlcGhlbkBuZXR3b3Jr
+cGx1bWJlci5vcmcNCj4gU3ViamVjdDogUmU6IFt2NCxuZXQtbmV4dCAyLzRdIG5ldDogc2NoZWR1
+bGU6IGFkZCBhY3Rpb24gZ2F0ZQ0KPiBvZmZsb2FkaW5nDQo+IA0KPiANCj4gT24gVHVlIDI4IEFw
+ciAyMDIwIGF0IDA2OjM0LCBQbyBMaXUgPFBvLkxpdUBueHAuY29tPiB3cm90ZToNCj4gPiBBZGQg
+dGhlIGdhdGUgYWN0aW9uIHRvIHRoZSBmbG93IGFjdGlvbiBlbnRyeS4gQWRkIHRoZSBnYXRlIHBh
+cmFtZXRlcnMNCj4gPiB0byB0aGUgdGNfc2V0dXBfZmxvd19hY3Rpb24oKSBxdWV1ZWluZyB0byB0
+aGUgZW50cmllcyBvZg0KPiA+IGZsb3dfYWN0aW9uX2VudHJ5IGFycmF5IHByb3ZpZGUgdG8gdGhl
+IGRyaXZlci4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IFBvIExpdSA8UG8uTGl1QG54cC5jb20+
+DQo+ID4gLS0tDQo+ID4gIGluY2x1ZGUvbmV0L2Zsb3dfb2ZmbG9hZC5oICAgfCAgMTAgKysrKw0K
+PiA+ICBpbmNsdWRlL25ldC90Y19hY3QvdGNfZ2F0ZS5oIHwgMTEzDQo+ICsrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrDQo+ID4gIG5ldC9zY2hlZC9jbHNfYXBpLmMgICAgICAgICAg
+fCAgMzMgKysrKysrKysrKw0KPiA+ICAzIGZpbGVzIGNoYW5nZWQsIDE1NiBpbnNlcnRpb25zKCsp
+DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9uZXQvZmxvd19vZmZsb2FkLmggYi9pbmNs
+dWRlL25ldC9mbG93X29mZmxvYWQuaA0KPiA+IGluZGV4IDM2MTljNmFjZjYwZi4uOTRhMzBmZTAy
+ZTZkIDEwMDY0NA0KPiA+IC0tLSBhL2luY2x1ZGUvbmV0L2Zsb3dfb2ZmbG9hZC5oDQo+ID4gKysr
+IGIvaW5jbHVkZS9uZXQvZmxvd19vZmZsb2FkLmgNCj4gPiBAQCAtMTQ3LDYgKzE0Nyw3IEBAIGVu
+dW0gZmxvd19hY3Rpb25faWQgew0KPiA+ICAgICAgIEZMT1dfQUNUSU9OX01QTFNfUFVTSCwNCj4g
+PiAgICAgICBGTE9XX0FDVElPTl9NUExTX1BPUCwNCj4gPiAgICAgICBGTE9XX0FDVElPTl9NUExT
+X01BTkdMRSwNCj4gPiArICAgICBGTE9XX0FDVElPTl9HQVRFLA0KPiA+ICAgICAgIE5VTV9GTE9X
+X0FDVElPTlMsDQo+ID4gIH07DQo+ID4NCj4gPiBAQCAtMjU1LDYgKzI1NiwxNSBAQCBzdHJ1Y3Qg
+Zmxvd19hY3Rpb25fZW50cnkgew0KPiA+ICAgICAgICAgICAgICAgICAgICAgICB1OCAgICAgICAg
+ICAgICAgYm9zOw0KPiA+ICAgICAgICAgICAgICAgICAgICAgICB1OCAgICAgICAgICAgICAgdHRs
+Ow0KPiA+ICAgICAgICAgICAgICAgfSBtcGxzX21hbmdsZTsNCj4gPiArICAgICAgICAgICAgIHN0
+cnVjdCB7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIHUzMiAgICAgICAgICAgICBpbmRleDsN
+Cj4gPiArICAgICAgICAgICAgICAgICAgICAgczMyICAgICAgICAgICAgIHByaW87DQo+ID4gKyAg
+ICAgICAgICAgICAgICAgICAgIHU2NCAgICAgICAgICAgICBiYXNldGltZTsNCj4gPiArICAgICAg
+ICAgICAgICAgICAgICAgdTY0ICAgICAgICAgICAgIGN5Y2xldGltZTsNCj4gPiArICAgICAgICAg
+ICAgICAgICAgICAgdTY0ICAgICAgICAgICAgIGN5Y2xldGltZWV4dDsNCj4gPiArICAgICAgICAg
+ICAgICAgICAgICAgdTMyICAgICAgICAgICAgIG51bV9lbnRyaWVzOw0KPiA+ICsgICAgICAgICAg
+ICAgICAgICAgICBzdHJ1Y3QgYWN0aW9uX2dhdGVfZW50cnkgKmVudHJpZXM7DQo+ID4gKyAgICAg
+ICAgICAgICB9IGdhdGU7DQo+ID4gICAgICAgfTsNCj4gPiAgICAgICBzdHJ1Y3QgZmxvd19hY3Rp
+b25fY29va2llICpjb29raWU7IC8qIHVzZXIgZGVmaW5lZCBhY3Rpb24gY29va2llDQo+ID4gKi8g
+IH07IGRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC90Y19hY3QvdGNfZ2F0ZS5oDQo+ID4gYi9pbmNs
+dWRlL25ldC90Y19hY3QvdGNfZ2F0ZS5oIGluZGV4IDMzMGFkOGIwMjQ5NS4uOWU2OThjN2Q2NGNk
+DQo+IDEwMDY0NA0KPiA+IC0tLSBhL2luY2x1ZGUvbmV0L3RjX2FjdC90Y19nYXRlLmgNCj4gPiAr
+KysgYi9pbmNsdWRlL25ldC90Y19hY3QvdGNfZ2F0ZS5oDQo+ID4gQEAgLTcsNiArNywxMyBAQA0K
+PiA+ICAjaW5jbHVkZSA8bmV0L2FjdF9hcGkuaD4NCj4gPiAgI2luY2x1ZGUgPGxpbnV4L3RjX2Fj
+dC90Y19nYXRlLmg+DQo+ID4NCj4gPiArc3RydWN0IGFjdGlvbl9nYXRlX2VudHJ5IHsNCj4gPiAr
+ICAgICB1OCAgICAgICAgICAgICAgICAgICAgICBnYXRlX3N0YXRlOw0KPiA+ICsgICAgIHUzMiAg
+ICAgICAgICAgICAgICAgICAgIGludGVydmFsOw0KPiA+ICsgICAgIHMzMiAgICAgICAgICAgICAg
+ICAgICAgIGlwdjsNCj4gPiArICAgICBzMzIgICAgICAgICAgICAgICAgICAgICBtYXhvY3RldHM7
+DQo+ID4gK307DQo+ID4gKw0KPiA+ICBzdHJ1Y3QgdGNmZ19nYXRlX2VudHJ5IHsNCj4gPiAgICAg
+ICBpbnQgICAgICAgICAgICAgICAgICAgICBpbmRleDsNCj4gPiAgICAgICB1OCAgICAgICAgICAg
+ICAgICAgICAgICBnYXRlX3N0YXRlOw0KPiA+IEBAIC00NCw0ICs1MSwxMTAgQEAgc3RydWN0IHRj
+Zl9nYXRlIHsNCj4gPg0KPiA+ICAjZGVmaW5lIHRvX2dhdGUoYSkgKChzdHJ1Y3QgdGNmX2dhdGUg
+KilhKQ0KPiA+DQo+ID4gK3N0YXRpYyBpbmxpbmUgYm9vbCBpc190Y2ZfZ2F0ZShjb25zdCBzdHJ1
+Y3QgdGNfYWN0aW9uICphKSB7ICNpZmRlZg0KPiA+ICtDT05GSUdfTkVUX0NMU19BQ1QNCj4gPiAr
+ICAgICBpZiAoYS0+b3BzICYmIGEtPm9wcy0+aWQgPT0gVENBX0lEX0dBVEUpDQo+ID4gKyAgICAg
+ICAgICAgICByZXR1cm4gdHJ1ZTsNCj4gPiArI2VuZGlmDQo+ID4gKyAgICAgcmV0dXJuIGZhbHNl
+Ow0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgaW5saW5lIHUzMiB0Y2ZfZ2F0ZV9pbmRleChj
+b25zdCBzdHJ1Y3QgdGNfYWN0aW9uICphKSB7DQo+ID4gKyAgICAgcmV0dXJuIGEtPnRjZmFfaW5k
+ZXg7DQo+ID4gK30NCj4gPiArDQo+ID4gK3N0YXRpYyBpbmxpbmUgczMyIHRjZl9nYXRlX3ByaW8o
+Y29uc3Qgc3RydWN0IHRjX2FjdGlvbiAqYSkgew0KPiA+ICsgICAgIHMzMiB0Y2ZnX3ByaW87DQo+
+ID4gKw0KPiA+ICsgICAgIHJjdV9yZWFkX2xvY2soKTsNCj4gDQo+IFRoaXMgYWN0aW9uIG5vIGxv
+bmdlciB1c2VzIHJjdSwgc28geW91IGRvbid0IG5lZWQgcHJvdGVjdCB3aXRoDQo+IHJjdV9yZWFk
+X2xvY2soKSBpbiBhbGwgdGhlc2UgaGVscGVycy4NCg0KSSB3b3VsZCByZW1vdmUgYWxsIHRoZSBy
+Y3VfcmVhZF9sb2NrKCkgaGVyZSBpbiB0aGlzIHBhdGNoLiANCg0KPiANCj4gPiArICAgICB0Y2Zn
+X3ByaW8gPSB0b19nYXRlKGEpLT5wYXJhbS50Y2ZnX3ByaW9yaXR5Ow0KPiA+ICsgICAgIHJjdV9y
+ZWFkX3VubG9jaygpOw0KPiA+ICsNCj4gPiArICAgICByZXR1cm4gdGNmZ19wcmlvOw0KPiA+ICt9
+DQo+ID4gKw0KPiA+ICtzdGF0aWMgaW5saW5lIHU2NCB0Y2ZfZ2F0ZV9iYXNldGltZShjb25zdCBz
+dHJ1Y3QgdGNfYWN0aW9uICphKSB7DQo+ID4gKyAgICAgdTY0IHRjZmdfYmFzZXRpbWU7DQo+ID4g
+Kw0KPiA+ICsgICAgIHJjdV9yZWFkX2xvY2soKTsNCj4gPiArICAgICB0Y2ZnX2Jhc2V0aW1lID0g
+dG9fZ2F0ZShhKS0+cGFyYW0udGNmZ19iYXNldGltZTsNCj4gPiArICAgICByY3VfcmVhZF91bmxv
+Y2soKTsNCj4gPiArDQo+ID4gKyAgICAgcmV0dXJuIHRjZmdfYmFzZXRpbWU7DQo+ID4gK30NCj4g
+PiArDQo+ID4gK3N0YXRpYyBpbmxpbmUgdTY0IHRjZl9nYXRlX2N5Y2xldGltZShjb25zdCBzdHJ1
+Y3QgdGNfYWN0aW9uICphKSB7DQo+ID4gKyAgICAgdTY0IHRjZmdfY3ljbGV0aW1lOw0KPiA+ICsN
+Cj4gPiArICAgICByY3VfcmVhZF9sb2NrKCk7DQo+ID4gKyAgICAgdGNmZ19jeWNsZXRpbWUgPSB0
+b19nYXRlKGEpLT5wYXJhbS50Y2ZnX2N5Y2xldGltZTsNCj4gPiArICAgICByY3VfcmVhZF91bmxv
+Y2soKTsNCj4gPiArDQo+ID4gKyAgICAgcmV0dXJuIHRjZmdfY3ljbGV0aW1lOw0KPiA+ICt9DQo+
+ID4gKw0KPiA+ICtzdGF0aWMgaW5saW5lIHU2NCB0Y2ZfZ2F0ZV9jeWNsZXRpbWVleHQoY29uc3Qg
+c3RydWN0IHRjX2FjdGlvbiAqYSkgew0KPiA+ICsgICAgIHU2NCB0Y2ZnX2N5Y2xldGltZWV4dDsN
+Cj4gPiArDQo+ID4gKyAgICAgcmN1X3JlYWRfbG9jaygpOw0KPiA+ICsgICAgIHRjZmdfY3ljbGV0
+aW1lZXh0ID0gdG9fZ2F0ZShhKS0+cGFyYW0udGNmZ19jeWNsZXRpbWVfZXh0Ow0KPiA+ICsgICAg
+IHJjdV9yZWFkX3VubG9jaygpOw0KPiA+ICsNCj4gPiArICAgICByZXR1cm4gdGNmZ19jeWNsZXRp
+bWVleHQ7DQo+ID4gK30NCj4gPiArDQo+ID4gK3N0YXRpYyBpbmxpbmUgdTMyIHRjZl9nYXRlX251
+bV9lbnRyaWVzKGNvbnN0IHN0cnVjdCB0Y19hY3Rpb24gKmEpIHsNCj4gPiArICAgICB1MzIgbnVt
+X2VudHJpZXM7DQo+ID4gKw0KPiA+ICsgICAgIHJjdV9yZWFkX2xvY2soKTsNCj4gPiArICAgICBu
+dW1fZW50cmllcyA9IHRvX2dhdGUoYSktPnBhcmFtLm51bV9lbnRyaWVzOw0KPiA+ICsgICAgIHJj
+dV9yZWFkX3VubG9jaygpOw0KPiA+ICsNCj4gPiArICAgICByZXR1cm4gbnVtX2VudHJpZXM7DQo+
+ID4gK30NCj4gPiArDQo+ID4gK3N0YXRpYyBpbmxpbmUgc3RydWN0IGFjdGlvbl9nYXRlX2VudHJ5
+DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICp0Y2ZfZ2F0ZV9nZXRfbGlzdChjb25zdCBzdHJ1
+Y3QgdGNfYWN0aW9uICphKSB7DQo+ID4gKyAgICAgc3RydWN0IGFjdGlvbl9nYXRlX2VudHJ5ICpv
+ZTsNCj4gPiArICAgICBzdHJ1Y3QgdGNmX2dhdGVfcGFyYW1zICpwOw0KPiA+ICsgICAgIHN0cnVj
+dCB0Y2ZnX2dhdGVfZW50cnkgKmVudHJ5Ow0KPiA+ICsgICAgIHUzMiBudW1fZW50cmllczsNCj4g
+PiArICAgICBpbnQgaSA9IDA7DQo+ID4gKw0KPiA+ICsgICAgIHJjdV9yZWFkX2xvY2soKTsNCj4g
+PiArDQo+ID4gKyAgICAgcCA9ICZ0b19nYXRlKGEpLT5wYXJhbTsNCj4gPiArICAgICBudW1fZW50
+cmllcyA9IHAtPm51bV9lbnRyaWVzOw0KPiA+ICsNCj4gPiArICAgICBsaXN0X2Zvcl9lYWNoX2Vu
+dHJ5KGVudHJ5LCAmcC0+ZW50cmllcywgbGlzdCkNCj4gPiArICAgICAgICAgICAgIGkrKzsNCj4g
+PiArDQo+ID4gKyAgICAgaWYgKGkgIT0gbnVtX2VudHJpZXMpDQo+ID4gKyAgICAgICAgICAgICBy
+ZXR1cm4gTlVMTDsNCj4gPiArDQo+ID4gKyAgICAgb2UgPSBremFsbG9jKHNpemVvZigqb2UpICog
+bnVtX2VudHJpZXMsIEdGUF9LRVJORUwpOw0KPiANCj4gQ2FuJ3QgYWxsb2NhdGUgd2l0aCBHRlBf
+S0VSTkVMIGZsYWcgaW4gcmN1IHJlYWQgYmxvY2tzLCBidXQgeW91IGRvbid0IG5lZWQNCj4gdGhl
+IHJjdSByZWFkIGxvY2sgaGVyZSBhbnl3YXkuIEhvd2V2ZXIsIHRjX3NldHVwX2Zsb3dfYWN0aW9u
+KCkgY2FsbHMgdGhpcw0KPiBmdW5jdGlvbiB3aGlsZSBob2xkaW5nIHRjZmFfbG9jayBzcGlubG9j
+aywgd2hpY2ggYWxzbyBwcmVjbHVkZXMgYWxsb2NhdGluZw0KPiBtZW1vcnkgd2l0aCB0aGF0IGZs
+YWcuIFlvdSBjYW4gdGVzdCBmb3Igc3VjaCBwcm9ibGVtcyBieSBlbmFibGluZw0KPiBDT05GSUdf
+REVCVUdfQVRPTUlDX1NMRUVQLiBUbyBoZWxwIHVuY292ZXIgc3VjaCBlcnJvcnMgYWxsIG5ldyBh
+Y3QNCg0KVGhhbmtzIGEgbG90LiBJIGFkZGVkIHRoaXMgY29uZmlnIGZvciBkZWJ1Zy4gSSB3b3Vs
+ZCB1c2UgR0ZQX0FUT01JQyBmbGFnIGF2b2lkIHNsZWVwaW5nIGFsbG9jIGFuZCB1c2luZyBrY2Fs
+bG9jIGZvciB0aGUgYXJyYXkuDQoNCj4gQVBJcyBhbmQgYWN0aW9uIGltcGxlbWVudGF0aW9ucyBh
+cmUgdXN1YWxseSBhY2NvbXBhbmllZCBieSB0ZGMgdGVzdHMuIElmDQo+IHlvdSBjaG9zZSB0byBp
+bXBsZW1lbnQgc3VjaCB0ZXN0cyB5b3UgY2FuIGxvb2sgYXQgNmU1MmZjYTM2YzY3ICgidGMtdGVz
+dHM6DQo+IEFkZCB0YyBhY3Rpb24gY3QgdGVzdHMiKSBmb3IgcmVjZW50IGV4YW1wbGUuDQoNCkkg
+d291bGQgbG9vayBpbnRvIHRoZSB0ZXN0LiBUaGFua3MhDQoNCj4gDQo+ID4gKyAgICAgaWYgKCFv
+ZSkNCj4gPiArICAgICAgICAgICAgIHJldHVybiBOVUxMOw0KPiANCj4gVGhpcyByZXR1cm5zIHdp
+dGhvdXQgcmVsZWFzaW5nIHJjdSByZWFkIGxvY2ssIGJ1dCBhcyBJIHNhaWQgYmVmb3JlIHlvdQ0K
+PiBwcm9iYWJseSBkb24ndCBuZWVkIHJjdSBwcm90ZWN0aW9uIGhlcmUgYW55d2F5Lg0KDQpUaGFu
+a3MgZm9yIHJlbWluZCwgdGhhdCBpcyBoZWxwZnVsLg0KDQo+IA0KPiA+ICsNCj4gPiArICAgICBp
+ID0gMDsNCj4gPiArICAgICBsaXN0X2Zvcl9lYWNoX2VudHJ5KGVudHJ5LCAmcC0+ZW50cmllcywg
+bGlzdCkgew0KPiA+ICsgICAgICAgICAgICAgb2VbaV0uZ2F0ZV9zdGF0ZSA9IGVudHJ5LT5nYXRl
+X3N0YXRlOw0KPiA+ICsgICAgICAgICAgICAgb2VbaV0uaW50ZXJ2YWwgPSBlbnRyeS0+aW50ZXJ2
+YWw7DQo+ID4gKyAgICAgICAgICAgICBvZVtpXS5pcHYgPSBlbnRyeS0+aXB2Ow0KPiA+ICsgICAg
+ICAgICAgICAgb2VbaV0ubWF4b2N0ZXRzID0gZW50cnktPm1heG9jdGV0czsNCj4gPiArICAgICAg
+ICAgICAgIGkrKzsNCj4gPiArICAgICB9DQo+ID4gKw0KPiA+ICsgICAgIHJjdV9yZWFkX3VubG9j
+aygpOw0KPiA+ICsNCj4gPiArICAgICByZXR1cm4gb2U7DQo+ID4gK30NCj4gPiAgI2VuZGlmDQo+
+ID4gZGlmZiAtLWdpdCBhL25ldC9zY2hlZC9jbHNfYXBpLmMgYi9uZXQvc2NoZWQvY2xzX2FwaS5j
+IGluZGV4DQo+ID4gMTFiNjgzYzQ1YzI4Li43ZTg1YzkxZDA3NTIgMTAwNjQ0DQo+ID4gLS0tIGEv
+bmV0L3NjaGVkL2Nsc19hcGkuYw0KPiA+ICsrKyBiL25ldC9zY2hlZC9jbHNfYXBpLmMNCj4gPiBA
+QCAtMzksNiArMzksNyBAQA0KPiA+ICAjaW5jbHVkZSA8bmV0L3RjX2FjdC90Y19za2JlZGl0Lmg+
+DQo+ID4gICNpbmNsdWRlIDxuZXQvdGNfYWN0L3RjX2N0Lmg+DQo+ID4gICNpbmNsdWRlIDxuZXQv
+dGNfYWN0L3RjX21wbHMuaD4NCj4gPiArI2luY2x1ZGUgPG5ldC90Y19hY3QvdGNfZ2F0ZS5oPg0K
+PiA+ICAjaW5jbHVkZSA8bmV0L2Zsb3dfb2ZmbG9hZC5oPg0KPiA+DQo+ID4gIGV4dGVybiBjb25z
+dCBzdHJ1Y3QgbmxhX3BvbGljeSBydG1fdGNhX3BvbGljeVtUQ0FfTUFYICsgMV07IEBADQo+ID4g
+LTM1MjYsNiArMzUyNywyNyBAQCBzdGF0aWMgdm9pZCB0Y2Zfc2FtcGxlX2dldF9ncm91cChzdHJ1
+Y3QNCj4gPiBmbG93X2FjdGlvbl9lbnRyeSAqZW50cnksICAjZW5kaWYgIH0NCj4gPg0KPiA+ICtz
+dGF0aWMgdm9pZCB0Y2ZfZ2F0ZV9lbnRyeV9kZXN0cnVjdG9yKHZvaWQgKnByaXYpIHsNCj4gPiAr
+ICAgICBzdHJ1Y3QgYWN0aW9uX2dhdGVfZW50cnkgKm9lID0gcHJpdjsNCj4gPiArDQo+ID4gKyAg
+ICAga2ZyZWUob2UpOw0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgaW50IHRjZl9nYXRlX2dl
+dF9lbnRyaWVzKHN0cnVjdCBmbG93X2FjdGlvbl9lbnRyeSAqZW50cnksDQo+ID4gKyAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgY29uc3Qgc3RydWN0IHRjX2FjdGlvbiAqYWN0KSB7DQo+ID4g
+KyAgICAgZW50cnktPmdhdGUuZW50cmllcyA9IHRjZl9nYXRlX2dldF9saXN0KGFjdCk7DQo+ID4g
+Kw0KPiA+ICsgICAgIGlmICghZW50cnktPmdhdGUuZW50cmllcykNCj4gPiArICAgICAgICAgICAg
+IHJldHVybiAtRUlOVkFMOw0KPiA+ICsNCj4gPiArICAgICBlbnRyeS0+ZGVzdHJ1Y3RvciA9IHRj
+Zl9nYXRlX2VudHJ5X2Rlc3RydWN0b3I7DQo+ID4gKyAgICAgZW50cnktPmRlc3RydWN0b3JfcHJp
+diA9IGVudHJ5LT5nYXRlLmVudHJpZXM7DQo+ID4gKw0KPiA+ICsgICAgIHJldHVybiAwOw0KPiA+
+ICt9DQo+ID4gKw0KPiA+ICBpbnQgdGNfc2V0dXBfZmxvd19hY3Rpb24oc3RydWN0IGZsb3dfYWN0
+aW9uICpmbG93X2FjdGlvbiwNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IHN0cnVj
+dCB0Y2ZfZXh0cyAqZXh0cykgIHsgQEAgLTM2NzIsNg0KPiA+ICszNjk0LDE3IEBAIGludCB0Y19z
+ZXR1cF9mbG93X2FjdGlvbihzdHJ1Y3QgZmxvd19hY3Rpb24gKmZsb3dfYWN0aW9uLA0KPiA+ICAg
+ICAgICAgICAgICAgfSBlbHNlIGlmIChpc190Y2Zfc2tiZWRpdF9wcmlvcml0eShhY3QpKSB7DQo+
+ID4gICAgICAgICAgICAgICAgICAgICAgIGVudHJ5LT5pZCA9IEZMT1dfQUNUSU9OX1BSSU9SSVRZ
+Ow0KPiA+ICAgICAgICAgICAgICAgICAgICAgICBlbnRyeS0+cHJpb3JpdHkgPSB0Y2Zfc2tiZWRp
+dF9wcmlvcml0eShhY3QpOw0KPiA+ICsgICAgICAgICAgICAgfSBlbHNlIGlmIChpc190Y2ZfZ2F0
+ZShhY3QpKSB7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIGVudHJ5LT5pZCA9IEZMT1dfQUNU
+SU9OX0dBVEU7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIGVudHJ5LT5nYXRlLmluZGV4ID0g
+dGNmX2dhdGVfaW5kZXgoYWN0KTsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgZW50cnktPmdh
+dGUucHJpbyA9IHRjZl9nYXRlX3ByaW8oYWN0KTsNCj4gPiArICAgICAgICAgICAgICAgICAgICAg
+ZW50cnktPmdhdGUuYmFzZXRpbWUgPSB0Y2ZfZ2F0ZV9iYXNldGltZShhY3QpOw0KPiA+ICsgICAg
+ICAgICAgICAgICAgICAgICBlbnRyeS0+Z2F0ZS5jeWNsZXRpbWUgPSB0Y2ZfZ2F0ZV9jeWNsZXRp
+bWUoYWN0KTsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgZW50cnktPmdhdGUuY3ljbGV0aW1l
+ZXh0ID0gdGNmX2dhdGVfY3ljbGV0aW1lZXh0KGFjdCk7DQo+ID4gKyAgICAgICAgICAgICAgICAg
+ICAgIGVudHJ5LT5nYXRlLm51bV9lbnRyaWVzID0gdGNmX2dhdGVfbnVtX2VudHJpZXMoYWN0KTsN
+Cj4gPiArICAgICAgICAgICAgICAgICAgICAgZXJyID0gdGNmX2dhdGVfZ2V0X2VudHJpZXMoZW50
+cnksIGFjdCk7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIGlmIChlcnIpDQo+ID4gKyAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgZ290byBlcnJfb3V0Ow0KPiA+ICAgICAgICAgICAgICAg
+fSBlbHNlIHsNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgZXJyID0gLUVPUE5PVFNVUFA7DQo+
+ID4gICAgICAgICAgICAgICAgICAgICAgIGdvdG8gZXJyX291dF9sb2NrZWQ7DQoNClRoYW5rcyBh
+IGxvdC4NCg0KQnIsDQpQbyBMaXUNCg==
