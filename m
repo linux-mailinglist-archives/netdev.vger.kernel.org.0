@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 164001BFB80
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:00:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E64C01BFB7A
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728936AbgD3NyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 09:54:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36588 "EHLO mail.kernel.org"
+        id S1728946AbgD3NyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:54:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728905AbgD3NyP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:54:15 -0400
+        id S1728937AbgD3NyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:54:16 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8E8BD2072A;
-        Thu, 30 Apr 2020 13:54:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A65F220774;
+        Thu, 30 Apr 2020 13:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254855;
-        bh=UZzWHQH2Ye08RTrRi7qlN1lnduAxTuqxC+B9xQqkuV0=;
+        s=default; t=1588254856;
+        bh=MVj9UZhM0DjTLdw9ouaGd2g02wNy/NokxdpMwsfgbjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pZ7+80/OyL6xHc7F2xqRXDaDgCkWl6IU5unvSQBlMhU2EdqpmOPlLDbjOQSieOSwv
-         BVgCyDPH4s1Wh5TWOlFEC5Bv7hxAcPsy3HbSFDtKzZCOp1qK40pxB4us8vXuRuhlqo
-         qQq8KuJwcvgmlu0YslzpMKl/lfsggrplWRa8pMj0=
+        b=YzJRvGWtvrFH0U0v7vR+NgTySzn5Ewm4BLBCeBc0cglx7PO8e7VycYC/Co3dhMETJ
+         6+VM6MXS78v4/ZEps30ALsvgnpVccBVGzvZUR/NNxI0A2GtgKPnEQk2mLebXO6QmO3
+         67WV/aITUB1fYR/wnJbUHmbPBb5qDNzX7RtKs2po=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
+Cc:     Julien Beraud <julien.beraud@orolia.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 11/27] wimax/i2400m: Fix potential urb refcnt leak
-Date:   Thu, 30 Apr 2020 09:53:46 -0400
-Message-Id: <20200430135402.20994-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 12/27] net: stmmac: fix enabling socfpga's ptp_ref_clock
+Date:   Thu, 30 Apr 2020 09:53:47 -0400
+Message-Id: <20200430135402.20994-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135402.20994-1-sashal@kernel.org>
 References: <20200430135402.20994-1-sashal@kernel.org>
@@ -44,44 +43,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+From: Julien Beraud <julien.beraud@orolia.com>
 
-[ Upstream commit 7717cbec172c3554d470023b4020d5781961187e ]
+[ Upstream commit 15ce30609d1e88d42fb1cd948f453e6d5f188249 ]
 
-i2400mu_bus_bm_wait_for_ack() invokes usb_get_urb(), which increases the
-refcount of the "notif_urb".
+There are 2 registers to write to enable a ptp ref clock coming from the
+fpga.
+One that enables the usage of the clock from the fpga for emac0 and emac1
+as a ptp ref clock, and the other to allow signals from the fpga to reach
+emac0 and emac1.
+Currently, if the dwmac-socfpga has phymode set to PHY_INTERFACE_MODE_MII,
+PHY_INTERFACE_MODE_GMII, or PHY_INTERFACE_MODE_SGMII, both registers will
+be written and the ptp ref clock will be set as coming from the fpga.
+Separate the 2 register writes to only enable signals from the fpga to
+reach emac0 or emac1 when ptp ref clock is not coming from the fpga.
 
-When i2400mu_bus_bm_wait_for_ack() returns, local variable "notif_urb"
-becomes invalid, so the refcount should be decreased to keep refcount
-balanced.
-
-The issue happens in all paths of i2400mu_bus_bm_wait_for_ack(), which
-forget to decrease the refcnt increased by usb_get_urb(), causing a
-refcnt leak.
-
-Fix this issue by calling usb_put_urb() before the
-i2400mu_bus_bm_wait_for_ack() returns.
-
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Julien Beraud <julien.beraud@orolia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wimax/i2400m/usb-fw.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wimax/i2400m/usb-fw.c b/drivers/net/wimax/i2400m/usb-fw.c
-index 502c346aa790b..7d396c81ec3eb 100644
---- a/drivers/net/wimax/i2400m/usb-fw.c
-+++ b/drivers/net/wimax/i2400m/usb-fw.c
-@@ -354,6 +354,7 @@ out:
- 		usb_autopm_put_interface(i2400mu->usb_iface);
- 	d_fnend(8, dev, "(i2400m %p ack %p size %zu) = %ld\n",
- 		i2400m, ack, ack_size, (long) result);
-+	usb_put_urb(&notif_urb);
- 	return result;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+index 5b3b06a0a3bf5..33407df6bea69 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -274,16 +274,19 @@ static int socfpga_dwmac_set_phy_mode(struct socfpga_dwmac *dwmac)
+ 	    phymode == PHY_INTERFACE_MODE_MII ||
+ 	    phymode == PHY_INTERFACE_MODE_GMII ||
+ 	    phymode == PHY_INTERFACE_MODE_SGMII) {
+-		ctrl |= SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2);
+ 		regmap_read(sys_mgr_base_addr, SYSMGR_FPGAGRP_MODULE_REG,
+ 			    &module);
+ 		module |= (SYSMGR_FPGAGRP_MODULE_EMAC << (reg_shift / 2));
+ 		regmap_write(sys_mgr_base_addr, SYSMGR_FPGAGRP_MODULE_REG,
+ 			     module);
+-	} else {
+-		ctrl &= ~(SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2));
+ 	}
  
- error_exceeded:
++	if (dwmac->f2h_ptp_ref_clk)
++		ctrl |= SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2);
++	else
++		ctrl &= ~(SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK <<
++			  (reg_shift / 2));
++
+ 	regmap_write(sys_mgr_base_addr, reg_offset, ctrl);
+ 
+ 	/* Deassert reset for the phy configuration to be sampled by
 -- 
 2.20.1
 
