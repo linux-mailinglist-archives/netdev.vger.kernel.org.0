@@ -2,135 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A091BFDFD
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1D461BFDFC
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728246AbgD3OYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 10:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728083AbgD3OY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 10:24:29 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C323C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 07:24:29 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id l187so7877623ybf.17
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 07:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=DpLe2/yxlpy0aFc7LjjFR8EhmIvjlgt7hqTB0OaUzqw=;
-        b=nTwgcui2CiV0+/Jpql/konVUDAJxIwSvypifzKGqEa5N2zt4MIbFjb1mAn7/qwLihf
-         vu0iHY6F0lUJ/lpzYGDHglar1oftRe5QKFNt+SxbDedcCmm3YwssWXQMsdKVrr1yW/L0
-         hbh2CMDDfsfgS8wpd1ItOELZ2zX2gZZfj9jv7hfUNZD/Cc3RQHB8NT+5HAVgLV5wmXhh
-         KUN8zSWgRRWlB4hEaPTS+sqCnIBgbPDRp47GrFog6FH1+9HvnApAy15WlVS+opecoFkk
-         JN0c9NKlKH12GdzFIkaOkli7Zj9XnFSyHT2bAMW34rF9aCYVPepdqiv+fA60MYvdLQ0C
-         bpWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=DpLe2/yxlpy0aFc7LjjFR8EhmIvjlgt7hqTB0OaUzqw=;
-        b=bIeu4JkvBPw5DF+ov7dJp4RmwK++0etkwiuMBA4yo4VozUqLLAFP+WyHLqxtMmBKKv
-         bnEUErkeEhVflhcziOHtpxdlQywoZDGA2Yvoqnv+E5TPCscmQUkqmyh98z99IYyaA0N2
-         mr9+ZZNf4Pgr44JXIIy277odlw2sjGKlgGrh6Bj3SyOtxBrk/PvhcgUaieKHL8d7vrOo
-         +1BJIi8QLFtBblaSgglGU4akW2sWqK3EP+ytxt6IcTuaXz+G/74TT8aVzj/jy3bZtW/F
-         XHBgsuenZcwrJbGKdcfsGGZ2X2o5EWR1Rtmvu1hbNDBMm7SRBIKui1bRoQU9PK3M/ZiO
-         TVBA==
-X-Gm-Message-State: AGi0PuZFP33HHtuCBgXrDRO09PgOr4A67hMg9L0VaWjrM9TXz/XOipMj
-        qA/P12PdlcQorkhVIxQIuD4WOqJc6EPG
-X-Google-Smtp-Source: APiQypLSBWwmxXdbCXvEwu6BQZ0SdYLx5+Wv2iv/ATKlzHHRCUjvZTfhpTl6ZunjIVWUzi0myR4aFnFZeter
-X-Received: by 2002:a25:9306:: with SMTP id f6mr5949447ybo.375.1588256668309;
- Thu, 30 Apr 2020 07:24:28 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 07:24:18 -0700
-In-Reply-To: <20200430142419.252180-1-irogers@google.com>
-Message-Id: <20200430142419.252180-4-irogers@google.com>
-Mime-Version: 1.0
-References: <20200430142419.252180-1-irogers@google.com>
-X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
-Subject: [PATCH v13 3/4] perf pmu: add perf_pmu__find_by_type helper
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Igor Lubashev <ilubashe@akamai.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
+        id S1728204AbgD3OYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 10:24:32 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33996 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728124AbgD3OY3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 10:24:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=x1qcW327bi40rJCDOA/3VQNP7BlakD04Fq3hF5EemCU=; b=gp2QReN3m19PvBPCArNU9deQZU
+        z7Ie2O7sL0SVI7By+LoWyF79XjtTG/m43F6uGABWeaGlNwS1GoWTM7YrSuNAGg2zYicn+9LVs7YXi
+        AcWN7yw36LigxHcr/hp5lQaoxICF7/vveF3BQCa0PhYpRyvtIA0qepksqvBm5n/lqTHM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jUA6t-000Q0O-LU; Thu, 30 Apr 2020 16:24:19 +0200
+Date:   Thu, 30 Apr 2020 16:24:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, Marek Vasut <marex@denx.de>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jiwei Sun <jiwei.sun@windriver.com>,
-        yuzhoujian <yuzhoujian@didichuxing.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        mkl@pengutronix.de, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christian Herber <christian.herber@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v3 1/2] ethtool: provide UAPI for PHY
+ master/slave configuration.
+Message-ID: <20200430142419.GC76972@lunn.ch>
+References: <20200428075308.2938-1-o.rempel@pengutronix.de>
+ <20200428075308.2938-2-o.rempel@pengutronix.de>
+ <20200429181614.GL30459@lunn.ch>
+ <20200430043751.ojvcgtubkbfunolb@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200430043751.ojvcgtubkbfunolb@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+On Thu, Apr 30, 2020 at 06:37:51AM +0200, Oleksij Rempel wrote:
+> Hi Andrew,
+> 
+> On Wed, Apr 29, 2020 at 08:16:14PM +0200, Andrew Lunn wrote:
+> > On Tue, Apr 28, 2020 at 09:53:07AM +0200, Oleksij Rempel wrote:
+> > 
+> > Hi Oleksij
+> > 
+> > Sorry for taking a while to review this. I was busy fixing the FEC
+> > driver which i broke :-(
+> 
+> Not problem.
+> Interesting, what is wrong with FEC? We use it a lot.
 
-This is used by libpfm4 during event parsing to locate the pmu for an
-event.
+I broke MDIO transactions, when making them faster. Hopefully fixed.
 
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Reviewed-by: Ian Rogers <irogers@google.com>
----
- tools/perf/util/pmu.c | 11 +++++++++++
- tools/perf/util/pmu.h |  1 +
- 2 files changed, 12 insertions(+)
+> > > diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> > > index 92f737f101178..eb680e3d6bda5 100644
+> > > --- a/include/uapi/linux/ethtool.h
+> > > +++ b/include/uapi/linux/ethtool.h
+> > > @@ -1666,6 +1666,31 @@ static inline int ethtool_validate_duplex(__u8 duplex)
+> > >  	return 0;
+> > >  }
+> > >  
+> > > +static inline int ethtool_validate_master_slave_cfg(__u8 cfg)
+> > > +{
+> > > +	switch (cfg) {
+> > > +	case PORT_MODE_CFG_MASTER_PREFERRED:
+> > > +	case PORT_MODE_CFG_SLAVE_PREFERRED:
+> > > +	case PORT_MODE_CFG_MASTER_FORCE:
+> > > +	case PORT_MODE_CFG_SLAVE_FORCE:
+> > > +	case PORT_MODE_CFG_UNKNOWN:
+> > > +		return 1;
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +}
+> > 
+> > Does this need to be an inline function? 
+> 
+> Yes, otherwise we get a lot of "defined but not used " warnings.
 
-diff --git a/tools/perf/util/pmu.c b/tools/perf/util/pmu.c
-index 5642de7f8be7..92bd7fafcce6 100644
---- a/tools/perf/util/pmu.c
-+++ b/tools/perf/util/pmu.c
-@@ -871,6 +871,17 @@ static struct perf_pmu *pmu_find(const char *name)
- 	return NULL;
- }
- 
-+struct perf_pmu *perf_pmu__find_by_type(unsigned int type)
-+{
-+	struct perf_pmu *pmu;
-+
-+	list_for_each_entry(pmu, &pmus, list)
-+		if (pmu->type == type)
-+			return pmu;
-+
-+	return NULL;
-+}
-+
- struct perf_pmu *perf_pmu__scan(struct perf_pmu *pmu)
- {
- 	/*
-diff --git a/tools/perf/util/pmu.h b/tools/perf/util/pmu.h
-index 1edd214b75a5..cb6fbec50313 100644
---- a/tools/perf/util/pmu.h
-+++ b/tools/perf/util/pmu.h
-@@ -72,6 +72,7 @@ struct perf_pmu_alias {
- };
- 
- struct perf_pmu *perf_pmu__find(const char *name);
-+struct perf_pmu *perf_pmu__find_by_type(unsigned int type);
- int perf_pmu__config(struct perf_pmu *pmu, struct perf_event_attr *attr,
- 		     struct list_head *head_terms,
- 		     struct parse_events_error *error);
--- 
-2.26.2.303.gf8c07b1a785-goog
+Sorry, was not clear enough. I think there is only one user of this
+function? Why not put it in the same compilation unit, as a normal
+static function?
 
+	Andrew
