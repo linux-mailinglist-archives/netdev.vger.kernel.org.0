@@ -2,123 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F17E71C097C
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:35:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E5F1C099B
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728129AbgD3VfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 17:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727832AbgD3VfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:35:22 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F799C08E934
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:35:22 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id s63so7435742qke.4
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:35:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qD/fVPgRRIyWs24d7bjWoi8ignYx3dFl8pvIjbbWrGU=;
-        b=TUErJTMoV2Ef58XYi9bdjAC95qZO4uGsDuy9cDeCcFK0IeRCQ3XBsVBS3vT1mPKyYa
-         WSG3QgGvw7KaL5Otq4jLPgL21AJtOyqW4K+lD4OSaE/JgP4aStbDKBEtSR6YIXRGCaUR
-         R+R7eTPKYorVu5YwLeAnCVDykVjmcC3RWwSeOmGGqixwAwqwtxRowH1DxIcLPvf89puD
-         ZnEsu25jLQa/BvMMZy0er6ViYWlhQRzLfgaREzV6AXLboEDrheW03mE1tZ7xt98INzfm
-         tWREoSJIJX5ZdZtjc7h+jDru14emC5cumLiKSLGF1qtCVoSvUX9Gb/RIs8v2s8G4eldD
-         2rLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qD/fVPgRRIyWs24d7bjWoi8ignYx3dFl8pvIjbbWrGU=;
-        b=HmNaCvrAutp128RDdyqw2rolc4kwWXRDPHtmUWwsnDxdw1jXkJGmBDzmzqFmcY1UYb
-         67GkFAIAIUAC6cLh3WGvsDaEEleXYIVBTtAwovsxzFaO8fj62Y5AJ9HCMC7IFUZbO2/H
-         wkWDaeymPbf96XMpXmV9LeML5voyV+lA0GEb6w3aTIR5yok10KT+06Q1j1Pmkf3RiBnq
-         TRE/cXkSl4U4COT/431CG2PWL7ByDFVkkcDTsGXYJxKch01sIc5PuknaoVsSpLOSMO63
-         uM3BQGHz73gg9j2Ag5ltSWyaiB/l/legD1+y2ifXfhbaifw9cmV8wlQPtXUKYA+uabZK
-         QeAw==
-X-Gm-Message-State: AGi0PubKxcz2LicupyOGlvBMp6uoww06ur2/A7ElAHuxjEVKrq/7PEFa
-        o1lbPzL1AUiy5vLdvXJCXD+w1Q==
-X-Google-Smtp-Source: APiQypJi6p4doOBZCsZHqe8y+gXjnJQOo30NLPOjTKJ7zVOa3hlcWPk393DOxm2TvlEIiy3pxSBsRQ==
-X-Received: by 2002:a37:a049:: with SMTP id j70mr547040qke.193.1588282521684;
-        Thu, 30 Apr 2020 14:35:21 -0700 (PDT)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id s190sm1112543qkh.23.2020.04.30.14.35.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 14:35:21 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net
-Cc:     evgreen@chromium.org.net, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 3/3] net: ipa: zero return code before issuing generic EE command
-Date:   Thu, 30 Apr 2020 16:35:12 -0500
-Message-Id: <20200430213512.3434-4-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200430213512.3434-1-elder@linaro.org>
-References: <20200430213512.3434-1-elder@linaro.org>
+        id S1727070AbgD3Vog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 17:44:36 -0400
+Received: from mout.kundenserver.de ([217.72.192.73]:60459 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726447AbgD3Vof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:44:35 -0400
+Received: from mail-qk1-f178.google.com ([209.85.222.178]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MJEpp-1jimlN0NSd-00Khm9; Thu, 30 Apr 2020 23:44:34 +0200
+Received: by mail-qk1-f178.google.com with SMTP id s9so4748399qkm.6;
+        Thu, 30 Apr 2020 14:44:33 -0700 (PDT)
+X-Gm-Message-State: AGi0PuZghjhx/xayLprs8SLRh1slG58kMxKQ2L1E4Zrvs+TJooOskv55
+        wYYqOHCuTuBgWS+b0WwgUoKO/19OG/B9CKSQ/MU=
+X-Google-Smtp-Source: APiQypJG61UgX2jVL3xX+glRo4MMKBEeabgc3GqvItqPEIiPOYIHTXVB0ewjzbQUwQBm4qyJilYhp6OqGHyHSKdeL8Q=
+X-Received: by 2002:a37:63d0:: with SMTP id x199mr594389qkb.3.1588283072801;
+ Thu, 30 Apr 2020 14:44:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200430213101.135134-1-arnd@arndb.de> <20200430213101.135134-5-arnd@arndb.de>
+ <49831bca-b9cf-4b9a-1a60-f4289e9c83c0@embeddedor.com>
+In-Reply-To: <49831bca-b9cf-4b9a-1a60-f4289e9c83c0@embeddedor.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 30 Apr 2020 23:44:16 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0y0JTrsjFx1XRh7A6YdSZ=aJ1V3-Eajfsbz3HtQOEu7A@mail.gmail.com>
+Message-ID: <CAK8P3a0y0JTrsjFx1XRh7A6YdSZ=aJ1V3-Eajfsbz3HtQOEu7A@mail.gmail.com>
+Subject: Re: [PATCH 04/15] ath10k: fix gcc-10 zero-length-bounds warnings
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Michal Kazior <michal.kazior@tieto.com>,
+        Kalle Valo <kvalo@qca.qualcomm.com>,
+        Maharaja Kennadyrajan <mkenna@codeaurora.org>,
+        Wen Gong <wgong@codeaurora.org>,
+        Erik Stromdahl <erik.stromdahl@gmail.com>,
+        ath10k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:UzqWa1uTx+8qlS57U8rov8c8CfYZsP5wisVZbCwro749WkrbXdK
+ 0cV6I4ErTSyxR50khFsv5dK2Qa5SPh+/eDNZLi/Az7qv6cPL3BM1YfmQ6fX+460XHHB33Vj
+ I+hvKmYefNAW1DnDXSpYy3qtOp6BcXt6qNdNKgt3WB31bXgVC2X/V55SJg5IVlhwktVcPvn
+ gMS2w0/Rpd0FDqaHt1Lcw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:AffdSqvvlvY=:2+GBVTlK354dDFmmZnrEkl
+ M5pB+N7FiY+DIwhiGS/NIZS4Q9MEIhO7sgPEC6R+iz5kPSvJAJ8FPfNf195oLq2reuRyd1GrD
+ hijlBApvjh//G2bw+HeRCmcslf7QCWtJzg85Wbmx8SQTCBtbjFlnjQCzvZDQ6BtxO9U4qggTA
+ 6HNud3R4LmHMN7mK1yVCNFfUUgtGglT8n0oxfBTLluh3kr90cta/XH9rayjvEQ7TgkmYyn4G7
+ 6nU8q8dZ4A6YkgpRvyNVuCce4ONFlfHfAQ34cY/o24kLYVe9vyi1nDKorzSjJio6+FQC6auDw
+ ou6xFlch0fN/xniowavN1QR2VJ3nvr1CtctWiFqWjOaGir1QXVgNoVvHJ9TxZwNu3LrcUMdz2
+ 4aBh7kttMZWJMLPijwHl4BAO+1G1BrHmyJ/FF1NHARdLVU4z2ffZI1mvu1Hfh19j5t6Qq6S41
+ KEa7adNCtIgI42364dQA3Y4iOrdlqyr//oIA4Ua3m1rG35s58MgER3fvQ2liTGJmEzZXzMtgo
+ xSNrkaS407eMaktZfdVjgwRXhrfcBd0sRguIOghxGkBWb4/1p0UZgOkQbv1yBVzBQyqbn2iS3
+ I3z/C3HjgQ85rnCJogdO7EpfHhi+VWr/Dbdgkh6Capx0tPKqQfMPp2rB+MCpq2xqfx3M8QNsr
+ DlHWUdEkZ5aPKY5dhmVnJo50BN5dSt9AVk/wwMkKUql04VrY41mglfxMuVF1OwvZsTOKt/yBs
+ gzDpH2dV6uyB4j32Sn2KXv6X4lV3t0Wh+PYQItub43mcAaTx6mXJ3p6UvR93ZCl8AqEhXa2Hm
+ X2j3c5qoM9H1RG5xbeLdY0k2+9QZMgcR+UUwIluqSgWjKes5IM=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zero the result code stored in a field of the scratch 0 register
-before issuing a generic EE command.  This just guarantees that
-the value we read later was actually written as a result of the
-command.
+On Thu, Apr 30, 2020 at 11:41 PM Gustavo A. R. Silva
+<gustavo@embeddedor.com> wrote:
+> On 4/30/20 16:30, Arnd Bergmann wrote:
+> > gcc-10 started warning about out-of-bounds access for zero-length
+> > arrays:
+> The treewide patch is an experimental change and, as this change only applies
+> to my -next tree, I will carry this patch in it, so other people don't have
+> to worry about this at all.
 
-Also add the definitions of two more possible result codes that can
-be returned when issuing flow control enable or disable commands:
-  INCORRECT_CHANNEL_STATE: - channel must be in started state
-  INCORRECT_DIRECTION - flow control is only valid for TX channels
+Ok, thanks!
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi.c     | 7 +++++++
- drivers/net/ipa/gsi_reg.h | 2 ++
- 2 files changed, 9 insertions(+)
-
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index b4206fda0b22..b671bea0aa7c 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -1041,6 +1041,7 @@ static void gsi_isr_gp_int1(struct gsi *gsi)
- 
- 	complete(&gsi->completion);
- }
-+
- /* Inter-EE interrupt handler */
- static void gsi_isr_glob_ee(struct gsi *gsi)
- {
-@@ -1493,6 +1494,12 @@ static int gsi_generic_command(struct gsi *gsi, u32 channel_id,
- 	struct completion *completion = &gsi->completion;
- 	u32 val;
- 
-+	/* First zero the result code field */
-+	val = ioread32(gsi->virt + GSI_CNTXT_SCRATCH_0_OFFSET);
-+	val &= ~GENERIC_EE_RESULT_FMASK;
-+	iowrite32(val, gsi->virt + GSI_CNTXT_SCRATCH_0_OFFSET);
-+
-+	/* Now issue the command */
- 	val = u32_encode_bits(opcode, GENERIC_OPCODE_FMASK);
- 	val |= u32_encode_bits(channel_id, GENERIC_CHID_FMASK);
- 	val |= u32_encode_bits(GSI_EE_MODEM, GENERIC_EE_FMASK);
-diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
-index 7613b9cc7cf6..acc9e744c67d 100644
---- a/drivers/net/ipa/gsi_reg.h
-+++ b/drivers/net/ipa/gsi_reg.h
-@@ -410,6 +410,8 @@
- #define INTER_EE_RESULT_FMASK		GENMASK(2, 0)
- #define GENERIC_EE_RESULT_FMASK		GENMASK(7, 5)
- #define GENERIC_EE_SUCCESS_FVAL			1
-+#define GENERIC_EE_INCORRECT_DIRECTION_FVAL	3
-+#define GENERIC_EE_INCORRECT_CHANNEL_FVAL	5
- #define GENERIC_EE_NO_RESOURCES_FVAL		7
- #define USB_MAX_PACKET_FMASK		GENMASK(15, 15)	/* 0: HS; 1: SS */
- #define MHI_BASE_CHANNEL_FMASK		GENMASK(31, 24)
--- 
-2.20.1
-
+       Arnd
