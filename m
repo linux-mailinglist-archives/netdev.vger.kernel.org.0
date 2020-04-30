@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6711B1C0437
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 880F81C0438
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726419AbgD3Rzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 13:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36914 "EHLO
+        id S1726415AbgD3R4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 13:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726285AbgD3Rzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 13:55:35 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9589C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:55:34 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id b20so1708367lff.2
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:55:34 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726285AbgD3R4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 13:56:45 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F452C035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:56:45 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id b18so2227898ilf.2
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:56:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YAwfX35UFzd6AAyv2YXpwGNndjhBXbsHCYcXi8pKaz8=;
-        b=dzq2UkrzkJGvJE1iqEPv9BjOdtMs4tJpwP92ceQC5W5yz5QubHL3rYXDsnAV0ZhrLs
-         TjzkKl3+gZ/p39zs0ndp4U2z3hmWg5ozPHt2wJhyeURdoPGIbjK0N79quLKLRAHCJu9N
-         +tR78zimlcAmXB1uRKdh2UvYpxo3kKhmX9OW8=
+        bh=BwbahxsG+KHenJmfi2a6APaEYz00sv2G+e/c6gcXcGc=;
+        b=PIp6isw19iqdbNct2t+9cMW9Q1X3yRTqff60dZAz7YXay2aGf8t7PSnzI+jB8qj3G5
+         oaUWs5Bkq5IBLo0XYiVUuZVxU/sg64rkgskJSWfSEu99HfIDamu+pmjDOb7JQ+n2rUBg
+         o1inOLvowJswfb/1ra3EN94/Z3k7o8ClYo4u18hECvHhYP0HfhMmxa043FizNdBGsJ+1
+         nB+0hjTG574RPet6fxByS/IOexKRjLY3KQfbNfKYULEcrJ2asXyjzU7hvGo1LC9M6JLY
+         jxHDJNBm3n3WWpXCj77nEk5v8NVfek12XakY2odxJhKUdMC/7ZXYkfQnNOES960oiYf5
+         ppiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YAwfX35UFzd6AAyv2YXpwGNndjhBXbsHCYcXi8pKaz8=;
-        b=cy9BTS0+h/f0U93jB84GD/eba7ELukifTgylLBooswCSbm8W+eFj2GHNf1m3CFsWJL
-         EH2YWVjBNiQLDefXbnosndSxLZJbqP2aJKEVgAvaTyhgXm0OgGtR3UltHy+L/meZbYxJ
-         JTkDZvAuvyJ5zC2cF06gF9JhDuKP51j0nSdHaCwUolkzd50Osyk3FLoPTd+JvirQXQHg
-         7272XQUyag4su5tiRIFDq1eokLX255kgQVW6wzACIa0s++9dIsyPrRuA7SE9/cJo769F
-         fDUx7p4uvH1v8E7AlA/644FyfdOa+1rwhFTMvjH0RbYhHbD3zstwHlyK5uj9q54mbciK
-         uJWg==
-X-Gm-Message-State: AGi0Pua+i1iJ3aoe+R8XqBtSLoSKi9GwQNFqNPBsJ+KHj7q62QTNBD86
-        CBgoiVKk89kJlY49X0rdg4DY7vBedW0CArQI
-X-Google-Smtp-Source: APiQypLWqd1DVPn0LSQMSL3Oty3e+5YHIlb2J+n2JW4jv2vmSj+yVEvwb3r51afFuMJ4AtzWT5LtoQ==
-X-Received: by 2002:ac2:4d12:: with SMTP id r18mr2970088lfi.181.1588269333265;
-        Thu, 30 Apr 2020 10:55:33 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id z9sm341276lfd.9.2020.04.30.10.55.31
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=BwbahxsG+KHenJmfi2a6APaEYz00sv2G+e/c6gcXcGc=;
+        b=eIevlC908T0JcSamAyLe/6zuvbnjLb4dTHy1bOh7nTx1yCyI7P4LN4Jsh0Wr/GX+oK
+         HTxu3J7DrJ31sesQKpX4eTExsiRZKtTT92QDFmUbWN6qsbLn6553/bqueXLM8AB0jN6C
+         fBfRHAXQqsf0HjXzXmRXlpUF+tj3TlkIblcixFNgTPILPIVfNzPkvQOFtT9n3aSyU8iE
+         jTppjD8sKHZtMrz+0x0939reQkM7KViu7fvE8gP9nKO3PG4LUdcE73fPIZ18Jto9o3sE
+         ycF9zk1j3nWwpjoz7unP7VR6lZK5+wmksPNXTUeXII2wkPf4Z1M69YLInvhsl24qYnuH
+         uNOg==
+X-Gm-Message-State: AGi0PuYwJVRVUGbHppzJYVkSvKUOx/zWPnzysq8ro080AdVfyHVd9keS
+        FrrRXIDlVGZt2hBpVM4c1Uc=
+X-Google-Smtp-Source: APiQypJlKh31yypp91YWhoo1veQbXJf5NvqUSQfVZLTe3+e2SmMvn+XmcVfN+sr4I4nJr1DzD1ZwLA==
+X-Received: by 2002:a92:2912:: with SMTP id l18mr3270967ilg.28.1588269404501;
+        Thu, 30 Apr 2020 10:56:44 -0700 (PDT)
+Received: from [10.67.49.116] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id n64sm167556ild.85.2020.04.30.10.56.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Apr 2020 10:55:31 -0700 (PDT)
+        Thu, 30 Apr 2020 10:56:43 -0700 (PDT)
 Subject: Re: [PATCH net-next 1/4] bridge: Allow enslaving DSA master network
  devices
-To:     Vladimir Oltean <olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jiri Pirko <jiri@resnulli.us>,
@@ -62,22 +65,76 @@ References: <20200429161952.17769-1-olteanv@gmail.com>
  <6b1681a7-13e1-9aaa-f765-2a327fb27555@cumulusnetworks.com>
  <147e0ee1-75f9-4dba-aff5-f7b4a078cbae@cumulusnetworks.com>
  <CA+h21hpAJDomzqTh2UBkefzWOnVbEa+EXmx9k8LXbUwhoURVZg@mail.gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <d9ce7400-2356-1304-d50d-3b54d912f065@cumulusnetworks.com>
-Date:   Thu, 30 Apr 2020 20:55:30 +0300
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <804c28dc-8c7b-db88-6422-cca72da6abe4@gmail.com>
+Date:   Thu, 30 Apr 2020 10:56:38 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+ Thunderbird/68.7.0
 MIME-Version: 1.0
 In-Reply-To: <CA+h21hpAJDomzqTh2UBkefzWOnVbEa+EXmx9k8LXbUwhoURVZg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/04/2020 20:50, Vladimir Oltean wrote:
+On 4/30/20 10:50 AM, Vladimir Oltean wrote:
 > Hi Nikolay, Roopa,
 > 
 > On Wed, 29 Apr 2020 at 19:33, Nikolay Aleksandrov
@@ -176,20 +233,20 @@ On 30/04/2020 20:50, Vladimir Oltean wrote:
 > Actually both of those are problematic, since br_port_get_check_rcu
 > and br_port_get_check_rtnl check for the rx_handler pointer against
 > br_handle_frame.
-
-Right, but they can be changed to use a different validation.
-
 > Actually a plain old revert of 8db0a2ee2c63 works just fine for what I
 > need it to, not sure if there's any point in making this any more
 > complicated than that.
 > What do you think?
-> 
 
-Sounds much better to me if it works for you.
+We would still be leaving single switch fabric with no nested tagging
+non functional if we allow a DSA master to be enslaved into the bridge I
+believe, unless something changed in how handlers are processed between
+8db0a2ee2c63 and now.
 
-Thanks!
-
-> Thanks,
-> -Vladimir
-> 
-
+From what you described to me, your Ocelot/Felix interfaces are DSA
+slaves from one side, and DSA master for the sja1105 network devices. We
+could change the netdev_uses_dsa() into something slightly more
+elaborate, which is reflective of whether there is nested tagging being
+used.
+-- 
+Florian
