@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 691A11BEDA4
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 03:34:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5238E1BEDA6
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 03:34:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbgD3Be2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 21:34:28 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:34177 "EHLO
+        id S1726816AbgD3Ber (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 21:34:47 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:35951 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726338AbgD3Be2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 21:34:28 -0400
+        by vger.kernel.org with ESMTP id S1726338AbgD3Ber (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 21:34:47 -0400
 Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id E64F55C0098;
-        Wed, 29 Apr 2020 21:34:26 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 29 Apr 2020 21:34:26 -0400
+        by mailout.nyi.internal (Postfix) with ESMTP id 1D8965C0129;
+        Wed, 29 Apr 2020 21:34:46 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Wed, 29 Apr 2020 21:34:46 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rylan.coffee; h=
         date:from:to:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=gdaFA2XkrvEtYXytp2mxXVDgZSI
-        YUFcivrn9R/xM5YM=; b=CKLv1oQ6TUexrFBL4TlN9aP6IUlawlmTojkSNNzT/08
-        0ao9TU1diTYrFNtJv9EHzY0Yvyw1GZEhwHg+gCy67USLeVmjHfHNbkhYUDKaYPlx
-        b4CinJbh/v7yo1C3Z9zNdjT/dcLBBFeIj0AjDy/sL5SOfXEjBGHUqwmTOpgQJ66z
-        51YgAHg29Vh5UWkBuo1tF4sE46ENbXRr3JfXZioLxl28W6M8hWYFUx1J2WCOdNDT
-        v6vkRxCOLy3FoRdNBUQAwAsA3n7uKpxBUqCJazuUnyfChPxDThl9AxEF5H03BueC
-        wETHTUqtdnAnbl1DCk6n7obiNtxRTHP2bp1xOGCW2PA==
+        :content-type:in-reply-to; s=fm3; bh=Ap62E9FkHJTqhnbxmGojLA3qLN5
+        +5l3/L8sbJ+VpUqE=; b=X6SEIOqcJQ55Mh1dwrloTTvvNyhEaNQDD3hUTk6m77/
+        ecgZlhseqjpwW72yvDxu3EhWvMBAgPnb8YVSGE71nFA/2lfLkfNeAcI7ak6OF3wr
+        8mJBDYUTSKVsJGcx5VxgHSuRpJOZZFwwn7yuwZdMv0cs5/tZSVpAH5oRQWMvSvcr
+        0uYPDiCEop13gRcthKd1Y8Uov2teptKsGEZyuJmwN9ZVLoF5c64iv5qE9pBF6a9m
+        JRTEGNfw0LNnSPbCEQkm5ruQ8rZCnpAg+kR4O4sT8m0JoNyaBF8AUdXHyfYt/sSI
+        3p0AYRgudLbGhUFGstXjC1kvYZapfCoh+/W3o0t22Aw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=gdaFA2
-        XkrvEtYXytp2mxXVDgZSIYUFcivrn9R/xM5YM=; b=SNFr3fxpj8w+zqWE+xpJ0Z
-        G/sNTus4+EJ6w8fTgSiaK4JO26tj7GILPmEl0ZJz9Kz6irZPTpO1pbymz8OB/mks
-        RE2Jk89nxfElFXqQtCuh4zssfpP+8kO/v7p20+ryb5a5pSrci68wTr+rOnprK84u
-        GBekVXMWTFqbb1orG5KIuw71jyVyT0LclOUkyGTpYLE6Q46Gr8INT/ywlVtGuPIy
-        BbPoe+8XYEhXRwNf4W3ui/IaYUoCRMPf1gJVbfcmE+lm0c9IXGVNtvbIGxl8KG3a
-        Xs93gtTb7Jd/LdaXqijaKK5AbEoiC1C09cS0+4Av0yypz/M4+NvsCJN7+GX1NptQ
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Ap62E9
+        FkHJTqhnbxmGojLA3qLN5+5l3/L8sbJ+VpUqE=; b=Ny7yhuP3FwmL9hv73Xup9A
+        1eEjDj4xCEIBL23F6cxxG0at2Zlh0R+IA443xgigNbe2jLIoZ7K5jj5o9OEb5pp3
+        1MjaQhW1bKJDh8hX69y3dl4vRst3AO9wCWWibcyJ2S6G/97VH7lWr8rfWs93XlPa
+        kdVjaQpViHEmhyMeeI6TMkIPfQEFitVlZGG3luno42ZuJdltz2IjKCqgDWCfLmlO
+        EbY+hH+qPeAbtKY9J88JY4Lmzc6oHdzBI/QU25/0g5tNxBD0l3ymbSEpG6k/YGN7
+        vRg/a69LrMTzZ+C9OoPtd5u4JsvkRvvUdIkoqDi/qTCxGC3ynmdXvQPV2kbMw3zw
         ==
-X-ME-Sender: <xms:IiuqXu223_9CFqIBySUTMH2F1Xz11kiiJtrknJIdF6fLsj4XDsysyA>
+X-ME-Sender: <xms:NSuqXiwXAqRwnfiUGH1XYR6wfhWL4EzUSxQgxI6mjWkDwBUiytUOtg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrieeggdegjecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
     fjughrpeffhffvuffkfhggtggujgesthdtredttddtjeenucfhrhhomheptfihlhgrnhcu
     ffhmvghllhhouceomhgrihhlsehrhihlrghnrdgtohhffhgvvgeqnecuggftrfgrthhtvg
     hrnhepjeffvefffeevgfdtteegudffieduveeuhfettddvueehveethfffgeetfeeghfeu
-    necukfhppedutdekrdegledrudehkedrkeegnecuvehluhhsthgvrhfuihiivgepfeenuc
+    necukfhppedutdekrdegledrudehkedrkeegnecuvehluhhsthgvrhfuihiivgepgeenuc
     frrghrrghmpehmrghilhhfrhhomhepmhgrihhlsehrhihlrghnrdgtohhffhgvvg
-X-ME-Proxy: <xmx:IiuqXiaC57b8yZgIUFv1DjkgXIHBDx7qtWGGPU965mvpY1Rq_s0d6g>
-    <xmx:IiuqXriSt2kJGmd5voBxXMYzF_zmgMBzo1rrfaUMsODIu5gIsqJrkg>
-    <xmx:IiuqXihwVm1FLo2IsK3Z7aB9m24HfvF2PkH7vafUb3gN9uPIsxqnfA>
-    <xmx:IiuqXgo5t-48Pwic6YQagcvEkQ8ddv7UKERY9st0QmbiId3B2FnuUg>
+X-ME-Proxy: <xmx:NSuqXjhvREmYHmSMYi9Xg-hewnnN64042JLhRzWRY9kw70oLC4KOQg>
+    <xmx:NSuqXmBKQ57ohuHSsTGWwserAXumEvCscXfIxlSfXHWVcFxt2qZUng>
+    <xmx:NSuqXgvhQdzNOGNiLl7n-9-r6eXkuzjGovaf-CsK0JYpAnjPma2AHA>
+    <xmx:NiuqXtn4l49uXxdnDj3j5zvKx1SWE8lhBPElZquY18Qw7B1rjLIDBw>
 Received: from athena (pool-108-49-158-84.bstnma.fios.verizon.net [108.49.158.84])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 82AFC3280066;
-        Wed, 29 Apr 2020 21:34:26 -0400 (EDT)
-Date:   Wed, 29 Apr 2020 21:34:25 -0400
+        by mail.messagingengine.com (Postfix) with ESMTPA id A9DD43065EF9;
+        Wed, 29 Apr 2020 21:34:45 -0400 (EDT)
+Date:   Wed, 29 Apr 2020 21:34:44 -0400
 From:   Rylan Dmello <mail@rylan.coffee>
 To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>
-Subject: [PATCH v2 5/7] staging: qlge: Remove multi-line dereference from
- ql_request_irq
-Message-ID: <517d71f0cbc55e6880c19a9ff16c2c8ab8913251.1588209862.git.mail@rylan.coffee>
+Subject: [PATCH v2 6/7] staging: qlge: Fix suspect code indent warning in
+ ql_init_device
+Message-ID: <7c07400dbce98d0c4c84aa941da8f34e32616159.1588209862.git.mail@rylan.coffee>
 References: <cover.1588209862.git.mail@rylan.coffee>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -71,32 +71,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix checkpatch.pl warning:
+Fix checkpatch.pl warnings:
 
-  WARNING: Avoid multiple line dereference - prefer 'qdev->flags'
+  WARNING: suspect code indent for conditional statements (16, 23)
+  WARNING: line over 80 characters
 
 Signed-off-by: Rylan Dmello <mail@rylan.coffee>
 ---
- drivers/staging/qlge/qlge_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/qlge/qlge_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index bb6c198a0130..9aa62d146d97 100644
+index 9aa62d146d97..fa708c722033 100644
 --- a/drivers/staging/qlge/qlge_main.c
 +++ b/drivers/staging/qlge/qlge_main.c
-@@ -3415,9 +3415,9 @@ static int ql_request_irq(struct ql_adapter *qdev)
- 				     &qdev->rx_ring[0]);
- 			status =
- 			    request_irq(pdev->irq, qlge_isr,
--					test_bit(QL_MSI_ENABLED,
--						 &qdev->
--						 flags) ? 0 : IRQF_SHARED,
-+					test_bit(QL_MSI_ENABLED, &qdev->flags)
-+						? 0
-+						: IRQF_SHARED,
- 					intr_context->name, &qdev->rx_ring[0]);
- 			if (status)
- 				goto err_irq;
+@@ -4420,7 +4420,8 @@ static int ql_init_device(struct pci_dev *pdev, struct net_device *ndev,
+ 	} else {
+ 		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 		if (!err)
+-		       err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
++			err = dma_set_coherent_mask(&pdev->dev,
++						    DMA_BIT_MASK(32));
+ 	}
+ 
+ 	if (err) {
 -- 
 2.26.2
 
