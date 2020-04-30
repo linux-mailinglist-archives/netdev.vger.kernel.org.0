@@ -2,161 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B3AF1BEDE3
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 03:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A81E1BEE0F
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 04:08:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbgD3ByG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 21:54:06 -0400
-Received: from mga02.intel.com ([134.134.136.20]:46312 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726180AbgD3ByF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 21:54:05 -0400
-IronPort-SDR: 0MK2kr1nrAQJY3Izuit+fha58oC6tRm8u8+4zk9qV5z7IPe5WkkHXbhUp1Illj4PFnZuE3n3Iv
- THtbrYfljxgw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2020 18:54:05 -0700
-IronPort-SDR: JRfWvi/0Lcjk+7j12JjYQo0hWQ5eYjyLSlU4cFSiJd/P/ifnC+GnHASJKmi6QfUIwfb5/lw5Is
- uUZvwQBM3SGg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,333,1583222400"; 
-   d="scan'208";a="432783861"
-Received: from xsang-optiplex-9020.sh.intel.com (HELO xsang-OptiPlex-9020) ([10.239.159.140])
-  by orsmga005.jf.intel.com with ESMTP; 29 Apr 2020 18:54:01 -0700
-Date:   Thu, 30 Apr 2020 10:04:16 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Mao Wenan <maowenan@huawei.com>, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH bpf-next 1/2] bpf: Change error code when ops is NULL
-Message-ID: <20200430020416.GE15540@xsang-OptiPlex-9020>
+        id S1726431AbgD3CI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 22:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726282AbgD3CIz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 22:08:55 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A8FC035494;
+        Wed, 29 Apr 2020 19:08:55 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id ep1so2288625qvb.0;
+        Wed, 29 Apr 2020 19:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Vu8UiaF2b4dRg9zeaHqlAMkMaJD4/cTzxpfI02uBLpY=;
+        b=OR/ftyjtkMFNzeAqnvtnN1mXM6frk7fec+ZDoPVjz3zCG/8QOICl98B+8NE+sKJaAc
+         U6w9Iso7GU4KkE9jQJStWS4C45JYstsyrMq2DPHW0GcbDpmru52rGVOdatUH+ve8psqR
+         HKRDwmRozfmao8B1zAOP7g/rKQTu4hcpF3uf20nm8hOoz6jGA48JXjxxOLaVHYhnm4q4
+         TMJF0sDZh2nlzBuylSjjJqs4fJD3ZS1owQFzx78TKls/+bbowyjD/Qga6DJVQXMfxj0y
+         ReJsPh5urzz4x3Zq4TO13HuSz09PZYNcZwsKHBxzrWv3MCupSbO78gQUcM0CeudoaLrX
+         r3Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Vu8UiaF2b4dRg9zeaHqlAMkMaJD4/cTzxpfI02uBLpY=;
+        b=KAuUGE+fVowPh4MmxaFa17HMxv0UOrSzFcFw5rkJ2ZPuT2cpWBn0YEr2lAbeiuUyXB
+         fL7+pb3b1ZFBh3mFc6DywGFG9o3N19q5S4RxyfekTaBhcoa2H3CiSWDAu+xeh5Vvxab+
+         sc6vpwy5TXxc4TaG/qcAFrnawp1dOmveUBO3P7xcbPFDEB3n6sZljohTHyZorODRLrdZ
+         q4Sh+5rQpnNUZIiJJfYNHGu66r4o4pSFJ8gt1S+p0Uhactl/rk7dkLtInAjnJ62/YeKg
+         wMLELXsEnH7+J4bCxa47Drj+zjdDUF5azv1txosIZebbNnPJGoZhA2dQqiuKRhnm1cuX
+         s3LQ==
+X-Gm-Message-State: AGi0PuY3ntsU4W7OVQK40CpJiT1W2cC3MSUCkBKyb8vH7Dz4NjlRQCIW
+        lykP93lke0YHN403/qoWb9/cVIncUMxMVleO+eIqXQ6s
+X-Google-Smtp-Source: APiQypIUcTNT23Rtcj2G3NKC80N7LyIVkvjUQepIUAu6UfZbg2r9PmHgtgGsmP19kpog8YdtHiMAPLNUjFFBzNt/0XA=
+X-Received: by 2002:ad4:42c9:: with SMTP id f9mr789913qvr.228.1588212534412;
+ Wed, 29 Apr 2020 19:08:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200422083010.28000-2-maowenan@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200427201235.2994549-1-yhs@fb.com> <20200427201247.2995622-1-yhs@fb.com>
+In-Reply-To: <20200427201247.2995622-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 29 Apr 2020 19:08:43 -0700
+Message-ID: <CAEf4BzaWkKbtDQf=0gOBj7Q6icswh61ky3FFS8bAmhkefDV0tg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 11/19] bpf: add task and task/file targets
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mao,
+On Mon, Apr 27, 2020 at 1:17 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> Only the tasks belonging to "current" pid namespace
+> are enumerated.
+>
+> For task/file target, the bpf program will have access to
+>   struct task_struct *task
+>   u32 fd
+>   struct file *file
+> where fd/file is an open file for the task.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  kernel/bpf/Makefile    |   2 +-
+>  kernel/bpf/task_iter.c | 319 +++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 320 insertions(+), 1 deletion(-)
+>  create mode 100644 kernel/bpf/task_iter.c
+>
 
-Thank you for the patch! Perhaps something to improve:
+[...]
 
-[auto build test WARNING on bpf-next/master]
-[also build test WARNING on bpf/master net/master net-next/master ipvs/master v5.7-rc2 next-20200423]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+> +static void *task_seq_start(struct seq_file *seq, loff_t *pos)
+> +{
+> +       struct bpf_iter_seq_task_info *info = seq->private;
+> +       struct task_struct *task;
+> +       u32 id = info->id;
+> +
+> +       if (*pos == 0)
+> +               info->ns = task_active_pid_ns(current);
 
-url:    https://github.com/0day-ci/linux/commits/Mao-Wenan/Change-return-code-if-failed-to-load-object/20200424-025339
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-191-gc51a0382-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
-:::::: branch date: 19 hours ago
-:::::: commit date: 19 hours ago
+I wonder why pid namespace is set in start() callback each time, while
+net_ns was set once when seq_file is created. I think it should be
+consistent, no? Either pid_ns is another feature and is set
+consistently just once using the context of the process that creates
+seq_file, or net_ns could be set using the same method without
+bpf_iter infra knowing about this feature? Or there are some
+non-obvious aspects which make pid_ns easier to work with?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kbuild test robot <lkp@intel.com>
+Either way, process read()'ing seq_file might be different than
+process open()'ing seq_file, so they might have different namespaces.
+We need to decide explicitly which context should be used and do it
+consistently.
+
+> +
+> +       task = task_seq_get_next(info->ns, &id);
+> +       if (!task)
+> +               return NULL;
+> +
+> +       ++*pos;
+> +       info->task = task;
+> +       info->id = id;
+> +
+> +       return task;
+> +}
+> +
+> +static void *task_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+> +{
+> +       struct bpf_iter_seq_task_info *info = seq->private;
+> +       struct task_struct *task;
+> +
+> +       ++*pos;
+> +       ++info->id;
+
+this would make iterator skip pid 0? Is that by design?
+
+> +       task = task_seq_get_next(info->ns, &info->id);
+> +       if (!task)
+> +               return NULL;
+> +
+> +       put_task_struct(info->task);
+
+on very first iteration info->task might be NULL, right?
+
+> +       info->task = task;
+> +       return task;
+> +}
+> +
+> +struct bpf_iter__task {
+> +       __bpf_md_ptr(struct bpf_iter_meta *, meta);
+> +       __bpf_md_ptr(struct task_struct *, task);
+> +};
+> +
+> +int __init __bpf_iter__task(struct bpf_iter_meta *meta, struct task_struct *task)
+> +{
+> +       return 0;
+> +}
+> +
+> +static int task_seq_show(struct seq_file *seq, void *v)
+> +{
+> +       struct bpf_iter_meta meta;
+> +       struct bpf_iter__task ctx;
+> +       struct bpf_prog *prog;
+> +       int ret = 0;
+> +
+> +       prog = bpf_iter_get_prog(seq, sizeof(struct bpf_iter_seq_task_info),
+> +                                &meta.session_id, &meta.seq_num,
+> +                                v == (void *)0);
+> +       if (prog) {
+
+can it happen that prog is NULL?
 
 
-sparse warnings: (new ones prefixed by >>)
+> +               meta.seq = seq;
+> +               ctx.meta = &meta;
+> +               ctx.task = v;
+> +               ret = bpf_iter_run_prog(prog, &ctx);
+> +       }
+> +
+> +       return ret == 0 ? 0 : -EINVAL;
+> +}
+> +
+> +static void task_seq_stop(struct seq_file *seq, void *v)
+> +{
+> +       struct bpf_iter_seq_task_info *info = seq->private;
+> +
+> +       if (!v)
+> +               task_seq_show(seq, v);
 
->> kernel/bpf/syscall.c:117:0: sparse: sparse: missing terminating " character
-   kernel/bpf/syscall.c:118:0: sparse: sparse: missing terminating " character
->> kernel/bpf/syscall.c:686:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:772:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:979:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1046:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1111:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1164:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1341:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1442:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1504:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1548:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1550:1: sparse: sparse: directive in macro's argument list
-   kernel/bpf/syscall.c:1551:1: sparse: sparse: directive in macro's argument list
->> kernel/bpf/syscall.c:116:17: sparse: sparse: macro "pr_warn" passed 2 arguments, but takes just 2
->> include/linux/bpf_types.h:7:1: sparse: sparse: No right hand side of ','-expression
-   include/linux/bpf_types.h:7:1: sparse: sparse: Expected ; at end of statement
-   include/linux/bpf_types.h:7:1: sparse: sparse: got [
-   include/linux/bpf_types.h:121:0: sparse: sparse: Expected } at end of compound statement
-   include/linux/bpf_types.h:121:0: sparse: sparse: got end-of-input
-   include/linux/bpf_types.h:121:0: sparse: sparse: Expected } at end of function
-   include/linux/bpf_types.h:121:0: sparse: sparse: got end-of-input
-   kernel/bpf/syscall.c:116:17: sparse: sparse: undefined identifier 'pr_warn'
-   kernel/bpf/syscall.c:1560:21: sparse: sparse: undefined identifier 'bpf_prog_types'
-   kernel/bpf/syscall.c:1560:21: sparse: sparse: undefined identifier 'bpf_prog_types'
-   kernel/bpf/syscall.c:1562:16: sparse: sparse: undefined identifier 'bpf_prog_types'
-   kernel/bpf/syscall.c:1562:16: sparse: sparse: undefined identifier 'bpf_prog_types'
-   kernel/bpf/syscall.c:1562:16: sparse: sparse: undefined identifier 'bpf_prog_types'
-   kernel/bpf/syscall.c:1562:16: sparse: sparse: undefined identifier 'bpf_prog_types'
->> kernel/bpf/syscall.c:1562:16: sparse: sparse: cannot size expression
-   kernel/bpf/syscall.c:1563:15: sparse: sparse: undefined identifier 'bpf_prog_types'
-   kernel/bpf/syscall.c:1797:27: sparse: sparse: undefined identifier 'bpf_dummy_read'
-   kernel/bpf/syscall.c:1798:27: sparse: sparse: undefined identifier 'bpf_dummy_write'
-   kernel/bpf/syscall.c:2293:27: sparse: sparse: undefined identifier 'bpf_dummy_read'
-   kernel/bpf/syscall.c:2294:27: sparse: sparse: undefined identifier 'bpf_dummy_write'
-   kernel/bpf/syscall.c:2870:23: sparse: sparse: undefined identifier '__bpf_map_inc_not_zero'
-   kernel/bpf/syscall.c:3538:15: sparse: sparse: undefined identifier 'map_get_sys_perms'
-   kernel/bpf/syscall.c:3544:15: sparse: sparse: undefined identifier 'map_get_sys_perms'
-   kernel/bpf/syscall.c:3685:23: sparse: sparse: undefined identifier 'map_create'
-   kernel/bpf/syscall.c:3688:23: sparse: sparse: undefined identifier 'map_lookup_elem'
-   kernel/bpf/syscall.c:3691:23: sparse: sparse: undefined identifier 'map_update_elem'
-   kernel/bpf/syscall.c:3694:23: sparse: sparse: undefined identifier 'map_delete_elem'
-   kernel/bpf/syscall.c:3697:23: sparse: sparse: undefined identifier 'map_get_next_key'
-   kernel/bpf/syscall.c:3700:23: sparse: sparse: undefined identifier 'map_freeze'
-   kernel/bpf/syscall.c:3757:23: sparse: sparse: undefined identifier 'map_lookup_and_delete_elem'
+hmm... show() called from stop()? what's the case where this is necessary?
+> +
+> +       if (info->task) {
+> +               put_task_struct(info->task);
+> +               info->task = NULL;
+> +       }
+> +}
+> +
 
-# https://github.com/0day-ci/linux/commit/45c88e856945c443c39e3f519ad9740b8e487d8d
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout 45c88e856945c443c39e3f519ad9740b8e487d8d
-vim +117 kernel/bpf/syscall.c
-
-a38845729ea398 Jakub Kicinski     2018-01-11  103  
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  104  static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  105  {
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  106  	const struct bpf_map_ops *ops;
-9ef09e35e521bf Mark Rutland       2018-05-03  107  	u32 type = attr->map_type;
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  108  	struct bpf_map *map;
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  109  	int err;
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  110  
-9ef09e35e521bf Mark Rutland       2018-05-03  111  	if (type >= ARRAY_SIZE(bpf_map_types))
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  112  		return ERR_PTR(-EINVAL);
-9ef09e35e521bf Mark Rutland       2018-05-03  113  	type = array_index_nospec(type, ARRAY_SIZE(bpf_map_types));
-9ef09e35e521bf Mark Rutland       2018-05-03  114  	ops = bpf_map_types[type];
-45c88e856945c4 Mao Wenan          2020-04-22  115  	if (!ops) {
-45c88e856945c4 Mao Wenan          2020-04-22 @116  		pr_warn("map type %d not supported or
-45c88e856945c4 Mao Wenan          2020-04-22 @117  			 kernel config not opened\n", type);
-45c88e856945c4 Mao Wenan          2020-04-22  118  		return ERR_PTR(-EOPNOTSUPP);
-45c88e856945c4 Mao Wenan          2020-04-22  119  	}
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  120  	if (ops->map_alloc_check) {
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  121  		err = ops->map_alloc_check(attr);
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  122  		if (err)
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  123  			return ERR_PTR(err);
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  124  	}
-a38845729ea398 Jakub Kicinski     2018-01-11  125  	if (attr->map_ifindex)
-a38845729ea398 Jakub Kicinski     2018-01-11  126  		ops = &bpf_map_offload_ops;
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  127  	map = ops->map_alloc(attr);
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  128  	if (IS_ERR(map))
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  129  		return map;
-1110f3a9bcf394 Jakub Kicinski     2018-01-11  130  	map->ops = ops;
-9ef09e35e521bf Mark Rutland       2018-05-03  131  	map->map_type = type;
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  132  	return map;
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  133  }
-99c55f7d47c0dc Alexei Starovoitov 2014-09-26  134  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
+[...]
