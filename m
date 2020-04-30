@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0526B1C019C
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:08:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A741C0149
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728070AbgD3QH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 12:07:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50840 "EHLO mail.kernel.org"
+        id S1726768AbgD3QEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 12:04:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50872 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726907AbgD3QEi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726863AbgD3QEi (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Apr 2020 12:04:38 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1ECD424960;
+        by mail.kernel.org (Postfix) with ESMTPSA id 09AC524955;
         Thu, 30 Apr 2020 16:04:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588262676;
-        bh=AKLSRgDRMriBe2VoqmymF5TgViMK8zitSGO+zOckj4Y=;
+        bh=Y41GO6rEfa6gMe2ZRrhdf69OnsyEGPVtS8H/VZVw4d0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gmz2JniklUmBdPRbKa2AoCq051T0Mmlq6iC1/X2xhwrCFRLKwyuDwgMbn58tU1E3O
-         H9Fzrae1h+3NJ3h1TRtpKdoGgRXO0knnexhH6niXDR9202ah23t1yFNgpIHGChaSG+
-         v8JUvHp7ECphYKGa1/MlifkBkLyBs8MF5kmRhRYc=
+        b=b7G34SC9Xglb7EOCw5U+SKqgsW4DsYt3HJ7LNSwR4XKixsmgQ1D8d4YpYwd4T9edJ
+         uczCo0AzNicdSodlz8v1lcY9fAZfeLCztT3OrxNZcrGpwiP1udVu5oMsdlpzIgmg6g
+         Skf8p2Yk/Ungr3uWBbcHlf0A2kCfFB/9zXBXaR9E=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUBfu-00AxF3-9x; Thu, 30 Apr 2020 18:04:34 +0200
+        id 1jUBfu-00AxF8-Al; Thu, 30 Apr 2020 18:04:34 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 12/37] docs: networking: convert nf_conntrack-sysctl.txt to ReST
-Date:   Thu, 30 Apr 2020 18:04:07 +0200
-Message-Id: <4ce89bb56e2bf138c78dbf9ad9d654051b786be1.1588261997.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 13/37] docs: networking: convert nf_flowtable.txt to ReST
+Date:   Thu, 30 Apr 2020 18:04:08 +0200
+Message-Id: <082c505f4ad07906cc427c1046e64629bd612c47.1588261997.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588261997.git.mchehab+huawei@kernel.org>
 References: <cover.1588261997.git.mchehab+huawei@kernel.org>
@@ -46,141 +46,128 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
-- add a document title;
-- mark lists as such;
+- adjust title markup;
+- mark code blocks and literals as such;
+- add notes markups;
+- adjust identation, whitespaces and blank lines;
 - add to networking/index.rst.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
  Documentation/networking/index.rst            |  1 +
- ...ack-sysctl.txt => nf_conntrack-sysctl.rst} | 51 +++++++++++--------
- 2 files changed, 30 insertions(+), 22 deletions(-)
- rename Documentation/networking/{nf_conntrack-sysctl.txt => nf_conntrack-sysctl.rst} (85%)
+ .../{nf_flowtable.txt => nf_flowtable.rst}    | 55 ++++++++++---------
+ 2 files changed, 31 insertions(+), 25 deletions(-)
+ rename Documentation/networking/{nf_flowtable.txt => nf_flowtable.rst} (76%)
 
 diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index d98509f15363..e5128bb7e7df 100644
+index e5128bb7e7df..c4e8a43741be 100644
 --- a/Documentation/networking/index.rst
 +++ b/Documentation/networking/index.rst
-@@ -85,6 +85,7 @@ Contents:
-    netdevices
+@@ -86,6 +86,7 @@ Contents:
     netfilter-sysctl
     netif-msg
-+   nf_conntrack-sysctl
+    nf_conntrack-sysctl
++   nf_flowtable
  
  .. only::  subproject and html
  
-diff --git a/Documentation/networking/nf_conntrack-sysctl.txt b/Documentation/networking/nf_conntrack-sysctl.rst
-similarity index 85%
-rename from Documentation/networking/nf_conntrack-sysctl.txt
-rename to Documentation/networking/nf_conntrack-sysctl.rst
-index f75c2ce6e136..11a9b76786cb 100644
---- a/Documentation/networking/nf_conntrack-sysctl.txt
-+++ b/Documentation/networking/nf_conntrack-sysctl.rst
-@@ -1,8 +1,15 @@
+diff --git a/Documentation/networking/nf_flowtable.txt b/Documentation/networking/nf_flowtable.rst
+similarity index 76%
+rename from Documentation/networking/nf_flowtable.txt
+rename to Documentation/networking/nf_flowtable.rst
+index 0bf32d1121be..b6e1fa141aae 100644
+--- a/Documentation/networking/nf_flowtable.txt
++++ b/Documentation/networking/nf_flowtable.rst
+@@ -1,3 +1,6 @@
 +.. SPDX-License-Identifier: GPL-2.0
 +
-+===================================
-+Netfilter Conntrack Sysfs variables
-+===================================
++====================================
+ Netfilter's flowtable infrastructure
+ ====================================
+ 
+@@ -31,15 +34,17 @@ to use this new alternative forwarding path via nftables policy.
+ This is represented in Fig.1, which describes the classic forwarding path
+ including the Netfilter hooks and the flowtable fastpath bypass.
+ 
+-                                         userspace process
+-                                          ^              |
+-                                          |              |
+-                                     _____|____     ____\/___
+-                                    /          \   /         \
+-                                    |   input   |  |  output  |
+-                                    \__________/   \_________/
+-                                         ^               |
+-                                         |               |
++::
 +
- /proc/sys/net/netfilter/nf_conntrack_* Variables:
-+=================================================
++					 userspace process
++					  ^              |
++					  |              |
++				     _____|____     ____\/___
++				    /          \   /         \
++				    |   input   |  |  output  |
++				    \__________/   \_________/
++					 ^               |
++					 |               |
+       _________      __________      ---------     _____\/_____
+      /         \    /          \     |Routing |   /            \
+   -->  ingress  ---> prerouting ---> |decision|   | postrouting |--> neigh_xmit
+@@ -59,7 +64,7 @@ including the Netfilter hooks and the flowtable fastpath bypass.
+       \ /                                                                 |
+        |__yes_________________fastpath bypass ____________________________|
  
- nf_conntrack_acct - BOOLEAN
--	0 - disabled (default)
--	not 0 - enabled
-+	- 0 - disabled (default)
-+	- not 0 - enabled
+-               Fig.1 Netfilter hooks and flowtable interactions
++	       Fig.1 Netfilter hooks and flowtable interactions
  
- 	Enable connection tracking flow accounting. 64-bit byte and packet
- 	counters per flow are added.
-@@ -16,8 +23,8 @@ nf_conntrack_buckets - INTEGER
- 	This sysctl is only writeable in the initial net namespace.
+ The flowtable entry also stores the NAT configuration, so all packets are
+ mangled according to the NAT policy that matches the initial packets that went
+@@ -72,18 +77,18 @@ Example configuration
+ ---------------------
  
- nf_conntrack_checksum - BOOLEAN
--	0 - disabled
--	not 0 - enabled (default)
-+	- 0 - disabled
-+	- not 0 - enabled (default)
+ Enabling the flowtable bypass is relatively easy, you only need to create a
+-flowtable and add one rule to your forward chain.
++flowtable and add one rule to your forward chain::
  
- 	Verify checksum of incoming packets. Packets with bad checksums are
- 	in INVALID state. If this is enabled, such packets will not be
-@@ -27,8 +34,8 @@ nf_conntrack_count - INTEGER (read-only)
- 	Number of currently allocated flow entries.
+-        table inet x {
++	table inet x {
+ 		flowtable f {
+ 			hook ingress priority 0; devices = { eth0, eth1 };
+ 		}
+-                chain y {
+-                        type filter hook forward priority 0; policy accept;
+-                        ip protocol tcp flow offload @f
+-                        counter packets 0 bytes 0
+-                }
+-        }
++		chain y {
++			type filter hook forward priority 0; policy accept;
++			ip protocol tcp flow offload @f
++			counter packets 0 bytes 0
++		}
++	}
  
- nf_conntrack_events - BOOLEAN
--	0 - disabled
--	not 0 - enabled (default)
-+	- 0 - disabled
-+	- not 0 - enabled (default)
+ This example adds the flowtable 'f' to the ingress hook of the eth0 and eth1
+ netdevices. You can create as many flowtables as you want in case you need to
+@@ -101,12 +106,12 @@ forwarding bypass.
+ More reading
+ ------------
  
- 	If this option is enabled, the connection tracking code will
- 	provide userspace with connection tracking events via ctnetlink.
-@@ -62,8 +69,8 @@ nf_conntrack_generic_timeout - INTEGER (seconds)
- 	protocols.
+-This documentation is based on the LWN.net articles [1][2]. Rafal Milecki also
+-made a very complete and comprehensive summary called "A state of network
++This documentation is based on the LWN.net articles [1]_\ [2]_. Rafal Milecki
++also made a very complete and comprehensive summary called "A state of network
+ acceleration" that describes how things were before this infrastructure was
+-mailined [3] and it also makes a rough summary of this work [4].
++mailined [3]_ and it also makes a rough summary of this work [4]_.
  
- nf_conntrack_helper - BOOLEAN
--	0 - disabled (default)
--	not 0 - enabled
-+	- 0 - disabled (default)
-+	- not 0 - enabled
- 
- 	Enable automatic conntrack helper assignment.
- 	If disabled it is required to set up iptables rules to assign
-@@ -81,14 +88,14 @@ nf_conntrack_icmpv6_timeout - INTEGER (seconds)
- 	Default for ICMP6 timeout.
- 
- nf_conntrack_log_invalid - INTEGER
--	0   - disable (default)
--	1   - log ICMP packets
--	6   - log TCP packets
--	17  - log UDP packets
--	33  - log DCCP packets
--	41  - log ICMPv6 packets
--	136 - log UDPLITE packets
--	255 - log packets of any protocol
-+	- 0   - disable (default)
-+	- 1   - log ICMP packets
-+	- 6   - log TCP packets
-+	- 17  - log UDP packets
-+	- 33  - log DCCP packets
-+	- 41  - log ICMPv6 packets
-+	- 136 - log UDPLITE packets
-+	- 255 - log packets of any protocol
- 
- 	Log invalid packets of a type specified by value.
- 
-@@ -97,15 +104,15 @@ nf_conntrack_max - INTEGER
- 	nf_conntrack_buckets value * 4.
- 
- nf_conntrack_tcp_be_liberal - BOOLEAN
--	0 - disabled (default)
--	not 0 - enabled
-+	- 0 - disabled (default)
-+	- not 0 - enabled
- 
- 	Be conservative in what you do, be liberal in what you accept from others.
- 	If it's non-zero, we mark only out of window RST segments as INVALID.
- 
- nf_conntrack_tcp_loose - BOOLEAN
--	0 - disabled
--	not 0 - enabled (default)
-+	- 0 - disabled
-+	- not 0 - enabled (default)
- 
- 	If it is set to zero, we disable picking up already established
- 	connections.
-@@ -148,8 +155,8 @@ nf_conntrack_tcp_timeout_unacknowledged - INTEGER (seconds)
- 	default 300
- 
- nf_conntrack_timestamp - BOOLEAN
--	0 - disabled (default)
--	not 0 - enabled
-+	- 0 - disabled (default)
-+	- not 0 - enabled
- 
- 	Enable connection tracking flow timestamping.
- 
+-[1] https://lwn.net/Articles/738214/
+-[2] https://lwn.net/Articles/742164/
+-[3] http://lists.infradead.org/pipermail/lede-dev/2018-January/010830.html
+-[4] http://lists.infradead.org/pipermail/lede-dev/2018-January/010829.html
++.. [1] https://lwn.net/Articles/738214/
++.. [2] https://lwn.net/Articles/742164/
++.. [3] http://lists.infradead.org/pipermail/lede-dev/2018-January/010830.html
++.. [4] http://lists.infradead.org/pipermail/lede-dev/2018-January/010829.html
 -- 
 2.25.4
 
