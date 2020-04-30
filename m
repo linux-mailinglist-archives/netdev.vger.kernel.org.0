@@ -2,43 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6A8B1BFC66
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3DB91BFC4F
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:05:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728813AbgD3OFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 10:05:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34506 "EHLO mail.kernel.org"
+        id S1728610AbgD3NxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:53:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34526 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728586AbgD3NxB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:53:01 -0400
+        id S1728594AbgD3NxC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:53:02 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F0B7B208DB;
-        Thu, 30 Apr 2020 13:52:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 481CD2137B;
+        Thu, 30 Apr 2020 13:53:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254780;
-        bh=R7xIYQrlJiXMsfv9y/AFv2LM+jP7ACZzBBhPtjMf1lE=;
+        s=default; t=1588254782;
+        bh=4omsvwzjvrAXfjmYJeWPqUxUMXmyScBvf237aFKph34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KT6EplGNYJW4ddxLTBhjJ25TOkHlHmLEk3GbjVduMzzjih8ns6CtFFZGgAHa3Yryi
-         eaPoBnnVQQ2PbSFEvJN3CCGeIrHq1yJ2YOCROS8bld1fSzINWTNDb76AdoiXrEVnYC
-         e71lkpuxf4DES43UUSxZO3tzWqai8rKhMum7Mn78=
+        b=nGpeRi08Es88G+ZtpcmiirGKFnuRU8Vs5r670ipWNSKO2IR97PccGc7fIcUoE/Y88
+         mEul3lQerTva/7WJuH1XaP4q71QNgQLYNoMbv3B25pHJgIaYjgSpKLnbKmK8Adyah0
+         QEk9YlolX1KkM6ejRqdcRykNRs8dHtu9WwSpuIFQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Xiumei Mu <xmu@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Song Liu <songliubraving@fb.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 37/57] cpumap: Avoid warning when CONFIG_DEBUG_PER_CPU_MAPS is enabled
-Date:   Thu, 30 Apr 2020 09:51:58 -0400
-Message-Id: <20200430135218.20372-37-sashal@kernel.org>
+Cc:     Jann Horn <jannh@google.com>, Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-api@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 38/57] bpf: Forbid XADD on spilled pointers for unprivileged users
+Date:   Thu, 30 Apr 2020 09:51:59 -0400
+Message-Id: <20200430135218.20372-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135218.20372-1-sashal@kernel.org>
 References: <20200430135218.20372-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -47,45 +43,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit bc23d0e3f717ced21fbfacab3ab887d55e5ba367 ]
+[ Upstream commit 6e7e63cbb023976d828cdb22422606bf77baa8a9 ]
 
-When the kernel is built with CONFIG_DEBUG_PER_CPU_MAPS, the cpumap code
-can trigger a spurious warning if CONFIG_CPUMASK_OFFSTACK is also set. This
-happens because in this configuration, NR_CPUS can be larger than
-nr_cpumask_bits, so the initial check in cpu_map_alloc() is not sufficient
-to guard against hitting the warning in cpumask_check().
+When check_xadd() verifies an XADD operation on a pointer to a stack slot
+containing a spilled pointer, check_stack_read() verifies that the read,
+which is part of XADD, is valid. However, since the placeholder value -1 is
+passed as `value_regno`, check_stack_read() can only return a binary
+decision and can't return the type of the value that was read. The intent
+here is to verify whether the value read from the stack slot may be used as
+a SCALAR_VALUE; but since check_stack_read() doesn't check the type, and
+the type information is lost when check_stack_read() returns, this is not
+enforced, and a malicious user can abuse XADD to leak spilled kernel
+pointers.
 
-Fix this by explicitly checking the supplied key against the
-nr_cpumask_bits variable before calling cpu_possible().
+Fix it by letting check_stack_read() verify that the value is usable as a
+SCALAR_VALUE if no type information is passed to the caller.
 
-Fixes: 6710e1126934 ("bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CPUMAP")
-Reported-by: Xiumei Mu <xmu@redhat.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+To be able to use __is_pointer_value() in check_stack_read(), move it up.
+
+Fix up the expected unprivileged error message for a BPF selftest that,
+until now, assumed that unprivileged users can use XADD on stack-spilled
+pointers. This also gives us a test for the behavior introduced in this
+patch for free.
+
+In theory, this could also be fixed by forbidding XADD on stack spills
+entirely, since XADD is a locked operation (for operations on memory with
+concurrency) and there can't be any concurrency on the BPF stack; but
+Alexei has said that he wants to keep XADD on stack slots working to avoid
+changes to the test suite [1].
+
+The following BPF program demonstrates how to leak a BPF map pointer as an
+unprivileged user using this bug:
+
+    // r7 = map_pointer
+    BPF_LD_MAP_FD(BPF_REG_7, small_map),
+    // r8 = launder(map_pointer)
+    BPF_STX_MEM(BPF_DW, BPF_REG_FP, BPF_REG_7, -8),
+    BPF_MOV64_IMM(BPF_REG_1, 0),
+    ((struct bpf_insn) {
+      .code  = BPF_STX | BPF_DW | BPF_XADD,
+      .dst_reg = BPF_REG_FP,
+      .src_reg = BPF_REG_1,
+      .off = -8
+    }),
+    BPF_LDX_MEM(BPF_DW, BPF_REG_8, BPF_REG_FP, -8),
+
+    // store r8 into map
+    BPF_MOV64_REG(BPF_REG_ARG1, BPF_REG_7),
+    BPF_MOV64_REG(BPF_REG_ARG2, BPF_REG_FP),
+    BPF_ALU64_IMM(BPF_ADD, BPF_REG_ARG2, -4),
+    BPF_ST_MEM(BPF_W, BPF_REG_ARG2, 0, 0),
+    BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
+    BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
+    BPF_EXIT_INSN(),
+    BPF_STX_MEM(BPF_DW, BPF_REG_0, BPF_REG_8, 0),
+
+    BPF_MOV64_IMM(BPF_REG_0, 0),
+    BPF_EXIT_INSN()
+
+[1] https://lore.kernel.org/bpf/20200416211116.qxqcza5vo2ddnkdq@ast-mbp.dhcp.thefacebook.com/
+
+Fixes: 17a5267067f3 ("bpf: verifier (add verifier core)")
+Signed-off-by: Jann Horn <jannh@google.com>
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Tested-by: Xiumei Mu <xmu@redhat.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20200416083120.453718-1-toke@redhat.com
+Link: https://lore.kernel.org/bpf/20200417000007.10734-1-jannh@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/cpumap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/verifier.c                         | 28 +++++++++++++------
+ .../bpf/verifier/value_illegal_alu.c          |  1 +
+ 2 files changed, 20 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index ef49e17ae47cb..a367fc8503933 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -486,7 +486,7 @@ static int cpu_map_update_elem(struct bpf_map *map, void *key, void *value,
- 		return -EOVERFLOW;
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index e1a65303cfd7f..ae27dd77a73cb 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1866,6 +1866,15 @@ static bool register_is_const(struct bpf_reg_state *reg)
+ 	return reg->type == SCALAR_VALUE && tnum_is_const(reg->var_off);
+ }
  
- 	/* Make sure CPU is a valid possible cpu */
--	if (!cpu_possible(key_cpu))
-+	if (key_cpu >= nr_cpumask_bits || !cpu_possible(key_cpu))
- 		return -ENODEV;
++static bool __is_pointer_value(bool allow_ptr_leaks,
++			       const struct bpf_reg_state *reg)
++{
++	if (allow_ptr_leaks)
++		return false;
++
++	return reg->type != SCALAR_VALUE;
++}
++
+ static void save_register_state(struct bpf_func_state *state,
+ 				int spi, struct bpf_reg_state *reg)
+ {
+@@ -2056,6 +2065,16 @@ static int check_stack_read(struct bpf_verifier_env *env,
+ 			 * which resets stack/reg liveness for state transitions
+ 			 */
+ 			state->regs[value_regno].live |= REG_LIVE_WRITTEN;
++		} else if (__is_pointer_value(env->allow_ptr_leaks, reg)) {
++			/* If value_regno==-1, the caller is asking us whether
++			 * it is acceptable to use this value as a SCALAR_VALUE
++			 * (e.g. for XADD).
++			 * We must not allow unprivileged callers to do that
++			 * with spilled pointers.
++			 */
++			verbose(env, "leaking pointer from stack off %d\n",
++				off);
++			return -EACCES;
+ 		}
+ 		mark_reg_read(env, reg, reg->parent, REG_LIVE_READ64);
+ 	} else {
+@@ -2416,15 +2435,6 @@ static int check_sock_access(struct bpf_verifier_env *env, int insn_idx,
+ 	return -EACCES;
+ }
  
- 	if (qsize == 0) {
+-static bool __is_pointer_value(bool allow_ptr_leaks,
+-			       const struct bpf_reg_state *reg)
+-{
+-	if (allow_ptr_leaks)
+-		return false;
+-
+-	return reg->type != SCALAR_VALUE;
+-}
+-
+ static struct bpf_reg_state *reg_state(struct bpf_verifier_env *env, int regno)
+ {
+ 	return cur_regs(env) + regno;
+diff --git a/tools/testing/selftests/bpf/verifier/value_illegal_alu.c b/tools/testing/selftests/bpf/verifier/value_illegal_alu.c
+index 7f6c232cd8423..ed1c2cea1dea6 100644
+--- a/tools/testing/selftests/bpf/verifier/value_illegal_alu.c
++++ b/tools/testing/selftests/bpf/verifier/value_illegal_alu.c
+@@ -88,6 +88,7 @@
+ 	BPF_EXIT_INSN(),
+ 	},
+ 	.fixup_map_hash_48b = { 3 },
++	.errstr_unpriv = "leaking pointer from stack off -8",
+ 	.errstr = "R0 invalid mem access 'inv'",
+ 	.result = REJECT,
+ 	.flags = F_NEEDS_EFFICIENT_UNALIGNED_ACCESS,
 -- 
 2.20.1
 
