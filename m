@@ -2,150 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAA351C0A70
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 00:32:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 687531C0AEC
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 01:21:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbgD3WcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 18:32:02 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:22566 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726784AbgD3WcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 18:32:02 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03UM5ucG024980;
-        Thu, 30 Apr 2020 18:31:58 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30q8047k8f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Apr 2020 18:31:57 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 03UMUhM2002264;
-        Thu, 30 Apr 2020 22:31:55 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 30mcu5uet0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Apr 2020 22:31:55 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 03UMUi1W64487882
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 30 Apr 2020 22:30:44 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 940FAA4068;
-        Thu, 30 Apr 2020 22:31:53 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4CB64A4069;
-        Thu, 30 Apr 2020 22:31:53 +0000 (GMT)
-Received: from oc5500677777.ibm.com (unknown [9.145.146.74])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 30 Apr 2020 22:31:53 +0000 (GMT)
-Subject: Re: [PATCH 1/1] net/mlx5: Call pci_disable_sriov() on remove
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>
-References: <20200430120308.92773-1-schnelle@linux.ibm.com>
- <20200430120308.92773-2-schnelle@linux.ibm.com>
- <2409e7071482b8d05447b8660abcac15987ad399.camel@mellanox.com>
- <36de00e7-cccb-7de8-bd93-84cf647d6d39@linux.ibm.com>
-Message-ID: <0c59cb62-3156-54bb-0f36-837369adf220@linux.ibm.com>
-Date:   Fri, 1 May 2020 00:31:53 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726562AbgD3XVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 19:21:23 -0400
+Received: from mail-eopbgr130109.outbound.protection.outlook.com ([40.107.13.109]:36160
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726384AbgD3XVX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 19:21:23 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UwakUdd/CY1Vc/YNdUIUx8onDZyelZaqM82yKlg0mHAKHeFpMky/ayo4DEGuWJWltBBDKuzmEWcBaLi63IsfFctGu+ROsS/KSF2JbF2aizxl2anw+XH3E6bsDSNVgkgkOhjiW4Ecol/Ah8ZRsKiwtFeT7CjjWmjjes9cNI5aUrnrMqXC77vEd6d7vNJJTTB5VEqoMGrkqTzc4i7vKXQO+D52RtstznrQ3cgrug5Tf/61+TlvLjscLmAEZ6fxXc8rgrk/x8OQFfX/5OicbPzs+mLzaFslLThWlRVdQ6R9hyrk/cpkairRUhiORaWM/Esvz4+ajudAKKZLEfyyR0x5Eg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=piSK8B47Kxr1L7tXunndAKvyAuBuqgGjfZ9fEzZnjgo=;
+ b=BW3BabcxoVeFX8mhRaBsBnrSnNfl2OtvlwjP3e/JlPEkmbjcBj8fztrcXKQllaRXLG52yRaR2XT04fkP6aM36HXxQvDbapW2VrDgkv7LooQnulK9ph2Mvy3l/7ZcEoFoJsCXIuty9ptg+JC055ZB89xGHU4vXEw1mVNZFQOLBllMcjdMUXMs8/2Xn7qKFmIybupHuV9TyalGh2gaziz8N6UnfdGarM7rOiiG9StfwFPkEjqAdMWK8MPZXPsmuR6giSGIeX6yNq5rBmLzz4iCGPD0U9RffNX/vXyAlqBLT396/yjm3CqMEmCZSoFaE14MKNIW7+xaxfkZoTBCuSvbvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=piSK8B47Kxr1L7tXunndAKvyAuBuqgGjfZ9fEzZnjgo=;
+ b=nBFxEDsiTNRcgcL2WSZyXOcH5Fzan2J5bESSZHVMH6xlbvapjjZKM8M6E7E+TwrEfURFJSt5QH5psTVkKPYUZ5BkpXngoQz4HAhiXllEYYII2DCFAJrf50r4p3CmNdfEel9pZgzMOLPGlsSU9XB8zCmwTerc7BoYhA/9PP5LjIw=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=plvision.eu;
+Received: from DB6P190MB0390.EURP190.PROD.OUTLOOK.COM (10.175.242.25) by
+ DB6P190MB0471.EURP190.PROD.OUTLOOK.COM (10.165.186.22) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2958.20; Thu, 30 Apr 2020 23:21:19 +0000
+Received: from DB6P190MB0390.EURP190.PROD.OUTLOOK.COM
+ ([fe80::c59e:e6ed:2bec:94a6]) by DB6P190MB0390.EURP190.PROD.OUTLOOK.COM
+ ([fe80::c59e:e6ed:2bec:94a6%6]) with mapi id 15.20.2937.028; Thu, 30 Apr 2020
+ 23:21:19 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Vadym Kochan <vadym.kochan@plvision.eu>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Subject: [RFC next-next v2 0/5] net: marvell: prestera: Add Switchdev driver for Prestera family ASIC device 98DX326x (AC3x)
+Date:   Fri,  1 May 2020 02:20:47 +0300
+Message-Id: <20200430232052.9016-1-vadym.kochan@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: AM6P192CA0036.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:209:83::49) To DB6P190MB0390.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:6:33::25)
 MIME-Version: 1.0
-In-Reply-To: <36de00e7-cccb-7de8-bd93-84cf647d6d39@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-30_13:2020-04-30,2020-04-30 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- suspectscore=0 phishscore=0 adultscore=0 lowpriorityscore=0
- priorityscore=1501 bulkscore=0 spamscore=0 clxscore=1015 mlxlogscore=686
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004300159
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6P192CA0036.EURP192.PROD.OUTLOOK.COM (2603:10a6:209:83::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Thu, 30 Apr 2020 23:21:17 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [217.20.186.93]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e7408b52-2b74-4747-791b-08d7ed5d2feb
+X-MS-TrafficTypeDiagnostic: DB6P190MB0471:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB6P190MB0471996B26ADA0FFFB85064B95AA0@DB6P190MB0471.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Forefront-PRVS: 0389EDA07F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0Z/0AFir/o5kO8eGJM/jSjCalw29/TRXzCYfD9+1A4H9jrfJTJD14NMWegTn9HnYS/ophROt8wCKRhMJ2u4ejFwR7pNKpUK9pukMEiLBItMtLsrXnk1Bc72U81vgnrO7pZkvIDanOFx+KqO436WH0wWPGtlD6w78D4T6mVBfyn0R4/qIfeSD5qbU1MHu63uZlbHFTENAqfzCE/4rnlGCLO/XH9tMowbzjHRtoixzGADeYIJc6sTiJ/wIk+LedYNkoaQY8B/Rgv7OxguGLcT+2TOR1XUBp0tKUnFaTWJ2edDZ/GJop4HOZvOoj5bEElEIqY30KI4OrEoLc3ectYsH6gox4xgW56laGZgmRviIXLAYjrrQaH7lB96XZm8v5nUKQM67cEWWZsEdtdSTg7L3+a/Y1gCYGFx3cEg88oWsevbJPDCVdyjb7aicZG05ZAOX
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB6P190MB0390.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(39830400003)(396003)(366004)(376002)(136003)(346002)(6512007)(44832011)(54906003)(316002)(6666004)(2906002)(956004)(2616005)(508600001)(4326008)(66476007)(66556008)(66946007)(86362001)(36756003)(6486002)(6506007)(16526019)(186003)(26005)(8936002)(8676002)(52116002)(1076003)(6916009)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: MVVrzvi4eaoaFUSuNtnEJQBaAjnOZ/kreIfTU5N613aT8kA5yhyWI9dHNgBI+x1aDvEckEkSxpzBsgLu++cbmpHcgAqFFkAF2TAZz6+nCYbVGVPe3AyZvtDpQbzrq+8nQpxRE39rua0uT4cKWrc9+PWYxoaHnXM6OJlHL1gI7keli2leqn5m+SvClhVxwL7IztJJJ5mUI6ERGZJjOPqovdVo7xobHjqRe4bPluHuoBW9VPAIkoyu2BVSD+Aj+Z90lhIyu1+1O3jiLRes+VvR/I1aJlDK77pEqMx+dV4kbAL0AKuVSULjhYwR/GKeOA/pIbInYU/B8EHoc/UZwGg3k1h88RVrKt/hJIo/wmqcRkAQHGywWYJUVlYi0U8a8PFYgQasjMn+8eMzC2NEakdZj/IJHXTBJwX0OsrH81s1FHb1dNCdGxADDAG+S4e9TnieonbYy87lk9w7N4SkIwJ69DGZ6FUL1MUQUtLIueTyhzoBrJSN6ZbOblNiZmhABMF2JxPrTiPI5TLOlhyz8/O7t7ZV6JCjfKJRmnbTQ18ujxzrbH/B90CR+/+Z37k8Lab8joC6rOCaZcoTqULXLu1QIHcPdr9wslz/ge08C+asFNoH0+EYDlnX8si640BPvda7uusMStuOVFmeTZ8qf4s4LG0hBGaamI4ruxrD1JbX5HpUkQcZjbHULb6vkphTPooFVZwM6T1GdCqMdyTAFu+OgAFpA9XuyA5BY3FtTP77ArJSjcR3U6gQngfgNkz0Xf7PixoyjFJxoR6zp8CP/7V71qKzWFKJ+AycMtSrnszMr48=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7408b52-2b74-4747-791b-08d7ed5d2feb
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 23:21:18.9915
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: z1nUYXy5hWt3JM2Io0XvAcJHjat8nwOLAi4DWcB8a4DBobDHHkFTqdPEeikraOBNM7H75ewzPzI3f3hOnsljMch9ZYALXddZJGHzRQwwLFA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6P190MB0471
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Marvell Prestera 98DX326x integrates up to 24 ports of 1GbE with 8
+ports of 10GbE uplinks or 2 ports of 40Gbps stacking for a largely
+wireless SMB deployment.
 
+Prestera Switchdev is a firmware based driver which operates via PCI bus.  The
+current implementation supports only boards designed for the Marvell Switchdev
+solution and requires special firmware.
 
-On 4/30/20 9:47 PM, Niklas Schnelle wrote:
-> 
-> 
-> On 4/30/20 5:58 PM, Saeed Mahameed wrote:
->> On Thu, 2020-04-30 at 14:03 +0200, Niklas Schnelle wrote:
->>> as described in Documentation/PCI/pci-iov-howto.rst a driver with SR-
->>> IOV
->>> support should call pci_disable_sriov() in the remove handler.
->>
->> Hi Niklas,
->>
->> looking at the documentation, it doesn't say "should" it just gives the
->> code as example.
->>
->>> Otherwise removing a PF (e.g. via pci_stop_and_remove_bus_device())
->>> with
->>> attached VFs does not properly shut the VFs down before shutting down
->>> the PF. This leads to the VF drivers handling defunct devices and
->>> accompanying error messages.
->>>
->>
->> Which should be the admin responsibility .. if the admin want to do
->> this, then let it be.. why block him ? 
->>
->> our mlx5 driver in the vf handles this gracefully and once pf
->> driver/device is back online the vf driver quickly recovers.
-> See my answer to your other answer ;-)
->>
->>> In the current code pci_disable_sriov() is already called in
->>> mlx5_sriov_disable() but not in mlx5_sriov_detach() which is called
->>> from
->>> the remove handler. Fix this by moving the pci_disable_sriov() call
->>> into
->>> mlx5_device_disable_sriov() which is called by both.
->>>
->>> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
->>> ---
->>>  drivers/net/ethernet/mellanox/mlx5/core/sriov.c | 3 ++-
->>>  1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
->>> b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
->>> index 3094d20297a9..2401961c9f5b 100644
->>> --- a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
->>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
->>> @@ -114,6 +114,8 @@ mlx5_device_disable_sriov(struct mlx5_core_dev
->>> *dev, int num_vfs, bool clear_vf)
->>>  	int err;
->>>  	int vf;
->>>  
->>> +	pci_disable_sriov(dev->pdev);
->>> +
->>>  	for (vf = num_vfs - 1; vf >= 0; vf--) {
->>>  		if (!sriov->vfs_ctx[vf].enabled)
->>>  			continue;
->>> @@ -156,7 +158,6 @@ static void mlx5_sriov_disable(struct pci_dev
->>> *pdev)
->>>  	struct mlx5_core_dev *dev  = pci_get_drvdata(pdev);
->>>  	int num_vfs = pci_num_vf(dev->pdev);
->>>  
->>> -	pci_disable_sriov(pdev);
->>
->> this patch is no good as it breaks code symmetry.. and could lead to
->> many new issues.
-> Ah you're right I totally missed that there is a matching pci_enable_sriov() in
-> mlx5_enable_sriov() haven't used these myself before and since it wasn't in the
-> documentation example I somehow expected it to happen in non-driver code,
-aaand it actually is in the documentation example and I definitely sent this
-when it wasn't ready, sorry again…
-> so for symmetry that would also have to move to mlx5_device_enable_sriov(),
-> sorry for the oversight.
->>
->>
->>>  	mlx5_device_disable_sriov(dev, num_vfs, true);
->>>  }
->>>  
->>
+This driver implementation includes only L1, basic L2 support, and RX/TX.
+
+The core Prestera switching logic is implemented in prestera.c, there is
+an intermediate hw layer between core logic and firmware. It is
+implemented in prestera_hw.c, the purpose of it is to encapsulate hw
+related logic, in future there is a plan to support more devices with
+different HW related configurations.
+
+The following Switchdev features are supported:
+
+    - VLAN-aware bridge offloading
+    - VLAN-unaware bridge offloading
+    - FDB offloading (learning, ageing)
+    - Switchport configuration
+
+RFC v2:
+    1) Use "pestera_" prefix in struct's and functions instead of mvsw_pr_
+
+    2) Original series split into additional patches for Switchdev ethtool support.
+
+    3) Use major and minor firmware version numbers in the firmware image filename.
+
+    4) Removed not needed prints.
+
+    5) Use iopoll API for waiting on register's value in prestera_pci.c
+
+    6) Use standart approach for describing PCI ID matching section instead of using
+       custom wrappers in prestera_pci.c
+
+    7) Add RX/TX support in prestera_rxtx.c.
+
+    8) Rewritten prestera_switchdev.c with following changes:
+       - handle netdev events from prestera.c
+
+       - use struct prestera_bridge for bridge objects, and get rid of
+         struct prestera_bridge_device which may confuse.
+
+       - use refcount_t
+
+    9) Get rid of macro usage for sending fw requests in prestera_hw.c
+
+    10) Add base_mac setting as module parameter. base_mac is required for
+        generation default port's mac.
+
+Vadym Kochan (5):
+  net: marvell: prestera: Add driver for Prestera family ASIC devices
+  net: marvell: prestera: Add PCI interface support
+  net: marvell: prestera: Add ethtool interface support
+  net: marvell: prestera: Add Switchdev driver implementation
+  dt-bindings: marvell,prestera: Add address mapping for Prestera
+    Switchdev PCIe driver
+
+ .../bindings/net/marvell,prestera.txt         |   13 +
+ drivers/net/ethernet/marvell/Kconfig          |    1 +
+ drivers/net/ethernet/marvell/Makefile         |    1 +
+ drivers/net/ethernet/marvell/prestera/Kconfig |   24 +
+ .../net/ethernet/marvell/prestera/Makefile    |    6 +
+ .../net/ethernet/marvell/prestera/prestera.c  | 1394 +++++++++++++++++
+ .../net/ethernet/marvell/prestera/prestera.h  |  200 +++
+ .../ethernet/marvell/prestera/prestera_dsa.c  |  134 ++
+ .../ethernet/marvell/prestera/prestera_dsa.h  |   37 +
+ .../ethernet/marvell/prestera/prestera_hw.c   | 1200 ++++++++++++++
+ .../ethernet/marvell/prestera/prestera_hw.h   |  172 ++
+ .../ethernet/marvell/prestera/prestera_pci.c  |  829 ++++++++++
+ .../ethernet/marvell/prestera/prestera_rxtx.c |  825 ++++++++++
+ .../ethernet/marvell/prestera/prestera_rxtx.h |   21 +
+ .../marvell/prestera/prestera_switchdev.c     | 1176 ++++++++++++++
+ .../marvell/prestera/prestera_switchdev.h     |   16 +
+ 16 files changed, 6049 insertions(+)
+ create mode 100644 drivers/net/ethernet/marvell/prestera/Kconfig
+ create mode 100644 drivers/net/ethernet/marvell/prestera/Makefile
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera.h
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_dsa.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_dsa.h
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_hw.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_hw.h
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_pci.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_rxtx.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_rxtx.h
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_switchdev.h
+
+-- 
+2.17.1
+
