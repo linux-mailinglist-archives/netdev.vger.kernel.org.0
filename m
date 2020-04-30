@@ -2,141 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87C121BEE68
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 04:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CD481BEE85
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 05:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726758AbgD3Cox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 22:44:53 -0400
-Received: from mail-eopbgr10071.outbound.protection.outlook.com ([40.107.1.71]:44611
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726180AbgD3Cow (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 22:44:52 -0400
+        id S1726558AbgD3DHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 23:07:11 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17344 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726180AbgD3DHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 23:07:10 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03U36bMZ024047;
+        Wed, 29 Apr 2020 20:06:58 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=MqxTgXWxo634cq0gKhHzL5jYtYdSWEoqrXb6iHqVTNM=;
+ b=bg8xjmzxnbToW0iKidKw8koFwomKh5gxQpH+1tEmqq8wLM6eMY3kKglxRAn0CMM4nCAr
+ WQR+QBPvoHsZRRomOA8CQEoSrzE3NXjmPgyZ/nwX17J8Ni4jBqyTB4WnvrkQpk+NnUB5
+ KXZem/GtFbHc5mWcQeZxiD2X8Wb2COK82CU= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 30n5bxk71e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 29 Apr 2020 20:06:58 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Wed, 29 Apr 2020 20:06:57 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DariR3upk7Q6+6cXFx2h26lAM8hKbyr7aSaQ/D1tYUBW5MVhM1wYNaGxWM16KSEbM15QjIYIPxHp3DNDxmhd0DFLPvqDC5CxfXIKXGY+aWO9Yg6oirmOht+oxwz4bVMmVUCR28LBDIa/+YJOJ8zbQZ+U2taSB7LMfZQXSonrYEeqEScJ6wZbISzmuw83Y8NtNLb1w7Qdtz7L1Wp4hyXSZiGchFj5UoQc8oOUmKtP/ETfJe9bBD3jAeJ2InMTVTniFEa26hTCsTr3API/mtd4MlIoFf8lZB2P1FYbkQUwNDxJvAA97j+kUwyYVTEGqbue+GAmtS9cju7Y/4wFCb0Yeg==
+ b=AOtKZtoJSUIsMtt4GSPwBhBtSKwsFupl/isE+T5wi2jZupMNOgtO027sgtqqYGewr555o7/pxCaNB3PL2QFAyxqPY7hbArdk+ewJNgwfNTqRSEeo1jcX0YEML4D5sSH2eImwGLutCOheEcK1rfsgH7BduInn9gaP6K4HOQZqBFGtFitlsAtk+cPtuU2zwnyDUruMaLJXRhyqXdsI4f4FwMT/6JVCCoWPsK/ckzXS0ExYcjSONNmfZS2WoZcfFg3vthKq0HmtptLcu9ASsGs6CWezZa+8uPnmmXHlOZC/8r0j8d+f+ACTqmxUbJkL1C/7dDurqMlM1U16cVsWm/o12A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BcSxMWKvv+HbEwc8A4dLH2oFpfx4JmYPp3rw2jy492k=;
- b=Puspo/CQ+3xqTwGvdnyp8jHn/4dQzcRfdwn2KIld66kssw422UZHXdGs7xFOpuAQPQdVbX28dk39E8Qe/pLZ5QTvkj3qhCklh3bTNOs6DC9fSrKUMu0a1Z/pcn4Rr/evBLzzmhGA+x7Q5Ii4ajOeE3yG+Wn37Qc3AzCfrDzg+ne38gUAViAiBwWfOQrepRVt+7gNXe+Ym86uCW3cxN/EE3YWcgWL4ojSZJFMC0A4DrDab3ZO4p8eT0k6otFXqjv1FqbjZTc7MgfS4mr3rG+2/tGO4ePFxtU7ksXRDQcOIZtKdUNDbq/WvqEzNoRrx08j5QThYA4QKMX017tzPmJrLg==
+ bh=MqxTgXWxo634cq0gKhHzL5jYtYdSWEoqrXb6iHqVTNM=;
+ b=WZucuVZre7nXs5G3RDxIMe83pvjtfr18TExUR/oT3ji6w4wnriqXVqyDijTWvxlszb9yCcTV689qEYMQisH1E35hwB8TcGQLuEkZhxPaRuTIKcXi9LgTZq5MqKAilAFBGGL9gTCq0wnz2Z17DZvUnahTRhudPoLdvGBPp5LZQGj+ffIpLuDEsJ6DN/YuMWnlmW7IQClk3QC2KYOpXR+ivPwwo5Vg+hTrVPKmfqtVP+ujbcbcYZV37r09WuzwQBy5W05If1D8M2OwTjKPE3AoxKyvA9ejpaxTUitf8xi+Ay9TR89rFdcQEJ+RrYjUDEBOq8a5dKMQG1Vt1znLJJszVA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BcSxMWKvv+HbEwc8A4dLH2oFpfx4JmYPp3rw2jy492k=;
- b=UnRM/tfDxwe9bUVdJUX+vH/5HWj/JFkRteQWLxJO6AR3WvAOy0/M2VmoEuSuDN3/PvBmOlZBy2rCRYKzc9JycZIq73QQArgWZbVdvlMixxty1KDSQugDse+HdAlbn5v4N/M548XAjzGeHnZUDgg56jmKzSADOFvWHd/117gcRNk=
-Received: from HE1PR0402MB2745.eurprd04.prod.outlook.com (2603:10a6:3:d7::12)
- by HE1PR0402MB2827.eurprd04.prod.outlook.com (2603:10a6:3:e1::7) with
+ bh=MqxTgXWxo634cq0gKhHzL5jYtYdSWEoqrXb6iHqVTNM=;
+ b=KZUPM6Xk/pYmwE7U3Kt6mngEPFC0Cx2D0Xr0EykPEHbRIXbPTK65wlrb2He1S5Ph8OC2I9tPCMMdCNuZlgIuyims4iXp9L/2R6r+wYUh2qkkydjG9cAeiqz05dJWGdVeTMbZA+E/1joqEC817L8f6T7+A0ljlEibzD+lHewjIdU=
+Received: from MW3PR15MB3772.namprd15.prod.outlook.com (2603:10b6:303:4c::14)
+ by CH2SPR01MB0020.namprd15.prod.outlook.com (2603:10b6:610:8c::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Thu, 30 Apr
- 2020 02:44:49 +0000
-Received: from HE1PR0402MB2745.eurprd04.prod.outlook.com
- ([fe80::e802:dffa:63bb:2e3d]) by HE1PR0402MB2745.eurprd04.prod.outlook.com
- ([fe80::e802:dffa:63bb:2e3d%10]) with mapi id 15.20.2937.028; Thu, 30 Apr
- 2020 02:44:49 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-CC:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>
-Subject: RE: [EXT] [PATCH net-next v2] net: ethernet: fec: Prevent MII event
- after MII_SPEED write
-Thread-Topic: [EXT] [PATCH net-next v2] net: ethernet: fec: Prevent MII event
- after MII_SPEED write
-Thread-Index: AQHWHmhG/d7V52bSzka8asn6kLoCvKiQ9VMg
-Date:   Thu, 30 Apr 2020 02:44:48 +0000
-Message-ID: <HE1PR0402MB2745BA1122387B49F589794CFFAA0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
-References: <20200429205323.76908-1-andrew@lunn.ch>
-In-Reply-To: <20200429205323.76908-1-andrew@lunn.ch>
-Accept-Language: zh-CN, en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19; Thu, 30 Apr
+ 2020 03:06:56 +0000
+Received: from MW3PR15MB3772.namprd15.prod.outlook.com
+ ([fe80::3032:6927:d600:772a]) by MW3PR15MB3772.namprd15.prod.outlook.com
+ ([fe80::3032:6927:d600:772a%7]) with mapi id 15.20.2937.023; Thu, 30 Apr 2020
+ 03:06:56 +0000
+Subject: Re: [PATCH bpf-next v1 03/19] bpf: add bpf_map iterator
+To:     Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Martin KaFai Lau <kafai@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+References: <20200427201235.2994549-1-yhs@fb.com>
+ <20200427201237.2994794-1-yhs@fb.com>
+ <20200429003738.pv4flhdaxpg66wiv@kafai-mbp>
+ <3df31c9a-2df7-d76a-5e54-b2cd48692883@fb.com>
+ <a5255338-94e8-3f4b-518e-e7f7146f69f2@fb.com>
+ <65a83b48-3965-5ae9-fafd-3e8836b03d2c@fb.com>
+ <7f15274d-46dd-f43f-575e-26a40032f900@fb.com>
+ <CAEf4BzaCVZem4O9eR9gBTO5c+PHy5zE8BdLD2Aa-PCLHC4ywRg@mail.gmail.com>
+ <401b5bd2-dc43-4465-1232-34428a1b3e4e@fb.com>
+ <f9a3590f-1fd3-2151-5b52-4e7ddc0da934@fb.com>
+ <CAEf4BzY1eycQ81h+nFKUhwAjCERAmAZhKXyHDAF2Sm4Gsb9UMw@mail.gmail.com>
+ <b070519a-0956-01bb-35d9-3ced12e0cd11@fb.com>
+ <2be3cd4a-cf55-2eeb-c33b-a25135defceb@fb.com>
+ <CAEf4BzZgZ7h_asHNGk_34vJv_yvLtWGcTGwdTO4fgLPySaG-Eg@mail.gmail.com>
+ <cc802671-76e6-e911-0e4e-53a4e99c69ff@fb.com>
+From:   Alexei Starovoitov <ast@fb.com>
+Message-ID: <9f5bd594-9511-1df4-093d-33111fc9c2dd@fb.com>
+Date:   Wed, 29 Apr 2020 20:06:53 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
+In-Reply-To: <cc802671-76e6-e911-0e4e-53a4e99c69ff@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.68]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6626dc9d-0b04-49e0-b41f-08d7ecb07365
-x-ms-traffictypediagnostic: HE1PR0402MB2827:
-x-microsoft-antispam-prvs: <HE1PR0402MB282795C1EE23F239334EF273FFAA0@HE1PR0402MB2827.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 0389EDA07F
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0402MB2745.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(376002)(39860400002)(346002)(366004)(7696005)(6506007)(478600001)(33656002)(2906002)(4326008)(52536014)(186003)(8936002)(8676002)(26005)(71200400001)(76116006)(316002)(86362001)(55016002)(9686003)(64756008)(66556008)(54906003)(66946007)(66476007)(66446008)(5660300002)(110136005);DIR:OUT;SFP:1101;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 26Un8u6JnApB9GGwkRQEqSdsPldHm4dZoRkO1NfRTLJdfg4QRQAUzq/Kz30BIY2xfuXVxQ6d2ahhHqTSUIwoLctpuvS3Iut8XQKk32Up0nyuva7EG4F7BXXNfO0knGMZ6OHOQ0SZfAJySaSjs6wV6DzW10g/rnHIL8vJcKleTj5/KCKErNbCzKPShZNuGhcFf8pgexJzaJNgcd8tTljExzW5MTfuNq23HMSj2JNFSXt96nAfHK5GUiPCH9W2esfMyhuQ1NqcXM33AsuOhEYoL7pcA5Mq5w32nWR3ngt8BVH3+prNxhgJqmUA5QPoc+vs8OKTArmQoccS9fpXZnlxA9kRPOf+0GvqhoGsu704tjS7kZW0aZZiqgOFh9gHyCS70IFduqsJzSZ/lPVquvNYRNa5NOJIBLf9R5X/NmTq4zdbjMjIonRal1S5DYEQ3nXo
-x-ms-exchange-antispam-messagedata: M9iDuDt9pXDCf4OH9bxmWUm2zmAZmDpmkkcfmq8eAgYGINoNTSe5W7Cxgbq6vVK5yG4oElKVCbiSCl8hHT+XkFdb+9EFRnoYJgvMTsEpf6Zon+mwiBXhMqLc7Z5PUDRiHDLzAxhTuCZyRapexkZb3wSyjxAxBmzfE1PWiGUpe8iwPiSdSAt65B9uNe1TSYu4/UnI4NU2v9ctQo3s7DY5W5LKzfJzhy2lkqo4YySABYUbRAiIHA1utcYy3e574pJzkOfOZ54UDW71b6cGtIvbUG7a2VjnsjGRDckgY5iSjeYlxNAGty3quk1ZwSm245O0GwGKGR3RZXZrx+woU/8L5wYXrDemTLsNFvghPI7j8lldRy17uYCT/dKoezkI0fkgM+TP/1OZPQLxU1AtqJqtjCzBBqOwbVZJHmVDnF8geHN3zJ8RufQSpSyn6u0Am4QjT1ttYcPOb/FZt0D2a37Jpv3qj4umg8fnvpV8ItrHaPtjRqouWIR9wnVyofyVqHnLoKAoIMZLwl+lbs1rtDWBD9/Nwo3Dw3/UmT468IpQKynqv/Ew1AJNKGoWz/Y1zpHXVMstcsR9ECsWB+ESQOVJiXrh3MvBYdCZgH6bxyoGMA60+NcKNWD/aa7k9SuvVVucOR8LK3TRug1UH26XNrokXAoq7dMV5JKrn6hpziXEQOPVrRhKwLRDTipim11jugi8U9tw7TdIU3hfM16AKK2aySbWU+PSUHqaTI84YMpDhpbz1jxeNis7ebDU4Y2xzm0Gka8mmYV0DBX9qNRgo1mP3bxKS17Khl8Ho2BsUuDi0KY=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MWHPR02CA0016.namprd02.prod.outlook.com
+ (2603:10b6:300:4b::26) To MW3PR15MB3772.namprd15.prod.outlook.com
+ (2603:10b6:303:4c::14)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6626dc9d-0b04-49e0-b41f-08d7ecb07365
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Apr 2020 02:44:48.9319
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21cf::103b] (2620:10d:c090:400::5:39f2) by MWHPR02CA0016.namprd02.prod.outlook.com (2603:10b6:300:4b::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Thu, 30 Apr 2020 03:06:54 +0000
+X-Originating-IP: [2620:10d:c090:400::5:39f2]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 193c2873-a27d-4a8b-a7d8-08d7ecb38a10
+X-MS-TrafficTypeDiagnostic: CH2SPR01MB0020:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <CH2SPR01MB0020B42D33C906C740695960D7AA0@CH2SPR01MB0020.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0389EDA07F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: j5gD5gynAoAI91ZNvc1X19RthniQ4BDcunLgtl7stATj950JXFI5yzyIKMy+DGnCMcMnn13LU5bb9IFFo0om2S6xVok6ubPZIMgaGLo7vckP8TG/DRalmDnkUNmAXFSxf3eIOpzl1e5TfwBDphLATle5XpIW7xs0ot4oh2llODVwAJuMVt2OKx/0LE8WyWtcmQyp53pt1FDhY6X1hmD/3hDoxrNmNxjQMeyc0yznPT44f3Qh0/hbwLIOOS9/F9iLz+7wMaqZMeQYKWvJkMNiHtBdE+YoVI1t44NY16vUc1LeZq2BPEXxHt5FtzAitrJtydV0A7v0ZLYhMzEstHYME9wxPPfhYUVu3VUCyjqLNiLK6MvO/03c9SoTFPwZ6OvwtDWSflZ9w0KRzTCXrpqLPx0RHa6+YX5PTV0HOBzvP3KwoXmYR/Oox1i1eiTKc6Jq
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB3772.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(366004)(136003)(376002)(346002)(396003)(2616005)(31686004)(36756003)(8676002)(16526019)(8936002)(2906002)(5660300002)(6486002)(52116002)(66556008)(186003)(31696002)(4326008)(53546011)(66476007)(66946007)(86362001)(110136005)(54906003)(316002)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: RDtdkr2TvPWskUhAos82CydOFWKmqAEUXUe2L4WnpXXB2Z6Ef27N6CQP1S9wlLaYOrHAyCxxN4PiXBQuYNQgNpKK5vqBQ+unrDDqnADm9T6u0fwRSbuy4KC677nsR4ervMih9MuRiwTVx7BShMvCoB5tz7585+RChIJPnCZSLT3k/A1cxAg+Blw1dommxKTv2lMNk0WKSYsQ/9afkOSj2ym2Kf5xcNMoWNGgBQntC1oxykv+VtZqgOwOaQFUpkD5Vx145LcZlsyEy5oeHYWYkdCE+3NHFLTHvg//wz6vwB8WS7Mdpl3itKiil186mnIXvKAN8jDFWZuS8KL/ruAT3gD7SYm4mV/InEGUTpXGBVzi82f5KBYXHR/6a9K1PwSf27ZKHAlnMeN7tYzHmOLi/Fy7BMqUUlTAnuE0HvMhcGpLmD7ZDzKU7+W2iFJ9IOhGJTbLT7Kfts/Ps2gWf1RCb3oxKUtvRvCGVaFVJeBjfnobtRHDObTO9zZgzIKQn+reCRD7ednlfkLvm1qFUAbsVc6WY6Jl8k9Heyu1ydPkQbwjOEqiUA00RRSKB38eemNlqMBysoygYIedNmM2cEHAT/CynFv+/hSCoYxPuGsIiCYbCDIdNmT7W9WmxFWJWk/1ikgS8OaJtlBbEC4sjDuIR72CBxYylc64UaWrVi0LwWKt4nltU27+qS/Rjb9ab4HzL/vvaKv6CGsNctTrhRg+JFBcVIIt1XIcjegiKxbK+5J2VcfyY8gbxB/4mQdvk2WwXC7k7B5xx16cOaqqKp2wMT4zrbdcbKa0NmIu7WKGPVHOGkr/rlyUirUCmBX7q+B64DrTxVHMWLlWn1cRIZKT2Q==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 193c2873-a27d-4a8b-a7d8-08d7ecb38a10
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 03:06:55.8700
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: E8J0LwchaIFpKPFMgO9IfBEdvf4VVV38xQdZUizd73qkUQVJDKJw1T+wR038GIlO4OHj6v3tOf02t8DkpOS0NA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0402MB2827
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 12+lhsmfUHI2StQl+P7ik7rzmL4N3X3ZwVdSKbouoMQkjDYoiN+nwdsMNkW/zDBn
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2SPR01MB0020
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-30_01:2020-04-30,2020-04-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
+ mlxlogscore=999 suspectscore=0 bulkscore=0 clxscore=1015 impostorscore=0
+ adultscore=0 priorityscore=1501 spamscore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004300023
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch> Sent: Thursday, April 30, 2020 4:53 AM
-> The change to polled IO for MDIO completion assumes that MII events are
-> only generated for MDIO transactions. However on some SoCs writing to the
-> MII_SPEED register can also trigger an MII event. As a result, the next M=
-DIO
-> read has a pending MII event, and immediately reads the data registers
-> before it contains useful data. When the read does complete, another MII
-> event is posted, which results in the next read also going wrong, and the=
- cycle
-> continues.
->=20
-> By writing 0 to the MII_DATA register before writing to the speed registe=
-r, this
-> MII event for the MII_SPEED is suppressed, and polled IO works as expecte=
-d.
->=20
-> v2 - Only infec_enet_mii_init()
->=20
-> Fixes: 29ae6bd1b0d8 ("net: ethernet: fec: Replace interrupt driven MDIO w=
-ith
-> polled IO")
-> Reported-by: Andy Duan <fugang.duan@nxp.com>
-> Suggested-by: Andy Duan <fugang.duan@nxp.com>
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+On 4/29/20 1:15 PM, Yonghong Song wrote:
+>>>
+>>> Even without lseek stop() will be called multiple times.
+>>> If I read seq_file.c correctly it will be called before
+>>> every copy_to_user(). Which means that for a lot of text
+>>> (or if read() is done with small buffer) there will be
+>>> plenty of start,show,show,stop sequences.
+>>
+>>
+>> Right start/stop can be called multiple times, but seems like there
+>> are clear indicators of beginning of iteration and end of iteration:
+>> - start() with seq_num == 0 is start of iteration (can be called
+>> multiple times, if first element overflows buffer);
+>> - stop() with p == NULL is end of iteration (seems like can be called
+>> multiple times as well, if user keeps read()'ing after iteration
+>> completed).
+>>
+>> There is another problem with stop(), though. If BPF program will
+>> attempt to output anything during stop(), that output will be just
+>> discarded. Not great. Especially if that output overflows and we need
+> 
+> The stop() output will not be discarded in the following cases:
+>     - regular show() objects overflow and stop() BPF program not called
+>     - regular show() objects not overflow, which means iteration is done,
+>       and stop() BPF program does not overflow.
+> 
+> The stop() seq_file output will be discarded if
+>     - regular show() objects not overflow and stop() BPF program output
+>       overflows.
+>     - no objects to iterate, BPF program got called, but its seq_file
+>       write/printf will be discarded.
+> 
+> Two options here:
+>    - implement Alexei suggestion to look ahead two elements to
+>      always having valid object and indicating the last element
+>      with a special flag.
+>    - Per Andrii's suggestion below to implement new way or to
+>      tweak seq_file() a little bit to resolve the above cases
+>      where stop() seq_file outputs being discarded.
+> 
+> Will try to experiment with both above options...
+> 
+> 
+>> to re-allocate buffer.
+>>
+>> We are trying to use seq_file just to reuse 140 lines of code in
+>> seq_read(), which is no magic, just a simple double buffer and retry
+>> piece of logic. We don't need lseek and traverse, we don't need all
+>> the escaping stuff. I think bpf_iter implementation would be much
+>> simpler if bpf_iter had better control over iteration. Then this whole
+>> "end of iteration" behavior would be crystal clear. Should we maybe
+>> reconsider again?
 
-Acked-by: Fugang Duan <fugang.duan@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> b/drivers/net/ethernet/freescale/fec_main.c
-> index 1ae075a246a3..2e209142f2d1 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -2142,6 +2142,16 @@ static int fec_enet_mii_init(struct
-> platform_device *pdev)
->         if (suppress_preamble)
->                 fep->phy_speed |=3D BIT(7);
->=20
-> +       /* Clear MMFR to avoid to generate MII event by writing MSCR.
-> +        * MII event generation condition:
-> +        * - writing MSCR:
-> +        *      - mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
-> +        *        mscr_reg_data_in[7:0] !=3D 0
-> +        * - writing MMFR:
-> +        *      - mscr[7:0]_not_zero
-> +        */
-> +       writel(0, fep->hwp + FEC_MII_DATA);
-> +
->         writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
->=20
->         /* Clear any pending transaction complete indication */
-> --
-> 2.26.1
+That's what I was advocating for some time now.
 
+I think seq_file is barely usable as a /proc extension and completely
+unusable for iterating.
+All the discussions in the last few weeks are pointing out that
+majority of use cases are in the iterating space instead of dumping.
+Dumping human readable strings as unstable /proc extension is
+a small subset. So I think we shouldn't use fs/seq_file.c.
+The dance around double op->next() or introducing op->finish()
+into seq_ops looks like fifth wheel to the car.
+I think bpf_iter semantics and bpf prog logic would be much simpler
+and easier to understand if op->read method was re-implemented
+for the purpose of iterating the objects.
+I mean seq_op->start/next/stop can be reused as-is to iterate
+existing kernel objects like sockets, but seq_read() will not be
+used. We should explicitly disable lseek and write on our
+cat-able files and use new bpf_seq_read() as .read op.
+This specialized bpf_seq_read() will still do a sequences of
+start/show/show/stop for every copy_to_user, but we don't need to
+add finish() to seq_op and hack existing seq_read().
+We also will be able to provide precise seq_num into the program
+instead of approximation.
+bpf_seq_read wouldn't need to deal with ppos and traverse.
+It wouldn't need fancy m->size<<=1 retries.
+It can allocate fixed PAGE_SIZE and be done with it.
+It's fine to restrict bpf progs to not dump more than 4k
+chracters per object.
+And we can call bpf_iter prog exactly once per element.
+Plenty of pros and no real cons.
