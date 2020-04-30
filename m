@@ -2,105 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF0F81C046B
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 20:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3E41C047D
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 20:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgD3SMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 14:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
+        id S1726377AbgD3SQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 14:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726318AbgD3SMq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 14:12:46 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77343C035494;
-        Thu, 30 Apr 2020 11:12:44 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id o10so5832366qtr.6;
-        Thu, 30 Apr 2020 11:12:44 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725844AbgD3SQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 14:16:14 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0817DC035494;
+        Thu, 30 Apr 2020 11:16:13 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id s30so5865656qth.2;
+        Thu, 30 Apr 2020 11:16:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=dgeA7MEUkqk2Es2dDo4XvU2axQ9S49ISzTxAK386n2M=;
-        b=Dh5EkvBeYPTkAWxgXDeWIUHLJ9KshJBiAjfgLJQCBrgkhYOD4MTWmIDLVmoINcNERQ
-         OgBI1jOEzRKj+hFjOzHMp1jHwHQSjHPwY5FfvJWVZFbqlWR1qY9O+RdYl+AZ/cwhNmWw
-         1uz/PTon3Djt4z6wXVakMGENmC9pog38ktYVA0DNriHRDS+NRp2IROeHpAP4ggNwbnF/
-         bwXqPGyqVqBHOPKcO5CZrgbmeZ6EOGenedDOEBa3F0jP58f/3gxib9s0Cc79IQiqzB7m
-         iSA3jtuJ4hEqEdXUeyBkqtHEyJgbOCJlS0TOhwG26R+AR9d2k2c5zs6wIBDzWSZ4ZkKF
-         kIHQ==
+        bh=bmiryqmNsMzqCrzqAFyjAS+CdD2hpANbynwf8cFNSWY=;
+        b=JValaWbuw3XkJirkJzU8Ghjs8H+tBfdwOFLoC9EuhgdI/bPKv5phMwNROvR7aybWME
+         Q6x8LnAfwylhJ9SkD3NMXB+EyMfcp62OvrCnaKu7sHkCE1g2Ks7092JUOjvaaRDcpdE+
+         CwS1YToT7Xo3zseZYtlj1/4azqH5OtO8MV7gX5nYel/OQGzqKsZQJLVUvRHYLEJ3hwKA
+         294Veb/HCgA0h5fODa2Gakj7XXQ/g/8ZZpayPgVk0h+vSmK8VobAJuUSTNpl5/QUJWDy
+         zAkrKZEPENFzSdIFBiQU6wN2Qg4/7K1OHWy1c8mafiKO+p70SClV95JPwVHx9T5lC0cJ
+         Ut2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dgeA7MEUkqk2Es2dDo4XvU2axQ9S49ISzTxAK386n2M=;
-        b=i3+1lVMSx0/kqi3dfb2yxVQ6G9O+6tPwEnB4xyNMYDpx30YNbPAdXpleAI2yBLYue/
-         EcoDA3KfW9OUqLV9N0sveiQ1lku3q3YbCBoepgV+Id7rAGRWuu5MWpOPXKTXiC0YnHWr
-         Gecu70A5McHpEvrSULA7wpGPGtw4c0MlmMsXT2WJNfufvQ31ODWUeDLffpp1jEZSGa4o
-         BBhv+gsq/xzbwmVLto+UW/lOMNXdd60pCqJSI+MiBRtd92gAToF0a3h2tPMRB9+APeNd
-         h5RPX0LEvBRaVZDT+PeZ+FwrHQlQU73NUmhJ43GaMaetA4WJg/HSyT3KTytphlMnNiCl
-         hLow==
-X-Gm-Message-State: AGi0PuZm+kKTmk/8ugLsotp5MH0m0N3AOV4/RKyufkMUCX17KSFnc4oj
-        k4CTPYJVwxY8PKO0enixV/Kd1Mq7k7dD+1q0uOE=
-X-Google-Smtp-Source: APiQypIrdKokXP3ByzYLD6DOa8n4uCJ1eajRL4E9ovCVZctzkEc9xI0lCETvmyCkNukTHwG7TnHhuGzeEQmFqQhvx+M=
-X-Received: by 2002:ac8:193d:: with SMTP id t58mr4724442qtj.93.1588270363413;
- Thu, 30 Apr 2020 11:12:43 -0700 (PDT)
+        bh=bmiryqmNsMzqCrzqAFyjAS+CdD2hpANbynwf8cFNSWY=;
+        b=UZ8SkIiEBOJZoYFGyu+OzKrSS51ealcCwxQvz0n6fbcvVpEeVTPMT2qCz04/odn2v+
+         S5a7a7Lh3msz3FSkE9aI7tyubFP9aZl8ZQ0EgDe4jrtLt+3b027VSVeXiQmzizQ5rhcS
+         sg/h53HsN/6+5wpr+hR12RzveVXrRdZUHUouhth0/KA7asAdV9p3OBhApzDRI00gukOu
+         dH6D5+Z2/ioYPGb4CTTBruMPXTb0650wUGC6QzteBSyvBxGy2InLJZL36ReEEoCdEVEJ
+         16PfCLJ1UUfuwAn9pTUxiktyLI40nmuZbM3F5OcEbwqEd6leZ+59MUeWr8GCf5CePNnZ
+         me8w==
+X-Gm-Message-State: AGi0PuYtCikfuTGcbC5QEvfGyLAzNhdZGvp4z5p7ubqd9MRs+45d2hae
+        ep/BkVocqaqnTd1pANnGpGVGdNhpmz58ZTdOEW9oRzOH
+X-Google-Smtp-Source: APiQypLCMhZfHmzKtuBVjnSIkr/dfC+B6ff3hBwBpqpGbD12AsIeVQHRfVwC00TBncI4+CD/lYKZy9vcgj861kGH13o=
+X-Received: by 2002:aed:2e24:: with SMTP id j33mr5027180qtd.117.1588270573067;
+ Thu, 30 Apr 2020 11:16:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <158824221003.2338.9700507405752328930.stgit@ebuild>
-In-Reply-To: <158824221003.2338.9700507405752328930.stgit@ebuild>
+References: <20200430071506.1408910-1-songliubraving@fb.com> <20200430071506.1408910-4-songliubraving@fb.com>
+In-Reply-To: <20200430071506.1408910-4-songliubraving@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 30 Apr 2020 11:12:32 -0700
-Message-ID: <CAEf4BzYeJxGuPC8rbsY5yvED8KNaq=7NULFPnwPdeEs==Srd1w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix probe code to return EPERM if encountered
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
+Date:   Thu, 30 Apr 2020 11:16:01 -0700
+Message-ID: <CAEf4Bza7upE6HTowsOa1qioLqCOCHy1t4SWd5X1ickKwbf9vng@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 3/3] bpf: add selftest for BPF_ENABLE_STATS
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 3:24 AM Eelco Chaudron <echaudro@redhat.com> wrote:
+On Thu, Apr 30, 2020 at 12:16 AM Song Liu <songliubraving@fb.com> wrote:
 >
-> When the probe code was failing for any reason ENOTSUP was returned, even
-> if this was due to no having enough lock space. This patch fixes this by
-> returning EPERM to the user application, so it can respond and increase
-> the RLIMIT_MEMLOCK size.
+> Add test for BPF_ENABLE_STATS, which should enable run_time_ns stats.
 >
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> ~/selftests/bpf# ./test_progs -t enable_stats  -v
+> test_enable_stats:PASS:skel_open_and_load 0 nsec
+> test_enable_stats:PASS:get_stats_fd 0 nsec
+> test_enable_stats:PASS:attach_raw_tp 0 nsec
+> test_enable_stats:PASS:get_prog_info 0 nsec
+> test_enable_stats:PASS:check_stats_enabled 0 nsec
+> test_enable_stats:PASS:check_run_cnt_valid 0 nsec
+> Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
 > ---
->  tools/lib/bpf/libbpf.c |    7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 8f480e29a6b0..a62388a151d4 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -3381,8 +3381,13 @@ bpf_object__probe_caps(struct bpf_object *obj)
->
->         for (i = 0; i < ARRAY_SIZE(probe_fn); i++) {
->                 ret = probe_fn[i](obj);
-> -               if (ret < 0)
-> +               if (ret < 0) {
->                         pr_debug("Probe #%d failed with %d.\n", i, ret);
-> +                       if (ret == -EPERM) {
-> +                               pr_perm_msg(ret);
-> +                               return ret;
 
-I think this is dangerous to do. This detection loop is not supposed
-to return error to user if any of the features are missing. I'd feel
-more comfortable if we split bpf_object__probe_name() into two tests:
-one testing trivial program and another testing same program with
-name. If the first one fails with EPERM -- then we can return error to
-user. If anything else fails -- that's ok. Thoughts?
+LGTM.
 
-> +                       }
-> +               }
->         }
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  .../selftests/bpf/prog_tests/enable_stats.c   | 45 +++++++++++++++++++
+>  .../selftests/bpf/progs/test_enable_stats.c   | 18 ++++++++
+>  2 files changed, 63 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/enable_stats.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_enable_stats.c
 >
->         return 0;
->
+
+[...]
+
+> +       stats_fd = bpf_enable_stats(BPF_STATS_RUN_TIME);
+> +       if (CHECK(stats_fd < 0, "get_stats_fd", "failed %d\n", errno)) {
+> +               test_enable_stats__destroy(skel);
+> +               return;
+> +       }
+> +
+> +       err = test_enable_stats__attach(skel);
+> +       if (CHECK(err, "attach_raw_tp", "err %d\n", err))
+> +               goto cleanup;
+> +
+> +       test_enable_stats__detach(skel);
+
+It's a bit subtle that we rely on detach (which does close()) to
+trigger attached program :) But it works!
+
+> +
+> +       prog_fd = bpf_program__fd(skel->progs.test_enable_stats);
+> +       memset(&info, 0, info_len);
+> +       err = bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
+> +       if (CHECK(err, "get_prog_info",
+> +                 "failed to get bpf_prog_info for fd %d\n", prog_fd))
+> +               goto cleanup;
+> +       if (CHECK(info.run_time_ns == 0, "check_stats_enabled",
+> +                 "failed to enable run_time_ns stats\n"))
+> +               goto cleanup;
+> +
+> +       CHECK(info.run_cnt != skel->bss->count, "check_run_cnt_valid",
+> +             "invalid run_cnt stats\n");
+> +
+
+[...]
