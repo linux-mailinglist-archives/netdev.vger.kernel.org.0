@@ -2,131 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB891C0272
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:27:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 101301C0300
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:47:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726616AbgD3Q1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 12:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
+        id S1726580AbgD3Qqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 12:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726503AbgD3Q1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 12:27:39 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7FE4C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 09:27:38 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id b11so7727577wrs.6
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 09:27:38 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726309AbgD3Qqx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 12:46:53 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05E0C035494;
+        Thu, 30 Apr 2020 09:46:53 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id di6so3327249qvb.10;
+        Thu, 30 Apr 2020 09:46:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=w5dGhgdXjcFYxh7PeZsK1x6o20/MILmLxPmOVMwjKo0=;
-        b=NuTQIojov+07F6xjJTplr1hK3fBv2T8BNYWmbMsYCR51qNx/9EhRJhNKIx27ZOVI33
-         WxC2zphjWv3rhhmvkZiytQPTps/9yYexZy5Or1HUF/0EpQ+kZMo5nOiuECg1lyTmIww/
-         M1lwRz43jJUZ3cEhw7RG26DumaptsHa10FjC3+JL7jajCw20qOLTUx5wk/JM9RMcIqv7
-         mj8sOIeBq0+rbHVMVl341W50xT6x2QLiask76D6kx0zRE0T/icmMuSuRDL42AAMwxycQ
-         PPbkyFHHOS5R1bKxNFPF21Wz69+9g7/vZELdRStZ0ewdK+3WbapeXic6ijWO2SQLAAQl
-         0yOA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Knn2ggUc17IHYXiTAXE/FUGKOLLexAqmCT7AElneZgY=;
+        b=rQq7H6v2V3koy12H4McM2FmuEflGIKjFaYM/JhDn5EXpLUsYu1rUwTlXLQRWC+rXRm
+         A2nWxzHL0P1txufo4mZ+9KEaeHscFmpkRFhZeC7+v5oxUGarhW8Hvcd6kGJSh+49a0hh
+         hFB3zjqLPoDgXs2q/Dq8cF9+OTb61FCHfPHrcX3zbZ/a0Bs0XC2KrXzZPN8sC+486I5K
+         oOKmKCqen2VjNyWUjfXIulB9lEpAv6sMKhXGBP8M1byQ6ddhj0jnyX81IUDZXreJtDim
+         ta8UUW5cYrqll2pYbU8UTQE9PfI8mtarNtxPUQIYzPtvjn0wuzuNQ558wysX2x76s5Q+
+         qKSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=w5dGhgdXjcFYxh7PeZsK1x6o20/MILmLxPmOVMwjKo0=;
-        b=JziZ89g9sBbaOk+htP6XXfTQGpM4Otar2MA6vek3517P1wK8Av8fvn+9sn+fkNB7Gk
-         DEuP4rOsZ/vLMZCJlMSFj7cfnpS7GL5ez2j6YeFKVHnVCgHuivnd4HwgFVdJxBMuvve7
-         ID21EsChxkZX1URADiQ1yzc1R84tYNmJRylTqxfio0n/pBdPl9B681tvdjsx6GgFAekh
-         nAtOKg1xhqPmjrtlxe68s6axnY3a23NBSET400kvchMK9QbHHHOQ5dw2AJt0hBVO9Y1Z
-         /hHlJYBsTuVG7ETL9I11Eac0ns8dx3hn7/LRLPeenWpa9ad/u7wzEeY5sjzcricmexUJ
-         Kgjw==
-X-Gm-Message-State: AGi0PuZS5A/THnb6LZedSPkCppfrvSafkRJ8yYMrIVDruvAD4gxQCXe7
-        DeuVTttoPPbUEKVChMCSV/ZkfA==
-X-Google-Smtp-Source: APiQypK/S9ssbCP3O7yRjBOcTDEB2eOJHUdkej82Rj3tFbMuOofvHnKMurj7qpGmWZNAM+sap2TkoQ==
-X-Received: by 2002:adf:e450:: with SMTP id t16mr5141548wrm.301.1588264057546;
-        Thu, 30 Apr 2020 09:27:37 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:702e:e652:aa4d:63d6? ([2a01:e0a:410:bb00:702e:e652:aa4d:63d6])
-        by smtp.gmail.com with ESMTPSA id e2sm281025wrv.89.2020.04.30.09.27.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Apr 2020 09:27:37 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next v4 2/3] net: ipv4: add sysctl for nexthop api
- compatibility mode
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>, dsahern@gmail.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, rdunlap@infradead.org,
-        nikolay@cumulusnetworks.com, bpoirier@cumulusnetworks.com
-References: <1588021007-16914-1-git-send-email-roopa@cumulusnetworks.com>
- <1588021007-16914-3-git-send-email-roopa@cumulusnetworks.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <74f127c0-8612-e964-b01e-bafec6669051@6wind.com>
-Date:   Thu, 30 Apr 2020 18:27:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Knn2ggUc17IHYXiTAXE/FUGKOLLexAqmCT7AElneZgY=;
+        b=rT9apzGRUaWLKWB1iXfmHzIOmLCUya+ldFkY0a5J7zR8XUfpiDzLKyvbCyZKWbAP3C
+         Vk1B1m0Suksho4heFkCqU7ZK7PwIvI4pjWQ34xqmNVkGjmaEq3qkp8KZemyCiAYBUHwI
+         A8nMALRD5Na2NBj9vZ+APkqmFnnYFbn+O/xDa4KVCUCKVIOdb46DHiKasHsCk91IXgfg
+         YQHrY46W/Lhk/VPsQJzOIqEKAUYGOCNh5sUql0ZSQtOw9pVMLKEpHY+Xn9HVK9NNdMWV
+         xuUSEPQpHCyg3L9wW1YlSrJZAdcs/xOflJPZmxLD6NLrD254/0zBOF9kERvUQs/l3ehY
+         mOZg==
+X-Gm-Message-State: AGi0PuYqPurtElvV04rt1aOBL7UGZ7+XyzI6+FgKJ72LHSq/T1Bv7A0r
+        Md0SLcvAVErjp0wT6Z0kha9EgGzuCV4=
+X-Google-Smtp-Source: APiQypKh6PAiSvPGAaBxlrnC7B3xhMTlshp4LV/F1JdH8jGjPjjaDR3QhytvY2ITC4vcPlMSFvS6HA==
+X-Received: by 2002:a05:6214:1462:: with SMTP id c2mr3885692qvy.202.1588265212361;
+        Thu, 30 Apr 2020 09:46:52 -0700 (PDT)
+Received: from localhost.localdomain ([138.204.25.205])
+        by smtp.gmail.com with ESMTPSA id x18sm388211qkn.107.2020.04.30.09.46.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Apr 2020 09:46:51 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 2BB0EC4BC6; Thu, 30 Apr 2020 13:46:49 -0300 (-03)
+Date:   Thu, 30 Apr 2020 13:46:49 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>, netdev@vger.kernel.org,
+        linux-sctp@vger.kernel.org
+Subject: Re: [PATCH 27/37] docs: networking: convert sctp.txt to ReST
+Message-ID: <20200430164649.GB2470@localhost.localdomain>
+References: <cover.1588261997.git.mchehab+huawei@kernel.org>
+ <5bbbf00c3aba45253e9d6ba0efeaf34bf2a8450f.1588261997.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1588021007-16914-3-git-send-email-roopa@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5bbbf00c3aba45253e9d6ba0efeaf34bf2a8450f.1588261997.git.mchehab+huawei@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 27/04/2020 à 22:56, Roopa Prabhu a écrit :
-> From: Roopa Prabhu <roopa@cumulusnetworks.com>
+On Thu, Apr 30, 2020 at 06:04:22PM +0200, Mauro Carvalho Chehab wrote:
+> - add SPDX header;
+> - add a document title;
+> - adjust identation, whitespaces and blank lines where needed;
+> - add to networking/index.rst.
 > 
-> Current route nexthop API maintains user space compatibility
-> with old route API by default. Dumps and netlink notifications
-> support both new and old API format. In systems which have
-> moved to the new API, this compatibility mode cancels some
-> of the performance benefits provided by the new nexthop API.
-> 
-> This patch adds new sysctl nexthop_compat_mode which is on
-> by default but provides the ability to turn off compatibility
-> mode allowing systems to run entirely with the new routing
-> API. Old route API behaviour and support is not modified by this
-> sysctl.
-> 
-> Uses a single sysctl to cover both ipv4 and ipv6 following
-> other sysctls. Covers dumps and delete notifications as
-> suggested by David Ahern.
-> 
-> Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+
 > ---
->  Documentation/networking/ip-sysctl.txt | 12 ++++++++++++
->  include/net/netns/ipv4.h               |  2 ++
->  net/ipv4/af_inet.c                     |  1 +
->  net/ipv4/fib_semantics.c               |  3 +++
->  net/ipv4/nexthop.c                     |  5 +++--
->  net/ipv4/sysctl_net_ipv4.c             |  9 +++++++++
->  net/ipv6/route.c                       |  3 ++-
->  7 files changed, 32 insertions(+), 3 deletions(-)
+>  Documentation/networking/index.rst            |  1 +
+>  .../networking/{sctp.txt => sctp.rst}         | 37 +++++++++++--------
+>  MAINTAINERS                                   |  2 +-
+>  3 files changed, 24 insertions(+), 16 deletions(-)
+>  rename Documentation/networking/{sctp.txt => sctp.rst} (64%)
 > 
-> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-> index 6fcfd31..a8f2da4 100644
-> --- a/Documentation/networking/ip-sysctl.txt
-> +++ b/Documentation/networking/ip-sysctl.txt
-> @@ -1553,6 +1553,18 @@ skip_notify_on_dev_down - BOOLEAN
->  	on userspace caches to track link events and evict routes.
->  	Default: false (generate message)
+> diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+> index cd307b9601fa..1761eb715061 100644
+> --- a/Documentation/networking/index.rst
+> +++ b/Documentation/networking/index.rst
+> @@ -100,6 +100,7 @@ Contents:
+>     rds
+>     regulatory
+>     rxrpc
+> +   sctp
 >  
-> +nexthop_compat_mode - BOOLEAN
-> +	New nexthop API provides a means for managing nexthops independent of
-> +	prefixes. Backwards compatibilty with old route format is enabled by
-> +	default which means route dumps and notifications contain the new
-> +	nexthop attribute but also the full, expanded nexthop definition.
-> +	Further, updates or deletes of a nexthop configuration generate route
-> +	notifications for each fib entry using the nexthop. Once a system
-> +	understands the new API, this sysctl can be disabled to achieve full
-> +	performance benefits of the new API by disabling the nexthop expansion
-> +	and extraneous notifications.
-> +	Default: true (backward compat mode)
-Maybe it could be good to allow only the transition true -> false to avoid
-nightmare debug. When the user chooses to leave the compat mode, it should never
-come back to it, it's not a game ;-)
-
-
-Regards,
-Nicolas
+>  .. only::  subproject and html
+>  
+> diff --git a/Documentation/networking/sctp.txt b/Documentation/networking/sctp.rst
+> similarity index 64%
+> rename from Documentation/networking/sctp.txt
+> rename to Documentation/networking/sctp.rst
+> index 97b810ca9082..9f4d9c8a925b 100644
+> --- a/Documentation/networking/sctp.txt
+> +++ b/Documentation/networking/sctp.rst
+> @@ -1,35 +1,42 @@
+> -Linux Kernel SCTP 
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +=================
+> +Linux Kernel SCTP
+> +=================
+>  
+>  This is the current BETA release of the Linux Kernel SCTP reference
+> -implementation.  
+> +implementation.
+>  
+>  SCTP (Stream Control Transmission Protocol) is a IP based, message oriented,
+>  reliable transport protocol, with congestion control, support for
+>  transparent multi-homing, and multiple ordered streams of messages.
+>  RFC2960 defines the core protocol.  The IETF SIGTRAN working group originally
+> -developed the SCTP protocol and later handed the protocol over to the 
+> -Transport Area (TSVWG) working group for the continued evolvement of SCTP as a 
+> -general purpose transport.  
+> +developed the SCTP protocol and later handed the protocol over to the
+> +Transport Area (TSVWG) working group for the continued evolvement of SCTP as a
+> +general purpose transport.
+>  
+> -See the IETF website (http://www.ietf.org) for further documents on SCTP. 
+> -See http://www.ietf.org/rfc/rfc2960.txt 
+> +See the IETF website (http://www.ietf.org) for further documents on SCTP.
+> +See http://www.ietf.org/rfc/rfc2960.txt
+>  
+>  The initial project goal is to create an Linux kernel reference implementation
+> -of SCTP that is RFC 2960 compliant and provides an programming interface 
+> -referred to as the  UDP-style API of the Sockets Extensions for SCTP, as 
+> -proposed in IETF Internet-Drafts.    
+> +of SCTP that is RFC 2960 compliant and provides an programming interface
+> +referred to as the  UDP-style API of the Sockets Extensions for SCTP, as
+> +proposed in IETF Internet-Drafts.
+>  
+> -Caveats:  
+> +Caveats
+> +=======
+>  
+> --lksctp can be built as statically or as a module.  However, be aware that 
+> -module removal of lksctp is not yet a safe activity.   
+> +- lksctp can be built as statically or as a module.  However, be aware that
+> +  module removal of lksctp is not yet a safe activity.
+>  
+> --There is tentative support for IPv6, but most work has gone towards 
+> -implementation and testing lksctp on IPv4.   
+> +- There is tentative support for IPv6, but most work has gone towards
+> +  implementation and testing lksctp on IPv4.
+>  
+>  
+>  For more information, please visit the lksctp project website:
+> +
+>     http://www.sf.net/projects/lksctp
+>  
+>  Or contact the lksctp developers through the mailing list:
+> +
+>     <linux-sctp@vger.kernel.org>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 93e1b253ae51..64789b29c085 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15044,7 +15044,7 @@ M:	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+>  L:	linux-sctp@vger.kernel.org
+>  S:	Maintained
+>  W:	http://lksctp.sourceforge.net
+> -F:	Documentation/networking/sctp.txt
+> +F:	Documentation/networking/sctp.rst
+>  F:	include/linux/sctp.h
+>  F:	include/net/sctp/
+>  F:	include/uapi/linux/sctp.h
+> -- 
+> 2.25.4
+> 
