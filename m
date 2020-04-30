@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E64C01BFB7A
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23A821BFB85
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:00:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728946AbgD3NyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 09:54:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36598 "EHLO mail.kernel.org"
+        id S1729115AbgD3OAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 10:00:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36608 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728937AbgD3NyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:54:16 -0400
+        id S1728169AbgD3NyR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:54:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A65F220774;
-        Thu, 30 Apr 2020 13:54:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A698D20870;
+        Thu, 30 Apr 2020 13:54:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254856;
-        bh=MVj9UZhM0DjTLdw9ouaGd2g02wNy/NokxdpMwsfgbjY=;
+        s=default; t=1588254857;
+        bh=FoaQyXCTpiF64dTsxTeMg1cZZGMD44nMvDekcFHo3/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YzJRvGWtvrFH0U0v7vR+NgTySzn5Ewm4BLBCeBc0cglx7PO8e7VycYC/Co3dhMETJ
-         6+VM6MXS78v4/ZEps30ALsvgnpVccBVGzvZUR/NNxI0A2GtgKPnEQk2mLebXO6QmO3
-         67WV/aITUB1fYR/wnJbUHmbPBb5qDNzX7RtKs2po=
+        b=ErPAlkiJjMRwgQVa8+JEZb5FvRTpR175631WKN+c6aFz5WT/E1vHUrpIku8VY3uVA
+         GUxBQaO4jS69HQSiULDkKwcMMdnGkL46EyHGAsgFszkI7r61At04OfXj6yHglvh3e5
+         iUCgjh9yB4bpgKQYfQPFqCaO9GWbOxkmVaEE6AL0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Julien Beraud <julien.beraud@orolia.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 12/27] net: stmmac: fix enabling socfpga's ptp_ref_clock
-Date:   Thu, 30 Apr 2020 09:53:47 -0400
-Message-Id: <20200430135402.20994-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 13/27] net: stmmac: Fix sub-second increment
+Date:   Thu, 30 Apr 2020 09:53:48 -0400
+Message-Id: <20200430135402.20994-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135402.20994-1-sashal@kernel.org>
 References: <20200430135402.20994-1-sashal@kernel.org>
@@ -45,53 +45,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Julien Beraud <julien.beraud@orolia.com>
 
-[ Upstream commit 15ce30609d1e88d42fb1cd948f453e6d5f188249 ]
+[ Upstream commit 91a2559c1dc5b0f7e1256d42b1508935e8eabfbf ]
 
-There are 2 registers to write to enable a ptp ref clock coming from the
-fpga.
-One that enables the usage of the clock from the fpga for emac0 and emac1
-as a ptp ref clock, and the other to allow signals from the fpga to reach
-emac0 and emac1.
-Currently, if the dwmac-socfpga has phymode set to PHY_INTERFACE_MODE_MII,
-PHY_INTERFACE_MODE_GMII, or PHY_INTERFACE_MODE_SGMII, both registers will
-be written and the ptp ref clock will be set as coming from the fpga.
-Separate the 2 register writes to only enable signals from the fpga to
-reach emac0 or emac1 when ptp ref clock is not coming from the fpga.
+In fine adjustement mode, which is the current default, the sub-second
+    increment register is the number of nanoseconds that will be added to
+    the clock when the accumulator overflows. At each clock cycle, the
+    value of the addend register is added to the accumulator.
+    Currently, we use 20ns = 1e09ns / 50MHz as this value whatever the
+    frequency of the ptp clock actually is.
+    The adjustment is then done on the addend register, only incrementing
+    every X clock cycles X being the ratio between 50MHz and ptp_clock_rate
+    (addend = 2^32 * 50MHz/ptp_clock_rate).
+    This causes the following issues :
+    - In case the frequency of the ptp clock is inferior or equal to 50MHz,
+      the addend value calculation will overflow and the default
+      addend value will be set to 0, causing the clock to not work at
+      all. (For instance, for ptp_clock_rate = 50MHz, addend = 2^32).
+    - The resolution of the timestamping clock is limited to 20ns while it
+      is not needed, thus limiting the accuracy of the timestamping to
+      20ns.
+
+    Fix this by setting sub-second increment to 2e09ns / ptp_clock_rate.
+    It will allow to reach the minimum possible frequency for
+    ptp_clk_ref, which is 5MHz for GMII 1000Mps Full-Duplex by setting the
+    sub-second-increment to a higher value. For instance, for 25MHz, it
+    gives ssinc = 80ns and default_addend = 2^31.
+    It will also allow to use a lower value for sub-second-increment, thus
+    improving the timestamping accuracy with frequencies higher than
+    100MHz, for instance, for 200MHz, ssinc = 10ns and default_addend =
+    2^31.
+
+v1->v2:
+ - Remove modifications to the calculation of default addend, which broke
+ compatibility with clock frequencies for which 2000000000 / ptp_clk_freq
+ is not an integer.
+ - Modify description according to discussions.
 
 Signed-off-by: Julien Beraud <julien.beraud@orolia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c    | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-index 5b3b06a0a3bf5..33407df6bea69 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -274,16 +274,19 @@ static int socfpga_dwmac_set_phy_mode(struct socfpga_dwmac *dwmac)
- 	    phymode == PHY_INTERFACE_MODE_MII ||
- 	    phymode == PHY_INTERFACE_MODE_GMII ||
- 	    phymode == PHY_INTERFACE_MODE_SGMII) {
--		ctrl |= SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2);
- 		regmap_read(sys_mgr_base_addr, SYSMGR_FPGAGRP_MODULE_REG,
- 			    &module);
- 		module |= (SYSMGR_FPGAGRP_MODULE_EMAC << (reg_shift / 2));
- 		regmap_write(sys_mgr_base_addr, SYSMGR_FPGAGRP_MODULE_REG,
- 			     module);
--	} else {
--		ctrl &= ~(SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2));
- 	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+index 41d528fbebb41..ccf7381c8baec 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+@@ -36,12 +36,16 @@ static u32 stmmac_config_sub_second_increment(void __iomem *ioaddr,
+ 	unsigned long data;
+ 	u32 reg_value;
  
-+	if (dwmac->f2h_ptp_ref_clk)
-+		ctrl |= SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2);
-+	else
-+		ctrl &= ~(SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK <<
-+			  (reg_shift / 2));
-+
- 	regmap_write(sys_mgr_base_addr, reg_offset, ctrl);
+-	/* For GMAC3.x, 4.x versions, convert the ptp_clock to nano second
+-	 *	formula = (1/ptp_clock) * 1000000000
+-	 * where ptp_clock is 50MHz if fine method is used to update system
++	/* For GMAC3.x, 4.x versions, in "fine adjustement mode" set sub-second
++	 * increment to twice the number of nanoseconds of a clock cycle.
++	 * The calculation of the default_addend value by the caller will set it
++	 * to mid-range = 2^31 when the remainder of this division is zero,
++	 * which will make the accumulator overflow once every 2 ptp_clock
++	 * cycles, adding twice the number of nanoseconds of a clock cycle :
++	 * 2000000000ULL / ptp_clock.
+ 	 */
+ 	if (value & PTP_TCR_TSCFUPDT)
+-		data = (1000000000ULL / 50000000);
++		data = (2000000000ULL / ptp_clock);
+ 	else
+ 		data = (1000000000ULL / ptp_clock);
  
- 	/* Deassert reset for the phy configuration to be sampled by
 -- 
 2.20.1
 
