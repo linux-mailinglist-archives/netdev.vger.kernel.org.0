@@ -2,446 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 667DB1C0AFC
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 01:31:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3A01C0B06
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 01:41:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbgD3Xb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 19:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726435AbgD3Xb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 19:31:56 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C21C035495
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 16:31:54 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id s8so9823644ybj.9
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 16:31:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=P/ZkVzy8srGzpdc1wH5VQEZkZ6K0ju1bsjqWwmQKNss=;
-        b=hTeDcqouG+d0dbaPopxWRL9v5H+pDW896PfOfBdGYdbNP9Hi+DVaN/xECgJXq2UzDK
-         y5TLjKliiu/s7JhzrAmXuMJ8uiRIaQVgKvdr+W087d/8N73VSVwIuGCyfPfu35jis87k
-         bMrHKNhOjE0AB1tbRXOGBWKqdWhGoflMQWCLvUUnud2qu16ziDXNolkVAvdZhvEEnZgS
-         wcg5IL6M3puCOSgqAHuBXoe4B7/HRc1UuI+U/itG4M18mUV7HiAXJbXS0Y3zFVb5mc/9
-         D18TsyTGU7TXcJ8IVU6rYOxsAQHy1TNWpCmnf42JgCb+X5eOl07XOc34VjcZRHDZsMm1
-         f6NA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=P/ZkVzy8srGzpdc1wH5VQEZkZ6K0ju1bsjqWwmQKNss=;
-        b=BUIPcDAFQEZ3DQsfiZEjrwXWuppFHvSvHN5XILAzOxsS96pAiAGuK1Lz51VXFaUZbs
-         Hrzloure/0MAqgYIOR1kMwYPrhrvlPGNh00MA36i/K1s2H/RHACFfh7gmFzPU3yBGLPP
-         Gtt+x631q3i0KbIKnIgSHlcJ0HDAuUpcVzgReec+2XVApxVS3zB84b/4zZC89OIiAKeB
-         Q+Ji9cE43oVDBlyY6H0df3F/IU/+mu3rjl7nJNS8ByXbSV/ALk9xTiSrenkTjl7D1mPP
-         7GZjcdErWZXz3mUVDz9Qz6saU3yzau97AD8vJGTnRsH5R9lc9vEEsTdmN6eecNZnh5Fw
-         D9hA==
-X-Gm-Message-State: AGi0PubUesy0EEtXxkeWL81VWWaqbZkPaN/OA4C5om/eBtOxC7nFv3Cr
-        Y4ZU3r9Pq2ABbIAjfwsGzbMe8MhYD2RsRZID8rbh/XbnMsessuKKC7r4MAlukwijLvWrpg6mvSp
-        25oyo5fJisrQmR/ed/+PJ33HjJpQ3sRB4+nyk4YpiDxZ1YUfTJ0La/A==
-X-Google-Smtp-Source: APiQypJDNBJ855fNpoNoY05VbLvgyoLzn31gX6fJ9xeOZgattsasn8f/HoyVf1dnFhAofOhu+j24ppo=
-X-Received: by 2002:a25:448:: with SMTP id 69mr2151763ybe.187.1588289513703;
- Thu, 30 Apr 2020 16:31:53 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 16:31:52 -0700
-Message-Id: <20200430233152.199403-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH bpf-next v3] bpf: bpf_{g,s}etsockopt for struct bpf_sock_addr
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726562AbgD3Xla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 19:41:30 -0400
+Received: from mail-db8eur05on2058.outbound.protection.outlook.com ([40.107.20.58]:34525
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726384AbgD3Xl3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 19:41:29 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AGu01S71VMxtIiKTXJ1jLDmeFASJbp+5gG3sh8xLBsNKxRQzI2zPsPbm16w/D5TUzlE6se+PwKYPdyDVe2N/KfZiZX7gzTSOGokmYMHtDPfvyYiZMpeJkoPF1VeC6BIdGT3SULt8oDw1e46+EQTvaO8Um+mjPLprqZQhqliUGPVjMaUzAY513us03ymR+a3B8AcEkNGMhpZ6ILlrIkDF9JspQs4JASXPIy6/X1U7K6ZBjpyY+ZjqwFU6L2c/zUSlCas89ZTzjqQaktPD/mOXEBMT/Pyu9U8ljPYjTyq3Js0yA6Ws/ZLpyowDb2graqkkXLXtoIuVfmEbJ+NhWxKu7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G6FBWrKUArQOaeHVFkxoQ7Pw/gUA5tnVlaKIw7Tc6XY=;
+ b=NMPpTY7J9U8MfArF4w1UgNwsQYsrKCeUP+7HsgDyAz0wiLYC3ZOIJc17IHQzaHq3BAROW0vDNTp+fcwOY+5QQHx8Um4y7JAIZ3L/iXarh7H1FHrsb3j3JvmUsgakesxPRbYpjhGhYZdDLlbwpJO9TXPpM8TTOu+UOLMlM4i4MAz0OiqoG1voNniL5xG8BzRJmmNtVMmeycsFPcoPQ9+7o+kjEVloMUCKGHSp5VdsoK9WLHRYgt41G7HALM0hv6JFw/Z4u8uTEHLL1rS8uAf4IEFOiY4ym5dRHSf/rFMOBnGViI0g1dYHBUm2PvKFDGEOjGKHEcNGaI6s3il2OkNCdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G6FBWrKUArQOaeHVFkxoQ7Pw/gUA5tnVlaKIw7Tc6XY=;
+ b=ohZIIDNhJdDhbVlOv8BL3Xd+/hfN8bSx5p4eyWBVSCJSouCRJlJFkfsTQ7dNqYnWfvtXwchOsZ26v0FiWZQrfc3sIJL8rvISm4ZdcIWd76ozoyptiyirpmrbr1giPzD4w3hiuVjSQspRo/7A0Ek26KAocdZiVKqYzajMpvIwsz0=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB3230.eurprd05.prod.outlook.com (2603:10a6:802:1b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Thu, 30 Apr
+ 2020 23:41:24 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.028; Thu, 30 Apr 2020
+ 23:41:24 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [PATCH net-next 0/2] ethtool: Add support for 100Gbps per lane link modes
+Date:   Thu, 30 Apr 2020 16:41:04 -0700
+Message-Id: <20200430234106.52732-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.25.4
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR17CA0026.namprd17.prod.outlook.com
+ (2603:10b6:a03:1b8::39) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY5PR17CA0026.namprd17.prod.outlook.com (2603:10b6:a03:1b8::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Thu, 30 Apr 2020 23:41:22 +0000
+X-Mailer: git-send-email 2.25.4
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 37705560-f4d7-47e5-f5c5-08d7ed5ffe70
+X-MS-TrafficTypeDiagnostic: VI1PR05MB3230:|VI1PR05MB3230:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB3230E91074E58CA4CCAA60F5BEAA0@VI1PR05MB3230.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-Forefront-PRVS: 0389EDA07F
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(366004)(136003)(396003)(346002)(39860400002)(36756003)(186003)(26005)(6506007)(2616005)(956004)(5660300002)(52116002)(316002)(4744005)(1076003)(478600001)(16526019)(6666004)(6486002)(2906002)(6512007)(86362001)(4326008)(54906003)(8676002)(66946007)(107886003)(66556008)(66476007)(8936002)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KLkNF3ujZ+Ht2xBzYiZRdvOjku5V5pqXQvRbVit3o/+JXHFv5lQLBBsxoVoI0vHeAd+JiDAk7ZpkXolOodBW3HqB/QN+U+Vj8+hNOG3gA3pHLeeeYBceJtvKT3cOSreXDBa1U/QdxUMdxJg1R6lxpmASdLfnlnKQU0Vjf54kfdZ31BrzS2ShcB3oyF0pcwNs+PNh6pTeOpEoquWRSgpgYp7M3N8B1tIfBBr/VgHWGYEw8bPAZa32RiUyhSIb1pOEpK7J2eIfWjQYpYmCyi1ZqpUp7FlxyQ3pBqSOFB4YuAleSr3lm7vfSiw+yZyj5KEMJn5MnsPMZAvzN0c6VctE28Tor4oW0DKv5oT/b9nlG9RFIL6xxSUZcGtKFBsfvHpuOsl9kGLNwuM3c/ha0wrdZlb2j54yqUVCgIQbFHcEzrw51xx/ZS18FuE6ECfOSo+8EM1rHAfbKNFcMKljFutdAllJ6bDeFh2PQANzBd9Xndv0V7u4qkSAJi2TOXs65HOV
+X-MS-Exchange-AntiSpam-MessageData: 7vOAsYXUu5y8chjDZZesbFWQnDK/8phkHjUSVsUB+MFt8rS0Ub+NaMw1O6xzQeoD/IXy6ApyXkCiGH+M5k3WArJ1tPNXJ35hz+UlP1uomXL9fBk4Q5uXtwLPdHaFMBz+mK1vd8pPnlbCXkmLZB4LvqbNXCz/H27qib1ySkbZoCSSsyuEYTV6/T7g5YHtwXRpxCudIGeFpKNlkPJUc2PSUunRW64Ks5N1Hf+bg0kwLN9PPhZFPMG1hOvit+Bts/OR7D3svpB9k76gGG2YjIkfMS5+kEZrUbLveL30O/VJAkxpEcum5eMXJgGorm2zeUeqGUrvB4IHfKlUmUTwREk4SjEx9YOS7PRr4xHJNXAzy8Xoo+WnOMXqPN7i2vRcw0gurZ23a00ENHroTtbaPGwrl1O/CqTSAOnGeb6X1MzaqglCzWhRtyd20GRo3Id93Cyd+vcLWAK6JKeOQ32XI1VRdyHnQkjYhkEXckOUeTeO1Y7qGPEHpQarwju2cPMRD17hP3aF+8uqWXzCkGbCzfapyq56BaBYX0GLigOApRzCQ9yCNdVxkHKkF9vpx/O8wn7bGObBBcIHavK9HkLhjmhKykuqXX1QWNZRcdMTsl2LQgoF8xUnk8x0Q92Cdoqt6Di/vw3e8NmBmH6q53X98xXpPzumOaQHwSlrW3TW4Ca/i1hBYaR5KPThQa6XmE23IoC4J0/gfgqNN7IoyssATfeNaYcT+xmliYYEUHno+SKpJpXZDE9WQX2OUyjxHnnD0xtJD6h6/7FOJ+T6Xe5dbBBA7LkR7nKeqI8kn/q9ntEnokg=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37705560-f4d7-47e5-f5c5-08d7ed5ffe70
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 23:41:24.6184
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KfB9FrtsbIXvohVgdlSz/yyoGPjC9KTKecX9EeN+TVzTq2tkbmEQwOpEQn04VMXoAWB1K9913yiHaAaco8PzYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3230
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, bpf_getsockopt and bpf_setsockopt helpers operate on the
-'struct bpf_sock_ops' context in BPF_PROG_TYPE_SOCK_OPS program.
-Let's generalize them and make them available for 'struct bpf_sock_addr'.
-That way, in the future, we can allow those helpers in more places.
+Hi,
 
-As an example, let's expose those 'struct bpf_sock_addr' based helpers to
-BPF_CGROUP_INET{4,6}_CONNECT hooks. That way we can override CC before the
-connection is made.
+This small series adds new ethtool link modes bits to 
+Define 100G, 200G and 400G link modes using 100Gbps per lane.
 
-v3:
-* Expose custom helpers for bpf_sock_addr context instead of doing
-  generic bpf_sock argument (as suggested by Daniel). Even with
-  try_socket_lock that doesn't sleep we have a problem where context sk
-  is already locked and socket lock is non-nestable.
+Thanks,
+Saeed.
 
-v2:
-* s/BPF_PROG_TYPE_CGROUP_SOCKOPT/BPF_PROG_TYPE_SOCK_OPS/
+Meir Lichtinger (2):
+  ethtool: Add support for 100Gbps per lane link modes
+  net/mlx5: Added support for 100Gbps per lane link modes
 
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- include/uapi/linux/bpf.h                      |  14 ++-
- net/core/filter.c                             | 118 ++++++++++++++----
- tools/include/uapi/linux/bpf.h                |  14 ++-
- tools/testing/selftests/bpf/config            |   1 +
- .../selftests/bpf/progs/connect4_prog.c       |  46 +++++++
- 5 files changed, 166 insertions(+), 27 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/port.c |  3 +++
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 21 ++++++++++++++++++-
+ drivers/net/phy/phy-core.c                    | 17 ++++++++++++++-
+ include/linux/mlx5/port.h                     |  3 +++
+ include/uapi/linux/ethtool.h                  | 15 +++++++++++++
+ net/ethtool/common.c                          | 15 +++++++++++++
+ net/ethtool/linkmodes.c                       | 16 ++++++++++++++
+ 7 files changed, 88 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 4a6c47f3febe..761db1aed891 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1564,7 +1564,7 @@ union bpf_attr {
-  * 	Return
-  * 		0
-  *
-- * int bpf_setsockopt(struct bpf_sock_ops *bpf_socket, int level, int optname, void *optval, int optlen)
-+ * int bpf_setsockopt(void *bpf_socket, int level, int optname, void *optval, int optlen)
-  * 	Description
-  * 		Emulate a call to **setsockopt()** on the socket associated to
-  * 		*bpf_socket*, which must be a full socket. The *level* at
-@@ -1572,6 +1572,11 @@ union bpf_attr {
-  * 		must be specified, see **setsockopt(2)** for more information.
-  * 		The option value of length *optlen* is pointed by *optval*.
-  *
-+ * 		*bpf_socket* should be one of the following:
-+ * 		* **struct bpf_sock_ops** for **BPF_PROG_TYPE_SOCK_OPS**.
-+ * 		* **struct bpf_sock_addr** for **BPF_CGROUP_INET4_CONNECT**
-+ * 		  and **BPF_CGROUP_INET6_CONNECT**.
-+ *
-  * 		This helper actually implements a subset of **setsockopt()**.
-  * 		It supports the following *level*\ s:
-  *
-@@ -1766,7 +1771,7 @@ union bpf_attr {
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-  *
-- * int bpf_getsockopt(struct bpf_sock_ops *bpf_socket, int level, int optname, void *optval, int optlen)
-+ * int bpf_getsockopt(void *bpf_socket, int level, int optname, void *optval, int optlen)
-  * 	Description
-  * 		Emulate a call to **getsockopt()** on the socket associated to
-  * 		*bpf_socket*, which must be a full socket. The *level* at
-@@ -1775,6 +1780,11 @@ union bpf_attr {
-  * 		The retrieved value is stored in the structure pointed by
-  * 		*opval* and of length *optlen*.
-  *
-+ * 		*bpf_socket* should be one of the following:
-+ * 		* **struct bpf_sock_ops** for **BPF_PROG_TYPE_SOCK_OPS**.
-+ * 		* **struct bpf_sock_addr** for **BPF_CGROUP_INET4_CONNECT**
-+ * 		  and **BPF_CGROUP_INET6_CONNECT**.
-+ *
-  * 		This helper actually implements a subset of **getsockopt()**.
-  * 		It supports the following *level*\ s:
-  *
-diff --git a/net/core/filter.c b/net/core/filter.c
-index da3b7a72c37c..437bb74dd9a9 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4194,16 +4194,19 @@ static const struct bpf_func_proto bpf_get_socket_uid_proto = {
- 	.arg1_type      = ARG_PTR_TO_CTX,
- };
- 
--BPF_CALL_5(bpf_setsockopt, struct bpf_sock_ops_kern *, bpf_sock,
--	   int, level, int, optname, char *, optval, int, optlen)
-+#define SOCKOPT_CC_REINIT (1 << 0)
-+
-+static int _bpf_setsockopt(struct sock *sk, int level, int optname,
-+			   char *optval, int optlen, u32 flags)
- {
--	struct sock *sk = bpf_sock->sk;
- 	int ret = 0;
- 	int val;
- 
- 	if (!sk_fullsock(sk))
- 		return -EINVAL;
- 
-+	sock_owned_by_me(sk);
-+
- 	if (level == SOL_SOCKET) {
- 		if (optlen != sizeof(int))
- 			return -EINVAL;
-@@ -4298,7 +4301,7 @@ BPF_CALL_5(bpf_setsockopt, struct bpf_sock_ops_kern *, bpf_sock,
- 		   sk->sk_prot->setsockopt == tcp_setsockopt) {
- 		if (optname == TCP_CONGESTION) {
- 			char name[TCP_CA_NAME_MAX];
--			bool reinit = bpf_sock->op > BPF_SOCK_OPS_NEEDS_ECN;
-+			bool reinit = flags & SOCKOPT_CC_REINIT;
- 
- 			strncpy(name, optval, min_t(long, optlen,
- 						    TCP_CA_NAME_MAX-1));
-@@ -4345,24 +4348,14 @@ BPF_CALL_5(bpf_setsockopt, struct bpf_sock_ops_kern *, bpf_sock,
- 	return ret;
- }
- 
--static const struct bpf_func_proto bpf_setsockopt_proto = {
--	.func		= bpf_setsockopt,
--	.gpl_only	= false,
--	.ret_type	= RET_INTEGER,
--	.arg1_type	= ARG_PTR_TO_CTX,
--	.arg2_type	= ARG_ANYTHING,
--	.arg3_type	= ARG_ANYTHING,
--	.arg4_type	= ARG_PTR_TO_MEM,
--	.arg5_type	= ARG_CONST_SIZE,
--};
--
--BPF_CALL_5(bpf_getsockopt, struct bpf_sock_ops_kern *, bpf_sock,
--	   int, level, int, optname, char *, optval, int, optlen)
-+static int _bpf_getsockopt(struct sock *sk, int level, int optname,
-+			   char *optval, int optlen)
- {
--	struct sock *sk = bpf_sock->sk;
--
- 	if (!sk_fullsock(sk))
- 		goto err_clear;
-+
-+	sock_owned_by_me(sk);
-+
- #ifdef CONFIG_INET
- 	if (level == SOL_TCP && sk->sk_prot->getsockopt == tcp_getsockopt) {
- 		struct inet_connection_sock *icsk;
-@@ -4428,8 +4421,71 @@ BPF_CALL_5(bpf_getsockopt, struct bpf_sock_ops_kern *, bpf_sock,
- 	return -EINVAL;
- }
- 
--static const struct bpf_func_proto bpf_getsockopt_proto = {
--	.func		= bpf_getsockopt,
-+BPF_CALL_5(bpf_sock_addr_setsockopt, struct bpf_sock_addr_kern *, ctx,
-+	   int, level, int, optname, char *, optval, int, optlen)
-+{
-+	u32 flags = 0;
-+	return _bpf_setsockopt(ctx->sk, level, optname, optval, optlen,
-+			       flags);
-+}
-+
-+static const struct bpf_func_proto bpf_sock_addr_setsockopt_proto = {
-+	.func		= bpf_sock_addr_setsockopt,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_ANYTHING,
-+	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg5_type	= ARG_CONST_SIZE,
-+};
-+
-+BPF_CALL_5(bpf_sock_addr_getsockopt, struct bpf_sock_addr_kern *, ctx,
-+	   int, level, int, optname, char *, optval, int, optlen)
-+{
-+	return _bpf_getsockopt(ctx->sk, level, optname, optval, optlen);
-+}
-+
-+static const struct bpf_func_proto bpf_sock_addr_getsockopt_proto = {
-+	.func		= bpf_sock_addr_getsockopt,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_ANYTHING,
-+	.arg4_type	= ARG_PTR_TO_UNINIT_MEM,
-+	.arg5_type	= ARG_CONST_SIZE,
-+};
-+
-+BPF_CALL_5(bpf_sock_ops_setsockopt, struct bpf_sock_ops_kern *, bpf_sock,
-+	   int, level, int, optname, char *, optval, int, optlen)
-+{
-+	u32 flags = 0;
-+	if (bpf_sock->op > BPF_SOCK_OPS_NEEDS_ECN)
-+		flags |= SOCKOPT_CC_REINIT;
-+	return _bpf_setsockopt(bpf_sock->sk, level, optname, optval, optlen,
-+			       flags);
-+}
-+
-+static const struct bpf_func_proto bpf_sock_ops_setsockopt_proto = {
-+	.func		= bpf_sock_ops_setsockopt,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_ANYTHING,
-+	.arg4_type	= ARG_PTR_TO_MEM,
-+	.arg5_type	= ARG_CONST_SIZE,
-+};
-+
-+BPF_CALL_5(bpf_sock_ops_getsockopt, struct bpf_sock_ops_kern *, bpf_sock,
-+	   int, level, int, optname, char *, optval, int, optlen)
-+{
-+	return _bpf_getsockopt(bpf_sock->sk, level, optname, optval, optlen);
-+}
-+
-+static const struct bpf_func_proto bpf_sock_ops_getsockopt_proto = {
-+	.func		= bpf_sock_ops_getsockopt,
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_PTR_TO_CTX,
-@@ -6043,6 +6099,22 @@ sock_addr_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_sk_storage_get_proto;
- 	case BPF_FUNC_sk_storage_delete:
- 		return &bpf_sk_storage_delete_proto;
-+	case BPF_FUNC_setsockopt:
-+		switch (prog->expected_attach_type) {
-+		case BPF_CGROUP_INET4_CONNECT:
-+		case BPF_CGROUP_INET6_CONNECT:
-+			return &bpf_sock_addr_setsockopt_proto;
-+		default:
-+			return NULL;
-+		}
-+	case BPF_FUNC_getsockopt:
-+		switch (prog->expected_attach_type) {
-+		case BPF_CGROUP_INET4_CONNECT:
-+		case BPF_CGROUP_INET6_CONNECT:
-+			return &bpf_sock_addr_getsockopt_proto;
-+		default:
-+			return NULL;
-+		}
- 	default:
- 		return bpf_base_func_proto(func_id);
- 	}
-@@ -6261,9 +6333,9 @@ sock_ops_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- {
- 	switch (func_id) {
- 	case BPF_FUNC_setsockopt:
--		return &bpf_setsockopt_proto;
-+		return &bpf_sock_ops_setsockopt_proto;
- 	case BPF_FUNC_getsockopt:
--		return &bpf_getsockopt_proto;
-+		return &bpf_sock_ops_getsockopt_proto;
- 	case BPF_FUNC_sock_ops_cb_flags_set:
- 		return &bpf_sock_ops_cb_flags_set_proto;
- 	case BPF_FUNC_sock_map_update:
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 4a6c47f3febe..761db1aed891 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1564,7 +1564,7 @@ union bpf_attr {
-  * 	Return
-  * 		0
-  *
-- * int bpf_setsockopt(struct bpf_sock_ops *bpf_socket, int level, int optname, void *optval, int optlen)
-+ * int bpf_setsockopt(void *bpf_socket, int level, int optname, void *optval, int optlen)
-  * 	Description
-  * 		Emulate a call to **setsockopt()** on the socket associated to
-  * 		*bpf_socket*, which must be a full socket. The *level* at
-@@ -1572,6 +1572,11 @@ union bpf_attr {
-  * 		must be specified, see **setsockopt(2)** for more information.
-  * 		The option value of length *optlen* is pointed by *optval*.
-  *
-+ * 		*bpf_socket* should be one of the following:
-+ * 		* **struct bpf_sock_ops** for **BPF_PROG_TYPE_SOCK_OPS**.
-+ * 		* **struct bpf_sock_addr** for **BPF_CGROUP_INET4_CONNECT**
-+ * 		  and **BPF_CGROUP_INET6_CONNECT**.
-+ *
-  * 		This helper actually implements a subset of **setsockopt()**.
-  * 		It supports the following *level*\ s:
-  *
-@@ -1766,7 +1771,7 @@ union bpf_attr {
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-  *
-- * int bpf_getsockopt(struct bpf_sock_ops *bpf_socket, int level, int optname, void *optval, int optlen)
-+ * int bpf_getsockopt(void *bpf_socket, int level, int optname, void *optval, int optlen)
-  * 	Description
-  * 		Emulate a call to **getsockopt()** on the socket associated to
-  * 		*bpf_socket*, which must be a full socket. The *level* at
-@@ -1775,6 +1780,11 @@ union bpf_attr {
-  * 		The retrieved value is stored in the structure pointed by
-  * 		*opval* and of length *optlen*.
-  *
-+ * 		*bpf_socket* should be one of the following:
-+ * 		* **struct bpf_sock_ops** for **BPF_PROG_TYPE_SOCK_OPS**.
-+ * 		* **struct bpf_sock_addr** for **BPF_CGROUP_INET4_CONNECT**
-+ * 		  and **BPF_CGROUP_INET6_CONNECT**.
-+ *
-  * 		This helper actually implements a subset of **getsockopt()**.
-  * 		It supports the following *level*\ s:
-  *
-diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
-index 60e3ae5d4e48..6e5b94c036ca 100644
---- a/tools/testing/selftests/bpf/config
-+++ b/tools/testing/selftests/bpf/config
-@@ -37,3 +37,4 @@ CONFIG_IPV6_SIT=m
- CONFIG_BPF_JIT=y
- CONFIG_BPF_LSM=y
- CONFIG_SECURITY=y
-+CONFIG_TCP_CONG_DCTCP=y
-diff --git a/tools/testing/selftests/bpf/progs/connect4_prog.c b/tools/testing/selftests/bpf/progs/connect4_prog.c
-index ad3c498a8150..972918cd2d7f 100644
---- a/tools/testing/selftests/bpf/progs/connect4_prog.c
-+++ b/tools/testing/selftests/bpf/progs/connect4_prog.c
-@@ -8,6 +8,7 @@
- #include <linux/in.h>
- #include <linux/in6.h>
- #include <sys/socket.h>
-+#include <netinet/tcp.h>
- 
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_endian.h>
-@@ -16,6 +17,10 @@
- #define DST_REWRITE_IP4		0x7f000001U
- #define DST_REWRITE_PORT4	4444
- 
-+#ifndef TCP_CA_NAME_MAX
-+#define TCP_CA_NAME_MAX 16
-+#endif
-+
- int _version SEC("version") = 1;
- 
- __attribute__ ((noinline))
-@@ -33,6 +38,43 @@ int do_bind(struct bpf_sock_addr *ctx)
- 	return 1;
- }
- 
-+static __inline int verify_cc(struct bpf_sock_addr *ctx,
-+			      char expected[TCP_CA_NAME_MAX])
-+{
-+	char buf[TCP_CA_NAME_MAX];
-+	int i;
-+
-+	if (bpf_getsockopt(ctx, SOL_TCP, TCP_CONGESTION, &buf, sizeof(buf)))
-+		return 1;
-+
-+	for (i = 0; i < TCP_CA_NAME_MAX; i++) {
-+		if (buf[i] != expected[i])
-+			return 1;
-+		if (buf[i] == 0)
-+			break;
-+	}
-+
-+	return 0;
-+}
-+
-+static __inline int set_cc(struct bpf_sock_addr *ctx)
-+{
-+	char dctcp[TCP_CA_NAME_MAX] = "dctcp";
-+	char cubic[TCP_CA_NAME_MAX] = "cubic";
-+
-+	if (bpf_setsockopt(ctx, SOL_TCP, TCP_CONGESTION, &dctcp, sizeof(dctcp)))
-+		return 1;
-+	if (verify_cc(ctx, dctcp))
-+		return 1;
-+
-+	if (bpf_setsockopt(ctx, SOL_TCP, TCP_CONGESTION, &cubic, sizeof(cubic)))
-+		return 1;
-+	if (verify_cc(ctx, cubic))
-+		return 1;
-+
-+	return 0;
-+}
-+
- SEC("cgroup/connect4")
- int connect_v4_prog(struct bpf_sock_addr *ctx)
- {
-@@ -66,6 +108,10 @@ int connect_v4_prog(struct bpf_sock_addr *ctx)
- 
- 	bpf_sk_release(sk);
- 
-+	/* Rewrite congestion control. */
-+	if (ctx->type == SOCK_STREAM && set_cc(ctx))
-+		return 0;
-+
- 	/* Rewrite destination. */
- 	ctx->user_ip4 = bpf_htonl(DST_REWRITE_IP4);
- 	ctx->user_port = bpf_htons(DST_REWRITE_PORT4);
 -- 
-2.26.2.526.g744177e7f7-goog
+2.25.4
 
