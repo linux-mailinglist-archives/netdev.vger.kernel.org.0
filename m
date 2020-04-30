@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 689541BF67E
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 13:21:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C0A91BF683
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 13:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727087AbgD3LVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 07:21:06 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:55342 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727080AbgD3LVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 07:21:05 -0400
+        id S1727094AbgD3LVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 07:21:12 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30288 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726826AbgD3LVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 07:21:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588245664;
+        s=mimecast20190719; t=1588245669;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gnPvZV/dEMFMyaLIx220Mtoo9DjIOh+4KYKq8NpYOXI=;
-        b=gIfTUe+ahBvPwqNIb07DH2hkKmTu0Bl/HGA4RR1Gy+isJj0kFIjfL5TApsdZZcFO3NTZUD
-        TzTVU+0niZ2rJEjUEFKf6mgtukiYZ+hup4h+rLpgvKQRb1kFFl1t17v++1EHnK8RnN0Qo2
-        9oj9cnvyTJFv/0tWCOA4KT1KTV85g0o=
+        bh=2SrLsvlKB7Vvew3O8IVQouTRL+WzcfG+4iOiFMJgGMg=;
+        b=NGkS3ug5R2FXADoD79+u7S7Jv6aoFuWpx/+vkWAyFPUDZx0El0DdhkcDOLWE9jYLYiYYuQ
+        v1dZx1ekcWonBQQSkQJCuyAkkDQLHo+k/Cp9cV2dOOoS92CgUaik4LiHf7Lq+oJsemtTHz
+        US1DaPZcSBB2xetEx9p3pZo/67dymJ4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-209-XmqwcZVxONuvKjYvHCSj2Q-1; Thu, 30 Apr 2020 07:21:00 -0400
-X-MC-Unique: XmqwcZVxONuvKjYvHCSj2Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-149-MTZdx47sNQq_ztVBDkahzg-1; Thu, 30 Apr 2020 07:21:06 -0400
+X-MC-Unique: MTZdx47sNQq_ztVBDkahzg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6FAEF800D24;
-        Thu, 30 Apr 2020 11:20:58 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CFBE8835B42;
+        Thu, 30 Apr 2020 11:21:03 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0181E5EDE3;
-        Thu, 30 Apr 2020 11:20:53 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 18AA75C1B0;
+        Thu, 30 Apr 2020 11:20:58 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id EF856324DB2C0;
-        Thu, 30 Apr 2020 13:20:51 +0200 (CEST)
-Subject: [PATCH net-next v2 06/33] net: XDP-generic determining XDP frame size
+        by firesoul.localdomain (Postfix) with ESMTP id 10D08324DB2C1;
+        Thu, 30 Apr 2020 13:20:57 +0200 (CEST)
+Subject: [PATCH net-next v2 07/33] xdp: xdp_frame add member frame_sz and
+ handle in convert_to_xdp_frame
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     sameehj@amazon.com
 Cc:     =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
@@ -55,72 +56,120 @@ Cc:     =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>,
         steffen.klassert@secunet.com
-Date:   Thu, 30 Apr 2020 13:20:51 +0200
-Message-ID: <158824565189.2172139.15984289372325616869.stgit@firesoul>
+Date:   Thu, 30 Apr 2020 13:20:57 +0200
+Message-ID: <158824565699.2172139.5564036399385623840.stgit@firesoul>
 In-Reply-To: <158824557985.2172139.4173570969543904434.stgit@firesoul>
 References: <158824557985.2172139.4173570969543904434.stgit@firesoul>
 User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SKB "head" pointer points to the data area that contains
-skb_shared_info, that can be found via skb_end_pointer(). Given
-xdp->data_hard_start have been established (basically pointing to
-skb->head), frame size is between skb_end_pointer() and data_hard_start,
-plus the size reserved to skb_shared_info.
+Use hole in struct xdp_frame, when adding member frame_sz, which keeps
+same sizeof struct (32 bytes)
 
-Change the bpf_xdp_adjust_tail offset adjust of skb->len, to be a positiv=
-e
-offset number on grow, and negative number on shrink.  As this seems more
-natural when reading the code.
+Drivers ixgbe and sfc had bug cases where the necessary/expected
+tailroom was not reserved. This can lead to some hard to catch memory
+corruption issues. Having the drivers frame_sz this can be detected when
+packet length/end via xdp->data_end exceed the xdp_data_hard_end
+pointer, which accounts for the reserved the tailroom.
+
+When detecting this driver issue, simply fail the conversion with NULL,
+which results in feedback to driver (failing xdp_do_redirect()) causing
+driver to drop packet. Given the lack of consistent XDP stats, this can
+be hard to troubleshoot. And given this is a driver bug, we want to
+generate some more noise in form of a WARN stack dump (to ID the driver
+code that inlined convert_to_xdp_frame).
+
+Inlining the WARN macro is problematic, because it adds an asm
+instruction (on Intel CPUs ud2) what influence instruction cache
+prefetching. Thus, introduce xdp_warn and macro XDP_WARN, to avoid this
+and at the same time make identifying the function and line of this
+inlined function easier.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 ---
- net/core/dev.c |   14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ include/net/xdp.h |   14 +++++++++++++-
+ net/core/xdp.c    |    7 +++++++
+ 2 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index afff16849c26..b364e6f3a37a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4549,6 +4549,11 @@ static u32 netif_receive_generic_xdp(struct sk_buf=
-f *skb,
- 	xdp->data_meta =3D xdp->data;
- 	xdp->data_end =3D xdp->data + hlen;
- 	xdp->data_hard_start =3D skb->data - skb_headroom(skb);
-+
-+	/* SKB "head" area always have tailroom for skb_shared_info */
-+	xdp->frame_sz  =3D (void *)skb_end_pointer(skb) - xdp->data_hard_start;
-+	xdp->frame_sz +=3D SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+
- 	orig_data_end =3D xdp->data_end;
- 	orig_data =3D xdp->data;
- 	eth =3D (struct ethhdr *)xdp->data;
-@@ -4572,14 +4577,11 @@ static u32 netif_receive_generic_xdp(struct sk_bu=
-ff *skb,
- 		skb_reset_network_header(skb);
- 	}
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index a764af4ae0ea..1366466868e4 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -89,7 +89,8 @@ struct xdp_frame {
+ 	void *data;
+ 	u16 len;
+ 	u16 headroom;
+-	u16 metasize;
++	u32 metasize:8;
++	u32 frame_sz:24;
+ 	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
+ 	 * while mem info is valid on remote CPU.
+ 	 */
+@@ -104,6 +105,10 @@ static inline void xdp_scrub_frame(struct xdp_frame =
+*frame)
+ 	frame->dev_rx =3D NULL;
+ }
 =20
--	/* check if bpf_xdp_adjust_tail was used. it can only "shrink"
--	 * pckt.
--	 */
--	off =3D orig_data_end - xdp->data_end;
-+	/* check if bpf_xdp_adjust_tail was used */
-+	off =3D xdp->data_end - orig_data_end;
- 	if (off !=3D 0) {
- 		skb_set_tail_pointer(skb, xdp->data_end - xdp->data);
--		skb->len -=3D off;
--
-+		skb->len +=3D off; /* positive on grow, negative on shrink */
- 	}
++/* Avoids inlining WARN macro in fast-path */
++void xdp_warn(const char* msg, const char* func, const int line);
++#define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
++
+ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
 =20
- 	/* check if XDP changed eth hdr such SKB needs update */
+ /* Convert xdp_buff to xdp_frame */
+@@ -124,6 +129,12 @@ struct xdp_frame *convert_to_xdp_frame(struct xdp_bu=
+ff *xdp)
+ 	if (unlikely((headroom - metasize) < sizeof(*xdp_frame)))
+ 		return NULL;
+=20
++	/* Catch if driver didn't reserve tailroom for skb_shared_info */
++	if (unlikely(xdp->data_end > xdp_data_hard_end(xdp))) {
++		XDP_WARN("Driver BUG: missing reserved tailroom");
++		return NULL;
++	}
++
+ 	/* Store info in top of packet */
+ 	xdp_frame =3D xdp->data_hard_start;
+=20
+@@ -131,6 +142,7 @@ struct xdp_frame *convert_to_xdp_frame(struct xdp_buf=
+f *xdp)
+ 	xdp_frame->len  =3D xdp->data_end - xdp->data;
+ 	xdp_frame->headroom =3D headroom - sizeof(*xdp_frame);
+ 	xdp_frame->metasize =3D metasize;
++	xdp_frame->frame_sz =3D xdp->frame_sz;
+=20
+ 	/* rxq only valid until napi_schedule ends, convert to xdp_mem_info */
+ 	xdp_frame->mem =3D xdp->rxq->mem;
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 4c7ea85486af..4bc3026ae218 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -11,6 +11,7 @@
+ #include <linux/slab.h>
+ #include <linux/idr.h>
+ #include <linux/rhashtable.h>
++#include <linux/bug.h>
+ #include <net/page_pool.h>
+=20
+ #include <net/xdp.h>
+@@ -496,3 +497,9 @@ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct =
+xdp_buff *xdp)
+ 	return xdpf;
+ }
+ EXPORT_SYMBOL_GPL(xdp_convert_zc_to_xdp_frame);
++
++/* Used by XDP_WARN macro, to avoid inlining WARN() in fast-path */
++void xdp_warn(const char* msg, const char* func, const int line) {
++	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
++};
++EXPORT_SYMBOL_GPL(xdp_warn);
 
 
