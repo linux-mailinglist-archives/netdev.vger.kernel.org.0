@@ -2,81 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14BF51BF549
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 12:23:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45BB11BF592
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 12:34:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726790AbgD3KXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 06:23:51 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:57420 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726777AbgD3KXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 06:23:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588242229;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=pGZ8YKX84O2C9ELQ3AtnmbGWiX9FZ6dQm7WK/H4lnHY=;
-        b=fclid7y+5RR9TZLZdkIjxUXgTringarO/k8V0D6MgLr3MCs2RZNuq0dSJ6cqtArNvzyfL6
-        P3cTtgJU/rUh/PKv4ctpdi2TqfHV7Qi3MUZrGF5ch0Nx/GnNWmMZDq4lc65bqUVUiGw2M+
-        /dM9jwynXIdgT8hTRYTkALp9amc42/E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-398-EW4dUmudMGWkKIgRfCbbvA-1; Thu, 30 Apr 2020 06:23:47 -0400
-X-MC-Unique: EW4dUmudMGWkKIgRfCbbvA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 060B4468;
-        Thu, 30 Apr 2020 10:23:46 +0000 (UTC)
-Received: from ebuild.redhat.com (ovpn-112-153.ams2.redhat.com [10.36.112.153])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B363728554;
-        Thu, 30 Apr 2020 10:23:40 +0000 (UTC)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, toke@redhat.com
-Subject: [PATCH bpf-next] libbpf: fix probe code to return EPERM if encountered
-Date:   Thu, 30 Apr 2020 12:23:34 +0200
-Message-Id: <158824221003.2338.9700507405752328930.stgit@ebuild>
-User-Agent: StGit/0.19
+        id S1726520AbgD3KeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 06:34:06 -0400
+Received: from mga03.intel.com ([134.134.136.65]:50128 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725280AbgD3KeG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 06:34:06 -0400
+IronPort-SDR: s0djCdIjweqheUKz0Ye+ae1N5syWT2mC1HDxrNMPJg/WKH168H342/GR7ckW2pIJomFmxN5U95
+ lFoDc0myuRUQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2020 03:34:05 -0700
+IronPort-SDR: oNSGShFgTIHLbK5FAXLFuSBJuQCzaR3qHIXy0kckPl8CstYgq8nfkf5yyCb731OYv0ajJXt2SV
+ KYOSSGvqX7zQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,334,1583222400"; 
+   d="scan'208";a="282817616"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga004.fm.intel.com with ESMTP; 30 Apr 2020 03:34:03 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jU6W7-003tPY-1V; Thu, 30 Apr 2020 13:34:07 +0300
+Date:   Thu, 30 Apr 2020 13:34:07 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Claudiu.Beznea@microchip.com
+Cc:     Nicolas.Ferre@microchip.com, netdev@vger.kernel.org,
+        davem@davemloft.net, alexandre.belloni@bootlin.com
+Subject: Re: [PATCH v1] net: macb: Fix runtime PM refcounting
+Message-ID: <20200430103407.GS185537@smile.fi.intel.com>
+References: <20200427105120.77892-1-andriy.shevchenko@linux.intel.com>
+ <75573a4d-b465-df63-c61d-6ec4c626e7fb@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <75573a4d-b465-df63-c61d-6ec4c626e7fb@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the probe code was failing for any reason ENOTSUP was returned, even
-if this was due to no having enough lock space. This patch fixes this by
-returning EPERM to the user application, so it can respond and increase
-the RLIMIT_MEMLOCK size.
+On Thu, Apr 30, 2020 at 07:59:41AM +0000, Claudiu.Beznea@microchip.com wrote:
+> 
+> 
+> On 27.04.2020 13:51, Andy Shevchenko wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > The commit e6a41c23df0d, while trying to fix an issue,
+> > 
+> >     ("net: macb: ensure interface is not suspended on at91rm9200")
+> > 
+> > introduced a refcounting regression, because in error case refcounter
+> > must be balanced. Fix it by calling pm_runtime_put_noidle() in error case.
+> > 
+> > While here, fix the same mistake in other couple of places.
 
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
----
- tools/lib/bpf/libbpf.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+...
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 8f480e29a6b0..a62388a151d4 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3381,8 +3381,13 @@ bpf_object__probe_caps(struct bpf_object *obj)
-=20
- 	for (i =3D 0; i < ARRAY_SIZE(probe_fn); i++) {
- 		ret =3D probe_fn[i](obj);
--		if (ret < 0)
-+		if (ret < 0) {
- 			pr_debug("Probe #%d failed with %d.\n", i, ret);
-+			if (ret =3D=3D -EPERM) {
-+				pr_perm_msg(ret);
-+				return ret;
-+			}
-+		}
- 	}
-=20
- 	return 0;
+> >         status = pm_runtime_get_sync(&bp->pdev->dev);
+> > -       if (status < 0)
+> > +       if (status < 0) {
+> > +               pm_runtime_put_noidle(&bp->pdev->dev);
+> 
+> pm_runtime_get_sync() calls __pm_runtime_resume(dev, RPM_GET_PUT),
+> increment refcounter and resume the device calling rpm_resume().
+
+Read the code further than the header file, please.
+
+> pm_runtime_put_noidle() just decrement the refcounter.
+
+which is exactly what has to be done on error path.
+
+> The proper way,
+> should be calling suspend again if the operation fails as
+> pm_runtime_put_autosuspend() does. So, what the code under mdio_pm_exit
+> label does should be enough.
+
+Huh? It returns an error without rebalancing refcounter.
+
+Yeah, one more time an evidence that people do not get runtime PM properly.
+
+> >                 goto mdio_pm_exit;
+> > +       }
+> > 
+> >         status = macb_mdio_wait_for_idle(bp);
+> >         if (status < 0)
+> > @@ -386,8 +388,10 @@ static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+> >         int status;
+> > 
+> >         status = pm_runtime_get_sync(&bp->pdev->dev);
+> > -       if (status < 0)
+> > +       if (status < 0) {
+> > +               pm_runtime_put_noidle(&bp->pdev->dev);
+> 
+> Ditto.
+
+Ditto.
+
+> 
+> >                 goto mdio_pm_exit;
+> > +       }
+> > 
+> >         status = macb_mdio_wait_for_idle(bp);
+> >         if (status < 0)
+> > @@ -3816,8 +3820,10 @@ static int at91ether_open(struct net_device *dev)
+> >         int ret;
+> > 
+> >         ret = pm_runtime_get_sync(&lp->pdev->dev);
+> > -       if (ret < 0)
+> > +       if (ret < 0) {
+> > +               pm_runtime_put_noidle(&lp->pdev->dev);
+> 
+> The proper way should be calling pm_runtime_put_sync() not only for this
+> returning path but for all of them in this function.
+
+Of course not.
+
+> >                 return ret;
+> > +       }
+> > 
+> >         /* Clear internal statistics */
+> >         ctl = macb_readl(lp, NCR);
+> > --
+> > 2.26.2
+> > 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
