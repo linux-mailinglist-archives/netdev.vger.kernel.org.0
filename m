@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 906981BFB83
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C6C41BFA95
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:54:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729280AbgD3OAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 10:00:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36620 "EHLO mail.kernel.org"
+        id S1727887AbgD3NyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:54:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36682 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728944AbgD3NyT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728951AbgD3NyT (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Apr 2020 09:54:19 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD81B20873;
-        Thu, 30 Apr 2020 13:54:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BD3952137B;
+        Thu, 30 Apr 2020 13:54:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254858;
-        bh=wwgUGUeeVHyww4aUxt7KJKda/A1Wd7zIYeOuDIpcz5g=;
+        s=default; t=1588254859;
+        bh=zdG9+nXHyjiM/BTOaYaVPvawmq2B75M4V90iTlupPwE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BA1IJpUaIgS3cBRl+A2NsPCtgFFWmZdwlR1zVGoKLqtL5s2igTxIuaWouTcKF1ahD
-         7TwTofW3+ij3PPd2MSqWP2Yy4wcjVEM6+lxZPp6xXvxPhmptDfR0vnw2WwHqJy0Mj6
-         VFn5sh8JK8nq+7O7HQu2IaKm0b7o3rS4tFd6lTlQ=
+        b=ksRVdnXo8kr5M3eZ5nffX7AxNhKnOpLeOxbqfO0PNP/G/bITdprHOFijE9ZfFy3pu
+         tnnc7My4LznWvvzN1nzY+pAIvOzDVs9mq2mkiqGRTlAgDZGcAkxW0YSBtWrwjCuq7S
+         BsQ2MWRFP6HBCE8l58S/gES9qxkdrIZuClXqeW2Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Manoj Malviya <manojmalviya@chelsio.com>,
+Cc:     Taehee Yoo <ap420073@gmail.com>, Jiri Pirko <jiri@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 14/27] cxgb4: fix large delays in PTP synchronization
-Date:   Thu, 30 Apr 2020 09:53:49 -0400
-Message-Id: <20200430135402.20994-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 15/27] team: fix hang in team_mode_get()
+Date:   Thu, 30 Apr 2020 09:53:50 -0400
+Message-Id: <20200430135402.20994-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135402.20994-1-sashal@kernel.org>
 References: <20200430135402.20994-1-sashal@kernel.org>
@@ -44,81 +43,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit bd019427bf3623ee3c7d2845cf921bbf4c14846c ]
+[ Upstream commit 1c30fbc76b8f0c07c92a8ca4cd7c456612e17eb5 ]
 
-Fetching PTP sync information from mailbox is slow and can take
-up to 10 milliseconds. Reduce this unnecessary delay by directly
-reading the information from the corresponding registers.
+When team mode is changed or set, the team_mode_get() is called to check
+whether the mode module is inserted or not. If the mode module is not
+inserted, it calls the request_module().
+In the request_module(), it creates a child process, which is
+the "modprobe" process and waits for the done of the child process.
+At this point, the following locks were used.
+down_read(&cb_lock()); by genl_rcv()
+    genl_lock(); by genl_rcv_msc()
+        rtnl_lock(); by team_nl_cmd_options_set()
+            mutex_lock(&team->lock); by team_nl_team_get()
 
-Fixes: 9c33e4208bce ("cxgb4: Add PTP Hardware Clock (PHC) support")
-Signed-off-by: Manoj Malviya <manojmalviya@chelsio.com>
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+Concurrently, the team module could be removed by rmmod or "modprobe -r"
+The __exit function of team module is team_module_exit(), which calls
+team_nl_fini() and it tries to acquire following locks.
+down_write(&cb_lock);
+    genl_lock();
+Because of the genl_lock() and cb_lock, this process can't be finished
+earlier than request_module() routine.
+
+The problem secenario.
+CPU0                                     CPU1
+team_mode_get
+    request_module()
+                                         modprobe -r team_mode_roundrobin
+                                                     team <--(B)
+        modprobe team <--(A)
+            team_mode_roundrobin
+
+By request_module(), the "modprobe team_mode_roundrobin" command
+will be executed. At this point, the modprobe process will decide
+that the team module should be inserted before team_mode_roundrobin.
+Because the team module is being removed.
+
+By the module infrastructure, the same module insert/remove operations
+can't be executed concurrently.
+So, (A) waits for (B) but (B) also waits for (A) because of locks.
+So that the hang occurs at this point.
+
+Test commands:
+    while :
+    do
+        teamd -d &
+	killall teamd &
+	modprobe -rv team_mode_roundrobin &
+    done
+
+The approach of this patch is to hold the reference count of the team
+module if the team module is compiled as a module. If the reference count
+of the team module is not zero while request_module() is being called,
+the team module will not be removed at that moment.
+So that the above scenario could not occur.
+
+Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/chelsio/cxgb4/cxgb4_ptp.c    | 27 +++++--------------
- drivers/net/ethernet/chelsio/cxgb4/t4_regs.h  |  3 +++
- 2 files changed, 9 insertions(+), 21 deletions(-)
+ drivers/net/team/team.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
-index 758f2b8363282..ff7e58a8c90fb 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
-@@ -311,32 +311,17 @@ static int cxgb4_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
-  */
- static int cxgb4_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
- {
--	struct adapter *adapter = (struct adapter *)container_of(ptp,
--				   struct adapter, ptp_clock_info);
--	struct fw_ptp_cmd c;
-+	struct adapter *adapter = container_of(ptp, struct adapter,
-+					       ptp_clock_info);
- 	u64 ns;
--	int err;
--
--	memset(&c, 0, sizeof(c));
--	c.op_to_portid = cpu_to_be32(FW_CMD_OP_V(FW_PTP_CMD) |
--				     FW_CMD_REQUEST_F |
--				     FW_CMD_READ_F |
--				     FW_PTP_CMD_PORTID_V(0));
--	c.retval_len16 = cpu_to_be32(FW_CMD_LEN16_V(sizeof(c) / 16));
--	c.u.ts.sc = FW_PTP_SC_GET_TIME;
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index 3dba58fa34339..396a8c6cb9992 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -480,6 +480,9 @@ static const struct team_mode *team_mode_get(const char *kind)
+ 	struct team_mode_item *mitem;
+ 	const struct team_mode *mode = NULL;
  
--	err = t4_wr_mbox(adapter, adapter->mbox, &c, sizeof(c), &c);
--	if (err < 0) {
--		dev_err(adapter->pdev_dev,
--			"PTP: %s error %d\n", __func__, -err);
--		return err;
--	}
-+	ns = t4_read_reg(adapter, T5_PORT_REG(0, MAC_PORT_PTP_SUM_LO_A));
-+	ns |= (u64)t4_read_reg(adapter,
-+			       T5_PORT_REG(0, MAC_PORT_PTP_SUM_HI_A)) << 32;
++	if (!try_module_get(THIS_MODULE))
++		return NULL;
++
+ 	spin_lock(&mode_list_lock);
+ 	mitem = __find_mode(kind);
+ 	if (!mitem) {
+@@ -495,6 +498,7 @@ static const struct team_mode *team_mode_get(const char *kind)
+ 	}
  
- 	/* convert to timespec*/
--	ns = be64_to_cpu(c.u.ts.tm);
- 	*ts = ns_to_timespec64(ns);
--
--	return err;
-+	return 0;
+ 	spin_unlock(&mode_list_lock);
++	module_put(THIS_MODULE);
+ 	return mode;
  }
  
- /**
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-index dac90837842bf..d3df6962cf433 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-@@ -1810,6 +1810,9 @@
- 
- #define MAC_PORT_CFG2_A 0x818
- 
-+#define MAC_PORT_PTP_SUM_LO_A 0x990
-+#define MAC_PORT_PTP_SUM_HI_A 0x994
-+
- #define MPS_CMN_CTL_A	0x9000
- 
- #define COUNTPAUSEMCRX_S    5
 -- 
 2.20.1
 
