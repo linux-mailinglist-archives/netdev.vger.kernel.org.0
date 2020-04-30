@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 189A91C03F4
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:35:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE7E1C03F5
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:36:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726581AbgD3Rfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 13:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        id S1726620AbgD3Rf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 13:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726285AbgD3Rfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 13:35:54 -0400
+        by vger.kernel.org with ESMTP id S1726285AbgD3Rf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 13:35:57 -0400
 Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D27C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:35:53 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id m138so8619127ybf.12
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:35:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEBBC035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:35:55 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id j4so8640869ybj.20
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:35:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=95kKH2I/3l6suen8DIljhfpclih+REAoGAkI8GXxGIY=;
-        b=HkfehOpsIgiLN0W6BiX83X3tOUCrHP9eKavhP8oS7V2EdaEr5soCSqVV7P3XzcYwOU
-         JYyTvZG6MvOlleFk9PXlOxBuSDtcUKs6/YmFE+nVJL1vo4jXRKylo2tE6AZoMWiUlsIc
-         eyvpQmADlMWoYcgnt3XyiyKh3Q20+hYIrgSTeJkq9PMpE4mLq7/8XVzgMQd+3yhVC61L
-         o+8KxLFvcPw42SUwXOYyjh/cJ64K0AGR8TrjBc1i/gHJWCcE/Wr8HbNTdGEw8GAEIMCe
-         /WFgQsHouMkeMflPuq3VoH+adl4R6ocaHHf0qkaDMlavAIqJxcjJ/dyTjHl+ZNbHhNaf
-         b5Tw==
+        bh=W4d+TDCXfiDdRa/mgZ6+hJRk02dZzOplm8YW3cYbnMo=;
+        b=fvMYYwsxjhpK8syDiVlBJ1himbhz1ctFLfDNn2Am8LSXfMKMsljovV+bcTfc4utbAC
+         ACBndEC16iQZn65RhM5fxFhdPIINIFEfv12jalvaP7AUfuy4R8m4eE6iqxM8+njDtXAM
+         acM1oEhaIIHXd8mqomBc7O1PTvcpvPB6U04iFAknmHNkqr3EqcfR6V+Jzat06ptP/FQj
+         /LlQKtczACeTi2L6A8Of2ZfHlphLV5Gu5MJQF+84fYPTF/JZv/0KhfI7BEQfbKf9QZF2
+         49ObNgTlb40IWHQVvPtTqkExgsUeZBPlU+iL/C8kXUPkHiMexUnRpwSCu+OjrlsHAKHi
+         shEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=95kKH2I/3l6suen8DIljhfpclih+REAoGAkI8GXxGIY=;
-        b=AH1vnHM6nYC3Dw0pYNbgMgpLnzl6NYQeWtbvbVdWmlEAI8nHkeIgm/ZbehKimokoV3
-         pNBl7lWHEYsdFVvDAvaePRXOH8dI5ukeZvka53ztogJuCQCgMJTLktoHxYBeFi6Ost0a
-         kLfmYHrxltoxRzTTOYCsViGSx5SxK+tEHVjGiGQ0iTZ5cJSLuDC60+Va0EWzjLjsosgi
-         etZSuqRBHwMUOiTJA2zblF8TmTZGsNqlyeir0kBvFZLS6CaVbNEcvf8uXlaEFcD9M7IH
-         qMeHndg7lf3DxYlSDrV6Wd31pFm6Xn9UbTuLtEYFBjaZOk222uGx7KEeOIpc/9Il4zVz
-         iFMQ==
-X-Gm-Message-State: AGi0PuaiB9clX98VVK2AZBobpr9Zb3TsBzc9pPDDt9q736A35BDvcgiz
-        aMu8NcHvp0kTNWku4HNvdKgC8i3ajYbLiQ==
-X-Google-Smtp-Source: APiQypJELbkErwkqKDVodECaX31opylAbociBMWGl+8ZMWmCZk9mlvpRlOW/OQTwV6ylLeil/rn1u/iDRCAgiw==
-X-Received: by 2002:a5b:bc8:: with SMTP id c8mr7445139ybr.395.1588268152273;
- Thu, 30 Apr 2020 10:35:52 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 10:35:42 -0700
+        bh=W4d+TDCXfiDdRa/mgZ6+hJRk02dZzOplm8YW3cYbnMo=;
+        b=fyjW0BMUvbmEQkA1VJE7C+18JFpFwK+4onIi4yEPSRLpHcInZLDqoJ2obpTsasNJ+X
+         +cpViAnobCayAOyKDYLOPMaS46+Tl/dwUIgO+xmj5UUHbBdGzNRL4N1+vzCxpr5WXt8W
+         ASDbhbAYacfy2qiMXYl6u3Now6Ry9YU6zws5L7IEIgiXs13AyNWMarQcTDkvjZ6619n8
+         coKPD+1S2Yy4O9H735tilzum2BCi61hpCswYV+5LYOAT5Crtf43IWGK8S3LOR6rIemgc
+         TzaDTIuTZNaGapGSCnxTfM59BGGQNg19aP72MV/rLxB3Xel++qRqU9QpmVakM0Xy//oR
+         SM7Q==
+X-Gm-Message-State: AGi0PubqdVV0+QeIAljHaz3QJaq8R6J+F+uVnso7Z4EilLD9z4nBc1eS
+        DnduDDeQCeTofRCMnDnlq91hHwBtm6jNPw==
+X-Google-Smtp-Source: APiQypL7jcIwOPbwEe4bx0kJlIoawTg36EEdgAtdFN/JtbEd5si3+UuhygsTFubXL+eWYp6qr8e3gKfEDoD8kA==
+X-Received: by 2002:a25:1304:: with SMTP id 4mr7480942ybt.431.1588268154948;
+ Thu, 30 Apr 2020 10:35:54 -0700 (PDT)
+Date:   Thu, 30 Apr 2020 10:35:43 -0700
 In-Reply-To: <20200430173543.41026-1-edumazet@google.com>
-Message-Id: <20200430173543.41026-3-edumazet@google.com>
+Message-Id: <20200430173543.41026-4-edumazet@google.com>
 Mime-Version: 1.0
 References: <20200430173543.41026-1-edumazet@google.com>
 X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
-Subject: [PATCH net-next 2/3] tcp: tcp_sack_new_ofo_skb() should be more conservative
+Subject: [PATCH net-next 3/3] tcp: add hrtimer slack to sack compression
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -63,75 +63,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, tcp_sack_new_ofo_skb() sends an ack if prior
-acks were 'compressed', if room has to be made in tp->selective_acks[]
+Add a sysctl to control hrtimer slack, default of 100 usec.
 
-But there is no guarantee all four sack ranges can be included
-in SACK option. As a matter of fact, when TCP timestamps option
-is used, only three SACK ranges can be included.
-
-Lets assume only two ranges can be included, and force the ack:
-
-- When we touch more than 2 ranges in the reordering
-  done if tcp_sack_extend() could be done.
-
-- If we have at least 2 ranges when adding a new one.
-
-This enforces that before a range is in third or fourth
-position, at least one ACK packet included it in first/second
-position.
+This gives the opportunity to reduce system overhead,
+and help very short RTT flows.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 Acked-by: Neal Cardwell <ncardwell@google.com>
 ---
- net/ipv4/tcp_input.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ Documentation/networking/ip-sysctl.rst | 8 ++++++++
+ include/net/netns/ipv4.h               | 1 +
+ net/ipv4/sysctl_net_ipv4.c             | 7 +++++++
+ net/ipv4/tcp_input.c                   | 5 +++--
+ net/ipv4/tcp_ipv4.c                    | 1 +
+ 5 files changed, 20 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 38f811d4b2f09fa81cd2ec22cefe95f9353858c9..bbefd5c6d96db4115a8aa7948a93868c0ae55a2f 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -651,6 +651,14 @@ tcp_comp_sack_delay_ns - LONG INTEGER
+ 
+ 	Default : 1,000,000 ns (1 ms)
+ 
++tcp_comp_sack_slack_ns - LONG INTEGER
++	This sysctl control the slack used when arming the
++	timer used by SACK compression. This gives extra time
++	for small RTT flows, and reduces system overhead by allowing
++	opportunistic reduction of timer interrupts.
++
++	Default : 100,000 ns (100 us)
++
+ tcp_comp_sack_nr - INTEGER
+ 	Max number of SACK that can be compressed.
+ 	Using 0 disables SACK compression.
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 5acdb4d414c4fe3cb96b62e6bf3500f447371247..9e36738c1fe164fa75cb6c4a0802773925f73b9a 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -173,6 +173,7 @@ struct netns_ipv4 {
+ 	int sysctl_tcp_rmem[3];
+ 	int sysctl_tcp_comp_sack_nr;
+ 	unsigned long sysctl_tcp_comp_sack_delay_ns;
++	unsigned long sysctl_tcp_comp_sack_slack_ns;
+ 	struct inet_timewait_death_row tcp_death_row;
+ 	int sysctl_max_syn_backlog;
+ 	int sysctl_tcp_fastopen;
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 95ad71e76cc3f62348c416e296be777decbc1e12..3a628423d27bfe28d5dfc5b70c5b9f980275fc7f 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -1329,6 +1329,13 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_doulongvec_minmax,
+ 	},
++	{
++		.procname	= "tcp_comp_sack_slack_ns",
++		.data		= &init_net.ipv4.sysctl_tcp_comp_sack_slack_ns,
++		.maxlen		= sizeof(unsigned long),
++		.mode		= 0644,
++		.proc_handler	= proc_doulongvec_minmax,
++	},
+ 	{
+ 		.procname	= "tcp_comp_sack_nr",
+ 		.data		= &init_net.ipv4.sysctl_tcp_comp_sack_nr,
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index da777df0a0baefb3bef8c802c9b9b83ff38b9fc9..ef921ecba4155abe9d078152ca8bd6a0be68317e 100644
+index ef921ecba4155abe9d078152ca8bd6a0be68317e..d68128a672ab05899d26eb9b1978c4a34023d51f 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -4348,6 +4348,12 @@ static void tcp_sack_compress_send_ack(struct sock *sk)
- 	tcp_send_ack(sk);
+@@ -5324,8 +5324,9 @@ static void __tcp_ack_snd_check(struct sock *sk, int ofo_possible)
+ 	delay = min_t(unsigned long, sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns,
+ 		      rtt * (NSEC_PER_USEC >> 3)/20);
+ 	sock_hold(sk);
+-	hrtimer_start(&tp->compressed_ack_timer, ns_to_ktime(delay),
+-		      HRTIMER_MODE_REL_PINNED_SOFT);
++	hrtimer_start_range_ns(&tp->compressed_ack_timer, ns_to_ktime(delay),
++			       sock_net(sk)->ipv4.sysctl_tcp_comp_sack_slack_ns,
++			       HRTIMER_MODE_REL_PINNED_SOFT);
  }
  
-+/* Reasonable amount of sack blocks included in TCP SACK option
-+ * The max is 4, but this becomes 3 if TCP timestamps are there.
-+ * Given that SACK packets might be lost, be conservative and use 2.
-+ */
-+#define TCP_SACK_BLOCKS_EXPECTED 2
-+
- static void tcp_sack_new_ofo_skb(struct sock *sk, u32 seq, u32 end_seq)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
-@@ -4360,6 +4366,8 @@ static void tcp_sack_new_ofo_skb(struct sock *sk, u32 seq, u32 end_seq)
- 
- 	for (this_sack = 0; this_sack < cur_sacks; this_sack++, sp++) {
- 		if (tcp_sack_extend(sp, seq, end_seq)) {
-+			if (this_sack >= TCP_SACK_BLOCKS_EXPECTED)
-+				tcp_sack_compress_send_ack(sk);
- 			/* Rotate this_sack to the first one. */
- 			for (; this_sack > 0; this_sack--, sp--)
- 				swap(*sp, *(sp - 1));
-@@ -4369,6 +4377,9 @@ static void tcp_sack_new_ofo_skb(struct sock *sk, u32 seq, u32 end_seq)
- 		}
+ static inline void tcp_ack_snd_check(struct sock *sk)
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 83a5d24e13b8c0079d80950acde13c232b4a845e..6c05f1ceb538cbb9981835440163485de2ccf716 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2780,6 +2780,7 @@ static int __net_init tcp_sk_init(struct net *net)
+ 		       sizeof(init_net.ipv4.sysctl_tcp_wmem));
  	}
- 
-+	if (this_sack >= TCP_SACK_BLOCKS_EXPECTED)
-+		tcp_sack_compress_send_ack(sk);
-+
- 	/* Could not find an adjacent existing SACK, build a new one,
- 	 * put it at the front, and shift everyone else down.  We
- 	 * always know there is at least one SACK present already here.
-@@ -4376,7 +4387,6 @@ static void tcp_sack_new_ofo_skb(struct sock *sk, u32 seq, u32 end_seq)
- 	 * If the sack array is full, forget about the last one.
- 	 */
- 	if (this_sack >= TCP_NUM_SACKS) {
--		tcp_sack_compress_send_ack(sk);
- 		this_sack--;
- 		tp->rx_opt.num_sacks--;
- 		sp--;
+ 	net->ipv4.sysctl_tcp_comp_sack_delay_ns = NSEC_PER_MSEC;
++	net->ipv4.sysctl_tcp_comp_sack_slack_ns = 100 * NSEC_PER_USEC;
+ 	net->ipv4.sysctl_tcp_comp_sack_nr = 44;
+ 	net->ipv4.sysctl_tcp_fastopen = TFO_CLIENT_ENABLE;
+ 	spin_lock_init(&net->ipv4.tcp_fastopen_ctx_lock);
 -- 
 2.26.2.303.gf8c07b1a785-goog
 
