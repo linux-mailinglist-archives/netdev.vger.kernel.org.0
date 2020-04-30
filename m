@@ -2,235 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A321C025F
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:25:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF8761C026A
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:26:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbgD3QZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 12:25:35 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:48744 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726486AbgD3QZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 12:25:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588263932;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=d7EAntEKWCxipEsZHA3JwdCBrte3X/EzEzWCEi3iTqU=;
-        b=hv+WlvvSGpQ0m2khIiYeYvE4++WtDFra56sd5ngXuxG761POnBX7HOaVPjh7wIKOn1/stu
-        Jw992E9eYgoy+gFbj9/DQPuLlm1JAMnus6KMOeq1LEScYuIepBE3hn7UmuA4TjOlk6HTHy
-        bwsrfyn0VsoT2bN1nIefkJWc0RUdg2o=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-348-DUEh-KWePCeuA9-N9PC8zg-1; Thu, 30 Apr 2020 12:25:28 -0400
-X-MC-Unique: DUEh-KWePCeuA9-N9PC8zg-1
-Received: by mail-wm1-f72.google.com with SMTP id v185so851963wmg.0
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 09:25:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=d7EAntEKWCxipEsZHA3JwdCBrte3X/EzEzWCEi3iTqU=;
-        b=iGouwX15ndL453N7P1x/19LUlF0jdfTVDzPBoIH48339xoVeAE7ukahjWoXdyS+Skt
-         OXPcHq1BXg7iCwPukMzSJF7KgEws0MkxK0yDcfKwCEiRYIlGjndPhuquWrHTvneHA36z
-         jJJSfJSyXjZIdbzYZibM59CQbzdAdl+RFOytF7uGnmt6a5qNWn7S/ZCyXjQSqZBotbjw
-         6VJpTftyUAPCAR0UQpcz9Hqiievor3Wd3LmTG4kNg+GJbsxEtv96ErJjnfYBBQI/a9Vi
-         z0T+xREmKqsaAy4PQu0fO2uNMfp7rXCGnOdLYVj/oUuxDgPBuYmsCIiSE/H0SmNEZNhN
-         ruhw==
-X-Gm-Message-State: AGi0PubRr9kfPit/MNkUI/J4OdEXV0wkZ7c8gkprv4fNWimWpNWrlDsj
-        GpaYcMr8hpVPtGwYYl42vQEBYKRzZpBSw3mvDLKirh/Mrh121KYQGzK9T6/TMQL6UP+ifkVjkaI
-        cElPe6DaZb2TUV8mO
-X-Received: by 2002:adf:a309:: with SMTP id c9mr4517822wrb.97.1588263925971;
-        Thu, 30 Apr 2020 09:25:25 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJxesyQ6DenL8g0PuIkRunaGDhr2hm8E0YBRtppq+/ppdUI56ZVeSiHPILMSpR5MD6bxfp4uQ==
-X-Received: by 2002:adf:a309:: with SMTP id c9mr4517792wrb.97.1588263925657;
-        Thu, 30 Apr 2020 09:25:25 -0700 (PDT)
-Received: from steredhat (host108-207-dynamic.49-79-r.retail.telecomitalia.it. [79.49.207.108])
-        by smtp.gmail.com with ESMTPSA id x18sm351018wrv.12.2020.04.30.09.25.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 09:25:24 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 18:25:21 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Justin He <Justin.He@arm.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kaly Xin <Kaly.Xin@arm.com>
-Subject: Re: [PATCH] vhost: vsock: don't send pkt when vq is not started
-Message-ID: <20200430162521.k4b4t3vttfabgqal@steredhat>
-References: <20200430021314.6425-1-justin.he@arm.com>
- <20200430082608.wbtqgglmtnd7e5ci@steredhat>
- <AM6PR08MB4069D4AB611B8C8180DC4B9CF7AA0@AM6PR08MB4069.eurprd08.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        id S1727057AbgD3Q0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 12:26:20 -0400
+Received: from mail-eopbgr60079.outbound.protection.outlook.com ([40.107.6.79]:10070
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726336AbgD3Q0T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 12:26:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iZml3v0HV/pYfoLjy535QrezNlFy4WpQzjWtesl9oCliWhNw5/4a2uXWm2AXKQSgl8jdaU8jxZPMr3gw1onIB8yKFhZy6BDrTLm7cA+iBZZwfnNAobyGW85EbJw0nYeDMGc3vWKKne/f6pPQ46Fj4mcc52bCdW+0aL0cB1FrRdTRyTWANxlR+z/HdoES+4n9/RAruQdwUcBFgEYiFz8/vAKE2oBjhOpt8Nu0yk5RZ8XAo5yvqrHlNTRxbQd595FJbkmzhTpFNYVWLbkI1LeOiRrCs/SQUMOkNCNjn7UqZRr5MdtKQMXCwkUJnRHzucm5wqEGnPSBAN414lGIL/39lg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J/Mh6domjzP9GRVOuySKOG8mJUyRZmz7j4kBNk6Ytlo=;
+ b=O8vnbGNlwPpu0ZqPN9zK7yPTfNjCFxTaa3x8FLQ3Y1ZgPje8c4C64ojTA9Qbg6tv/xt44TeBZFu8IENfsWfgVHlKBKsLuDoB0IP38nF8O6rJM3KDhAhpd4ACIAh7k4yjHrVQwRpbucUhr189U6JZjqTHwZhcGA25jeLMY74NN8jQjW+WbqmF50w+7eIsDPdjqvlAuVFoeQhcqrlNqcmainfXwt3MP0mvU79ZhHyEbEKuE/2QF7kEZyDRe3rk7Kp6DLQcTXLK7xMmJo1UIPcuAEaGQV8cNmPhmzvGPymI7ZvHT81J8krHnoN+cjUVeNZsyk39uAdLKASNIWh7mCRArA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J/Mh6domjzP9GRVOuySKOG8mJUyRZmz7j4kBNk6Ytlo=;
+ b=mkTP804uO6rUXsEpb5sHXThK+5Q1IjbG/XfjOaERBP42TS2qibxbLW2bqa7V2aIxq8I4RZXdiK/GP2DAEx0F8o4+JFmB9SvH92OzW3Du5n/GrdSir8yJX0UyuQpUQuzaYJPQ7ZWbTCQN3GLUmdfy6P9/IdgdQPtc6WhxAKKrLzA=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB5376.eurprd05.prod.outlook.com (2603:10a6:803:a4::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19; Thu, 30 Apr
+ 2020 16:26:15 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.028; Thu, 30 Apr 2020
+ 16:26:15 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net V2 0/7] Mellanox, mlx5 fixes 2020-04-29
+Date:   Thu, 30 Apr 2020 09:25:44 -0700
+Message-Id: <20200430162551.14997-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.25.4
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <AM6PR08MB4069D4AB611B8C8180DC4B9CF7AA0@AM6PR08MB4069.eurprd08.prod.outlook.com>
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR02CA0070.namprd02.prod.outlook.com
+ (2603:10b6:a03:54::47) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BYAPR02CA0070.namprd02.prod.outlook.com (2603:10b6:a03:54::47) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Thu, 30 Apr 2020 16:26:14 +0000
+X-Mailer: git-send-email 2.25.4
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 254e5eda-1e33-4ee6-89ee-08d7ed23345f
+X-MS-TrafficTypeDiagnostic: VI1PR05MB5376:|VI1PR05MB5376:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB5376F238F804C0BD7DC1112EBEAA0@VI1PR05MB5376.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-Forefront-PRVS: 0389EDA07F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: su5ENrDRL8XhAdaHlhAa4vw6q4sAtBiiykzOtoDWWolo67XxSxFqSj6xzwyLx/6EvlZIOI9ix3qYAqVaCTV3hV2Ys9LUZIuCnAB3ecQxea+kFGNV6MnQH8yz48+MNMWSpnraGjnyjSGjvjmco2Ubyvjy+x8+HqOWrey8K+VgP23TuoKltn5bo9EbQ8MVh5GlcR4yzrYl5eGZ5pBAGpZ+YfAsnpX8HdkDuHFErcyCmkZjFvNjf/w+ya0ho61CyFwvCiRiZHupilHpG0Vt4g3BY2O3rQSo51PR9xuj/30KB4qLXhpqclkDqhIr6RpcyWyoPrpb7EbQ/Z8QCZ1A5Gbv7wnZRkZ0q9YTGxc6LXZQtmdhHeWmVTW45lUhXCIOatpCA8kKbVcraBDVCj2toS6+ELfbXApS07iQOC4ovjY2Lvg3Vse/04vZ+wBT5AkvWcvO4i3sH7eMORJF05pOsdAEzgTDyG7g6lJpbrb9yfTYN2FfLsn1ZRmD6gy0zss2U3+4
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(366004)(136003)(39860400002)(346002)(8936002)(6916009)(107886003)(36756003)(4326008)(66476007)(6486002)(8676002)(66556008)(66946007)(2906002)(26005)(6512007)(1076003)(316002)(956004)(6506007)(86362001)(6666004)(52116002)(2616005)(5660300002)(186003)(16526019)(478600001)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: qQLx4FA4oSNfjBn1jFRb7yfURSaRQlzgi21YFI67Zx/m3Hob5bi5o8H+L/n+dCuzCW56IbEc0FmujNprjST2iWbYUv8BsNXgIBEyMe48/GFC4T4krvyXXyEgIv5klrHz3aHFYfpX4VrEnW+burxL/joefDuxs0HjhKLmTnBgxhwo6pT1AQD9e9BGFpPcDHvpBTaf7eyestkQFcXXS7QrmkWouIz9lN8wS3o5u6ww9MD63X02oiOcrN9yPkXTKMPy7Q45/3VEjjwAdxj69ZnSp5cJZ2V5otZ3ZBZ3vAzWn1PULTCZ7LviWMt6a/3abL2Crc6hQsr4kp1155dLIH+/x3VMPj+kIf1i+hi2w47oPTd3SbVR8bVWginJa0ttkkEE7KfvwJL/hVEE5/7LR2yEuVCGGp3Pdvw3ezbnFCeXaQZnsdx050GvCECfw5nyRTyDYVVepVpsRphGS2YVBrwb91Q+hqD98l0Ygz/DjzgvI3+idhKzX9seKoJDjSok+uilnvJEbMFbRqVLG248dAAWAZF/rukLiGchyam6/EGDNL978m3YTX7jqMY3UJnlINrLHUq0FkD7AxBvbWaTIXI68kGIDVmv813pvJhtad5QqDAfBo1v7+PUfSC4xbldO+JYaPBzRiUtAIsL0QPRSHtXz8EFGH6YcgY/w4dEh99+WO89SYxMZNbh48tf74hD5DtYD66BuXTcNwUi4Z9ZgXo7Wm7VYoF+NqH+IpBecOCO9nqd+3J3rwzV5moHleam7yM4TSS/XWFy7/f6ZEXI5vtEbwrtXENp7LpXC3Ij5T259ZM=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 254e5eda-1e33-4ee6-89ee-08d7ed23345f
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 16:26:15.6618
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KQNqfd0/LtazEBtRvCi47hJH89rxNT6vq7nqBYokoCqxs0dJR28EKK41S6siGTthuhE6w/j01PRgUxnE5cCM1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5376
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 10:06:26AM +0000, Justin He wrote:
-> Hi Stefano
-> 
-> > -----Original Message-----
-> > From: Stefano Garzarella <sgarzare@redhat.com>
-> > Sent: Thursday, April 30, 2020 4:26 PM
-> > To: Justin He <Justin.He@arm.com>
-> > Cc: Stefan Hajnoczi <stefanha@redhat.com>; Michael S. Tsirkin
-> > <mst@redhat.com>; Jason Wang <jasowang@redhat.com>;
-> > kvm@vger.kernel.org; virtualization@lists.linux-foundation.org;
-> > netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Kaly Xin
-> > <Kaly.Xin@arm.com>
-> > Subject: Re: [PATCH] vhost: vsock: don't send pkt when vq is not started
-> >
-> > Hi Jia,
-> > thanks for the patch, some comments below:
-> >
-> > On Thu, Apr 30, 2020 at 10:13:14AM +0800, Jia He wrote:
-> > > Ning Bo reported an abnormal 2-second gap when booting Kata container
-> > [1].
-> > > The unconditional timeout is caused by
-> > VSOCK_DEFAULT_CONNECT_TIMEOUT of
-> > > connect at client side. The vhost vsock client tries to connect an
-> > > initlizing virtio vsock server.
-> > >
-> > > The abnormal flow looks like:
-> > > host-userspace           vhost vsock                       guest vsock
-> > > ==============           ===========                       ============
-> > > connect()     -------->  vhost_transport_send_pkt_work()   initializing
-> > >    |                     vq->private_data==NULL
-> > >    |                     will not be queued
-> > >    V
-> > > schedule_timeout(2s)
-> > >                          vhost_vsock_start()  <---------   device ready
-> > >                          set vq->private_data
-> > >
-> > > wait for 2s and failed
-> > >
-> > > connect() again          vq->private_data!=NULL          recv connecting pkt
-> > >
-> > > 1. host userspace sends a connect pkt, at that time, guest vsock is under
-> > > initializing, hence the vhost_vsock_start has not been called. So
-> > > vq->private_data==NULL, and the pkt is not been queued to send to guest.
-> > > 2. then it sleeps for 2s
-> > > 3. after guest vsock finishes initializing, vq->private_data is set.
-> > > 4. When host userspace wakes up after 2s, send connecting pkt again,
-> > > everything is fine.
-> > >
-> > > This fixes it by checking vq->private_data in vhost_transport_send_pkt,
-> > > and return at once if !vq->private_data. This makes user connect()
-> > > be returned with ECONNREFUSED.
-> > >
-> > > After this patch, kata-runtime (with vsock enabled) boottime reduces from
-> > > 3s to 1s on ThunderX2 arm64 server.
-> > >
-> > > [1] https://github.com/kata-containers/runtime/issues/1917
-> > >
-> > > Reported-by: Ning Bo <n.b@live.com>
-> > > Signed-off-by: Jia He <justin.he@arm.com>
-> > > ---
-> > >  drivers/vhost/vsock.c | 8 ++++++++
-> > >  1 file changed, 8 insertions(+)
-> > >
-> > > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> > > index e36aaf9ba7bd..67474334dd88 100644
-> > > --- a/drivers/vhost/vsock.c
-> > > +++ b/drivers/vhost/vsock.c
-> > > @@ -241,6 +241,7 @@ vhost_transport_send_pkt(struct virtio_vsock_pkt
-> > *pkt)
-> > >  {
-> > >  struct vhost_vsock *vsock;
-> > >  int len = pkt->len;
-> > > +struct vhost_virtqueue *vq;
-> > >
-> > >  rcu_read_lock();
-> > >
-> > > @@ -252,6 +253,13 @@ vhost_transport_send_pkt(struct virtio_vsock_pkt
-> > *pkt)
-> > >  return -ENODEV;
-> > >  }
-> > >
-> > > +vq = &vsock->vqs[VSOCK_VQ_RX];
-> > > +if (!vq->private_data) {
-> >
-> > I think is better to use vhost_vq_get_backend():
-> >
-> > if (!vhost_vq_get_backend(&vsock->vqs[VSOCK_VQ_RX])) {
-> > ...
-> >
-> > This function should be called with 'vq->mutex' acquired as explained in
-> > the comment, but here we can avoid that, because we are not using the vq,
-> > so it is safe, because in vhost_transport_do_send_pkt() we check it again.
-> >
-> > Please add a comment explaining that.
-> >
-> 
-> Thanks, vhost_vq_get_backend is better. I chose a 5.3 kernel to develop
-> and missed this helper.
+Hi Dave,
 
-:-)
+This series introduces some fixes to mlx5 driver.
 
-> >
-> > As an alternative to this patch, should we kick the send worker when the
-> > device is ready?
-> >
-> > IIUC we reach the timeout because the send worker (that runs
-> > vhost_transport_do_send_pkt()) exits immediately since 'vq->private_data'
-> > is NULL, and no one will requeue it.
-> >
-> > Let's do it when we know the device is ready:
-> >
-> > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> > index e36aaf9ba7bd..295b5867944f 100644
-> > --- a/drivers/vhost/vsock.c
-> > +++ b/drivers/vhost/vsock.c
-> > @@ -543,6 +543,11 @@ static int vhost_vsock_start(struct vhost_vsock
-> > *vsock)
-> >                 mutex_unlock(&vq->mutex);
-> >         }
-> >
-> > +       /* Some packets may have been queued before the device was started,
-> > +        * let's kick the send worker to send them.
-> > +        */
-> > +       vhost_work_queue(&vsock->dev, &vsock->send_pkt_work);
-> > +
-> Yes, it works.
-> But do you think a threshold should be set here to prevent the queue
-> from being too long? E.g. the client user sends too many connect pkts
-> in a short time before the server is completely ready.
+Please pull and let me know if there is any problem.
 
-When the user call the connect() the socket status is moved to
-SS_CONNECTING (see net/vmw_vsock/af_vsock.c), so another connect() on
-the same socket will receive EALREADY error.
+v2:
+ - Dropped the ktls patch, Tariq has to check if it is fixable in the stack
 
-If the user uses multiple sockets, the socket layer already check for
-any limits, so I don't think we should put a threshold here.
+For -stable v4.12
+ ('net/mlx5: Fix forced completion access non initialized command entry')
+ ('net/mlx5: Fix command entry leak in Internal Error State')
 
-> 
-> >         mutex_unlock(&vsock->dev.mutex);
-> >         return 0;
-> >
-> > I didn't test it, can you try if it fixes the issue?
-> >
-> > I'm not sure which is better...
-> I don't know, either. Wait for more comments 😊
+For -stable v5.4
+ ('net/mlx5: DR, On creation set CQ's arm_db member to right value')
+ 
+For -stable v5.6
+ ('net/mlx5e: Fix q counters on uplink representors')
 
-I prefer the second option, because the device is in a transitional
-state and a connect can block (for at most two seconds) until the device is
-started.
+Thanks,
+Saeed.
 
-For the first option, I'm also not sure if ECONNREFUSED is the right error
-to return, maybe is better ENETUNREACH.
+---
+The following changes since commit 30724ccbfc8325cade4a2d36cd1f75b06341d9eb:
 
-Cheers,
-Stefano
+  Merge branch 'wireguard-fixes' (2020-04-29 14:23:05 -0700)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-04-29
+
+for you to fetch changes up to 67b38de646894c9a94fe4d6d17719e70cc6028eb:
+
+  net/mlx5e: Fix q counters on uplink representors (2020-04-30 09:20:33 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-04-29
+
+----------------------------------------------------------------
+Erez Shitrit (1):
+      net/mlx5: DR, On creation set CQ's arm_db member to right value
+
+Moshe Shemesh (2):
+      net/mlx5: Fix forced completion access non initialized command entry
+      net/mlx5: Fix command entry leak in Internal Error State
+
+Parav Pandit (3):
+      net/mlx5: E-switch, Fix error unwinding flow for steering init failure
+      net/mlx5: E-switch, Fix printing wrong error value
+      net/mlx5: E-switch, Fix mutex init order
+
+Roi Dayan (1):
+      net/mlx5e: Fix q counters on uplink representors
+
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c          |  6 +++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c       |  9 ++-------
+ .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 18 +++++++++---------
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 14 +++++++++++++-
+ 4 files changed, 29 insertions(+), 18 deletions(-)
