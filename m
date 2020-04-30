@@ -2,116 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A0951BF66F
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 13:20:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E8B1BF671
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 13:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgD3LTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 07:19:23 -0400
-Received: from mail-am6eur05on2054.outbound.protection.outlook.com ([40.107.22.54]:19840
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725280AbgD3LTX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 07:19:23 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kxDXOCDT5TxWmnl9YpZSm3gCgML+92P+a8MW3E+h9/2+hCLw8me9fDnI5OS9j5RpNmEHnbBTz5Yar+oCJIYfDE8xDZAvcXFL9G3hcjAhbZMpIgxOxXSUKaaMT4e9fI3OWH6nBlAbpACHdYFWLBE1DjthXce8i1CCXx7rSVLxSoafgX/KV1+SKGmAkZJw8hJ7Hj0JpWqrvWMzU7i9V+ECfKltvFJswOA6yRwolmL+YjMo/DNmo52S5nXxkpXAjq7hKOK/dLYVEUVrc1LUGMwaoOTZLzAl6RLHIS+jtcNL42+CjOWWpNHKcD5j5mHFMcwTwQqzmzZQRX4uB4gG2MrPmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bBtnms6l+lf4YliKxWCIXJxAAZPCjtWHzXx5mNozj2g=;
- b=n0E7p+7UFsKUw03h/43NaN051SJWbEyOYbQE9nBALjATVVMCCjH99TxZFKB64YUn/eXnsYweq+Z+64PbS7kTajsdPGMs3jFBtLf0DLU4+W4ayPpj3n6VVxBcj5PDhS40zHFz7mg+S2vwFKkkNzcDLC+JFD/PNTKffT1suFFDMxxR+RMevcUooj/rI0Gl5E/L1vz0Vw1pj1X8qmgrGSLsc7Q+wUb3+67fPQg/mNUrIhXsr0o0p/hKWGXhcrW3ksn6QgJEDn+zjxsqGc3lYTvM7lAJVON0JahO7d8dlTGnW0j2NZnFOIMAQ1RarwUDJ9RmgYSuxHBBmQGe9YgEjwIf1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bBtnms6l+lf4YliKxWCIXJxAAZPCjtWHzXx5mNozj2g=;
- b=Q/jGU9s9bwWWURLiCKUE6sJB7mWaMH5IFpXBWFvsVzL3ilxkwNX4aIWOmVzjYFs3Ab3awqTl+9dMOYQn+Onojew9IO6cKbXXzkVSCk6+IQZBBigDRKAWURrEcZ2j7eV9PjhRGrbec00+adLNq6td8Dab3ae5koJuQRJAPS6qcJk=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from VI1PR05MB4157.eurprd05.prod.outlook.com (2603:10a6:803:4d::20)
- by VI1PR05MB6383.eurprd05.prod.outlook.com (2603:10a6:803:f6::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19; Thu, 30 Apr
- 2020 11:19:18 +0000
-Received: from VI1PR05MB4157.eurprd05.prod.outlook.com
- ([fe80::90af:a464:b72d:e314]) by VI1PR05MB4157.eurprd05.prod.outlook.com
- ([fe80::90af:a464:b72d:e314%5]) with mapi id 15.20.2937.023; Thu, 30 Apr 2020
- 11:19:17 +0000
-Subject: Re: [PATCH net-next 3/3] net/mlx5e: Fix the code style
-To:     xiangxia.m.yue@gmail.com, paulb@mellanox.com, saeedm@mellanox.com,
-        gerlitz.or@gmail.com
-Cc:     netdev@vger.kernel.org
-References: <1588051455-42828-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1588051455-42828-3-git-send-email-xiangxia.m.yue@gmail.com>
-From:   Roi Dayan <roid@mellanox.com>
-Message-ID: <e593b24a-4cf5-cc26-0f26-ba8e0ca25894@mellanox.com>
-Date:   Thu, 30 Apr 2020 14:19:15 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-In-Reply-To: <1588051455-42828-3-git-send-email-xiangxia.m.yue@gmail.com>
+        id S1726884AbgD3LU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 07:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726483AbgD3LU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 07:20:28 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7624DC035495
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 04:20:27 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id f11so6083334ljp.1
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 04:20:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7QEu8lQDX7asS/EZnMosCw8iJ8orrbIm4oxu4zfa7w8=;
+        b=HucCPpnpma0D9qFGBTzTef+mq4pL65ONVeTzpZom5AgHG+MJYKVQrLsrWUbXmKSWRA
+         RsmDdNSJ8Lcfq2n85ORjZE7iWC3gulDmD1hdMaONaELzssFXRIg1uvtrYgDcI6limxZN
+         EZJiO5nW2WdKnP7m5Ndy1ZNZ85oi6eISP3/a8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7QEu8lQDX7asS/EZnMosCw8iJ8orrbIm4oxu4zfa7w8=;
+        b=GgQJF2Su4oGFlMOSYht1q4ph7hZDz3hnsAWu9wRFSA2luu0a6sgHdr29SfeKw4Sv16
+         a5RSkGlNblWQ2iCtk/Yhk7wMJgFNPO03L7rKcQLSi+YHyuU1xWH2xF8Ut4C9xmQJ9IE9
+         6X0tKuVjhFX5Y7Buwsf6MqMAPRHVYwRkXztGSpXnf3Am3hQl+34YPDUR+sR09A1SadjY
+         Kx6HKve/0k6qCj9r2AWkCYQKjiOOgFaAtte7zt/IbubjXv0UA2CBgfAAsbs1ezMVx6SO
+         DNaxqDL0d5Z/oy0HrfHSxmejKsRoC0o2fyhAeLr96ijuDQjtm1KBxtOPzrQViu/LW1Xj
+         k6ug==
+X-Gm-Message-State: AGi0PuZol4YLi/TCAA8PYJcLjPZntH8a/F2B3b+YHJvIzRTUSyT7LKob
+        F2sqt9TyaErtl0xex1n8wVyVh3SOJRwTsQ==
+X-Google-Smtp-Source: APiQypLGoRK/B5UEMM3ebOwPImgOIEU58k6prYsh3w5eqcv3NsOneJlrmwbIIVMBMK48+FaohW+KLw==
+X-Received: by 2002:a05:651c:449:: with SMTP id g9mr1937084ljg.278.1588245625383;
+        Thu, 30 Apr 2020 04:20:25 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id a12sm4050511ljj.64.2020.04.30.04.20.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Apr 2020 04:20:24 -0700 (PDT)
+Subject: Re: BUG: soft lockup while deleting tap interface from vlan aware
+ bridge
+To:     Ido Schimmel <idosch@idosch.org>,
+        Stefan Priebe - Profihost AG <s.priebe@profihost.ag>
+Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>, netdev@vger.kernel.org
+References: <85b1e301-8189-540b-b4bf-d0902e74becc@profihost.ag>
+ <20200430105551.GA4068275@splinter>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <4b3a6079-d8d4-24c5-8fc9-15bcb96bca80@cumulusnetworks.com>
+Date:   Thu, 30 Apr 2020 14:20:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200430105551.GA4068275@splinter>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR07CA0023.eurprd07.prod.outlook.com
- (2603:10a6:208:ac::36) To VI1PR05MB4157.eurprd05.prod.outlook.com
- (2603:10a6:803:4d::20)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.170] (176.231.113.172) by AM0PR07CA0023.eurprd07.prod.outlook.com (2603:10a6:208:ac::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.11 via Frontend Transport; Thu, 30 Apr 2020 11:19:16 +0000
-X-Originating-IP: [176.231.113.172]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6f083814-d58f-42d4-9105-08d7ecf85288
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6383:|VI1PR05MB6383:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB6383C788608A3176AFB2DFD8B5AA0@VI1PR05MB6383.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:126;
-X-Forefront-PRVS: 0389EDA07F
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Kj5ly9kD2qU8hv6h3SroFC7h7Syu8x4xT1/TbCZFgHXqGsS/alSoph1vQDQhBXNOm9EQ2ROwvC+1ypcE6mAjIVWGyUkTQfYEhW6mSrgaja6gPnDu02de8WjLhiiWLHsvokmDP2nrPLuZZ87QvmQrW3lKJ0y005urMEEEA42IjT32pTDa++beJvTBGvEavEEsNTr1xrvN3FkXPU79pyno/oqptx0zMDlR3uN60zZktNKV5cG8h7Lkdh6Eyr/8Cnn8VtvNKcbS38yKhKIcaflJTkyqcJBrMz1KSxcWBtYL8dChsB5pkouZ/dXP88vkWe/rrLa7ukT2K3vBIuRi8d57mExjvc3zrA1XjPtH+l+DXftCNokdXwxsWr6j0pvpxftRAqOYVy5jukl/8iUIyEqHH2chozELfAS61c/6v4HwPHcp10y+KfLUYhzc5DUlrvnw
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4157.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(396003)(376002)(346002)(39860400002)(136003)(66556008)(66946007)(52116002)(16576012)(316002)(4326008)(53546011)(4744005)(2906002)(8676002)(478600001)(31686004)(66476007)(8936002)(16526019)(6486002)(5660300002)(956004)(186003)(26005)(86362001)(31696002)(2616005)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: jQ5vPF/z7guEiT7WxFd5t0JoYdrqjPxyuafbFF9Dkk+yhTP404TZPqfEwly+QyuOABOgq0sqUdxYXzMNeJKQy1veSrqGEC7KcxkQ5TF0+/JfNOT3MPDGQmW72tWWOClF94NTVjcIPghj1S9nJN/nkmtwWPJscMh4eSOat6hNdGhcMntKle52711Au83pZ291HHT9v4aoXK+nglxQmQ4DkVbzysjIia7nTtz0D9mXx/3HwsbSr6khgv5FFiZvQdY5s2rDGVd3CNcGQwtVLf9J/Lb7kmsd+7Ti/jvjb0z+ZhfOdqNcxM9HM7VCS/SM11HB1JltLf4D/9/UK0CP151tJ769x+kGmou7pqZwKBhl8f36T2Avuy+cMTqY+8Y81URIWsbUU34lrwXACUkI8Ja64OHZpzTiub94RirQTF0eytUYiJ3q/qFAaOzf372uJm8gCHKmWdt17ABA/Eu1/s5PnFAmtSTkF7YXmnh/VpvkipngaI3V5+U7IbyA7w56/fyYcqhEr5G9WnR9DkFjkNxRe76hk3QBpXKs7V5Vuk5Y8L0oEzS6n7vqr91IpMYotJWjPTN9Ih/A47yAWe634iQ+pp6EVpDiAGrFl9wuUzI9LMtKKU6kd+q7RSHuM4G/bszOR2jWB5XiZ2AAGr1zEPBA+KN+ErDAelqCZkZSrH1fSSS1JSFXOQyTvlKSazC77txW3JaVW96HNc2+Ozi347tCzCpjLY8VqBjr+gyFC3mOdN+1O+DEBltVXpo6P9ltJd33hjNADxG2Zrk+iTLTjnvLPfmAN5YKtAW/5Vkvr0vVHvrp5eBFsIAsRcm92iC0cy4L
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f083814-d58f-42d4-9105-08d7ecf85288
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 11:19:17.8869
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZUeXfZ4lyAjzNO5G6I0YH+4U5ZmHUIAj8A5U0+BPepsCKQnbVcJKwesitYRcc9lI5zHdvI1jFQa1mq3zxIANQg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6383
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2020-04-28 8:24 AM, xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On 30/04/2020 13:55, Ido Schimmel wrote:
+> On Wed, Apr 29, 2020 at 10:52:35PM +0200, Stefan Priebe - Profihost AG wrote:
+>> Hello,
+>>
+>> while running a stable vanilla kernel 4.19.115 i'm reproducably get this
+>> one:
+>>
+>> watchdog: BUG: soft lockup - CPU#38 stuck for 22s! [bridge:3570653]
+>>
+>> ...
+>>
+>> Call
+>> Trace:nbp_vlan_delete+0x59/0xa0br_vlan_info+0x66/0xd0br_afspec+0x18c/0x1d0br_dellink+0x74/0xd0rtnl_bridge_dellink+0x110/0x220rtnetlink_rcv_msg+0x283/0x360
 > 
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Nik, Stefan,
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> index 55457f268495..6b68f47e7024 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> @@ -1367,7 +1367,7 @@ static bool mlx5e_rep_has_offload_stats(const struct net_device *dev, int attr_i
->  {
->  	switch (attr_id) {
->  	case IFLA_OFFLOAD_XSTATS_CPU_HIT:
-> -			return true;
-> +		return true;
->  	}
->  
->  	return false;
+> My theory is that 4K VLANs are deleted in a batch and preemption is
+> disabled (please confirm). For each VLAN the kernel needs to go over the
+
+Right, that's what I was expecting. :-)
+
+> entire FDB and delete affected entries. If the FDB is very large or the
+> FDB lock is contended this can cause the kernel to loop for more than 20
+> seconds without calling schedule().
+
+Indeed, we already have that issue also with expire which goes over all entries.
+I have rough patches that improve the situation from way back, will have to go over and
+polish them to submit when I got more time. Long ago I've tested it with expiring 10 million
+entries but on a rather powerful CPU.
+
+> 
+> To reproduce I added mdelay(100) in br_fdb_delete_by_port() and ran
+> this:
+> 
+> ip link add name br10 up type bridge vlan_filtering 1
+> ip link add name dummy10 up type dummy
+> ip link set dev dummy10 master br10
+> bridge vlan add vid 1-4094 dev dummy10 master
+> bridge vlan del vid 1-4094 dev dummy10 master
+> 
+> Got a similar trace to Stefan's. Seems to be fixed by attached:
+> 
+> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+> index a774e19c41bb..240e260e3461 100644
+> --- a/net/bridge/br_netlink.c
+> +++ b/net/bridge/br_netlink.c
+> @@ -615,6 +615,7 @@ int br_process_vlan_info(struct net_bridge *br,
+>                                                v - 1, rtm_cmd);
+>                                 v_change_start = 0;
+>                         }
+> +                       cond_resched();
+>                 }
+>                 /* v_change_start is set only if the last/whole range changed */
+>                 if (v_change_start)
+> 
+> WDYT?
 > 
 
-
-Reviewed-by: Roi Dayan <roid@mellanox.com>
+Maybe we can batch the deletes at say 32 at a time?
+Otherwise looks good to me, thanks!
