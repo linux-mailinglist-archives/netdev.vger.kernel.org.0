@@ -2,39 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 104531C01A5
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516AA1C014E
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:06:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbgD3QEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 12:04:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50378 "EHLO mail.kernel.org"
+        id S1727896AbgD3QEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 12:04:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50438 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726350AbgD3QEg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 12:04:36 -0400
+        id S1726635AbgD3QEh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 12:04:37 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BEF3420775;
+        by mail.kernel.org (Postfix) with ESMTPSA id CDD98208CA;
         Thu, 30 Apr 2020 16:04:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588262675;
-        bh=kwLf545ZLLKl4cDNQVW1Q3oZtALV8Rc5ZHCSwPCR5Ng=;
+        s=default; t=1588262676;
+        bh=sFuN0vBK+JwBRLNPQc/i7o6rOqaphy84PmOAJvpLo7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F9ovvL+5dz7imvEp73G2FjBuKbniXBnBMIKtI4d9elsbHrE1UUt+FzZpOrn37PSO+
-         nBWW4Ee5nxtZ9iU0NIL+oRH8wC7P1d0G55vIa3LWdDlXuEynayk6+qNL8oqvTIchaC
-         HvaP/bdqo+axBzq/a/8HQ/laEsPCtjA5OuBycePk=
+        b=tY0oVDQIEQe0IOgIkcGS66w2Yi+puKEyzkMHYZ7arBix0cK6asc8NkbsCVqyROh4c
+         pNT4G88lN11RiEj2Gu4rDqz6tmZAN2RmI3n5QoaAqWw/KpFiP7CncgcPBocbRXX4LW
+         jSiZHgd3QsOiNMUgHUNLgmQr3H3GIJezV1CfckmM=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUBfu-00AxEJ-1p; Thu, 30 Apr 2020 18:04:34 +0200
+        id 1jUBfu-00AxEN-2j; Thu, 30 Apr 2020 18:04:34 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 03/37] docs: networking: convert ltpc.txt to ReST
-Date:   Thu, 30 Apr 2020 18:03:58 +0200
-Message-Id: <6e495bae2c1b7804fd7ff0d3462c1d15b5c0dc3d.1588261997.git.mchehab+huawei@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: [PATCH 04/37] docs: networking: convert mac80211-injection.txt to ReST
+Date:   Thu, 30 Apr 2020 18:03:59 +0200
+Message-Id: <015916acf01942ca53453444aa48f70e7bfa5221.1588261997.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588261997.git.mchehab+huawei@kernel.org>
 References: <cover.1588261997.git.mchehab+huawei@kernel.org>
@@ -46,7 +48,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
-- add a document title;
+- adjust title markup;
 - mark code blocks and literals as such;
 - mark tables as such;
 - adjust identation, whitespaces and blank lines;
@@ -55,170 +57,153 @@ X-Mailing-List: netdev@vger.kernel.org
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
  Documentation/networking/index.rst            |  1 +
- .../networking/{ltpc.txt => ltpc.rst}         | 45 ++++++++++++-------
- drivers/net/appletalk/Kconfig                 |  2 +-
- 3 files changed, 31 insertions(+), 17 deletions(-)
- rename Documentation/networking/{ltpc.txt => ltpc.rst} (86%)
+ ...1-injection.txt => mac80211-injection.rst} | 39 ++++++++++++-------
+ MAINTAINERS                                   |  2 +-
+ net/mac80211/tx.c                             |  2 +-
+ 4 files changed, 27 insertions(+), 17 deletions(-)
+ rename Documentation/networking/{mac80211-injection.txt => mac80211-injection.rst} (68%)
 
 diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index acd2567cf0d4..b3608b177a8b 100644
+index b3608b177a8b..81c1834bfb57 100644
 --- a/Documentation/networking/index.rst
 +++ b/Documentation/networking/index.rst
-@@ -76,6 +76,7 @@ Contents:
-    kcm
+@@ -77,6 +77,7 @@ Contents:
     l2tp
     lapb-module
-+   ltpc
+    ltpc
++   mac80211-injection
  
  .. only::  subproject and html
  
-diff --git a/Documentation/networking/ltpc.txt b/Documentation/networking/ltpc.rst
-similarity index 86%
-rename from Documentation/networking/ltpc.txt
-rename to Documentation/networking/ltpc.rst
-index a005a73b76d0..0ad197fd17ce 100644
---- a/Documentation/networking/ltpc.txt
-+++ b/Documentation/networking/ltpc.rst
-@@ -1,3 +1,9 @@
+diff --git a/Documentation/networking/mac80211-injection.txt b/Documentation/networking/mac80211-injection.rst
+similarity index 68%
+rename from Documentation/networking/mac80211-injection.txt
+rename to Documentation/networking/mac80211-injection.rst
+index d58d78df9ca2..75d4edcae852 100644
+--- a/Documentation/networking/mac80211-injection.txt
++++ b/Documentation/networking/mac80211-injection.rst
+@@ -1,9 +1,12 @@
 +.. SPDX-License-Identifier: GPL-2.0
 +
-+===========
-+LTPC Driver
-+===========
-+
- This is the ALPHA version of the ltpc driver.
++=========================================
+ How to use packet injection with mac80211
+ =========================================
  
- In order to use it, you will need at least version 1.3.3 of the
-@@ -15,7 +21,7 @@ yourself.  (see "Card Configuration" below for how to determine or
- change the settings on your card)
+ mac80211 now allows arbitrary packets to be injected down any Monitor Mode
+ interface from userland.  The packet you inject needs to be composed in the
+-following format:
++following format::
  
- When the driver is compiled into the kernel, you can add a line such
--as the following to your /etc/lilo.conf:
-+as the following to your /etc/lilo.conf::
+  [ radiotap header  ]
+  [ ieee80211 header ]
+@@ -18,15 +21,19 @@ radiotap headers and used to control injection:
  
-  append="ltpc=0x240,9,1"
+  * IEEE80211_RADIOTAP_FLAGS
  
-@@ -25,13 +31,13 @@ the driver will try to determine them itself.
+-   IEEE80211_RADIOTAP_F_FCS: FCS will be removed and recalculated
+-   IEEE80211_RADIOTAP_F_WEP: frame will be encrypted if key available
+-   IEEE80211_RADIOTAP_F_FRAG: frame will be fragmented if longer than the
++   =========================  ===========================================
++   IEEE80211_RADIOTAP_F_FCS   FCS will be removed and recalculated
++   IEEE80211_RADIOTAP_F_WEP   frame will be encrypted if key available
++   IEEE80211_RADIOTAP_F_FRAG  frame will be fragmented if longer than the
+ 			      current fragmentation threshold.
++   =========================  ===========================================
  
- If you load the driver as a module, you can pass the parameters "io=",
- "irq=", and "dma=" on the command line with insmod or modprobe, or add
--them as options in a configuration file in /etc/modprobe.d/ directory:
-+them as options in a configuration file in /etc/modprobe.d/ directory::
+  * IEEE80211_RADIOTAP_TX_FLAGS
  
-  alias lt0 ltpc # autoload the module when the interface is configured
-  options ltpc io=0x240 irq=9 dma=1
+-   IEEE80211_RADIOTAP_F_TX_NOACK: frame should be sent without waiting for
++   =============================  ========================================
++   IEEE80211_RADIOTAP_F_TX_NOACK  frame should be sent without waiting for
+ 				  an ACK even if it is a unicast frame
++   =============================  ========================================
  
- Before starting up the netatalk demons (perhaps in rc.local), you
--need to add a line such as:
-+need to add a line such as::
+  * IEEE80211_RADIOTAP_RATE
  
-  /sbin/ifconfig lt0 127.0.0.42
+@@ -37,8 +44,10 @@ radiotap headers and used to control injection:
+    HT rate for the transmission (only for devices without own rate control).
+    Also some flags are parsed
  
-@@ -42,7 +48,7 @@ The appropriate netatalk configuration depends on whether you are
- attached to a network that includes AppleTalk routers or not.  If,
- like me, you are simply connecting to your home Macintoshes and
- printers, you need to set up netatalk to "seed".  The way I do this
--is to have the lines
-+is to have the lines::
+-   IEEE80211_RADIOTAP_MCS_SGI: use short guard interval
+-   IEEE80211_RADIOTAP_MCS_BW_40: send in HT40 mode
++   ============================  ========================
++   IEEE80211_RADIOTAP_MCS_SGI    use short guard interval
++   IEEE80211_RADIOTAP_MCS_BW_40  send in HT40 mode
++   ============================  ========================
  
-  dummy -seed -phase 2 -net 2000 -addr 2000.26 -zone "1033"
-  lt0 -seed -phase 1 -net 1033 -addr 1033.27 -zone "1033"
-@@ -57,13 +63,13 @@ such.
+  * IEEE80211_RADIOTAP_DATA_RETRIES
  
- If you are attached to an extended AppleTalk network, with routers on
- it, then you don't need to fool around with this -- the appropriate
--line in atalkd.conf is
-+line in atalkd.conf is::
+@@ -51,17 +60,17 @@ radiotap headers and used to control injection:
+    without own rate control). Also other fields are parsed
  
-  lt0 -phase 1
+    flags field
+-   IEEE80211_RADIOTAP_VHT_FLAG_SGI: use short guard interval
++	IEEE80211_RADIOTAP_VHT_FLAG_SGI: use short guard interval
  
----------------------------------------
+    bandwidth field
+-   1: send using 40MHz channel width
+-   4: send using 80MHz channel width
+-   11: send using 160MHz channel width
++	* 1: send using 40MHz channel width
++	* 4: send using 80MHz channel width
++	* 11: send using 160MHz channel width
  
--Card Configuration:
-+Card Configuration
-+==================
+ The injection code can also skip all other currently defined radiotap fields
+ facilitating replay of captured radiotap headers directly.
  
- The interrupts and so forth are configured via the dipswitch on the
- board.  Set the switches so as not to conflict with other hardware.
-@@ -73,26 +79,32 @@ board.  Set the switches so as not to conflict with other hardware.
-        original documentation refers to IRQ2.  Since you'll be running
-        this on an AT (or later) class machine, that really means IRQ9.
+-Here is an example valid radiotap header defining some parameters
++Here is an example valid radiotap header defining some parameters::
  
-+       ===     ===========================================================
-        SW1     IRQ 4
-        SW2     IRQ 3
-        SW3     IRQ 9 (2 in original card documentation only applies to XT)
-+       ===     ===========================================================
+ 	0x00, 0x00, // <-- radiotap version
+ 	0x0b, 0x00, // <- radiotap header length
+@@ -71,7 +80,7 @@ Here is an example valid radiotap header defining some parameters
+ 	0x01 //<-- antenna
  
+ The ieee80211 header follows immediately afterwards, looking for example like
+-this:
++this::
  
-        DMA -- choose DMA 1 or 3, and set both corresponding switches.
+ 	0x08, 0x01, 0x00, 0x00,
+ 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+@@ -84,10 +93,10 @@ Then lastly there is the payload.
+ After composing the packet contents, it is sent by send()-ing it to a logical
+ mac80211 interface that is in Monitor mode.  Libpcap can also be used,
+ (which is easier than doing the work to bind the socket to the right
+-interface), along the following lines:
++interface), along the following lines:::
  
-+       ===     =====
-        SW4     DMA 3
-        SW5     DMA 1
-        SW6     DMA 3
-        SW7     DMA 1
-+       ===     =====
+ 	ppcap = pcap_open_live(szInterfaceName, 800, 1, 20, szErrbuf);
+-...
++	...
+ 	r = pcap_inject(ppcap, u8aSendBuffer, nLength);
  
+ You can also find a link to a complete inject application here:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0db63acd07b0..1546ecb855b5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10112,7 +10112,7 @@ S:	Maintained
+ W:	https://wireless.wiki.kernel.org/
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
+-F:	Documentation/networking/mac80211-injection.txt
++F:	Documentation/networking/mac80211-injection.rst
+ F:	Documentation/networking/mac80211_hwsim/mac80211_hwsim.rst
+ F:	drivers/net/wireless/mac80211_hwsim.[ch]
+ F:	include/net/mac80211.h
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 6dad67eb60b2..47f460c8bd74 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -2144,7 +2144,7 @@ static bool ieee80211_parse_tx_radiotap(struct ieee80211_local *local,
  
-        I/O address -- choose one.
+ 		/*
+ 		 * Please update the file
+-		 * Documentation/networking/mac80211-injection.txt
++		 * Documentation/networking/mac80211-injection.rst
+ 		 * when parsing new fields here.
+ 		 */
  
-+       ===     =========
-        SW8     220 / 240
-+       ===     =========
- 
----------------------------------------
- 
--IP:
-+IP
-+==
- 
- Yes, it is possible to do IP over LocalTalk.  However, you can't just
- treat the LocalTalk device like an ordinary Ethernet device, even if
-@@ -102,9 +114,9 @@ Instead, you follow the same procedure as for doing IP in EtherTalk.
- See Documentation/networking/ipddp.rst for more information about the
- kernel driver and userspace tools needed.
- 
----------------------------------------
- 
--BUGS:
-+Bugs
-+====
- 
- IRQ autoprobing often doesn't work on a cold boot.  To get around
- this, either compile the driver as a module, or pass the parameters
-@@ -120,12 +132,13 @@ It may theoretically be possible to use two LTPC cards in the same
- machine, but this is unsupported, so if you really want to do this,
- you'll probably have to hack the initialization code a bit.
- 
--______________________________________
- 
--THANKS:
--	Thanks to Alan Cox for helpful discussions early on in this
-+Thanks
-+======
-+
-+Thanks to Alan Cox for helpful discussions early on in this
- work, and to Denis Hainsworth for doing the bleeding-edge testing.
- 
---- Bradford Johnson <bradford@math.umn.edu>
-+Bradford Johnson <bradford@math.umn.edu>
- 
---- Updated 11/09/1998 by David Huggins-Daines <dhd@debian.org>
-+Updated 11/09/1998 by David Huggins-Daines <dhd@debian.org>
-diff --git a/drivers/net/appletalk/Kconfig b/drivers/net/appletalk/Kconfig
-index ccde6479050c..10589a82263b 100644
---- a/drivers/net/appletalk/Kconfig
-+++ b/drivers/net/appletalk/Kconfig
-@@ -48,7 +48,7 @@ config LTPC
- 	  If you are in doubt, this card is the one with the 65C02 chip on it.
- 	  You also need version 1.3.3 or later of the netatalk package.
- 	  This driver is experimental, which means that it may not work.
--	  See the file <file:Documentation/networking/ltpc.txt>.
-+	  See the file <file:Documentation/networking/ltpc.rst>.
- 
- config COPS
- 	tristate "COPS LocalTalk PC support"
 -- 
 2.25.4
 
