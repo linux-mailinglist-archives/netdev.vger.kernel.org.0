@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B86171BFD11
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7BD11BFA1F
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:51:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728983AbgD3OKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 10:10:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60234 "EHLO mail.kernel.org"
+        id S1728181AbgD3Nvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:51:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60280 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728152AbgD3Nvl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:51:41 -0400
+        id S1728163AbgD3Nvm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:51:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5269C24953;
-        Thu, 30 Apr 2020 13:51:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 65046208DB;
+        Thu, 30 Apr 2020 13:51:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254701;
-        bh=Y+UUWSoIDCIpgXx9xE6XqRNIwYNkaFmOrUW01mRiSPA=;
+        s=default; t=1588254702;
+        bh=wrABUCT+G08Y7AeY04cIYcN7RrLyYK0q03babfo1+tI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ztKeGvx8oqtlO69NVtac6yeQI4NrNmp+1ChkjKkc82MuahyoK8PrvnrvsD7/GAy8Z
-         jM6f7sAjTcr7QwEhEyEBqpL7Hg93Ou/DfZgvwbDjlD3vTPQBveNbF7BVX3E0sIt6QK
-         8uCL31jVwGlHC1mCOuCFlzeMiifl3kDgjykBuNKs=
+        b=NsLEYb7PhT70nWZdHielVv6+48YS6cNW3KqRJkQC+u96O6K8IJe6XkFptPUmRBw8M
+         ggXFGOZBvFJR5O+Qx7XuR8yEt1Y6cQD4+Rfmf92b2g3cD6uqcL/nZ0CPVQbzOcbBbM
+         fzmV9tc/aht2Q9WrVfMdBTcm52GD0aUxCfeuMwes=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhu Yanjun <yanjunz@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 50/79] net/mlx5e: Get the latest values from counters in switchdev mode
-Date:   Thu, 30 Apr 2020 09:50:14 -0400
-Message-Id: <20200430135043.19851-50-sashal@kernel.org>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Xiumei Mu <xmu@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Song Liu <songliubraving@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 51/79] cpumap: Avoid warning when CONFIG_DEBUG_PER_CPU_MAPS is enabled
+Date:   Thu, 30 Apr 2020 09:50:15 -0400
+Message-Id: <20200430135043.19851-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135043.19851-1-sashal@kernel.org>
 References: <20200430135043.19851-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,55 +47,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhu Yanjun <yanjunz@mellanox.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-[ Upstream commit dcdf4ce0ff4ba206fc362e149c8ae81d6a2f849c ]
+[ Upstream commit bc23d0e3f717ced21fbfacab3ab887d55e5ba367 ]
 
-In the switchdev mode, when running "cat
-/sys/class/net/NIC/statistics/tx_packets", the ppcnt register is
-accessed to get the latest values. But currently this command can
-not get the correct values from ppcnt.
+When the kernel is built with CONFIG_DEBUG_PER_CPU_MAPS, the cpumap code
+can trigger a spurious warning if CONFIG_CPUMASK_OFFSTACK is also set. This
+happens because in this configuration, NR_CPUS can be larger than
+nr_cpumask_bits, so the initial check in cpu_map_alloc() is not sufficient
+to guard against hitting the warning in cpumask_check().
 
-From firmware manual, before getting the 802_3 counters, the 802_3
-data layout should be set to the ppcnt register.
+Fix this by explicitly checking the supplied key against the
+nr_cpumask_bits variable before calling cpu_possible().
 
-When the command "cat /sys/class/net/NIC/statistics/tx_packets" is
-run, before updating 802_3 data layout with ppcnt register, the
-monitor counters are tested. The test result will decide the
-802_3 data layout is updated or not.
-
-Actually the monitor counters do not support to monitor rx/tx
-stats of 802_3 in switchdev mode. So the rx/tx counters change
-will not trigger monitor counters. So the 802_3 data layout will
-not be updated in ppcnt register. Finally this command can not get
-the latest values from ppcnt register with 802_3 data layout.
-
-Fixes: 5c7e8bbb0257 ("net/mlx5e: Use monitor counters for update stats")
-Signed-off-by: Zhu Yanjun <yanjunz@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Fixes: 6710e1126934 ("bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CPUMAP")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Tested-by: Xiumei Mu <xmu@redhat.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20200416083120.453718-1-toke@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ kernel/bpf/cpumap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 2650739964326..d02db5aebac45 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3568,7 +3568,12 @@ mlx5e_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 	struct mlx5e_vport_stats *vstats = &priv->stats.vport;
- 	struct mlx5e_pport_stats *pstats = &priv->stats.pport;
+diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+index 70f71b154fa57..3fe0b006d2d2e 100644
+--- a/kernel/bpf/cpumap.c
++++ b/kernel/bpf/cpumap.c
+@@ -469,7 +469,7 @@ static int cpu_map_update_elem(struct bpf_map *map, void *key, void *value,
+ 		return -EOVERFLOW;
  
--	if (!mlx5e_monitor_counter_supported(priv)) {
-+	/* In switchdev mode, monitor counters doesn't monitor
-+	 * rx/tx stats of 802_3. The update stats mechanism
-+	 * should keep the 802_3 layout counters updated
-+	 */
-+	if (!mlx5e_monitor_counter_supported(priv) ||
-+	    mlx5e_is_uplink_rep(priv)) {
- 		/* update HW stats in background for next time */
- 		mlx5e_queue_update_stats(priv);
- 	}
+ 	/* Make sure CPU is a valid possible cpu */
+-	if (!cpu_possible(key_cpu))
++	if (key_cpu >= nr_cpumask_bits || !cpu_possible(key_cpu))
+ 		return -ENODEV;
+ 
+ 	if (qsize == 0) {
 -- 
 2.20.1
 
