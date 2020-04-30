@@ -2,169 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F36D31BEE47
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 04:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B48771BEE5F
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 04:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbgD3CYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 22:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60478 "EHLO
+        id S1726811AbgD3CkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 22:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726180AbgD3CYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 22:24:09 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F24FC035494;
-        Wed, 29 Apr 2020 19:24:09 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id z6so1661621plk.10;
-        Wed, 29 Apr 2020 19:24:09 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726180AbgD3CkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 22:40:22 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A700C035494
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 19:40:22 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id c63so4334653qke.2
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 19:40:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xbSIwRPgvresfcrdfxkSpKBG8zf3ZdkCqm3NBkNr4kM=;
-        b=Ek1DNVvEsD6S/hoBW1Bdd5sunrCvd16NsNWLRDlYyUPvoatxxY0H7qROatvS16NvTk
-         /MdTnaEOoPjrATERIB/8R2UOIkU9zzKmcl4LqKrIb9Hn3q3mh2VllyYiY1LrykjYGfNT
-         1cMCPo3tYXOqXVlmOkeBzuZ8Rg3BGeKqsJ8z8RXWIo2tYVSOUYfEBfQEoKZL1yDiHzLs
-         ERJEZSDoYlwjWmf1Uaq4dnt4n3NbZ51P5HQAe5RtHh0QNb77O3sbj/M1z/pCCNGYl2+o
-         2ucH0Iu7ObvuCMwhj+SqLHV9raTC46eaTzpmCkkeUjZfurFwJfIL29am4s6c5p/yVS9V
-         kwrA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=f5Ak7oI1eIiRhEKWpiKXEIFPcL2Rb3apHTUCS9FOGPQ=;
+        b=lRNlOttgBSRTPoAeJBxFDZFRoqtDFLaD1ppWg2uL8GnqyUcny8rb9I3dRySviWej/i
+         qsLTVXxkU86FsMfBP9VXRGG6kl4ozNknRniVFHRyr2061oFqUP9j76XCX8ne0QGpxOco
+         inu0uBYmw94lryBJn36xi4m8IjnMM5oFU+zVz3n4WksAaYkVbTU6tKPsiFNbeQFjCJGE
+         p8zslUVgwRSzB5vv4B/b/b/M17LGJgDMjVAKv+C8LHhVidUPouL4k7PZpQirfmxGXJfQ
+         qcNZTrXGdc5+tAfFjUFZflupoRzdshfDR9wdZ9rAxKq7Kd7xtbVFRiv5emVN5sy6/k5e
+         E0Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xbSIwRPgvresfcrdfxkSpKBG8zf3ZdkCqm3NBkNr4kM=;
-        b=Sovh4kI+d4WhdzpFGXvee8Bxftfrhug8+E6uXqP2MR1Q5/nCG12QPegD6URlKXUiZE
-         CNedzSh4UTJEm/ca3N8zdWOPDRNvfVKyQAWql55ktQMCZO67aPFF/tw0YBq7BOCwKw3l
-         syzPmVU3KwMLeEggZfhs4HZ0s0TGd0YzX/u56tZgl+GxoHBXY93iR911WmItFgQIODT2
-         45QPM6JVTXdCVr0PZBQQqPflhE5KQb/igWKZx/R1p/KSipVo2eAQTx3Rnco5EBGx5x8n
-         G5Y2gFbKZg7sNOlvolRNhz6UBQK8zkC0A4lCg8ijeilWUZSpjM1yHfryJ1bQl4eqHIan
-         AF+g==
-X-Gm-Message-State: AGi0PuZ5Q9oE1lD145Lb+A9bwOF3PQ26DLBstH6Svdr14XA3kq5aGzZI
-        cBNg2MUnNc/uU89Aem80yrQ=
-X-Google-Smtp-Source: APiQypL3eMs7VgBGNkhIfVUiFWPQ69gegiWeBI5PDPanJ1CKBpYB0gCyeGlmKToul3AazT9OguebQA==
-X-Received: by 2002:a17:902:b58a:: with SMTP id a10mr1461251pls.129.1588213448969;
-        Wed, 29 Apr 2020 19:24:08 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:39f2])
-        by smtp.gmail.com with ESMTPSA id d20sm1963094pgl.72.2020.04.29.19.24.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2020 19:24:08 -0700 (PDT)
-Date:   Wed, 29 Apr 2020 19:24:05 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     sdf@google.com
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v2] bpf: bpf_{g,s}etsockopt for struct bpf_sock
-Message-ID: <20200430022405.55gt7v3y7ckdkepx@ast-mbp.dhcp.thefacebook.com>
-References: <20200429170524.217865-1-sdf@google.com>
- <640e7fd3-4059-5ff8-f9ed-09b1becd0f7b@iogearbox.net>
- <20200429233312.GB241848@google.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=f5Ak7oI1eIiRhEKWpiKXEIFPcL2Rb3apHTUCS9FOGPQ=;
+        b=r7zQmbWVA88sFsNE92Fqpkznd86cbRmzIC4wSzh4/RaLQxrW2SOLoxo56ldc8Fqb05
+         bjc2sslm48mO/aNdFXQDvnVxxPZcu4cNbpp21x2yUb9+EtU/P0GEEI8Le44kPt/YiZ07
+         QkQFumTkSlM+bhP/Y0dN3Gp+snEcPkK07O9baumCGBiaZs0tyQDjmj58OejjKyrQrNLC
+         KoyuKPix/s458822itQ78OHcOno9Iv7XN9l6eL3xMgKdcyaepkbqFc+EkRPgQtAnDtOP
+         GszbbuFbxAKLDP6s1INJxcsIB7iVgdfVRIpfgbt+zl4o/KtH8+LMyPPJiDn7M/P6FcGE
+         DeCg==
+X-Gm-Message-State: AGi0PuYscpH7OrqvCGRc5wrSXC9/zzw0KNFMJT6N9qV9TsOOMfyBt9SG
+        WgtHQiN38CobjSIi4nj/eE8=
+X-Google-Smtp-Source: APiQypLF1Z2DZaCgmEWd4ZUOnvdFkQLCO1nT5Noq/NWSTmIQiqLkkp7Ajmx0k238a4WAp2j4OgfMEg==
+X-Received: by 2002:a05:620a:1458:: with SMTP id i24mr1491902qkl.279.1588214421420;
+        Wed, 29 Apr 2020 19:40:21 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:ec9c:e6ab:797a:4bad? ([2601:282:803:7700:ec9c:e6ab:797a:4bad])
+        by smtp.googlemail.com with ESMTPSA id m26sm985337qta.53.2020.04.29.19.40.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Apr 2020 19:40:20 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] erspan: Add type I version 0 support.
+To:     William Tu <u9012063@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Petr Machata <petrm@mellanox.com>,
+        Xin Long <lucien.xin@gmail.com>, guy@alum.mit.edu,
+        Dmitriy Andreyevskiy <dandreye@cisco.com>
+References: <1587913455-78048-1-git-send-email-u9012063@gmail.com>
+ <435b0763-5b7f-fc4b-5490-e6ac36ec0ff0@gmail.com>
+ <CALDO+SZY+VVfYXfwUE6z7TzqGkK8fpak8-a3XJ8_ghwyyxJjwg@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7477680c-4e01-e0b7-c51c-03fcd4c27ad8@gmail.com>
+Date:   Wed, 29 Apr 2020 20:40:18 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200429233312.GB241848@google.com>
+In-Reply-To: <CALDO+SZY+VVfYXfwUE6z7TzqGkK8fpak8-a3XJ8_ghwyyxJjwg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 04:33:12PM -0700, sdf@google.com wrote:
-> On 04/30, Daniel Borkmann wrote:
-> > On 4/29/20 7:05 PM, Stanislav Fomichev wrote:
-> > > Currently, bpf_getsocktop and bpf_setsockopt helpers operate on the
-> > > 'struct bpf_sock_ops' context in BPF_PROG_TYPE_SOCK_OPS program.
-> > > Let's generalize them and make the first argument be 'struct bpf_sock'.
-> > > That way, in the future, we can allow those helpers in more places.
-> > >
-> > > BPF_PROG_TYPE_SOCK_OPS still has the existing helpers that operate
-> > > on 'struct bpf_sock_ops', but we add new bpf_{g,s}etsockopt that work
-> > > on 'struct bpf_sock'. [Alternatively, for BPF_PROG_TYPE_SOCK_OPS,
-> > > we can enable them both and teach verifier to pick the right one
-> > > based on the context (bpf_sock_ops vs bpf_sock).]
-> > >
-> > > As an example, let's allow those 'struct bpf_sock' based helpers to
-> > > be called from the BPF_CGROUP_INET{4,6}_CONNECT hooks. That way
-> > > we can override CC before the connection is made.
-> > >
-> > > v2:
-> > > * s/BPF_PROG_TYPE_CGROUP_SOCKOPT/BPF_PROG_TYPE_SOCK_OPS/
-> > >
-> > > Acked-by: John Fastabend <john.fastabend@gmail.com>
-> > > Acked-by: Martin KaFai Lau <kafai@fb.com>
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > [...]
-> > > +BPF_CALL_5(bpf_setsockopt, struct sock *, sk,
-> > > +	   int, level, int, optname, char *, optval, int, optlen)
-> > > +{
-> > > +	u32 flags = 0;
-> > > +	return _bpf_setsockopt(sk, level, optname, optval, optlen, flags);
-> > > +}
-> > > +
-> > > +static const struct bpf_func_proto bpf_setsockopt_proto = {
-> > > +	.func		= bpf_setsockopt,
-> > > +	.gpl_only	= false,
-> > > +	.ret_type	= RET_INTEGER,
-> > > +	.arg1_type	= ARG_PTR_TO_SOCKET,
-> > > +	.arg2_type	= ARG_ANYTHING,
-> > > +	.arg3_type	= ARG_ANYTHING,
-> > > +	.arg4_type	= ARG_PTR_TO_MEM,
-> > > +	.arg5_type	= ARG_CONST_SIZE,
-> > > +};
-> > > +
-> > > +BPF_CALL_5(bpf_getsockopt, struct sock *, sk,
-> > > +	   int, level, int, optname, char *, optval, int, optlen)
-> > > +{
-> > > +	return _bpf_getsockopt(sk, level, optname, optval, optlen);
-> > > +}
-> > > +
-> > >   static const struct bpf_func_proto bpf_getsockopt_proto = {
-> > >   	.func		= bpf_getsockopt,
-> > >   	.gpl_only	= false,
-> > >   	.ret_type	= RET_INTEGER,
-> > > +	.arg1_type	= ARG_PTR_TO_SOCKET,
-> > > +	.arg2_type	= ARG_ANYTHING,
-> > > +	.arg3_type	= ARG_ANYTHING,
-> > > +	.arg4_type	= ARG_PTR_TO_UNINIT_MEM,
-> > > +	.arg5_type	= ARG_CONST_SIZE,
-> > > +};
-> > > +
-> > [...]
-> > > @@ -6043,6 +6098,22 @@ sock_addr_func_proto(enum bpf_func_id func_id,
-> > const struct bpf_prog *prog)
-> > >   		return &bpf_sk_storage_get_proto;
-> > >   	case BPF_FUNC_sk_storage_delete:
-> > >   		return &bpf_sk_storage_delete_proto;
-> > > +	case BPF_FUNC_setsockopt:
-> > > +		switch (prog->expected_attach_type) {
-> > > +		case BPF_CGROUP_INET4_CONNECT:
-> > > +		case BPF_CGROUP_INET6_CONNECT:
-> > > +			return &bpf_setsockopt_proto;
+On 4/29/20 6:45 PM, William Tu wrote:
+> On Wed, Apr 29, 2020 at 2:52 PM David Ahern <dsahern@gmail.com> wrote:
+>>
+>> On 4/26/20 9:04 AM, William Tu wrote:
+>>> The Type I ERSPAN frame format is based on the barebones
+>>> IP + GRE(4-byte) encapsulation on top of the raw mirrored frame.
+>>> Both type I and II use 0x88BE as protocol type. Unlike type II
+>>> and III, no sequence number or key is required.
+>>
+>> should this be considered a bug fix or -next is what you prefer?
+>>
+> Hi David,
+> Since it's supporting a new type, I'd consider -next.
+> But either way is ok to me, I don't have have any preference.
+> Thanks!
+> William
 > 
-> > Hm, I'm not sure this is safe. In the sock_addr_func_proto() we also have
-> > other helpers callable from connect hooks like sk_lookup_{tcp,udp} which
-> > return a PTR_TO_SOCKET_OR_NULL, and now we can pass those sockets also
-> > into
-> > bpf_{get,set}sockopt() helper after lookup to change various sk related
-> > stuff
-> > but w/o being under lock. Doesn't the sock_owned_by_me() yell here at
-> > minimum
-> > (I'd expect so)?
-> Ugh, good point, I missed the fact that sk_lookup_{tcp,udp} are there
-> for sock_addr :-( I can try to do a simple test case to verify
-> that sock_owned_by_me triggers, but I'm pretty certain it should
-> (I've been calling bpf_{s,g}etsockopt for context socket so it's quiet).
-> 
-> I don't think there is any helper similar to sock_owned_by_me() that
-> I can call to verify that the socket is held by current thread
-> (without the lockdep splat) and bail out?
-> 
-> In this case, is something like adding new PTR_TO_LOCKED_SOCKET_OR_NULL
-> is the way to go? Any other ideas?
 
-Looks like networking will benefit from sleepable progs too.
-We could have just did lock_sock() inside bpf_setsockopt
-before setting cong control.
-In the mean time how about introducing try_lock_sock() 
-that will bail out if it cannot grab the lock?
-For most practical cases that would work and eventually we
-can convert it to full lock_sock ?
+applied to iproute2-next.
