@@ -2,83 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFA721C0454
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 20:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF0F81C046B
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 20:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbgD3SDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 14:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38294 "EHLO
+        id S1726598AbgD3SMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 14:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726336AbgD3SDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 14:03:47 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A542FC035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 11:03:46 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id z6so3049392wml.2
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 11:03:46 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726318AbgD3SMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 14:12:46 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77343C035494;
+        Thu, 30 Apr 2020 11:12:44 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id o10so5832366qtr.6;
+        Thu, 30 Apr 2020 11:12:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nAYOfWcSDzqJHbetzae7LSUBpm8hJGe9JUFNGPJTyHc=;
-        b=uOUuyjrZ/vKSxqEPMks9pR1xDyJfSgmz8LGuB8OzVtr4iqjdCp0vuS9u1bdgaW0c5/
-         ajNzcvnXn1g84FaCCU2H1ByuhaPXwD16J3Ah3c4sv1rKkl/enb+rgFBAs05JBD5u0wAD
-         KnYnZ0/CzsIUQ4uk140SDDeuVnCf8qo9HT8qdenOY7L/NFgp3d1dHK/Ohq0mRpb20zxQ
-         uQ1NSUCq9VIU62WTlkcqxaKl7zq7MDnzHqO9gSIyrHfBDQnHzD/5KSvxNIoNUs9tAdBx
-         kQqrnEAJSKSGW6XK60SWraW7rdeCaTi10GBNGiHPo3yKEMxAJTpmSOju3RcRajWADNk1
-         cULg==
+        bh=dgeA7MEUkqk2Es2dDo4XvU2axQ9S49ISzTxAK386n2M=;
+        b=Dh5EkvBeYPTkAWxgXDeWIUHLJ9KshJBiAjfgLJQCBrgkhYOD4MTWmIDLVmoINcNERQ
+         OgBI1jOEzRKj+hFjOzHMp1jHwHQSjHPwY5FfvJWVZFbqlWR1qY9O+RdYl+AZ/cwhNmWw
+         1uz/PTon3Djt4z6wXVakMGENmC9pog38ktYVA0DNriHRDS+NRp2IROeHpAP4ggNwbnF/
+         bwXqPGyqVqBHOPKcO5CZrgbmeZ6EOGenedDOEBa3F0jP58f/3gxib9s0Cc79IQiqzB7m
+         iSA3jtuJ4hEqEdXUeyBkqtHEyJgbOCJlS0TOhwG26R+AR9d2k2c5zs6wIBDzWSZ4ZkKF
+         kIHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nAYOfWcSDzqJHbetzae7LSUBpm8hJGe9JUFNGPJTyHc=;
-        b=mwWAU/k+VO5O6VXNf7n8lbbm0Lz00ICxLu3vJFr6Ws42njigeH6Z9qGiDeYmMJZ5m1
-         8MGCESM3Ctkr2Jd+rc0kDnVCfWdh/PmTZjVtkmTiqSNl6CkyA+59GMvKFMVidsVc3h04
-         dpOZrxg0g23fMY5SilzhBlp205EeuD9Tjm5C3wR3yhSiOnMJoX9qzPfV8Z5R/RITkK0p
-         RP0Viw/GimlYfMDU81Jq8hWVwJXfTibDa9gQstPrOE0TxbYLmSwZXsTx/ykWfKx5Xw6/
-         RJe7/zbWv22+J/269eIS5DFmW/38pZtHYzPxZFHzR+j/HX+CivufD3ytbUvxpPvkZpjF
-         Zoug==
-X-Gm-Message-State: AGi0PubFyozaZY/zOP/Jko2e0NHh1BpQNwzmOUH4lGJIWaic4CIrgD8v
-        FUoAQYdm4tzvRsvOyDpHbCYa4VnVmvBE8T6uhSk=
-X-Google-Smtp-Source: APiQypIsLxPBXUGp9EvQNWmQt7gAXXLtSwrIyz0YJRThXGZIoteWPs+YbSomT2uvl63lyM9VKElc3mbJRrqGV1ejevo=
-X-Received: by 2002:a05:600c:29c2:: with SMTP id s2mr4195347wmd.111.1588269825341;
- Thu, 30 Apr 2020 11:03:45 -0700 (PDT)
+        bh=dgeA7MEUkqk2Es2dDo4XvU2axQ9S49ISzTxAK386n2M=;
+        b=i3+1lVMSx0/kqi3dfb2yxVQ6G9O+6tPwEnB4xyNMYDpx30YNbPAdXpleAI2yBLYue/
+         EcoDA3KfW9OUqLV9N0sveiQ1lku3q3YbCBoepgV+Id7rAGRWuu5MWpOPXKTXiC0YnHWr
+         Gecu70A5McHpEvrSULA7wpGPGtw4c0MlmMsXT2WJNfufvQ31ODWUeDLffpp1jEZSGa4o
+         BBhv+gsq/xzbwmVLto+UW/lOMNXdd60pCqJSI+MiBRtd92gAToF0a3h2tPMRB9+APeNd
+         h5RPX0LEvBRaVZDT+PeZ+FwrHQlQU73NUmhJ43GaMaetA4WJg/HSyT3KTytphlMnNiCl
+         hLow==
+X-Gm-Message-State: AGi0PuZm+kKTmk/8ugLsotp5MH0m0N3AOV4/RKyufkMUCX17KSFnc4oj
+        k4CTPYJVwxY8PKO0enixV/Kd1Mq7k7dD+1q0uOE=
+X-Google-Smtp-Source: APiQypIrdKokXP3ByzYLD6DOa8n4uCJ1eajRL4E9ovCVZctzkEc9xI0lCETvmyCkNukTHwG7TnHhuGzeEQmFqQhvx+M=
+X-Received: by 2002:ac8:193d:: with SMTP id t58mr4724442qtj.93.1588270363413;
+ Thu, 30 Apr 2020 11:12:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1587983178.git.lucien.xin@gmail.com> <a06922f5bd35b674caee4bd5919186ea1323202a.1587983178.git.lucien.xin@gmail.com>
- <838c55576eabd17db407a95bc6609c05bf5e174b.1587983178.git.lucien.xin@gmail.com>
- <1cd96ed3-b2ec-6cc7-8737-0cc2ecd38f72@gmail.com> <CADvbK_cSTXakVS9qkiESu6swXPsEZyDvfPggQp1cWXYHg6hC5Q@mail.gmail.com>
- <3896333e-1c2b-8f9e-c41a-48662b2d60b6@gmail.com>
-In-Reply-To: <3896333e-1c2b-8f9e-c41a-48662b2d60b6@gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 1 May 2020 02:09:11 +0800
-Message-ID: <CADvbK_d9oMKR5-bmPPCBFt1ag=030KTfK23ss-OG68t5PpX-8A@mail.gmail.com>
-Subject: Re: [PATCHv4 iproute2-next 2/7] iproute_lwtunnel: add options support
- for vxlan metadata
-To:     David Ahern <dsahern@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jakub Kicinski <kuba@kernel.org>
+References: <158824221003.2338.9700507405752328930.stgit@ebuild>
+In-Reply-To: <158824221003.2338.9700507405752328930.stgit@ebuild>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 30 Apr 2020 11:12:32 -0700
+Message-ID: <CAEf4BzYeJxGuPC8rbsY5yvED8KNaq=7NULFPnwPdeEs==Srd1w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix probe code to return EPERM if encountered
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 1, 2020 at 12:19 AM David Ahern <dsahern@gmail.com> wrote:
+On Thu, Apr 30, 2020 at 3:24 AM Eelco Chaudron <echaudro@redhat.com> wrote:
 >
-> On 4/29/20 11:12 PM, Xin Long wrote:
-> >>
-> >> gdp? should that be 'gbp'?
-> > Right, should be 'gbp'. Sorry.
-> > The same mistake also exists in:
-> >
-> >   [PATCHv4 iproute2-next 4/7] tc: m_tunnel_key: add options support for vxlan
+> When the probe code was failing for any reason ENOTSUP was returned, even
+> if this was due to no having enough lock space. This patch fixes this by
+> returning EPERM to the user application, so it can respond and increase
+> the RLIMIT_MEMLOCK size.
 >
-> yep, saw that.
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> ---
+>  tools/lib/bpf/libbpf.c |    7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 >
-> >
-> > Any other comments? Otherwise, I will post v5 with the fix.
-> >
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 8f480e29a6b0..a62388a151d4 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -3381,8 +3381,13 @@ bpf_object__probe_caps(struct bpf_object *obj)
 >
-> LGTM. I can just edit the patches and fix before applying.
-Great. thanks!
+>         for (i = 0; i < ARRAY_SIZE(probe_fn); i++) {
+>                 ret = probe_fn[i](obj);
+> -               if (ret < 0)
+> +               if (ret < 0) {
+>                         pr_debug("Probe #%d failed with %d.\n", i, ret);
+> +                       if (ret == -EPERM) {
+> +                               pr_perm_msg(ret);
+> +                               return ret;
+
+I think this is dangerous to do. This detection loop is not supposed
+to return error to user if any of the features are missing. I'd feel
+more comfortable if we split bpf_object__probe_name() into two tests:
+one testing trivial program and another testing same program with
+name. If the first one fails with EPERM -- then we can return error to
+user. If anything else fails -- that's ok. Thoughts?
+
+> +                       }
+> +               }
+>         }
+>
+>         return 0;
+>
