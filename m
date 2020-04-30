@@ -2,130 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28E8B1BF671
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 13:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D721A1BF673
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 13:20:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbgD3LU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 07:20:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726483AbgD3LU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 07:20:28 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7624DC035495
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 04:20:27 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id f11so6083334ljp.1
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 04:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7QEu8lQDX7asS/EZnMosCw8iJ8orrbIm4oxu4zfa7w8=;
-        b=HucCPpnpma0D9qFGBTzTef+mq4pL65ONVeTzpZom5AgHG+MJYKVQrLsrWUbXmKSWRA
-         RsmDdNSJ8Lcfq2n85ORjZE7iWC3gulDmD1hdMaONaELzssFXRIg1uvtrYgDcI6limxZN
-         EZJiO5nW2WdKnP7m5Ndy1ZNZ85oi6eISP3/a8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7QEu8lQDX7asS/EZnMosCw8iJ8orrbIm4oxu4zfa7w8=;
-        b=GgQJF2Su4oGFlMOSYht1q4ph7hZDz3hnsAWu9wRFSA2luu0a6sgHdr29SfeKw4Sv16
-         a5RSkGlNblWQ2iCtk/Yhk7wMJgFNPO03L7rKcQLSi+YHyuU1xWH2xF8Ut4C9xmQJ9IE9
-         6X0tKuVjhFX5Y7Buwsf6MqMAPRHVYwRkXztGSpXnf3Am3hQl+34YPDUR+sR09A1SadjY
-         Kx6HKve/0k6qCj9r2AWkCYQKjiOOgFaAtte7zt/IbubjXv0UA2CBgfAAsbs1ezMVx6SO
-         DNaxqDL0d5Z/oy0HrfHSxmejKsRoC0o2fyhAeLr96ijuDQjtm1KBxtOPzrQViu/LW1Xj
-         k6ug==
-X-Gm-Message-State: AGi0PuZol4YLi/TCAA8PYJcLjPZntH8a/F2B3b+YHJvIzRTUSyT7LKob
-        F2sqt9TyaErtl0xex1n8wVyVh3SOJRwTsQ==
-X-Google-Smtp-Source: APiQypLGoRK/B5UEMM3ebOwPImgOIEU58k6prYsh3w5eqcv3NsOneJlrmwbIIVMBMK48+FaohW+KLw==
-X-Received: by 2002:a05:651c:449:: with SMTP id g9mr1937084ljg.278.1588245625383;
-        Thu, 30 Apr 2020 04:20:25 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id a12sm4050511ljj.64.2020.04.30.04.20.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Apr 2020 04:20:24 -0700 (PDT)
-Subject: Re: BUG: soft lockup while deleting tap interface from vlan aware
- bridge
-To:     Ido Schimmel <idosch@idosch.org>,
-        Stefan Priebe - Profihost AG <s.priebe@profihost.ag>
-Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>, netdev@vger.kernel.org
-References: <85b1e301-8189-540b-b4bf-d0902e74becc@profihost.ag>
- <20200430105551.GA4068275@splinter>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <4b3a6079-d8d4-24c5-8fc9-15bcb96bca80@cumulusnetworks.com>
-Date:   Thu, 30 Apr 2020 14:20:23 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726962AbgD3LUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 07:20:39 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38459 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726483AbgD3LUi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 07:20:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588245637;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=O9fQrK3QGrJL4UsVTT1BjsaZ4mQubvGNYU2PTJvcHmE=;
+        b=NodTBZlfZ6U/6a2EjalMEyZrU2yx0BzqwK9OlyD1I71uu5aqR1TlBOBiUAr8xGBdYcsMLh
+        rvf4u1petJ1sMZkvN7vwi6DMXaXxmR5ymiSfa522bCqelgAzaXLoFFrQ3I3o2hoe2XO86r
+        Pj99UEHR6qCC9sey7nR7iiLF/Horr/g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-353-Lg0IBU8OPOyS0vg36vyxXQ-1; Thu, 30 Apr 2020 07:20:35 -0400
+X-MC-Unique: Lg0IBU8OPOyS0vg36vyxXQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4BC2745F;
+        Thu, 30 Apr 2020 11:20:33 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 852C7165F6;
+        Thu, 30 Apr 2020 11:20:27 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 7D882324DB2C1;
+        Thu, 30 Apr 2020 13:20:26 +0200 (CEST)
+Subject: [PATCH net-next v2 01/33] xdp: add frame size to xdp_buff
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     sameehj@amazon.com
+Cc:     =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com,
+        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        steffen.klassert@secunet.com
+Date:   Thu, 30 Apr 2020 13:20:26 +0200
+Message-ID: <158824562644.2172139.9670830558460527639.stgit@firesoul>
+In-Reply-To: <158824557985.2172139.4173570969543904434.stgit@firesoul>
+References: <158824557985.2172139.4173570969543904434.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-In-Reply-To: <20200430105551.GA4068275@splinter>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/04/2020 13:55, Ido Schimmel wrote:
-> On Wed, Apr 29, 2020 at 10:52:35PM +0200, Stefan Priebe - Profihost AG wrote:
->> Hello,
->>
->> while running a stable vanilla kernel 4.19.115 i'm reproducably get this
->> one:
->>
->> watchdog: BUG: soft lockup - CPU#38 stuck for 22s! [bridge:3570653]
->>
->> ...
->>
->> Call
->> Trace:nbp_vlan_delete+0x59/0xa0br_vlan_info+0x66/0xd0br_afspec+0x18c/0x1d0br_dellink+0x74/0xd0rtnl_bridge_dellink+0x110/0x220rtnetlink_rcv_msg+0x283/0x360
-> 
-> Nik, Stefan,
-> 
-> My theory is that 4K VLANs are deleted in a batch and preemption is
-> disabled (please confirm). For each VLAN the kernel needs to go over the
+XDP have evolved to support several frame sizes, but xdp_buff was not
+updated with this information. The frame size (frame_sz) member of
+xdp_buff is introduced to know the real size of the memory the frame is
+delivered in.
 
-Right, that's what I was expecting. :-)
+When introducing this also make it clear that some tailroom is
+reserved/required when creating SKBs using build_skb().
 
-> entire FDB and delete affected entries. If the FDB is very large or the
-> FDB lock is contended this can cause the kernel to loop for more than 20
-> seconds without calling schedule().
+It would also have been an option to introduce a pointer to
+data_hard_end (with reserved offset). The advantage with frame_sz is
+that (like rxq) drivers only need to setup/assign this value once per
+NAPI cycle. Due to XDP-generic (and some drivers) it's not possible to
+store frame_sz inside xdp_rxq_info, because it's varies per packet as it
+can be based/depend on packet length.
 
-Indeed, we already have that issue also with expire which goes over all entries.
-I have rough patches that improve the situation from way back, will have to go over and
-polish them to submit when I got more time. Long ago I've tested it with expiring 10 million
-entries but on a rather powerful CPU.
+V2: nitpick: deduct -> deduce
 
-> 
-> To reproduce I added mdelay(100) in br_fdb_delete_by_port() and ran
-> this:
-> 
-> ip link add name br10 up type bridge vlan_filtering 1
-> ip link add name dummy10 up type dummy
-> ip link set dev dummy10 master br10
-> bridge vlan add vid 1-4094 dev dummy10 master
-> bridge vlan del vid 1-4094 dev dummy10 master
-> 
-> Got a similar trace to Stefan's. Seems to be fixed by attached:
-> 
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index a774e19c41bb..240e260e3461 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -615,6 +615,7 @@ int br_process_vlan_info(struct net_bridge *br,
->                                                v - 1, rtm_cmd);
->                                 v_change_start = 0;
->                         }
-> +                       cond_resched();
->                 }
->                 /* v_change_start is set only if the last/whole range changed */
->                 if (v_change_start)
-> 
-> WDYT?
-> 
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+---
+ include/net/xdp.h |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Maybe we can batch the deletes at say 32 at a time?
-Otherwise looks good to me, thanks!
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 3cc6d5d84aa4..a764af4ae0ea 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -6,6 +6,8 @@
+ #ifndef __LINUX_NET_XDP_H__
+ #define __LINUX_NET_XDP_H__
+=20
++#include <linux/skbuff.h> /* skb_shared_info */
++
+ /**
+  * DOC: XDP RX-queue information
+  *
+@@ -70,8 +72,19 @@ struct xdp_buff {
+ 	void *data_hard_start;
+ 	unsigned long handle;
+ 	struct xdp_rxq_info *rxq;
++	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
+ };
+=20
++/* Reserve memory area at end-of data area.
++ *
++ * This macro reserves tailroom in the XDP buffer by limiting the
++ * XDP/BPF data access to data_hard_end.  Notice same area (and size)
++ * is used for XDP_PASS, when constructing the SKB via build_skb().
++ */
++#define xdp_data_hard_end(xdp)				\
++	((xdp)->data_hard_start + (xdp)->frame_sz -	\
++	 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
++
+ struct xdp_frame {
+ 	void *data;
+ 	u16 len;
+
+
