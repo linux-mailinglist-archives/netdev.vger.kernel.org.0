@@ -2,119 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30E4C1BF851
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 14:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CD051BF854
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 14:41:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgD3MkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 08:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726520AbgD3MkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 08:40:14 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1916C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 05:40:13 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id w18so2877585qvs.3
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 05:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tlapnet.cz; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SfIYKgPds4OejD3qxNFmtT7uVL/B8O59w3PXGuZWqkg=;
-        b=GVOvIYH0wupNtVBqpZ/hh9wasQ580XNjGL2295E7+waOwpbIynXq+u6YMy68PJ6YmG
-         N1ypEg5gu3mLyO6a0nRjzd/k/edYCJfWTsmI0W3SRKyRcLqlBHVb/gu6YM9byPQLXE22
-         4w7D/KNesvYQVjXuf0Bfym5cBtivGRe4lIyR51kn5tL5Bnnlx2YAUsEVtHpGy/NZVVha
-         B7dDRm6NjnpTWfeev6pOJ04cqrIIkI0F9sk3dw+Qq+Wdk97Ro6WjtmG0CuwpeqKQUC9O
-         sT88iYIploJC0wmdmEhA02dOXynJFcAkI3c6I6kR6vid+h/r5sfvzCybaL44j8B5WPux
-         HXkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SfIYKgPds4OejD3qxNFmtT7uVL/B8O59w3PXGuZWqkg=;
-        b=omHyotrla66tf75KAqEMof5Onwb+SEvXKL0UiRwOYxndtipOIwQ0Rov5ni5zPBO+qV
-         EmpntQ5miyVLPA4qGPkYLhbVdj2WSqVEePX+BSf+0JlD1mJr0r7BlxeUcNxt8ft71kOy
-         Ua9DL0SB5XBa4GVo6ZvXyKHqkOWvm7WgCSmGAqXxXmEGtyU4JeNOPjipNfgbowT5jj4a
-         1CpGTVPKS5CogxCqko0ELIOIknyoEudNwG7mGJKCwNl383xJhRfrLaMR98Li92b5b2Iu
-         z/BjMY3d9sUvQ0DprJd3RmUa6PMG/OCYZz/DcpPl+2EtIq/E9Vc+aCNZ8BL8yspL7B8J
-         sE5w==
-X-Gm-Message-State: AGi0PuYkDwSJyOG7yaJcPHLHiXzxJDmIhF4byD/CVxRZuGyHWEdC+mzQ
-        SDxrkjbjws6rrjiAHiEp0fnGCbnTP/F+Q/tC196mmKi9Ads=
-X-Google-Smtp-Source: APiQypJdpV0eEIb7b3258IQ+Y5MHoPPU1vL/DxV5eUartsIeB7tM9hWO99LM/1ClnU0AMv+X0TJGCAvQ056vnO862UA=
-X-Received: by 2002:a05:6214:572:: with SMTP id cj18mr2667337qvb.209.1588250412831;
- Thu, 30 Apr 2020 05:40:12 -0700 (PDT)
+        id S1726816AbgD3Mlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 08:41:49 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:16940 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726677AbgD3Mlt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 08:41:49 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03UCfHDe007452;
+        Thu, 30 Apr 2020 05:41:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=P9RqNQ3ZW1xcDzu1No5qu1M4+LnuFtCTMBpM3v2W5+Y=;
+ b=fn2/aw6XCaJmxijQHjtip6MRqz4sFlSl16MY4PjxVwozhgbQAMs/rh9elxLt8cts50m+
+ YdgE9nUyBbN1vfzlFWIBo75JZY5lnfnZnSX7pG+yX6zk5PifuWyg97zcnkjOXFirjPY2
+ PlQdtyUOXZr5kmcBapIbiEYpkouUh/qNn9X5uWXSAH04lg1W9bsNy4Td7Ne0EqFHfn6B
+ nJ4yEA8tJKK2XG14uCYaSqcsv4Jbkjd9dJwLyaJnhwPXNyAuYgyvnr7RwIPBErkbzdm7
+ A/wzaAVYQgSK688zsvfC/QRZ9MV/Xqegq2GdflsZ/45lx1rNzZkbZ68rlrE6llIum+co Ww== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 30mmqmx0af-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 30 Apr 2020 05:41:45 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 30 Apr
+ 2020 05:41:43 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 30 Apr 2020 05:41:43 -0700
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 64BBD3F703F;
+        Thu, 30 Apr 2020 05:41:43 -0700 (PDT)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 03UCfhnc003031;
+        Thu, 30 Apr 2020 05:41:43 -0700
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 03UCfgKg003022;
+        Thu, 30 Apr 2020 05:41:42 -0700
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
+        <irusskikh@marvell.com>, <mkalderon@marvell.com>
+Subject: [PATCH net-next 1/1] qedr: Avoid DB recover entry deletion when device is not active.
+Date:   Thu, 30 Apr 2020 05:41:10 -0700
+Message-ID: <20200430124110.2964-1-skalluru@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
- <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
- <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
- <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
- <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
- <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
- <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
- <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
- <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
- <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
- <CANxWus8YFkWPELmau=tbTXYa8ezyMsC5M+vLrNPoqbOcrLo0Cg@mail.gmail.com>
- <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
- <CAM_iQpV-0f=yX3P=ZD7_-mBvZZn57MGmFxrHqT3U3g+p_mKyJQ@mail.gmail.com>
- <CANxWus8P8KdcZE8L1-ZLOWLxyp4OOWNY82Xw+S2qAomanViWQA@mail.gmail.com>
- <CAM_iQpU3uhQewuAtv38xfgWesVEqpazXs3QqFHBBRF4i1qLdXw@mail.gmail.com>
- <CANxWus9xn=Z=rZ6BBZBMHNj6ocWU5dZi3PkOsQtAdgjyUdJ2zg@mail.gmail.com>
- <CAM_iQpWPmu71XYvoshZ3aAr0JmXTg+Y9s0Gvpq77XWbokv1AgQ@mail.gmail.com> <CANxWus9vSe=WtggXveB+YW_29fD8_qb-7A1pCgMUHz7SFfKhTA@mail.gmail.com>
-In-Reply-To: <CANxWus9vSe=WtggXveB+YW_29fD8_qb-7A1pCgMUHz7SFfKhTA@mail.gmail.com>
-From:   =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
-Date:   Thu, 30 Apr 2020 14:40:01 +0200
-Message-ID: <CANxWus8=CZ8Y1GvqKFJHhdxun9gB8v1SP0XNZ7SMk4oDvkmEww@mail.gmail.com>
-Subject: Re: iproute2: tc deletion freezes whole server
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-30_08:2020-04-30,2020-04-30 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 5:01 PM V=C3=A1clav Zindulka
-<vaclav.zindulka@tlapnet.cz> wrote:
-> > > > The problem is actually more complicated than I thought, although i=
-t
-> > > > needs more work, below is the first pile of patches I have for you =
-to
-> > > > test:
-> > > >
-> > > > https://github.com/congwang/linux/commits/qdisc_reset
-> > > >
-> > > > It is based on the latest net-next branch. Please let me know the r=
-esult.
-> > >
-> > > I have applied all the patches in your four commits to my custom 5.4.=
-6
-> > > kernel source. There was no change in the amount of fq_codel_reset
-> > > calls. Tested on ifb, RJ45 and SFP+ interfaces.
-> >
-> > It is true my patches do not reduce the number of fq_codel_reset() call=
-s,
-> > they are intended to reduce the CPU time spent in each fq_codel_reset()=
-.
-> >
-> > Can you measure this? Note, you do not have to add your own printk()
-> > any more, because my patches add a few tracepoints, especially for
-> > qdisc_reset(). So you can obtain the time by checking the timestamps
-> > of these trace events. Of course, you can also use perf trace like you
-> > did before.
->
-> Sorry for delayed responses. We were moving to a new house so I didn't
-> have much time to test it. I've measured your pile of patches applied
-> vs unpatched kernel. Result is a little bit better, but it is only
-> about 1s faster. Results are here. Do you need any additional reports
-> or measurements of other interfaces?
-> https://github.com/zvalcav/tc-kernel/tree/master/20200415 I've
-> recompiled the kernel without printk which had some overhead too.
+The doorbell (DB) recovery entries gets deleted by the QED driver when
+QEDR device transition to non-active or dead state (e.g., during the
+AER recovery phase). The patch adds driver changes to skip deleting
+DB recovery entries from QEDR when the device is in non-active state.
 
-Hello Cong,
+Fixes: 731815e720ae ("qede: Add support for handling the pcie errors.")
+Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+---
+ drivers/infiniband/hw/qedr/verbs.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-did you have any time to look at it further? I'm just asking since my
-boss wants me to give him some verdict. I've started to study eBPF and
-XDP in the meantime so we have an alternative in case there won't be a
-solution to this problem.
+diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
+index a5bd3ad..7e10f3b 100644
+--- a/drivers/infiniband/hw/qedr/verbs.c
++++ b/drivers/infiniband/hw/qedr/verbs.c
+@@ -672,6 +672,12 @@ static void qedr_db_recovery_del(struct qedr_dev *dev,
+ 				 void __iomem *db_addr,
+ 				 void *db_data)
+ {
++	if (QEDR_DEAD(dev)) {
++		DP_VERBOSE(dev, QEDR_MSG_FAIL,
++			   "avoiding db rec since device is dead\n");
++		return 0;
++	}
++
+ 	if (!db_data) {
+ 		DP_DEBUG(dev, QEDR_MSG_INIT, "avoiding db rec since old lib\n");
+ 		return;
+-- 
+1.8.3.1
+
