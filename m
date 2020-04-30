@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9CC21C0602
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 21:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B0CA1C0609
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 21:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgD3TRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 15:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49786 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726272AbgD3TRQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 15:17:16 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC865C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 12:17:16 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 465891288C1BF;
-        Thu, 30 Apr 2020 12:17:16 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 12:17:15 -0700 (PDT)
-Message-Id: <20200430.121715.781644599315226720.davem@davemloft.net>
-To:     wangyunjian@huawei.com
-Cc:     netdev@vger.kernel.org, jerry.lilijun@huawei.com,
-        xudingke@huawei.com
-Subject: Re: [PATCH net-next] net: caif: Fix use correct return type for
- ndo_start_xmit()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1588241776-35896-1-git-send-email-wangyunjian@huawei.com>
-References: <1588241776-35896-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 Apr 2020 12:17:16 -0700 (PDT)
+        id S1726524AbgD3TTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 15:19:47 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34728 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726272AbgD3TTq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 15:19:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=kn6td7end1fk2SRFrPwPsOdgAphzqnVSSD+aX/O1L5I=; b=sfxamlTtpV7dZTa2/x8O+89mEb
+        9BmRPUt2CzYIxYHdueS8IkTiw+NaRI65TdiObtQrILhwkNeDrWdkujLlK9e0YfVdCvCBq9s2Fqdjo
+        4lWzn5k3shIcDsZE61kF+NUNpJpbwxTPVlBfEa+/rlTgV305XlGAuy8wjUuDaKkj1lMw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jUEim-000S6e-Li; Thu, 30 Apr 2020 21:19:44 +0200
+Date:   Thu, 30 Apr 2020 21:19:44 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Subject: Re: [PATCH net-next 1/4] net: dsa: b53: Rename num_arl_entries to
+ num_arl_bins
+Message-ID: <20200430191944.GB107658@lunn.ch>
+References: <20200430184911.29660-1-f.fainelli@gmail.com>
+ <20200430184911.29660-2-f.fainelli@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200430184911.29660-2-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wangyunjian <wangyunjian@huawei.com>
-Date: Thu, 30 Apr 2020 18:16:16 +0800
-
-> From: Yunjian Wang <wangyunjian@huawei.com>
+On Thu, Apr 30, 2020 at 11:49:08AM -0700, Florian Fainelli wrote:
+> The variable currently holds the number of ARL bins per ARL buckets,
+> which is different from the number of ARL entries which would be bins
+> times buckets. We will be adding a num_arl_buckets in a subsequent patch
+> so get variables straight now.
 > 
-> The method ndo_start_xmit() returns a value of type netdev_tx_t. Fix
-> the ndo function to use the correct type.
-> 
-> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Applied.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
