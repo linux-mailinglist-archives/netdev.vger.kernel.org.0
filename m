@@ -2,39 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F0F91C0187
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DDF91C0158
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:06:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728424AbgD3QGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 12:06:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50840 "EHLO mail.kernel.org"
+        id S1728198AbgD3QFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 12:05:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50948 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727781AbgD3QEj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726350AbgD3QEj (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 30 Apr 2020 12:04:39 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 828CB2498C;
+        by mail.kernel.org (Postfix) with ESMTPSA id 9BB9C24996;
         Thu, 30 Apr 2020 16:04:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588262676;
-        bh=mwXQTjF7850lNOTbqQXXAQp2gqoDNDy9E2jrpxLqrgg=;
+        bh=d94CsypiJEYQM/PseQEmq5pXeaworePLCyj5TfMicOw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yB8ol5IgG7UroXTG2SVA7rWHMrtG995xZoXka+QB8+UxaIP/9uI6F6nToa51TzyYd
-         878WdFKxDgov9pvpNZTtd90JsrriVTFj7+3v1L/P26S3jnpqNS9oy2x7oDeFOmhF8/
-         SHgYgm5NCCOM1n9b42ArrtjVuV6p2M+WL4eKeVN8=
+        b=QFVTwCE05GKbjAIiVWJcmuvzyWF1jmAYqlXSW9p5IVHDimnMzYxwl18SBzoXsPjOV
+         sjcwD95387WIN+GKr/aHZmRLIuUBhuiNx2v9FHbqtqPuZ/lAhewdf8JEQgX21GVT1m
+         BLthGxSjsmPsVaC5Q/p65FRdBm6y04cfWO3uUZR8=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUBfu-00AxGb-Qq; Thu, 30 Apr 2020 18:04:34 +0200
+        id 1jUBfu-00AxGg-Rg; Thu, 30 Apr 2020 18:04:34 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 31/37] docs: networking: convert strparser.txt to ReST
-Date:   Thu, 30 Apr 2020 18:04:26 +0200
-Message-Id: <ebd753137781aa0d28d6eda54d31d8072d56daea.1588261997.git.mchehab+huawei@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH 32/37] docs: networking: convert switchdev.txt to ReST
+Date:   Thu, 30 Apr 2020 18:04:27 +0200
+Message-Id: <549e294cfa5dc175b4b72c624cbabfbee9f0b84f.1588261997.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588261997.git.mchehab+huawei@kernel.org>
 References: <cover.1588261997.git.mchehab+huawei@kernel.org>
@@ -46,6 +50,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
+- use copyright symbol;
 - adjust title markup;
 - mark code blocks and literals as such;
 - mark tables as such;
@@ -54,218 +59,251 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- Documentation/networking/index.rst            |  1 +
- .../{strparser.txt => strparser.rst}          | 85 +++++++++++++------
- 2 files changed, 60 insertions(+), 26 deletions(-)
- rename Documentation/networking/{strparser.txt => strparser.rst} (80%)
+ Documentation/networking/index.rst            |   1 +
+ .../{switchdev.txt => switchdev.rst}          | 114 ++++++++++--------
+ drivers/staging/fsl-dpaa2/ethsw/README        |   2 +-
+ 3 files changed, 66 insertions(+), 51 deletions(-)
+ rename Documentation/networking/{switchdev.txt => switchdev.rst} (84%)
 
 diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index d19ddcbe66e5..e5a705024c6a 100644
+index e5a705024c6a..5e495804f96f 100644
 --- a/Documentation/networking/index.rst
 +++ b/Documentation/networking/index.rst
-@@ -104,6 +104,7 @@ Contents:
-    secid
+@@ -105,6 +105,7 @@ Contents:
     seg6-sysctl
     skfp
-+   strparser
+    strparser
++   switchdev
  
  .. only::  subproject and html
  
-diff --git a/Documentation/networking/strparser.txt b/Documentation/networking/strparser.rst
-similarity index 80%
-rename from Documentation/networking/strparser.txt
-rename to Documentation/networking/strparser.rst
-index a7d354ddda7b..6cab1f74ae05 100644
---- a/Documentation/networking/strparser.txt
-+++ b/Documentation/networking/strparser.rst
-@@ -1,4 +1,8 @@
+diff --git a/Documentation/networking/switchdev.txt b/Documentation/networking/switchdev.rst
+similarity index 84%
+rename from Documentation/networking/switchdev.txt
+rename to Documentation/networking/switchdev.rst
+index 86174ce8cd13..ddc3f35775dc 100644
+--- a/Documentation/networking/switchdev.txt
++++ b/Documentation/networking/switchdev.rst
+@@ -1,7 +1,13 @@
 +.. SPDX-License-Identifier: GPL-2.0
++.. include:: <isonum.txt>
 +
-+=========================
- Stream Parser (strparser)
-+=========================
- 
- Introduction
- ============
-@@ -34,8 +38,10 @@ that is called when a full message has been completed.
- Functions
- =========
- 
--strp_init(struct strparser *strp, struct sock *sk,
--	  const struct strp_callbacks *cb)
-+     ::
++===============================================
+ Ethernet switch device driver model (switchdev)
+ ===============================================
+-Copyright (c) 2014 Jiri Pirko <jiri@resnulli.us>
+-Copyright (c) 2014-2015 Scott Feldman <sfeldma@gmail.com>
 +
-+	strp_init(struct strparser *strp, struct sock *sk,
-+		const struct strp_callbacks *cb)
- 
-      Called to initialize a stream parser. strp is a struct of type
-      strparser that is allocated by the upper layer. sk is the TCP
-@@ -43,31 +49,41 @@ strp_init(struct strparser *strp, struct sock *sk,
-      callback mode; in general mode this is set to NULL. Callbacks
-      are called by the stream parser (the callbacks are listed below).
- 
--void strp_pause(struct strparser *strp)
-+     ::
++Copyright |copy| 2014 Jiri Pirko <jiri@resnulli.us>
 +
-+	void strp_pause(struct strparser *strp)
++Copyright |copy| 2014-2015 Scott Feldman <sfeldma@gmail.com>
  
-      Temporarily pause a stream parser. Message parsing is suspended
-      and no new messages are delivered to the upper layer.
  
--void strp_unpause(struct strparser *strp)
-+     ::
+ The Ethernet switch device driver model (switchdev) is an in-kernel driver
+@@ -12,53 +18,57 @@ Figure 1 is a block diagram showing the components of the switchdev model for
+ an example setup using a data-center-class switch ASIC chip.  Other setups
+ with SR-IOV or soft switches, such as OVS, are possible.
+ 
++::
+ 
+-                             User-space tools
 +
-+	void strp_unpause(struct strparser *strp)
++			     User-space tools
  
-      Unpause a paused stream parser.
+        user space                   |
+       +-------------------------------------------------------------------+
+        kernel                       | Netlink
+-                                    |
+-                     +--------------+-------------------------------+
+-                     |         Network stack                        |
+-                     |           (Linux)                            |
+-                     |                                              |
+-                     +----------------------------------------------+
++				    |
++		     +--------------+-------------------------------+
++		     |         Network stack                        |
++		     |           (Linux)                            |
++		     |                                              |
++		     +----------------------------------------------+
  
--void strp_stop(struct strparser *strp);
-+     ::
+-                           sw1p2     sw1p4     sw1p6
+-                      sw1p1  +  sw1p3  +  sw1p5  +          eth1
+-                        +    |    +    |    +    |            +
+-                        |    |    |    |    |    |            |
+-                     +--+----+----+----+----+----+---+  +-----+-----+
+-                     |         Switch driver         |  |    mgmt   |
+-                     |        (this document)        |  |   driver  |
+-                     |                               |  |           |
+-                     +--------------+----------------+  +-----------+
+-                                    |
++			   sw1p2     sw1p4     sw1p6
++		      sw1p1  +  sw1p3  +  sw1p5  +          eth1
++			+    |    +    |    +    |            +
++			|    |    |    |    |    |            |
++		     +--+----+----+----+----+----+---+  +-----+-----+
++		     |         Switch driver         |  |    mgmt   |
++		     |        (this document)        |  |   driver  |
++		     |                               |  |           |
++		     +--------------+----------------+  +-----------+
++				    |
+        kernel                       | HW bus (eg PCI)
+       +-------------------------------------------------------------------+
+        hardware                     |
+-                     +--------------+----------------+
+-                     |         Switch device (sw1)   |
+-                     |  +----+                       +--------+
+-                     |  |    v offloaded data path   | mgmt port
+-                     |  |    |                       |
+-                     +--|----|----+----+----+----+---+
+-                        |    |    |    |    |    |
+-                        +    +    +    +    +    +
+-                       p1   p2   p3   p4   p5   p6
++		     +--------------+----------------+
++		     |         Switch device (sw1)   |
++		     |  +----+                       +--------+
++		     |  |    v offloaded data path   | mgmt port
++		     |  |    |                       |
++		     +--|----|----+----+----+----+---+
++			|    |    |    |    |    |
++			+    +    +    +    +    +
++		       p1   p2   p3   p4   p5   p6
+ 
+-                             front-panel ports
++			     front-panel ports
+ 
+ 
+-                                    Fig 1.
++				    Fig 1.
+ 
+ 
+ Include Files
+ -------------
+ 
+-#include <linux/netdevice.h>
+-#include <net/switchdev.h>
++::
 +
-+	void strp_stop(struct strparser *strp);
++    #include <linux/netdevice.h>
++    #include <net/switchdev.h>
  
-      strp_stop is called to completely stop stream parser operations.
-      This is called internally when the stream parser encounters an
-      error, and it is called from the upper layer to stop parsing
-      operations.
  
--void strp_done(struct strparser *strp);
-+     ::
+ Configuration
+@@ -114,10 +124,10 @@ Using port PHYS name (ndo_get_phys_port_name) for the key is particularly
+ useful for dynamically-named ports where the device names its ports based on
+ external configuration.  For example, if a physical 40G port is split logically
+ into 4 10G ports, resulting in 4 port netdevs, the device can give a unique
+-name for each port using port PHYS name.  The udev rule would be:
++name for each port using port PHYS name.  The udev rule would be::
+ 
+-SUBSYSTEM=="net", ACTION=="add", ATTR{phys_switch_id}=="<phys_switch_id>", \
+-	ATTR{phys_port_name}!="", NAME="swX$attr{phys_port_name}"
++    SUBSYSTEM=="net", ACTION=="add", ATTR{phys_switch_id}=="<phys_switch_id>", \
++	    ATTR{phys_port_name}!="", NAME="swX$attr{phys_port_name}"
+ 
+ Suggested naming convention is "swXpYsZ", where X is the switch name or ID, Y
+ is the port name or ID, and Z is the sub-port name or ID.  For example, sw1p1s0
+@@ -173,7 +183,7 @@ Static FDB Entries
+ 
+ The switchdev driver should implement ndo_fdb_add, ndo_fdb_del and ndo_fdb_dump
+ to support static FDB entries installed to the device.  Static bridge FDB
+-entries are installed, for example, using iproute2 bridge cmd:
++entries are installed, for example, using iproute2 bridge cmd::
+ 
+ 	bridge fdb add ADDR dev DEV [vlan VID] [self]
+ 
+@@ -185,7 +195,7 @@ XXX: what should be done if offloading this rule to hardware fails (for
+ example, due to full capacity in hardware tables) ?
+ 
+ Note: by default, the bridge does not filter on VLAN and only bridges untagged
+-traffic.  To enable VLAN support, turn on VLAN filtering:
++traffic.  To enable VLAN support, turn on VLAN filtering::
+ 
+ 	echo 1 >/sys/class/net/<bridge>/bridge/vlan_filtering
+ 
+@@ -194,7 +204,7 @@ Notification of Learned/Forgotten Source MAC/VLANs
+ 
+ The switch device will learn/forget source MAC address/VLAN on ingress packets
+ and notify the switch driver of the mac/vlan/port tuples.  The switch driver,
+-in turn, will notify the bridge driver using the switchdev notifier call:
++in turn, will notify the bridge driver using the switchdev notifier call::
+ 
+ 	err = call_switchdev_notifiers(val, dev, info, extack);
+ 
+@@ -202,7 +212,7 @@ Where val is SWITCHDEV_FDB_ADD when learning and SWITCHDEV_FDB_DEL when
+ forgetting, and info points to a struct switchdev_notifier_fdb_info.  On
+ SWITCHDEV_FDB_ADD, the bridge driver will install the FDB entry into the
+ bridge's FDB and mark the entry as NTF_EXT_LEARNED.  The iproute2 bridge
+-command will label these entries "offload":
++command will label these entries "offload"::
+ 
+ 	$ bridge fdb
+ 	52:54:00:12:35:01 dev sw1p1 master br0 permanent
+@@ -219,11 +229,11 @@ command will label these entries "offload":
+ 	01:00:5e:00:00:01 dev br0 self permanent
+ 	33:33:ff:12:35:01 dev br0 self permanent
+ 
+-Learning on the port should be disabled on the bridge using the bridge command:
++Learning on the port should be disabled on the bridge using the bridge command::
+ 
+ 	bridge link set dev DEV learning off
+ 
+-Learning on the device port should be enabled, as well as learning_sync:
++Learning on the device port should be enabled, as well as learning_sync::
+ 
+ 	bridge link set dev DEV learning on self
+ 	bridge link set dev DEV learning_sync on self
+@@ -314,12 +324,16 @@ forwards the packet to the matching FIB entry's nexthop(s) egress ports.
+ 
+ To program the device, the driver has to register a FIB notifier handler
+ using register_fib_notifier. The following events are available:
+-FIB_EVENT_ENTRY_ADD: used for both adding a new FIB entry to the device,
+-                     or modifying an existing entry on the device.
+-FIB_EVENT_ENTRY_DEL: used for removing a FIB entry
+-FIB_EVENT_RULE_ADD, FIB_EVENT_RULE_DEL: used to propagate FIB rule changes
+ 
+-FIB_EVENT_ENTRY_ADD and FIB_EVENT_ENTRY_DEL events pass:
++===================  ===================================================
++FIB_EVENT_ENTRY_ADD  used for both adding a new FIB entry to the device,
++		     or modifying an existing entry on the device.
++FIB_EVENT_ENTRY_DEL  used for removing a FIB entry
++FIB_EVENT_RULE_ADD,
++FIB_EVENT_RULE_DEL   used to propagate FIB rule changes
++===================  ===================================================
 +
-+	void strp_done(struct strparser *strp);
++FIB_EVENT_ENTRY_ADD and FIB_EVENT_ENTRY_DEL events pass::
  
-      strp_done is called to release any resources held by the stream
-      parser instance. This must be called after the stream processor
-      has been stopped.
+ 	struct fib_entry_notifier_info {
+ 		struct fib_notifier_info info; /* must be first */
+@@ -332,12 +346,12 @@ FIB_EVENT_ENTRY_ADD and FIB_EVENT_ENTRY_DEL events pass:
+ 		u32 nlflags;
+ 	};
  
--int strp_process(struct strparser *strp, struct sk_buff *orig_skb,
--		 unsigned int orig_offset, size_t orig_len,
--		 size_t max_msg_size, long timeo)
-+     ::
-+
-+	int strp_process(struct strparser *strp, struct sk_buff *orig_skb,
-+			 unsigned int orig_offset, size_t orig_len,
-+			 size_t max_msg_size, long timeo)
+-to add/modify/delete IPv4 dst/dest_len prefix on table tb_id.  The *fi
+-structure holds details on the route and route's nexthops.  *dev is one of the
+-port netdevs mentioned in the route's next hop list.
++to add/modify/delete IPv4 dst/dest_len prefix on table tb_id.  The ``*fi``
++structure holds details on the route and route's nexthops.  ``*dev`` is one
++of the port netdevs mentioned in the route's next hop list.
  
-     strp_process is called in general mode for a stream parser to
-     parse an sk_buff. The number of bytes processed or a negative
-@@ -75,7 +91,9 @@ int strp_process(struct strparser *strp, struct sk_buff *orig_skb,
-     consume the sk_buff. max_msg_size is maximum size the stream
-     parser will parse. timeo is timeout for completing a message.
+ Routes offloaded to the device are labeled with "offload" in the ip route
+-listing:
++listing::
  
--void strp_data_ready(struct strparser *strp);
-+    ::
-+
-+	void strp_data_ready(struct strparser *strp);
+ 	$ ip route show
+ 	default via 192.168.0.2 dev eth0
+diff --git a/drivers/staging/fsl-dpaa2/ethsw/README b/drivers/staging/fsl-dpaa2/ethsw/README
+index f6fc07f780d1..b48dcbf7c5fb 100644
+--- a/drivers/staging/fsl-dpaa2/ethsw/README
++++ b/drivers/staging/fsl-dpaa2/ethsw/README
+@@ -79,7 +79,7 @@ The DPSW can have ports connected to DPNIs or to PHYs via DPMACs.
  
-     The upper layer calls strp_tcp_data_ready when data is ready on
-     the lower socket for strparser to process. This should be called
-@@ -83,7 +101,9 @@ void strp_data_ready(struct strparser *strp);
-     maximum messages size is the limit of the receive socket
-     buffer and message timeout is the receive timeout for the socket.
+ For a more detailed description of the Ethernet switch device driver model
+ see:
+-	Documentation/networking/switchdev.txt
++	Documentation/networking/switchdev.rst
  
--void strp_check_rcv(struct strparser *strp);
-+    ::
-+
-+	void strp_check_rcv(struct strparser *strp);
- 
-     strp_check_rcv is called to check for new messages on the socket.
-     This is normally called at initialization of a stream parser
-@@ -94,7 +114,9 @@ Callbacks
- 
- There are six callbacks:
- 
--int (*parse_msg)(struct strparser *strp, struct sk_buff *skb);
-+    ::
-+
-+	int (*parse_msg)(struct strparser *strp, struct sk_buff *skb);
- 
-     parse_msg is called to determine the length of the next message
-     in the stream. The upper layer must implement this function. It
-@@ -107,14 +129,16 @@ int (*parse_msg)(struct strparser *strp, struct sk_buff *skb);
- 
-     The return values of this function are:
- 
--    >0 : indicates length of successfully parsed message
--    0  : indicates more data must be received to parse the message
--    -ESTRPIPE : current message should not be processed by the
--          kernel, return control of the socket to userspace which
--          can proceed to read the messages itself
--    other < 0 : Error in parsing, give control back to userspace
--          assuming that synchronization is lost and the stream
--          is unrecoverable (application expected to close TCP socket)
-+    =========    ===========================================================
-+    >0           indicates length of successfully parsed message
-+    0            indicates more data must be received to parse the message
-+    -ESTRPIPE    current message should not be processed by the
-+		 kernel, return control of the socket to userspace which
-+		 can proceed to read the messages itself
-+    other < 0    Error in parsing, give control back to userspace
-+		 assuming that synchronization is lost and the stream
-+		 is unrecoverable (application expected to close TCP socket)
-+    =========    ===========================================================
- 
-     In the case that an error is returned (return value is less than
-     zero) and the parser is in receive callback mode, then it will set
-@@ -123,7 +147,9 @@ int (*parse_msg)(struct strparser *strp, struct sk_buff *skb);
-     the current message, then the error set on the attached socket is
-     ENODATA since the stream is unrecoverable in that case.
- 
--void (*lock)(struct strparser *strp)
-+    ::
-+
-+	void (*lock)(struct strparser *strp)
- 
-     The lock callback is called to lock the strp structure when
-     the strparser is performing an asynchronous operation (such as
-@@ -131,14 +157,18 @@ void (*lock)(struct strparser *strp)
-     function is to lock_sock for the associated socket. In general
-     mode the callback must be set appropriately.
- 
--void (*unlock)(struct strparser *strp)
-+    ::
-+
-+	void (*unlock)(struct strparser *strp)
- 
-     The unlock callback is called to release the lock obtained
-     by the lock callback. In receive callback mode the default
-     function is release_sock for the associated socket. In general
-     mode the callback must be set appropriately.
- 
--void (*rcv_msg)(struct strparser *strp, struct sk_buff *skb);
-+    ::
-+
-+	void (*rcv_msg)(struct strparser *strp, struct sk_buff *skb);
- 
-     rcv_msg is called when a full message has been received and
-     is queued. The callee must consume the sk_buff; it can
-@@ -152,7 +182,9 @@ void (*rcv_msg)(struct strparser *strp, struct sk_buff *skb);
-     the length of the message. skb->len - offset may be greater
-     then full_len since strparser does not trim the skb.
- 
--int (*read_sock_done)(struct strparser *strp, int err);
-+    ::
-+
-+	int (*read_sock_done)(struct strparser *strp, int err);
- 
-      read_sock_done is called when the stream parser is done reading
-      the TCP socket in receive callback mode. The stream parser may
-@@ -160,7 +192,9 @@ int (*read_sock_done)(struct strparser *strp, int err);
-      to occur when exiting the loop. If the callback is not set (NULL
-      in strp_init) a default function is used.
- 
--void (*abort_parser)(struct strparser *strp, int err);
-+     ::
-+
-+	void (*abort_parser)(struct strparser *strp, int err);
- 
-      This function is called when stream parser encounters an error
-      in parsing. The default function stops the stream parser and
-@@ -204,4 +238,3 @@ Author
- ======
- 
- Tom Herbert (tom@quantonium.net)
--
+ Creating an Ethernet Switch
+ ===========================
 -- 
 2.25.4
 
