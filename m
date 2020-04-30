@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B60C21C062C
+	by mail.lfdr.de (Postfix) with ESMTP id 3DEC51C062B
 	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 21:22:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727121AbgD3TWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 15:22:13 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:56951 "EHLO
+        id S1727114AbgD3TWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 15:22:12 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44415 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727060AbgD3TWA (ORCPT
+        with ESMTP id S1727080AbgD3TWA (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 15:22:00 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from maorg@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 30 Apr 2020 22:21:53 +0300
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from maorg@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 30 Apr 2020 22:21:54 +0300
 Received: from dev-l-vrt-201.mtl.labs.mlnx (dev-l-vrt-201.mtl.labs.mlnx [10.134.201.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03UJLqAW004128;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03UJLqAX004128;
         Thu, 30 Apr 2020 22:21:53 +0300
 From:   Maor Gottlieb <maorg@mellanox.com>
 To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
@@ -23,9 +23,9 @@ To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
 Cc:     leonro@mellanox.com, saeedm@mellanox.com,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         alexr@mellanox.com, Maor Gottlieb <maorg@mellanox.com>
-Subject: [PATCH V8 rdma-next 14/16] RDMA/core: Get xmit slave for LAG
-Date:   Thu, 30 Apr 2020 22:21:44 +0300
-Message-Id: <20200430192146.12863-15-maorg@mellanox.com>
+Subject: [PATCH V8 rdma-next 15/16] RDMA/mlx5: Refactor affinity related code
+Date:   Thu, 30 Apr 2020 22:21:45 +0300
+Message-Id: <20200430192146.12863-16-maorg@mellanox.com>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20200430192146.12863-1-maorg@mellanox.com>
 References: <20200430192146.12863-1-maorg@mellanox.com>
@@ -34,170 +34,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a call to rdma_lag_get_ah_roce_slave when
-Address handle is created.
-Lower driver can use it to select the QP's affinity port.
+Move affinity related code in modify qp to function.
+It's a preparation for next patch the extend the affinity
+calculation to consider the xmit slave.
 
 Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
 Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/core/verbs.c | 61 +++++++++++++++++++++++----------
- include/rdma/ib_verbs.h         |  2 ++
- 2 files changed, 45 insertions(+), 18 deletions(-)
+ drivers/infiniband/hw/mlx5/qp.c | 90 +++++++++++++++++++--------------
+ 1 file changed, 53 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 86be8a54a2d6..bf0249f76ae9 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -50,6 +50,7 @@
- #include <rdma/ib_cache.h>
- #include <rdma/ib_addr.h>
- #include <rdma/rw.h>
-+#include <rdma/lag.h>
- 
- #include "core_priv.h"
- #include <trace/events/rdma_core.h>
-@@ -500,7 +501,8 @@ rdma_update_sgid_attr(struct rdma_ah_attr *ah_attr,
- static struct ib_ah *_rdma_create_ah(struct ib_pd *pd,
- 				     struct rdma_ah_attr *ah_attr,
- 				     u32 flags,
--				     struct ib_udata *udata)
-+				     struct ib_udata *udata,
-+				     struct net_device *xmit_slave)
- {
- 	struct rdma_ah_init_attr init_attr = {};
- 	struct ib_device *device = pd->device;
-@@ -524,6 +526,7 @@ static struct ib_ah *_rdma_create_ah(struct ib_pd *pd,
- 	ah->sgid_attr = rdma_update_sgid_attr(ah_attr, NULL);
- 	init_attr.ah_attr = ah_attr;
- 	init_attr.flags = flags;
-+	init_attr.xmit_slave = xmit_slave;
- 
- 	ret = device->ops.create_ah(ah, &init_attr, udata);
- 	if (ret) {
-@@ -550,15 +553,22 @@ struct ib_ah *rdma_create_ah(struct ib_pd *pd, struct rdma_ah_attr *ah_attr,
- 			     u32 flags)
- {
- 	const struct ib_gid_attr *old_sgid_attr;
-+	struct net_device *slave;
- 	struct ib_ah *ah;
- 	int ret;
- 
- 	ret = rdma_fill_sgid_attr(pd->device, ah_attr, &old_sgid_attr);
- 	if (ret)
- 		return ERR_PTR(ret);
--
--	ah = _rdma_create_ah(pd, ah_attr, flags, NULL);
--
-+	slave = rdma_lag_get_ah_roce_slave(pd->device, ah_attr,
-+					   (flags & RDMA_CREATE_AH_SLEEPABLE) ?
-+					   GFP_KERNEL : GFP_ATOMIC);
-+	if (IS_ERR(slave)) {
-+		rdma_unfill_sgid_attr(ah_attr, old_sgid_attr);
-+		return (void *)slave;
-+	}
-+	ah = _rdma_create_ah(pd, ah_attr, flags, NULL, slave);
-+	rdma_lag_put_ah_roce_slave(slave);
- 	rdma_unfill_sgid_attr(ah_attr, old_sgid_attr);
- 	return ah;
+diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
+index 2673678f1899..518abbda33c0 100644
+--- a/drivers/infiniband/hw/mlx5/qp.c
++++ b/drivers/infiniband/hw/mlx5/qp.c
+@@ -3409,33 +3409,61 @@ static int modify_raw_packet_qp(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
+ 	return 0;
  }
-@@ -597,7 +607,8 @@ struct ib_ah *rdma_create_user_ah(struct ib_pd *pd,
- 		}
- 	}
  
--	ah = _rdma_create_ah(pd, ah_attr, RDMA_CREATE_AH_SLEEPABLE, udata);
-+	ah = _rdma_create_ah(pd, ah_attr, RDMA_CREATE_AH_SLEEPABLE,
-+			     udata, NULL);
+-static unsigned int get_tx_affinity(struct mlx5_ib_dev *dev,
+-				    struct mlx5_ib_pd *pd,
+-				    struct mlx5_ib_qp_base *qp_base,
+-				    u8 port_num, struct ib_udata *udata)
++static unsigned int get_tx_affinity_rr(struct mlx5_ib_dev *dev,
++				       struct ib_udata *udata)
+ {
+ 	struct mlx5_ib_ucontext *ucontext = rdma_udata_to_drv_context(
+ 		udata, struct mlx5_ib_ucontext, ibucontext);
+-	unsigned int tx_port_affinity;
++	u8 port_num = mlx5_core_native_port_num(dev->mdev) - 1;
++	atomic_t *tx_port_affinity;
  
- out:
- 	rdma_unfill_sgid_attr(ah_attr, old_sgid_attr);
-@@ -1636,11 +1647,35 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
- 	const struct ib_gid_attr *old_sgid_attr_alt_av;
- 	int ret;
- 
-+	attr->xmit_slave = NULL;
- 	if (attr_mask & IB_QP_AV) {
- 		ret = rdma_fill_sgid_attr(qp->device, &attr->ah_attr,
- 					  &old_sgid_attr_av);
- 		if (ret)
- 			return ret;
+-	if (ucontext) {
+-		tx_port_affinity = (unsigned int)atomic_add_return(
+-					   1, &ucontext->tx_port_affinity) %
+-					   MLX5_MAX_PORTS +
+-				   1;
++	if (ucontext)
++		tx_port_affinity = &ucontext->tx_port_affinity;
++	else
++		tx_port_affinity = &dev->port[port_num].roce.tx_port_affinity;
 +
-+		if (attr->ah_attr.type == RDMA_AH_ATTR_TYPE_ROCE &&
-+		    is_qp_type_connected(qp)) {
-+			struct net_device *slave;
++	return (unsigned int)atomic_add_return(1, tx_port_affinity) %
++		MLX5_MAX_PORTS + 1;
++}
 +
-+			/*
-+			 * If the user provided the qp_attr then we have to
-+			 * resolve it. Kerne users have to provide already
-+			 * resolved rdma_ah_attr's.
-+			 */
-+			if (udata) {
-+				ret = ib_resolve_eth_dmac(qp->device,
-+							  &attr->ah_attr);
-+				if (ret)
-+					goto out_av;
-+			}
-+			slave = rdma_lag_get_ah_roce_slave(qp->device,
-+							   &attr->ah_attr,
-+							   GFP_KERNEL);
-+			if (IS_ERR(slave))
-+				goto out_av;
-+			attr->xmit_slave = slave;
-+		}
- 	}
- 	if (attr_mask & IB_QP_ALT_PATH) {
- 		/*
-@@ -1667,18 +1702,6 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
- 		}
- 	}
- 
--	/*
--	 * If the user provided the qp_attr then we have to resolve it. Kernel
--	 * users have to provide already resolved rdma_ah_attr's
--	 */
--	if (udata && (attr_mask & IB_QP_AV) &&
--	    attr->ah_attr.type == RDMA_AH_ATTR_TYPE_ROCE &&
--	    is_qp_type_connected(qp)) {
--		ret = ib_resolve_eth_dmac(qp->device, &attr->ah_attr);
--		if (ret)
--			goto out;
++static bool qp_supports_affinity(struct ib_qp *qp)
++{
++	struct mlx5_ib_qp *mqp = to_mqp(qp);
++
++	if ((qp->qp_type == IB_QPT_RC) ||
++	    (qp->qp_type == IB_QPT_UD &&
++	     !(mqp->flags & MLX5_IB_QP_CREATE_SQPN_QP1)) ||
++	    (qp->qp_type == IB_QPT_UC) ||
++	    (qp->qp_type == IB_QPT_RAW_PACKET) ||
++	    (qp->qp_type == IB_QPT_XRC_INI) ||
++	    (qp->qp_type == IB_QPT_XRC_TGT))
++		return true;
++	return false;
++}
++
++static unsigned int get_tx_affinity(struct ib_qp *qp, u8 init,
++				    struct ib_udata *udata)
++{
++	struct mlx5_ib_ucontext *ucontext = rdma_udata_to_drv_context(
++		udata, struct mlx5_ib_ucontext, ibucontext);
++	struct mlx5_ib_dev *dev = to_mdev(qp->device);
++	struct mlx5_ib_qp *mqp = to_mqp(qp);
++	struct mlx5_ib_qp_base *qp_base;
++	unsigned int tx_affinity;
++
++	if (!(dev->lag_active && init && qp_supports_affinity(qp)))
++		return 0;
++
++	tx_affinity = get_tx_affinity_rr(dev, udata);
++
++	qp_base = &mqp->trans_qp.base;
++	if (ucontext)
+ 		mlx5_ib_dbg(dev, "Set tx affinity 0x%x to qpn 0x%x ucontext %p\n",
+-				tx_port_affinity, qp_base->mqp.qpn, ucontext);
+-	} else {
+-		tx_port_affinity =
+-			(unsigned int)atomic_add_return(
+-				1, &dev->port[port_num].roce.tx_port_affinity) %
+-				MLX5_MAX_PORTS +
+-			1;
++			    tx_affinity, qp_base->mqp.qpn, ucontext);
++	else
+ 		mlx5_ib_dbg(dev, "Set tx affinity 0x%x to qpn 0x%x\n",
+-				tx_port_affinity, qp_base->mqp.qpn);
 -	}
 -
- 	if (rdma_ib_or_roce(qp->device, port)) {
- 		if (attr_mask & IB_QP_RQ_PSN && attr->rq_psn & ~0xffffff) {
- 			dev_warn(&qp->device->dev,
-@@ -1720,8 +1743,10 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
- 	if (attr_mask & IB_QP_ALT_PATH)
- 		rdma_unfill_sgid_attr(&attr->alt_ah_attr, old_sgid_attr_alt_av);
- out_av:
--	if (attr_mask & IB_QP_AV)
-+	if (attr_mask & IB_QP_AV) {
-+		rdma_lag_put_ah_roce_slave(attr->xmit_slave);
- 		rdma_unfill_sgid_attr(&attr->ah_attr, old_sgid_attr_av);
-+	}
- 	return ret;
+-	return tx_port_affinity;
++			    tx_affinity, qp_base->mqp.qpn);
++	return tx_affinity;
  }
  
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index e6c18ec0365a..8d29f2f79da8 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -883,6 +883,7 @@ __attribute_const__ enum ib_rate mult_to_ib_rate(int mult);
- struct rdma_ah_init_attr {
- 	struct rdma_ah_attr *ah_attr;
- 	u32 flags;
-+	struct net_device *xmit_slave;
- };
+ static int __mlx5_ib_qp_set_counter(struct ib_qp *qp,
+@@ -3546,22 +3574,10 @@ static int __mlx5_ib_modify_qp(struct ib_qp *ibqp,
+ 		}
+ 	}
  
- enum rdma_ah_attr_type {
-@@ -1272,6 +1273,7 @@ struct ib_qp_attr {
- 	u8			alt_port_num;
- 	u8			alt_timeout;
- 	u32			rate_limit;
-+	struct net_device	*xmit_slave;
- };
+-	if ((cur_state == IB_QPS_RESET) && (new_state == IB_QPS_INIT)) {
+-		if ((ibqp->qp_type == IB_QPT_RC) ||
+-		    (ibqp->qp_type == IB_QPT_UD &&
+-		     !(qp->flags & MLX5_IB_QP_CREATE_SQPN_QP1)) ||
+-		    (ibqp->qp_type == IB_QPT_UC) ||
+-		    (ibqp->qp_type == IB_QPT_RAW_PACKET) ||
+-		    (ibqp->qp_type == IB_QPT_XRC_INI) ||
+-		    (ibqp->qp_type == IB_QPT_XRC_TGT)) {
+-			if (dev->lag_active) {
+-				u8 p = mlx5_core_native_port_num(dev->mdev) - 1;
+-				tx_affinity = get_tx_affinity(dev, pd, base, p,
+-							      udata);
+-				context->flags |= cpu_to_be32(tx_affinity << 24);
+-			}
+-		}
+-	}
++	tx_affinity = get_tx_affinity(ibqp,
++				      cur_state == IB_QPS_RESET &&
++				      new_state == IB_QPS_INIT, udata);
++	context->flags |= cpu_to_be32(tx_affinity << 24);
  
- enum ib_wr_opcode {
+ 	if (is_sqp(ibqp->qp_type)) {
+ 		context->mtu_msgmax = (IB_MTU_256 << 5) | 8;
 -- 
 2.17.2
 
