@@ -2,137 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45BB11BF592
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 12:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A72331BF5A3
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 12:37:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbgD3KeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 06:34:06 -0400
-Received: from mga03.intel.com ([134.134.136.65]:50128 "EHLO mga03.intel.com"
+        id S1726692AbgD3Kg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 06:36:57 -0400
+Received: from foss.arm.com ([217.140.110.172]:52242 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725280AbgD3KeG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 06:34:06 -0400
-IronPort-SDR: s0djCdIjweqheUKz0Ye+ae1N5syWT2mC1HDxrNMPJg/WKH168H342/GR7ckW2pIJomFmxN5U95
- lFoDc0myuRUQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2020 03:34:05 -0700
-IronPort-SDR: oNSGShFgTIHLbK5FAXLFuSBJuQCzaR3qHIXy0kckPl8CstYgq8nfkf5yyCb731OYv0ajJXt2SV
- KYOSSGvqX7zQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,334,1583222400"; 
-   d="scan'208";a="282817616"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga004.fm.intel.com with ESMTP; 30 Apr 2020 03:34:03 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jU6W7-003tPY-1V; Thu, 30 Apr 2020 13:34:07 +0300
-Date:   Thu, 30 Apr 2020 13:34:07 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Claudiu.Beznea@microchip.com
-Cc:     Nicolas.Ferre@microchip.com, netdev@vger.kernel.org,
-        davem@davemloft.net, alexandre.belloni@bootlin.com
-Subject: Re: [PATCH v1] net: macb: Fix runtime PM refcounting
-Message-ID: <20200430103407.GS185537@smile.fi.intel.com>
-References: <20200427105120.77892-1-andriy.shevchenko@linux.intel.com>
- <75573a4d-b465-df63-c61d-6ec4c626e7fb@microchip.com>
+        id S1725280AbgD3Kg4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 06:36:56 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B27C61063;
+        Thu, 30 Apr 2020 03:36:53 -0700 (PDT)
+Received: from C02TD0UTHF1T.local (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A03223F68F;
+        Thu, 30 Apr 2020 03:36:49 -0700 (PDT)
+Date:   Thu, 30 Apr 2020 11:36:46 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Jianyong Wu <Jianyong.Wu@arm.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "will@kernel.org" <will@kernel.org>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
+        nd <nd@arm.com>, Haibo Xu <Haibo.Xu@arm.com>
+Subject: Re: [RFC PATCH v11 5/9] psci: Add hypercall service for ptp_kvm.
+Message-ID: <20200430103646.GB39784@C02TD0UTHF1T.local>
+References: <20200421032304.26300-1-jianyong.wu@arm.com>
+ <20200421032304.26300-6-jianyong.wu@arm.com>
+ <20200421095736.GB16306@C02TD0UTHF1T.local>
+ <ab629714-c08c-2155-dd13-ad25e7f60b39@arm.com>
+ <20200424103953.GD1167@C02TD0UTHF1T.local>
+ <b53b0a47-1fe6-ad92-05f4-80d50980c587@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <75573a4d-b465-df63-c61d-6ec4c626e7fb@microchip.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <b53b0a47-1fe6-ad92-05f4-80d50980c587@arm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 07:59:41AM +0000, Claudiu.Beznea@microchip.com wrote:
+On Tue, Apr 28, 2020 at 07:14:52AM +0100, Jianyong Wu wrote:
+> On 2020/4/24 6:39 PM, Mark Rutland wrote:
+> > On Fri, Apr 24, 2020 at 03:50:22AM +0100, Jianyong Wu wrote:
+> >> On 2020/4/21 5:57 PM, Mark Rutland wrote:
+> >>> On Tue, Apr 21, 2020 at 11:23:00AM +0800, Jianyong Wu wrote:
+> >>>> diff --git a/virt/kvm/arm/hypercalls.c b/virt/kvm/arm/hypercalls.c
+> >>>> index 550dfa3e53cd..a5309c28d4dc 100644
+> >>>> --- a/virt/kvm/arm/hypercalls.c
+> >>>> +++ b/virt/kvm/arm/hypercalls.c
+> >>>> @@ -62,6 +66,44 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+> >>>>    if (gpa != GPA_INVALID)
+> >>>>    val = gpa;
+> >>>>    break;
+> >>>> +/*
+> >>>> + * This serves virtual kvm_ptp.
+> >>>> + * Four values will be passed back.
+> >>>> + * reg0 stores high 32-bit host ktime;
+> >>>> + * reg1 stores low 32-bit host ktime;
+> >>>> + * reg2 stores high 32-bit difference of host cycles and cntvoff;
+> >>>> + * reg3 stores low 32-bit difference of host cycles and cntvoff.
+> >>>> + */
+> >>>> +case ARM_SMCCC_HYP_KVM_PTP_FUNC_ID:
+> >>> Shouldn't the host opt-in to providing this to the guest, as with other
+> >>> features?
+> >> er, do you mean that "ARM_SMCCC_HV_PV_TIME_XXX" as "opt-in"? if so, I
+> >> think this
+> >>
+> >> kvm_ptp doesn't need a buddy. the driver in guest will call this service
+> >> in a definite way.
+> > I mean that when creating the VM, userspace should be able to choose
+> > whether the PTP service is provided to the guest. The host shouldn't
+> > always provide it as there may be cases where doing so is undesireable.
+> >
+> I think I have implemented in patch 9/9 that userspace can get the info
+> that if the host offers the kvm_ptp service. But for now, the host
+> kernel will always offer the kvm_ptp capability in the current
+> implementation. I think x86 follow the same behavior (see [1]). so I
+> have not considered when and how to disable this kvm_ptp service in
+> host. Do you think we should offer this opt-in?
+
+I think taht should be opt-in, yes.
+
+[...]
+
+> > It's also not clear to me what notion of host time is being exposed to
+> > the guest (and consequently how this would interact with time changes on
+> > the host, time namespaces, etc). Having some description of that would
+> > be very helpful.
 > 
+> sorry to have not made it clear.
 > 
-> On 27.04.2020 13:51, Andy Shevchenko wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > The commit e6a41c23df0d, while trying to fix an issue,
-> > 
-> >     ("net: macb: ensure interface is not suspended on at91rm9200")
-> > 
-> > introduced a refcounting regression, because in error case refcounter
-> > must be balanced. Fix it by calling pm_runtime_put_noidle() in error case.
-> > 
-> > While here, fix the same mistake in other couple of places.
+> Time will not change in host and only time in guest will change to sync
+> with host. host time is the target that time in guest want to adjust to.
+> guest need to get the host time then compute the different of the time
+> in guest and host, so the guest can adjust the time base on the difference.
 
-...
+I understood that host time wouldn't change here, but what was not clear
+is which notion of host time is being exposed to the guest.
 
-> >         status = pm_runtime_get_sync(&bp->pdev->dev);
-> > -       if (status < 0)
-> > +       if (status < 0) {
-> > +               pm_runtime_put_noidle(&bp->pdev->dev);
-> 
-> pm_runtime_get_sync() calls __pm_runtime_resume(dev, RPM_GET_PUT),
-> increment refcounter and resume the device calling rpm_resume().
+e.g. is that a raw monotonic clock, or one subject to periodic adjument,
+or wall time in the host? What is the epoch of the host time?
 
-Read the code further than the header file, please.
+> I will add the base principle of time sync service in guest using
+> kvm_ptp in commit message.
 
-> pm_runtime_put_noidle() just decrement the refcounter.
+That would be great; thanks!
 
-which is exactly what has to be done on error path.
-
-> The proper way,
-> should be calling suspend again if the operation fails as
-> pm_runtime_put_autosuspend() does. So, what the code under mdio_pm_exit
-> label does should be enough.
-
-Huh? It returns an error without rebalancing refcounter.
-
-Yeah, one more time an evidence that people do not get runtime PM properly.
-
-> >                 goto mdio_pm_exit;
-> > +       }
-> > 
-> >         status = macb_mdio_wait_for_idle(bp);
-> >         if (status < 0)
-> > @@ -386,8 +388,10 @@ static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
-> >         int status;
-> > 
-> >         status = pm_runtime_get_sync(&bp->pdev->dev);
-> > -       if (status < 0)
-> > +       if (status < 0) {
-> > +               pm_runtime_put_noidle(&bp->pdev->dev);
-> 
-> Ditto.
-
-Ditto.
-
-> 
-> >                 goto mdio_pm_exit;
-> > +       }
-> > 
-> >         status = macb_mdio_wait_for_idle(bp);
-> >         if (status < 0)
-> > @@ -3816,8 +3820,10 @@ static int at91ether_open(struct net_device *dev)
-> >         int ret;
-> > 
-> >         ret = pm_runtime_get_sync(&lp->pdev->dev);
-> > -       if (ret < 0)
-> > +       if (ret < 0) {
-> > +               pm_runtime_put_noidle(&lp->pdev->dev);
-> 
-> The proper way should be calling pm_runtime_put_sync() not only for this
-> returning path but for all of them in this function.
-
-Of course not.
-
-> >                 return ret;
-> > +       }
-> > 
-> >         /* Clear internal statistics */
-> >         ctl = macb_readl(lp, NCR);
-> > --
-> > 2.26.2
-> > 
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Mark.
