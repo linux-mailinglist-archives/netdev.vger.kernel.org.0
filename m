@@ -2,102 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10FF41C094E
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:32:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E701C0956
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727808AbgD3Vcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 17:32:31 -0400
-Received: from mout.kundenserver.de ([212.227.126.133]:40221 "EHLO
+        id S1727895AbgD3Vcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 17:32:53 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:41711 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbgD3Vcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:32:31 -0400
+        with ESMTP id S1726336AbgD3Vcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:32:53 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
  (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MuUza-1jCBdY2bPm-00rWvV; Thu, 30 Apr 2020 23:32:02 +0200
+ 1MkHhB-1ijycN3S9Z-00kg62; Thu, 30 Apr 2020 23:32:10 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
-To:     linux-kernel@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Michal Kazior <michal.kazior@tieto.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Kalle Valo <kvalo@qca.qualcomm.com>,
-        Maharaja Kennadyrajan <mkenna@codeaurora.org>,
-        Wen Gong <wgong@codeaurora.org>,
-        Erik Stromdahl <erik.stromdahl@gmail.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 04/15] ath10k: fix gcc-10 zero-length-bounds warnings
-Date:   Thu, 30 Apr 2020 23:30:46 +0200
-Message-Id: <20200430213101.135134-5-arnd@arndb.de>
+To:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Brad Spengler <spender@grsecurity.net>,
+        Daniel Borkmann <dborkman@redhat.com>,
+        Alexei Starovoitov <ast@plumgrid.com>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH 05/15] bpf: avoid gcc-10 stringop-overflow warning
+Date:   Thu, 30 Apr 2020 23:30:47 +0200
+Message-Id: <20200430213101.135134-6-arnd@arndb.de>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200430213101.135134-1-arnd@arndb.de>
 References: <20200430213101.135134-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:ccN1pTp5mmzG1V/LbfNTrOg5a2/CArUQ2I6vcwgPdfkvayXPXxD
- UcaYf0K7t7QiHPFwXmL0MAjZ8kc646dtFKMnW+OwN9WF6dNvNIuFMoXI5ZUGl5Zd7TJBjmW
- 3VoU67At7c8JSqXoWPosMq5jkjGERss8vZA+5lcxJJPByBpE+bTRXi56M546CAW7xSUjDYa
- 28T1892LzHqslkkRJVYWA==
+X-Provags-ID: V03:K1:CNokUhC2Wd1qKIMECqDz0OzwxjWsXarCmDvbpwr+hUv52yn5JoC
+ 9H3WOHuftCnlwalcINh7ammfYLcKgvWQiuKdukCpnN7gBpUGoJ9pyrT0dG6lc36FbmIQFML
+ gPfWVYSSBDp3BPgxp6tHbBA46kd6tyVgyS1oFsiwg7QEX+dtCXixT5jKOo+dJGxeBzZv/dO
+ sCQuKjMGxvMBfwAgQK9PQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:rCAqcLlN2Qw=:i+uJ1FCvreCnBJCFHWLH0L
- Jae4i0/9E0VTrPezIrTFvhERBWJAoPbnuZN4oa2hTMXo7r+ggwY5tsz86kKuZvRLN4rNk8AXS
- NNulXMo1lYfw2aYJa6ysZg6ZlrrYCvAcGOpOHDBLUx9A8fGn01OzURuffwY7xsJSN5cyyBRKb
- j0KSlMoiyMibqznbXADUfkYaP9IGpBBRtrXE3QZCs90SHSnBca4pi95WM2YVMcwBnWw4B3Bmm
- tBNuNn30vV9JjOxdcKfOURDIOwYYaEXdXM2DE5QrT4T8yvwJ8eBWfwUAeHPNnXZ3YzsSuTdTJ
- m1TkVnqBVNJ+K8XcFsmEGmLl3sPizRlB+gpWvSRQRNWPN/NQdFbLosAanrn12sUvsxAGV43GJ
- 6kPsrNYSUvJiGaieBS2UJWyqwo1vjq2Q2itwv6Q/ViyhSlkk9QaB8vcZwZ97EJZp4HaVbNvMr
- 5rE0gmlEgsv4+4EsOUFjjkkUYxfolz3C5vxV5VVTFgofEwPrntEymtbfy74KAoRhjL3SPE/7+
- WyJmtQgifvAMe+Ztx0jYMFp5sRjFxZt2+iyaPsSCDvk5kHZz2yjUrHvbPyTn55xS6Mn6vbwiz
- EhCgh9jghUmRIqnpuHOEJ2UzNAJn+KYf4jrvIAF16w7oAPxf+Yg96p2DYFyuSnfamQWLFH/xT
- Mng16ViWcUik3KWL/1+xteRAWAC3irsWeJB1puAKtpYuRXf/B9aNEzYxyTxkSSpYuBrPj0Ptd
- Jf4NES5x/eL5ax1OuDHopXar+O4y51ObCA4hGRAwKwdXSHxkp2+Sz1Xz8O3Ezj+9HmL8YvOOF
- 7GAXUSkAxvlSKV96wBb/QZzzBOwiPWzSSdpxnihC5Uj/9xcTlI=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EFuFrq1r0eY=:pH1mVhTjpOX9B51tQ10Xbj
+ YHp/lf+shijhTXKq0mRIibRgPW3pjUW9S23wZzWdlLQ90F1RxuwBX7KvCW4JrP89ga4rLVMiT
+ mOaSecFwCuWccoh2xVUmpSFy0zcYDfCiYnPCg5WPqXiMjUqaM4KQ/4dgvmQWrF/k66LD4LbxE
+ 8PCq9R7n+Zb139bUBs+/3nJfLi9M/FXYXxsGtXdTbhMBLzooauAxK2U2GeVmKPuU0/5D6sB85
+ tLoTW9bm0aPblL//ymuooHMV4vqYbjVkC18uYDCDfgkD5Zj8Y0YT9UL62AI6hKz6eTQmYiltF
+ n2ADtyTc7uoNWml71rH6sbJPUJeRebXtlpw1q0Mriceir5QUznrgSnvUtfZDY+L6oO+kWQum3
+ Q7VXQn7zyMWB9XWS1mS0sKJG3tTPEi4z8Kj63U5fL0dzeJo3PWig2K4Y/NhJ+Pw2j79Km1859
+ 4hR/2m+WR+P6ArNOFfcgHwsYW39SMm0Q1rHdMoES7qwiE0VfmZyJQOue+DF8XCVhSCtxNygdS
+ ol5nanhBsZpod1ed1mI7cM+yFFInHM8z/7LLDd39OtG/Ib9zaTznjr3xeBRqYvgVni+MS7o1t
+ kt7iHPwNi2GV0klKBx5vTeWJFHmKFW3EeN6ZsHr8VUeBASecYnoIU8GJ0AmcHQ9vTf8Vv0FwQ
+ cYawKz7w5FWdDEwItHfs/z9a2LwxDTannp+qZyLJcA5dj5YGiqdccZAXyKnAGtRNthhEIc1DW
+ aZwUmZZXIQ1NHEsFZ519fLKKIU+UCLNQzvq/3nmKopkn02ctzhkOCsUEF6bR1utxugo3kJsg7
+ VfvmXbGb+U8TuanOTfxiq+6NbwJiyqam0S6ApWkGx0wFbdDz4k=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-gcc-10 started warning about out-of-bounds access for zero-length
-arrays:
+gcc-10 warns about accesses to zero-length arrays:
 
-In file included from drivers/net/wireless/ath/ath10k/core.h:18,
-                 from drivers/net/wireless/ath/ath10k/htt_rx.c:8:
-drivers/net/wireless/ath/ath10k/htt_rx.c: In function 'ath10k_htt_rx_tx_fetch_ind':
-drivers/net/wireless/ath/ath10k/htt.h:1683:17: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'struct htt_tx_fetch_record[0]' [-Wzero-length-bounds]
- 1683 |  return (void *)&ind->records[le16_to_cpu(ind->num_records)];
-      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/wireless/ath/ath10k/htt.h:1676:29: note: while referencing 'records'
- 1676 |  struct htt_tx_fetch_record records[0];
-      |                             ^~~~~~~
+kernel/bpf/core.c: In function 'bpf_patch_insn_single':
+cc1: warning: writing 8 bytes into a region of size 0 [-Wstringop-overflow=]
+In file included from kernel/bpf/core.c:21:
+include/linux/filter.h:550:20: note: at offset 0 to object 'insnsi' with size 0 declared here
+  550 |   struct bpf_insn  insnsi[0];
+      |                    ^~~~~~
 
-The structure was already converted to have a flexible-array member in
-the past, but there are two zero-length members in the end and only
-one of them can be a flexible-array member.
+In this case, we really want to have two flexible-array members,
+but that is not possible. Removing the union to make insnsi a
+flexible-array member while leaving insns as a zero-length array
+fixes the warning, as nothing writes to the other one in that way.
 
-Swap the two around to avoid the warning, as 'resp_ids' is not accessed
-in a way that causes a warning.
+This trick only works on linux-3.18 or higher, as older versions
+had additional members in the union.
 
-Fixes: 3ba225b506a2 ("treewide: Replace zero-length array with flexible-array member")
-Fixes: 22e6b3bc5d96 ("ath10k: add new htt definitions")
+Fixes: 60a3b2253c41 ("net: bpf: make eBPF interpreter images read-only")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/wireless/ath/ath10k/htt.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/filter.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
-index e7096a73c6ca..7621f0a3dc77 100644
---- a/drivers/net/wireless/ath/ath10k/htt.h
-+++ b/drivers/net/wireless/ath/ath10k/htt.h
-@@ -1673,8 +1673,8 @@ struct htt_tx_fetch_ind {
- 	__le32 token;
- 	__le16 num_resp_ids;
- 	__le16 num_records;
--	struct htt_tx_fetch_record records[0];
--	__le32 resp_ids[]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
-+	__le32 resp_ids[0]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
-+	struct htt_tx_fetch_record records[];
- } __packed;
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index af37318bb1c5..73d06a39e2d6 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -545,10 +545,8 @@ struct bpf_prog {
+ 	unsigned int		(*bpf_func)(const void *ctx,
+ 					    const struct bpf_insn *insn);
+ 	/* Instructions for interpreter */
+-	union {
+-		struct sock_filter	insns[0];
+-		struct bpf_insn		insnsi[0];
+-	};
++	struct sock_filter	insns[0];
++	struct bpf_insn		insnsi[];
+ };
  
- static inline void *
+ struct sk_filter {
 -- 
 2.26.0
 
