@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E892E1C0621
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 21:22:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DBC51C0626
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 21:22:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgD3TWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 15:22:02 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44383 "EHLO
+        id S1727047AbgD3TWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 15:22:05 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:56930 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727064AbgD3TWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 15:22:00 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from maorg@mellanox.com)
+        with ESMTP id S1727042AbgD3TWE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 15:22:04 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from maorg@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 30 Apr 2020 22:21:53 +0300
 Received: from dev-l-vrt-201.mtl.labs.mlnx (dev-l-vrt-201.mtl.labs.mlnx [10.134.201.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03UJLqAR004128;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03UJLqAS004128;
         Thu, 30 Apr 2020 22:21:53 +0300
 From:   Maor Gottlieb <maorg@mellanox.com>
 To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
@@ -23,9 +23,9 @@ To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
 Cc:     leonro@mellanox.com, saeedm@mellanox.com,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         alexr@mellanox.com, Maor Gottlieb <maorg@mellanox.com>
-Subject: [PATCH V8 mlx5-next 09/16] bonding: Implement ndo_get_xmit_slave
-Date:   Thu, 30 Apr 2020 22:21:39 +0300
-Message-Id: <20200430192146.12863-10-maorg@mellanox.com>
+Subject: [PATCH V8 mlx5-next 10/16] net/mlx5: Change lag mutex lock to spin lock
+Date:   Thu, 30 Apr 2020 22:21:40 +0300
+Message-Id: <20200430192146.12863-11-maorg@mellanox.com>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20200430192146.12863-1-maorg@mellanox.com>
 References: <20200430192146.12863-1-maorg@mellanox.com>
@@ -34,78 +34,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add implementation of ndo_get_xmit_slave. Find the slave by using the
-helper function according to the bond mode. If the caller set all_slaves
-to true, then it assumes that all slaves are available to transmit.
+The lag lock could be a spin lock, the critical section is short
+and there is no need that the thread will sleep.
+Change the lock that protects the LAG structure from mutex
+to spin lock. It is required for next patch that need to
+access this structure from context that we can't sleep.
+In addition there is no need to hold this lock when query the
+congestion counters.
 
 Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
-Reviewed-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/net/bonding/bond_main.c | 43 +++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c | 42 +++++++++----------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 2de693f0262e..39b1ad7edbb4 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4347,6 +4347,48 @@ static u16 bond_select_queue(struct net_device *dev, struct sk_buff *skb,
- 	return txq;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+index 93052b07c76c..496a3408d771 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+@@ -42,7 +42,7 @@
+  * Beware of lock dependencies (preferably, no locks should be acquired
+  * under it).
+  */
+-static DEFINE_MUTEX(lag_mutex);
++static DEFINE_SPINLOCK(lag_lock);
+ 
+ static int mlx5_cmd_create_lag(struct mlx5_core_dev *dev, u8 remap_port1,
+ 			       u8 remap_port2)
+@@ -297,9 +297,9 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
+ 	if (!dev0 || !dev1)
+ 		return;
+ 
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	tracker = ldev->tracker;
+-	mutex_unlock(&lag_mutex);
++	spin_unlock(&lag_lock);
+ 
+ 	do_bond = tracker.is_bonded && mlx5_lag_check_prereq(ldev);
+ 
+@@ -481,9 +481,9 @@ static int mlx5_lag_netdev_event(struct notifier_block *this,
+ 		break;
+ 	}
+ 
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	ldev->tracker = tracker;
+-	mutex_unlock(&lag_mutex);
++	spin_unlock(&lag_lock);
+ 
+ 	if (changed)
+ 		mlx5_queue_bond_work(ldev, 0);
+@@ -525,7 +525,7 @@ static void mlx5_lag_dev_add_pf(struct mlx5_lag *ldev,
+ 	if (fn >= MLX5_MAX_PORTS)
+ 		return;
+ 
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	ldev->pf[fn].dev    = dev;
+ 	ldev->pf[fn].netdev = netdev;
+ 	ldev->tracker.netdev_state[fn].link_up = 0;
+@@ -533,7 +533,7 @@ static void mlx5_lag_dev_add_pf(struct mlx5_lag *ldev,
+ 
+ 	dev->priv.lag = ldev;
+ 
+-	mutex_unlock(&lag_mutex);
++	spin_unlock(&lag_lock);
  }
  
-+static struct net_device *bond_xmit_get_slave(struct net_device *master_dev,
-+					      struct sk_buff *skb,
-+					      bool all_slaves)
-+{
-+	struct bonding *bond = netdev_priv(master_dev);
-+	struct bond_up_slave *slaves;
-+	struct slave *slave = NULL;
-+
-+	switch (BOND_MODE(bond)) {
-+	case BOND_MODE_ROUNDROBIN:
-+		slave = bond_xmit_roundrobin_slave_get(bond, skb);
-+		break;
-+	case BOND_MODE_ACTIVEBACKUP:
-+		slave = bond_xmit_activebackup_slave_get(bond, skb);
-+		break;
-+	case BOND_MODE_8023AD:
-+	case BOND_MODE_XOR:
-+		if (all_slaves)
-+			slaves = rcu_dereference(bond->all_slaves);
-+		else
-+			slaves = rcu_dereference(bond->usable_slaves);
-+		slave = bond_xmit_3ad_xor_slave_get(bond, skb, slaves);
-+		break;
-+	case BOND_MODE_BROADCAST:
-+		break;
-+	case BOND_MODE_ALB:
-+		slave = bond_xmit_alb_slave_get(bond, skb);
-+		break;
-+	case BOND_MODE_TLB:
-+		slave = bond_xmit_tlb_slave_get(bond, skb);
-+		break;
-+	default:
-+		/* Should never happen, mode already checked */
-+		WARN_ONCE(true, "Unknown bonding mode");
-+		break;
-+	}
-+
-+	if (slave)
-+		return slave->dev;
-+	return NULL;
-+}
-+
- static netdev_tx_t __bond_start_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct bonding *bond = netdev_priv(dev);
-@@ -4468,6 +4510,7 @@ static const struct net_device_ops bond_netdev_ops = {
- 	.ndo_del_slave		= bond_release,
- 	.ndo_fix_features	= bond_fix_features,
- 	.ndo_features_check	= passthru_features_check,
-+	.ndo_get_xmit_slave	= bond_xmit_get_slave,
- };
+ static void mlx5_lag_dev_remove_pf(struct mlx5_lag *ldev,
+@@ -548,11 +548,11 @@ static void mlx5_lag_dev_remove_pf(struct mlx5_lag *ldev,
+ 	if (i == MLX5_MAX_PORTS)
+ 		return;
  
- static const struct device_type bond_type = {
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	memset(&ldev->pf[i], 0, sizeof(*ldev->pf));
+ 
+ 	dev->priv.lag = NULL;
+-	mutex_unlock(&lag_mutex);
++	spin_unlock(&lag_lock);
+ }
+ 
+ /* Must be called with intf_mutex held */
+@@ -630,10 +630,10 @@ bool mlx5_lag_is_roce(struct mlx5_core_dev *dev)
+ 	struct mlx5_lag *ldev;
+ 	bool res;
+ 
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	ldev = mlx5_lag_dev_get(dev);
+ 	res  = ldev && __mlx5_lag_is_roce(ldev);
+-	mutex_unlock(&lag_mutex);
++	spin_unlock(&lag_lock);
+ 
+ 	return res;
+ }
+@@ -644,10 +644,10 @@ bool mlx5_lag_is_active(struct mlx5_core_dev *dev)
+ 	struct mlx5_lag *ldev;
+ 	bool res;
+ 
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	ldev = mlx5_lag_dev_get(dev);
+ 	res  = ldev && __mlx5_lag_is_active(ldev);
+-	mutex_unlock(&lag_mutex);
++	spin_unlock(&lag_lock);
+ 
+ 	return res;
+ }
+@@ -658,10 +658,10 @@ bool mlx5_lag_is_sriov(struct mlx5_core_dev *dev)
+ 	struct mlx5_lag *ldev;
+ 	bool res;
+ 
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	ldev = mlx5_lag_dev_get(dev);
+ 	res  = ldev && __mlx5_lag_is_sriov(ldev);
+-	mutex_unlock(&lag_mutex);
++	spin_unlock(&lag_lock);
+ 
+ 	return res;
+ }
+@@ -687,7 +687,7 @@ struct net_device *mlx5_lag_get_roce_netdev(struct mlx5_core_dev *dev)
+ 	struct net_device *ndev = NULL;
+ 	struct mlx5_lag *ldev;
+ 
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	ldev = mlx5_lag_dev_get(dev);
+ 
+ 	if (!(ldev && __mlx5_lag_is_roce(ldev)))
+@@ -704,7 +704,7 @@ struct net_device *mlx5_lag_get_roce_netdev(struct mlx5_core_dev *dev)
+ 		dev_hold(ndev);
+ 
+ unlock:
+-	mutex_unlock(&lag_mutex);
++	spin_unlock(&lag_lock);
+ 
+ 	return ndev;
+ }
+@@ -746,7 +746,7 @@ int mlx5_lag_query_cong_counters(struct mlx5_core_dev *dev,
+ 
+ 	memset(values, 0, sizeof(*values) * num_counters);
+ 
+-	mutex_lock(&lag_mutex);
++	spin_lock(&lag_lock);
+ 	ldev = mlx5_lag_dev_get(dev);
+ 	if (ldev && __mlx5_lag_is_roce(ldev)) {
+ 		num_ports = MLX5_MAX_PORTS;
+@@ -756,18 +756,18 @@ int mlx5_lag_query_cong_counters(struct mlx5_core_dev *dev,
+ 		num_ports = 1;
+ 		mdev[MLX5_LAG_P1] = dev;
+ 	}
++	spin_unlock(&lag_lock);
+ 
+ 	for (i = 0; i < num_ports; ++i) {
+ 		ret = mlx5_cmd_query_cong_counter(mdev[i], false, out, outlen);
+ 		if (ret)
+-			goto unlock;
++			goto free;
+ 
+ 		for (j = 0; j < num_counters; ++j)
+ 			values[j] += be64_to_cpup((__be64 *)(out + offsets[j]));
+ 	}
+ 
+-unlock:
+-	mutex_unlock(&lag_mutex);
++free:
+ 	kvfree(out);
+ 	return ret;
+ }
 -- 
 2.17.2
 
