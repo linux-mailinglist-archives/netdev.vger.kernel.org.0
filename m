@@ -2,115 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C2191BECF5
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 02:29:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF0D1BECFB
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 02:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgD3A3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 20:29:12 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:33068 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726279AbgD3A3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 20:29:12 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 03U0IZXO009728;
-        Wed, 29 Apr 2020 17:28:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=wmHMqIvQ5Ed2ay7yUaiXRVMaNEiGf5PJWwOf6gIUvEU=;
- b=qvQHDCZNrHNyM6TC53ijmKvHlotc6HtYFKbOBAhIdYus1N1vcA4eE62RT2L7bKA65bC9
- mvgFmtch++sfh6Y9RbzESw8d1FisZqeDO40LiZ+mAWGtKIUT2RbudpkOl/T7KmwbRT42
- RbViFL61ASs79+ocUARS96hMZYZwiHotOZg= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 30mgvnyg3b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 29 Apr 2020 17:28:57 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Wed, 29 Apr 2020 17:28:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UIW5DEyq9WBQ3qDfNQYUu30Q7e0P1uWZAmHZqgS26gxTtSpaJtMDcvXc65JPORw2HniQAx5hhkz2bUnR88gmKeYWkoJoZkm0vLJx7fYqdxzKTtVF8Isk/3QMCZW6rUz3sJTCWGy6Ya86TdduJAq5A8Imsvymsp37xRi/Mc/IywCPCikYxRFznpehoiMu9rZ6b2bJPg8rLucVidnpIj+t28xiNNxBi7JCaHuIPWP+gotc3mzFfzL8PIVWB7oOKkITP1hwF0l+rdrk6ODEWUUym5IVafYqfeCGAY49diFy7NouiSAj8wo1q1ZnVph8yx919eA28iIFP8JY4x9md9ZSZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wmHMqIvQ5Ed2ay7yUaiXRVMaNEiGf5PJWwOf6gIUvEU=;
- b=H5Dr4yo9Mb9vPWexdEoMgonqBDGBRAP0I+cZd0/MCj0f7QWjLMRMGrhWS1PmCCSdY96sH/S4j6hDBoYuNMxDrNq6//m7DQcmNh8OC3sP41cEh7O/QOXwHSEqTkW/uBQ/7m+9v3BQrHxQznNgVOh1RaSI/UJIjOKYUQpY4MfocPOYypJdliD+47kRqImmzi6qsNhoRB5xVlGPsHvYAwcuRdzhgNBhnzJmGaer6l/rWPOsZkCeNPRlcGrJOQa0AsmTUXLdpFUC5hNRJweAdeSRaiqDrYoyN7zOuuLYX+SwSFJ042R8Hx01mZ04ZuBr2Tzk/eJzq7vHfXAOd3/Omu0lCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wmHMqIvQ5Ed2ay7yUaiXRVMaNEiGf5PJWwOf6gIUvEU=;
- b=kWIqzLfHf7phtn7v0IKX+7Aa7q/WwyuWP1mP3mmw8Cyyia/HlZwNqTSSlartrlBO43rGj0b3/785twbP2qu4jAjSd0mK5GQPEaRgxydLu0Li55qxhZf7WJ1kD0o+rD+zYXVEUOtT8fvYzRRDLYr4v3bApraSrSDNUgc9GkpJyMk=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB3319.namprd15.prod.outlook.com (2603:10b6:a03:10b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Thu, 30 Apr
- 2020 00:28:55 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::bdf1:da56:867d:f8a2]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::bdf1:da56:867d:f8a2%7]) with mapi id 15.20.2958.020; Thu, 30 Apr 2020
- 00:28:55 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-CC:     bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>, Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v8 bpf-next 1/3] bpf: sharing bpf runtime stats with
- BPF_ENABLE_STATS
-Thread-Topic: [PATCH v8 bpf-next 1/3] bpf: sharing bpf runtime stats with
- BPF_ENABLE_STATS
-Thread-Index: AQHWHfHZBEsXJHNI5EqTeTxWQMOY4aiQwVuAgAAPaQA=
-Date:   Thu, 30 Apr 2020 00:28:55 +0000
-Message-ID: <5BF895D9-6761-45FB-BE78-034BB2C73C6F@fb.com>
-References: <20200429064543.634465-1-songliubraving@fb.com>
- <20200429064543.634465-2-songliubraving@fb.com>
- <77523dab-bfd0-45d4-0d03-26a07bb6483e@iogearbox.net>
-In-Reply-To: <77523dab-bfd0-45d4-0d03-26a07bb6483e@iogearbox.net>
+        id S1726441AbgD3Adt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Apr 2020 20:33:49 -0400
+Received: from mga14.intel.com ([192.55.52.115]:48687 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726279AbgD3Adt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 20:33:49 -0400
+IronPort-SDR: plh9Sc2lbA+sgsp9hk7hRryln3YAr9LH/CeaH6FXLz7LSfrvepnjifYDXD6om9GVvuFiZ691lS
+ rU+JmlOvgOgA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2020 17:33:45 -0700
+IronPort-SDR: Otx2iqHsSGnt3Fmw+QsJcHS3D6uCBpWLGEKiyaK+fPCezsjzfymc1Kwrsd0lE0ooALdJlS88+5
+ h3aQaorpyUaQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,333,1583222400"; 
+   d="scan'208";a="248127043"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+  by fmsmga007.fm.intel.com with ESMTP; 29 Apr 2020 17:33:45 -0700
+Received: from fmsmsx156.amr.corp.intel.com (10.18.116.74) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 29 Apr 2020 17:33:45 -0700
+Received: from fmsmsx102.amr.corp.intel.com ([169.254.10.190]) by
+ fmsmsx156.amr.corp.intel.com ([169.254.13.73]) with mapi id 14.03.0439.000;
+ Wed, 29 Apr 2020 17:33:44 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jiri@resnulli.us" <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>
+Subject: RE: [PATCH net-next v2] devlink: let kernel allocate region
+ snapshot id
+Thread-Topic: [PATCH net-next v2] devlink: let kernel allocate region
+ snapshot id
+Thread-Index: AQHWHn9F6pFmAiLS4kGfEjS5pJHLy6iQ0MOA
+Date:   Thu, 30 Apr 2020 00:33:43 +0000
+Message-ID: <02874ECE860811409154E81DA85FBB58B6CF8474@FMSMSX102.amr.corp.intel.com>
+References: <20200429233813.1137428-1-kuba@kernel.org>
+In-Reply-To: <20200429233813.1137428-1-kuba@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.60.0.2.5)
-authentication-results: iogearbox.net; dkim=none (message not signed)
- header.d=none;iogearbox.net; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:ae7a]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ab2c3222-5dc4-41ed-c7fb-08d7ec9d7751
-x-ms-traffictypediagnostic: BYAPR15MB3319:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB3319E533170F554249A19FE0B3AA0@BYAPR15MB3319.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 0389EDA07F
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(366004)(136003)(396003)(39860400002)(66446008)(64756008)(76116006)(66946007)(2906002)(91956017)(66476007)(5660300002)(6916009)(66556008)(478600001)(4326008)(8676002)(53546011)(186003)(6486002)(36756003)(2616005)(33656002)(86362001)(8936002)(71200400001)(6506007)(6512007)(316002)(54906003);DIR:OUT;SFP:1102;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iyqkiuetjcqquvpvqcllpW2ZkREBBe2XKog6o+3BMrjfSIKrHInobbJ8GyiP781jAm2tvHlcA7nHMJHjX2lFYm0AE6E9NUWCxZAx7aLBJ9LOxTimubLAlJHivluF8e+ztCmE4xwLm4pcH+JIqUm2WJYf98IMTyrkcDWi4m8ksdkDGc2NfDrG3VZkArLl24KhHy5QHLQIYmI1vKs3YofIppJE16vpDAONuUAmkhrVV8Rh9pc+zIKK2aCrhRpOM53wiQuA6hUQCC5b79tQFoygo87QbWOgReMNgoASCITpyHt/T2q4tRx9XgPywavuEcKWiPDZqcucdM1PzZiJaUNs8eX//HV3xGsluK98YQc2RTcVNltpTWBBrQm0oOy6awYLHTCWSvfx4KClRZC1dQp+HPo/E3HCUNZr/K00mUGz+lvNZKziud1WlT2whPWbRTQC
-x-ms-exchange-antispam-messagedata: ptzphgZ0sMnNsdda9Qu9pgtZR5Mc9Uk/iFxahTAABx4gtHU/y3EUuid0/5YIsgWJlWWGYFNscC8GAsmrduzm7Gl+Sj6TpsPxGsd6d+BH1IP/sklAKXMYAmSwLjEBFdJ4KXbxjeEhyaZvPwwasJN9gEX/aEgHLO9uMbC0e1dARyBiQi2vIaM21KHQAhAOsngBVYSv+6Zwx08Nw6IuMFvdqQ27wtY9Rlgw4aMxlPfOTF5ynLWHLN/iN09PvMTLX7FuSbrO65z/cOLdEA+cz7PW25UFZ6Ke6VKNdH/99MSwbx0qxLIVK9Llrxs/cZA9BqLzjDTgNYU8zDg3Uuz+CcftH5xMBIXdivPe2BxqMKEVty20+FLbXOGJGRVrCnGapuuLvaCrR985wfsleQzdUFr1G3/IHBTmx9NW8hvCC0r04fhw08pvtj3vxy4DOOL5RnRsFJITb1TdCwP7xrUyphi+M4UBPA0Ptgxxci5QsbfCZbP7geHe0PX1kG12uZxq0d3Hwr/oKnCtdac1O79jQRUxH0RX5JKi9UhMP4o/7z8z5+dH6wUSNIr891R7R0aNJFloleZ5K8su+8B6ehctECqXHEbeat2YfhTsbTjRajzbI2dCGODJc7GdP0ehLNiCNdhjbve+SWkNzXFzXT2vK3AN7gaeJCBeQBWWXgNH/PBub4aC8PvphtmRXEynhKb/Y/b/IW5U+VEJq55qau/lStQfong4u4uVxOpTeC70Nrh1hf0DUKbwRKwTnOHjRCbr0TW15j/LMy/6x4nTvJInBcibbXIahVh/J34cCjhNWarHQaeyTngGiYH7YLW6rcNRmtVg0bfJow05qPKtga11J8VsoQ==
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.108]
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <01E60669E903A843BEA2321504CFE67F@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: ab2c3222-5dc4-41ed-c7fb-08d7ec9d7751
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Apr 2020 00:28:55.1593
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eaDm1MRcxvtbkceLagifILc2djCV+49Ezb5S8lfrp9DrOkaVFMmzQWjC6ZUqwB0txhLISmkp3uolasP1euCuTA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3319
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-29_11:2020-04-29,2020-04-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 bulkscore=0
- malwarescore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
- priorityscore=1501 impostorscore=0 mlxlogscore=999 clxscore=1015
- suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004300000
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -118,78 +63,236 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-> On Apr 29, 2020, at 4:33 PM, Daniel Borkmann <daniel@iogearbox.net> wrote=
-:
->=20
->>=20
-[...]
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> Behalf Of Jakub Kicinski
+> Sent: Wednesday, April 29, 2020 4:38 PM
+> To: davem@davemloft.net; jiri@resnulli.us
+> Cc: netdev@vger.kernel.org; kernel-team@fb.com; Keller, Jacob E
+> <jacob.e.keller@intel.com>; Jakub Kicinski <kuba@kernel.org>
+> Subject: [PATCH net-next v2] devlink: let kernel allocate region snapshot id
+> 
+> Currently users have to choose a free snapshot id before
+> calling DEVLINK_CMD_REGION_NEW. This is potentially racy
+> and inconvenient.
+> 
+> Make the DEVLINK_ATTR_REGION_SNAPSHOT_ID optional and try
+> to allocate id automatically. Send a message back to the
+> caller with the snapshot info.
+> 
+> The message carrying id gets sent immediately, but the
+> allocation is only valid if the entire operation succeeded.
+> This makes life easier, as sending the notification itself
+> may fail.
 
->> +
->> +	fd =3D anon_inode_getfd("bpf-stats", &bpf_stats_fops, NULL, 0);
->=20
-> Missing O_CLOEXEC or intentional (if latter, I'd have expected a comment
-> here though)?
+I like this. Not having to plan ahead and pick a random id is pretty useful, and this helps avoid some of the race that could occur around this.
 
-Yeah, we should have O_CLOEXEC here. Will fix (unless you want fix it at
-commit time).=20
-
->=20
->> +	if (fd >=3D 0)
->> +		static_key_slow_inc(&bpf_stats_enabled_key.key);
->> +
->> +	mutex_unlock(&bpf_stats_enabled_mutex);
->> +	return fd;
->> +}
->> +
->> +#define BPF_ENABLE_STATS_LAST_FIELD enable_stats.type
->> +
-> [...]
->> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
->> index e961286d0e14..af08ef0690cb 100644
->> --- a/kernel/sysctl.c
->> +++ b/kernel/sysctl.c
->> @@ -201,6 +201,40 @@ static int max_extfrag_threshold =3D 1000;
->>    #endif /* CONFIG_SYSCTL */
->>  +#ifdef CONFIG_BPF_SYSCALL
->> +static int bpf_stats_handler(struct ctl_table *table, int write,
->> +			     void __user *buffer, size_t *lenp,
->> +			     loff_t *ppos)
->> +{
->> +	struct static_key *key =3D (struct static_key *)table->data;
->> +	static int saved_val;
->> +	int val, ret;
->> +	struct ctl_table tmp =3D {
->> +		.data   =3D &val,
->> +		.maxlen =3D sizeof(val),
->> +		.mode   =3D table->mode,
->> +		.extra1 =3D SYSCTL_ZERO,
->> +		.extra2 =3D SYSCTL_ONE,
->> +	};
->> +
->> +	if (write && !capable(CAP_SYS_ADMIN))
->> +		return -EPERM;
->> +
->> +	mutex_lock(&bpf_stats_enabled_mutex);
->> +	val =3D saved_val;
->> +	ret =3D proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
->> +	if (write && !ret && val !=3D saved_val) {
->> +		if (val)
->> +			static_key_slow_inc(key);
->> +		else
->> +			static_key_slow_dec(key);
->> +		saved_val =3D val;
->> +	}
->> +	mutex_unlock(&bpf_stats_enabled_mutex);
->> +	return ret;
->> +}
->=20
-> nit: I wonder if most of the logic could have been shared with
-> proc_do_static_key() here and only the mutex passed as an arg to
-> the common helper?
-
-We have static saved_val here, so it is not so easy to share it.=20
-I think it is cleaner with separate functions. =20
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 
 Thanks,
-Song
+Jake
+
+> 
+> Example use:
+> $ devlink region new netdevsim/netdevsim1/dummy
+> netdevsim/netdevsim1/dummy: snapshot 1
+> 
+> $ id=$(devlink -j region new netdevsim/netdevsim1/dummy | \
+>        jq '.[][][][]')
+> $ devlink region dump netdevsim/netdevsim1/dummy snapshot $id
+> [...]
+> $ devlink region del netdevsim/netdevsim1/dummy snapshot $id
+> 
+> v2:
+>  - don't wrap the line containing extack;
+>  - add a few sentences to the docs.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  .../networking/devlink/devlink-region.rst     | 10 ++-
+>  net/core/devlink.c                            | 83 ++++++++++++++++---
+>  .../drivers/net/netdevsim/devlink.sh          | 13 +++
+>  3 files changed, 91 insertions(+), 15 deletions(-)
+> 
+> diff --git a/Documentation/networking/devlink/devlink-region.rst
+> b/Documentation/networking/devlink/devlink-region.rst
+> index 04e04d1ff627..b163d09a3d0d 100644
+> --- a/Documentation/networking/devlink/devlink-region.rst
+> +++ b/Documentation/networking/devlink/devlink-region.rst
+> @@ -23,7 +23,12 @@ states, but see also :doc:`devlink-health`
+>  Regions may optionally support capturing a snapshot on demand via the
+>  ``DEVLINK_CMD_REGION_NEW`` netlink message. A driver wishing to allow
+>  requested snapshots must implement the ``.snapshot`` callback for the region
+> -in its ``devlink_region_ops`` structure.
+> +in its ``devlink_region_ops`` structure. If snapshot id is not set in
+> +the ``DEVLINK_CMD_REGION_NEW`` request kernel will allocate one and send
+> +the snapshot information to user space. Note that receiving the snapshot
+> +information does not guarantee that the snapshot creation completed
+> +successfully, user space must check the status of the operation before
+> +proceeding.
+> 
+>  example usage
+>  -------------
+> @@ -45,7 +50,8 @@ example usage
+>      $ devlink region del pci/0000:00:05.0/cr-space snapshot 1
+> 
+>      # Request an immediate snapshot, if supported by the region
+> -    $ devlink region new pci/0000:00:05.0/cr-space snapshot 5
+> +    $ devlink region new pci/0000:00:05.0/cr-space
+> +    pci/0000:00:05.0/cr-space: snapshot 5
+> 
+>      # Dump a snapshot:
+>      $ devlink region dump pci/0000:00:05.0/fw-health snapshot 1
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 1ec2e9fd8898..82703be1032e 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -4065,10 +4065,64 @@ static int devlink_nl_cmd_region_del(struct sk_buff
+> *skb,
+>  	return 0;
+>  }
+> 
+> +static int
+> +devlink_nl_alloc_snapshot_id(struct devlink *devlink, struct genl_info *info,
+> +			     struct devlink_region *region, u32 *snapshot_id)
+> +{
+> +	struct sk_buff *msg;
+> +	void *hdr;
+> +	int err;
+> +
+> +	err = __devlink_region_snapshot_id_get(devlink, snapshot_id);
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(info->extack, "Failed to allocate a new
+> snapshot id");
+> +		return err;
+> +	}
+> +
+> +	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+> +	if (!msg) {
+> +		err = -ENOMEM;
+> +		goto err_msg_alloc;
+> +	}
+> +
+> +	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
+> +			  &devlink_nl_family, 0, DEVLINK_CMD_REGION_NEW);
+> +	if (!hdr) {
+> +		err = -EMSGSIZE;
+> +		goto err_put_failure;
+> +	}
+> +	err = devlink_nl_put_handle(msg, devlink);
+> +	if (err)
+> +		goto err_attr_failure;
+> +	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME, region->ops-
+> >name);
+> +	if (err)
+> +		goto err_attr_failure;
+> +	err = nla_put_u32(msg, DEVLINK_ATTR_REGION_SNAPSHOT_ID,
+> *snapshot_id);
+> +	if (err)
+> +		goto err_attr_failure;
+> +	genlmsg_end(msg, hdr);
+> +
+> +	err = genlmsg_reply(msg, info);
+> +	if (err)
+> +		goto err_reply;
+> +
+> +	return 0;
+> +
+> +err_attr_failure:
+> +	genlmsg_cancel(msg, hdr);
+> +err_put_failure:
+> +	nlmsg_free(msg);
+> +err_msg_alloc:
+> +err_reply:
+> +	__devlink_snapshot_id_decrement(devlink, *snapshot_id);
+> +	return err;
+> +}
+> +
+>  static int
+>  devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+>  {
+>  	struct devlink *devlink = info->user_ptr[0];
+> +	struct nlattr *snapshot_id_attr;
+>  	struct devlink_region *region;
+>  	const char *region_name;
+>  	u32 snapshot_id;
+> @@ -4080,11 +4134,6 @@ devlink_nl_cmd_region_new(struct sk_buff *skb,
+> struct genl_info *info)
+>  		return -EINVAL;
+>  	}
+> 
+> -	if (!info->attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
+> -		NL_SET_ERR_MSG_MOD(info->extack, "No snapshot id
+> provided");
+> -		return -EINVAL;
+> -	}
+> -
+>  	region_name = nla_data(info->attrs[DEVLINK_ATTR_REGION_NAME]);
+>  	region = devlink_region_get_by_name(devlink, region_name);
+>  	if (!region) {
+> @@ -4102,16 +4151,24 @@ devlink_nl_cmd_region_new(struct sk_buff *skb,
+> struct genl_info *info)
+>  		return -ENOSPC;
+>  	}
+> 
+> -	snapshot_id = nla_get_u32(info-
+> >attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
+> +	snapshot_id_attr = info->attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID];
+> +	if (snapshot_id_attr) {
+> +		snapshot_id = nla_get_u32(snapshot_id_attr);
+> 
+> -	if (devlink_region_snapshot_get_by_id(region, snapshot_id)) {
+> -		NL_SET_ERR_MSG_MOD(info->extack, "The requested snapshot
+> id is already in use");
+> -		return -EEXIST;
+> -	}
+> +		if (devlink_region_snapshot_get_by_id(region, snapshot_id)) {
+> +			NL_SET_ERR_MSG_MOD(info->extack, "The requested
+> snapshot id is already in use");
+> +			return -EEXIST;
+> +		}
+> 
+> -	err = __devlink_snapshot_id_insert(devlink, snapshot_id);
+> -	if (err)
+> -		return err;
+> +		err = __devlink_snapshot_id_insert(devlink, snapshot_id);
+> +		if (err)
+> +			return err;
+> +	} else {
+> +		err = devlink_nl_alloc_snapshot_id(devlink, info,
+> +						   region, &snapshot_id);
+> +		if (err)
+> +			return err;
+> +	}
+> 
+>  	err = region->ops->snapshot(devlink, info->extack, &data);
+>  	if (err)
+> diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+> b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+> index 9f9741444549..ad539eccddcb 100755
+> --- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+> +++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+> @@ -151,6 +151,19 @@ regions_test()
+> 
+>  	check_region_snapshot_count dummy post-second-delete 2
+> 
+> +	sid=$(devlink -j region new $DL_HANDLE/dummy | jq '.[][][][]')
+> +	check_err $? "Failed to create a new snapshot with id allocated by the
+> kernel"
+> +
+> +	check_region_snapshot_count dummy post-first-request 3
+> +
+> +	devlink region dump $DL_HANDLE/dummy snapshot $sid >> /dev/null
+> +	check_err $? "Failed to dump a snapshot with id allocated by the kernel"
+> +
+> +	devlink region del $DL_HANDLE/dummy snapshot $sid
+> +	check_err $? "Failed to delete snapshot with id allocated by the kernel"
+> +
+> +	check_region_snapshot_count dummy post-first-request 2
+> +
+>  	log_test "regions test"
+>  }
+> 
+> --
+> 2.25.4
 
