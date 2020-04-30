@@ -2,145 +2,819 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49EA81BF12A
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 09:19:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDD841BF1A8
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 09:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgD3HTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 03:19:09 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:29355 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726337AbgD3HTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 03:19:08 -0400
+        id S1726491AbgD3HkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 03:40:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726411AbgD3HkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 03:40:10 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2DDC035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 00:40:10 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id u15so5415258ljd.3
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 00:40:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1588231148; x=1619767148;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=49aIoMJfZD48Zv0jPVQLv85WcEcgrU7KH5esWay/qvU=;
-  b=k9p0pKH4TREqaVe8zrqwDzlFUwLiLxKchOuetK7CF0J//NCXcamDuCm8
-   ZR2BGIg8ehrmuh0zk0zLpyTGyGZjJtxBgmr5xE9Ms1xSNbM0WgbLerhDb
-   0HvCbGwk0WzvsX485Q+AkQf9zMhx56uR12aoKT7GkDyhcYZP4qB5UTb/t
-   0=;
-IronPort-SDR: IlHjtA3eOb1l09Nb+e8NXZtuMd9Wiq/R1iYFI7f9hxls5nYp7ejSi19bXNpDrn8BE53sgkv4uZ
- 5KZImaeRH56Q==
-X-IronPort-AV: E=Sophos;i="5.73,334,1583193600"; 
-   d="scan'208";a="28239627"
-Subject: RE: [PATCH] net: ena: fix gcc-4.8 missing-braces warning
-Thread-Topic: [PATCH] net: ena: fix gcc-4.8 missing-braces warning
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-9ec21598.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 30 Apr 2020 07:18:55 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1d-9ec21598.us-east-1.amazon.com (Postfix) with ESMTPS id 86C5FA1D38;
-        Thu, 30 Apr 2020 07:18:52 +0000 (UTC)
-Received: from EX13D08EUC003.ant.amazon.com (10.43.164.232) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 30 Apr 2020 07:18:51 +0000
-Received: from EX13D11EUC003.ant.amazon.com (10.43.164.153) by
- EX13D08EUC003.ant.amazon.com (10.43.164.232) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 30 Apr 2020 07:18:50 +0000
-Received: from EX13D11EUC003.ant.amazon.com ([10.43.164.153]) by
- EX13D11EUC003.ant.amazon.com ([10.43.164.153]) with mapi id 15.00.1497.006;
- Thu, 30 Apr 2020 07:18:50 +0000
-From:   "Jubran, Samih" <sameehj@amazon.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-CC:     "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Thread-Index: AQHWHadH74VL29pWn0eLulmochhjwKiRPQvg
-Date:   Thu, 30 Apr 2020 07:18:47 +0000
-Deferred-Delivery: Thu, 30 Apr 2020 07:17:49 +0000
-Message-ID: <03f3568ec8c646cdb7c767b16d19525a@EX13D11EUC003.ant.amazon.com>
-References: <20200428215131.3948527-1-arnd@arndb.de>
-In-Reply-To: <20200428215131.3948527-1-arnd@arndb.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.46]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YJV+rW/POdcXbMgLGZLMWul5Tj94GV5Q1XCZdNDjIlw=;
+        b=awaCiJx0QNdKtYDtScZFMycJIJLzRMaujUaFyrnKANhLT8GMuZPWta+sf/YYVm17+w
+         lv8+l0EmGaxJEkR4y+OD0jWz7Z6UAk1LwZ3+phL5DJ5MjYejZNrRy8JrJi267J+DRFkN
+         EiuWaOCg+omI9dpQ/DcqT5HKgf3xqUAXy/qGDS50Q/u5eiYyiaJZT1sfq7FzJq37ZLG9
+         XihgN4pFLoZb3xUbcYB2jaJwBotOb1uUI3qyDR21ma7Rhoh05SGNi40dvRls0bZHmT8E
+         jJDT7R2ixyQAHru0NoGkE5b+BYVTSvXNOr/UhLFxuOEX2Qezds54ApZfhAFfyryEGbC7
+         ow1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YJV+rW/POdcXbMgLGZLMWul5Tj94GV5Q1XCZdNDjIlw=;
+        b=ezRoFLRPySjSYkvzjmNmccw9QXDefUiCtVyawS/FWnDILcLRJvd3GmX9aTRyZ13KKM
+         Ri8E1GbP29vu/0Pxp8yCqeCczNyId2Y64Nsk1pI0ECei+YkU0xBKih52722BJhQGMY36
+         l4yp48ymIIJ/44IWVGKYVJ8MUogoKxXc4ez6q/LqZNKwwXN0S/J76Vfv47ycSDHDwd0N
+         Won74lpgLfrbW6z4yjPpqB1INaxRiWR5pO9JF5lj9lHAcB570aY8q4RxlPmsgXdMxkL9
+         lrqIUSKlYw1Z9gqYmc1nnaswN/cfncGEPR1nyG9b0lYX2SB0lqT/y4vUiujW+nkysUE8
+         iDPA==
+X-Gm-Message-State: AGi0PuZtsu4EGhtq0QJSTsyD+uFeaxaKozqBQvWs4JywT+CYrjj1R7YQ
+        H5G1JNce+MK3AjkL3WgLiyrkyEXmjGAvUPmmMXaI6N1u
+X-Google-Smtp-Source: APiQypKtL9yylIkBVcLeqAg8vmNJMyJ/b00YCPV4eGSzfBq+GhO1s2lbiQyEAKk2VsW44s4pVKDdS3rtFVjm8wdNWOw=
+X-Received: by 2002:a2e:8658:: with SMTP id i24mr1214058ljj.287.1588232408181;
+ Thu, 30 Apr 2020 00:40:08 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200428060206.21814-1-xiyou.wangcong@gmail.com> <20200428060206.21814-2-xiyou.wangcong@gmail.com>
+In-Reply-To: <20200428060206.21814-2-xiyou.wangcong@gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Thu, 30 Apr 2020 16:39:56 +0900
+Message-ID: <CAMArcTU2r2undM5119_1W=pc2fu5AtUDp2RtizjVayRY=fGVEg@mail.gmail.com>
+Subject: Re: [Patch net-next 1/2] net: partially revert dynamic lockdep key changes
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        syzbot <syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 28 Apr 2020 at 15:02, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
 
-> -----Original Message-----
-> From: Arnd Bergmann <arnd@arndb.de>
-> Sent: Wednesday, April 29, 2020 12:51 AM
-> To: Belgazal, Netanel <netanel@amazon.com>; Kiyanovski, Arthur
-> <akiyano@amazon.com>; David S. Miller <davem@davemloft.net>; Alexei
-> Starovoitov <ast@kernel.org>; Daniel Borkmann <daniel@iogearbox.net>;
-> Jakub Kicinski <kuba@kernel.org>; Jesper Dangaard Brouer
-> <hawk@kernel.org>; John Fastabend <john.fastabend@gmail.com>; Jubran,
-> Samih <sameehj@amazon.com>
-> Cc: Arnd Bergmann <arnd@arndb.de>; Tzalik, Guy <gtzalik@amazon.com>;
-> Bshara, Saeed <saeedb@amazon.com>; Machulsky, Zorik
-> <zorik@amazon.com>; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; bpf@vger.kernel.org
-> Subject: [EXTERNAL] [PATCH] net: ena: fix gcc-4.8 missing-braces warning
->=20
-> CAUTION: This email originated from outside of the organization. Do not c=
-lick
-> links or open attachments unless you can confirm the sender and know the
-> content is safe.
->=20
->=20
->=20
-> Older compilers warn about initializers with incorrect curly
-> braces:
->=20
-> drivers/net/ethernet/amazon/ena/ena_netdev.c: In function
-> 'ena_xdp_xmit_buff':
-> drivers/net/ethernet/amazon/ena/ena_netdev.c:311:2: error: expected ','
-> or ';' before 'struct'
->   struct ena_tx_buffer *tx_info;
->   ^~~~~~
-> drivers/net/ethernet/amazon/ena/ena_netdev.c:321:2: error: 'tx_info'
-> undeclared (first use in this function)
->   tx_info =3D &xdp_ring->tx_buffer_info[req_id];
->   ^~~~~~~
-> drivers/net/ethernet/amazon/ena/ena_netdev.c:321:2: note: each
-> undeclared identifier is reported only once for each function it appears =
-in
->=20
-> Use the GNU empty initializer extension to avoid this.
->=20
-> Fixes: 31aa9857f173 ("net: ena: enable negotiating larger Rx ring size")
-Please use the correct fixes, it should be XDP TX commit.
-Otherwise looks good,
-Thanks!
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Hi Cong,
+Thank you so much for this work!
+
+> This patch reverts the folowing commits:
+>
+> commit 064ff66e2bef84f1153087612032b5b9eab005bd
+> "bonding: add missing netdev_update_lockdep_key()"
+>
+> commit 53d374979ef147ab51f5d632dfe20b14aebeccd0
+> "net: avoid updating qdisc_xmit_lock_key in netdev_update_lockdep_key()"
+>
+> commit 1f26c0d3d24125992ab0026b0dab16c08df947c7
+> "net: fix kernel-doc warning in <linux/netdevice.h>"
+>
+> commit ab92d68fc22f9afab480153bd82a20f6e2533769
+> "net: core: add generic lockdep keys"
+>
+> but keeps the addr_list_lock_key because we still lock
+> addr_list_lock nestedly on stack devices, unlikely xmit_lock
+> this is safe because we don't take addr_list_lock on any fast
+> path.
+>
+> Reported-and-tested-by: syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com
+> Cc: Dmitry Vyukov <dvyukov@google.com>
+> Cc: Taehee Yoo <ap420073@gmail.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 > ---
->  drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index 2cc765df8da3..ad385652ca24 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -307,7 +307,7 @@ static int ena_xdp_xmit_buff(struct net_device *dev,
->                              struct ena_rx_buffer *rx_info)  {
->         struct ena_adapter *adapter =3D netdev_priv(dev);
-> -       struct ena_com_tx_ctx ena_tx_ctx =3D {0};
-> +       struct ena_com_tx_ctx ena_tx_ctx =3D { };
->         struct ena_tx_buffer *tx_info;
->         struct ena_ring *xdp_ring;
->         u16 next_to_use, req_id;
-> --
-> 2.26.0
+>  drivers/net/bonding/bond_main.c               |  1 +
+>  .../net/ethernet/netronome/nfp/nfp_net_repr.c | 16 ++++
+>  drivers/net/hamradio/bpqether.c               | 20 +++++
+>  drivers/net/hyperv/netvsc_drv.c               |  2 +
+>  drivers/net/ipvlan/ipvlan_main.c              |  2 +
+>  drivers/net/macsec.c                          |  2 +
+>  drivers/net/macvlan.c                         |  2 +
+>  drivers/net/ppp/ppp_generic.c                 |  2 +
+>  drivers/net/team/team.c                       |  1 +
+>  drivers/net/vrf.c                             |  1 +
+>  .../net/wireless/intersil/hostap/hostap_hw.c  | 22 +++++
+>  include/linux/netdevice.h                     | 27 ++++--
+>  net/8021q/vlan_dev.c                          | 23 +++++
+>  net/batman-adv/soft-interface.c               | 30 +++++++
+>  net/bluetooth/6lowpan.c                       |  8 ++
+>  net/core/dev.c                                | 90 +++++++++++++++----
+>  net/dsa/slave.c                               | 12 +++
+>  net/ieee802154/6lowpan/core.c                 |  8 ++
+>  net/l2tp/l2tp_eth.c                           |  1 +
+>  net/netrom/af_netrom.c                        | 21 +++++
+>  net/rose/af_rose.c                            | 21 +++++
+>  net/sched/sch_generic.c                       | 17 ++--
+>  22 files changed, 296 insertions(+), 33 deletions(-)
+>
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 2e70e43c5df5..d01871321d22 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -4898,6 +4898,7 @@ static int bond_init(struct net_device *bond_dev)
+>         spin_lock_init(&bond->stats_lock);
+>         lockdep_register_key(&bond->stats_lock_key);
+>         lockdep_set_class(&bond->stats_lock, &bond->stats_lock_key);
+> +       netdev_lockdep_set_classes(bond_dev);
+>
+>         list_add_tail(&bond->bond_list, &bn->dev_list);
+>
+> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> index 79d72c88bbef..b3cabc274121 100644
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> @@ -299,6 +299,20 @@ static void nfp_repr_clean(struct nfp_repr *repr)
+>         nfp_port_free(repr->port);
+>  }
+>
+> +static struct lock_class_key nfp_repr_netdev_xmit_lock_key;
+> +
+> +static void nfp_repr_set_lockdep_class_one(struct net_device *dev,
+> +                                          struct netdev_queue *txq,
+> +                                          void *_unused)
+> +{
+> +       lockdep_set_class(&txq->_xmit_lock, &nfp_repr_netdev_xmit_lock_key);
+> +}
+> +
+> +static void nfp_repr_set_lockdep_class(struct net_device *dev)
+> +{
+> +       netdev_for_each_tx_queue(dev, nfp_repr_set_lockdep_class_one, NULL);
+> +}
+> +
+>  int nfp_repr_init(struct nfp_app *app, struct net_device *netdev,
+>                   u32 cmsg_port_id, struct nfp_port *port,
+>                   struct net_device *pf_netdev)
+> @@ -308,6 +322,8 @@ int nfp_repr_init(struct nfp_app *app, struct net_device *netdev,
+>         u32 repr_cap = nn->tlv_caps.repr_cap;
+>         int err;
+>
+> +       nfp_repr_set_lockdep_class(netdev);
+> +
+>         repr->port = port;
+>         repr->dst = metadata_dst_alloc(0, METADATA_HW_PORT_MUX, GFP_KERNEL);
+>         if (!repr->dst)
+> diff --git a/drivers/net/hamradio/bpqether.c b/drivers/net/hamradio/bpqether.c
+> index fbea6f232819..206688154fdf 100644
+> --- a/drivers/net/hamradio/bpqether.c
+> +++ b/drivers/net/hamradio/bpqether.c
+> @@ -107,6 +107,25 @@ struct bpqdev {
+>
+>  static LIST_HEAD(bpq_devices);
+>
+> +/*
+> + * bpqether network devices are paired with ethernet devices below them, so
+> + * form a special "super class" of normal ethernet devices; split their locks
+> + * off into a separate class since they always nest.
+> + */
+> +static struct lock_class_key bpq_netdev_xmit_lock_key;
+> +
+> +static void bpq_set_lockdep_class_one(struct net_device *dev,
+> +                                     struct netdev_queue *txq,
+> +                                     void *_unused)
+> +{
+> +       lockdep_set_class(&txq->_xmit_lock, &bpq_netdev_xmit_lock_key);
+> +}
+> +
+> +static void bpq_set_lockdep_class(struct net_device *dev)
+> +{
+> +       netdev_for_each_tx_queue(dev, bpq_set_lockdep_class_one, NULL);
+> +}
+> +
+>  /* ------------------------------------------------------------------------ */
+>
+>
+> @@ -477,6 +496,7 @@ static int bpq_new_device(struct net_device *edev)
+>         err = register_netdevice(ndev);
+>         if (err)
+>                 goto error;
+> +       bpq_set_lockdep_class(ndev);
+>
+>         /* List protected by RTNL */
+>         list_add_rcu(&bpq->bpq_list, &bpq_devices);
+> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+> index d8e86bdbfba1..c0b647a4c893 100644
+> --- a/drivers/net/hyperv/netvsc_drv.c
+> +++ b/drivers/net/hyperv/netvsc_drv.c
+> @@ -2456,6 +2456,8 @@ static int netvsc_probe(struct hv_device *dev,
+>                 NETIF_F_HW_VLAN_CTAG_RX;
+>         net->vlan_features = net->features;
+>
+> +       netdev_lockdep_set_classes(net);
+> +
+>         /* MTU range: 68 - 1500 or 65521 */
+>         net->min_mtu = NETVSC_MTU_MIN;
+>         if (nvdev->nvsp_version >= NVSP_PROTOCOL_VERSION_2)
+> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+> index f195f278a83a..15e87c097b0b 100644
+> --- a/drivers/net/ipvlan/ipvlan_main.c
+> +++ b/drivers/net/ipvlan/ipvlan_main.c
+> @@ -131,6 +131,8 @@ static int ipvlan_init(struct net_device *dev)
+>         dev->gso_max_segs = phy_dev->gso_max_segs;
+>         dev->hard_header_len = phy_dev->hard_header_len;
+>
+> +       netdev_lockdep_set_classes(dev);
+> +
+>         ipvlan->pcpu_stats = netdev_alloc_pcpu_stats(struct ipvl_pcpu_stats);
+>         if (!ipvlan->pcpu_stats)
+>                 return -ENOMEM;
+> diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+> index 758baf7cb8a1..ea3f25cc79ef 100644
+> --- a/drivers/net/macsec.c
+> +++ b/drivers/net/macsec.c
+> @@ -4047,6 +4047,8 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
+>         if (err < 0)
+>                 return err;
+>
+> +       netdev_lockdep_set_classes(dev);
+> +
+>         err = netdev_upper_dev_link(real_dev, dev, extack);
+>         if (err < 0)
+>                 goto unregister;
+> diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+> index d45600e0a38c..34eb073cdd74 100644
+> --- a/drivers/net/macvlan.c
+> +++ b/drivers/net/macvlan.c
+> @@ -890,6 +890,8 @@ static int macvlan_init(struct net_device *dev)
+>         dev->gso_max_segs       = lowerdev->gso_max_segs;
+>         dev->hard_header_len    = lowerdev->hard_header_len;
+>
+> +       netdev_lockdep_set_classes(dev);
+> +
+>         vlan->pcpu_stats = netdev_alloc_pcpu_stats(struct vlan_pcpu_stats);
+>         if (!vlan->pcpu_stats)
+>                 return -ENOMEM;
+> diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+> index 22cc2cb9d878..7d005896a0f9 100644
+> --- a/drivers/net/ppp/ppp_generic.c
+> +++ b/drivers/net/ppp/ppp_generic.c
+> @@ -1410,6 +1410,8 @@ static int ppp_dev_init(struct net_device *dev)
+>  {
+>         struct ppp *ppp;
+>
+> +       netdev_lockdep_set_classes(dev);
+> +
+>         ppp = netdev_priv(dev);
+>         /* Let the netdevice take a reference on the ppp file. This ensures
+>          * that ppp_destroy_interface() won't run before the device gets
+> diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+> index 04845a4017f9..8c1e02752ff6 100644
+> --- a/drivers/net/team/team.c
+> +++ b/drivers/net/team/team.c
+> @@ -1647,6 +1647,7 @@ static int team_init(struct net_device *dev)
+>
+>         lockdep_register_key(&team->team_lock_key);
+>         __mutex_init(&team->lock, "team->team_lock_key", &team->team_lock_key);
+> +       netdev_lockdep_set_classes(dev);
+>
+>         return 0;
+>
+> diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+> index 56f8aab46f89..43928a1c2f2a 100644
+> --- a/drivers/net/vrf.c
+> +++ b/drivers/net/vrf.c
+> @@ -867,6 +867,7 @@ static int vrf_dev_init(struct net_device *dev)
+>
+>         /* similarly, oper state is irrelevant; set to up to avoid confusion */
+>         dev->operstate = IF_OPER_UP;
+> +       netdev_lockdep_set_classes(dev);
+>         return 0;
+>
+>  out_rth:
+> diff --git a/drivers/net/wireless/intersil/hostap/hostap_hw.c b/drivers/net/wireless/intersil/hostap/hostap_hw.c
+> index 58212c532c90..aadf3dec5bf3 100644
+> --- a/drivers/net/wireless/intersil/hostap/hostap_hw.c
+> +++ b/drivers/net/wireless/intersil/hostap/hostap_hw.c
+> @@ -3041,6 +3041,27 @@ static void prism2_clear_set_tim_queue(local_info_t *local)
+>         }
+>  }
+>
+> +
+> +/*
+> + * HostAP uses two layers of net devices, where the inner
+> + * layer gets called all the time from the outer layer.
+> + * This is a natural nesting, which needs a split lock type.
+> + */
+> +static struct lock_class_key hostap_netdev_xmit_lock_key;
+> +
+> +static void prism2_set_lockdep_class_one(struct net_device *dev,
+> +                                        struct netdev_queue *txq,
+> +                                        void *_unused)
+> +{
+> +       lockdep_set_class(&txq->_xmit_lock,
+> +                         &hostap_netdev_xmit_lock_key);
+> +}
+> +
+> +static void prism2_set_lockdep_class(struct net_device *dev)
+> +{
+> +       netdev_for_each_tx_queue(dev, prism2_set_lockdep_class_one, NULL);
+> +}
+> +
+>  static struct net_device *
+>  prism2_init_local_data(struct prism2_helper_functions *funcs, int card_idx,
+>                        struct device *sdev)
+> @@ -3199,6 +3220,7 @@ while (0)
+>         if (ret >= 0)
+>                 ret = register_netdevice(dev);
+>
+> +       prism2_set_lockdep_class(dev);
+>         rtnl_unlock();
+>         if (ret < 0) {
+>                 printk(KERN_WARNING "%s: register netdevice failed!\n",
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 5a8d40f1ffe2..7725efd6e48a 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1805,13 +1805,11 @@ enum netdev_priv_flags {
+>   *     @phydev:        Physical device may attach itself
+>   *                     for hardware timestamping
+>   *     @sfp_bus:       attached &struct sfp_bus structure.
+> - *     @qdisc_tx_busylock_key: lockdep class annotating Qdisc->busylock
+> - *                             spinlock
+> - *     @qdisc_running_key:     lockdep class annotating Qdisc->running seqcount
+> - *     @qdisc_xmit_lock_key:   lockdep class annotating
+> - *                             netdev_queue->_xmit_lock spinlock
+> + *
+>   *     @addr_list_lock_key:    lockdep class annotating
+>   *                             net_device->addr_list_lock spinlock
+> + *     @qdisc_tx_busylock: lockdep class annotating Qdisc->busylock spinlock
+> + *     @qdisc_running_key: lockdep class annotating Qdisc->running seqcount
+>   *
+>   *     @proto_down:    protocol port state information can be sent to the
+>   *                     switch driver and used to set the phys state of the
+> @@ -2112,10 +2110,9 @@ struct net_device {
+>  #endif
+>         struct phy_device       *phydev;
+>         struct sfp_bus          *sfp_bus;
+> -       struct lock_class_key   qdisc_tx_busylock_key;
+> -       struct lock_class_key   qdisc_running_key;
+> -       struct lock_class_key   qdisc_xmit_lock_key;
+>         struct lock_class_key   addr_list_lock_key;
+> +       struct lock_class_key   *qdisc_tx_busylock;
+> +       struct lock_class_key   *qdisc_running_key;
+>         bool                    proto_down;
+>         unsigned                wol_enabled:1;
+>
+> @@ -2200,6 +2197,20 @@ static inline void netdev_for_each_tx_queue(struct net_device *dev,
+>                 f(dev, &dev->_tx[i], arg);
+>  }
+>
+> +#define netdev_lockdep_set_classes(dev)                                \
+> +{                                                              \
+> +       static struct lock_class_key qdisc_tx_busylock_key;     \
+> +       static struct lock_class_key qdisc_running_key;         \
+> +       static struct lock_class_key qdisc_xmit_lock_key;       \
+> +       unsigned int i;                                         \
+> +                                                               \
+> +       (dev)->qdisc_tx_busylock = &qdisc_tx_busylock_key;      \
+> +       (dev)->qdisc_running_key = &qdisc_running_key;          \
+> +       for (i = 0; i < (dev)->num_tx_queues; i++)              \
+> +               lockdep_set_class(&(dev)->_tx[i]._xmit_lock,    \
+> +                                 &qdisc_xmit_lock_key);        \
+> +}
+> +
+>  u16 netdev_pick_tx(struct net_device *dev, struct sk_buff *skb,
+>                      struct net_device *sb_dev);
+>  struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
+> diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+> index 990b9fde28c6..2efce9a07955 100644
+> --- a/net/8021q/vlan_dev.c
+> +++ b/net/8021q/vlan_dev.c
+> @@ -489,6 +489,27 @@ static void vlan_dev_set_rx_mode(struct net_device *vlan_dev)
+>         dev_uc_sync(vlan_dev_priv(vlan_dev)->real_dev, vlan_dev);
+>  }
+>
+> +/*
+> + * vlan network devices have devices nesting below it, and are a special
+> + * "super class" of normal network devices; split their locks off into a
+> + * separate class since they always nest.
+> + */
+> +static struct lock_class_key vlan_netdev_xmit_lock_key;
+> +
+> +static void vlan_dev_set_lockdep_one(struct net_device *dev,
+> +                                    struct netdev_queue *txq,
+> +                                    void *_subclass)
+> +{
+> +       lockdep_set_class_and_subclass(&txq->_xmit_lock,
+> +                                      &vlan_netdev_xmit_lock_key,
+> +                                      *(int *)_subclass);
 
+I think lockdep_set_class() is enough.
+How do you think about it?
+
+> +}
+> +
+> +static void vlan_dev_set_lockdep_class(struct net_device *dev, int subclass)
+> +{
+> +       netdev_for_each_tx_queue(dev, vlan_dev_set_lockdep_one, &subclass);
+> +}
+> +
+>  static const struct header_ops vlan_header_ops = {
+>         .create  = vlan_dev_hard_header,
+>         .parse   = eth_header_parse,
+> @@ -579,6 +600,8 @@ static int vlan_dev_init(struct net_device *dev)
+>
+>         SET_NETDEV_DEVTYPE(dev, &vlan_type);
+>
+> +       vlan_dev_set_lockdep_class(dev, dev->lower_level);
+> +
+>         vlan->vlan_pcpu_stats = netdev_alloc_pcpu_stats(struct vlan_pcpu_stats);
+>         if (!vlan->vlan_pcpu_stats)
+>                 return -ENOMEM;
+> diff --git a/net/batman-adv/soft-interface.c b/net/batman-adv/soft-interface.c
+> index 5f05a728f347..822af540b854 100644
+> --- a/net/batman-adv/soft-interface.c
+> +++ b/net/batman-adv/soft-interface.c
+> @@ -739,6 +739,34 @@ static int batadv_interface_kill_vid(struct net_device *dev, __be16 proto,
+>         return 0;
+>  }
+>
+> +/* batman-adv network devices have devices nesting below it and are a special
+> + * "super class" of normal network devices; split their locks off into a
+> + * separate class since they always nest.
+> + */
+> +static struct lock_class_key batadv_netdev_xmit_lock_key;
+> +
+> +/**
+> + * batadv_set_lockdep_class_one() - Set lockdep class for a single tx queue
+> + * @dev: device which owns the tx queue
+> + * @txq: tx queue to modify
+> + * @_unused: always NULL
+> + */
+> +static void batadv_set_lockdep_class_one(struct net_device *dev,
+> +                                        struct netdev_queue *txq,
+> +                                        void *_unused)
+> +{
+> +       lockdep_set_class(&txq->_xmit_lock, &batadv_netdev_xmit_lock_key);
+> +}
+> +
+> +/**
+> + * batadv_set_lockdep_class() - Set txq and addr_list lockdep class
+> + * @dev: network device to modify
+> + */
+> +static void batadv_set_lockdep_class(struct net_device *dev)
+> +{
+> +       netdev_for_each_tx_queue(dev, batadv_set_lockdep_class_one, NULL);
+> +}
+> +
+>  /**
+>   * batadv_softif_init_late() - late stage initialization of soft interface
+>   * @dev: registered network device to modify
+> @@ -752,6 +780,8 @@ static int batadv_softif_init_late(struct net_device *dev)
+>         int ret;
+>         size_t cnt_len = sizeof(u64) * BATADV_CNT_NUM;
+>
+> +       batadv_set_lockdep_class(dev);
+> +
+>         bat_priv = netdev_priv(dev);
+>         bat_priv->soft_iface = dev;
+>
+> diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+> index 4febc82a7c76..bb55d92691b0 100644
+> --- a/net/bluetooth/6lowpan.c
+> +++ b/net/bluetooth/6lowpan.c
+> @@ -571,7 +571,15 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
+>         return err < 0 ? NET_XMIT_DROP : err;
+>  }
+>
+> +static int bt_dev_init(struct net_device *dev)
+> +{
+> +       netdev_lockdep_set_classes(dev);
+> +
+> +       return 0;
+> +}
+> +
+>  static const struct net_device_ops netdev_ops = {
+> +       .ndo_init               = bt_dev_init,
+>         .ndo_start_xmit         = bt_xmit,
+>  };
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index afff16849c26..f8d83922a6af 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -398,6 +398,74 @@ static RAW_NOTIFIER_HEAD(netdev_chain);
+>  DEFINE_PER_CPU_ALIGNED(struct softnet_data, softnet_data);
+>  EXPORT_PER_CPU_SYMBOL(softnet_data);
+>
+> +#ifdef CONFIG_LOCKDEP
+> +/*
+> + * register_netdevice() inits txq->_xmit_lock and sets lockdep class
+> + * according to dev->type
+> + */
+> +static const unsigned short netdev_lock_type[] = {
+> +        ARPHRD_NETROM, ARPHRD_ETHER, ARPHRD_EETHER, ARPHRD_AX25,
+> +        ARPHRD_PRONET, ARPHRD_CHAOS, ARPHRD_IEEE802, ARPHRD_ARCNET,
+> +        ARPHRD_APPLETLK, ARPHRD_DLCI, ARPHRD_ATM, ARPHRD_METRICOM,
+> +        ARPHRD_IEEE1394, ARPHRD_EUI64, ARPHRD_INFINIBAND, ARPHRD_SLIP,
+> +        ARPHRD_CSLIP, ARPHRD_SLIP6, ARPHRD_CSLIP6, ARPHRD_RSRVD,
+> +        ARPHRD_ADAPT, ARPHRD_ROSE, ARPHRD_X25, ARPHRD_HWX25,
+> +        ARPHRD_PPP, ARPHRD_CISCO, ARPHRD_LAPB, ARPHRD_DDCMP,
+> +        ARPHRD_RAWHDLC, ARPHRD_TUNNEL, ARPHRD_TUNNEL6, ARPHRD_FRAD,
+> +        ARPHRD_SKIP, ARPHRD_LOOPBACK, ARPHRD_LOCALTLK, ARPHRD_FDDI,
+> +        ARPHRD_BIF, ARPHRD_SIT, ARPHRD_IPDDP, ARPHRD_IPGRE,
+> +        ARPHRD_PIMREG, ARPHRD_HIPPI, ARPHRD_ASH, ARPHRD_ECONET,
+> +        ARPHRD_IRDA, ARPHRD_FCPP, ARPHRD_FCAL, ARPHRD_FCPL,
+> +        ARPHRD_FCFABRIC, ARPHRD_IEEE80211, ARPHRD_IEEE80211_PRISM,
+> +        ARPHRD_IEEE80211_RADIOTAP, ARPHRD_PHONET, ARPHRD_PHONET_PIPE,
+> +        ARPHRD_IEEE802154, ARPHRD_VOID, ARPHRD_NONE};
+> +
+> +static const char *const netdev_lock_name[] = {
+> +       "_xmit_NETROM", "_xmit_ETHER", "_xmit_EETHER", "_xmit_AX25",
+> +       "_xmit_PRONET", "_xmit_CHAOS", "_xmit_IEEE802", "_xmit_ARCNET",
+> +       "_xmit_APPLETLK", "_xmit_DLCI", "_xmit_ATM", "_xmit_METRICOM",
+> +       "_xmit_IEEE1394", "_xmit_EUI64", "_xmit_INFINIBAND", "_xmit_SLIP",
+> +       "_xmit_CSLIP", "_xmit_SLIP6", "_xmit_CSLIP6", "_xmit_RSRVD",
+> +       "_xmit_ADAPT", "_xmit_ROSE", "_xmit_X25", "_xmit_HWX25",
+> +       "_xmit_PPP", "_xmit_CISCO", "_xmit_LAPB", "_xmit_DDCMP",
+> +       "_xmit_RAWHDLC", "_xmit_TUNNEL", "_xmit_TUNNEL6", "_xmit_FRAD",
+> +       "_xmit_SKIP", "_xmit_LOOPBACK", "_xmit_LOCALTLK", "_xmit_FDDI",
+> +       "_xmit_BIF", "_xmit_SIT", "_xmit_IPDDP", "_xmit_IPGRE",
+> +       "_xmit_PIMREG", "_xmit_HIPPI", "_xmit_ASH", "_xmit_ECONET",
+> +       "_xmit_IRDA", "_xmit_FCPP", "_xmit_FCAL", "_xmit_FCPL",
+> +       "_xmit_FCFABRIC", "_xmit_IEEE80211", "_xmit_IEEE80211_PRISM",
+> +       "_xmit_IEEE80211_RADIOTAP", "_xmit_PHONET", "_xmit_PHONET_PIPE",
+> +       "_xmit_IEEE802154", "_xmit_VOID", "_xmit_NONE"};
+> +
+> +static struct lock_class_key netdev_xmit_lock_key[ARRAY_SIZE(netdev_lock_type)];
+> +
+> +static inline unsigned short netdev_lock_pos(unsigned short dev_type)
+> +{
+> +       int i;
+> +
+> +       for (i = 0; i < ARRAY_SIZE(netdev_lock_type); i++)
+> +               if (netdev_lock_type[i] == dev_type)
+> +                       return i;
+> +       /* the last key is used by default */
+> +       return ARRAY_SIZE(netdev_lock_type) - 1;
+> +}
+> +
+> +static inline void netdev_set_xmit_lockdep_class(spinlock_t *lock,
+> +                                                unsigned short dev_type)
+> +{
+> +       int i;
+> +
+> +       i = netdev_lock_pos(dev_type);
+> +       lockdep_set_class_and_name(lock, &netdev_xmit_lock_key[i],
+> +                                  netdev_lock_name[i]);
+> +}
+> +#else
+> +static inline void netdev_set_xmit_lockdep_class(spinlock_t *lock,
+> +                                                unsigned short dev_type)
+> +{
+> +}
+> +#endif
+> +
+>  /*******************************************************************************
+>   *
+>   *             Protocol management and registration routines
+> @@ -9208,7 +9276,7 @@ static void netdev_init_one_queue(struct net_device *dev,
+>  {
+>         /* Initialize queue lock */
+>         spin_lock_init(&queue->_xmit_lock);
+> -       lockdep_set_class(&queue->_xmit_lock, &dev->qdisc_xmit_lock_key);
+> +       netdev_set_xmit_lockdep_class(&queue->_xmit_lock, dev->type);
+>         queue->xmit_lock_owner = -1;
+>         netdev_queue_numa_node_write(queue, NUMA_NO_NODE);
+>         queue->dev = dev;
+> @@ -9255,22 +9323,6 @@ void netif_tx_stop_all_queues(struct net_device *dev)
+>  }
+>  EXPORT_SYMBOL(netif_tx_stop_all_queues);
+>
+> -static void netdev_register_lockdep_key(struct net_device *dev)
+> -{
+> -       lockdep_register_key(&dev->qdisc_tx_busylock_key);
+> -       lockdep_register_key(&dev->qdisc_running_key);
+> -       lockdep_register_key(&dev->qdisc_xmit_lock_key);
+> -       lockdep_register_key(&dev->addr_list_lock_key);
+> -}
+> -
+> -static void netdev_unregister_lockdep_key(struct net_device *dev)
+> -{
+> -       lockdep_unregister_key(&dev->qdisc_tx_busylock_key);
+> -       lockdep_unregister_key(&dev->qdisc_running_key);
+> -       lockdep_unregister_key(&dev->qdisc_xmit_lock_key);
+> -       lockdep_unregister_key(&dev->addr_list_lock_key);
+> -}
+> -
+>  void netdev_update_lockdep_key(struct net_device *dev)
+>  {
+>         lockdep_unregister_key(&dev->addr_list_lock_key);
+> @@ -9837,7 +9889,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+>
+>         dev_net_set(dev, &init_net);
+>
+> -       netdev_register_lockdep_key(dev);
+> +       lockdep_register_key(&dev->addr_list_lock_key);
+>
+>         dev->gso_max_size = GSO_MAX_SIZE;
+>         dev->gso_max_segs = GSO_MAX_SEGS;
+> @@ -9926,7 +9978,7 @@ void free_netdev(struct net_device *dev)
+>         free_percpu(dev->xdp_bulkq);
+>         dev->xdp_bulkq = NULL;
+>
+> -       netdev_unregister_lockdep_key(dev);
+> +       lockdep_unregister_key(&dev->addr_list_lock_key);
+>
+>         /*  Compatibility with error handling in drivers */
+>         if (dev->reg_state == NETREG_UNINITIALIZED) {
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index ba8bf90dc0cc..fa2634043751 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -1671,6 +1671,15 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
+>         return ret;
+>  }
+>
+> +static struct lock_class_key dsa_slave_netdev_xmit_lock_key;
+> +static void dsa_slave_set_lockdep_class_one(struct net_device *dev,
+> +                                           struct netdev_queue *txq,
+> +                                           void *_unused)
+> +{
+> +       lockdep_set_class(&txq->_xmit_lock,
+> +                         &dsa_slave_netdev_xmit_lock_key);
+> +}
+> +
+>  int dsa_slave_suspend(struct net_device *slave_dev)
+>  {
+>         struct dsa_port *dp = dsa_slave_to_port(slave_dev);
+> @@ -1754,6 +1763,9 @@ int dsa_slave_create(struct dsa_port *port)
+>                 slave_dev->max_mtu = ETH_MAX_MTU;
+>         SET_NETDEV_DEVTYPE(slave_dev, &dsa_type);
+>
+> +       netdev_for_each_tx_queue(slave_dev, dsa_slave_set_lockdep_class_one,
+> +                                NULL);
+> +
+>         SET_NETDEV_DEV(slave_dev, port->ds->dev);
+>         slave_dev->dev.of_node = port->dn;
+>         slave_dev->vlan_features = master->vlan_features;
+> diff --git a/net/ieee802154/6lowpan/core.c b/net/ieee802154/6lowpan/core.c
+> index c0b107cdd715..3297e7fa9945 100644
+> --- a/net/ieee802154/6lowpan/core.c
+> +++ b/net/ieee802154/6lowpan/core.c
+> @@ -58,6 +58,13 @@ static const struct header_ops lowpan_header_ops = {
+>         .create = lowpan_header_create,
+>  };
+>
+> +static int lowpan_dev_init(struct net_device *ldev)
+> +{
+> +       netdev_lockdep_set_classes(ldev);
+> +
+> +       return 0;
+> +}
+> +
+>  static int lowpan_open(struct net_device *dev)
+>  {
+>         if (!open_count)
+> @@ -89,6 +96,7 @@ static int lowpan_get_iflink(const struct net_device *dev)
+>  }
+>
+>  static const struct net_device_ops lowpan_netdev_ops = {
+> +       .ndo_init               = lowpan_dev_init,
+>         .ndo_start_xmit         = lowpan_xmit,
+>         .ndo_open               = lowpan_open,
+>         .ndo_stop               = lowpan_stop,
+> diff --git a/net/l2tp/l2tp_eth.c b/net/l2tp/l2tp_eth.c
+> index d3b520b9b2c9..fd5ac2788e45 100644
+> --- a/net/l2tp/l2tp_eth.c
+> +++ b/net/l2tp/l2tp_eth.c
+> @@ -56,6 +56,7 @@ static int l2tp_eth_dev_init(struct net_device *dev)
+>  {
+>         eth_hw_addr_random(dev);
+>         eth_broadcast_addr(dev->broadcast);
+> +       netdev_lockdep_set_classes(dev);
+>
+>         return 0;
+>  }
+> diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
+> index 7b1a74f74aad..eccc7d366e17 100644
+> --- a/net/netrom/af_netrom.c
+> +++ b/net/netrom/af_netrom.c
+> @@ -63,6 +63,26 @@ static DEFINE_SPINLOCK(nr_list_lock);
+>
+>  static const struct proto_ops nr_proto_ops;
+>
+> +/*
+> + * NETROM network devices are virtual network devices encapsulating NETROM
+> + * frames into AX.25 which will be sent through an AX.25 device, so form a
+> + * special "super class" of normal net devices; split their locks off into a
+> + * separate class since they always nest.
+> + */
+> +static struct lock_class_key nr_netdev_xmit_lock_key;
+> +
+> +static void nr_set_lockdep_one(struct net_device *dev,
+> +                              struct netdev_queue *txq,
+> +                              void *_unused)
+> +{
+> +       lockdep_set_class(&txq->_xmit_lock, &nr_netdev_xmit_lock_key);
+> +}
+> +
+> +static void nr_set_lockdep_key(struct net_device *dev)
+> +{
+> +       netdev_for_each_tx_queue(dev, nr_set_lockdep_one, NULL);
+> +}
+> +
+>  /*
+>   *     Socket removal during an interrupt is now safe.
+>   */
+> @@ -1394,6 +1414,7 @@ static int __init nr_proto_init(void)
+>                         free_netdev(dev);
+>                         goto fail;
+>                 }
+> +               nr_set_lockdep_key(dev);
+>                 dev_nr[i] = dev;
+>         }
+>
+> diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+> index 1e8eeb044b07..e7a872207b46 100644
+> --- a/net/rose/af_rose.c
+> +++ b/net/rose/af_rose.c
+> @@ -64,6 +64,26 @@ static const struct proto_ops rose_proto_ops;
+>
+>  ax25_address rose_callsign;
+>
+> +/*
+> + * ROSE network devices are virtual network devices encapsulating ROSE
+> + * frames into AX.25 which will be sent through an AX.25 device, so form a
+> + * special "super class" of normal net devices; split their locks off into a
+> + * separate class since they always nest.
+> + */
+> +static struct lock_class_key rose_netdev_xmit_lock_key;
+> +
+> +static void rose_set_lockdep_one(struct net_device *dev,
+> +                                struct netdev_queue *txq,
+> +                                void *_unused)
+> +{
+> +       lockdep_set_class(&txq->_xmit_lock, &rose_netdev_xmit_lock_key);
+> +}
+> +
+> +static void rose_set_lockdep_key(struct net_device *dev)
+> +{
+> +       netdev_for_each_tx_queue(dev, rose_set_lockdep_one, NULL);
+> +}
+> +
+>  /*
+>   *     Convert a ROSE address into text.
+>   */
+> @@ -1511,6 +1531,7 @@ static int __init rose_proto_init(void)
+>                         free_netdev(dev);
+>                         goto fail;
+>                 }
+> +               rose_set_lockdep_key(dev);
+>                 dev_rose[i] = dev;
+>         }
+>
+> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> index 2efd5b61acef..06bb4203fb2b 100644
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -794,6 +794,9 @@ struct Qdisc_ops pfifo_fast_ops __read_mostly = {
+>  };
+>  EXPORT_SYMBOL(pfifo_fast_ops);
+>
+> +static struct lock_class_key qdisc_tx_busylock;
+> +static struct lock_class_key qdisc_running_key;
+> +
+>  struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
+>                           const struct Qdisc_ops *ops,
+>                           struct netlink_ext_ack *extack)
+> @@ -846,9 +849,17 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
+>         }
+>
+>         spin_lock_init(&sch->busylock);
+> +       lockdep_set_class(&sch->busylock,
+> +                         dev->qdisc_tx_busylock ?: &qdisc_tx_busylock);
+> +
+>         /* seqlock has the same scope of busylock, for NOLOCK qdisc */
+>         spin_lock_init(&sch->seqlock);
+> +       lockdep_set_class(&sch->busylock,
+> +                         dev->qdisc_tx_busylock ?: &qdisc_tx_busylock);
+> +
+>         seqcount_init(&sch->running);
+> +       lockdep_set_class(&sch->running,
+> +                         dev->qdisc_running_key ?: &qdisc_running_key);
+>
+>         sch->ops = ops;
+>         sch->flags = ops->static_flags;
+> @@ -859,12 +870,6 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
+>         dev_hold(dev);
+>         refcount_set(&sch->refcnt, 1);
+>
+> -       if (sch != &noop_qdisc) {
+> -               lockdep_set_class(&sch->busylock, &dev->qdisc_tx_busylock_key);
+> -               lockdep_set_class(&sch->seqlock, &dev->qdisc_tx_busylock_key);
+> -               lockdep_set_class(&sch->running, &dev->qdisc_running_key);
+> -       }
+> -
+>         return sch;
+>  errout1:
+>         kfree(p);
+> --
+> 2.26.1
+>
