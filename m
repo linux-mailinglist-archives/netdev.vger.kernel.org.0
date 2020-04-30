@@ -2,109 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD1141BED44
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 02:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 074601BED85
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 03:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726431AbgD3A64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 20:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726279AbgD3A6z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 20:58:55 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF58C035494
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 17:58:55 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id j1so4812048wrt.1
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 17:58:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LAom/5XyfNYEYu4U1V0uLnMQO5Pw8EeSU5KUZrwVz1g=;
-        b=WvCljVypvx+AObl2uAEmHvYJKwk6XD7OuI8ZbJ3ZqogNIT1tNwE1S9zdlzPgtEf6b8
-         9WnYf7meEWmXbA0Qx+KmDUraekGx7T8Eh31+woUI5TB3L5SF9EIEoSL2KHxROJeVo+JK
-         LHEl7iiSL5TdBY4LSLe/PfetnymNtcckNatQ8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LAom/5XyfNYEYu4U1V0uLnMQO5Pw8EeSU5KUZrwVz1g=;
-        b=J/S7TAKffdw8Xan5i/Fi8p/aG4ayKwS0vHGbUGn25KMhaeh6FLctH+3DBLfXG3IJzj
-         o3T6yPTN01/eEX5daN0Pam8VAgZegi6JMxoCl0O95GpsuPT4i7hjY2ZBvlqxwW+5yeAx
-         TuC5bHOhWUfltG+a65GCtHxVjs3K9HjY3hJHG7hgHtua8NS18FKiZY8wrslgWg5VkO+E
-         3i9N0V37s7DmuqWcJlbk9Ars4Ca81MK5bHfW+bOfSxfjUxmfTfj+FNasKorME22JshNs
-         rHv/B5YBKvGSnA0BwhB8m/8EU7WUgKAdcybjq9OjHogHCSbyEiW3mXEGPWOTeZsujJLJ
-         oauw==
-X-Gm-Message-State: AGi0Pub1bpGHi8taTUt6RSBsatpkFrFxqKOcpHL+HEDvzd/XYwxyZc2W
-        3mwDn31nLVXydtCEL4lieZBq5WjCQxEzSw==
-X-Google-Smtp-Source: APiQypIYkKWfc9cAkSgL8IsAYWdUdb/KpksLmeCRIXqFrxbH2tuJYkPmGkK4kEY2GSWsMZ0KsJcWfA==
-X-Received: by 2002:adf:f750:: with SMTP id z16mr751269wrp.115.1588208333385;
-        Wed, 29 Apr 2020 17:58:53 -0700 (PDT)
-Received: from [192.168.0.112] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.googlemail.com with ESMTPSA id b22sm10548865wmj.1.2020.04.29.17.58.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 17:58:52 -0700 (PDT)
-Subject: Re: [PATCH iproute2 1/7] bridge: Use the same flag names in input and
- output
-To:     Benjamin Poirier <bpoirier@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <20200427235051.250058-1-bpoirier@cumulusnetworks.com>
- <20200427235051.250058-2-bpoirier@cumulusnetworks.com>
- <CAJieiUh0c1LCud2ZNuD5MygrBO=Yb1OgqHawxjgkX1j+6NHMrQ@mail.gmail.com>
- <20200430002216.GA76853@f3>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <a2fc6935-555f-b881-1ff2-f824bd08d6ae@cumulusnetworks.com>
-Date:   Thu, 30 Apr 2020 03:58:51 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726378AbgD3BZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 21:25:55 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:30934 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726286AbgD3BZy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 21:25:54 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03U1F4Io004841
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 18:25:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=3+o7l02/rlglt5SdbycnrNsOMQZhnw7LzfBDqT6Y0rA=;
+ b=Sf/SHdtzoJCD5puxSO5diXsluU7EFs7VP0fG6a9ogg9vDD+FV2FUJ36KWHQcNGFEUuNZ
+ Tzi9RWIRZCtzhCvwUQIM+DIrmERsMhaZ/kMItxwvABXopZSX2H5qQNNWuhMedw90k11y
+ fVeYTt/X0zlYizPEV4zHQKGfKal2e3qPJo4= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 30pq0dke9m-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 18:25:54 -0700
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Wed, 29 Apr 2020 18:25:52 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 79F5C2EC306A; Wed, 29 Apr 2020 18:25:45 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] libbpf: fix false unused variable warning
+Date:   Wed, 29 Apr 2020 18:25:44 -0700
+Message-ID: <20200430012544.1347275-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200430002216.GA76853@f3>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-29_11:2020-04-29,2020-04-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ priorityscore=1501 clxscore=1015 adultscore=0 lowpriorityscore=0
+ impostorscore=0 malwarescore=0 bulkscore=0 spamscore=0 mlxscore=0
+ mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004300006
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/20 3:22 AM, Benjamin Poirier wrote:
-> On 2020-04-29 08:12 -0700, Roopa Prabhu wrote:
->> On Mon, Apr 27, 2020 at 4:51 PM Benjamin Poirier
->> <bpoirier@cumulusnetworks.com> wrote:
->>>
->>> Output the same names for vlan flags as the ones accepted in command input.
->>>
->>> Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
->>> ---
->>
->> Benjamin, It's a good change,  but this will break existing users ?.
-> 
-> Nikolay voiced the same concern. The current output looks like
-> 
-> ben@f3:~$ bridge vlan
-> port    vlan ids
-> br0     None
-> tap0     1 PVID Egress Untagged
-> 
-> tap1     1 PVID Egress Untagged
-> 
-> docker0  1 PVID Egress Untagged
-> 
-> ben@f3:~$
-> 
-> "PVID Egress Untagged" look like 3 flags to me. Anything we can do to
-> improve it?
-> 
+Some versions of GCC falsely detect that vi might not be initialized. Tha=
+t's
+not true, but let's silence it with NULL initialization.
 
-Put a "," after PVID ? :-)
-The bigger problem is that "Egress Untagged" is also used as a flag in the json output.
-Anyone parsing that and looking at the flags would be broken. In addition
-this has been described in many of HowTos and docs over the years.
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/libbpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'd just drop this change.
-
-Thanks,
-  Nik
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index d86ff8214b96..977add1b73e2 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5003,8 +5003,8 @@ static int bpf_object__collect_map_relos(struct bpf=
+_object *obj,
+ 					 GElf_Shdr *shdr, Elf_Data *data)
+ {
+ 	int i, j, nrels, new_sz, ptr_sz =3D sizeof(void *);
++	const struct btf_var_secinfo *vi =3D NULL;
+ 	const struct btf_type *sec, *var, *def;
+-	const struct btf_var_secinfo *vi;
+ 	const struct btf_member *member;
+ 	struct bpf_map *map, *targ_map;
+ 	const char *name, *mname;
+--=20
+2.24.1
 
