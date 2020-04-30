@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 607361BFDF6
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:25:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 436E41BFDF8
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:25:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727808AbgD3OYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 10:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
+        id S1728132AbgD3OY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 10:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726743AbgD3OYX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 10:24:23 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E00FC035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 07:24:23 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id n205so7901609ybf.14
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 07:24:23 -0700 (PDT)
+        with ESMTP id S1728068AbgD3OYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 10:24:25 -0400
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CF3C08E934
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 07:24:25 -0700 (PDT)
+Received: by mail-qk1-x74a.google.com with SMTP id d13so6590672qke.19
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 07:24:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=pPMd8GxOGm3PZwmKjJNhDVTp6BEu4LYZBpof2RciyW4=;
-        b=d8Q0nNydiTmsktkI9xbCiukARVhVtmZojz9tyrLg5wwlSscPmZSFjPoJIM1OvHX+l4
-         S4N5YWorYvuSsheAvaqlEU1cMU8tMo3BOFyibxo0Idxfzs2aYlw7cVZL/sZBb6ofjSnH
-         Br+7uBs+nFj2QHPNbBwFPAcbx4nx98XeEDUyr77ycx5r0PGZFaQLS3j/jQUNhYS8xOir
-         VpLiAtoQi9GMvX182A42I2wn2JHa+wrj8rYAhB6j32FL9TZgp9SrVbwZz8p2s90VEgn/
-         cZ16PaCJHwp8UeA/pwlfWHdXz8w25KN90se8ul/3oueVGKdj6i92mdN51RIVoIvc5fMI
-         MPrQ==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=i/C9Y5GBkF2sbab6q3+mjJTMGZ+JZWwA9+KZOitr3OM=;
+        b=Uk/IVd7JCTjsWFv97jNMCas7BQBBx5POqcL+MxXjSs5PP1g4haTpXWRTtc5NKn2VdK
+         aH5+k3jgElDkEGJcADkiJoy9vdCrRaMX+doMcVWpGMhs8/nxBmGVjoMJyYNAyPz/gTDA
+         hcK542kKVi9f9ClzNsDbt7RwxBYaqrNXTJDLTebYmKCSV+WNszePKqWkzSY6m8+gdgRm
+         wEgWlLmvu19YH9iLb/hqElh/hvLkOby8gWxh9ABfOMqT8SaHGDGrASxql0wYLc/tfnJf
+         KglE1rU7Y2A7vasVj+Qu+t7HYwG42FTTT2CTSEUHBJWdWrm4GATf9BSVkjpvaGI38IIw
+         4vyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=pPMd8GxOGm3PZwmKjJNhDVTp6BEu4LYZBpof2RciyW4=;
-        b=VfGTI8yX15EpiWaLsLinH6HiEVA++g7hf1GyiiJ70gr7ECyPNSg4cwpyLkACLJNQnr
-         3ElbecQB27t8mo7m+tXL6N+df879XllOBYdaXEDFm3dqvsSh6rj4dWzb4UeBkjRinuCS
-         BonoGDmMaFxCtG7NcQtK+j+lP6vn1yutU9DOlOoltvvrai1/td8dPLAk/G32L83o8/eo
-         1zO2R5jCeOEA0wDflo8RQNRV7aRLQFbCvdBOijodcZPW7kUvB4kz/sF5sqMa1KojVA1v
-         xVm6w5kExR2RiwXlciTKMxZ23x++0ZOmpYZLHVKQmfRw0PYKK7ONkFtMINZhcg71ymNw
-         zcRA==
-X-Gm-Message-State: AGi0PuZxSnkW+99NujewbTof0yxqx8RkV+CORbQ3hw0xYftxPT9e5csL
-        MELR6e6aYiY9+rOJh0Ei0Lu6RkroXIy7
-X-Google-Smtp-Source: APiQypK3Vpft00hes53MtZEVCGv8AFAIWWwXyGRt84ln9KqoYa7RHrUR62Y+lauNqNBrxPeLot4ZXLxuzIPz
-X-Received: by 2002:a25:1a84:: with SMTP id a126mr6320236yba.161.1588256662435;
- Thu, 30 Apr 2020 07:24:22 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 07:24:15 -0700
-Message-Id: <20200430142419.252180-1-irogers@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=i/C9Y5GBkF2sbab6q3+mjJTMGZ+JZWwA9+KZOitr3OM=;
+        b=r3enrPlm3sOYXZaN9Pjp8+in58vMLX/1YrdUBlz3xkObfDSjTSv8OD2RMT5AZ7Eny2
+         5nNkHtxPOjr0/hP2DuqAyZrLFEYgwDv2DFe+cvcefetqO4DD5iCmFoZMQ06Vkj3H8dPo
+         Euime11qN/YRuPDSz46RBX4vwBp7K5pHfPWUxrnuhjpxbgyeABzdhcacH/Zfyzu/7YvW
+         726oB4tceFsLuLdUH6lf3tWiglw2uMypLTeVaM5zZBGRsxvMjN31X7xeg7Ltx+G4Y86Z
+         76AAV26c8eyzF24koCkNvwIoVle/BCRuMukZR7lHgCu+Q1dY201aeabafH/+yTGhFIo/
+         LnZw==
+X-Gm-Message-State: AGi0PuYqrLM+p96hJAR86fTJ5g8ZE66rG5VZTVfUS89IOF75qY93JRaW
+        js+lMPe0vB2+Vr6m545ckPRfdetMOiPF
+X-Google-Smtp-Source: APiQypKP1zBW8q2AAwdPS9E/7mblPhFugkRftNjhh+3oJHyi895hdKUfL/Si2nyV7ycNpADdY3f8KYvSloaL
+X-Received: by 2002:a0c:a8e5:: with SMTP id h37mr3258473qvc.69.1588256664346;
+ Thu, 30 Apr 2020 07:24:24 -0700 (PDT)
+Date:   Thu, 30 Apr 2020 07:24:16 -0700
+In-Reply-To: <20200430142419.252180-1-irogers@google.com>
+Message-Id: <20200430142419.252180-2-irogers@google.com>
 Mime-Version: 1.0
+References: <20200430142419.252180-1-irogers@google.com>
 X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
-Subject: [PATCH v13 0/4] perf tools: add support for libpfm4
+Subject: [PATCH v13 1/4] perf doc: pass ASCIIDOC_EXTRA as an argument
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -81,92 +85,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch links perf with the libpfm4 library if it is available and
-LIBPFM4 is passed to the build. The libpfm4 library contains hardware
-event tables for all processors supported by perf_events. It is a
-helper library that helps convert from a symbolic event name to the
-event encoding required by the underlying kernel interface. This
-library is open-source and available from: http://perfmon2.sf.net.
-    
-With this patch, it is possible to specify full hardware events
-by name. Hardware filters are also supported. Events must be
-specified via the --pfm-events and not -e option. Both options
-are active at the same time and it is possible to mix and match:
-    
-$ perf stat --pfm-events inst_retired:any_p:c=1:i -e cycles ....
+commit e9cfa47e687d ("perf doc: allow ASCIIDOC_EXTRA to be an argument")
+allowed ASCIIDOC_EXTRA to be passed as an option to the Documentation
+Makefile. This change passes ASCIIDOC_EXTRA, set by detected features or
+command line options, prior to doing a Documentation build. This is
+necessary to allow conditional compilation, based on configuration
+variables, in asciidoc code.
 
-v13 moves libpfm_initialize purely into pfm.c as suggested by
-    acme@kernel.org.
-v12 changes NO_LIBPFM4 as a make option to LIBPFM4, ie opt-in rather
-    than opt-out of feature detection and build support. Suggested by
-    acme@kernel.org. It also moves passing the ASCIIDOC_EXTRA argument
-    into its own commit.
-v11 reformats the perf list output.
-v10 addresses review comments from jolsa@redhat.com.
-v9 removes some unnecessary #ifs.
-v8 addresses review comments from jolsa@redhat.com.
-   Breaks the patch into 4, adds a test and moves the libpfm code into its
-   own file. perf list encoding tries to be closer to existing.
-v7 rebases and adds fallback code for libpfm4 events.
-   The fallback code is to force user only priv level in case the
-   perf_event_open() syscall failed for permissions reason.
-   the fallback forces a user privilege level restriction on the event
-   string, so depending on the syntax either u or :u is needed.
-    
-   But libpfm4 can use a : or . as the separator, so simply searching
-   for ':' vs. '/' is not good enough to determine the syntax needed.
-   Therefore, this patch introduces a new evsel boolean field to mark
-   events coming from  libpfm4. The field is then used to adjust the
-   fallback string.
-v6 was a rebase.
-v5 was a rebase.
-v4 was a rebase on
-   git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git
-   branch perf/core and re-adds the tools/build/feature/test-libpfm4.c
-   missed in v3.
-v3 is against acme/perf/core and removes a diagnostic warning.
-v2 of this patch makes the --pfm-events man page documentation
-   conditional on libpfm4 behing configured. It tidies some of the
-   documentation and adds the feature test missed in the v1 patch.
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/Makefile.perf | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Ian Rogers (1):
-  perf doc: pass ASCIIDOC_EXTRA as an argument
-
-Stephane Eranian (3):
-  tools feature: add support for detecting libpfm4
-  perf pmu: add perf_pmu__find_by_type helper
-  perf tools: add support for libpfm4
-
- tools/build/Makefile.feature             |   3 +-
- tools/build/feature/Makefile             |   6 +-
- tools/build/feature/test-libpfm4.c       |   9 +
- tools/perf/Documentation/perf-record.txt |  11 +
- tools/perf/Documentation/perf-stat.txt   |  10 +
- tools/perf/Documentation/perf-top.txt    |  11 +
- tools/perf/Makefile.config               |  13 ++
- tools/perf/Makefile.perf                 |   8 +-
- tools/perf/builtin-record.c              |   6 +
- tools/perf/builtin-stat.c                |   6 +
- tools/perf/builtin-top.c                 |   6 +
- tools/perf/tests/Build                   |   1 +
- tools/perf/tests/builtin-test.c          |   9 +
- tools/perf/tests/pfm.c                   | 203 ++++++++++++++++
- tools/perf/tests/tests.h                 |   3 +
- tools/perf/util/Build                    |   2 +
- tools/perf/util/evsel.c                  |   2 +-
- tools/perf/util/evsel.h                  |   1 +
- tools/perf/util/parse-events.c           |  30 ++-
- tools/perf/util/parse-events.h           |   4 +
- tools/perf/util/pfm.c                    | 281 +++++++++++++++++++++++
- tools/perf/util/pfm.h                    |  37 +++
- tools/perf/util/pmu.c                    |  11 +
- tools/perf/util/pmu.h                    |   1 +
- 24 files changed, 661 insertions(+), 13 deletions(-)
- create mode 100644 tools/build/feature/test-libpfm4.c
- create mode 100644 tools/perf/tests/pfm.c
- create mode 100644 tools/perf/util/pfm.c
- create mode 100644 tools/perf/util/pfm.h
-
+diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
+index d15a311408f1..94a495594e99 100644
+--- a/tools/perf/Makefile.perf
++++ b/tools/perf/Makefile.perf
+@@ -188,7 +188,7 @@ AWK     = awk
+ # non-config cases
+ config := 1
+ 
+-NON_CONFIG_TARGETS := clean python-clean TAGS tags cscope help install-doc install-man install-html install-info install-pdf doc man html info pdf
++NON_CONFIG_TARGETS := clean python-clean TAGS tags cscope help
+ 
+ ifdef MAKECMDGOALS
+ ifeq ($(filter-out $(NON_CONFIG_TARGETS),$(MAKECMDGOALS)),)
+@@ -832,7 +832,7 @@ INSTALL_DOC_TARGETS += quick-install-doc quick-install-man quick-install-html
+ 
+ # 'make doc' should call 'make -C Documentation all'
+ $(DOC_TARGETS):
+-	$(Q)$(MAKE) -C $(DOC_DIR) O=$(OUTPUT) $(@:doc=all)
++	$(Q)$(MAKE) -C $(DOC_DIR) O=$(OUTPUT) $(@:doc=all) ASCIIDOC_EXTRA=$(ASCIIDOC_EXTRA)
+ 
+ TAG_FOLDERS= . ../lib ../include
+ TAG_FILES= ../../include/uapi/linux/perf_event.h
+@@ -959,7 +959,7 @@ install-python_ext:
+ 
+ # 'make install-doc' should call 'make -C Documentation install'
+ $(INSTALL_DOC_TARGETS):
+-	$(Q)$(MAKE) -C $(DOC_DIR) O=$(OUTPUT) $(@:-doc=)
++	$(Q)$(MAKE) -C $(DOC_DIR) O=$(OUTPUT) $(@:-doc=) ASCIIDOC_EXTRA=$(ASCIIDOC_EXTRA)
+ 
+ ### Cleaning rules
+ 
 -- 
 2.26.2.303.gf8c07b1a785-goog
 
