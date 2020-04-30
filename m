@@ -2,90 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1ABB1BECF0
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 02:22:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D2EC1BECFF
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 02:34:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726419AbgD3AWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 20:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726279AbgD3AWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 20:22:21 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD49C035494
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 17:22:21 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id d3so1880944pgj.6
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 17:22:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yTsv7V2khja28H4GAsx3q04P4vwATxNN2ArNlfsJ6gk=;
-        b=AB7RvWGJXL2J7U3tk+CsmB/UfS1ujYnjsuNtGypA2P7a9L2EuYFMN5M5tOcpzsiL+1
-         jgRSO7oNCIj9Mumh8z/Pfr0r8wC8GxTYTBZncF9JOtQmiDxtB4A0Focz5QQxUmtKD7jh
-         g1XDpU1ni4DzYFaI5ntTQC0679HF7tpi4je68=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yTsv7V2khja28H4GAsx3q04P4vwATxNN2ArNlfsJ6gk=;
-        b=QGONYVfgc15QcyjuzrMBseDidBmtCBLx6qVJyU/zoQ0/YT5nZr/EfQSeOlSz1n3hIl
-         evQl5AoBdP3aqrnejH8R6GU1v+N7BjoVM9V/9ndXX8xzk7C6EPnVw2xrb5VeaMZuPu44
-         Qc3HVDs+8tcaTFeaemMX1oi/WcOJuEwuq9wgBpPHbw3WU33x/rh1avM0VYq36tWD8ZbC
-         GU/1+2UXDIvtMVCvYAx8YdGf1UjbQK3P0W0P6UFRE83wf2lirorUSs4OhV9QmrXr7sYR
-         vZ1Et1LCZnmU70ZaaeSawh+YcTnLaZ09QlWCdYoO7bV8D+Tur5hTk6GISz1TSwEc3P2S
-         pjKw==
-X-Gm-Message-State: AGi0PuYATH8T6crWqwbAZQOlxOW6MrmyREHxTSfDXrX138/27m9z74ef
-        S7jIzjzp9UJj8MuKIiyqDGkHz3EZ00Y=
-X-Google-Smtp-Source: APiQypKHASZfp/13ZJAO8uvwDtYLFYnIehOII+R3A+/H90JlQgxFFp/TPlfXV7+tvNtnJtTq9HA0pQ==
-X-Received: by 2002:a05:6a00:12:: with SMTP id h18mr753411pfk.293.1588206141305;
-        Wed, 29 Apr 2020 17:22:21 -0700 (PDT)
-Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id t20sm327544pjo.13.2020.04.29.17.22.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2020 17:22:20 -0700 (PDT)
-Date:   Thu, 30 Apr 2020 09:22:16 +0900
-From:   Benjamin Poirier <bpoirier@cumulusnetworks.com>
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH iproute2 1/7] bridge: Use the same flag names in input
- and output
-Message-ID: <20200430002216.GA76853@f3>
-References: <20200427235051.250058-1-bpoirier@cumulusnetworks.com>
- <20200427235051.250058-2-bpoirier@cumulusnetworks.com>
- <CAJieiUh0c1LCud2ZNuD5MygrBO=Yb1OgqHawxjgkX1j+6NHMrQ@mail.gmail.com>
+        id S1726481AbgD3Aeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 20:34:31 -0400
+Received: from pbmsgap01.intersil.com ([192.157.179.201]:48322 "EHLO
+        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726279AbgD3Aea (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 20:34:30 -0400
+X-Greylist: delayed 342 seconds by postgrey-1.27 at vger.kernel.org; Wed, 29 Apr 2020 20:34:30 EDT
+Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
+        by pbmsgap01.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 03U0P6iB005024;
+        Wed, 29 Apr 2020 20:28:46 -0400
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap01.intersil.com with ESMTP id 30mgqytds5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 29 Apr 2020 20:28:46 -0400
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1531.3; Wed, 29 Apr 2020 20:28:45 -0400
+Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.1531.3 via Frontend
+ Transport; Wed, 29 Apr 2020 20:28:44 -0400
+From:   <vincent.cheng.xh@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: [PATCH net-next 0/3] ptp: Add adjust phase to support phase offset.
+Date:   Wed, 29 Apr 2020 20:28:22 -0400
+Message-ID: <1588206505-21773-1-git-send-email-vincent.cheng.xh@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJieiUh0c1LCud2ZNuD5MygrBO=Yb1OgqHawxjgkX1j+6NHMrQ@mail.gmail.com>
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-29_11:2020-04-29,2020-04-29 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 suspectscore=4 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=661
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-2002250000 definitions=main-2004300000
+X-Proofpoint-Spam-Reason: mlx
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-04-29 08:12 -0700, Roopa Prabhu wrote:
-> On Mon, Apr 27, 2020 at 4:51 PM Benjamin Poirier
-> <bpoirier@cumulusnetworks.com> wrote:
-> >
-> > Output the same names for vlan flags as the ones accepted in command input.
-> >
-> > Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
-> > ---
-> 
-> Benjamin, It's a good change,  but this will break existing users ?.
+From: Vincent Cheng <vincent.cheng.xh@renesas.com>
 
-Nikolay voiced the same concern. The current output looks like
+This series adds adjust phase to the PTP Hardware Clock device interface.
 
-ben@f3:~$ bridge vlan
-port    vlan ids
-br0     None
-tap0     1 PVID Egress Untagged
+Some PTP hardware clocks have a write phase mode that has
+a built-in hardware filtering capability.  The write phase mode
+utilizes a phase offset control word instead of a frequency offset 
+control word.  Add adjust phase function to take advantage of this
+capability.
 
-tap1     1 PVID Egress Untagged
+Vincent Cheng (3):
+  ptp: Add adjphase function to support phase offset control.
+  ptp: Add adjust_phase to ptp_clock_caps capability.
+  ptp: ptp_clockmatrix: Add adjphase() to support PHC write phase mode.
 
-docker0  1 PVID Egress Untagged
+ drivers/ptp/ptp_chardev.c             |   1 +
+ drivers/ptp/ptp_clock.c               |   2 +
+ drivers/ptp/ptp_clockmatrix.c         | 123 ++++++++++++++++++++++++++++++++++
+ drivers/ptp/ptp_clockmatrix.h         |  11 ++-
+ include/linux/ptp_clock_kernel.h      |   6 +-
+ include/uapi/linux/ptp_clock.h        |   4 +-
+ tools/testing/selftests/ptp/testptp.c |   6 +-
+ 7 files changed, 147 insertions(+), 6 deletions(-)
 
-ben@f3:~$
+-- 
+2.7.4
 
-"PVID Egress Untagged" look like 3 flags to me. Anything we can do to
-improve it?
