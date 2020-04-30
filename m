@@ -2,77 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 733131C08B0
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:01:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 193E41C0892
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 22:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726677AbgD3VBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 17:01:23 -0400
-Received: from mout.kundenserver.de ([217.72.192.74]:40279 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbgD3VBW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:01:22 -0400
-Received: from A1K-Ubuntu.lan ([209.93.117.199]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.179]) with ESMTPA (Nemesis) id
- 1M9Frd-1jYv08364V-006Pty; Thu, 30 Apr 2020 23:01:15 +0200
-From:   Darren Stevens <darren@stevens-zone.net>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     oss@buserror.net, netdev@vger.kernel.org, madalin.bacur@nxp.com,
-        linuxppc-dev@lists.ozlabs.org, chzigotzky@xenosoft.de
-Date:   Thu, 30 Apr 2020 21:45:14 +0100 (BST)
-Message-ID: <4f9f07dc2ed.5db66924@auth.smtp.1and1.co.uk>
-In-Reply-To: <20200425001021.GB1095011@lunn.ch>
-References: <20200424232938.1a85d353@Cyrus.lan>
- <20200425001021.GB1095011@lunn.ch>
-User-Agent: YAM/2.9p1 (AmigaOS4; PPC; rv:20140418r7798)
-Subject: Re: Don't initialise ports with no PHY
+        id S1726626AbgD3UvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 16:51:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35036 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726338AbgD3UvG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 16:51:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=5A06G/vo4nsY8mFEkZch8Qvl2TNKsv7kBPwF2mP9QA0=; b=czWxAQDKv98MtAC8l9hWTbB2P4
+        60yl54BWYL88bQfGnbZaj1aOWOm1Z5wJhStMc5ixDNUyj+puM3/XB6iZgWm8hv39wKm1K0xjIddsB
+        cy0MHsKPfEcEs2mk4Vzp5ACRLFZMsxP2EQDvXHGQQqCJj7keYsL75Q5+/MqegK+XYcOY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jUG96-000SnX-JG; Thu, 30 Apr 2020 22:51:00 +0200
+Date:   Thu, 30 Apr 2020 22:51:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     cphealy@gmail.com, davem@davemloft.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, mkubecek@suse.cz, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 0/9] Ethernet Cable test support
+Message-ID: <20200430205100.GG107658@lunn.ch>
+References: <20200425180621.1140452-1-andrew@lunn.ch>
+ <20200429160213.21777-1-michael@walle.cc>
+ <20200429163247.GC66424@lunn.ch>
+ <c4363f2888192efc692e08cc1a4a9a57@walle.cc>
+ <20200430182331.GE76972@lunn.ch>
+ <30fd56d966b577a045ddeb01942a9944@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Provags-ID: V03:K1:fmf8xDnUzK1WedA9cWQE5LSLSxbFn1of7nHBxBR3yRKilFW0fF5
- OJ6HQwSUJOCx6rl52kdtqC/xPXc3MQKFito5V+n9aKOJ3dQ3GKqLuVUOgYHMvNJdnGnsT7Q
- lm5/5CZwJPyBdWsByEm07DZCS54J6Bkx2j4n1pIXzRBlK3d/vrvgoc5EqE760My03JZf0ze
- mFpToSbM9vHUJ2kOUsONA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6z6v/dYPaI8=:GaDS2hOxqcRk47vz2BwL0J
- siNhhZfVPtxhsQyPCWW+31UfkS/FQZsDT083a2mXCOxOp99UF/GBUJlpgtrimM8rg2blGqx25
- nxnvjTAabzkKsqjGxKdC3Sjh7riMTnNCviDmm0kr7v7IWQKBwsfxaOc46M9bDYQrJNJbCnwYB
- +ey8biZi9vJv4m9HbIUSgCsnSan617agjv2gZpq3mTASk2nHVxVPG//ku/W0/T4yEtfAMix7l
- 9ZKIE7X2tol5c2We8IQjJuuSWk2SlwvPjms3Ae+KBJdxiXdlX2eXJf5aF650KSI4QE3AiToMf
- dsPECAEGaFtVVMzMp36jOuwPK2xw85TrZSJ76Aamuq0rs5mygw64ep7PpBLm/F7rt8fcAbZ4w
- HKrWeAGPdp8fEdZySSeGXpLUSyXYXkrAp8EFKdeamA2ba1ddX2nnd6f8R3ixXl2N+Re68a3RA
- f6y4ZaHowRiz+e9mQcRsfreJfi5gM0iuc1utXB1totahrgBIxGzXFoFFK/ne+lol7n645/bjH
- sfL42JFuASIGPGr9jlCxdiGEDAs+txFLU9dfRdhuH26s4xGC3cI4IWlFnJMarWAH/FeFXFHzo
- DaCBEZFkgfrWaJmhpqWLNVHkVYl4YrPyfxc5Z6uBGQgQ7DqwOECz51l6eXc7mURyrNzixSghx
- vr4GDLB26F2VuVKv7BHwn6fHh8CnRDCmDxDzIPFDY20lM45B7g69FyoANF+dHeGOVwi0FSuOO
- jiuk3cMB8UuImYM81jRGZvDsSmwgYQUnc4D9rWJBnwPlDe9eOQ4EcFf5NBCqEU+Q1NZijMqtx
- xhJs9ebagTT1VIJtXHJHcKYdbQQVUP1QalGmPHIaxE4kaUkWSljh3FTqmMYbfjEBFDTyFYD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <30fd56d966b577a045ddeb01942a9944@walle.cc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Andrew
+On Thu, Apr 30, 2020 at 09:44:12PM +0200, Michael Walle wrote:
+> Am 2020-04-30 20:23, schrieb Andrew Lunn:
+> > > Ok. I do have one problem. TDR works fine for the AR8031 and the
+> > > BCM54140 as long as there is no link partner, i.e. open cable,
+> > > shorted pairs etc. But as soon as there is a link partner and a
+> > > link, both PHYs return garbage. As far as I understand TDR, there
+> > > must not be a link, correct?
+> > 
+> > Correct.
+> > 
+> > The Marvell PHY will down the link and then wait 1.5 seconds before
+> > starting TDR, if you set a bit. I _think_ it downs the link by turning
+> > off autoneg.
+> 
+> According to the Atheros datasheet the "CDT can be performed when
+> there is no link partner or when the link partner is auto-negotiating".
+> One could interpret that as is is only allowed _during_ autoneg. But
+> as far as I know there is no indication if autoneg is currently active,
+> is it?
+> 
+> > Maybe there is some hints in 802.3 clause 22?
+> 
+> I'm just skimming over that, but even if the link could be disabled
+> locally, shouldn't there still be link pulses from the peer?
 
-On 25/04/2020, Andrew Lunn wrote:
-> On Fri, Apr 24, 2020 at 11:29:38PM +0100, Darren Stevens wrote:
->> Since cbb961ca271e ("Use random MAC address when none is given")
->> Varisys Cyrus P5020 boards have been listing 5 ethernet ports instead of
->> the 2 the board has.This is because we were preventing the adding of the
->> unused ports by not suppling them a MAC address, which this patch now
->> supplies.
->> 
->> Prevent them from appearing in the net devices list by checking for a
->> 'status="disabled"' entry during probe and skipping the port if we find
->> it. 
->
-> Hi Darren
->
-> I'm surprised the core is probing a device which has status disabled.
-> Are you sure this is the correct explanation?
+I guessing here....
 
-You are correct, the core is detecting status="disabled". My mistake, the Hardware vendor's supplied dts always relied on only supplying active ports with an IP address, and it didn't occur to me to test that they could be disabled.
+If the local end stops negotiating, the link peer will stop sending
+traffic, and just sends link pulses. The PHY knows when the next set of
+link pulses are expected from the link partner, since they should be
+every 16ms. It can then avoid them when doing its TDR.
 
-Sorry.
-
-Regards
-Darren
-
+      Andrew
