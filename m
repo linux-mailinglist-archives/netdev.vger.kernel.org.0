@@ -2,97 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F281C06A0
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 21:39:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF6801C06A3
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 21:41:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgD3TjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 15:39:20 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:34873 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726318AbgD3TjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 15:39:20 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0E4A25C00A6;
-        Thu, 30 Apr 2020 15:39:19 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 30 Apr 2020 15:39:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=8Ws9ps3lVg7IhWMNT
-        naQ/4aJYXRu9Os3jYNOpTZ6jvA=; b=v99v1/6soCGfESBw9ZMkohNduywqGF+F6
-        ckTokBbPqazQ/k3wQjp2vnp1jEZr4m91K3UfXV3S4rR/u+fJNDTiW1iq4KxBvv3X
-        bKKZhrZfLxnNq+Sj0S++HH6YrUgfE3l/Zbb8hAPFoIm04R6hNykmMnOp7WNGzlU5
-        XXbaW5QCYH0NGuFrBtj6PKS9Pm5gG9czOlgYZ/NTgLEqG7wdtr6ziupTb+VdbDzM
-        whemRMhBXLdPmItICFUesqxIldjOhxLzqmbn/aUO2nWBIZChJd1icoVH8hUKe1ME
-        HqKevSt3LbWSYLjyHm0twnECLH1y3irIBA3tu0L+zSBoK3O5LOpoQ==
-X-ME-Sender: <xms:ZimrXrrTFgoolFxSyIqIy0My11wJva-iEf_-WHAkSo9ZmceZUcK9Vg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrieehgddufeekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeejledrudektddrheegrdduudeinecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ZimrXo5K531afULx2976cWxOFdXvGa_xPcq6Uxj1dkXUVDQNLyVvLA>
-    <xmx:ZimrXhrWKDA7Vl2Xzt9jshTwy_gq22BaqZFlLcmfu6wWGbImKg9bvg>
-    <xmx:ZimrXqgAGIip1LiU7kkxYOtXPIABlPIOQeF2ztO2SZwVPWOSaoxoBA>
-    <xmx:ZymrXjhdSpEvCPDJu3dTD0UobX1I6UqIack_CfyBiXURYY7I7-LLvQ>
-Received: from splinter.mtl.com (bzq-79-180-54-116.red.bezeqint.net [79.180.54.116])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E299F3065F40;
-        Thu, 30 Apr 2020 15:39:16 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Cc:     davem@davemloft.net, kuba@kernel.org, nikolay@cumulusnetworks.com,
-        roopa@cumulusnetworks.com, s.priebe@profihost.ag,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] net: bridge: vlan: Add a schedule point during VLAN processing
-Date:   Thu, 30 Apr 2020 22:38:45 +0300
-Message-Id: <20200430193845.4087868-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
+        id S1726375AbgD3Tls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 15:41:48 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34842 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726272AbgD3Tlr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 15:41:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=/yKT0kEu0twZ55Af42Shn8uTiSBnYYF/fmHd0lOTNu8=; b=20TN8wWq68SkMxcx43cLgoBSqs
+        NMkSQUz6/2gFa2gCfR+AzLjdDJm0KZoACfixK1X1pn65gutZEHfHSgj+IrlahTNUvtR8Iku0DRqWF
+        odLlJb8q3C+hg0ym5qDGUOOxSC2TOjP8fuKwMuuzXZhlae70MpVSNlNOZ1gDWm1Eh2Ns=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jUF43-000SJk-VA; Thu, 30 Apr 2020 21:41:43 +0200
+Date:   Thu, 30 Apr 2020 21:41:43 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, cphealy@gmail.com,
+        davem@davemloft.net, hkallweit1@gmail.com, mkubecek@suse.cz,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 0/9] Ethernet Cable test support
+Message-ID: <20200430194143.GF107658@lunn.ch>
+References: <20200425180621.1140452-1-andrew@lunn.ch>
+ <20200429160213.21777-1-michael@walle.cc>
+ <20200429163247.GC66424@lunn.ch>
+ <c4363f2888192efc692e08cc1a4a9a57@walle.cc>
+ <61eb35f8-3264-117d-59c2-22f0fdc36e96@gmail.com>
+ <9caef9bbfaed5c75e72e083db8a552fd@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9caef9bbfaed5c75e72e083db8a552fd@walle.cc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+> ECD. The registers looks exactly like the one from the Marvell PHYs,
+> which makes me wonder if both have the same building block or if one
+> imitated the registers of the other. There are subtle differences
+> like one bit in the broadcom PHY is "break link" and is self-clearing,
+> while the bit on the Marvell PHY is described as "perform diagnostics
+> on link break".
 
-User space can request to delete a range of VLANs from a bridge slave in
-one netlink request. For each deleted VLAN the FDB needs to be traversed
-in order to flush all the affected entries.
+Should we be sharing code between the two drivers?
 
-If a large range of VLANs is deleted and the number of FDB entries is
-large or the FDB lock is contented, it is possible for the kernel to
-loop through the deleted VLANs for a long time. In case preemption is
-disabled, this can result in a soft lockup.
+> What do you mean by calibrate it?
 
-Fix this by adding a schedule point after each VLAN is deleted to yield
-the CPU, if needed. This is safe because the VLANs are traversed in
-process context.
+Some of the Marvell documentation talks about calibrating for losses
+on the PCB. Run a diagnostics with no cable plugged in, and get the
+cable length to the 'fault'. This gives you the distance to the RJ45
+socket. You should then subtract that from all subsequent results.
+But since this is board design specific, i decided to ignore it. I
+suppose it could be stuffed into a DT property, but i got the feeling
+it is not worth it, given the measurement granularity of 80cm.
 
-Fixes: bdced7ef7838 ("bridge: support for multiple vlans and vlan ranges in setlink and dellink requests")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reported-by: Stefan Priebe - Profihost AG <s.priebe@profihost.ag>
-Tested-by: Stefan Priebe - Profihost AG <s.priebe@profihost.ag>
----
- net/bridge/br_netlink.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 43dab4066f91..a0f5dbee8f9c 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -612,6 +612,7 @@ int br_process_vlan_info(struct net_bridge *br,
- 					       v - 1, rtm_cmd);
- 				v_change_start = 0;
- 			}
-+			cond_resched();
- 		}
- 		/* v_change_start is set only if the last/whole range changed */
- 		if (v_change_start)
--- 
-2.24.1
-
+   Andrew
