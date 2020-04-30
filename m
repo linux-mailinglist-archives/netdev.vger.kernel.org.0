@@ -2,87 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 074601BED85
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 03:25:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B68CA1BED8F
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 03:32:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726378AbgD3BZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 21:25:55 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:30934 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726286AbgD3BZy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 21:25:54 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03U1F4Io004841
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 18:25:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=3+o7l02/rlglt5SdbycnrNsOMQZhnw7LzfBDqT6Y0rA=;
- b=Sf/SHdtzoJCD5puxSO5diXsluU7EFs7VP0fG6a9ogg9vDD+FV2FUJ36KWHQcNGFEUuNZ
- Tzi9RWIRZCtzhCvwUQIM+DIrmERsMhaZ/kMItxwvABXopZSX2H5qQNNWuhMedw90k11y
- fVeYTt/X0zlYizPEV4zHQKGfKal2e3qPJo4= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 30pq0dke9m-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 18:25:54 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Wed, 29 Apr 2020 18:25:52 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 79F5C2EC306A; Wed, 29 Apr 2020 18:25:45 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] libbpf: fix false unused variable warning
-Date:   Wed, 29 Apr 2020 18:25:44 -0700
-Message-ID: <20200430012544.1347275-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726424AbgD3Bb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 21:31:57 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:51611 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726291AbgD3Bb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 21:31:57 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id DDF925C00A0;
+        Wed, 29 Apr 2020 21:31:55 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Wed, 29 Apr 2020 21:31:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rylan.coffee; h=
+        date:from:to:subject:message-id:mime-version:content-type; s=
+        fm3; bh=SYK7O3pWETptKlBHEnGL7d2b/hjrdjwGHndWnjpBIYc=; b=I9Rl+wyc
+        wAmq++yMiOioQj+oWaq9nyXI0XsLaqEES0VZqiZwG3prd4qZiNH07Q145rQ02dNq
+        hiLZJ6vBIMkLZ2ndPBKwbqopvZdd6zvQY6vIbd5CGzWXB8MQPZXo3IJGiz2sxYEH
+        jEWLbfFBRRoXGB3avlx202U5BnmawUUsOJzYvFaXNo9CnkQs1LeZA+ul2U79Gx+C
+        YR/tYQJUGn89eRpeqo9C9aZ5QzVUl8RZbUM6wKXIli0Nk8dnqRQrQMqNvv4ubNt6
+        iASUhkOAh2Fc3GpsjNZ150ToHv9MC05eTZ13wdMxMXg/Iu93TTSsCBuxANMkhbUM
+        ua3TxhhdnZ/dbQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=content-type:date:from:message-id
+        :mime-version:subject:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm2; bh=SYK7O3pWETptKlBHEnGL7d2b/hjrd
+        jwGHndWnjpBIYc=; b=nj/QXmBskjFwJjZz1SEW1HTzdX8C72xA7b4qZZetuwHhN
+        PhYYmRuYS1q3NXxGVLmOQPNBVgH9Nwqd0fzzHSZE5j2S37tLeO5EInEUUr/PMT4Q
+        /VwbstVRlh3+Te5/QOaSsRpOzg3jxqiclLh5JMtyPtbXm1/MhOSI345DWRT6NiY+
+        Re6AGEKQvpx3TxC1FNlmHfv0KC2ps7kTtnDCJMH4oNayw2OEyCshrwzW45YuDnCt
+        FcpKcLPcyN3llXYe4dHj7CAI3/8ym5xPdnFRKa8RLzo8vxmEpVtrfNCGURjxSj+L
+        knem6Dwzvlf9Jwiu0XWft13qK+4rNWSxN+ep0XHPQ==
+X-ME-Sender: <xms:iyqqXnUN-2jG3K83g1OHzb59grIIIjZflxFff9n6CzTX6jxhYluwHA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrieeggdegiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkgggtugesthdtredttddtjeenucfhrhhomheptfihlhgrnhcuffhm
+    vghllhhouceomhgrihhlsehrhihlrghnrdgtohhffhgvvgeqnecuggftrfgrthhtvghrnh
+    epledukefggeevtdffjeduieefiedtuddufeeuvdehkeeuieelleeigfdvledufeelnecu
+    kfhppedutdekrdegledrudehkedrkeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
+    hrrghmpehmrghilhhfrhhomhepmhgrihhlsehrhihlrghnrdgtohhffhgvvg
+X-ME-Proxy: <xmx:iyqqXk_bOnBPMdhsAuA9Cx8DiMD_JJOWdmohjdJXLx9qsCThNAbYQQ>
+    <xmx:iyqqXmfyNvhFEl-sZyw_u2rBq3rgtfHICqzKdd_fECy43MKqgILAxg>
+    <xmx:iyqqXm-z82upvot94bBLUozn0b478f_YHZyc91ghnR9gelwOL-PtIA>
+    <xmx:iyqqXoIpOUQVVdgBIbxjt6b_6umq_MMSUQE4voGi_jjtSKIaejryQw>
+Received: from athena (pool-108-49-158-84.bstnma.fios.verizon.net [108.49.158.84])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 59DB73065EBD;
+        Wed, 29 Apr 2020 21:31:55 -0400 (EDT)
+Date:   Wed, 29 Apr 2020 21:31:54 -0400
+From:   Rylan Dmello <mail@rylan.coffee>
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, Joe Perches <joe@perches.com>
+Subject: [PATCH v2 0/7] staging: qlge: Checkpatch.pl indentation fixes in
+ qlge_main.c
+Message-ID: <cover.1588209862.git.mail@rylan.coffee>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-29_11:2020-04-29,2020-04-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
- priorityscore=1501 clxscore=1015 adultscore=0 lowpriorityscore=0
- impostorscore=0 malwarescore=0 bulkscore=0 spamscore=0 mlxscore=0
- mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004300006
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some versions of GCC falsely detect that vi might not be initialized. Tha=
-t's
-not true, but let's silence it with NULL initialization.
+This patchset fixes some indentation- and style-related issues in qlge_main.c
+reported by checkpatch.pl, such as:
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  WARNING: Avoid multiple line dereference
+  WARNING: line over 80 characters
+  WARNING: suspect code indent for conditional statements
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index d86ff8214b96..977add1b73e2 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -5003,8 +5003,8 @@ static int bpf_object__collect_map_relos(struct bpf=
-_object *obj,
- 					 GElf_Shdr *shdr, Elf_Data *data)
- {
- 	int i, j, nrels, new_sz, ptr_sz =3D sizeof(void *);
-+	const struct btf_var_secinfo *vi =3D NULL;
- 	const struct btf_type *sec, *var, *def;
--	const struct btf_var_secinfo *vi;
- 	const struct btf_member *member;
- 	struct bpf_map *map, *targ_map;
- 	const char *name, *mname;
---=20
-2.24.1
+v2:
+ - Addressed feedback from Joe Perches by unindenting
+   ql_set_mac_addr_reg and by replacing goto statements with break
+   statements in the function.
+
+Rylan Dmello (7):
+  staging: qlge: Fix indentation in ql_set_mac_addr_reg
+  staging: qlge: Remove gotos from ql_set_mac_addr_reg
+  staging: qlge: Fix indentation in ql_get_mac_addr_reg
+  staging: qlge: Remove goto statements from ql_get_mac_addr_reg
+  staging: qlge: Remove multi-line dereference from ql_request_irq
+  staging: qlge: Fix suspect code indent warning in ql_init_device
+  staging: qlge: Fix function argument alignment warning in
+    ql_init_device
+
+ drivers/staging/qlge/qlge_main.c | 258 ++++++++++++++-----------------
+ 1 file changed, 120 insertions(+), 138 deletions(-)
+
+-- 
+2.26.2
 
