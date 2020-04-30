@@ -2,130 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 962161C0271
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB891C0272
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:27:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbgD3Q0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 12:26:39 -0400
-Received: from mail-eopbgr60079.outbound.protection.outlook.com ([40.107.6.79]:10070
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726336AbgD3Q0i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 12:26:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AF9WEezybA6BwJhpjjBMeBqPuamGqvYbQX5jULxRw6FWtvM4/GkoBg76YG+dUC8RkW/fZlgXuIB6M0P1ckEWif0+8kF4WQsanZk5M+UzIUv11Kifv38cq3+ozUB8oozz493K08KDIP8PQ1L6Fo3R4j7alnW0BMJwYdsgv2cq/ueLRDskVCjVPJlT9aH/Gz9iRQSO8MLIBjS2n044HkqwUFSPd/5qg3Wq8ZqcmgXNYNIPxtQmuQG/h8HET6J0rGOLt621kFsZrDvpYc1zNdalxkkiNg4VTjOIEH4Cb4VyGtVZcTPuOBA1YjyA/WkjPr9j3xNiDgQAZp1mW8Hm1UXSqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2AAhFgVc2ZVICs48Ge6eX4rh1r93rthSxi81KUUQU30=;
- b=ZCgC5kcc+hy2Z2aenX0zXEJF0dWm2ckH1uzcP6fl8dcl1Oyy/w6JaTZ8x19GhbXhhKmRiP0nW3z9MB3TZsKoGzqW8O0++ZCkVVfgO7zPfUgmalG3pmGS/JoaLzuP7Ddx+dN/iNGcniuBuKuxHH3R8GTvx8gbUlbw8hoeEEor6Sp33KPRMPNcOe3I7WKJaEB7xpKC6Sj7CET4+hsm9bNoQN+CvqDDI3+tEcXXYF1pjywePg0ZrWY9NkLllDH/3zEcP7hWckST6uPnAMeqqESsyGl0s9aPcLQSTSjWL1MS4kBqGCFXyH5BVvluqrHyUmb7D9RgUUceFBIF6tz+j9FIUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2AAhFgVc2ZVICs48Ge6eX4rh1r93rthSxi81KUUQU30=;
- b=I10h61V0yky+I9JgQ6We6bqMMLXhSCPyMhyxbgrNHmTjt6Vk2CTFAbNQTYStLXbBwyuLVRTrjwmPBim9g7GFAE7EEHQj+zOLuLzUaX3CA06lvlHSvszQoZa7df3DuDkAkNfQEMRAr9r/zfkxG5U7xEHPjIg9eYEnIPfGwn1fKTw=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB5376.eurprd05.prod.outlook.com (2603:10a6:803:a4::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19; Thu, 30 Apr
- 2020 16:26:32 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.028; Thu, 30 Apr 2020
- 16:26:31 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        Roi Dayan <roid@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net V2 7/7] net/mlx5e: Fix q counters on uplink representors
-Date:   Thu, 30 Apr 2020 09:25:51 -0700
-Message-Id: <20200430162551.14997-8-saeedm@mellanox.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20200430162551.14997-1-saeedm@mellanox.com>
-References: <20200430162551.14997-1-saeedm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR02CA0070.namprd02.prod.outlook.com
- (2603:10b6:a03:54::47) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
+        id S1726616AbgD3Q1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 12:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726503AbgD3Q1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 12:27:39 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7FE4C035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 09:27:38 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id b11so7727577wrs.6
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 09:27:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=w5dGhgdXjcFYxh7PeZsK1x6o20/MILmLxPmOVMwjKo0=;
+        b=NuTQIojov+07F6xjJTplr1hK3fBv2T8BNYWmbMsYCR51qNx/9EhRJhNKIx27ZOVI33
+         WxC2zphjWv3rhhmvkZiytQPTps/9yYexZy5Or1HUF/0EpQ+kZMo5nOiuECg1lyTmIww/
+         M1lwRz43jJUZ3cEhw7RG26DumaptsHa10FjC3+JL7jajCw20qOLTUx5wk/JM9RMcIqv7
+         mj8sOIeBq0+rbHVMVl341W50xT6x2QLiask76D6kx0zRE0T/icmMuSuRDL42AAMwxycQ
+         PPbkyFHHOS5R1bKxNFPF21Wz69+9g7/vZELdRStZ0ewdK+3WbapeXic6ijWO2SQLAAQl
+         0yOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=w5dGhgdXjcFYxh7PeZsK1x6o20/MILmLxPmOVMwjKo0=;
+        b=JziZ89g9sBbaOk+htP6XXfTQGpM4Otar2MA6vek3517P1wK8Av8fvn+9sn+fkNB7Gk
+         DEuP4rOsZ/vLMZCJlMSFj7cfnpS7GL5ez2j6YeFKVHnVCgHuivnd4HwgFVdJxBMuvve7
+         ID21EsChxkZX1URADiQ1yzc1R84tYNmJRylTqxfio0n/pBdPl9B681tvdjsx6GgFAekh
+         nAtOKg1xhqPmjrtlxe68s6axnY3a23NBSET400kvchMK9QbHHHOQ5dw2AJt0hBVO9Y1Z
+         /hHlJYBsTuVG7ETL9I11Eac0ns8dx3hn7/LRLPeenWpa9ad/u7wzEeY5sjzcricmexUJ
+         Kgjw==
+X-Gm-Message-State: AGi0PuZS5A/THnb6LZedSPkCppfrvSafkRJ8yYMrIVDruvAD4gxQCXe7
+        DeuVTttoPPbUEKVChMCSV/ZkfA==
+X-Google-Smtp-Source: APiQypK/S9ssbCP3O7yRjBOcTDEB2eOJHUdkej82Rj3tFbMuOofvHnKMurj7qpGmWZNAM+sap2TkoQ==
+X-Received: by 2002:adf:e450:: with SMTP id t16mr5141548wrm.301.1588264057546;
+        Thu, 30 Apr 2020 09:27:37 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:702e:e652:aa4d:63d6? ([2a01:e0a:410:bb00:702e:e652:aa4d:63d6])
+        by smtp.gmail.com with ESMTPSA id e2sm281025wrv.89.2020.04.30.09.27.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Apr 2020 09:27:37 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next v4 2/3] net: ipv4: add sysctl for nexthop api
+ compatibility mode
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>, dsahern@gmail.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, rdunlap@infradead.org,
+        nikolay@cumulusnetworks.com, bpoirier@cumulusnetworks.com
+References: <1588021007-16914-1-git-send-email-roopa@cumulusnetworks.com>
+ <1588021007-16914-3-git-send-email-roopa@cumulusnetworks.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <74f127c0-8612-e964-b01e-bafec6669051@6wind.com>
+Date:   Thu, 30 Apr 2020 18:27:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR02CA0070.namprd02.prod.outlook.com (2603:10b6:a03:54::47) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Thu, 30 Apr 2020 16:26:29 +0000
-X-Mailer: git-send-email 2.25.4
-X-Originating-IP: [73.15.39.150]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 714d223f-78af-4c4f-3a17-08d7ed233de9
-X-MS-TrafficTypeDiagnostic: VI1PR05MB5376:|VI1PR05MB5376:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB537687B0BF8EE53F8B66FFD1BEAA0@VI1PR05MB5376.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:514;
-X-Forefront-PRVS: 0389EDA07F
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: m6j+KISNGpunadZQOwcacEgBL13tm4Y0KrwES1RkY2WNB+CCHW7bwXtY26xr0VI81Ds847OKFPcgoZ5GXxRtzEKvuA4nVMFTrbhPAm0m9xhOgSF5X+012PSgG8e0t3/tldDRPYNnwIPleAWNMkrFBQ8Mpn8DCVdrU64XnOajskmkvQSnOTvaV88RoqkoLYCRbs/kTAnSMSfIhFin2qD/WITR9gBZTm4nout5U9ksQxtCqba1eld7exqBNrZJPzdc6V0InpXIdeTbtyyC42mReZLU5sF1vZr8cxuWV8EE3fkTTom7VVbK4MWEymiL0pJX4rzIZD5tOJJhSWRbOeqbw7h4cy23rUSrSz5/ZKgUmRIrQ4SjyaPlAdTZ/i9M2vbQgpODVrWMfn7xEsFLexNX7VYPFbuKAbwRuV/4HSCJcP+YaLdtvuCq0Ep0M0q6aVY7JL3XaBib1x4jsBMPwj38CxYsfzjueJb4M4EfjdZhEv/yawx1sNOozmHCaArDgGM7
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(366004)(136003)(39860400002)(346002)(8936002)(6916009)(107886003)(36756003)(4326008)(66476007)(6486002)(54906003)(8676002)(66556008)(66946007)(2906002)(26005)(6512007)(1076003)(316002)(956004)(6506007)(86362001)(6666004)(52116002)(2616005)(5660300002)(186003)(16526019)(478600001)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: SMF1fEli39h68LN+Zb+BJ0RGQlti9MGoYroLnBau6NdLUaLdqHKuLTksWySQtKFpgZNMuVTflOldZrbf7uqo8yxlRllcRIlTZjMwJfUPlbUReY1qUmlxfjBLAQ64x+FRHnn6oRoNX5Q7XvR5vN5AzaQG7rWG90KWxK2xfHc2bOH1W+8AD11TKpLLZaJjgvjciadHgY2gKywB5wKi8Qtksv8T+1kH5FMbpfyA2Xl7dNYQIZ5rLh0McG1JvRIGu5S+pZ5zxmMlWRO8TyqFi+YQNYxlbpsjOQo8IkFi/Olw1VjVXmNOhVYuruTU2tKxqJKgg7JFOGSK/PjhclFCNcnqz+aD6kKeVh0PdI+u8DLUMDJXfsHjpo2rEOCFSyXUksO4S+FYMOO6RSYrPq2+DHGppcmg9fbU1bfLhGYYPXbFaLCnaUymXivX2gxV0itBt6Wttfe+8z7tp2Pe8ykqy6Bjf/MoDfbaZNdr5Rq4jV2XfIjGryShSxCqiltOmCxve0rtzWouBkW9ytlunQ5M3nGZaG4QHojMG0XD4Qch1ciFqeQu0acKNNFhbJ1S7Ivo9EE5QpOcMRWNZoav7/TwI9Yd/nOV9wkxEzvsatLIx+YjXuJCUUtPVF0rUYeZhClPcp47GKZloRt/9OncgPwCH3hqe7lHHxyri3DzNtBLNqOBh1lxCsLoZH3lCRgxMZ8zQCz0QjEOGjwUTQgYc9JOUwYgGZv5+J7cnJ04Pu/y16yAiWXlhDTMfxPOXEX9UFDsElPtMnmht+xgoDTrg44nkIPZJ4E/fDE9+h2+7MnwwYqKHNM=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 714d223f-78af-4c4f-3a17-08d7ed233de9
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 16:26:31.8505
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: O6JMD5hpwgs87xV2P0hpgfqKFe6V8bJ+MVmevpm9znM6Drm9pNtrgfPgrLUD6QkW4UuBZNa94Ll0Kzttmr0TJg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5376
+In-Reply-To: <1588021007-16914-3-git-send-email-roopa@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@mellanox.com>
+Le 27/04/2020 à 22:56, Roopa Prabhu a écrit :
+> From: Roopa Prabhu <roopa@cumulusnetworks.com>
+> 
+> Current route nexthop API maintains user space compatibility
+> with old route API by default. Dumps and netlink notifications
+> support both new and old API format. In systems which have
+> moved to the new API, this compatibility mode cancels some
+> of the performance benefits provided by the new nexthop API.
+> 
+> This patch adds new sysctl nexthop_compat_mode which is on
+> by default but provides the ability to turn off compatibility
+> mode allowing systems to run entirely with the new routing
+> API. Old route API behaviour and support is not modified by this
+> sysctl.
+> 
+> Uses a single sysctl to cover both ipv4 and ipv6 following
+> other sysctls. Covers dumps and delete notifications as
+> suggested by David Ahern.
+> 
+> Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+> ---
+>  Documentation/networking/ip-sysctl.txt | 12 ++++++++++++
+>  include/net/netns/ipv4.h               |  2 ++
+>  net/ipv4/af_inet.c                     |  1 +
+>  net/ipv4/fib_semantics.c               |  3 +++
+>  net/ipv4/nexthop.c                     |  5 +++--
+>  net/ipv4/sysctl_net_ipv4.c             |  9 +++++++++
+>  net/ipv6/route.c                       |  3 ++-
+>  7 files changed, 32 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+> index 6fcfd31..a8f2da4 100644
+> --- a/Documentation/networking/ip-sysctl.txt
+> +++ b/Documentation/networking/ip-sysctl.txt
+> @@ -1553,6 +1553,18 @@ skip_notify_on_dev_down - BOOLEAN
+>  	on userspace caches to track link events and evict routes.
+>  	Default: false (generate message)
+>  
+> +nexthop_compat_mode - BOOLEAN
+> +	New nexthop API provides a means for managing nexthops independent of
+> +	prefixes. Backwards compatibilty with old route format is enabled by
+> +	default which means route dumps and notifications contain the new
+> +	nexthop attribute but also the full, expanded nexthop definition.
+> +	Further, updates or deletes of a nexthop configuration generate route
+> +	notifications for each fib entry using the nexthop. Once a system
+> +	understands the new API, this sysctl can be disabled to achieve full
+> +	performance benefits of the new API by disabling the nexthop expansion
+> +	and extraneous notifications.
+> +	Default: true (backward compat mode)
+Maybe it could be good to allow only the transition true -> false to avoid
+nightmare debug. When the user chooses to leave the compat mode, it should never
+come back to it, it's not a game ;-)
 
-Need to allocate the q counters before init_rx which needs them
-when creating the rq.
 
-Fixes: 8520fa57a4e9 ("net/mlx5e: Create q counters on uplink representors")
-Signed-off-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 55457f268495..f372e94948fd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -1773,19 +1773,14 @@ static void mlx5e_cleanup_rep_rx(struct mlx5e_priv *priv)
- 
- static int mlx5e_init_ul_rep_rx(struct mlx5e_priv *priv)
- {
--	int err = mlx5e_init_rep_rx(priv);
--
--	if (err)
--		return err;
--
- 	mlx5e_create_q_counters(priv);
--	return 0;
-+	return mlx5e_init_rep_rx(priv);
- }
- 
- static void mlx5e_cleanup_ul_rep_rx(struct mlx5e_priv *priv)
- {
--	mlx5e_destroy_q_counters(priv);
- 	mlx5e_cleanup_rep_rx(priv);
-+	mlx5e_destroy_q_counters(priv);
- }
- 
- static int mlx5e_init_uplink_rep_tx(struct mlx5e_rep_priv *rpriv)
--- 
-2.25.4
-
+Regards,
+Nicolas
