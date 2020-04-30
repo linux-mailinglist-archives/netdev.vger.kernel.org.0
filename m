@@ -2,126 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB68B1C0AF1
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 01:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E934F1C0AF8
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 01:27:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727884AbgD3XWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 19:22:33 -0400
-Received: from mail-vi1eur05on2127.outbound.protection.outlook.com ([40.107.21.127]:1217
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726478AbgD3XWc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 19:22:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kq5WsBwspOrBg3cAyLSGsnmVS9LyyygAYawy9MYEFLz//E7/qChtpqfeMRFncZXnnRl7h+U3LQEfmm1rHh+xbToffyJG+MblKTJ69/13wIy4A2Iw30Izj07fpH+UdpnvAHs2hAJRnPDDHaV+BylJKDxj78qmfJ80ubZlDoH4D2hPWWJ7zURjfGmDaVq93Vj8djjA9OCEdTz/KJ6sSvK32cxaKh6Knh2Miv/rS1cKuQUFtsLWfKM7tW/lW/mUwX9WX4cSit27w0zy5Y33MRtPdh45oa2ATf1+++kktsSwoIDIxk575p/cT9z5z56nC80NJR/pETXBUXIJD3a0E3p8uA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BuBFAU4Hzx9GDkUUszi9EK7bt//MRDeG6L/n63Z4ZBI=;
- b=CdNoA9ea/S/D9BaGvZ7kKeS/a6JUOuWfCgUzbco7pGYJIZHqXAch0mKsSi5kbCDsGcnuU9SlKOi848tUNCVaSVXdhsVGKehDjEvM6KWkr2IxpM+j+QKOWkkystu398EWK9izhqsjQgeYbFd9IXsXYkwUchlRPmPq4rMumKYMqi3shjinlc7b3MXizR4ceBBv8OCbtrou7iCmC9Um8h9rlTtZdMSwHYprPAiRHIFV2h+KYD9MW87Suo4UgGAARqi6rdR69I7J27vdGuKzlBNfdoVQcr5Z5iUBLR5QRAorCg+TMcHndZiQzx8P6cdOjsmNZYdlGO8r/LclzdOj/6AGJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BuBFAU4Hzx9GDkUUszi9EK7bt//MRDeG6L/n63Z4ZBI=;
- b=QfFu6mOJr2PwXoGXTlV06UwW/GIVXplP/1JVwBbLmu/wNM7LYhqzST8IeRfqCgknMlzLf//kTgvNQpadhQhmgltZ7YDaUSwSCX0gVoFx+ohflVVNWRey0AYRq+/XneLtu7UrCqdclhansHH3AkjrA9TFZaC0XCt7ga7+ZtAMAs4=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=plvision.eu;
-Received: from DB6P190MB0390.EURP190.PROD.OUTLOOK.COM (10.175.242.25) by
- DB6P190MB0471.EURP190.PROD.OUTLOOK.COM (10.165.186.22) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2958.20; Thu, 30 Apr 2020 23:21:26 +0000
-Received: from DB6P190MB0390.EURP190.PROD.OUTLOOK.COM
- ([fe80::c59e:e6ed:2bec:94a6]) by DB6P190MB0390.EURP190.PROD.OUTLOOK.COM
- ([fe80::c59e:e6ed:2bec:94a6%6]) with mapi id 15.20.2937.028; Thu, 30 Apr 2020
- 23:21:25 +0000
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Vadym Kochan <vadym.kochan@plvision.eu>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Subject: [RFC next-next v2 5/5] dt-bindings: marvell,prestera: Add address mapping for Prestera Switchdev PCIe driver
-Date:   Fri,  1 May 2020 02:20:52 +0300
-Message-Id: <20200430232052.9016-6-vadym.kochan@plvision.eu>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200430232052.9016-1-vadym.kochan@plvision.eu>
-References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
-Content-Type: text/plain
-X-ClientProxiedBy: AM6P192CA0036.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:209:83::49) To DB6P190MB0390.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:6:33::25)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6P192CA0036.EURP192.PROD.OUTLOOK.COM (2603:10a6:209:83::49) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Thu, 30 Apr 2020 23:21:24 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [217.20.186.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 59641546-33a5-4ae9-43e6-08d7ed5d33f5
-X-MS-TrafficTypeDiagnostic: DB6P190MB0471:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB6P190MB0471C76093480EA932EFFB3C95AA0@DB6P190MB0471.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-Forefront-PRVS: 0389EDA07F
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: w8gPCM5QwGz0m+Vv+Jqk9VrZ2qQFuG9afdswdpwd/717WqNNOAUPD6ytVRVPMA4rikVAYiMbg/83uTRLlw+q4H2MgrXl6emwZ9offXy0EkwXC12PzohIEW5GHElskXlvAVoPdgO1xczAPRE00XJoILxUElBb6eQdkZoawzLT35bYp5yfYMHpvFrhdc0B23Mitp6S+z1YfeUG0yhmFjTl/4AGQqcvuTmdW14bvUKCmkeuaAZjWgKChBa42RHO/3VrhoH9reKGKdXnFlxnknHzuXO7SfK0m0vE760YiiAitf3C226vkCAnDJyI+ykq5ph11BYNKihomDMMxwhmR9rcsZLYEAsRh+hECZP+T9argO3HLE886pA86Y1Yheudgp9YJ9s04pO2lR+Qb9CrXsYNPlqgi7Wwj+cSFa80E4fHGedue+5HBWhETodtXYcVJf10MgCuAsuDyn03qqMg1W5UgR9Uf7VG7lC6wRb5O2ZqSGvxixXgyPj+wSFmygKdHJVc
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB6P190MB0390.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(39830400003)(396003)(366004)(376002)(136003)(346002)(6512007)(44832011)(54906003)(316002)(6666004)(2906002)(956004)(2616005)(508600001)(4326008)(66476007)(66556008)(66946007)(86362001)(36756003)(6486002)(6506007)(16526019)(186003)(26005)(8936002)(8676002)(52116002)(1076003)(6916009)(5660300002)(142933001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: zT6b8DMlg3EHR+AZd6iZWFhdULIZOtxm3PpIGLIgLkbI1uBxTfMWMgZgUed2LAi+tl96+Qr4Kw8o2wgXZJ4Ri63H+6ZTlrwPqjnNukmPQYKLhqRt5irDQIQelPwYozRPrWaQN2TBvy9qFPR0ZQmJfmF9bQkGCSy15De4z3KdNPZjeN1r1eDLAOduITqv2Lc1xJAoQEIy0Td0ccK9A5eKompR2K34cx1dCih5DYuO7Q+MqE0iVuTGvuyysfR5M8qN42waZLhA+OxrUDI0PXiYjNrJhvjEsJqENpKdaM4fIQaPEeTK8kPGwYrUkqM0jR9nMW+UFNaVbN2QDuDp9pHZ0xiAH4SfyICGDiGrvpyTiO8c5c5j6yyJTVAYBaa2foI7Pbx4n/RHyJIZOzR0PqWB4xbNuzEeTUBtXgdk5W8j6tRPmoMIY3rWRTv6sPv2pcu5WXPRGkKnD4E1ikQUP6PTrH/0TqxqZtUhmM/OrTOesAP5PDHjX8cjVCStd/brJHR6kHUsGAFKz6g7KwwF8SSWkKBgCtn05HYGaTfay9dUnW0P4gzujiCtz2mrY9R0TkaE3Vg3Q2sqr8X5mQUzRcq9ZaO97aFqoNGqMH7y8EHPU5QDAlN1iw14cl8ICZAVN75crURCT+rF1ELEYbjtcwAeMaSy7B6tnBOftpU0vaFnThsJhNS1Apm4BkAz+K79GPIsx4gv/D8wapCc/lKRPzZtFXUaq0Fb9Yv9jKFxWoTF8WjxKuAFY2l8EnMQllg54JWbsGB2hDfOMilvTcsNOe3XQb9Fqij+BTQNMGjYtcNVHhs=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59641546-33a5-4ae9-43e6-08d7ed5d33f5
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 23:21:25.7696
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VoxGbjbgAXOaEesFHVz0W9/3fBg2cPhzkBXgqccH8XVHGSx5c5bQmqpycJGIxbC/yeDWuhvUk7CZoqfxGzIjxQmtlSHNuDouJNo4NXjcdqs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6P190MB0471
+        id S1727833AbgD3X1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 19:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726473AbgD3X1U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 19:27:20 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D27FC035494;
+        Thu, 30 Apr 2020 16:27:20 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id f13so9468306wrm.13;
+        Thu, 30 Apr 2020 16:27:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=iwGMJ3atf52D3UJ+iV0PYj51AJ7HOOV59IlkEIgFlvs=;
+        b=Ho8eIrETN/C38cQG9B4TyO8NBcw5yzdnfi+ArQyZI795mD9FgdBLI/C/TjXZxKRHak
+         OsPLX/RwkPL4SQjdixuTljHnUDzhWPp4234FF2Q5TXu9JGdJTmICXPvCEB2R5LVgibkj
+         4pYWi0MuqTqDwss2szvhNde4ZocQ/1aiz4WGWAifLDdsWXXBNvIm2ZAuJqPARr2AQv8i
+         ahxfghwCHM4lwX9ear55rCzwOOE+LQSBRKyS1azOUilaDnsi/K14LB7ypRLVCqzLiUaF
+         i/VtDmKnP2k9aVDr3rPo3rClm8TQ1g9eIIgemoiMJvXJHbuZ9OEDMVnbtke3VsWLwtf7
+         V6xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=iwGMJ3atf52D3UJ+iV0PYj51AJ7HOOV59IlkEIgFlvs=;
+        b=mHi0CeTNgvr450yKkW3Zs76/4XXcH8CmxqClIdOL1tGvsWeFK4jMmgYGid0EAec/vt
+         G/BBYQ6+1ANTvRnGr9OzAS1GcdAha1DWi/EJ/rI1mvYOfk6X2N+9bEKGpB7tkW3snrwj
+         3yY6YGKQNs44Rg86QNWzUgEEaikDZCBPwfwhzX23oYTlq7E2aPSx1PzR5PlTiUaH4JHy
+         HLm33msgJFDcRz9VsgjRGfX9QD/kU049PdchqihXUqhwyGCpSVewh+COCVNPcsmvroti
+         9UxkbYxiL0ThKzeIwXqlaffNqhF2Jfo/b2zm16oSVZPIPW0UW6PJII7PIwewKmdO/9W5
+         6QCw==
+X-Gm-Message-State: AGi0PuY9S38yOM0DZxsVi+BmbqdLrMO2goN7PePjCiIQQAfk/SJ14P1+
+        WfvQ3qYBoR9m9G+GoQ/MMKtOVpDu
+X-Google-Smtp-Source: APiQypJ9QBZ/zFuFRlJyi2lC9tZGSSLHdykCtriDR2xe9V06oEpVjemClkqN3blZOvr0hTwEo+kZqg==
+X-Received: by 2002:adf:82f5:: with SMTP id 108mr964561wrc.43.1588289238808;
+        Thu, 30 Apr 2020 16:27:18 -0700 (PDT)
+Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id t8sm1708463wrq.88.2020.04.30.16.27.16
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 Apr 2020 16:27:18 -0700 (PDT)
+From:   Doug Berger <opendmb@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
+Subject: [PATCH net-next] net: bcmgenet: Move wake-up event out of side band ISR
+Date:   Thu, 30 Apr 2020 16:26:51 -0700
+Message-Id: <1588289211-26190-1-git-send-email-opendmb@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document requirement for the PCI port which is connected to the ASIC, to
-allow access to the firmware related registers.
+The side band interrupt service routine is not available on chips
+like 7211, or rather, it does not permit the signaling of wake-up
+events due to the complex interrupt hierarchy.
 
-Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+Move the wake-up event accounting into a .resume_noirq function,
+account for possible wake-up events and clear the MPD/HFB interrupts
+from there, while leaving the hardware untouched until the resume
+function proceeds with doing its usual business.
+
+Because bcmgenet_wol_power_down_cfg() now enables the MPD and HFB
+interrupts, it is invoked by a .suspend_noirq function to prevent
+the servicing of interrupts after the clocks have been disabled.
+
+Signed-off-by: Doug Berger <opendmb@gmail.com>
 ---
- .../devicetree/bindings/net/marvell,prestera.txt    | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 72 ++++++++++++++++++----
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  2 +
+ drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c |  6 ++
+ 3 files changed, 67 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/marvell,prestera.txt b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-index 83370ebf5b89..103c35cfa8a7 100644
---- a/Documentation/devicetree/bindings/net/marvell,prestera.txt
-+++ b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-@@ -45,3 +45,16 @@ dfx-server {
- 	ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
- 	reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
- };
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index ad614d7201bd..ff31da0ed846 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -3270,10 +3270,7 @@ static irqreturn_t bcmgenet_isr0(int irq, void *dev_id)
+ 
+ static irqreturn_t bcmgenet_wol_isr(int irq, void *dev_id)
+ {
+-	struct bcmgenet_priv *priv = dev_id;
+-
+-	pm_wakeup_event(&priv->pdev->dev, 0);
+-
++	/* Acknowledge the interrupt */
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -4174,13 +4171,12 @@ static void bcmgenet_shutdown(struct platform_device *pdev)
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+-static int bcmgenet_resume(struct device *d)
++static int bcmgenet_resume_noirq(struct device *d)
+ {
+ 	struct net_device *dev = dev_get_drvdata(d);
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+-	unsigned long dma_ctrl;
+-	u32 offset, reg;
+ 	int ret;
++	u32 reg;
+ 
+ 	if (!netif_running(dev))
+ 		return 0;
+@@ -4190,6 +4186,34 @@ static int bcmgenet_resume(struct device *d)
+ 	if (ret)
+ 		return ret;
+ 
++	if (device_may_wakeup(d) && priv->wolopts) {
++		/* Account for Wake-on-LAN events and clear those events
++		 * (Some devices need more time between enabling the clocks
++		 *  and the interrupt register reflecting the wake event so
++		 *  read the register twice)
++		 */
++		reg = bcmgenet_intrl2_0_readl(priv, INTRL2_CPU_STAT);
++		reg = bcmgenet_intrl2_0_readl(priv, INTRL2_CPU_STAT);
++		if (reg & UMAC_IRQ_WAKE_EVENT)
++			pm_wakeup_event(&priv->pdev->dev, 0);
++	}
 +
-+Marvell Prestera SwitchDev bindings
-+-----------------------------------
-+The current implementation of Prestera Switchdev PCI interface driver requires
-+that BAR2 is assigned to 0xf6000000 as base address from the PCI IO range:
++	bcmgenet_intrl2_0_writel(priv, UMAC_IRQ_WAKE_EVENT, INTRL2_CPU_CLEAR);
 +
-+&cp0_pcie0 {
-+	ranges = <0x81000000 0x0 0xfb000000 0x0 0xfb000000 0x0 0xf0000
-+		0x82000000 0x0 0xf6000000 0x0 0xf6000000 0x0 0x2000000
-+		0x82000000 0x0 0xf9000000 0x0 0xf9000000 0x0 0x100000>;
-+	phys = <&cp0_comphy0 0>;
-+	status = "okay";
++	return 0;
++}
++
++static int bcmgenet_resume(struct device *d)
++{
++	struct net_device *dev = dev_get_drvdata(d);
++	struct bcmgenet_priv *priv = netdev_priv(dev);
++	unsigned long dma_ctrl;
++	u32 offset, reg;
++	int ret;
++
++	if (!netif_running(dev))
++		return 0;
++
+ 	/* From WOL-enabled suspend, switch to regular clock */
+ 	if (device_may_wakeup(d) && priv->wolopts)
+ 		bcmgenet_power_up(priv, GENET_POWER_WOL_MAGIC);
+@@ -4262,7 +4286,6 @@ static int bcmgenet_suspend(struct device *d)
+ {
+ 	struct net_device *dev = dev_get_drvdata(d);
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+-	int ret = 0;
+ 	u32 offset;
+ 
+ 	if (!netif_running(dev))
+@@ -4282,23 +4305,46 @@ static int bcmgenet_suspend(struct device *d)
+ 	priv->hfb_en[2] = bcmgenet_hfb_reg_readl(priv, offset + sizeof(u32));
+ 	bcmgenet_hfb_reg_writel(priv, 0, HFB_CTRL);
+ 
++	return 0;
++}
++
++static int bcmgenet_suspend_noirq(struct device *d)
++{
++	struct net_device *dev = dev_get_drvdata(d);
++	struct bcmgenet_priv *priv = netdev_priv(dev);
++	int ret = 0;
++
++	if (!netif_running(dev))
++		return 0;
++
+ 	/* Prepare the device for Wake-on-LAN and switch to the slow clock */
+ 	if (device_may_wakeup(d) && priv->wolopts)
+ 		ret = bcmgenet_power_down(priv, GENET_POWER_WOL_MAGIC);
+ 	else if (priv->internal_phy)
+ 		ret = bcmgenet_power_down(priv, GENET_POWER_PASSIVE);
+ 
++	/* Let the framework handle resumption and leave the clocks on */
++	if (ret)
++		return ret;
++
+ 	/* Turn off the clocks */
+ 	clk_disable_unprepare(priv->clk);
+ 
+-	if (ret)
+-		bcmgenet_resume(d);
+-
+-	return ret;
++	return 0;
+ }
++#else
++#define bcmgenet_suspend	NULL
++#define bcmgenet_suspend_noirq	NULL
++#define bcmgenet_resume		NULL
++#define bcmgenet_resume_noirq	NULL
+ #endif /* CONFIG_PM_SLEEP */
+ 
+-static SIMPLE_DEV_PM_OPS(bcmgenet_pm_ops, bcmgenet_suspend, bcmgenet_resume);
++static const struct dev_pm_ops bcmgenet_pm_ops = {
++	.suspend	= bcmgenet_suspend,
++	.suspend_noirq	= bcmgenet_suspend_noirq,
++	.resume		= bcmgenet_resume,
++	.resume_noirq	= bcmgenet_resume_noirq,
 +};
+ 
+ static const struct acpi_device_id genet_acpi_match[] = {
+ 	{ "BCM6E4E", (kernel_ulong_t)&bcm2711_plat_data },
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+index 031d91f45067..a12cb59298f4 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+@@ -312,6 +312,8 @@ struct bcmgenet_mib_counters {
+ #define UMAC_IRQ_HFB_SM			(1 << 10)
+ #define UMAC_IRQ_HFB_MM			(1 << 11)
+ #define UMAC_IRQ_MPD_R			(1 << 12)
++#define UMAC_IRQ_WAKE_EVENT		(UMAC_IRQ_HFB_SM | UMAC_IRQ_HFB_MM | \
++					 UMAC_IRQ_MPD_R)
+ #define UMAC_IRQ_RXDMA_MBDONE		(1 << 13)
+ #define UMAC_IRQ_RXDMA_PDONE		(1 << 14)
+ #define UMAC_IRQ_RXDMA_BDONE		(1 << 15)
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+index 4b9d65f392c2..4ea6a26b04f7 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+@@ -193,6 +193,12 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
+ 		bcmgenet_ext_writel(priv, reg, EXT_EXT_PWR_MGMT);
+ 	}
+ 
++	reg = UMAC_IRQ_MPD_R;
++	if (hfb_enable)
++		reg |=  UMAC_IRQ_HFB_SM | UMAC_IRQ_HFB_MM;
++
++	bcmgenet_intrl2_0_writel(priv, reg, INTRL2_CPU_MASK_CLEAR);
++
+ 	return 0;
+ }
+ 
 -- 
-2.17.1
+2.7.4
 
