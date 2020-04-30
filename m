@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 637481C0194
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:08:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 507501C0181
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 18:07:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728487AbgD3QG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 12:06:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50864 "EHLO mail.kernel.org"
+        id S1728355AbgD3QGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 12:06:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50842 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726960AbgD3QEi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 12:04:38 -0400
+        id S1726961AbgD3QEj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 12:04:39 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3A49624970;
+        by mail.kernel.org (Postfix) with ESMTPSA id 3ABBF24971;
         Thu, 30 Apr 2020 16:04:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588262676;
-        bh=nFix0a/j/Cj5TviaDz5+T9+Ut0oC83oAgMWkoZOnEvQ=;
+        bh=9C1dMa3Ehy9gAHQ6OEEAo6fXYVOEg1MVQjKTqt6Kfh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IkzFj0pBnvQtFcGQpcY7mKuY7CwzkLdlE9w6FUv7aqrdOx4zaGMTkIpYV8ysll2T1
-         YWMwLz/uVefvLrz5q1HgKt9hKtsA6TpgTUSWhUnk7V6Ll+9UTUBJpAFWzWDgGHYEKr
-         kSTOF+2o8uoSimJ5RQtZMq8CkGNGhZnKfh58O9FU=
+        b=CPwloxsInEjj07RqZI+aYO6sQcQA7HiRfy96ApyEWWHqNYeOn1a0Z0TJzD28aMJFc
+         Zp0IZfrCa0J49qQgdradEgVmd84mnx0BDE27s/2QEWXAUr1JfYZSrvPRzpIRjKlsjA
+         1A7ewi7pHZ6afw8jPiXLam0MuZrPnhCYDC7pdMvg=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUBfu-00AxFc-Fq; Thu, 30 Apr 2020 18:04:34 +0200
+        id 1jUBfu-00AxFh-Gc; Thu, 30 Apr 2020 18:04:34 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 19/37] docs: networking: convert PLIP.txt to ReST
-Date:   Thu, 30 Apr 2020 18:04:14 +0200
-Message-Id: <3a25bd7bb5cda9f622d43584bd0d062034fa4fb6.1588261997.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 20/37] docs: networking: convert ppp_generic.txt to ReST
+Date:   Thu, 30 Apr 2020 18:04:15 +0200
+Message-Id: <e711e7e6de04025ff21e893b7c008fab677c55ac.1588261997.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588261997.git.mchehab+huawei@kernel.org>
 References: <cover.1588261997.git.mchehab+huawei@kernel.org>
@@ -46,164 +46,193 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
+- adjust title markup;
 - mark code blocks and literals as such;
+- mark tables as such;
 - adjust identation, whitespaces and blank lines where needed;
 - add to networking/index.rst.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
  Documentation/networking/index.rst            |  1 +
- .../networking/{PLIP.txt => plip.rst}         | 43 +++++++++++--------
- drivers/net/plip/Kconfig                      |  2 +-
- 3 files changed, 27 insertions(+), 19 deletions(-)
- rename Documentation/networking/{PLIP.txt => plip.rst} (92%)
+ .../{ppp_generic.txt => ppp_generic.rst}      | 52 ++++++++++++-------
+ 2 files changed, 33 insertions(+), 20 deletions(-)
+ rename Documentation/networking/{ppp_generic.txt => ppp_generic.rst} (91%)
 
 diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 696181a96e3c..18bb10239cad 100644
+index 18bb10239cad..f89535871481 100644
 --- a/Documentation/networking/index.rst
 +++ b/Documentation/networking/index.rst
-@@ -92,6 +92,7 @@ Contents:
-    packet_mmap
+@@ -93,6 +93,7 @@ Contents:
     phonet
     pktgen
-+   plip
+    plip
++   ppp_generic
  
  .. only::  subproject and html
  
-diff --git a/Documentation/networking/PLIP.txt b/Documentation/networking/plip.rst
-similarity index 92%
-rename from Documentation/networking/PLIP.txt
-rename to Documentation/networking/plip.rst
-index ad7e3f7c3bbf..0eda745050ff 100644
---- a/Documentation/networking/PLIP.txt
-+++ b/Documentation/networking/plip.rst
-@@ -1,4 +1,8 @@
+diff --git a/Documentation/networking/ppp_generic.txt b/Documentation/networking/ppp_generic.rst
+similarity index 91%
+rename from Documentation/networking/ppp_generic.txt
+rename to Documentation/networking/ppp_generic.rst
+index fd563aff5fc9..e60504377900 100644
+--- a/Documentation/networking/ppp_generic.txt
++++ b/Documentation/networking/ppp_generic.rst
+@@ -1,8 +1,12 @@
+-		PPP Generic Driver and Channel Interface
+-		----------------------------------------
 +.. SPDX-License-Identifier: GPL-2.0
+ 
+-			    Paul Mackerras
++========================================
++PPP Generic Driver and Channel Interface
++========================================
 +
-+================================================
- PLIP: The Parallel Line Internet Protocol Device
-+================================================
- 
- Donald Becker (becker@super.org)
- I.D.A. Supercomputing Research Center, Bowie MD 20715
-@@ -83,7 +87,7 @@ When the PLIP driver is used in IRQ mode, the timeout used for triggering a
- data transfer (the maximal time the PLIP driver would allow the other side
- before announcing a timeout, when trying to handshake a transfer of some
- data) is, by default, 500usec. As IRQ delivery is more or less immediate,
--this timeout is quite sufficient. 
-+this timeout is quite sufficient.
- 
- When in IRQ-less mode, the PLIP driver polls the parallel port HZ times
- per second (where HZ is typically 100 on most platforms, and 1024 on an
-@@ -115,7 +119,7 @@ printer "null" cable to transfer data four bits at a time using
- data bit outputs connected to status bit inputs.
- 
- The second data transfer method relies on both machines having
--bi-directional parallel ports, rather than output-only ``printer''
-+bi-directional parallel ports, rather than output-only ``printer``
- ports.  This allows byte-wide transfers and avoids reconstructing
- nibbles into bytes, leading to much faster transfers.
- 
-@@ -132,7 +136,7 @@ bits with standard status register implementation.
- 
- A cable that implements this protocol is available commercially as a
- "Null Printer" or "Turbo Laplink" cable.  It can be constructed with
--two DB-25 male connectors symmetrically connected as follows:
-+two DB-25 male connectors symmetrically connected as follows::
- 
-     STROBE output	1*
-     D0->ERROR	2 - 15		15 - 2
-@@ -146,7 +150,8 @@ two DB-25 male connectors symmetrically connected as follows:
-     SLCTIN	17 - 17
-     extra grounds are 18*,19*,20*,21*,22*,23*,24*
-     GROUND	25 - 25
--* Do not connect these pins on either end
++			   Paul Mackerras
+ 			   paulus@samba.org
 +
-+    * Do not connect these pins on either end
+ 			      7 Feb 2002
  
- If the cable you are using has a metallic shield it should be
- connected to the metallic DB-25 shell at one end only.
-@@ -155,14 +160,14 @@ Parallel Transfer Mode 1
- ========================
+ The generic PPP driver in linux-2.4 provides an implementation of the
+@@ -19,7 +23,7 @@ functionality which is of use in any PPP implementation, including:
+ * simple packet filtering
  
- The second data transfer method relies on both machines having
--bi-directional parallel ports, rather than output-only ``printer''
-+bi-directional parallel ports, rather than output-only ``printer``
- ports.  This allows byte-wide transfers, and avoids reconstructing
- nibbles into bytes.  This cable should not be used on unidirectional
--``printer'' (as opposed to ``parallel'') ports or when the machine
-+``printer`` (as opposed to ``parallel``) ports or when the machine
- isn't configured for PLIP, as it will result in output driver
- conflicts and the (unlikely) possibility of damage.
+ For sending and receiving PPP frames, the generic PPP driver calls on
+-the services of PPP `channels'.  A PPP channel encapsulates a
++the services of PPP ``channels``.  A PPP channel encapsulates a
+ mechanism for transporting PPP frames from one machine to another.  A
+ PPP channel implementation can be arbitrarily complex internally but
+ has a very simple interface with the generic PPP code: it merely has
+@@ -102,7 +106,7 @@ communications medium and prepare it to do PPP.  For example, with an
+ async tty, this can involve setting the tty speed and modes, issuing
+ modem commands, and then going through some sort of dialog with the
+ remote system to invoke PPP service there.  We refer to this process
+-as `discovery'.  Then the user-level process tells the medium to
++as ``discovery``.  Then the user-level process tells the medium to
+ become a PPP channel and register itself with the generic PPP layer.
+ The channel then has to report the channel number assigned to it back
+ to the user-level process.  From that point, the PPP negotiation code
+@@ -111,8 +115,8 @@ negotiation, accessing the channel through the /dev/ppp interface.
  
--The cable for this transfer mode should be constructed as follows:
-+The cable for this transfer mode should be constructed as follows::
+ At the interface to the PPP generic layer, PPP frames are stored in
+ skbuff structures and start with the two-byte PPP protocol number.
+-The frame does *not* include the 0xff `address' byte or the 0x03
+-`control' byte that are optionally used in async PPP.  Nor is there
++The frame does *not* include the 0xff ``address`` byte or the 0x03
++``control`` byte that are optionally used in async PPP.  Nor is there
+ any escaping of control characters, nor are there any FCS or framing
+ characters included.  That is all the responsibility of the channel
+ code, if it is needed for the particular medium.  That is, the skbuffs
+@@ -121,16 +125,16 @@ protocol number and the data, and the skbuffs presented to ppp_input()
+ must be in the same format.
  
-     STROBE->BUSY 1 - 11
-     D0->D0	2 - 2
-@@ -179,7 +184,8 @@ The cable for this transfer mode should be constructed as follows:
-     GND->ERROR	18 - 15
-     extra grounds are 19*,20*,21*,22*,23*,24*
-     GROUND	25 - 25
--* Do not connect these pins on either end
+ The channel must provide an instance of a ppp_channel struct to
+-represent the channel.  The channel is free to use the `private' field
+-however it wishes.  The channel should initialize the `mtu' and
+-`hdrlen' fields before calling ppp_register_channel() and not change
+-them until after ppp_unregister_channel() returns.  The `mtu' field
++represent the channel.  The channel is free to use the ``private`` field
++however it wishes.  The channel should initialize the ``mtu`` and
++``hdrlen`` fields before calling ppp_register_channel() and not change
++them until after ppp_unregister_channel() returns.  The ``mtu`` field
+ represents the maximum size of the data part of the PPP frames, that
+ is, it does not include the 2-byte protocol number.
+ 
+ If the channel needs some headroom in the skbuffs presented to it for
+ transmission (i.e., some space free in the skbuff data area before the
+-start of the PPP frame), it should set the `hdrlen' field of the
++start of the PPP frame), it should set the ``hdrlen`` field of the
+ ppp_channel struct to the amount of headroom required.  The generic
+ PPP layer will attempt to provide that much headroom but the channel
+ should still check if there is sufficient headroom and copy the skbuff
+@@ -322,6 +326,8 @@ an interface unit are:
+   interface.  The argument should be a pointer to an int containing
+   the new flags value.  The bits in the flags value that can be set
+   are:
 +
-+    * Do not connect these pins on either end
++	================	========================================
+ 	SC_COMP_TCP		enable transmit TCP header compression
+ 	SC_NO_TCP_CCID		disable connection-id compression for
+ 				TCP header compression
+@@ -335,6 +341,7 @@ an interface unit are:
+ 	SC_MP_SHORTSEQ		expect short multilink sequence
+ 				numbers on received multilink fragments
+ 	SC_MP_XSHORTSEQ		transmit short multilink sequence nos.
++	================	========================================
  
- Once again, if the cable you are using has a metallic shield it should
- be connected to the metallic DB-25 shell at one end only.
-@@ -188,7 +194,7 @@ PLIP Mode 0 transfer protocol
- =============================
- 
- The PLIP driver is compatible with the "Crynwr" parallel port transfer
--standard in Mode 0.  That standard specifies the following protocol:
-+standard in Mode 0.  That standard specifies the following protocol::
- 
-    send header nibble '0x8'
-    count-low octet
-@@ -196,20 +202,21 @@ standard in Mode 0.  That standard specifies the following protocol:
-    ... data octets
-    checksum octet
- 
--Each octet is sent as
-+Each octet is sent as::
+   The values of these flags are defined in <linux/ppp-ioctl.h>.  Note
+   that the values of the SC_MULTILINK, SC_MP_SHORTSEQ and
+@@ -345,17 +352,20 @@ an interface unit are:
+   interface unit.  The argument should point to an int where the ioctl
+   will store the flags value.  As well as the values listed above for
+   PPPIOCSFLAGS, the following bits may be set in the returned value:
 +
- 	<wait for rx. '0x1?'>	<send 0x10+(octet&0x0F)>
- 	<wait for rx. '0x0?'>	<send 0x00+((octet>>4)&0x0F)>
++	================	=========================================
+ 	SC_COMP_RUN		CCP compressor is running
+ 	SC_DECOMP_RUN		CCP decompressor is running
+ 	SC_DC_ERROR		CCP decompressor detected non-fatal error
+ 	SC_DC_FERROR		CCP decompressor detected fatal error
++	================	=========================================
  
- To start a transfer the transmitting machine outputs a nibble 0x08.
- That raises the ACK line, triggering an interrupt in the receiving
- machine.  The receiving machine disables interrupts and raises its own ACK
--line. 
-+line.
+ * PPPIOCSCOMPRESS sets the parameters for packet compression or
+   decompression.  The argument should point to a ppp_option_data
+   structure (defined in <linux/ppp-ioctl.h>), which contains a
+   pointer/length pair which should describe a block of memory
+   containing a CCP option specifying a compression method and its
+-  parameters.  The ppp_option_data struct also contains a `transmit'
++  parameters.  The ppp_option_data struct also contains a ``transmit``
+   field.  If this is 0, the ioctl will affect the receive path,
+   otherwise the transmit path.
  
--Restated:
-+Restated::
+@@ -377,7 +387,7 @@ an interface unit are:
+   ppp_idle structure (defined in <linux/ppp_defs.h>).  If the
+   CONFIG_PPP_FILTER option is enabled, the set of packets which reset
+   the transmit and receive idle timers is restricted to those which
+-  pass the `active' packet filter.
++  pass the ``active`` packet filter.
+   Two versions of this command exist, to deal with user space
+   expecting times as either 32-bit or 64-bit time_t seconds.
  
--(OUT is bit 0-4, OUT.j is bit j from OUT. IN likewise)
--Send_Byte:
--   OUT := low nibble, OUT.4 := 1
--   WAIT FOR IN.4 = 1
--   OUT := high nibble, OUT.4 := 0
--   WAIT FOR IN.4 = 0
-+  (OUT is bit 0-4, OUT.j is bit j from OUT. IN likewise)
-+  Send_Byte:
-+     OUT := low nibble, OUT.4 := 1
-+     WAIT FOR IN.4 = 1
-+     OUT := high nibble, OUT.4 := 0
-+     WAIT FOR IN.4 = 0
-diff --git a/drivers/net/plip/Kconfig b/drivers/net/plip/Kconfig
-index b41035be2d51..e03556d1d0c2 100644
---- a/drivers/net/plip/Kconfig
-+++ b/drivers/net/plip/Kconfig
-@@ -21,7 +21,7 @@ config PLIP
- 	  bits at a time (mode 0) or with special PLIP cables, to be used on
- 	  bidirectional parallel ports only, which can transmit 8 bits at a
- 	  time (mode 1); you can find the wiring of these cables in
--	  <file:Documentation/networking/PLIP.txt>.  The cables can be up to
-+	  <file:Documentation/networking/plip.rst>.  The cables can be up to
- 	  15m long.  Mode 0 works also if one of the machines runs DOS/Windows
- 	  and has some PLIP software installed, e.g. the Crynwr PLIP packet
- 	  driver (<http://oak.oakland.edu/simtel.net/msdos/pktdrvr-pre.html>)
+@@ -391,31 +401,33 @@ an interface unit are:
+ 
+ * PPPIOCSNPMODE sets the network-protocol mode for a given network
+   protocol.  The argument should point to an npioctl struct (defined
+-  in <linux/ppp-ioctl.h>).  The `protocol' field gives the PPP protocol
+-  number for the protocol to be affected, and the `mode' field
++  in <linux/ppp-ioctl.h>).  The ``protocol`` field gives the PPP protocol
++  number for the protocol to be affected, and the ``mode`` field
+   specifies what to do with packets for that protocol:
+ 
++	=============	==============================================
+ 	NPMODE_PASS	normal operation, transmit and receive packets
+ 	NPMODE_DROP	silently drop packets for this protocol
+ 	NPMODE_ERROR	drop packets and return an error on transmit
+ 	NPMODE_QUEUE	queue up packets for transmit, drop received
+ 			packets
++	=============	==============================================
+ 
+   At present NPMODE_ERROR and NPMODE_QUEUE have the same effect as
+   NPMODE_DROP.
+ 
+ * PPPIOCGNPMODE returns the network-protocol mode for a given
+   protocol.  The argument should point to an npioctl struct with the
+-  `protocol' field set to the PPP protocol number for the protocol of
+-  interest.  On return the `mode' field will be set to the network-
++  ``protocol`` field set to the PPP protocol number for the protocol of
++  interest.  On return the ``mode`` field will be set to the network-
+   protocol mode for that protocol.
+ 
+-* PPPIOCSPASS and PPPIOCSACTIVE set the `pass' and `active' packet
++* PPPIOCSPASS and PPPIOCSACTIVE set the ``pass`` and ``active`` packet
+   filters.  These ioctls are only available if the CONFIG_PPP_FILTER
+   option is selected.  The argument should point to a sock_fprog
+   structure (defined in <linux/filter.h>) containing the compiled BPF
+   instructions for the filter.  Packets are dropped if they fail the
+-  `pass' filter; otherwise, if they fail the `active' filter they are
++  ``pass`` filter; otherwise, if they fail the ``active`` filter they are
+   passed but they do not reset the transmit or receive idle timer.
+ 
+ * PPPIOCSMRRU enables or disables multilink processing for received
 -- 
 2.25.4
 
