@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0FC71BF3CE
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 11:08:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A3191BF3C6
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 11:07:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727052AbgD3JHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 05:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38614 "EHLO
+        id S1726924AbgD3JHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 05:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726853AbgD3JHf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 05:07:35 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E27C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 02:07:33 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id e16so774595wra.7
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 02:07:33 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726902AbgD3JHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 05:07:37 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75933C09B040
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 02:07:35 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id j2so5907413wrs.9
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 02:07:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sartura-hr.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4IFZd1qXcd87Y4Kb8dlFeUJd/ZFzdcOLb7Q8itu4OPU=;
-        b=I8PpA8gaKcgMqKhaimKG3chJ67lv7Oi7gXilQeqy5e6TgM1MbHDqnJrOEpRE1TD5be
-         t6FcSJ0XWRUTdrJHZXyggxI5RYNpQG5tsvCrMhBRlHCy/NKfPO79+AldVyC3orIMTXdD
-         m8xqApVTaLXPg28qXAhSiGHMbtzd7c6sVKzHpaK48vwa1vWYYpEpMAfrykV2vd7m0ZNg
-         rgi9+deICrpqtPUFDIAFQkSWSlhtgn99Pq3s7ubdZ4B8LMmwThGvPLtPwTedvKamzW2c
-         7GsLB1UDgY6JL6EnGPnP19aLFSq2oU/5eXOUH3bhno+Ohv0YrsKDoks/8xHt/T0W1rdW
-         RAMQ==
+        bh=aSnhROolTmuNxKQ1QNrIfCpkc60JhptC2Ev7o1MMRIs=;
+        b=2NFtPuDai2GU04crZKM1empmfPhhA0Bls4/L4/QBIxjpleOLdh4HhLB8HS2qu8LTWe
+         PTryYB1/x9f2RDQCnTnTXXDUhXqeXtQhj4/3kN0tl9iOGOBXLAMWe9DmN/abE5PjLg6v
+         RRi+qi6mmiywapKBX4rE2ggqBde5iCJ6UrTKbhjMjJs5Ps+bjIgwVkttddT/E1YWAnxJ
+         Odbv1sZjCOx1PajkLcUeuK/Oka3YY7QlUPVr1LJAarWD7ghoRjAE2iBp3hF944f+PytA
+         iSYC5OoPZpEw/iOLkUXRWpd8uGTA+AONLKX2CYK0BXkBvzXDyvCo2322CldgdrdTaIPy
+         arEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4IFZd1qXcd87Y4Kb8dlFeUJd/ZFzdcOLb7Q8itu4OPU=;
-        b=rnlD+lKWKX71cSFxHkCxqeL6io+Rk3bAv1L+5iJHd5WiF5bRSa8NMwPM53vTNzL5T+
-         8Iu8WyGbuQoUl0w6pSJ/5gfB8lJNcniJyo5taR0nxfniKjsFt7iG9cvCHAol5kYB/3Vw
-         i1AlKuMVqEwTN+aGcx6ROQYJc+7ljB/o2Tb/8Bav1lL8tMXrI9mb+W/30qxbLU36qx2x
-         wzwyOuyw6V3mxwgJ7nwJxL1KxbVNXx8mFGtCiow+WjHBd5GQkkepfU/NNkI9n4l4wIxW
-         hceTVc5pXJBOY0eiH9+idhHeDHPoWLtXjxHkM9bP9Omp1qyvM4ArdDsA3JcxgiCsIoUh
-         7lig==
-X-Gm-Message-State: AGi0PuaTrj+hLQwxcTglogvmoXTo2Gw3g6bC3YnxP04uaZBDLHbfErel
-        +AXEecW29k6snQ+kT6OkQm/JAg==
-X-Google-Smtp-Source: APiQypLbE6U7WN08pNaa+vsjXPdd+7UZ+H0gkm4r2CyGpQlcS5EbhKxLXmNTgzXcP4JCojR0mXGuBQ==
-X-Received: by 2002:adf:f187:: with SMTP id h7mr2714292wro.331.1588237652231;
-        Thu, 30 Apr 2020 02:07:32 -0700 (PDT)
+        bh=aSnhROolTmuNxKQ1QNrIfCpkc60JhptC2Ev7o1MMRIs=;
+        b=qEH2MFnRwZNvq/tfpBo8xX0gUu5kfMOWnZ8Iizt9MjkU4dJVaGO67Jw61UbS6tByy0
+         0NtAR3wjpZsXTy3IiP5lmd/SLZqN9nmWrswMlaFQyaH0YZ5Gf9zkFkkA0oTARazbU+Fd
+         dG1TT7xmOAvODkq+ya7imEdDUKrjo3PgshwTwDE0rk1J9gvNBWBgGMH04Kk+YB9noiui
+         QfSGcmIgYjWJaWnkEg1jeH7h+770D6G3e2EcsJj23Q/UA2iAFtfqrApSbvqotmDbdekf
+         Zbe4H/yfOPKfPuWJWAvDcXLReVRkz0oQTY0Ju1buEx1FnwNrG2vObPQEaeALdPAJdaJz
+         KDwg==
+X-Gm-Message-State: AGi0Puadq5O49zi6ms54Zn3/j7DmA+Kg71BgO42tmIYNJlP+zz5er5jJ
+        c2S/Wy/9twhaPMj0ypdXOZd2gez9/5HRmw==
+X-Google-Smtp-Source: APiQypL+whDX5YNFdXzbe4mSiXm401XyLwWMRAoZ34VLjzYsrzmdjvMTFU4y44SUGA4hPfEVMtYeIw==
+X-Received: by 2002:a5d:4b90:: with SMTP id b16mr3110846wrt.16.1588237654217;
+        Thu, 30 Apr 2020 02:07:34 -0700 (PDT)
 Received: from localhost.localdomain ([2a0e:b107:830:0:47e5:c676:4796:5818])
-        by smtp.googlemail.com with ESMTPSA id t20sm10962025wmi.2.2020.04.30.02.07.31
+        by smtp.googlemail.com with ESMTPSA id t20sm10962025wmi.2.2020.04.30.02.07.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 02:07:31 -0700 (PDT)
+        Thu, 30 Apr 2020 02:07:33 -0700 (PDT)
 From:   Robert Marko <robert.marko@sartura.hr>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
@@ -55,11 +55,10 @@ To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         mark.rutland@arm.com, linux-arm-msm@vger.kernel.org,
         devicetree@vger.kernel.org
 Cc:     Robert Marko <robert.marko@sartura.hr>,
-        Christian Lamparter <chunkeey@gmail.com>,
         Luka Perkov <luka.perkov@sartura.hr>
-Subject: [PATCH net-next v5 1/3] net: phy: mdio: add IPQ4019 MDIO driver
-Date:   Thu, 30 Apr 2020 11:07:05 +0200
-Message-Id: <20200430090707.24810-2-robert.marko@sartura.hr>
+Subject: [PATCH net-next v5 2/3] dt-bindings: add Qualcomm IPQ4019 MDIO bindings
+Date:   Thu, 30 Apr 2020 11:07:06 +0200
+Message-Id: <20200430090707.24810-3-robert.marko@sartura.hr>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200430090707.24810-1-robert.marko@sartura.hr>
 References: <20200430090707.24810-1-robert.marko@sartura.hr>
@@ -70,235 +69,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the driver for the MDIO interface
-inside of Qualcomm IPQ40xx series SoC-s.
+This patch adds the binding document for the IPQ40xx MDIO driver.
 
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
 Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Cc: Luka Perkov <luka.perkov@sartura.hr>
 ---
 Changes from v3 to v4:
-* Change compatible	and references to IPQ4019
-  per Rob Herrings suggestion
+* Change compatible to IPQ4019
 
 Changes from v2 to v3:
-* Rename registers
-* Remove unnecessary variable initialisations
-* Switch to readl_poll_timeout() instead of custom solution
-* Drop unused header
+* Remove status from example
 
-Changes from v1 to v2:
-* Remove magic default value
-* Remove lockdep_assert_held
-* Add C45 check
-* Simplify the driver
-* Drop device and mii_bus structs from private struct
-* Use devm_mdiobus_alloc_size()
+ .../bindings/net/qcom,ipq4019-mdio.yaml       | 61 +++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
 
- drivers/net/phy/Kconfig        |   7 ++
- drivers/net/phy/Makefile       |   1 +
- drivers/net/phy/mdio-ipq4019.c | 160 +++++++++++++++++++++++++++++++++
- 3 files changed, 168 insertions(+)
- create mode 100644 drivers/net/phy/mdio-ipq4019.c
-
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 3fa33d27eeba..6693df126861 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -157,6 +157,13 @@ config MDIO_I2C
- 
- 	  This is library mode.
- 
-+config MDIO_IPQ4019
-+	tristate "Qualcomm IPQ4019 MDIO interface support"
-+	depends on HAS_IOMEM && OF_MDIO
-+	help
-+	  This driver supports the MDIO interface found in Qualcomm
-+	  IPQ40xx series Soc-s.
-+
- config MDIO_IPQ8064
- 	tristate "Qualcomm IPQ8064 MDIO interface support"
- 	depends on HAS_IOMEM && OF_MDIO
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index 2f5c7093a65b..12e0d0b137b9 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -37,6 +37,7 @@ obj-$(CONFIG_MDIO_CAVIUM)	+= mdio-cavium.o
- obj-$(CONFIG_MDIO_GPIO)		+= mdio-gpio.o
- obj-$(CONFIG_MDIO_HISI_FEMAC)	+= mdio-hisi-femac.o
- obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
-+obj-$(CONFIG_MDIO_IPQ4019)	+= mdio-ipq4019.o
- obj-$(CONFIG_MDIO_IPQ8064)	+= mdio-ipq8064.o
- obj-$(CONFIG_MDIO_MOXART)	+= mdio-moxart.o
- obj-$(CONFIG_MDIO_MSCC_MIIM)	+= mdio-mscc-miim.o
-diff --git a/drivers/net/phy/mdio-ipq4019.c b/drivers/net/phy/mdio-ipq4019.c
+diff --git a/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
 new file mode 100644
-index 000000000000..f1f25489e134
+index 000000000000..13555a89975f
 --- /dev/null
-+++ b/drivers/net/phy/mdio-ipq4019.c
-@@ -0,0 +1,160 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+/* Copyright (c) 2015, The Linux Foundation. All rights reserved. */
-+/* Copyright (c) 2020 Sartura Ltd. */
++++ b/Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
+@@ -0,0 +1,61 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/qcom,ipq4019-mdio.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <linux/delay.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/io.h>
-+#include <linux/iopoll.h>
-+#include <linux/of_address.h>
-+#include <linux/of_mdio.h>
-+#include <linux/phy.h>
-+#include <linux/platform_device.h>
++title: Qualcomm IPQ40xx MDIO Controller Device Tree Bindings
 +
-+#define MDIO_ADDR_REG				0x44
-+#define MDIO_DATA_WRITE_REG			0x48
-+#define MDIO_DATA_READ_REG			0x4c
-+#define MDIO_CMD_REG				0x50
-+#define MDIO_CMD_ACCESS_BUSY		BIT(16)
-+#define MDIO_CMD_ACCESS_START		BIT(8)
-+#define MDIO_CMD_ACCESS_CODE_READ	0
-+#define MDIO_CMD_ACCESS_CODE_WRITE	1
++maintainers:
++  - Robert Marko <robert.marko@sartura.hr>
 +
-+#define ipq4019_MDIO_TIMEOUT	10000
-+#define ipq4019_MDIO_SLEEP		10
++allOf:
++  - $ref: "mdio.yaml#"
 +
-+struct ipq4019_mdio_data {
-+	void __iomem	*membase;
-+};
++properties:
++  compatible:
++    const: qcom,ipq4019-mdio
 +
-+static int ipq4019_mdio_wait_busy(struct mii_bus *bus)
-+{
-+	struct ipq4019_mdio_data *priv = bus->priv;
-+	unsigned int busy;
++  "#address-cells":
++    const: 1
 +
-+	return readl_poll_timeout(priv->membase + MDIO_CMD_REG, busy,
-+				  (busy & MDIO_CMD_ACCESS_BUSY) == 0, 
-+				  ipq4019_MDIO_SLEEP, ipq4019_MDIO_TIMEOUT);
-+}
++  "#size-cells":
++    const: 0
 +
-+static int ipq4019_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
-+{
-+	struct ipq4019_mdio_data *priv = bus->priv;
-+	unsigned int cmd;
++  reg:
++    maxItems: 1
 +
-+	/* Reject clause 45 */
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
 +
-+	if (ipq4019_mdio_wait_busy(bus))
-+		return -ETIMEDOUT;
++examples:
++  - |
++    mdio@90000 {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      compatible = "qcom,ipq4019-mdio";
++      reg = <0x90000 0x64>;
 +
-+	/* issue the phy address and reg */
-+	writel((mii_id << 8) | regnum, priv->membase + MDIO_ADDR_REG);
++      ethphy0: ethernet-phy@0 {
++        reg = <0>;
++      };
 +
-+	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_READ;
++      ethphy1: ethernet-phy@1 {
++        reg = <1>;
++      };
 +
-+	/* issue read command */
-+	writel(cmd, priv->membase + MDIO_CMD_REG);
++      ethphy2: ethernet-phy@2 {
++        reg = <2>;
++      };
 +
-+	/* Wait read complete */
-+	if (ipq4019_mdio_wait_busy(bus))
-+		return -ETIMEDOUT;
++      ethphy3: ethernet-phy@3 {
++        reg = <3>;
++      };
 +
-+	/* Read and return data */
-+	return readl(priv->membase + MDIO_DATA_READ_REG);
-+}
-+
-+static int ipq4019_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
-+							 u16 value)
-+{
-+	struct ipq4019_mdio_data *priv = bus->priv;
-+	unsigned int cmd;
-+
-+	/* Reject clause 45 */
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
-+	if (ipq4019_mdio_wait_busy(bus))
-+		return -ETIMEDOUT;
-+
-+	/* issue the phy address and reg */
-+	writel((mii_id << 8) | regnum, priv->membase + MDIO_ADDR_REG);
-+
-+	/* issue write data */
-+	writel(value, priv->membase + MDIO_DATA_WRITE_REG);
-+
-+	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_WRITE;
-+	/* issue write command */
-+	writel(cmd, priv->membase + MDIO_CMD_REG);
-+
-+	/* Wait write complete */
-+	if (ipq4019_mdio_wait_busy(bus))
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static int ipq4019_mdio_probe(struct platform_device *pdev)
-+{
-+	struct ipq4019_mdio_data *priv;
-+	struct mii_bus *bus;
-+	int ret;
-+
-+	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
-+	if (!bus)
-+		return -ENOMEM;
-+
-+	priv = bus->priv;
-+
-+	priv->membase = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(priv->membase))
-+		return PTR_ERR(priv->membase);
-+
-+	bus->name = "ipq4019_mdio";
-+	bus->read = ipq4019_mdio_read;
-+	bus->write = ipq4019_mdio_write;
-+	bus->parent = &pdev->dev;
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "%s%d", pdev->name, pdev->id);
-+
-+	ret = of_mdiobus_register(bus, pdev->dev.of_node);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Cannot register MDIO bus!\n");
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, bus);
-+
-+	return 0;
-+}
-+
-+static int ipq4019_mdio_remove(struct platform_device *pdev)
-+{
-+	struct mii_bus *bus = platform_get_drvdata(pdev);
-+
-+	mdiobus_unregister(bus);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id ipq4019_mdio_dt_ids[] = {
-+	{ .compatible = "qcom,ipq4019-mdio" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ipq4019_mdio_dt_ids);
-+
-+static struct platform_driver ipq4019_mdio_driver = {
-+	.probe = ipq4019_mdio_probe,
-+	.remove = ipq4019_mdio_remove,
-+	.driver = {
-+		.name = "ipq4019-mdio",
-+		.of_match_table = ipq4019_mdio_dt_ids,
-+	},
-+};
-+
-+module_platform_driver(ipq4019_mdio_driver);
-+
-+MODULE_DESCRIPTION("ipq4019 MDIO interface driver");
-+MODULE_AUTHOR("Qualcomm Atheros");
-+MODULE_LICENSE("Dual BSD/GPL");
++      ethphy4: ethernet-phy@4 {
++        reg = <4>;
++      };
++    };
 -- 
 2.26.2
 
