@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4944C1BFBC9
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:02:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0211BFBAA
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 16:01:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729081AbgD3OB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 10:01:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35742 "EHLO mail.kernel.org"
+        id S1728818AbgD3Nxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:53:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35796 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728805AbgD3Nxs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:53:48 -0400
+        id S1727080AbgD3Nxu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:53:50 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 87DB520870;
-        Thu, 30 Apr 2020 13:53:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A2884208D5;
+        Thu, 30 Apr 2020 13:53:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254828;
-        bh=ARzt+QRGNF/8fnvNLUN8Z+j7aZMWVm22ICAbuRC5tLk=;
+        s=default; t=1588254829;
+        bh=LxsFIRnpUZ8gaPNMQhr0294rKM/sSfRPCBVpSBeChxE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=slk8kbE64pkhcKAYzVj0R75zNGZCTlUuzcKk24Zbv2WbLHNszYdHSwTDfCTVGKDMe
-         Z36Xqyce7Yktn4cmxX1ht83Wmk5zQWkIth4QLbVt2sehIQCsJ4dbrlrGA6oMkf8yU2
-         RpBnu4vFtLMc5g+YmhdeU8gQKzMRptihQaVd7Vt8=
+        b=yEySL5r71VB4zl0atg2BkJzAInYgXgwQEn3q8N8N3oL4mQVmdpjd/ThQI+GRKx99A
+         zbwzvCJJeEXr5YreXmw2BPTb74gktWrOW4ZiTZGKtoY76yFzBheF+jLSgP3IpTMSYV
+         lyWBxdxiMbFvG35NPBOF8mHYmZIQVPa7VTbhyJ8k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 20/30] net/mlx5: Fix failing fw tracer allocation on s390
-Date:   Thu, 30 Apr 2020 09:53:15 -0400
-Message-Id: <20200430135325.20762-20-sashal@kernel.org>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Xiumei Mu <xmu@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Song Liu <songliubraving@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 21/30] cpumap: Avoid warning when CONFIG_DEBUG_PER_CPU_MAPS is enabled
+Date:   Thu, 30 Apr 2020 09:53:16 -0400
+Message-Id: <20200430135325.20762-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135325.20762-1-sashal@kernel.org>
 References: <20200430135325.20762-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,58 +47,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Niklas Schnelle <schnelle@linux.ibm.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-[ Upstream commit a019b36123aec9700b21ae0724710f62928a8bc1 ]
+[ Upstream commit bc23d0e3f717ced21fbfacab3ab887d55e5ba367 ]
 
-On s390 FORCE_MAX_ZONEORDER is 9 instead of 11, thus a larger kzalloc()
-allocation as done for the firmware tracer will always fail.
+When the kernel is built with CONFIG_DEBUG_PER_CPU_MAPS, the cpumap code
+can trigger a spurious warning if CONFIG_CPUMASK_OFFSTACK is also set. This
+happens because in this configuration, NR_CPUS can be larger than
+nr_cpumask_bits, so the initial check in cpu_map_alloc() is not sufficient
+to guard against hitting the warning in cpumask_check().
 
-Looking at mlx5_fw_tracer_save_trace(), it is actually the driver itself
-that copies the debug data into the trace array and there is no need for
-the allocation to be contiguous in physical memory. We can therefor use
-kvzalloc() instead of kzalloc() and get rid of the large contiguous
-allcoation.
+Fix this by explicitly checking the supplied key against the
+nr_cpumask_bits variable before calling cpu_possible().
 
-Fixes: f53aaa31cce7 ("net/mlx5: FW tracer, implement tracer logic")
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Fixes: 6710e1126934 ("bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CPUMAP")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Tested-by: Xiumei Mu <xmu@redhat.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20200416083120.453718-1-toke@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ kernel/bpf/cpumap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-index d4ec93bde4ded..2266c09b741a2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-@@ -796,7 +796,7 @@ struct mlx5_fw_tracer *mlx5_fw_tracer_create(struct mlx5_core_dev *dev)
- 		return NULL;
- 	}
+diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+index 3c18260403dde..61fbcae82f0a1 100644
+--- a/kernel/bpf/cpumap.c
++++ b/kernel/bpf/cpumap.c
+@@ -455,7 +455,7 @@ static int cpu_map_update_elem(struct bpf_map *map, void *key, void *value,
+ 		return -EOVERFLOW;
  
--	tracer = kzalloc(sizeof(*tracer), GFP_KERNEL);
-+	tracer = kvzalloc(sizeof(*tracer), GFP_KERNEL);
- 	if (!tracer)
- 		return ERR_PTR(-ENOMEM);
+ 	/* Make sure CPU is a valid possible cpu */
+-	if (!cpu_possible(key_cpu))
++	if (key_cpu >= nr_cpumask_bits || !cpu_possible(key_cpu))
+ 		return -ENODEV;
  
-@@ -842,7 +842,7 @@ destroy_workqueue:
- 	tracer->dev = NULL;
- 	destroy_workqueue(tracer->work_queue);
- free_tracer:
--	kfree(tracer);
-+	kvfree(tracer);
- 	return ERR_PTR(err);
- }
- 
-@@ -919,7 +919,7 @@ void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer)
- 	mlx5_fw_tracer_destroy_log_buf(tracer);
- 	flush_workqueue(tracer->work_queue);
- 	destroy_workqueue(tracer->work_queue);
--	kfree(tracer);
-+	kvfree(tracer);
- }
- 
- void mlx5_fw_tracer_event(struct mlx5_core_dev *dev, struct mlx5_eqe *eqe)
+ 	if (qsize == 0) {
 -- 
 2.20.1
 
