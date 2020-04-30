@@ -2,147 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A83C1BF09C
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 08:55:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 205EC1BF0A9
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 08:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726474AbgD3Gzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 02:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
+        id S1726440AbgD3G7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 02:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726358AbgD3Gzi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 02:55:38 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0605C035494;
-        Wed, 29 Apr 2020 23:55:38 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id p13so2469231qvt.12;
-        Wed, 29 Apr 2020 23:55:38 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726337AbgD3G7r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 02:59:47 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C48FC035494
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 23:59:46 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id e25so5289356ljg.5
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 23:59:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XuyijJFgqu+UnV4YQxHBc4Ey7rEQnv9T0JtGpYNNon4=;
-        b=romEJsf4xzAdVXHad7w7d+Ypu6f/jj9fF4JrCe93gXJrzHbJ2B4HjI2XE5vQWA+uE4
-         klxyJ02DnApVVKZh14M1aZEEkNVvIyLbU/HLk89Ob+DUcKBtbWHSZXrW9q/G1mGgZECI
-         6qT7zq/boTKVUhKr2Ob+a0/KZzuFK0TxyZPJGU7e8Dca4RAmFwlybbN+gjA+RRjCrqZt
-         sbvKn4YArKzCjLheAvFVkwayxiVhfJrtVJHbt8R4DmxGSwR2ONqkcnFNrR3YQNUb1O5p
-         mH+3s/m142CUasroQfmsFLIMdM53zXnvWwzuwSokVWb6roPS1sqlVRP9gQcl/gpKJppO
-         UCmQ==
+        bh=DRuLB2fMbj1dQhXxpCJoy01gyg+HAGfCja4rwpDmXiQ=;
+        b=bGnmqiEXN5JEywLdrad8Cv7Tmr/XJB+j+LMkBIt3U0oWAEfkHqQWptoVuWBKWUWXTW
+         ugGo+Ael2ZtcpkGpacHgUbTlfyI2+P+CUHiXEPQGgFIhtA3yTizgE/QjPXPuOIPmq+Cx
+         aIqvtWjnFQBaIC4frAt51L2zn5PBmyblaN3lzA5UtUfo3t28GSUxHcvY/+1Y18xpNjVt
+         3cT+GkoKI2HH5H1WVDpZckDAyx6j779vqaOGl2J5fyxCDF196kg8GheUzAPIu4wnj0zJ
+         lI15BfD60M9v9dOnTp3Ly/uyUzmrdE1rsUBhSfUoxeGENMyibomPM784hTi0BKuH/kQ0
+         h7FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XuyijJFgqu+UnV4YQxHBc4Ey7rEQnv9T0JtGpYNNon4=;
-        b=jm6+ykuvu/nFwABqgV4WdjSKqhSAX8bsmWeZ2H+bKFpQlltKNPldqea+jjthDuqgEi
-         0HFjMN6xn74bxYiYmw2fWG+U0R9uYu1sc+a7wcNpfx+yXnLuXe0qFoubjvnmQ6kuavH3
-         BnRQsPk9oeuCbAg2h2szffPnDCrotkWPHiA2oXs/dgDcxEy5/cAy4vHjvhLXxCs1YJvf
-         1Y//Z4UIeyT6N00wg/ayTwqi5JRr2bdZgkysH0qi/VHJo9bEgkymNmwV2GjPWHYbmJi1
-         +Q3lyGFa74n+neeggHlnz7rhqDJZED9e5qpd4UDMSTAq6AaENTgBa9pFV/q9KGQh5iF5
-         9F/w==
-X-Gm-Message-State: AGi0PubaJlq/XVHoP0M3gkt5AO0dpHLMpZ4yT+/Ld3DhFsSSHn/bV9WP
-        c8HReaxw1LsrYOCTKJ+VJHVWvfQrL0mEe3V+zuI=
-X-Google-Smtp-Source: APiQypJ3biDM9QactItKFUW7x3hGoiUG3ZSlO2VJHlg1x1VSvy8oXODesJCZrDEEDGahjt8akT783fIzfnyyY0APCaw=
-X-Received: by 2002:a0c:eb09:: with SMTP id j9mr1598588qvp.196.1588229737867;
- Wed, 29 Apr 2020 23:55:37 -0700 (PDT)
+        bh=DRuLB2fMbj1dQhXxpCJoy01gyg+HAGfCja4rwpDmXiQ=;
+        b=PLZpJ/smPd4ijjtVr4CvPxCKaN2eCEwhngWdTNz4H07GhgeO/YHgV65h39Uq44adlI
+         6Chs2m4OEv9e8FhmmH2io74yFRVn+vMCcSbi0eSElstfalAUyK+JlQdN+O14T98yGv3i
+         hEg8N40W1T2A4GMl5CpbFpjHuVxV5WyW4FT+Rg7bQhbI14e0oYKC7jGp4x+AEmYICXav
+         M+SIRamgn0/FvZ6zudpnr8Za8CDjopexIblczugvLnXeZFcCxlsYv6EM58wyqGxYLISX
+         GPyEsksvKw61KTFE3w6HbuRCLByDcDXSbknHhQl8sTeptWOHrIMS59EtJXT+bZABaFFj
+         xJJA==
+X-Gm-Message-State: AGi0PubpfzKX04rvIxxAZjhmgueCuBVAwxOuvzI5jOV75LSZ3TVo0fRf
+        BbH5zXfr0wUAdW+0zF/jp0SRmwFEul/KGwd60+9r3hkV
+X-Google-Smtp-Source: APiQypJDx11YDF++eRVsdmkmUsFG6/9JRJBD4llOigjEEAXUuXhc8PiFCBW968ay7ndVym2C1iNNCw39z1xgKsruIc4=
+X-Received: by 2002:a2e:8658:: with SMTP id i24mr1121344ljj.287.1588229984305;
+ Wed, 29 Apr 2020 23:59:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200429064543.634465-1-songliubraving@fb.com>
- <20200429064543.634465-4-songliubraving@fb.com> <CAEf4BzZNbBhfS0Hxmn6Fu5+-SzxObS0w9KhMSrLz23inWVSuYQ@mail.gmail.com>
- <C9DC5EF9-0DEE-4952-B7CA-64153C8D8850@fb.com>
-In-Reply-To: <C9DC5EF9-0DEE-4952-B7CA-64153C8D8850@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 29 Apr 2020 23:55:26 -0700
-Message-ID: <CAEf4BzYeJZHK5hRPpETK+cJFTRx+nDFHv-dhjpOSt=-VP9T5Cg@mail.gmail.com>
-Subject: Re: [PATCH v8 bpf-next 3/3] bpf: add selftest for BPF_ENABLE_STATS
-To:     Song Liu <songliubraving@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
+References: <20200428060206.21814-1-xiyou.wangcong@gmail.com> <20200428060206.21814-3-xiyou.wangcong@gmail.com>
+In-Reply-To: <20200428060206.21814-3-xiyou.wangcong@gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Thu, 30 Apr 2020 15:59:33 +0900
+Message-ID: <CAMArcTVvDfF8rOkrbHd_82NydB9KikD01WYrJGX+Tfv=QS1u6A@mail.gmail.com>
+Subject: Re: [Patch net-next 2/2] bonding: remove useless stats_lock_key
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        syzbot <syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 10:12 PM Song Liu <songliubraving@fb.com> wrote:
+On Tue, 28 Apr 2020 at 15:02, Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
->
->
-> > On Apr 29, 2020, at 7:23 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Tue, Apr 28, 2020 at 11:47 PM Song Liu <songliubraving@fb.com> wrote:
-> >>
-> >> Add test for BPF_ENABLE_STATS, which should enable run_time_ns stats.
-> >>
-> >> ~/selftests/bpf# ./test_progs -t enable_stats  -v
-> >> test_enable_stats:PASS:skel_open_and_load 0 nsec
-> >> test_enable_stats:PASS:get_stats_fd 0 nsec
-> >> test_enable_stats:PASS:attach_raw_tp 0 nsec
-> >> test_enable_stats:PASS:get_prog_info 0 nsec
-> >> test_enable_stats:PASS:check_stats_enabled 0 nsec
-> >> test_enable_stats:PASS:check_run_cnt_valid 0 nsec
-> >> Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
-> >>
-> >> Signed-off-by: Song Liu <songliubraving@fb.com>
-> >> ---
-> >> .../selftests/bpf/prog_tests/enable_stats.c   | 46 +++++++++++++++++++
-> >> .../selftests/bpf/progs/test_enable_stats.c   | 18 ++++++++
-> >> 2 files changed, 64 insertions(+)
-> >> create mode 100644 tools/testing/selftests/bpf/prog_tests/enable_stats.c
-> >> create mode 100644 tools/testing/selftests/bpf/progs/test_enable_stats.c
-> >>
-> >> diff --git a/tools/testing/selftests/bpf/prog_tests/enable_stats.c b/tools/testing/selftests/bpf/prog_tests/enable_stats.c
-> >> new file mode 100644
-> >> index 000000000000..cb5e34dcfd42
-> >> --- /dev/null
-> >> +++ b/tools/testing/selftests/bpf/prog_tests/enable_stats.c
-> >> @@ -0,0 +1,46 @@
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +#include <test_progs.h>
-> >> +#include <sys/mman.h>
-> >
-> > is this header used for anything?
->
-> Not really, will remove it.
->
-> >
-> >> +#include "test_enable_stats.skel.h"
-> >> +
-> >> +void test_enable_stats(void)
-> >> +{
-> >
-> > [...]
-> >
-> >> +
-> >> +char _license[] SEC("license") = "GPL";
-> >> +
-> >> +static __u64 count;
-> >
-> > this is actually very unreliable, because compiler might decide to
-> > just remove this variable. It should be either `static volatile`, or
-> > better use zero-initialized global variable:
-> >
-> > __u64 count = 0;
->
-> Why would compile remove it? Is it because "static" or "no initialized?
 
-because static, which makes compiler assume that no one else can
-access it (which is not true for BPF programs).
+Hi Cong,
+Thank you for this work!
 
-> Would "__u64 count;" work?
-
-unfortunately, no, libbpf enforces that all global variables are
-initialized (uninitialized global variables go into special COM
-section, libbpf doesn't support it).
-
+> After commit b3e80d44f5b1
+> ("bonding: fix lockdep warning in bond_get_stats()") the dynamic
+> key is no longer necessary, as we compute nest level at run-time.
+> So, we can just remove it to save some lockdep keys.
 >
-> For "__u64 count = 0;", checkpatch.pl generates an error:
+> Test commands:
+>  ip link add bond0 type bond
+>  ip link add bond1 type bond
+>  ip link set bond0 master bond1
+>  ip link set bond0 nomaster
+>  ip link set bond1 master bond0
 >
-> ERROR: do not initialise globals to 0
-> #92: FILE: tools/testing/selftests/bpf/progs/test_enable_stats.c:11:
-> +__u64 count = 0;
+> Reported-and-tested-by: syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com
+> Cc: Taehee Yoo <ap420073@gmail.com>
+> Cc: Dmitry Vyukov <dvyukov@google.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-ignore checkpatch.pl in this case?
-
->
-> Thanks,
-> Song
+Acked-by: Taehee Yoo <ap420073@gmail.com>
