@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EF461BED12
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 02:45:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D39831BED06
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 02:40:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbgD3ApL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 20:45:11 -0400
-Received: from pbmsgap01.intersil.com ([192.157.179.201]:48772 "EHLO
+        id S1726468AbgD3Ajx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 20:39:53 -0400
+Received: from pbmsgap01.intersil.com ([192.157.179.201]:48536 "EHLO
         pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726309AbgD3ApL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 20:45:11 -0400
+        with ESMTP id S1726279AbgD3Ajx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 20:39:53 -0400
 Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
-        by pbmsgap01.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 03U0P6iC005024;
-        Wed, 29 Apr 2020 20:28:50 -0400
-Received: from pbmxdp02.intersil.corp (pbmxdp02.pb.intersil.com [132.158.200.223])
-        by pbmsgap01.intersil.com with ESMTP id 30mgqytds6-1
+        by pbmsgap01.intersil.com (8.16.0.27/8.16.0.27) with SMTP id 03U0Sq6j007279;
+        Wed, 29 Apr 2020 20:28:52 -0400
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap01.intersil.com with ESMTP id 30mgqytds7-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 29 Apr 2020 20:28:50 -0400
-Received: from pbmxdp02.intersil.corp (132.158.200.223) by
- pbmxdp02.intersil.corp (132.158.200.223) with Microsoft SMTP Server
+        Wed, 29 Apr 2020 20:28:52 -0400
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1531.3; Wed, 29 Apr 2020 20:28:48 -0400
-Received: from localhost (132.158.202.109) by pbmxdp02.intersil.corp
- (132.158.200.223) with Microsoft SMTP Server id 15.1.1531.3 via Frontend
- Transport; Wed, 29 Apr 2020 20:28:48 -0400
+ 15.1.1531.3; Wed, 29 Apr 2020 20:28:50 -0400
+Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.1531.3 via Frontend
+ Transport; Wed, 29 Apr 2020 20:28:50 -0400
 From:   <vincent.cheng.xh@renesas.com>
 To:     <richardcochran@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>,
         Vincent Cheng <vincent.cheng.xh@renesas.com>
-Subject: [PATCH net-next 1/3] ptp: Add adjphase function to support phase offset control.
-Date:   Wed, 29 Apr 2020 20:28:23 -0400
-Message-ID: <1588206505-21773-2-git-send-email-vincent.cheng.xh@renesas.com>
+Subject: [PATCH net-next 2/3] ptp: Add adjust_phase to ptp_clock_caps capability.
+Date:   Wed, 29 Apr 2020 20:28:24 -0400
+Message-ID: <1588206505-21773-3-git-send-email-vincent.cheng.xh@renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1588206505-21773-1-git-send-email-vincent.cheng.xh@renesas.com>
 References: <1588206505-21773-1-git-send-email-vincent.cheng.xh@renesas.com>
@@ -53,60 +53,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vincent Cheng <vincent.cheng.xh@renesas.com>
 
-Adds adjust phase function to take advantage of a PHC
-clock's hardware filtering capability that uses phase offset
-control word instead of frequency offset control word.
+Add adjust_phase to ptp_clock_caps capability to allow
+user to query if a PHC driver supports adjust phase with
+ioctl PTP_CLOCK_GETCAPS command.
 
 Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
 ---
- drivers/ptp/ptp_clock.c          | 2 ++
- include/linux/ptp_clock_kernel.h | 6 +++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ drivers/ptp/ptp_chardev.c             | 1 +
+ include/uapi/linux/ptp_clock.h        | 4 +++-
+ tools/testing/selftests/ptp/testptp.c | 6 ++++--
+ 3 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-index acabbe7..c46ff98 100644
---- a/drivers/ptp/ptp_clock.c
-+++ b/drivers/ptp/ptp_clock.c
-@@ -146,6 +146,8 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
- 		else
- 			err = ops->adjfreq(ops, ppb);
- 		ptp->dialed_frequency = tx->freq;
-+	} else if (tx->modes & ADJ_OFFSET) {
-+		err = ops->adjphase(ops, tx->offset);
- 	} else if (tx->modes == 0) {
- 		tx->freq = ptp->dialed_frequency;
- 		err = 0;
-diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
-index 121a7ed..31144d9 100644
---- a/include/linux/ptp_clock_kernel.h
-+++ b/include/linux/ptp_clock_kernel.h
-@@ -36,7 +36,7 @@ struct ptp_system_timestamp {
+diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+index 93d574f..375cd6e 100644
+--- a/drivers/ptp/ptp_chardev.c
++++ b/drivers/ptp/ptp_chardev.c
+@@ -136,6 +136,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		caps.pps = ptp->info->pps;
+ 		caps.n_pins = ptp->info->n_pins;
+ 		caps.cross_timestamping = ptp->info->getcrosststamp != NULL;
++		caps.adjust_phase = ptp->info->adjphase != NULL;
+ 		if (copy_to_user((void __user *)arg, &caps, sizeof(caps)))
+ 			err = -EFAULT;
+ 		break;
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index 9dc9d00..ff070aa 100644
+--- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -89,7 +89,9 @@ struct ptp_clock_caps {
+ 	int n_pins;    /* Number of input/output pins. */
+ 	/* Whether the clock supports precise system-device cross timestamps */
+ 	int cross_timestamping;
+-	int rsv[13];   /* Reserved for future use. */
++	/* Whether the clock supports adjust phase */
++	int adjust_phase;
++	int rsv[12];   /* Reserved for future use. */
  };
  
- /**
-- * struct ptp_clock_info - decribes a PTP hardware clock
-+ * struct ptp_clock_info - describes a PTP hardware clock
-  *
-  * @owner:     The clock driver should set to THIS_MODULE.
-  * @name:      A short "friendly name" to identify the clock and to
-@@ -65,6 +65,9 @@ struct ptp_system_timestamp {
-  *            parameter delta: Desired frequency offset from nominal frequency
-  *            in parts per billion
-  *
-+ * @adjphase:  Adjusts the phase offset of the hardware clock.
-+ *             parameter delta: Desired change in nanoseconds.
-+ *
-  * @adjtime:  Shifts the time of the hardware clock.
-  *            parameter delta: Desired change in nanoseconds.
-  *
-@@ -128,6 +131,7 @@ struct ptp_clock_info {
- 	struct ptp_pin_desc *pin_config;
- 	int (*adjfine)(struct ptp_clock_info *ptp, long scaled_ppm);
- 	int (*adjfreq)(struct ptp_clock_info *ptp, s32 delta);
-+	int (*adjphase)(struct ptp_clock_info *ptp, s32 phase);
- 	int (*adjtime)(struct ptp_clock_info *ptp, s64 delta);
- 	int (*gettime64)(struct ptp_clock_info *ptp, struct timespec64 *ts);
- 	int (*gettimex64)(struct ptp_clock_info *ptp, struct timespec64 *ts,
+ struct ptp_extts_request {
+diff --git a/tools/testing/selftests/ptp/testptp.c b/tools/testing/selftests/ptp/testptp.c
+index c0dd102..da7a9dd 100644
+--- a/tools/testing/selftests/ptp/testptp.c
++++ b/tools/testing/selftests/ptp/testptp.c
+@@ -269,14 +269,16 @@ int main(int argc, char *argv[])
+ 			       "  %d programmable periodic signals\n"
+ 			       "  %d pulse per second\n"
+ 			       "  %d programmable pins\n"
+-			       "  %d cross timestamping\n",
++			       "  %d cross timestamping\n"
++			       "  %d adjust_phase\n",
+ 			       caps.max_adj,
+ 			       caps.n_alarm,
+ 			       caps.n_ext_ts,
+ 			       caps.n_per_out,
+ 			       caps.pps,
+ 			       caps.n_pins,
+-			       caps.cross_timestamping);
++			       caps.cross_timestamping,
++			       caps.adjust_phase);
+ 		}
+ 	}
+ 
 -- 
 2.7.4
 
