@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 531F11BFB2B
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7BB1BFB22
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728451AbgD3N6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 09:58:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37398 "EHLO mail.kernel.org"
+        id S1729075AbgD3N5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:57:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37512 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729040AbgD3Nyp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:54:45 -0400
+        id S1728244AbgD3Nyq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:54:46 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A6BC824953;
-        Thu, 30 Apr 2020 13:54:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A9C9420870;
+        Thu, 30 Apr 2020 13:54:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254884;
-        bh=R+09xoVT9AffdNtKi8kGvcnhGP63SnymqbY3uEN+E5U=;
+        s=default; t=1588254886;
+        bh=rgqJWEix/GQDsqSO53LLaO59gXIZ/vIIE4s6yAZ4QKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IaIcp2cAmO8VEBqZgGM2jtvj3zDZUmEkXCSbJR3a7jWEpAkLCBHUa+bebHUPWm1GW
-         yukEA6K5n//Fd8B4r5c0Y62o9Y24WjLU4bP10QSV1kDrtUrU4V4se1xdpaD+ir280s
-         aiVrJcGPrvCNI/XfwyTXTFWsSsuobvIDFDWhuzDI=
+        b=NdmD3WXht2bsnRGA07LsH+8/hugS21b5TxE3wEScfN3FQKGYUlyINkvHQ1z6XLv9H
+         psLpKSEfMzmvwL6mELnRy4eRCsXK/883syycw6hEiH8KUatmkFanwyOUSHARaXEp/7
+         nzDMkwDXu4RjtFXLBXxdrO6ELFuujfMDVJ+PZy7g=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
-        syzbot+5035b1f9dc7ea4558d5a@syzkaller.appspotmail.com,
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 09/17] macvlan: fix null dereference in macvlan_device_event()
-Date:   Thu, 30 Apr 2020 09:54:25 -0400
-Message-Id: <20200430135433.21204-9-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 11/17] net: dsa: b53: Fix ARL register definitions
+Date:   Thu, 30 Apr 2020 09:54:27 -0400
+Message-Id: <20200430135433.21204-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135433.21204-1-sashal@kernel.org>
 References: <20200430135433.21204-1-sashal@kernel.org>
@@ -44,137 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 4dee15b4fd0d61ec6bbd179238191e959d34cf7a ]
+[ Upstream commit c2e77a18a7ed65eb48f6e389b6a59a0fd753646a ]
 
-In the macvlan_device_event(), the list_first_entry_or_null() is used.
-This function could return null pointer if there is no node.
-But, the macvlan module doesn't check the null pointer.
-So, null-ptr-deref would occur.
+The ARL {MAC,VID} tuple and the forward entry were off by 0x10 bytes,
+which means that when we read/wrote from/to ARL bin index 0, we were
+actually accessing the ARLA_RWCTRL register.
 
-      bond0
-        |
-   +----+-----+
-   |          |
-macvlan0   macvlan1
-   |          |
- dummy0     dummy1
-
-The problem scenario.
-If dummy1 is removed,
-1. ->dellink() of dummy1 is called.
-2. NETDEV_UNREGISTER of dummy1 notification is sent to macvlan module.
-3. ->dellink() of macvlan1 is called.
-4. NETDEV_UNREGISTER of macvlan1 notification is sent to bond module.
-5. __bond_release_one() is called and it internally calls
-   dev_set_mac_address().
-6. dev_set_mac_address() calls the ->ndo_set_mac_address() of macvlan1,
-   which is macvlan_set_mac_address().
-7. macvlan_set_mac_address() calls the dev_set_mac_address() with dummy1.
-8. NETDEV_CHANGEADDR of dummy1 is sent to macvlan module.
-9. In the macvlan_device_event(), it calls list_first_entry_or_null().
-At this point, dummy1 and macvlan1 were removed.
-So, list_first_entry_or_null() will return NULL.
-
-Test commands:
-    ip netns add nst
-    ip netns exec nst ip link add bond0 type bond
-    for i in {0..10}
-    do
-        ip netns exec nst ip link add dummy$i type dummy
-	ip netns exec nst ip link add macvlan$i link dummy$i \
-		type macvlan mode passthru
-	ip netns exec nst ip link set macvlan$i master bond0
-    done
-    ip netns del nst
-
-Splat looks like:
-[   40.585687][  T146] general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] SMP DEI
-[   40.587249][  T146] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-[   40.588342][  T146] CPU: 1 PID: 146 Comm: kworker/u8:2 Not tainted 5.7.0-rc1+ #532
-[   40.589299][  T146] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[   40.590469][  T146] Workqueue: netns cleanup_net
-[   40.591045][  T146] RIP: 0010:macvlan_device_event+0x4e2/0x900 [macvlan]
-[   40.591905][  T146] Code: 00 00 00 00 00 fc ff df 80 3c 06 00 0f 85 45 02 00 00 48 89 da 48 b8 00 00 00 00 00 fc ff d2
-[   40.594126][  T146] RSP: 0018:ffff88806116f4a0 EFLAGS: 00010246
-[   40.594783][  T146] RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-[   40.595653][  T146] RDX: 0000000000000000 RSI: ffff88806547ddd8 RDI: ffff8880540f1360
-[   40.596495][  T146] RBP: ffff88804011a808 R08: fffffbfff4fb8421 R09: fffffbfff4fb8421
-[   40.597377][  T146] R10: ffffffffa7dc2107 R11: 0000000000000000 R12: 0000000000000008
-[   40.598186][  T146] R13: ffff88804011a000 R14: ffff8880540f1000 R15: 1ffff1100c22de9a
-[   40.599012][  T146] FS:  0000000000000000(0000) GS:ffff888067800000(0000) knlGS:0000000000000000
-[   40.600004][  T146] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   40.600665][  T146] CR2: 00005572d3a807b8 CR3: 000000005fcf4003 CR4: 00000000000606e0
-[   40.601485][  T146] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   40.602461][  T146] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   40.603443][  T146] Call Trace:
-[   40.603871][  T146]  ? nf_tables_dump_setelem+0xa0/0xa0 [nf_tables]
-[   40.604587][  T146]  ? macvlan_uninit+0x100/0x100 [macvlan]
-[   40.605212][  T146]  ? __module_text_address+0x13/0x140
-[   40.605842][  T146]  notifier_call_chain+0x90/0x160
-[   40.606477][  T146]  dev_set_mac_address+0x28e/0x3f0
-[   40.607117][  T146]  ? netdev_notify_peers+0xc0/0xc0
-[   40.607762][  T146]  ? __module_text_address+0x13/0x140
-[   40.608440][  T146]  ? notifier_call_chain+0x90/0x160
-[   40.609097][  T146]  ? dev_set_mac_address+0x1f0/0x3f0
-[   40.609758][  T146]  dev_set_mac_address+0x1f0/0x3f0
-[   40.610402][  T146]  ? __local_bh_enable_ip+0xe9/0x1b0
-[   40.611071][  T146]  ? bond_hw_addr_flush+0x77/0x100 [bonding]
-[   40.611823][  T146]  ? netdev_notify_peers+0xc0/0xc0
-[   40.612461][  T146]  ? bond_hw_addr_flush+0x77/0x100 [bonding]
-[   40.613213][  T146]  ? bond_hw_addr_flush+0x77/0x100 [bonding]
-[   40.613963][  T146]  ? __local_bh_enable_ip+0xe9/0x1b0
-[   40.614631][  T146]  ? bond_time_in_interval.isra.31+0x90/0x90 [bonding]
-[   40.615484][  T146]  ? __bond_release_one+0x9f0/0x12c0 [bonding]
-[   40.616230][  T146]  __bond_release_one+0x9f0/0x12c0 [bonding]
-[   40.616949][  T146]  ? bond_enslave+0x47c0/0x47c0 [bonding]
-[   40.617642][  T146]  ? lock_downgrade+0x730/0x730
-[   40.618218][  T146]  ? check_flags.part.42+0x450/0x450
-[   40.618850][  T146]  ? __mutex_unlock_slowpath+0xd0/0x670
-[   40.619519][  T146]  ? trace_hardirqs_on+0x30/0x180
-[   40.620117][  T146]  ? wait_for_completion+0x250/0x250
-[   40.620754][  T146]  bond_netdev_event+0x822/0x970 [bonding]
-[   40.621460][  T146]  ? __module_text_address+0x13/0x140
-[   40.622097][  T146]  notifier_call_chain+0x90/0x160
-[   40.622806][  T146]  rollback_registered_many+0x660/0xcf0
-[   40.623522][  T146]  ? netif_set_real_num_tx_queues+0x780/0x780
-[   40.624290][  T146]  ? notifier_call_chain+0x90/0x160
-[   40.624957][  T146]  ? netdev_upper_dev_unlink+0x114/0x180
-[   40.625686][  T146]  ? __netdev_adjacent_dev_unlink_neighbour+0x30/0x30
-[   40.626421][  T146]  ? mutex_is_locked+0x13/0x50
-[   40.627016][  T146]  ? unregister_netdevice_queue+0xf2/0x240
-[   40.627663][  T146]  unregister_netdevice_many.part.134+0x13/0x1b0
-[   40.628362][  T146]  default_device_exit_batch+0x2d9/0x390
-[   40.628987][  T146]  ? unregister_netdevice_many+0x40/0x40
-[   40.629615][  T146]  ? dev_change_net_namespace+0xcb0/0xcb0
-[   40.630279][  T146]  ? prepare_to_wait_exclusive+0x2e0/0x2e0
-[   40.630943][  T146]  ? ops_exit_list.isra.9+0x97/0x140
-[   40.631554][  T146]  cleanup_net+0x441/0x890
-[ ... ]
-
-Fixes: e289fd28176b ("macvlan: fix the problem when mac address changes for passthru mode")
-Reported-by: syzbot+5035b1f9dc7ea4558d5a@syzkaller.appspotmail.com
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Fixes: 1da6df85c6fb ("net: dsa: b53: Implement ARL add/del/dump operations")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macvlan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/b53/b53_regs.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 2948816214304..4f582ce929f22 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -1607,7 +1607,7 @@ static int macvlan_device_event(struct notifier_block *unused,
- 						struct macvlan_dev,
- 						list);
+diff --git a/drivers/net/dsa/b53/b53_regs.h b/drivers/net/dsa/b53/b53_regs.h
+index 81044000ce751..85c44bfba55a2 100644
+--- a/drivers/net/dsa/b53/b53_regs.h
++++ b/drivers/net/dsa/b53/b53_regs.h
+@@ -261,7 +261,7 @@
+  *
+  * BCM5325 and BCM5365 share most definitions below
+  */
+-#define B53_ARLTBL_MAC_VID_ENTRY(n)	(0x10 * (n))
++#define B53_ARLTBL_MAC_VID_ENTRY(n)	((0x10 * (n)) + 0x10)
+ #define   ARLTBL_MAC_MASK		0xffffffffffffULL
+ #define   ARLTBL_VID_S			48
+ #define   ARLTBL_VID_MASK_25		0xff
+@@ -273,7 +273,7 @@
+ #define   ARLTBL_VALID_25		BIT(63)
  
--		if (macvlan_sync_address(vlan->dev, dev->dev_addr))
-+		if (vlan && macvlan_sync_address(vlan->dev, dev->dev_addr))
- 			return NOTIFY_BAD;
- 
- 		break;
+ /* ARL Table Data Entry N Registers (32 bit) */
+-#define B53_ARLTBL_DATA_ENTRY(n)	((0x10 * (n)) + 0x08)
++#define B53_ARLTBL_DATA_ENTRY(n)	((0x10 * (n)) + 0x18)
+ #define   ARLTBL_DATA_PORT_ID_MASK	0x1ff
+ #define   ARLTBL_TC(tc)			((3 & tc) << 11)
+ #define   ARLTBL_AGE			BIT(14)
 -- 
 2.20.1
 
