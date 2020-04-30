@@ -2,144 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D70A51BF7D5
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 14:06:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE21A1BF7EE
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 14:09:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726798AbgD3MGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 08:06:06 -0400
-Received: from mail-eopbgr80073.outbound.protection.outlook.com ([40.107.8.73]:23518
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726127AbgD3MGF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 08:06:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HWSF5YscwOMmLWJfHWpU8xxypQ/GolX6ZLfbQ3XIGQf0yGg0KZxJMUWHT9t9paiQ0Vsiq9RnzUIDx88jLbuF7pN8/wKLTmUQmCgYuqVXNmekJIHJHqsKv0T4IIgxwmxz/SILlTrU7wH0ImuKqV8O6xucDp3uzJuE6Q3Hf3Qg9XMBwG8Owisen8khd+zjGUMajIUTEQNkL/JGOTx7ms+fkjZq0G4f2Qh/sQSk4R/D5hN06c51gQ4P5i0E7Ddc/1/AASO/KmeRcRhSK5SL8i8R05xVMzRx4MlWM/Xx/hdLJLIF34d7sXWPnaUPi0HGzLSYNgFj5RfQvU7O1+uNHDtXbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TcHDJkr8twbZIBzugmOzaLCjeJwVTLtWJ+NTd6YpWMw=;
- b=J/jRw1qd3HlCprHO+UrbyP4wyMxrDXKunsQ9sA5XfKlXxaNrl4C9oigSra7Lt7Lf1OTGjclovrqosmzbiMLs3lNmD+NH8fRPKEnG6mjdunm5KxoOPJrAC5RCSi79AjmTRTMfEejZNmh0dTuKIURsB3/PGLUjOgn1RZFfon0jTokxEJ1j2GDgc680LMaebU9qbWEcFI2Hfd4p0S147kPsQksDLGTn9rCsMohVuwdhiuPPYF61BGn/+tYhHZU5gs5+NSZIp/Ub0oyK6Icjo8W/EJMlW3O1awPmaj5iE1N7Hxp8pDGiuUEneGuroaDQCXx+RMN0zLOxRynwUGx82qYlnQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TcHDJkr8twbZIBzugmOzaLCjeJwVTLtWJ+NTd6YpWMw=;
- b=SiTYsTlp3Av22oCnKGgdPgt203OaTHfyCdA7K7qYksucHb/jmIL/IG6eHGFReqZbRXWSCwYHsH3JcTf/tUMwMRNKwbzwiLa1UawS5erdRRINcnNhnnQKqAPOTEX6astDL/h8OIsYVzulq80VVK+DC/8BpFE2E6BcAFp8IZXoNyo=
-Authentication-Results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none
- header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB5059.eurprd04.prod.outlook.com (2603:10a6:208:bf::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Thu, 30 Apr
- 2020 12:06:01 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2958.019; Thu, 30 Apr 2020
- 12:06:01 +0000
-Date:   Thu, 30 Apr 2020 17:35:47 +0530
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        id S1726816AbgD3MJz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 30 Apr 2020 08:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38882 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726515AbgD3MJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 08:09:54 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5FEC035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 05:09:54 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jU80j-0004eL-2T; Thu, 30 Apr 2020 14:09:49 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jU80f-0000EE-BC; Thu, 30 Apr 2020 14:09:45 +0200
+Date:   Thu, 30 Apr 2020 14:09:45 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-acpi@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        Varun Sethi <V.Sethi@nxp.com>, linux-kernel@vger.kernel.org,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        mkl@pengutronix.de, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christian Herber <christian.herber@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next PATCH v2 0/3] Introduce new APIs to support phylink
- and phy layers
-Message-ID: <20200430120547.GA19262@lsv03152.swis.in-blr01.nxp.com>
-References: <20200427132409.23664-1-calvin.johnson@oss.nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200427132409.23664-1-calvin.johnson@oss.nxp.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: SG2PR04CA0148.apcprd04.prod.outlook.com
- (2603:1096:3:16::32) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+Subject: Re: [PATCH net-next v3 1/2] ethtool: provide UAPI for PHY
+ master/slave configuration.
+Message-ID: <20200430120945.GA7370@pengutronix.de>
+References: <20200428075308.2938-1-o.rempel@pengutronix.de>
+ <20200428075308.2938-2-o.rempel@pengutronix.de>
+ <20200429195222.GA17581@lion.mk-sys.cz>
+ <20200430050058.cetxv76pyboanbkz@pengutronix.de>
+ <20200430082020.GC17581@lion.mk-sys.cz>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR04CA0148.apcprd04.prod.outlook.com (2603:1096:3:16::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Thu, 30 Apr 2020 12:05:54 +0000
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 621bbaad-9d09-4da5-4a23-08d7ecfed8ef
-X-MS-TrafficTypeDiagnostic: AM0PR04MB5059:|AM0PR04MB5059:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB5059BD6D63F84E31491E6A03D2AA0@AM0PR04MB5059.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-Forefront-PRVS: 0389EDA07F
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(136003)(376002)(366004)(39860400002)(316002)(54906003)(956004)(7416002)(33656002)(8936002)(8676002)(55236004)(26005)(6506007)(5660300002)(186003)(7696005)(66476007)(6666004)(44832011)(66946007)(52116002)(66556008)(110136005)(1006002)(1076003)(4326008)(16526019)(55016002)(478600001)(9686003)(86362001)(2906002)(110426005)(921003);DIR:OUT;SFP:1101;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vCb3Dc5VpIOWySpinUu2P7EB0/4ZEAW5jANrZAYer6BL3xtG5kXp4rvzQQfDAM+ILI3k0VqFD7FN0VtgmZ5LdXSNLYTUKhf98mh30PnqEcAWw/ZDE71gHmb99nRiPPehIqkjXrFlu6pjHelAaSutdYiwChjHUwspJwtpKYkwHKWdNuDeRtkHWl/Q4q//vZkOv1XcsDVddaPQOJT9DWNW56BtmLICdNUjvAgdluAn3CO7rPEkqh1lsVoa9KlKIEOmR7yfuF/j4tHjlAo4dP+2ZjdCDv84Zboy2DuZBuWVsxxdpM+iPuPKkntyhZrXrb+QPFIlugTOQ5eLBT4FKuw3trfD7rHrrVYhU+gee6HEfvyDWEeGwzaMsy5SyNl86mcuBAtu2kGE4LoS4idQmVwIlhUCjeaamHPjxf1sgTh/a8v8MpKBLnycIn5BWi9p62X3nO2FM1aNLdDTT2k/pHwEk/sPUl8ez9VtUztqN+rnFJ8/0zEq083Gw0FAY8SiASNCtwVrMzmWJUljiWAgh27o8w==
-X-MS-Exchange-AntiSpam-MessageData: lRazfolALNbRdaLQjzUZtLbFB+cO9fAf7gALuYV9TyhslZelOOgaLptR4kvGuo3Sz4AqTDLXAHWbSi/Od6vYT/Q2UqddryEuNsmbsTkk4Tll5BpTAz6mV29vaIn5ge0nUJIz5GeTnJkbTg4GdE6O+srXgKsfCsnk0q1XbBeDk6kT5SR+EWN4XiSQV2zcNNzAhY8Dfizp/s9NcMdQr0JsLadn7Gvj8dp9073ur/RzFp7+ugsaieTSjiTaIpDKE5kst0tI1J2ZIeazzN6APv8s5oGmGuvMdjqcTnwJO+Aia6gJlHC8X/2gPoPVj8XO+DJKymk/40CEi2H4jDMF1QIATCpyH8MTbH5ZOhDPepswd/yvfMOP71w95bc0syfnVs3pN22ezzmLckytejTnI+dsrgHuOishFNg7WDVUekGMFuvziFEPtHuUS+1wrDU1uJ8CuUo3QwSNtH80i6lCnvMJPBY6TtIx0VmTAuvPRgXybGzqZa/eFbi+ocLVpR8L27Ug8fKzOK9GZCotrbXiZq4ySXq4DX4p8Zm04JLBwKm6y8gRqUokI6DaoqRPm00MMBi0Wq2ZTasschtcTHALVnjFMeQY1I2I9MvNjs+mwwwZTROMcQrD7q/Em59OIga9aKWdqN0XIB4aVrYJnRM+LPIsRaA65RNYFaAxNYVaJlHEABoqyqqeRH/+qvNuBzTj7RjWZ24jGk+DcCdbTbxBwq36GK8fO33+lGHi1o2WTCJsleN4gakLZW0TbuLjjynws173s+z0ECr9wkn6utP9/HL671YH7PKoHIbIjh6jS1d0B70=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 621bbaad-9d09-4da5-4a23-08d7ecfed8ef
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2020 12:06:00.9229
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tRZvVcNW3hDrFL9BGMLHLyKfjwiF6neb1MId7+xX1mK688VK2RFjBuboL5JnMQLCmqwGMScNiHEfqDtJ0eQYcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5059
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200430082020.GC17581@lion.mk-sys.cz>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:03:23 up 232 days, 51 min, 517 users,  load average: 22.23,
+ 19.35, 22.10
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 06:54:06PM +0530, Calvin Johnson wrote:
+Hi Michal,
 
-Hi Russell, others,
+On Thu, Apr 30, 2020 at 10:20:20AM +0200, Michal Kubecek wrote:
+> On Thu, Apr 30, 2020 at 07:00:58AM +0200, Oleksij Rempel wrote:
+> > > > diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> > > > index 92f737f101178..eb680e3d6bda5 100644
+> > > > --- a/include/uapi/linux/ethtool.h
+> > > > +++ b/include/uapi/linux/ethtool.h
+> > > > @@ -1666,6 +1666,31 @@ static inline int ethtool_validate_duplex(__u8 duplex)
+> > > >  	return 0;
+> > > >  }
+> > > >  
+> > > > +/* Port mode */
+> > > > +#define PORT_MODE_CFG_UNKNOWN		0
+> > > > +#define PORT_MODE_CFG_MASTER_PREFERRED	1
+> > > > +#define PORT_MODE_CFG_SLAVE_PREFERRED	2
+> > > > +#define PORT_MODE_CFG_MASTER_FORCE	3
+> > > > +#define PORT_MODE_CFG_SLAVE_FORCE	4
+> > > > +#define PORT_MODE_STATE_UNKNOWN		0
+> > > > +#define PORT_MODE_STATE_MASTER		1
+> > > > +#define PORT_MODE_STATE_SLAVE		2
+> > > > +#define PORT_MODE_STATE_ERR		3
+> > > 
+> > > You have "MASTER_SLAVE" or "master_slave" everywhere but "PORT_MODE" in
+> > > these constants which is inconsistent.
+> > 
+> > What will be preferred name?
+> 
+> Not sure, that would be rather question for people more familiar with
+> the hardware. What I wanted to say is that whether we use "master_slave"
+> or "port_mode", we should use the same everywhere.
 
-> Following functions are defined:
->   phylink_fwnode_phy_connect()
->   phylink_device_phy_connect()
->   fwnode_phy_find_device()
->   device_phy_find_device()
->   fwnode_get_phy_node()
-> 
-> First two help in connecting phy to phylink instance.
-> Next two help in finding a phy on a mdiobus.
-> Last one helps in getting phy_node from a fwnode.
-> 
-> Changes in v2:
->   move phy code from base/property.c to net/phy/phy_device.c
->   replace acpi & of code to get phy-handle with fwnode_find_reference
->   replace of_ and acpi_ code with generic fwnode to get phy-handle.
-> 
-> Calvin Johnson (3):
->   device property: Introduce phy related fwnode functions
->   net: phy: alphabetically sort header includes
->   phylink: Introduce phylink_fwnode_phy_connect()
-> 
->  drivers/net/phy/phy_device.c | 83 ++++++++++++++++++++++++++++++------
->  drivers/net/phy/phylink.c    | 68 +++++++++++++++++++++++++++++
->  include/linux/phy.h          |  3 ++
->  include/linux/phylink.h      |  6 +++
->  4 files changed, 146 insertions(+), 14 deletions(-)
+Ok, I rename it all to MASTER_SLAVE prefix. It is the only common name
+across the all documentations.
 
-I've a new patch introducing fwnode_mdiobus_register_phy and fwnode_get_phy_id.
-Can I introduce it in v3 of this patchset or do I need to send it separately?
-Please advice.
+> > > > +
+> > > > +static inline int ethtool_validate_master_slave_cfg(__u8 cfg)
+> > > > +{
+> > > > +	switch (cfg) {
+> > > > +	case PORT_MODE_CFG_MASTER_PREFERRED:
+> > > > +	case PORT_MODE_CFG_SLAVE_PREFERRED:
+> > > > +	case PORT_MODE_CFG_MASTER_FORCE:
+> > > > +	case PORT_MODE_CFG_SLAVE_FORCE:
+> > > > +	case PORT_MODE_CFG_UNKNOWN:
+> > > > +		return 1;
+> > > > +	}
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > 
+> > > Should we really allow CFG_UNKNOWN in client requests? As far as I can
+> > > see, this value is handled as no-op which should be rather expressed by
+> > > absence of the attribute. Allowing the client to request a value,
+> > > keeping current one and returning 0 (success) is IMHO wrong.
+> > 
+> > ok
+> > 
+> > > Also, should this function be in UAPI header?
+> > 
+> > It is placed together with other validate functions:
+> > ethtool_validate_duplex
+> > ethtool_validate_speed
+> > 
+> > Doing it in a different place, would be inconsistent.
+> 
+> Those two have been there since "ever". The important question is if we
+> want this function to be provided to userspace as part of UAPI (which
+> would also limit our options for future modifications.
 
-Thanks
-Calvin
+good argument. Moved it to other location.
+
+> > 
+> > > [...]
+> > > > @@ -119,7 +123,12 @@ static int linkmodes_fill_reply(struct sk_buff *skb,
+> > > >  	}
+> > > >  
+> > > >  	if (nla_put_u32(skb, ETHTOOL_A_LINKMODES_SPEED, lsettings->speed) ||
+> > > > -	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_DUPLEX, lsettings->duplex))
+> > > > +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_DUPLEX, lsettings->duplex) ||
+> > > > +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG,
+> > > > +		       lsettings->master_slave_cfg) ||
+> > > > +	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE,
+> > > > +		       lsettings->master_slave_state))
+> > > > +
+> > > >  		return -EMSGSIZE;
+> > > 
+> > > From the two handlers you introduced, it seems we only get CFG_UNKNOWN
+> > > or STATE_UNKNOWN if driver or device does not support the feature at all
+> > > so it would be IMHO more appropriate to omit the attribute in such case.
+> > 
+> > STATE_UNKNOWN is returned if link is not active.
+> 
+> How about distinguishing the two cases then? Omitting both if CFG is
+> CFG_UNKNOWN (i.e. driver does not support the feature) and sending
+> STATE=STATE_UNKNOWN to userspace only if we know it's a meaningful value
+> actually reported by the driver?
+
+Hm... after thinking about it, we should keep state and config
+separately. The TJA1102 PHY do not provide actual state. Even no error
+related to Master/Master conflict. I reworked the code to have
+unsupported and unknown values.  In case we know, that state or config
+is not supported, it will not be exported to the user space.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
