@@ -2,117 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F881C03FA
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:37:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 114221C0429
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 19:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726517AbgD3RhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 13:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
+        id S1726380AbgD3RsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 13:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726355AbgD3RhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 13:37:10 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABF4C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:37:10 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id e6so987536pjt.4
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:37:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=GqdNFKrppA4lg731637DrQ9hb2ieBy3NSSpdjjmhTa4=;
-        b=pJ4nWmuzW2HW5n8TZdmQzIOvhplC1JN6T+AgXWbqvxT7cLbyf0jh0BNHFGe4ByC4ZS
-         dwVkbTvzV2hFHDz3tcq+gb/X1btf+FNbl/y/XZVyKbSe7gDlLyTLFTpyRpKQ4Z11skoK
-         lH1xWxAB6vf8G/Rb3ayjQVJkMravwLu0Nf1ZRsgQvGi0Yg0eQ7vDzbzpswdEfxCYkXsb
-         UPsqhytz+mQIn6zv46/TGGKZw6utD+l7/GLrhSRrK6QNAYn58SMgg0ONH7D3HJrmmdgV
-         G/GCqkocs+QTZih6vBLwxblWhXysFJXCZGExWV1S9zzRox86f15iQrd5wWQlWoL4IZj/
-         UMng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=GqdNFKrppA4lg731637DrQ9hb2ieBy3NSSpdjjmhTa4=;
-        b=XJN3AX0/xj3AVG2Bo7dYIJ7zWZ1o/xBWJrN3b3C19lkiRawyRnSuVxKQLH8A9ZV1+Z
-         v5ozkUDs9qrN7uuaQoy8AsSX0Xig5CwhsEFzM7wcDMOBpqrYCK8iq6K9YXR/osgaWVSk
-         Ix8OZlYPSkfzQ/7Qx4JVFC6UQGkCbBISuRxcTqIBWHpYZwY2i1EVd7d3HDjA43xoz78a
-         zFoaBBVlQjU/CGtzuKViwrodrJDgL/7B6xxRcLnSQW41Ml+QQQTgzjT1PINvO5JXNU20
-         FAgDV0hy+8RD+P2N4rdMF/y8jDF4/tBUek8L9csCEsGst7hFBgwYkv6wiBJoW7afY0uP
-         fmxg==
-X-Gm-Message-State: AGi0PuZ0Pb8pD1TPJXn6dXo2wCz9SmuoCYNP+cHVsXJTZTfXP/Khj+04
-        c+BulibqvR6Shh7by+plUt8=
-X-Google-Smtp-Source: APiQypKbRvEW0LbZkQJzCvJaWW+EY98Z61IQX0PGfVBV0FgWjEX1QP40vPMSDx0x+fNnCpwXxR9V4g==
-X-Received: by 2002:a17:90a:f985:: with SMTP id cq5mr4251738pjb.193.1588268230010;
-        Thu, 30 Apr 2020 10:37:10 -0700 (PDT)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id d2sm360907pfc.7.2020.04.30.10.37.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 10:37:08 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net-next] hsr: remove hsr interface if all slaves are removed
-Date:   Thu, 30 Apr 2020 17:37:02 +0000
-Message-Id: <20200430173702.20146-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        by vger.kernel.org with ESMTP id S1726285AbgD3RsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 13:48:17 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8687C035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 10:48:16 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 30FA422F43;
+        Thu, 30 Apr 2020 19:48:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1588268894;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JuW5UAYoNPzsFHWib5oi9JBwlDANMV54A3WbLhXj/MY=;
+        b=kQtiqNakQmr4mOYsvyb7PXLUxEfeTRQXzIK/R3tim/i4u2Ua0UzvehFZUVBOMVSZlcaVEp
+        26yO/CMCtBD0+4oluTfBDR78nE7l+MAGDkp02MnF86f/OjYk3F1HtSczyOdO8/blf/uZ6/
+        lg9PL/SlnX0NtIfWycThhbBEs+/gte8=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 30 Apr 2020 19:48:13 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     cphealy@gmail.com, davem@davemloft.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, mkubecek@suse.cz, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 0/9] Ethernet Cable test support
+In-Reply-To: <20200429163247.GC66424@lunn.ch>
+References: <20200425180621.1140452-1-andrew@lunn.ch>
+ <20200429160213.21777-1-michael@walle.cc> <20200429163247.GC66424@lunn.ch>
+Message-ID: <c4363f2888192efc692e08cc1a4a9a57@walle.cc>
+X-Sender: michael@walle.cc
+User-Agent: Roundcube Webmail/1.3.10
+X-Spamd-Bar: +
+X-Spam-Level: *
+X-Rspamd-Server: web
+X-Spam-Status: No, score=1.40
+X-Spam-Score: 1.40
+X-Rspamd-Queue-Id: 30FA422F43
+X-Spamd-Result: default: False [1.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[7];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         FREEMAIL_CC(0.00)[gmail.com,davemloft.net,suse.cz,vger.kernel.org];
+         MID_RHS_MATCH_FROM(0.00)[];
+         SUSPICIOUS_RECIPS(1.50)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When all hsr slave interfaces are removed, hsr interface doesn't work.
-At that moment, it's fine to remove an unused hsr interface automatically
-for saving resources.
-That's a common behavior of virtual interfaces.
+Hi Andrew,
 
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- net/hsr/hsr_main.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+Am 2020-04-29 18:32, schrieb Andrew Lunn:
+> On Wed, Apr 29, 2020 at 06:02:13PM +0200, Michael Walle wrote:
+>> Hi Andrew,
+>> 
+>> > Add infrastructure in ethtool and phylib support for triggering a
+>> > cable test and reporting the results. The Marvell 1G PHY driver is
+>> > then extended to make use of this infrastructure.
+>> 
+>> I'm currently trying this with the AR8031 PHY. With this PHY, you
+>> have to select the pair which you want to start the test on. So
+>> you'd have to start the test four times in a row for a normal
+>> gigabit cable. Right now, I don't see a way how to do that
+>> efficiently if there is no interrupt. One could start another test
+>> in the get_status() polling if the former was completed
+>> successfully. But then you'd have to wait at least four polling
+>> intervals to get the final result (given a cable with four pairs).
+>> 
+>> Any other ideas?
+> 
+> Hi Michael
+> 
+> Nice to see some more PHYs getting support for this.
+> 
+> It is important that the start function returns quickly. However, the
+> get status function can block. So you could do all the work in the
+> first call to get status, polling for completion at a faster rate,
+> etc.
 
-diff --git a/net/hsr/hsr_main.c b/net/hsr/hsr_main.c
-index 26d6c39f24e1..e2564de67603 100644
---- a/net/hsr/hsr_main.c
-+++ b/net/hsr/hsr_main.c
-@@ -15,12 +15,23 @@
- #include "hsr_framereg.h"
- #include "hsr_slave.h"
- 
-+static bool hsr_slave_empty(struct hsr_priv *hsr)
-+{
-+	struct hsr_port *port;
-+
-+	hsr_for_each_port(hsr, port)
-+		if (port->type != HSR_PT_MASTER)
-+			return false;
-+	return true;
-+}
-+
- static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
- 			     void *ptr)
- {
--	struct net_device *dev;
- 	struct hsr_port *port, *master;
-+	struct net_device *dev;
- 	struct hsr_priv *hsr;
-+	LIST_HEAD(list_kill);
- 	int mtu_max;
- 	int res;
- 
-@@ -85,8 +96,15 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
- 		master->dev->mtu = mtu_max;
- 		break;
- 	case NETDEV_UNREGISTER:
--		if (!is_hsr_master(dev))
-+		if (!is_hsr_master(dev)) {
-+			master = hsr_port_get_hsr(port->hsr, HSR_PT_MASTER);
- 			hsr_del_port(port);
-+			if (hsr_slave_empty(master->hsr)) {
-+				unregister_netdevice_queue(master->dev,
-+							   &list_kill);
-+				unregister_netdevice_many(&list_kill);
-+			}
-+		}
- 		break;
- 	case NETDEV_PRE_TYPE_CHANGE:
- 		/* HSR works only on Ethernet devices. Refuse slave to change
--- 
-2.17.1
+Ok. I do have one problem. TDR works fine for the AR8031 and the
+BCM54140 as long as there is no link partner, i.e. open cable,
+shorted pairs etc. But as soon as there is a link partner and a
+link, both PHYs return garbage. As far as I understand TDR, there
+must not be a link, correct? The link partner may send data or
+link pulses. No how do you silence the local NIC or even the peer?
 
+-michael
