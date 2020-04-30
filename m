@@ -2,84 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B218B1C0970
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DB091C0979
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:35:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728088AbgD3Vd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 17:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
+        id S1726926AbgD3VfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 17:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728073AbgD3Vdz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:33:55 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5427EC035495
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:33:55 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id fu13so1463019pjb.5
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:33:55 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726697AbgD3VfS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:35:18 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94784C035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:35:18 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id s30so6441808qth.2
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:35:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dJ9+kFqXFrpdHLiWYSazGnkujgJqbuT3m3Zj97VRUVY=;
-        b=lHasLmoeLvkHx7CiJ9oAKZGkLl+hD4x1wEibnsmOz+TWF8x4Y+jjWfErFW9BIgW2ss
-         boi2MzyTR2WnotFhhuZmMLcgWp8j0fQIxxbnWtkr0IR1ziBE4hJ5IiQ2fyxgCqzLQ5IR
-         lQxlrQenZLxNduU8wSJJYFZFjlkvyiKuawSpxeBvUcM8YLpbyy7n3hLkHmIts6wr4KGY
-         Hj+JsoIkylNaa4IrhMM5caxMmfKcj9Z8l9vYL17lHHfgAbyc/O7LG2tAvfy5HnIcqHAR
-         7X5k3sxGkYPF8GQnDLWS8qsRCdYCpfNVicyMwb8mQ9vtWE5EZ3bZSGQb99pUXSFr4Wj5
-         1neQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kTk6yYIRjy/yH5ibrsyY7pGPZXvpxpVJg89xhFWMhmk=;
+        b=hCZM12KQKj8y4MNe9iAZBBNYgArVcqYoUEI68Jt/z3WihDy4Gc5BHnXtJK6ccvZLKv
+         9ZZsCoOiK9R6wURBQzaL5G6J8JUezpP7EqESYydO04f0XpUa/s96DolKGo1EXz+SVL6r
+         V9yDSVLpRPxlxVwTYUfSiVBBTohaC/gN6AQUpj3S6txzHAHNl9KJOraZQEBC1gS2nf9f
+         WfyA0ipMZLis2ahlnZgvcks361qVkMgEVqCgn2hE6DWQg+PI92gAYCdjli/GnaEQ1zsx
+         WSmB2gK1EaUqhtkV8DXB3ClABpJtRnVlix7IK9GdHjrS6BJ1c7bhJcxvxb9SOZX2JY+F
+         0I1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=dJ9+kFqXFrpdHLiWYSazGnkujgJqbuT3m3Zj97VRUVY=;
-        b=lAkbDXASTsYpeKm0jSOsyptLAcWF7AxieITKEalMFFrflpNURSZRrGs9ll4KyQ2Gdw
-         krhINWKrAG8pqYkcAFmHPoOHh5EFr8giFX7D0F5SB2lqqLlrmMimJ3d5WWIwQLX3TV68
-         Tr09JrHth+gIfDBAAND+fG+EumKeBu1u0mQE06tWjFO7uKvhhMOAviJPPh9QHap4NAgr
-         mCrLgWRb17U5Z7bKaGQIrBvWB0QyjaCtBYea9wh39MHgE4d6qJ/UAUb3dSdfrrEI7O6B
-         UOyETzWS0Q5nZlTzxSgiPfMNw6HE4mF81r8ljp93nkgs/TdnLcFCLUfQRv57F5DddPdt
-         tVsg==
-X-Gm-Message-State: AGi0PuaQhCbXtsdCnO6LLy75Mh1VAg3SgQF5FMWUrJTXn2mSGsh7Lhqv
-        GZMkvyx+VxxztJrXo4BJKyKXZ66+XO8=
-X-Google-Smtp-Source: APiQypKbH9V0AxUAfT1PTnjLlO/IYx/aODwXc3dIcwrMT7xzw7goFl0558/K2oPgKM+epwUmXAw8ew==
-X-Received: by 2002:a17:90b:3017:: with SMTP id hg23mr1003201pjb.150.1588282434587;
-        Thu, 30 Apr 2020 14:33:54 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id f9sm579086pgj.2.2020.04.30.14.33.53
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 Apr 2020 14:33:53 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net 3/3] ionic: add device reset to fw upgrade down
-Date:   Thu, 30 Apr 2020 14:33:43 -0700
-Message-Id: <20200430213343.44124-4-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200430213343.44124-1-snelson@pensando.io>
-References: <20200430213343.44124-1-snelson@pensando.io>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kTk6yYIRjy/yH5ibrsyY7pGPZXvpxpVJg89xhFWMhmk=;
+        b=SvxzGaPZQwUWkAG14kL+unPsbAKovnb0b05ey2xa6baAhO8seBDY6HP9ug6YQ9R+fo
+         zOilftB89weZeLZKH9bpNw9wQdPZGmTyjWjCim7hH5SXVT1YXUepWIKYz4plfyOvVSbf
+         6WkqPe+6a/0zja5ChJqHyitAdcMCS+S6nZ/Acmmq0RHTfXY2bFkd9AgEf5XO5FG9s0CL
+         ctArTVI4+msHTlobTtq/84+/f8OU7cPHR8v647wxoZpFqkO9Jh2X2rLa4KjhQFWnSOCR
+         DS29ajcR98ydEP2rrPTukuk3NDphzdF6WlhsIbBAFohy4y3wFQZJ6vXFMpB6EnzlJJ04
+         S6xw==
+X-Gm-Message-State: AGi0PuYW3YFshNLKSFbA6HCajxkBSThL6ubNduIaRpFytBJoZ0XqTE/5
+        4cjpukEvc8HJ9dEhKpO+CfzgKg==
+X-Google-Smtp-Source: APiQypJ3FPyDD5FI3mYL1dKJRNwwgoAXCHnFt27ymnOfL1Nj6ShzWU/D+bdUQ1zy/rRsbE49SFFklA==
+X-Received: by 2002:ac8:27cb:: with SMTP id x11mr636252qtx.272.1588282517788;
+        Thu, 30 Apr 2020 14:35:17 -0700 (PDT)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id s190sm1112543qkh.23.2020.04.30.14.35.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Apr 2020 14:35:16 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net
+Cc:     evgreen@chromium.org.net, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/3] net: ipa: three bug fixes
+Date:   Thu, 30 Apr 2020 16:35:09 -0500
+Message-Id: <20200430213512.3434-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Doing a device reset addresses an obscure FW timing issue in
-the FW upgrade process.
+This series fixes three bugs in the Qualcomm IPA code.  The third
+adds a missing error code initialization step.
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 1 +
- 1 file changed, 1 insertion(+)
+					-Alex
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 6fcfb634d809..d5293bfded29 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2101,6 +2101,7 @@ static void ionic_lif_handle_fw_down(struct ionic_lif *lif)
- 		ionic_txrx_free(lif);
- 	}
- 	ionic_lifs_deinit(ionic);
-+	ionic_reset(ionic);
- 	ionic_qcqs_free(lif);
- 
- 	dev_info(ionic->dev, "FW Down: LIFs stopped\n");
+Alex Elder (3):
+  net: ipa: fix a bug in ipa_endpoint_stop()
+  net: ipa: fix an error message in gsi_channel_init_one()
+  net: ipa: zero return code before issuing generic EE command
+
+ drivers/net/ipa/gsi.c          | 11 +++++++++--
+ drivers/net/ipa/gsi_reg.h      |  2 ++
+ drivers/net/ipa/ipa_endpoint.c |  7 ++-----
+ 3 files changed, 13 insertions(+), 7 deletions(-)
+
 -- 
-2.17.1
+2.20.1
 
