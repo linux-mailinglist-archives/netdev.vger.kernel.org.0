@@ -2,114 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71AD11C096B
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D7E1C096E
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728042AbgD3Vdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 17:33:44 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:52689 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726909AbgD3Vdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:33:43 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MOz8O-1jp8650rV6-00PM3H; Thu, 30 Apr 2020 23:32:29 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     linux-kernel@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, Joe Perches <joe@perches.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH 07/15] drop_monitor: work around gcc-10 stringop-overflow warning
-Date:   Thu, 30 Apr 2020 23:30:49 +0200
-Message-Id: <20200430213101.135134-8-arnd@arndb.de>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200430213101.135134-1-arnd@arndb.de>
-References: <20200430213101.135134-1-arnd@arndb.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Jvut3fuVCUJStyT2q/5j1FYj+ej7s7opv8+9Oq4TJu02Tw+aA3n
- fymY+dPKzN4cscCrfqeujzfQhh7XUAPiYqE+axWnneSN6KYsU808BNL/FpTLvtEcsV0uZJH
- Q7FfUhb0HrUA671OUFRqaXIObfmoYffIkQ8W1hmkSEnKz3TKdQ30AdFaPxU5u2mFU1i5Ghv
- xUAw6yB8Hm+dnqJJeoDzQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:c9XiUSyQeWo=:GT4r7caaWoRR/d1E5gTP0x
- G3xIjNlLitaH8+kRIOy1cEJzYv9OGYAIO6hwLIEA78jvm0bRI4ZDOMnXkmfnnMSVYmHpC2wNr
- 4fq/J4ZZwXxADMJa7eKdtWCpT2qteOG2m5u50ed0V43EojNydrh2UauJdC0KMOfNKm0/Nkzuc
- 2Qk9z4l+aK+9UFYkZPpRPXs2vhUeTHB+2WZ1hPbn/FuJo5mRAh1foc6+mckjXCadKSMygsdbZ
- leVT7V6RkouzTxFzxgGDgCIUeelR/BHY4i1uTTB7ybytngHZi0ODLbJwt56+1S7YlwpQ8HRKn
- CcyDx87UJ/EK2MEu2pa62OnkRl3+4abtC+S/yfTT5ZSjqunvxET4pDMYsC4PjGNw1pceL+oy/
- Un+gWCFzLv3gKsDTpWih6NHb5LPBAhyBW2Nz8/M7Pbk464PKvn2FVCFoyV8SeCqFdoiR0wCFe
- qeBtZC4PGZDAnTwJydK323R+83VNWuxbQji7SQbO+bvkp8glDT3QjcHUHFu6bNScJaziosGwq
- 143pJ3bo8bEE+sEkVfX426YmU2g50KFuGKQfXbfttJItke93T6z30h2oVjKdTP6f6VrMffNNP
- dcXCCDv7oXM+qEpLEDPUFXRqoJsydwTg45ddaxAApal9T7uTb/H1x8bmjv/pKO0l9Ipn+QjoE
- ONZA8QkND0UV4SZbtI6iFJan0OjoVRU80gK690hdAQHZLbFn6f4A+AeAzIsynJl0Y4TDQfhlG
- 7c9/da+A5uMxRiXme95Fuq8Gw0br+44FSXyeY9JXU/nuUj99FpsLi8uUsgG7qBkHsxa2ld5O5
- FjhYyOcCP9AJ7peLoaZIz523vofjuuou/y3DUZ5NIriwq6HMHA=
+        id S1728075AbgD3Vdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 17:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726752AbgD3Vdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:33:51 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6640EC035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:33:51 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id z6so2815480plk.10
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:33:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=jbjAtLgSx++jA6t7xlCAULbJf9CM7m63JqKvbK35sBw=;
+        b=FUF6YGoSJKvMYI3FF/vvrU/bI1nNftJNbZUEWxYNcnvqJJrqFJHM57CIcqiYAJSkWi
+         zuk7/grl61aGaeuhXpHMTs98eGTsl2T/ZZRgBW/Pwhm4sXjyVBIisX/d8NPHo7qLod/5
+         fGhoNyIONPy4ulR+I2AfWk0Uia3/pRF3qmhm87S1y9zHA1eYyD9/Z68uVJ5AiR2GpFcF
+         Br/FSvFxJa+9fCupAmCYPggR/nkmYz9Emi5Q1ZWeYh2qzdlo1JIz4rMsr3A+CxF7Zahr
+         9PMMxW+oop2+2mHZuarInOSejPmEFMOrn+YvWrmU/bpQsYAb+OBOO8G4c73YwFpbDsMs
+         3GGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=jbjAtLgSx++jA6t7xlCAULbJf9CM7m63JqKvbK35sBw=;
+        b=Q+QFwtVa580F2mMvoy0m67hvM5noSXf0tBWr0gSd/JQ0lUZaGDej9jTusFtdEgMpyL
+         hWwGvZ9mWZAhRIa+B+ZpTgwe2/i/75m+wITMEalLgEARthqGDEnuWQEAwlWcKSNgZCdD
+         OVKSvi/wJlr815GzaDqAykPGBeaL5Fhr1ZJduD8r1UMh29/QCtVNE9gn6cd3wW0T4kq9
+         VSPI2AB12d3QUilipGOeUt7brBfiDt6lrT1lhbuGJGV3IxI+5TJfKKbh8dmAbbIgcNDC
+         RMn1zKP2EPReFnXPnAfwBgID5SOFlda+x+WTRhvUA48I8NIkBKg7PsUowKJIIUj6LMD0
+         TB/Q==
+X-Gm-Message-State: AGi0Pubz7jj6WiKjyaKpr8ZrtCj1fbRADHUDNVUpz6YiDjO4VpdvBWXp
+        fjALdyrv6Y1RFRoWtFutnelAT9ZziZU=
+X-Google-Smtp-Source: APiQypKZjzOlwJaZYcr6Htbdkd1x6J6kYWu8NWuIx8Mf2FmUemjD7MpwLQWHf2pZ6cUtap6WsFMvbg==
+X-Received: by 2002:a17:902:8d95:: with SMTP id v21mr1099201plo.322.1588282430479;
+        Thu, 30 Apr 2020 14:33:50 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id f9sm579086pgj.2.2020.04.30.14.33.49
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 30 Apr 2020 14:33:49 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v2 net 0/3] ionic: fw upgrade bug fixes
+Date:   Thu, 30 Apr 2020 14:33:40 -0700
+Message-Id: <20200430213343.44124-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current gcc-10 snapshot produces a false-positive warning:
+These patches address issues found in additional internal
+fw-upgrade testing.
 
-net/core/drop_monitor.c: In function 'trace_drop_common.constprop':
-cc1: error: writing 8 bytes into a region of size 0 [-Werror=stringop-overflow=]
-In file included from net/core/drop_monitor.c:23:
-include/uapi/linux/net_dropmon.h:36:8: note: at offset 0 to object 'entries' with size 4 declared here
-   36 |  __u32 entries;
-      |        ^~~~~~~
+Shannon Nelson (3):
+  ionic: no link check until after probe
+  ionic: refresh devinfo after fw-upgrade
+  ionic: add device reset to fw upgrade down
 
-I reported this in the gcc bugzilla, but in case it does not get
-fixed in the release, work around it by using a temporary variable.
+v2:
+ - replaced extra state flag with postponing first link check
+ - added device reset patch
 
-Fixes: 9a8afc8d3962 ("Network Drop Monitor: Adding drop monitor implementation & Netlink protocol")
-Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94881
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- net/core/drop_monitor.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 8e33cec9fc4e..2ee7bc4c9e03 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -213,6 +213,7 @@ static void sched_send_work(struct timer_list *t)
- static void trace_drop_common(struct sk_buff *skb, void *location)
- {
- 	struct net_dm_alert_msg *msg;
-+	struct net_dm_drop_point *point;
- 	struct nlmsghdr *nlh;
- 	struct nlattr *nla;
- 	int i;
-@@ -231,11 +232,13 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
- 	nlh = (struct nlmsghdr *)dskb->data;
- 	nla = genlmsg_data(nlmsg_data(nlh));
- 	msg = nla_data(nla);
-+	point = msg->points;
- 	for (i = 0; i < msg->entries; i++) {
--		if (!memcmp(&location, msg->points[i].pc, sizeof(void *))) {
--			msg->points[i].count++;
-+		if (!memcmp(&location, &point->pc, sizeof(void *))) {
-+			point->count++;
- 			goto out;
- 		}
-+		point++;
- 	}
- 	if (msg->entries == dm_hit_limit)
- 		goto out;
-@@ -244,8 +247,8 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
- 	 */
- 	__nla_reserve_nohdr(dskb, sizeof(struct net_dm_drop_point));
- 	nla->nla_len += NLA_ALIGN(sizeof(struct net_dm_drop_point));
--	memcpy(msg->points[msg->entries].pc, &location, sizeof(void *));
--	msg->points[msg->entries].count = 1;
-+	memcpy(point->pc, &location, sizeof(void *));
-+	point->count = 1;
- 	msg->entries++;
- 
- 	if (!timer_pending(&data->send_timer)) {
 -- 
-2.26.0
+2.17.1
 
