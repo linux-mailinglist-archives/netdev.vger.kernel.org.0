@@ -2,116 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4CB1C0953
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:32:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71AD11C096B
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:34:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbgD3Vcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 17:32:47 -0400
-Received: from mout.kundenserver.de ([212.227.126.131]:49795 "EHLO
+        id S1728042AbgD3Vdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 17:33:44 -0400
+Received: from mout.kundenserver.de ([212.227.126.130]:52689 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbgD3Vcr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:32:47 -0400
+        with ESMTP id S1726909AbgD3Vdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:33:43 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
  (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1M2w0K-1jTBOd0Rhs-003PJb; Thu, 30 Apr 2020 23:32:23 +0200
+ 1MOz8O-1jp8650rV6-00PM3H; Thu, 30 Apr 2020 23:32:29 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
-To:     linux-kernel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+To:     linux-kernel@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Jeremy Sowden <jeremy@azazel.net>,
-        Li RongQing <lirongqing@baidu.com>,
-        Joe Perches <joe@perches.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jules Irenge <jbi.octave@gmail.com>,
-        Dirk Morris <dmorris@metaloft.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+Cc:     Arnd Bergmann <arnd@arndb.de>, Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>, Joe Perches <joe@perches.com>,
         netdev@vger.kernel.org
-Subject: [PATCH 06/15] netfilter: conntrack: avoid gcc-10 zero-length-bounds warning
-Date:   Thu, 30 Apr 2020 23:30:48 +0200
-Message-Id: <20200430213101.135134-7-arnd@arndb.de>
+Subject: [PATCH 07/15] drop_monitor: work around gcc-10 stringop-overflow warning
+Date:   Thu, 30 Apr 2020 23:30:49 +0200
+Message-Id: <20200430213101.135134-8-arnd@arndb.de>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200430213101.135134-1-arnd@arndb.de>
 References: <20200430213101.135134-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:8Sp1zqk0kvXNuoj2OkQlE/ujFJe7AlEDhxnJ66L0VukuMY/xxYi
- +JgvA3BEJVInn94lFMseSuPlDxRS/GL/oaTPplGHTZvnLqo7E/MijvoRxlN0VmpEU2lISm0
- lE2g9NCgBPAiDai9y5MKBi5xa6BaV6duj4paBSzna762U2aagG+uxR3tmKxRzdadqKwZsQP
- sTKb8dOBMg6yReMFaqH6w==
+X-Provags-ID: V03:K1:Jvut3fuVCUJStyT2q/5j1FYj+ej7s7opv8+9Oq4TJu02Tw+aA3n
+ fymY+dPKzN4cscCrfqeujzfQhh7XUAPiYqE+axWnneSN6KYsU808BNL/FpTLvtEcsV0uZJH
+ Q7FfUhb0HrUA671OUFRqaXIObfmoYffIkQ8W1hmkSEnKz3TKdQ30AdFaPxU5u2mFU1i5Ghv
+ xUAw6yB8Hm+dnqJJeoDzQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:VNz0tYWZTqk=:UsDGslkgNI5fdFKkPvadEp
- 6mtBxc23aMctyVNSUmtxjmYVlBSip2tqZUVeWE3owPBMOAzBA5KaIipnOc4+0PpR/FzETZXhO
- /k094E//vxZnfTOZxqwMe+rNEuL0uTQol7g1+JVqrOgBs2tl/5LVpo9uSRvLzyXzdq2Ih5x0s
- jy/nvLF4ZaFqgffe/1Ij5wy0qGZizKErNItmS1jZA6GqPUe99IR4qVP7GSRFnoVuCGHIOkZOs
- BQT/QITf4RXgOM09POIWx1EiXMaeET75PoUV7WQXZZyFvQl3GSfxdSsR0njRL/iQlQOJUUKE9
- HQ46qhkyrNPeO9/5HNrtbsMadFiSghd5C7WtARl2/ebqhQY5u14yK2gX5RvTwKjC/msY4V8Ma
- 2EiUu4H49OIhOMwK25KYdEKkBe4iS8YAYY6HfBsYZMw8UPWtFchtX4QaTouIA3PJerFzR134x
- UXcMBdnxLcwasMRYHXnRcWyBFuFOH52QC4NhpI4q3L4IkIRLoXfg3sHIbH/H6qhI+OEwFKzIS
- w5wNzOrgxrviDDsIdTsyVYONKT7Art9WABh/fydx/FW/BGuc87HioQ0GUfFWI2bZRfpBVA4gc
- f3CFLH2Cykr1Tkom3EUXjDWcZSBSW2905QaeE4oDK2EzR+hRbUHN40VCs9rEp1amdToMv4w1e
- CxpXRZvYI3iG3prMVih9ujBWabjb9AN6M6Bh9N69PBEboD2TQAz0fF9+0BhaU4f0h+gt5PFEg
- zcJRCivnsDG1XWjKDrp4p7GKd5RRj8vZDIuQuj5eq8x9vUwrxFnvSCdj5F9dgU1Ze5PBO1AAt
- Ei0a3eb1reZbx2wTQbnlgmpLvtKHD8vLmD5ZgRjMFVANTbDmUk=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:c9XiUSyQeWo=:GT4r7caaWoRR/d1E5gTP0x
+ G3xIjNlLitaH8+kRIOy1cEJzYv9OGYAIO6hwLIEA78jvm0bRI4ZDOMnXkmfnnMSVYmHpC2wNr
+ 4fq/J4ZZwXxADMJa7eKdtWCpT2qteOG2m5u50ed0V43EojNydrh2UauJdC0KMOfNKm0/Nkzuc
+ 2Qk9z4l+aK+9UFYkZPpRPXs2vhUeTHB+2WZ1hPbn/FuJo5mRAh1foc6+mckjXCadKSMygsdbZ
+ leVT7V6RkouzTxFzxgGDgCIUeelR/BHY4i1uTTB7ybytngHZi0ODLbJwt56+1S7YlwpQ8HRKn
+ CcyDx87UJ/EK2MEu2pa62OnkRl3+4abtC+S/yfTT5ZSjqunvxET4pDMYsC4PjGNw1pceL+oy/
+ Un+gWCFzLv3gKsDTpWih6NHb5LPBAhyBW2Nz8/M7Pbk464PKvn2FVCFoyV8SeCqFdoiR0wCFe
+ qeBtZC4PGZDAnTwJydK323R+83VNWuxbQji7SQbO+bvkp8glDT3QjcHUHFu6bNScJaziosGwq
+ 143pJ3bo8bEE+sEkVfX426YmU2g50KFuGKQfXbfttJItke93T6z30h2oVjKdTP6f6VrMffNNP
+ dcXCCDv7oXM+qEpLEDPUFXRqoJsydwTg45ddaxAApal9T7uTb/H1x8bmjv/pKO0l9Ipn+QjoE
+ ONZA8QkND0UV4SZbtI6iFJan0OjoVRU80gK690hdAQHZLbFn6f4A+AeAzIsynJl0Y4TDQfhlG
+ 7c9/da+A5uMxRiXme95Fuq8Gw0br+44FSXyeY9JXU/nuUj99FpsLi8uUsgG7qBkHsxa2ld5O5
+ FjhYyOcCP9AJ7peLoaZIz523vofjuuou/y3DUZ5NIriwq6HMHA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-gcc-10 warns around a suspicious access to an empty struct member:
+The current gcc-10 snapshot produces a false-positive warning:
 
-net/netfilter/nf_conntrack_core.c: In function '__nf_conntrack_alloc':
-net/netfilter/nf_conntrack_core.c:1522:9: warning: array subscript 0 is outside the bounds of an interior zero-length array 'u8[0]' {aka 'unsigned char[0]'} [-Wzero-length-bounds]
- 1522 |  memset(&ct->__nfct_init_offset[0], 0,
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from net/netfilter/nf_conntrack_core.c:37:
-include/net/netfilter/nf_conntrack.h:90:5: note: while referencing '__nfct_init_offset'
-   90 |  u8 __nfct_init_offset[0];
-      |     ^~~~~~~~~~~~~~~~~~
+net/core/drop_monitor.c: In function 'trace_drop_common.constprop':
+cc1: error: writing 8 bytes into a region of size 0 [-Werror=stringop-overflow=]
+In file included from net/core/drop_monitor.c:23:
+include/uapi/linux/net_dropmon.h:36:8: note: at offset 0 to object 'entries' with size 4 declared here
+   36 |  __u32 entries;
+      |        ^~~~~~~
 
-The code is correct but a bit unusual. Rework it slightly in a way that
-does not trigger the warning, using an empty struct instead of an empty
-array. There are probably more elegant ways to do this, but this is the
-smallest change.
+I reported this in the gcc bugzilla, but in case it does not get
+fixed in the release, work around it by using a temporary variable.
 
-Fixes: c41884ce0562 ("netfilter: conntrack: avoid zeroing timer")
+Fixes: 9a8afc8d3962 ("Network Drop Monitor: Adding drop monitor implementation & Netlink protocol")
+Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94881
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- include/net/netfilter/nf_conntrack.h | 2 +-
- net/netfilter/nf_conntrack_core.c    | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/core/drop_monitor.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index 9f551f3b69c6..90690e37a56f 100644
---- a/include/net/netfilter/nf_conntrack.h
-+++ b/include/net/netfilter/nf_conntrack.h
-@@ -87,7 +87,7 @@ struct nf_conn {
- 	struct hlist_node	nat_bysource;
- #endif
- 	/* all members below initialized via memset */
--	u8 __nfct_init_offset[0];
-+	struct { } __nfct_init_offset;
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 8e33cec9fc4e..2ee7bc4c9e03 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -213,6 +213,7 @@ static void sched_send_work(struct timer_list *t)
+ static void trace_drop_common(struct sk_buff *skb, void *location)
+ {
+ 	struct net_dm_alert_msg *msg;
++	struct net_dm_drop_point *point;
+ 	struct nlmsghdr *nlh;
+ 	struct nlattr *nla;
+ 	int i;
+@@ -231,11 +232,13 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+ 	nlh = (struct nlmsghdr *)dskb->data;
+ 	nla = genlmsg_data(nlmsg_data(nlh));
+ 	msg = nla_data(nla);
++	point = msg->points;
+ 	for (i = 0; i < msg->entries; i++) {
+-		if (!memcmp(&location, msg->points[i].pc, sizeof(void *))) {
+-			msg->points[i].count++;
++		if (!memcmp(&location, &point->pc, sizeof(void *))) {
++			point->count++;
+ 			goto out;
+ 		}
++		point++;
+ 	}
+ 	if (msg->entries == dm_hit_limit)
+ 		goto out;
+@@ -244,8 +247,8 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+ 	 */
+ 	__nla_reserve_nohdr(dskb, sizeof(struct net_dm_drop_point));
+ 	nla->nla_len += NLA_ALIGN(sizeof(struct net_dm_drop_point));
+-	memcpy(msg->points[msg->entries].pc, &location, sizeof(void *));
+-	msg->points[msg->entries].count = 1;
++	memcpy(point->pc, &location, sizeof(void *));
++	point->count = 1;
+ 	msg->entries++;
  
- 	/* If we were expected by an expectation, this will be it */
- 	struct nf_conn *master;
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index c4582eb71766..0173398f4ced 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1519,9 +1519,9 @@ __nf_conntrack_alloc(struct net *net,
- 	ct->status = 0;
- 	ct->timeout = 0;
- 	write_pnet(&ct->ct_net, net);
--	memset(&ct->__nfct_init_offset[0], 0,
-+	memset(&ct->__nfct_init_offset, 0,
- 	       offsetof(struct nf_conn, proto) -
--	       offsetof(struct nf_conn, __nfct_init_offset[0]));
-+	       offsetof(struct nf_conn, __nfct_init_offset));
- 
- 	nf_ct_zone_add(ct, zone);
- 
+ 	if (!timer_pending(&data->send_timer)) {
 -- 
 2.26.0
 
