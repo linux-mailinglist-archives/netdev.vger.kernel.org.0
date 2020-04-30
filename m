@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A801BFB34
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:58:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 531F11BFB2B
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:58:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729034AbgD3N6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 09:58:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37316 "EHLO mail.kernel.org"
+        id S1728451AbgD3N6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:58:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729029AbgD3Nym (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:54:42 -0400
+        id S1729040AbgD3Nyp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:54:45 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 589F824959;
-        Thu, 30 Apr 2020 13:54:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A6BC824953;
+        Thu, 30 Apr 2020 13:54:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254882;
-        bh=+9oms/9IGYFr18qU0BTZBIJZzmvXIJbWaop6DxcrCyI=;
+        s=default; t=1588254884;
+        bh=R+09xoVT9AffdNtKi8kGvcnhGP63SnymqbY3uEN+E5U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tTvYtqBXk9mj5dmnnQKxm+MYHk5Wd5YUS/tOmxGRXKH16Sg8nxLnhpD0oJ8GJqqfv
-         m/E6b4kioI3zTq6tS7yldLia0SihWRQZbM78osLNhyUf/k3cWkBwm9c+2BhGtEHBRU
-         hB2Y/IYbGYnOVTinjap+UL+ByUNi0KczQXAuzark=
+        b=IaIcp2cAmO8VEBqZgGM2jtvj3zDZUmEkXCSbJR3a7jWEpAkLCBHUa+bebHUPWm1GW
+         yukEA6K5n//Fd8B4r5c0Y62o9Y24WjLU4bP10QSV1kDrtUrU4V4se1xdpaD+ir280s
+         aiVrJcGPrvCNI/XfwyTXTFWsSsuobvIDFDWhuzDI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>, Jiri Pirko <jiri@mellanox.com>,
+Cc:     Taehee Yoo <ap420073@gmail.com>,
+        syzbot+5035b1f9dc7ea4558d5a@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 07/17] team: fix hang in team_mode_get()
-Date:   Thu, 30 Apr 2020 09:54:23 -0400
-Message-Id: <20200430135433.21204-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 09/17] macvlan: fix null dereference in macvlan_device_event()
+Date:   Thu, 30 Apr 2020 09:54:25 -0400
+Message-Id: <20200430135433.21204-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135433.21204-1-sashal@kernel.org>
 References: <20200430135433.21204-1-sashal@kernel.org>
@@ -45,91 +46,135 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 1c30fbc76b8f0c07c92a8ca4cd7c456612e17eb5 ]
+[ Upstream commit 4dee15b4fd0d61ec6bbd179238191e959d34cf7a ]
 
-When team mode is changed or set, the team_mode_get() is called to check
-whether the mode module is inserted or not. If the mode module is not
-inserted, it calls the request_module().
-In the request_module(), it creates a child process, which is
-the "modprobe" process and waits for the done of the child process.
-At this point, the following locks were used.
-down_read(&cb_lock()); by genl_rcv()
-    genl_lock(); by genl_rcv_msc()
-        rtnl_lock(); by team_nl_cmd_options_set()
-            mutex_lock(&team->lock); by team_nl_team_get()
+In the macvlan_device_event(), the list_first_entry_or_null() is used.
+This function could return null pointer if there is no node.
+But, the macvlan module doesn't check the null pointer.
+So, null-ptr-deref would occur.
 
-Concurrently, the team module could be removed by rmmod or "modprobe -r"
-The __exit function of team module is team_module_exit(), which calls
-team_nl_fini() and it tries to acquire following locks.
-down_write(&cb_lock);
-    genl_lock();
-Because of the genl_lock() and cb_lock, this process can't be finished
-earlier than request_module() routine.
+      bond0
+        |
+   +----+-----+
+   |          |
+macvlan0   macvlan1
+   |          |
+ dummy0     dummy1
 
-The problem secenario.
-CPU0                                     CPU1
-team_mode_get
-    request_module()
-                                         modprobe -r team_mode_roundrobin
-                                                     team <--(B)
-        modprobe team <--(A)
-            team_mode_roundrobin
-
-By request_module(), the "modprobe team_mode_roundrobin" command
-will be executed. At this point, the modprobe process will decide
-that the team module should be inserted before team_mode_roundrobin.
-Because the team module is being removed.
-
-By the module infrastructure, the same module insert/remove operations
-can't be executed concurrently.
-So, (A) waits for (B) but (B) also waits for (A) because of locks.
-So that the hang occurs at this point.
+The problem scenario.
+If dummy1 is removed,
+1. ->dellink() of dummy1 is called.
+2. NETDEV_UNREGISTER of dummy1 notification is sent to macvlan module.
+3. ->dellink() of macvlan1 is called.
+4. NETDEV_UNREGISTER of macvlan1 notification is sent to bond module.
+5. __bond_release_one() is called and it internally calls
+   dev_set_mac_address().
+6. dev_set_mac_address() calls the ->ndo_set_mac_address() of macvlan1,
+   which is macvlan_set_mac_address().
+7. macvlan_set_mac_address() calls the dev_set_mac_address() with dummy1.
+8. NETDEV_CHANGEADDR of dummy1 is sent to macvlan module.
+9. In the macvlan_device_event(), it calls list_first_entry_or_null().
+At this point, dummy1 and macvlan1 were removed.
+So, list_first_entry_or_null() will return NULL.
 
 Test commands:
-    while :
+    ip netns add nst
+    ip netns exec nst ip link add bond0 type bond
+    for i in {0..10}
     do
-        teamd -d &
-	killall teamd &
-	modprobe -rv team_mode_roundrobin &
+        ip netns exec nst ip link add dummy$i type dummy
+	ip netns exec nst ip link add macvlan$i link dummy$i \
+		type macvlan mode passthru
+	ip netns exec nst ip link set macvlan$i master bond0
     done
+    ip netns del nst
 
-The approach of this patch is to hold the reference count of the team
-module if the team module is compiled as a module. If the reference count
-of the team module is not zero while request_module() is being called,
-the team module will not be removed at that moment.
-So that the above scenario could not occur.
+Splat looks like:
+[   40.585687][  T146] general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] SMP DEI
+[   40.587249][  T146] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+[   40.588342][  T146] CPU: 1 PID: 146 Comm: kworker/u8:2 Not tainted 5.7.0-rc1+ #532
+[   40.589299][  T146] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[   40.590469][  T146] Workqueue: netns cleanup_net
+[   40.591045][  T146] RIP: 0010:macvlan_device_event+0x4e2/0x900 [macvlan]
+[   40.591905][  T146] Code: 00 00 00 00 00 fc ff df 80 3c 06 00 0f 85 45 02 00 00 48 89 da 48 b8 00 00 00 00 00 fc ff d2
+[   40.594126][  T146] RSP: 0018:ffff88806116f4a0 EFLAGS: 00010246
+[   40.594783][  T146] RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+[   40.595653][  T146] RDX: 0000000000000000 RSI: ffff88806547ddd8 RDI: ffff8880540f1360
+[   40.596495][  T146] RBP: ffff88804011a808 R08: fffffbfff4fb8421 R09: fffffbfff4fb8421
+[   40.597377][  T146] R10: ffffffffa7dc2107 R11: 0000000000000000 R12: 0000000000000008
+[   40.598186][  T146] R13: ffff88804011a000 R14: ffff8880540f1000 R15: 1ffff1100c22de9a
+[   40.599012][  T146] FS:  0000000000000000(0000) GS:ffff888067800000(0000) knlGS:0000000000000000
+[   40.600004][  T146] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   40.600665][  T146] CR2: 00005572d3a807b8 CR3: 000000005fcf4003 CR4: 00000000000606e0
+[   40.601485][  T146] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   40.602461][  T146] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   40.603443][  T146] Call Trace:
+[   40.603871][  T146]  ? nf_tables_dump_setelem+0xa0/0xa0 [nf_tables]
+[   40.604587][  T146]  ? macvlan_uninit+0x100/0x100 [macvlan]
+[   40.605212][  T146]  ? __module_text_address+0x13/0x140
+[   40.605842][  T146]  notifier_call_chain+0x90/0x160
+[   40.606477][  T146]  dev_set_mac_address+0x28e/0x3f0
+[   40.607117][  T146]  ? netdev_notify_peers+0xc0/0xc0
+[   40.607762][  T146]  ? __module_text_address+0x13/0x140
+[   40.608440][  T146]  ? notifier_call_chain+0x90/0x160
+[   40.609097][  T146]  ? dev_set_mac_address+0x1f0/0x3f0
+[   40.609758][  T146]  dev_set_mac_address+0x1f0/0x3f0
+[   40.610402][  T146]  ? __local_bh_enable_ip+0xe9/0x1b0
+[   40.611071][  T146]  ? bond_hw_addr_flush+0x77/0x100 [bonding]
+[   40.611823][  T146]  ? netdev_notify_peers+0xc0/0xc0
+[   40.612461][  T146]  ? bond_hw_addr_flush+0x77/0x100 [bonding]
+[   40.613213][  T146]  ? bond_hw_addr_flush+0x77/0x100 [bonding]
+[   40.613963][  T146]  ? __local_bh_enable_ip+0xe9/0x1b0
+[   40.614631][  T146]  ? bond_time_in_interval.isra.31+0x90/0x90 [bonding]
+[   40.615484][  T146]  ? __bond_release_one+0x9f0/0x12c0 [bonding]
+[   40.616230][  T146]  __bond_release_one+0x9f0/0x12c0 [bonding]
+[   40.616949][  T146]  ? bond_enslave+0x47c0/0x47c0 [bonding]
+[   40.617642][  T146]  ? lock_downgrade+0x730/0x730
+[   40.618218][  T146]  ? check_flags.part.42+0x450/0x450
+[   40.618850][  T146]  ? __mutex_unlock_slowpath+0xd0/0x670
+[   40.619519][  T146]  ? trace_hardirqs_on+0x30/0x180
+[   40.620117][  T146]  ? wait_for_completion+0x250/0x250
+[   40.620754][  T146]  bond_netdev_event+0x822/0x970 [bonding]
+[   40.621460][  T146]  ? __module_text_address+0x13/0x140
+[   40.622097][  T146]  notifier_call_chain+0x90/0x160
+[   40.622806][  T146]  rollback_registered_many+0x660/0xcf0
+[   40.623522][  T146]  ? netif_set_real_num_tx_queues+0x780/0x780
+[   40.624290][  T146]  ? notifier_call_chain+0x90/0x160
+[   40.624957][  T146]  ? netdev_upper_dev_unlink+0x114/0x180
+[   40.625686][  T146]  ? __netdev_adjacent_dev_unlink_neighbour+0x30/0x30
+[   40.626421][  T146]  ? mutex_is_locked+0x13/0x50
+[   40.627016][  T146]  ? unregister_netdevice_queue+0xf2/0x240
+[   40.627663][  T146]  unregister_netdevice_many.part.134+0x13/0x1b0
+[   40.628362][  T146]  default_device_exit_batch+0x2d9/0x390
+[   40.628987][  T146]  ? unregister_netdevice_many+0x40/0x40
+[   40.629615][  T146]  ? dev_change_net_namespace+0xcb0/0xcb0
+[   40.630279][  T146]  ? prepare_to_wait_exclusive+0x2e0/0x2e0
+[   40.630943][  T146]  ? ops_exit_list.isra.9+0x97/0x140
+[   40.631554][  T146]  cleanup_net+0x441/0x890
+[ ... ]
 
-Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
+Fixes: e289fd28176b ("macvlan: fix the problem when mac address changes for passthru mode")
+Reported-by: syzbot+5035b1f9dc7ea4558d5a@syzkaller.appspotmail.com
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/team/team.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/macvlan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index d0c18e3557f1c..cea6d2eabe7e6 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -480,6 +480,9 @@ static const struct team_mode *team_mode_get(const char *kind)
- 	struct team_mode_item *mitem;
- 	const struct team_mode *mode = NULL;
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 2948816214304..4f582ce929f22 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -1607,7 +1607,7 @@ static int macvlan_device_event(struct notifier_block *unused,
+ 						struct macvlan_dev,
+ 						list);
  
-+	if (!try_module_get(THIS_MODULE))
-+		return NULL;
-+
- 	spin_lock(&mode_list_lock);
- 	mitem = __find_mode(kind);
- 	if (!mitem) {
-@@ -495,6 +498,7 @@ static const struct team_mode *team_mode_get(const char *kind)
- 	}
+-		if (macvlan_sync_address(vlan->dev, dev->dev_addr))
++		if (vlan && macvlan_sync_address(vlan->dev, dev->dev_addr))
+ 			return NOTIFY_BAD;
  
- 	spin_unlock(&mode_list_lock);
-+	module_put(THIS_MODULE);
- 	return mode;
- }
- 
+ 		break;
 -- 
 2.20.1
 
