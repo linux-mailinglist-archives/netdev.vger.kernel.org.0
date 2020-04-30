@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8428F1C097B
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:35:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E19B91C097E
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:35:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727777AbgD3VfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 17:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43296 "EHLO
+        id S1728140AbgD3Vf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 17:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727077AbgD3VfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:35:20 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB310C035495
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:35:19 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id s9so4720797qkm.6
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:35:19 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727077AbgD3VfW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:35:22 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223ADC035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:35:21 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id i68so6422174qtb.5
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:35:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LDbWKqllD32Zzrgur/5ifZ7Q6Ppu2GkH8sQaMON6aEA=;
-        b=w8Hp6LU/YnMao27Myy/EieJ66WTJDSb2srpoFkwVQgk1zBbjc4sBbYcXQmdGxG8yV4
-         4+QjcJO3M+SNfKmA4X7pjK1uLS+PoVpeG+OTFC6ffSASFPuKAUyFkatsZpwnfbY8eAUb
-         njCJL50HuqRTm/46xi4L4sr4JFeAe5LAZSpEkgtb+E7GM7N6s3Rc9rsntbAHNbkxTWX1
-         YR0whSuao/79fI8iCxtPcdzhlZhJehTV17LfEuFrRl+LzdRQ3OMEA1MEHprNOJovWaxg
-         r4wHyQwQgjQ7eK7aF/8j4Rznag09rMfa2V1x1abhHDqQsLwL1lfXroV1duJcZnCSYM03
-         rzlg==
+        bh=C4NZHd20DqH/vMopbnAr3CvIxlhLY+CMbHfzvIpU5fo=;
+        b=FAkKib5UEUdJ8vrJ3fEKyY/s8lgMD7f5u4GS4xdPjhvVpDtOAC8ykkeJnOk9FbzU3b
+         kmwrBahaK3+c+ARuIT6QoV3cVvis5z4O4onUhhXh2d8K3Q+GngbIOhXHY3/WTLU6J+6V
+         fM6JoA3LMLm7BWJkOiU5uB0Hwsfc4WwZiBxQ8K4nPkWZHUc4Fr1ugvPHifEUl8bbBBSY
+         cmZtYlfn+btahEQeH4+Ht8tRliKWoZf3Cg8juMNLcyqZWrfCk2hzMvuTxlrns1XwGGzy
+         vOJGflAAQL7XqHv6DcYQxjS2I6ArwHEy7PEy9gDKdC48OReAKAvOmiDA7xP54KrJRo48
+         LJVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LDbWKqllD32Zzrgur/5ifZ7Q6Ppu2GkH8sQaMON6aEA=;
-        b=os8FvYtPmqAGG1o34lr5dxtnBMyjqLG6tTNWuqQLI6hTDMQWNrqwUH6VEutoX8+LLc
-         8K7m75q0R0X8quKgVBWPQxb6gwuFT+bIHb0opw0TbGcwWrhntg3pQB2tM2ho8IjuDZSd
-         SFQHQbD1PmX8hFZt14UZhoHCMGjt6yOi/C3+50asadOc9EEnDobJ27ViwAzFHzgK+fni
-         0DuW0KtJcztJbz454DB+yv2LHF6bIWizgIKl+OnMUtcvekYInpanw1a8AJSvTB1/hGjK
-         UnMMJ1kv+MRd6YO7ZkLHuutvv6i4Jd9mER7JEDD0meWNftbrQNk7PeoRvkQnxlSLWLh7
-         oobA==
-X-Gm-Message-State: AGi0Pub0tuPaOZ+zIF+yhqYEGKMNg9bD3LDS6OkbvKLxk2BNDRxsAu6Y
-        fkSNGzTdsQtx52zOdjGSPWgsYA==
-X-Google-Smtp-Source: APiQypLrSH7yaDRSRPpYaNxGoA74UjF04aY6CXlzqQMGPLp5Pw5yu1nJ6UVSjdnghjSA5D5aFznHvw==
-X-Received: by 2002:a37:aa8e:: with SMTP id t136mr559577qke.175.1588282519043;
-        Thu, 30 Apr 2020 14:35:19 -0700 (PDT)
+        bh=C4NZHd20DqH/vMopbnAr3CvIxlhLY+CMbHfzvIpU5fo=;
+        b=WcYmYhKb92fXYEqbzeNt+SiK8hDGhEOlWo6GEeZ6TfZrEOZed5X/V4anKPJ3xNZJow
+         TGrxViiLZAERn2Yp/7bu4JYN3cMCIq/EzKvRe51i325OF+lh0VdUVhu+TC52WvMqYjwP
+         HFvbYhN79goun18/wMCttIpw/yhwO8j8Qa3psKUoqmhPoxBMRsGTK9hbipv2ETfKp/pt
+         ctw3K191MDvPOdcyquOI0QOD6hiwTNVOCma2Za0AWU4+ZkQzqIvzHGFso6hgHIl/tJyY
+         NL6qzy9vMR5A+zxnjXUJg/RoCl3xllPddlUIHjDTOj1hoR2UiyCOXU7dfgDt6xTcg42V
+         +z9g==
+X-Gm-Message-State: AGi0Puae8gb1Hikt8aT3P1y7uV0Eq5vuhB8PCEI6A8ePY+aLioGDahqg
+        H+5iB5dXz2EoQi+1rI6kN/M6AA==
+X-Google-Smtp-Source: APiQypI9hbKnj1Bz3fAGJul0OELxHEBWAad+NzSj8OX1wtfY7PAuFyORwlaik3yuLFedpJoPks83Hw==
+X-Received: by 2002:ac8:312e:: with SMTP id g43mr625184qtb.256.1588282520338;
+        Thu, 30 Apr 2020 14:35:20 -0700 (PDT)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id s190sm1112543qkh.23.2020.04.30.14.35.17
+        by smtp.gmail.com with ESMTPSA id s190sm1112543qkh.23.2020.04.30.14.35.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 14:35:18 -0700 (PDT)
+        Thu, 30 Apr 2020 14:35:19 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net
 Cc:     evgreen@chromium.org.net, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/3] net: ipa: fix a bug in ipa_endpoint_stop()
-Date:   Thu, 30 Apr 2020 16:35:10 -0500
-Message-Id: <20200430213512.3434-2-elder@linaro.org>
+Subject: [PATCH net 2/3] net: ipa: fix an error message in gsi_channel_init_one()
+Date:   Thu, 30 Apr 2020 16:35:11 -0500
+Message-Id: <20200430213512.3434-3-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430213512.3434-1-elder@linaro.org>
 References: <20200430213512.3434-1-elder@linaro.org>
@@ -65,48 +65,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ipa_endpoint_stop(), for TX endpoints we set the number of retries
-to 0.  When we break out of the loop, retries being 0 means we return
-EIO rather than the value of ret (which should be 0).
-
-Fix this by using a non-zero retry count for both RX and TX
-channels, and just break out of the loop after calling
-gsi_channel_stop() for TX channels.  This way only RX channels
-will retry, and the retry count will be non-zero at the end
-for TX channels (so the proper value gets returned).
+An error message about limiting the number of TREs used prints the
+wrong value.  Fix this bug.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ipa/gsi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 6de03be28784..a21534f1462f 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1283,7 +1283,7 @@ static int ipa_endpoint_stop_rx_dma(struct ipa *ipa)
-  */
- int ipa_endpoint_stop(struct ipa_endpoint *endpoint)
- {
--	u32 retries = endpoint->toward_ipa ? 0 : IPA_ENDPOINT_STOP_RX_RETRIES;
-+	u32 retries = IPA_ENDPOINT_STOP_RX_RETRIES;
- 	int ret;
+diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+index 845478a19a4f..b4206fda0b22 100644
+--- a/drivers/net/ipa/gsi.c
++++ b/drivers/net/ipa/gsi.c
+@@ -1798,9 +1798,9 @@ static int gsi_channel_init_one(struct gsi *gsi,
  
- 	do {
-@@ -1291,12 +1291,9 @@ int ipa_endpoint_stop(struct ipa_endpoint *endpoint)
- 		struct gsi *gsi = &ipa->gsi;
- 
- 		ret = gsi_channel_stop(gsi, endpoint->channel_id);
--		if (ret != -EAGAIN)
-+		if (ret != -EAGAIN || endpoint->toward_ipa)
- 			break;
- 
--		if (endpoint->toward_ipa)
--			continue;
--
- 		/* For IPA v3.5.1, send a DMA read task and check again */
- 		if (ipa->version == IPA_VERSION_3_5_1) {
- 			ret = ipa_endpoint_stop_rx_dma(ipa);
+ 	/* Worst case we need an event for every outstanding TRE */
+ 	if (data->channel.tre_count > data->channel.event_count) {
+-		dev_warn(gsi->dev, "channel %u limited to %u TREs\n",
+-			data->channel_id, data->channel.tre_count);
+ 		tre_count = data->channel.event_count;
++		dev_warn(gsi->dev, "channel %u limited to %u TREs\n",
++			 data->channel_id, tre_count);
+ 	} else {
+ 		tre_count = data->channel.tre_count;
+ 	}
 -- 
 2.20.1
 
