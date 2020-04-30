@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45CC01C096F
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A17E1C0971
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 23:34:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728080AbgD3Vdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 17:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
+        id S1728092AbgD3Vd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 17:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728073AbgD3Vdw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:33:52 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9135EC035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:33:52 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id a7so1468761pju.2
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:33:52 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728079AbgD3Vdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 17:33:54 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB88DC035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:33:53 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id h11so2812800plr.11
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 14:33:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AHCak8b57d5ZqzbWNkbXwgnBt215953siCNmduVJF0U=;
-        b=cITdmPqZDinlWoL9ck8f4gG4wHh5+g090SaRTFRKpeuCfWxPbmexY9tf9L1XTxSKB4
-         GQewzJ5OTddBBgOW41A9ufoSCa5dGFeNJLMip3afDdZRTHyih0kEq4DmKA2sukkSoju1
-         eC5WM9UPQuPB06Upfh/y54NFJ402eFTp2qLtbch2kB5CiVDzgteBfuFQ841KfXXHDqVf
-         KZCD5Y7c/AU27KUMCz+9lbDxhhuREV3xbYy2QrggiSyF+EV0bTgUSmL5lGk4PpMCJpl2
-         mJe2vZF439Qbja4UzE7bMahSZON6tcjoYQSRjIPN/BeuE0kqRP6spWTW7CE6bcmPg02F
-         mX4g==
+        bh=Wegmr42YRvQ17z0Bfvenqch5XlVtJ3cgb5J58z+4rBY=;
+        b=4JWQmW2tZw1q0yMUOmXmeru2Ptc+TS7S0NOn95r0e4BK7Zg/qN4rBx59uz6cJe32EU
+         nUzuRvYVxoiv50tEsPbrXsp5JsnDkOu3miqnHZze3UhQcj9Mf29dSZ83TOKeZSXNhcVM
+         wYmTLEqVvlpRzkhmd/B/4NRWa1BmCEwsMxnDQ0C70F/llPNNo7wT7ZyQ6+qvdrAcpZ+0
+         Ba9xvMJjFn8VFs+AV0nRoERcMEh+uEcwiIbB6/phjRlRPbCrG9OUdrJbg5zgzGJczJ/u
+         ILzrGXHbkoKQ8bVhCIVGwXjf6F44CbIE4XWvaC1J3AnVZpePpI5wYJmS+4P+WPLzSe2j
+         ignQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=AHCak8b57d5ZqzbWNkbXwgnBt215953siCNmduVJF0U=;
-        b=uX8+dOL36fgtMJRz2+xCU0uPlyvR4g5fm97SL1cScGSb/02ds6qhbrp2CzTy8FFxG0
-         Wzrm/oW6gyFrP7761TmRSOXo/tw3PnZRR7wtnWFHQRd1GQF0vS6xYAQhWrd24dILpmt1
-         Thn0D2hGtfaRauyAgtNLs+Lgnepj8l5a+NJkhgjBJvl0oBhUAISFJsvNORXh5tLU24ZB
-         dvJl64xW2Fj+7n6dVkX0H0xoQv1r5UJpEWjO1kbKJFvLVQinlpJk8w1Ky6++LK3y1nWY
-         CKvcZ4RaWIhP878c99U39aaXr0YTv+apxel9KPHbZ53N6Zr1x6mySsHhUDwXFdWdH95d
-         ov9w==
-X-Gm-Message-State: AGi0PuYp/d3dhhjauecLWuPcKfu8J3Ls9tRrkyiWLPCLUIBl8/1KngTe
-        qq6vjBJgFQGZqpAzFp6or2stmmpwzcY=
-X-Google-Smtp-Source: APiQypINL4wcIB8noMEwcaYySCNfvenghtm7fa+5zOQbsDQRWBOz7sSbd2cnKmPl0TxSUNMH0JM7AQ==
-X-Received: by 2002:a17:90a:718c:: with SMTP id i12mr976827pjk.142.1588282431871;
-        Thu, 30 Apr 2020 14:33:51 -0700 (PDT)
+        bh=Wegmr42YRvQ17z0Bfvenqch5XlVtJ3cgb5J58z+4rBY=;
+        b=c7c37rKpiIIvcI+JjPaF+jOLw3AYMOthLHhipHcCIQaYZm6AkmC5Ilz8e5qkfv97yJ
+         qjN+NJKW823q/6zRxwzS8+btKgiE8eF2rz+POJctVOCYSitZaJmZjZkWVHvK+vX0PWRx
+         9lJkD6VJRMfebaNjwU4fUZS80wJxEaNPhtCfcCc8MT5UmVGH9mXYpmIZc/mg/MLI99WU
+         IWlEzWJuYRWAfVEC9+ofjVYOO7t8S02MHudVmhZCyCWE1zXN4jBu/F4OawO4vLCskWex
+         BFNV40twuQmEdYWf2sBA/DyBQmhkOCuGDDOWSDJgIoaRPcPl454kiFdwJuoIR5UiT2n6
+         VElg==
+X-Gm-Message-State: AGi0PuZ855/bph1mHSPZKs+638xbWvQPkm7s/rz4wmDXETyQQWd4527+
+        NzGL8wjYI61Nutgb5ec6azIG74quWVM=
+X-Google-Smtp-Source: APiQypJua5WII8Hrd9Ed3VN3kK8q8egtM7yu1al2aw/PK6BuL3siIg4ZzfOVcsAmC53CKPxoelyJCA==
+X-Received: by 2002:a17:902:ab8d:: with SMTP id f13mr970932plr.58.1588282433196;
+        Thu, 30 Apr 2020 14:33:53 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id f9sm579086pgj.2.2020.04.30.14.33.50
+        by smtp.gmail.com with ESMTPSA id f9sm579086pgj.2.2020.04.30.14.33.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 Apr 2020 14:33:51 -0700 (PDT)
+        Thu, 30 Apr 2020 14:33:52 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net 1/3] ionic: no link check until after probe
-Date:   Thu, 30 Apr 2020 14:33:41 -0700
-Message-Id: <20200430213343.44124-2-snelson@pensando.io>
+Subject: [PATCH v2 net 2/3] ionic: refresh devinfo after fw-upgrade
+Date:   Thu, 30 Apr 2020 14:33:42 -0700
+Message-Id: <20200430213343.44124-3-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200430213343.44124-1-snelson@pensando.io>
 References: <20200430213343.44124-1-snelson@pensando.io>
@@ -60,31 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't bother with the link check during probe, let
-the watchdog notice the first link-up.  This allows
-probe to finish cleanly without any interruptions
-from over excited user programs opening the device
-as soon as it is registered.
+Make sure we can report the new FW version after a
+fw-upgrade has finished by re-reading the device's
+fw version information.
 
 Fixes: c672412f6172 ("ionic: remove lifs on fw reset")
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 5acf4f46c268..bbc6c79e0f04 100644
+index bbc6c79e0f04..6fcfb634d809 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2549,8 +2549,6 @@ int ionic_lifs_register(struct ionic *ionic)
- 		dev_err(ionic->dev, "Cannot register net device, aborting\n");
- 		return err;
- 	}
--
--	ionic_link_status_check_request(ionic->master_lif);
- 	ionic->master_lif->registered = true;
+@@ -2116,6 +2116,7 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
  
- 	return 0;
+ 	dev_info(ionic->dev, "FW Up: restarting LIFs\n");
+ 
++	ionic_init_devinfo(ionic);
+ 	err = ionic_qcqs_alloc(lif);
+ 	if (err)
+ 		goto err_out;
 -- 
 2.17.1
 
