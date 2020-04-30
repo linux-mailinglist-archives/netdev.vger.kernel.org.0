@@ -2,166 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41F961BEFFA
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 08:02:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA0C1BF033
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 08:24:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726468AbgD3GBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 02:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726180AbgD3GBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 02:01:54 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B3BC035494;
-        Wed, 29 Apr 2020 23:01:54 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id 72so3991864otu.1;
-        Wed, 29 Apr 2020 23:01:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Aa3UitXCFbuTJBux4KS46nQWRa1PCa2MQgyHix6wDug=;
-        b=kZgnKradh+4gpoJwCp1MJ3tB7TuolRMw9SwiW7nibfo44Tv9PAsB2xns1+L2Wny7VP
-         U5ohBtK306N5Qr5pbHNRlQzHfZL6sCjqd8WS+IkMeKkYuEGEjd9zyWZW8LTb9quPYAg+
-         H+Qd3eXvxn5midIIHrT5Du22c9gxboErvMUtsuybABTXCuYN6phvJr20LkfUmUE3IpAS
-         56qpB7x4OHUkj4bd1iC1UvVpGfiY1OwB1i/BjYLTP7owSrOmey+7fB7wqMKo0TB6v5iw
-         /YFQyqD2pkVBxaVhzxjvOtb2Fqpkl9rWv6h+sX8Ha5exq3nNv47MYsme3sPzrKdqO9Fe
-         +B0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Aa3UitXCFbuTJBux4KS46nQWRa1PCa2MQgyHix6wDug=;
-        b=VSY3jiF/X8fgHYfmca8X3SPsOHi3W++wfFuy2xSe7N8xVDEJfTHhn5p6oaDUg36Rmr
-         9UVW1QKHhy5HI6/udVi9qB+q/MNJ6nFejIYyx4KnCQWYQ5PCD0WlWPyvGiIeyG17fnOa
-         W//TPuFuDb3ZW9MhNzyuxHMt24WrmV8lw35Urkh6qkqO5GftLzsy4uk1mlw4q/hv2Sye
-         zTeHXzR/BjPCZPMWaeXRTcv/rtFIWHG5AZTelRfciL9WDUuhRf0RTEWJ4TFkiZYJsxSz
-         WDkS5+XoaYOqLq7noNOJ6tqo3nkf6N4TXz/1wJ/p6mwMCl54NNUbk9W+ZBiMZfG27+Z3
-         AGvQ==
-X-Gm-Message-State: AGi0PuaqrWupxMeCLw4TPlQgLYSc0duzrgXQOQATA5gNKQ5Pf+jLXs2Y
-        HJrR/f8Tyc2p4pzZL3am4cw=
-X-Google-Smtp-Source: APiQypJA8lwMHREZR1z8guvVKGBGiHBDYRIAPZ3As+ejNU4wSQHxBl8S78vLQZNAcJrVqvEK+o6ZGA==
-X-Received: by 2002:a9d:6391:: with SMTP id w17mr1276881otk.325.1588226513591;
-        Wed, 29 Apr 2020 23:01:53 -0700 (PDT)
-Received: from ubuntu-s3-xlarge-x86 ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id 10sm993958oto.80.2020.04.29.23.01.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2020 23:01:53 -0700 (PDT)
-Date:   Wed, 29 Apr 2020 23:01:51 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "clang-built-linux@googlegroups.com" 
-        <clang-built-linux@googlegroups.com>,
-        Sami Tolvanen <samitolvanen@google.com>
-Subject: Re: [PATCH v2] hv_netvsc: Fix netvsc_start_xmit's return type
-Message-ID: <20200430060151.GA3548130@ubuntu-s3-xlarge-x86>
-References: <20200428100828.aslw3pn5nhwtlsnt@liuwe-devbox-debian-v2.j3c5onc20sse1dnehy4noqpfcg.zx.internal.cloudapp.net>
- <20200428175455.2109973-1-natechancellor@gmail.com>
- <MW2PR2101MB10522D4D5EBAB469FE5B4D8BD7AA0@MW2PR2101MB1052.namprd21.prod.outlook.com>
+        id S1726420AbgD3GYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 02:24:37 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:40608 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726378AbgD3GYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 02:24:37 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03U6Ix6B082343;
+        Thu, 30 Apr 2020 06:24:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : from : subject :
+ message-id : date : mime-version : content-type :
+ content-transfer-encoding; s=corp-2020-01-29;
+ bh=XUwJL7oKOvoszyS/pb+1mdNcUr5KwBxkTglA4j36pMU=;
+ b=kQc87b/I3J5Nnjil4m2k/qesDrfxTbSs+pH0DiRKA0liP76VzmH4QFoP4jURYACzUNPj
+ 6fsWBUo/xCL7DeKC69eIHOoCkFag642cL9v8zIGU3XBCkUPsvrpSAHgXmLYQdjM5YN0P
+ 5+uGWkzzJfQI5Ixp88QkGWiUYtAEKVfzLa6AsJ1wMXBS0YRkB802FpHtJcQznEhL6YxB
+ 6Osv+4blmVNyI3wU2ZPHV0sPkRkTuZ/zb44XinYerutnz2A06OW88tRM3uUu9CndTqz3
+ tIZqIYZblRaFaDPteHcGtOCWVqY0v7H9UfWrvr0VRixIzbZSBWFcDmKhCzX6wzbF0F1U cw== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 30nucg9huy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Apr 2020 06:24:29 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03U6Cmx4065196;
+        Thu, 30 Apr 2020 06:24:29 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 30mxpmvs20-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Apr 2020 06:24:29 +0000
+Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 03U6OQn1019770;
+        Thu, 30 Apr 2020 06:24:26 GMT
+Received: from [10.166.176.96] (/10.166.176.96)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 29 Apr 2020 23:24:26 -0700
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+From:   Allen <allen.pais@oracle.com>
+Subject: Net: [DSA]: dsa-loop kernel panic
+Message-ID: <9d7ac811-f3c9-ff13-5b81-259daa8c424f@oracle.com>
+Date:   Thu, 30 Apr 2020 11:54:15 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MW2PR2101MB10522D4D5EBAB469FE5B4D8BD7AA0@MW2PR2101MB1052.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9606 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=762 malwarescore=0
+ mlxscore=0 bulkscore=0 adultscore=0 phishscore=0 suspectscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004300050
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9606 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011 priorityscore=1501
+ mlxlogscore=817 impostorscore=0 suspectscore=0 malwarescore=0
+ lowpriorityscore=0 mlxscore=0 spamscore=0 adultscore=0 phishscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004300050
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+Hi,
 
-On Thu, Apr 30, 2020 at 12:06:09AM +0000, Michael Kelley wrote:
-> From: Nathan Chancellor <natechancellor@gmail.com> Sent: Tuesday, April 28, 2020 10:55 AM
-> > 
-> > Do note that netvsc_xmit still returns int because netvsc_xmit has a
-> > potential return from netvsc_vf_xmit, which does not return netdev_tx_t
-> > because of the call to dev_queue_xmit.
-> > 
-> > I am not sure if that is an oversight that was introduced by
-> > commit 0c195567a8f6e ("netvsc: transparent VF management") or if
-> > everything works properly as it is now.
-> > 
-> > My patch is purely concerned with making the definition match the
-> > prototype so it should be NFC aside from avoiding the CFI panic.
-> > 
-> 
-> While it probably works correctly now, I'm not too keen on just
-> changing the return type for netvsc_start_xmit() and assuming the
-> 'int' that is returned from netvsc_xmit() will be correctly mapped to
-> the netdev_tx_t enum type.  While that mapping probably happens
-> correctly at the moment, this really should have a more holistic fix.
+   We ran into a kernel panic with dsa-loop.
+Here are the details:
 
-While it might work correctly, I am not sure that the mapping is
-correct, hence that comment.
+VM: aarch64 kvm running 5.7.0-rc3+
 
-netdev_tx_t is an enum with two acceptable types, 0x00 and 0x10. Up
-until commit 0c195567a8f6e ("netvsc: transparent VF management"),
-netvsc_xmit was guaranteed to return something of type netdev_tx_t.
+$ modprobe dsa-loop
+[   25.968427] dsa-loop fixed-0:1f: DSA mockup driver: 0x1f
+[   25.978156] libphy: dsa slave smi: probed
+[   25.979230] dsa-loop fixed-0:1f: nonfatal error -95 setting MTU on port 0
+[   25.980974] dsa-loop fixed-0:1f lan1 (uninitialized): PHY 
+[dsa-0.0:00] driver [Generic PHY] (irq=POLL)
+[   25.983855] dsa-loop fixed-0:1f: nonfatal error -95 setting MTU on port 1
+[   25.985523] dsa-loop fixed-0:1f lan2 (uninitialized): PHY 
+[dsa-0.0:01] driver [Generic PHY] (irq=POLL)
+[   25.988127] dsa-loop fixed-0:1f: nonfatal error -95 setting MTU on port 2
+[   25.989775] dsa-loop fixed-0:1f lan3 (uninitialized): PHY 
+[dsa-0.0:02] driver [Generic PHY] (irq=POLL)
+[   25.992651] dsa-loop fixed-0:1f: nonfatal error -95 setting MTU on port 3
+[   25.994472] dsa-loop fixed-0:1f lan4 (uninitialized): PHY 
+[dsa-0.0:03] driver [Generic PHY] (irq=POLL)
+[   25.997015] DSA: tree 0 setup
+[root@localhost ~]# [   26.002672] dsa-loop fixed-0:1f lan1: configuring 
+for phy/gmii link mode
+[   26.008264] dsa-loop fixed-0:1f lan1: Link is Up - 100Mbps/Full - 
+flow control off
+[   26.010098] IPv6: ADDRCONF(NETDEV_CHANGE): lan1: link becomes ready
+[   26.014539] dsa-loop fixed-0:1f lan3: configuring for phy/gmii link mode
+[   26.021323] dsa-loop fixed-0:1f lan2: configuring for phy/gmii link mode
+[   26.023274] dsa-loop fixed-0:1f lan3: Link is Up - 100Mbps/Full - 
+flow control off
+[   26.028358] dsa-loop fixed-0:1f lan4: configuring for phy/gmii link mode
+[   26.036157] dsa-loop fixed-0:1f lan2: Link is Up - 100Mbps/Full - 
+flow control off
+[   26.037875] dsa-loop fixed-0:1f lan4: Link is Up - 100Mbps/Full - 
+flow control off
+[   26.039858] IPv6: ADDRCONF(NETDEV_CHANGE): lan3: link becomes ready
+[   26.041527] IPv6: ADDRCONF(NETDEV_CHANGE): lan2: link becomes ready
+[   26.043219] IPv6: ADDRCONF(NETDEV_CHANGE): lan4: link becomes ready
 
-However, after said commit, we could return anything from
-netvsc_vf_xmit, which in turn calls dev_queue_xmit then
-__dev_queue_xmit which will return either an error code (-ENOMEM or
--ENETDOWN) or something from __dev_xmit_skb, which appears to be
-NET_XMIT_SUCCESS, NET_XMIT_DROP, or NET_XMIT_CN.
 
-It does not look like netvsc_xmit or netvsc_vf_xmit try to convert those
-returns to netdev_tx_t in some way; netvsc_vf_xmit just passes the
-return value up to netvsc_xmit, which is the part that I am unsure
-about...
 
-> Nathan -- are you willing to look at doing the more holistic fix?  Or
-> should we see about asking Haiyang Zhang to do it?
+$ rmmod dsa-loop
+[   50.688935] Unable to handle kernel read from unreadable memory at 
+virtual address 0000000000000040
+[   50.690775] Mem abort info:
+[   50.691285]   ESR = 0x96000005
+[   50.691831]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   50.693061]   SET = 0, FnV = 0
+[   50.693799]   EA = 0, S1PTW = 0
+[   50.694542] Data abort info:
+[   50.695093]   ISV = 0, ISS = 0x00000005
+[   50.695841]   CM = 0, WnR = 0
+[   50.696543] user pgtable: 64k pages, 48-bit VAs, pgdp=000000020dde7000
+[   50.697925] [0000000000000040] pgd=000000020bec0003, 
+pud=000000020bec0003, pmd=0000000212ab0003, pte=0000000000000000
+[   50.700057] Internal error: Oops: 96000005 [#1] SMP
 
-I would be fine trying to look at a more holistic fix but I know
-basically nothing about this subsystem. I am unsure if something like
-this would be acceptable or if something else needs to happen.
-Otherwise, I'd be fine with you guys taking a look and just giving me
-reported-by credit.
+p650M.e7s0s1a0g4e8 ]f rMoomd uslyseslo lgdin@lkeocd alinh: osdst a_atlo 
+oAppr(- 2) 9 ip236t:1_r4:pf06il .te..r
+_ t _kReEJrnECelT :Infnt_rerejnaecl t_eirprovr6:  iOpotp_sR:E J9E6C0T0 
+0n0f0_5re j[e#c1t]_ iSpMvP4 xt
+onntrack ebtable_nat ebtable_broute ip6table_nat ip6table_mangle 
+ip6table_security ip6table_raw iptable_nat nf_nat iptable_mangle 
+iptable_security iptable_raw nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 
+ip_set ebtable_filter ebtables rfkill ip6table_filter ip6_tables 
+iptable_filter vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher 
+crct10dif_ce ghash_ce sha2_ce sha256_arm64 sha1_ce virtio_rng button 
+qemu_fw_cfg ip_tables xfs libcrc32c virtio_net net_failover 
+virtio_console failover virtio_scsi virtio_pci
+[   50.715211] CPU: 3 PID: 1559 Comm: rmmod Not tainted 5.7.0-rc3+ #3
+[   50.716620] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 
+02/06/2015
+[   50.718185] pstate: 60400005 (nZCv daif +PAN -UAO)
+[   50.719274] pc : __dev_set_rx_mode+0x48/0xa0
+[   50.720252] lr : dev_mc_unsync+0xbc/0xfc
+[   50.721129] sp : ffff800010f6f960
+[   50.721875] x29: ffff800010f6f960 x28: ffff0001c10d5d40
+[   50.723085] x27: 0000000000000000 x26: ffffa039806cfcd0
+[   50.724301] x25: ffffa03980f53000 x24: ffffa03980f53000
+[   50.725488] x23: 0000000000000001 x22: ffffa03980f53000
+[   50.726669] x21: ffffa03980137f1c x20: 0000000000000000
+[   50.727849] x19: ffff0001c11a2000 x18: 0000000000000000
+[   50.729046] x17: 0000000000000000 x16: ffffa0397fd53578
+[   50.730236] x15: 6e04191515120a09 x14: 0000000000000000
+[   50.731451] x13: ffff000000000000 x12: ffffffffffffffff
+[   50.732681] x11: 0000000000000030 x10: 0000000000001bd0
+[   50.733874] x9 : ffff800010f6f6d0 x8 : 0000000000000000
+[   50.735054] x7 : ffffffffffffffff x6 : 000000000000ffff
+[   50.736261] x5 : 0000000000000001 x4 : ffff0001c2e32f00
+[   50.737446] x3 : 0000000000000000 x2 : 0000000000000000
+[   50.738631] x1 : ffff0001c2e3bd00 x0 : 0000000000029820
+[   50.739815] Call trace:
+[   50.740385]  __dev_set_rx_mode+0x48/0xa0
+[   50.741267]  dev_mc_unsync+0xbc/0xfc
+[   50.742064]  dsa_slave_close+0x34/0xb4
+[   50.742905]  __dev_close_many+0xbc/0x13c
+[   50.743782]  dev_close_many+0xb8/0x184
+[   50.744637]  rollback_registered_many+0x160/0x558
+[   50.745691]  rollback_registered+0x68/0xac
+[   50.746606]  unregister_netdevice_queue+0x9c/0x128
+[   50.747673]  unregister_netdev+0x28/0x38
+[   50.748564]  dsa_slave_destroy+0x4c/0x74
+[   50.749447]  dsa_port_teardown+0xac/0xb8
+[   50.750326]  dsa_tree_teardown_switches+0x38/0x9c
+[   50.751372]  dsa_unregister_switch+0x104/0x1c0
+[   50.752384]  dsa_loop_drv_remove+0x24/0x54 [dsa_loop]
+[   50.753518]  mdio_remove+0x2c/0x48
+[   50.754284]  device_release_driver_internal+0xfc/0x1ac
+[   50.755428]  driver_detach+0x6c/0xdc
+[   50.756244]  bus_remove_driver+0x74/0xe8
+[   50.757120]  driver_unregister+0x34/0x5c
+[   50.758039]  mdio_driver_unregister+0x20/0x2c
+[   50.759026]  dsa_loop_exit+0x1c/0xf670 [dsa_loop]
+[   50.760094]  __arm64_sys_delete_module+0x18c/0x29c
+[   50.761177]  el0_svc_common.constprop.3+0xdc/0x194
+[   50.762288]  do_el0_svc+0x84/0xa0
+[   50.763029]  el0_sync_handler+0x80/0x9c
+[   50.763888]  el0_sync+0x164/0x180
+[   50.764654] Code: b9429275 35000175 3949f660 35000220 (f9402281)
+[   50.766046] ---[ end trace 9e9af4eb8dcf17ac ]---
+[   50.767088] Kernel panic - not syncing: Fatal exception in interrupt
+[   50.768527] SMP: stopping secondary CPUs
+[   50.769431] Kernel Offset: 0x20396f4a0000 from 0xffff800010000000
+[   50.770796] PHYS_OFFSET: 0xffffd52500000000
+[   50.771733] CPU features: 0x080002,20802008
+[   50.772620] Memory Limit: none
+[   50.773260] ---[ end Kernel panic - not syncing: Fatal exception in 
+interrupt ]---
 
-Cheers,
-Nathan
+  I haven't had much luck trying to figure what exactly is causing the
+panic. Will keep looking, any help here would be great.
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index d8e86bdbfba1e..a39480cfb8fa7 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -520,7 +520,8 @@ static int netvsc_vf_xmit(struct net_device *net, struct net_device *vf_netdev,
- 	return rc;
- }
- 
--static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
-+static netdev_tx_t netvsc_xmit(struct sk_buff *skb, struct net_device *net,
-+			       bool xdp_tx)
- {
- 	struct net_device_context *net_device_ctx = netdev_priv(net);
- 	struct hv_netvsc_packet *packet = NULL;
-@@ -537,8 +538,11 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
- 	 */
- 	vf_netdev = rcu_dereference_bh(net_device_ctx->vf_netdev);
- 	if (vf_netdev && netif_running(vf_netdev) &&
--	    !netpoll_tx_running(net))
--		return netvsc_vf_xmit(net, vf_netdev, skb);
-+	    !netpoll_tx_running(net)) {
-+		if (!netvsc_vf_xmit(net, vf_netdev, skb))
-+			return NETDEV_TX_OK;
-+		goto drop;
-+	}
- 
- 	/* We will atmost need two pages to describe the rndis
- 	 * header. We can only transmit MAX_PAGE_BUFFER_COUNT number
-@@ -707,7 +711,8 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
- 	goto drop;
- }
- 
--static int netvsc_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-+static netdev_tx_t netvsc_start_xmit(struct sk_buff *skb,
-+				     struct net_device *ndev)
- {
- 	return netvsc_xmit(skb, ndev, false);
- }
+Thanks,
+- Allen
