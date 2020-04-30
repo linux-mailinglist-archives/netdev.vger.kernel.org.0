@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 083841BFAA4
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3C7F1BFB1F
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:58:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728266AbgD3Nyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 09:54:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37622 "EHLO mail.kernel.org"
+        id S1727953AbgD3N5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:57:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37628 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729066AbgD3Nyv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:54:51 -0400
+        id S1728104AbgD3Nyw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:54:52 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D9D49208DB;
-        Thu, 30 Apr 2020 13:54:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E188C20873;
+        Thu, 30 Apr 2020 13:54:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254890;
-        bh=yHeiB67tW2XIZJMzXUe4enYchdDsqXbZcv1tiZPJtvc=;
+        s=default; t=1588254891;
+        bh=6PQThudiOADLiowU8hPRGHfSO63STL1z7Wa+F73g4G0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YjMknSh+jpAuzCIy3AxRN+iuhpZZPf1Ge9dcnhVsz8xP5pNQZy/s72LPwuQsucOB2
-         aw/KzLVETh/3KDTAoKBy4YIHAQ+CmJ1WXMP0vU2oiSRIwhcVnI61401/Se/MQn4dBK
-         dD2ZdpjWmjFz1F4vR1mx+sZsKlYrOKOz5K44M8/s=
+        b=kXmtWC758Y/Njd9L0GglATGtVS8Yf9ixrbfh+Wp7ynps4tUUPffit4mbFptFyL5/4
+         VrbXb8IxtooGaZYtNVxrDN9bLp//seSPj5oXx7Du1hcPV2DPAhVn8S5z978MuizHFU
+         zjXIj5ZXr7t4gFLxNIsPIUcJDhDL61FrxOziChRI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
+Cc:     Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 15/17] macsec: avoid to set wrong mtu
-Date:   Thu, 30 Apr 2020 09:54:31 -0400
-Message-Id: <20200430135433.21204-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 16/17] net: bcmgenet: suppress warnings on failed Rx SKB allocations
+Date:   Thu, 30 Apr 2020 09:54:32 -0400
+Message-Id: <20200430135433.21204-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135433.21204-1-sashal@kernel.org>
 References: <20200430135433.21204-1-sashal@kernel.org>
@@ -43,67 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Doug Berger <opendmb@gmail.com>
 
-[ Upstream commit 7f327080364abccf923fa5a5b24e038eb0ba1407 ]
+[ Upstream commit ecaeceb8a8a145d93c7e136f170238229165348f ]
 
-When a macsec interface is created, the mtu is calculated with the lower
-interface's mtu value.
-If the mtu of lower interface is lower than the length, which is needed
-by macsec interface, macsec's mtu value will be overflowed.
-So, if the lower interface's mtu is too low, macsec interface's mtu
-should be set to 0.
+The driver is designed to drop Rx packets and reclaim the buffers
+when an allocation fails, and the network interface needs to safely
+handle this packet loss. Therefore, an allocation failure of Rx
+SKBs is relatively benign.
 
-Test commands:
-    ip link add dummy0 mtu 10 type dummy
-    ip link add macsec0 link dummy0 type macsec
-    ip link show macsec0
+However, the output of the warning message occurs with a high
+scheduling priority that can cause excessive jitter/latency for
+other high priority processing.
 
-Before:
-    11: macsec0@dummy0: <BROADCAST,MULTICAST,M-DOWN> mtu 4294967274
-After:
-    11: macsec0@dummy0: <BROADCAST,MULTICAST,M-DOWN> mtu 0
+This commit suppresses the warning messages to prevent scheduling
+problems while retaining the failure count in the statistics of
+the network interface.
 
-Fixes: c09440f7dcb3 ("macsec: introduce IEEE 802.1AE driver")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index da8bf327a3e98..df2ee65a33e35 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -3209,11 +3209,11 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
- 			  struct nlattr *tb[], struct nlattr *data[])
- {
- 	struct macsec_dev *macsec = macsec_priv(dev);
-+	rx_handler_func_t *rx_handler;
-+	u8 icv_len = DEFAULT_ICV_LEN;
- 	struct net_device *real_dev;
--	int err;
-+	int err, mtu;
- 	sci_t sci;
--	u8 icv_len = DEFAULT_ICV_LEN;
--	rx_handler_func_t *rx_handler;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index a234044805977..5d4189c94718c 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -1596,7 +1596,8 @@ static struct sk_buff *bcmgenet_rx_refill(struct bcmgenet_priv *priv,
+ 	dma_addr_t mapping;
  
- 	if (!tb[IFLA_LINK])
- 		return -EINVAL;
-@@ -3229,7 +3229,11 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
- 
- 	if (data && data[IFLA_MACSEC_ICV_LEN])
- 		icv_len = nla_get_u8(data[IFLA_MACSEC_ICV_LEN]);
--	dev->mtu = real_dev->mtu - icv_len - macsec_extra_len(true);
-+	mtu = real_dev->mtu - icv_len - macsec_extra_len(true);
-+	if (mtu < 0)
-+		dev->mtu = 0;
-+	else
-+		dev->mtu = mtu;
- 
- 	rx_handler = rtnl_dereference(real_dev->rx_handler);
- 	if (rx_handler && rx_handler != macsec_handle_frame)
+ 	/* Allocate a new Rx skb */
+-	skb = netdev_alloc_skb(priv->dev, priv->rx_buf_len + SKB_ALIGNMENT);
++	skb = __netdev_alloc_skb(priv->dev, priv->rx_buf_len + SKB_ALIGNMENT,
++				 GFP_ATOMIC | __GFP_NOWARN);
+ 	if (!skb) {
+ 		priv->mib.alloc_rx_buff_failed++;
+ 		netif_err(priv, rx_err, priv->dev,
 -- 
 2.20.1
 
