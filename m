@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9C961BFA6A
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CB781BFA6C
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 15:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728676AbgD3NxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 09:53:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34966 "EHLO mail.kernel.org"
+        id S1728694AbgD3NxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Apr 2020 09:53:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35012 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728660AbgD3NxP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:53:15 -0400
+        id S1727844AbgD3NxS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:53:18 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8CAE824956;
-        Thu, 30 Apr 2020 13:53:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8E42124955;
+        Thu, 30 Apr 2020 13:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254795;
-        bh=YNOc2verFZCxdF+PEr0mt3qsZBXxUQ4tOaOWm46Gf7k=;
+        s=default; t=1588254798;
+        bh=sedaMORXTg8SDgtVuzUu8r2cikdARwNP5LlB0uU0aaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UWiGgEUT6PW9INt36D/nlG+DZ+jFWVDE1lhK7UyPTweI90J8uaS1RXv1efkhZKHGX
-         SpEEA8NLEkiVOG+hp65N51EJ9GDEwWAA48eTVmQe6ETNuNMX5Q2t9q8Z9fL4iRmomc
-         Sf7aa7VlVWdfSFzRsu7NsTR5ioWe3FybpH98Rcss=
+        b=hz/+/Nxjubc/9B8DHww8AD1pu+SoSeXLDD85qendC5cUyA1969tez6eVYpTvYLuFc
+         veCp8KaHl08/Fm1+0/5szBhC0nXpiQgyYibEL+Axc/mVFzb/ZP//C33Q46umMPkUXx
+         PJdPdtG6dHKlgS7lsIHYr7fW5rLqXjd4lD9a83Xk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 50/57] mac80211: sta_info: Add lockdep condition for RCU list usage
-Date:   Thu, 30 Apr 2020 09:52:11 -0400
-Message-Id: <20200430135218.20372-50-sashal@kernel.org>
+Cc:     Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 53/57] net: bcmgenet: suppress warnings on failed Rx SKB allocations
+Date:   Thu, 30 Apr 2020 09:52:14 -0400
+Message-Id: <20200430135218.20372-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200430135218.20372-1-sashal@kernel.org>
 References: <20200430135218.20372-1-sashal@kernel.org>
@@ -44,36 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+From: Doug Berger <opendmb@gmail.com>
 
-[ Upstream commit 8ca47eb9f9e4e10e7e7fa695731a88941732c38d ]
+[ Upstream commit ecaeceb8a8a145d93c7e136f170238229165348f ]
 
-The function sta_info_get_by_idx() uses RCU list primitive.
-It is called with  local->sta_mtx held from mac80211/cfg.c.
-Add lockdep expression to avoid any false positive RCU list warnings.
+The driver is designed to drop Rx packets and reclaim the buffers
+when an allocation fails, and the network interface needs to safely
+handle this packet loss. Therefore, an allocation failure of Rx
+SKBs is relatively benign.
 
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Link: https://lore.kernel.org/r/20200409082906.27427-1-madhuparnabhowmik10@gmail.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+However, the output of the warning message occurs with a high
+scheduling priority that can cause excessive jitter/latency for
+other high priority processing.
+
+This commit suppresses the warning messages to prevent scheduling
+problems while retaining the failure count in the statistics of
+the network interface.
+
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/sta_info.c | 3 ++-
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
-index 21b1422b1b1c3..b1669f0244706 100644
---- a/net/mac80211/sta_info.c
-+++ b/net/mac80211/sta_info.c
-@@ -217,7 +217,8 @@ struct sta_info *sta_info_get_by_idx(struct ieee80211_sub_if_data *sdata,
- 	struct sta_info *sta;
- 	int i = 0;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index ff09ee777b2bf..6f01f4e03cef1 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -1697,7 +1697,8 @@ static struct sk_buff *bcmgenet_rx_refill(struct bcmgenet_priv *priv,
+ 	dma_addr_t mapping;
  
--	list_for_each_entry_rcu(sta, &local->sta_list, list) {
-+	list_for_each_entry_rcu(sta, &local->sta_list, list,
-+				lockdep_is_held(&local->sta_mtx)) {
- 		if (sdata != sta->sdata)
- 			continue;
- 		if (i < idx) {
+ 	/* Allocate a new Rx skb */
+-	skb = netdev_alloc_skb(priv->dev, priv->rx_buf_len + SKB_ALIGNMENT);
++	skb = __netdev_alloc_skb(priv->dev, priv->rx_buf_len + SKB_ALIGNMENT,
++				 GFP_ATOMIC | __GFP_NOWARN);
+ 	if (!skb) {
+ 		priv->mib.alloc_rx_buff_failed++;
+ 		netif_err(priv, rx_err, priv->dev,
 -- 
 2.20.1
 
