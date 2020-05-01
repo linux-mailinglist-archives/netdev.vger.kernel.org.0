@@ -2,99 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A04F1C0F2D
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 10:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DF501C0FED
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 10:47:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728351AbgEAILj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 04:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
+        id S1728499AbgEAIrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 04:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728277AbgEAILj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 04:11:39 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D78C035494
-        for <netdev@vger.kernel.org>; Fri,  1 May 2020 01:11:37 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id o27so5340662wra.12
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 01:11:37 -0700 (PDT)
+        with ESMTP id S1728345AbgEAIrb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 04:47:31 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B2BC035494
+        for <netdev@vger.kernel.org>; Fri,  1 May 2020 01:47:31 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id n11so4293509pgl.9
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 01:47:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=ypdC5bFiTQ6W4Eylc1bXnH57NDGvqvtM4m9p/fFJmvc=;
-        b=SzWp7pn3sk5z2OAR2P/JEpOzjDEBNnINsLHbLf5pkxUHlKqXr5srl3QQhgP9s8pS/j
-         uwNNfCd7lGpNn1oy3RRQiCkexhCFUt4dENUttQaCRu0hIRvzYuaGT8V2K95PfDjT64bY
-         BqC9VHgAn0iALi45NE6JLmoSk2h75g1LzyPt4ZwpomAMGTuzO3Cx3/DcVFmDMt0aj32c
-         1Sn0sG4Qibf4x+18kSbUnXVd6qDjU9AAn+FJCOiWdXEPXEHiDRyv9e+1YydXzhFmh+/D
-         RCfIXdry0F8xiwW4roKzzl8jCe26KX3IpbN49k9wmtMgbDDDnYTEtvSqGPh6PthWkMSw
-         RR9A==
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fJPngCR/Ze6ailmvb88DA3u06U0ScAsor5iE6iNKdCE=;
+        b=I73Hl9zApEO0pCfwK56ggvOUsbd1FV7Ih/yIHFQvl0jQo/+DOZ2RULUWcZKSa/HwqP
+         T89nULEtrFZwP5zTu6MFyMkW9GkzVC34jc4WV9tVDRsk2i47AMlNkUQKfv9YDv30IjN7
+         1yOQopUtE4UZ/1rpfGBpz77Q/LOblpIFAhmM4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=ypdC5bFiTQ6W4Eylc1bXnH57NDGvqvtM4m9p/fFJmvc=;
-        b=ENwZk2eQRS76rNu0z9ednkB7O219faHuzpNk56TlrgPaCdKtrCUa2wWf36OQlbz/9T
-         bpPi7FoVbSuCeZFIbbM9lf+uLi+uGeHUwAHFHxoBlUrCtcFW3dH98QQ+XI8gQFjglKMT
-         aZqjK1CDeZ8v50dFycLOanqqM7Qqs6vx1DcipsGh7zy6ogK1SVEfcdaVkT7NVeBWQ60Q
-         bmEHtJA3zOGy0OrIt8PGzKROkldHRa7qGQLQ/ePyk/Hzf/ZibBnx7BhSgkIc5KUBUS1P
-         HeL5ip2HTU/Eg03BTJcJpACwsO1l2K7qJPIDeu1u1+qEJS0/jyvHespQSDEtp5r7E64D
-         DHPQ==
-X-Gm-Message-State: AGi0Pub1M5/ELVK37pBBM2djbmLMHPpkpb+bVAkIAr8x2bJr5BOgv7qP
-        rx5Vk4Ck0/XXNvsnVuF2BfVp0IB5
-X-Google-Smtp-Source: APiQypJ5RySf5KFDv1wrZOG+ovBzT3iLmEiD+r7AV8zRwyll7yeG6BszP7Vvp9fFbx520b8OQS5MlA==
-X-Received: by 2002:adf:84c1:: with SMTP id 59mr2973499wrg.350.1588320696131;
-        Fri, 01 May 2020 01:11:36 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f06:ee00:dc97:352a:650c:351d? (p200300EA8F06EE00DC97352A650C351D.dip0.t-ipconnect.de. [2003:ea:8f06:ee00:dc97:352a:650c:351d])
-        by smtp.googlemail.com with ESMTPSA id j17sm3430683wrb.46.2020.05.01.01.11.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 May 2020 01:11:35 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: remove not needed parameter in
- rtl8169_set_magic_reg
-Message-ID: <52b40061-60d2-d517-4e82-bb2077ede8d8@gmail.com>
-Date:   Fri, 1 May 2020 10:11:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fJPngCR/Ze6ailmvb88DA3u06U0ScAsor5iE6iNKdCE=;
+        b=Nk2HlTQxKfNuW3uVc9URqV1kf0QYcZi05wce0FP0xna/cF22ALLZInoIviTP3AjkQA
+         wT+iElNMBmTL03CXsFbCasEQvgDv3fxB6OaOlxjW7UCpxxPm/Nex/LSdvdX6BawR0QqN
+         vin3igrMxISQiDwWIxmrgbCHwmFpw7iwdGLF77IoCFbLPQRzEeGXG+MhwWejRmh6q1bC
+         gHBwmd9QdLTtiQ7m8P5sPqui/bbqKK5qOirpaQg+H9yNW2a2Rbnumv55NhXzrk8Np5ci
+         oJXmuEoJ/Ytwb6R0skrwX6q6CNDXas4pbEwEf4PiaIOtJraAkVeQwAXHdce9eB0sLhnH
+         DQYg==
+X-Gm-Message-State: AGi0PuYJog77X1LigkK09H8xAnkZkmPAB1unlrm3xyodlwuK9BXTzmGY
+        uOvl75F2JQJps9YowMaBXaHhu9iRqUs=
+X-Google-Smtp-Source: APiQypJGu+9HjY3HlMV2TGCYP/1EhkABK8HDO3cNva9KKtSqDx4Egl2qwM+RDiCWhkrKBJW6ZTCWqw==
+X-Received: by 2002:aa7:95b2:: with SMTP id a18mr3299115pfk.91.1588322850507;
+        Fri, 01 May 2020 01:47:30 -0700 (PDT)
+Received: from f3.synalogic.ca (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
+        by smtp.gmail.com with ESMTPSA id mj4sm1578460pjb.0.2020.05.01.01.47.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 May 2020 01:47:29 -0700 (PDT)
+From:   Benjamin Poirier <bpoirier@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH iproute2 v2 0/6] bridge vlan output fixes
+Date:   Fri,  1 May 2020 17:47:14 +0900
+Message-Id: <20200501084720.138421-1-bpoirier@cumulusnetworks.com>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove a not needed parameter in rtl8169_set_magic_reg.
+More fixes for `bridge vlan` and `bridge vlan tunnelshow` normal and JSON
+mode output.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Some column titles are changed, empty lines removed from the output,
+interfaces with no vlans or tunnels are removed, columns are aligned.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 0ac3976e3..0f869a761 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2608,7 +2608,7 @@ static void rtl_set_rx_tx_desc_registers(struct rtl8169_private *tp)
- 	RTL_W32(tp, RxDescAddrLow, ((u64) tp->RxPhyAddr) & DMA_BIT_MASK(32));
- }
- 
--static void rtl8169_set_magic_reg(struct rtl8169_private *tp, unsigned mac_version)
-+static void rtl8169_set_magic_reg(struct rtl8169_private *tp)
- {
- 	u32 val;
- 
-@@ -3811,7 +3811,7 @@ static void rtl_hw_start_8169(struct rtl8169_private *tp)
- 
- 	RTL_W16(tp, CPlusCmd, tp->cp_cmd);
- 
--	rtl8169_set_magic_reg(tp, tp->mac_version);
-+	rtl8169_set_magic_reg(tp);
- 
- 	/* disable interrupt coalescing */
- 	RTL_W16(tp, IntrMitigate, 0x0000);
+Changes v2:
+* dropped patch 1, "bridge: Use the same flag names in input and output"
+
+Sample outputs with this config:
+
+ip link add br0 type bridge
+
+ip link add vx0 type vxlan dstport 4789 external
+ip link set dev vx0 master br0
+bridge vlan del vid 1 dev vx0
+
+ip link add vx1 type vxlan dstport 4790 external
+ip link set dev vx1 master br0
+
+ip link add vx2 type vxlan dstport 4791 external
+ip link set dev vx2 master br0
+ip link set dev vx2 type bridge_slave vlan_tunnel on
+bridge vlan add dev vx2 vid 2
+bridge vlan add dev vx2 vid 2 tunnel_info id 2
+bridge vlan add dev vx2 vid 1010-1020
+bridge vlan add dev vx2 vid 1010-1020 tunnel_info id 1010-1020
+bridge vlan add dev vx2 vid 1030
+bridge vlan add dev vx2 vid 1030 tunnel_info id 65556
+
+ip link add vx-longname type vxlan dstport 4792 external
+ip link set dev vx-longname master br0
+ip link set dev vx-longname type bridge_slave vlan_tunnel on
+bridge vlan add dev vx-longname vid 2
+bridge vlan add dev vx-longname vid 2 tunnel_info id 2
+
+Before & after:
+
+root@vsid:/src/iproute2# bridge -c vlan
+port    vlan ids
+br0      1 PVID Egress Untagged
+
+vx0     None
+vx1      1 PVID Egress Untagged
+
+vx2      1 PVID Egress Untagged
+         2
+         1010-1020
+         1030
+
+vx-longname      1 PVID Egress Untagged
+         2
+
+root@vsid:/src/iproute2# ./bridge/bridge -c vlan
+port              vlan-id
+br0               1 PVID Egress Untagged
+vx1               1 PVID Egress Untagged
+vx2               1 PVID Egress Untagged
+                  2
+                  1010-1020
+                  1030
+vx-longname       1 PVID Egress Untagged
+                  2
+root@vsid:/src/iproute2#
+
+===
+
+root@vsid:/src/iproute2# bridge vlan tunnelshow
+port    vlan ids        tunnel id
+br0
+vx0     None
+vx1
+vx2      2       2
+         1010-1020       1010-1020
+         1030    65556
+
+vx-longname      2       2
+
+root@vsid:/src/iproute2# ./bridge/bridge vlan tunnelshow
+port              vlan-id    tunnel-id
+vx2               2          2
+                  1010-1020  1010-1020
+                  1030       65556
+vx-longname       2          2
+root@vsid:/src/iproute2#
+
+===
+
+root@vsid:/src/iproute2# bridge -j -p vlan tunnelshow
+[ {
+        "ifname": "br0",
+        "tunnels": [ ]
+    },{
+        "ifname": "vx1",
+        "tunnels": [ ]
+    },{
+        "ifname": "vx2",
+        "tunnels": [ {
+                "vlan": 2,
+                "tunid": 2
+            },{
+                "vlan": 1010,
+                "vlanEnd": 1020,
+                "tunid": 1010,
+                "tunidEnd": 1020
+            },{
+                "vlan": 1030,
+                "tunid": 65556
+            } ]
+    },{
+        "ifname": "vx-longname",
+        "tunnels": [ {
+                "vlan": 2,
+                "tunid": 2
+            } ]
+    } ]
+root@vsid:/src/iproute2# ./bridge/bridge -j -p vlan tunnelshow
+[ {
+        "ifname": "vx2",
+        "tunnels": [ {
+                "vlan": 2,
+                "tunid": 2
+            },{
+                "vlan": 1010,
+                "vlanEnd": 1020,
+                "tunid": 1010,
+                "tunidEnd": 1020
+            },{
+                "vlan": 1030,
+                "tunid": 65556
+            } ]
+    },{
+        "ifname": "vx-longname",
+        "tunnels": [ {
+                "vlan": 2,
+                "tunid": 2
+            } ]
+    } ]
+root@vsid:/src/iproute2#
+
+Benjamin Poirier (6):
+  bridge: Use consistent column names in vlan output
+  bridge: Fix typo
+  bridge: Fix output with empty vlan lists
+  json_print: Return number of characters printed
+  bridge: Align output columns
+  Replace open-coded instances of print_nl()
+
+ bridge/vlan.c                            | 111 +++++++++++++++--------
+ include/json_print.h                     |  24 +++--
+ lib/json_print.c                         |  95 +++++++++++--------
+ tc/m_action.c                            |  14 +--
+ tc/m_connmark.c                          |   4 +-
+ tc/m_ctinfo.c                            |   4 +-
+ tc/m_ife.c                               |   4 +-
+ tc/m_mpls.c                              |   2 +-
+ tc/m_nat.c                               |   4 +-
+ tc/m_sample.c                            |   4 +-
+ tc/m_skbedit.c                           |   4 +-
+ tc/m_tunnel_key.c                        |  16 ++--
+ tc/q_taprio.c                            |   8 +-
+ tc/tc_util.c                             |   4 +-
+ testsuite/tests/bridge/vlan/show.t       |  30 ++++++
+ testsuite/tests/bridge/vlan/tunnelshow.t |   2 +-
+ 16 files changed, 210 insertions(+), 120 deletions(-)
+ create mode 100755 testsuite/tests/bridge/vlan/show.t
+
 -- 
-2.26.2
+2.26.0
 
