@@ -2,101 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 523641C1873
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DBEE1C18BB
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:58:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729645AbgEAOrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:47:31 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:22708 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729245AbgEAOr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 10:47:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588344448;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TAjswuo/nfZVxK4WmcUPw+t1lhJhZPT7S8oViDh5c/M=;
-        b=gZ0n49WCj0NWj2ULNX6/drg10r9zbl06ExpDL3zTyMK9Nk+HDRGBS1ahMhocTnlEwhF7Fn
-        +/YNt/i3MMyBOkNczjZXlbZiqb9yot/ZDikgSY0R38k81zH9wwQfSmruAFt4Hd/JJLFkL1
-        Nc9YyPx/aD+FDhf08V7d78ZIwVJw18o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-323-XycBYBrvMfGAR2SyAfIh3Q-1; Fri, 01 May 2020 10:47:19 -0400
-X-MC-Unique: XycBYBrvMfGAR2SyAfIh3Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E4DD1800D4A;
-        Fri,  1 May 2020 14:47:16 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2A2A56A94C;
-        Fri,  1 May 2020 14:47:04 +0000 (UTC)
-Date:   Fri, 1 May 2020 16:47:03 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Haiyang Zhang <haiyangz@microsoft.com>
-Cc:     "sameehj@amazon.com" <sameehj@amazon.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "zorik@amazon.com" <zorik@amazon.com>,
-        "akiyano@amazon.com" <akiyano@amazon.com>,
-        "gtzalik@amazon.com" <gtzalik@amazon.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "steffen.klassert@secunet.com" <steffen.klassert@secunet.com>,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next v2 12/33] hv_netvsc: add XDP frame size to
- driver
-Message-ID: <20200501164703.75eb5737@carbon>
-In-Reply-To: <MN2PR21MB1437A4F44AC313E5DF962B35CAAA0@MN2PR21MB1437.namprd21.prod.outlook.com>
-References: <158824557985.2172139.4173570969543904434.stgit@firesoul>
-        <158824568241.2172139.9308631605958332864.stgit@firesoul>
-        <MN2PR21MB1437A4F44AC313E5DF962B35CAAA0@MN2PR21MB1437.namprd21.prod.outlook.com>
+        id S1730226AbgEAOtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729114AbgEAOtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 10:49:14 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56563C061A0C;
+        Fri,  1 May 2020 07:49:14 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id x1so7637246ejd.8;
+        Fri, 01 May 2020 07:49:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fxPFkW3QxOmRfYj2h3nMtAxuro0T/xEXMFbcE0LTrVU=;
+        b=W3eBxkRVCUkRmVjaeZxdY0eWXI1WeV14Y3GZ6cGG6qX2rTNYODG/BhL8vEpRBcwaX8
+         5zyBVQI+Panp/tiEK/dymKhhil24IaILyAaTbA3+8a3McJf9tacA3Zc7rwjq5i0wWM3R
+         kNZhVSx8yndKHndGwo7LMgJt+4oODm4bGQ7Xu4rUIJQYPUR40Ev/Jg4FjzSM5/gEV5+x
+         oQPS5n4+5GFiF2LMJceZVHlRYcpEj/Q9OldY0p8kPupcGJLxLMkoKGeFEXfmjNy1T8g+
+         5HfzjwGCytspb5OaBLFNKMcAUGG9Oz5jmvrc5BifLpcq/oGghD/DAsv+kcGzitsc9hJ8
+         702w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fxPFkW3QxOmRfYj2h3nMtAxuro0T/xEXMFbcE0LTrVU=;
+        b=PNu1Nk0KoaPPBBdpL15G3DrF3oKx7knlcPdqKvJrROP4L3RoNZyItdDd9YPp/r0I2D
+         7j6jMW/llYz4qfhYl6SqUQulWD87ryJzWhYyMxqDiH+mB9t05ZGAvXsGHDP7q/+G1Kjm
+         urWA5bAGtKuHEg0SP629ogsnJcHmAFO6BvZ1lVBD2lsE2leAof1If7Twk+ez+sEj46Fd
+         Y1BvXOvZGDL6RAPM6FiaPbwkdhGwFtKtMnke6T2bBxlRgb7GC8HS1YRedYc0WTM0wiA7
+         ni7pgnKYvHLulHca7oL1IsWPATHTjzbQ5Kt7aKJ7YG2SfMJtXeHfwl2AYNDQCNr+GWZr
+         h31w==
+X-Gm-Message-State: AGi0PuaZq3OMGmiFun309hY8LSRPsgeHOyrB3vX53DEDXJMspXgWGBZP
+        rF6Zz035nYW23sydtvQaDrBXffl6oGnG/spslyQ=
+X-Google-Smtp-Source: APiQypI+1+VQOUh4IFgtlgbygkJrSop4NKMEXZUd+7VOMUopczAN+iZLGHuyibbdAMVPCjuSWytmI5hAyJGDHqrKplU=
+X-Received: by 2002:a17:906:4048:: with SMTP id y8mr3549075ejj.258.1588344553010;
+ Fri, 01 May 2020 07:49:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com> <20200429212933.GA76972@lunn.ch>
+In-Reply-To: <20200429212933.GA76972@lunn.ch>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Fri, 1 May 2020 16:49:02 +0200
+Message-ID: <CAFBinCDAz48BKjvLHOmuHk6nME+vpCueFW14UWP1b8Ae_D1j5w@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 00/11] dwmac-meson8b Ethernet RX delay configuration
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     robh+dt@kernel.org, f.fainelli@gmail.com,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        jianxin.pan@amlogic.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Apr 2020 14:20:20 +0000
-Haiyang Zhang <haiyangz@microsoft.com> wrote:
-> > -----Original Message-----
-> > From: Jesper Dangaard Brouer <brouer@redhat.com>
-> > 
-> > The hyperv NIC drivers XDP implementation is rather disappointing as it will
-> > be a slowdown to enable XDP on this driver, given it will allocate a new page
-> > for each packet and copy over the payload, before invoking the XDP BPF-
-> > prog.  
+Hi Andrew,
+
+On Wed, Apr 29, 2020 at 11:29 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> This needs correction. As I said previously -- 
-> This statement is not accurate -- The data path of netvsc driver does memory 
-> allocation and copy even without XDP, so it's not "a slowdown to enable XDP".
+> > - Khadas VIM2 seems to have the RX delay built into the PCB trace
+> >   length. When I enable the RX delay on the PHY or MAC I can't get any
+> >   data through. I expect that we will have the same situation on all
+> >   GXBB, GXM, AXG, G12A, G12B and SM1 boards
+>
+> Hi Martin
+>
+> Can you actually see this on the PCB? The other possibility is that
+> the bootloader is configuring something, which is not getting
+> overridden when linux starts up.
+at least it doesn't jump straight into my eye.
+I checked in u-boot and Linux, and for both the RX delay is disabled
+in the PHY as well as in the MAC.
 
-Okay, I have changed the paragraph text to:
+The schematics of the Khadas VIM2 also show the the RX delay in the
+PHY is turned off by pin-strapping, see page 7 on the right: [0]
+It's the same for the Khadas VIM3 schematics, also on page 7: [1]
+There are also high resolution images of the Khadas VIM3 online so you
+can look at it yourself (I couldn't find any for the Khadas VIM2 which
+is what I have): [2]
 
- The hyperv NIC driver does memory allocation and copy even without XDP.
- In XDP mode it will allocate a new page for each packet and copy over
- the payload, before invoking the XDP BPF-prog.
+I agree that we need to get an answer to the RX delay question on the
+arm64 SoCs.
+If there's no way to find out from the existing resources then I can
+contact Khadas and ask them about the PCB trace length on VIM2, VIM3
+and VIM3L (these are the ones with RGMII PHYs).
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+For the older SoCs the RX delay has to be provided by either the MAC
+or the PHY and right now we're not configuring it.
+We cannot simply enable the RX delay at the PHY level because the
+bootloader enables it in the MAC (so we have to turn it off there).
+So it would be great if you could still review this series.
 
+
+Martin
+
+
+[0] https://dl.khadas.com/Hardware/VIM2/Schematic/VIM2_V12_Sch.pdf
+[1] https://dl.khadas.com/Hardware/VIM3/Schematic/VIM3_V12_Sch.pdf
+[2] https://forum.khadas.com/t/khadas-vim3-is-launching-on-24-june/4103
