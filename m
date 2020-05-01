@@ -2,238 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB591C105E
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 11:32:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40DF21C1086
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 11:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728423AbgEAJcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 05:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728236AbgEAJcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 05:32:08 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F14CC035495
-        for <netdev@vger.kernel.org>; Fri,  1 May 2020 02:32:07 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id f18so2072734lja.13
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 02:32:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=l4VUzp5KC03VH6gy0M9XP/QukbREalbR/O4IyAslFpg=;
-        b=JKTApq1IUP9/N3bg/cvPJ5Jy5fG2SE+gJlY01zmFFBicEP7D31vUOPKkKLav2sUUwh
-         Y850fANFDfJ3z3K9VdG1+dLDPTniHK2eHmEddRPIFG5mfg5HjnhYssZbrTYmz3wpcsTE
-         1L4GVqcIii7iEv0Ihr1TY76nTl9YZy5K03rRs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=l4VUzp5KC03VH6gy0M9XP/QukbREalbR/O4IyAslFpg=;
-        b=I/N18CrSNk2zCSV2Sfz3atffL/EguntCW/BFn0P5KqPruYCMoeUsGN8rFVxLsTwijr
-         Od7GHkVF8V1QT8H96Yq7jDYswEYZu+tbzE+YhsRqGtUvDJksHfQsvWkY85Av6riBLrj/
-         THrCaQJkm51FLZ0y+Le/kz6GJUR5So4Hnqx2fHr2xnnMSqosSpRLV2UtZWbXg2NXyxaa
-         EHCb42LP2ZIcttiejmVO0YvuJkWyUCbiUxBOaL4YIg3/jgzqGxWQwVx1onSoyi2IX8Ur
-         OKpzTz56fpPg0lO+HdotXZbxTViQC9KiZY4uQBktVXZ0v+DL2qEeLc/z78C7NJXnQlhO
-         s6Ig==
-X-Gm-Message-State: AGi0PuYstR2e6UlzD9WbCfOQfHz+hlRUK+nUS20VY11irdJsxDW6arQ8
-        birbgZHz/F45Yn+RdUTWZ+yZnQ==
-X-Google-Smtp-Source: APiQypL8kD3FB+T6zgjPk6q83TJphW8DgwaJHjVyk5GBM9CoWhl4S4f76ERwiD/otoImwg5QX3mezQ==
-X-Received: by 2002:a2e:7e0b:: with SMTP id z11mr1877583ljc.284.1588325525456;
-        Fri, 01 May 2020 02:32:05 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id y25sm1811450lfy.59.2020.05.01.02.32.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 May 2020 02:32:04 -0700 (PDT)
-Subject: Re: [PATCH iproute2 v2 0/6] bridge vlan output fixes
-To:     Benjamin Poirier <bpoirier@cumulusnetworks.com>,
-        netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>
-References: <20200501084720.138421-1-bpoirier@cumulusnetworks.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <903da83e-2c53-c95e-ad9e-c9f8242d4d55@cumulusnetworks.com>
-Date:   Fri, 1 May 2020 12:32:00 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1728462AbgEAJ4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 05:56:15 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:43076 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728325AbgEAJ4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 05:56:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588326973;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eAy8SCe/9ydqWgCfl9lh5fay1Ypq7aGYf5ZhZcirSyY=;
+        b=hgH0XiGBK9kgCdNV7ePJoCxXv1OCwSGqh4Z0Wi3QocrG1Q2TDwPhfmAyVUt1+x7ltNIalX
+        eS62L/9EoZcN/rK0l5L7o/am6qBqqwC4CFrZY2cT3pzXHipz3UpFcgWAraWEUSCmx1UrNc
+        v12Acbk7nXLdsma1KGQtYrqmHEs/EKU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-25-NxxaCg39M9mbOVSXPTx_xg-1; Fri, 01 May 2020 05:56:09 -0400
+X-MC-Unique: NxxaCg39M9mbOVSXPTx_xg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F049B107ACF2;
+        Fri,  1 May 2020 09:56:06 +0000 (UTC)
+Received: from [10.36.112.109] (ovpn-112-109.ams2.redhat.com [10.36.112.109])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 112F75D9CC;
+        Fri,  1 May 2020 09:56:01 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Andrii Nakryiko" <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Martin Lau" <kafai@fb.com>, "Song Liu" <songliubraving@fb.com>,
+        "Yonghong Song" <yhs@fb.com>, "Andrii Nakryiko" <andriin@fb.com>,
+        "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix probe code to return EPERM if
+ encountered
+Date:   Fri, 01 May 2020 11:56:00 +0200
+Message-ID: <5E1C3675-7D77-4A58-B2FD-CE92806DA363@redhat.com>
+In-Reply-To: <CAEf4BzYeJxGuPC8rbsY5yvED8KNaq=7NULFPnwPdeEs==Srd1w@mail.gmail.com>
+References: <158824221003.2338.9700507405752328930.stgit@ebuild>
+ <CAEf4BzYeJxGuPC8rbsY5yvED8KNaq=7NULFPnwPdeEs==Srd1w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200501084720.138421-1-bpoirier@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; format=flowed
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/05/2020 11:47, Benjamin Poirier wrote:
-> More fixes for `bridge vlan` and `bridge vlan tunnelshow` normal and JSON
-> mode output.
-> 
-> Some column titles are changed, empty lines removed from the output,
-> interfaces with no vlans or tunnels are removed, columns are aligned.
-> 
-> Changes v2:
-> * dropped patch 1, "bridge: Use the same flag names in input and output"
-> 
-> Sample outputs with this config:
-> 
-> ip link add br0 type bridge
-> 
-> ip link add vx0 type vxlan dstport 4789 external
-> ip link set dev vx0 master br0
-> bridge vlan del vid 1 dev vx0
-> 
-> ip link add vx1 type vxlan dstport 4790 external
-> ip link set dev vx1 master br0
-> 
-> ip link add vx2 type vxlan dstport 4791 external
-> ip link set dev vx2 master br0
-> ip link set dev vx2 type bridge_slave vlan_tunnel on
-> bridge vlan add dev vx2 vid 2
-> bridge vlan add dev vx2 vid 2 tunnel_info id 2
-> bridge vlan add dev vx2 vid 1010-1020
-> bridge vlan add dev vx2 vid 1010-1020 tunnel_info id 1010-1020
-> bridge vlan add dev vx2 vid 1030
-> bridge vlan add dev vx2 vid 1030 tunnel_info id 65556
-> 
-> ip link add vx-longname type vxlan dstport 4792 external
-> ip link set dev vx-longname master br0
-> ip link set dev vx-longname type bridge_slave vlan_tunnel on
-> bridge vlan add dev vx-longname vid 2
-> bridge vlan add dev vx-longname vid 2 tunnel_info id 2
-> 
-> Before & after:
-> 
-> root@vsid:/src/iproute2# bridge -c vlan
-> port    vlan ids
-> br0      1 PVID Egress Untagged
-> 
-> vx0     None
-> vx1      1 PVID Egress Untagged
-> 
-> vx2      1 PVID Egress Untagged
->          2
->          1010-1020
->          1030
-> 
-> vx-longname      1 PVID Egress Untagged
->          2
-> 
-> root@vsid:/src/iproute2# ./bridge/bridge -c vlan
-> port              vlan-id
-> br0               1 PVID Egress Untagged
-> vx1               1 PVID Egress Untagged
-> vx2               1 PVID Egress Untagged
->                   2
->                   1010-1020
->                   1030
-> vx-longname       1 PVID Egress Untagged
->                   2
-> root@vsid:/src/iproute2#
-> 
-> ===
-> 
-> root@vsid:/src/iproute2# bridge vlan tunnelshow
-> port    vlan ids        tunnel id
-> br0
-> vx0     None
-> vx1
-> vx2      2       2
->          1010-1020       1010-1020
->          1030    65556
-> 
-> vx-longname      2       2
-> 
-> root@vsid:/src/iproute2# ./bridge/bridge vlan tunnelshow
-> port              vlan-id    tunnel-id
-> vx2               2          2
->                   1010-1020  1010-1020
->                   1030       65556
-> vx-longname       2          2
-> root@vsid:/src/iproute2#
-> 
-> ===
-> 
-> root@vsid:/src/iproute2# bridge -j -p vlan tunnelshow
-> [ {
->         "ifname": "br0",
->         "tunnels": [ ]
->     },{
->         "ifname": "vx1",
->         "tunnels": [ ]
->     },{
->         "ifname": "vx2",
->         "tunnels": [ {
->                 "vlan": 2,
->                 "tunid": 2
->             },{
->                 "vlan": 1010,
->                 "vlanEnd": 1020,
->                 "tunid": 1010,
->                 "tunidEnd": 1020
->             },{
->                 "vlan": 1030,
->                 "tunid": 65556
->             } ]
->     },{
->         "ifname": "vx-longname",
->         "tunnels": [ {
->                 "vlan": 2,
->                 "tunid": 2
->             } ]
->     } ]
-> root@vsid:/src/iproute2# ./bridge/bridge -j -p vlan tunnelshow
-> [ {
->         "ifname": "vx2",
->         "tunnels": [ {
->                 "vlan": 2,
->                 "tunid": 2
->             },{
->                 "vlan": 1010,
->                 "vlanEnd": 1020,
->                 "tunid": 1010,
->                 "tunidEnd": 1020
->             },{
->                 "vlan": 1030,
->                 "tunid": 65556
->             } ]
->     },{
->         "ifname": "vx-longname",
->         "tunnels": [ {
->                 "vlan": 2,
->                 "tunid": 2
->             } ]
->     } ]
-> root@vsid:/src/iproute2#
-> 
-> Benjamin Poirier (6):
->   bridge: Use consistent column names in vlan output
->   bridge: Fix typo
->   bridge: Fix output with empty vlan lists
->   json_print: Return number of characters printed
->   bridge: Align output columns
->   Replace open-coded instances of print_nl()
-> 
->  bridge/vlan.c                            | 111 +++++++++++++++--------
->  include/json_print.h                     |  24 +++--
->  lib/json_print.c                         |  95 +++++++++++--------
->  tc/m_action.c                            |  14 +--
->  tc/m_connmark.c                          |   4 +-
->  tc/m_ctinfo.c                            |   4 +-
->  tc/m_ife.c                               |   4 +-
->  tc/m_mpls.c                              |   2 +-
->  tc/m_nat.c                               |   4 +-
->  tc/m_sample.c                            |   4 +-
->  tc/m_skbedit.c                           |   4 +-
->  tc/m_tunnel_key.c                        |  16 ++--
->  tc/q_taprio.c                            |   8 +-
->  tc/tc_util.c                             |   4 +-
->  testsuite/tests/bridge/vlan/show.t       |  30 ++++++
->  testsuite/tests/bridge/vlan/tunnelshow.t |   2 +-
->  16 files changed, 210 insertions(+), 120 deletions(-)
->  create mode 100755 testsuite/tests/bridge/vlan/show.t
-> 
 
-Looks good, thanks!
-For the whole set:
-Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+
+On 30 Apr 2020, at 20:12, Andrii Nakryiko wrote:
+
+> On Thu, Apr 30, 2020 at 3:24 AM Eelco Chaudron <echaudro@redhat.com> 
+> wrote:
+>>
+>> When the probe code was failing for any reason ENOTSUP was returned, 
+>> even
+>> if this was due to no having enough lock space. This patch fixes this 
+>> by
+>> returning EPERM to the user application, so it can respond and 
+>> increase
+>> the RLIMIT_MEMLOCK size.
+>>
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>> ---
+>>  tools/lib/bpf/libbpf.c |    7 ++++++-
+>>  1 file changed, 6 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>> index 8f480e29a6b0..a62388a151d4 100644
+>> --- a/tools/lib/bpf/libbpf.c
+>> +++ b/tools/lib/bpf/libbpf.c
+>> @@ -3381,8 +3381,13 @@ bpf_object__probe_caps(struct bpf_object *obj)
+>>
+>>         for (i = 0; i < ARRAY_SIZE(probe_fn); i++) {
+>>                 ret = probe_fn[i](obj);
+>> -               if (ret < 0)
+>> +               if (ret < 0) {
+>>                         pr_debug("Probe #%d failed with %d.\n", i, 
+>> ret);
+>> +                       if (ret == -EPERM) {
+>> +                               pr_perm_msg(ret);
+>> +                               return ret;
+>
+> I think this is dangerous to do. This detection loop is not supposed
+> to return error to user if any of the features are missing. I'd feel
+> more comfortable if we split bpf_object__probe_name() into two tests:
+> one testing trivial program and another testing same program with
+> name. If the first one fails with EPERM -- then we can return error to
+> user. If anything else fails -- that's ok. Thoughts?
+
+Before sending the patch I briefly checked the existing probes and did 
+not see any other code path that could lead to EPERM. But you are right 
+that this might not be the case for previous kernels. So you suggest 
+something like this?
+
+diff --git a/src/libbpf.c b/src/libbpf.c
+index ff91742..fd5fdee 100644
+--- a/src/libbpf.c
++++ b/src/libbpf.c
+@@ -3130,7 +3130,7 @@ int bpf_map__resize(struct bpf_map *map, __u32 
+max_entries)
+  }
+
+  static int
+-bpf_object__probe_name(struct bpf_object *obj)
++bpf_object__probe_loading(struct bpf_object *obj)
+  {
+         struct bpf_load_program_attr attr;
+         char *cp, errmsg[STRERR_BUFSIZE];
+@@ -3157,8 +3157,26 @@ bpf_object__probe_name(struct bpf_object *obj)
+         }
+         close(ret);
+
+-       /* now try the same program, but with the name */
++       return 0;
++}
+
++static int
++bpf_object__probe_name(struct bpf_object *obj)
++{
++       struct bpf_load_program_attr attr;
++       struct bpf_insn insns[] = {
++               BPF_MOV64_IMM(BPF_REG_0, 0),
++               BPF_EXIT_INSN(),
++       };
++       int ret;
++
++       /* make sure loading with name works */
++
++       memset(&attr, 0, sizeof(attr));
++       attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
++       attr.insns = insns;
++       attr.insns_cnt = ARRAY_SIZE(insns);
++       attr.license = "GPL";
+         attr.name = "test";
+         ret = bpf_load_program_xattr(&attr, NULL, 0);
+         if (ret >= 0) {
+@@ -3328,6 +3346,11 @@ bpf_object__probe_caps(struct bpf_object *obj)
+         };
+         int i, ret;
+
++       if (bpf_object__probe_loading(obj) == -EPERM) {
++               pr_perm_msg(-EPERM);
++               return -EPERM;
++       }
++
+         for (i = 0; i < ARRAY_SIZE(probe_fn); i++) {
+                 ret = probe_fn[i](obj);
+                 if (ret < 0)
+
+Let me know, and I sent out a v2.
+
+Cheers,
+
+Eelco
+
