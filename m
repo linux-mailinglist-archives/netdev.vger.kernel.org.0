@@ -2,125 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD1A61C1D6F
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 20:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D33D1C1D7D
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 21:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730194AbgEAS43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 14:56:29 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23596 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730074AbgEAS42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 14:56:28 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 041IeUwo011940
-        for <netdev@vger.kernel.org>; Fri, 1 May 2020 11:56:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=1UibhM8/Ws+BT/moLSKnrq0pQFjfgiKjje2D7orwhR8=;
- b=ZjyIHWLWKXO2DqwGEEyyR9SKWnNXipQOSx20DHe45aJgILwMs9C7QglCS4hLYMyw0gvi
- KXPaJuRN9eDzIg6jxng2VZLeGOReWjJ6hxv0Li75PZKrvfq+ntLJ8U3ebMV8UcAYIxJt
- alanCgjClXOJNFCJAQB+2d3ekUH1dOFYTd4= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30r7dyw5fe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 11:56:28 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Fri, 1 May 2020 11:56:26 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 9BC592EC2F4C; Fri,  1 May 2020 11:56:23 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        <syzbot+39b64425f91b5aab714d@syzkaller.appspotmail.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next] bpf: fix use-after-free of bpf_link when priming half-fails
-Date:   Fri, 1 May 2020 11:56:22 -0700
-Message-ID: <20200501185622.3088964-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1730416AbgEATBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 15:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729766AbgEATBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 15:01:20 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CA7C061A0C;
+        Fri,  1 May 2020 12:01:20 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b188so10156514qkd.9;
+        Fri, 01 May 2020 12:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=POQ5NKa4769BoncsZBdGJ5a0YBr+BMUrQYDGRmZ417U=;
+        b=lN9hoQN1AAp9IsoVmGdhomDPRXA+QillGn1eqg2Gyu3FbmOMn6O2rujAmsQ+9GX6Za
+         yJQzTsfLtJhOHoLLo7a0cu9h/Qv5uoNZz8FJNqFSLZrYvkFGcChY8yvBevIuYG0CmY5/
+         kWqKFn4314B5KoEJOlwnS874Mn5QDJFYNK0p6yO7rblPhpuScWuLastXjt3FNLXwtRlT
+         tmb0ltML3CbrWQd9/WKpJvXJ6PYL3aNea5c8S66/ioIR+LuwY+yBqc5mlXgzUt4jqAPk
+         REDIoUVps+hLEWcUZu27Jsm1G065RWA2LkLAGRM85dNBDOd8C+lshN3QLjKpIgG/ca9c
+         VeIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=POQ5NKa4769BoncsZBdGJ5a0YBr+BMUrQYDGRmZ417U=;
+        b=Rw1POnUGFCacu8VNCb4ybA7Xm2kCj1vudzZVoosBq+IeDIhgsBOH7Nd6bBSvbJ/InF
+         aKH3hVxAQ+xDv52X/VnSmGrpkqVF9DHOzr+04b6zUx+d/V3p2xuwRWvWSlDkC1qrjgM0
+         DQjijJrupFZz3n6CvdSlVbJHcLU++O4MkE2F16aTlCnB00fuggaHSfpxZUij/H0i+cVV
+         ooE8WPlbjSuDogLyRdSXxoCHwKRGRe1Si5Epv5OnMYp1gOg/hRz20hXHmHGR+QH0v7SY
+         d64rKfOepTMXVL7QqU8vLuhYYcH7P3h6dXv5Jk+oFBtfhCq8gRZL+VDNwOD6gyayhhzS
+         xTtA==
+X-Gm-Message-State: AGi0PuYpXVlkIIovgThxtrddvPIN9GlvD+JNuzUmJ9WfjFS3W+0mj9Dw
+        U8FFwGsmW20t9M2OpFizcQRZdxdEe9hARHO8UHE=
+X-Google-Smtp-Source: APiQypLzPaCgu8lwSdmV9SfYyeyTDgzE55zdxWpN1RCkpl2uAsQaWOoDZEdMJ2G9pQsIcnT4uuwlQhkr9vBoAuiomwE=
+X-Received: by 2002:ae9:e10b:: with SMTP id g11mr5415473qkm.449.1588359679709;
+ Fri, 01 May 2020 12:01:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-05-01_11:2020-05-01,2020-05-01 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- suspectscore=25 clxscore=1015 phishscore=0 lowpriorityscore=0
- malwarescore=0 spamscore=0 priorityscore=1501 impostorscore=0 adultscore=0
- bulkscore=0 mlxlogscore=632 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2005010141
-X-FB-Internal: deliver
+References: <20200427201235.2994549-1-yhs@fb.com> <20200427201247.2995622-1-yhs@fb.com>
+ <CAEf4BzaWkKbtDQf=0gOBj7Q6icswh61ky3FFS8bAmhkefDV0tg@mail.gmail.com> <dc46e006-468d-22d6-91bc-2c8e75590205@fb.com>
+In-Reply-To: <dc46e006-468d-22d6-91bc-2c8e75590205@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 1 May 2020 12:01:08 -0700
+Message-ID: <CAEf4BzZij0uXAvvkNJQNOF=fu44Bg+SsxX7x3WWg2+5wsOATrQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 11/19] bpf: add task and task/file targets
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If bpf_link_prime() succeeds to allocate new anon file, but then fails to
-allocate ID for it, link priming is considered to be failed and user is
-supposed ot be able to directly kfree() bpf_link, because it was never ex=
-posed
-to user-space.
+On Fri, May 1, 2020 at 10:23 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 4/29/20 7:08 PM, Andrii Nakryiko wrote:
+> > On Mon, Apr 27, 2020 at 1:17 PM Yonghong Song <yhs@fb.com> wrote:
+> >>
+> >> Only the tasks belonging to "current" pid namespace
+> >> are enumerated.
+> >>
+> >> For task/file target, the bpf program will have access to
+> >>    struct task_struct *task
+> >>    u32 fd
+> >>    struct file *file
+> >> where fd/file is an open file for the task.
+> >>
+> >> Signed-off-by: Yonghong Song <yhs@fb.com>
+> >> ---
+> >>   kernel/bpf/Makefile    |   2 +-
+> >>   kernel/bpf/task_iter.c | 319 +++++++++++++++++++++++++++++++++++++++++
+> >>   2 files changed, 320 insertions(+), 1 deletion(-)
+> >>   create mode 100644 kernel/bpf/task_iter.c
+> >>
+> >
+> > [...]
+> >
+> >> +static void *task_seq_start(struct seq_file *seq, loff_t *pos)
+> >> +{
+> >> +       struct bpf_iter_seq_task_info *info = seq->private;
+> >> +       struct task_struct *task;
+> >> +       u32 id = info->id;
+> >> +
+> >> +       if (*pos == 0)
+> >> +               info->ns = task_active_pid_ns(current);
+> >
+> > I wonder why pid namespace is set in start() callback each time, while
+> > net_ns was set once when seq_file is created. I think it should be
+> > consistent, no? Either pid_ns is another feature and is set
+> > consistently just once using the context of the process that creates
+> > seq_file, or net_ns could be set using the same method without
+> > bpf_iter infra knowing about this feature? Or there are some
+> > non-obvious aspects which make pid_ns easier to work with?
+> >
+> > Either way, process read()'ing seq_file might be different than
+> > process open()'ing seq_file, so they might have different namespaces.
+> > We need to decide explicitly which context should be used and do it
+> > consistently.
+>
+> Good point. for networking case, the `net` namespace is locked
+> at seq_file open stage and later on it is used for seq_read().
+>
+> I think I should do the same thing, locking down pid namespace
+> at open.
 
-But at that point file already keeps a pointer to bpf_link and will event=
-ually
-call bpf_link_release(), so if bpf_link was kfree()'d by caller, that wou=
-ld
-lead to use-after-free.
+Yeah, I think it's a good idea.
 
-Fix this by first allocating ID and only then allocating file. Adding ID =
-to
-link_idr is ok, because link at that point still doesn't have its ID set,=
- so
-no user-space process can create a new FD for it.
+>
+> >
+> >> +
+> >> +       task = task_seq_get_next(info->ns, &id);
+> >> +       if (!task)
+> >> +               return NULL;
+> >> +
+> >> +       ++*pos;
+> >> +       info->task = task;
+> >> +       info->id = id;
+> >> +
+> >> +       return task;
+> >> +}
+> >> +
+> >> +static void *task_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+> >> +{
+> >> +       struct bpf_iter_seq_task_info *info = seq->private;
+> >> +       struct task_struct *task;
+> >> +
+> >> +       ++*pos;
+> >> +       ++info->id;
+> >
+> > this would make iterator skip pid 0? Is that by design?
+>
+> The start will try to find pid 0. That means start will never
+> return SEQ_START_TOKEN since the bpf program won't be called any way.
 
-Suggested-by: Martin KaFai Lau <kafai@fb.com>
-Fixes: a3b80e107894 ("bpf: Allocate ID for bpf_link")
-Reported-by: syzbot+39b64425f91b5aab714d@syzkaller.appspotmail.com
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- kernel/bpf/syscall.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Never mind, I confused task_seq_next() and task_seq_get_next() :)
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index c75b2dd2459c..108c8051dff2 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2348,19 +2348,20 @@ int bpf_link_prime(struct bpf_link *link, struct =
-bpf_link_primer *primer)
- 	if (fd < 0)
- 		return fd;
-=20
--	file =3D anon_inode_getfile("bpf_link", &bpf_link_fops, link, O_CLOEXEC=
-);
--	if (IS_ERR(file)) {
--		put_unused_fd(fd);
--		return PTR_ERR(file);
--	}
-=20
- 	id =3D bpf_link_alloc_id(link);
- 	if (id < 0) {
- 		put_unused_fd(fd);
--		fput(file);
- 		return id;
- 	}
-=20
-+	file =3D anon_inode_getfile("bpf_link", &bpf_link_fops, link, O_CLOEXEC=
-);
-+	if (IS_ERR(file)) {
-+		bpf_link_free_id(id);
-+		put_unused_fd(fd);
-+		return PTR_ERR(file);
-+	}
-+
- 	primer->link =3D link;
- 	primer->file =3D file;
- 	primer->fd =3D fd;
---=20
-2.24.1
+>
+> >
+> >> +       task = task_seq_get_next(info->ns, &info->id);
+> >> +       if (!task)
+> >> +               return NULL;
+> >> +
+> >> +       put_task_struct(info->task);
+> >
+> > on very first iteration info->task might be NULL, right?
+>
+> Even the first iteration info->task is not NULL. The start()
+> will forcefully try to find the first real task from idr number 0.
+>
 
+Right, goes to same confusion as above, sorry.
+
+> >
+> >> +       info->task = task;
+> >> +       return task;
+> >> +}
+> >> +
+> >> +struct bpf_iter__task {
+> >> +       __bpf_md_ptr(struct bpf_iter_meta *, meta);
+> >> +       __bpf_md_ptr(struct task_struct *, task);
+> >> +};
+> >> +
+> >> +int __init __bpf_iter__task(struct bpf_iter_meta *meta, struct task_struct *task)
+> >> +{
+> >> +       return 0;
+> >> +}
+> >> +
+> >> +static int task_seq_show(struct seq_file *seq, void *v)
+> >> +{
+> >> +       struct bpf_iter_meta meta;
+> >> +       struct bpf_iter__task ctx;
+> >> +       struct bpf_prog *prog;
+> >> +       int ret = 0;
+> >> +
+> >> +       prog = bpf_iter_get_prog(seq, sizeof(struct bpf_iter_seq_task_info),
+> >> +                                &meta.session_id, &meta.seq_num,
+> >> +                                v == (void *)0);
+> >> +       if (prog) {
+> >
+> > can it happen that prog is NULL?
+>
+> Yes, this function is shared between show() and stop().
+> The stop() function might be called multiple times since
+> user can repeatedly try read() although there is nothing
+> there, in which case, the seq_ops will be just
+> start() and stop().
+
+Ah, right, NULL case after end of iteration, got it.
+
+>
+> >
+> >
+> >> +               meta.seq = seq;
+> >> +               ctx.meta = &meta;
+> >> +               ctx.task = v;
+> >> +               ret = bpf_iter_run_prog(prog, &ctx);
+> >> +       }
+> >> +
+> >> +       return ret == 0 ? 0 : -EINVAL;
+> >> +}
+> >> +
+> >> +static void task_seq_stop(struct seq_file *seq, void *v)
+> >> +{
+> >> +       struct bpf_iter_seq_task_info *info = seq->private;
+> >> +
+> >> +       if (!v)
+> >> +               task_seq_show(seq, v);
+> >
+> > hmm... show() called from stop()? what's the case where this is necessary?
+>
+> I will refactor it better. This is to invoke bpf program
+> in stop() with NULL object to signal the end of
+> iteration.
+>
+> >> +
+> >> +       if (info->task) {
+> >> +               put_task_struct(info->task);
+> >> +               info->task = NULL;
+> >> +       }
+> >> +}
+> >> +
+> >
+> > [...]
+> >
