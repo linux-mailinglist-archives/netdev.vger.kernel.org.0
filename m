@@ -2,81 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 218A01C1739
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6ED1C1661
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:08:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730268AbgEAN7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 09:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729586AbgEAN2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 09:28:13 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D248FC061A0C
-        for <netdev@vger.kernel.org>; Fri,  1 May 2020 06:28:12 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id e9so4843464iok.9
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 06:28:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=FQRWycjgg9PSHf5QnGsUBT2EyveEEMkgeXusSqizlYE=;
-        b=IbjNWNXeDJmh+YdcllhjXD7Q5kkDwz3UMj2GgzMbNP3k1UJ3/VNNb3iKBG6hLIOSZC
-         2p+zvIdlWLDyz2wI84Yf6807UfQzgptQWbzjiQr6CPmQmYu03qdL+O6GshtU1efvzmLV
-         ZXGpJy3OJkvd2z88RNb/XQ9+Kp4suuz9GcE0u28X2JcMv85PYdr0Gv9C5A1l4HjkbPzj
-         uzvEsgm9Gn4RTVyJqgodfWw9X1UMh4ZUej0LBLel9TOYcygHrL5NDVDljMUvyBbiHGbI
-         CY3Xl4mMslHQWQbLyvTfUaCr7ELfGuksDsyvu192O1JcsTvepjF1zbNin49oUjpYD7Id
-         kNPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=FQRWycjgg9PSHf5QnGsUBT2EyveEEMkgeXusSqizlYE=;
-        b=q2iaw59P15PdlvyBdUsUBW8vjfOT5TPdZoFzaQdTZEOLsKmVPRbjO7nzKT6aN1No1g
-         vfJryvzEb7DwDaa6094xDpQG+P1AdlJGs14k9qYIZ/KM8wLUjM76cRvzza6kbSyTjIYE
-         NtNTu3rELEjYMcGqFQQlfn1b4EaTz8CyyGfUR5u2Q7Cqjj0rAVhp6oz4lHnNJksFPonC
-         pS6uxz4V2338j5+QAErzv3hx9Suk9oSyJcLpvQKkzdDAqENDskNoMbljAeZBaehNXtHa
-         NBECxDxDSEj8j89z/cgO23cbfA864QFuG0nzNAjMg0GBheeo4y0TC9BbgdU2GNJAUw1f
-         7Xrg==
-X-Gm-Message-State: AGi0PuYIjLYL7m8cY+149Xs3k/Bms8K46H+SxsUXtciwaLHQ+Nm1NGRp
-        4NAH3Siq49/8Ney0uK94mYHkzPzsEeSIRN6uras=
-X-Google-Smtp-Source: APiQypKwZMmmFiIKuB4c8NM6K0wztyzh/4KXG0qliuOAfTlWRlf3ogR2h+1wtCilzuhfbvct8Y8nxMvjVE7GShkY7ks=
-X-Received: by 2002:a05:6638:a47:: with SMTP id 7mr3164665jap.12.1588339691528;
- Fri, 01 May 2020 06:28:11 -0700 (PDT)
+        id S1731806AbgEANri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 09:47:38 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:59409 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731613AbgEANnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 09:43:18 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jUVwd-00067j-4A; Fri, 01 May 2020 13:43:11 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] net: dsa: sja1105: fix speed setting for 10 MBPS
+Date:   Fri,  1 May 2020 14:43:10 +0100
+Message-Id: <20200501134310.289561-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:a02:b005:0:0:0:0:0 with HTTP; Fri, 1 May 2020 06:28:11 -0700 (PDT)
-Reply-To: jnjitap@outlook.fr
-From:   MR JEROME <katiebonaparte@gmail.com>
-Date:   Fri, 1 May 2020 14:28:11 +0100
-Message-ID: <CAOk5xKw=k5PNJC0YvVTvsPMx9As1ptEJ7KfRW3VdccpSttokzQ@mail.gmail.com>
-Subject: FINANCIAL BUSINESS PROJECT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+From: Colin Ian King <colin.king@canonical.com>
 
-I have a business proposal in the tune of $10.2 Million USD partaining
-to this issue of Corona virus for you to handle with me. I have
-opportunity to transfer this abandon fund to your bank account in your
-country which belongs to our client.
+The current logic for speed checking will never set the speed to 10 MBPS
+because bmcr & BMCR_SPEED10 is always 0 since BMCR_SPEED10 is 0. Also
+the erroneous setting where BMCR_SPEED1000 and BMCR_SPEED100 are both
+set causes the speed to be 1000 MBS.  Fix this by masking bps and checking
+for just the expected settings of BMCR_SPEED1000, BMCR_SPEED100 and
+BMCR_SPEED10 and defaulting to the unknown speed otherwise.
 
-I am inviting you in this transaction where this money can be shared
-between us at ratio of 60/40% and help the needy around us don't be
-afraid of anything I am with you I will instruct you what you will do
-to maintain this fund.
+Addresses-Coverity: ("Logically dead code")
+Fixes: ffe10e679cec ("net: dsa: sja1105: Add support for the SGMII port")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/dsa/sja1105/sja1105_main.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Please kindly contact me with your information's if you are interested
-in this transaction for more details.
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 472f4eb20c49..59a9038cdc4e 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1600,6 +1600,7 @@ static const char * const sja1105_reset_reasons[] = {
+ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 				 enum sja1105_reset_reason reason)
+ {
++	const int mask = (BMCR_SPEED1000 | BMCR_SPEED100 | BMCR_SPEED10);
+ 	struct ptp_system_timestamp ptp_sts_before;
+ 	struct ptp_system_timestamp ptp_sts_after;
+ 	struct sja1105_mac_config_entry *mac;
+@@ -1684,14 +1685,16 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 		sja1105_sgmii_pcs_config(priv, an_enabled, false);
+ 
+ 		if (!an_enabled) {
+-			int speed = SPEED_UNKNOWN;
++			int speed;
+ 
+-			if (bmcr & BMCR_SPEED1000)
++			if ((bmcr & mask) == BMCR_SPEED1000)
+ 				speed = SPEED_1000;
+-			else if (bmcr & BMCR_SPEED100)
++			else if ((bmcr & mask) == BMCR_SPEED100)
+ 				speed = SPEED_100;
+-			else if (bmcr & BMCR_SPEED10)
++			else if ((bmcr & mask) == BMCR_SPEED10)
+ 				speed = SPEED_10;
++			else
++				speed = SPEED_UNKNOWN;
+ 
+ 			sja1105_sgmii_pcs_force_speed(priv, speed);
+ 		}
+-- 
+2.25.1
 
-Your Name:..............
-Your Bank Name:.............
-Your Account Number:...........
-Your Telephone Number:............
-Your Country And Address:............
-Your Age And Sex:.......................
-
-Thanks
-Mr.Jerome.
