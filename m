@@ -2,65 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34E431C1059
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 11:28:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BB591C105E
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 11:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728384AbgEAJ23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 05:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
+        id S1728423AbgEAJcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 05:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728236AbgEAJ23 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 05:28:29 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918B2C035495
-        for <netdev@vger.kernel.org>; Fri,  1 May 2020 02:28:28 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id y3so3474344lfy.1
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 02:28:28 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728236AbgEAJcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 05:32:08 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F14CC035495
+        for <netdev@vger.kernel.org>; Fri,  1 May 2020 02:32:07 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id f18so2072734lja.13
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 02:32:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IDH0QHo315zsR2EVp9WirUHH3ScryOp5m/0pVw90/ek=;
-        b=OOIMmAKgOIKQNayrYOkT9wUrrPDA1zRklTCqqXAkXjZCUGNH9Hq1JX7jNdXTpWszxu
-         MQ25bIx/NSjKlx5UGPfctm7j3xLx+NVm0yE2VSq/YknQnaA87IIDP0AQXqRM55dOLjho
-         98hv/vNmhaZBDNy6rv/bMVE0NRoH3q179ECxk=
+        bh=l4VUzp5KC03VH6gy0M9XP/QukbREalbR/O4IyAslFpg=;
+        b=JKTApq1IUP9/N3bg/cvPJ5Jy5fG2SE+gJlY01zmFFBicEP7D31vUOPKkKLav2sUUwh
+         Y850fANFDfJ3z3K9VdG1+dLDPTniHK2eHmEddRPIFG5mfg5HjnhYssZbrTYmz3wpcsTE
+         1L4GVqcIii7iEv0Ihr1TY76nTl9YZy5K03rRs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=IDH0QHo315zsR2EVp9WirUHH3ScryOp5m/0pVw90/ek=;
-        b=W/IQ9x0qx4qnvaxstcR/tfxqUG73hcNeO1YYZVartS1BBG10BZvN9acCmre+v2G38X
-         kNiGJwHozNpOgCW+CxOHfYEb7FnIIHJIYkKE6RJco2HvNBzduMBCcOeknCRI70Erbl2b
-         xgb58z2+f6NlCtLjRZp6Oo+kED6y4hEbuDA1pB1kTPmT89I4EPm56hF6kwkxpBq9Cs2i
-         7+2jIeUmTCcPAXjqkqxHRo8ozweKlRSnd0L5gdtD601ozuyC5+5RN2vDq1hCZGqhkTDn
-         R6qtMD/PvexGqu+4M39jESEjlDhistMvhSF/ewSEb60UiIL3fKdRvoAMfhTu2wsfGFiY
-         n+/A==
-X-Gm-Message-State: AGi0PuabZHh+RigyXWFczg7NJ1QP6iQ8SsTZe/jGAzejEkgFX8cOnJX8
-        Ps86pvn1JEY+iWKTaQau7s1VdQ==
-X-Google-Smtp-Source: APiQypKuJuZgvqbzLVtPV71itbTGQyVGbfUpK/VJdSss32TXGQgAk6xhYclxnFYh19k8lE4oeUF8zQ==
-X-Received: by 2002:a05:6512:685:: with SMTP id t5mr2010404lfe.47.1588325306328;
-        Fri, 01 May 2020 02:28:26 -0700 (PDT)
+        bh=l4VUzp5KC03VH6gy0M9XP/QukbREalbR/O4IyAslFpg=;
+        b=I/N18CrSNk2zCSV2Sfz3atffL/EguntCW/BFn0P5KqPruYCMoeUsGN8rFVxLsTwijr
+         Od7GHkVF8V1QT8H96Yq7jDYswEYZu+tbzE+YhsRqGtUvDJksHfQsvWkY85Av6riBLrj/
+         THrCaQJkm51FLZ0y+Le/kz6GJUR5So4Hnqx2fHr2xnnMSqosSpRLV2UtZWbXg2NXyxaa
+         EHCb42LP2ZIcttiejmVO0YvuJkWyUCbiUxBOaL4YIg3/jgzqGxWQwVx1onSoyi2IX8Ur
+         OKpzTz56fpPg0lO+HdotXZbxTViQC9KiZY4uQBktVXZ0v+DL2qEeLc/z78C7NJXnQlhO
+         s6Ig==
+X-Gm-Message-State: AGi0PuYstR2e6UlzD9WbCfOQfHz+hlRUK+nUS20VY11irdJsxDW6arQ8
+        birbgZHz/F45Yn+RdUTWZ+yZnQ==
+X-Google-Smtp-Source: APiQypL8kD3FB+T6zgjPk6q83TJphW8DgwaJHjVyk5GBM9CoWhl4S4f76ERwiD/otoImwg5QX3mezQ==
+X-Received: by 2002:a2e:7e0b:: with SMTP id z11mr1877583ljc.284.1588325525456;
+        Fri, 01 May 2020 02:32:05 -0700 (PDT)
 Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id 24sm1662561ljv.3.2020.05.01.02.28.23
+        by smtp.gmail.com with ESMTPSA id y25sm1811450lfy.59.2020.05.01.02.32.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 May 2020 02:28:25 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 1/4] net: bridge: allow enslaving some DSA
- master network devices
-To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, davem@davemloft.net
-Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
-        netdev@vger.kernel.org, leoyang.li@nxp.com,
-        roopa@cumulusnetworks.com
-References: <20200430202542.11797-1-olteanv@gmail.com>
- <20200430202542.11797-2-olteanv@gmail.com>
+        Fri, 01 May 2020 02:32:04 -0700 (PDT)
+Subject: Re: [PATCH iproute2 v2 0/6] bridge vlan output fixes
+To:     Benjamin Poirier <bpoirier@cumulusnetworks.com>,
+        netdev@vger.kernel.org
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>
+References: <20200501084720.138421-1-bpoirier@cumulusnetworks.com>
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <6d46b1ea-0d46-3857-e3b8-82d73ddcaea0@cumulusnetworks.com>
-Date:   Fri, 1 May 2020 12:28:21 +0300
+Message-ID: <903da83e-2c53-c95e-ad9e-c9f8242d4d55@cumulusnetworks.com>
+Date:   Fri, 1 May 2020 12:32:00 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200430202542.11797-2-olteanv@gmail.com>
+In-Reply-To: <20200501084720.138421-1-bpoirier@cumulusnetworks.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,48 +65,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/04/2020 23:25, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 01/05/2020 11:47, Benjamin Poirier wrote:
+> More fixes for `bridge vlan` and `bridge vlan tunnelshow` normal and JSON
+> mode output.
 > 
-> Commit 8db0a2ee2c63 ("net: bridge: reject DSA-enabled master netdevices
-> as bridge members") added a special check in br_if.c in order to check
-> for a DSA master network device with a tagging protocol configured. This
-> was done because back then, such devices, once enslaved in a bridge
-> would become inoperative and would not pass DSA tagged traffic anymore
-> due to br_handle_frame returning RX_HANDLER_CONSUMED.
+> Some column titles are changed, empty lines removed from the output,
+> interfaces with no vlans or tunnels are removed, columns are aligned.
 > 
-> But right now we have valid use cases which do require bridging of DSA
-> masters. One such example is when the DSA master ports are DSA switch
-> ports themselves (in a disjoint tree setup). This should be completely
-> equivalent, functionally speaking, from having multiple DSA switches
-> hanging off of the ports of a switchdev driver. So we should allow the
-> enslaving of DSA tagged master network devices.
+> Changes v2:
+> * dropped patch 1, "bridge: Use the same flag names in input and output"
 > 
-> Instead of the regular br_handle_frame(), install a new function
-> br_handle_frame_dummy() on these DSA masters, which returns
-> RX_HANDLER_PASS in order to call into the DSA specific tagging protocol
-> handlers, and lift the restriction from br_add_if.
+> Sample outputs with this config:
 > 
-> Suggested-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> Changes in v2:
-> * Removed the hotpath netdev_uses_dsa check and installed a dummy
->   rx_handler for such net devices.
-> * Improved the check of which DSA master net devices are able to be
->   bridged and which aren't.
-> * At this stage, the patch is different enough from where I took it from
->   (aka https://github.com/ffainelli/linux/commit/75618cea75ada8d9eef7936c002b5ec3dd3e4eac)
->   that I just added my authorship to it).
+> ip link add br0 type bridge
 > 
->  include/net/dsa.h       |  2 +-
->  net/bridge/br_if.c      | 32 +++++++++++++++++++++++---------
->  net/bridge/br_input.c   | 23 ++++++++++++++++++++++-
->  net/bridge/br_private.h |  6 +++---
->  4 files changed, 49 insertions(+), 14 deletions(-)
+> ip link add vx0 type vxlan dstport 4789 external
+> ip link set dev vx0 master br0
+> bridge vlan del vid 1 dev vx0
+> 
+> ip link add vx1 type vxlan dstport 4790 external
+> ip link set dev vx1 master br0
+> 
+> ip link add vx2 type vxlan dstport 4791 external
+> ip link set dev vx2 master br0
+> ip link set dev vx2 type bridge_slave vlan_tunnel on
+> bridge vlan add dev vx2 vid 2
+> bridge vlan add dev vx2 vid 2 tunnel_info id 2
+> bridge vlan add dev vx2 vid 1010-1020
+> bridge vlan add dev vx2 vid 1010-1020 tunnel_info id 1010-1020
+> bridge vlan add dev vx2 vid 1030
+> bridge vlan add dev vx2 vid 1030 tunnel_info id 65556
+> 
+> ip link add vx-longname type vxlan dstport 4792 external
+> ip link set dev vx-longname master br0
+> ip link set dev vx-longname type bridge_slave vlan_tunnel on
+> bridge vlan add dev vx-longname vid 2
+> bridge vlan add dev vx-longname vid 2 tunnel_info id 2
+> 
+> Before & after:
+> 
+> root@vsid:/src/iproute2# bridge -c vlan
+> port    vlan ids
+> br0      1 PVID Egress Untagged
+> 
+> vx0     None
+> vx1      1 PVID Egress Untagged
+> 
+> vx2      1 PVID Egress Untagged
+>          2
+>          1010-1020
+>          1030
+> 
+> vx-longname      1 PVID Egress Untagged
+>          2
+> 
+> root@vsid:/src/iproute2# ./bridge/bridge -c vlan
+> port              vlan-id
+> br0               1 PVID Egress Untagged
+> vx1               1 PVID Egress Untagged
+> vx2               1 PVID Egress Untagged
+>                   2
+>                   1010-1020
+>                   1030
+> vx-longname       1 PVID Egress Untagged
+>                   2
+> root@vsid:/src/iproute2#
+> 
+> ===
+> 
+> root@vsid:/src/iproute2# bridge vlan tunnelshow
+> port    vlan ids        tunnel id
+> br0
+> vx0     None
+> vx1
+> vx2      2       2
+>          1010-1020       1010-1020
+>          1030    65556
+> 
+> vx-longname      2       2
+> 
+> root@vsid:/src/iproute2# ./bridge/bridge vlan tunnelshow
+> port              vlan-id    tunnel-id
+> vx2               2          2
+>                   1010-1020  1010-1020
+>                   1030       65556
+> vx-longname       2          2
+> root@vsid:/src/iproute2#
+> 
+> ===
+> 
+> root@vsid:/src/iproute2# bridge -j -p vlan tunnelshow
+> [ {
+>         "ifname": "br0",
+>         "tunnels": [ ]
+>     },{
+>         "ifname": "vx1",
+>         "tunnels": [ ]
+>     },{
+>         "ifname": "vx2",
+>         "tunnels": [ {
+>                 "vlan": 2,
+>                 "tunid": 2
+>             },{
+>                 "vlan": 1010,
+>                 "vlanEnd": 1020,
+>                 "tunid": 1010,
+>                 "tunidEnd": 1020
+>             },{
+>                 "vlan": 1030,
+>                 "tunid": 65556
+>             } ]
+>     },{
+>         "ifname": "vx-longname",
+>         "tunnels": [ {
+>                 "vlan": 2,
+>                 "tunid": 2
+>             } ]
+>     } ]
+> root@vsid:/src/iproute2# ./bridge/bridge -j -p vlan tunnelshow
+> [ {
+>         "ifname": "vx2",
+>         "tunnels": [ {
+>                 "vlan": 2,
+>                 "tunid": 2
+>             },{
+>                 "vlan": 1010,
+>                 "vlanEnd": 1020,
+>                 "tunid": 1010,
+>                 "tunidEnd": 1020
+>             },{
+>                 "vlan": 1030,
+>                 "tunid": 65556
+>             } ]
+>     },{
+>         "ifname": "vx-longname",
+>         "tunnels": [ {
+>                 "vlan": 2,
+>                 "tunid": 2
+>             } ]
+>     } ]
+> root@vsid:/src/iproute2#
+> 
+> Benjamin Poirier (6):
+>   bridge: Use consistent column names in vlan output
+>   bridge: Fix typo
+>   bridge: Fix output with empty vlan lists
+>   json_print: Return number of characters printed
+>   bridge: Align output columns
+>   Replace open-coded instances of print_nl()
+> 
+>  bridge/vlan.c                            | 111 +++++++++++++++--------
+>  include/json_print.h                     |  24 +++--
+>  lib/json_print.c                         |  95 +++++++++++--------
+>  tc/m_action.c                            |  14 +--
+>  tc/m_connmark.c                          |   4 +-
+>  tc/m_ctinfo.c                            |   4 +-
+>  tc/m_ife.c                               |   4 +-
+>  tc/m_mpls.c                              |   2 +-
+>  tc/m_nat.c                               |   4 +-
+>  tc/m_sample.c                            |   4 +-
+>  tc/m_skbedit.c                           |   4 +-
+>  tc/m_tunnel_key.c                        |  16 ++--
+>  tc/q_taprio.c                            |   8 +-
+>  tc/tc_util.c                             |   4 +-
+>  testsuite/tests/bridge/vlan/show.t       |  30 ++++++
+>  testsuite/tests/bridge/vlan/tunnelshow.t |   2 +-
+>  16 files changed, 210 insertions(+), 120 deletions(-)
+>  create mode 100755 testsuite/tests/bridge/vlan/show.t
 > 
 
-Looks good to me, thanks.
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-
+Looks good, thanks!
+For the whole set:
+Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
