@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A8C1C2091
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 00:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B2731C2095
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 00:28:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726473AbgEAW2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 18:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
+        id S1726654AbgEAW2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 18:28:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726333AbgEAW2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 18:28:19 -0400
+        with ESMTP id S1726333AbgEAW2k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 18:28:40 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220C5C061A0C;
-        Fri,  1 May 2020 15:28:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211B4C061A0C;
+        Fri,  1 May 2020 15:28:40 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 86F3E14F4BE36;
-        Fri,  1 May 2020 15:28:18 -0700 (PDT)
-Date:   Fri, 01 May 2020 15:28:17 -0700 (PDT)
-Message-Id: <20200501.152817.688071349221528108.davem@davemloft.net>
-To:     weiyongjun1@huawei.com
-Cc:     grygorii.strashko@ti.com, david@lechnology.com,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next v2] drivers: net: davinci_mdio: fix potential
- NULL dereference in davinci_mdio_probe()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5545014F4BE24;
+        Fri,  1 May 2020 15:28:38 -0700 (PDT)
+Date:   Fri, 01 May 2020 15:28:37 -0700 (PDT)
+Message-Id: <20200501.152837.1463395932472619581.davem@davemloft.net>
+To:     clay@daemons.net
+Cc:     arnd@arndb.de, richardcochran@gmail.com, nico@fluxnic.net,
+        grygorii.strashko@ti.com, geert@linux-m68k.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        nicolas.ferre@microchip.com, tglx@linutronix.de,
+        gregkh@linuxfoundation.org, brouer@redhat.com,
+        ilias.apalodimas@linaro.org, kishon@ti.com, maowenan@huawei.com,
+        ivan.khoronzhuk@linaro.org, ecree@solarflare.com,
+        josh@joshtriplett.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: Make PTP-specific drivers depend on
+ PTP_1588_CLOCK
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200429025220.166415-1-weiyongjun1@huawei.com>
-References: <20200427094032.181184-1-weiyongjun1@huawei.com>
-        <20200429025220.166415-1-weiyongjun1@huawei.com>
+In-Reply-To: <20200429075903.19788-1-clay@daemons.net>
+References: <20200429072959.GA10194@arctic-shiba-lx>
+        <20200429075903.19788-1-clay@daemons.net>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 01 May 2020 15:28:18 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 01 May 2020 15:28:39 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
-Date: Wed, 29 Apr 2020 02:52:20 +0000
+From: Clay McClure <clay@daemons.net>
+Date: Wed, 29 Apr 2020 00:59:00 -0700
 
-> platform_get_resource() may fail and return NULL, so we should
-> better check it's return value to avoid a NULL pointer dereference
-> since devm_ioremap() does not check input parameters for null.
+> Commit d1cbfd771ce8 ("ptp_clock: Allow for it to be optional") changed
+> all PTP-capable Ethernet drivers from `select PTP_1588_CLOCK` to `imply
+> PTP_1588_CLOCK`, "in order to break the hard dependency between the PTP
+> clock subsystem and ethernet drivers capable of being clock providers."
+> As a result it is possible to build PTP-capable Ethernet drivers without
+> the PTP subsystem by deselecting PTP_1588_CLOCK. Drivers are required to
+> handle the missing dependency gracefully.
+ ...
+> Note how these symbols all reference PTP or timestamping in their name;
+> this is a clue that they depend on PTP_1588_CLOCK.
 > 
-> This is detected by Coccinelle semantic patch.
+> Change them from `imply PTP_1588_CLOCK` [2] to `depends on PTP_1588_CLOCK`.
+> I'm not using `select PTP_1588_CLOCK` here because PTP_1588_CLOCK has
+> its own dependencies, which `select` would not transitively apply.
 > 
-> @@
-> expression pdev, res, n, t, e, e1, e2;
-> @@
-> 
-> res = \(platform_get_resource\|platform_get_resource_byname\)(pdev, t, n);
-> + if (!res)
-> +   return -EINVAL;
-> ... when != res == NULL
-> e = devm_ioremap(e1, res->start, e2);
-> 
-> Fixes: 03f66f067560 ("net: ethernet: ti: davinci_mdio: use devm_ioremap()")
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-> Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
+> Additionally, remove the `select NET_PTP_CLASSIFY` from CPTS_TI_MOD;
+> PTP_1588_CLOCK already selects that.
+ ...
 
-Applied.
+Applied, thanks.
