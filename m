@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADD441C111B
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 12:48:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBE7E1C112A
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 12:48:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728648AbgEAKse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 06:48:34 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:57102 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728608AbgEAKsa (ORCPT
+        id S1728638AbgEAKsc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 06:48:32 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:15628 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728268AbgEAKsa (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 06:48:30 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 041AY80Q103870;
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 041AXWtR177203;
         Fri, 1 May 2020 06:48:28 -0400
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30r821wrn3-1
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 30r825p2qp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 May 2020 06:48:28 -0400
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 041Ak4dp011167;
-        Fri, 1 May 2020 10:48:25 GMT
+        Fri, 01 May 2020 06:48:27 -0400
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 041Ak31b014464;
+        Fri, 1 May 2020 10:48:26 GMT
 Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04fra.de.ibm.com with ESMTP id 30mcu5bf8u-1
+        by ppma02fra.de.ibm.com with ESMTP id 30mcu7ydks-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 May 2020 10:48:25 +0000
+        Fri, 01 May 2020 10:48:26 +0000
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 041AmNkN64094704
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 041AmNXG64094710
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Fri, 1 May 2020 10:48:23 GMT
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 02AFEA4054;
+        by IMSVA (Postfix) with ESMTP id 4B8CEA4054;
         Fri,  1 May 2020 10:48:23 +0000 (GMT)
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BAF00A405C;
-        Fri,  1 May 2020 10:48:22 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 0FA63A405F;
+        Fri,  1 May 2020 10:48:23 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
         Fri,  1 May 2020 10:48:22 +0000 (GMT)
@@ -43,148 +43,118 @@ To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
         ubraun@linux.ibm.com
-Subject: [PATCH net-next 02/13] net/smc: unmapping of buffers to support multiple links
-Date:   Fri,  1 May 2020 12:48:02 +0200
-Message-Id: <20200501104813.76601-3-kgraul@linux.ibm.com>
+Subject: [PATCH net-next 03/13] net/smc: map and register buffers for a new link
+Date:   Fri,  1 May 2020 12:48:03 +0200
+Message-Id: <20200501104813.76601-4-kgraul@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200501104813.76601-1-kgraul@linux.ibm.com>
 References: <20200501104813.76601-1-kgraul@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
  definitions=2020-05-01_03:2020-04-30,2020-05-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1015
- mlxscore=0 malwarescore=0 suspectscore=3 bulkscore=0 adultscore=0
- priorityscore=1501 mlxlogscore=999 spamscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ impostorscore=0 clxscore=1015 phishscore=0 lowpriorityscore=0
+ priorityscore=1501 malwarescore=0 suspectscore=1 bulkscore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2003020000 definitions=main-2005010078
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the support of multiple links that are created and cleared there
-is a need to unmap one link from all current buffers. Add unmapping by
-link and by rmb. And make smcr_link_clear() available to be called from
-the LLC layer.
+Introduce support to map and register all current buffers for a new
+link. smcr_buf_map_lgr() will map used buffers for a new link and
+smcr_buf_reg_lgr() can be called to register used buffers on the
+IB device of the new link.
 
 Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
 ---
- net/smc/smc_core.c | 76 +++++++++++++++++++++++++++++++++++-----------
- net/smc/smc_core.h |  1 +
- 2 files changed, 60 insertions(+), 17 deletions(-)
+ net/smc/smc_core.c | 60 ++++++++++++++++++++++++++++++++++++++++++++++
+ net/smc/smc_core.h |  2 ++
+ 2 files changed, 62 insertions(+)
 
 diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index de6bc36fe9a7..d5ecea490b4e 100644
+index d5ecea490b4e..0e87f652caea 100644
 --- a/net/smc/smc_core.c
 +++ b/net/smc/smc_core.c
-@@ -498,14 +498,69 @@ void smc_conn_free(struct smc_connection *conn)
- 		smc_lgr_schedule_free_work(lgr);
+@@ -1185,6 +1185,66 @@ int smcr_link_reg_rmb(struct smc_link *link, struct smc_buf_desc *rmb_desc)
+ 	return 0;
  }
  
--static void smcr_link_clear(struct smc_link *lnk)
-+/* unregister a link from a buf_desc */
-+static void smcr_buf_unmap_link(struct smc_buf_desc *buf_desc, bool is_rmb,
-+				struct smc_link *lnk)
++static int _smcr_buf_map_lgr(struct smc_link *lnk, struct mutex *lock,
++			     struct list_head *lst, bool is_rmb)
 +{
-+	if (is_rmb)
-+		buf_desc->is_reg_mr[lnk->link_idx] = false;
-+	if (!buf_desc->is_map_ib[lnk->link_idx])
-+		return;
-+	if (is_rmb) {
-+		if (buf_desc->mr_rx[lnk->link_idx]) {
-+			smc_ib_put_memory_region(
-+					buf_desc->mr_rx[lnk->link_idx]);
-+			buf_desc->mr_rx[lnk->link_idx] = NULL;
-+		}
-+		smc_ib_buf_unmap_sg(lnk, buf_desc, DMA_FROM_DEVICE);
-+	} else {
-+		smc_ib_buf_unmap_sg(lnk, buf_desc, DMA_TO_DEVICE);
++	struct smc_buf_desc *buf_desc, *bf;
++	int rc = 0;
++
++	mutex_lock(lock);
++	list_for_each_entry_safe(buf_desc, bf, lst, list) {
++		if (!buf_desc->used)
++			continue;
++		rc = smcr_buf_map_link(buf_desc, is_rmb, lnk);
++		if (rc)
++			goto out;
 +	}
-+	sg_free_table(&buf_desc->sgt[lnk->link_idx]);
-+	buf_desc->is_map_ib[lnk->link_idx] = false;
++out:
++	mutex_unlock(lock);
++	return rc;
 +}
 +
-+/* unmap all buffers of lgr for a deleted link */
-+static void smcr_buf_unmap_lgr(struct smc_link *lnk)
++/* map all used buffers of lgr for a new link */
++int smcr_buf_map_lgr(struct smc_link *lnk)
++{
++	struct smc_link_group *lgr = lnk->lgr;
++	int i, rc = 0;
++
++	for (i = 0; i < SMC_RMBE_SIZES; i++) {
++		rc = _smcr_buf_map_lgr(lnk, &lgr->rmbs_lock,
++				       &lgr->rmbs[i], true);
++		if (rc)
++			return rc;
++		rc = _smcr_buf_map_lgr(lnk, &lgr->sndbufs_lock,
++				       &lgr->sndbufs[i], false);
++		if (rc)
++			return rc;
++	}
++	return 0;
++}
++
++/* register all used buffers of lgr for a new link */
++int smcr_buf_reg_lgr(struct smc_link *lnk)
 +{
 +	struct smc_link_group *lgr = lnk->lgr;
 +	struct smc_buf_desc *buf_desc, *bf;
-+	int i;
++	int i, rc = 0;
 +
++	mutex_lock(&lgr->rmbs_lock);
 +	for (i = 0; i < SMC_RMBE_SIZES; i++) {
-+		mutex_lock(&lgr->rmbs_lock);
-+		list_for_each_entry_safe(buf_desc, bf, &lgr->rmbs[i], list)
-+			smcr_buf_unmap_link(buf_desc, true, lnk);
-+		mutex_unlock(&lgr->rmbs_lock);
-+		mutex_lock(&lgr->sndbufs_lock);
-+		list_for_each_entry_safe(buf_desc, bf, &lgr->sndbufs[i],
-+					 list)
-+			smcr_buf_unmap_link(buf_desc, false, lnk);
-+		mutex_unlock(&lgr->sndbufs_lock);
++		list_for_each_entry_safe(buf_desc, bf, &lgr->rmbs[i], list) {
++			if (!buf_desc->used)
++				continue;
++			rc = smcr_link_reg_rmb(lnk, buf_desc);
++			if (rc)
++				goto out;
++		}
 +	}
++out:
++	mutex_unlock(&lgr->rmbs_lock);
++	return rc;
 +}
 +
-+static void smcr_rtoken_clear_link(struct smc_link *lnk)
-+{
-+	struct smc_link_group *lgr = lnk->lgr;
-+	int i;
-+
-+	for (i = 0; i < SMC_RMBS_PER_LGR_MAX; i++) {
-+		lgr->rtokens[i][lnk->link_idx].rkey = 0;
-+		lgr->rtokens[i][lnk->link_idx].dma_addr = 0;
-+	}
-+}
-+
-+void smcr_link_clear(struct smc_link *lnk)
+ static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
+ 						bool is_rmb, int bufsize)
  {
- 	struct smc_ib_device *smcibdev;
- 
--	if (lnk->peer_qpn == 0)
-+	if (!lnk->lgr || lnk->state == SMC_LNK_UNUSED)
- 		return;
- 	lnk->peer_qpn = 0;
- 	smc_llc_link_clear(lnk);
-+	smcr_buf_unmap_lgr(lnk);
-+	smcr_rtoken_clear_link(lnk);
- 	smc_ib_modify_qp_reset(lnk);
- 	smc_wr_free_link(lnk);
- 	smc_ib_destroy_queue_pair(lnk);
-@@ -522,23 +577,10 @@ static void smcr_link_clear(struct smc_link *lnk)
- static void smcr_buf_free(struct smc_link_group *lgr, bool is_rmb,
- 			  struct smc_buf_desc *buf_desc)
- {
--	struct smc_link *lnk;
- 	int i;
- 
--	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
--		lnk = &lgr->lnk[i];
--		if (!buf_desc->is_map_ib[lnk->link_idx])
--			continue;
--		if (is_rmb) {
--			if (buf_desc->mr_rx[lnk->link_idx])
--				smc_ib_put_memory_region(
--						buf_desc->mr_rx[lnk->link_idx]);
--			smc_ib_buf_unmap_sg(lnk, buf_desc, DMA_FROM_DEVICE);
--		} else {
--			smc_ib_buf_unmap_sg(lnk, buf_desc, DMA_TO_DEVICE);
--		}
--		sg_free_table(&buf_desc->sgt[lnk->link_idx]);
--	}
-+	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++)
-+		smcr_buf_unmap_link(buf_desc, is_rmb, &lgr->lnk[i]);
- 
- 	if (buf_desc->pages)
- 		__free_pages(buf_desc->pages, buf_desc->order);
 diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index fd512188d2c6..fa532a423fd7 100644
+index fa532a423fd7..61ddb5264936 100644
 --- a/net/smc/smc_core.h
 +++ b/net/smc/smc_core.h
-@@ -367,6 +367,7 @@ void smc_lgr_schedule_free_work_fast(struct smc_link_group *lgr);
- int smc_core_init(void);
+@@ -368,6 +368,8 @@ int smc_core_init(void);
  void smc_core_exit(void);
  
-+void smcr_link_clear(struct smc_link *lnk);
+ void smcr_link_clear(struct smc_link *lnk);
++int smcr_buf_map_lgr(struct smc_link *lnk);
++int smcr_buf_reg_lgr(struct smc_link *lnk);
  int smcr_link_reg_rmb(struct smc_link *link, struct smc_buf_desc *rmb_desc);
  static inline struct smc_link_group *smc_get_lgr(struct smc_link *link)
  {
