@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C58A1C1F06
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 22:53:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2D3A1C1F47
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 23:10:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727869AbgEAUwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 16:52:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:53472 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726384AbgEAUwP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 May 2020 16:52:15 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 615D0ACB1;
-        Fri,  1 May 2020 20:52:13 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 307A1602E9; Fri,  1 May 2020 22:52:12 +0200 (CEST)
-Date:   Fri, 1 May 2020 22:52:12 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        mkl@pengutronix.de, Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: Re: [PATCH net-next v4 1/2] ethtool: provide UAPI for PHY
- master/slave configuration.
-Message-ID: <20200501205212.GE8976@lion.mk-sys.cz>
-References: <20200501074633.24421-1-o.rempel@pengutronix.de>
- <20200501074633.24421-2-o.rempel@pengutronix.de>
- <20200501155210.GD8976@lion.mk-sys.cz>
+        id S1726450AbgEAVJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 17:09:47 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:36903 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbgEAVJq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 17:09:46 -0400
+Received: by mail-ot1-f66.google.com with SMTP id z17so3639467oto.4;
+        Fri, 01 May 2020 14:09:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=azaNq8gnek7T+A7rdK17PV/xQfKmjBVg34Ma1l/t8qw=;
+        b=MJ3obAPF0yxWvXBcvhMFx2QBlijy/sSZWh3nuYjF5xbzSDNPvALMXSMlcvujd6ODVJ
+         MaNyRiPrew1QsoSOo3GP8NZr9gHrBFH3Xvluis5OEnWDSQdCEg0T1tBdZQVrkSeC2yoQ
+         iupfiS/1sVIpEYBWR/1n0U6bmtOXCdjK55xUJe5htQ3aAPzGuoYeuvFtdqs7NES+eYks
+         vaK6a7SSajCGNISteF+DYqFAiIU8RWKbtAIFPiWJpNJG+RA2/VzfSW5Qe5gJ1f/+TBds
+         +aCzvUYumgGbKCfcCcuh+t499f//UmNpnCmZfT2r/z3tRboNPz66i6lCli66d0oTLhcB
+         +rTg==
+X-Gm-Message-State: AGi0PubdifZrD3afr3L6k1YDeY6T82shRfyScZcwbKZSfWgt+4vTI7df
+        57CRqcz7aAzGEzmmtphoZA==
+X-Google-Smtp-Source: APiQypLECOBaRa68pLT9OXVtC6bUt86y91nQBnNKSvn0KMAG/61MoBxyIwqFEkO/eNcHjZD1+jP0MQ==
+X-Received: by 2002:a05:6830:20d8:: with SMTP id z24mr5338741otq.74.1588367384402;
+        Fri, 01 May 2020 14:09:44 -0700 (PDT)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id h24sm1105171otj.25.2020.05.01.14.09.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 May 2020 14:09:43 -0700 (PDT)
+Received: (nullmailer pid 30822 invoked by uid 1000);
+        Fri, 01 May 2020 21:09:42 -0000
+Date:   Fri, 1 May 2020 16:09:42 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        jianxin.pan@amlogic.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH RFC v2 02/11] dt-bindings: net: dwmac-meson: Document the
+ "timing-adjustment" clock
+Message-ID: <20200501210942.GA27082@bogus>
+References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
+ <20200429201644.1144546-3-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200501155210.GD8976@lion.mk-sys.cz>
+In-Reply-To: <20200429201644.1144546-3-martin.blumenstingl@googlemail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 01, 2020 at 05:52:10PM +0200, Michal Kubecek wrote:
-> On Fri, May 01, 2020 at 09:46:32AM +0200, Oleksij Rempel wrote:
-> [...]
-> >  static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
-> >  				  struct ethtool_link_ksettings *ksettings,
-> >  				  bool *mod)
-> >  {
-> >  	struct ethtool_link_settings *lsettings = &ksettings->base;
-> >  	bool req_speed, req_duplex;
-> > +	const struct nlattr *attr;
-> >  	int ret;
-> >  
-> > +	attr = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
-> > +	if (attr) {
+On Wed, 29 Apr 2020 22:16:35 +0200, Martin Blumenstingl wrote:
+> The PRG_ETHERNET registers can add an RX delay in RGMII mode. This
+> requires an internal re-timing circuit whose input clock is called
+> "timing adjustment clock". Document this clock input so the clock can be
+> enabled as needed.
 > 
-> Introducing the variable makes little sense if this is the only place
-> where it is used. But if you decide to use it also in the two other
-> places working with the attribute, it should probably have more
-> descriptive name.
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+>  .../devicetree/bindings/net/amlogic,meson-dwmac.yaml   | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
 > 
-> Michal
-> 
-> > +		u8 cfg = nla_get_u8(tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG]);
-> > +		if (!ethnl_validate_master_slave_cfg(cfg))
-> > +			return -EOPNOTSUPP;
-> > +	}
 
-Also, please set extack error message and bad attribute when the check
-fails.
+My bot found errors running 'make dt_binding_check' on your patch:
 
-Michal
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: clocks: Additional items are not allowed ([4294967295] was unexpected)
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: clocks: [[4294967295], [4294967295], [4294967295], [4294967295]] is too long
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: clocks: Additional items are not allowed ([4294967295] was unexpected)
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: clocks: [[4294967295], [4294967295], [4294967295], [4294967295]] is too long
 
-> > +
-> >  	*mod = false;
-> >  	req_speed = tb[ETHTOOL_A_LINKMODES_SPEED];
-> >  	req_duplex = tb[ETHTOOL_A_LINKMODES_DUPLEX];
-> > @@ -311,6 +357,8 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
-> >  			 mod);
-> >  	ethnl_update_u8(&lsettings->duplex, tb[ETHTOOL_A_LINKMODES_DUPLEX],
-> >  			mod);
-> > +	ethnl_update_u8(&lsettings->master_slave_cfg,
-> > +			tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG], mod);
-> >  
-> >  	if (!tb[ETHTOOL_A_LINKMODES_OURS] && lsettings->autoneg &&
-> >  	    (req_speed || req_duplex) &&
-> > -- 
-> > 2.26.2
-> > 
+See https://patchwork.ozlabs.org/patch/1279646
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure dt-schema is up to date:
+
+pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
+
+Please check and re-submit.
