@@ -2,35 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 533ED1C1AB6
+	by mail.lfdr.de (Postfix) with ESMTP id C06A71C1AB7
 	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 18:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729176AbgEAQkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 12:40:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42036 "EHLO mail.kernel.org"
+        id S1729956AbgEAQkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 12:40:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729041AbgEAQkp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 May 2020 12:40:45 -0400
+        id S1728443AbgEAQkq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 12:40:46 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 026FD24955;
-        Fri,  1 May 2020 16:40:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6BB2624957;
+        Fri,  1 May 2020 16:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588351245;
-        bh=W4mfpywxxj/o0i/oEAPi7hMri+25H69Nhwzcxc9MrOs=;
+        bh=H8FhhyS2BckO9fhBc7IYUvKjV/xZkqNfm0MHVsAYoaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yZlF9gZS9Z1BIoVf6sWU3W7rZwkHpHiMIyjRVAnTSHyNw9LJmgNnO7kkFgf8Ts4Z/
-         Nah0m9N26PNFFNINCBk/v8tNkPA0/Vlf3gSS247s61BGOiZiTs9GVmt8epZX8kocLN
-         IFjrZrKFmOtg5QpTXA2H6e6w5QU1fRRYMNG0c1Bw=
+        b=1bHnMN43pQMUFi4RvYwmS5EKTzfvlDIP1ZrBPwCmULTqawww71GqPgJpVcagLT4r6
+         bLsl5AVSKKE/0ljirkryrnls2aJTTGHg+Gl2NK5iqoIF0TEmPqE5z//1rgu1GlaFFy
+         SdCiKqOoMcnYCCCcajUcPqknp7bia+LVh93IwYyg=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, jiri@resnulli.us
 Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
-        jacob.e.keller@intel.com, Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next v4 1/3] devlink: factor out building a snapshot notification
-Date:   Fri,  1 May 2020 09:40:40 -0700
-Message-Id: <20200501164042.1430604-2-kuba@kernel.org>
+        jacob.e.keller@intel.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v4 2/3] devlink: let kernel allocate region snapshot id
+Date:   Fri,  1 May 2020 09:40:41 -0700
+Message-Id: <20200501164042.1430604-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200501164042.1430604-1-kuba@kernel.org>
 References: <20200501164042.1430604-1-kuba@kernel.org>
@@ -41,92 +40,186 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We'll need to send snapshot info back on the socket
-which requested a snapshot to be created. Factor out
-constructing a snapshot description from the broadcast
-notification code.
+Currently users have to choose a free snapshot id before
+calling DEVLINK_CMD_REGION_NEW. This is potentially racy
+and inconvenient.
 
-v3: new patch
+Make the DEVLINK_ATTR_REGION_SNAPSHOT_ID optional and try
+to allocate id automatically. Send a message back to the
+caller with the snapshot info.
+
+Example use:
+$ devlink region new netdevsim/netdevsim1/dummy
+netdevsim/netdevsim1/dummy: snapshot 1
+
+$ id=$(devlink -j region new netdevsim/netdevsim1/dummy | \
+       jq '.[][][][]')
+$ devlink region dump netdevsim/netdevsim1/dummy snapshot $id
+[...]
+$ devlink region del netdevsim/netdevsim1/dummy snapshot $id
+
+v4:
+ - inline the notification code
+v3:
+ - send the notification only once snapshot creation completed.
+v2:
+ - don't wrap the line containing extack;
+ - add a few sentences to the docs.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- net/core/devlink.c | 39 ++++++++++++++++++++++++++++-----------
- 1 file changed, 28 insertions(+), 11 deletions(-)
+ .../networking/devlink/devlink-region.rst     |  7 ++-
+ net/core/devlink.c                            | 57 ++++++++++++++-----
+ .../drivers/net/netdevsim/devlink.sh          | 13 +++++
+ 3 files changed, 62 insertions(+), 15 deletions(-)
 
+diff --git a/Documentation/networking/devlink/devlink-region.rst b/Documentation/networking/devlink/devlink-region.rst
+index 04e04d1ff627..daf35427fce1 100644
+--- a/Documentation/networking/devlink/devlink-region.rst
++++ b/Documentation/networking/devlink/devlink-region.rst
+@@ -23,7 +23,9 @@ states, but see also :doc:`devlink-health`
+ Regions may optionally support capturing a snapshot on demand via the
+ ``DEVLINK_CMD_REGION_NEW`` netlink message. A driver wishing to allow
+ requested snapshots must implement the ``.snapshot`` callback for the region
+-in its ``devlink_region_ops`` structure.
++in its ``devlink_region_ops`` structure. If snapshot id is not set in
++the ``DEVLINK_CMD_REGION_NEW`` request kernel will allocate one and send
++the snapshot information to user space.
+ 
+ example usage
+ -------------
+@@ -45,7 +47,8 @@ example usage
+     $ devlink region del pci/0000:00:05.0/cr-space snapshot 1
+ 
+     # Request an immediate snapshot, if supported by the region
+-    $ devlink region new pci/0000:00:05.0/cr-space snapshot 5
++    $ devlink region new pci/0000:00:05.0/cr-space
++    pci/0000:00:05.0/cr-space: snapshot 5
+ 
+     # Dump a snapshot:
+     $ devlink region dump pci/0000:00:05.0/fw-health snapshot 1
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 9f0af8931a9c..92afb85bad89 100644
+index 92afb85bad89..cf3084208724 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -3716,24 +3716,26 @@ static int devlink_nl_region_fill(struct sk_buff *msg, struct devlink *devlink,
- 	return err;
- }
- 
--static void devlink_nl_region_notify(struct devlink_region *region,
--				     struct devlink_snapshot *snapshot,
--				     enum devlink_command cmd)
-+static struct sk_buff *
-+devlink_nl_region_notify_build(struct devlink_region *region,
-+			       struct devlink_snapshot *snapshot,
-+			       enum devlink_command cmd, u32 portid, u32 seq)
+@@ -4086,6 +4086,8 @@ static int
+ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
  {
- 	struct devlink *devlink = region->devlink;
- 	struct sk_buff *msg;
- 	void *hdr;
- 	int err;
+ 	struct devlink *devlink = info->user_ptr[0];
++	struct devlink_snapshot *snapshot;
++	struct nlattr *snapshot_id_attr;
+ 	struct devlink_region *region;
+ 	const char *region_name;
+ 	u32 snapshot_id;
+@@ -4097,11 +4099,6 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 		return -EINVAL;
+ 	}
  
--	WARN_ON(cmd != DEVLINK_CMD_REGION_NEW && cmd != DEVLINK_CMD_REGION_DEL);
+-	if (!info->attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "No snapshot id provided");
+-		return -EINVAL;
+-	}
+-
+ 	region_name = nla_data(info->attrs[DEVLINK_ATTR_REGION_NAME]);
+ 	region = devlink_region_get_by_name(devlink, region_name);
+ 	if (!region) {
+@@ -4119,16 +4116,25 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 		return -ENOSPC;
+ 	}
  
- 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
- 	if (!msg)
--		return;
-+		return ERR_PTR(-ENOMEM);
+-	snapshot_id = nla_get_u32(info->attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
++	snapshot_id_attr = info->attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID];
++	if (snapshot_id_attr) {
++		snapshot_id = nla_get_u32(snapshot_id_attr);
  
--	hdr = genlmsg_put(msg, 0, 0, &devlink_nl_family, 0, cmd);
--	if (!hdr)
-+	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, 0, cmd);
-+	if (!hdr) {
-+		err = -EMSGSIZE;
- 		goto out_free_msg;
+-	if (devlink_region_snapshot_get_by_id(region, snapshot_id)) {
+-		NL_SET_ERR_MSG_MOD(info->extack, "The requested snapshot id is already in use");
+-		return -EEXIST;
+-	}
++		if (devlink_region_snapshot_get_by_id(region, snapshot_id)) {
++			NL_SET_ERR_MSG_MOD(info->extack, "The requested snapshot id is already in use");
++			return -EEXIST;
++		}
+ 
+-	err = __devlink_snapshot_id_insert(devlink, snapshot_id);
+-	if (err)
+-		return err;
++		err = __devlink_snapshot_id_insert(devlink, snapshot_id);
++		if (err)
++			return err;
++	} else {
++		err = __devlink_region_snapshot_id_get(devlink, &snapshot_id);
++		if (err) {
++			NL_SET_ERR_MSG_MOD(info->extack, "Failed to allocate a new snapshot id");
++			return err;
++		}
 +	}
  
- 	err = devlink_nl_put_handle(msg, devlink);
+ 	err = region->ops->snapshot(devlink, info->extack, &data);
  	if (err)
-@@ -3757,15 +3759,30 @@ static void devlink_nl_region_notify(struct devlink_region *region,
- 	}
- 	genlmsg_end(msg, hdr);
+@@ -4138,6 +4144,27 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 	if (err)
+ 		goto err_snapshot_create;
  
--	genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink),
--				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
--
--	return;
-+	return msg;
++	if (!snapshot_id_attr) {
++		struct sk_buff *msg;
++
++		snapshot = devlink_region_snapshot_get_by_id(region,
++							     snapshot_id);
++		if (WARN_ON(!snapshot))
++			return -EINVAL;
++
++		msg = devlink_nl_region_notify_build(region, snapshot,
++						     DEVLINK_CMD_REGION_NEW,
++						     info->snd_portid,
++						     info->snd_seq);
++		err = PTR_ERR_OR_ZERO(msg);
++		if (err)
++			goto err_notify;
++
++		err = genlmsg_reply(msg, info);
++		if (err)
++			goto err_notify;
++	}
++
+ 	return 0;
  
- out_cancel_msg:
- 	genlmsg_cancel(msg, hdr);
- out_free_msg:
- 	nlmsg_free(msg);
-+	return ERR_PTR(err);
-+}
+ err_snapshot_create:
+@@ -4145,6 +4172,10 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ err_snapshot_capture:
+ 	__devlink_snapshot_id_decrement(devlink, snapshot_id);
+ 	return err;
 +
-+static void devlink_nl_region_notify(struct devlink_region *region,
-+				     struct devlink_snapshot *snapshot,
-+				     enum devlink_command cmd)
-+{
-+	struct devlink *devlink = region->devlink;
-+	struct sk_buff *msg;
-+
-+	WARN_ON(cmd != DEVLINK_CMD_REGION_NEW && cmd != DEVLINK_CMD_REGION_DEL);
-+
-+	msg = devlink_nl_region_notify_build(region, snapshot, cmd, 0, 0);
-+	if (IS_ERR(msg))
-+		return;
-+
-+	genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink),
-+				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
++err_notify:
++	devlink_region_snapshot_del(region, snapshot);
++	return err;
  }
  
- /**
+ static int devlink_nl_cmd_region_read_chunk_fill(struct sk_buff *msg,
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+index 1d15afd62941..de4b32fc4223 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+@@ -166,6 +166,19 @@ regions_test()
+ 
+ 	check_region_snapshot_count dummy post-second-delete 2
+ 
++	sid=$(devlink -j region new $DL_HANDLE/dummy | jq '.[][][][]')
++	check_err $? "Failed to create a new snapshot with id allocated by the kernel"
++
++	check_region_snapshot_count dummy post-first-request 3
++
++	devlink region dump $DL_HANDLE/dummy snapshot $sid >> /dev/null
++	check_err $? "Failed to dump a snapshot with id allocated by the kernel"
++
++	devlink region del $DL_HANDLE/dummy snapshot $sid
++	check_err $? "Failed to delete snapshot with id allocated by the kernel"
++
++	check_region_snapshot_count dummy post-first-request 2
++
+ 	log_test "regions test"
+ }
+ 
 -- 
 2.25.4
 
