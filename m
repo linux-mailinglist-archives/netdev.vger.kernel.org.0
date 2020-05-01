@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB3DC1C1FB6
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 23:37:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D2381C1FB8
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 23:37:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726495AbgEAVgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 17:36:42 -0400
-Received: from mga06.intel.com ([134.134.136.31]:7319 "EHLO mga06.intel.com"
+        id S1726581AbgEAVhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 17:37:18 -0400
+Received: from mga01.intel.com ([192.55.52.88]:43343 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726045AbgEAVgl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 May 2020 17:36:41 -0400
-IronPort-SDR: qILp6ynDiaVrRCnTaXWH2i0HGaMBPii3RrGEd3YiBvRlxkT2pC3jhipjGYWt5JtdFW4ZQVjc+p
- RjgErnoEDbkQ==
+        id S1726045AbgEAVhS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 17:37:18 -0400
+IronPort-SDR: hT1MJYrrPPJVJKLdmExLX//FmB7y2zb68z3V13dfOrUWxDOakE3ootrwKBsAHz1eXQ2i6ZFRNU
+ nBNSDSl9N06A==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2020 14:36:41 -0700
-IronPort-SDR: kUNzzpYaU/GFttYyDOTScysRTtOJazSAfRnulPhY3cfZ26eK/nrh3rRvqu/ih1bxzAUonj/Oln
- WrrztPbgul2g==
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2020 14:37:17 -0700
+IronPort-SDR: tJqOBVBAbCjyDDJKQECv8VFJSqZpAq/p1v5KkY4BNMjHXj+k9LEnorRdMJkimov17JTtVocHO6
+ otcvErg1ESeA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,341,1583222400"; 
-   d="scan'208";a="248645776"
+   d="scan'208";a="248645901"
 Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.101.237]) ([10.209.101.237])
-  by fmsmga007.fm.intel.com with ESMTP; 01 May 2020 14:36:40 -0700
-Subject: Re: [PATCH net-next v4 2/3] devlink: let kernel allocate region
- snapshot id
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        jiri@resnulli.us
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-References: <20200501164042.1430604-1-kuba@kernel.org>
- <20200501164042.1430604-3-kuba@kernel.org>
+  by fmsmga007.fm.intel.com with ESMTP; 01 May 2020 14:37:16 -0700
+Subject: Re: [PATCH net-next v2] devlink: let kernel allocate region snapshot
+ id
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>
+References: <20200429233813.1137428-1-kuba@kernel.org>
+ <20200430045315.GF6581@nanopsycho.orion>
+ <02874ECE860811409154E81DA85FBB58C0771750@ORSMSX151.amr.corp.intel.com>
+ <20200501143251.1f7026ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Jacob Keller <jacob.e.keller@intel.com>
 Organization: Intel Corporation
-Message-ID: <29924c8d-933d-17ec-a6ee-7feb54c68b89@intel.com>
-Date:   Fri, 1 May 2020 14:36:40 -0700
+Message-ID: <aa51f181-69f7-edc6-1987-be1dce31d3ab@intel.com>
+Date:   Fri, 1 May 2020 14:37:16 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200501164042.1430604-3-kuba@kernel.org>
+In-Reply-To: <20200501143251.1f7026ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -49,33 +53,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 5/1/2020 9:40 AM, Jakub Kicinski wrote:
-> Currently users have to choose a free snapshot id before
-> calling DEVLINK_CMD_REGION_NEW. This is potentially racy
-> and inconvenient.
+On 5/1/2020 2:32 PM, Jakub Kicinski wrote:
+> On Fri, 1 May 2020 21:23:25 +0000 Keller, Jacob E wrote:
+>>> Could you please send the snapshot id just before you return 0 in this
+>>> function, as you offered in v1? I think it would be great to do it like
+>>> that.
+>>>
+>>
+>> Also: Does it make sense to send the snapshot id regardless of
+>> whether it was auto-generated or not?
 > 
-> Make the DEVLINK_ATTR_REGION_SNAPSHOT_ID optional and try
-> to allocate id automatically. Send a message back to the
-> caller with the snapshot info.
+> I may be wrong, but I think sending extra messages via netlink,
+> which user space may not expect based on previous kernel versions 
+> is considered uAPI breakage.
 > 
-> Example use:
-> $ devlink region new netdevsim/netdevsim1/dummy
-> netdevsim/netdevsim1/dummy: snapshot 1
-> 
-> $ id=$(devlink -j region new netdevsim/netdevsim1/dummy | \
->        jq '.[][][][]')
-> $ devlink region dump netdevsim/netdevsim1/dummy snapshot $id
-> [...]
-> $ devlink region del netdevsim/netdevsim1/dummy snapshot $id
-> 
-> v4:
->  - inline the notification code
-> v3:
->  - send the notification only once snapshot creation completed.
-> v2:
->  - don't wrap the line containing extack;
->  - add a few sentences to the docs.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Ok makes sense.
+
+Thanks,
+Jake
