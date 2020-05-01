@@ -2,156 +2,455 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D34561C1819
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:45:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7A741C1852
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:47:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729259AbgEAOov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728914AbgEAOou (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 10:44:50 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657CCC061A0E
-        for <netdev@vger.kernel.org>; Fri,  1 May 2020 07:44:50 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id y19so4827754qvv.4
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 07:44:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=U5PjdaeI6wDSO7gdM3zjoZXmYp1q+jp147y29p4wfzk=;
-        b=WSaJ6f9mlX6vD9GW6hdUsSCHrqyxVZrj8VQbADFepWoMu+riIrRDlbxe2fXg39EBzE
-         x0sPGzykUtDIw9y8F1etfKcdCE6zLKITFVNf7PWP9CGCM1wRw4afh+zOcpJwRhyI/pSV
-         Z4dqRySdZO0gx0Az0U8CcLmDe2uJcbj6sj7cw8cUu0PGIYmB9fYVAX7HRUmWIXfnMYMZ
-         0gVH5jxfjS7SHwEHZ+3CUT0hVJlo1Qeu0Yli3BNO7HUqSqMz3PDsBYDxBzXXsGjnSioh
-         uzcGqtT/UHUIfAkbT1zaawUZsETjrLGUip/xd8XHDv5iyYsxihqmf1onzHBlGo8pNrbQ
-         NaAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=U5PjdaeI6wDSO7gdM3zjoZXmYp1q+jp147y29p4wfzk=;
-        b=aNHYgq7e3q7ygxvk+IorgTb8qmNJqxfeiY0RreZcWgpju89kD+sKQhsiERjhRjlt9R
-         KV7mYDzOmGcxUZueRQ/x5dudiceY3TCrDf5kjTIIbjim7Yf3sGATcuTOziTC3n3cuY9W
-         1g6S8JdBx/MN+K6d7dSCUbqp6rJMz0jTY9jWXYKT7PbcQvxeIVWX0iIzXHZYTW64JR2Z
-         m76dKF9GsijmvkrnLMwRxH1Wg74pCKla2DKT8okqoMKo4g9RXzYDj3sqDhAFy0DZQYoS
-         nFaS0v9uxc6wwtvTGrWk9UhMHqKlBgh9t0dUmSaXy9yF1wEmk533rgANTosgGBQgWYjn
-         5trA==
-X-Gm-Message-State: AGi0PuZ8m1Rdu+2wIHgix8pcXRP2mRmqkvwH1zQtpHdXo+iZAIlVq/3y
-        PDTDdMJrOUYUyFhAik0H2cGs9A==
-X-Google-Smtp-Source: APiQypLxzTulW5VDBvswuNVdHxLVKhlwnSaXPY4brbLdxFwXbg3UVgvOUCx6csk4zv6d348AETjL1g==
-X-Received: by 2002:ad4:4dc8:: with SMTP id cw8mr2444533qvb.83.1588344289315;
-        Fri, 01 May 2020 07:44:49 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id f198sm2876635qke.46.2020.05.01.07.44.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 01 May 2020 07:44:48 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jUWuG-0001Yo-4D; Fri, 01 May 2020 11:44:48 -0300
-Date:   Fri, 1 May 2020 11:44:48 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Maor Gottlieb <maorg@mellanox.com>
-Cc:     davem@davemloft.net, dledford@redhat.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        jiri@mellanox.com, dsahern@kernel.org, leonro@mellanox.com,
-        saeedm@mellanox.com, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, alexr@mellanox.com
-Subject: Re: [PATCH V8 mlx5-next 00/16] Add support to get xmit slave
-Message-ID: <20200501144448.GO26002@ziepe.ca>
-References: <20200430192146.12863-1-maorg@mellanox.com>
+        id S1730007AbgEAOq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:46:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52652 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729580AbgEAOpK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 10:45:10 -0400
+Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DCA642499B;
+        Fri,  1 May 2020 14:45:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588344307;
+        bh=zye3w0+bBHDbYAfggdapQ1VOTj27wEtBgshSU5GQVG0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xP3FawV1193TIdgfoaoQVg/t2Q7sTTo01O1wvnLNOurpYt0yYi6yHZqhpAlFEerMz
+         WwiadHENSnW7CyXmfHu/x/MV5VLwmuSYfGodOPCuyHw95QJYC4E6tgB9rAHfjsLg3v
+         sUaNnevlkbnUxJzYhF2B2t/vYqgFLnSxrxcx5c7k=
+Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
+        (envelope-from <mchehab@kernel.org>)
+        id 1jUWuT-00FCeg-U7; Fri, 01 May 2020 16:45:01 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jon Mason <jdmason@kudzu.us>,
+        netdev@vger.kernel.org
+Subject: [PATCH 27/37] docs: networking: device drivers: convert neterion/s2io.txt to ReST
+Date:   Fri,  1 May 2020 16:44:49 +0200
+Message-Id: <bda8a022bee4e7aead15c32728aca47a35291c2e.1588344146.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <cover.1588344146.git.mchehab+huawei@kernel.org>
+References: <cover.1588344146.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200430192146.12863-1-maorg@mellanox.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 10:21:30PM +0300, Maor Gottlieb wrote:
-> Hi Dave,
-> 
-> This series is a combination of netdev and RDMA, so in order to avoid
-> conflicts, we would like to ask you to route this series through
-> mlx5-next shared branch. It is based on v5.7-rc2 tag.
-> 
-> 
-> The following series adds support to get the LAG master xmit slave by
-> introducing new .ndo - ndo_get_xmit_slave. Every LAG module can
-> implement it and it first implemented in the bond driver. 
-> This is follow-up to the RFC discussion [1].
-> 
-> The main motivation for doing this is for drivers that offload part
-> of the LAG functionality. For example, Mellanox Connect-X hardware
-> implements RoCE LAG which selects the TX affinity when the resources
-> are created and port is remapped when it goes down.
-> 
-> The first part of this patchset introduces the new .ndo and add the
-> support to the bonding module.
-> 
-> The second part adds support to get the RoCE LAG xmit slave by building
-> skb of the RoCE packet based on the AH attributes and call to the new
-> .ndo.
-> 
-> The third part change the mlx5 driver driver to set the QP's affinity
-> port according to the slave which found by the .ndo.
-> 
-> Thanks
-> 
-> [1]
-> https://lore.kernel.org/netdev/20200126132126.9981-1-maorg@xxxxxxxxxxxx/
+- add SPDX header;
+- add a document title;
+- comment out text-only TOC from html/pdf output;
+- mark code blocks and literals as such;
+- adjust identation, whitespaces and blank lines where needed;
+- add to networking/index.rst.
 
-where did these xxxxx's come from?
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ .../networking/device_drivers/index.rst       |   1 +
+ .../device_drivers/neterion/s2io.rst          | 196 ++++++++++++++++++
+ .../device_drivers/neterion/s2io.txt          | 141 -------------
+ MAINTAINERS                                   |   2 +-
+ drivers/net/ethernet/neterion/Kconfig         |   2 +-
+ 5 files changed, 199 insertions(+), 143 deletions(-)
+ create mode 100644 Documentation/networking/device_drivers/neterion/s2io.rst
+ delete mode 100644 Documentation/networking/device_drivers/neterion/s2io.txt
 
-> Change log:
-> v8: Fix bad numbering of v7. 
-> v7: Change only in RDMA part:
-> 	- return slave and as output
-> 	- Don't hold lock while allocating skb.
->     In addition, reorder patches, so mlx5 patches are before RDMA.
-> v6: patch 1 - Fix commit message and add function description. 
->     patch 10 - Keep udata as function argument.
-> v5: patch 1 - Remove rcu lock.
->     patch 10 - Refactor patch that group the AH attributes in struct.
->     patch 11 - call the ndo while holding the rcu and initialize xmit_slave.
->     patch 12 - Store the xmit slave in rdma_ah_init_attr and qp_attr.
-> 
-> v4: 1. Rename master_get_xmit_slave to netdev_get_xmit_slave and move
-> the implementation to dev.c 
->     2. Remove unnecessary check of NULL pointer.
->     3. Fix typo.
-> v3: 1. Move master_get_xmit_slave to netdevice.h and change the flags
-> arg.
-> to bool.
->     2. Split helper functions commit to multiple commits for each bond
-> mode.
->     3. Extract refcotring changes to seperate commits.
-> v2: The first patch wasn't sent in v1.
-> v1:
-> https://lore.kernel.org/netdev/ac373456-b838-29cf-645f-b1ea1a93e3b0@xxxxxxxxx/T/#t 
-> 
-> Maor Gottlieb (16):
->   net/core: Introduce netdev_get_xmit_slave
->   bonding: Export skip slave logic to function
->   bonding: Rename slave_arr to usable_slaves
->   bonding/alb: Add helper functions to get the xmit slave
->   bonding: Add helper function to get the xmit slave based on hash
->   bonding: Add helper function to get the xmit slave in rr mode
->   bonding: Add function to get the xmit slave in active-backup mode
->   bonding: Add array of all slaves
->   bonding: Implement ndo_get_xmit_slave
->   net/mlx5: Change lag mutex lock to spin lock
->   net/mlx5: Add support to get lag physical port
->   RDMA: Group create AH arguments in struct
->   RDMA/core: Add LAG functionality
->   RDMA/core: Get xmit slave for LAG
->   RDMA/mlx5: Refactor affinity related code
->   RDMA/mlx5: Set lag tx affinity according to slave
+diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
+index 575f0043b03e..da1f8438d4ea 100644
+--- a/Documentation/networking/device_drivers/index.rst
++++ b/Documentation/networking/device_drivers/index.rst
+@@ -42,6 +42,7 @@ Contents:
+    intel/ipw2100
+    intel/ipw2200
+    microsoft/netvsc
++   neterion/s2io
+ 
+ .. only::  subproject and html
+ 
+diff --git a/Documentation/networking/device_drivers/neterion/s2io.rst b/Documentation/networking/device_drivers/neterion/s2io.rst
+new file mode 100644
+index 000000000000..c5673ec4559b
+--- /dev/null
++++ b/Documentation/networking/device_drivers/neterion/s2io.rst
+@@ -0,0 +1,196 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=========================================================
++Neterion's (Formerly S2io) Xframe I/II PCI-X 10GbE driver
++=========================================================
++
++Release notes for Neterion's (Formerly S2io) Xframe I/II PCI-X 10GbE driver.
++
++.. Contents
++  - 1.  Introduction
++  - 2.  Identifying the adapter/interface
++  - 3.  Features supported
++  - 4.  Command line parameters
++  - 5.  Performance suggestions
++  - 6.  Available Downloads
++
++
++1. Introduction
++===============
++This Linux driver supports Neterion's Xframe I PCI-X 1.0 and
++Xframe II PCI-X 2.0 adapters. It supports several features
++such as jumbo frames, MSI/MSI-X, checksum offloads, TSO, UFO and so on.
++See below for complete list of features.
++
++All features are supported for both IPv4 and IPv6.
++
++2. Identifying the adapter/interface
++====================================
++
++a. Insert the adapter(s) in your system.
++b. Build and load driver::
++
++	# insmod s2io.ko
++
++c. View log messages::
++
++	# dmesg | tail -40
++
++You will see messages similar to::
++
++	eth3: Neterion Xframe I 10GbE adapter (rev 3), Version 2.0.9.1, Intr type INTA
++	eth4: Neterion Xframe II 10GbE adapter (rev 2), Version 2.0.9.1, Intr type INTA
++	eth4: Device is on 64 bit 133MHz PCIX(M1) bus
++
++The above messages identify the adapter type(Xframe I/II), adapter revision,
++driver version, interface name(eth3, eth4), Interrupt type(INTA, MSI, MSI-X).
++In case of Xframe II, the PCI/PCI-X bus width and frequency are displayed
++as well.
++
++To associate an interface with a physical adapter use "ethtool -p <ethX>".
++The corresponding adapter's LED will blink multiple times.
++
++3. Features supported
++=====================
++a. Jumbo frames. Xframe I/II supports MTU up to 9600 bytes,
++   modifiable using ip command.
++
++b. Offloads. Supports checksum offload(TCP/UDP/IP) on transmit
++   and receive, TSO.
++
++c. Multi-buffer receive mode. Scattering of packet across multiple
++   buffers. Currently driver supports 2-buffer mode which yields
++   significant performance improvement on certain platforms(SGI Altix,
++   IBM xSeries).
++
++d. MSI/MSI-X. Can be enabled on platforms which support this feature
++   (IA64, Xeon) resulting in noticeable performance improvement(up to 7%
++   on certain platforms).
++
++e. Statistics. Comprehensive MAC-level and software statistics displayed
++   using "ethtool -S" option.
++
++f. Multi-FIFO/Ring. Supports up to 8 transmit queues and receive rings,
++   with multiple steering options.
++
++4. Command line parameters
++==========================
++
++a. tx_fifo_num
++	Number of transmit queues
++
++Valid range: 1-8
++
++Default: 1
++
++b. rx_ring_num
++	Number of receive rings
++
++Valid range: 1-8
++
++Default: 1
++
++c. tx_fifo_len
++	Size of each transmit queue
++
++Valid range: Total length of all queues should not exceed 8192
++
++Default: 4096
++
++d. rx_ring_sz
++	Size of each receive ring(in 4K blocks)
++
++Valid range: Limited by memory on system
++
++Default: 30
++
++e. intr_type
++	Specifies interrupt type. Possible values 0(INTA), 2(MSI-X)
++
++Valid values: 0, 2
++
++Default: 2
++
++5. Performance suggestions
++==========================
++
++General:
++
++a. Set MTU to maximum(9000 for switch setup, 9600 in back-to-back configuration)
++b. Set TCP windows size to optimal value.
++
++For instance, for MTU=1500 a value of 210K has been observed to result in
++good performance::
++
++	# sysctl -w net.ipv4.tcp_rmem="210000 210000 210000"
++	# sysctl -w net.ipv4.tcp_wmem="210000 210000 210000"
++
++For MTU=9000, TCP window size of 10 MB is recommended::
++
++	# sysctl -w net.ipv4.tcp_rmem="10000000 10000000 10000000"
++	# sysctl -w net.ipv4.tcp_wmem="10000000 10000000 10000000"
++
++Transmit performance:
++
++a. By default, the driver respects BIOS settings for PCI bus parameters.
++   However, you may want to experiment with PCI bus parameters
++   max-split-transactions(MOST) and MMRBC (use setpci command).
++
++   A MOST value of 2 has been found optimal for Opterons and 3 for Itanium.
++
++   It could be different for your hardware.
++
++   Set MMRBC to 4K**.
++
++   For example you can set
++
++   For opteron::
++
++	#setpci -d 17d5:* 62=1d
++
++   For Itanium::
++
++	#setpci -d 17d5:* 62=3d
++
++   For detailed description of the PCI registers, please see Xframe User Guide.
++
++b. Ensure Transmit Checksum offload is enabled. Use ethtool to set/verify this
++   parameter.
++
++c. Turn on TSO(using "ethtool -K")::
++
++	# ethtool -K <ethX> tso on
++
++Receive performance:
++
++a. By default, the driver respects BIOS settings for PCI bus parameters.
++   However, you may want to set PCI latency timer to 248::
++
++	#setpci -d 17d5:* LATENCY_TIMER=f8
++
++   For detailed description of the PCI registers, please see Xframe User Guide.
++
++b. Use 2-buffer mode. This results in large performance boost on
++   certain platforms(eg. SGI Altix, IBM xSeries).
++
++c. Ensure Receive Checksum offload is enabled. Use "ethtool -K ethX" command to
++   set/verify this option.
++
++d. Enable NAPI feature(in kernel configuration Device Drivers ---> Network
++   device support --->  Ethernet (10000 Mbit) ---> S2IO 10Gbe Xframe NIC) to
++   bring down CPU utilization.
++
++.. note::
++
++   For AMD opteron platforms with 8131 chipset, MMRBC=1 and MOST=1 are
++   recommended as safe parameters.
++
++For more information, please review the AMD8131 errata at
++http://vip.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/
++26310_AMD-8131_HyperTransport_PCI-X_Tunnel_Revision_Guide_rev_3_18.pdf
++
++6. Support
++==========
++
++For further support please contact either your 10GbE Xframe NIC vendor (IBM,
++HP, SGI etc.)
+diff --git a/Documentation/networking/device_drivers/neterion/s2io.txt b/Documentation/networking/device_drivers/neterion/s2io.txt
+deleted file mode 100644
+index 0362a42f7cf4..000000000000
+--- a/Documentation/networking/device_drivers/neterion/s2io.txt
++++ /dev/null
+@@ -1,141 +0,0 @@
+-Release notes for Neterion's (Formerly S2io) Xframe I/II PCI-X 10GbE driver.
+-
+-Contents
+-=======
+-- 1.  Introduction
+-- 2.  Identifying the adapter/interface
+-- 3.  Features supported
+-- 4.  Command line parameters
+-- 5.  Performance suggestions
+-- 6.  Available Downloads 
+-
+-
+-1.	Introduction:
+-This Linux driver supports Neterion's Xframe I PCI-X 1.0 and
+-Xframe II PCI-X 2.0 adapters. It supports several features 
+-such as jumbo frames, MSI/MSI-X, checksum offloads, TSO, UFO and so on.
+-See below for complete list of features.
+-All features are supported for both IPv4 and IPv6.
+-
+-2.	Identifying the adapter/interface:
+-a. Insert the adapter(s) in your system.
+-b. Build and load driver 
+-# insmod s2io.ko
+-c. View log messages
+-# dmesg | tail -40
+-You will see messages similar to:
+-eth3: Neterion Xframe I 10GbE adapter (rev 3), Version 2.0.9.1, Intr type INTA
+-eth4: Neterion Xframe II 10GbE adapter (rev 2), Version 2.0.9.1, Intr type INTA
+-eth4: Device is on 64 bit 133MHz PCIX(M1) bus
+-
+-The above messages identify the adapter type(Xframe I/II), adapter revision,
+-driver version, interface name(eth3, eth4), Interrupt type(INTA, MSI, MSI-X).
+-In case of Xframe II, the PCI/PCI-X bus width and frequency are displayed
+-as well.
+-
+-To associate an interface with a physical adapter use "ethtool -p <ethX>".
+-The corresponding adapter's LED will blink multiple times.
+-
+-3.	Features supported:
+-a. Jumbo frames. Xframe I/II supports MTU up to 9600 bytes,
+-modifiable using ip command.
+-
+-b. Offloads. Supports checksum offload(TCP/UDP/IP) on transmit
+-and receive, TSO.
+-
+-c. Multi-buffer receive mode. Scattering of packet across multiple
+-buffers. Currently driver supports 2-buffer mode which yields
+-significant performance improvement on certain platforms(SGI Altix,
+-IBM xSeries).
+-
+-d. MSI/MSI-X. Can be enabled on platforms which support this feature
+-(IA64, Xeon) resulting in noticeable performance improvement(up to 7%
+-on certain platforms).
+-
+-e. Statistics. Comprehensive MAC-level and software statistics displayed
+-using "ethtool -S" option.
+-
+-f. Multi-FIFO/Ring. Supports up to 8 transmit queues and receive rings,
+-with multiple steering options.
+-
+-4.  Command line parameters
+-a. tx_fifo_num
+-Number of transmit queues
+-Valid range: 1-8
+-Default: 1
+-
+-b. rx_ring_num
+-Number of receive rings
+-Valid range: 1-8
+-Default: 1
+-
+-c. tx_fifo_len
+-Size of each transmit queue
+-Valid range: Total length of all queues should not exceed 8192
+-Default: 4096
+-
+-d. rx_ring_sz 
+-Size of each receive ring(in 4K blocks)
+-Valid range: Limited by memory on system
+-Default: 30 
+-
+-e. intr_type
+-Specifies interrupt type. Possible values 0(INTA), 2(MSI-X)
+-Valid values: 0, 2
+-Default: 2
+-
+-5.  Performance suggestions
+-General:
+-a. Set MTU to maximum(9000 for switch setup, 9600 in back-to-back configuration)
+-b. Set TCP windows size to optimal value. 
+-For instance, for MTU=1500 a value of 210K has been observed to result in 
+-good performance.
+-# sysctl -w net.ipv4.tcp_rmem="210000 210000 210000"
+-# sysctl -w net.ipv4.tcp_wmem="210000 210000 210000"
+-For MTU=9000, TCP window size of 10 MB is recommended.
+-# sysctl -w net.ipv4.tcp_rmem="10000000 10000000 10000000"
+-# sysctl -w net.ipv4.tcp_wmem="10000000 10000000 10000000"
+-
+-Transmit performance:
+-a. By default, the driver respects BIOS settings for PCI bus parameters. 
+-However, you may want to experiment with PCI bus parameters 
+-max-split-transactions(MOST) and MMRBC (use setpci command). 
+-A MOST value of 2 has been found optimal for Opterons and 3 for Itanium.  
+-It could be different for your hardware.  
+-Set MMRBC to 4K**.
+-
+-For example you can set 
+-For opteron
+-#setpci -d 17d5:* 62=1d 
+-For Itanium
+-#setpci -d 17d5:* 62=3d 
+-
+-For detailed description of the PCI registers, please see Xframe User Guide.
+-
+-b. Ensure Transmit Checksum offload is enabled. Use ethtool to set/verify this 
+-parameter.
+-c. Turn on TSO(using "ethtool -K")
+-# ethtool -K <ethX> tso on
+-
+-Receive performance:
+-a. By default, the driver respects BIOS settings for PCI bus parameters. 
+-However, you may want to set PCI latency timer to 248.
+-#setpci -d 17d5:* LATENCY_TIMER=f8
+-For detailed description of the PCI registers, please see Xframe User Guide.
+-b. Use 2-buffer mode. This results in large performance boost on
+-certain platforms(eg. SGI Altix, IBM xSeries).
+-c. Ensure Receive Checksum offload is enabled. Use "ethtool -K ethX" command to 
+-set/verify this option.
+-d. Enable NAPI feature(in kernel configuration Device Drivers ---> Network 
+-device support --->  Ethernet (10000 Mbit) ---> S2IO 10Gbe Xframe NIC) to 
+-bring down CPU utilization.
+-
+-** For AMD opteron platforms with 8131 chipset, MMRBC=1 and MOST=1 are 
+-recommended as safe parameters.
+-For more information, please review the AMD8131 errata at
+-http://vip.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/
+-26310_AMD-8131_HyperTransport_PCI-X_Tunnel_Revision_Guide_rev_3_18.pdf
+-
+-6. Support
+-For further support please contact either your 10GbE Xframe NIC vendor (IBM, 
+-HP, SGI etc.)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ef6bd3be1bb5..122a684d522b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11691,7 +11691,7 @@ NETERION 10GbE DRIVERS (s2io/vxge)
+ M:	Jon Mason <jdmason@kudzu.us>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+-F:	Documentation/networking/device_drivers/neterion/s2io.txt
++F:	Documentation/networking/device_drivers/neterion/s2io.rst
+ F:	Documentation/networking/device_drivers/neterion/vxge.txt
+ F:	drivers/net/ethernet/neterion/
+ 
+diff --git a/drivers/net/ethernet/neterion/Kconfig b/drivers/net/ethernet/neterion/Kconfig
+index 5e630f3a0189..c375ee08f6ea 100644
+--- a/drivers/net/ethernet/neterion/Kconfig
++++ b/drivers/net/ethernet/neterion/Kconfig
+@@ -27,7 +27,7 @@ config S2IO
+ 	  on its age.
+ 
+ 	  More specific information on configuring the driver is in
+-	  <file:Documentation/networking/device_drivers/neterion/s2io.txt>.
++	  <file:Documentation/networking/device_drivers/neterion/s2io.rst>.
+ 
+ 	  To compile this driver as a module, choose M here. The module
+ 	  will be called s2io.
+-- 
+2.25.4
 
-It seems fine to me too, Saeed, can you apply the net parts to the
-mlx5 shared branch with DaveM's ack? Thanks
-
-Jason
