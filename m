@@ -2,264 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B8A1C1BA0
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 19:26:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68ECE1C1BD6
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 19:35:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729513AbgEAR0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 13:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
+        id S1729519AbgEARfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 13:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729447AbgEAR0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 13:26:37 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CECC061A0C
-        for <netdev@vger.kernel.org>; Fri,  1 May 2020 10:26:37 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id f13so12229126wrm.13
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 10:26:37 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728951AbgEARfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 13:35:14 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D01BC061A0C
+        for <netdev@vger.kernel.org>; Fri,  1 May 2020 10:35:14 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id c2so5559830iow.7
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 10:35:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
+        h=subject:to:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i6+T9ZY8miwi1Ht/A9pyx9HK6GZg44XuE8KhYVMh0dQ=;
-        b=ANwixmv2EnUQiet41GLD91cNGyxeO7CF9LDnanHmxSL0o9uSe3ABBGcAjeli4RT5lL
-         ZyC8250I+BAsgo7/v3ao+x4SV2In+uckLJxNQXAQT77vxXZxoYygDO7O1HLweC90S/Eo
-         kvCuGSqjhCkhWDzimitjSbP0GtG2WJDKWaw++DMLcwmcdCp3642ymzY9ubWZURqNNAsW
-         B+JfbpmikknlpJYoRhUCQQQPGjUuca3St1lW0/u3MF5fxES6/j4FdKEyaslQ38KD/Q5x
-         g4IK4AT+zFO6q7G9rDEAGJM7gjoxHZhbLWnY9Bt7K2dNb7rgVDAMtP5uy1pGbdg6dndK
-         AkZw==
+        bh=1Pf8HlDBmh3u0M/uJgx8voT+VnvXU16YoHECf4VjkCU=;
+        b=rqukjck7a6vfnWNsgDBSb4CYkY05BFIf8nZkiX5F/A+1V2kC7cnhkEHSCnQeVbyKxY
+         3ZhXKOqgqyN2BupGF2BpdkJhG+KFp4f/CAPsewiPfavutcABbfrPFEuvBM7KgokwSEDW
+         YVG+wQb2qA+m++XXEOJawVhJzd0Q/lvuNuw2cGGog/bHU2NQYDztW/gnnY4cXFbB1Wvl
+         6v0HjAaUNaX/FsTqKAq8iGwgT7/0jClaWg+0RUx2QW0QzW4iaHq/GqCW8gVrJifvYLa5
+         lPs09itlrOfb11EKUzT2OunG7SPxe1Y1sJwCvOz9QHWosT1UnNcPYoHWZSepABBXlPa4
+         1YHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:subject:to:references:from:autocrypt:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=i6+T9ZY8miwi1Ht/A9pyx9HK6GZg44XuE8KhYVMh0dQ=;
-        b=PMwEAf5xImCHO/JYJRNs7mHnVVwx/F2ZNOVW+3PK1x3M8GVmLSv0tZPp7VBSonNGNt
-         pMmBLanvn9V/D5SiAmn9lNNc+4aQ2markqdHeSQXOc6+YaXWiOZ17u2pib5RJbz+8YqL
-         xocJ3lT/E0nX0hxJir4L8rSwwQl3zI6KSyO7dhEfd0IsYNiA2PlBPIwDPbTc9IEBZ51c
-         1tyREgC37vntnM84r4IpBJESX9dwjAiktULNFY4H1xRVKrlGbceMPdYM9nluNaUWWZFo
-         XVyMigfKA7pRceHyAccb+jR6MY8mdyR2W6PfSAAYk4JhfHb+GBjkdv3kt0iGbtqITXy7
-         F1zw==
-X-Gm-Message-State: AGi0PuZfHCBF7CJhls78FiwS5DKonzAyJQbONPrYQjZGcZOdvVdMdtcX
-        FNUgC3D52fQbspiNxjBGrjwQXxDt
-X-Google-Smtp-Source: APiQypLc7gXBBFPNILtDtTKJMY/5p7KQwneKtlELlkjEjgXgpZQ7C50TGwYHPKfBTl5ZWWSSqK2cng==
-X-Received: by 2002:a05:6000:108e:: with SMTP id y14mr5598220wrw.292.1588353995480;
-        Fri, 01 May 2020 10:26:35 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f06:ee00:54e4:3086:385e:b03b? (p200300EA8F06EE0054E43086385EB03B.dip0.t-ipconnect.de. [2003:ea:8f06:ee00:54e4:3086:385e:b03b])
-        by smtp.googlemail.com with ESMTPSA id b82sm394686wmh.1.2020.05.01.10.26.34
+        bh=1Pf8HlDBmh3u0M/uJgx8voT+VnvXU16YoHECf4VjkCU=;
+        b=b6dffQn+BJrI6aFPknTx/wnqLMTtdMeH5Ei4Rk1LD4J2meo0r1XLJpV6IQ2/3dDZA1
+         xjo1IQn6CsDB5B3leb4QHE5ZvJ2JwGpcy+MQ3Md+1FmiWrK5nwz+v2MZLC3ArQCJ92Xg
+         /ITNiQChLTkGPvJyWmqDibqEaj6tF+UGMxXnNct0KIStJf7uKcZM/0NfrA48QWpWP/FU
+         hP2VWqInTh6uK/vpEuxGDbtrWMxQbiKwQD0OVbxhQn5BriJkkUx7b+Tvlw9nD0PO5/ri
+         zi/GLG1/IKyog97fa0U1gqOuFA5gZzs0omHX0UWbtHtSWujF5XDga6SlNP+zLHfdmJ0v
+         fBdQ==
+X-Gm-Message-State: AGi0Pub7J4M1zCducTdC0/NPEZYBQGbxI7rSgkiBlGvSA/W9n5geDByw
+        wyOaoe18LuNbQa9SmO/uHjk=
+X-Google-Smtp-Source: APiQypL1zr/NVazLATtfqniC3USbblDqhuLi98KhcoGSReBFODcyRbTAc5OjSoCVCzKw//S93QBMwQ==
+X-Received: by 2002:a02:6514:: with SMTP id u20mr4167958jab.101.1588354512993;
+        Fri, 01 May 2020 10:35:12 -0700 (PDT)
+Received: from [10.67.49.116] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id b77sm1146442iof.29.2020.05.01.10.35.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 May 2020 10:26:35 -0700 (PDT)
-Subject: [PATCH net-next 4/4] r8169: switch from netif_xxx message functions
- to netdev_xxx
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <0e2ab257-5564-f16a-92f9-d0635e140837@gmail.com>
-Message-ID: <6afdb9d8-8769-874b-a3f5-0a3f13da2fe5@gmail.com>
-Date:   Fri, 1 May 2020 19:26:22 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+        Fri, 01 May 2020 10:35:12 -0700 (PDT)
+Subject: Re: Net: [DSA]: dsa-loop kernel panic
+To:     Allen <allen.pais@oracle.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <9d7ac811-f3c9-ff13-5b81-259daa8c424f@oracle.com>
+ <dd42f431-d555-fcd2-b25e-50aeecbb513b@gmail.com>
+ <c998f49c-0119-7d8c-7cbc-ab8beadfa82d@oracle.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz80nRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+wmYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSDOwU0EVxvH8AEQAOqv6agYuT4x3DgFIJNv9i0e
+ S443rCudGwmg+CbjXGA4RUe1bNdPHYgbbIaN8PFkXfb4jqg64SyU66FXJJJO+DmPK/t7dRNA
+ 3eMB1h0GbAHlLzsAzD0DKk1ARbjIusnc02aRQNsAUfceqH5fAMfs2hgXBa0ZUJ4bLly5zNbr
+ r0t/fqZsyI2rGQT9h1D5OYn4oF3KXpSpo+orJD93PEDeseho1EpmMfsVH7PxjVUlNVzmZ+tc
+ IDw24CDSXf0xxnaojoicQi7kzKpUrJodfhNXUnX2JAm/d0f9GR7zClpQMezJ2hYAX7BvBajb
+ Wbtzwi34s8lWGI121VjtQNt64mSqsK0iQAE6OYk0uuQbmMaxbBTT63+04rTPBO+gRAWZNDmQ
+ b2cTLjrOmdaiPGClSlKx1RhatzW7j1gnUbpfUl91Xzrp6/Rr9BgAZydBE/iu57KWsdMaqu84
+ JzO9UBGomh9eyBWBkrBt+Fe1qN78kM7JO6i3/QI56NA4SflV+N4PPgI8TjDVaxgrfUTV0gVa
+ cr9gDE5VgnSeSiOleChM1jOByZu0JTShOkT6AcSVW0kCz3fUrd4e5sS3J3uJezSvXjYDZ53k
+ +0GS/Hy//7PSvDbNVretLkDWL24Sgxu/v8i3JiYIxe+F5Br8QpkwNa1tm7FK4jOd95xvYADl
+ BUI1EZMCPI7zABEBAAHCwagEGBECAAkFAlcbx/ACGwICKQkQYVeZFbVjdg7BXSAEGQECAAYF
+ Alcbx/AACgkQh9CWnEQHBwSJBw//Z5n6IO19mVzMy/ZLU/vu8flv0Aa0kwk5qvDyvuvfiDTd
+ WQzq2PLs+obX0y1ffntluhvP+8yLzg7h5O6/skOfOV26ZYD9FeV3PIgR3QYF26p2Ocwa3B/k
+ P6ENkk2pRL2hh6jaA1Bsi0P34iqC2UzzLq+exctXPa07ioknTIJ09BT31lQ36Udg7NIKalnj
+ 5UbkRjqApZ+Rp0RAP9jFtq1n/gjvZGyEfuuo/G+EVCaiCt3Vp/cWxDYf2qsX6JxkwmUNswuL
+ C3duQ0AOMNYrT6Pn+Vf0kMboZ5UJEzgnSe2/5m8v6TUc9ZbC5I517niyC4+4DY8E2m2V2LS9
+ es9uKpA0yNcd4PfEf8bp29/30MEfBWOf80b1yaubrP5y7yLzplcGRZMF3PgBfi0iGo6kM/V2
+ 13iD/wQ45QTV0WTXaHVbklOdRDXDHIpT69hFJ6hAKnnM7AhqZ70Qi31UHkma9i/TeLLzYYXz
+ zhLHGIYaR04dFT8sSKTwTSqvm8rmDzMpN54/NeDSoSJitDuIE8givW/oGQFb0HGAF70qLgp0
+ 2XiUazRyRU4E4LuhNHGsUxoHOc80B3l+u3jM6xqJht2ZyMZndbAG4LyVA2g9hq2JbpX8BlsF
+ skzW1kbzIoIVXT5EhelxYEGqLFsZFdDhCy8tjePOWK069lKuuFSssaZ3C4edHtkZ8gCfWWtA
+ 8dMsqeOIg9Trx7ZBCDOZGNAAnjYQmSb2eYOAti3PX3Ex7vI8ZhJCzsNNBEjPuBIQEAC/6NPW
+ 6EfQ91ZNU7e/oKWK91kOoYGFTjfdOatp3RKANidHUMSTUcN7J2mxww80AQHKjr3Yu2InXwVX
+ SotMMR4UrkQX7jqabqXV5G+88bj0Lkr3gi6qmVkUPgnNkIBe0gaoM523ujYKLreal2OQ3GoJ
+ PS6hTRoSUM1BhwLCLIWqdX9AdT6FMlDXhCJ1ffA/F3f3nTN5oTvZ0aVF0SvQb7eIhGVFxrlb
+ WS0+dpyulr9hGdU4kzoqmZX9T/r8WCwcfXipmmz3Zt8o2pYWPMq9Utby9IEgPwultaP06MHY
+ nhda1jfzGB5ZKco/XEaXNvNYADtAD91dRtNGMwRHWMotIGiWwhEJ6vFc9bw1xcR88oYBs+7p
+ gbFSpmMGYAPA66wdDKGj9+cLhkd0SXGht9AJyaRA5AWB85yNmqcXXLkzzh2chIpSEawRsw8B
+ rQIZXc5QaAcBN2dzGN9UzqQArtWaTTjMrGesYhN+aVpMHNCmJuISQORhX5lkjeg54oplt6Zn
+ QyIsOCH3MfG95ha0TgWwyFtdxOdY/UY2zv5wGivZ3WeS0TtQf/BcGre2y85rAohFziWOzTaS
+ BKZKDaBFHwnGcJi61Pnjkz82hena8OmsnsBIucsz4N0wE+hVd6AbDYN8ZcFNIDyt7+oGD1+c
+ PfqLz2df6qjXzq27BBUboklbGUObNwADBQ//V45Z51Q4fRl/6/+oY5q+FPbRLDPlUF2lV6mb
+ hymkpqIzi1Aj/2FUKOyImGjbLAkuBQj3uMqy+BSSXyQLG3sg8pDDe8AJwXDpG2fQTyTzQm6l
+ OnaMCzosvALk2EOPJryMkOCI52+hk67cSFA0HjgTbkAv4Mssd52y/5VZR28a+LW+mJIZDurI
+ Y14UIe50G99xYxjuD1lNdTa/Yv6qFfEAqNdjEBKNuOEUQOlTLndOsvxOOPa1mRUk8Bqm9BUt
+ LHk3GDb8bfDwdos1/h2QPEi+eI+O/bm8YX7qE7uZ13bRWBY+S4+cd+Cyj8ezKYAJo9B+0g4a
+ RVhdhc3AtW44lvZo1h2iml9twMLfewKkGV3oG35CcF9mOd7n6vDad3teeNpYd/5qYhkopQrG
+ k2oRBqxyvpSLrJepsyaIpfrt5NNaH7yTCtGXcxlGf2jzGdei6H4xQPjDcVq2Ra5GJohnb/ix
+ uOc0pWciL80ohtpSspLlWoPiIowiKJu/D/Y0bQdatUOZcGadkywCZc/dg5hcAYNYchc8AwA4
+ 2dp6w8SlIsm1yIGafWlNnfvqbRBglSTnxFuKqVggiz2zk+1wa/oP+B96lm7N4/3Aw6uy7lWC
+ HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
+ TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <1ec3b421-dee5-e291-ac17-5d2f713b9aae@gmail.com>
+Date:   Fri, 1 May 2020 10:35:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <0e2ab257-5564-f16a-92f9-d0635e140837@gmail.com>
+In-Reply-To: <c998f49c-0119-7d8c-7cbc-ab8beadfa82d@oracle.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Considering the few messages we have in the driver, there's not really
-a benefit in being able to control them on a message type level.
-Therefore simplify the code and switch to the netdev_xxx message
-functions. In addition add net_ratelimit() to messages that can be
-printed from a hot path.
+On 4/30/20 11:48 PM, Allen wrote:
+> 
+>>
+>> you have missed an important detail here which is the master device that
+>> was used for DSA. The current code defaults to whatever "eth0" is, what
+>> does this map to for your configuration?
+>>
+> 
+>  It maps to "eth0". Please let me know if you need further details.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 68 ++++++++---------------
- 1 file changed, 22 insertions(+), 46 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 768721d56..8b665f2ec 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -59,9 +59,6 @@
- #define FIRMWARE_8107E_2	"rtl_nic/rtl8107e-2.fw"
- #define FIRMWARE_8125A_3	"rtl_nic/rtl8125a-3.fw"
- 
--#define R8169_MSG_DEFAULT \
--	(NETIF_MSG_DRV | NETIF_MSG_PROBE | NETIF_MSG_IFUP | NETIF_MSG_IFDOWN)
--
- /* Maximum number of multicast addresses to filter (vs. Rx-all-multicast).
-    The RTL chips use a 64 element hash table based on the Ethernet CRC. */
- #define	MC_FILTER_LIMIT	32
-@@ -179,10 +176,6 @@ static const struct pci_device_id rtl8169_pci_tbl[] = {
- 
- MODULE_DEVICE_TABLE(pci, rtl8169_pci_tbl);
- 
--static struct {
--	u32 msg_enable;
--} debug = { -1 };
--
- enum rtl_registers {
- 	MAC0		= 0,	/* Ethernet hardware address. */
- 	MAC4		= 4,
-@@ -604,7 +597,6 @@ struct rtl8169_private {
- 	struct net_device *dev;
- 	struct phy_device *phydev;
- 	struct napi_struct napi;
--	u32 msg_enable;
- 	enum mac_version mac_version;
- 	u32 cur_rx; /* Index into the Rx descriptor buffer of next Rx pkt. */
- 	u32 cur_tx; /* Index into the Tx descriptor buffer of next Rx pkt. */
-@@ -646,8 +638,6 @@ typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
- 
- MODULE_AUTHOR("Realtek and the Linux r8169 crew <netdev@vger.kernel.org>");
- MODULE_DESCRIPTION("RealTek RTL-8169 Gigabit Ethernet driver");
--module_param_named(debug, debug.msg_enable, int, 0);
--MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., 16=all)");
- MODULE_SOFTDEP("pre: realtek");
- MODULE_LICENSE("GPL");
- MODULE_FIRMWARE(FIRMWARE_8168D_1);
-@@ -751,8 +741,10 @@ static bool rtl_loop_wait(struct rtl8169_private *tp, const struct rtl_cond *c,
- 			return true;
- 		delay(d);
- 	}
--	netif_err(tp, drv, tp->dev, "%s == %d (loop: %d, delay: %d).\n",
--		  c->msg, !high, n, d);
-+
-+	if (net_ratelimit())
-+		netdev_err(tp->dev, "%s == %d (loop: %d, delay: %d).\n",
-+			   c->msg, !high, n, d);
- 	return false;
- }
- 
-@@ -797,7 +789,8 @@ static bool name ## _check(struct rtl8169_private *tp)
- static bool rtl_ocp_reg_failure(struct rtl8169_private *tp, u32 reg)
- {
- 	if (reg & 0xffff0001) {
--		netif_err(tp, drv, tp->dev, "Invalid ocp reg %x!\n", reg);
-+		if (net_ratelimit())
-+			netdev_err(tp->dev, "Invalid ocp reg %x!\n", reg);
- 		return true;
- 	}
- 	return false;
-@@ -1580,20 +1573,6 @@ static void rtl8169_get_regs(struct net_device *dev, struct ethtool_regs *regs,
- 	rtl_unlock_work(tp);
- }
- 
--static u32 rtl8169_get_msglevel(struct net_device *dev)
--{
--	struct rtl8169_private *tp = netdev_priv(dev);
--
--	return tp->msg_enable;
--}
--
--static void rtl8169_set_msglevel(struct net_device *dev, u32 value)
--{
--	struct rtl8169_private *tp = netdev_priv(dev);
--
--	tp->msg_enable = value;
--}
--
- static const char rtl8169_gstrings[][ETH_GSTRING_LEN] = {
- 	"tx_packets",
- 	"rx_packets",
-@@ -1985,8 +1964,6 @@ static const struct ethtool_ops rtl8169_ethtool_ops = {
- 	.get_link		= ethtool_op_get_link,
- 	.get_coalesce		= rtl_get_coalesce,
- 	.set_coalesce		= rtl_set_coalesce,
--	.get_msglevel		= rtl8169_get_msglevel,
--	.set_msglevel		= rtl8169_set_msglevel,
- 	.get_regs		= rtl8169_get_regs,
- 	.get_wol		= rtl8169_get_wol,
- 	.set_wol		= rtl8169_set_wol,
-@@ -3868,8 +3845,7 @@ static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
- 
- 	mapping = dma_map_page(d, data, 0, R8169_RX_BUF_SIZE, DMA_FROM_DEVICE);
- 	if (unlikely(dma_mapping_error(d, mapping))) {
--		if (net_ratelimit())
--			netif_err(tp, drv, tp->dev, "Failed to map RX DMA!\n");
-+		netdev_err(tp->dev, "Failed to map RX DMA!\n");
- 		__free_pages(data, get_order(R8169_RX_BUF_SIZE));
- 		return NULL;
- 	}
-@@ -4006,7 +3982,7 @@ static int rtl8169_tx_map(struct rtl8169_private *tp, const u32 *opts, u32 len,
- 	ret = dma_mapping_error(d, mapping);
- 	if (unlikely(ret)) {
- 		if (net_ratelimit())
--			netif_err(tp, drv, tp->dev, "Failed to map TX data!\n");
-+			netdev_err(tp->dev, "Failed to map TX data!\n");
- 		return ret;
- 	}
- 
-@@ -4172,7 +4148,8 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 	txd_first = tp->TxDescArray + entry;
- 
- 	if (unlikely(!rtl_tx_slots_avail(tp, frags))) {
--		netif_err(tp, drv, dev, "BUG! Tx Ring full when queue awake!\n");
-+		if (net_ratelimit())
-+			netdev_err(dev, "BUG! Tx Ring full when queue awake!\n");
- 		goto err_stop_0;
- 	}
- 
-@@ -4334,9 +4311,9 @@ static void rtl8169_pcierr_interrupt(struct net_device *dev)
- 
- 	pci_status_errs = pci_status_get_and_clear_errors(pdev);
- 
--	netif_err(tp, intr, dev, "PCI error (cmd = 0x%04x, status_errs = 0x%04x)\n",
--		  pci_cmd, pci_status_errs);
--
-+	if (net_ratelimit())
-+		netdev_err(dev, "PCI error (cmd = 0x%04x, status_errs = 0x%04x)\n",
-+			   pci_cmd, pci_status_errs);
- 	/*
- 	 * The recovery sequence below admits a very elaborated explanation:
- 	 * - it seems to work;
-@@ -4454,8 +4431,9 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, u32 budget
- 		dma_rmb();
- 
- 		if (unlikely(status & RxRES)) {
--			netif_info(tp, rx_err, dev, "Rx ERROR. status = %08x\n",
--				   status);
-+			if (net_ratelimit())
-+				netdev_warn(dev, "Rx ERROR. status = %08x\n",
-+					    status);
- 			dev->stats.rx_errors++;
- 			if (status & (RxRWT | RxRUNT))
- 				dev->stats.rx_length_errors++;
-@@ -5326,7 +5304,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tp = netdev_priv(dev);
- 	tp->dev = dev;
- 	tp->pci_dev = pdev;
--	tp->msg_enable = netif_msg_init(debug.msg_enable, R8169_MSG_DEFAULT);
- 	tp->supports_gmii = ent->driver_data == RTL_CFG_NO_GBIT ? 0 : 1;
- 	tp->eee_adv = -1;
- 	tp->ocp_base = OCP_STD_PHY_BASE;
-@@ -5484,15 +5461,14 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (rc)
- 		return rc;
- 
--	netif_info(tp, probe, dev, "%s, %pM, XID %03x, IRQ %d\n",
--		   rtl_chip_infos[chipset].name, dev->dev_addr, xid,
--		   pci_irq_vector(pdev, 0));
-+	netdev_info(dev, "%s, %pM, XID %03x, IRQ %d\n",
-+		    rtl_chip_infos[chipset].name, dev->dev_addr, xid,
-+		    pci_irq_vector(pdev, 0));
- 
- 	if (jumbo_max)
--		netif_info(tp, probe, dev,
--			   "jumbo features [frames: %d bytes, tx checksumming: %s]\n",
--			   jumbo_max, tp->mac_version <= RTL_GIGA_MAC_VER_06 ?
--			   "ok" : "ko");
-+		netdev_info(dev, "jumbo features [frames: %d bytes, tx checksumming: %s]\n",
-+			    jumbo_max, tp->mac_version <= RTL_GIGA_MAC_VER_06 ?
-+			    "ok" : "ko");
- 
- 	if (r8168_check_dash(tp))
- 		rtl8168_driver_start(tp);
+I suppose I should have been clearer, what network device driver created
+eth0?
 -- 
-2.26.2
-
-
+Florian
