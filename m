@@ -2,70 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8E761C12B5
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 15:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C32A1C1752
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728794AbgEANQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 09:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48322 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728586AbgEANQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 09:16:25 -0400
-Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B18C061A0C;
-        Fri,  1 May 2020 06:16:25 -0700 (PDT)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1jUVWc-0006qD-Ve; Fri, 01 May 2020 15:16:19 +0200
-Received: from laforge by localhost.localdomain with local (Exim 4.93)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1jUVWR-005pUN-AV; Fri, 01 May 2020 15:16:07 +0200
-Date:   Fri, 1 May 2020 15:16:07 +0200
-From:   Harald Welte <laforge@gnumonks.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Subject: Re: ABI breakage in sctp_event_subscribe (was [PATCH net-next 0/4]
- sctp: add some missing events from rfc5061)
-Message-ID: <20200501131607.GU1294372@nataraja>
-References: <cover.1570534014.git.lucien.xin@gmail.com>
- <20200419102536.GA4127396@nataraja>
+        id S1729902AbgEAOBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:01:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36134 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728831AbgEANZd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 09:25:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=+J9/XuzaYZkc7KdhEejKIjHZVQxLgr8ct3mRcOr6mp0=; b=g/PRKZN4p6dyVNt4voSziF0z/E
+        Jyx5pk2UnFy84ELAeLCgLm6gMKGB89jV8il6E/xtca+x80qWrYpR5tvzJfj+EyIC6y3FG4q4Y4Jn6
+        ho3kN8mFp+Clul4Gr7uFAAiCNMo1XHwAQBRRTZodNXcZl0vaR/J8Nxq7TjGxAsMX1PQo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jUVfQ-000XTu-Ff; Fri, 01 May 2020 15:25:24 +0200
+Date:   Fri, 1 May 2020 15:25:24 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Subject: Re: [RFC next-next v2 2/5] net: marvell: prestera: Add PCI interface
+ support
+Message-ID: <20200501132524.GB128166@lunn.ch>
+References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
+ <20200430232052.9016-3-vadym.kochan@plvision.eu>
+ <20200501000015.GC22077@lunn.ch>
+ <20200501062223.GA15217@plvision.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200419102536.GA4127396@nataraja>
+In-Reply-To: <20200501062223.GA15217@plvision.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux SCTP developers,
+> > Hi Vadym
+> > 
+> > What are the plans for getting the firmware into linux-firmware git
+> > repo?
+> > 
+> > 	Andrew
+> 
+> Well, what is the procedure ? I was thinking that probably after
+> conceptual part will be approved and I will send official PATCH series
+> along with the firmware image to the linux-firmware ?
 
-On Sun, Apr 19, 2020 at 12:25:36PM +0200, Harald Welte wrote:
-> this patchset (merged back in Q4/2019) has broken ABI compatibility, more
-> or less exactly as it was discussed/predicted in Message-Id
-> <20190206201430.18830-1-julien@arista.com>
-> "[PATCH net] sctp: make sctp_setsockopt_events() less strict about the option length"
-> on this very list in February 2019.
+Hi Vadym
 
-does the lack of any follow-up so far seems to indicate nobody considers
-this a problem?  Even without any feedback from the Linux kernel
-developers, I would be curious to hear What do other SCTP users say.
+I just wanted to ensure you actually were going to send the
+firmware. For the Marvell 10G PHYs, you need to signed an NDA with
+Marvell to get the firmware, and you probably cannot distribute
+it. Marvell seems to have no interest in making the firmware
+available. So we NACKed support for loading the firmware a runtime.
 
-So far I have a somewhat difficult time understanding that I would be
-the only one worried about ABI breakage?  If that's the case, I guess
-it would be best to get the word out that people using Linux SCTP should
-better make sure to not use binary packages but always build on the
-system they run it on, to ensure kernel headers are identical.
+If you have all the legal mumbo jumbo in place to make the firmware
+available, great. You can post it for merging to linux-firmware now.
 
-I don't mean this in any cynical way.  The point is either the ABI is
-stable and people can move binaries between different OS/kernel
-versions, or they cannot.  So far the general assumption on Linux is you
-can, but with SCTP you can not, so this needs to be clarified.
+Thanks
+	   Andrew
 
-Regards,
-	Harald
--- 
-- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
