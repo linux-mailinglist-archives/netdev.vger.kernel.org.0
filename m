@@ -2,44 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8D61C18A8
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8447A1C186D
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730478AbgEAOsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:48:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52758 "EHLO mail.kernel.org"
+        id S1730214AbgEAOrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:47:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52770 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729470AbgEAOpI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 May 2020 10:45:08 -0400
+        id S1729482AbgEAOpJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 10:45:09 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F10BA24987;
+        by mail.kernel.org (Postfix) with ESMTPSA id ECC8724968;
         Fri,  1 May 2020 14:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588344306;
-        bh=LzZm9/U3E6zV1Rtxksb2atmQbCTG1SrCaFI5en8K55Y=;
+        bh=hkiqN/QrjAnxIafOQsAVClXlNjkAlT26dumfuuA/mHE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I5TepsA1cD/QrW2DKk8H0/Mv+39uUtcne4cefhlWfRxc14ZZTJ2yvJnNGKMUMIZpx
-         dMk8v1APZb6tVZmXy6UHLxtby3QHefx555v6JeJxZ1yeT1XuXpvKTYhxW6z7KejGhg
-         NMOM+4eKD9XlbPvDsYTmn8ZTm7OSq6Qq9bsoQzfE=
+        b=UaT/2C2eT5Pl3qhZ26SayGAwbrh7OuOzyfIeGVMiT2dwe7dgDJHdtEE5dFZJXI+2Y
+         yqTdGdWj5YiscMsXqqXUzjSAVP9riTY3UcvDh3yQuv3tjQcfOAeOY94lAVVQO9HjgI
+         mjAxBz59lVJ99WXCzSad5xbuMr96yd3hhBxFtPpk=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUWuT-00FCdY-J1; Fri, 01 May 2020 16:45:01 +0200
+        id 1jUWuT-00FCdd-Jr; Fri, 01 May 2020 16:45:01 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Netanel Belgazal <netanel@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Guy Tzalik <gtzalik@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Zorik Machulsky <zorik@amazon.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 14/37] docs: networking: device drivers: convert amazon/ena.txt to ReST
-Date:   Fri,  1 May 2020 16:44:36 +0200
-Message-Id: <1c8f7109570ea829ed832596a14ec1f76b59e5ec.1588344146.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 15/37] docs: networking: device drivers: convert aquantia/atlantic.txt to ReST
+Date:   Fri,  1 May 2020 16:44:37 +0200
+Message-Id: <f6d8605f322899e9fa1a71248b165e7ad3840ab7.1588344146.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588344146.git.mchehab+huawei@kernel.org>
 References: <cover.1588344146.git.mchehab+huawei@kernel.org>
@@ -51,355 +47,683 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
-- adjust titles and chapters, adding proper markups;
+- use copyright symbol;
+- adjust title and its markup;
+- comment out text-only TOC from html/pdf output;
 - mark code blocks and literals as such;
-- mark tables as such;
 - adjust identation, whitespaces and blank lines where needed;
 - add to networking/index.rst.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- .../amazon/{ena.txt => ena.rst}               | 142 +++++++++++-------
+ .../aquantia/{atlantic.txt => atlantic.rst}   | 373 +++++++++++-------
  .../networking/device_drivers/index.rst       |   1 +
  MAINTAINERS                                   |   2 +-
- 3 files changed, 91 insertions(+), 54 deletions(-)
- rename Documentation/networking/device_drivers/amazon/{ena.txt => ena.rst} (86%)
+ 3 files changed, 227 insertions(+), 149 deletions(-)
+ rename Documentation/networking/device_drivers/aquantia/{atlantic.txt => atlantic.rst} (63%)
 
-diff --git a/Documentation/networking/device_drivers/amazon/ena.txt b/Documentation/networking/device_drivers/amazon/ena.rst
-similarity index 86%
-rename from Documentation/networking/device_drivers/amazon/ena.txt
-rename to Documentation/networking/device_drivers/amazon/ena.rst
-index 1bb55c7b604c..11af6388ea87 100644
---- a/Documentation/networking/device_drivers/amazon/ena.txt
-+++ b/Documentation/networking/device_drivers/amazon/ena.rst
-@@ -1,8 +1,12 @@
--Linux kernel driver for Elastic Network Adapter (ENA) family:
--=============================================================
+diff --git a/Documentation/networking/device_drivers/aquantia/atlantic.txt b/Documentation/networking/device_drivers/aquantia/atlantic.rst
+similarity index 63%
+rename from Documentation/networking/device_drivers/aquantia/atlantic.txt
+rename to Documentation/networking/device_drivers/aquantia/atlantic.rst
+index 2013fcedc2da..595ddef1c8b3 100644
+--- a/Documentation/networking/device_drivers/aquantia/atlantic.txt
++++ b/Documentation/networking/device_drivers/aquantia/atlantic.rst
+@@ -1,83 +1,96 @@
+-Marvell(Aquantia) AQtion Driver for the aQuantia Multi-Gigabit PCI Express
+-Family of Ethernet Adapters
+-=============================================================================
+-
+-Contents
+-========
+-
+-- Identifying Your Adapter
+-- Configuration
+-- Supported ethtool options
+-- Command Line Parameters
+-- Config file parameters
+-- Support
+-- License
 +.. SPDX-License-Identifier: GPL-2.0
++.. include:: <isonum.txt>
 +
-+============================================================
-+Linux kernel driver for Elastic Network Adapter (ENA) family
-+============================================================
++===============================
++Marvell(Aquantia) AQtion Driver
++===============================
 +
-+Overview
-+========
++For the aQuantia Multi-Gigabit PCI Express Family of Ethernet Adapters
++
++.. Contents
++
++    - Identifying Your Adapter
++    - Configuration
++    - Supported ethtool options
++    - Command Line Parameters
++    - Config file parameters
++    - Support
++    - License
  
--Overview:
--=========
- ENA is a networking interface designed to make good use of modern CPU
- features and system architectures.
+ Identifying Your Adapter
+ ========================
  
-@@ -35,32 +39,40 @@ debug logs.
- Some of the ENA devices support a working mode called Low-latency
- Queue (LLQ), which saves several more microseconds.
+-The driver in this release is compatible with AQC-100, AQC-107, AQC-108 based ethernet adapters.
++The driver in this release is compatible with AQC-100, AQC-107, AQC-108
++based ethernet adapters.
  
--Supported PCI vendor ID/device IDs:
-+Supported PCI vendor ID/device IDs
-+==================================
-+
-+=========   =======================
-+1d0f:0ec2   ENA PF
-+1d0f:1ec2   ENA PF with LLQ support
-+1d0f:ec20   ENA VF
-+1d0f:ec21   ENA VF with LLQ support
-+=========   =======================
-+
-+ENA Source Code Directory Structure
- ===================================
--1d0f:0ec2 - ENA PF
--1d0f:1ec2 - ENA PF with LLQ support
--1d0f:ec20 - ENA VF
--1d0f:ec21 - ENA VF with LLQ support
  
--ENA Source Code Directory Structure:
--====================================
--ena_com.[ch]      - Management communication layer. This layer is
--                    responsible for the handling all the management
--                    (admin) communication between the device and the
--                    driver.
--ena_eth_com.[ch]  - Tx/Rx data path.
--ena_admin_defs.h  - Definition of ENA management interface.
--ena_eth_io_defs.h - Definition of ENA data path interface.
--ena_common_defs.h - Common definitions for ena_com layer.
--ena_regs_defs.h   - Definition of ENA PCI memory-mapped (MMIO) registers.
--ena_netdev.[ch]   - Main Linux kernel driver.
--ena_syfsfs.[ch]   - Sysfs files.
--ena_ethtool.c     - ethtool callbacks.
--ena_pci_id_tbl.h  - Supported device IDs.
-+=================   ======================================================
-+ena_com.[ch]        Management communication layer. This layer is
-+		    responsible for the handling all the management
-+		    (admin) communication between the device and the
-+		    driver.
-+ena_eth_com.[ch]    Tx/Rx data path.
-+ena_admin_defs.h    Definition of ENA management interface.
-+ena_eth_io_defs.h   Definition of ENA data path interface.
-+ena_common_defs.h   Common definitions for ena_com layer.
-+ena_regs_defs.h     Definition of ENA PCI memory-mapped (MMIO) registers.
-+ena_netdev.[ch]     Main Linux kernel driver.
-+ena_syfsfs.[ch]     Sysfs files.
-+ena_ethtool.c       ethtool callbacks.
-+ena_pci_id_tbl.h    Supported device IDs.
-+=================   ======================================================
+ SFP+ Devices (for AQC-100 based adapters)
+-----------------------------------
++-----------------------------------------
  
- Management Interface:
- =====================
-+
- ENA management interface is exposed by means of:
-+
- - PCIe Configuration Space
- - Device Registers
- - Admin Queue (AQ) and Admin Completion Queue (ACQ)
-@@ -78,6 +90,7 @@ vendor-specific extensions. Most of the management operations are
- framed in a generic Get/Set feature command.
+-This release tested with passive Direct Attach Cables (DAC) and SFP+/LC Optical Transceiver.
++This release tested with passive Direct Attach Cables (DAC) and SFP+/LC
++Optical Transceiver.
  
- The following admin queue commands are supported:
+ Configuration
+-=========================
+-  Viewing Link Messages
+-  ---------------------
++=============
 +
- - Create I/O submission queue
- - Create I/O completion queue
- - Destroy I/O submission queue
-@@ -96,12 +109,16 @@ be reported using ACQ. AENQ events are subdivided into groups. Each
- group may have multiple syndromes, as shown below
++Viewing Link Messages
++---------------------
+   Link messages will not be displayed to the console if the distribution is
+   restricting system messages. In order to see network driver link messages on
+-  your console, set dmesg to eight by entering the following:
++  your console, set dmesg to eight by entering the following::
  
- The events are:
-+
-+	====================	===============
- 	Group			Syndrome
--	Link state change	- X -
--	Fatal error		- X -
-+	====================	===============
-+	Link state change	**X**
-+	Fatal error		**X**
- 	Notification		Suspend traffic
- 	Notification		Resume traffic
--	Keep-Alive		- X -
-+	Keep-Alive		**X**
-+	====================	===============
+        dmesg -n 8
  
- ACQ and AENQ share the same MSI-X vector.
+-  NOTE: This setting is not saved across reboots.
++  .. note::
  
-@@ -113,8 +130,8 @@ the device every second. The driver re-arms the WD upon reception of a
- Keep-Alive event. A missed Keep-Alive event causes the WD handler to
- fire.
+-  Jumbo Frames
+-  ------------
++     This setting is not saved across reboots.
++
++Jumbo Frames
++------------
+   The driver supports Jumbo Frames for all adapters. Jumbo Frames support is
+   enabled by changing the MTU to a value larger than the default of 1500.
+   The maximum value for the MTU is 16000.  Use the `ip` command to
+-  increase the MTU size.  For example:
++  increase the MTU size.  For example::
  
--Data Path Interface:
--====================
-+Data Path Interface
-+===================
- I/O operations are based on Tx and Rx Submission Queues (Tx SQ and Rx
- SQ correspondingly). Each SQ has a completion queue (CQ) associated
- with it.
-@@ -123,11 +140,15 @@ The SQs and CQs are implemented as descriptor rings in contiguous
- physical memory.
+-        ip link set mtu 16000 dev enp1s0
++	ip link set mtu 16000 dev enp1s0
  
- The ENA driver supports two Queue Operation modes for Tx SQs:
-+
- - Regular mode
-+
-   * In this mode the Tx SQs reside in the host's memory. The ENA
-     device fetches the ENA Tx descriptors and packet data from host
-     memory.
-+
- - Low Latency Queue (LLQ) mode or "push-mode".
-+
-   * In this mode the driver pushes the transmit descriptors and the
-     first 128 bytes of the packet directly to the ENA device memory
-     space. The rest of the packet payload is fetched by the
-@@ -142,6 +163,7 @@ Note: Not all ENA devices support LLQ, and this feature is negotiated
+-  ethtool
+-  -------
++ethtool
++-------
+   The driver utilizes the ethtool interface for driver configuration and
+   diagnostics, as well as displaying statistical information. The latest
+   ethtool version is required for this functionality.
  
- The driver supports multi-queue for both Tx and Rx. This has various
- benefits:
-+
- - Reduced CPU/thread/process contention on a given Ethernet interface.
- - Cache miss rate on completion is reduced, particularly for data
-   cache lines that hold the sk_buff structures.
-@@ -151,8 +173,8 @@ benefits:
-   packet is running.
- - In hardware interrupt re-direction.
+-  NAPI
+-  ----
++NAPI
++----
+   NAPI (Rx polling mode) is supported in the atlantic driver.
  
--Interrupt Modes:
--================
-+Interrupt Modes
-+===============
- The driver assigns a single MSI-X vector per queue pair (for both Tx
- and Rx directions). The driver assigns an additional dedicated MSI-X vector
- for management (for ACQ and AENQ).
-@@ -163,9 +185,12 @@ removed. I/O queue interrupt registration is performed when the Linux
- interface of the adapter is opened, and it is de-registered when the
- interface is closed.
+ Supported ethtool options
+-============================
+- Viewing adapter settings
+- ---------------------
+- ethtool <ethX>
++=========================
  
--The management interrupt is named:
-+The management interrupt is named::
+- Output example:
++Viewing adapter settings
++------------------------
 +
-    ena-mgmnt@pci:<PCI domain:bus:slot.function>
--and for each queue pair, an interrupt is named:
++ ::
 +
-+and for each queue pair, an interrupt is named::
++    ethtool <ethX>
 +
-    <interface name>-Tx-Rx-<queue index>
++ Output example::
  
- The ENA device operates in auto-mask and auto-clear interrupt
-@@ -173,8 +198,8 @@ modes. That is, once MSI-X is delivered to the host, its Cause bit is
- automatically cleared and the interrupt is masked. The interrupt is
- unmasked by the driver after NAPI processing is complete.
+   Settings for enp1s0:
+     Supported ports: [ TP ]
+     Supported link modes:   100baseT/Full
+-                            1000baseT/Full
+-                            10000baseT/Full
+-                            2500baseT/Full
+-                            5000baseT/Full
++			    1000baseT/Full
++			    10000baseT/Full
++			    2500baseT/Full
++			    5000baseT/Full
+     Supported pause frame use: Symmetric
+     Supports auto-negotiation: Yes
+     Supported FEC modes: Not reported
+     Advertised link modes:  100baseT/Full
+-                            1000baseT/Full
+-                            10000baseT/Full
+-                            2500baseT/Full
+-                            5000baseT/Full
++			    1000baseT/Full
++			    10000baseT/Full
++			    2500baseT/Full
++			    5000baseT/Full
+     Advertised pause frame use: Symmetric
+     Advertised auto-negotiation: Yes
+     Advertised FEC modes: Not reported
+@@ -92,16 +105,22 @@ Supported ethtool options
+     Wake-on: d
+     Link detected: yes
  
--Interrupt Moderation:
--=====================
-+Interrupt Moderation
-+====================
- ENA driver and device can operate in conventional or adaptive interrupt
- moderation mode.
+- ---
+- Note: AQrate speeds (2.5/5 Gb/s) will be displayed only with linux kernels > 4.10.
+-    But you can still use these speeds:
++
++ .. note::
++
++    AQrate speeds (2.5/5 Gb/s) will be displayed only with linux kernels > 4.10.
++    But you can still use these speeds::
++
+ 	ethtool -s eth0 autoneg off speed 2500
  
-@@ -202,45 +227,46 @@ delay value to each level.
- The user can enable/disable adaptive moderation, modify the interrupt
- delay table and restore its default values through sysfs.
+- Viewing adapter information
+- ---------------------
+- ethtool -i <ethX>
++Viewing adapter information
++---------------------------
  
--RX copybreak:
--=============
-+RX copybreak
-+============
- The rx_copybreak is initialized by default to ENA_DEFAULT_RX_COPYBREAK
- and can be configured by the ETHTOOL_STUNABLE command of the
- SIOCETHTOOL ioctl.
+- Output example:
++ ::
++
++  ethtool -i <ethX>
++
++ Output example::
  
--SKB:
--====
-+SKB
-+===
- The driver-allocated SKB for frames received from Rx handling using
- NAPI context. The allocation method depends on the size of the packet.
- If the frame length is larger than rx_copybreak, napi_get_frags()
- is used, otherwise netdev_alloc_skb_ip_align() is used, the buffer
- content is copied (by CPU) to the SKB, and the buffer is recycled.
+   driver: atlantic
+   version: 5.2.0-050200rc5-generic-kern
+@@ -115,12 +134,16 @@ Supported ethtool options
+   supports-priv-flags: no
  
--Statistics:
--===========
-+Statistics
-+==========
- The user can obtain ENA device and driver statistics using ethtool.
- The driver can collect regular or extended statistics (including
- per-queue stats) from the device.
  
- In addition the driver logs the stats to syslog upon device reset.
+- Viewing Ethernet adapter statistics:
+- ---------------------
+- ethtool -S <ethX>
++Viewing Ethernet adapter statistics
++-----------------------------------
  
--MTU:
--====
-+MTU
-+===
- The driver supports an arbitrarily large MTU with a maximum that is
- negotiated with the device. The driver configures MTU using the
- SetFeature command (ENA_ADMIN_MTU property). The user can change MTU
- via ip(8) and similar legacy tools.
+- Output example:
+- NIC statistics:
++ ::
++
++    ethtool -S <ethX>
++
++ Output example::
++
++  NIC statistics:
+      InPackets: 13238607
+      InUCast: 13293852
+      InMCast: 52
+@@ -164,85 +187,95 @@ Supported ethtool options
+      Queue[3] InLroPackets: 0
+      Queue[3] InErrors: 0
  
--Stateless Offloads:
--===================
-+Stateless Offloads
-+==================
- The ENA driver supports:
-+
- - TSO over IPv4/IPv6
- - TSO with ECN
- - IPv4 header checksum offload
- - TCP/UDP over IPv4/IPv6 checksum offloads
+- Interrupt coalescing support
+- ---------------------------------
+- ITR mode, TX/RX coalescing timings could be viewed with:
++Interrupt coalescing support
++----------------------------
  
--RSS:
--====
-+RSS
-+===
- - The ENA device supports RSS that allows flexible Rx traffic
-   steering.
- - Toeplitz and CRC32 hash functions are supported.
-@@ -255,11 +281,13 @@ RSS:
- - The user can provide a hash key, hash function, and configure the
-   indirection table through ethtool(8).
+- ethtool -c <ethX>
++ ITR mode, TX/RX coalescing timings could be viewed with::
  
--DATA PATH:
--==========
--Tx:
-----
-+DATA PATH
-+=========
-+Tx
-+--
-+
- end_start_xmit() is called by the stack. This function does the following:
-+
- - Maps data buffers (skb->data and frags).
- - Populates ena_buf for the push buffer (if the driver and device are
-   in push mode.)
-@@ -271,8 +299,10 @@ end_start_xmit() is called by the stack. This function does the following:
- - Calls ena_com_prepare_tx(), an ENA communication layer that converts
-   the ena_bufs to ENA descriptors (and adds meta ENA descriptors as
-   needed.)
-+
-   * This function also copies the ENA descriptors and the push buffer
-     to the Device memory space (if in push mode.)
-+
- - Writes doorbell to the ENA device.
- - When the ENA device finishes sending the packet, a completion
-   interrupt is raised.
-@@ -280,14 +310,16 @@ end_start_xmit() is called by the stack. This function does the following:
- - The ena_clean_tx_irq() function is called. This function handles the
-   completion descriptors generated by the ENA, with a single
-   completion descriptor per completed packet.
-+
-   * req_id is retrieved from the completion descriptor. The tx_info of
-     the packet is retrieved via the req_id. The data buffers are
-     unmapped and req_id is returned to the empty req_id ring.
-   * The function stops when the completion descriptors are completed or
-     the budget is reached.
+- and changed with:
++    ethtool -c <ethX>
  
--Rx:
-----
-+Rx
-+--
+- ethtool -C <ethX> tx-usecs <usecs> rx-usecs <usecs>
++ and changed with::
+ 
+- To disable coalescing:
++    ethtool -C <ethX> tx-usecs <usecs> rx-usecs <usecs>
+ 
+- ethtool -C <ethX> tx-usecs 0 rx-usecs 0 tx-max-frames 1 tx-max-frames 1
++ To disable coalescing::
+ 
+- Wake on LAN support
+- ---------------------------------
++    ethtool -C <ethX> tx-usecs 0 rx-usecs 0 tx-max-frames 1 tx-max-frames 1
+ 
+- WOL support by magic packet:
++Wake on LAN support
++-------------------
+ 
+- ethtool -s <ethX> wol g
++ WOL support by magic packet::
+ 
+- To disable WOL:
++    ethtool -s <ethX> wol g
+ 
+- ethtool -s <ethX> wol d
++ To disable WOL::
+ 
+- Set and check the driver message level
+- ---------------------------------
++    ethtool -s <ethX> wol d
 +
- - When a packet is received from the ENA device.
- - The interrupt handler schedules NAPI.
- - The ena_clean_rx_irq() function is called. This function calls
-@@ -296,13 +328,17 @@ Rx:
-   no new packet is found.
- - Then it calls the ena_clean_rx_irq() function.
- - ena_eth_rx_skb() checks packet length:
++Set and check the driver message level
++--------------------------------------
+ 
+  Set message level
+ 
+- ethtool -s <ethX> msglvl <level>
++ ::
 +
-   * If the packet is small (len < rx_copybreak), the driver allocates
-     a SKB for the new packet, and copies the packet payload into the
-     SKB data buffer.
++    ethtool -s <ethX> msglvl <level>
+ 
+  Level values:
+ 
+- 0x0001 - general driver status.
+- 0x0002 - hardware probing.
+- 0x0004 - link state.
+- 0x0008 - periodic status check.
+- 0x0010 - interface being brought down.
+- 0x0020 - interface being brought up.
+- 0x0040 - receive error.
+- 0x0080 - transmit error.
+- 0x0200 - interrupt handling.
+- 0x0400 - transmit completion.
+- 0x0800 - receive completion.
+- 0x1000 - packet contents.
+- 0x2000 - hardware status.
+- 0x4000 - Wake-on-LAN status.
++ ======   =============================
++ 0x0001   general driver status.
++ 0x0002   hardware probing.
++ 0x0004   link state.
++ 0x0008   periodic status check.
++ 0x0010   interface being brought down.
++ 0x0020   interface being brought up.
++ 0x0040   receive error.
++ 0x0080   transmit error.
++ 0x0200   interrupt handling.
++ 0x0400   transmit completion.
++ 0x0800   receive completion.
++ 0x1000   packet contents.
++ 0x2000   hardware status.
++ 0x4000   Wake-on-LAN status.
++ ======   =============================
+ 
+  By default, the level of debugging messages is set 0x0001(general driver status).
+ 
+  Check message level
+ 
+- ethtool <ethX> | grep "Current message level"
++ ::
+ 
+- If you want to disable the output of messages
++    ethtool <ethX> | grep "Current message level"
+ 
+- ethtool -s <ethX> msglvl 0
++ If you want to disable the output of messages::
 +
-     - In this way the original data buffer is not passed to the stack
-       and is reused for future Rx packets.
++    ethtool -s <ethX> msglvl 0
 +
-   * Otherwise the function unmaps the Rx buffer, then allocates the
-     new SKB structure and hooks the Rx buffer to the SKB frags.
++RX flow rules (ntuple filters)
++------------------------------
+ 
+- RX flow rules (ntuple filters)
+- ---------------------------------
+  There are separate rules supported, that applies in that order:
 +
- - The new SKB is updated with the necessary information (protocol,
-   checksum hw verify result, etc.), and then passed to the network
-   stack, using the NAPI interface function napi_gro_receive().
+  1. 16 VLAN ID rules
+  2. 16 L2 EtherType rules
+  3. 8 L3/L4 5-Tuple rules
+ 
+ 
+  The driver utilizes the ethtool interface for configuring ntuple filters,
+- via "ethtool -N <device> <filter>".
++ via ``ethtool -N <device> <filter>``.
+ 
+- To enable or disable the RX flow rules:
++ To enable or disable the RX flow rules::
+ 
+- ethtool -K ethX ntuple <on|off>
++    ethtool -K ethX ntuple <on|off>
+ 
+  When disabling ntuple filters, all the user programed filters are
+  flushed from the driver cache and hardware. All needed filters must
+  be re-added when ntuple is re-enabled.
+ 
+  Because of the fixed order of the rules, the location of filters is also fixed:
++
+  - Locations 0 - 15 for VLAN ID filters
+  - Locations 16 - 31 for L2 EtherType filters
+  - Locations 32 - 39 for L3/L4 5-tuple filters (locations 32, 36 for IPv6)
+@@ -253,32 +286,34 @@ Supported ethtool options
+  addresses can be supported. Source and destination ports are only compared for
+  TCP/UDP/SCTP packets.
+ 
+- To add a filter that directs packet to queue 5, use <-N|-U|--config-nfc|--config-ntuple> switch:
++ To add a filter that directs packet to queue 5, use
++ ``<-N|-U|--config-nfc|--config-ntuple>`` switch::
+ 
+- ethtool -N <ethX> flow-type udp4 src-ip 10.0.0.1 dst-ip 10.0.0.2 src-port 2000 dst-port 2001 action 5 <loc 32>
++    ethtool -N <ethX> flow-type udp4 src-ip 10.0.0.1 dst-ip 10.0.0.2 src-port 2000 dst-port 2001 action 5 <loc 32>
+ 
+  - action is the queue number.
+  - loc is the rule number.
+ 
+- For "flow-type ip4|udp4|tcp4|sctp4|ip6|udp6|tcp6|sctp6" you must set the loc
++ For ``flow-type ip4|udp4|tcp4|sctp4|ip6|udp6|tcp6|sctp6`` you must set the loc
+  number within 32 - 39.
+- For "flow-type ip4|udp4|tcp4|sctp4|ip6|udp6|tcp6|sctp6" you can set 8 rules
++ For ``flow-type ip4|udp4|tcp4|sctp4|ip6|udp6|tcp6|sctp6`` you can set 8 rules
+  for traffic IPv4 or you can set 2 rules for traffic IPv6. Loc number traffic
+  IPv6 is 32 and 36.
+  At the moment you can not use IPv4 and IPv6 filters at the same time.
+ 
+- Example filter for IPv6 filter traffic:
++ Example filter for IPv6 filter traffic::
+ 
+- sudo ethtool -N <ethX> flow-type tcp6 src-ip 2001:db8:0:f101::1 dst-ip 2001:db8:0:f101::2 action 1 loc 32
+- sudo ethtool -N <ethX> flow-type ip6 src-ip 2001:db8:0:f101::2 dst-ip 2001:db8:0:f101::5 action -1 loc 36
++    sudo ethtool -N <ethX> flow-type tcp6 src-ip 2001:db8:0:f101::1 dst-ip 2001:db8:0:f101::2 action 1 loc 32
++    sudo ethtool -N <ethX> flow-type ip6 src-ip 2001:db8:0:f101::2 dst-ip 2001:db8:0:f101::5 action -1 loc 36
+ 
+- Example filter for IPv4 filter traffic:
++ Example filter for IPv4 filter traffic::
+ 
+- sudo ethtool -N <ethX> flow-type udp4 src-ip 10.0.0.4 dst-ip 10.0.0.7 src-port 2000 dst-port 2001 loc 32
+- sudo ethtool -N <ethX> flow-type tcp4 src-ip 10.0.0.3 dst-ip 10.0.0.9 src-port 2000 dst-port 2001 loc 33
+- sudo ethtool -N <ethX> flow-type ip4 src-ip 10.0.0.6 dst-ip 10.0.0.4 loc 34
++    sudo ethtool -N <ethX> flow-type udp4 src-ip 10.0.0.4 dst-ip 10.0.0.7 src-port 2000 dst-port 2001 loc 32
++    sudo ethtool -N <ethX> flow-type tcp4 src-ip 10.0.0.3 dst-ip 10.0.0.9 src-port 2000 dst-port 2001 loc 33
++    sudo ethtool -N <ethX> flow-type ip4 src-ip 10.0.0.6 dst-ip 10.0.0.4 loc 34
+ 
+  If you set action -1, then all traffic corresponding to the filter will be discarded.
++
+  The maximum value action is 31.
+ 
+ 
+@@ -287,8 +322,9 @@ Supported ethtool options
+  from L2 Ethertype filter with UserPriority since both User Priority and VLAN ID
+  are passed in the same 'vlan' parameter.
+ 
+- To add a filter that directs packets from VLAN 2001 to queue 5:
+- ethtool -N <ethX> flow-type ip4 vlan 2001 m 0xF000 action 1 loc 0
++ To add a filter that directs packets from VLAN 2001 to queue 5::
++
++    ethtool -N <ethX> flow-type ip4 vlan 2001 m 0xF000 action 1 loc 0
+ 
+ 
+  L2 EtherType filters allows filter packet by EtherType field or both EtherType
+@@ -297,17 +333,17 @@ Supported ethtool options
+  distinguish VLAN filter from L2 Ethertype filter with UserPriority since both
+  User Priority and VLAN ID are passed in the same 'vlan' parameter.
+ 
+- To add a filter that directs IP4 packess of priority 3 to queue 3:
+- ethtool -N <ethX> flow-type ether proto 0x800 vlan 0x600 m 0x1FFF action 3 loc 16
++ To add a filter that directs IP4 packess of priority 3 to queue 3::
+ 
++    ethtool -N <ethX> flow-type ether proto 0x800 vlan 0x600 m 0x1FFF action 3 loc 16
+ 
+- To see the list of filters currently present:
++ To see the list of filters currently present::
+ 
+- ethtool <-u|-n|--show-nfc|--show-ntuple> <ethX>
++    ethtool <-u|-n|--show-nfc|--show-ntuple> <ethX>
+ 
+- Rules may be deleted from the table itself. This is done using:
++ Rules may be deleted from the table itself. This is done using::
+ 
+- sudo ethtool <-N|-U|--config-nfc|--config-ntuple> <ethX> delete <loc>
++    sudo ethtool <-N|-U|--config-nfc|--config-ntuple> <ethX> delete <loc>
+ 
+  - loc is the rule number to be deleted.
+ 
+@@ -316,34 +352,37 @@ Supported ethtool options
+  case, any flow that matches the filter criteria will be directed to the
+  appropriate queue. RX filters is supported on all kernels 2.6.30 and later.
+ 
+- RSS for UDP
+- ---------------------------------
++RSS for UDP
++-----------
++
+  Currently, NIC does not support RSS for fragmented IP packets, which leads to
+  incorrect working of RSS for fragmented UDP traffic. To disable RSS for UDP the
+  RX Flow L3/L4 rule may be used.
+ 
+- Example:
+- ethtool -N eth0 flow-type udp4 action 0 loc 32
++ Example::
++
++    ethtool -N eth0 flow-type udp4 action 0 loc 32
++
++UDP GSO hardware offload
++------------------------
+ 
+- UDP GSO hardware offload
+- ---------------------------------
+  UDP GSO allows to boost UDP tx rates by offloading UDP headers allocation
+  into hardware. A special userspace socket option is required for this,
+- could be validated with /kernel/tools/testing/selftests/net/
++ could be validated with /kernel/tools/testing/selftests/net/::
+ 
+     udpgso_bench_tx -u -4 -D 10.0.1.1 -s 6300 -S 100
+ 
+  Will cause sending out of 100 byte sized UDP packets formed from single
+  6300 bytes user buffer.
+ 
+- UDP GSO is configured by:
++ UDP GSO is configured by::
+ 
+     ethtool -K eth0 tx-udp-segmentation on
+ 
+- Private flags (testing)
+- ---------------------------------
++Private flags (testing)
++-----------------------
+ 
+- Atlantic driver supports private flags for hardware custom features:
++ Atlantic driver supports private flags for hardware custom features::
+ 
+ 	$ ethtool --show-priv-flags ethX
+ 
+@@ -354,7 +393,7 @@ Supported ethtool options
+ 	PHYInternalLoopback: off
+ 	PHYExternalLoopback: off
+ 
+- Example:
++ Example::
+ 
+ 	$ ethtool --set-priv-flags ethX DMASystemLoopback on
+ 
+@@ -370,93 +409,130 @@ Command Line Parameters
+ The following command line parameters are available on atlantic driver:
+ 
+ aq_itr -Interrupt throttling mode
+-----------------------------------------
++---------------------------------
+ Accepted values: 0, 1, 0xFFFF
++
+ Default value: 0xFFFF
+-0      - Disable interrupt throttling.
+-1      - Enable interrupt throttling and use specified tx and rx rates.
+-0xFFFF - Auto throttling mode. Driver will choose the best RX and TX
+-         interrupt throtting settings based on link speed.
++
++======   ==============================================================
++0        Disable interrupt throttling.
++1        Enable interrupt throttling and use specified tx and rx rates.
++0xFFFF   Auto throttling mode. Driver will choose the best RX and TX
++	 interrupt throtting settings based on link speed.
++======   ==============================================================
+ 
+ aq_itr_tx - TX interrupt throttle rate
+-----------------------------------------
++--------------------------------------
++
+ Accepted values: 0 - 0x1FF
++
+ Default value: 0
++
+ TX side throttling in microseconds. Adapter will setup maximum interrupt delay
+ to this value. Minimum interrupt delay will be a half of this value
+ 
+ aq_itr_rx - RX interrupt throttle rate
+-----------------------------------------
++--------------------------------------
++
+ Accepted values: 0 - 0x1FF
++
+ Default value: 0
++
+ RX side throttling in microseconds. Adapter will setup maximum interrupt delay
+ to this value. Minimum interrupt delay will be a half of this value
+ 
+-Note: ITR settings could be changed in runtime by ethtool -c means (see below)
++.. note::
++
++   ITR settings could be changed in runtime by ethtool -c means (see below)
+ 
+ Config file parameters
+-=======================
++======================
++
+ For some fine tuning and performance optimizations,
+ some parameters can be changed in the {source_dir}/aq_cfg.h file.
+ 
+ AQ_CFG_RX_PAGEORDER
+-----------------------------------------
++-------------------
++
+ Default value: 0
++
+ RX page order override. Thats a power of 2 number of RX pages allocated for
+-each descriptor. Received descriptor size is still limited by AQ_CFG_RX_FRAME_MAX.
++each descriptor. Received descriptor size is still limited by
++AQ_CFG_RX_FRAME_MAX.
++
+ Increasing pageorder makes page reuse better (actual on iommu enabled systems).
+ 
+ AQ_CFG_RX_REFILL_THRES
+-----------------------------------------
++----------------------
++
+ Default value: 32
++
+ RX refill threshold. RX path will not refill freed descriptors until the
+ specified number of free descriptors is observed. Larger values may help
+ better page reuse but may lead to packet drops as well.
+ 
+ AQ_CFG_VECS_DEF
+-------------------------------------------------------------
++---------------
++
+ Number of queues
++
+ Valid Range: 0 - 8 (up to AQ_CFG_VECS_MAX)
++
+ Default value: 8
++
+ Notice this value will be capped by the number of cores available on the system.
+ 
+ AQ_CFG_IS_RSS_DEF
+-------------------------------------------------------------
++-----------------
++
+ Enable/disable Receive Side Scaling
+ 
+ This feature allows the adapter to distribute receive processing
+ across multiple CPU-cores and to prevent from overloading a single CPU core.
+ 
+ Valid values
+-0 - disabled
+-1 - enabled
++
++==  ========
++0   disabled
++1   enabled
++==  ========
+ 
+ Default value: 1
+ 
+ AQ_CFG_NUM_RSS_QUEUES_DEF
+-------------------------------------------------------------
++-------------------------
++
+ Number of queues for Receive Side Scaling
++
+ Valid Range: 0 - 8 (up to AQ_CFG_VECS_DEF)
+ 
+ Default value: AQ_CFG_VECS_DEF
+ 
+ AQ_CFG_IS_LRO_DEF
+-------------------------------------------------------------
++-----------------
++
+ Enable/disable Large Receive Offload
+ 
+ This offload enables the adapter to coalesce multiple TCP segments and indicate
+ them as a single coalesced unit to the OS networking subsystem.
+-The system consumes less energy but it also introduces more latency in packets processing.
++
++The system consumes less energy but it also introduces more latency in packets
++processing.
+ 
+ Valid values
+-0 - disabled
+-1 - enabled
++
++==  ========
++0   disabled
++1   enabled
++==  ========
+ 
+ Default value: 1
+ 
+ AQ_CFG_TX_CLEAN_BUDGET
+-----------------------------------------
++----------------------
++
+ Maximum descriptors to cleanup on TX at once.
++
+ Default value: 256
+ 
+ After the aq_cfg.h file changed the driver must be rebuilt to take effect.
+@@ -472,7 +548,8 @@ License
+ =======
+ 
+ aQuantia Corporation Network Driver
+-Copyright(c) 2014 - 2019 aQuantia Corporation.
++
++Copyright |copy| 2014 - 2019 aQuantia Corporation.
+ 
+ This program is free software; you can redistribute it and/or modify it
+ under the terms and conditions of the GNU General Public License,
 diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
-index aaac502b81ea..019a0d2efe67 100644
+index 019a0d2efe67..7dde314fc957 100644
 --- a/Documentation/networking/device_drivers/index.rst
 +++ b/Documentation/networking/device_drivers/index.rst
-@@ -29,6 +29,7 @@ Contents:
-    stmicro/stmmac
+@@ -30,6 +30,7 @@ Contents:
     3com/3c509
     3com/vortex
-+   amazon/ena
+    amazon/ena
++   aquantia/atlantic
  
  .. only::  subproject and html
  
 diff --git a/MAINTAINERS b/MAINTAINERS
-index a45ab6a25942..990d1414ffd6 100644
+index 990d1414ffd6..91098b704635 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -816,7 +816,7 @@ R:	Saeed Bishara <saeedb@amazon.com>
- R:	Zorik Machulsky <zorik@amazon.com>
- L:	netdev@vger.kernel.org
+@@ -1280,7 +1280,7 @@ L:	netdev@vger.kernel.org
  S:	Supported
--F:	Documentation/networking/device_drivers/amazon/ena.txt
-+F:	Documentation/networking/device_drivers/amazon/ena.rst
- F:	drivers/net/ethernet/amazon/
+ W:	https://www.marvell.com/
+ Q:	http://patchwork.ozlabs.org/project/netdev/list/
+-F:	Documentation/networking/device_drivers/aquantia/atlantic.txt
++F:	Documentation/networking/device_drivers/aquantia/atlantic.rst
+ F:	drivers/net/ethernet/aquantia/atlantic/
  
- AMAZON RDMA EFA DRIVER
+ AQUANTIA ETHERNET DRIVER PTP SUBSYSTEM
 -- 
 2.25.4
 
