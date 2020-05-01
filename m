@@ -2,96 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C76E1C1E17
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 21:54:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50F6D1C1E1C
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 21:57:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726892AbgEATxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 15:53:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726405AbgEATxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 15:53:51 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C75BC061A0C;
-        Fri,  1 May 2020 12:53:51 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id l11so4692858lfc.5;
-        Fri, 01 May 2020 12:53:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eLkHCYTX65FanCUz3FGo9DHm9M6l7fkrFEW0FMC5F38=;
-        b=lrWTXLI3amZbQ6VrK6hi4UcxorzKUPWacsUmgIyCL7+dSJHnqKcalh/nRBjw77Rw5C
-         pb6uB83edUMxnrnL4aNbxCyx68qGBmoXSCP3WsQ9q1TqsuPC53V1rb3QjVGpPL7K7TtB
-         3/e4RFZ5VzGFgIgT5iQzByeARX8x18y/z7Is/NCp1TKVBtQrXCutrnqwhskxAnzS/90h
-         DlnJ0VrRVfGT70JKVCT7W4D9N4rco40vzdAdNoXaPuo+FbgCgxo4l/S/B5fPf4vexMvZ
-         i5r20aK0edLDW2EM54hF4tjhdY3Fv4KIQfjYKlCMfjS+AQ+XObKhp0Z/4uRB05iuiqGL
-         fvzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eLkHCYTX65FanCUz3FGo9DHm9M6l7fkrFEW0FMC5F38=;
-        b=qYqZPtZPKvQQaWgZCdoxI8qUuR4t1BbJ2ft236NCxxEBo13cgf3eTN13cA2mn0TpMS
-         R2MUmnebjfFFfOvOq5j4GK6JnbbXvYUaH1aj32zFMEMB80lCWmuQuopR2umRHu9qLj9w
-         vkb4xdPYaT7sk9sTa49z3nT70ScUZ5cKBntakU86VVOn8HFEgB/KtbBri6x+GUeBUtu6
-         71wxaZY/5XScX7VIuS9SLIFFTIeQ3bMJn1Lpp/8LsMZxl3cgrx91P5sM/iIFY+8DlaYi
-         mCBZXGQdUVX7pyJv9n2BUwbpPwNPtwT1z+gLSGlvgnNMJZ7b/tmVJ1bEGVCyWXhsrqJA
-         KNCA==
-X-Gm-Message-State: AGi0PuYyEJ00L80AJquvUUmrd1pgmWr91wxGuphWGELTrPiGCQ73D9p+
-        nTYVTznhzUruty40DMmL7Y9v5N/47w9iYk8gFbw=
-X-Google-Smtp-Source: APiQypKarPZIn17Dqxjm7lbKIn7nz/O1si92DdMxBzYGW9+hPUO3PAiY46HAt4//L5RpaBW4qUHBU3RcT0cevptzXFs=
-X-Received: by 2002:ac2:5235:: with SMTP id i21mr3469858lfl.73.1588362829634;
- Fri, 01 May 2020 12:53:49 -0700 (PDT)
+        id S1726926AbgEAT41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 15:56:27 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:45432 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726405AbgEAT40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 15:56:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588362984;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=idsL9/zHf4CyC3WFj5zMx9Ab5m9lVQmPJIIKwCnj6C0=;
+        b=VAkXCr1uwSmNnejoWiY16cqSiQ/XKNH/NIrKvIN4LYRA7U2iIgJGEOmoiznSoyRDsPByJ9
+        UC0cMGPyJcOr0nUmMrBCpzLkIZzzK7XIKJfrNL2YSpUNUuQuJCmQuKdL1tUU4v1x0Yz/bg
+        4oTlCtaxaPDHXsD1+mQjkSq04HXXEGg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-475-h7M1a2OZMv2rfZGtOrVacw-1; Fri, 01 May 2020 15:56:22 -0400
+X-MC-Unique: h7M1a2OZMv2rfZGtOrVacw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10A4245F;
+        Fri,  1 May 2020 19:56:21 +0000 (UTC)
+Received: from treble (ovpn-114-104.rdu2.redhat.com [10.10.114.104])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D5C873AC;
+        Fri,  1 May 2020 19:56:19 +0000 (UTC)
+Date:   Fri, 1 May 2020 14:56:17 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
+ compatibility
+Message-ID: <20200501195617.czrnfqqcxfnliz3k@treble>
+References: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
+ <20200501190930.ptxyml5o4rviyo26@ast-mbp.dhcp.thefacebook.com>
+ <20200501192204.cepwymj3fln2ngpi@treble>
+ <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200430233152.199403-1-sdf@google.com> <5eac6b6252755_2dd52ac42ee805b8c9@john-XPS-13-9370.notmuch>
-In-Reply-To: <5eac6b6252755_2dd52ac42ee805b8c9@john-XPS-13-9370.notmuch>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 1 May 2020 12:53:37 -0700
-Message-ID: <CAADnVQK0Jtr3+nvOgWxmtBD2SQE2YhYbNJPMWw-7n219vy_4+Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3] bpf: bpf_{g,s}etsockopt for struct bpf_sock_addr
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 1, 2020 at 11:33 AM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Stanislav Fomichev wrote:
-> > Currently, bpf_getsockopt and bpf_setsockopt helpers operate on the
-> > 'struct bpf_sock_ops' context in BPF_PROG_TYPE_SOCK_OPS program.
-> > Let's generalize them and make them available for 'struct bpf_sock_addr'.
-> > That way, in the future, we can allow those helpers in more places.
-> >
-> > As an example, let's expose those 'struct bpf_sock_addr' based helpers to
-> > BPF_CGROUP_INET{4,6}_CONNECT hooks. That way we can override CC before the
-> > connection is made.
-> >
-> > v3:
-> > * Expose custom helpers for bpf_sock_addr context instead of doing
-> >   generic bpf_sock argument (as suggested by Daniel). Even with
-> >   try_socket_lock that doesn't sleep we have a problem where context sk
-> >   is already locked and socket lock is non-nestable.
-> >
-> > v2:
-> > * s/BPF_PROG_TYPE_CGROUP_SOCKOPT/BPF_PROG_TYPE_SOCK_OPS/
-> >
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
->
-> To bad we had to fall back to ctx here.
->
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
+On Fri, May 01, 2020 at 12:40:53PM -0700, Alexei Starovoitov wrote:
+> On Fri, May 01, 2020 at 02:22:04PM -0500, Josh Poimboeuf wrote:
+> > On Fri, May 01, 2020 at 12:09:30PM -0700, Alexei Starovoitov wrote:
+> > > On Thu, Apr 30, 2020 at 02:07:43PM -0500, Josh Poimboeuf wrote:
+> > > > Objtool decodes instructions and follows all potential code branches
+> > > > within a function.  But it's not an emulator, so it doesn't track
+> > > > register values.  For that reason, it usually can't follow
+> > > > intra-function indirect branches, unless they're using a jump table
+> > > > which follows a certain format (e.g., GCC switch statement jump tables).
+> > > > 
+> > > > In most cases, the generated code for the BPF jump table looks a lot
+> > > > like a GCC jump table, so objtool can follow it.  However, with
+> > > > RETPOLINE=n, GCC keeps the jump table address in a register, and then
+> > > > does 160+ indirect jumps with it.  When objtool encounters the indirect
+> > > > jumps, it can't tell which jump table is being used (or even whether
+> > > > they might be sibling calls instead).
+> > > > 
+> > > > This was fixed before by disabling an optimization in ___bpf_prog_run(),
+> > > > using the "optimize" function attribute.  However, that attribute is bad
+> > > > news.  It doesn't append options to the command-line arguments.  Instead
+> > > > it starts from a blank slate.  And according to recent GCC documentation
+> > > > it's not recommended for production use.  So revert the previous fix:
+> > > > 
+> > > >   3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
+> > > > 
+> > > > With that reverted, solve the original problem in a different way by
+> > > > getting rid of the "goto select_insn" indirection, and instead just goto
+> > > > the jump table directly.  This simplifies the code a bit and helps GCC
+> > > > generate saner code for the jump table branches, at least in the
+> > > > RETPOLINE=n case.
+> > > > 
+> > > > But, in the RETPOLINE=y case, this simpler code actually causes GCC to
+> > > > generate far worse code, ballooning the function text size by +40%.  So
+> > > > leave that code the way it was.  In fact Alexei prefers to leave *all*
+> > > > the code the way it was, except where needed by objtool.  So even
+> > > > non-x86 RETPOLINE=n code will continue to have "goto select_insn".
+> > > > 
+> > > > This stuff is crazy voodoo, and far from ideal.  But it works for now.
+> > > > Eventually, there's a plan to create a compiler plugin for annotating
+> > > > jump tables.  That will make this a lot less fragile.
+> > > 
+> > > I don't like this commit log.
+> > > Here you're saying that the code recognized by objtool is sane and good
+> > > whereas well optimized gcc code is somehow voodoo and bad.
+> > > That is just wrong.
+> > 
+> > I have no idea what you're talking about.
+> > 
+> > Are you saying that ballooning the function text size by 40% is well
+> > optimized GCC code?  It seems like a bug to me.  That's the only place I
+> > said anything bad about GCC code.
+> 
+> It could be a bug, but did you benchmark the speed of interpreter ?
+> Is it faster or slower with 40% more code ?
+> Did you benchmark it on other archs ?
 
-Applied. Thanks
+I thought we were in agreement that 40% text growth is bad.  Isn't that
+why you wanted to keep 'goto select_insn' for the retpoline case?
+
+If there's some other reason, let me know and I'll put it in the patch
+description instead.
+
+> > When I said "this stuff is crazy voodoo" I was referring to the patch
+> > itself.  I agree it's horrible, it's only the best approach we're able
+> > to come up with at the moment.
+> 
+> please reword it then.
+
+Ok, so: This *patch* is crazy voodoo ?
+
+-- 
+Josh
+
