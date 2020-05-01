@@ -2,102 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 705FC1C0DAD
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 07:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5F9D1C0DC3
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 07:36:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728227AbgEAFQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 01:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        id S1728277AbgEAFgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 01:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728099AbgEAFQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 01:16:06 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D13C035494;
-        Thu, 30 Apr 2020 22:16:04 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id f18so1655149lja.13;
-        Thu, 30 Apr 2020 22:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D00DqwLp1pIkCBQPFGQl7gIJVCS8/hRa1H7R7PcZvC0=;
-        b=KCHL0GWQjV+/Vcy6mMKmvihoMXLEC1KLzWhotLuUqEhNq1BCETeBtFuU0xquauOwQW
-         PKf2wIk5/m/wKKS2YKd5PyMgR8f9uTHNg+Q7tulGlUwO6BmuX5VTJBE0Q4MLc2Yk++az
-         6BzbmTU9isVBiJIucl3uFdzOpzJxf40dD8TJG0aWPRjseCZjsjS5hgbCKZDwFgqlWu5w
-         swDucdz3ti+cUoNMouMDmbVFAryxKuCEae9Iy4V7+my9YaGKCiTEte3VS9ga2vrUw+Rl
-         CEWwnJWQpu63K/8AfUwl5En80amp+kVWvTH7BpXkTSVzFspPG/vRzwfiSJCJoCc69S9W
-         TJ5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D00DqwLp1pIkCBQPFGQl7gIJVCS8/hRa1H7R7PcZvC0=;
-        b=W8kYA62Ytp8M8RkmGUEu8UzkEBQbsb9uWn+mlQUAY/I4oz0ShVnCWnLUisGqdLnpdA
-         XkZR4iLjggBU0io0qGEcVXSXG04fwwCZE+8kbrYhraySRR1yFtb5B7a69bvFKQsYWo/i
-         zPJRtowI8KOsuT5oxnmHLEDqyRkMvtmi0YUG+OGyzhoIBg1RH/sA7BC4GhWH0m3uLM66
-         OpNRcZ0Id97aKggWQOWiSMryjAbYcNa5j2BT/TcdutPhwcLTGcxbOad7pb2lCpA00WY0
-         s3LvUXdxU+GvVqXSWTFm3Ns5PU4Y6H/78lW8x5V2EROhT2hMfSPJD2Xs1cOOgJxuXT6R
-         7Brg==
-X-Gm-Message-State: AGi0PuYah0f8pZjgJUECVr6bg9bV9I+lmhttj8d4XGVKO8LmonhWujtz
-        XitcGwtNWVHH4jr37jY0FQrcdwUdSraBXYVhTvX88w==
-X-Google-Smtp-Source: APiQypKi4WrKP2xDoGnVXIC/UwV7doDPgLzDNy1snvMiqG21XF1URHfcuQljZvH54wwj5brVMztQOnS98yRF5Go25XA=
-X-Received: by 2002:a2e:b80b:: with SMTP id u11mr1431017ljo.212.1588310163069;
- Thu, 30 Apr 2020 22:16:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAK7LNARHd0DXRLONf6vH_ghsYZjzoduzkixqNDpVqqPx0yHbHg@mail.gmail.com>
- <CAADnVQ+RvDq9qvNgSkwaMO8QcDG1gCm-SkGgNHyy1gVC3_0w=A@mail.gmail.com> <CAK7LNAQ5NMZWrQ_1yk+_-06zrmYMOcKvNnuX=u1sReuy6wg9Gw@mail.gmail.com>
-In-Reply-To: <CAK7LNAQ5NMZWrQ_1yk+_-06zrmYMOcKvNnuX=u1sReuy6wg9Gw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 30 Apr 2020 22:15:51 -0700
-Message-ID: <CAADnVQKymMnEs0jFg8-qZLXS5n0DxMrqhmwQ17Do=TKd+niqhw@mail.gmail.com>
-Subject: Re: BPFilter: bit size mismatch between bpfiter_umh and vmliux
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1726452AbgEAFgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 01:36:07 -0400
+Received: from mo6-p02-ob.smtp.rzone.de (mo6-p02-ob.smtp.rzone.de [IPv6:2a01:238:20a:202:5302::9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B28C035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 22:36:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1588311362;
+        s=strato-dkim-0002; d=xenosoft.de;
+        h=To:In-Reply-To:Cc:References:Message-Id:Date:Subject:From:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=hJfQ2R9oyPXbRKp+zZNmmNIpIc89RJkcFkSmzvlkCgw=;
+        b=eESpH0TwBzm64mpr0fGQTst6afDc+ZLe96ovACp3Jm0TbDMvKFL6lKImZKRZ3wiFir
+        ex+QeEPFmT5V3mF8SYU3yKXbvwy7yV7q7+p4LP3tePiLsvtSsUUvkCe4KxAMs07VI5Mp
+        MofTn4IoqPn+hnYDcSGc0i5fzc47rf0ae2B7I2hFroXZ/W8NoTSALyHKzb15QrFiEgKK
+        KJdTEiYUEbkjmKRmsnVqYjRGvTs5wvNffT3V+HwEftPeoBlDuySV0uraceRfouNwVeaD
+        I+sxmTPYMtCm4FyxQ14a7p/ych4DkKNlXd49LJ7peJ1Sa5BKfRh0L2ONW+b6o/BhcHg0
+        0CvA==
+X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGN0rBVhd9dFr6KxrfO5Oh7R7b2dxi7ozwXQ+Xo6i0Yv8EnsEhh3gF2nHSBbUFCw1"
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a01:598:b000:f529:7401:562d:9520:15ed]
+        by smtp.strato.de (RZmta 46.6.2 AUTH)
+        with ESMTPSA id I01247w415Zxi5E
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Fri, 1 May 2020 07:35:59 +0200 (CEST)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   Christian Zigotzky <chzigotzky@xenosoft.de>
+Mime-Version: 1.0 (1.0)
+Subject: Re: Don't initialise ports with no PHY
+Date:   Fri, 1 May 2020 07:35:58 +0200
+Message-Id: <1963BFFC-34FD-4BDC-B277-838FB332D7BF@xenosoft.de>
+References: <4f9f12e02c7.744a6d93@auth.smtp.1and1.co.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, "R.T.Dickinson" <rtd2@xtra.co.nz>,
+        netdev@vger.kernel.org, mad skateman <madskateman@gmail.com>,
+        linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <4f9f12e02c7.744a6d93@auth.smtp.1and1.co.uk>
+To:     Darren Stevens <darren@stevens-zone.net>
+X-Mailer: iPhone Mail (17D50)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 9:06 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Hi Alexei,
->
-> On Wed, Apr 29, 2020 at 1:14 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > At least, the build was successful,
-> > > but does this work at runtime?
-> > >
-> > > If this is a bug, I can fix it cleanly.
-> > >
-> > > I think the bit size of the user mode helper
-> > > should match to the kernel bit size. Is this correct?
-> >
-> > yes. they should match.
-> > In theory we can have -m32 umh running on 64-bit kernel,
-> > but I wouldn't bother adding support for such thing
-> > until there is a use case.
-> > Running 64-bit umh on 32-bit kernel is no go.
->
->
-> Thanks for the comments.
->
->
-> This issue will be fixed by this:
-> https://patchwork.kernel.org/patch/11515997/
->
-> and the Makefile will be cleaned up by this:
-> https://patchwork.kernel.org/patch/11515995/
->
->
-> They are parts of the big series of Makefile cleanups.
-> So, I will apply the whole to kbuild tree.
 
-thank you.
-I saw the patches, but didn't have time to test or comment on them.
-To be fair umh logic was bit rotting a bit, but that will change soon.
+> On 30. Apr 2020, at 23:36, Darren Stevens <darren@stevens-zone.net> wrote:=
+
+>=20
+> =EF=BB=BFHello Christian
+>=20
+>> On 29/04/2020, Christian Zigotzky wrote:
+>>=20
+>>=20
+>>>> On 29. Apr 2020, at 17:22, Andrew Lunn <andrew@lunn.ch> wrote:
+>>>=20
+>>> ?On Wed, Apr 29, 2020 at 03:55:28PM +0200, Christian Zigotzky wrote:
+>>>> Hi Andrew,
+>>>>=20
+>>>> You can find some dtb and source files in our kernel package.
+>>>>=20
+>>>> Download: http://www.xenosoft.de/linux-image-5.7-rc3-X1000_X5000.tar.gz=
+
+>>>=20
+>>> I have the tarball. Are we talking about
+>>>=20
+>>>=20
+> linux-image-5.7-rc3-X1000_X5000/X5000_and_QEMU_e5500/dtbs/X5000_20/cyrus.e=
+th.dtb
+>>=20
+>>> I don't see any status =3D "disabled"; in the blob. So i would expect
+>>> the driver to probe.
+>=20
+> No, the vendor never added that to them.
+>=20
+>> Yes, that's correct but maybe Darren uses another dtb file.
+>>=20
+>> @Darren
+>> Which dtb file do you use?
+>=20
+> My current one attached, including updated cyrus_p5020.dts & p5020si-pre.d=
+tsi
+> which I'm preparing patches for.
+>=20
+> Christian, build an unmodified kernel, select board level reset or power o=
+ff,
+> then both the GPIO drivers.
+> Then under LED Support: GPIO connected LED's and triggers -> disk activity=
+
+>=20
+> I think you still have a 5020 don't you? I'll look at 5040 later (I'll nee=
+d
+> someone to test)
+>=20
+> Regards
+> Darren
+> <cyrus-dts.zip>
+
+Darren
+
+I use a 5040 currently.
+
+Thanks
+Christian
+
+
