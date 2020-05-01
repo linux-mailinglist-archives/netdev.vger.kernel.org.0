@@ -2,98 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 697141C2161
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 01:49:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6255F1C21AB
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 01:54:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgEAXtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 19:49:01 -0400
-Received: from www62.your-server.de ([213.133.104.62]:48346 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726437AbgEAXtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 19:49:00 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jUfOm-0004Dg-V2; Sat, 02 May 2020 01:48:53 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jUfOm-0008u3-Ja; Sat, 02 May 2020 01:48:52 +0200
-Subject: Re: [PATCH 1/1] selftests/bpf: add cls_redirect classifier
-To:     Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Theo Julienne <theojulienne@github.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux@googlegroups.com
-References: <20200424185556.7358-1-lmb@cloudflare.com>
- <20200424185556.7358-2-lmb@cloudflare.com>
- <20200426173324.5zg7isugereb5ert@ast-mbp.dhcp.thefacebook.com>
- <CACAyw98nK_Vkstp-vEqNwKXtoCRnTOPr7Eh+ziH56tJGbnPsig@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <185417b8-0d50-f8a3-7a09-949066579732@iogearbox.net>
-Date:   Sat, 2 May 2020 01:48:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726896AbgEAXws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 19:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726344AbgEAXws (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 19:52:48 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6247C061A0C;
+        Fri,  1 May 2020 16:52:47 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id 188so5063215lfa.10;
+        Fri, 01 May 2020 16:52:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fhpUd3KTt89xfWncWQDykv056+ZVfYnLxoCmV5ESyvQ=;
+        b=ka22SCtaig9XGQg0FqxN1q0zRmsQdWwrvEWDnkfIR9mkP7APJKkRZGyv64rsXkTgEb
+         obcpgedhvvxqBdk2hbtTlA4RTc+esLb3Vue3yeaY4oOmYAY6XE+r0Juew2JJd/0XNCd2
+         dQCPL2DGkRvWEMu5rRFA3Nsw9GAW8NPXyaGy/5bBVisVyCp6xFdMfe4Su9m4mE8jyprh
+         7yq6/oSdZM8NtTpx3L3yNApR5+36SiUCbOq7D1uTlAAf5rpqC8i4AEweh/soLe9UF2rC
+         NWdUxVlCzXfsWz2QJM0qcWrezIbfEk8qNowvvY+YyBIX2DY5ugMkL4+wM0iBZQ6HBBX9
+         JA8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fhpUd3KTt89xfWncWQDykv056+ZVfYnLxoCmV5ESyvQ=;
+        b=X24KbXA/qvExHrVmWjhcjjpUFRA275KpTO1SuPM/0IS01HlU2za2Sqi2YnWZ78Jsiw
+         vsY+kbXLqBV0zMjMzAIvE5z1ZjyfHwl2fiVSZjs2mZuydmeJN4eHSomPVaK/W3eIfpDR
+         aYJPDxVV1vpD2btWf0DraFcABQptJX61hCXQOJalevR3IyraSnSCf7XINmtcJn7XJE51
+         q+YErTQ09tOTZ1tqZZ0F+ituul9xb9OP1d5aaC+52ZxnMRGeDTloqAPW/IJHwzawM6iW
+         lUv7vTukwHpOealQGU2JZptj+9UmIOtlFfcxtO/08ioz0voznq+3dO4iHWpeTdo1Qyfw
+         3ZkA==
+X-Gm-Message-State: AGi0PuYzTla/J15bdMqOR5pmAfDUGhsI3p7JTVugFztEhtJj4ZASGP91
+        LWsCCsAkeg6atdUcdic/FgESZKrUehhunwDkXauXUQ==
+X-Google-Smtp-Source: APiQypLncqum4n6ln75EI339iN7GETVsUUFDA2Ky+aJdnCOS/HKBje7e20JtBFPFcBhvtJONecb1FnYu+o0SO+4sI6Q=
+X-Received: by 2002:ac2:420b:: with SMTP id y11mr3962472lfh.8.1588377166409;
+ Fri, 01 May 2020 16:52:46 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CACAyw98nK_Vkstp-vEqNwKXtoCRnTOPr7Eh+ziH56tJGbnPsig@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25799/Fri May  1 14:11:09 2020)
+References: <20200501224320.28441-1-sdf@google.com> <20200501225700.j4dukc7t5hxaijer@kafai-mbp>
+In-Reply-To: <20200501225700.j4dukc7t5hxaijer@kafai-mbp>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 1 May 2020 16:52:35 -0700
+Message-ID: <CAADnVQJfFm7OhHAxKpSddk7toESWvHLuxpF2Fgt6ZBBS0EYMyQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: use reno instead of dctcp
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/27/20 11:45 AM, Lorenz Bauer wrote:
-> On Sun, 26 Apr 2020 at 18:33, Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-[...]
->>> +/* Linux packet pointers are either aligned to NET_IP_ALIGN (aka 2 bytes),
->>> + * or not aligned if the arch supports efficient unaligned access.
->>> + *
->>> + * Since the verifier ensures that eBPF packet accesses follow these rules,
->>> + * we can tell LLVM to emit code as if we always had a larger alignment.
->>> + * It will yell at us if we end up on a platform where this is not valid.
->>> + */
->>> +typedef uint8_t *net_ptr __attribute__((align_value(8)));
->>
->> Wow. I didn't know about this attribute.
->> I wonder whether it can help Daniel's memcpy hack.
-> 
-> Yes, I think so.
+On Fri, May 1, 2020 at 3:57 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Fri, May 01, 2020 at 03:43:20PM -0700, Stanislav Fomichev wrote:
+> > Andrey pointed out that we can use reno instead of dctcp for CC
+> > tests and drop CONFIG_TCP_CONG_DCTCP=y requirement.
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-Just for some more context [0]. I think the problem is a bit more complex in
-general. Generally, _any_ kind of pointer to some data (except for the stack)
-is currently treated as byte-by-byte copy from __builtin_memcpy() and other
-similarly available __builtin_*() helpers on BPF backend since the backend
-cannot make any assumptions about the data's alignment and whether unaligned
-access from the underlying arch is ok & efficient (the latter the verifier
-does judge for us however). So it's definitely not just limited to xdp->data.
-There is also the issue that while access to any non-stack data can be
-unaligned, access to the stack however cannot. I've discussed a while back
-with Yonghong about potential solutions. One would be to add a small patch
-to the BPF backend to enable __builtin_*() helpers to allow for unaligned
-access which could then be opt-ed in e.g. via -mattr from llc for the case
-when we know that the compiled program only runs on archs with efficient
-unaligned access anyway. However, this still potentially breaks with the BPF
-stack for the case when objects are, for example, larger than size 8 but with
-a natural alignment smaller than 8 where __builtin_memcpy() would then decide
-to emit dw-typed load/stores. But for these cases could then be annotated via
-__aligned(8) on stack. So this is basically what we do right now as a generic
-workaround in Cilium [0], meaning, our own memcpy/memset with optimal number
-of instructions and __aligned(8) where needed; most of the time this __aligned(8)
-is not needed, so it's really just a few places, and we also have a cocci
-scripts to catch these during development if needed. Anyway, real thing would
-be to allow the BPF stack for unaligned access as well and then BPF backend
-could nicely solve this in a native way w/o any workarounds, but that is tbd.
-
-Thanks,
-Daniel
-
-   [0] https://github.com/cilium/cilium/blob/master/bpf/include/bpf/builtins.h
+Applied. Thanks
