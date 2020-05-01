@@ -2,106 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB9A61C1254
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 14:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 950331C11B5
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 13:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728775AbgEAMlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 08:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728712AbgEAMlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 08:41:47 -0400
-X-Greylist: delayed 4393 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 01 May 2020 05:41:47 PDT
-Received: from smtp.tuxdriver.com (tunnel92311-pt.tunnel.tserv13.ash1.ipv6.he.net [IPv6:2001:470:7:9c9::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C41CC061A0C;
-        Fri,  1 May 2020 05:41:47 -0700 (PDT)
-Received: from [107.15.85.130] (helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1jUTq8-0005B2-96; Fri, 01 May 2020 07:28:26 -0400
-Date:   Fri, 1 May 2020 07:28:14 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, Joe Perches <joe@perches.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 07/15] drop_monitor: work around gcc-10 stringop-overflow
- warning
-Message-ID: <20200501112814.GA2175875@hmswarspite.think-freely.org>
-References: <20200430213101.135134-1-arnd@arndb.de>
- <20200430213101.135134-8-arnd@arndb.de>
+        id S1728642AbgEAL4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 07:56:17 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42142 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728570AbgEAL4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 07:56:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588334175;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=80rfEzLgNgzLSm4P8ePsBC7Rh1UCZZCx9F6alt2/1l4=;
+        b=WpEPLx+eD1JQkeCH6QeTOUgqlZVTalbH5EtXP/KfwfLPN+MqEPGz9uy3IF+ODuEfVMU30W
+        PGEsPziDTqmg1LMqeeQojxW1uqRd7la8Mw3W8m5budtfI8cCFlVaRTlsrLry5LKEh3jNkB
+        SRqzgUYMNaCGeFPHtlxLcIAPP2T6ub8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-455-AMBL9R_kOre8Jv8g2UTgoQ-1; Fri, 01 May 2020 07:56:09 -0400
+X-MC-Unique: AMBL9R_kOre8Jv8g2UTgoQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C707D8014C1;
+        Fri,  1 May 2020 11:56:08 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 946EF5D9CA;
+        Fri,  1 May 2020 11:56:04 +0000 (UTC)
+Date:   Fri, 1 May 2020 13:56:02 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>, brouer@redhat.com
+Subject: Re: [PATCH net-next V2] net: sched: fallback to qdisc noqueue if
+ default qdisc setup fail
+Message-ID: <20200501135602.0671c73d@carbon>
+In-Reply-To: <20200430124549.3272afb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <158824694174.2180470.8094886910962590764.stgit@firesoul>
+        <20200430124549.3272afb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200430213101.135134-8-arnd@arndb.de>
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 11:30:49PM +0200, Arnd Bergmann wrote:
-> The current gcc-10 snapshot produces a false-positive warning:
+On Thu, 30 Apr 2020 12:45:49 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
+
+> On Thu, 30 Apr 2020 13:42:22 +0200 Jesper Dangaard Brouer wrote:
+> > Currently if the default qdisc setup/init fails, the device ends up with
+> > qdisc "noop", which causes all TX packets to get dropped.
+> > 
+> > With the introduction of sysctl net/core/default_qdisc it is possible
+> > to change the default qdisc to be more advanced, which opens for the
+> > possibility that Qdisc_ops->init() can fail.
+> > 
+> > This patch detect these kind of failures, and choose to fallback to
+> > qdisc "noqueue", which is so simple that its init call will not fail.
+> > This allows the interface to continue functioning.
+> > 
+> > V2:
+> > As this also captures memory failures, which are transient, the
+> > device is not kept in IFF_NO_QUEUE state.  This allows the net_device
+> > to retry to default qdisc assignment.
+> > 
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>  
 > 
-> net/core/drop_monitor.c: In function 'trace_drop_common.constprop':
-> cc1: error: writing 8 bytes into a region of size 0 [-Werror=stringop-overflow=]
-> In file included from net/core/drop_monitor.c:23:
-> include/uapi/linux/net_dropmon.h:36:8: note: at offset 0 to object 'entries' with size 4 declared here
->    36 |  __u32 entries;
->       |        ^~~~~~~
+> I have mixed feelings about this one, I wonder if I'm the only one.
+> Seems like failure to allocate the default qdisc is pretty critical,
+> the log message may be missed, especially in the boot time noise.
 > 
-> I reported this in the gcc bugzilla, but in case it does not get
-> fixed in the release, work around it by using a temporary variable.
-> 
-> Fixes: 9a8afc8d3962 ("Network Drop Monitor: Adding drop monitor implementation & Netlink protocol")
-> Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94881
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  net/core/drop_monitor.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-> index 8e33cec9fc4e..2ee7bc4c9e03 100644
-> --- a/net/core/drop_monitor.c
-> +++ b/net/core/drop_monitor.c
-> @@ -213,6 +213,7 @@ static void sched_send_work(struct timer_list *t)
->  static void trace_drop_common(struct sk_buff *skb, void *location)
->  {
->  	struct net_dm_alert_msg *msg;
-> +	struct net_dm_drop_point *point;
->  	struct nlmsghdr *nlh;
->  	struct nlattr *nla;
->  	int i;
-> @@ -231,11 +232,13 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
->  	nlh = (struct nlmsghdr *)dskb->data;
->  	nla = genlmsg_data(nlmsg_data(nlh));
->  	msg = nla_data(nla);
-> +	point = msg->points;
->  	for (i = 0; i < msg->entries; i++) {
-> -		if (!memcmp(&location, msg->points[i].pc, sizeof(void *))) {
-> -			msg->points[i].count++;
-> +		if (!memcmp(&location, &point->pc, sizeof(void *))) {
-> +			point->count++;
->  			goto out;
->  		}
-> +		point++;
->  	}
->  	if (msg->entries == dm_hit_limit)
->  		goto out;
-> @@ -244,8 +247,8 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
->  	 */
->  	__nla_reserve_nohdr(dskb, sizeof(struct net_dm_drop_point));
->  	nla->nla_len += NLA_ALIGN(sizeof(struct net_dm_drop_point));
-> -	memcpy(msg->points[msg->entries].pc, &location, sizeof(void *));
-> -	msg->points[msg->entries].count = 1;
-> +	memcpy(point->pc, &location, sizeof(void *));
-> +	point->count = 1;
->  	msg->entries++;
->  
->  	if (!timer_pending(&data->send_timer)) {
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> I think a WARN_ON() is in order here, I'd personally just replace the
+> netdev_info with a WARN_ON, without the fallback.
+
+It is good that we agree that failure to default qdisc is pretty
+critical.  I guess we disagree on whether (1) we keep network
+functioning in a degraded state, (2) drop all packets on net_device
+such that people notice.
+
+This change propose (1) keeping the box functioning.  For me it was a
+pretty bad experience, that when I pushed a new kernel over the network
+to my embedded box, then I lost all network connectivity.  I
+fortunately had serial console access (as this was not an OpenWRT box
+but a full devel board) so I could debug, but I could no-longer upgrade
+the kernel.  I clearly noticed, as the box was not operational, but I
+guess most people would just give up at this point. (Imagine a small
+OpenWRT box config setting default_qdisc to fq_codel, which brick the
+box as it cannot allocate memory).
+
+I hope that people will notice this degrade state, when they start to
+transfer data to the device.  Because running 'noqueue' on a physical
+device will result in net_crit_ratelimited() messages below:
+
+ [86971.609318] Virtual device eth0 asks to queue packet!
+ [86971.622183] Virtual device eth0 asks to queue packet!
+ [86971.627510] Virtual device eth0 asks to queue packet!
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
