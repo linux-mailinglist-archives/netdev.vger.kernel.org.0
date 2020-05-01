@@ -2,198 +2,310 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1804C1C1DA7
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 21:09:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFEBB1C1DAC
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 21:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730496AbgEATJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 15:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729766AbgEATJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 15:09:34 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5F8C061A0C;
-        Fri,  1 May 2020 12:09:34 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id v63so1950000pfb.10;
-        Fri, 01 May 2020 12:09:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3jiAPaFiQIwup5Rl6bkdApLMWC+g3p/Kt1dCChwBGvU=;
-        b=HYqlOnF6xR6P3tL0oO/ZOqArCr8YiLqKR4ycbsI5PMe3b5gDjQkRgVRsbYe3Kv3H3+
-         dXtnOI8X8c2MGLulvZM72mVH6ibte2GRWWFNyciyYoXoXh+rXm6wqWvV5rNCJCPUopdm
-         ISIf/vnLr2f7BzTpAy+c+79V1cciunTnlLDKhmrvAu/OwhpyrS5UPfBvaO/czF8EPEWq
-         DdfSq4C4qjpR9VjB/lk0qizsNTNH9H8Wq9OFsc3UPtg08wDYJHCXqikvNZ5wr05PJApm
-         FiT9QFCi8o7XGYx/LTjCTltXKCM/KFbNS2nPDp4Cd1vES1hnsfUtx/mf79t5c7ckVfnT
-         ItvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3jiAPaFiQIwup5Rl6bkdApLMWC+g3p/Kt1dCChwBGvU=;
-        b=ix4Q/15qdRUxKFiCNYvT2bTADGj5pvYSXddROrbkvS5Q+aWTVFla8w2pRjqshPR9kJ
-         FNcK624y/iyu9xkIvcrVneWGLTjqkaJnqFw+ju23P8xcuDRycYpCSP4Js+x8ifAOB5gz
-         7FGCKf+1IFyXdExqc43pOIsUyPDXvEvmcp5VuHIKpXUPV+9XDO0kp/o5ahR644NT+ELX
-         cKwbw/4zp0mU7OOmDSJC9wvL1SOvCVm89yZ44LgwjVQqYiHkVJ53uEBBzN8/Vm+BETEh
-         L1Mp3BYGSVm+GbRECPQKSaynRs+Uku5x9L6JNlXAQzFMpuCCQ1gJbLDlhCI7xMuriCYH
-         eGFQ==
-X-Gm-Message-State: AGi0PubceWZrYORAp0cXltrI1yrLV7n5PzorYlryL/bhphQyv9qLLC5d
-        1qbnRmtYWFZvKjwbGP9v4EM=
-X-Google-Smtp-Source: APiQypIBl1/RFUI1dVmI7MYjTIw4oUr1NcTWvPch+Z2udtILKSBl834zc6fvAKWhOD4ilquX0Pj6eg==
-X-Received: by 2002:a62:e803:: with SMTP id c3mr5338940pfi.228.1588360173626;
-        Fri, 01 May 2020 12:09:33 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8cd4])
-        by smtp.gmail.com with ESMTPSA id r4sm2609313pgi.6.2020.05.01.12.09.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 May 2020 12:09:32 -0700 (PDT)
-Date:   Fri, 1 May 2020 12:09:30 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
- compatibility
-Message-ID: <20200501190930.ptxyml5o4rviyo26@ast-mbp.dhcp.thefacebook.com>
-References: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
+        id S1730484AbgEATM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 15:12:27 -0400
+Received: from mta-out1.inet.fi ([62.71.2.226]:53560 "EHLO johanna2.inet.fi"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729839AbgEATM0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 15:12:26 -0400
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrieejgddufeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefuvfhfhffkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefnrghurhhiucflrghkkhhuuceolhgruhhrihdrjhgrkhhkuhesphhprdhinhgvthdrfhhiqeenucggtffrrghtthgvrhhnpeetueejffffuefgheeihffhhfekjeetudekvdethedvtefgleejvdeijefhgfelgeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgrdhinhenucfkphepkeegrddvgeekrdeftddrudelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudefhegnpdhinhgvthepkeegrddvgeekrdeftddrudelhedpmhgrihhlfhhrohhmpeeolhgruhhjrghkqdefsehmsghogidrihhnvghtrdhfihequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehlvghonheskhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhhitggpshifshgusehrvggrlhhtvghkrdgtohhmqe
+Received: from [192.168.1.135] (84.248.30.195) by johanna2.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
+        id 5E361F593C468991; Fri, 1 May 2020 22:12:08 +0300
+Subject: Re: NET: r8168/r8169 identifying fix
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        nic_swsd@realtek.com
+References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
+ <20200413113430.GM334007@unreal>
+ <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
+ <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
+ <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
+ <4860e57e-93e4-24f5-6103-fa80acbdfa0d@pp.inet.fi>
+ <70cfcfb3-ce2a-9d47-b034-b94682e46e35@gmail.com>
+ <d4e622f1-7bd1-d884-20b2-c16e60b42bf2@pp.inet.fi>
+ <8db3cdc1-b63d-9028-e4bd-659e6d213f8f@pp.inet.fi>
+ <2f7aeeb2-2a19-da7c-7436-71203a29f9e8@gmail.com>
+ <d9781ac2-c7b7-0399-578e-cc43c4629147@pp.inet.fi>
+ <04107d6d-d07b-7589-0cef-0d39d86484f3@pp.inet.fi>
+ <b9a31f5a-e140-5cd4-d7aa-21a2fa2c27a0@gmail.com>
+ <de1bf1a4-8ce3-3352-3ff6-339206fa871e@pp.inet.fi>
+ <a940416a-2cc9-c27b-1660-df19273b7478@pp.inet.fi>
+ <ae6fe5f1-d7d5-c0ca-a206-48940ee80681@pp.inet.fi>
+ <303643ef-91b1-462a-5ecd-6217ca7b325f@pp.inet.fi>
+ <db508b70-e5fb-2abf-8012-c168fe7535a7@pp.inet.fi>
+ <f3faeea9-13b7-d6ca-7cce-6ec0278d7437@pp.inet.fi>
+ <2c9b8110-3be9-28d8-a5e1-729686fe6f12@gmail.com>
+From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
+Message-ID: <2359c10c-0f62-c12a-645b-b7f9db315fc4@pp.inet.fi>
+Date:   Fri, 1 May 2020 22:12:07 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
+In-Reply-To: <2c9b8110-3be9-28d8-a5e1-729686fe6f12@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 02:07:43PM -0500, Josh Poimboeuf wrote:
-> Objtool decodes instructions and follows all potential code branches
-> within a function.  But it's not an emulator, so it doesn't track
-> register values.  For that reason, it usually can't follow
-> intra-function indirect branches, unless they're using a jump table
-> which follows a certain format (e.g., GCC switch statement jump tables).
-> 
-> In most cases, the generated code for the BPF jump table looks a lot
-> like a GCC jump table, so objtool can follow it.  However, with
-> RETPOLINE=n, GCC keeps the jump table address in a register, and then
-> does 160+ indirect jumps with it.  When objtool encounters the indirect
-> jumps, it can't tell which jump table is being used (or even whether
-> they might be sibling calls instead).
-> 
-> This was fixed before by disabling an optimization in ___bpf_prog_run(),
-> using the "optimize" function attribute.  However, that attribute is bad
-> news.  It doesn't append options to the command-line arguments.  Instead
-> it starts from a blank slate.  And according to recent GCC documentation
-> it's not recommended for production use.  So revert the previous fix:
-> 
->   3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
-> 
-> With that reverted, solve the original problem in a different way by
-> getting rid of the "goto select_insn" indirection, and instead just goto
-> the jump table directly.  This simplifies the code a bit and helps GCC
-> generate saner code for the jump table branches, at least in the
-> RETPOLINE=n case.
-> 
-> But, in the RETPOLINE=y case, this simpler code actually causes GCC to
-> generate far worse code, ballooning the function text size by +40%.  So
-> leave that code the way it was.  In fact Alexei prefers to leave *all*
-> the code the way it was, except where needed by objtool.  So even
-> non-x86 RETPOLINE=n code will continue to have "goto select_insn".
-> 
-> This stuff is crazy voodoo, and far from ideal.  But it works for now.
-> Eventually, there's a plan to create a compiler plugin for annotating
-> jump tables.  That will make this a lot less fragile.
+Hi,
 
-I don't like this commit log.
-Here you're saying that the code recognized by objtool is sane and good
-whereas well optimized gcc code is somehow voodoo and bad.
-That is just wrong.
-goto select_insn; vs goto *jumptable[insn->code]; is not a contract that
-compiler has to follow. The compiler is free to convert direct goto
-into indirect and the other way around.
-For all practical purposes this patch is a band aid for objtool that will fall
-apart in the future. Just like the previous patch that survived less than a year.
-It's not clear whether old one worked for clang.
-It's not clear whether new one will work for clang.
-retpoline=y causing code bloat is a different issue that can be investigated
-separately. gcc/clang have different modes of generating retpoline thunks.
-May be one of those flags can help.
 
-In other words I'm ok with the patch, but commit log needs to be reworded.
+On 19.4.2020 19.00, Heiner Kallweit wrote:
+> On 19.04.2020 18:49, Lauri Jakku wrote:
+>> Hi,
+>>
+>> On 19.4.2020 18.09, Lauri Jakku wrote:
+>>> Hi,
+>>>
+>>> On 18.4.2020 21.46, Lauri Jakku wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> On 18.4.2020 14.06, Lauri Jakku wrote:
+>>>>> Hi,
+>>>>>
+>>>>> On 17.4.2020 10.30, Lauri Jakku wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> On 17.4.2020 9.23, Lauri Jakku wrote:
+>>>>>>> On 16.4.2020 23.50, Heiner Kallweit wrote:
+>>>>>>>> On 16.04.2020 22:38, Lauri Jakku wrote:
+>>>>>>>>> Hi
+>>>>>>>>>
+>>>>>>>>> On 16.4.2020 23.10, Lauri Jakku wrote:
+>>>>>>>>>> On 16.4.2020 23.02, Heiner Kallweit wrote:
+>>>>>>>>>>> On 16.04.2020 21:58, Lauri Jakku wrote:
+>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>
+>>>>>>>>>>>> On 16.4.2020 21.37, Lauri Jakku wrote:
+>>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> On 16.4.2020 21.26, Heiner Kallweit wrote:
+>>>>>>>>>>>>>> On 16.04.2020 13:30, Lauri Jakku wrote:
+>>>>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> 5.6.3-2-MANJARO: stock manjaro kernel, without modifications --> network does not work
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> 5.6.3-2-MANJARO-lja: No attach check, modified kernel (r8169 mods only) --> network does not work
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> 5.6.3-2-MANJARO-with-the-r8169-patch: phy patched + r8169 mods -> devices show up ok, network works
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> All different initcpio's have realtek.ko in them.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Thanks for the logs. Based on the logs you're presumable affected by a known BIOS bug.
+>>>>>>>>>>>>>> Check bug tickets 202275 and 207203 at bugzilla.kernel.org.
+>>>>>>>>>>>>>> In the first referenced tickets it's about the same mainboard (with earlier BIOS version).
+>>>>>>>>>>>>>> BIOS on this mainboard seems to not initialize the network chip / PHY correctly, it reports
+>>>>>>>>>>>>>> a random number as PHY ID, resulting in no PHY driver being found.
+>>>>>>>>>>>>>> Enable "Onboard LAN Boot ROM" in the BIOS, and your problem should be gone.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>> OK, I try that, thank you :)
+>>>>>>>>>>>>>
+>>>>>>>>>>>> It seems that i DO have the ROM's enabled, i'm now testing some mutex guard for phy state and try to use it as indicator
+>>>>>>>>>>>>
+>>>>>>>>>>>> that attach has been done. One thing i've noticed is that driver needs to be reloaded to allow traffic (ie. ping works etc.)
+>>>>>>>>>>>>
+>>>>>>>>>>> All that shouldn't be needed. Just check with which PHY ID the PHY comes up.
+>>>>>>>>>>> And what do you mean with "it seems"? Is the option enabled or not?
+>>>>>>>>>>>
+>>>>>>>>>> I do have ROM's enabled, and it does not help with my issue.
+>>>>>>>> Your BIOS is a beta version, downgrading to F7 may help. Then you have the same
+>>>>>>>> mainboard + BIOS as the user who opened bug ticket 202275.
+>>>>>>>>
+>>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc2077002
+>>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: MAC version: 23
+>>>>>>>
+>>>>>>> ....
+>>>>>>>
+>>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
+>>>>>>>
+>>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: MAC version: 23
+>>>>>>>
+>>>>>>> .. after module unload & load cycle:
+>>>>>>>
+>>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
+>>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: MAC version: 23
+>>>>>>>
+>>>>>>>
+>>>>>>> it seem to be the case that the phy_id chances onetime, then stays the same. I'll do few shutdowns and see
+>>>>>>>
+>>>>>>> is there a pattern at all .. next i'm going to try how it behaves, if i read mac/phy versions twice on MAC version 23.
+>>>>>>>
+>>>>>>>
+>>>>>>> The BIOS downgrade: I'd like to solve this without downgrading BIOS. If I can't, then I'll do systemd-service that
+>>>>>>>
+>>>>>>> reloads r8169 driver at boot, cause then network is just fine.
+>>>>>>>
+>>>>>>>
+>>>>>> What i've gathered samples now, there is three values for PHY ID:
+>>>>>>
+>>>>>> [sillyme@MinistryOfSillyWalk KernelStuff]$ sudo journalctl |grep "PHY ver"
+>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0xc2077002
+>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc2077002
+>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0xc1071002
+>>>>>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc1071002
+>>>>>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0xc1071002
+>>>>>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc1071002
+>>>>>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0xc1071002
+>>>>>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc1071002
+>>>>>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
+>>>>>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
+>>>>>>
+>>>>>> I dont know are those hard coded or what, and are they device specific how much.
+>>>>>>
+>>>>>> i haven't coldbooted things up, that may be that something to check do they vary how per coldboot.
+>>>>>>
+>>>>>>>>> I check the ID, and revert all other changes, and check how it is working after adding the PHY id to list.
+>>>>>>>>>
+>>>>> What i've now learned: the patch + script + journald services -> Results working network, but it is still a workaround.
+>>>>>
+>>>> Following patch trusts the MAC version, another thing witch could help is to derive method to do 2dn pass of the probeing:
+>>>>
+>>>> if specific MAC version is found.
+>>>>
+>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>>>> index acd122a88d4a..62b37a1abc24 100644
+>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>>> @@ -5172,13 +5172,18 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
+>>>>          if (!tp->phydev) {
+>>>>                  mdiobus_unregister(new_bus);
+>>>>                  return -ENODEV;
+>>>> -       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+>>>> -               /* Most chip versions fail with the genphy driver.
+>>>> -                * Therefore ensure that the dedicated PHY driver is loaded.
+>>>> -                */
+>>>> -               dev_err(&pdev->dev, "Not known MAC version.\n");
+>>>> -               mdiobus_unregister(new_bus);
+>>>> -               return -EUNATCH;
+>>>> +       } else {
+>>>> +               dev_info(&pdev->dev, "PHY version: 0x%x\n", tp->phydev->phy_id);
+>>>> +               dev_info(&pdev->dev, "MAC version: %d\n", tp->mac_version);
+>>>> +
+>>>> +               if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+>>>> +                       /* Most chip versions fail with the genphy driver.
+>>>> +                        * Therefore ensure that the dedicated PHY driver is loaded.
+>>>> +                        */
+>>>> +                       dev_err(&pdev->dev, "Not known MAC/PHY version.\n", tp->phydev->phy_id);
+>>>> +                       mdiobus_unregister(new_bus);
+>>>> +                       return -EUNATCH;
+>>>> +               }
+>>>>          }
+>>>>
+>>>>          /* PHY will be woken up in rtl_open() */
+>>>>
+>>> I just got bleeding edge 5.7.0-1 kernel compiled + firmware's updated.. and  now up'n'running. There is one (WARN_ONCE) stack trace coming from driver, i think i tinker with it next, with above patch the network devices shows up and they can be configured.
+>>>
+>> I tought to ask first, before going to make new probe_type for errorneus hw (propetype + retry counter) to do re-probe if requested, N times. Or should the r8169_main.c return deferred probe on error on some MAC enums ? Which approach is design-wise sound ?
+>>
+>> I just tought that the DEFERRED probe may just do the trick i'm looking ways to implement the re-probeing... hmm. I try the deferred thing and check would that help.
+>>
+> Playing with options to work around the issue is of course a great way to
+> learn about the kernel. However it's questionable whether a workaround in
+> the driver is acceptable for dealing with the broken BIOS of exactly one
+>> 10 yrs old board (for which even a userspace workaround exists).
 
-> Fixes: 3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> ---
->  include/linux/compiler-gcc.h   |  2 --
->  include/linux/compiler_types.h |  4 ----
->  kernel/bpf/core.c              | 10 +++++++---
->  3 files changed, 7 insertions(+), 9 deletions(-)
-> 
-> diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-> index cf294faec2f8..2c8583eb5de8 100644
-> --- a/include/linux/compiler-gcc.h
-> +++ b/include/linux/compiler-gcc.h
-> @@ -176,5 +176,3 @@
->  #else
->  #define __diag_GCC_8(s)
->  #endif
-> -
-> -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
-> diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-> index e970f97a7fcb..58105f1deb79 100644
-> --- a/include/linux/compiler_types.h
-> +++ b/include/linux/compiler_types.h
-> @@ -203,10 +203,6 @@ struct ftrace_likely_data {
->  #define asm_inline asm
->  #endif
->  
-> -#ifndef __no_fgcse
-> -# define __no_fgcse
-> -#endif
-> -
->  /* Are two types/vars the same type (ignoring qualifiers)? */
->  #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
->  
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 916f5132a984..eec470c598ad 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -1364,7 +1364,7 @@ u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
->   *
->   * Decode and execute eBPF instructions.
->   */
-> -static u64 __no_fgcse ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
-> +static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
->  {
->  #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
->  #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
-> @@ -1384,11 +1384,15 @@ static u64 __no_fgcse ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u6
->  #undef BPF_INSN_2_LBL
->  	u32 tail_call_cnt = 0;
->  
-> +#if defined(CONFIG_X86_64) && !defined(CONFIG_RETPOLINE)
-> +#define CONT	 ({ insn++; goto *jumptable[insn->code]; })
-> +#define CONT_JMP ({ insn++; goto *jumptable[insn->code]; })
-> +#else
->  #define CONT	 ({ insn++; goto select_insn; })
->  #define CONT_JMP ({ insn++; goto select_insn; })
-> -
->  select_insn:
->  	goto *jumptable[insn->code];
-> +#endif
->  
->  	/* ALU */
->  #define ALU(OPCODE, OP)			\
-> @@ -1547,7 +1551,7 @@ static u64 __no_fgcse ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u6
->  		 * where arg1_type is ARG_PTR_TO_CTX.
->  		 */
->  		insn = prog->insnsi;
-> -		goto select_insn;
-> +		CONT;
+problem recognized: libphy-module get's unloaded for some reason before 
+r8169 driver loads -> missing lowlevel functionality -> not working 
+driver. This only occurs at 1st load of module.. seeking solution.
 
-This is broken. I don't think you've run basic tests with this patch.
+
+There is [last unloaded: libphy] entries in log BEFORE r8169 is probed 
+first time.
+
+
+Any clue what is responsible for unloading to occur ?
+
+
+>>>>>>>>>>>>>>> The problem with old method seems to be, that device does not have had time to attach before the
+>>>>>>>>>>>>>>> PHY driver check.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> The patch:
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>>>>>> index bf5bf05970a2..acd122a88d4a 100644
+>>>>>>>>>>>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>>>>>> @@ -5172,11 +5172,11 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
+>>>>>>>>>>>>>>>             if (!tp->phydev) {
+>>>>>>>>>>>>>>> mdiobus_unregister(new_bus);
+>>>>>>>>>>>>>>>                     return -ENODEV;
+>>>>>>>>>>>>>>> -       } else if (!tp->phydev->drv) {
+>>>>>>>>>>>>>>> +       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+>>>>>>>>>>>>>>>                     /* Most chip versions fail with the genphy driver.
+>>>>>>>>>>>>>>>                      * Therefore ensure that the dedicated PHY driver is loaded.
+>>>>>>>>>>>>>>>                      */
+>>>>>>>>>>>>>>> -               dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
+>>>>>>>>>>>>>>> +               dev_err(&pdev->dev, "Not known MAC version.\n");
+>>>>>>>>>>>>>>> mdiobus_unregister(new_bus);
+>>>>>>>>>>>>>>>                     return -EUNATCH;
+>>>>>>>>>>>>>>>             }
+>>>>>>>>>>>>>>> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+>>>>>>>>>>>>>>> index 66b8c61ca74c..aba2b304b821 100644
+>>>>>>>>>>>>>>> --- a/drivers/net/phy/phy-core.c
+>>>>>>>>>>>>>>> +++ b/drivers/net/phy/phy-core.c
+>>>>>>>>>>>>>>> @@ -704,6 +704,10 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
+>>>>>>>>>>>>>>>        static int __phy_read_page(struct phy_device *phydev)
+>>>>>>>>>>>>>>>      {
+>>>>>>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
+>>>>>>>>>>>>>>> +       if (!phydev->attached_dev)
+>>>>>>>>>>>>>>> +               return -EOPNOTSUPP;
+>>>>>>>>>>>>>>> +
+>>>>>>>>>>>>>>>             if (WARN_ONCE(!phydev->drv->read_page, "read_page callback not available, PHY driver not loaded?\n"))
+>>>>>>>>>>>>>>>                     return -EOPNOTSUPP;
+>>>>>>>>>>>>>>>      @@ -712,12 +716,17 @@ static int __phy_read_page(struct phy_device *phydev)
+>>>>>>>>>>>>>>>        static int __phy_write_page(struct phy_device *phydev, int page)
+>>>>>>>>>>>>>>>      {
+>>>>>>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
+>>>>>>>>>>>>>>> +       if (!phydev->attached_dev)
+>>>>>>>>>>>>>>> +               return -EOPNOTSUPP;
+>>>>>>>>>>>>>>> +
+>>>>>>>>>>>>>>>             if (WARN_ONCE(!phydev->drv->write_page, "write_page callback not available, PHY driver not loaded?\n"))
+>>>>>>>>>>>>>>>                     return -EOPNOTSUPP;
+>>>>>>>>>>>>>>>               return phydev->drv->write_page(phydev, page);
+>>>>>>>>>>>>>>>      }
+>>>>>>>>>>>>>>>      +
+>>>>>>>>>>>>>>>      /**
+>>>>>>>>>>>>>>>       * phy_save_page() - take the bus lock and save the current page
+>>>>>>>>>>>>>>>       * @phydev: a pointer to a &struct phy_device
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> 15. huhtik. 2020, 19.18, Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> kirjoitti:
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>         On 15.04.2020 16:39, Lauri Jakku wrote:
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>             Hi, There seems to he Something odd problem, maybe timing related. Stripped version not workingas expected. I get back to you, when i have it working.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>         There's no point in working on your patch. W/o proper justification it
+>>>>>>>>>>>>>>>         isn't acceptable anyway. And so far we still don't know which problem
+>>>>>>>>>>>>>>>         you actually have.
+>>>>>>>>>>>>>>>         FIRST please provide the requested logs and explain the actual problem
+>>>>>>>>>>>>>>>         (incl. the commit that caused the regression).
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>             13. huhtik. 2020, 14.46, Lauri Jakku <ljakku77@gmail.com <mailto:ljakku77@gmail.com>> kirjoitti: Hi, Fair enough, i'll strip them. -lja On 2020-04-13 14:34, Leon Romanovsky wrote:
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>             On Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri Jakku wrote: Hi, Comments inline. On 2020-04-13 13:58, Leon Romanovsky wrote: On Mon, Apr 13, 2020 at 01:30:13PM +0300, Lauri Jakku wrote: From 2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00 2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 Apr 2020 13:18:35 +0300 Subject: [PATCH] NET: r8168/r8169 identifying fix The driver installation determination made properly by checking PHY vs DRIVER id's. --- drivers/net/ethernet/realtek/r8169_main.c | 70 ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 +++- 2 files changed, 72 insertions(+), 9 deletions(-) I would say that most of the code is debug prints. I tought that they are helpful to keep, they are using the debug calls, so they are not visible if user does not like those. You are missing the point of who are your users. Users want to have working device and the code. They don't need or like to debug their kernel. Thanks
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
