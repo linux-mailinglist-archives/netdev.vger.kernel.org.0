@@ -2,110 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9E51C1B17
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 19:03:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F35341C1B49
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 19:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729877AbgEARDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 13:03:21 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:37767 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728975AbgEARDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 13:03:21 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jUZ4I-0001WR-EZ; Fri, 01 May 2020 17:03:18 +0000
-To:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Dirk Brandewie <dirk.j.brandewie@intel.com>,
-        Jeff Pieper <jeffrey.e.pieper@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Subject: re: e1000: Add support for the CE4100 reference platform
-Message-ID: <e7e6b67a-69fe-ce79-cba5-d88020144796@canonical.com>
-Date:   Fri, 1 May 2020 18:03:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1730133AbgEARKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 13:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57082 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728495AbgEARKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 13:10:19 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9937C061A0C;
+        Fri,  1 May 2020 10:10:18 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id t12so7745093edw.3;
+        Fri, 01 May 2020 10:10:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mdsa9GHdUWtpaN13DncP5RB/gp8GCrhEqRpKlncbW8M=;
+        b=VFix+ZzzMeP4eNt2Ma6wISbnBws23mS6CK24e9btsoxi/rWAL28gHCi3lnw01N2Mso
+         xg7A5BAI4W+HY83Q4a9smJTfbPRB6vX6oaiV3FXBRkn6hDHWIN0DGdL47vAFMZS93EAF
+         Xkpme5PxE0x9U6DQBOSk3KEchoiisb+4c0tORK82VbZJgmveYqqkviH8RVMWJ5kFg7Xj
+         2ccbyQziO0INOSv7Rs+puN5g+q31+TzX5QZpBq0IJFlBvvq+RRHCqRO29F3xDWvwUxN3
+         UqXlO2R0Jo/A2g7JJ6pIyPJD/KyOOoAubmsnNLXOyDELxVxqF3Zt+TX4hw9AX1+H4XOu
+         eayg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mdsa9GHdUWtpaN13DncP5RB/gp8GCrhEqRpKlncbW8M=;
+        b=KH6APUGmwO6Cgkv0Yr7wskij2sg1bsKpbIBT431RhNEcBwvYBoLxbSPlVJsfpbeZTL
+         vCcgVwDhyLs+IZgNCbXTmXe76lAGsxOKGJJRGs6oJnU/JaaESiUOP2BEOBiiVoZtMXwS
+         itE3ot4Qpu+ZMN5kV+t7hPt4hKEnEDzu2tZXC03SMnL/4jS55O4AzAeMDv2pHqtKRK6q
+         x5ng3vIjQiNM+otZEM3ES+LCfvu76cma6E40FxPrnw359XGCs9B9ArLCYN7RSpbRDYMv
+         FVGuoIT1NIdt5pLzqWHaqFHb4EOYO8AiQKJRTjgKNWuIqb2GfekUD/yua822zKWDNrHS
+         d29A==
+X-Gm-Message-State: AGi0PuZftMEqRK0YqDO+jlQbgsRnLa52uE4NxttneIjJSKH/r4KGK4rM
+        7UKqp+Sc0w5Ixot+lc7HHGkYceDwRoIU+Ye88T4=
+X-Google-Smtp-Source: APiQypIlznByGASsngfncYgj2mcw6Vrs/KqUKB8Ee7ab33jQKBgHBdr9tJ2P2JZNmmWhIHFqaa9FcURiBcyKlJ1LWcU=
+X-Received: by 2002:a50:fc06:: with SMTP id i6mr4256455edr.110.1588353017519;
+ Fri, 01 May 2020 10:10:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
+ <20200429201644.1144546-9-martin.blumenstingl@googlemail.com> <20200501154448.GH128733@lunn.ch>
+In-Reply-To: <20200501154448.GH128733@lunn.ch>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Fri, 1 May 2020 19:10:06 +0200
+Message-ID: <CAFBinCCbtLRomdikKWkS+HOFoek4cGhN4L91FQfQ4rbKTV-xvg@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 08/11] net: stmmac: dwmac-meson8b: add support for
+ the RX delay configuration
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     robh+dt@kernel.org, f.fainelli@gmail.com,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        jianxin.pan@amlogic.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Andrew,
 
-Static analysis with Coverity has detected an issue with setting the
-speed control on the e1000 driver. This was introduced back in 2011 with
-the following commit:
+On Fri, May 1, 2020 at 5:44 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > +     if (rx_dly_config & PRG_ETH0_ADJ_ENABLE) {
+> > +             /* The timing adjustment logic is driven by a separate clock */
+> > +             ret = meson8b_devm_clk_prepare_enable(dwmac,
+> > +                                                   dwmac->timing_adj_clk);
+> > +             if (ret) {
+> > +                     dev_err(dwmac->dev,
+> > +                             "Failed to enable the timing-adjustment clock\n");
+> > +                     return ret;
+> > +             }
+> > +     }
+>
+> Hi Martin
+>
+> It is a while since i used the clk API. I thought the get_optional()
+> call returned a NULL pointer if the clock does not exist.
+> clk_prepare_enable() passed a NULL pointer is a NOP, but it also does
+> not return an error. So if the clock does not exist, you won't get
+> this error, the code keeps going, configures the hardware, but it does
+> not work.
+>
+> I think you need to check dwmac->timing_adj_clk != NULL here, and
+> error out if DT has properties which require it.
+Thank you for your excellent code review quality (as always)!
+you are right and I will fix that in the next version
 
-commit 5377a4160bb65ee4dd11b4b1d081d86d56d92bff
-Author: Dirk Brandewie <dirk.j.brandewie@intel.com>
-Date:   Thu Jan 6 14:29:54 2011 +0000
 
-    e1000: Add support for the CE4100 reference platform
-
-The Coverity analysis is as follows for function
-e1000_config_mac_to_phy() in source
-drivers/net/ethernet/intel/e1000/e1000_hw.c:
-
-Operands don't affect result  (CONSTANT_EXPRESSION_RESULT)
-result_independent_of_operands: phy_data & 0x200000 is always 0
-regardless of the values of its operands. This occurs as the logical
-operand of if.
-
-1936                if (phy_data & RTL_PHY_CTRL_SPD_100)
-1937                        ctrl |= E1000_CTRL_SPD_100;
-1938                else
-1939                        ctrl |= E1000_CTRL_SPD_10;
-
-phy_data is a u16 and it is being and-ed with 0x200000 and this always
-is zero, so the E1000_CTRL_SPD_100 is never set.
-
-Colin
+Martin
