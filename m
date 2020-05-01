@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 356231C1823
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:46:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 510411C18A5
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:57:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729628AbgEAOpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:45:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52274 "EHLO mail.kernel.org"
+        id S1729814AbgEAOse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:48:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52676 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729292AbgEAOpG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 May 2020 10:45:06 -0400
+        id S1729375AbgEAOpI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 10:45:08 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0863224958;
+        by mail.kernel.org (Postfix) with ESMTPSA id F210424957;
         Fri,  1 May 2020 14:45:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588344305;
-        bh=CDa6UpW7/RGJVktJniWzFL5SPPJXC3PdL3ikarRe5hM=;
+        bh=VMY4rTaMjFiAbEot2p58ZYqw+5MMQ8SFn49S3iC3TiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KzTdahS/PrJiGnxqv7C3Le46BJYDHNRcbR3uR0sicVk/9txPJb8iaFZ9z2KOlyMOD
-         Xx9JRf9ePmvur3+sKCtgA9yE/PvUUUoVkOblkDkxuiJE/UBWp1XSt1U08wnhOD/wzN
-         JZfWfmfUaHdRAZA400+81Bv6oAZMmFYnMo0/24ao=
+        b=KLH3o1S11gwM0xok1neh+nlU/5gFvdKfbfwmKCYmFxnFYK5GyAAvcfqD50kfEawfY
+         0wEBIDZF5b80oAEy0xk9AwzJkUIG/BYGEPDGdaqRn1wrzXb0Vo2tpKkUcMEGXmXtFW
+         0E1FNBp1kFlnjyQvqfedKIdOVLWoYsRXr3Ky5umE=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUWuT-00FCe8-O9; Fri, 01 May 2020 16:45:01 +0200
+        id 1jUWuT-00FCeD-P7; Fri, 01 May 2020 16:45:01 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH 20/37] docs: networking: device drivers: convert dec/dmfe.txt to ReST
-Date:   Fri,  1 May 2020 16:44:42 +0200
-Message-Id: <e05cabf197a58952ad1610adfe60c9f400465f5d.1588344146.git.mchehab+huawei@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 21/37] docs: networking: device drivers: convert dlink/dl2k.txt to ReST
+Date:   Fri,  1 May 2020 16:44:43 +0200
+Message-Id: <5c65b062416ecdac93cf12826ea04d95776cf8c4.1588344146.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588344146.git.mchehab+huawei@kernel.org>
 References: <cover.1588344146.git.mchehab+huawei@kernel.org>
@@ -47,143 +46,426 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
-- adjust titles and chapters, adding proper markups;
-- comment out text-only TOC from html/pdf output;
 - mark code blocks and literals as such;
-- mark tables as such;
+- mark lists as such;
 - adjust identation, whitespaces and blank lines where needed;
 - add to networking/index.rst.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- .../device_drivers/dec/{dmfe.txt => dmfe.rst} | 35 +++++++++++--------
- .../networking/device_drivers/index.rst       |  1 +
- MAINTAINERS                                   |  2 +-
- drivers/net/ethernet/dec/tulip/Kconfig        |  2 +-
- 4 files changed, 23 insertions(+), 17 deletions(-)
- rename Documentation/networking/device_drivers/dec/{dmfe.txt => dmfe.rst} (68%)
+ .../dlink/{dl2k.txt => dl2k.rst}              | 228 ++++++++++--------
+ .../networking/device_drivers/index.rst       |   1 +
+ drivers/net/ethernet/dlink/dl2k.c             |   2 +-
+ 3 files changed, 132 insertions(+), 99 deletions(-)
+ rename Documentation/networking/device_drivers/dlink/{dl2k.txt => dl2k.rst} (59%)
 
-diff --git a/Documentation/networking/device_drivers/dec/dmfe.txt b/Documentation/networking/device_drivers/dec/dmfe.rst
-similarity index 68%
-rename from Documentation/networking/device_drivers/dec/dmfe.txt
-rename to Documentation/networking/device_drivers/dec/dmfe.rst
-index 25320bf19c86..c4cf809cad84 100644
---- a/Documentation/networking/device_drivers/dec/dmfe.txt
-+++ b/Documentation/networking/device_drivers/dec/dmfe.rst
-@@ -1,6 +1,11 @@
+diff --git a/Documentation/networking/device_drivers/dlink/dl2k.txt b/Documentation/networking/device_drivers/dlink/dl2k.rst
+similarity index 59%
+rename from Documentation/networking/device_drivers/dlink/dl2k.txt
+rename to Documentation/networking/device_drivers/dlink/dl2k.rst
+index cba74f7a3abc..ccdb5d0d7460 100644
+--- a/Documentation/networking/device_drivers/dlink/dl2k.txt
++++ b/Documentation/networking/device_drivers/dlink/dl2k.rst
+@@ -1,10 +1,13 @@
 +.. SPDX-License-Identifier: GPL-2.0
+ 
+-    D-Link DL2000-based Gigabit Ethernet Adapter Installation
+-    for Linux
+-    May 23, 2002
++=========================================================
++D-Link DL2000-based Gigabit Ethernet Adapter Installation
++=========================================================
 +
-+==============================================================
-+Davicom DM9102(A)/DM9132/DM9801 fast ethernet driver for Linux
-+==============================================================
++May 23, 2002
 +
- Note: This driver doesn't have a maintainer.
++.. Contents
  
--Davicom DM9102(A)/DM9132/DM9801 fast ethernet driver for Linux.
- 
- This program is free software; you can redistribute it and/or
- modify it under the terms of the GNU General   Public License
-@@ -16,29 +21,29 @@ GNU General Public License for more details.
- This driver provides kernel support for Davicom DM9102(A)/DM9132/DM9801 ethernet cards ( CNET
- 10/100 ethernet cards uses Davicom chipset too, so this driver supports CNET cards too ).If you
- didn't compile this driver as a module, it will automatically load itself on boot and print a
--line similar to :
-+line similar to::
- 
- 	dmfe: Davicom DM9xxx net driver, version 1.36.4 (2002-01-17)
- 
--If you compiled this driver as a module, you have to load it on boot.You can load it with command :
-+If you compiled this driver as a module, you have to load it on boot.You can load it with command::
- 
- 	insmod dmfe
- 
- This way it will autodetect the device mode.This is the suggested way to load the module.Or you can pass
--a mode= setting to module while loading, like :
-+a mode= setting to module while loading, like::
- 
- 	insmod dmfe mode=0 # Force 10M Half Duplex
- 	insmod dmfe mode=1 # Force 100M Half Duplex
- 	insmod dmfe mode=4 # Force 10M Full Duplex
- 	insmod dmfe mode=5 # Force 100M Full Duplex
- 
--Next you should configure your network interface with a command similar to :
-+Next you should configure your network interface with a command similar to::
- 
- 	ifconfig eth0 172.22.3.18
--                      ^^^^^^^^^^^
-+		      ^^^^^^^^^^^
- 		     Your IP Address
- 
--Then you may have to modify the default routing table with command :
-+Then you may have to modify the default routing table with command::
- 
- 	route add default eth0
- 
-@@ -48,10 +53,10 @@ Now your ethernet card should be up and running.
- 
- TODO:
- 
--Implement pci_driver::suspend() and pci_driver::resume() power management methods.
--Check on 64 bit boxes.
--Check and fix on big endian boxes.
--Test and make sure PCI latency is now correct for all cases.
-+- Implement pci_driver::suspend() and pci_driver::resume() power management methods.
-+- Check on 64 bit boxes.
-+- Check and fix on big endian boxes.
-+- Test and make sure PCI latency is now correct for all cases.
+-Contents
+-========
+  - Compatibility List
+  - Quick Install
+  - Compiling the Driver
+@@ -15,12 +18,13 @@ Contents
  
  
- Authors:
-@@ -60,7 +65,7 @@ Sten Wang <sten_wang@davicom.com.tw >   : Original Author
+ Compatibility List
+-=================
++==================
++
+ Adapter Support:
  
- Contributors:
+-D-Link DGE-550T Gigabit Ethernet Adapter.
+-D-Link DGE-550SX Gigabit Ethernet Adapter.
+-D-Link DL2000-based Gigabit Ethernet Adapter.
++- D-Link DGE-550T Gigabit Ethernet Adapter.
++- D-Link DGE-550SX Gigabit Ethernet Adapter.
++- D-Link DL2000-based Gigabit Ethernet Adapter.
  
--Marcelo Tosatti <marcelo@conectiva.com.br>
--Alan Cox <alan@lxorguk.ukuu.org.uk>
--Jeff Garzik <jgarzik@pobox.com>
--Vojtech Pavlik <vojtech@suse.cz>
-+- Marcelo Tosatti <marcelo@conectiva.com.br>
-+- Alan Cox <alan@lxorguk.ukuu.org.uk>
-+- Jeff Garzik <jgarzik@pobox.com>
-+- Vojtech Pavlik <vojtech@suse.cz>
+ 
+ The driver support Linux kernel 2.4.7 later. We had tested it
+@@ -34,28 +38,32 @@ on the environments below.
+ 
+ Quick Install
+ =============
+-Install linux driver as following command:
++Install linux driver as following command::
++
++    1. make all
++    2. insmod dl2k.ko
++    3. ifconfig eth0 up 10.xxx.xxx.xxx netmask 255.0.0.0
++			^^^^^^^^^^^^^^^\	    ^^^^^^^^\
++					IP		     NETMASK
+ 
+-1. make all
+-2. insmod dl2k.ko
+-3. ifconfig eth0 up 10.xxx.xxx.xxx netmask 255.0.0.0
+-		    ^^^^^^^^^^^^^^^\	    ^^^^^^^^\
+-				    IP		     NETMASK
+ Now eth0 should active, you can test it by "ping" or get more information by
+ "ifconfig". If tested ok, continue the next step.
+ 
+-4. cp dl2k.ko /lib/modules/`uname -r`/kernel/drivers/net
+-5. Add the following line to /etc/modprobe.d/dl2k.conf:
++4. ``cp dl2k.ko /lib/modules/`uname -r`/kernel/drivers/net``
++5. Add the following line to /etc/modprobe.d/dl2k.conf::
++
+ 	alias eth0 dl2k
+-6. Run depmod to updated module indexes.
+-7. Run "netconfig" or "netconf" to create configuration script ifcfg-eth0
++
++6. Run ``depmod`` to updated module indexes.
++7. Run ``netconfig`` or ``netconf`` to create configuration script ifcfg-eth0
+    located at /etc/sysconfig/network-scripts or create it manually.
++
+    [see - Configuration Script Sample]
+ 8. Driver will automatically load and configure at next boot time.
+ 
+ Compiling the Driver
+ ====================
+-  In Linux, NIC drivers are most commonly configured as loadable modules.
++In Linux, NIC drivers are most commonly configured as loadable modules.
+ The approach of building a monolithic kernel has become obsolete. The driver
+ can be compiled as part of a monolithic kernel, but is strongly discouraged.
+ The remainder of this section assumes the driver is built as a loadable module.
+@@ -73,93 +81,108 @@ to compile and link the driver:
+ CD-ROM drive
+ ------------
+ 
+-[root@XXX /] mkdir cdrom
+-[root@XXX /] mount -r -t iso9660 -o conv=auto /dev/cdrom /cdrom
+-[root@XXX /] cd root
+-[root@XXX /root] mkdir dl2k
+-[root@XXX /root] cd dl2k
+-[root@XXX dl2k] cp /cdrom/linux/dl2k.tgz /root/dl2k
+-[root@XXX dl2k] tar xfvz dl2k.tgz
+-[root@XXX dl2k] make all
++::
++
++    [root@XXX /] mkdir cdrom
++    [root@XXX /] mount -r -t iso9660 -o conv=auto /dev/cdrom /cdrom
++    [root@XXX /] cd root
++    [root@XXX /root] mkdir dl2k
++    [root@XXX /root] cd dl2k
++    [root@XXX dl2k] cp /cdrom/linux/dl2k.tgz /root/dl2k
++    [root@XXX dl2k] tar xfvz dl2k.tgz
++    [root@XXX dl2k] make all
+ 
+ Floppy disc drive
+ -----------------
+ 
+-[root@XXX /] cd root
+-[root@XXX /root] mkdir dl2k
+-[root@XXX /root] cd dl2k
+-[root@XXX dl2k] mcopy a:/linux/dl2k.tgz /root/dl2k
+-[root@XXX dl2k] tar xfvz dl2k.tgz
+-[root@XXX dl2k] make all
++::
++
++    [root@XXX /] cd root
++    [root@XXX /root] mkdir dl2k
++    [root@XXX /root] cd dl2k
++    [root@XXX dl2k] mcopy a:/linux/dl2k.tgz /root/dl2k
++    [root@XXX dl2k] tar xfvz dl2k.tgz
++    [root@XXX dl2k] make all
+ 
+ Installing the Driver
+ =====================
+ 
+-  Manual Installation
+-  -------------------
++Manual Installation
++-------------------
++
+   Once the driver has been compiled, it must be loaded, enabled, and bound
+   to a protocol stack in order to establish network connectivity. To load a
+-  module enter the command:
++  module enter the command::
+ 
+-  insmod dl2k.o
++    insmod dl2k.o
+ 
+-  or
++  or::
+ 
+-  insmod dl2k.o <optional parameter>	; add parameter
++    insmod dl2k.o <optional parameter>	; add parameter
+ 
+-  ===============================================================
+-   example: insmod dl2k.o media=100mbps_hd
+-   or	    insmod dl2k.o media=3
+-   or	    insmod dl2k.o media=3,2	; for 2 cards
+-  ===============================================================
++---------------------------------------------------------
++
++  example::
++
++    insmod dl2k.o media=100mbps_hd
++
++   or::
++
++    insmod dl2k.o media=3
++
++   or::
++
++    insmod dl2k.o media=3,2	; for 2 cards
++
++---------------------------------------------------------
+ 
+   Please reference the list of the command line parameters supported by
+   the Linux device driver below.
+ 
+   The insmod command only loads the driver and gives it a name of the form
+   eth0, eth1, etc. To bring the NIC into an operational state,
+-  it is necessary to issue the following command:
++  it is necessary to issue the following command::
+ 
+-  ifconfig eth0 up
++    ifconfig eth0 up
+ 
+   Finally, to bind the driver to the active protocol (e.g., TCP/IP with
+-  Linux), enter the following command:
++  Linux), enter the following command::
+ 
+-  ifup eth0
++    ifup eth0
+ 
+   Note that this is meaningful only if the system can find a configuration
+   script that contains the necessary network information. A sample will be
+   given in the next paragraph.
+ 
+-  The commands to unload a driver are as follows:
++  The commands to unload a driver are as follows::
+ 
+-  ifdown eth0
+-  ifconfig eth0 down
+-  rmmod dl2k.o
++    ifdown eth0
++    ifconfig eth0 down
++    rmmod dl2k.o
+ 
+   The following are the commands to list the currently loaded modules and
+-  to see the current network configuration.
++  to see the current network configuration::
+ 
+-  lsmod
+-  ifconfig
++    lsmod
++    ifconfig
+ 
+ 
+-  Automated Installation
+-  ----------------------
++Automated Installation
++----------------------
+   This section describes how to install the driver such that it is
+   automatically loaded and configured at boot time. The following description
+   is based on a Red Hat 6.0/7.0 distribution, but it can easily be ported to
+   other distributions as well.
+ 
+-  Red Hat v6.x/v7.x
+-  -----------------
++Red Hat v6.x/v7.x
++-----------------
+   1. Copy dl2k.o to the network modules directory, typically
+      /lib/modules/2.x.x-xx/net or /lib/modules/2.x.x/kernel/drivers/net.
+   2. Locate the boot module configuration file, most commonly in the
+-     /etc/modprobe.d/ directory. Add the following lines:
++     /etc/modprobe.d/ directory. Add the following lines::
+ 
+-     alias ethx dl2k
+-     options dl2k <optional parameters>
++	alias ethx dl2k
++	options dl2k <optional parameters>
+ 
+      where ethx will be eth0 if the NIC is the only ethernet adapter, eth1 if
+      one other ethernet adapter is installed, etc. Refer to the table in the
+@@ -180,11 +203,15 @@ parameter. Below is a list of the command line parameters supported by the
+ Linux device
+ driver.
+ 
+-mtu=packet_size			- Specifies the maximum packet size. default
++
++===============================   ==============================================
++mtu=packet_size			  Specifies the maximum packet size. default
+ 				  is 1500.
+ 
+-media=media_type		- Specifies the media type the NIC operates at.
++media=media_type		  Specifies the media type the NIC operates at.
+ 				  autosense	Autosensing active media.
++
++				  ===========	=========================
+ 				  10mbps_hd	10Mbps half duplex.
+ 				  10mbps_fd	10Mbps full duplex.
+ 				  100mbps_hd	100Mbps half duplex.
+@@ -198,85 +225,90 @@ media=media_type		- Specifies the media type the NIC operates at.
+ 				  4		100Mbps full duplex.
+ 				  5          	1000Mbps half duplex.
+ 				  6          	1000Mbps full duplex.
++				  ===========	=========================
+ 
+ 				  By default, the NIC operates at autosense.
+ 				  1000mbps_fd and 1000mbps_hd types are only
+ 				  available for fiber adapter.
+ 
+-vlan=n				- Specifies the VLAN ID. If vlan=0, the
++vlan=n				  Specifies the VLAN ID. If vlan=0, the
+ 				  Virtual Local Area Network (VLAN) function is
+ 				  disable.
+ 
+-jumbo=[0|1]			- Specifies the jumbo frame support. If jumbo=1,
++jumbo=[0|1]			  Specifies the jumbo frame support. If jumbo=1,
+ 				  the NIC accept jumbo frames. By default, this
+ 				  function is disabled.
+ 				  Jumbo frame usually improve the performance
+ 				  int gigabit.
+-				  This feature need jumbo frame compatible 
++				  This feature need jumbo frame compatible
+ 				  remote.
+-				  
+-rx_coalesce=m			- Number of rx frame handled each interrupt.
+-rx_timeout=n			- Rx DMA wait time for an interrupt. 
+-				  If set rx_coalesce > 0, hardware only assert 
+-				  an interrupt for m frames. Hardware won't 
++
++rx_coalesce=m			  Number of rx frame handled each interrupt.
++rx_timeout=n			  Rx DMA wait time for an interrupt.
++				  If set rx_coalesce > 0, hardware only assert
++				  an interrupt for m frames. Hardware won't
+ 				  assert rx interrupt until m frames received or
+-				  reach timeout of n * 640 nano seconds. 
+-				  Set proper rx_coalesce and rx_timeout can 
++				  reach timeout of n * 640 nano seconds.
++				  Set proper rx_coalesce and rx_timeout can
+ 				  reduce congestion collapse and overload which
+ 				  has been a bottleneck for high speed network.
+-				  
++
+ 				  For example, rx_coalesce=10 rx_timeout=800.
+-				  that is, hardware assert only 1 interrupt 
+-				  for 10 frames received or timeout of 512 us. 
++				  that is, hardware assert only 1 interrupt
++				  for 10 frames received or timeout of 512 us.
+ 
+-tx_coalesce=n			- Number of tx frame handled each interrupt.
+-				  Set n > 1 can reduce the interrupts 
++tx_coalesce=n			  Number of tx frame handled each interrupt.
++				  Set n > 1 can reduce the interrupts
+ 				  congestion usually lower performance of
+ 				  high speed network card. Default is 16.
+-				  
+-tx_flow=[1|0]			- Specifies the Tx flow control. If tx_flow=0, 
++
++tx_flow=[1|0]			  Specifies the Tx flow control. If tx_flow=0,
+ 				  the Tx flow control disable else driver
+ 				  autodetect.
+-rx_flow=[1|0]			- Specifies the Rx flow control. If rx_flow=0, 
++rx_flow=[1|0]			  Specifies the Rx flow control. If rx_flow=0,
+ 				  the Rx flow control enable else driver
+ 				  autodetect.
++===============================   ==============================================
+ 
+ 
+ Configuration Script Sample
+ ===========================
+-Here is a sample of a simple configuration script:
++Here is a sample of a simple configuration script::
+ 
+-DEVICE=eth0
+-USERCTL=no
+-ONBOOT=yes
+-POOTPROTO=none
+-BROADCAST=207.200.5.255
+-NETWORK=207.200.5.0
+-NETMASK=255.255.255.0
+-IPADDR=207.200.5.2
++    DEVICE=eth0
++    USERCTL=no
++    ONBOOT=yes
++    POOTPROTO=none
++    BROADCAST=207.200.5.255
++    NETWORK=207.200.5.0
++    NETMASK=255.255.255.0
++    IPADDR=207.200.5.2
+ 
+ 
+ Troubleshooting
+ ===============
+ Q1. Source files contain ^ M behind every line.
+-	Make sure all files are Unix file format (no LF). Try the following
+-    shell command to convert files.
++
++    Make sure all files are Unix file format (no LF). Try the following
++    shell command to convert files::
+ 
+ 	cat dl2k.c | col -b > dl2k.tmp
+ 	mv dl2k.tmp dl2k.c
+ 
+-	OR
++    OR::
+ 
+ 	cat dl2k.c | tr -d "\r" > dl2k.tmp
+ 	mv dl2k.tmp dl2k.c
+ 
+-Q2: Could not find header files (*.h) ?
+-	To compile the driver, you need kernel header files. After
++Q2: Could not find header files (``*.h``)?
++
++    To compile the driver, you need kernel header files. After
+     installing the kernel source, the header files are usually located in
+     /usr/src/linux/include, which is the default include directory configured
+     in Makefile. For some distributions, there is a copy of header files in
+     /usr/src/include/linux and /usr/src/include/asm, that you can change the
+     INCLUDEDIR in Makefile to /usr/include without installing kernel source.
+-	Note that RH 7.0 didn't provide correct header files in /usr/include,
++
++    Note that RH 7.0 didn't provide correct header files in /usr/include,
+     including those files will make a wrong version driver.
+ 
 diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
-index 4ad13ffb5800..09728e964ce1 100644
+index 09728e964ce1..e5d1863379cb 100644
 --- a/Documentation/networking/device_drivers/index.rst
 +++ b/Documentation/networking/device_drivers/index.rst
-@@ -35,6 +35,7 @@ Contents:
-    cirrus/cs89x0
+@@ -36,6 +36,7 @@ Contents:
     davicom/dm9000
     dec/de4x5
-+   dec/dmfe
+    dec/dmfe
++   dlink/dl2k
  
  .. only::  subproject and html
  
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 91098b704635..b92568479a71 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4710,7 +4710,7 @@ F:	net/ax25/sysctl_net_ax25.c
- DAVICOM FAST ETHERNET (DMFE) NETWORK DRIVER
- L:	netdev@vger.kernel.org
- S:	Orphan
--F:	Documentation/networking/device_drivers/dec/dmfe.txt
-+F:	Documentation/networking/device_drivers/dec/dmfe.rst
- F:	drivers/net/ethernet/dec/tulip/dmfe.c
+diff --git a/drivers/net/ethernet/dlink/dl2k.c b/drivers/net/ethernet/dlink/dl2k.c
+index 643090555cc7..5143722c4419 100644
+--- a/drivers/net/ethernet/dlink/dl2k.c
++++ b/drivers/net/ethernet/dlink/dl2k.c
+@@ -1869,7 +1869,7 @@ Compile command:
  
- DC390/AM53C974 SCSI driver
-diff --git a/drivers/net/ethernet/dec/tulip/Kconfig b/drivers/net/ethernet/dec/tulip/Kconfig
-index 8c4245d94bb2..177f36f4b89d 100644
---- a/drivers/net/ethernet/dec/tulip/Kconfig
-+++ b/drivers/net/ethernet/dec/tulip/Kconfig
-@@ -138,7 +138,7 @@ config DM9102
- 	  This driver is for DM9102(A)/DM9132/DM9801 compatible PCI cards from
- 	  Davicom (<http://www.davicom.com.tw/>).  If you have such a network
- 	  (Ethernet) card, say Y.  Some information is contained in the file
--	  <file:Documentation/networking/device_drivers/dec/dmfe.txt>.
-+	  <file:Documentation/networking/device_drivers/dec/dmfe.rst>.
+ gcc -D__KERNEL__ -DMODULE -I/usr/src/linux/include -Wall -Wstrict-prototypes -O2 -c dl2k.c
  
- 	  To compile this driver as a module, choose M here. The module will
- 	  be called dmfe.
+-Read Documentation/networking/device_drivers/dlink/dl2k.txt for details.
++Read Documentation/networking/device_drivers/dlink/dl2k.rst for details.
+ 
+ */
+ 
 -- 
 2.25.4
 
