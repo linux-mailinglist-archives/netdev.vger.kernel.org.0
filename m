@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B63301C182E
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 293771C1833
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:47:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729768AbgEAOpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:45:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52912 "EHLO mail.kernel.org"
+        id S1729582AbgEAOp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:45:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52926 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729582AbgEAOpM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729598AbgEAOpM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 1 May 2020 10:45:12 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC84A2499A;
+        by mail.kernel.org (Postfix) with ESMTPSA id DEAF62499F;
         Fri,  1 May 2020 14:45:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588344307;
-        bh=bFUSU0CDHE5bMJp0MuJssCpCSNpjL04f4SSrum4JlSg=;
+        bh=TWOT3LI8NQ4YlVM+QpDrfNl+OXQn24thtUBxAlgCXPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1HY3viXkg/ce+4Lsps7SyAbfYUV4XIK3F2wLKZtfGcTquw/WMwZfsI7Ut6yVI4+X5
-         g3Gkbhijgaj5rMGZ/osWC+mMjQ0vs2LPi9HzjpnOI5E0IS5GDZY22sE0XVdzxACBZT
-         dCHgSnZIAsrDK+aFiw5/DK/ZcoeHPI8mxZioILX4=
+        b=zrk38iaMvXHB74TZlZAXezcGwer8XFKrhlgcMqWqlc7JT0rd8PFrJywTiGYEpRXPs
+         uLBPFNjeKuriEGf6XJfCB20cVx39SPNYWICCyklZAlHNVh7ombcId/+ajkubUvUckD
+         5aVIk7908IMaQVg7dC45JLfYVQ8f7jc9Z4grpYHs=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUWuT-00FCeS-RX; Fri, 01 May 2020 16:45:01 +0200
+        id 1jUWuT-00FCeY-SQ; Fri, 01 May 2020 16:45:01 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
@@ -35,9 +35,9 @@ Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Stanislav Yakovlev <stas.yakovlev@gmail.com>,
         Kalle Valo <kvalo@codeaurora.org>, netdev@vger.kernel.org,
         linux-wireless@vger.kernel.org
-Subject: [PATCH 24/37] docs: networking: device drivers: convert intel/ipw2100.txt to ReST
-Date:   Fri,  1 May 2020 16:44:46 +0200
-Message-Id: <9f8e6ca792b65b691fadafc5a1f20de20b4f7c6f.1588344146.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 25/37] docs: networking: device drivers: convert intel/ipw2200.txt to ReST
+Date:   Fri,  1 May 2020 16:44:47 +0200
+Message-Id: <b7428138935499bec38daf284f222d13c6f4f6b0.1588344146.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588344146.git.mchehab+huawei@kernel.org>
 References: <cover.1588344146.git.mchehab+huawei@kernel.org>
@@ -61,199 +61,420 @@ X-Mailing-List: netdev@vger.kernel.org
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
  .../networking/device_drivers/index.rst       |   1 +
- .../intel/{ipw2100.txt => ipw2100.rst}        | 242 ++++++++++--------
+ .../intel/{ipw2200.txt => ipw2200.rst}        | 410 ++++++++++--------
  MAINTAINERS                                   |   2 +-
  drivers/net/wireless/intel/ipw2x00/Kconfig    |   2 +-
- drivers/net/wireless/intel/ipw2x00/ipw2100.c  |   2 +-
- 5 files changed, 140 insertions(+), 109 deletions(-)
- rename Documentation/networking/device_drivers/intel/{ipw2100.txt => ipw2100.rst} (70%)
+ 4 files changed, 235 insertions(+), 180 deletions(-)
+ rename Documentation/networking/device_drivers/intel/{ipw2200.txt => ipw2200.rst} (64%)
 
 diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
-index cec3415ee459..54ed10f3d1a7 100644
+index 54ed10f3d1a7..f9ce0089ec7d 100644
 --- a/Documentation/networking/device_drivers/index.rst
 +++ b/Documentation/networking/device_drivers/index.rst
-@@ -39,6 +39,7 @@ Contents:
-    dlink/dl2k
+@@ -40,6 +40,7 @@ Contents:
     freescale/dpaa
     freescale/gianfar
-+   intel/ipw2100
+    intel/ipw2100
++   intel/ipw2200
  
  .. only::  subproject and html
  
-diff --git a/Documentation/networking/device_drivers/intel/ipw2100.txt b/Documentation/networking/device_drivers/intel/ipw2100.rst
-similarity index 70%
-rename from Documentation/networking/device_drivers/intel/ipw2100.txt
-rename to Documentation/networking/device_drivers/intel/ipw2100.rst
-index 6f85e1d06031..d54ad522f937 100644
---- a/Documentation/networking/device_drivers/intel/ipw2100.txt
-+++ b/Documentation/networking/device_drivers/intel/ipw2100.rst
-@@ -1,31 +1,37 @@
+diff --git a/Documentation/networking/device_drivers/intel/ipw2200.txt b/Documentation/networking/device_drivers/intel/ipw2200.rst
+similarity index 64%
+rename from Documentation/networking/device_drivers/intel/ipw2200.txt
+rename to Documentation/networking/device_drivers/intel/ipw2200.rst
+index b7658bed4906..0cb42d2fd7e5 100644
+--- a/Documentation/networking/device_drivers/intel/ipw2200.txt
++++ b/Documentation/networking/device_drivers/intel/ipw2200.rst
+@@ -1,8 +1,15 @@
 +.. SPDX-License-Identifier: GPL-2.0
 +.. include:: <isonum.txt>
  
--Intel(R) PRO/Wireless 2100 Driver for Linux in support of:
-+===========================================
-+Intel(R) PRO/Wireless 2100 Driver for Linux
-+===========================================
+-Intel(R) PRO/Wireless 2915ABG Driver for Linux in support of:
++==============================================
++Intel(R) PRO/Wireless 2915ABG Driver for Linux
++==============================================
  
--Intel(R) PRO/Wireless 2100 Network Connection
+-Intel(R) PRO/Wireless 2200BG Network Connection
+-Intel(R) PRO/Wireless 2915ABG Network Connection
++
 +Support for:
++
++- Intel(R) PRO/Wireless 2200BG Network Connection
++- Intel(R) PRO/Wireless 2915ABG Network Connection
  
--Copyright (C) 2003-2006, Intel Corporation
-+- Intel(R) PRO/Wireless 2100 Network Connection
-+
-+Copyright |copy| 2003-2006, Intel Corporation
+ Note: The Intel(R) PRO/Wireless 2915ABG Driver for Linux and Intel(R)
+ PRO/Wireless 2200BG Driver for Linux is a unified driver that works on
+@@ -10,37 +17,37 @@ both hardware adapters listed above. In this document the Intel(R)
+ PRO/Wireless 2915ABG Driver for Linux will be used to reference the
+ unified driver.
  
- README.ipw2100
+-Copyright (C) 2004-2006, Intel Corporation
++Copyright |copy| 2004-2006, Intel Corporation
  
--Version: git-1.1.5
--Date   : January 25, 2006
-+:Version: git-1.1.5
-+:Date:    January 25, 2006
-+
-+.. Index
-+
-+    0. IMPORTANT INFORMATION BEFORE USING THIS DRIVER
-+    1. Introduction
-+    2. Release git-1.1.5 Current Features
-+    3. Command Line Parameters
-+    4. Sysfs Helper Files
-+    5. Radio Kill Switch
-+    6. Dynamic Firmware
-+    7. Power Management
-+    8. Support
-+    9. License
-+
+ README.ipw2200
+ 
+-Version: 1.1.2
+-Date   : March 30, 2006
++:Version: 1.1.2
++:Date: March 30, 2006
+ 
  
 -Index
 ------------------------------------------------
- 0. IMPORTANT INFORMATION BEFORE USING THIS DRIVER
--1. Introduction
--2. Release git-1.1.5 Current Features
--3. Command Line Parameters
--4. Sysfs Helper Files
--5. Radio Kill Switch
--6. Dynamic Firmware
--7. Power Management
--8. Support
--9. License
--
--
+-0.   IMPORTANT INFORMATION BEFORE USING THIS DRIVER
+-1.   Introduction
+-1.1. Overview of features
+-1.2. Module parameters
+-1.3. Wireless Extension Private Methods
+-1.4. Sysfs Helper Files
+-1.5. Supported channels
+-2.   Ad-Hoc Networking
+-3.   Interacting with Wireless Tools
+-3.1. iwconfig mode
+-3.2. iwconfig sens
+-4.   About the Version Numbers
+-5.   Firmware installation
+-6.   Support
+-7.   License
++.. Index
+ 
++    0.   IMPORTANT INFORMATION BEFORE USING THIS DRIVER
++    1.   Introduction
++    1.1. Overview of features
++    1.2. Module parameters
++    1.3. Wireless Extension Private Methods
++    1.4. Sysfs Helper Files
++    1.5. Supported channels
++    2.   Ad-Hoc Networking
++    3.   Interacting with Wireless Tools
++    3.1. iwconfig mode
++    3.2. iwconfig sens
++    4.   About the Version Numbers
++    5.   Firmware installation
++    6.   Support
++    7.   License
+ 
 -0.   IMPORTANT INFORMATION BEFORE USING THIS DRIVER
 ------------------------------------------------
+ 
+-Important Notice FOR ALL USERS OR DISTRIBUTORS!!!! 
++0. IMPORTANT INFORMATION BEFORE USING THIS DRIVER
 +=================================================
++
++Important Notice FOR ALL USERS OR DISTRIBUTORS!!!!
  
- Important Notice FOR ALL USERS OR DISTRIBUTORS!!!!
+ Intel wireless LAN adapters are engineered, manufactured, tested, and
+ quality checked to ensure that they meet all necessary local and
+@@ -56,7 +63,7 @@ product is granted. Intel's wireless LAN's EEPROM, firmware, and
+ software driver are designed to carefully control parameters that affect
+ radio operation and to ensure electromagnetic compliance (EMC). These
+ parameters include, without limitation, RF power, spectrum usage,
+-channel scanning, and human exposure. 
++channel scanning, and human exposure.
  
-@@ -75,10 +81,10 @@ obtain a tested driver from Intel Customer Support at:
- http://www.intel.com/support/wireless/sb/CS-006408.htm
+ For these reasons Intel cannot permit any manipulation by third parties
+ of the software provided in binary format with the wireless WLAN
+@@ -70,7 +77,7 @@ no liability, under any theory of liability for any issues associated
+ with the modified products, including without limitation, claims under
+ the warranty and/or issues arising from regulatory non-compliance, and
+ (iii) Intel will not provide or be required to assist in providing
+-support to any third parties for such modified products.  
++support to any third parties for such modified products.
  
- 1. Introduction
+ Note: Many regulatory agencies consider Wireless LAN adapters to be
+ modules, and accordingly, condition system-level regulatory approval
+@@ -78,23 +85,24 @@ upon receipt and review of test data documenting that the antennas and
+ system configuration do not cause the EMC and radio operation to be
+ non-compliant.
+ 
+-The drivers available for download from SourceForge are provided as a 
+-part of a development project.  Conformance to local regulatory 
+-requirements is the responsibility of the individual developer.  As 
+-such, if you are interested in deploying or shipping a driver as part of 
+-solution intended to be used for purposes other than development, please 
++The drivers available for download from SourceForge are provided as a
++part of a development project.  Conformance to local regulatory
++requirements is the responsibility of the individual developer.  As
++such, if you are interested in deploying or shipping a driver as part of
++solution intended to be used for purposes other than development, please
+ obtain a tested driver from Intel Customer Support at:
+ 
+ http://support.intel.com
+ 
+ 
+-1.   Introduction
 ------------------------------------------------
+-The following sections attempt to provide a brief introduction to using 
++1. Introduction
 +===============
- 
--This document provides a brief overview of the features supported by the 
--IPW2100 driver project.  The main project website, where the latest 
-+This document provides a brief overview of the features supported by the
-+IPW2100 driver project.  The main project website, where the latest
- development version of the driver can be found, is:
- 
- 	http://ipw2100.sourceforge.net
-@@ -89,10 +95,11 @@ for the driver project.
- 
- 
- 2. Release git-1.1.5 Current Supported Features
-------------------------------------------------
-+===============================================
 +
- - Managed (BSS) and Ad-Hoc (IBSS)
- - WEP (shared key and open)
--- Wireless Tools support 
-+- Wireless Tools support
- - 802.1x (tested with XSupplicant 1.0.1)
++The following sections attempt to provide a brief introduction to using
+ the Intel(R) PRO/Wireless 2915ABG Driver for Linux.
  
- Enabled (but not supported) features:
-@@ -105,11 +112,11 @@ performed on a given feature.
+-This document is not meant to be a comprehensive manual on 
+-understanding or using wireless technologies, but should be sufficient 
++This document is not meant to be a comprehensive manual on
++understanding or using wireless technologies, but should be sufficient
+ to get you moving without wires on Linux.
+ 
+ For information on building and installing the driver, see the INSTALL
+@@ -102,14 +110,14 @@ file.
  
  
- 3. Command Line Parameters
+ 1.1. Overview of Features
 ------------------------------------------------
-+==========================
++-------------------------
+ The current release (1.1.2) supports the following features:
  
- If the driver is built as a module, the following optional parameters are used
- by entering them on the command line with the modprobe command using this
--syntax:
-+syntax::
+ + BSS mode (Infrastructure, Managed)
+ + IBSS mode (Ad-Hoc)
+ + WEP (OPEN and SHARED KEY mode)
+ + 802.1x EAP via wpa_supplicant and xsupplicant
+-+ Wireless Extension support 
+++ Wireless Extension support
+ + Full B and G rate support (2200 and 2915)
+ + Full A rate support (2915 only)
+ + Transmit power control
+@@ -122,102 +130,107 @@ supported:
+ + long/short preamble support
+ + Monitor mode (aka RFMon)
  
- 	modprobe ipw2100 [<option>=<VAL1><,VAL2>...]
- 
-@@ -119,61 +126,76 @@ For example, to disable the radio on driver loading, enter:
- 
- The ipw2100 driver supports the following module parameters:
- 
--Name		Value		Example:
--debug		0x0-0xffffffff	debug=1024
--mode		0,1,2		mode=1   /* AdHoc */
--channel		int		channel=3 /* Only valid in AdHoc or Monitor */
--associate	boolean		associate=0 /* Do NOT auto associate */
--disable		boolean		disable=1 /* Do not power the HW */
-+=========	==============	============  ==============================
-+Name		Value		Example       Meaning
-+=========	==============	============  ==============================
-+debug		0x0-0xffffffff	debug=1024    Debug level set to 1024
-+mode		0,1,2		mode=1        AdHoc
-+channel		int		channel=3     Only valid in AdHoc or Monitor
-+associate	boolean		associate=0   Do NOT auto associate
-+disable		boolean		disable=1     Do not power the HW
-+=========	==============	============  ==============================
+-The distinction between officially supported and enabled is a reflection 
++The distinction between officially supported and enabled is a reflection
+ on the amount of validation and interoperability testing that has been
+-performed on a given feature. 
++performed on a given feature.
  
  
- 4. Sysfs Helper Files
-----------------------------     
+ 
+ 1.2. Command Line Parameters
 ------------------------------------------------
-+=====================
++----------------------------
  
--There are several ways to control the behavior of the driver.  Many of the 
-+There are several ways to control the behavior of the driver.  Many of the
- general capabilities are exposed through the Wireless Tools (iwconfig).  There
- are a few capabilities that are exposed through entries in the Linux Sysfs.
+ Like many modules used in the Linux kernel, the Intel(R) PRO/Wireless
+-2915ABG Driver for Linux allows configuration options to be provided 
+-as module parameters.  The most common way to specify a module parameter 
+-is via the command line.  
++2915ABG Driver for Linux allows configuration options to be provided
++as module parameters.  The most common way to specify a module parameter
++is via the command line.
  
+-The general form is:
++The general form is::
  
------- Driver Level ------
-+**Driver Level**
+-% modprobe ipw2200 parameter=value
++    % modprobe ipw2200 parameter=value
+ 
+ Where the supported parameter are:
+ 
+   associate
+ 	Set to 0 to disable the auto scan-and-associate functionality of the
+-	driver.  If disabled, the driver will not attempt to scan 
+-	for and associate to a network until it has been configured with 
+-	one or more properties for the target network, for example configuring 
++	driver.  If disabled, the driver will not attempt to scan
++	for and associate to a network until it has been configured with
++	one or more properties for the target network, for example configuring
+ 	the network SSID.  Default is 0 (do not auto-associate)
+-	
 +
- For the driver level files, look in /sys/bus/pci/drivers/ipw2100/
+ 	Example: % modprobe ipw2200 associate=0
+ 
+   auto_create
+-	Set to 0 to disable the auto creation of an Ad-Hoc network 
+-	matching the channel and network name parameters provided.  
++	Set to 0 to disable the auto creation of an Ad-Hoc network
++	matching the channel and network name parameters provided.
+ 	Default is 1.
+ 
+   channel
+ 	channel number for association.  The normal method for setting
+-        the channel would be to use the standard wireless tools
+-        (i.e. `iwconfig eth1 channel 10`), but it is useful sometimes
++	the channel would be to use the standard wireless tools
++	(i.e. `iwconfig eth1 channel 10`), but it is useful sometimes
+ 	to set this while debugging.  Channel 0 means 'ANY'
+ 
+   debug
+ 	If using a debug build, this is used to control the amount of debug
+ 	info is logged.  See the 'dvals' and 'load' script for more info on
+-	how to use this (the dvals and load scripts are provided as part 
+-	of the ipw2200 development snapshot releases available from the 
++	how to use this (the dvals and load scripts are provided as part
++	of the ipw2200 development snapshot releases available from the
+ 	SourceForge project at http://ipw2200.sf.net)
+-  
++
+   led
+ 	Can be used to turn on experimental LED code.
+ 	0 = Off, 1 = On.  Default is 1.
+ 
+   mode
+-	Can be used to set the default mode of the adapter.  
++	Can be used to set the default mode of the adapter.
+ 	0 = Managed, 1 = Ad-Hoc, 2 = Monitor
+ 
+ 
+ 1.3. Wireless Extension Private Methods
+------------------------------------------------
++---------------------------------------
+ 
+-As an interface designed to handle generic hardware, there are certain 
+-capabilities not exposed through the normal Wireless Tool interface.  As 
+-such, a provision is provided for a driver to declare custom, or 
+-private, methods.  The Intel(R) PRO/Wireless 2915ABG Driver for Linux 
++As an interface designed to handle generic hardware, there are certain
++capabilities not exposed through the normal Wireless Tool interface.  As
++such, a provision is provided for a driver to declare custom, or
++private, methods.  The Intel(R) PRO/Wireless 2915ABG Driver for Linux
+ defines several of these to configure various settings.
+ 
+-The general form of using the private wireless methods is:
++The general form of using the private wireless methods is::
+ 
+ 	% iwpriv $IFNAME method parameters
+ 
+-Where $IFNAME is the interface name the device is registered with 
++Where $IFNAME is the interface name the device is registered with
+ (typically eth1, customized via one of the various network interface
+ name managers, such as ifrename)
+ 
+ The supported private methods are:
+ 
+   get_mode
+-	Can be used to report out which IEEE mode the driver is 
++	Can be used to report out which IEEE mode the driver is
+ 	configured to support.  Example:
+-	
++
+ 	% iwpriv eth1 get_mode
+ 	eth1	get_mode:802.11bg (6)
+ 
+   set_mode
+-	Can be used to configure which IEEE mode the driver will 
+-	support.  
++	Can be used to configure which IEEE mode the driver will
++	support.
++
++	Usage::
++
++	    % iwpriv eth1 set_mode {mode}
+ 
+-	Usage:
+-	% iwpriv eth1 set_mode {mode}
+ 	Where {mode} is a number in the range 1-7:
++
++	==	=====================
+ 	1	802.11a (2915 only)
+ 	2	802.11b
+ 	3	802.11ab (2915 only)
+-	4	802.11g 
++	4	802.11g
+ 	5	802.11ag (2915 only)
+ 	6	802.11bg
+ 	7	802.11abg (2915 only)
++	==	=====================
+ 
+   get_preamble
+ 	Can be used to report configuration of preamble length.
+@@ -225,99 +238,123 @@ The supported private methods are:
+   set_preamble
+ 	Can be used to set the configuration of preamble length:
+ 
+-	Usage:
+-	% iwpriv eth1 set_preamble {mode}
++	Usage::
++
++	    % iwpriv eth1 set_preamble {mode}
++
+ 	Where {mode} is one of:
++
++	==	========================================
+ 	1	Long preamble only
+ 	0	Auto (long or short based on connection)
+-	
++	==	========================================
+ 
+-1.4. Sysfs Helper Files:
+------------------------------------------------
+ 
+-The Linux kernel provides a pseudo file system that can be used to 
++1.4. Sysfs Helper Files
++-----------------------
++
++The Linux kernel provides a pseudo file system that can be used to
+ access various components of the operating system.  The Intel(R)
+ PRO/Wireless 2915ABG Driver for Linux exposes several configuration
+ parameters through this mechanism.
+ 
+-An entry in the sysfs can support reading and/or writing.  You can 
+-typically query the contents of a sysfs entry through the use of cat, 
+-and can set the contents via echo.  For example:
++An entry in the sysfs can support reading and/or writing.  You can
++typically query the contents of a sysfs entry through the use of cat,
++and can set the contents via echo.  For example::
+ 
+-% cat /sys/bus/pci/drivers/ipw2200/debug_level
++    % cat /sys/bus/pci/drivers/ipw2200/debug_level
+ 
+-Will report the current debug level of the driver's logging subsystem 
++Will report the current debug level of the driver's logging subsystem
+ (only available if CONFIG_IPW2200_DEBUG was configured when the driver
+ was built).
+ 
+-You can set the debug level via:
++You can set the debug level via::
+ 
+-% echo $VALUE > /sys/bus/pci/drivers/ipw2200/debug_level
++    % echo $VALUE > /sys/bus/pci/drivers/ipw2200/debug_level
+ 
+-Where $VALUE would be a number in the case of this sysfs entry.  The 
+-input to sysfs files does not have to be a number.  For example, the 
+-firmware loader used by hotplug utilizes sysfs entries for transferring 
++Where $VALUE would be a number in the case of this sysfs entry.  The
++input to sysfs files does not have to be a number.  For example, the
++firmware loader used by hotplug utilizes sysfs entries for transferring
+ the firmware image from user space into the driver.
+ 
+-The Intel(R) PRO/Wireless 2915ABG Driver for Linux exposes sysfs entries 
+-at two levels -- driver level, which apply to all instances of the driver 
+-(in the event that there are more than one device installed) and device 
++The Intel(R) PRO/Wireless 2915ABG Driver for Linux exposes sysfs entries
++at two levels -- driver level, which apply to all instances of the driver
++(in the event that there are more than one device installed) and device
+ level, which applies only to the single specific instance.
+ 
+ 
+ 1.4.1 Driver Level Sysfs Helper Files
+------------------------------------------------
++^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ For the driver level files, look in /sys/bus/pci/drivers/ipw2200/
  
 -  debug_level  
 -	
--	This controls the same global as the 'debug' module parameter.  For 
--        information on the various debugging levels available, run the 'dvals'
 +  debug_level
-+	This controls the same global as the 'debug' module parameter.  For
-+	information on the various debugging levels available, run the 'dvals'
- 	script found in the driver source directory.
+ 	This controls the same global as the 'debug' module parameter
  
--	NOTE:  'debug_level' is only enabled if CONFIG_IPW2100_DEBUG is turn
--	       on.
-+	.. note::
-+
-+	      'debug_level' is only enabled if CONFIG_IPW2100_DEBUG is turn on.
-+
-+**Device Level**
-+
-+For the device level files look in::
  
------- Device Level ------
--For the device level files look in
+ 
+ 1.4.2 Device Level Sysfs Helper Files
+------------------------------------------------
++^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++
++For the device level files, look in::
+ 
+-For the device level files, look in
 -	
- 	/sys/bus/pci/drivers/ipw2100/{PCI-ID}/
+ 	/sys/bus/pci/drivers/ipw2200/{PCI-ID}/
  
 -For example:
-+For example::
++For example:::
 +
- 	/sys/bus/pci/drivers/ipw2100/0000:02:01.0
+ 	/sys/bus/pci/drivers/ipw2200/0000:02:01.0
  
- For the device level files, see /sys/bus/pci/drivers/ipw2100:
+ For the device level files, see /sys/bus/pci/drivers/ipw2200:
  
    rf_kill
 -	read - 
@@ -261,13 +482,7 @@ index 6f85e1d06031..d54ad522f937 100644
 -	1 = SW based RF kill active (radio off)
 -	2 = HW based RF kill active (radio off)
 -	3 = Both HW and SW RF kill active (radio off)
--	write -
--	0 = If SW based RF kill active, turn the radio back on
--	1 = If radio is on, activate SW based RF kill
--
--	NOTE: If you enable the SW based RF kill and then toggle the HW
--  	based RF kill from ON -> OFF -> ON, the radio will NOT come back on
-+	read
++	read -
 +
 +	==  =========================================
 +	0   RF kill not enabled (radio on)
@@ -276,8 +491,14 @@ index 6f85e1d06031..d54ad522f937 100644
 +	3   Both HW and SW RF kill active (radio off)
 +	==  =========================================
 +
-+	write
-+
+ 	write -
+-	0 = If SW based RF kill active, turn the radio back on
+-	1 = If radio is on, activate SW based RF kill
+ 
+-	NOTE: If you enable the SW based RF kill and then toggle the HW
+-  	based RF kill from ON -> OFF -> ON, the radio will NOT come back on
+-	
+-  ucode 
 +	==  ==================================================
 +	0   If SW based RF kill active, turn the radio back on
 +	1   If radio is on, activate SW based RF kill
@@ -287,150 +508,237 @@ index 6f85e1d06031..d54ad522f937 100644
 +
 +	   If you enable the SW based RF kill and then toggle the HW
 +	   based RF kill from ON -> OFF -> ON, the radio will NOT come back on
- 
- 
- 5. Radio Kill Switch
-------------------------------------------------
-+====================
 +
- Most laptops provide the ability for the user to physically disable the radio.
- Some vendors have implemented this as a physical switch that requires no
- software to turn the radio off and on.  On other laptops, however, the switch
-@@ -186,9 +208,10 @@ on your system.
++  ucode
+ 	read-only access to the ucode version number
  
- 
- 6. Dynamic Firmware
-------------------------------------------------
--As the firmware is licensed under a restricted use license, it can not be 
--included within the kernel sources.  To enable the IPW2100 you will need a 
-+===================
+   led
+ 	read -
+-	0 = LED code disabled
+-	1 = LED code enabled
 +
-+As the firmware is licensed under a restricted use license, it can not be
-+included within the kernel sources.  To enable the IPW2100 you will need a
- firmware image to load into the wireless NIC's processors.
- 
- You can obtain these images from <http://ipw2100.sf.net/firmware.php>.
-@@ -197,52 +220,57 @@ See INSTALL for instructions on installing the firmware.
- 
- 
- 7. Power Management
-------------------------------------------------
--The IPW2100 supports the configuration of the Power Save Protocol 
--through a private wireless extension interface.  The IPW2100 supports 
-+===================
++	==  =================
++	0   LED code disabled
++	1   LED code enabled
++	==  =================
 +
-+The IPW2100 supports the configuration of the Power Save Protocol
-+through a private wireless extension interface.  The IPW2100 supports
- the following different modes:
+ 	write -
+-	0 = Disable LED code
+-	1 = Enable LED code
  
-+	===	===========================================================
- 	off	No power management.  Radio is always on.
- 	on	Automatic power management
--	1-5	Different levels of power management.  The higher the 
--		number the greater the power savings, but with an impact to 
--		packet latencies. 
-+	1-5	Different levels of power management.  The higher the
-+		number the greater the power savings, but with an impact to
-+		packet latencies.
-+	===	===========================================================
- 
--Power management works by powering down the radio after a certain 
--interval of time has passed where no packets are passed through the 
--radio.  Once powered down, the radio remains in that state for a given 
--period of time.  For higher power savings, the interval between last 
-+Power management works by powering down the radio after a certain
-+interval of time has passed where no packets are passed through the
-+radio.  Once powered down, the radio remains in that state for a given
-+period of time.  For higher power savings, the interval between last
- packet processed to sleep is shorter and the sleep period is longer.
- 
--When the radio is asleep, the access point sending data to the station 
--must buffer packets at the AP until the station wakes up and requests 
--any buffered packets.  If you have an AP that does not correctly support 
--the PSP protocol you may experience packet loss or very poor performance 
--while power management is enabled.  If this is the case, you will need 
--to try and find a firmware update for your AP, or disable power 
--management (via `iwconfig eth1 power off`)
-+When the radio is asleep, the access point sending data to the station
-+must buffer packets at the AP until the station wakes up and requests
-+any buffered packets.  If you have an AP that does not correctly support
-+the PSP protocol you may experience packet loss or very poor performance
-+while power management is enabled.  If this is the case, you will need
-+to try and find a firmware update for your AP, or disable power
-+management (via ``iwconfig eth1 power off``)
- 
--To configure the power level on the IPW2100 you use a combination of 
--iwconfig and iwpriv.  iwconfig is used to turn power management on, off, 
-+To configure the power level on the IPW2100 you use a combination of
-+iwconfig and iwpriv.  iwconfig is used to turn power management on, off,
- and set it to auto.
- 
-+	=========================  ====================================
- 	iwconfig eth1 power off    Disables radio power down
--	iwconfig eth1 power on     Enables radio power management to 
-+	iwconfig eth1 power on     Enables radio power management to
- 				   last set level (defaults to AUTO)
--	iwpriv eth1 set_power 0    Sets power level to AUTO and enables 
--				   power management if not previously 
-+	iwpriv eth1 set_power 0    Sets power level to AUTO and enables
-+				   power management if not previously
- 				   enabled.
--	iwpriv eth1 set_power 1-5  Set the power level as specified, 
--				   enabling power management if not 
-+	iwpriv eth1 set_power 1-5  Set the power level as specified,
-+				   enabling power management if not
- 				   previously enabled.
-+	=========================  ====================================
+-	NOTE: The LED code has been reported to hang some systems when 
+-	running ifconfig and is therefore disabled by default.
++	==  ================
++	0   Disable LED code
++	1   Enable LED code
++	==  ================
 +
-+You can view the current power level setting via::
- 
--You can view the current power level setting via:
--	
- 	iwpriv eth1 get_power
- 
- It will return the current period or timeout that is configured as a string
- in the form of xxxx/yyyy (z) where xxxx is the timeout interval (amount of
--time after packet processing), yyyy is the period to sleep (amount of time to 
-+time after packet processing), yyyy is the period to sleep (amount of time to
- wait before powering the radio and querying the access point for buffered
- packets), and z is the 'power level'.  If power management is turned off the
- xxxx/yyyy will be replaced with 'off' -- the level reported will be the active
-@@ -250,44 +278,46 @@ level if `iwconfig eth1 power on` is invoked.
++
++	.. note::
++
++	   The LED code has been reported to hang some systems when
++	   running ifconfig and is therefore disabled by default.
  
  
- 8. Support
+ 1.5. Supported channels
 ------------------------------------------------
++-----------------------
+ 
+ Upon loading the Intel(R) PRO/Wireless 2915ABG Driver for Linux, a
+ message stating the detected geography code and the number of 802.11
+@@ -326,44 +363,59 @@ channels supported by the card will be displayed in the log.
+ The geography code corresponds to a regulatory domain as shown in the
+ table below.
+ 
+-					  Supported channels
+-Code	Geography			802.11bg	802.11a
++	+------+----------------------------+--------------------+
++	|      |			    | Supported channels |
++	| Code |        Geography	    +----------+---------+
++	|      |			    | 802.11bg | 802.11a |
++	+======+============================+==========+=========+
++	| ---  | Restricted 		    |  11      |   0     |
++	+------+----------------------------+----------+---------+
++	| ZZF  | Custom US/Canada 	    |  11      |   8     |
++	+------+----------------------------+----------+---------+
++	| ZZD  | Rest of World 		    |  13      |   0     |
++	+------+----------------------------+----------+---------+
++	| ZZA  | Custom USA & Europe & High |  11      |  13     |
++	+------+----------------------------+----------+---------+
++	| ZZB  | Custom NA & Europe	    |  11      |  13     |
++	+------+----------------------------+----------+---------+
++	| ZZC  | Custom Japan 		    |  11      |   4     |
++	+------+----------------------------+----------+---------+
++	| ZZM  | Custom  		    |  11      |   0     |
++	+------+----------------------------+----------+---------+
++	| ZZE  | Europe 		    |  13      |  19     |
++	+------+----------------------------+----------+---------+
++	| ZZJ  | Custom Japan 		    |  14      |   4     |
++	+------+----------------------------+----------+---------+
++	| ZZR  | Rest of World		    |  14      |   0     |
++	+------+----------------------------+----------+---------+
++	| ZZH  | High Band		    |  13      |   4     |
++	+------+----------------------------+----------+---------+
++	| ZZG  | Custom Europe		    |  13      |   4     |
++	+------+----------------------------+----------+---------+
++	| ZZK  | Europe 		    |  13      |  24     |
++	+------+----------------------------+----------+---------+
++	| ZZL  | Europe 		    |  11      |  13     |
++	+------+----------------------------+----------+---------+
+ 
+----	Restricted			11 	 	 0
+-ZZF	Custom US/Canada		11	 	 8
+-ZZD	Rest of World			13	 	 0
+-ZZA	Custom USA & Europe & High	11		13
+-ZZB	Custom NA & Europe    		11		13
+-ZZC	Custom Japan			11	 	 4
+-ZZM	Custom 				11	 	 0
+-ZZE	Europe				13		19
+-ZZJ	Custom Japan			14	 	 4
+-ZZR	Rest of World			14	 	 0
+-ZZH	High Band			13	 	 4
+-ZZG	Custom Europe			13	 	 4
+-ZZK	Europe 				13		24
+-ZZL	Europe				11		13
++2.  Ad-Hoc Networking
++=====================
+ 
+-
+-2.   Ad-Hoc Networking
+------------------------------------------------
+-
+-When using a device in an Ad-Hoc network, it is useful to understand the 
+-sequence and requirements for the driver to be able to create, join, or 
++When using a device in an Ad-Hoc network, it is useful to understand the
++sequence and requirements for the driver to be able to create, join, or
+ merge networks.
+ 
+-The following attempts to provide enough information so that you can 
+-have a consistent experience while using the driver as a member of an 
++The following attempts to provide enough information so that you can
++have a consistent experience while using the driver as a member of an
+ Ad-Hoc network.
+ 
+ 2.1. Joining an Ad-Hoc Network
+------------------------------------------------
++------------------------------
+ 
+-The easiest way to get onto an Ad-Hoc network is to join one that 
++The easiest way to get onto an Ad-Hoc network is to join one that
+ already exists.
+ 
+ 2.2. Creating an Ad-Hoc Network
+------------------------------------------------
++-------------------------------
+ 
+ An Ad-Hoc networks is created using the syntax of the Wireless tool.
+ 
+@@ -371,21 +423,21 @@ For Example:
+ iwconfig eth1 mode ad-hoc essid testing channel 2
+ 
+ 2.3. Merging Ad-Hoc Networks
+------------------------------------------------
++----------------------------
+ 
+ 
+-3.  Interaction with Wireless Tools
+------------------------------------------------
++3. Interaction with Wireless Tools
++==================================
+ 
+ 3.1 iwconfig mode
+------------------------------------------------
++-----------------
+ 
+ When configuring the mode of the adapter, all run-time configured parameters
+ are reset to the value used when the module was loaded.  This includes
+ channels, rates, ESSID, etc.
+ 
+ 3.2 iwconfig sens
+------------------------------------------------
++-----------------
+ 
+ The 'iwconfig ethX sens XX' command will not set the signal sensitivity
+ threshold, as described in iwconfig documentation, but rather the number
+@@ -394,35 +446,35 @@ to another access point. At the same time, it will set the disassociation
+ threshold to 3 times the given value.
+ 
+ 
+-4.   About the Version Numbers
+------------------------------------------------
++4.  About the Version Numbers
++=============================
+ 
+-Due to the nature of open source development projects, there are 
+-frequently changes being incorporated that have not gone through 
+-a complete validation process.  These changes are incorporated into 
++Due to the nature of open source development projects, there are
++frequently changes being incorporated that have not gone through
++a complete validation process.  These changes are incorporated into
+ development snapshot releases.
+ 
+-Releases are numbered with a three level scheme: 
++Releases are numbered with a three level scheme:
+ 
+ 	major.minor.development
+ 
+ Any version where the 'development' portion is 0 (for example
+-1.0.0, 1.1.0, etc.) indicates a stable version that will be made 
++1.0.0, 1.1.0, etc.) indicates a stable version that will be made
+ available for kernel inclusion.
+ 
+ Any version where the 'development' portion is not a 0 (for
+ example 1.0.1, 1.1.5, etc.) indicates a development version that is
+-being made available for testing and cutting edge users.  The stability 
++being made available for testing and cutting edge users.  The stability
+ and functionality of the development releases are not know.  We make
+ efforts to try and keep all snapshots reasonably stable, but due to the
+-frequency of their release, and the desire to get those releases 
++frequency of their release, and the desire to get those releases
+ available as quickly as possible, unknown anomalies should be expected.
+ 
+ The major version number will be incremented when significant changes
+ are made to the driver.  Currently, there are no major changes planned.
+ 
+-5.  Firmware installation
+-----------------------------------------------
++5. Firmware installation
++========================
+ 
+ The driver requires a firmware image, download it and extract the
+ files under /lib/firmware (or wherever your hotplug's firmware.agent
+@@ -433,40 +485,42 @@ The firmware can be downloaded from the following URL:
+     http://ipw2200.sf.net/
+ 
+ 
+-6.  Support
+------------------------------------------------
++6. Support
 +==========
  
- For general development information and support,
- go to:
+-For direct support of the 1.0.0 version, you can contact 
++For direct support of the 1.0.0 version, you can contact
+ http://supportmail.intel.com, or you can use the open source project
+ support.
+ 
+ For general information and support, go to:
 -	
 +
-     http://ipw2100.sf.net/
+     http://ipw2200.sf.net/
  
--The ipw2100 1.1.0 driver and firmware can be downloaded from:  
-+The ipw2100 1.1.0 driver and firmware can be downloaded from:
  
-     http://support.intel.com
- 
--For installation support on the ipw2100 1.1.0 driver on Linux kernels 
--2.6.8 or greater, email support is available from:  
-+For installation support on the ipw2100 1.1.0 driver on Linux kernels
-+2.6.8 or greater, email support is available from:
- 
-     http://supportmail.intel.com
- 
- 9. License
+-7.  License
 ------------------------------------------------
++7. License
 +==========
  
 -  Copyright(c) 2003 - 2006 Intel Corporation. All rights reserved.
 +  Copyright |copy| 2003 - 2006 Intel Corporation. All rights reserved.
  
 -  This program is free software; you can redistribute it and/or modify it 
--  under the terms of the GNU General Public License (version 2) as 
+-  under the terms of the GNU General Public License version 2 as 
 +  This program is free software; you can redistribute it and/or modify it
-+  under the terms of the GNU General Public License (version 2) as
++  under the terms of the GNU General Public License version 2 as
    published by the Free Software Foundation.
 -  
 -  This program is distributed in the hope that it will be useful, but WITHOUT 
@@ -453,51 +761,38 @@ index 6f85e1d06031..d54ad522f937 100644
    file called LICENSE.
 -  
 +
-   License Contact Information:
+   Contact Information:
 +
    James P. Ketrenos <ipw2100-admin@linux.intel.com>
 +
    Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
  
 diff --git a/MAINTAINERS b/MAINTAINERS
-index b92568479a71..2ac9c94ff4f2 100644
+index 2ac9c94ff4f2..62c654308bc8 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -8762,7 +8762,7 @@ INTEL PRO/WIRELESS 2100, 2200BG, 2915ABG NETWORK CONNECTION SUPPORT
- M:	Stanislav Yakovlev <stas.yakovlev@gmail.com>
+@@ -8763,7 +8763,7 @@ M:	Stanislav Yakovlev <stas.yakovlev@gmail.com>
  L:	linux-wireless@vger.kernel.org
  S:	Maintained
--F:	Documentation/networking/device_drivers/intel/ipw2100.txt
-+F:	Documentation/networking/device_drivers/intel/ipw2100.rst
- F:	Documentation/networking/device_drivers/intel/ipw2200.txt
+ F:	Documentation/networking/device_drivers/intel/ipw2100.rst
+-F:	Documentation/networking/device_drivers/intel/ipw2200.txt
++F:	Documentation/networking/device_drivers/intel/ipw2200.rst
  F:	drivers/net/wireless/intel/ipw2x00/
  
+ INTEL PSTATE DRIVER
 diff --git a/drivers/net/wireless/intel/ipw2x00/Kconfig b/drivers/net/wireless/intel/ipw2x00/Kconfig
-index ab17903ba9f8..b0b3cd6296f3 100644
+index b0b3cd6296f3..f42b3cdce611 100644
 --- a/drivers/net/wireless/intel/ipw2x00/Kconfig
 +++ b/drivers/net/wireless/intel/ipw2x00/Kconfig
-@@ -16,7 +16,7 @@ config IPW2100
- 	  A driver for the Intel PRO/Wireless 2100 Network
- 	  Connection 802.11b wireless network adapter.
+@@ -78,7 +78,7 @@ config IPW2200
+ 	  A driver for the Intel PRO/Wireless 2200BG and 2915ABG Network
+ 	  Connection adapters.
  
--	  See <file:Documentation/networking/device_drivers/intel/ipw2100.txt>
-+	  See <file:Documentation/networking/device_drivers/intel/ipw2100.rst>
- 	  for information on the capabilities currently enabled in this driver
- 	  and for tips for debugging issues and problems.
+-	  See <file:Documentation/networking/device_drivers/intel/ipw2200.txt>
++	  See <file:Documentation/networking/device_drivers/intel/ipw2200.rst>
+ 	  for information on the capabilities currently enabled in this
+ 	  driver and for tips for debugging issues and problems.
  
-diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-index 97ea6e2035e6..624fe721e2b5 100644
---- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
-@@ -8352,7 +8352,7 @@ static int ipw2100_mod_firmware_load(struct ipw2100_fw *fw)
- 	if (IPW2100_FW_MAJOR(h->version) != IPW2100_FW_MAJOR_VERSION) {
- 		printk(KERN_WARNING DRV_NAME ": Firmware image not compatible "
- 		       "(detected version id of %u). "
--		       "See Documentation/networking/device_drivers/intel/ipw2100.txt\n",
-+		       "See Documentation/networking/device_drivers/intel/ipw2100.rst\n",
- 		       h->version);
- 		return 1;
- 	}
 -- 
 2.25.4
 
