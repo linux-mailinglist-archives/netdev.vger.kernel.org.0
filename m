@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A17B21C1824
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:46:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A26811C1883
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:57:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729655AbgEAOpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:45:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52210 "EHLO mail.kernel.org"
+        id S1729492AbgEAOpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:45:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52206 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729185AbgEAOpG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 May 2020 10:45:06 -0400
+        id S1728914AbgEAOpF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 10:45:05 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF5962173E;
+        by mail.kernel.org (Postfix) with ESMTPSA id EE090208DB;
         Fri,  1 May 2020 14:45:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588344305;
-        bh=BbJSuVHr+5IYyFuJdvZiLliVMl8TXc8u3OKr+XoJgqM=;
+        bh=hboY7LvkSkG+z9pZ1T82TwKQFJjcn1LXM91doMsst3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ek4Fs5EnMWY9KkNiiDgeipm6HTU2HAI16If947ALxxpfJXokfVVs7rV7eRn0tRPdf
-         oQ4R6M18YVWCsPxSda4EXXZSJFR6Tykdmv1+vIwTThnplL9eCCZfL2SzSyYLhFZv5x
-         WXAiSuegzPKkTKwT9vLXtoV6mEnoULa82hIa/jMQ=
+        b=rsPMDGoEYR9sGgftuvVNtqmzF35W8IbmSE422+UronlGfOib3qMp1x43IQZP5kdp3
+         ufwypaCJTzjls/26N5M1YHZ9fipdY0NxMAkT5hi88M/aidtscdJ28NbZPpPBvbjhbe
+         FpkRdUvezN2TaSInntJZpA85VQs4mdERYz/wpq28=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUWuT-00FCcx-D7; Fri, 01 May 2020 16:45:01 +0200
+        id 1jUWuT-00FCd2-Dt; Fri, 01 May 2020 16:45:01 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 07/37] docs: networking: convert xfrm_device.txt to ReST
-Date:   Fri,  1 May 2020 16:44:29 +0200
-Message-Id: <0977c0a0683059dabe314ceb543d3e8f0abbc506.1588344146.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 08/37] docs: networking: convert xfrm_proc.txt to ReST
+Date:   Fri,  1 May 2020 16:44:30 +0200
+Message-Id: <b888b39a925d0c8385b9a3fa338edb762cf78a7d.1588344146.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588344146.git.mchehab+huawei@kernel.org>
 References: <cover.1588344146.git.mchehab+huawei@kernel.org>
@@ -46,148 +46,143 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
-- mark code blocks and literals as such;
-- mark tables as such;
+- adjust title markup;
 - adjust identation, whitespaces and blank lines where needed;
 - add to networking/index.rst.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
  Documentation/networking/index.rst            |  1 +
- .../{xfrm_device.txt => xfrm_device.rst}      | 33 ++++++++++++-------
- 2 files changed, 23 insertions(+), 11 deletions(-)
- rename Documentation/networking/{xfrm_device.txt => xfrm_device.rst} (92%)
+ .../{xfrm_proc.txt => xfrm_proc.rst}          | 31 +++++++++++++++++++
+ 2 files changed, 32 insertions(+)
+ rename Documentation/networking/{xfrm_proc.txt => xfrm_proc.rst} (95%)
 
 diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 75521e6c473b..e31f6cb564b4 100644
+index e31f6cb564b4..3fe70efb632e 100644
 --- a/Documentation/networking/index.rst
 +++ b/Documentation/networking/index.rst
-@@ -117,6 +117,7 @@ Contents:
-    vxlan
+@@ -118,6 +118,7 @@ Contents:
     x25-iface
     x25
-+   xfrm_device
+    xfrm_device
++   xfrm_proc
  
  .. only::  subproject and html
  
-diff --git a/Documentation/networking/xfrm_device.txt b/Documentation/networking/xfrm_device.rst
-similarity index 92%
-rename from Documentation/networking/xfrm_device.txt
-rename to Documentation/networking/xfrm_device.rst
-index a1c904dc70dc..da1073acda96 100644
---- a/Documentation/networking/xfrm_device.txt
-+++ b/Documentation/networking/xfrm_device.rst
-@@ -1,7 +1,9 @@
+diff --git a/Documentation/networking/xfrm_proc.txt b/Documentation/networking/xfrm_proc.rst
+similarity index 95%
+rename from Documentation/networking/xfrm_proc.txt
+rename to Documentation/networking/xfrm_proc.rst
+index 2eae619ab67b..0a771c5a7399 100644
+--- a/Documentation/networking/xfrm_proc.txt
++++ b/Documentation/networking/xfrm_proc.rst
+@@ -1,5 +1,9 @@
 +.. SPDX-License-Identifier: GPL-2.0
- 
- ===============================================
- XFRM device - offloading the IPsec computations
- ===============================================
 +
- Shannon Nelson <shannon.nelson@oracle.com>
- 
- 
-@@ -19,7 +21,7 @@ hardware offload.
- Userland access to the offload is typically through a system such as
- libreswan or KAME/raccoon, but the iproute2 'ip xfrm' command set can
- be handy when experimenting.  An example command might look something
--like this:
-+like this::
- 
-   ip x s add proto esp dst 14.0.0.70 src 14.0.0.52 spi 0x07 mode transport \
-      reqid 0x07 replay-window 32 \
-@@ -34,15 +36,17 @@ Yes, that's ugly, but that's what shell scripts and/or libreswan are for.
- Callbacks to implement
- ======================
- 
--/* from include/linux/netdevice.h */
--struct xfrmdev_ops {
-+::
++==================================
+ XFRM proc - /proc/net/xfrm_* files
+ ==================================
 +
-+  /* from include/linux/netdevice.h */
-+  struct xfrmdev_ops {
- 	int	(*xdo_dev_state_add) (struct xfrm_state *x);
- 	void	(*xdo_dev_state_delete) (struct xfrm_state *x);
- 	void	(*xdo_dev_state_free) (struct xfrm_state *x);
- 	bool	(*xdo_dev_offload_ok) (struct sk_buff *skb,
- 				       struct xfrm_state *x);
- 	void    (*xdo_dev_state_advance_esn) (struct xfrm_state *x);
--};
-+  };
+ Masahide NAKAMURA <nakam@linux-ipv6.org>
  
- The NIC driver offering ipsec offload will need to implement these
- callbacks to make the offload available to the network stack's
-@@ -58,6 +62,8 @@ At probe time and before the call to register_netdev(), the driver should
- set up local data structures and XFRM callbacks, and set the feature bits.
- The XFRM code's listener will finish the setup on NETDEV_REGISTER.
  
-+::
+@@ -14,42 +18,58 @@ as part of the linux private MIB.  These counters can be viewed in
+ 
+ Inbound errors
+ ~~~~~~~~~~~~~~
 +
- 		adapter->netdev->xfrmdev_ops = &ixgbe_xfrmdev_ops;
- 		adapter->netdev->features |= NETIF_F_HW_ESP;
- 		adapter->netdev->hw_enc_features |= NETIF_F_HW_ESP;
-@@ -65,16 +71,20 @@ The XFRM code's listener will finish the setup on NETDEV_REGISTER.
- When new SAs are set up with a request for "offload" feature, the
- driver's xdo_dev_state_add() will be given the new SA to be offloaded
- and an indication of whether it is for Rx or Tx.  The driver should
+ XfrmInError:
+ 	All errors which is not matched others
 +
- 	- verify the algorithm is supported for offloads
- 	- store the SA information (key, salt, target-ip, protocol, etc)
- 	- enable the HW offload of the SA
- 	- return status value:
+ XfrmInBufferError:
+ 	No buffer is left
 +
-+		===========   ===================================
- 		0             success
- 		-EOPNETSUPP   offload not supported, try SW IPsec
- 		other         fail the request
-+		===========   ===================================
- 
- The driver can also set an offload_handle in the SA, an opaque void pointer
--that can be used to convey context into the fast-path offload requests.
-+that can be used to convey context into the fast-path offload requests::
- 
- 		xs->xso.offload_handle = context;
- 
-@@ -88,7 +98,7 @@ return true of false to signify its support.
- 
- When ready to send, the driver needs to inspect the Tx packet for the
- offload information, including the opaque context, and set up the packet
--send accordingly.
-+send accordingly::
- 
- 		xs = xfrm_input_state(skb);
- 		context = xs->xso.offload_handle;
-@@ -105,18 +115,21 @@ the packet's skb.  At this point the data should be decrypted but the
- IPsec headers are still in the packet data; they are removed later up
- the stack in xfrm_input().
- 
--	find and hold the SA that was used to the Rx skb
-+	find and hold the SA that was used to the Rx skb::
+ XfrmInHdrError:
+ 	Header error
 +
- 		get spi, protocol, and destination IP from packet headers
- 		xs = find xs from (spi, protocol, dest_IP)
- 		xfrm_state_hold(xs);
- 
--	store the state information into the skb
-+	store the state information into the skb::
+ XfrmInNoStates:
+ 	No state is found
+ 	i.e. Either inbound SPI, address, or IPsec protocol at SA is wrong
 +
- 		sp = secpath_set(skb);
- 		if (!sp) return;
- 		sp->xvec[sp->len++] = xs;
- 		sp->olen++;
- 
--	indicate the success and/or error status of the offload
-+	indicate the success and/or error status of the offload::
+ XfrmInStateProtoError:
+ 	Transformation protocol specific error
+ 	e.g. SA key is wrong
 +
- 		xo = xfrm_offload(skb);
- 		xo->flags = CRYPTO_DONE;
- 		xo->status = crypto_status;
-@@ -136,5 +149,3 @@ hardware needs.
- As a netdev is set to DOWN the XFRM stack's netdev listener will call
- xdo_dev_state_delete() and xdo_dev_state_free() on any remaining offloaded
- states.
--
--
+ XfrmInStateModeError:
+ 	Transformation mode specific error
++
+ XfrmInStateSeqError:
+ 	Sequence error
+ 	i.e. Sequence number is out of window
++
+ XfrmInStateExpired:
+ 	State is expired
++
+ XfrmInStateMismatch:
+ 	State has mismatch option
+ 	e.g. UDP encapsulation type is mismatch
++
+ XfrmInStateInvalid:
+ 	State is invalid
++
+ XfrmInTmplMismatch:
+ 	No matching template for states
+ 	e.g. Inbound SAs are correct but SP rule is wrong
++
+ XfrmInNoPols:
+ 	No policy is found for states
+ 	e.g. Inbound SAs are correct but no SP is found
++
+ XfrmInPolBlock:
+ 	Policy discards
++
+ XfrmInPolError:
+ 	Policy error
++
+ XfrmAcquireError:
+ 	State hasn't been fully acquired before use
++
+ XfrmFwdHdrError:
+ 	Forward routing of a packet is not allowed
+ 
+@@ -57,26 +77,37 @@ Outbound errors
+ ~~~~~~~~~~~~~~~
+ XfrmOutError:
+ 	All errors which is not matched others
++
+ XfrmOutBundleGenError:
+ 	Bundle generation error
++
+ XfrmOutBundleCheckError:
+ 	Bundle check error
++
+ XfrmOutNoStates:
+ 	No state is found
++
+ XfrmOutStateProtoError:
+ 	Transformation protocol specific error
++
+ XfrmOutStateModeError:
+ 	Transformation mode specific error
++
+ XfrmOutStateSeqError:
+ 	Sequence error
+ 	i.e. Sequence number overflow
++
+ XfrmOutStateExpired:
+ 	State is expired
++
+ XfrmOutPolBlock:
+ 	Policy discards
++
+ XfrmOutPolDead:
+ 	Policy is dead
++
+ XfrmOutPolError:
+ 	Policy error
++
+ XfrmOutStateInvalid:
+ 	State is invalid, perhaps expired
 -- 
 2.25.4
 
