@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F32571C185D
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7271C1855
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:47:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730137AbgEAOqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:46:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52788 "EHLO mail.kernel.org"
+        id S1730064AbgEAOq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:46:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52758 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729502AbgEAOpK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729538AbgEAOpK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 1 May 2020 10:45:10 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ED0B524982;
+        by mail.kernel.org (Postfix) with ESMTPSA id F028924986;
         Fri,  1 May 2020 14:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588344306;
-        bh=Oc7YPefTP4LbfGthW3bo/1jad2PWEOiKVFe+gs+mTuA=;
+        bh=CeJOt3a/Wgizd57L8hCo0eTRqPtt13fyWxD2EJLdlgk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSXTMX2VW39JYGJ/ciJez5BmshjkTjf/4yw1tUnWQMSWaZ1aH0n16VJ7NgdYMFEO2
-         utNxVnBbsX+Tn5FZNLsqvuWFVfO+7SWJdlD5dpwBE4++t16mLZo7onh6tsbRDwOvKU
-         oy4A7yhs2tCz/2d//HeiyVxFQEYSIDiefszPqPfs=
+        b=VRmkV2pfrviRSKpFRAJHMEtTNKm4WZFRoYWm2EveEitVEpFbeHIqyUNvSw3WjEVfE
+         0/E0LkxY3So/MWBjc2Py1CvKAu9qRbgMQsLRPGaO6Jx1MzwWluKqgEivD5bx1bDCaH
+         9YpBCeD0zG2q/dDFajBmRfOHApBUymHWfWPSxPDc=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jUWuT-00FCdO-HK; Fri, 01 May 2020 16:45:01 +0200
+        id 1jUWuT-00FCdS-ID; Fri, 01 May 2020 16:45:01 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Steffen Klassert <klassert@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 12/37] docs: networking: device drivers: convert 3com/3c509.txt to ReST
-Date:   Fri,  1 May 2020 16:44:34 +0200
-Message-Id: <fb77f8d3b1df3c55b68ebf0d40e0fdcfcb30ae42.1588344146.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 13/37] docs: networking: device drivers: convert 3com/vortex.txt to ReST
+Date:   Fri,  1 May 2020 16:44:35 +0200
+Message-Id: <fd5c8424d3d72ea7251d267233c8743d0c51b4e6.1588344146.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588344146.git.mchehab+huawei@kernel.org>
 References: <cover.1588344146.git.mchehab+huawei@kernel.org>
@@ -46,326 +47,506 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 - add SPDX header;
-- adjust titles and chapters, adding proper markups;
+- add a document title;
 - mark code blocks and literals as such;
-- add notes markups;
 - mark tables as such;
 - adjust identation, whitespaces and blank lines where needed;
 - add to networking/index.rst.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- .../3com/{3c509.txt => 3c509.rst}             | 158 +++++++++++-------
+ .../3com/{vortex.txt => vortex.rst}           | 223 +++++++++---------
  .../networking/device_drivers/index.rst       |   1 +
- 2 files changed, 98 insertions(+), 61 deletions(-)
- rename Documentation/networking/device_drivers/3com/{3c509.txt => 3c509.rst} (68%)
+ MAINTAINERS                                   |   2 +-
+ drivers/net/ethernet/3com/3c59x.c             |   4 +-
+ drivers/net/ethernet/3com/Kconfig             |   2 +-
+ 5 files changed, 123 insertions(+), 109 deletions(-)
+ rename Documentation/networking/device_drivers/3com/{vortex.txt => vortex.rst} (72%)
 
-diff --git a/Documentation/networking/device_drivers/3com/3c509.txt b/Documentation/networking/device_drivers/3com/3c509.rst
-similarity index 68%
-rename from Documentation/networking/device_drivers/3com/3c509.txt
-rename to Documentation/networking/device_drivers/3com/3c509.rst
-index fbf722e15ac3..47f706bacdd9 100644
---- a/Documentation/networking/device_drivers/3com/3c509.txt
-+++ b/Documentation/networking/device_drivers/3com/3c509.rst
-@@ -1,17 +1,21 @@
+diff --git a/Documentation/networking/device_drivers/3com/vortex.txt b/Documentation/networking/device_drivers/3com/vortex.rst
+similarity index 72%
+rename from Documentation/networking/device_drivers/3com/vortex.txt
+rename to Documentation/networking/device_drivers/3com/vortex.rst
+index 587f3fcfbcae..800add5be338 100644
+--- a/Documentation/networking/device_drivers/3com/vortex.txt
++++ b/Documentation/networking/device_drivers/3com/vortex.rst
+@@ -1,5 +1,13 @@
+-Documentation/networking/device_drivers/3com/vortex.txt
 +.. SPDX-License-Identifier: GPL-2.0
 +
-+=============================================================================
- Linux and the 3Com EtherLink III Series Ethercards (driver v1.18c and higher)
------------------------------------------------------------------------------
-+=============================================================================
- 
- This file contains the instructions and caveats for v1.18c and higher versions
- of the 3c509 driver. You should not use the driver without reading this file.
- 
- release 1.0
++=========================
++3Com Vortex device driver
++=========================
 +
- 28 February 2002
++Documentation/networking/device_drivers/3com/vortex.rst
 +
- Current maintainer (corrections to):
-   David Ruggiero <jdr@farfalle.com>
- 
------------------------------------------------------------------------------
--
--(0) Introduction
-+Introduction
-+============
- 
- The following are notes and information on using the 3Com EtherLink III series
- ethercards in Linux. These cards are commonly known by the most widely-used
-@@ -21,11 +25,11 @@ be (but sometimes are) confused with the similarly-numbered PCI-bus "3c905"
- provided by the module 3c509.c, which has code to support all of the following
- models:
- 
--  3c509 (original ISA card)
--  3c509B (later revision of the ISA card; supports full-duplex)
--  3c589 (PCMCIA)
--  3c589B (later revision of the 3c589; supports full-duplex)
--  3c579 (EISA)
-+ - 3c509 (original ISA card)
-+ - 3c509B (later revision of the ISA card; supports full-duplex)
-+ - 3c589 (PCMCIA)
-+ - 3c589B (later revision of the 3c589; supports full-duplex)
-+ - 3c579 (EISA)
- 
- Large portions of this documentation were heavily borrowed from the guide
- written the original author of the 3c509 driver, Donald Becker. The master
-@@ -33,32 +37,34 @@ copy of that document, which contains notes on older versions of the driver,
- currently resides on Scyld web server: http://www.scyld.com/.
- 
- 
--(1) Special Driver Features
-+Special Driver Features
-+=======================
- 
- Overriding card settings
- 
- The driver allows boot- or load-time overriding of the card's detected IOADDR,
- IRQ, and transceiver settings, although this capability shouldn't generally be
- needed except to enable full-duplex mode (see below). An example of the syntax
--for LILO parameters for doing this:
-+for LILO parameters for doing this::
- 
--    ether=10,0x310,3,0x3c509,eth0 
-+    ether=10,0x310,3,0x3c509,eth0
- 
- This configures the first found 3c509 card for IRQ 10, base I/O 0x310, and
- transceiver type 3 (10base2). The flag "0x3c509" must be set to avoid conflicts
- with other card types when overriding the I/O address. When the driver is
- loaded as a module, only the IRQ may be overridden. For example,
- setting two cards to IRQ10 and IRQ11 is done by using the irq module
--option:
-+option::
- 
-    options 3c509 irq=10,11
- 
- 
--(2) Full-duplex mode
-+Full-duplex mode
-+================
- 
- The v1.18c driver added support for the 3c509B's full-duplex capabilities.
- In order to enable and successfully use full-duplex mode, three conditions
--must be met: 
-+must be met:
- 
- (a) You must have a Etherlink III card model whose hardware supports full-
- duplex operations. Currently, the only members of the 3c509 family that are
-@@ -78,27 +84,32 @@ duplex-capable  Ethernet switch (*not* a hub), or a full-duplex-capable NIC on
- another system that's connected directly to the 3c509B via a crossover cable.
- 
- Full-duplex mode can be enabled using 'ethtool'.
-- 
--/////Extremely important caution concerning full-duplex mode/////
--Understand that the 3c509B's hardware's full-duplex support is much more
--limited than that provide by more modern network interface cards. Although
--at the physical layer of the network it fully supports full-duplex operation,
--the card was designed before the current Ethernet auto-negotiation (N-way)
--spec was written. This means that the 3c509B family ***cannot and will not
--auto-negotiate a full-duplex connection with its link partner under any
--circumstances, no matter how it is initialized***. If the full-duplex mode
--of the 3c509B is enabled, its link partner will very likely need to be
--independently _forced_ into full-duplex mode as well; otherwise various nasty
--failures will occur - at the very least, you'll see massive numbers of packet
--collisions. This is one of very rare circumstances where disabling auto-
--negotiation and forcing the duplex mode of a network interface card or switch
--would ever be necessary or desirable.
- 
-+.. warning::
- 
--(3) Available Transceiver Types
-+  Extremely important caution concerning full-duplex mode
+ Andrew Morton
 +
-+  Understand that the 3c509B's hardware's full-duplex support is much more
-+  limited than that provide by more modern network interface cards. Although
-+  at the physical layer of the network it fully supports full-duplex operation,
-+  the card was designed before the current Ethernet auto-negotiation (N-way)
-+  spec was written. This means that the 3c509B family ***cannot and will not
-+  auto-negotiate a full-duplex connection with its link partner under any
-+  circumstances, no matter how it is initialized***. If the full-duplex mode
-+  of the 3c509B is enabled, its link partner will very likely need to be
-+  independently _forced_ into full-duplex mode as well; otherwise various nasty
-+  failures will occur - at the very least, you'll see massive numbers of packet
-+  collisions. This is one of very rare circumstances where disabling auto-
-+  negotiation and forcing the duplex mode of a network interface card or switch
-+  would ever be necessary or desirable.
+ 30 April 2000
+ 
+ 
+@@ -8,12 +16,12 @@ driver for Linux, 3c59x.c.
+ 
+ The driver was written by Donald Becker <becker@scyld.com>
+ 
+-Don is no longer the prime maintainer of this version of the driver. 
++Don is no longer the prime maintainer of this version of the driver.
+ Please report problems to one or more of:
+ 
+-  Andrew Morton
+-  Netdev mailing list <netdev@vger.kernel.org>
+-  Linux kernel mailing list <linux-kernel@vger.kernel.org>
++- Andrew Morton
++- Netdev mailing list <netdev@vger.kernel.org>
++- Linux kernel mailing list <linux-kernel@vger.kernel.org>
+ 
+ Please note the 'Reporting and Diagnosing Problems' section at the end
+ of this file.
+@@ -24,58 +32,58 @@ Since kernel 2.3.99-pre6, this driver incorporates the support for the
+ 
+ This driver supports the following hardware:
+ 
+-	3c590 Vortex 10Mbps
+-	3c592 EISA 10Mbps Demon/Vortex
+-	3c597 EISA Fast Demon/Vortex
+-	3c595 Vortex 100baseTx
+-	3c595 Vortex 100baseT4
+-	3c595 Vortex 100base-MII
+-	3c900 Boomerang 10baseT
+-	3c900 Boomerang 10Mbps Combo
+-	3c900 Cyclone 10Mbps TPO
+-	3c900 Cyclone 10Mbps Combo
+-	3c900 Cyclone 10Mbps TPC
+-	3c900B-FL Cyclone 10base-FL
+-	3c905 Boomerang 100baseTx
+-	3c905 Boomerang 100baseT4
+-	3c905B Cyclone 100baseTx
+-	3c905B Cyclone 10/100/BNC
+-	3c905B-FX Cyclone 100baseFx
+-	3c905C Tornado
+-	3c920B-EMB-WNM (ATI Radeon 9100 IGP)
+-	3c980 Cyclone
+-	3c980C Python-T
+-	3cSOHO100-TX Hurricane
+-	3c555 Laptop Hurricane
+-	3c556 Laptop Tornado
+-	3c556B Laptop Hurricane
+-	3c575 [Megahertz] 10/100 LAN  CardBus
+-	3c575 Boomerang CardBus
+-	3CCFE575BT Cyclone CardBus
+-	3CCFE575CT Tornado CardBus
+-	3CCFE656 Cyclone CardBus
+-	3CCFEM656B Cyclone+Winmodem CardBus
+-	3CXFEM656C Tornado+Winmodem CardBus
+-	3c450 HomePNA Tornado
+-	3c920 Tornado
+-	3c982 Hydra Dual Port A
+-	3c982 Hydra Dual Port B
+-	3c905B-T4
+-	3c920B-EMB-WNM Tornado
++	- 3c590 Vortex 10Mbps
++	- 3c592 EISA 10Mbps Demon/Vortex
++	- 3c597 EISA Fast Demon/Vortex
++	- 3c595 Vortex 100baseTx
++	- 3c595 Vortex 100baseT4
++	- 3c595 Vortex 100base-MII
++	- 3c900 Boomerang 10baseT
++	- 3c900 Boomerang 10Mbps Combo
++	- 3c900 Cyclone 10Mbps TPO
++	- 3c900 Cyclone 10Mbps Combo
++	- 3c900 Cyclone 10Mbps TPC
++	- 3c900B-FL Cyclone 10base-FL
++	- 3c905 Boomerang 100baseTx
++	- 3c905 Boomerang 100baseT4
++	- 3c905B Cyclone 100baseTx
++	- 3c905B Cyclone 10/100/BNC
++	- 3c905B-FX Cyclone 100baseFx
++	- 3c905C Tornado
++	- 3c920B-EMB-WNM (ATI Radeon 9100 IGP)
++	- 3c980 Cyclone
++	- 3c980C Python-T
++	- 3cSOHO100-TX Hurricane
++	- 3c555 Laptop Hurricane
++	- 3c556 Laptop Tornado
++	- 3c556B Laptop Hurricane
++	- 3c575 [Megahertz] 10/100 LAN  CardBus
++	- 3c575 Boomerang CardBus
++	- 3CCFE575BT Cyclone CardBus
++	- 3CCFE575CT Tornado CardBus
++	- 3CCFE656 Cyclone CardBus
++	- 3CCFEM656B Cyclone+Winmodem CardBus
++	- 3CXFEM656C Tornado+Winmodem CardBus
++	- 3c450 HomePNA Tornado
++	- 3c920 Tornado
++	- 3c982 Hydra Dual Port A
++	- 3c982 Hydra Dual Port B
++	- 3c905B-T4
++	- 3c920B-EMB-WNM Tornado
+ 
+ Module parameters
+ =================
+ 
+ There are several parameters which may be provided to the driver when
+-its module is loaded.  These are usually placed in /etc/modprobe.d/*.conf
+-configuration files.  Example:
++its module is loaded.  These are usually placed in ``/etc/modprobe.d/*.conf``
++configuration files.  Example::
+ 
+-options 3c59x debug=3 rx_copybreak=300
++    options 3c59x debug=3 rx_copybreak=300
+ 
+ If you are using the PCMCIA tools (cardmgr) then the options may be
+-placed in /etc/pcmcia/config.opts:
++placed in /etc/pcmcia/config.opts::
+ 
+-module "3c59x" opts "debug=3 rx_copybreak=300"
++    module "3c59x" opts "debug=3 rx_copybreak=300"
+ 
+ 
+ The supported parameters are:
+@@ -89,7 +97,7 @@ options=N1,N2,N3,...
+ 
+   Each number in the list provides an option to the corresponding
+   network card.  So if you have two 3c905's and you wish to provide
+-  them with option 0x204 you would use:
++  them with option 0x204 you would use::
+ 
+     options=0x204,0x204
+ 
+@@ -97,6 +105,8 @@ options=N1,N2,N3,...
+   have the following meanings:
+ 
+   Possible media type settings
 +
-+
-+Available Transceiver Types
-+===========================
++	==	=================================
+ 	0	10baseT
+ 	1	10Mbs AUI
+ 	2	undefined
+@@ -108,17 +118,20 @@ options=N1,N2,N3,...
+ 	8       Autonegotiate
+ 	9       External MII
+ 	10      Use default setting from EEPROM
++	==	=================================
  
- For versions of the driver v1.18c and above, the available transceiver types are:
-- 
-+
-+== =========================================================================
- 0  transceiver type from EEPROM config (normally 10baseT); force half-duplex
- 1  AUI (thick-net / DB15 connector)
- 2  (undefined)
-@@ -106,6 +117,7 @@ For versions of the driver v1.18c and above, the available transceiver types are
- 4  10baseT (RJ-45 connector); force half-duplex mode
- 8  transceiver type and duplex mode taken from card's EEPROM config settings
- 12 10baseT (RJ-45 connector); force full-duplex mode
-+== =========================================================================
+   When generating a value for the 'options' setting, the above media
+   selection values may be OR'ed (or added to) the following:
  
- Prior to driver version 1.18c, only transceiver codes 0-4 were supported. Note
- that the new transceiver codes 8 and 12 are the *only* ones that will enable
-@@ -116,26 +128,30 @@ it must always be explicitly enabled via one of these code in order to be
- activated.
++  ======  =============================================
+   0x8000  Set driver debugging level to 7
+   0x4000  Set driver debugging level to 2
+   0x0400  Enable Wake-on-LAN
+   0x0200  Force full duplex mode.
+   0x0010  Bus-master enable bit (Old Vortex cards only)
++  ======  =============================================
  
- The transceiver type can be changed using 'ethtool'.
--  
+-  For example:
++  For example::
  
--(4a) Interpretation of error messages and common problems
-+
-+Interpretation of error messages and common problems
-+----------------------------------------------------
+     insmod 3c59x options=0x204
  
- Error Messages
-+^^^^^^^^^^^^^^
+@@ -127,14 +140,14 @@ options=N1,N2,N3,...
  
--eth0: Infinite loop in interrupt, status 2011. 
-+eth0: Infinite loop in interrupt, status 2011.
- These are "mostly harmless" message indicating that the driver had too much
- work during that interrupt cycle. With a status of 0x2011 you are receiving
- packets faster than they can be removed from the card. This should be rare
- or impossible in normal operation. Possible causes of this error report are:
-- 
-+
-    - a "green" mode enabled that slows the processor down when there is no
--     keyboard activity. 
-+     keyboard activity.
+ global_options=N
  
-    - some other device or device driver hogging the bus or disabling interrupts.
-      Check /proc/interrupts for excessive interrupt counts. The timer tick
--     interrupt should always be incrementing faster than the others. 
-+     interrupt should always be incrementing faster than the others.
-+
-+No received packets
-+^^^^^^^^^^^^^^^^^^^
+-  Sets the `options' parameter for all 3c59x NICs in the machine. 
+-  Entries in the `options' array above will override any setting of
++  Sets the ``options`` parameter for all 3c59x NICs in the machine.
++  Entries in the ``options`` array above will override any setting of
+   this.
  
--No received packets 
- If a 3c509, 3c562 or 3c589 can successfully transmit packets, but never
- receives packets (as reported by /proc/net/dev or 'ifconfig') you likely
- have an interrupt line problem. Check /proc/interrupts to verify that the
-@@ -146,26 +162,37 @@ or IRQ5, and the easiest solution is to move the 3c509 to a different
- interrupt line. If the device is receiving packets but 'ping' doesn't work,
- you have a routing problem.
+ full_duplex=N1,N2,N3...
  
--Tx Carrier Errors Reported in /proc/net/dev 
-+Tx Carrier Errors Reported in /proc/net/dev
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+
- If an EtherLink III appears to transmit packets, but the "Tx carrier errors"
- field in /proc/net/dev increments as quickly as the Tx packet count, you
--likely have an unterminated network or the incorrect media transceiver selected. 
-+likely have an unterminated network or the incorrect media transceiver selected.
-+
-+3c509B card is not detected on machines with an ISA PnP BIOS.
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   Similar to bit 9 of 'options'.  Forces the corresponding card into
+-  full-duplex mode.  Please use this in preference to the `options'
++  full-duplex mode.  Please use this in preference to the ``options``
+   parameter.
  
--3c509B card is not detected on machines with an ISA PnP BIOS. 
- While the updated driver works with most PnP BIOS programs, it does not work
- with all. This can be fixed by disabling PnP support using the 3Com-supplied
--setup program. 
-+setup program.
-+
-+3c509 card is not detected on overclocked machines
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   In fact, please don't use this at all! You're better off getting
+@@ -143,13 +156,13 @@ full_duplex=N1,N2,N3...
+ global_full_duplex=N1
  
--3c509 card is not detected on overclocked machines 
- Increase the delay time in id_read_eeprom() from the current value, 500,
--to an absurdly high value, such as 5000. 
-+to an absurdly high value, such as 5000.
+   Sets full duplex mode for all 3c59x NICs in the machine.  Entries
+-  in the `full_duplex' array above will override any setting of this.
++  in the ``full_duplex`` array above will override any setting of this.
  
+ flow_ctrl=N1,N2,N3...
  
--(4b) Decoding Status and Error Messages
-+Decoding Status and Error Messages
-+----------------------------------
+   Use 802.3x MAC-layer flow control.  The 3com cards only support the
+   PAUSE command, which means that they will stop sending packets for a
+-  short period if they receive a PAUSE frame from the link partner. 
++  short period if they receive a PAUSE frame from the link partner.
  
--The bits in the main status register are: 
+   The driver only allows flow control on a link which is operating in
+   full duplex mode.
+@@ -170,14 +183,14 @@ rx_copybreak=M
  
-+The bits in the main status register are:
-+
-+=====	======================================
- value 	description
-+=====	======================================
- 0x01 	Interrupt latch
- 0x02 	Tx overrun, or Rx underrun
- 0x04 	Tx complete
-@@ -174,30 +201,38 @@ value 	description
- 0x20 	A Rx packet has started to arrive
- 0x40 	The driver has requested an interrupt
- 0x80 	Statistics counter nearly full
-+=====	======================================
+   This is a speed/space tradeoff.
  
--The bits in the transmit (Tx) status word are: 
-+The bits in the transmit (Tx) status word are:
+-  The value of rx_copybreak is used to decide when to make the copy. 
+-  If the packet size is less than rx_copybreak, the packet is copied. 
++  The value of rx_copybreak is used to decide when to make the copy.
++  If the packet size is less than rx_copybreak, the packet is copied.
+   The default value for rx_copybreak is 200 bytes.
  
--value 	description
--0x02 	Out-of-window collision.
--0x04 	Status stack overflow (normally impossible).
--0x08 	16 collisions.
--0x10 	Tx underrun (not enough PCI bus bandwidth).
--0x20 	Tx jabber.
--0x40 	Tx interrupt requested.
--0x80 	Status is valid (this should always be set).
-+=====	============================================
-+value	description
-+=====	============================================
-+0x02	Out-of-window collision.
-+0x04	Status stack overflow (normally impossible).
-+0x08	16 collisions.
-+0x10	Tx underrun (not enough PCI bus bandwidth).
-+0x20	Tx jabber.
-+0x40	Tx interrupt requested.
-+0x80	Status is valid (this should always be set).
-+=====	============================================
+ max_interrupt_work=N
  
+   The driver's interrupt service routine can handle many receive and
+-  transmit packets in a single invocation.  It does this in a loop. 
++  transmit packets in a single invocation.  It does this in a loop.
+   The value of max_interrupt_work governs how many times the interrupt
+   service routine will loop.  The default value is 32 loops.  If this
+   is exceeded the interrupt service routine gives up and generates a
+@@ -186,7 +199,7 @@ max_interrupt_work=N
+ hw_checksums=N1,N2,N3,...
  
--When a transmit error occurs the driver produces a status message such as 
-+When a transmit error occurs the driver produces a status message such as::
+   Recent 3com NICs are able to generate IPv4, TCP and UDP checksums
+-  in hardware.  Linux has used the Rx checksumming for a long time. 
++  in hardware.  Linux has used the Rx checksumming for a long time.
+   The "zero copy" patch which is planned for the 2.4 kernel series
+   allows you to make use of the NIC's DMA scatter/gather and transmit
+   checksumming as well.
+@@ -196,11 +209,11 @@ hw_checksums=N1,N2,N3,...
  
-    eth0: Transmit error, Tx status register 82
+   This module parameter has been provided so you can override this
+   decision.  If you think that Tx checksums are causing a problem, you
+-  may disable the feature with `hw_checksums=0'.
++  may disable the feature with ``hw_checksums=0``.
  
- The two values typically seen here are:
+   If you think your NIC should be performing Tx checksumming and the
+   driver isn't enabling it, you can force the use of hardware Tx
+-  checksumming with `hw_checksums=1'.
++  checksumming with ``hw_checksums=1``.
  
--0x82 
-+0x82
-+^^^^
-+
- Out of window collision. This typically occurs when some other Ethernet
--host is incorrectly set to full duplex on a half duplex network. 
-+host is incorrectly set to full duplex on a half duplex network.
-+
-+0x88
-+^^^^
+   The driver drops a message in the logfiles to indicate whether or
+   not it is using hardware scatter/gather and hardware Tx checksums.
+@@ -210,8 +223,8 @@ hw_checksums=N1,N2,N3,...
+   decrease in throughput for send().  There is no effect upon receive
+   efficiency.
  
--0x88 
- 16 collisions. This typically occurs when the network is exceptionally busy
- or when another host doesn't correctly back off after a collision. If this
- error is mixed with 0x82 errors it is the result of a host incorrectly set
-@@ -207,7 +242,8 @@ Both of these errors are the result of network problems that should be
- corrected. They do not represent driver malfunction.
+-compaq_ioaddr=N
+-compaq_irq=N
++compaq_ioaddr=N,
++compaq_irq=N,
+ compaq_device_id=N
  
+   "Variables to work-around the Compaq PCI BIOS32 problem"....
+@@ -219,7 +232,7 @@ compaq_device_id=N
+ watchdog=N
  
--(5) Revision history (this file)
-+Revision history (this file)
-+============================
+   Sets the time duration (in milliseconds) after which the kernel
+-  decides that the transmitter has become stuck and needs to be reset. 
++  decides that the transmitter has become stuck and needs to be reset.
+   This is mainly for debugging purposes, although it may be advantageous
+   to increase this value on LANs which have very high collision rates.
+   The default value is 5000 (5.0 seconds).
+@@ -227,7 +240,7 @@ watchdog=N
+ enable_wol=N1,N2,N3,...
  
- 28Feb02 v1.0  DR   New; major portions based on Becker original 3c509 docs
+   Enable Wake-on-LAN support for the relevant interface.  Donald
+-  Becker's `ether-wake' application may be used to wake suspended
++  Becker's ``ether-wake`` application may be used to wake suspended
+   machines.
  
+   Also enables the NIC's power management support.
+@@ -235,7 +248,7 @@ enable_wol=N1,N2,N3,...
+ global_enable_wol=N
+ 
+   Sets enable_wol mode for all 3c59x NICs in the machine.  Entries in
+-  the `enable_wol' array above will override any setting of this.
++  the ``enable_wol`` array above will override any setting of this.
+ 
+ Media selection
+ ---------------
+@@ -325,12 +338,12 @@ Autonegotiation notes
+ 
+   Cisco switches    (Jeff Busch <jbusch@deja.com>)
+ 
+-    My "standard config" for ports to which PC's/servers connect directly:
++    My "standard config" for ports to which PC's/servers connect directly::
+ 
+-        interface FastEthernet0/N
+-        description machinename
+-        load-interval 30
+-        spanning-tree portfast
++	interface FastEthernet0/N
++	description machinename
++	load-interval 30
++	spanning-tree portfast
+ 
+     If autonegotiation is a problem, you may need to specify "speed
+     100" and "duplex full" as well (or "speed 10" and "duplex half").
+@@ -368,9 +381,9 @@ steps you should take:
+ 
+   But for most problems it is useful to provide the following:
+ 
+-   o Kernel version, driver version
++   - Kernel version, driver version
+ 
+-   o A copy of the banner message which the driver generates when
++   - A copy of the banner message which the driver generates when
+      it is initialised.  For example:
+ 
+      eth0: 3Com PCI 3c905C Tornado at 0xa400,  00:50:da:6a:88:f0, IRQ 19
+@@ -378,68 +391,68 @@ steps you should take:
+      MII transceiver found at address 24, status 782d.
+      Enabling bus-master transmits and whole-frame receives.
+ 
+-     NOTE: You must provide the `debug=2' modprobe option to generate
+-     a full detection message.  Please do this:
++     NOTE: You must provide the ``debug=2`` modprobe option to generate
++     a full detection message.  Please do this::
+ 
+ 	modprobe 3c59x debug=2
+ 
+-   o If it is a PCI device, the relevant output from 'lspci -vx', eg:
++   - If it is a PCI device, the relevant output from 'lspci -vx', eg::
+ 
+-     00:09.0 Ethernet controller: 3Com Corporation 3c905C-TX [Fast Etherlink] (rev 74)
+-             Subsystem: 3Com Corporation: Unknown device 9200
+-             Flags: bus master, medium devsel, latency 32, IRQ 19
+-             I/O ports at a400 [size=128]
+-             Memory at db000000 (32-bit, non-prefetchable) [size=128]
+-             Expansion ROM at <unassigned> [disabled] [size=128K]
+-             Capabilities: [dc] Power Management version 2
+-     00: b7 10 00 92 07 00 10 02 74 00 00 02 08 20 00 00
+-     10: 01 a4 00 00 00 00 00 db 00 00 00 00 00 00 00 00
+-     20: 00 00 00 00 00 00 00 00 00 00 00 00 b7 10 00 10
+-     30: 00 00 00 00 dc 00 00 00 00 00 00 00 05 01 0a 0a
++       00:09.0 Ethernet controller: 3Com Corporation 3c905C-TX [Fast Etherlink] (rev 74)
++	       Subsystem: 3Com Corporation: Unknown device 9200
++	       Flags: bus master, medium devsel, latency 32, IRQ 19
++	       I/O ports at a400 [size=128]
++	       Memory at db000000 (32-bit, non-prefetchable) [size=128]
++	       Expansion ROM at <unassigned> [disabled] [size=128K]
++	       Capabilities: [dc] Power Management version 2
++       00: b7 10 00 92 07 00 10 02 74 00 00 02 08 20 00 00
++       10: 01 a4 00 00 00 00 00 db 00 00 00 00 00 00 00 00
++       20: 00 00 00 00 00 00 00 00 00 00 00 00 b7 10 00 10
++       30: 00 00 00 00 dc 00 00 00 00 00 00 00 05 01 0a 0a
+ 
+-   o A description of the environment: 10baseT? 100baseT?
++   - A description of the environment: 10baseT? 100baseT?
+      full/half duplex? switched or hubbed?
+ 
+-   o Any additional module parameters which you may be providing to the driver.
++   - Any additional module parameters which you may be providing to the driver.
+ 
+-   o Any kernel logs which are produced.  The more the merrier. 
++   - Any kernel logs which are produced.  The more the merrier.
+      If this is a large file and you are sending your report to a
+      mailing list, mention that you have the logfile, but don't send
+      it.  If you're reporting direct to the maintainer then just send
+      it.
+ 
+      To ensure that all kernel logs are available, add the
+-     following line to /etc/syslog.conf:
++     following line to /etc/syslog.conf::
+ 
+-         kern.* /var/log/messages
++	 kern.* /var/log/messages
+ 
+-     Then restart syslogd with:
++     Then restart syslogd with::
+ 
+-         /etc/rc.d/init.d/syslog restart
++	 /etc/rc.d/init.d/syslog restart
+ 
+      (The above may vary, depending upon which Linux distribution you use).
+ 
+-    o If your problem is reproducible then that's great.  Try the
++    - If your problem is reproducible then that's great.  Try the
+       following:
+ 
+       1) Increase the debug level.  Usually this is done via:
+ 
+-         a) modprobe driver debug=7
+-         b) In /etc/modprobe.d/driver.conf:
+-            options driver debug=7
++	 a) modprobe driver debug=7
++	 b) In /etc/modprobe.d/driver.conf:
++	    options driver debug=7
+ 
+       2) Recreate the problem with the higher debug level,
+-         send all logs to the maintainer.
++	 send all logs to the maintainer.
+ 
+       3) Download you card's diagnostic tool from Donald
+-         Becker's website <http://www.scyld.com/ethercard_diag.html>.
+-         Download mii-diag.c as well.  Build these.
++	 Becker's website <http://www.scyld.com/ethercard_diag.html>.
++	 Download mii-diag.c as well.  Build these.
+ 
+-         a) Run 'vortex-diag -aaee' and 'mii-diag -v' when the card is
+-            working correctly.  Save the output.
++	 a) Run 'vortex-diag -aaee' and 'mii-diag -v' when the card is
++	    working correctly.  Save the output.
+ 
+-         b) Run the above commands when the card is malfunctioning.  Send
+-            both sets of output.
++	 b) Run the above commands when the card is malfunctioning.  Send
++	    both sets of output.
+ 
+ Finally, please be patient and be prepared to do some work.  You may
+ end up working on this problem for a week or more as the maintainer
 diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
-index a191faaf97de..402a9188f446 100644
+index 402a9188f446..aaac502b81ea 100644
 --- a/Documentation/networking/device_drivers/index.rst
 +++ b/Documentation/networking/device_drivers/index.rst
-@@ -27,6 +27,7 @@ Contents:
-    netronome/nfp
+@@ -28,6 +28,7 @@ Contents:
     pensando/ionic
     stmicro/stmmac
-+   3com/3c509
+    3com/3c509
++   3com/vortex
  
  .. only::  subproject and html
+ 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a480267571b9..a45ab6a25942 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -147,7 +147,7 @@ Maintainers List
+ M:	Steffen Klassert <klassert@kernel.org>
+ L:	netdev@vger.kernel.org
+ S:	Odd Fixes
+-F:	Documentation/networking/device_drivers/3com/vortex.txt
++F:	Documentation/networking/device_drivers/3com/vortex.rst
+ F:	drivers/net/ethernet/3com/3c59x.c
+ 
+ 3CR990 NETWORK DRIVER
+diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
+index a2b7f7ab8170..5984b7033999 100644
+--- a/drivers/net/ethernet/3com/3c59x.c
++++ b/drivers/net/ethernet/3com/3c59x.c
+@@ -1149,7 +1149,7 @@ static int vortex_probe1(struct device *gendev, void __iomem *ioaddr, int irq,
+ 
+ 	print_info = (vortex_debug > 1);
+ 	if (print_info)
+-		pr_info("See Documentation/networking/device_drivers/3com/vortex.txt\n");
++		pr_info("See Documentation/networking/device_drivers/3com/vortex.rst\n");
+ 
+ 	pr_info("%s: 3Com %s %s at %p.\n",
+ 	       print_name,
+@@ -1954,7 +1954,7 @@ vortex_error(struct net_device *dev, int status)
+ 				   dev->name, tx_status);
+ 			if (tx_status == 0x82) {
+ 				pr_err("Probably a duplex mismatch.  See "
+-						"Documentation/networking/device_drivers/3com/vortex.txt\n");
++						"Documentation/networking/device_drivers/3com/vortex.rst\n");
+ 			}
+ 			dump_tx_ring(dev);
+ 		}
+diff --git a/drivers/net/ethernet/3com/Kconfig b/drivers/net/ethernet/3com/Kconfig
+index 3a6fc99c6f32..7cc259893cb9 100644
+--- a/drivers/net/ethernet/3com/Kconfig
++++ b/drivers/net/ethernet/3com/Kconfig
+@@ -76,7 +76,7 @@ config VORTEX
+ 	  "Hurricane" (3c555/3cSOHO)                           PCI
+ 
+ 	  If you have such a card, say Y here.  More specific information is in
+-	  <file:Documentation/networking/device_drivers/3com/vortex.txt> and
++	  <file:Documentation/networking/device_drivers/3com/vortex.rst> and
+ 	  in the comments at the beginning of
+ 	  <file:drivers/net/ethernet/3com/3c59x.c>.
  
 -- 
 2.25.4
