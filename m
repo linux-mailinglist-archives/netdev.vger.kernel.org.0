@@ -2,107 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DBEE1C18BB
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B4CF1C18B5
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:58:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730226AbgEAOtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729114AbgEAOtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 10:49:14 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56563C061A0C;
-        Fri,  1 May 2020 07:49:14 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id x1so7637246ejd.8;
-        Fri, 01 May 2020 07:49:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fxPFkW3QxOmRfYj2h3nMtAxuro0T/xEXMFbcE0LTrVU=;
-        b=W3eBxkRVCUkRmVjaeZxdY0eWXI1WeV14Y3GZ6cGG6qX2rTNYODG/BhL8vEpRBcwaX8
-         5zyBVQI+Panp/tiEK/dymKhhil24IaILyAaTbA3+8a3McJf9tacA3Zc7rwjq5i0wWM3R
-         kNZhVSx8yndKHndGwo7LMgJt+4oODm4bGQ7Xu4rUIJQYPUR40Ev/Jg4FjzSM5/gEV5+x
-         oQPS5n4+5GFiF2LMJceZVHlRYcpEj/Q9OldY0p8kPupcGJLxLMkoKGeFEXfmjNy1T8g+
-         5HfzjwGCytspb5OaBLFNKMcAUGG9Oz5jmvrc5BifLpcq/oGghD/DAsv+kcGzitsc9hJ8
-         702w==
+        id S1730541AbgEAOtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 10:49:07 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:33772 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730537AbgEAOtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 10:49:04 -0400
+Received: by mail-il1-f200.google.com with SMTP id l18so5036132ilg.0
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 07:49:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fxPFkW3QxOmRfYj2h3nMtAxuro0T/xEXMFbcE0LTrVU=;
-        b=PNu1Nk0KoaPPBBdpL15G3DrF3oKx7knlcPdqKvJrROP4L3RoNZyItdDd9YPp/r0I2D
-         7j6jMW/llYz4qfhYl6SqUQulWD87ryJzWhYyMxqDiH+mB9t05ZGAvXsGHDP7q/+G1Kjm
-         urWA5bAGtKuHEg0SP629ogsnJcHmAFO6BvZ1lVBD2lsE2leAof1If7Twk+ez+sEj46Fd
-         Y1BvXOvZGDL6RAPM6FiaPbwkdhGwFtKtMnke6T2bBxlRgb7GC8HS1YRedYc0WTM0wiA7
-         ni7pgnKYvHLulHca7oL1IsWPATHTjzbQ5Kt7aKJ7YG2SfMJtXeHfwl2AYNDQCNr+GWZr
-         h31w==
-X-Gm-Message-State: AGi0PuaZq3OMGmiFun309hY8LSRPsgeHOyrB3vX53DEDXJMspXgWGBZP
-        rF6Zz035nYW23sydtvQaDrBXffl6oGnG/spslyQ=
-X-Google-Smtp-Source: APiQypI+1+VQOUh4IFgtlgbygkJrSop4NKMEXZUd+7VOMUopczAN+iZLGHuyibbdAMVPCjuSWytmI5hAyJGDHqrKplU=
-X-Received: by 2002:a17:906:4048:: with SMTP id y8mr3549075ejj.258.1588344553010;
- Fri, 01 May 2020 07:49:13 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Jh5jVpDHfQplZhcaNyu6KjtSKvR1Mtv8UVWG8cYmvgs=;
+        b=YrnfeEwXjHBIsmjkwiKrVj3DMj/cFWoFERFARCtkZFWtZPSK+w3oLGwGz7so5Y2az9
+         F5pzdAUcxQbiBTl5H8hlbwXN6L+/VHO2gAmLQoLH3i+JlYJ07u6Xu7ujFBo19maWyfI9
+         mHtyIaWr01CH1sMJsxulThqiAfKV22kAhEtr9J7ndIWt6SsLaaQbWoHw7O08SwVGCnxJ
+         MGN/AieNRZcmnubSO2nMUWVbgoZZ0QPUHMN3uII7PX8dcyi+dxlYJCEL9oTEpVVxRDpj
+         AXT1w9fEiwmhnUjx2qBLUTLwnG6UNMFC9ynryIX53tK4T7gkbvfz1zgQM+ZiZl4OgVxb
+         Nbmg==
+X-Gm-Message-State: AGi0PuZQVdZNIm/dHNhe4wLzpVIWruWGdoVmm7A35p8BHyA6hhORPaLD
+        eDC7C6HY4eY+W2nSaBNpVh1GcY4txy+liO4Lumtq+Eg8+oL4
+X-Google-Smtp-Source: APiQypLK1R32YygzKw6o+zrjKt0GIokFgX8oowRX0+5I/s/40LhWT/hwtwkehxiJ47ijw4bdIgcKya/AdAIK2f7+ZiLlGEbjeIlX
 MIME-Version: 1.0
-References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com> <20200429212933.GA76972@lunn.ch>
-In-Reply-To: <20200429212933.GA76972@lunn.ch>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Fri, 1 May 2020 16:49:02 +0200
-Message-ID: <CAFBinCDAz48BKjvLHOmuHk6nME+vpCueFW14UWP1b8Ae_D1j5w@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 00/11] dwmac-meson8b Ethernet RX delay configuration
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     robh+dt@kernel.org, f.fainelli@gmail.com,
-        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        jianxin.pan@amlogic.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
+X-Received: by 2002:a05:6e02:dc3:: with SMTP id l3mr3777413ilj.149.1588344543764;
+ Fri, 01 May 2020 07:49:03 -0700 (PDT)
+Date:   Fri, 01 May 2020 07:49:03 -0700
+In-Reply-To: <00000000000052913105a4943655@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004fe61505a49748ee@google.com>
+Subject: Re: KASAN: use-after-free Read in inet_diag_bc_sk
+From:   syzbot <syzbot+13bef047dbfffa5cd1af@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net,
+        john.fastabend@gmail.com, kafai@fb.com, khlebnikov@yandex-team.ru,
+        kpsingh@chromium.org, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org, zeil@yandex-team.ru
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+syzbot has bisected this bug to:
 
-On Wed, Apr 29, 2020 at 11:29 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > - Khadas VIM2 seems to have the RX delay built into the PCB trace
-> >   length. When I enable the RX delay on the PHY or MAC I can't get any
-> >   data through. I expect that we will have the same situation on all
-> >   GXBB, GXM, AXG, G12A, G12B and SM1 boards
->
-> Hi Martin
->
-> Can you actually see this on the PCB? The other possibility is that
-> the bootloader is configuring something, which is not getting
-> overridden when linux starts up.
-at least it doesn't jump straight into my eye.
-I checked in u-boot and Linux, and for both the RX delay is disabled
-in the PHY as well as in the MAC.
+commit b1f3e43dbfacfcd95296b0f80f84b186add9ef54
+Author: Dmitry Yakunin <zeil@yandex-team.ru>
+Date:   Thu Apr 30 15:51:15 2020 +0000
 
-The schematics of the Khadas VIM2 also show the the RX delay in the
-PHY is turned off by pin-strapping, see page 7 on the right: [0]
-It's the same for the Khadas VIM3 schematics, also on page 7: [1]
-There are also high resolution images of the Khadas VIM3 online so you
-can look at it yourself (I couldn't find any for the Khadas VIM2 which
-is what I have): [2]
+    inet_diag: add support for cgroup filter
 
-I agree that we need to get an answer to the RX delay question on the
-arm64 SoCs.
-If there's no way to find out from the existing resources then I can
-contact Khadas and ask them about the PCB trace length on VIM2, VIM3
-and VIM3L (these are the ones with RGMII PHYs).
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=106b15f8100000
+start commit:   37ecb5b8 hinic: Use kmemdup instead of kzalloc and memcpy
+git tree:       net-next
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=126b15f8100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=146b15f8100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b1494ce3fbc02154
+dashboard link: https://syzkaller.appspot.com/bug?extid=13bef047dbfffa5cd1af
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12296e60100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=150c6f02100000
 
-For the older SoCs the RX delay has to be provided by either the MAC
-or the PHY and right now we're not configuring it.
-We cannot simply enable the RX delay at the PHY level because the
-bootloader enables it in the MAC (so we have to turn it off there).
-So it would be great if you could still review this series.
+Reported-by: syzbot+13bef047dbfffa5cd1af@syzkaller.appspotmail.com
+Fixes: b1f3e43dbfac ("inet_diag: add support for cgroup filter")
 
-
-Martin
-
-
-[0] https://dl.khadas.com/Hardware/VIM2/Schematic/VIM2_V12_Sch.pdf
-[1] https://dl.khadas.com/Hardware/VIM3/Schematic/VIM3_V12_Sch.pdf
-[2] https://forum.khadas.com/t/khadas-vim3-is-launching-on-24-june/4103
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
