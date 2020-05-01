@@ -2,94 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 306161C1EFA
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 22:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C58A1C1F06
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 22:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727778AbgEAUvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 16:51:04 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:49238 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726318AbgEAUvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 16:51:03 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 041KouFD080776;
-        Fri, 1 May 2020 15:50:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588366256;
-        bh=LhttJw1JbjTgnmdvEPuQ5xgCDkw1lEfTeMZ9lnsUOOs=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=AzWR0avdQVa+SIH4vJtK+qkZQ4OmgWJCjaJyzRMov1mHKc7E7pPJ+aq/5TDX/7mSc
-         aa9FrD4umBIX6dkuHJ7w7lnKA9j7ff58oecw7Gvzs2W3wVMv4/ci8zqhHRgmNv70uY
-         t8FnNWOLluMH6OaFXdnJ/K0exkWZMThpSL/KzyIU=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 041Kougc049222
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 1 May 2020 15:50:56 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 1 May
- 2020 15:50:55 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 1 May 2020 15:50:55 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 041KosiP099423;
-        Fri, 1 May 2020 15:50:55 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     Richard Cochran <richardcochran@gmail.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
+        id S1727869AbgEAUwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 16:52:15 -0400
+Received: from mx2.suse.de ([195.135.220.15]:53472 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726384AbgEAUwP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 May 2020 16:52:15 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 615D0ACB1;
+        Fri,  1 May 2020 20:52:13 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 307A1602E9; Fri,  1 May 2020 22:52:12 +0200 (CEST)
+Date:   Fri, 1 May 2020 22:52:12 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, Tero Kristo <t-kristo@ti.com>
-CC:     Lokesh Vutla <lokeshvutla@ti.com>, <netdev@vger.kernel.org>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, Nishanth Menon <nm@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next 7/7] arm64: dts: ti: j721e-main: add main navss cpts node
-Date:   Fri, 1 May 2020 23:50:11 +0300
-Message-ID: <20200501205011.14899-8-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200501205011.14899-1-grygorii.strashko@ti.com>
-References: <20200501205011.14899-1-grygorii.strashko@ti.com>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        mkl@pengutronix.de, Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>
+Subject: Re: [PATCH net-next v4 1/2] ethtool: provide UAPI for PHY
+ master/slave configuration.
+Message-ID: <20200501205212.GE8976@lion.mk-sys.cz>
+References: <20200501074633.24421-1-o.rempel@pengutronix.de>
+ <20200501074633.24421-2-o.rempel@pengutronix.de>
+ <20200501155210.GD8976@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200501155210.GD8976@lion.mk-sys.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add DT node for Main NAVSS CPTS module.
+On Fri, May 01, 2020 at 05:52:10PM +0200, Michal Kubecek wrote:
+> On Fri, May 01, 2020 at 09:46:32AM +0200, Oleksij Rempel wrote:
+> [...]
+> >  static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
+> >  				  struct ethtool_link_ksettings *ksettings,
+> >  				  bool *mod)
+> >  {
+> >  	struct ethtool_link_settings *lsettings = &ksettings->base;
+> >  	bool req_speed, req_duplex;
+> > +	const struct nlattr *attr;
+> >  	int ret;
+> >  
+> > +	attr = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
+> > +	if (attr) {
+> 
+> Introducing the variable makes little sense if this is the only place
+> where it is used. But if you decide to use it also in the two other
+> places working with the attribute, it should probably have more
+> descriptive name.
+> 
+> Michal
+> 
+> > +		u8 cfg = nla_get_u8(tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG]);
+> > +		if (!ethnl_validate_master_slave_cfg(cfg))
+> > +			return -EOPNOTSUPP;
+> > +	}
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Also, please set extack error message and bad attribute when the check
+fails.
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-index 0b9d14b838a1..844a5b50cf09 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-@@ -254,6 +254,18 @@
- 						<0x0c>; /* RX_UHCHAN */
- 			ti,sci-rm-range-rflow = <0x00>; /* GP RFLOW */
- 		};
-+
-+		cpts@310d0000 {
-+			compatible = "ti,j721e-cpts";
-+			reg = <0x0 0x310d0000 0x0 0x400>;
-+			reg-names = "cpts";
-+			clocks = <&k3_clks 201 1>;
-+			clock-names = "cpts";
-+			interrupts-extended = <&main_navss_intr 201 0>;
-+			interrupt-names = "cpts";
-+			ti,cpts-periodic-outputs = <6>;
-+			ti,cpts-ext-ts-inputs = <8>;
-+		};
- 	};
- 
- 	main_pmx0: pinmux@11c000 {
--- 
-2.17.1
+Michal
 
+> > +
+> >  	*mod = false;
+> >  	req_speed = tb[ETHTOOL_A_LINKMODES_SPEED];
+> >  	req_duplex = tb[ETHTOOL_A_LINKMODES_DUPLEX];
+> > @@ -311,6 +357,8 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
+> >  			 mod);
+> >  	ethnl_update_u8(&lsettings->duplex, tb[ETHTOOL_A_LINKMODES_DUPLEX],
+> >  			mod);
+> > +	ethnl_update_u8(&lsettings->master_slave_cfg,
+> > +			tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG], mod);
+> >  
+> >  	if (!tb[ETHTOOL_A_LINKMODES_OURS] && lsettings->autoneg &&
+> >  	    (req_speed || req_duplex) &&
+> > -- 
+> > 2.26.2
+> > 
