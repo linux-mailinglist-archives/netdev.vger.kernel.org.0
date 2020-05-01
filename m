@@ -2,150 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715621C0BE9
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 04:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EBA01C2AD3
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 11:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728109AbgEACC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Apr 2020 22:02:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728105AbgEACCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Apr 2020 22:02:22 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE653C035494
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 19:02:22 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id c21so3157436plz.4
-        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 19:02:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs.washington.edu; s=goo201206;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=fJ0X3HmB1iDCnqYSKzBuKNLlmf+ZNE7akQZz7eS+SQs=;
-        b=buGYG1zPmUGmihTBS3FalBgnSAVFf5gYRLV938Kf3kJS7zBbWoaUgQlCNRvsd7Gm5v
-         v2Ybw0vo68ILLFIbam3bSlhEXbSKXz3l13n0o1RPtmFAXsR5ue7ZzwtajUY8Q3ntIJfz
-         e9gVZ4kpwNw5XkxtEthuLibHWDwI4OQuPiaZo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=fJ0X3HmB1iDCnqYSKzBuKNLlmf+ZNE7akQZz7eS+SQs=;
-        b=WqjTNxf/csNFfgxfQy21kf6uUnqooR9NXRJDj9q3ezYiezsqoLIz/FOHKRnlZo0FLM
-         OlpI7ONCquFq2wFUPbaJAbnpwkiEG69+1SIhTh5/GoPBbOSCpR4610p4XmginIubFxDP
-         BuSFUgsOH7fHRZoMZykajvVdmPaVTxfT/3GPVQt+sSVLib0yDw8x9lV6tuO2tbdQcwkE
-         RHe4Ltzc3KGF0aFO9GwNn4EMJaQ/gAWNg4eAvmmLqPT0abRgYSfUeUYAozBCw82k8vD5
-         53FSEu9w3xaagXvy9wWhAg1UZLB3W3lLp4gMVgJNkHOj8DWG5/f4Ay4xifd27mM3PP1z
-         2CIg==
-X-Gm-Message-State: AGi0PuZgLyqEe5GJ0PnhCmsxc+IvSNmqyh7qmOGwsFwi7x3LW6L4EQek
-        7Tdwt4SRpyqDsMrfP41GR+yAfw==
-X-Google-Smtp-Source: APiQypIIPeSyeqjGDdK6yZnRaWppj/2y2OI0Sxy/utZnN7It04QldoSdy+Qq/1GaEPCvXdGHIPur/Q==
-X-Received: by 2002:a17:90b:1044:: with SMTP id gq4mr1928047pjb.81.1588298542058;
-        Thu, 30 Apr 2020 19:02:22 -0700 (PDT)
-Received: from localhost.localdomain (c-73-53-94-119.hsd1.wa.comcast.net. [73.53.94.119])
-        by smtp.gmail.com with ESMTPSA id fy21sm802915pjb.25.2020.04.30.19.02.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 19:02:21 -0700 (PDT)
-From:   Luke Nelson <lukenels@cs.washington.edu>
-X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 2/2] bpf, arm: Optimize ALU ARSH K using asr immediate instruction
-Date:   Thu, 30 Apr 2020 19:02:10 -0700
-Message-Id: <20200501020210.32294-3-luke.r.nels@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200501020210.32294-1-luke.r.nels@gmail.com>
-References: <20200501020210.32294-1-luke.r.nels@gmail.com>
+        id S1727922AbgECJEf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 3 May 2020 05:04:35 -0400
+Received: from mail.30tageserver.de ([46.38.251.90]:50650 "EHLO
+        v220120211527745399.yourvserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726445AbgECJEf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 05:04:35 -0400
+X-Greylist: delayed 157834 seconds by postgrey-1.27 at vger.kernel.org; Sun, 03 May 2020 05:04:34 EDT
+Received: from localhost (ip6-localhost [127.0.0.1])
+        by v220120211527745399.yourvserver.net (Postfix) with ESMTP id C5C05792B8;
+        Fri,  1 May 2020 10:59:01 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at v220120211527745399.yourvserver.net
+X-Spam-Flag: NO
+X-Spam-Score: 1.589
+X-Spam-Level: *
+X-Spam-Status: No, score=1.589 required=6.31 tests=[ALL_TRUSTED=-1,
+        DNS_FROM_AHBL_RHSBL=2.438, LOTS_OF_MONEY=0.001, MISSING_MID=0.14,
+        T_HK_NAME_MR_MRS=0.01] autolearn=unavailable
+Received: from v220120211527745399.yourvserver.net ([127.0.0.1])
+        by localhost (v220120211527745399.yourvserver.net [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id XxFbOhETR6BF; Fri,  1 May 2020 10:59:01 +0200 (CEST)
+Received: from DMTESTv7-10.northeurope.cloudapp.azure.com (unknown [40.113.89.2])
+        by v220120211527745399.yourvserver.net (Postfix) with ESMTPA id 9D882687EE;
+        Fri,  1 May 2020 04:30:54 +0200 (CEST)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: Grant(info)
+To:     Recipients <noreply@dbz.com>
+From:   "Mr. X" <noreply@dbz.com>
+Date:   Fri, 01 May 2020 02:30:53 +0000
+Reply-To: info1@dbzmail.com
+Message-Id: <20200501085901.C5C05792B8@v220120211527745399.yourvserver.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds an optimization that uses the asr immediate instruction
-for BPF_ALU BPF_ARSH BPF_K, rather than loading the immediate to
-a temporary register. This is similar to existing code for handling
-BPF_ALU BPF_{LSH,RSH} BPF_K. This optimization saves two instructions
-and is more consistent with LSH and RSH.
+Lieber Bewohner, lieber
 
-Example of the code generated for BPF_ALU32_IMM(BPF_ARSH, BPF_REG_0, 5)
-before the optimization:
+Die DBZ Project Foundation hat 25 Millionen US-Dollar für Notfallzuschüsse für kleine Unternehmen und einzelne Projekte bereitgestellt.
+Der Betrag variiert zwischen 300.000,00 USD und 800.000,00 USD pro Antragsteller.
 
-  2c:  mov    r8, #5
-  30:  mov    r9, #0
-  34:  asr    r0, r0, r8
+Die Bewerbung beginnt am 27. April unter folgender E-Mail-Adresse: info47@dbzmail.com
 
-and after optimization:
+Sie finden Details in mehreren Sprachen, die erforderlichen Bewerbungsunterlagen und ein Bewerbungsformular.
 
-  2c:  asr    r0, r0, #5
+HINWEIS: Diese Spende gilt für die ersten 30 Bewerber.
 
-Tested on QEMU using lib/test_bpf and test_verifier.
+Vielen Dank,
 
-Co-developed-by: Xi Wang <xi.wang@gmail.com>
-Signed-off-by: Xi Wang <xi.wang@gmail.com>
-Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
----
- arch/arm/net/bpf_jit_32.c | 10 +++++++---
- arch/arm/net/bpf_jit_32.h |  3 +++
- 2 files changed, 10 insertions(+), 3 deletions(-)
+DBZ-Projektteam (Weltstiftungsgruppe).
+E-Mail: info47@dbzmail.com.
+E-Mail: donationbudgetzonefoundation@gmail.com.
 
-diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
-index 48b89211ee5c..0207b6ea6e8a 100644
---- a/arch/arm/net/bpf_jit_32.c
-+++ b/arch/arm/net/bpf_jit_32.c
-@@ -795,6 +795,9 @@ static inline void emit_a32_alu_i(const s8 dst, const u32 val,
- 	case BPF_RSH:
- 		emit(ARM_LSR_I(rd, rd, val), ctx);
- 		break;
-+	case BPF_ARSH:
-+		emit(ARM_ASR_I(rd, rd, val), ctx);
-+		break;
- 	case BPF_NEG:
- 		emit(ARM_RSB_I(rd, rd, val), ctx);
- 		break;
-@@ -1408,7 +1411,6 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
- 	case BPF_ALU | BPF_MUL | BPF_X:
- 	case BPF_ALU | BPF_LSH | BPF_X:
- 	case BPF_ALU | BPF_RSH | BPF_X:
--	case BPF_ALU | BPF_ARSH | BPF_K:
- 	case BPF_ALU | BPF_ARSH | BPF_X:
- 	case BPF_ALU64 | BPF_ADD | BPF_K:
- 	case BPF_ALU64 | BPF_ADD | BPF_X:
-@@ -1465,10 +1467,12 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx)
- 	case BPF_ALU64 | BPF_MOD | BPF_K:
- 	case BPF_ALU64 | BPF_MOD | BPF_X:
- 		goto notyet;
--	/* dst = dst >> imm */
- 	/* dst = dst << imm */
--	case BPF_ALU | BPF_RSH | BPF_K:
-+	/* dst = dst >> imm */
-+	/* dst = dst >> imm (signed) */
- 	case BPF_ALU | BPF_LSH | BPF_K:
-+	case BPF_ALU | BPF_RSH | BPF_K:
-+	case BPF_ALU | BPF_ARSH | BPF_K:
- 		if (unlikely(imm > 31))
- 			return -EINVAL;
- 		if (imm)
-diff --git a/arch/arm/net/bpf_jit_32.h b/arch/arm/net/bpf_jit_32.h
-index fb67cbc589e0..e0b593a1498d 100644
---- a/arch/arm/net/bpf_jit_32.h
-+++ b/arch/arm/net/bpf_jit_32.h
-@@ -94,6 +94,9 @@
- #define ARM_INST_LSR_I		0x01a00020
- #define ARM_INST_LSR_R		0x01a00030
- 
-+#define ARM_INST_ASR_I		0x01a00040
-+#define ARM_INST_ASR_R		0x01a00050
-+
- #define ARM_INST_MOV_R		0x01a00000
- #define ARM_INST_MOVS_R		0x01b00000
- #define ARM_INST_MOV_I		0x03a00000
--- 
-2.17.1
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Policy Disclaimer for Donation Budget Zone Foundation.  Corporacion:
+
+This message contains information that may be privileged or confidential and is the property of Donation Budget Zone Foundation. 
+It is only intended for the person to whom it is addressed. If you are not the intended recipient, you are not authorized to read, print, retain, copy, disseminate, distribute, or use this message or any part thereof. 
+If you receive this message in error, please notify the sender immediately and delete all copies of this message.
