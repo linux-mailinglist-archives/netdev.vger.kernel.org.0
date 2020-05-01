@@ -2,140 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C62691C0DFC
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 08:22:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B56B1C0E00
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 08:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728244AbgEAGWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 02:22:36 -0400
-Received: from mail-eopbgr50134.outbound.protection.outlook.com ([40.107.5.134]:3259
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728126AbgEAGWf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 May 2020 02:22:35 -0400
+        id S1728229AbgEAGZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 02:25:40 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:28830 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728126AbgEAGZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 02:25:39 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0416Eqm2000492;
+        Thu, 30 Apr 2020 23:25:26 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=hIElppGZapH9Ibt07sfWnGMgQNSXBhns7rALbuG3/T8=;
+ b=XBcxG/hNO/IWS8JeYOhiSP0jc++jeHdKYatj+HeefeslzePKcDRlha5MiN3HFt9XzyXg
+ JUUq57wNtrE+71XOCdgFuDK6r7nqummlsf8lGy+B2qOrrT8qyb0+Fv0ibGwXnAE33w8U
+ 8I/B/5/lLBuSYs/76UL45wNHj5zLGRANv0c= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 30r7ea9vpd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 30 Apr 2020 23:25:25 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Thu, 30 Apr 2020 23:25:25 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K8pIPZQoFNe0I2Q10II40xRBu17Pb0KGY4dptjrW6mdj2GK3vkQ/wie9D/c96VIuX3IM92thlGQokQpyWUQlAM0gCct8YUW1cJ2HgQvfKKMl97w0O+6VoNlAtqOdPIPgTFJIwMscKVdZAY3/dxqae0lyNw2jAr3GR2lf5vHPBTclzo5vngKQAU9XSIE0PvevQbhnPQJ/lqGe/ZiCcqrukfdw6sNnCdg2XnbGnA0e8lBmPjIwBop69wKooJb/MRVYPeRE7ADCz6yyNywwKd1OZCz7l6f6uDtlE4ZdhKXocwjRbxEqrvlpdkvC+wGBgV+O37+LBBd1ypw13AGJk3NDGQ==
+ b=Xaj9dkzon1dEDlhj5BECbkuR4yczkWz89D0yk6FKDsgxsduxKr5puuj4v2GuXuIA4KJvedLlJJuf4PWDy/OvxDjCEjEuh+uFNYvopMrSG+5djYZ4LgU7a7nII3C6cIQEnkLIB6j21leF5w7w96atcs1HUzl2fd+S9H8B/hnLknq92ZfGcQJSfb02HCZhWDsl7AR/hykGgw3zVDGminHV6Z2dSkVJKCpg4HOIltUfRHq0fkkc8ZTcrNYTs3HeVnGIXof+3zpDWu6CuluDRcLajUKPlLy0AKXZH3Xdj3D1w3alY/BPrcOiExDRIPW6AOG8tbQUBpjTaxqoCoLhWSKwFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wPQqHtly8N8Bt56jYP/QXXvSKq8/eZFKAH53OkzYif8=;
- b=I8g7mcJw+VQypV3BeQDHqaMpoZOlIlTAm+N7YdHkjrPh7sPv5Bt83Q4tSH0kI51DKgFspDr0hM27qnp1jBoQCxZTW7EvorRnGP1pvTwUTiKONSoI2oGByheGQyvinDWH6dyatJH16Phw+CI3IWHe5L5NzCBQIkTXI7NOejHhgvp6ByQ9wKLvytjqFhmZl9djthf+N9NpszhODB74/M+aO92iIlLaqUwz6gZr1LAmNIrexvaEZWuemCADI/TNcEgg8kkCz9L3iHPJHaerdQqY8CjRtpkAPuGOymckoBXZWUHFJftmWdJ/NkE4Ez403Lfoc8dVZiq9QVnwgP33M8U4bg==
+ bh=hIElppGZapH9Ibt07sfWnGMgQNSXBhns7rALbuG3/T8=;
+ b=W79H/3oWeDE8IURBUeCTruy7A1u5iKUJRUz18/yEbcYz4Q9UodtEdxa3o4iov2+LmOhe4TGMdH+KIJ3Vco57t32qtApIAUw2GcG0z1hKjeRN/gPGss5hIIILE4C7ogwDEZF4fN6vwz+8cafyEslqJUgOhmVWHrDNW9CtrUtzXUG4emPNZwl+P9FaCPq4rZLGRdle9myNEQ7nhdF325RgNmGoZ+l+qc2s2ef6mPurRSeuL58hk6q0dX+Vxz2gtfv5Bnc2UbtYk1h+x7fBmFzJ3nwkUVg6BOzV+zZX2JVgkXqnbVQq7iJPy/2C9pHJ9OMcbvARQKTY7LBugSykJmhTzg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wPQqHtly8N8Bt56jYP/QXXvSKq8/eZFKAH53OkzYif8=;
- b=iaiRzrXSVeMY8UAWJCA0bI5o6HePLzCUUXWPWiwtzOdKSP3V7z7T8hvvDa1MOTe7PTh0RbSAJIaRVzxPXrFs6ddJwNEYcLuB6j3zkHQJ8dpulkMYXe80cC6BCMzQvetl3JLZLG1oWUqecr6r3q4ZcLHgBZVKYM2w+pb/y2A4UHk=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::10)
- by VI1P190MB0063.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:9a::15) with
+ bh=hIElppGZapH9Ibt07sfWnGMgQNSXBhns7rALbuG3/T8=;
+ b=lQaMuzelaeIuxyzzg4VRdcEpi0Az0cO+RfWCziwSoOH+g7cBeBrs5tZclmuFVKx3Z5PLSLEBuNtmVEdbgMYNaVTyoEx331q5xkd5/0HF4x/NrOYaP/yWrqJ3NFzP+84SSTnKbMOU8UmqxSfUJGXdMmCGhLmo+aIID2rG2Gr+hrY=
+Received: from MW3PR15MB4044.namprd15.prod.outlook.com (2603:10b6:303:4b::24)
+ by MW3PR15MB3884.namprd15.prod.outlook.com (2603:10b6:303:42::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20; Fri, 1 May
- 2020 06:22:32 +0000
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::f983:c9a8:573a:751c]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::f983:c9a8:573a:751c%7]) with mapi id 15.20.2958.027; Fri, 1 May 2020
- 06:22:32 +0000
-Date:   Fri, 1 May 2020 09:22:23 +0300
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Subject: Re: [RFC next-next v2 2/5] net: marvell: prestera: Add PCI interface
- support
-Message-ID: <20200501062223.GA15217@plvision.eu>
-References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
- <20200430232052.9016-3-vadym.kochan@plvision.eu>
- <20200501000015.GC22077@lunn.ch>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.27; Fri, 1 May
+ 2020 06:25:24 +0000
+Received: from MW3PR15MB4044.namprd15.prod.outlook.com
+ ([fe80::e5c5:aeff:ca99:aae0]) by MW3PR15MB4044.namprd15.prod.outlook.com
+ ([fe80::e5c5:aeff:ca99:aae0%4]) with mapi id 15.20.2958.020; Fri, 1 May 2020
+ 06:25:24 +0000
+Date:   Thu, 30 Apr 2020 23:25:21 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <andrii.nakryiko@gmail.com>,
+        <kernel-team@fb.com>,
+        <syzbot+39b64425f91b5aab714d@syzkaller.appspotmail.com>
+Subject: Re: [Potential Spoof] [PATCH bpf-next] bpf: fix use-after-free of
+ bpf_link when priming half-fails
+Message-ID: <20200501062521.2xruidyrtuxycipw@kafai-mbp>
+References: <20200430194609.1216836-1-andriin@fb.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200501000015.GC22077@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: AM6PR05CA0023.eurprd05.prod.outlook.com
- (2603:10a6:20b:2e::36) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:35::10)
+In-Reply-To: <20200430194609.1216836-1-andriin@fb.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: MWHPR17CA0060.namprd17.prod.outlook.com
+ (2603:10b6:300:93::22) To MW3PR15MB4044.namprd15.prod.outlook.com
+ (2603:10b6:303:4b::24)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plvision.eu (217.20.186.93) by AM6PR05CA0023.eurprd05.prod.outlook.com (2603:10a6:20b:2e::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Fri, 1 May 2020 06:22:30 +0000
-X-Originating-IP: [217.20.186.93]
+Received: from kafai-mbp (2620:10d:c090:400::5:da9a) by MWHPR17CA0060.namprd17.prod.outlook.com (2603:10b6:300:93::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Fri, 1 May 2020 06:25:23 +0000
+X-Originating-IP: [2620:10d:c090:400::5:da9a]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6d46df56-81aa-41eb-f675-08d7ed9807c0
-X-MS-TrafficTypeDiagnostic: VI1P190MB0063:
+X-MS-Office365-Filtering-Correlation-Id: 6c8cf6ba-fd90-4ea4-3ebc-08d7ed986e3a
+X-MS-TrafficTypeDiagnostic: MW3PR15MB3884:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1P190MB006339440441789DF1295E6E95AB0@VI1P190MB0063.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <MW3PR15MB38847C7D6DDE3DAAAC0D1489D5AB0@MW3PR15MB3884.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
 X-Forefront-PRVS: 0390DB4BDA
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IrxnzRBdtRjFL99b3a15VPHXix/Zldhk60PxCvE2h6cHZlxsnjGvVdLIyf47cBlu8oVnYWSv3yP8r4qd7R1q0z0j6lBHKqWJd6ILn8Ft+6TvG23n15qsmb1w/A7kW1i8618QRxMTGcZxkh5QDK/S1ItQ8e8tP4yobhbfZ+FDrCfDhyc0Odi/lCz+2m1jOADADH1Mj3XfBUVGhjQfkA/8ncuLuf7QXyYB9BoYYrv9thta7dL16QgYRgLYmwrtjeYZkypqIgsk7dUoDxlaZXmlP473y0YlN63JVXwH+33io0uQOappUhpifMXTXpGtNa57tXqmjOAn/DN44py7DlckS8/KhFlsBWZdlUz28b4KTK+bP6bd9PBolTKkDAFsR2BQqz7iGHGxvt2/Jhq1RYfrB7ZCZo3TPfaOPHOlmVqQun+B9bfGpuJoJIw4FNrU3wU1
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(366004)(376002)(39830400003)(346002)(136003)(396003)(186003)(2906002)(6666004)(44832011)(5660300002)(8936002)(55016002)(8886007)(4326008)(16526019)(1076003)(2616005)(956004)(66556008)(66946007)(66476007)(33656002)(6916009)(7696005)(508600001)(52116002)(86362001)(316002)(26005)(8676002)(36756003)(54906003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: f6QQ0CSi6sYs0YKIuqPEgGLDxdxguOLgXolSZRLmXHrm27Nu1FTQ4W8px30y8v3s8rzYKEiPmEW6/bt4pOZeggzyEsgnt+wYAthi6C8Es2k7Q/x2KrQB/BWK2QANzsEFoHWs+aZpYLlFI8FHaRpm0lVQeCsznxoUEmuv7hQPYGIqircPFNjPL9q2PIPUxLmrUNPYBqmnGhaRgHpLseumgD7bcSR71TlUJchj+9Zegbto0DSaXGYLqRFDY2/rt69jstv11D9beEEVrd4biAlBCgps6daGY9yYjrjqQxbmgeoVXoeKjpGytNbG/B3Allu52sltx7iGbc0rG2cpejDO7yvXD1k8DBjidnuvrFEWGrKr40vSTm3x/evmmAmJ13blNojW/wwuJlyvo3P35457OSl1XhTKHaJ9utbFQ6hFcMLvbqiyL2+3atuMg+L3FkXVLFQz9rkqzkpQFoGJ7R89B65vN1FlYoJm1DCbIgSL2hSRFTXAeBGfxrQquY9uLcyi3D0AMmZZp5IFoffC461OPyiTSB45bG9dHGC/j3CtCV1pva8X0Zu1QrMbHSJs9ulPkN732fwhy5tE1HRzONCRxNWngMIsjvH8ZVdNSSz8vsp2h1rd3gzHbMI/lZtnJZP3GwCnaqECXo3gB+HKhc7HrOSdf+RyTCX4oCMRjcGVCLPKo4MgZuD3G0gJUHc/GiP52DHC3K9i1zkXHNUrGs8NkHRoYCWdMcnBODPF7gR/yar5JQMOlfrv7jS4vvYy1dJT+iJbVKlyT/ib20OV9s4NcK30WQKOUbRwgNP1pvR0Ti8=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d46df56-81aa-41eb-f675-08d7ed9807c0
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2020 06:22:32.1840
+X-Microsoft-Antispam-Message-Info: 9Q1b1btKW9R4Ck95hU1OTWFgN/hmt235sy8P6WLQHjJF+lpNODW31cx7I3ozkKIiEauXkVsPHyX+U8A13zBqR5hkmbXrueslrfp107rphQ1EzqRTAf2vBdGdarJCbx5jtM4k4eAy5X9J5Cy/6KtZD5zqN/tL/f/M1t9JzCrC45zHnRiyDjfvlZC+Ug2Xf3fo9VavdUUl+N8LkFlEuFYGzHyJ4BCwkkndjNU99XRL99O2ddXYqKy27nDsZ0+tJZlPiIV4FKZgWLV15LBg9og7yupYipxAz93VTGpdklk1sZ2/gQPOpPMDxqDCN6702R27UisEzIOytaGpDpy1r4D81kS4kFcYQd1vxaDONQr+mKHvM8xl3geV2XIRSVe8jeXQXu5B/mYv4c3BFuBUjOwhcRK/0Q3YxsE+g64eirORKSuxJJof1r4MUKB5HX7tBGnD
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB4044.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(396003)(366004)(39860400002)(376002)(346002)(8676002)(8936002)(16526019)(186003)(55016002)(33716001)(6496006)(52116002)(4326008)(9686003)(316002)(6862004)(1076003)(86362001)(5660300002)(478600001)(2906002)(66556008)(66476007)(6636002)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 0WaBnjwi7D+35espMBT453c1+qjsSg0YZlo9UIa0HJh6bDjdq4q8YhBpOKIqD1VQKTWTHvhV42DZvvpfqAiPvdBgRnM0rX1TtxSXu52tEkRk6iuwzTy4Gn7k2cawUBLlURXMLCIU1O0OjNrpPMX/gatsilUsWe1tfx1ESXgX0cC4qrMODCISkdkRTuetAw7yyF6VXHw9fM+3B1L4BsiNQ/aMu1Jyo1TD9+58/Zr8ojalo5FUyCuRQdonM3mXRcDsPffo7O60059R26ICbmGF6W2l1tWo5pRNQeRxVD4Fly6NkNl8BJaXjn4hba8aTJx8Mhr5yLdp5r2mlTB3q8JM/WRotEriaz7Fxbluj9y13IogqXPDo+wPJOqwkn5cjsdg6Jfvxx1rrd+ebTD5RVbTr3r4ExR5vF7OkPn+u0xfRNGw0odTWDa2i8/A0Pr/3qIhJN6FfiIMmQyctdCjMCnfKLjEpz9iewYhru8brmNfBH3pJrnOjVLAF1S/UeLUYMOO+1ayEaz8tJ98JY1hJTpVLZE3Pbx5hG8uvNIBXrYrtn1AitWfpkSTRFTY74Q/BukTXNgr9N1U/gokS4lChLSeMPmoEvjAWnd6t+E5Xfb6uFWpGKIMEBPNFpXVZhpLeLUGZfjZQpzKMnoHAvffkra0sVohzkuWMPCDayOJPAzWPinUuktFVsMjccMlZ4RrBCilljWBoqqV7D4nDXqTk20OfSU54g3gOCgdFuxxvuJWFXs6r9hyfks9r07luSUaAddnRkR/lVkmEgs5sbFC54h4Te7fIWwRWDE5iJ/Xdjq2yWPMV70mDqJXOjCSzSa4LqoFCJyb7s4J5CN5NjWdNKx+ZQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c8cf6ba-fd90-4ea4-3ebc-08d7ed986e3a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2020 06:25:24.0628
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1+m8mEZx4x7JD1r48WNE5VTBqmXZNDH2JQBKEYnkfO4E8cWgsAg9DrZZVKSJFCVbVfm4KhjJSht1lkimv2QZB0iB1MwRxVZA+z+XrRm+lbA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0063
+X-MS-Exchange-CrossTenant-UserPrincipalName: AzUPvoAu6B4qtcIiz0uf+07PEakZhLtF+sWq39t+YGjd5FUiGZ3ROUV4hK7Wvm57
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB3884
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-01_01:2020-04-30,2020-05-01 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ mlxlogscore=762 bulkscore=0 priorityscore=1501 clxscore=1011 spamscore=0
+ mlxscore=0 lowpriorityscore=0 phishscore=0 suspectscore=2 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005010046
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Fri, May 01, 2020 at 02:00:15AM +0200, Andrew Lunn wrote:
-> On Fri, May 01, 2020 at 02:20:49AM +0300, Vadym Kochan wrote:
-> > Add PCI interface driver for Prestera Switch ASICs family devices, which
-> > provides:
-> > 
-> >     - Firmware loading mechanism
-> >     - Requests & events handling to/from the firmware
-> >     - Access to the firmware on the bus level
-> > 
-> > The firmware has to be loaded each time device is reset. The driver is
-> > loading it from:
-> > 
-> >     /lib/firmware/marvell/prestera_fw-v{MAJOR}.{MINOR}.img
-> > 
-> > The full firmware image version is located within internal header and
-> > consists of 3 numbers - MAJOR.MINOR.PATCH. Additionally, driver has
-> > hard-coded minimum supported firmware version which it can work with:
-> > 
-> >     MAJOR - reflects the support on ABI level between driver and loaded
-> >             firmware, this number should be the same for driver and loaded
-> >             firmware.
-> > 
-> >     MINOR - this is the minimum supported version between driver and the
-> >             firmware.
-> > 
-> >     PATCH - indicates only fixes, firmware ABI is not changed.
-> > 
-> > Firmware image file name contains only MAJOR and MINOR numbers to make
-> > driver be compatible with any PATCH version.
+On Thu, Apr 30, 2020 at 12:46:08PM -0700, Andrii Nakryiko wrote:
+> If bpf_link_prime() succeeds to allocate new anon file, but then fails to
+> allocate ID for it, link priming is considered to be failed and user is
+> supposed ot be able to directly kfree() bpf_link, because it was never exposed
+> to user-space.
 > 
-> Hi Vadym
+> But at that point file already keeps a pointer to bpf_link and will eventually
+> call bpf_link_release(), so if bpf_link was kfree()'d by caller, that would
+> lead to use-after-free.
 > 
-> What are the plans for getting the firmware into linux-firmware git
-> repo?
+> Fix this by creating file with NULL private_data until ID allocation succeeds.
+> Only then set private_data to bpf_link. Teach bpf_link_release() to recognize
+> such situation and do nothing.
 > 
-> 	Andrew
+> Fixes: a3b80e107894 ("bpf: Allocate ID for bpf_link")
+> Reported-by: syzbot+39b64425f91b5aab714d@syzkaller.appspotmail.com
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  kernel/bpf/syscall.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+> 
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index c75b2dd2459c..ce00df64a4d4 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -2267,7 +2267,12 @@ static int bpf_link_release(struct inode *inode, struct file *filp)
+>  {
+>  	struct bpf_link *link = filp->private_data;
+>  
+> -	bpf_link_put(link);
+> +	/* if bpf_link_prime() allocated file, but failed to allocate ID,
+> +	 * file->private_data will be null and by now link itself is kfree()'d
+> +	 * directly, so just do nothing in such case.
+> +	 */
+> +	if (link)
+> +		bpf_link_put(link);
+>  	return 0;
+>  }
+>  
+> @@ -2348,7 +2353,7 @@ int bpf_link_prime(struct bpf_link *link, struct bpf_link_primer *primer)
+>  	if (fd < 0)
+>  		return fd;
+>  
+> -	file = anon_inode_getfile("bpf_link", &bpf_link_fops, link, O_CLOEXEC);
+> +	file = anon_inode_getfile("bpf_link", &bpf_link_fops, NULL, O_CLOEXEC);
+>  	if (IS_ERR(file)) {
+>  		put_unused_fd(fd);
+>  		return PTR_ERR(file);
+> @@ -2357,10 +2362,15 @@ int bpf_link_prime(struct bpf_link *link, struct bpf_link_primer *primer)
+>  	id = bpf_link_alloc_id(link);
+>  	if (id < 0) {
+>  		put_unused_fd(fd);
+> -		fput(file);
+> +		fput(file); /* won't put link, so user can kfree() it */
+>  		return id;
+>  	}
+>  
+> +	/* Link priming succeeded, point file's private data to link now.
+> +	 * After this caller has to call bpf_link_cleanup() to free link.
+> +	 */
+> +	file->private_data = link;
+Instead of switching private_data back and forth, how about calling getfile() at end
+(i.e. after alloc_id())?
 
-Well, what is the procedure ? I was thinking that probably after
-conceptual part will be approved and I will send official PATCH series
-along with the firmware image to the linux-firmware ?
-
-Regards,
-Vadym Kochan
+> +
+>  	primer->link = link;
+>  	primer->file = file;
+>  	primer->fd = fd;
+> -- 
+> 2.24.1
+> 
