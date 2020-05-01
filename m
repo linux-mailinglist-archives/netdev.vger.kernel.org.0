@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7430A1C1157
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 13:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2C5C1C115C
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 13:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728673AbgEALJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 07:09:19 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:53075 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728625AbgEALJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 07:09:18 -0400
-Received: by mail-il1-f199.google.com with SMTP id l9so4398740ili.19
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 04:09:17 -0700 (PDT)
+        id S1728680AbgEALKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 07:10:14 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48598 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728480AbgEALKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 07:10:13 -0400
+Received: by mail-il1-f197.google.com with SMTP id i2so4410449ile.15
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 04:10:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=6NqdmlOfSLvBUqffTv0jBBGWaw7cUouN9KdGAg4Bx/E=;
-        b=jfRv/5rNe8Oh5JTcDqjAcI6uIvgDo+aOusluHo7ZXFfDyNwN87JDZzxtzUO0MHRIID
-         lvM7KDdLNVjyDd+6+9XeH6H5iNaTQfCRJYpXJ5QLzLZ6cMjqldA7Ewp5JrGjVIXYANt0
-         3lmx5sezmogp5CiMA1XKd40G2f5TEnOeR83/LPZfyT8P4EpeNus22ZEow2OhFO7PEEf+
-         Xnzo9580IcRRDS7PC/k8znxQOOAYPnI5IctKp9G/P3SRsvn2kj3Amlf8lt3X2NiAe0Za
-         y3FMNYV8343MEr1haqn9UijHRHaqPv2dJsjKeAvqW2vIhoZP4ruoOxb1Nn87C8bA9pDR
-         2JSA==
-X-Gm-Message-State: AGi0PubFDxjo3178fbVLtbLSRIGhuT5IwqXseIIusNCZt82uHzMP84UX
-        v7crGg73nrSgPOUoHSRS5PeJW0PagF+AF/8Z6eth8QXNZq6Y
-X-Google-Smtp-Source: APiQypLDPLjtEZ9aO52H75iqwbBI0TXJXelwsH8OX9v0vpsHpW5HM81A6E2w5pzvFSeE58tVjKErKzbEjn9KvdeiZE/hYMu7cPaG
+        bh=805zBc87YjZKh++vea6KHONgCzLVRm9bLbOYZJbmGEM=;
+        b=SnUgxTLLnFo+fdRKzeWGxy7KQwrR2cWp6ChcRKL5Vgt0L2ZQcXuMpBaG7W+bnh9GeH
+         Q4fpb5JbTWJfJRzhR8XvfrZCdgAQlCF7u7PYs5Tpncu7+71vYhhgKIaqkWB6rMOE0Fez
+         NyaDuoVetsGB5sH6qGj1tA7h+hBYBZNR13GEX9wUmBKd9hbS+zMHMQupvKPrCegd6e71
+         uGL9oXKe+SJ3lBNcaEBKZxOIZW0L9cMqamaiIaggncOsLGgwtuhpntTWVBrNZ/O+Hbo9
+         ws+qHnoLGqA9B7lAH9FAZ5k+4NTx5Dd6cpmo/PgLyATvcilTbp6P1h3u9aGRnSG4tuM+
+         ls0Q==
+X-Gm-Message-State: AGi0Pua24zOZn/lImUkEeHrluoPJL9aMCsjAGMwh3EOJ5C6cb3WokcYG
+        vsszdkPNKWYUIQTFnxCpb/pHZyJcvspR9qBb/cnizqFEytXy
+X-Google-Smtp-Source: APiQypJXLoz6OkLldVGcPoJsS2tBVjQnuFwa49wLMYRV2HwiAPmx4AurWuYkGPc+S64EZkMaYU1DCw+CGWLgYwrKp12Fy1veOjJU
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2a2:: with SMTP id d2mr2772738jaq.104.1588331357046;
- Fri, 01 May 2020 04:09:17 -0700 (PDT)
-Date:   Fri, 01 May 2020 04:09:17 -0700
+X-Received: by 2002:a5d:9505:: with SMTP id d5mr3200308iom.185.1588331411970;
+ Fri, 01 May 2020 04:10:11 -0700 (PDT)
+Date:   Fri, 01 May 2020 04:10:11 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000052913105a4943655@google.com>
-Subject: KASAN: use-after-free Read in inet_diag_bc_sk
-From:   syzbot <syzbot+13bef047dbfffa5cd1af@syzkaller.appspotmail.com>
+Message-ID: <000000000000989de905a494396b@google.com>
+Subject: KASAN: slab-out-of-bounds Read in inet_diag_bc_sk
+From:   syzbot <syzbot+ee80f840d9bf6893223b@syzkaller.appspotmail.com>
 To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
         daniel@iogearbox.net, davem@davemloft.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        john.fastabend@gmail.com, kafai@fb.com, khlebnikov@yandex-team.ru,
+        kpsingh@chromium.org, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        yoshfuji@linux-ipv6.org
+        yoshfuji@linux-ipv6.org, zeil@yandex-team.ru
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -54,22 +54,37 @@ syzbot found the following crash on:
 
 HEAD commit:    37ecb5b8 hinic: Use kmemdup instead of kzalloc and memcpy
 git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=141e54bc100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15f93c4c100000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=b1494ce3fbc02154
-dashboard link: https://syzkaller.appspot.com/bug?extid=13bef047dbfffa5cd1af
+dashboard link: https://syzkaller.appspot.com/bug?extid=ee80f840d9bf6893223b
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12296e60100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=150c6f02100000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11337a9c100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16f67d40100000
+
+The bug was bisected to:
+
+commit b1f3e43dbfacfcd95296b0f80f84b186add9ef54
+Author: Dmitry Yakunin <zeil@yandex-team.ru>
+Date:   Thu Apr 30 15:51:15 2020 +0000
+
+    inet_diag: add support for cgroup filter
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10c3ec4c100000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=12c3ec4c100000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14c3ec4c100000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+13bef047dbfffa5cd1af@syzkaller.appspotmail.com
+Reported-by: syzbot+ee80f840d9bf6893223b@syzkaller.appspotmail.com
+Fixes: b1f3e43dbfac ("inet_diag: add support for cgroup filter")
 
+batman_adv: batadv0: Interface activated: batadv_slave_1
 ==================================================================
-BUG: KASAN: use-after-free in cgroup_id include/linux/cgroup.h:312 [inline]
-BUG: KASAN: use-after-free in inet_diag_bc_sk+0xb6e/0xc70 net/ipv4/inet_diag.c:749
-Read of size 8 at addr ffff88821b2c9f08 by task syz-executor674/7229
+BUG: KASAN: slab-out-of-bounds in __read_once_size include/linux/compiler.h:199 [inline]
+BUG: KASAN: slab-out-of-bounds in sock_cgroup_ptr include/linux/cgroup.h:836 [inline]
+BUG: KASAN: slab-out-of-bounds in inet_diag_bc_sk+0xb64/0xc70 net/ipv4/inet_diag.c:749
+Read of size 8 at addr ffff888093b72260 by task syz-executor021/7043
 
-CPU: 1 PID: 7229 Comm: syz-executor674 Not tainted 5.7.0-rc2-syzkaller #0
+CPU: 1 PID: 7043 Comm: syz-executor021 Not tainted 5.7.0-rc2-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
@@ -77,8 +92,9 @@ Call Trace:
  print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:382
  __kasan_report.cold+0x35/0x4d mm/kasan/report.c:511
  kasan_report+0x33/0x50 mm/kasan/common.c:625
- cgroup_id include/linux/cgroup.h:312 [inline]
- inet_diag_bc_sk+0xb6e/0xc70 net/ipv4/inet_diag.c:749
+ __read_once_size include/linux/compiler.h:199 [inline]
+ sock_cgroup_ptr include/linux/cgroup.h:836 [inline]
+ inet_diag_bc_sk+0xb64/0xc70 net/ipv4/inet_diag.c:749
  inet_diag_dump_icsk+0xbe4/0x1306 net/ipv4/inet_diag.c:1061
  __inet_diag_dump+0x8d/0x240 net/ipv4/inet_diag.c:1113
  netlink_dump+0x50b/0xf50 net/netlink/af_netlink.c:2245
@@ -103,16 +119,16 @@ Call Trace:
  do_writev+0x27f/0x300 fs/read_write.c:1115
  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
  entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x443d69
-Code: e8 8c 07 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 3b 0a fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffea5636068 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443d69
-RDX: 0000000000000001 RSI: 0000000020000200 RDI: 0000000000000006
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000e475
+RIP: 0033:0x443519
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffc1c84dbe8 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443519
+RDX: 0000000000000001 RSI: 0000000020000140 RDI: 0000000000000005
+RBP: 00007ffc1c84dbf0 R08: 000000000000001c R09: 0000000001bbbbbb
+R10: 000000000000001c R11: 0000000000000246 R12: 00007ffc1c84dc00
 R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
-Allocated by task 1:
+Allocated by task 0:
  save_stack+0x1b/0x40 mm/kasan/common.c:49
  set_track mm/kasan/common.c:57 [inline]
  __kasan_kmalloc mm/kasan/common.c:495 [inline]
@@ -120,68 +136,49 @@ Allocated by task 1:
  slab_post_alloc_hook mm/slab.h:586 [inline]
  slab_alloc mm/slab.c:3320 [inline]
  kmem_cache_alloc+0x11b/0x740 mm/slab.c:3484
- kmem_cache_zalloc include/linux/slab.h:659 [inline]
- __kernfs_new_node+0xd4/0x690 fs/kernfs/dir.c:627
- kernfs_new_node+0x93/0x120 fs/kernfs/dir.c:689
- __kernfs_create_file+0x51/0x350 fs/kernfs/file.c:1001
- sysfs_add_file_mode_ns+0x224/0x520 fs/sysfs/file.c:305
- create_files fs/sysfs/group.c:64 [inline]
- internal_create_group+0x327/0xba0 fs/sysfs/group.c:149
- kernel_add_sysfs_param kernel/params.c:795 [inline]
- param_sysfs_builtin kernel/params.c:832 [inline]
- param_sysfs_init+0x3a0/0x430 kernel/params.c:953
- do_one_initcall+0x10a/0x7d0 init/main.c:1157
- do_initcall_level init/main.c:1230 [inline]
- do_initcalls init/main.c:1246 [inline]
- do_basic_setup init/main.c:1266 [inline]
- kernel_init_freeable+0x501/0x5ae init/main.c:1450
- kernel_init+0xd/0x1bb init/main.c:1357
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+ dst_alloc+0x103/0x1c0 net/core/dst.c:93
+ ip6_dst_alloc+0x2e/0x90 net/ipv6/route.c:355
+ icmp6_dst_alloc+0x69/0x460 net/ipv6/route.c:3135
+ mld_sendpack+0x5dd/0xdf0 net/ipv6/mcast.c:1671
+ mld_send_cr net/ipv6/mcast.c:1978 [inline]
+ mld_ifc_timer_expire+0x42e/0x920 net/ipv6/mcast.c:2477
+ call_timer_fn+0x1ac/0x780 kernel/time/timer.c:1405
+ expire_timers kernel/time/timer.c:1450 [inline]
+ __run_timers kernel/time/timer.c:1774 [inline]
+ __run_timers kernel/time/timer.c:1741 [inline]
+ run_timer_softirq+0x623/0x1600 kernel/time/timer.c:1787
+ __do_softirq+0x26c/0x9f7 kernel/softirq.c:292
 
-Freed by task 1:
+Freed by task 9:
  save_stack+0x1b/0x40 mm/kasan/common.c:49
  set_track mm/kasan/common.c:57 [inline]
  kasan_set_free_info mm/kasan/common.c:317 [inline]
  __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:456
  __cache_free mm/slab.c:3426 [inline]
  kmem_cache_free+0x7f/0x320 mm/slab.c:3694
- kernfs_put fs/kernfs/dir.c:537 [inline]
- kernfs_put+0x2f9/0x570 fs/kernfs/dir.c:506
- __kernfs_remove fs/kernfs/dir.c:1344 [inline]
- __kernfs_remove+0x690/0x950 fs/kernfs/dir.c:1282
- kernfs_remove_by_name_ns+0x51/0xb0 fs/kernfs/dir.c:1516
- kernfs_remove_by_name include/linux/kernfs.h:593 [inline]
- remove_files.isra.0+0x76/0x190 fs/sysfs/group.c:28
- sysfs_remove_group+0xb3/0x1b0 fs/sysfs/group.c:289
- kernel_add_sysfs_param kernel/params.c:790 [inline]
- param_sysfs_builtin kernel/params.c:832 [inline]
- param_sysfs_init+0x333/0x430 kernel/params.c:953
- do_one_initcall+0x10a/0x7d0 init/main.c:1157
- do_initcall_level init/main.c:1230 [inline]
- do_initcalls init/main.c:1246 [inline]
- do_basic_setup init/main.c:1266 [inline]
- kernel_init_freeable+0x501/0x5ae init/main.c:1450
- kernel_init+0xd/0x1bb init/main.c:1357
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+ dst_destroy+0x27f/0x3a0 net/core/dst.c:129
+ rcu_do_batch kernel/rcu/tree.c:2206 [inline]
+ rcu_core+0x59f/0x1370 kernel/rcu/tree.c:2433
+ __do_softirq+0x26c/0x9f7 kernel/softirq.c:292
 
-The buggy address belongs to the object at ffff88821b2c9e80
- which belongs to the cache kernfs_node_cache of size 168
-The buggy address is located 136 bytes inside of
- 168-byte region [ffff88821b2c9e80, ffff88821b2c9f28)
+The buggy address belongs to the object at ffff888093b72180
+ which belongs to the cache ip6_dst_cache of size 224
+The buggy address is located 0 bytes to the right of
+ 224-byte region [ffff888093b72180, ffff888093b72260)
 The buggy address belongs to the page:
-page:ffffea00086cb240 refcount:1 mapcount:0 mapping:00000000c46c458d index:0xffff88821b2c9000
-flags: 0x57ffe0000000200(slab)
-raw: 057ffe0000000200 ffffea00086cb288 ffffea00086cb148 ffff88821bc508c0
-raw: ffff88821b2c9000 ffff88821b2c9000 0000000100000009 0000000000000000
+page:ffffea00024edc80 refcount:1 mapcount:0 mapping:0000000071da7a3c index:0x0
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea000226ef88 ffffea00024e6b88 ffff88809a706700
+raw: 0000000000000000 ffff888093b72040 000000010000000c 0000000000000000
 page dumped because: kasan: bad access detected
 
 Memory state around the buggy address:
- ffff88821b2c9e00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
- ffff88821b2c9e80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88821b2c9f00: fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc
-                      ^
- ffff88821b2c9f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88821b2ca000: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+ ffff888093b72100: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888093b72180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff888093b72200: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+                                                       ^
+ ffff888093b72280: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+ ffff888093b72300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
 ==================================================================
 
 
@@ -192,5 +189,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this bug, for details see:
 https://goo.gl/tpsmEJ#testing-patches
