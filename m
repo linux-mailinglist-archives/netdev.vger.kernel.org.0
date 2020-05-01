@@ -2,313 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E98771C1FF3
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 23:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5591C200F
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 23:53:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727774AbgEAVqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 17:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727060AbgEAVqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 17:46:37 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2FBC08ED7D
-        for <netdev@vger.kernel.org>; Fri,  1 May 2020 14:46:37 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id l78so10639924qke.7
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 14:46:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+uxv+I2/FTJBYBAjECwblv3RDhMku6JWKomQ4Y91nmM=;
-        b=H9yanSPsA+U88jyPGN8QJqxFiCaATOffIamOYA9dkOpALy1hywuSZ/TWenPYX8PMNM
-         anb/N3lQdk9pZpqEFzxvnRQposoGWTNe67oqlD2iSdC+6gT5Ai5oIfDu499JZ2xx4gJ2
-         8nEC/w4qflEzXH2gXnCDZlT8x+T9o8Wm+bh1B4Gi6z2PXKFd645NV8U2jr1SBvcT+Syr
-         qgfhJbEVZuEJ0crACS3qw4GXlbnzfp87n1Et9LCoNqbDKdeQi/860Z4b5b8TEHNut7Hs
-         oqS7hcuM+ZvTlm7P0vnVfvsby1IK9P5izSHs1fwJ4lDGKQ+TWOC7VXgBkpxF4kTMIMQ3
-         BOLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+uxv+I2/FTJBYBAjECwblv3RDhMku6JWKomQ4Y91nmM=;
-        b=fP0m0hchiiJ42HXOVDN7ifQ6D2X/cVjacIMobAZy+aBD9uaSLeqnVoNn2fbmDBLzLq
-         ztQpxF/3AClrdCwx/Jf0aeeDaHtNG6v6J+DUCMWNOoc01a+fsoPIoneD2tl3LtMWJSmu
-         swjGOrQXq9Wv33f0jcM2ggbTloPyX6Lu/0CHYyJtb5hqYMQHN6RxOFCpJOfJqHUDJrdM
-         C9fbE67xU3+kWgCKXYj0dtfvD6t700KgJTmqUkggi4Vl0YtBL5jReJinLddDN8PkpXiA
-         zncWmlh3H6DT7qWXtSy1M9yw0chNrKmTzO5mKwneth2EKP7kVFUixVHl5bRMV78qYP3p
-         Ijxw==
-X-Gm-Message-State: AGi0Pub1DQTtBTVKv/+/iGFXbD6in0Zeodutavg+Y5J1BmWuidrpQybd
-        Ps+O8+yyrLfDA8IJ9urJ2bsUig==
-X-Google-Smtp-Source: APiQypIEH50rTxi7c1REIzQ2SLaIQV+QqAPGJNKDWYIxjk6iX1MKO2VQNt4z85V+Pgl+EVP6OFQfRQ==
-X-Received: by 2002:ae9:edce:: with SMTP id c197mr5807335qkg.454.1588369596430;
-        Fri, 01 May 2020 14:46:36 -0700 (PDT)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id z18sm3470982qti.47.2020.05.01.14.46.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 May 2020 14:46:36 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net
-Cc:     evgreen@chromium.org.net, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        agross@kernel.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 4/4] net: ipa: define SMEM memory region for IPA
-Date:   Fri,  1 May 2020 16:46:25 -0500
-Message-Id: <20200501214625.31539-5-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200501214625.31539-1-elder@linaro.org>
-References: <20200501214625.31539-1-elder@linaro.org>
+        id S1726846AbgEAVwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 17:52:24 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:44144 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726344AbgEAVwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 17:52:23 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 041LYLq0021804;
+        Fri, 1 May 2020 14:52:06 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=D6LHUdeJni784EED1TZzxjisJxJllC5HH80IfH3E7V8=;
+ b=lGraYWkxje4AUC4tWkNDIc+KRtxT9PRNp1mGVJmKR/noaOUfiZO8AdPRsC6Tdbx/Jgu7
+ whCJTPEjOuTkdkl416vB+ISX0Etx16X+mN6u0wniAhFqVRLIMQ/lrDGZBwayY6DXCO3g
+ Xok7r7QY9CsN9f8vj4JqD8moEzNw/auDWKo= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 30r7dbx0ns-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 01 May 2020 14:52:06 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Fri, 1 May 2020 14:52:05 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O2NeWrH7M3Wz9B5PTeJC5Bi1sNvT5+zvWQRTPtK45zQt6xg88C0Ybf+96CBuuhttIA1bWZMmN4nfJjVReKTHS8+49vQdI83BU57fR5cZcTCQ2g4oQLac3D5zulDpEoU8N8B7lX3OMlsT+AyV0dIwiME6vjMoDCoOXz/tJ3Dlk8xy3PYEHvcllR3ZKzgb72bvPqJJnfDx3+oCPvuJPhpeBplQeCc1fSn6/jJ1qQJbBEwxBdyqzwLurXU7KAyw/pnCeaEqM6VdcXzvbv2tbU2WqOcbFqyj443yEDQYf+Hh2kMueX4SV7/gPdWMOh+uEiXWN+uzLcbTHRcFcrLGmp5YTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=D6LHUdeJni784EED1TZzxjisJxJllC5HH80IfH3E7V8=;
+ b=KWmYYcyVWyKuM0fNLmvGmicpc9zfQqf5rxDElSEd1MJsIDwu99EIv86LYbuntpEMncWooqnHcTsowlu0DhyR4DIQwjx48rOOnMChDLkqxuG/eo3M1bnb0CfVl54EcPbKheG9TS6LaGdeOtd86MuQXIiMBVkHPT90CD/HIViXtgH9NUyNoKQcruaHkcIm1NpqFsa7ku8ACUhoRWdlM00ukWveohabzS/VDHWfli2PDpEBv4+NiDaIZM5vFTaigvJzYIeYBj2S5gmePpbJwpZVgkkPcXRhH4jo6Mxbt+jKgYOM/VMKCyV0YnL8pSp6/mYc/rG9DSZzGUSUTHPBYy8yUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=D6LHUdeJni784EED1TZzxjisJxJllC5HH80IfH3E7V8=;
+ b=CC8odlwGYAvD65hKuIM/BhBMKX96YFd1oefqhME8+1sF45foBM7XBfUIdiszx1tfX7cq8J2IAh1LmFZp259BspKDrrAUHQo/MCI4TmDTN8Is2pppPa+7IuJjXt5SzfLNTm8TFcxb4TjeV8OhiZ4LDwxD9x8c8RpcGyK1nypbn9g=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4119.namprd15.prod.outlook.com (2603:10b6:a02:cd::20)
+ by BYAPR15MB2855.namprd15.prod.outlook.com (2603:10b6:a03:b3::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20; Fri, 1 May
+ 2020 21:52:04 +0000
+Received: from BYAPR15MB4119.namprd15.prod.outlook.com
+ ([fe80::90d6:ec75:fde:e992]) by BYAPR15MB4119.namprd15.prod.outlook.com
+ ([fe80::90d6:ec75:fde:e992%7]) with mapi id 15.20.2937.028; Fri, 1 May 2020
+ 21:52:04 +0000
+Date:   Fri, 1 May 2020 14:52:02 -0700
+From:   Andrey Ignatov <rdna@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <davem@davemloft.net>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next v3] bpf: bpf_{g,s}etsockopt for struct
+ bpf_sock_addr
+Message-ID: <20200501215202.GA72448@rdna-mbp.dhcp.thefacebook.com>
+References: <20200430233152.199403-1-sdf@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200430233152.199403-1-sdf@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-ClientProxiedBy: BYAPR07CA0005.namprd07.prod.outlook.com
+ (2603:10b6:a02:bc::18) To BYAPR15MB4119.namprd15.prod.outlook.com
+ (2603:10b6:a02:cd::20)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost (2620:10d:c090:400::5:be22) by BYAPR07CA0005.namprd07.prod.outlook.com (2603:10b6:a02:bc::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Fri, 1 May 2020 21:52:04 +0000
+X-Originating-IP: [2620:10d:c090:400::5:be22]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3e91fd1d-4b5b-4d03-dc7e-08d7ee19e2a7
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2855:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2855CFA8ACD988565208CD49A8AB0@BYAPR15MB2855.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:873;
+X-Forefront-PRVS: 0390DB4BDA
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WWRQxO4V5j+3aNFF1N9tsvuG8eSx76EucUID+loo7LgKqiINgBc5kkqSpMAENVs0fgqrgc1jSlprv4vnjLxmu7IucerC6GVca9iRQt/3DgKMfCGuS5mi75IWrOV2TdyyYjdcOLrR7Y2VDfqgOp4bBIWjgbIE/SN39gvzWs+wuqYF+bJ5kbCgs4UP3dHoxKp8c/KWyl0rgQDKNBDZaI74uZbuKOuMoNJSw4Nnv5YY+dIMDQ8TfjzGjr8ak+jvjVJGcarfJi1QmvXW/VRvsELFLTy9DMvzU6QmnuuqcpXAMkb0rOmRLXEl9YzjuJAgSqX+04NzYFvFb0T3Qjf+pzJnhp1zTjf/SOcYVEZYoFKpAOm203fMbOn9ljVjWdG/vm/XFj9l4/vu8J3dh/eY5wdIyX0T6+B5TXLEvsrTX8c78LB/Qm1N4BXBoglFzCMQc4ahRIvvjM87fEL5BABcguN6OTmjMWxSVyRRLYZKBqq00WU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4119.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(136003)(376002)(366004)(39860400002)(346002)(86362001)(1076003)(5660300002)(6496006)(52116002)(16526019)(6486002)(186003)(478600001)(9686003)(2906002)(8676002)(8936002)(54906003)(316002)(66946007)(66556008)(66476007)(33656002)(6916009)(4326008)(142933001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: lHJcuPURgP9pzXE8SqGQdGZUpSLjQdpRorxaiDskRzN8cljTUKh83Y7KAWLm9gGRxQMFTDnrPvWi/JSP99ArxSVckhxdLAlVuNeBMMCWwHxZsh4HcW0/744+c8LmqYsaWHZCnOQrHv9F0AinYNuAZGIKaahKVU7cpMTFB0/fbHZMv9cUswwjoVuAI6EQSGwYRRMXyFh6nzx1r3lXanm+mvY7D1mp60WiBZkALzVifVNy5jYy5g1Sj2zzARWmFSeLn4eDSW/bAk3V5LyCltvDCeXYt4Q5ApFi0x+qW8zMtZN9YrhDyfmRynp+phx1HJKMz/WISqhFlj6IKjT8JbYspa1niwABCvzD3Xt+de9FwFmvTQV0mQWmNVsvdE7vxhTvFoZLmCEEoCpumpT3TcTPXLl9aaFdeLF+AENSNLfrkimBjBWp5ZOAcDF/aOelCKYTDlQ1OF3A04vBW6Flr0IgXuVybvFf/OTXkMI1vVH/Ur61lZ0sZF+2eYko21S/FfdSZOM/YK3oyTrvkXFqu//Lh5+Z4Fo7zQzRXbAO+aQtbgU7uT4HcxUf50zTBjtCJmCgeppzVO5dppAIERtnvis3AhapkzcMOaCraAIgN9BK11V0tyVYpbdEAePudEEhQKNmzaBkLT6vu/lpn2xrxIirhUo599u+wyayoECdh6IDbYg3dQu1ysNKebL+0ff2SSoVAXj+ZzTVcz/lP2y6TWy7sjOaVpvloI1Z377FxAzdJdd1SJKxgbmKdALBNmP7rtnLzpCswmA8dynZRzv5Zc1DOrNZjLbHgDzG8jUjpZDm/MS5ITEc1g2mvDlDWWO0qvjvRZe2BxSWmNyE/N1vefYF3A==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e91fd1d-4b5b-4d03-dc7e-08d7ee19e2a7
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2020 21:52:04.3617
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YJs0I5NxJIl3d3lkpSATeWnmjpgToFbjVCft7DNjAjpKqRvCImvRxKnxXq1ElsL4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2855
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-01_16:2020-05-01,2020-05-01 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0 mlxscore=0
+ lowpriorityscore=0 mlxlogscore=999 spamscore=0 phishscore=0 bulkscore=0
+ malwarescore=0 impostorscore=0 adultscore=0 clxscore=1011
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005010153
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arrange to use an item from SMEM memory for IPA.  SMEM item number
-497 is designated to be used by the IPA.  Specify the item ID and
-size of the region in platform configuration data.  Allocate and get
-a pointer to this region from ipa_mem_init().  The memory must be
-mapped for access through an SMMU.
+Stanislav Fomichev <sdf@google.com> [Thu, 2020-04-30 16:32 -0700]:
+> Currently, bpf_getsockopt and bpf_setsockopt helpers operate on the
+> 'struct bpf_sock_ops' context in BPF_PROG_TYPE_SOCK_OPS program.
+> Let's generalize them and make them available for 'struct bpf_sock_addr'.
+> That way, in the future, we can allow those helpers in more places.
+> 
+> As an example, let's expose those 'struct bpf_sock_addr' based helpers to
+> BPF_CGROUP_INET{4,6}_CONNECT hooks. That way we can override CC before the
+> connection is made.
+> 
+> v3:
+> * Expose custom helpers for bpf_sock_addr context instead of doing
+>   generic bpf_sock argument (as suggested by Daniel). Even with
+>   try_socket_lock that doesn't sleep we have a problem where context sk
+>   is already locked and socket lock is non-nestable.
+> 
+> v2:
+> * s/BPF_PROG_TYPE_CGROUP_SOCKOPT/BPF_PROG_TYPE_SOCK_OPS/
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa.h             |   5 ++
- drivers/net/ipa/ipa_data-sc7180.c |   2 +
- drivers/net/ipa/ipa_data-sdm845.c |   2 +
- drivers/net/ipa/ipa_data.h        |   4 ++
- drivers/net/ipa/ipa_mem.c         | 116 ++++++++++++++++++++++++++++++
- 5 files changed, 129 insertions(+)
+...
 
-diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
-index 32f6dfafdb05..b10a85392952 100644
---- a/drivers/net/ipa/ipa.h
-+++ b/drivers/net/ipa/ipa.h
-@@ -49,6 +49,8 @@ struct ipa_interrupt;
-  * @mem:		Array of IPA-local memory region descriptors
-  * @imem_iova:		I/O virtual address of IPA region in IMEM
-  * @imem_size;		Size of IMEM region
-+ * @smem_iova:		I/O virtual address of IPA region in SMEM
-+ * @smem_size;		Size of SMEM region
-  * @zero_addr:		DMA address of preallocated zero-filled memory
-  * @zero_virt:		Virtual address of preallocated zero-filled memory
-  * @zero_size:		Size (bytes) of preallocated zero-filled memory
-@@ -93,6 +95,9 @@ struct ipa {
- 	unsigned long imem_iova;
- 	size_t imem_size;
- 
-+	unsigned long smem_iova;
-+	size_t smem_size;
-+
- 	dma_addr_t zero_addr;
- 	void *zero_virt;
- 	size_t zero_size;
-diff --git a/drivers/net/ipa/ipa_data-sc7180.c b/drivers/net/ipa/ipa_data-sc7180.c
-index e9007d151c68..43faa35ae726 100644
---- a/drivers/net/ipa/ipa_data-sc7180.c
-+++ b/drivers/net/ipa/ipa_data-sc7180.c
-@@ -301,6 +301,8 @@ static struct ipa_mem_data ipa_mem_data = {
- 	.local		= ipa_mem_local_data,
- 	.imem_addr	= 0x146a8000,
- 	.imem_size	= 0x00002000,
-+	.smem_id	= 497,
-+	.smem_size	= 0x00002000,
- };
- 
- /* Configuration data for the SC7180 SoC. */
-diff --git a/drivers/net/ipa/ipa_data-sdm845.c b/drivers/net/ipa/ipa_data-sdm845.c
-index c0e207085550..f7ba85717edf 100644
---- a/drivers/net/ipa/ipa_data-sdm845.c
-+++ b/drivers/net/ipa/ipa_data-sdm845.c
-@@ -323,6 +323,8 @@ static struct ipa_mem_data ipa_mem_data = {
- 	.local		= ipa_mem_local_data,
- 	.imem_addr	= 0x146bd000,
- 	.imem_size	= 0x00002000,
-+	.smem_id	= 497,
-+	.smem_size	= 0x00002000,
- };
- 
- /* Configuration data for the SDM845 SoC. */
-diff --git a/drivers/net/ipa/ipa_data.h b/drivers/net/ipa/ipa_data.h
-index 69957af56ccd..16dfd74717b1 100644
---- a/drivers/net/ipa/ipa_data.h
-+++ b/drivers/net/ipa/ipa_data.h
-@@ -250,12 +250,16 @@ struct ipa_resource_data {
-  * @local:		array of IPA-local memory region descriptors
-  * @imem_addr:		physical address of IPA region within IMEM
-  * @imem_size:		size in bytes of IPA IMEM region
-+ * @smem_id:		item identifier for IPA region within SMEM memory
-+ * @imem_size:		size in bytes of the IPA SMEM region
-  */
- struct ipa_mem_data {
- 	u32 local_count;
- 	const struct ipa_mem *local;
- 	u32 imem_addr;
- 	u32 imem_size;
-+	u32 smem_id;
-+	u32 smem_size;
- };
- 
- /**
-diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-index 3c0916597fe1..aa8f6b0f3d50 100644
---- a/drivers/net/ipa/ipa_mem.c
-+++ b/drivers/net/ipa/ipa_mem.c
-@@ -10,6 +10,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/iommu.h>
- #include <linux/io.h>
-+#include <linux/soc/qcom/smem.h>
- 
- #include "ipa.h"
- #include "ipa_reg.h"
-@@ -23,6 +24,9 @@
- /* "Canary" value placed between memory regions to detect overflow */
- #define IPA_MEM_CANARY_VAL		cpu_to_le32(0xdeadbeef)
- 
-+/* SMEM host id representing the modem. */
-+#define QCOM_SMEM_HOST_MODEM	1
-+
- /* Add an immediate command to a transaction that zeroes a memory region */
- static void
- ipa_mem_zero_region_add(struct gsi_trans *trans, const struct ipa_mem *mem)
-@@ -340,6 +344,111 @@ static void ipa_imem_exit(struct ipa *ipa)
- 	ipa->imem_iova = 0;
- }
- 
-+/**
-+ * ipa_smem_init() - Initialize SMEM memory used by the IPA
-+ * @ipa:	IPA pointer
-+ * @item:	Item ID of SMEM memory
-+ * @size:	Size (bytes) of SMEM memory region
-+ *
-+ * SMEM is a managed block of shared DRAM, from which numbered "items"
-+ * can be allocated.  One item is designated for use by the IPA.
-+ *
-+ * The modem accesses SMEM memory directly, but the IPA accesses it
-+ * via the IOMMU, using the AP's credentials.
-+ *
-+ * If size provided is non-zero, we allocate it and map it for
-+ * access through the IOMMU.
-+ *
-+ * Note: @size and the item address are is not guaranteed to be page-aligned.
-+ */
-+static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
-+{
-+	struct device *dev = &ipa->pdev->dev;
-+	struct iommu_domain *domain;
-+	unsigned long iova;
-+	phys_addr_t phys;
-+	phys_addr_t addr;
-+	size_t actual;
-+	void *virt;
-+	int ret;
-+
-+	if (!size)
-+		return 0;	/* SMEM memory not used */
-+
-+	/* SMEM is memory shared between the AP and another system entity
-+	 * (in this case, the modem).  An allocation from SMEM is persistent
-+	 * until the AP reboots; there is no way to free an allocated SMEM
-+	 * region.  Allocation only reserves the space; to use it you need
-+	 * to "get" a pointer it (this implies no reference counting).
-+	 * The item might have already been allocated, in which case we
-+	 * use it unless the size isn't what we expect.
-+	 */
-+	ret = qcom_smem_alloc(QCOM_SMEM_HOST_MODEM, item, size);
-+	if (ret && ret != -EEXIST) {
-+		dev_err(dev, "error %d allocating size %zu SMEM item %u\n",
-+			ret, size, item);
-+		return ret;
-+	}
-+
-+	/* Now get the address of the SMEM memory region */
-+	virt = qcom_smem_get(QCOM_SMEM_HOST_MODEM, item, &actual);
-+	if (IS_ERR(virt)) {
-+		ret = PTR_ERR(virt);
-+		dev_err(dev, "error %d getting SMEM item %u\n", ret, item);
-+		return ret;
-+	}
-+
-+	/* In case the region was already allocated, verify the size */
-+	if (ret && actual != size) {
-+		dev_err(dev, "SMEM item %u has size %zu, expected %zu\n",
-+			item, actual, size);
-+		return -EINVAL;
-+	}
-+
-+	domain = iommu_get_domain_for_dev(dev);
-+	if (!domain) {
-+		dev_err(dev, "no IOMMU domain found for SMEM\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Align the address down and the size up to a page boundary */
-+	addr = qcom_smem_virt_to_phys(virt) & PAGE_MASK;
-+	phys = addr & PAGE_MASK;
-+	size = PAGE_ALIGN(size + addr - phys);
-+	iova = phys;	/* We just want a direct mapping */
-+
-+	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE);
-+	if (ret)
-+		return ret;
-+
-+	ipa->smem_iova = iova;
-+	ipa->smem_size = size;
-+
-+	return 0;
-+}
-+
-+static void ipa_smem_exit(struct ipa *ipa)
-+{
-+	struct device *dev = &ipa->pdev->dev;
-+	struct iommu_domain *domain;
-+
-+	domain = iommu_get_domain_for_dev(dev);
-+	if (domain) {
-+		size_t size;
-+
-+		size = iommu_unmap(domain, ipa->smem_iova, ipa->smem_size);
-+		if (size != ipa->smem_size)
-+			dev_warn(dev, "unmapped %zu SMEM bytes, expected %lu\n",
-+				 size, ipa->smem_size);
-+
-+	} else {
-+		dev_err(dev, "couldn't get IPA IOMMU domain for SMEM\n");
-+	}
-+
-+	ipa->smem_size = 0;
-+	ipa->smem_iova = 0;
-+}
-+
- /* Perform memory region-related initialization */
- int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
- {
-@@ -383,8 +492,14 @@ int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
- 	if (ret)
- 		goto err_unmap;
- 
-+	ret = ipa_smem_init(ipa, mem_data->smem_id, mem_data->smem_size);
-+	if (ret)
-+		goto err_imem_exit;
-+
- 	return 0;
- 
-+err_imem_exit:
-+	ipa_imem_exit(ipa);
- err_unmap:
- 	memunmap(ipa->mem_virt);
- 
-@@ -394,6 +509,7 @@ int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
- /* Inverse of ipa_mem_init() */
- void ipa_mem_exit(struct ipa *ipa)
- {
-+	ipa_smem_exit(ipa);
- 	ipa_imem_exit(ipa);
- 	memunmap(ipa->mem_virt);
- }
+>  SEC("cgroup/connect4")
+>  int connect_v4_prog(struct bpf_sock_addr *ctx)
+>  {
+> @@ -66,6 +108,10 @@ int connect_v4_prog(struct bpf_sock_addr *ctx)
+>  
+>  	bpf_sk_release(sk);
+>  
+> +	/* Rewrite congestion control. */
+> +	if (ctx->type == SOCK_STREAM && set_cc(ctx))
+> +		return 0;
+
+Hi Stas,
+
+This new check breaks one of tests in test_sock_addr:
+
+	root@arch-fb-vm1:/home/rdna/bpf-next/tools/testing/selftests/bpf ./test_sock_addr.sh
+	...
+	(test_sock_addr.c:1199: errno: Operation not permitted) Fail to connect to server
+	Test case: connect4: rewrite IP & TCP port .. [FAIL]
+	...
+	Summary: 34 PASSED, 1 FAILED
+
+What the test does is it sets up TCPv4 server:
+
+	[pid   386] socket(PF_INET, SOCK_STREAM, IPPROTO_IP) = 6
+	[pid   386] bind(6, {sa_family=AF_INET, sin_port=htons(4444), sin_addr=inet_addr("127.0.0.1")}, 128) = 0
+	[pid   386] listen(6, 128)              = 0
+
+Then tries to connect to a fake IPv4:port and this connect4 program
+should redirect it to that TCP server, but only if every field in
+context has expected value.
+
+But after that commit program started denying the connect:
+
+	[pid   386] socket(PF_INET, SOCK_STREAM, IPPROTO_IP) = 7
+	[pid   386] connect(7, {sa_family=AF_INET, sin_port=htons(4040), sin_addr=inet_addr("192.168.1.254")}, 128) = -1 EPERM (Operation not permitted)
+	(test_sock_addr.c:1201: errno: Operation not permitted) Fail to connect to server
+	Test case: connect4: rewrite IP & TCP port .. [FAIL] 
+
+I verified that commenting out this new `if` fixes the problem, but
+haven't spent time root-causing it. Could you please look at it?
+
+Thanks.
+
+
 -- 
-2.20.1
-
+Andrey Ignatov
