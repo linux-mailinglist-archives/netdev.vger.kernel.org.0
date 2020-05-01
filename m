@@ -2,78 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C32A1C1752
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 218A01C1739
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 16:10:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729902AbgEAOBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 10:01:34 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36134 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728831AbgEANZd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 May 2020 09:25:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=+J9/XuzaYZkc7KdhEejKIjHZVQxLgr8ct3mRcOr6mp0=; b=g/PRKZN4p6dyVNt4voSziF0z/E
-        Jyx5pk2UnFy84ELAeLCgLm6gMKGB89jV8il6E/xtca+x80qWrYpR5tvzJfj+EyIC6y3FG4q4Y4Jn6
-        ho3kN8mFp+Clul4Gr7uFAAiCNMo1XHwAQBRRTZodNXcZl0vaR/J8Nxq7TjGxAsMX1PQo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jUVfQ-000XTu-Ff; Fri, 01 May 2020 15:25:24 +0200
-Date:   Fri, 1 May 2020 15:25:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Subject: Re: [RFC next-next v2 2/5] net: marvell: prestera: Add PCI interface
- support
-Message-ID: <20200501132524.GB128166@lunn.ch>
-References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
- <20200430232052.9016-3-vadym.kochan@plvision.eu>
- <20200501000015.GC22077@lunn.ch>
- <20200501062223.GA15217@plvision.eu>
+        id S1730268AbgEAN7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 09:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729586AbgEAN2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 09:28:13 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D248FC061A0C
+        for <netdev@vger.kernel.org>; Fri,  1 May 2020 06:28:12 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id e9so4843464iok.9
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 06:28:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=FQRWycjgg9PSHf5QnGsUBT2EyveEEMkgeXusSqizlYE=;
+        b=IbjNWNXeDJmh+YdcllhjXD7Q5kkDwz3UMj2GgzMbNP3k1UJ3/VNNb3iKBG6hLIOSZC
+         2p+zvIdlWLDyz2wI84Yf6807UfQzgptQWbzjiQr6CPmQmYu03qdL+O6GshtU1efvzmLV
+         ZXGpJy3OJkvd2z88RNb/XQ9+Kp4suuz9GcE0u28X2JcMv85PYdr0Gv9C5A1l4HjkbPzj
+         uzvEsgm9Gn4RTVyJqgodfWw9X1UMh4ZUej0LBLel9TOYcygHrL5NDVDljMUvyBbiHGbI
+         CY3Xl4mMslHQWQbLyvTfUaCr7ELfGuksDsyvu192O1JcsTvepjF1zbNin49oUjpYD7Id
+         kNPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=FQRWycjgg9PSHf5QnGsUBT2EyveEEMkgeXusSqizlYE=;
+        b=q2iaw59P15PdlvyBdUsUBW8vjfOT5TPdZoFzaQdTZEOLsKmVPRbjO7nzKT6aN1No1g
+         vfJryvzEb7DwDaa6094xDpQG+P1AdlJGs14k9qYIZ/KM8wLUjM76cRvzza6kbSyTjIYE
+         NtNTu3rELEjYMcGqFQQlfn1b4EaTz8CyyGfUR5u2Q7Cqjj0rAVhp6oz4lHnNJksFPonC
+         pS6uxz4V2338j5+QAErzv3hx9Suk9oSyJcLpvQKkzdDAqENDskNoMbljAeZBaehNXtHa
+         NBECxDxDSEj8j89z/cgO23cbfA864QFuG0nzNAjMg0GBheeo4y0TC9BbgdU2GNJAUw1f
+         7Xrg==
+X-Gm-Message-State: AGi0PuYIjLYL7m8cY+149Xs3k/Bms8K46H+SxsUXtciwaLHQ+Nm1NGRp
+        4NAH3Siq49/8Ney0uK94mYHkzPzsEeSIRN6uras=
+X-Google-Smtp-Source: APiQypKwZMmmFiIKuB4c8NM6K0wztyzh/4KXG0qliuOAfTlWRlf3ogR2h+1wtCilzuhfbvct8Y8nxMvjVE7GShkY7ks=
+X-Received: by 2002:a05:6638:a47:: with SMTP id 7mr3164665jap.12.1588339691528;
+ Fri, 01 May 2020 06:28:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200501062223.GA15217@plvision.eu>
+Received: by 2002:a02:b005:0:0:0:0:0 with HTTP; Fri, 1 May 2020 06:28:11 -0700 (PDT)
+Reply-To: jnjitap@outlook.fr
+From:   MR JEROME <katiebonaparte@gmail.com>
+Date:   Fri, 1 May 2020 14:28:11 +0100
+Message-ID: <CAOk5xKw=k5PNJC0YvVTvsPMx9As1ptEJ7KfRW3VdccpSttokzQ@mail.gmail.com>
+Subject: FINANCIAL BUSINESS PROJECT
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Hi Vadym
-> > 
-> > What are the plans for getting the firmware into linux-firmware git
-> > repo?
-> > 
-> > 	Andrew
-> 
-> Well, what is the procedure ? I was thinking that probably after
-> conceptual part will be approved and I will send official PATCH series
-> along with the firmware image to the linux-firmware ?
+Dear Friend,
 
-Hi Vadym
+I have a business proposal in the tune of $10.2 Million USD partaining
+to this issue of Corona virus for you to handle with me. I have
+opportunity to transfer this abandon fund to your bank account in your
+country which belongs to our client.
 
-I just wanted to ensure you actually were going to send the
-firmware. For the Marvell 10G PHYs, you need to signed an NDA with
-Marvell to get the firmware, and you probably cannot distribute
-it. Marvell seems to have no interest in making the firmware
-available. So we NACKed support for loading the firmware a runtime.
+I am inviting you in this transaction where this money can be shared
+between us at ratio of 60/40% and help the needy around us don't be
+afraid of anything I am with you I will instruct you what you will do
+to maintain this fund.
 
-If you have all the legal mumbo jumbo in place to make the firmware
-available, great. You can post it for merging to linux-firmware now.
+Please kindly contact me with your information's if you are interested
+in this transaction for more details.
+
+Your Name:..............
+Your Bank Name:.............
+Your Account Number:...........
+Your Telephone Number:............
+Your Country And Address:............
+Your Age And Sex:.......................
 
 Thanks
-	   Andrew
-
+Mr.Jerome.
