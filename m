@@ -2,76 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E31BA1C0CFC
-	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 06:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5971C0CF8
+	for <lists+netdev@lfdr.de>; Fri,  1 May 2020 06:00:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbgEAEAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 00:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46744 "EHLO
+        id S1727793AbgEAEAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 00:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbgEAEAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 00:00:43 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF97C035494;
-        Thu, 30 Apr 2020 21:00:43 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jUMqj-00FaZY-JM; Fri, 01 May 2020 04:00:29 +0000
-Date:   Fri, 1 May 2020 05:00:29 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        "Guilherme G. Piccoli" <gpiccoli@canonical.com>
-Subject: Re: linux-next: manual merge of the akpm-current tree with the
- bpf-next tree
-Message-ID: <20200501040029.GI23230@ZenIV.linux.org.uk>
-References: <20200429164507.35ac444b@canb.auug.org.au>
- <20200429064702.GA31928@lst.de>
- <CAADnVQJWLPpt6tEGo=KkLBaHLpwZFLBfZX7UB4Z6+hMf6g220w@mail.gmail.com>
- <20200429065404.GA32139@lst.de>
- <20200429182406.67582a6a@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200429182406.67582a6a@canb.auug.org.au>
+        with ESMTP id S1725791AbgEAEAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 00:00:38 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E79C035494
+        for <netdev@vger.kernel.org>; Thu, 30 Apr 2020 21:00:38 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 09781127806CC;
+        Thu, 30 Apr 2020 21:00:38 -0700 (PDT)
+Date:   Thu, 30 Apr 2020 21:00:37 -0700 (PDT)
+Message-Id: <20200430.210037.2294375960459896634.davem@davemloft.net>
+To:     andriy.shevchenko@linux.intel.com
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-stm32@st-md-mailman.stormreply.com,
+        netdev@vger.kernel.org, weifeng.voon@intel.com,
+        boon.leong.ong@intel.com
+Subject: Re: [PATCH v1] stmmac: intel: Fix kernel crash due to wrong error
+ path
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200429150932.17927-1-andriy.shevchenko@linux.intel.com>
+References: <20200429150932.17927-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 30 Apr 2020 21:00:38 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 06:24:06PM +1000, Stephen Rothwell wrote:
-> Hi Christoph,
-> 
-> On Wed, 29 Apr 2020 08:54:04 +0200 Christoph Hellwig <hch@lst.de> wrote:
-> >
-> > On Tue, Apr 28, 2020 at 11:49:34PM -0700, Alexei Starovoitov wrote:
-> > > On Tue, Apr 28, 2020 at 11:47 PM Christoph Hellwig <hch@lst.de> wrote:  
-> > > >
-> > > > On Wed, Apr 29, 2020 at 04:45:07PM +1000, Stephen Rothwell wrote:  
-> > > > >
-> > > > > Today's linux-next merge of the akpm-current tree got a conflict in:
-> > > > >
-> > > > >   kernel/sysctl.c
-> > > > >
-> > > > > between commit:
-> > > > >
-> > > > >   f461d2dcd511 ("sysctl: avoid forward declarations")
-> > > > >
-> > > > > from the bpf-next tree and commits:  
-> > > >
-> > > > Hmm, the above should have gone in through Al..  
-> > > 
-> > > Al pushed them into vfs tree and we pulled that tag into bpf-next.  
-> > 
-> > Ok.  And Stephen pulled your tree first.
-> 
-> No, it is not in the branch I fetch from Al yet.
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date: Wed, 29 Apr 2020 18:09:32 +0300
 
-Now it is...
+> Unfortunately sometimes ->probe() may fail. The commit b9663b7ca6ff
+> ("net: stmmac: Enable SERDES power up/down sequence")
+> messed up with error handling and thus:
+> 
+> [   12.811311] ------------[ cut here ]------------
+> [   12.811993] kernel BUG at net/core/dev.c:9937!
+> 
+> Fix this by properly crafted error path.
+> 
+> Fixes: b9663b7ca6ff ("net: stmmac: Enable SERDES power up/down sequence")
+> Cc: Voon Weifeng <weifeng.voon@intel.com>
+> Cc: Ong Boon Leong <boon.leong.ong@intel.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Applied.
