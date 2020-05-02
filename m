@@ -2,282 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C03391C23E5
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 09:43:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A55731C2400
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 10:29:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726782AbgEBHm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 03:42:27 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:30132 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726486AbgEBHm1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 03:42:27 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0427WhUk029695;
-        Sat, 2 May 2020 03:41:43 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s38n9ncv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 03:41:42 -0400
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0427YiZt033464;
-        Sat, 2 May 2020 03:41:42 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s38n9nce-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 03:41:42 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 0427eHrf019578;
-        Sat, 2 May 2020 07:41:39 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 30s0g5gd34-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 07:41:39 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0427eSsQ59965934
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 2 May 2020 07:40:28 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9E744A4054;
-        Sat,  2 May 2020 07:41:37 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7EADCA405F;
-        Sat,  2 May 2020 07:41:35 +0000 (GMT)
-Received: from linux.ibm.com (unknown [9.148.204.17])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Sat,  2 May 2020 07:41:35 +0000 (GMT)
-Date:   Sat, 2 May 2020 10:41:33 +0300
-From:   Mike Rapoport <rppt@linux.ibm.com>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Marc Zyngier <maz@kernel.org>, Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Harry Wei <harryxiyou@gmail.com>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Tejun Heo <tj@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Marcos Paulo de Souza <marcos.souza.org@gmail.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-ia64@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 07/14] docs: add IRQ documentation at the core-api book
-Message-ID: <20200502074133.GC342687@linux.ibm.com>
-References: <cover.1588345503.git.mchehab+huawei@kernel.org>
- <2da7485c3718e1442e6b4c2dd66857b776e8899b.1588345503.git.mchehab+huawei@kernel.org>
+        id S1726759AbgEBI3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 04:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725785AbgEBI27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 04:28:59 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E517C061A0C
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 01:28:59 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id x25so2528179wmc.0
+        for <netdev@vger.kernel.org>; Sat, 02 May 2020 01:28:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=/8TOEfn/f3krSiYbART1jbzpegPNU+rqldlhVTZ6ajA=;
+        b=hfDAe+wsN7no5kxGU2KlUBk+ExyDLbQWlnAHD1JHfrUaMV+UrNJxlcimZg61zPKdzy
+         HyJLujJR8BR2VeLjo+ueX6vaBAHARAUSTqD0ofsylJwCcNug030EexFeJ87pVuJ8qEY1
+         W9+HxDBowxbWvOpzfFUpfpRMDxnlw4ts5GOKEWJcGjigagQrntzSgbI6T8UFxVTEc5r4
+         /TRYnVUijw4V1tQv/Q60Gkg3daA40Q4LfPa72sIbRX73cYE4yCEFe2S0G9I5f3jhGRiu
+         MP6C7NnpHQZBq2Iw21q28urWzXXSGfh1SskHILRFFMuqNKIRWZwxR01AACxAN8vwIlM6
+         kwHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=/8TOEfn/f3krSiYbART1jbzpegPNU+rqldlhVTZ6ajA=;
+        b=GkUelFWSQUYaahq3L1goapsqErwJOCsYTBgCZ9jKji7k0cUXiGelpgr8D+EpXpd4MC
+         s6hUz0py+HK3LcVZjYFaoQOcVlcJY2XEOlNdsiNLOa7k9vKPjK8SoEcawY6YICOo6sXf
+         9hSVu0rDpOhPpYYLhi+/BrzrijJaIl6BDtOYL4E6yBmXkSrwFn67DlhUB86Fy6Kc3Unk
+         iQPJhfrlzQooln1Euq71Wb2eXep41FMSBXJQLYSNPMeCKnUkDazz7yAtGqXfxKKNceB9
+         o1nK4/2x5LHXJURmWaQ7OnIwKuvUHGbTDDA2YnIu4bIs4ES/19EYyGntBxA5SR/IYhlJ
+         LVZw==
+X-Gm-Message-State: AGi0PuY7Neb5DAZ5l1LuGW/VlP2LQDnpWznZ4DPysOOoexBjdXcSwW0C
+        J6q5Ne7G73JJdyzS+cApsIg=
+X-Google-Smtp-Source: APiQypLDUDLD7AnKeaZeCapFvOzYfc3IcYuUqCkUk23TXjFVhmnZele0YYN1nvgGhcGUi6tTcemOwg==
+X-Received: by 2002:a7b:cd10:: with SMTP id f16mr3764733wmj.21.1588408138033;
+        Sat, 02 May 2020 01:28:58 -0700 (PDT)
+Received: from white ([188.27.146.47])
+        by smtp.gmail.com with ESMTPSA id y9sm3048662wmm.26.2020.05.02.01.28.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 May 2020 01:28:57 -0700 (PDT)
+Date:   Sat, 2 May 2020 11:28:56 +0300
+From:   Lese Doru Calin <lesedorucalin01@gmail.com>
+To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v6] net: Option to retrieve the pending data from send queue
+ of UDP socket
+Message-ID: <20200502082856.GA3152@white>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2da7485c3718e1442e6b4c2dd66857b776e8899b.1588345503.git.mchehab+huawei@kernel.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-05-02_04:2020-05-01,2020-05-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 clxscore=1011 adultscore=0 mlxlogscore=999 suspectscore=0
- lowpriorityscore=0 bulkscore=0 phishscore=0 mlxscore=0 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005020066
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Mauro,
+In this year's edition of GSoC, there is a project idea for CRIU to add support
+for checkpoint/restore of cork-ed UDP sockets. But to add it, the kernel API needs
+to be extended.
+This is what this patch does. It adds a new command, called SIOUDPPENDGET, to the 
+ioctl syscall regarding UDP sockets, which stores the pending data from the write
+queue and the destination address in a struct msghdr. The arg for ioctl needs to 
+be a pointer to a user space struct msghdr. The syscall returns the number of writed
+bytes, if successful, or error. To retrive the data requires the CAP_NET_ADMIN
+capability.
 
-On Fri, May 01, 2020 at 05:37:51PM +0200, Mauro Carvalho Chehab wrote:
-> There are 4 IRQ documentation files under Documentation/*.txt.
-> 
-> Move them into a new directory (core-api/irq) and add a new
-> index file for it.
+Signed-off-by: Lese Doru Calin <lesedorucalin01@gmail.com>
+---
+ include/linux/socket.h       |   2 +
+ include/uapi/linux/sockios.h |   3 +
+ net/ipv4/udp.c               | 145 +++++++++++++++++++++++++++++++----
+ net/socket.c                 |   4 +-
+ 4 files changed, 139 insertions(+), 15 deletions(-)
 
-Just curious, why IRQ docs got their subdirectory and DMA didn't :)
-
-> While here, use a title markup for the Debugging section of the
-> irq-domain.rst file.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  Documentation/admin-guide/hw-vuln/l1tf.rst            |  2 +-
->  Documentation/admin-guide/kernel-per-CPU-kthreads.rst |  2 +-
->  Documentation/core-api/index.rst                      |  1 +
->  Documentation/{IRQ.txt => core-api/irq/concepts.rst}  |  0
->  Documentation/core-api/irq/index.rst                  | 11 +++++++++++
->  .../irq/irq-affinity.rst}                             |  0
->  .../{IRQ-domain.txt => core-api/irq/irq-domain.rst}   |  3 ++-
->  .../irq/irqflags-tracing.rst}                         |  0
->  Documentation/ia64/irq-redir.rst                      |  2 +-
->  Documentation/networking/scaling.rst                  |  4 ++--
->  Documentation/translations/zh_CN/IRQ.txt              |  4 ++--
->  MAINTAINERS                                           |  2 +-
->  12 files changed, 22 insertions(+), 9 deletions(-)
->  rename Documentation/{IRQ.txt => core-api/irq/concepts.rst} (100%)
->  create mode 100644 Documentation/core-api/irq/index.rst
->  rename Documentation/{IRQ-affinity.txt => core-api/irq/irq-affinity.rst} (100%)
->  rename Documentation/{IRQ-domain.txt => core-api/irq/irq-domain.rst} (99%)
->  rename Documentation/{irqflags-tracing.txt => core-api/irq/irqflags-tracing.rst} (100%)
-> 
-> diff --git a/Documentation/admin-guide/hw-vuln/l1tf.rst b/Documentation/admin-guide/hw-vuln/l1tf.rst
-> index f83212fae4d5..3eeeb488d955 100644
-> --- a/Documentation/admin-guide/hw-vuln/l1tf.rst
-> +++ b/Documentation/admin-guide/hw-vuln/l1tf.rst
-> @@ -268,7 +268,7 @@ Guest mitigation mechanisms
->     /proc/irq/$NR/smp_affinity[_list] files. Limited documentation is
->     available at:
->  
-> -   https://www.kernel.org/doc/Documentation/IRQ-affinity.txt
-> +   https://www.kernel.org/doc/Documentation/core-api/irq/irq-affinity.rst
->  
->  .. _smt_control:
->  
-> diff --git a/Documentation/admin-guide/kernel-per-CPU-kthreads.rst b/Documentation/admin-guide/kernel-per-CPU-kthreads.rst
-> index 21818aca4708..dc36aeb65d0a 100644
-> --- a/Documentation/admin-guide/kernel-per-CPU-kthreads.rst
-> +++ b/Documentation/admin-guide/kernel-per-CPU-kthreads.rst
-> @@ -10,7 +10,7 @@ them to a "housekeeping" CPU dedicated to such work.
->  References
->  ==========
->  
-> --	Documentation/IRQ-affinity.txt:  Binding interrupts to sets of CPUs.
-> +-	Documentation/core-api/irq/irq-affinity.rst:  Binding interrupts to sets of CPUs.
->  
->  -	Documentation/admin-guide/cgroup-v1:  Using cgroups to bind tasks to sets of CPUs.
->  
-> diff --git a/Documentation/core-api/index.rst b/Documentation/core-api/index.rst
-> index ab056b3626f4..49a885e83a55 100644
-> --- a/Documentation/core-api/index.rst
-> +++ b/Documentation/core-api/index.rst
-> @@ -52,6 +52,7 @@ How Linux keeps everything from happening at the same time.  See
->  
->     atomic_ops
->     refcount-vs-atomic
-> +   irq/index
->     local_ops
->     padata
->     ../RCU/index
-> diff --git a/Documentation/IRQ.txt b/Documentation/core-api/irq/concepts.rst
-> similarity index 100%
-> rename from Documentation/IRQ.txt
-> rename to Documentation/core-api/irq/concepts.rst
-> diff --git a/Documentation/core-api/irq/index.rst b/Documentation/core-api/irq/index.rst
-> new file mode 100644
-> index 000000000000..0d65d11e5420
-> --- /dev/null
-> +++ b/Documentation/core-api/irq/index.rst
-> @@ -0,0 +1,11 @@
-> +====
-> +IRQs
-> +====
-> +
-> +.. toctree::
-> +   :maxdepth: 1
-> +
-> +   concepts
-> +   irq-affinity
-> +   irq-domain
-> +   irqflags-tracing
-> diff --git a/Documentation/IRQ-affinity.txt b/Documentation/core-api/irq/irq-affinity.rst
-> similarity index 100%
-> rename from Documentation/IRQ-affinity.txt
-> rename to Documentation/core-api/irq/irq-affinity.rst
-> diff --git a/Documentation/IRQ-domain.txt b/Documentation/core-api/irq/irq-domain.rst
-> similarity index 99%
-> rename from Documentation/IRQ-domain.txt
-> rename to Documentation/core-api/irq/irq-domain.rst
-> index 507775cce753..096db12f32d5 100644
-> --- a/Documentation/IRQ-domain.txt
-> +++ b/Documentation/core-api/irq/irq-domain.rst
-> @@ -263,7 +263,8 @@ needs to:
->  Hierarchy irq_domain is in no way x86 specific, and is heavily used to
->  support other architectures, such as ARM, ARM64 etc.
->  
-> -=== Debugging ===
-> +Debugging
-> +=========
->  
->  Most of the internals of the IRQ subsystem are exposed in debugfs by
->  turning CONFIG_GENERIC_IRQ_DEBUGFS on.
-> diff --git a/Documentation/irqflags-tracing.txt b/Documentation/core-api/irq/irqflags-tracing.rst
-> similarity index 100%
-> rename from Documentation/irqflags-tracing.txt
-> rename to Documentation/core-api/irq/irqflags-tracing.rst
-> diff --git a/Documentation/ia64/irq-redir.rst b/Documentation/ia64/irq-redir.rst
-> index 39bf94484a15..6bbbbe4f73ef 100644
-> --- a/Documentation/ia64/irq-redir.rst
-> +++ b/Documentation/ia64/irq-redir.rst
-> @@ -7,7 +7,7 @@ IRQ affinity on IA64 platforms
->  
->  By writing to /proc/irq/IRQ#/smp_affinity the interrupt routing can be
->  controlled. The behavior on IA64 platforms is slightly different from
-> -that described in Documentation/IRQ-affinity.txt for i386 systems.
-> +that described in Documentation/core-api/irq/irq-affinity.rst for i386 systems.
->  
->  Because of the usage of SAPIC mode and physical destination mode the
->  IRQ target is one particular CPU and cannot be a mask of several
-> diff --git a/Documentation/networking/scaling.rst b/Documentation/networking/scaling.rst
-> index f78d7bf27ff5..8f0347b9fb3d 100644
-> --- a/Documentation/networking/scaling.rst
-> +++ b/Documentation/networking/scaling.rst
-> @@ -81,7 +81,7 @@ of queues to IRQs can be determined from /proc/interrupts. By default,
->  an IRQ may be handled on any CPU. Because a non-negligible part of packet
->  processing takes place in receive interrupt handling, it is advantageous
->  to spread receive interrupts between CPUs. To manually adjust the IRQ
-> -affinity of each interrupt see Documentation/IRQ-affinity.txt. Some systems
-> +affinity of each interrupt see Documentation/core-api/irq/irq-affinity.rst. Some systems
->  will be running irqbalance, a daemon that dynamically optimizes IRQ
->  assignments and as a result may override any manual settings.
->  
-> @@ -160,7 +160,7 @@ can be configured for each receive queue using a sysfs file entry::
->  
->  This file implements a bitmap of CPUs. RPS is disabled when it is zero
->  (the default), in which case packets are processed on the interrupting
-> -CPU. Documentation/IRQ-affinity.txt explains how CPUs are assigned to
-> +CPU. Documentation/core-api/irq/irq-affinity.rst explains how CPUs are assigned to
->  the bitmap.
->  
->  
-> diff --git a/Documentation/translations/zh_CN/IRQ.txt b/Documentation/translations/zh_CN/IRQ.txt
-> index 956026d5cf82..9aec8dca4fcf 100644
-> --- a/Documentation/translations/zh_CN/IRQ.txt
-> +++ b/Documentation/translations/zh_CN/IRQ.txt
-> @@ -1,4 +1,4 @@
-> -Chinese translated version of Documentation/IRQ.txt
-> +Chinese translated version of Documentation/core-api/irq/index.rst
->  
->  If you have any comment or update to the content, please contact the
->  original document maintainer directly.  However, if you have a problem
-> @@ -9,7 +9,7 @@ or if there is a problem with the translation.
->  Maintainer: Eric W. Biederman <ebiederman@xmission.com>
->  Chinese maintainer: Fu Wei <tekkamanninja@gmail.com>
->  ---------------------------------------------------------------------
-> -Documentation/IRQ.txt 的中文翻译
-> +Documentation/core-api/irq/index.rst 的中文翻译
->  
->  如果想评论或更新本文的内容，请直接联系原文档的维护者。如果你使用英文
->  交流有困难的话，也可以向中文版维护者求助。如果本翻译更新不及时或者翻
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a1d7af532950..6eb3d85a646f 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -8974,7 +8974,7 @@ IRQ DOMAINS (IRQ NUMBER MAPPING LIBRARY)
->  M:	Marc Zyngier <maz@kernel.org>
->  S:	Maintained
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
-> -F:	Documentation/IRQ-domain.txt
-> +F:	Documentation/core-api/irq/irq-domain.rst
->  F:	include/linux/irqdomain.h
->  F:	kernel/irq/irqdomain.c
->  F:	kernel/irq/msi.c
-> -- 
-> 2.25.4
-> 
-
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 54338fac45cb..632ba0ea6709 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -351,6 +351,8 @@ struct ucred {
+ #define IPX_TYPE	1
+ 
+ extern int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_storage *kaddr);
++extern int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
++			     void __user *uaddr, int __user *ulen);
+ extern int put_cmsg(struct msghdr*, int level, int type, int len, void *data);
+ 
+ struct timespec64;
+diff --git a/include/uapi/linux/sockios.h b/include/uapi/linux/sockios.h
+index 7d1bccbbef78..3639fa906604 100644
+--- a/include/uapi/linux/sockios.h
++++ b/include/uapi/linux/sockios.h
+@@ -153,6 +153,9 @@
+ #define SIOCSHWTSTAMP	0x89b0		/* set and get config		*/
+ #define SIOCGHWTSTAMP	0x89b1		/* get config			*/
+ 
++/* UDP socket calls*/
++#define SIOUDPPENDGET 0x89C0	/* get the pending data from write queue */
++
+ /* Device private ioctl calls */
+ 
+ /*
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 32564b350823..f729a5e7f90b 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1620,6 +1620,133 @@ static int first_packet_length(struct sock *sk)
+ 	return res;
+ }
+ 
++static void udp_set_source_addr(struct sock *sk, struct msghdr *msg,
++				int *addr_len, u32 addr, u16 port)
++{
++	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
++
++	if (sin) {
++		sin->sin_family = AF_INET;
++		sin->sin_port = port;
++		sin->sin_addr.s_addr = addr;
++		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
++		*addr_len = sizeof(*sin);
++
++		if (cgroup_bpf_enabled)
++			BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
++					 (struct sockaddr *)sin);
++	}
++}
++
++static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
++{
++	int copy, copied = 0, err = 0;
++	struct sk_buff *skb;
++
++	skb_queue_walk(&sk->sk_write_queue, skb) {
++		copy = len - copied;
++		if (copy > skb->len - off)
++			copy = skb->len - off;
++
++		err = skb_copy_datagram_msg(skb, off, msg, copy);
++		if (err)
++			break;
++
++		copied += copy;
++		if (len <= copied)
++			break;
++	}
++	return err ?: copied;
++}
++
++static int udp_get_pending_write_queue(struct sock *sk, struct msghdr *msg,
++				       int *addr_len)
++{
++	int err = 0, off = sizeof(struct udphdr);
++	struct inet_sock *inet = inet_sk(sk);
++	struct udp_sock *up = udp_sk(sk);
++	struct flowi4 *fl4;
++	struct flowi6 *fl6;
++
++	switch (up->pending) {
++	case 0:
++		return -ENODATA;
++	case AF_INET:
++		off += sizeof(struct iphdr);
++		fl4 = &inet->cork.fl.u.ip4;
++		udp_set_source_addr(sk, msg, addr_len,
++				    fl4->daddr, fl4->fl4_dport);
++		break;
++	case AF_INET6:
++		off += sizeof(struct ipv6hdr);
++		if (msg->msg_name) {
++			DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6,
++					 msg->msg_name);
++
++			fl6 = &inet->cork.fl.u.ip6;
++			sin6->sin6_family = AF_INET6;
++			sin6->sin6_port = fl6->fl6_dport;
++			sin6->sin6_flowinfo = 0;
++			sin6->sin6_addr = fl6->daddr;
++			sin6->sin6_scope_id = fl6->flowi6_oif;
++			*addr_len = sizeof(*sin6);
++
++			if (cgroup_bpf_enabled)
++				BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk,
++						(struct sockaddr *)sin6);
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	lock_sock(sk);
++	if (unlikely(!up->pending)) {
++		release_sock(sk);
++		return -EINVAL;
++	}
++	err = udp_peek_sndq(sk, msg, off, msg_data_left(msg));
++	release_sock(sk);
++	return err;
++}
++
++static int prep_msghdr_recv_pending(struct sock *sk, void __user *argp)
++{
++	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
++	struct user_msghdr __user *msg;
++	struct sockaddr __user *uaddr;
++	struct sockaddr_storage addr;
++	struct msghdr msg_sys;
++	int __user *uaddr_len;
++	int err = 0, len = 0;
++
++	if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
++		return -EPERM;
++
++	if (!argp)
++		return -EINVAL;
++
++	msg = (struct user_msghdr __user *)argp;
++	err = recvmsg_copy_msghdr(&msg_sys, msg, 0, &uaddr, &iov);
++	if (err < 0)
++		return err;
++
++	uaddr_len = &msg->msg_namelen;
++	msg_sys.msg_name = &addr;
++	msg_sys.msg_flags = 0;
++
++	err = udp_get_pending_write_queue(sk, &msg_sys, &len);
++	msg_sys.msg_namelen = len;
++	len = err;
++
++	if (uaddr && err >= 0)
++		err = move_addr_to_user(&addr, msg_sys.msg_namelen,
++					uaddr, uaddr_len);
++
++	kfree(iov);
++	return err < 0 ? err : len;
++}
++
+ /*
+  *	IOCTL requests applicable to the UDP protocol
+  */
+@@ -1641,6 +1768,9 @@ int udp_ioctl(struct sock *sk, int cmd, unsigned long arg)
+ 		return put_user(amount, (int __user *)arg);
+ 	}
+ 
++	case SIOUDPPENDGET:
++		return prep_msghdr_recv_pending(sk, (void __user *)arg);
++
+ 	default:
+ 		return -ENOIOCTLCMD;
+ 	}
+@@ -1729,7 +1859,6 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 		int flags, int *addr_len)
+ {
+ 	struct inet_sock *inet = inet_sk(sk);
+-	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
+ 	struct sk_buff *skb;
+ 	unsigned int ulen, copied;
+ 	int off, err, peeking = flags & MSG_PEEK;
+@@ -1794,18 +1923,8 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 
+ 	sock_recv_ts_and_drops(msg, sk, skb);
+ 
+-	/* Copy the address. */
+-	if (sin) {
+-		sin->sin_family = AF_INET;
+-		sin->sin_port = udp_hdr(skb)->source;
+-		sin->sin_addr.s_addr = ip_hdr(skb)->saddr;
+-		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
+-		*addr_len = sizeof(*sin);
+-
+-		if (cgroup_bpf_enabled)
+-			BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
+-							(struct sockaddr *)sin);
+-	}
++	udp_set_source_addr(sk, msg, addr_len, ip_hdr(skb)->saddr,
++			    udp_hdr(skb)->source);
+ 
+ 	if (udp_sk(sk)->gro_enabled)
+ 		udp_cmsg_recv(msg, sk, skb);
+diff --git a/net/socket.c b/net/socket.c
+index 2dd739fba866..bd25d528c9a0 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -217,8 +217,8 @@ int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_storage *k
+  *	specified. Zero is returned for a success.
+  */
+ 
+-static int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
+-			     void __user *uaddr, int __user *ulen)
++int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
++		      void __user *uaddr, int __user *ulen)
+ {
+ 	int err;
+ 	int len;
 -- 
-Sincerely yours,
-Mike.
+2.17.1
+
