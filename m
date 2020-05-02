@@ -2,126 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 256D41C255A
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 14:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A1D71C2581
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 14:59:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727969AbgEBMgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 08:36:21 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:38056 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727914AbgEBMgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 08:36:18 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 042CWZe1125785;
-        Sat, 2 May 2020 08:36:17 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s5d248fy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 08:36:17 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 042CZK70027079;
-        Sat, 2 May 2020 12:36:15 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 30s0g5gs7n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 12:36:15 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 042CZ3qv24379650
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 2 May 2020 12:35:03 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7A12BA405F;
-        Sat,  2 May 2020 12:36:12 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3C55CA405C;
-        Sat,  2 May 2020 12:36:12 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Sat,  2 May 2020 12:36:12 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net-next 13/13] net/smc: save state of last sent CDC message
-Date:   Sat,  2 May 2020 14:35:52 +0200
-Message-Id: <20200502123552.17204-14-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200502123552.17204-1-kgraul@linux.ibm.com>
-References: <20200502123552.17204-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-05-02_06:2020-05-01,2020-05-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 adultscore=0
- impostorscore=0 mlxscore=0 phishscore=0 spamscore=0 bulkscore=0
- lowpriorityscore=0 mlxlogscore=871 malwarescore=0 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005020114
+        id S1727921AbgEBM6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 08:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44286 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727867AbgEBM6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 08:58:31 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D1FC061A0C
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 05:58:30 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id q7so11932227qkf.3
+        for <netdev@vger.kernel.org>; Sat, 02 May 2020 05:58:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=zdxUWMWXTEs/zs0LJh1bxLoOHpDg1k5nkLimqXptzik=;
+        b=oFb0bH0yyb9+I5ZVIxVWZZRFFjLqWEA+QeFjAlTms899EALEQZz5dHHrffK+Wzkm/5
+         yi0/esgdk//niSdtYkvt5XY7wJkwrvF9AUke3674yjl0+kxQybtDkjQrScxVULYB5tqf
+         GpUUzK5HWobSlOEU95Twiw8NUiLhL2Po7JXKmBtG6JqHIri2pz5dKw6ImeA/fZftNLYc
+         a1w/bGK4hnw1v66TsTzMVSoEMkTTiUo+1v8O9I1i33SdvVyAaXYk3Qpu35q8hMW5AJGD
+         YJtjGZ2+CH3UxxG6fr3byVo8S/KCbBYjpWU+y0+VME3xhTZ03ZR7ca+F/sHFepGfLKro
+         qbIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=zdxUWMWXTEs/zs0LJh1bxLoOHpDg1k5nkLimqXptzik=;
+        b=EOexo1JwBEmSaDISm/+I3H1omwUNObbAPvLuLR91tSpjf56ppO6j37hrgwbaAZY5KG
+         StSqirSpgFJmtJdyqi6ZzeIGYtRrnjFvwcfPIycI59y4kZIhZqsYIOuHxQImtuh7UIKq
+         SUt/7g/UjSAQXLTZL8ReZfvgqNQKXvuxw7gSKbJrp1/ymNBMlAy22vn1IY7BesrobRC5
+         4Zpn2RyWJTzH6Cdvv+FY5YU1r0kJzxLdYy8sFZ9KHdXdp5b2YB6djjkyQKc9k73xRBCO
+         ZdsPtZOOkC0/4wn4LLYS2u82WORkN6MOL03Vv2+L1ZMjGsP02FEinSsguGFAld3EpXrW
+         XjkQ==
+X-Gm-Message-State: AGi0Pubp3DMnDlyleEL9XzvL1H/zD9Hyi+UFmQw24eSdyS1ivUQRPfpD
+        p1QZ1fnmpHNlsA4+n3L/A5vhS94NguGjIUCnDn8=
+X-Google-Smtp-Source: APiQypLokY65GjWQLIZqnWQ4bMnYIeNncgWAL/iiR1fQHKB20UvMT09UYr9RQiimii7NSWuyh3wBLBlZkxAa1Uy+abc=
+X-Received: by 2002:a05:620a:54b:: with SMTP id o11mr8190796qko.152.1588424309313;
+ Sat, 02 May 2020 05:58:29 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a0c:e0c2:0:0:0:0:0 with HTTP; Sat, 2 May 2020 05:58:28 -0700 (PDT)
+Reply-To: ayishagddafio@mail.ru
+From:   AISHA GADDAFI <aisha20110016@gmail.com>
+Date:   Sat, 2 May 2020 05:58:28 -0700
+Message-ID: <CAESqvJoKP5ka25_=VD9r7Xh+6CVFeXxZC14JKZ8iPNASfsUf_g@mail.gmail.com>
+Subject: Lieber Freund (Assalamu Alaikum),?
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a link goes down and all connections of this link need to be
-switched to an other link then the producer cursor and the sequence of
-the last successfully sent CDC message must be known. Add the two fields
-to the SMC connection and update it in the tx completion handler.
-And to allow matching of sequences in error cases reset the seqno to the
-old value in smc_cdc_msg_send() when the actual send failed.
+--=20
+Lieber Freund (Assalamu Alaikum),
 
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
-Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
----
- net/smc/smc.h     | 4 ++++
- net/smc/smc_cdc.c | 6 ++++++
- 2 files changed, 10 insertions(+)
+Ich bin vor einer privaten Suche auf Ihren E-Mail-Kontakt gesto=C3=9Fen
+Ihre Hilfe. Mein Name ist Aisha Al-Qaddafi, eine alleinerziehende
+Mutter und eine Witwe
+mit drei Kindern. Ich bin die einzige leibliche Tochter des Sp=C3=A4tlibysc=
+hen
+Pr=C3=A4sident (verstorbener Oberst Muammar Gaddafi).
 
-diff --git a/net/smc/smc.h b/net/smc/smc.h
-index 1a084afa7372..1e9113771600 100644
---- a/net/smc/smc.h
-+++ b/net/smc/smc.h
-@@ -143,6 +143,9 @@ struct smc_connection {
- 						 * .prod cf. TCP snd_nxt
- 						 * .cons cf. TCP sends ack
- 						 */
-+	union smc_host_cursor	local_tx_ctrl_fin;
-+						/* prod crsr - confirmed by peer
-+						 */
- 	union smc_host_cursor	tx_curs_prep;	/* tx - prepared data
- 						 * snd_max..wmem_alloc
- 						 */
-@@ -154,6 +157,7 @@ struct smc_connection {
- 						 */
- 	atomic_t		sndbuf_space;	/* remaining space in sndbuf */
- 	u16			tx_cdc_seq;	/* sequence # for CDC send */
-+	u16			tx_cdc_seq_fin;	/* sequence # - tx completed */
- 	spinlock_t		send_lock;	/* protect wr_sends */
- 	struct delayed_work	tx_work;	/* retry of smc_cdc_msg_send */
- 	u32			tx_off;		/* base offset in peer rmb */
-diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
-index f64589d823aa..c5e33296e55c 100644
---- a/net/smc/smc_cdc.c
-+++ b/net/smc/smc_cdc.c
-@@ -47,6 +47,9 @@ static void smc_cdc_tx_handler(struct smc_wr_tx_pend_priv *pnd_snd,
- 		/* guarantee 0 <= sndbuf_space <= sndbuf_desc->len */
- 		smp_mb__after_atomic();
- 		smc_curs_copy(&conn->tx_curs_fin, &cdcpend->cursor, conn);
-+		smc_curs_copy(&conn->local_tx_ctrl_fin, &cdcpend->p_cursor,
-+			      conn);
-+		conn->tx_cdc_seq_fin = cdcpend->ctrl_seq;
- 	}
- 	smc_tx_sndbuf_nonfull(smc);
- 	bh_unlock_sock(&smc->sk);
-@@ -104,6 +107,9 @@ int smc_cdc_msg_send(struct smc_connection *conn,
- 	if (!rc) {
- 		smc_curs_copy(&conn->rx_curs_confirmed, &cfed, conn);
- 		conn->local_rx_ctrl.prod_flags.cons_curs_upd_req = 0;
-+	} else {
-+		conn->tx_cdc_seq--;
-+		conn->local_tx_ctrl.seqno = conn->tx_cdc_seq;
- 	}
- 
- 	return rc;
--- 
-2.17.1
+Ich habe Investmentfonds im Wert von siebenundzwanzig Millionen
+f=C3=BCnfhunderttausend
+United State Dollar ($ 27.500.000.00) und ich brauche eine
+vertrauensw=C3=BCrdige Investition
+Manager / Partner aufgrund meines aktuellen Fl=C3=BCchtlingsstatus bin ich =
+jedoch
+M=C3=B6glicherweise interessieren Sie sich f=C3=BCr die Unterst=C3=BCtzung =
+von
+Investitionsprojekten in Ihrem Land
+Von dort aus k=C3=B6nnen wir in naher Zukunft Gesch=C3=A4ftsbeziehungen auf=
+bauen.
 
+Ich bin bereit, mit Ihnen =C3=BCber das Verh=C3=A4ltnis zwischen Investitio=
+n und
+Unternehmensgewinn zu verhandeln
+Basis f=C3=BCr die zuk=C3=BCnftige Investition Gewinne zu erzielen.
+
+Wenn Sie bereit sind, dieses Projekt in meinem Namen zu bearbeiten,
+antworten Sie bitte dringend
+Damit ich Ihnen mehr Informationen =C3=BCber die Investmentfonds geben kann=
+.
+
+Ihre dringende Antwort wird gesch=C3=A4tzt. schreibe mir an diese email adr=
+esse (
+ayishagddafio@mail.ru ) zur weiteren Diskussion.
+
+Freundliche Gr=C3=BC=C3=9Fe
+Frau Aisha Al-Qaddafi
