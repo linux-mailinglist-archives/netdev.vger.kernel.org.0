@@ -2,229 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17A911C2680
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 17:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 147C91C2686
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 17:25:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728226AbgEBPVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 11:21:05 -0400
-Received: from mail-eopbgr00090.outbound.protection.outlook.com ([40.107.0.90]:6406
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728134AbgEBPVF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 May 2020 11:21:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vjyvqu2MWlIQgvNnuwVJO5eCvbLd3/9IygmkwM9o2BB1h+9axZV+5E68hcHJp1DOk4KMJwEoqsom9W65Lzma8rcVUWLkyWKTgmhwTlTzQBJ7dZqh0K/OdoVP3O55YFlep5fzSH/DPHyPuqSfZDpBtoLkKGKGx3DeY3WUulzHW2h7jJyobU6QchJToNegVoJwZyPdmZRrJR859FlneCYIqAfb6R8vvcUfp/07nLZhTI6gnUsLiu9vUpjEG82pD83lKeHhTTstGb2SVG9+/Jk0NY8vRzMKxRxdy98HTO4tlnqxYCPDmD1H3FMJRLmrUPU8dD3ZG7/Q9RpLQrOkloVKnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mSslYt5PAaBYEr24Gssti0TxlOPFQ47ACcbUO2o1Ocs=;
- b=kAQ7e+Bs5d4EO9YLXMTSnlxsx3WTZc3ZHF8MQ3mt1G41rcFJLd+49nfWwmbBiPB6n7nlILGLF9YWSdsw1BsGCQ3yljKtXwMdba/vq9AY+7dyNg1jFXLRYFF7TbGJUh7rSebCAEh1oXLW/TDx2qGNHTurjSO+8S6Ox1hZz2hX8an3uPIWuc5mzHaLYTB54TyaguL0TxLw+hMGEtfhr/LRHqEQwcdiKo/L5aINQpd2gyKE7ml4B08S9XqiLG8nOOWcLMcBlTxRzwBnb928SwutyUoFjVBBljZUW52IBWw4ViHKxtXsEcoaYWLi2GHYsUSQmyAMVI205qWEZXOEPkdD6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mSslYt5PAaBYEr24Gssti0TxlOPFQ47ACcbUO2o1Ocs=;
- b=JYTqwl9HyDsAmyiiG012PXJP48cQtYR61yA6aoYtAEJx63KfvBO9hI4gAlmyPfqa83gXslbZGoVh9gIYjeedQz33QNTj8Zi51ZJj/wuxUFMoeabZJKOP9/OF6yA0c2UspLxipif4Jpt5Zaf/41qlx+88o9F+sJTdu6dL/ZzwgOs=
-Authentication-Results: idosch.org; dkim=none (message not signed)
- header.d=none;idosch.org; dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::10)
- by VI1P190MB0527.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:2e::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19; Sat, 2 May
- 2020 15:20:59 +0000
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::f983:c9a8:573a:751c]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::f983:c9a8:573a:751c%7]) with mapi id 15.20.2958.027; Sat, 2 May 2020
- 15:20:59 +0000
-Date:   Sat, 2 May 2020 18:20:49 +0300
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>
-Subject: Re: [RFC net-next 1/3] net: marvell: prestera: Add Switchdev driver
- for Prestera family ASIC device 98DX325x (AC3x)
-Message-ID: <20200502152049.GA8513@plvision.eu>
-References: <20200225163025.9430-1-vadym.kochan@plvision.eu>
- <20200225163025.9430-2-vadym.kochan@plvision.eu>
- <20200305144937.GA132852@splinter>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200305144937.GA132852@splinter>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: AM5PR0502CA0009.eurprd05.prod.outlook.com
- (2603:10a6:203:91::19) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:35::10)
+        id S1728200AbgEBPZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 11:25:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37972 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728072AbgEBPZU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 May 2020 11:25:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=7R5iVR0FVO737OIeqR+iXbm03VG1hGrwrsuabDYrlGk=; b=UXGY7M9QODV7/fI2Z7hNPGkz0f
+        DqVeobc9YjITJ1yjQ/3rnfq5E4Wig/1PLM1tvnADZVkjZ1onHFiFabDcKWjA3+S4anM54YawZNSP5
+        YODIXMjTy8Wi6hGLnmtskpYb8wbeTDQKsOtzzjbacEG7G8V5yXVL3YOez01ArUP5DkFw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jUu0z-000eB8-73; Sat, 02 May 2020 17:25:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>, fugang.duan@nxp.com,
+        Chris Healy <cphealy@gmail.com>, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next v5] net: ethernet: fec: Replace interrupt driven MDIO with polled IO
+Date:   Sat,  2 May 2020 17:25:04 +0200
+Message-Id: <20200502152504.154401-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plvision.eu (217.20.186.93) by AM5PR0502CA0009.eurprd05.prod.outlook.com (2603:10a6:203:91::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Sat, 2 May 2020 15:20:56 +0000
-X-Originating-IP: [217.20.186.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5923cd46-1d45-4318-a9d8-08d7eeac69cd
-X-MS-TrafficTypeDiagnostic: VI1P190MB0527:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1P190MB052744B8FF59ECC76407E26E95A80@VI1P190MB0527.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 039178EF4A
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZkmnTCiXv4ZpyrQ9WLip4ZZ7I+Nif8mYMf//nQuWyzL83m6/bOUx00pi39EAA9FNICWd42f8nfFFaYos9FUO/0VmZNf9Yc51+0J2/I/RQAY3NNQRRPz7daQx4QYIjCd0r6DMpkL+U0nvShI4e4et/jOpuwG1Twp2ZPkbOs9tBWhl9nRIwx/fN0YnAte1PnvCXOtPFM29RjQoVinnHFRqKR7I5D97Oyam8i4q9hCV7kLg/SGbw8fHv7ZexSgmKzN19tagY2W3YXfIegk6wOZXk8Z5W8h510aLh6xJq0S8fesLJCaAqSTFWewXXOxWy7Fqxuj4NOTirWqNu2Zt9xe1LVLkR9ovAuPK9UwBs5lQ8ZsVX7ajHSKS6RQ6gdPXEWechPGGeckb1YKm3avGz+WfrUiUF9b2lWNM/llnUEVKilUhGJsx/GdhEoqGp18u3IAs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(366004)(136003)(346002)(396003)(376002)(39830400003)(26005)(6916009)(186003)(54906003)(66946007)(66476007)(16526019)(4326008)(107886003)(7696005)(52116002)(55016002)(316002)(36756003)(6666004)(8886007)(66556008)(1076003)(508600001)(86362001)(44832011)(33656002)(2616005)(2906002)(956004)(5660300002)(8936002)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: +CLS0h1vZRdYjsa9WFwltmVahZ5oTAJVL/DMGXWomo12nOPnJri91ZPh+lhwTJws3xo92t+SaSDoB1Yi3vC+g45mBs2Ch1Mci2EOs6zzR0WVcVe3u5BW8z50ymI65rkT7ZFmvuaL6+BsqGZFw1E96G7v5vETSNhTLMI83AxhehDryLn4MiRZn6/3iPbuXJCjdtIImLyFnPfqqpA+lvKCTRINUFina+jBrSu10SO3Dhd/V+QSRvQtg3AZFkvZhNCs68Cgia7E3CcEmZPyIbQc/sW/XBsbgs8F3IS05TrGuzr/xwmXLAQj0HaK3HiMEgyCZF6dRO8rusz8izYtE90FGf+XNjGuwSrglh3/p2WCPtfnFZDpRmBEPAiJ3jM2p/lybkpI2G+uNU34jJb1mQ1jRR7p+1Qpou4UqobnSWVL2SgPt+q23OWePqjZkUFb+DCvA1lYuC9b5xUXkfDWG19R30bLFC3UgNEBu2p1SUhWXPrucSdAePx+vy4mFSma7fExeiO4I4L0tx5ETPHVhNrgkYG1agCYvlHhE0dO37j7HdroDmTVTtBzK6QgFhCl9qUz/qpZE52LXRE7cRImJbwd5I4ykNsJtffIjp7EnKhQxwyJJg1Gm3/Ynxm93x92Pp66jTszbInuOJ2pLKxkWgv8ygicc1AY0mt+jHJ8T0mwnqQXJ6ZUrtc0oar4Jomnw7vTl4Kw0eHq1drQDMQ1yYDc4pNh65KexIfkuF8lnYg4gIrZHJ+Hc4EAyYNEZx5hjuLTwePiFdSIMj3pHvH3QTuCL9NNdzvVX7P9b6p3cnul35s=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5923cd46-1d45-4318-a9d8-08d7eeac69cd
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2020 15:20:58.7787
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gwhQXvQCLejn5K1+6YP9pNl7xMOHIrdDkgpbrgbqJn7hnhCHIDf3D6KytYp7/MpmHEWV5S6BoC/RFavxthrxAnaaxp1WK3Pj4+T87z7ul6g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0527
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ido,
+Measurements of the MDIO bus have shown that driving the MDIO bus
+using interrupts is slow. Back to back MDIO transactions take about
+90us, with 25us spent performing the transaction, and the remainder of
+the time the bus is idle.
 
-On Thu, Mar 05, 2020 at 04:49:37PM +0200, Ido Schimmel wrote:
-> On Tue, Feb 25, 2020 at 04:30:54PM +0000, Vadym Kochan wrote:
-> > +int mvsw_pr_port_learning_set(struct mvsw_pr_port *port, bool learn)
-> > +{
-> > +	return mvsw_pr_hw_port_learning_set(port, learn);
-> > +}
-> > +
-> > +int mvsw_pr_port_flood_set(struct mvsw_pr_port *port, bool flood)
-> > +{
-> > +	return mvsw_pr_hw_port_flood_set(port, flood);
-> > +}
-> 
-> Flooding and learning are per-port attributes? Not per-{port, VLAN} ?
-> If so, you need to have various restrictions in the driver in case
-> someone configures multiple vlan devices on top of a port and enslaves
-> them to different bridges.
-> 
-> > +
-> > +
-> > +	INIT_LIST_HEAD(&port->vlans_list);
-> > +	port->pvid = MVSW_PR_DEFAULT_VID;
-> 
-> If you're using VID 1, then you need to make sure that user cannot
-> configure a VLAN device with with this VID. If possible, I suggest that
-> you use VID 4095, as it cannot be configured from user space.
-> 
-> I'm actually not entirely sure why you need a default VID.
-> 
+Replacing the completion interrupt with polled IO results in back to
+back transactions of 40us. The polling loop waiting for the hardware
+to complete the transaction takes around 28us. Which suggests
+interrupt handling has an overhead of 50us, and polled IO nearly
+halves this overhead, and doubles the MDIO performance.
+
+Care has to be taken when setting the MII_SPEED register, or it can
+trigger an MII event> That then upsets the polling, due to an
+unexpected pending event.
+
+Suggested-by: Chris Heally <cphealy@gmail.com>
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/freescale/fec.h      |  4 +-
+ drivers/net/ethernet/freescale/fec_main.c | 77 +++++++++++++----------
+ 2 files changed, 45 insertions(+), 36 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index e74dd1f86bba..a6cdd5b61921 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -376,8 +376,7 @@ struct bufdesc_ex {
+ #define FEC_ENET_TS_AVAIL       ((uint)0x00010000)
+ #define FEC_ENET_TS_TIMER       ((uint)0x00008000)
  
-> > +mvsw_pr_port_vlan_bridge_join(struct mvsw_pr_port_vlan *port_vlan,
-> > +			      struct mvsw_pr_bridge_port *br_port,
-> > +			      struct netlink_ext_ack *extack)
-> > +{
-> > +	struct mvsw_pr_port *port = port_vlan->mvsw_pr_port;
-> > +	struct mvsw_pr_bridge_vlan *br_vlan;
-> > +	u16 vid = port_vlan->vid;
-> > +	int err;
-> > +
-> > +	if (port_vlan->bridge_port)
-> > +		return 0;
-> > +
-> > +	err = mvsw_pr_port_flood_set(port, br_port->flags & BR_FLOOD);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	err = mvsw_pr_port_learning_set(port, br_port->flags & BR_LEARNING);
-> > +	if (err)
-> > +		goto err_port_learning_set;
-> 
-> It seems that learning and flooding are not per-{port, VLAN} attributes,
-> so I'm not sure why you have this here.
-> 
-> The fact that you don't undo this in mvsw_pr_port_vlan_bridge_leave()
-> tells me it should not be here.
-> 
-
- > +
-> > +void
-> > +mvsw_pr_port_vlan_bridge_leave(struct mvsw_pr_port_vlan *port_vlan)
-> > +{
-> > +	struct mvsw_pr_port *port = port_vlan->mvsw_pr_port;
-> > +	struct mvsw_pr_bridge_vlan *br_vlan;
-> > +	struct mvsw_pr_bridge_port *br_port;
-> > +	int port_count;
-> > +	u16 vid = port_vlan->vid;
-> > +	bool last_port, last_vlan;
-> > +
-> > +	br_port = port_vlan->bridge_port;
-> > +	last_vlan = list_is_singular(&br_port->vlan_list);
-> > +	port_count =
-> > +	    mvsw_pr_bridge_vlan_port_count_get(br_port->bridge_device, vid);
-> > +	br_vlan = mvsw_pr_bridge_vlan_find(br_port, vid);
-> > +	last_port = port_count == 1;
-> > +	if (last_vlan) {
-> > +		mvsw_pr_fdb_flush_port(port, MVSW_PR_FDB_FLUSH_MODE_DYNAMIC);
-> > +	} else if (last_port) {
-> > +		mvsw_pr_fdb_flush_vlan(port->sw, vid,
-> > +				       MVSW_PR_FDB_FLUSH_MODE_DYNAMIC);
-> > +	} else {
-> > +		mvsw_pr_fdb_flush_port_vlan(port, vid,
-> > +					    MVSW_PR_FDB_FLUSH_MODE_DYNAMIC);
-> 
-> If you always flush based on {port, VID}, then why do you need the other
-> two?
-> 
-
- > +
-> > +static int mvsw_pr_port_obj_attr_set(struct net_device *dev,
-> > +				     const struct switchdev_attr *attr,
-> > +				     struct switchdev_trans *trans)
-> > +{
-> > +	int err = 0;
-> > +	struct mvsw_pr_port *port = netdev_priv(dev);
-> > +
-> > +	switch (attr->id) {
-> > +	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
-> > +		err = -EOPNOTSUPP;
-> 
-> You don't support STP?
-
-Not, yet. But it will be in the next submission or official patch.
-> 
-> > +		break;
+-#define FEC_DEFAULT_IMASK (FEC_ENET_TXF | FEC_ENET_RXF | FEC_ENET_MII)
+-#define FEC_NAPI_IMASK	FEC_ENET_MII
++#define FEC_DEFAULT_IMASK (FEC_ENET_TXF | FEC_ENET_RXF)
+ #define FEC_RX_DISABLED_IMASK (FEC_DEFAULT_IMASK & (~FEC_ENET_RXF))
  
-> > +	default:
-> > +		kfree(switchdev_work);
-> > +		return NOTIFY_DONE;
-> > +	}
-> > +
-> > +	queue_work(mvsw_owq, &switchdev_work->work);
-> 
-> Once you defer the operation you cannot return an error, which is
-> problematic. Do you have a way to know if the operation will succeed or
-> not? That is, if the hardware has enough space for this new FDB entry?
-> 
-Right, fdb configuration on via fw is blocking operation I still need to
-think on it if it is possible by current design.
+ /* ENET interrupt coalescing macro define */
+@@ -543,7 +542,6 @@ struct fec_enet_private {
+ 	int	link;
+ 	int	full_duplex;
+ 	int	speed;
+-	struct	completion mdio_done;
+ 	int	irq[FEC_IRQ_NUM];
+ 	bool	bufdesc_ex;
+ 	int	pause_flag;
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index c7b84bb22f75..2e209142f2d1 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -976,8 +976,8 @@ fec_restart(struct net_device *ndev)
+ 	writel((__force u32)cpu_to_be32(temp_mac[1]),
+ 	       fep->hwp + FEC_ADDR_HIGH);
+ 
+-	/* Clear any outstanding interrupt. */
+-	writel(0xffffffff, fep->hwp + FEC_IEVENT);
++	/* Clear any outstanding interrupt, except MDIO. */
++	writel((0xffffffff & ~FEC_ENET_MII), fep->hwp + FEC_IEVENT);
+ 
+ 	fec_enet_bd_init(ndev);
+ 
+@@ -1123,7 +1123,7 @@ fec_restart(struct net_device *ndev)
+ 	if (fep->link)
+ 		writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+ 	else
+-		writel(FEC_ENET_MII, fep->hwp + FEC_IMASK);
++		writel(0, fep->hwp + FEC_IMASK);
+ 
+ 	/* Init the interrupt coalescing */
+ 	fec_enet_itr_coal_init(ndev);
+@@ -1652,6 +1652,10 @@ fec_enet_interrupt(int irq, void *dev_id)
+ 	irqreturn_t ret = IRQ_NONE;
+ 
+ 	int_events = readl(fep->hwp + FEC_IEVENT);
++
++	/* Don't clear MDIO events, we poll for those */
++	int_events &= ~FEC_ENET_MII;
++
+ 	writel(int_events, fep->hwp + FEC_IEVENT);
+ 	fec_enet_collect_events(fep, int_events);
+ 
+@@ -1659,16 +1663,12 @@ fec_enet_interrupt(int irq, void *dev_id)
+ 		ret = IRQ_HANDLED;
+ 
+ 		if (napi_schedule_prep(&fep->napi)) {
+-			/* Disable the NAPI interrupts */
+-			writel(FEC_NAPI_IMASK, fep->hwp + FEC_IMASK);
++			/* Disable interrupts */
++			writel(0, fep->hwp + FEC_IMASK);
+ 			__napi_schedule(&fep->napi);
+ 		}
+ 	}
+ 
+-	if (int_events & FEC_ENET_MII) {
+-		ret = IRQ_HANDLED;
+-		complete(&fep->mdio_done);
+-	}
+ 	return ret;
+ }
+ 
+@@ -1818,11 +1818,24 @@ static void fec_enet_adjust_link(struct net_device *ndev)
+ 		phy_print_status(phy_dev);
+ }
+ 
++static int fec_enet_mdio_wait(struct fec_enet_private *fep)
++{
++	uint ievent;
++	int ret;
++
++	ret = readl_poll_timeout_atomic(fep->hwp + FEC_IEVENT, ievent,
++					ievent & FEC_ENET_MII, 2, 30000);
++
++	if (!ret)
++		writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
++
++	return ret;
++}
++
+ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ {
+ 	struct fec_enet_private *fep = bus->priv;
+ 	struct device *dev = &fep->pdev->dev;
+-	unsigned long time_left;
+ 	int ret = 0, frame_start, frame_addr, frame_op;
+ 	bool is_c45 = !!(regnum & MII_ADDR_C45);
+ 
+@@ -1830,8 +1843,6 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	reinit_completion(&fep->mdio_done);
+-
+ 	if (is_c45) {
+ 		frame_start = FEC_MMFR_ST_C45;
+ 
+@@ -1843,11 +1854,9 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ 		       fep->hwp + FEC_MII_DATA);
+ 
+ 		/* wait for end of transfer */
+-		time_left = wait_for_completion_timeout(&fep->mdio_done,
+-				usecs_to_jiffies(FEC_MII_TIMEOUT));
+-		if (time_left == 0) {
++		ret = fec_enet_mdio_wait(fep);
++		if (ret) {
+ 			netdev_err(fep->netdev, "MDIO address write timeout\n");
+-			ret = -ETIMEDOUT;
+ 			goto out;
+ 		}
+ 
+@@ -1866,11 +1875,9 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ 		FEC_MMFR_TA, fep->hwp + FEC_MII_DATA);
+ 
+ 	/* wait for end of transfer */
+-	time_left = wait_for_completion_timeout(&fep->mdio_done,
+-			usecs_to_jiffies(FEC_MII_TIMEOUT));
+-	if (time_left == 0) {
++	ret = fec_enet_mdio_wait(fep);
++	if (ret) {
+ 		netdev_err(fep->netdev, "MDIO read timeout\n");
+-		ret = -ETIMEDOUT;
+ 		goto out;
+ 	}
+ 
+@@ -1888,7 +1895,6 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ {
+ 	struct fec_enet_private *fep = bus->priv;
+ 	struct device *dev = &fep->pdev->dev;
+-	unsigned long time_left;
+ 	int ret, frame_start, frame_addr;
+ 	bool is_c45 = !!(regnum & MII_ADDR_C45);
+ 
+@@ -1898,8 +1904,6 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 	else
+ 		ret = 0;
+ 
+-	reinit_completion(&fep->mdio_done);
+-
+ 	if (is_c45) {
+ 		frame_start = FEC_MMFR_ST_C45;
+ 
+@@ -1911,11 +1915,9 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 		       fep->hwp + FEC_MII_DATA);
+ 
+ 		/* wait for end of transfer */
+-		time_left = wait_for_completion_timeout(&fep->mdio_done,
+-			usecs_to_jiffies(FEC_MII_TIMEOUT));
+-		if (time_left == 0) {
++		ret = fec_enet_mdio_wait(fep);
++		if (ret) {
+ 			netdev_err(fep->netdev, "MDIO address write timeout\n");
+-			ret = -ETIMEDOUT;
+ 			goto out;
+ 		}
+ 	} else {
+@@ -1931,12 +1933,9 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 		fep->hwp + FEC_MII_DATA);
+ 
+ 	/* wait for end of transfer */
+-	time_left = wait_for_completion_timeout(&fep->mdio_done,
+-			usecs_to_jiffies(FEC_MII_TIMEOUT));
+-	if (time_left == 0) {
++	ret = fec_enet_mdio_wait(fep);
++	if (ret)
+ 		netdev_err(fep->netdev, "MDIO write timeout\n");
+-		ret  = -ETIMEDOUT;
+-	}
+ 
+ out:
+ 	pm_runtime_mark_last_busy(dev);
+@@ -2143,8 +2142,21 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 	if (suppress_preamble)
+ 		fep->phy_speed |= BIT(7);
+ 
++	/* Clear MMFR to avoid to generate MII event by writing MSCR.
++	 * MII event generation condition:
++	 * - writing MSCR:
++	 *	- mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
++	 *	  mscr_reg_data_in[7:0] != 0
++	 * - writing MMFR:
++	 *	- mscr[7:0]_not_zero
++	 */
++	writel(0, fep->hwp + FEC_MII_DATA);
++
+ 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
+ 
++	/* Clear any pending transaction complete indication */
++	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
++
+ 	fep->mii_bus = mdiobus_alloc();
+ 	if (fep->mii_bus == NULL) {
+ 		err = -ENOMEM;
+@@ -3686,7 +3698,6 @@ fec_probe(struct platform_device *pdev)
+ 		fep->irq[i] = irq;
+ 	}
+ 
+-	init_completion(&fep->mdio_done);
+ 	ret = fec_enet_mii_init(pdev);
+ 	if (ret)
+ 		goto failed_mii_init;
+-- 
+2.26.2
 
-
-> 
-> Why do you need both 'struct mvsw_pr_switchdev' and 'struct
-> mvsw_pr_bridge'? I think the second is enough. Also, I assume
-> 'switchdev' naming is inspired by mlxsw, but 'bridge' is better.
-> 
-I changed to use bridge for bridge object, because having bridge_device
-may confuse.
-
-Thank you for your comments they were very useful, sorry for so late
-answer, I decided to re-implement this version a bit. Regarding flooding
-and default vid I still need to check it.
-
-Regards,
-Vadym Kochan
