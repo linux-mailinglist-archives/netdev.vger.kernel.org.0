@@ -2,90 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6BF1C2808
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 21:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD191C2821
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 22:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728513AbgEBTbz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 2 May 2020 15:31:55 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:56663 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728488AbgEBTby (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 15:31:54 -0400
-X-Originating-IP: 86.210.146.109
-Received: from windsurf.home (lfbn-tou-1-915-109.w86-210.abo.wanadoo.fr [86.210.146.109])
-        (Authenticated sender: thomas.petazzoni@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 56DFDFF803;
-        Sat,  2 May 2020 19:31:52 +0000 (UTC)
-Date:   Sat, 2 May 2020 21:31:51 +0200
-From:   Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <uwe@kleine-koenig.org>
-Cc:     Arnaud Ebalard <arno@natisbad.org>, netdev@vger.kernel.org,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?UTF-8?B?VMOpbmFy?= =?UTF-8?B?dA==?= 
-        <antoine.tenart@bootlin.com>
-Subject: Re: network unreliable on ReadyNAS 104 with Debian kernel
-Message-ID: <20200502213151.2507c6b0@windsurf.home>
-In-Reply-To: <20200502141408.GA29911@taurus.defre.kleine-koenig.org>
-References: <20200502141408.GA29911@taurus.defre.kleine-koenig.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1728501AbgEBUAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 16:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728107AbgEBUAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 16:00:18 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563B6C061A0C;
+        Sat,  2 May 2020 13:00:18 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id 188so6414489lfa.10;
+        Sat, 02 May 2020 13:00:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1fuetHlZxL3y2tZ9qEmdGxI1Km5DfxBd1g0XjlCyH5Q=;
+        b=olCYBWju3MTiafCvFHWSzQMP7PHQOLrFmKH4W8alekcVg+INxvFfdY1ryjnDRpIzgi
+         gVv1PGzc8MAa3CoyAKNo2XHBzhoCEmh3YwV0kxwAHwemjPf9L7VmkI1+FZ+WFTnERUn8
+         hWk5S+OBwFTe0hqXGQMvQ9mDzCbDuyGdGJs+7+hYqfjUV0f/cOBzECmb1AYVMPGSmhR2
+         ZWEdeqTU0p4ThSXMqOz3I+/VfNcaO8tbB/L8IuEmZi4UhG6MjaywB2q90oI24KXBj3x6
+         kJ+x4CDOcAJ8MMTjJMOxd67vDQVsPVTjlW8ikVbIpR+eydBTauIiWlhIZUj7a7TtlwqJ
+         I8qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1fuetHlZxL3y2tZ9qEmdGxI1Km5DfxBd1g0XjlCyH5Q=;
+        b=YAAyzGEvPRhU83l1ZMPOehSUEZGnHPg1VcAo9r1QaNzULlFcpFn1xWMxFac7IL8/Ud
+         F15sN44g4FjMVyER1KLN6YNm2jHYIvEkS6T0O3jmhZt9/6AWyctrSB3fa3rMIVh96DSh
+         o24PhoQmUGKgSiJDl3OACU3cUXFoybGEdkUAkAMRHAhFmDIB9wVXmkcyxpZISGBNS20M
+         zLNJl8PGOMfsKOIQLaUeV1zxhn6yRozcb1arO810NI9JAgI5pacM1NXDpmyxUeSVTBTp
+         LAr6pIolQfM0vj/viWeSZd6fal39LJZPAxS/UVw2JtpDy2n8I2wt/MbISeJlytpWcdaU
+         mUDw==
+X-Gm-Message-State: AGi0Pub3MBC9kgf0NdCB7CCozshdAyrOSoqVc68FqxG+rCqbUXOLr8q3
+        Wj+YR7g8mesU8iW6lgdYpL4zfniH1mVD1bnX1c0=
+X-Google-Smtp-Source: APiQypJ5A648tqnQDNQFGNgG0fRH1tO9p7S3Qf5u07Hd61HxSsdvL/DeRc4H4Zq5qApPffCls3U9hb3BlGGEThGHjJ4=
+X-Received: by 2002:ac2:569b:: with SMTP id 27mr6497034lfr.134.1588449616656;
+ Sat, 02 May 2020 13:00:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+References: <20200430071506.1408910-1-songliubraving@fb.com> <20200430071506.1408910-3-songliubraving@fb.com>
+In-Reply-To: <20200430071506.1408910-3-songliubraving@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 2 May 2020 13:00:05 -0700
+Message-ID: <CAADnVQK-Zo19Z1Gdaq9MYE_9GmyrCuOFbz873D4uCvvVSp0j0w@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next 2/3] libbpf: add support for command BPF_ENABLE_STATS
+To:     Song Liu <songliubraving@fb.com>, Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Uwe,
+On Thu, Apr 30, 2020 at 12:15 AM Song Liu <songliubraving@fb.com> wrote:
+>
+> bpf_enable_stats() is added to enable given stats.
+>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+...
+> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+> index 335b457b3a25..1901b2777854 100644
+> --- a/tools/lib/bpf/bpf.h
+> +++ b/tools/lib/bpf/bpf.h
+> @@ -231,6 +231,7 @@ LIBBPF_API int bpf_load_btf(void *btf, __u32 btf_size=
+, char *log_buf,
+>  LIBBPF_API int bpf_task_fd_query(int pid, int fd, __u32 flags, char *buf=
+,
+>                                  __u32 *buf_len, __u32 *prog_id, __u32 *f=
+d_type,
+>                                  __u64 *probe_offset, __u64 *probe_addr);
+> +LIBBPF_API int bpf_enable_stats(enum bpf_stats_type type);
 
-+Maxime Chevallier and Antoine Ténart, who have also worked on mvneta.
+I see odd warning here while building selftests
 
-On Sat, 2 May 2020 16:14:08 +0200
-Uwe Kleine-König <uwe@kleine-koenig.org> wrote:
+In file included from runqslower.c:10:
+.../tools/testing/selftests/bpf/tools/include/bpf/bpf.h:234:38:
+warning: =E2=80=98enum bpf_stats_type=E2=80=99 declared inside parameter li=
+st will not
+be visible outside of this definition or declaration
+  234 | LIBBPF_API int bpf_enable_stats(enum bpf_stats_type type);
 
-> I own a ReadyNAS 104 (CPU: Armada 370, mvneta driver) and since some
-> time its network driver isn't reliable any more. I see things like:
-> 
-> 	$ rsync -a remotehost:dir /srv/dir
-> 	ssh_dispatch_run_fatal: Connection to $remoteaddress port 22: message authentication code incorrect
-> 	rsync: connection unexpectedly closed (11350078 bytes received so far) [receiver]
-> 	rsync error: error in rsync protocol data stream (code 12) at io.c(235) [receiver=3.1.3]
-> 	rsync: connection unexpectedly closed (13675 bytes received so far) [generator]
-> 	rsync error: unexplained error (code 255) at io.c(235) [generator=3.1.3]
-> 
-> when ever something like this happens, I get
-> 
-> 	mvneta d0074000.ethernet eth1: bad rx status 0e8b0000 (overrun error), size=680
+Since this warning is printed only when building runqslower
+and the rest of selftests are fine, I'm guessing
+it's a makefile issue with order of includes?
 
-I am also running an Armada 370 ReadyNAS, though with a much older
-kernel (4.4.x). It is working fine for me, but checking the kernel
-logs, I in fact also have the same issue:
-
-[4141806.620510] mvneta d0070000.ethernet eth0: bad rx status 0f830000 (overrun error), size=1344
-[4141821.344100] mvneta d0070000.ethernet eth0: bad rx status 0f830000 (overrun error), size=272
-[4141831.098003] mvneta d0070000.ethernet eth0: bad rx status 0f830000 (overrun error), size=896
-[4141850.655858] mvneta d0070000.ethernet eth0: bad rx status 0f830000 (overrun error), size=592
-[4141850.915259] mvneta d0070000.ethernet eth0: bad rx status 0d830000 (overrun error), size=16
-
-> This happens with Debian's 5.4.0-4-armmp (Version: 5.4.19-1) kernel, but
-> I also experienced it with the 4.19 series. On slow connections this
-> isn't a problem so the problem might exist already longer. In fact I
-> think there are two problems: The first is that the hardware doesn't get
-> enough buffers in time for the receive path and the other is that in the
-> error case corrupted packets are given to the upper layers.
-> 
-> Does this ring a bell for you? I didn't start to debug that yet.
-
-I think I do remember seeing reports about this, but I don't remember
-if it ended up being fixed (and what we're seeing is some other
-problem), or if it's still the same issue. It's been a long time I
-looked into mvneta, unfortunately.
-
-Best regards,
-
-Thomas
--- 
-Thomas Petazzoni, CTO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Andrii, could you please take a look ?
+Not urgent. Just flagging for visibility.
