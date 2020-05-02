@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7FD71C282A
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 22:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76AB01C282D
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 22:10:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728523AbgEBUJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 16:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54524 "EHLO
+        id S1728540AbgEBUKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 16:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728107AbgEBUJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 16:09:09 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D047C061A0C;
-        Sat,  2 May 2020 13:09:09 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id p25so3381982pfn.11;
-        Sat, 02 May 2020 13:09:09 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728484AbgEBUKA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 16:10:00 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C397AC061A0C;
+        Sat,  2 May 2020 13:10:00 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id s10so5086541plr.1;
+        Sat, 02 May 2020 13:10:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=em8vZ+PgEWtvxg7M8kYifNWj1sZL7mr8nrqD/vdWn/o=;
-        b=SA1u9wHD+JYjE7MAjNxdtKNHBBVQmvRN4hrVMsVqiTBuDUluzk++VjK11bKGpMiTB5
-         AlaOT+PCDnELLGmNoNMVx7fybtoGi1V+tloNv3SSfzoNDVY6bEOsd3kJNUhBhw0itGBE
-         De5qKtDXYDJCHFhNI06Th1E7bl7IDiJKmlekLmmcATEK0g2N6h80maZT2d/PkZUnGpRA
-         YPWxuDXsVVprg901yQNi0jhJHx2AHkhCZBiczGUXHT2EnvmmRHQqxAmi4MhLoAK+j3Bi
-         mKtfgZTpP8kInoxDAX6zIILFJYTWEVI6M/h3UGRU12t0BwTVYuqdCLKjo+jRvDNWiBdn
-         K/1A==
+        bh=NNYnyHd7wPwHHcfClp0Z4S4fofjD7iMF04FKC5dbzIU=;
+        b=HUflaO23p62DZdDEeTCccMuKW1xuIrzTP24VJ00PZ0iI3A3degj7m9NeCg2Lhd9+iu
+         5WVff+AD4yrXEIcO/YF308KK83gm43pkWA2/Zt91mNvSDmTfAyRRqQgxaIpCTsPMxrjH
+         6OzYNiFJV/y1aZoA2AmaQBZpuOsM0spnViMRrBKzYBilrS4WTR9uGJlZmt1z9/ZDWp6Q
+         ki+14BLS0swWqhJk9MWHifGDpJrEYReuUM43hRWT6DFJ80GjcK7UeCjmrlcV0gYwUXGx
+         co1aVM6/bvXIckKBo2tqYFUOv4Piff4/jmn7f96xEm8WmMe4WzQ6k8zTHICRUnPbwus/
+         ghCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=em8vZ+PgEWtvxg7M8kYifNWj1sZL7mr8nrqD/vdWn/o=;
-        b=TMsP4y0Lu7+TVKLS1/UOHI8lyl1R9Yqx/q5eAbIbWAFJ/n5DkJbm1M2KtopqxnWyhI
-         BlvbMUn4ef6rrHfa6HBE/umDtH7gECclCVxS5sSc/s3uR/v5T5+gyhrGVNruhj9rR47e
-         9ofKRKt0k0bDVK/4ABfV90DWgbZfgYSXhI8SPWLPjs0RFeGDjHn4dNUrdYgvUVmEv0+0
-         uXuqnteixbZkOQdmJzCgHMbiGGK0x6IQ61cHKV/0cCFwVUGZ2BJLk2ps8GbhjOJCN7u6
-         1NTgQ4p6pR08zqfE+5/I3HuAZc9x+DEda9HuaAS2dQawfsoYO4iPvC7ucizIYHxjvF1T
-         Ja4A==
-X-Gm-Message-State: AGi0PuYNpbqU7zmo40plL+nfVNPIfF+p0EQ31DfEEtiPzVS7xs5qLgPo
-        rG0z007X01wApnuCKJD8qFGjylsQ
-X-Google-Smtp-Source: APiQypLLNL3K9X2yQT7/iIgkr2pAUhFAJdbV8AYJr6+l9jhIL8YNQy2v0TCcDJYcs0ajVbp3Bs5sVQ==
-X-Received: by 2002:a63:e550:: with SMTP id z16mr10218280pgj.104.1588450148757;
-        Sat, 02 May 2020 13:09:08 -0700 (PDT)
+        bh=NNYnyHd7wPwHHcfClp0Z4S4fofjD7iMF04FKC5dbzIU=;
+        b=G9T+jJbjXac1MufkVNToBA8+HGdFtsBe5Fr3W3LQK8YoAKtnor73hfETwshE46DMyi
+         M4FZRF1QmIN5t/uKHNrl583JbB3tT7YTtl0+4Usc8m9LYH/1b6KOsManaK1wPnq8i2qR
+         QsMF2CuN6ds19XUuKy8JCefPZLMbD9F4lyA/ZR/rOLsVsHim+ziPk/WtUiUtryg/YM0U
+         LJMzIBaNwN/zR4K1E2/SjSVTA22WVhs4iVLLIFlBaoVBd3GAOB4zJdZlB/j3fZZTYu+F
+         1D/PRRFT0Hvm7Do6aYh7fOOty/jKzGlMlrfxIi77epEDwCcco5NEZS2Pza+08ChVY1s7
+         pnLw==
+X-Gm-Message-State: AGi0PubK8tyWc9MtxGp/RNuvp5iFvfDSX04WUjkOCln2o3ZUnglvAAL6
+        f2S7NulRJ4Q5h84m1w02OEhu/cs+
+X-Google-Smtp-Source: APiQypLQCn9ULLnHMXJdtOgn4OPohL36oTa6V/KLfBWO3qMDtEuBRGy6K++hW2E1tPCRZ0WoWPz23w==
+X-Received: by 2002:a17:902:bd02:: with SMTP id p2mr10639006pls.72.1588450200432;
+        Sat, 02 May 2020 13:10:00 -0700 (PDT)
 Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id z23sm5084937pfr.136.2020.05.02.13.09.07
+        by smtp.gmail.com with ESMTPSA id c4sm2836084pjs.0.2020.05.02.13.09.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 May 2020 13:09:08 -0700 (PDT)
-Date:   Sat, 2 May 2020 13:09:06 -0700
+        Sat, 02 May 2020 13:09:59 -0700 (PDT)
+Date:   Sat, 2 May 2020 13:09:58 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     vincent.cheng.xh@renesas.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/3] ptp: Add adjphase function to support
- phase offset control.
-Message-ID: <20200502200906.GA30104@localhost>
+Subject: Re: [PATCH v2 net-next 3/3] ptp: ptp_clockmatrix: Add adjphase() to
+ support PHC write phase mode.
+Message-ID: <20200502200958.GB30104@localhost>
 References: <1588390538-24589-1-git-send-email-vincent.cheng.xh@renesas.com>
- <1588390538-24589-2-git-send-email-vincent.cheng.xh@renesas.com>
+ <1588390538-24589-4-git-send-email-vincent.cheng.xh@renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1588390538-24589-2-git-send-email-vincent.cheng.xh@renesas.com>
+In-Reply-To: <1588390538-24589-4-git-send-email-vincent.cheng.xh@renesas.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 01, 2020 at 11:35:36PM -0400, vincent.cheng.xh@renesas.com wrote:
+On Fri, May 01, 2020 at 11:35:38PM -0400, vincent.cheng.xh@renesas.com wrote:
 > From: Vincent Cheng <vincent.cheng.xh@renesas.com>
 > 
-> Adds adjust phase function to take advantage of a PHC
-> clock's hardware filtering capability that uses phase offset
-> control word instead of frequency offset control word.
+> Add idtcm_adjphase() to support PHC write phase mode.
 > 
 > Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
 
-Reviewed-by: Richard Cochran <richardcochran@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
