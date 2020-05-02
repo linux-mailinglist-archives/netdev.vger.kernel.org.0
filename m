@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 147C91C2686
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 17:25:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BBEE1C2693
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 17:35:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728200AbgEBPZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 11:25:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37972 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728072AbgEBPZU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 May 2020 11:25:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=7R5iVR0FVO737OIeqR+iXbm03VG1hGrwrsuabDYrlGk=; b=UXGY7M9QODV7/fI2Z7hNPGkz0f
-        DqVeobc9YjITJ1yjQ/3rnfq5E4Wig/1PLM1tvnADZVkjZ1onHFiFabDcKWjA3+S4anM54YawZNSP5
-        YODIXMjTy8Wi6hGLnmtskpYb8wbeTDQKsOtzzjbacEG7G8V5yXVL3YOez01ArUP5DkFw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jUu0z-000eB8-73; Sat, 02 May 2020 17:25:17 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, fugang.duan@nxp.com,
-        Chris Healy <cphealy@gmail.com>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v5] net: ethernet: fec: Replace interrupt driven MDIO with polled IO
-Date:   Sat,  2 May 2020 17:25:04 +0200
-Message-Id: <20200502152504.154401-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.26.2
+        id S1728244AbgEBPfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 11:35:00 -0400
+Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:46870 "EHLO
+        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727897AbgEBPfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 11:35:00 -0400
+Received: from mxbackcorp1o.mail.yandex.net (mxbackcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::301])
+        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 7A8042E09B7;
+        Sat,  2 May 2020 18:34:53 +0300 (MSK)
+Received: from iva8-88b7aa9dc799.qloud-c.yandex.net (iva8-88b7aa9dc799.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:88b7:aa9d])
+        by mxbackcorp1o.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id Wt7SerPtPA-YqbWLRpn;
+        Sat, 02 May 2020 18:34:53 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1588433693; bh=ItS7qMky3WsDKuAAiwZW5eAEqpnMDhf6GjWH/yoKNgM=;
+        h=Message-Id:Date:Subject:To:From;
+        b=YOzP2JJJwbiOOehEqKRBWaqfE+FIxzlDxd5DUS0Hm2g8NxU6RpXIP8ohsHTuwOL9P
+         piyoqqqGpcB4IsnPJRL7TnaUO8fE+BHHs/jyqw4vv9J1TG01P2FBVMeQb5FJxr9CCZ
+         CPxg6Qv7xT8lRtNz4Mp76QKOej2jlgLs24dYApUc=
+Authentication-Results: mxbackcorp1o.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from unknown (unknown [95.108.217.196])
+        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id sVVyFfmTp0-YqWSCMai;
+        Sat, 02 May 2020 18:34:52 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+From:   Dmitry Yakunin <zeil@yandex-team.ru>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH net-next] inet_diag: bc: read cgroup id only for full sockets
+Date:   Sat,  2 May 2020 18:34:42 +0300
+Message-Id: <20200502153442.90490-1-zeil@yandex-team.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -38,244 +41,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Measurements of the MDIO bus have shown that driving the MDIO bus
-using interrupts is slow. Back to back MDIO transactions take about
-90us, with 25us spent performing the transaction, and the remainder of
-the time the bus is idle.
+Fix bug introduced by commit b1f3e43dbfac ("inet_diag: add support for
+cgroup filter").
 
-Replacing the completion interrupt with polled IO results in back to
-back transactions of 40us. The polling loop waiting for the hardware
-to complete the transaction takes around 28us. Which suggests
-interrupt handling has an overhead of 50us, and polled IO nearly
-halves this overhead, and doubles the MDIO performance.
-
-Care has to be taken when setting the MII_SPEED register, or it can
-trigger an MII event> That then upsets the polling, due to an
-unexpected pending event.
-
-Suggested-by: Chris Heally <cphealy@gmail.com>
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
+Reported-by: syzbot+ee80f840d9bf6893223b@syzkaller.appspotmail.com
+Reported-by: syzbot+13bef047dbfffa5cd1af@syzkaller.appspotmail.com
+Fixes: b1f3e43dbfac ("inet_diag: add support for cgroup filter")
 ---
- drivers/net/ethernet/freescale/fec.h      |  4 +-
- drivers/net/ethernet/freescale/fec_main.c | 77 +++++++++++++----------
- 2 files changed, 45 insertions(+), 36 deletions(-)
+ net/ipv4/inet_diag.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
-index e74dd1f86bba..a6cdd5b61921 100644
---- a/drivers/net/ethernet/freescale/fec.h
-+++ b/drivers/net/ethernet/freescale/fec.h
-@@ -376,8 +376,7 @@ struct bufdesc_ex {
- #define FEC_ENET_TS_AVAIL       ((uint)0x00010000)
- #define FEC_ENET_TS_TIMER       ((uint)0x00008000)
- 
--#define FEC_DEFAULT_IMASK (FEC_ENET_TXF | FEC_ENET_RXF | FEC_ENET_MII)
--#define FEC_NAPI_IMASK	FEC_ENET_MII
-+#define FEC_DEFAULT_IMASK (FEC_ENET_TXF | FEC_ENET_RXF)
- #define FEC_RX_DISABLED_IMASK (FEC_DEFAULT_IMASK & (~FEC_ENET_RXF))
- 
- /* ENET interrupt coalescing macro define */
-@@ -543,7 +542,6 @@ struct fec_enet_private {
- 	int	link;
- 	int	full_duplex;
- 	int	speed;
--	struct	completion mdio_done;
- 	int	irq[FEC_IRQ_NUM];
- 	bool	bufdesc_ex;
- 	int	pause_flag;
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index c7b84bb22f75..2e209142f2d1 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -976,8 +976,8 @@ fec_restart(struct net_device *ndev)
- 	writel((__force u32)cpu_to_be32(temp_mac[1]),
- 	       fep->hwp + FEC_ADDR_HIGH);
- 
--	/* Clear any outstanding interrupt. */
--	writel(0xffffffff, fep->hwp + FEC_IEVENT);
-+	/* Clear any outstanding interrupt, except MDIO. */
-+	writel((0xffffffff & ~FEC_ENET_MII), fep->hwp + FEC_IEVENT);
- 
- 	fec_enet_bd_init(ndev);
- 
-@@ -1123,7 +1123,7 @@ fec_restart(struct net_device *ndev)
- 	if (fep->link)
- 		writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
+index 0034092..125f4f8 100644
+--- a/net/ipv4/inet_diag.c
++++ b/net/ipv4/inet_diag.c
+@@ -746,7 +746,8 @@ int inet_diag_bc_sk(const struct nlattr *bc, struct sock *sk)
  	else
--		writel(FEC_ENET_MII, fep->hwp + FEC_IMASK);
-+		writel(0, fep->hwp + FEC_IMASK);
+ 		entry.mark = 0;
+ #ifdef CONFIG_SOCK_CGROUP_DATA
+-	entry.cgroup_id = cgroup_id(sock_cgroup_ptr(&sk->sk_cgrp_data));
++	entry.cgroup_id = sk_fullsock(sk) ?
++		cgroup_id(sock_cgroup_ptr(&sk->sk_cgrp_data)) : 0;
+ #endif
  
- 	/* Init the interrupt coalescing */
- 	fec_enet_itr_coal_init(ndev);
-@@ -1652,6 +1652,10 @@ fec_enet_interrupt(int irq, void *dev_id)
- 	irqreturn_t ret = IRQ_NONE;
- 
- 	int_events = readl(fep->hwp + FEC_IEVENT);
-+
-+	/* Don't clear MDIO events, we poll for those */
-+	int_events &= ~FEC_ENET_MII;
-+
- 	writel(int_events, fep->hwp + FEC_IEVENT);
- 	fec_enet_collect_events(fep, int_events);
- 
-@@ -1659,16 +1663,12 @@ fec_enet_interrupt(int irq, void *dev_id)
- 		ret = IRQ_HANDLED;
- 
- 		if (napi_schedule_prep(&fep->napi)) {
--			/* Disable the NAPI interrupts */
--			writel(FEC_NAPI_IMASK, fep->hwp + FEC_IMASK);
-+			/* Disable interrupts */
-+			writel(0, fep->hwp + FEC_IMASK);
- 			__napi_schedule(&fep->napi);
- 		}
- 	}
- 
--	if (int_events & FEC_ENET_MII) {
--		ret = IRQ_HANDLED;
--		complete(&fep->mdio_done);
--	}
- 	return ret;
- }
- 
-@@ -1818,11 +1818,24 @@ static void fec_enet_adjust_link(struct net_device *ndev)
- 		phy_print_status(phy_dev);
- }
- 
-+static int fec_enet_mdio_wait(struct fec_enet_private *fep)
-+{
-+	uint ievent;
-+	int ret;
-+
-+	ret = readl_poll_timeout_atomic(fep->hwp + FEC_IEVENT, ievent,
-+					ievent & FEC_ENET_MII, 2, 30000);
-+
-+	if (!ret)
-+		writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
-+
-+	return ret;
-+}
-+
- static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- {
- 	struct fec_enet_private *fep = bus->priv;
- 	struct device *dev = &fep->pdev->dev;
--	unsigned long time_left;
- 	int ret = 0, frame_start, frame_addr, frame_op;
- 	bool is_c45 = !!(regnum & MII_ADDR_C45);
- 
-@@ -1830,8 +1843,6 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- 	if (ret < 0)
- 		return ret;
- 
--	reinit_completion(&fep->mdio_done);
--
- 	if (is_c45) {
- 		frame_start = FEC_MMFR_ST_C45;
- 
-@@ -1843,11 +1854,9 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- 		       fep->hwp + FEC_MII_DATA);
- 
- 		/* wait for end of transfer */
--		time_left = wait_for_completion_timeout(&fep->mdio_done,
--				usecs_to_jiffies(FEC_MII_TIMEOUT));
--		if (time_left == 0) {
-+		ret = fec_enet_mdio_wait(fep);
-+		if (ret) {
- 			netdev_err(fep->netdev, "MDIO address write timeout\n");
--			ret = -ETIMEDOUT;
- 			goto out;
- 		}
- 
-@@ -1866,11 +1875,9 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- 		FEC_MMFR_TA, fep->hwp + FEC_MII_DATA);
- 
- 	/* wait for end of transfer */
--	time_left = wait_for_completion_timeout(&fep->mdio_done,
--			usecs_to_jiffies(FEC_MII_TIMEOUT));
--	if (time_left == 0) {
-+	ret = fec_enet_mdio_wait(fep);
-+	if (ret) {
- 		netdev_err(fep->netdev, "MDIO read timeout\n");
--		ret = -ETIMEDOUT;
- 		goto out;
- 	}
- 
-@@ -1888,7 +1895,6 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- {
- 	struct fec_enet_private *fep = bus->priv;
- 	struct device *dev = &fep->pdev->dev;
--	unsigned long time_left;
- 	int ret, frame_start, frame_addr;
- 	bool is_c45 = !!(regnum & MII_ADDR_C45);
- 
-@@ -1898,8 +1904,6 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 	else
- 		ret = 0;
- 
--	reinit_completion(&fep->mdio_done);
--
- 	if (is_c45) {
- 		frame_start = FEC_MMFR_ST_C45;
- 
-@@ -1911,11 +1915,9 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 		       fep->hwp + FEC_MII_DATA);
- 
- 		/* wait for end of transfer */
--		time_left = wait_for_completion_timeout(&fep->mdio_done,
--			usecs_to_jiffies(FEC_MII_TIMEOUT));
--		if (time_left == 0) {
-+		ret = fec_enet_mdio_wait(fep);
-+		if (ret) {
- 			netdev_err(fep->netdev, "MDIO address write timeout\n");
--			ret = -ETIMEDOUT;
- 			goto out;
- 		}
- 	} else {
-@@ -1931,12 +1933,9 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 		fep->hwp + FEC_MII_DATA);
- 
- 	/* wait for end of transfer */
--	time_left = wait_for_completion_timeout(&fep->mdio_done,
--			usecs_to_jiffies(FEC_MII_TIMEOUT));
--	if (time_left == 0) {
-+	ret = fec_enet_mdio_wait(fep);
-+	if (ret)
- 		netdev_err(fep->netdev, "MDIO write timeout\n");
--		ret  = -ETIMEDOUT;
--	}
- 
- out:
- 	pm_runtime_mark_last_busy(dev);
-@@ -2143,8 +2142,21 @@ static int fec_enet_mii_init(struct platform_device *pdev)
- 	if (suppress_preamble)
- 		fep->phy_speed |= BIT(7);
- 
-+	/* Clear MMFR to avoid to generate MII event by writing MSCR.
-+	 * MII event generation condition:
-+	 * - writing MSCR:
-+	 *	- mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
-+	 *	  mscr_reg_data_in[7:0] != 0
-+	 * - writing MMFR:
-+	 *	- mscr[7:0]_not_zero
-+	 */
-+	writel(0, fep->hwp + FEC_MII_DATA);
-+
- 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
- 
-+	/* Clear any pending transaction complete indication */
-+	writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
-+
- 	fep->mii_bus = mdiobus_alloc();
- 	if (fep->mii_bus == NULL) {
- 		err = -ENOMEM;
-@@ -3686,7 +3698,6 @@ fec_probe(struct platform_device *pdev)
- 		fep->irq[i] = irq;
- 	}
- 
--	init_completion(&fep->mdio_done);
- 	ret = fec_enet_mii_init(pdev);
- 	if (ret)
- 		goto failed_mii_init;
+ 	return inet_diag_bc_run(bc, &entry);
 -- 
-2.26.2
+2.7.4
 
