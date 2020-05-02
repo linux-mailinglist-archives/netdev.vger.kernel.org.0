@@ -2,91 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DA11C260B
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 16:19:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CA51C261C
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 16:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728090AbgEBOTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 10:19:43 -0400
-Received: from antares.kleine-koenig.org ([94.130.110.236]:41688 "EHLO
-        antares.kleine-koenig.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728020AbgEBOTm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 10:19:42 -0400
-X-Greylist: delayed 327 seconds by postgrey-1.27 at vger.kernel.org; Sat, 02 May 2020 10:19:41 EDT
-Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
-        id 0373E970BF0; Sat,  2 May 2020 16:14:12 +0200 (CEST)
-Date:   Sat, 2 May 2020 16:14:08 +0200
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
-To:     Arnaud Ebalard <arno@natisbad.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Cc:     netdev@vger.kernel.org
-Subject: network unreliable on ReadyNAS 104 with Debian kernel
-Message-ID: <20200502141408.GA29911@taurus.defre.kleine-koenig.org>
+        id S1728266AbgEBO1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 10:27:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58054 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728020AbgEBO1A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 May 2020 10:27:00 -0400
+Received: from localhost (p5486C608.dip0.t-ipconnect.de [84.134.198.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 388E324969;
+        Sat,  2 May 2020 14:26:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588429619;
+        bh=K+s5i8Ccp51nBc59RG/W0ZP/68DE7QAVr0ZSUob2qHA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=r5wcyDexfab2nZ7DFyB5Y5bbcYvPVZMTevWt15zUs9b6nXeAZkMr4tAs3W+8/8cWg
+         o4QN34DhSUm/tBWq7J5rUTs95ex2V4oLc0MxqSt6jkvovn6SrdBVnzlAB44Yf52NXu
+         qaoGIeMC/qqu327nA2eGzn0h793vfKJ82MW3q08Y=
+From:   Wolfram Sang <wsa@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     kernel@pengutronix.de, Wolfram Sang <wsa@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] can: mscan: mpc5xxx_can: update contact email
+Date:   Sat,  2 May 2020 16:26:56 +0200
+Message-Id: <20200502142657.19199-1-wsa@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="azLHFNyN32YCQGCU"
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The 'pengutronix' address is defunct for years. Use the proper contact
+address.
 
---azLHFNyN32YCQGCU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+---
+ drivers/net/can/mscan/mpc5xxx_can.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hello Arnaud, hello Thomas,
+diff --git a/drivers/net/can/mscan/mpc5xxx_can.c b/drivers/net/can/mscan/mpc5xxx_can.c
+index e4f4b5c9ebd6..e254e04ae257 100644
+--- a/drivers/net/can/mscan/mpc5xxx_can.c
++++ b/drivers/net/can/mscan/mpc5xxx_can.c
+@@ -5,7 +5,7 @@
+  * Copyright (C) 2004-2005 Andrey Volkov <avolkov@varma-el.com>,
+  *                         Varma Electronics Oy
+  * Copyright (C) 2008-2009 Wolfgang Grandegger <wg@grandegger.com>
+- * Copyright (C) 2009 Wolfram Sang, Pengutronix <w.sang@pengutronix.de>
++ * Copyright (C) 2009 Wolfram Sang, Pengutronix <kernel@pengutronix.de>
+  */
+ 
+ #include <linux/kernel.h>
+-- 
+2.20.1
 
-I own a ReadyNAS 104 (CPU: Armada 370, mvneta driver) and since some
-time its network driver isn't reliable any more. I see things like:
-
-	$ rsync -a remotehost:dir /srv/dir
-	ssh_dispatch_run_fatal: Connection to $remoteaddress port 22: message authentication code incorrect
-	rsync: connection unexpectedly closed (11350078 bytes received so far) [receiver]
-	rsync error: error in rsync protocol data stream (code 12) at io.c(235) [receiver=3.1.3]
-	rsync: connection unexpectedly closed (13675 bytes received so far) [generator]
-	rsync error: unexplained error (code 255) at io.c(235) [generator=3.1.3]
-
-when ever something like this happens, I get
-
-	mvneta d0074000.ethernet eth1: bad rx status 0e8b0000 (overrun error), size=680
-
-(with varying numbers after size=) in the kernel log.
-
-With
-
-	sudo ethtool -K eth1 tso off gso off gro off
-
-the behaviour gets better, but I still get errors. In tcpdump I saw
-packets received that are a mix of (at least) two other packets sent on
-the remote side.
-
-This happens with Debian's 5.4.0-4-armmp (Version: 5.4.19-1) kernel, but
-I also experienced it with the 4.19 series. On slow connections this
-isn't a problem so the problem might exist already longer. In fact I
-think there are two problems: The first is that the hardware doesn't get
-enough buffers in time for the receive path and the other is that in the
-error case corrupted packets are given to the upper layers.
-
-Does this ring a bell for you? I didn't start to debug that yet.
-
-Best regards
-Uwe
-
---azLHFNyN32YCQGCU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl6tgCcACgkQwfwUeK3K
-7AlmjQf+LKuXJKedfRkGJLeb+8mikI346ZsDI60Y52sWtnZZ+J7D/BMQ3ZHzI34e
-cmO2p/LvLvkuar59jEclUf2Smijwa++IPWExMdeuuJsQRQ83sD4KcDW5lzBZR8fd
-HNAh9dN/yHBcTh0ixNNaMoUwkVl/jRuJ58U565/ahxv8iIcIx0yAGQVgs0RZtVv9
-6IeXNOw3dAQzXHrmLrrdniAvfO0zhE1f5+inWZ2r73/9bFyHSuDpOpW2zvlWilLD
-LpONXLbdbykF6K1m9fHFt5scNxNzXRhH5/TYezvQaRqYWYMS+9zrvdK9MUVliWgG
-k4QVReaLpy30DuZGBZS3bc+f7V/opg==
-=uTJQ
------END PGP SIGNATURE-----
-
---azLHFNyN32YCQGCU--
