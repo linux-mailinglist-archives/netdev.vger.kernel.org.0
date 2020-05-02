@@ -2,80 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C3FD1C22B4
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 06:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 899FD1C236E
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 07:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbgEBEM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 00:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
+        id S1727864AbgEBF6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 01:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726435AbgEBEM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 00:12:27 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7501C061A0C
-        for <netdev@vger.kernel.org>; Fri,  1 May 2020 21:12:26 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id e17so9564461qtp.7
-        for <netdev@vger.kernel.org>; Fri, 01 May 2020 21:12:26 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726468AbgEBF6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 01:58:44 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7791AC061A0C
+        for <netdev@vger.kernel.org>; Fri,  1 May 2020 22:58:43 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id o27so9011502wra.12
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 22:58:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=content-transfer-encoding:from:mime-version:subject:date:message-id
-         :references:cc:in-reply-to:to;
-        bh=AzOwTGLCqsoxcos1rC36ROn5pWK/vWwfcPGTzajxF68=;
-        b=kf2yU7BsKbHqzFcVVJurq2/7ijIg6XVB+iwt2JTUEy76OXGB4gpE+VVijMuiRfKM7c
-         xw9fpS3AerfR9/Z1YpZHd1X3sAbEpO4DlPE2CMHC0ZrkXb/ExGyMcqxK+VC66cx8LFLW
-         kRC23+eMoFlPS8/d0Np6dfiuYsQkWrsQfpb1LLVj1o+ZeOZwmryFS3HgAS23YPGv4xAZ
-         XCkkGiiep+y/PkA7p2cCbfRfjyXdrXA91XOVDSxw+NOEf1FH9QJU8dTt3IuHcP002Vl6
-         kqYxbsPinAZ//7Bd2Z43slseZJ24TpZAFdQQSfWfcuE1JCsBM4ei2I+V8c3/qdnbbYbz
-         hhgA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bCfLkCNhN2DbSrrnF7aqzGzYRxHe/z2O6zUH9lIxRQ0=;
+        b=gyIBD2oKGCcTT/F/plffhnnL6eFrnyNVJijP2exT3ZEqkFHeqFqb+rhzc+5qjbP1RR
+         t3wHNb8hC6mPd0FwDD6o8UfGWJt6LxNO2VFXarO1jru6KBY/Llnsi9jmvDJe7utN9QiB
+         g7C5afIEWt5VmLNBTjB/jWKwjJe2iNLVSp3EykcaNjwof2axmMudluvf8mF6+wm8fvUL
+         egtHHe8oqsoQBxnBkZZn305ws41/FxUhnDtkp4PGqmQdSPcBMsExuGOcL9aLmI7f07jy
+         7ZHApQN+pvspXAxwOExIrJqK8WIgrZLgvNDkO3ISyYuXtkD9SiiscJ+vfDI/ZhfhvJvt
+         7jmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:from:mime-version
-         :subject:date:message-id:references:cc:in-reply-to:to;
-        bh=AzOwTGLCqsoxcos1rC36ROn5pWK/vWwfcPGTzajxF68=;
-        b=ob7uT/DecbHC1Bxodhr0+e+jkAvyxMmSv/27pH9TSN7+PMC/QoafB6v4x/wzYleaca
-         sDZ5Ygtk5FshhHrWWq69WJkPMVssmaSjZj14q3KOt6Kpz0HZxkLz/Fzxq8PT7suiro/U
-         UYTXgpw5NPu6wktviCyLxZoPjKZdxDQOcfRzcEyXlRAtIyr5D5uNp3fXoSUei71mxy8y
-         bNZ/41UVDJeYfSXvLKQg1w0mqEeAfLLNHXTyvHOQQJQrfJ56Uc9zQ6mNvO2RUHXmjgUe
-         3uuX4E8NVrvH0eHQKXouQ9EKyckj8A0fLssAmbE7utWQ/HnsNjimPeZFBJiNsEf78jQ2
-         61DQ==
-X-Gm-Message-State: AGi0PuaB1wBtAQhtsBhU+cfju2TsuWfw1SXiyP/F7Ls5dDGeCezqQhrW
-        SXzxMiWuSFohv/VEq9aMjJOkTw==
-X-Google-Smtp-Source: APiQypLPkWWge7EXckbKA9YVakIfE03lfFAsJz99G06idEV0NvoYOvjA5KdUvBzLII+eZqBDJlak7Q==
-X-Received: by 2002:aed:34c3:: with SMTP id x61mr6579161qtd.333.1588392746111;
-        Fri, 01 May 2020 21:12:26 -0700 (PDT)
-Received: from [192.168.1.183] (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
-        by smtp.gmail.com with ESMTPSA id y10sm4300219qki.63.2020.05.01.21.12.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 May 2020 21:12:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bCfLkCNhN2DbSrrnF7aqzGzYRxHe/z2O6zUH9lIxRQ0=;
+        b=ebO33w0aOnrM0/8jwmBE2BnLliiGVPoqKxv44UlyxoVBY9PBMbmWPnJrIuWUALbf32
+         gst6+QGCoe567wOkyG9cQrCwmM10s7bt2JtjPDvXWSz6IPE5xO5lYPdyzCGCfq/1Bypy
+         lXTWrRqmJQN+1Wq05+3DXcRyHKYCmVVBHD+qob+REsQZRD1Hjj/4yWqvuYi40/yCGW62
+         EED+XyoLrHdexQpmk8oPdYJy++s07BLJBnvV5s/2QUHf2SffcsDqRxP+j/IMumhuwZPh
+         d2A/9NbSa6Qv/7kbNTkk+GdViCiqxAM7/iWV753B5Vr+EZKTt3bV0oBum88J3iiDosdP
+         6MvQ==
+X-Gm-Message-State: AGi0Puau9k4OME7LG/An4LbZvATHRVESTQioEq3+NSK7az56soiDYAOK
+        75b6gmufSEqaybwvPq1EV8t78w==
+X-Google-Smtp-Source: APiQypKBH5VK8AdJPjlVC+ImwwmMwwgIxYVaQ0qjvuU9B/FRDY/XrhCjfInO8LxDE369HZstUadyxw==
+X-Received: by 2002:adf:ce02:: with SMTP id p2mr7624227wrn.173.1588399122189;
+        Fri, 01 May 2020 22:58:42 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id h1sm2721071wme.42.2020.05.01.22.58.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 May 2020 22:58:41 -0700 (PDT)
+Date:   Sat, 2 May 2020 07:58:40 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
+        jacob.e.keller@intel.com
+Subject: Re: [PATCH iproute2-next v3] devlink: support kernel-side snapshot
+ id allocation
+Message-ID: <20200502055840.GB25211@nanopsycho.orion>
+References: <20200430175759.1301789-1-kuba@kernel.org>
+ <20200430175759.1301789-5-kuba@kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-From:   Qian Cai <cai@lca.pw>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH] net: fix memory leaks in flush_backlog() with RPS
-Date:   Sat, 2 May 2020 00:12:24 -0400
-Message-Id: <C9E5387E-6241-4CB3-B3F2-9CA575920569@lca.pw>
-References: <8a012879-825f-596d-9866-0dd3a095dfbb@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <8a012879-825f-596d-9866-0dd3a095dfbb@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-X-Mailer: iPhone Mail (17D50)
+Content-Disposition: inline
+In-Reply-To: <20200430175759.1301789-5-kuba@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thu, Apr 30, 2020 at 07:57:59PM CEST, kuba@kernel.org wrote:
+>Make ID argument optional and read the snapshot info
+>that kernel sends us.
+>
+>$ devlink region new netdevsim/netdevsim1/dummy
+>netdevsim/netdevsim1/dummy: snapshot 0
+>$ devlink -jp region new netdevsim/netdevsim1/dummy
+>{
+>    "regions": {
+>        "netdevsim/netdevsim1/dummy": {
+>            "snapshot": [ 1 ]
+>        }
+>    }
+>}
+>$ devlink region show netdevsim/netdevsim1/dummy
+>netdevsim/netdevsim1/dummy: size 32768 snapshot [0 1]
+>
+>v3: back to v1..
+>
+>Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-
-> On May 1, 2020, at 11:32 PM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->=20
-> kfree_skb() is supposed to call skb_dst_drop() (look in skb_release_head_s=
-tate())
->=20
-> If you think about it, we would have hundreds of similar bugs if this was n=
-ot the case.
-
-Thanks for quick response. Funny thing is that once I applied this patch, th=
-e leaks went away. It could be the fuzzers do not always reproduce the leaks=
- or it could be that call_rcu() in skb_dst_drop() takes a long time waiting f=
-or grace periods which may confuse kmemleak because skb has already gone.=
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
