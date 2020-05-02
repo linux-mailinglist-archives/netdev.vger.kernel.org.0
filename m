@@ -2,121 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DE381C24B4
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 13:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4970A1C2530
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 14:21:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727778AbgEBLW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 07:22:28 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:46588 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726654AbgEBLW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 07:22:27 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 042B2Xh3184724;
-        Sat, 2 May 2020 07:21:51 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s50wucma-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 07:21:51 -0400
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 042BJ3Ks021250;
-        Sat, 2 May 2020 07:21:51 -0400
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s50wuckr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 07:21:50 -0400
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 042BKSVA012967;
-        Sat, 2 May 2020 11:21:48 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma05fra.de.ibm.com with ESMTP id 30s0g5g8wa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 11:21:48 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 042BLkKJ53674396
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 2 May 2020 11:21:46 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EB76411C050;
-        Sat,  2 May 2020 11:21:45 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EA28A11C04C;
-        Sat,  2 May 2020 11:21:43 +0000 (GMT)
-Received: from linux.ibm.com (unknown [9.148.204.17])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Sat,  2 May 2020 11:21:43 +0000 (GMT)
-Date:   Sat, 2 May 2020 14:21:41 +0300
-From:   Mike Rapoport <rppt@linux.ibm.com>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Marc Zyngier <maz@kernel.org>, Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Harry Wei <harryxiyou@gmail.com>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Tejun Heo <tj@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Marcos Paulo de Souza <marcos.souza.org@gmail.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-ia64@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 07/14] docs: add IRQ documentation at the core-api book
-Message-ID: <20200502112141.GE342687@linux.ibm.com>
-References: <cover.1588345503.git.mchehab+huawei@kernel.org>
- <2da7485c3718e1442e6b4c2dd66857b776e8899b.1588345503.git.mchehab+huawei@kernel.org>
- <20200502074133.GC342687@linux.ibm.com>
- <20200502110438.1aad7d86@coco.lan>
+        id S1727863AbgEBMV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 08:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727118AbgEBMV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 08:21:26 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E551C061A0F
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 05:21:25 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id b24so5841847lfp.7
+        for <netdev@vger.kernel.org>; Sat, 02 May 2020 05:21:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ceg32SJO0EfoqNJv2X/qLbUtrniOfXr61mP5NwTkMnU=;
+        b=VVkqCu9RDWzq6YBs/j7mOw6q8qNZldPYjfP4UuI2Y4rWUHx4Ici/alROEbx5tk1pt2
+         oIa9S2ePWl69sn0ufl+SZuQVtMeGSJNPIaDp9cqtdvFJLWkXC2NkY3nkx2vKH1JRuu9O
+         jVsrQKte+hcB1DSDCuPb5gJXNSU+KQ1/o3yMLiqIHNEcnQVfwrX6HOAR421LY+I4Cr6L
+         7863hIoMUdmSE1H7gUbE9oQTVt5n7tLHBjgZZZNqIoWlCttTRCbqKXrvSfYjrKJ2w6B4
+         Nqki6Cwxnl5HWqNl4fWMDs+FPd7Wlxw4VViQeqDA5ZR/i4Ynr0qroqlkcu6BTvA+NuN3
+         d0Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ceg32SJO0EfoqNJv2X/qLbUtrniOfXr61mP5NwTkMnU=;
+        b=QBpJDROXrcTifWMT17IZ8lQfFXX1IoVhcYO7v2PGcnc2AfRROJbwA6aYWEFWE7GlyU
+         lFGtMqYLIuXo/+zFvsM2FXgL6SHsacUz75mqYpIw5tXH/UjhZpNPeSW8iYjx6canW78q
+         NzjTe9hBmNEwK55eJUpILJ3LkdseazRCiPuqE9RKBcr8eNuZRvBAvheTJnBZauCGzQNG
+         c0yH25EIQS2wvwM9NIIC6n32bkCXnpvH1ieQol5xbhEfzeUaR3dRJeVhrL7fgNEd03vd
+         A8nu1kYwFBTHzxqMhkUfFE9BE0bCxmLmBm5HR97osvzCsxu5Gmyh/f46HUSxzypVDeuf
+         1I9Q==
+X-Gm-Message-State: AGi0PuYskbzMRGEVIcDZVXK4xHLjhqW2X0Wu9mejXouQ+LXReSu9yLMQ
+        Yu5GUDYzkg3RZX9QYRZ50zTtQ4s76FU=
+X-Google-Smtp-Source: APiQypK/eS7/y7LmA2plGuu3YKGMbgawTzyGOOoUslRJ6ZF24W0m4iEHUiqZ8X6omdaDwmTd0IR4Kw==
+X-Received: by 2002:a19:10:: with SMTP id 16mr5486216lfa.145.1588422083405;
+        Sat, 02 May 2020 05:21:23 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:44e2:b75:5482:ef8f:6eeb:f75c? ([2a00:1fa0:44e2:b75:5482:ef8f:6eeb:f75c])
+        by smtp.gmail.com with ESMTPSA id h24sm4650568lji.99.2020.05.02.05.21.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 May 2020 05:21:22 -0700 (PDT)
+Subject: Re: [PATCH] net: dsa: sja1105: fix speed setting for 10 MBPS
+To:     Colin King <colin.king@canonical.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+References: <20200501134310.289561-1-colin.king@canonical.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <ccfa3bc1-cdbd-f990-321f-55555531d56d@cogentembedded.com>
+Date:   Sat, 2 May 2020 15:21:20 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200502110438.1aad7d86@coco.lan>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-05-02_06:2020-05-01,2020-05-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 malwarescore=0
- clxscore=1015 suspectscore=1 mlxlogscore=999 priorityscore=1501
- impostorscore=0 lowpriorityscore=0 mlxscore=0 adultscore=0 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005020095
+In-Reply-To: <20200501134310.289561-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 02, 2020 at 12:16:41PM +0200, Mauro Carvalho Chehab wrote:
-> Em Sat, 2 May 2020 10:41:33 +0300
-> Mike Rapoport <rppt@linux.ibm.com> escreveu:
-> 
-> > Hello Mauro,
-> > 
-> > On Fri, May 01, 2020 at 05:37:51PM +0200, Mauro Carvalho Chehab wrote:
-> > > There are 4 IRQ documentation files under Documentation/*.txt.
-> > > 
-> > > Move them into a new directory (core-api/irq) and add a new
-> > > index file for it.  
-> > 
-> > Just curious, why IRQ docs got their subdirectory and DMA didn't :)
-> 
-> Heh, you got me... :-)
-> 
-> The rationale I used is that DMA fits nicely being close to other 
-> memory related documents.  As those currently don't have a subdir,
-> I opted to not create a DMA-specific dir. I admit that his is a
-> weak reason. I wouldn't mind placing them on a separate subdir,
-> if you think it would be worth.
+Hello!
 
-I'm Ok without a dir as well :)
+On 01.05.2020 16:43, Colin King wrote:
 
-> Thanks,
-> Mauro
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The current logic for speed checking will never set the speed to 10 MBPS
+> because bmcr & BMCR_SPEED10 is always 0 since BMCR_SPEED10 is 0. Also
+> the erroneous setting where BMCR_SPEED1000 and BMCR_SPEED100 are both
+> set causes the speed to be 1000 MBS.  Fix this by masking bps and checking
+> for just the expected settings of BMCR_SPEED1000, BMCR_SPEED100 and
+> BMCR_SPEED10 and defaulting to the unknown speed otherwise.
+> 
+> Addresses-Coverity: ("Logically dead code")
+> Fixes: ffe10e679cec ("net: dsa: sja1105: Add support for the SGMII port")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>   drivers/net/dsa/sja1105/sja1105_main.c | 11 +++++++----
+>   1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+> index 472f4eb20c49..59a9038cdc4e 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_main.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
+> @@ -1600,6 +1600,7 @@ static const char * const sja1105_reset_reasons[] = {
+>   int sja1105_static_config_reload(struct sja1105_private *priv,
+>   				 enum sja1105_reset_reason reason)
+>   {
+> +	const int mask = (BMCR_SPEED1000 | BMCR_SPEED100 | BMCR_SPEED10);
 
--- 
-Sincerely yours,
-Mike.
+    Why not declare it in the block it's used in? Also, () not needed here.
+
+>   	struct ptp_system_timestamp ptp_sts_before;
+>   	struct ptp_system_timestamp ptp_sts_after;
+>   	struct sja1105_mac_config_entry *mac;
+> @@ -1684,14 +1685,16 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+>   		sja1105_sgmii_pcs_config(priv, an_enabled, false);
+>   
+>   		if (!an_enabled) {
+> -			int speed = SPEED_UNKNOWN;
+> +			int speed;
+
+    Why not the following?
+
+		int mask = bmcr & (BMCR_SPEED1000 | BMCR_SPEED100 |
+			   BMCR_SPEED10);			
+
+>   
+> -			if (bmcr & BMCR_SPEED1000)
+> +			if ((bmcr & mask) == BMCR_SPEED1000)
+>   				speed = SPEED_1000;
+> -			else if (bmcr & BMCR_SPEED100)
+> +			else if ((bmcr & mask) == BMCR_SPEED100)
+>   				speed = SPEED_100;
+> -			else if (bmcr & BMCR_SPEED10)
+> +			else if ((bmcr & mask) == BMCR_SPEED10)
+>   				speed = SPEED_10;
+> +			else
+> +				speed = SPEED_UNKNOWN;
+>   
+>   			sja1105_sgmii_pcs_force_speed(priv, speed);
+>   		}
+
+MBR, Sergei
