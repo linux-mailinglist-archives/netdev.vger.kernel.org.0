@@ -2,71 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17DA71C2402
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 10:32:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0C641C242D
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 10:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726745AbgEBIct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 04:32:49 -0400
-Received: from sonic304-21.consmr.mail.ir2.yahoo.com ([77.238.179.146]:35719
-        "EHLO sonic304-21.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725785AbgEBIcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 04:32:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1588408366; bh=vUjtVOr1LCIoQU4EvLR2F9kwRcMR3abpMUhjHVo2tTA=; h=Date:From:Reply-To:Subject:References:From:Subject; b=icDB1JZy/gSdJT/QehsZaE8TYycCDZbUK9sfohiLhg9QWSkG/aq4pI8M/eIT+10Ozp45aa8NxRRQrAeYT0njGI0XOZjDldZAfGcUVmDqx22aPzsX37/p+4igfUzgSMEE5lu7gZLUjNwqeYKENVWq8aED8p/m31ZlOvElGD2ifXYWmt7+9MaaXFZI6MdwZZhc3osKcnEzPUgfU4IDaMlTrfqvdNkZ3kkdY11fccEIhaaTzp/hO1umfu6MnhohFOFLOy5h5hX27oYgxOR1K9JmW2U28tpWXN7XW2/1kzVy5DmVPGsxISt2YBA2mxrB/06ja52dIww3ew7lWGRWqNMeVQ==
-X-YMail-OSG: b8F7ikcVM1mppIihb33EONWBYSxwOiHTWrxjFxYxW2umz.lvrmPQ7XMP0HGcI58
- NDVMxngbEtLU2dVjxvrpOFoEKz7dmU.uvJ0AUgZG9YY2MQl8uoajv6QHvEpm..w9PPX_6KYnWA6Z
- TnU5npAhFKkyS4k.L4IAXdAEmXl3tJjmluI0wVrFW6ypYEKY5QYdAWRryhS.7DL7XOaWEuljo6tN
- hn92rDSsm6dzC69mtE6.Y4IYIWihWx5PzOOvjKlov5FT1oJMJMHz9.QhT9mrSqsqo4tNTjOEw6uO
- xv76fAEUBV1S5Syel.O1Yd9Fw1g5c.xqA4X1lZpWAkMW4C5qdCTUz38hK0gi.D9vU5m3.YQ78Wb1
- jJTfsqwg85lS23LgA2y.P0m9YvNsOVjSqslxDGdbiu4q_4mZ8ElYm_Z99H.EVx2UW9NQ5xMGQe97
- Pj3L9xklVZBzFiU9s8ari.n6Z.tGwaZ8yw7YejX1dtttk4e9ux1ny.U04KjaktbLPwzFEwGvyzZs
- .pOyJlcR379SoDeet5aedKqd10jyIcsAu3T6lMh0ZpJrY.wAvJf6c4o_s3F7VA.wgOxntj0qvB83
- DF.g3JWqr5I1.Efft8Eokfrw813Yycq5LEc_CWbGr5sEU3pN4w7uCPqCvtJR05Ffy4_Qw9n_k22R
- 9FCNy_cmgQZiVJ3O9WplgUyMrFxJ3ESJGKl78FMuAlNzaSdTkl7QDzhu0uBtFr4Bj9m2SKvpoYWH
- GjbsW5yoB1haJRtrAQmAxVmP.U0.U1CVczKImmKgzLHkvGBKpw1krYatdaICcVvNReoW4XslaDi8
- 0MbTdF_YiqfPArPGnXeAX5y2ZqpfcG.vpr.KsmMWrU1GnMHCMAIqGC8zncvDg6imHUMka3__DbnA
- IfYxl54T9IqJS8OTvQaY89S7ax5LIA3NqpbQufDgBzz_aLxwG7oHiikvLEV9wlWo35SmVSzhU6F.
- J_rn5hEUjT79Gk9r3QKBPQluN.h4vH57aMyEBm1sWMcNc7CHqqmKn6D_jNKM7XP.ORd9sysLMNW3
- uiv2JuRsWbITlyy3Ou0izVErMfZQWf5j0ko7MnoPDAyH73AJ8Qrr4Xhc7ayA0Y04N1dVzfT.2PPR
- pD0Vst5u5d0ofKu.ES2jH5aAvknCfSegC2nay7s_Yv9G2bpDglC7lnGxZbjluOGgMjGMvFjZ2e4n
- wB5NNoe5wLPNqUmn7j4xISPlmZBOX.4qJrwVUZxmh5oTttJKhLUiWyWAPaXqzxOl5QWdNKxNiASc
- vkvF1gkgzZEO1u1KMvL6aEIvoj99mFuGoNe7P32wltpweW8NvKUTDESVBtMisDlJPX0auZg--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ir2.yahoo.com with HTTP; Sat, 2 May 2020 08:32:46 +0000
-Date:   Sat, 2 May 2020 08:32:44 +0000 (UTC)
-From:   REJOY <mrsrajoysmrsrajoyshassain@gmail.com>
-Reply-To: rejoyhassain02@gmail.com
-Message-ID: <207580047.100025.1588408364665@mail.yahoo.com>
-Subject: Thank you for your anticipated co-operation.
+        id S1726842AbgEBIsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 04:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725785AbgEBIsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 04:48:07 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632F7C061A0C
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 01:48:07 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id s10so6514116iln.11
+        for <netdev@vger.kernel.org>; Sat, 02 May 2020 01:48:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XQdMDcOjN+TpA8VFMRnm/ud788SF0zKch86ezKxC7x0=;
+        b=UwbAwiSuBuZcdsXA2h6T1aAx+O+GMjOjSKeUg/uLGdjfKBo06E/N9g+A/HiI7hiIZz
+         ESFXUX2gHzSSTtS1MXkj6plTo4fPL2Wjf7kwEvM7eW8vs8Pvz5mdsiHDoT/GEhlVeQLO
+         RpiPD6G9r6nvPDHRPA8L/2B1/nMGrCQbTgeWwmZbbvvDANFgpt7AU03ffkM9XReFzZzl
+         xzIHKn+/92T20F3dBVpFYlJGOHdP0Q+n9pxQ1gx4eWjD61Zbz+YtBfinun3vImfPqp1j
+         GQBxgwEIn85k8GwOBoAkO39Lqy7a+HeckFeCX4cyJ8DmPg3ashwpmpp0M6vQoOw8Ge91
+         cknA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XQdMDcOjN+TpA8VFMRnm/ud788SF0zKch86ezKxC7x0=;
+        b=VvPCb8MiSOgwqMfL/zWPxycwZ2AZyZoknDk6ZpUG2tCNzI7k/tBNw88aelRqRQDxqV
+         BMSVxVNuuu6VTmoxZU4gd2rVXVTYy6/ckU4hq3tYGsczhXeix5B9qlZcqZpNo1ZiZR5I
+         dK7bBRLw+2BhVRBvwMFlqYEJ3T0bpRHwgBw+wm3jxxnrXToUxnkwwxP2mZ7W5KWX4JYd
+         DCiLu99jWt0up9iaQRKn6uy6ta4EJi8p13HW9OKxgvTNuAO87lk8NNyHfRemMKKYGI2H
+         7X6U5CpfCEN05KZ8cfpIk0AuqJJFBOXCd3yP+M509bDmU3xSxK5+VhUfsbTHtGwq/XAr
+         il/A==
+X-Gm-Message-State: AGi0PuZl5143t1dwxXj+m/gKkuYLAFyGGcM3/VaZKXNg2uXzBHjkQQRR
+        NZ+fRD1dZYxhhIzuDZWxQhmqNXQFleiUOA==
+X-Google-Smtp-Source: APiQypJQDCGbN5rbwgM071xd1cgnZwwlkReVwW9/mWToLZbSQgRlLFEn1m/6W1LEjsjNXucqkhY46Q==
+X-Received: by 2002:a92:cc12:: with SMTP id s18mr7615380ilp.113.1588409286588;
+        Sat, 02 May 2020 01:48:06 -0700 (PDT)
+Received: from [10.0.0.125] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id b12sm2190097ilo.13.2020.05.02.01.48.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 May 2020 01:48:05 -0700 (PDT)
+Subject: Re: [Patch net v2] net_sched: fix tcm_parent in tc filter dump
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>
+References: <20200501035349.31244-1-xiyou.wangcong@gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <7b3e8f90-0e1e-ff59-2378-c6e59c9c1d9e@mojatatu.com>
+Date:   Sat, 2 May 2020 04:48:05 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20200501035349.31244-1-xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-References: <207580047.100025.1588408364665.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15756 YMailNodin Mozilla/5.0 (Windows NT 5.1; rv:52.0) Gecko/20100101 Firefox/52.0
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020-04-30 11:53 p.m., Cong Wang wrote:
+> When we tell kernel to dump filters from root (ffff:ffff),
+> those filters on ingress (ffff:0000) are matched, but their
+> true parents must be dumped as they are. However, kernel
+> dumps just whatever we tell it, that is either ffff:ffff
+> or ffff:0000:
+> 
+>   $ nl-cls-list --dev=dummy0 --parent=root
+>   cls basic dev dummy0 id none parent root prio 49152 protocol ip match-all
+>   cls basic dev dummy0 id :1 parent root prio 49152 protocol ip match-all
+>   $ nl-cls-list --dev=dummy0 --parent=ffff:
+>   cls basic dev dummy0 id none parent ffff: prio 49152 protocol ip match-all
+>   cls basic dev dummy0 id :1 parent ffff: prio 49152 protocol ip match-all
+> 
+> This is confusing and misleading, more importantly this is
+> a regression since 4.15, so the old behavior must be restored.
+> 
+> And, when tc filters are installed on a tc class, the parent
+> should be the classid, rather than the qdisc handle. Commit
+> edf6711c9840 ("net: sched: remove classid and q fields from tcf_proto")
+> removed the classid we save for filters, we can just restore
+> this classid in tcf_block.
+> 
+> Steps to reproduce this:
+>   ip li set dev dummy0 up
+>   tc qd add dev dummy0 ingress
+>   tc filter add dev dummy0 parent ffff: protocol arp basic action pass
+>   tc filter show dev dummy0 root
+> 
+> Before this patch:
+>   filter protocol arp pref 49152 basic
+>   filter protocol arp pref 49152 basic handle 0x1
+> 	action order 1: gact action pass
+> 	 random type none pass val 0
+> 	 index 1 ref 1 bind 1
+> 
+> After this patch:
+>   filter parent ffff: protocol arp pref 49152 basic
+>   filter parent ffff: protocol arp pref 49152 basic handle 0x1
+>   	action order 1: gact action pass
+>   	 random type none pass val 0
+> 	 index 1 ref 1 bind 1
 
+Note:
+tc filter show dev dummy0 root
+should not show that filter. OTOH,
+tc filter show dev dummy0 parent ffff:
+should.
 
-DEAR FRIEND.
+root and ffff: are distinct/unique installation hooks.
 
-YOU MAY BE WONDERING WHYI CONTACT YOU BUT SOMEONE LUCKY HAS TO BE CHOSEN WHICH IS YOU. I WANT YOU TO HANDLE THIS BUSINESS TRASACTION WITH ME IF CHANCE YOU TO DO INTERNATION BUSINESS I GO YOUR CONTACT FROM A RELIABLE WEB DIRECTORY.
-
-I RECEIVE YOUR CONTENT OF YOUR EMAIL FROM THIS DHL MASTER CARD OFFICES FUND OF $10.5 USD MILLION AFTER THE BOARD OF DIRECTORS MEETINGS, THE UNITED NATIONS GOVERNMENT HAVE DECIDED TO ISSUE YOU YOUR (ATM) VALUED AT 10.5 MILLION UNITED STATES DOLLAR.THIS IS TO BRING TO YOUR NOTICE THAT YOUR VALUED SUM OF 10.5 MILLION DOLLAR HAS BEING TODAY CREDITED INTO (ATM) MASTER CARD AND HAS BEEN HANDLE TO THE FOREIGN REMITTANCE DEPARTMENT TO SEND IT TO YOU TODAY IN YOUR FAVOR.
-
-WITH YOUR (ATM) YOU WILL HAVE ACCESS TO MAKE DAILY WITHDRAWALS OF $5000,00 UNITED STATE DOLLARS DAILIES AS ALREADY PROGRAMMED UNTIL YOU WITHDRAW YOUR TOTAL SUM IN YOUR (ATM) CARD WHICH HAS REGISTERED IN OUR SYSTEM FOR PAYMENT RECORD, AS SOON AS WE RECEIVE YOUR INFORMATIONS AND YOUR HOME ADDRESS OF YOUR COUNTRY AS ALREADY PROGRAMMED, WE WILL SEND YOUR (ATM) CARD THROUGH DHL COURIER SERVICE, WE HAVE RECEIVED A SIGNAL FROM THE SWISS WORLD BANK TO INFECT YOUR TRANSFER TO YOU WITHIN ONE WEEK,
-
-WE HAVE JUST FINISHED OUR ANNUAL GENERAL MEETING WITH THE CENTRAL BANK OF AMERICA (BOA). AT THE END OF THE BOARD OF DIRECTORS MEETING TODAY, WE HAVE CONCLUDED TO IMMEDIATELY ISSUE YOU AS SOON AS POSSIBLE,
-
-AND YOUR VALUE SUM HAS BEEN CREDITED INTO YOUR (ATM) VISA CARD
-ACCOUNT. WHICH YOU WILL USE TO WITHDRAW YOUR FUND IN ANY PART OF THE WORLD, WE HAVE ISSUED AND CREDITED YOUR (ATM) CARD IN YOUR NAME TODAY,
-
-YOUR (ATM) WILL BE INSURE BY THE INSURANCE COMPANY AND SEND TO YOU
-THROUGH ANY AVAILABLE COURIER COMPANY OF OUR CHOICE.
-
-ONCE AGAIN CONGRATULATIONS TO YOU,
-
-DIRECTOR DHL SERVICE,
-THANKS,
-SINCERELY.
+cheers,
+jamal
