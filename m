@@ -2,153 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80EE91C244D
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 11:19:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 037951C245D
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 11:29:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726745AbgEBJTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 05:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
+        id S1726900AbgEBJ3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 05:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726488AbgEBJTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 05:19:21 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0674EC061A0C
-        for <netdev@vger.kernel.org>; Sat,  2 May 2020 02:19:20 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id k18so7193755ion.0
-        for <netdev@vger.kernel.org>; Sat, 02 May 2020 02:19:20 -0700 (PDT)
+        with ESMTP id S1726548AbgEBJ3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 05:29:14 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AD1C061A0C;
+        Sat,  2 May 2020 02:29:12 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id b24so5648775lfp.7;
+        Sat, 02 May 2020 02:29:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=B3nnnQAf8Ty/XcylsZpczGWC+Yx77mQlkEfBvrolNLE=;
-        b=h+v1zreSTJnWKgVi6nAoaCXQ+0lLxRmTKnXgGUVVNoZ6pQ/9p1qsIBNc5wApuDs41d
-         rDsGMqtjovYOBFk2tFmTBV+W5CFEt104qcntisZj1/ALUGmMzk4uzOQ70q7ID0drZ0mv
-         dMiA/HFR+YBlXH92OS4nEMHIh0x0J6bkVjaGqAHPf69byhx0Rn3AkwiCcuMkHt+6s/Fa
-         YBw63zewPUcyQsSoL1bTvx7dluKENbqjLXLDbjkUNgrUrI0A3WkUab8yRafPZ0NopZ45
-         6jPMelNBZE1p+GM2/sSclh+BiubujAC1chVINxubGgU8Q5z4+9AfR3i9eHNtv2jJhhrP
-         pfwA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=aPHQopP3uegPMTxg+Aep4CZznGAz3JZTwpCPsbRISYs=;
+        b=gM6Q6PvUrEvO82aPMtbJuHrfNzsTg09BxUWKI/JiPu6G0zBVAHvTJTSz0whunNhKQ8
+         abcPxt6jNnlhY9197MMff0ZDDyDdadnQpmWWw6tGgbaGzy8H2sCJ1rCGPmlBUawpDyTz
+         LRfBAwkUPlC+izp1B64NlrkZkPvD6ztv+X1XMMisFeqHdFA7xOWYNQu6hdVdd9M8gKcj
+         9lYolSnjXITaC8c7hdlD8s+5hPw/5YLK6UuAnC8HbTovyBLje5+F9GztKjH9kKM80HAE
+         bMmkYARu5/f2n9ZqFmBl02PSmyoeYdA/buCKfh8gerYKRrfHzhmkwos4ebyP2Zypb0Kh
+         +jPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=B3nnnQAf8Ty/XcylsZpczGWC+Yx77mQlkEfBvrolNLE=;
-        b=I2ztJxjLbqhk7cXY/WpJJNIsvp/Q8546AJ2aSQXSvlBXei75KucpP8G8kZwwLxMVRa
-         BI5CjqslkBCEkd4gy5AxOnqLL4j9Tduf/5vbLwqf77j2S50QcqenlmbW7ygh3U9yFAdK
-         zqlKszWNOu8U+SjTcBymghGNfKfWweTMuQvlNoLkPWlhJy65MEMVmflxY4MrhrM04ojL
-         hUQFkYUCjTz0dqjxkVEooIM/ilXNwMTL35diQCfBMyVSsNUWGNPyIXc9sdzjiUqv5M13
-         KPig+mH2g4RF/W+xOoJn0ljG5KSJx89+0BtEsGm9tqBkM7DedasBliA5E5HULIriwCi0
-         EmHQ==
-X-Gm-Message-State: AGi0PuZvtikfO3h/vZhyacKf3yhYPrWMpHNaSI5+Xb7z41SHDcUU0EQr
-        loOFb2PPZaWyfbCLNhTTe2M52VPvfZTQ/g==
-X-Google-Smtp-Source: APiQypIngqpg8m7/vXIv76ba95cTMGW2PSunko0cCFkHTRxYWJwa+urlFCgocnHsuN3bWoKfysSnTQ==
-X-Received: by 2002:a6b:a14:: with SMTP id z20mr7385379ioi.182.1588411160208;
-        Sat, 02 May 2020 02:19:20 -0700 (PDT)
-Received: from [10.0.0.125] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id r16sm2233019ilb.32.2020.05.02.02.19.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 May 2020 02:19:19 -0700 (PDT)
-Subject: Re: [Patch net v2] net_sched: fix tcm_parent in tc filter dump
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>
-References: <20200501035349.31244-1-xiyou.wangcong@gmail.com>
- <7b3e8f90-0e1e-ff59-2378-c6e59c9c1d9e@mojatatu.com>
-Message-ID: <a18c1d1a-20a1-7346-4835-6163acb4339b@mojatatu.com>
-Date:   Sat, 2 May 2020 05:19:18 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=aPHQopP3uegPMTxg+Aep4CZznGAz3JZTwpCPsbRISYs=;
+        b=Tw1c9prbCTHEWiW7/PJhrZ8Ai83Gy7wJLleddgrf2J597WFyRSlbMKXVgW5bh947WW
+         gRhtEpilAZO56LPevw2iN7CWeAn7Oc4BtcKERL1USB0PLf0H2Fp+K1uYxvsstISDh3aG
+         RQTrNMJwDPrTcP4u76jFQ3Tf5E8zDmdRQFj1FT6Y5pLMUiP2fCHT+BJKYM8m0uMgIYyD
+         uzkJSzTdMMJiReWQfwMBat745dd/AO6Q6iY+R7cAMdiJ7kVZrBbup3+EKDTwJOEmdkKd
+         4EmpgkYJ4vP2aXJQ0Vb9cpBhZ0tZgr/LxIoPVCYw1qMZWVbwTPKyV6DmlxHPkffX+Fcb
+         e5nA==
+X-Gm-Message-State: AGi0Pub8FOmaXf7sKIaJGkWlkqH42+Y07z41+BMMG1vT87WHPkj4xJ5Y
+        ZWSouSU7TZBzRij5vmMKWutHmr9kZLbrDw==
+X-Google-Smtp-Source: APiQypL+rhFpvo0J8V5u9+Cqdvz0B4kvC0FdO359+CLV3LOLLGTbItJ1GIKLE2DurgiTERn0y3ng6g==
+X-Received: by 2002:ac2:5482:: with SMTP id t2mr4204303lfk.202.1588411750792;
+        Sat, 02 May 2020 02:29:10 -0700 (PDT)
+Received: from maxim-hplinux ([89.179.187.17])
+        by smtp.gmail.com with ESMTPSA id f26sm3988555lfc.84.2020.05.02.02.29.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 02 May 2020 02:29:10 -0700 (PDT)
+Date:   Sat, 2 May 2020 12:29:08 +0300
+From:   Maxim Petrov <mmrmaximuzz@gmail.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     mmrmaximuzz@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] stmmac: fix pointer check after utilization in
+ stmmac_interrupt
+Message-ID: <20200502092906.GA9883@maxim-hplinux>
 MIME-Version: 1.0
-In-Reply-To: <7b3e8f90-0e1e-ff59-2378-c6e59c9c1d9e@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-02 4:48 a.m., Jamal Hadi Salim wrote:
-> On 2020-04-30 11:53 p.m., Cong Wang wrote:
+The paranoidal pointer check in IRQ handler looks very strange - it
+really protects us only against bogus drivers which request IRQ line
+with null pointer dev_id. However, the code fragment is incorrect
+because the dev pointer is used before the actual check. That leads
+to undefined behavior thus compilers are free to remove the pointer
+check at all.
 
-[..]
->> Steps to reproduce this:
->>   ip li set dev dummy0 up
->>   tc qd add dev dummy0 ingress
->>   tc filter add dev dummy0 parent ffff: protocol arp basic action pass
->>   tc filter show dev dummy0 root
->>
->> Before this patch:
->>   filter protocol arp pref 49152 basic
->>   filter protocol arp pref 49152 basic handle 0x1
->>     action order 1: gact action pass
->>      random type none pass val 0
->>      index 1 ref 1 bind 1
->>
->> After this patch:
->>   filter parent ffff: protocol arp pref 49152 basic
->>   filter parent ffff: protocol arp pref 49152 basic handle 0x1
->>       action order 1: gact action pass
->>        random type none pass val 0
->>      index 1 ref 1 bind 1
-> 
-> Note:
-> tc filter show dev dummy0 root
-> should not show that filter. OTOH,
-> tc filter show dev dummy0 parent ffff:
-> should.
-> 
-> root and ffff: are distinct/unique installation hooks.
-> 
+Signed-off-by: Maxim Petrov <mmrmaximuzz@gmail.com>
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 20 +++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-Suprised no one raised this earlier - since it is so
-fundamental (we should add a tdc test for it). I went back
-to the oldest kernel i have from early 2018 and it was broken..
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 565da6498c84..ca08699f5565 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4070,24 +4070,28 @@ static int stmmac_set_features(struct net_device *netdev,
+  */
+ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
+ {
+-	struct net_device *dev = (struct net_device *)dev_id;
+-	struct stmmac_priv *priv = netdev_priv(dev);
+-	u32 rx_cnt = priv->plat->rx_queues_to_use;
+-	u32 tx_cnt = priv->plat->tx_queues_to_use;
++	u32 rx_cnt;
++	u32 tx_cnt;
+ 	u32 queues_count;
+ 	u32 queue;
+ 	bool xmac;
++	struct stmmac_priv *priv;
++	struct net_device *dev = (struct net_device *)dev_id;
+ 
++	if (unlikely(!dev)) {
++		netdev_err(NULL, "%s: invalid dev pointer\n", __func__);
++		return IRQ_NONE;
++	}
++
++	priv = netdev_priv(dev);
++	rx_cnt = priv->plat->rx_queues_to_use;
++	tx_cnt = priv->plat->tx_queues_to_use;
+ 	xmac = priv->plat->has_gmac4 || priv->plat->has_xgmac;
+ 	queues_count = (rx_cnt > tx_cnt) ? rx_cnt : tx_cnt;
+ 
+ 	if (priv->irq_wake)
+ 		pm_wakeup_event(priv->device, 0);
+ 
+-	if (unlikely(!dev)) {
+-		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
+-		return IRQ_NONE;
+-	}
+ 
+ 	/* Check if adapter is up */
+ 	if (test_bit(STMMAC_DOWN, &priv->state))
 
-Cong, your patch is good for the case where we
-want to show _all_ filters regardless of where they
-were installed but only if no parent is specified. i.e if i did this:
-tc filter show dev dummy0
-then i am asking to see all the filters for that device.
-I am actually not sure if "tc filter show dev dummy0"
-ever worked that way - but it makes sense since
-no dump-filtering is specified.
+base-commit: 6a8b55ed4056ea5559ebe4f6a4b247f627870d4c
+-- 
+2.17.1
 
-
-To illustrate, I did this:
-tc filter add dev dummy0 root protocol arp prio 49151 basic action pass
-
-And now the output looks like:
--------
-#  tc filter show dev dummy0 ingressfilter protocol arp pref 49151 basic 
-chain 0
-filter protocol arp pref 49151 basic chain 0 handle 0x2
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 2 ref 1 bind 1
-
-filter protocol arp pref 49151 basic chain 0 handle 0x1
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
-
-#  tc filter show dev dummy0 root
-filter protocol arp pref 49151 basic chain 0
-filter protocol arp pref 49151 basic chain 0 handle 0x2
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 2 ref 1 bind 1
-
-filter protocol arp pref 49151 basic chain 0 handle 0x1
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
-------
-
-
-
-If, OTOH, i specified the parent
-then only that parents filters should be displayed..
-
-cheers,
-jamal
