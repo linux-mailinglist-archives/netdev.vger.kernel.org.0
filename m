@@ -2,72 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5569C1C21E5
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 02:25:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB541C2227
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 03:34:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726951AbgEBAZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 20:25:18 -0400
-Received: from smtprelay0219.hostedemail.com ([216.40.44.219]:37310 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726352AbgEBAZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 20:25:18 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 27FA8181D341E;
-        Sat,  2 May 2020 00:25:17 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 30,2,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:491:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:2892:3138:3139:3140:3141:3142:3352:3622:3865:3867:3868:3870:3871:3874:4321:5007:6119:6120:6742:7875:10004:10400:10848:11232:11658:11914:12109:12297:12740:12760:12895:13069:13138:13231:13311:13357:13439:14659:21080:21627:30034:30054:30062:30075:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: unit54_10c38181e770c
-X-Filterd-Recvd-Size: 2162
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf13.hostedemail.com (Postfix) with ESMTPA;
-        Sat,  2 May 2020 00:25:15 +0000 (UTC)
-Message-ID: <7c15d0d43e0661d4b68d80c26fe73bfb6df38184.camel@perches.com>
-Subject: Re: [RFC PATCH bpf-next 0/6] bpf, printk: add BTF-based type
- printing
-From:   Joe Perches <joe@perches.com>
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>, ast@kernel.org,
-        daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
-        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Date:   Fri, 01 May 2020 17:25:13 -0700
-In-Reply-To: <alpine.LRH.2.21.2004301010520.23084@localhost>
-References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
-         <20200418160536.4mrvqh2lasqbyk77@ast-mbp>
-         <alpine.LRH.2.21.2004201623390.12711@localhost>
-         <7d6019da19d52c851d884731b1f16328fdbe2e3d.camel@perches.com>
-         <alpine.LRH.2.21.2004301010520.23084@localhost>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726660AbgEBBe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 21:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726503AbgEBBez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 21:34:55 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439D8C061A0C
+        for <netdev@vger.kernel.org>; Fri,  1 May 2020 18:34:55 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id q2so5620510qvd.1
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 18:34:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=NwwxzimPqqoSwBzRxjqXa4BndHO3/v5XpdehEsc5RwE=;
+        b=rAifOEUazf9H2imzP3d705CydGjDYKgaF1R77xzvEfc7W1ywbp8fhCUSzwMAq9hJGV
+         sGWYIYCLn6mKD55W+xDK3AH7qsEyuYkQwwbWpZ6vHb0bMUBB2N8HmZak1N++WksLjhZN
+         nwLh7SCg2AiFSpvgFI8zdUuW+Ox0V7jEQclYHknzgSQbxBM3rQXwOiw7Bq7eD7smqXBM
+         MAQ7Hq5MrjmW1xuTKIDoJttd6bprfaLZh8uGKSI4AwcZASdrXUssgDexJFp7RKgfe6qY
+         OJSBNbu6W+OzgQYkqdpCB0BgUT01qoTeNdnOmaTYeCkhFrdk2awBm+3XxRoihgNBRJzk
+         F22w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=NwwxzimPqqoSwBzRxjqXa4BndHO3/v5XpdehEsc5RwE=;
+        b=dJkjIzH8IuE0vgo0e7H82qNUzeh/XV1syMRWpsZ196LSMoVNTsqMJRp0qzfr/2DGAh
+         mRGOyZpp883QBlGAuhRmvXcTL3icCjWXUyo+j4UHOUBYlu+7G3zuXCZF9/JlHNKV2VtC
+         ZIdWe6Aop7qCZtaMACZQ2Q4bhetz5EFaCHWkeNeUje3fXhHYP+GKBkhWvXVnpeGz9RD4
+         Ckh2euKVusKxfEomrVTKM7uFcWXJ4BbwJkx4H/VITPxGxvFKVTNexU8oz7X2UEpv2md/
+         FeIidKVoNjzDL9L+GrpoS2JM+X6ND5PyVs5pKQbzRKpBSUp/HgPT+kFB9OpLSUOVv3sT
+         UZWA==
+X-Gm-Message-State: AGi0Pubh4h/G3E1Sd3HBTlDd9mxOqQ8sW52DhIgbATAeQqjZzpXVGUor
+        4/qD3fHeNDdpj5d5FUwdzQdb+Q==
+X-Google-Smtp-Source: APiQypJaSc+uZ2ooKN/WX99zVXn7DhDXsaPedknazbRSeS0doa20wDlmY2Mbcd22KJ8FiAbnoo2RkA==
+X-Received: by 2002:a0c:da01:: with SMTP id x1mr6798286qvj.103.1588383293006;
+        Fri, 01 May 2020 18:34:53 -0700 (PDT)
+Received: from mojatatu.com ([74.127.203.199])
+        by smtp.gmail.com with ESMTPSA id j92sm3926186qtd.58.2020.05.01.18.34.38
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 01 May 2020 18:34:52 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, dsahern@gmail.com,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net 1/1] neigh: send protocol value in neighbor create notification
+Date:   Fri,  1 May 2020 21:34:18 -0400
+Message-Id: <1588383258-11049-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-04-30 at 03:03 -0700, Alan Maguire wrote:
-> On Mon, 20 Apr 2020, Joe Perches wrote:
+When a new neighbor entry has been added, event is generated but it does not
+include protocol, because its value is assigned after the event notification
+routine has run, so move protocol assignment code earlier.
 
-> > Here as well the individual field types don't contain
-> > enough information to determine if a field should be
-> > output as %x or %u.
-> Right, we could add some more format modifiers for cases
-> like that I guess.  Currently the display formats used are
-> - numbers are represented as decimal
-> - bitfields are represented in hex
-> - pointers are obfuscated unless the 'x' option is used
-> - char arrays are printed as chars if printable,
->   [ 'l', 'i', 'k', 'e', ' ', 't', 'h', 'i', 's' ]
-> 
-> I'd be happy to add more format specifiers to control
-> these options, or tweak the defaults if needed. A
-> "print numbers in hex" option seems worthwhile perhaps?
+Fixes: df9b0e30d44c ("neighbor: Add protocol attribute")
+Cc: David Ahern <dsahern@gmail.com>
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+---
+ net/core/neighbour.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Or maybe add and use new typedefs like x8,x16,x32,x64 to the
-bpf struct definitions where u8,u16,u32,u64 are %u and
-x8,x16,x32,x64 are %x
-
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 39d37d0ef575..116139233d57 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -1956,6 +1956,9 @@ static int neigh_add(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 				   NEIGH_UPDATE_F_OVERRIDE_ISROUTER);
+ 	}
+ 
++	if (protocol)
++		neigh->protocol = protocol;
++
+ 	if (ndm->ndm_flags & NTF_EXT_LEARNED)
+ 		flags |= NEIGH_UPDATE_F_EXT_LEARNED;
+ 
+@@ -1969,9 +1972,6 @@ static int neigh_add(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		err = __neigh_update(neigh, lladdr, ndm->ndm_state, flags,
+ 				     NETLINK_CB(skb).portid, extack);
+ 
+-	if (protocol)
+-		neigh->protocol = protocol;
+-
+ 	neigh_release(neigh);
+ 
+ out:
+-- 
+2.7.4
 
