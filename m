@@ -2,141 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF6CE1C265C
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 16:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0DD31C2671
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 17:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728274AbgEBO4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 10:56:30 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:30978 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728068AbgEBO42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 10:56:28 -0400
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 042EWD3l054168;
-        Sat, 2 May 2020 10:56:27 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s28djq9v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 10:56:27 -0400
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 042EipPD076283;
-        Sat, 2 May 2020 10:56:27 -0400
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s28djq94-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 10:56:27 -0400
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 042Esoh2020742;
-        Sat, 2 May 2020 14:56:24 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma02fra.de.ibm.com with ESMTP id 30s0g58cgm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 02 May 2020 14:56:24 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 042EuMmu8782122
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 2 May 2020 14:56:22 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7BEBCAE045;
-        Sat,  2 May 2020 14:56:22 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3BDBBAE051;
-        Sat,  2 May 2020 14:56:22 +0000 (GMT)
-Received: from [9.145.175.68] (unknown [9.145.175.68])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Sat,  2 May 2020 14:56:22 +0000 (GMT)
-Subject: Re: [PATCH net-next 1/3] net: napi: add hard irqs deferral feature
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Luigi Rizzo <lrizzo@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <20200422161329.56026-1-edumazet@google.com>
- <20200422161329.56026-2-edumazet@google.com>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-Message-ID: <a8f1fbf8-b25f-d3aa-27fe-11b1f0fdae3f@linux.ibm.com>
-Date:   Sat, 2 May 2020 16:56:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1728161AbgEBPJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 11:09:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37954 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728023AbgEBPJE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 May 2020 11:09:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=IFsRGO5e1rfVXlct2Kp+RCv1fGdk2G1SnctbUVOtFHs=; b=ch1rntif43Fa9B7XMjkLBAKmi9
+        iyiyLfX7FNY908IAIM4uHfnC0vQSS/y2DOtNUx1NY3tjKHcuiMrDpoCrrx8xX16f9hA9XjvAAKevI
+        xrP5tdO+E8HSDQfbDfgrPVE5qO1X9ml26i7hJIO5nx6utQQOJTIc2Uib59IL1Cl8jcKI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jUtlB-000e5x-7H; Sat, 02 May 2020 17:08:57 +0200
+Date:   Sat, 2 May 2020 17:08:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        netdev@vger.kernel.org, Meir Lichtinger <meirl@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH net-next 1/2] ethtool: Add support for 100Gbps per lane
+ link modes
+Message-ID: <20200502150857.GC142589@lunn.ch>
+References: <20200430234106.52732-1-saeedm@mellanox.com>
+ <20200430234106.52732-2-saeedm@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200422161329.56026-2-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-05-02_07:2020-05-01,2020-05-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 suspectscore=0
- impostorscore=0 lowpriorityscore=0 phishscore=0 priorityscore=1501
- mlxscore=0 malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=999
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005020125
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200430234106.52732-2-saeedm@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22.04.20 18:13, Eric Dumazet wrote:
-> Back in commit 3b47d30396ba ("net: gro: add a per device gro flush timer")
-> we added the ability to arm one high resolution timer, that we used
-> to keep not-complete packets in GRO engine a bit longer, hoping that further
-> frames might be added to them.
+On Thu, Apr 30, 2020 at 04:41:05PM -0700, Saeed Mahameed wrote:
+> From: Meir Lichtinger <meirl@mellanox.com>
 > 
-> Since then, we added the napi_complete_done() interface, and commit
-> 364b6055738b ("net: busy-poll: return busypolling status to drivers")
-> allowed drivers to avoid re-arming NIC interrupts if we made a promise
-> that their NAPI poll() handler would be called in the near future.
+> Define 100G, 200G and 400G link modes using 100Gbps per lane
 > 
-> This infrastructure can be leveraged, thanks to a new device parameter,
-> which allows to arm the napi hrtimer, instead of re-arming the device
-> hard IRQ.
+> Signed-off-by: Meir Lichtinger <meirl@mellanox.com>
+> CC: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Aya Levin <ayal@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> ---
+>  drivers/net/phy/phy-core.c   | 17 ++++++++++++++++-
+>  include/uapi/linux/ethtool.h | 15 +++++++++++++++
+>  net/ethtool/common.c         | 15 +++++++++++++++
+>  net/ethtool/linkmodes.c      | 16 ++++++++++++++++
+>  4 files changed, 62 insertions(+), 1 deletion(-)
 > 
-> We have noticed that on some servers with 32 RX queues or more, the chit-chat
-> between the NIC and the host caused by IRQ delivery and re-arming could hurt
-> throughput by ~20% on 100Gbit NIC.
-> 
-> In contrast, hrtimers are using local (percpu) resources and might have lower
-> cost.
-> 
-> The new tunable, named napi_defer_hard_irqs, is placed in the same hierarchy
-> than gro_flush_timeout (/sys/class/net/ethX/)
-> 
+> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+> index 66b8c61ca74c..a71fc8b18973 100644
+> --- a/drivers/net/phy/phy-core.c
+> +++ b/drivers/net/phy/phy-core.c
+> @@ -8,7 +8,7 @@
+>  
+>  const char *phy_speed_to_str(int speed)
+>  {
+> -	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 75,
+> +	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 90,
+>  		"Enum ethtool_link_mode_bit_indices and phylib are out of sync. "
+>  		"If a speed or mode has been added please update phy_speed_to_str "
+>  		"and the PHY settings array.\n");
+> @@ -78,12 +78,22 @@ static const struct phy_setting settings[] = {
+>  	PHY_SETTING( 400000, FULL, 400000baseLR8_ER8_FR8_Full	),
+>  	PHY_SETTING( 400000, FULL, 400000baseDR8_Full		),
+>  	PHY_SETTING( 400000, FULL, 400000baseSR8_Full		),
+> +	PHY_SETTING( 400000, FULL, 400000baseCR4_Full		),
+> +	PHY_SETTING( 400000, FULL, 400000baseKR4_Full		),
+> +	PHY_SETTING( 400000, FULL, 400000baseLR4_ER4_FR4_Full	),
 
-Hi Eric,
-could you please add some Documentation for this new sysfs tunable? Thanks!
-Looks like gro_flush_timeout is missing the same :).
+Hi Mier, Saeed.
 
-> By default, both gro_flush_timeout and napi_defer_hard_irqs are zero.
-> 
-> This patch does not change the prior behavior of gro_flush_timeout
-> if used alone : NIC hard irqs should be rearmed as before.
-> 
-> One concrete usage can be :
-> 
-> echo 20000 >/sys/class/net/eth1/gro_flush_timeout
-> echo 10 >/sys/class/net/eth1/napi_defer_hard_irqs
-> 
-> If at least one packet is retired, then we will reset napi counter
-> to 10 (napi_defer_hard_irqs), ensuring at least 10 periodic scans
-> of the queue.
-> 
-> On busy queues, this should avoid NIC hard IRQ, while before this patch IRQ
-> avoidance was only possible if napi->poll() was exhausting its budget
-> and not call napi_complete_done().
-> 
+Could you explain this last one? Seems unlikely this is a 12 pair link
+mode. So i assume it is four pair which can do LR4, ER4 or FR4? Can
+you connect a 400000baseLR4 to a 400000baseER4 with a 10Km cable and
+it work? How do you know you have connected a 400000baseLR4 to a
+400000baseER4 with a 40Km and it is not expected to work, when looking
+at ethtool? I assume the EEPROM contents tell you if the module is
+LR4, ER4, or FR4?
 
-I was confused here for a second, so let me just clarify how this is intended
-to look like for pure TX completion IRQs:
-
-napi->poll() calls napi_complete_done() with an accurate work_done value, but
-then still returns 0 because TX completion work doesn't consume NAPI budget.
-
-> This feature also can be used to work around some non-optimal NIC irq
-> coalescing strategies.
-> 
-> Having the ability to insert XX usec delays between each napi->poll()
-> can increase cache efficiency, since we increase batch sizes.
-> 
-> It also keeps serving cpus not idle too long, reducing tail latencies.
-> 
-> Co-developed-by: Luigi Rizzo <lrizzo@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+     Andrew
