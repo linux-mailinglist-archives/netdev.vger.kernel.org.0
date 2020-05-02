@@ -2,192 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E9791C226E
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 05:06:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 474001C2277
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 05:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726896AbgEBDG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 May 2020 23:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        id S1726574AbgEBDQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 May 2020 23:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726439AbgEBDG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 23:06:27 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F8AC061A0C;
-        Fri,  1 May 2020 20:06:27 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id b6so1066257plz.13;
-        Fri, 01 May 2020 20:06:27 -0700 (PDT)
+        with ESMTP id S1726486AbgEBDQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 May 2020 23:16:27 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391A9C061A0E
+        for <netdev@vger.kernel.org>; Fri,  1 May 2020 20:16:27 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id p13so5676922qvt.12
+        for <netdev@vger.kernel.org>; Fri, 01 May 2020 20:16:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rcS4SXJymg0omkgwuj5pE9mFl3v8Rk4xC5SV4SXTbU0=;
-        b=FMAsEtV5IC6Ybl5Ntwwx86lb1DzFrAMQ2gtpD8nyX8PCtc3I/FUR85pC2zXHLb66J3
-         J20hi2yunHAsctwl/0p/iKytjxq5++8rUzzWVCFXS424OVFqLsz7l/nU/WUfzbSbkLhE
-         mxz4nj7FgxIhPratVYkRp3v1siGSmjIa/fft136HCC6qOKsy5jQtGOVezmftwwCioAL4
-         vCBPzDGrlBDcRkJcxWAzpvXyWNlE9tKNyDu76bH2TMTN3HD62QTmpbf2x2N3hWtvZ3jr
-         jr4dNLGZNDUU56dmOj4Iqz70xQ3z0U+wYKe0JgPxSzJ/SnE44C2uS8gid9XKSDi9W6x3
-         1ntg==
+        d=lca.pw; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lworb5UpeNJ31ys+5ITTrjwjHLN/UBHgYQzxeY/UWSo=;
+        b=JOixvvnm2PR5uwk2LWcLrBVanrBNhBVeaTDWR/IKBzx5R+33lRaJ1gThE7UktcTRDs
+         sy2A2TQHBNmQpgFkfvv5QY8vg5FJjy9sKTN2c56ZupeKWrJQqTTZm3O72r70AKXJlcEq
+         j5Td8mYMii7DxTf+ymu9Vv/ePUEJYop+XEsA92B4/GrxEY4SROAKQWZinQdqlZBUPws9
+         NVpPI9bEod9OZVA4WT1a11p9vAN4qK9qa3d05UKToW0eBS7HVnJerRfyMlDKULU+Xzly
+         fliUwrR5OsxievIIebshI32+WLnkdwC/M57y34G865/iTekTY692cyz7i5RaEOVKbBGq
+         EaEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rcS4SXJymg0omkgwuj5pE9mFl3v8Rk4xC5SV4SXTbU0=;
-        b=txaYyKwcEROKp6gJTYkLPSBt5YJnd1e3m3vjDM5z/dzBrEb8p5vwtEpozqQs7vPGC7
-         fO/2bHwG0yQbYSPCr2ZxY74+uNGL2PwgXIsE/fVbEA3ysophlajhDrvud23lskymuQII
-         7l0BngFaj9+90EGb3BLa0NyU658SdFx3OBdLY78A5BoQ4nLqJ/VxUUA8sXujnMQJYp53
-         PibcZ40txYJ/5ymwUQqsRez0d/WEVU+Dj/lXCudHXo0uIpBUZjTAZVR7qwv6zE6uC+BU
-         SNJpjYzJgdSE4cFHpLiSUcKUi/TurkTsEXgR56FPL/FDASdqlNJQD4hTAJvQV0320sPp
-         a20g==
-X-Gm-Message-State: AGi0PuZ0Tmo0uL9VFHIy3HMGINrH8huXFEjU+SWN4b9wNEekNl7UVJL2
-        XQiHK8bgTRs2/LOxF7QVTgAs9n67
-X-Google-Smtp-Source: APiQypJwSi7uyKe7pfSh23iLnlJVy8UfrL8U1ha0uzoV2a2qUI6uw4LeDDm1wK3FfaHtSscbIsKJAg==
-X-Received: by 2002:a17:90a:3509:: with SMTP id q9mr3152343pjb.121.1588388786336;
-        Fri, 01 May 2020 20:06:26 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e9ae])
-        by smtp.gmail.com with ESMTPSA id a26sm3041659pgd.68.2020.05.01.20.06.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 May 2020 20:06:25 -0700 (PDT)
-Date:   Fri, 1 May 2020 20:06:22 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
- compatibility
-Message-ID: <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
-References: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
- <20200501190930.ptxyml5o4rviyo26@ast-mbp.dhcp.thefacebook.com>
- <20200501192204.cepwymj3fln2ngpi@treble>
- <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
- <20200501195617.czrnfqqcxfnliz3k@treble>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lworb5UpeNJ31ys+5ITTrjwjHLN/UBHgYQzxeY/UWSo=;
+        b=qm1w5JvwXGVGPZlQgyMqOqPnQBeDE047K31vajuCQnCoBKhvPn9p5Y7tpkBZjz4yeO
+         DIv2IV0z1npZKnH9va9FGMApq+sKZbQN6Aw+ItQni+ox4mFVDbrpEFFwv4kZGFk1misU
+         CI1Q9jPm3XOhssGwsgVMixnna2v+jszPwr+7mtokJXzYua/tZKc+L5FtGS+YAoIxw4ll
+         RoYf4yuEnW487B3dCnrGLGkLB63dkX3FN/Q6buON9J7xWEO62YP7nv4+Nlxn4TSeBWey
+         MiR9ddWKlk7fmY+WA8Pl13SgrzP0RR3tmJVVRwl204bhpzMQICsJkn4aWU8W3ZzH5XLs
+         6cpA==
+X-Gm-Message-State: AGi0PuaLgXYoX1uK4RjM4cMmE38YzmUHpGWHlT2olZVC8vTCaWeh07RP
+        U9gZmqwcPOsCL3Z18Q9mlR9hqqbtMm+12Q==
+X-Google-Smtp-Source: APiQypLJj58lOu5lGcplNS+Tiyudn02eVeYcPZQIMtWaeHOntzj35Uc1/rmg1qAnaw0+uRzDjMDPZw==
+X-Received: by 2002:ad4:4c03:: with SMTP id bz3mr6821544qvb.224.1588389386189;
+        Fri, 01 May 2020 20:16:26 -0700 (PDT)
+Received: from ovpn-112-11.phx2.redhat.com (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
+        by smtp.gmail.com with ESMTPSA id c5sm4325806qkj.101.2020.05.01.20.16.24
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 01 May 2020 20:16:25 -0700 (PDT)
+From:   Qian Cai <cai@lca.pw>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Qian Cai <cai@lca.pw>
+Subject: [PATCH] net: fix memory leaks in flush_backlog() with RPS
+Date:   Fri,  1 May 2020 23:15:16 -0400
+Message-Id: <20200502031516.2825-1-cai@lca.pw>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200501195617.czrnfqqcxfnliz3k@treble>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 01, 2020 at 02:56:17PM -0500, Josh Poimboeuf wrote:
-> On Fri, May 01, 2020 at 12:40:53PM -0700, Alexei Starovoitov wrote:
-> > On Fri, May 01, 2020 at 02:22:04PM -0500, Josh Poimboeuf wrote:
-> > > On Fri, May 01, 2020 at 12:09:30PM -0700, Alexei Starovoitov wrote:
-> > > > On Thu, Apr 30, 2020 at 02:07:43PM -0500, Josh Poimboeuf wrote:
-> > > > > Objtool decodes instructions and follows all potential code branches
-> > > > > within a function.  But it's not an emulator, so it doesn't track
-> > > > > register values.  For that reason, it usually can't follow
-> > > > > intra-function indirect branches, unless they're using a jump table
-> > > > > which follows a certain format (e.g., GCC switch statement jump tables).
-> > > > > 
-> > > > > In most cases, the generated code for the BPF jump table looks a lot
-> > > > > like a GCC jump table, so objtool can follow it.  However, with
-> > > > > RETPOLINE=n, GCC keeps the jump table address in a register, and then
-> > > > > does 160+ indirect jumps with it.  When objtool encounters the indirect
-> > > > > jumps, it can't tell which jump table is being used (or even whether
-> > > > > they might be sibling calls instead).
-> > > > > 
-> > > > > This was fixed before by disabling an optimization in ___bpf_prog_run(),
-> > > > > using the "optimize" function attribute.  However, that attribute is bad
-> > > > > news.  It doesn't append options to the command-line arguments.  Instead
-> > > > > it starts from a blank slate.  And according to recent GCC documentation
-> > > > > it's not recommended for production use.  So revert the previous fix:
-> > > > > 
-> > > > >   3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
-> > > > > 
-> > > > > With that reverted, solve the original problem in a different way by
-> > > > > getting rid of the "goto select_insn" indirection, and instead just goto
-> > > > > the jump table directly.  This simplifies the code a bit and helps GCC
-> > > > > generate saner code for the jump table branches, at least in the
-> > > > > RETPOLINE=n case.
-> > > > > 
-> > > > > But, in the RETPOLINE=y case, this simpler code actually causes GCC to
-> > > > > generate far worse code, ballooning the function text size by +40%.  So
-> > > > > leave that code the way it was.  In fact Alexei prefers to leave *all*
-> > > > > the code the way it was, except where needed by objtool.  So even
-> > > > > non-x86 RETPOLINE=n code will continue to have "goto select_insn".
-> > > > > 
-> > > > > This stuff is crazy voodoo, and far from ideal.  But it works for now.
-> > > > > Eventually, there's a plan to create a compiler plugin for annotating
-> > > > > jump tables.  That will make this a lot less fragile.
-> > > > 
-> > > > I don't like this commit log.
-> > > > Here you're saying that the code recognized by objtool is sane and good
-> > > > whereas well optimized gcc code is somehow voodoo and bad.
-> > > > That is just wrong.
-> > > 
-> > > I have no idea what you're talking about.
-> > > 
-> > > Are you saying that ballooning the function text size by 40% is well
-> > > optimized GCC code?  It seems like a bug to me.  That's the only place I
-> > > said anything bad about GCC code.
-> > 
-> > It could be a bug, but did you benchmark the speed of interpreter ?
-> > Is it faster or slower with 40% more code ?
-> > Did you benchmark it on other archs ?
-> 
-> I thought we were in agreement that 40% text growth is bad.  Isn't that
-> why you wanted to keep 'goto select_insn' for the retpoline case?
+netif_receive_skb_list_internal() could call enqueue_to_backlog() to put
+some skb to softnet_data.input_pkt_queue and then in
+ip_route_input_slow(), it allocates a dst_entry to be used in
+skb_dst_set(). Later,
 
-Let me see whether I got this right.
-In first the sentence above you're claiming that I've agreed that 
-'goto select_insn' is bad for retpoline case and in the second sentence
-you're saying that I wanted to keep it because it's bad?
-In other words you're saying I wanted bad code for retpoline case for
-some mischievous purpose?
-Do you really think so or just trolling?
+cleanup_net
+  default_device_exit_batch
+    unregister_netdevice_many
+      rollback_registered_many
+        flush_all_backlogs
 
-Let's look at the facts.
-I've applied your patch and the kernel crashed on the very first test in
-selftests/bpf which makes me believe that you only compile tested it.
-Taking the question "is 40% text growth is bad?" out of context... Ohh yes.
-but if 40% extra code gives 10% speedup to interpreter it's suddenly good, right?
-Since you didn't run basic tests I don't think you've tested performance either.
-So this direct->indirect patch might cause performance degradation to
-architectures that don't have JIT.
-On x86-64 JIT=y is the default, so I'm fine taking that performance risk
-only for the case where that risk has to be taken. In other words to help
-objtool understand the code and only for the case where objtool cannot do
-it with existing code.
-The 40% potential text decrease after direct->indirect transiton is
-irrelevant here. It must be a separate patch after corresponding
-performance benchmarking is done.
-Just claiming in commit log that current code is obviously bad
-is misleading to folks who will be reading it later.
+will call flush_backlog() for all CPUs which would call kfree_skb() for
+each skb on the input_pkt_queue without calling skb_dst_drop() first.
 
-Also as I explained earlier direct->indirect in C is not a contract
-for the compiler. Currently there is single C line:
-goto *jumptable[insn->code];
-but gcc/clang may generate arbitrary number of indirect jumps
-for this function.
-Changing the macro from "goto select_insn" to "goto *jumptable"
-messes with compiler optimizations and there is no guarantee
-that the code is going to be better or worse.
-Why do you think there are two identical macros there?
-#define CONT     ({ insn++; goto select_insn; })
-#define CONT_JMP ({ insn++; goto select_insn; })
-Why not one?
-The answer is in old patch from 2014:
-https://patchwork.ozlabs.org/project/netdev/patch/1393910304-4004-2-git-send-email-ast@plumgrid.com/
-+#define CONT ({insn++; LOAD_IMM; goto select_insn; })
-+#define CONT_JMP ({insn++; LOAD_IMM; goto select_insn; })
-+/* some compilers may need help:
-+ * #define CONT_JMP ({insn++; LOAD_IMM; goto *jumptable[insn->code]; })
-+ */
+unreferenced object 0xffff97008e4c4040 (size 176):
+ comm "softirq", pid 0, jiffies 4295173845 (age 32012.550s)
+ hex dump (first 32 bytes):
+   00 d0 a5 74 04 97 ff ff 40 72 1a 96 ff ff ff ff  ...t....@r......
+   c1 a3 c5 95 ff ff ff ff 00 00 00 00 00 00 00 00  ................
+ backtrace:
+   [<0000000030483fae>] kmem_cache_alloc+0x184/0x430
+   [<000000007ae17545>] dst_alloc+0x8e/0x128
+   [<000000001efe9a1f>] rt_dst_alloc+0x6f/0x1e0
+   rt_dst_alloc at net/ipv4/route.c:1628
+   [<00000000e67d4dac>] ip_route_input_rcu+0xdfe/0x1640
+   ip_route_input_slow at net/ipv4/route.c:2218
+   (inlined by) ip_route_input_rcu at net/ipv4/route.c:2348
+   [<000000009f30cbc0>] ip_route_input_noref+0xab/0x1a0
+   [<000000004f53bd04>] arp_process+0x83a/0xf50
+   arp_process at net/ipv4/arp.c:813 (discriminator 1)
+   [<0000000061fd547d>] arp_rcv+0x276/0x330
+   [<0000000007dbfa7a>] __netif_receive_skb_list_core+0x4d2/0x500
+   [<0000000062d5f6d2>] netif_receive_skb_list_internal+0x4cb/0x7d0
+   [<000000002baa2b74>] gro_normal_list+0x55/0xc0
+   [<0000000093d04885>] napi_complete_done+0xea/0x350
+   [<00000000467dd088>] tg3_poll_msix+0x174/0x310 [tg3]
+   [<00000000498af7d9>] net_rx_action+0x278/0x890
+   [<000000001e81d7e6>] __do_softirq+0xd9/0x589
+   [<00000000087ee354>] irq_exit+0xa2/0xc0
+   [<000000001c4db0cd>] do_IRQ+0x87/0x180
 
-That was the patch after dozens of performance experiments
-with different gcc versions on different cpus.
-Six years ago the interpreter performance could be improved
-if _one_ of these macros replaced direct with indirect
-for certain versions of gcc. But not both macros.
+Signed-off-by: Qian Cai <cai@lca.pw>
+---
+ net/core/dev.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-To be honest I don't think you're interested in doing performance
-analysis here. You just want to shut up that objtool warning and
-move on, right? So please do so without making misleading statements
-about goodness or badness of generated code.
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 522288177bbd..b898cd3036da 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5496,6 +5496,7 @@ static void flush_backlog(struct work_struct *work)
+ 	skb_queue_walk_safe(&sd->input_pkt_queue, skb, tmp) {
+ 		if (skb->dev->reg_state == NETREG_UNREGISTERING) {
+ 			__skb_unlink(skb, &sd->input_pkt_queue);
++			skb_dst_drop(skb);
+ 			kfree_skb(skb);
+ 			input_queue_head_incr(sd);
+ 		}
+-- 
+2.21.0 (Apple Git-122.2)
 
-Thanks
