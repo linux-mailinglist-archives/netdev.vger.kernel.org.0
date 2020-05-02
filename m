@@ -2,76 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76AB01C282D
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 22:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 820B71C28AC
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 00:50:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728540AbgEBUKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 16:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728484AbgEBUKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 16:10:00 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C397AC061A0C;
-        Sat,  2 May 2020 13:10:00 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id s10so5086541plr.1;
-        Sat, 02 May 2020 13:10:00 -0700 (PDT)
+        id S1728603AbgEBWuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 18:50:04 -0400
+Received: from mta-p8.oit.umn.edu ([134.84.196.208]:54294 "EHLO
+        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728581AbgEBWuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 18:50:03 -0400
+X-Greylist: delayed 413 seconds by postgrey-1.27 at vger.kernel.org; Sat, 02 May 2020 18:50:03 EDT
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 49F3zy3xg1z9vCDJ
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 22:43:10 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p8.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id i_3Y5xIXtJAQ for <netdev@vger.kernel.org>;
+        Sat,  2 May 2020 17:43:10 -0500 (CDT)
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 49F3zy2t6vz9vCD1
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 17:43:10 -0500 (CDT)
+Received: by mail-qt1-f197.google.com with SMTP id z3so15874203qtb.6
+        for <netdev@vger.kernel.org>; Sat, 02 May 2020 15:43:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=NNYnyHd7wPwHHcfClp0Z4S4fofjD7iMF04FKC5dbzIU=;
-        b=HUflaO23p62DZdDEeTCccMuKW1xuIrzTP24VJ00PZ0iI3A3degj7m9NeCg2Lhd9+iu
-         5WVff+AD4yrXEIcO/YF308KK83gm43pkWA2/Zt91mNvSDmTfAyRRqQgxaIpCTsPMxrjH
-         6OzYNiFJV/y1aZoA2AmaQBZpuOsM0spnViMRrBKzYBilrS4WTR9uGJlZmt1z9/ZDWp6Q
-         ki+14BLS0swWqhJk9MWHifGDpJrEYReuUM43hRWT6DFJ80GjcK7UeCjmrlcV0gYwUXGx
-         co1aVM6/bvXIckKBo2tqYFUOv4Piff4/jmn7f96xEm8WmMe4WzQ6k8zTHICRUnPbwus/
-         ghCw==
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=KR1J6K/N/jgMtmPG7Tj5KjyDT0kXwPVMrBemGwfcPxM=;
+        b=PKTnIp3Pp+s6IVQhP198ve09phFiYcts74X67JMi3qpMhxginR5r/ZHjyWetLSWgpn
+         GRLkmBXBageZfi/3I4BiDAnqAxm2oKXTfqKpypSPfPhy3oDEXEqIa57TfDvHoSUqZFyF
+         TdSEMr68j6SydX9Ct12JCG3rXxClXGMeK4oAKmbIJbAKCRm1nes812WBiLwaDTB98JDg
+         fdlvPZsF7Ke1PZC+6JH/oOBkWi56+Bn3nOQqcw/Ko3emhpsKRMFhud9upozve7BbgCGo
+         triXpGg7S7Q8WXp072G5ZHOjkiYvh0r5ALUPQwh9zifi8wWXcNKJm4rwLmxPHra6StJx
+         nTpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=NNYnyHd7wPwHHcfClp0Z4S4fofjD7iMF04FKC5dbzIU=;
-        b=G9T+jJbjXac1MufkVNToBA8+HGdFtsBe5Fr3W3LQK8YoAKtnor73hfETwshE46DMyi
-         M4FZRF1QmIN5t/uKHNrl583JbB3tT7YTtl0+4Usc8m9LYH/1b6KOsManaK1wPnq8i2qR
-         QsMF2CuN6ds19XUuKy8JCefPZLMbD9F4lyA/ZR/rOLsVsHim+ziPk/WtUiUtryg/YM0U
-         LJMzIBaNwN/zR4K1E2/SjSVTA22WVhs4iVLLIFlBaoVBd3GAOB4zJdZlB/j3fZZTYu+F
-         1D/PRRFT0Hvm7Do6aYh7fOOty/jKzGlMlrfxIi77epEDwCcco5NEZS2Pza+08ChVY1s7
-         pnLw==
-X-Gm-Message-State: AGi0PubK8tyWc9MtxGp/RNuvp5iFvfDSX04WUjkOCln2o3ZUnglvAAL6
-        f2S7NulRJ4Q5h84m1w02OEhu/cs+
-X-Google-Smtp-Source: APiQypLQCn9ULLnHMXJdtOgn4OPohL36oTa6V/KLfBWO3qMDtEuBRGy6K++hW2E1tPCRZ0WoWPz23w==
-X-Received: by 2002:a17:902:bd02:: with SMTP id p2mr10639006pls.72.1588450200432;
-        Sat, 02 May 2020 13:10:00 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id c4sm2836084pjs.0.2020.05.02.13.09.59
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KR1J6K/N/jgMtmPG7Tj5KjyDT0kXwPVMrBemGwfcPxM=;
+        b=TtR3fFQMBYTknaz2jyu6faQaW86ZvJI2xxUQfpRP5c72mfKLNIKMCgkxqQipq7mqno
+         SYf4J//aD2Kin0h9/IUsNLUL3AUI+Q3i/Jq/tnGM3+xTgKTHbaHi2wxYAjDICSF66PNU
+         /FLazvTWLnf2sCyfw0xJruqtY0GhD6aAy0Ad8jxnApAs8VngvpF33wGGlVZZg+EKtSKA
+         b57/mVK2poTxEsBNMMkvYPued3FN1bc90fFT5wTGtIEeD0HNlw2d8wL4+cQ5j56L7fH8
+         bb+jlcMc5RenxxFCS+s5m5Vzhp0Qa9yw2Gp9a9IdK3X36YOfLOSV4AwTLjzts3hrZPmT
+         xDkA==
+X-Gm-Message-State: AGi0PuZki4PK6JvQNKIXkew8LxQcVsNZhf98f7ykHD0oMXgIB5XTNBz1
+        9PyovFBn2Pzaj2bKQZTPBvSlAV2/kU8L4bMXobAGTfMQ1cR2+1VIdsPYEtPVikW7nshxaGKH2sx
+        pDtx2zhGwh+CFXraymijR
+X-Received: by 2002:ac8:39a7:: with SMTP id v36mr10349297qte.387.1588459389749;
+        Sat, 02 May 2020 15:43:09 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJVoXz32Eihyqk5u9MNYq2tHVXWisKM8exVuCyk24JqmZEeXkVmiFsvZFVPDfijC7XmCArdfw==
+X-Received: by 2002:ac8:39a7:: with SMTP id v36mr10349272qte.387.1588459389296;
+        Sat, 02 May 2020 15:43:09 -0700 (PDT)
+Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
+        by smtp.gmail.com with ESMTPSA id u24sm5896172qkk.84.2020.05.02.15.43.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 May 2020 13:09:59 -0700 (PDT)
-Date:   Sat, 2 May 2020 13:09:58 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     vincent.cheng.xh@renesas.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 3/3] ptp: ptp_clockmatrix: Add adjphase() to
- support PHC write phase mode.
-Message-ID: <20200502200958.GB30104@localhost>
-References: <1588390538-24589-1-git-send-email-vincent.cheng.xh@renesas.com>
- <1588390538-24589-4-git-send-email-vincent.cheng.xh@renesas.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1588390538-24589-4-git-send-email-vincent.cheng.xh@renesas.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Sat, 02 May 2020 15:43:08 -0700 (PDT)
+From:   wu000273@umn.edu
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, oss-drivers@netronome.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kjlu@umn.edu,
+        wu000273@umn.edu
+Subject: [PATCH] nfp: abm: fix a memory leak bug
+Date:   Sat,  2 May 2020 17:42:59 -0500
+Message-Id: <20200502224259.1477-1-wu000273@umn.edu>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 01, 2020 at 11:35:38PM -0400, vincent.cheng.xh@renesas.com wrote:
-> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
-> 
-> Add idtcm_adjphase() to support PHC write phase mode.
-> 
-> Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
+From: Qiushi Wu <wu000273@umn.edu>
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+In function nfp_abm_vnic_set_mac, pointer nsp is allocated by nfp_nsp_open.
+But when nfp_nsp_has_hwinfo_lookup fail, the pointer is not released,
+which can lead to a memory leak bug. Fix this issue by adding
+nfp_nsp_close(nsp) in the error path.
+
+Signed-off-by: Qiushi Wu <wu000273@umn.edu>
+---
+ drivers/net/ethernet/netronome/nfp/abm/main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/netronome/nfp/abm/main.c b/drivers/net/ethernet/netronome/nfp/abm/main.c
+index 9183b3e85d21..354efffac0f9 100644
+--- a/drivers/net/ethernet/netronome/nfp/abm/main.c
++++ b/drivers/net/ethernet/netronome/nfp/abm/main.c
+@@ -283,6 +283,7 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
+ 	if (!nfp_nsp_has_hwinfo_lookup(nsp)) {
+ 		nfp_warn(pf->cpp, "NSP doesn't support PF MAC generation\n");
+ 		eth_hw_addr_random(nn->dp.netdev);
++		nfp_nsp_close(nsp);
+ 		return;
+ 	}
+ 
+-- 
+2.17.1
+
