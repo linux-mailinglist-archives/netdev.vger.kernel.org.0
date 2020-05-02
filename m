@@ -2,84 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BF471C2476
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 12:16:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8DC1C247E
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 12:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726896AbgEBKQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 06:16:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56748 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726548AbgEBKQu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 May 2020 06:16:50 -0400
-Received: from coco.lan (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9FC192137B;
-        Sat,  2 May 2020 10:16:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588414609;
-        bh=gRdDQ4UPhds1fw6akroO5DSN+kXJ/Jobhw+m6BxY8+c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=0xTBaLfvRm2dyp/S59pNxBJoQqhHdn1nlD9DQiWfNSCqbETQzIzai5qoNA4v81yJd
-         c6n0A2ipkMXhaYQJDgOSg6DzCGjO23LrWhQ7Yi4U6u/1Ipy1HF2RVYEY2D9lMgqu2O
-         5QgApv55CZMZ2JCHyClrvvw1d3yXbX06r551M5hA=
-Date:   Sat, 2 May 2020 12:16:41 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Mike Rapoport <rppt@linux.ibm.com>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Marc Zyngier <maz@kernel.org>, Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Harry Wei <harryxiyou@gmail.com>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Tejun Heo <tj@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Marcos Paulo de Souza <marcos.souza.org@gmail.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Rob Herring <robh@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-ia64@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 07/14] docs: add IRQ documentation at the core-api book
-Message-ID: <20200502110438.1aad7d86@coco.lan>
-In-Reply-To: <20200502074133.GC342687@linux.ibm.com>
-References: <cover.1588345503.git.mchehab+huawei@kernel.org>
-        <2da7485c3718e1442e6b4c2dd66857b776e8899b.1588345503.git.mchehab+huawei@kernel.org>
-        <20200502074133.GC342687@linux.ibm.com>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1727778AbgEBK1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 06:27:36 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:41548 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726574AbgEBK1f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 May 2020 06:27:35 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 26E951F4C475056ECB60;
+        Sat,  2 May 2020 18:27:30 +0800 (CST)
+Received: from [127.0.0.1] (10.166.215.99) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Sat, 2 May 2020
+ 18:27:22 +0800
+To:     <tj@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
+        <netdev@vger.kernel.org>,
+        "Libin (Huawei)" <huawei.libin@huawei.com>,
+        <yangyingliang@huawei.com>, <guofan5@huawei.com>,
+        <wangkefeng.wang@huawei.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Subject: cgroup pointed by sock is leaked on mode switch
+Message-ID: <03dab6ab-0ffe-3cae-193f-a7f84e9b14c5@huawei.com>
+Date:   Sat, 2 May 2020 18:27:21 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.166.215.99]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Sat, 2 May 2020 10:41:33 +0300
-Mike Rapoport <rppt@linux.ibm.com> escreveu:
+Hi,
 
-> Hello Mauro,
-> 
-> On Fri, May 01, 2020 at 05:37:51PM +0200, Mauro Carvalho Chehab wrote:
-> > There are 4 IRQ documentation files under Documentation/*.txt.
-> > 
-> > Move them into a new directory (core-api/irq) and add a new
-> > index file for it.  
-> 
-> Just curious, why IRQ docs got their subdirectory and DMA didn't :)
+I got an oom panic because cgroup is leaked.
 
-Heh, you got me... :-)
+Here is the steps :
+   - run a docker with --cap-add sys_admin parameter and the systemd 
+process in the docker uses both cgroupv1 and cgroupv2
+   - ssh/exit from host to docker repeately
 
-The rationale I used is that DMA fits nicely being close to other 
-memory related documents.  As those currently don't have a subdir,
-I opted to not create a DMA-specific dir. I admit that his is a
-weak reason. I wouldn't mind placing them on a separate subdir,
-if you think it would be worth.
+I find the number nr_dying_descendants is increasing:
+linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
+'^nr_dying_descendants [^0]'  {} +
+/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 80
+/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
+1
+/sys/fs/cgroup/unified/lxc/cgroup.stat:nr_dying_descendants 79
+/sys/fs/cgroup/unified/lxc/5f1fdb8c54fa40c3e599613dab6e4815058b76ebada8a27bc1fe80c0d4801764/cgroup.stat:nr_dying_descendants 
+78
+/sys/fs/cgroup/unified/lxc/5f1fdb8c54fa40c3e599613dab6e4815058b76ebada8a27bc1fe80c0d4801764/system.slice/cgroup.stat:nr_dying_descendants 
+78
+
+
+The situation is as same as the commit bd1060a1d671 ("sock, cgroup: add 
+sock->sk_cgroup") describes.
+"On mode switch, cgroup references which are already being pointed to by 
+socks may be leaked."
+
+Do we have a fix for this leak now ?
+
+Or how  about fix this by record the cgrp2 pointer, then put it when sk 
+is freeing like this:
+
+diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
+index d9bd671105e2..cbb1e76ea305 100644
+--- a/include/linux/cgroup-defs.h
++++ b/include/linux/cgroup-defs.h
+@@ -770,6 +770,7 @@ struct sock_cgroup_data {
+  #endif
+          u64        val;
+      };
++    struct cgroup *cgrpv2;
+  };
+
+  /*
+@@ -802,6 +803,7 @@ static inline void sock_cgroup_set_prioidx(struct 
+sock_cgroup_data *skcd,
+          return;
+
+      if (!(skcd_buf.is_data & 1)) {
++        WRITE_ONCE(skcd->cgrpv2, skcd_buf.val);
+          skcd_buf.val = 0;
+          skcd_buf.is_data = 1;
+      }
+@@ -819,6 +821,7 @@ static inline void sock_cgroup_set_classid(struct 
+sock_cgroup_data *skcd,
+          return;
+
+      if (!(skcd_buf.is_data & 1)) {
++        WRITE_ONCE(skcd->cgrpv2, skcd_buf.val);
+          skcd_buf.val = 0;
+          skcd_buf.is_data = 1;
+      }
+diff --git a/net/core/sock.c b/net/core/sock.c
+index a0dda2bf9d7c..7c761ef2d32e 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1520,6 +1520,10 @@ static void sk_prot_free(struct proto *prot, 
+struct sock *sk)
+      slab = prot->slab;
+
+      cgroup_sk_free(&sk->sk_cgrp_data);
++    if (sk->sk_cgrp_data.cgrpv2) {
++        cgroup_put(sk->sk_cgrp_data.cgrpv2);
++        sk->sk_cgrp_data.cgrpv2 = NULL;
++    }
+      mem_cgroup_sk_free(sk);
+      security_sk_free(sk);
+      if (slab != NULL)
+
 
 Thanks,
-Mauro
+Yang
+
