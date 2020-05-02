@@ -2,307 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A55731C2400
-	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 10:29:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17DA71C2402
+	for <lists+netdev@lfdr.de>; Sat,  2 May 2020 10:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726759AbgEBI3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 04:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725785AbgEBI27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 04:28:59 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E517C061A0C
-        for <netdev@vger.kernel.org>; Sat,  2 May 2020 01:28:59 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id x25so2528179wmc.0
-        for <netdev@vger.kernel.org>; Sat, 02 May 2020 01:28:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=/8TOEfn/f3krSiYbART1jbzpegPNU+rqldlhVTZ6ajA=;
-        b=hfDAe+wsN7no5kxGU2KlUBk+ExyDLbQWlnAHD1JHfrUaMV+UrNJxlcimZg61zPKdzy
-         HyJLujJR8BR2VeLjo+ueX6vaBAHARAUSTqD0ofsylJwCcNug030EexFeJ87pVuJ8qEY1
-         W9+HxDBowxbWvOpzfFUpfpRMDxnlw4ts5GOKEWJcGjigagQrntzSgbI6T8UFxVTEc5r4
-         /TRYnVUijw4V1tQv/Q60Gkg3daA40Q4LfPa72sIbRX73cYE4yCEFe2S0G9I5f3jhGRiu
-         MP6C7NnpHQZBq2Iw21q28urWzXXSGfh1SskHILRFFMuqNKIRWZwxR01AACxAN8vwIlM6
-         kwHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=/8TOEfn/f3krSiYbART1jbzpegPNU+rqldlhVTZ6ajA=;
-        b=GkUelFWSQUYaahq3L1goapsqErwJOCsYTBgCZ9jKji7k0cUXiGelpgr8D+EpXpd4MC
-         s6hUz0py+HK3LcVZjYFaoQOcVlcJY2XEOlNdsiNLOa7k9vKPjK8SoEcawY6YICOo6sXf
-         9hSVu0rDpOhPpYYLhi+/BrzrijJaIl6BDtOYL4E6yBmXkSrwFn67DlhUB86Fy6Kc3Unk
-         iQPJhfrlzQooln1Euq71Wb2eXep41FMSBXJQLYSNPMeCKnUkDazz7yAtGqXfxKKNceB9
-         o1nK4/2x5LHXJURmWaQ7OnIwKuvUHGbTDDA2YnIu4bIs4ES/19EYyGntBxA5SR/IYhlJ
-         LVZw==
-X-Gm-Message-State: AGi0PuY7Neb5DAZ5l1LuGW/VlP2LQDnpWznZ4DPysOOoexBjdXcSwW0C
-        J6q5Ne7G73JJdyzS+cApsIg=
-X-Google-Smtp-Source: APiQypLDUDLD7AnKeaZeCapFvOzYfc3IcYuUqCkUk23TXjFVhmnZele0YYN1nvgGhcGUi6tTcemOwg==
-X-Received: by 2002:a7b:cd10:: with SMTP id f16mr3764733wmj.21.1588408138033;
-        Sat, 02 May 2020 01:28:58 -0700 (PDT)
-Received: from white ([188.27.146.47])
-        by smtp.gmail.com with ESMTPSA id y9sm3048662wmm.26.2020.05.02.01.28.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 May 2020 01:28:57 -0700 (PDT)
-Date:   Sat, 2 May 2020 11:28:56 +0300
-From:   Lese Doru Calin <lesedorucalin01@gmail.com>
-To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v6] net: Option to retrieve the pending data from send queue
- of UDP socket
-Message-ID: <20200502082856.GA3152@white>
+        id S1726745AbgEBIct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 04:32:49 -0400
+Received: from sonic304-21.consmr.mail.ir2.yahoo.com ([77.238.179.146]:35719
+        "EHLO sonic304-21.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725785AbgEBIcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 04:32:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1588408366; bh=vUjtVOr1LCIoQU4EvLR2F9kwRcMR3abpMUhjHVo2tTA=; h=Date:From:Reply-To:Subject:References:From:Subject; b=icDB1JZy/gSdJT/QehsZaE8TYycCDZbUK9sfohiLhg9QWSkG/aq4pI8M/eIT+10Ozp45aa8NxRRQrAeYT0njGI0XOZjDldZAfGcUVmDqx22aPzsX37/p+4igfUzgSMEE5lu7gZLUjNwqeYKENVWq8aED8p/m31ZlOvElGD2ifXYWmt7+9MaaXFZI6MdwZZhc3osKcnEzPUgfU4IDaMlTrfqvdNkZ3kkdY11fccEIhaaTzp/hO1umfu6MnhohFOFLOy5h5hX27oYgxOR1K9JmW2U28tpWXN7XW2/1kzVy5DmVPGsxISt2YBA2mxrB/06ja52dIww3ew7lWGRWqNMeVQ==
+X-YMail-OSG: b8F7ikcVM1mppIihb33EONWBYSxwOiHTWrxjFxYxW2umz.lvrmPQ7XMP0HGcI58
+ NDVMxngbEtLU2dVjxvrpOFoEKz7dmU.uvJ0AUgZG9YY2MQl8uoajv6QHvEpm..w9PPX_6KYnWA6Z
+ TnU5npAhFKkyS4k.L4IAXdAEmXl3tJjmluI0wVrFW6ypYEKY5QYdAWRryhS.7DL7XOaWEuljo6tN
+ hn92rDSsm6dzC69mtE6.Y4IYIWihWx5PzOOvjKlov5FT1oJMJMHz9.QhT9mrSqsqo4tNTjOEw6uO
+ xv76fAEUBV1S5Syel.O1Yd9Fw1g5c.xqA4X1lZpWAkMW4C5qdCTUz38hK0gi.D9vU5m3.YQ78Wb1
+ jJTfsqwg85lS23LgA2y.P0m9YvNsOVjSqslxDGdbiu4q_4mZ8ElYm_Z99H.EVx2UW9NQ5xMGQe97
+ Pj3L9xklVZBzFiU9s8ari.n6Z.tGwaZ8yw7YejX1dtttk4e9ux1ny.U04KjaktbLPwzFEwGvyzZs
+ .pOyJlcR379SoDeet5aedKqd10jyIcsAu3T6lMh0ZpJrY.wAvJf6c4o_s3F7VA.wgOxntj0qvB83
+ DF.g3JWqr5I1.Efft8Eokfrw813Yycq5LEc_CWbGr5sEU3pN4w7uCPqCvtJR05Ffy4_Qw9n_k22R
+ 9FCNy_cmgQZiVJ3O9WplgUyMrFxJ3ESJGKl78FMuAlNzaSdTkl7QDzhu0uBtFr4Bj9m2SKvpoYWH
+ GjbsW5yoB1haJRtrAQmAxVmP.U0.U1CVczKImmKgzLHkvGBKpw1krYatdaICcVvNReoW4XslaDi8
+ 0MbTdF_YiqfPArPGnXeAX5y2ZqpfcG.vpr.KsmMWrU1GnMHCMAIqGC8zncvDg6imHUMka3__DbnA
+ IfYxl54T9IqJS8OTvQaY89S7ax5LIA3NqpbQufDgBzz_aLxwG7oHiikvLEV9wlWo35SmVSzhU6F.
+ J_rn5hEUjT79Gk9r3QKBPQluN.h4vH57aMyEBm1sWMcNc7CHqqmKn6D_jNKM7XP.ORd9sysLMNW3
+ uiv2JuRsWbITlyy3Ou0izVErMfZQWf5j0ko7MnoPDAyH73AJ8Qrr4Xhc7ayA0Y04N1dVzfT.2PPR
+ pD0Vst5u5d0ofKu.ES2jH5aAvknCfSegC2nay7s_Yv9G2bpDglC7lnGxZbjluOGgMjGMvFjZ2e4n
+ wB5NNoe5wLPNqUmn7j4xISPlmZBOX.4qJrwVUZxmh5oTttJKhLUiWyWAPaXqzxOl5QWdNKxNiASc
+ vkvF1gkgzZEO1u1KMvL6aEIvoj99mFuGoNe7P32wltpweW8NvKUTDESVBtMisDlJPX0auZg--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ir2.yahoo.com with HTTP; Sat, 2 May 2020 08:32:46 +0000
+Date:   Sat, 2 May 2020 08:32:44 +0000 (UTC)
+From:   REJOY <mrsrajoysmrsrajoyshassain@gmail.com>
+Reply-To: rejoyhassain02@gmail.com
+Message-ID: <207580047.100025.1588408364665@mail.yahoo.com>
+Subject: Thank you for your anticipated co-operation.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <207580047.100025.1588408364665.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.15756 YMailNodin Mozilla/5.0 (Windows NT 5.1; rv:52.0) Gecko/20100101 Firefox/52.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In this year's edition of GSoC, there is a project idea for CRIU to add support
-for checkpoint/restore of cork-ed UDP sockets. But to add it, the kernel API needs
-to be extended.
-This is what this patch does. It adds a new command, called SIOUDPPENDGET, to the 
-ioctl syscall regarding UDP sockets, which stores the pending data from the write
-queue and the destination address in a struct msghdr. The arg for ioctl needs to 
-be a pointer to a user space struct msghdr. The syscall returns the number of writed
-bytes, if successful, or error. To retrive the data requires the CAP_NET_ADMIN
-capability.
 
-Signed-off-by: Lese Doru Calin <lesedorucalin01@gmail.com>
----
- include/linux/socket.h       |   2 +
- include/uapi/linux/sockios.h |   3 +
- net/ipv4/udp.c               | 145 +++++++++++++++++++++++++++++++----
- net/socket.c                 |   4 +-
- 4 files changed, 139 insertions(+), 15 deletions(-)
 
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 54338fac45cb..632ba0ea6709 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -351,6 +351,8 @@ struct ucred {
- #define IPX_TYPE	1
- 
- extern int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_storage *kaddr);
-+extern int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
-+			     void __user *uaddr, int __user *ulen);
- extern int put_cmsg(struct msghdr*, int level, int type, int len, void *data);
- 
- struct timespec64;
-diff --git a/include/uapi/linux/sockios.h b/include/uapi/linux/sockios.h
-index 7d1bccbbef78..3639fa906604 100644
---- a/include/uapi/linux/sockios.h
-+++ b/include/uapi/linux/sockios.h
-@@ -153,6 +153,9 @@
- #define SIOCSHWTSTAMP	0x89b0		/* set and get config		*/
- #define SIOCGHWTSTAMP	0x89b1		/* get config			*/
- 
-+/* UDP socket calls*/
-+#define SIOUDPPENDGET 0x89C0	/* get the pending data from write queue */
-+
- /* Device private ioctl calls */
- 
- /*
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 32564b350823..f729a5e7f90b 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1620,6 +1620,133 @@ static int first_packet_length(struct sock *sk)
- 	return res;
- }
- 
-+static void udp_set_source_addr(struct sock *sk, struct msghdr *msg,
-+				int *addr_len, u32 addr, u16 port)
-+{
-+	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
-+
-+	if (sin) {
-+		sin->sin_family = AF_INET;
-+		sin->sin_port = port;
-+		sin->sin_addr.s_addr = addr;
-+		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
-+		*addr_len = sizeof(*sin);
-+
-+		if (cgroup_bpf_enabled)
-+			BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
-+					 (struct sockaddr *)sin);
-+	}
-+}
-+
-+static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
-+{
-+	int copy, copied = 0, err = 0;
-+	struct sk_buff *skb;
-+
-+	skb_queue_walk(&sk->sk_write_queue, skb) {
-+		copy = len - copied;
-+		if (copy > skb->len - off)
-+			copy = skb->len - off;
-+
-+		err = skb_copy_datagram_msg(skb, off, msg, copy);
-+		if (err)
-+			break;
-+
-+		copied += copy;
-+		if (len <= copied)
-+			break;
-+	}
-+	return err ?: copied;
-+}
-+
-+static int udp_get_pending_write_queue(struct sock *sk, struct msghdr *msg,
-+				       int *addr_len)
-+{
-+	int err = 0, off = sizeof(struct udphdr);
-+	struct inet_sock *inet = inet_sk(sk);
-+	struct udp_sock *up = udp_sk(sk);
-+	struct flowi4 *fl4;
-+	struct flowi6 *fl6;
-+
-+	switch (up->pending) {
-+	case 0:
-+		return -ENODATA;
-+	case AF_INET:
-+		off += sizeof(struct iphdr);
-+		fl4 = &inet->cork.fl.u.ip4;
-+		udp_set_source_addr(sk, msg, addr_len,
-+				    fl4->daddr, fl4->fl4_dport);
-+		break;
-+	case AF_INET6:
-+		off += sizeof(struct ipv6hdr);
-+		if (msg->msg_name) {
-+			DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6,
-+					 msg->msg_name);
-+
-+			fl6 = &inet->cork.fl.u.ip6;
-+			sin6->sin6_family = AF_INET6;
-+			sin6->sin6_port = fl6->fl6_dport;
-+			sin6->sin6_flowinfo = 0;
-+			sin6->sin6_addr = fl6->daddr;
-+			sin6->sin6_scope_id = fl6->flowi6_oif;
-+			*addr_len = sizeof(*sin6);
-+
-+			if (cgroup_bpf_enabled)
-+				BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk,
-+						(struct sockaddr *)sin6);
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	lock_sock(sk);
-+	if (unlikely(!up->pending)) {
-+		release_sock(sk);
-+		return -EINVAL;
-+	}
-+	err = udp_peek_sndq(sk, msg, off, msg_data_left(msg));
-+	release_sock(sk);
-+	return err;
-+}
-+
-+static int prep_msghdr_recv_pending(struct sock *sk, void __user *argp)
-+{
-+	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
-+	struct user_msghdr __user *msg;
-+	struct sockaddr __user *uaddr;
-+	struct sockaddr_storage addr;
-+	struct msghdr msg_sys;
-+	int __user *uaddr_len;
-+	int err = 0, len = 0;
-+
-+	if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
-+		return -EPERM;
-+
-+	if (!argp)
-+		return -EINVAL;
-+
-+	msg = (struct user_msghdr __user *)argp;
-+	err = recvmsg_copy_msghdr(&msg_sys, msg, 0, &uaddr, &iov);
-+	if (err < 0)
-+		return err;
-+
-+	uaddr_len = &msg->msg_namelen;
-+	msg_sys.msg_name = &addr;
-+	msg_sys.msg_flags = 0;
-+
-+	err = udp_get_pending_write_queue(sk, &msg_sys, &len);
-+	msg_sys.msg_namelen = len;
-+	len = err;
-+
-+	if (uaddr && err >= 0)
-+		err = move_addr_to_user(&addr, msg_sys.msg_namelen,
-+					uaddr, uaddr_len);
-+
-+	kfree(iov);
-+	return err < 0 ? err : len;
-+}
-+
- /*
-  *	IOCTL requests applicable to the UDP protocol
-  */
-@@ -1641,6 +1768,9 @@ int udp_ioctl(struct sock *sk, int cmd, unsigned long arg)
- 		return put_user(amount, (int __user *)arg);
- 	}
- 
-+	case SIOUDPPENDGET:
-+		return prep_msghdr_recv_pending(sk, (void __user *)arg);
-+
- 	default:
- 		return -ENOIOCTLCMD;
- 	}
-@@ -1729,7 +1859,6 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 		int flags, int *addr_len)
- {
- 	struct inet_sock *inet = inet_sk(sk);
--	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
- 	struct sk_buff *skb;
- 	unsigned int ulen, copied;
- 	int off, err, peeking = flags & MSG_PEEK;
-@@ -1794,18 +1923,8 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 
- 	sock_recv_ts_and_drops(msg, sk, skb);
- 
--	/* Copy the address. */
--	if (sin) {
--		sin->sin_family = AF_INET;
--		sin->sin_port = udp_hdr(skb)->source;
--		sin->sin_addr.s_addr = ip_hdr(skb)->saddr;
--		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
--		*addr_len = sizeof(*sin);
--
--		if (cgroup_bpf_enabled)
--			BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
--							(struct sockaddr *)sin);
--	}
-+	udp_set_source_addr(sk, msg, addr_len, ip_hdr(skb)->saddr,
-+			    udp_hdr(skb)->source);
- 
- 	if (udp_sk(sk)->gro_enabled)
- 		udp_cmsg_recv(msg, sk, skb);
-diff --git a/net/socket.c b/net/socket.c
-index 2dd739fba866..bd25d528c9a0 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -217,8 +217,8 @@ int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_storage *k
-  *	specified. Zero is returned for a success.
-  */
- 
--static int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
--			     void __user *uaddr, int __user *ulen)
-+int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
-+		      void __user *uaddr, int __user *ulen)
- {
- 	int err;
- 	int len;
--- 
-2.17.1
+DEAR FRIEND.
 
+YOU MAY BE WONDERING WHYI CONTACT YOU BUT SOMEONE LUCKY HAS TO BE CHOSEN WHICH IS YOU. I WANT YOU TO HANDLE THIS BUSINESS TRASACTION WITH ME IF CHANCE YOU TO DO INTERNATION BUSINESS I GO YOUR CONTACT FROM A RELIABLE WEB DIRECTORY.
+
+I RECEIVE YOUR CONTENT OF YOUR EMAIL FROM THIS DHL MASTER CARD OFFICES FUND OF $10.5 USD MILLION AFTER THE BOARD OF DIRECTORS MEETINGS, THE UNITED NATIONS GOVERNMENT HAVE DECIDED TO ISSUE YOU YOUR (ATM) VALUED AT 10.5 MILLION UNITED STATES DOLLAR.THIS IS TO BRING TO YOUR NOTICE THAT YOUR VALUED SUM OF 10.5 MILLION DOLLAR HAS BEING TODAY CREDITED INTO (ATM) MASTER CARD AND HAS BEEN HANDLE TO THE FOREIGN REMITTANCE DEPARTMENT TO SEND IT TO YOU TODAY IN YOUR FAVOR.
+
+WITH YOUR (ATM) YOU WILL HAVE ACCESS TO MAKE DAILY WITHDRAWALS OF $5000,00 UNITED STATE DOLLARS DAILIES AS ALREADY PROGRAMMED UNTIL YOU WITHDRAW YOUR TOTAL SUM IN YOUR (ATM) CARD WHICH HAS REGISTERED IN OUR SYSTEM FOR PAYMENT RECORD, AS SOON AS WE RECEIVE YOUR INFORMATIONS AND YOUR HOME ADDRESS OF YOUR COUNTRY AS ALREADY PROGRAMMED, WE WILL SEND YOUR (ATM) CARD THROUGH DHL COURIER SERVICE, WE HAVE RECEIVED A SIGNAL FROM THE SWISS WORLD BANK TO INFECT YOUR TRANSFER TO YOU WITHIN ONE WEEK,
+
+WE HAVE JUST FINISHED OUR ANNUAL GENERAL MEETING WITH THE CENTRAL BANK OF AMERICA (BOA). AT THE END OF THE BOARD OF DIRECTORS MEETING TODAY, WE HAVE CONCLUDED TO IMMEDIATELY ISSUE YOU AS SOON AS POSSIBLE,
+
+AND YOUR VALUE SUM HAS BEEN CREDITED INTO YOUR (ATM) VISA CARD
+ACCOUNT. WHICH YOU WILL USE TO WITHDRAW YOUR FUND IN ANY PART OF THE WORLD, WE HAVE ISSUED AND CREDITED YOUR (ATM) CARD IN YOUR NAME TODAY,
+
+YOUR (ATM) WILL BE INSURE BY THE INSURANCE COMPANY AND SEND TO YOU
+THROUGH ANY AVAILABLE COURIER COMPANY OF OUR CHOICE.
+
+ONCE AGAIN CONGRATULATIONS TO YOU,
+
+DIRECTOR DHL SERVICE,
+THANKS,
+SINCERELY.
