@@ -2,115 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 061DD1C2C2C
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:32:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDE241C2C36
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728224AbgECMce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 08:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728067AbgECMcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 08:32:33 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3738C061A0C;
-        Sun,  3 May 2020 05:32:32 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id q124so7171193pgq.13;
-        Sun, 03 May 2020 05:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OjKNsWuIlNWqOK8ZTfhDbmoOKJ5lMhGgdYyR3P+yrPs=;
-        b=ROSqKV+TRSB/gN3uXuCuk55t9hWftXZdrFL+65lO6rz7wY/CWQAQacEmEpatwFLMJw
-         LVLLkwT0K2DG9p7hjGtPM3hrYO2Go0ULqgaVohy3Ec7WmfizN08PMfhx7sqtIGdQP5SW
-         MABDmweWRpHFK3TY47EdA3ValTXg7f7sEdrpJaa8ASjtjm5/CiiRiEjBdJ03STsV6j8E
-         EqZLUW2DrYu9VThXk7A+L3sbm3MN7MsEECMFht0UtN7o5z3mE3f9+Kyxtx5QjtxkCE2O
-         SmyAFZuXVKtYEGWcfaSUExg4XhjI5Qc3VYYtbsYwvSxm1mO4IScjdQBpefMa3+v1m+bJ
-         lNTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OjKNsWuIlNWqOK8ZTfhDbmoOKJ5lMhGgdYyR3P+yrPs=;
-        b=VN1SP+YuFKIZXM7QBmp7H9PpHW9SSoo7rp3kQq3jk1FBGASN4IIc+PraEEQUD99sNq
-         Mr2kI2WZuxSK7HtFjqSsjwm2VeazGr2cP3ojQylboJdsJ376VM2c7q0/nNUxieRoUfGE
-         7KZPucxhwIfizrA1H70HAfF00vXX3GtRMoRYCAp14CiJ50m6eSdLvBMNQ7EKAEpRc+hH
-         sppVSJcZEkqAV3PRHN4wnneDExTB7xSKgjm3ErsG8vuOo5zzPNJPiYdBHYj2OCRt7Ehp
-         0wim37aXUgwQAShDSC0qmXMDRgfRAlK17E3U9jehUQ9+K8Iaz8zgt0elmwS/Cc5AnXFy
-         y3lw==
-X-Gm-Message-State: AGi0PuZmN/3tZDe4myy+yUXM71IsRe7pzkUAQfZ+nB5K1tXXg1qtUetr
-        PMhHqgpkKkdx59onF5ZzIXU=
-X-Google-Smtp-Source: APiQypJb994dlbUr1k5iWSh9AbhTGKGKo5AP/hP7Juwv642dHfO6NJAVOM2+pS3z5nSs0K2zQLX5NA==
-X-Received: by 2002:a63:da02:: with SMTP id c2mr12284369pgh.22.1588509152596;
-        Sun, 03 May 2020 05:32:32 -0700 (PDT)
-Received: from localhost ([89.208.244.169])
-        by smtp.gmail.com with ESMTPSA id x132sm6476464pfc.57.2020.05.03.05.32.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 03 May 2020 05:32:32 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     nicolas.ferre@microchip.com, davem@davemloft.net,
-        paul.walmsley@sifive.com, palmer@dabbelt.com, yash.shah@sifive.com,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH net v3] net: macb: fix an issue about leak related system resources
-Date:   Sun,  3 May 2020 20:32:26 +0800
-Message-Id: <20200503123226.7092-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728278AbgECMjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 08:39:47 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:52274 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728203AbgECMjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 08:39:47 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 043CVekt169236;
+        Sun, 3 May 2020 08:39:44 -0400
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 30s4v5vwf7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 03 May 2020 08:39:44 -0400
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 043CaBrS004592;
+        Sun, 3 May 2020 12:39:42 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma02fra.de.ibm.com with ESMTP id 30s0g592d3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 03 May 2020 12:39:42 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 043Cddwx17039398
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 3 May 2020 12:39:39 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CF04B4C04A;
+        Sun,  3 May 2020 12:39:39 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8F12A4C044;
+        Sun,  3 May 2020 12:39:39 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sun,  3 May 2020 12:39:39 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next v2 00/11] net/smc: add and delete link processing
+Date:   Sun,  3 May 2020 14:38:39 +0200
+Message-Id: <20200503123850.57261-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-03_09:2020-05-01,2020-05-03 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ suspectscore=1 adultscore=0 clxscore=1015 impostorscore=0
+ lowpriorityscore=0 bulkscore=0 phishscore=0 mlxscore=0 mlxlogscore=862
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005030110
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A call of the function macb_init() can fail in the function
-fu540_c000_init. The related system resources were not released
-then. use devm_platform_ioremap_resource() to replace ioremap()
-to fix it.
+These patches add the 'add link' and 'delete link' processing as 
+SMC server and client. This processing allows to establish and
+remove links of a link group dynamically.
 
-Fixes: c218ad559020ff9 ("macb: Add support for SiFive FU540-C000")
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Yash Shah <yash.shah@sifive.com>
-Suggested-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
-v2 -> v3:
-	- use IS_ERR() and PTR_ERR() for error handling by Nicolas's
-	  suggestion. Thanks Nicolas!
-v1 -> v2:
-	- Nicolas and Andy suggest use devm_platform_ioremap_resource()
-	  to repalce devm_ioremap() to fix this issue. Thanks Nicolas
-	  and Andy.
-	- Yash help me to review this patch, Thanks Yash!
+v2: Fix mess up with unused static functions. Merge patch 8 into patch 4.
+    Postpone patch 13 to next series.
 
- drivers/net/ethernet/cadence/macb_main.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+Karsten Graul (11):
+  net/smc: first part of add link processing as SMC client
+  net/smc: rkey processing for a new link as SMC client
+  net/smc: final part of add link processing as SMC client
+  net/smc: first part of add link processing as SMC server
+  net/smc: rkey processing for a new link as SMC server
+  net/smc: final part of add link processing as SMC server
+  net/smc: delete an asymmetric link as SMC server
+  net/smc: llc_del_link_work and use the LLC flow for delete link
+  net/smc: delete link processing as SMC client
+  net/smc: delete link processing as SMC server
+  net/smc: enqueue local LLC messages
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index a0e8c5bbabc0..f040a36d6e54 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4172,15 +4172,9 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
- 
- static int fu540_c000_init(struct platform_device *pdev)
- {
--	struct resource *res;
--
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	if (!res)
--		return -ENODEV;
--
--	mgmt->reg = ioremap(res->start, resource_size(res));
--	if (!mgmt->reg)
--		return -ENOMEM;
-+	mgmt->reg = devm_platform_ioremap_resource(pdev, 1);
-+	if (IS_ERR(mgmt->reg))
-+		return PTR_ERR(mgmt->reg);
- 
- 	return macb_init(pdev);
- }
+ net/smc/af_smc.c   |   4 +-
+ net/smc/smc_core.c |  29 +-
+ net/smc/smc_core.h |   4 +-
+ net/smc/smc_llc.c  | 798 +++++++++++++++++++++++++++++++++++++++++++--
+ net/smc/smc_llc.h  |   5 +
+ net/smc/smc_wr.c   |   2 +-
+ net/smc/smc_wr.h   |   1 +
+ 7 files changed, 800 insertions(+), 43 deletions(-)
+
 -- 
-2.25.0
+2.17.1
 
