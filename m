@@ -2,55 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CDC71C3036
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 00:58:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43EF11C3039
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 01:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgECW6J convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 3 May 2020 18:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48998 "EHLO
+        id S1726377AbgECXBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 19:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725844AbgECW6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 18:58:09 -0400
+        by vger.kernel.org with ESMTP id S1725844AbgECXBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 19:01:07 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05CA7C061A0E;
-        Sun,  3 May 2020 15:58:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 228DFC061A0E
+        for <netdev@vger.kernel.org>; Sun,  3 May 2020 16:01:07 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8C4351211C987;
-        Sun,  3 May 2020 15:58:08 -0700 (PDT)
-Date:   Sun, 03 May 2020 15:58:07 -0700 (PDT)
-Message-Id: <20200503.155807.975495147223194743.davem@davemloft.net>
-To:     bjorn@mork.no
-Cc:     Kangie@footclan.ninja, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: qmi_wwan: add support for DW5816e
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 27B0A1211C987;
+        Sun,  3 May 2020 16:01:06 -0700 (PDT)
+Date:   Sun, 03 May 2020 16:01:05 -0700 (PDT)
+Message-Id: <20200503.160105.1764216961043543026.davem@davemloft.net>
+To:     sameehj@amazon.com
+Cc:     netdev@vger.kernel.org, dwmw@amazon.com, zorik@amazon.com,
+        matua@amazon.com, saeedb@amazon.com, msw@amazon.com,
+        aliguori@amazon.com, nafea@amazon.com, gtzalik@amazon.com,
+        netanel@amazon.com, alisaidi@amazon.com, benh@amazon.com,
+        akiyano@amazon.com, ndagan@amazon.com
+Subject: Re: [PATCH V3 net-next 00/12] Enhance current features in ena
+ driver
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <87v9ldlccp.fsf@miraculix.mork.no>
-References: <20200502155228.11535-1-Kangie@footclan.ninja>
-        <87v9ldlccp.fsf@miraculix.mork.no>
+In-Reply-To: <20200503095221.6408-1-sameehj@amazon.com>
+References: <20200503095221.6408-1-sameehj@amazon.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 03 May 2020 15:58:08 -0700 (PDT)
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 03 May 2020 16:01:06 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bjørn Mork <bjorn@mork.no>
-Date: Sun, 03 May 2020 09:13:58 +0200
+From: <sameehj@amazon.com>
+Date: Sun, 3 May 2020 09:52:09 +0000
 
-> Matt Jolly <Kangie@footclan.ninja> writes:
+> From: Sameeh Jubran <sameehj@amazon.com>
 > 
->> Add support for Dell Wireless 5816e to drivers/net/usb/qmi_wwan.c
->>
->> Signed-off-by: Matt Jolly <Kangie@footclan.ninja>
- ...
-> Looks fine to me.  Please add to the stable queue as well,  Thanks.
 > 
-> Acked-by: Bjørn Mork <bjorn@mork.no>
+> Difference from v2:
+> * dropped patch "net: ena: move llq configuration from ena_probe to ena_device_init()" 
+> * reworked patch ""net: ena: implement ena_com_get_admin_polling_mode() to drop the prototype
+> 
+> Difference from v1:
+> * reodered paches #01 and #02.
+> * dropped adding Rx/Tx drops to ethtool in patch #08
+> 
+> V1:
+> This patchset introduces the following:
+> * minor changes to RSS feature
+> * add total rx and tx drop counter
+> * add unmask_interrupt counter for ethtool statistics
+> * add missing implementation for ena_com_get_admin_polling_mode()
+> * some minor code clean-up and cosmetics
+> * use SHUTDOWN as reset reason when closing interface
 
-Applied and queued up for -stable.
+Series applied, thank you.
