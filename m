@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F2C1C2C4C
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF3D1C2C39
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728425AbgECMkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 08:40:10 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:52146 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728067AbgECMjr (ORCPT
+        id S1728503AbgECMjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 08:39:49 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:25692 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728214AbgECMjr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 08:39:47 -0400
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 043CW61U130562;
-        Sun, 3 May 2020 08:39:45 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 30svg7sr7e-1
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 043CWc7G026692;
+        Sun, 3 May 2020 08:39:46 -0400
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 30s5d2vd25-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 03 May 2020 08:39:45 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 043CZOcn011867;
-        Sun, 3 May 2020 12:39:43 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 30s0g5jn9h-1
+        Sun, 03 May 2020 08:39:46 -0400
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 043CZhWs004008;
+        Sun, 3 May 2020 12:39:44 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04fra.de.ibm.com with ESMTP id 30s0g6126p-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Sun, 03 May 2020 12:39:43 +0000
 Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 043CdeBU47841326
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 043CdfPY22806558
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 3 May 2020 12:39:40 GMT
+        Sun, 3 May 2020 12:39:41 GMT
 Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A4E1A4C040;
+        by IMSVA (Postfix) with ESMTP id E55254C046;
         Sun,  3 May 2020 12:39:40 +0000 (GMT)
 Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6FBC64C046;
+        by IMSVA (Postfix) with ESMTP id AF4F54C044;
         Sun,  3 May 2020 12:39:40 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -43,173 +43,173 @@ To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
         heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
         ubraun@linux.ibm.com
-Subject: [PATCH net-next v2 03/11] net/smc: final part of add link processing as SMC client
-Date:   Sun,  3 May 2020 14:38:42 +0200
-Message-Id: <20200503123850.57261-4-kgraul@linux.ibm.com>
+Subject: [PATCH net-next v2 04/11] net/smc: first part of add link processing as SMC server
+Date:   Sun,  3 May 2020 14:38:43 +0200
+Message-Id: <20200503123850.57261-5-kgraul@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200503123850.57261-1-kgraul@linux.ibm.com>
 References: <20200503123850.57261-1-kgraul@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
  definitions=2020-05-03_09:2020-05-01,2020-05-03 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- spamscore=0 mlxscore=0 suspectscore=1 mlxlogscore=999 clxscore=1015
- lowpriorityscore=0 adultscore=0 bulkscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005030110
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 adultscore=0
+ impostorscore=0 mlxscore=0 phishscore=0 spamscore=0 bulkscore=0
+ lowpriorityscore=0 mlxlogscore=999 malwarescore=0 clxscore=1015
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005030112
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch finalizes the ADD_LINK processing of new links. Receive the
-CONFIRM_LINK request from peer, complete the link initialization,
-register all used buffers with the IB device and finally send the
-CONFIRM_LINK response, which completes the ADD_LINK processing.
-And activate smc_llc_cli_add_link() in af_smc.c.
+First set of functions to process an ADD_LINK LLC request as an SMC
+server. Find an alternate IB device, determine the new link group type
+and get the index for the new link. Then initialize the link and send
+the ADD_LINK LLC message to the peer. Save the contents of the response,
+ready the link, map all used buffers and register the buffers with the
+IB device. If any error occurs, stop the processing and clear the link.
+And call smc_llc_srv_add_link() in af_smc.c to start second link
+establishment after the initial link of a link group was created.
 
 Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
 ---
  net/smc/af_smc.c  |  2 +-
- net/smc/smc_llc.c | 73 +++++++++++++++++++++++++++++++++++++++++++++--
+ net/smc/smc_llc.c | 91 ++++++++++++++++++++++++++++++++++++++++++++++-
  net/smc/smc_llc.h |  1 +
- 3 files changed, 72 insertions(+), 4 deletions(-)
+ 3 files changed, 92 insertions(+), 2 deletions(-)
 
 diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 6663a63be9e4..1afb6e4275f2 100644
+index 1afb6e4275f2..c67272007f41 100644
 --- a/net/smc/af_smc.c
 +++ b/net/smc/af_smc.c
-@@ -427,7 +427,7 @@ static int smcr_clnt_conf_first_link(struct smc_sock *smc)
- 		return rc;
- 	}
- 	smc_llc_flow_qentry_clr(&link->lgr->llc_flow_lcl);
--	/* tbd: call smc_llc_cli_add_link(link, qentry); */
-+	smc_llc_cli_add_link(link, qentry);
+@@ -1067,7 +1067,7 @@ static int smcr_serv_conf_first_link(struct smc_sock *smc)
+ 	smc_llc_link_active(link);
+ 
+ 	/* initial contact - try to establish second link */
+-	/* tbd: call smc_llc_srv_add_link(link); */
++	smc_llc_srv_add_link(link);
  	return 0;
  }
  
 diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index a06b618f172e..d56ca60597d4 100644
+index d56ca60597d4..e2f254e21759 100644
 --- a/net/smc/smc_llc.c
 +++ b/net/smc/smc_llc.c
-@@ -381,7 +381,7 @@ int smc_llc_send_confirm_link(struct smc_link *link,
- 	hton24(confllc->sender_qp_num, link->roce_qp->qp_num);
- 	confllc->link_num = link->link_id;
- 	memcpy(confllc->link_uid, lgr->id, SMC_LGR_ID_SIZE);
--	confllc->max_links = SMC_LLC_ADD_LNK_MAX_LINKS; /* enforce peer resp. */
-+	confllc->max_links = SMC_LLC_ADD_LNK_MAX_LINKS;
- 	/* send llc message */
- 	rc = smc_wr_tx_send(link, pend);
- 	return rc;
-@@ -724,6 +724,61 @@ static int smc_llc_cli_add_link_reject(struct smc_llc_qentry *qentry)
- 	return smc_llc_send_message(qentry->link, &qentry->msg);
+@@ -863,6 +863,94 @@ static void smc_llc_process_cli_add_link(struct smc_link_group *lgr)
+ 	mutex_unlock(&lgr->llc_conf_mutex);
  }
  
-+static int smc_llc_cli_conf_link(struct smc_link *link,
-+				 struct smc_init_info *ini,
-+				 struct smc_link *link_new,
-+				 enum smc_lgr_type lgr_new_t)
++int smc_llc_srv_add_link(struct smc_link *link)
 +{
++	enum smc_lgr_type lgr_new_t = SMC_LGR_SYMMETRIC;
 +	struct smc_link_group *lgr = link->lgr;
-+	struct smc_llc_msg_del_link *del_llc;
++	struct smc_llc_msg_add_link *add_llc;
 +	struct smc_llc_qentry *qentry = NULL;
-+	int rc = 0;
++	struct smc_link *link_new;
++	struct smc_init_info ini;
++	int lnk_idx, rc = 0;
 +
-+	/* receive CONFIRM LINK request over RoCE fabric */
-+	qentry = smc_llc_wait(lgr, NULL, SMC_LLC_WAIT_FIRST_TIME, 0);
++	/* ignore client add link recommendation, start new flow */
++	ini.vlan_id = lgr->vlan_id;
++	smc_pnet_find_alt_roce(lgr, &ini, link->smcibdev);
++	if (!ini.ib_dev) {
++		lgr_new_t = SMC_LGR_ASYMMETRIC_LOCAL;
++		ini.ib_dev = link->smcibdev;
++		ini.ib_port = link->ibport;
++	}
++	lnk_idx = smc_llc_alloc_alt_link(lgr, lgr_new_t);
++	if (lnk_idx < 0)
++		return 0;
++
++	rc = smcr_link_init(lgr, &lgr->lnk[lnk_idx], lnk_idx, &ini);
++	if (rc)
++		return rc;
++	link_new = &lgr->lnk[lnk_idx];
++	rc = smc_llc_send_add_link(link,
++				   link_new->smcibdev->mac[ini.ib_port - 1],
++				   link_new->gid, link_new, SMC_LLC_REQ);
++	if (rc)
++		goto out_err;
++	/* receive ADD LINK response over the RoCE fabric */
++	qentry = smc_llc_wait(lgr, link, SMC_LLC_WAIT_TIME, SMC_LLC_ADD_LINK);
 +	if (!qentry) {
-+		rc = smc_llc_send_delete_link(link, link_new->link_id,
-+					      SMC_LLC_REQ, false,
-+					      SMC_LLC_DEL_LOST_PATH);
-+		return -ENOLINK;
++		rc = -ETIMEDOUT;
++		goto out_err;
 +	}
-+	if (qentry->msg.raw.hdr.common.type != SMC_LLC_CONFIRM_LINK) {
-+		/* received DELETE_LINK instead */
-+		del_llc = &qentry->msg.delete_link;
-+		qentry->msg.raw.hdr.flags |= SMC_LLC_FLAG_RESP;
-+		smc_llc_send_message(link, &qentry->msg);
++	add_llc = &qentry->msg.add_link;
++	if (add_llc->hd.flags & SMC_LLC_FLAG_ADD_LNK_REJ) {
 +		smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
-+		return -ENOLINK;
++		rc = -ENOLINK;
++		goto out_err;
 +	}
++	if (lgr->type == SMC_LGR_SINGLE &&
++	    (!memcmp(add_llc->sender_gid, link->peer_gid, SMC_GID_SIZE) &&
++	     !memcmp(add_llc->sender_mac, link->peer_mac, ETH_ALEN))) {
++		lgr_new_t = SMC_LGR_ASYMMETRIC_PEER;
++	}
++	smc_llc_save_add_link_info(link_new, add_llc);
 +	smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
 +
-+	rc = smc_ib_modify_qp_rts(link_new);
-+	if (rc) {
-+		smc_llc_send_delete_link(link, link_new->link_id, SMC_LLC_REQ,
-+					 false, SMC_LLC_DEL_LOST_PATH);
-+		return -ENOLINK;
-+	}
-+	smc_wr_remember_qp_attr(link_new);
-+
++	rc = smc_ib_ready_link(link_new);
++	if (rc)
++		goto out_err;
++	rc = smcr_buf_map_lgr(link_new);
++	if (rc)
++		goto out_err;
 +	rc = smcr_buf_reg_lgr(link_new);
-+	if (rc) {
-+		smc_llc_send_delete_link(link, link_new->link_id, SMC_LLC_REQ,
-+					 false, SMC_LLC_DEL_LOST_PATH);
-+		return -ENOLINK;
-+	}
-+
-+	/* send CONFIRM LINK response over RoCE fabric */
-+	rc = smc_llc_send_confirm_link(link_new, SMC_LLC_RESP);
-+	if (rc) {
-+		smc_llc_send_delete_link(link, link_new->link_id, SMC_LLC_REQ,
-+					 false, SMC_LLC_DEL_LOST_PATH);
-+		return -ENOLINK;
-+	}
-+	smc_llc_link_active(link_new);
-+	lgr->type = lgr_new_t;
++	if (rc)
++		goto out_err;
++	/* tbd: rc = smc_llc_srv_rkey_exchange(link, link_new); */
++	if (rc)
++		goto out_err;
++	/* tbd: rc = smc_llc_srv_conf_link(link, link_new, lgr_new_t); */
++	if (rc)
++		goto out_err;
 +	return 0;
++out_err:
++	smcr_link_clear(link_new);
++	return rc;
 +}
 +
- static void smc_llc_save_add_link_info(struct smc_link *link,
- 				       struct smc_llc_msg_add_link *add_llc)
- {
-@@ -785,7 +840,7 @@ int smc_llc_cli_add_link(struct smc_link *link, struct smc_llc_qentry *qentry)
- 		rc = 0;
- 		goto out_clear_lnk;
- 	}
--	/* tbd: rc = smc_llc_cli_conf_link(link, &ini, lnk_new, lgr_new_t); */
-+	rc = smc_llc_cli_conf_link(link, &ini, lnk_new, lgr_new_t);
- 	if (!rc)
- 		goto out;
- out_clear_lnk:
-@@ -797,6 +852,17 @@ int smc_llc_cli_add_link(struct smc_link *link, struct smc_llc_qentry *qentry)
- 	return rc;
- }
- 
-+static void smc_llc_process_cli_add_link(struct smc_link_group *lgr)
++static void smc_llc_process_srv_add_link(struct smc_link_group *lgr)
 +{
-+	struct smc_llc_qentry *qentry;
++	struct smc_link *link = lgr->llc_flow_lcl.qentry->link;
++	int rc;
 +
-+	qentry = smc_llc_flow_qentry_clr(&lgr->llc_flow_lcl);
++	smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
 +
 +	mutex_lock(&lgr->llc_conf_mutex);
-+	smc_llc_cli_add_link(qentry->link, qentry);
++	rc = smc_llc_srv_add_link(link);
++	if (!rc && lgr->type == SMC_LGR_SYMMETRIC) {
++		/* delete any asymmetric link */
++		/* tbd: smc_llc_delete_asym_link(lgr); */
++	}
 +	mutex_unlock(&lgr->llc_conf_mutex);
 +}
 +
  /* worker to process an add link message */
  static void smc_llc_add_link_work(struct work_struct *work)
  {
-@@ -809,7 +875,8 @@ static void smc_llc_add_link_work(struct work_struct *work)
- 		goto out;
- 	}
+@@ -877,7 +965,8 @@ static void smc_llc_add_link_work(struct work_struct *work)
  
--	/* tbd: call smc_llc_process_cli_add_link(lgr); */
-+	if (lgr->role == SMC_CLNT)
-+		smc_llc_process_cli_add_link(lgr);
- 	/* tbd: call smc_llc_process_srv_add_link(lgr); */
+ 	if (lgr->role == SMC_CLNT)
+ 		smc_llc_process_cli_add_link(lgr);
+-	/* tbd: call smc_llc_process_srv_add_link(lgr); */
++	else
++		smc_llc_process_srv_add_link(lgr);
  out:
  	smc_llc_flow_stop(lgr, &lgr->llc_flow_lcl);
+ }
 diff --git a/net/smc/smc_llc.h b/net/smc/smc_llc.h
-index 97a4f02f5a93..7c314bbef8c8 100644
+index 7c314bbef8c8..1a7748d0541f 100644
 --- a/net/smc/smc_llc.h
 +++ b/net/smc/smc_llc.h
-@@ -88,6 +88,7 @@ struct smc_llc_qentry *smc_llc_wait(struct smc_link_group *lgr,
- 				    int time_out, u8 exp_msg);
+@@ -89,6 +89,7 @@ struct smc_llc_qentry *smc_llc_wait(struct smc_link_group *lgr,
  struct smc_llc_qentry *smc_llc_flow_qentry_clr(struct smc_llc_flow *flow);
  void smc_llc_flow_qentry_del(struct smc_llc_flow *flow);
-+int smc_llc_cli_add_link(struct smc_link *link, struct smc_llc_qentry *qentry);
+ int smc_llc_cli_add_link(struct smc_link *link, struct smc_llc_qentry *qentry);
++int smc_llc_srv_add_link(struct smc_link *link);
  int smc_llc_init(void) __init;
  
  #endif /* SMC_LLC_H */
