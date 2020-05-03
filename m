@@ -2,85 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F2D81C2973
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 05:11:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74F051C2991
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 06:24:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbgECDJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 23:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726702AbgECDJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 23:09:33 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDFFC061A0C
-        for <netdev@vger.kernel.org>; Sat,  2 May 2020 20:09:33 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id q57so16449960qte.3
-        for <netdev@vger.kernel.org>; Sat, 02 May 2020 20:09:33 -0700 (PDT)
+        id S1726864AbgECEYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 00:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726773AbgECEYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 00:24:12 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C34C061A0C
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 21:24:12 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id t3so2151273otp.3
+        for <netdev@vger.kernel.org>; Sat, 02 May 2020 21:24:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=n/0Ut9gQo5Jm24RDwN7W8/9Z0xUpyQWs338WKD6Iu04=;
-        b=jJ6NWY0sJVbw7e0rjJqsRz1Kd/uPOqG7ndgImK0GeRlaqMYnEBN1ixrZbDvA5Ou1Kk
-         ST+/IL0Fy+bVK9ullTmErnX1VpEG1JpRyVhypkCgC1EJLfZSeonb9fwJTi9HXPhWMDFL
-         nmzCyMn73XsdAPm4xSRwJ7Oq40N73A8exUNJbe1ZRLHrhLMgEQAH0/pBHz7KqWETvlT7
-         zMp6AZ7nJnSlB21sxzVLwQhNtGMrw1+14PcPmNOY3CarEHdwiHiYJg73SPX51bcBCxEK
-         o0Xezdds5p9hPPzBemBHTLmNdOrVttpcMpQvIQZr1hHcpLzCYelzh2g1gs6gf8LfbNBl
-         P8cg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mif5fpoVTE803zhOIG7KijChbP05Nv/41pjjBrEXjb8=;
+        b=XAJWG93w+TV6dHeT+2otMsMY4+D1/0K+To9GgA0U7lMkFrhzRo0e78Zy0wpSorfLxe
+         lSgxeuiYDuO7X20TaeyO5MZiOltrV/kIjsn+1ZqX6dlD0qUe52mA5538Ky7xHRQbI1KI
+         FVPuvMf2EQJ9/huIs0hVwXfBZ6bohxEnHvRiV0M4SY7FmUNaZZTMhZtLVgEutDWe71hO
+         Pd44/tPrfiGEUwBWqYvz9r7vdY6yGeU6DAssCDUCtrZW50oS55vXeSIyPm4TOp8pqEFx
+         YrZPH+LycfLS36i3x3rXhsKiBZxVevJl8ZJ1QV97jCz3oLWasFlr/LiOqDe37a/d/I05
+         mQ8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=n/0Ut9gQo5Jm24RDwN7W8/9Z0xUpyQWs338WKD6Iu04=;
-        b=iv19ej/a9oUharehbnWB+ecQTfwNzd/EqUgklYnO6XDpPweZKCGqMgO3yNdgn657sR
-         C7GCS2WS8xwYeHxuV8YvTwYI+Q0xF7FWKqmxRB8uVa42YSIG1se3ET6aQpLNbm5+BF1O
-         pUfMKlzGYXOP3wb5jvnlRb23TOjrzYStQkRyueF+G1OHQxuw1MYjmtdWQdSGlSc39JUz
-         b/znULbuhwtOMkDWks+Fjk9c/ZhnODe9noZTI+WlO8r/FRkuFfCcw+iBUxqpuZ+ZL7b3
-         LPAbGeR2I3tpxsxDGogxh7BjKqeGoGOtLrroavvAYa5FMXI5Vc0+LoQpSNLl8imNPkMo
-         6ThQ==
-X-Gm-Message-State: AGi0PubBlO+b7v881Wi01Gck+hqtaJ5w6y9kHu4EYxaQ7IU5l5FBFnPh
-        rfdDqrlaWvgxJXMBzgSrYVgOPv1KFhtRBw==
-X-Google-Smtp-Source: APiQypLN9ow+cITm/6bkRSEt6jAVZeKREz3whhG9fXyMy1AYbbV/dQiubkrHr80BL2OeefX6mmDXO++U6glkOg==
-X-Received: by 2002:a0c:e992:: with SMTP id z18mr11228948qvn.25.1588475372452;
- Sat, 02 May 2020 20:09:32 -0700 (PDT)
-Date:   Sat,  2 May 2020 20:09:25 -0700
-Message-Id: <20200503030925.33060-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH net] net_sched: sch_skbprio: add message validation to skbprio_change()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mif5fpoVTE803zhOIG7KijChbP05Nv/41pjjBrEXjb8=;
+        b=J2yvZKVz7GKxs9IAL91Fhtt0XdyIVqONmbtcnLDeTs4mb4PrQAU88KN5fP/kUK0cri
+         rynEWW9jKA3tPigxkkX93xCfzY7VqQrM75ZFQAcLgv5CkEd3X0E3JSM8Oto+0a6Kpyro
+         dl6w/nl3nYJ7O5/PloK4is45FVbrZmSkBNiknu/wTRDE2Ul+tmp6wtYRGs1fmBc9DyVB
+         G1Q5FEXgcjm6QyV0mTxIfH2dd5aBXy9Ewv2G3shY6c29U4gtfHM5ORSRTcLnCQb7y0Q2
+         UIFQruYLfUH1IuVSvr50b/MgMsI+yoLgYmfloVXVRF5CMtxDWgWy/jz6nE9E6HuTCiK9
+         GyLg==
+X-Gm-Message-State: AGi0PuZScd1cnYoDYELFjNDPkFZROBnz15VBeDZ+0pNdcs4X+HJagOE1
+        itndBqx5wrKyoQ3nQIK/W9+79OGXV79/UCSli5k=
+X-Google-Smtp-Source: APiQypI1VAYjuKj6zq1/SKN4md79Iplvr29z58zimgchDJxTZoXhwMs42H8me7JTqggF2PQsyARerIZI9RXSNzLw//Q=
+X-Received: by 2002:a9d:4a1:: with SMTP id 30mr9303168otm.319.1588479851640;
+ Sat, 02 May 2020 21:24:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200428060206.21814-1-xiyou.wangcong@gmail.com>
+ <20200428060206.21814-2-xiyou.wangcong@gmail.com> <CAMArcTU2r2undM5119_1W=pc2fu5AtUDp2RtizjVayRY=fGVEg@mail.gmail.com>
+ <CAM_iQpWdf+K7n+YfZv-+_Cz5b9+kxXV0F0PfYuUyHJ574OEGsA@mail.gmail.com> <CAMArcTVei4AF7TdUEawZbJZKpf6ABAu7UwL+5iP9jVQsxqOWSQ@mail.gmail.com>
+In-Reply-To: <CAMArcTVei4AF7TdUEawZbJZKpf6ABAu7UwL+5iP9jVQsxqOWSQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 2 May 2020 21:24:00 -0700
+Message-ID: <CAM_iQpUK2r7+tO4XfRKuZ4DbAKX9j8v+ve8e36uqcftG5Vp4fw@mail.gmail.com>
+Subject: Re: [Patch net-next 1/2] net: partially revert dynamic lockdep key changes
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        syzbot <syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do not assume the attribute has the right size.
+On Sat, May 2, 2020 at 12:36 AM Taehee Yoo <ap420073@gmail.com> wrote:
+>
+> On Fri, 1 May 2020 at 15:02, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+>
+> Hi Cong,
+>
+> > On Thu, Apr 30, 2020 at 12:40 AM Taehee Yoo <ap420073@gmail.com> wrote:
+> > > > +static void vlan_dev_set_lockdep_one(struct net_device *dev,
+> > > > +                                    struct netdev_queue *txq,
+> > > > +                                    void *_subclass)
+> > > > +{
+> > > > +       lockdep_set_class_and_subclass(&txq->_xmit_lock,
+> > > > +                                      &vlan_netdev_xmit_lock_key,
+> > > > +                                      *(int *)_subclass);
+> > >
+> > > I think lockdep_set_class() is enough.
+> > > How do you think about it?
+> >
+> > Good catch. I overlooked this one. Is lockdep_set_class() safe
+> > for vlan stacked on vlan?
+> >
+>
+> I think this is safe because of the LLTX flag.
+> Also, I tested nested VLAN interfaces with lockdep_set_class().
+> I didn't see any lockdep warning.
 
-Fixes: aea5f654e6b7 ("net/sched: add skbprio scheduler")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/sched/sch_skbprio.c | 3 +++
- 1 file changed, 3 insertions(+)
+Great! I will update and send v2.
 
-diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
-index 0fb10abf757962c1e3e6feb8c68dedd9a1808f1b..7a5e4c454715617cb57c6db7de7fdaa9e6886d40 100644
---- a/net/sched/sch_skbprio.c
-+++ b/net/sched/sch_skbprio.c
-@@ -169,6 +169,9 @@ static int skbprio_change(struct Qdisc *sch, struct nlattr *opt,
- {
- 	struct tc_skbprio_qopt *ctl = nla_data(opt);
- 
-+	if (opt->nla_len != nla_attr_size(sizeof(*ctl)))
-+		return -EINVAL;
-+
- 	sch->limit = ctl->limit;
- 	return 0;
- }
--- 
-2.26.2.526.g744177e7f7-goog
-
+Thanks.
