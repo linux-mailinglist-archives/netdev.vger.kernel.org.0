@@ -2,93 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 770A01C2970
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 04:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F2D81C2973
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 05:11:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726804AbgECCyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 22:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60762 "EHLO
+        id S1726757AbgECDJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 23:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726737AbgECCyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 22:54:40 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2365C061A0C
-        for <netdev@vger.kernel.org>; Sat,  2 May 2020 19:54:39 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id x26so14516903qvd.20
-        for <netdev@vger.kernel.org>; Sat, 02 May 2020 19:54:39 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726702AbgECDJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 23:09:33 -0400
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDFFC061A0C
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 20:09:33 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id q57so16449960qte.3
+        for <netdev@vger.kernel.org>; Sat, 02 May 2020 20:09:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=KZxU7fhcXs7NKSC1K/Ymo11K3GPQvbR81eqkF9drnPg=;
-        b=IJ1JBmqkZB1oHiaZkSUnzVmHTq3/5A3N9cH/h53bmM+uJXXe2he54rQSjDDv0XUNok
-         BL+AeakbWDgjWZLBs6yLCFPy0xwpbn6Ryoz7VPktsrCE/nZhtO1gNituony0ElQ0rPdR
-         whNdgc4/khMxNUJfc6vpqDftyXbz3ibYcVEVHHKPay8P7geYRFA30rVZn2gy28mq1N8v
-         UF+S68Ctdy8fUxW4IRCzZw8ZRt4YUthgZpOlBGepZr4OXjHwnxsjT3hZogDy0+lL5FVV
-         RtdpRO28+yzAE4AOdyjgAVD925H8sokj1y7r6zOBmvu+XhkjNicDXbR67VtQ8Dfw41xW
-         Yl0A==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=n/0Ut9gQo5Jm24RDwN7W8/9Z0xUpyQWs338WKD6Iu04=;
+        b=jJ6NWY0sJVbw7e0rjJqsRz1Kd/uPOqG7ndgImK0GeRlaqMYnEBN1ixrZbDvA5Ou1Kk
+         ST+/IL0Fy+bVK9ullTmErnX1VpEG1JpRyVhypkCgC1EJLfZSeonb9fwJTi9HXPhWMDFL
+         nmzCyMn73XsdAPm4xSRwJ7Oq40N73A8exUNJbe1ZRLHrhLMgEQAH0/pBHz7KqWETvlT7
+         zMp6AZ7nJnSlB21sxzVLwQhNtGMrw1+14PcPmNOY3CarEHdwiHiYJg73SPX51bcBCxEK
+         o0Xezdds5p9hPPzBemBHTLmNdOrVttpcMpQvIQZr1hHcpLzCYelzh2g1gs6gf8LfbNBl
+         P8cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=KZxU7fhcXs7NKSC1K/Ymo11K3GPQvbR81eqkF9drnPg=;
-        b=DZ0VpRkOYctNne23mexkCoEWTBPcYTSB8PFTY5fmeFeFbVPCNgYnyMa4Zp72MsU0x4
-         rdE/f3wmPjlLC/u1cmF/GulJZrQ1993VMs9hltq3Q+mIjI+99/befx9IeQBuDT/pXJU5
-         yLiBbPqnCt3sXKZBz9kAdshjOwmcwXCm1ZgSODuR/3MJrraz36qbGNPN/HJO1YPVmgKC
-         SS3GKYQw+Z6uCOqG6Fe8BKjGE0hEsCMVrooyWgXVHYalg4EPhZNdB7YDRG3Cxpw0sAsC
-         ClVAY9t/cA9b6FF/aKjlc6ibHMPNOULZStu/TNWSgqOBKJXnvo2yK+buPe5sOEd6hqE+
-         nQXA==
-X-Gm-Message-State: AGi0PuadMlakLF/ojfo6sGY9Kq70OlG1RTSvtL5OGB8iJlIPLUkj8YJQ
-        dfqzwKu/uZ6ag11vMOkB3Y6cPtNI3BiW4w==
-X-Google-Smtp-Source: APiQypLLI7nT7XUd4a8GJDTgAb6cFI5bx4a3FnxCngaQ0WN814XMIcsL+Z1rcTkFeUS7qnXI5+3ez5eqc/SdNw==
-X-Received: by 2002:a05:6214:32d:: with SMTP id j13mr10428963qvu.96.1588474478945;
- Sat, 02 May 2020 19:54:38 -0700 (PDT)
-Date:   Sat,  2 May 2020 19:54:22 -0700
-In-Reply-To: <20200503025422.219257-1-edumazet@google.com>
-Message-Id: <20200503025422.219257-6-edumazet@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=n/0Ut9gQo5Jm24RDwN7W8/9Z0xUpyQWs338WKD6Iu04=;
+        b=iv19ej/a9oUharehbnWB+ecQTfwNzd/EqUgklYnO6XDpPweZKCGqMgO3yNdgn657sR
+         C7GCS2WS8xwYeHxuV8YvTwYI+Q0xF7FWKqmxRB8uVa42YSIG1se3ET6aQpLNbm5+BF1O
+         pUfMKlzGYXOP3wb5jvnlRb23TOjrzYStQkRyueF+G1OHQxuw1MYjmtdWQdSGlSc39JUz
+         b/znULbuhwtOMkDWks+Fjk9c/ZhnODe9noZTI+WlO8r/FRkuFfCcw+iBUxqpuZ+ZL7b3
+         LPAbGeR2I3tpxsxDGogxh7BjKqeGoGOtLrroavvAYa5FMXI5Vc0+LoQpSNLl8imNPkMo
+         6ThQ==
+X-Gm-Message-State: AGi0PubBlO+b7v881Wi01Gck+hqtaJ5w6y9kHu4EYxaQ7IU5l5FBFnPh
+        rfdDqrlaWvgxJXMBzgSrYVgOPv1KFhtRBw==
+X-Google-Smtp-Source: APiQypLN9ow+cITm/6bkRSEt6jAVZeKREz3whhG9fXyMy1AYbbV/dQiubkrHr80BL2OeefX6mmDXO++U6glkOg==
+X-Received: by 2002:a0c:e992:: with SMTP id z18mr11228948qvn.25.1588475372452;
+ Sat, 02 May 2020 20:09:32 -0700 (PDT)
+Date:   Sat,  2 May 2020 20:09:25 -0700
+Message-Id: <20200503030925.33060-1-edumazet@google.com>
 Mime-Version: 1.0
-References: <20200503025422.219257-1-edumazet@google.com>
 X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH net-next 5/5] net_sched: sch_fq: perform a prefetch() earlier
+Subject: [PATCH net] net_sched: sch_skbprio: add message validation to skbprio_change()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The prefetch() done in fq_dequeue() can be done a bit earlier
-after the refactoring of the code done in the prior patch.
+Do not assume the attribute has the right size.
 
+Fixes: aea5f654e6b7 ("net/sched: add skbprio scheduler")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 ---
- net/sched/sch_fq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sched/sch_skbprio.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
-index 4a28f611edf0cd4ac7fb53fc1c2a4ba12060bf59..8f06a808c59abec0e8343a00250055df7cab6f10 100644
---- a/net/sched/sch_fq.c
-+++ b/net/sched/sch_fq.c
-@@ -576,6 +576,7 @@ static struct sk_buff *fq_dequeue(struct Qdisc *sch)
- 			fq_flow_set_throttled(q, f);
- 			goto begin;
- 		}
-+		prefetch(&skb->end);
- 		if ((s64)(now - time_next_packet - q->ce_threshold) > 0) {
- 			INET_ECN_set_ce(skb);
- 			q->stat_ce_mark++;
-@@ -592,7 +593,6 @@ static struct sk_buff *fq_dequeue(struct Qdisc *sch)
- 		}
- 		goto begin;
- 	}
--	prefetch(&skb->end);
- 	plen = qdisc_pkt_len(skb);
- 	f->credit -= plen;
+diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
+index 0fb10abf757962c1e3e6feb8c68dedd9a1808f1b..7a5e4c454715617cb57c6db7de7fdaa9e6886d40 100644
+--- a/net/sched/sch_skbprio.c
++++ b/net/sched/sch_skbprio.c
+@@ -169,6 +169,9 @@ static int skbprio_change(struct Qdisc *sch, struct nlattr *opt,
+ {
+ 	struct tc_skbprio_qopt *ctl = nla_data(opt);
  
++	if (opt->nla_len != nla_attr_size(sizeof(*ctl)))
++		return -EINVAL;
++
+ 	sch->limit = ctl->limit;
+ 	return 0;
+ }
 -- 
 2.26.2.526.g744177e7f7-goog
 
