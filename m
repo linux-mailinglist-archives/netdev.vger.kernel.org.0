@@ -2,155 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 252271C2F4C
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 22:49:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DFFB1C2F58
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 23:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729128AbgECUtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 16:49:46 -0400
-Received: from mta-p7.oit.umn.edu ([134.84.196.207]:50070 "EHLO
-        mta-p7.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729102AbgECUtn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 16:49:43 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p7.oit.umn.edu (Postfix) with ESMTP id 49FdQZ74Tcz9vKT9
-        for <netdev@vger.kernel.org>; Sun,  3 May 2020 20:49:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p7.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p7.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 6zqyLlleS0ij for <netdev@vger.kernel.org>;
-        Sun,  3 May 2020 15:49:42 -0500 (CDT)
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p7.oit.umn.edu (Postfix) with ESMTPS id 49FdQZ5npYz9vKT0
-        for <netdev@vger.kernel.org>; Sun,  3 May 2020 15:49:42 -0500 (CDT)
-Received: by mail-qt1-f200.google.com with SMTP id q43so18516138qtj.11
-        for <netdev@vger.kernel.org>; Sun, 03 May 2020 13:49:42 -0700 (PDT)
+        id S1729047AbgECVGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 17:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728998AbgECVGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 17:06:21 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB52C061A0E
+        for <netdev@vger.kernel.org>; Sun,  3 May 2020 14:06:21 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id 145so4556022pfw.13
+        for <netdev@vger.kernel.org>; Sun, 03 May 2020 14:06:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zSYYMjCer/k9tmJ7ZZe4YO3vkQ6QJMlcwBfIN/y6pU4=;
-        b=S4jyhd/m97dQjajh3P06TxKvTaD5NanIRG9+JD9GuZVN+HHjK92aLTnnMkH914pr3J
-         E6MJi1qP/gWWjsfaKqEkDrLTePribNxLCtgLQE87Iwgg5aCFd0VkEZhjYW+INF0HEYJ5
-         FvQf6AccCvuhnHLXSvretDJxSYjoGoREO+iyqbGFL51LcoCySRjgTteR8+fy08cPuncp
-         fYNp8G+yqikiMNpn8/KK2gWKysFCslyJf24GhdE1IpxNMTnqcJTnTYUypsQPfVm+5qbI
-         y8rGLXqF4+FIJslak9Qq8gxi/Pyv8iqMoLtNcvJP4313bI1YaDGPppuLjK2NhLlvmRB4
-         2xDQ==
+        d=gmail.com; s=20161025;
+        h=to:references:from:autocrypt:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LEgWD4W/Klc5jR0H65ky4vuNqezbPw7lFLRYyVYOAJM=;
+        b=C09FEjtFPW8tX7c6819cWNv97jOYeyYtbN43Ji0pP0CR3tWRsQi0bcRksaJtnduA8v
+         0Arv9gKmgOLLiX6/znd42lAnwD/nMgY1CH+PaWuGccQOenDcChZInZfMJdJxuWLRz1kZ
+         sj4g5j3TZO/FvoGCwTje4EGEQZGRFJ9uiztLOFgoc1hYYOcN2Cvy40nqQHmwLvu+XQmw
+         VjPjJ12gY5TNYbsG4CwMtFj4A1RR/uUFC96c8PKEH3+PzHFH3yVti2/QLogNJ5aocXCl
+         IF2KI+VtE+9l+3Tx9Ck31bioBEr5iz/YiCErJubTrvteunR+BclObky1Mg1VCAU/pXPx
+         qzmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:to:references:from:autocrypt:subject:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=zSYYMjCer/k9tmJ7ZZe4YO3vkQ6QJMlcwBfIN/y6pU4=;
-        b=fPOYEYG5/Fu2ik0xKf0JT70D+GN3hVKu0X238Cm/pepIyUCyAkz8r7l2fBQouZaAHU
-         Lf9DymX9N0wyJioXbJpsh5PUGNJYwFA9zsxRgZRchRWT14kkibKZFUOFM6w6F5YIlqnu
-         FrENjaHQnuPEH+3RZw5GPWA40aqFaLMg5/yyDJh/X/BTAUSlE7ejCZujlLxzeTyXwD1h
-         REs2OO1fRH4UWTIzKKV9aQAMZWOSkghxmfLd+OuSun4KWeHGlNbb+nS8FT2r0Zd+xKsp
-         CyeBKlLbcrsugpVsIWm+kmoLigbaGPJrulMz2FHomtgxOyezs8m7Ud9biCNvBXAiqd9u
-         fnQQ==
-X-Gm-Message-State: AGi0PuYSCE2TrElEo1nRKAT2eQMP2SwfIvc+9EAJRR/ZKCohd8ubhgZy
-        1RrwduwIJWisMziXgomcRHrmBrfBL+GWGPczL1vssRYrh8DVCQDhOQksb9cJGmJIAB0Rv5L/70m
-        x4kezOfAHpIE+4vdvoKgg
-X-Received: by 2002:a37:4955:: with SMTP id w82mr12151030qka.240.1588538981655;
-        Sun, 03 May 2020 13:49:41 -0700 (PDT)
-X-Google-Smtp-Source: APiQypL/yRI3pvKwp5EcSRyFRyzRWgGDsy73tBk0Bjk1YTubstQEXIh8JCXYenyVhJAmb49/eivC6w==
-X-Received: by 2002:a37:4955:: with SMTP id w82mr12151006qka.240.1588538981093;
-        Sun, 03 May 2020 13:49:41 -0700 (PDT)
-Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
-        by smtp.gmail.com with ESMTPSA id a124sm8366919qkf.93.2020.05.03.13.49.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 May 2020 13:49:40 -0700 (PDT)
-From:   wu000273@umn.edu
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, Markus.Elfring@web.de,
-        oss-drivers@netronome.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kjlu@umn.edu, wu000273@umn.edu
-Subject: [PATCH v3] nfp: abm: Fix incomplete release of system resources in nfp_abm_vnic_set_mac()
-Date:   Sun,  3 May 2020 15:49:32 -0500
-Message-Id: <20200503204932.11167-1-wu000273@umn.edu>
-X-Mailer: git-send-email 2.17.1
+        bh=LEgWD4W/Klc5jR0H65ky4vuNqezbPw7lFLRYyVYOAJM=;
+        b=FDopT49ibyvd+LZX2UC5F6pwtcFwBDMmBiviBdAM7vtK4W7/RHkW95EUnW1HDcCXWd
+         kpwc3Gf8SPPIfbcn5an7K8fZPFLvTRaaKWnmKo75vTl7SXmlOYJMdgKTej7kZMf17gGI
+         FjFy+d/ug3nsHpB5e1hxU4ySrigGZEK8qvHjJfxZN+OKDIo+2u5+A5AkqTda7BNV5W0B
+         0X8iJ1IAKduAKBv7CBvcOCgo+tKmNeZntcBpxMamX8H765ZmE+nu/a8OVjcf1tsUpBB/
+         fSMfLA7EWgnKk1pFE+kv8CTxmYSowo0q4+WigDXmhfuIF4+ernRGwrz/s8ajsN2LOOQq
+         a+4g==
+X-Gm-Message-State: AGi0PuYU+tSBavj4sbSMsFTb0bLjWjAPbAUdpuD5lYAwzcMJi95QRoSz
+        PF9ymMX68yC2BFI2iDxwY7Q=
+X-Google-Smtp-Source: APiQypJSVyahEzgG9zmspUwaHHVbCkoKpPYopmNEHukVbm4Jy/MFd9KNBu7LuqFUFJWyqdvyAvGwrA==
+X-Received: by 2002:a63:6c7:: with SMTP id 190mr13591884pgg.418.1588539979088;
+        Sun, 03 May 2020 14:06:19 -0700 (PDT)
+Received: from [192.168.1.2] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.googlemail.com with ESMTPSA id d74sm7152849pfd.70.2020.05.03.14.06.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 May 2020 14:06:17 -0700 (PDT)
+To:     Allen <allen.pais@oracle.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <9d7ac811-f3c9-ff13-5b81-259daa8c424f@oracle.com>
+ <dd42f431-d555-fcd2-b25e-50aeecbb513b@gmail.com>
+ <c998f49c-0119-7d8c-7cbc-ab8beadfa82d@oracle.com>
+ <1ec3b421-dee5-e291-ac17-5d2f713b9aae@gmail.com>
+ <9a4912aa-3129-1774-5f21-2f6fb4afafb2@oracle.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
+Subject: Re: Net: [DSA]: dsa-loop kernel panic
+Message-ID: <a15245fb-a9a4-4bcd-8459-fe3cbcc03119@gmail.com>
+Date:   Sun, 3 May 2020 14:06:16 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <9a4912aa-3129-1774-5f21-2f6fb4afafb2@oracle.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiushi Wu <wu000273@umn.edu>
+Le 2020-05-01 à 10:58, Allen a écrit :
+>>>
+>>>   It maps to "eth0". Please let me know if you need further details.
+>>
+>> I suppose I should have been clearer, what network device driver created
+>> eth0?
+>>
+> 
+>  This was seen on a VM.
+> eth0 [52:54:00:c1:cd:65]: virtio_net (up)
 
-In function nfp_abm_vnic_set_mac, pointer nsp is allocated by nfp_nsp_open.
-But when nfp_nsp_has_hwinfo_lookup fail, the pointer is not released,
-which can lead to a memory leak bug. Thus add a call of the function
-“nfp_nsp_close” for the completion of the exception handling.
-
-Fixes: f6e71efdf9fb1 ("nfp: abm: look up MAC addresses via management FW")
-Signed-off-by: Qiushi Wu <wu000273@umn.edu>
----
- drivers/net/ethernet/netronome/nfp/abm/main.c | 21 ++++++++++---------
- 1 file changed, 11 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/abm/main.c b/drivers/net/ethernet/netronome/nfp/abm/main.c
-index 9183b3e85d21..f196789f62fe 100644
---- a/drivers/net/ethernet/netronome/nfp/abm/main.c
-+++ b/drivers/net/ethernet/netronome/nfp/abm/main.c
-@@ -265,8 +265,7 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
- 
- 	if (id > pf->eth_tbl->count) {
- 		nfp_warn(pf->cpp, "No entry for persistent MAC address\n");
--		eth_hw_addr_random(nn->dp.netdev);
--		return;
-+		goto generate_random_address;
- 	}
- 
- 	snprintf(hwinfo, sizeof(hwinfo), "eth%u.mac.pf%u",
-@@ -276,14 +275,13 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
- 	if (IS_ERR(nsp)) {
- 		nfp_warn(pf->cpp, "Failed to access the NSP for persistent MAC address: %ld\n",
- 			 PTR_ERR(nsp));
--		eth_hw_addr_random(nn->dp.netdev);
--		return;
-+		goto generate_random_address;
- 	}
- 
- 	if (!nfp_nsp_has_hwinfo_lookup(nsp)) {
- 		nfp_warn(pf->cpp, "NSP doesn't support PF MAC generation\n");
--		eth_hw_addr_random(nn->dp.netdev);
--		return;
-+		nfp_nsp_close(nsp);
-+		goto generate_random_address;
- 	}
- 
- 	err = nfp_nsp_hwinfo_lookup(nsp, hwinfo, sizeof(hwinfo));
-@@ -291,8 +289,7 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
- 	if (err) {
- 		nfp_warn(pf->cpp, "Reading persistent MAC address failed: %d\n",
- 			 err);
--		eth_hw_addr_random(nn->dp.netdev);
--		return;
-+		goto generate_random_address;
- 	}
- 
- 	if (sscanf(hwinfo, "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx",
-@@ -300,12 +297,16 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
- 		   &mac_addr[3], &mac_addr[4], &mac_addr[5]) != 6) {
- 		nfp_warn(pf->cpp, "Can't parse persistent MAC address (%s)\n",
- 			 hwinfo);
--		eth_hw_addr_random(nn->dp.netdev);
--		return;
-+		goto generate_random_address;
- 	}
- 
- 	ether_addr_copy(nn->dp.netdev->dev_addr, mac_addr);
- 	ether_addr_copy(nn->dp.netdev->perm_addr, mac_addr);
-+	return;
-+
-+generate_random_address:
-+	eth_hw_addr_random(nn->dp.netdev);
-+	return;
- }
- 
- static int
+I have reproduced it here with virtio_net and am now looking into this,
+at first glance it does not look like we are properly holding the device
+reference count for the case where DSA was probed via platform device
+configuration.
 -- 
-2.17.1
-
+Florian
