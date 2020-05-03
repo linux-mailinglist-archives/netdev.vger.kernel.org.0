@@ -2,186 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 799911C2C3E
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:40:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D4A31C2C77
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728568AbgECMjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 08:39:53 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:60648 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728417AbgECMjt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 08:39:49 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 043CXURE089928;
-        Sun, 3 May 2020 08:39:48 -0400
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s369xxrq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 03 May 2020 08:39:47 -0400
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 043CZOYB003946;
-        Sun, 3 May 2020 12:39:45 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04fra.de.ibm.com with ESMTP id 30s0g6126s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 03 May 2020 12:39:45 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 043Cdg1J31064142
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 3 May 2020 12:39:42 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BFDE24C040;
-        Sun,  3 May 2020 12:39:42 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8A0134C044;
-        Sun,  3 May 2020 12:39:42 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Sun,  3 May 2020 12:39:42 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net-next v2 11/11] net/smc: enqueue local LLC messages
-Date:   Sun,  3 May 2020 14:38:50 +0200
-Message-Id: <20200503123850.57261-12-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200503123850.57261-1-kgraul@linux.ibm.com>
-References: <20200503123850.57261-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-05-03_09:2020-05-01,2020-05-03 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- bulkscore=0 priorityscore=1501 mlxscore=0 phishscore=0 clxscore=1015
- malwarescore=0 suspectscore=1 spamscore=0 lowpriorityscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005030110
+        id S1728242AbgECMsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 08:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728115AbgECMsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 08:48:22 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E9CC061A0C
+        for <netdev@vger.kernel.org>; Sun,  3 May 2020 05:48:20 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id e9so9458398iok.9
+        for <netdev@vger.kernel.org>; Sun, 03 May 2020 05:48:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MQDD+mhPo5ohtn74Ww8z4UvE0EQ9Jh+TtXxoSmmwLS0=;
+        b=V1n7Bi7i2Rc8+6XnrGuavLIL3/LMJyeVAXW6PcEnypUdN9jD8mBoWRl+MdAEC1Oanl
+         zozsDnUNQOjBFOiP7QKxvjSqCnbL4QPfihMrCPnzohZua5frfmQdYQtWxUMlmjdGrIev
+         RrglGccbdG2a8kLaApnP3uBc75Y94AKrmKVhPxRvGmnEpFNnze5/XLWVc5bO9Fz4U0jM
+         uQDzeZoKwf/WAqUpHy+1An0EHUpb+1ZYCK6ctQZrofeP+J/LZ+azP0+pKBPv01hzp37q
+         XXUoftETxRm9ocKz5dED+NJaAut5M52nfSbSxNa1bHb8R3DD+GLX4qaOJqbPdIP3mmsV
+         XLWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MQDD+mhPo5ohtn74Ww8z4UvE0EQ9Jh+TtXxoSmmwLS0=;
+        b=mb8FicjpmySxmBlje/lWvKdsBSkwkPe8zJmCRHNwRzoD4tF9mkqGzTSz69lMxfnpqs
+         6iE7TJXVTejEuZGBAY3dEap9bTLsXJXj6OYxY8vrSe677asjkK2/NM9K5eGqTQELToyl
+         IU57FXM/EdrzxDgx2n5kdinXZ5mAbN+faIyk4U/6YFjk3BmOxS43P7oZ6/tNXPC6A8vB
+         0KkBX4dOi/9gjEFFi27f7rA/qag82Vo52M4h3mK6y3/4PSPrgZgo68YV1U6iYMPG/6Ec
+         XkmLAoaouiNOFo7LPgJPSNLfeQFjv9z6NhtsYstN7zNXIQJpQCll3cRlAhL7sRR0v0hL
+         81zQ==
+X-Gm-Message-State: AGi0PuaDXi8xyavOL0EIiW91OZdxsSsYWpV0u6wLdv2vR083c2idh4D0
+        1HmB7Y5qYmr2aYAltCGixw8hNA==
+X-Google-Smtp-Source: APiQypJEXTM7BhiQjba5jJ8KLSri4SKUktegex5RIJIrjvJkRJ0mDxyec+xpxFv6h6mVmT9RhaFHUw==
+X-Received: by 2002:a6b:8b17:: with SMTP id n23mr11324386iod.69.1588510099934;
+        Sun, 03 May 2020 05:48:19 -0700 (PDT)
+Received: from [10.0.0.125] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id l13sm3514119ilo.46.2020.05.03.05.48.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 May 2020 05:48:19 -0700 (PDT)
+Subject: Re: [Patch net v2] net_sched: fix tcm_parent in tc filter dump
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>
+References: <20200501035349.31244-1-xiyou.wangcong@gmail.com>
+ <7b3e8f90-0e1e-ff59-2378-c6e59c9c1d9e@mojatatu.com>
+ <a18c1d1a-20a1-7346-4835-6163acb4339b@mojatatu.com>
+ <CAM_iQpWi9MA5DEk7933aah3yeOQ+=bHO8H2-xpqTtcXn0k=+0Q@mail.gmail.com>
+ <66d03368-9b8e-b953-a3a5-1f61b71e6307@mojatatu.com>
+Message-ID: <08e34ca6-3a9d-4245-317f-ae17b60e3666@mojatatu.com>
+Date:   Sun, 3 May 2020 08:48:18 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <66d03368-9b8e-b953-a3a5-1f61b71e6307@mojatatu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As SMC server, when a second link was deleted, trigger the setup of an
-asymmetric link. Do this by enqueueing a local ADD_LINK message which
-is processed by the LLC layer as if it were received from peer. Do the
-same when a new IB port became active and a new link could be created.
-smc_llc_srv_add_link_local() enqueues a local ADD_LINK message.
-And smc_llc_srv_delete_link_local() is used the same way to enqueue a
-local DELETE_LINK message. This is used when an IB port is no longer
-active.
+On 2020-05-03 8:02 a.m., Jamal Hadi Salim wrote:
+> On 2020-05-02 10:28 p.m., Cong Wang wrote:
+>> On Sat, May 2, 2020 at 2:19 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>>
+>>> On 2020-05-02 4:48 a.m., Jamal Hadi Salim wrote:
+> 
+> [..]
+>>>> Note:
+>>>> tc filter show dev dummy0 root
+>>>> should not show that filter. OTOH,
+>>>> tc filter show dev dummy0 parent ffff:
+>>>> should.
+>>
+>> Hmm, but we use TC_H_MAJ(tcm->tcm_parent) to do the
+>> lookup, 'root' (ffff:ffff) has the same MAJ with ingress
+>> (ffff:0000).
+>>
+> 
+> I have some long analysis and theory below.
+> 
+>> And qdisc_lookup() started to search for ingress since 2008,
+>> commit 8123b421e8ed944671d7241323ed3198cccb4041.
+>>
+>> So it is likely too late to change this behavior even if it is not
+>> what we prefer.
+>>
+> 
+> My gut feeling is that whatever broke (likely during block addition
+> maybe even earlier during clsact addition) is in the code
+> path for adding filter. Dumping may have bugs but i would
+> point a finger to filter addition first.
+> More below.... (sorry long email).
+> 
+> 
+> Here's what i tried after applying your patch:
+> 
+> ----
+> # $TC qd add dev $DEV ingress
+> # $TC qd add dev $DEV root prio
+> # $TC qd ls dev $DEV
+> qdisc noqueue 0: dev lo root refcnt 2
+> qdisc prio 8008: dev enp0s1 root refcnt 2 bands 3 priomap 1 2 2 2 1 2 0 
+> 0 1 1 1 1 1 1 1 1
+> qdisc ingress ffff: dev enp0s1 parent ffff:fff1 ----------------
+> -----
+> 
+> egress i.e root is at 8008:
+> ingress is at ffff:fff1
+> 
+> If say:
+> ---
+> # $TC filter add dev $DEV root protocol arp prio 10 basic action pass
+> ----
+> 
+> i am instructing the kernel to "go and find root (which is 8008:)
+> and install the filter there".
 
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
-Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
----
- net/smc/smc_core.c |  3 ++-
- net/smc/smc_llc.c  | 30 +++++++++++++++++++++++++++++-
- net/smc/smc_llc.h  |  2 ++
- 3 files changed, 33 insertions(+), 2 deletions(-)
+Ok, I went backwards and looked at many kernel sources.
+It is true we install the filters in two different locations
+i.e just specifying TC_H_ROOT does not equate to picking
+the egress qdisc with that flag.
+And has been broken for way too long - so we have to live
+with it.
+I wish we had more tdc tests and earlier.
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index a964304283fa..32a6cadc5c1f 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -883,7 +883,7 @@ static void smcr_link_up(struct smc_link_group *lgr,
- 		link = smc_llc_usable_link(lgr);
- 		if (!link)
- 			return;
--		/* tbd: call smc_llc_srv_add_link_local(link); */
-+		smc_llc_srv_add_link_local(link);
- 	} else {
- 		/* invite server to start add link processing */
- 		u8 gid[SMC_GID_SIZE];
-@@ -954,6 +954,7 @@ static void smcr_link_down(struct smc_link *lnk)
- 
- 	if (lgr->role == SMC_SERV) {
- 		/* trigger local delete link processing */
-+		smc_llc_srv_delete_link_local(to_lnk, del_link_id);
- 	} else {
- 		if (lgr->llc_flow_lcl.type != SMC_LLC_FLOW_NONE) {
- 			/* another llc task is ongoing */
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index ac065f6d60dc..7675ccd6f3c3 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -159,6 +159,8 @@ struct smc_llc_qentry {
- 	union smc_llc_msg msg;
- };
- 
-+static void smc_llc_enqueue(struct smc_link *link, union smc_llc_msg *llc);
-+
- struct smc_llc_qentry *smc_llc_flow_qentry_clr(struct smc_llc_flow *flow)
- {
- 	struct smc_llc_qentry *qentry = flow->qentry;
-@@ -1110,6 +1112,17 @@ static void smc_llc_process_srv_add_link(struct smc_link_group *lgr)
- 	mutex_unlock(&lgr->llc_conf_mutex);
- }
- 
-+/* enqueue a local add_link req to trigger a new add_link flow, only as SERV */
-+void smc_llc_srv_add_link_local(struct smc_link *link)
-+{
-+	struct smc_llc_msg_add_link add_llc = {0};
-+
-+	add_llc.hd.length = sizeof(add_llc);
-+	add_llc.hd.common.type = SMC_LLC_ADD_LINK;
-+	/* no dev and port needed, we as server ignore client data anyway */
-+	smc_llc_enqueue(link, (union smc_llc_msg *)&add_llc);
-+}
-+
- /* worker to process an add link message */
- static void smc_llc_add_link_work(struct work_struct *work)
- {
-@@ -1130,6 +1143,21 @@ static void smc_llc_add_link_work(struct work_struct *work)
- 	smc_llc_flow_stop(lgr, &lgr->llc_flow_lcl);
- }
- 
-+/* enqueue a local del_link msg to trigger a new del_link flow,
-+ * called only for role SMC_SERV
-+ */
-+void smc_llc_srv_delete_link_local(struct smc_link *link, u8 del_link_id)
-+{
-+	struct smc_llc_msg_del_link del_llc = {0};
-+
-+	del_llc.hd.length = sizeof(del_llc);
-+	del_llc.hd.common.type = SMC_LLC_DELETE_LINK;
-+	del_llc.link_num = del_link_id;
-+	del_llc.reason = htonl(SMC_LLC_DEL_LOST_PATH);
-+	del_llc.hd.flags |= SMC_LLC_FLAG_DEL_LINK_ORDERLY;
-+	smc_llc_enqueue(link, (union smc_llc_msg *)&del_llc);
-+}
-+
- static void smc_llc_process_cli_delete_link(struct smc_link_group *lgr)
- {
- 	struct smc_link *lnk_del = NULL, *lnk_asym, *lnk;
-@@ -1250,7 +1278,7 @@ static void smc_llc_process_srv_delete_link(struct smc_link_group *lgr)
- 
- 	if (lgr->type == SMC_LGR_SINGLE && !list_empty(&lgr->list)) {
- 		/* trigger setup of asymm alt link */
--		/* tbd: call smc_llc_srv_add_link_local(lnk); */
-+		smc_llc_srv_add_link_local(lnk);
- 	}
- out:
- 	mutex_unlock(&lgr->llc_conf_mutex);
-diff --git a/net/smc/smc_llc.h b/net/smc/smc_llc.h
-index 1a7748d0541f..c335fc5f363c 100644
---- a/net/smc/smc_llc.h
-+++ b/net/smc/smc_llc.h
-@@ -69,6 +69,7 @@ int smc_llc_send_add_link(struct smc_link *link, u8 mac[], u8 gid[],
- int smc_llc_send_delete_link(struct smc_link *link, u8 link_del_id,
- 			     enum smc_llc_reqresp reqresp, bool orderly,
- 			     u32 reason);
-+void smc_llc_srv_delete_link_local(struct smc_link *link, u8 del_link_id);
- void smc_llc_lgr_init(struct smc_link_group *lgr, struct smc_sock *smc);
- void smc_llc_lgr_clear(struct smc_link_group *lgr);
- int smc_llc_link_init(struct smc_link *link);
-@@ -90,6 +91,7 @@ struct smc_llc_qentry *smc_llc_flow_qentry_clr(struct smc_llc_flow *flow);
- void smc_llc_flow_qentry_del(struct smc_llc_flow *flow);
- int smc_llc_cli_add_link(struct smc_link *link, struct smc_llc_qentry *qentry);
- int smc_llc_srv_add_link(struct smc_link *link);
-+void smc_llc_srv_add_link_local(struct smc_link *link);
- int smc_llc_init(void) __init;
- 
- #endif /* SMC_LLC_H */
--- 
-2.17.1
+Advise to users is not to use semantics like "root" or ingress
+but rather explicitly specify the parent.
 
+So ignore what i said above. I will ACK your patch.
+
+cheers,
+jamal
