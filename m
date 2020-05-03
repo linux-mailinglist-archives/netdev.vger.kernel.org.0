@@ -2,351 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7DFA1C2EB4
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 21:11:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 978011C2F35
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 22:25:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729026AbgECTLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 15:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42192 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728847AbgECTLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 15:11:49 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562CCC061A0E
-        for <netdev@vger.kernel.org>; Sun,  3 May 2020 12:11:48 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id 71so12246671qtc.12
-        for <netdev@vger.kernel.org>; Sun, 03 May 2020 12:11:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XUcUJXd5sYMeG+kspj4N5/bj4os1+aQN1aLG3jtxArc=;
-        b=boGqOoWVBuW/orXYBuIe3K4kpBzsSgngKxQI0d0UzC3Ioa9sYlPbB7ZzCyImFmV3Vh
-         /NomXPGoB6XeTwCh7Ker+eHF+GaK3aEHGfPdHI6GWaWdUBocv2KePEZIX8dIl/Lk30Ws
-         8kisV4oUHEsp7ilHqjvB7drz5ZAz1qFRxXjpyMk6S3Wz7FlOnZGXp2+CPao7UsrmnUb9
-         zPREOCCH1JnHH9UWfM8ICXZoiiVk/L3tbSnE/5d4a4oDpG1Clsq4xYOik3a/PwpMEQ84
-         ee6q87ab9WThIcbdy9HdbzE8Ograqm8yCoqqpaDNCXfmDTeKFIXUAQM0dXZOVZ3+OLZ2
-         FJug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XUcUJXd5sYMeG+kspj4N5/bj4os1+aQN1aLG3jtxArc=;
-        b=IIzJ06a15iMTtdJL/kvK4z7kwglUt4BsHzfEYTGcYDCXZ+EWqunWS53mlY7AzwNRbx
-         iCNmekxO2+JgDFnfjwrX7uKVB20etu7rYTHg8yooTKyzaYPpR4sOvNkpdKl0Qdb6wpI7
-         Qib1WEQL2+jkBKM9u9dTRALhicrHHLI9DHLGDjfiV2VvWQTaKhBZvvBU2Il6ICaX3pD6
-         QJYkx9kBhAFppStUrkHThvIciC6DynIBPvhA+QdQ6lshrmZqTL3/sgfkw3CLBO6G7Ce8
-         OA2NwMphzVI2/QVLcgKbJONMPotty024/8Xw0qDOAWNYmoSQe0mMJQLqFK9W8VReafKB
-         2AyQ==
-X-Gm-Message-State: AGi0PuY2URhyQIC5TErQL5cv0B8eU41XuPGBoHsiVxHr9SgKjQtux4Uc
-        Gg/YtPvvbqDtfTs6fAOibiYxCUrd
-X-Google-Smtp-Source: APiQypKmVaHEPTtnI1fsEyrUTrRTrfTFNHPo7Z4NbIBORR4zBnSx3/ERwc6zgKutQJ97WJw1hfWqhw==
-X-Received: by 2002:ac8:543:: with SMTP id c3mr13325678qth.8.1588533105580;
-        Sun, 03 May 2020 12:11:45 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id f68sm3662550qke.74.2020.05.03.12.11.44
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 May 2020 12:11:44 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id r14so648711ybm.12
-        for <netdev@vger.kernel.org>; Sun, 03 May 2020 12:11:44 -0700 (PDT)
-X-Received: by 2002:a25:afd0:: with SMTP id d16mr21958835ybj.441.1588533103318;
- Sun, 03 May 2020 12:11:43 -0700 (PDT)
+        id S1729109AbgECUZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 16:25:50 -0400
+Received: from mout.web.de ([212.227.15.4]:55217 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729081AbgECUZt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 May 2020 16:25:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1588537532;
+        bh=+rOf7wzYZ24guVO6dSkAZcWagsazdX9BRZj0qYMnu/A=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=rm0F4KBpi8K3bl4IlgRJesD5tZl5bkTj1Ibiznr3sElb+BC1w0V+0tXfwIhop4Gnv
+         6zv+O2UYEhIOFwk8Ar9qpZEFFzadUbCZPUPe8sy2aaviXcusT48YVCh0WoPTaNDgIB
+         7ipuzuga/lGgcVoAI+ZmjrKP1XSW2GCNS3hU8N98=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.131.26.31]) by smtp.web.de (mrweb003
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lpw63-1iymNP2QDP-00fkNc; Sun, 03
+ May 2020 22:25:32 +0200
+Subject: Re: [PATCH v2] nfp: abm: Fix incomplete release of system resources
+ in nfp_abm_vnic_set_mac()
+To:     Qiushi Wu <wu000273@umn.edu>, oss-drivers@netronome.com,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Kangjie Lu <kjlu@umn.edu>
+References: <20200503184220.6209-1-wu000273@umn.edu>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <88eecbe4-89b3-2b4d-87c7-5487cf23cadb@web.de>
+Date:   Sun, 3 May 2020 22:25:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20200502082856.GA3152@white>
-In-Reply-To: <20200502082856.GA3152@white>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 3 May 2020 15:11:05 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSc0jEw53Ngx6x+Q7+Sj=UwO71n+Pg6mD_FOx6nhTHij9Q@mail.gmail.com>
-Message-ID: <CA+FuTSc0jEw53Ngx6x+Q7+Sj=UwO71n+Pg6mD_FOx6nhTHij9Q@mail.gmail.com>
-Subject: Re: [PATCH v6] net: Option to retrieve the pending data from send
- queue of UDP socket
-To:     Lese Doru Calin <lesedorucalin01@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200503184220.6209-1-wu000273@umn.edu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:4dVsQFfab4hiFErMRMDbyJdWtmu7mUM2oanMiPdoGYUsnKv5YBX
+ uTuY1a0+Fit7UtWlmqKH5WEmzialh9rDe2N4Yygj9cW6Qd1Ld4cZ47enG1hgIts+PLCpfhZ
+ FxT607cNqH4F3LbIZqOD/0hdkS35cC7g3EUM9EkfQGye/ILxUhZ3uK0LkxRE9RUGjQGxsQJ
+ cG8ra3zJfcphUTzbiQFZg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pzL/aeVbPr8=:d/zdX1waBCRDdGrs1Df5gM
+ 5x6uSEavCvPFpzc9W3nl2c0+vxhN+j4hebJl6VaRsnk1bZU1vqkz+6+09iRWAUpIh6QgE69y5
+ Mhwyk5g9/DA0o+I6I0OpBxgdtyehNGbOJsb/gXiRVLBUrlJXhu+xlXbJgtG/7eV1VFBqwKe+2
+ rJh27BZvH2CIadooHmOuiaPklPYxsHw0Yr9VcaBYvTy0bnVEzS7cfII5X1n8FTu8ZIW3KW5C2
+ CbkCOEYSw5UY2FIPKu5/5lbB+3DwO8Meem41f+Nx55B4arl3BGelVTw3yAOGNOHKzbl2YhtJX
+ sc92GoInfubO7Brxp4BZrsyunek6HybXN8gma2FTepeFAYrPunU2RTWbOHQ+jntdcDkQAkW0L
+ 6DeL6qHNE6eSFP6IVT8jfHXW/aFpsFGogD2YybXq/hKTUmh41zA/nZhD9lxvgonw7xMNxW8cJ
+ uOMkiKYWzdPJ29yR+Cz+zJau7GnqgKz94HIyHGOoZbVBy7Wwl2Pnsfo3E1mj56xuNLr5xOLMs
+ LL7JLfUwmUYLDmA9e8vhVQ1TJuMwRIdLixhKuSp6I5iDLZqIWkyKcB9b/oCZ6OW3aLuRooTES
+ APzABsK7ejk5mu4qXlPIgR+nrl7hl2XgTWAOnLDtIFDWQmuVEbBlxYskENAivoMeWyRIhHcuF
+ IKtSRiaYxANHbSN7lKzwsPOhNsZODF37LerxKad/voEDHVhykWG3NxqIL7KaGTsHCh7F9bF7o
+ /fAr72RVdEGDKSTghearWh7ewGT/3vrLIXJrKgNEbSBGW0+9UzzRMuR2awr4C7DrwhJ1UBRGo
+ CKjQ2IIdFMWAYJ86PXHoD9mePk4lxdJ0qIZQTis5SWwCEZsI4YryYp3CuEg2D0zyZ/BOJpSky
+ sSLIcCFNz69tTywO6MCKtCHjRTXVWilO6XeJhg7Uq0HTVOV1KD2FC3QQBUq2SjBWVPaURkmug
+ M4PT9+1L5FCflpl8/Tuy98xES0VtTqTaV3gDwKDFVFcrWC9449wVRWnOJ0j7jfpHIfvGRAwLu
+ kCeRPQegxyyIwzkyBFDsz05EekHtkb5+etqmhxUhb3g0SRnci/OgfxAeF3XRROIV3G+rZys4w
+ xSweNMdBAN7GnR+7zsfsq+ZI0gjVCJVnm/M2vF6EL9qqeGqku+c4K53iOTmgCo+eNYZRAizp0
+ VCslweA1Mr+HwmqRG9yOEIVDpeAI04EvgkuP8/7X8ZhvWyVmo1E3rnm4AnwEZ/2nFj0AMNA3m
+ KxmVkbLf+f3SNjWFQ
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 2, 2020 at 4:29 AM Lese Doru Calin
-<lesedorucalin01@gmail.com> wrote:
->
-> In this year's edition of GSoC, there is a project idea for CRIU to add support
-> for checkpoint/restore of cork-ed UDP sockets. But to add it, the kernel API needs
-> to be extended.
-> This is what this patch does. It adds a new command, called SIOUDPPENDGET, to the
-> ioctl syscall regarding UDP sockets, which stores the pending data from the write
-> queue and the destination address in a struct msghdr. The arg for ioctl needs to
-> be a pointer to a user space struct msghdr. The syscall returns the number of writed
-> bytes, if successful, or error. To retrive the data requires the CAP_NET_ADMIN
-> capability.
->
-> Signed-off-by: Lese Doru Calin <lesedorucalin01@gmail.com>
+> =E2=80=A6 Thus add a call of the function
+> =E2=80=9Cnfp_nsp_close=E2=80=9D for the completion of the exception hand=
+ling.
 
-A few concerns:
+Thanks for your positive response.
 
-- why call the BPF recvmsg hook from this ioctl function?
-
-- The patch saves msg_name, but not other relevant state stored in
-inet_cork, such as state passed through cmsg. Without that, this might
-introduce more subtle bugs than not checkpointing at all.
-
-- Duplicating usercopy code from net/socket.c is fragile and adds
-maintenance burden. If anything such refactoring should stay inside
-that file. To some extent the same applies to udp_peek_sndq and
-net/core/datagram.c.
-
-Less important
-
-- a getsockopt is generally preferred over extending ioctl.
-
-Overall, I'm not sure that this is the right approach. It is quite a
-bit of code, for a mostly hypothetical omission to CRIU?
-
-Since these are unreliable datagrams, it is arguably sufficient to
-just drop a datagram if checkpoint/restore happened on a corked
-socket. That might be simpler.
-
-As long as CRIU is behind a static branch and thus adds no cycles in
-the common hot path, I personally don't mind having it in the normal
-send/recv path as much -- if that allows it to reuse existing code,
-e.g., for copy to user. The MSG_ERRQUEUE path in particular is already
-a slow path to loop packets from the send patch back to the sending
-process.
+I imagined that a small patch series would be more reasonable
+than this direct change combination.
 
 
-> ---
->  include/linux/socket.h       |   2 +
->  include/uapi/linux/sockios.h |   3 +
->  net/ipv4/udp.c               | 145 +++++++++++++++++++++++++++++++----
->  net/socket.c                 |   4 +-
->  4 files changed, 139 insertions(+), 15 deletions(-)
->
-> diff --git a/include/linux/socket.h b/include/linux/socket.h
-> index 54338fac45cb..632ba0ea6709 100644
-> --- a/include/linux/socket.h
-> +++ b/include/linux/socket.h
-> @@ -351,6 +351,8 @@ struct ucred {
->  #define IPX_TYPE       1
->
->  extern int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_storage *kaddr);
-> +extern int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
-> +                            void __user *uaddr, int __user *ulen);
->  extern int put_cmsg(struct msghdr*, int level, int type, int len, void *data);
->
->  struct timespec64;
-> diff --git a/include/uapi/linux/sockios.h b/include/uapi/linux/sockios.h
-> index 7d1bccbbef78..3639fa906604 100644
-> --- a/include/uapi/linux/sockios.h
-> +++ b/include/uapi/linux/sockios.h
-> @@ -153,6 +153,9 @@
->  #define SIOCSHWTSTAMP  0x89b0          /* set and get config           */
->  #define SIOCGHWTSTAMP  0x89b1          /* get config                   */
->
-> +/* UDP socket calls*/
-> +#define SIOUDPPENDGET 0x89C0   /* get the pending data from write queue */
+=E2=80=A6
+> +++ b/drivers/net/ethernet/netronome/nfp/abm/main.c
+=E2=80=A6
+>  	ether_addr_copy(nn->dp.netdev->perm_addr, mac_addr);
 > +
->  /* Device private ioctl calls */
->
->  /*
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 32564b350823..f729a5e7f90b 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -1620,6 +1620,133 @@ static int first_packet_length(struct sock *sk)
->         return res;
+> +generate_random_address:
+> +	eth_hw_addr_random(nn->dp.netdev);
+> +	return;
 >  }
->
-> +static void udp_set_source_addr(struct sock *sk, struct msghdr *msg,
-> +                               int *addr_len, u32 addr, u16 port)
-> +{
-> +       DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
-> +
-> +       if (sin) {
-> +               sin->sin_family = AF_INET;
-> +               sin->sin_port = port;
-> +               sin->sin_addr.s_addr = addr;
-> +               memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
-> +               *addr_len = sizeof(*sin);
-> +
-> +               if (cgroup_bpf_enabled)
-> +                       BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
-> +                                        (struct sockaddr *)sin);
-> +       }
-> +}
-> +
-> +static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
-> +{
-> +       int copy, copied = 0, err = 0;
-> +       struct sk_buff *skb;
-> +
-> +       skb_queue_walk(&sk->sk_write_queue, skb) {
-> +               copy = len - copied;
-> +               if (copy > skb->len - off)
-> +                       copy = skb->len - off;
-> +
-> +               err = skb_copy_datagram_msg(skb, off, msg, copy);
-> +               if (err)
-> +                       break;
-> +
-> +               copied += copy;
-> +               if (len <= copied)
-> +                       break;
-> +       }
-> +       return err ?: copied;
-> +}
-> +
-> +static int udp_get_pending_write_queue(struct sock *sk, struct msghdr *msg,
-> +                                      int *addr_len)
-> +{
-> +       int err = 0, off = sizeof(struct udphdr);
-> +       struct inet_sock *inet = inet_sk(sk);
-> +       struct udp_sock *up = udp_sk(sk);
-> +       struct flowi4 *fl4;
-> +       struct flowi6 *fl6;
-> +
-> +       switch (up->pending) {
-> +       case 0:
-> +               return -ENODATA;
-> +       case AF_INET:
-> +               off += sizeof(struct iphdr);
-> +               fl4 = &inet->cork.fl.u.ip4;
-> +               udp_set_source_addr(sk, msg, addr_len,
-> +                                   fl4->daddr, fl4->fl4_dport);
-> +               break;
-> +       case AF_INET6:
-> +               off += sizeof(struct ipv6hdr);
-> +               if (msg->msg_name) {
-> +                       DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6,
-> +                                        msg->msg_name);
-> +
-> +                       fl6 = &inet->cork.fl.u.ip6;
-> +                       sin6->sin6_family = AF_INET6;
-> +                       sin6->sin6_port = fl6->fl6_dport;
-> +                       sin6->sin6_flowinfo = 0;
-> +                       sin6->sin6_addr = fl6->daddr;
-> +                       sin6->sin6_scope_id = fl6->flowi6_oif;
-> +                       *addr_len = sizeof(*sin6);
-> +
-> +                       if (cgroup_bpf_enabled)
-> +                               BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk,
-> +                                               (struct sockaddr *)sin6);
-> +               }
-> +               break;
-> +       default:
-> +               return -EINVAL;
-> +       }
-> +
-> +       lock_sock(sk);
-> +       if (unlikely(!up->pending)) {
-> +               release_sock(sk);
-> +               return -EINVAL;
-> +       }
-> +       err = udp_peek_sndq(sk, msg, off, msg_data_left(msg));
-> +       release_sock(sk);
-> +       return err;
-> +}
-> +
-> +static int prep_msghdr_recv_pending(struct sock *sk, void __user *argp)
-> +{
-> +       struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
-> +       struct user_msghdr __user *msg;
-> +       struct sockaddr __user *uaddr;
-> +       struct sockaddr_storage addr;
-> +       struct msghdr msg_sys;
-> +       int __user *uaddr_len;
-> +       int err = 0, len = 0;
-> +
-> +       if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
-> +               return -EPERM;
-> +
-> +       if (!argp)
-> +               return -EINVAL;
-> +
-> +       msg = (struct user_msghdr __user *)argp;
-> +       err = recvmsg_copy_msghdr(&msg_sys, msg, 0, &uaddr, &iov);
-> +       if (err < 0)
-> +               return err;
-> +
-> +       uaddr_len = &msg->msg_namelen;
-> +       msg_sys.msg_name = &addr;
-> +       msg_sys.msg_flags = 0;
-> +
-> +       err = udp_get_pending_write_queue(sk, &msg_sys, &len);
-> +       msg_sys.msg_namelen = len;
-> +       len = err;
-> +
-> +       if (uaddr && err >= 0)
-> +               err = move_addr_to_user(&addr, msg_sys.msg_namelen,
-> +                                       uaddr, uaddr_len);
-> +
-> +       kfree(iov);
-> +       return err < 0 ? err : len;
-> +}
-> +
->  /*
->   *     IOCTL requests applicable to the UDP protocol
->   */
-> @@ -1641,6 +1768,9 @@ int udp_ioctl(struct sock *sk, int cmd, unsigned long arg)
->                 return put_user(amount, (int __user *)arg);
->         }
->
-> +       case SIOUDPPENDGET:
-> +               return prep_msghdr_recv_pending(sk, (void __user *)arg);
-> +
->         default:
->                 return -ENOIOCTLCMD;
->         }
-> @@ -1729,7 +1859,6 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
->                 int flags, int *addr_len)
->  {
->         struct inet_sock *inet = inet_sk(sk);
-> -       DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
->         struct sk_buff *skb;
->         unsigned int ulen, copied;
->         int off, err, peeking = flags & MSG_PEEK;
-> @@ -1794,18 +1923,8 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
->
->         sock_recv_ts_and_drops(msg, sk, skb);
->
-> -       /* Copy the address. */
-> -       if (sin) {
-> -               sin->sin_family = AF_INET;
-> -               sin->sin_port = udp_hdr(skb)->source;
-> -               sin->sin_addr.s_addr = ip_hdr(skb)->saddr;
-> -               memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
-> -               *addr_len = sizeof(*sin);
-> -
-> -               if (cgroup_bpf_enabled)
-> -                       BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
-> -                                                       (struct sockaddr *)sin);
-> -       }
-> +       udp_set_source_addr(sk, msg, addr_len, ip_hdr(skb)->saddr,
-> +                           udp_hdr(skb)->source);
->
->         if (udp_sk(sk)->gro_enabled)
->                 udp_cmsg_recv(msg, sk, skb);
-> diff --git a/net/socket.c b/net/socket.c
-> index 2dd739fba866..bd25d528c9a0 100644
-> --- a/net/socket.c
-> +++ b/net/socket.c
-> @@ -217,8 +217,8 @@ int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_storage *k
->   *     specified. Zero is returned for a success.
->   */
->
-> -static int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
-> -                            void __user *uaddr, int __user *ulen)
-> +int move_addr_to_user(struct sockaddr_storage *kaddr, int klen,
-> +                     void __user *uaddr, int __user *ulen)
->  {
->         int err;
->         int len;
-> --
-> 2.17.1
->
+=E2=80=A6
+
+Unfortunately, you interpreted my update suggestion in a questionable way
+at this source code place.
+I guess that the following code variant can be considered instead.
+
+ 	ether_addr_copy(nn->dp.netdev->perm_addr, mac_addr);
++	return;
++
++generate_random_address:
++	eth_hw_addr_random(nn->dp.netdev);
+ }
+
+
+Regards,
+Markus
