@@ -2,340 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C56A1C2E79
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 20:16:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E4CC1C2E8D
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 20:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728929AbgECSPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 14:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33554 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728723AbgECSPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 14:15:36 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D729C061A0E;
-        Sun,  3 May 2020 11:15:34 -0700 (PDT)
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1728951AbgECSmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 14:42:31 -0400
+Received: from mta-p5.oit.umn.edu ([134.84.196.205]:38368 "EHLO
+        mta-p5.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728885AbgECSma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 14:42:30 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p5.oit.umn.edu (Postfix) with ESMTP id 49FZbn6K8Yz9vKb6
+        for <netdev@vger.kernel.org>; Sun,  3 May 2020 18:42:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p5.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p5.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Ss0bsYN8bzuB for <netdev@vger.kernel.org>;
+        Sun,  3 May 2020 13:42:29 -0500 (CDT)
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id A39A122FA7;
-        Sun,  3 May 2020 20:15:26 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1588529729;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=pe1oZ0gJvMeKHYh7RVOTyyKCz9hHsy+cLGRHdjIuQg4=;
-        b=pKl4XfVvWsf1WDYabmKGrWH9o1/SzSbnm190Y1rPcbBQLmaffP0SRjPQPKxh6RziK6hCVA
-        0bcXfTTsdeky09Y8wSrwy8Di9uoxN7aOmF9wVzcGLYI20FF3oU107LDBoGKCyegSR1XFt9
-        teh7MjvHfhXvZeRCPZKEqlQ6zPNJqoo=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michael Walle <michael@walle.cc>
-Subject: [RFC net-next] net: phy: at803x: add cable diagnostics support
-Date:   Sun,  3 May 2020 20:15:17 +0200
-Message-Id: <20200503181517.4538-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
+        by mta-p5.oit.umn.edu (Postfix) with ESMTPS id 49FZbn54sYz9vKb7
+        for <netdev@vger.kernel.org>; Sun,  3 May 2020 13:42:29 -0500 (CDT)
+Received: by mail-qk1-f197.google.com with SMTP id l19so16350377qki.14
+        for <netdev@vger.kernel.org>; Sun, 03 May 2020 11:42:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bERp/MYvY8iJVrv+YyRIQ4+dlCYQm4dIrcl0kh2LDyo=;
+        b=hfOL75fLvjbGbVxKB87MExbY9F02snj66SbPvO8kdUaggICaYHLVp/qCtZzzCtC2mH
+         E2uKFokuep4sIyLzQYmN71qOvzZ03GmkhPSYyad+8vAO1rX/1by6o04eyUBIdgcycLy3
+         ffS88SixMFKoZpu7h2Csig3yiBI6SmAtQEiy8pcR/sVN42R5cMpVzs5SMrtQ9bDLoAPA
+         /YTHguQZSjHIE/Y8a+4QOKF3UvmEVEZc+4OAth5ke/1r9wCOaemnCs/KTs53YlmjZdlT
+         /FR0lpGugJIeUNHJra/mQ2KUZh7IgRCPGhTgbgZdtb8/JtBolkkb9eOGFv4pyUA9VPB0
+         E7Yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bERp/MYvY8iJVrv+YyRIQ4+dlCYQm4dIrcl0kh2LDyo=;
+        b=ThJJKInP9M8zlgjsaCJZdqkEu8HMgsT57zXLBJwwloToXYF8ZSUaM3layVOaGhaF8W
+         TXLD9K1IT5pw4cy5zbfHk6Gn3YKrUPNqIZUjeji2N+aT2fBH6uba7DZWYjR4lPw1vYpw
+         Otye0G/XasJQIEC/RuS+ZCqBbgGvK/9mw3xpmx8RcoTPtPv27axASnhk5R4+AU+Jww05
+         H62wve5PQ7zMxYY7yo6c9mc0S5r41KR5OeAGg2o38DyG24YrrEL8jZhD1/ibVLAzh+jI
+         AFEa4WdnN9JJ20GnzfTm6LZ1q/Dh9Kf5KEF52y9nzSygvFf5Sp6/bdC4FCH7k4w1PCCe
+         sXaA==
+X-Gm-Message-State: AGi0PuZon3v3m/jhKD+4RWJa5y39+bv/k4z8y6ldq1UM1BmjB4gqnvbk
+        uP6vx4qENgd23u9tkq49EEaK2oh4BGiLrmEVpTnTzFqO26ayoa8eefjfDkavpWDJptrt3RKTHV0
+        4J1/WjozPsKLkWdyFtwE3
+X-Received: by 2002:a05:620a:137a:: with SMTP id d26mr2038290qkl.326.1588531348879;
+        Sun, 03 May 2020 11:42:28 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLA5qkfVL5yPYKXJbyK42ZVvx1EOqC9Qilm0q8+o3zSvor5mHTWo0MFNOxKcABMSC71qMKOig==
+X-Received: by 2002:a05:620a:137a:: with SMTP id d26mr2038270qkl.326.1588531348490;
+        Sun, 03 May 2020 11:42:28 -0700 (PDT)
+Received: from qiushi.dtc.umn.edu (cs-kh5248-02-umh.cs.umn.edu. [128.101.106.4])
+        by smtp.gmail.com with ESMTPSA id o43sm8769039qtb.49.2020.05.03.11.42.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 May 2020 11:42:27 -0700 (PDT)
+From:   wu000273@umn.edu
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, Markus.Elfring@web.de,
+        oss-drivers@netronome.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kjlu@umn.edu, wu000273@umn.edu
+Subject: [PATCH v2] nfp: abm: Fix incomplete release of system resources in nfp_abm_vnic_set_mac()
+Date:   Sun,  3 May 2020 13:42:20 -0500
+Message-Id: <20200503184220.6209-1-wu000273@umn.edu>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: ++++++
-X-Spam-Level: ******
-X-Rspamd-Server: web
-X-Spam-Status: Yes, score=6.40
-X-Spam-Score: 6.40
-X-Rspamd-Queue-Id: A39A122FA7
-X-Spamd-Result: default: False [6.40 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         R_MISSING_CHARSET(2.50)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         TAGGED_RCPT(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         BROKEN_CONTENT_TYPE(1.50)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         NEURAL_SPAM(0.00)[0.860];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_SEVEN(0.00)[8];
-         MID_CONTAINS_FROM(1.00)[];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
-         FREEMAIL_CC(0.00)[lunn.ch,gmail.com,armlinux.org.uk,davemloft.net,walle.cc];
-         SUSPICIOUS_RECIPS(1.50)[]
-X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The AR8031/AR8033 and the AR8035 support cable diagnostics. Adding
-driver support is straightforward, so lets add it.
+From: Qiushi Wu <wu000273@umn.edu>
 
-The PHY just do one pair at a time, so we have to start the test four
-times. The cable_test_get_status() can block and therefore we can just
-busy polling the test completion and continue with the next pair until
-we are done.
-The time delta counter seems to run with 125MHz which just gives us a
-resolution of about 82.4cm per tick.
+In function nfp_abm_vnic_set_mac, pointer nsp is allocated by nfp_nsp_open.
+But when nfp_nsp_has_hwinfo_lookup fail, the pointer is not released,
+which can lead to a memory leak bug. Thus add a call of the function
+“nfp_nsp_close” for the completion of the exception handling.
 
-This was tested with a 100m ethernet cable, a 1m cable and a broken
-1m cable where pair 3 was shorted and pair 4 were open. Leaving the
-100m cable unconnected resulted in a measured fault distance of about
-114m. For the short cable the result the measured distance is either
-82cm or 1.64m.
-
-If the cable is connected to an active peer, the results might be
-inconclusive if there are broken cables. I guess this is because
-the remote PHY will disturb the measurement. Using an intact ethernet
-cable the restart of the auto negotiation seem to cause the remote PHY
-to stop sending distrubance signals.
-
-Signed-off-by: Michael Walle <michael@walle.cc>
+Fixes: f6e71efdf9fb1 ("nfp: abm: look up MAC addresses via management FW")
+Signed-off-by: Qiushi Wu <wu000273@umn.edu>
 ---
-This is an RFC because the patch requires Andrew's cable test support:
-https://lore.kernel.org/netdev/20200425180621.1140452-1-andrew@lunn.ch/
+ drivers/net/ethernet/netronome/nfp/abm/main.c | 20 +++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
- drivers/net/phy/at803x.c | 167 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 167 insertions(+)
-
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 76eb5a77fc5c..978f1b2fb931 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -18,6 +18,8 @@
- #include <linux/regulator/of_regulator.h>
- #include <linux/regulator/driver.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/ethtool_netlink.h>
-+#include <uapi/linux/ethtool_netlink.h>
- #include <dt-bindings/net/qca-ar803x.h>
+diff --git a/drivers/net/ethernet/netronome/nfp/abm/main.c b/drivers/net/ethernet/netronome/nfp/abm/main.c
+index 9183b3e85d21..a5152f11e2f5 100644
+--- a/drivers/net/ethernet/netronome/nfp/abm/main.c
++++ b/drivers/net/ethernet/netronome/nfp/abm/main.c
+@@ -265,8 +265,7 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
  
- #define AT803X_SPECIFIC_STATUS			0x11
-@@ -46,6 +48,16 @@
- #define AT803X_SMART_SPEED_ENABLE		BIT(5)
- #define AT803X_SMART_SPEED_RETRY_LIMIT_MASK	GENMASK(4, 2)
- #define AT803X_SMART_SPEED_BYPASS_TIMER		BIT(1)
-+#define AT803X_CDT				0x16
-+#define AT803X_CDT_MDI_PAIR_MASK		GENMASK(9, 8)
-+#define AT803X_CDT_ENABLE_TEST			BIT(0)
-+#define AT803X_CDT_STATUS			0x1c
-+#define AT803X_CDT_STATUS_STAT_NORMAL		0
-+#define AT803X_CDT_STATUS_STAT_SHORT		1
-+#define AT803X_CDT_STATUS_STAT_OPEN		2
-+#define AT803X_CDT_STATUS_STAT_FAIL		3
-+#define AT803X_CDT_STATUS_STAT_MASK		GENMASK(9, 8)
-+#define AT803X_CDT_STATUS_DELTA_TIME_MASK	GENMASK(7, 0)
- #define AT803X_LED_CONTROL			0x18
- 
- #define AT803X_DEVICE_ADDR			0x03
-@@ -110,6 +122,8 @@
- #define AT803X_MIN_DOWNSHIFT 2
- #define AT803X_MAX_DOWNSHIFT 9
- 
-+#define AT803X_CDT_DELAY_MS 1500
-+
- #define ATH9331_PHY_ID 0x004dd041
- #define ATH8030_PHY_ID 0x004dd076
- #define ATH8031_PHY_ID 0x004dd074
-@@ -129,6 +143,7 @@ struct at803x_priv {
- 	struct regulator_dev *vddio_rdev;
- 	struct regulator_dev *vddh_rdev;
- 	struct regulator *vddio;
-+	unsigned long cdt_start;
- };
- 
- struct at803x_context {
-@@ -794,11 +809,158 @@ static int at803x_set_tunable(struct phy_device *phydev,
+ 	if (id > pf->eth_tbl->count) {
+ 		nfp_warn(pf->cpp, "No entry for persistent MAC address\n");
+-		eth_hw_addr_random(nn->dp.netdev);
+-		return;
++		goto generate_random_address;
  	}
+ 
+ 	snprintf(hwinfo, sizeof(hwinfo), "eth%u.mac.pf%u",
+@@ -276,14 +275,13 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
+ 	if (IS_ERR(nsp)) {
+ 		nfp_warn(pf->cpp, "Failed to access the NSP for persistent MAC address: %ld\n",
+ 			 PTR_ERR(nsp));
+-		eth_hw_addr_random(nn->dp.netdev);
+-		return;
++		goto generate_random_address;
+ 	}
+ 
+ 	if (!nfp_nsp_has_hwinfo_lookup(nsp)) {
+ 		nfp_warn(pf->cpp, "NSP doesn't support PF MAC generation\n");
+-		eth_hw_addr_random(nn->dp.netdev);
+-		return;
++		nfp_nsp_close(nsp);
++		goto generate_random_address;
+ 	}
+ 
+ 	err = nfp_nsp_hwinfo_lookup(nsp, hwinfo, sizeof(hwinfo));
+@@ -291,8 +289,7 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
+ 	if (err) {
+ 		nfp_warn(pf->cpp, "Reading persistent MAC address failed: %d\n",
+ 			 err);
+-		eth_hw_addr_random(nn->dp.netdev);
+-		return;
++		goto generate_random_address;
+ 	}
+ 
+ 	if (sscanf(hwinfo, "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx",
+@@ -300,12 +297,15 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp_abm *abm, struct nfp_net *nn,
+ 		   &mac_addr[3], &mac_addr[4], &mac_addr[5]) != 6) {
+ 		nfp_warn(pf->cpp, "Can't parse persistent MAC address (%s)\n",
+ 			 hwinfo);
+-		eth_hw_addr_random(nn->dp.netdev);
+-		return;
++		goto generate_random_address;
+ 	}
+ 
+ 	ether_addr_copy(nn->dp.netdev->dev_addr, mac_addr);
+ 	ether_addr_copy(nn->dp.netdev->perm_addr, mac_addr);
++
++generate_random_address:
++	eth_hw_addr_random(nn->dp.netdev);
++	return;
  }
  
-+static int at803x_cdt_test_result(u16 status)
-+{
-+	switch (FIELD_GET(AT803X_CDT_STATUS_STAT_MASK, status)) {
-+	case AT803X_CDT_STATUS_STAT_NORMAL:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
-+	case AT803X_CDT_STATUS_STAT_SHORT:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
-+	case AT803X_CDT_STATUS_STAT_OPEN:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
-+	case AT803X_CDT_STATUS_STAT_FAIL:
-+	default:
-+		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-+	}
-+}
-+
-+static bool at803x_cdt_fault_length_valid(u16 status)
-+{
-+	switch (FIELD_GET(AT803X_CDT_STATUS_STAT_MASK, status)) {
-+	case AT803X_CDT_STATUS_STAT_OPEN:
-+	case AT803X_CDT_STATUS_STAT_SHORT:
-+		return true;
-+	}
-+	return false;
-+}
-+
-+static int at803x_cdt_fault_length(u16 status)
-+{
-+	int dt;
-+
-+	/* According to the datasheet the distance to the fault is
-+	 * DELTA_TIME * 0.824 meters.
-+	 *
-+	 * The author suspect the correct formula is:
-+	 *
-+	 *   fault_distance = DELTA_TIME * (c * VF) / 125MHz / 2
-+	 *
-+	 * where c is the speed of light, VF is the velocity factor of
-+	 * the twisted pair cable, 125MHz the counter frequency and
-+	 * we need to divide by 2 because the hardware will measure the
-+	 * round trip time to the fault and back to the PHY.
-+	 *
-+	 * With a VF of 0.69 we get the factor 0.824 mentioned in the
-+	 * datasheet.
-+	 */
-+	dt = FIELD_GET(AT803X_CDT_STATUS_DELTA_TIME_MASK, status);
-+
-+	return (dt * 824) / 10;
-+}
-+
-+static int at803x_cdt_start(struct phy_device *phydev, int pair)
-+{
-+	u16 cdt;
-+
-+	cdt = FIELD_PREP(AT803X_CDT_MDI_PAIR_MASK, pair) |
-+	      AT803X_CDT_ENABLE_TEST;
-+
-+	return phy_write(phydev, AT803X_CDT, cdt);
-+}
-+
-+static int at803x_cdt_wait_for_completion(struct phy_device *phydev)
-+{
-+	int val, ret;
-+
-+	/* One test run takes about 25ms */
-+	ret = phy_read_poll_timeout(phydev, AT803X_CDT, val,
-+				    !(val & AT803X_CDT_ENABLE_TEST),
-+				    30000, 100000, true);
-+
-+	return ret < 0 ? ret : 0;
-+}
-+
-+static int at803x_cable_test_get_status(struct phy_device *phydev,
-+					bool *finished)
-+{
-+	struct at803x_priv *priv = phydev->priv;
-+	static const int ethtool_pair[] = {
-+		ETHTOOL_A_CABLE_PAIR_0, ETHTOOL_A_CABLE_PAIR_1,
-+		ETHTOOL_A_CABLE_PAIR_2, ETHTOOL_A_CABLE_PAIR_3};
-+	int pair, val, ret;
-+	unsigned int delay_ms;
-+
-+	*finished = false;
-+
-+	if (priv->cdt_start) {
-+		delay_ms = AT803X_CDT_DELAY_MS;
-+		delay_ms -= jiffies_delta_to_msecs(jiffies - priv->cdt_start);
-+		if (delay_ms > 0)
-+			msleep(delay_ms);
-+	}
-+
-+	for (pair = 0; pair < 4; pair++) {
-+		ret = at803x_cdt_start(phydev, pair);
-+		if (ret)
-+			return ret;
-+
-+		ret = at803x_cdt_wait_for_completion(phydev);
-+		if (ret)
-+			return ret;
-+
-+		val = phy_read(phydev, AT803X_CDT_STATUS);
-+		if (val < 0)
-+			return val;
-+
-+		ethnl_cable_test_result(phydev, ethtool_pair[pair],
-+					at803x_cdt_test_result(val));
-+
-+		if (at803x_cdt_fault_length_valid(val))
-+			continue;
-+
-+		ethnl_cable_test_fault_length(phydev, ethtool_pair[pair],
-+					      at803x_cdt_fault_length(val));
-+	}
-+
-+	*finished = true;
-+
-+	return 0;
-+}
-+
-+static int at803x_cable_test_start(struct phy_device *phydev)
-+{
-+	struct at803x_priv *priv = phydev->priv;
-+	int bmsr, ret;
-+
-+	/* According to the datasheet the CDT can be performed when
-+	 * there is no link partner or when the link partner is
-+	 * auto-negotiating. Thus restart the AN before starting the
-+	 * test. Manual tests have shown, that the we have to wait
-+	 * between 1s and 3s after restarting the AN to have reliable
-+	 * results.
-+	 */
-+	bmsr = phy_read(phydev, MII_BMSR);
-+	if (bmsr < 0)
-+		return bmsr;
-+
-+	if (bmsr & BMSR_LSTATUS) {
-+		ret = genphy_restart_aneg(phydev);
-+		if (ret)
-+			return ret;
-+		priv->cdt_start = jiffies;
-+	} else {
-+		priv->cdt_start = 0;
-+	}
-+
-+	return 0;
-+}
-+
- static struct phy_driver at803x_driver[] = {
- {
- 	/* Qualcomm Atheros AR8035 */
- 	PHY_ID_MATCH_EXACT(ATH8035_PHY_ID),
- 	.name			= "Qualcomm Atheros AR8035",
-+	.flags			= PHY_POLL_CABLE_TEST,
- 	.probe			= at803x_probe,
- 	.remove			= at803x_remove,
- 	.config_init		= at803x_config_init,
-@@ -813,6 +975,8 @@ static struct phy_driver at803x_driver[] = {
- 	.config_intr		= at803x_config_intr,
- 	.get_tunable		= at803x_get_tunable,
- 	.set_tunable		= at803x_set_tunable,
-+	.cable_test_start	= at803x_cable_test_start,
-+	.cable_test_get_status	= at803x_cable_test_get_status,
- }, {
- 	/* Qualcomm Atheros AR8030 */
- 	.phy_id			= ATH8030_PHY_ID,
-@@ -833,6 +997,7 @@ static struct phy_driver at803x_driver[] = {
- 	/* Qualcomm Atheros AR8031/AR8033 */
- 	PHY_ID_MATCH_EXACT(ATH8031_PHY_ID),
- 	.name			= "Qualcomm Atheros AR8031/AR8033",
-+	.flags			= PHY_POLL_CABLE_TEST,
- 	.probe			= at803x_probe,
- 	.remove			= at803x_remove,
- 	.config_init		= at803x_config_init,
-@@ -848,6 +1013,8 @@ static struct phy_driver at803x_driver[] = {
- 	.config_intr		= &at803x_config_intr,
- 	.get_tunable		= at803x_get_tunable,
- 	.set_tunable		= at803x_set_tunable,
-+	.cable_test_start	= at803x_cable_test_start,
-+	.cable_test_get_status	= at803x_cable_test_get_status,
- }, {
- 	/* Qualcomm Atheros AR8032 */
- 	PHY_ID_MATCH_EXACT(ATH8032_PHY_ID),
+ static int
 -- 
-2.20.1
+2.17.1
 
