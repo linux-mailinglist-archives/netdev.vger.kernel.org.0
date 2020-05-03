@@ -2,122 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3CB71C2C7A
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:50:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 679511C2CDF
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 15:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728503AbgECMul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 08:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728115AbgECMuk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 08:50:40 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72891C061A0C
-        for <netdev@vger.kernel.org>; Sun,  3 May 2020 05:50:40 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id u189so8756016ilc.4
-        for <netdev@vger.kernel.org>; Sun, 03 May 2020 05:50:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GiUSG5GkP26HALIdlrItQY2NYBaW76ZGmrfqbfScIHI=;
-        b=Qm9HlHOvNZJINCQsATxbGlePr+fVJ25NLUWrDUR6wOWsMT1n6D6a52Qo5fKBWBwaIg
-         44BYTxJrfwg7ZUyF/9fgZrgSjzzjeZe9oqo8ujMQzm89quXPE+ehzxS+pSzPP9yMjB2r
-         ayNOG2OGgasFnbBIP9NtZx4nIvP2K2O3SaK4oFEPA9DMpIY5ZFdgOgT3Rt+MqK/I9hm9
-         yMy8ibQACv0zu7rlhLI16AT0jk3nW/lksonLaQcBu1csEaFaH7e5g+q08k2d7oX9T414
-         kQFv+kSrJWdiMpPs17B/ahf9vLT5+9fJ2LT8b8anqqVGJKbbxaVqHrtkcLDQV0ISR5S+
-         3VSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GiUSG5GkP26HALIdlrItQY2NYBaW76ZGmrfqbfScIHI=;
-        b=IyelAcW6/5f0BamuUM2JcZ0Ch5b1hO1G/W5RVuyXEav80AuLqjFQZsz57tuCGsLXBB
-         FiTob21vntWaPppZp9urHGc70R5AHRzrfu+zi81Jwz+a7oiPjBlKD1qwCkmgYP4x2tWm
-         u8rvyG2s13IBad0thCiKNOfbnMD91oV/eRobnFqznCDPYW5BlmBGcfbmqC/L2Fuk1kLZ
-         glOWuFZBPoVbK8KhU6rv/rx4LbU3mv7Rn0zUeYWjm5MO+MzXzbTNTQcRocNtEUZa2skn
-         mDsyeDa6IV9YGrL95s5rN4nCLmhR5pVlp8BMx46oCrDC1FSyzRtQRwexE8BqbXt4ZzGW
-         +9/w==
-X-Gm-Message-State: AGi0Pubikriqz8vHqPTnKP+XUkYmPBPx0k67MXL745oyYPJTsJNRLA0a
-        S0QplgoNLeXa+EI2Q+dGdHLiew==
-X-Google-Smtp-Source: APiQypJgeDO+YC0PJ1xJG9ie35485zK8mfXPpqh8/T38QBoyYOR3tSE/X/EO3MrIAmCc7g1g6/V7Pg==
-X-Received: by 2002:a05:6e02:d09:: with SMTP id g9mr12196051ilj.230.1588510239726;
-        Sun, 03 May 2020 05:50:39 -0700 (PDT)
-Received: from [10.0.0.125] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id u128sm2708233ioe.23.2020.05.03.05.50.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 May 2020 05:50:39 -0700 (PDT)
-Subject: Re: [Patch net v2] net_sched: fix tcm_parent in tc filter dump
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>
-References: <20200501035349.31244-1-xiyou.wangcong@gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <82f9f756-a49b-9aa9-5b1c-52cddf9997a5@mojatatu.com>
-Date:   Sun, 3 May 2020 08:50:38 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728677AbgECNwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 09:52:50 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:44196 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728645AbgECNwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 09:52:50 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-194-3gMxvSZ4OeeIzTSoj4h9rA-1; Sun, 03 May 2020 14:52:46 +0100
+X-MC-Unique: 3gMxvSZ4OeeIzTSoj4h9rA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Sun, 3 May 2020 14:52:45 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Sun, 3 May 2020 14:52:45 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Karstens, Nate'" <Nate.Karstens@garmin.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        "Jeff Layton" <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        "Arnd Bergmann" <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Changli Gao <xiaosuo@gmail.com>
+Subject: RE: [PATCH 1/4] fs: Implement close-on-fork
+Thread-Topic: [PATCH 1/4] fs: Implement close-on-fork
+Thread-Index: AQHWFuOUNQrmUX2/BU6CQ6OUTp2yNKiCIimAgBEzlACAAxtC0A==
+Date:   Sun, 3 May 2020 13:52:45 +0000
+Message-ID: <4d00ffe759ec4f87bd7f4e663732838b@AcuMS.aculab.com>
+References: <20200420071548.62112-1-nate.karstens@garmin.com>
+ <20200420071548.62112-2-nate.karstens@garmin.com>
+ <36dce9b4-a0bf-0015-f6bc-1006938545b1@gmail.com>
+ <0e884704c25740df8e652d50431facff@garmin.com>
+In-Reply-To: <0e884704c25740df8e652d50431facff@garmin.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20200501035349.31244-1-xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-04-30 11:53 p.m., Cong Wang wrote:
-> When we tell kernel to dump filters from root (ffff:ffff),
-> those filters on ingress (ffff:0000) are matched, but their
-> true parents must be dumped as they are. However, kernel
-> dumps just whatever we tell it, that is either ffff:ffff
-> or ffff:0000:
-> 
->   $ nl-cls-list --dev=dummy0 --parent=root
->   cls basic dev dummy0 id none parent root prio 49152 protocol ip match-all
->   cls basic dev dummy0 id :1 parent root prio 49152 protocol ip match-all
->   $ nl-cls-list --dev=dummy0 --parent=ffff:
->   cls basic dev dummy0 id none parent ffff: prio 49152 protocol ip match-all
->   cls basic dev dummy0 id :1 parent ffff: prio 49152 protocol ip match-all
-> 
-> This is confusing and misleading, more importantly this is
-> a regression since 4.15, so the old behavior must be restored.
-> 
-> And, when tc filters are installed on a tc class, the parent
-> should be the classid, rather than the qdisc handle. Commit
-> edf6711c9840 ("net: sched: remove classid and q fields from tcf_proto")
-> removed the classid we save for filters, we can just restore
-> this classid in tcf_block.
-> 
-> Steps to reproduce this:
->   ip li set dev dummy0 up
->   tc qd add dev dummy0 ingress
->   tc filter add dev dummy0 parent ffff: protocol arp basic action pass
->   tc filter show dev dummy0 root
-> 
-> Before this patch:
->   filter protocol arp pref 49152 basic
->   filter protocol arp pref 49152 basic handle 0x1
-> 	action order 1: gact action pass
-> 	 random type none pass val 0
-> 	 index 1 ref 1 bind 1
-> 
-> After this patch:
->   filter parent ffff: protocol arp pref 49152 basic
->   filter parent ffff: protocol arp pref 49152 basic handle 0x1
->   	action order 1: gact action pass
->   	 random type none pass val 0
-> 	 index 1 ref 1 bind 1
-> 
-> Fixes: a10fa20101ae ("net: sched: propagate q and parent from caller down to tcf_fill_node")
-> Fixes: edf6711c9840 ("net: sched: remove classid and q fields from tcf_proto")
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+RnJvbTogS2Fyc3RlbnMsIE5hdGUNCj4gU2VudDogMDEgTWF5IDIwMjAgMTU6NDUNCj4gVGhhbmtz
+IGZvciB0aGUgc3VnZ2VzdGlvbi4gSSBsb29rZWQgaW50byBpdCBhbmQgbm90aWNlZCB0aGF0IGRv
+X2Nsb3NlX29uX2V4ZWMoKSBhcHBlYXJzIHRvIGhhdmUgc29tZQ0KPiBvcHRpbWl6YXRpb25zIGFz
+IHdlbGw6DQo+IA0KPiA+IHNldCA9IGZkdC0+Y2xvc2Vfb25fZXhlY1tpXTsNCj4gPiBpZiAoIXNl
+dCkNCj4gPiAJY29udGludWU7DQo+IA0KPiBJZiB3ZSBpbnRlcmxlYXZlIHRoZSBjbG9zZS1vbi1l
+eGVjIGFuZCBjbG9zZS1vbi1mb3JrIGZsYWdzIHRoZW4gdGhpcyBvcHRpbWl6YXRpb24gd2lsbCBo
+YXZlIHRvIGJlDQo+IHJlbW92ZWQuIERvIHlvdSBoYXZlIGEgc2Vuc2Ugb2Ygd2hpY2ggb3B0aW1p
+emF0aW9uIHByb3ZpZGVzIHRoZSBtb3N0IGJlbmVmaXQ/DQoNClRoaW5rcy4uLi4NCkEgbW9kZXJh
+dGUgcHJvcG9ydGlvbiBvZiBleGVjKCkgd2lsbCBoYXZlIGF0IGxlYXN0IG9uZSBmZCB3aXRoICdj
+bG9zZSBvbiBleGVjJyBzZXQuDQpWZXJ5IGZldyBmb3JrKCkgd2lsbCBoYXZlIGFueSBmZCB3aXRo
+ICdjbG9zZSBvbiBmb3JrJyBzZXQuDQpUaGUgJ2Nsb3NlIG9uIGZvcmsnIHRhYmxlIHNob3VsZG4n
+dCBiZSBjb3BpZWQgdG8gdGhlIGZvcmtlZCBwcm9jZXNzLg0KVGhlICdjbG9zZSBvbiBleGVjJyB0
+YWJsZSBpcyBkZWxldGVkIGJ5IGV4ZWMoKS4NCg0KU28uLi4NCk9uIGZvcmsoKSB0YWtlIGEgY29w
+eSBhbmQgY2xlYXIgdGhlICdjbG9zZV9vbl9mb3JrJyBiaXRtYXAuDQpGb3IgZXZlcnkgYml0IHNl
+dCBsb29rdXAgdGhlIGZkIGFuZCBjbG9zZSBpZiB0aGUgbGl2ZSBiaXQgaXMgc2V0Lg0KU2ltaWxh
+cmx5IGV4ZWMoKSBjbGVhcnMgYW5kIGFjdHMgb24gdGhlICdjbG9zZSBvbiBleGVjJyBtYXAuDQoN
+CllvdSBzaG91bGQgYmUgYWJsZSB0byB1c2UgdGhlIHNhbWUgJ2Nsb3NlIHRoZSBmZHMgaW4gdGhp
+cyBiaXRtYXAnDQpmdW5jdGlvbiBmb3IgYm90aCBjYXNlcy4NCg0KU28gSSB0aGluayB5b3UgbmVl
+ZCB0d28gYml0bWFwcy4NCkJ1dCB0aGUgY29kZSBuZWVkcyB0byBkaWZmZXJlbnRpYXRlIGJldHdl
+ZW4gcmVxdWVzdHMgdG8gc2V0IGJpdHMNCih3aGljaCBuZWVkIHRvIGFsbG9jYXRlL2V4dGVuZCB0
+aGUgYml0bWFwKSBhbmQgb25lcyB0byBjbGVhci9yZWFkDQpiaXRzICh3aGljaCBkbyBub3QpLg0K
+DQpZb3UgbWlnaHQgZXZlbiBjb25zaWRlciBwdXR0aW5nIHRoZSAnbGl2ZScgZmxhZyBpbnRvIHRo
+ZSBmZCBzdHJ1Y3R1cmUNCmFuZCB1c2luZyB0aGUgYml0bWFwIHZhbHVlIGFzIGEgJ2hpbnQnIC0g
+d2hpY2ggbWlnaHQgYmUgaGFzaGVkLg0KDQpBZnRlciBhbGwsIGl0IGlzIGxpa2VseSB0aGF0IHRo
+ZSAnY2xvc2Ugb24gZXhlYycgcHJvY2Vzc2luZw0Kd2lsbCBiZSBmYXN0ZXIgb3ZlcmFsbCBpZiBp
+dCBqdXN0IGxvb3BzIHRocm91Z2ggdGhlIG9wZW4gZmQgYW5kDQpjaGVja3MgZWFjaCBpbiB0dXJu
+IQ0KSSBkb3VidCBtYW55IHByb2Nlc3NlcyBhY3R1YWxseSBleGVjIHdpdGggbW9yZSB0aGFuIGFu
+IGhhbmRmdWwNCm9mIG9wZW4gZmlsZXMuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJl
+c3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsx
+IDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-
-
-cheers,
-jamal
