@@ -2,238 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01C971C2BFB
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:03:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061DD1C2C2C
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 14:32:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728164AbgECMCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 08:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727112AbgECMCs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 08:02:48 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6956C061A0C
-        for <netdev@vger.kernel.org>; Sun,  3 May 2020 05:02:48 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id c16so8653082ilr.3
-        for <netdev@vger.kernel.org>; Sun, 03 May 2020 05:02:48 -0700 (PDT)
+        id S1728224AbgECMce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 08:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728067AbgECMcd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 08:32:33 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3738C061A0C;
+        Sun,  3 May 2020 05:32:32 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id q124so7171193pgq.13;
+        Sun, 03 May 2020 05:32:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LwYEYv9jX5+IrarLgwN8+Y1BV1svZsAHqKGJl7IUx+E=;
-        b=fUElKQ2OyKXgA1yO3+IJqOw83Wq/Xi0MGufOH61NEAFCZh+VqbXbC84QDAaRD65ST0
-         3hmSnFy63/KOK9b4CDvR/tp7o8XSnaNqIOmYg8hL+5KSTnqaHqwWxHboGVTS2CV4d/Uc
-         vyqYRAYAuU8yIBVljcdEsw298lZtS4mU4We89QqaZVZxsviPD2dxzIc/SV0wvrl04H2c
-         Ne6rJKD9AAhXFntW53cftEfmavuo133RfIF4W1q2n8kOIzAewfIz3pA5T1uG2HQEc387
-         vS7AQRSBREOvnIAi/is/fEeMIwBQFIN0upbKeijIEVzPZLzDRJq9BKKAg6S7FWiicgXf
-         0I+Q==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OjKNsWuIlNWqOK8ZTfhDbmoOKJ5lMhGgdYyR3P+yrPs=;
+        b=ROSqKV+TRSB/gN3uXuCuk55t9hWftXZdrFL+65lO6rz7wY/CWQAQacEmEpatwFLMJw
+         LVLLkwT0K2DG9p7hjGtPM3hrYO2Go0ULqgaVohy3Ec7WmfizN08PMfhx7sqtIGdQP5SW
+         MABDmweWRpHFK3TY47EdA3ValTXg7f7sEdrpJaa8ASjtjm5/CiiRiEjBdJ03STsV6j8E
+         EqZLUW2DrYu9VThXk7A+L3sbm3MN7MsEECMFht0UtN7o5z3mE3f9+Kyxtx5QjtxkCE2O
+         SmyAFZuXVKtYEGWcfaSUExg4XhjI5Qc3VYYtbsYwvSxm1mO4IScjdQBpefMa3+v1m+bJ
+         lNTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LwYEYv9jX5+IrarLgwN8+Y1BV1svZsAHqKGJl7IUx+E=;
-        b=ZhAfn/IDslqtyhcESzz322WMKnfoRgIo2DmeMUKTtLNnrnaJWsopbanv5YjwkBzjjW
-         zOum0zsoocQaOTmYvS0aXxPhP/hlpVnIw4mt1m9jwPcWxB+G4oxCJsQEprjfg9YA1htN
-         Z9hEMaO4X0jvV0jugVWc4ocVpuyDefgD9cKgKNptw4QjeRg1UcB5Tawy7vyGO93TjZGm
-         j54mcybyfhPz5IHcRbUgOMdOZW5ayswNXBj2eOCJ1mP88pHAxyvmBlDI1nTgkf/BRWbB
-         Zl0L/0H0ciI/U/2iCa4cEgkGE3jVpcYCxdrdu24wwVwIOVYQPGkTsOBOng8gtK7+on6z
-         vT8w==
-X-Gm-Message-State: AGi0PuZijIs0wb94ZfGyngsCTMQXBE5zYfQocY2KkLpw5veVQwoQZ9eg
-        LNB8L8XeDNZkUkiI+VAXDNUEYg==
-X-Google-Smtp-Source: APiQypIFQO1Is391HJOFEwfiAyLzd/CfYMQjWlTgif/jujIN5gLBpcfhP061uChZRFNKeEqKDmVsjA==
-X-Received: by 2002:a92:7303:: with SMTP id o3mr11739353ilc.275.1588507367762;
-        Sun, 03 May 2020 05:02:47 -0700 (PDT)
-Received: from [10.0.0.125] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id a5sm2753787ioa.47.2020.05.03.05.02.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 May 2020 05:02:47 -0700 (PDT)
-Subject: Re: [Patch net v2] net_sched: fix tcm_parent in tc filter dump
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>
-References: <20200501035349.31244-1-xiyou.wangcong@gmail.com>
- <7b3e8f90-0e1e-ff59-2378-c6e59c9c1d9e@mojatatu.com>
- <a18c1d1a-20a1-7346-4835-6163acb4339b@mojatatu.com>
- <CAM_iQpWi9MA5DEk7933aah3yeOQ+=bHO8H2-xpqTtcXn0k=+0Q@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <66d03368-9b8e-b953-a3a5-1f61b71e6307@mojatatu.com>
-Date:   Sun, 3 May 2020 08:02:45 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        bh=OjKNsWuIlNWqOK8ZTfhDbmoOKJ5lMhGgdYyR3P+yrPs=;
+        b=VN1SP+YuFKIZXM7QBmp7H9PpHW9SSoo7rp3kQq3jk1FBGASN4IIc+PraEEQUD99sNq
+         Mr2kI2WZuxSK7HtFjqSsjwm2VeazGr2cP3ojQylboJdsJ376VM2c7q0/nNUxieRoUfGE
+         7KZPucxhwIfizrA1H70HAfF00vXX3GtRMoRYCAp14CiJ50m6eSdLvBMNQ7EKAEpRc+hH
+         sppVSJcZEkqAV3PRHN4wnneDExTB7xSKgjm3ErsG8vuOo5zzPNJPiYdBHYj2OCRt7Ehp
+         0wim37aXUgwQAShDSC0qmXMDRgfRAlK17E3U9jehUQ9+K8Iaz8zgt0elmwS/Cc5AnXFy
+         y3lw==
+X-Gm-Message-State: AGi0PuZmN/3tZDe4myy+yUXM71IsRe7pzkUAQfZ+nB5K1tXXg1qtUetr
+        PMhHqgpkKkdx59onF5ZzIXU=
+X-Google-Smtp-Source: APiQypJb994dlbUr1k5iWSh9AbhTGKGKo5AP/hP7Juwv642dHfO6NJAVOM2+pS3z5nSs0K2zQLX5NA==
+X-Received: by 2002:a63:da02:: with SMTP id c2mr12284369pgh.22.1588509152596;
+        Sun, 03 May 2020 05:32:32 -0700 (PDT)
+Received: from localhost ([89.208.244.169])
+        by smtp.gmail.com with ESMTPSA id x132sm6476464pfc.57.2020.05.03.05.32.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 03 May 2020 05:32:32 -0700 (PDT)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        paul.walmsley@sifive.com, palmer@dabbelt.com, yash.shah@sifive.com,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH net v3] net: macb: fix an issue about leak related system resources
+Date:   Sun,  3 May 2020 20:32:26 +0800
+Message-Id: <20200503123226.7092-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpWi9MA5DEk7933aah3yeOQ+=bHO8H2-xpqTtcXn0k=+0Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-02 10:28 p.m., Cong Wang wrote:
-> On Sat, May 2, 2020 at 2:19 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->>
->> On 2020-05-02 4:48 a.m., Jamal Hadi Salim wrote:
+A call of the function macb_init() can fail in the function
+fu540_c000_init. The related system resources were not released
+then. use devm_platform_ioremap_resource() to replace ioremap()
+to fix it.
 
-[..]
->>> Note:
->>> tc filter show dev dummy0 root
->>> should not show that filter. OTOH,
->>> tc filter show dev dummy0 parent ffff:
->>> should.
-> 
-> Hmm, but we use TC_H_MAJ(tcm->tcm_parent) to do the
-> lookup, 'root' (ffff:ffff) has the same MAJ with ingress
-> (ffff:0000).
->
-
-I have some long analysis and theory below.
-
-> And qdisc_lookup() started to search for ingress since 2008,
-> commit 8123b421e8ed944671d7241323ed3198cccb4041.
-> 
-> So it is likely too late to change this behavior even if it is not
-> what we prefer.
-> 
-
-My gut feeling is that whatever broke (likely during block addition
-maybe even earlier during clsact addition) is in the code
-path for adding filter. Dumping may have bugs but i would
-point a finger to filter addition first.
-More below.... (sorry long email).
-
-
-Here's what i tried after applying your patch:
-
-----
-# $TC qd add dev $DEV ingress
-# $TC qd add dev $DEV root prio
-# $TC qd ls dev $DEV
-qdisc noqueue 0: dev lo root refcnt 2
-qdisc prio 8008: dev enp0s1 root refcnt 2 bands 3 priomap 1 2 2 2 1 2 0 
-0 1 1 1 1 1 1 1 1
-qdisc ingress ffff: dev enp0s1 parent ffff:fff1 ----------------
------
-
-egress i.e root is at 8008:
-ingress is at ffff:fff1
-
-If say:
+Fixes: c218ad559020ff9 ("macb: Add support for SiFive FU540-C000")
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Yash Shah <yash.shah@sifive.com>
+Suggested-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
-# $TC filter add dev $DEV root protocol arp prio 10 basic action pass
-----
+v2 -> v3:
+	- use IS_ERR() and PTR_ERR() for error handling by Nicolas's
+	  suggestion. Thanks Nicolas!
+v1 -> v2:
+	- Nicolas and Andy suggest use devm_platform_ioremap_resource()
+	  to repalce devm_ioremap() to fix this issue. Thanks Nicolas
+	  and Andy.
+	- Yash help me to review this patch, Thanks Yash!
 
-i am instructing the kernel to "go and find root (which is 8008:)
-and install the filter there".
-IOW, I could install that filter alternatively as:
-----
-# $TC filter add dev $DEV parent 8008: protocol arp prio 11 basic action 
-pass
----
+ drivers/net/ethernet/cadence/macb_main.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
-Basically these two filters are equivalent and should end in the
-same qdisc.
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index a0e8c5bbabc0..f040a36d6e54 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4172,15 +4172,9 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 
+ static int fu540_c000_init(struct platform_device *pdev)
+ {
+-	struct resource *res;
+-
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	if (!res)
+-		return -ENODEV;
+-
+-	mgmt->reg = ioremap(res->start, resource_size(res));
+-	if (!mgmt->reg)
+-		return -ENOMEM;
++	mgmt->reg = devm_platform_ioremap_resource(pdev, 1);
++	if (IS_ERR(mgmt->reg))
++		return PTR_ERR(mgmt->reg);
+ 
+ 	return macb_init(pdev);
+ }
+-- 
+2.25.0
 
-To test, I added those two filters (the prio is useful to visualize
-in the dump).
-
-Lets see the dump:
-
--------
-# $TC filter show dev $DEV root
-filter protocol arp pref 10 basic chain 0
-filter protocol arp pref 10 basic chain 0 handle 0x1
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
----------
-
-I was hoping i'd see both filters, but alas there's only
-one.
-
-Lets try a different dump explicitly specifying root qdisc id:
----------
-# $TC filter show dev $DEV parent 8008:
-filter protocol arp pref 11 basic chain 0
-filter protocol arp pref 11 basic chain 0 handle 0x1
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 2 ref 1 bind 1
----------
-
-Again i was hoping to see both filters.
-
-This sounds like the two filters are anchored
-at two different qdiscs instead of the same one
-(i.e root). Hence my suspicion...
-
-Lets add a filter at ingress:
------
-$TC filter add dev $DEV parent ffff:fff1 protocol arp basic action pass
--------
-
-Ok lets dump this from ingress:
-
------
-# $TC filter show dev $DEV parent ffff:fff1
-filter protocol arp pref 10 basic chain 0
-filter protocol arp pref 10 basic chain 0 handle 0x1
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
-
-filter protocol arp pref 49152 basic chain 0
-filter protocol arp pref 49152 basic chain 0 handle 0x1
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 3 ref 1 bind 1
--------------
-
-Same result if i said "root".
-I was only expecting to see the one with pref 49152 in
-the above output.
-
-It _feels_ like those two filters(ingress and egress) are
-installed in the same struct.
-
-Ok, last dump without specifying a parent, which should
-pick root qdisc per code:
-------
-# $TC filter show dev $DEV
-filter parent 8008: protocol arp pref 11 basic chain 0
-filter parent 8008: protocol arp pref 11 basic chain 0 handle 0x1
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 2 ref 1 bind 1
-----
-
-Semantically this should have dumped all 3 filters and
-not just pick root. But that issue has been there
-for a decade like you said. So it is reasonable to specify
-parent ffff:fff1 for dumping just ingress side.
-Also reasonable not to see ingress when dumping root.
-
-> If parent is not specified, only egress will be shown, as
-> we just assign q = dev->qdisc.
->
-
-Which is the root egress qdisc.
-That is the "$TC filter show dev $DEV" scenario.
-See my comment above.
-
-> I agree, 'root' should mean the root qdisc on egress, matching
-> ingress with 'root' doesn't make much sense to me either.
-> 
-> But I am afraid it is too late to change ,if this behavior has been
-> there for 12+ years.
-> 
-
-Although i cant pinpoint exactly when - this used to work (I dont think
-its 12+ years but I could be wrong). These semantics are really broken.
-
-Do you have time to look at the theory that things break at install?
-If you dont have time i could try to debug it by Tuesday.
-
-cheers,
-jamal
