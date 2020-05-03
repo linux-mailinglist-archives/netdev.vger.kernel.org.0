@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1E561C296D
-	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 04:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0382C1C296F
+	for <lists+netdev@lfdr.de>; Sun,  3 May 2020 04:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726784AbgECCyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 May 2020 22:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60744 "EHLO
+        id S1726791AbgECCyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 May 2020 22:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726737AbgECCyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 22:54:35 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394CFC061A0C
-        for <netdev@vger.kernel.org>; Sat,  2 May 2020 19:54:34 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id e44so16396516qta.9
-        for <netdev@vger.kernel.org>; Sat, 02 May 2020 19:54:34 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726737AbgECCyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 May 2020 22:54:38 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC97BC061A0C
+        for <netdev@vger.kernel.org>; Sat,  2 May 2020 19:54:36 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id s62so17982474ybs.0
+        for <netdev@vger.kernel.org>; Sat, 02 May 2020 19:54:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=YiPWzu6JN+jioGoB8E1wQWY8w8NLrEX8+vsGogqxbCM=;
-        b=Gs3mk1jNIRPcTVw+B0Yg173vLtnwADJQJU2MlzGM7ktAcKPcWAv5aSARy5uoO2Nrg7
-         IXXKCPqGurpBQM6iOREFsghukgYfrPPtnX6ERF8Hc3ElZgClEPfLL0bjeZMqhH6lqecd
-         0p77njPc4mrA7jGhNQDr/QMVyJDTsfnO22Jvah6Eew3Eu2znVO0U5RSqy/r5FWZL38rY
-         Pk1asD7nAOFOWYeUWX8NXMP+7FZkBGz+0s+BD6dS5m0ki6VWh38QZt+9NA2biUnPG/ru
-         y0acK0rK4GlqSRXVClQTXqIFA9rBB5Now0v/S48UVhtbI4lEMTzCLsSV1Vrr0oCXr21u
-         tYLw==
+        bh=WAnULMs9+JtBKLPpt2fdT9wencbeP+ie0ya5DBJ0CpI=;
+        b=ddYwECl+ocLWI2dHJHhl1igDzjYkPUAlbtyNhpPmEi0Dyf7OTKzPaidjPmbVKDp476
+         1U0LuDiMqIVASZ5fWQR+HoR7+dkCl7/OmFpRr44R+6IcBJcbWoLSTEXahIOVHfP0k0c/
+         XAvOExt+OlPu5ObEf4JnPszIx4b7Jy8KxJ+e28bAp7KdNITkslf2niefaz7Lwbb4vgwU
+         bVFkJIl67qkXBH1/EeDRfeS+F5xsjNUwST3CjySCD+u3mMRHRrAWrOvlVuMWQjcHf21D
+         NWyFvVgKQKJ0q1qKu9P6/TomXhfT3gHb0h1lDXbT2gJK0A+a8FwmVOBuwj+yDzqc9HZV
+         4GLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=YiPWzu6JN+jioGoB8E1wQWY8w8NLrEX8+vsGogqxbCM=;
-        b=EB3+J7QiKDSTome1DF867S5/azatrm83Twldughzq9wVjKyGxxf4P5QNWV8Py/3sMq
-         dN0ivDXQ9hVy7Mzw1cABFgOrYuow3TMi7/DEsexV7aL+jwgPhHUiIbJaftD+5tGbVGOb
-         t64f/LFCXZD0Sx/3Wmkl4sWF5l2yMcKzW4kA0gahnLpkt0cisbnazdvod/VjHRml3SfT
-         A4y1KNGUkX09kw6ZaqsbQ3U9ZA3qre1s1Xsg0AsA+ZNEhu8pxrNjRKdEYg6YYuudKXgr
-         1bvc5UO52bjua57NxRTyIuoSwv6hWUNAplxXZquzUgEre95JvZGfTZ/YnSvdpY0p8Vb+
-         ywOg==
-X-Gm-Message-State: AGi0PuZ6Q6BwZl0nepQmz3sSWL4XZ9rqgJxrZZcMf47cv/6+wS3EH1BL
-        hrH6xWDqi6+P6818xkHoITAIHieasELRMA==
-X-Google-Smtp-Source: APiQypLB5Afk5mNvtoH1pfut7HpZofJUQ2Tq5yq/MrvJlpXOVW0SZ0/UeMd0aJlKFOAV+Rsdl/EcuvpPGl845A==
-X-Received: by 2002:a0c:b5dd:: with SMTP id o29mr11033615qvf.87.1588474473375;
- Sat, 02 May 2020 19:54:33 -0700 (PDT)
-Date:   Sat,  2 May 2020 19:54:20 -0700
+        bh=WAnULMs9+JtBKLPpt2fdT9wencbeP+ie0ya5DBJ0CpI=;
+        b=ueh3FcCpZWOpvE0CxvJPIH6GpjPIPR5pq0hppUQf9jDljfryd9DkUOUQaLZHk9iaD5
+         cnoEjSXupWJ91ssGFa0lJ1rTpaXZfT4ey398vd/udYjdyHX4pAwgXs/l7M4ooh761G6I
+         E00+3l0XeyAnbSmnChUq++P93JH1HdfrSXCvvNi3fklg3m0pc2sxFveyqFXSAGkfFYwf
+         mDGP+bmZIWoO8a2YDE6WvfzjpxkYYBB/zjXdh41qY+G4h61DvhPRrGuNvYWls/2AI4ld
+         95BWKgCjliwtwZ51dnMQcHiDiqso3djIiahcRKj/ythKFtL3M7fwajpDQQm9mFp6cN5y
+         gWCQ==
+X-Gm-Message-State: AGi0Pua1J3IrUhSv1441zZMBhO9KxnwHEIkG2IMuwnfOYGhvKv17cAiI
+        XH9vkb1B2UCaQo+hXJXn8cuz9A7+JNI6kA==
+X-Google-Smtp-Source: APiQypLyEvVUpz9VDAp7pk3DUCcUXTLAb6cgZ935swUm71LMQ+nfLeHtYyapqCglL2gOfBcyXbtb7iAvtED5Bw==
+X-Received: by 2002:a25:5f4a:: with SMTP id h10mr17689800ybm.372.1588474475900;
+ Sat, 02 May 2020 19:54:35 -0700 (PDT)
+Date:   Sat,  2 May 2020 19:54:21 -0700
 In-Reply-To: <20200503025422.219257-1-edumazet@google.com>
-Message-Id: <20200503025422.219257-4-edumazet@google.com>
+Message-Id: <20200503025422.219257-5-edumazet@google.com>
 Mime-Version: 1.0
 References: <20200503025422.219257-1-edumazet@google.com>
 X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH net-next 3/5] net_sched: sch_fq: use bulk freeing in fq_gc()
+Subject: [PATCH net-next 4/5] net_sched: sch_fq: do not call fq_peek() twice
+ per packet
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -61,56 +62,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fq_gc() already builds a small array of pointers, so using
-kmem_cache_free_bulk() needs very little change.
+This refactors the code to not call fq_peek() from fq_dequeue_head()
+since the caller can provide the skb.
+
+Also rename fq_dequeue_head() to fq_dequeue_skb() because 'head' is
+a bit vague, given the skb could come from t_root rb-tree.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/sched/sch_fq.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ net/sched/sch_fq.c | 34 ++++++++++++++++------------------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
 
 diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
-index 7a2b3195938ede3c14c37b90c9604185cfa3f651..56e4f3c4380c517136b22862771f9899a7fd99f2 100644
+index 56e4f3c4380c517136b22862771f9899a7fd99f2..4a28f611edf0cd4ac7fb53fc1c2a4ba12060bf59 100644
 --- a/net/sched/sch_fq.c
 +++ b/net/sched/sch_fq.c
-@@ -218,9 +218,10 @@ static void fq_gc(struct fq_sched_data *q,
- 		  struct rb_root *root,
- 		  struct sock *sk)
- {
--	struct fq_flow *f, *tofree[FQ_GC_MAX];
- 	struct rb_node **p, *parent;
--	int fcnt = 0;
-+	void *tofree[FQ_GC_MAX];
-+	struct fq_flow *f;
-+	int i, fcnt = 0;
- 
- 	p = &root->rb_node;
- 	parent = NULL;
-@@ -243,15 +244,18 @@ static void fq_gc(struct fq_sched_data *q,
- 			p = &parent->rb_left;
+@@ -388,19 +388,17 @@ static void fq_erase_head(struct Qdisc *sch, struct fq_flow *flow,
  	}
- 
--	q->flows -= fcnt;
--	q->inactive_flows -= fcnt;
--	q->stat_gc_flows += fcnt;
--	while (fcnt) {
--		struct fq_flow *f = tofree[--fcnt];
-+	if (!fcnt)
-+		return;
- 
-+	for (i = fcnt; i > 0; ) {
-+		f = tofree[--i];
- 		rb_erase(&f->fq_node, root);
--		kmem_cache_free(fq_flow_cachep, f);
- 	}
-+	q->flows -= fcnt;
-+	q->inactive_flows -= fcnt;
-+	q->stat_gc_flows += fcnt;
-+
-+	kmem_cache_free_bulk(fq_flow_cachep, fcnt, tofree);
  }
  
- static struct fq_flow *fq_classify(struct sk_buff *skb, struct fq_sched_data *q)
+-/* remove one skb from head of flow queue */
+-static struct sk_buff *fq_dequeue_head(struct Qdisc *sch, struct fq_flow *flow)
++/* Remove one skb from flow queue.
++ * This skb must be the return value of prior fq_peek().
++ */
++static void fq_dequeue_skb(struct Qdisc *sch, struct fq_flow *flow,
++			   struct sk_buff *skb)
+ {
+-	struct sk_buff *skb = fq_peek(flow);
+-
+-	if (skb) {
+-		fq_erase_head(sch, flow, skb);
+-		skb_mark_not_on_list(skb);
+-		flow->qlen--;
+-		qdisc_qstats_backlog_dec(sch, skb);
+-		sch->q.qlen--;
+-	}
+-	return skb;
++	fq_erase_head(sch, flow, skb);
++	skb_mark_not_on_list(skb);
++	flow->qlen--;
++	qdisc_qstats_backlog_dec(sch, skb);
++	sch->q.qlen--;
+ }
+ 
+ static void flow_queue_add(struct fq_flow *flow, struct sk_buff *skb)
+@@ -538,9 +536,11 @@ static struct sk_buff *fq_dequeue(struct Qdisc *sch)
+ 	if (!sch->q.qlen)
+ 		return NULL;
+ 
+-	skb = fq_dequeue_head(sch, &q->internal);
+-	if (skb)
++	skb = fq_peek(&q->internal);
++	if (unlikely(skb)) {
++		fq_dequeue_skb(sch, &q->internal, skb);
+ 		goto out;
++	}
+ 
+ 	q->ktime_cache = now = ktime_get_ns();
+ 	fq_check_throttled(q, now);
+@@ -580,10 +580,8 @@ static struct sk_buff *fq_dequeue(struct Qdisc *sch)
+ 			INET_ECN_set_ce(skb);
+ 			q->stat_ce_mark++;
+ 		}
+-	}
+-
+-	skb = fq_dequeue_head(sch, f);
+-	if (!skb) {
++		fq_dequeue_skb(sch, f, skb);
++	} else {
+ 		head->first = f->next;
+ 		/* force a pass through old_flows to prevent starvation */
+ 		if ((head == &q->new_flows) && q->old_flows.first) {
 -- 
 2.26.2.526.g744177e7f7-goog
 
