@@ -2,296 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C77B51C3DE9
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 17:00:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B35481C3DF3
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 17:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729330AbgEDPAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 11:00:41 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:21078 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729315AbgEDPAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 11:00:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588604439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rD9VYkezYm68DLy5dph4tU1iJLMZjlUwyGss8oFF0Sg=;
-        b=SfQu/tCmqh6YFzsQYOxG6MFMbKAK6POjQx3OS/U3e57V71KC/T9SRuCdOgpfHx7Rx4JydJ
-        AkGRA+IlVf1Xqfs5nK7RzWz4YD1JVhSW7irhxXg6T53wqJSr+F7GAVLTES+k/F3SUOnPOH
-        pExSqi6tTgLhzGluKIc+/fHSlI2OTDc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-10-z-JY57fLOyiW7uKZwuDzFA-1; Mon, 04 May 2020 11:00:36 -0400
-X-MC-Unique: z-JY57fLOyiW7uKZwuDzFA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7BAFA1005510;
-        Mon,  4 May 2020 15:00:34 +0000 (UTC)
-Received: from hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com (hp-dl360pgen8-07.khw2.lab.eng.bos.redhat.com [10.16.210.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B1E46FF1E;
-        Mon,  4 May 2020 15:00:33 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
+        id S1729379AbgEDPBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 11:01:13 -0400
+Received: from mout.web.de ([217.72.192.78]:45637 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728165AbgEDPBM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 May 2020 11:01:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1588604443;
+        bh=t0Fhy+TbkKQdUlUiQQWRSsl/lwJ1Qmb1XkVpr9bmbOk=;
+        h=X-UI-Sender-Class:Subject:To:References:From:Cc:Date:In-Reply-To;
+        b=URgCbDrsCfZ8VQtUhqfIH3SEOvXjb5SnYkF/tnmmjXEtKTt2MwFCDDRGtjmdQYDpF
+         uGDoGseD/fQvHZSQjqzSJIUIh5F//AoT9VqzvUpCp5BjdiK1qbDNm1dc6r4DNQltRC
+         cYwEnfPqqDY2gX3HK8fi55uuJed6PWY63x4/KWcw=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.133.152.69]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MQvkQ-1jiI3Z0M4U-00UMxJ; Mon, 04
+ May 2020 17:00:43 +0200
+Subject: Re: [PATCH] net: rtw88: fix an issue about leak system resources
+To:     Dejin Zheng <zhengdejin5@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <79591cab-fe3e-0597-3126-c251d41d492b@web.de>
+ <20200504144206.GA5409@nuc8i5>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: [RFC PATCH net-next 3/3] bonding: support hardware encryption offload to slaves
-Date:   Mon,  4 May 2020 10:59:43 -0400
-Message-Id: <20200504145943.8841-4-jarod@redhat.com>
-In-Reply-To: <20200504145943.8841-1-jarod@redhat.com>
-References: <20200504145943.8841-1-jarod@redhat.com>
+        Kalle Valo <kvalo@codeaurora.org>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>
+Message-ID: <882eacd1-1cbf-6aef-06c5-3ed6d402c0f5@web.de>
+Date:   Mon, 4 May 2020 17:00:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <20200504144206.GA5409@nuc8i5>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:a0BUZE4f+oVWjdLKKU/Q1IptQqypiXinFpRhF8BapHAJeM85yPv
+ MIhMHpkKKaTlkQ47VA0itg/JZ5OCzf+70/zEbaTmcMz9VOBEn6ar6nsknusXNAPTbFHm2AF
+ jgXt6JKRebNL9iAL351vsS9t/8du2Y9xop1uHQQKnqQZ306XPnErT3b215U/T9ygrx+1dWA
+ 8YM+dGeEBmDDQbUJeGCIA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NdE/1pgD8Xs=:LnxbXX0Xus26yfL2TBaM+W
+ doYUryQNy7UJV3boA4xcbtMZBOMzMCgW7U8Pmg0AlTjwDRZEwWY0UFiforifcSba9ezSo83Df
+ yc2aAGH39WbP8Zh59F5ZDZf01t38GcQKgGynkEA+vcymifyO/+30BqD1uK+7O5Zi8Zbhc5Y+D
+ Kz3TWkPRT0MjKPBMGak/StClVux1OK0ZF30gTs0lVC/hz++s8O9Muv6YT/6JjnYZhevUDPop/
+ 7peFLwLJkRchtjWTIT7gl4iFyR/Xmzw0MN/Wm2mSdz+bRBNz2rvHRqROwutHz2yJcmcjmnBY4
+ KefByhKVk2cKrEWDjJibCccD8wNwhc6eBZhdxPkhDCpAgtNBTmcs4i3Ld6+pTBxuZgrH0VxJu
+ Psh+Egy/kzHHrkSLQjP7ieN+8sBgt08i3zmT+KNQozq7QQuyTR6uq1wgkjAV92G/4qPE1LVbX
+ 8HMFPA+kXQzWrJQbJr2pbf3He8lx7NVqgR5TA4qGEKKNeacVgCO9NKbR0PCkMCFhbl6ltKzpV
+ FxAauqJFg6izLUvvx12a5ifoaXokvso3cPHqxAa3EIlcVc3X2D5lcqsRfrYGCk3Iiv0Y1TLNY
+ 5z0WerhpuP3wISjvj88S3Opq5aGbTc739oAf7rJjiY/AEccfBfeSX++nd2Sp8ECH+UOWgknBz
+ ZOXwxF5UpOl4Ut4QHSedYfHh7vGp3ZTpQCNNbiTLLKJ47O/RHrpwe72QZ83w9vgE5oofNlI4L
+ Pqgwxh7VRbuWtfRCBQTFBS1LpDQKomJeJBetEMy8VInpzOSwpNvqwHXfAk+zb6SkOuRTJB9LP
+ 4VpkMwh9nXWq/563232YmYCFF6kSwPDnBDV6+b7X2lylll7f11GAloc5wsn32okkU+ZddRGrU
+ O5lZzqFdPRPF+ILQta2kRbt/KL1KBJVwqc90XNiXFMvuhEtAl3jxMTCW3dhA5xjqRjI/JXw0Z
+ jjuYKOH+kIvYzFIUGaD9zwGox8LxIP2y9fXSnIchZV8vrogMQdI6RsElg6n8mf/feuZCrOgUo
+ hsqz38Snb7mR8BsZfOkUcRGKulm3TVu4+HRj/ueZQk3EgakwpmA9Z8NCSV54dV6KcK9J3uU3H
+ vkGRSjKkUQI/0lQL9OCya+1CvwfcBypg8oDrWPN73r9mUJ4s9gkqWFJ8akhAJao5TO/xD4qYu
+ Ssm3jqtLOU5hsAdSeOWHv2DcS3kfCrFzv7YcShkTS0olhSJvHerLIHqudWWgMX0V75BilBwyw
+ SHvSglWdIq/DEanKv
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, this support is limited to active-backup mode, as I'm not sure
-about the feasilibity of mapping an xfrm_state's offload handle to
-multiple hardware devices simultaneously, and we rely on being able to
-pass some hints to both the xfrm and NIC driver about whether or not
-they're operating on a slave device.
+>>> the related system resources were not released when pci_iomap() return
+>>> error in the rtw_pci_io_mapping() function. add pci_release_regions() =
+to
+>>> fix it.
+>>
+>> How do you think about a wording variant like the following?
+>>
+>>    Subject:
+>>    [PATCH v2] net: rtw88: Complete exception handling in rtw_pci_io_map=
+ping()
+>>
+>>    Change description:
+>>    A call of the function =E2=80=9Cpci_request_regions=E2=80=9D can fai=
+l here.
+>>    The corresponding system resources were not released then.
+>>    Thus add a call of the function =E2=80=9Cpci_release_regions=E2=80=
+=9D.
+>>
+>>
+> Markus, I think my commit comments is a sufficiently clear description
+> for this patch.
 
-I've tested this atop an Intel x520 device (ixgbe) using libreswan in
-transport mode, succesfully achieving ~4.3Gbps throughput with netperf
-(more or less identical to throughput on a bare NIC in this system),
-as well as successful failover and recovery mid-netperf.
+I got an other impression for specific aspects.
 
-CC: Jay Vosburgh <j.vosburgh@gmail.com>
-CC: Veaceslav Falico <vfalico@gmail.com>
-CC: Andy Gospodarek <andy@greyhouse.net>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: Steffen Klassert <steffen.klassert@secunet.com>
-CC: Herbert Xu <herbert@gondor.apana.org.au>
-CC: netdev@vger.kernel.org
-CC: intel-wired-lan@lists.osuosl.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
----
- drivers/net/bonding/bond_main.c | 103 +++++++++++++++++++++++++++++++-
- include/net/bonding.h           |   1 +
- 2 files changed, 101 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
-index 2e70e43c5df5..781da5beb484 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -79,6 +79,7 @@
- #include <net/pkt_sched.h>
- #include <linux/rculist.h>
- #include <net/flow_dissector.h>
-+#include <net/xfrm.h>
- #include <net/bonding.h>
- #include <net/bond_3ad.h>
- #include <net/bond_alb.h>
-@@ -278,8 +279,6 @@ const char *bond_mode_name(int mode)
- 	return names[mode];
- }
-=20
--/*---------------------------------- VLAN ------------------------------=
------*/
--
- /**
-  * bond_dev_queue_xmit - Prepare skb for xmit.
-  *
-@@ -302,6 +301,8 @@ void bond_dev_queue_xmit(struct bonding *bond, struct=
- sk_buff *skb,
- 		dev_queue_xmit(skb);
- }
-=20
-+/*---------------------------------- VLAN ------------------------------=
------*/
-+
- /* In the following 2 functions, bond_vlan_rx_add_vid and bond_vlan_rx_k=
-ill_vid,
-  * We don't protect the slave list iteration with a lock because:
-  * a. This operation is performed in IOCTL context,
-@@ -372,6 +373,82 @@ static int bond_vlan_rx_kill_vid(struct net_device *=
-bond_dev,
- 	return 0;
- }
-=20
-+/*---------------------------------- XFRM ------------------------------=
------*/
-+
-+/**
-+ * bond_ipsec_add_sa - program device with a security association
-+ * @xs: pointer to transformer state struct
-+ **/
-+static int bond_ipsec_add_sa(struct xfrm_state *xs)
-+{
-+	struct net_device *bond_dev =3D xs->xso.dev;
-+	struct bonding *bond =3D netdev_priv(bond_dev);
-+	struct slave *slave =3D rtnl_dereference(bond->curr_active_slave);
-+
-+	xs->xso.slave_dev =3D slave->dev;
-+	bond->xs =3D xs;
-+
-+	if (!(slave->dev->xfrmdev_ops
-+	      && slave->dev->xfrmdev_ops->xdo_dev_state_add)) {
-+		slave_warn(bond_dev, slave->dev, "Slave does not support ipsec offload=
-\n");
-+		return -EINVAL;
-+	}
-+
-+	return slave->dev->xfrmdev_ops->xdo_dev_state_add(xs);
-+}
-+
-+/**
-+ * bond_ipsec_del_sa - clear out this specific SA
-+ * @xs: pointer to transformer state struct
-+ **/
-+static void bond_ipsec_del_sa(struct xfrm_state *xs)
-+{
-+	struct net_device *bond_dev =3D xs->xso.dev;
-+	struct bonding *bond =3D netdev_priv(bond_dev);
-+	struct slave *slave =3D rtnl_dereference(bond->curr_active_slave);
-+
-+	if (!slave)
-+		return;
-+
-+	xs->xso.slave_dev =3D slave->dev;
-+
-+	if (!(slave->dev->xfrmdev_ops
-+	      && slave->dev->xfrmdev_ops->xdo_dev_state_delete)) {
-+		slave_warn(bond_dev, slave->dev, "%s: no slave xdo_dev_state_delete\n"=
-, __func__);
-+		return;
-+	}
-+
-+	slave->dev->xfrmdev_ops->xdo_dev_state_delete(xs);
-+}
-+
-+/**
-+ * bond_ipsec_offload_ok - can this packet use the xfrm hw offload
-+ * @skb: current data packet
-+ * @xs: pointer to transformer state struct
-+ **/
-+static bool bond_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state=
- *xs)
-+{
-+	struct net_device *bond_dev =3D xs->xso.dev;
-+	struct bonding *bond =3D netdev_priv(bond_dev);
-+	struct slave *curr_active =3D rtnl_dereference(bond->curr_active_slave)=
-;
-+	struct net_device *slave_dev =3D curr_active->dev;
-+
-+	if (!(slave_dev->xfrmdev_ops
-+	      && slave_dev->xfrmdev_ops->xdo_dev_offload_ok)) {
-+		slave_warn(bond_dev, slave_dev, "%s: no slave xdo_dev_offload_ok\n", _=
-_func__);
-+		return false;
-+	}
-+
-+	xs->xso.slave_dev =3D slave_dev;
-+	return slave_dev->xfrmdev_ops->xdo_dev_offload_ok(skb, xs);
-+}
-+
-+static const struct xfrmdev_ops bond_xfrmdev_ops =3D {
-+	.xdo_dev_state_add =3D bond_ipsec_add_sa,
-+	.xdo_dev_state_delete =3D bond_ipsec_del_sa,
-+	.xdo_dev_offload_ok =3D bond_ipsec_offload_ok,
-+};
-+
- /*------------------------------- Link status --------------------------=
------*/
-=20
- /* Set the carrier state for the master according to the state of its
-@@ -878,6 +955,9 @@ void bond_change_active_slave(struct bonding *bond, s=
-truct slave *new_active)
- 	if (old_active =3D=3D new_active)
- 		return;
-=20
-+	if ((BOND_MODE(bond) =3D=3D BOND_MODE_ACTIVEBACKUP) && bond->xs)
-+		bond_ipsec_del_sa(bond->xs);
-+
- 	if (new_active) {
- 		new_active->last_link_up =3D jiffies;
-=20
-@@ -941,6 +1021,11 @@ void bond_change_active_slave(struct bonding *bond,=
- struct slave *new_active)
- 					bond_should_notify_peers(bond);
- 			}
-=20
-+			if (old_active && bond->xs) {
-+				xfrm_dev_state_flush(dev_net(bond->dev), bond->dev, true);
-+				bond_ipsec_add_sa(bond->xs);
-+			}
-+
- 			call_netdevice_notifiers(NETDEV_BONDING_FAILOVER, bond->dev);
- 			if (should_notify_peers) {
- 				bond->send_peer_notif--;
-@@ -1125,7 +1210,9 @@ static netdev_features_t bond_fix_features(struct n=
-et_device *dev,
- 				 NETIF_F_HIGHDMA | NETIF_F_LRO)
-=20
- #define BOND_ENC_FEATURES	(NETIF_F_HW_CSUM | NETIF_F_SG | \
--				 NETIF_F_RXCSUM | NETIF_F_ALL_TSO)
-+				 NETIF_F_RXCSUM | NETIF_F_ALL_TSO | \
-+				 NETIF_F_HW_ESP | NETIF_F_HW_ESP_TX_CSUM | \
-+				 NETIF_F_GSO_ESP)
-=20
- #define BOND_MPLS_FEATURES	(NETIF_F_HW_CSUM | NETIF_F_SG | \
- 				 NETIF_F_ALL_TSO)
-@@ -1464,6 +1551,9 @@ int bond_enslave(struct net_device *bond_dev, struc=
-t net_device *slave_dev,
- 		slave_dbg(bond_dev, slave_dev, "is !NETIF_F_VLAN_CHALLENGED\n");
- 	}
-=20
-+	if (slave_dev->features & NETIF_F_HW_ESP)
-+		slave_dbg(bond_dev, slave_dev, "is esp-hw-offload capable\n");
-+
- 	/* Old ifenslave binaries are no longer supported.  These can
- 	 * be identified with moderate accuracy by the state of the slave:
- 	 * the current ifenslave will set the interface down prior to
-@@ -4444,6 +4534,11 @@ void bond_setup(struct net_device *bond_dev)
- 	bond_dev->priv_flags |=3D IFF_BONDING | IFF_UNICAST_FLT | IFF_NO_QUEUE;
- 	bond_dev->priv_flags &=3D ~(IFF_XMIT_DST_RELEASE | IFF_TX_SKB_SHARING);
-=20
-+	/* set up xfrm device ops (only supported in active-backup right now */
-+	if ((BOND_MODE(bond) =3D=3D BOND_MODE_ACTIVEBACKUP))
-+		bond_dev->xfrmdev_ops =3D &bond_xfrmdev_ops;
-+	bond->xs =3D NULL;
-+
- 	/* don't acquire bond device's netif_tx_lock when transmitting */
- 	bond_dev->features |=3D NETIF_F_LLTX;
-=20
-@@ -4462,6 +4557,8 @@ void bond_setup(struct net_device *bond_dev)
- 				NETIF_F_HW_VLAN_CTAG_FILTER;
-=20
- 	bond_dev->hw_features |=3D NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
-+	if ((BOND_MODE(bond) =3D=3D BOND_MODE_ACTIVEBACKUP))
-+		bond_dev->hw_features |=3D BOND_ENC_FEATURES;
- 	bond_dev->features |=3D bond_dev->hw_features;
- 	bond_dev->features |=3D NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_=
-TX;
- }
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index dc2ce31a1f52..854b46511bd8 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -238,6 +238,7 @@ struct bonding {
- #endif /* CONFIG_DEBUG_FS */
- 	struct rtnl_link_stats64 bond_stats;
- 	struct lock_class_key stats_lock_key;
-+	struct xfrm_state *xs;
- };
-=20
- #define bond_slave_get_rcu(dev) \
---=20
-2.20.1
+> Someone has told me not to send commit comments again and again
+> when it is enough clear.
 
+My patch review tries should give you hints where I noticed wording weakne=
+sses.
+The corresponding change tolerance can vary by involved contributors.
+
+
+> Because it only wastes the precious time of the maintainer
+> and very very little help for patch improvement.
+
+I hope that also your commit messages will improve.
+
+
+> BTW, In the past week, you asked me to change the commit comments in my
+> 6 patches like this one. Let me return to the essence of patch, point
+> out the code problems and better solutions will be more popular.
+
+I would appreciate if various update suggestions would become nicer someho=
+w.
+
+Regards,
+Markus
