@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 123BC1C4AA1
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 01:53:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACBD61C4AAA
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 01:54:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728476AbgEDXxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 19:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55794 "EHLO
+        id S1728575AbgEDXyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 19:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728273AbgEDXxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 19:53:53 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71C6C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 16:53:52 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id t7so170057qvz.6
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 16:53:52 -0700 (PDT)
+        with ESMTP id S1728481AbgEDXxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 19:53:54 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0F7C061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 16:53:54 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id c10so623300qka.4
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 16:53:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=njpEHqJ2+bC0XHGj2Gh4SOikioCbruZmns91MTnO70c=;
-        b=rq0x+5IDXCfi3TUfgjkNPS0lyyMoNJxroyBGpFEp0uuDKsjh73upRpIJXJU7d8CYIW
-         PveqCmyT6Aap6tdsB8K1ja4FjM7MEMJgQ+M9vYhfyZ4z/1zI+7J6igQrSYRX8VKPQk1h
-         iKw+gN9eTNy1EVI9MIOGvGxrVAzVGRg3tErAo7HtSG8qChG4GtTCyig9ijF9Q/3+8oxx
-         vXazLQujHEpUk0aa4yA8PLoUu7t71ojy+eDCbycgOwHhYh5qjkpNxxGwxN1tSKqLG6fl
-         dYQW3rQFQfRfPQzwgIQEkjeljCreNhlTkjI4Tw5dT1KdOcYFCCx5pxoxuPA2OqsyNKxA
-         603A==
+        bh=9e/vSBZuwDiq8/b0nws+itk9WL5dzY00wM0U6fmP48U=;
+        b=cZue72a32pclfHpfB6ezr17gZGoOVWHOFdTNrMgh5YMPUcwIBXtFp3+XfkafkA/dQS
+         R+r2zdv98+R9IfxU7IVMhkmZkUS/A8O6eOXhcN7ESIqvsBcrOkOBMSzAfmKJaZvec+dS
+         /W+0PEFoH8+t2YJvNLCJaAJYKeDAMyCvv8KN+vhn26ACPoqA+O74L3wZL1qpkpriwRIy
+         8fMarpe7768rbfTDQZrlWwWhG8uOXemNYr3hhdaDjU1tTEegMBURx28M+1xIBATdnjD2
+         X56wUEAS0vRa5eIYUTGpKS+GZmn6+y3r9in4boSdcQL5qOWkFGirOMnLMYcnubCNqCAy
+         hHCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=njpEHqJ2+bC0XHGj2Gh4SOikioCbruZmns91MTnO70c=;
-        b=n7Xgm7Nnt4J5BR1A9Ty1CLMx0t5sKxZWs+wcRiY+OIm+GGM1oZdq5Ib3BqLcXGJRHW
-         phrbpsA65JKkN5OI+nADMs61H+PUeX2E7dsGbbkjL7Y6EJXTCBV3OXnyyWUjqa6Y9rK7
-         7t05IPB102D2AXPvi5Cdj3cp/RioBEQ5IjM+L05EHB1r6vVqBhBmngTkmv55vTwJg9zq
-         vee+LTWEVSR56rkxAP4vejVPJiu5QERuLqstkwKDWn6L32hRGABSrLljEz5LwzEVXB50
-         Z0hj67FizFuhn9tzc68wvQq7XQcwzRQarbA7BX16LsbfUTOR06wNqmeReyDOi6b/IPp3
-         sH/A==
-X-Gm-Message-State: AGi0PuYSVZvnDPZFoAOqiyMHc8TJV8rSFlunSn8beSQNa/BYGKIvdDLl
-        5wHM2CubEDZV9Ki4Xu+L5miXYg==
-X-Google-Smtp-Source: APiQypISe7QYS+Aaf3aiaaXANNXXtH/Gfb6cUIcrkZtDtfUMEZY9NrVMMT6X1/JOJ02CaZBNGcfNlA==
-X-Received: by 2002:a05:6214:7a7:: with SMTP id v7mr135118qvz.27.1588636432088;
-        Mon, 04 May 2020 16:53:52 -0700 (PDT)
+        bh=9e/vSBZuwDiq8/b0nws+itk9WL5dzY00wM0U6fmP48U=;
+        b=Tiw6RM99gWHjEXocsfMl5cnbrq6rvQm1B0FgeZg5WKa3Etv0EtFRWWPewM8gZmPpnu
+         z0AJPdYcJ5HfVh87w72lxr8PCfVoAuARNWu6ijPTee1efZHu6pk6mhvqh6z2cpkKyDrO
+         2gdZQbCUg4jTCC1plKncpczenkuGpu8vc+clyh6NILyzE1qyq7kbluamfgqWrLeIDiHO
+         Q5kS7vueu7QUeAXc94OKDzlrcGn6iwGkfoffQIXdQtp8oJ477STx0ydfHM01X3fJcJ9A
+         uhgpPPX7ad1TegsVmjxDb+i6+9PUhFshQCGbQ1dgXDZ+7Bd+YR3meSMg2+8ReVD8FoRI
+         qUqw==
+X-Gm-Message-State: AGi0PuaG0xa6lf3LqRvo7gjhW8vsVoGoeXNzBTYIC8yUyh/sRpL2m1ny
+        8m9fdnsy2t5k0J8Y6k+o/Ah9LA==
+X-Google-Smtp-Source: APiQypJwIH0y5YEgziQGpZMep0whQGrFG6xdz4SF/k+HuofPrLIay0wZ3KqCCsN8QifgioflFWYyYA==
+X-Received: by 2002:a37:d0a:: with SMTP id 10mr936221qkn.288.1588636433490;
+        Mon, 04 May 2020 16:53:53 -0700 (PDT)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id z18sm296004qti.47.2020.05.04.16.53.50
+        by smtp.gmail.com with ESMTPSA id z18sm296004qti.47.2020.05.04.16.53.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 16:53:51 -0700 (PDT)
+        Mon, 04 May 2020 16:53:52 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/5] net: ipa: fix a bug in ipa_endpoint_stop()
-Date:   Mon,  4 May 2020 18:53:41 -0500
-Message-Id: <20200504235345.17118-2-elder@linaro.org>
+Subject: [PATCH net-next 2/5] net: ipa: get rid of workaround in ipa_endpoint_stop()
+Date:   Mon,  4 May 2020 18:53:42 -0500
+Message-Id: <20200504235345.17118-3-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200504235345.17118-1-elder@linaro.org>
 References: <20200504235345.17118-1-elder@linaro.org>
@@ -65,53 +65,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ipa_endpoint_stop(), for TX endpoints we set the number of retries
-to 0.  When we break out of the loop, retries being 0 means we return
-EIO rather than the value of ret (which should be 0).
+In ipa_endpoint_stop(), a workaround is used for IPA version 3.5.1
+where a 1-byte DMA request is issued between GSI channel stop
+retries.
 
-Fix this by using a non-zero retry count for both RX and TX
-channels, and just break out of the loop after calling
-gsi_channel_stop() for TX channels.  This way only RX channels
-will retry, and the retry count will be non-zero at the end
-for TX channels (so the proper value gets returned).
+It turns out that this workaround is only required for IPA versions
+3.1 and 3.2, and we don't support those.  So remove the call to
+ipa_endpoint_stop_rx_dma() in that function.  That leaves that
+function unused, so get rid of it.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-(cherry picked from commit 713b6ebb4c376b3fb65fdceb3b59e401c93248f9)
 ---
-
-NOTE:  DO NOT MERGE (this has already been committed.)
-
- drivers/net/ipa/ipa_endpoint.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 39 +---------------------------------
+ 1 file changed, 1 insertion(+), 38 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 6de03be28784..a21534f1462f 100644
+index a21534f1462f..c20a5a32fbaa 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1283,7 +1283,7 @@ static int ipa_endpoint_stop_rx_dma(struct ipa *ipa)
-  */
- int ipa_endpoint_stop(struct ipa_endpoint *endpoint)
- {
--	u32 retries = endpoint->toward_ipa ? 0 : IPA_ENDPOINT_STOP_RX_RETRIES;
-+	u32 retries = IPA_ENDPOINT_STOP_RX_RETRIES;
+@@ -33,13 +33,10 @@
+ #define IPA_RX_BUFFER_OVERHEAD	(PAGE_SIZE - SKB_MAX_ORDER(NET_SKB_PAD, 0))
+ 
+ #define IPA_ENDPOINT_STOP_RX_RETRIES		10
+-#define IPA_ENDPOINT_STOP_RX_SIZE		1	/* bytes */
+ 
+ #define IPA_ENDPOINT_RESET_AGGR_RETRY_MAX	3
+ #define IPA_AGGR_TIME_LIMIT_DEFAULT		1000	/* microseconds */
+ 
+-#define ENDPOINT_STOP_DMA_TIMEOUT		15	/* milliseconds */
+-
+ /** enum ipa_status_opcode - status element opcode hardware values */
+ enum ipa_status_opcode {
+ 	IPA_STATUS_OPCODE_PACKET		= 0x01,
+@@ -1246,32 +1243,6 @@ static void ipa_endpoint_reset(struct ipa_endpoint *endpoint)
+ 			ret, endpoint->channel_id, endpoint->endpoint_id);
+ }
+ 
+-static int ipa_endpoint_stop_rx_dma(struct ipa *ipa)
+-{
+-	u16 size = IPA_ENDPOINT_STOP_RX_SIZE;
+-	struct gsi_trans *trans;
+-	dma_addr_t addr;
+-	int ret;
+-
+-	trans = ipa_cmd_trans_alloc(ipa, 1);
+-	if (!trans) {
+-		dev_err(&ipa->pdev->dev,
+-			"no transaction for RX endpoint STOP workaround\n");
+-		return -EBUSY;
+-	}
+-
+-	/* Read into the highest part of the zero memory area */
+-	addr = ipa->zero_addr + ipa->zero_size - size;
+-
+-	ipa_cmd_dma_task_32b_addr_add(trans, size, addr, false);
+-
+-	ret = gsi_trans_commit_wait_timeout(trans, ENDPOINT_STOP_DMA_TIMEOUT);
+-	if (ret)
+-		gsi_trans_free(trans);
+-
+-	return ret;
+-}
+-
+ /**
+  * ipa_endpoint_stop() - Stops a GSI channel in IPA
+  * @client:	Client whose endpoint should be stopped
+@@ -1287,20 +1258,12 @@ int ipa_endpoint_stop(struct ipa_endpoint *endpoint)
  	int ret;
  
  	do {
-@@ -1291,12 +1291,9 @@ int ipa_endpoint_stop(struct ipa_endpoint *endpoint)
- 		struct gsi *gsi = &ipa->gsi;
+-		struct ipa *ipa = endpoint->ipa;
+-		struct gsi *gsi = &ipa->gsi;
++		struct gsi *gsi = &endpoint->ipa->gsi;
  
  		ret = gsi_channel_stop(gsi, endpoint->channel_id);
--		if (ret != -EAGAIN)
-+		if (ret != -EAGAIN || endpoint->toward_ipa)
+ 		if (ret != -EAGAIN || endpoint->toward_ipa)
  			break;
  
--		if (endpoint->toward_ipa)
--			continue;
+-		/* For IPA v3.5.1, send a DMA read task and check again */
+-		if (ipa->version == IPA_VERSION_3_5_1) {
+-			ret = ipa_endpoint_stop_rx_dma(ipa);
+-			if (ret)
+-				break;
+-		}
 -
- 		/* For IPA v3.5.1, send a DMA read task and check again */
- 		if (ipa->version == IPA_VERSION_3_5_1) {
- 			ret = ipa_endpoint_stop_rx_dma(ipa);
+ 		msleep(1);
+ 	} while (retries--);
+ 
 -- 
 2.20.1
 
