@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68FAA1C45DD
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:28:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC181C45E6
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:29:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730938AbgEDS1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 14:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
+        id S1730882AbgEDS3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 14:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730894AbgEDS1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:27:54 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17F0C061A41
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:27:53 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id u22so62193plq.12
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 11:27:53 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730606AbgEDS32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:29:28 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9A1C061A41
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:29:27 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id 207so163755pgc.6
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 11:29:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=nNG0LdDMqhgoNOsYJtqodOSWFHeIBtvo/8trfMubmmI=;
-        b=l1z9nxVQOCSfy94Afw1Uy11I/u7eFSYpN2RP/fNFVUCBQ66CkXzNxP0dmnLSm5vSy9
-         kgQzrEUmn2Z8f0r+GfX2Ov+oFmOKMsi2lbh0nx2WWXs0xuD1SuIIW/jrxDnRRtRuJMJG
-         OKCPDD6drFQiiF7mQIS7tSWDeVGGGL4BeVQgpHiXyhL2Mkv8RzHd/479D3TcBNVDLJ97
-         6mPohZITWb+Z0XAIpgYRFflCD5EP2gp8892Y7cfm4LLBx/+AofWqKcowBi+qTLexBXWK
-         7jg8OcFWRTqzFIJR1e9SvyADZYJjnSJ/Xbsz9K90LYmp94Z8mf+ZvDMI8ctmeuYPPjIp
-         6DOw==
+        bh=3mcb3hEms/g2cRqXnF9mYGpTlaunEURjVZJCsIzGh9k=;
+        b=Zh/W+EiE3lvTwm+HWpVVsbuUMLNuAdreiZ2ZqOc+C3Ch5E1CjUraKKj4/BATTkl0SQ
+         nvB715f5f1/i8/QqCGuaBQQmLrIX/rGOkI7uCqvJgOziqNe4wpbCZDC64EOO8tEneDC8
+         5xZC438qx9k6dBvlrMI4JqvZbGDHXCci/LtIt8oaHR8w9sxBUtyE8LE/Fr77j5ASvaT5
+         EE5davlIM9hmPW7dbjVYycDHUjQYDbcrNLIGZv+yOb/kyKoUtTcWkcdTkEJE4O00VAUF
+         teOcH6GUEH+lU+8sdTOS1kCwvq4f5hoc7ZzEmJ4rFkPmkhdOHR+KOlMuGINjD/FbCU9L
+         D3NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=nNG0LdDMqhgoNOsYJtqodOSWFHeIBtvo/8trfMubmmI=;
-        b=MP3YRh/sMA95l0xHv6/OeZK6/V5mydFAkXBwYl79OKzNKmcou4qFpbPqLKt914uWis
-         N82bOrqxFMuvJzjWC6JJHD5Frt07hmuXA//rdmCUQrVs7gHo4zcIA5wjvLSk8MciSdZe
-         ccnz/+/70ZFJ+ieii4K1aDnSQgtjqPm7Om6CAyuh0mH8o3biX02aRcMvF3tVPkLzLi13
-         dAwsSROqAx+/VAo7l328Pfeto4KQGDWm9NW4EePRlUT/VQMjzP5K1ds+1Zf9CJYUCrmA
-         K8grALTq5COAzFkw+NasEOhVyne77k3yIfSVmjDOp+ptLGN42+kFiFpv0G5VniPASwex
-         NHQQ==
-X-Gm-Message-State: AGi0PuZJmpFrIktAqQkrCszuaWu3zUVCLWTa0UscR9wxA4xh5C34+/zP
-        vbkXCHX9JG9s6cZ6OBTcAQrPgg==
-X-Google-Smtp-Source: APiQypJWzYTt4TwZ/qA7F3EWZokRUkdG2JpMjsFX+GZrUyPGCSa3XwwUZnYR5pCPtQCkhEkhCo4hTg==
-X-Received: by 2002:a17:90a:d917:: with SMTP id c23mr332348pjv.192.1588616873082;
-        Mon, 04 May 2020 11:27:53 -0700 (PDT)
+        bh=3mcb3hEms/g2cRqXnF9mYGpTlaunEURjVZJCsIzGh9k=;
+        b=LgFyFuWmrWDppBuZ2i+R/JaBOz144HJ2gAp/Z7h8wVqN2v7Gzp0qdG1J50on/C67xN
+         LJb/CyUHswcH9UQkd9N+bxOIYPTajxYnHhR8T3E7MnMfd4LwRWnAZ09EMjXAaPhv4NLj
+         x4EWaWryoIj9W0a7829R00E3bipMaUxICiJXZkgplc02XmlYKxFwoE5XejrGDRxiAZF1
+         YRaEmOhSdEMxgj2l8rtlH/W23nkonKCSLCQWAaeDV+8TrJ4UJyYE04SF5m1FSQko+zHD
+         4WxlJ2pUfaBVqMvJy3idV1YIX+moGbpIbI1Kpq04sOvWoQxgTmgWC4Gg1p9ifXlRCW5f
+         uWMQ==
+X-Gm-Message-State: AGi0PuY+u06WcI4/ljY4Z0dlk0NIW1ZRgpS444KH1/OiWyUCcENV6hGm
+        nMUqREgcT2SE4vsNfH8G/7/E4A==
+X-Google-Smtp-Source: APiQypJw2QOIf2XJfvZVcM8veojbbFcmiYFYAB5w4F2DRway3GD/F2mtQmG2UymA9Nd+umrDiTMePw==
+X-Received: by 2002:aa7:82d7:: with SMTP id f23mr19851746pfn.198.1588616966991;
+        Mon, 04 May 2020 11:29:26 -0700 (PDT)
 Received: from builder.lan (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id 71sm9489750pfw.111.2020.05.04.11.27.51
+        by smtp.gmail.com with ESMTPSA id 13sm9402013pfv.95.2020.05.04.11.29.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 11:27:52 -0700 (PDT)
-Date:   Mon, 4 May 2020 11:28:36 -0700
+        Mon, 04 May 2020 11:29:26 -0700 (PDT)
+Date:   Mon, 4 May 2020 11:30:10 -0700
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, agross@kernel.org, robh+dt@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/4] net: ipa: define IMEM memory region for
- IPA
-Message-ID: <20200504182836.GC20625@builder.lan>
+Cc:     robh+dt@kernel.org, davem@davemloft.net, evgreen@chromium.org,
+        subashab@codeaurora.org, cpratapa@codeaurora.org,
+        agross@kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/4] dt-bindings: net: add IPA iommus property
+Message-ID: <20200504183010.GD20625@builder.lan>
 References: <20200504175859.22606-1-elder@linaro.org>
- <20200504175859.22606-4-elder@linaro.org>
+ <20200504175859.22606-2-elder@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200504175859.22606-4-elder@linaro.org>
+In-Reply-To: <20200504175859.22606-2-elder@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -70,211 +70,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon 04 May 10:58 PDT 2020, Alex Elder wrote:
 
-> Define a region of IMEM memory available for use by IPA in the
-> platform configuration data.  Initialize it from ipa_mem_init().
-> The memory must be mapped for access through an SMMU.
+> The IPA accesses "IMEM" and main system memory through an SMMU, so
+> its DT node requires an iommus property to define range of stream IDs
+> it uses.
 > 
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/net/qcom,ipa.yaml | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> index 140f15245654..7b749fc04c32 100644
+> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> @@ -20,7 +20,10 @@ description:
+>    The GSI is an integral part of the IPA, but it is logically isolated
+>    and has a distinct interrupt and a separately-defined address space.
+>  
+> -  See also soc/qcom/qcom,smp2p.txt and interconnect/interconnect.txt.
+> +  See also soc/qcom/qcom,smp2p.txt and interconnect/interconnect.txt.  See
+> +  iommu/iommu.txt and iommu/arm,smmu.yaml for more information about SMMU
+> +  bindings.
+> +
+>  
+>    - |
+>      --------             ---------
+> @@ -54,6 +57,9 @@ properties:
+>        - const: ipa-shared
+>        - const: gsi
+>  
+> +  iommus:
+> +    maxItems: 1
+> +
+>    clocks:
+>      maxItems: 1
+>  
+> @@ -126,6 +132,7 @@ properties:
+>  
+>  required:
+>    - compatible
+> +  - iommus
+
+This technically "breaks" backwards compatibility, but the binding is
+rather new and in limited use, so I think we should do this.
+
 
 Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
 Regards,
 Bjorn
 
-> Signed-off-by: Alex Elder <elder@linaro.org>
-> ---
->  drivers/net/ipa/ipa.h             |  5 ++
->  drivers/net/ipa/ipa_data-sc7180.c |  2 +
->  drivers/net/ipa/ipa_data-sdm845.c |  2 +
->  drivers/net/ipa/ipa_data.h        |  6 ++-
->  drivers/net/ipa/ipa_mem.c         | 84 +++++++++++++++++++++++++++++++
->  5 files changed, 98 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
-> index 23fb29889e5a..32f6dfafdb05 100644
-> --- a/drivers/net/ipa/ipa.h
-> +++ b/drivers/net/ipa/ipa.h
-> @@ -47,6 +47,8 @@ struct ipa_interrupt;
->   * @mem_offset:		Offset from @mem_virt used for access to IPA memory
->   * @mem_size:		Total size (bytes) of memory at @mem_virt
->   * @mem:		Array of IPA-local memory region descriptors
-> + * @imem_iova:		I/O virtual address of IPA region in IMEM
-> + * @imem_size;		Size of IMEM region
->   * @zero_addr:		DMA address of preallocated zero-filled memory
->   * @zero_virt:		Virtual address of preallocated zero-filled memory
->   * @zero_size:		Size (bytes) of preallocated zero-filled memory
-> @@ -88,6 +90,9 @@ struct ipa {
->  	u32 mem_size;
->  	const struct ipa_mem *mem;
+>    - reg
+>    - clocks
+>    - interrupts
+> @@ -164,6 +171,7 @@ examples:
+>                  modem-init;
+>                  modem-remoteproc = <&mss_pil>;
 >  
-> +	unsigned long imem_iova;
-> +	size_t imem_size;
-> +
->  	dma_addr_t zero_addr;
->  	void *zero_virt;
->  	size_t zero_size;
-> diff --git a/drivers/net/ipa/ipa_data-sc7180.c b/drivers/net/ipa/ipa_data-sc7180.c
-> index f97e7e4e61c1..e9007d151c68 100644
-> --- a/drivers/net/ipa/ipa_data-sc7180.c
-> +++ b/drivers/net/ipa/ipa_data-sc7180.c
-> @@ -299,6 +299,8 @@ static const struct ipa_mem ipa_mem_local_data[] = {
->  static struct ipa_mem_data ipa_mem_data = {
->  	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
->  	.local		= ipa_mem_local_data,
-> +	.imem_addr	= 0x146a8000,
-> +	.imem_size	= 0x00002000,
->  };
->  
->  /* Configuration data for the SC7180 SoC. */
-> diff --git a/drivers/net/ipa/ipa_data-sdm845.c b/drivers/net/ipa/ipa_data-sdm845.c
-> index c55507e94559..c0e207085550 100644
-> --- a/drivers/net/ipa/ipa_data-sdm845.c
-> +++ b/drivers/net/ipa/ipa_data-sdm845.c
-> @@ -321,6 +321,8 @@ static const struct ipa_mem ipa_mem_local_data[] = {
->  static struct ipa_mem_data ipa_mem_data = {
->  	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
->  	.local		= ipa_mem_local_data,
-> +	.imem_addr	= 0x146bd000,
-> +	.imem_size	= 0x00002000,
->  };
->  
->  /* Configuration data for the SDM845 SoC. */
-> diff --git a/drivers/net/ipa/ipa_data.h b/drivers/net/ipa/ipa_data.h
-> index 51d8e5a6f23a..69957af56ccd 100644
-> --- a/drivers/net/ipa/ipa_data.h
-> +++ b/drivers/net/ipa/ipa_data.h
-> @@ -245,13 +245,17 @@ struct ipa_resource_data {
->  };
->  
->  /**
-> - * struct ipa_mem - IPA-local memory region description
-> + * struct ipa_mem - description of IPA memory regions
->   * @local_count:	number of regions defined in the local[] array
->   * @local:		array of IPA-local memory region descriptors
-> + * @imem_addr:		physical address of IPA region within IMEM
-> + * @imem_size:		size in bytes of IPA IMEM region
->   */
->  struct ipa_mem_data {
->  	u32 local_count;
->  	const struct ipa_mem *local;
-> +	u32 imem_addr;
-> +	u32 imem_size;
->  };
->  
->  /**
-> diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-> index fb4de2a12796..3c0916597fe1 100644
-> --- a/drivers/net/ipa/ipa_mem.c
-> +++ b/drivers/net/ipa/ipa_mem.c
-> @@ -8,6 +8,7 @@
->  #include <linux/bitfield.h>
->  #include <linux/bug.h>
->  #include <linux/dma-mapping.h>
-> +#include <linux/iommu.h>
->  #include <linux/io.h>
->  
->  #include "ipa.h"
-> @@ -266,6 +267,79 @@ int ipa_mem_zero_modem(struct ipa *ipa)
->  	return 0;
->  }
->  
-> +/**
-> + * ipa_imem_init() - Initialize IMEM memory used by the IPA
-> + * @ipa:	IPA pointer
-> + * @addr:	Physical address of the IPA region in IMEM
-> + * @size:	Size (bytes) of the IPA region in IMEM
-> + *
-> + * IMEM is a block of shared memory separate from system DRAM, and
-> + * a portion of this memory is available for the IPA to use.  The
-> + * modem accesses this memory directly, but the IPA accesses it
-> + * via the IOMMU, using the AP's credentials.
-> + *
-> + * If this region exists (size > 0) we map it for read/write access
-> + * through the IOMMU using the IPA device.
-> + *
-> + * Note: @addr and @size are not guaranteed to be page-aligned.
-> + */
-> +static int ipa_imem_init(struct ipa *ipa, unsigned long addr, size_t size)
-> +{
-> +	struct device *dev = &ipa->pdev->dev;
-> +	struct iommu_domain *domain;
-> +	unsigned long iova;
-> +	phys_addr_t phys;
-> +	int ret;
-> +
-> +	if (!size)
-> +		return 0;	/* IMEM memory not used */
-> +
-> +	domain = iommu_get_domain_for_dev(dev);
-> +	if (!domain) {
-> +		dev_err(dev, "no IOMMU domain found for IMEM\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Align the address down and the size up to page boundaries */
-> +	phys = addr & PAGE_MASK;
-> +	size = PAGE_ALIGN(size + addr - phys);
-> +	iova = phys;	/* We just want a direct mapping */
-> +
-> +	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ipa->imem_iova = iova;
-> +	ipa->imem_size = size;
-> +
-> +	return 0;
-> +}
-> +
-> +static void ipa_imem_exit(struct ipa *ipa)
-> +{
-> +	struct iommu_domain *domain;
-> +	struct device *dev;
-> +
-> +	if (!ipa->imem_size)
-> +		return;
-> +
-> +	dev = &ipa->pdev->dev;
-> +	domain = iommu_get_domain_for_dev(dev);
-> +	if (domain) {
-> +		size_t size;
-> +
-> +		size = iommu_unmap(domain, ipa->imem_iova, ipa->imem_size);
-> +		if (size != ipa->imem_size)
-> +			dev_warn(dev, "unmapped %zu IMEM bytes, expected %lu\n",
-> +				 size, ipa->imem_size);
-> +	} else {
-> +		dev_err(dev, "couldn't get IPA IOMMU domain for IMEM\n");
-> +	}
-> +
-> +	ipa->imem_size = 0;
-> +	ipa->imem_iova = 0;
-> +}
-> +
->  /* Perform memory region-related initialization */
->  int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
->  {
-> @@ -305,11 +379,21 @@ int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
->  	/* The ipa->mem[] array is indexed by enum ipa_mem_id values */
->  	ipa->mem = mem_data->local;
->  
-> +	ret = ipa_imem_init(ipa, mem_data->imem_addr, mem_data->imem_size);
-> +	if (ret)
-> +		goto err_unmap;
-> +
->  	return 0;
-> +
-> +err_unmap:
-> +	memunmap(ipa->mem_virt);
-> +
-> +	return ret;
->  }
->  
->  /* Inverse of ipa_mem_init() */
->  void ipa_mem_exit(struct ipa *ipa)
->  {
-> +	ipa_imem_exit(ipa);
->  	memunmap(ipa->mem_virt);
->  }
+> +                iommus = <&apps_smmu 0x720 0x3>;
+>                  reg = <0 0x1e40000 0 0x7000>,
+>                          <0 0x1e47000 0 0x2000>,
+>                          <0 0x1e04000 0 0x2c000>;
 > -- 
 > 2.20.1
 > 
