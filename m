@@ -2,236 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 158131C3682
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 12:10:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 090E81C36CA
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 12:24:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728021AbgEDKKi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 4 May 2020 06:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39930 "EHLO
+        id S1728611AbgEDKXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 06:23:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726531AbgEDKKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 06:10:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E34EC061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 03:10:37 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jVY3U-0007Sj-N1; Mon, 04 May 2020 12:10:32 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jVY3R-00029q-Ko; Mon, 04 May 2020 12:10:29 +0200
-Date:   Mon, 4 May 2020 12:10:29 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        kernel@pengutronix.de, David Jander <david@protonic.nl>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christian Herber <christian.herber@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v5 1/2] ethtool: provide UAPI for PHY master/slave
- configuration.
-Message-ID: <20200504101029.zt3eu7jsywdiq4tu@pengutronix.de>
-References: <20200504071214.5890-1-o.rempel@pengutronix.de>
- <20200504071214.5890-2-o.rempel@pengutronix.de>
- <20200504091044.GA8237@lion.mk-sys.cz>
+        by vger.kernel.org with ESMTP id S1726351AbgEDKXr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 06:23:47 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF7AC061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 03:23:46 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id k8so13436260ejv.3
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 03:23:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QKIehFHWwvSGI5j1A6FtkuGdpgXvVnZnjyFdcNCcJF8=;
+        b=qr8TqGXlb4D2tb0+ne2Da+ZeWmUcoSEUNp75Arx2DUbi1MCd3GWLF4rCWrPThPEsDx
+         uATvXfH+QXaCMXKePq4rSWqmBojLlTX07fGXIGiZfDLnP+/l+caHSZMW5gj6wtgBrIO8
+         XQvIVysTazIOE/YszOyPGzsa+8HelrXAZw7fHyNfECF1h0pKIOcc8fvpw43AYCAbGMAL
+         iILxiWDnpqjfRGXdfeC+nYildxd34pOnkSUxWUypydxTzuDcIiN88MxhTepk4r0YwNkA
+         Syo0uLe4P2Pj2ERM6A1tZ2KXpRdsoSpaSti9bwur4qNQYPE3/jhp0fCmXG4zQ0wYyGQq
+         Nssg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QKIehFHWwvSGI5j1A6FtkuGdpgXvVnZnjyFdcNCcJF8=;
+        b=ZPZxkDI5GnMhOtZki74JVpXUqHKEtDx/+RwoIS4MLmZCY6i62ssbynL7gNNBADiecD
+         QPi5LfB792y/jeLw5vNlXZ4hO9jD4nnjj3BCl1drbZhyZdxWNjdG/MrCZnWRnd5XdWmE
+         Jv8kWX/bdAVQU56XYSQF0YlLYTokUbOuzZjQBiCgic5zgHogIHTQlTyx1VktnkaEmyaU
+         x9HSuPAO3ENtnDjwYtsXDsQNCCzZOIOXvCkdE50wV3sykXhwE7UnVRczEjvs10mUt8pA
+         6QXMXgUI+mKSssMdqBsbTfUHFAqHvsW0/RPfNvRXniw1v8VzXtvH+J8U9Q9D2VN1ANBq
+         1GbA==
+X-Gm-Message-State: AGi0Puarw48xX3LGSSz8cCyxyKJXCow9ITqOb6VhUpf6Rt0fNOdGixMm
+        K5zarTSPJSd/pfIc1N/VqUXJmMuvyVKfDXT0A/p4Lj1V
+X-Google-Smtp-Source: APiQypLfV/REVA1t9wWKlXZlCIVJ3T/UyzTw6ZnIBS3pGt4uSR3Rf8vhSbrXmFSJEnGjx1c944pfHibLBSi85R8MpYM=
+X-Received: by 2002:a17:906:2503:: with SMTP id i3mr13454264ejb.293.1588587825234;
+ Mon, 04 May 2020 03:23:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20200504091044.GA8237@lion.mk-sys.cz>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 11:42:37 up 171 days,  1:01, 187 users,  load average: 0.16, 0.08,
- 0.05
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20200425120207.5400-1-dqfext@gmail.com>
+In-Reply-To: <20200425120207.5400-1-dqfext@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 4 May 2020 13:23:34 +0300
+Message-ID: <CA+h21hpeJK8mHduKoWn5rbmz=BEz_6HQdz3Xf63NsXpZxsky0A@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix roaming from DSA user ports
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Tom James <tj17@me.com>,
+        Stijn Segers <foss@volatilesystems.org>,
+        riddlariddla@hotmail.com, Szabolcs Hubai <szab.hu@gmail.com>,
+        Paul Fertser <fercerpav@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 04, 2020 at 11:10:44AM +0200, Michal Kubecek wrote:
-> On Mon, May 04, 2020 at 09:12:13AM +0200, Oleksij Rempel wrote:
-> > This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
-> > auto-negotiation support, we needed to be able to configure the
-> > MASTER-SLAVE role of the port manually or from an application in user
-> > space.
-> > 
-> > The same UAPI can be used for 1000BASE-T or MultiGBASE-T devices to
-> > force MASTER or SLAVE role. See IEEE 802.3-2018:
-> > 22.2.4.3.7 MASTER-SLAVE control register (Register 9)
-> > 22.2.4.3.8 MASTER-SLAVE status register (Register 10)
-> > 40.5.2 MASTER-SLAVE configuration resolution
-> > 45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
-> > 45.2.7.10 MultiGBASE-T AN control 1 register (Register 7.32)
-> > 
-> > The MASTER-SLAVE role affects the clock configuration:
-> > 
-> > -------------------------------------------------------------------------------
-> > When the  PHY is configured as MASTER, the PMA Transmit function shall
-> > source TX_TCLK from a local clock source. When configured as SLAVE, the
-> > PMA Transmit function shall source TX_TCLK from the clock recovered from
-> > data stream provided by MASTER.
-> > 
-> > iMX6Q                     KSZ9031                XXX
-> > ------\                /-----------\        /------------\
-> >       |                |           |        |            |
-> >  MAC  |<----RGMII----->| PHY Slave |<------>| PHY Master |
-> >       |<--- 125 MHz ---+-<------/  |        | \          |
-> > ------/                \-----------/        \------------/
-> >                                                ^
-> >                                                 \-TX_TCLK
-> > 
-> > -------------------------------------------------------------------------------
-> > 
-> > Since some clock or link related issues are only reproducible in a
-> > specific MASTER-SLAVE-role, MAC and PHY configuration, it is beneficial
-> > to provide generic (not 100BASE-T1 specific) interface to the user space
-> > for configuration flexibility and trouble shooting.
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > index ac2784192472f..42dda9d2082ee 100644
-> > --- a/drivers/net/phy/phy_device.c
-> > +++ b/drivers/net/phy/phy_device.c
-> > @@ -1768,6 +1768,90 @@ int genphy_setup_forced(struct phy_device *phydev)
-> >  }
-> >  EXPORT_SYMBOL(genphy_setup_forced);
-> >  
-> > +static int genphy_setup_master_slave(struct phy_device *phydev)
-> > +{
-> > +	u16 ctl = 0;
-> > +
-> > +	if (!phydev->is_gigabit_capable)
-> > +		return 0;
-> 
-> Why did you revert to silently ignoring requests in this case?
+Hi Qingfang,
 
-genphy_setup_forced() is called by __genphy_config_aneg() and this can
-be called by a PHY driver after configuring master slave mode locally by
-PHY driver. See tja11xx patch. Same can be potentially done in the phy/realtek.c
-driver.
+On Sat, 25 Apr 2020 at 15:03, DENG Qingfang <dqfext@gmail.com> wrote:
+>
+> When a client moves from a DSA user port to a software port in a bridge,
+> it cannot reach any other clients that connected to the DSA user ports.
+> That is because SA learning on the CPU port is disabled, so the switch
+> ignores the client's frames from the CPU port and still thinks it is at
+> the user port.
+>
+> Fix it by enabling SA learning on the CPU port.
+>
+> To prevent the switch from learning from flooding frames from the CPU
+> port, set skb->offload_fwd_mark to 1 for unicast and broadcast frames,
+> and let the switch flood them instead of trapping to the CPU port.
+> Multicast frames still need to be trapped to the CPU port for snooping,
+> so set the SA_DIS bit of the MTK tag to 1 when transmitting those frames
+> to disable SA learning.
+>
+> Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> ---
 
-Currently my imagination is not caffeanized enough to
-provide a better solution. Do you have ideas?
+I think enabling learning on the CPU port would fix the problem
+sometimes, but not always. (actually nothing can solve it always, see
+below)
+The switch learns the new route only if it receives any packets from
+the CPU port, with a SA equal to the station you're trying to reach.
+But what if the station is not sending any traffic at the moment,
+because it is simply waiting for connections to it first (just an
+example)?
+Unless there is any traffic already coming from the destination
+station too, your patch won't work.
+I am currently facing a similar situation with the ocelot/felix
+switches, but in that case, enabling SA learning on the CPU port is
+not possible.
+The way I dealt with it is by forcing a flush of the FDB entries on
+the port, in the following scenarios:
+- link goes down
+- port leaves its bridge
+So traffic towards a destination that has migrated away will
+temporarily be flooded again (towards the CPU port as well).
+There is still one case which isn't treated using this approach: when
+the station migrates away from a switch port that is not directly
+connected to this one. So no "link down" events would get generated in
+that case. We would still have to wait until the address expires in
+that case. I don't think that particular situation can be solved.
+My point is: if we agree that this is a larger problem, then DSA
+should have a .port_fdb_flush method and schedule a workqueue whenever
+necessary. Yes, it is a costly operation, but it will still probably
+take a lot less than the 300 seconds that the bridge configures for
+address ageing.
 
-> On the
-> other hand, we might rather want to do a more generic check which would
-> handle all drivers not supporting the feature, see below.
+Thoughts?
 
-> [...]
-> > @@ -287,14 +308,37 @@ static bool ethnl_auto_linkmodes(struct ethtool_link_ksettings *ksettings,
-> >  			     __ETHTOOL_LINK_MODE_MASK_NBITS);
-> >  }
-> >  
-> > +static int ethnl_validate_master_slave_cfg(u8 cfg)
-> > +{
-> > +	switch (cfg) {
-> > +	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-> > +	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-> > +	case MASTER_SLAVE_CFG_MASTER_FORCE:
-> > +	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-> > +		return 1;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> 
-> Nitpick: bool would be more appropriate as return value.
+>  drivers/net/dsa/mt7530.c |  9 ++-------
+>  drivers/net/dsa/mt7530.h |  1 +
+>  net/dsa/tag_mtk.c        | 15 +++++++++++++++
+>  3 files changed, 18 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 5c444cd722bd..34e4aadfa705 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -628,11 +628,8 @@ mt7530_cpu_port_enable(struct mt7530_priv *priv,
+>         mt7530_write(priv, MT7530_PVC_P(port),
+>                      PORT_SPEC_TAG);
+>
+> -       /* Disable auto learning on the cpu port */
+> -       mt7530_set(priv, MT7530_PSC_P(port), SA_DIS);
+> -
+> -       /* Unknown unicast frame fordwarding to the cpu port */
+> -       mt7530_set(priv, MT7530_MFC, UNU_FFP(BIT(port)));
+> +       /* Unknown multicast frame forwarding to the cpu port */
+> +       mt7530_rmw(priv, MT7530_MFC, UNM_FFP_MASK, UNM_FFP(BIT(port)));
+>
+>         /* Set CPU port number */
+>         if (priv->id == ID_MT7621)
+> @@ -1294,8 +1291,6 @@ mt7530_setup(struct dsa_switch *ds)
+>         /* Enable and reset MIB counters */
+>         mt7530_mib_reset(ds);
+>
+> -       mt7530_clear(priv, MT7530_MFC, UNU_FFP_MASK);
+> -
+>         for (i = 0; i < MT7530_NUM_PORTS; i++) {
+>                 /* Disable forwarding by default on all ports */
+>                 mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
+> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+> index 979bb6374678..82af4d2d406e 100644
+> --- a/drivers/net/dsa/mt7530.h
+> +++ b/drivers/net/dsa/mt7530.h
+> @@ -31,6 +31,7 @@ enum {
+>  #define MT7530_MFC                     0x10
+>  #define  BC_FFP(x)                     (((x) & 0xff) << 24)
+>  #define  UNM_FFP(x)                    (((x) & 0xff) << 16)
+> +#define  UNM_FFP_MASK                  UNM_FFP(~0)
+>  #define  UNU_FFP(x)                    (((x) & 0xff) << 8)
+>  #define  UNU_FFP_MASK                  UNU_FFP(~0)
+>  #define  CPU_EN                                BIT(7)
+> diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+> index b5705cba8318..d6619edd53e5 100644
+> --- a/net/dsa/tag_mtk.c
+> +++ b/net/dsa/tag_mtk.c
+> @@ -15,6 +15,7 @@
+>  #define MTK_HDR_XMIT_TAGGED_TPID_8100  1
+>  #define MTK_HDR_RECV_SOURCE_PORT_MASK  GENMASK(2, 0)
+>  #define MTK_HDR_XMIT_DP_BIT_MASK       GENMASK(5, 0)
+> +#define MTK_HDR_XMIT_SA_DIS            BIT(6)
+>
+>  static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+>                                     struct net_device *dev)
+> @@ -22,6 +23,9 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+>         struct dsa_port *dp = dsa_slave_to_port(dev);
+>         u8 *mtk_tag;
+>         bool is_vlan_skb = true;
+> +       unsigned char *dest = eth_hdr(skb)->h_dest;
+> +       bool is_multicast_skb = is_multicast_ether_addr(dest) &&
+> +                               !is_broadcast_ether_addr(dest);
+>
+>         /* Build the special tag after the MAC Source Address. If VLAN header
+>          * is present, it's required that VLAN header and special tag is
+> @@ -47,6 +51,10 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+>                      MTK_HDR_XMIT_UNTAGGED;
+>         mtk_tag[1] = (1 << dp->index) & MTK_HDR_XMIT_DP_BIT_MASK;
+>
+> +       /* Disable SA learning for multicast frames */
+> +       if (unlikely(is_multicast_skb))
+> +               mtk_tag[1] |= MTK_HDR_XMIT_SA_DIS;
+> +
+>         /* Tag control information is kept for 802.1Q */
+>         if (!is_vlan_skb) {
+>                 mtk_tag[2] = 0;
+> @@ -61,6 +69,9 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+>  {
+>         int port;
+>         __be16 *phdr, hdr;
+> +       unsigned char *dest = eth_hdr(skb)->h_dest;
+> +       bool is_multicast_skb = is_multicast_ether_addr(dest) &&
+> +                               !is_broadcast_ether_addr(dest);
+>
+>         if (unlikely(!pskb_may_pull(skb, MTK_HDR_LEN)))
+>                 return NULL;
+> @@ -86,6 +97,10 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+>         if (!skb->dev)
+>                 return NULL;
+>
+> +       /* Only unicast or broadcast frames are offloaded */
+> +       if (likely(!is_multicast_skb))
+> +               skb->offload_fwd_mark = 1;
+> +
+>         return skb;
+>  }
+>
+> --
+> 2.26.1
+>
 
-ok
-
-> > +
-> >  static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
-> >  				  struct ethtool_link_ksettings *ksettings,
-> >  				  bool *mod)
-> >  {
-> >  	struct ethtool_link_settings *lsettings = &ksettings->base;
-> >  	bool req_speed, req_duplex;
-> > +	const struct nlattr *master_slave_cfg;
-> >  	int ret;
-> >  
-> > +	master_slave_cfg = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
-> > +	if (master_slave_cfg) {
-> > +		u8 cfg = nla_get_u8(master_slave_cfg);
-> > +		if (!ethnl_validate_master_slave_cfg(cfg)) {
-> > +			GENL_SET_ERR_MSG(info, "LINKMODES_MASTER_SLAVE_CFG contains not valid value");
-> > +			return -EOPNOTSUPP;
-> > +		}
-> > +	}
-> 
-> Please set also the "bad attribute" in extack, it may help
-> non-interactive clients.
-> 
-> Also, it would be nice to report error if client wants to set master/slave but
-> driver does not support it. How about this?
-> 
-> 	if (master_slave_cfg) {
-> 		u8 cfg = nla_get_u8(master_slave_cfg);
-> 
-> 		if (lsettings->master_slave_cfg == MASTER_SLAVE_CFG_UNSUPPORTED) {
-> 			NL_SET_ERR_MSG_ATTR(info->extack, master_slave_cfg,
-> 					    "master/slave configuration not supported by device");
-> 			return -EOPNOTSUPP;
-> 		}
-> 		if (!ethnl_validate_master_slave_cfg(cfg)) {
-> 			NL_SET_ERR_MSG_ATTR(info->extack, master_slave_cfg,
-> 					    "master/slave value is invalid");
-> 			return -EOPNOTSUPP;
-> 		}
-> 	}
-> 
-
-looks good. thx!
-
-> 
-> Do you plan to allow handling master/slave also via ioctl()?
-
-no.
-
-> If yes, we should
-> also add the sanity checks to ioctl code path. If not, we should prevent
-> passing non-zero values from userspace to driver.
-
-What is the best place to add this sanity check?
-
-> Other than this, the patch looks good to me.
-> 
-> Michal
-> 
-> >  	*mod = false;
-> >  	req_speed = tb[ETHTOOL_A_LINKMODES_SPEED];
-> >  	req_duplex = tb[ETHTOOL_A_LINKMODES_DUPLEX];
-> > @@ -311,6 +355,7 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
-> >  			 mod);
-> >  	ethnl_update_u8(&lsettings->duplex, tb[ETHTOOL_A_LINKMODES_DUPLEX],
-> >  			mod);
-> > +	ethnl_update_u8(&lsettings->master_slave_cfg, master_slave_cfg, mod);
-> >  
-> >  	if (!tb[ETHTOOL_A_LINKMODES_OURS] && lsettings->autoneg &&
-> >  	    (req_speed || req_duplex) &&
-> > -- 
-> > 2.26.2
-> > 
-> 
-> 
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Thanks,
+-Vladimir
