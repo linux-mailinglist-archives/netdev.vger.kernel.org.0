@@ -2,91 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5962D1C436D
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:56:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D6F1C4385
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730569AbgEDR4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        id S1730703AbgEDR7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729386AbgEDR4g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:56:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286F8C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 10:56:36 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1jVfJy-0004nF-Rx; Mon, 04 May 2020 19:56:02 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1jVfJp-0002rR-TC; Mon, 04 May 2020 19:55:53 +0200
-Date:   Mon, 4 May 2020 19:55:53 +0200
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        alsa-devel@alsa-project.org,
-        Olivier Moysan <olivier.moysan@st.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>, Jyri Sarha <jsarha@ti.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Sandy Huang <hjc@rock-chips.com>, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] docs: dt: fix broken links due to txt->yaml renames
-Message-ID: <20200504175553.jdm7a7aabloevxba@pengutronix.de>
-References: <967df5c3303b478b76199d4379fe40f5094f3f9b.1588584538.git.mchehab+huawei@kernel.org>
- <20200504174522.GA3383@ravnborg.org>
+        by vger.kernel.org with ESMTP id S1730692AbgEDR7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:59:08 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBE0C061A10
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 10:59:07 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id 23so507365qkf.0
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 10:59:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vqdw6T961NjpBgRT/XhyOu+dO0BOx3bSC8VPzWsBaf8=;
+        b=XPPT51l7YVLzCOVDR8nXFLo0ll/gEhC+LGvA/j0yhs3ZktWvl0sAm3ZbfhvqTH3C/D
+         ob0L3coYcB9BRxc3fZvibyxEE6yc6am6tRF7VR6G/N80RmcfUkKm+Dd3eVNcBoKTMkYj
+         /Hq0E1m9fqBgPbBFdnr9j8qfc7mSf2egge2V/mVAOykoiw9QwObUn4IH9jPEYLFjSs+F
+         TupT1A+dCMnVbX7hmJwpGXfzxkIaHlq8cT/EMPi48gSWtAUo8RDuh1Gq1v1dNMDgmiMv
+         gUKFA1YpWXOqPL9yC3HmH5uy8dWiuR3v0/g78gPbreQidnKadkgNDdii6O0dTF8GoWXW
+         e/lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vqdw6T961NjpBgRT/XhyOu+dO0BOx3bSC8VPzWsBaf8=;
+        b=Hi1EnO8aF/vGYhIU1wPK2wUmJD7J2zcnlMi/UP21GgLYwaMmcTlBgAd1T86wAepv72
+         XMglNPa2kI/Gq+aaSSM2wtKKOZoeX8ZDcC67utA9Xs/NhVDndWrE5qPQimW3jK2damUC
+         bc89LitOj8P1ljCq8mvCwOr8DWOYG3kiXeGARXCCzugL9UO/mQjYipJY2NcT2AlRyGiD
+         Bj+loPXkB/Bj/vqWQxG8o0T7m5PBCLp4Fu5rdHt9SHcsXqEqGVM91PTtNvnacrx2uivx
+         RocMg0bT0oICSCfFjlZqQQ4QjG0jrqATAMc3Ier0fyzYfX9lIMoCzm3yxmnjLdgSe83k
+         T4ZA==
+X-Gm-Message-State: AGi0PuaqSFP4qiFVEjIaryeoUmN4B05paBpHWNJmtGpWZWexHRiUDwmw
+        WlrpymXTD5NBZ/GXhh/f+7FUyQ==
+X-Google-Smtp-Source: APiQypJJ+e8/no9p4zo1oA/7S8B1GlIpY1L/RkCv9O30uXiNL1i8dlLjNyWlL/9UZ7G1xUcxb/aAwA==
+X-Received: by 2002:a37:8346:: with SMTP id f67mr367493qkd.283.1588615146701;
+        Mon, 04 May 2020 10:59:06 -0700 (PDT)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id h19sm11271088qtk.78.2020.05.04.10.59.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2020 10:59:05 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        agross@kernel.org, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/4] net: ipa: I/O map SMEM and IMEM
+Date:   Mon,  4 May 2020 12:58:55 -0500
+Message-Id: <20200504175859.22606-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200504174522.GA3383@ravnborg.org>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sam,
+This series adds the definition of two memory regions that must be
+mapped for IPA to access through an SMMU.  It requires the SMMU to
+be defined in the IPA node in the SoC's Device Tree file.
 
-On Mon, May 04, 2020 at 07:45:22PM +0200, Sam Ravnborg wrote:
-> On Mon, May 04, 2020 at 11:30:20AM +0200, Mauro Carvalho Chehab wrote:
-> > There are some new broken doc links due to yaml renames
-> > at DT. Developers should really run:
-> > 
-> > 	./scripts/documentation-file-ref-check
-> > 
-> > in order to solve those issues while submitting patches.
-> Would love if some bot could do this for me on any patches that creates
-> .yaml files or so.
-> I know I will forget this and it can be automated.
-> If I get a bot mail that my patch would broke a link I would
-> have it fixed before it hits any tree.
+There is no change since version 1 to the content of the code in
+these patches, *however* this time the first patch is an update to
+the binding definition rather than an update to a DTS file.
 
-What about adding a check to check_patch?
+					-Alex
 
-Best regards
-Uwe
+Alex Elder (4):
+  dt-bindings: net: add IPA iommus property
+  net: ipa: redefine struct ipa_mem_data
+  net: ipa: define IMEM memory region for IPA
+  net: ipa: define SMEM memory region for IPA
+
+ .../devicetree/bindings/net/qcom,ipa.yaml     |  10 +-
+ drivers/net/ipa/ipa.h                         |  10 +
+ drivers/net/ipa/ipa_data-sc7180.c             |  14 +-
+ drivers/net/ipa/ipa_data-sdm845.c             |  14 +-
+ drivers/net/ipa/ipa_data.h                    |  23 +-
+ drivers/net/ipa/ipa_main.c                    |   2 +-
+ drivers/net/ipa/ipa_mem.c                     | 209 +++++++++++++++++-
+ drivers/net/ipa/ipa_mem.h                     |   3 +-
+ 8 files changed, 263 insertions(+), 22 deletions(-)
 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.20.1
+
