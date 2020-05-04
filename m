@@ -2,241 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D2831C47B1
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 22:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DC061C47C1
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 22:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727095AbgEDUIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 16:08:00 -0400
-Received: from gateway23.websitewelcome.com ([192.185.49.177]:13077 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726334AbgEDUH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 16:07:59 -0400
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 5603D37F1
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:07:58 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id VhNejQQz4EfyqVhNejEOsl; Mon, 04 May 2020 15:07:58 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QQwjaZedmAfrFU0rWpB+oFfnyoC2Vh8dMVpNEp+/1a8=; b=YvBiONp6QYSQAI1G8z08SM7g/Z
-        B1dlFOOIF+orc6+l7/Ci3y/6MAJXtWyEM+aX8APnapsdo/7pjDIgs/wXikNBb4r6j62iTrQJbfJrU
-        kPmAp/Xd3Kqd3hIxiLrnOMjZkJfPOxw+3gtGMsXh3Dr5wPi+95QmHtFjJ0HrlsWdTuJW0OLvHPdyV
-        3qGUbetw4jTRK/I0JuP75NMN7XUzMRhlvsLQYVIwLXy5klCeJRO4l13ND/MZfSBLgS7I/7N3t28zs
-        wdCwdqBUiFIo0noLla95CJrJ4qZLw4/SBUscQrxJ0Bi5DXdH+V6I6eA4ZKUvJMWU7wIxbJ9ykgjhZ
-        h3xqyYHQ==;
-Received: from [189.207.59.248] (port=58770 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1jVhNd-002HS1-SC; Mon, 04 May 2020 15:07:57 -0500
-Date:   Mon, 4 May 2020 15:12:24 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
+        id S1727095AbgEDUOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 16:14:32 -0400
+Received: from mout.web.de ([212.227.15.4]:40017 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726111AbgEDUOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 May 2020 16:14:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1588623251;
+        bh=fM0qlrt2nxlUHS4Lo23+CVfKwk8o4EthxceeGf2zWcQ=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=gRGwNFL4aqk3ftRPT/XVgKszD4NxC5QJwT7DfO5aAVvSRyUP77T3BgNnDOOXkx4v5
+         pHP08SLR542bd3AYKhm1IsScaseSL+w3MB1vdW97c84WYhAvGsFdSTviZJZVVjAv+f
+         /1Y/o67CKfREnINCTw7reg1Tm9zg1V+4m3rt/6oI=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.133.152.69]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LtXDY-1j6Qpr0KAe-010scS; Mon, 04
+ May 2020 22:14:11 +0200
+Subject: Re: [v3] nfp: abm: Fix incomplete release of system resources in
+ nfp_abm_vnic_set_mac()
+To:     Qiushi Wu <wu000273@umn.edu>, netdev@vger.kernel.org
+Cc:     LKML <linux-kernel@vger.kernel.org>, oss-drivers@netronome.com,
+        Kangjie Lu <kjlu@umn.edu>, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] ath11k: Replace zero-length array with flexible-array
-Message-ID: <20200504201224.GA32282@embeddedor>
+References: <20200503204932.11167-1-wu000273@umn.edu>
+ <20200504100300.28438c70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAMV6ehFC=efyD81rtNRcWW9gbiD4t6z4G2TkLk7WqLS+Qg9X-Q@mail.gmail.com>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <ca694a38-14c5-bb9e-c140-52a6d847017b@web.de>
+Date:   Mon, 4 May 2020 22:13:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.207.59.248
-X-Source-L: No
-X-Exim-ID: 1jVhNd-002HS1-SC
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.207.59.248]:58770
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 16
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+In-Reply-To: <CAMV6ehFC=efyD81rtNRcWW9gbiD4t6z4G2TkLk7WqLS+Qg9X-Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+X-Provags-ID: V03:K1:+3OdVBq/w0xTpg7DCIQ/+khai6nBBgVHN2yAtWx3B13sQPoMJ2b
+ jKJndxmjJmCwOQp/bNhZ1jjRQFDctmm7HHcrTbvqi1NYtTF3ETyFmbUamQNTjtiT10ixQgp
+ J3fIY/oR5qKEjBQUqn2039XAkPDurHMhf2P91tf6jxAI/kdPvPq/HcCqSwjVkaIPeyGJ5p9
+ y9rLV6k+aGy28Ke8mjQ9g==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:8i6+Wn1gR/0=:I1mENXJuiVPFqYBrETs/Mq
+ 81G8JhG1T0GzJmbx+VF/4miHfL7eVSC5a9lnzBvyFJcyzxDFZE50RUKTXC3Iid0rGnVZsgocq
+ M85MEfrf9VpTUqvD+Xnk+QI1ZjBDkzscPP+i/3gpzUwJ18qQEDw4eEKM5KQJ9hRXaJdg2NBxk
+ W2R8BHxVn5Fd3Jx955PnxNNoKOL90KI4gTfBMfy5UGczeUgtTANGZLKdZD4UIUbSj0NhnCFet
+ pt5/YV0Lt9G9o9QzFpmVNg7iRN7K4SNv0egqKNHplXZyqOTG6rgyquQwKmPWNCnWvaSEdXlNK
+ Y6Gr54hNyTxCC/GXOqK5Xpr051/j4hT/jzK4BQFGKG3RhvHr0yLT5AyPBwebRRofO/s8pwNOd
+ 7SYUFAff2jOn4zNdXMkd2sqelTikFr/ax+qCI/N4amMB4db2jo4eEmVV6np1cbqHbWe5rTteo
+ X4duCW/ocx5/BWS9ePhkWvhiIEYoF12l4VZ1woei6X9My7bZHIcCEF5fENWd0ZB3kp7Ld994C
+ noHiR0Yo2pHUzvhDwAOWZvLZ9NLM8eF38U+NFX4tVdpxo4HW87dKMeh0tVAe5K01OPieLErgA
+ yIqxA1r/f/kkL7ObbeG57p9cfktG9ByhyEvfouktOUpuh+6j/Y+BqLg2RdwaGUdgixpISW4fh
+ fwRtzgipkFJW1iSHtphNiFSzMAPG28CJKXEEdGmhpT0KNRtY/PNIEm9MwELORShr7fSfypsWl
+ G210kDpdh/AYewDUkp3kHdHRPKbAyuMtMFgZawT/qZpkSvcu7ULPJb8CVt8NEiVyhX3oU9wfq
+ 2IhV56xl6CsHJGeCtFAnFs/563yDC9OPQ4AOk60ltFUyOskldBzr6EsHFQ4WwQU8Q0lm9v8ux
+ 7N58MifQwP0SeUGRj8PAWKuUHZ5ruLpqrKUDDGVJ27Pfxz4rdrzh75vYDYLdejoJHa2O4fx2o
+ U9D+PQ5XjuEB0/LSGXQvFB9W69FViszJhloDemRkhxORr9O2CAyVPj6dY2RvwJB2mW5wbPf6w
+ fhe67IBxCtYuz/rgnGqnStkkdbe6aSOpGURd906GXbmmJEfqH4pPGmBSUmZHzyKMuKDyMZ9eY
+ klXJS62YBVQK4Mli0IzXfiH+tZ+A1WI8Ewlf+A8AAtOQpKkrKer4v+5QeHR7OXvZpyKImMOMY
+ vGEkofNqkadDyjgaa6CGHe5xQ+TWRCYztIXysp1ttroESXbQmHIKxeQTtihfZGZPk/F6a4idn
+ +NkhnL5ZNnY1MYSOD
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+> By the way, is there anything else that I need to improve for this patch?
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+I became curious if you would like to adjust further details from
+the change description.
+Other contributors might care less for presented concerns.
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
-
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
-
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
-
-sizeof(flexible-array-member) triggers a warning because flexible array
-members have incomplete type[1]. There are some instances of code in
-which the sizeof operator is being incorrectly/erroneously applied to
-zero-length arrays and the result is zero. Such instances may be hiding
-some bugs. So, this work (flexible-array member conversions) will also
-help to get completely rid of those sorts of issues.
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/net/wireless/ath/ath11k/debug.h           | 4 ++--
- drivers/net/wireless/ath/ath11k/debug_htt_stats.h | 8 ++++----
- drivers/net/wireless/ath/ath11k/hal_desc.h        | 4 ++--
- drivers/net/wireless/ath/ath11k/hal_rx.h          | 2 +-
- drivers/net/wireless/ath/ath11k/hw.h              | 2 +-
- drivers/net/wireless/ath/ath11k/wmi.h             | 2 +-
- 6 files changed, 11 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/debug.h b/drivers/net/wireless/ath/ath11k/debug.h
-index 97e7306c506d..c7edf946ff5c 100644
---- a/drivers/net/wireless/ath/ath11k/debug.h
-+++ b/drivers/net/wireless/ath/ath11k/debug.h
-@@ -67,7 +67,7 @@ struct debug_htt_stats_req {
- 	u8 peer_addr[ETH_ALEN];
- 	struct completion cmpln;
- 	u32 buf_len;
--	u8 buf[0];
-+	u8 buf[];
- };
- 
- struct ath_pktlog_hdr {
-@@ -77,7 +77,7 @@ struct ath_pktlog_hdr {
- 	u16 size;
- 	u32 timestamp;
- 	u32 type_specific_data;
--	u8 payload[0];
-+	u8 payload[];
- };
- 
- #define ATH11K_HTT_STATS_BUF_SIZE (1024 * 512)
-diff --git a/drivers/net/wireless/ath/ath11k/debug_htt_stats.h b/drivers/net/wireless/ath/ath11k/debug_htt_stats.h
-index 23a6baa9e95a..682a6ff222bd 100644
---- a/drivers/net/wireless/ath/ath11k/debug_htt_stats.h
-+++ b/drivers/net/wireless/ath/ath11k/debug_htt_stats.h
-@@ -239,7 +239,7 @@ struct htt_tx_pdev_stats_tx_ppdu_stats_tlv_v {
-  */
- struct htt_tx_pdev_stats_tried_mpdu_cnt_hist_tlv_v {
- 	u32 hist_bin_size;
--	u32 tried_mpdu_cnt_hist[0]; /* HTT_TX_PDEV_TRIED_MPDU_CNT_HIST */
-+	u32 tried_mpdu_cnt_hist[]; /* HTT_TX_PDEV_TRIED_MPDU_CNT_HIST */
- };
- 
- /* == SOC ERROR STATS == */
-@@ -550,7 +550,7 @@ struct htt_tx_hwq_stats_cmn_tlv {
- struct htt_tx_hwq_difs_latency_stats_tlv_v {
- 	u32 hist_intvl;
- 	/* histogram of ppdu post to hwsch - > cmd status received */
--	u32 difs_latency_hist[0]; /* HTT_TX_HWQ_MAX_DIFS_LATENCY_BINS */
-+	u32 difs_latency_hist[]; /* HTT_TX_HWQ_MAX_DIFS_LATENCY_BINS */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size */
-@@ -586,7 +586,7 @@ struct htt_tx_hwq_fes_result_stats_tlv_v {
- struct htt_tx_hwq_tried_mpdu_cnt_hist_tlv_v {
- 	u32 hist_bin_size;
- 	/* Histogram of number of mpdus on tried mpdu */
--	u32 tried_mpdu_cnt_hist[0]; /* HTT_TX_HWQ_TRIED_MPDU_CNT_HIST */
-+	u32 tried_mpdu_cnt_hist[]; /* HTT_TX_HWQ_TRIED_MPDU_CNT_HIST */
- };
- 
- /* NOTE: Variable length TLV, use length spec to infer array size
-@@ -1584,7 +1584,7 @@ struct htt_pdev_stats_twt_session_tlv {
- struct htt_pdev_stats_twt_sessions_tlv {
- 	u32 pdev_id;
- 	u32 num_sessions;
--	struct htt_pdev_stats_twt_session_tlv twt_session[0];
-+	struct htt_pdev_stats_twt_session_tlv twt_session[];
- };
- 
- enum htt_rx_reo_resource_sample_id_enum {
-diff --git a/drivers/net/wireless/ath/ath11k/hal_desc.h b/drivers/net/wireless/ath/ath11k/hal_desc.h
-index 5e200380cca4..a1f747c1c44d 100644
---- a/drivers/net/wireless/ath/ath11k/hal_desc.h
-+++ b/drivers/net/wireless/ath/ath11k/hal_desc.h
-@@ -477,7 +477,7 @@ enum hal_tlv_tag {
- 
- struct hal_tlv_hdr {
- 	u32 tl;
--	u8 value[0];
-+	u8 value[];
- } __packed;
- 
- #define RX_MPDU_DESC_INFO0_MSDU_COUNT		GENMASK(7, 0)
-@@ -1972,7 +1972,7 @@ struct hal_rx_reo_queue {
- 	u32 processed_total_bytes;
- 	u32 info5;
- 	u32 rsvd[3];
--	struct hal_rx_reo_queue_ext ext_desc[0];
-+	struct hal_rx_reo_queue_ext ext_desc[];
- } __packed;
- 
- /* hal_rx_reo_queue
-diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.h b/drivers/net/wireless/ath/ath11k/hal_rx.h
-index e863e4abfcc1..c436191ae1e8 100644
---- a/drivers/net/wireless/ath/ath11k/hal_rx.h
-+++ b/drivers/net/wireless/ath/ath11k/hal_rx.h
-@@ -23,7 +23,7 @@ struct hal_rx_wbm_rel_info {
- 
- struct hal_rx_mon_status_tlv_hdr {
- 	u32 hdr;
--	u8 value[0];
-+	u8 value[];
- };
- 
- enum hal_rx_su_mu_coding {
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 9973477ae373..cdec95644758 100644
---- a/drivers/net/wireless/ath/ath11k/hw.h
-+++ b/drivers/net/wireless/ath/ath11k/hw.h
-@@ -111,7 +111,7 @@ struct ath11k_hw_params {
- struct ath11k_fw_ie {
- 	__le32 id;
- 	__le32 len;
--	u8 data[0];
-+	u8 data[];
- };
- 
- enum ath11k_bd_ie_board_type {
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 510f9c6bc1d7..717e87db91cb 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.h
-+++ b/drivers/net/wireless/ath/ath11k/wmi.h
-@@ -39,7 +39,7 @@ struct wmi_cmd_hdr {
- 
- struct wmi_tlv {
- 	u32 header;
--	u8 value[0];
-+	u8 value[];
- } __packed;
- 
- #define WMI_TLV_LEN	GENMASK(15, 0)
--- 
-2.26.2
-
+Regards,
+Markus
