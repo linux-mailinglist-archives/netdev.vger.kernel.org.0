@@ -2,98 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 699861C317A
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 05:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD5EE1C3180
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 05:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbgEDDkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 May 2020 23:40:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
+        id S1727092AbgEDDvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 May 2020 23:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726441AbgEDDkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 23:40:39 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9FFEC061A0E
-        for <netdev@vger.kernel.org>; Sun,  3 May 2020 20:40:38 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id k22so12347311eds.6
-        for <netdev@vger.kernel.org>; Sun, 03 May 2020 20:40:38 -0700 (PDT)
+        with ESMTP id S1726404AbgEDDvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 May 2020 23:51:07 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F419CC061A0E;
+        Sun,  3 May 2020 20:51:06 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id rh22so12705046ejb.12;
+        Sun, 03 May 2020 20:51:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:references:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=WF2Hl2LJ8qhAFZKEyl8hGYbf2PR8TYNsy3HiW11DVqI=;
-        b=OSimv1tKgn39kCEp3ljkGuRbCvJx1yvlKAKq/f/8U4HqRz7AKcNT1Arx7tq1Uuvv1o
-         qUvYEU7fZQGrm+dVuZINjMOVnYZFyb/dJUH2OtaAV7D2F4Tt1UuEMb4lxQYbqG1pzWuO
-         LgV1t6dikYWjw0OdBASALM36oXzX9AWS6LJWp5KU7jrFR3cTVUPR0c0tp6Rvvn1dCzHp
-         IFfgk6t7VjzS27k3QVGQeOni9dL2udr8/HI96+yRynvrIdhK1hLtphbgO5buzpofaRc2
-         ca/fPjl1Wq0MxoEKzSGAQgeCt8ew52/riHhT/3YXP0xtvhHojJTgjVTgdWhjfSakp9kh
-         LnfQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=61xhgDGc14PjWGT+UPMdCblFNXcNXrLsMXpcQV30Zvw=;
+        b=dAmr0FgWofbeUDE0c2ykk+/p7bxfkD1i8Su0uYlO3HerLEfiInIKVesIg6u3NJuyKF
+         YMCc7fo9FcLA6IuTvNHYxkiaMDtOEbEIvDQf//FkoMq7J+30zCknK3Fd8hIt/33z9p8a
+         DQ5Yja9rCQUPNGaa3t2urvQOYT/BAtplD74BNRXsJhqCcXLFwlimDFjts1N7dVGXzQ8s
+         ia3cbPeqR91AEpe1NuqGQySgxkaQBUWkf3YgSgJL7C2/60613cUma/LSP38QMxf766PE
+         9T8ZXO9pZ7PoynIhxHUUMWDecgxGwQdTg60GEq/TQf1uD3Gi7Jzs9b6MUcbEBwdOHVHa
+         zQYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WF2Hl2LJ8qhAFZKEyl8hGYbf2PR8TYNsy3HiW11DVqI=;
-        b=QYT2O5ZC/4Zf7JohLrD6LOQ/XSB7hygJ4uYdDrI010lzUP1j3qfP3wL2pv7DWnrPqf
-         hdeg71APvAk7ZMR8A5nNXNhYzjIzGvrcJRr8rVvcgLwk9jrFXyI+gLf05IG6aQQQQARq
-         34sMXPozLvP/mJxF+JlBU+zfmcvPFuMfJvSBhBMl084jrHfeQSqkJrBqugBOIKvC/2E8
-         zKUsRRM9v7XE1/SmaE15kvrnthob1oS0+/HkvpxuyCbLqkag8ptdSGDnoGg76iHNmjyV
-         X4cmgjGVLeJGA21v1zKrAPm5ZNcKx+wnDp4cKrE24+YsEQttpYqi9StGsfGYAq6Bll/V
-         6R0Q==
-X-Gm-Message-State: AGi0PuYIqQXTmdYgNQlx4RKQDO4qHYKWKsK/2Q+8vzL0kSFhdSHBUz48
-        3X9ycga4B69A6g8IQ7n9Mnw09FFF
-X-Google-Smtp-Source: APiQypK38w7Rx5ynZJQqsVgNxnoEvMihRTWi25UOTCTjcpm5y7AvfN8JZcHjQ5d21EXWdQvygzEvWQ==
-X-Received: by 2002:aa7:d655:: with SMTP id v21mr13333420edr.355.1588563637225;
-        Sun, 03 May 2020 20:40:37 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id 10sm1378006ejt.80.2020.05.03.20.40.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 May 2020 20:40:36 -0700 (PDT)
-Subject: Re: Net: [DSA]: dsa-loop kernel panic
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=61xhgDGc14PjWGT+UPMdCblFNXcNXrLsMXpcQV30Zvw=;
+        b=XikzcawIkbY8TIYrSjM8GDEJbNB409YHoUiL9RquHEvUofpJHWmWFoQFkVTPfRRho2
+         Un531X58yGHxmFTz9yELFG/Fdc6qmtqIzMRG0BNvath6D3+pK1JHqrayGDqNJexVWsYY
+         U7KrC5V4aQSAOPT4cWYvR+W1w6940hsyCYdu06f5dJfCYYefVoUo9GsYWpYMQWvl4ugc
+         UsZea12jGuA6ACAU9/ntxsDEaBRCLjRiRsst/a/6PUPJ0LmTAeWQFZRDSEUBk/CnHOPL
+         9duXYzZ2T5h70+zZNdp5dvOmp4SiEMXcTbgK6tMDW2IWvXVNPGqJnSS2zMCobJ21+Fk6
+         KQcA==
+X-Gm-Message-State: AGi0PubQ6dcxkYIlSfCgrIH/6jtTeZURlg69rDU+Z0EyzkAP6uWncqSJ
+        h4vPpeMl6BtwS9l4yV8tDHuQdclZ
+X-Google-Smtp-Source: APiQypJGtIoCAhlaIS7VkGnCNt5fu/cW/IN11ak+DiYic/9FRqnoIQZwyGPZiA93Mcqdf7/qEHqndg==
+X-Received: by 2002:a17:906:2b8a:: with SMTP id m10mr2092466ejg.183.1588564265311;
+        Sun, 03 May 2020 20:51:05 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id h11sm1408468ejc.4.2020.05.03.20.51.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 May 2020 20:51:04 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     Allen <allen.pais@oracle.com>, netdev@vger.kernel.org,
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-References: <9d7ac811-f3c9-ff13-5b81-259daa8c424f@oracle.com>
- <dd42f431-d555-fcd2-b25e-50aeecbb513b@gmail.com>
- <c998f49c-0119-7d8c-7cbc-ab8beadfa82d@oracle.com>
- <1ec3b421-dee5-e291-ac17-5d2f713b9aae@gmail.com>
- <9a4912aa-3129-1774-5f21-2f6fb4afafb2@oracle.com>
- <a15245fb-a9a4-4bcd-8459-fe3cbcc03119@gmail.com>
-Message-ID: <82bc0bdf-e4f6-2b85-d2ad-54632b287a60@gmail.com>
-Date:   Sun, 3 May 2020 20:40:33 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <a15245fb-a9a4-4bcd-8459-fe3cbcc03119@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: dsa: Do not make user port errors fatal
+Date:   Sun,  3 May 2020 20:50:57 -0700
+Message-Id: <20200504035057.20275-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Prior to 1d27732f411d ("net: dsa: setup and teardown ports"), we would
+not treat failures to set-up an user port as fatal, but after this
+commit we would, which is a regression for some systems where interfaces
+may be declared in the Device Tree, but the underlying hardware may not
+be present (pluggable daughter cards for instance).
 
+Fixes: 1d27732f411d ("net: dsa: setup and teardown ports")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ net/dsa/dsa2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 5/3/2020 2:06 PM, Florian Fainelli wrote:
-> Le 2020-05-01 à 10:58, Allen a écrit :
->>>>
->>>>   It maps to "eth0". Please let me know if you need further details.
->>>
->>> I suppose I should have been clearer, what network device driver created
->>> eth0?
->>>
->>
->>  This was seen on a VM.
->> eth0 [52:54:00:c1:cd:65]: virtio_net (up)
-> 
-> I have reproduced it here with virtio_net and am now looking into this,
-> at first glance it does not look like we are properly holding the device
-> reference count for the case where DSA was probed via platform device
-> configuration.
-
-There is a DSA master reference counting issue, but with dsa-loop, the
-DSA master is already properly reference counted thanks to the
-dev_get_by_name() call, I will keep digging.
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 9a271a58a41d..d90665b465b8 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -459,7 +459,7 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
+ 	list_for_each_entry(dp, &dst->ports, list) {
+ 		err = dsa_port_setup(dp);
+ 		if (err)
+-			goto teardown;
++			continue;
+ 	}
+ 
+ 	return 0;
 -- 
-Florian
+2.17.1
+
