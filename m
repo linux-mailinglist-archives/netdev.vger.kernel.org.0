@@ -2,144 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 448231C48BF
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 23:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B36011C48CA
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 23:07:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727842AbgEDVDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 17:03:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57434 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726334AbgEDVDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 17:03:18 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B51C061A0E;
-        Mon,  4 May 2020 14:03:17 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id g13so152330wrb.8;
-        Mon, 04 May 2020 14:03:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=n0gWd/LKEKfbFqunt27R8+2BYVGb8cKLklv+je6aFbk=;
-        b=LmR4y6bUzadG9TaDR2YViM86obTCNs5PL7ve0409Y2bFpIIpoy0SpP8Xbi84p1Hahm
-         yPK/AA/H9XMFLgd/6lIpf0fCyuY6+bnvRIF0IR9keaEbYibbhINA226PjfFTCWtXQ+ss
-         TiB0XRBVM/xs2Ifs+8TqYcqI+vVjpBkpTpngfbg+CkJTpNjtYDf+SxhXzVOHcqIllh4g
-         oGZqUG247TO6j4PFV5OMt4imAoXNhzs7oaCdk2qA7Jn6h/OJkiqvyc74NdtJGs9Dtjc4
-         UlIkbPvknNXGwXTruZvhbqphUFfxL0Cs2hxF4kq/OuWqdjWB3zeY+QDQi+sXNsQeDEBX
-         XWgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=n0gWd/LKEKfbFqunt27R8+2BYVGb8cKLklv+je6aFbk=;
-        b=kRqUDrOIwC+fImVC4u/bsSBY/AyRETk+z1jxi6zoWdWZ0aFd25VsSYQdAJqBW3v8Jw
-         /GaTaCzHtUHW+CGEI+4prkFzV1PMdwmqosEcPQU0rT0GOfkHk+LizjIVJUwsnYCAm3Q5
-         EAIf4cmy6Xl+cWyYOxk1civ+zCp3wvyHz81CjnriEEMsxXLkS7413wEMfmzbKexo8wNz
-         opsV++m1Cmi9spTGgCCeU8yVpxI4dLA10h4MhinFCFseXkxHvxt3pvOJwG4HIxEWMErK
-         FMKwMKZMa07/maRyiUBJPxRtZx04aM+T41Gm/2gfYczUFAAWCoALAP6lAbg9/d9jojFT
-         UJ8w==
-X-Gm-Message-State: AGi0PuaTa5PoLejnohZBcoaxPGzp1eRbf1+CsrU6eBy8UjBtd8xKrFso
-        RcMjukeDici7gfoyAEITzafwlbHo
-X-Google-Smtp-Source: APiQypJzkKLT2kMEemfvan89ukp/i0ZeR5T1FDjZwlEnyqDg6E3kHj4mcha3VCheoZAMEd3nYVmSQg==
-X-Received: by 2002:a5d:650b:: with SMTP id x11mr982279wru.405.1588626196291;
-        Mon, 04 May 2020 14:03:16 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y63sm259719wmg.21.2020.05.04.14.03.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 14:03:15 -0700 (PDT)
-Subject: Re: [PATCH net] net: dsa: Do not leave DSA master with NULL
- netdev_ops
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, allen.pais@oracle.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20200504201806.27192-1-f.fainelli@gmail.com>
- <CA+h21ho50twA=D=kZYxVuE=C6gf=8JeXmTEHhV30p_30oQZjjA@mail.gmail.com>
- <b32f205a-6ff3-e1db-33d1-6518091f90b4@gmail.com>
- <CA+h21hpObEHt04igBBbX40niuqON=41=f35zTgYNOTZZscbivQ@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <9ed48660-8b43-6661-1794-aa6eedbed3cc@gmail.com>
-Date:   Mon, 4 May 2020 14:03:12 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        id S1726816AbgEDVHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 17:07:15 -0400
+Received: from www62.your-server.de ([213.133.104.62]:32810 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726334AbgEDVHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 17:07:15 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jViIn-0001Gq-FV; Mon, 04 May 2020 23:07:01 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jViIm-000G0e-PC; Mon, 04 May 2020 23:07:00 +0200
+Subject: Re: [PATCH 05/15] bpf: avoid gcc-10 stringop-overflow warning
+To:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Brad Spengler <spender@grsecurity.net>,
+        Daniel Borkmann <dborkman@redhat.com>,
+        Alexei Starovoitov <ast@plumgrid.com>,
+        Kees Cook <keescook@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20200430213101.135134-1-arnd@arndb.de>
+ <20200430213101.135134-6-arnd@arndb.de>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <f1ffd814-538b-1913-5b67-266060abfa7a@iogearbox.net>
+Date:   Mon, 4 May 2020 23:06:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <CA+h21hpObEHt04igBBbX40niuqON=41=f35zTgYNOTZZscbivQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200430213101.135134-6-arnd@arndb.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25802/Mon May  4 14:12:31 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/4/2020 1:49 PM, Vladimir Oltean wrote:
-> On Mon, 4 May 2020 at 23:40, Florian Fainelli <f.fainelli@gmail.com> wrote:
->>
->>
->>
->> On 5/4/2020 1:34 PM, Vladimir Oltean wrote:
->>> Hi Florian,
->>>
->>> On Mon, 4 May 2020 at 23:19, Florian Fainelli <f.fainelli@gmail.com> wrote:
->>>>
->>>> When ndo_get_phys_port_name() for the CPU port was added we introduced
->>>> an early check for when the DSA master network device in
->>>> dsa_master_ndo_setup() already implements ndo_get_phys_port_name(). When
->>>> we perform the teardown operation in dsa_master_ndo_teardown() we would
->>>> not be checking that cpu_dp->orig_ndo_ops was successfully allocated and
->>>> non-NULL initialized.
->>>>
->>>> With network device drivers such as virtio_net, this leads to a NPD as
->>>> soon as the DSA switch hanging off of it gets torn down because we are
->>>> now assigning the virtio_net device's netdev_ops a NULL pointer.
->>>>
->>>> Fixes: da7b9e9b00d4 ("net: dsa: Add ndo_get_phys_port_name() for CPU port")
->>>> Reported-by: Allen Pais <allen.pais@oracle.com>
->>>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->>>> ---
->>>
->>> The fix makes complete sense.
->>> But on another note, if we don't overlay an ndo_get_phys_port_name if
->>> the master already has one, doesn't that render the entire mechanism
->>> of having a reliable way for user space to determine the CPU port
->>> number pointless?
->>
->> For the CPU port I would consider ndo_get_phys_port_name() to be more
->> best effort than an absolute need unlike the user facing ports, where
->> this is necessary for a variety of actions (e.g.: determining
->> queues/port numbers etc.) which is why there was no overlay being done
->> in that case. There is not a good way to cascade the information other
->> than do something like pX.Y and defining what the X and Y are, what do
->> you think?
->> --
->> Florian
+On 4/30/20 11:30 PM, Arnd Bergmann wrote:
+> gcc-10 warns about accesses to zero-length arrays:
 > 
-> For the CPU/master port I am not actually sure who is the final
-> consumer of the ndo_get_phys_port_name, I thought it is simply
-> informational, with the observation that it may be unreliable in
-> transmitting that information over.
-> Speaking of which, if "informational" is the only purpose, could this
-> not be used?
-
-Yes, I had not considered devlink would expose that information,
-ndo_phys_port_name() is there now though and since it is exposed through
-sysfs so reverting would be an ABI breakage.
-
+> kernel/bpf/core.c: In function 'bpf_patch_insn_single':
+> cc1: warning: writing 8 bytes into a region of size 0 [-Wstringop-overflow=]
+> In file included from kernel/bpf/core.c:21:
+> include/linux/filter.h:550:20: note: at offset 0 to object 'insnsi' with size 0 declared here
+>    550 |   struct bpf_insn  insnsi[0];
+>        |                    ^~~~~~
 > 
-> devlink port | grep "flavour cpu"
-> pci/0000:00:00.5/4: type notset flavour cpu port 4
-> spi/spi2.0/4: type notset flavour cpu port 4
-> spi/spi2.1/4: type notset flavour cpu port 4
+> In this case, we really want to have two flexible-array members,
+> but that is not possible. Removing the union to make insnsi a
+> flexible-array member while leaving insns as a zero-length array
+> fixes the warning, as nothing writes to the other one in that way.
 > 
-> Thanks,
-> -Vladimir
+> This trick only works on linux-3.18 or higher, as older versions
+> had additional members in the union.
 > 
+> Fixes: 60a3b2253c41 ("net: bpf: make eBPF interpreter images read-only")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
--- 
-Florian
+Not pretty but looks okay to me, both have the same offset afterwards
+in the pahole dump as well.
+
+struct bpf_prog {
+[...]
+         unsigned int               (*bpf_func)(const void  *, const struct bpf_insn  *); /*    48     8 */
+         struct sock_filter         insns[0];             /*    56     0 */
+         struct bpf_insn            insnsi[];             /*    56     0 */
+
+         /* size: 56, cachelines: 1, members: 21 */
+         /* sum members: 50, holes: 1, sum holes: 4 */
+         /* sum bitfield members: 10 bits, bit holes: 1, sum bit holes: 6 bits */
+         /* last cacheline: 56 bytes */
+};
+
+Applied to bpf-next, thanks!
