@@ -2,119 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34C671C3D65
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 16:42:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89A6F1C3D7E
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 16:49:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729202AbgEDOmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 10:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
+        id S1728963AbgEDOtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 10:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728802AbgEDOmj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 10:42:39 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19074C061A0E;
-        Mon,  4 May 2020 07:42:39 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id l18so10521605wrn.6;
-        Mon, 04 May 2020 07:42:39 -0700 (PDT)
+        with ESMTP id S1728821AbgEDOtT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 10:49:19 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4F1C061A10
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 07:49:17 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id fu13so3860698pjb.5
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 07:49:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=9FMwwNQtGFnr1eeDSstc6L1dxV0HnTklGu1OpkfvDCw=;
-        b=EHoa2S5/zTC/wBYwfEWv98eTrPr34B1kgmKlx4BPOY2AQm5EBhIshVFi7QVcakAuSC
-         M6SZTHli0jojNPfoi5yVB5zDpW+EGwKmTBEaBpKrQmH+HI2+f+/rrHh6B3o6/GsyIu1t
-         bhhyJ9hfvEbYEgORPmmbvMQfZTJE/gw2RHJgXXsZrvu4k8cZRiWbUBjYzIMYDR4hRa5k
-         Zb3bH2jO4e94rEe5ImVUBK91y+X8vi01gV7Bl86Dfl1NLJGbmT3rx74WSBMx2H2TrdO9
-         Xdec8oELTWyHllrCZjT+kzK+gA9Rd86fcYUP9ubs8bbXr90fpWg782sV/z+ebwBOvqZN
-         hswg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=5lmoQJYoeg3ybSPwplhMkrooqQOGOYA7nU2sY4Dq1pc=;
+        b=R04Fjb4R2zQrBdDiS1rI1lH0gMnWxIPItV5U2BOiCIby5HxxzYV7c9vaEBIuSU6TKc
+         N9yJAqZKcVjZS3dG2Rah6YyW6mKqK9XGAwKP4ZTnARpmIBVYbSR+v9/ffySNScve9KAS
+         fFp6YUwxhiVFrKpnhfNdNztyuV6JtUulx7ImPpPksB5T3uIrbqLIc2QZ0DIaH7vmMYa/
+         mlSuf4zp+Oh+k8sETM+eBqNyneLDT6QlrGT3CmLeedUqmbAq6giRJxV29uKfbeWsbvDB
+         yM6pyiRw2db9pa0Tm3awQzKDxTdw3iafUgw096RzVZ2cKOSKyRo5hi5nclBmgK32UOHY
+         x8EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=9FMwwNQtGFnr1eeDSstc6L1dxV0HnTklGu1OpkfvDCw=;
-        b=PWDxYwS6z6M6DwQ+p8DGt9MzW+JJ45Lj4WdgfbNNuCWurUt8hvtbCBedKtY45No5/7
-         E9nclv4avUJA/Ln6Gn4tIxAcaFEreZyg4bqdeK7d/v8CwZ2RGpSA1DVUpDa7zX+n2usp
-         WbVCj6dU90xtYGoAiac8UVILorZuAQCIt3W+qmf8BGeOJlbMdq63zcJiy+uJyLl4hVyw
-         d90P4quBnfZMRWbGteZN8FCNHCRn18sKavb+TK1+OaVB5KycwRfhbEBXzc39X0WzLUEg
-         6S00EHYTkUd56WRd9+SH8PCb5GHvu2xIoPUD/Gto9rzQY0lzPsI1iffFfvoyhYVMZ76I
-         hJZg==
-X-Gm-Message-State: AGi0PuZKCP4kTxuhw5Rme/8dyFUakehYAVuA3Ty7jTtPrHxW64xT0B+t
-        IVXR+Hb3fYjYV88Rmj2Hkao=
-X-Google-Smtp-Source: APiQypJRbQrLFhGZ3k3jfOD97WL6AD9Bq/GOdddDC18ZWCqOfyY+6vEJ8jnAAszB/q0rCbLg3k693w==
-X-Received: by 2002:a5d:4241:: with SMTP id s1mr19110460wrr.250.1588603357853;
-        Mon, 04 May 2020 07:42:37 -0700 (PDT)
-Received: from localhost.localdomain (dynamic-adsl-78-12-12-93.clienti.tiscali.it. [78.12.12.93])
-        by smtp.gmail.com with ESMTPSA id r15sm6566212wrq.93.2020.05.04.07.42.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 07:42:37 -0700 (PDT)
-From:   Ahmed Abdelsalam <ahabdels@gmail.com>
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dav.lebrun@gmail.com
-Cc:     Ahmed Abdelsalam <ahabdels@gmail.com>
-Subject: [net] seg6: fix SRH processing to comply with RFC8754
-Date:   Mon,  4 May 2020 14:42:11 +0000
-Message-Id: <20200504144211.5613-1-ahabdels@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5lmoQJYoeg3ybSPwplhMkrooqQOGOYA7nU2sY4Dq1pc=;
+        b=KnWQMyKvVmGYGJaFqLJbQAbenDiY6stPGtYPmFb/cO569kHI/FQ8KPdUt5YgzjJfqu
+         H3r6vVfZptLXE9kZ6eNSyg/cDaWzrzqZSDkMHUJvteoWCBRNNMUdXhdwyt31FPhsrDfT
+         0SpXLPinWYOOOimrPZn+v3i41xecRZb/14tXa5e7Rfv4ohH/s6g/gwytD35D+clN+h2O
+         f8M8+CyxBiWHWq6nghKxgilGx7+G9/jXGKC9/IJDuKZozI2/R0+nqAaQj+gnVmeCeVTH
+         JDJNevBf1Rhro8pzPJsssZxszvwYkQ+TlcsUyjvlcvdrU86E9bdcHbHqn6ArPUP0K13s
+         jqeA==
+X-Gm-Message-State: AGi0PuZTc3eD7c/84/+h2derPFXdALP2Z360xUKzcB5Dxuk3JmGBb6tJ
+        s9T06vcPLtlFqpvm+8ceXTBn
+X-Google-Smtp-Source: APiQypJjIapp5XKSell2YBv+inFoZ8mKXrHBT+VFs3IVljbQMp6IsqaBr1+529ONpM1jjcEHWag4sQ==
+X-Received: by 2002:a17:902:fe8e:: with SMTP id x14mr18541862plm.128.1588603756751;
+        Mon, 04 May 2020 07:49:16 -0700 (PDT)
+Received: from Mani-XPS-13-9360 ([2409:4072:41c:f7b5:bdcc:167e:2cd1:efea])
+        by smtp.gmail.com with ESMTPSA id p66sm9009181pfb.65.2020.05.04.07.49.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 04 May 2020 07:49:15 -0700 (PDT)
+Date:   Mon, 4 May 2020 20:19:06 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     davem@davemloft.net
+Cc:     gregkh@linuxfoundation.org, smohanad@codeaurora.org,
+        jhugo@codeaurora.org, kvalo@codeaurora.org,
+        bjorn.andersson@linaro.org, hemantk@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clew@codeaurora.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] net: qrtr: Add MHI transport layer
+Message-ID: <20200504144906.GF3391@Mani-XPS-13-9360>
+References: <20200427075829.9304-1-manivannan.sadhasivam@linaro.org>
+ <20200427075829.9304-3-manivannan.sadhasivam@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200427075829.9304-3-manivannan.sadhasivam@linaro.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Segment Routing Header (SRH) which defines the SRv6 dataplane is defined
-in RFC8754.
+Hi Dave,
 
-RFC8754 (section 4.1) defines the SR source node behavior which encapsulates
-packets into an outer IPv6 header and SRH. The SR source node encodes the
-full list of Segments that defines the packet path in the SRH. Then, the
-first segment from list of Segments is copied into the Destination address
-of the outer IPv6 header and the packet is sent to the first hop in its path
-towards the destination.
+On Mon, Apr 27, 2020 at 01:28:28PM +0530, Manivannan Sadhasivam wrote:
+> MHI is the transport layer used for communicating to the external modems.
+> Hence, this commit adds MHI transport layer support to QRTR for
+> transferring the QMI messages over IPC Router.
+> 
 
-If the Segment list has only one segment, the SR source node can omit the SRH
-as he only segment is added in the destination address.
+Can you please review this driver? It'd be great if this ends up in v5.8
+along with all other MHI patches.
 
-RFC8754 (section 4.1.1) defines the Reduced SRH, when a source does not
-require the entire SID list to be preserved in the SRH. A reduced SRH does
-not contain the first segment of the related SR Policy (the first segment is
-the one already in the DA of the IPv6 header), and the Last Entry field is
-set to n-2, where n is the number of elements in the SR Policy.
+Thanks,
+Mani
 
-RFC8754 (section 4.3.1.1) defines the SRH processing and the logic to
-validate the SRH (S09, S10, S11) which works for both reduced and
-non-reduced behaviors.
-
-This patch updates seg6_validate_srh() to validate the SRH as per RFC8754.
-
-Signed-off-by: Ahmed Abdelsalam <ahabdels@gmail.com>
----
- net/ipv6/seg6.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
-index 4c7e0a27fa9c..e37d2b34cacc 100644
---- a/net/ipv6/seg6.c
-+++ b/net/ipv6/seg6.c
-@@ -28,6 +28,7 @@
- bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len)
- {
- 	int trailing;
-+	int max_last_entry;
- 	unsigned int tlv_offset;
- 
- 	if (srh->type != IPV6_SRCRT_TYPE_4)
-@@ -36,7 +37,12 @@ bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len)
- 	if (((srh->hdrlen + 1) << 3) != len)
- 		return false;
- 
--	if (srh->segments_left > srh->first_segment)
-+	max_last_entry = (srh->hdrlen / 2) - 1;
-+
-+	if (srh->first_segment > max_last_entry)
-+		return false;
-+
-+	if (srh->segments_left > srh->first_segment + 1)
- 		return false;
- 
- 	tlv_offset = sizeof(*srh) + ((srh->first_segment + 1) << 4);
--- 
-2.17.1
-
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: netdev@vger.kernel.org
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>  net/qrtr/Kconfig  |   7 +++
+>  net/qrtr/Makefile |   2 +
+>  net/qrtr/mhi.c    | 127 ++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 136 insertions(+)
+>  create mode 100644 net/qrtr/mhi.c
+> 
+> diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
+> index 63f89cc6e82c..8eb876471564 100644
+> --- a/net/qrtr/Kconfig
+> +++ b/net/qrtr/Kconfig
+> @@ -29,4 +29,11 @@ config QRTR_TUN
+>  	  implement endpoints of QRTR, for purpose of tunneling data to other
+>  	  hosts or testing purposes.
+>  
+> +config QRTR_MHI
+> +	tristate "MHI IPC Router channels"
+> +	depends on MHI_BUS
+> +	help
+> +	  Say Y here to support MHI based ipcrouter channels. MHI is the
+> +	  transport used for communicating to external modems.
+> +
+>  endif # QRTR
+> diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
+> index 32d4e923925d..1b1411d158a7 100644
+> --- a/net/qrtr/Makefile
+> +++ b/net/qrtr/Makefile
+> @@ -5,3 +5,5 @@ obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
+>  qrtr-smd-y	:= smd.o
+>  obj-$(CONFIG_QRTR_TUN) += qrtr-tun.o
+>  qrtr-tun-y	:= tun.o
+> +obj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o
+> +qrtr-mhi-y	:= mhi.o
+> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+> new file mode 100644
+> index 000000000000..2a2abf5b070d
+> --- /dev/null
+> +++ b/net/qrtr/mhi.c
+> @@ -0,0 +1,127 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+> + */
+> +
+> +#include <linux/mhi.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/skbuff.h>
+> +#include <net/sock.h>
+> +
+> +#include "qrtr.h"
+> +
+> +struct qrtr_mhi_dev {
+> +	struct qrtr_endpoint ep;
+> +	struct mhi_device *mhi_dev;
+> +	struct device *dev;
+> +};
+> +
+> +/* From MHI to QRTR */
+> +static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
+> +				      struct mhi_result *mhi_res)
+> +{
+> +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
+> +	int rc;
+> +
+> +	if (!qdev || mhi_res->transaction_status)
+> +		return;
+> +
+> +	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
+> +				mhi_res->bytes_xferd);
+> +	if (rc == -EINVAL)
+> +		dev_err(qdev->dev, "invalid ipcrouter packet\n");
+> +}
+> +
+> +/* From QRTR to MHI */
+> +static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
+> +				      struct mhi_result *mhi_res)
+> +{
+> +	struct sk_buff *skb = (struct sk_buff *)mhi_res->buf_addr;
+> +
+> +	if (skb->sk)
+> +		sock_put(skb->sk);
+> +	consume_skb(skb);
+> +}
+> +
+> +/* Send data over MHI */
+> +static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
+> +{
+> +	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
+> +	int rc;
+> +
+> +	rc = skb_linearize(skb);
+> +	if (rc)
+> +		goto free_skb;
+> +
+> +	rc = mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
+> +			   MHI_EOT);
+> +	if (rc)
+> +		goto free_skb;
+> +
+> +	if (skb->sk)
+> +		sock_hold(skb->sk);
+> +
+> +	return rc;
+> +
+> +free_skb:
+> +	kfree_skb(skb);
+> +
+> +	return rc;
+> +}
+> +
+> +static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
+> +			       const struct mhi_device_id *id)
+> +{
+> +	struct qrtr_mhi_dev *qdev;
+> +	int rc;
+> +
+> +	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
+> +	if (!qdev)
+> +		return -ENOMEM;
+> +
+> +	qdev->mhi_dev = mhi_dev;
+> +	qdev->dev = &mhi_dev->dev;
+> +	qdev->ep.xmit = qcom_mhi_qrtr_send;
+> +
+> +	dev_set_drvdata(&mhi_dev->dev, qdev);
+> +	rc = qrtr_endpoint_register(&qdev->ep, QRTR_EP_NID_AUTO);
+> +	if (rc)
+> +		return rc;
+> +
+> +	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
+> +
+> +	return 0;
+> +}
+> +
+> +static void qcom_mhi_qrtr_remove(struct mhi_device *mhi_dev)
+> +{
+> +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
+> +
+> +	qrtr_endpoint_unregister(&qdev->ep);
+> +	dev_set_drvdata(&mhi_dev->dev, NULL);
+> +}
+> +
+> +static const struct mhi_device_id qcom_mhi_qrtr_id_table[] = {
+> +	{ .chan = "IPCR" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(mhi, qcom_mhi_qrtr_id_table);
+> +
+> +static struct mhi_driver qcom_mhi_qrtr_driver = {
+> +	.probe = qcom_mhi_qrtr_probe,
+> +	.remove = qcom_mhi_qrtr_remove,
+> +	.dl_xfer_cb = qcom_mhi_qrtr_dl_callback,
+> +	.ul_xfer_cb = qcom_mhi_qrtr_ul_callback,
+> +	.id_table = qcom_mhi_qrtr_id_table,
+> +	.driver = {
+> +		.name = "qcom_mhi_qrtr",
+> +	},
+> +};
+> +
+> +module_mhi_driver(qcom_mhi_qrtr_driver);
+> +
+> +MODULE_AUTHOR("Chris Lew <clew@codeaurora.org>");
+> +MODULE_AUTHOR("Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>");
+> +MODULE_DESCRIPTION("Qualcomm IPC-Router MHI interface driver");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.17.1
+> 
