@@ -2,165 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B728F1C39B6
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 14:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA8C41C39CE
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 14:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728877AbgEDMoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 08:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
+        id S1728139AbgEDMrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 08:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728475AbgEDMoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 08:44:24 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AB1C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 05:44:24 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id k12so8231787wmj.3
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 05:44:24 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726404AbgEDMri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 08:47:38 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BEDC061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 05:47:38 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id b18so11088054ilf.2
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 05:47:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/VFrQTqtmw8M3JqCJ35gBTW/wMAKmrJTc9j9D0crIWw=;
-        b=Q8NsrY1xrrpfulD18ddLN24jVD8dCg8/t0rOV+s6zY1zG0x53P+UQmWm/PE/ecvWhv
-         0SpAqocl3w7GolFsj+P21qZPNbRnsddBARwaQZODMYFuQVS4MH3BB8fgYjfU8DIOgISR
-         a2HWxEjaFdJsctA6GTgVZpG3KScwZOH2QlhabvIwvnCKK8huMWaTdk6D0j6+ilK+3+7+
-         kn8ybMfVDWHPnJQAqlNrFytFfpLNQjTsG2s8c3M/U5SBztimxKNGrW2707pn9fvMIw6M
-         eHPoGbaQY2L7m5S0IKWoJfGqweCJAocOIPI+SpYNQYCrZyMNiIsfJJzigWIkBKJ5wQCl
-         VlYg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PgaD51dpZoUQrQwC3rrOuRfLFfcUYGw0vyRmubj90k4=;
+        b=WIYaYN8T/Gr8LKpuvsLi+frCBd9j2X0XbqOzWuigrxytd1DsldlMK5W39EUXiAs1wL
+         4FE8XXJixHe+uaoLYVUR0YLXLhv3xGl2IN96xpTYIo/RBqvXIVQd39Pa3q/o+u0KT/0g
+         umhdzPtdOgeSdp872Yt61x9m9y2jFRCHNuegZ9PPDao2jeBN710vHGCUvpV/yCjaxV8B
+         to5ry89mnlbc/hl5C3DPrjw5y2La34FkKVG2ymWnTRGWb6C880o+sZGGSODBcQPCwRcn
+         Ca/4sVMG3BtANAlHyjawa+brMoI+FDuGv4DXgqCaxTT99ydiUaY58j/wrcqWZ60fJaka
+         tTrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=/VFrQTqtmw8M3JqCJ35gBTW/wMAKmrJTc9j9D0crIWw=;
-        b=MzMS718Sq8iDUbOeJ6/CPWBEU5YIiHsYbEFuUNlwlJHlAz6mbWZueGivFQ6iR4HB4p
-         GMWdff9V8FRuTiDr+uE5aAWgB5vPuzqzJuvvuBGa9VBrYSmyMm6Mdjuvdh2lRjx6NAVm
-         dERId89DtYW2wU0EjhsmPfgOw59cBsyLl3uyEzNq2OHe+OtVPvSZBlNwtB3b5mwMu3Cq
-         pRKLwIMZ+le6c2e/9hVlMDKZbbXvyelIywsSN25nwBE/51eaOunR604HYoXu9Rl1rvhT
-         6sS8zaegK8ya5ofqOUvkHa+PUCS85jV63EVeIqxMva0lvXi5o58oohiEmaIMs0wmQQBb
-         e64g==
-X-Gm-Message-State: AGi0PubwXXXIvMBoEHysH+T65PeCmLZPKles/kazyeHy9tncvmoXo2Jd
-        WR5GBg1w0xSAuLrmpl7OhZI=
-X-Google-Smtp-Source: APiQypIXEWUe3xMzWEKDgvz7Hr4DbHJxlfpwZyJ56aIjOwl6kfXIcg6wQjBCTfMZpakW2v0FJ2ya/g==
-X-Received: by 2002:a1c:7715:: with SMTP id t21mr13727190wmi.182.1588596262875;
-        Mon, 04 May 2020 05:44:22 -0700 (PDT)
-Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id 32sm17343670wrg.19.2020.05.04.05.44.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 05:44:22 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
-Cc:     davem@davemloft.net, jiri@resnulli.us, idosch@idosch.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        georg.waibel@sensor-technik.de, o.rempel@pengutronix.de,
-        christian.herber@nxp.com
-Subject: [RFC 6/6] docs: net: dsa: sja1105: document the best_effort_vlan_filtering option
-Date:   Mon,  4 May 2020 15:43:25 +0300
-Message-Id: <20200504124325.26758-7-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200504124325.26758-1-olteanv@gmail.com>
-References: <20200504124325.26758-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PgaD51dpZoUQrQwC3rrOuRfLFfcUYGw0vyRmubj90k4=;
+        b=ZTGYKpxHhX0kVkyzatZ4ZmTw6nMAEZ2XjiIcsbMeiM4y+g3k1MtOGXaI60TT2b5TCW
+         6VcRvU1yZupMYgFLEm0pqnIM/pM01NHVC0+EWlIbA5JFEc8dYhd/LK9Gpe2l6JrwgZB3
+         WliIFsaLmpVpR6waYTik3ArBD+iVdE2EFyYsjus+P38+cywpB/72inWl6KYZtFjuQY+B
+         DuQgUIkvrXt+OWho6aE7K+IdaHHUJRIwEKGOfDAsmJ9KWZCbNdw/AvLDBOGSImTshfqa
+         vUVn2dB9McLCZjJqZtKcUloXYzDiBGcnAClVhtyN6rUtHI2cuWjB3mMLXeXWAPvgQ0gp
+         dRAA==
+X-Gm-Message-State: AGi0PuZCwMYkpw3kiR54u4hRaQlNKPuH8dqjnLGS2uSLoK010BFYm3Lg
+        GVmqpgQf6+rhqxyRqRF3qIOWyxTK3ilohHIoinA=
+X-Google-Smtp-Source: APiQypIZAMDEitUO2Hh64G2YMAOFVlB59XhIgI11KetbzuX1QLHiK/bPleJrA/ivGWHgpDObbXBH2b4s72IJSsMvCkc=
+X-Received: by 2002:a05:6e02:cc4:: with SMTP id c4mr15477997ilj.31.1588596457717;
+ Mon, 04 May 2020 05:47:37 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200425120207.5400-1-dqfext@gmail.com> <CA+h21hpeJK8mHduKoWn5rbmz=BEz_6HQdz3Xf63NsXpZxsky0A@mail.gmail.com>
+In-Reply-To: <CA+h21hpeJK8mHduKoWn5rbmz=BEz_6HQdz3Xf63NsXpZxsky0A@mail.gmail.com>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Mon, 4 May 2020 20:47:29 +0800
+Message-ID: <CALW65jb_n49+jTo8kd6QT7AwXdCxJOR1bOFA72fyhjReM2688Q@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix roaming from DSA user ports
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Tom James <tj17@me.com>,
+        Stijn Segers <foss@volatilesystems.org>,
+        riddlariddla@hotmail.com, Szabolcs Hubai <szab.hu@gmail.com>,
+        Paul Fertser <fercerpav@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi Vladimir,
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- .../networking/devlink-params-sja1105.txt     | 24 ++++++++++
- Documentation/networking/dsa/sja1105.rst      | 46 +++++++++++++++++++
- 2 files changed, 70 insertions(+)
+On Mon, May 4, 2020 at 6:23 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> Hi Qingfang,
+>
+> On Sat, 25 Apr 2020 at 15:03, DENG Qingfang <dqfext@gmail.com> wrote:
+> >
+> > When a client moves from a DSA user port to a software port in a bridge,
+> > it cannot reach any other clients that connected to the DSA user ports.
+> > That is because SA learning on the CPU port is disabled, so the switch
+> > ignores the client's frames from the CPU port and still thinks it is at
+> > the user port.
+> >
+> > Fix it by enabling SA learning on the CPU port.
+> >
+> > To prevent the switch from learning from flooding frames from the CPU
+> > port, set skb->offload_fwd_mark to 1 for unicast and broadcast frames,
+> > and let the switch flood them instead of trapping to the CPU port.
+> > Multicast frames still need to be trapped to the CPU port for snooping,
+> > so set the SA_DIS bit of the MTK tag to 1 when transmitting those frames
+> > to disable SA learning.
+> >
+> > Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+> > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> > ---
+>
+> I think enabling learning on the CPU port would fix the problem
+> sometimes, but not always. (actually nothing can solve it always, see
+> below)
+> The switch learns the new route only if it receives any packets from
+> the CPU port, with a SA equal to the station you're trying to reach.
+> But what if the station is not sending any traffic at the moment,
+> because it is simply waiting for connections to it first (just an
+> example)?
+> Unless there is any traffic already coming from the destination
+> station too, your patch won't work.
+> I am currently facing a similar situation with the ocelot/felix
+> switches, but in that case, enabling SA learning on the CPU port is
+> not possible.
 
-diff --git a/Documentation/networking/devlink-params-sja1105.txt b/Documentation/networking/devlink-params-sja1105.txt
-index 5096a4cf923c..576dcc6e2d96 100644
---- a/Documentation/networking/devlink-params-sja1105.txt
-+++ b/Documentation/networking/devlink-params-sja1105.txt
-@@ -7,3 +7,27 @@ hostprio		[DEVICE, DRIVER-SPECIFIC]
- 			your PTP frames.
- 			Configuration mode: runtime
- 			Type: u8. 0-7 valid.
-+
-+best_effort_vlan_filtering
-+			[DEVICE, DRIVER-SPECIFIC]
-+			Allow plain ETH_P_8021Q headers to be used as DSA tags.
-+			Benefits:
-+			- Can terminate untagged traffic over switch net
-+			  devices even when enslaved to a bridge with
-+			  vlan_filtering=1.
-+			- Can terminate VLAN-tagged traffic over switch net
-+			  devices even when enslaved to a bridge with
-+			  vlan_filtering=1, with some constraints (no more than
-+			  7 VLANs per user port).
-+			- Can do QoS based on VLAN PCP and VLAN membership
-+			  admission control for autonomously forwarded frames
-+			  (regardless of whether they can be terminated on the
-+			  CPU or not).
-+			Drawbacks:
-+			- User cannot use VLANs in range 1024-3071. If the
-+			  switch receives frames with such VIDs, it will
-+			  misinterpret them as DSA tags.
-+			- Switch uses Shared VLAN Learning (FDB lookup uses
-+			  only DMAC as key).
-+			Configuration mode: runtime
-+			Type: bool.
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-index 4a8639cba1f3..d963ff2ac1c9 100644
---- a/Documentation/networking/dsa/sja1105.rst
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -77,6 +77,52 @@ change.
- The TPID is restored when ``vlan_filtering`` is requested by the user through
- the bridge layer, and general IP termination becomes no longer possible through
- the switch netdevices in this mode.
-+There exists a third configuration option, via ``best_effort_vlan_filtering``.
-+This permits termination of some traffic on switch net devices, at the expense
-+of losing some VLAN filtering abilities: reduced range of usable VIDs and
-+shared VLAN learning.
-+The frames which can be terminated on the CPU in this mode are:
-+- All untagged frames
-+- VLAN-tagged frames, up to 7 different VLANs per user port
-+This operating mode is slightly insane to be collated with the default
-+``vlan_filtering``, so it is an opt-in that needs to be enabled using a devlink
-+parameter. To enable it::
-+
-+  ip link set dev br0 type bridge vlan_filtering 1
-+  [   61.204770] sja1105 spi0.1: Reset switch and programmed static config. Reason: VLAN filtering
-+  [   61.239944] sja1105 spi0.1: Disabled switch tagging
-+  devlink dev param set spi/spi0.1 name best_effort_vlan_filtering value true cmode runtime
-+  [   64.682927] sja1105 spi0.1: Reset switch and programmed static config. Reason: VLAN filtering
-+  [   64.711925] sja1105 spi0.1: Enabled switch tagging
-+  bridge vlan add dev swp2 vid 1025 untagged pvid
-+  RTNETLINK answers: Operation not permitted
-+  bridge vlan add dev swp2 vid 100
-+  bridge vlan add dev swp2 vid 101 untagged
-+  bridge vlan
-+  port    vlan ids
-+  swp5     1 PVID Egress Untagged
-+
-+  swp2     1 PVID Egress Untagged
-+           100
-+           101 Egress Untagged
-+
-+  swp3     1 PVID Egress Untagged
-+
-+  swp4     1 PVID Egress Untagged
-+
-+  br0      1 PVID Egress Untagged
-+  bridge vlan add dev swp2 vid 102
-+  bridge vlan add dev swp2 vid 103
-+  bridge vlan add dev swp2 vid 104
-+  bridge vlan add dev swp2 vid 105
-+  bridge vlan add dev swp2 vid 106
-+  bridge vlan add dev swp2 vid 107
-+  [ 3885.216832] sja1105 spi0.1: No more free subvlans
-+
-+The "No more free subvlans" warning message means that once the capacity is
-+exceeded, frames tagged with newly added VLANs (in this case 107) are not able
-+to be terminated on the CPU. They are still accepted and forwarded
-+autonomously.
- 
- The switches have two programmable filters for link-local destination MACs.
- These are used to trap BPDUs and PTP traffic to the master netdevice, and are
--- 
-2.17.1
+Why is it not possible?
 
+Then try my previous RFC patch
+"net: bridge: fix client roaming from DSA user port"
+It tries removing entries from the switch when the client moves to another port.
+
+> The way I dealt with it is by forcing a flush of the FDB entries on
+> the port, in the following scenarios:
+> - link goes down
+> - port leaves its bridge
+> So traffic towards a destination that has migrated away will
+> temporarily be flooded again (towards the CPU port as well).
+> There is still one case which isn't treated using this approach: when
+> the station migrates away from a switch port that is not directly
+> connected to this one. So no "link down" events would get generated in
+> that case. We would still have to wait until the address expires in
+> that case. I don't think that particular situation can be solved.
+
+You're right. Every switch has this issue, even Linux bridge.
+
+> My point is: if we agree that this is a larger problem, then DSA
+> should have a .port_fdb_flush method and schedule a workqueue whenever
+> necessary. Yes, it is a costly operation, but it will still probably
+> take a lot less than the 300 seconds that the bridge configures for
+> address ageing.
+>
+> Thoughts?
+>
+> >  drivers/net/dsa/mt7530.c |  9 ++-------
+> >  drivers/net/dsa/mt7530.h |  1 +
+> >  net/dsa/tag_mtk.c        | 15 +++++++++++++++
+> >  3 files changed, 18 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> > index 5c444cd722bd..34e4aadfa705 100644
+> > --- a/drivers/net/dsa/mt7530.c
+> > +++ b/drivers/net/dsa/mt7530.c
+> > @@ -628,11 +628,8 @@ mt7530_cpu_port_enable(struct mt7530_priv *priv,
+> >         mt7530_write(priv, MT7530_PVC_P(port),
+> >                      PORT_SPEC_TAG);
+> >
+> > -       /* Disable auto learning on the cpu port */
+> > -       mt7530_set(priv, MT7530_PSC_P(port), SA_DIS);
+> > -
+> > -       /* Unknown unicast frame fordwarding to the cpu port */
+> > -       mt7530_set(priv, MT7530_MFC, UNU_FFP(BIT(port)));
+> > +       /* Unknown multicast frame forwarding to the cpu port */
+> > +       mt7530_rmw(priv, MT7530_MFC, UNM_FFP_MASK, UNM_FFP(BIT(port)));
+> >
+> >         /* Set CPU port number */
+> >         if (priv->id == ID_MT7621)
+> > @@ -1294,8 +1291,6 @@ mt7530_setup(struct dsa_switch *ds)
+> >         /* Enable and reset MIB counters */
+> >         mt7530_mib_reset(ds);
+> >
+> > -       mt7530_clear(priv, MT7530_MFC, UNU_FFP_MASK);
+> > -
+> >         for (i = 0; i < MT7530_NUM_PORTS; i++) {
+> >                 /* Disable forwarding by default on all ports */
+> >                 mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
+> > diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+> > index 979bb6374678..82af4d2d406e 100644
+> > --- a/drivers/net/dsa/mt7530.h
+> > +++ b/drivers/net/dsa/mt7530.h
+> > @@ -31,6 +31,7 @@ enum {
+> >  #define MT7530_MFC                     0x10
+> >  #define  BC_FFP(x)                     (((x) & 0xff) << 24)
+> >  #define  UNM_FFP(x)                    (((x) & 0xff) << 16)
+> > +#define  UNM_FFP_MASK                  UNM_FFP(~0)
+> >  #define  UNU_FFP(x)                    (((x) & 0xff) << 8)
+> >  #define  UNU_FFP_MASK                  UNU_FFP(~0)
+> >  #define  CPU_EN                                BIT(7)
+> > diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+> > index b5705cba8318..d6619edd53e5 100644
+> > --- a/net/dsa/tag_mtk.c
+> > +++ b/net/dsa/tag_mtk.c
+> > @@ -15,6 +15,7 @@
+> >  #define MTK_HDR_XMIT_TAGGED_TPID_8100  1
+> >  #define MTK_HDR_RECV_SOURCE_PORT_MASK  GENMASK(2, 0)
+> >  #define MTK_HDR_XMIT_DP_BIT_MASK       GENMASK(5, 0)
+> > +#define MTK_HDR_XMIT_SA_DIS            BIT(6)
+> >
+> >  static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+> >                                     struct net_device *dev)
+> > @@ -22,6 +23,9 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+> >         struct dsa_port *dp = dsa_slave_to_port(dev);
+> >         u8 *mtk_tag;
+> >         bool is_vlan_skb = true;
+> > +       unsigned char *dest = eth_hdr(skb)->h_dest;
+> > +       bool is_multicast_skb = is_multicast_ether_addr(dest) &&
+> > +                               !is_broadcast_ether_addr(dest);
+> >
+> >         /* Build the special tag after the MAC Source Address. If VLAN header
+> >          * is present, it's required that VLAN header and special tag is
+> > @@ -47,6 +51,10 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+> >                      MTK_HDR_XMIT_UNTAGGED;
+> >         mtk_tag[1] = (1 << dp->index) & MTK_HDR_XMIT_DP_BIT_MASK;
+> >
+> > +       /* Disable SA learning for multicast frames */
+> > +       if (unlikely(is_multicast_skb))
+> > +               mtk_tag[1] |= MTK_HDR_XMIT_SA_DIS;
+> > +
+> >         /* Tag control information is kept for 802.1Q */
+> >         if (!is_vlan_skb) {
+> >                 mtk_tag[2] = 0;
+> > @@ -61,6 +69,9 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+> >  {
+> >         int port;
+> >         __be16 *phdr, hdr;
+> > +       unsigned char *dest = eth_hdr(skb)->h_dest;
+> > +       bool is_multicast_skb = is_multicast_ether_addr(dest) &&
+> > +                               !is_broadcast_ether_addr(dest);
+> >
+> >         if (unlikely(!pskb_may_pull(skb, MTK_HDR_LEN)))
+> >                 return NULL;
+> > @@ -86,6 +97,10 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+> >         if (!skb->dev)
+> >                 return NULL;
+> >
+> > +       /* Only unicast or broadcast frames are offloaded */
+> > +       if (likely(!is_multicast_skb))
+> > +               skb->offload_fwd_mark = 1;
+> > +
+> >         return skb;
+> >  }
+> >
+> > --
+> > 2.26.1
+> >
+>
+> Thanks,
+> -Vladimir
