@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11FE71C4991
+	by mail.lfdr.de (Postfix) with ESMTP id CA19F1C4992
 	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 00:28:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728190AbgEDW2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 18:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
+        id S1728203AbgEDW2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 18:28:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726291AbgEDW2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 18:28:30 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED315C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:28:29 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id w3so370174plz.5
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 15:28:29 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726291AbgEDW2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 18:28:31 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4633BC061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:28:31 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id fu13so109444pjb.5
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 15:28:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=gZxwmcOnYI8K1qxp5F3nQ8jlL3utLOPCQfqA68jQdYU=;
-        b=dLvpVxEChsNmj9/ihurFXdnxwmRwBzi1lvOqMWfbMGOt1Q9LG6GV91kairi04y3I8H
-         xOTSKIrKykSd+xm5tnZiIEJIPHfIEBeaoi9Pc+S5dN+zkPJD4RHd0oDcFWFWZGgn6pGM
-         XqiP5Pxnk+DrHecJaMa6dmJpc9eyeC/Yb52ME=
+        bh=z0UGzWPL7acmTASycMCLnCO3J5RwVKthHRyDk3rUG3I=;
+        b=Hp1aiPSJATHApkRxCyelx+9+06iaK4UJtlMEc7rks3u+u9kacvdHEVxzCSbDz6eFD2
+         AP+9w7KX8JrmTEFXHECGnDx2mJauLGaXYYDlA05V/MPsqw4OliyhtoUYbMdcD6rMJh7a
+         TXERFGK8XRq3nam2gggVNxJp/U3EBq4HYSWgo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=gZxwmcOnYI8K1qxp5F3nQ8jlL3utLOPCQfqA68jQdYU=;
-        b=q1eO4JF1VbXBZ9QwgP136eB0jm9EcKWG1aj/2dyRqN3D3hz3GOoez9wiSg7UMQsbwT
-         6amL3Dup1yZvMmsxTrX+A8+TlU4DbusC26OFmuSdrxRzlXeDIboAchCpzoFMbvPqYQ5B
-         afbMtTghZsISkJbNl6nKI7sREAWgCrMfLJUZ8cyfSz1ttvpTQ1jvLLpjvclSKluvRYyv
-         jchuaZsfCTo4h0dduV6Jg6VBHPR/m6Xj1NArXHxLT7r6z8hHodn/oJ49oc0vxIa5d/Mb
-         37EVVvdvW1ninKRDIaZFaIqCJgPDwy3Ij52g31tyIKoeOSMdL9P1efVNwC5jjBTg1Tgk
-         4IuQ==
-X-Gm-Message-State: AGi0PuawrBDLkumnzm2nQUDkHnLjW01Q81UsICY5cB2uLPh33JqP+wOv
-        K7cciDAAhGpt2VbOHYbA+Uiggw==
-X-Google-Smtp-Source: APiQypKM5nrZJvXf6jCzpm1yaGBXeW4CV8jIkVDK0Gtki6UzH4ZPzIXGqyyh1cGkvzWmIKj/M9cAOA==
-X-Received: by 2002:a17:902:ed4a:: with SMTP id y10mr249362plb.227.1588631309359;
-        Mon, 04 May 2020 15:28:29 -0700 (PDT)
+        bh=z0UGzWPL7acmTASycMCLnCO3J5RwVKthHRyDk3rUG3I=;
+        b=OX5UWFQJjKgimK7dagoMh+0X8s77TzRUXHf0iGmajbDaL4GnYJo5335YK76hphzups
+         KBpJtmQateBOWPP3O8MAoOR0SegF1y5cdzmdzYehR1fbzkkC+DYV0cx4oeD+aMnWja+R
+         YHNX+4DlkYjQ8SkwBfusoKPF/o6VBn/7dp794jZf//N5MfoPpy4vuwI6UQNB2PgVXMEk
+         3ZAz2vTPI52axxI1L8UpH2yjOux45r6LoWjqFX7vnBKP9zq1ikWulHttPL5Nq1niy7IA
+         yPX1JOoDjPnOolf/dM9/gOHq1V30AQeS30ukD2fK1bf9sDYmv+Kpmm9D5fjofcffZS6l
+         2xLA==
+X-Gm-Message-State: AGi0PuZobtOjgOuxlnJg4TAwJyezGBz7lFK6hvJZdWNLlvNiLWLIUpWP
+        otLKF9Qd+EJVtK6DyJlP2vphbg==
+X-Google-Smtp-Source: APiQypI7ouyeia03Fu7TL8W/ZZnX8wi+hhpHR36j7O+R5e+5Ryh9yQKJYkno3Y/6pmeEBVzd6nd4UQ==
+X-Received: by 2002:a17:90a:a402:: with SMTP id y2mr46708pjp.24.1588631310589;
+        Mon, 04 May 2020 15:28:30 -0700 (PDT)
 Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id ie17sm21213pjb.19.2020.05.04.15.28.28
+        by smtp.googlemail.com with ESMTPSA id ie17sm21213pjb.19.2020.05.04.15.28.29
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 04 May 2020 15:28:28 -0700 (PDT)
+        Mon, 04 May 2020 15:28:29 -0700 (PDT)
 From:   Roopa Prabhu <roopa@cumulusnetworks.com>
 X-Google-Original-From: Roopa Prabhu
 To:     dsahern@gmail.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
         idosch@mellanox.com, jiri@mellanox.com, petrm@mellanox.com
-Subject: [RFC PATCH net-next 1/5] nexthop: support for fdb ecmp nexthops
-Date:   Mon,  4 May 2020 15:28:17 -0700
-Message-Id: <1588631301-21564-2-git-send-email-roopa@cumulusnetworks.com>
+Subject: [RFC PATCH net-next 2/5] vxlan: ecmp support for mac fdb entries
+Date:   Mon,  4 May 2020 15:28:18 -0700
+Message-Id: <1588631301-21564-3-git-send-email-roopa@cumulusnetworks.com>
 X-Mailer: git-send-email 2.1.4
 In-Reply-To: <1588631301-21564-1-git-send-email-roopa@cumulusnetworks.com>
 References: <1588631301-21564-1-git-send-email-roopa@cumulusnetworks.com>
@@ -61,362 +61,648 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-This patch introduces ecmp nexthops and nexthop groups
-for mac fdb entries. In subsequent patches this is used
-by the vxlan driver fdb entries. The use case is
-E-VPN multihoming [1,2,3] which requires bridged vxlan traffic
-to be load balanced to remote switches (vteps) belonging to
-the same multi-homed ethernet segment (This is analogous to
-a multi-homed LAG but over vxlan).
+Todays vxlan mac fdb entries can point to multiple remote
+ips (rdsts) with the sole purpose of replicating
+broadcast-multicast and unknown unicast packets to those remote ips.
 
-Changes include new nexthop flag NHA_FDB for nexthops
-referenced by fdb entries. These nexthops only have ip.
-This patch includes appropriate checks to avoid routes
-referencing such nexthops.
+E-VPN multihoming [1,2,3] requires bridged vxlan traffic to be
+load balanced to remote switches (vteps) belonging to the
+same multi-homed ethernet segment (E-VPN multihoming is analogous
+to multi-homed LAG implementations, but with the inter-switch
+peerlink replaced with a vxlan tunnel). In other words it needs
+support for mac ecmp. Furthermore, for faster convergence, E-VPN
+multihoming needs the ability to update fdb ecmp nexthops independent
+of the fdb entries.
 
-example:
-$ip nexthop add id 12 via 172.16.1.2 fdb
-$ip nexthop add id 13 via 172.16.1.3 fdb
-$ip nexthop add id 102 group 12/13 fdb
+New route nexthop API is perfect for this usecase.
+This patch extends the vxlan fdb code to take a nexthop id
+pointing to an ecmp nexthop group.
 
-$bridge fdb add 02:02:00:00:00:13 dev vxlan1000 nhid 101 self
+Changes include:
+- New NDA_NH_ID attribute for fdbs
+- Use the newly added fdb nexthop groups
+- makes vxlan rdsts and nexthop handling code mutually
+  exclusive
+- since this is a new use-case and the requirement is for ecmp
+nexthop groups, the fdb add and update path checks that the
+nexthop is really an ecmp nexthop group. This check can be relaxed
+in the future, if we want to introduce replication fdb nexthop groups
+and allow its use in lieu of current rdst lists.
+- fdb update requests with nexthop id's only allowed for existing
+fdb's that have nexthop id's
+- learning will not override an existing fdb entry with nexthop
+group
+- I have wrapped the switchdev offload code around the presence of
+rdst
+- I think there is scope for simplyfing vxlan_xmit_one: Will see
+what I can do before the non-RFC version
 
-[1] E-VPN https://tools.ietf.org/html/rfc7432
-[2] E-VPN VxLAN: https://tools.ietf.org/html/rfc8365
-[3] LPC talk with mention of nexthop groups for L2 ecmp
-http://vger.kernel.org/lpc_net2018_talks/scaling_bridge_fdb_database_slidesV3.pdf
+[1] E-VPN RFC https://tools.ietf.org/html/rfc7432
+[2] E-VPN with vxlan https://tools.ietf.org/html/rfc8365
+[3] http://vger.kernel.org/lpc_net2018_talks/scaling_bridge_fdb_database_slidesV3.pdf
 
 Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
 ---
- include/net/nexthop.h        |  14 ++++++
- include/uapi/linux/nexthop.h |   1 +
- net/ipv4/nexthop.c           | 101 +++++++++++++++++++++++++++++++++----------
- 3 files changed, 93 insertions(+), 23 deletions(-)
+ drivers/net/vxlan.c            | 286 ++++++++++++++++++++++++++++++++---------
+ include/uapi/linux/neighbour.h |   1 +
+ 2 files changed, 227 insertions(+), 60 deletions(-)
 
-diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-index c440ccc..3ad4e97 100644
---- a/include/net/nexthop.h
-+++ b/include/net/nexthop.h
-@@ -26,6 +26,7 @@ struct nh_config {
- 	u8		nh_family;
- 	u8		nh_protocol;
- 	u8		nh_blackhole;
-+	u8		nh_fdb;
- 	u32		nh_flags;
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index a5b415f..176f2b3 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -26,6 +26,7 @@
+ #include <net/netns/generic.h>
+ #include <net/tun_proto.h>
+ #include <net/vxlan.h>
++#include <net/nexthop.h>
  
- 	int		nh_ifindex;
-@@ -52,6 +53,7 @@ struct nh_info {
- 
- 	u8			family;
- 	bool			reject_nh;
-+	bool			fdb_nh;
- 
- 	union {
- 		struct fib_nh_common	fib_nhc;
-@@ -80,6 +82,7 @@ struct nexthop {
- 	struct rb_node		rb_node;    /* entry on netns rbtree */
- 	struct list_head	fi_list;    /* v4 entries using nh */
- 	struct list_head	f6i_list;   /* v6 entries using nh */
-+	struct list_head        fdb_list;   /* fdb entries using this nh */
- 	struct list_head	grp_list;   /* nh group entries using this nh */
- 	struct net		*net;
- 
-@@ -88,6 +91,7 @@ struct nexthop {
- 	u8			protocol;   /* app managing this nh */
- 	u8			nh_flags;
- 	bool			is_group;
-+	bool			is_fdb_nh;
- 
- 	refcount_t		refcnt;
- 	struct rcu_head		rcu;
-@@ -304,4 +308,14 @@ static inline void nexthop_path_fib6_result(struct fib6_result *res, int hash)
- int nexthop_for_each_fib6_nh(struct nexthop *nh,
- 			     int (*cb)(struct fib6_nh *nh, void *arg),
- 			     void *arg);
-+
-+static inline struct nh_info *nexthop_path_fdb(struct nexthop *nh,  u32 hash)
-+{
-+	struct nh_info *nhi;
-+
-+	nh = nexthop_select_path(nh, hash);
-+	nhi = rcu_dereference(nh->nh_info);
-+
-+	return nhi;
-+}
- #endif
-diff --git a/include/uapi/linux/nexthop.h b/include/uapi/linux/nexthop.h
-index 7b61867..19a234a 100644
---- a/include/uapi/linux/nexthop.h
-+++ b/include/uapi/linux/nexthop.h
-@@ -48,6 +48,7 @@ enum {
- 	 */
- 	NHA_GROUPS,	/* flag; only return nexthop groups in dump */
- 	NHA_MASTER,	/* u32;  only return nexthops with given master dev */
-+	NHA_FDB,	/* nexthop belongs to a bridge fdb */
- 
- 	__NHA_MAX,
- };
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 3957364..98f8d2a 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -33,6 +33,7 @@ static const struct nla_policy rtm_nh_policy[NHA_MAX + 1] = {
- 	[NHA_ENCAP]		= { .type = NLA_NESTED },
- 	[NHA_GROUPS]		= { .type = NLA_FLAG },
- 	[NHA_MASTER]		= { .type = NLA_U32 },
-+	[NHA_FDB]		= { .type = NLA_FLAG },
+ #if IS_ENABLED(CONFIG_IPV6)
+ #include <net/ip6_tunnel.h>
+@@ -78,6 +79,8 @@ struct vxlan_fdb {
+ 	u16		  state;	/* see ndm_state */
+ 	__be32		  vni;
+ 	u16		  flags;	/* see ndm_flags and below */
++	struct list_head  nh_list;
++	struct nexthop	  *nh;
  };
  
- static unsigned int nh_dev_hashfn(unsigned int val)
-@@ -107,6 +108,7 @@ static struct nexthop *nexthop_alloc(void)
- 		INIT_LIST_HEAD(&nh->fi_list);
- 		INIT_LIST_HEAD(&nh->f6i_list);
- 		INIT_LIST_HEAD(&nh->grp_list);
-+		INIT_LIST_HEAD(&nh->fdb_list);
- 	}
- 	return nh;
+ #define NTF_VXLAN_ADDED_BY_USER 0x100
+@@ -174,11 +177,15 @@ static inline struct hlist_head *vs_head(struct net *net, __be16 port)
+  */
+ static inline struct vxlan_rdst *first_remote_rcu(struct vxlan_fdb *fdb)
+ {
++	if (fdb->nh)
++		return NULL;
+ 	return list_entry_rcu(fdb->remotes.next, struct vxlan_rdst, list);
  }
-@@ -227,6 +229,9 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
- 	if (nla_put_u32(skb, NHA_ID, nh->id))
+ 
+ static inline struct vxlan_rdst *first_remote_rtnl(struct vxlan_fdb *fdb)
+ {
++	if (fdb->nh)
++		return NULL;
+ 	return list_first_entry(&fdb->remotes, struct vxlan_rdst, list);
+ }
+ 
+@@ -265,15 +272,19 @@ static int vxlan_fdb_info(struct sk_buff *skb, struct vxlan_dev *vxlan,
+ 	send_eth = send_ip = true;
+ 
+ 	if (type == RTM_GETNEIGH) {
+-		send_ip = !vxlan_addr_any(&rdst->remote_ip);
++		if (rdst) {
++			send_ip = !vxlan_addr_any(&rdst->remote_ip);
++			ndm->ndm_family = send_ip ? rdst->remote_ip.sa.sa_family : AF_INET;
++		} else if (fdb->nh) {
++			ndm->ndm_family = fdb->nh->nh_info->family;
++		}
+ 		send_eth = !is_zero_ether_addr(fdb->eth_addr);
+-		ndm->ndm_family = send_ip ? rdst->remote_ip.sa.sa_family : AF_INET;
+ 	} else
+ 		ndm->ndm_family	= AF_BRIDGE;
+ 	ndm->ndm_state = fdb->state;
+ 	ndm->ndm_ifindex = vxlan->dev->ifindex;
+ 	ndm->ndm_flags = fdb->flags;
+-	if (rdst->offloaded)
++	if (rdst && rdst->offloaded)
+ 		ndm->ndm_flags |= NTF_OFFLOADED;
+ 	ndm->ndm_type = RTN_UNICAST;
+ 
+@@ -284,23 +295,30 @@ static int vxlan_fdb_info(struct sk_buff *skb, struct vxlan_dev *vxlan,
+ 
+ 	if (send_eth && nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->eth_addr))
  		goto nla_put_failure;
- 
-+	if (nh->is_fdb_nh && nla_put_flag(skb, NHA_FDB))
-+		goto nla_put_failure;
++	if (fdb->nh) {
++		if (nla_put_u32(skb, NDA_NH_ID, fdb->nh->id))
++			goto nla_put_failure;
++	} else if (rdst) {
++		if (send_ip && vxlan_nla_put_addr(skb, NDA_DST,
++						  &rdst->remote_ip))
++			goto nla_put_failure;
 +
- 	if (nh->is_group) {
- 		struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
++		if (rdst->remote_port &&
++		    rdst->remote_port != vxlan->cfg.dst_port &&
++		    nla_put_be16(skb, NDA_PORT, rdst->remote_port))
++			goto nla_put_failure;
++		if (rdst->remote_vni != vxlan->default_dst.remote_vni &&
++		    nla_put_u32(skb, NDA_VNI, be32_to_cpu(rdst->remote_vni)))
++			goto nla_put_failure;
++		if (rdst->remote_ifindex &&
++		    nla_put_u32(skb, NDA_IFINDEX, rdst->remote_ifindex))
++			goto nla_put_failure;
++	}
  
-@@ -241,7 +246,7 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
- 		if (nla_put_flag(skb, NHA_BLACKHOLE))
- 			goto nla_put_failure;
- 		goto out;
--	} else {
-+	} else if (!nh->is_fdb_nh) {
- 		const struct net_device *dev;
- 
- 		dev = nhi->fib_nhc.nhc_dev;
-@@ -393,6 +398,7 @@ static int nh_check_attr_group(struct net *net, struct nlattr *tb[],
- 	unsigned int len = nla_len(tb[NHA_GROUP]);
- 	struct nexthop_grp *nhg;
- 	unsigned int i, j;
-+	u8 nhg_fdb = 0;
- 
- 	if (len & (sizeof(struct nexthop_grp) - 1)) {
- 		NL_SET_ERR_MSG(extack,
-@@ -421,6 +427,8 @@ static int nh_check_attr_group(struct net *net, struct nlattr *tb[],
- 		}
- 	}
- 
-+	if (tb[NHA_FDB])
-+		nhg_fdb = 1;
- 	nhg = nla_data(tb[NHA_GROUP]);
- 	for (i = 0; i < len; ++i) {
- 		struct nexthop *nh;
-@@ -432,11 +440,16 @@ static int nh_check_attr_group(struct net *net, struct nlattr *tb[],
- 		}
- 		if (!valid_group_nh(nh, len, extack))
- 			return -EINVAL;
-+		if (nhg_fdb && !nh->is_fdb_nh) {
-+			NL_SET_ERR_MSG(extack, "FDB Multipath group can only have fdb nexthops");
-+			return -EINVAL;
-+		}
- 	}
- 	for (i = NHA_GROUP + 1; i < __NHA_MAX; ++i) {
- 		if (!tb[i])
- 			continue;
+-	if (send_ip && vxlan_nla_put_addr(skb, NDA_DST, &rdst->remote_ip))
+-		goto nla_put_failure;
 -
-+		if (tb[NHA_FDB])
-+			continue;
- 		NL_SET_ERR_MSG(extack,
- 			       "No other attributes can be set in nexthop groups");
- 		return -EINVAL;
-@@ -495,6 +508,9 @@ struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
- 		if (hash > atomic_read(&nhge->upper_bound))
- 			continue;
+-	if (rdst->remote_port && rdst->remote_port != vxlan->cfg.dst_port &&
+-	    nla_put_be16(skb, NDA_PORT, rdst->remote_port))
+-		goto nla_put_failure;
+-	if (rdst->remote_vni != vxlan->default_dst.remote_vni &&
+-	    nla_put_u32(skb, NDA_VNI, be32_to_cpu(rdst->remote_vni)))
+-		goto nla_put_failure;
+ 	if ((vxlan->cfg.flags & VXLAN_F_COLLECT_METADATA) && fdb->vni &&
+ 	    nla_put_u32(skb, NDA_SRC_VNI,
+ 			be32_to_cpu(fdb->vni)))
+ 		goto nla_put_failure;
+-	if (rdst->remote_ifindex &&
+-	    nla_put_u32(skb, NDA_IFINDEX, rdst->remote_ifindex))
+-		goto nla_put_failure;
  
-+		if (nhge->nh->is_fdb_nh)
-+			return nhge->nh;
-+
- 		/* nexthops always check if it is good and does
- 		 * not rely on a sysctl for this behavior
- 		 */
-@@ -564,6 +580,11 @@ int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
+ 	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
+ 	ci.ndm_confirmed = 0;
+@@ -401,7 +419,7 @@ static int vxlan_fdb_notify(struct vxlan_dev *vxlan, struct vxlan_fdb *fdb,
  {
- 	struct nh_info *nhi;
- 
-+	if (nh->is_fdb_nh) {
-+		NL_SET_ERR_MSG(extack, "Route cannot point to a fdb nexthop");
-+		return -EINVAL;
-+	}
-+
- 	/* fib6_src is unique to a fib6_info and limits the ability to cache
- 	 * routes in fib6_nh within a nexthop that is potentially shared
- 	 * across multiple fib entries. If the config wants to use source
-@@ -640,6 +661,12 @@ int fib_check_nexthop(struct nexthop *nh, u8 scope,
- {
- 	int err = 0;
- 
-+	if (nh->is_fdb_nh) {
-+		NL_SET_ERR_MSG(extack, "Route cannot point to a fdb nexthop");
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
- 	if (nh->is_group) {
- 		struct nh_group *nhg;
- 
-@@ -1125,6 +1152,9 @@ static struct nexthop *nexthop_create_group(struct net *net,
- 		nh_group_rebalance(nhg);
- 	}
- 
-+	if (cfg->nh_fdb)
-+		nh->is_fdb_nh = 1;
-+
- 	rcu_assign_pointer(nh->nh_grp, nhg);
- 
- 	return nh;
-@@ -1152,7 +1182,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
- 		.fc_encap = cfg->nh_encap,
- 		.fc_encap_type = cfg->nh_encap_type,
- 	};
--	u32 tb_id = l3mdev_fib_table(cfg->dev);
-+	u32 tb_id = (cfg->dev ? l3mdev_fib_table(cfg->dev) : RT_TABLE_MAIN);
  	int err;
  
- 	err = fib_nh_init(net, fib_nh, &fib_cfg, 1, extack);
-@@ -1161,6 +1191,9 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
- 		goto out;
- 	}
+-	if (swdev_notify) {
++	if (swdev_notify && rd) {
+ 		switch (type) {
+ 		case RTM_NEWNEIGH:
+ 			err = vxlan_fdb_switchdev_call_notifiers(vxlan, fdb, rd,
+@@ -805,6 +823,8 @@ static struct vxlan_fdb *vxlan_fdb_alloc(const u8 *mac, __u16 state,
+ 	f->flags = ndm_flags;
+ 	f->updated = f->used = jiffies;
+ 	f->vni = src_vni;
++	f->nh = NULL;
++	INIT_LIST_HEAD(&f->nh_list);
+ 	INIT_LIST_HEAD(&f->remotes);
+ 	memcpy(f->eth_addr, mac, ETH_ALEN);
  
-+	if (nh->is_fdb_nh)
-+		goto out;
+@@ -819,11 +839,59 @@ static void vxlan_fdb_insert(struct vxlan_dev *vxlan, const u8 *mac,
+ 			   vxlan_fdb_head(vxlan, mac, src_vni));
+ }
+ 
++static int vxlan_fdb_nh_update(struct vxlan_dev *vxlan, struct vxlan_fdb *fdb,
++			       u32 nhid, struct netlink_ext_ack *extack)
++{
++	struct nexthop *nh;
++	int err = -EINVAL;
 +
- 	/* sets nh_dev if successful */
- 	err = fib_check_nh(net, fib_nh, tb_id, 0, extack);
- 	if (!err) {
-@@ -1227,6 +1260,9 @@ static struct nexthop *nexthop_create(struct net *net, struct nh_config *cfg,
- 	nhi->family = cfg->nh_family;
- 	nhi->fib_nhc.nhc_scope = RT_SCOPE_LINK;
- 
-+	if (cfg->nh_fdb)
-+		nh->is_fdb_nh = 1;
++	if (fdb->nh && (fdb->nh->id == nhid))
++		return 0;
 +
- 	if (cfg->nh_blackhole) {
- 		nhi->reject_nh = 1;
- 		cfg->nh_ifindex = net->loopback_dev->ifindex;
-@@ -1248,7 +1284,8 @@ static struct nexthop *nexthop_create(struct net *net, struct nh_config *cfg,
- 	}
++	nh = nexthop_find_by_id(vxlan->net, nhid);
++	if (!nh) {
++		NL_SET_ERR_MSG(extack, "Nexthop id does not exist");
++		goto err_inval;
++	}
++
++	if (nh) {
++		if (!nexthop_get(nh)) {
++			NL_SET_ERR_MSG(extack, "Nexthop has been deleted");
++			nh = NULL;
++			goto err_inval;
++		}
++		if (!nh->is_fdb_nh) {
++			NL_SET_ERR_MSG(extack, "Nexthop is not a fdb nexthop");
++			goto err_inval;
++		}
++
++		if (!nh->is_group || !nh->nh_grp->mpath) {
++			NL_SET_ERR_MSG(extack, "Nexthop is not a multipath group");
++			goto err_inval;
++		}
++	}
++
++	if (fdb->nh) {
++		list_del(&fdb->nh_list);
++		nexthop_put(fdb->nh);
++	}
++
++	fdb->nh = nh;
++	list_add(&fdb->nh_list, &nh->fdb_list);
++	return 0;
++
++err_inval:
++	if (nh)
++		nexthop_put(nh);
++	return err;
++}
++
+ static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+ 			    const u8 *mac, union vxlan_addr *ip,
+ 			    __u16 state, __be16 port, __be32 src_vni,
+ 			    __be32 vni, __u32 ifindex, __u16 ndm_flags,
+-			    struct vxlan_fdb **fdb)
++			    u32 nhid, struct vxlan_fdb **fdb,
++			    struct netlink_ext_ack *extack)
+ {
+ 	struct vxlan_rdst *rd = NULL;
+ 	struct vxlan_fdb *f;
+@@ -838,15 +906,20 @@ static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+ 	if (!f)
+ 		return -ENOMEM;
  
- 	/* add the entry to the device based hash */
--	nexthop_devhash_add(net, nhi);
-+	if (!nh->is_fdb_nh)
-+		nexthop_devhash_add(net, nhi);
+-	rc = vxlan_fdb_append(f, ip, port, vni, ifindex, &rd);
+-	if (rc < 0) {
+-		kfree(f);
+-		return rc;
+-	}
++	if (nhid)
++		rc = vxlan_fdb_nh_update(vxlan, f, nhid, extack);
++	else
++		rc = vxlan_fdb_append(f, ip, port, vni, ifindex, &rd);
++	if (rc < 0)
++		goto errout;
  
- 	rcu_assign_pointer(nh->nh_info, nhi);
+ 	*fdb = f;
  
-@@ -1367,6 +1404,9 @@ static int rtm_to_nh_config(struct net *net, struct sk_buff *skb,
- 			NL_SET_ERR_MSG(extack, "Invalid group type");
- 			goto out;
+ 	return 0;
++
++errout:
++	kfree(f);
++	return rc;
+ }
+ 
+ static void __vxlan_fdb_free(struct vxlan_fdb *f)
+@@ -897,7 +970,7 @@ static int vxlan_fdb_update_existing(struct vxlan_dev *vxlan,
+ 				     __u16 state, __u16 flags,
+ 				     __be16 port, __be32 vni,
+ 				     __u32 ifindex, __u16 ndm_flags,
+-				     struct vxlan_fdb *f,
++				     struct vxlan_fdb *f, u32 nhid,
+ 				     bool swdev_notify,
+ 				     struct netlink_ext_ack *extack)
+ {
+@@ -908,6 +981,9 @@ static int vxlan_fdb_update_existing(struct vxlan_dev *vxlan,
+ 	int rc = 0;
+ 	int err;
+ 
++	if (nhid && !f->nh)
++		return -EOPNOTSUPP;
++
+ 	/* Do not allow an externally learned entry to take over an entry added
+ 	 * by the user.
+ 	 */
+@@ -925,6 +1001,19 @@ static int vxlan_fdb_update_existing(struct vxlan_dev *vxlan,
  		}
-+		if (tb[NHA_FDB])
-+			cfg->nh_fdb = nla_get_flag(tb[NHA_FDB]);
-+
- 		err = nh_check_attr_group(net, tb, extack);
- 
- 		/* no other attributes should be set */
-@@ -1385,26 +1425,38 @@ static int rtm_to_nh_config(struct net *net, struct sk_buff *skb,
- 		goto out;
  	}
  
--	if (!tb[NHA_OIF]) {
--		NL_SET_ERR_MSG(extack, "Device attribute required for non-blackhole nexthops");
-+	if (tb[NHA_FDB]) {
-+		if (tb[NHA_OIF] ||
-+		    tb[NHA_ENCAP]   || tb[NHA_ENCAP_TYPE]) {
-+			NL_SET_ERR_MSG(extack, "Fdb attribute can not be used with encap or oif");
-+			goto out;
-+		}
++	if (nhid) {
++		if (!f->nh)
++			return -EOPNOTSUPP;
 +
-+		cfg->nh_fdb = nla_get_flag(tb[NHA_FDB]);
++		if (f->nh->id != nhid) {
++			rc = vxlan_fdb_nh_update(vxlan, f, nhid, extack);
++			if (rc < 0)
++				return rc;
++			notify = 1;
++			f->updated = jiffies;
++		}
 +	}
 +
-+	if (!cfg->nh_fdb && !tb[NHA_OIF]) {
-+		NL_SET_ERR_MSG(extack, "Device attribute required for non-blackhole and non-fdb nexthops");
+ 	if ((flags & NLM_F_REPLACE)) {
+ 		/* Only change unicasts */
+ 		if (!(is_multicast_ether_addr(f->eth_addr) ||
+@@ -975,7 +1064,7 @@ static int vxlan_fdb_update_create(struct vxlan_dev *vxlan,
+ 				   const u8 *mac, union vxlan_addr *ip,
+ 				   __u16 state, __u16 flags,
+ 				   __be16 port, __be32 src_vni, __be32 vni,
+-				   __u32 ifindex, __u16 ndm_flags,
++				   __u32 ifindex, __u16 ndm_flags, u32 nhid,
+ 				   bool swdev_notify,
+ 				   struct netlink_ext_ack *extack)
+ {
+@@ -990,7 +1079,7 @@ static int vxlan_fdb_update_create(struct vxlan_dev *vxlan,
+ 
+ 	netdev_dbg(vxlan->dev, "add %pM -> %pIS\n", mac, ip);
+ 	rc = vxlan_fdb_create(vxlan, mac, ip, state, port, src_vni,
+-			      vni, ifindex, fdb_flags, &f);
++			      vni, ifindex, fdb_flags, nhid, &f, extack);
+ 	if (rc < 0)
+ 		return rc;
+ 
+@@ -1012,7 +1101,7 @@ static int vxlan_fdb_update(struct vxlan_dev *vxlan,
+ 			    const u8 *mac, union vxlan_addr *ip,
+ 			    __u16 state, __u16 flags,
+ 			    __be16 port, __be32 src_vni, __be32 vni,
+-			    __u32 ifindex, __u16 ndm_flags,
++			    __u32 ifindex, __u16 ndm_flags, u32 nhid,
+ 			    bool swdev_notify,
+ 			    struct netlink_ext_ack *extack)
+ {
+@@ -1028,14 +1117,15 @@ static int vxlan_fdb_update(struct vxlan_dev *vxlan,
+ 
+ 		return vxlan_fdb_update_existing(vxlan, ip, state, flags, port,
+ 						 vni, ifindex, ndm_flags, f,
+-						 swdev_notify, extack);
++						 nhid, swdev_notify, extack);
+ 	} else {
+ 		if (!(flags & NLM_F_CREATE))
+ 			return -ENOENT;
+ 
+ 		return vxlan_fdb_update_create(vxlan, mac, ip, state, flags,
+ 					       port, src_vni, vni, ifindex,
+-					       ndm_flags, swdev_notify, extack);
++					       ndm_flags, nhid, swdev_notify,
++					       extack);
+ 	}
+ }
+ 
+@@ -1049,7 +1139,7 @@ static void vxlan_fdb_dst_destroy(struct vxlan_dev *vxlan, struct vxlan_fdb *f,
+ 
+ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
+ 			   union vxlan_addr *ip, __be16 *port, __be32 *src_vni,
+-			   __be32 *vni, u32 *ifindex)
++			   __be32 *vni, u32 *ifindex, u32 *nhid)
+ {
+ 	struct net *net = dev_net(vxlan->dev);
+ 	int err;
+@@ -1109,6 +1199,11 @@ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
+ 		*ifindex = 0;
+ 	}
+ 
++	if (tb[NDA_NH_ID])
++		*nhid = nla_get_u32(tb[NDA_NH_ID]);
++	else
++		*nhid = 0;
++
+ 	return 0;
+ }
+ 
+@@ -1123,7 +1218,7 @@ static int vxlan_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
+ 	union vxlan_addr ip;
+ 	__be16 port;
+ 	__be32 src_vni, vni;
+-	u32 ifindex;
++	u32 ifindex, nhid;
+ 	u32 hash_index;
+ 	int err;
+ 
+@@ -1133,10 +1228,11 @@ static int vxlan_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
+ 		return -EINVAL;
+ 	}
+ 
+-	if (tb[NDA_DST] == NULL)
++	if (!tb || (!tb[NDA_DST] && !tb[NDA_NH_ID]))
+ 		return -EINVAL;
+ 
+-	err = vxlan_fdb_parse(tb, vxlan, &ip, &port, &src_vni, &vni, &ifindex);
++	err = vxlan_fdb_parse(tb, vxlan, &ip, &port, &src_vni, &vni, &ifindex,
++			      &nhid);
+ 	if (err)
+ 		return err;
+ 
+@@ -1148,7 +1244,7 @@ static int vxlan_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
+ 	err = vxlan_fdb_update(vxlan, addr, &ip, ndm->ndm_state, flags,
+ 			       port, src_vni, vni, ifindex,
+ 			       ndm->ndm_flags | NTF_VXLAN_ADDED_BY_USER,
+-			       true, extack);
++			       nhid, true, extack);
+ 	spin_unlock_bh(&vxlan->hash_lock[hash_index]);
+ 
+ 	return err;
+@@ -1181,6 +1277,12 @@ static int __vxlan_fdb_delete(struct vxlan_dev *vxlan,
  		goto out;
  	}
  
--	cfg->nh_ifindex = nla_get_u32(tb[NHA_OIF]);
--	if (cfg->nh_ifindex)
--		cfg->dev = __dev_get_by_index(net, cfg->nh_ifindex);
-+	if (!cfg->nh_fdb && tb[NHA_OIF]) {
-+		cfg->nh_ifindex = nla_get_u32(tb[NHA_OIF]);
-+		if (cfg->nh_ifindex)
-+			cfg->dev = __dev_get_by_index(net, cfg->nh_ifindex);
++	if (f->nh) {
++		list_del(&f->nh_list);
++		nexthop_put(f->nh);
++		f->nh = NULL;
++	}
++
+ 	vxlan_fdb_destroy(vxlan, f, true, swdev_notify);
  
--	if (!cfg->dev) {
--		NL_SET_ERR_MSG(extack, "Invalid device index");
--		goto out;
--	} else if (!(cfg->dev->flags & IFF_UP)) {
--		NL_SET_ERR_MSG(extack, "Nexthop device is not up");
--		err = -ENETDOWN;
--		goto out;
--	} else if (!netif_carrier_ok(cfg->dev)) {
--		NL_SET_ERR_MSG(extack, "Carrier for nexthop device is down");
--		err = -ENETDOWN;
--		goto out;
-+		if (!cfg->dev) {
-+			NL_SET_ERR_MSG(extack, "Invalid device index");
-+			goto out;
-+		} else if (!(cfg->dev->flags & IFF_UP)) {
-+			NL_SET_ERR_MSG(extack, "Nexthop device is not up");
-+			err = -ENETDOWN;
-+			goto out;
-+		} else if (!netif_carrier_ok(cfg->dev)) {
-+			NL_SET_ERR_MSG(extack, "Carrier for nexthop device is down");
-+			err = -ENETDOWN;
-+			goto out;
-+		}
- 	}
- 
- 	err = -EINVAL;
-@@ -1633,7 +1685,7 @@ static bool nh_dump_filtered(struct nexthop *nh, int dev_idx, int master_idx,
- 
- static int nh_valid_dump_req(const struct nlmsghdr *nlh, int *dev_idx,
- 			     int *master_idx, bool *group_filter,
--			     struct netlink_callback *cb)
-+			     bool *fdb_filter, struct netlink_callback *cb)
- {
- 	struct netlink_ext_ack *extack = cb->extack;
- 	struct nlattr *tb[NHA_MAX + 1];
-@@ -1670,6 +1722,9 @@ static int nh_valid_dump_req(const struct nlmsghdr *nlh, int *dev_idx,
- 		case NHA_GROUPS:
- 			*group_filter = true;
- 			break;
-+		case NHA_FDB:
-+			*fdb_filter = true;
-+			break;
- 		default:
- 			NL_SET_ERR_MSG(extack, "Unsupported attribute in dump request");
- 			return -EINVAL;
-@@ -1688,17 +1743,17 @@ static int nh_valid_dump_req(const struct nlmsghdr *nlh, int *dev_idx,
- /* rtnl */
- static int rtm_dump_nexthop(struct sk_buff *skb, struct netlink_callback *cb)
- {
-+	bool group_filter = false, fdb_filter = false;
- 	struct nhmsg *nhm = nlmsg_data(cb->nlh);
- 	int dev_filter_idx = 0, master_idx = 0;
- 	struct net *net = sock_net(skb->sk);
- 	struct rb_root *root = &net->nexthop.rb_root;
--	bool group_filter = false;
- 	struct rb_node *node;
- 	int idx = 0, s_idx;
+ out:
+@@ -1196,11 +1298,12 @@ static int vxlan_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
+ 	union vxlan_addr ip;
+ 	__be32 src_vni, vni;
+ 	__be16 port;
+-	u32 ifindex;
++	u32 ifindex, nhid;
+ 	u32 hash_index;
  	int err;
  
- 	err = nh_valid_dump_req(cb->nlh, &dev_filter_idx, &master_idx,
--				&group_filter, cb);
-+				&group_filter, &fdb_filter, cb);
- 	if (err < 0)
+-	err = vxlan_fdb_parse(tb, vxlan, &ip, &port, &src_vni, &vni, &ifindex);
++	err = vxlan_fdb_parse(tb, vxlan, &ip, &port, &src_vni, &vni, &ifindex,
++			      &nhid);
+ 	if (err)
  		return err;
+ 
+@@ -1228,6 +1331,17 @@ static int vxlan_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
+ 		hlist_for_each_entry_rcu(f, &vxlan->fdb_head[h], hlist) {
+ 			struct vxlan_rdst *rd;
+ 
++			if (f->nh) {
++				err = vxlan_fdb_info(skb, vxlan, f,
++						     NETLINK_CB(cb->skb).portid,
++						     cb->nlh->nlmsg_seq,
++						     RTM_NEWNEIGH,
++						     NLM_F_MULTI, NULL);
++				if (err < 0)
++					goto out;
++				continue;
++			}
++
+ 			list_for_each_entry_rcu(rd, &f->remotes, list) {
+ 				if (*idx < cb->args[2])
+ 					goto skip;
+@@ -1311,6 +1425,10 @@ static bool vxlan_snoop(struct net_device *dev,
+ 		if (f->state & (NUD_PERMANENT | NUD_NOARP))
+ 			return true;
+ 
++		/* Don't override an fdb with nexthop with a learnt entry */
++		if (f->nh)
++			return true;
++
+ 		if (net_ratelimit())
+ 			netdev_info(dev,
+ 				    "%pM migrated from %pIS to %pIS\n",
+@@ -1333,7 +1451,7 @@ static bool vxlan_snoop(struct net_device *dev,
+ 					 vxlan->cfg.dst_port,
+ 					 vni,
+ 					 vxlan->default_dst.remote_vni,
+-					 ifindex, NTF_SELF, true, NULL);
++					 ifindex, NTF_SELF, 0, true, NULL);
+ 		spin_unlock(&vxlan->hash_lock[hash_index]);
+ 	}
+ 
+@@ -2227,6 +2345,8 @@ static struct rtable *vxlan_get_route(struct vxlan_dev *vxlan, struct net_device
+ 
+ 	if (tos && !info)
+ 		use_cache = false;
++	if (!dst_cache)
++		use_cache = false;
+ 	if (use_cache) {
+ 		rt = dst_cache_get_ip4(dst_cache, saddr);
+ 		if (rt)
+@@ -2408,11 +2528,26 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
+ 	return 0;
+ }
+ 
++static void nhc_gw2vxlan_addr(struct nh_info *nhi, union vxlan_addr *remote_ip)
++{
++	memset(remote_ip, 0, sizeof(union vxlan_addr));
++	switch (nhi->fib_nh.nh_common.nhc_gw_family) {
++	case AF_INET:
++		remote_ip->sin.sin_addr.s_addr = nhi->fib_nh.nh_common.nhc_gw.ipv4;
++		remote_ip->sa.sa_family = AF_INET;
++		break;
++	case AF_INET6:
++		remote_ip->sin6.sin6_addr = nhi->fib_nh.nh_common.nhc_gw.ipv6;
++		remote_ip->sa.sa_family = AF_INET6;
++		break;
++	}
++}
++
+ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 			   __be32 default_vni, struct vxlan_rdst *rdst,
+-			   bool did_rsc)
++			   struct nh_info *nhi, bool did_rsc)
+ {
+-	struct dst_cache *dst_cache;
++	struct dst_cache *dst_cache = NULL;
+ 	struct ip_tunnel_info *info;
+ 	struct vxlan_dev *vxlan = netdev_priv(dev);
+ 	const struct iphdr *old_iph = ip_hdr(skb);
+@@ -2432,8 +2567,13 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 
+ 	info = skb_tunnel_info(skb);
+ 
+-	if (rdst) {
+-		dst = &rdst->remote_ip;
++	if (rdst || nhi) {
++		if (rdst) {
++			dst = &rdst->remote_ip;
++		} else {
++			nhc_gw2vxlan_addr(nhi, &remote_ip);
++			dst = &remote_ip;
++		}
+ 		if (vxlan_addr_any(dst)) {
+ 			if (did_rsc) {
+ 				/* short-circuited back to local bridge */
+@@ -2443,11 +2583,17 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 			goto drop;
+ 		}
+ 
+-		dst_port = rdst->remote_port ? rdst->remote_port : vxlan->cfg.dst_port;
+-		vni = (rdst->remote_vni) ? : default_vni;
+-		ifindex = rdst->remote_ifindex;
++		if (rdst) {
++			dst_port = rdst->remote_port ? rdst->remote_port : vxlan->cfg.dst_port;
++			vni = rdst->remote_vni ? : default_vni;
++			ifindex = rdst->remote_ifindex;
++			dst_cache = &rdst->dst_cache;
++		} else {
++			dst_port = vxlan->cfg.dst_port;
++			vni = default_vni;
++			ifindex = nhi->fib_nh.fib_nh_oif;
++		}
+ 		local_ip = vxlan->cfg.saddr;
+-		dst_cache = &rdst->dst_cache;
+ 		md->gbp = skb->mark;
+ 		if (flags & VXLAN_F_TTL_INHERIT) {
+ 			ttl = ip_tunnel_get_ttl(old_iph, skb);
+@@ -2616,6 +2762,19 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 	kfree_skb(skb);
+ }
+ 
++static void vxlan_xmit_nh(struct sk_buff *skb, struct net_device *dev,
++			  struct vxlan_fdb *f, __be32 vni, bool did_rsc)
++{
++	struct nexthop *nh = f->nh;
++	struct nh_info *nhi;
++	u32 hash;
++
++	hash = skb_get_hash(skb);
++	nhi = nexthop_path_fdb(nh, hash);
++
++	vxlan_xmit_one(skb, dev, vni, NULL, nhi, did_rsc);
++}
++
+ /* Transmit local packets over Vxlan
+  *
+  * Outer IP header inherits ECN and DF from inner header.
+@@ -2642,7 +2801,8 @@ static netdev_tx_t vxlan_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			vni = tunnel_id_to_key32(info->key.tun_id);
+ 		} else {
+ 			if (info && info->mode & IP_TUNNEL_INFO_TX)
+-				vxlan_xmit_one(skb, dev, vni, NULL, false);
++				vxlan_xmit_one(skb, dev, vni, NULL, NULL,
++					       false);
+ 			else
+ 				kfree_skb(skb);
+ 			return NETDEV_TX_OK;
+@@ -2692,22 +2852,28 @@ static netdev_tx_t vxlan_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		}
+ 	}
+ 
+-	list_for_each_entry_rcu(rdst, &f->remotes, list) {
+-		struct sk_buff *skb1;
++	if (f->nh) {
++		vxlan_xmit_nh(skb, dev, f,
++			      (vni ? : vxlan->default_dst.remote_vni), did_rsc);
++	} else {
++		list_for_each_entry_rcu(rdst, &f->remotes, list) {
++			struct sk_buff *skb1;
+ 
+-		if (!fdst) {
+-			fdst = rdst;
+-			continue;
++			if (!fdst) {
++				fdst = rdst;
++				continue;
++			}
++			skb1 = skb_clone(skb, GFP_ATOMIC);
++			if (skb1)
++				vxlan_xmit_one(skb1, dev, vni, rdst, NULL,
++					       did_rsc);
+ 		}
+-		skb1 = skb_clone(skb, GFP_ATOMIC);
+-		if (skb1)
+-			vxlan_xmit_one(skb1, dev, vni, rdst, did_rsc);
++		if (fdst)
++			vxlan_xmit_one(skb, dev, vni, fdst, NULL, did_rsc);
++		else
++			kfree_skb(skb);
+ 	}
+ 
+-	if (fdst)
+-		vxlan_xmit_one(skb, dev, vni, fdst, did_rsc);
+-	else
+-		kfree_skb(skb);
+ 	return NETDEV_TX_OK;
+ }
+ 
+@@ -3615,7 +3781,7 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 				       dst->remote_vni,
+ 				       dst->remote_vni,
+ 				       dst->remote_ifindex,
+-				       NTF_SELF, &f);
++				       NTF_SELF, 0, &f, extack);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -4013,7 +4179,7 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
+ 					       vxlan->cfg.dst_port,
+ 					       conf.vni, conf.vni,
+ 					       conf.remote_ifindex,
+-					       NTF_SELF, true, extack);
++					       NTF_SELF, 0, true, extack);
+ 			if (err) {
+ 				spin_unlock_bh(&vxlan->hash_lock[hash_index]);
+ 				netdev_adjacent_change_abort(dst->remote_dev,
+@@ -4335,7 +4501,7 @@ vxlan_fdb_external_learn_add(struct net_device *dev,
+ 			       fdb_info->remote_vni,
+ 			       fdb_info->remote_ifindex,
+ 			       NTF_USE | NTF_SELF | NTF_EXT_LEARNED,
+-			       false, extack);
++			       0, false, extack);
+ 	spin_unlock_bh(&vxlan->hash_lock[hash_index]);
+ 
+ 	return err;
+diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+index cd144e3..eefcda8 100644
+--- a/include/uapi/linux/neighbour.h
++++ b/include/uapi/linux/neighbour.h
+@@ -29,6 +29,7 @@ enum {
+ 	NDA_LINK_NETNSID,
+ 	NDA_SRC_VNI,
+ 	NDA_PROTOCOL,  /* Originator of entry */
++	NDA_NH_ID,
+ 	__NDA_MAX
+ };
  
 -- 
 2.1.4
