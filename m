@@ -2,131 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C11A01C4324
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:45:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5658E1C4328
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729969AbgEDRpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729386AbgEDRpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:45:17 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD0FC061A0E;
-        Mon,  4 May 2020 10:45:17 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id a5so217478pjh.2;
-        Mon, 04 May 2020 10:45:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2s0HKSDbYZQCfls10fELFqwmKEgOAIpeqz5usoPo4C0=;
-        b=g/4fA1U6TvbO9g8SGDv9GgL60R0B0BYHGWxzBykqBMPixJZPEUkJykL3gXRFz3BycJ
-         h4lD13nQHVFN/A8FUFm/u9+nDjpPx+i6DcqFg45WnPAWLxMUHD0jlbAK7eMY4Pfgx0h5
-         3C2GPafI3xCIwcz1Yfe0V/ESc5G0FlF5nTpN87ZXOOCl4jUcxSeISzIv35p801+0Cq1S
-         dSp3UnTupyjEM0/7wGjFz4xyl4iMqWAVs6Z3W/Jw9rBQkcMZCm4g5uYQdxRa2MX/2vTj
-         RVKmafd1J+hYu7lokWZUzhuNFrFGfCwIHOCofBe6Sm3dYrF+TP6cQiRc7Dq5RoASg7Dg
-         4Xyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2s0HKSDbYZQCfls10fELFqwmKEgOAIpeqz5usoPo4C0=;
-        b=KpknbY+/nofefQPx+V/eQozlPQ9vcrTZrQ6jrA4LMCXPIsO1v0PECfq51DiKK8uHVB
-         s2URUAxvYofi8hD/R5BUW4PN6XQgYSxPzf7P6pvhNDpb07nAWrsJ2y3e4dnbOOL/zqiv
-         44Z1hxsqZ6SjlLt22k6QTEPNKyaKk0YoGXOAeplRKOTL/CqsfiZZ/LcCwSeWtDJf5ogz
-         LTRB2IUA5HZzdQrh3l6jfClHfDXBWWkFfWovHNRtjilPoHjoxO3kRLlR5NYZLfb3rhps
-         zmgndNby3Ae8Hxi7gHRiZDEoTauNlx+MuIojVb6mo/1RpVYOVHqdfARl2+DupVk47y5a
-         ocWg==
-X-Gm-Message-State: AGi0PuZAHT8h6LsHdi8EFIQTKFqv5DngsG8HeEBYLPjPIJoSjvCERAYh
-        fWghl61im8QC4nl8DECmlpz83MPi
-X-Google-Smtp-Source: APiQypJ1TXlo5ebIEETrzNeVDBC0y7QkNKSvcViP8Ys+iHpEzMNrMnbMET9A3Oz0ftwc30gsrCH+XA==
-X-Received: by 2002:a17:90a:f985:: with SMTP id cq5mr69889pjb.193.1588614316940;
-        Mon, 04 May 2020 10:45:16 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id h8sm9262758pfo.143.2020.05.04.10.45.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 10:45:16 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] net: phy: add concept of shared storage for
- PHYs
-To:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-References: <20200504163859.10763-1-michael@walle.cc>
- <20200504163859.10763-2-michael@walle.cc>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <3649566c-1424-133f-fed0-b920874fb36b@gmail.com>
-Date:   Mon, 4 May 2020 10:45:14 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        id S1730296AbgEDRpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:45:42 -0400
+Received: from asavdk4.altibox.net ([109.247.116.15]:51864 "EHLO
+        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729386AbgEDRpm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:45:42 -0400
+Received: from ravnborg.org (unknown [158.248.194.18])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by asavdk4.altibox.net (Postfix) with ESMTPS id 674D0804C8;
+        Mon,  4 May 2020 19:45:29 +0200 (CEST)
+Date:   Mon, 4 May 2020 19:45:22 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, alsa-devel@alsa-project.org,
+        Olivier Moysan <olivier.moysan@st.com>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org, Sandy Huang <hjc@rock-chips.com>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        linux-rockchip@lists.infradead.org, linux-mips@vger.kernel.org,
+        devicetree@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Jyri Sarha <jsarha@ti.com>, Mark Brown <broonie@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] docs: dt: fix broken links due to txt->yaml renames
+Message-ID: <20200504174522.GA3383@ravnborg.org>
+References: <967df5c3303b478b76199d4379fe40f5094f3f9b.1588584538.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20200504163859.10763-2-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <967df5c3303b478b76199d4379fe40f5094f3f9b.1588584538.git.mchehab+huawei@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.3 cv=MOBOZvRl c=1 sm=1 tr=0
+        a=UWs3HLbX/2nnQ3s7vZ42gw==:117 a=UWs3HLbX/2nnQ3s7vZ42gw==:17
+        a=kj9zAlcOel0A:10 a=VwQbUJbxAAAA:8 a=7gkXJVJtAAAA:8 a=7CQSdrXTAAAA:8
+        a=8AirrxEcAAAA:8 a=vzhER2c_AAAA:8 a=pGLkceISAAAA:8 a=e5mUnYsNAAAA:8
+        a=bwdeMy8yTPKsQMvDTKEA:9 a=CjuIK1q_8ugA:10 a=AjGcO6oz07-iQ99wixmX:22
+        a=E9Po1WZjFZOl8hwRPBS3:22 a=a-qgeE7W1pNrGK8U0ZQC:22
+        a=ST-jHhOKWsTCqRlWije3:22 a=0YTRHmU2iG2pZC6F1fw2:22
+        a=Vxmtnl_E_bksehYqCbjh:22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Mauro.
 
-
-On 5/4/2020 9:38 AM, Michael Walle wrote:
-> There are packages which contain multiple PHY devices, eg. a quad PHY
-> transceiver. Provide functions to allocate and free shared storage.
+On Mon, May 04, 2020 at 11:30:20AM +0200, Mauro Carvalho Chehab wrote:
+> There are some new broken doc links due to yaml renames
+> at DT. Developers should really run:
 > 
-> Usually, a quad PHY contains global registers, which don't belong to any
-> PHY. Provide convenience functions to access these registers.
+> 	./scripts/documentation-file-ref-check
 > 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+> in order to solve those issues while submitting patches.
+Would love if some bot could do this for me on any patches that creates
+.yaml files or so.
+I know I will forget this and it can be automated.
+If I get a bot mail that my patch would broke a link I would
+have it fixed before it hits any tree.
 
-This looks pretty good, just a few comments below.
 
-[snip]
+> This tool can even fix most of the issues with:
+> 
+> 	./scripts/documentation-file-ref-check --fix
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-> +
-> +/**
-> + * devm_phy_package_join - resource managed phy_package_join()
-> + * @dev: device that is registering this GPIO device
+Patch looks good.
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
 
-You mean device registering this PHY package here?
-
-[snip]
-
-Might be worth a comment that this is a used as a bit number.
-
-> +
-> +#define PHY_SHARED_F_INIT_DONE 0
-> +
->  /*
->   * The Bus class for PHYs.  Devices which provide access to
->   * PHYs should register using this structure
-> @@ -278,6 +301,12 @@ struct mii_bus {
->  	int reset_delay_us;
->  	/* RESET GPIO descriptor pointer */
->  	struct gpio_desc *reset_gpiod;
-> +
-> +	/* protect access to the shared element */
-> +	struct mutex shared_lock;
-> +
-> +	/* shared state across different PHYs */
-> +	struct phy_package_shared *shared[PHY_MAX_ADDR];
->  };
->  #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
+> ---
+> 
+> PS.: This patch is against today's linux-next.
+> 
+> 
+>  .../devicetree/bindings/display/bridge/sii902x.txt          | 2 +-
+>  .../devicetree/bindings/display/rockchip/rockchip-drm.yaml  | 2 +-
+>  .../devicetree/bindings/net/mediatek-bluetooth.txt          | 2 +-
+>  .../devicetree/bindings/sound/audio-graph-card.txt          | 2 +-
+>  .../devicetree/bindings/sound/st,sti-asoc-card.txt          | 2 +-
+>  Documentation/mips/ingenic-tcu.rst                          | 2 +-
+>  MAINTAINERS                                                 | 6 +++---
+>  7 files changed, 9 insertions(+), 9 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/bridge/sii902x.txt b/Documentation/devicetree/bindings/display/bridge/sii902x.txt
+> index 6e14e087c0d0..0d1db3f9da84 100644
+> --- a/Documentation/devicetree/bindings/display/bridge/sii902x.txt
+> +++ b/Documentation/devicetree/bindings/display/bridge/sii902x.txt
+> @@ -37,7 +37,7 @@ Optional properties:
+>  	simple-card or audio-graph-card binding. See their binding
+>  	documents on how to describe the way the sii902x device is
+>  	connected to the rest of the audio system:
+> -	Documentation/devicetree/bindings/sound/simple-card.txt
+> +	Documentation/devicetree/bindings/sound/simple-card.yaml
+>  	Documentation/devicetree/bindings/sound/audio-graph-card.txt
+>  	Note: In case of the audio-graph-card binding the used port
+>  	index should be 3.
+> diff --git a/Documentation/devicetree/bindings/display/rockchip/rockchip-drm.yaml b/Documentation/devicetree/bindings/display/rockchip/rockchip-drm.yaml
+> index ec8ae742d4da..7204da5eb4c5 100644
+> --- a/Documentation/devicetree/bindings/display/rockchip/rockchip-drm.yaml
+> +++ b/Documentation/devicetree/bindings/display/rockchip/rockchip-drm.yaml
+> @@ -24,7 +24,7 @@ properties:
+>      description: |
+>        Should contain a list of phandles pointing to display interface port
+>        of vop devices. vop definitions as defined in
+> -      Documentation/devicetree/bindings/display/rockchip/rockchip-vop.txt
+> +      Documentation/devicetree/bindings/display/rockchip/rockchip-vop.yaml
 >  
-> @@ -478,6 +507,10 @@ struct phy_device {
->  	/* For use by PHYs to maintain extra state */
->  	void *priv;
+>  required:
+>    - compatible
+> diff --git a/Documentation/devicetree/bindings/net/mediatek-bluetooth.txt b/Documentation/devicetree/bindings/net/mediatek-bluetooth.txt
+> index 219bcbd0d344..9ef5bacda8c1 100644
+> --- a/Documentation/devicetree/bindings/net/mediatek-bluetooth.txt
+> +++ b/Documentation/devicetree/bindings/net/mediatek-bluetooth.txt
+> @@ -3,7 +3,7 @@ MediaTek SoC built-in Bluetooth Devices
 >  
-> +	/* shared data pointer */
-> +	/* For use by PHYs inside the same package and needs a shared state. */
-
-s/and needs/that need/
--- 
-Florian
+>  This device is a serial attached device to BTIF device and thus it must be a
+>  child node of the serial node with BTIF. The dt-bindings details for BTIF
+> -device can be known via Documentation/devicetree/bindings/serial/8250.txt.
+> +device can be known via Documentation/devicetree/bindings/serial/8250.yaml.
+>  
+>  Required properties:
+>  
+> diff --git a/Documentation/devicetree/bindings/sound/audio-graph-card.txt b/Documentation/devicetree/bindings/sound/audio-graph-card.txt
+> index 269682619a70..d5f6919a2d69 100644
+> --- a/Documentation/devicetree/bindings/sound/audio-graph-card.txt
+> +++ b/Documentation/devicetree/bindings/sound/audio-graph-card.txt
+> @@ -5,7 +5,7 @@ It is based on common bindings for device graphs.
+>  see ${LINUX}/Documentation/devicetree/bindings/graph.txt
+>  
+>  Basically, Audio Graph Card property is same as Simple Card.
+> -see ${LINUX}/Documentation/devicetree/bindings/sound/simple-card.txt
+> +see ${LINUX}/Documentation/devicetree/bindings/sound/simple-card.yaml
+>  
+>  Below are same as Simple-Card.
+>  
+> diff --git a/Documentation/devicetree/bindings/sound/st,sti-asoc-card.txt b/Documentation/devicetree/bindings/sound/st,sti-asoc-card.txt
+> index 4d51f3f5ea98..a6ffcdec6f6a 100644
+> --- a/Documentation/devicetree/bindings/sound/st,sti-asoc-card.txt
+> +++ b/Documentation/devicetree/bindings/sound/st,sti-asoc-card.txt
+> @@ -5,7 +5,7 @@ codec or external codecs.
+>  
+>  sti sound drivers allows to expose sti SoC audio interface through the
+>  generic ASoC simple card. For details about sound card declaration please refer to
+> -Documentation/devicetree/bindings/sound/simple-card.txt.
+> +Documentation/devicetree/bindings/sound/simple-card.yaml.
+>  
+>  1) sti-uniperiph-dai: audio dai device.
+>  ---------------------------------------
+> diff --git a/Documentation/mips/ingenic-tcu.rst b/Documentation/mips/ingenic-tcu.rst
+> index c5a646b14450..2b75760619b4 100644
+> --- a/Documentation/mips/ingenic-tcu.rst
+> +++ b/Documentation/mips/ingenic-tcu.rst
+> @@ -68,4 +68,4 @@ and frameworks can be controlled from the same registers, all of these
+>  drivers access their registers through the same regmap.
+>  
+>  For more information regarding the devicetree bindings of the TCU drivers,
+> -have a look at Documentation/devicetree/bindings/timer/ingenic,tcu.txt.
+> +have a look at Documentation/devicetree/bindings/timer/ingenic,tcu.yaml.
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index b6ec0b3c3125..b70842425302 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3911,7 +3911,7 @@ L:	linux-crypto@vger.kernel.org
+>  S:	Supported
+>  F:	drivers/char/hw_random/cctrng.c
+>  F:	drivers/char/hw_random/cctrng.h
+> -F:	Documentation/devicetree/bindings/rng/arm-cctrng.txt
+> +F:	Documentation/devicetree/bindings/rng/arm-cctrng.yaml
+>  W:	https://developer.arm.com/products/system-ip/trustzone-cryptocell/cryptocell-700-family
+>  
+>  CEC FRAMEWORK
+> @@ -5446,7 +5446,7 @@ F:	include/uapi/drm/r128_drm.h
+>  DRM DRIVER FOR RAYDIUM RM67191 PANELS
+>  M:	Robert Chiras <robert.chiras@nxp.com>
+>  S:	Maintained
+> -F:	Documentation/devicetree/bindings/display/panel/raydium,rm67191.txt
+> +F:	Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
+>  F:	drivers/gpu/drm/panel/panel-raydium-rm67191.c
+>  
+>  DRM DRIVER FOR ROCKTECH JH057N00900 PANELS
+> @@ -16294,7 +16294,7 @@ M:	Hoan Tran <hoan@os.amperecomputing.com>
+>  M:	Serge Semin <fancer.lancer@gmail.com>
+>  L:	linux-gpio@vger.kernel.org
+>  S:	Maintained
+> -F:	Documentation/devicetree/bindings/gpio/snps-dwapb-gpio.txt
+> +F:	Documentation/devicetree/bindings/gpio/snps,dw-apb-gpio.yaml
+>  F:	drivers/gpio/gpio-dwapb.c
+>  
+>  SYNOPSYS DESIGNWARE AXI DMAC DRIVER
+> -- 
+> 2.25.4
+> 
+> _______________________________________________
+> dri-devel mailing list
+> dri-devel@lists.freedesktop.org
+> https://lists.freedesktop.org/mailman/listinfo/dri-devel
