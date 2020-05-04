@@ -2,61 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B22CD1C42A9
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD29D1C42B8
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730088AbgEDR0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51558 "EHLO
+        id S1730173AbgEDR2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729549AbgEDR0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:26:05 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1458FC061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 10:26:05 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id d15so63798wrx.3
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 10:26:05 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730014AbgEDR2c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:28:32 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9553EC061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 10:28:32 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id s8so30142wrt.9
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 10:28:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=39a6a45aAhI37SBtghDGoyPPZUGcFGiRqSVaNvdGgcY=;
-        b=kiqOtDeQl0yxJa8BxFwZsTrkIVFjBY8+zhTPq2S7+ArMT5cvnf66Jo0Mkx25BW4ljm
-         LdyufEEqGZgM33HS2urc3LD31rSU741cd51QbDdEvI7sTDsArvRGOhyra36JO/b++JY8
-         AG6QNuu+LVGsXEGLLNmDNrUG0bhmAwB3SMzbkhIJrMj4ByEqPv+iDCnFvx2mMhFPJd1r
-         5tElpwGE2wHtdufOy+4C6Lc1+dgataW2ihacod/MIbkTq6PvUYCbTLjzGxo4JnUfnNi/
-         HLv/68KM1kBHp6sZ3cgHPEGOr25iI6s1MBFdc6Wh11w/9EmRWK/A+57OSBYUWshxwr0J
-         vUbA==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UFM1X7OscGNc6keRZ/CtLtFqcGBmpDr08iC+LJm6cUw=;
+        b=ZuOxm11ydoKP/tHeTSsuZfAJNlAa2Loa20x4YcxruoGrKAUZXpSP8gaqb40beZwcFr
+         VggNyqBiRGDfg+TV/g54eUhDg/bmkxaPsCqr74V/gISMJwZvO4ZNybTAm3lUZp27CJnP
+         eFZ7YN3/czimfrqKXoDrsUrOHB53ePzIBrcIIhT+qvnMh7n0y0dMtgQS3WQFsS/d5GQ4
+         o2OVU+g/brSIWdk16lWV4fnqB24zEFi4lyyzM4gXY/UQI80Dz3ZGewPRYmcBHzeDxiiB
+         skE4BHlgDZ16l9puldoO4BOfcGFKdr7Q/oEqMLPOpRk8vI2s0JW7x4DSLlb4Hfi6ksTk
+         /eLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=39a6a45aAhI37SBtghDGoyPPZUGcFGiRqSVaNvdGgcY=;
-        b=gNNB3Vl9dWnFDy5KZGoFVWN5CeDlSMLWhf6HZvR14QH7b50HmkM2aVSBtDkdDxfUtn
-         W7yHNIrbN3oqmCPgDq0kNKvjl4cNhRsD1OKztMuBp9y5dbAEwHfnGMU9+FDn4ieAIgQk
-         K0F697k3Uw8WPcP4lSPv/nOxSl9sGrcRfHQLxUw5lXda2cbl+g2sTv6zSPsgSX/jaq56
-         viiL3B/UntwWIF5cHz1Zj3VL9enNmhKuv2B32bNxqa2CzTvdt+sF0YWMa/AKXsbtIJ2m
-         rwEF2P8a5DAxDj9J3ygOU8kKg54dRdphztEDJNGNL/oV/+bZEi90zHhOVHHMAi2sEHqo
-         ym3w==
-X-Gm-Message-State: AGi0Pua2BUobB76X1dwHsJhHJ2gi1DigY/dMnUjchV9rBgsgSodbnZoa
-        zfO4uCymDh0I3DvWZnt8NDUGfTg2
-X-Google-Smtp-Source: APiQypI+IFt2aHXbPlcZsh9k8lCx/QGcxu8n6Or9OAWn+0ooR2Kr8yWvTh+1+9CqnTBknHHVZeWh1g==
-X-Received: by 2002:adf:ef48:: with SMTP id c8mr383162wrp.140.1588613163574;
-        Mon, 04 May 2020 10:26:03 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UFM1X7OscGNc6keRZ/CtLtFqcGBmpDr08iC+LJm6cUw=;
+        b=fkb6PTbShuOvunleH/usWj7VLLxy3PDK//Mw2iXB5eelfkx0RoazxH5Df4af221o0V
+         QkEmcNXYC/YomSWkR4bMIKmZbvGz+Wv889HWXmgbdwMvb48U66MSEaL3e78au510DTSt
+         n+ByRYRY+IIeZ/Npe3YdwVLegWfiw5eBG2dHiqPgZ3YEeACnqCuWjWHnHBOsC6tS+FbV
+         4t7l1386VJufm+N72BX20SJNqVc3gD+ObldzG/aTvYZ3Vxi/MAXfYWLC3EIYCatBG+Y4
+         ytgOf8IHGe+9GwIBEh1ca7XaI25z7TR5kq02o7dFt/jXBkf09JVIr+nhzhTby/QNDu46
+         SlMw==
+X-Gm-Message-State: AGi0Pua+bTI5tEpkP9+w57TPqnExCAyQ9aYlBXgcovJfwgGMjfitiSJa
+        hKInuiYkjMNdSW17+v/Npwck62Pe
+X-Google-Smtp-Source: APiQypJlBaONphLSAjuYUsIYgn/r1rCTgOwWSFkPUEpA9JaEWsLaSAmIU4yUibDQK9nvDMVB88a15g==
+X-Received: by 2002:adf:f041:: with SMTP id t1mr373680wro.346.1588613311011;
+        Mon, 04 May 2020 10:28:31 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f43:c500:c07a:3448:98ce:439e? (p200300EA8F43C500C07A344898CE439E.dip0.t-ipconnect.de. [2003:ea:8f43:c500:c07a:3448:98ce:439e])
-        by smtp.googlemail.com with ESMTPSA id s8sm16482169wrt.69.2020.05.04.10.26.02
+        by smtp.googlemail.com with ESMTPSA id k184sm173871wmf.9.2020.05.04.10.28.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 10:26:03 -0700 (PDT)
+        Mon, 04 May 2020 10:28:30 -0700 (PDT)
+Subject: [PATCH net-next 1/2] net: add helper eth_hw_addr_crc
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/2] net: add helper eth_hw_addr_crc
-Message-ID: <329df165-a6a3-3c3b-cbb3-ea77ce2ea672@gmail.com>
-Date:   Mon, 4 May 2020 19:25:58 +0200
+References: <329df165-a6a3-3c3b-cbb3-ea77ce2ea672@gmail.com>
+Message-ID: <9de1aa6e-6c22-fad3-efe3-0200efb289bd@gmail.com>
+Date:   Mon, 4 May 2020 19:27:00 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <329df165-a6a3-3c3b-cbb3-ea77ce2ea672@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,16 +72,42 @@ Several drivers use the same code as basis for filter hashes. Therefore
 let's factor it out to a helper. This way drivers don't have to access
 struct netdev_hw_addr internals.
 
-First user is r8169.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ include/linux/etherdevice.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Heiner Kallweit (2):
-  net: add helper eth_hw_addr_crc
-  r8169: use new helper eth_hw_addr_crc
-
- drivers/net/ethernet/realtek/r8169_main.c |  3 +--
- include/linux/etherdevice.h               | 12 ++++++++++++
- 2 files changed, 13 insertions(+), 2 deletions(-)
-
+diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+index 8801f1f98..2e5debc03 100644
+--- a/include/linux/etherdevice.h
++++ b/include/linux/etherdevice.h
+@@ -20,6 +20,7 @@
+ #include <linux/if_ether.h>
+ #include <linux/netdevice.h>
+ #include <linux/random.h>
++#include <linux/crc32.h>
+ #include <asm/unaligned.h>
+ #include <asm/bitsperlong.h>
+ 
+@@ -265,6 +266,17 @@ static inline void eth_hw_addr_random(struct net_device *dev)
+ 	eth_random_addr(dev->dev_addr);
+ }
+ 
++/**
++ * eth_hw_addr_crc - Calculate CRC from netdev_hw_addr
++ * @ha: pointer to hardware address
++ *
++ * Calculate CRC from a hardware address as basis for filter hashes.
++ */
++static inline u32 eth_hw_addr_crc(struct netdev_hw_addr *ha)
++{
++	return ether_crc(ETH_ALEN, ha->addr);
++}
++
+ /**
+  * ether_addr_copy - Copy an Ethernet address
+  * @dst: Pointer to a six-byte array Ethernet address destination
 -- 
 2.26.2
+
 
