@@ -2,116 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 694E51C49C3
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 00:45:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41EBB1C49EB
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 00:57:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728141AbgEDWpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 18:45:05 -0400
-Received: from mta-p8.oit.umn.edu ([134.84.196.208]:41980 "EHLO
-        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726469AbgEDWpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 18:45:05 -0400
-X-Greylist: delayed 503 seconds by postgrey-1.27 at vger.kernel.org; Mon, 04 May 2020 18:45:04 EDT
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 49GHlY1ZpFz9vY6h
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 22:36:41 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p8.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id gf40TafUjGYt for <netdev@vger.kernel.org>;
-        Mon,  4 May 2020 17:36:41 -0500 (CDT)
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 49GHlY0TvHz9vY6Z
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 17:36:41 -0500 (CDT)
-Received: by mail-oi1-f199.google.com with SMTP id j84so319423oib.21
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 15:36:41 -0700 (PDT)
+        id S1728211AbgEDW5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 18:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728118AbgEDW5V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 18:57:21 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46402C061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:57:21 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id x17so446892wrt.5
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 15:57:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=64urMlieBPhteKCakD46TmqveQT9kT5oO4nkAodHJ9Y=;
-        b=C0VsSiJfDQGikGjlrABXcdLHwAIpGiBKuCYmcslbNcRcnJHD+4qMjhDaCjHVyEzaI9
-         3Cxg/SnMMZUXX7fC069f7tQFyvC/+O2z128JM/bbYAGq0+L40ZcdtcMgorsv3/NEUVkA
-         HqSTKkc4T2Xj4iDxf7m1CpJumBDKkn8b1c88czpBREMcs5KDvEIJxytJX+V6r11qEL11
-         JQqPCPTLORUjkeQoXSRiHYGKTQ2vX9A0ck5DQ9WpCRehnzRfO9vnAT38H6oa6qqoOr4S
-         4BBU+ZSoyV79+MLSxu+g7OMkvi9okgAtxn8jWuq0JgVTOV29oTn5X/q8v/LE15AgyCno
-         7Oyg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=p0wqQckVgtJPU/WsIc2gqoqI8PhGIAOFQ0q1H46E9lo=;
+        b=or5SyXEK2vhpj50NNKXUIF95YBvlZAB1mMeaawUkMookPLxbeU9I5CCYCuUWg/PzsA
+         NGVFbstcwDhs8NmcOupHZ2rw5IcYyMsPVxE+5v2vnao7/CSV9Vkqu37iATRzBfkyMXEz
+         slzW2b+7a68tpFD/poqJBmUE9if14ZoXDyEf7EVxv8nEOmrShc2bo46VfTbpYmyFFNh+
+         EcuhJoElEn1dXaCyq/7S0LucnSCL9FjmX7Ttu9sDqw7MfaK/nfrfjxxJNTgxbOGs59IW
+         x7n7fMdqMVzYs4Ti7j1LX97fvajGLilwznC+l6JUBJxBczI2ghBzV7GDhqf9fh2zNXdY
+         1T2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=64urMlieBPhteKCakD46TmqveQT9kT5oO4nkAodHJ9Y=;
-        b=PM0W/rZ1iAntZ1DkB7metxvaw02gDpq+2C6DXUM5oQND8w+swbzlE1L2xfoMVRmefH
-         yFecZBwEoCtAxwZZb2MIxQ3p4dhSpMzcFrATvg68todbQCKtKptzE7vbtu/KTXgBvI47
-         Ztq70J7Gzsg/Qz9fXUDM6G9MVc1zLFWgsgy7ofAisK/fzOVipzsLixES0xgvc0VJiPM2
-         +OKsZNoVEX9f79ZyY4RUahdqgSzqggLI++8xxrMI290rvpaIIhooDDueWMxj9lp29Dqt
-         4WYEba97t3B5BZluT6ock9cYQJC3lCs4lw2tXYg80JY6OppYUGRKdtVYTXxeAKofOvXn
-         z19Q==
-X-Gm-Message-State: AGi0PuYzXbgUHfD4XIaFDn2Lh3KV5/MmdacF5C08iZlDM91a3mP7Np8Z
-        WynRa6kgeUlKLlpwYXgk7a5miMLhedNPRuCvhco//XWco37QTWQgsYkCScSn7v3C24himIFe8pE
-        wTRFf2eGdDPmb2fkA78QJ1Mkcs5s4n9mymGsR
-X-Received: by 2002:a54:4115:: with SMTP id l21mr462896oic.15.1588631800517;
-        Mon, 04 May 2020 15:36:40 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLhs2soxclb524UwzekmnX0fUXn6jRkl1yJQEuxf2en1z1zVxNicRVUvSslUbXitlUpnydFzs6wwWDi6ZC8Wy4=
-X-Received: by 2002:a54:4115:: with SMTP id l21mr462862oic.15.1588631800122;
- Mon, 04 May 2020 15:36:40 -0700 (PDT)
-MIME-Version: 1.0
-From:   Navid Emamdoost <emamd001@umn.edu>
-Date:   Mon, 4 May 2020 17:36:29 -0500
-Message-ID: <CAJ7L_GoCA0e0npN5amfAjK4KJKxg0fTXo94VqzMMB65y4LRMMA@mail.gmail.com>
-Subject: Potential Race Condition in tls_hw_hash() and alike
-To:     Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        Dave Watson <davejwatson@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Stephen McCamant <mccamant@cs.umn.edu>, Kangjie Lu <kjlu@umn.edu>,
-        Qiushi Wu <wu000273@umn.edu>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=p0wqQckVgtJPU/WsIc2gqoqI8PhGIAOFQ0q1H46E9lo=;
+        b=ai9J7TXop65akDdORPBX5az9XVxdPoMfmu4AeY8Aznir0+F/a9xCRq2dqbKJlvQRCw
+         ovo5ppDwzkOrP5UPYldF53IkHnd8FmTROM/XkS4G93sf6yg2YfSFnf6WKMUctcT6Kj71
+         3gY0NzOQzmbs5lHUNycV748hcfY/bKRmichVPYIQHiF/gqqtfaKYB2tYXuazm/EdtOiX
+         HHIJntihRQi+2Nd0y/cvVtxCZU+MegOZjnTD4AR9cuCHfxN0VNRHAjriV3rRggaKv7OH
+         32cXBFAh98egSPf+NRXV1PPvy+183b5jPEcQjoLyin37NM2JPKPP+5n+AFAuDTxcb+RE
+         D6jg==
+X-Gm-Message-State: AGi0PuavTHtDynBBy1jfVMpFMA9hzF5haOKsgKZmwPLq1TPuVaSYSKK4
+        2QhRDm1JR8gRm8VKlqoE4xTxqz0IakE=
+X-Google-Smtp-Source: APiQypJguVxoUXvq20w0YUlpRGPDmR+w95WV5+8vslc5J8lNGvAwVAChb6x2pQiFKysAR9gn6wRoGw==
+X-Received: by 2002:a5d:6850:: with SMTP id o16mr128331wrw.309.1588633039706;
+        Mon, 04 May 2020 15:57:19 -0700 (PDT)
+Received: from localhost.localdomain ([86.121.118.29])
+        by smtp.gmail.com with ESMTPSA id e2sm21146075wrv.89.2020.05.04.15.57.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2020 15:57:19 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        vinicius.gomes@intel.com, po.liu@nxp.com, xiaoliang.yang_1@nxp.com,
+        mingkai.hu@nxp.com, christian.herber@nxp.com,
+        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
+        vlad@buslov.dev, jiri@mellanox.com, idosch@mellanox.com,
+        kuba@kernel.org
+Subject: [PATCH net-next 0/6] tc-gate offload for SJA1105 DSA switch
+Date:   Tue,  5 May 2020 01:56:42 +0300
+Message-Id: <20200504225648.23085-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I was wondering if a race condition in net/tls/tls_main.c may lead to
-a UAF or not?
+Expose the TTEthernet hardware features of the switch using standard
+tc-flower actions: trap, drop, redirect and gate.
 
-The scenario can be like this:
-1) device is initialized and registered via chtls_register_dev()
-2) while tls_hw_hash() is executed in one thread, the device gets
-detached (CPU2), and another thread tries to acquire the pointer
-(CPU3):
+Vladimir Oltean (6):
+  net: dsa: introduce a dsa_port_from_netdev public helper
+  net: dsa: sja1105: add static tables for virtual links
+  net: dsa: sja1105: make room for virtual link parsing in flower
+    offload
+  net: dsa: sja1105: support flow-based redirection via virtual links
+  net: dsa: sja1105: implement tc-gate using time-triggered virtual
+    links
+  docs: net: dsa: sja1105: document intended usage of virtual links
 
-        CPU1:  tls_hw_hash()
-        CPU2: chtls_uld_state_change()
-                  CPU3: can be tls_hw_hash() or tls_hw_unhash()
-        //<assume kref == 1>
-        spin_lock_bh(&device_spinlock);
-        list_for_each_entry(dev, &device_list, dev_list) {
-                if (dev->hash) {
-                        kref_get(&dev->kref);  //kref == 2
-                        spin_unlock_bh(&device_spinlock);
- kref_put(&cdev->tlsdev.kref, cdev->tlsdev.release); //kref == 1
-                        err |= dev->hash(dev, sk);
+ Documentation/networking/dsa/sja1105.rst      | 116 +++
+ drivers/net/dsa/sja1105/Kconfig               |   9 +
+ drivers/net/dsa/sja1105/Makefile              |   4 +
+ drivers/net/dsa/sja1105/sja1105.h             |  59 +-
+ .../net/dsa/sja1105/sja1105_dynamic_config.c  |  51 ++
+ drivers/net/dsa/sja1105/sja1105_flower.c      | 215 ++++-
+ drivers/net/dsa/sja1105/sja1105_main.c        |  13 +-
+ drivers/net/dsa/sja1105/sja1105_ptp.h         |  13 +
+ drivers/net/dsa/sja1105/sja1105_spi.c         |   2 +
+ .../net/dsa/sja1105/sja1105_static_config.c   | 202 +++++
+ .../net/dsa/sja1105/sja1105_static_config.h   |  65 ++
+ drivers/net/dsa/sja1105/sja1105_tas.c         | 127 ++-
+ drivers/net/dsa/sja1105/sja1105_tas.h         |  31 +
+ drivers/net/dsa/sja1105/sja1105_vl.c          | 796 ++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_vl.h          |  72 ++
+ include/net/dsa.h                             |   1 +
+ net/dsa/dsa.c                                 |   9 +
+ 17 files changed, 1741 insertions(+), 44 deletions(-)
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_vl.c
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_vl.h
 
+-- 
+2.17.1
 
-spin_lock_bh(&device_spinlock);
-                        kref_put(&dev->kref, dev->release);   //kref
-== 0, release
-                         kref_get(&dev->kref);  //BUG: kref 0 to 1!
-
-
-
-
-Basically, the problem comes from the fact that kref_put is not lock protected.
-Do you agree that such a race condition may happen? If yes, then is
-moving kref_put inside the lock a practical solution?
-
-Thank you,
---
-Navid.
