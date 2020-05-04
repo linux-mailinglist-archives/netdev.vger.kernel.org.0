@@ -2,182 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C88B1C4995
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 00:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 694E51C49C3
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 00:45:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728241AbgEDW2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 18:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728209AbgEDW2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 18:28:35 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5E5C061A0F
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:28:35 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id x2so43235pfx.7
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 15:28:35 -0700 (PDT)
+        id S1728141AbgEDWpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 18:45:05 -0400
+Received: from mta-p8.oit.umn.edu ([134.84.196.208]:41980 "EHLO
+        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726469AbgEDWpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 18:45:05 -0400
+X-Greylist: delayed 503 seconds by postgrey-1.27 at vger.kernel.org; Mon, 04 May 2020 18:45:04 EDT
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 49GHlY1ZpFz9vY6h
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 22:36:41 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p8.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id gf40TafUjGYt for <netdev@vger.kernel.org>;
+        Mon,  4 May 2020 17:36:41 -0500 (CDT)
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 49GHlY0TvHz9vY6Z
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 17:36:41 -0500 (CDT)
+Received: by mail-oi1-f199.google.com with SMTP id j84so319423oib.21
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 15:36:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=cJMf+LX27V0WOkoHK5RGaB2GQBlawx8Eb3REqvDLDB4=;
-        b=QsxAHavd8yvDbL3M5530ckQor0EdXeE2vVeU8CIQNhJidSOe+kyZ+8WioO7G1yP40N
-         pPQJ5IBxGJTZtr2Czrb9LiFsO0jxy49ADdSWXSHCmfHSJclMqcypXMxfOWNe5Gi3siyM
-         wOCz1n5XoZVPXzh4wXHledSjWUw5rTQelNgBM=
+        d=umn.edu; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=64urMlieBPhteKCakD46TmqveQT9kT5oO4nkAodHJ9Y=;
+        b=C0VsSiJfDQGikGjlrABXcdLHwAIpGiBKuCYmcslbNcRcnJHD+4qMjhDaCjHVyEzaI9
+         3Cxg/SnMMZUXX7fC069f7tQFyvC/+O2z128JM/bbYAGq0+L40ZcdtcMgorsv3/NEUVkA
+         HqSTKkc4T2Xj4iDxf7m1CpJumBDKkn8b1c88czpBREMcs5KDvEIJxytJX+V6r11qEL11
+         JQqPCPTLORUjkeQoXSRiHYGKTQ2vX9A0ck5DQ9WpCRehnzRfO9vnAT38H6oa6qqoOr4S
+         4BBU+ZSoyV79+MLSxu+g7OMkvi9okgAtxn8jWuq0JgVTOV29oTn5X/q8v/LE15AgyCno
+         7Oyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=cJMf+LX27V0WOkoHK5RGaB2GQBlawx8Eb3REqvDLDB4=;
-        b=QGZQYpcweOBiLZomlNwrjcq1+Dl4NlDL+dyPnTDOD7gn7AqHIvRpy3Acs4mwXZBHno
-         jll61lBU7K20expdTifR977zReFfHvaqfGaNJ/xuBC268aOAiMUCW4nbUOc63FbSv7k8
-         KR0U0Zpq+JTWL9/NbZjNkt0wQB3HIruFnrB8ClDfhkCw/pWodtAzLP+GDHLCPdkG6HUC
-         IVH83eAdPvsXmR5cJOcdgv3nSYqWCYFiTBcLvf70sVk+UScq7HG3xFH1ovRzp3ehB1AG
-         x3FH7ZsPWdCkZpiklBwPt6Bdd3w6S2BozBSj7tgMcmUtYJNW4F5l6EOH7txA1xYt9oIk
-         QUdQ==
-X-Gm-Message-State: AGi0PuYzFE4ITJC5Ni9Ctr8RnAA4DtHh/XQAoyosD8eK0c9Wdxsx9PRJ
-        K/f2SExfJJ4ybbiZ74WCFumvZQ==
-X-Google-Smtp-Source: APiQypIY4sip9Nop/tyjabJRPSZ87Xg62stSblYKAByUm1mMCdKDrKnKjKzrr6jC6mCVh+wiYA+GXg==
-X-Received: by 2002:a63:742:: with SMTP id 63mr391552pgh.33.1588631314574;
-        Mon, 04 May 2020 15:28:34 -0700 (PDT)
-Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id ie17sm21213pjb.19.2020.05.04.15.28.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 04 May 2020 15:28:33 -0700 (PDT)
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-X-Google-Original-From: Roopa Prabhu
-To:     dsahern@gmail.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
-        idosch@mellanox.com, jiri@mellanox.com, petrm@mellanox.com
-Subject: [RFC PATCH net-next 5/5] selftests: net: add fdb nexthop tests
-Date:   Mon,  4 May 2020 15:28:21 -0700
-Message-Id: <1588631301-21564-6-git-send-email-roopa@cumulusnetworks.com>
-X-Mailer: git-send-email 2.1.4
-In-Reply-To: <1588631301-21564-1-git-send-email-roopa@cumulusnetworks.com>
-References: <1588631301-21564-1-git-send-email-roopa@cumulusnetworks.com>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=64urMlieBPhteKCakD46TmqveQT9kT5oO4nkAodHJ9Y=;
+        b=PM0W/rZ1iAntZ1DkB7metxvaw02gDpq+2C6DXUM5oQND8w+swbzlE1L2xfoMVRmefH
+         yFecZBwEoCtAxwZZb2MIxQ3p4dhSpMzcFrATvg68todbQCKtKptzE7vbtu/KTXgBvI47
+         Ztq70J7Gzsg/Qz9fXUDM6G9MVc1zLFWgsgy7ofAisK/fzOVipzsLixES0xgvc0VJiPM2
+         +OKsZNoVEX9f79ZyY4RUahdqgSzqggLI++8xxrMI290rvpaIIhooDDueWMxj9lp29Dqt
+         4WYEba97t3B5BZluT6ock9cYQJC3lCs4lw2tXYg80JY6OppYUGRKdtVYTXxeAKofOvXn
+         z19Q==
+X-Gm-Message-State: AGi0PuYzXbgUHfD4XIaFDn2Lh3KV5/MmdacF5C08iZlDM91a3mP7Np8Z
+        WynRa6kgeUlKLlpwYXgk7a5miMLhedNPRuCvhco//XWco37QTWQgsYkCScSn7v3C24himIFe8pE
+        wTRFf2eGdDPmb2fkA78QJ1Mkcs5s4n9mymGsR
+X-Received: by 2002:a54:4115:: with SMTP id l21mr462896oic.15.1588631800517;
+        Mon, 04 May 2020 15:36:40 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLhs2soxclb524UwzekmnX0fUXn6jRkl1yJQEuxf2en1z1zVxNicRVUvSslUbXitlUpnydFzs6wwWDi6ZC8Wy4=
+X-Received: by 2002:a54:4115:: with SMTP id l21mr462862oic.15.1588631800122;
+ Mon, 04 May 2020 15:36:40 -0700 (PDT)
+MIME-Version: 1.0
+From:   Navid Emamdoost <emamd001@umn.edu>
+Date:   Mon, 4 May 2020 17:36:29 -0500
+Message-ID: <CAJ7L_GoCA0e0npN5amfAjK4KJKxg0fTXo94VqzMMB65y4LRMMA@mail.gmail.com>
+Subject: Potential Race Condition in tls_hw_hash() and alike
+To:     Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        Dave Watson <davejwatson@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Stephen McCamant <mccamant@cs.umn.edu>, Kangjie Lu <kjlu@umn.edu>,
+        Qiushi Wu <wu000273@umn.edu>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roopa Prabhu <roopa@cumulusnetworks.com>
+Hi,
 
-This commit adds ipv4 and ipv6 basic fdb tests to fib_nexthops.sh.
-Started with a separate test script for fdb nexthops but seems like
-its better for basic tests to live in fib_nexthops.sh for overall
-nexthop API coverage.
+I was wondering if a race condition in net/tls/tls_main.c may lead to
+a UAF or not?
 
-TODO:
-- runtime vxlan fdb tests: Its best to add test similar
-to the forwarding/vxlan_symmetric.sh test (WIP at the moment. Any
-suggestions welcome. Plan to include it in the non-RFC version)
+The scenario can be like this:
+1) device is initialized and registered via chtls_register_dev()
+2) while tls_hw_hash() is executed in one thread, the device gets
+detached (CPU2), and another thread tries to acquire the pointer
+(CPU3):
 
-Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
----
- tools/testing/selftests/net/fib_nexthops.sh | 77 ++++++++++++++++++++++++++++-
- 1 file changed, 75 insertions(+), 2 deletions(-)
+        CPU1:  tls_hw_hash()
+        CPU2: chtls_uld_state_change()
+                  CPU3: can be tls_hw_hash() or tls_hw_unhash()
+        //<assume kref == 1>
+        spin_lock_bh(&device_spinlock);
+        list_for_each_entry(dev, &device_list, dev_list) {
+                if (dev->hash) {
+                        kref_get(&dev->kref);  //kref == 2
+                        spin_unlock_bh(&device_spinlock);
+ kref_put(&cdev->tlsdev.kref, cdev->tlsdev.release); //kref == 1
+                        err |= dev->hash(dev, sk);
 
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index dd0e5fe..41bce6c 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -19,8 +19,8 @@ ret=0
- ksft_skip=4
- 
- # all tests in this script. Can be overridden with -t option
--IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_compat_mode"
--IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_compat_mode"
-+IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_compat_mode ipv4_fdb_grp_fcnal"
-+IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_compat_mode ipv6_fdb_grp_fcnal"
- 
- ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
- TESTS="${ALL_TESTS}"
-@@ -146,6 +146,7 @@ setup()
- 	create_ns remote
- 
- 	IP="ip -netns me"
-+	BRIDGE="bridge -netns me"
- 	set -e
- 	$IP li add veth1 type veth peer name veth2
- 	$IP li set veth1 up
-@@ -280,6 +281,78 @@ stop_ip_monitor()
- 	return $rc
- }
- 
-+check_nexthop_fdb_support()
-+{
-+	$IP nexthop help 2>&1 | grep -q fdb
-+	if [ $? -ne 0 ]; then
-+		echo "SKIP: iproute2 too old, missing fdb nexthop support"
-+		exit $ksft_skip
-+	fi
-+}
-+
-+ipv6_fdb_grp_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv6 fdb groups functional"
-+	echo "--------------------------"
-+
-+	check_nexthop_fdb_support
-+
-+	# basic functionality: create a fdb nexthop group, default weight
-+	run_cmd "$IP nexthop add id 61 via 2001:db8:91::2 fdb"
-+	run_cmd "$IP nexthop add id 62 via 2001:db8:91::3 fdb"
-+	run_cmd "$IP nexthop add id 101 group 61/62 fdb"
-+	log_test $? 0 "Create nexthop group with single nexthop"
-+
-+	# get nexthop group
-+	run_cmd "$IP nexthop get id 101"
-+	log_test $? 0 "Get nexthop group by id"
-+	check_nexthop "id 101" "id 101 group 61/62 fdb"
-+
-+	$IP link add name vx10 type vxlan id 1010 local 10.0.0.1 remote 10.0.0.2 dstport 4789 nolearning noudpcsum tos inherit ttl 100
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:12 dev vx10 nhid 101 self"
-+	log_test $? 0 "Fdb mac add with nexthop"
-+
-+	run_cmd "$IP nexthop del id 101"
-+	log_test $? 0 "Fdb nexthop delete"
-+
-+	$IP link del dev vx10
-+}
-+
-+ipv4_fdb_grp_fcnal()
-+{
-+	local rc
-+
-+	echo
-+	echo "IPv4 fdb groups functional"
-+	echo "--------------------------"
-+
-+	check_nexthop_fdb_support
-+
-+	# create group with multiple nexthops
-+	run_cmd "$IP nexthop add id 12 via 172.16.1.2 fdb"
-+	run_cmd "$IP nexthop add id 13 via 172.16.1.3 fdb"
-+	run_cmd "$IP nexthop add id 102 group 12/13 fdb"
-+	log_test $? 0 "Nexthop group with multiple nexthops"
-+	check_nexthop "id 102" "id 102 group 12/13"
-+
-+	# get nexthop group
-+	run_cmd "$IP nexthop get id 102"
-+	log_test $? 0 "Get nexthop group by id"
-+	check_nexthop "id 102" "id 102 group 12/13 fdb"
-+
-+	run_cmd "$IP link add name vx10 type vxlan id 1010 local 10.0.0.1 remote 10.0.0.2 dstport 4789 nolearning noudpcsum tos inherit ttl 100"
-+	run_cmd "$BRIDGE fdb add 02:02:00:00:00:13 dev vx10 nhid 102 self"
-+	log_test $? 0 "Fdb mac add with nexthop"
-+
-+	run_cmd "$IP nexthop del id 102"
-+	log_test $? 0 "Fdb nexthop delete"
-+
-+	$IP link del dev vx10
-+}
-+
- ################################################################################
- # basic operations (add, delete, replace) on nexthops and nexthop groups
- #
--- 
-2.1.4
 
+spin_lock_bh(&device_spinlock);
+                        kref_put(&dev->kref, dev->release);   //kref
+== 0, release
+                         kref_get(&dev->kref);  //BUG: kref 0 to 1!
+
+
+
+
+Basically, the problem comes from the fact that kref_put is not lock protected.
+Do you agree that such a race condition may happen? If yes, then is
+moving kref_put inside the lock a practical solution?
+
+Thank you,
+--
+Navid.
