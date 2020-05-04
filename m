@@ -2,73 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B412C1C3B6C
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 15:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65A151C3BA3
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 15:47:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728110AbgEDNkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 09:40:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40068 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727786AbgEDNkk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 May 2020 09:40:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=AS2kv0gpUVX7q+EU8jc6o6kLyYe4vA6m3YP11lOv2W4=; b=FKq32PO49K7052ag4nwLaAeRJi
-        SCB9TH1e0Kq8y1nBOTyOs87CbK1XO03zV5+FTyBE09XdTEltwfV898Yq6HgYH/EFd9F3jUxAmgJdo
-        CDEzrhTn364OKsaf6WbCE86VaEECqGwjKKYwu56w9pAEw/R2HOJpSU6j/MjzsjWUF9nc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jVbKi-000nw6-Ve; Mon, 04 May 2020 15:40:32 +0200
-Date:   Mon, 4 May 2020 15:40:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
-        devicetree@vger.kernel.org
-Subject: Re: [RFC PATCH] dt-bindings: net: nxp,tja11xx: add compatible support
-Message-ID: <20200504134032.GB190789@lunn.ch>
-References: <20200504082617.11326-1-o.rempel@pengutronix.de>
- <20200504084412.juhnxip7lg2d3ct5@pengutronix.de>
+        id S1728666AbgEDNrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 09:47:06 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:21352 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728116AbgEDNrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 09:47:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1588600025; x=1620136025;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YdfSV8vFHtHkdY/j8Ajqyu9W6T2nF4zgct9CAGRxwRQ=;
+  b=0+JAHkcWxpITI5R4goTSPQMBKrdiHzSTWMwCmcQAEU1p6lByU4QWCY4q
+   BfVc66AVR8BWDyXk0zSOPJj65yjI4S7Cb+LS/F60iUVfDLrZ8sHnOZVuf
+   KunmtH8XwuVFrFHRj2OZfqeBb3YweWfsRJVy9mhTH+V+ifZ0HAOmd1GbP
+   y7i9P+c0rRxRpMFiYnUSIKmZmWr8I4rFP6V4c5Ihk646iQffqsSbJV2ww
+   2RrZRgnsEt3yVnT1KeCCn/XQYb6rSBQLIjIz0Wv8fK27M6rErb2a1cpzh
+   CLcvTlb9jF3MGyQoG87tH4qNqOa9kOl+6wVF2y93lg6++/KAaQBXT8ok+
+   w==;
+IronPort-SDR: hsTM1QVLN9NhCq54tmB8QKFvocu9kjOduP0h93w7Ccg6OxKoxHWaRIoqTuZrqRgNyQpmP7Jfop
+ 6UdRqUn7gGWMLXt3nGVbqEEBVWrHnut10yjQX+yGmawu8RbxMZd3JCoYcyYiqys8CgxH8ORxPX
+ BSsBbmQnqNZBNO4mMFMwy66FWVOXwjrDYZzA49QowmyXrFBkn3GoOaZg1d9eWYe3P1hLzHQHrX
+ vX/6rFmXYsdvDvmvc6Kv5z+1PzB/JRWk7kLA7ndsIzhtKFPUundxmirbcXFgBL+zJlOwAVRFHD
+ HJ0=
+X-IronPort-AV: E=Sophos;i="5.73,352,1583218800"; 
+   d="scan'208";a="74135742"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2020 06:46:29 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 4 May 2020 06:46:30 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Mon, 4 May 2020 06:46:26 -0700
+From:   <nicolas.ferre@microchip.com>
+To:     <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        "Claudiu Beznea" <claudiu.beznea@microchip.com>,
+        <harini.katakam@xilinx.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        <antoine.tenart@bootlin.com>, <f.fainelli@gmail.com>,
+        <linux@armlinux.org.uk>, <andrew@lunn.ch>,
+        <michal.simek@xilinx.com>,
+        "Nicolas Ferre" <nicolas.ferre@microchip.com>
+Subject: [PATCH v3 0/7] net: macb: Wake-on-Lan magic packet fixes and GEM handling
+Date:   Mon, 4 May 2020 15:44:15 +0200
+Message-ID: <cover.1588597759.git.nicolas.ferre@microchip.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200504084412.juhnxip7lg2d3ct5@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 04, 2020 at 10:44:12AM +0200, Oleksij Rempel wrote:
-> Hi all,
-> 
-> here is first attempt to rework this binding. So far I have following
-> questions and/or issues:
-> - currently this PHY is identified by ID, not by compatible. Should it
->   be probed by compatible?
->   Theoretically I can use:
->   	compatible = "nxp,tja1102", "ethernet-phy-ieee802.3-c22";
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Hi Oleksij
+Hi,
+Here is the 3rd series to fix WoL magic-packet on the current macb driver.
+I also add, in the second part of this series the feature to GEM types of IPs.
+Please tell me if they should be separated; but the two last patches cannot go
+without the 5 fixes first ones.
 
-This will not work, in the current framework. PHYs probe via the ID
-registers, or ethernet-phy-id0141.0e90 like compatible strings. MDIO
-devices, which means devices like Ethernet switches, probe via
-compatible strings. There are a few old DT blobs which do have a
-compatible for the PHY, but they are white listed and ignored. See
-of_mdio.c, whitelist_phys and of_mdiobus_child_is_phy().
+MACB and GEM code must co-exist and as they don't share exactly the same
+register layout, I had to specialize a bit the suspend/resume paths and plug a
+specific IRQ handler in order to avoid overloading the "normal" IRQ hot path.
 
-If the DT validation code is wrongly forcing you to have a compatible,
-i think your best bet is to use the ethernet-phy-id with the correct
-ID values.
+The use of dumb buffers for RX that Harini implemented in [1] might
+need to be considered for a follow-up patch series in order to address
+lower-power modes on some of the platforms.
+For instance, I didn't have to implement dumb buffers for some of the simpler
+ARM9 platforms using MACB+FIFO types of controllers.
 
-   Andrew
+Please give feedback. Best regards,
+  Nicolas
+
+[1]:
+https://github.com/Xilinx/linux-xlnx/commit/e9648006e8d9132db2594e50e700af362b3c9226#diff-41909d180431659ccc1229aa30fd4e5a
+https://github.com/Xilinx/linux-xlnx/commit/60a21c686f7e4e50489ae04b9bb1980b145e52ef
+
+Changes in v3:
+- Revert some of the v2 changes done in macb_resume(). Now the resume function
+  supports in-depth re-configuration of the controller in order to deal with
+  deeper sleep states. Basically as it was before changes introduced by this
+  series
+- Tested for non-regression with our deeper Power Management mode which cuts
+  power to the controller completely
+
+Changes in v2:
+- Add patch 4/7 ("net: macb: fix macb_suspend() by removing call to netif_carrier_off()")
+  needed for keeping phy state consistent
+- Add patch 5/7 ("net: macb: fix call to pm_runtime in the suspend/resume functions") that prevent
+  putting the macb in runtime pm suspend mode when WoL is used
+- Collect review tags on 3 first patches from Florian: Thanks!
+- Review of macb_resume() function
+- Addition of pm_wakeup_event() in both MACB and GEM WoL IRQ handlers
+
+Nicolas Ferre (7):
+  net: macb: fix wakeup test in runtime suspend/resume routines
+  net: macb: mark device wake capable when "magic-packet" property
+    present
+  net: macb: fix macb_get/set_wol() when moving to phylink
+  net: macb: fix macb_suspend() by removing call to netif_carrier_off()
+  net: macb: fix call to pm_runtime in the suspend/resume functions
+  net: macb: WoL support for GEM type of Ethernet controller
+  net: macb: Add WoL interrupt support for MACB type of Ethernet
+    controller
+
+ drivers/net/ethernet/cadence/macb.h      |   3 +
+ drivers/net/ethernet/cadence/macb_main.c | 209 +++++++++++++++++++----
+ 2 files changed, 176 insertions(+), 36 deletions(-)
+
+-- 
+2.26.2
+
