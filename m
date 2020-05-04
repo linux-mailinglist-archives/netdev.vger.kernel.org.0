@@ -2,110 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6E51C45B4
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:23:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 095A01C45B8
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:23:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730675AbgEDSXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 14:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
+        id S1730763AbgEDSXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 14:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729958AbgEDSXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:23:05 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB65C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:23:05 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id b188so512668qkd.9
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 11:23:05 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730696AbgEDSXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:23:18 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4239C061A10
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:23:18 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id w4so13380960ioc.6
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 11:23:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=W89QFzwdJ4a86mFFHyl+0XzZlABu8f6wPmHtba+o2FM=;
-        b=gfBlXbwRgFX8szqyF9W2g7Ze+BYXoVJvLxaRCihKpeYMuXGpVpwYz0rk7/ZxnLXPPN
-         jQ8TORFvP6INhn6Ls/pAdfLMJdFCAf3c1JT+KSgZ5lLdinZMemHeaZuTHX/wQCSOF98N
-         5Wd76CiL6zBeDTAYdU+Gc+6mgk1IBy7vgy0yL01heb/zXFf+rUZw5o1Q2bdtjPmMxLAc
-         WxwAzyPK5fX29T9hW74QhMz6ysVwaKuXdT3qu9k4IUHZ7IMlLZvzANmmvtLFgtZwP10x
-         AweK5ge35hJd38BWiCxsam3nSUmwB1o9oaS9A72gXOztCU9nE7o5YN5jlY54gdNzUrbE
-         AWhA==
+        d=linaro.org; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=g00MXxVdtztL4qBMS1aNPPa+lbPn+NJIpTHVHqlFdp4=;
+        b=YXOeQUUayM6/ouFtGCsISVJxSpaOEQJ4jSyQ8BSyXptcIlItLECymk2zqbRE+z8BeA
+         UzxwHHZpnbYkXMQDviMSGeIK+cTw9DXrZtbjMZxLAX8ZsP2lDNKaZoD1FLP4XFBtLIqN
+         K/H5/dVM9JPfTuuczRP0juET3D1IhxXabFd4X4nYxcrmR/BO9A9jZWLJvI3AfFXDWcsP
+         bB1UKpqXRlBv4AUsMxnNUrs7tjoNgQo7ge9pYVwGbD8gk8uvgb1ToQlwdpLDcFGHhHFF
+         2lr22WkBR+95902NkqrDrVSE/+Ykn6r7eOlO8Ao2XwkJQqQD+mX1ObF3xY6hqbMSLWxe
+         q9Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=W89QFzwdJ4a86mFFHyl+0XzZlABu8f6wPmHtba+o2FM=;
-        b=NI8bas6duU5zKVFdFLhxkR8ZidOVipNwVa7HS/HJOM9DvYwACv2gITx3CUUdUekMP4
-         RO+1hA/oSF77VT+a60zW4LFC1AK3MsBA9sTKr9Nd0aSlRMDMjKX2tDfwNzm/74bVIroi
-         csO96owl/49hHvReI5rjFFvnwCXdtWNGalUFtME9nxUAT7OrcTYTJ/hLGh88FLiEWWMo
-         1Vm4cnBcLTiAPrgd3VuCvCZFg0sRQXnuISdQeEmf1CQNrLsJhQSbBMio4+TTcH/9q3i7
-         IZFiXGQETyHf+KqcvfdpSxdb0oLK5k7VG2/0hZr4FmVDDgs/q6pUexOY2SOv/twvB0la
-         DNQg==
-X-Gm-Message-State: AGi0Pua67p34Rf+qe8uc/R9kxcuNYtegxBKmmH/tCllipq9v9jldpFJ6
-        VLfxx9fJYZelCYaxBhb593Y=
-X-Google-Smtp-Source: APiQypK5+HDRj4oHpTo9TL4aQ1I4beKhu5UkfYzWcs0y12cytjQFO4qjcZiiElDhMx+FnEu4qZgj9Q==
-X-Received: by 2002:a05:620a:1202:: with SMTP id u2mr526289qkj.285.1588616584571;
-        Mon, 04 May 2020 11:23:04 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id s8sm11809903qtb.0.2020.05.04.11.23.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 11:23:03 -0700 (PDT)
-Date:   Mon, 4 May 2020 14:23:02 -0400
-Message-ID: <20200504142302.GD941102@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        vinicius.gomes@intel.com, po.liu@nxp.com, xiaoliang.yang@nxp.com,
-        mingkai.hu@nxp.com, christian.herber@nxp.com,
-        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
-        alexandru.marginean@nxp.com, vlad@buslov.dev, jiri@mellanox.com,
-        idosch@mellanox.com, kuba@kernel.org
-Subject: Re: [PATCH net-next 4/6] net: dsa: sja1105: support flow-based
- redirection via virtual links
-In-Reply-To: <20200504141913.GB941102@t480s.localdomain>
-References: <20200503211035.19363-1-olteanv@gmail.com>
- <20200503211035.19363-5-olteanv@gmail.com>
- <20200504141913.GB941102@t480s.localdomain>
+        bh=g00MXxVdtztL4qBMS1aNPPa+lbPn+NJIpTHVHqlFdp4=;
+        b=AjI1oQtc6TOT+PyqGs1RSkd5cASZDcnWBqeNZ5JEj1t8ZyfP+KR1HkhE4sXWqPVCfu
+         tY7Kc4JeSXwZiRz/CcbSoVkdthnpsfIMlSvPo5oQta9jxd1ECfL+i861QD0rdMpW3Eud
+         jOuGEXyxDMnmbO/QXMc1BehqSYAps2fjWqneAOGI7+wjO76STp4f2Ketxt1udiPmaGmg
+         sWZPPa+k00JWJU/9ip62fWL8d0zTpbabMTAbNR8Ni7p0fjjVQLeI/sx5znjHm7wssGdi
+         ztPO0dtwjiDFCugH9MKJThirmblSpi7BSN5je/fycYBW+Ryc+h+MoIM0/GEX/gjyprKd
+         O/tQ==
+X-Gm-Message-State: AGi0PuaS91L+8QgO/gthiV8TuyOCz7MToVK/EqnoXM2q0Hi3wBrxeAO4
+        jrPozxawk3mEcschYg9UrWU7Dw==
+X-Google-Smtp-Source: APiQypKXOR9T8IP7JnAqSvoxNt2MP63A/IWQcSz212xzt/Zjxn35i0MjKM6muvk2wEXRTm5fSj0L8w==
+X-Received: by 2002:a5e:c008:: with SMTP id u8mr16636889iol.4.1588616597871;
+        Mon, 04 May 2020 11:23:17 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id v9sm4487809iol.28.2020.05.04.11.23.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 May 2020 11:23:16 -0700 (PDT)
+Subject: Re: [PATCH] dt-bindings: net: add IPA iommus property
+From:   Alex Elder <elder@linaro.org>
+To:     robh+dt@kernel.org, bjorn.andersson@linaro.org, agross@kernel.org
+Cc:     evgreen@chromium.org.net, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, davem@davemloft.net,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200501214500.31433-1-elder@linaro.org>
+Message-ID: <040dbe54-1a64-6d32-076e-189963f10036@linaro.org>
+Date:   Mon, 4 May 2020 13:23:16 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200501214500.31433-1-elder@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 May 2020 14:19:13 -0400, Vivien Didelot <vivien.didelot@gmail.com> wrote:
-> Hi Vladimir,
+On 5/1/20 4:45 PM, Alex Elder wrote:
+> The IPA accesses "IMEM" and main system memory through an SMMU, so
+> its DT node requires an iommus property to define range of stream IDs
+> it uses.
 > 
-> On Mon,  4 May 2020 00:10:33 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > +		case FLOW_ACTION_REDIRECT: {
-> > +			struct dsa_port *to_dp;
-> > +
-> > +			if (!dsa_slave_dev_check(act->dev)) {
-> > +				NL_SET_ERR_MSG_MOD(extack,
-> > +						   "Destination not a switch port");
-> > +				return -EOPNOTSUPP;
-> > +			}
-> > +
-> > +			to_dp = dsa_slave_to_port(act->dev);
-> 
-> Instead of exporting two DSA core internal functions, I would rather expose
-> a new helper for drivers, such as this one:
-> 
->     struct dsa_port *dsa_dev_to_port(struct net_device *dev)
->     {
->         if (!dsa_slave_dev_check(dev))
->             return -EOPNOTSUPP;
+> Signed-off-by: Alex Elder <elder@linaro.org>
 
-Oops, NULL, not an integer error code, but you get the idea of public helpers.
+Please ignore this patch.  I have reposted it as the first
+patch in a new series:
+   https://lore.kernel.org/netdev/20200504175859.22606-1-elder@linaro.org/
 
->     
->         return dsa_slave_to_port(dev);
->     }
+					-Alex
+
+> ---
+>   Documentation/devicetree/bindings/net/qcom,ipa.yaml | 10 +++++++++-
+>   1 file changed, 9 insertions(+), 1 deletion(-)
 > 
-> The naming might not be the best, this helper could even be mirroring-specific,
-> I didn't really check the requirements for this functionality yet.
+> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> index 140f15245654..7b749fc04c32 100644
+> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> @@ -20,7 +20,10 @@ description:
+>     The GSI is an integral part of the IPA, but it is logically isolated
+>     and has a distinct interrupt and a separately-defined address space.
+>   
+> -  See also soc/qcom/qcom,smp2p.txt and interconnect/interconnect.txt.
+> +  See also soc/qcom/qcom,smp2p.txt and interconnect/interconnect.txt.  See
+> +  iommu/iommu.txt and iommu/arm,smmu.yaml for more information about SMMU
+> +  bindings.
+> +
+>   
+>     - |
+>       --------             ---------
+> @@ -54,6 +57,9 @@ properties:
+>         - const: ipa-shared
+>         - const: gsi
+>   
+> +  iommus:
+> +    maxItems: 1
+> +
+>     clocks:
+>       maxItems: 1
+>   
+> @@ -126,6 +132,7 @@ properties:
+>   
+>   required:
+>     - compatible
+> +  - iommus
+>     - reg
+>     - clocks
+>     - interrupts
+> @@ -164,6 +171,7 @@ examples:
+>                   modem-init;
+>                   modem-remoteproc = <&mss_pil>;
+>   
+> +                iommus = <&apps_smmu 0x720 0x3>;
+>                   reg = <0 0x1e40000 0 0x7000>,
+>                           <0 0x1e47000 0 0x2000>,
+>                           <0 0x1e04000 0 0x2c000>;
 > 
-> 
-> Thank you,
-> 
-> 	Vivien
+
