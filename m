@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43CD41C40BC
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:04:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27FBA1C416F
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:12:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729945AbgEDRES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        id S1730352AbgEDRLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729938AbgEDREQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:04:16 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56119C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 10:04:16 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id y4so10420732ljn.7
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 10:04:16 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730076AbgEDRLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:11:45 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD740C061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 10:11:44 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id t11so10419224lfe.4
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 10:11:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ylw/rVQ5uqDbHMoBEoqRYKRrSFsR0xjBGTCKci2YdMA=;
-        b=XEYCKlpcxCa4Yj1hBe1EPO8dgoDM2lJYKR9mj/CVqv5dDTLl+4T8bazaW1eLrSHqCj
-         TourY/FU0op5zaB6vPTBwaemfEu/JcWi7QaTZa5Ay6rctmHyqAQv06t6XNI0saMrXiG/
-         Fj8XwttesOC1EtU7rbpbTUZbRpZTDorDCE2og=
+        bh=ixzEtMiXaF/qz/KekxraCygM8Jiomf7VZjOVAfNWf6o=;
+        b=eeaN8etLnIL/QFNqWHl/zogdftIj/e6LccItgF5ZbbaOs17zN0noNQCEp6rlPW4oNx
+         xMMFrHE1kN99Bq3heBUNZBuIpbfzvFUmlqAWH9DarrBA2YOHAR8H6GUiOXp2BWV9gWjK
+         VS6u/zPR6u6bslVlDc9X5Q2VbFFOK3/0JD+leo5QCQA0ILDkvLVtseq0vfLH2DoxlJvx
+         EC9HfcIcMa+RxXY/TmVMJz2LeM6cHTUfvDHuSpoyjuBSRojswnkUzVXX4vCkljKBj8i4
+         OWoVb7L9UEO2tV/IGvgYXSCTwnfSMhfnq9yqc/icW6tzpAJCI7TNusYkHrWEpBOKNWVJ
+         psbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ylw/rVQ5uqDbHMoBEoqRYKRrSFsR0xjBGTCKci2YdMA=;
-        b=PN1ko1RMjDdC2oW4f46oHSObDDDQ7B9A8L7HWqro3R1oOKtoOZs02XxqvjZC8+8BQB
-         bqiuGTguvEyI66zOor7F39H7zuEUs+ZowOYiNxQff2IPc1hp+Ma0/3wc1bE2lT2Ut2cr
-         2UmDVEKa3p3gLGGLi2oMyK+GlFJ973dZ57XpKL/Pjmu0jqRkhETgs1PpyvtVD/+qgnaz
-         ast2nRG6jpyZCM1wrBYgh4ZWKnzEEdH+bELN76+y2EGKJTMxcU6z3n4l7wHtfButYBGp
-         fkBXFbTzCYrXyp0/uIdA+vcwPZ7fRRsBPSpV15+2Ei7h3YlrdpSTKCijSjv85rqQFvaA
-         jaAg==
-X-Gm-Message-State: AGi0PubyTZRJWUcd51NJxw1xR4MOTJBOkcw9ExirDVd1oyXXsLi5ek/l
-        XmUuwlPNgSLZEU7UmmhIH12Ag7wpnp8=
-X-Google-Smtp-Source: APiQypJdPJsLU1h7vG0VBsFCGecOfCiLw+r1MagDzMlxpDlbZuIaBtIpDJ5Uco0XntD7G9u+66tfCg==
-X-Received: by 2002:a2e:8753:: with SMTP id q19mr11148942ljj.6.1588611854527;
-        Mon, 04 May 2020 10:04:14 -0700 (PDT)
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com. [209.85.208.173])
-        by smtp.gmail.com with ESMTPSA id o23sm11187487ljh.63.2020.05.04.10.04.11
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 10:04:13 -0700 (PDT)
-Received: by mail-lj1-f173.google.com with SMTP id w20so10480447ljj.0
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 10:04:11 -0700 (PDT)
-X-Received: by 2002:a05:651c:390:: with SMTP id e16mr10921197ljp.186.1588611851101;
- Mon, 04 May 2020 10:04:11 -0700 (PDT)
+        bh=ixzEtMiXaF/qz/KekxraCygM8Jiomf7VZjOVAfNWf6o=;
+        b=INoQZcLBrO+032LCMHMAbJommx3taoDZH5h4nQTSmvfpnxKYCmFfcclOs/rkdMEGSP
+         4LDPNruZkN0Dv7b7K9NpW+d/M3oBkAkR9GumRGedUoj+6qGaDDVkVvp4AYdghzxoLOjC
+         ebYemK3STZ7MUoYIYXZwMLHrnDl7gv2V1kcSYj3DOMADbYAkeJAzdY5aRwiHxk/PYZO0
+         lIL/oB4gYbxD1dDMsj3XF8GwRpX7+ffP6e8o+9K1V30Qxuc0VXF2YlhQb0WT9EsGUeIY
+         TI2Zk2KdoyGSQutkNLBhNddNSsfDplGcpMCXRbXrSZvEillm6BzNxZ5pgV5xB5cfGLYR
+         8JfQ==
+X-Gm-Message-State: AGi0PuZihOEewMk8KNQZFYnGHkz/Y3uhbhRQyR9IS+AWSoF43r+3X3CR
+        YvE7tEGajiseaxGe0P1pHQyc/y9WKnZCv1esbZS/zhmF
+X-Google-Smtp-Source: APiQypKc1omnphI6WLyvU5+jop5OY05TJyNWaGxPBgWKxNwhDNF5yLKbvzHvI4+yRncVphs1v76ybDfWO2AiSBAwCQg=
+X-Received: by 2002:ac2:4248:: with SMTP id m8mr12396502lfl.211.1588612303343;
+ Mon, 04 May 2020 10:11:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <79591cab-fe3e-0597-3126-c251d41d492b@web.de> <20200504144206.GA5409@nuc8i5>
- <882eacd1-1cbf-6aef-06c5-3ed6d402c0f5@web.de>
-In-Reply-To: <882eacd1-1cbf-6aef-06c5-3ed6d402c0f5@web.de>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 4 May 2020 10:03:59 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXOJ2CSzdgos4Y8Wd7iZjRUkrMN=Ma0_-ujG8bihGzPKkQ@mail.gmail.com>
-Message-ID: <CA+ASDXOJ2CSzdgos4Y8Wd7iZjRUkrMN=Ma0_-ujG8bihGzPKkQ@mail.gmail.com>
-Subject: Re: [PATCH] net: rtw88: fix an issue about leak system resources
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Dejin Zheng <zhengdejin5@gmail.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Markus Elfring <Markus.Elfring@web.de>
+References: <20200503052220.4536-1-xiyou.wangcong@gmail.com> <20200503052220.4536-2-xiyou.wangcong@gmail.com>
+In-Reply-To: <20200503052220.4536-2-xiyou.wangcong@gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Tue, 5 May 2020 02:11:31 +0900
+Message-ID: <CAMArcTVQO8U_kU1EHxCDsjdfGn-y_keAQ3ScjJmPAeya+B8hHQ@mail.gmail.com>
+Subject: Re: [Patch net-next v2 1/2] net: partially revert dynamic lockdep key changes
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        syzbot <syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(Markus is clearly not taking the hint, but FYI for everyone else:)
-
-On Mon, May 4, 2020 at 8:00 AM Markus Elfring <Markus.Elfring@web.de> wrote:
-> > BTW, In the past week, you asked me to change the commit comments in my
-> > 6 patches like this one. Let me return to the essence of patch, point
-> > out the code problems and better solutions will be more popular.
+On Sun, 3 May 2020 at 14:22, Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> I would appreciate if various update suggestions would become nicer somehow.
 
-Markus is not really providing any value to the community. Just search
-for his recent mail history -- it's all silly commit message
-nitpicking of little value. He's been blacklisted by a number of
-people already:
+Hi Cong,
+Thank you for this work!
 
-https://lkml.kernel.org/lkml/20190919112937.GA3072241@kroah.com/
+> This patch reverts the folowing commits:
+>
+> commit 064ff66e2bef84f1153087612032b5b9eab005bd
+> "bonding: add missing netdev_update_lockdep_key()"
+>
+> commit 53d374979ef147ab51f5d632dfe20b14aebeccd0
+> "net: avoid updating qdisc_xmit_lock_key in netdev_update_lockdep_key()"
+>
+> commit 1f26c0d3d24125992ab0026b0dab16c08df947c7
+> "net: fix kernel-doc warning in <linux/netdevice.h>"
+>
+> commit ab92d68fc22f9afab480153bd82a20f6e2533769
+> "net: core: add generic lockdep keys"
+>
+> but keeps the addr_list_lock_key because we still lock
+> addr_list_lock nestedly on stack devices, unlikely xmit_lock
+> this is safe because we don't take addr_list_lock on any fast
+> path.
+>
+> Reported-and-tested-by: syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com
+> Cc: Dmitry Vyukov <dvyukov@google.com>
+> Cc: Taehee Yoo <ap420073@gmail.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-Some people continue to humor him, but it's mostly just a waste of
-their time, as this has been going on for years. Just look at searches
-like this, and tell me whether they produce anything useful:
+Acked-by: Taehee Yoo <ap420073@gmail.com>
 
-https://lkml.kernel.org/lkml/?q=%22markus+elfring%22&o=5000
-
-Brian
+Thank you,
+Taehee Yoo
