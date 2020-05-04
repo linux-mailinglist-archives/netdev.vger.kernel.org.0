@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41EBB1C49EB
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 00:57:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59E271C49F0
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 01:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728211AbgEDW5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 18:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46970 "EHLO
+        id S1728258AbgEDXAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 19:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728118AbgEDW5V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 18:57:21 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46402C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:57:21 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id x17so446892wrt.5
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 15:57:21 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728145AbgEDXAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 19:00:45 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFC6C061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 16:00:45 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id d15so468867wrx.3
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 16:00:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=p0wqQckVgtJPU/WsIc2gqoqI8PhGIAOFQ0q1H46E9lo=;
-        b=or5SyXEK2vhpj50NNKXUIF95YBvlZAB1mMeaawUkMookPLxbeU9I5CCYCuUWg/PzsA
-         NGVFbstcwDhs8NmcOupHZ2rw5IcYyMsPVxE+5v2vnao7/CSV9Vkqu37iATRzBfkyMXEz
-         slzW2b+7a68tpFD/poqJBmUE9if14ZoXDyEf7EVxv8nEOmrShc2bo46VfTbpYmyFFNh+
-         EcuhJoElEn1dXaCyq/7S0LucnSCL9FjmX7Ttu9sDqw7MfaK/nfrfjxxJNTgxbOGs59IW
-         x7n7fMdqMVzYs4Ti7j1LX97fvajGLilwznC+l6JUBJxBczI2ghBzV7GDhqf9fh2zNXdY
-         1T2Q==
+        bh=k84+CyeUkzPtWA1Vkzw4sOhnnGMXXH5R2rSUq2n4/8w=;
+        b=G+Ia9Swt+aANCwa4tiOIpudMjPG06jby673pLz6c9+qTt1rxHDucRSoGCQrDFKuCEV
+         /kMde4t02xq3rxuxly04PMgwqoSXXO4jVdvAvYzJ5MxTsXa6vCA4rvkeTq/qC9y2v87m
+         SUrw1GWL2KS8q90VXC/tsgs1U5XaxC8j+0aMPr9wKol9HkUZdOuFLQIaxqogMYc1SV/C
+         xz2KVSUmsrdvzOL2lwZw0Cb7afxJLkm2tViw4EFhQ91GvNvitpsFiog7FvhsD5vTbQgU
+         BRtVZT2NGb20kA9o9sUu/zBqSfpPM0V31vHN+TRLfMfh/3P5kytbdMMRTxcYJcOAXSxy
+         UUVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=p0wqQckVgtJPU/WsIc2gqoqI8PhGIAOFQ0q1H46E9lo=;
-        b=ai9J7TXop65akDdORPBX5az9XVxdPoMfmu4AeY8Aznir0+F/a9xCRq2dqbKJlvQRCw
-         ovo5ppDwzkOrP5UPYldF53IkHnd8FmTROM/XkS4G93sf6yg2YfSFnf6WKMUctcT6Kj71
-         3gY0NzOQzmbs5lHUNycV748hcfY/bKRmichVPYIQHiF/gqqtfaKYB2tYXuazm/EdtOiX
-         HHIJntihRQi+2Nd0y/cvVtxCZU+MegOZjnTD4AR9cuCHfxN0VNRHAjriV3rRggaKv7OH
-         32cXBFAh98egSPf+NRXV1PPvy+183b5jPEcQjoLyin37NM2JPKPP+5n+AFAuDTxcb+RE
-         D6jg==
-X-Gm-Message-State: AGi0PuavTHtDynBBy1jfVMpFMA9hzF5haOKsgKZmwPLq1TPuVaSYSKK4
-        2QhRDm1JR8gRm8VKlqoE4xTxqz0IakE=
-X-Google-Smtp-Source: APiQypJguVxoUXvq20w0YUlpRGPDmR+w95WV5+8vslc5J8lNGvAwVAChb6x2pQiFKysAR9gn6wRoGw==
-X-Received: by 2002:a5d:6850:: with SMTP id o16mr128331wrw.309.1588633039706;
-        Mon, 04 May 2020 15:57:19 -0700 (PDT)
+        bh=k84+CyeUkzPtWA1Vkzw4sOhnnGMXXH5R2rSUq2n4/8w=;
+        b=DpDL0ZIKJW/sFzogzgJfhRld0gGO3XvMQ9RnoNoIbP2BoFlRydVbxYnq9CieXa5Wm2
+         IbG4I73WnvfAkLQimkaN4H4V/4M9xOtY+dGZzzy0hx96FI0D8cPcnL+Dgzra4SeJt2rL
+         F59lRf2xNalU84I8q1nk/gUFDqsCOC76BZDjDXyXLTGC5d29RgXW7ya2CDe2EfWkfbJk
+         xMRIFZVR6GAXY/mt1OMXKvq3oGL6tKzc8XQcbz7XCkyb9nIkslGTpgMDXIYvHJlFH+8S
+         XRMoPDrzQ0D5Tbqp2aVrSWGXFMcEvGXipZFGWFM1A30f25fJw9+yYMfhieDaTDMetBOW
+         /MjA==
+X-Gm-Message-State: AGi0PububSKOuec1xhl7nhSZ+3gxX27wJ0EZWP4brfjCX4vhf4rt4Wu/
+        xmY+pWD5wUvZniA1fiL71rJsWpS+17Q=
+X-Google-Smtp-Source: APiQypIZk0Jl4H/lDcgVyx9iDLDIcAd/G9H2V8nvgACXr+ShTwlz52khxhq2HX/z+sUoDq2FE0E65Q==
+X-Received: by 2002:a5d:4645:: with SMTP id j5mr174384wrs.282.1588633243953;
+        Mon, 04 May 2020 16:00:43 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id e2sm21146075wrv.89.2020.05.04.15.57.18
+        by smtp.gmail.com with ESMTPSA id r23sm15322570wra.74.2020.05.04.16.00.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 15:57:19 -0700 (PDT)
+        Mon, 04 May 2020 16:00:43 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
@@ -53,9 +53,9 @@ Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
         vlad@buslov.dev, jiri@mellanox.com, idosch@mellanox.com,
         kuba@kernel.org
-Subject: [PATCH net-next 0/6] tc-gate offload for SJA1105 DSA switch
-Date:   Tue,  5 May 2020 01:56:42 +0300
-Message-Id: <20200504225648.23085-1-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 0/6] tc-gate offload for SJA1105 DSA switch
+Date:   Tue,  5 May 2020 02:00:28 +0300
+Message-Id: <20200504230034.23958-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -66,6 +66,12 @@ From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Expose the TTEthernet hardware features of the switch using standard
 tc-flower actions: trap, drop, redirect and gate.
+
+v1 was submitted at:
+https://patchwork.ozlabs.org/project/netdev/cover/20200503211035.19363-1-olteanv@gmail.com/
+
+Changes in v2:
+Using a newly introduced dsa_port_from_netdev public helper.
 
 Vladimir Oltean (6):
   net: dsa: introduce a dsa_port_from_netdev public helper
