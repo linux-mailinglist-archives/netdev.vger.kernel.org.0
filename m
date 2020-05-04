@@ -2,63 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1FF1C4665
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:51:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B673C1C466C
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbgEDSvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 14:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726334AbgEDSvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:51:13 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BEDC061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:51:13 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C0D1111F5F61A;
-        Mon,  4 May 2020 11:51:12 -0700 (PDT)
-Date:   Mon, 04 May 2020 11:51:11 -0700 (PDT)
-Message-Id: <20200504.115111.2011826515282537226.davem@davemloft.net>
-To:     brouer@redhat.com
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        stephen@networkplumber.org, dsahern@gmail.com
-Subject: Re: [PATCH net-next V2] net: sched: fallback to qdisc noqueue if
- default qdisc setup fail
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <158824694174.2180470.8094886910962590764.stgit@firesoul>
-References: <158824694174.2180470.8094886910962590764.stgit@firesoul>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 04 May 2020 11:51:12 -0700 (PDT)
+        id S1726809AbgEDSwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 14:52:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41440 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725981AbgEDSwa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 May 2020 14:52:30 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 100102073E;
+        Mon,  4 May 2020 18:52:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588618349;
+        bh=3Ha52XgoS8/4Yl319juPJCrmPW0Ttr1geD7MdSO8LIE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=XLSwU/Qf0ogTE0CtscTX5f6VBjWOx2GHPz/nrM/uaXYsnFyVNJw0uS9yz3IMupLFL
+         eXG7oip5dn0LiQh4mKbZWQqMuMvlaVGB+BOoanqiAbtmBln2dKsPuUJf3EqcfBAurl
+         tiXyeUeav9GizHRf/XhQXTUC5s7YkFuEPh0UKaa8=
+Received: by mail-oi1-f181.google.com with SMTP id o7so7617825oif.2;
+        Mon, 04 May 2020 11:52:29 -0700 (PDT)
+X-Gm-Message-State: AGi0PuZEKizU2SRSTj+8FXU9CcQa5dPWfEwSHt0h3RvfgkuogELP45As
+        cmqaIqVIJAQmx60ss9F3zBvNTfn8rVY9bmnt/w==
+X-Google-Smtp-Source: APiQypLERbCjXmAD9kScXWp+0jLyUa/wK6ffbmYWXz4/VHjupVQvQVBEQSBvA5Wg6mUwQJ+1TlFFTO/AGTkgyn+G/pE=
+X-Received: by 2002:aca:1904:: with SMTP id l4mr10035883oii.106.1588618348223;
+ Mon, 04 May 2020 11:52:28 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200504175859.22606-1-elder@linaro.org> <20200504175859.22606-2-elder@linaro.org>
+In-Reply-To: <20200504175859.22606-2-elder@linaro.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 4 May 2020 13:52:15 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLY2iuJHXEEx41eEVPgkwmHbngOB53sFgF1e079uLOOqQ@mail.gmail.com>
+Message-ID: <CAL_JsqLY2iuJHXEEx41eEVPgkwmHbngOB53sFgF1e079uLOOqQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/4] dt-bindings: net: add IPA iommus property
+To:     Alex Elder <elder@linaro.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Evan Green <evgreen@chromium.org>, subashab@codeaurora.org,
+        cpratapa@codeaurora.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Date: Thu, 30 Apr 2020 13:42:22 +0200
+On Mon, May 4, 2020 at 12:59 PM Alex Elder <elder@linaro.org> wrote:
+>
+> The IPA accesses "IMEM" and main system memory through an SMMU, so
+> its DT node requires an iommus property to define range of stream IDs
+> it uses.
+>
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/net/qcom,ipa.yaml | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> index 140f15245654..7b749fc04c32 100644
+> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> @@ -20,7 +20,10 @@ description:
+>    The GSI is an integral part of the IPA, but it is logically isolated
+>    and has a distinct interrupt and a separately-defined address space.
+>
+> -  See also soc/qcom/qcom,smp2p.txt and interconnect/interconnect.txt.
+> +  See also soc/qcom/qcom,smp2p.txt and interconnect/interconnect.txt.  See
+> +  iommu/iommu.txt and iommu/arm,smmu.yaml for more information about SMMU
+> +  bindings.
 
-> Currently if the default qdisc setup/init fails, the device ends up with
-> qdisc "noop", which causes all TX packets to get dropped.
-> 
-> With the introduction of sysctl net/core/default_qdisc it is possible
-> to change the default qdisc to be more advanced, which opens for the
-> possibility that Qdisc_ops->init() can fail.
-> 
-> This patch detect these kind of failures, and choose to fallback to
-> qdisc "noqueue", which is so simple that its init call will not fail.
-> This allows the interface to continue functioning.
-> 
-> V2:
-> As this also captures memory failures, which are transient, the
-> device is not kept in IFF_NO_QUEUE state.  This allows the net_device
-> to retry to default qdisc assignment.
-> 
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+I'd drop this. We don't need every binding to reference back to common
+bindings. And in theory, this binding is unrelated to the Arm SMMU.
+Any IOMMU could be used.
 
-Applied, thanks.
+With that,
+
+Reviewed-by: Rob Herring <robh@kernel.org>
