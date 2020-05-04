@@ -2,135 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED6571C45E0
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68FAA1C45DD
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730871AbgEDS2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 14:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
+        id S1730938AbgEDS1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 14:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731031AbgEDS2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:28:01 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82ACC061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:28:00 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id i62so471883ybc.11
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 11:28:00 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730894AbgEDS1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:27:54 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17F0C061A41
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:27:53 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id u22so62193plq.12
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 11:27:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=OnX2KU5w3g+k8zVLiUmujhqVjHfZoHuApD9BlEoH9Hk=;
-        b=JlzcaRKpftQzYi50cuJXOYFvWvCCXzp7Hdjw9BqjXLQt2vU7lBtPEZvP0rhO9SQO2x
-         /RwAwE2VMVO/YFq1cwpAopQPKVm9uazwOWFJgEirUTczJrcPSEeKAP5wtZyp8/kCuYEm
-         WQ52mB/cEcoz7zagPHkHQ+0qXcXY+GOAFNt3psLsWZWZWSjWIbHVI1Yg7nND7zqXJQNK
-         dZypB2Jdr5XkdbJgoXJCVzG1UW1duSi0aRTe/rl1jQcJ8Yc0lxRtAsd5hfyyIBg4ocOI
-         3PNBmRsOK86gAs3M7xu1LduP/xNXKyY5k3is+xNZlPti2norPqgIlk4ael2ougRc8zcY
-         bxog==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nNG0LdDMqhgoNOsYJtqodOSWFHeIBtvo/8trfMubmmI=;
+        b=l1z9nxVQOCSfy94Afw1Uy11I/u7eFSYpN2RP/fNFVUCBQ66CkXzNxP0dmnLSm5vSy9
+         kgQzrEUmn2Z8f0r+GfX2Ov+oFmOKMsi2lbh0nx2WWXs0xuD1SuIIW/jrxDnRRtRuJMJG
+         OKCPDD6drFQiiF7mQIS7tSWDeVGGGL4BeVQgpHiXyhL2Mkv8RzHd/479D3TcBNVDLJ97
+         6mPohZITWb+Z0XAIpgYRFflCD5EP2gp8892Y7cfm4LLBx/+AofWqKcowBi+qTLexBXWK
+         7jg8OcFWRTqzFIJR1e9SvyADZYJjnSJ/Xbsz9K90LYmp94Z8mf+ZvDMI8ctmeuYPPjIp
+         6DOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=OnX2KU5w3g+k8zVLiUmujhqVjHfZoHuApD9BlEoH9Hk=;
-        b=ZovEQeO+KV4L0O6yVsjd8frwsZJlO5S3B9gZH9sh6Tp+LVp0BxugSSRqmMTL8xUJ4G
-         XY8+OhlVMMDAkpTHGfhlMCweGHX5OU2CoKtx/022AXMVwAMMHbodVXuiNjvFGaGqeRcb
-         v4o8yIwCYGkC6wLY1n3oRDYonjn1B8oCfswTnSdZSvPAHEoUC+ZukPKq2JBgwy7sJ+Jr
-         4iexOpgfX3/mqeQKuAy1laOpecIxzKREj16F9D2iGfdW4+h3NiUGveCz1QHnXjAA/5gy
-         Esmw30iYKDpkWW8mR/BqO3q9zggreCZhcmcCLrvkh4HPubffBJjaoCVfipb9JHM4T4E8
-         Nf/w==
-X-Gm-Message-State: AGi0PuZ5CsJPUxX2DwP4gSjlFEGBVDwUH1ZYA4F0RewOxvOFfGQWsb68
-        suntPYspbFaD3fQnmf4d8NemgT+DOxIoxA==
-X-Google-Smtp-Source: APiQypJN7zx711PxQ883Mhj78qyUEHaHz+yGpWSp96l1pwv1mWbjfBWs9h3pHWGnIu/Ue+YlMKETRrQR05uwPQ==
-X-Received: by 2002:a25:da8b:: with SMTP id n133mr853922ybf.418.1588616880091;
- Mon, 04 May 2020 11:28:00 -0700 (PDT)
-Date:   Mon,  4 May 2020 11:27:50 -0700
-In-Reply-To: <20200504182750.176486-1-edumazet@google.com>
-Message-Id: <20200504182750.176486-3-edumazet@google.com>
-Mime-Version: 1.0
-References: <20200504182750.176486-1-edumazet@google.com>
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH net-next 2/2] tcp: defer xmit timer reset in tcp_xmit_retransmit_queue()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nNG0LdDMqhgoNOsYJtqodOSWFHeIBtvo/8trfMubmmI=;
+        b=MP3YRh/sMA95l0xHv6/OeZK6/V5mydFAkXBwYl79OKzNKmcou4qFpbPqLKt914uWis
+         N82bOrqxFMuvJzjWC6JJHD5Frt07hmuXA//rdmCUQrVs7gHo4zcIA5wjvLSk8MciSdZe
+         ccnz/+/70ZFJ+ieii4K1aDnSQgtjqPm7Om6CAyuh0mH8o3biX02aRcMvF3tVPkLzLi13
+         dAwsSROqAx+/VAo7l328Pfeto4KQGDWm9NW4EePRlUT/VQMjzP5K1ds+1Zf9CJYUCrmA
+         K8grALTq5COAzFkw+NasEOhVyne77k3yIfSVmjDOp+ptLGN42+kFiFpv0G5VniPASwex
+         NHQQ==
+X-Gm-Message-State: AGi0PuZJmpFrIktAqQkrCszuaWu3zUVCLWTa0UscR9wxA4xh5C34+/zP
+        vbkXCHX9JG9s6cZ6OBTcAQrPgg==
+X-Google-Smtp-Source: APiQypJWzYTt4TwZ/qA7F3EWZokRUkdG2JpMjsFX+GZrUyPGCSa3XwwUZnYR5pCPtQCkhEkhCo4hTg==
+X-Received: by 2002:a17:90a:d917:: with SMTP id c23mr332348pjv.192.1588616873082;
+        Mon, 04 May 2020 11:27:53 -0700 (PDT)
+Received: from builder.lan (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id 71sm9489750pfw.111.2020.05.04.11.27.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2020 11:27:52 -0700 (PDT)
+Date:   Mon, 4 May 2020 11:28:36 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, agross@kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 3/4] net: ipa: define IMEM memory region for
+ IPA
+Message-ID: <20200504182836.GC20625@builder.lan>
+References: <20200504175859.22606-1-elder@linaro.org>
+ <20200504175859.22606-4-elder@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200504175859.22606-4-elder@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As hinted in prior change ("tcp: refine tcp_pacing_delay()
-for very low pacing rates"), it is probably best arming
-the xmit timer only when all the packets have been scheduled,
-rather than when the head of rtx queue has been re-sent.
+On Mon 04 May 10:58 PDT 2020, Alex Elder wrote:
 
-This does matter for flows having extremely low pacing rates,
-since their tp->tcp_wstamp_ns could be far in the future.
+> Define a region of IMEM memory available for use by IPA in the
+> platform configuration data.  Initialize it from ipa_mem_init().
+> The memory must be mapped for access through an SMMU.
+> 
 
-Note that the regular xmit path has a stronger limit
-in tcp_small_queue_check(), meaning it is less likely to
-go beyond the pacing horizon.
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_output.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+Regards,
+Bjorn
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 32c9db902f180aad3776b85bcdeb482443a9a5be..a50e1990a845a258d4cc6a2a989d09068ea3a973 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3112,6 +3112,7 @@ void tcp_xmit_retransmit_queue(struct sock *sk)
- 	const struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct sk_buff *skb, *rtx_head, *hole = NULL;
- 	struct tcp_sock *tp = tcp_sk(sk);
-+	bool rearm_timer = false;
- 	u32 max_segs;
- 	int mib_idx;
- 
-@@ -3134,7 +3135,7 @@ void tcp_xmit_retransmit_queue(struct sock *sk)
- 
- 		segs = tp->snd_cwnd - tcp_packets_in_flight(tp);
- 		if (segs <= 0)
--			return;
-+			break;
- 		sacked = TCP_SKB_CB(skb)->sacked;
- 		/* In case tcp_shift_skb_data() have aggregated large skbs,
- 		 * we need to make sure not sending too bigs TSO packets
-@@ -3159,10 +3160,10 @@ void tcp_xmit_retransmit_queue(struct sock *sk)
- 			continue;
- 
- 		if (tcp_small_queue_check(sk, skb, 1))
--			return;
-+			break;
- 
- 		if (tcp_retransmit_skb(sk, skb, segs))
--			return;
-+			break;
- 
- 		NET_ADD_STATS(sock_net(sk), mib_idx, tcp_skb_pcount(skb));
- 
-@@ -3171,10 +3172,13 @@ void tcp_xmit_retransmit_queue(struct sock *sk)
- 
- 		if (skb == rtx_head &&
- 		    icsk->icsk_pending != ICSK_TIME_REO_TIMEOUT)
--			tcp_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
--					     inet_csk(sk)->icsk_rto,
--					     TCP_RTO_MAX);
-+			rearm_timer = true;
-+
- 	}
-+	if (rearm_timer)
-+		tcp_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
-+				     inet_csk(sk)->icsk_rto,
-+				     TCP_RTO_MAX);
- }
- 
- /* We allow to exceed memory limits for FIN packets to expedite
--- 
-2.26.2.526.g744177e7f7-goog
-
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  drivers/net/ipa/ipa.h             |  5 ++
+>  drivers/net/ipa/ipa_data-sc7180.c |  2 +
+>  drivers/net/ipa/ipa_data-sdm845.c |  2 +
+>  drivers/net/ipa/ipa_data.h        |  6 ++-
+>  drivers/net/ipa/ipa_mem.c         | 84 +++++++++++++++++++++++++++++++
+>  5 files changed, 98 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
+> index 23fb29889e5a..32f6dfafdb05 100644
+> --- a/drivers/net/ipa/ipa.h
+> +++ b/drivers/net/ipa/ipa.h
+> @@ -47,6 +47,8 @@ struct ipa_interrupt;
+>   * @mem_offset:		Offset from @mem_virt used for access to IPA memory
+>   * @mem_size:		Total size (bytes) of memory at @mem_virt
+>   * @mem:		Array of IPA-local memory region descriptors
+> + * @imem_iova:		I/O virtual address of IPA region in IMEM
+> + * @imem_size;		Size of IMEM region
+>   * @zero_addr:		DMA address of preallocated zero-filled memory
+>   * @zero_virt:		Virtual address of preallocated zero-filled memory
+>   * @zero_size:		Size (bytes) of preallocated zero-filled memory
+> @@ -88,6 +90,9 @@ struct ipa {
+>  	u32 mem_size;
+>  	const struct ipa_mem *mem;
+>  
+> +	unsigned long imem_iova;
+> +	size_t imem_size;
+> +
+>  	dma_addr_t zero_addr;
+>  	void *zero_virt;
+>  	size_t zero_size;
+> diff --git a/drivers/net/ipa/ipa_data-sc7180.c b/drivers/net/ipa/ipa_data-sc7180.c
+> index f97e7e4e61c1..e9007d151c68 100644
+> --- a/drivers/net/ipa/ipa_data-sc7180.c
+> +++ b/drivers/net/ipa/ipa_data-sc7180.c
+> @@ -299,6 +299,8 @@ static const struct ipa_mem ipa_mem_local_data[] = {
+>  static struct ipa_mem_data ipa_mem_data = {
+>  	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
+>  	.local		= ipa_mem_local_data,
+> +	.imem_addr	= 0x146a8000,
+> +	.imem_size	= 0x00002000,
+>  };
+>  
+>  /* Configuration data for the SC7180 SoC. */
+> diff --git a/drivers/net/ipa/ipa_data-sdm845.c b/drivers/net/ipa/ipa_data-sdm845.c
+> index c55507e94559..c0e207085550 100644
+> --- a/drivers/net/ipa/ipa_data-sdm845.c
+> +++ b/drivers/net/ipa/ipa_data-sdm845.c
+> @@ -321,6 +321,8 @@ static const struct ipa_mem ipa_mem_local_data[] = {
+>  static struct ipa_mem_data ipa_mem_data = {
+>  	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
+>  	.local		= ipa_mem_local_data,
+> +	.imem_addr	= 0x146bd000,
+> +	.imem_size	= 0x00002000,
+>  };
+>  
+>  /* Configuration data for the SDM845 SoC. */
+> diff --git a/drivers/net/ipa/ipa_data.h b/drivers/net/ipa/ipa_data.h
+> index 51d8e5a6f23a..69957af56ccd 100644
+> --- a/drivers/net/ipa/ipa_data.h
+> +++ b/drivers/net/ipa/ipa_data.h
+> @@ -245,13 +245,17 @@ struct ipa_resource_data {
+>  };
+>  
+>  /**
+> - * struct ipa_mem - IPA-local memory region description
+> + * struct ipa_mem - description of IPA memory regions
+>   * @local_count:	number of regions defined in the local[] array
+>   * @local:		array of IPA-local memory region descriptors
+> + * @imem_addr:		physical address of IPA region within IMEM
+> + * @imem_size:		size in bytes of IPA IMEM region
+>   */
+>  struct ipa_mem_data {
+>  	u32 local_count;
+>  	const struct ipa_mem *local;
+> +	u32 imem_addr;
+> +	u32 imem_size;
+>  };
+>  
+>  /**
+> diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
+> index fb4de2a12796..3c0916597fe1 100644
+> --- a/drivers/net/ipa/ipa_mem.c
+> +++ b/drivers/net/ipa/ipa_mem.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/bitfield.h>
+>  #include <linux/bug.h>
+>  #include <linux/dma-mapping.h>
+> +#include <linux/iommu.h>
+>  #include <linux/io.h>
+>  
+>  #include "ipa.h"
+> @@ -266,6 +267,79 @@ int ipa_mem_zero_modem(struct ipa *ipa)
+>  	return 0;
+>  }
+>  
+> +/**
+> + * ipa_imem_init() - Initialize IMEM memory used by the IPA
+> + * @ipa:	IPA pointer
+> + * @addr:	Physical address of the IPA region in IMEM
+> + * @size:	Size (bytes) of the IPA region in IMEM
+> + *
+> + * IMEM is a block of shared memory separate from system DRAM, and
+> + * a portion of this memory is available for the IPA to use.  The
+> + * modem accesses this memory directly, but the IPA accesses it
+> + * via the IOMMU, using the AP's credentials.
+> + *
+> + * If this region exists (size > 0) we map it for read/write access
+> + * through the IOMMU using the IPA device.
+> + *
+> + * Note: @addr and @size are not guaranteed to be page-aligned.
+> + */
+> +static int ipa_imem_init(struct ipa *ipa, unsigned long addr, size_t size)
+> +{
+> +	struct device *dev = &ipa->pdev->dev;
+> +	struct iommu_domain *domain;
+> +	unsigned long iova;
+> +	phys_addr_t phys;
+> +	int ret;
+> +
+> +	if (!size)
+> +		return 0;	/* IMEM memory not used */
+> +
+> +	domain = iommu_get_domain_for_dev(dev);
+> +	if (!domain) {
+> +		dev_err(dev, "no IOMMU domain found for IMEM\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Align the address down and the size up to page boundaries */
+> +	phys = addr & PAGE_MASK;
+> +	size = PAGE_ALIGN(size + addr - phys);
+> +	iova = phys;	/* We just want a direct mapping */
+> +
+> +	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ipa->imem_iova = iova;
+> +	ipa->imem_size = size;
+> +
+> +	return 0;
+> +}
+> +
+> +static void ipa_imem_exit(struct ipa *ipa)
+> +{
+> +	struct iommu_domain *domain;
+> +	struct device *dev;
+> +
+> +	if (!ipa->imem_size)
+> +		return;
+> +
+> +	dev = &ipa->pdev->dev;
+> +	domain = iommu_get_domain_for_dev(dev);
+> +	if (domain) {
+> +		size_t size;
+> +
+> +		size = iommu_unmap(domain, ipa->imem_iova, ipa->imem_size);
+> +		if (size != ipa->imem_size)
+> +			dev_warn(dev, "unmapped %zu IMEM bytes, expected %lu\n",
+> +				 size, ipa->imem_size);
+> +	} else {
+> +		dev_err(dev, "couldn't get IPA IOMMU domain for IMEM\n");
+> +	}
+> +
+> +	ipa->imem_size = 0;
+> +	ipa->imem_iova = 0;
+> +}
+> +
+>  /* Perform memory region-related initialization */
+>  int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
+>  {
+> @@ -305,11 +379,21 @@ int ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data)
+>  	/* The ipa->mem[] array is indexed by enum ipa_mem_id values */
+>  	ipa->mem = mem_data->local;
+>  
+> +	ret = ipa_imem_init(ipa, mem_data->imem_addr, mem_data->imem_size);
+> +	if (ret)
+> +		goto err_unmap;
+> +
+>  	return 0;
+> +
+> +err_unmap:
+> +	memunmap(ipa->mem_virt);
+> +
+> +	return ret;
+>  }
+>  
+>  /* Inverse of ipa_mem_init() */
+>  void ipa_mem_exit(struct ipa *ipa)
+>  {
+> +	ipa_imem_exit(ipa);
+>  	memunmap(ipa->mem_virt);
+>  }
+> -- 
+> 2.20.1
+> 
