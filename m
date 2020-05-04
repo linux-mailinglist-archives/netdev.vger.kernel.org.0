@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A151C3BA3
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 15:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C5671C3BA1
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 15:47:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728666AbgEDNrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 09:47:06 -0400
+        id S1728706AbgEDNrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 09:47:07 -0400
 Received: from esa2.microchip.iphmx.com ([68.232.149.84]:21352 "EHLO
         esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728116AbgEDNrF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 09:47:05 -0400
+        with ESMTP id S1728315AbgEDNrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 09:47:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1588600025; x=1620136025;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YdfSV8vFHtHkdY/j8Ajqyu9W6T2nF4zgct9CAGRxwRQ=;
-  b=0+JAHkcWxpITI5R4goTSPQMBKrdiHzSTWMwCmcQAEU1p6lByU4QWCY4q
-   BfVc66AVR8BWDyXk0zSOPJj65yjI4S7Cb+LS/F60iUVfDLrZ8sHnOZVuf
-   KunmtH8XwuVFrFHRj2OZfqeBb3YweWfsRJVy9mhTH+V+ifZ0HAOmd1GbP
-   y7i9P+c0rRxRpMFiYnUSIKmZmWr8I4rFP6V4c5Ihk646iQffqsSbJV2ww
-   2RrZRgnsEt3yVnT1KeCCn/XQYb6rSBQLIjIz0Wv8fK27M6rErb2a1cpzh
-   CLcvTlb9jF3MGyQoG87tH4qNqOa9kOl+6wVF2y93lg6++/KAaQBXT8ok+
-   w==;
-IronPort-SDR: hsTM1QVLN9NhCq54tmB8QKFvocu9kjOduP0h93w7Ccg6OxKoxHWaRIoqTuZrqRgNyQpmP7Jfop
- 6UdRqUn7gGWMLXt3nGVbqEEBVWrHnut10yjQX+yGmawu8RbxMZd3JCoYcyYiqys8CgxH8ORxPX
- BSsBbmQnqNZBNO4mMFMwy66FWVOXwjrDYZzA49QowmyXrFBkn3GoOaZg1d9eWYe3P1hLzHQHrX
- vX/6rFmXYsdvDvmvc6Kv5z+1PzB/JRWk7kLA7ndsIzhtKFPUundxmirbcXFgBL+zJlOwAVRFHD
- HJ0=
+  t=1588600026; x=1620136026;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tE91w861pxg0ps3UOR5O7pcA0Vt5sQbNgdVLyXzR7B0=;
+  b=ZqSVKX4ZIQ1tffKtZI1aDyNVNIu95pNodUK3noiysQVfUI9tNqKKuBi8
+   ZdwzwzajURZA4fW6/lgpbkqOrpSJlTb+9Cxd79ZU//ljCltE6zeTAxzbC
+   r9geZIt9FPQ4t1BASEzSx4ILcj35vJLD7SFKrzA5mqbNKCWHHCedyMZkj
+   wrk6XWlModNapnr+SqYvXQ3mMgQmlRG81Dr/gLMBM+quxmKZ918qTdYzX
+   G56QVLwESVnrMhIHXx8x7ApT4hqP62NstiYe/VXv0dziVSWRbJv31r9yO
+   oD9UCYiafjCaf6BVwruxi5vz+zph0QeTenXsVyzagZ8sX3cwqK4wJ47AL
+   Q==;
+IronPort-SDR: +xPiIMwaLvNJjMlB6h11BC5RYHbjuL+WHgjVAB8fBLQ4obJ7YVwoNMs/BCNYNygc/WnXieRiwB
+ uZQcvgxafDKeofruOtThliYyd48KHyWwYUN3vkZYJPpmqfBbRv8FU8oWUvr6E1GjkfcTHn2oso
+ Tw2eK1Gcn+F6b2tFx8SLZZGMX1+jC4RshTUJ/ki/ZhY/n4l7Pmi8E1IImzUsRJMTVgPIgW6bcE
+ kmxVFIwQWskwhqVxEb2/X199I8CxZOQgghJhoiEpRTjb0z6YXpLfDzQajhYeQWrfgYoNXORi/A
+ ngc=
 X-IronPort-AV: E=Sophos;i="5.73,352,1583218800"; 
-   d="scan'208";a="74135742"
+   d="scan'208";a="74135752"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2020 06:46:29 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2020 06:46:33 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 4 May 2020 06:46:30 -0700
+ 15.1.1713.5; Mon, 4 May 2020 06:46:33 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Mon, 4 May 2020 06:46:26 -0700
+ 15.1.1713.5 via Frontend Transport; Mon, 4 May 2020 06:46:30 -0700
 From:   <nicolas.ferre@microchip.com>
 To:     <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
         "Claudiu Beznea" <claudiu.beznea@microchip.com>,
@@ -51,10 +51,12 @@ CC:     <linux-kernel@vger.kernel.org>,
         <linux@armlinux.org.uk>, <andrew@lunn.ch>,
         <michal.simek@xilinx.com>,
         "Nicolas Ferre" <nicolas.ferre@microchip.com>
-Subject: [PATCH v3 0/7] net: macb: Wake-on-Lan magic packet fixes and GEM handling
-Date:   Mon, 4 May 2020 15:44:15 +0200
-Message-ID: <cover.1588597759.git.nicolas.ferre@microchip.com>
+Subject: [PATCH v3 1/7] net: macb: fix wakeup test in runtime suspend/resume routines
+Date:   Mon, 4 May 2020 15:44:16 +0200
+Message-ID: <760ececd082c834c1ab4b1b410c605cc10bb6224.1588597759.git.nicolas.ferre@microchip.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <cover.1588597759.git.nicolas.ferre@microchip.com>
+References: <cover.1588597759.git.nicolas.ferre@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -65,61 +67,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Hi,
-Here is the 3rd series to fix WoL magic-packet on the current macb driver.
-I also add, in the second part of this series the feature to GEM types of IPs.
-Please tell me if they should be separated; but the two last patches cannot go
-without the 5 fixes first ones.
+Use the proper struct device pointer to check if the wakeup flag
+and wakeup source are positioned.
+Use the one passed by function call which is equivalent to
+&bp->dev->dev.parent.
 
-MACB and GEM code must co-exist and as they don't share exactly the same
-register layout, I had to specialize a bit the suspend/resume paths and plug a
-specific IRQ handler in order to avoid overloading the "normal" IRQ hot path.
+It's preventing the trigger of a spurious interrupt in case the
+Wake-on-Lan feature is used.
 
-The use of dumb buffers for RX that Harini implemented in [1] might
-need to be considered for a follow-up patch series in order to address
-lower-power modes on some of the platforms.
-For instance, I didn't have to implement dumb buffers for some of the simpler
-ARM9 platforms using MACB+FIFO types of controllers.
+Fixes: bc1109d04c39 ("net: macb: Add pm runtime support")
+Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc: Harini Katakam <harini.katakam@xilinx.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Please give feedback. Best regards,
-  Nicolas
-
-[1]:
-https://github.com/Xilinx/linux-xlnx/commit/e9648006e8d9132db2594e50e700af362b3c9226#diff-41909d180431659ccc1229aa30fd4e5a
-https://github.com/Xilinx/linux-xlnx/commit/60a21c686f7e4e50489ae04b9bb1980b145e52ef
-
-Changes in v3:
-- Revert some of the v2 changes done in macb_resume(). Now the resume function
-  supports in-depth re-configuration of the controller in order to deal with
-  deeper sleep states. Basically as it was before changes introduced by this
-  series
-- Tested for non-regression with our deeper Power Management mode which cuts
-  power to the controller completely
-
-Changes in v2:
-- Add patch 4/7 ("net: macb: fix macb_suspend() by removing call to netif_carrier_off()")
-  needed for keeping phy state consistent
-- Add patch 5/7 ("net: macb: fix call to pm_runtime in the suspend/resume functions") that prevent
-  putting the macb in runtime pm suspend mode when WoL is used
-- Collect review tags on 3 first patches from Florian: Thanks!
-- Review of macb_resume() function
-- Addition of pm_wakeup_event() in both MACB and GEM WoL IRQ handlers
-
-Nicolas Ferre (7):
-  net: macb: fix wakeup test in runtime suspend/resume routines
-  net: macb: mark device wake capable when "magic-packet" property
-    present
-  net: macb: fix macb_get/set_wol() when moving to phylink
-  net: macb: fix macb_suspend() by removing call to netif_carrier_off()
-  net: macb: fix call to pm_runtime in the suspend/resume functions
-  net: macb: WoL support for GEM type of Ethernet controller
-  net: macb: Add WoL interrupt support for MACB type of Ethernet
-    controller
-
- drivers/net/ethernet/cadence/macb.h      |   3 +
- drivers/net/ethernet/cadence/macb_main.c | 209 +++++++++++++++++++----
- 2 files changed, 176 insertions(+), 36 deletions(-)
-
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index a0e8c5bbabc0..d1b4d6b6d7c8 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4616,7 +4616,7 @@ static int __maybe_unused macb_runtime_suspend(struct device *dev)
+ 	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct macb *bp = netdev_priv(netdev);
+ 
+-	if (!(device_may_wakeup(&bp->dev->dev))) {
++	if (!(device_may_wakeup(dev))) {
+ 		clk_disable_unprepare(bp->tx_clk);
+ 		clk_disable_unprepare(bp->hclk);
+ 		clk_disable_unprepare(bp->pclk);
+@@ -4632,7 +4632,7 @@ static int __maybe_unused macb_runtime_resume(struct device *dev)
+ 	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct macb *bp = netdev_priv(netdev);
+ 
+-	if (!(device_may_wakeup(&bp->dev->dev))) {
++	if (!(device_may_wakeup(dev))) {
+ 		clk_prepare_enable(bp->pclk);
+ 		clk_prepare_enable(bp->hclk);
+ 		clk_prepare_enable(bp->tx_clk);
 -- 
 2.26.2
 
