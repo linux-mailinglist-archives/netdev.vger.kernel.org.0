@@ -2,124 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB5A1C38A4
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 13:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69FFA1C38C9
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 14:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728644AbgEDLyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 07:54:40 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:55391 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726445AbgEDLyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 07:54:39 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1588593279; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=r4Vq94vENugKRBMOinIfOx4dU8whdhitU1epPdspy+o=; b=VwQkIGQdzFVT7HyC50lnPN4zR054L9ifaJ9da5GTHVLI+TDaX37BmM5yOPjIlwZb7doN0Np2
- Y9zVxHfER2euf8Zz3WtUyB/JMdenVyvVqHzWGnoL5t0/e7EfPNt3PrTYH3L5xdDpy41PfREi
- z53VdemrSdgP84jTGmpgMLug4fQ=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5eb0026c.7f3182a63d50-smtp-out-n04;
- Mon, 04 May 2020 11:54:20 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 3D9F2C433CB; Mon,  4 May 2020 11:54:19 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7EF2AC433D2;
-        Mon,  4 May 2020 11:54:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7EF2AC433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Michal Kazior <michal.kazior@tieto.com>,
-        Maharaja Kennadyrajan <mkenna@codeaurora.org>,
-        Wen Gong <wgong@codeaurora.org>,
-        Erik Stromdahl <erik.stromdahl@gmail.com>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH 04/15] ath10k: fix gcc-10 zero-length-bounds warnings
-References: <20200430213101.135134-1-arnd@arndb.de>
-        <20200430213101.135134-5-arnd@arndb.de>
-        <49831bca-b9cf-4b9a-1a60-f4289e9c83c0@embeddedor.com>
-Date:   Mon, 04 May 2020 14:54:13 +0300
-In-Reply-To: <49831bca-b9cf-4b9a-1a60-f4289e9c83c0@embeddedor.com> (Gustavo A.
-        R. Silva's message of "Thu, 30 Apr 2020 16:45:32 -0500")
-Message-ID: <87368flxui.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728678AbgEDMBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 08:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726445AbgEDMBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 08:01:35 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F13C061A0E;
+        Mon,  4 May 2020 05:01:35 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id hi11so3670311pjb.3;
+        Mon, 04 May 2020 05:01:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QzsKXL54QvuRKs7TKdiKfQUShykoR6n5UojyFRWW+gk=;
+        b=T/qK5uqmZIKrhIb/DIJ/DfL90hQm6GSUp/elWjJ8CwEU2qBhCwqivOba8xQgLRxeqV
+         4NThZBvi/6Q9PniGItMndipp+6FGGntmL7Mfw/1Sw10TUwVFfjOs7bsKcJIESRuqHZFj
+         J2JAw3lzujhwppvKwyjnlDiFyaANCQ5/8UFNaIjLPFjDVYJ3lOagRm5Cn0x6O5465ZSU
+         gJJcB8mmt0h3PEOy477BilIA4/OymYajsf5XzpM3lVvd2KFuucf+R2fpFlN2to8/cxgS
+         LNs12AkViZlBjPjqtv6+/hIgXerlPQKrK09NswZR+cATPtZdSWUsIYphFWfcWC+r3GtM
+         jH6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QzsKXL54QvuRKs7TKdiKfQUShykoR6n5UojyFRWW+gk=;
+        b=k0DeWH8M9kxoNF8yjTZNEl5vI1go6Hw/8Lzi2Dk+HiWYCkJe5F2zMc0hJoOpJEWS7b
+         NKb0hKGCrIGPPflztwXxai+kRhLcjDWjHnlQrK80GQkAocFj8rkOaFUVSjxFxNFI5GZQ
+         +3stpvcHYbwknT4yneWZZKnyQcl7jJt0WN87MsMvkbbFYcMeAU3zkQF6i2GLXQRRWM1P
+         0/a8SZSzUFtTlk/0PEVwD0xo2tX2qN+SvItYZLS8fyphLWs7b/EP1uTmhma9Zn6c2QZB
+         UngVV4nOofydXyPW/N2dV1X+ABRiIgdEQY8xkETr3DfTrVqP3HU6ATD9YU3FoiO1xE//
+         qz/w==
+X-Gm-Message-State: AGi0PubOxrLlCU3ZK8UwnN0giw4Ihns5AK3IddhTKt8QlFdB/HcspQQy
+        Sjc6tQ43Zz77DfzvX48umfk=
+X-Google-Smtp-Source: APiQypIeAGR5MGlOZrGOX5Ic3d55EImWrtDHe6ZwOnXBCLEsmQWJCLYn1VHDDJGq+ExRsEaU/QJmAA==
+X-Received: by 2002:a17:90a:3086:: with SMTP id h6mr17926601pjb.49.1588593694898;
+        Mon, 04 May 2020 05:01:34 -0700 (PDT)
+Received: from localhost ([162.211.220.152])
+        by smtp.gmail.com with ESMTPSA id 14sm8945087pfj.90.2020.05.04.05.01.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 04 May 2020 05:01:34 -0700 (PDT)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     claudiu.manoil@nxp.com, davem@davemloft.net,
+        vladimir.oltean@nxp.com, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH net v1] net: enetc: fix an issue about leak system resources
+Date:   Mon,  4 May 2020 20:01:27 +0800
+Message-Id: <20200504120127.4482-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
+the related system resources were not released when enetc_hw_alloc()
+return error in the enetc_pci_mdio_probe(), add iounmap() for error
+handling label "err_hw_alloc" to fix it.
 
-> Hi Arnd,
->
-> On 4/30/20 16:30, Arnd Bergmann wrote:
->> gcc-10 started warning about out-of-bounds access for zero-length
->> arrays:
->> 
->> In file included from drivers/net/wireless/ath/ath10k/core.h:18,
->>                  from drivers/net/wireless/ath/ath10k/htt_rx.c:8:
->> drivers/net/wireless/ath/ath10k/htt_rx.c: In function 'ath10k_htt_rx_tx_fetch_ind':
->> drivers/net/wireless/ath/ath10k/htt.h:1683:17: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'struct htt_tx_fetch_record[0]' [-Wzero-length-bounds]
->>  1683 |  return (void *)&ind->records[le16_to_cpu(ind->num_records)];
->>       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/net/wireless/ath/ath10k/htt.h:1676:29: note: while referencing 'records'
->>  1676 |  struct htt_tx_fetch_record records[0];
->>       |                             ^~~~~~~
->> 
->> The structure was already converted to have a flexible-array member in
->> the past, but there are two zero-length members in the end and only
->> one of them can be a flexible-array member.
->> 
->> Swap the two around to avoid the warning, as 'resp_ids' is not accessed
->> in a way that causes a warning.
->> 
->> Fixes: 3ba225b506a2 ("treewide: Replace zero-length array with flexible-array member")
->> Fixes: 22e6b3bc5d96 ("ath10k: add new htt definitions")
->> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->> ---
->>  drivers/net/wireless/ath/ath10k/htt.h | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->> 
->> diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
->> index e7096a73c6ca..7621f0a3dc77 100644
->> --- a/drivers/net/wireless/ath/ath10k/htt.h
->> +++ b/drivers/net/wireless/ath/ath10k/htt.h
->> @@ -1673,8 +1673,8 @@ struct htt_tx_fetch_ind {
->>  	__le32 token;
->>  	__le16 num_resp_ids;
->>  	__le16 num_records;
->> -	struct htt_tx_fetch_record records[0];
->> -	__le32 resp_ids[]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
->> +	__le32 resp_ids[0]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
->> +	struct htt_tx_fetch_record records[];
->>  } __packed;
->>  
->>  static inline void *
->> 
->
-> The treewide patch is an experimental change and, as this change only applies
-> to my -next tree, I will carry this patch in it, so other people don't have
-> to worry about this at all.
+Fixes: 6517798dd3432a ("enetc: Make MDIO accessors more generic and export to include/linux/fsl")
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Gustavo, why do you have ath10k patches in your tree? I prefer that
-ath10k patches go through my ath.git tree so that they are reviewed and
-tested.
-
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
+index ebc635f8a4cc..15f37c5b8dc1 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
+@@ -74,8 +74,8 @@ static int enetc_pci_mdio_probe(struct pci_dev *pdev,
+ 	pci_disable_device(pdev);
+ err_pci_enable:
+ err_mdiobus_alloc:
+-	iounmap(port_regs);
+ err_hw_alloc:
++	iounmap(port_regs);
+ err_ioremap:
+ 	return err;
+ }
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.25.0
+
