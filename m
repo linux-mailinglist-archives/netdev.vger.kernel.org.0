@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC3921C425C
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:21:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8693F1C425E
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729985AbgEDRVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
+        id S1730032AbgEDRVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729777AbgEDRVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:21:18 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFD0C061A0E;
-        Mon,  4 May 2020 10:21:18 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id x2so12000098ilp.13;
-        Mon, 04 May 2020 10:21:18 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729667AbgEDRVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:21:38 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE384C061A0E;
+        Mon,  4 May 2020 10:21:38 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id f3so13167213ioj.1;
+        Mon, 04 May 2020 10:21:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=tUSEwSXh8XVl3QH0MEWVOPc/xrRd2sKV2YwFOw1eFQI=;
-        b=mxJr9oeCM07QvxB9jzZYDAQZMQHsP2epgm1aAdQ06XoWjOHr7ZmKsZSve6wcY1YXIl
-         +MF8GrcLv8fRSlpNk8R6Yks8XiH6jMIF8SaScT9seKm43jESFANbLLbzrHJVpUZqCXTt
-         HlTXNXyz6wMHhL1FGBUZdfsJrAU07CM+pc2h57L/rUthOdV7OHI16+47T991ssbnMg2a
-         DyQ23DNSpuqIHHM9kxidugLjrJeSdtzvwor1W0O1eIm7BTy37juCP5RVqquJswWHiTjz
-         rZIEC2oMQa3jbp1EX5e1nkDmRn7363STvNdsAy9de/2NFx2lPwCJkijKgDT9gUflNic9
-         DGhw==
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=T0bFivZkGCPqQDuoXyfkeADSXLeemmjLzmCAHYc6sAw=;
+        b=lW6oLhb+oEywGN3MgMXgDiA7i+xWpKjzHgPF2CXL2c3dxfNfxSfQ2ka9tqBLakp5BZ
+         dJJAgUHytLIib5kf9wfq4VPnofV/5KO6zvOK8YzQncwOXgODTfrPLhZiOzkNKOIBN4En
+         pwGOkx8a3o2tgkL/W8+xqNSgIhwruqVFePioyn+gjdVAaWwpB7aDgvXAXm//w42r0iWe
+         IMNKLxi6tYiWZHj7JmupS9ew6sH3iF+e3fQtxQRW7KDiac4MaM/wLMGUMssoDYYrEO+a
+         J/2ZtmpzLEI1WygjQiRuJU82GRcr8QFNQnTZ63mbl6qC2mXB68qPBIZs8sHklyUGxt0a
+         wPtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=tUSEwSXh8XVl3QH0MEWVOPc/xrRd2sKV2YwFOw1eFQI=;
-        b=nvbQc95EZ2BIk8/h4Xbek/uNCl4k2GJP9aO/3TDZ6AgnoV1/QLWTPF4rfomNTqGw+Z
-         eAJMCCqyO9FhfzmuSaIGXqJe2DiM7atW+/oC327eJQ66sWKQyhFnDHiKlYwTStDtxz3X
-         v+iwDnk61bnEQzXIToDXmUhwZTttmWQ8VJ8uh6T2dZae8j70viIsRD/3o4KTaFzpLBEt
-         vwfOgxC93BGdI8VFzR6akjgEnUPW6ZKWK3tLcx2DROVNJVpqg0nVT/8a0Aj2DKkHuOcr
-         1cv6e/7dcwsMXY/+Dz5vh7pQAgeCa+38abPBhPM4vWCoTkrIKOpJKx10I7wjaRAUkeNO
-         4NeQ==
-X-Gm-Message-State: AGi0PubefSp9o14q3/0DPyaijVsiRhM01prZY1YdI935K/+siqv3IsPJ
-        KHtw8tGEi/BhGCAaxQTvKSU=
-X-Google-Smtp-Source: APiQypIp64ebifabNDFE8DeWtM6rRqtw7pEc+SPcJjgF+LKnDmtPAjSOcoAiBL4LDueMSEZp1NeigA==
-X-Received: by 2002:a92:8693:: with SMTP id l19mr18025696ilh.48.1588612877654;
-        Mon, 04 May 2020 10:21:17 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=T0bFivZkGCPqQDuoXyfkeADSXLeemmjLzmCAHYc6sAw=;
+        b=EIaQu+n9sYTsixfj1jexXD6QCHQKcoanngvqD/4MnuBr4Q9ZJkw9DNUlL+5+r40hJF
+         RZjyCKuAhFwUsiBgeX+d46h6JAX6Km9ZoWV+N506+BEjPIejp4OJ6DwhOd0wYlodlefg
+         oiV284vJzpIaeBwvASnC6DD9U9aA3JZNaJtNnGpoglOr2/s0lo8nJws4QVbuUuCP5gmT
+         xzo5CuYzbc/qKSH5iCkvkGNvi09DYiI85ZvVNywxg0k/cI0iHEkrzT637qrOjaawUmSt
+         kBIP41XLq/1Qji0W/xiYUIHIJBQuuwYlx64HkFOtwrbXGjpSMGwcFn837+JHVUMK07wX
+         9YEg==
+X-Gm-Message-State: AGi0PuZWkVWbpFrtzAcD2ATjWdOq8O3Yg65h2tkMomtw2vyBxCkW7o34
+        WBhNUGUqoWNEvZPVmZvABNgystYG19w=
+X-Google-Smtp-Source: APiQypL5eECy1DSxNzoKkk5/d16TitveVmE3ptOBJrD+G3me0Q9PJ8GgS95DXe5bqOjk+wDQkdp0DQ==
+X-Received: by 2002:a6b:14d0:: with SMTP id 199mr16521233iou.11.1588612898128;
+        Mon, 04 May 2020 10:21:38 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id m14sm5471742ilq.68.2020.05.04.10.21.09
+        by smtp.gmail.com with ESMTPSA id r2sm3609501ioo.51.2020.05.04.10.21.30
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 04 May 2020 10:21:16 -0700 (PDT)
-Subject: [PATCH 0/2] sockmap, fix for some error paths with helpers 
+        Mon, 04 May 2020 10:21:37 -0700 (PDT)
+Subject: [PATCH 1/2] bpf: sockmap,
+ msg_pop_data can incorrecty set an sge length
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub@cloudflare.com, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com, ast@kernel.org
-Date:   Mon, 04 May 2020 10:21:01 -0700
-Message-ID: <158861271707.14306.15853815339036099229.stgit@john-Precision-5820-Tower>
+Date:   Mon, 04 May 2020 10:21:23 -0700
+Message-ID: <158861288359.14306.7654891716919968144.stgit@john-Precision-5820-Tower>
+In-Reply-To: <158861271707.14306.15853815339036099229.stgit@john-Precision-5820-Tower>
+References: <158861271707.14306.15853815339036099229.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -63,24 +66,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In these two cases sk_msg layout was getting confused with some helper
-sequences.
+When sk_msg_pop() is called where the pop operation is working on
+the end of a sge element and there is no additional trailing data
+and there _is_ data in front of pop, like the following case,
 
-I found these while cleaning up test_sockmap to do a better job covering
-the different scenarios. Those patches will go to bpf-next and include
-tests that cover these two cases.
 
+   |____________a_____________|__pop__|
+
+We have out of order operations where we incorrectly set the pop
+variable so that instead of zero'ing pop we incorrectly leave it
+untouched, effectively. This can cause later logic to shift the
+buffers around believing it should pop extra space. The result is
+we have 'popped' more data then we expected potentially breaking
+program logic.
+
+It took us a while to hit this case because typically we pop headers
+which seem to rarely be at the end of a scatterlist elements but
+we can't rely on this.
+
+Fixes: 7246d8ed4dcce ("bpf: helper to pop data from messages")
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
+ net/core/filter.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-John Fastabend (2):
-      bpf: sockmap, msg_pop_data can incorrecty set an sge length
-      bpf: sockmap, bpf_tcp_ingress needs to subtract bytes from sg.size
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 7d6ceaa..5cc9276 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2590,8 +2590,8 @@ BPF_CALL_4(bpf_msg_pop_data, struct sk_msg *, msg, u32, start,
+ 			}
+ 			pop = 0;
+ 		} else if (pop >= sge->length - a) {
+-			sge->length = a;
+ 			pop -= (sge->length - a);
++			sge->length = a;
+ 		}
+ 	}
+ 
 
-
- include/linux/skmsg.h |    1 +
- net/core/filter.c     |    2 +-
- net/ipv4/tcp_bpf.c    |    1 -
- 3 files changed, 2 insertions(+), 2 deletions(-)
-
---
-Signature
