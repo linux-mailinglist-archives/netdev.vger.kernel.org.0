@@ -2,98 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 605861C483C
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 22:28:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 923041C485C
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 22:34:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgEDU2F convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 4 May 2020 16:28:05 -0400
-Received: from mga03.intel.com ([134.134.136.65]:60139 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726334AbgEDU2F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 May 2020 16:28:05 -0400
-IronPort-SDR: tEXcMrxJOw4out8B+zdAY1kEJSsAr0iepczBan6sKrt+4ctBGQo93G1Z9oi/iAobZ1z+pROtUg
- GNKfkuJQh/9Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2020 13:28:04 -0700
-IronPort-SDR: Tq/jZWgJ6AUwkRsjaMqbQWY2fWdseKH72RaHEPvpnJo0rzelICaR5nI2gOywHD4HNMNdXASnkw
- 1zC1NwnCC7dQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,353,1583222400"; 
-   d="scan'208";a="249260889"
-Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
-  by fmsmga007.fm.intel.com with ESMTP; 04 May 2020 13:28:03 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.248]) by
- ORSMSX108.amr.corp.intel.com ([169.254.2.68]) with mapi id 14.03.0439.000;
- Mon, 4 May 2020 13:28:03 -0700
-From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-To:     David Miller <davem@davemloft.net>,
-        "kai.heng.feng@canonical.com" <kai.heng.feng@canonical.com>
-CC:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] igb: Report speed and duplex as unknown when device is
- runtime suspended
-Thread-Topic: [PATCH] igb: Report speed and duplex as unknown when device is
- runtime suspended
-Thread-Index: AQHWIjoCs1YMgvTPr0+YmRp3SYYI9aiYsmYA//+t7dA=
-Date:   Mon, 4 May 2020 20:28:03 +0000
-Message-ID: <61CC2BC414934749BD9F5BF3D5D9404498687DD5@ORSMSX112.amr.corp.intel.com>
-References: <20200504173218.1724-1-kai.heng.feng@canonical.com>
- <20200504.112056.1400711844642835898.davem@davemloft.net>
-In-Reply-To: <20200504.112056.1400711844642835898.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727768AbgEDUeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 16:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726334AbgEDUeP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 16:34:15 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B51AC061A0E;
+        Mon,  4 May 2020 13:34:15 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id t12so14782124edw.3;
+        Mon, 04 May 2020 13:34:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0ujQBkedTruUaYli8xYvaDmOGg+LHDXWsK2ccHcdSVw=;
+        b=IBszTMXczFe5F/fu85oU0ycVzvAlEnxq50EH4Wp9Euc4Zb2L47c3tvalIDRU0jiNDu
+         h3+ksOL0GZW95hQlGBKTs4mmKe8KVvzVkN4qoCy+A1i12umkFk0Vglp/SWNg7ZtS0faU
+         coEoWU7Q05dsezdat1dFMLP0m8gEuo1o+hBg1rvFITg3ruBTu7HYQGpVyqUXU4OgNQBk
+         PZZyCrgkWpM/uWM7CpKZgtiEl2Ek1j1jAsi5sk/8d2KTQ4YOBuTNw5B/0wEOLwMnRWne
+         hadnqjW3MocrscbVh4ak9VJ/R9HBqFAJuMubsBnwv6R3NtgMfx2V06D4aWnwmJJeounJ
+         SBfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0ujQBkedTruUaYli8xYvaDmOGg+LHDXWsK2ccHcdSVw=;
+        b=Fb6tr2Xm8h64VpWNMY/6c209JufZkQkiu43tEiY+1XX3CroLZm4hWylSute/MoVoDU
+         t5IcecbKPCrhWU6NLbbmBmtkdkbpKxhtcsb805CqTUgP1RDwv0OjOLrtixj+R9hswOpV
+         go4ArFB1mkVVWax1PSk7EuYCU5BsHTymZN1jw/d9nDDjmEwhp0MDM7RdGk4TLBlAwT0E
+         u58Xau1LXEAwRHHaJkcrk+aISFov9Bu/QSeAT17XrIa3gsu7Nekjf9XP8xGyiRKugf/Y
+         CgL70I6P0JxZhBB5QC69DDPpCqOlUMjmWN8ebs3gMCK0i0QxrmGTAu4g95jBpYrL71Dc
+         M7Sg==
+X-Gm-Message-State: AGi0PuY5LapGbwxNEtGAOJhyzf5j7+K3PaF6Es3wmH/eRHhlydQzpi4x
+        aD3HDQLOSjYONQttUTl8iVcKwoU62WztA5evM5k=
+X-Google-Smtp-Source: APiQypLadytmeo0878qVxF3SemwWssYsZnGHJqE8PKI3DwBvWZ6o/+mKKJCpD4dpd6TwjjYR5cZ31Ob2gF6K41EofYk=
+X-Received: by 2002:a50:a2e5:: with SMTP id 92mr16631358edm.139.1588624453705;
+ Mon, 04 May 2020 13:34:13 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200504201806.27192-1-f.fainelli@gmail.com>
+In-Reply-To: <20200504201806.27192-1-f.fainelli@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 4 May 2020 23:34:02 +0300
+Message-ID: <CA+h21ho50twA=D=kZYxVuE=C6gf=8JeXmTEHhV30p_30oQZjjA@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: Do not leave DSA master with NULL netdev_ops
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, allen.pais@oracle.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: David Miller <davem@davemloft.net>
-> Sent: Monday, May 4, 2020 11:21
-> To: kai.heng.feng@canonical.com
-> Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; intel-wired-
-> lan@lists.osuosl.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH] igb: Report speed and duplex as unknown when device is
-> runtime suspended
-> 
-> From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> Date: Tue,  5 May 2020 01:32:18 +0800
-> 
-> > igb device gets runtime suspended when there's no link partner. We
-> > can't get correct speed under that state:
-> > $ cat /sys/class/net/enp3s0/speed
-> > 1000
-> >
-> > In addition to that, an error can also be spotted in dmesg:
-> > [  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
-> >
-> > Since device can only be runtime suspended when there's no link
-> > partner, we can directly report the speed and duplex as unknown.
-> >
-> > The more generic approach will be wrap get_link_ksettings() with
-> > begin() and complete() callbacks. However, for this particular issue,
-> > begin() calls igb_runtime_resume() , which tries to rtnl_lock() while
-> > the lock is already hold by upper ethtool layer.
-> >
-> > So let's take this approach until the igb_runtime_resume() no longer
-> > needs to hold rtnl_lock.
-> >
-> > Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> 
-> I'm assuming I will get this from upstream via Jeff K.
-[Kirsher, Jeffrey T] 
+Hi Florian,
 
-Yep, I will be picking this up once Alex's last questions/concerns are addressed.
+On Mon, 4 May 2020 at 23:19, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> When ndo_get_phys_port_name() for the CPU port was added we introduced
+> an early check for when the DSA master network device in
+> dsa_master_ndo_setup() already implements ndo_get_phys_port_name(). When
+> we perform the teardown operation in dsa_master_ndo_teardown() we would
+> not be checking that cpu_dp->orig_ndo_ops was successfully allocated and
+> non-NULL initialized.
+>
+> With network device drivers such as virtio_net, this leads to a NPD as
+> soon as the DSA switch hanging off of it gets torn down because we are
+> now assigning the virtio_net device's netdev_ops a NULL pointer.
+>
+> Fixes: da7b9e9b00d4 ("net: dsa: Add ndo_get_phys_port_name() for CPU port")
+> Reported-by: Allen Pais <allen.pais@oracle.com>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+
+The fix makes complete sense.
+But on another note, if we don't overlay an ndo_get_phys_port_name if
+the master already has one, doesn't that render the entire mechanism
+of having a reliable way for user space to determine the CPU port
+number pointless?
+
+>  net/dsa/master.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/dsa/master.c b/net/dsa/master.c
+> index b5c535af63a3..a621367c6e8c 100644
+> --- a/net/dsa/master.c
+> +++ b/net/dsa/master.c
+> @@ -289,7 +289,8 @@ static void dsa_master_ndo_teardown(struct net_device *dev)
+>  {
+>         struct dsa_port *cpu_dp = dev->dsa_ptr;
+>
+> -       dev->netdev_ops = cpu_dp->orig_ndo_ops;
+> +       if (cpu_dp->orig_ndo_ops)
+> +               dev->netdev_ops = cpu_dp->orig_ndo_ops;
+>         cpu_dp->orig_ndo_ops = NULL;
+>  }
+>
+> --
+> 2.20.1
+>
+
+Regards,
+-Vladimir
