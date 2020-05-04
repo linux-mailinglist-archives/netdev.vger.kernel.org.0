@@ -2,81 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB77F1C387F
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 13:43:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB5A1C38A4
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 13:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728587AbgEDLna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 07:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726782AbgEDLna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 07:43:30 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CF8C061A0E;
-        Mon,  4 May 2020 04:43:29 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id g12so8612202wmh.3;
-        Mon, 04 May 2020 04:43:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7zq/Vd/myQ/CLDbfPWku2LL/tP/F7KSMA7+XLhhYj9g=;
-        b=u8hJ3JzAwBJnpqX4QTl/fM1A96s9krcR44lRLgfz/ZDH7DHDBIf075O5Jh3s1Tcbyg
-         lWZEKQyiAjNtUmAKezHOybJehnehqgtuk+LVwdpuNE2GLEQc54QtmWPY0u5715MJP+vk
-         sp07LfgKQPnttBrKF9O+F4RqBupuM1bzYj6o+Yqsi21fv95mZy8m0igZjA0Qvd1KjyQP
-         yH6s5g6BMhnqMXHtKLGOYbDMHPRYEnJhwO3IcbpPAmnBUyZX2esycZfRLrGkJegP41KS
-         tf3crszhytYeYYiRC7Z/b91gAUzjrJowQPKrHTti9EPumDXdhEAKUGj9xA96yDTn20qH
-         sMqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7zq/Vd/myQ/CLDbfPWku2LL/tP/F7KSMA7+XLhhYj9g=;
-        b=rkKvrS5C9Z0OCzdQgRUblkxkYo33X6sgaxUDu8SauFZ0kMQL/X+TdIs3QwZCNvcF1h
-         plfNo673gh9af4q5b1pwbaCGxBFxntNWJmnkEGBeqOkkc8slQmfLzDvzsgOeQyYMJ/Wk
-         v74NQAjOOlUgz2DVeLDOCvAVcsvTTpU+vQSHXK8x5m0XFSzTk2Knl2V2S3xqjZVxWu7j
-         m8HO+SNaafdxy9gZBzQoq9zjvX+HMgCAFJQ3hLAsquTTCqF81IYUj5N30xeSk5bZm6zt
-         nnwCP7aF3hBT82dMU6ay2nyix9D0wpI0tghEuzIFSCNKvpFWgs/3xU03+uWAUDxPDdcN
-         ME+A==
-X-Gm-Message-State: AGi0PuZEs6U3OqixokyJrV/J3gcNkImn0UwvF3+nL6eyr6CreswzAl9w
-        ZTdWBE7fC2BwtXGXDcM2uPt+ObObq+IxJbCpjUY=
-X-Google-Smtp-Source: APiQypJ3iuedsbNxfFhX7K/2DjPz9/nHMo3wBXC/NZX8pDB9XJHUyvx+ORF9u68W5iUeL+N9hnq4RCb0MisGH0Fckdg=
-X-Received: by 2002:a1c:5502:: with SMTP id j2mr15187871wmb.56.1588592608652;
- Mon, 04 May 2020 04:43:28 -0700 (PDT)
+        id S1728644AbgEDLyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 07:54:40 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:55391 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726445AbgEDLyj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 07:54:39 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1588593279; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=r4Vq94vENugKRBMOinIfOx4dU8whdhitU1epPdspy+o=; b=VwQkIGQdzFVT7HyC50lnPN4zR054L9ifaJ9da5GTHVLI+TDaX37BmM5yOPjIlwZb7doN0Np2
+ Y9zVxHfER2euf8Zz3WtUyB/JMdenVyvVqHzWGnoL5t0/e7EfPNt3PrTYH3L5xdDpy41PfREi
+ z53VdemrSdgP84jTGmpgMLug4fQ=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5eb0026c.7f3182a63d50-smtp-out-n04;
+ Mon, 04 May 2020 11:54:20 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 3D9F2C433CB; Mon,  4 May 2020 11:54:19 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7EF2AC433D2;
+        Mon,  4 May 2020 11:54:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7EF2AC433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Michal Kazior <michal.kazior@tieto.com>,
+        Maharaja Kennadyrajan <mkenna@codeaurora.org>,
+        Wen Gong <wgong@codeaurora.org>,
+        Erik Stromdahl <erik.stromdahl@gmail.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH 04/15] ath10k: fix gcc-10 zero-length-bounds warnings
+References: <20200430213101.135134-1-arnd@arndb.de>
+        <20200430213101.135134-5-arnd@arndb.de>
+        <49831bca-b9cf-4b9a-1a60-f4289e9c83c0@embeddedor.com>
+Date:   Mon, 04 May 2020 14:54:13 +0300
+In-Reply-To: <49831bca-b9cf-4b9a-1a60-f4289e9c83c0@embeddedor.com> (Gustavo A.
+        R. Silva's message of "Thu, 30 Apr 2020 16:45:32 -0500")
+Message-ID: <87368flxui.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <20200504113716.7930-1-bjorn.topel@gmail.com> <20200504113716.7930-12-bjorn.topel@gmail.com>
-In-Reply-To: <20200504113716.7930-12-bjorn.topel@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 4 May 2020 13:43:17 +0200
-Message-ID: <CAJ+HfNhV0+3moPNr8dtSKbTzs8W=z3CdPDk4Brg88hKH=og=Kw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 11/13] xsk: remove MEM_TYPE_ZERO_COPY and
- corresponding code
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 May 2020 at 13:38, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> =
-wrote:
->
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->
-> There are no users of MEM_TYPE_ZERO_COPY. Remove all corresponding
-> code, including the "handle" member of struct xdp_sock.
->
+"Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
 
-"struct xdp_buff"
+> Hi Arnd,
+>
+> On 4/30/20 16:30, Arnd Bergmann wrote:
+>> gcc-10 started warning about out-of-bounds access for zero-length
+>> arrays:
+>> 
+>> In file included from drivers/net/wireless/ath/ath10k/core.h:18,
+>>                  from drivers/net/wireless/ath/ath10k/htt_rx.c:8:
+>> drivers/net/wireless/ath/ath10k/htt_rx.c: In function 'ath10k_htt_rx_tx_fetch_ind':
+>> drivers/net/wireless/ath/ath10k/htt.h:1683:17: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'struct htt_tx_fetch_record[0]' [-Wzero-length-bounds]
+>>  1683 |  return (void *)&ind->records[le16_to_cpu(ind->num_records)];
+>>       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/wireless/ath/ath10k/htt.h:1676:29: note: while referencing 'records'
+>>  1676 |  struct htt_tx_fetch_record records[0];
+>>       |                             ^~~~~~~
+>> 
+>> The structure was already converted to have a flexible-array member in
+>> the past, but there are two zero-length members in the end and only
+>> one of them can be a flexible-array member.
+>> 
+>> Swap the two around to avoid the warning, as 'resp_ids' is not accessed
+>> in a way that causes a warning.
+>> 
+>> Fixes: 3ba225b506a2 ("treewide: Replace zero-length array with flexible-array member")
+>> Fixes: 22e6b3bc5d96 ("ath10k: add new htt definitions")
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>> ---
+>>  drivers/net/wireless/ath/ath10k/htt.h | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
+>> index e7096a73c6ca..7621f0a3dc77 100644
+>> --- a/drivers/net/wireless/ath/ath10k/htt.h
+>> +++ b/drivers/net/wireless/ath/ath10k/htt.h
+>> @@ -1673,8 +1673,8 @@ struct htt_tx_fetch_ind {
+>>  	__le32 token;
+>>  	__le16 num_resp_ids;
+>>  	__le16 num_records;
+>> -	struct htt_tx_fetch_record records[0];
+>> -	__le32 resp_ids[]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
+>> +	__le32 resp_ids[0]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
+>> +	struct htt_tx_fetch_record records[];
+>>  } __packed;
+>>  
+>>  static inline void *
+>> 
+>
+> The treewide patch is an experimental change and, as this change only applies
+> to my -next tree, I will carry this patch in it, so other people don't have
+> to worry about this at all.
+
+Gustavo, why do you have ath10k patches in your tree? I prefer that
+ath10k patches go through my ath.git tree so that they are reviewed and
+tested.
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
