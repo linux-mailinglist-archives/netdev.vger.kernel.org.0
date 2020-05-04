@@ -2,72 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3C5A1C430D
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B06011C430F
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:39:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730122AbgEDRjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729969AbgEDRjj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:39:39 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCA5C061A0E;
-        Mon,  4 May 2020 10:39:37 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E3A8F15B52E80;
-        Mon,  4 May 2020 10:39:36 -0700 (PDT)
-Date:   Mon, 04 May 2020 10:39:35 -0700 (PDT)
-Message-Id: <20200504.103935.1584665284135386530.davem@davemloft.net>
-To:     joyce.ooi@intel.com
-Cc:     thor.thayer@linux.intel.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dalon.westergreen@intel.com,
-        ley.foon.tan@intel.com, chin.liang.see@intel.com,
-        dinh.nguyen@intel.com
-Subject: Re: [PATCHv2 01/10] net: eth: altera: tse_start_xmit ignores
- tx_buffer call response
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200504082558.112627-2-joyce.ooi@intel.com>
-References: <20200504082558.112627-1-joyce.ooi@intel.com>
-        <20200504082558.112627-2-joyce.ooi@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 04 May 2020 10:39:37 -0700 (PDT)
+        id S1730125AbgEDRjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:39:55 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:63650 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729962AbgEDRjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:39:54 -0400
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 044HY6oU003760;
+        Mon, 4 May 2020 13:39:52 -0400
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 30s1svyx87-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 May 2020 13:39:50 -0400
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 044HUJ6m021811;
+        Mon, 4 May 2020 17:39:49 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma05fra.de.ibm.com with ESMTP id 30s0g5j4dn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 May 2020 17:39:48 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 044Hdk9D58654784
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 May 2020 17:39:46 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 12316AE045;
+        Mon,  4 May 2020 17:39:46 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BC738AE04D;
+        Mon,  4 May 2020 17:39:45 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  4 May 2020 17:39:45 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net] s390/qeth: fix cancelling of TX timer on dev_close()
+Date:   Mon,  4 May 2020 19:39:42 +0200
+Message-Id: <20200504173942.69298-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-04_11:2020-05-04,2020-05-04 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 malwarescore=0 phishscore=0 adultscore=0
+ impostorscore=0 mlxlogscore=919 bulkscore=0 clxscore=1015 suspectscore=0
+ mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005040135
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Joyce Ooi <joyce.ooi@intel.com>
-Date: Mon,  4 May 2020 16:25:49 +0800
+With the introduction of TX coalescing, .ndo_start_xmit now potentially
+starts the TX completion timer. So only kill the timer _after_ TX has
+been disabled.
 
-> The return from tx_buffer call in tse_start_xmit is
-> inapropriately ignored.  tse_buffer calls should return
-> 0 for success or NETDEV_TX_BUSY.  tse_start_xmit should
-> return not report a successful transmit when the tse_buffer
-> call returns an error condition.
+Fixes: ee1e52d1e4bb ("s390/qeth: add TX IRQ coalescing support for IQD devices")
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+---
+ drivers/s390/net/qeth_core_main.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-From driver.txt:
+diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+index f7689461c242..569966bdc513 100644
+--- a/drivers/s390/net/qeth_core_main.c
++++ b/drivers/s390/net/qeth_core_main.c
+@@ -6717,17 +6717,17 @@ int qeth_stop(struct net_device *dev)
+ 		unsigned int i;
+ 
+ 		/* Quiesce the NAPI instances: */
+-		qeth_for_each_output_queue(card, queue, i) {
++		qeth_for_each_output_queue(card, queue, i)
+ 			napi_disable(&queue->napi);
+-			del_timer_sync(&queue->timer);
+-		}
+ 
+ 		/* Stop .ndo_start_xmit, might still access queue->napi. */
+ 		netif_tx_disable(dev);
+ 
+-		/* Queues may get re-allocated, so remove the NAPIs here. */
+-		qeth_for_each_output_queue(card, queue, i)
++		qeth_for_each_output_queue(card, queue, i) {
++			del_timer_sync(&queue->timer);
++			/* Queues may get re-allocated, so remove the NAPIs. */
+ 			netif_napi_del(&queue->napi);
++		}
+ 	} else {
+ 		netif_tx_disable(dev);
+ 	}
+-- 
+2.17.1
 
-====================
-1) The ndo_start_xmit method must not return NETDEV_TX_BUSY under
-   any normal circumstances.  It is considered a hard error unless
-   there is no way your device can tell ahead of time when it's
-   transmit function will become busy.
-====================
-
-The problem is that when you return this error code, something has
-to trigger restarting the transmit queue to start sending packets
-to your device again.  The usual mechanism is waking the transmit
-queue, but it's obviously already awake since your transmit routine
-is being called.  Therefore nothing will reliably restart the queue
-when you return this error code.
-
-The best thing to do honestly is to drop the packet and return
-NETDEV_TX_OK, meanwhile bumping a statistic counter to record this
-event.
