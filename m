@@ -2,189 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A31D61C354C
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 11:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E84421C3573
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 11:20:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728168AbgEDJKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 05:10:48 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38692 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726467AbgEDJKr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 May 2020 05:10:47 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id D8EDFAC7D;
-        Mon,  4 May 2020 09:10:46 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 43276604EE; Mon,  4 May 2020 11:10:44 +0200 (CEST)
-Date:   Mon, 4 May 2020 11:10:44 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S1728347AbgEDJUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 05:20:51 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:37831 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727824AbgEDJUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 05:20:50 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1588584049; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=z3mUepLM3WsniLD5TRfWqfHrgRQVjA/uOj1ZMRdcoTI=; b=rSaKLR3UzmlldXGKkVTC9viz3w2KbfS6bwr5v37qisJ6RJh1pwBaYNYr222a+adnI6CrSvwG
+ ibjm7nIgGm6LQcrF2UEtL+XRh/zE37dc8Y9ipKUbT3cyT0mk+AnS4upbQAZvag3u4M9lNyJg
+ HdKKdU8AW2agC8uzurB6gmeiA6Y=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5eafde71.7f63f130a0a0-smtp-out-n03;
+ Mon, 04 May 2020 09:20:49 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id CF21FC433BA; Mon,  4 May 2020 09:20:47 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7A56BC433D2;
+        Mon,  4 May 2020 09:20:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7A56BC433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        mkl@pengutronix.de, Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: Re: [PATCH v5 1/2] ethtool: provide UAPI for PHY master/slave
- configuration.
-Message-ID: <20200504091044.GA8237@lion.mk-sys.cz>
-References: <20200504071214.5890-1-o.rempel@pengutronix.de>
- <20200504071214.5890-2-o.rempel@pengutronix.de>
+        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: Re: [PATCH 24/37] docs: networking: device drivers: convert intel/ipw2100.txt to ReST
+References: <cover.1588344146.git.mchehab+huawei@kernel.org>
+        <9f8e6ca792b65b691fadafc5a1f20de20b4f7c6f.1588344146.git.mchehab+huawei@kernel.org>
+Date:   Mon, 04 May 2020 12:20:42 +0300
+In-Reply-To: <9f8e6ca792b65b691fadafc5a1f20de20b4f7c6f.1588344146.git.mchehab+huawei@kernel.org>
+        (Mauro Carvalho Chehab's message of "Fri, 1 May 2020 16:44:46 +0200")
+Message-ID: <87lfm8dpjp.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200504071214.5890-2-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 04, 2020 at 09:12:13AM +0200, Oleksij Rempel wrote:
-> This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
-> auto-negotiation support, we needed to be able to configure the
-> MASTER-SLAVE role of the port manually or from an application in user
-> space.
-> 
-> The same UAPI can be used for 1000BASE-T or MultiGBASE-T devices to
-> force MASTER or SLAVE role. See IEEE 802.3-2018:
-> 22.2.4.3.7 MASTER-SLAVE control register (Register 9)
-> 22.2.4.3.8 MASTER-SLAVE status register (Register 10)
-> 40.5.2 MASTER-SLAVE configuration resolution
-> 45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
-> 45.2.7.10 MultiGBASE-T AN control 1 register (Register 7.32)
-> 
-> The MASTER-SLAVE role affects the clock configuration:
-> 
-> -------------------------------------------------------------------------------
-> When the  PHY is configured as MASTER, the PMA Transmit function shall
-> source TX_TCLK from a local clock source. When configured as SLAVE, the
-> PMA Transmit function shall source TX_TCLK from the clock recovered from
-> data stream provided by MASTER.
-> 
-> iMX6Q                     KSZ9031                XXX
-> ------\                /-----------\        /------------\
->       |                |           |        |            |
->  MAC  |<----RGMII----->| PHY Slave |<------>| PHY Master |
->       |<--- 125 MHz ---+-<------/  |        | \          |
-> ------/                \-----------/        \------------/
->                                                ^
->                                                 \-TX_TCLK
-> 
-> -------------------------------------------------------------------------------
-> 
-> Since some clock or link related issues are only reproducible in a
-> specific MASTER-SLAVE-role, MAC and PHY configuration, it is beneficial
-> to provide generic (not 100BASE-T1 specific) interface to the user space
-> for configuration flexibility and trouble shooting.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index ac2784192472f..42dda9d2082ee 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -1768,6 +1768,90 @@ int genphy_setup_forced(struct phy_device *phydev)
->  }
->  EXPORT_SYMBOL(genphy_setup_forced);
->  
-> +static int genphy_setup_master_slave(struct phy_device *phydev)
-> +{
-> +	u16 ctl = 0;
-> +
-> +	if (!phydev->is_gigabit_capable)
-> +		return 0;
+Mauro Carvalho Chehab <mchehab+huawei@kernel.org> writes:
 
-Why did you revert to silently ignoring requests in this case? On the
-other hand, we might rather want to do a more generic check which would
-handle all drivers not supporting the feature, see below.
+> - add SPDX header;
+> - adjust titles and chapters, adding proper markups;
+> - comment out text-only TOC from html/pdf output;
+> - use copyright symbol;
+> - use :field: markup;
+> - mark code blocks and literals as such;
+> - mark tables as such;
+> - adjust identation, whitespaces and blank lines where needed;
+> - add to networking/index.rst.
+>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-[...]
-> @@ -287,14 +308,37 @@ static bool ethnl_auto_linkmodes(struct ethtool_link_ksettings *ksettings,
->  			     __ETHTOOL_LINK_MODE_MASK_NBITS);
->  }
->  
-> +static int ethnl_validate_master_slave_cfg(u8 cfg)
-> +{
-> +	switch (cfg) {
-> +	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-> +	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-> +	case MASTER_SLAVE_CFG_MASTER_FORCE:
-> +	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-> +		return 1;
-> +	}
-> +
-> +	return 0;
-> +}
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
-Nitpick: bool would be more appropriate as return value.
-
-> +
->  static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
->  				  struct ethtool_link_ksettings *ksettings,
->  				  bool *mod)
->  {
->  	struct ethtool_link_settings *lsettings = &ksettings->base;
->  	bool req_speed, req_duplex;
-> +	const struct nlattr *master_slave_cfg;
->  	int ret;
->  
-> +	master_slave_cfg = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
-> +	if (master_slave_cfg) {
-> +		u8 cfg = nla_get_u8(master_slave_cfg);
-> +		if (!ethnl_validate_master_slave_cfg(cfg)) {
-> +			GENL_SET_ERR_MSG(info, "LINKMODES_MASTER_SLAVE_CFG contains not valid value");
-> +			return -EOPNOTSUPP;
-> +		}
-> +	}
-
-Please set also the "bad attribute" in extack, it may help
-non-interactive clients.
-
-Also, it would be nice to report error if client wants to set master/slave but
-driver does not support it. How about this?
-
-	if (master_slave_cfg) {
-		u8 cfg = nla_get_u8(master_slave_cfg);
-
-		if (lsettings->master_slave_cfg == MASTER_SLAVE_CFG_UNSUPPORTED) {
-			NL_SET_ERR_MSG_ATTR(info->extack, master_slave_cfg,
-					    "master/slave configuration not supported by device");
-			return -EOPNOTSUPP;
-		}
-		if (!ethnl_validate_master_slave_cfg(cfg)) {
-			NL_SET_ERR_MSG_ATTR(info->extack, master_slave_cfg,
-					    "master/slave value is invalid");
-			return -EOPNOTSUPP;
-		}
-	}
-
-
-Do you plan to allow handling master/slave also via ioctl()? If yes, we should
-also add the sanity checks to ioctl code path. If not, we should prevent
-passing non-zero values from userspace to driver.
-
-Other than this, the patch looks good to me.
-
-Michal
-
->  	*mod = false;
->  	req_speed = tb[ETHTOOL_A_LINKMODES_SPEED];
->  	req_duplex = tb[ETHTOOL_A_LINKMODES_DUPLEX];
-> @@ -311,6 +355,7 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
->  			 mod);
->  	ethnl_update_u8(&lsettings->duplex, tb[ETHTOOL_A_LINKMODES_DUPLEX],
->  			mod);
-> +	ethnl_update_u8(&lsettings->master_slave_cfg, master_slave_cfg, mod);
->  
->  	if (!tb[ETHTOOL_A_LINKMODES_OURS] && lsettings->autoneg &&
->  	    (req_speed || req_duplex) &&
-> -- 
-> 2.26.2
-> 
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
