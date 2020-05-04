@@ -2,124 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12B831C4A02
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 01:04:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AA731C4A29
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 01:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728309AbgEDXEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 19:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728182AbgEDXEZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 19:04:25 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42BBC061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 16:04:24 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id o10so493498qtr.6
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 16:04:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=UokQRbi80BC9ekM9D+zmyLH/FUVBnlx91dFtdhfAQVU=;
-        b=Usn38V3ZPYHhJR58y0xLzkptgrYM6nZAij/keEXqdjamIIm8IC8ySsU4H6BD1fUe7y
-         oBhshCGugEV5jyB5cL2uBo+UpTgAnL6Ibgm3LAnmf0U4WmHcZhYNFBOvBQdM1Zr9JVkC
-         D9tgkglhMTi8r/pW0+ts0RdODK+XUAKQs/fVkoBst3Jc7f+sYjFC/NeWr1E+/NBjtoVl
-         ApUMgvWulLjwwVGX9cj3YNLr0IIf4h12tn3ihz/18pOUFFxuoLzoP6004TQZg3RIjppr
-         k+fkMRNnop2s0oO3y1NJ92HGK5UZ/p/tIxoL2y+k8MYxIpFId7bJYKBiVTouu8atx+hE
-         KYWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UokQRbi80BC9ekM9D+zmyLH/FUVBnlx91dFtdhfAQVU=;
-        b=Q4uMwAFXvLYhXiYoafNZrOW1bvRyXSrws/5Uq6EZ87yh8TtFLdEhZh+wNUd5n+7lEv
-         nRjPUtBvwNQ5cFNkxQgxcdz/cDoY0t4S18yjh1qxN6dMM/3/xJDLxU7QHSqVwCHK55BG
-         daCeH11r6RavX7VxN1HkXninOALPvahM1h9MKIZ5I89xz2OeSSSGDafWRiftry28W1dW
-         txFTcgZ3BuMuUaj1Syy2uUICyYw16qLPpGO8ax0VcM4JI2Ld2XuKU25we6qQINkJuPeR
-         bCQgGitHvXtgjMSftSEuXYMSrqj+bN74BhrBBbcBzTbGnzze10pQpSwjrLdt0H5uH+zB
-         4pqw==
-X-Gm-Message-State: AGi0PubnZutMl5eGkJCu0Okk6ygbp5D4H7hvSaioiUhD0hAxlruz0GFG
-        bngeJZOdguElshzAMAP92gV9eRB8
-X-Google-Smtp-Source: APiQypJf1F0A6Gp5PsH/2+7o+F1B4m4Eg+rjrzxN+CzRhTBlt454GwtMLKNRUnB5gsr0z0CODQgGpw==
-X-Received: by 2002:ac8:3874:: with SMTP id r49mr52966qtb.66.1588633463752;
-        Mon, 04 May 2020 16:04:23 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:4fe:5250:d314:f77b? ([2601:282:803:7700:4fe:5250:d314:f77b])
-        by smtp.googlemail.com with ESMTPSA id w134sm423548qkb.47.2020.05.04.16.04.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 16:04:22 -0700 (PDT)
-Subject: Re: max channels for mlx5
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <198081c2-cb0d-e1d5-901c-446b63c36706@gmail.com>
- <2f5110e579a21737e5c13b23482eff6fdb6f3808.camel@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f11d1ff2-b16b-37d3-0e17-4a051c29a9b5@gmail.com>
-Date:   Mon, 4 May 2020 17:04:21 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <2f5110e579a21737e5c13b23482eff6fdb6f3808.camel@mellanox.com>
+        id S1728404AbgEDXX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 19:23:29 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11194 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728223AbgEDXX3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 19:23:29 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 044NKeW8003280;
+        Mon, 4 May 2020 16:23:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=YfexcXuHK6VHvnIhXZmbFdEfjoE7uYsKejWbZGez5kg=;
+ b=a2buvzhVEa9x97FkEaWfPGXTJ/ETy2KjunKDrxP/QDo8mpDGNeWV9Npgdz1488YLNojq
+ JWqp5jxudyfralODsUzdtGghjYAJpWU0caqQ25366Mj0ipbJQIFRnR7JRpga3uqkTk49
+ RBU+ZUNlk4heLdYJ3dtx01N3qi8lCcAo/sk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 30ss0wqttf-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 04 May 2020 16:23:12 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Mon, 4 May 2020 16:22:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ietQmPopbMA4CLKQkrklkp4Y3M3O+F5uKOHzmn3oiLDSHdfPGGedGLo055YpyiJS83nl0cSsOoGIExzmGVHJGbLtG7PEQ9pwxcheHC9KC7mHE6J2tj2qdiF5ElEWHgH5BZ0XCRziFn+IpkdTksjdxyTJS1Xd76fawT6EeV3mAMbFPTTbha3fE59VVABG7eZxAyv04BAWJj+uyFZoi2Cv7GndZgm/4MqTe/ydzRon+JoQpEUx3kgOMXesTMsMQA0j4DaCiLv3oxCpyRm7j0AVE1q4f22u3iIDDmy4pnQhYx+BWRTvTTgGT8UZSLp3r5VPsYS5GMN829a2rwMPU8USJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YfexcXuHK6VHvnIhXZmbFdEfjoE7uYsKejWbZGez5kg=;
+ b=C+7GvtLC3zlJcm8klWFcvEon3Nk3EQ8wy8DVUwCe76fzEl98mplq/iJ3XcsEIKX+KDgYLzRK3RwGL9eYaeqAe4bvnALZDK6MRH4K5U6HNkFtzwVAExwyclhGQRD2hWqQSJJbGxx+ZwaUpiAfEuHY0IArIQOAK6HznylHYzigZSEa6z0pS1XqibatryamlULZVwXXQEQytBRprUw3dMcZ/UaIbFcxUjdyfMz/6afqBTQqjmxM4qpIuCOiGaaqt/hQoETBn1Gm4Gijw35wo51HFDLtP0oVP1J2OCc155FarRNm+hgo5EE3y4b/uds6UuCJ0HMGmRthUL+XdlzuG4QBNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YfexcXuHK6VHvnIhXZmbFdEfjoE7uYsKejWbZGez5kg=;
+ b=FbhUrx4W4Fka1JbQ3MkHQRMqc+UNQ/HfifNrEaO+BzdzTqLHvB1qG9ZriGrD7A+ySMk6SvPTn18T4WoBmk8tcsd9iUN3VOJo7010UZRRHJ1BBOfGdBVAsGjJ/MEFiT6f8blDJIzXhy36x56T0p/Kp25a8Oqxen4piN17Fox/3CQ=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4119.namprd15.prod.outlook.com (2603:10b6:a02:cd::20)
+ by BYAPR15MB3384.namprd15.prod.outlook.com (2603:10b6:a03:112::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20; Mon, 4 May
+ 2020 23:22:48 +0000
+Received: from BYAPR15MB4119.namprd15.prod.outlook.com
+ ([fe80::90d6:ec75:fde:e992]) by BYAPR15MB4119.namprd15.prod.outlook.com
+ ([fe80::90d6:ec75:fde:e992%7]) with mapi id 15.20.2958.029; Mon, 4 May 2020
+ 23:22:48 +0000
+Date:   Mon, 4 May 2020 16:22:47 -0700
+From:   Andrey Ignatov <rdna@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <davem@davemloft.net>, <ast@kernel.org>, <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next 4/4] bpf: allow any port in bpf_bind helper
+Message-ID: <20200504232247.GA20087@rdna-mbp>
+References: <20200504173430.6629-1-sdf@google.com>
+ <20200504173430.6629-5-sdf@google.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20200504173430.6629-5-sdf@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-ClientProxiedBy: BY5PR04CA0028.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::38) To BYAPR15MB4119.namprd15.prod.outlook.com
+ (2603:10b6:a02:cd::20)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost (2620:10d:c090:400::5:d4c3) by BY5PR04CA0028.namprd04.prod.outlook.com (2603:10b6:a03:1d0::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Mon, 4 May 2020 23:22:48 +0000
+X-Originating-IP: [2620:10d:c090:400::5:d4c3]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 857fd7d0-c5f8-4056-bd61-08d7f0820f03
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3384:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3384B1522CEAE141F3AAC72FA8A60@BYAPR15MB3384.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 03932714EB
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QOebkKloMAwuXQWDOWzNGmfRN2dOO4RwrKt7e6oPUKH2szoR72dPzDfDQXTiUg+XnpY8PuW/a9J2k5V1R902FrHWUUqq2mA5hd7v+56gYl3o5lIBBKj226X+G/T9f+D5wT8SztvbKQHRXZbn3oA7erbB+1UQI3J+QmT2SZmMBPxly6kl1PFBv1ONyMMP9vk6N83T4gZoujS0c3tvDeKD6GH9NpIB0Q9TZc14sysfjxKVdI7qKtmF2ihMx5st+b/dZsuWz0l9K4OJ1h019YnvPMxxrRSkIAlqJQvlbDANwr1wSc+9bzJHWWf3Wx7iKMUsbpe4IaVdl83BZsv4MtdmtapP+BMehdr431RDFzxPFjkmlGR3QEcpB1Bz1l9tsSJrYVOqAc6BPGyQY9NyZ2zMzkGjrdm8ST+Z9ooBmrBdn6Jdj98BSv+PxdK5sqEz1q1JIlNuuSRGv7G6cdJmTdlTNDvt5oSFgbeUHPCUGTFOvBh3+fmnZNuLtDUuPzK4R9mmmbbNtzIuLZxMzd/msI3znQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4119.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(7916004)(346002)(39860400002)(396003)(136003)(376002)(366004)(33430700001)(9686003)(33716001)(8676002)(33656002)(2906002)(1076003)(66946007)(33440700001)(4326008)(186003)(16526019)(66556008)(6496006)(6916009)(6486002)(52116002)(66476007)(86362001)(316002)(5660300002)(478600001)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: LZXc4lG8tpusDC0KbNYJi3RmFhUmSZ/wgNiVC8jYQ6jwBM0H+jsKObzMO0SGZJnjdUCIgbKTSO3dbjEladcOHQWfGgv73nl421MTKGBfZ6znZ85uFyhY+sED6JKtogIXQmP1U2pN5HI7KItF+pIHYL7+lvHT4l1BM89+TjQBqZnJmikHPglM2LttD/j5oV0nEkXl5gavxV2i7QB+xJJfMKoXdcKeuJwNyfpcXxcyFZVI8GzfBoJwcuty0WBg1AekADizmHY1gTmWkhxGDbvJK5WpdBu57TvI5fxemZ+HxxACaySR4TfhmhIuYz8fszVPW8rK9V2xT/KuLZXncO4G14quvGAZq+q+PxRqN0uBHu+OhFkRDQKyYLoL7q000kVwaWihk5Y49Nyfi9DA9eZ0UG2b0QhMXD+OBDl3IWm8myJsz37XY34g2XqceOgDiX5HGlJXob7uMyJ3sy9z5kX1AqwNIDwsLb4l3FnpuphHiGp/NVC6Ea3Etxqhv+wDyl8PVNI1R3FAQbrXAFMW9MAEX0zIOyXSR8+noyLW7SHsv4RgIZIue99LV8bnQ948aeBr/0ucYpAKenROCer2UuHiibUpGwZrJq9AmtyJzJk2eSotnNw6UG5yY7tPhVp4Hthujy3/MoHmd8eb+YM+kvjCXXFQA/tqMY9/6zrqC0vF01m+8eEisFRXb9/Ju1skLBeLD1eUt7iz1xcnaQyrUb9TOjrAN7RAl0ygWpUQvepXYe3gs7TG2KdR71zqMB4u2Fy+wdDfgCL6JrS3zoxAoRDLqIkoHZ7dys19QuBzT/A5K3Lb9BVBLpY2p6T78mrWYqX0O0vShvl7QQN8cYOT4mbiFA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 857fd7d0-c5f8-4056-bd61-08d7f0820f03
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2020 23:22:48.7211
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: P2n8R48uDdFvHbLE73d8t9TjooepPvk0DKFt4frs8N9lYx8TAxENTKLmSneGqWK6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3384
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-04_13:2020-05-04,2020-05-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ priorityscore=1501 mlxscore=0 lowpriorityscore=0 suspectscore=2
+ clxscore=1015 spamscore=0 malwarescore=0 adultscore=0 impostorscore=0
+ mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2005040182
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/4/20 3:46 PM, Saeed Mahameed wrote:
-> what is the amount of msix avaiable for eth0 port ?
+Stanislav Fomichev <sdf@google.com> [Mon, 2020-05-04 10:34 -0700]:
+> We want to have a tighter control on what ports we bind to in
+> the BPF_CGROUP_INET{4,6}_CONNECT hooks even if it means
+> connect() becomes slightly more expensive. The expensive part
+> comes from the fact that we now need to call inet_csk_get_port()
+> that verifies that the port is not used and allocates an entry
+> in the hash table for it.
+
+FWIW: Initially that IP_BIND_ADDRESS_NO_PORT limitation came from the
+fact that on my specific use-case (mysql client making 200-500 connects
+per sec to mysql server) disabling the option was making application
+pretty much unusable (inet_csk_get_port was taking more time than mysql
+client connect timeout == 3sec).
+
+But I guess for some use-cases that call sys_connect not too often it
+makes sense.
+
+
+> Since we can't rely on "snum || !bind_address_no_port" to prevent
+> us from calling POST_BIND hook anymore, let's add another bind flag
+> to indicate that the call site is BPF program.
 > 
-> businfo=$(ethtool -i eth0 | grep bus-info | cut -d":" -f2-)
-> cat /proc/interrupts | grep $businfo | wc -l
+> Cc: Andrey Ignatov <rdna@fb.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  include/net/inet_common.h                     |   2 +
+>  net/core/filter.c                             |   9 +-
+>  net/ipv4/af_inet.c                            |  10 +-
+>  net/ipv6/af_inet6.c                           |  12 +-
+>  .../bpf/prog_tests/connect_force_port.c       | 104 ++++++++++++++++++
+>  .../selftests/bpf/progs/connect_force_port4.c |  28 +++++
+>  .../selftests/bpf/progs/connect_force_port6.c |  28 +++++
+>  7 files changed, 177 insertions(+), 16 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/connect_force_port.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/connect_force_port4.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/connect_force_port6.c
 
-64
+Documentation in include/uapi/linux/bpf.h should be updated as well
+since now it states this:
 
-> 
-> So if number of msix is 64, we can only use 63 for data path
-> completions .. 
-> 
-> do you have sriov enabled ? 
 
-no
+ *              **AF_INET6**). Looking for a free port to bind to can be
+ *              expensive, therefore binding to port is not permitted by the
+ *              helper: *addr*\ **->sin_port** (or **sin6_port**, respectively)
+ *              must be set to zero.
 
-> 
-> what is the FW version you have ?
+IMO it's also worth to keep a note on performance implications of
+setting port to non zero.
 
-$ ethtool -i eth0
-driver: mlx5_core
-version: 5.0-0
-firmware-version: 14.27.1016 (MT_2420110034)
 
-> we need to figure out if this is a system MSIX limitation or a FW
-> limitation.
-> 
->> A side effect of this limit is XDP_REDIRECT drops packets if a vhost
->> thread gets scheduled on cpus 64 and up since the tx queue is based
->> on
->> processor id:
->>
->> int mlx5e_xdp_xmit(struct net_device *dev, int n, struct xdp_frame
->> **frames,
->>                    u32 flags)
->> {
->> 	...
->>         sq_num = smp_processor_id();
->>         if (unlikely(sq_num >= priv->channels.num))
->>                 return -ENXIO;
->>
->> So in my example if the redirect happens on cpus 64-95, which is 1/3
->> of
->> my hardware threads, the packet is just dropped.
->>
-> 
-> Know XDP redirect issue,  you need to tune the RSS and affinity on RX
-> side and match TX count and affinity on TX side, so you won't end up on
-> a wrong CPU on the TX side
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index fa9ddab5dd1f..fc5161b9ff6a 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -4527,29 +4527,24 @@ BPF_CALL_3(bpf_bind, struct bpf_sock_addr_kern *, ctx, struct sockaddr *, addr,
+>  	struct sock *sk = ctx->sk;
+>  	int err;
+>  
+> -	/* Binding to port can be expensive so it's prohibited in the helper.
+> -	 * Only binding to IP is supported.
+> -	 */
+>  	err = -EINVAL;
+>  	if (addr_len < offsetofend(struct sockaddr, sa_family))
+>  		return err;
+>  	if (addr->sa_family == AF_INET) {
+>  		if (addr_len < sizeof(struct sockaddr_in))
+>  			return err;
+> -		if (((struct sockaddr_in *)addr)->sin_port != htons(0))
+> -			return err;
+>  		return __inet_bind(sk, addr, addr_len,
+> +				   BIND_FROM_BPF |
+>  				   BIND_FORCE_ADDRESS_NO_PORT);
 
-Understood for port to port redirect.
+Should BIND_FORCE_ADDRESS_NO_PORT be passed only if port is zero?
+Passing non zero port and BIND_FORCE_ADDRESS_NO_PORT at the same time
+looks confusing (even though it works).
 
-This use case is a virtual machine with a tap device + vhost bypassing
-host kernel stack and redirecting to a port. Losing a third of the cpus
-for vhost threads is a huge limitation.
+-- 
+Andrey Ignatov
