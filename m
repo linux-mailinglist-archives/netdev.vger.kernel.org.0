@@ -2,104 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7E61C4779
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 21:59:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAC9C1C4895
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 22:52:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbgEDT7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 15:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726419AbgEDT7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 15:59:06 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F9EC061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 12:59:04 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id d17so533978wrg.11
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 12:59:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=0aHh92ML8oduvR19KesGxpKGxDmTnMmLNmLo3d1fS3w=;
-        b=fdzu0GpXFH6JzOzG5D1INdTzLsiQ/r9UJSQOe4qCsuzxxIdX7rHVaO+JCBp3XmOEls
-         Jh/vKYae2DPHhDMO+BEBarkZ9vmRIxn7CwGxmyCcHh/UTqJlbuLPjg0fpbpjnkTDS0nz
-         gycBIqrVd9QG+6En5ZjpQ7XqE43mkuL5YWqKlQ2HnW0T9UdzUBG7LvEG/VaH6WXoHUF+
-         w+ZRDyySxjXLFg1MtTuTY6jPgFvCZJYZVZIA/h348eqrp6V2octK6MmkXAnBiK87YR+E
-         q22zM9grI/4kop9PO7KpNj+woUQY9UOlJXRySyduPcpkHrgdgimF/X7bUV727Rol3rF8
-         PIZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=0aHh92ML8oduvR19KesGxpKGxDmTnMmLNmLo3d1fS3w=;
-        b=nC+avpqPK75K4CIgkGpAESiVjj4HyrUkAHlrIzA1NqkgaK0qumagd1Awvsu0XEdv1m
-         oXwOPNSKzY6w67G4wjUpizEl0GrvJJ5Ltbo79Fu0i8M1kDda1b3OCx0xv1fXnP+CzEo9
-         qzNcR3yKwKJnMeQ7weZbHK40mKADCt7Sqgf3oJBkg5jiQkkcZByZnyiqm/tUUAERbVuP
-         JN1WO/9O6Faagbg9TjUOIMTyQWsQ11UverKt7slndSekABcqbZnYXsh1heL/HKMiYlgU
-         huZ0BpMq2JAhiT3LEWGj/KnrukkSxh1nyJr2QAKQA2Yu55wQiPl7dfdS4Csszp5P2f+u
-         Co2A==
-X-Gm-Message-State: AGi0PuaC9AscILUMXqKR8hGuPnRlMMUMf6crsBi/TmY2GJ8x5E6Jnbfw
-        6WxhZocX35Zad50nS6A9R2c=
-X-Google-Smtp-Source: APiQypKhn1Uymvms8VnBwFBXGz4IAVGsOwIOw5601BcTF2Ei/8C7lCfi54fxmQ4fZVz3x7TP2Tg97A==
-X-Received: by 2002:adf:d4ce:: with SMTP id w14mr981485wrk.232.1588622342988;
-        Mon, 04 May 2020 12:59:02 -0700 (PDT)
-Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id c20sm791526wmd.36.2020.05.04.12.59.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 12:59:02 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH v2 net] net: dsa: remove duplicate assignment in dsa_slave_add_cls_matchall_mirred
-Date:   Mon,  4 May 2020 22:58:56 +0300
-Message-Id: <20200504195856.12340-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727995AbgEDUwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 16:52:44 -0400
+Received: from gateway31.websitewelcome.com ([192.185.144.218]:19917 "EHLO
+        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727952AbgEDUwo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 16:52:44 -0400
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id BB7E5B33558
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:04:17 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id VhK5jQLYaEfyqVhK5jEJUf; Mon, 04 May 2020 15:04:17 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=V96LBizxl4+aEJIjzbcrRlhTjAqahm2dmV9MAZqHdGc=; b=L4JqgH+UVyVZV2P7eUgtXNCiOR
+        SNVfuSkG3J1W6yEXdAOSzu/7iJk37Nx6f+qmfoVr4NvirPvSMFnOuYtCT6axHGIB5OTK3Ftq6h1uF
+        F5epi927ICta8GvCWztD9SikDgk3pzeFCuu8m2P0Tgkp0oLPw0XbuCOP4fGF4NpEj8p4f/8mtQrjK
+        qxOvr9wynLQWlBrk1XRabwH7QlqyrymSub0l/rfky81DJZmckWhRkLHXJDEGs8ulU17h29TcecsVx
+        w2sRFbfjDqKtCjvHWYCsLFwN7IGezLXe7m3vfZ+Uu8DNTglqtORFixXudBRWvC206UmCzjVTiDThS
+        //HscYMg==;
+Received: from [189.207.59.248] (port=58762 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1jVhK3-002Fbe-9W; Mon, 04 May 2020 15:04:15 -0500
+Date:   Mon, 4 May 2020 15:08:38 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] ath6kl: Replace zero-length array with flexible-array
+Message-ID: <20200504200838.GA31974@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.207.59.248
+X-Source-L: No
+X-Exim-ID: 1jVhK3-002Fbe-9W
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (embeddedor) [189.207.59.248]:58762
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 4
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-This was caused by a poor merge conflict resolution on my side. The
-"act = &cls->rule->action.entries[0];" assignment was already present in
-the code prior to the patch mentioned below.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-Fixes: e13c2075280e ("net: dsa: refactor matchall mirred action to separate function")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
+
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
+
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+sizeof(flexible-array-member) triggers a warning because flexible array
+members have incomplete type[1]. There are some instances of code in
+which the sizeof operator is being incorrectly/erroneously applied to
+zero-length arrays and the result is zero. Such instances may be hiding
+some bugs. So, this work (flexible-array member conversions) will also
+help to get completely rid of those sorts of issues.
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
-Changes in v2:
-Forgot to copy the netdev list.
+ drivers/net/wireless/ath/ath6kl/core.h  | 4 ++--
+ drivers/net/wireless/ath/ath6kl/debug.c | 2 +-
+ drivers/net/wireless/ath/ath6kl/hif.h   | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
- net/dsa/slave.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index ba8bf90dc0cc..a7f5fe64c2f3 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -856,20 +856,18 @@ dsa_slave_add_cls_matchall_mirred(struct net_device *dev,
- 	struct dsa_port *to_dp;
- 	int err;
+diff --git a/drivers/net/wireless/ath/ath6kl/core.h b/drivers/net/wireless/ath/ath6kl/core.h
+index 0d30e762c090..77e052336eb5 100644
+--- a/drivers/net/wireless/ath/ath6kl/core.h
++++ b/drivers/net/wireless/ath/ath6kl/core.h
+@@ -160,7 +160,7 @@ enum ath6kl_fw_capability {
+ struct ath6kl_fw_ie {
+ 	__le32 id;
+ 	__le32 len;
+-	u8 data[0];
++	u8 data[];
+ };
  
--	act = &cls->rule->action.entries[0];
--
- 	if (!ds->ops->port_mirror_add)
- 		return -EOPNOTSUPP;
+ enum ath6kl_hw_flags {
+@@ -406,7 +406,7 @@ struct ath6kl_mgmt_buff {
+ 	u32 id;
+ 	bool no_cck;
+ 	size_t len;
+-	u8 buf[0];
++	u8 buf[];
+ };
  
--	if (!act->dev)
--		return -EINVAL;
--
- 	if (!flow_action_basic_hw_stats_check(&cls->rule->action,
- 					      cls->common.extack))
- 		return -EOPNOTSUPP;
+ struct ath6kl_sta {
+diff --git a/drivers/net/wireless/ath/ath6kl/debug.c b/drivers/net/wireless/ath/ath6kl/debug.c
+index 54337d60f288..7506cea46f58 100644
+--- a/drivers/net/wireless/ath/ath6kl/debug.c
++++ b/drivers/net/wireless/ath/ath6kl/debug.c
+@@ -30,7 +30,7 @@ struct ath6kl_fwlog_slot {
+ 	__le32 length;
  
- 	act = &cls->rule->action.entries[0];
+ 	/* max ATH6KL_FWLOG_PAYLOAD_SIZE bytes */
+-	u8 payload[0];
++	u8 payload[];
+ };
  
-+	if (!act->dev)
-+		return -EINVAL;
-+
- 	if (!dsa_slave_dev_check(act->dev))
- 		return -EOPNOTSUPP;
+ #define ATH6KL_FWLOG_MAX_ENTRIES 20
+diff --git a/drivers/net/wireless/ath/ath6kl/hif.h b/drivers/net/wireless/ath/ath6kl/hif.h
+index dc6bd8cd9b83..aea7fea2a81e 100644
+--- a/drivers/net/wireless/ath/ath6kl/hif.h
++++ b/drivers/net/wireless/ath/ath6kl/hif.h
+@@ -199,7 +199,7 @@ struct hif_scatter_req {
  
+ 	u32 scat_q_depth;
+ 
+-	struct hif_scatter_item scat_list[0];
++	struct hif_scatter_item scat_list[];
+ };
+ 
+ struct ath6kl_irq_proc_registers {
 -- 
-2.17.1
+2.26.2
 
