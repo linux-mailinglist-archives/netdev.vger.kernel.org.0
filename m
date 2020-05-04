@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6103E1C386A
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 13:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D88071C386C
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 13:38:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728796AbgEDLin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 07:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
+        id S1728801AbgEDLis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 07:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728401AbgEDLin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 07:38:43 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45CAC061A0E;
-        Mon,  4 May 2020 04:38:41 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id x15so5370328pfa.1;
-        Mon, 04 May 2020 04:38:41 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728401AbgEDLir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 07:38:47 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9391CC061A0E;
+        Mon,  4 May 2020 04:38:46 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id r4so8338523pgg.4;
+        Mon, 04 May 2020 04:38:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=J1/y1MLg8LorjG/aTLacZ4LrYP167FLxIVI8q7mmhDs=;
-        b=Lz+12E+jNuVlgJn+w2Uc4+GE6OuvN5JdOYeJtPEEsaWD8z1uovI1ZbJFRER2TDVgw3
-         30eXpA/wBv1j+PQDmoOJF1arxKnCQMCVcfvo56QUwoeMxWEvGWjVf6qqKsDQHsygSh47
-         63ggNh1Fxv2gXGuGtCXH6m1pceIKLA4CtNpJnHjPdbtf6NunBDf4ys88u8smj8dP2i7d
-         DnlyknJQF9RvWIIk1+1EQ162WmRhBAtKDPBpO66QcbccqG2J/pZQCNMOCf4EWG6Xz2F9
-         SE+mo0CKW4VJ/Ej2XXqCgBJAjCwEgcrIQP8sOwgpq6czfYknEyVnHhA1IT8AI4SIsuST
-         rKoQ==
+        bh=9I6FEysHYMGxr5dFBfKURMBs6YqpPVw6QHSnNB4bxHs=;
+        b=Txh2ZQ8eLsIRHinCteSaiP6ADxPPXQrcyfObVwIfn1+vaD5RojHfFcy/pD52AoqHFF
+         JxRR+A6OGFE+fFDNp7vp0g+gmxkLRrhlNbLctJmJzEbaZ2BpGsGWjl59A1v2ZGtSmLsn
+         4PmdpilkHUUR0FxePjhNW8L16ve4kC6jQ/Rnp5whsviylAgOwZ4HR38CRWKlDrcFRSt4
+         vScmApVLQ9ZB4Gf2lO+GesqAkL6RN8D6bl/fX3QjEHA51vTK267aAP25QI6U7epq2Y5S
+         YAlE+OAAntiOzJGxq9JljGuV1kIJrZlb6IIE3RAgvLAocSHBoA6+O9bh5oZAOMbNtL5p
+         acaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=J1/y1MLg8LorjG/aTLacZ4LrYP167FLxIVI8q7mmhDs=;
-        b=g4ndG3qPYTMVSrB+sI4J4Uluzb9vWy9Qnf/efgEpe7HjmhD6PISDnhclwwVrgZ/JSZ
-         Bh7E8kRa+nKkWSAYPjZCOfPKWXE1ke592ynKL95/xtWQVbspUDacwb/EhqC7EeOkZ5f+
-         wUeMLRZWZF0p3O8UfT4CiD1Htqv7dS32bWbtGdQmwnqHoO48ylBpcRxu5phjpYaJ+iMk
-         xOD2ymn9uCBwQ37gZ4EEy/0l7JTIDL0Z3MhvMJy4Lu3bkR+/+7rRMKHcToC23TNxstX0
-         nUfHGQH3OKif98jNUmnR0+U0J+KECxJQmzFuHTQ45Cem6nI8o9T0/KS0dNGaQIw7udlI
-         EcLg==
-X-Gm-Message-State: AGi0PubaT+ITvuCtu/SQ32g/B0Oz6Io1E54rKE6MlQqsK59evwELati7
-        khn1TWXHFLaYYSqmpg7mXzU=
-X-Google-Smtp-Source: APiQypKs2Hf+X+JzHadwhba6ucu+jjocgQkjUEj4mfiDpJVK8hRoHNOVkLPY1dTg/nDvgoyU9DfDeQ==
-X-Received: by 2002:a62:1985:: with SMTP id 127mr8752256pfz.175.1588592321131;
-        Mon, 04 May 2020 04:38:41 -0700 (PDT)
+        bh=9I6FEysHYMGxr5dFBfKURMBs6YqpPVw6QHSnNB4bxHs=;
+        b=Db7L0lNYaDBA0nXgxniGV1HSYsEJpejPfj9Zs1+fHNs6ZI85DP774GDlJCUaqdcSv4
+         zYjwr3FqmO0i3m9q/4cPA7K+OPzvsMkCBWQ/bMwkFeZ4YTys8I6lh7+OHPpBwCBU5b0w
+         zmkCTJYkYRsCYPa2ZE14vGWsBfZzqaNRJXe5cis4o7rjvLWA0Spp64DBgQWQDozle/aV
+         1LMJYGj5GUuxNamlo67EoPwQLQXFN7GX10ZV7y3kqmvjKKtPrF44cOXtkiH1wC7zb3oG
+         2K2ap6Frp9u+vpPTE3yt0GhGB7jYaY0933W81V7vrGQfK93X0al1qDrP2N3TWoWcG0J2
+         o3RA==
+X-Gm-Message-State: AGi0PuZnISEejPk2/enc/5HWfa3zySeRoTXMnjheFdoa/Oo3gUOiN84z
+        qMNxz3883f6i6+v6+g4xiEI=
+X-Google-Smtp-Source: APiQypI/CZQrO5t/UbYCAfTjcjuzeezRCq3GdS9QmRNdXifmHnpf0F+QmHNtKlt9GE3EkJUrUuchtQ==
+X-Received: by 2002:aa7:810a:: with SMTP id b10mr10658874pfi.22.1588592325759;
+        Mon, 04 May 2020 04:38:45 -0700 (PDT)
 Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id x185sm8650789pfx.155.2020.05.04.04.38.36
+        by smtp.gmail.com with ESMTPSA id x185sm8650789pfx.155.2020.05.04.04.38.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 04:38:40 -0700 (PDT)
+        Mon, 04 May 2020 04:38:45 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
         kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
@@ -54,9 +54,9 @@ To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
         magnus.karlsson@intel.com, jonathan.lemon@gmail.com
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         maximmi@mellanox.com, maciej.fijalkowski@intel.com
-Subject: [RFC PATCH bpf-next 10/13] mlx5, xsk: migrate to new MEM_TYPE_XSK_BUFF_POOL
-Date:   Mon,  4 May 2020 13:37:12 +0200
-Message-Id: <20200504113716.7930-11-bjorn.topel@gmail.com>
+Subject: [RFC PATCH bpf-next 11/13] xsk: remove MEM_TYPE_ZERO_COPY and corresponding code
+Date:   Mon,  4 May 2020 13:37:13 +0200
+Message-Id: <20200504113716.7930-12-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200504113716.7930-1-bjorn.topel@gmail.com>
 References: <20200504113716.7930-1-bjorn.topel@gmail.com>
@@ -70,636 +70,878 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-Use the new MEM_TYPE_XSK_BUFF_POOL API in lieu of MEM_TYPE_ZERO_COPY in
-mlx5e. It allows to drop a lot of code from the driver (which is now
-common in AF_XDP core and was related to XSK RX frame allocation, DMA
-mapping, etc.) and slightly improve performance.
+There are no users of MEM_TYPE_ZERO_COPY. Remove all corresponding
+code, including the "handle" member of struct xdp_sock.
 
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  11 +-
- .../ethernet/mellanox/mlx5/core/en/params.c   |   4 +-
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  30 ++---
- .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |   2 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 111 +++---------------
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |   6 -
- .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   |   6 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/umem.c |  52 +-------
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  15 +--
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  43 +++++--
- 10 files changed, 77 insertions(+), 203 deletions(-)
+ drivers/net/hyperv/netvsc_bpf.c |   1 -
+ include/net/xdp.h               |   9 +--
+ include/net/xdp_sock.h          |  45 -----------
+ include/net/xdp_sock_drv.h      | 139 --------------------------------
+ include/trace/events/xdp.h      |   1 -
+ net/core/xdp.c                  |  42 ++--------
+ net/xdp/xdp_umem.c              |  56 +------------
+ net/xdp/xsk.c                   |  48 +----------
+ net/xdp/xsk_buff_pool.c         |   7 ++
+ net/xdp/xsk_queue.c             |  62 --------------
+ net/xdp/xsk_queue.h             | 105 ------------------------
+ 11 files changed, 15 insertions(+), 500 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 0864b76ca2c0..368563ff8efb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -426,13 +426,12 @@ struct mlx5e_txqsq {
- } ____cacheline_aligned_in_smp;
+diff --git a/drivers/net/hyperv/netvsc_bpf.c b/drivers/net/hyperv/netvsc_bpf.c
+index b86611041db6..9f78f774041b 100644
+--- a/drivers/net/hyperv/netvsc_bpf.c
++++ b/drivers/net/hyperv/netvsc_bpf.c
+@@ -49,7 +49,6 @@ u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvchan,
+ 	xdp_set_data_meta_invalid(xdp);
+ 	xdp->data_end = xdp->data + len;
+ 	xdp->rxq = &nvchan->xdp_rxq;
+-	xdp->handle = 0;
  
- struct mlx5e_dma_info {
--	dma_addr_t addr;
- 	union {
--		struct page *page;
- 		struct {
--			u64 handle;
--			void *data;
--		} xsk;
-+			dma_addr_t addr;
-+			struct page *page;
-+		};
-+		struct xdp_buff *xsk;
- 	};
+ 	memcpy(xdp->data, data, len);
+ 
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 83173e4d306c..1495ffb7a642 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -37,7 +37,6 @@ enum xdp_mem_type {
+ 	MEM_TYPE_PAGE_SHARED = 0, /* Split-page refcnt based model */
+ 	MEM_TYPE_PAGE_ORDER0,     /* Orig XDP full page model */
+ 	MEM_TYPE_PAGE_POOL,
+-	MEM_TYPE_ZERO_COPY,
+ 	MEM_TYPE_XSK_BUFF_POOL,
+ 	MEM_TYPE_MAX,
+ };
+@@ -53,10 +52,6 @@ struct xdp_mem_info {
+ 
+ struct page_pool;
+ 
+-struct zero_copy_allocator {
+-	void (*free)(struct zero_copy_allocator *zca, unsigned long handle);
+-};
+-
+ struct xdp_rxq_info {
+ 	struct net_device *dev;
+ 	u32 queue_index;
+@@ -69,7 +64,6 @@ struct xdp_buff {
+ 	void *data_end;
+ 	void *data_meta;
+ 	void *data_hard_start;
+-	unsigned long handle;
+ 	struct xdp_rxq_info *rxq;
  };
  
-@@ -650,7 +649,6 @@ struct mlx5e_rq {
- 		} mpwqe;
- 	};
- 	struct {
--		u16            umem_headroom;
- 		u16            headroom;
- 		u8             map_dir;   /* dma map direction */
- 	} buff;
-@@ -682,7 +680,6 @@ struct mlx5e_rq {
- 	struct page_pool      *page_pool;
+@@ -102,8 +96,7 @@ struct xdp_frame *convert_to_xdp_frame(struct xdp_buff *xdp)
+ 	int metasize;
+ 	int headroom;
  
- 	/* AF_XDP zero-copy */
--	struct zero_copy_allocator zca;
- 	struct xdp_umem       *umem;
+-	if (xdp->rxq->mem.type == MEM_TYPE_ZERO_COPY ||
+-	    xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL)
++	if (xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL)
+ 		return xdp_convert_zc_to_xdp_frame(xdp);
  
- 	struct work_struct     recover_work;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index eb2e1f2138e4..2b68dce50bfb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -16,8 +16,10 @@ u16 mlx5e_get_linear_rq_headroom(struct mlx5e_params *params,
+ 	/* Assure headroom is available for storing info */
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index 117cc1e2ca38..6fda898308b6 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -17,26 +17,12 @@ struct net_device;
+ struct xsk_queue;
+ struct xdp_buff;
  
- 	if (mlx5e_rx_is_xdp(params, xsk)) {
- 		headroom += XDP_PACKET_HEADROOM;
--		if (xsk)
-+		if (xsk) {
- 			headroom += xsk->headroom;
-+			headroom -= NET_IP_ALIGN;
-+		}
- 	} else {
- 		headroom += MLX5_RX_HEADROOM;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index b04b99396f65..a2a194525b15 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -71,7 +71,7 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- 	xdptxd.data = xdpf->data;
- 	xdptxd.len  = xdpf->len;
- 
--	if (xdp->rxq->mem.type == MEM_TYPE_ZERO_COPY) {
-+	if (xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL) {
- 		/* The xdp_buff was in the UMEM and was copied into a newly
- 		 * allocated page. The UMEM page was returned via the ZCA, and
- 		 * this new page has to be mapped at this point and has to be
-@@ -119,49 +119,33 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- 
- /* returns true if packet was consumed by xdp */
- bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
--		      void *va, u16 *rx_headroom, u32 *len, bool xsk)
-+		      u32 *len, struct xdp_buff *xdp)
- {
- 	struct bpf_prog *prog = READ_ONCE(rq->xdp_prog);
--	struct xdp_umem *umem = rq->umem;
--	struct xdp_buff xdp;
- 	u32 act;
- 	int err;
- 
- 	if (!prog)
- 		return false;
- 
--	xdp.data = va + *rx_headroom;
--	xdp_set_data_meta_invalid(&xdp);
--	xdp.data_end = xdp.data + *len;
--	xdp.data_hard_start = va;
--	if (xsk)
--		xdp.handle = di->xsk.handle;
--	xdp.rxq = &rq->xdp_rxq;
+-struct xdp_umem_page {
+-	void *addr;
+-	dma_addr_t dma;
+-};
 -
--	act = bpf_prog_run_xdp(prog, &xdp);
--	if (xsk) {
--		u64 off = xdp.data - xdp.data_hard_start;
+-struct xdp_umem_fq_reuse {
+-	u32 nentries;
+-	u32 length;
+-	u64 handles[];
+-};
 -
--		xdp.handle = xsk_umem_adjust_offset(umem, xdp.handle, off);
--	}
-+	act = bpf_prog_run_xdp(prog, xdp);
- 	switch (act) {
- 	case XDP_PASS:
--		*rx_headroom = xdp.data - xdp.data_hard_start;
--		*len = xdp.data_end - xdp.data;
-+		*len = xdp->data_end - xdp->data;
- 		return false;
- 	case XDP_TX:
--		if (unlikely(!mlx5e_xmit_xdp_buff(rq->xdpsq, rq, di, &xdp)))
-+		if (unlikely(!mlx5e_xmit_xdp_buff(rq->xdpsq, rq, di, xdp)))
- 			goto xdp_abort;
- 		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags); /* non-atomic */
- 		return true;
- 	case XDP_REDIRECT:
- 		/* When XDP enabled then page-refcnt==1 here */
--		err = xdp_do_redirect(rq->netdev, &xdp, prog);
-+		err = xdp_do_redirect(rq->netdev, xdp, prog);
- 		if (unlikely(err))
- 			goto xdp_abort;
- 		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags);
- 		__set_bit(MLX5E_RQ_FLAG_XDP_REDIRECT, rq->flags);
--		if (!xsk)
-+		if (xdp->rxq->mem.type != MEM_TYPE_XSK_BUFF_POOL)
- 			mlx5e_page_dma_unmap(rq, di);
- 		rq->stats->xdp_redirect++;
- 		return true;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-index ed6f045febeb..54bad625267f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-@@ -63,7 +63,7 @@
- struct mlx5e_xsk_param;
- int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk);
- bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
--		      void *va, u16 *rx_headroom, u32 *len, bool xsk);
-+		      u32 *len, struct xdp_buff *xdp);
- void mlx5e_xdp_mpwqe_complete(struct mlx5e_xdpsq *sq);
- bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq);
- void mlx5e_free_xdpsq_descs(struct mlx5e_xdpsq *sq);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-index 62fc8a128a8d..59c40983d428 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-@@ -3,71 +3,10 @@
+ struct xdp_umem {
+ 	struct xsk_queue *fq;
+ 	struct xsk_queue *cq;
+ 	struct xsk_buff_pool *pool;
+-	struct xdp_umem_page *pages;
+-	u64 chunk_mask;
+ 	u64 size;
+ 	u32 headroom;
+-	u32 chunk_size_nohr;
+ 	u32 chunk_size;
+ 	struct user_struct *user;
+ 	unsigned long address;
+@@ -49,7 +35,6 @@ struct xdp_umem {
+ 	u8 flags;
+ 	int id;
+ 	struct net_device *dev;
+-	struct xdp_umem_fq_reuse *fq_reuse;
+ 	bool zc;
+ 	spinlock_t xsk_list_lock;
+ 	struct list_head xsk_list;
+@@ -110,21 +95,6 @@ static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
+ 	return xs;
+ }
  
- #include "rx.h"
- #include "en/xdp.h"
--#include <net/xdp_sock.h>
-+#include <net/xdp_sock_drv.h>
- 
- /* RX data path */
- 
--bool mlx5e_xsk_pages_enough_umem(struct mlx5e_rq *rq, int count)
+-static inline u64 xsk_umem_extract_addr(u64 addr)
 -{
--	/* Check in advance that we have enough frames, instead of allocating
--	 * one-by-one, failing and moving frames to the Reuse Ring.
--	 */
--	return xsk_umem_has_addrs_rq(rq->umem, count);
+-	return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
 -}
 -
--int mlx5e_xsk_page_alloc_umem(struct mlx5e_rq *rq,
--			      struct mlx5e_dma_info *dma_info)
+-static inline u64 xsk_umem_extract_offset(u64 addr)
 -{
--	struct xdp_umem *umem = rq->umem;
--	u64 handle;
+-	return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
+-}
 -
--	if (!xsk_umem_peek_addr_rq(umem, &handle))
--		return -ENOMEM;
+-static inline u64 xsk_umem_add_offset_to_addr(u64 addr)
+-{
+-	return xsk_umem_extract_addr(addr) + xsk_umem_extract_offset(addr);
+-}
 -
--	dma_info->xsk.handle = xsk_umem_adjust_offset(umem, handle,
--						      rq->buff.umem_headroom);
--	dma_info->xsk.data = xdp_umem_get_data(umem, dma_info->xsk.handle);
--
--	/* No need to add headroom to the DMA address. In striding RQ case, we
--	 * just provide pages for UMR, and headroom is counted at the setup
--	 * stage when creating a WQE. In non-striding RQ case, headroom is
--	 * accounted in mlx5e_alloc_rx_wqe.
--	 */
--	dma_info->addr = xdp_umem_get_dma(umem, handle);
--
--	xsk_umem_release_addr_rq(umem);
--
--	dma_sync_single_for_device(rq->pdev, dma_info->addr, PAGE_SIZE,
--				   DMA_BIDIRECTIONAL);
--
+ #else
+ 
+ static inline int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+@@ -147,21 +117,6 @@ static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
+ 	return NULL;
+ }
+ 
+-static inline u64 xsk_umem_extract_addr(u64 addr)
+-{
 -	return 0;
 -}
 -
--static inline void mlx5e_xsk_recycle_frame(struct mlx5e_rq *rq, u64 handle)
+-static inline u64 xsk_umem_extract_offset(u64 addr)
 -{
--	xsk_umem_fq_reuse(rq->umem, handle & rq->umem->chunk_mask);
+-	return 0;
 -}
 -
--/* XSKRQ uses pages from UMEM, they must not be released. They are returned to
-- * the userspace if possible, and if not, this function is called to reuse them
-- * in the driver.
+-static inline u64 xsk_umem_add_offset_to_addr(u64 addr)
+-{
+-	return 0;
+-}
+-
+ #endif /* CONFIG_XDP_SOCKETS */
+ 
+ #endif /* _LINUX_XDP_SOCK_H */
+diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
+index 232f2e3f01ac..75c6cc390e86 100644
+--- a/include/net/xdp_sock_drv.h
++++ b/include/net/xdp_sock_drv.h
+@@ -11,16 +11,9 @@
+ 
+ #ifdef CONFIG_XDP_SOCKETS
+ 
+-bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt);
+-bool xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr);
+-void xsk_umem_release_addr(struct xdp_umem *umem);
+ void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries);
+ bool xsk_umem_consume_tx(struct xdp_umem *umem, struct xdp_desc *desc);
+ void xsk_umem_consume_tx_done(struct xdp_umem *umem);
+-struct xdp_umem_fq_reuse *xsk_reuseq_prepare(u32 nentries);
+-struct xdp_umem_fq_reuse *xsk_reuseq_swap(struct xdp_umem *umem,
+-					  struct xdp_umem_fq_reuse *newq);
+-void xsk_reuseq_free(struct xdp_umem_fq_reuse *rq);
+ struct xdp_umem *xdp_get_umem_from_qid(struct net_device *dev, u16 queue_id);
+ void xsk_set_rx_need_wakeup(struct xdp_umem *umem);
+ void xsk_set_tx_need_wakeup(struct xdp_umem *umem);
+@@ -28,75 +21,6 @@ void xsk_clear_rx_need_wakeup(struct xdp_umem *umem);
+ void xsk_clear_tx_need_wakeup(struct xdp_umem *umem);
+ bool xsk_umem_uses_need_wakeup(struct xdp_umem *umem);
+ 
+-static inline char *xdp_umem_get_data(struct xdp_umem *umem, u64 addr)
+-{
+-	unsigned long page_addr;
+-
+-	addr = xsk_umem_add_offset_to_addr(addr);
+-	page_addr = (unsigned long)umem->pages[addr >> PAGE_SHIFT].addr;
+-
+-	return (char *)(page_addr & PAGE_MASK) + (addr & ~PAGE_MASK);
+-}
+-
+-static inline dma_addr_t xdp_umem_get_dma(struct xdp_umem *umem, u64 addr)
+-{
+-	addr = xsk_umem_add_offset_to_addr(addr);
+-
+-	return umem->pages[addr >> PAGE_SHIFT].dma + (addr & ~PAGE_MASK);
+-}
+-
+-/* Reuse-queue aware version of FILL queue helpers */
+-static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
+-{
+-	struct xdp_umem_fq_reuse *rq = umem->fq_reuse;
+-
+-	if (rq->length >= cnt)
+-		return true;
+-
+-	return xsk_umem_has_addrs(umem, cnt - rq->length);
+-}
+-
+-static inline bool xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *addr)
+-{
+-	struct xdp_umem_fq_reuse *rq = umem->fq_reuse;
+-
+-	if (!rq->length)
+-		return xsk_umem_peek_addr(umem, addr);
+-
+-	*addr = rq->handles[rq->length - 1];
+-	return addr;
+-}
+-
+-static inline void xsk_umem_release_addr_rq(struct xdp_umem *umem)
+-{
+-	struct xdp_umem_fq_reuse *rq = umem->fq_reuse;
+-
+-	if (!rq->length)
+-		xsk_umem_release_addr(umem);
+-	else
+-		rq->length--;
+-}
+-
+-static inline void xsk_umem_fq_reuse(struct xdp_umem *umem, u64 addr)
+-{
+-	struct xdp_umem_fq_reuse *rq = umem->fq_reuse;
+-
+-	rq->handles[rq->length++] = addr;
+-}
+-
+-/* Handle the offset appropriately depending on aligned or unaligned mode.
+- * For unaligned mode, we store the offset in the upper 16-bits of the address.
+- * For aligned mode, we simply add the offset to the address.
 - */
--void mlx5e_xsk_page_release(struct mlx5e_rq *rq,
--			    struct mlx5e_dma_info *dma_info)
+-static inline u64 xsk_umem_adjust_offset(struct xdp_umem *umem, u64 address,
+-					 u64 offset)
 -{
--	mlx5e_xsk_recycle_frame(rq, dma_info->xsk.handle);
+-	if (umem->flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG)
+-		return address + (offset << XSK_UNALIGNED_BUF_OFFSET_SHIFT);
+-	else
+-		return address + offset;
 -}
 -
--/* Return a frame back to the hardware to fill in again. It is used by XDP when
-- * the XDP program returns XDP_TX or XDP_REDIRECT not to an XSKMAP.
-- */
--void mlx5e_xsk_zca_free(struct zero_copy_allocator *zca, unsigned long handle)
+ static inline u32 xsk_umem_get_rx_frame_size(struct xdp_umem *umem)
+ {
+ 	return umem->chunk_size - umem->headroom - XDP_PACKET_HEADROOM;
+@@ -170,20 +94,6 @@ static inline void xsk_buff_raw_dma_sync_for_device(struct xdp_umem *umem,
+ 
+ #else
+ 
+-static inline bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
 -{
--	struct mlx5e_rq *rq = container_of(zca, struct mlx5e_rq, zca);
--
--	mlx5e_xsk_recycle_frame(rq, handle);
+-	return false;
 -}
 -
- static struct sk_buff *mlx5e_xsk_construct_skb(struct mlx5e_rq *rq, void *data,
- 					       u32 cqe_bcnt)
- {
-@@ -90,11 +29,8 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
- 						    u32 head_offset,
- 						    u32 page_idx)
- {
--	struct mlx5e_dma_info *di = &wi->umr.dma_info[page_idx];
--	u16 rx_headroom = rq->buff.headroom - rq->buff.umem_headroom;
-+	struct xdp_buff *xdp = wi->umr.dma_info[page_idx].xsk;
- 	u32 cqe_bcnt32 = cqe_bcnt;
--	void *va, *data;
--	u32 frag_size;
- 	bool consumed;
- 
- 	/* Check packet size. Note LRO doesn't use linear SKB */
-@@ -103,22 +39,19 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
- 		return NULL;
- 	}
- 
--	/* head_offset is not used in this function, because di->xsk.data and
--	 * di->addr point directly to the necessary place. Furthermore, in the
--	 * current implementation, UMR pages are mapped to XSK frames, so
-+	/* head_offset is not used in this function, because xdp->data and the
-+	 * DMA address point directly to the necessary place. Furthermore, in
-+	 * the current implementation, UMR pages are mapped to XSK frames, so
- 	 * head_offset should always be 0.
- 	 */
- 	WARN_ON_ONCE(head_offset);
- 
--	va             = di->xsk.data;
--	data           = va + rx_headroom;
--	frag_size      = rq->buff.headroom + cqe_bcnt32;
--
--	dma_sync_single_for_cpu(rq->pdev, di->addr, frag_size, DMA_BIDIRECTIONAL);
--	prefetch(data);
-+	xdp->data_end = xdp->data + cqe_bcnt32;
-+	xsk_buff_dma_sync_for_cpu(xdp);
-+	prefetch(xdp->data);
- 
- 	rcu_read_lock();
--	consumed = mlx5e_xdp_handle(rq, di, va, &rx_headroom, &cqe_bcnt32, true);
-+	consumed = mlx5e_xdp_handle(rq, NULL, &cqe_bcnt32, xdp);
- 	rcu_read_unlock();
- 
- 	/* Possible flows:
-@@ -145,7 +78,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
- 	/* XDP_PASS: copy the data from the UMEM to a new SKB and reuse the
- 	 * frame. On SKB allocation failure, NULL is returned.
- 	 */
--	return mlx5e_xsk_construct_skb(rq, data, cqe_bcnt32);
-+	return mlx5e_xsk_construct_skb(rq, xdp->data, cqe_bcnt32);
- }
- 
- struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
-@@ -153,25 +86,19 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 					      struct mlx5e_wqe_frag_info *wi,
- 					      u32 cqe_bcnt)
- {
--	struct mlx5e_dma_info *di = wi->di;
--	u16 rx_headroom = rq->buff.headroom - rq->buff.umem_headroom;
--	void *va, *data;
-+	struct xdp_buff *xdp = wi->di->xsk;
- 	bool consumed;
--	u32 frag_size;
- 
--	/* wi->offset is not used in this function, because di->xsk.data and
--	 * di->addr point directly to the necessary place. Furthermore, in the
--	 * current implementation, one page = one packet = one frame, so
-+	/* wi->offset is not used in this function, because xdp->data and the
-+	 * DMA address point directly to the necessary place. Furthermore, the
-+	 * XSK allocator allocates frames per packet, instead of pages, so
- 	 * wi->offset should always be 0.
- 	 */
- 	WARN_ON_ONCE(wi->offset);
- 
--	va             = di->xsk.data;
--	data           = va + rx_headroom;
--	frag_size      = rq->buff.headroom + cqe_bcnt;
--
--	dma_sync_single_for_cpu(rq->pdev, di->addr, frag_size, DMA_BIDIRECTIONAL);
--	prefetch(data);
-+	xdp->data_end = xdp->data + cqe_bcnt;
-+	xsk_buff_dma_sync_for_cpu(xdp);
-+	prefetch(xdp->data);
- 
- 	if (unlikely(get_cqe_opcode(cqe) != MLX5_CQE_RESP_SEND)) {
- 		rq->stats->wqe_err++;
-@@ -179,7 +106,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 	}
- 
- 	rcu_read_lock();
--	consumed = mlx5e_xdp_handle(rq, di, va, &rx_headroom, &cqe_bcnt, true);
-+	consumed = mlx5e_xdp_handle(rq, NULL, &cqe_bcnt, xdp);
- 	rcu_read_unlock();
- 
- 	if (likely(consumed))
-@@ -189,5 +116,5 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 	 * will be handled by mlx5e_put_rx_frag.
- 	 * On SKB allocation failure, NULL is returned.
- 	 */
--	return mlx5e_xsk_construct_skb(rq, data, cqe_bcnt);
-+	return mlx5e_xsk_construct_skb(rq, xdp->data, cqe_bcnt);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-index a8e11adbf426..0062652f37b3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-@@ -9,12 +9,6 @@
- 
- /* RX data path */
- 
--bool mlx5e_xsk_pages_enough_umem(struct mlx5e_rq *rq, int count);
--int mlx5e_xsk_page_alloc_umem(struct mlx5e_rq *rq,
--			      struct mlx5e_dma_info *dma_info);
--void mlx5e_xsk_page_release(struct mlx5e_rq *rq,
--			    struct mlx5e_dma_info *dma_info);
--void mlx5e_xsk_zca_free(struct zero_copy_allocator *zca, unsigned long handle);
- struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
- 						    struct mlx5e_mpw_info *wi,
- 						    u16 cqe_bcnt,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-index 3bcdb5b2fc20..470f3b6317c3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-@@ -5,7 +5,7 @@
- #include "umem.h"
- #include "en/xdp.h"
- #include "en/params.h"
--#include <net/xdp_sock.h>
-+#include <net/xdp_sock_drv.h>
- 
- int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
- {
-@@ -92,8 +92,8 @@ bool mlx5e_xsk_tx(struct mlx5e_xdpsq *sq, unsigned int budget)
- 			break;
- 		}
- 
--		xdptxd.dma_addr = xdp_umem_get_dma(umem, desc.addr);
--		xdptxd.data = xdp_umem_get_data(umem, desc.addr);
-+		xdptxd.dma_addr = xsk_buff_raw_get_dma(umem, desc.addr);
-+		xdptxd.data = xsk_buff_raw_get_data(umem, desc.addr);
- 		xdptxd.len = desc.len;
- 
- 		dma_sync_single_for_device(sq->pdev, xdptxd.dma_addr,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
-index 5e49fdb564b3..6a888f17f1c4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
-@@ -10,40 +10,14 @@ static int mlx5e_xsk_map_umem(struct mlx5e_priv *priv,
- 			      struct xdp_umem *umem)
- {
- 	struct device *dev = priv->mdev->device;
--	u32 i;
- 
--	for (i = 0; i < umem->npgs; i++) {
--		dma_addr_t dma = dma_map_page(dev, umem->pgs[i], 0, PAGE_SIZE,
--					      DMA_BIDIRECTIONAL);
--
--		if (unlikely(dma_mapping_error(dev, dma)))
--			goto err_unmap;
--		umem->pages[i].dma = dma;
--	}
--
--	return 0;
--
--err_unmap:
--	while (i--) {
--		dma_unmap_page(dev, umem->pages[i].dma, PAGE_SIZE,
--			       DMA_BIDIRECTIONAL);
--		umem->pages[i].dma = 0;
--	}
--
--	return -ENOMEM;
-+	return xsk_buff_dma_map(umem, dev, 0);
- }
- 
- static void mlx5e_xsk_unmap_umem(struct mlx5e_priv *priv,
- 				 struct xdp_umem *umem)
- {
--	struct device *dev = priv->mdev->device;
--	u32 i;
--
--	for (i = 0; i < umem->npgs; i++) {
--		dma_unmap_page(dev, umem->pages[i].dma, PAGE_SIZE,
--			       DMA_BIDIRECTIONAL);
--		umem->pages[i].dma = 0;
--	}
-+	return xsk_buff_dma_unmap(umem, 0);
- }
- 
- static int mlx5e_xsk_get_umems(struct mlx5e_xsk *xsk)
-@@ -88,15 +62,10 @@ static void mlx5e_xsk_remove_umem(struct mlx5e_xsk *xsk, u16 ix)
- 	mlx5e_xsk_put_umems(xsk);
- }
- 
--static bool mlx5e_xsk_is_umem_sane(struct xdp_umem *umem)
+-static inline u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
 -{
--	return umem->headroom <= 0xffff && umem->chunk_size_nohr <= 0xffff;
+-	return NULL;
 -}
 -
- void mlx5e_build_xsk_param(struct xdp_umem *umem, struct mlx5e_xsk_param *xsk)
- {
- 	xsk->headroom = umem->headroom;
--	xsk->chunk_size = umem->chunk_size_nohr + umem->headroom;
-+	xsk->chunk_size = umem->chunk_size;
- }
- 
- static int mlx5e_xsk_enable_locked(struct mlx5e_priv *priv,
-@@ -110,9 +79,6 @@ static int mlx5e_xsk_enable_locked(struct mlx5e_priv *priv,
- 	if (unlikely(mlx5e_xsk_get_umem(&priv->channels.params, &priv->xsk, ix)))
- 		return -EBUSY;
- 
--	if (unlikely(!mlx5e_xsk_is_umem_sane(umem)))
--		return -EINVAL;
--
- 	err = mlx5e_xsk_map_umem(priv, umem);
- 	if (unlikely(err))
- 		return err;
-@@ -241,18 +207,6 @@ int mlx5e_xsk_setup_umem(struct net_device *dev, struct xdp_umem *umem, u16 qid)
- 		      mlx5e_xsk_disable_umem(priv, ix);
- }
- 
--int mlx5e_xsk_resize_reuseq(struct xdp_umem *umem, u32 nentries)
+-static inline void xsk_umem_release_addr(struct xdp_umem *umem)
 -{
--	struct xdp_umem_fq_reuse *reuseq;
+-}
 -
--	reuseq = xsk_reuseq_prepare(nentries);
--	if (unlikely(!reuseq))
--		return -ENOMEM;
--	xsk_reuseq_free(xsk_reuseq_swap(umem, reuseq));
+ static inline void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries)
+ {
+ }
+@@ -198,55 +108,12 @@ static inline void xsk_umem_consume_tx_done(struct xdp_umem *umem)
+ {
+ }
+ 
+-static inline struct xdp_umem_fq_reuse *xsk_reuseq_prepare(u32 nentries)
+-{
+-	return NULL;
+-}
 -
+-static inline struct xdp_umem_fq_reuse *xsk_reuseq_swap(
+-	struct xdp_umem *umem, struct xdp_umem_fq_reuse *newq)
+-{
+-	return NULL;
+-}
+-
+-static inline void xsk_reuseq_free(struct xdp_umem_fq_reuse *rq)
+-{
+-}
+-
+ static inline struct xdp_umem *xdp_get_umem_from_qid(struct net_device *dev,
+ 						     u16 queue_id)
+ {
+ 	return NULL;
+ }
+ 
+-static inline char *xdp_umem_get_data(struct xdp_umem *umem, u64 addr)
+-{
+-	return NULL;
+-}
+-
+-static inline dma_addr_t xdp_umem_get_dma(struct xdp_umem *umem, u64 addr)
+-{
 -	return 0;
 -}
 -
- u16 mlx5e_xsk_first_unused_channel(struct mlx5e_params *params, struct mlx5e_xsk *xsk)
+-static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
+-{
+-	return false;
+-}
+-
+-static inline u64 *xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *addr)
+-{
+-	return NULL;
+-}
+-
+-static inline void xsk_umem_release_addr_rq(struct xdp_umem *umem)
+-{
+-}
+-
+-static inline void xsk_umem_fq_reuse(struct xdp_umem *umem, u64 addr)
+-{
+-}
+-
+ static inline void xsk_set_rx_need_wakeup(struct xdp_umem *umem)
  {
- 	u16 res = xsk->refcnt ? params->num_channels : 0;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 048a4f8601a8..5ce73931eff4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -38,7 +38,7 @@
- #include <linux/bpf.h>
- #include <linux/if_bridge.h>
- #include <net/page_pool.h>
--#include <net/xdp_sock.h>
-+#include <net/xdp_sock_drv.h>
- #include "eswitch.h"
- #include "en.h"
- #include "en/txrx.h"
-@@ -414,7 +414,6 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
+ }
+@@ -268,12 +135,6 @@ static inline bool xsk_umem_uses_need_wakeup(struct xdp_umem *umem)
+ 	return false;
+ }
  
- 	rq->buff.map_dir = rq->xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
- 	rq->buff.headroom = mlx5e_get_rq_headroom(mdev, params, xsk);
--	rq->buff.umem_headroom = xsk ? xsk->headroom : 0;
- 	pool_size = 1 << params->log_rq_mtu_frames;
+-static inline u64 xsk_umem_adjust_offset(struct xdp_umem *umem, u64 handle,
+-					 u64 offset)
+-{
+-	return 0;
+-}
+-
+ static inline u32 xsk_umem_get_rx_frame_size(struct xdp_umem *umem)
+ {
+ 	return 0;
+diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+index 48547a12fa27..b73d3e141323 100644
+--- a/include/trace/events/xdp.h
++++ b/include/trace/events/xdp.h
+@@ -287,7 +287,6 @@ TRACE_EVENT(xdp_devmap_xmit,
+ 	FN(PAGE_SHARED)		\
+ 	FN(PAGE_ORDER0)		\
+ 	FN(PAGE_POOL)		\
+-	FN(ZERO_COPY)		\
+ 	FN(XSK_BUFF_POOL)
  
- 	switch (rq->wq_type) {
-@@ -522,17 +521,9 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
+ #define __MEM_TYPE_TP_FN(x)	\
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 89053ef8333b..11273c976e19 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -109,27 +109,6 @@ static void mem_allocator_disconnect(void *allocator)
+ 	mutex_unlock(&mem_id_lock);
+ }
+ 
+-static void mem_id_disconnect(int id)
+-{
+-	struct xdp_mem_allocator *xa;
+-
+-	mutex_lock(&mem_id_lock);
+-
+-	xa = rhashtable_lookup_fast(mem_id_ht, &id, mem_id_rht_params);
+-	if (!xa) {
+-		mutex_unlock(&mem_id_lock);
+-		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
+-		return;
+-	}
+-
+-	trace_mem_disconnect(xa);
+-
+-	if (!rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
+-		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
+-
+-	mutex_unlock(&mem_id_lock);
+-}
+-
+ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
+ {
+ 	struct xdp_mem_allocator *xa;
+@@ -143,9 +122,6 @@ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
+ 	if (id == 0)
+ 		return;
+ 
+-	if (xdp_rxq->mem.type == MEM_TYPE_ZERO_COPY)
+-		return mem_id_disconnect(id);
+-
+ 	if (xdp_rxq->mem.type == MEM_TYPE_PAGE_POOL) {
+ 		rcu_read_lock();
+ 		xa = rhashtable_lookup(mem_id_ht, &id, mem_id_rht_params);
+@@ -301,7 +277,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+ 	xdp_rxq->mem.type = type;
+ 
+ 	if (!allocator) {
+-		if (type == MEM_TYPE_PAGE_POOL || type == MEM_TYPE_ZERO_COPY)
++		if (type == MEM_TYPE_PAGE_POOL)
+ 			return -EINVAL; /* Setup time check page_pool req */
+ 		return 0;
  	}
+@@ -361,7 +337,7 @@ EXPORT_SYMBOL_GPL(xdp_rxq_info_reg_mem_model);
+  * of xdp_frames/pages in those cases.
+  */
+ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
+-			 unsigned long handle, struct xdp_buff *xdp)
++			 struct xdp_buff *xdp)
+ {
+ 	struct xdp_mem_allocator *xa;
+ 	struct page *page;
+@@ -383,14 +359,6 @@ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
+ 		page = virt_to_page(data); /* Assumes order0 page*/
+ 		put_page(page);
+ 		break;
+-	case MEM_TYPE_ZERO_COPY:
+-		/* NB! Only valid from an xdp_buff! */
+-		rcu_read_lock();
+-		/* mem->id is valid, checked in xdp_rxq_info_reg_mem_model() */
+-		xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+-		xa->zc_alloc->free(xa->zc_alloc, handle);
+-		rcu_read_unlock();
+-		break;
+ 	case MEM_TYPE_XSK_BUFF_POOL:
+ 		/* NB! Only valid from an xdp_buff! */
+ 		xsk_buff_free(xdp);
+@@ -403,19 +371,19 @@ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
  
- 	if (xsk) {
--		err = mlx5e_xsk_resize_reuseq(umem, num_xsk_frames);
--		if (unlikely(err)) {
--			mlx5_core_err(mdev, "Unable to allocate the Reuse Ring for %u frames\n",
--				      num_xsk_frames);
--			goto err_free;
+ void xdp_return_frame(struct xdp_frame *xdpf)
+ {
+-	__xdp_return(xdpf->data, &xdpf->mem, false, 0, NULL);
++	__xdp_return(xdpf->data, &xdpf->mem, false, NULL);
+ }
+ EXPORT_SYMBOL_GPL(xdp_return_frame);
+ 
+ void xdp_return_frame_rx_napi(struct xdp_frame *xdpf)
+ {
+-	__xdp_return(xdpf->data, &xdpf->mem, true, 0, NULL);
++	__xdp_return(xdpf->data, &xdpf->mem, true, NULL);
+ }
+ EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
+ 
+ void xdp_return_buff(struct xdp_buff *xdp)
+ {
+-	__xdp_return(xdp->data, &xdp->rxq->mem, true, xdp->handle, xdp);
++	__xdp_return(xdp->data, &xdp->rxq->mem, true, xdp);
+ }
+ EXPORT_SYMBOL_GPL(xdp_return_buff);
+ 
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 0bc8a50d553f..ad4c81ba53de 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -179,37 +179,6 @@ void xdp_umem_clear_dev(struct xdp_umem *umem)
+ 	umem->zc = false;
+ }
+ 
+-static void xdp_umem_unmap_pages(struct xdp_umem *umem)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < umem->npgs; i++)
+-		if (PageHighMem(umem->pgs[i]))
+-			vunmap(umem->pages[i].addr);
+-}
+-
+-static int xdp_umem_map_pages(struct xdp_umem *umem)
+-{
+-	unsigned int i;
+-	void *addr;
+-
+-	for (i = 0; i < umem->npgs; i++) {
+-		if (PageHighMem(umem->pgs[i]))
+-			addr = vmap(&umem->pgs[i], 1, VM_MAP, PAGE_KERNEL);
+-		else
+-			addr = page_address(umem->pgs[i]);
+-
+-		if (!addr) {
+-			xdp_umem_unmap_pages(umem);
+-			return -ENOMEM;
 -		}
 -
--		rq->zca.free = mlx5e_xsk_zca_free;
- 		err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq,
--						 MEM_TYPE_ZERO_COPY,
--						 &rq->zca);
-+						 MEM_TYPE_XSK_BUFF_POOL, NULL);
-+		xsk_buff_set_rxq_info(rq->umem, &rq->xdp_rxq);
- 	} else {
- 		/* Create a page_pool and register it with rxq */
- 		pp_params.order     = 0;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index d9a5a669b84d..662bc73f6dae 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -263,10 +263,12 @@ static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq,
- static inline int mlx5e_page_alloc(struct mlx5e_rq *rq,
- 				   struct mlx5e_dma_info *dma_info)
+-		umem->pages[i].addr = addr;
+-	}
+-
+-	return 0;
+-}
+-
+ static void xdp_umem_unpin_pages(struct xdp_umem *umem)
  {
--	if (rq->umem)
--		return mlx5e_xsk_page_alloc_umem(rq, dma_info);
--	else
--		return mlx5e_page_alloc_pool(rq, dma_info);
-+	if (rq->umem) {
-+		dma_info->xsk = xsk_buff_alloc(rq->umem);
-+		return dma_info->xsk ? 0 : -ENOMEM;
-+	}
-+
-+	return mlx5e_page_alloc_pool(rq, dma_info);
- }
- 
- void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct mlx5e_dma_info *dma_info)
-@@ -300,7 +302,7 @@ static inline void mlx5e_page_release(struct mlx5e_rq *rq,
- 		 * put into the Reuse Ring, because there is no way to return
- 		 * the page to the userspace when the interface goes down.
- 		 */
--		mlx5e_xsk_page_release(rq, dma_info);
-+		xsk_buff_free(dma_info->xsk);
- 	else
- 		mlx5e_page_release_dynamic(rq, dma_info, recycle);
- }
-@@ -385,7 +387,11 @@ static int mlx5e_alloc_rx_wqes(struct mlx5e_rq *rq, u16 ix, u8 wqe_bulk)
- 	if (rq->umem) {
- 		int pages_desired = wqe_bulk << rq->wqe.info.log_num_frags;
- 
--		if (unlikely(!mlx5e_xsk_pages_enough_umem(rq, pages_desired)))
-+		/* Check in advance that we have enough frames, instead of
-+		 * allocating one-by-one, failing and moving frames to the
-+		 * Reuse Ring.
-+		 */
-+		if (unlikely(!xsk_buff_can_alloc(rq->umem, pages_desired)))
- 			return -ENOMEM;
+ 	unpin_user_pages_dirty_lock(umem->pgs, umem->npgs, true);
+@@ -244,14 +213,9 @@ static void xdp_umem_release(struct xdp_umem *umem)
+ 		umem->cq = NULL;
  	}
  
-@@ -480,8 +486,11 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 	int err;
- 	int i;
+-	xsk_reuseq_destroy(umem);
+ 	xp_destroy(umem->pool);
+-	xdp_umem_unmap_pages(umem);
+ 	xdp_umem_unpin_pages(umem);
  
-+	/* Check in advance that we have enough frames, instead of allocating
-+	 * one-by-one, failing and moving frames to the Reuse Ring.
-+	 */
- 	if (rq->umem &&
--	    unlikely(!mlx5e_xsk_pages_enough_umem(rq, MLX5_MPWRQ_PAGES_PER_WQE))) {
-+	    unlikely(!xsk_buff_can_alloc(rq->umem, MLX5_MPWRQ_PAGES_PER_WQE))) {
+-	kvfree(umem->pages);
+-	umem->pages = NULL;
+-
+ 	xdp_umem_unaccount_pages(umem);
+ 	kfree(umem);
+ }
+@@ -386,11 +350,8 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
+ 		return -EINVAL;
+ 
+ 	umem->address = (unsigned long)addr;
+-	umem->chunk_mask = unaligned_chunks ? XSK_UNALIGNED_BUF_ADDR_MASK
+-					    : ~((u64)chunk_size - 1);
+ 	umem->size = size;
+ 	umem->headroom = headroom;
+-	umem->chunk_size_nohr = chunk_size - headroom;
+ 	umem->chunk_size = chunk_size;
+ 	umem->npgs = size / PAGE_SIZE;
+ 	umem->pgs = NULL;
+@@ -409,29 +370,14 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
+ 	if (err)
+ 		goto out_account;
+ 
+-	umem->pages = kvcalloc(umem->npgs, sizeof(*umem->pages),
+-			       GFP_KERNEL_ACCOUNT);
+-	if (!umem->pages) {
+-		err = -ENOMEM;
+-		goto out_pin;
+-	}
+-
+-	err = xdp_umem_map_pages(umem);
+-	if (err)
+-		goto out_pages;
+-
+ 	umem->pool = xp_create(umem->pgs, umem->npgs, chunks, chunk_size,
+ 			       headroom, size, unaligned_chunks);
+ 	if (!umem->pool) {
  		err = -ENOMEM;
- 		goto err;
+-		goto out_unmap;
++		goto out_pin;
  	}
-@@ -1038,12 +1047,23 @@ struct sk_buff *mlx5e_build_linear_skb(struct mlx5e_rq *rq, void *va,
- 	return skb;
+ 	return 0;
+ 
+-out_unmap:
+-	xdp_umem_unmap_pages(umem);
+-out_pages:
+-	kvfree(umem->pages);
+ out_pin:
+ 	xdp_umem_unpin_pages(umem);
+ out_account:
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index df36c12236c3..bcd5faf82788 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -39,24 +39,6 @@ bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
+ 		READ_ONCE(xs->umem->fq);
  }
  
-+static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq, void *va, u16 headroom,
-+				u32 len, struct xdp_buff *xdp)
-+{
-+	xdp->data_hard_start = va;
-+	xdp_set_data_meta_invalid(xdp);
-+	xdp->data = va + headroom;
-+	xdp->data_end = xdp->data + len;
-+	xdp->rxq = &rq->xdp_rxq;
-+}
-+
- struct sk_buff *
- mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
- 			  struct mlx5e_wqe_frag_info *wi, u32 cqe_bcnt)
+-bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
+-{
+-	return xskq_cons_has_entries(umem->fq, cnt);
+-}
+-EXPORT_SYMBOL(xsk_umem_has_addrs);
+-
+-bool xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
+-{
+-	return xskq_cons_peek_addr(umem->fq, addr, umem);
+-}
+-EXPORT_SYMBOL(xsk_umem_peek_addr);
+-
+-void xsk_umem_release_addr(struct xdp_umem *umem)
+-{
+-	xskq_cons_release(umem->fq);
+-}
+-EXPORT_SYMBOL(xsk_umem_release_addr);
+-
+ void xsk_set_rx_need_wakeup(struct xdp_umem *umem)
  {
- 	struct mlx5e_dma_info *di = wi->di;
- 	u16 rx_headroom = rq->buff.headroom;
-+	struct xdp_buff xdp;
- 	struct sk_buff *skb;
- 	void *va, *data;
- 	bool consumed;
-@@ -1059,11 +1079,13 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
- 	prefetch(data);
+ 	if (umem->need_wakeup & XDP_WAKEUP_RX)
+@@ -203,8 +185,7 @@ static int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp,
  
- 	rcu_read_lock();
--	consumed = mlx5e_xdp_handle(rq, di, va, &rx_headroom, &cqe_bcnt, false);
-+	mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
-+	consumed = mlx5e_xdp_handle(rq, di, &cqe_bcnt, &xdp);
- 	rcu_read_unlock();
- 	if (consumed)
- 		return NULL; /* page/packet was consumed by XDP */
+ 	len = xdp->data_end - xdp->data;
  
-+	rx_headroom = xdp.data - xdp.data_hard_start;
- 	skb = mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt);
- 	if (unlikely(!skb))
- 		return NULL;
-@@ -1336,6 +1358,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 	struct mlx5e_dma_info *di = &wi->umr.dma_info[page_idx];
- 	u16 rx_headroom = rq->buff.headroom;
- 	u32 cqe_bcnt32 = cqe_bcnt;
-+	struct xdp_buff xdp;
- 	struct sk_buff *skb;
- 	void *va, *data;
- 	u32 frag_size;
-@@ -1357,7 +1380,8 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 	prefetch(data);
+-	return xdp->rxq->mem.type == MEM_TYPE_ZERO_COPY ||
+-		xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL ?
++	return xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL ?
+ 		__xsk_rcv_zc(xs, xdp, len) :
+ 		__xsk_rcv(xs, xdp, len, explicit_free);
+ }
+@@ -588,24 +569,6 @@ static struct socket *xsk_lookup_xsk_from_fd(int fd)
+ 	return sock;
+ }
  
- 	rcu_read_lock();
--	consumed = mlx5e_xdp_handle(rq, di, va, &rx_headroom, &cqe_bcnt32, false);
-+	mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt32, &xdp);
-+	consumed = mlx5e_xdp_handle(rq, di, &cqe_bcnt32, &xdp);
- 	rcu_read_unlock();
- 	if (consumed) {
- 		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags))
-@@ -1365,6 +1389,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 		return NULL; /* page/packet was consumed by XDP */
+-/* Check if umem pages are contiguous.
+- * If zero-copy mode, use the DMA address to do the page contiguity check
+- * For all other modes we use addr (kernel virtual address)
+- * Store the result in the low bits of addr.
+- */
+-static void xsk_check_page_contiguity(struct xdp_umem *umem, u32 flags)
+-{
+-	struct xdp_umem_page *pgs = umem->pages;
+-	int i, is_contig;
+-
+-	for (i = 0; i < umem->npgs - 1; i++) {
+-		is_contig = (flags & XDP_ZEROCOPY) ?
+-			(pgs[i].dma + PAGE_SIZE == pgs[i + 1].dma) :
+-			(pgs[i].addr + PAGE_SIZE == pgs[i + 1].addr);
+-		pgs[i].addr += is_contig << XSK_NEXT_PG_CONTIG_SHIFT;
+-	}
+-}
+-
+ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+ {
+ 	struct sockaddr_xdp *sxdp = (struct sockaddr_xdp *)addr;
+@@ -688,23 +651,14 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+ 		goto out_unlock;
+ 	} else {
+ 		/* This xsk has its own umem. */
+-		xskq_set_umem(xs->umem->fq, xs->umem->size,
+-			      xs->umem->chunk_mask);
+-		xskq_set_umem(xs->umem->cq, xs->umem->size,
+-			      xs->umem->chunk_mask);
+-
+ 		err = xdp_umem_assign_dev(xs->umem, dev, qid, flags);
+ 		if (err)
+ 			goto out_unlock;
+-
+-		xsk_check_page_contiguity(xs->umem, flags);
  	}
  
-+	rx_headroom = xdp.data - xdp.data_hard_start;
- 	skb = mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt32);
- 	if (unlikely(!skb))
- 		return NULL;
+ 	xs->dev = dev;
+ 	xs->zc = xs->umem->zc;
+ 	xs->queue_id = qid;
+-	xskq_set_umem(xs->rx, xs->umem->size, xs->umem->chunk_mask);
+-	xskq_set_umem(xs->tx, xs->umem->size, xs->umem->chunk_mask);
+ 	xdp_add_sk_umem(xs->umem, xs);
+ 
+ out_unlock:
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 30cb2de77a03..30537220e8f2 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -7,6 +7,13 @@
+ 
+ #include "xsk_queue.h"
+ 
++/* Masks for xdp_umem_page flags.
++ * The low 12-bits of the addr will be 0 since this is the page address, so we
++ * can use them for flags.
++ */
++#define XSK_NEXT_PG_CONTIG_SHIFT 0
++#define XSK_NEXT_PG_CONTIG_MASK BIT_ULL(XSK_NEXT_PG_CONTIG_SHIFT)
++
+ struct xsk_buff_pool {
+ 	struct xsk_queue *fq;
+ 	struct list_head free_list;
+diff --git a/net/xdp/xsk_queue.c b/net/xdp/xsk_queue.c
+index c90e9c1e3c63..c33b5d985b9b 100644
+--- a/net/xdp/xsk_queue.c
++++ b/net/xdp/xsk_queue.c
+@@ -9,15 +9,6 @@
+ 
+ #include "xsk_queue.h"
+ 
+-void xskq_set_umem(struct xsk_queue *q, u64 size, u64 chunk_mask)
+-{
+-	if (!q)
+-		return;
+-
+-	q->size = size;
+-	q->chunk_mask = chunk_mask;
+-}
+-
+ static size_t xskq_get_ring_size(struct xsk_queue *q, bool umem_queue)
+ {
+ 	struct xdp_umem_ring *umem_ring;
+@@ -63,56 +54,3 @@ void xskq_destroy(struct xsk_queue *q)
+ 	page_frag_free(q->ring);
+ 	kfree(q);
+ }
+-
+-struct xdp_umem_fq_reuse *xsk_reuseq_prepare(u32 nentries)
+-{
+-	struct xdp_umem_fq_reuse *newq;
+-
+-	/* Check for overflow */
+-	if (nentries > (u32)roundup_pow_of_two(nentries))
+-		return NULL;
+-	nentries = roundup_pow_of_two(nentries);
+-
+-	newq = kvmalloc(struct_size(newq, handles, nentries), GFP_KERNEL);
+-	if (!newq)
+-		return NULL;
+-	memset(newq, 0, offsetof(typeof(*newq), handles));
+-
+-	newq->nentries = nentries;
+-	return newq;
+-}
+-EXPORT_SYMBOL_GPL(xsk_reuseq_prepare);
+-
+-struct xdp_umem_fq_reuse *xsk_reuseq_swap(struct xdp_umem *umem,
+-					  struct xdp_umem_fq_reuse *newq)
+-{
+-	struct xdp_umem_fq_reuse *oldq = umem->fq_reuse;
+-
+-	if (!oldq) {
+-		umem->fq_reuse = newq;
+-		return NULL;
+-	}
+-
+-	if (newq->nentries < oldq->length)
+-		return newq;
+-
+-	memcpy(newq->handles, oldq->handles,
+-	       array_size(oldq->length, sizeof(u64)));
+-	newq->length = oldq->length;
+-
+-	umem->fq_reuse = newq;
+-	return oldq;
+-}
+-EXPORT_SYMBOL_GPL(xsk_reuseq_swap);
+-
+-void xsk_reuseq_free(struct xdp_umem_fq_reuse *rq)
+-{
+-	kvfree(rq);
+-}
+-EXPORT_SYMBOL_GPL(xsk_reuseq_free);
+-
+-void xsk_reuseq_destroy(struct xdp_umem *umem)
+-{
+-	xsk_reuseq_free(umem->fq_reuse);
+-	umem->fq_reuse = NULL;
+-}
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index db25da8fb2b9..16bf15864788 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -32,8 +32,6 @@ struct xdp_umem_ring {
+ };
+ 
+ struct xsk_queue {
+-	u64 chunk_mask;
+-	u64 size;
+ 	u32 ring_mask;
+ 	u32 nentries;
+ 	u32 cached_prod;
+@@ -106,90 +104,6 @@ struct xsk_queue {
+ 
+ /* Functions that read and validate content from consumer rings. */
+ 
+-static inline bool xskq_cons_crosses_non_contig_pg(struct xdp_umem *umem,
+-						   u64 addr,
+-						   u64 length)
+-{
+-	bool cross_pg = (addr & (PAGE_SIZE - 1)) + length > PAGE_SIZE;
+-	bool next_pg_contig =
+-		(unsigned long)umem->pages[(addr >> PAGE_SHIFT)].addr &
+-			XSK_NEXT_PG_CONTIG_MASK;
+-
+-	return cross_pg && !next_pg_contig;
+-}
+-
+-static inline bool xskq_cons_is_valid_unaligned(struct xsk_queue *q,
+-						u64 addr,
+-						u64 length,
+-						struct xdp_umem *umem)
+-{
+-	u64 base_addr = xsk_umem_extract_addr(addr);
+-
+-	addr = xsk_umem_add_offset_to_addr(addr);
+-	if (base_addr >= q->size || addr >= q->size ||
+-	    xskq_cons_crosses_non_contig_pg(umem, addr, length)) {
+-		q->invalid_descs++;
+-		return false;
+-	}
+-
+-	return true;
+-}
+-
+-static inline bool xskq_cons_is_valid_addr(struct xsk_queue *q, u64 addr)
+-{
+-	if (addr >= q->size) {
+-		q->invalid_descs++;
+-		return false;
+-	}
+-
+-	return true;
+-}
+-
+-static inline bool xskq_cons_read_addr(struct xsk_queue *q, u64 *addr,
+-				       struct xdp_umem *umem)
+-{
+-	struct xdp_umem_ring *ring = (struct xdp_umem_ring *)q->ring;
+-
+-	while (q->cached_cons != q->cached_prod) {
+-		u32 idx = q->cached_cons & q->ring_mask;
+-
+-		*addr = ring->desc[idx] & q->chunk_mask;
+-
+-		if (umem->flags & XDP_UMEM_UNALIGNED_CHUNK_FLAG) {
+-			if (xskq_cons_is_valid_unaligned(q, *addr,
+-							 umem->chunk_size_nohr,
+-							 umem))
+-				return true;
+-			goto out;
+-		}
+-
+-		if (xskq_cons_is_valid_addr(q, *addr))
+-			return true;
+-
+-out:
+-		q->cached_cons++;
+-	}
+-
+-	return false;
+-}
+-
+-static inline bool xskq_cons_read_addr_aligned(struct xsk_queue *q, u64 *addr)
+-{
+-	struct xdp_umem_ring *ring = (struct xdp_umem_ring *)q->ring;
+-
+-	while (q->cached_cons != q->cached_prod) {
+-		u32 idx = q->cached_cons & q->ring_mask;
+-
+-		*addr = ring->desc[idx];
+-		if (xskq_cons_is_valid_addr(q, *addr))
+-			return true;
+-
+-		q->cached_cons++;
+-	}
+-
+-	return false;
+-}
+-
+ static inline bool xskq_cons_read_addr_unchecked(struct xsk_queue *q, u64 *addr)
+ {
+ 	struct xdp_umem_ring *ring = (struct xdp_umem_ring *)q->ring;
+@@ -267,21 +181,6 @@ static inline bool xskq_cons_has_entries(struct xsk_queue *q, u32 cnt)
+ 	return entries >= cnt;
+ }
+ 
+-static inline bool xskq_cons_peek_addr(struct xsk_queue *q, u64 *addr,
+-				       struct xdp_umem *umem)
+-{
+-	if (q->cached_prod == q->cached_cons)
+-		xskq_cons_get_entries(q);
+-	return xskq_cons_read_addr(q, addr, umem);
+-}
+-
+-static inline bool xskq_cons_peek_addr_aligned(struct xsk_queue *q, u64 *addr)
+-{
+-	if (q->cached_prod == q->cached_cons)
+-		xskq_cons_get_entries(q);
+-	return xskq_cons_read_addr_aligned(q, addr);
+-}
+-
+ static inline bool xskq_cons_peek_addr_unchecked(struct xsk_queue *q, u64 *addr)
+ {
+ 	if (q->cached_prod == q->cached_cons)
+@@ -410,11 +309,7 @@ static inline u64 xskq_nb_invalid_descs(struct xsk_queue *q)
+ 	return q ? q->invalid_descs : 0;
+ }
+ 
+-void xskq_set_umem(struct xsk_queue *q, u64 size, u64 chunk_mask);
+ struct xsk_queue *xskq_create(u32 nentries, bool umem_queue);
+ void xskq_destroy(struct xsk_queue *q_ops);
+ 
+-/* Executed by the core when the entire UMEM gets freed */
+-void xsk_reuseq_destroy(struct xdp_umem *umem);
+-
+ #endif /* _LINUX_XSK_QUEUE_H */
 -- 
 2.25.1
 
