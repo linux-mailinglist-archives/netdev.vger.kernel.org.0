@@ -2,92 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69FFA1C38C9
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 14:01:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4C81C3917
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 14:15:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728678AbgEDMBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 08:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726445AbgEDMBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 08:01:35 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F13C061A0E;
-        Mon,  4 May 2020 05:01:35 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id hi11so3670311pjb.3;
-        Mon, 04 May 2020 05:01:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QzsKXL54QvuRKs7TKdiKfQUShykoR6n5UojyFRWW+gk=;
-        b=T/qK5uqmZIKrhIb/DIJ/DfL90hQm6GSUp/elWjJ8CwEU2qBhCwqivOba8xQgLRxeqV
-         4NThZBvi/6Q9PniGItMndipp+6FGGntmL7Mfw/1Sw10TUwVFfjOs7bsKcJIESRuqHZFj
-         J2JAw3lzujhwppvKwyjnlDiFyaANCQ5/8UFNaIjLPFjDVYJ3lOagRm5Cn0x6O5465ZSU
-         gJJcB8mmt0h3PEOy477BilIA4/OymYajsf5XzpM3lVvd2KFuucf+R2fpFlN2to8/cxgS
-         LNs12AkViZlBjPjqtv6+/hIgXerlPQKrK09NswZR+cATPtZdSWUsIYphFWfcWC+r3GtM
-         jH6g==
+        id S1728733AbgEDMPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 08:15:49 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:59310 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728253AbgEDMPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 08:15:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588594547;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=q5qLe/YbLa8g+76m0wKCJz9sEFGWHkbwiwLtZx/ZVFk=;
+        b=BoupBZjinqWOG60CRL1nwi+ttchJJbX0UNYWrTc0U4ZfNvu8j01xdyxYUaoMen9ob3/VDH
+        7+LD20bUUoSII35T8mXnqx1GIKOuO0P4it5g/LcjFyLFTrwGngSlhuHxMoamfcPP0o91iJ
+        2DHfcVLnxELFkWrWpBwBu80wkVqpQRI=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-38-V6tdcWy-NmeW0zli1Kx-NA-1; Mon, 04 May 2020 08:15:44 -0400
+X-MC-Unique: V6tdcWy-NmeW0zli1Kx-NA-1
+Received: by mail-wr1-f70.google.com with SMTP id a3so10657250wro.1
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 05:15:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QzsKXL54QvuRKs7TKdiKfQUShykoR6n5UojyFRWW+gk=;
-        b=k0DeWH8M9kxoNF8yjTZNEl5vI1go6Hw/8Lzi2Dk+HiWYCkJe5F2zMc0hJoOpJEWS7b
-         NKb0hKGCrIGPPflztwXxai+kRhLcjDWjHnlQrK80GQkAocFj8rkOaFUVSjxFxNFI5GZQ
-         +3stpvcHYbwknT4yneWZZKnyQcl7jJt0WN87MsMvkbbFYcMeAU3zkQF6i2GLXQRRWM1P
-         0/a8SZSzUFtTlk/0PEVwD0xo2tX2qN+SvItYZLS8fyphLWs7b/EP1uTmhma9Zn6c2QZB
-         UngVV4nOofydXyPW/N2dV1X+ABRiIgdEQY8xkETr3DfTrVqP3HU6ATD9YU3FoiO1xE//
-         qz/w==
-X-Gm-Message-State: AGi0PubOxrLlCU3ZK8UwnN0giw4Ihns5AK3IddhTKt8QlFdB/HcspQQy
-        Sjc6tQ43Zz77DfzvX48umfk=
-X-Google-Smtp-Source: APiQypIeAGR5MGlOZrGOX5Ic3d55EImWrtDHe6ZwOnXBCLEsmQWJCLYn1VHDDJGq+ExRsEaU/QJmAA==
-X-Received: by 2002:a17:90a:3086:: with SMTP id h6mr17926601pjb.49.1588593694898;
-        Mon, 04 May 2020 05:01:34 -0700 (PDT)
-Received: from localhost ([162.211.220.152])
-        by smtp.gmail.com with ESMTPSA id 14sm8945087pfj.90.2020.05.04.05.01.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 04 May 2020 05:01:34 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     claudiu.manoil@nxp.com, davem@davemloft.net,
-        vladimir.oltean@nxp.com, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH net v1] net: enetc: fix an issue about leak system resources
-Date:   Mon,  4 May 2020 20:01:27 +0800
-Message-Id: <20200504120127.4482-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=q5qLe/YbLa8g+76m0wKCJz9sEFGWHkbwiwLtZx/ZVFk=;
+        b=raRxtipUmc3TqQoN0oIMywHjVAhx+eKSzbMh1QCVb8yaKY6kwHI6uQZXA0LP2i+fmu
+         lHqmNVYzWDzAoDCzf2tNtO4JyEfkT17R+q3c0rfOelfd+9lklkwlm6vq2ftvk3yqgrnB
+         RLo6NVa+4aBmRJ4sxOaGJ2WoatoEaEhmU/fnQaN66+c/8e9skr5pRSfa8K2WcpXnppdX
+         yN5ugE5LFj6unXQPKV3AKuRwYE3jj2KHWuvtwcx9b3+nRHl94hESE3PLYh5gq+8EttpP
+         V+GwvlCnXM0gluORWfXi+z4qoI8mlYUwycVrITSzOy8g84vW+hyYELcgl2dmybCmixP/
+         0c/w==
+X-Gm-Message-State: AGi0PuZoMMHua1bonbF2YuE4PksfXC0KLlvhs/Y0GuOsRQUEmzQRPgOY
+        K2DcabnVQlWfOW84aPp+cIVP2ndEJrqxenJhSdWLod+JK8PugOb0N4RnYk/IolV9Q2MmFg+gf/C
+        z5WCWJWPP/xoqDdkp
+X-Received: by 2002:a1c:4e06:: with SMTP id g6mr14085619wmh.186.1588594542755;
+        Mon, 04 May 2020 05:15:42 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIAWbJGa73k/tJK0QUm1DfayD29dwoou70hN0HhHJnMSNr/UKPo3sTuvVCseBF2z+tgI/8tzQ==
+X-Received: by 2002:a1c:4e06:: with SMTP id g6mr14085601wmh.186.1588594542532;
+        Mon, 04 May 2020 05:15:42 -0700 (PDT)
+Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
+        by smtp.gmail.com with ESMTPSA id s24sm13455322wmj.28.2020.05.04.05.15.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2020 05:15:41 -0700 (PDT)
+Date:   Mon, 4 May 2020 08:15:40 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        justin.he@arm.com, ldigby@redhat.com, mst@redhat.com, n.b@live.com,
+        stefanha@redhat.com
+Subject: [GIT PULL] vhost: fixes
+Message-ID: <20200504081540-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the related system resources were not released when enetc_hw_alloc()
-return error in the enetc_pci_mdio_probe(), add iounmap() for error
-handling label "err_hw_alloc" to fix it.
+The following changes since commit 6a8b55ed4056ea5559ebe4f6a4b247f627870d4c:
 
-Fixes: 6517798dd3432a ("enetc: Make MDIO accessors more generic and export to include/linux/fsl")
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
- drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  Linux 5.7-rc3 (2020-04-26 13:51:02 -0700)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-index ebc635f8a4cc..15f37c5b8dc1 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-@@ -74,8 +74,8 @@ static int enetc_pci_mdio_probe(struct pci_dev *pdev,
- 	pci_disable_device(pdev);
- err_pci_enable:
- err_mdiobus_alloc:
--	iounmap(port_regs);
- err_hw_alloc:
-+	iounmap(port_regs);
- err_ioremap:
- 	return err;
- }
--- 
-2.25.0
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+
+for you to fetch changes up to 0b841030625cde5f784dd62aec72d6a766faae70:
+
+  vhost: vsock: kick send_pkt worker once device is started (2020-05-02 10:28:21 -0400)
+
+----------------------------------------------------------------
+virtio: fixes
+
+A couple of bug fixes.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Jia He (1):
+      vhost: vsock: kick send_pkt worker once device is started
+
+Stefan Hajnoczi (1):
+      virtio-blk: handle block_device_operations callbacks after hot unplug
+
+ drivers/block/virtio_blk.c | 86 +++++++++++++++++++++++++++++++++++++++++-----
+ drivers/vhost/vsock.c      |  5 +++
+ 2 files changed, 83 insertions(+), 8 deletions(-)
 
