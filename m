@@ -2,65 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C101C42D4
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACAAA1C42D7
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730259AbgEDRcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729942AbgEDRcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:32:05 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE958C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 10:32:05 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EDA59119534F6;
-        Mon,  4 May 2020 10:32:04 -0700 (PDT)
-Date:   Mon, 04 May 2020 10:32:04 -0700 (PDT)
-Message-Id: <20200504.103204.2161530815623718852.davem@davemloft.net>
-To:     tuong.t.lien@dektech.com.au
-Cc:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
-Subject: Re: [net] tipc: fix partial topology connection closure
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200504041554.3703-1-tuong.t.lien@dektech.com.au>
-References: <20200504041554.3703-1-tuong.t.lien@dektech.com.au>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 04 May 2020 10:32:05 -0700 (PDT)
+        id S1730273AbgEDRcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:32:31 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:45601 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729549AbgEDRca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:32:30 -0400
+Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1jVex5-0007yZ-Bd; Mon, 04 May 2020 17:32:23 +0000
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] igb: Report speed and duplex as unknown when device is runtime suspended
+Date:   Tue,  5 May 2020 01:32:18 +0800
+Message-Id: <20200504173218.1724-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tuong Lien <tuong.t.lien@dektech.com.au>
-Date: Mon,  4 May 2020 11:15:54 +0700
+igb device gets runtime suspended when there's no link partner. We can't
+get correct speed under that state:
+$ cat /sys/class/net/enp3s0/speed
+1000
 
-> When an application connects to the TIPC topology server and subscribes
-> to some services, a new connection is created along with some objects -
-> 'tipc_subscription' to store related data correspondingly...
-> However, there is one omission in the connection handling that when the
-> connection or application is orderly shutdown (e.g. via SIGQUIT, etc.),
-> the connection is not closed in kernel, the 'tipc_subscription' objects
-> are not freed too.
-> This results in:
-> - The maximum number of subscriptions (65535) will be reached soon, new
-> subscriptions will be rejected;
-> - TIPC module cannot be removed (unless the objects  are somehow forced
-> to release first);
-> 
-> The commit fixes the issue by closing the connection if the 'recvmsg()'
-> returns '0' i.e. when the peer is shutdown gracefully. It also includes
-> the other unexpected cases.
-> 
-> Acked-by: Jon Maloy <jmaloy@redhat.com>
-> Acked-by: Ying Xue <ying.xue@windriver.com>
-> Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+In addition to that, an error can also be spotted in dmesg:
+[  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
 
-Applied, thanks.
+Since device can only be runtime suspended when there's no link partner,
+we can directly report the speed and duplex as unknown.
+
+The more generic approach will be wrap get_link_ksettings() with begin()
+and complete() callbacks. However, for this particular issue, begin()
+calls igb_runtime_resume() , which tries to rtnl_lock() while the lock
+is already hold by upper ethtool layer.
+
+So let's take this approach until the igb_runtime_resume() no longer
+needs to hold rtnl_lock.
+
+Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/ethernet/intel/igb/igb_ethtool.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+index 39d3b76a6f5d..b429bca4aa6a 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
++++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+@@ -143,6 +143,12 @@ static int igb_get_link_ksettings(struct net_device *netdev,
+ 	u32 speed;
+ 	u32 supported, advertising;
+ 
++	if (pm_runtime_suspended(&adapter->pdev->dev)) {
++		cmd->base.duplex = DUPLEX_UNKNOWN;
++		cmd->base.speed = SPEED_UNKNOWN;
++		return 0;
++	}
++
+ 	status = rd32(E1000_STATUS);
+ 	if (hw->phy.media_type == e1000_media_type_copper) {
+ 
+-- 
+2.17.1
+
