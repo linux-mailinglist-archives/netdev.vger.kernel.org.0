@@ -2,222 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FD661C3244
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 07:30:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A04D1C326B
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 08:02:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727124AbgEDFah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 01:30:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37038 "EHLO mail.kernel.org"
+        id S1726660AbgEDGC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 02:02:28 -0400
+Received: from mout.web.de ([212.227.17.12]:56227 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725859AbgEDFah (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 May 2020 01:30:37 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B4DF920643;
-        Mon,  4 May 2020 05:30:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588570236;
-        bh=HsGKaXqonDChSxUGKlerxSgDMZsxSBRM5TFr1CWZWrg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1xWttnFjLnXjNnKEQXa3G2HgZ2KwepgPCS8eCVr2As6Lcxpa8inU950A8Gs1/Efe2
-         AxoBGXaDx5LdUXrYPZbKfnCSTVIBH7uPOcumOomfEKtszaZz7C+3Q8dR8sX6lzbvOP
-         J0PHRIJnZDUDG7LTNjcT7RQD0oE2J/t91+OffK7o=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Maor Gottlieb <maorg@mellanox.com>, linux-rdma@vger.kernel.org,
-        Mark Bloch <markb@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [PATCH mlx5-next v1 2/4] net/mlx5: Add support in forward to namespace
-Date:   Mon,  4 May 2020 08:30:10 +0300
-Message-Id: <20200504053012.270689-3-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200504053012.270689-1-leon@kernel.org>
-References: <20200504053012.270689-1-leon@kernel.org>
+        id S1725859AbgEDGC2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 May 2020 02:02:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1588572131;
+        bh=VzTdkyAD08T61DvGRdMXtyVSqMI0D89n3sPnc+qPeXg=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=TlI2YE31VFBaW70FsVWiN9MHOVTW4Z894A3DS91GW369m02tNi9nOGmDe0mkjIj4o
+         nCp63mXTqvE8Zt72kZYAWmJcEqapUa695NSi7BTK0/QdmTWYg/NxVU6pgAgaQvguQ8
+         RFI4u2RH095TcTzLpfEDE6H3OvOBVVuLXRrtghrM=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.133.152.69]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MX0YK-1jhdF03naG-00VzSC; Mon, 04
+ May 2020 08:02:11 +0200
+Subject: Re: [PATCH v3] nfp: abm: Fix incomplete release of system resources
+ in nfp_abm_vnic_set_mac()
+To:     Qiushi Wu <wu000273@umn.edu>, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org
+Cc:     oss-drivers@netronome.com, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, Kangjie Lu <kjlu@umn.edu>
+References: <20200503204932.11167-1-wu000273@umn.edu>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <265a25f7-6ef1-1387-d60a-9ffe8ccfbd73@web.de>
+Date:   Mon, 4 May 2020 08:01:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200503204932.11167-1-wu000273@umn.edu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:AvXDT0o/ikXfL38quRh8+24/gaW0HKkjufaX4AXzE7TDRVA80m0
+ QQcWwRwI7CvNRTOtX5SH6GNu+bmrZLyZYBLjtCVbbJRZJefTcl9pelHnlK7KGs9KRU+b7MA
+ oL1wssaT+LyZxJOOzUxYud8Svw+Gts0xpMo5l2JMpkGbcEk9N6QB50CKJGtUMoUwJoJeiU0
+ 7aqbYDVixFvwj09G0EaRw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ebZw7HG1iVM=:oeihwbmQomtzBFPf6Fk8j/
+ r/xegseR6mOQD52eq19nn/pNRjYxqFH1Rzq6lsqxMNvkOe0XAzPNMJx40thCa1h4caLZ5SiFc
+ mwPkPzwPYQlsZ183+yaqFHTsM2mEyBqsGRbj116Xict9hg2Kmhg4PBGmiNm3uVAv75LzAM3lb
+ 9dLh9xDu909jDnEXwPKFRT4AC7GMYcUko99aHSNLXRRUvSAvxGCKkTUz5za4NBZUpDZGzDhOc
+ 8iCJSz5XRnvvDwHSiZa1QB2Gt+TLYPSlmEIRnFOKihKdd2irRSZIZVu96dkKjBoALZyItluwx
+ nN+0AWT9ng3WtBZYJmqi8RHXZItR9q3Wp8wrgfGYfcXe7CGJpHfFpzoVxwIAGdHytGLVOK/5h
+ C521AiX7v/eF3AePwRgKAwOtYlE7ozKpFzMEJryPDK/I7eJm3ONYp6KTo6R+Q4V5DO3wOO+t4
+ IDfnvoLNi0INEket753Vgm8KWBev5yirmFZcZ9l+gN9a63+klDTg1joHNr1fwtNQHmT/Io4+p
+ otzfMnOUzhTi8KwzEOQBO+/OuFUEGBpBPQzLL2rwg5Up55/h3Y870AFPOCcHJdZGOmFsgVazr
+ YycW1NQenWEA6WDaya5RvqPc+A6ycPPQ+eeBgjdzJdB3ZXDNi9pr0/pjgSmIjgJ04aDLsWRsz
+ Pd5rmR/LAdmT56aAVSUrqi/EcaZc3zAaoMlmcVCUz5ZCOfHLXafcWnGkdGyPsknCPFNLnN9Po
+ MeeQE2YpNn5ohy5Uxu1PCv4kqWVttfjM04kvCBmvXh56CPlo8AWKoSMLD91/b85wzZZXOjU6v
+ /Twl+WZUfk5qPCadbrHKbyaV9E/As4UdQF4KjPB3YkXHxwMou87GOXHac9lJxqIzGG62azjrT
+ zt6V3jP/1v3FEAMkC3Vmy9n1XFph4ARQxEqz2nMMm3vh+ME7ZXtOkdVeOe4mA8QMRlUePFsC2
+ /X+lmy/wMh/g4rtbSw6QXy2/tOVC5k68Iv3wc44fKRUDMIwQo7ctbIEhijlPFRo5tfAU6vHWn
+ 8I4H7vq64eb2x7NALt7xrDF1SkLAPZcr7Wnw9FPLtuH21F76w/rd91RAe1Efdmjm8G5Tx2hkp
+ A1ZXEONI/577EwJP0NBuWVd2ZXulhd80wEIJPvuOi33423vFTo5vhJOMVB+rI/ywei1wapE/u
+ 0bDXVswxvm5sN+vTU/4TJGSZRMh3yoiSO56Idfa9oMFcJDlqCNIEwh3Ac55i7sGI6yuHZb5K2
+ eblermRJjO0UfHce3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Gottlieb <maorg@mellanox.com>
+> =E2=80=A6 Thus add a call of the function
+> =E2=80=9Cnfp_nsp_close=E2=80=9D for the completion of the exception hand=
+ling.
 
-Currently, fs_core supports rule of forward the traffic
-to continue matching in the next priority, now we add support
-to forward the traffic matching in the next namespace.
+I suggest to mention also the addition of a jump target because of
+a Linux coding style concern.
 
-Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
-Reviewed-by: Mark Bloch <markb@mellanox.com>
-Reviewed-by: Mark Zhang <markz@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 56 ++++++++++++++++---
- .../net/ethernet/mellanox/mlx5/core/fs_core.h |  2 +
- include/linux/mlx5/fs.h                       |  1 +
- 3 files changed, 51 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 9afe942f7aa2..b297bdbeaf50 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -384,6 +384,12 @@ static struct fs_prio *find_prio(struct mlx5_flow_namespace *ns,
- 	return NULL;
- }
- 
-+static bool is_fwd_next_action(u32 action)
-+{
-+	return action & (MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO |
-+			 MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_NS);
-+}
-+
- static bool check_valid_spec(const struct mlx5_flow_spec *spec)
- {
- 	int i;
-@@ -502,7 +508,7 @@ static void del_sw_hw_rule(struct fs_node *node)
- 	fs_get_obj(rule, node);
- 	fs_get_obj(fte, rule->node.parent);
- 	trace_mlx5_fs_del_rule(rule);
--	if (rule->sw_action == MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO) {
-+	if (is_fwd_next_action(rule->sw_action)) {
- 		mutex_lock(&rule->dest_attr.ft->lock);
- 		list_del(&rule->next_ft);
- 		mutex_unlock(&rule->dest_attr.ft->lock);
-@@ -826,6 +832,36 @@ static struct mlx5_flow_table *find_prev_chained_ft(struct fs_prio *prio)
- 	return find_closest_ft(prio, true);
- }
- 
-+static struct fs_prio *find_fwd_ns_prio(struct mlx5_flow_root_namespace *root,
-+					struct mlx5_flow_namespace *ns)
-+{
-+	struct mlx5_flow_namespace *root_ns = &root->ns;
-+	struct fs_prio *iter_prio;
-+	struct fs_prio *prio;
-+
-+	fs_get_obj(prio, ns->node.parent);
-+	list_for_each_entry(iter_prio, &root_ns->node.children, node.list) {
-+		if (iter_prio == prio &&
-+		    !list_is_last(&prio->node.children, &iter_prio->node.list))
-+			return list_next_entry(iter_prio, node.list);
-+	}
-+	return NULL;
-+}
-+
-+static struct mlx5_flow_table *find_next_fwd_ft(struct mlx5_flow_table *ft,
-+						struct mlx5_flow_act *flow_act)
-+{
-+	struct mlx5_flow_root_namespace *root = find_root(&ft->node);
-+	struct fs_prio *prio;
-+
-+	if (flow_act->action & MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_NS)
-+		prio = find_fwd_ns_prio(root, ft->ns);
-+	else
-+		fs_get_obj(prio, ft->node.parent);
-+
-+	return (prio) ? find_next_chained_ft(prio) : NULL;
-+}
-+
- static int connect_fts_in_prio(struct mlx5_core_dev *dev,
- 			       struct fs_prio *prio,
- 			       struct mlx5_flow_table *ft)
-@@ -976,6 +1012,10 @@ static int connect_fwd_rules(struct mlx5_core_dev *dev,
- 	list_splice_init(&old_next_ft->fwd_rules, &new_next_ft->fwd_rules);
- 	mutex_unlock(&old_next_ft->lock);
- 	list_for_each_entry(iter, &new_next_ft->fwd_rules, next_ft) {
-+		if ((iter->sw_action & MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_NS) &&
-+		    iter->ft->ns == new_next_ft->ns)
-+			continue;
-+
- 		err = _mlx5_modify_rule_destination(iter, &dest);
- 		if (err)
- 			pr_err("mlx5_core: failed to modify rule to point on flow table %d\n",
-@@ -1077,6 +1117,7 @@ static struct mlx5_flow_table *__mlx5_create_flow_table(struct mlx5_flow_namespa
- 	next_ft = unmanaged ? ft_attr->next_ft :
- 			      find_next_chained_ft(fs_prio);
- 	ft->def_miss_action = ns->def_miss_action;
-+	ft->ns = ns;
- 	err = root->cmds->create_flow_table(root, ft, log_table_sz, next_ft);
- 	if (err)
- 		goto free_ft;
-@@ -1903,21 +1944,19 @@ mlx5_add_flow_rules(struct mlx5_flow_table *ft,
- 	struct mlx5_flow_table *next_ft = NULL;
- 	struct mlx5_flow_handle *handle = NULL;
- 	u32 sw_action = flow_act->action;
--	struct fs_prio *prio;
- 	int i;
- 
- 	if (!spec)
- 		spec = &zero_spec;
- 
--	if (!(sw_action & MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO))
-+	if (!is_fwd_next_action(sw_action))
- 		return _mlx5_add_flow_rules(ft, spec, flow_act, dest, num_dest);
- 
- 	if (!fwd_next_prio_supported(ft))
- 		return ERR_PTR(-EOPNOTSUPP);
- 
- 	mutex_lock(&root->chain_lock);
--	fs_get_obj(prio, ft->node.parent);
--	next_ft = find_next_chained_ft(prio);
-+	next_ft = find_next_fwd_ft(ft, flow_act);
- 	if (!next_ft) {
- 		handle = ERR_PTR(-EOPNOTSUPP);
- 		goto unlock;
-@@ -1937,7 +1976,8 @@ mlx5_add_flow_rules(struct mlx5_flow_table *ft,
- 	dest = gen_dest;
- 	num_dest++;
- 	flow_act->action &=
--		~MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO;
-+		~(MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO |
-+		  MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_NS);
- 	flow_act->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
- 	handle = _mlx5_add_flow_rules(ft, spec, flow_act, dest, num_dest);
- 	if (IS_ERR_OR_NULL(handle))
-@@ -1948,8 +1988,8 @@ mlx5_add_flow_rules(struct mlx5_flow_table *ft,
- 		list_add(&handle->rule[num_dest - 1]->next_ft,
- 			 &next_ft->fwd_rules);
- 		mutex_unlock(&next_ft->lock);
--		handle->rule[num_dest - 1]->sw_action =
--			MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO;
-+		handle->rule[num_dest - 1]->sw_action = sw_action;
-+		handle->rule[num_dest - 1]->ft = ft;
- 	}
- unlock:
- 	mutex_unlock(&root->chain_lock);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-index 508108c58dae..825b662f809b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-@@ -138,6 +138,7 @@ struct fs_node {
- 
- struct mlx5_flow_rule {
- 	struct fs_node				node;
-+	struct mlx5_flow_table			*ft;
- 	struct mlx5_flow_destination		dest_attr;
- 	/* next_ft should be accessed under chain_lock and only of
- 	 * destination type is FWD_NEXT_fT.
-@@ -175,6 +176,7 @@ struct mlx5_flow_table {
- 	u32				flags;
- 	struct rhltable			fgs_hash;
- 	enum mlx5_flow_table_miss_action def_miss_action;
-+	struct mlx5_flow_namespace	*ns;
- };
- 
- struct mlx5_ft_underlay_qp {
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index e2d13e074067..6c5aa0a21425 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -42,6 +42,7 @@ enum {
- 	MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO	= 1 << 16,
- 	MLX5_FLOW_CONTEXT_ACTION_ENCRYPT	= 1 << 17,
- 	MLX5_FLOW_CONTEXT_ACTION_DECRYPT	= 1 << 18,
-+	MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_NS	= 1 << 19,
- };
- 
- enum {
--- 
-2.26.2
+=E2=80=A6
+> +++ b/drivers/net/ethernet/netronome/nfp/abm/main.c
+=E2=80=A6
+> @@ -300,12 +297,16 @@ nfp_abm_vnic_set_mac(struct nfp_pf *pf, struct nfp=
+_abm *abm, struct nfp_net *nn,
+=E2=80=A6
+> +generate_random_address:
+> +	eth_hw_addr_random(nn->dp.netdev);
+> +	return;
+>  }
+=E2=80=A6
 
+I recommend to apply the check =E2=80=9CRETURN_VOID=E2=80=9D once more.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/sc=
+ripts/checkpatch.pl?id=3D0e698dfa282211e414076f9dc7e83c1c288314fd#n4866
+
+Regards,
+Markus
