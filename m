@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 049191C4252
+	by mail.lfdr.de (Postfix) with ESMTP id 70D3D1C4253
 	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730022AbgEDRTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:19:43 -0400
-Received: from mout.web.de ([217.72.192.78]:49519 "EHLO mout.web.de"
+        id S1730199AbgEDRTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:19:44 -0400
+Received: from mout.web.de ([217.72.192.78]:50559 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729690AbgEDRTm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 May 2020 13:19:42 -0400
+        id S1729751AbgEDRTn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 May 2020 13:19:43 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1588612756;
+        s=dbaedf251592; t=1588612755;
         bh=BeE/XnA78cYGRlTeteDOGlcycZ9D1xVSiYLpmUc4pE4=;
         h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=bhzzVJWe0KkJaOOiqUxuuFm3TeTEOuWxXehLFU1fp465VmZmHmZUIK8nI4YqbZcNx
-         7aja7wl1dU7tdf1iPMtoFrButvavcRv4QVEuINV6y8z87E2S1RCRBU4ykThnJIFVV5
-         +PFG5qtEvNP7/zSq0+i/E+bWictAcY4gJYCd+PWM=
+        b=EY9kzD9akof4oERWLtjgYubA5ZeUZOPCiDbTnUYnSAkMuGa6ALtGQMk85Gu7kMzJO
+         bWp3K5CH9ZU0K28cTNhNcj/f1H1prsF4caO1petGRPf7lxxH8UXr854ItULYLSQqkf
+         msjoZSEqY6kCEeMzGiIVz1TKjtp9izVpLzyEtWsE=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.133.152.69]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MDP6H-1jM4VN0hdV-00Gmx9; Mon, 04
- May 2020 19:19:16 +0200
+Received: from [192.168.1.2] ([93.133.152.69]) by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MREzO-1jjtqB1L8O-00NA2f; Mon, 04
+ May 2020 19:19:15 +0200
 Subject: Re: net: rtw88: fix an issue about leak system resources
 To:     Brian Norris <briannorris@chromium.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
@@ -79,7 +79,7 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <70a010f9-1439-b1f2-bbd2-cb536c546dc6@web.de>
+Message-ID: <db4c6000-ccc3-6113-96db-b7a69297156d@web.de>
 Date:   Mon, 4 May 2020 19:19:10 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
@@ -88,30 +88,30 @@ In-Reply-To: <CA+ASDXOJ2CSzdgos4Y8Wd7iZjRUkrMN=Ma0_-ujG8bihGzPKkQ@mail.gmail.com
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-GB
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:weSFy8FO26DkgvXAFWH/8IuKfF815VybzJtTuACSNMU8VyXuGuq
- 2f/ix8Ml7Ao+0MzRvKmroancAkiP/v9OHLao9dCD8dSEgOGjh15Fpwx8aPTFh5QeSynTf76
- rTU8btfpwwcry0oG6qQfu5z5Z/J0mXXrfNvPQmajajJPUfDbE/+Jwk0lj+mSyaUtKbRVeM+
- S+TiuNCN9BpvVv5o0Lzmw==
+X-Provags-ID: V03:K1:as2LwTzBskOWCD4Z/OJdWM4e5FnwtXplAMm/VUNVBv9JofaeTLW
+ RnexyxWVE7/b70DVT8Lt6lSGP1PbitFKWTkAxmZKltdksZkl528t48vU9o8jgpj2AuIWqDS
+ 2puZ5mA19SLRvEzDXcfS5u1U0Q8F9kVL6FeuEBZsd7eBgGbHikA3LXzaOIMnuvOcBVfTvNU
+ LhgwTARsmBHoHyhNRHugg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:eurdMbPiP2g=:ra3lkT3T2uhunMpihMLUne
- r+qv9CenweLAvXxH/pGm5SDPQ6axUTUngksHK1tqC4BDdJCtmmWu3KTBpQ6Sd5ICJoy+2i2+/
- gruUFLVIsrNTaYEO7WFDf5X4KsbqcLIIpn0r+TBWcou8SNRQ1ngUiAzhdlEvnL4cIxLostB4n
- c8mmiW+0I69aLy+KEqyzn3XJigGExt5Tn1Pxiu6T7QXYEdq4jiaGZmSTYmgCdwFhWbZkTsoWF
- uKKCni8ZL9PSpBszJQ91XleDyTE48P8YWYX+XJxKSYjhzAQrCA9uNiEdvjYKFmORku7c0MA2P
- gOka8LrGfo9xROEUDxvSabnnvgDGPTCVtsdowdJ1ZmTL0cJ5433QWNyf7VSmq7VvQh8NONDQP
- u0TPkXD+dyPicQwz7mDBhQU8ynURjqeGOxV1QYbqWnBScYjls4r8zqxnyZga8nwVQ60+EHx3C
- 1UIm3p8T3D7Ddcj+prvn7ZrMDjZ+W/D2XgKYEUEpqRgGaA+44wvjbaELe1qhio1XoV5FHM8Aa
- J8XgCmQlYMUbzE1yZX7+r3UayT0JgmWCiMCNNJCalDA1SM6TbOeDTqJoEGzyFL9hsh9PSRBZP
- mbrsdxmgdjnzfePHTWqVMYNvD30ic/UgIX/mH8UqJY9NM55N1orodF3GLnHw9az95g97qXcsc
- TxruB9NBvKRwo7uuUUK9d3betoLIH9gephsYGNZy9scaNtuxNEsME8zs1SwrzRvQvG4w7upkz
- ih4nkKhO6U7jgHMIL6qS9ztKDI9kH2qAanh+EXdEOZnYfHqDZaSxPfplIfqgpAZqVhPhhuR+P
- uVuRY3v43Nw0dfBasDeLzyt3P3k173ott29Dvjh0nuxukhhf5dSdwqCZQDPVNbasegygtrHAG
- eOBnpkCAdQpa+h+FfY2+sg6BSiDKICA1Gg8TO11Csn+jVFPJqIZCGrPTFumjjR8N4KJMY3wu0
- wosqhgYMi7Ly6JLKqSU+pp8u8+Kwk9ngBNT0g7fw+PjqPFVuS5fm/izojGnNprtbyemm1nVSS
- qdon3/9LdWpLXsKY935jWD/4bYdYKqB11o4g8SD1qLafV8EPQbphVuVi+atZJCPToYiUgMrKV
- 4dcjf8+5s45tKhrFlF82RzVX5IJfDhsXqR+ey2cgTVoZeTmBgU5MSIdAG8S9CubsF5hdz1Lfr
- Rnawf/cwnNV24hQ8iBApJtK25ui9a/Ll8t1mUzzETtE9quwLasIpZmgKJwnwbfW/4cdUcU6Ly
- OcyHONbKyWNBPb47U
+X-UI-Out-Filterresults: notjunk:1;V03:K0:s9mrU1GOSho=:geT4fKMpQO0AZEpCx05gRB
+ wFEmSROKwRCycx1Jp4r05GI4/VkT5/vUl9v5PyD/+fwgp6uwSJJk9+xoRPwPcR08lNbG2a7Ug
+ Tf/mH7/aMbVzASDHwjAMxyEjEI/GQSvdf0o/6+Lz1JqmZGH5yxIHerYjMUHU59k4YcdUyXNcX
+ a+e/Od2UIgUAdMWOQ2+v2ilc1FUoqVawifVIjTa9WdGws8lsPqe0PbmojPstUzLSSTjNQTiR8
+ 6Y+RONykXjnuh3eOaH1CKEEEzJzGKDPBmjTD/X/68YdzxBZsryc+D/XoooIAHHZgGCQgD36ai
+ WxC3ehqgSSlO3xqAwvDxTOiVd1rkSyW/3CC4t3Ugd0K3Qmr/gbzCJoq44Y8jiU8Yib7RzwF39
+ ggCc/cgZA3CXxdzOWL9idSH8PwDt+UPvBQUe7TFhicPYfgarlMtI+g55yiipdkmBSJBxALj5P
+ xpvLc5KPZzgPQWxH+atVnCkR3zHySFXvS2QOv5yzdTu7xv7TrMvevhFe/ccRgX/yhYf2/gnm0
+ 8nrfoS6P2Pj/UbSIMTTv2uUABuYpSrxx1sX2ekLIC27g7PCNcGb9FRWIPjFkmwA+L9CWB950l
+ A1SmQhzoR9bCwShnjpL4jBoN+y24Ga0FToCU0Bndm2drAobBucwEqijCHQBFC7T5OmR/a5juv
+ +WHTNaO6pWM77S99jhplc4uwUZCySVfwqF8pTYYMu5hKNCVdx3tziwEOKk+0a1xm1XIC8m8f6
+ 2tJfJWFWN0aC22E7Wzs9CN7OD6ZKGFnR3eTZektYo04+2Q4dmWHTGWmf6UxKD7YqpMS7utYtz
+ Ayz2e7WxhgYqSX/mIxEKBVhx2MdNh/7OcxeB0SWMCi5qI3DBSc3cNU1QJFTC3YK635SkREUxe
+ rYxnrSkoIvyVTYytNek92LKxO74zin24wQ/qLKUFtSJL+Cw6AIWfmINGBS6F/hbp2OoDqYvVK
+ oAZybnBW/RSTH56WJDvawOJwtATUryGSAh23P3lGaTwNlGW3s9FLzZflT7sIIptkD0r8RMYk1
+ vdfrDIgFWHvSkhoCooqoaMReuykZRJZIDOJQnij7oL/QwUAeu6j7VvEl7DYDH7l61yCVh01rp
+ xW7MLZgpmIJN0UcB3anSUMsLo3jSqTrPpQ07sXbMfcwb8kHqGCkOBaB7xuMe4ftRb6R4cqQ2R
+ jt0/43TXEYJ/Mbp6GTtynnQr9SPfZhAxUtpd4vnMG/777hesqi4umiybqwuVYGh02rRp6zJXx
+ gGPiZxIan/f/J6TYc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
