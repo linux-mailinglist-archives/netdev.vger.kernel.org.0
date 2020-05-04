@@ -2,129 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABAD01C461C
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:39:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F22E01C4625
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 20:42:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726816AbgEDSil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 14:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
+        id S1727113AbgEDSmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 14:42:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726778AbgEDSij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:38:39 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD05C061A0F
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:38:38 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id t12so14450683edw.3
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 11:38:38 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727100AbgEDSl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 14:41:59 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39CEC061A10
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 11:41:59 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id f7so5960970pfa.9
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 11:41:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fTDD2VPZVPs+4wr2Ar3GVpXywKzRxglPHg3Mz+UZktU=;
-        b=jrhTAEPakzP2hcNrY9kEF84NCU+7+bdWFKIfvb8wwq1Dr1EO9PYabe0xVAn1k0jQ3Y
-         rlwvXpVDmmkEg7eoDlYmyFWRmmJLkQzrb8BGoiO78nsKT9rqrYuKdDET3ahyEehHzIjn
-         iof8itiT21KAatOQSRo+gkpLms1GroqwXNVLV7kmjL1hbWbOQzFCmVVizWRNstJKl0xf
-         Y15WP4Zx3hQkYFeVDx5m6qqpD9Up8/5mKQJUy6rR43sVLMEciQ+GstPpF3q2K1VrX18b
-         Jba58h/fQ26pOW1ojTG39UPVLc3r/T7CfBJFZmIjl/bCsEiKv89X61ThgxW7HztmoAl3
-         LD+A==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=W2tJ5b2t7hczpaAxFKlCfGf3HMAY03e+dltiT1wWRtw=;
+        b=ZeNPUEFJK3Vzqz+6/aS6puuqVk/a8cosOmqzD7wITSt0oXSXn2EHXgOrzGqV7NeV1U
+         tpNtoJ8OFz+o7A+cLKtE7CTdGQP15Cv/jR2PAAT/RkIvE7i4pWJs/yQJ9GoGzWr77iYi
+         GoWITCOXJw3bA0fVyTcdTrgnW0VyEa9wuf8no=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fTDD2VPZVPs+4wr2Ar3GVpXywKzRxglPHg3Mz+UZktU=;
-        b=a3drvhqL2Xb2ApraEDLbhACadBHOwoa5fkzHyAgz3e+u8Pzn2Y02BKhfAOS2FSK7On
-         9fhzKUCBulAgUQs8ncZLn+taUN8ufhYp0Z65pkTtX0yNVAFkpw+UAg1Obpt8AohIU+mP
-         GygzMf5Wucr4jombqeEcFlUnTGWG31pYnEyatXRnbpfrhP83OdI1yGXt20Imhzzg1eLI
-         Xuga+lGFqSUZf4GjNHfI4rRvCynD8FIH7fV+4GYII7hVFRSV01NE+jQkV6cK7UJqxdZH
-         18wu9M5SCP5pKuhsOpmeZ0mwek9c6v32mb2JEmfc9LygNlzjD/eovl/MLOTDPEGBRYLv
-         VhnQ==
-X-Gm-Message-State: AGi0PuaJWvn9RvpNCYngzNntOYPXIY6ekL99Op7Nxsxg3G5Pk+nLcV1v
-        xOh9rzcZSlwAKy7zIG1gTh+pq3MvSgdvmkBmFJE=
-X-Google-Smtp-Source: APiQypK/HxbRqVUp08i3uURQaSmdtCFpUKg+UyLkX1W+Kj8qwj4YbZfuJokcokashkw+Jfk/xoihtw8V8Xk+ZAL8rK8=
-X-Received: by 2002:a50:8dc2:: with SMTP id s2mr16578866edh.318.1588617517456;
- Mon, 04 May 2020 11:38:37 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=W2tJ5b2t7hczpaAxFKlCfGf3HMAY03e+dltiT1wWRtw=;
+        b=jOS1XM8GRcCNCds5IRzq9RzPnCRF/i+1tx6c1KZ7wRjQyO/+ncx1A+ZAozLt3nEHiB
+         MfgJGNUBO/YUgqfIbawiW8MEZFhBZzQdqCperFgkU5ID2NTfS3L8JK9wurJgrU/dBgr9
+         d3dnAA4n8TN9541QwGb4FgqWwPib005+IXHT/UvlLWEKfBAQvMhbz4tGse4Pr1GKp4iD
+         64xsnDdHM2SeXl//ElPuQjE14ZBp41PmySbtPFI61g736j1mDMGzNJ9qZc5Xa8oZ0WUx
+         S+5Q8h6FtwKomAm+ETacFOMdS/+G9Wdw+dLylEmfmJm5bVASIFhWq34Y12CWp0As80ov
+         6cLQ==
+X-Gm-Message-State: AGi0PuY+DTZahyVOTaGSDNCTuMXcdQhHoJNWf0Iwp6uvck+jB/isUGqe
+        X1Fj9bM0e2A0+U34CmqqsJzu7Q==
+X-Google-Smtp-Source: APiQypIZef/BfkRBu20SORWfQDfii5L/7CKWSh4JL4l2QaSNhCzuiGlsdosd5WC0raG1OkKCcKBJ1A==
+X-Received: by 2002:a62:4ec6:: with SMTP id c189mr19147132pfb.299.1588617719212;
+        Mon, 04 May 2020 11:41:59 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q6sm9253995pfh.193.2020.05.04.11.41.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2020 11:41:58 -0700 (PDT)
+Date:   Mon, 4 May 2020 11:41:57 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Iurii Zaikin <yzaikin@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, David Rientjes <rientjes@google.com>
+Subject: Re: [PATCH 2/5] mm: remove watermark_boost_factor_sysctl_handler
+Message-ID: <202005041141.DA134ED931@keescook>
+References: <20200424064338.538313-1-hch@lst.de>
+ <20200424064338.538313-3-hch@lst.de>
 MIME-Version: 1.0
-References: <20200503211035.19363-1-olteanv@gmail.com> <20200503211035.19363-5-olteanv@gmail.com>
- <20200504141913.GB941102@t480s.localdomain> <20200504142302.GD941102@t480s.localdomain>
-In-Reply-To: <20200504142302.GD941102@t480s.localdomain>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 4 May 2020 21:38:26 +0300
-Message-ID: <CA+h21howxs23VkvTVk3BiepQz7Z1vXgRiE1w+F1eeHYqYZmLpA@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/6] net: dsa: sja1105: support flow-based
- redirection via virtual links
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Po Liu <po.liu@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang@nxp.com>,
-        Mingkai Hu <mingkai.hu@nxp.com>,
-        Christian Herber <christian.herber@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        vlad@buslov.dev, Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200424064338.538313-3-hch@lst.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vivien,
+On Fri, Apr 24, 2020 at 08:43:35AM +0200, Christoph Hellwig wrote:
+> watermark_boost_factor_sysctl_handler is just a pointless wrapper for
+> proc_dointvec_minmax, so remove it and use proc_dointvec_minmax
+> directly.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-On Mon, 4 May 2020 at 21:23, Vivien Didelot <vivien.didelot@gmail.com> wrote:
->
-> On Mon, 4 May 2020 14:19:13 -0400, Vivien Didelot <vivien.didelot@gmail.com> wrote:
-> > Hi Vladimir,
-> >
-> > On Mon,  4 May 2020 00:10:33 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > +           case FLOW_ACTION_REDIRECT: {
-> > > +                   struct dsa_port *to_dp;
-> > > +
-> > > +                   if (!dsa_slave_dev_check(act->dev)) {
-> > > +                           NL_SET_ERR_MSG_MOD(extack,
-> > > +                                              "Destination not a switch port");
-> > > +                           return -EOPNOTSUPP;
-> > > +                   }
-> > > +
-> > > +                   to_dp = dsa_slave_to_port(act->dev);
-> >
-> > Instead of exporting two DSA core internal functions, I would rather expose
-> > a new helper for drivers, such as this one:
-> >
-> >     struct dsa_port *dsa_dev_to_port(struct net_device *dev)
-> >     {
-> >         if (!dsa_slave_dev_check(dev))
-> >             return -EOPNOTSUPP;
->
-> Oops, NULL, not an integer error code, but you get the idea of public helpers.
->
-> >
-> >         return dsa_slave_to_port(dev);
-> >     }
-> >
-> > The naming might not be the best, this helper could even be mirroring-specific,
-> > I didn't really check the requirements for this functionality yet.
-> >
-> >
-> > Thank you,
-> >
-> >       Vivien
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-How about
+-Kees
 
-int dsa_slave_get_port_index(struct net_device *dev)
-{
-    if (!dsa_slave_dev_check(dev))
-        return -EINVAL;
+> Acked-by: David Rientjes <rientjes@google.com>
+> ---
+>  include/linux/mmzone.h |  2 --
+>  kernel/sysctl.c        |  2 +-
+>  mm/page_alloc.c        | 12 ------------
+>  3 files changed, 1 insertion(+), 15 deletions(-)
+> 
+> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+> index 1b9de7d220fb7..f37bb8f187fc7 100644
+> --- a/include/linux/mmzone.h
+> +++ b/include/linux/mmzone.h
+> @@ -911,8 +911,6 @@ static inline int is_highmem(struct zone *zone)
+>  struct ctl_table;
+>  int min_free_kbytes_sysctl_handler(struct ctl_table *, int,
+>  					void __user *, size_t *, loff_t *);
+> -int watermark_boost_factor_sysctl_handler(struct ctl_table *, int,
+> -					void __user *, size_t *, loff_t *);
+>  int watermark_scale_factor_sysctl_handler(struct ctl_table *, int,
+>  					void __user *, size_t *, loff_t *);
+>  extern int sysctl_lowmem_reserve_ratio[MAX_NR_ZONES];
+> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+> index 8a176d8727a3a..99d27acf46465 100644
+> --- a/kernel/sysctl.c
+> +++ b/kernel/sysctl.c
+> @@ -1491,7 +1491,7 @@ static struct ctl_table vm_table[] = {
+>  		.data		= &watermark_boost_factor,
+>  		.maxlen		= sizeof(watermark_boost_factor),
+>  		.mode		= 0644,
+> -		.proc_handler	= watermark_boost_factor_sysctl_handler,
+> +		.proc_handler	= proc_dointvec_minmax,
+>  		.extra1		= SYSCTL_ZERO,
+>  	},
+>  	{
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 69827d4fa0527..62c1550cd43ec 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -7978,18 +7978,6 @@ int min_free_kbytes_sysctl_handler(struct ctl_table *table, int write,
+>  	return 0;
+>  }
+>  
+> -int watermark_boost_factor_sysctl_handler(struct ctl_table *table, int write,
+> -	void __user *buffer, size_t *length, loff_t *ppos)
+> -{
+> -	int rc;
+> -
+> -	rc = proc_dointvec_minmax(table, write, buffer, length, ppos);
+> -	if (rc)
+> -		return rc;
+> -
+> -	return 0;
+> -}
+> -
+>  int watermark_scale_factor_sysctl_handler(struct ctl_table *table, int write,
+>  	void __user *buffer, size_t *length, loff_t *ppos)
+>  {
+> -- 
+> 2.26.1
+> 
 
-    return dsa_slave_to_port(dev)->index;
-}
-EXPORT_SYMBOL_GPL(dsa_slave_get_port_index);
-
-also, where to put it? slave.c I suppose?
-
-Thanks,
--Vladimir
+-- 
+Kees Cook
