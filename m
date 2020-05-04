@@ -2,138 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03EED1C31E3
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 06:41:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 564E11C31FC
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 06:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727811AbgEDElQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 00:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbgEDElO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 00:41:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C773C061A0E
-        for <netdev@vger.kernel.org>; Sun,  3 May 2020 21:41:14 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jVSug-0003Ve-H5; Mon, 04 May 2020 06:41:06 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jVSuf-0004v2-Qf; Mon, 04 May 2020 06:41:05 +0200
-Date:   Mon, 4 May 2020 06:41:05 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: Re: [PATCH net-next v4 0/2] provide support for PHY master/slave
- configuration
-Message-ID: <20200504044105.rhjucllibspdsrxe@pengutronix.de>
-References: <20200504043320.29041-1-o.rempel@pengutronix.de>
+        id S1726449AbgEDEzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 00:55:31 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:52688 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725859AbgEDEzb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 00:55:31 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0444t1b6164944;
+        Mon, 4 May 2020 04:55:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=eqc1g0RHD8NajFbSbeM3ITNHQefj4Xkc2Q5/lenbumc=;
+ b=msEduOPzOZN+xiGenLo/sQweyoIHZ/vpQ6ShR4alfM2EemyXBvuncJfWuz2AlwtUifFO
+ 8OlYSFDp0fKkVr/+INumuU3kVrvyaTC18yDQF2hT6LoBtmWOS2h953BcBxOkEBOcg/Jh
+ 0w8eXFmaGuU2URgqGXdADYE7r1jSLKWilWDlCRIA6ahm9zf2xqHQpz/5T7kBhv7ULTXH
+ HAaQVoymBjgpa350T4V7UH0zamrU18ABpDh3O46mGbdXKmAyCXaFJaRhbMq6ct5rl1dd
+ cAxwYbkWu3i52fzAFdPr6EyxUSYGB+m7Ki9Y4EpOkc8vIfboMGMyCP3kJGzuoDmEf2Ro 9g== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 30s09qvqer-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 May 2020 04:55:23 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0444fXic014245;
+        Mon, 4 May 2020 04:55:23 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 30t1r17q8u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 04 May 2020 04:55:23 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0444tMiM015764;
+        Mon, 4 May 2020 04:55:22 GMT
+Received: from [192.168.0.106] (/49.207.49.247)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 03 May 2020 21:55:21 -0700
+Subject: Re: Net: [DSA]: dsa-loop kernel panic
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <9d7ac811-f3c9-ff13-5b81-259daa8c424f@oracle.com>
+ <dd42f431-d555-fcd2-b25e-50aeecbb513b@gmail.com>
+ <c998f49c-0119-7d8c-7cbc-ab8beadfa82d@oracle.com>
+ <1ec3b421-dee5-e291-ac17-5d2f713b9aae@gmail.com>
+ <9a4912aa-3129-1774-5f21-2f6fb4afafb2@oracle.com>
+ <a15245fb-a9a4-4bcd-8459-fe3cbcc03119@gmail.com>
+ <82bc0bdf-e4f6-2b85-d2ad-54632b287a60@gmail.com>
+From:   Allen <allen.pais@oracle.com>
+Message-ID: <702a2379-b6b2-1ec6-685f-a1861f42e40d@oracle.com>
+Date:   Mon, 4 May 2020 10:25:17 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="al4i3sobqapo63vk"
-Content-Disposition: inline
-In-Reply-To: <20200504043320.29041-1-o.rempel@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 06:40:27 up 170 days, 19:59, 170 users,  load average: 1.13, 0.59,
- 0.24
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <82bc0bdf-e4f6-2b85-d2ad-54632b287a60@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9610 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0 suspectscore=0
+ spamscore=0 mlxlogscore=747 malwarescore=0 phishscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2005040039
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9610 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 adultscore=0 clxscore=1015 suspectscore=0
+ priorityscore=1501 malwarescore=0 mlxlogscore=793 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005040041
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---al4i3sobqapo63vk
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> 
+> There is a DSA master reference counting issue, but with dsa-loop, the
+> DSA master is already properly reference counted thanks to the
+> dev_get_by_name() call, I will keep digging.
+> 
 
-please ignore it, i send it by accident.
+Thank you Florain.
 
-On Mon, May 04, 2020 at 06:33:18AM +0200, Oleksij Rempel wrote:
-> changes v3:
-> - rename port_mode to master_slave=20
-> - move validation code to net/ethtool/linkmodes.c=20
-> - add UNSUPPORTED state and avoid sending unsupported fields
-> - more formatting and naming fixes
-> - tja11xx: support only force mode
-> - tja11xx: mark state as unsupported
->=20
-> changes v3:
-> - provide separate field for config and state.
-> - make state rejected on set
-> - add validation
->=20
-> changes v2:
-> - change names. Use MASTER_PREFERRED instead of MULTIPORT
-> - configure master/slave only on request. Default configuration can be
->   provided by PHY or eeprom
-> - status and configuration to the user space.
->=20
-> Oleksij Rempel (2):
->   ethtool: provide UAPI for PHY master/slave configuration.
->   net: phy: tja11xx: add support for master-slave configuration
->=20
->  Documentation/networking/ethtool-netlink.rst | 35 ++++----
->  drivers/net/phy/nxp-tja11xx.c                | 47 +++++++++-
->  drivers/net/phy/phy.c                        |  4 +-
->  drivers/net/phy/phy_device.c                 | 95 ++++++++++++++++++++
->  include/linux/phy.h                          |  3 +
->  include/uapi/linux/ethtool.h                 | 16 +++-
->  include/uapi/linux/ethtool_netlink.h         |  2 +
->  include/uapi/linux/mii.h                     |  2 +
->  net/ethtool/linkmodes.c                      | 48 ++++++++++
->  9 files changed, 233 insertions(+), 19 deletions(-)
->=20
-> --=20
-> 2.26.2
->=20
->=20
+I am not dsa expert, am debugging the call chain.
 
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---al4i3sobqapo63vk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl6vnN0ACgkQ4omh9DUa
-UbMisw//S+5fk4z2WYhenaLbiVvUUQXXS1a7PjerkTG6xeqYZdeSi1bz2m+JLlqS
-Yl5tI6lJmrWtS3qcZF35BkTVsnXTdss/+kQZxax39DJdKygCynfQtCzcWGyTZGFD
-p2q/ckLpFrGDrv2xw4JcP/8qFi+ur/X5/+6RPlQA8Ee0lFIomKRfBsazNpehXHgd
-kIKl7aZQPuiGK4Ne87RTAygJcXn/zuVWQmv0TW+nc/heQgXAqX9zRFAf5nej2b0F
-XiQT/RcznTJAfQHms8iDsjRH8w7AP7xXlkERcwAcFaMqOSxuiJOIUmyDrZ1LfSgr
-z4vdBosjMpFYMbCpmEuqkJfkTqvcax1Cm4yxjW0eo63rCKihjb9SXPdAUTvwG4RZ
-CfCD7B89/mmx4GzQ6TQhQDH+aqWviGFeJsGFNuN2dBt2I028bIT/4jhMjSVrS8Ny
-SS+CSfg1lVZ3ChfW+3fekBn5CavJ65jQsCiKqNQj08Wm+tgVazORV2NNMg3jb689
-p6UM203Mj5O1wtZIp3951P2W9HwSLBCqlEDkiB47M8izEPz+28N71N9r/1tMgQ9Y
-Hw7yAwQJ0/InT8VtnaN6mlcgUyjS8Xtch+SkiIHvtf2U1eKgWcnDch/gtybfkPCy
-RwetP/nzIeZ6kVdKDxYOqHBaT9+ByryfdOKIW5dVQmR4nBTFEt0=
-=ikpK
------END PGP SIGNATURE-----
-
---al4i3sobqapo63vk--
+- Allen
