@@ -2,257 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A6F1C3D7E
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 16:49:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66F551C3D87
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 16:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728963AbgEDOtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 10:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55208 "EHLO
+        id S1729179AbgEDOuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 10:50:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728821AbgEDOtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 10:49:19 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4F1C061A10
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 07:49:17 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id fu13so3860698pjb.5
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 07:49:17 -0700 (PDT)
+        with ESMTP id S1727833AbgEDOuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 10:50:00 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4C8C061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 07:50:00 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id k6so12576684iob.3
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 07:50:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5lmoQJYoeg3ybSPwplhMkrooqQOGOYA7nU2sY4Dq1pc=;
-        b=R04Fjb4R2zQrBdDiS1rI1lH0gMnWxIPItV5U2BOiCIby5HxxzYV7c9vaEBIuSU6TKc
-         N9yJAqZKcVjZS3dG2Rah6YyW6mKqK9XGAwKP4ZTnARpmIBVYbSR+v9/ffySNScve9KAS
-         fFp6YUwxhiVFrKpnhfNdNztyuV6JtUulx7ImPpPksB5T3uIrbqLIc2QZ0DIaH7vmMYa/
-         mlSuf4zp+Oh+k8sETM+eBqNyneLDT6QlrGT3CmLeedUqmbAq6giRJxV29uKfbeWsbvDB
-         yM6pyiRw2db9pa0Tm3awQzKDxTdw3iafUgw096RzVZ2cKOSKyRo5hi5nclBmgK32UOHY
-         x8EQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b/g+R1fDSmMSuxtLGeYcAV97ESR2gO90b6gQaER1uUA=;
+        b=K73aK+3h8ByTePqEK2rSx6EASzMwrdGbT8R6QT+4oF8kK3oGc1gUHKD3n8ObF5qr7v
+         CBbrBDhwfxv+AWWM6QTjfPhZsMzifL5EIHZPM5qK2FSH25CsUMMZ4Ssk1k4b+XX+3OGZ
+         3ox5bQ6QPt4id0llvbe8R5x7hWlhmibWwd1HRLaWdXO1kn5Z/CGwBqIOspAa1lU4PY/0
+         6ppkMqNjd9OG/KvaFNYm3+5AD1CVxSw961Xi4SBC/kBxFuQ5woYRwOOuCdENMNgoncCa
+         plrTVIosXU1f75VJe8hJYGiuGoDdiusoIYWz4aRMlzJFUTHA/mA2lOOLEouyF4UCb8QY
+         BnXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5lmoQJYoeg3ybSPwplhMkrooqQOGOYA7nU2sY4Dq1pc=;
-        b=KnWQMyKvVmGYGJaFqLJbQAbenDiY6stPGtYPmFb/cO569kHI/FQ8KPdUt5YgzjJfqu
-         H3r6vVfZptLXE9kZ6eNSyg/cDaWzrzqZSDkMHUJvteoWCBRNNMUdXhdwyt31FPhsrDfT
-         0SpXLPinWYOOOimrPZn+v3i41xecRZb/14tXa5e7Rfv4ohH/s6g/gwytD35D+clN+h2O
-         f8M8+CyxBiWHWq6nghKxgilGx7+G9/jXGKC9/IJDuKZozI2/R0+nqAaQj+gnVmeCeVTH
-         JDJNevBf1Rhro8pzPJsssZxszvwYkQ+TlcsUyjvlcvdrU86E9bdcHbHqn6ArPUP0K13s
-         jqeA==
-X-Gm-Message-State: AGi0PuZTc3eD7c/84/+h2derPFXdALP2Z360xUKzcB5Dxuk3JmGBb6tJ
-        s9T06vcPLtlFqpvm+8ceXTBn
-X-Google-Smtp-Source: APiQypJjIapp5XKSell2YBv+inFoZ8mKXrHBT+VFs3IVljbQMp6IsqaBr1+529ONpM1jjcEHWag4sQ==
-X-Received: by 2002:a17:902:fe8e:: with SMTP id x14mr18541862plm.128.1588603756751;
-        Mon, 04 May 2020 07:49:16 -0700 (PDT)
-Received: from Mani-XPS-13-9360 ([2409:4072:41c:f7b5:bdcc:167e:2cd1:efea])
-        by smtp.gmail.com with ESMTPSA id p66sm9009181pfb.65.2020.05.04.07.49.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 04 May 2020 07:49:15 -0700 (PDT)
-Date:   Mon, 4 May 2020 20:19:06 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     davem@davemloft.net
-Cc:     gregkh@linuxfoundation.org, smohanad@codeaurora.org,
-        jhugo@codeaurora.org, kvalo@codeaurora.org,
-        bjorn.andersson@linaro.org, hemantk@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clew@codeaurora.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] net: qrtr: Add MHI transport layer
-Message-ID: <20200504144906.GF3391@Mani-XPS-13-9360>
-References: <20200427075829.9304-1-manivannan.sadhasivam@linaro.org>
- <20200427075829.9304-3-manivannan.sadhasivam@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b/g+R1fDSmMSuxtLGeYcAV97ESR2gO90b6gQaER1uUA=;
+        b=UnSfbB0YOD7/Oeaud0Nh2+eVgxTFs16sQ73oKEwhNhYl1oktlnhJ5Fb9w1Dzul6IQp
+         7XnqFXrrxpjKHVUJbdoWIvXt9mV9ckwq/8LChJOhuV1qOL9B0An33cDGRkkJXxpUlO7x
+         SpSIb50145LsQ320Fgi/u5mk7WI5LMDv4KYeSAqW+ElbN1VBtMMGN9FlbXuxa2Z13lyQ
+         /M6FmhnnEZrwZy1YoRQkjPGU5or0kp/EBy1q2GU8+EO4SwZg9cMXcwDWxShbnaDy5Kyg
+         +1Z6XhBSO0FGgNWkTzqt3HJVVql/rlkXbGDLaQ1ML5InExZtpjR8QsWMIoD4eBWJJCPZ
+         8DWQ==
+X-Gm-Message-State: AGi0PuZMtLhnCbbPz8a4sD/1iEQiK9TknUEhuDxvIO0/rBb43koBMVVv
+        mqtkNSHz/pPPyHXg+R3XWbiPWS1QoM3UjXp9+qk=
+X-Google-Smtp-Source: APiQypIUunA/C7JtFZKuCl06GpCLRGSjHQpeo66/A6o4dchQzdz+j40TdiWgquMUWFcQWzBWW6wr2tQi8Bl20CIUxP0=
+X-Received: by 2002:a02:5bc9:: with SMTP id g192mr15615436jab.136.1588603799448;
+ Mon, 04 May 2020 07:49:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200427075829.9304-3-manivannan.sadhasivam@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200425120207.5400-1-dqfext@gmail.com> <CA+h21hpeJK8mHduKoWn5rbmz=BEz_6HQdz3Xf63NsXpZxsky0A@mail.gmail.com>
+ <CALW65jb_n49+jTo8kd6QT7AwXdCxJOR1bOFA72fyhjReM2688Q@mail.gmail.com> <CA+h21hrhcqpF+nTmG6057ckB+CzHQGC+F5_bbAK7TXxmpvzNBQ@mail.gmail.com>
+In-Reply-To: <CA+h21hrhcqpF+nTmG6057ckB+CzHQGC+F5_bbAK7TXxmpvzNBQ@mail.gmail.com>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Mon, 4 May 2020 22:49:50 +0800
+Message-ID: <CALW65ja9+pCMkd_1VGYnxwwLdDnS1ZBamB-KWT=fFTdT51B64Q@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix roaming from DSA user ports
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Tom James <tj17@me.com>,
+        Stijn Segers <foss@volatilesystems.org>,
+        riddlariddla@hotmail.com, Szabolcs Hubai <szab.hu@gmail.com>,
+        Paul Fertser <fercerpav@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+Hi Vladimir,
 
-On Mon, Apr 27, 2020 at 01:28:28PM +0530, Manivannan Sadhasivam wrote:
-> MHI is the transport layer used for communicating to the external modems.
-> Hence, this commit adds MHI transport layer support to QRTR for
-> transferring the QMI messages over IPC Router.
-> 
+On Mon, May 4, 2020 at 9:15 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> Hi Qingfang,
+>
+> On Mon, 4 May 2020 at 15:47, DENG Qingfang <dqfext@gmail.com> wrote:
+> >
+> > Hi Vladimir,
+> >
+> > On Mon, May 4, 2020 at 6:23 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > Hi Qingfang,
+> > >
+> > > On Sat, 25 Apr 2020 at 15:03, DENG Qingfang <dqfext@gmail.com> wrote:
+> > > >
+> > > > When a client moves from a DSA user port to a software port in a bridge,
+> > > > it cannot reach any other clients that connected to the DSA user ports.
+> > > > That is because SA learning on the CPU port is disabled, so the switch
+> > > > ignores the client's frames from the CPU port and still thinks it is at
+> > > > the user port.
+> > > >
+> > > > Fix it by enabling SA learning on the CPU port.
+> > > >
+> > > > To prevent the switch from learning from flooding frames from the CPU
+> > > > port, set skb->offload_fwd_mark to 1 for unicast and broadcast frames,
+> > > > and let the switch flood them instead of trapping to the CPU port.
+> > > > Multicast frames still need to be trapped to the CPU port for snooping,
+> > > > so set the SA_DIS bit of the MTK tag to 1 when transmitting those frames
+> > > > to disable SA learning.
+> > > >
+> > > > Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+> > > > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> > > > ---
+> > >
+> > > I think enabling learning on the CPU port would fix the problem
+> > > sometimes, but not always. (actually nothing can solve it always, see
+> > > below)
+> > > The switch learns the new route only if it receives any packets from
+> > > the CPU port, with a SA equal to the station you're trying to reach.
+> > > But what if the station is not sending any traffic at the moment,
+> > > because it is simply waiting for connections to it first (just an
+> > > example)?
+> > > Unless there is any traffic already coming from the destination
+> > > station too, your patch won't work.
+> > > I am currently facing a similar situation with the ocelot/felix
+> > > switches, but in that case, enabling SA learning on the CPU port is
+> > > not possible.
+> >
+> > Why is it not possible?
+> >
+>
+> Because learning on the CPU port is not supported on this hardware.
+>
+> > Then try my previous RFC patch
+> > "net: bridge: fix client roaming from DSA user port"
+> > It tries removing entries from the switch when the client moves to another port.
+> >
+>
+> Your patch only deletes FDB entries of packets received in the
+> fastpath by the software bridge, which as I said, won't work if the
+> software bridge doesn't receive packets in the first place due to a
+> stale FDB entry.
 
-Can you please review this driver? It'd be great if this ends up in v5.8
-along with all other MHI patches.
+As I said before, ALL switches including software linux bridge have this issue.
+In this case, you'd better ensure the client sends packets first after
+migration, which
+most clients already do in switches + wireless APs setup.
 
-Thanks,
-Mani
+>
+> > > The way I dealt with it is by forcing a flush of the FDB entries on
+> > > the port, in the following scenarios:
+> > > - link goes down
+> > > - port leaves its bridge
+> > > So traffic towards a destination that has migrated away will
+> > > temporarily be flooded again (towards the CPU port as well).
+> > > There is still one case which isn't treated using this approach: when
+> > > the station migrates away from a switch port that is not directly
+> > > connected to this one. So no "link down" events would get generated in
+> > > that case. We would still have to wait until the address expires in
+> > > that case. I don't think that particular situation can be solved.
+> >
+> > You're right. Every switch has this issue, even Linux bridge.
+> >
+> > > My point is: if we agree that this is a larger problem, then DSA
+> > > should have a .port_fdb_flush method and schedule a workqueue whenever
+> > > necessary. Yes, it is a costly operation, but it will still probably
+> > > take a lot less than the 300 seconds that the bridge configures for
+> > > address ageing.
+> > >
+> > > Thoughts?
+> > >
+>
+> > >
+> > > Thanks,
+> > > -Vladimir
+>
+> Regards,
+> -Vladimir
 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  net/qrtr/Kconfig  |   7 +++
->  net/qrtr/Makefile |   2 +
->  net/qrtr/mhi.c    | 127 ++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 136 insertions(+)
->  create mode 100644 net/qrtr/mhi.c
-> 
-> diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
-> index 63f89cc6e82c..8eb876471564 100644
-> --- a/net/qrtr/Kconfig
-> +++ b/net/qrtr/Kconfig
-> @@ -29,4 +29,11 @@ config QRTR_TUN
->  	  implement endpoints of QRTR, for purpose of tunneling data to other
->  	  hosts or testing purposes.
->  
-> +config QRTR_MHI
-> +	tristate "MHI IPC Router channels"
-> +	depends on MHI_BUS
-> +	help
-> +	  Say Y here to support MHI based ipcrouter channels. MHI is the
-> +	  transport used for communicating to external modems.
-> +
->  endif # QRTR
-> diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
-> index 32d4e923925d..1b1411d158a7 100644
-> --- a/net/qrtr/Makefile
-> +++ b/net/qrtr/Makefile
-> @@ -5,3 +5,5 @@ obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
->  qrtr-smd-y	:= smd.o
->  obj-$(CONFIG_QRTR_TUN) += qrtr-tun.o
->  qrtr-tun-y	:= tun.o
-> +obj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o
-> +qrtr-mhi-y	:= mhi.o
-> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-> new file mode 100644
-> index 000000000000..2a2abf5b070d
-> --- /dev/null
-> +++ b/net/qrtr/mhi.c
-> @@ -0,0 +1,127 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
-> + */
-> +
-> +#include <linux/mhi.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/skbuff.h>
-> +#include <net/sock.h>
-> +
-> +#include "qrtr.h"
-> +
-> +struct qrtr_mhi_dev {
-> +	struct qrtr_endpoint ep;
-> +	struct mhi_device *mhi_dev;
-> +	struct device *dev;
-> +};
-> +
-> +/* From MHI to QRTR */
-> +static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
-> +				      struct mhi_result *mhi_res)
-> +{
-> +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
-> +	int rc;
-> +
-> +	if (!qdev || mhi_res->transaction_status)
-> +		return;
-> +
-> +	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
-> +				mhi_res->bytes_xferd);
-> +	if (rc == -EINVAL)
-> +		dev_err(qdev->dev, "invalid ipcrouter packet\n");
-> +}
-> +
-> +/* From QRTR to MHI */
-> +static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
-> +				      struct mhi_result *mhi_res)
-> +{
-> +	struct sk_buff *skb = (struct sk_buff *)mhi_res->buf_addr;
-> +
-> +	if (skb->sk)
-> +		sock_put(skb->sk);
-> +	consume_skb(skb);
-> +}
-> +
-> +/* Send data over MHI */
-> +static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
-> +{
-> +	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
-> +	int rc;
-> +
-> +	rc = skb_linearize(skb);
-> +	if (rc)
-> +		goto free_skb;
-> +
-> +	rc = mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
-> +			   MHI_EOT);
-> +	if (rc)
-> +		goto free_skb;
-> +
-> +	if (skb->sk)
-> +		sock_hold(skb->sk);
-> +
-> +	return rc;
-> +
-> +free_skb:
-> +	kfree_skb(skb);
-> +
-> +	return rc;
-> +}
-> +
-> +static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
-> +			       const struct mhi_device_id *id)
-> +{
-> +	struct qrtr_mhi_dev *qdev;
-> +	int rc;
-> +
-> +	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
-> +	if (!qdev)
-> +		return -ENOMEM;
-> +
-> +	qdev->mhi_dev = mhi_dev;
-> +	qdev->dev = &mhi_dev->dev;
-> +	qdev->ep.xmit = qcom_mhi_qrtr_send;
-> +
-> +	dev_set_drvdata(&mhi_dev->dev, qdev);
-> +	rc = qrtr_endpoint_register(&qdev->ep, QRTR_EP_NID_AUTO);
-> +	if (rc)
-> +		return rc;
-> +
-> +	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
-> +
-> +	return 0;
-> +}
-> +
-> +static void qcom_mhi_qrtr_remove(struct mhi_device *mhi_dev)
-> +{
-> +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
-> +
-> +	qrtr_endpoint_unregister(&qdev->ep);
-> +	dev_set_drvdata(&mhi_dev->dev, NULL);
-> +}
-> +
-> +static const struct mhi_device_id qcom_mhi_qrtr_id_table[] = {
-> +	{ .chan = "IPCR" },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(mhi, qcom_mhi_qrtr_id_table);
-> +
-> +static struct mhi_driver qcom_mhi_qrtr_driver = {
-> +	.probe = qcom_mhi_qrtr_probe,
-> +	.remove = qcom_mhi_qrtr_remove,
-> +	.dl_xfer_cb = qcom_mhi_qrtr_dl_callback,
-> +	.ul_xfer_cb = qcom_mhi_qrtr_ul_callback,
-> +	.id_table = qcom_mhi_qrtr_id_table,
-> +	.driver = {
-> +		.name = "qcom_mhi_qrtr",
-> +	},
-> +};
-> +
-> +module_mhi_driver(qcom_mhi_qrtr_driver);
-> +
-> +MODULE_AUTHOR("Chris Lew <clew@codeaurora.org>");
-> +MODULE_AUTHOR("Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>");
-> +MODULE_DESCRIPTION("Qualcomm IPC-Router MHI interface driver");
-> +MODULE_LICENSE("GPL v2");
-> -- 
-> 2.17.1
-> 
+Regards,
+Qingfang
