@@ -2,82 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C3C11C3D62
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 16:42:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34C671C3D65
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 16:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729189AbgEDOmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 10:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54066 "EHLO
+        id S1729202AbgEDOmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 10:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729124AbgEDOl7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 10:41:59 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBDEC061A0E;
-        Mon,  4 May 2020 07:41:59 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id s9so14118117qkm.6;
-        Mon, 04 May 2020 07:41:59 -0700 (PDT)
+        with ESMTP id S1728802AbgEDOmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 10:42:39 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19074C061A0E;
+        Mon,  4 May 2020 07:42:39 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id l18so10521605wrn.6;
+        Mon, 04 May 2020 07:42:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NkMwBJDlPtKc7IPtaLLfagBNdN2mLm8jarZATLwqSqY=;
-        b=Ljj8M+WORWav2k2sUXlaUAeKZWZDqTp+V52Q36m4i+3HKTvzSXJ2Dq31yI7E4RHeud
-         nJu48oOhxOfe7+yPqktvmqy/4o1fEY0JqgC7DPAXBCm4e9M5BFdwt4KokyS7FsPrUK3P
-         g8whXBVIA5CP9DYuMuZsnj6hMKuor5uvhSCHrtOT8A0WfhW+OmT6M1uSg9h3nIJxjB07
-         m3nZ7RV72sU+jqE+2r+QCQ17kQZXT58qxwvBkjUtee8r02PA2VKRppv6qF4qRWT9effV
-         aA2CdEUlx2f+uBX9cA14hRlcYHlbuy6rChy6gnXT0AuBc7bX98oWuwL8xP2tW0hIzP5h
-         zR6A==
+        h=from:to:cc:subject:date:message-id;
+        bh=9FMwwNQtGFnr1eeDSstc6L1dxV0HnTklGu1OpkfvDCw=;
+        b=EHoa2S5/zTC/wBYwfEWv98eTrPr34B1kgmKlx4BPOY2AQm5EBhIshVFi7QVcakAuSC
+         M6SZTHli0jojNPfoi5yVB5zDpW+EGwKmTBEaBpKrQmH+HI2+f+/rrHh6B3o6/GsyIu1t
+         bhhyJ9hfvEbYEgORPmmbvMQfZTJE/gw2RHJgXXsZrvu4k8cZRiWbUBjYzIMYDR4hRa5k
+         Zb3bH2jO4e94rEe5ImVUBK91y+X8vi01gV7Bl86Dfl1NLJGbmT3rx74WSBMx2H2TrdO9
+         Xdec8oELTWyHllrCZjT+kzK+gA9Rd86fcYUP9ubs8bbXr90fpWg782sV/z+ebwBOvqZN
+         hswg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NkMwBJDlPtKc7IPtaLLfagBNdN2mLm8jarZATLwqSqY=;
-        b=NikFe40TeOrEuu6WRW3Z7pliXRKhCKUDMYtrqCPljd3r+Qxh2Ge0OguzQUhRGLdLg3
-         6ljx+huf1fQBOr2lZgZ2G5LnvjzCr3E2pdk1hljl/w3GufUsd9pca4h3tDlY1JuvV7+0
-         IiVL6sUFCXo5o3Sf6f4EiQxAIDJ8vUKCKuGicQyUtUX4rjpn1qe/hIii7R7uBaStvo9x
-         F9ZQCuNfXKKvsgGnUkuqFz470Ttdcp+7zs+mkzAQPOqMbtoy12tZo7POcKzGp2YL1rvi
-         4ZR7axl9rSaajdLvVkkAqaMXoziI+ULQHUVkoUPuEFoYQLiZyI6hFnkWpOBrdM2CDt99
-         oG3Q==
-X-Gm-Message-State: AGi0PuaQgTstEW+r6kpSMQ9jB7U22Mw52T8SN2ERxSayftZLkjWu159e
-        rx2cn3hxkU3EBaX77co49gY=
-X-Google-Smtp-Source: APiQypJLgRH6Y6vgX00eIv9Dr6kc5DWBBuMG/UGteJMIC93I1rP9dCafaQGm9abFhky131DjbFEsbw==
-X-Received: by 2002:a37:a753:: with SMTP id q80mr10125089qke.492.1588603318578;
-        Mon, 04 May 2020 07:41:58 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:4fe:5250:d314:f77b? ([2601:282:803:7700:4fe:5250:d314:f77b])
-        by smtp.googlemail.com with ESMTPSA id d207sm6389442qkc.49.2020.05.04.07.41.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 07:41:57 -0700 (PDT)
-Subject: Re: [PATCH V7 mlx5-next 00/16] Add support to get xmit slave
-To:     Jarod Wilson <jarod@redhat.com>, Maor Gottlieb <maorg@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, jgg@mellanox.com,
-        Doug Ledford <dledford@redhat.com>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        jiri@mellanox.com, dsahern@kernel.org, leonro@mellanox.com,
-        saeedm@mellanox.com, linux-rdma@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>, alexr@mellanox.com
-References: <20200430185033.11476-1-maorg@mellanox.com>
- <CAKfmpSdchyUZT5S7k07tDzwraiePsgRBvGe=SaaHvvm83bbBhg@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <27196f08-953a-4558-7c95-90fb13976c92@gmail.com>
-Date:   Mon, 4 May 2020 08:41:55 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <CAKfmpSdchyUZT5S7k07tDzwraiePsgRBvGe=SaaHvvm83bbBhg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=9FMwwNQtGFnr1eeDSstc6L1dxV0HnTklGu1OpkfvDCw=;
+        b=PWDxYwS6z6M6DwQ+p8DGt9MzW+JJ45Lj4WdgfbNNuCWurUt8hvtbCBedKtY45No5/7
+         E9nclv4avUJA/Ln6Gn4tIxAcaFEreZyg4bqdeK7d/v8CwZ2RGpSA1DVUpDa7zX+n2usp
+         WbVCj6dU90xtYGoAiac8UVILorZuAQCIt3W+qmf8BGeOJlbMdq63zcJiy+uJyLl4hVyw
+         d90P4quBnfZMRWbGteZN8FCNHCRn18sKavb+TK1+OaVB5KycwRfhbEBXzc39X0WzLUEg
+         6S00EHYTkUd56WRd9+SH8PCb5GHvu2xIoPUD/Gto9rzQY0lzPsI1iffFfvoyhYVMZ76I
+         hJZg==
+X-Gm-Message-State: AGi0PuZKCP4kTxuhw5Rme/8dyFUakehYAVuA3Ty7jTtPrHxW64xT0B+t
+        IVXR+Hb3fYjYV88Rmj2Hkao=
+X-Google-Smtp-Source: APiQypJRbQrLFhGZ3k3jfOD97WL6AD9Bq/GOdddDC18ZWCqOfyY+6vEJ8jnAAszB/q0rCbLg3k693w==
+X-Received: by 2002:a5d:4241:: with SMTP id s1mr19110460wrr.250.1588603357853;
+        Mon, 04 May 2020 07:42:37 -0700 (PDT)
+Received: from localhost.localdomain (dynamic-adsl-78-12-12-93.clienti.tiscali.it. [78.12.12.93])
+        by smtp.gmail.com with ESMTPSA id r15sm6566212wrq.93.2020.05.04.07.42.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 May 2020 07:42:37 -0700 (PDT)
+From:   Ahmed Abdelsalam <ahabdels@gmail.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dav.lebrun@gmail.com
+Cc:     Ahmed Abdelsalam <ahabdels@gmail.com>
+Subject: [net] seg6: fix SRH processing to comply with RFC8754
+Date:   Mon,  4 May 2020 14:42:11 +0000
+Message-Id: <20200504144211.5613-1-ahabdels@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/4/20 8:36 AM, Jarod Wilson wrote:
-> At a glance, I'm not sure why all the "get the xmit slave" functions
-> are being passed an skb. None of them should be manipulating the skb,
-> that should all be done in the respective xmit functions after the
-> slave has been returned.
+The Segment Routing Header (SRH) which defines the SRv6 dataplane is defined
+in RFC8754.
 
-a number of them select a slave based on hash of the packet data -- from
-ethernet data only to L3+L4 hashing.
+RFC8754 (section 4.1) defines the SR source node behavior which encapsulates
+packets into an outer IPv6 header and SRH. The SR source node encodes the
+full list of Segments that defines the packet path in the SRH. Then, the
+first segment from list of Segments is copied into the Destination address
+of the outer IPv6 header and the packet is sent to the first hop in its path
+towards the destination.
+
+If the Segment list has only one segment, the SR source node can omit the SRH
+as he only segment is added in the destination address.
+
+RFC8754 (section 4.1.1) defines the Reduced SRH, when a source does not
+require the entire SID list to be preserved in the SRH. A reduced SRH does
+not contain the first segment of the related SR Policy (the first segment is
+the one already in the DA of the IPv6 header), and the Last Entry field is
+set to n-2, where n is the number of elements in the SR Policy.
+
+RFC8754 (section 4.3.1.1) defines the SRH processing and the logic to
+validate the SRH (S09, S10, S11) which works for both reduced and
+non-reduced behaviors.
+
+This patch updates seg6_validate_srh() to validate the SRH as per RFC8754.
+
+Signed-off-by: Ahmed Abdelsalam <ahabdels@gmail.com>
+---
+ net/ipv6/seg6.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
+index 4c7e0a27fa9c..e37d2b34cacc 100644
+--- a/net/ipv6/seg6.c
++++ b/net/ipv6/seg6.c
+@@ -28,6 +28,7 @@
+ bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len)
+ {
+ 	int trailing;
++	int max_last_entry;
+ 	unsigned int tlv_offset;
+ 
+ 	if (srh->type != IPV6_SRCRT_TYPE_4)
+@@ -36,7 +37,12 @@ bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len)
+ 	if (((srh->hdrlen + 1) << 3) != len)
+ 		return false;
+ 
+-	if (srh->segments_left > srh->first_segment)
++	max_last_entry = (srh->hdrlen / 2) - 1;
++
++	if (srh->first_segment > max_last_entry)
++		return false;
++
++	if (srh->segments_left > srh->first_segment + 1)
+ 		return false;
+ 
+ 	tlv_offset = sizeof(*srh) + ((srh->first_segment + 1) << 4);
+-- 
+2.17.1
+
