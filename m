@@ -2,112 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD29D1C42B8
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:28:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DD761C42B4
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:28:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730173AbgEDR2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730014AbgEDR2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:28:32 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9553EC061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 10:28:32 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id s8so30142wrt.9
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 10:28:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UFM1X7OscGNc6keRZ/CtLtFqcGBmpDr08iC+LJm6cUw=;
-        b=ZuOxm11ydoKP/tHeTSsuZfAJNlAa2Loa20x4YcxruoGrKAUZXpSP8gaqb40beZwcFr
-         VggNyqBiRGDfg+TV/g54eUhDg/bmkxaPsCqr74V/gISMJwZvO4ZNybTAm3lUZp27CJnP
-         eFZ7YN3/czimfrqKXoDrsUrOHB53ePzIBrcIIhT+qvnMh7n0y0dMtgQS3WQFsS/d5GQ4
-         o2OVU+g/brSIWdk16lWV4fnqB24zEFi4lyyzM4gXY/UQI80Dz3ZGewPRYmcBHzeDxiiB
-         skE4BHlgDZ16l9puldoO4BOfcGFKdr7Q/oEqMLPOpRk8vI2s0JW7x4DSLlb4Hfi6ksTk
-         /eLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UFM1X7OscGNc6keRZ/CtLtFqcGBmpDr08iC+LJm6cUw=;
-        b=fkb6PTbShuOvunleH/usWj7VLLxy3PDK//Mw2iXB5eelfkx0RoazxH5Df4af221o0V
-         QkEmcNXYC/YomSWkR4bMIKmZbvGz+Wv889HWXmgbdwMvb48U66MSEaL3e78au510DTSt
-         n+ByRYRY+IIeZ/Npe3YdwVLegWfiw5eBG2dHiqPgZ3YEeACnqCuWjWHnHBOsC6tS+FbV
-         4t7l1386VJufm+N72BX20SJNqVc3gD+ObldzG/aTvYZ3Vxi/MAXfYWLC3EIYCatBG+Y4
-         ytgOf8IHGe+9GwIBEh1ca7XaI25z7TR5kq02o7dFt/jXBkf09JVIr+nhzhTby/QNDu46
-         SlMw==
-X-Gm-Message-State: AGi0Pua+bTI5tEpkP9+w57TPqnExCAyQ9aYlBXgcovJfwgGMjfitiSJa
-        hKInuiYkjMNdSW17+v/Npwck62Pe
-X-Google-Smtp-Source: APiQypJlBaONphLSAjuYUsIYgn/r1rCTgOwWSFkPUEpA9JaEWsLaSAmIU4yUibDQK9nvDMVB88a15g==
-X-Received: by 2002:adf:f041:: with SMTP id t1mr373680wro.346.1588613311011;
-        Mon, 04 May 2020 10:28:31 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f43:c500:c07a:3448:98ce:439e? (p200300EA8F43C500C07A344898CE439E.dip0.t-ipconnect.de. [2003:ea:8f43:c500:c07a:3448:98ce:439e])
-        by smtp.googlemail.com with ESMTPSA id k184sm173871wmf.9.2020.05.04.10.28.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 10:28:30 -0700 (PDT)
-Subject: [PATCH net-next 1/2] net: add helper eth_hw_addr_crc
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <329df165-a6a3-3c3b-cbb3-ea77ce2ea672@gmail.com>
-Message-ID: <9de1aa6e-6c22-fad3-efe3-0200efb289bd@gmail.com>
-Date:   Mon, 4 May 2020 19:27:00 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1730057AbgEDR2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:28:24 -0400
+Received: from smtprelay0098.hostedemail.com ([216.40.44.98]:45014 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729597AbgEDR2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:28:24 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 9A50019B29;
+        Mon,  4 May 2020 17:28:22 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1537:1566:1593:1594:1711:1714:1730:1747:1777:1792:2198:2199:2393:2559:2562:2731:2828:3138:3139:3140:3141:3142:3622:3865:3866:3867:3870:4321:4362:5007:6742:6743:10004:10400:10848:11232:11658:11914:12043:12297:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21627:30054:30060:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: edge64_2b6e02f508642
+X-Filterd-Recvd-Size: 2313
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf01.hostedemail.com (Postfix) with ESMTPA;
+        Mon,  4 May 2020 17:28:18 +0000 (UTC)
+Message-ID: <be112d4580b3dcd648fca7c23c09f5f13b31e435.camel@perches.com>
+Subject: Re: [PATCH] docs: dt: fix broken links due to txt->yaml renames
+From:   Joe Perches <joe@perches.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sandy Huang <hjc@rock-chips.com>,
+        Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Jyri Sarha <jsarha@ti.com>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-mips@vger.kernel.org
+Date:   Mon, 04 May 2020 10:28:17 -0700
+In-Reply-To: <967df5c3303b478b76199d4379fe40f5094f3f9b.1588584538.git.mchehab+huawei@kernel.org>
+References: <967df5c3303b478b76199d4379fe40f5094f3f9b.1588584538.git.mchehab+huawei@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.1-2 
 MIME-Version: 1.0
-In-Reply-To: <329df165-a6a3-3c3b-cbb3-ea77ce2ea672@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Several drivers use the same code as basis for filter hashes. Therefore
-let's factor it out to a helper. This way drivers don't have to access
-struct netdev_hw_addr internals.
+On Mon, 2020-05-04 at 11:30 +0200, Mauro Carvalho Chehab wrote:
+> There are some new broken doc links due to yaml renames
+> at DT. Developers should really run:
+> 
+> 	./scripts/documentation-file-ref-check
+> 
+> in order to solve those issues while submitting patches.
+> This tool can even fix most of the issues with:
+> 
+> 	./scripts/documentation-file-ref-check --fix
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- include/linux/etherdevice.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-index 8801f1f98..2e5debc03 100644
---- a/include/linux/etherdevice.h
-+++ b/include/linux/etherdevice.h
-@@ -20,6 +20,7 @@
- #include <linux/if_ether.h>
- #include <linux/netdevice.h>
- #include <linux/random.h>
-+#include <linux/crc32.h>
- #include <asm/unaligned.h>
- #include <asm/bitsperlong.h>
- 
-@@ -265,6 +266,17 @@ static inline void eth_hw_addr_random(struct net_device *dev)
- 	eth_random_addr(dev->dev_addr);
- }
- 
-+/**
-+ * eth_hw_addr_crc - Calculate CRC from netdev_hw_addr
-+ * @ha: pointer to hardware address
-+ *
-+ * Calculate CRC from a hardware address as basis for filter hashes.
-+ */
-+static inline u32 eth_hw_addr_crc(struct netdev_hw_addr *ha)
-+{
-+	return ether_crc(ETH_ALEN, ha->addr);
-+}
-+
- /**
-  * ether_addr_copy - Copy an Ethernet address
-  * @dst: Pointer to a six-byte array Ethernet address destination
--- 
-2.26.2
+Thanks Mauro.
 
 
