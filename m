@@ -2,122 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E8021C4336
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDFF51C433D
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 19:48:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730025AbgEDRrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 13:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
+        id S1730404AbgEDRsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 13:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728158AbgEDRrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:47:52 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D85C061A0E;
-        Mon,  4 May 2020 10:47:51 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id s9so14691553eju.1;
-        Mon, 04 May 2020 10:47:51 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728158AbgEDRsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 13:48:41 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BA9C061A0E;
+        Mon,  4 May 2020 10:48:41 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id u22so18325plq.12;
+        Mon, 04 May 2020 10:48:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hQpvk8vgp1YbyFllbBW8xqqGLWMt1EgunqBmk7p9TlQ=;
-        b=kjhU7qwuLUl0tgR1+ZMtPX0gXNz5aUz/F88ZhiEUnMhCOiWuh8hJ4xwCoE3QiM1C4n
-         M3DzFk5zkOAz+jwzdAFblAhyYtMvNzM94V+VxmXFm9XyRdE58Aa5LQt/wDR804AsrwW6
-         Gl0AFFTX0mrDpCguqaReT2ETbj+lzXW/0WsupNJCzFs99F8kQVWs+c9cXg8kvkryihl8
-         lFhk009uQr70yHCuCRiE3Fiw06qQSWfKls9EoZeZtSmS89io1+oDDCu5YxgDY7dsYh8e
-         0xEZkItYS7PyyjOCIrjmriI81HVc4ntiwcrBXe568He/68RB9mE1jIGumTBrIR276y4S
-         Vz1g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0YqP8VecB2UmToDpnEaiYt/EjUvvCgEGjmA2T6HOWIA=;
+        b=fze/N73aF0T0xDDZ9EvDTavgTrx7OOs9+P8+jDDYp/iG7xAbRoPZZgYjiHrNRftuqi
+         gxBfqiF55Jt43mLXDIoZxgMMW2hGd08bO8E8vjxTjnxOkykodaVdfVWS2ievBhDjJ3Hm
+         XVKvsUBfBb/eP1VwzntNMkKjgGlDoxyQFd4yngkMmFkHGeLBYG6f+1s/zQK0k4AkCcqD
+         WSORyabSj14nrudCoPiC10dEh7zBx49ywPouXJOBIX6FzL8fGZKGIa0dVVFSK4IsRc0E
+         SZo8SnUUVlLNk3UnUpN+zSEssVjxbPIyf+tzU8VIh41eu+gjko5qJYLtmz0blKW9MEZl
+         4qJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hQpvk8vgp1YbyFllbBW8xqqGLWMt1EgunqBmk7p9TlQ=;
-        b=ZYCoH0S4eZ1b+Z/fmlsgZLbvJuWiwTxTNk32WH9oujQ72ficZcNivLRToRCYOGsp4G
-         MebSEc6GuyE1K8F6bSbTozrbWn6g2510BY08WeOFzDDQp8SV1vXLlEqbATFbN762gb4y
-         MQBjxThcPtTsjTHOuR0sCivTxldqvczCrxH+CDf/xaaphBft9qcRf9HiXxosIdSiAN00
-         LALjClp9P0KGMfYL3Wmgqx6tNYNINYaH/lNNiifnOx3HslcPPLrBVqPbV3DNgD2Q5RYR
-         Z8Ymx/vgApA4q5k/p/CWj6/mBGQs2KNt+YyZqNU23QuINqoFaDaEgFGhk6qzNNuND7Ft
-         UhuQ==
-X-Gm-Message-State: AGi0PuayrTR8+VgrR0rZ575ZwL7uWGzHHaJdPBKuuAuwGIYl3DFsxkEu
-        JAg1pImWtiMfdB2BJPX9H5nf6JyY8ZfuY9WnGig=
-X-Google-Smtp-Source: APiQypIB+DjJDEbl3B8ocaghRBc++ZzEvZ0KpOa2gaX14qS/UjOBQn89425mtvYHu8jWZhwETphKyX3pbNyfgGl3Sms=
-X-Received: by 2002:a17:906:78c:: with SMTP id l12mr14971947ejc.189.1588614470560;
- Mon, 04 May 2020 10:47:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200504165228.12787-1-michael@walle.cc>
-In-Reply-To: <20200504165228.12787-1-michael@walle.cc>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 4 May 2020 20:47:39 +0300
-Message-ID: <CA+h21hpGT8qzeOVUZKU2CJDRmjSyRO-Z2oy_PvPeN88jTPsYuw@mail.gmail.com>
-Subject: Re: [PATCH RESEND net-next] net: dsa: felix: allow the device to be disabled
-To:     Michael Walle <michael@walle.cc>
-Cc:     "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0YqP8VecB2UmToDpnEaiYt/EjUvvCgEGjmA2T6HOWIA=;
+        b=SMsg5LaidiQ/RhsbPhekIYC1NDMbXkbGRtM9+Ctta3+0sV9W03FjNpXzpQgi7XMjhb
+         9ken2B+gXxkY7pgtuNk5WwONkVtkg1fOOEicTS/SROsuwB35QVM4FAlMWljaIwgk+9La
+         tdb9WFVn+ysQe2UbGF5DWeu97eZbmuw+vGkO+8CyW/0y8IbeEmI75+KL2rsFaysVqfkB
+         QvX8+6/n1M7VQE1OpLNRAaSZj6bD+q/x7ktN2UDCQ7d7GbR6KwCyDr2J7hts3OhATFGE
+         ZMoYlwCEX0GrPQDcyfxi+S6/twOc2MArD0pgoXsbmHYxu76mB6rmYkdZnnQGrnV+YLdB
+         c2jQ==
+X-Gm-Message-State: AGi0PuYlJEEIxwjuxaSkgVgeW7IhvR6gdSNfQRwaJDVISQYcIwJ0/i7Y
+        rTWNm71/ssqyMAnIehLqhvg=
+X-Google-Smtp-Source: APiQypLr2jwuAnm1jNRaW+Ddm4ybkhMe5FmAfgXl619Lj25y3qbkURxTMQdu/z08bXQtKrtADpCv+g==
+X-Received: by 2002:a17:902:fe03:: with SMTP id g3mr380567plj.28.1588614520869;
+        Mon, 04 May 2020 10:48:40 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id i9sm9403353pfk.199.2020.05.04.10.48.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 May 2020 10:48:40 -0700 (PDT)
+Subject: Re: [PATCH RESEND net-next] net: dsa: felix: allow the device to be
+ disabled
+To:     Michael Walle <michael@walle.cc>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Shawn Guo <shawnguo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+References: <20200504165228.12787-1-michael@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a2284212-bc13-5221-acf0-188c2965416d@gmail.com>
+Date:   Mon, 4 May 2020 10:48:37 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200504165228.12787-1-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 May 2020 at 19:55, Michael Walle <michael@walle.cc> wrote:
->
+
+
+On 5/4/2020 9:52 AM, Michael Walle wrote:
 > If there is no specific configuration of the felix switch in the device
 > tree, but only the default configuration (ie. given by the SoCs dtsi
 > file), the probe fails because no CPU port has been set. On the other
 > hand you cannot set a default CPU port because that depends on the
 > actual board using the switch.
->
+> 
 > [    2.701300] DSA: tree 0 has no CPU port
 > [    2.705167] mscc_felix 0000:00:00.5: Failed to register DSA switch: -22
 > [    2.711844] mscc_felix: probe of 0000:00:00.5 failed with error -22
->
+> 
 > Thus let the device tree disable this device entirely, like it is also
 > done with the enetc driver of the same SoC.
->
+> 
 > Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-> This was part of a two patch series. The second patch is already merged.
-> This patch was never picked up, although it was Acked-by: David Miller,
-> see:
-> https://lore.kernel.org/netdev/20200314.205335.907987569817755804.davem@davemloft.net/
->
-> Since there is no more dependency, this patch could go through the
-> net-next queue.
->
->  drivers/net/dsa/ocelot/felix.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> index 69546383a382..531c7710063f 100644
-> --- a/drivers/net/dsa/ocelot/felix.c
-> +++ b/drivers/net/dsa/ocelot/felix.c
-> @@ -699,6 +699,11 @@ static int felix_pci_probe(struct pci_dev *pdev,
->         struct felix *felix;
->         int err;
->
-> +       if (pdev->dev.of_node && !of_device_is_available(pdev->dev.of_node)) {
-> +               dev_info(&pdev->dev, "device is disabled, skipping\n");
-> +               return -ENODEV;
-> +       }
-> +
->         err = pci_enable_device(pdev);
->         if (err) {
->                 dev_err(&pdev->dev, "device enable failed\n");
-> --
-> 2.20.1
->
-
-Thanks, Michael!
--Vladimir
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
