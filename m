@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4827D1C3406
+	by mail.lfdr.de (Postfix) with ESMTP id B84C91C3407
 	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 10:06:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728165AbgEDIGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 04:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
+        id S1728170AbgEDIGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 04:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728098AbgEDIGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 04:06:40 -0400
+        by vger.kernel.org with ESMTP id S1728098AbgEDIGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 04:06:43 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A51C061A0E
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 01:06:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AABC061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 01:06:43 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1jVW7a-000673-FM; Mon, 04 May 2020 10:06:38 +0200
+        id 1jVW7d-00067V-Aq; Mon, 04 May 2020 10:06:41 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     steffen.klassert@secunet.com
 Cc:     <netdev@vger.kernel.org>, Florian Westphal <fw@strlen.de>
-Subject: [PATCH ipsec-next v2 6/7] xfrm: remove extract_output indirection from xfrm_state_afinfo
-Date:   Mon,  4 May 2020 10:06:08 +0200
-Message-Id: <20200504080609.14648-7-fw@strlen.de>
+Subject: [PATCH ipsec-next v2 7/7] xfrm: remove output_finish indirection from xfrm_state_afinfo
+Date:   Mon,  4 May 2020 10:06:09 +0200
+Message-Id: <20200504080609.14648-8-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200504080609.14648-1-fw@strlen.de>
 References: <20200504080609.14648-1-fw@strlen.de>
@@ -33,219 +33,186 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move this to xfrm_output.c.  This avoids the state->extract_output
-indirection.
+There are only two implementaions, one for ipv4 and one for ipv6.
 
-This patch also removes the duplicated __xfrm6_extract_header helper
-added in an earlier patch, we can now use the one from xfrm_inout.h .
+Both are almost identical, they clear skb->cb[], set the TRANSFORMED flag
+in IP(6)CB and then call the common xfrm_output() function.
+
+By placing the IPCB handling into the common function, we avoid the need
+for the output_finish indirection as the output functions can simply
+use xfrm_output().
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- include/net/xfrm.h      |  3 --
- net/ipv6/xfrm6_output.c | 58 -----------------------------------
+ include/net/xfrm.h      |  1 -
+ net/ipv4/xfrm4_output.c | 23 +----------------------
+ net/ipv4/xfrm4_state.c  |  1 -
+ net/ipv6/xfrm6_output.c | 34 ++--------------------------------
  net/ipv6/xfrm6_state.c  |  1 -
- net/xfrm/xfrm_output.c  | 67 ++++++++++++++++++++++++++++++++++++-----
- 4 files changed, 59 insertions(+), 70 deletions(-)
+ net/xfrm/xfrm_output.c  | 16 ++++++++++++++++
+ 6 files changed, 19 insertions(+), 57 deletions(-)
 
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 8f7fb033d557..db814a7e042f 100644
+index db814a7e042f..094fe682f5d7 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
-@@ -362,8 +362,6 @@ struct xfrm_state_afinfo {
+@@ -361,7 +361,6 @@ struct xfrm_state_afinfo {
+ 	const struct xfrm_type		*type_dstopts;
  
  	int			(*output)(struct net *net, struct sock *sk, struct sk_buff *skb);
- 	int			(*output_finish)(struct sock *sk, struct sk_buff *skb);
--	int			(*extract_output)(struct xfrm_state *x,
--						  struct sk_buff *skb);
+-	int			(*output_finish)(struct sock *sk, struct sk_buff *skb);
  	int			(*transport_finish)(struct sk_buff *skb,
  						    int async);
  	void			(*local_error)(struct sk_buff *skb, u32 mtu);
-@@ -1601,7 +1599,6 @@ int xfrm6_tunnel_register(struct xfrm6_tunnel *handler, unsigned short family);
- int xfrm6_tunnel_deregister(struct xfrm6_tunnel *handler, unsigned short family);
- __be32 xfrm6_tunnel_alloc_spi(struct net *net, xfrm_address_t *saddr);
- __be32 xfrm6_tunnel_spi_lookup(struct net *net, const xfrm_address_t *saddr);
--int xfrm6_extract_output(struct xfrm_state *x, struct sk_buff *skb);
- int xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb);
- int xfrm6_output_finish(struct sock *sk, struct sk_buff *skb);
- int xfrm6_find_1stfragopt(struct xfrm_state *x, struct sk_buff *skb,
+diff --git a/net/ipv4/xfrm4_output.c b/net/ipv4/xfrm4_output.c
+index 21c8fa0a31ed..502eb189d852 100644
+--- a/net/ipv4/xfrm4_output.c
++++ b/net/ipv4/xfrm4_output.c
+@@ -14,22 +14,9 @@
+ #include <net/xfrm.h>
+ #include <net/icmp.h>
+ 
+-int xfrm4_output_finish(struct sock *sk, struct sk_buff *skb)
+-{
+-	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
+-
+-#ifdef CONFIG_NETFILTER
+-	IPCB(skb)->flags |= IPSKB_XFRM_TRANSFORMED;
+-#endif
+-
+-	return xfrm_output(sk, skb);
+-}
+-
+ static int __xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct xfrm_state *x = skb_dst(skb)->xfrm;
+-	const struct xfrm_state_afinfo *afinfo;
+-	int ret = -EAFNOSUPPORT;
+ 
+ #ifdef CONFIG_NETFILTER
+ 	if (!x) {
+@@ -38,15 +25,7 @@ static int __xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 	}
+ #endif
+ 
+-	rcu_read_lock();
+-	afinfo = xfrm_state_afinfo_get_rcu(x->outer_mode.family);
+-	if (likely(afinfo))
+-		ret = afinfo->output_finish(sk, skb);
+-	else
+-		kfree_skb(skb);
+-	rcu_read_unlock();
+-
+-	return ret;
++	return xfrm_output(sk, skb);
+ }
+ 
+ int xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+diff --git a/net/ipv4/xfrm4_state.c b/net/ipv4/xfrm4_state.c
+index b23a1711297b..87d4db591488 100644
+--- a/net/ipv4/xfrm4_state.c
++++ b/net/ipv4/xfrm4_state.c
+@@ -14,7 +14,6 @@ static struct xfrm_state_afinfo xfrm4_state_afinfo = {
+ 	.family			= AF_INET,
+ 	.proto			= IPPROTO_IPIP,
+ 	.output			= xfrm4_output,
+-	.output_finish		= xfrm4_output_finish,
+ 	.transport_finish	= xfrm4_transport_finish,
+ 	.local_error		= xfrm4_local_error,
+ };
 diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
-index be64f280510c..b7d65b344679 100644
+index b7d65b344679..8b84d534b19d 100644
 --- a/net/ipv6/xfrm6_output.c
 +++ b/net/ipv6/xfrm6_output.c
-@@ -47,64 +47,6 @@ void xfrm6_local_error(struct sk_buff *skb, u32 mtu)
+@@ -47,39 +47,9 @@ void xfrm6_local_error(struct sk_buff *skb, u32 mtu)
  	ipv6_local_error(sk, EMSGSIZE, &fl6, mtu);
  }
  
--static int xfrm6_tunnel_check_size(struct sk_buff *skb)
+-int xfrm6_output_finish(struct sock *sk, struct sk_buff *skb)
 -{
--	int mtu, ret = 0;
--	struct dst_entry *dst = skb_dst(skb);
+-	memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
 -
--	if (skb->ignore_df)
--		goto out;
+-#ifdef CONFIG_NETFILTER
+-	IP6CB(skb)->flags |= IP6SKB_XFRM_TRANSFORMED;
+-#endif
 -
--	mtu = dst_mtu(dst);
--	if (mtu < IPV6_MIN_MTU)
--		mtu = IPV6_MIN_MTU;
+-	return xfrm_output(sk, skb);
+-}
 -
--	if ((!skb_is_gso(skb) && skb->len > mtu) ||
--	    (skb_is_gso(skb) &&
--	     !skb_gso_validate_network_len(skb, ip6_skb_dst_mtu(skb)))) {
--		skb->dev = dst->dev;
--		skb->protocol = htons(ETH_P_IPV6);
+-static int __xfrm6_output_state_finish(struct xfrm_state *x, struct sock *sk,
+-				       struct sk_buff *skb)
+-{
+-	const struct xfrm_state_afinfo *afinfo;
+-	int ret = -EAFNOSUPPORT;
 -
--		if (xfrm6_local_dontfrag(skb->sk))
--			xfrm6_local_rxpmtu(skb, mtu);
--		else if (skb->sk)
--			xfrm_local_error(skb, mtu);
--		else
--			icmpv6_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
--		ret = -EMSGSIZE;
--	}
--out:
+-	rcu_read_lock();
+-	afinfo = xfrm_state_afinfo_get_rcu(x->outer_mode.family);
+-	if (likely(afinfo))
+-		ret = afinfo->output_finish(sk, skb);
+-	else
+-		kfree_skb(skb);
+-	rcu_read_unlock();
+-
 -	return ret;
 -}
 -
--static void __xfrm6_extract_header(struct sk_buff *skb)
--{
--	struct ipv6hdr *iph = ipv6_hdr(skb);
--
--	XFRM_MODE_SKB_CB(skb)->ihl = sizeof(*iph);
--	XFRM_MODE_SKB_CB(skb)->id = 0;
--	XFRM_MODE_SKB_CB(skb)->frag_off = htons(IP_DF);
--	XFRM_MODE_SKB_CB(skb)->tos = ipv6_get_dsfield(iph);
--	XFRM_MODE_SKB_CB(skb)->ttl = iph->hop_limit;
--	XFRM_MODE_SKB_CB(skb)->optlen = 0;
--	memcpy(XFRM_MODE_SKB_CB(skb)->flow_lbl, iph->flow_lbl,
--	       sizeof(XFRM_MODE_SKB_CB(skb)->flow_lbl));
--}
--
--int xfrm6_extract_output(struct xfrm_state *x, struct sk_buff *skb)
--{
--	int err;
--
--	err = xfrm6_tunnel_check_size(skb);
--	if (err)
--		return err;
--
--	XFRM_MODE_SKB_CB(skb)->protocol = ipv6_hdr(skb)->nexthdr;
--
--	__xfrm6_extract_header(skb);
--	return 0;
--}
--
- int xfrm6_output_finish(struct sock *sk, struct sk_buff *skb)
+ static int __xfrm6_output_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
  {
- 	memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
+-	struct xfrm_state *x = skb_dst(skb)->xfrm;
+-
+-	return __xfrm6_output_state_finish(x, sk, skb);
++	return xfrm_output(sk, skb);
+ }
+ 
+ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+@@ -121,7 +91,7 @@ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 				    __xfrm6_output_finish);
+ 
+ skip_frag:
+-	return __xfrm6_output_state_finish(x, sk, skb);
++	return xfrm_output(sk, skb);
+ }
+ 
+ int xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 diff --git a/net/ipv6/xfrm6_state.c b/net/ipv6/xfrm6_state.c
-index 8fbf5a68ee6e..15247f2f78e1 100644
+index 15247f2f78e1..6610b2198fa9 100644
 --- a/net/ipv6/xfrm6_state.c
 +++ b/net/ipv6/xfrm6_state.c
-@@ -19,7 +19,6 @@ static struct xfrm_state_afinfo xfrm6_state_afinfo = {
+@@ -18,7 +18,6 @@ static struct xfrm_state_afinfo xfrm6_state_afinfo = {
+ 	.family			= AF_INET6,
  	.proto			= IPPROTO_IPV6,
  	.output			= xfrm6_output,
- 	.output_finish		= xfrm6_output_finish,
--	.extract_output		= xfrm6_extract_output,
+-	.output_finish		= xfrm6_output_finish,
  	.transport_finish	= xfrm6_transport_finish,
  	.local_error		= xfrm6_local_error,
  };
 diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index a7b3af7f7a1e..3a646df1318d 100644
+index 3a646df1318d..9c43b8dd80fb 100644
 --- a/net/xfrm/xfrm_output.c
 +++ b/net/xfrm/xfrm_output.c
-@@ -17,6 +17,11 @@
- #include <net/inet_ecn.h>
- #include <net/xfrm.h>
+@@ -571,6 +571,22 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
+ 	struct xfrm_state *x = skb_dst(skb)->xfrm;
+ 	int err;
  
-+#if IS_ENABLED(CONFIG_IPV6)
-+#include <net/ip6_route.h>
-+#include <net/ipv6_stubs.h>
++	switch (x->outer_mode.family) {
++	case AF_INET:
++		memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
++#ifdef CONFIG_NETFILTER
++		IPCB(skb)->flags |= IPSKB_XFRM_TRANSFORMED;
 +#endif
-+
- #include "xfrm_inout.h"
- 
- static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff *skb);
-@@ -651,11 +656,60 @@ static int xfrm4_extract_output(struct xfrm_state *x, struct sk_buff *skb)
- 	return 0;
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
-+static int xfrm6_tunnel_check_size(struct sk_buff *skb)
-+{
-+	int mtu, ret = 0;
-+	struct dst_entry *dst = skb_dst(skb);
-+
-+	if (skb->ignore_df)
-+		goto out;
-+
-+	mtu = dst_mtu(dst);
-+	if (mtu < IPV6_MIN_MTU)
-+		mtu = IPV6_MIN_MTU;
-+
-+	if ((!skb_is_gso(skb) && skb->len > mtu) ||
-+	    (skb_is_gso(skb) &&
-+	     !skb_gso_validate_network_len(skb, ip6_skb_dst_mtu(skb)))) {
-+		skb->dev = dst->dev;
-+		skb->protocol = htons(ETH_P_IPV6);
-+
-+		if (xfrm6_local_dontfrag(skb->sk))
-+			ipv6_stub->xfrm6_local_rxpmtu(skb, mtu);
-+		else if (skb->sk)
-+			xfrm_local_error(skb, mtu);
-+		else
-+			icmpv6_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
-+		ret = -EMSGSIZE;
-+	}
-+out:
-+	return ret;
-+}
-+#endif
-+
-+static int xfrm6_extract_output(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+#if IS_ENABLED(CONFIG_IPV6)
-+	int err;
-+
-+	err = xfrm6_tunnel_check_size(skb);
-+	if (err)
-+		return err;
-+
-+	XFRM_MODE_SKB_CB(skb)->protocol = ipv6_hdr(skb)->nexthdr;
-+
-+	xfrm6_extract_header(skb);
-+	return 0;
-+#else
-+	WARN_ON_ONCE(1);
-+	return -EAFNOSUPPORT;
-+#endif
-+}
-+
- static int xfrm_inner_extract_output(struct xfrm_state *x, struct sk_buff *skb)
- {
--	const struct xfrm_state_afinfo *afinfo;
- 	const struct xfrm_mode *inner_mode;
--	int err = -EAFNOSUPPORT;
- 
- 	if (x->sel.family == AF_UNSPEC)
- 		inner_mode = xfrm_ip2inner_mode(x,
-@@ -669,14 +723,11 @@ static int xfrm_inner_extract_output(struct xfrm_state *x, struct sk_buff *skb)
- 	switch (inner_mode->family) {
- 	case AF_INET:
- 		return xfrm4_extract_output(x, skb);
++		break;
 +	case AF_INET6:
-+		return xfrm6_extract_output(x, skb);
- 	}
--	rcu_read_lock();
--	afinfo = xfrm_state_afinfo_get_rcu(inner_mode->family);
--	if (likely(afinfo))
--		err = afinfo->extract_output(x, skb);
--	rcu_read_unlock();
++		memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
++
++#ifdef CONFIG_NETFILTER
++		IP6CB(skb)->flags |= IP6SKB_XFRM_TRANSFORMED;
++#endif
++		break;
++	}
++
+ 	secpath_reset(skb);
  
--	return err;
-+	return -EAFNOSUPPORT;
- }
- 
- void xfrm_local_error(struct sk_buff *skb, int mtu)
+ 	if (xfrm_dev_offload_ok(skb, x)) {
 -- 
 2.26.2
 
