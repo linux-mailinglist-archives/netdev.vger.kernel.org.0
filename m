@@ -2,68 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 014921C48B2
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 23:01:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 448231C48BF
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 23:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgEDVBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 17:01:31 -0400
-Received: from www62.your-server.de ([213.133.104.62]:60414 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726334AbgEDVBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 17:01:31 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jViDO-0000u2-JM; Mon, 04 May 2020 23:01:26 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jViDO-000Nmt-7F; Mon, 04 May 2020 23:01:26 +0200
-Subject: Re: [PATCH bpf-next 0/2] xsk: improve code readability
-To:     Magnus Karlsson <magnus.karlsson@intel.com>, bjorn.topel@intel.com,
-        ast@kernel.org, netdev@vger.kernel.org, jonathan.lemon@gmail.com
-References: <1588599232-24897-1-git-send-email-magnus.karlsson@intel.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c11bbedc-aa94-c41e-5b62-202f75ae2bf1@iogearbox.net>
-Date:   Mon, 4 May 2020 23:01:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727842AbgEDVDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 17:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726334AbgEDVDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 17:03:18 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B51C061A0E;
+        Mon,  4 May 2020 14:03:17 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id g13so152330wrb.8;
+        Mon, 04 May 2020 14:03:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=n0gWd/LKEKfbFqunt27R8+2BYVGb8cKLklv+je6aFbk=;
+        b=LmR4y6bUzadG9TaDR2YViM86obTCNs5PL7ve0409Y2bFpIIpoy0SpP8Xbi84p1Hahm
+         yPK/AA/H9XMFLgd/6lIpf0fCyuY6+bnvRIF0IR9keaEbYibbhINA226PjfFTCWtXQ+ss
+         TiB0XRBVM/xs2Ifs+8TqYcqI+vVjpBkpTpngfbg+CkJTpNjtYDf+SxhXzVOHcqIllh4g
+         oGZqUG247TO6j4PFV5OMt4imAoXNhzs7oaCdk2qA7Jn6h/OJkiqvyc74NdtJGs9Dtjc4
+         UlIkbPvknNXGwXTruZvhbqphUFfxL0Cs2hxF4kq/OuWqdjWB3zeY+QDQi+sXNsQeDEBX
+         XWgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=n0gWd/LKEKfbFqunt27R8+2BYVGb8cKLklv+je6aFbk=;
+        b=kRqUDrOIwC+fImVC4u/bsSBY/AyRETk+z1jxi6zoWdWZ0aFd25VsSYQdAJqBW3v8Jw
+         /GaTaCzHtUHW+CGEI+4prkFzV1PMdwmqosEcPQU0rT0GOfkHk+LizjIVJUwsnYCAm3Q5
+         EAIf4cmy6Xl+cWyYOxk1civ+zCp3wvyHz81CjnriEEMsxXLkS7413wEMfmzbKexo8wNz
+         opsV++m1Cmi9spTGgCCeU8yVpxI4dLA10h4MhinFCFseXkxHvxt3pvOJwG4HIxEWMErK
+         FMKwMKZMa07/maRyiUBJPxRtZx04aM+T41Gm/2gfYczUFAAWCoALAP6lAbg9/d9jojFT
+         UJ8w==
+X-Gm-Message-State: AGi0PuaTa5PoLejnohZBcoaxPGzp1eRbf1+CsrU6eBy8UjBtd8xKrFso
+        RcMjukeDici7gfoyAEITzafwlbHo
+X-Google-Smtp-Source: APiQypJzkKLT2kMEemfvan89ukp/i0ZeR5T1FDjZwlEnyqDg6E3kHj4mcha3VCheoZAMEd3nYVmSQg==
+X-Received: by 2002:a5d:650b:: with SMTP id x11mr982279wru.405.1588626196291;
+        Mon, 04 May 2020 14:03:16 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y63sm259719wmg.21.2020.05.04.14.03.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 May 2020 14:03:15 -0700 (PDT)
+Subject: Re: [PATCH net] net: dsa: Do not leave DSA master with NULL
+ netdev_ops
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, allen.pais@oracle.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20200504201806.27192-1-f.fainelli@gmail.com>
+ <CA+h21ho50twA=D=kZYxVuE=C6gf=8JeXmTEHhV30p_30oQZjjA@mail.gmail.com>
+ <b32f205a-6ff3-e1db-33d1-6518091f90b4@gmail.com>
+ <CA+h21hpObEHt04igBBbX40niuqON=41=f35zTgYNOTZZscbivQ@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <9ed48660-8b43-6661-1794-aa6eedbed3cc@gmail.com>
+Date:   Mon, 4 May 2020 14:03:12 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <1588599232-24897-1-git-send-email-magnus.karlsson@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <CA+h21hpObEHt04igBBbX40niuqON=41=f35zTgYNOTZZscbivQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25802/Mon May  4 14:12:31 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/4/20 3:33 PM, Magnus Karlsson wrote:
-> This small series improves xsk code readibility by renaming two
-> variables in the first patch and removing one struct member that there
-> is no reason to keep around in the second patch. Basically small
-> things that were found in other series but not fixed there for one or
-> the other reason.
+
+
+On 5/4/2020 1:49 PM, Vladimir Oltean wrote:
+> On Mon, 4 May 2020 at 23:40, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>>
+>>
+>>
+>> On 5/4/2020 1:34 PM, Vladimir Oltean wrote:
+>>> Hi Florian,
+>>>
+>>> On Mon, 4 May 2020 at 23:19, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>>>>
+>>>> When ndo_get_phys_port_name() for the CPU port was added we introduced
+>>>> an early check for when the DSA master network device in
+>>>> dsa_master_ndo_setup() already implements ndo_get_phys_port_name(). When
+>>>> we perform the teardown operation in dsa_master_ndo_teardown() we would
+>>>> not be checking that cpu_dp->orig_ndo_ops was successfully allocated and
+>>>> non-NULL initialized.
+>>>>
+>>>> With network device drivers such as virtio_net, this leads to a NPD as
+>>>> soon as the DSA switch hanging off of it gets torn down because we are
+>>>> now assigning the virtio_net device's netdev_ops a NULL pointer.
+>>>>
+>>>> Fixes: da7b9e9b00d4 ("net: dsa: Add ndo_get_phys_port_name() for CPU port")
+>>>> Reported-by: Allen Pais <allen.pais@oracle.com>
+>>>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>>>> ---
+>>>
+>>> The fix makes complete sense.
+>>> But on another note, if we don't overlay an ndo_get_phys_port_name if
+>>> the master already has one, doesn't that render the entire mechanism
+>>> of having a reliable way for user space to determine the CPU port
+>>> number pointless?
+>>
+>> For the CPU port I would consider ndo_get_phys_port_name() to be more
+>> best effort than an absolute need unlike the user facing ports, where
+>> this is necessary for a variety of actions (e.g.: determining
+>> queues/port numbers etc.) which is why there was no overlay being done
+>> in that case. There is not a good way to cascade the information other
+>> than do something like pX.Y and defining what the X and Y are, what do
+>> you think?
+>> --
+>> Florian
 > 
-> Thanks: Magnus
+> For the CPU/master port I am not actually sure who is the final
+> consumer of the ndo_get_phys_port_name, I thought it is simply
+> informational, with the observation that it may be unreliable in
+> transmitting that information over.
+> Speaking of which, if "informational" is the only purpose, could this
+> not be used?
+
+Yes, I had not considered devlink would expose that information,
+ndo_phys_port_name() is there now though and since it is exposed through
+sysfs so reverting would be an ABI breakage.
+
 > 
-> Magnus Karlsson (2):
->    xsk: change two variable names for increased clarity
->    xsk: remove unnecessary member in xdp_umem
+> devlink port | grep "flavour cpu"
+> pci/0000:00:00.5/4: type notset flavour cpu port 4
+> spi/spi2.0/4: type notset flavour cpu port 4
+> spi/spi2.1/4: type notset flavour cpu port 4
 > 
->   include/net/xdp_sock.h |  5 ++---
->   net/xdp/xdp_umem.c     | 21 ++++++++++-----------
->   net/xdp/xsk.c          |  8 ++++----
->   net/xdp/xsk_queue.c    |  4 ++--
->   net/xdp/xsk_queue.h    |  8 ++++----
->   5 files changed, 22 insertions(+), 24 deletions(-)
-> 
-> --
-> 2.7.4
+> Thanks,
+> -Vladimir
 > 
 
-Applied, thanks!
+-- 
+Florian
