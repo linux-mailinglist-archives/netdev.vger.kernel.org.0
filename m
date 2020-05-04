@@ -2,22 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C1111C4897
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 22:52:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D2831C47B1
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 22:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728014AbgEDUws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 16:52:48 -0400
-Received: from gateway22.websitewelcome.com ([192.185.47.48]:49314 "EHLO
-        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726419AbgEDUws (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 16:52:48 -0400
-X-Greylist: delayed 1500 seconds by postgrey-1.27 at vger.kernel.org; Mon, 04 May 2020 16:52:46 EDT
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id B18BB15683
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:06:42 -0500 (CDT)
+        id S1727095AbgEDUIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 16:08:00 -0400
+Received: from gateway23.websitewelcome.com ([192.185.49.177]:13077 "EHLO
+        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726334AbgEDUH7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 16:07:59 -0400
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 5603D37F1
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 15:07:58 -0500 (CDT)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id VhMQj9unQ1s2xVhMQjjiKh; Mon, 04 May 2020 15:06:42 -0500
+        id VhNejQQz4EfyqVhNejEOsl; Mon, 04 May 2020 15:07:58 -0500
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -25,25 +24,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=FhdSqbnIjF/VfgKxY8JVFIdq0H36uTAyETzNIb3T7zw=; b=rjvH4WUGFAvJB4lzCzL/ebXFaE
-        XlGHJGNZ62AHM0UtRJ8lkN3MGIyW+N5VYL9Trev3dvDYZUSHeqMJVsoa01xomtwzMBsz5pBdks9Lp
-        QiAJp5AEMmBFyU8HoDHJqOVz18uCeXiezCGHycwYLRi+kkcwzY9cqkzctV/F1CdF300jCjahK7VhV
-        Y45gArEUAUkMbPu3iXgp2xoDyWd77qIoxQZ6mP754eqQ9OduFyaAjv1t4d4XlvNNb5yiwaQZehJYz
-        ONL6ObU6xRqCmEgzrKbSsXjJz2kBJspSqmEc3heXjFH7/WqobAjz45dQ/heOqeaqLdUJPpjMhR/rP
-        PG+mbIQw==;
-Received: from [189.207.59.248] (port=58766 helo=embeddedor)
+        bh=QQwjaZedmAfrFU0rWpB+oFfnyoC2Vh8dMVpNEp+/1a8=; b=YvBiONp6QYSQAI1G8z08SM7g/Z
+        B1dlFOOIF+orc6+l7/Ci3y/6MAJXtWyEM+aX8APnapsdo/7pjDIgs/wXikNBb4r6j62iTrQJbfJrU
+        kPmAp/Xd3Kqd3hIxiLrnOMjZkJfPOxw+3gtGMsXh3Dr5wPi+95QmHtFjJ0HrlsWdTuJW0OLvHPdyV
+        3qGUbetw4jTRK/I0JuP75NMN7XUzMRhlvsLQYVIwLXy5klCeJRO4l13ND/MZfSBLgS7I/7N3t28zs
+        wdCwdqBUiFIo0noLla95CJrJ4qZLw4/SBUscQrxJ0Bi5DXdH+V6I6eA4ZKUvJMWU7wIxbJ9ykgjhZ
+        h3xqyYHQ==;
+Received: from [189.207.59.248] (port=58770 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1jVhMQ-002Gry-Ad; Mon, 04 May 2020 15:06:42 -0500
-Date:   Mon, 4 May 2020 15:11:08 -0500
+        id 1jVhNd-002HS1-SC; Mon, 04 May 2020 15:07:57 -0500
+Date:   Mon, 4 May 2020 15:12:24 -0500
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] ath10k: Replace zero-length array with flexible-array
-Message-ID: <20200504201108.GA32136@embeddedor>
+Subject: [PATCH] ath11k: Replace zero-length array with flexible-array
+Message-ID: <20200504201224.GA32282@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,13 +55,13 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 189.207.59.248
 X-Source-L: No
-X-Exim-ID: 1jVhMQ-002Gry-Ad
+X-Exim-ID: 1jVhNd-002HS1-SC
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.207.59.248]:58766
+X-Source-Sender: (embeddedor) [189.207.59.248]:58770
 X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 10
+X-Email-Count: 16
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
 X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
@@ -107,508 +106,137 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/net/wireless/ath/ath10k/ce.h       |  2 +-
- drivers/net/wireless/ath/ath10k/core.h     |  2 +-
- drivers/net/wireless/ath/ath10k/coredump.h |  4 +--
- drivers/net/wireless/ath/ath10k/debug.h    |  2 +-
- drivers/net/wireless/ath/ath10k/htt.h      | 42 +++++++++++-----------
- drivers/net/wireless/ath/ath10k/hw.h       |  2 +-
- drivers/net/wireless/ath/ath10k/pci.h      |  2 +-
- drivers/net/wireless/ath/ath10k/wmi-tlv.h  |  6 ++--
- drivers/net/wireless/ath/ath10k/wmi.h      | 42 +++++++++++-----------
- 9 files changed, 52 insertions(+), 52 deletions(-)
+ drivers/net/wireless/ath/ath11k/debug.h           | 4 ++--
+ drivers/net/wireless/ath/ath11k/debug_htt_stats.h | 8 ++++----
+ drivers/net/wireless/ath/ath11k/hal_desc.h        | 4 ++--
+ drivers/net/wireless/ath/ath11k/hal_rx.h          | 2 +-
+ drivers/net/wireless/ath/ath11k/hw.h              | 2 +-
+ drivers/net/wireless/ath/ath11k/wmi.h             | 2 +-
+ 6 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/ce.h b/drivers/net/wireless/ath/ath10k/ce.h
-index a7478c240f78..41b5ea25ca57 100644
---- a/drivers/net/wireless/ath/ath10k/ce.h
-+++ b/drivers/net/wireless/ath/ath10k/ce.h
-@@ -110,7 +110,7 @@ struct ath10k_ce_ring {
- 	struct ce_desc_64 *shadow_base;
- 
- 	/* keep last */
--	void *per_transfer_context[0];
-+	void *per_transfer_context[];
+diff --git a/drivers/net/wireless/ath/ath11k/debug.h b/drivers/net/wireless/ath/ath11k/debug.h
+index 97e7306c506d..c7edf946ff5c 100644
+--- a/drivers/net/wireless/ath/ath11k/debug.h
++++ b/drivers/net/wireless/ath/ath11k/debug.h
+@@ -67,7 +67,7 @@ struct debug_htt_stats_req {
+ 	u8 peer_addr[ETH_ALEN];
+ 	struct completion cmpln;
+ 	u32 buf_len;
+-	u8 buf[0];
++	u8 buf[];
  };
  
- struct ath10k_ce_pipe {
-diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
-index bd8ef576c590..829c2f9244e8 100644
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -1228,7 +1228,7 @@ struct ath10k {
- 	int coex_gpio_pin;
- 
- 	/* must be last */
--	u8 drv_priv[0] __aligned(sizeof(void *));
-+	u8 drv_priv[] __aligned(sizeof(void *));
+ struct ath_pktlog_hdr {
+@@ -77,7 +77,7 @@ struct ath_pktlog_hdr {
+ 	u16 size;
+ 	u32 timestamp;
+ 	u32 type_specific_data;
+-	u8 payload[0];
++	u8 payload[];
  };
  
- static inline bool ath10k_peer_stats_enabled(struct ath10k *ar)
-diff --git a/drivers/net/wireless/ath/ath10k/coredump.h b/drivers/net/wireless/ath/ath10k/coredump.h
-index 8bf03e8c1d3a..e760ce1a5f1e 100644
---- a/drivers/net/wireless/ath/ath10k/coredump.h
-+++ b/drivers/net/wireless/ath/ath10k/coredump.h
-@@ -88,7 +88,7 @@ struct ath10k_dump_file_data {
- 	u8 unused[128];
- 
- 	/* struct ath10k_tlv_dump_data + more */
--	u8 data[0];
-+	u8 data[];
- } __packed;
- 
- struct ath10k_dump_ram_data_hdr {
-@@ -100,7 +100,7 @@ struct ath10k_dump_ram_data_hdr {
- 	/* length of payload data, not including this header */
- 	__le32 length;
- 
--	u8 data[0];
-+	u8 data[];
- };
- 
- /* magic number to fill the holes not copied due to sections in regions */
-diff --git a/drivers/net/wireless/ath/ath10k/debug.h b/drivers/net/wireless/ath/ath10k/debug.h
-index 82f7eb8583d9..099cc438e231 100644
---- a/drivers/net/wireless/ath/ath10k/debug.h
-+++ b/drivers/net/wireless/ath/ath10k/debug.h
-@@ -65,7 +65,7 @@ struct ath10k_pktlog_hdr {
- 	__le16 log_type; /* Type of log information foll this header */
- 	__le16 size; /* Size of variable length log information in bytes */
- 	__le32 timestamp;
--	u8 payload[0];
-+	u8 payload[];
- } __packed;
- 
- /* FIXME: How to calculate the buffer size sanely? */
-diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
-index 4a12564fc30e..fd072d60319a 100644
---- a/drivers/net/wireless/ath/ath10k/htt.h
-+++ b/drivers/net/wireless/ath/ath10k/htt.h
-@@ -279,12 +279,12 @@ struct htt_rx_ring_setup_hdr {
- 
- struct htt_rx_ring_setup_32 {
- 	struct htt_rx_ring_setup_hdr hdr;
--	struct htt_rx_ring_setup_ring32 rings[0];
-+	struct htt_rx_ring_setup_ring32 rings[];
- } __packed;
- 
- struct htt_rx_ring_setup_64 {
- 	struct htt_rx_ring_setup_hdr hdr;
--	struct htt_rx_ring_setup_ring64 rings[0];
-+	struct htt_rx_ring_setup_ring64 rings[];
- } __packed;
- 
- /*
-@@ -722,7 +722,7 @@ struct htt_rx_indication {
- 	 * %mpdu_ranges starts after &%prefix + roundup(%fw_rx_desc_bytes, 4)
- 	 * and has %num_mpdu_ranges elements.
- 	 */
--	struct htt_rx_indication_mpdu_range mpdu_ranges[0];
-+	struct htt_rx_indication_mpdu_range mpdu_ranges[];
- } __packed;
- 
- /* High latency version of the RX indication */
-@@ -731,7 +731,7 @@ struct htt_rx_indication_hl {
- 	struct htt_rx_indication_ppdu ppdu;
- 	struct htt_rx_indication_prefix prefix;
- 	struct fw_rx_desc_hl fw_desc;
--	struct htt_rx_indication_mpdu_range mpdu_ranges[0];
-+	struct htt_rx_indication_mpdu_range mpdu_ranges[];
- } __packed;
- 
- struct htt_hl_rx_desc {
-@@ -898,7 +898,7 @@ struct htt_append_retries {
- struct htt_data_tx_completion_ext {
- 	struct htt_append_retries a_retries;
- 	__le32 t_stamp;
--	__le16 msdus_rssi[0];
-+	__le16 msdus_rssi[];
- } __packed;
- 
- /**
-@@ -982,7 +982,7 @@ struct htt_data_tx_completion {
- 	} __packed;
- 	u8 num_msdus;
- 	u8 flags2; /* HTT_TX_CMPL_FLAG_DATA_RSSI */
--	__le16 msdus[0]; /* variable length based on %num_msdus */
-+	__le16 msdus[]; /* variable length based on %num_msdus */
- } __packed;
- 
- #define HTT_TX_PPDU_DUR_INFO0_PEER_ID_MASK	GENMASK(15, 0)
-@@ -997,7 +997,7 @@ struct htt_data_tx_ppdu_dur {
- 
- struct htt_data_tx_compl_ppdu_dur {
- 	__le32 info0; /* HTT_TX_COMPL_PPDU_DUR_INFO0_ */
--	struct htt_data_tx_ppdu_dur ppdu_dur[0];
-+	struct htt_data_tx_ppdu_dur ppdu_dur[];
- } __packed;
- 
- struct htt_tx_compl_ind_base {
-@@ -1023,7 +1023,7 @@ struct htt_rc_update {
- 	u8 addr[6];
- 	u8 num_elems;
- 	u8 rsvd0;
--	struct htt_rc_tx_done_params params[0]; /* variable length %num_elems */
-+	struct htt_rc_tx_done_params params[]; /* variable length %num_elems */
- } __packed;
- 
- /* see htt_rx_indication for similar fields and descriptions */
-@@ -1040,7 +1040,7 @@ struct htt_rx_fragment_indication {
- 	__le16 fw_rx_desc_bytes;
- 	__le16 rsvd0;
- 
--	u8 fw_msdu_rx_desc[0];
-+	u8 fw_msdu_rx_desc[];
- } __packed;
- 
- #define ATH10K_IEEE80211_EXTIV               BIT(5)
-@@ -1065,7 +1065,7 @@ struct htt_rx_pn_ind {
- 	u8 seqno_end;
- 	u8 pn_ie_count;
- 	u8 reserved;
--	u8 pn_ies[0];
-+	u8 pn_ies[];
- } __packed;
- 
- struct htt_rx_offload_msdu {
-@@ -1074,7 +1074,7 @@ struct htt_rx_offload_msdu {
- 	u8 vdev_id;
- 	u8 tid;
- 	u8 fw_desc;
--	u8 payload[0];
-+	u8 payload[];
- } __packed;
- 
- struct htt_rx_offload_ind {
-@@ -1157,7 +1157,7 @@ struct htt_rx_test {
- 	 *  a) num_ints * sizeof(__le32)
- 	 *  b) num_chars * sizeof(u8) aligned to 4bytes
- 	 */
--	u8 payload[0];
-+	u8 payload[];
- } __packed;
- 
- static inline __le32 *htt_rx_test_get_ints(struct htt_rx_test *rx_test)
-@@ -1191,7 +1191,7 @@ static inline u8 *htt_rx_test_get_chars(struct htt_rx_test *rx_test)
+ #define ATH11K_HTT_STATS_BUF_SIZE (1024 * 512)
+diff --git a/drivers/net/wireless/ath/ath11k/debug_htt_stats.h b/drivers/net/wireless/ath/ath11k/debug_htt_stats.h
+index 23a6baa9e95a..682a6ff222bd 100644
+--- a/drivers/net/wireless/ath/ath11k/debug_htt_stats.h
++++ b/drivers/net/wireless/ath/ath11k/debug_htt_stats.h
+@@ -239,7 +239,7 @@ struct htt_tx_pdev_stats_tx_ppdu_stats_tlv_v {
   */
- struct htt_pktlog_msg {
- 	u8 pad[3];
--	u8 payload[0];
-+	u8 payload[];
- } __packed;
- 
- struct htt_dbg_stats_rx_reorder_stats {
-@@ -1480,7 +1480,7 @@ struct htt_stats_conf_item {
- 	} __packed;
- 	u8 pad;
- 	__le16 length;
--	u8 payload[0]; /* roundup(length, 4) long */
-+	u8 payload[]; /* roundup(length, 4) long */
- } __packed;
- 
- struct htt_stats_conf {
-@@ -1489,7 +1489,7 @@ struct htt_stats_conf {
- 	__le32 cookie_msb;
- 
- 	/* each item has variable length! */
--	struct htt_stats_conf_item items[0];
-+	struct htt_stats_conf_item items[];
- } __packed;
- 
- static inline struct htt_stats_conf_item *htt_stats_conf_next_item(
-@@ -1664,7 +1664,7 @@ struct htt_tx_fetch_ind {
- 	__le16 num_resp_ids;
- 	__le16 num_records;
- 	struct htt_tx_fetch_record records[0];
--	__le32 resp_ids[0]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
-+	__le32 resp_ids[]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
- } __packed;
- 
- static inline void *
-@@ -1679,13 +1679,13 @@ struct htt_tx_fetch_resp {
- 	__le16 fetch_seq_num;
- 	__le16 num_records;
- 	__le32 token;
--	struct htt_tx_fetch_record records[0];
-+	struct htt_tx_fetch_record records[];
- } __packed;
- 
- struct htt_tx_fetch_confirm {
- 	u8 pad0;
- 	__le16 num_resp_ids;
--	__le32 resp_ids[0];
-+	__le32 resp_ids[];
- } __packed;
- 
- enum htt_tx_mode_switch_mode {
-@@ -1717,7 +1717,7 @@ struct htt_tx_mode_switch_ind {
- 	__le16 info0; /* HTT_TX_MODE_SWITCH_IND_INFO0_ */
- 	__le16 info1; /* HTT_TX_MODE_SWITCH_IND_INFO1_ */
- 	u8 pad1[2];
--	struct htt_tx_mode_switch_record records[0];
-+	struct htt_tx_mode_switch_record records[];
- } __packed;
- 
- struct htt_channel_change {
-@@ -1747,7 +1747,7 @@ struct htt_peer_tx_stats {
- 	u8 num_ppdu;
- 	u8 ppdu_len;
- 	u8 version;
--	u8 payload[0];
-+	u8 payload[];
- } __packed;
- 
- #define ATH10K_10_2_TX_STATS_OFFSET	136
-@@ -2185,7 +2185,7 @@ struct htt_rx_desc {
- 		struct rx_ppdu_end ppdu_end;
- 	} __packed;
- 	u8 rx_hdr_status[RX_HTT_HDR_STATUS_LEN];
--	u8 msdu_payload[0];
-+	u8 msdu_payload[];
+ struct htt_tx_pdev_stats_tried_mpdu_cnt_hist_tlv_v {
+ 	u32 hist_bin_size;
+-	u32 tried_mpdu_cnt_hist[0]; /* HTT_TX_PDEV_TRIED_MPDU_CNT_HIST */
++	u32 tried_mpdu_cnt_hist[]; /* HTT_TX_PDEV_TRIED_MPDU_CNT_HIST */
  };
  
- #define HTT_RX_DESC_HL_INFO_SEQ_NUM_MASK           0x00000fff
-diff --git a/drivers/net/wireless/ath/ath10k/hw.h b/drivers/net/wireless/ath/ath10k/hw.h
-index 970c736ac6bb..077813bc6c7e 100644
---- a/drivers/net/wireless/ath/ath10k/hw.h
-+++ b/drivers/net/wireless/ath/ath10k/hw.h
-@@ -165,7 +165,7 @@ enum qca9377_chip_id_rev {
- struct ath10k_fw_ie {
+ /* == SOC ERROR STATS == */
+@@ -550,7 +550,7 @@ struct htt_tx_hwq_stats_cmn_tlv {
+ struct htt_tx_hwq_difs_latency_stats_tlv_v {
+ 	u32 hist_intvl;
+ 	/* histogram of ppdu post to hwsch - > cmd status received */
+-	u32 difs_latency_hist[0]; /* HTT_TX_HWQ_MAX_DIFS_LATENCY_BINS */
++	u32 difs_latency_hist[]; /* HTT_TX_HWQ_MAX_DIFS_LATENCY_BINS */
+ };
+ 
+ /* NOTE: Variable length TLV, use length spec to infer array size */
+@@ -586,7 +586,7 @@ struct htt_tx_hwq_fes_result_stats_tlv_v {
+ struct htt_tx_hwq_tried_mpdu_cnt_hist_tlv_v {
+ 	u32 hist_bin_size;
+ 	/* Histogram of number of mpdus on tried mpdu */
+-	u32 tried_mpdu_cnt_hist[0]; /* HTT_TX_HWQ_TRIED_MPDU_CNT_HIST */
++	u32 tried_mpdu_cnt_hist[]; /* HTT_TX_HWQ_TRIED_MPDU_CNT_HIST */
+ };
+ 
+ /* NOTE: Variable length TLV, use length spec to infer array size
+@@ -1584,7 +1584,7 @@ struct htt_pdev_stats_twt_session_tlv {
+ struct htt_pdev_stats_twt_sessions_tlv {
+ 	u32 pdev_id;
+ 	u32 num_sessions;
+-	struct htt_pdev_stats_twt_session_tlv twt_session[0];
++	struct htt_pdev_stats_twt_session_tlv twt_session[];
+ };
+ 
+ enum htt_rx_reo_resource_sample_id_enum {
+diff --git a/drivers/net/wireless/ath/ath11k/hal_desc.h b/drivers/net/wireless/ath/ath11k/hal_desc.h
+index 5e200380cca4..a1f747c1c44d 100644
+--- a/drivers/net/wireless/ath/ath11k/hal_desc.h
++++ b/drivers/net/wireless/ath/ath11k/hal_desc.h
+@@ -477,7 +477,7 @@ enum hal_tlv_tag {
+ 
+ struct hal_tlv_hdr {
+ 	u32 tl;
+-	u8 value[0];
++	u8 value[];
+ } __packed;
+ 
+ #define RX_MPDU_DESC_INFO0_MSDU_COUNT		GENMASK(7, 0)
+@@ -1972,7 +1972,7 @@ struct hal_rx_reo_queue {
+ 	u32 processed_total_bytes;
+ 	u32 info5;
+ 	u32 rsvd[3];
+-	struct hal_rx_reo_queue_ext ext_desc[0];
++	struct hal_rx_reo_queue_ext ext_desc[];
+ } __packed;
+ 
+ /* hal_rx_reo_queue
+diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.h b/drivers/net/wireless/ath/ath11k/hal_rx.h
+index e863e4abfcc1..c436191ae1e8 100644
+--- a/drivers/net/wireless/ath/ath11k/hal_rx.h
++++ b/drivers/net/wireless/ath/ath11k/hal_rx.h
+@@ -23,7 +23,7 @@ struct hal_rx_wbm_rel_info {
+ 
+ struct hal_rx_mon_status_tlv_hdr {
+ 	u32 hdr;
+-	u8 value[0];
++	u8 value[];
+ };
+ 
+ enum hal_rx_su_mu_coding {
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 9973477ae373..cdec95644758 100644
+--- a/drivers/net/wireless/ath/ath11k/hw.h
++++ b/drivers/net/wireless/ath/ath11k/hw.h
+@@ -111,7 +111,7 @@ struct ath11k_hw_params {
+ struct ath11k_fw_ie {
  	__le32 id;
  	__le32 len;
 -	u8 data[0];
 +	u8 data[];
  };
  
- enum ath10k_fw_ie_type {
-diff --git a/drivers/net/wireless/ath/ath10k/pci.h b/drivers/net/wireless/ath/ath10k/pci.h
-index 4455ed6c5275..1254412f06dd 100644
---- a/drivers/net/wireless/ath/ath10k/pci.h
-+++ b/drivers/net/wireless/ath/ath10k/pci.h
-@@ -182,7 +182,7 @@ struct ath10k_pci {
- 	 * allocated (ahb support enabled case) in the continuation of
- 	 * this struct.
- 	 */
--	struct ath10k_ahb ahb[0];
-+	struct ath10k_ahb ahb[];
- };
+ enum ath11k_bd_ie_board_type {
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 510f9c6bc1d7..717e87db91cb 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.h
++++ b/drivers/net/wireless/ath/ath11k/wmi.h
+@@ -39,7 +39,7 @@ struct wmi_cmd_hdr {
  
- static inline struct ath10k_pci *ath10k_pci_priv(struct ath10k *ar)
-diff --git a/drivers/net/wireless/ath/ath10k/wmi-tlv.h b/drivers/net/wireless/ath/ath10k/wmi-tlv.h
-index 4972dc12991c..4d49eb4b7f3d 100644
---- a/drivers/net/wireless/ath/ath10k/wmi-tlv.h
-+++ b/drivers/net/wireless/ath/ath10k/wmi-tlv.h
-@@ -1623,7 +1623,7 @@ wmi_tlv_svc_map_ext(const __le32 *in, unsigned long *out, size_t len)
  struct wmi_tlv {
- 	__le16 len;
- 	__le16 tag;
+ 	u32 header;
 -	u8 value[0];
 +	u8 value[];
  } __packed;
  
- struct ath10k_mgmt_tx_pkt_addr {
-@@ -2023,7 +2023,7 @@ struct wmi_tlv_bcn_tx_status_ev {
- struct wmi_tlv_bcn_prb_info {
- 	__le32 caps;
- 	__le32 erp;
--	u8 ies[0];
-+	u8 ies[];
- } __packed;
- 
- struct wmi_tlv_bcn_tmpl_cmd {
-@@ -2054,7 +2054,7 @@ struct wmi_tlv_diag_item {
- 	__le16 len;
- 	__le32 timestamp;
- 	__le32 code;
--	u8 payload[0];
-+	u8 payload[];
- } __packed;
- 
- struct wmi_tlv_diag_data_ev {
-diff --git a/drivers/net/wireless/ath/ath10k/wmi.h b/drivers/net/wireless/ath/ath10k/wmi.h
-index 6df415778374..df140cfb7af7 100644
---- a/drivers/net/wireless/ath/ath10k/wmi.h
-+++ b/drivers/net/wireless/ath/ath10k/wmi.h
-@@ -2290,7 +2290,7 @@ struct wmi_service_ready_event {
- 	 * where FW can access this memory directly (or) by DMA.
- 	 */
- 	__le32 num_mem_reqs;
--	struct wlan_host_mem_req mem_reqs[0];
-+	struct wlan_host_mem_req mem_reqs[];
- } __packed;
- 
- /* This is the definition from 10.X firmware branch */
-@@ -2329,7 +2329,7 @@ struct wmi_10x_service_ready_event {
- 	 */
- 	__le32 num_mem_reqs;
- 
--	struct wlan_host_mem_req mem_reqs[0];
-+	struct wlan_host_mem_req mem_reqs[];
- } __packed;
- 
- #define WMI_SERVICE_READY_TIMEOUT_HZ (5 * HZ)
-@@ -3084,19 +3084,19 @@ struct wmi_chan_list_entry {
- struct wmi_chan_list {
- 	__le32 tag; /* WMI_CHAN_LIST_TAG */
- 	__le32 num_chan;
--	struct wmi_chan_list_entry channel_list[0];
-+	struct wmi_chan_list_entry channel_list[];
- } __packed;
- 
- struct wmi_bssid_list {
- 	__le32 tag; /* WMI_BSSID_LIST_TAG */
- 	__le32 num_bssid;
--	struct wmi_mac_addr bssid_list[0];
-+	struct wmi_mac_addr bssid_list[];
- } __packed;
- 
- struct wmi_ie_data {
- 	__le32 tag; /* WMI_IE_TAG */
- 	__le32 ie_len;
--	u8 ie_data[0];
-+	u8 ie_data[];
- } __packed;
- 
- struct wmi_ssid {
-@@ -3107,7 +3107,7 @@ struct wmi_ssid {
- struct wmi_ssid_list {
- 	__le32 tag; /* WMI_SSID_LIST_TAG */
- 	__le32 num_ssids;
--	struct wmi_ssid ssids[0];
-+	struct wmi_ssid ssids[];
- } __packed;
- 
- /* prefix used by scan requestor ids on the host */
-@@ -3309,7 +3309,7 @@ struct wmi_stop_scan_arg {
- 
- struct wmi_scan_chan_list_cmd {
- 	__le32 num_scan_chans;
--	struct wmi_channel chan_info[0];
-+	struct wmi_channel chan_info[];
- } __packed;
- 
- struct wmi_scan_chan_list_arg {
-@@ -3393,12 +3393,12 @@ struct wmi_mgmt_rx_hdr_v2 {
- 
- struct wmi_mgmt_rx_event_v1 {
- 	struct wmi_mgmt_rx_hdr_v1 hdr;
--	u8 buf[0];
-+	u8 buf[];
- } __packed;
- 
- struct wmi_mgmt_rx_event_v2 {
- 	struct wmi_mgmt_rx_hdr_v2 hdr;
--	u8 buf[0];
-+	u8 buf[];
- } __packed;
- 
- struct wmi_10_4_mgmt_rx_hdr {
-@@ -3413,7 +3413,7 @@ struct wmi_10_4_mgmt_rx_hdr {
- 
- struct wmi_10_4_mgmt_rx_event {
- 	struct wmi_10_4_mgmt_rx_hdr hdr;
--	u8 buf[0];
-+	u8 buf[];
- } __packed;
- 
- struct wmi_mgmt_rx_ext_info {
-@@ -3453,14 +3453,14 @@ struct wmi_phyerr {
- 	__le32 rssi_chains[4];
- 	__le16 nf_chains[4];
- 	__le32 buf_len;
--	u8 buf[0];
-+	u8 buf[];
- } __packed;
- 
- struct wmi_phyerr_event {
- 	__le32 num_phyerrs;
- 	__le32 tsf_l32;
- 	__le32 tsf_u32;
--	struct wmi_phyerr phyerrs[0];
-+	struct wmi_phyerr phyerrs[];
- } __packed;
- 
- struct wmi_10_4_phyerr_event {
-@@ -3477,7 +3477,7 @@ struct wmi_10_4_phyerr_event {
- 	__le32 phy_err_mask[2];
- 	__le32 tsf_timestamp;
- 	__le32 buf_len;
--	u8 buf[0];
-+	u8 buf[];
- } __packed;
- 
- struct wmi_radar_found_info {
-@@ -3590,7 +3590,7 @@ struct wmi_mgmt_tx_hdr {
- 
- struct wmi_mgmt_tx_cmd {
- 	struct wmi_mgmt_tx_hdr hdr;
--	u8 buf[0];
-+	u8 buf[];
- } __packed;
- 
- struct wmi_echo_event {
-@@ -4618,7 +4618,7 @@ struct wmi_stats_event {
- 	 *  By having a zero sized array, the pointer to data area
- 	 *  becomes available without increasing the struct size
- 	 */
--	u8 data[0];
-+	u8 data[];
- } __packed;
- 
- struct wmi_10_2_stats_event {
-@@ -4628,7 +4628,7 @@ struct wmi_10_2_stats_event {
- 	__le32 num_vdev_stats;
- 	__le32 num_peer_stats;
- 	__le32 num_bcnflt_stats;
--	u8 data[0];
-+	u8 data[];
- } __packed;
- 
- /*
-@@ -5023,7 +5023,7 @@ struct wmi_vdev_install_key_cmd {
- 	__le32 key_rxmic_len;
- 
- 	/* contains key followed by tx mic followed by rx mic */
--	u8 key_data[0];
-+	u8 key_data[];
- } __packed;
- 
- struct wmi_vdev_install_key_arg {
-@@ -5693,7 +5693,7 @@ struct wmi_bcn_tx_hdr {
- 
- struct wmi_bcn_tx_cmd {
- 	struct wmi_bcn_tx_hdr hdr;
--	u8 *bcn[0];
-+	u8 *bcn[];
- } __packed;
- 
- struct wmi_bcn_tx_arg {
-@@ -6110,7 +6110,7 @@ struct wmi_bcn_info {
- 
- struct wmi_host_swba_event {
- 	__le32 vdev_map;
--	struct wmi_bcn_info bcn_info[0];
-+	struct wmi_bcn_info bcn_info[];
- } __packed;
- 
- struct wmi_10_2_4_bcn_info {
-@@ -6120,7 +6120,7 @@ struct wmi_10_2_4_bcn_info {
- 
- struct wmi_10_2_4_host_swba_event {
- 	__le32 vdev_map;
--	struct wmi_10_2_4_bcn_info bcn_info[0];
-+	struct wmi_10_2_4_bcn_info bcn_info[];
- } __packed;
- 
- /* 16 words = 512 client + 1 word = for guard */
-@@ -6161,7 +6161,7 @@ struct wmi_10_4_bcn_info {
- 
- struct wmi_10_4_host_swba_event {
- 	__le32 vdev_map;
--	struct wmi_10_4_bcn_info bcn_info[0];
-+	struct wmi_10_4_bcn_info bcn_info[];
- } __packed;
- 
- #define WMI_MAX_AP_VDEV 16
+ #define WMI_TLV_LEN	GENMASK(15, 0)
 -- 
 2.26.2
 
