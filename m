@@ -2,118 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 113B71C353B
-	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 11:05:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A31D61C354C
+	for <lists+netdev@lfdr.de>; Mon,  4 May 2020 11:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727993AbgEDJFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 05:05:31 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39015 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725928AbgEDJFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 05:05:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588583130;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=BUMYAgYVEbMnE9HCazZFtfj40ubk94x+JHLvAPGLttU=;
-        b=fTTTdyCHvmUJoOTSuwIlYx4R0FlMDzWb2Yww+ORFsTqQ6K6wMB1Vcx22gXuQhY4ZwKqbiZ
-        p7fyub/UB+UTNl3O2UwvaJR0+Lsv0pqV+SE5eVxzPKn0jq2A7aIB7E43vWUrMoqvhCvPoO
-        qa3x/U3sSL6FSMVbmbR0nAyM0F6ovnI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-441-AJYe1ogYNwyt4figYBKPVw-1; Mon, 04 May 2020 05:05:26 -0400
-X-MC-Unique: AJYe1ogYNwyt4figYBKPVw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 950697BAC;
-        Mon,  4 May 2020 09:05:24 +0000 (UTC)
-Received: from ebuild.redhat.com (ovpn-115-25.ams2.redhat.com [10.36.115.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E74F55D9D5;
-        Mon,  4 May 2020 09:05:19 +0000 (UTC)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, toke@redhat.com
-Subject: [PATCH bpf-next v2] libbpf: fix probe code to return EPERM if encountered
-Date:   Mon,  4 May 2020 11:05:14 +0200
-Message-Id: <158858309381.5053.12391080967642755711.stgit@ebuild>
-User-Agent: StGit/0.19
+        id S1728168AbgEDJKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 05:10:48 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38692 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726467AbgEDJKr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 May 2020 05:10:47 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id D8EDFAC7D;
+        Mon,  4 May 2020 09:10:46 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 43276604EE; Mon,  4 May 2020 11:10:44 +0200 (CEST)
+Date:   Mon, 4 May 2020 11:10:44 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        mkl@pengutronix.de, Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>
+Subject: Re: [PATCH v5 1/2] ethtool: provide UAPI for PHY master/slave
+ configuration.
+Message-ID: <20200504091044.GA8237@lion.mk-sys.cz>
+References: <20200504071214.5890-1-o.rempel@pengutronix.de>
+ <20200504071214.5890-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200504071214.5890-2-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the probe code was failing for any reason ENOTSUP was returned, even
-if this was due to no having enough lock space. This patch fixes this by
-returning EPERM to the user application, so it can respond and increase
-the RLIMIT_MEMLOCK size.
+On Mon, May 04, 2020 at 09:12:13AM +0200, Oleksij Rempel wrote:
+> This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
+> auto-negotiation support, we needed to be able to configure the
+> MASTER-SLAVE role of the port manually or from an application in user
+> space.
+> 
+> The same UAPI can be used for 1000BASE-T or MultiGBASE-T devices to
+> force MASTER or SLAVE role. See IEEE 802.3-2018:
+> 22.2.4.3.7 MASTER-SLAVE control register (Register 9)
+> 22.2.4.3.8 MASTER-SLAVE status register (Register 10)
+> 40.5.2 MASTER-SLAVE configuration resolution
+> 45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
+> 45.2.7.10 MultiGBASE-T AN control 1 register (Register 7.32)
+> 
+> The MASTER-SLAVE role affects the clock configuration:
+> 
+> -------------------------------------------------------------------------------
+> When the  PHY is configured as MASTER, the PMA Transmit function shall
+> source TX_TCLK from a local clock source. When configured as SLAVE, the
+> PMA Transmit function shall source TX_TCLK from the clock recovered from
+> data stream provided by MASTER.
+> 
+> iMX6Q                     KSZ9031                XXX
+> ------\                /-----------\        /------------\
+>       |                |           |        |            |
+>  MAC  |<----RGMII----->| PHY Slave |<------>| PHY Master |
+>       |<--- 125 MHz ---+-<------/  |        | \          |
+> ------/                \-----------/        \------------/
+>                                                ^
+>                                                 \-TX_TCLK
+> 
+> -------------------------------------------------------------------------------
+> 
+> Since some clock or link related issues are only reproducible in a
+> specific MASTER-SLAVE-role, MAC and PHY configuration, it is beneficial
+> to provide generic (not 100BASE-T1 specific) interface to the user space
+> for configuration flexibility and trouble shooting.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index ac2784192472f..42dda9d2082ee 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1768,6 +1768,90 @@ int genphy_setup_forced(struct phy_device *phydev)
+>  }
+>  EXPORT_SYMBOL(genphy_setup_forced);
+>  
+> +static int genphy_setup_master_slave(struct phy_device *phydev)
+> +{
+> +	u16 ctl = 0;
+> +
+> +	if (!phydev->is_gigabit_capable)
+> +		return 0;
 
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
----
-v2: Split bpf_object__probe_name() in two functions as suggested by Andri=
-i
+Why did you revert to silently ignoring requests in this case? On the
+other hand, we might rather want to do a more generic check which would
+handle all drivers not supporting the feature, see below.
 
- tools/lib/bpf/libbpf.c |   25 ++++++++++++++++++++++---
- 1 file changed, 22 insertions(+), 3 deletions(-)
+[...]
+> @@ -287,14 +308,37 @@ static bool ethnl_auto_linkmodes(struct ethtool_link_ksettings *ksettings,
+>  			     __ETHTOOL_LINK_MODE_MASK_NBITS);
+>  }
+>  
+> +static int ethnl_validate_master_slave_cfg(u8 cfg)
+> +{
+> +	switch (cfg) {
+> +	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
+> +	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
+> +	case MASTER_SLAVE_CFG_MASTER_FORCE:
+> +	case MASTER_SLAVE_CFG_SLAVE_FORCE:
+> +		return 1;
+> +	}
+> +
+> +	return 0;
+> +}
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 8f480e29a6b0..6838e6d431ce 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3149,7 +3149,7 @@ int bpf_map__resize(struct bpf_map *map, __u32 max_=
-entries)
- }
-=20
- static int
--bpf_object__probe_name(struct bpf_object *obj)
-+bpf_object__probe_loading(struct bpf_object *obj)
- {
- 	struct bpf_load_program_attr attr;
- 	char *cp, errmsg[STRERR_BUFSIZE];
-@@ -3176,8 +3176,26 @@ bpf_object__probe_name(struct bpf_object *obj)
- 	}
- 	close(ret);
-=20
--	/* now try the same program, but with the name */
-+	return 0;
-+}
-=20
-+static int
-+bpf_object__probe_name(struct bpf_object *obj)
-+{
-+	struct bpf_load_program_attr attr;
-+	struct bpf_insn insns[] =3D {
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	};
-+	int ret;
-+
-+	/* make sure loading with name works */
-+
-+	memset(&attr, 0, sizeof(attr));
-+	attr.prog_type =3D BPF_PROG_TYPE_SOCKET_FILTER;
-+	attr.insns =3D insns;
-+	attr.insns_cnt =3D ARRAY_SIZE(insns);
-+	attr.license =3D "GPL";
- 	attr.name =3D "test";
- 	ret =3D bpf_load_program_xattr(&attr, NULL, 0);
- 	if (ret >=3D 0) {
-@@ -5386,7 +5404,8 @@ int bpf_object__load_xattr(struct bpf_object_load_a=
-ttr *attr)
-=20
- 	obj->loaded =3D true;
-=20
--	err =3D bpf_object__probe_caps(obj);
-+	err =3D bpf_object__probe_loading(obj);
-+	err =3D err ? : bpf_object__probe_caps(obj);
- 	err =3D err ? : bpf_object__resolve_externs(obj, obj->kconfig);
- 	err =3D err ? : bpf_object__sanitize_and_load_btf(obj);
- 	err =3D err ? : bpf_object__sanitize_maps(obj);
+Nitpick: bool would be more appropriate as return value.
 
+> +
+>  static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
+>  				  struct ethtool_link_ksettings *ksettings,
+>  				  bool *mod)
+>  {
+>  	struct ethtool_link_settings *lsettings = &ksettings->base;
+>  	bool req_speed, req_duplex;
+> +	const struct nlattr *master_slave_cfg;
+>  	int ret;
+>  
+> +	master_slave_cfg = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
+> +	if (master_slave_cfg) {
+> +		u8 cfg = nla_get_u8(master_slave_cfg);
+> +		if (!ethnl_validate_master_slave_cfg(cfg)) {
+> +			GENL_SET_ERR_MSG(info, "LINKMODES_MASTER_SLAVE_CFG contains not valid value");
+> +			return -EOPNOTSUPP;
+> +		}
+> +	}
+
+Please set also the "bad attribute" in extack, it may help
+non-interactive clients.
+
+Also, it would be nice to report error if client wants to set master/slave but
+driver does not support it. How about this?
+
+	if (master_slave_cfg) {
+		u8 cfg = nla_get_u8(master_slave_cfg);
+
+		if (lsettings->master_slave_cfg == MASTER_SLAVE_CFG_UNSUPPORTED) {
+			NL_SET_ERR_MSG_ATTR(info->extack, master_slave_cfg,
+					    "master/slave configuration not supported by device");
+			return -EOPNOTSUPP;
+		}
+		if (!ethnl_validate_master_slave_cfg(cfg)) {
+			NL_SET_ERR_MSG_ATTR(info->extack, master_slave_cfg,
+					    "master/slave value is invalid");
+			return -EOPNOTSUPP;
+		}
+	}
+
+
+Do you plan to allow handling master/slave also via ioctl()? If yes, we should
+also add the sanity checks to ioctl code path. If not, we should prevent
+passing non-zero values from userspace to driver.
+
+Other than this, the patch looks good to me.
+
+Michal
+
+>  	*mod = false;
+>  	req_speed = tb[ETHTOOL_A_LINKMODES_SPEED];
+>  	req_duplex = tb[ETHTOOL_A_LINKMODES_DUPLEX];
+> @@ -311,6 +355,7 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
+>  			 mod);
+>  	ethnl_update_u8(&lsettings->duplex, tb[ETHTOOL_A_LINKMODES_DUPLEX],
+>  			mod);
+> +	ethnl_update_u8(&lsettings->master_slave_cfg, master_slave_cfg, mod);
+>  
+>  	if (!tb[ETHTOOL_A_LINKMODES_OURS] && lsettings->autoneg &&
+>  	    (req_speed || req_duplex) &&
+> -- 
+> 2.26.2
+> 
