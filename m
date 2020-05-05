@@ -2,137 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3CB1C4F92
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 09:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC70A1C4FA3
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 09:51:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbgEEHuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 03:50:12 -0400
-Received: from mail-dm6nam11on2136.outbound.protection.outlook.com ([40.107.223.136]:30692
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726337AbgEEHuM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 03:50:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XkpM4IH0wU7CJf15m8QM1tE4pEGEITsPDMqy3xadeqjkcaB+g+Uf+j3Mgz/j2FwYxV63cnRJvW/0BLiBQGIpnFCVrUiB8euJ9DP31ZXlR9EM2Z2xI9mPncQhlNt8pRRKMn42uJza1K6keuziqjA9OfNpptr37VncjMUNmUSgTgm6rmHaY0MeemxBumaagPASBG/7Ob0GxVSh334jDByGJOEESn2CRRuNlp0RY/dGxqYox4u3e0qh5/XGCFIIB5+MJBcJG1lszgOCEebNAqvbODcF2dI8MFZKMxAkp8kOyB3iRA8doqk70/jQOIitvyZ0O3DPjSiFyzmtO7P05qgJow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f56w56JSqyWTJSwbFCkv2hYmPrYJ9QHwAwOCmhHouBI=;
- b=KUyROUJLWR4EkEz/e6+7SbIFy+zR6D7FpPhY2U63rTXHg03jfFScz8lZx0ls8TqJc6F+xHGx+PhOhZiuAIxQ20mc2x00Zf7V29/UBVohndXCY7pzbQr0uqSHPPEHqJa/ObMWgTww2LmiQHvRKICiChq7TDgiQll/K/m9dWmU3UG0SgFJWgZ+y7dJkj9m8NXk3nindCcqFcSQhQR1qtrUu7tj72ayq7m+3kk2sajlfKtyZzktnyIjLRIVxz2GFC4PcMLkspUixTh2JOl/S8eiugPmQiT5EUoAtuJyqOmLk1wY5qB9pal8UtlVO2upmqduPqtecWtlC47RPuSXGhW9Tw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cypress.com; dmarc=pass action=none header.from=cypress.com;
- dkim=pass header.d=cypress.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cypress.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f56w56JSqyWTJSwbFCkv2hYmPrYJ9QHwAwOCmhHouBI=;
- b=R2xsZk+wNMUfQf7K/ahHdJBJlpBZtSudjRYqS9GSBH1LGHtgTpA9YYmtxE0UYMISeLNWtn2gHuLnWOrGdi54WLs9s1TQ7an+eKDI1f+WzioZJIdR6abx8jH8M8tjwlxmczXINJKZpNyOaCaCHEA1cnEFhot8dOV5GbbBo/cZZt4=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=cypress.com;
-Received: from BYAPR06MB4901.namprd06.prod.outlook.com (2603:10b6:a03:7a::30)
- by BYAPR06MB3829.namprd06.prod.outlook.com (2603:10b6:a02:89::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.29; Tue, 5 May
- 2020 07:50:07 +0000
-Received: from BYAPR06MB4901.namprd06.prod.outlook.com
- ([fe80::69bb:5671:e8b:74c1]) by BYAPR06MB4901.namprd06.prod.outlook.com
- ([fe80::69bb:5671:e8b:74c1%3]) with mapi id 15.20.2958.030; Tue, 5 May 2020
- 07:50:07 +0000
-Reply-To: chi-hsien.lin@cypress.com
-Subject: Re: [PATCH] brcmfmac: remove Comparison to bool in
- brcmf_p2p_send_action_frame()
-To:     Jason Yan <yanaijie@huawei.com>,
-        "arend.vanspriel@broadcom.com" <arend.vanspriel@broadcom.com>,
-        "franky.lin@broadcom.com" <franky.lin@broadcom.com>,
-        "hante.meuleman@broadcom.com" <hante.meuleman@broadcom.com>,
-        Wright Feng <Wright.Feng@cypress.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20200504113346.41342-1-yanaijie@huawei.com>
-From:   Chi-Hsien Lin <chi-hsien.lin@cypress.com>
-Message-ID: <41f77019-087f-95c6-6287-1b9ab3a87298@cypress.com>
-Date:   Tue, 5 May 2020 15:50:01 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.9.1
-In-Reply-To: <20200504113346.41342-1-yanaijie@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR03CA0022.namprd03.prod.outlook.com
- (2603:10b6:a03:1e0::32) To BYAPR06MB4901.namprd06.prod.outlook.com
- (2603:10b6:a03:7a::30)
+        id S1728436AbgEEHva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 03:51:30 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:13544 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728180AbgEEHv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 03:51:29 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1588665089; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=PIaNX+XjiI8iaziq2RQV4YWNfhjivHE+uwXFjmQivzQ=;
+ b=IHaVLpmSbc6cZSMGFhSC9tuEUrMxucwicM4SRQpTWKswJqxjGAGx6zfJTtvRY95KgT2CzZex
+ h/vp9KAvgdoO/17K16cZkru631tcpPoRu1cWQLWZWm9Oghh59pHMIc1FCKfFuHFg+XLL0kBy
+ WUIIolHZ705/ZX6zwVsRxM+68JQ=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5eb11afe.7fcea5582d88-smtp-out-n02;
+ Tue, 05 May 2020 07:51:26 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 86A73C432C2; Tue,  5 May 2020 07:51:26 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7AA10C433D2;
+        Tue,  5 May 2020 07:51:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7AA10C433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.9.112.143] (61.222.14.99) by BY5PR03CA0022.namprd03.prod.outlook.com (2603:10b6:a03:1e0::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Tue, 5 May 2020 07:50:04 +0000
-X-Originating-IP: [61.222.14.99]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 5051780e-1ff4-4a01-25e1-08d7f0c8edcc
-X-MS-TrafficTypeDiagnostic: BYAPR06MB3829:|BYAPR06MB3829:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR06MB38291A7585E7CE7564A4E158BBA70@BYAPR06MB3829.namprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:312;
-X-Forefront-PRVS: 0394259C80
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YGnmaeqWT1D149D0JCM5QadNujkLNvsJnHCfmPgF/CWtlJgp7rx4yTxf+QImGXB2cBb2DSnu2E8XbyjHb7z/aHK7Cfy++iHSY9HqOvEV7Vs9jdF7gagsj6vCJIB41dcfAnn/bQZ7i3pf/oHDBtyGlPbPhqXx/Eu+TV7zCm47lApaPGO9QZOt4gFGWWUDb92Sd0+KoKClppeYoka5lid8FxN8UChTak+/IAn/5/zVbsocbtxdUMbt2i5wSHd9WJ/hPGhd8iARNQSu7995DLrzeW18fWegcjYHpZxQ89k//b1DZoXoNpP9Ok/JG8oj0QFYJH2B67JpJjhMdqrpUT4KvU/4voBbncj+fbp6Qtf+AXCot5Qj0x6JxtJgUWirOhT7KTxvw6UcWWuyOdCtQfn12v0PJ9GNYXPrul6snngEAaNcizb+BSwMiLk43PdwPLKh1eO/7oqR16FhRO0LRJeeCEcRVkTQDiJS5n3eBrYT3bTQOCdD/Tlq5SRZhFsxNa4mYpTIlCAGH7CfVtN1czH7UOuGIWOinLJjpeBww8SYv0lcPfDvEIeDiY/fRXP54YmYqW2nt2/WVUEt7jOkJ5uTtQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR06MB4901.namprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(39860400002)(376002)(136003)(396003)(346002)(33430700001)(6486002)(66946007)(5660300002)(66556008)(66476007)(33440700001)(186003)(53546011)(16526019)(956004)(8676002)(6666004)(26005)(8936002)(2616005)(52116002)(36756003)(110136005)(16576012)(7416002)(31696002)(2906002)(3450700001)(86362001)(316002)(478600001)(31686004)(70780200001)(921003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: AAmpXHFtWnodAsgOUKc0NVHH8Lahx0BVGx6bnE735yc/cTrpSuERAMVY2Gbw6yEaLWh1Tf2soVC6dT/TyR4l1IF0W0oHXulsNrm6ba35a86a8AyjoihDmBimsBXFUgtx2IYopFY55fRDZJPBuRuQLykKwbR+G1xBSjdjobxZLUUZRd/VizZNrbWn0R0+0Fqwb2mYo0OVluQuXAB24+lnorRwO+c7ztZMY64oT3uiXMP/GlHUlcXsnT3ZidZoupH75cLCFlv4969I9fVf52SBUohj6NZxvy/qo7a1Erboro1KgUdDOeUN7EIWWtbv2iMgJkACK2gpL3nRtCv26zhYhWmvmv9WtPSAiLYKmIpD2Ekdi2svsuemZsHE7ZPkVKDpI4sZtqKNC4nSPMDqCPtQK20WlQHQXhkGDxFvpU/B0kifo52BxiFGkrPCi1xaRBMuDgpOzzYurXBOK1iUDjI0webqvhuSizcplET2422+KXit26EOMyb7JTNUVDo7bhXiMWdqBmIRnOXC1UILcRilxuYv3fjelTyoLezdzeAIAHjurs2ETQuIePDky4DmKGTsN51KW5vVtzMv+VGNMUP0D6sqFkHj+aYzQRGrEDqwmX8jVWGDuH5qBpbiJPpvw0H6mKMgQtIA/7LpUtaaUj+vnXmP7vnfVGnKv4v+vskeNYXeqWj9heVzwC/WG8nPYI9HdrkJBFLM4JaRIKqvlCy1+KnSARGUsNBBk1HpWMQmnHd6632k68sF0xu2CmfOS3oM2xKquT5bHXVOrDsVJKO73hxfgy9evQC3oKT1QTo4zDY=
-X-OriginatorOrg: cypress.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5051780e-1ff4-4a01-25e1-08d7f0c8edcc
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2020 07:50:07.3167
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 011addfc-2c09-450d-8938-e0bbc2dd2376
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VolswaNUukFQ5ee//wT+WVc/piQXoAjM4o9wtRoD5aQHn7K6GyY6zYCpk1+y40E6QsO+gJ4OM6PG+dVlAjlhEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR06MB3829
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k: Replace zero-length array with flexible-array
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200504201108.GA32136@embeddedor>
+References: <20200504201108.GA32136@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200505075126.86A73C432C2@smtp.codeaurora.org>
+Date:   Tue,  5 May 2020 07:51:26 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
 
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
+> 
+> struct foo {
+>         int stuff;
+>         struct boo array[];
+> };
+> 
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertently introduced[3] to the codebase from now on.
+> 
+> Also, notice that, dynamic memory allocations won't be affected by
+> this change:
+> 
+> "Flexible array members have incomplete type, and so the sizeof operator
+> may not be applied. As a quirk of the original implementation of
+> zero-length arrays, sizeof evaluates to zero."[1]
+> 
+> sizeof(flexible-array-member) triggers a warning because flexible array
+> members have incomplete type[1]. There are some instances of code in
+> which the sizeof operator is being incorrectly/erroneously applied to
+> zero-length arrays and the result is zero. Such instances may be hiding
+> some bugs. So, this work (flexible-array member conversions) will also
+> help to get completely rid of those sorts of issues.
+> 
+> This issue was found with the help of Coccinelle.
+> 
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-On 05/04/2020 7:33, Jason Yan wrote:
-> Fix the following coccicheck warning:
-> 
-> drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c:1781:9-12:
-> WARNING: Comparison to bool
-> drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c:1785:5-8:
-> WARNING: Comparison to bool
-> 
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
-Reviewed-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
+Fails to apply, please rebase on top of ath.git master branch.
 
-> ---
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-> index 1f5deea5a288..16b193d13a2f 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-> @@ -1777,12 +1777,11 @@ bool brcmf_p2p_send_action_frame(struct brcmf_cfg80211_info *cfg,
->   	}
->   
->   	tx_retry = 0;
-> -	while (!p2p->block_gon_req_tx &&
-> -	       (ack == false) && (tx_retry < P2P_AF_TX_MAX_RETRY)) {
-> +	while (!p2p->block_gon_req_tx && !ack && (tx_retry < P2P_AF_TX_MAX_RETRY)) {
->   		ack = !brcmf_p2p_tx_action_frame(p2p, af_params);
->   		tx_retry++;
->   	}
-> -	if (ack == false) {
-> +	if (!ack) {
->   		bphy_err(drvr, "Failed to send Action Frame(retry %d)\n",
->   			 tx_retry);
->   		clear_bit(BRCMF_P2P_STATUS_GO_NEG_PHASE, &p2p->status);
-> 
+error: patch failed: drivers/net/wireless/ath/ath10k/pci.h:182
+error: drivers/net/wireless/ath/ath10k/pci.h: patch does not apply
+stg import: Diff does not apply cleanly
+
+Patch set to Changes Requested.
+
+-- 
+https://patchwork.kernel.org/patch/11527635/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
