@@ -2,68 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C44221C63E3
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 00:28:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A0AF1C63E9
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 00:31:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729403AbgEEW2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 18:28:12 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52696 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728875AbgEEW2M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 18:28:12 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jW62s-0000io-2Z; Wed, 06 May 2020 00:28:10 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jW62r-0003Ww-RJ; Wed, 06 May 2020 00:28:09 +0200
-Subject: Re: [PATCH 0/2] sockmap, fix for some error paths with helpers
-To:     John Fastabend <john.fastabend@gmail.com>, jakub@cloudflare.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org
-References: <158861271707.14306.15853815339036099229.stgit@john-Precision-5820-Tower>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <56c4d993-d237-c822-f7a7-bdb408f1b5dc@iogearbox.net>
-Date:   Wed, 6 May 2020 00:28:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728737AbgEEWbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 18:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727089AbgEEWbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 18:31:00 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F506C061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 15:31:00 -0700 (PDT)
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jW65V-00068r-EU; Wed, 06 May 2020 00:30:54 +0200
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id F37011001F5; Wed,  6 May 2020 00:30:52 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [BUG] Inconsistent lock state in virtnet poll
+In-Reply-To: <20200505120352-mutt-send-email-mst@kernel.org>
+References: <87lfm6oa7b.fsf@nanos.tec.linutronix.de> <20200505120352-mutt-send-email-mst@kernel.org>
+Date:   Wed, 06 May 2020 00:30:52 +0200
+Message-ID: <87v9lanher.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <158861271707.14306.15853815339036099229.stgit@john-Precision-5820-Tower>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25803/Tue May  5 14:19:25 2020)
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/4/20 7:21 PM, John Fastabend wrote:
-> In these two cases sk_msg layout was getting confused with some helper
-> sequences.
-> 
-> I found these while cleaning up test_sockmap to do a better job covering
-> the different scenarios. Those patches will go to bpf-next and include
-> tests that cover these two cases.
-> 
-> ---
-> 
-> John Fastabend (2):
->        bpf: sockmap, msg_pop_data can incorrecty set an sge length
->        bpf: sockmap, bpf_tcp_ingress needs to subtract bytes from sg.size
-> 
-> 
->   include/linux/skmsg.h |    1 +
->   net/core/filter.c     |    2 +-
->   net/ipv4/tcp_bpf.c    |    1 -
->   3 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> --
-> Signature
-> 
+"Michael S. Tsirkin" <mst@redhat.com> writes:
+> On Tue, May 05, 2020 at 02:08:56PM +0200, Thomas Gleixner wrote:
+>> 
+>> The following lockdep splat happens reproducibly on 5.7-rc4
+>
+>> ================================
+>> WARNING: inconsistent lock state
+>> 5.7.0-rc4+ #79 Not tainted
+>> --------------------------------
+>> inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+>> ip/356 [HC0[0]:SC1[1]:HE1:SE0] takes:
+>> f3ee4cd8 (&syncp->seq#2){+.?.}-{0:0}, at: net_rx_action+0xfb/0x390
+>> {SOFTIRQ-ON-W} state was registered at:
+>>   lock_acquire+0x82/0x300
+>>   try_fill_recv+0x39f/0x590
+>
+> Weird. Where does try_fill_recv acquire any locks?
 
-Applied to bpf, thanks!
+  u64_stats_update_begin(&rq->stats.syncp);
+
+That's a 32bit kernel which uses a seqcount for this. sequence counts
+are "lock" constructs where you need to make sure that writers are
+serialized.
+
+Actually the problem at hand is that try_fill_recv() is called from
+fully preemptible context initialy and then from softirq context.
+
+Obviously that's for the open() path a non issue, but lockdep does not
+know about that. OTOH, there is other code which calls that from
+non-softirq context.
+
+The hack below made it shut up. It's obvioulsy not ideal, but at least
+it let me look at the actual problem I was chasing down :)
+
+Thanks,
+
+        tglx
+
+8<-----------
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1243,9 +1243,11 @@ static bool try_fill_recv(struct virtnet
+ 			break;
+ 	} while (rq->vq->num_free);
+ 	if (virtqueue_kick_prepare(rq->vq) && virtqueue_notify(rq->vq)) {
++		local_bh_disable();
+ 		u64_stats_update_begin(&rq->stats.syncp);
+ 		rq->stats.kicks++;
+ 		u64_stats_update_end(&rq->stats.syncp);
++		local_bh_enable();
+ 	}
+ 
+ 	return !oom;
