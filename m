@@ -2,52 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 035681C6305
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 23:24:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 753851C630D
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 23:29:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729256AbgEEVYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 17:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728660AbgEEVYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 17:24:41 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC4CC061A0F;
-        Tue,  5 May 2020 14:24:40 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 682151281606D;
-        Tue,  5 May 2020 14:24:40 -0700 (PDT)
-Date:   Tue, 05 May 2020 14:24:39 -0700 (PDT)
-Message-Id: <20200505.142439.1075452616982863931.davem@davemloft.net>
-To:     bhsharma@redhat.com
-Cc:     netdev@vger.kernel.org, bhupesh.linux@gmail.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        aelior@marvell.com, GR-everest-linux-l2@marvell.com,
-        manishc@marvell.com
-Subject: Re: [PATCH 1/2] net: qed*: Reduce RX and TX default ring count
- when running inside kdump kernel
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1588705481-18385-2-git-send-email-bhsharma@redhat.com>
-References: <1588705481-18385-1-git-send-email-bhsharma@redhat.com>
-        <1588705481-18385-2-git-send-email-bhsharma@redhat.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1728584AbgEEV26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 17:28:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58480 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727785AbgEEV26 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 17:28:58 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1BF4F206A5;
+        Tue,  5 May 2020 21:28:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588714137;
+        bh=5/BTjp/n0KQrA6IRrVk66kijzLqf9GSaanDpQXL2EO0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MjEIEuhhyNNEVHWW4xHpfU7lqsKN2+Tle857n5AIo9+DH7thr9GIMnSD871SeFeai
+         DQOOWX1Jw5K9JpBS7yReB8HDdMy5UlMzSk0OmVBQXXc0kSKC3hUzH6QBIAt4qLPboo
+         GcRAv801idqEn3fmDBPIySvxMT/p4dAOOLagec6o=
+Date:   Tue, 5 May 2020 14:28:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>
+Subject: Re: [PATCH net-next 10/11] s390/qeth: allow reset via ethtool
+Message-ID: <20200505142855.24b7c1bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <6788c6f1-52cb-c421-7251-500a391bb48b@linux.ibm.com>
+References: <20200505162559.14138-1-jwi@linux.ibm.com>
+        <20200505162559.14138-11-jwi@linux.ibm.com>
+        <20200505102149.1fd5b9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a19ccf27-2280-036c-057f-8e6d2319bb28@linux.ibm.com>
+        <20200505112940.6fe70918@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <6788c6f1-52cb-c421-7251-500a391bb48b@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 May 2020 14:24:40 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bhupesh Sharma <bhsharma@redhat.com>
-Date: Wed,  6 May 2020 00:34:40 +0530
+On Tue, 5 May 2020 21:57:43 +0200 Julian Wiedmann wrote:
+> > This is the comment from the uAPI header:
+> > 
+> > /* The reset() operation must clear the flags for the components which
+> >  * were actually reset.  On successful return, the flags indicate the
+> >  * components which were not reset, either because they do not exist
+> >  * in the hardware or because they cannot be reset independently.  The
+> >  * driver must never reset any components that were not requested.
+> >  */
+> > 
+> > Now let's take ETH_RESET_PHY as an example. Surely you're not resetting
+> > any PHY here, so that bit should not be cleared. Please look at the
+> > bits and select the ones which make sense, add whatever is missing.
+> >   
+> 
+> It's a virtual device, _none_ of them make much sense?! We better not be
+> resetting any actual HW components, the other interfaces on the same
+> adapter would be quite unhappy about that.
 
-> -#define NUM_RX_BDS_DEF		((u16)BIT(10) - 1)
-> +#define NUM_RX_BDS_DEF		((is_kdump_kernel()) ? ((u16)BIT(6) - 1) : ((u16)BIT(10) - 1))
+Well, then, you can't use the API in its current form. You can't say
+none of the sub-options are applicable, but the sum of them does.
 
-These parenthesis are very excessive and unnecessary.  At the
-very least remove the parenthesis around is_kdump_kernel().
+> Sorry for being dense, and I appreciate that the API leaves a lot of room
+> for sophisticated partial resets where the driver/HW allows it.
+> But it sounds like what you're suggesting is
+> (1) we select a rather arbitrary set of components that _might_ represent a
+>     full "virtual" reset, and then
+> (2) expect the user to guess a super-set of these features. And not worry
+>     when they selected too much, and this obscure PHY thing failed to reset.
+
+No, please see the code I provided below, and read how the interface 
+is supposed to work. I posted the code comment in my previous reply. 
+I don't know what else I can do for you.
+
+User can still pass "all" but you can't _clear_ all bits, 'cause you
+didn't reset any PHY, MAC, etc.
+
+> So I looked at gve's implementation and thought "yep, looks simple enough".
+
+Ugh, yeah, gve is not a good example.
+
+> But if we start asking users to interpret HW bits that hardly make any
+> sense to them, we're worse off than with the existing custom sysfs trigger...
+
+Actually - operationally, how do you expect people to use this reset?
+Some user space system detects the NIC is in a bad state? Does the
+interface communicate that via some log messages or such?
+
+The commit message doesn't really explain the "why".
+
+> > Then my suggestion would be something like:
+> > 
+> >   #define QETH_RESET_FLAGS (flag | flag | flag)
+> > 
+> >   if ((*flags & QETH_RESET_FLAGS) != QETH_RESET_FLAGS))
+> > 	return -EINVAL;
+> >   ...
+> >   *flags &= ~QETH_RESET_FLAGS;
