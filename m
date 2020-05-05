@@ -2,65 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0B711C5DD4
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54AB41C5E30
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730243AbgEEQsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 12:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45104 "EHLO
+        id S1730799AbgEEQ7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 12:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730069AbgEEQsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:48:47 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AABFC061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 09:48:47 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id k12so2532710qtm.4
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 09:48:47 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729553AbgEEQ7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:59:31 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92ED6C061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 09:59:31 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id di6so1345857qvb.10
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 09:59:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Np1YJxktt/cQII+KKcpJcc/p6vuOqy7nN6Elnc7spCo=;
-        b=M0086J0Tv2CqZMkcX4NvMsBkb0V765PYb+qLMmPdvY1eprhHTa85RUuMHlb9UpBJ+Q
-         vcYtltvFfAuHe35MubXRzVgMyuMDrgnix6HGjLrv5OWBgKPT+1OTSVixNTVCBV7YgNLp
-         ke6LmiU1DzsrEvJ6CzzCltdHxsS9e4YBTMNz8Z74HDwkRybekz7yONiIMwS3QBUj9tR6
-         eSBXUq3PpCm9fwUiFobXyf2EL7B/FSNd2UCiTJG0zMW5orzOJgy/nz1bTI4HjSpCvt/M
-         7Gl5yyxu1ncKgK4/kJ3I+oI1w3xZIulX6XhIEdUnwOxcDD6RPVYSQVi7qR8d01/PzC5h
-         LPiQ==
+        bh=f7thmUG1F50yL1gfq5N1CCp+yuL87PgVlu/WLQkv+Vw=;
+        b=FlbsHplJiwJFfuTymhSw8XZMnhB/8T/X9qVwbn+jYFZxDiDyyFozR4M9fQKpXC0o6n
+         mMr84kRANPFhRzSxIJxuDDbJERH+xxY011uiDHI8BVBEb2SJbpN5dRn1RqbaNffF3gp6
+         3CR5+WsooFjYkxCn+XvJ6NBXDu4HS0wJJQsEcDXmkAJlELzTi/ymx+DkZuAU/Wm+jpU5
+         gTEVOZJjkn4jhYx5UhQVdoWSYvJWZdtXo099R6tR2CC46CgKQXI8d1aNvVfNkzsX7ATC
+         6oQkGWhyglZw9pAXl8VHCGgLw57U3LzqouUen8W9nSHt5JRknPkFX77IoKefmbxYJPa/
+         8Ybg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Np1YJxktt/cQII+KKcpJcc/p6vuOqy7nN6Elnc7spCo=;
-        b=ODcWc2u3fLt8bGnckkvk5FEnTYVPCyMGFdrGmud/O0LEyXly67zTgf1PIHyVFEptg8
-         JDJ4bt9WQKqGHF3El3I3B0qW9p8W73Gxs1FOjeGlplg98jfOYObabAr1zaJmp0bJFGIE
-         nPdnvQR7CYlnCw7KCMvAVyiSg+kyg2GqBlvbcc91CukKvbSpmJqtdu/U5/cav4tDKIy/
-         Xm4s25i3Pz8nR/LrzX8qgq0SjLblqVMUHUH30w+ixDKsAciZcoxVbb2DIZoeuFCyusGC
-         xO3qXm+GxBm6qOL1gxi+o1tCPJSAqLplVeMPI68F79VEfFZszMQLRdkwSY1Se1PSRtV5
-         KIoA==
-X-Gm-Message-State: AGi0Pua0MXBEa99TbbpF0oRuOcapYGk4xRbWjyDm0prG0ajroJmcKxxr
-        khEe0c4T76I3iAunZDvZV40=
-X-Google-Smtp-Source: APiQypL09nJHRf+ro29J0obRB/yStfis5JEVqyK9Y4Bm/4khyFlny2GlbeWvStioIku7xHT7WMDbZw==
-X-Received: by 2002:ac8:82f:: with SMTP id u44mr3578688qth.198.1588697326481;
-        Tue, 05 May 2020 09:48:46 -0700 (PDT)
+        bh=f7thmUG1F50yL1gfq5N1CCp+yuL87PgVlu/WLQkv+Vw=;
+        b=mIP5JGbzek+Y5WfFYJdw+4q0A91lguoK3t5maUuYOTWA9b9/WPbXNqlq5f/XD580oF
+         H+vhk877tE2UibsI98IxM/+w33kmYl3NkPe99LHWd/u4upvkpydwK57hO4k+K9/k2wIp
+         mK5AVEGYasM8nYiyHb0mM55YMbiVdpoteUZyOAZV7oTYlbuvKxpXnEe0J3juJLi9ZgYp
+         D/vh7Nk8rvZZSLDhVID5R5Q/5A8SA660HE1s2fCHkxyroRLs4UlY3z1gHCYJ2atssX0p
+         GAG9eRttuZzL9cI/+ntaZHLvsjUYVkxMJ/RzGzNfYo9TfmZ71bUuGvokQXipEN9qaIeJ
+         beqA==
+X-Gm-Message-State: AGi0Puauv/5vtoelT8rSlqUuDJdDbM+njgDf9hoylMK1GN08sVCK4kYi
+        FbTcni+ffmYe+guu4BsqZDzouIoA
+X-Google-Smtp-Source: APiQypJJ+0YjJyDBDGWjr5QDhI6y16YjBSqlG1QNqG3U53xGpmb3jE29kjPCGS1EILJQSRlY5h79Uw==
+X-Received: by 2002:a0c:8324:: with SMTP id j33mr3793470qva.23.1588697970848;
+        Tue, 05 May 2020 09:59:30 -0700 (PDT)
 Received: from ?IPv6:2601:282:803:7700:c19:a884:3b89:d8b6? ([2601:282:803:7700:c19:a884:3b89:d8b6])
-        by smtp.googlemail.com with ESMTPSA id o201sm2223775qke.31.2020.05.05.09.48.45
+        by smtp.googlemail.com with ESMTPSA id d207sm2081880qkc.49.2020.05.05.09.59.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 May 2020 09:48:45 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 2/2] lwtunnel: add support for rpl segment
- routing
-To:     Alexander Aring <alex.aring@gmail.com>, netdev@vger.kernel.org
-Cc:     mcr@sandelman.ca, stefan@datenfreihafen.org
-References: <20200502225834.28938-1-alex.aring@gmail.com>
- <20200502225834.28938-2-alex.aring@gmail.com>
+        Tue, 05 May 2020 09:59:30 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v3] devlink: support kernel-side snapshot id
+ allocation
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, jiri@resnulli.us, netdev@vger.kernel.org,
+        kernel-team@fb.com, jacob.e.keller@intel.com
+References: <20200430175759.1301789-1-kuba@kernel.org>
+ <20200430175759.1301789-5-kuba@kernel.org>
+ <af7fae65-1187-65c5-9c40-0b0703cf4053@gmail.com>
+ <20200505092009.1cfe01c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <91fa6efb-1284-7f85-e2f7-627c349d5b76@gmail.com>
-Date:   Tue, 5 May 2020 10:48:44 -0600
+Message-ID: <76a99d9c-3574-1c8d-07cb-1f16e1bf9cca@gmail.com>
+Date:   Tue, 5 May 2020 10:59:28 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200502225834.28938-2-alex.aring@gmail.com>
+In-Reply-To: <20200505092009.1cfe01c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,20 +72,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/2/20 4:58 PM, Alexander Aring wrote:
-> @@ -162,6 +168,32 @@ static void print_encap_seg6(FILE *fp, struct rtattr *encap)
->  	print_srh(fp, tuninfo->srh);
->  }
->  
-> +static void print_rpl_srh(FILE *fp, struct ipv6_rpl_sr_hdr *srh)
-> +{
-> +	int i;
-> +
-> +	for (i = srh->segments_left - 1; i >= 0; i--) {
-> +		print_color_string(PRINT_ANY, COLOR_INET6,
-> +				   NULL, "%s ",
-> +				   rt_addr_n2a(AF_INET6, 16, &srh->rpl_segaddr[i]));
+On 5/5/20 10:20 AM, Jakub Kicinski wrote:
+> On Tue, 5 May 2020 10:14:24 -0600 David Ahern wrote:
+>> On 4/30/20 11:57 AM, Jakub Kicinski wrote:
+>>> Make ID argument optional and read the snapshot info
+>>> that kernel sends us.
+>>>
+>>> $ devlink region new netdevsim/netdevsim1/dummy
+>>> netdevsim/netdevsim1/dummy: snapshot 0
+>>> $ devlink -jp region new netdevsim/netdevsim1/dummy
+>>> {
+>>>     "regions": {
+>>>         "netdevsim/netdevsim1/dummy": {
+>>>             "snapshot": [ 1 ]
+>>>         }
+>>>     }
+>>> }
+>>> $ devlink region show netdevsim/netdevsim1/dummy
+>>> netdevsim/netdevsim1/dummy: size 32768 snapshot [0 1]
+>>>
+>>> v3: back to v1..
+>>>
+>>> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>>> ---
+>>>  devlink/devlink.c | 26 +++++++++++++++++++++++---
+>>>  1 file changed, 23 insertions(+), 3 deletions(-)  
+>>
+>> this does not apply to current iproute2-next
+> 
+> Hm. This was on top of Jake's patch, but Stephen took that one into
+> iproute2, since the kernel feature is in 5.7 already. What is the
+> protocol here? Can you merge iproute2 into iproute2-next? :S
+> 
 
-
-you aren't printing anything for the json case?
-
+merged and pushed. can you resend? I deleted it after it failed to apply
+and now has vanished.
