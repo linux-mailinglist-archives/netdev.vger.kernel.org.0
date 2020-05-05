@@ -2,76 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 119E21C5D8D
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:27:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BBED1C5D93
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:28:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730791AbgEEQ0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 12:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
+        id S1730475AbgEEQ2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 12:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730282AbgEEQ0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:26:44 -0400
-Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54901C061A0F;
-        Tue,  5 May 2020 09:26:44 -0700 (PDT)
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jW0Ou-001bTK-0E; Tue, 05 May 2020 16:26:32 +0000
-Date:   Tue, 5 May 2020 17:26:31 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     SeongJae Park <sjpark@amazon.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        sj38.park@gmail.com, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        SeongJae Park <sjpark@amazon.de>, snu@amazon.com,
-        amit@kernel.org, stable@vger.kernel.org
-Subject: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle
- change
-Message-ID: <20200505162631.GY23230@ZenIV.linux.org.uk>
-References: <a8510327-d4f0-1207-1342-d688e9d5b8c3@gmail.com>
- <20200505154644.18997-1-sjpark@amazon.com>
- <CANn89iLHV2wyhk6-d6j_4=Ns01AEE5HSA4Qu3LO0gqKgcG81vQ@mail.gmail.com>
+        with ESMTP id S1729663AbgEEQ2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:28:04 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F15C061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 09:28:03 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id rh22so2168384ejb.12
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 09:28:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:reply-to:to:cc:references:in-reply-to:subject:date:message-id
+         :mime-version:content-transfer-encoding:thread-index
+         :content-language;
+        bh=mkrDmN8OaGRhN4F+5g25hkHuD5TIe3aLkVkjvXIirIE=;
+        b=DvrJoJdwX4wojPg9gZ5ZtuLgqsbR+v4H0dBgFB4NenPU2I+MDGfYWrREcVQPUWBt26
+         wAaibeFk2QE1CtTqHIulpQMDFT7/tECK62WZSwymDhROuP0eEaql4Ml8ntB1SZpreofM
+         WbATICxrUIq2HA2RMdiljgB1GvBVUnrwErvbYbC13qfb5RVwR9hQLYAYayqk4dqSlCGQ
+         qSbvqzzscML/D6fSZyalhZiNWe3SNu5fx3cOeFHgsnBMq+619s80zyF7IZR8bj27jW0y
+         VTH2b63PKDzK/RSyxWeMoy2UiY+/qH21EXFoYZXzBz5BuzjT5sdvU1n2MudouaJDjg9L
+         2NfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:reply-to:to:cc:references:in-reply-to
+         :subject:date:message-id:mime-version:content-transfer-encoding
+         :thread-index:content-language;
+        bh=mkrDmN8OaGRhN4F+5g25hkHuD5TIe3aLkVkjvXIirIE=;
+        b=X67IZYDjQigDUS4RHp/3FC6EvHVJ9N/WBcQMNZV+llGqfErgW1gzEcCUp0hI4dJ7V0
+         Wn6gMBKB1hHxwnAwU4pCbkpH+om+rm3rTORtgvipIwvjYEDoD31LBZBu6YAKCdl+pmu4
+         pvQjxEhpsbS/6dSSYOFwcMh7JMQPfyPeiWSIFp/3Tsqcu3+DTP+QiFgmB/z3gyz7NYAw
+         sCuES1RI1gp9gyqYwvG1Q+GJfnI+UUJwzYGn/06WWh8+XNqhkhlsZpHyvl4r5M5mDG//
+         KSfRucUxEW9nNr6qvlrArSsrfohqXMb840y1TltO4oeImxSM/Cz0vqIRqclvJ/1jN8BY
+         CAXA==
+X-Gm-Message-State: AGi0PuZb1XVl7ztle1g5Xhz5JWtccyLiK0OSXgYinfurNX5/zJPYWerH
+        CG1mTzeMEGyEOe8niYaV/Jc=
+X-Google-Smtp-Source: APiQypL1OXlXrAGcooKtNcKuyn7ci++JEgkhWF+shL/fzi12q+rXB/e66g0Nf3qWwFdofuLAr+g/Jw==
+X-Received: by 2002:a17:906:f159:: with SMTP id gw25mr3564756ejb.193.1588696082598;
+        Tue, 05 May 2020 09:28:02 -0700 (PDT)
+Received: from CBGR90WXYV0 ([54.239.6.186])
+        by smtp.gmail.com with ESMTPSA id n23sm330542ejz.20.2020.05.05.09.28.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 May 2020 09:28:02 -0700 (PDT)
+From:   Paul Durrant <xadimgnik@gmail.com>
+X-Google-Original-From: "Paul Durrant" <paul@xen.org>
+Reply-To: <paul@xen.org>
+To:     "'Denis Kirjanov'" <kda@linux-powerpc.org>
+Cc:     <netdev@vger.kernel.org>, <jgross@suse.com>, <wei.liu@kernel.org>,
+        <ilias.apalodimas@linaro.org>
+References: <1588581474-18345-1-git-send-email-kda@linux-powerpc.org> <1588581474-18345-2-git-send-email-kda@linux-powerpc.org> <004201d622e8$2fff5cf0$8ffe16d0$@xen.org> <CAOJe8K3sByKRgecjYBnm35_Kijaqu0TTruQwvddEu1tkF-TEVg@mail.gmail.com>
+In-Reply-To: <CAOJe8K3sByKRgecjYBnm35_Kijaqu0TTruQwvddEu1tkF-TEVg@mail.gmail.com>
+Subject: RE: [PATCH net-next v7 2/2] xen networking: add XDP offset adjustment to xen-netback
+Date:   Tue, 5 May 2020 17:28:00 +0100
+Message-ID: <005a01d622fa$25745e40$705d1ac0$@xen.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iLHV2wyhk6-d6j_4=Ns01AEE5HSA4Qu3LO0gqKgcG81vQ@mail.gmail.com>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQE3/rdtCvsSNPb5s7Kxs8cJj/qIbwLQYVL2AY7IqSUBQOo04amo9b8A
+Content-Language: en-gb
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 09:00:44AM -0700, Eric Dumazet wrote:
-
-> > Not exactly the 10,000,000, as it is only the possible highest number, but I
-> > was able to observe clear exponential increase of the number of the objects
-> > using slabtop.  Before the start of the problematic workload, the number of
-> > objects of 'kmalloc-64' was 5760, but I was able to observe the number increase
-> > to 1,136,576.
+> -----Original Message-----
+> >> @@ -417,6 +431,11 @@ static void frontend_changed(struct =
+xenbus_device
+> >> *dev,
+> >>  		set_backend_state(be, XenbusStateConnected);
+> >>  		break;
+> >>
+> >> +	case XenbusStateReconfiguring:
+> >> +		read_xenbus_frontend_xdp(be, dev);
 > >
-> >           OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
-> > before:   5760   5088  88%    0.06K     90       64       360K kmalloc-64
-> > after:  1136576 1136576 100%    0.06K  17759       64     71036K kmalloc-64
-> >
-> 
-> Great, thanks.
-> 
-> How recent is the kernel you are running for your experiment ?
-> 
-> Let's make sure the bug is not in RCU.
-> 
-> After Al changes, RCU got slightly better under stress.
+> > Is the frontend always expected to trigger a re-configure, or could
+> > feature-xdp already be enabled prior to connection?
+>=20
+> Yes, feature-xdp is set by the frontend when  xdp code is loaded.
+>=20
 
-The thing that worries me here is that this is far from being the only
-source of RCU-delayed freeing of objects.  If we really see bogus OOM
-kills due to that (IRL, not in an artificial microbenchmark), we'd
-better do something that would help with all those sources, not just
-paper over the contributions from one of those.  Because there's no
-chance in hell to get rid of RCU-delayed freeing in general...
+That's still ambiguous... what I'm getting at is whether you also need =
+to read the xdp state when transitioning into Connected as well as =
+Reconfiguring?
 
-Does the problem extend to kfree_rcu()?  And there's a lot of RCU
-callbacks that boil down to kmem_cache_free(); those really look like
-they should have exact same issue - sock_free_inode() is one of those,
-after all.
+  Paul
+
