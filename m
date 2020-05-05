@@ -2,131 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C30A21C5600
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 14:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1C51C5620
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 15:01:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728894AbgEEMzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 08:55:48 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:50544 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728497AbgEEMzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 08:55:48 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 045CtgJd100492;
-        Tue, 5 May 2020 07:55:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588683342;
-        bh=TFx+viVGB1RJAgHDimKDlop7ZpZlSmdHvKAad8iYbGk=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=OPSd7s7EyQGGbbs6oMhwkXOkxxVubFW4Hn6fLa9Mcm1djjT7WC5J6yQ4wCiTQzipJ
-         e3zo/AellZ4yCplWQYc0fAPnM2yz9L4m/7BgsvCMGDTnbrWelqUHJ1xYpGlXHtaWxx
-         OUBjKPr7UrAEt+R2bv5ZxIjMOVJlMWtU+3yd2V9A=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 045Ctgmi031790
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 May 2020 07:55:42 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 5 May
- 2020 07:55:42 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 5 May 2020 07:55:42 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 045Ctchu036626;
-        Tue, 5 May 2020 07:55:39 -0500
-Subject: Re: [PATCH net-next 3/7] net: ethernet: ti: am65-cpsw-nuss: enable
- packet timestamping support
-To:     Anders Roxell <anders.roxell@linaro.org>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tero Kristo <t-kristo@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Networking <netdev@vger.kernel.org>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Nishanth Menon <nm@ti.com>
-References: <20200501205011.14899-1-grygorii.strashko@ti.com>
- <20200501205011.14899-4-grygorii.strashko@ti.com>
- <CADYN=9L+RtruRYKah0Bomh7UaPGQ==N9trd0ZoVQ3GTc-VY8Dg@mail.gmail.com>
- <1bf51157-9fee-1948-f9ff-116799d12731@ti.com>
- <CADYN=9LfqLLmKNHPfXEiQbaX8ELF78BL-vWUcX-VP3aQ86csNg@mail.gmail.com>
- <CADYN=9LDCE2sQca12D4ow3BkaxXi1_bnc4Apu7pP4vnA=5AOKA@mail.gmail.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <7c32cb2f-e0f3-8861-3cdc-ef3f922aa044@ti.com>
-Date:   Tue, 5 May 2020 15:55:37 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <CADYN=9LDCE2sQca12D4ow3BkaxXi1_bnc4Apu7pP4vnA=5AOKA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1729023AbgEENBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 09:01:50 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:46784 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728834AbgEENBu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 09:01:50 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 045Cb72F114713;
+        Tue, 5 May 2020 09:01:48 -0400
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 30s4xkp48t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 May 2020 09:01:45 -0400
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 045D0qbr023230;
+        Tue, 5 May 2020 13:01:42 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03fra.de.ibm.com with ESMTP id 30s0g5jtqs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 May 2020 13:01:42 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 045D1dhJ63242286
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 5 May 2020 13:01:39 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 866ADAE057;
+        Tue,  5 May 2020 13:01:39 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3D229AE056;
+        Tue,  5 May 2020 13:01:39 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  5 May 2020 13:01:39 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next 0/2] log state changes and cleanup
+Date:   Tue,  5 May 2020 15:01:19 +0200
+Message-Id: <20200505130121.103272-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-05_07:2020-05-04,2020-05-05 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ mlxlogscore=834 spamscore=0 impostorscore=0 mlxscore=0 adultscore=0
+ suspectscore=1 clxscore=1015 priorityscore=1501 bulkscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005050098
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Patch 1 adds the logging of important state changes to enable SMC-R 
+users to detect SMC-R link groups that are not redundant and require
+user actions. Patch 2 is a contribution to clean up an unused inline 
+function.
 
+Karsten Graul (1):
+  net/smc: log important pnetid and state change events
 
-On 05/05/2020 14:59, Anders Roxell wrote:
-> On Tue, 5 May 2020 at 13:16, Anders Roxell <anders.roxell@linaro.org> wrote:
->>
->> On Tue, 5 May 2020 at 13:05, Grygorii Strashko <grygorii.strashko@ti.com> wrote:
->>>
->>> hi Anders,
->>
->> Hi Grygorii,
-> 
-> Hi again,
-> 
->>
->>>
->>> On 05/05/2020 13:17, Anders Roxell wrote:
->>>> On Fri, 1 May 2020 at 22:50, Grygorii Strashko <grygorii.strashko@ti.com> wrote:
->>>>>
->>>>> The MCU CPSW Common Platform Time Sync (CPTS) provides possibility to
->>>>> timestamp TX PTP packets and all RX packets.
->>>>>
->>>>> This enables corresponding support in TI AM65x/J721E MCU CPSW driver.
->>>>>
->>>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
->>>>> ---
->>>>>    drivers/net/ethernet/ti/Kconfig             |   1 +
->>>>>    drivers/net/ethernet/ti/am65-cpsw-ethtool.c |  24 ++-
->>>>>    drivers/net/ethernet/ti/am65-cpsw-nuss.c    | 172 ++++++++++++++++++++
->>>>>    drivers/net/ethernet/ti/am65-cpsw-nuss.h    |   6 +-
->>>>>    4 files changed, 201 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
->>>>> index 1f4e5b6dc686..2c7bd1ccaaec 100644
->>>>> --- a/drivers/net/ethernet/ti/Kconfig
->>>>> +++ b/drivers/net/ethernet/ti/Kconfig
->>>>> @@ -100,6 +100,7 @@ config TI_K3_AM65_CPSW_NUSS
->>>>>           depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
->>>>>           select TI_DAVINCI_MDIO
->>>>>           imply PHY_TI_GMII_SEL
->>>>> +       imply TI_AM65_CPTS
->>>>
->>>> Should this be TI_K3_AM65_CPTS ?
-> 
-> instead of 'imply TI_K3_AM65_CPTS' don't you want to do this:
-> 'depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS'
-> 
-> 
+YueHaibing (1):
+  net/smc: remove unused inline function smc_curs_read
 
-this seems will do the trick.
-Dependencies:
-PTP_1588_CLOCK -> TI_K3_AM65_CPTS -> TI_K3_AM65_CPSW_NUSS
-
-I'll send patch.
+ net/smc/af_smc.c   |  6 ++----
+ net/smc/smc_cdc.h  | 17 -----------------
+ net/smc/smc_core.c | 34 ++++++++++++++++++++++++++++-----
+ net/smc/smc_core.h |  2 +-
+ net/smc/smc_ib.c   | 11 +++++++++++
+ net/smc/smc_ism.c  |  6 ++++++
+ net/smc/smc_llc.c  | 25 ++++++++++++++++++------
+ net/smc/smc_llc.h  |  2 +-
+ net/smc/smc_pnet.c | 47 +++++++++++++++++++++++++++++++++++++++++++---
+ 9 files changed, 113 insertions(+), 37 deletions(-)
 
 -- 
-Best regards,
-grygorii
+2.17.1
+
