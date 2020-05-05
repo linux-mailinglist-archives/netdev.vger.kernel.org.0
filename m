@@ -2,128 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8F11C6075
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 20:50:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 332901C607F
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 20:57:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729054AbgEESue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 14:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
+        id S1728798AbgEES5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 14:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728076AbgEESud (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 14:50:33 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B68C061A10
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 11:50:31 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id f18so2752994lja.13
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 11:50:31 -0700 (PDT)
+        with ESMTP id S1727785AbgEES5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 14:57:34 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4ABC061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 11:57:34 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id a7so1567968pju.2
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 11:57:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fQtcPUQW49oPTnT+jASB+pu5t+m5qPdUelhle+W5F4o=;
-        b=e2LM4c7y4U0BetC/gB0eIa7BcxIovrqW2+yMivftL2EUsrm9A/3tzPHnkWrENn0+BY
-         3u8nlKnzNbvWltqUbePhaEVeITEBqdy3oJ/OoqwDOACo021vaWG3fpFzoZBwAEfpJ/T7
-         +AgIzXtc4NJ1zsQ+y6SrWc1RKchP8F8XxTSv08dWWyQ2BtBnzBt+iy4L92tZ3UliSHEx
-         lZPLffC2w/YnG5vf5M2YiUUcpWIt7S3jEiV8hAHP9h79nVayw4X1+qTG0d8wF3MY8iSJ
-         v9f/mCqFam0KZFjTCQpO/p7SAEWfWjm3aKaNwCqNALVOt0eWz/CsLXXLRBCOZRGKAVY5
-         N1LA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=baKPDXK84t/+KcDc27e7wEO3Oj3JjOYYo4AL+8KJlq0=;
+        b=q9b6KcDZFzza0x4eqfA83QLO/ntXPpScCELGE1HoBXZ2fxaWgazGtqR8ulTPqhVRyD
+         8CQhF8A0vcsaaQNoXc46k1aBwAB3zm/H8iFE42JrL/hzWFeeBppyPIoxdc37Oi+9wFV/
+         dMB+/qru+yIAtfOdy0bT5vD4e1H70pc8hJ8AYa0UMxrKLgKpIX1U04RpnJcNqdOTSTHr
+         fmLJhAhoP0FGTYMtjXQjdH5mWDJ4xqnAkXyvuwIRXtGyPOUitLvwNWr/Wk9m7h/pwOdX
+         jOkDk58kSEU1Xt11OUGb2Z0dGApzvCqQMta5cAJzBxqiNMAom6q2R/y80sagzPqnv/u7
+         71UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fQtcPUQW49oPTnT+jASB+pu5t+m5qPdUelhle+W5F4o=;
-        b=Sx+QNLv7NgVVueQTyaZShC1YOa7vdqQ/wuviXZWoVPUlwKjnfxr+sUSW4MBLJYRz+e
-         hviOZ/T5fcNkR42OFWhnVH0h4AvevbZNHNCYf7LPDI3xk6LE4Wpk5XGbn7B0f3H7qeT3
-         nZnO8kl3GWu6EVMlkdX0+u8P2oAK9XNErnaqc7mzs3FB8KwiCEGZ0z5IX4CSSRdq8YMH
-         G3JfiDNUiV9LbB8vXWCsPCfiR2jMD+LDrcIMecxToiiRSVE7/ME9ORaZmBh/5x3eBEVO
-         0pWQaDOKZqldfFvfzEtK6J3ahPDY1UZ/PJWcF926pxjIeBGvOnRN3yHxdfyjDBY1oWu8
-         nlOg==
-X-Gm-Message-State: AGi0PubVAHX9oxjmInVzEccYoXMDJrBd6Mj8s7GWkdBHzHDNYnMo3Sik
-        yLquwvLJFlCV7Pbog4fkIbyhy2wU/0AXLWF4sdKevA==
-X-Google-Smtp-Source: APiQypKvjCJ8PklB3LOXCvVyQOThS4XpKMQ/Afaf/e/kP6nt/5BFFzQYKIqd2OgadCHb/8wFTCM6UEj3k7Ta0f50ic0=
-X-Received: by 2002:a05:651c:107a:: with SMTP id y26mr2697805ljm.80.1588704629773;
- Tue, 05 May 2020 11:50:29 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=baKPDXK84t/+KcDc27e7wEO3Oj3JjOYYo4AL+8KJlq0=;
+        b=WKDcymlhZlQI0JtlDuypy/9vwHfsTT2ARS8b4+0PWDVwu66c0AacQa6huRwIeXcM1y
+         aaf+I7nWNQdD7076Ag4pT/jEpr7d1kKfN3xbKhKoZEYAn7bRDspTzlwn+zmfdKMFh8A/
+         iHHW6RUPiChGPO4rTGSlEQsNIO3L9e8tMKJvVeVP76Bgk4/J/pgUvm4MPyfRdg0RuG9w
+         7e8LuDKfZ/3pa7k4NvALFXEN8L/iSwm1el6s02/4JitPN22ei3wqf8OfxtRB9nsM0WNl
+         /BtGLfa7zSUzO/wCm5vLSM9PfEYqhy2Gldx6JTLqfRXm5RfR2xJOMnmzXsehOqHju3oH
+         nenQ==
+X-Gm-Message-State: AGi0PuZUmPz5BI0sRcuXDZGYglzkbs6eLl/mO1AoqZboP+GhOofkxLgq
+        LfOdu33TCUgszv1fI01OCMw=
+X-Google-Smtp-Source: APiQypIwro8ab3tLY8vMuZj0G2VW69GnFGzXelh+ciTBEOYw+mw1uLVoFBa/24Vck5TdOMKHz8BueA==
+X-Received: by 2002:a17:902:8d95:: with SMTP id v21mr4655275plo.322.1588705053607;
+        Tue, 05 May 2020 11:57:33 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id l37sm2755115pje.12.2020.05.05.11.57.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 11:57:32 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Subject: [PATCH] Revert "ipv6: add mtu lock check in __ip6_rt_update_pmtu"
+Date:   Tue,  5 May 2020 11:57:23 -0700
+Message-Id: <20200505185723.191944-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
 MIME-Version: 1.0
-References: <20200505162123.13366-1-grygorii.strashko@ti.com>
-In-Reply-To: <20200505162123.13366-1-grygorii.strashko@ti.com>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Tue, 5 May 2020 20:50:18 +0200
-Message-ID: <CADYN=9KZ9GSBv+VOA0MSLHcW312sEOX+T+h5GNyaaAridaLXuA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: ethernet: ti: am65-cpts: fix build
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 May 2020 at 18:21, Grygorii Strashko <grygorii.strashko@ti.com> wrote:
->
-> It's possible to have build configuration which will force PTP_1588_CLOCK=m
-> and so TI_K3_AM65_CPTS=m while still have TI_K3_AM65_CPSW_NUSS=y. This will
-> cause build failures:
->
-> aarch64-linux-gnu-ld: ../drivers/net/ethernet/ti/am65-cpsw-nuss.o: in function `am65_cpsw_init_cpts':
-> ../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1685: undefined reference to `am65_cpts_create'
-> aarch64-linux-gnu-ld: ../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1685:(.text+0x2e20):
-> relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `am65_cpts_create'
->
-> Fix it by adding dependencies from CPTS in TI_K3_AM65_CPSW_NUSS as below:
->    config TI_K3_AM65_CPSW_NUSS
->    ...
->      depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS
->
-> Note. This will create below dependencies and for NFS boot + CPTS all of them
-> have to be built-in.
->   PTP_1588_CLOCK -> TI_K3_AM65_CPTS -> TI_K3_AM65_CPSW_NUSS
->
-> While here, clean up TI_K3_AM65_CPTS definition.
->
-> Fixes: b1f66a5bee07 ("net: ethernet: ti: am65-cpsw-nuss: enable packet timestamping support")
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> Reported-by: Anders Roxell <anders.roxell@linaro.org>
+From: Maciej Żenczykowski <maze@google.com>
 
-Tested-by: Anders Roxell <anders.roxell@linaro.org>
+This reverts commit 19bda36c4299ce3d7e5bce10bebe01764a655a6d:
 
-> ---
->  drivers/net/ethernet/ti/Kconfig | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-> index 4ab35ce7b451..988e907e3322 100644
-> --- a/drivers/net/ethernet/ti/Kconfig
-> +++ b/drivers/net/ethernet/ti/Kconfig
-> @@ -99,7 +99,7 @@ config TI_K3_AM65_CPSW_NUSS
->         depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
->         select TI_DAVINCI_MDIO
->         imply PHY_TI_GMII_SEL
-> -       imply TI_AM65_CPTS
-> +       depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS
+| ipv6: add mtu lock check in __ip6_rt_update_pmtu
+|
+| Prior to this patch, ipv6 didn't do mtu lock check in ip6_update_pmtu.
+| It leaded to that mtu lock doesn't really work when receiving the pkt
+| of ICMPV6_PKT_TOOBIG.
+|
+| This patch is to add mtu lock check in __ip6_rt_update_pmtu just as ipv4
+| did in __ip_rt_update_pmtu.
 
-Don't we want to move this so it is below the other 'depends on' ?
+The above reasoning is incorrect.  IPv6 *requires* icmp based pmtu to work.
+There's already a comment to this effect elsewhere in the kernel:
 
-Cheers,
-Anders
+  $ git grep -p -B1 -A3 'RTAX_MTU lock'
+  net/ipv6/route.c=4813=
 
->         help
->           This driver supports TI K3 AM654/J721E CPSW2G Ethernet SubSystem.
->           The two-port Gigabit Ethernet MAC (MCU_CPSW0) subsystem provides
-> @@ -112,9 +112,8 @@ config TI_K3_AM65_CPSW_NUSS
->
->  config TI_K3_AM65_CPTS
->         tristate "TI K3 AM65x CPTS"
-> -       depends on ARCH_K3 && OF && PTP_1588_CLOCK
-> +       depends on ARCH_K3 && OF
->         depends on PTP_1588_CLOCK
-> -       select NET_PTP_CLASSIFY
->         help
->           Say y here to support the TI K3 AM65x CPTS with 1588 features such as
->           PTP hardware clock for each CPTS device and network packets
-> --
-> 2.17.1
->
+  static int rt6_mtu_change_route(struct fib6_info *f6i, void *p_arg)
+  ...
+    /* In IPv6 pmtu discovery is not optional,
+       so that RTAX_MTU lock cannot disable it.
+       We still use this lock to block changes
+       caused by addrconf/ndisc.
+    */
+
+This reverts to the pre-4.9 behaviour.
+
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Xin Long <lucien.xin@gmail.com>
+Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Fixes: 19bda36c4299 ("ipv6: add mtu lock check in __ip6_rt_update_pmtu")
+---
+ net/ipv6/route.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 8d418038fe32..ff847a324220 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -2722,8 +2722,10 @@ static void __ip6_rt_update_pmtu(struct dst_entry *dst, const struct sock *sk,
+ 	const struct in6_addr *daddr, *saddr;
+ 	struct rt6_info *rt6 = (struct rt6_info *)dst;
+ 
+-	if (dst_metric_locked(dst, RTAX_MTU))
+-		return;
++	/* Note: do *NOT* check dst_metric_locked(dst, RTAX_MTU)
++	 * IPv6 pmtu discovery isn't optional, so 'mtu lock' cannot disable it.
++	 * [see also comment in rt6_mtu_change_route()]
++	 */
+ 
+ 	if (iph) {
+ 		daddr = &iph->daddr;
+-- 
+2.26.2.526.g744177e7f7-goog
+
