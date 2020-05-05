@@ -2,71 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F13E11C4C7C
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 05:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B8A91C4C8F
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 05:14:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgEEDHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 23:07:36 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:34056 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726286AbgEEDHg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 May 2020 23:07:36 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 964AADF6DE1001F56FFA;
-        Tue,  5 May 2020 11:07:30 +0800 (CST)
-Received: from localhost (10.173.251.152) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Tue, 5 May 2020
- 11:06:46 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <jerry.lilijun@huawei.com>,
-        <xudingke@huawei.com>, Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net-next] net: altera: Fix use correct return type for ndo_start_xmit()
-Date:   Tue, 5 May 2020 11:06:45 +0800
-Message-ID: <1588648005-84716-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.173.251.152]
-X-CFilter-Loop: Reflected
+        id S1728303AbgEEDOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 23:14:12 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:16825 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728268AbgEEDOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 23:14:11 -0400
+Received: from beagle7.blr.asicdesigners.com (beagle7.blr.asicdesigners.com [10.193.80.123])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0453Dquu019487;
+        Mon, 4 May 2020 20:13:53 -0700
+From:   Devulapally Shiva Krishna <shiva@chelsio.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au
+Cc:     linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        secdev@chelsio.com, Devulapally Shiva Krishna <shiva@chelsio.com>
+Subject: [PATCH net-next 0/5] Crypto/chcr: Fix issues regarding algorithm implementation in driver
+Date:   Tue,  5 May 2020 08:42:52 +0530
+Message-Id: <20200505031257.9153-1-shiva@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+The following series of patches fixes the issues which came during
+self-tests with CONFIG_CRYPTO_MANAGER_EXTRA_TESTS enabled.
 
-The method ndo_start_xmit() returns a value of type netdev_tx_t. Fix
-the ndo function to use the correct type.
+Patch 1: Fixes gcm(aes) hang issue and rfc4106-gcm encryption issue.
+Patch 2: Fixes ctr, cbc, xts and rfc3686-ctr extra test failures.
+Patch 3: Fixes ccm(aes) extra test failures.
+Patch 4: Added support for 48 byte-key_len in aes_xts.
+Patch 5: fix for hmac(sha) extra test failure.
 
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/net/ethernet/altera/altera_tse_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Devulapally Shiva Krishna (5):
+  Crypto/chcr: fix gcm-aes and rfc4106-gcm failed tests
+  Crypto/chcr: fix ctr, cbc, xts and rfc3686-ctr failed tests
+  Crypto/chcr: fix for ccm(aes) failed test
+  Crypto/chcr: support for 48 byte key_len in aes-xts
+  Crypto/chcr: fix for hmac(sha) test fails
 
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index 1671c1f..907125a 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -554,7 +554,7 @@ static irqreturn_t altera_isr(int irq, void *dev_id)
-  * physically contiguous fragment starting at
-  * skb->data, for length of skb_headlen(skb).
-  */
--static int tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct altera_tse_private *priv = netdev_priv(dev);
- 	unsigned int txsize = priv->tx_ring_size;
-@@ -562,7 +562,7 @@ static int tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct tse_buffer *buffer = NULL;
- 	int nfrags = skb_shinfo(skb)->nr_frags;
- 	unsigned int nopaged_len = skb_headlen(skb);
--	enum netdev_tx ret = NETDEV_TX_OK;
-+	netdev_tx_t ret = NETDEV_TX_OK;
- 	dma_addr_t dma_addr;
- 
- 	spin_lock_bh(&priv->tx_lock);
+ drivers/crypto/chelsio/chcr_algo.c   | 89 +++++++++++++++++++++-------
+ drivers/crypto/chelsio/chcr_crypto.h |  1 +
+ 2 files changed, 68 insertions(+), 22 deletions(-)
+
 -- 
-1.8.3.1
-
+2.18.1
 
