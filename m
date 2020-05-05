@@ -2,99 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 593081C4E7B
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 08:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D06771C4EBA
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 09:02:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727937AbgEEGuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 02:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        id S1728033AbgEEHC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 03:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725320AbgEEGuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 02:50:05 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7572C061A0F;
-        Mon,  4 May 2020 23:50:05 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id u22so398508plq.12;
-        Mon, 04 May 2020 23:50:05 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725320AbgEEHC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 03:02:27 -0400
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1FAC061A0F;
+        Tue,  5 May 2020 00:02:27 -0700 (PDT)
+Received: by mail-oi1-x243.google.com with SMTP id i13so961794oie.9;
+        Tue, 05 May 2020 00:02:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=0aXe94VU2WISTIlufs3bfltwqE1JuV8SHwsemLcdlPY=;
-        b=VUb2ebxOqBa2eX4HEwAC4TSnsr/67cFpLtQ50LMIHcpva39QnEzqr3yXtnu7GqNhLy
-         GiYXsq6zUdUoFWZ2h7UJ3R/DiNoyvrfOrfxftC5aatZu2vlRb2Yft3CRkqMTmyTYE5lK
-         teCTSmflsWScuw39WtRUWBqMXzzLLUfoROuZkcafhKA7tXysUa1wAyk6joVC1rOxmagY
-         tpETTtS/+i/Ll1BapImmBp5CymTjHToomA4PbsA9FXr9BcSBBqGcSxmHwmHZBidA7C25
-         M+zICsV0+WdGLyfL6k1w49IBwFxM0DCbgmkHkZ5Eh+r/Sk/zsAKjgDeefng+1NSBEBxb
-         pKCQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qfsI1Ae/gqByhDdxZCxdOk6CE5/Yy0Hxtg5XtcaRpu8=;
+        b=umG6XOaKe/xvpUZeb+ZoINdQdF6RfrbdVKqruPqkdIJ3fN4ToRiF/OLriv7P70gpss
+         +7l7G+K7OdLaaw7rteichaKB0E6oUI12pB1ztiSsenG/+MVo4pPUNUOsUiQPXi/Gob3C
+         o0xRew0aPGmj1QwayCuMxqN95fzZk17nsUD/lExn8Wlcsheal9pzwjie9/u7PgTrGsyh
+         mWnqWj3earegjwCMKdLYOAo0hNQPJLzWM9+Wk8Rk2CGTVltXrw+MmLqBFEloTEGNBeaw
+         LUkn7aq2OlSq72zQMipu9yhlE9cWuqFuV7Tjnpah+So7NmMcgCCQvtODO4p9dRk5Hay8
+         YhYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=0aXe94VU2WISTIlufs3bfltwqE1JuV8SHwsemLcdlPY=;
-        b=lQ2c1V9qHEe+CH/NCdExqb7z3VbhPOsowSF8VqZpOAtVlml7HzsM+xALMKgl5yDVeP
-         EvoOiPY7l9VqFO4D+HZrRIT3C0j88L3Kd+2f9IKvVo5Sy1bU3cwAfpBIHJYGLf4KJEyA
-         U4cnN4gpGFKrS18YJAYb+2iJjEg7GQOwRpRFBjneo7vRpwVachhoJCqsP3KBrYeTjoVY
-         +GC5snmj/kMPiLS7RaZggH+s/PuA+juUsKkEGUPBDIJWlNimB5Hxt1tcoRG/y9c2enlL
-         z+8dxOmXewCF8hyF6wi8LORgt2QHvUY6H0/NLYwMdhaq5/0GwfbVZbppTLvSIVdOxpsg
-         eOFw==
-X-Gm-Message-State: AGi0PuZPgjhulvIKVj8ZAXCdXT/H4KH4/fvFXoyy2k9TKXj1WJizC9Qr
-        6lUmG7ZcS+8Ozl9hNtDDKKg=
-X-Google-Smtp-Source: APiQypI3URDDfdNNVIPkHt00KJRYSHOJH+UmM+3WQVkcv4oKDPy1TMORpL06DWRPurmnD5TWKsN1Nw==
-X-Received: by 2002:a17:902:a701:: with SMTP id w1mr1333852plq.165.1588661405149;
-        Mon, 04 May 2020 23:50:05 -0700 (PDT)
-Received: from localhost ([162.211.220.152])
-        by smtp.gmail.com with ESMTPSA id z7sm1036273pff.47.2020.05.04.23.50.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 04 May 2020 23:50:04 -0700 (PDT)
-Date:   Tue, 5 May 2020 14:49:58 +0800
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     davem@davemloft.net, swboyd@chromium.org, ynezz@true.cz,
-        netdev@vger.kernel.org, jonathan.richardson@broadcom.com,
-        linux-kernel@vger.kernel.org,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>
-Subject: Re: [PATCH net v1] net: broadcom: fix a mistake about ioremap
- resource
-Message-ID: <20200505064958.GA1357@nuc8i5>
-References: <20200505020329.31638-1-zhengdejin5@gmail.com>
- <8b71b3ba-edc8-ce78-27ba-ce05230efc31@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qfsI1Ae/gqByhDdxZCxdOk6CE5/Yy0Hxtg5XtcaRpu8=;
+        b=T1ZzxKnWQvye0APIhOHVVY5s8NmWKw/Oxb98q+WE1DmXsErobofUqezpwPerOOSu7V
+         QP/LSRPItAOlbEHjuKHMC9fzSIGakFwG/8DRDjBNOOFvPWzwsqxZYiyBC6xLjHl8QSsz
+         VYbAP/zwIgoeeNpB3UvAvNeSPjHkjXgXwLUyJBEek79Hq4JX8R1/DFl9WMs8K5G/SW+M
+         BoW/6SWXZkM92jRiIVIcHCFQnNYX1uolXjwJ4lVmCBLWYPymfiyav5pA8hXYVSKvqXUr
+         Ktixpm5nelw6RrWxa/STdI9UXiXlY8b+JeqFotZVwubovD1mepNC9crtEnSDGq+QjWdi
+         ee4g==
+X-Gm-Message-State: AGi0PubSNO4Yh4Mod1TuLaN+M2uj+93Fu1Yw+pcXIz/WHtEeWAIMR0ix
+        0b6HuSZDagUprDrYBTYxvJI8z1wO2a7xhp4IAsY=
+X-Google-Smtp-Source: APiQypJ2xrC1M/0qN6b4tO9XZLdzWwTN5fdKRF0qgDKiz+8gLvFQDr/+AKJ8ps3kVV5UKQj3RHOQjIA0St1A71S1ZTw=
+X-Received: by 2002:a54:4e84:: with SMTP id c4mr1569779oiy.142.1588662146271;
+ Tue, 05 May 2020 00:02:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8b71b3ba-edc8-ce78-27ba-ce05230efc31@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <0000000000005a8fe005a4b8a114@google.com> <20200504190348.iphzmd7micvidh46@treble>
+ <CAM_iQpVu11xwKS5OEhDKmtbnP83oFNy9jBoAROS78-ECPEBWdw@mail.gmail.com>
+In-Reply-To: <CAM_iQpVu11xwKS5OEhDKmtbnP83oFNy9jBoAROS78-ECPEBWdw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 5 May 2020 00:02:15 -0700
+Message-ID: <CAM_iQpVsWkJQaWG01kz8C0J8oSPq23RNKfgAfgUs3dpSDRHFaQ@mail.gmail.com>
+Subject: Re: BUG: stack guard page was hit in unwind_next_frame
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        shile.zhang@linux.alibaba.com,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86 <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 04, 2020 at 08:28:52PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 5/4/2020 7:03 PM, Dejin Zheng wrote:
-> > Commit d7a5502b0bb8b ("net: broadcom: convert to
-> > devm_platform_ioremap_resource_byname()") will broke this driver.
-> > idm_base and nicpm_base were optional, after this change, they are
-> > mandatory. it will probe fails with -22 when the dtb doesn't have them
-> > defined. so revert part of this commit and make idm_base and nicpm_base
-> > as optional.
-> > 
-> > Fixes: d7a5502b0bb8bde ("net: broadcom: convert to devm_platform_ioremap_resource_byname()")
-> > Reported-by: Jonathan Richardson <jonathan.richardson@broadcom.com>
-> > Cc: Scott Branden <scott.branden@broadcom.com>
-> > Cc: Ray Jui <ray.jui@broadcom.com>
-> > Cc: Florian Fainelli <f.fainelli@gmail.com>
-> > Cc: David S. Miller <davem@davemloft.net>
-> > Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
-> 
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+On Mon, May 4, 2020 at 6:06 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Mon, May 4, 2020 at 12:08 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> >
+> > On Sat, May 02, 2020 at 11:36:11PM -0700, syzbot wrote:
+> > > Hello,
+> > >
+> > > syzbot found the following crash on:
+> > >
+> > > HEAD commit:    8999dc89 net/x25: Fix null-ptr-deref in x25_disconnect
+> > > git tree:       net
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=16004440100000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=b7a70e992f2f9b68
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=e73ceacfd8560cc8a3ca
+> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > >
+> > > Unfortunately, I don't have any reproducer for this crash yet.
+> > >
+> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > Reported-by: syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com
+> >
+> > Infinite loop in network code.
+>
+> It is not a loop, it is an unbound recursion where netdev events
+> trigger between bond master and slave back and forth.
+>
+> Let me see how this can be fixed properly.
 
-Florian, Thank you very much for helping me as always!
+The following patch works for me, I think it is reasonable to stop
+the netdev event propagation from upper to lower device, but I am
+not sure whether this will miss the netdev event in complex
+multi-layer setups.
 
-BR,
-Dejin
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 522288177bbd..ece50ae346c3 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8907,7 +8907,7 @@ static void netdev_sync_lower_features(struct
+net_device *upper,
+                        netdev_dbg(upper, "Disabling feature %pNF on
+lower dev %s.\n",
+                                   &feature, lower->name);
+                        lower->wanted_features &= ~feature;
+-                       netdev_update_features(lower);
++                       __netdev_update_features(lower);
 
-> -- 
-> Florian
+                        if (unlikely(lower->features & feature))
+                                netdev_WARN(upper, "failed to disable
+%pNF on %s!\n",
