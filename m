@@ -2,141 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 811451C5BD8
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A13DB1C5C02
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730490AbgEEPmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 11:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34490 "EHLO
+        id S1730581AbgEEPnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 11:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729447AbgEEPmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:42:17 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499E0C061A0F;
-        Tue,  5 May 2020 08:42:17 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id k12so2318040qtm.4;
-        Tue, 05 May 2020 08:42:17 -0700 (PDT)
+        with ESMTP id S1730542AbgEEPnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:43:52 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82F1C061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 08:43:51 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id h129so2887531ybc.3
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 08:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OdSiaVzqGpXkKErkBltChUbo57smog+mPGXXST7mpwE=;
-        b=swOHeOWR+HuU6TtVziCADaRF6lOWBfKvUpUX8SVljvZscu1Iz4LWJEZNcUdU9+cjIo
-         WGjooglq64KqR0LMuLqXbZlaVO0oqb9oEZNJok4mBm7CtcG4YI4KDq0vHslEFi/ZAyb9
-         8ij98N+MzWxd9N5Iwgi9cbUBr3ErTo8StfSvrSJ7Lx1ItCjO3+dLF4Jie5eGLEZ6uafD
-         2BEirE8E9hyHYFrtmuhamxMUqyYbUNpWtJr1pxMaznzCpHVKheb+MFVKn5Y7eHigvybY
-         xblDiVnKGSO1YOVZCBOhDyivCijimZrtwgQUMs6QzuaU2V0EFW5hbL22ycsa7Hc27KUL
-         dPuQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=8JgpSeOkIkbqwEqU/8Ds2H2RtksZG8y7lWBYS0HQjmY=;
+        b=rX428mZiCbjD3JISXDjyYFEc57JsG6XMAqLf/16ahtsNOznkY8WFrE0Qg/LzVVE4Qi
+         dQcuKAuv9jKOW9dNw4g2Tauf1HxJksZfRt9YRo8WkQmhNPv+FeyDTQaMR+orrWWlVWW5
+         QG1RbSPK59jxmnIe2gLrztWjYDla6wlwvr/aE55MJawKjYtyU1c41Magk1smQC9V9Olc
+         273VZilJr8sJIgU4IR8Wj/tYSKtxUBlA8N+BMGhaL6t+mftU6Y5pzhm/EA0Bo3sX+fI1
+         8heM75XNJg35O9IgtZbRLIuXMOVERil0cjz1ZcDOPZy/kQlUzPY5dTfcVtI2m+BpRW4d
+         5DtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OdSiaVzqGpXkKErkBltChUbo57smog+mPGXXST7mpwE=;
-        b=qjHLX1Kwl6V7eJppyVhl308jh3lmghSqQMjaheYHrRBJW57CgpD5gCWc5B2diyGdwa
-         9uIuWL49fU+gSHn20va+5+4/akQQPvS3Glq7iRXDkzICC5ikiCxUGNWVh078lvjSNVzM
-         1l+mDXA/lKwvGDGaZlXFO1fL3+m04huiLqc3WZ33HHYiZ3vQd/0oHwsyOFZk6dRT2PNi
-         wE3tQy+yv0p+4LkB68bXnvD9hMNQa6JQxvX3VgjgvWqAzYzoRGhW867RTWWd6AfOuDnE
-         f5Lhb+zDsXsUdcZLn3ke3b2YF4Jy/yuHaZT6yJyLtipN41L9yQrf05I32bGUIAo5wM/X
-         2E4A==
-X-Gm-Message-State: AGi0Pua3xZlhx8eu5ciysPyZijHshf/9CNWYbbLld7lS/NqqEI9bLGQW
-        TB5oGECIBvwKwy3p/bGndtsG1D8P
-X-Google-Smtp-Source: APiQypJ88ZbYg7+35egNTg+Nfq1JqkXSNm9MjWkXgtZgOUWm6nDxFFp7G7QadeEJbnIW+iiXF7VSjw==
-X-Received: by 2002:ac8:82f:: with SMTP id u44mr3244954qth.198.1588693335969;
-        Tue, 05 May 2020 08:42:15 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c19:a884:3b89:d8b6? ([2601:282:803:7700:c19:a884:3b89:d8b6])
-        by smtp.googlemail.com with ESMTPSA id e3sm749294qkd.113.2020.05.05.08.42.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 May 2020 08:42:15 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 1/2] ss: introduce cgroup2 cache and helper
- functions
-To:     Dmitry Yakunin <zeil@yandex-team.ru>, netdev@vger.kernel.org
-Cc:     khlebnikov@yandex-team.ru, cgroups@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20200430155245.83364-1-zeil@yandex-team.ru>
- <20200430155245.83364-2-zeil@yandex-team.ru>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7edb94ab-badb-e2f5-42fc-f04d38d29791@gmail.com>
-Date:   Tue, 5 May 2020 09:42:13 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20200430155245.83364-2-zeil@yandex-team.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=8JgpSeOkIkbqwEqU/8Ds2H2RtksZG8y7lWBYS0HQjmY=;
+        b=mrCfw3fbCzmHdkGp7fc1A6vCYMhMJ/5VSZB9WVQDfyrS99IGe3ZnNVpoM6V+CwgHDx
+         gvjaGNuSQMRPXEBcCRRLeuBtCNA6jQsx9vu4xku7Z32bHf0tMNiWpZqd3IfZjNEDJzJ1
+         Jc4qj15T2hg9a3zWltzHC2l+59WMbMAOW4zAaLtreQg+XTI6sHdCekpaKESZYt/VuzUf
+         ThrJQVRnQVX3pAx3qJudKJCjeqGSPz8i7YeV8QyPeG3RA40vFW+AKHp5R3rFLgEBOBzN
+         72U44XpThnK3fctWc0qL/VVQinMJg5IWzFv+OKzh3vdenE/VxdQloYKHcPyMZn02km4y
+         jPhw==
+X-Gm-Message-State: AGi0PuY8ONRwHkmqWGAKBD9LHNCG+aaTZn5Ji022Wi69qUAiOHWx4j5R
+        5evQ541vRQkPAlVLv0eWvd2cBdLMbv1brw==
+X-Google-Smtp-Source: APiQypKs8N4ry2ZNexWjbGdyIWVpMTV6fWAvreyFj60BavJHP5E3ZeuUEmIBRwhorXI+Q2EDAd/IIPiGZsjRug==
+X-Received: by 2002:a5b:9d0:: with SMTP id y16mr5809367ybq.81.1588693431121;
+ Tue, 05 May 2020 08:43:51 -0700 (PDT)
+Date:   Tue,  5 May 2020 08:43:48 -0700
+Message-Id: <20200505154348.224941-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
+Subject: [PATCH iproute2] tc: fq: fix two issues
+From:   Eric Dumazet <edumazet@google.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-global comment. iproute2 uses the net coding style of reverse xmas tree
-for declarations. There are a number of places that need to be fixed up.
+My latest patch missed the fact that this file got JSON support.
 
-On 4/30/20 9:52 AM, Dmitry Yakunin wrote:
-> diff --git a/lib/cg_map.c b/lib/cg_map.c
-> new file mode 100644
-> index 0000000..0a1d834
-> --- /dev/null
-> +++ b/lib/cg_map.c
-> @@ -0,0 +1,133 @@
-> +/*
-> + * cg_map.c	cgroup v2 cache
-> + *
-> + *		This program is free software; you can redistribute it and/or
-> + *		modify it under the terms of the GNU General Public License
-> + *		as published by the Free Software Foundation; either version
-> + *		2 of the License, or (at your option) any later version.
+Also fixes a spelling error added during JSON change.
 
-Drop the boilerplate in favor of SPDX line
+Fixes: be9ca9d54123 ("tc: fq: add timer_slack parameter")
+Fixes: d15e2bfc042b ("tc: fq: add support for JSON output")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ tc/q_fq.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-> + *
-> + * Authors:	Dmitry Yakunin <zeil@yandex-team.ru>
-> + */
-> +
-> +#include <stdlib.h>
-> +#include <string.h>
-> +#include <stdio.h>
-> +#include <stdbool.h>
-> +#include <linux/types.h>
-> +#include <linux/limits.h>
-> +#include <ftw.h>
-> +
-> +#include "cg_map.h"
-> +#include "list.h"
-> +#include "utils.h"
-> +
-> +struct cg_cache {
-> +	struct hlist_node id_hash;
-> +	__u64	id;
-> +	char	path[];
-> +};
-> +
-> +#define IDMAP_SIZE	1024
-> +static struct hlist_head id_head[IDMAP_SIZE];
-> +
-> +static struct cg_cache *cg_get_by_id(__u64 id)
-> +{
-> +	struct hlist_node *n;
-> +	unsigned int h = id & (IDMAP_SIZE - 1);
-> +
-> +	hlist_for_each(n, &id_head[h]) {
-> +		struct cg_cache *cg
-> +			= container_of(n, struct cg_cache, id_hash);
-
-Don't split the line like that. Since you need 2 lines just do:
-+		struct cg_cache *cg;
-+
-+		cg = container_of(n, struct cg_cache, id_hash);
-
-> +		if (cg->id == id)
-> +			return cg;
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
-
-
-
+diff --git a/tc/q_fq.c b/tc/q_fq.c
+index ffae0523b1abe6a9328c6542160ff938ad666532..98d1bf4014e3f9fbb8e804f92dcdc96e417b5c74 100644
+--- a/tc/q_fq.c
++++ b/tc/q_fq.c
+@@ -379,7 +379,9 @@ static int fq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	if (tb[TCA_FQ_TIMER_SLACK] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_TIMER_SLACK]) >= sizeof(__u32)) {
+ 		timer_slack = rta_getattr_u32(tb[TCA_FQ_TIMER_SLACK]);
+-		fprintf(f, "timer_slack %s ", sprint_time64(timer_slack, b1));
++		print_uint(PRINT_JSON, "timer_slack", NULL, timer_slack);
++		print_string(PRINT_FP, NULL, "timer_slack %s ",
++			     sprint_time64(timer_slack, b1));
+ 	}
+ 
+ 	return 0;
+@@ -442,7 +444,7 @@ static int fq_print_xstats(struct qdisc_util *qu, FILE *f,
+ 		print_nl();
+ 		print_lluint(PRINT_ANY, "pkts_too_long",
+ 			     "  pkts_too_long %llu", st->pkts_too_long);
+-		print_lluint(PRINT_ANY, "alloc_errors", " alloc_erros %llu",
++		print_lluint(PRINT_ANY, "alloc_errors", " alloc_errors %llu",
+ 			     st->allocation_errors);
+ 	}
+ 
+-- 
+2.26.2.526.g744177e7f7-goog
 
