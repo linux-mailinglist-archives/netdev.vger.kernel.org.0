@@ -2,187 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEDB51C5FC3
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 20:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6583D1C5FC0
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 20:11:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730794AbgEESLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 14:11:31 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:59334 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730184AbgEESLb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 14:11:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1588702291; x=1620238291;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   mime-version;
-  bh=+821Wwf5AYr1K8nxKevr7tEFWbfM2VMfbVR0LMsRGRU=;
-  b=Fw32OJqkT9B3700Rs9H3z7XRNZaGo9VPDnYN9pLA8pm3reLQ5fTsrUeM
-   Bv9j2h5CYdOgZLqHcCRJEyZt3/ZAeZQtbUn7MOG6BzHH2jIzXftcNDnXk
-   vyQDA8dAvqjrC6U8NUcRZuAtulPeewL+/1qgwLIPWpnTtV6UEFaHlBNBq
-   Y=;
-IronPort-SDR: EW34MZA2llje8LI32uObFMWC21OA8p4OnrRx9nolhn7kb7tsekUE0ly/Qhvy52SivyxEb2Z0jP
- dGTlwrxrmSBw==
-X-IronPort-AV: E=Sophos;i="5.73,356,1583193600"; 
-   d="scan'208";a="42850494"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-397e131e.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 05 May 2020 18:11:29 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-397e131e.us-west-2.amazon.com (Postfix) with ESMTPS id A6856A21CC;
-        Tue,  5 May 2020 18:11:27 +0000 (UTC)
-Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 5 May 2020 18:11:27 +0000
-Received: from u886c93fd17d25d.ant.amazon.com (10.43.162.200) by
- EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 5 May 2020 18:11:16 +0000
-From:   SeongJae Park <sjpark@amazon.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        SeongJae Park <sjpark@amazon.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        "Al Viro" <viro@zeniv.linux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <sj38.park@gmail.com>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        SeongJae Park <sjpark@amazon.de>, <snu@amazon.com>,
-        <amit@kernel.org>, <stable@vger.kernel.org>
-Subject: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
-Date:   Tue, 5 May 2020 20:11:01 +0200
-Message-ID: <20200505181101.16384-1-sjpark@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200505172850.GD2869@paulmck-ThinkPad-P72> (raw)
+        id S1730769AbgEESLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 14:11:18 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:22569 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730595AbgEESLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 14:11:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588702276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FUXa2CXmLuQRCLi3xJlNiY+EjIDk0Fg9RVQ/zxz/azE=;
+        b=Ew+OdeAIVYU6nOSsvswepMvT/TlKYPq2wCU3jM7XJR4nYiTzXU8a+2/nJXsQFEISd+JxdV
+        uD/hXPb/EE9EkkGJH6EPgfqZCKLWSsNLh1bMYMy3pCtYY8F8pclqBhq8tlxVsI8bgyRIKL
+        cpvVYZ8N9LguhGrbanwuVOemWb0iPP8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-426-KnVlNyLUPpCFfSK0Az0--w-1; Tue, 05 May 2020 14:11:14 -0400
+X-MC-Unique: KnVlNyLUPpCFfSK0Az0--w-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 78AEE8014D5;
+        Tue,  5 May 2020 18:11:12 +0000 (UTC)
+Received: from treble (ovpn-119-47.rdu2.redhat.com [10.10.119.47])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E79635C1B2;
+        Tue,  5 May 2020 18:11:10 +0000 (UTC)
+Date:   Tue, 5 May 2020 13:11:08 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
+ compatibility
+Message-ID: <20200505181108.hwcqanvw3qf5qyxk@treble>
+References: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
+ <20200501190930.ptxyml5o4rviyo26@ast-mbp.dhcp.thefacebook.com>
+ <20200501192204.cepwymj3fln2ngpi@treble>
+ <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
+ <20200501195617.czrnfqqcxfnliz3k@treble>
+ <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
+ <20200502192105.xp2osi5z354rh4sm@treble>
+ <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.200]
-X-ClientProxiedBy: EX13D06UWA004.ant.amazon.com (10.43.160.164) To
- EX13D31EUA001.ant.amazon.com (10.43.165.15)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 May 2020 10:28:50 -0700 "Paul E. McKenney" <paulmck@kernel.org> wrote:
-
-> On Tue, May 05, 2020 at 09:37:42AM -0700, Eric Dumazet wrote:
+On Tue, May 05, 2020 at 10:43:00AM -0700, Alexei Starovoitov wrote:
+> > Or, if you want to minimize the patch's impact on other arches, and keep
+> > the current patch the way it is (with bug fixed and changed patch
+> > description), that's fine too.  I can change the patch description
+> > accordingly.
 > > 
-> > 
-> > On 5/5/20 9:31 AM, Eric Dumazet wrote:
-> > > 
-> > > 
-> > > On 5/5/20 9:25 AM, Eric Dumazet wrote:
-> > >>
-> > >>
-> > >> On 5/5/20 9:13 AM, SeongJae Park wrote:
-> > >>> On Tue, 5 May 2020 09:00:44 -0700 Eric Dumazet <edumazet@google.com> wrote:
-> > >>>
-> > >>>> On Tue, May 5, 2020 at 8:47 AM SeongJae Park <sjpark@amazon.com> wrote:
-> > >>>>>
-> > >>>>> On Tue, 5 May 2020 08:20:50 -0700 Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > >>>>>
-> > >>>>>>
-> > >>>>>>
-> > >>>>>> On 5/5/20 8:07 AM, SeongJae Park wrote:
-> > >>>>>>> On Tue, 5 May 2020 07:53:39 -0700 Eric Dumazet <edumazet@google.com> wrote:
-> > >>>>>>>
-> > >>>>>>
-> > >>>>>>>> Why do we have 10,000,000 objects around ? Could this be because of
-> > >>>>>>>> some RCU problem ?
-> > >>>>>>>
-> > >>>>>>> Mainly because of a long RCU grace period, as you guess.  I have no idea how
-> > >>>>>>> the grace period became so long in this case.
-> > >>>>>>>
-> > >>>>>>> As my test machine was a virtual machine instance, I guess RCU readers
-> > >>>>>>> preemption[1] like problem might affected this.
-> > >>>>>>>
-> > >>>>>>> [1] https://www.usenix.org/system/files/conference/atc17/atc17-prasad.pdf
-> > >>>>>>>
-> > >>>>>>>>
-> > >>>>>>>> Once Al patches reverted, do you have 10,000,000 sock_alloc around ?
-> > >>>>>>>
-> > >>>>>>> Yes, both the old kernel that prior to Al's patches and the recent kernel
-> > >>>>>>> reverting the Al's patches didn't reproduce the problem.
-> > >>>>>>>
-> > >>>>>>
-> > >>>>>> I repeat my question : Do you have 10,000,000 (smaller) objects kept in slab caches ?
-> > >>>>>>
-> > >>>>>> TCP sockets use the (very complex, error prone) SLAB_TYPESAFE_BY_RCU, but not the struct socket_wq
-> > >>>>>> object that was allocated in sock_alloc_inode() before Al patches.
-> > >>>>>>
-> > >>>>>> These objects should be visible in kmalloc-64 kmem cache.
-> > >>>>>
-> > >>>>> Not exactly the 10,000,000, as it is only the possible highest number, but I
-> > >>>>> was able to observe clear exponential increase of the number of the objects
-> > >>>>> using slabtop.  Before the start of the problematic workload, the number of
-> > >>>>> objects of 'kmalloc-64' was 5760, but I was able to observe the number increase
-> > >>>>> to 1,136,576.
-> > >>>>>
-> > >>>>>           OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
-> > >>>>> before:   5760   5088  88%    0.06K     90       64       360K kmalloc-64
-> > >>>>> after:  1136576 1136576 100%    0.06K  17759       64     71036K kmalloc-64
-> > >>>>>
-> > >>>>
-> > >>>> Great, thanks.
-> > >>>>
-> > >>>> How recent is the kernel you are running for your experiment ?
-> > >>>
-> > >>> It's based on 5.4.35.
-> > >>>
-> > >>>>
-> > >>>> Let's make sure the bug is not in RCU.
-> > >>>
-> > >>> One thing I can currently say is that the grace period passes at last.  I
-> > >>> modified the benchmark to repeat not 10,000 times but only 5,000 times to run
-> > >>> the test without OOM but easily observable memory pressure.  As soon as the
-> > >>> benchmark finishes, the memory were freed.
-> > >>>
-> > >>> If you need more tests, please let me know.
-> > >>>
-> > >>
-> > >> I would ask Paul opinion on this issue, because we have many objects
-> > >> being freed after RCU grace periods.
-> > >>
-> > >> If RCU subsystem can not keep-up, I guess other workloads will also suffer.
-> > >>
-> > >> Sure, we can revert patches there and there trying to work around the issue,
-> > >> but for objects allocated from process context, we should not have these problems.
-> > >>
-> > > 
-> > > I wonder if simply adjusting rcu_divisor to 6 or 5 would help 
-> > > 
-> > > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> > > index d9a49cd6065a20936edbda1b334136ab597cde52..fde833bac0f9f81e8536211b4dad6e7575c1219a 100644
-> > > --- a/kernel/rcu/tree.c
-> > > +++ b/kernel/rcu/tree.c
-> > > @@ -427,7 +427,7 @@ module_param(qovld, long, 0444);
-> > >  static ulong jiffies_till_first_fqs = ULONG_MAX;
-> > >  static ulong jiffies_till_next_fqs = ULONG_MAX;
-> > >  static bool rcu_kick_kthreads;
-> > > -static int rcu_divisor = 7;
-> > > +static int rcu_divisor = 6;
-> > >  module_param(rcu_divisor, int, 0644);
-> > >  
-> > >  /* Force an exit from rcu_do_batch() after 3 milliseconds. */
-> > > 
-> > 
-> > To be clear, you can adjust the value without building a new kernel.
-> > 
-> > echo 6 >/sys/module/rcutree/parameters/rcu_divisor
+> > Or if you want me to measure the performance impact of the +40% code
+> > growth, and *then* decide what to do, that's also fine.  But you'd need
+> > to tell me what tests to run.
 > 
-> Worth a try!  If that helps significantly, I have some ideas for updating
-> that heuristic, such as checking for sudden increases in the number of
-> pending callbacks.
+> I'd like to minimize the risk and avoid code churn,
+> so how about we step back and debug it first?
+> Which version of gcc are you using and what .config?
+> I've tried:
+> Linux version 5.7.0-rc2 (gcc version 10.0.1 20200505 (prerelease) (GCC)
+> CONFIG_UNWINDER_ORC=y
+> # CONFIG_RETPOLINE is not set
 > 
-> But I would really also like to know whether there are long readers and
-> whether v5.6 fares better.
+> and objtool didn't complain.
+> I would like to reproduce it first before making any changes.
 
-I will share the results as soon as possible :)
+Revert
 
+  3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
 
-Thanks,
-SeongJae Park
+and compile with retpolines off (and either ORC or FP, doesn't matter).
 
-> 
-> 							Thanx, Paul
+I'm using GCC 9.3.1:
+
+  kernel/bpf/core.o: warning: objtool: ___bpf_prog_run()+0x8dc: sibling call from callable instruction with modified stack frame
+
+That's the original issue described in that commit.
+
+> Also since objtool cannot follow the optimizations compiler is doing
+> how about admit the design failure and teach objtool to build ORC
+> (and whatever else it needs to build) based on dwarf for the functions where
+> it cannot understand the assembly code ?
+> Otherwise objtool will forever be playing whackamole with compilers.
+
+I agree it's not a good long term approach.  But DWARF has its own
+issues and we can't rely on it for live patching.
+
+As I mentioned we have a plan to use a compiler plugin to annotate jump
+tables (including GCC switch tables).  But the approach taken by this
+patch should be good enough for now.
+
+-- 
+Josh
+
