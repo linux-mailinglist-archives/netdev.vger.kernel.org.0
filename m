@@ -2,155 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1A71C6348
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 23:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F521C6386
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 23:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729250AbgEEVn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 17:43:26 -0400
-Received: from correo.us.es ([193.147.175.20]:46532 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729178AbgEEVnZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 17:43:25 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id C9ED2118457
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 23:43:23 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BAA26115410
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 23:43:23 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id AFD7A4E737; Tue,  5 May 2020 23:43:23 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9FB2D1158E9;
-        Tue,  5 May 2020 23:43:21 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 05 May 2020 23:43:21 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 7E1B642EE38F;
-        Tue,  5 May 2020 23:43:21 +0200 (CEST)
-Date:   Tue, 5 May 2020 23:43:21 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, jiri@resnulli.us, ecree@solarflare.com
-Subject: Re: [PATCH net,v2] net: flow_offload: skip hw stats check for
- FLOW_ACTION_HW_STATS_DONT_CARE
-Message-ID: <20200505214321.GA13591@salvia>
-References: <20200505174736.29414-1-pablo@netfilter.org>
- <20200505114010.132abebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200505193145.GA9789@salvia>
- <20200505124343.27897ad6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1729218AbgEEV4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 17:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727089AbgEEV4Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 17:56:16 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9310DC061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 14:56:16 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id i19so3638048ioh.12
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 14:56:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6QCNUI4uAjwww79M1bcuR1zaMsxOZpR0pStHjtQsoJc=;
+        b=V9PeneSKTcI7Xr7jzFMcbGXb2YB1GEgHput1sYq81iw46zEzfjJ8J9UVbqOkNPLKcC
+         h3IY7dwaTB/ianf7DMYyr8IAntVlIXlrDMVUz7AzdogXr20yQPO8MGdcts9+Q+QYACuT
+         83Nn1pSJja4iX34eKrfpmB82tE+VnqPh0OGTX40Uq90jZbShi6S6gnO4HUNyZMmLuOPX
+         jxDiiKntpbq/YZ7e3M86dQtlhKInComhu6wtgX2tT7aU1yZ6bugMnoQk/kqdRca8aQfn
+         seB1dlpfXFiugiAu2y/fXmV9g56naQ6RkriP0YK8zyPb/Pe73o3fQhIiaJzJhBCyUqIw
+         Ip3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6QCNUI4uAjwww79M1bcuR1zaMsxOZpR0pStHjtQsoJc=;
+        b=INHA6pDN5FuPgEMps+w2/gHL98DCdkc1Cnpvt+xL+KptgRAQEymS0Z2CcFp5OV9N5c
+         FY5myGnXmNAnl+TrwjwqJuuiAK9KiiiYtrwT7aeFZOxqjWxNDrJnoFV5Fctg828H9tKO
+         9MRL9Taq6S+mVdlREk4lOjjkv9/CH2pAx7pu0ne7P8roUE6rK6m90xVEiW+cD4ZBtcdy
+         aqlrXngZSmTDFcoq3MY/q5GS3jgeFEyf/BN0bXyzF9hXxQdkCKRiMRNOKIRDXizbww2p
+         jLgXsOYpnftRSX6rwRwxl+MN7jJRWKji3kqMApkzU2aXsR41y6xZozwiyEW43xPgsgdC
+         aaUw==
+X-Gm-Message-State: AGi0Pua3MnBfbXe8ZHMMF2njQJqMIkyjggQ1ux1gSIHewEFP7hl2Vczn
+        3t5e+4U6Yr4pppsHHGZh9EavTqxB979JAh58la0Adg==
+X-Google-Smtp-Source: APiQypJEQoJT3t8V7yngFS3uGekbo9+BGWP29cP3GRdH7RfSN/HW3eQoWV2dnQAAlSOFe6lNNw2A8UNKRzklZZtaBGg=
+X-Received: by 2002:a6b:d219:: with SMTP id q25mr5572179iob.202.1588715775539;
+ Tue, 05 May 2020 14:56:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200505124343.27897ad6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20200505185723.191944-1-zenczykowski@gmail.com> <20200505.142322.2185521151586528997.davem@davemloft.net>
+In-Reply-To: <20200505.142322.2185521151586528997.davem@davemloft.net>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Tue, 5 May 2020 14:56:03 -0700
+Message-ID: <CANP3RGfVbvSRath6Ajd6_xzVrcK1dci=fFLMAGEogrT54fuudw@mail.gmail.com>
+Subject: Re: [PATCH] Revert "ipv6: add mtu lock check in __ip6_rt_update_pmtu"
+To:     David Miller <davem@davemloft.net>
+Cc:     Linux NetDev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem Bruijn <willemb@google.com>, lucien.xin@gmail.com,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 12:43:43PM -0700, Jakub Kicinski wrote:
-> On Tue, 5 May 2020 21:31:45 +0200 Pablo Neira Ayuso wrote:
-> > On Tue, May 05, 2020 at 11:40:10AM -0700, Jakub Kicinski wrote:
-> > > On Tue,  5 May 2020 19:47:36 +0200 Pablo Neira Ayuso wrote:  
-> > > > This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
-> > > > that the frontend does not need counters, this hw stats type request
-> > > > never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
-> > > > the driver to disable the stats, however, if the driver cannot disable
-> > > > counters, it bails out.
-> > > > 
-> > > > TCA_ACT_HW_STATS_* maintains the 1:1 mapping with FLOW_ACTION_HW_STATS_*
-> > > > except by disabled which is mapped to FLOW_ACTION_HW_STATS_DISABLED
-> > > > (this is 0 in tc). Add tc_act_hw_stats() to perform the mapping between
-> > > > TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*.
-> > > > 
-> > > > Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
-> > > > Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> > > > ---
-> > > > v2: define FLOW_ACTION_HW_STATS_DISABLED at the end of the enumeration
-> > > >     as Jiri suggested. Keep the 1:1 mapping between TCA_ACT_HW_STATS_*
-> > > >     and FLOW_ACTION_HW_STATS_* except by the disabled case.
-> > > > 
-> > > >  include/net/flow_offload.h |  9 ++++++++-
-> > > >  net/sched/cls_api.c        | 14 ++++++++++++--
-> > > >  2 files changed, 20 insertions(+), 3 deletions(-)
-> > > > 
-> > > > diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-> > > > index 3619c6acf60f..efc8350b42fb 100644
-> > > > --- a/include/net/flow_offload.h
-> > > > +++ b/include/net/flow_offload.h
-> > > > @@ -166,15 +166,18 @@ enum flow_action_mangle_base {
-> > > >  enum flow_action_hw_stats_bit {
-> > > >  	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
-> > > >  	FLOW_ACTION_HW_STATS_DELAYED_BIT,
-> > > > +	FLOW_ACTION_HW_STATS_DISABLED_BIT,
-> > > >  };
-> > > >  
-> > > >  enum flow_action_hw_stats {
-> > > > -	FLOW_ACTION_HW_STATS_DISABLED = 0,
-> > > > +	FLOW_ACTION_HW_STATS_DONT_CARE = 0,  
-> > > 
-> > > Why not ~0? Or ANY | DISABLED? 
-> > > Otherwise you may confuse drivers which check bit by bit.  
-> > 
-> > I'm confused, you agreed with this behaviour:
-> 
-> I was expecting the 0 to be exposed at UAPI level, and then kernel
-> would translate that to a full mask internally.
->
-> From the other reply:
-> 
-> > I can send a v3 to handle the _DONT_CARE type from the mlxsw.
-> 
-> Seems a little unnecessary for all drivers to cater to the special
-> case, when we made the argument be a bitfield specifically so that 
-> the drivers can function as long as they match on any of the bits.
+I don't buy your argument at all.
+There's *lots* of places where internet standards prevent Linux from
+doing various things.
+Trying to prevent users from shooting themselves in the foot, or
+trying to be a good netizen.
 
-Let's summarize semantics:
+If users require their computers to be broken, they can patch and
+build their own kernels.
 
-- FLOW_ACTION_HW_STATS_DISABLED means disable counters, bail out if
-  driver cannot disable them.
+Indeed, the entire point of internet standards is interoperability and
+specifying things that must or must not be done.
 
-- FLOW_ACTION_HW_STATS_IMMEDIATE means enable inmediate counters,
-  bail out if driver cannot enable inmediate counters.
+To quote from https://tools.ietf.org/html/rfc8201
 
-- FLOW_ACTION_HW_STATS_DELAY means enable delayed counters, bail out
-  if driver cannot enable delay counters.
+Nodes not implementing Path MTU Discovery must use the IPv6 minimum
+   link MTU defined in [RFC8200] as the maximum packet size.
 
-- FLOW_ACTION_HW_STATS_ANY means enable counters, either inmmediate or
-  delayed, if driver cannot enable any of them, bail out.
+(my comment: ie. 1280)
 
-- FLOW_ACTION_HW_STATS_DONT_CARE (0) means counters are not needed, never
-  bail out.
+...
 
-How can you combine DISABLED and ANY? Look at the semantics above and
-combine them: this is asking for any counter otherwise bail out and
-DISABLED is asking for no counters at all, otherwise bail out.
+Note that Path MTU Discovery must be performed even in cases where a
+   node "thinks" a destination is attached to the same link as itself,
+   as it might have a PMTU lower than the link MTU.  In a situation such
+   as when a neighboring router acts as proxy [ND] for some destination,
+   the destination can appear to be directly connected, but it is in
+   fact more than one hop away.
 
-This sounds like asking for things that are opposed.
+...
 
-So bit A means X, bit B means Y, but if you combine A and B, it means
-something complete different, say Z?
+When a node receives a Packet Too Big message, it must reduce its
+   estimate of the PMTU for the relevant path, based on the value of the
+   MTU field in the message.
 
-In your proposal, drivers drivers will have to check for ANY | DISABLED
-for don't care?
+...
 
-And what is the semantic for 0 (no bit set) in the kernel in your
-proposal?
+After receiving a Packet Too Big message, a node must attempt to
+   avoid eliciting more such messages in the near future.  The node must
+   reduce the size of the packets it is sending along the path
 
-Jiri mentioned there will be more bits coming soon. How will you
-extend this model (all bit set on for DONT_CARE) if new bits with
-specific semantics are showing up?
+...
 
-Combining ANY | DISABLED is non-sense, it should be rejected.
+Because each of these messages (and
+   the dropped packets they respond to) consume network resources, nodes
+   using Path MTU Discovery must detect decreases in PMTU as fast as
+   possible.
+
+--
+
+Furthermore, as we're finally upgrading to 4.9+ kernels, we now have
+customers complaining about broken ipv6 pmtud.
+This is a userspace visible regression in previously correct behaviour.
+
+And we do have a reason for locking the mtu with the old pre-4.9 behaviour:
+So we can change the mtu of the interfaces without it affecting the
+mtu of the routes through those interfaces.
