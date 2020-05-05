@@ -2,90 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD04E1C5E43
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:02:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 143541C5E4C
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730244AbgEERCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 13:02:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42136 "EHLO mail.kernel.org"
+        id S1730529AbgEERFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 13:05:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728804AbgEERCh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 13:02:37 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        id S1730342AbgEERFI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 13:05:08 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AAB0D206B9;
-        Tue,  5 May 2020 17:02:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D8F5B206B9;
+        Tue,  5 May 2020 17:05:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588698156;
-        bh=cxzc4n0fji3iIZXUSpJT8FlBbG2oT5ou/HugO3IFL9w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fhTuRrhcO2Ldh4lczhpT1QtZVQEdgb33E18i5NNzuYuIscbaFJwpJUK3opT7LVKmr
-         4yivgMGz4teB8Of4NtZMAdtvDcyN2GNKt/NPa/bCUTgOmBrN10N86BB02Gncoot3MY
-         g7j+7Z1P0AKRyKCFF84JFSnbo8L6C6sZVDrEr5vM=
-Date:   Tue, 5 May 2020 19:02:33 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        christophe.jaillet@wanadoo.fr, leon@kernel.org, tglx@linutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [BUG] net: chelsio: Possible buffer overflow caused by DMA
- failures/attacks
-Message-ID: <20200505170233.GA1114580@kroah.com>
-References: <95e19362-b9c9-faf9-3f9e-f6f4c65a6aff@gmail.com>
+        s=default; t=1588698308;
+        bh=t/fDWEogthAmgEzIsZeMrFQCGdPf3CvEx7El5ySzB5c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=o4kjFfl1LaQoklFfO8Q+2tI3Q3bD5CvzjE9SJFBkFD4P4jhDmb8kAuZIysjBtSnkd
+         v2D+e/5+GSMInT5CjkF+CsX76R04xkAAqQXu2j7q9aREsACpcrbUK2bsCLe5/MLbYg
+         Kn4K4O1M3CKJn4d0F8WM0HYweiYk75mQEtk0UDEg=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     dsahern@gmail.com
+Cc:     stephen@networkplumber.org, jacob.e.keller@intel.com,
+        jiri@resnulli.us, netdev@vger.kernel.org, kernel-team@fb.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH iproute2-next RESEND] devlink: support kernel-side snapshot id allocation
+Date:   Tue,  5 May 2020 10:04:57 -0700
+Message-Id: <20200505170457.1997205-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <76a99d9c-3574-1c8d-07cb-1f16e1bf9cca@gmail.com>
+References: <76a99d9c-3574-1c8d-07cb-1f16e1bf9cca@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <95e19362-b9c9-faf9-3f9e-f6f4c65a6aff@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 11:50:28PM +0800, Jia-Ju Bai wrote:
-> In alloc_rx_resources():
->     sge->respQ.entries =
->         pci_alloc_consistent(pdev, size, &sge->respQ.dma_addr);
-> 
-> Thus, "sge->respQ.entries" is a DMA value, and it is assigned to
-> "e" in process_pure_responses():
->     struct sge *sge = adapter->sge;
->     struct respQ *q = &sge->respQ;
->     struct respQ_e *e = &q->entries[q->cidx];
-> 
-> When DMA failures or attacks occur, the data stored in "e" can be
-> changed at any time. In this case, the value of "e->FreelistQid"
-> can be a large number to cause buffer overflow when the
-> following code is executed:
->     const struct freelQ *fl = &sge->freelQ[e->FreelistQid];
-> 
-> Similarly, "sge->respQ.entries" is also assigned to "e" in
-> process_responses():
->     struct sge *sge = adapter->sge;
->     struct respQ *q = &sge->respQ;
->     struct respQ_e *e = &q->entries[q->cidx];
-> 
-> When DMA failures or attacks occur, the data stored in "e" can be
-> changed at any time. In this case, the value of "e->FreelistQid"
-> can be a large number to cause buffer overflow when the
-> following code is executed:
->     struct freelQ *fl = &sge->freelQ[e->FreelistQid];
-> 
-> Considering that DMA can fail or be attacked, I think that it is dangerous
-> to
-> use a DMA value (or any value tainted by it) as an array index or a
-> control-flow
-> condition. However, I have found many such dangerous cases in Linux device
-> drivers
-> through my static-analysis tool and code review.
-> I am not sure whether my opinion is correct, so I want to listen to your
-> points of view.
+Make ID argument optional and read the snapshot info
+that kernel sends us.
 
-Can you create a patch to show what you think needs to be fixed?  That's
-the best way to get feedback, reports like this are usually very
-infrequently replied to.
+$ devlink region new netdevsim/netdevsim1/dummy
+netdevsim/netdevsim1/dummy: snapshot 0
+$ devlink -jp region new netdevsim/netdevsim1/dummy
+{
+    "regions": {
+        "netdevsim/netdevsim1/dummy": {
+            "snapshot": [ 1 ]
+        }
+    }
+}
+$ devlink region show netdevsim/netdevsim1/dummy
+netdevsim/netdevsim1/dummy: size 32768 snapshot [0 1]
 
-thanks,
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ devlink/devlink.c | 26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
 
-greg k-h
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index bd48a73bc0e4..507972c360a7 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -6476,6 +6476,23 @@ static int cmd_region_read(struct dl *dl)
+ 	return err;
+ }
+ 
++static int cmd_region_snapshot_new_cb(const struct nlmsghdr *nlh, void *data)
++{
++	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
++	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
++	struct dl *dl = data;
++
++	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
++	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
++	    !tb[DEVLINK_ATTR_REGION_NAME] ||
++	    !tb[DEVLINK_ATTR_REGION_SNAPSHOT_ID])
++		return MNL_CB_ERROR;
++
++	pr_out_region(dl, tb);
++
++	return MNL_CB_OK;
++}
++
+ static int cmd_region_snapshot_new(struct dl *dl)
+ {
+ 	struct nlmsghdr *nlh;
+@@ -6484,12 +6501,15 @@ static int cmd_region_snapshot_new(struct dl *dl)
+ 	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_REGION_NEW,
+ 			       NLM_F_REQUEST | NLM_F_ACK);
+ 
+-	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE_REGION |
+-				DL_OPT_REGION_SNAPSHOT_ID, 0);
++	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE_REGION,
++				DL_OPT_REGION_SNAPSHOT_ID);
+ 	if (err)
+ 		return err;
+ 
+-	return _mnlg_socket_sndrcv(dl->nlg, nlh, NULL, NULL);
++	pr_out_section_start(dl, "regions");
++	err = _mnlg_socket_sndrcv(dl->nlg, nlh, cmd_region_snapshot_new_cb, dl);
++	pr_out_section_end(dl);
++	return err;
+ }
+ 
+ static void cmd_region_help(void)
+-- 
+2.25.4
+
