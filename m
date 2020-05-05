@@ -2,152 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A11FB1C61E0
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 22:18:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E00931C61EA
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 22:24:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729011AbgEEUSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 16:18:00 -0400
-Received: from mout.web.de ([212.227.17.11]:51523 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727785AbgEEUR7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 16:17:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1588709862;
-        bh=YHjHsOjHtltg1OJ43UcJF6RyLNnk3LxukMUmEw05Gc4=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=cJpEqE+OOU2LmVX42JH4Drlz4skNosuENJK/y5MdmVbDm209dbvz4tp9g6uC0GLCl
-         QQNuLuGObI+mQUaGnJNxZnQsbX3Uod/4XonZHeHvMsq1bnCS+X4VEsyaRjCIkiHZxQ
-         QZ01xiXtnVxApGbZus4hVig4kSm/25EgasCtEeWY=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.132.123]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MLgQp-1jWL7m3WVP-000rRU; Tue, 05
- May 2020 22:17:41 +0200
-Subject: Re: [v3] nfp: abm: Fix incomplete release of system resources in
- nfp_abm_vnic_set_mac()
-To:     Qiushi Wu <wu000273@umn.edu>, netdev@vger.kernel.org
-Cc:     LKML <linux-kernel@vger.kernel.org>, oss-drivers@netronome.com,
-        Kangjie Lu <kjlu@umn.edu>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20200503204932.11167-1-wu000273@umn.edu>
- <20200504100300.28438c70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAMV6ehFC=efyD81rtNRcWW9gbiD4t6z4G2TkLk7WqLS+Qg9X-Q@mail.gmail.com>
- <ca694a38-14c5-bb9e-c140-52a6d847017b@web.de>
- <CAMV6ehE=GXooHwG1TQ-LZqpepceAudX=P63o139UgKG7TMRxwQ@mail.gmail.com>
- <6f0e483f-95d8-e30b-6688-e7c3fa6051c4@web.de>
- <CAMV6ehEP-X+5bXj6VXMpZCPkr6YZWsB0Z_sTBxFxNpwa6D0Z0Q@mail.gmail.com>
- <956f4891-e85d-abfd-0177-2a175bf51357@web.de>
- <CAMV6ehE9YRxakbP9ahXkiZEPut8E3qYsN0cxiLqCWasfvLAWFw@mail.gmail.com>
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <e6989cd8-42b8-d1ab-1fe3-aad26840ae05@web.de>
-Date:   Tue, 5 May 2020 22:17:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728660AbgEEUYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 16:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728076AbgEEUYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 16:24:02 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6960DC061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 13:24:02 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id q7so193527qkf.3
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 13:24:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nU71uN6a9cWiSFlJfVXXBXRBImWeoLqu7MgSy8U/okY=;
+        b=S3V3u/nGlQ5spxJ+Lbkm8sW78Z50b7+KtThAiiuXrVHJL+QOQnUn/QfQZbxb0/guXR
+         NEzx+vcEaU1jH3QVgNqVcx2pSgdTV5uWqTDjWGbNxZGpxZFoIYurZKNiF5mQAiAD2tAR
+         DX4D3tvrfolgkTaWBTXU9xfLH379fHrYIIvlQrl1jVzFwV0f+FEEZTb9SCIwkZpKa5rd
+         PTJ46nXjNRadnQDOwtyaqiOg1fFrBMdbO/fhUM7+aFFjxrrBj4vwHHTgsv06Vl57+0oC
+         WoWZwtSQgS75hdnJzLuN8sV5D6iqQnUd6gr6JaYD+EHjQQT7Avxy/nSZ0MOaT34UtQHK
+         /zQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nU71uN6a9cWiSFlJfVXXBXRBImWeoLqu7MgSy8U/okY=;
+        b=jr7omiWJtA/e6jZg7bfdk7mMumuqRvgvz2crcBuiR6lvjhtoogpWlOazhitlXDqlDS
+         J+FTyCjchM6sPaEK9eB7LJRHLmBQYWHPZifccYAyrH+gM9HM53UbJYiMg6lvLwLIy90L
+         AFkXiQR0v44jGFv5TCze0ZC0SeB8vbxQVck0pd20pl8WLVcwiuQnzkBF+UB+4GYq+wZK
+         6pIYkN+8rAOHMs5ih74w8VxZZR/yphQ/yJJi8s/exj3gfXv9PyLLH1ssHNIAokUvQ2A0
+         5YYAq9x4TgHoRvrrvOOgiNBOeASmCUr7jlm0TSXFUV9yYSgavVKSnJsidnUkEG/e2fbw
+         zN8A==
+X-Gm-Message-State: AGi0PuZ570NzZyqH0K19sDcCw00R+HlqgFtGKaDCfsV8/nN4osYDDahm
+        afflgk+zAU3h5Tz7TdCIUl+FarWZ
+X-Google-Smtp-Source: APiQypI5Me436ZM2uKfIAENRt6w8o8MgbU7HojrQTD7UcQN5g0qvQAW1LDP9qJa6dXDd1FFIfJNs7A==
+X-Received: by 2002:a37:b95:: with SMTP id 143mr5216982qkl.409.1588710240454;
+        Tue, 05 May 2020 13:24:00 -0700 (PDT)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id a64sm2681588qkc.114.2020.05.05.13.23.59
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 May 2020 13:24:00 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id w137so544947ybg.8
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 13:23:59 -0700 (PDT)
+X-Received: by 2002:a05:6902:533:: with SMTP id y19mr8102031ybs.213.1588710238623;
+ Tue, 05 May 2020 13:23:58 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAMV6ehE9YRxakbP9ahXkiZEPut8E3qYsN0cxiLqCWasfvLAWFw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:MxjqGyClP6hvU3ad6ilNvkBCcOR2UaBsjyTM9/TJgRhGK7pJ7jR
- 0HMtqiTh7pz0+BOrwLTDn0MTO7n2vP0TzB7wUhN/SKYzuhvOIPZu3NabkxGzQmsFCQ9uPU/
- spyAabkVax+1FTNiwA8pcvPPrqO4VTis1WRJyKAvZgcHTq9cByLMlTBeiJ+Hd0ubUspL4lT
- iGKFhY9kJTwlkPDIhcZNQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:u1rcn8iT758=:oJkLBEXUL8CPxKeY1ZiPH4
- lfCvQEfdS8CIpsZjl7rJ2zv7Pqq74Cz8skm9semJsgro62bORAFxF4+HZk43s0duwWAfNSomL
- GylzJHdGE7fSOuNS6j9zWs7EGUDNjILyyQ367mSk53HbryAkV03EnNyCZinRDp/coiGgBOtY6
- TC0V0/07zLCHbGi+we2ZAGu7MH/rJMnGCTXWGub63gncXFD0GTB+513Mo2xGm2Baz6X0X9ApC
- GR4yc2x08O+5Vx59pd+bdpYW8LyF3rBXZRS7c8iPZ/qx83kT2X9rToRUtT5voVEdPAUrNzvT5
- WcDOVOfbzmcfpFmkAmpmB8nZKlM6qIiAl2+Cy2rjp8M/HfmTfX8niio9q0SV65ZEnzhR1nikB
- 81lzKZkINiwEQPCRIu9RctT/eCjvU7yutZm8bn+PArQeSwKe80t51l3zhGWb3+kWI8kvOkbcR
- MnxS4aYVRiTWcp0yWSS8enM5xmiUpnx/jlrw17eKSLVJtZsv2cTizWZpg0NpVVKlTCl2f181w
- gH/70z+sWfrFxN7+AFQRXCCEcKrDZGyyo1jgnGMIXT9ZThwGLj9P9xu+o7RdIpkPYhAG9IN0e
- B7eRnrGn+UKZQ+HVTXXRBOQk14F70dxSXxUsTNjA9AXmHBs7NV9dYsQLrC7agGQ8VARI+DOcU
- r3XjtkkAmO/Ceq7jXJWhdwskZte78zZXKl3suPhMshJLakJa1qixdiQGAW3bDDSO6Y2Aqx5/k
- JfwTex3iZG1rQ0FT5liSBTkzABbfCe0Z+teLl9/IzgcAW8habLN5ReHyIjBgLr4ztMqL7RA5g
- toLaF9GTnnOSMVOtsCOeIM9nEtllivpxxORYQ9aMK1CNPUfJBf8PAUG6eKgUZk6ourT2a2wUT
- 4v9EdMP0XgYTgW1phCo1nfguoQnYrAEHDkr1oha+YeKI4KbHScgz3xi5SkxpLk9Q8EbVzMFpC
- zRykP7ieewssxIsb7XDFSzvIytq1AN/qzuZCulTiuhJsvLfBDR0xrYMQBJFequckCxPRHeBHj
- Pti3uSM4f6vQwRHBSw3cM/FidBA+YXO9DjVTIc9UI5qEC6l9mHA6h3sQfWX5m2JWFtZLtcHhV
- +gSoSa7qevrbOt7oIDw77NlplhpsfOtNFEzLrnlo9mMQx2YZOuJTnccfmGDhViBcb4VdsHd6m
- gDfmxpJ1Cr4xI0HLOmZOF1EMBUmqserHFXMKdYdw0LRn1KfwezgqZuvLLmDYEY6Undw2P5xTp
- Q81FTORuVZbalwQMu
+References: <20200504162948.4146-1-kelly@onechronos.com>
+In-Reply-To: <20200504162948.4146-1-kelly@onechronos.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 5 May 2020 16:23:21 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSco8n3CFJ78RF_rTLCoGd5=haFxrrOKHhuD6UdyApC+Rg@mail.gmail.com>
+Message-ID: <CA+FuTSco8n3CFJ78RF_rTLCoGd5=haFxrrOKHhuD6UdyApC+Rg@mail.gmail.com>
+Subject: Re: [PATCH] net: tcp: fix rx timestamp behavior for tcp_recvmsg
+To:     Kelly Littlepage <kelly@onechronos.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Iris Liu <iris@onechronos.com>,
+        Mike Maloney <maloney@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> What do you think about changing:
-> "But when nfp_nsp_has_hwinfo_lookup fail, the pointer is not released,..=
-"
-> to
-=E2=80=A6
-> or
-> "But when nfp_nsp_has_hwinfo_lookup fail,
+On Mon, May 4, 2020 at 12:30 PM Kelly Littlepage <kelly@onechronos.com> wrote:
+>
+> Timestamping cmsgs are not returned when the user buffer supplied to
+> recvmsg is too small to copy at least one skbuff in entirety.
 
-I became curious about a related wording variant.
+In general a tcp reader should not make any assumptions on
+packetization of the bytestream, including the number of skbs that
+might have made up the bytestream.
 
-  But when a call of the function =E2=80=9C=E2=80=A6=E2=80=9D failed,
+> Support
+> for TCP rx timestamps came from commit 98aaa913b4ed ("tcp: Extend
+> SOF_TIMESTAMPING_RX_SOFTWARE to TCP recvmsg") which noted that the cmsg
+> should "return the timestamp corresponding to the highest sequence
+> number data returned." The commit further notes that when coalescing
+> skbs code should "maintain the invariant of returning the timestamp of
+> the last byte in the recvmsg buffer."
 
+This states that if a byte range spans multiple timestamps, only the
+last one is returned.
 
-> NSP resource is not cleaned up and unlocked."
+> This is consistent with Section 1.4 of timestamping.txt, a document that
+> discusses expected behavior when timestamping streaming protocols. It's
+> worth noting that Section 1.4 alludes to a "buffer" in a way that might
+> have resulted in the current behavior:
+>
+> > The SO_TIMESTAMPING interface supports timestamping of bytes in a
+> bytestream. Each request is interpreted as a request for when the entire
+> contents of the buffer has passed a timestamping point....In practice,
+> timestamps can be correlated with segments of a bytestream consistently,
+> if both semantics of the timestamp and the timing of measurement are
+> chosen correctly....For bytestreams, we chose that a timestamp is
+> generated only when all bytes have passed a point.
+>
+> An interpretation of skbs as delineators for timestamping points makes
+> sense for tx timestamps but poses implementation challenges on the rx
+> side. Under the current API unless tcp_recvmsg happens to return bytes
+> copied from precisely one skb there's no useful mapping from bytes to
+> timestamps. Some sequences of reads will result in timestamps getting
+> lost
 
-I find such information also nicer. (The abbreviation =E2=80=9CNSP=E2=80=
-=9D might need
-another bit of clarification.)
+That's a known caveat, see above. This patch does not change that.
 
-I imagine there might be interests (eventually related to computer science=
-)
-to measure the corresponding object sizes because of a missed function cal=
-l
-and offer a more precise information in the commit message
-(depending on the willingness to invest efforts in such a data determinati=
-on).
+> and others will result in the user receiving a timestamp from the
+> second to last skb that tcp_recvmsg copied from instead of the last.
 
-Will such considerations become relevant for any subsequent
-software development approaches?
+On Tx, the idea was to associate a timestamp with the last byte in the
+send buffer, so that a timestamp for this seqno informs us of the
+upper bound on latency of all bytes in the send buffer.
 
-Regards,
-Markus
+On Rx, we currently return the timestamp of the last skb of which the
+last byte is read, which is associated with a byte in the recv buffer,
+but it is not necessarily the last one. Nor the first. As such it is
+not clear what it defines.
+
+Your patch addresses this by instead always returning the timestamp
+associated with the last byte in the recv buffer. The same timestamp
+could then be returned again for a subsequent recv call, if the entire
+recv buffer is filled from the same skb. Which is fine.
+
+That sounds correct to me.
+
+> The
+> proposed change addresses both problems while remaining consistent with
+> 1.4 and the wording of commit 98aaa913b4ed ("tcp: Extend
+> SOF_TIMESTAMPING_RX_SOFTWARE to TCP recvmsg").
+>
+> Co-developed-by: Iris Liu <iris@onechronos.com>
+> Signed-off-by: Iris Liu <iris@onechronos.com>
+> Signed-off-by: Kelly Littlepage <kelly@onechronos.com>
+> ---
+>  net/ipv4/tcp.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 6d87de434377..e72bd651d21a 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -2154,13 +2154,15 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
+>                         tp->urg_data = 0;
+>                         tcp_fast_path_check(sk);
+>                 }
+> -               if (used + offset < skb->len)
+> -                       continue;
+>
+>                 if (TCP_SKB_CB(skb)->has_rxtstamp) {
+>                         tcp_update_recv_tstamps(skb, &tss);
+>                         cmsg_flags |= 2;
+>                 }
+> +
+> +               if (used + offset < skb->len)
+> +                       continue;
+> +
+>                 if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)
+>                         goto found_fin_ok;
+>                 if (!(flags & MSG_PEEK))
+> --
+> 2.26.2
