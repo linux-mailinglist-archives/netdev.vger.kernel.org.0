@@ -2,73 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 374711C56BC
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 15:24:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7011C5706
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 15:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729088AbgEENYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 09:24:19 -0400
-Received: from mx2.suse.de ([195.135.220.15]:46454 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729020AbgEENYT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 09:24:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 639E2AB3D;
-        Tue,  5 May 2020 13:24:20 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 669E7602B9; Tue,  5 May 2020 15:24:17 +0200 (CEST)
-Date:   Tue, 5 May 2020 15:24:17 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Chris Healy <cphealy@gmail.com>, michael@walle.cc
-Subject: Re: [PATCH net-next v2 04/10] net: ethtool: Add attributes for cable
- test reports
-Message-ID: <20200505132417.GI5989@lion.mk-sys.cz>
-References: <20200505001821.208534-1-andrew@lunn.ch>
- <20200505001821.208534-5-andrew@lunn.ch>
- <20200505082838.GH8237@lion.mk-sys.cz>
- <20200505131548.GE208718@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200505131548.GE208718@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1729119AbgEENdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 09:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728990AbgEENdN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 09:33:13 -0400
+X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 05 May 2020 06:33:13 PDT
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2F7C061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 06:33:12 -0700 (PDT)
+Received: from ramsan ([IPv6:2a02:1810:ac12:ed60:bd97:8453:3b10:1832])
+        by baptiste.telenet-ops.be with bizsmtp
+        id b1U92200E3VwRR3011U9X9; Tue, 05 May 2020 15:28:09 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1jVxcI-0007yK-1e; Tue, 05 May 2020 15:28:10 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1jVxcI-0004bV-0H; Tue, 05 May 2020 15:28:10 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2] ionic: Use debugfs_create_bool() to export bool
+Date:   Tue,  5 May 2020 15:28:09 +0200
+Message-Id: <20200505132809.17655-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 03:15:48PM +0200, Andrew Lunn wrote:
-> > > + +---------------------------------------------+--------+---------------------+
-> > > + | ``ETHTOOL_A_CABLE_TEST_HEADER``             | nested | reply header        |
-> > > + +---------------------------------------------+--------+---------------------+
-> > > + | ``ETHTOOL_A_CABLE_TEST_STATUS``             | u8     | completed           |
-> > > + +---------------------------------------------+--------+---------------------+
-> > > + | ``ETHTOOL_A_CABLE_TEST_NTF_NEST``           | nested | all the results     |
-> > > + +-+-------------------------------------------+--------+---------------------+
-> > > + | | ``ETHTOOL_A_CABLE_TEST_STATUS``           | u8     | completed           |
-> > > + +-+-------------------------------------------+--------+---------------------+
-> > 
-> > You have ETHTOOL_A_CABLE_TEST_STATUS both here and on top level. AFAICS
-> > the top level attribute is the right one - but the name is
-> > ETHTOOL_A_CABLE_TEST_NTF_STATUS.
-> 
-> Hi Michal
-> 
-> They need better names. The first one is about the test run
-> status. Started vs complete. A notification is sent when the test is
-> started, and a second one at the end with the actual test results. The
-> second status is per pair, indicating open, shorted, O.K.
-> Maybe this second one shouldd be ETHTOOL_A_CABLE_TEST_NTF_PAIR_STATUS.
+Currently bool ionic_cq.done_color is exported using
+debugfs_create_u8(), which requires a cast, preventing further compiler
+checks.
 
-The per-pair status is ETHTOOL_A_CABLE_RESULTS_CODE (nested within
-ETHTOOL_A_CABLE_TEST_NTF_RESULT), isn't it?
+Fix this by switching to debugfs_create_bool(), and dropping the cast.
 
-Based on the code, I would say second ETHTOOL_A_CABLE_TEST_STATUS line
-should be dropped and first fixed to ETHTOOL_A_CABLE_TEST_NTF_STATUS.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Shannon Nelson <snelson@pensando.io>
+---
+v2:
+  - Add Acked-by.
+---
+ drivers/net/ethernet/pensando/ionic/ionic_debugfs.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Michal
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+index 5f8fc58d42b3d31c..11621ccc1faf0837 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+@@ -170,8 +170,7 @@ void ionic_debugfs_add_qcq(struct ionic_lif *lif, struct ionic_qcq *qcq)
+ 	debugfs_create_x64("base_pa", 0400, cq_dentry, &cq->base_pa);
+ 	debugfs_create_u32("num_descs", 0400, cq_dentry, &cq->num_descs);
+ 	debugfs_create_u32("desc_size", 0400, cq_dentry, &cq->desc_size);
+-	debugfs_create_u8("done_color", 0400, cq_dentry,
+-			  (u8 *)&cq->done_color);
++	debugfs_create_bool("done_color", 0400, cq_dentry, &cq->done_color);
+ 
+ 	debugfs_create_file("tail", 0400, cq_dentry, cq, &cq_tail_fops);
+ 
+-- 
+2.17.1
+
