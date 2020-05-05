@@ -2,113 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD4E81C4AF7
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 02:19:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66FEA1C4B10
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 02:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728571AbgEEATB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 20:19:01 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41378 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728535AbgEEATB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 May 2020 20:19:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Cs7gXRieqA/hKSrbcwQ6bI1VZ2XfhrWkA6NiAbRUtOY=; b=VOYPltANrkC8gNgSMrhLy2Q4PN
-        muhN9gKnrMPGZva68qyJ1/GTReoRvQEf19Y4Y+nbfJbxHhS+le/PLJbYoMcZfVSzHJbeWtWaNJrEr
-        yqZ/o0NlHKMBkb5DUjrmF5NXJXDcWpSTd+D+PTstnTmaoRlkgzebMu6WTpZ03+6O9AFU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jVlID-000sGx-Lz; Tue, 05 May 2020 02:18:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Chris Healy <cphealy@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>, michael@walle.cc,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v2 10/10] net: phy: Send notifier when starting the cable test
-Date:   Tue,  5 May 2020 02:18:21 +0200
-Message-Id: <20200505001821.208534-11-andrew@lunn.ch>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200505001821.208534-1-andrew@lunn.ch>
-References: <20200505001821.208534-1-andrew@lunn.ch>
+        id S1726774AbgEEAao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 20:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbgEEAan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 20:30:43 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663C2C061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 17:30:42 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id r4so225377pgg.4
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 17:30:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=G9m3tUKx0iu5Orqy3hvEfJ7xP503opkqDayoNMwoLvw=;
+        b=XGhlM+DRSDKPWGwfo9u86VJEZYIAuWRCDw+l93DqGtDoN5KQT7421R5z8JqgW4rOrH
+         iH3pzvbSpqjdyzKfOoS+6PAEhOAm722ncHx3OICQRAlvLstQzaID4q3cDgoPkoeLcqI7
+         /5t2f7GVcQJQ0IA/IODnak8RRIMjBCw4thSnSpMj0rJxpLIZL77Lrb+3Zfe9ZYzUohoF
+         QF5G5gLvmzLNCb05M7/DYJFPfqPtPkS+a9waiubKq4N+kXub4l7eV8BbljE711PybLuz
+         9v3Jo9DLnQxGivF5vUM+3mzKfW2+Gsp3NNKBf+luBHoe9RghZyA7cKX8P+CaCARhbjsL
+         kJvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=G9m3tUKx0iu5Orqy3hvEfJ7xP503opkqDayoNMwoLvw=;
+        b=BMsRoplYO2QcIsCE+0BD4EfCrRutrIQ/QKzgO8NgcLsjs6q9eJmVkfS5Q2yx6mrBS8
+         LvntKC3ckFW/rrsB7Voq4zVJ26u/YHEqtMr4JrDt2MFWVNeyHfhnsazPaCVNpaW1/Uhq
+         D2SxJe0HPBPNeEVRXfz9vIAhsNJiu4McO0DDqikAg9T0X7Kr4echgsO8WknTf6eTo14j
+         9GkObEKDTTayBfOFy4P5YIkipklsdV0AcHsUTPDBDsckFFIScJBBCwPCjBBwi+AP+iy/
+         I4J/G9EUap1eBgIDT8bpacgP0ydogEHYI0aVZmipPVtWNA1aUBayF6RI4fWAGMpABZRk
+         PsmA==
+X-Gm-Message-State: AGi0PuYn9zu3jHoFkH469XisCbvj5UVB/d4lD2S3uJHivTjz5ImIESsF
+        N9zLV0QkYZp91Ox3ZBas4xM=
+X-Google-Smtp-Source: APiQypJNKVdRfksf7bcxUrnXtCxuVFkH9urOpHcADlqPQvAziUo1FylBATbM6L3/TlDVvtoL0G+VzA==
+X-Received: by 2002:aa7:9575:: with SMTP id x21mr584174pfq.324.1588638641780;
+        Mon, 04 May 2020 17:30:41 -0700 (PDT)
+Received: from localhost ([162.211.220.152])
+        by smtp.gmail.com with ESMTPSA id 30sm200333pgp.38.2020.05.04.17.30.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 04 May 2020 17:30:40 -0700 (PDT)
+Date:   Tue, 5 May 2020 08:30:35 +0800
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     Jonathan Richardson <jonathan.richardson@broadcom.com>
+Cc:     davem@davemloft.net, Scott Branden <scott.branden@broadcom.com>,
+        Ray Jui <ray.jui@broadcom.com>, netdev@vger.kernel.org
+Subject: Re: bgmac-enet driver broken in 5.7
+Message-ID: <20200505003035.GA8437@nuc8i5>
+References: <CAHrpVsUFBTEj9VB_aURRB+=w68nybiKxkEX+kO2pe+O9GGyzBg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHrpVsUFBTEj9VB_aURRB+=w68nybiKxkEX+kO2pe+O9GGyzBg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given that it takes time to run a cable test, send a notify message at
-the start, as well as when it is completed.
+On Mon, May 04, 2020 at 12:32:55PM -0700, Jonathan Richardson wrote:
+> Hi,
+> 
+> Commit d7a5502b0bb8b (net: broadcom: convert to
+> devm_platform_ioremap_resource_byname()) broke the bgmac-enet driver.
+> probe fails with -22. idm_base and nicpm_base were optional. Now they
+> are mandatory. Our upstream dtb doesn't have them defined. I'm not
+> clear on why this change was made. Can it be reverted?
+>
+Jon, I am so sorry for that, I will submit a cl to reverted it to make
+idm_base and nicpm_base as optional. sorry!
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- net/ethtool/cabletest.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+BR,
+Dejin
 
-diff --git a/net/ethtool/cabletest.c b/net/ethtool/cabletest.c
-index f500454a54eb..e59f570494c0 100644
---- a/net/ethtool/cabletest.c
-+++ b/net/ethtool/cabletest.c
-@@ -20,6 +20,41 @@ cable_test_act_policy[ETHTOOL_A_CABLE_TEST_MAX + 1] = {
- 	[ETHTOOL_A_CABLE_TEST_HEADER]		= { .type = NLA_NESTED },
- };
- 
-+static int ethnl_cable_test_started(struct phy_device *phydev)
-+{
-+	struct sk_buff *skb;
-+	int err = -ENOMEM;
-+	void *ehdr;
-+
-+	skb = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
-+	if (!skb)
-+		goto out;
-+
-+	ehdr = ethnl_bcastmsg_put(skb, ETHTOOL_MSG_CABLE_TEST_NTF);
-+	if (!ehdr) {
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
-+	err = ethnl_fill_reply_header(skb, phydev->attached_dev,
-+				      ETHTOOL_A_CABLE_TEST_NTF_HEADER);
-+	if (err)
-+		goto out;
-+
-+	err = nla_put_u8(skb, ETHTOOL_A_CABLE_TEST_NTF_STATUS,
-+			 ETHTOOL_A_CABLE_TEST_NTF_STATUS_STARTED);
-+	if (err)
-+		goto out;
-+
-+	genlmsg_end(skb, ehdr);
-+
-+	return ethnl_multicast(skb, phydev->attached_dev);
-+
-+out:
-+	nlmsg_free(skb);
-+	return err;
-+}
-+
- int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct nlattr *tb[ETHTOOL_A_CABLE_TEST_MAX + 1];
-@@ -54,6 +89,10 @@ int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info)
- 	ret = phy_start_cable_test(dev->phydev, info->extack);
- 
- 	ethnl_ops_complete(dev);
-+
-+	if (!ret)
-+		ethnl_cable_test_started(dev->phydev);
-+
- out_rtnl:
- 	rtnl_unlock();
- out_dev_put:
--- 
-2.26.2
-
+> Thanks,
+> Jon
