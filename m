@@ -2,199 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A961C60FF
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:25:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 108681C610D
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:31:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728609AbgEETZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 15:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727857AbgEETZl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:25:41 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF17C061A41
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 12:25:40 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id o7so3045330oif.2
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 12:25:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RKLj+Bvazx+0GBaDeiW8XR54CzGKY4AHaP4cILqovw8=;
-        b=SJdtgGTW5rf7rigkvrS0mGJrpwJvn5sAzRAkkSYrU2yWA/lI6TmCZF0sq1SvNFwlg1
-         kREVUdbiAPDNjSfxcJ7oIXu434wnGVlmGdtL6WbnnD9hbqTKUgJpUSsrG2XH0oFtkDpS
-         blRYXGrjL79B5wOO2fnZ53Ph/JTysPZXNngkk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RKLj+Bvazx+0GBaDeiW8XR54CzGKY4AHaP4cILqovw8=;
-        b=CxXirK9Am/VVulxeFDeOGLvysfOQKpfahXGh1Wt1fbUNXPB9sZNjfKKALq/HP4ENCJ
-         WWWqTo4qA0Z7lR/MdamYSFFPrMRFG6bISnK70WtKCpmqhuk9OvyZCuhfX8kAwZw4mTcD
-         +C1HNriU45hhpDlviK71StT0A0ZMV3ZlLKv1K4kqCYtR5jsOGCl5P+RXyQBaODVmubn8
-         ZdH2BKypeBG1esCEpBEipEQBK9Lw4Tf41r6DKS6EQjjnH6ZDFQv7ArrGE4boO4RMQpeD
-         MnpUpHW5dwvXJ+VgIeWKUqiFsmQSdp3VLJr26J/LboXKGREHBs5//UCXL0Qt+X/eX7k8
-         iz7Q==
-X-Gm-Message-State: AGi0PubgLd/1SUh4mbFCbvVdHHecouH640dRUSW2ueMduqoW2iVcDbTA
-        ZO7uDRWn/DeuXgQC6/XfzX0yHYIC6VAwbSmfaJQDdA==
-X-Google-Smtp-Source: APiQypJj1DkGUZt7VIZXosUiRMoBR0Hk5xmD/ibsZ1474R2bICyoP6W/sR5eJX+NBmdVffk3jmYWOAdQstorpI7Bi6g=
-X-Received: by 2002:aca:403:: with SMTP id 3mr227565oie.166.1588706739870;
- Tue, 05 May 2020 12:25:39 -0700 (PDT)
+        id S1728569AbgEETbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 15:31:51 -0400
+Received: from correo.us.es ([193.147.175.20]:34322 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728135AbgEETbv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 15:31:51 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id AD686508CCF
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 21:31:48 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 9F8D21158E8
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 21:31:48 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 94C5D11541C; Tue,  5 May 2020 21:31:48 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4A49F2004A;
+        Tue,  5 May 2020 21:31:46 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 05 May 2020 21:31:46 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 2A68142EE38E;
+        Tue,  5 May 2020 21:31:46 +0200 (CEST)
+Date:   Tue, 5 May 2020 21:31:45 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, jiri@resnulli.us, ecree@solarflare.com
+Subject: Re: [PATCH net,v2] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DONT_CARE
+Message-ID: <20200505193145.GA9789@salvia>
+References: <20200505174736.29414-1-pablo@netfilter.org>
+ <20200505114010.132abebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200505140231.16600-1-brgl@bgdev.pl> <20200505140231.16600-6-brgl@bgdev.pl>
-In-Reply-To: <20200505140231.16600-6-brgl@bgdev.pl>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Tue, 5 May 2020 12:25:03 -0700
-Message-ID: <CAKOOJTzcNr7mc9xusQm3nCzkq5P=ha-si3fizeEL2_KJUOC3-Q@mail.gmail.com>
-Subject: Re: [PATCH 05/11] net: core: provide devm_register_netdev()
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200505114010.132abebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 5, 2020 at 7:05 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
->
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
->
-> Provide devm_register_netdev() - a device resource managed variant
-> of register_netdev(). This new helper will only work for net_device
-> structs that have a parent device assigned and are devres managed too.
->
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> ---
->  include/linux/netdevice.h |  4 ++++
->  net/core/dev.c            | 48 +++++++++++++++++++++++++++++++++++++++
->  net/ethernet/eth.c        |  1 +
->  3 files changed, 53 insertions(+)
->
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 130a668049ab..433bd5ca2efc 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1515,6 +1515,8 @@ struct net_device_ops {
->   * @IFF_FAILOVER_SLAVE: device is lower dev of a failover master device
->   * @IFF_L3MDEV_RX_HANDLER: only invoke the rx handler of L3 master device
->   * @IFF_LIVE_RENAME_OK: rename is allowed while device is up and running
-> + * @IFF_IS_DEVRES: this structure was allocated dynamically and is managed by
-> + *     devres
->   */
->  enum netdev_priv_flags {
->         IFF_802_1Q_VLAN                 = 1<<0,
-> @@ -1548,6 +1550,7 @@ enum netdev_priv_flags {
->         IFF_FAILOVER_SLAVE              = 1<<28,
->         IFF_L3MDEV_RX_HANDLER           = 1<<29,
->         IFF_LIVE_RENAME_OK              = 1<<30,
-> +       IFF_IS_DEVRES                   = 1<<31,
->  };
->
->  #define IFF_802_1Q_VLAN                        IFF_802_1Q_VLAN
-> @@ -4206,6 +4209,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
->                          count)
->
->  int register_netdev(struct net_device *dev);
-> +int devm_register_netdev(struct net_device *ndev);
->  void unregister_netdev(struct net_device *dev);
->
->  /* General hardware address lists handling functions */
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 522288177bbd..99db537c9468 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -9519,6 +9519,54 @@ int register_netdev(struct net_device *dev)
->  }
->  EXPORT_SYMBOL(register_netdev);
->
-> +struct netdevice_devres {
-> +       struct net_device *ndev;
-> +};
-> +
-> +static void devm_netdev_release(struct device *dev, void *this)
-> +{
-> +       struct netdevice_devres *res = this;
-> +
-> +       unregister_netdev(res->ndev);
-> +}
-> +
-> +/**
-> + *     devm_register_netdev - resource managed variant of register_netdev()
-> + *     @ndev: device to register
-> + *
-> + *     This is a devres variant of register_netdev() for which the unregister
-> + *     function will be call automatically when the parent device of ndev
-> + *     is detached.
-> + */
-> +int devm_register_netdev(struct net_device *ndev)
-> +{
-> +       struct netdevice_devres *dr;
-> +       int ret;
-> +
-> +       /* struct net_device itself must be devres managed. */
-> +       BUG_ON(!(ndev->priv_flags & IFF_IS_DEVRES));
-> +       /* struct net_device must have a parent device - it will be the device
-> +        * managing this resource.
-> +        */
+On Tue, May 05, 2020 at 11:40:10AM -0700, Jakub Kicinski wrote:
+> On Tue,  5 May 2020 19:47:36 +0200 Pablo Neira Ayuso wrote:
+> > This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
+> > that the frontend does not need counters, this hw stats type request
+> > never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
+> > the driver to disable the stats, however, if the driver cannot disable
+> > counters, it bails out.
+> > 
+> > TCA_ACT_HW_STATS_* maintains the 1:1 mapping with FLOW_ACTION_HW_STATS_*
+> > except by disabled which is mapped to FLOW_ACTION_HW_STATS_DISABLED
+> > (this is 0 in tc). Add tc_act_hw_stats() to perform the mapping between
+> > TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*.
+> > 
+> > Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
+> > Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> > ---
+> > v2: define FLOW_ACTION_HW_STATS_DISABLED at the end of the enumeration
+> >     as Jiri suggested. Keep the 1:1 mapping between TCA_ACT_HW_STATS_*
+> >     and FLOW_ACTION_HW_STATS_* except by the disabled case.
+> > 
+> >  include/net/flow_offload.h |  9 ++++++++-
+> >  net/sched/cls_api.c        | 14 ++++++++++++--
+> >  2 files changed, 20 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+> > index 3619c6acf60f..efc8350b42fb 100644
+> > --- a/include/net/flow_offload.h
+> > +++ b/include/net/flow_offload.h
+> > @@ -166,15 +166,18 @@ enum flow_action_mangle_base {
+> >  enum flow_action_hw_stats_bit {
+> >  	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+> >  	FLOW_ACTION_HW_STATS_DELAYED_BIT,
+> > +	FLOW_ACTION_HW_STATS_DISABLED_BIT,
+> >  };
+> >  
+> >  enum flow_action_hw_stats {
+> > -	FLOW_ACTION_HW_STATS_DISABLED = 0,
+> > +	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
+> 
+> Why not ~0? Or ANY | DISABLED? 
+> Otherwise you may confuse drivers which check bit by bit.
 
-Catching static programming errors seems like an expensive use of the
-last runtime flag in the enum. It would be weird to devres manage the
-unregister and not also choose to manage the underlying memory in the
-same fashion, so it wouldn't be an obvious mistake to make. If it must
-be enforced, one could also iterate over the registered release
-functions and check for the presence of devm_free_netdev without
-burning the flag.
+I'm confused, you agreed with this behaviour:
 
-> +       BUG_ON(!ndev->dev.parent);
-> +
-> +       dr = devres_alloc(devm_netdev_release, sizeof(*dr), GFP_KERNEL);
-> +       if (!dr)
-> +               return -ENOMEM;
-> +
-> +       ret = register_netdev(ndev);
-> +       if (ret) {
-> +               devres_free(dr);
-> +               return ret;
-> +       }
-> +
-> +       dr->ndev = ndev;
-> +       devres_add(ndev->dev.parent, dr);
-> +
-> +       return 0;
-> +}
-> +EXPORT_SYMBOL(devm_register_netdev);
-> +
->  int netdev_refcnt_read(const struct net_device *dev)
->  {
->         int i, refcnt = 0;
-> diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-> index c8b903302ff2..ce9b5e576f20 100644
-> --- a/net/ethernet/eth.c
-> +++ b/net/ethernet/eth.c
-> @@ -423,6 +423,7 @@ struct net_device *devm_alloc_etherdev_mqs(struct device *dev, int sizeof_priv,
->
->         *dr = netdev;
->         devres_add(dev, dr);
-> +       netdev->priv_flags |= IFF_IS_DEVRES;
->
->         return netdev;
->  }
-> --
-> 2.25.0
->
-
-Regards,
-Edwin Peer
+https://lore.kernel.org/netfilter-devel/20200427111220.7b07aae1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/T/#m6091486b2b0ddac512fe6c17f5508f280f630b60
