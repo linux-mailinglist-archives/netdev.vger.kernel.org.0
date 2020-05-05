@@ -2,90 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4915B1C60E3
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B8BF1C60C1
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728875AbgEETOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 15:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
+        id S1728627AbgEETHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 15:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726350AbgEETOL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:14:11 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97687C061A0F;
-        Tue,  5 May 2020 12:14:09 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id h11so1217706plr.11;
-        Tue, 05 May 2020 12:14:09 -0700 (PDT)
+        with ESMTP id S1727857AbgEETHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:07:08 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406B4C061A0F;
+        Tue,  5 May 2020 12:07:08 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id f8so1221493plt.2;
+        Tue, 05 May 2020 12:07:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AMQjHklvVQp8kLG2jdJ/FZUlk13ISomLbpvw9v/vCEA=;
-        b=LYsM8+Tl4vjqomLGLLzRn3FTLZGWZKGg8tg5+yPy/bp4zdiUIEv6E9aHqiIz0h66DE
-         TnAybeL39QPQoU3/WmYUHs0sJl364AaTUz/1ZS7upTH79bdwCKeOXmfyuuM/Hf+M6NRs
-         Ti5/hjUoEvAJYzbPGbNKOxHjwbJn6HoSrB8ZXhTyHLEqLdhgxVtF8pUMCrtEp2O4ek/y
-         /fX3hk2LU8eMbRYeidHbX7ZnxJPb+JI4Uau6gdZ6JyIL8TNOM9RMOCEYxvuul4ucYaB+
-         GR0c1sA+KF7d39Mqt5n36Yja5SeT1T4eJB6oi6XAG+210soAwsm5V0ISXPMvLtq3jKL+
-         +GMA==
+        h=from:to:cc:subject:date:message-id;
+        bh=fWyOOrvUK77uA/msSZdDDnmybty7hQPcowq4Z58m++0=;
+        b=BPHouBLZVWeHaubUI19wpiMPuNtIWM6/YUERDUNe9MNgSmVVq0+cuxhz5bbxK3kGR/
+         UxcdfDx5R8f3MQ80bBtDEUMhM0+5IrSRG1k40tEN/KtDJEk+cwmfyVkJy8XAOFHr8iZV
+         F4yJrLmDlhHmTlklDWECl6sk8bPgMQ2UzPK0tbwjp46p+Zg9ks/sU6Oi6OCWWSH+iOB3
+         W0bCCNjZW9NvvDQZt7CCmoZ3WNfRiAeq9LraUzBiD/CEpqKX37b7yIu+KkT6Sg0vWC5i
+         0TcYCFn7ETDBN3JI4s/uaXI2hQlYqm7S+dmA9jFiQBQtqioeyCarQZr4EkFEIw6owo/M
+         F3dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AMQjHklvVQp8kLG2jdJ/FZUlk13ISomLbpvw9v/vCEA=;
-        b=Tc++xbki0e+xAdQ0582XGUwTGEqrqE0EMziisNm+dZXbyCLhYq8altGhn7K4+HUDE8
-         yoh4SM9ZOgjwYUSmWRusJ9xbh85HZUt2dMyi/ZQiAhI/VJaYJWVBBj+As6rwjfiPrAxe
-         R58xBowuQe5YWGzFKktdreBnwKOyw8agbfm1QA5oz6QmNsjznOVw+VQWTy0OPktfpKzX
-         JfUcOd8xJz0anqbG3UXn1gxoJynXF6anlEGKK6reL9nhkxp9RFMiVTjsNXw/rNtNx0/X
-         z6L/rMEF5yxMMQ5+P+87/r+a3NfKHpHs1SiLEjsOLNibMIYk18S7sROym84M0Tj9MLma
-         6h1w==
-X-Gm-Message-State: AGi0PuadPvFmrT73dX8LgdxPOdmQvDm93R/YxToWqdSCbwrQSRRtG+dv
-        WzwVGs+n/ce4HV8Wq/G2Ywo=
-X-Google-Smtp-Source: APiQypINnciGRgQTOyBGie2I7fcyZymRaMAr9cKIOnDeCc3yOFSzaJKS2cKSRMI3uRqRjfKD9kn1Mw==
-X-Received: by 2002:a17:90a:d985:: with SMTP id d5mr4642222pjv.171.1588706048939;
-        Tue, 05 May 2020 12:14:08 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:e28e])
-        by smtp.gmail.com with ESMTPSA id 131sm2164452pgg.65.2020.05.05.12.14.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2020 12:14:08 -0700 (PDT)
-Date:   Tue, 5 May 2020 12:14:05 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
- compatibility
-Message-ID: <20200505191405.v3xai47bxeaqsmyg@ast-mbp.dhcp.thefacebook.com>
-References: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
- <20200501190930.ptxyml5o4rviyo26@ast-mbp.dhcp.thefacebook.com>
- <20200501192204.cepwymj3fln2ngpi@treble>
- <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
- <20200501195617.czrnfqqcxfnliz3k@treble>
- <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
- <20200502192105.xp2osi5z354rh4sm@treble>
- <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
- <89101da0-20e4-a29f-9796-870aa4d328a6@infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <89101da0-20e4-a29f-9796-870aa4d328a6@infradead.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fWyOOrvUK77uA/msSZdDDnmybty7hQPcowq4Z58m++0=;
+        b=nzv3F2dYOyGwxTUdlk87VcPVjNHiXWw9cPwe8cRrhqbv5jxXnXyRSghlIFt74mBQhV
+         oEyu3I4Kqi+exZraqiwzr4+wfWCaOqOQ+r3oW6IKOY9fW3QeLxQmsKb6G8OQ+HVfaCRH
+         yyxHWkZnjn1OBGv6L3Q8+gG8JQu4ABcBTIZoxmbSS2vgVIALt0M7sAtIcFn3kps2K1yH
+         16BM3Z4x312aO1qKCNvCSefWLEO9v8fins037atjsYvd6gVdxLTHrxjYOd6o8CN+9Hqt
+         LyWQSz4jPnvYQDhxL0pnnuv9HyjwGM+B+KH3kprvGiGb9OHSxzQ7TYUyItnHpDXxTkvx
+         pXjw==
+X-Gm-Message-State: AGi0PuYot68TqWr8+ASfoLiF0RvCl8HLHBbO0ASRhDxrSXn0/zDpFlwu
+        Bvkqj6eVWG4QgvKhKepp/vg=
+X-Google-Smtp-Source: APiQypIii3zV6Elp7IO251v6M6vB2QPxZ+fMr3HRaeN0DRbvD8NEebNCns+Io+5802VclUQUQzICSw==
+X-Received: by 2002:a17:90a:9e9:: with SMTP id 96mr4913003pjo.41.1588705627557;
+        Tue, 05 May 2020 12:07:07 -0700 (PDT)
+Received: from jordon-HP-15-Notebook-PC.domain.name ([122.167.156.195])
+        by smtp.gmail.com with ESMTPSA id 138sm2664906pfz.31.2020.05.05.12.07.00
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 May 2020 12:07:06 -0700 (PDT)
+From:   Souptick Joarder <jrdr.linux@gmail.com>
+To:     tony.luck@intel.com, fenghua.yu@intel.com, rspringer@google.com,
+        toddpoynor@google.com, benchan@chromium.org,
+        gregkh@linuxfoundation.org, jens.wiklander@linaro.org,
+        akpm@linux-foundation.org, santosh.shilimkar@oracle.com,
+        davem@davemloft.net, kuba@kernel.org, jack@suse.cz,
+        jhubbard@nvidia.com, ira.weiny@intel.com, jglisse@redhat.com
+Cc:     inux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devel@driverdev.osuosl.org, tee-dev@lists.linaro.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
+        Souptick Joarder <jrdr.linux@gmail.com>
+Subject: [RFC] mm/gup.c: Updated return value of {get|pin}_user_pages_fast()
+Date:   Wed,  6 May 2020 00:44:19 +0530
+Message-Id: <1588706059-4208-1-git-send-email-jrdr.linux@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> Hi,
-> 
-> I see the objtool warning:
-> kernel/bpf/core.o: warning: objtool: ___bpf_prog_run()+0x33: call without frame pointer save/setup
-> 
-> when using:
-> gcc (SUSE Linux) 9.3.1 20200406 [revision 6db837a5288ee3ca5ec504fbd5a765817e556ac2]
-> 
-> with the attached config file.
+Currently {get|pin}_user_pages_fast() have 3 return value 0, -errno
+and no of pinned pages. The only case where these two functions will
+return 0, is for nr_pages <= 0, which doesn't find a valid use case.
+But if at all any, then a -ERRNO will be returned instead of 0, which
+means {get|pin}_user_pages_fast() will have 2 return values -errno &
+no of pinned pages.
 
-Thanks Randy. I reproduced it.
+Update all the callers which deals with return value 0 accordingly.
+
+Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+---
+ arch/ia64/kernel/err_inject.c              | 2 +-
+ drivers/platform/goldfish/goldfish_pipe.c  | 2 +-
+ drivers/staging/gasket/gasket_page_table.c | 4 ++--
+ drivers/tee/tee_shm.c                      | 2 +-
+ mm/gup.c                                   | 6 +++---
+ net/rds/rdma.c                             | 2 +-
+ 6 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/arch/ia64/kernel/err_inject.c b/arch/ia64/kernel/err_inject.c
+index 8b5b8e6b..fd72218 100644
+--- a/arch/ia64/kernel/err_inject.c
++++ b/arch/ia64/kernel/err_inject.c
+@@ -143,7 +143,7 @@ static DEVICE_ATTR(name, 0644, show_##name, store_##name)
+ 	int ret;
+ 
+ 	ret = get_user_pages_fast(virt_addr, 1, FOLL_WRITE, NULL);
+-	if (ret<=0) {
++	if (ret < 0) {
+ #ifdef ERR_INJ_DEBUG
+ 		printk("Virtual address %lx is not existing.\n",virt_addr);
+ #endif
+diff --git a/drivers/platform/goldfish/goldfish_pipe.c b/drivers/platform/goldfish/goldfish_pipe.c
+index 1ab207e..831449d 100644
+--- a/drivers/platform/goldfish/goldfish_pipe.c
++++ b/drivers/platform/goldfish/goldfish_pipe.c
+@@ -277,7 +277,7 @@ static int goldfish_pin_pages(unsigned long first_page,
+ 	ret = pin_user_pages_fast(first_page, requested_pages,
+ 				  !is_write ? FOLL_WRITE : 0,
+ 				  pages);
+-	if (ret <= 0)
++	if (ret < 0)
+ 		return -EFAULT;
+ 	if (ret < requested_pages)
+ 		*iter_last_page_size = PAGE_SIZE;
+diff --git a/drivers/staging/gasket/gasket_page_table.c b/drivers/staging/gasket/gasket_page_table.c
+index f6d7157..1d08e1d 100644
+--- a/drivers/staging/gasket/gasket_page_table.c
++++ b/drivers/staging/gasket/gasket_page_table.c
+@@ -489,11 +489,11 @@ static int gasket_perform_mapping(struct gasket_page_table *pg_tbl,
+ 			ret = get_user_pages_fast(page_addr - offset, 1,
+ 						  FOLL_WRITE, &page);
+ 
+-			if (ret <= 0) {
++			if (ret < 0) {
+ 				dev_err(pg_tbl->device,
+ 					"get user pages failed for addr=0x%lx, offset=0x%lx [ret=%d]\n",
+ 					page_addr, offset, ret);
+-				return ret ? ret : -ENOMEM;
++				return ret;
+ 			}
+ 			++pg_tbl->num_active_pages;
+ 
+diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+index bd679b7..2706a1f 100644
+--- a/drivers/tee/tee_shm.c
++++ b/drivers/tee/tee_shm.c
+@@ -230,7 +230,7 @@ struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
+ 	if (rc > 0)
+ 		shm->num_pages = rc;
+ 	if (rc != num_pages) {
+-		if (rc >= 0)
++		if (rc > 0)
+ 			rc = -ENOMEM;
+ 		ret = ERR_PTR(rc);
+ 		goto err;
+diff --git a/mm/gup.c b/mm/gup.c
+index 50681f0..8d293ed 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -2760,7 +2760,7 @@ static int internal_get_user_pages_fast(unsigned long start, int nr_pages,
+ 	end = start + len;
+ 
+ 	if (end <= start)
+-		return 0;
++		return -EINVAL;
+ 	if (unlikely(!access_ok((void __user *)start, len)))
+ 		return -EFAULT;
+ 
+@@ -2805,8 +2805,8 @@ static int internal_get_user_pages_fast(unsigned long start, int nr_pages,
+  * calling get_user_pages().
+  *
+  * Returns number of pages pinned. This may be fewer than the number requested.
+- * If nr_pages is 0 or negative, returns 0. If no pages were pinned, returns
+- * -errno.
++ * If nr_pages is 0 or negative, returns -errno. If no pages were pinned,
++ * returns -errno.
+  */
+ int get_user_pages_fast(unsigned long start, int nr_pages,
+ 			unsigned int gup_flags, struct page **pages)
+diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+index a7ae118..44b96e6 100644
+--- a/net/rds/rdma.c
++++ b/net/rds/rdma.c
+@@ -161,7 +161,7 @@ static int rds_pin_pages(unsigned long user_addr, unsigned int nr_pages,
+ 		gup_flags |= FOLL_WRITE;
+ 
+ 	ret = pin_user_pages_fast(user_addr, nr_pages, gup_flags, pages);
+-	if (ret >= 0 && ret < nr_pages) {
++	if (ret > 0 && ret < nr_pages) {
+ 		unpin_user_pages(pages, ret);
+ 		ret = -EFAULT;
+ 	}
+-- 
+1.9.1
+
