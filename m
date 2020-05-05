@@ -2,96 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0401C5D76
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:26:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 119E21C5D8D
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:27:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730258AbgEEQ0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 12:26:15 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:61244 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730677AbgEEQ0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:26:11 -0400
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 045G2jPS052203;
-        Tue, 5 May 2020 12:26:10 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30u8sgxu5q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 05 May 2020 12:26:10 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 045GJncb003376;
-        Tue, 5 May 2020 16:26:08 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 30s0g5qc3j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 05 May 2020 16:26:07 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 045GQ5fm62259404
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 5 May 2020 16:26:05 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4173442045;
-        Tue,  5 May 2020 16:26:05 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ED29B42042;
-        Tue,  5 May 2020 16:26:04 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  5 May 2020 16:26:04 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 11/11] s390/qeth: clean up Kconfig help text
-Date:   Tue,  5 May 2020 18:25:59 +0200
-Message-Id: <20200505162559.14138-12-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200505162559.14138-1-jwi@linux.ibm.com>
-References: <20200505162559.14138-1-jwi@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-05-05_09:2020-05-04,2020-05-05 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
- priorityscore=1501 adultscore=0 malwarescore=0 bulkscore=0
- lowpriorityscore=0 mlxscore=0 impostorscore=0 phishscore=0 suspectscore=0
- mlxlogscore=459 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005050126
+        id S1730791AbgEEQ0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 12:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730282AbgEEQ0o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:26:44 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54901C061A0F;
+        Tue,  5 May 2020 09:26:44 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jW0Ou-001bTK-0E; Tue, 05 May 2020 16:26:32 +0000
+Date:   Tue, 5 May 2020 17:26:31 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     SeongJae Park <sjpark@amazon.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        sj38.park@gmail.com, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        SeongJae Park <sjpark@amazon.de>, snu@amazon.com,
+        amit@kernel.org, stable@vger.kernel.org
+Subject: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle
+ change
+Message-ID: <20200505162631.GY23230@ZenIV.linux.org.uk>
+References: <a8510327-d4f0-1207-1342-d688e9d5b8c3@gmail.com>
+ <20200505154644.18997-1-sjpark@amazon.com>
+ <CANn89iLHV2wyhk6-d6j_4=Ns01AEE5HSA4Qu3LO0gqKgcG81vQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iLHV2wyhk6-d6j_4=Ns01AEE5HSA4Qu3LO0gqKgcG81vQ@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove a stale doc link. While at it also reword the help text to get
-rid of an outdated marketing term.
+On Tue, May 05, 2020 at 09:00:44AM -0700, Eric Dumazet wrote:
 
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/Kconfig | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+> > Not exactly the 10,000,000, as it is only the possible highest number, but I
+> > was able to observe clear exponential increase of the number of the objects
+> > using slabtop.  Before the start of the problematic workload, the number of
+> > objects of 'kmalloc-64' was 5760, but I was able to observe the number increase
+> > to 1,136,576.
+> >
+> >           OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
+> > before:   5760   5088  88%    0.06K     90       64       360K kmalloc-64
+> > after:  1136576 1136576 100%    0.06K  17759       64     71036K kmalloc-64
+> >
+> 
+> Great, thanks.
+> 
+> How recent is the kernel you are running for your experiment ?
+> 
+> Let's make sure the bug is not in RCU.
+> 
+> After Al changes, RCU got slightly better under stress.
 
-diff --git a/drivers/s390/net/Kconfig b/drivers/s390/net/Kconfig
-index 3850a0f5f0bc..53120e68796e 100644
---- a/drivers/s390/net/Kconfig
-+++ b/drivers/s390/net/Kconfig
-@@ -63,12 +63,9 @@ config QETH
- 	prompt "Gigabit Ethernet device support"
- 	depends on CCW && NETDEVICES && IP_MULTICAST && QDIO && ETHERNET
- 	help
--	  This driver supports the IBM System z OSA Express adapters
--	  in QDIO mode (all media types), HiperSockets interfaces and z/VM
--	  virtual NICs for Guest LAN and VSWITCH.
--	
--	  For details please refer to the documentation provided by IBM at
--	  <http://www.ibm.com/developerworks/linux/linux390>
-+	  This driver supports IBM's OSA Express network adapters in QDIO mode,
-+	  HiperSockets interfaces and z/VM virtual NICs for Guest LAN and
-+	  VSWITCH.
- 
- 	  To compile this driver as a module, choose M.
- 	  The module name is qeth.
--- 
-2.17.1
+The thing that worries me here is that this is far from being the only
+source of RCU-delayed freeing of objects.  If we really see bogus OOM
+kills due to that (IRL, not in an artificial microbenchmark), we'd
+better do something that would help with all those sources, not just
+paper over the contributions from one of those.  Because there's no
+chance in hell to get rid of RCU-delayed freeing in general...
 
+Does the problem extend to kfree_rcu()?  And there's a lot of RCU
+callbacks that boil down to kmem_cache_free(); those really look like
+they should have exact same issue - sock_free_inode() is one of those,
+after all.
