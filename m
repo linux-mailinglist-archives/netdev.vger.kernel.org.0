@@ -2,112 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6583D1C5FC0
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 20:11:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 775171C5FC6
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 20:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730769AbgEESLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 14:11:18 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:22569 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730595AbgEESLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 14:11:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588702276;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FUXa2CXmLuQRCLi3xJlNiY+EjIDk0Fg9RVQ/zxz/azE=;
-        b=Ew+OdeAIVYU6nOSsvswepMvT/TlKYPq2wCU3jM7XJR4nYiTzXU8a+2/nJXsQFEISd+JxdV
-        uD/hXPb/EE9EkkGJH6EPgfqZCKLWSsNLh1bMYMy3pCtYY8F8pclqBhq8tlxVsI8bgyRIKL
-        cpvVYZ8N9LguhGrbanwuVOemWb0iPP8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-426-KnVlNyLUPpCFfSK0Az0--w-1; Tue, 05 May 2020 14:11:14 -0400
-X-MC-Unique: KnVlNyLUPpCFfSK0Az0--w-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 78AEE8014D5;
-        Tue,  5 May 2020 18:11:12 +0000 (UTC)
-Received: from treble (ovpn-119-47.rdu2.redhat.com [10.10.119.47])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E79635C1B2;
-        Tue,  5 May 2020 18:11:10 +0000 (UTC)
-Date:   Tue, 5 May 2020 13:11:08 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
- compatibility
-Message-ID: <20200505181108.hwcqanvw3qf5qyxk@treble>
-References: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
- <20200501190930.ptxyml5o4rviyo26@ast-mbp.dhcp.thefacebook.com>
- <20200501192204.cepwymj3fln2ngpi@treble>
- <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
- <20200501195617.czrnfqqcxfnliz3k@treble>
- <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
- <20200502192105.xp2osi5z354rh4sm@treble>
- <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        id S1730673AbgEESMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 14:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729663AbgEESMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 14:12:14 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE456C061A0F;
+        Tue,  5 May 2020 11:12:14 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D08A127EDD2C;
+        Tue,  5 May 2020 11:12:10 -0700 (PDT)
+Date:   Tue, 05 May 2020 11:12:06 -0700 (PDT)
+Message-Id: <20200505.111206.118627398774406136.davem@davemloft.net>
+To:     zhengdejin5@gmail.com
+Cc:     swboyd@chromium.org, ynezz@true.cz, netdev@vger.kernel.org,
+        jonathan.richardson@broadcom.com, linux-kernel@vger.kernel.org,
+        scott.branden@broadcom.com, ray.jui@broadcom.com,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH net v1] net: broadcom: fix a mistake about ioremap
+ resource
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200505020329.31638-1-zhengdejin5@gmail.com>
+References: <20200505020329.31638-1-zhengdejin5@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 May 2020 11:12:11 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 10:43:00AM -0700, Alexei Starovoitov wrote:
-> > Or, if you want to minimize the patch's impact on other arches, and keep
-> > the current patch the way it is (with bug fixed and changed patch
-> > description), that's fine too.  I can change the patch description
-> > accordingly.
-> > 
-> > Or if you want me to measure the performance impact of the +40% code
-> > growth, and *then* decide what to do, that's also fine.  But you'd need
-> > to tell me what tests to run.
+From: Dejin Zheng <zhengdejin5@gmail.com>
+Date: Tue,  5 May 2020 10:03:29 +0800
+
+> Commit d7a5502b0bb8b ("net: broadcom: convert to
+> devm_platform_ioremap_resource_byname()") will broke this driver.
+> idm_base and nicpm_base were optional, after this change, they are
+> mandatory. it will probe fails with -22 when the dtb doesn't have them
+> defined. so revert part of this commit and make idm_base and nicpm_base
+> as optional.
 > 
-> I'd like to minimize the risk and avoid code churn,
-> so how about we step back and debug it first?
-> Which version of gcc are you using and what .config?
-> I've tried:
-> Linux version 5.7.0-rc2 (gcc version 10.0.1 20200505 (prerelease) (GCC)
-> CONFIG_UNWINDER_ORC=y
-> # CONFIG_RETPOLINE is not set
-> 
-> and objtool didn't complain.
-> I would like to reproduce it first before making any changes.
+> Fixes: d7a5502b0bb8bde ("net: broadcom: convert to devm_platform_ioremap_resource_byname()")
+> Reported-by: Jonathan Richardson <jonathan.richardson@broadcom.com>
+> Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 
-Revert
-
-  3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
-
-and compile with retpolines off (and either ORC or FP, doesn't matter).
-
-I'm using GCC 9.3.1:
-
-  kernel/bpf/core.o: warning: objtool: ___bpf_prog_run()+0x8dc: sibling call from callable instruction with modified stack frame
-
-That's the original issue described in that commit.
-
-> Also since objtool cannot follow the optimizations compiler is doing
-> how about admit the design failure and teach objtool to build ORC
-> (and whatever else it needs to build) based on dwarf for the functions where
-> it cannot understand the assembly code ?
-> Otherwise objtool will forever be playing whackamole with compilers.
-
-I agree it's not a good long term approach.  But DWARF has its own
-issues and we can't rely on it for live patching.
-
-As I mentioned we have a plan to use a compiler plugin to annotate jump
-tables (including GCC switch tables).  But the approach taken by this
-patch should be good enough for now.
-
--- 
-Josh
-
+Applied, thank you.
