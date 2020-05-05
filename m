@@ -2,243 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9701C5BA2
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:39:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 811451C5BD8
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730367AbgEEPiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 11:38:55 -0400
-Received: from mout.kundenserver.de ([212.227.126.134]:39771 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729276AbgEEPiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:38:55 -0400
-Received: from localhost.localdomain ([149.172.19.189]) by
- mrelayeu.kundenserver.de (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MdNse-1iweps3DMG-00ZMLU; Tue, 05 May 2020 17:38:40 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] [net-next, v2] dsa: sja1105: dynamically allocate stats structure
-Date:   Tue,  5 May 2020 17:38:19 +0200
-Message-Id: <20200505153834.1437767-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.26.0
+        id S1730490AbgEEPmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 11:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729447AbgEEPmR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:42:17 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499E0C061A0F;
+        Tue,  5 May 2020 08:42:17 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id k12so2318040qtm.4;
+        Tue, 05 May 2020 08:42:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OdSiaVzqGpXkKErkBltChUbo57smog+mPGXXST7mpwE=;
+        b=swOHeOWR+HuU6TtVziCADaRF6lOWBfKvUpUX8SVljvZscu1Iz4LWJEZNcUdU9+cjIo
+         WGjooglq64KqR0LMuLqXbZlaVO0oqb9oEZNJok4mBm7CtcG4YI4KDq0vHslEFi/ZAyb9
+         8ij98N+MzWxd9N5Iwgi9cbUBr3ErTo8StfSvrSJ7Lx1ItCjO3+dLF4Jie5eGLEZ6uafD
+         2BEirE8E9hyHYFrtmuhamxMUqyYbUNpWtJr1pxMaznzCpHVKheb+MFVKn5Y7eHigvybY
+         xblDiVnKGSO1YOVZCBOhDyivCijimZrtwgQUMs6QzuaU2V0EFW5hbL22ycsa7Hc27KUL
+         dPuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OdSiaVzqGpXkKErkBltChUbo57smog+mPGXXST7mpwE=;
+        b=qjHLX1Kwl6V7eJppyVhl308jh3lmghSqQMjaheYHrRBJW57CgpD5gCWc5B2diyGdwa
+         9uIuWL49fU+gSHn20va+5+4/akQQPvS3Glq7iRXDkzICC5ikiCxUGNWVh078lvjSNVzM
+         1l+mDXA/lKwvGDGaZlXFO1fL3+m04huiLqc3WZ33HHYiZ3vQd/0oHwsyOFZk6dRT2PNi
+         wE3tQy+yv0p+4LkB68bXnvD9hMNQa6JQxvX3VgjgvWqAzYzoRGhW867RTWWd6AfOuDnE
+         f5Lhb+zDsXsUdcZLn3ke3b2YF4Jy/yuHaZT6yJyLtipN41L9yQrf05I32bGUIAo5wM/X
+         2E4A==
+X-Gm-Message-State: AGi0Pua3xZlhx8eu5ciysPyZijHshf/9CNWYbbLld7lS/NqqEI9bLGQW
+        TB5oGECIBvwKwy3p/bGndtsG1D8P
+X-Google-Smtp-Source: APiQypJ88ZbYg7+35egNTg+Nfq1JqkXSNm9MjWkXgtZgOUWm6nDxFFp7G7QadeEJbnIW+iiXF7VSjw==
+X-Received: by 2002:ac8:82f:: with SMTP id u44mr3244954qth.198.1588693335969;
+        Tue, 05 May 2020 08:42:15 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c19:a884:3b89:d8b6? ([2601:282:803:7700:c19:a884:3b89:d8b6])
+        by smtp.googlemail.com with ESMTPSA id e3sm749294qkd.113.2020.05.05.08.42.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 May 2020 08:42:15 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 1/2] ss: introduce cgroup2 cache and helper
+ functions
+To:     Dmitry Yakunin <zeil@yandex-team.ru>, netdev@vger.kernel.org
+Cc:     khlebnikov@yandex-team.ru, cgroups@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20200430155245.83364-1-zeil@yandex-team.ru>
+ <20200430155245.83364-2-zeil@yandex-team.ru>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7edb94ab-badb-e2f5-42fc-f04d38d29791@gmail.com>
+Date:   Tue, 5 May 2020 09:42:13 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Bh13PbOFLRcVbfsxdpNxOCz10zCbKaRSrYe3NBwEcgKKrMQUnXM
- N/7bKe6eyT4HrM6m/PTZy/7zyd+TkuTxsSMZcPxXAzZRMkMEEQo2Ah/bZMPlbeaBNG1J3ax
- PJfsPb84pa8r05m8l4MZeiOSQzgdUoWyCOCyaRf3hXLu3hW3VaHUDn/X1zy3DNsbr2hScYZ
- 4BJQJr/OHk3mEG/Q+sCow==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:oCYYc5N0GXI=:+vWtTkunBfUxKZhYKXfcYJ
- nP70/QVR6iB36EwCq+h9db2bUhRp2D0ardfof1Y4h5ghv8wYsjfnGcStKL3ktgHAw3HBg+rlL
- CAQDToKiPNmwZUGs7S1sQTTWZ2+86LR/WjpJgIwXfbwuzghzAVPAJ97jH12Dm4/n//5bzeMmQ
- /PxxGyw2o3Y6Y3cvAg1p6qawfWn3ZFa8hoZ3lxu4Kwr3xLpUIzS3UWORCn1mnFwQe7GLBswIW
- lAfr6SswAliaQor9f+MWyrUJ17YTvCwjJsDoUZScHoqPPpAHyO97R6PgvZOPf56OD/IOSTU2k
- drlS91I0um+S6ai4Vz5YmhYQzO0vb1zsHnYe/JdXeocEE/7LroDGA/V5MKlY12ET6yrDjSj9u
- sX8DQ8+4Z7UjSOJ5wH9cAx1yqBCn5/Hf+TTJhdTeXeA0qHBBotrZD3fDAFx23qXq/g+xNpCEh
- rBfzUhVDRfryd0YIbnn1bxpIscGScUqiHqQjUFcHriJ/zfkusIwsX7AttmVgybFNLruL7bUUl
- fEZj3AtCOizhLGbNZFDGc4E+Dh4VguNDoRcaMbZzdsz4rcc7uFkEfVnsjpk2tDuzWMWA7hlUw
- 4RlJvXEBE/OXulf3Ntp4E8UUgI/xb4FqKwQAj7dZzCm+9Mp4D0z5o+WtfywqRhnTGQmn6PVvT
- zwwmQmwR/fMrFexrD4ybL/hZGEPrYUN+vzVxwv6GJsLvvFKeNKzS9zjrzg1iVR1RTRVbvdm5I
- yEUEsug04AsgHRPLkaRvB1v7yPgQip19h5gr0gEQHw+ZDqh+dWd9AlZ8/ECtmXIbmV+VOukPF
- mfycg7NmcFiJIOIVxeRnXNt9qpi3uXd0oUyIFpGnMTk1nu7p5A=
+In-Reply-To: <20200430155245.83364-2-zeil@yandex-team.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The addition of sja1105_port_status_ether structure into the
-statistics causes the frame size to go over the warning limit:
+global comment. iproute2 uses the net coding style of reverse xmas tree
+for declarations. There are a number of places that need to be fixed up.
 
-drivers/net/dsa/sja1105/sja1105_ethtool.c:421:6: error: stack frame size of 1104 bytes in function 'sja1105_get_ethtool_stats' [-Werror,-Wframe-larger-than=]
+On 4/30/20 9:52 AM, Dmitry Yakunin wrote:
+> diff --git a/lib/cg_map.c b/lib/cg_map.c
+> new file mode 100644
+> index 0000000..0a1d834
+> --- /dev/null
+> +++ b/lib/cg_map.c
+> @@ -0,0 +1,133 @@
+> +/*
+> + * cg_map.c	cgroup v2 cache
+> + *
+> + *		This program is free software; you can redistribute it and/or
+> + *		modify it under the terms of the GNU General Public License
+> + *		as published by the Free Software Foundation; either version
+> + *		2 of the License, or (at your option) any later version.
 
-Use dynamic allocation to avoid this.
+Drop the boilerplate in favor of SPDX line
 
-Fixes: 336aa67bd027 ("net: dsa: sja1105: show more ethtool statistics counters for P/Q/R/S")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-v2: remove extra ';'
-    remove bogus include/linux/warnings.h change
----
- drivers/net/dsa/sja1105/sja1105_ethtool.c | 144 +++++++++++-----------
- 1 file changed, 74 insertions(+), 70 deletions(-)
+> + *
+> + * Authors:	Dmitry Yakunin <zeil@yandex-team.ru>
+> + */
+> +
+> +#include <stdlib.h>
+> +#include <string.h>
+> +#include <stdio.h>
+> +#include <stdbool.h>
+> +#include <linux/types.h>
+> +#include <linux/limits.h>
+> +#include <ftw.h>
+> +
+> +#include "cg_map.h"
+> +#include "list.h"
+> +#include "utils.h"
+> +
+> +struct cg_cache {
+> +	struct hlist_node id_hash;
+> +	__u64	id;
+> +	char	path[];
+> +};
+> +
+> +#define IDMAP_SIZE	1024
+> +static struct hlist_head id_head[IDMAP_SIZE];
+> +
+> +static struct cg_cache *cg_get_by_id(__u64 id)
+> +{
+> +	struct hlist_node *n;
+> +	unsigned int h = id & (IDMAP_SIZE - 1);
+> +
+> +	hlist_for_each(n, &id_head[h]) {
+> +		struct cg_cache *cg
+> +			= container_of(n, struct cg_cache, id_hash);
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_ethtool.c b/drivers/net/dsa/sja1105/sja1105_ethtool.c
-index d742ffcbfce9..709f035055c5 100644
---- a/drivers/net/dsa/sja1105/sja1105_ethtool.c
-+++ b/drivers/net/dsa/sja1105/sja1105_ethtool.c
-@@ -421,92 +421,96 @@ static char sja1105pqrs_extra_port_stats[][ETH_GSTRING_LEN] = {
- void sja1105_get_ethtool_stats(struct dsa_switch *ds, int port, u64 *data)
- {
- 	struct sja1105_private *priv = ds->priv;
--	struct sja1105_port_status status;
-+	struct sja1105_port_status *status;
- 	int rc, i, k = 0;
- 
--	memset(&status, 0, sizeof(status));
-+	status = kzalloc(sizeof(*status), GFP_KERNEL);
-+	if (!status)
-+		goto out;
- 
--	rc = sja1105_port_status_get(priv, &status, port);
-+	rc = sja1105_port_status_get(priv, status, port);
- 	if (rc < 0) {
- 		dev_err(ds->dev, "Failed to read port %d counters: %d\n",
- 			port, rc);
--		return;
-+		goto out;
- 	}
- 	memset(data, 0, ARRAY_SIZE(sja1105_port_stats) * sizeof(u64));
--	data[k++] = status.mac.n_runt;
--	data[k++] = status.mac.n_soferr;
--	data[k++] = status.mac.n_alignerr;
--	data[k++] = status.mac.n_miierr;
--	data[k++] = status.mac.typeerr;
--	data[k++] = status.mac.sizeerr;
--	data[k++] = status.mac.tctimeout;
--	data[k++] = status.mac.priorerr;
--	data[k++] = status.mac.nomaster;
--	data[k++] = status.mac.memov;
--	data[k++] = status.mac.memerr;
--	data[k++] = status.mac.invtyp;
--	data[k++] = status.mac.intcyov;
--	data[k++] = status.mac.domerr;
--	data[k++] = status.mac.pcfbagdrop;
--	data[k++] = status.mac.spcprior;
--	data[k++] = status.mac.ageprior;
--	data[k++] = status.mac.portdrop;
--	data[k++] = status.mac.lendrop;
--	data[k++] = status.mac.bagdrop;
--	data[k++] = status.mac.policeerr;
--	data[k++] = status.mac.drpnona664err;
--	data[k++] = status.mac.spcerr;
--	data[k++] = status.mac.agedrp;
--	data[k++] = status.hl1.n_n664err;
--	data[k++] = status.hl1.n_vlanerr;
--	data[k++] = status.hl1.n_unreleased;
--	data[k++] = status.hl1.n_sizeerr;
--	data[k++] = status.hl1.n_crcerr;
--	data[k++] = status.hl1.n_vlnotfound;
--	data[k++] = status.hl1.n_ctpolerr;
--	data[k++] = status.hl1.n_polerr;
--	data[k++] = status.hl1.n_rxfrm;
--	data[k++] = status.hl1.n_rxbyte;
--	data[k++] = status.hl1.n_txfrm;
--	data[k++] = status.hl1.n_txbyte;
--	data[k++] = status.hl2.n_qfull;
--	data[k++] = status.hl2.n_part_drop;
--	data[k++] = status.hl2.n_egr_disabled;
--	data[k++] = status.hl2.n_not_reach;
-+	data[k++] = status->mac.n_runt;
-+	data[k++] = status->mac.n_soferr;
-+	data[k++] = status->mac.n_alignerr;
-+	data[k++] = status->mac.n_miierr;
-+	data[k++] = status->mac.typeerr;
-+	data[k++] = status->mac.sizeerr;
-+	data[k++] = status->mac.tctimeout;
-+	data[k++] = status->mac.priorerr;
-+	data[k++] = status->mac.nomaster;
-+	data[k++] = status->mac.memov;
-+	data[k++] = status->mac.memerr;
-+	data[k++] = status->mac.invtyp;
-+	data[k++] = status->mac.intcyov;
-+	data[k++] = status->mac.domerr;
-+	data[k++] = status->mac.pcfbagdrop;
-+	data[k++] = status->mac.spcprior;
-+	data[k++] = status->mac.ageprior;
-+	data[k++] = status->mac.portdrop;
-+	data[k++] = status->mac.lendrop;
-+	data[k++] = status->mac.bagdrop;
-+	data[k++] = status->mac.policeerr;
-+	data[k++] = status->mac.drpnona664err;
-+	data[k++] = status->mac.spcerr;
-+	data[k++] = status->mac.agedrp;
-+	data[k++] = status->hl1.n_n664err;
-+	data[k++] = status->hl1.n_vlanerr;
-+	data[k++] = status->hl1.n_unreleased;
-+	data[k++] = status->hl1.n_sizeerr;
-+	data[k++] = status->hl1.n_crcerr;
-+	data[k++] = status->hl1.n_vlnotfound;
-+	data[k++] = status->hl1.n_ctpolerr;
-+	data[k++] = status->hl1.n_polerr;
-+	data[k++] = status->hl1.n_rxfrm;
-+	data[k++] = status->hl1.n_rxbyte;
-+	data[k++] = status->hl1.n_txfrm;
-+	data[k++] = status->hl1.n_txbyte;
-+	data[k++] = status->hl2.n_qfull;
-+	data[k++] = status->hl2.n_part_drop;
-+	data[k++] = status->hl2.n_egr_disabled;
-+	data[k++] = status->hl2.n_not_reach;
- 
- 	if (priv->info->device_id == SJA1105E_DEVICE_ID ||
- 	    priv->info->device_id == SJA1105T_DEVICE_ID)
--		return;
-+		goto out;;
- 
- 	memset(data + k, 0, ARRAY_SIZE(sja1105pqrs_extra_port_stats) *
- 			sizeof(u64));
- 	for (i = 0; i < 8; i++) {
--		data[k++] = status.hl2.qlevel_hwm[i];
--		data[k++] = status.hl2.qlevel[i];
-+		data[k++] = status->hl2.qlevel_hwm[i];
-+		data[k++] = status->hl2.qlevel[i];
- 	}
--	data[k++] = status.ether.n_drops_nolearn;
--	data[k++] = status.ether.n_drops_noroute;
--	data[k++] = status.ether.n_drops_ill_dtag;
--	data[k++] = status.ether.n_drops_dtag;
--	data[k++] = status.ether.n_drops_sotag;
--	data[k++] = status.ether.n_drops_sitag;
--	data[k++] = status.ether.n_drops_utag;
--	data[k++] = status.ether.n_tx_bytes_1024_2047;
--	data[k++] = status.ether.n_tx_bytes_512_1023;
--	data[k++] = status.ether.n_tx_bytes_256_511;
--	data[k++] = status.ether.n_tx_bytes_128_255;
--	data[k++] = status.ether.n_tx_bytes_65_127;
--	data[k++] = status.ether.n_tx_bytes_64;
--	data[k++] = status.ether.n_tx_mcast;
--	data[k++] = status.ether.n_tx_bcast;
--	data[k++] = status.ether.n_rx_bytes_1024_2047;
--	data[k++] = status.ether.n_rx_bytes_512_1023;
--	data[k++] = status.ether.n_rx_bytes_256_511;
--	data[k++] = status.ether.n_rx_bytes_128_255;
--	data[k++] = status.ether.n_rx_bytes_65_127;
--	data[k++] = status.ether.n_rx_bytes_64;
--	data[k++] = status.ether.n_rx_mcast;
--	data[k++] = status.ether.n_rx_bcast;
-+	data[k++] = status->ether.n_drops_nolearn;
-+	data[k++] = status->ether.n_drops_noroute;
-+	data[k++] = status->ether.n_drops_ill_dtag;
-+	data[k++] = status->ether.n_drops_dtag;
-+	data[k++] = status->ether.n_drops_sotag;
-+	data[k++] = status->ether.n_drops_sitag;
-+	data[k++] = status->ether.n_drops_utag;
-+	data[k++] = status->ether.n_tx_bytes_1024_2047;
-+	data[k++] = status->ether.n_tx_bytes_512_1023;
-+	data[k++] = status->ether.n_tx_bytes_256_511;
-+	data[k++] = status->ether.n_tx_bytes_128_255;
-+	data[k++] = status->ether.n_tx_bytes_65_127;
-+	data[k++] = status->ether.n_tx_bytes_64;
-+	data[k++] = status->ether.n_tx_mcast;
-+	data[k++] = status->ether.n_tx_bcast;
-+	data[k++] = status->ether.n_rx_bytes_1024_2047;
-+	data[k++] = status->ether.n_rx_bytes_512_1023;
-+	data[k++] = status->ether.n_rx_bytes_256_511;
-+	data[k++] = status->ether.n_rx_bytes_128_255;
-+	data[k++] = status->ether.n_rx_bytes_65_127;
-+	data[k++] = status->ether.n_rx_bytes_64;
-+	data[k++] = status->ether.n_rx_mcast;
-+	data[k++] = status->ether.n_rx_bcast;
-+out:
-+	kfree(status);
- }
- 
- void sja1105_get_strings(struct dsa_switch *ds, int port,
--- 
-2.26.0
+Don't split the line like that. Since you need 2 lines just do:
++		struct cg_cache *cg;
++
++		cg = container_of(n, struct cg_cache, id_hash);
+
+> +		if (cg->id == id)
+> +			return cg;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+
+
+
 
