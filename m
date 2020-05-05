@@ -2,189 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 165ED1C5EB5
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:22:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1BC21C5EBA
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:24:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730274AbgEERWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 13:22:53 -0400
-Received: from mout.kundenserver.de ([212.227.126.134]:58391 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729654AbgEERWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 13:22:53 -0400
-Received: from localhost.localdomain ([149.172.19.189]) by
- mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1Mbj3e-1j0Y4W17pW-00dJht; Tue, 05 May 2020 19:22:38 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S1730173AbgEERX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 13:23:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58970 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729553AbgEERX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 13:23:59 -0400
+Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3F970206E6;
+        Tue,  5 May 2020 17:23:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588699438;
+        bh=t5A/U0Sexblxjhw78VzqUxtmAaJ6UZrXtrnGg9xfqJY=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=YqXQHuNgXTjYD+VUQZ1piM0t+2vFx9UxJIATSnJyiR6KvfoPfO7QZ185PJpgprYYg
+         W8UkcvID46pXVGsh0B8y+quhYFQdQBEJxVSSueAQTbpJcIDdyY9r48IetpEMZCTgEt
+         9Dr7ytNurWYNB5/D5uJsBivXoRT/uhYgiDz8tI70=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 1AC9C3522F5F; Tue,  5 May 2020 10:23:58 -0700 (PDT)
+Date:   Tue, 5 May 2020 10:23:58 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     SeongJae Park <sjpark@amazon.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Al Viro <viro@zeniv.linux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Taehee Yoo <ap420073@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH] net: bareudp: avoid uninitialized variable warning
-Date:   Tue,  5 May 2020 19:22:14 +0200
-Message-Id: <20200505172232.1034560-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.26.0
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        sj38.park@gmail.com, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        SeongJae Park <sjpark@amazon.de>, snu@amazon.com,
+        amit@kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
+Message-ID: <20200505172358.GC2869@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20200505161302.547-1-sjpark@amazon.com>
+ <05843a3c-eb9d-3a0d-f992-7e4b97cc1f19@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:ScX50QBtpxPFHX9a2scBFJp+o7DWKydLzKgA2Q+e/2ogsI4SAtl
- djmLGBbV1D639qDn9G714rq7fyC/8ZEqIclZmJSc+0InIrXToStgetKi8SWqcaCJl6UgCxk
- KCKiquoiRbungr5pwrYYeZK3S+kzCczSOVZTD2dDycjCJBn3CKegMADSogr0LGqf1piMOxI
- 9KtIuXpxh9hB+89TBJ9Iw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:1wtMQ+rWzW8=:mcwGonjEhrQw1MIe99lyBE
- y7Vk4eNKd/OkxLAPihR3aSI6irPA6m+nAbmzjAF8KzukyUcL6/dQSyVYPjYMnSdfMzZuTYMuD
- dogqprIJM9wYZaDaeo0sBIovtgnufZUsARXBy+F0k/ItxXxyLmrd14KENnK/XqaaGAtKiG8ro
- WCtaHARroay8i0jPdMDFiGQxEuQn+HhYUZai1p3eHRrwq4CHCyuE6KnzM3fYQHRzZCVjgYtU+
- YZN2iyxRUo/09I9W8OjwTLTjoW/3M72e3vl3NmELnVH3bj29NOf152I7Z4sTPiz+Y5Qnzn0Zv
- 1xBSAVN7lHzH1HoFD7YtUUhjzlCTZ5teDCVFyOKxSSwEf9r5hJWjMg8ykB9tDzxWXIVF1J6tN
- TIDmIXFjJpjFoIy1iUre65uP3SEtGE7s8g0aPsUCwdnlb03rtK/btdf/6pRvKqf+BoK4lDCVM
- NL2wR6NLPfufYROr3v0SrPpzhtd2o9JBxxMiC+VAxpjZ3opkxN4BlWecd6pNY0A1Vm0RrLfC+
- OS5Ac9EyS7lh0OZ0h3Fj14uUivWsvzn5UPFRJBZ3cB5GlZONZnXhcm5ESM0bNsqEQxd/IXeXj
- 146zB4dj8K+pN4KaD9ALradcG7O6Qu6/lkHrhk9O12E0vReIYLy8WjwegmTgOJoKsIC6gmgR4
- DIu6Hm783J/VS5VaGP9v/LmhS+uIR1NwFIJAdbGivO5z7vule8RNeDfOeFgNT+O+ZUKGbGEvi
- ciM+qk7DLO4K1ZTe4us/9Ln8Fo1VqkWP/nSo82HfsqkZZ87l3MTY7XeOSRPHg02knmSVha65O
- ucJ4keWx+EJ1s1bYRQwOSm12P4rQSfoUa+AedHAoC3UxAaEvC0=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <05843a3c-eb9d-3a0d-f992-7e4b97cc1f19@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang points out that building without IPv6 would lead to returning
-an uninitialized variable if a packet with family!=AF_INET is
-passed into bareudp_udp_encap_recv():
+On Tue, May 05, 2020 at 09:25:06AM -0700, Eric Dumazet wrote:
+> 
+> 
+> On 5/5/20 9:13 AM, SeongJae Park wrote:
+> > On Tue, 5 May 2020 09:00:44 -0700 Eric Dumazet <edumazet@google.com> wrote:
+> > 
+> >> On Tue, May 5, 2020 at 8:47 AM SeongJae Park <sjpark@amazon.com> wrote:
+> >>>
+> >>> On Tue, 5 May 2020 08:20:50 -0700 Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >>>
+> >>>>
+> >>>>
+> >>>> On 5/5/20 8:07 AM, SeongJae Park wrote:
+> >>>>> On Tue, 5 May 2020 07:53:39 -0700 Eric Dumazet <edumazet@google.com> wrote:
+> >>>>>
+> >>>>
+> >>>>>> Why do we have 10,000,000 objects around ? Could this be because of
+> >>>>>> some RCU problem ?
+> >>>>>
+> >>>>> Mainly because of a long RCU grace period, as you guess.  I have no idea how
+> >>>>> the grace period became so long in this case.
+> >>>>>
+> >>>>> As my test machine was a virtual machine instance, I guess RCU readers
+> >>>>> preemption[1] like problem might affected this.
+> >>>>>
+> >>>>> [1] https://www.usenix.org/system/files/conference/atc17/atc17-prasad.pdf
 
-drivers/net/bareudp.c:139:6: error: variable 'err' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
-        if (family == AF_INET)
-            ^~~~~~~~~~~~~~~~~
-drivers/net/bareudp.c:146:15: note: uninitialized use occurs here
-        if (unlikely(err)) {
-                     ^~~
-include/linux/compiler.h:78:42: note: expanded from macro 'unlikely'
- # define unlikely(x)    __builtin_expect(!!(x), 0)
-                                            ^
-drivers/net/bareudp.c:139:2: note: remove the 'if' if its condition is always true
-        if (family == AF_INET)
-        ^~~~~~~~~~~~~~~~~~~~~~
+If this is the root cause of the problem, then it will be necessary to
+provide a hint to the hypervisor.  Or, in the near term, avoid loading
+the hypervisor the point that vCPU preemption is so lengthy.
 
-This cannot happen in practice, so change the condition in a way that
-gcc sees the IPv4 case as unconditionally true here.
-For consistency, change all the similar constructs in this file the
-same way, using "if(IS_ENABLED())" instead of #if IS_ENABLED()".
+RCU could also provide some sort of pre-stall-warning notification that
+some of the CPUs aren't passing through quiescent states, which might
+allow the guest OS's userspace to take corrective action.
 
-Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/bareudp.c    | 18 ++++--------------
- include/net/udp_tunnel.h |  2 --
- 2 files changed, 4 insertions(+), 16 deletions(-)
+But first, what are you doing to either confirm or invalidate the
+hypothesis that this might be due to vCPU preemption?
 
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index cc0703c3d57f..efd1a1d1f35e 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -136,25 +136,21 @@ static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 	oiph = skb_network_header(skb);
- 	skb_reset_network_header(skb);
- 
--	if (family == AF_INET)
-+	if (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
- 		err = IP_ECN_decapsulate(oiph, skb);
--#if IS_ENABLED(CONFIG_IPV6)
- 	else
- 		err = IP6_ECN_decapsulate(oiph, skb);
--#endif
- 
- 	if (unlikely(err)) {
- 		if (log_ecn_error) {
--			if  (family == AF_INET)
-+			if  (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
- 				net_info_ratelimited("non-ECT from %pI4 "
- 						     "with TOS=%#x\n",
- 						     &((struct iphdr *)oiph)->saddr,
- 						     ((struct iphdr *)oiph)->tos);
--#if IS_ENABLED(CONFIG_IPV6)
- 			else
- 				net_info_ratelimited("non-ECT from %pI6\n",
- 						     &((struct ipv6hdr *)oiph)->saddr);
--#endif
- 		}
- 		if (err > 1) {
- 			++bareudp->dev->stats.rx_frame_errors;
-@@ -350,7 +346,6 @@ static int bareudp_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 	return err;
- }
- 
--#if IS_ENABLED(CONFIG_IPV6)
- static int bareudp6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 			     struct bareudp_dev *bareudp,
- 			     const struct ip_tunnel_info *info)
-@@ -411,7 +406,6 @@ static int bareudp6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
- 	dst_release(dst);
- 	return err;
- }
--#endif
- 
- static netdev_tx_t bareudp_xmit(struct sk_buff *skb, struct net_device *dev)
- {
-@@ -435,11 +429,9 @@ static netdev_tx_t bareudp_xmit(struct sk_buff *skb, struct net_device *dev)
- 	}
- 
- 	rcu_read_lock();
--#if IS_ENABLED(CONFIG_IPV6)
--	if (info->mode & IP_TUNNEL_INFO_IPV6)
-+	if (IS_ENABLED(CONFIG_IPV6) && info->mode & IP_TUNNEL_INFO_IPV6)
- 		err = bareudp6_xmit_skb(skb, dev, bareudp, info);
- 	else
--#endif
- 		err = bareudp_xmit_skb(skb, dev, bareudp, info);
- 
- 	rcu_read_unlock();
-@@ -467,7 +459,7 @@ static int bareudp_fill_metadata_dst(struct net_device *dev,
- 
- 	use_cache = ip_tunnel_dst_cache_usable(skb, info);
- 
--	if (ip_tunnel_info_af(info) == AF_INET) {
-+	if (!IS_ENABLED(CONFIG_IPV6) || ip_tunnel_info_af(info) == AF_INET) {
- 		struct rtable *rt;
- 		__be32 saddr;
- 
-@@ -478,7 +470,6 @@ static int bareudp_fill_metadata_dst(struct net_device *dev,
- 
- 		ip_rt_put(rt);
- 		info->key.u.ipv4.src = saddr;
--#if IS_ENABLED(CONFIG_IPV6)
- 	} else if (ip_tunnel_info_af(info) == AF_INET6) {
- 		struct dst_entry *dst;
- 		struct in6_addr saddr;
-@@ -492,7 +483,6 @@ static int bareudp_fill_metadata_dst(struct net_device *dev,
- 
- 		dst_release(dst);
- 		info->key.u.ipv6.src = saddr;
--#endif
- 	} else {
- 		return -EINVAL;
- 	}
-diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
-index 4b1f95e08307..e7312ceb2794 100644
---- a/include/net/udp_tunnel.h
-+++ b/include/net/udp_tunnel.h
-@@ -143,14 +143,12 @@ void udp_tunnel_xmit_skb(struct rtable *rt, struct sock *sk, struct sk_buff *skb
- 			 __be16 df, __be16 src_port, __be16 dst_port,
- 			 bool xnet, bool nocheck);
- 
--#if IS_ENABLED(CONFIG_IPV6)
- int udp_tunnel6_xmit_skb(struct dst_entry *dst, struct sock *sk,
- 			 struct sk_buff *skb,
- 			 struct net_device *dev, struct in6_addr *saddr,
- 			 struct in6_addr *daddr,
- 			 __u8 prio, __u8 ttl, __be32 label,
- 			 __be16 src_port, __be16 dst_port, bool nocheck);
--#endif
- 
- void udp_tunnel_sock_release(struct socket *sock);
- 
--- 
-2.26.0
+> >>>>>> Once Al patches reverted, do you have 10,000,000 sock_alloc around ?
+> >>>>>
+> >>>>> Yes, both the old kernel that prior to Al's patches and the recent kernel
+> >>>>> reverting the Al's patches didn't reproduce the problem.
+> >>>>>
+> >>>>
+> >>>> I repeat my question : Do you have 10,000,000 (smaller) objects kept in slab caches ?
+> >>>>
+> >>>> TCP sockets use the (very complex, error prone) SLAB_TYPESAFE_BY_RCU, but not the struct socket_wq
+> >>>> object that was allocated in sock_alloc_inode() before Al patches.
+> >>>>
+> >>>> These objects should be visible in kmalloc-64 kmem cache.
+> >>>
+> >>> Not exactly the 10,000,000, as it is only the possible highest number, but I
+> >>> was able to observe clear exponential increase of the number of the objects
+> >>> using slabtop.  Before the start of the problematic workload, the number of
+> >>> objects of 'kmalloc-64' was 5760, but I was able to observe the number increase
+> >>> to 1,136,576.
+> >>>
+> >>>           OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
+> >>> before:   5760   5088  88%    0.06K     90       64       360K kmalloc-64
+> >>> after:  1136576 1136576 100%    0.06K  17759       64     71036K kmalloc-64
+> >>>
+> >>
+> >> Great, thanks.
+> >>
+> >> How recent is the kernel you are running for your experiment ?
+> > 
+> > It's based on 5.4.35.
 
+Is it possible to retest on v5.6?  I have been adding various mechanisms
+to make RCU keep up better with heavy callback overload.
+
+Also, could you please provide the .config?  If either NO_HZ_FULL or
+RCU_NOCB_CPU, please also provide the kernel boot parameters.
+
+> >> Let's make sure the bug is not in RCU.
+> > 
+> > One thing I can currently say is that the grace period passes at last.  I
+> > modified the benchmark to repeat not 10,000 times but only 5,000 times to run
+> > the test without OOM but easily observable memory pressure.  As soon as the
+> > benchmark finishes, the memory were freed.
+> > 
+> > If you need more tests, please let me know.
+> 
+> I would ask Paul opinion on this issue, because we have many objects
+> being freed after RCU grace periods.
+
+As always, "It depends."
+
+o	If the problem is a too-long RCU reader, RCU is prohibited from
+	ending the grace period.  The reader duration must be shortened,
+	and until it is shortened, there is nothing RCU can do.
+
+o	In some special cases of the above, RCU can and does help, for
+	example, by enlisting the aid of cond_resched().  So perhaps
+	there is a long in-kernel loop that needs a cond_resched().
+
+	And perhaps RCU can help for some types of vCPU preemption.
+
+o	As Al suggested offline and as has been discussed in the past,
+	it would not be hard to cause RCU to burn CPU to attain faster
+	grace periods during OOM events.  This could be helpful, but only
+	given that RCU readers are completing in reasonable timeframes.
+
+> If RCU subsystem can not keep-up, I guess other workloads will also suffer.
+
+If readers are not excessively long, RCU should be able to keep up.
+(In the absence of misconfigurations, for example, both NO_HZ_FULL and
+then binding all the rcuo kthreads to a single CPU on a 100-CPU system
+or some such.)
+
+> Sure, we can revert patches there and there trying to work around the issue,
+> but for objects allocated from process context, we should not have these problems.
+
+Agreed, let's get more info on what is happening to RCU.
+
+One approach is to shorten the RCU CPU stall warning timeout
+(rcupdate.rcu_cpu_stall_timeout=10 for 10 seconds).
+
+							Thanx, Paul
