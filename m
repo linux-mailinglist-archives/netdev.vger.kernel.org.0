@@ -2,484 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F561C6202
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 22:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7E691C620C
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 22:28:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729218AbgEEU1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 16:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729195AbgEEU1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 16:27:42 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBB7C061A10
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 13:27:42 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id m20so3425382qvy.13
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 13:27:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=4tyugyVAAYd9pLHhzPA6LyrLOrFWWfrUrNoaTQVy348=;
-        b=T6iFtIik86xhqn09RhVTekWP6onReLV0IvSxqXVtRjTvfxBwO8v3y5fmRuZQRIXTor
-         JDhpKmto/5ZtC1Hfo7om0hrYbAE1wYeC5qhvZORelOvWSRvGDeL14wcIf+6OKPr3AS2W
-         UX/h0UeTqlLipfHfpdCbRXlmaLAF8n+cROtUyDt/j90OHOGta/E59vM8CQj6niWD2NBJ
-         LkHokahqd6tJtB67xWxIJFDHdZSPUvNxouD7Z0wRdopdo7ZjPElf/n0SBxbZrsKaACqu
-         2qXNk0qMumJDTQ48ckNjFP8C/h/raG4Odwk7YCnKIY8TX6AdxCh2Yh73qKwfQH/2vHpZ
-         Hdfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=4tyugyVAAYd9pLHhzPA6LyrLOrFWWfrUrNoaTQVy348=;
-        b=Glap15qMBjLTa0EzXokWLQQvlxGyQ+gJxxSUvzawJPgSWfNSwnXmsK7z4umc+9UJ66
-         ftcbRLOmXWIIVYT62n5KE2XR8Z/rsRKyyr2mY4xJLeb2dz+U9HTfH/HQ7fjyo0lcw4Yg
-         6IR2zYm0nQ1lez5jjfvdBYC4V8tknomAyfWWGPeKygasgVsMnMA57BVYnKAOGs5TO2EE
-         cqzRt54hTIIfxMC60u2HNSq8yGUXnyNi0nhbukwBxcqpqgByZw927Sb4BPtJz1rqPwmN
-         A7RxEsRFIKZxGFrYE7t6Lxr/NMGP95ue+ZTRFOZbFi1j0HR6eHGOXZbkuDoeEpkohd60
-         4cHg==
-X-Gm-Message-State: AGi0PubVhl0lKJOJaYSp0AObE/OWOe/AnOkwW+OX6symCqFI+0iYZwUv
-        ZUd5RG6ZokN0jd2Asqo+XeFLQo1oPW1G0jKZ1WiwSPnhgkU1cqoXr/Mv7x3jOt2ZX+PB5ru7EuJ
-        v2qVwFCiyDSkJ1j4IsB5w2PAekVtVWk0ZeO/r4tKpKAzV+KxGneyvpw==
-X-Google-Smtp-Source: APiQypJvXmuPzJYpMvT6NvTN5Toznq2+h7E/GGKYv8xQPA7ndnqtbKBE3jDcVB8fywMEMJRu09mgz/I=
-X-Received: by 2002:a0c:f54e:: with SMTP id p14mr4799131qvm.200.1588710461706;
- Tue, 05 May 2020 13:27:41 -0700 (PDT)
-Date:   Tue,  5 May 2020 13:27:30 -0700
-In-Reply-To: <20200505202730.70489-1-sdf@google.com>
-Message-Id: <20200505202730.70489-6-sdf@google.com>
-Mime-Version: 1.0
-References: <20200505202730.70489-1-sdf@google.com>
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH bpf-next v2 5/5] selftests/bpf: move existing common
- networking parts into network_helpers
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1729286AbgEEU2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 16:28:42 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8248 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728135AbgEEU2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 16:28:41 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 045KNXdw024741;
+        Tue, 5 May 2020 13:28:28 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=sibvFv+7zV6h7doKX2p8pe6tFfIzO1Ga9vaJdfg2yO0=;
+ b=E1UiA/mOw2k1n6RAiIV1dHfzmeyKf8zEKCc6RKH6Q24y+TcQNObGK+bjvi0L9VtGw124
+ 9s/5IdO4M0+R196smnMnG0v7NeA5DaDNzkRcUgR1tsiTqgBCRXu7agO9sq4CbmHT0GR/
+ b0cW1A/7xzCmFwJ/7c8J7HbbpMhcreFfrGU= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 30srsede0q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 05 May 2020 13:28:28 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 5 May 2020 13:28:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QX5tgbxcS13ZUsHaeTq00W03wz2LA4Uwxr6JqVcTLObAk8Esd1N9TEfnu6S3t/CtBKp0d6an1HRTR/Pzzdb8NHDmmZMXxXag+TVZODiLyeqMrT0dnKFyF9dOjOp0OBN9LMhFozMsoj82lhMBHxXXE1KJIM4KhoyhS/nGLRxz9TSJJpjJ/lif6aNuDzt5d6cIiVhTRpYfaaNz8magRKP21pAIdT3Llxhtiu5M/L7XWwzN2yPuxmyzF4JDtpt2St8Xb0CNQcvHEhvmIns7oH6617+1qyuoqWyHqu50+daDdBX54ECJuN/op3gqDjCDyeor30EBoqBY5TjgtcDeu6vNcw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sibvFv+7zV6h7doKX2p8pe6tFfIzO1Ga9vaJdfg2yO0=;
+ b=etDDQW6JKj+5A/SFnmozgIb++YEKdD9TVz9jguLbY1px8pqcCd6QMxS+b4WLvcuXcgG6cLMcwmQBT3Jo4vbL/nnd0HoAlY5mmqUxihdeXBOx6ZhaAueV5SQA493X7HPlRrBG0zOjfEuoSf8OZxzwh+vmnkQeubrG/dAM63PQf2yN4iE6MK4xz+9JRhf9lpyVoGrPRItZBiD3633qogVzQwzuJL1tPC2bFZBq+YVTaY0gi2549RzGuQDDSRl+1tRQuv7/350pn+UUvvCQAIpqUnBs6j02p11BlYwYdFZDLQLP7owKHxHcy7ka+SwB7Iqx1agky/6Wf3D+32zF+kDMTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sibvFv+7zV6h7doKX2p8pe6tFfIzO1Ga9vaJdfg2yO0=;
+ b=L77oT3JLOdB3SffZoi69ine5AnW6zX5daQKU3ZXS/BYFgXhoVZi387oP1ARCO5nI5H1uZvQK4gv+3uV0u+uJgrpxJj3eNTBVXastGX0TfSx11A1idpbhW3PGjBQVNf+2olfxr4YSAXuvN157DjqxRg7kfDWUaciC1cOUMyOJtqY=
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB3461.namprd15.prod.outlook.com (2603:10b6:a03:109::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20; Tue, 5 May
+ 2020 20:28:24 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::8988:aa27:5d70:6923]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::8988:aa27:5d70:6923%5]) with mapi id 15.20.2958.030; Tue, 5 May 2020
+ 20:28:24 +0000
+Subject: Re: [PATCH bpf-next v2 06/20] bpf: create anonymous bpf iterator
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+References: <20200504062547.2047304-1-yhs@fb.com>
+ <20200504062553.2047848-1-yhs@fb.com>
+ <CAEf4BzadAZy+GQwV3DXoGk6KdNYbVMxaP7BFphSc47w5WeXiRA@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <8cf5ea90-6805-84fe-faae-3c894cd1b203@fb.com>
+Date:   Tue, 5 May 2020 13:28:18 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
+In-Reply-To: <CAEf4BzadAZy+GQwV3DXoGk6KdNYbVMxaP7BFphSc47w5WeXiRA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR07CA0031.namprd07.prod.outlook.com
+ (2603:10b6:a02:bc::44) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:99aa) by BYAPR07CA0031.namprd07.prod.outlook.com (2603:10b6:a02:bc::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.27 via Frontend Transport; Tue, 5 May 2020 20:28:23 +0000
+X-Originating-IP: [2620:10d:c090:400::5:99aa]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: efbf3211-5080-441d-ad45-08d7f132dc1a
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3461:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB346117480E1EDD71B18DDC98D3A70@BYAPR15MB3461.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 0394259C80
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FgJEzdg60/MyYaAS+Ntp6jRn0tMY/IQDMJ1z4f83pcgjZu3QGjKx0UaM3eU85F92c9tRiaUBRj1m5vgxpWgGlhty9dBTKlFzobrlslVelum/J1qOLAA3znTFylq7OywGfNodB7AcGBsiCSyVUQdwhoXS/LJ5m8fUWbpUsHjfajtpfeUm2mygEF3K4X5AWer/Gb7cECH6ZTcoSiY8fGQIngjdN1uYxCJUeHbvw3GEuyHH/y4lQcRKSjhZkwwWYot7rytXVxMrjb0X66qfatovWovOok62TZqY/vAMbLmnPvDsM7pDyhYg051ZvvvWakviQOUtdMvUCJxoxtHUOuvt0I+my2A8Q5e3gvUHyU2ywClhOo2J9XRpgRl4TJVfvfJo1XWMQfv4eawerVe7C5GHKW8we5KjnzSKDURFCTcp0r8dt71HzT20rB+E4Hc3uSguLtq9xOacacdkChhI9fCEh08nCIncQve0PptMigDqYwMeb38a/ozPYC1Gey/hDfEec07/J6B5lQ4c0RuKfdOE9N8f0Hhea5z84KS+DyQ7T7RFvwfeRZ7Rpt1brVnxhKa7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(346002)(376002)(136003)(396003)(39850400004)(33430700001)(31686004)(316002)(54906003)(52116002)(16526019)(186003)(6666004)(5660300002)(31696002)(2906002)(86362001)(8676002)(66476007)(66556008)(478600001)(6916009)(66946007)(8936002)(4326008)(53546011)(36756003)(6506007)(2616005)(6486002)(33440700001)(6512007)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: MKE3r6rRR4PR2rzsTozev40fFIuH3aBjaAfC0XMKAV+vql8y5drg7gv4sb8DB/OGloHpxcg95KAto3AqFtzOVs094AhMdsotitUUUbdop4J2McB1UqKJ2klveA05nt114spmGiFfqzplVEvj4xojLpHpZWDypdI4u5VfVZlkZpwRVLNl3OpEpI1seZMpWiOFeebKkxQwO7VUO3E5Lk8NYwPayAFK9f5vR0ZyIYy/vDf9zBPbmnLGsK1l6CQfzA1hWePiEAyUxdhQIsU1Ez9vsZ62ipjB1pbcZV84cFPmpXvdT4ROILAx2oS3D7K0F5clBUWYe6IQ0CCKPFpxjyxI1dD7zRImxyC8VnxcHnu/tUtMtqIt13c0zUyRabijgZI3R5bZ2Otdu1ciAHqq2lgvX7F9RS9m1Yzfn0J3uxHw4V69Gk9n0h7Xe/S+V48jdlItBSHzSOzi3soFDxfsY6cKxSrvPHwZNKymZMaLnxWmyB9d+ICYvwOuvVDXThdVvbXybeL0wRLNlqtD7viLeIyxRwbnTA3NBqLhf1dIj4QkTgp/UdSLJFusnC5aRX92I9s3FTsF06jdBws/yhovROwwm0SEQxodiDy4+Vk1MJFAahTuMyjiQTqvCXdy1xc4uVx1CUwwxgTCa6A+Dte00u1axcM/R9rbiZ0sMvjilwX87pC3SNCVCoL5zknaoMS/BuA2lRueH18In/cAPDLl+70WR/LZSrRKhCHWue9oBVxwHCgDRosYrtzCJmBaJlnWS5NpGSBrVhjW4//e71YroYqmQcrvvvbxtyNuRHomEXLDTK1V4arMr78hlJJVEvxn0vprohGUmYBfOjp9Ui/Opg0IOg==
+X-MS-Exchange-CrossTenant-Network-Message-Id: efbf3211-5080-441d-ad45-08d7f132dc1a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2020 20:28:24.1168
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CeIi2xrNyN56D8GDfCAJsHNVQDSTj4MGzmYvSWYLr7TxXj2P1h0zL2PMRyX77ags
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3461
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-05_10:2020-05-04,2020-05-05 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ priorityscore=1501 impostorscore=0 lowpriorityscore=0 phishscore=0
+ adultscore=0 bulkscore=0 spamscore=0 malwarescore=0 suspectscore=0
+ mlxscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005050157
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Move pkt_v4 and pkt_v6 into network_helpers and adjust the users.
-2. Copy-paste spin_lock_thread into two tests that use it.
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/network_helpers.c | 17 +++++++++++
- tools/testing/selftests/bpf/network_helpers.h | 29 ++++++++++++++++++
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  1 +
- .../selftests/bpf/prog_tests/flow_dissector.c |  1 +
- .../prog_tests/flow_dissector_load_bytes.c    |  1 +
- .../selftests/bpf/prog_tests/global_data.c    |  1 +
- .../selftests/bpf/prog_tests/kfree_skb.c      |  1 +
- .../selftests/bpf/prog_tests/l4lb_all.c       |  1 +
- .../selftests/bpf/prog_tests/map_lock.c       | 14 +++++++++
- .../selftests/bpf/prog_tests/pkt_access.c     |  1 +
- .../selftests/bpf/prog_tests/pkt_md_access.c  |  1 +
- .../selftests/bpf/prog_tests/prog_run_xattr.c |  1 +
- .../bpf/prog_tests/queue_stack_map.c          |  1 +
- .../selftests/bpf/prog_tests/signal_pending.c |  1 +
- .../selftests/bpf/prog_tests/skb_ctx.c        |  1 +
- .../selftests/bpf/prog_tests/spinlock.c       | 14 +++++++++
- tools/testing/selftests/bpf/prog_tests/xdp.c  |  1 +
- .../bpf/prog_tests/xdp_adjust_tail.c          |  1 +
- .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    |  1 +
- .../selftests/bpf/prog_tests/xdp_noinline.c   |  1 +
- tools/testing/selftests/bpf/test_progs.c      | 30 -------------------
- tools/testing/selftests/bpf/test_progs.h      | 23 --------------
- 22 files changed, 90 insertions(+), 53 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/network_helpers.c b/tools/testing/selftests/bpf/network_helpers.c
-index 30ef0c7edebf..159ca9225596 100644
---- a/tools/testing/selftests/bpf/network_helpers.c
-+++ b/tools/testing/selftests/bpf/network_helpers.c
-@@ -25,6 +25,23 @@
- #define log_err(MSG, ...) fprintf(stderr, "(%s:%d: errno: %s) " MSG "\n", \
- 	__FILE__, __LINE__, clean_errno(), ##__VA_ARGS__)
- 
-+struct ipv4_packet pkt_v4 = {
-+	.eth.h_proto = __bpf_constant_htons(ETH_P_IP),
-+	.iph.ihl = 5,
-+	.iph.protocol = IPPROTO_TCP,
-+	.iph.tot_len = __bpf_constant_htons(MAGIC_BYTES),
-+	.tcp.urg_ptr = 123,
-+	.tcp.doff = 5,
-+};
-+
-+struct ipv6_packet pkt_v6 = {
-+	.eth.h_proto = __bpf_constant_htons(ETH_P_IPV6),
-+	.iph.nexthdr = IPPROTO_TCP,
-+	.iph.payload_len = __bpf_constant_htons(MAGIC_BYTES),
-+	.tcp.urg_ptr = 123,
-+	.tcp.doff = 5,
-+};
-+
- static int start_server(int family)
- {
- 	struct sockaddr_storage addr = {};
-diff --git a/tools/testing/selftests/bpf/network_helpers.h b/tools/testing/selftests/bpf/network_helpers.h
-index 74e2c40667a2..205123b53a23 100644
---- a/tools/testing/selftests/bpf/network_helpers.h
-+++ b/tools/testing/selftests/bpf/network_helpers.h
-@@ -3,6 +3,35 @@
- #define __NETWORK_HELPERS_H
- #include <sys/socket.h>
- #include <sys/types.h>
-+#include <linux/types.h>
-+typedef __u16 __sum16;
-+#include <linux/if_ether.h>
-+#include <linux/if_packet.h>
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+#include <netinet/tcp.h>
-+#include <bpf/bpf_endian.h>
-+
-+#define MAGIC_VAL 0x1234
-+#define NUM_ITER 100000
-+#define VIP_NUM 5
-+#define MAGIC_BYTES 123
-+
-+/* ipv4 test vector */
-+struct ipv4_packet {
-+	struct ethhdr eth;
-+	struct iphdr iph;
-+	struct tcphdr tcp;
-+} __packed;
-+extern struct ipv4_packet pkt_v4;
-+
-+/* ipv6 test vector */
-+struct ipv6_packet {
-+	struct ethhdr eth;
-+	struct ipv6hdr iph;
-+	struct tcphdr tcp;
-+} __packed;
-+extern struct ipv6_packet pkt_v6;
- 
- int start_server_thread(int family);
- void stop_server_thread(int fd);
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-index c2642517e1d8..a895bfed55db 100644
---- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2019 Facebook */
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- static void test_fexit_bpf2bpf_common(const char *obj_file,
- 				      const char *target_obj_file,
-diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-index 92563898867c..2301c4d3ecec 100644
---- a/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-+++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- #include <error.h>
- #include <linux/if.h>
- #include <linux/if_tun.h>
-diff --git a/tools/testing/selftests/bpf/prog_tests/flow_dissector_load_bytes.c b/tools/testing/selftests/bpf/prog_tests/flow_dissector_load_bytes.c
-index dc5ef155ec28..0e8a4d2f023d 100644
---- a/tools/testing/selftests/bpf/prog_tests/flow_dissector_load_bytes.c
-+++ b/tools/testing/selftests/bpf/prog_tests/flow_dissector_load_bytes.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- void test_flow_dissector_load_bytes(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/global_data.c b/tools/testing/selftests/bpf/prog_tests/global_data.c
-index c680926fce73..e3cb62b0a110 100644
---- a/tools/testing/selftests/bpf/prog_tests/global_data.c
-+++ b/tools/testing/selftests/bpf/prog_tests/global_data.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- static void test_global_data_number(struct bpf_object *obj, __u32 duration)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-index 7507c8f689bc..42c3a3103c26 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- struct meta {
- 	int ifindex;
-diff --git a/tools/testing/selftests/bpf/prog_tests/l4lb_all.c b/tools/testing/selftests/bpf/prog_tests/l4lb_all.c
-index eaf64595be88..c2d373e294bb 100644
---- a/tools/testing/selftests/bpf/prog_tests/l4lb_all.c
-+++ b/tools/testing/selftests/bpf/prog_tests/l4lb_all.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- static void test_l4lb(const char *file)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/map_lock.c b/tools/testing/selftests/bpf/prog_tests/map_lock.c
-index 8f91f1881d11..ce17b1ed8709 100644
---- a/tools/testing/selftests/bpf/prog_tests/map_lock.c
-+++ b/tools/testing/selftests/bpf/prog_tests/map_lock.c
-@@ -1,5 +1,19 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
-+
-+static void *spin_lock_thread(void *arg)
-+{
-+	__u32 duration, retval;
-+	int err, prog_fd = *(u32 *) arg;
-+
-+	err = bpf_prog_test_run(prog_fd, 10000, &pkt_v4, sizeof(pkt_v4),
-+				NULL, NULL, &retval, &duration);
-+	CHECK(err || retval, "",
-+	      "err %d errno %d retval %d duration %d\n",
-+	      err, errno, retval, duration);
-+	pthread_exit(arg);
-+}
- 
- static void *parallel_map_access(void *arg)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/pkt_access.c b/tools/testing/selftests/bpf/prog_tests/pkt_access.c
-index a2537dfa899c..44b514fabccd 100644
---- a/tools/testing/selftests/bpf/prog_tests/pkt_access.c
-+++ b/tools/testing/selftests/bpf/prog_tests/pkt_access.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- void test_pkt_access(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/pkt_md_access.c b/tools/testing/selftests/bpf/prog_tests/pkt_md_access.c
-index 5f7aea605019..939015cd6dba 100644
---- a/tools/testing/selftests/bpf/prog_tests/pkt_md_access.c
-+++ b/tools/testing/selftests/bpf/prog_tests/pkt_md_access.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- void test_pkt_md_access(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/prog_run_xattr.c b/tools/testing/selftests/bpf/prog_tests/prog_run_xattr.c
-index 5dd89b941f53..dde2b7ae7bc9 100644
---- a/tools/testing/selftests/bpf/prog_tests/prog_run_xattr.c
-+++ b/tools/testing/selftests/bpf/prog_tests/prog_run_xattr.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- void test_prog_run_xattr(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/queue_stack_map.c b/tools/testing/selftests/bpf/prog_tests/queue_stack_map.c
-index faccc66f4e39..f47e7b1cb32c 100644
---- a/tools/testing/selftests/bpf/prog_tests/queue_stack_map.c
-+++ b/tools/testing/selftests/bpf/prog_tests/queue_stack_map.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- enum {
- 	QUEUE,
-diff --git a/tools/testing/selftests/bpf/prog_tests/signal_pending.c b/tools/testing/selftests/bpf/prog_tests/signal_pending.c
-index 996e808f43a2..dfcbddcbe4d3 100644
---- a/tools/testing/selftests/bpf/prog_tests/signal_pending.c
-+++ b/tools/testing/selftests/bpf/prog_tests/signal_pending.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- static void sigalrm_handler(int s) {}
- static struct sigaction sigalrm_action = {
-diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-index 4538bd08203f..7021b92af313 100644
---- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-+++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- void test_skb_ctx(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/spinlock.c b/tools/testing/selftests/bpf/prog_tests/spinlock.c
-index 1ae00cd3174e..7577a77a4c4c 100644
---- a/tools/testing/selftests/bpf/prog_tests/spinlock.c
-+++ b/tools/testing/selftests/bpf/prog_tests/spinlock.c
-@@ -1,5 +1,19 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
-+
-+static void *spin_lock_thread(void *arg)
-+{
-+	__u32 duration, retval;
-+	int err, prog_fd = *(u32 *) arg;
-+
-+	err = bpf_prog_test_run(prog_fd, 10000, &pkt_v4, sizeof(pkt_v4),
-+				NULL, NULL, &retval, &duration);
-+	CHECK(err || retval, "",
-+	      "err %d errno %d retval %d duration %d\n",
-+	      err, errno, retval, duration);
-+	pthread_exit(arg);
-+}
- 
- void test_spinlock(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp.c b/tools/testing/selftests/bpf/prog_tests/xdp.c
-index dcb5ecac778e..48921ff74850 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- void test_xdp(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-index 3744196d7cba..6c8ca1c93f9b 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- void test_xdp_adjust_tail(void)
- {
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
-index a0f688c37023..2c6c570b21f8 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- #include <net/if.h>
- #include "test_xdp.skel.h"
- #include "test_xdp_bpf2bpf.skel.h"
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_noinline.c b/tools/testing/selftests/bpf/prog_tests/xdp_noinline.c
-index c9404e6b226e..f284f72158ef 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_noinline.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_noinline.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
-+#include <network_helpers.h>
- 
- void test_xdp_noinline(void)
- {
-diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-index 93970ec1c9e9..0f411fdc4f6d 100644
---- a/tools/testing/selftests/bpf/test_progs.c
-+++ b/tools/testing/selftests/bpf/test_progs.c
-@@ -222,23 +222,6 @@ int test__join_cgroup(const char *path)
- 	return fd;
- }
- 
--struct ipv4_packet pkt_v4 = {
--	.eth.h_proto = __bpf_constant_htons(ETH_P_IP),
--	.iph.ihl = 5,
--	.iph.protocol = IPPROTO_TCP,
--	.iph.tot_len = __bpf_constant_htons(MAGIC_BYTES),
--	.tcp.urg_ptr = 123,
--	.tcp.doff = 5,
--};
--
--struct ipv6_packet pkt_v6 = {
--	.eth.h_proto = __bpf_constant_htons(ETH_P_IPV6),
--	.iph.nexthdr = IPPROTO_TCP,
--	.iph.payload_len = __bpf_constant_htons(MAGIC_BYTES),
--	.tcp.urg_ptr = 123,
--	.tcp.doff = 5,
--};
--
- int bpf_find_map(const char *test, struct bpf_object *obj, const char *name)
- {
- 	struct bpf_map *map;
-@@ -358,19 +341,6 @@ int extract_build_id(char *build_id, size_t size)
- 	return -1;
- }
- 
--void *spin_lock_thread(void *arg)
--{
--	__u32 duration, retval;
--	int err, prog_fd = *(u32 *) arg;
--
--	err = bpf_prog_test_run(prog_fd, 10000, &pkt_v4, sizeof(pkt_v4),
--				NULL, NULL, &retval, &duration);
--	CHECK(err || retval, "",
--	      "err %d errno %d retval %d duration %d\n",
--	      err, errno, retval, duration);
--	pthread_exit(arg);
--}
--
- /* extern declarations for test funcs */
- #define DEFINE_TEST(name) extern void test_##name(void);
- #include <prog_tests/tests.h>
-diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
-index 10188cc8e9e0..83287c76332b 100644
---- a/tools/testing/selftests/bpf/test_progs.h
-+++ b/tools/testing/selftests/bpf/test_progs.h
-@@ -87,24 +87,6 @@ extern void test__skip(void);
- extern void test__fail(void);
- extern int test__join_cgroup(const char *path);
- 
--#define MAGIC_BYTES 123
--
--/* ipv4 test vector */
--struct ipv4_packet {
--	struct ethhdr eth;
--	struct iphdr iph;
--	struct tcphdr tcp;
--} __packed;
--extern struct ipv4_packet pkt_v4;
--
--/* ipv6 test vector */
--struct ipv6_packet {
--	struct ethhdr eth;
--	struct ipv6hdr iph;
--	struct tcphdr tcp;
--} __packed;
--extern struct ipv6_packet pkt_v6;
--
- #define PRINT_FAIL(format...)                                                  \
- 	({                                                                     \
- 		test__fail();                                                  \
-@@ -143,10 +125,6 @@ extern struct ipv6_packet pkt_v6;
- #define CHECK_ATTR(condition, tag, format...) \
- 	_CHECK(condition, tag, tattr.duration, format)
- 
--#define MAGIC_VAL 0x1234
--#define NUM_ITER 100000
--#define VIP_NUM 5
--
- static inline __u64 ptr_to_u64(const void *ptr)
- {
- 	return (__u64) (unsigned long) ptr;
-@@ -156,7 +134,6 @@ int bpf_find_map(const char *test, struct bpf_object *obj, const char *name);
- int compare_map_keys(int map1_fd, int map2_fd);
- int compare_stack_ips(int smap_fd, int amap_fd, int stack_trace_len);
- int extract_build_id(char *build_id, size_t size);
--void *spin_lock_thread(void *arg);
- 
- #ifdef __x86_64__
- #define SYS_NANOSLEEP_KPROBE_NAME "__x64_sys_nanosleep"
--- 
-2.26.2.526.g744177e7f7-goog
+On 5/5/20 1:11 PM, Andrii Nakryiko wrote:
+> On Sun, May 3, 2020 at 11:29 PM Yonghong Song <yhs@fb.com> wrote:
+>>
+>> A new bpf command BPF_ITER_CREATE is added.
+>>
+>> The anonymous bpf iterator is seq_file based.
+>> The seq_file private data are referenced by targets.
+>> The bpf_iter infrastructure allocated additional space
+>> at seq_file->private before the space used by targets
+>> to store some meta data, e.g.,
+>>    prog:       prog to run
+>>    session_id: an unique id for each opened seq_file
+>>    seq_num:    how many times bpf programs are queried in this session
+>>    do_stop:    an internal state to decide whether bpf program
+>>                should be called in seq_ops->stop() or not
+>>
+>> Signed-off-by: Yonghong Song <yhs@fb.com>
+>> ---
+>>   include/linux/bpf.h            |   1 +
+>>   include/uapi/linux/bpf.h       |   6 ++
+>>   kernel/bpf/bpf_iter.c          | 128 +++++++++++++++++++++++++++++++++
+>>   kernel/bpf/syscall.c           |  26 +++++++
+>>   tools/include/uapi/linux/bpf.h |   6 ++
+>>   5 files changed, 167 insertions(+)
+>>
+> 
+> [...]
+> 
+>>   /* The description below is an attempt at providing documentation to eBPF
+>> diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
+>> index 2674c9cbc3dc..2a9f939be6e6 100644
+>> --- a/kernel/bpf/bpf_iter.c
+>> +++ b/kernel/bpf/bpf_iter.c
+>> @@ -2,6 +2,7 @@
+>>   /* Copyright (c) 2020 Facebook */
+>>
+>>   #include <linux/fs.h>
+>> +#include <linux/anon_inodes.h>
+>>   #include <linux/filter.h>
+>>   #include <linux/bpf.h>
+>>
+>> @@ -20,12 +21,26 @@ struct bpf_iter_link {
+>>          struct bpf_iter_target_info *tinfo;
+>>   };
+>>
+>> +struct bpf_iter_priv_data {
+>> +       struct {
+> 
+> nit: anon struct seems unnecessary here? is it just for visual grouping?
 
+Yes, this is just for virtual grouping. Not 100% sure whether this
+is needed or not.
+
+> 
+>> +               struct bpf_iter_target_info *tinfo;
+>> +               struct bpf_prog *prog;
+>> +               u64 session_id;
+>> +               u64 seq_num;
+>> +               u64 do_stop;
+>> +       };
+>> +       u8 target_private[] __aligned(8);
+>> +};
+>> +
+>>   static struct list_head targets = LIST_HEAD_INIT(targets);
+>>   static DEFINE_MUTEX(targets_mutex);
+>>
+>>   /* protect bpf_iter_link changes */
+>>   static DEFINE_MUTEX(link_mutex);
+>>
+>> +/* incremented on every opened seq_file */
+>> +static atomic64_t session_id;
+>> +
+>>   /* bpf_seq_read, a customized and simpler version for bpf iterator.
+>>    * no_llseek is assumed for this file.
+>>    * The following are differences from seq_read():
+>> @@ -154,6 +169,31 @@ static ssize_t bpf_seq_read(struct file *file, char __user *buf, size_t size,
+>>          goto Done;
+>>   }
+>>
+>> +static int iter_release(struct inode *inode, struct file *file)
+>> +{
+>> +       struct bpf_iter_priv_data *iter_priv;
+>> +       void *file_priv = file->private_data;
+>> +       struct seq_file *seq;
+>> +
+>> +       seq = file_priv;
+> 
+> 
+> seq might be NULL, if anon_inode_getfile succeeded, but then
+> prepare_seq_file failed, so you need to handle that.
+
+Thanks for catching this. Missed this case.
+
+> 
+> Also, file_priv is redundant, assign to seq directly from file->private_data?
+
+Ack.
+
+> 
+>> +       iter_priv = container_of(seq->private, struct bpf_iter_priv_data,
+>> +                                target_private);
+>> +
+>> +       if (iter_priv->tinfo->fini_seq_private)
+>> +               iter_priv->tinfo->fini_seq_private(seq->private);
+>> +
+>> +       bpf_prog_put(iter_priv->prog);
+>> +       seq->private = iter_priv;
+>> +
+>> +       return seq_release_private(inode, file);
+>> +}
+>> +
+>> +static const struct file_operations bpf_iter_fops = {
+>> +       .llseek         = no_llseek,
+>> +       .read           = bpf_seq_read,
+>> +       .release        = iter_release,
+>> +};
+>> +
+>>   int bpf_iter_reg_target(struct bpf_iter_reg *reg_info)
+>>   {
+>>          struct bpf_iter_target_info *tinfo;
+>> @@ -289,3 +329,91 @@ int bpf_iter_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+>>
+>>          return bpf_link_settle(&link_primer);
+>>   }
+>> +
+>> +static void init_seq_meta(struct bpf_iter_priv_data *priv_data,
+>> +                         struct bpf_iter_target_info *tinfo,
+>> +                         struct bpf_prog *prog)
+>> +{
+>> +       priv_data->tinfo = tinfo;
+>> +       priv_data->prog = prog;
+>> +       priv_data->session_id = atomic64_add_return(1, &session_id);
+> 
+> nit: atomic64_inc_return?
+
+Ack.
+
+> 
+>> +       priv_data->seq_num = 0;
+>> +       priv_data->do_stop = 0;
+>> +}
+>> +
+> 
+> [...]
+> 
