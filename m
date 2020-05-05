@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F87F1C5858
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 16:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D351C5907
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 16:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729313AbgEEONg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 10:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48478 "EHLO
+        id S1730597AbgEEOVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 10:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729146AbgEEONf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 10:13:35 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1E4C061A0F;
-        Tue,  5 May 2020 07:13:35 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id mq3so1186874pjb.1;
-        Tue, 05 May 2020 07:13:35 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729797AbgEEOPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 10:15:23 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC5DC061A0F;
+        Tue,  5 May 2020 07:15:23 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id s8so1135687pgq.1;
+        Tue, 05 May 2020 07:15:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=vUI7H3zEQ9H8QIwCQ24EAq2pWsz3laTp86kjJwGCy2A=;
-        b=YkZw8YQXDccsDbBS4C0O5LMJGsSXIuT1ovPSHZeibMB4ZhJbetT5karBIQDGZyMu0k
-         IBdRJNOVOa1GNEbhoAuCCrvOK95e4ExfkjwNMMqw8yyFSpe6/HZclQjj/o/y/DEjyXQf
-         D8bD98dH4TU8N9iILFu6DwhyrLrlFYj24qKgldff3S35uVjPxaC8qpPHMbhOElowls51
-         NA+CUw+XfSpefYj0MsjjxqdD/1An+fcrvFfnPRdSVMHOAFB4Q7IZukrTfCHjNl6LuXlX
-         SkcXFYf+6CloWECw34gLTvnp/U4XgJ2AEyem4IDuABqVEJH0tksWHndPxMQsIdIQQlgL
-         50zQ==
+        bh=0nX/PJie6N8ENA2Zvbm0yQ+G3ZDyBTfdd9KJ7MPuSj4=;
+        b=nfmE75xAk2mRtYELliGHUe/ax/6qkgrPatqmkxJZ/4QQY+o+lMk11CjpG4sAQ3FVBV
+         WzncbHPCgbdKwNdc+0McksELLJMYnMAiR59i9RiNpkJ1wTWQvRjMj/LOf+Xb5oeK3q9X
+         8VD8zvXA45j3xTucUWd8a6+SrLV7AXDs8dsNgTmPYadNJvCSJY3+9yk+3FG9cqznsAn1
+         Ayjs9sTijBSlXb0wCaoDlmLuPkX19TLs6CSO8ttbuzlrxO+xpFQbVBsTgFRVP0zVj4wd
+         QyMxU4d3tVal6fMMXpNV6WOxd3TZfCk2bsV8QT8ybu6iLP/OmMTw0MsgxUT8NrAH2Rv+
+         1Ceg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=vUI7H3zEQ9H8QIwCQ24EAq2pWsz3laTp86kjJwGCy2A=;
-        b=T/TvscqHdAIbMR/l9sfaTewI3wA0V+khggHHL3YFmdAyCvd1e1LkHhj33RmC7V3klf
-         YQyheZtE8PimCDkc/EdiMIdMFIMgDt8TxXDOGyG/Yr5tRNQotUji9SMxzDKF3l1Az5Rx
-         Dy/Q2oF8vl9xexPWXa97iw6ZWr69rwrKXmE/ri5Yplg97c38W4Te9VQjuNBmYAydYWJn
-         h6xm12uxfEfVlUWrZfSqwgwu68h/KLC0SvGgtyVGugdUCf1PhK0qW2NRbh04q31tNuz+
-         9s0XkPbNT0RjVEeXVEx7Q3yN5Z8q3sdz2Y2SP1Fak01Ety715SdKOEyQ9Ln5+T+RVvrF
-         N9Hg==
-X-Gm-Message-State: AGi0PuZYt4ZOwzb4DO6RhM+acBpokbvxX//GHQ0qfPzJHk7+6gVgz3lR
-        DXSSWABZRi1x0PfVLxbe27g8OPLfqSVqDIYdUZk=
-X-Google-Smtp-Source: APiQypKwqHcpUrfpqYd5uUdTyj3td5+1Wg/esi83wvGDAF8yQlrbm2K4xPgTkvNlPBQj0TfYH1WbhCd8ME96fqQEWY0=
-X-Received: by 2002:a17:90a:37a3:: with SMTP id v32mr3401271pjb.2.1588688015023;
- Tue, 05 May 2020 07:13:35 -0700 (PDT)
+        bh=0nX/PJie6N8ENA2Zvbm0yQ+G3ZDyBTfdd9KJ7MPuSj4=;
+        b=L303mJpbVSMNy1ExethZrn1BrbfB9EogsM9HridS/D8+4WcZiXGqoWk7vWF6GPZiwo
+         ShmaWWFGJ/lyaH7gqfTXYghTHub9QlUO9yz7cn1laBMCOMwbudx9/lUWLuGL5xuJsNPo
+         CI2/0YQ5F4AV4a4lCye0DXUkXVIqhJBIFeqaCZIeyjXJz25GoUDcSbduNuFXuXG1N0Il
+         aR7+eG5H1tpsAUtCeJAVMMxvj//QmYLwQnhRPokCYQg8i4fnhrU8bTRoi60H2Z/K8kVY
+         OqMOUi1o1U6nMLpn3D1XnMCvtKo15MO15T8WFUGIHH+dzfcK0X1j6BB+qCz34GA751PF
+         AJMw==
+X-Gm-Message-State: AGi0PuamiyE38pwwZG5ADwgsmkPDl8yYZxVtl5QOKKVlbSCLmL/w7NJm
+        BnWthRIaovLTx4nmjYGsV71Mz904+ktKfu2m3T4=
+X-Google-Smtp-Source: APiQypLc7JWdA097hNwo8eG2GAZy8/3FtlTIfHPPFCBF9V0wjqm7rU8EeIuNboUNOrlwwMtxJqnfA7pV8Mn60TSZrt8=
+X-Received: by 2002:a62:5ec7:: with SMTP id s190mr3257831pfb.130.1588688122575;
+ Tue, 05 May 2020 07:15:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com> <20200505132905.10276-4-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20200505132905.10276-4-calvin.johnson@oss.nxp.com>
+References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com> <20200505132905.10276-5-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20200505132905.10276-5-calvin.johnson@oss.nxp.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 5 May 2020 17:13:28 +0300
-Message-ID: <CAHp75Ve4RMhfkNjO9NtNpjT9uRi3p1BAifCGDrB2fhAyBA8YtQ@mail.gmail.com>
-Subject: Re: [net-next PATCH v3 3/5] phylink: Introduce phylink_fwnode_phy_connect()
+Date:   Tue, 5 May 2020 17:15:16 +0300
+Message-ID: <CAHp75VfQ_ueABUcgUUirQ7kK60CR6vMi1gP-UsdDd+UmsSE4Sw@mail.gmail.com>
+Subject: Re: [net-next PATCH v3 4/5] net: phy: Introduce fwnode_get_phy_id()
 To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
 Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
         Russell King - ARM Linux admin <linux@armlinux.org.uk>,
@@ -83,42 +83,36 @@ X-Mailing-List: netdev@vger.kernel.org
 On Tue, May 5, 2020 at 4:29 PM Calvin Johnson
 <calvin.johnson@oss.nxp.com> wrote:
 >
-> Define phylink_fwnode_phy_connect() to connect phy specified by
-> a fwnode to a phylink instance.
+> Extract phy_id from compatible string. This will be used by
+> fwnode_mdiobus_register_phy() to create phy device using the
+> phy_id.
 
-...
-
-> +       int ret = 0;
-
-Redundant assignment.
-
-> +       if ((IS_ERR(phy_fwnode)) && pl->cfg_link_an_mode == MLO_AN_PHY)
-
-No Lisp, please.
-
-> +               return -ENODEV;
-
-...
-
-> +       phy_dev = fwnode_phy_find_device(phy_fwnode);
-> +       fwnode_handle_put(phy_fwnode);
-
-Hmm... Isn't it racy? I mean if you put fwnode here the phy_dev may
-already be gone before you call phy_attach_direct, right?
-
-> +       if (!phy_dev)
-> +               return -ENODEV;
+> +int fwnode_get_phy_id(struct fwnode_handle *fwnode, u32 *phy_id)
+> +{
+> +       const char *cp;
+> +       unsigned int upper, lower;
+> +       int ret;
 > +
-> +       ret = phy_attach_direct(pl->netdev, phy_dev, flags,
-> +                               pl->link_interface);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
-> +       if (ret)
-> +               phy_detach(phy_dev);
-> +
-> +       return ret;
+> +       ret = fwnode_property_read_string(fwnode, "compatible", &cp);
+> +       if (!ret) {
+
+if (ret)
+ return ret;
+
+will help a lot with readability of this.
+
+> +               if (sscanf(cp, "ethernet-phy-id%4x.%4x",
+> +                          &upper, &lower) == 2) {
+
+> +                       *phy_id = ((upper & 0xFFFF) << 16) | (lower & 0xFFFF);
+
+How upper can be bigger than 0xfff? Same for lower.
+
+> +                       return 0;
+> +               }
+> +       }
+> +       return -EINVAL;
+> +}
 
 -- 
 With Best Regards,
