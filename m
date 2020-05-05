@@ -2,68 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D504A1C56AD
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 15:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 374711C56BC
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 15:24:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729044AbgEENWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 09:22:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42448 "EHLO vps0.lunn.ch"
+        id S1729088AbgEENYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 09:24:19 -0400
+Received: from mx2.suse.de ([195.135.220.15]:46454 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729007AbgEENWG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 09:22:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=hVfUHHjlv46RQ1l+YXEbPOpdzuWu6b+PUyGbuOSTRSw=; b=Hc6jRazIO66vYIoMr8Y5M4qwTU
-        57oK+4AsmpGXetUyuOJAfiI+jVsAN5cFnsiVF+TLhffQ7C2vLTigLdotYD32r9OyaM4Y+9rsocWJN
-        yTSUV/IUG92ftRJZNrSIAMl6GjZKsFddyWcPBJaaUTWDCaSgSbhEaffCaDHfUJRoAqzw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jVxWN-000w4r-PV; Tue, 05 May 2020 15:22:03 +0200
-Date:   Tue, 5 May 2020 15:22:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
+        id S1729020AbgEENYT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 09:24:19 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 639E2AB3D;
+        Tue,  5 May 2020 13:24:20 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 669E7602B9; Tue,  5 May 2020 15:24:17 +0200 (CEST)
+Date:   Tue, 5 May 2020 15:24:17 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     David Miller <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Chris Healy <cphealy@gmail.com>, michael@walle.cc
-Subject: Re: [PATCH net-next v2 07/10] net: ethtool: Add helpers for
- reporting test results
-Message-ID: <20200505132203.GG208718@lunn.ch>
+Subject: Re: [PATCH net-next v2 04/10] net: ethtool: Add attributes for cable
+ test reports
+Message-ID: <20200505132417.GI5989@lion.mk-sys.cz>
 References: <20200505001821.208534-1-andrew@lunn.ch>
- <20200505001821.208534-8-andrew@lunn.ch>
- <20200505105043.GK8237@lion.mk-sys.cz>
+ <20200505001821.208534-5-andrew@lunn.ch>
+ <20200505082838.GH8237@lion.mk-sys.cz>
+ <20200505131548.GE208718@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200505105043.GK8237@lion.mk-sys.cz>
+In-Reply-To: <20200505131548.GE208718@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +int ethnl_cable_test_fault_length(struct phy_device *phydev, u8 pair, u32 cm)
-> > +{
-> > +	struct nlattr *nest;
-> > +	int ret = -EMSGSIZE;
-> > +
-> > +	nest = nla_nest_start(phydev->skb,
-> > +			      ETHTOOL_A_CABLE_TEST_NTF_FAULT_LENGTH);
-> > +	if (!nest)
-> > +		return -EMSGSIZE;
-> > +
-> > +	if (nla_put_u8(phydev->skb, ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR, pair))
-> > +		goto err;
-> > +	if (nla_put_u16(phydev->skb, ETHTOOL_A_CABLE_FAULT_LENGTH_CM, cm))
-> > +		goto err;
+On Tue, May 05, 2020 at 03:15:48PM +0200, Andrew Lunn wrote:
+> > > + +---------------------------------------------+--------+---------------------+
+> > > + | ``ETHTOOL_A_CABLE_TEST_HEADER``             | nested | reply header        |
+> > > + +---------------------------------------------+--------+---------------------+
+> > > + | ``ETHTOOL_A_CABLE_TEST_STATUS``             | u8     | completed           |
+> > > + +---------------------------------------------+--------+---------------------+
+> > > + | ``ETHTOOL_A_CABLE_TEST_NTF_NEST``           | nested | all the results     |
+> > > + +-+-------------------------------------------+--------+---------------------+
+> > > + | | ``ETHTOOL_A_CABLE_TEST_STATUS``           | u8     | completed           |
+> > > + +-+-------------------------------------------+--------+---------------------+
+> > 
+> > You have ETHTOOL_A_CABLE_TEST_STATUS both here and on top level. AFAICS
+> > the top level attribute is the right one - but the name is
+> > ETHTOOL_A_CABLE_TEST_NTF_STATUS.
 > 
-> This should be nla_put_u32().
+> Hi Michal
+> 
+> They need better names. The first one is about the test run
+> status. Started vs complete. A notification is sent when the test is
+> started, and a second one at the end with the actual test results. The
+> second status is per pair, indicating open, shorted, O.K.
+> Maybe this second one shouldd be ETHTOOL_A_CABLE_TEST_NTF_PAIR_STATUS.
 
-Yes. I think i messed up a rebase merge conflict somewhere. I'm also
-surprised user space is not complaining.
+The per-pair status is ETHTOOL_A_CABLE_RESULTS_CODE (nested within
+ETHTOOL_A_CABLE_TEST_NTF_RESULT), isn't it?
 
-	  Andrew
+Based on the code, I would say second ETHTOOL_A_CABLE_TEST_STATUS line
+should be dropped and first fixed to ETHTOOL_A_CABLE_TEST_NTF_STATUS.
+
+Michal
