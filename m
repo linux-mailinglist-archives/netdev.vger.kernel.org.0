@@ -2,194 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E78041C4AA6
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 01:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 396901C4ADF
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 02:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728551AbgEDXyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 19:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
+        id S1728427AbgEEAFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 20:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728482AbgEDXx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 19:53:58 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BAECC061A0F
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 16:53:58 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id v10so181502qvr.2
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 16:53:58 -0700 (PDT)
+        with ESMTP id S1728223AbgEEAFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 20:05:22 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B971C061A0E
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 17:05:22 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id f8so76886plt.2
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 17:05:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=d/9GF7fGwRIqCk6Du1UKOadUaqr7KafAgxhMU9fZkoU=;
-        b=UgoJ/n6ww+UMgFwyQHCKn8rgMm6w0uW8xyV5EnUYDDt5VoqjzjdoAtQOXZQCtv01t7
-         ZpHlyPbEaURmvZQ0eSeeqlDfD+7gVHZUvlsWRFcDqq/zDUw9kJDrpOM/RrcM4pRflSvS
-         o2Jg1N3eOSBoMCskiklFca8VyBSvxIIfvx+tqT93lqfSMA5hs4BsHQAnh0CU2oVs7uIU
-         2PTG+8PHhp/G6oxi3NKaB8KjOML3Ggchh6wyID7EexF3eealZSJ1XlnFHgRtIuf8wV+A
-         04CRE6jbie0/I92U+NVoDx0zelJLiA/3YpA5q2pCFxcP4OCGynetdsv+U/ajSbFjDJ09
-         v6bg==
+        bh=AJisQVo+doMecpLYDgXbLnuJk8fwWTr3ooCXVB5wUoA=;
+        b=bEgemimGj7IRspISKSzcTlqaOWHAl6fmTwOvgtr3AN4Em7/FE7pp6vcnz7jJ4QwhdI
+         RytS6X7kee8K2g9n5YfWAMVERGszoIn7UpmVu7QoqjkJwmaTfWPx1tbaMuzluWwDPRFq
+         u+DIL3owBzu3hyp8p0fQyCYbW//9GObS3dO1fd9RWGy7KUyRO1+nygmCxOyQHim0pbXx
+         FxfRwcvKgX0WDmplcTe6MEbKgbddDFlrczf0uAZ2QFv5vDS8BRjctqni5IdECGAjFPEm
+         bMhBd6Z8ZBn6xr2bF4D4gqnvQyGUeK8NKNHU20aVDRGg7wtgkUcJ12rmK55LXq6GIiNR
+         ns1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=d/9GF7fGwRIqCk6Du1UKOadUaqr7KafAgxhMU9fZkoU=;
-        b=B1AHY5D06Racx397gBAyFBpe+1ObHGChYaxLjta0/UpQESmhihDm2XGbJD/1lYWKl8
-         zC870vOyyBCLT0G9KZx2QrYHHmNOgx7zWmkFM/nJ5TZzM6nmNDmodp+NxA8rdzrmhg3i
-         ehaWghG5SKii1rI4WIh9goSFd04SjinmarRHmsIISk8hjX/RAb666yHKJ9PC5w+D7zQn
-         svS1nzU1XdZqfcgq/Ut39FTb7Yod2yiV5y1erD6FXtwbdFR7J+JS6YD2xay4GLlbdjcl
-         rZNP5heQMJn2PJ78AojxXBagMopzNfBB/cB/FqoBUzQowMjoKrjjV/pTV+dNy+yl5yHF
-         omRA==
-X-Gm-Message-State: AGi0PuYarf3hdo/ctSlQP50/VCtXUWNfM5RSY2yHA/sC+xrHdm4G7gaX
-        P/zKYBNXlKm4JCW1VEWPJAi9uQ==
-X-Google-Smtp-Source: APiQypKloUDbIE1xszOpiHPCeRygxLtLNdEXbfSMZ2rsM/aVi7Fpx3yBgEnxdb7alnZaF0/D2qWRVA==
-X-Received: by 2002:a0c:b5dd:: with SMTP id o29mr129427qvf.87.1588636437509;
-        Mon, 04 May 2020 16:53:57 -0700 (PDT)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id z18sm296004qti.47.2020.05.04.16.53.56
+        bh=AJisQVo+doMecpLYDgXbLnuJk8fwWTr3ooCXVB5wUoA=;
+        b=TEZbF2HXa8SJc3nxHIVa3AUVN4EZ8CDth8fjEqjuXV1tHJkFwlJ18pPlXDZkOvuNKO
+         fBRQ/IZPTSMUkzkh1ClYeVFNPNLJ7c/FfNBZKgBKw4OVeuRuWcnXuuhZKL9NPEk7POIG
+         SyBln2jWIssAUutyzRh+edzPFVxbFEgPDAWA5+tUUSfNadIYh7iisn6Mt3j7E0nHuS3x
+         sPwROlJJM37LZbSNrk+OaJ7s780NOI3IKPy+2bKD3hrY3M6SYtfvMlQdeCukI9XfDAZy
+         d0Io0l7NcRB3pdz0V7K/scwh5SzjJ8aCCmaw5tRTD/DDssrPjFMC1T5+fb7ErincWV2+
+         M8mw==
+X-Gm-Message-State: AGi0PubYD+r1tmrjzsctqxnNCxpm4OzQhIpohgHoJ7tITecrnZKlF0ga
+        jErSl186DoqKzAPwbkjGFlqz8Q==
+X-Google-Smtp-Source: APiQypLxIOTVNo8eLemhfWKUgu3c4328NsfUjwNsLd0y3N+j/UzZI2PMItToOZNaf2Stvx3eOnErfA==
+X-Received: by 2002:a17:902:361:: with SMTP id 88mr204608pld.279.1588637121607;
+        Mon, 04 May 2020 17:05:21 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id b13sm223058pfo.67.2020.05.04.17.05.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 16:53:57 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net
-Cc:     evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/5] net: ipa: kill ipa_cmd_dma_task_32b_addr_add()
-Date:   Mon,  4 May 2020 18:53:45 -0500
-Message-Id: <20200504235345.17118-6-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200504235345.17118-1-elder@linaro.org>
-References: <20200504235345.17118-1-elder@linaro.org>
+        Mon, 04 May 2020 17:05:21 -0700 (PDT)
+Date:   Mon, 4 May 2020 17:05:12 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Po Liu <Po.Liu@nxp.com>
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, vinicius.gomes@intel.com, vlad@buslov.dev,
+        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
+        alexandru.marginean@nxp.com, michael.chan@broadcom.com,
+        vishal@chelsio.com, saeedm@mellanox.com, leon@kernel.org,
+        jiri@mellanox.com, idosch@mellanox.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        kuba@kernel.org, xiyou.wangcong@gmail.com,
+        simon.horman@netronome.com, pablo@netfilter.org,
+        moshe@mellanox.com, m-karicheri2@ti.com,
+        andre.guedes@linux.intel.com
+Subject: Re: [v3,iproute2 1/2] iproute2:tc:action: add a gate control action
+Message-ID: <20200504170512.74505a82@hermes.lan>
+In-Reply-To: <20200503063251.10915-1-Po.Liu@nxp.com>
+References: <20200501005318.21334-5-Po.Liu@nxp.com>
+        <20200503063251.10915-1-Po.Liu@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A recent commit removed the only use of ipa_cmd_dma_task_32b_addr_add().
-This function (and the IPA immediate command it implements) is no
-longer needed, so get rid of it, along with all of the definitions
-associated with it.  Isolate its removal in a commit so it can be
-easily added back again if needed.
+On Sun,  3 May 2020 14:32:50 +0800
+Po Liu <Po.Liu@nxp.com> wrote:
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_cmd.c | 59 ---------------------------------------
- drivers/net/ipa/ipa_cmd.h | 11 --------
- 2 files changed, 70 deletions(-)
+> Introduce a ingress frame gate control flow action.
+> Tc gate action does the work like this:
+> Assume there is a gate allow specified ingress frames can pass at
+> specific time slot, and also drop at specific time slot. Tc filter
+> chooses the ingress frames, and tc gate action would specify what slot
+> does these frames can be passed to device and what time slot would be
+> dropped.
+> Tc gate action would provide an entry list to tell how much time gate
+> keep open and how much time gate keep state close. Gate action also
+> assign a start time to tell when the entry list start. Then driver would
+> repeat the gate entry list cyclically.
+> For the software simulation, gate action require the user assign a time
+> clock type.
+> 
+> Below is the setting example in user space. Tc filter a stream source ip
+> address is 192.168.0.20 and gate action own two time slots. One is last
+> 200ms gate open let frame pass another is last 100ms gate close let
+> frames dropped.
+> 
+>  # tc qdisc add dev eth0 ingress
+>  # tc filter add dev eth0 parent ffff: protocol ip \
+> 
+>             flower src_ip 192.168.0.20 \
+>             action gate index 2 clockid CLOCK_TAI \
+>             sched-entry open 200000000 -1 -1 \
+>             sched-entry close 100000000
+> 
+>  # tc chain del dev eth0 ingress chain 0
+> 
+> "sched-entry" follow the name taprio style. Gate state is
+> "open"/"close". Follow the period nanosecond. Then next -1 is internal
+> priority value means which ingress queue should put to. "-1" means
+> wildcard. The last value optional specifies the maximum number of
+> MSDU octets that are permitted to pass the gate during the specified
+> time interval.
+> 
+> Below example shows filtering a stream with destination mac address is
+> 10:00:80:00:00:00 and ip type is ICMP, follow the action gate. The gate
+> action would run with one close time slot which means always keep close.
+> The time cycle is total 200000000ns. The base-time would calculate by:
+> 
+>      1357000000000 + (N + 1) * cycletime
+> 
+> When the total value is the future time, it will be the start time.
+> The cycletime here would be 200000000ns for this case.
+> 
+>  #tc filter add dev eth0 parent ffff:  protocol ip \
+>            flower skip_hw ip_proto icmp dst_mac 10:00:80:00:00:00 \
+>            action gate index 12 base-time 1357000000000 \
+>            sched-entry CLOSE 200000000 \
+>            clockid CLOCK_TAI
+> 
+> Signed-off-by: Po Liu <Po.Liu@nxp.com>
 
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index d226b858742d..394f8a6df086 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -103,28 +103,6 @@ struct ipa_cmd_ip_packet_init {
- /* Field masks for ipa_cmd_ip_packet_init dest_endpoint field */
- #define IPA_PACKET_INIT_DEST_ENDPOINT_FMASK		GENMASK(4, 0)
- 
--/* IPA_CMD_DMA_TASK_32B_ADDR */
--
--/* This opcode gets modified with a DMA operation count */
--
--#define DMA_TASK_32B_ADDR_OPCODE_COUNT_FMASK		GENMASK(15, 8)
--
--struct ipa_cmd_hw_dma_task_32b_addr {
--	__le16 flags;
--	__le16 size;
--	__le32 addr;
--	__le16 packet_size;
--	u8 reserved[6];
--};
--
--/* Field masks for ipa_cmd_hw_dma_task_32b_addr flags field */
--#define DMA_TASK_32B_ADDR_FLAGS_SW_RSVD_FMASK		GENMASK(10, 0)
--#define DMA_TASK_32B_ADDR_FLAGS_CMPLT_FMASK		GENMASK(11, 11)
--#define DMA_TASK_32B_ADDR_FLAGS_EOF_FMASK		GENMASK(12, 12)
--#define DMA_TASK_32B_ADDR_FLAGS_FLSH_FMASK		GENMASK(13, 13)
--#define DMA_TASK_32B_ADDR_FLAGS_LOCK_FMASK		GENMASK(14, 14)
--#define DMA_TASK_32B_ADDR_FLAGS_UNLOCK_FMASK		GENMASK(15, 15)
--
- /* IPA_CMD_DMA_SHARED_MEM */
- 
- /* For IPA v4.0+, this opcode gets modified with pipeline clear options */
-@@ -163,7 +141,6 @@ union ipa_cmd_payload {
- 	struct ipa_cmd_hw_hdr_init_local hdr_init_local;
- 	struct ipa_cmd_register_write register_write;
- 	struct ipa_cmd_ip_packet_init ip_packet_init;
--	struct ipa_cmd_hw_dma_task_32b_addr dma_task_32b_addr;
- 	struct ipa_cmd_hw_dma_mem_mem dma_shared_mem;
- 	struct ipa_cmd_ip_packet_tag_status ip_packet_tag_status;
- };
-@@ -508,42 +485,6 @@ static void ipa_cmd_ip_packet_init_add(struct gsi_trans *trans, u8 endpoint_id)
- 			  direction, opcode);
- }
- 
--/* Use a 32-bit DMA command to zero a block of memory */
--void ipa_cmd_dma_task_32b_addr_add(struct gsi_trans *trans, u16 size,
--				   dma_addr_t addr, bool toward_ipa)
--{
--	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
--	enum ipa_cmd_opcode opcode = IPA_CMD_DMA_TASK_32B_ADDR;
--	struct ipa_cmd_hw_dma_task_32b_addr *payload;
--	union ipa_cmd_payload *cmd_payload;
--	enum dma_data_direction direction;
--	dma_addr_t payload_addr;
--	u16 flags;
--
--	/* assert(addr <= U32_MAX); */
--	addr &= GENMASK_ULL(31, 0);
--
--	/* The opcode encodes the number of DMA operations in the high byte */
--	opcode |= u16_encode_bits(1, DMA_TASK_32B_ADDR_OPCODE_COUNT_FMASK);
--
--	direction = toward_ipa ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
--
--	/* complete: 0 = don't interrupt; eof: 0 = don't assert eot */
--	flags = DMA_TASK_32B_ADDR_FLAGS_FLSH_FMASK;
--	/* lock: 0 = don't lock endpoint; unlock: 0 = don't unlock */
--
--	cmd_payload = ipa_cmd_payload_alloc(ipa, &payload_addr);
--	payload = &cmd_payload->dma_task_32b_addr;
--
--	payload->flags = cpu_to_le16(flags);
--	payload->size = cpu_to_le16(size);
--	payload->addr = cpu_to_le32((u32)addr);
--	payload->packet_size = cpu_to_le16(size);
--
--	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
--			  direction, opcode);
--}
--
- /* Use a DMA command to read or write a block of IPA-resident memory */
- void ipa_cmd_dma_shared_mem_add(struct gsi_trans *trans, u32 offset, u16 size,
- 				dma_addr_t addr, bool toward_ipa)
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index 4917525b3a47..e440aa69c8b5 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -35,7 +35,6 @@ enum ipa_cmd_opcode {
- 	IPA_CMD_HDR_INIT_LOCAL		= 9,
- 	IPA_CMD_REGISTER_WRITE		= 12,
- 	IPA_CMD_IP_PACKET_INIT		= 16,
--	IPA_CMD_DMA_TASK_32B_ADDR	= 17,
- 	IPA_CMD_DMA_SHARED_MEM		= 19,
- 	IPA_CMD_IP_PACKET_TAG_STATUS	= 20,
- };
-@@ -147,16 +146,6 @@ void ipa_cmd_hdr_init_local_add(struct gsi_trans *trans, u32 offset, u16 size,
- void ipa_cmd_register_write_add(struct gsi_trans *trans, u32 offset, u32 value,
- 				u32 mask, bool clear_full);
- 
--/**
-- * ipa_cmd_dma_task_32b_addr_add() - Add a 32-bit DMA command to a transaction
-- * @trans:	GSi transaction
-- * @size:	Number of bytes to be memory to be transferred
-- * @addr:	DMA address of buffer to be read into or written from
-- * @toward_ipa:	true means write to IPA memory; false means read
-- */
--void ipa_cmd_dma_task_32b_addr_add(struct gsi_trans *trans, u16 size,
--				   dma_addr_t addr, bool toward_ipa);
--
- /**
-  * ipa_cmd_dma_shared_mem_add() - Add a DMA memory command to a transaction
-  * @trans:	GSI transaction
--- 
-2.20.1
+These changes are specific to net-next should be assigned to iproute2-next.
+Will change delegation.
 
