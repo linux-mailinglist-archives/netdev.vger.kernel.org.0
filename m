@@ -2,135 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 901E91C5956
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 16:24:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F87F1C5858
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 16:13:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729349AbgEEONs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 10:13:48 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:36933 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729146AbgEEONr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 10:13:47 -0400
-Received: from localhost.localdomain ([149.172.19.189]) by
- mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1M9WeC-1jSePQ0bES-005d0q; Tue, 05 May 2020 16:13:32 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, wireguard@lists.zx2c4.com,
-        clang-built-linux@googlegroups.com
-Subject: [PATCH] net: wireguard: avoid unused variable warning
-Date:   Tue,  5 May 2020 16:13:17 +0200
-Message-Id: <20200505141327.746184-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.26.0
+        id S1729313AbgEEONg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 10:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48478 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729146AbgEEONf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 10:13:35 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1E4C061A0F;
+        Tue,  5 May 2020 07:13:35 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id mq3so1186874pjb.1;
+        Tue, 05 May 2020 07:13:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vUI7H3zEQ9H8QIwCQ24EAq2pWsz3laTp86kjJwGCy2A=;
+        b=YkZw8YQXDccsDbBS4C0O5LMJGsSXIuT1ovPSHZeibMB4ZhJbetT5karBIQDGZyMu0k
+         IBdRJNOVOa1GNEbhoAuCCrvOK95e4ExfkjwNMMqw8yyFSpe6/HZclQjj/o/y/DEjyXQf
+         D8bD98dH4TU8N9iILFu6DwhyrLrlFYj24qKgldff3S35uVjPxaC8qpPHMbhOElowls51
+         NA+CUw+XfSpefYj0MsjjxqdD/1An+fcrvFfnPRdSVMHOAFB4Q7IZukrTfCHjNl6LuXlX
+         SkcXFYf+6CloWECw34gLTvnp/U4XgJ2AEyem4IDuABqVEJH0tksWHndPxMQsIdIQQlgL
+         50zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vUI7H3zEQ9H8QIwCQ24EAq2pWsz3laTp86kjJwGCy2A=;
+        b=T/TvscqHdAIbMR/l9sfaTewI3wA0V+khggHHL3YFmdAyCvd1e1LkHhj33RmC7V3klf
+         YQyheZtE8PimCDkc/EdiMIdMFIMgDt8TxXDOGyG/Yr5tRNQotUji9SMxzDKF3l1Az5Rx
+         Dy/Q2oF8vl9xexPWXa97iw6ZWr69rwrKXmE/ri5Yplg97c38W4Te9VQjuNBmYAydYWJn
+         h6xm12uxfEfVlUWrZfSqwgwu68h/KLC0SvGgtyVGugdUCf1PhK0qW2NRbh04q31tNuz+
+         9s0XkPbNT0RjVEeXVEx7Q3yN5Z8q3sdz2Y2SP1Fak01Ety715SdKOEyQ9Ln5+T+RVvrF
+         N9Hg==
+X-Gm-Message-State: AGi0PuZYt4ZOwzb4DO6RhM+acBpokbvxX//GHQ0qfPzJHk7+6gVgz3lR
+        DXSSWABZRi1x0PfVLxbe27g8OPLfqSVqDIYdUZk=
+X-Google-Smtp-Source: APiQypKwqHcpUrfpqYd5uUdTyj3td5+1Wg/esi83wvGDAF8yQlrbm2K4xPgTkvNlPBQj0TfYH1WbhCd8ME96fqQEWY0=
+X-Received: by 2002:a17:90a:37a3:: with SMTP id v32mr3401271pjb.2.1588688015023;
+ Tue, 05 May 2020 07:13:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:j5rBKEs2EZ2wBWucgw3jP/snV64xmxjwf5JSJRK1981/0aQIMOW
- fEF0VkodfzvUsiuEQUDo7kxlEFs3xdtHubS7l8i8Gk1lEj/6nOgXOAI7UbeAobG1OrqBrcG
- GVJlqLnzIGLXPiv/nvBYUAcfTh4xKECz/6lRIBaCKcqauCArBacxGzmbeG17O3z256yLxp7
- bPL+EwTM3HZElCMzzbHdg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Dk/GUQ/t1Bc=:yEMm/AYZhCfPtA9HWgU3/6
- NpaeDf8tJN2PXbUfTPSlKnW7zxCFyXGgCxtknT8672D1Ri8glQ0ejXiFdUI0VLfBoZxCu5ZDq
- Clbq9XIaw4vcoS70Z2oe1OASZcipm0xIj+Zd/sSDeKE8gTibGvA7lKu5AMxc3kJh2lauU4eO0
- 2VZryiFexozDS0SJoW6iZ6r2J2I7RNXCG9q5S3XNMZEHyPZxOUTh7XKocmbX2dBzzUCYOYkob
- ImIbtdgQxuidwLOPtuVokmY/B19rUsAtrBJQavK1pXZUX9zUsmDM1rl6/9jg9JmEWtZYQdHJj
- +3AnWXN2FG9EqRAhc3HC73C63I/UyhuLDh2+lBinSTdkgGdPQ1TNh58+2id0y4BPR06U8R23C
- CAB8mOJeJI1VXb2BGa7qb8GxLRBTBqGJotvhWYSel4/A+YrG7hjLIlsAvodsTEb0dEV61D5l5
- INqNgLWCH3tuiIYBOTpfgiCSB8qU83C9eMU5oClxOZAEpyJjjsLdxi+qSrpIUixWyJbMjM25b
- NjnrlxnZUtn2Z3CAdaNw786GgKxn3jw80kwrk6Onysd02XylVd4HeN6QAUsczkoyc1CD4L9zK
- 2ktIYnX4devlUErlwVSGJzrPp+U9YNrHIcGTuM/KMRD3KzIH9+zjoDIVQ3AtpjcnZnuR4NQnt
- oYRKBcLtwnw/1EJFvNfQsdavWNOOzKnjXIa8BXi8RM980R6bmIOG3PRpoR/waCc+FYsBccfA6
- xLLw98YqKlcnpnG0+v8pwD98Lv0jX+sbOtb4b3JZeVJm0LO7sik3VgKCtlEjzeXI8AbKWOwCk
- bvmJu2G6jNC4yXyi8EScJuTfM7t46CimQURKtQRg4qvTNma43E=
+References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com> <20200505132905.10276-4-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20200505132905.10276-4-calvin.johnson@oss.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 5 May 2020 17:13:28 +0300
+Message-ID: <CAHp75Ve4RMhfkNjO9NtNpjT9uRi3p1BAifCGDrB2fhAyBA8YtQ@mail.gmail.com>
+Subject: Re: [net-next PATCH v3 3/5] phylink: Introduce phylink_fwnode_phy_connect()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang points out a harmless use of uninitialized variables that
-get passed into a local function but are ignored there:
+On Tue, May 5, 2020 at 4:29 PM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> Define phylink_fwnode_phy_connect() to connect phy specified by
+> a fwnode to a phylink instance.
 
-In file included from drivers/net/wireguard/ratelimiter.c:223:
-drivers/net/wireguard/selftest/ratelimiter.c:173:34: error: variable 'skb6' is uninitialized when used here [-Werror,-Wuninitialized]
-                ret = timings_test(skb4, hdr4, skb6, hdr6, &test_count);
-                                               ^~~~
-drivers/net/wireguard/selftest/ratelimiter.c:123:29: note: initialize the variable 'skb6' to silence this warning
-        struct sk_buff *skb4, *skb6;
-                                   ^
-                                    = NULL
-drivers/net/wireguard/selftest/ratelimiter.c:173:40: error: variable 'hdr6' is uninitialized when used here [-Werror,-Wuninitialized]
-                ret = timings_test(skb4, hdr4, skb6, hdr6, &test_count);
-                                                     ^~~~
-drivers/net/wireguard/selftest/ratelimiter.c:125:22: note: initialize the variable 'hdr6' to silence this warning
-        struct ipv6hdr *hdr6;
-                            ^
+...
 
-Shut up the warning by ensuring the variables are always initialized,
-and make up for the loss of readability by changing the "#if IS_ENABLED()"
-checks to regular "if (IS_ENABLED())".
+> +       int ret = 0;
 
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/wireguard/selftest/ratelimiter.c | 32 +++++++++++---------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+Redundant assignment.
 
-diff --git a/drivers/net/wireguard/selftest/ratelimiter.c b/drivers/net/wireguard/selftest/ratelimiter.c
-index bcd6462e4540..f408b936e224 100644
---- a/drivers/net/wireguard/selftest/ratelimiter.c
-+++ b/drivers/net/wireguard/selftest/ratelimiter.c
-@@ -153,19 +153,22 @@ bool __init wg_ratelimiter_selftest(void)
- 	skb_reset_network_header(skb4);
- 	++test;
- 
--#if IS_ENABLED(CONFIG_IPV6)
--	skb6 = alloc_skb(sizeof(struct ipv6hdr), GFP_KERNEL);
--	if (unlikely(!skb6)) {
--		kfree_skb(skb4);
--		goto err_nofree;
-+	if (IS_ENABLED(CONFIG_IPV6)) {
-+		skb6 = alloc_skb(sizeof(struct ipv6hdr), GFP_KERNEL);
-+		if (unlikely(!skb6)) {
-+			kfree_skb(skb4);
-+			goto err_nofree;
-+		}
-+		skb6->protocol = htons(ETH_P_IPV6);
-+		hdr6 = (struct ipv6hdr *)skb_put(skb6, sizeof(*hdr6));
-+		hdr6->saddr.in6_u.u6_addr32[0] = htonl(1212);
-+		hdr6->saddr.in6_u.u6_addr32[1] = htonl(289188);
-+		skb_reset_network_header(skb6);
-+		++test;
-+	} else {
-+		skb6 = NULL;
-+		hdr6 = NULL;
- 	}
--	skb6->protocol = htons(ETH_P_IPV6);
--	hdr6 = (struct ipv6hdr *)skb_put(skb6, sizeof(*hdr6));
--	hdr6->saddr.in6_u.u6_addr32[0] = htonl(1212);
--	hdr6->saddr.in6_u.u6_addr32[1] = htonl(289188);
--	skb_reset_network_header(skb6);
--	++test;
--#endif
- 
- 	for (trials = TRIALS_BEFORE_GIVING_UP;;) {
- 		int test_count = 0, ret;
-@@ -206,9 +209,8 @@ bool __init wg_ratelimiter_selftest(void)
- 
- err:
- 	kfree_skb(skb4);
--#if IS_ENABLED(CONFIG_IPV6)
--	kfree_skb(skb6);
--#endif
-+	if (IS_ENABLED(CONFIG_IPV6))
-+		kfree_skb(skb6);
- err_nofree:
- 	wg_ratelimiter_uninit();
- 	wg_ratelimiter_uninit();
+> +       if ((IS_ERR(phy_fwnode)) && pl->cfg_link_an_mode == MLO_AN_PHY)
+
+No Lisp, please.
+
+> +               return -ENODEV;
+
+...
+
+> +       phy_dev = fwnode_phy_find_device(phy_fwnode);
+> +       fwnode_handle_put(phy_fwnode);
+
+Hmm... Isn't it racy? I mean if you put fwnode here the phy_dev may
+already be gone before you call phy_attach_direct, right?
+
+> +       if (!phy_dev)
+> +               return -ENODEV;
+> +
+> +       ret = phy_attach_direct(pl->netdev, phy_dev, flags,
+> +                               pl->link_interface);
+> +       if (ret)
+> +               return ret;
+> +
+> +       ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
+> +       if (ret)
+> +               phy_detach(phy_dev);
+> +
+> +       return ret;
+
 -- 
-2.26.0
-
+With Best Regards,
+Andy Shevchenko
