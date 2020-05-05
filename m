@@ -2,166 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 574491C550F
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 14:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B72CB1C551A
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 14:11:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728784AbgEEMJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 08:09:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
+        id S1728895AbgEEMLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 08:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728660AbgEEMJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 08:09:00 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39509C061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 05:09:00 -0700 (PDT)
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1jVwNe-0005dI-9E; Tue, 05 May 2020 14:08:58 +0200
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 8D6F21001F5; Tue,  5 May 2020 14:08:56 +0200 (CEST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [BUG] Inconsistent lock state in virtnet poll
-Date:   Tue, 05 May 2020 14:08:56 +0200
-Message-ID: <87lfm6oa7b.fsf@nanos.tec.linutronix.de>
+        by vger.kernel.org with ESMTP id S1728603AbgEEMLU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 08:11:20 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7327C061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 05:11:18 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id y24so2052091wma.4
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 05:11:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GfkKDN3U0Fak2+2qGbh9J5E/oCVrfybMFbff5lvFh4M=;
+        b=yjAGwpIHpA5KtqMUw5+hpDZOCW58jIDAwPV9D0zt+e6URxhjYmoJrm2IjgM98JJHTo
+         CrLYxALxvOhp5OvWrockQmOE2NZf30RVqTXmFMkafO+MeOPRnOkWGq/WrYlAe1J08p1n
+         7JBrYY/6R6bdgdUC3rel9a8RejJJSR2CcHJIeUx3/zmFQjJgd6YbN46qThP8Wmrsqe8x
+         8LI8Nr/x4iIl98zNOAf56Ot812faA+mpVF3F28kDwnrniYg3pfk2Z8Suhy6lhvOj8jy9
+         lGF6ulE6dUwEkaDFWHd/xeM9eTBTHx/a55E5tV9+/yLoxdXOcnCge1umC/Nl6pF3GSab
+         igww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GfkKDN3U0Fak2+2qGbh9J5E/oCVrfybMFbff5lvFh4M=;
+        b=ePipWzqlwLl/rb0/YZNYK3nk5p0xQTxmXTLgaBg2GMh118vbxizxhVHhdNAjip+qWl
+         YSuO8oExfjEGkOFn+YbKl8effuworScPVy36Z65PtSJ7RT/LUC1oNWQkcGMJDQ94k76B
+         9c2mKRPsGUBVwYl7rwN6BEGJICemqWJiHoOwaKLeRFfecFETHbdKE6/iJo1h4zEWI6vQ
+         YA3w4uMJNlH4xNKhsqBDDhYcEDcS4IPRg5CcFfvtCasOJUrr5WpuOwmY7XdGsyzp8FlG
+         +jBmTeUOyzjU1iEerMqFAGU50/GTlTfXnv0sGpap8Mdcq6vdFBt/VM3VYn0PkRNwnMCK
+         IabQ==
+X-Gm-Message-State: AGi0PuZK/P0XklBZt2HGgY+fQW3Otx1x0zYtA3e7RHSIbGHxCY7o/Rf8
+        1rjLEbd3gpfx3Z3sE6ZL+YhBYQ==
+X-Google-Smtp-Source: APiQypIDO7s4Ggqimk/sDrN5143nXwFIxQntiZ4q34Ow2v6ExztohehSTwyLFshYUzwY7vynqYzilw==
+X-Received: by 2002:a1c:4e12:: with SMTP id g18mr2975910wmh.11.1588680677409;
+        Tue, 05 May 2020 05:11:17 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id z22sm3461384wma.20.2020.05.05.05.11.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 05:11:16 -0700 (PDT)
+Date:   Tue, 5 May 2020 14:11:15 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, ecree@solarflare.com
+Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DONT_CARE
+Message-ID: <20200505121115.GH14398@nanopsycho.orion>
+References: <20200505092159.27269-1-pablo@netfilter.org>
+ <20200505094900.GF14398@nanopsycho.orion>
+ <20200505100814.GA29299@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200505100814.GA29299@salvia>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Tue, May 05, 2020 at 12:08:14PM CEST, pablo@netfilter.org wrote:
+>On Tue, May 05, 2020 at 11:49:00AM +0200, Jiri Pirko wrote:
+>> Tue, May 05, 2020 at 11:21:59AM CEST, pablo@netfilter.org wrote:
+>> >This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
+>> >that the frontend does not need counters, this hw stats type request
+>> >never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
+>> >the driver to disable the stats, however, if the driver cannot disable
+>> >counters, it bails out.
+>> >
+>> >Remove BUILD_BUG_ON since TCA_ACT_HW_STATS_* don't map 1:1 with
+>> >FLOW_ACTION_HW_STATS_* anymore. Add tc_act_hw_stats() to perform the
+>> >mapping between TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*
+>> >
+>> >Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
+>> >Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+>> >---
+>> >This is a follow up after "net: flow_offload: skip hw stats check for
+>> >FLOW_ACTION_HW_STATS_DISABLED". This patch restores the netfilter hardware
+>> >offloads.
+>> >
+>> > include/net/flow_offload.h |  9 ++++++++-
+>> > net/sched/cls_api.c        | 23 +++++++++++++++++------
+>> > 2 files changed, 25 insertions(+), 7 deletions(-)
+>> >
+>> >diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+>> >index 3619c6acf60f..0c75163699f0 100644
+>> >--- a/include/net/flow_offload.h
+>> >+++ b/include/net/flow_offload.h
+>> >@@ -164,12 +164,15 @@ enum flow_action_mangle_base {
+>> > };
+>> > 
+>> > enum flow_action_hw_stats_bit {
+>> >+	FLOW_ACTION_HW_STATS_DISABLED_BIT,
+>> > 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+>> > 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
+>> > };
+>> > 
+>> > enum flow_action_hw_stats {
+>> >-	FLOW_ACTION_HW_STATS_DISABLED = 0,
+>> >+	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
+>> >+	FLOW_ACTION_HW_STATS_DISABLED =
+>> >+		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
+>> > 	FLOW_ACTION_HW_STATS_IMMEDIATE =
+>> > 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
+>> > 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
+>> >@@ -325,7 +328,11 @@ __flow_action_hw_stats_check(const struct flow_action *action,
+>> > 		return true;
+>> > 	if (!flow_action_mixed_hw_stats_check(action, extack))
+>> > 		return false;
+>> >+
+>> > 	action_entry = flow_action_first_entry_get(action);
+>> >+	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
+>> >+		return true;
+>> >+
+>> > 	if (!check_allow_bit &&
+>> > 	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
+>> > 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
+>> >diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+>> >index 55bd1429678f..8ddc16a1ca68 100644
+>> >--- a/net/sched/cls_api.c
+>> >+++ b/net/sched/cls_api.c
+>> >@@ -3523,16 +3523,27 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
+>> > #endif
+>> > }
+>> > 
+>> >+static enum flow_action_hw_stats tc_act_hw_stats_array[] = {
+>> >+	[0]				= FLOW_ACTION_HW_STATS_DISABLED,
+>> >+	[TCA_ACT_HW_STATS_IMMEDIATE]	= FLOW_ACTION_HW_STATS_IMMEDIATE,
+>> >+	[TCA_ACT_HW_STATS_DELAYED]	= FLOW_ACTION_HW_STATS_DELAYED,
+>> >+	[TCA_ACT_HW_STATS_ANY]		= FLOW_ACTION_HW_STATS_ANY,
+>> 
+>> TCA_ACT_HW_* are bits. There can be a combination of those according
+>> to the user request. For 2 bits, it is not problem, but I have a
+>> patchset in pipes adding another type.
+>> Then you need to have 1:1 mapping in this array for all bit
+>> combinations. That is not right.
+>> 
+>> How about putting DISABLED to the at the end of enum
+>> flow_action_hw_stats? They you can just map 0 here to FLOW_ACTION_HW_STATS_DISABLED
+>> as an exception, but the bits you can take 1:1.
+>
+>Another possibility is to remove this mapping code is to update tc
+>UAPI to get it aligned with this update.
+>
+>This UAPI is only available in the few 5.7.0-rc kernel releases,
+>I think only developers are using this at this stage?
 
-The following lockdep splat happens reproducibly on 5.7-rc4
+Hmm, I think that TC-wise, the UAPI as is makes perfect sense. There is
+no don't care. Each bit allows to indicate user what he is interested
+in.
 
-Thanks,
+I would prefer to convert to flow_offload (as we do anyway) in a format
+that is comfortable for flow_offload (given the fact it is used not only
+for TC).
 
-        tglx
-
-================================
-WARNING: inconsistent lock state
-5.7.0-rc4+ #79 Not tainted
---------------------------------
-inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-ip/356 [HC0[0]:SC1[1]:HE1:SE0] takes:
-f3ee4cd8 (&syncp->seq#2){+.?.}-{0:0}, at: net_rx_action+0xfb/0x390
-{SOFTIRQ-ON-W} state was registered at:
-  lock_acquire+0x82/0x300
-  try_fill_recv+0x39f/0x590
-  virtnet_open+0xe0/0x180
-  __dev_open+0xbe/0x160
-  __dev_change_flags+0x152/0x1b0
-  dev_change_flags+0x23/0x60
-  do_setlink+0x814/0xa30
-  __rtnl_newlink+0x583/0x8e0
-  rtnl_newlink+0x36/0x60
-  rtnetlink_rcv_msg+0x139/0x470
-  netlink_rcv_skb+0x6a/0xe0
-  rtnetlink_rcv+0xd/0x10
-  netlink_unicast+0x175/0x250
-  netlink_sendmsg+0x263/0x440
-  sock_sendmsg+0x5c/0x60
-  ____sys_sendmsg+0x182/0x1d0
-  ___sys_sendmsg+0x59/0x90
-  __sys_sendmsg+0x39/0x80
-  __ia32_sys_socketcall+0x2d2/0x330
-  do_fast_syscall_32+0x82/0x340
-  entry_SYSENTER_32+0xaa/0x102
-irq event stamp: 2276
-hardirqs last  enabled at (2276): [<c18e419e>] net_rx_action+0x7e/0x390
-hardirqs last disabled at (2275): [<c18e4178>] net_rx_action+0x58/0x390
-softirqs last  enabled at (2272): [<c16f87ee>] virtnet_napi_enable+0xe/0x50
-softirqs last disabled at (2273): [<c101fb10>] call_on_stack+0x40/0x50
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&syncp->seq#2);
-  <Interrupt>
-    lock(&syncp->seq#2);
-
- *** DEADLOCK ***
-
-1 lock held by ip/356:
- #0: c20a4a38 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x118/0x470
-
-stack backtrace:
-CPU: 2 PID: 356 Comm: ip Not tainted 5.7.0-rc4+ #79
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
-Call Trace:
- <SOFTIRQ>
- dump_stack+0x6e/0x9e
- print_usage_bug.cold+0x15a/0x162
- mark_lock+0x58d/0x6e0
- ? check_usage_backwards+0x180/0x180
- __lock_acquire+0xdd7/0x24f0
- ? select_task_rq_fair+0xbb/0xfe0
- ? __lock_acquire+0x35f/0x24f0
- ? __lock_acquire+0x35f/0x24f0
- ? __lock_acquire+0x35f/0x24f0
- lock_acquire+0x82/0x300
- ? net_rx_action+0xfb/0x390
- ? find_held_lock+0x24/0x80
- ? lock_release+0x8a/0x260
- ? virtnet_poll+0xd0/0x3d9
- virtnet_poll+0x1d3/0x3d9
- ? net_rx_action+0xfb/0x390
- ? trace_hardirqs_on+0x4a/0xf0
- net_rx_action+0xfb/0x390
- ? __do_softirq+0x84/0x3ca
- ? virtnet_napi_enable+0xe/0x50
- __do_softirq+0xb1/0x3ca
- ? virtnet_napi_enable+0xe/0x50
- ? __irqentry_text_end+0x8/0x8
- call_on_stack+0x40/0x50
- </SOFTIRQ>
- ? do_softirq.part.0+0x4e/0x50
- ? __local_bh_enable_ip+0xd1/0xe0
- ? virtnet_napi_enable+0x41/0x50
- ? virtnet_open+0x7f/0x180
- ? __dev_open+0xbe/0x160
- ? __dev_change_flags+0x152/0x1b0
- ? dev_change_flags+0x23/0x60
- ? do_setlink+0x814/0xa30
- ? __lock_acquire+0x35f/0x24f0
- ? __nla_parse+0x1c/0x30
- ? __rtnl_newlink+0x583/0x8e0
- ? lock_acquire+0x82/0x300
- ? handle_mm_fault+0x6e6/0xa10
- ? find_held_lock+0x24/0x80
- ? __lock_acquire+0x35f/0x24f0
- ? lock_acquire+0x82/0x300
- ? __lock_acquire+0x35f/0x24f0
- ? rtnl_newlink+0x23/0x60
- ? rcu_read_lock_sched_held+0x3f/0x70
- ? kmem_cache_alloc_trace+0x235/0x260
- ? rtnl_newlink+0x36/0x60
- ? __rtnl_newlink+0x8e0/0x8e0
- ? rtnetlink_rcv_msg+0x139/0x470
- ? netlink_deliver_tap+0x81/0x3a0
- ? find_held_lock+0x24/0x80
- ? rtnl_bridge_getlink+0x240/0x240
- ? netlink_rcv_skb+0x6a/0xe0
- ? rtnl_bridge_getlink+0x240/0x240
- ? rtnetlink_rcv+0xd/0x10
- ? netlink_unicast+0x175/0x250
- ? netlink_sendmsg+0x263/0x440
- ? netlink_unicast+0x250/0x250
- ? sock_sendmsg+0x5c/0x60
- ? ____sys_sendmsg+0x182/0x1d0
- ? ___sys_sendmsg+0x59/0x90
- ? lock_acquire+0x82/0x300
- ? __might_fault+0x39/0x80
- ? __sys_sendmsg+0x39/0x80
- ? __ia32_sys_socketcall+0x2d2/0x330
- ? do_fast_syscall_32+0x82/0x340
- ? entry_SYSENTER_32+0xaa/0x102
-
+Did you check the solution I suggested? Above. Seems to be quite
+straightforward.
