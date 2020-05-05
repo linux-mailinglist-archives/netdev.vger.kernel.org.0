@@ -2,47 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21ADD1C4DF4
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 07:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D82F1C4DFA
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 07:58:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgEEF5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 01:57:07 -0400
-Received: from verein.lst.de ([213.95.11.211]:33401 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725320AbgEEF5H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 01:57:07 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 430EE68BEB; Tue,  5 May 2020 07:57:04 +0200 (CEST)
-Date:   Tue, 5 May 2020 07:57:04 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Christoph Hellwig <hch@lst.de>, Iurii Zaikin <yzaikin@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH 5/5] sysctl: pass kernel pointers to ->proc_handler
-Message-ID: <20200505055704.GA3552@lst.de>
-References: <20200424064338.538313-1-hch@lst.de> <20200424064338.538313-6-hch@lst.de> <202005041154.CC19F03@keescook>
+        id S1726635AbgEEF6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 01:58:16 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:54588 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725320AbgEEF6Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 01:58:16 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 09885A24B97E355DA470;
+        Tue,  5 May 2020 13:58:05 +0800 (CST)
+Received: from localhost (10.173.251.152) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Tue, 5 May 2020
+ 13:57:58 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <jerry.lilijun@huawei.com>,
+        <xudingke@huawei.com>, Yunjian Wang <wangyunjian@huawei.com>
+Subject: [PATCH] net: emac: Fix use correct return type for ndo_start_xmit()
+Date:   Tue, 5 May 2020 13:57:49 +0800
+Message-ID: <1588658269-21452-1-git-send-email-wangyunjian@huawei.com>
+X-Mailer: git-send-email 1.9.5.msysgit.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202005041154.CC19F03@keescook>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain
+X-Originating-IP: [10.173.251.152]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 04, 2020 at 12:01:11PM -0700, Kees Cook wrote:
-> >  	if (error)
-> > -		goto out;
-> > +		goto out_free_buf;
-> >  
-> >  	/* careful: calling conventions are nasty here */
-> 
-> Is this comment still valid after doing these cleanups?
+From: Yunjian Wang <wangyunjian@huawei.com>
 
-The comment is pretty old so I decided to keep it.  That being said
-I'm not sure it really is very helpful.
+The method ndo_start_xmit() returns a value of type netdev_tx_t. Fix
+the ndo function to use the correct type.
+
+Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+---
+ drivers/net/ethernet/qualcomm/emac/emac-mac.c | 5 +++--
+ drivers/net/ethernet/qualcomm/emac/emac-mac.h | 5 +++--
+ drivers/net/ethernet/qualcomm/emac/emac.c     | 3 ++-
+ 3 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/qualcomm/emac/emac-mac.c b/drivers/net/ethernet/qualcomm/emac/emac-mac.c
+index 251d4ac..117188e3 100644
+--- a/drivers/net/ethernet/qualcomm/emac/emac-mac.c
++++ b/drivers/net/ethernet/qualcomm/emac/emac-mac.c
+@@ -1431,8 +1431,9 @@ static void emac_tx_fill_tpd(struct emac_adapter *adpt,
+ }
+ 
+ /* Transmit the packet using specified transmit queue */
+-int emac_mac_tx_buf_send(struct emac_adapter *adpt, struct emac_tx_queue *tx_q,
+-			 struct sk_buff *skb)
++netdev_tx_t emac_mac_tx_buf_send(struct emac_adapter *adpt,
++				 struct emac_tx_queue *tx_q,
++				 struct sk_buff *skb)
+ {
+ 	struct emac_tpd tpd;
+ 	u32 prod_idx;
+diff --git a/drivers/net/ethernet/qualcomm/emac/emac-mac.h b/drivers/net/ethernet/qualcomm/emac/emac-mac.h
+index ae08bdd..920123e 100644
+--- a/drivers/net/ethernet/qualcomm/emac/emac-mac.h
++++ b/drivers/net/ethernet/qualcomm/emac/emac-mac.h
+@@ -227,8 +227,9 @@ struct emac_tx_queue {
+ void emac_mac_mode_config(struct emac_adapter *adpt);
+ void emac_mac_rx_process(struct emac_adapter *adpt, struct emac_rx_queue *rx_q,
+ 			 int *num_pkts, int max_pkts);
+-int emac_mac_tx_buf_send(struct emac_adapter *adpt, struct emac_tx_queue *tx_q,
+-			 struct sk_buff *skb);
++netdev_tx_t emac_mac_tx_buf_send(struct emac_adapter *adpt,
++				 struct emac_tx_queue *tx_q,
++				 struct sk_buff *skb);
+ void emac_mac_tx_process(struct emac_adapter *adpt, struct emac_tx_queue *tx_q);
+ void emac_mac_rx_tx_ring_init_all(struct platform_device *pdev,
+ 				  struct emac_adapter *adpt);
+diff --git a/drivers/net/ethernet/qualcomm/emac/emac.c b/drivers/net/ethernet/qualcomm/emac/emac.c
+index 18b0c7a..20b1b43 100644
+--- a/drivers/net/ethernet/qualcomm/emac/emac.c
++++ b/drivers/net/ethernet/qualcomm/emac/emac.c
+@@ -115,7 +115,8 @@ static int emac_napi_rtx(struct napi_struct *napi, int budget)
+ }
+ 
+ /* Transmit the packet */
+-static int emac_start_xmit(struct sk_buff *skb, struct net_device *netdev)
++static netdev_tx_t emac_start_xmit(struct sk_buff *skb,
++				   struct net_device *netdev)
+ {
+ 	struct emac_adapter *adpt = netdev_priv(netdev);
+ 
+-- 
+1.8.3.1
+
+
