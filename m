@@ -2,60 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 531C51C63AC
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 00:10:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 267621C63E1
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 00:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729247AbgEEWJz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 5 May 2020 18:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727089AbgEEWJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 18:09:55 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE5DC061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 15:09:55 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 940891281C39F;
-        Tue,  5 May 2020 15:09:54 -0700 (PDT)
-Date:   Tue, 05 May 2020 15:09:51 -0700 (PDT)
-Message-Id: <20200505.150951.1869532656064502918.davem@davemloft.net>
-To:     zenczykowski@gmail.com
-Cc:     netdev@vger.kernel.org, edumazet@google.com, willemb@google.com,
-        lucien.xin@gmail.com, hannes@stressinduktion.org
-Subject: Re: [PATCH] Revert "ipv6: add mtu lock check in
- __ip6_rt_update_pmtu"
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CANP3RGfVbvSRath6Ajd6_xzVrcK1dci=fFLMAGEogrT54fuudw@mail.gmail.com>
-References: <20200505185723.191944-1-zenczykowski@gmail.com>
-        <20200505.142322.2185521151586528997.davem@davemloft.net>
-        <CANP3RGfVbvSRath6Ajd6_xzVrcK1dci=fFLMAGEogrT54fuudw@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-2
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 May 2020 15:09:54 -0700 (PDT)
+        id S1729388AbgEEW1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 18:27:52 -0400
+Received: from mx2.suse.de ([195.135.220.15]:50266 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728875AbgEEW1v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 18:27:51 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 58A16AE2C;
+        Tue,  5 May 2020 22:27:52 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id AEDF2602B9; Wed,  6 May 2020 00:27:48 +0200 (CEST)
+Date:   Wed, 6 May 2020 00:27:48 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com,
+        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
+        Jarod Wilson <jarod@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [Patch net] net: fix a potential recursive NETDEV_FEAT_CHANGE
+Message-ID: <20200505222748.GQ8237@lion.mk-sys.cz>
+References: <20200505215819.1997-1-xiyou.wangcong@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200505215819.1997-1-xiyou.wangcong@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej ¯enczykowski <zenczykowski@gmail.com>
-Date: Tue, 5 May 2020 14:56:03 -0700
+On Tue, May 05, 2020 at 02:58:19PM -0700, Cong Wang wrote:
+> syzbot managed to trigger a recursive NETDEV_FEAT_CHANGE event
+> between bonding master and slave. I managed to find a reproducer
+> for this:
+> 
+>   ip li set bond0 up
+>   ifenslave bond0 eth0
+>   brctl addbr br0
+>   ethtool -K eth0 lro off
+>   brctl addif br0 bond0
+>   ip li set br0 up
+> 
+> When a NETDEV_FEAT_CHANGE event is triggered on a bonding slave,
+> it captures this and calls bond_compute_features() to fixup its
+> master's and other slaves' features. However, when syncing with
+> its lower devices by netdev_sync_lower_features() this event is
+> triggered again on slaves, so it goes back and forth recursively
+> until the kernel stack is exhausted.
+> 
+> It is unnecessary to trigger it for a second time, because when
+> we update the features from top down, we rely on each
+> dev->netdev_ops->ndo_fix_features() to do the job, each stacked
+> device should implement it. NETDEV_FEAT_CHANGE event is necessary
+> when we update from bottom up, like in existing stacked device
+> implementations.
+> 
+> Just calling __netdev_update_features() is sufficient to fix this
+> issue.
+> 
+> Fixes: fd867d51f889 ("net/core: generic support for disabling netdev features down stack")
+> Reported-by: syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com
+> Reported-by: syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com
+> Cc: Jarod Wilson <jarod@redhat.com>
+> Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+> Cc: Jann Horn <jannh@google.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> ---
+>  net/core/dev.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 522288177bbd..ece50ae346c3 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -8907,7 +8907,7 @@ static void netdev_sync_lower_features(struct net_device *upper,
+>  			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
+>  				   &feature, lower->name);
+>  			lower->wanted_features &= ~feature;
+> -			netdev_update_features(lower);
+> +			__netdev_update_features(lower);
+>  
+>  			if (unlikely(lower->features & feature))
+>  				netdev_WARN(upper, "failed to disable %pNF on %s!\n",
 
-> There's *lots* of places where internet standards prevent Linux from
-> doing various things.
+Wouldn't this mean that when we disable LRO on a bond manually with
+"ethtool -K", LRO will be also disabled on its slaves but no netlink
+notification for them would be sent to userspace?
 
-"Linux" generally speaking?
-
-That's true only if "rm -rf net/netfilter/ net/ipv4/netfilter net/ipv6/netfilter"
-
-Also, insert an XDP program... --> "non compliant"
-
-And so on and so forth. :-)
-
-It's local system policy, how do I react to packets.  If it doesn't
-violate the min/max limits for ipv6 packets it emits onto the internet
-I don't see this as something that can be seen as mandatory.
+Michal
