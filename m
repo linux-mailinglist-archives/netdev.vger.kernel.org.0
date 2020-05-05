@@ -2,128 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E1281C5180
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 11:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9AE31C51D2
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 11:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728569AbgEEJEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 05:04:12 -0400
-Received: from mout.web.de ([217.72.192.78]:47763 "EHLO mout.web.de"
+        id S1728422AbgEEJWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 05:22:09 -0400
+Received: from correo.us.es ([193.147.175.20]:46284 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725766AbgEEJEL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 05:04:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1588669425;
-        bh=sbmEMMiBSk8bvwWZ/D3b0FG5iaQet+xYwsgtjPy4XYY=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=kqHZgxMrp6EtOUTa/gvQWxqNJbXHNRtBroLBYq6Y0THm4b0vSiIpJAmj4usA64VUq
-         lCciQdSpoPT9n95zyQpivHZz2uVntqiZPttfzqKbMxtJOGMvLpLpctbH8MJJZl/Zeo
-         xyaFOTTepNiEGGv4MYx8UvCup9Jc9HQ9SjNfujSM=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.132.123]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M57dy-1jDxfC38WM-00zIaY; Tue, 05
- May 2020 11:03:44 +0200
-Subject: Re: net: rtw88: Fix an issue about leaking system resources
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Dejin Zheng <zhengdejin5@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>
-References: <79591cab-fe3e-0597-3126-c251d41d492b@web.de>
- <20200504144206.GA5409@nuc8i5> <882eacd1-1cbf-6aef-06c5-3ed6d402c0f5@web.de>
- <CA+ASDXOJ2CSzdgos4Y8Wd7iZjRUkrMN=Ma0_-ujG8bihGzPKkQ@mail.gmail.com>
- <20200505005908.GA8464@nuc8i5>
- <CAHp75Ve43za_hAQbECPTFS0eEqSeYJtq3bvojmed=-6g=3DhvA@mail.gmail.com>
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <7442f3d4-db99-30cc-7eb6-79badda2f8b9@web.de>
-Date:   Tue, 5 May 2020 11:03:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1727931AbgEEJWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 05:22:09 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 1A810E2C58
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 11:22:07 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0BCE11158F8
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 11:22:07 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id F36251158EE; Tue,  5 May 2020 11:22:06 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id DB7E0115410;
+        Tue,  5 May 2020 11:22:04 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 05 May 2020 11:22:04 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 9C7B742EF42B;
+        Tue,  5 May 2020 11:22:04 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
+        kuba@kernel.org, ecree@solarflare.com
+Subject: [PATCH net] net: flow_offload: skip hw stats check for FLOW_ACTION_HW_STATS_DONT_CARE
+Date:   Tue,  5 May 2020 11:21:59 +0200
+Message-Id: <20200505092159.27269-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <CAHp75Ve43za_hAQbECPTFS0eEqSeYJtq3bvojmed=-6g=3DhvA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-X-Provags-ID: V03:K1:8nddOyafvuTrOU8ir6S//KuAEVImUUucqnH0/fetpHYLX+iMFWh
- jeJ5ASXSmCIbHLStQ6UWwKyaywYnb7Z+u3XivVkUaDzYOgPAzy3gEDZA0zApU2E1gL6I3L5
- PdoZW4DNR56qV32/rLyft12/3THD/6DD9v3rqbYX0xqwVyzsCDrGtCJcuUOjH9p3OEX9azh
- ek8P7mnP6TRj5HjtFxpcg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Lv72e3Xl4nQ=:X1HNxaVqkqD2NsGSOaqlJc
- nQBrb2oxqR7UFRWvRJtHoSnLewYo9o/I4xzK/Dcr0avYvKzJcAmixuTIxvOB4xql1vmR6/S+4
- A6/TIhKiWZTXCmmz85QRuo+YpZOOHiz27ASgD20Avj7sy0jTEoSi+j1ddN0X5/tLAed6LetO6
- C/S0D4GUHrncXWbfot/WOpkfLeJzgDAlc2SEyuUMLf2UqYiMiZUK8jdPS+V6SK1EIAy/tDLap
- UtcWGD5i+vHJsGFKHZjJrM1neocf/p1zoIZF/yts8/ZWkMNyM5Ca3zQ99nEpAaoExVLgIEsmv
- Bib9IuIRxX5w7UdDWePq8FAFZWnVwqs7BJ7fNXIQfHyo3N5nFKKGdnLsTqx1nJsMvd9NABozZ
- 8u4lS9ifO0VWluHHDWlRpi7waQqrATAWINmvl9dlHNbbtWcn73D6FrcRkyjQ7tfEuBA01f5gx
- alm7bhQ+wM4LQeB5Ie02t0OGVX0lKZcBASbACxu9RvDom9SuarUJdSu4txAyLEzMK6YJQezg/
- 92w2v1Blv6AU1lsxV6pnLfk9IIc2VzhycM5WrFtZCLA5uftuZEqbcQWtY93fagv3f7Ho93Cdq
- 1tSR4Tyou4SbD2ZSCYdCkskqi4LtWTWYt7FU1nXIxufzGhJ+S1EWTl+QvgRPrE8pSvmQ7L79l
- JUIelBE9+TB9jKeeJJ8Gov86JWdj5g5889ZE6bLSrSAY+Gw2/EMsdsF+WyEODzw22rVGbIm6d
- s7mdscUxDobijScAbvjLZC/nlgsc4YVZMnBLL8vHPJIN+NUneJDNDU+YKptrEMNKK/M01cM9V
- AnGil804YPpq3FxG8+s/yy65PZJex1Csk8OyBnBNpTQBfyZkDGf4SeJ5Ds3CYeN4sGZB1ZKnu
- 87Mxw4bIX7sqjD/Yj3p1Rs375ZSKnGI2Fwwp0Uq8o8yxAwXi7yBfpBC9pq9wV4DRFRP6O4FwL
- BvNm6H4h/JUc4MQwkt6SaGYy+psbE8QlCV5fy5Mkfu5gH2XRR0vw+hFzApZV1aJeY+W4jmUHr
- L45M03wGMtD6IcSQlW21caSUGFedQY/ovVUNDUxjcvvVYTVt3lpDmb5lLjkZLi9vnWs9AJ3Vg
- 1ayDUzxtECyHcE2uffViSdjhS7EqQpGa1rukp+bRgYPTPZjKZDRaZ32wnPx9aHAzHggsQuOo9
- cfUQz3/LvhsNtMkwn3y+fWY/WvNtyb1sdrW6Giony2h+s/Lvz+BkQ3DuW4Us+8jTqn7qaMZNo
- o5FeYYDsqfYdgJGnP
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Perhaps we need to find a good researcher student who may do a MD
-> dissertation out of the case :-)
+This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
+that the frontend does not need counters, this hw stats type request
+never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
+the driver to disable the stats, however, if the driver cannot disable
+counters, it bails out.
 
-I got the impression that some research is performed already around
-affected areas.
-Would you like to reuse any more experiences from there?
+Remove BUILD_BUG_ON since TCA_ACT_HW_STATS_* don't map 1:1 with
+FLOW_ACTION_HW_STATS_* anymore. Add tc_act_hw_stats() to perform the
+mapping between TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*
 
-Regards,
-Markus
+Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+This is a follow up after "net: flow_offload: skip hw stats check for
+FLOW_ACTION_HW_STATS_DISABLED". This patch restores the netfilter hardware
+offloads.
+
+ include/net/flow_offload.h |  9 ++++++++-
+ net/sched/cls_api.c        | 23 +++++++++++++++++------
+ 2 files changed, 25 insertions(+), 7 deletions(-)
+
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 3619c6acf60f..0c75163699f0 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -164,12 +164,15 @@ enum flow_action_mangle_base {
+ };
+ 
+ enum flow_action_hw_stats_bit {
++	FLOW_ACTION_HW_STATS_DISABLED_BIT,
+ 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+ 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
+ };
+ 
+ enum flow_action_hw_stats {
+-	FLOW_ACTION_HW_STATS_DISABLED = 0,
++	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
++	FLOW_ACTION_HW_STATS_DISABLED =
++		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
+ 	FLOW_ACTION_HW_STATS_IMMEDIATE =
+ 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
+ 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
+@@ -325,7 +328,11 @@ __flow_action_hw_stats_check(const struct flow_action *action,
+ 		return true;
+ 	if (!flow_action_mixed_hw_stats_check(action, extack))
+ 		return false;
++
+ 	action_entry = flow_action_first_entry_get(action);
++	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
++		return true;
++
+ 	if (!check_allow_bit &&
+ 	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 55bd1429678f..8ddc16a1ca68 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3523,16 +3523,27 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
+ #endif
+ }
+ 
++static enum flow_action_hw_stats tc_act_hw_stats_array[] = {
++	[0]				= FLOW_ACTION_HW_STATS_DISABLED,
++	[TCA_ACT_HW_STATS_IMMEDIATE]	= FLOW_ACTION_HW_STATS_IMMEDIATE,
++	[TCA_ACT_HW_STATS_DELAYED]	= FLOW_ACTION_HW_STATS_DELAYED,
++	[TCA_ACT_HW_STATS_ANY]		= FLOW_ACTION_HW_STATS_ANY,
++};
++
++static enum flow_action_hw_stats tc_act_hw_stats(u8 hw_stats)
++{
++	if (WARN_ON_ONCE(hw_stats > TCA_ACT_HW_STATS_ANY))
++		return FLOW_ACTION_HW_STATS_DONT_CARE;
++
++	return tc_act_hw_stats_array[hw_stats];
++}
++
+ int tc_setup_flow_action(struct flow_action *flow_action,
+ 			 const struct tcf_exts *exts)
+ {
+ 	struct tc_action *act;
+ 	int i, j, k, err = 0;
+ 
+-	BUILD_BUG_ON(TCA_ACT_HW_STATS_ANY != FLOW_ACTION_HW_STATS_ANY);
+-	BUILD_BUG_ON(TCA_ACT_HW_STATS_IMMEDIATE != FLOW_ACTION_HW_STATS_IMMEDIATE);
+-	BUILD_BUG_ON(TCA_ACT_HW_STATS_DELAYED != FLOW_ACTION_HW_STATS_DELAYED);
+-
+ 	if (!exts)
+ 		return 0;
+ 
+@@ -3546,7 +3557,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 		if (err)
+ 			goto err_out_locked;
+ 
+-		entry->hw_stats = act->hw_stats;
++		entry->hw_stats = tc_act_hw_stats(act->hw_stats);
+ 
+ 		if (is_tcf_gact_ok(act)) {
+ 			entry->id = FLOW_ACTION_ACCEPT;
+@@ -3614,7 +3625,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 				entry->mangle.mask = tcf_pedit_mask(act, k);
+ 				entry->mangle.val = tcf_pedit_val(act, k);
+ 				entry->mangle.offset = tcf_pedit_offset(act, k);
+-				entry->hw_stats = act->hw_stats;
++				entry->hw_stats = tc_act_hw_stats(act->hw_stats);
+ 				entry = &flow_action->entries[++j];
+ 			}
+ 		} else if (is_tcf_csum(act)) {
+-- 
+2.20.1
+
