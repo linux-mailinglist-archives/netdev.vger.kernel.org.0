@@ -2,106 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B28351C4CF0
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 06:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9F81C4CFA
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 06:08:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbgEEEFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 00:05:16 -0400
-Received: from mail-oo1-f66.google.com ([209.85.161.66]:37833 "EHLO
-        mail-oo1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725272AbgEEEFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 00:05:14 -0400
-Received: by mail-oo1-f66.google.com with SMTP id v6so18565oou.4;
-        Mon, 04 May 2020 21:05:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6WQI3JSgZPOFGGzXwwk2K02/3Pv1yWZDzRlpx8k9vAU=;
-        b=T+4oLveKdi8SLPO732OHxpXLgdVPQNat74wBHGmzc29OiSZ4K0hH5CxT8SgQmfpAzF
-         wAGr/LXw6Qv+ISheetLCNqTlFxHcVYeZiHpX6fEcS9Wt+pFejupOu6tZv5ajTdOyr+3+
-         qSc7LYQLYCHc0UE+Xr6C6HlQ6Sfwx7mun3u/dAC0BeRWUuulf3l28UK/RINJpxA5mb2S
-         UI9T4LYk1cTvjiby8cZyqSjG6uBgyNhyGtDHIp4/JcWMx5/a3DkAgMLwikmRrChP+H56
-         wWkOst6wdoSLFhvCRP5cO7gHFAWmlaEYj7cv6BQBRSf9Mkgww+DhaOaCyEx7RrLfWX8H
-         /jVQ==
-X-Gm-Message-State: AGi0PuaG9rFe1aKPz/VPNgE2mKSO7hCmTcqB8oyhbwMD3ZHKMKfMdOjP
-        dR5YBDoER/H0G6XZcjB7yPzpEXs=
-X-Google-Smtp-Source: APiQypLGue2T2PeYCGDsL7qgUIq2ihNupfk0d/AlfGZGSS8M6OljhlK0/aPRKFsxfJuayvNWzuXA4w==
-X-Received: by 2002:a4a:92d1:: with SMTP id j17mr1338642ooh.13.1588651513417;
-        Mon, 04 May 2020 21:05:13 -0700 (PDT)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id e10sm260152oie.18.2020.05.04.21.05.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 May 2020 21:05:12 -0700 (PDT)
-Received: (nullmailer pid 30274 invoked by uid 1000);
-        Tue, 05 May 2020 04:05:12 -0000
-Date:   Mon, 4 May 2020 23:05:11 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tero Kristo <t-kristo@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>, netdev@vger.kernel.org,
-        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Nishanth Menon <nm@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [PATCH net-next 1/7] dt-binding: ti: am65x: document common
- platform time sync cpts module
-Message-ID: <20200505040511.GB8509@bogus>
-References: <20200501205011.14899-1-grygorii.strashko@ti.com>
- <20200501205011.14899-2-grygorii.strashko@ti.com>
+        id S1726638AbgEEEIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 00:08:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45308 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725272AbgEEEIL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 00:08:11 -0400
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 319202087E;
+        Tue,  5 May 2020 04:08:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588651690;
+        bh=uzzMCgqE/O5IIYjUlJGPkxkNrxePxpFGbx62v87B1yk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=BN6Cy/3HpCwbAGqGdvC+qqnnmWcpBeTMOV+avy7c5MqADF8o2RkgcRkJzIQXdsCsk
+         1Afk3jIt/KQM3TnQcStiKfqzuLsewX65wxQohWJds/+9oXyCCJshgXhqgUpXBb3dvp
+         Pj9E/11iNOGPIQykmHB/KEKg0M4b5I2GMOZkNt/o=
+Received: by mail-ot1-f54.google.com with SMTP id m13so561394otf.6;
+        Mon, 04 May 2020 21:08:10 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYCc8W08LyWksuW5sQZqz/19WrYFFaUhJea7EHP7Nd0bFUJ8bMP
+        TH24vvr7k6O4ssDpVm8Cn3ceMFQOC52xr3mHaw==
+X-Google-Smtp-Source: APiQypKr0Hhrl0+e44U31hazXs0o4bScaIuGYf4nCgkUWwDdJ4zYt2nRLPemlwjIE7S1TGeNHXWRAj+I7RpOjlh+8dk=
+X-Received: by 2002:a9d:7d85:: with SMTP id j5mr690540otn.107.1588651689440;
+ Mon, 04 May 2020 21:08:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200501205011.14899-2-grygorii.strashko@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <967df5c3303b478b76199d4379fe40f5094f3f9b.1588584538.git.mchehab+huawei@kernel.org>
+ <20200504174522.GA3383@ravnborg.org> <20200504175553.jdm7a7aabloevxba@pengutronix.de>
+In-Reply-To: <20200504175553.jdm7a7aabloevxba@pengutronix.de>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 4 May 2020 23:07:57 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJuRrhEtt5uxaQ=7WvDKiF_2v025GiYUvrrFE5jxBr-Xg@mail.gmail.com>
+Message-ID: <CAL_JsqJuRrhEtt5uxaQ=7WvDKiF_2v025GiYUvrrFE5jxBr-Xg@mail.gmail.com>
+Subject: Re: [PATCH] docs: dt: fix broken links due to txt->yaml renames
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sam Ravnborg <sam@ravnborg.org>
+Cc:     Linux-ALSA <alsa-devel@alsa-project.org>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        devicetree@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>, Jyri Sarha <jsarha@ti.com>,
+        Mark Brown <broonie@kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Sandy Huang <hjc@rock-chips.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 1 May 2020 23:50:05 +0300, Grygorii Strashko wrote:
-> Document device tree bindings for TI AM654/J721E SoC The Common Platform
-> Time Sync (CPTS) module. The CPTS module is used to facilitate host control
-> of time sync operations. Main features of CPTS module are:
->   - selection of multiple external clock sources
->   - 64-bit timestamp mode in ns with ppm and nudge adjustment.
->   - control of time sync events via interrupt or polling
->   - hardware timestamp of ext. events (HWx_TS_PUSH)
->   - periodic generator function outputs (TS_GENFx)
->   - PPS in combination with timesync router
->   - Depending on integration it enables compliance with the IEEE 1588-2008
-> standard for a precision clock synchronization protocol, Ethernet Enhanced
-> Scheduled Traffic Operations (CPTS_ESTFn) and PCIe Subsystem Precision Time
-> Measurement (PTM).
-> 
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> ---
->  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   |   7 +
->  .../bindings/net/ti,k3-am654-cpts.yaml        | 152 ++++++++++++++++++
->  2 files changed, 159 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
-> 
+On Mon, May 4, 2020 at 12:56 PM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hi Sam,
+>
+> On Mon, May 04, 2020 at 07:45:22PM +0200, Sam Ravnborg wrote:
+> > On Mon, May 04, 2020 at 11:30:20AM +0200, Mauro Carvalho Chehab wrote:
+> > > There are some new broken doc links due to yaml renames
+> > > at DT. Developers should really run:
+> > >
+> > >     ./scripts/documentation-file-ref-check
+> > >
+> > > in order to solve those issues while submitting patches.
+> > Would love if some bot could do this for me on any patches that creates
+> > .yaml files or so.
+> > I know I will forget this and it can be automated.
+> > If I get a bot mail that my patch would broke a link I would
+> > have it fixed before it hits any tree.
 
-My bot found errors running 'make dt_binding_check' on your patch:
+I can probably add this to what I'm already checking. Not completely
+automated though as it depends on me to review before sending.
 
-Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml: $id: relative path/filename doesn't match actual path or filename
-	expected: http://devicetree.org/schemas/net/ti,k3-am654-cpts.yaml#
-Unknown file referenced: [Errno 2] No such file or directory: '/usr/local/lib/python3.6/dist-packages/dtschema/schemas/net/ti,am654-cpts.yaml'
-Documentation/devicetree/bindings/Makefile:12: recipe for target 'Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dts' failed
-make[1]: *** [Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dts] Error 255
-make[1]: *** Waiting for unfinished jobs....
-Makefile:1300: recipe for target 'dt_binding_check' failed
-make: *** [dt_binding_check] Error 2
+> What about adding a check to check_patch?
 
-See https://patchwork.ozlabs.org/patch/1281460
+That would be the best way to get submitters to do this.
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure dt-schema is up to date:
-
-pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
-
-Please check and re-submit.
+Rob
