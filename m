@@ -2,54 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FB551C6174
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C861C6196
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 22:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729135AbgEET6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 15:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728135AbgEET6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:58:07 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A99BC061A0F;
-        Tue,  5 May 2020 12:58:07 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A31C01280966A;
-        Tue,  5 May 2020 12:58:06 -0700 (PDT)
-Date:   Tue, 05 May 2020 12:58:05 -0700 (PDT)
-Message-Id: <20200505.125805.2022273480111353321.davem@davemloft.net>
-To:     kgraul@linux.ibm.com
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: Re: [PATCH net-next 0/2] log state changes and cleanup
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200505130121.103272-1-kgraul@linux.ibm.com>
-References: <20200505130121.103272-1-kgraul@linux.ibm.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 May 2020 12:58:07 -0700 (PDT)
+        id S1728954AbgEEUHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 16:07:07 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:59929 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728569AbgEEUHH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 16:07:07 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 318e206f;
+        Tue, 5 May 2020 19:54:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=usExkLZzTo+s7Ni/6F6b27S3A0o=; b=RIT+d+
+        kYZjKMjN0Oi4werOuJaG/Ue+FahbxZSd+K4iB6REfNMtbDULbKttGBkBUuj+8U/I
+        CIaN3DzntxeTeBdx6e0kp58iK3T9tXRn8nwW+IosL25yvQPq2XpQModGLPAJ8zwa
+        g5ivRfnGg30rWqlWM+xmdAB9zPzKZS8OzlmHyT6DtebfeNwiNVh05vpoWFwU6jYJ
+        m1CTcjnFJbhux60b7r2qs566F53HRbAKzkLoBsyRxjx7A8qRI+1IIy0ugOS1kQRj
+        v38yDj73vKsg4yg0qWCgwcuThCbxysy+D4ySjp0/yYnEMSLtaP2QVwxQ+si9Mx34
+        2khr5pUpBgmtotzQ==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d7eb683e (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 5 May 2020 19:54:30 +0000 (UTC)
+Received: by mail-il1-f169.google.com with SMTP id r2so2443877ilo.6;
+        Tue, 05 May 2020 13:07:04 -0700 (PDT)
+X-Gm-Message-State: AGi0PuazqeyWAA702UffdSDe7B5CaGvakxdsWmNpeiK0v6RCjx0rJfAt
+        QLKv7/j/pp4RYjvNdFYPQTWnUrZ7WoBSaPHvebI=
+X-Google-Smtp-Source: APiQypIbrq5BimrpgkqS3H4zSchqYRWQJ5afcQiOi4WgV4Z/1/duDp5O8TBtdE54uH7v86Gkyl7M0plAdTTyiC9H8Os=
+X-Received: by 2002:a92:5c82:: with SMTP id d2mr5605707ilg.231.1588709223915;
+ Tue, 05 May 2020 13:07:03 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200505141327.746184-1-arnd@arndb.de>
+In-Reply-To: <20200505141327.746184-1-arnd@arndb.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 5 May 2020 14:06:52 -0600
+X-Gmail-Original-Message-ID: <CAHmME9oTO7DiWCXoeCBjmPOBMoZQ2hUhHjZ4_oi-nVP_9pRpSg@mail.gmail.com>
+Message-ID: <CAHmME9oTO7DiWCXoeCBjmPOBMoZQ2hUhHjZ4_oi-nVP_9pRpSg@mail.gmail.com>
+Subject: Re: [PATCH] net: wireguard: avoid unused variable warning
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Karsten Graul <kgraul@linux.ibm.com>
-Date: Tue,  5 May 2020 15:01:19 +0200
+On Tue, May 5, 2020 at 8:13 AM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> clang points out a harmless use of uninitialized variables that
+> get passed into a local function but are ignored there:
+>
+> In file included from drivers/net/wireguard/ratelimiter.c:223:
+> drivers/net/wireguard/selftest/ratelimiter.c:173:34: error: variable 'skb6' is uninitialized when used here [-Werror,-Wuninitialized]
+>                 ret = timings_test(skb4, hdr4, skb6, hdr6, &test_count);
+>                                                ^~~~
+> drivers/net/wireguard/selftest/ratelimiter.c:123:29: note: initialize the variable 'skb6' to silence this warning
+>         struct sk_buff *skb4, *skb6;
+>                                    ^
+>                                     = NULL
+> drivers/net/wireguard/selftest/ratelimiter.c:173:40: error: variable 'hdr6' is uninitialized when used here [-Werror,-Wuninitialized]
+>                 ret = timings_test(skb4, hdr4, skb6, hdr6, &test_count);
+>                                                      ^~~~
+> drivers/net/wireguard/selftest/ratelimiter.c:125:22: note: initialize the variable 'hdr6' to silence this warning
+>         struct ipv6hdr *hdr6;
+>                             ^
 
-> Patch 1 adds the logging of important state changes to enable SMC-R 
-> users to detect SMC-R link groups that are not redundant and require
-> user actions. Patch 2 is a contribution to clean up an unused inline 
-> function.
+Seems like the code is a bit easier to read and is more uniform
+looking by just initializing those two variables to NULL, like the
+warning suggests. If you don't mind, I'll queue something up in my
+tree to this effect.
 
-Please use an appropriate subsystem prefix in your Subject lines for
-patch series intro emails, just like you would do for the patches
-themselves.
+By the way, I'm having a bit of a hard time reproducing the warning
+with either clang-10 or clang-9. Just for my own curiosity, would you
+mind sending the .config that results in this?
 
-Series applied, thank.
+Jason
