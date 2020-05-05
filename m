@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4EAA1C59BD
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 16:36:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 233461C59E4
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 16:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729472AbgEEOg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 10:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52382 "EHLO
+        id S1729346AbgEEOpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 10:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729123AbgEEOg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 10:36:29 -0400
+        by vger.kernel.org with ESMTP id S1727857AbgEEOpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 10:45:21 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1B9C061A0F;
-        Tue,  5 May 2020 07:36:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7878C061A0F;
+        Tue,  5 May 2020 07:45:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=JHqeW2n9o8eTf4Hj7Xby8dss3L4FHej0u+cvFpm1AoA=; b=GDDaMxFr/i1udh9LrXu6dWreK
-        r28SRTfpehqGgO/3BlnNRVwB7mdrW7xBnVPGeiIGVOAiDzF0/5vmc8zgNIAfZQvFfXyZATf+kRN+3
-        iRS+dtALs24P+0ElYCsS78KRX48bXcODPVQFpR878hQogOs4f7kOvk3XkpCGUd/wKpQ+GKJfNPbRF
-        rIDFJgJdyViOV9mRsMuoGh3ylNSsPtvnj5y2YDGOSxZj3GIOnP0q8WHr+39iLDLynHDCNF0ILLypd
-        HixG9HokCuyUkZhIe9aAENG+VoIYS13gGtzTZnjundmF+bmjSQJlnUSDMFlVclzcDlgHfo1hRslzS
-        EpnQu/4QA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56510)
+         bh=bce39cuhX+v1hhfYsPnYxLnuYR5lP/z3GapCTjD03hM=; b=b2Jt5T0jNdoZl3RJSWosMCfhx
+        kgLFhgINbBWKyjtBOcxA48/fC1ckaCPZjO8j937EwIiBU4erqDB7D6RmWvm8RHrOqtENm7l8eHZ+C
+        f+YnQvZk6yGKlVtaXZAhBkEuJPKAa4fA/+tCo2SJgGVFLrHiMw5b0aA/webhWeJX1A9tmjuzfpMMQ
+        EiOLtC5g8TLkvnMlRURyYhWvzpC9ddO9H52wFyZmELgmCDazwji3PP3ueKlVEUEmJyQzS45eFLsci
+        AQQd2bWz7zT+OGSLFNkNYkd/lkL8nV3EZKre9zaUHj8OX/lu/HbIGwE8iBgAHEbT5LLfJR4IuBDFP
+        ucLMiqVAw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:36340)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1jVyfz-0002xZ-I8; Tue, 05 May 2020 15:36:03 +0100
+        id 1jVyod-00030V-EZ; Tue, 05 May 2020 15:44:59 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jVyfv-0007Dz-PQ; Tue, 05 May 2020 15:35:59 +0100
-Date:   Tue, 5 May 2020 15:35:59 +0100
+        id 1jVyoc-0007F0-7K; Tue, 05 May 2020 15:44:58 +0100
+Date:   Tue, 5 May 2020 15:44:58 +0100
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
 Cc:     "Rafael J . Wysocki" <rafael@kernel.org>, linux.cj@gmail.com,
@@ -59,140 +59,170 @@ Cc:     "Rafael J . Wysocki" <rafael@kernel.org>, linux.cj@gmail.com,
         Pankaj Bansal <pankaj.bansal@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next PATCH v3 3/5] phylink: Introduce
- phylink_fwnode_phy_connect()
-Message-ID: <20200505143559.GJ1551@shell.armlinux.org.uk>
+Subject: Re: [net-next PATCH v3 1/5] net: phy: Introduce phy related fwnode
+ functions
+Message-ID: <20200505144458.GK1551@shell.armlinux.org.uk>
 References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
- <20200505132905.10276-4-calvin.johnson@oss.nxp.com>
+ <20200505132905.10276-2-calvin.johnson@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200505132905.10276-4-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20200505132905.10276-2-calvin.johnson@oss.nxp.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 06:59:03PM +0530, Calvin Johnson wrote:
-> Define phylink_fwnode_phy_connect() to connect phy specified by
-> a fwnode to a phylink instance.
+On Tue, May 05, 2020 at 06:59:01PM +0530, Calvin Johnson wrote:
+> Define fwnode_phy_find_device() to iterate an mdiobus and find the
+> phy device of the provided phy fwnode. Additionally define
+> device_phy_find_device() to find phy device of provided device.
+> 
+> Define fwnode_get_phy_node() to get phy_node using named reference.
 > 
 > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 > ---
 > 
 > Changes in v3:
->   remove NULL return check as it is invalid
->   remove unused phylink_device_phy_connect()
+>   move fwnode APIs to appropriate place
+>   stubs fwnode APIs for !CONFIG_PHYLIB
+>   improve comment on function return condition.
 > 
 > Changes in v2:
->   replace of_ and acpi_ code with generic fwnode to get phy-handle.
+>   move phy code from base/property.c to net/phy/phy_device.c
+>   replace acpi & of code to get phy-handle with fwnode_find_reference
 > 
->  drivers/net/phy/phylink.c | 48 +++++++++++++++++++++++++++++++++++++++
->  include/linux/phylink.h   |  3 +++
->  2 files changed, 51 insertions(+)
+>  drivers/net/phy/phy_device.c | 53 ++++++++++++++++++++++++++++++++++++
+>  include/linux/phy.h          | 19 +++++++++++++
+>  2 files changed, 72 insertions(+)
 > 
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> index 0f23bec431c1..560d1069426c 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -961,6 +961,54 @@ int phylink_connect_phy(struct phylink *pl, struct phy_device *phy)
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 7e1ddd5745d2..3e8224132218 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/mdio.h>
+>  #include <linux/io.h>
+>  #include <linux/uaccess.h>
+> +#include <linux/property.h>
+>  
+>  MODULE_DESCRIPTION("PHY library");
+>  MODULE_AUTHOR("Andy Fleming");
+> @@ -2436,6 +2437,58 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+>  	return phydrv->config_intr && phydrv->ack_interrupt;
 >  }
->  EXPORT_SYMBOL_GPL(phylink_connect_phy);
 >  
 > +/**
-> + * phylink_fwnode_phy_connect() - connect the PHY specified in the fwnode.
-> + * @pl: a pointer to a &struct phylink returned from phylink_create()
-> + * @fwnode: a pointer to a &struct fwnode_handle.
-> + * @flags: PHY-specific flags to communicate to the PHY device driver
+> + * fwnode_phy_find_device - Find phy_device on the mdiobus for the provided
+> + * phy_fwnode.
+> + * @phy_fwnode: Pointer to the phy's fwnode.
 > + *
-> + * Connect the phy specified @fwnode to the phylink instance specified
-> + * by @pl. Actions specified in phylink_connect_phy() will be
-> + * performed.
-> + *
-> + * Returns 0 on success or a negative errno.
+> + * If successful, returns a pointer to the phy_device with the embedded
+> + * struct device refcount incremented by one, or NULL on failure.
 > + */
-> +int phylink_fwnode_phy_connect(struct phylink *pl,
-> +			       struct fwnode_handle *fwnode,
-> +			       u32 flags)
+> +struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode)
 > +{
-> +	struct fwnode_handle *phy_fwnode;
-> +	struct phy_device *phy_dev;
-> +	int ret = 0;
+> +	struct device *d;
+> +	struct mdio_device *mdiodev;
 > +
-> +	/* Fixed links and 802.3z are handled without needing a PHY */
-> +	if (pl->cfg_link_an_mode == MLO_AN_FIXED ||
-> +	    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
-> +	     phy_interface_mode_is_8023z(pl->link_interface)))
-> +		return 0;
+> +	if (!phy_fwnode)
+> +		return NULL;
 > +
-> +	phy_fwnode = fwnode_get_phy_node(fwnode);
-> +	if ((IS_ERR(phy_fwnode)) && pl->cfg_link_an_mode == MLO_AN_PHY)
-> +		return -ENODEV;
-
-This doesn't reflect the behaviour of phylink_of_phy_connect() - it is
-*not* a cleanup of what is there, which is:
-
-                if (!phy_node) {
-                        if (pl->cfg_link_an_mode == MLO_AN_PHY)
-                                return -ENODEV;
-                        return 0;
-                }
-
-which does:
-
-- if there is a PHY node, find the PHY and connect it.
-- if there is no PHY node, then:
-   + if we are expecting a PHY to be present, return an error.
-   + otherwise, it is not a problem, continue.
-
-That is very important behaviour - it allows drivers to call
-phylink_*_phy_connect() without knowing whether there should or should
-not be a PHY - and keeps that knowledge within phylink.  It means
-network drivers don't have to parse the firmware to find out if there's
-a fixed link or SFP cage attached, and decide whether to call these
-functions.
-
+> +	d = bus_find_device_by_fwnode(&mdio_bus_type, phy_fwnode);
+> +	if (d) {
+> +		mdiodev = to_mdio_device(d);
+> +		if (mdiodev->flags & MDIO_DEVICE_FLAG_PHY)
+> +			return to_phy_device(d);
+> +		put_device(d);
+> +	}
 > +
-> +	phy_dev = fwnode_phy_find_device(phy_fwnode);
-> +	fwnode_handle_put(phy_fwnode);
-> +	if (!phy_dev)
-> +		return -ENODEV;
-> +
-> +	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
-> +				pl->link_interface);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
-> +	if (ret)
-> +		phy_detach(phy_dev);
-> +
-> +	return ret;
+> +	return NULL;
 > +}
-> +EXPORT_SYMBOL_GPL(phylink_fwnode_phy_connect);
+> +EXPORT_SYMBOL(fwnode_phy_find_device);
+
+This is basically functionally equivalent to of_phy_find_device().  If
+we replaced of_mdio_find_device() with a fwnode equivalent and used that
+above, we could have both of_mdio_find_device() and of_phy_find_device()
+be wrappers around their fwnode equivalents.
+
+That also means less lines of code to maintain, and means that we're
+unlikely to have two implementations that may drift apart functionally
+over time because their separated in two different parts of the kernel.
+That is an especially important point given that fwnodes can be DT
+nodes, so one may call fwnode APIs on a DT platform.
+
 > +
+> +/**
+> + * device_phy_find_device - For the given device, get the phy_device
+> + * @dev: Pointer to the given device
+> + *
+> + * Refer return conditions of fwnode_phy_find_device().
+> + */
+> +struct phy_device *device_phy_find_device(struct device *dev)
+> +{
+> +	return fwnode_phy_find_device(dev_fwnode(dev));
+> +}
+> +EXPORT_SYMBOL_GPL(device_phy_find_device);
+> +
+> +/**
+> + * fwnode_get_phy_node - Get the phy_node using the named reference.
+> + * @fwnode: Pointer to fwnode from which phy_node has to be obtained.
+> + *
+> + * Refer return conditions of fwnode_find_reference().
+> + */
+> +struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
+> +{
+> +	return fwnode_find_reference(fwnode, "phy-handle", 0);
+> +}
+> +EXPORT_SYMBOL_GPL(fwnode_get_phy_node);
 
-I think we need to go further with this, and we need to have
-phylink_fwnode_phy_connect() functionally identical to
-phylink_of_phy_connect() for DT-based fwnodes.  Doing so will avoid
-introducing errors such as the one you've added above.
+What if the fwnode is a DT device handle?  Shouldn't this also check for
+the legacy properties as well, so we can transition code over to this
+new interface?
 
-The only difference between these two is that DT has a number of
-legacy properties - these can be omitted if the fwnode is not a DT
-node.
-
-Remember that fwnode is compatible with DT, so fwnode_phy_find_device()
-can internally decide whether to look for the ACPI property or one of
-the three DT properties.
-
-It also means that phylink_of_phy_connect() can become:
-
-int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
-                           u32 flags)
-{
-        return phylink_fwnode_phy_connect(pl, of_fwnode_handle(dn), flags);
-}
+> +
+>  /**
+>   * phy_probe - probe and init a PHY device
+>   * @dev: device to probe and init
+> diff --git a/include/linux/phy.h b/include/linux/phy.h
+> index e2bfb9240587..f2664730a331 100644
+> --- a/include/linux/phy.h
+> +++ b/include/linux/phy.h
+> @@ -1141,10 +1141,29 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
+>  				     bool is_c45,
+>  				     struct phy_c45_device_ids *c45_ids);
+>  #if IS_ENABLED(CONFIG_PHYLIB)
+> +struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode);
+> +struct phy_device *device_phy_find_device(struct device *dev);
+> +struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode);
+>  struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45);
+>  int phy_device_register(struct phy_device *phy);
+>  void phy_device_free(struct phy_device *phydev);
+>  #else
+> +static inline
+> +struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline struct phy_device *device_phy_find_device(struct device *dev)
+> +{
+> +	return NULL;
+> +}
+> +
+> +struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
+> +{
+> +	return NULL;
+> +}
+> +
+>  static inline
+>  struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
+>  {
+> -- 
+> 2.17.1
+> 
+> 
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
