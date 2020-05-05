@@ -2,111 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B381C4FEF
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 10:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A84D01C501A
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 10:18:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728549AbgEEILe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 04:11:34 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:1847 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726568AbgEEIL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 04:11:29 -0400
+        id S1728498AbgEEISh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 04:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725833AbgEEISg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 04:18:36 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A79C061A0F;
+        Tue,  5 May 2020 01:18:36 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id z8so669886wrw.3;
+        Tue, 05 May 2020 01:18:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1588666290; x=1620202290;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=l/C3b9DCnuqlbf12vX7TbBNdmk3bR5sHrCa2DPOGmdI=;
-  b=ABosggn8sdi88sjhuPpyMo8Pn/k2chAOxUv1zxknW/0azjfNlXqc78Mu
-   vEiSDC16QdM4iWrdGg3WxM5wiaChoW5ZDhVU+Ofm5SvST+ShMXtMF0DMz
-   z8mAmhqSm2hwrH6BsaJzkXCrSdhQt8U5JH79JAzWeSNaDn8gADWyBrB1x
-   o=;
-IronPort-SDR: Q0fnFkKi3rRl3HOVQyIb+jpegaGV3s/ezIwGaBW9LEjXF7XnBEthihR+MnjZSVL7Kb328TM0I2
- Yt+ssf1Zu6bQ==
-X-IronPort-AV: E=Sophos;i="5.73,354,1583193600"; 
-   d="scan'208";a="30084469"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 05 May 2020 08:11:29 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com (Postfix) with ESMTPS id 5C2E6A1EE8;
-        Tue,  5 May 2020 08:11:28 +0000 (UTC)
-Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 5 May 2020 08:11:27 +0000
-Received: from u886c93fd17d25d.ant.amazon.com (10.43.160.92) by
- EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 5 May 2020 08:11:23 +0000
-From:   SeongJae Park <sjpark@amazon.com>
-To:     <davem@davemloft.net>
-CC:     <viro@zeniv.linux.org.uk>, <kuba@kernel.org>,
-        <gregkh@linuxfoundation.org>, <edumazet@google.com>,
-        <sj38.park@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, SeongJae Park <sjpark@amazon.de>
-Subject: [PATCH net v2 2/2] Revert "sockfs: switch to ->free_inode()"
-Date:   Tue, 5 May 2020 10:10:35 +0200
-Message-ID: <20200505081035.7436-3-sjpark@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200505081035.7436-1-sjpark@amazon.com>
-References: <20200505081035.7436-1-sjpark@amazon.com>
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:date:in-reply-to:references:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=EIFxKxmFxgre3FE3hg4SRgHwf8DPj6vfKEDfHM3CKiQ=;
+        b=aCwFA4fBfDssQEipU83E5gLSF3r7zaHJkvIXCb1dXejB+cc5emDmQQMCF1Bi/lYHyZ
+         nogOXWKOoZM/FD7DzRznqlJy+RmjRdLlqHw+ma20qkCd37GaMOEOCs5pCoa6HDlOPvwY
+         aNzpdCgtSsm/36rWPoRXXtbO6adDsKSBefbLYrCdhvj/3N78si+y0B38O7uyYtRpV6UH
+         6WpH5Whq1hRLNf4xHm406O/KAO4uiQLntUvF4h8ShoQ0Eu+5S9MoKKwvYRJhkwmOL+7V
+         9IA3KknRRwfbgrFhe9ArlwfwZYbbrQqvNYIH2GogYwseHxxpit/74c3WD5SsoG4/9qQW
+         hQXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=EIFxKxmFxgre3FE3hg4SRgHwf8DPj6vfKEDfHM3CKiQ=;
+        b=azwid+64/LE3kPq+g23cvHHtXI6q5fvps5DaocoT9IqvaKKN66Mvpqd+YxWH0/MHhQ
+         9itDXmDNJiqiC0a3F51C0qbHGPslomK6n/YHtInPEAJ9zVy2JtXh6lgJI6RzrLfS1dOW
+         YEkO5NzBZdEY8dswrygbGU9dY+depwHyP6k2NR+TKE/XEPboQZKCV56I3wC4U/em0R7s
+         8rBF3S/VqR5eMCmDUMmfEAZY9ZMM6vk4qNmHCmI0lpnGYh99YJolg1HccOJ3A/xsg6TE
+         b3MeQCk0guiDFA4SRSbTDuWVcCPzgGdEJ1ItXfxYeZnSPe5SYuHktF1L9di487rTVImd
+         a1Ew==
+X-Gm-Message-State: AGi0Pub69V+igEe1XTiXO6DyVAGBaN09NH1izu/lnVheCqrZQX88c+OE
+        nIfKKtSUptvpqSzFJ68f+/E=
+X-Google-Smtp-Source: APiQypKehcY7YzCDA1Wjt8XeBeLTP04ZFxaXOXH4V8yBBNrHkagzoD8d7KOQ77V0q2W6OMvwd6k8gg==
+X-Received: by 2002:a5d:51c9:: with SMTP id n9mr2257856wrv.84.1588666715387;
+        Tue, 05 May 2020 01:18:35 -0700 (PDT)
+Received: from user-8.122.vpn.cf.ac.uk (vpn-users-dip-pool162.dip.cf.ac.uk. [131.251.253.162])
+        by smtp.googlemail.com with ESMTPSA id f83sm2453308wmf.42.2020.05.05.01.18.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 01:18:34 -0700 (PDT)
+Message-ID: <c654c9f6707a40eb32908e6cd90cca0df8a9cdd4.camel@gmail.com>
+Subject: Re: [PATCH net-next] net: agere: use true,false for bool variable
+From:   Mark Einon <mark.einon@gmail.com>
+To:     Jason Yan <yanaijie@huawei.com>, davem@davemloft.net,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 05 May 2020 09:18:28 +0100
+In-Reply-To: <20200505074556.22331-1-yanaijie@huawei.com>
+References: <20200505074556.22331-1-yanaijie@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.92]
-X-ClientProxiedBy: EX13P01UWA003.ant.amazon.com (10.43.160.197) To
- EX13D31EUA001.ant.amazon.com (10.43.165.15)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: SeongJae Park <sjpark@amazon.de>
 
-This reverts commit 6d7855c54e1e269275d7c504f8f62a0b7a5b3f18.
+On Tue, 2020-05-05 at 15:45 +0800, Jason Yan wrote:
+> Fix the following coccicheck warning:
+> 
+> drivers/net/ethernet/agere/et131x.c:717:3-22: WARNING: Assignment of
+> 0/1 to bool variable
+> drivers/net/ethernet/agere/et131x.c:721:1-20: WARNING: Assignment of
+> 0/1 to bool variable
+> 
+> Signed-off-by: Jason Yan <yanaijie@huawei.com>
 
-The commit 6d7855c54e1e ("sockfs: switch to ->free_inode()") made the
-deallocation of 'socket_alloc' to be done asynchronously using RCU, as
-same to 'sock.wq'.
-
-The change made 'socket_alloc' live longer than before.  As a result,
-user programs intensively repeating allocations and deallocations of
-sockets could cause memory pressure on recent kernels.
-
-To avoid the problem, this commit reverts the change.
-
-Fixes: 6d7855c54e1e ("sockfs: switch to ->free_inode()")
-Fixes: 333f7909a857 ("coallocate socket_sq with socket itself")
-Signed-off-by: SeongJae Park <sjpark@amazon.de>
----
- net/socket.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/socket.c b/net/socket.c
-index e274ae4b45e4..27174021f47f 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -273,12 +273,12 @@ static struct inode *sock_alloc_inode(struct super_block *sb)
- 	return &ei->vfs_inode;
- }
- 
--static void sock_free_inode(struct inode *inode)
-+static void sock_destroy_inode(struct inode *inode)
- {
- 	struct socket_alloc *ei;
- 
- 	ei = container_of(inode, struct socket_alloc, vfs_inode);
--	kfree(ei->socket.wq);
-+	kfree_rcu(ei->socket.wq, rcu);
- 	kmem_cache_free(sock_inode_cachep, ei);
- }
- 
-@@ -303,7 +303,7 @@ static void init_inodecache(void)
- 
- static const struct super_operations sockfs_ops = {
- 	.alloc_inode	= sock_alloc_inode,
--	.free_inode	= sock_free_inode,
-+	.destroy_inode	= sock_destroy_inode,
- 	.statfs		= simple_statfs,
- };
- 
--- 
-2.17.1
+Acked-by: Mark Einon <mark.einon@gmail.com>
 
