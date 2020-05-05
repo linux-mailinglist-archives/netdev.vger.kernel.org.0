@@ -2,124 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD2551C528E
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 12:07:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F40B91C5292
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 12:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728512AbgEEKHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 06:07:48 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56932 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728180AbgEEKHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 06:07:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588673266;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aYuWFMuynq3VbJyNimEz5R2FKeZE2sFhiA3M2NpBMuE=;
-        b=L7SKbWkH6pp0FYshcOuLfmBLe1DWv89QDYgKGL7sa56ea/OtzO4I+0Pk/9jmMtmJ5bezt5
-        8MXnZKCnLrIpJAsSUJcU/GMjMXwye7qI3K8IynysLR7nsAlhEtxh2/LmDr12iZz/KTGK8o
-        HknMDzk3L6o+tDl99LoETx7ucTRFtWs=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-86-lW_hmpYkPfqmgGPZ0ZWEWw-1; Tue, 05 May 2020 06:07:44 -0400
-X-MC-Unique: lW_hmpYkPfqmgGPZ0ZWEWw-1
-Received: by mail-lj1-f200.google.com with SMTP id w19so342084ljw.13
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 03:07:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=aYuWFMuynq3VbJyNimEz5R2FKeZE2sFhiA3M2NpBMuE=;
-        b=Q6rHUtODRQyjWuf09ufg8yKN1+MaLkqncUaTTGbszc2edAgD8rgevwWnnavmhOi702
-         bgl5U+FWNl6JKWCEghBx1Fuu8rfTGFabuFFXiQWbqTg9jO46JnSWy8Xqyb1jCUPQf/hM
-         aV75pN6sq9oCT5sSiAESJUaF6+Dmwb7ZvBMtYzg2wWNlbxqz0gWbKnDTnBmu/9poFUYV
-         0MqCditjoY4Zi2ITa/nxIfVAPD/+W0mAol0oCSEvX0ERfNBhOQy4/qNnOiO0Ealh9ai7
-         sto5QUlmrMdkOPamqXsZ4NixBYWateZjw0a3K9mRDMBIHfui4UY0QNP5j3pxO8aSFQCL
-         wNAQ==
-X-Gm-Message-State: AGi0PuaKlXji4/xw9SYKWEmPB03sjUGGYOT8VpUjaiUplAAeOBWxSfh3
-        ZYqIek753QUFhZRZnu4MY/E5WEGxegq8uaP5e2fDnZIBljx4PIafw7x9kH1FSZUnB693q9E2l48
-        hBGlbxmQiROHaNWjY
-X-Received: by 2002:a05:651c:c8:: with SMTP id 8mr1272923ljr.182.1588673262424;
-        Tue, 05 May 2020 03:07:42 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJxlFK3xQvOkXb27eoijKcaRsGbnTDR45HZ//RaU2u09Hd4m0EgGmhWdvcWj04rLF7DfHNkPA==
-X-Received: by 2002:a05:651c:c8:: with SMTP id 8mr1272911ljr.182.1588673262170;
-        Tue, 05 May 2020 03:07:42 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id c19sm1582447lfh.42.2020.05.05.03.07.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2020 03:07:41 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 8D85B1804E9; Tue,  5 May 2020 12:07:40 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Eelco Chaudron <echaudro@redhat.com>
-Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next v2] libbpf: fix probe code to return EPERM if encountered
-In-Reply-To: <CAEf4BzYHBisx0dLWn-Udp6saPqAA6ew_6W1BJ=zpcQOqWxPSPQ@mail.gmail.com>
-References: <158858309381.5053.12391080967642755711.stgit@ebuild> <CAEf4BzYHBisx0dLWn-Udp6saPqAA6ew_6W1BJ=zpcQOqWxPSPQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 05 May 2020 12:07:40 +0200
-Message-ID: <87k11qoftf.fsf@toke.dk>
+        id S1728647AbgEEKIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 06:08:18 -0400
+Received: from correo.us.es ([193.147.175.20]:57810 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728422AbgEEKIS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 06:08:18 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 2F9E21E2C8C
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 12:08:17 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1F6051158E8
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 12:08:17 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 0FBB111540B; Tue,  5 May 2020 12:08:17 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id EBE401158F6;
+        Tue,  5 May 2020 12:08:14 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 05 May 2020 12:08:14 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id CFA3142EF42D;
+        Tue,  5 May 2020 12:08:14 +0200 (CEST)
+Date:   Tue, 5 May 2020 12:08:14 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, ecree@solarflare.com
+Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DONT_CARE
+Message-ID: <20200505100814.GA29299@salvia>
+References: <20200505092159.27269-1-pablo@netfilter.org>
+ <20200505094900.GF14398@nanopsycho.orion>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200505094900.GF14398@nanopsycho.orion>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+On Tue, May 05, 2020 at 11:49:00AM +0200, Jiri Pirko wrote:
+> Tue, May 05, 2020 at 11:21:59AM CEST, pablo@netfilter.org wrote:
+> >This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
+> >that the frontend does not need counters, this hw stats type request
+> >never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
+> >the driver to disable the stats, however, if the driver cannot disable
+> >counters, it bails out.
+> >
+> >Remove BUILD_BUG_ON since TCA_ACT_HW_STATS_* don't map 1:1 with
+> >FLOW_ACTION_HW_STATS_* anymore. Add tc_act_hw_stats() to perform the
+> >mapping between TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*
+> >
+> >Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
+> >Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> >---
+> >This is a follow up after "net: flow_offload: skip hw stats check for
+> >FLOW_ACTION_HW_STATS_DISABLED". This patch restores the netfilter hardware
+> >offloads.
+> >
+> > include/net/flow_offload.h |  9 ++++++++-
+> > net/sched/cls_api.c        | 23 +++++++++++++++++------
+> > 2 files changed, 25 insertions(+), 7 deletions(-)
+> >
+> >diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+> >index 3619c6acf60f..0c75163699f0 100644
+> >--- a/include/net/flow_offload.h
+> >+++ b/include/net/flow_offload.h
+> >@@ -164,12 +164,15 @@ enum flow_action_mangle_base {
+> > };
+> > 
+> > enum flow_action_hw_stats_bit {
+> >+	FLOW_ACTION_HW_STATS_DISABLED_BIT,
+> > 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+> > 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
+> > };
+> > 
+> > enum flow_action_hw_stats {
+> >-	FLOW_ACTION_HW_STATS_DISABLED = 0,
+> >+	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
+> >+	FLOW_ACTION_HW_STATS_DISABLED =
+> >+		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
+> > 	FLOW_ACTION_HW_STATS_IMMEDIATE =
+> > 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
+> > 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
+> >@@ -325,7 +328,11 @@ __flow_action_hw_stats_check(const struct flow_action *action,
+> > 		return true;
+> > 	if (!flow_action_mixed_hw_stats_check(action, extack))
+> > 		return false;
+> >+
+> > 	action_entry = flow_action_first_entry_get(action);
+> >+	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
+> >+		return true;
+> >+
+> > 	if (!check_allow_bit &&
+> > 	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
+> > 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
+> >diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> >index 55bd1429678f..8ddc16a1ca68 100644
+> >--- a/net/sched/cls_api.c
+> >+++ b/net/sched/cls_api.c
+> >@@ -3523,16 +3523,27 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
+> > #endif
+> > }
+> > 
+> >+static enum flow_action_hw_stats tc_act_hw_stats_array[] = {
+> >+	[0]				= FLOW_ACTION_HW_STATS_DISABLED,
+> >+	[TCA_ACT_HW_STATS_IMMEDIATE]	= FLOW_ACTION_HW_STATS_IMMEDIATE,
+> >+	[TCA_ACT_HW_STATS_DELAYED]	= FLOW_ACTION_HW_STATS_DELAYED,
+> >+	[TCA_ACT_HW_STATS_ANY]		= FLOW_ACTION_HW_STATS_ANY,
+> 
+> TCA_ACT_HW_* are bits. There can be a combination of those according
+> to the user request. For 2 bits, it is not problem, but I have a
+> patchset in pipes adding another type.
+> Then you need to have 1:1 mapping in this array for all bit
+> combinations. That is not right.
+> 
+> How about putting DISABLED to the at the end of enum
+> flow_action_hw_stats? They you can just map 0 here to FLOW_ACTION_HW_STATS_DISABLED
+> as an exception, but the bits you can take 1:1.
 
-> On Mon, May 4, 2020 at 2:13 AM Eelco Chaudron <echaudro@redhat.com> wrote:
->>
->> When the probe code was failing for any reason ENOTSUP was returned, even
->> if this was due to no having enough lock space. This patch fixes this by
->> returning EPERM to the user application, so it can respond and increase
->> the RLIMIT_MEMLOCK size.
->>
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->> ---
->> v2: Split bpf_object__probe_name() in two functions as suggested by Andrii
->
-> Yeah, looks good, and this is good enough, so consider you have my
-> ack. But I think we can further improve the experience by:
->
-> 1. Changing existing "Couldn't load basic 'r0 = 0' BPF program."
-> message to be something more meaningful and actionable for user. E.g.,
->
-> "Couldn't load trivial BPF program. Make sure your kernel supports BPF
-> (CONFIG_BPF_SYSCALL=y) and/or that RLIMIT_MEMLOCK is set to big enough
-> value."
->
-> Then even complete kernel newbies can search for CONFIG_BPF_SYSCALL or
-> RLIMIT_MEMLOCK and hopefully find useful discussions. We can/should
-> add RLIMIT_MEMLOCK examples to some FAQ, probably as well (if it's not
-> there already).
+Another possibility is to remove this mapping code is to update tc
+UAPI to get it aligned with this update.
 
-Always on board with improving documentation; and yeah I agree that
-"Couldn't load basic 'r0 = 0' BPF program." could be a bit friendlier ;)
-
-> 2. I'd do bpf_object__probe_loading() before obj->loaded is set, so
-> that user can have a loop of bpf_object__load() that bump
-> RLIMIT_MEMLOCK in steps. After setting obj->loaded = true, user won't
-> be able to attemp loading again and will get "object should not be
-> loaded twice\n".
-
-In practice this is not going to be enough, though. The memlock error
-only triggers on initial load if the limit is already exceeded (by other
-BPF programs); but often what will happen is that the program being
-loaded will have a map definition that's big enough to exhaust the
-memlimit by itself. In which case the memlock error will trigger while
-creating maps, not on initial probe.
-
-Since you can't predict where the error will happen, you need to be
-prepared to close the bpf object and start over anyway, so I'm not sure
-it adds much value to move bpf_object__probe_loading() earlier?
-
--Toke
-
+This UAPI is only available in the few 5.7.0-rc kernel releases,
+I think only developers are using this at this stage?
