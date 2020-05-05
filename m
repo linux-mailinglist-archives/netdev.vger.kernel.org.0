@@ -2,98 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5D11C5D34
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:14:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 434831C5D54
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730673AbgEEQO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 12:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728807AbgEEQO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:14:28 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D75C061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 09:14:28 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id 23so2901850qkf.0
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 09:14:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7jayfKDonoj89kH0I50wMpwHcwY+D02wuaSYk5lnZf8=;
-        b=XflsIoEx5LvUx5SmzqnNbCBlWKj4l4qJ2Vr8zezS5xJz6Bbzx3o+we+AZjRh2xJEbs
-         dFcMN87lbZjBZiHsZ8pZoPYNdcEhxE7chrtECqr2CMbKdO/1eYgNqmOvahNUua3zKrGh
-         f3UVN+WUB+fAOAC8TiZgjmvlArP8jxkkMu9YvBpGcFTVNJ5LxwoA2Au3QLQ+14bDu3/H
-         yb+Q7qqfRynO4j7U/VmkXuyF7j0cTJICWOIaHU4WSo7GE7lzY60V/4Adv1Qmu6cH+fXU
-         cpHjS7lPeW4JjOy9qJx+UQw8AF6KY+iu3UEwgaNKgVEuYSl6gAkuepyV7kS/+yEndjSb
-         KnZg==
+        id S1730359AbgEEQUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 12:20:35 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:59365 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730282AbgEEQUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:20:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588695632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I2s71uL8xGKEolWyYIMtKAtRYtl4jyJkJ/99unlnUqU=;
+        b=elRRYMhKiMgK+F7few5kLmIFq5xnGvZDFiEgIzKKG4hXdU4IRMTQGRjCYbavNFV6xfTW4H
+        fPX7SCZ/V3irDKJT9u20XVGpEp7dYFOeTKputURsE7JCCIFHDxcSAvfm3lYFP/5nR7OGpB
+        LMmLUu6ubjEROtD+yZ70ILsOAFH6dqc=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-89-8NTqGOCBNCqxWq6dA_e5Sg-1; Tue, 05 May 2020 12:20:11 -0400
+X-MC-Unique: 8NTqGOCBNCqxWq6dA_e5Sg-1
+Received: by mail-wr1-f72.google.com with SMTP id q13so1465343wrn.14
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 09:20:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7jayfKDonoj89kH0I50wMpwHcwY+D02wuaSYk5lnZf8=;
-        b=EIUs603GMOA5HqWjeE31EqIb7TuuBJw/ErnC0qjFFtiOp5OgU08Q71T5UVoL4eQULD
-         yzYI06sFYj8mZyp6JaTvqgWI3ebCWNfP4S5sK/vO3/HDIehgwweAk0ukxnPKmCimcb9B
-         T9Y7g04SuE15TRuTd4XkSGf74LMB+K5/8hF9niW2Zur5WAj+kvDpMorCXYYYJBnf4t2k
-         NtW7AM5tIIV7nENC5KU++3qi7Kzl/tPCNlW900Jk/7hj5JY2MLp2pR30LO4DWzYV9Ul6
-         1IL9rDDGH4+QSV9HbVLTuVuMtdIeDzl/48WaD1fj8g/S7TbtCTpA/q0cKwyyk86NJh5y
-         Hz7A==
-X-Gm-Message-State: AGi0PubrjQmRW295SOYB6u2FUWTUcPH5SDxLWxdhNtQYKDkBe3dpv8tW
-        mAdP4u/g6kIyJFwZFTGroVxY9cFP
-X-Google-Smtp-Source: APiQypL3F07RBVAIJjwXFNhAOA7Gfk5oOxOpna6ang0K1fT6vX0XIVFNLDBTNTzg2rDUjya1WPYQTA==
-X-Received: by 2002:a37:47d4:: with SMTP id u203mr4149294qka.424.1588695267791;
-        Tue, 05 May 2020 09:14:27 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c19:a884:3b89:d8b6? ([2601:282:803:7700:c19:a884:3b89:d8b6])
-        by smtp.googlemail.com with ESMTPSA id l8sm2233836qtl.86.2020.05.05.09.14.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 May 2020 09:14:26 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v3] devlink: support kernel-side snapshot id
- allocation
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        jiri@resnulli.us
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
-        jacob.e.keller@intel.com
-References: <20200430175759.1301789-1-kuba@kernel.org>
- <20200430175759.1301789-5-kuba@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <af7fae65-1187-65c5-9c40-0b0703cf4053@gmail.com>
-Date:   Tue, 5 May 2020 10:14:24 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=I2s71uL8xGKEolWyYIMtKAtRYtl4jyJkJ/99unlnUqU=;
+        b=tS0ffHSJfCuTW0UlB6FB+LdcuvPetP1g1NDZfL6OvPKnoh8vzKSgwEIvqiOktdbJZB
+         EHNImO/ixbqBm8rH80loPRA6/GkSMOCvr1W02YzKKYAmbWv31Oe8GKFGCEWdSi/zUlZk
+         BOlppFYOluGituLskW7z1HQvpUJ6f6DdBiVlM3jUg/aLd7PRUH8zzbTuyAkx3wlwu2t6
+         xTFpdlrKFy+UaX99bee1k0pHDAWkPh41Hx7T2lUESDYdU25F2EMSUfUUbUJ/XKjjQJby
+         pzgdSEfTvvrDw2pUJdRHSEfjPa55oLeuVdxFSXNJQXiQ7axzVObb2TrYOSvlgP8ql1Qq
+         RAAw==
+X-Gm-Message-State: AGi0PuY5vsK8utFz4EMa3YFyRO4jjzzgmEzbH7c3FVveYbjNm4BW/blP
+        n/9thJiAFfsVkFHT6zYID7fKEm/M3OFqs6me51kKH8PY9G0nKzd05AqfrdiT2oESgTbuC2o480J
+        VrgEFCnxG5igv5OCe
+X-Received: by 2002:a05:600c:c9:: with SMTP id u9mr4061969wmm.15.1588695610844;
+        Tue, 05 May 2020 09:20:10 -0700 (PDT)
+X-Google-Smtp-Source: APiQypItx4pewXH8KspumOw+hW8KlzDc1X/wIkpla2d9GHs5ihHGkbZ8JJ4G4js7d++2/VPr7p4xvA==
+X-Received: by 2002:a05:600c:c9:: with SMTP id u9mr4061952wmm.15.1588695610624;
+        Tue, 05 May 2020 09:20:10 -0700 (PDT)
+Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
+        by smtp.gmail.com with ESMTPSA id d1sm3805662wrx.65.2020.05.05.09.20.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 09:20:10 -0700 (PDT)
+Date:   Tue, 5 May 2020 12:20:07 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     kbuild test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+Subject: Re: [vhost:vhost 8/22] drivers/virtio/virtio_mem.c:1375:20: error:
+ implicit declaration of function 'kzalloc'; did you mean 'vzalloc'?
+Message-ID: <20200505121732-mutt-send-email-mst@kernel.org>
+References: <202005052221.83QerHmG%lkp@intel.com>
+ <7dea2810-85cf-0892-20a8-bba3e3a2c133@redhat.com>
+ <20200505114433-mutt-send-email-mst@kernel.org>
+ <3eaebd8d-750a-d046-15f5-706fb00a196e@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200430175759.1301789-5-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3eaebd8d-750a-d046-15f5-706fb00a196e@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/20 11:57 AM, Jakub Kicinski wrote:
-> Make ID argument optional and read the snapshot info
-> that kernel sends us.
+On Tue, May 05, 2020 at 05:46:44PM +0200, David Hildenbrand wrote:
+> On 05.05.20 17:44, Michael S. Tsirkin wrote:
+> > On Tue, May 05, 2020 at 04:50:13PM +0200, David Hildenbrand wrote:
+> >> On 05.05.20 16:15, kbuild test robot wrote:
+> >>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
+> >>> head:   da1742791d8c0c0a8e5471f181549c4726a5c5f9
+> >>> commit: 7527631e900d464ed2d533f799cb0da2b29cc6f0 [8/22] virtio-mem: Paravirtualized memory hotplug
+> >>> config: x86_64-randconfig-b002-20200505 (attached as .config)
+> >>> compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+> >>> reproduce:
+> >>>         git checkout 7527631e900d464ed2d533f799cb0da2b29cc6f0
+> >>>         # save the attached .config to linux build tree
+> >>>         make ARCH=x86_64 
+> >>>
+> >>> If you fix the issue, kindly add following tag as appropriate
+> >>> Reported-by: kbuild test robot <lkp@intel.com>
+> >>>
+> >>> All error/warnings (new ones prefixed by >>):
+> >>>
+> >>>    drivers/virtio/virtio_mem.c: In function 'virtio_mem_probe':
+> >>>>> drivers/virtio/virtio_mem.c:1375:20: error: implicit declaration of function 'kzalloc'; did you mean 'vzalloc'? [-Werror=implicit-function-declaration]
+> >>>      vdev->priv = vm = kzalloc(sizeof(*vm), GFP_KERNEL);
+> >>>                        ^~~~~~~
+> >>>                        vzalloc
+> >>>>> drivers/virtio/virtio_mem.c:1375:18: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+> >>>      vdev->priv = vm = kzalloc(sizeof(*vm), GFP_KERNEL);
+> >>>                      ^
+> >>>>> drivers/virtio/virtio_mem.c:1419:2: error: implicit declaration of function 'kfree'; did you mean 'vfree'? [-Werror=implicit-function-declaration]
+> >>>      kfree(vm);
+> >>>      ^~~~~
+> >>>      vfree
+> >>>    cc1: some warnings being treated as errors
+> >>>
+> >>> vim +1375 drivers/virtio/virtio_mem.c
+> >>
+> >> Guess we simply need
+> >>
+> >>  #include <linux/slab.h>
+> >>
+> >> to make it work for that config.
+> > 
+> > 
+> > OK I added that in the 1st commit that introduced virtio-mem.
 > 
-> $ devlink region new netdevsim/netdevsim1/dummy
-> netdevsim/netdevsim1/dummy: snapshot 0
-> $ devlink -jp region new netdevsim/netdevsim1/dummy
-> {
->     "regions": {
->         "netdevsim/netdevsim1/dummy": {
->             "snapshot": [ 1 ]
->         }
->     }
-> }
-> $ devlink region show netdevsim/netdevsim1/dummy
-> netdevsim/netdevsim1/dummy: size 32768 snapshot [0 1]
-> 
-> v3: back to v1..
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  devlink/devlink.c | 26 +++++++++++++++++++++++---
->  1 file changed, 23 insertions(+), 3 deletions(-)
+> Thanks. I have some addon-patches ready, what's the best way to continue
+> with these?
 
-this does not apply to current iproute2-next
+If these are bugfixes, just respin the series (including this fix).
+If these are more features, you can just post them on list noting "next" in
+subject and saying "this is on top of vhost tree" after --.
+I don't know how to make 0-day figure out where to apply such dependent
+patches unfortunately.
+
+> 
+> -- 
+> Thanks,
+> 
+> David / dhildenb
 
