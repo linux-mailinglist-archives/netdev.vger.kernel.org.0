@@ -2,102 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2874B1C5065
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 10:33:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B90931C506F
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 10:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728596AbgEEIdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 04:33:46 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50748 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727784AbgEEIdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 04:33:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588667624;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EDl2xSBu90NOC3GloHnCYuVKjBJW46RKbcO5wJkv4Sk=;
-        b=NUMVuEfWPSSrApOOG1/N+m/kShi8n/g9vSzdFx1Ihs2FosP9MS2eBg8i5oOv87D5m2nf9R
-        Vzwzy2A0mKETkpzrD0FJLdoyBPbSZauDuIKRiEbt7pvDMNlcxbrummD9T2o9O/NH3Mq8Xq
-        0Ldz3ut2osg9vGsj3DY6jO2/npvEXRU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-451-_2xvOWEuM060uXxyTzrBXQ-1; Tue, 05 May 2020 04:33:41 -0400
-X-MC-Unique: _2xvOWEuM060uXxyTzrBXQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5B39E100A8E9;
-        Tue,  5 May 2020 08:33:40 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 28B66627D9;
-        Tue,  5 May 2020 08:33:35 +0000 (UTC)
-Date:   Tue, 5 May 2020 10:33:33 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, jgross@suse.com,
-        wei.liu@kernel.org, paul@xen.org, ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v7 1/2] xen networking: add basic XDP support
- for xen-netfront
-Message-ID: <20200505103320.11d24a14@carbon>
-In-Reply-To: <1588581474-18345-1-git-send-email-kda@linux-powerpc.org>
-References: <1588581474-18345-1-git-send-email-kda@linux-powerpc.org>
+        id S1728508AbgEEIgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 04:36:37 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:44452 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725833AbgEEIgh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 04:36:37 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 0A92C1AC43DB951D8E36;
+        Tue,  5 May 2020 16:36:36 +0800 (CST)
+Received: from localhost (10.166.215.154) by DGGEMS405-HUB.china.huawei.com
+ (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Tue, 5 May 2020
+ 16:36:29 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <jeffrey.t.kirsher@intel.com>, <davem@davemloft.net>
+CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] ixgbe: Remove unused inline function ixgbe_irq_disable_queues
+Date:   Tue, 5 May 2020 16:35:54 +0800
+Message-ID: <20200505083554.25808-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain
+X-Originating-IP: [10.166.215.154]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  4 May 2020 11:37:53 +0300
-Denis Kirjanov <kda@linux-powerpc.org> wrote:
+commit b5f69ccf6765 ("ixgbe: avoid bringing rings up/down as macvlans are added/removed")
+left behind this, remove it.
 
-> +static int xennet_create_page_pool(struct netfront_queue *queue)
-> +{
-> +	int err;
-> +	struct page_pool_params pp_params = {
-> +		.order = 0,
-> +		.flags = 0,
-> +		.pool_size = NET_RX_RING_SIZE,
-> +		.nid = NUMA_NO_NODE,
-> +		.dev = &queue->info->netdev->dev,
-> +		.offset = XDP_PACKET_HEADROOM,
-> +		.max_len = XEN_PAGE_SIZE - XDP_PACKET_HEADROOM,
-> +	};
-> +
-> +	queue->page_pool = page_pool_create(&pp_params);
-> +	if (IS_ERR(queue->page_pool)) {
-> +		 err = PTR_ERR(queue->page_pool);
-> +		 queue->page_pool = NULL;
-> +		 return err;
-> +	}
-> +
-> +	err = xdp_rxq_info_reg(&queue->xdp_rxq, queue->info->netdev,
-> +			       queue->id);
-> +	if (err) {
-> +		netdev_err(queue->info->netdev, "xdp_rxq_info_reg failed\n");
-> +		goto err_free_pp;
-> +	}
-> +
-> +	err = xdp_rxq_info_reg_mem_model(&queue->xdp_rxq,
-> +					 MEM_TYPE_PAGE_ORDER0, NULL);
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 29 -------------------
+ 1 file changed, 29 deletions(-)
 
-What!?! - You are creating a page_pool, but registering a MEM_TYPE_PAGE_ORDER0.
-
-Have you even tested this?  The page_pool in-flight accounting will be
-completely off.  This should show up when removing the page_pool again.
-
-For driver developers do diagnose and catch stuff like this, we have
-some bpftrace scripts that can help troubleshoot, here[1]:
-
-[1] https://github.com/xdp-project/xdp-project/tree/master/areas/mem/bpftrace
-
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 718931d951bc..ebfe6b57ed30 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -2954,35 +2954,6 @@ static inline void ixgbe_irq_enable_queues(struct ixgbe_adapter *adapter,
+ 	/* skip the flush */
+ }
+ 
+-static inline void ixgbe_irq_disable_queues(struct ixgbe_adapter *adapter,
+-					    u64 qmask)
+-{
+-	u32 mask;
+-	struct ixgbe_hw *hw = &adapter->hw;
+-
+-	switch (hw->mac.type) {
+-	case ixgbe_mac_82598EB:
+-		mask = (IXGBE_EIMS_RTX_QUEUE & qmask);
+-		IXGBE_WRITE_REG(hw, IXGBE_EIMC, mask);
+-		break;
+-	case ixgbe_mac_82599EB:
+-	case ixgbe_mac_X540:
+-	case ixgbe_mac_X550:
+-	case ixgbe_mac_X550EM_x:
+-	case ixgbe_mac_x550em_a:
+-		mask = (qmask & 0xFFFFFFFF);
+-		if (mask)
+-			IXGBE_WRITE_REG(hw, IXGBE_EIMC_EX(0), mask);
+-		mask = (qmask >> 32);
+-		if (mask)
+-			IXGBE_WRITE_REG(hw, IXGBE_EIMC_EX(1), mask);
+-		break;
+-	default:
+-		break;
+-	}
+-	/* skip the flush */
+-}
+-
+ /**
+  * ixgbe_irq_enable - Enable default interrupt generation settings
+  * @adapter: board private structure
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.17.1
+
 
