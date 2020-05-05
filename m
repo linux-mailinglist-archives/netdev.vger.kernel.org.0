@@ -2,118 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC1A1C640F
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 00:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EFB21C640D
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 00:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729119AbgEEWmR convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 5 May 2020 18:42:17 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:43217 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726568AbgEEWmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 18:42:17 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1jW6EJ-0002am-Fk; Tue, 05 May 2020 22:39:59 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id BDDBE6C567; Tue,  5 May 2020 15:39:57 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id B6A1BAC1DB;
-        Tue,  5 May 2020 15:39:57 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-cc:     netdev@vger.kernel.org,
-        syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com,
-        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
-        Jarod Wilson <jarod@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jann Horn <jannh@google.com>
-Subject: Re: [Patch net] net: fix a potential recursive NETDEV_FEAT_CHANGE
-In-reply-to: <20200505215819.1997-1-xiyou.wangcong@gmail.com>
-References: <20200505215819.1997-1-xiyou.wangcong@gmail.com>
-Comments: In-reply-to Cong Wang <xiyou.wangcong@gmail.com>
-   message dated "Tue, 05 May 2020 14:58:19 -0700."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1729229AbgEEWkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 18:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727089AbgEEWkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 18:40:13 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D5CC061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 15:40:12 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id f8so170917plt.2
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 15:40:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YncV9CUGG2f+ezKZApwaV6IO5AUde9KegofVoeADXyc=;
+        b=MXTWNrp0SFeRW0JSfQmGTi7j7P7r63vWiQDhImFAwbLHYpgjLdR7cEDeYhf7FfCnUA
+         x9s8JfnjSp5kZ78sZU47MMShiqIgTtgiS6RfxbJ6saQnd8GBqOl5QovpN68CN/4MoWmg
+         fEhuprmhQhalvbjWaGHyXCeSV9WfDrbtpWPjryWYkOwIZHQDlC5YimTqVP3wda6nkUVR
+         sbAwYW03QcxVetylQyaQf3PparUuJc/WY79lrbA1minl2mjSqhEn8LS3S/ZKrkWsOj3H
+         9RFWiGVD7w1BIampcSMqJRhp2gbrvnffF7uSC3eMumsEkIu/58z3foFeBJCtVDrQWJA6
+         DRDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YncV9CUGG2f+ezKZApwaV6IO5AUde9KegofVoeADXyc=;
+        b=TLo6S9fmiMH1TlKS24OLqbsxw6CMY8DP/UxoU4Lh1HnaekI5A+zC5HZwXAAvvqqbP2
+         T5Sxpjv3r+b82cnmK5CAXZ5eEbMAinKFWtqm5Nw1BIm57EccJJw2FBdw4tpL3jfSVikL
+         LMzVguZRQNuSCvSFxIsBXcpFY47Ek09Qg9bLAP1gkoDsD0un4f/MgjT2xtGyxflnArWX
+         SLrB8rTY1XF8OzEvFUsn5F65conVez3I7HrOKMbhLIoW3TYMtHvyG/BwKEMQ7b6RaOkM
+         lqenRDNbI0jt14f0m++8emEsmxzxpMChWItNOZxf8FhnSo4mHJJzFkJX50WwTQZG/SLk
+         1Hpw==
+X-Gm-Message-State: AGi0PubUawMlInTUStnh2sZmg/OA3J0kv1zNVEBQG7+/dDSQ2vBA7PDy
+        jJQH7y77K7/kvpTzRc4tUtw=
+X-Google-Smtp-Source: APiQypIox1Da9Q7h1v4wZvboKyiRfuNWuAMu4VuHxnIgDJf4rm61QnaolhB3k+TL88iv6s68pEhuwA==
+X-Received: by 2002:a17:90a:fb4e:: with SMTP id iq14mr5597868pjb.146.1588718411681;
+        Tue, 05 May 2020 15:40:11 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id c10sm15114pfm.50.2020.05.05.15.40.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 May 2020 15:40:11 -0700 (PDT)
+Subject: Re: [BUG] Inconsistent lock state in virtnet poll
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <87lfm6oa7b.fsf@nanos.tec.linutronix.de>
+ <20200505120352-mutt-send-email-mst@kernel.org>
+ <87v9lanher.fsf@nanos.tec.linutronix.de>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <98c4d934-5a27-1cf7-119a-ce0c5a501864@gmail.com>
+Date:   Tue, 5 May 2020 15:40:09 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2832.1588718397.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Tue, 05 May 2020 15:39:57 -0700
-Message-ID: <2833.1588718397@famine>
+In-Reply-To: <87v9lanher.fsf@nanos.tec.linutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang <xiyou.wangcong@gmail.com> wrote:
 
->syzbot managed to trigger a recursive NETDEV_FEAT_CHANGE event
->between bonding master and slave. I managed to find a reproducer
->for this:
->
->  ip li set bond0 up
->  ifenslave bond0 eth0
->  brctl addbr br0
->  ethtool -K eth0 lro off
->  brctl addif br0 bond0
->  ip li set br0 up
 
-	Presumably this is tied to the LRO feature being special in
-netdev_sync_lower_features (via NETIF_F_UPPER_DISABLES), but why doesn't
-LRO become disabled and stop the recursion once the test
-
-		if (!(features & feature) && (lower->features & feature)) {
-
-	no longer evalutes to true (in theory)?
-
-	-J
-
->When a NETDEV_FEAT_CHANGE event is triggered on a bonding slave,
->it captures this and calls bond_compute_features() to fixup its
->master's and other slaves' features. However, when syncing with
->its lower devices by netdev_sync_lower_features() this event is
->triggered again on slaves, so it goes back and forth recursively
->until the kernel stack is exhausted.
->
->It is unnecessary to trigger it for a second time, because when
->we update the features from top down, we rely on each
->dev->netdev_ops->ndo_fix_features() to do the job, each stacked
->device should implement it. NETDEV_FEAT_CHANGE event is necessary
->when we update from bottom up, like in existing stacked device
->implementations.
->
->Just calling __netdev_update_features() is sufficient to fix this
->issue.
->
->Fixes: fd867d51f889 ("net/core: generic support for disabling netdev features down stack")
->Reported-by: syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com
->Reported-by: syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com
->Cc: Jarod Wilson <jarod@redhat.com>
->Cc: Josh Poimboeuf <jpoimboe@redhat.com>
->Cc: Jay Vosburgh <j.vosburgh@gmail.com>
->Cc: Jann Horn <jannh@google.com>
->Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
->---
-> net/core/dev.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/net/core/dev.c b/net/core/dev.c
->index 522288177bbd..ece50ae346c3 100644
->--- a/net/core/dev.c
->+++ b/net/core/dev.c
->@@ -8907,7 +8907,7 @@ static void netdev_sync_lower_features(struct net_device *upper,
-> 			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
-> 				   &feature, lower->name);
-> 			lower->wanted_features &= ~feature;
->-			netdev_update_features(lower);
->+			__netdev_update_features(lower);
+On 5/5/20 3:30 PM, Thomas Gleixner wrote:
+> "Michael S. Tsirkin" <mst@redhat.com> writes:
+>> On Tue, May 05, 2020 at 02:08:56PM +0200, Thomas Gleixner wrote:
+>>>
+>>> The following lockdep splat happens reproducibly on 5.7-rc4
+>>
+>>> ================================
+>>> WARNING: inconsistent lock state
+>>> 5.7.0-rc4+ #79 Not tainted
+>>> --------------------------------
+>>> inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+>>> ip/356 [HC0[0]:SC1[1]:HE1:SE0] takes:
+>>> f3ee4cd8 (&syncp->seq#2){+.?.}-{0:0}, at: net_rx_action+0xfb/0x390
+>>> {SOFTIRQ-ON-W} state was registered at:
+>>>   lock_acquire+0x82/0x300
+>>>   try_fill_recv+0x39f/0x590
+>>
+>> Weird. Where does try_fill_recv acquire any locks?
 > 
-> 			if (unlikely(lower->features & feature))
-> 				netdev_WARN(upper, "failed to disable %pNF on %s!\n",
->-- 
->2.26.2
->
+>   u64_stats_update_begin(&rq->stats.syncp);
+> 
+> That's a 32bit kernel which uses a seqcount for this. sequence counts
+> are "lock" constructs where you need to make sure that writers are
+> serialized.
+> 
+> Actually the problem at hand is that try_fill_recv() is called from
+> fully preemptible context initialy and then from softirq context.
+> 
+> Obviously that's for the open() path a non issue, but lockdep does not
+> know about that. OTOH, there is other code which calls that from
+> non-softirq context.
+> 
+> The hack below made it shut up. It's obvioulsy not ideal, but at least
+> it let me look at the actual problem I was chasing down :)
+> 
+> Thanks,
+> 
+>         tglx
+> 
+> 8<-----------
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1243,9 +1243,11 @@ static bool try_fill_recv(struct virtnet
+>  			break;
+>  	} while (rq->vq->num_free);
+>  	if (virtqueue_kick_prepare(rq->vq) && virtqueue_notify(rq->vq)) {
+> +		local_bh_disable();
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Or use u64_stats_update_begin_irqsave() whic is a NOP on 64bit kernels
+
+>  		u64_stats_update_begin(&rq->stats.syncp);
+>  		rq->stats.kicks++;
+>  		u64_stats_update_end(&rq->stats.syncp);
+> +		local_bh_enable();
+>  	}
+>  
+>  	return !oom;
+> 
