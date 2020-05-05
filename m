@@ -2,272 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C64101C6168
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2CD21C616F
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:57:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728512AbgEET4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 15:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726350AbgEET4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:56:14 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7E9C061A0F;
-        Tue,  5 May 2020 12:56:14 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id s2so195365qtq.13;
-        Tue, 05 May 2020 12:56:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cf/0i1AzurWniqV3J618DdxsQ8szFCFmkFE6Zuk0aZ4=;
-        b=FIvmwxYMolp0anYF4K54TsNvQ6xq5+CuicohiNP9VaKRZViiWOf1Qao5R9+beEURrw
-         zl3f8Pt65Dt9MNhHx4/Mf2lyjSkjIM1pUCj01wQWCXr846/7ysh0cUFe/8MUcGwHxGE7
-         068iVYmbpLRFzqNfLEXNXK84FN/s6fKtfTDue+//uihtcC+0zkJM6yfW1EOC2Cvh0BiB
-         TnSx9HeBeyDWc6hLUY1HI9FqoCmLKdUDVozVuhb80IrIhQQET8FWtS8v2LbvgsEP7fue
-         BwRC5Z+PhCpYThXH1eO5x4m+p4J9iCHc0X7Sk0MuLUfexco7al21JTEWwK6uY4FGcXst
-         at0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cf/0i1AzurWniqV3J618DdxsQ8szFCFmkFE6Zuk0aZ4=;
-        b=kLYhHNh5cGVNKvfJzfDdQaFLjel8jYsKOrbrChHEIFcWOktxSh2hx/Y+MaPpxvL37R
-         UIOISiPg8I4QOmnKYOB2uWDqwyBhi0ovPPZVEImRQAN9YftFJd9P6h08n6BbUciJSWP+
-         /dYp1qILETLIabHvHRqVKaY/y4iqsAW3oSVwuYhgyBpslRPdxvvmk+jjYgyxfMnZtu4C
-         qB7KPbBNMoroVzXxBq+ruuviMxsYjP1KoNKNxJIksiTxF1gGXeFf3QZAARnLEPWKtVjV
-         PuGKtXnEKdIQoUOOE1ihB8kqoUiZeTl7YHwOLXbAxfKz7rBpsCVTeZEgTsIfv4PRIEGh
-         J8yg==
-X-Gm-Message-State: AGi0PuZE4O6qhKm9ZPd9v8Q3Sy0OJUBIlMRUHF7eb5bBscSu3FpAol1h
-        29AhkIh18OnCYQarvj9ydLiTR74RQqAusSPI52Y=
-X-Google-Smtp-Source: APiQypLaA1zdOkVrBf7dyyBfdi5uKanqW75P1/XiKIPwzxsRCapFZFBZ1d86YGLLBFH0hOuYPQD+gVNwbOxkQUN7i/4=
-X-Received: by 2002:ac8:3f6d:: with SMTP id w42mr4512593qtk.171.1588708573252;
- Tue, 05 May 2020 12:56:13 -0700 (PDT)
+        id S1729067AbgEET5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 15:57:54 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:29566 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728584AbgEET5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:57:52 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 045JW6Xj125508;
+        Tue, 5 May 2020 15:57:48 -0400
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 30s3186ng6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 May 2020 15:57:48 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 045Jtb5j024305;
+        Tue, 5 May 2020 19:57:47 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 30s0g5b42b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 05 May 2020 19:57:46 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 045Jviqp45219904
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 5 May 2020 19:57:44 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9B63A52050;
+        Tue,  5 May 2020 19:57:44 +0000 (GMT)
+Received: from [9.145.75.123] (unknown [9.145.75.123])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 411EF5204E;
+        Tue,  5 May 2020 19:57:44 +0000 (GMT)
+Subject: Re: [PATCH net-next 10/11] s390/qeth: allow reset via ethtool
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>
+References: <20200505162559.14138-1-jwi@linux.ibm.com>
+ <20200505162559.14138-11-jwi@linux.ibm.com>
+ <20200505102149.1fd5b9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a19ccf27-2280-036c-057f-8e6d2319bb28@linux.ibm.com>
+ <20200505112940.6fe70918@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Message-ID: <6788c6f1-52cb-c421-7251-500a391bb48b@linux.ibm.com>
+Date:   Tue, 5 May 2020 21:57:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20200504062547.2047304-1-yhs@fb.com> <20200504062552.2047789-1-yhs@fb.com>
-In-Reply-To: <20200504062552.2047789-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 May 2020 12:56:02 -0700
-Message-ID: <CAEf4BzYKACiOB+cAC+g-LdJNJbnz9yrGyw7VsBoW1b2pHjUghw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 05/20] bpf: implement bpf_seq_read() for bpf iterator
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200505112940.6fe70918@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-05_10:2020-05-04,2020-05-05 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ priorityscore=1501 lowpriorityscore=0 suspectscore=0 mlxscore=0
+ spamscore=0 malwarescore=0 mlxlogscore=999 adultscore=0 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005050145
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 3, 2020 at 11:26 PM Yonghong Song <yhs@fb.com> wrote:
->
-> bpf iterator uses seq_file to provide a lossless
-> way to transfer data to user space. But we want to call
-> bpf program after all objects have been traversed, and
-> bpf program may write additional data to the
-> seq_file buffer. The current seq_read() does not work
-> for this use case.
->
-> Besides allowing stop() function to write to the buffer,
-> the bpf_seq_read() also fixed the buffer size to one page.
-> If any single call of show() or stop() will emit data
-> more than one page to cause overflow, -E2BIG error code
-> will be returned to user space.
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  kernel/bpf/bpf_iter.c | 128 ++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 128 insertions(+)
->
-> diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
-> index 05ae04ac1eca..2674c9cbc3dc 100644
-> --- a/kernel/bpf/bpf_iter.c
-> +++ b/kernel/bpf/bpf_iter.c
-> @@ -26,6 +26,134 @@ static DEFINE_MUTEX(targets_mutex);
->  /* protect bpf_iter_link changes */
->  static DEFINE_MUTEX(link_mutex);
->
-> +/* bpf_seq_read, a customized and simpler version for bpf iterator.
-> + * no_llseek is assumed for this file.
-> + * The following are differences from seq_read():
-> + *  . fixed buffer size (PAGE_SIZE)
-> + *  . assuming no_llseek
-> + *  . stop() may call bpf program, handling potential overflow there
-> + */
-> +static ssize_t bpf_seq_read(struct file *file, char __user *buf, size_t size,
-> +                           loff_t *ppos)
-> +{
-> +       struct seq_file *seq = file->private_data;
-> +       size_t n, offs, copied = 0;
-> +       int err = 0;
-> +       void *p;
-> +
-> +       mutex_lock(&seq->lock);
-> +
-> +       if (!seq->buf) {
-> +               seq->size = PAGE_SIZE;
-> +               seq->buf = kmalloc(seq->size, GFP_KERNEL);
-> +               if (!seq->buf)
-> +                       goto Enomem;
+On 05.05.20 20:29, Jakub Kicinski wrote:
+> On Tue, 5 May 2020 20:23:31 +0200 Julian Wiedmann wrote:
+>> On 05.05.20 19:21, Jakub Kicinski wrote:
+>>> On Tue,  5 May 2020 18:25:58 +0200 Julian Wiedmann wrote:  
+>>>> Implement the .reset callback. Only a full reset is supported.
+>>>>
+>>>> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+>>>> Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
+>>>> ---
+>>>>  drivers/s390/net/qeth_ethtool.c | 16 ++++++++++++++++
+>>>>  1 file changed, 16 insertions(+)
+>>>>
+>>>> diff --git a/drivers/s390/net/qeth_ethtool.c b/drivers/s390/net/qeth_ethtool.c
+>>>> index ebdc03210608..0d12002d0615 100644
+>>>> --- a/drivers/s390/net/qeth_ethtool.c
+>>>> +++ b/drivers/s390/net/qeth_ethtool.c
+>>>> @@ -193,6 +193,21 @@ static void qeth_get_drvinfo(struct net_device *dev,
+>>>>  		 CARD_RDEV_ID(card), CARD_WDEV_ID(card), CARD_DDEV_ID(card));
+>>>>  }
+>>>>  
+>>>> +static int qeth_reset(struct net_device *dev, u32 *flags)
+>>>> +{
+>>>> +	struct qeth_card *card = dev->ml_priv;
+>>>> +	int rc;
+>>>> +
+>>>> +	if (*flags != ETH_RESET_ALL)
+>>>> +		return -EINVAL;
+>>>> +
+>>>> +	rc = qeth_schedule_recovery(card);
+>>>> +	if (!rc)
+>>>> +		*flags = 0;  
+>>>
+>>> I think it's better if you only clear the flags for things you actually
+>>> reset. See the commit message for 7a13240e3718 ("bnxt_en: fix
+>>> ethtool_reset_flags ABI violations").
+>>>   
+>>
+>> Not sure I understand - you mean *flags &= ~ETH_RESET_ALL ?
+>>
+>> Since we're effectively managing a virtual device, those individual
+>> ETH_RESET_* flags just don't map very well...
+>> This _is_ a full-blown reset, I don't see how we could provide any finer
+>> granularity.
+> 
+> This is the comment from the uAPI header:
+> 
+> /* The reset() operation must clear the flags for the components which
+>  * were actually reset.  On successful return, the flags indicate the
+>  * components which were not reset, either because they do not exist
+>  * in the hardware or because they cannot be reset independently.  The
+>  * driver must never reset any components that were not requested.
+>  */
+> 
+> Now let's take ETH_RESET_PHY as an example. Surely you're not resetting
+> any PHY here, so that bit should not be cleared. Please look at the
+> bits and select the ones which make sense, add whatever is missing.
+> 
 
-Why not just mutex_unlock and exit with -ENOMEM? Less goto'ing, more
-straightforward.
+It's a virtual device, _none_ of them make much sense?! We better not be
+resetting any actual HW components, the other interfaces on the same
+adapter would be quite unhappy about that.
 
-> +       }
-> +
-> +       if (seq->count) {
-> +               n = min(seq->count, size);
-> +               err = copy_to_user(buf, seq->buf + seq->from, n);
-> +               if (err)
-> +                       goto Efault;
-> +               seq->count -= n;
-> +               seq->from += n;
-> +               copied = n;
-> +               goto Done;
-> +       }
-> +
-> +       seq->from = 0;
-> +       p = seq->op->start(seq, &seq->index);
-> +       if (!p || IS_ERR(p))
+Sorry for being dense, and I appreciate that the API leaves a lot of room
+for sophisticated partial resets where the driver/HW allows it.
+But it sounds like what you're suggesting is
+(1) we select a rather arbitrary set of components that _might_ represent a
+    full "virtual" reset, and then
+(2) expect the user to guess a super-set of these features. And not worry
+    when they selected too much, and this obscure PHY thing failed to reset.
 
-IS_ERR_OR_NULL?
+So I looked at gve's implementation and thought "yep, looks simple enough".
+But if we start asking users to interpret HW bits that hardly make any
+sense to them, we're worse off than with the existing custom sysfs trigger...
 
-> +               goto Stop;
-> +
-> +       err = seq->op->show(seq, p);
-> +       if (seq_has_overflowed(seq)) {
-> +               err = -E2BIG;
-> +               goto Error_show;
-> +       } else if (err) {
-> +               /* < 0: go out, > 0: skip */
-> +               if (likely(err < 0))
-> +                       goto Error_show;
-> +               seq->count = 0;
-> +       }
+> Then my suggestion would be something like:
+> 
+>   #define QETH_RESET_FLAGS (flag | flag | flag)
+> 
+>   if ((*flags & QETH_RESET_FLAGS) != QETH_RESET_FLAGS))
+> 	return -EINVAL;
+>   ...
+>   *flags &= ~QETH_RESET_FLAGS;
+> 
 
-This seems a bit more straightforward:
-
-if (seq_has_overflowed(seq))
-    err = -E2BIG;
-if (err < 0)
-    goto Error_show;
-else if (err > 0)
-    seq->count = 0;
-
-Also, I wonder if err > 0 (so skip was requested), should we ignore
-overflow? So something like:
-
-if (err > 0) {
-    seq->count = 0;
-} else {
-    if (seq_has_overflowed(seq))
-        err = -E2BIG;
-    if (err)
-        goto Error_show;
-}
-
-> +
-> +       while (1) {
-> +               loff_t pos = seq->index;
-> +
-> +               offs = seq->count;
-> +               p = seq->op->next(seq, p, &seq->index);
-> +               if (pos == seq->index) {
-> +                       pr_info_ratelimited("buggy seq_file .next function %ps "
-> +                               "did not updated position index\n",
-> +                               seq->op->next);
-> +                       seq->index++;
-> +               }
-> +
-> +               if (!p || IS_ERR(p)) {
-
-Same, IS_ERR_OR_NULL.
-
-> +                       err = PTR_ERR(p);
-> +                       break;
-> +               }
-> +               if (seq->count >= size)
-> +                       break;
-> +
-> +               err = seq->op->show(seq, p);
-> +               if (seq_has_overflowed(seq)) {
-> +                       if (offs == 0) {
-> +                               err = -E2BIG;
-> +                               goto Error_show;
-> +                       }
-> +                       seq->count = offs;
-> +                       break;
-> +               } else if (err) {
-> +                       /* < 0: go out, > 0: skip */
-> +                       seq->count = offs;
-> +                       if (likely(err < 0)) {
-> +                               if (offs == 0)
-> +                                       goto Error_show;
-> +                               break;
-> +                       }
-> +               }
-
-Same question here about ignoring overflow if skip was requested.
-
-> +       }
-> +Stop:
-> +       offs = seq->count;
-> +       /* may call bpf program */
-> +       seq->op->stop(seq, p);
-> +       if (seq_has_overflowed(seq)) {
-> +               if (offs == 0)
-> +                       goto Error_stop;
-> +               seq->count = offs;
-
-just want to double-check, because it's not clear from the code. If
-all the start()/show()/next() succeeded, but stop() overflown. Would
-stop() be called again on subsequent read? Would start/show/next
-handle this correctly as well?
-
-> +       }
-> +
-> +       n = min(seq->count, size);
-> +       err = copy_to_user(buf, seq->buf, n);
-> +       if (err)
-> +               goto Efault;
-> +       copied = n;
-> +       seq->count -= n;
-> +       seq->from = n;
-> +Done:
-> +       if (!copied)
-> +               copied = err;
-> +       else
-> +               *ppos += copied;
-> +       mutex_unlock(&seq->lock);
-> +       return copied;
-> +
-> +Error_show:
-> +       seq->op->stop(seq, p);
-> +Error_stop:
-> +       seq->count = 0;
-> +       goto Done;
-> +
-> +Enomem:
-> +       err = -ENOMEM;
-> +       goto Done;
-> +
-> +Efault:
-> +       err = -EFAULT;
-> +       goto Done;
-
-Enomem and Efault seem completely redundant and just add goto
-complexity to this algorithm. Let's just inline `err =
--E(NOMEM|FAULT); goto Done;` instead?
-
-> +}
-> +
->  int bpf_iter_reg_target(struct bpf_iter_reg *reg_info)
->  {
->         struct bpf_iter_target_info *tinfo;
-> --
-> 2.24.1
->
