@@ -2,97 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1266E1C5B90
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:37:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9701C5BA2
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:39:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729674AbgEEPhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 11:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729561AbgEEPhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:37:47 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D935EC061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 08:37:46 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id q43so2079238qtj.11
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 08:37:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=6XH0FPT08YBoUx+mfK4TeZ+oCrUvAXy0ysNUHVi9yfY=;
-        b=V4lu4DOohkEbU/ygGOhKvQ5skq0xGYACi2bYX+2rJikgFeHm1c6nANeCfPkHDGG82P
-         29omG+HlqmzrezTYL7DvLbxGXstOzFYkTN0K89KNsUfR0l42C0LiIVGhuXGTH2zxQcV5
-         Tx8fN2fgcHXRtABfxzoHXf+ixWdGRb6bWmWIc88lzTAKaCRtYs22jA9u6CzGsrqXHYyq
-         2zBuKu3AhNqi6i/EtvzEins272cMEbPkRTLRGczFM+do0CGpqvqjGncDhlp/2RYiyb2H
-         2WNc/bw5HDan7UIqxpg6Thi38c/6QV/yBbwPlsbkIdkJIIyuqueCPci8isnReOpXEBNc
-         72Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=6XH0FPT08YBoUx+mfK4TeZ+oCrUvAXy0ysNUHVi9yfY=;
-        b=fPgC3J5OTqT/hQYwu2dUQodlmMkwzwZkEENeqSsgjmE2Pql15vil/3AuMe0LeGpDER
-         VwDcA/nXoKC/TSrng7D5bMbyvXtxWLSNkWY9fSojPPQBYLsw7dc310GpUlU8Wy5LWPcd
-         ngUJinHUKKE7wfcFtq+GevTut/otDBhO3/RR3Vb3kyAW5PDvHcchfE/LIjnH92/Tbhge
-         xRnfvy8Wv9Pjy1Xa3Cr3pxgYmU1U+0I7OOA1hDPgUffrWubAIAqRC4it0+d9kMthaWNv
-         k8NXZd9t+MhBbDNog8HEVk9P5lFKJKHrwi7YMAdeoINFSQHLUzh9q5dX7mm+tIZWRWlN
-         UjZA==
-X-Gm-Message-State: AGi0PubZavx1xRnNkrccLVRoGZJHrEOYpvEFPRIoxaL4AUEzoff1hHyY
-        dTeuKtSDEh1RoxEBLKk/DceEYs+7e5PPdQ==
-X-Google-Smtp-Source: APiQypKox1e7l+91oxCJzNRNLS2Iz4JvcwylazpIeYqgWziOLrFGkz3eC9+OnVZLSKgjUYZHzCrqQQOpbldpYg==
-X-Received: by 2002:a05:6214:1702:: with SMTP id db2mr3338445qvb.201.1588693065830;
- Tue, 05 May 2020 08:37:45 -0700 (PDT)
-Date:   Tue,  5 May 2020 08:37:41 -0700
-Message-Id: <20200505153741.223354-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH iproute2] ss: add support for Gbit speeds in sprint_bw()
-From:   Eric Dumazet <edumazet@google.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730367AbgEEPiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 11:38:55 -0400
+Received: from mout.kundenserver.de ([212.227.126.134]:39771 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729276AbgEEPiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:38:55 -0400
+Received: from localhost.localdomain ([149.172.19.189]) by
+ mrelayeu.kundenserver.de (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MdNse-1iweps3DMG-00ZMLU; Tue, 05 May 2020 17:38:40 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] [net-next, v2] dsa: sja1105: dynamically allocate stats structure
+Date:   Tue,  5 May 2020 17:38:19 +0200
+Message-Id: <20200505153834.1437767-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.26.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:Bh13PbOFLRcVbfsxdpNxOCz10zCbKaRSrYe3NBwEcgKKrMQUnXM
+ N/7bKe6eyT4HrM6m/PTZy/7zyd+TkuTxsSMZcPxXAzZRMkMEEQo2Ah/bZMPlbeaBNG1J3ax
+ PJfsPb84pa8r05m8l4MZeiOSQzgdUoWyCOCyaRf3hXLu3hW3VaHUDn/X1zy3DNsbr2hScYZ
+ 4BJQJr/OHk3mEG/Q+sCow==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:oCYYc5N0GXI=:+vWtTkunBfUxKZhYKXfcYJ
+ nP70/QVR6iB36EwCq+h9db2bUhRp2D0ardfof1Y4h5ghv8wYsjfnGcStKL3ktgHAw3HBg+rlL
+ CAQDToKiPNmwZUGs7S1sQTTWZ2+86LR/WjpJgIwXfbwuzghzAVPAJ97jH12Dm4/n//5bzeMmQ
+ /PxxGyw2o3Y6Y3cvAg1p6qawfWn3ZFa8hoZ3lxu4Kwr3xLpUIzS3UWORCn1mnFwQe7GLBswIW
+ lAfr6SswAliaQor9f+MWyrUJ17YTvCwjJsDoUZScHoqPPpAHyO97R6PgvZOPf56OD/IOSTU2k
+ drlS91I0um+S6ai4Vz5YmhYQzO0vb1zsHnYe/JdXeocEE/7LroDGA/V5MKlY12ET6yrDjSj9u
+ sX8DQ8+4Z7UjSOJ5wH9cAx1yqBCn5/Hf+TTJhdTeXeA0qHBBotrZD3fDAFx23qXq/g+xNpCEh
+ rBfzUhVDRfryd0YIbnn1bxpIscGScUqiHqQjUFcHriJ/zfkusIwsX7AttmVgybFNLruL7bUUl
+ fEZj3AtCOizhLGbNZFDGc4E+Dh4VguNDoRcaMbZzdsz4rcc7uFkEfVnsjpk2tDuzWMWA7hlUw
+ 4RlJvXEBE/OXulf3Ntp4E8UUgI/xb4FqKwQAj7dZzCm+9Mp4D0z5o+WtfywqRhnTGQmn6PVvT
+ zwwmQmwR/fMrFexrD4ybL/hZGEPrYUN+vzVxwv6GJsLvvFKeNKzS9zjrzg1iVR1RTRVbvdm5I
+ yEUEsug04AsgHRPLkaRvB1v7yPgQip19h5gr0gEQHw+ZDqh+dWd9AlZ8/ECtmXIbmV+VOukPF
+ mfycg7NmcFiJIOIVxeRnXNt9qpi3uXd0oUyIFpGnMTk1nu7p5A=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Also use 'g' specifier instead of 'f' to remove trailing zeros,
-and increase precision.
+The addition of sja1105_port_status_ether structure into the
+statistics causes the frame size to go over the warning limit:
 
-Examples of output :
- Before        After
- 8.0Kbps       8Kbps
- 9.9Mbps       9.92Mbps
- 55001Mbps     55Gbps
+drivers/net/dsa/sja1105/sja1105_ethtool.c:421:6: error: stack frame size of 1104 bytes in function 'sja1105_get_ethtool_stats' [-Werror,-Wframe-larger-than=]
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Use dynamic allocation to avoid this.
+
+Fixes: 336aa67bd027 ("net: dsa: sja1105: show more ethtool statistics counters for P/Q/R/S")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- misc/ss.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+v2: remove extra ';'
+    remove bogus include/linux/warnings.h change
+---
+ drivers/net/dsa/sja1105/sja1105_ethtool.c | 144 +++++++++++-----------
+ 1 file changed, 74 insertions(+), 70 deletions(-)
 
-diff --git a/misc/ss.c b/misc/ss.c
-index 3ef151fbf1f1b3856e95a1baa751a1cdd27d10b7..ab206b2011ec92b899709d2c78ce7310e88ec80e 100644
---- a/misc/ss.c
-+++ b/misc/ss.c
-@@ -2382,10 +2382,12 @@ static char *sprint_bw(char *buf, double bw)
+diff --git a/drivers/net/dsa/sja1105/sja1105_ethtool.c b/drivers/net/dsa/sja1105/sja1105_ethtool.c
+index d742ffcbfce9..709f035055c5 100644
+--- a/drivers/net/dsa/sja1105/sja1105_ethtool.c
++++ b/drivers/net/dsa/sja1105/sja1105_ethtool.c
+@@ -421,92 +421,96 @@ static char sja1105pqrs_extra_port_stats[][ETH_GSTRING_LEN] = {
+ void sja1105_get_ethtool_stats(struct dsa_switch *ds, int port, u64 *data)
  {
- 	if (numeric)
- 		sprintf(buf, "%.0f", bw);
--	else if (bw > 1000000.)
--		sprintf(buf, "%.1fM", bw / 1000000.);
--	else if (bw > 1000.)
--		sprintf(buf, "%.1fK", bw / 1000.);
-+	else if (bw >= 1e9)
-+		sprintf(buf, "%.3gG", bw / 1e9);
-+	else if (bw >= 1e6)
-+		sprintf(buf, "%.3gM", bw / 1e6);
-+	else if (bw >= 1e3)
-+		sprintf(buf, "%.3gK", bw / 1e3);
- 	else
- 		sprintf(buf, "%g", bw);
+ 	struct sja1105_private *priv = ds->priv;
+-	struct sja1105_port_status status;
++	struct sja1105_port_status *status;
+ 	int rc, i, k = 0;
  
+-	memset(&status, 0, sizeof(status));
++	status = kzalloc(sizeof(*status), GFP_KERNEL);
++	if (!status)
++		goto out;
+ 
+-	rc = sja1105_port_status_get(priv, &status, port);
++	rc = sja1105_port_status_get(priv, status, port);
+ 	if (rc < 0) {
+ 		dev_err(ds->dev, "Failed to read port %d counters: %d\n",
+ 			port, rc);
+-		return;
++		goto out;
+ 	}
+ 	memset(data, 0, ARRAY_SIZE(sja1105_port_stats) * sizeof(u64));
+-	data[k++] = status.mac.n_runt;
+-	data[k++] = status.mac.n_soferr;
+-	data[k++] = status.mac.n_alignerr;
+-	data[k++] = status.mac.n_miierr;
+-	data[k++] = status.mac.typeerr;
+-	data[k++] = status.mac.sizeerr;
+-	data[k++] = status.mac.tctimeout;
+-	data[k++] = status.mac.priorerr;
+-	data[k++] = status.mac.nomaster;
+-	data[k++] = status.mac.memov;
+-	data[k++] = status.mac.memerr;
+-	data[k++] = status.mac.invtyp;
+-	data[k++] = status.mac.intcyov;
+-	data[k++] = status.mac.domerr;
+-	data[k++] = status.mac.pcfbagdrop;
+-	data[k++] = status.mac.spcprior;
+-	data[k++] = status.mac.ageprior;
+-	data[k++] = status.mac.portdrop;
+-	data[k++] = status.mac.lendrop;
+-	data[k++] = status.mac.bagdrop;
+-	data[k++] = status.mac.policeerr;
+-	data[k++] = status.mac.drpnona664err;
+-	data[k++] = status.mac.spcerr;
+-	data[k++] = status.mac.agedrp;
+-	data[k++] = status.hl1.n_n664err;
+-	data[k++] = status.hl1.n_vlanerr;
+-	data[k++] = status.hl1.n_unreleased;
+-	data[k++] = status.hl1.n_sizeerr;
+-	data[k++] = status.hl1.n_crcerr;
+-	data[k++] = status.hl1.n_vlnotfound;
+-	data[k++] = status.hl1.n_ctpolerr;
+-	data[k++] = status.hl1.n_polerr;
+-	data[k++] = status.hl1.n_rxfrm;
+-	data[k++] = status.hl1.n_rxbyte;
+-	data[k++] = status.hl1.n_txfrm;
+-	data[k++] = status.hl1.n_txbyte;
+-	data[k++] = status.hl2.n_qfull;
+-	data[k++] = status.hl2.n_part_drop;
+-	data[k++] = status.hl2.n_egr_disabled;
+-	data[k++] = status.hl2.n_not_reach;
++	data[k++] = status->mac.n_runt;
++	data[k++] = status->mac.n_soferr;
++	data[k++] = status->mac.n_alignerr;
++	data[k++] = status->mac.n_miierr;
++	data[k++] = status->mac.typeerr;
++	data[k++] = status->mac.sizeerr;
++	data[k++] = status->mac.tctimeout;
++	data[k++] = status->mac.priorerr;
++	data[k++] = status->mac.nomaster;
++	data[k++] = status->mac.memov;
++	data[k++] = status->mac.memerr;
++	data[k++] = status->mac.invtyp;
++	data[k++] = status->mac.intcyov;
++	data[k++] = status->mac.domerr;
++	data[k++] = status->mac.pcfbagdrop;
++	data[k++] = status->mac.spcprior;
++	data[k++] = status->mac.ageprior;
++	data[k++] = status->mac.portdrop;
++	data[k++] = status->mac.lendrop;
++	data[k++] = status->mac.bagdrop;
++	data[k++] = status->mac.policeerr;
++	data[k++] = status->mac.drpnona664err;
++	data[k++] = status->mac.spcerr;
++	data[k++] = status->mac.agedrp;
++	data[k++] = status->hl1.n_n664err;
++	data[k++] = status->hl1.n_vlanerr;
++	data[k++] = status->hl1.n_unreleased;
++	data[k++] = status->hl1.n_sizeerr;
++	data[k++] = status->hl1.n_crcerr;
++	data[k++] = status->hl1.n_vlnotfound;
++	data[k++] = status->hl1.n_ctpolerr;
++	data[k++] = status->hl1.n_polerr;
++	data[k++] = status->hl1.n_rxfrm;
++	data[k++] = status->hl1.n_rxbyte;
++	data[k++] = status->hl1.n_txfrm;
++	data[k++] = status->hl1.n_txbyte;
++	data[k++] = status->hl2.n_qfull;
++	data[k++] = status->hl2.n_part_drop;
++	data[k++] = status->hl2.n_egr_disabled;
++	data[k++] = status->hl2.n_not_reach;
+ 
+ 	if (priv->info->device_id == SJA1105E_DEVICE_ID ||
+ 	    priv->info->device_id == SJA1105T_DEVICE_ID)
+-		return;
++		goto out;;
+ 
+ 	memset(data + k, 0, ARRAY_SIZE(sja1105pqrs_extra_port_stats) *
+ 			sizeof(u64));
+ 	for (i = 0; i < 8; i++) {
+-		data[k++] = status.hl2.qlevel_hwm[i];
+-		data[k++] = status.hl2.qlevel[i];
++		data[k++] = status->hl2.qlevel_hwm[i];
++		data[k++] = status->hl2.qlevel[i];
+ 	}
+-	data[k++] = status.ether.n_drops_nolearn;
+-	data[k++] = status.ether.n_drops_noroute;
+-	data[k++] = status.ether.n_drops_ill_dtag;
+-	data[k++] = status.ether.n_drops_dtag;
+-	data[k++] = status.ether.n_drops_sotag;
+-	data[k++] = status.ether.n_drops_sitag;
+-	data[k++] = status.ether.n_drops_utag;
+-	data[k++] = status.ether.n_tx_bytes_1024_2047;
+-	data[k++] = status.ether.n_tx_bytes_512_1023;
+-	data[k++] = status.ether.n_tx_bytes_256_511;
+-	data[k++] = status.ether.n_tx_bytes_128_255;
+-	data[k++] = status.ether.n_tx_bytes_65_127;
+-	data[k++] = status.ether.n_tx_bytes_64;
+-	data[k++] = status.ether.n_tx_mcast;
+-	data[k++] = status.ether.n_tx_bcast;
+-	data[k++] = status.ether.n_rx_bytes_1024_2047;
+-	data[k++] = status.ether.n_rx_bytes_512_1023;
+-	data[k++] = status.ether.n_rx_bytes_256_511;
+-	data[k++] = status.ether.n_rx_bytes_128_255;
+-	data[k++] = status.ether.n_rx_bytes_65_127;
+-	data[k++] = status.ether.n_rx_bytes_64;
+-	data[k++] = status.ether.n_rx_mcast;
+-	data[k++] = status.ether.n_rx_bcast;
++	data[k++] = status->ether.n_drops_nolearn;
++	data[k++] = status->ether.n_drops_noroute;
++	data[k++] = status->ether.n_drops_ill_dtag;
++	data[k++] = status->ether.n_drops_dtag;
++	data[k++] = status->ether.n_drops_sotag;
++	data[k++] = status->ether.n_drops_sitag;
++	data[k++] = status->ether.n_drops_utag;
++	data[k++] = status->ether.n_tx_bytes_1024_2047;
++	data[k++] = status->ether.n_tx_bytes_512_1023;
++	data[k++] = status->ether.n_tx_bytes_256_511;
++	data[k++] = status->ether.n_tx_bytes_128_255;
++	data[k++] = status->ether.n_tx_bytes_65_127;
++	data[k++] = status->ether.n_tx_bytes_64;
++	data[k++] = status->ether.n_tx_mcast;
++	data[k++] = status->ether.n_tx_bcast;
++	data[k++] = status->ether.n_rx_bytes_1024_2047;
++	data[k++] = status->ether.n_rx_bytes_512_1023;
++	data[k++] = status->ether.n_rx_bytes_256_511;
++	data[k++] = status->ether.n_rx_bytes_128_255;
++	data[k++] = status->ether.n_rx_bytes_65_127;
++	data[k++] = status->ether.n_rx_bytes_64;
++	data[k++] = status->ether.n_rx_mcast;
++	data[k++] = status->ether.n_rx_bcast;
++out:
++	kfree(status);
+ }
+ 
+ void sja1105_get_strings(struct dsa_switch *ds, int port,
 -- 
-2.26.2.526.g744177e7f7-goog
+2.26.0
 
