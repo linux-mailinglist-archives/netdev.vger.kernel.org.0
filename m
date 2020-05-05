@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 245FE1C4C9D
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 05:18:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C51E31C4C9E
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 05:19:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgEEDSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 23:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
+        id S1726788AbgEEDTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 23:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726516AbgEEDSx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 23:18:53 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B022C061A0F
-        for <netdev@vger.kernel.org>; Mon,  4 May 2020 20:18:53 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id j21so403088pgb.7
-        for <netdev@vger.kernel.org>; Mon, 04 May 2020 20:18:53 -0700 (PDT)
+        with ESMTP id S1726345AbgEEDTd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 23:19:33 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D002C061A0F
+        for <netdev@vger.kernel.org>; Mon,  4 May 2020 20:19:33 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id fu13so391795pjb.5
+        for <netdev@vger.kernel.org>; Mon, 04 May 2020 20:19:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TzMeq4y87PqFi2c+amULC4eWXiD8MVZ6p0wJ+ywOgdY=;
-        b=Rg1HuNAfClBNvFJBno3xrJVoQIaqr5pXPz/zZOS8Khn8K+JHf6x8+SldpZCUKjPa/C
-         wVu8sCRdfHhW3fuENY8sPqjl2fc/siKhrNSDahhQ4wz316V5jy6JJU25fkSNLzO4BuWC
-         GHK4Zk4qqMdrm8SLYzWHYlKs5sRwO58ua+e7t6yfm0zNPIbNjI1hYksP0/xmbSxBNXC/
-         hpx7d4+dga7S41un7pzsOh96FKVfG/lEYyIvAA3YX4fqpxekHL6BbNz2JH8f4nubMo+b
-         u4Ae8dSZdV2HbZJ99ig6zUVO8gEsGG4QjmTHFzwWBnCx3kJ3C257d1ZE9OBJEnMjUWO5
-         KekA==
+        bh=Ql485aFHW8quVlerGG9ms+J5Hywqsnvoywo7XH/T9Jc=;
+        b=cny0QiF9NxGp5pUZGFJw5uxKGXLOPd9MFOZtQ2oKgPgguJkFDaN6xDjyZJuinEr/Ko
+         r8seea+agJAecf8t1vxQOTRQ1ZSEfjHXxybXdbFNDOgt3TYeNixqL0NGDLe5v8HRB6UH
+         lW+EVfMtiH+UpCPhEqy7498+lw7yc/oD49HRWj8oj8NWTY33INEy9wqFS8zg024kfwO4
+         8xYXkgQXTiZzpEkhy68i1Y7W1Z/g9qd9Da5uJKUkaQ7f44nIcHwcM5MqFFtcVmIE5QzM
+         sXoweunvAoVdoOyDKkEhsM86pRiyD/EfXjtKySo4omjnFfubHoLE6wmQwz+Qq+ytgGS8
+         A2ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=TzMeq4y87PqFi2c+amULC4eWXiD8MVZ6p0wJ+ywOgdY=;
-        b=ES7CclIYGeSUl6hl9O9Vy/0pGGt6Ie47Oh7HI7WRXjNfCNXW5GhbC2NaEmHiQWGFQB
-         eqNqAl69brxeHtOqA+vrYcpBGu+EeVFuWp77PgFKH2sAFhPxlS2/dCY2O5SCRnA9Zvzg
-         GnmOS3vZ/X2ot93SDwjvD/3o9WSRska2fqCnKFvzuT+GV/xBMosikdNtFx4c1bmn23r+
-         ihv4BRWMJU/ZPRGXM0olZu++ceuejOmLeVKdnx99TJ6QVXTmh030wUp1c07RF6oEzgJO
-         qsJIxGXTQRD/ctdlnSR1rXPFshUNJjDIefOAyb7MzGK/ax+GYh4Wyk9s+13+0RZiua23
-         BcgA==
-X-Gm-Message-State: AGi0PuamdbhwHcwBC/dV1ThaVlwITS0RGza2EETv6GpmUrG2W0SbrEkP
-        SzEUGpno+J4OGsYGFtzQV7M=
-X-Google-Smtp-Source: APiQypKG8/Kh0mrC3bbejihKc1VJOzVNvVnlI48PolK4hJWANwKVuVP3zXhOR9nuZGxqroc3+8dK+g==
-X-Received: by 2002:a62:a10c:: with SMTP id b12mr1218138pff.14.1588648732625;
-        Mon, 04 May 2020 20:18:52 -0700 (PDT)
+        bh=Ql485aFHW8quVlerGG9ms+J5Hywqsnvoywo7XH/T9Jc=;
+        b=eJBKhISkEYGjJbmmjMJgSI7BHnYbUrFuFmc8+fwIQQjn7ftKEVz8BCVu9RfqZuxYz/
+         pOc4WXO/ABSZKvJ9BVDV/Vw3yE/2Fmzr4xeBAeonsEbeZrHl8BNAZ/lFV5nJtN4RcpTd
+         miexN7IeCHfPh1NTAWojdSYd1GBr+/34qAIXecj10O1cxwSrL2eywC55h7kzCyqa3Vq+
+         AQQe2GiVVHMpNq+VwV5OG0omxVbmAQ/fvf/u4lc5/YNL6dKyL6zYP79IDglwBcF0Pxbl
+         uqEC/b9nXwLU4yw5ax7/fNGfgVyiWuakOKGY3/8pHg+PxuaSmG/3JxZZOSloSAT28dhQ
+         HGEA==
+X-Gm-Message-State: AGi0PubNGQ2XaQ1xM0sWoKyWvl6TWbNSkAIFH6esVYMeM2kedt9JiEoh
+        V6vV/uP1T/mSBAU/ieWnih0=
+X-Google-Smtp-Source: APiQypKAgQ22febD8Jrn6ZQnxzeUHFTSDThQP9+l8E9CBKOwS0g5kBNOurkGGAXY4IH36SKRC2zHPA==
+X-Received: by 2002:a17:90a:d24a:: with SMTP id o10mr344098pjw.18.1588648772526;
+        Mon, 04 May 2020 20:19:32 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id 23sm372005pjb.11.2020.05.04.20.18.51
+        by smtp.gmail.com with ESMTPSA id 128sm513464pfy.5.2020.05.04.20.19.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 20:18:51 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 03/10] net: ethtool: netlink: Add support for
- triggering a cable test
+        Mon, 04 May 2020 20:19:31 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 04/10] net: ethtool: Add attributes for cable
+ test reports
 To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Chris Healy <cphealy@gmail.com>,
         Michal Kubecek <mkubecek@suse.cz>, michael@walle.cc
 References: <20200505001821.208534-1-andrew@lunn.ch>
- <20200505001821.208534-4-andrew@lunn.ch>
+ <20200505001821.208534-5-andrew@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <f2fa915b-d202-6ca5-a341-9ee96300c07b@gmail.com>
-Date:   Mon, 4 May 2020 20:18:50 -0700
+Message-ID: <a31a1a36-5f9b-5283-b86c-94974d8dbf5d@gmail.com>
+Date:   Mon, 4 May 2020 20:19:30 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200505001821.208534-4-andrew@lunn.ch>
+In-Reply-To: <20200505001821.208534-5-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,17 +75,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 5/4/2020 5:18 PM, Andrew Lunn wrote:
-> Add new ethtool netlink calls to trigger the starting of a PHY cable
-> test.
-> 
-> Add Kconfig'ury to ETHTOOL_NETLINK so that PHYLIB is not a module when
-> ETHTOOL_NETLINK is builtin, which would result in kernel linking errors.
+> Add the attributes needed to report cable test results to userspace.
+> The reports are expected to be per twisted pair. A nested property per
+> pair can report the result of the cable test. A nested property can
+> also report the length of the cable to any fault.
 > 
 > v2:
-> Remove unwanted white space change
-> Remove ethnl_cable_test_act_ops and use doit handler
-> Rename cable_test_set_policy cable_test_act_policy
-> Remove ETHTOOL_MSG_CABLE_TEST_ACT_REPLY
+> Grammar fixes
+> Change length from u16 to u32
+> s/DEV/HEADER/g
+> Add status attributes
+> Rename pairs from numbers to letters.
 > 
 > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
