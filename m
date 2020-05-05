@@ -2,81 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 793241C5B7B
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:35:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1266E1C5B90
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:37:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730060AbgEEPe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 11:34:56 -0400
-Received: from mout.kundenserver.de ([217.72.192.75]:32923 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729447AbgEEPe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:34:56 -0400
-Received: from mail-qk1-f171.google.com ([209.85.222.171]) by
- mrelayeu.kundenserver.de (mreue109 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1MtfRp-1jHtsv2esh-00v4dV; Tue, 05 May 2020 17:34:54 +0200
-Received: by mail-qk1-f171.google.com with SMTP id f13so2735742qkh.2;
-        Tue, 05 May 2020 08:34:54 -0700 (PDT)
-X-Gm-Message-State: AGi0Pub2Lj7INkZdZeZmap/L7ibpyvMtORfQ2A/xm/7yxrSS2TbOdxGb
-        XV2Xx/RTXaHU5FaOTe4RgnI25XMuC5CQTGfBDxg=
-X-Google-Smtp-Source: APiQypJ6aNF96MJ+osF2WCBQeZWcDk6l1GVugJ56JpB8nOxW+eYqhDjSR3n8hNxMlYLYJbdvAfV1tblMIRLQi6j+tII=
-X-Received: by 2002:a37:4e08:: with SMTP id c8mr4066508qkb.286.1588692893453;
- Tue, 05 May 2020 08:34:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200505135848.180753-1-arnd@arndb.de> <20200505140443.GK208718@lunn.ch>
-In-Reply-To: <20200505140443.GK208718@lunn.ch>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 5 May 2020 17:34:37 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2Dtr5Ng7tt0ibPkNL565S+7cyYfGxfo4WUftkQ9mxgWw@mail.gmail.com>
-Message-ID: <CAK8P3a2Dtr5Ng7tt0ibPkNL565S+7cyYfGxfo4WUftkQ9mxgWw@mail.gmail.com>
-Subject: Re: [PATCH] [net-next] dsa: sja1105: dynamically allocate stats structure
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
+        id S1729674AbgEEPhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 11:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729561AbgEEPhr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:37:47 -0400
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D935EC061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 08:37:46 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id q43so2079238qtj.11
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 08:37:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=6XH0FPT08YBoUx+mfK4TeZ+oCrUvAXy0ysNUHVi9yfY=;
+        b=V4lu4DOohkEbU/ygGOhKvQ5skq0xGYACi2bYX+2rJikgFeHm1c6nANeCfPkHDGG82P
+         29omG+HlqmzrezTYL7DvLbxGXstOzFYkTN0K89KNsUfR0l42C0LiIVGhuXGTH2zxQcV5
+         Tx8fN2fgcHXRtABfxzoHXf+ixWdGRb6bWmWIc88lzTAKaCRtYs22jA9u6CzGsrqXHYyq
+         2zBuKu3AhNqi6i/EtvzEins272cMEbPkRTLRGczFM+do0CGpqvqjGncDhlp/2RYiyb2H
+         2WNc/bw5HDan7UIqxpg6Thi38c/6QV/yBbwPlsbkIdkJIIyuqueCPci8isnReOpXEBNc
+         72Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=6XH0FPT08YBoUx+mfK4TeZ+oCrUvAXy0ysNUHVi9yfY=;
+        b=fPgC3J5OTqT/hQYwu2dUQodlmMkwzwZkEENeqSsgjmE2Pql15vil/3AuMe0LeGpDER
+         VwDcA/nXoKC/TSrng7D5bMbyvXtxWLSNkWY9fSojPPQBYLsw7dc310GpUlU8Wy5LWPcd
+         ngUJinHUKKE7wfcFtq+GevTut/otDBhO3/RR3Vb3kyAW5PDvHcchfE/LIjnH92/Tbhge
+         xRnfvy8Wv9Pjy1Xa3Cr3pxgYmU1U+0I7OOA1hDPgUffrWubAIAqRC4it0+d9kMthaWNv
+         k8NXZd9t+MhBbDNog8HEVk9P5lFKJKHrwi7YMAdeoINFSQHLUzh9q5dX7mm+tIZWRWlN
+         UjZA==
+X-Gm-Message-State: AGi0PubZavx1xRnNkrccLVRoGZJHrEOYpvEFPRIoxaL4AUEzoff1hHyY
+        dTeuKtSDEh1RoxEBLKk/DceEYs+7e5PPdQ==
+X-Google-Smtp-Source: APiQypKox1e7l+91oxCJzNRNLS2Iz4JvcwylazpIeYqgWziOLrFGkz3eC9+OnVZLSKgjUYZHzCrqQQOpbldpYg==
+X-Received: by 2002:a05:6214:1702:: with SMTP id db2mr3338445qvb.201.1588693065830;
+ Tue, 05 May 2020 08:37:45 -0700 (PDT)
+Date:   Tue,  5 May 2020 08:37:41 -0700
+Message-Id: <20200505153741.223354-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
+Subject: [PATCH iproute2] ss: add support for Gbit speeds in sprint_bw()
+From:   Eric Dumazet <edumazet@google.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:yBMsXm2HGYg8sUK9ISFYJPBa5Zh9OYPYxhrn4HeznkNc9saoevk
- EBUJ6mAyWlRpoGY+nhYlpQNpoDtf3V+vmdCrzPOp7KWBD0DZjWR5D7c+QW02sB2vAOF5NKB
- AGnVIJ184N9M8wFpcWz3obPPxJ7P9ZhRLTZ4Q/Ark332CNZu5b/yKh+QVcjDEyU+4E4jVxz
- xzqh9TGTQIgHZOjIM93+A==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ahYfMqjPmJ8=:Qa4mc42wjBSHKhfVxUB9N+
- 3s4eJA7LpiAxcvhQV13VGaVmD3gn/Ld+IMKFWU0LlO5IDzmCUTV1K8+NYLTAmt5go8nN5odzq
- cEtLbmsTjpXK34lO+dsy08D43RoSxhJU/CuQIRRcSFYlk0Bme8wqq1qsL9Zh0RFqP+lPIxsmW
- /JRqMd13Xb4mLPhWBxRLq+QmcYH2s1zc6f2nRBb8r8s8vYyGJ7jtZa6OjsWV2wjulxWv3Kt3i
- kQ218wOwHcD/JjTQOeEoYxkeUpJ5Mzo9wDS0+Pp0aKTIy8et9jaH/57oW8IlaT60GwStFYCsR
- 1qTRt+m+/5kBV1M8HD90+ArNaO/8EhbxLLiAVHruiuMMRmAiolf5wzQUFnB0JaHaT7n67eowd
- 8AkeotN1ZWLX/NcDNhufoZZnpz6IHbmfZNA2Ebfvp0j9gVxSix1olkTsxTZ7d7CCMqrAPHh6v
- CrstWmRTrjeXnSSyin7OIn3YQ88M826aVhodQx33zg/8rrNRp+2XGANMaUunBdnkfhkSj5I3M
- 9ozFd9hVclEJCEG+ZPMR6h85k8LSCn86wQceSHPpqo7I1+y9DxxKydGFY+0R9Us7j0XBDdKSL
- g3i/8SDG4C2sOYTZIbeS21fWU4I9VEeYiLvtHpZRrj0DSwe9sVtUYKE6yNY7PJnFu0cYjGW2q
- CqjJ0WSrMa63xkR/HkP+KHNFRgwoPJlefbXlufAiw/HwBxjRC5QAGZiu4CMVcRXkTFhHbKncg
- RcswhfLTaw4wa/NyXvG/LT1Ws4y3NA0d/teEIHtEv1hgL7aRKOsoKutUzrasidRHdH1EdIQqf
- TN88wcF3MTtFs8XkaHACJVJSpyO5MJ8fK/te0F3oHsVssf8lzw=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 5, 2020 at 4:04 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > -     rc = sja1105_port_status_get(priv, &status, port);
-> > +     rc = sja1105_port_status_get(priv, status, port);
-> >       if (rc < 0) {
-> >               dev_err(ds->dev, "Failed to read port %d counters: %d\n",
-> >                       port, rc);
-> > -             return;
-> > +             goto out;;
->
-> Hi Arnd
->
-> I expect static checker people will drive by soon with a fix for the ;; :-)
+Also use 'g' specifier instead of 'f' to remove trailing zeros,
+and increase precision.
 
-I need to fix the patch up anyway, as it accidentally included an unrelated
-change that fails to apply. Fixed now.
+Examples of output :
+ Before        After
+ 8.0Kbps       8Kbps
+ 9.9Mbps       9.92Mbps
+ 55001Mbps     55Gbps
 
-      Arnd
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ misc/ss.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/misc/ss.c b/misc/ss.c
+index 3ef151fbf1f1b3856e95a1baa751a1cdd27d10b7..ab206b2011ec92b899709d2c78ce7310e88ec80e 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -2382,10 +2382,12 @@ static char *sprint_bw(char *buf, double bw)
+ {
+ 	if (numeric)
+ 		sprintf(buf, "%.0f", bw);
+-	else if (bw > 1000000.)
+-		sprintf(buf, "%.1fM", bw / 1000000.);
+-	else if (bw > 1000.)
+-		sprintf(buf, "%.1fK", bw / 1000.);
++	else if (bw >= 1e9)
++		sprintf(buf, "%.3gG", bw / 1e9);
++	else if (bw >= 1e6)
++		sprintf(buf, "%.3gM", bw / 1e6);
++	else if (bw >= 1e3)
++		sprintf(buf, "%.3gK", bw / 1e3);
+ 	else
+ 		sprintf(buf, "%g", bw);
+ 
+-- 
+2.26.2.526.g744177e7f7-goog
+
