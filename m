@@ -2,76 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 286AC1C4DCA
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 07:51:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21ADD1C4DF4
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 07:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725915AbgEEFve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 01:51:34 -0400
-Received: from mga17.intel.com ([192.55.52.151]:41497 "EHLO mga17.intel.com"
+        id S1727984AbgEEF5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 01:57:07 -0400
+Received: from verein.lst.de ([213.95.11.211]:33401 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725320AbgEEFve (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 01:51:34 -0400
-IronPort-SDR: L6Hgm2HZlpn94KWtdft9QcWZ/MM85XYLAmZ+bC3wdJ5YnQMi4OBRuE9o6BJ8kDM3aBTatN0qVF
- CStRXoSAH7Kg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2020 22:51:33 -0700
-IronPort-SDR: 7Y9jHygZnKSnAZbtwIh0VdUyRJfLV2zvyiNKZqvfjxN/rlyrkV/verR61t41KXveQoPpOKbwVd
- furVy/m1qY8g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,354,1583222400"; 
-   d="scan'208";a="338548394"
-Received: from wpross-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.33.167])
-  by orsmga001.jf.intel.com with ESMTP; 04 May 2020 22:51:30 -0700
-Subject: Re: [RFC PATCH bpf-next 13/13] MAINTAINERS, xsk: update AF_XDP
- section after moves/adds
-To:     Joe Perches <joe@perches.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com
-Cc:     maximmi@mellanox.com, maciej.fijalkowski@intel.com
-References: <20200504113716.7930-1-bjorn.topel@gmail.com>
- <20200504113716.7930-14-bjorn.topel@gmail.com>
- <5ae86fa9e7fbb92e08055dd60526bf9802217f5f.camel@perches.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <7472483f-e3e4-0a47-f903-b5986e2832d8@intel.com>
-Date:   Tue, 5 May 2020 07:51:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1725320AbgEEF5H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 01:57:07 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 430EE68BEB; Tue,  5 May 2020 07:57:04 +0200 (CEST)
+Date:   Tue, 5 May 2020 07:57:04 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Christoph Hellwig <hch@lst.de>, Iurii Zaikin <yzaikin@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrey Ignatov <rdna@fb.com>
+Subject: Re: [PATCH 5/5] sysctl: pass kernel pointers to ->proc_handler
+Message-ID: <20200505055704.GA3552@lst.de>
+References: <20200424064338.538313-1-hch@lst.de> <20200424064338.538313-6-hch@lst.de> <202005041154.CC19F03@keescook>
 MIME-Version: 1.0
-In-Reply-To: <5ae86fa9e7fbb92e08055dd60526bf9802217f5f.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202005041154.CC19F03@keescook>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-05 05:02, Joe Perches wrote:
-> On Mon, 2020-05-04 at 13:37 +0200, Björn Töpel wrote:
->> Update MAINTAINERS to correctly mirror the current AF_XDP socket file
->> layout. Also, add the AF_XDP files of libbpf.
-> []
->> diff --git a/MAINTAINERS b/MAINTAINERS
-> []
->> @@ -18451,8 +18451,12 @@ R:	Jonathan Lemon <jonathan.lemon@gmail.com>
->>   L:	netdev@vger.kernel.org
->>   L:	bpf@vger.kernel.org
->>   S:	Maintained
->> -F:	kernel/bpf/xskmap.c
->>   F:	net/xdp/
->> +F:	include/net/xdp_sock*
->> +F:	include/net/xsk_buffer_pool.h
->> +F:	include/uapi/linux/if_xdp.h
->> +F:	tools/lib/bpf/xsk*
->> +F:	samples/bpf/xdpsock*
+On Mon, May 04, 2020 at 12:01:11PM -0700, Kees Cook wrote:
+> >  	if (error)
+> > -		goto out;
+> > +		goto out_free_buf;
+> >  
+> >  	/* careful: calling conventions are nasty here */
 > 
-> Alphabetic order in file patterns please
->
+> Is this comment still valid after doing these cleanups?
 
-Thanks for pointing this out, Joe. I'll fix this in the next revision.
-
+The comment is pretty old so I decided to keep it.  That being said
+I'm not sure it really is very helpful.
