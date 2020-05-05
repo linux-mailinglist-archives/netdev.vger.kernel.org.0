@@ -2,155 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4DA1C5C62
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:47:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F4B1C5C7F
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730517AbgEEPrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 11:47:31 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30505 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730440AbgEEPr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:47:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588693647;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-        bh=CXSDb19dE2QCf06dgi6foK1UYMiGs0Wvb6l4Uj5Is34=;
-        b=K3wBV80MET1HnrOlHtvNL1wy+YPxrcyNdqINeJYGDLP+DJeG5I/VBHVlknLYxXBC9Swkcr
-        8qJKA5TWvh6PLRxwYyQQfFUrPOV7QYQH1eV0rK4ZXTWxqmkw/NH7VaqRb+skWQqDDqufJj
-        gNzDYDQ0EVBEAsPj+0sgmt6gKl7XCxA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-394-o4HH4TSGOqaZJZTJUYbsFw-1; Tue, 05 May 2020 11:47:23 -0400
-X-MC-Unique: o4HH4TSGOqaZJZTJUYbsFw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1DDC6190B696;
-        Tue,  5 May 2020 15:46:47 +0000 (UTC)
-Received: from [10.36.114.14] (ovpn-114-14.ams2.redhat.com [10.36.114.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 717C619C4F;
-        Tue,  5 May 2020 15:46:45 +0000 (UTC)
-Subject: Re: [vhost:vhost 8/22] drivers/virtio/virtio_mem.c:1375:20: error:
- implicit declaration of function 'kzalloc'; did you mean 'vzalloc'?
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kbuild test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-References: <202005052221.83QerHmG%lkp@intel.com>
- <7dea2810-85cf-0892-20a8-bba3e3a2c133@redhat.com>
- <20200505114433-mutt-send-email-mst@kernel.org>
-From:   David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; prefer-encrypt=mutual; keydata=
- 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
-Organization: Red Hat GmbH
-Message-ID: <3eaebd8d-750a-d046-15f5-706fb00a196e@redhat.com>
-Date:   Tue, 5 May 2020 17:46:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1730070AbgEEPuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 11:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35804 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729150AbgEEPuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:50:07 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917D9C061A0F;
+        Tue,  5 May 2020 08:50:07 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id k81so2772876qke.5;
+        Tue, 05 May 2020 08:50:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yJr8RqITkDOSGCYSWIKgpqgvoSgqR2F95IvJn3b0ji4=;
+        b=jc0CkDP2R64dQQyGSslB9qk/kYm/zxhSNRdlUNAK+ACzkAtWZbgvmHATjia5aFel8o
+         ElMXA5x7gAZLp3+uLkYOhyRcrFWJzBB/UbPMP13/+JUlYldi3ceOhNrLPAIajFuWghfe
+         4abpBFl5979n9mX1uHFxWoL3nV6mUZe8yOGN+Bl8VdaKGIiqUGLfZujSE7nvS5iT3xK+
+         V0jzCJNs2wlkSo9P7QPvg/3iAR3omJKATAltVkVslcBb+lVAdSBiXwGwpJFPfRMQb+c8
+         alpJv9gVvRJeXd7dOw9ON+bWn+LD7wulFhfsvjoZHRydZtGMgT+f6giTXOtbUq8aipyo
+         EjYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yJr8RqITkDOSGCYSWIKgpqgvoSgqR2F95IvJn3b0ji4=;
+        b=FKE5K/jP9Os0M2xLZoHVTcicVYTS2f7r4kNV/mIL8eTiJwOGdOAtaVrLt4/JJauTr0
+         uW2iBeaQ5IO0kUpPuYSXsSgmL332TZPTe/rGJEhkMcDgvN60c9EeykTr0sAR0ScwNC0f
+         Kz9bZbUXrhGf2t3OH7cF1o/EKz5e1rFgTzKQMru0T6SAaDUr2kZjcXuzCTn8I8HrlPUa
+         rAEdILAV6u+G8Q4itEJ78rJU5Z/XupPQ0mXdwn4uPX7lprdSeGsB+bb81uWkaeBuphsH
+         Xxyu5nFXkhXjYTtUo8SJhvlD+0YKpDA6UhFoh7jh3H15UgezSO+knOLjQ3lmDmz+fbb/
+         Eyrw==
+X-Gm-Message-State: AGi0PuZZBYftyGxdrda3YkMIrRIn+TXPMI34HQSK62uRrt32M0rid9Zw
+        7JOQDkifAER6vJVTcnabb4w4aYbK
+X-Google-Smtp-Source: APiQypLCqoomdHCwWQgejNHDdpI6LwLVKABF7LU6TEhgRnJJpXSiw5kVu5AcqucNL0BygHBTCKCInA==
+X-Received: by 2002:a37:5846:: with SMTP id m67mr3829421qkb.78.1588693806656;
+        Tue, 05 May 2020 08:50:06 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c19:a884:3b89:d8b6? ([2601:282:803:7700:c19:a884:3b89:d8b6])
+        by smtp.googlemail.com with ESMTPSA id f68sm2192226qke.74.2020.05.05.08.50.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 May 2020 08:50:06 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 2/2] ss: add support for cgroup v2
+ information and filtering
+To:     Dmitry Yakunin <zeil@yandex-team.ru>, netdev@vger.kernel.org
+Cc:     khlebnikov@yandex-team.ru, cgroups@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20200430155245.83364-1-zeil@yandex-team.ru>
+ <20200430155245.83364-3-zeil@yandex-team.ru>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <72f12b35-0dd2-81b2-aeb1-52822c7fe03a@gmail.com>
+Date:   Tue, 5 May 2020 09:50:04 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200505114433-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200430155245.83364-3-zeil@yandex-team.ru>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.05.20 17:44, Michael S. Tsirkin wrote:
-> On Tue, May 05, 2020 at 04:50:13PM +0200, David Hildenbrand wrote:
->> On 05.05.20 16:15, kbuild test robot wrote:
->>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
->>> head:   da1742791d8c0c0a8e5471f181549c4726a5c5f9
->>> commit: 7527631e900d464ed2d533f799cb0da2b29cc6f0 [8/22] virtio-mem: Paravirtualized memory hotplug
->>> config: x86_64-randconfig-b002-20200505 (attached as .config)
->>> compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
->>> reproduce:
->>>         git checkout 7527631e900d464ed2d533f799cb0da2b29cc6f0
->>>         # save the attached .config to linux build tree
->>>         make ARCH=x86_64 
->>>
->>> If you fix the issue, kindly add following tag as appropriate
->>> Reported-by: kbuild test robot <lkp@intel.com>
->>>
->>> All error/warnings (new ones prefixed by >>):
->>>
->>>    drivers/virtio/virtio_mem.c: In function 'virtio_mem_probe':
->>>>> drivers/virtio/virtio_mem.c:1375:20: error: implicit declaration of function 'kzalloc'; did you mean 'vzalloc'? [-Werror=implicit-function-declaration]
->>>      vdev->priv = vm = kzalloc(sizeof(*vm), GFP_KERNEL);
->>>                        ^~~~~~~
->>>                        vzalloc
->>>>> drivers/virtio/virtio_mem.c:1375:18: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
->>>      vdev->priv = vm = kzalloc(sizeof(*vm), GFP_KERNEL);
->>>                      ^
->>>>> drivers/virtio/virtio_mem.c:1419:2: error: implicit declaration of function 'kfree'; did you mean 'vfree'? [-Werror=implicit-function-declaration]
->>>      kfree(vm);
->>>      ^~~~~
->>>      vfree
->>>    cc1: some warnings being treated as errors
->>>
->>> vim +1375 drivers/virtio/virtio_mem.c
->>
->> Guess we simply need
->>
->>  #include <linux/slab.h>
->>
->> to make it work for that config.
+On 4/30/20 9:52 AM, Dmitry Yakunin wrote:
+> This patch introduces two new features: obtaining cgroup information and
+> filtering sockets by cgroups. These features work based on cgroup v2 ID
+> field in the socket (kernel should be compiled with CONFIG_SOCK_CGROUP_DATA).
 > 
+> Cgroup information can be obtained by specifying --cgroup flag and now contains
+> only pathname. For faster pathname lookups cgroup cache is implemented. This
+> cache is filled on ss startup and missed entries are resolved and saved
+> on the fly.
 > 
-> OK I added that in the 1st commit that introduced virtio-mem.
+> Cgroup filter extends EXPRESSION and allows to specify cgroup pathname
+> (relative or absolute) to obtain sockets attached only to this cgroup.
+> Filter syntax: ss [ cgroup PATHNAME ]
+> Examples:
+>     ss -a cgroup /sys/fs/cgroup/unified (or ss -a cgroup .)
+>     ss -a cgroup /sys/fs/cgroup/unified/cgroup1 (or ss -a cgroup cgroup1)
+> 
 
-Thanks. I have some addon-patches ready, what's the best way to continue
-with these?
+on a kernel without support for this feature:
 
+$ misc/ss -a cgroup /sys/fs/cgroup/unified
+RTNETLINK answers: Invalid argument
+RTNETLINK answers: Invalid argument
+RTNETLINK answers: Invalid argument
+RTNETLINK answers: Invalid argument
+RTNETLINK answers: Invalid argument
+RTNETLINK answers: Invalid argument
+RTNETLINK answers: Invalid argument
+RTNETLINK answers: Invalid argument
+RTNETLINK answers: Invalid argument
+Netid    State    Recv-Q    Send-Q       Local Address:Port         Peer
+Address:Port    Process
 
--- 
-Thanks,
-
-David / dhildenb
-
+New iproute2 can be run on older kernels, so errors should be cleanly
+handled.
