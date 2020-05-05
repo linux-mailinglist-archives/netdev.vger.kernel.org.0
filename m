@@ -2,174 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A553F1C5D9C
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:31:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D011C5D9E
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:31:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730037AbgEEQbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 12:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729840AbgEEQbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:31:06 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BFEC061A0F;
-        Tue,  5 May 2020 09:31:06 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id b8so1228475pgi.11;
-        Tue, 05 May 2020 09:31:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hfJ7CD8kT1IxAQsPsr4fznv4yl20HQI5OOnUts3Y7HI=;
-        b=PSRWhVm+KF9bJV+bKC+qaUXSsdqLvJm958luEJ4SlPY3I761Out/MWDDOnIlGmMzPE
-         CqF4cMPzJIcRzNu3KLsfroHFQYw9SCHuklgE1GCpTCr+Dv0lArr+uzDEtXxID4AbVzQi
-         JKuq/S9IXtx8wRzqNG/eeEsRkcb6PAbXaWyMB1i01RKRmMQR/ZtWPZlFGnPgNy4rIeiD
-         9QM2wu7AMN8aWcGtpJVmvJ3gIbTCFturHjn/d3xUpiVLF0eUn0yW+7mBrz2ZOsdaGmZe
-         up5oLX1k7b5iSjno4IIOAQQtnemXvUtNRBQ2vT/XiuiXcOTymL9hhoncKX+aYV+GBMvo
-         N86w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hfJ7CD8kT1IxAQsPsr4fznv4yl20HQI5OOnUts3Y7HI=;
-        b=ZpR8GE65+rHpfp5oi55oGNS9+p5EQ9YVAoKn50+CIUzqCb1Y9NpxEoCEPivgIcwHET
-         PU0OHrHBQLyOzFGFq31/mwTEowBXwX8Vz7pVxL6HxXfR/aLJWR4vBSq+3xxTIUugSBD0
-         5+rIzp+uOFsvBtOJg2VZFd6L/vcl9CIlbDmYiMO1QBr66sR5wLcLt94yjhuUR/PIg9sP
-         O0B/CFujLM9+Tcn6NbuFzVzWUsKkDEHTdfyzcAFN/ygSOsu7+5dOWs4rhMi24belg0Ec
-         65EV3w3zQmrWIYfH6aCnT8PswwSftEnqCf4YcjMQvZoWVFsBXnyhGnM2/IQ6qNyeSLrY
-         YeKw==
-X-Gm-Message-State: AGi0Pub76SYbs+nM2axWpD24ww39nNxWLbXmi1b7vpelWEBJi82tchDO
-        2TzAFuIwvnzdYFNavwS+CBLhh7g5
-X-Google-Smtp-Source: APiQypLsqZvCUtbY5LmgDxny4jtbsy+eBRYHAzhG0adC0fKtlM2K6mqcontLK4x83hEAyDMOQi8+6w==
-X-Received: by 2002:a62:4e88:: with SMTP id c130mr4010584pfb.122.1588696265889;
-        Tue, 05 May 2020 09:31:05 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id e11sm2348271pfl.85.2020.05.05.09.31.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 May 2020 09:31:05 -0700 (PDT)
-Subject: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
-To:     SeongJae Park <sjpark@amazon.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        sj38.park@gmail.com, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        SeongJae Park <sjpark@amazon.de>, snu@amazon.com,
-        amit@kernel.org, stable@vger.kernel.org,
-        Paul McKenney <paulmck@kernel.org>
-References: <20200505161302.547-1-sjpark@amazon.com>
- <05843a3c-eb9d-3a0d-f992-7e4b97cc1f19@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <77124fc2-86b2-27f6-fd7c-4f1e86eb3fff@gmail.com>
-Date:   Tue, 5 May 2020 09:31:02 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1730270AbgEEQbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 12:31:34 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:33970 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729840AbgEEQbe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:31:34 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 045GVTWB119652;
+        Tue, 5 May 2020 11:31:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1588696289;
+        bh=taYNfOw1PERNYYRNSf6RpqbmydDX/ba8q0uroLuaJ+A=;
+        h=From:To:CC:Subject:Date;
+        b=ACdEEFfLuoAHZtJh1cM1BSIgKLA4wfntKTjCv8fjI981M1UVDFnq7Jd3xPxJaUJbO
+         /1HomyBWx+8qMr/AWy6mX4CuhHmQcbf3+PFGG/xG8yP+3mRTHLP7+IiGIve870t3I1
+         GPZZI1tdE/va7R9+D8/23qGvKKIT+S5JH5+T98Ig=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 045GVTDq045409
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 May 2020 11:31:29 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 5 May
+ 2020 11:31:29 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 5 May 2020 11:31:29 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 045GVRfw048550;
+        Tue, 5 May 2020 11:31:28 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH] net: ethernet: ti: am65-cpsw-nuss: fix irqs type
+Date:   Tue, 5 May 2020 19:31:26 +0300
+Message-ID: <20200505163126.13942-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <05843a3c-eb9d-3a0d-f992-7e4b97cc1f19@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The K3 INTA driver, which is source TX/RX IRQs for CPSW NUSS, defines IRQs
+triggering type as EDGE by default, but triggering type for CPSW NUSS TX/RX
+IRQs has to be LEVEL as the EDGE triggering type may cause unnecessary IRQs
+triggering and NAPI scheduling for empty queues. It was discovered with
+RT-kernel.
 
+Fix it by explicitly specifying CPSW NUSS TX/RX IRQ type as
+IRQF_TRIGGER_HIGH.
 
-On 5/5/20 9:25 AM, Eric Dumazet wrote:
-> 
-> 
-> On 5/5/20 9:13 AM, SeongJae Park wrote:
->> On Tue, 5 May 2020 09:00:44 -0700 Eric Dumazet <edumazet@google.com> wrote:
->>
->>> On Tue, May 5, 2020 at 8:47 AM SeongJae Park <sjpark@amazon.com> wrote:
->>>>
->>>> On Tue, 5 May 2020 08:20:50 -0700 Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>>>
->>>>>
->>>>>
->>>>> On 5/5/20 8:07 AM, SeongJae Park wrote:
->>>>>> On Tue, 5 May 2020 07:53:39 -0700 Eric Dumazet <edumazet@google.com> wrote:
->>>>>>
->>>>>
->>>>>>> Why do we have 10,000,000 objects around ? Could this be because of
->>>>>>> some RCU problem ?
->>>>>>
->>>>>> Mainly because of a long RCU grace period, as you guess.  I have no idea how
->>>>>> the grace period became so long in this case.
->>>>>>
->>>>>> As my test machine was a virtual machine instance, I guess RCU readers
->>>>>> preemption[1] like problem might affected this.
->>>>>>
->>>>>> [1] https://www.usenix.org/system/files/conference/atc17/atc17-prasad.pdf
->>>>>>
->>>>>>>
->>>>>>> Once Al patches reverted, do you have 10,000,000 sock_alloc around ?
->>>>>>
->>>>>> Yes, both the old kernel that prior to Al's patches and the recent kernel
->>>>>> reverting the Al's patches didn't reproduce the problem.
->>>>>>
->>>>>
->>>>> I repeat my question : Do you have 10,000,000 (smaller) objects kept in slab caches ?
->>>>>
->>>>> TCP sockets use the (very complex, error prone) SLAB_TYPESAFE_BY_RCU, but not the struct socket_wq
->>>>> object that was allocated in sock_alloc_inode() before Al patches.
->>>>>
->>>>> These objects should be visible in kmalloc-64 kmem cache.
->>>>
->>>> Not exactly the 10,000,000, as it is only the possible highest number, but I
->>>> was able to observe clear exponential increase of the number of the objects
->>>> using slabtop.  Before the start of the problematic workload, the number of
->>>> objects of 'kmalloc-64' was 5760, but I was able to observe the number increase
->>>> to 1,136,576.
->>>>
->>>>           OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
->>>> before:   5760   5088  88%    0.06K     90       64       360K kmalloc-64
->>>> after:  1136576 1136576 100%    0.06K  17759       64     71036K kmalloc-64
->>>>
->>>
->>> Great, thanks.
->>>
->>> How recent is the kernel you are running for your experiment ?
->>
->> It's based on 5.4.35.
->>
->>>
->>> Let's make sure the bug is not in RCU.
->>
->> One thing I can currently say is that the grace period passes at last.  I
->> modified the benchmark to repeat not 10,000 times but only 5,000 times to run
->> the test without OOM but easily observable memory pressure.  As soon as the
->> benchmark finishes, the memory were freed.
->>
->> If you need more tests, please let me know.
->>
-> 
-> I would ask Paul opinion on this issue, because we have many objects
-> being freed after RCU grace periods.
-> 
-> If RCU subsystem can not keep-up, I guess other workloads will also suffer.
-> 
-> Sure, we can revert patches there and there trying to work around the issue,
-> but for objects allocated from process context, we should not have these problems.
-> 
+Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-I wonder if simply adjusting rcu_divisor to 6 or 5 would help 
-
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index d9a49cd6065a20936edbda1b334136ab597cde52..fde833bac0f9f81e8536211b4dad6e7575c1219a 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -427,7 +427,7 @@ module_param(qovld, long, 0444);
- static ulong jiffies_till_first_fqs = ULONG_MAX;
- static ulong jiffies_till_next_fqs = ULONG_MAX;
- static bool rcu_kick_kthreads;
--static int rcu_divisor = 7;
-+static int rcu_divisor = 6;
- module_param(rcu_divisor, int, 0644);
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 2bf56733ba94..2517ffba8178 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -1719,7 +1719,8 @@ static int am65_cpsw_nuss_ndev_add_napi_2g(struct am65_cpsw_common *common)
  
- /* Force an exit from rcu_do_batch() after 3 milliseconds. */
+ 		ret = devm_request_irq(dev, tx_chn->irq,
+ 				       am65_cpsw_nuss_tx_irq,
+-				       0, tx_chn->tx_chn_name, tx_chn);
++				       IRQF_TRIGGER_HIGH,
++				       tx_chn->tx_chn_name, tx_chn);
+ 		if (ret) {
+ 			dev_err(dev, "failure requesting tx%u irq %u, %d\n",
+ 				tx_chn->id, tx_chn->irq, ret);
+@@ -1744,7 +1745,7 @@ static int am65_cpsw_nuss_ndev_reg_2g(struct am65_cpsw_common *common)
+ 
+ 	ret = devm_request_irq(dev, common->rx_chns.irq,
+ 			       am65_cpsw_nuss_rx_irq,
+-			       0, dev_name(dev), common);
++			       IRQF_TRIGGER_HIGH, dev_name(dev), common);
+ 	if (ret) {
+ 		dev_err(dev, "failure requesting rx irq %u, %d\n",
+ 			common->rx_chns.irq, ret);
+-- 
+2.17.1
 
