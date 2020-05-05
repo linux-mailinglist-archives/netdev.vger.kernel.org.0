@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 082771C5C27
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:45:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 764091C5C60
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 17:47:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730667AbgEEPo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 11:44:59 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44750 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730417AbgEEPo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:44:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588693497;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ATymMeG6RiOGBAAfWdg7fwilnSvvAev3slucMk0tl5E=;
-        b=e3dVUVbYT23HNGLZNXk4DR1D80eNSsGzSeatVpX26UC7LfLvdJ5v/Difa8HBs19Vv3OaSv
-        jWEgCLMrFLs8KqTurvbsE5xmKqU5RaawrONW651QR1FTxJS/2iu2cVb8gGl9rGL4bWnnKm
-        sZtWZQaZz/Pnh6E7zxN71Wb+iLxNmNI=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-139-6ngYP9ZDM_i6FpayITGhgg-1; Tue, 05 May 2020 11:44:53 -0400
-X-MC-Unique: 6ngYP9ZDM_i6FpayITGhgg-1
-Received: by mail-wm1-f70.google.com with SMTP id 14so998861wmo.9
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 08:44:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ATymMeG6RiOGBAAfWdg7fwilnSvvAev3slucMk0tl5E=;
-        b=p5FQwrOGpemTVWkVYayrgO3HdTmymhINaQoy5uHxokkR3aj9Ik4OiDUKQMsQViiIk+
-         EyvSTnY/NOXkaT+baXC/g2nh4ENCEg4F5ax30ig/HyFBmf3ydpDLtikfkE3xvNU7693V
-         V/ByMIca01GhJN7XcwxeWIeKbUs59MLbaHzsYnaUGIT75AXYPCs2TC1Xp9FIQgJd/F/r
-         6JWysVFInDuhyT0k7sR6EyY4xgDeWR1qiB5cZLQ5FXKrrNfYJyjFbo5Go9lSXNQxV0JS
-         gk5g15ByDlQzoXZ7MWZKJeJrGifrgOmILeZUQnDnbFg4FpxDtttynQQbyjShtXv0Y6Rj
-         aT+g==
-X-Gm-Message-State: AGi0PuZSPu0pdBub4ulypbYSIVs+XWzz4gyRxwEY1lYMiKsnv8GUVW8v
-        46poIMTlAHzeveZsSqPbYl8SCDfbE9uBoH4aOFYbPRPCKYLqhzyF9T+Pc/2GMjdgq3Y97BOqVzm
-        E9QhcrkmiR02GLipP
-X-Received: by 2002:a05:600c:220c:: with SMTP id z12mr3889166wml.84.1588693492413;
-        Tue, 05 May 2020 08:44:52 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLAtAtR29+1Xpb9v/bXxgErbXkwmiM0ZkUgsrIiaMjwwteCzask/x8xdzj9MT0cC1whI9Hdyw==
-X-Received: by 2002:a05:600c:220c:: with SMTP id z12mr3889139wml.84.1588693492106;
-        Tue, 05 May 2020 08:44:52 -0700 (PDT)
-Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
-        by smtp.gmail.com with ESMTPSA id x13sm4635004wmc.5.2020.05.05.08.44.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2020 08:44:51 -0700 (PDT)
-Date:   Tue, 5 May 2020 11:44:48 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     kbuild test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Subject: Re: [vhost:vhost 8/22] drivers/virtio/virtio_mem.c:1375:20: error:
- implicit declaration of function 'kzalloc'; did you mean 'vzalloc'?
-Message-ID: <20200505114433-mutt-send-email-mst@kernel.org>
-References: <202005052221.83QerHmG%lkp@intel.com>
- <7dea2810-85cf-0892-20a8-bba3e3a2c133@redhat.com>
+        id S1730299AbgEEPr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 11:47:27 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:63427 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729406AbgEEPr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 11:47:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1588693647; x=1620229647;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   mime-version;
+  bh=qgL+UrIHPggA/cbMIcuZ6L6wlHkLvvYMOzgo5iwxhgg=;
+  b=G+Q7z7KLHWVXnfTXL6vCm+I433aihc4qv6kJ4WtoMTKroRNfPk1h2ODX
+   OF6z/eK/BT306TyXHZLwicMXlh1LxUV8H66LNNDTsbf9ehFMfjnYhlQjE
+   jI8MAGvELZ+s45fCv7TLThd3hP0hjX2NmaUVQsLs2nttVoml0/fnqvhKa
+   U=;
+IronPort-SDR: O166hFl/kUUCS2stThOFXVSw6unJMOC3/77W9R3kUjp/BSPJ10ib3NA17O1H6Lb1AtOuv/GJ+Y
+ 1lR6gvyLhizA==
+X-IronPort-AV: E=Sophos;i="5.73,355,1583193600"; 
+   d="scan'208";a="33074496"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-5dd976cd.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 05 May 2020 15:47:24 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1d-5dd976cd.us-east-1.amazon.com (Postfix) with ESMTPS id DA09DA225F;
+        Tue,  5 May 2020 15:47:20 +0000 (UTC)
+Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 5 May 2020 15:47:20 +0000
+Received: from u886c93fd17d25d.ant.amazon.com (10.43.162.38) by
+ EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 5 May 2020 15:47:12 +0000
+From:   SeongJae Park <sjpark@amazon.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+CC:     SeongJae Park <sjpark@amazon.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <sj38.park@gmail.com>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        SeongJae Park <sjpark@amazon.de>, <snu@amazon.com>,
+        <amit@kernel.org>, <stable@vger.kernel.org>
+Subject: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
+Date:   Tue, 5 May 2020 17:46:44 +0200
+Message-ID: <20200505154644.18997-1-sjpark@amazon.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <a8510327-d4f0-1207-1342-d688e9d5b8c3@gmail.com> (raw)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7dea2810-85cf-0892-20a8-bba3e3a2c133@redhat.com>
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.38]
+X-ClientProxiedBy: EX13D18UWC003.ant.amazon.com (10.43.162.237) To
+ EX13D31EUA001.ant.amazon.com (10.43.165.15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 04:50:13PM +0200, David Hildenbrand wrote:
-> On 05.05.20 16:15, kbuild test robot wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
-> > head:   da1742791d8c0c0a8e5471f181549c4726a5c5f9
-> > commit: 7527631e900d464ed2d533f799cb0da2b29cc6f0 [8/22] virtio-mem: Paravirtualized memory hotplug
-> > config: x86_64-randconfig-b002-20200505 (attached as .config)
-> > compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-> > reproduce:
-> >         git checkout 7527631e900d464ed2d533f799cb0da2b29cc6f0
-> >         # save the attached .config to linux build tree
-> >         make ARCH=x86_64 
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kbuild test robot <lkp@intel.com>
-> > 
-> > All error/warnings (new ones prefixed by >>):
-> > 
-> >    drivers/virtio/virtio_mem.c: In function 'virtio_mem_probe':
-> >>> drivers/virtio/virtio_mem.c:1375:20: error: implicit declaration of function 'kzalloc'; did you mean 'vzalloc'? [-Werror=implicit-function-declaration]
-> >      vdev->priv = vm = kzalloc(sizeof(*vm), GFP_KERNEL);
-> >                        ^~~~~~~
-> >                        vzalloc
-> >>> drivers/virtio/virtio_mem.c:1375:18: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
-> >      vdev->priv = vm = kzalloc(sizeof(*vm), GFP_KERNEL);
-> >                      ^
-> >>> drivers/virtio/virtio_mem.c:1419:2: error: implicit declaration of function 'kfree'; did you mean 'vfree'? [-Werror=implicit-function-declaration]
-> >      kfree(vm);
-> >      ^~~~~
-> >      vfree
-> >    cc1: some warnings being treated as errors
-> > 
-> > vim +1375 drivers/virtio/virtio_mem.c
+On Tue, 5 May 2020 08:20:50 -0700 Eric Dumazet <eric.dumazet@gmail.com> wrote:
+
 > 
-> Guess we simply need
 > 
->  #include <linux/slab.h>
+> On 5/5/20 8:07 AM, SeongJae Park wrote:
+> > On Tue, 5 May 2020 07:53:39 -0700 Eric Dumazet <edumazet@google.com> wrote:
+> > 
 > 
-> to make it work for that config.
+> >> Why do we have 10,000,000 objects around ? Could this be because of
+> >> some RCU problem ?
+> > 
+> > Mainly because of a long RCU grace period, as you guess.  I have no idea how
+> > the grace period became so long in this case.
+> > 
+> > As my test machine was a virtual machine instance, I guess RCU readers
+> > preemption[1] like problem might affected this.
+> > 
+> > [1] https://www.usenix.org/system/files/conference/atc17/atc17-prasad.pdf
+> > 
+> >>
+> >> Once Al patches reverted, do you have 10,000,000 sock_alloc around ?
+> > 
+> > Yes, both the old kernel that prior to Al's patches and the recent kernel
+> > reverting the Al's patches didn't reproduce the problem.
+> >
+> 
+> I repeat my question : Do you have 10,000,000 (smaller) objects kept in slab caches ?
+> 
+> TCP sockets use the (very complex, error prone) SLAB_TYPESAFE_BY_RCU, but not the struct socket_wq
+> object that was allocated in sock_alloc_inode() before Al patches.
+> 
+> These objects should be visible in kmalloc-64 kmem cache.
+
+Not exactly the 10,000,000, as it is only the possible highest number, but I
+was able to observe clear exponential increase of the number of the objects
+using slabtop.  Before the start of the problematic workload, the number of
+objects of 'kmalloc-64' was 5760, but I was able to observe the number increase
+to 1,136,576.
+
+	  OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
+before:	  5760   5088  88%    0.06K     90       64       360K kmalloc-64
+after:	1136576 1136576 100%    0.06K  17759       64     71036K kmalloc-64
 
 
-OK I added that in the 1st commit that introduced virtio-mem.
-
-> -- 
-> Thanks,
-> 
-> David / dhildenb
+Thanks,
+SeongJae Park
 
