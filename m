@@ -2,91 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD9D21C6110
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 177701C6122
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728965AbgEETcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 15:32:02 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:31760 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728737AbgEETcB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:32:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588707120;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=i0caJOHWv/qw9cJJ8Niq+lMoz4pnwFyP/fiTwaMzzC0=;
-        b=QCSP76Zw7f3c7KEhOeHj3gYIT2QYThyV+PdpgS/5kB7LzWIALGeCT4DFmEwn//IwiEJDni
-        3jODQnA0r7W2X4HiqWCqyXadWHWfh1xaHYlK+fO4oehFlkc9pqNx3U4PxZ7xRVROuI6Pd7
-        rqWQzm7JQJikMIqshXiku2dzelL8WPE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-87-jM7WZMLQO1G5tG8kfLwBQg-1; Tue, 05 May 2020 15:31:56 -0400
-X-MC-Unique: jM7WZMLQO1G5tG8kfLwBQg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1729028AbgEETgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 15:36:39 -0400
+Received: from correo.us.es ([193.147.175.20]:36808 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728609AbgEETgj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 15:36:39 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id E2FAED2DA17
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 21:36:37 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D5218115410
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 21:36:37 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id CF1312135D; Tue,  5 May 2020 21:36:37 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D2A6C1158E2;
+        Tue,  5 May 2020 21:36:35 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 05 May 2020 21:36:35 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6FB84872FE0;
-        Tue,  5 May 2020 19:31:54 +0000 (UTC)
-Received: from treble (ovpn-119-47.rdu2.redhat.com [10.10.119.47])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3899E60BEC;
-        Tue,  5 May 2020 19:31:53 +0000 (UTC)
-Date:   Tue, 5 May 2020 14:31:51 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
- compatibility
-Message-ID: <20200505193151.mkluubxvqz7zouf6@treble>
-References: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
- <20200501190930.ptxyml5o4rviyo26@ast-mbp.dhcp.thefacebook.com>
- <20200501192204.cepwymj3fln2ngpi@treble>
- <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
- <20200501195617.czrnfqqcxfnliz3k@treble>
- <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
- <20200502192105.xp2osi5z354rh4sm@treble>
- <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
- <89101da0-20e4-a29f-9796-870aa4d328a6@infradead.org>
- <20200505191405.v3xai47bxeaqsmyg@ast-mbp.dhcp.thefacebook.com>
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id B215942EE38E;
+        Tue,  5 May 2020 21:36:35 +0200 (CEST)
+Date:   Tue, 5 May 2020 21:36:35 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netfilter-devel@vger.kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org, ecree@solarflare.com,
+        idosch@mellanox.com
+Subject: Re: [PATCH net,v2] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DONT_CARE
+Message-ID: <20200505193635.GA13114@salvia>
+References: <20200505174736.29414-1-pablo@netfilter.org>
+ <20200505183643.GI14398@nanopsycho.orion>
+ <20200505114616.221fc9af@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200505191405.v3xai47bxeaqsmyg@ast-mbp.dhcp.thefacebook.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+In-Reply-To: <20200505114616.221fc9af@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 12:14:05PM -0700, Alexei Starovoitov wrote:
+On Tue, May 05, 2020 at 11:46:16AM -0700, Jakub Kicinski wrote:
+> On Tue, 5 May 2020 20:36:43 +0200 Jiri Pirko wrote:
+> > Tue, May 05, 2020 at 07:47:36PM CEST, pablo@netfilter.org wrote:
+> > >This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
+> > >that the frontend does not need counters, this hw stats type request
+> > >never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
+> > >the driver to disable the stats, however, if the driver cannot disable
+> > >counters, it bails out.
+> > >
+> > >TCA_ACT_HW_STATS_* maintains the 1:1 mapping with FLOW_ACTION_HW_STATS_*
+> > >except by disabled which is mapped to FLOW_ACTION_HW_STATS_DISABLED
+> > >(this is 0 in tc). Add tc_act_hw_stats() to perform the mapping between
+> > >TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*.
+> > >
+> > >Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
+> > >Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>  
 > > 
-> > Hi,
+> > Looks great. Thanks!
 > > 
-> > I see the objtool warning:
-> > kernel/bpf/core.o: warning: objtool: ___bpf_prog_run()+0x33: call without frame pointer save/setup
-> > 
-> > when using:
-> > gcc (SUSE Linux) 9.3.1 20200406 [revision 6db837a5288ee3ca5ec504fbd5a765817e556ac2]
-> > 
-> > with the attached config file.
+> > Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 > 
-> Thanks Randy. I reproduced it.
+> Is this going to "just work" for mlxsw?
+> 
+>         act = flow_action_first_entry_get(flow_action);                         
+>         if (act->hw_stats == FLOW_ACTION_HW_STATS_ANY ||                        
+>             act->hw_stats == FLOW_ACTION_HW_STATS_IMMEDIATE) {                  
+>                 /* Count action is inserted first */                            
+>                 err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);    
+>                 if (err)                                                        
+>                         return err;                                             
+>         } else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED) {            
+>                 NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type"); 
+>                 return -EOPNOTSUPP;                                             
+>         }
+> 
+> if hw_stats is 0 we'll get into the else and bail.
+> 
+> That doesn't deliver on the "don't care" promise, no?
 
-This problem isn't a mystery, it's caused by __attribute__((optimize)).
+I can send a v3 to handle the _DONT_CARE type from the mlxsw.
 
-The only real solution is to revert
-
-  3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
-
-Once you do that (and disable retpolines) then you should see the
-problem described in my other email.
-
--- 
-Josh
-
+Thank you.
