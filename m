@@ -2,213 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65F571C5F2F
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:47:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2961D1C5F36
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730243AbgEERrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 13:47:20 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43266 "EHLO vps0.lunn.ch"
+        id S1730431AbgEERrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 13:47:47 -0400
+Received: from correo.us.es ([193.147.175.20]:38208 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729315AbgEERrU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 13:47:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=+R73Z4jVWXCfBPkWr/ITaVNISegdk9AM0hchGPNJ8Sc=; b=qQ2MvF5uTgTfl+Fohrz1RdJXhA
-        jbKJkUtbz4bOmvpVN6BZvX4xrqBf8368xqyVXN9pj3mu5y6CHTKEBzV8hYeZQXFyuM0lhfILWQiWn
-        7tQckNZ3aDVY5LOkHKjulgNx5/2306VdzhHpCgzN29KlMn4zb+v52g8MZafJrHKY0UOw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jW1ev-000y9n-Ug; Tue, 05 May 2020 19:47:09 +0200
-Date:   Tue, 5 May 2020 19:47:09 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 06/11] net: ethernet: mtk-eth-mac: new driver
-Message-ID: <20200505174709.GD224913@lunn.ch>
-References: <20200505140231.16600-1-brgl@bgdev.pl>
- <20200505140231.16600-7-brgl@bgdev.pl>
+        id S1729315AbgEERrq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 May 2020 13:47:46 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 71C9011EB27
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 19:47:42 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5EBCE1158E5
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 19:47:42 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 5D136115417; Tue,  5 May 2020 19:47:42 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5349C1158E3;
+        Tue,  5 May 2020 19:47:40 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 05 May 2020 19:47:40 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 1577942EE38E;
+        Tue,  5 May 2020 19:47:40 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
+        ecree@solarflare.com, kuba@kernel.org
+Subject: [PATCH net,v2] net: flow_offload: skip hw stats check for FLOW_ACTION_HW_STATS_DONT_CARE
+Date:   Tue,  5 May 2020 19:47:36 +0200
+Message-Id: <20200505174736.29414-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200505140231.16600-7-brgl@bgdev.pl>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static struct net_device *mtk_mac_get_netdev(struct mtk_mac_priv *priv)
-> +{
-> +	char *ptr = (char *)priv;
-> +
-> +	return (struct net_device *)(ptr - ALIGN(sizeof(struct net_device),
-> +						 NETDEV_ALIGN));
-> +}
+This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
+that the frontend does not need counters, this hw stats type request
+never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
+the driver to disable the stats, however, if the driver cannot disable
+counters, it bails out.
 
-Bit of an odd way to do it. It is much more normal to just have
+TCA_ACT_HW_STATS_* maintains the 1:1 mapping with FLOW_ACTION_HW_STATS_*
+except by disabled which is mapped to FLOW_ACTION_HW_STATS_DISABLED
+(this is 0 in tc). Add tc_act_hw_stats() to perform the mapping between
+TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*.
 
-    return priv->netdev;
+Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+v2: define FLOW_ACTION_HW_STATS_DISABLED at the end of the enumeration
+    as Jiri suggested. Keep the 1:1 mapping between TCA_ACT_HW_STATS_*
+    and FLOW_ACTION_HW_STATS_* except by the disabled case.
 
-> +static struct sk_buff *mtk_mac_alloc_skb(struct net_device *ndev)
-> +{
-> +	uintptr_t tail, offset;
-> +	struct sk_buff *skb;
-> +
-> +	skb = dev_alloc_skb(MTK_MAC_MAX_FRAME_SIZE);
-> +	if (!skb)
-> +		return NULL;
-> +
-> +	/* Align to 16 bytes. */
-> +	tail = (uintptr_t)skb_tail_pointer(skb);
-> +	if (tail & (MTK_MAC_SKB_ALIGNMENT - 1)) {
-> +		offset = tail & (MTK_MAC_SKB_ALIGNMENT - 1);
-> +		skb_reserve(skb, MTK_MAC_SKB_ALIGNMENT - offset);
-> +	}
-> +
-> +	/* Ensure 16-byte alignment of the skb pointer: eth_type_trans() will
-> +	 * extract the Ethernet header (14 bytes) so we need two more bytes.
-> +	 */
-> +	skb_reserve(skb, 2);
+ include/net/flow_offload.h |  9 ++++++++-
+ net/sched/cls_api.c        | 14 ++++++++++++--
+ 2 files changed, 20 insertions(+), 3 deletions(-)
 
-NET_IP_ALIGN
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 3619c6acf60f..efc8350b42fb 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -166,15 +166,18 @@ enum flow_action_mangle_base {
+ enum flow_action_hw_stats_bit {
+ 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+ 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
++	FLOW_ACTION_HW_STATS_DISABLED_BIT,
+ };
+ 
+ enum flow_action_hw_stats {
+-	FLOW_ACTION_HW_STATS_DISABLED = 0,
++	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
+ 	FLOW_ACTION_HW_STATS_IMMEDIATE =
+ 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
+ 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
+ 	FLOW_ACTION_HW_STATS_ANY = FLOW_ACTION_HW_STATS_IMMEDIATE |
+ 				   FLOW_ACTION_HW_STATS_DELAYED,
++	FLOW_ACTION_HW_STATS_DISABLED =
++		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
+ };
+ 
+ typedef void (*action_destr)(void *priv);
+@@ -325,7 +328,11 @@ __flow_action_hw_stats_check(const struct flow_action *action,
+ 		return true;
+ 	if (!flow_action_mixed_hw_stats_check(action, extack))
+ 		return false;
++
+ 	action_entry = flow_action_first_entry_get(action);
++	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
++		return true;
++
+ 	if (!check_allow_bit &&
+ 	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 55bd1429678f..56cf1b9e1e24 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3523,6 +3523,16 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
+ #endif
+ }
+ 
++static enum flow_action_hw_stats tc_act_hw_stats(u8 hw_stats)
++{
++	if (WARN_ON_ONCE(hw_stats > TCA_ACT_HW_STATS_ANY))
++		return FLOW_ACTION_HW_STATS_DONT_CARE;
++	else if (!hw_stats)
++		return FLOW_ACTION_HW_STATS_DISABLED;
++
++	return hw_stats;
++}
++
+ int tc_setup_flow_action(struct flow_action *flow_action,
+ 			 const struct tcf_exts *exts)
+ {
+@@ -3546,7 +3556,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 		if (err)
+ 			goto err_out_locked;
+ 
+-		entry->hw_stats = act->hw_stats;
++		entry->hw_stats = tc_act_hw_stats(act->hw_stats);
+ 
+ 		if (is_tcf_gact_ok(act)) {
+ 			entry->id = FLOW_ACTION_ACCEPT;
+@@ -3614,7 +3624,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 				entry->mangle.mask = tcf_pedit_mask(act, k);
+ 				entry->mangle.val = tcf_pedit_val(act, k);
+ 				entry->mangle.offset = tcf_pedit_offset(act, k);
+-				entry->hw_stats = act->hw_stats;
++				entry->hw_stats = tc_act_hw_stats(act->hw_stats);
+ 				entry = &flow_action->entries[++j];
+ 			}
+ 		} else if (is_tcf_csum(act)) {
+-- 
+2.20.1
 
-There might also be something in skbuf.h which will do your 16 byte
-alignment for you.
-
-> +static int mtk_mac_enable(struct net_device *ndev)
-> +{
-> +	struct mtk_mac_priv *priv = netdev_priv(ndev);
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	mtk_mac_nic_disable_pd(priv);
-> +	mtk_mac_intr_mask_all(priv);
-> +	mtk_mac_dma_stop(priv);
-> +	netif_carrier_off(ndev);
-
-Attaching the PHY will turn the carrier off.  If you are using phylib
-correctly, you should not have to touch the carrier status, phylib
-will do it for you.
-
-> +	/* Configure flow control */
-> +	val = MTK_MAC_VAL_FC_CFG_SEND_PAUSE_TH_2K;
-> +	val <<= MTK_MAC_OFF_FC_CFG_SEND_PAUSE_TH;
-> +	val |= MTK_MAC_BIT_FC_CFG_BP_EN;
-> +	val |= MTK_MAC_BIT_FC_CFG_UC_PAUSE_DIR;
-> +	regmap_write(priv->regs, MTK_MAC_REG_FC_CFG, val);
-> +
-> +	/* Set SEND_PAUSE_RLS to 1K */
-> +	val = MTK_MAC_VAL_EXT_CFG_SND_PAUSE_RLS_1K;
-> +	val <<= MTK_MAC_OFF_EXT_CFG_SND_PAUSE_RLS;
-> +	regmap_write(priv->regs, MTK_MAC_REG_EXT_CFG, val);
-
-Pause is something this is auto-negotiated. You should be setting this
-in your link change notifier which phylib will call when the link goes
-up.
-
-> +static int mtk_mac_mdio_rwok_wait(struct mtk_mac_priv *priv)
-> +{
-> +	unsigned long start = jiffies;
-> +	unsigned int val;
-> +
-> +	for (;;) {
-> +		regmap_read(priv->regs, MTK_MAC_REG_PHY_CTRL0, &val);
-> +		if (val & MTK_MAC_BIT_PHY_CTRL0_RWOK)
-> +			break;
-> +
-> +		udelay(10);
-> +		if (time_after(jiffies, start + MTK_MAC_WAIT_TIMEOUT))
-> +			return -ETIMEDOUT;
-> +	}
-
-regmap_read_poll_timeout() ?
-
-> +static int mtk_mac_mdio_read(struct mii_bus *mii, int phy_id, int regnum)
-> +{
-> +	struct mtk_mac_priv *priv = mii->priv;
-> +	unsigned int val, data;
-> +	int ret;
-
-It would be good if here and in _write() you check for C45 addresses
-and return -EOPNOTSUP.
-
-> +
-> +	mtk_mac_mdio_rwok_clear(priv);
-> +
-> +	val = (regnum << MTK_MAC_OFF_PHY_CTRL0_PREG);
-> +	val &= MTK_MAC_MSK_PHY_CTRL0_PREG;
-> +	val |= MTK_MAC_BIT_PHY_CTRL0_RDCMD;
-> +
-> +	regmap_write(priv->regs, MTK_MAC_REG_PHY_CTRL0, val);
-> +
-> +	ret = mtk_mac_mdio_rwok_wait(priv);
-> +	if (ret)
-> +		return ret;
-> +
-> +	regmap_read(priv->regs, MTK_MAC_REG_PHY_CTRL0, &data);
-> +
-> +	data &= MTK_MAC_MSK_PHY_CTRL0_RWDATA;
-> +	data >>= MTK_MAC_OFF_PHY_CTRL0_RWDATA;
-> +
-> +	return data;
-> +}
-
-> +static int mtk_mac_mdio_init(struct net_device *ndev)
-> +{
-> +	struct mtk_mac_priv *priv = netdev_priv(ndev);
-> +	struct device *dev = mtk_mac_get_dev(priv);
-> +	struct device_node *of_node, *mdio_node;
-> +	int ret;
-> +
-> +	of_node = dev->of_node;
-> +
-> +	mdio_node = of_get_child_by_name(of_node, "mdio");
-> +	if (!mdio_node)
-> +		return -ENODEV;
-> +
-> +	if (!of_device_is_available(mdio_node)) {
-> +		ret = -ENODEV;
-> +		goto out_put_node;
-> +	}
-> +
-> +	priv->mii = devm_mdiobus_alloc(dev);
-> +	if (!priv->mii) {
-> +		ret = -ENOMEM;
-> +		goto out_put_node;
-> +	}
-> +
-> +	snprintf(priv->mii->id, MII_BUS_ID_SIZE, "%s", dev_name(dev));
-> +	priv->mii->name = "mdio";
-
-It is normal to include something like 'MTK' in the name.
-
-> +	priv->mii->parent = dev;
-> +	priv->mii->read = mtk_mac_mdio_read;
-> +	priv->mii->write = mtk_mac_mdio_write;
-> +	priv->mii->priv = priv;
-> +
-> +	ret = of_mdiobus_register(priv->mii, mdio_node);
-> +
-> +out_put_node:
-> +	of_node_put(mdio_node);
-> +	return ret;
-> +}
-
-  Andrew
