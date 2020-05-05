@@ -2,165 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B72CB1C551A
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 14:11:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A65771C5554
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 14:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728895AbgEEMLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 08:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728603AbgEEMLU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 08:11:20 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7327C061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 05:11:18 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id y24so2052091wma.4
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 05:11:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GfkKDN3U0Fak2+2qGbh9J5E/oCVrfybMFbff5lvFh4M=;
-        b=yjAGwpIHpA5KtqMUw5+hpDZOCW58jIDAwPV9D0zt+e6URxhjYmoJrm2IjgM98JJHTo
-         CrLYxALxvOhp5OvWrockQmOE2NZf30RVqTXmFMkafO+MeOPRnOkWGq/WrYlAe1J08p1n
-         7JBrYY/6R6bdgdUC3rel9a8RejJJSR2CcHJIeUx3/zmFQjJgd6YbN46qThP8Wmrsqe8x
-         8LI8Nr/x4iIl98zNOAf56Ot812faA+mpVF3F28kDwnrniYg3pfk2Z8Suhy6lhvOj8jy9
-         lGF6ulE6dUwEkaDFWHd/xeM9eTBTHx/a55E5tV9+/yLoxdXOcnCge1umC/Nl6pF3GSab
-         igww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GfkKDN3U0Fak2+2qGbh9J5E/oCVrfybMFbff5lvFh4M=;
-        b=ePipWzqlwLl/rb0/YZNYK3nk5p0xQTxmXTLgaBg2GMh118vbxizxhVHhdNAjip+qWl
-         YSuO8oExfjEGkOFn+YbKl8effuworScPVy36Z65PtSJ7RT/LUC1oNWQkcGMJDQ94k76B
-         9c2mKRPsGUBVwYl7rwN6BEGJICemqWJiHoOwaKLeRFfecFETHbdKE6/iJo1h4zEWI6vQ
-         YA3w4uMJNlH4xNKhsqBDDhYcEDcS4IPRg5CcFfvtCasOJUrr5WpuOwmY7XdGsyzp8FlG
-         +jBmTeUOyzjU1iEerMqFAGU50/GTlTfXnv0sGpap8Mdcq6vdFBt/VM3VYn0PkRNwnMCK
-         IabQ==
-X-Gm-Message-State: AGi0PuZK/P0XklBZt2HGgY+fQW3Otx1x0zYtA3e7RHSIbGHxCY7o/Rf8
-        1rjLEbd3gpfx3Z3sE6ZL+YhBYQ==
-X-Google-Smtp-Source: APiQypIDO7s4Ggqimk/sDrN5143nXwFIxQntiZ4q34Ow2v6ExztohehSTwyLFshYUzwY7vynqYzilw==
-X-Received: by 2002:a1c:4e12:: with SMTP id g18mr2975910wmh.11.1588680677409;
-        Tue, 05 May 2020 05:11:17 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id z22sm3461384wma.20.2020.05.05.05.11.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2020 05:11:16 -0700 (PDT)
-Date:   Tue, 5 May 2020 14:11:15 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, ecree@solarflare.com
-Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
- FLOW_ACTION_HW_STATS_DONT_CARE
-Message-ID: <20200505121115.GH14398@nanopsycho.orion>
-References: <20200505092159.27269-1-pablo@netfilter.org>
- <20200505094900.GF14398@nanopsycho.orion>
- <20200505100814.GA29299@salvia>
+        id S1728642AbgEEMUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 08:20:22 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:46578 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727090AbgEEMUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 08:20:21 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 045CKC1d091262;
+        Tue, 5 May 2020 07:20:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1588681212;
+        bh=33urkOujjL8eDQqLN/MMIk9++M7FiWab7tR7NHM+1C0=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=WU/xSzDRKiMWoIZl6UWuffzuHpkfOvdCh6Y3DXwDOWiXZlIXtr/D5CaznKuHQgHnm
+         jlmaeanMLpur4FCZnp8CnrJkwTd71CUhBx9R+0iNNTeNqMQiyYaBWQS3EqLGlGGRwy
+         16PvEiMps7CVR1mDG3PqsWF1vDCGfViAzDjaEfF8=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 045CKCwJ040109;
+        Tue, 5 May 2020 07:20:12 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 5 May
+ 2020 07:20:11 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 5 May 2020 07:20:11 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 045CK7qD102805;
+        Tue, 5 May 2020 07:20:08 -0500
+Subject: Re: [PATCH net-next 3/7] net: ethernet: ti: am65-cpsw-nuss: enable
+ packet timestamping support
+To:     Anders Roxell <anders.roxell@linaro.org>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tero Kristo <t-kristo@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Networking <netdev@vger.kernel.org>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Clay McClure <clay@daemons.net>
+References: <20200501205011.14899-1-grygorii.strashko@ti.com>
+ <20200501205011.14899-4-grygorii.strashko@ti.com>
+ <CADYN=9L+RtruRYKah0Bomh7UaPGQ==N9trd0ZoVQ3GTc-VY8Dg@mail.gmail.com>
+ <1bf51157-9fee-1948-f9ff-116799d12731@ti.com>
+ <CADYN=9LfqLLmKNHPfXEiQbaX8ELF78BL-vWUcX-VP3aQ86csNg@mail.gmail.com>
+ <CADYN=9LDCE2sQca12D4ow3BkaxXi1_bnc4Apu7pP4vnA=5AOKA@mail.gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <5f338763-b35b-e2b4-7f15-df3a5bcbb799@ti.com>
+Date:   Tue, 5 May 2020 15:20:06 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200505100814.GA29299@salvia>
+In-Reply-To: <CADYN=9LDCE2sQca12D4ow3BkaxXi1_bnc4Apu7pP4vnA=5AOKA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, May 05, 2020 at 12:08:14PM CEST, pablo@netfilter.org wrote:
->On Tue, May 05, 2020 at 11:49:00AM +0200, Jiri Pirko wrote:
->> Tue, May 05, 2020 at 11:21:59AM CEST, pablo@netfilter.org wrote:
->> >This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
->> >that the frontend does not need counters, this hw stats type request
->> >never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
->> >the driver to disable the stats, however, if the driver cannot disable
->> >counters, it bails out.
->> >
->> >Remove BUILD_BUG_ON since TCA_ACT_HW_STATS_* don't map 1:1 with
->> >FLOW_ACTION_HW_STATS_* anymore. Add tc_act_hw_stats() to perform the
->> >mapping between TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*
->> >
->> >Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
->> >Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
->> >---
->> >This is a follow up after "net: flow_offload: skip hw stats check for
->> >FLOW_ACTION_HW_STATS_DISABLED". This patch restores the netfilter hardware
->> >offloads.
->> >
->> > include/net/flow_offload.h |  9 ++++++++-
->> > net/sched/cls_api.c        | 23 +++++++++++++++++------
->> > 2 files changed, 25 insertions(+), 7 deletions(-)
->> >
->> >diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
->> >index 3619c6acf60f..0c75163699f0 100644
->> >--- a/include/net/flow_offload.h
->> >+++ b/include/net/flow_offload.h
->> >@@ -164,12 +164,15 @@ enum flow_action_mangle_base {
->> > };
->> > 
->> > enum flow_action_hw_stats_bit {
->> >+	FLOW_ACTION_HW_STATS_DISABLED_BIT,
->> > 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
->> > 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
->> > };
->> > 
->> > enum flow_action_hw_stats {
->> >-	FLOW_ACTION_HW_STATS_DISABLED = 0,
->> >+	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
->> >+	FLOW_ACTION_HW_STATS_DISABLED =
->> >+		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
->> > 	FLOW_ACTION_HW_STATS_IMMEDIATE =
->> > 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
->> > 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
->> >@@ -325,7 +328,11 @@ __flow_action_hw_stats_check(const struct flow_action *action,
->> > 		return true;
->> > 	if (!flow_action_mixed_hw_stats_check(action, extack))
->> > 		return false;
->> >+
->> > 	action_entry = flow_action_first_entry_get(action);
->> >+	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
->> >+		return true;
->> >+
->> > 	if (!check_allow_bit &&
->> > 	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
->> > 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
->> >diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
->> >index 55bd1429678f..8ddc16a1ca68 100644
->> >--- a/net/sched/cls_api.c
->> >+++ b/net/sched/cls_api.c
->> >@@ -3523,16 +3523,27 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
->> > #endif
->> > }
->> > 
->> >+static enum flow_action_hw_stats tc_act_hw_stats_array[] = {
->> >+	[0]				= FLOW_ACTION_HW_STATS_DISABLED,
->> >+	[TCA_ACT_HW_STATS_IMMEDIATE]	= FLOW_ACTION_HW_STATS_IMMEDIATE,
->> >+	[TCA_ACT_HW_STATS_DELAYED]	= FLOW_ACTION_HW_STATS_DELAYED,
->> >+	[TCA_ACT_HW_STATS_ANY]		= FLOW_ACTION_HW_STATS_ANY,
->> 
->> TCA_ACT_HW_* are bits. There can be a combination of those according
->> to the user request. For 2 bits, it is not problem, but I have a
->> patchset in pipes adding another type.
->> Then you need to have 1:1 mapping in this array for all bit
->> combinations. That is not right.
->> 
->> How about putting DISABLED to the at the end of enum
->> flow_action_hw_stats? They you can just map 0 here to FLOW_ACTION_HW_STATS_DISABLED
->> as an exception, but the bits you can take 1:1.
->
->Another possibility is to remove this mapping code is to update tc
->UAPI to get it aligned with this update.
->
->This UAPI is only available in the few 5.7.0-rc kernel releases,
->I think only developers are using this at this stage?
+Hi Anders,
 
-Hmm, I think that TC-wise, the UAPI as is makes perfect sense. There is
-no don't care. Each bit allows to indicate user what he is interested
-in.
+On 05/05/2020 14:59, Anders Roxell wrote:
+> On Tue, 5 May 2020 at 13:16, Anders Roxell <anders.roxell@linaro.org> wrote:
+>> On Tue, 5 May 2020 at 13:05, Grygorii Strashko <grygorii.strashko@ti.com> wrote:
+>>> On 05/05/2020 13:17, Anders Roxell wrote:
+>>>> On Fri, 1 May 2020 at 22:50, Grygorii Strashko <grygorii.strashko@ti.com> wrote:
+>>>>>
+>>>>> The MCU CPSW Common Platform Time Sync (CPTS) provides possibility to
+>>>>> timestamp TX PTP packets and all RX packets.
+>>>>>
+>>>>> This enables corresponding support in TI AM65x/J721E MCU CPSW driver.
+>>>>>
+>>>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>>>>> ---
+>>>>>    drivers/net/ethernet/ti/Kconfig             |   1 +
+>>>>>    drivers/net/ethernet/ti/am65-cpsw-ethtool.c |  24 ++-
+>>>>>    drivers/net/ethernet/ti/am65-cpsw-nuss.c    | 172 ++++++++++++++++++++
+>>>>>    drivers/net/ethernet/ti/am65-cpsw-nuss.h    |   6 +-
+>>>>>    4 files changed, 201 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+>>>>> index 1f4e5b6dc686..2c7bd1ccaaec 100644
+>>>>> --- a/drivers/net/ethernet/ti/Kconfig
+>>>>> +++ b/drivers/net/ethernet/ti/Kconfig
+>>>>> @@ -100,6 +100,7 @@ config TI_K3_AM65_CPSW_NUSS
+>>>>>           depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
+>>>>>           select TI_DAVINCI_MDIO
+>>>>>           imply PHY_TI_GMII_SEL
+>>>>> +       imply TI_AM65_CPTS
+>>>>
+>>>> Should this be TI_K3_AM65_CPTS ?
+> 
+> instead of 'imply TI_K3_AM65_CPTS' don't you want to do this:
+> 'depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS'
+> 
+> 
 
-I would prefer to convert to flow_offload (as we do anyway) in a format
-that is comfortable for flow_offload (given the fact it is used not only
-for TC).
+Right, I'll try. It seems your defconfig is produced by randconfig as
+I can't get broken cfg TI_AM65_CPTS=m and TI_K3_AM65_CPSW_NUSS=y
+with neither one below:
 
-Did you check the solution I suggested? Above. Seems to be quite
-straightforward.
+  make ARCH=arm64 O=k3-arm64 defconfig
+  make ARCH=arm64 O=k3-arm64 allnoconfig
+  make ARCH=arm64 O=k3-arm64 allyesconfig
+  make ARCH=arm64 O=k3-arm64 allmodconfig
+  make ARCH=arm64 O=k3-arm64 alldefconfig
+  make ARCH=arm64 O=k3-arm64 yes2modconfig
+  make ARCH=arm64 O=k3-arm64 mod2yesconfig
+
+Related legacy TI CPTS threads:
+  https://lkml.org/lkml/2020/5/2/344
+  https://lkml.org/lkml/2020/5/1/1348
+
+I'd try summarize goal
+  TI_K3_AM65_CPSW_NUSS	TI_AM65_CPTS
+  Y			Y/N
+  M			Y/M/N
+  N			Y/M/N
+
+
+-- 
+Best regards,
+grygorii
