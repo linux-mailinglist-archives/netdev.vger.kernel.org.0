@@ -2,106 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 014E41C4B31
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 02:59:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5337A1C4B3C
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 03:06:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbgEEA7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 20:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
+        id S1726630AbgEEBG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 21:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726531AbgEEA7P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 20:59:15 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0F0C061A0F;
-        Mon,  4 May 2020 17:59:15 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id y6so258697pjc.4;
-        Mon, 04 May 2020 17:59:15 -0700 (PDT)
+        with ESMTP id S1726421AbgEEBGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 21:06:25 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D715C061A0F;
+        Mon,  4 May 2020 18:06:25 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id z25so253433otq.13;
+        Mon, 04 May 2020 18:06:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6SbvvHuG282tx1BJXlB+6W9tHbbfB/CsKsZjXwYQB6M=;
-        b=H2EZzlddBSJ/4wSnvCWrD/5pmqfHRjtoU2walwps612vPPqT7uMyEJ86JL3FVoSx+I
-         6uXIMCMBupDAKTQ90ldWxmffdz6hgMDY/Zde4Dv50VLvuJIkqhQAj+QJWnXTsoKNiQvJ
-         +9RicTZtk4GQ7HvW0MvOlAkprJ17ELegTle9iH6XcDgZdGFdmw/cRbAivDgo5ru9c+7B
-         z3pfpBEjCObqRWexhsU7oC14nTO3NM8yVpeHfJvPaCKzgJuE5NpYWuRcqHBE+jglpOmU
-         iU3VVCj6D5VnAwyRnFSUF2DK1EY/7iovh+Q3vX54/McqcTZ0uOIDnIm6bRnCnxJw2421
-         mkBA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CdwxcUFpDpRXJQYQA4tNofTIdp6JTfVxZhsYvwhhuio=;
+        b=nWAYyQPhoAediHBMdLD5YT5596BfKZq6FPTPVXsb1xqpqhfvtCdD1WEDWCr0xWVwWN
+         x3FWG5i9v/O5cjy+6zhs7CGdQHkebZFOozOCgbpLp0vjLIr3Y9X7kxf8zsIvFUMYh2xI
+         0KBXg6V61tVBxeSLF10nQW5EwFNiLBI5iTabGx6KphnnFdAXKI0wNo7YmxIogC0Wzd4D
+         /tITPGjGT8aagOkGzgobTGFyaiVA3qPUotQbXXiG/qSDfcPAmO3Dj6At/MnJq+x8qv6V
+         C3R0EsiPYuQq2KfVXEQpHu74XmAV2sz61TtVAVJMnE9rY4bjQlQxNp9Oz4dQ3e13OYrt
+         VZOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6SbvvHuG282tx1BJXlB+6W9tHbbfB/CsKsZjXwYQB6M=;
-        b=AJ4gB3OYY6XmDmK53g68kWq9Naen5VcJnplZHKJF1y8d3EotGu19VDni9K7/gHdWnd
-         oRPDDWtY7tBg889iDsVmclYd33gewsKH7iRPnQE6xLzEvtbX9LczqwYd7EpuJl+hxulp
-         nqMFpD6JlTk/n1u/jEjO3EVmbUL24qUkabmkCx2M60QSPPGH/nRdwBV1jlVK83ZZX+9K
-         Tcq7Y9l4vCGUyRjlKD/gLJ5IGNhxAca1UfJS3aShVwr01wioJ6ZDCRI/3QuTdRhHrsxz
-         SThTKhQuryMoe5ZUBVkH3+sn7Rt7OM72vj96bRyMXNOpiL53BxJ5G40xw716msIRah/B
-         TFZQ==
-X-Gm-Message-State: AGi0PuYEy3j02QCQKM6mTxiAoUGbU7kf8L654vjfPpYOs/0Ou5pj39m6
-        uOgETBjSU++eR/JJH4ApZyk=
-X-Google-Smtp-Source: APiQypKbwxQiSORcx46GjsuCviMeM8k4EtYU9bCm15TH/WlUMld56J2/s0aSYu2NQt5AqJ5mLiYsCA==
-X-Received: by 2002:a17:902:23:: with SMTP id 32mr712614pla.40.1588640354849;
-        Mon, 04 May 2020 17:59:14 -0700 (PDT)
-Received: from localhost ([162.211.220.152])
-        by smtp.gmail.com with ESMTPSA id a21sm298853pfk.39.2020.05.04.17.59.13
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 04 May 2020 17:59:14 -0700 (PDT)
-Date:   Tue, 5 May 2020 08:59:08 +0800
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Markus Elfring <Markus.Elfring@web.de>
-Subject: Re: [PATCH] net: rtw88: fix an issue about leak system resources
-Message-ID: <20200505005908.GA8464@nuc8i5>
-References: <79591cab-fe3e-0597-3126-c251d41d492b@web.de>
- <20200504144206.GA5409@nuc8i5>
- <882eacd1-1cbf-6aef-06c5-3ed6d402c0f5@web.de>
- <CA+ASDXOJ2CSzdgos4Y8Wd7iZjRUkrMN=Ma0_-ujG8bihGzPKkQ@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CdwxcUFpDpRXJQYQA4tNofTIdp6JTfVxZhsYvwhhuio=;
+        b=ucee1zRyjqIlN1LxRlouY3qeJsQIT5lXchfgIHkINTERaPlmBzlRZRRGOniFPh9qqj
+         35XRGD0spMPyiUF50plW249Tl9hI2fpSf9YlF6xP6FVc5a7QqyXzga40G+RvlDHTRh7n
+         rsl+r7FTlzLNO71FqsyNSPKrbCBJUktvXoTdBVonr6VjpfyGfi8kjHNApxfKHIoM6VQW
+         R/+9yotnfwByDEtZqoKIm6Rxoe/Lmq3p4kclEtNY4XhmwnVNxrdM8GSFgTrQaDyqBolU
+         pT4o2OhmNQGyUj95s4hVJaCdJhNWraIG4wiAYq2zeXe4kRdun9t6KRMXYsXXPUyoyqUt
+         zYxA==
+X-Gm-Message-State: AGi0PuYLWj0jcNNpgpOJx+IO7nO5CkKNu+MfiJkZ4tsWD0JtbdcUDzGY
+        9k9YZDjCneINgW6symsl+0i753UHc2NaI2VEdgw=
+X-Google-Smtp-Source: APiQypIeUyYLu4PyVWEwcNM4KHou+LK6yqrKBTIIm3x+Utq3dMUUOEn1pRhdtOx7zI5xQ14fOIU0eNEWBOrKMPKSoe4=
+X-Received: by 2002:a9d:107:: with SMTP id 7mr648193otu.48.1588640784669; Mon,
+ 04 May 2020 18:06:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+ASDXOJ2CSzdgos4Y8Wd7iZjRUkrMN=Ma0_-ujG8bihGzPKkQ@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <0000000000005a8fe005a4b8a114@google.com> <20200504190348.iphzmd7micvidh46@treble>
+In-Reply-To: <20200504190348.iphzmd7micvidh46@treble>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 4 May 2020 18:06:13 -0700
+Message-ID: <CAM_iQpVu11xwKS5OEhDKmtbnP83oFNy9jBoAROS78-ECPEBWdw@mail.gmail.com>
+Subject: Re: BUG: stack guard page was hit in unwind_next_frame
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        shile.zhang@linux.alibaba.com,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86 <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 04, 2020 at 10:03:59AM -0700, Brian Norris wrote:
-> (Markus is clearly not taking the hint, but FYI for everyone else:)
-> 
-> On Mon, May 4, 2020 at 8:00 AM Markus Elfring <Markus.Elfring@web.de> wrote:
-> > > BTW, In the past week, you asked me to change the commit comments in my
-> > > 6 patches like this one. Let me return to the essence of patch, point
-> > > out the code problems and better solutions will be more popular.
-> >
-> > I would appreciate if various update suggestions would become nicer somehow.
-> 
-> Markus is not really providing any value to the community. Just search
-> for his recent mail history -- it's all silly commit message
-> nitpicking of little value. He's been blacklisted by a number of
-> people already:
-> 
-> https://lkml.kernel.org/lkml/20190919112937.GA3072241@kroah.com/
-> 
-> Some people continue to humor him, but it's mostly just a waste of
-> their time, as this has been going on for years. Just look at searches
-> like this, and tell me whether they produce anything useful:
-> 
-> https://lkml.kernel.org/lkml/?q=%22markus+elfring%22&o=5000
+On Mon, May 4, 2020 at 12:08 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
 >
-Brian, Thanks very much for your reminder, These comments have always
-bothered me. Now I can put it on my blacklist. Thank you very very much!
+> On Sat, May 02, 2020 at 11:36:11PM -0700, syzbot wrote:
+> > Hello,
+> >
+> > syzbot found the following crash on:
+> >
+> > HEAD commit:    8999dc89 net/x25: Fix null-ptr-deref in x25_disconnect
+> > git tree:       net
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=16004440100000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=b7a70e992f2f9b68
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=e73ceacfd8560cc8a3ca
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> >
+> > Unfortunately, I don't have any reproducer for this crash yet.
+> >
+> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > Reported-by: syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com
+>
+> Infinite loop in network code.
 
-BR,
-Dejin
+It is not a loop, it is an unbound recursion where netdev events
+trigger between bond master and slave back and forth.
 
-> Brian
+Let me see how this can be fixed properly.
+
+Thanks!
