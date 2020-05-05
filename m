@@ -2,89 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A85331C5F01
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:38:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6466C1C5F17
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:43:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730472AbgEERiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 13:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52804 "EHLO
+        id S1730093AbgEERnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 13:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730342AbgEERiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 13:38:24 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342B6C061A41
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 10:38:23 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id h4so2512299ljg.12
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 10:38:23 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728804AbgEERnE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 13:43:04 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C05EC061A0F;
+        Tue,  5 May 2020 10:43:04 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x15so1226469pfa.1;
+        Tue, 05 May 2020 10:43:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nv0AIZrWlMo4m0rNhQ0hmb2K7EScYgYrwU3TenVEmog=;
-        b=EZSQQZlIteDqtbEIcl/sEkeBUfzjC+YtuCRNGMwWCq1AIeFJ3n4lyDDj8t67g6lgOv
-         vG2erCqH5ghfC7q0wRU3CL4Hc1X83XBVUxV/+FOuE8DVCZL3q7jY7Hj7QYyF0Vc85oqH
-         jyFcaDUaWWrs9ZE+JHUIH20XmBu1l0lK2xrnU=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kvERfMRg9N5gTCAlwuPKs93EBGmnYI4iJipCtIeq2gs=;
+        b=Qph4APLFoI2+hzETZ4MmK6/ia7rSIkOf+Q0tNR6/Yo671rXycMeMqjEDN4wuCsWKoi
+         eP5p3DBCR7byLb7+zZxVURtTEsaF6lQs4JpX5tNHKBLL5HbqdqaW2hu8nCH6uiXeO1Mt
+         TG357redEoBK4eVC5aKYVa1hUpHM6dTk7QwMRxdYeF3Wc5je3F24D9KNDZF1sNBA+EOX
+         kPkwmufXTAne9zliUtdZQGQA+pjzumbZDQsrPuyv80c3uivMX+42kn6gQgDwli//Ofc0
+         eD3MCUbBaHAq4nvhYYiFgk1cPvqNBDrTEL8+bkx+TofdZxjcP/M+9GgwDVJZ6WlaQLIG
+         33UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nv0AIZrWlMo4m0rNhQ0hmb2K7EScYgYrwU3TenVEmog=;
-        b=LL4XOR+jNeubUpmCnkfYIMkQTzYEakMqj9YC8CDHe7tgwtR9CF/VPPUl6ZjeQ/Gs4i
-         L5XFHwDU3gMzH4DXBSkEzrQzfrsCx5l1ySj6e1zfHUW3g//wLrXsLycvyk93zy2VbBYx
-         z10jG73a8PbqRQo+td0WB4vH9svcC5zFEePDbF03cp7dCTgk0RvnI8Y+go+nTbZEPWyj
-         wY0gsl0YYvPZ0Z1BhFHvKli2TD+9kPwmVEgr30wfdGzGI8yQZPtZnhXMOoZTgnaYS7nU
-         lAUJ5ysv5pnZsIjW1IWrWehr7rWSeodU73wTMFscA66Takug80si/UpqtsbbaovaA4q9
-         O/Xg==
-X-Gm-Message-State: AGi0PuZ/AkGvbWVoWa3PWHQZ992vDgdnaD4vqUXifnKXUyVsSwowO7iY
-        RN+ffyrA8WtN0wYscDNHCafABck0ors=
-X-Google-Smtp-Source: APiQypJWbI/y9dKGi+ZReKRPdLAT2LRgxdryqQE9LNt/02eV3+48kVQf2VaOT9W24onyVt93F7KXGQ==
-X-Received: by 2002:a2e:9882:: with SMTP id b2mr2574455ljj.35.1588700300661;
-        Tue, 05 May 2020 10:38:20 -0700 (PDT)
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
-        by smtp.gmail.com with ESMTPSA id w9sm168348ljw.39.2020.05.05.10.38.19
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 May 2020 10:38:19 -0700 (PDT)
-Received: by mail-lf1-f54.google.com with SMTP id w14so2064990lfk.3
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 10:38:19 -0700 (PDT)
-X-Received: by 2002:a19:c394:: with SMTP id t142mr2441981lff.129.1588700298965;
- Tue, 05 May 2020 10:38:18 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kvERfMRg9N5gTCAlwuPKs93EBGmnYI4iJipCtIeq2gs=;
+        b=gsKJUGZRMUcq2txq1EsN4HH6uk3gwPxhDT/v8GsLyqzyiseANGQ0uNFktfYvdE36T4
+         kDbJ8SAK8oUF/QZJLoKogbCFQlkVKJW7R6xBoVB7M/7liER10utGJBktOE4h7OXqkpb3
+         u3UvluSdFA1uYcyOxc6iiwwJWDAljSUE9x1FocW5TU3xW2axnaeECG75BddoTUe7ptMQ
+         8qD06IHrmskZSVdiOxIYgMzoNqAFgiiMYu2xkGWgEhGWTDcSroI25Zg11FTzI3UqKMGD
+         mDzpVp/cPMOk7uP/707/BhgsZvsonAs3YFnUKOBgZR74CaipAQyiX+AwLohagrJcERLm
+         r5sQ==
+X-Gm-Message-State: AGi0Puars1VP+Q7ypvLsFblrkO7g8Hfn+1oZUeEHn0/QQ7DksPe9HY7A
+        uR8fS1VPniL4mZ/uXyfLE2o=
+X-Google-Smtp-Source: APiQypJsKH+LeTVhCiBz3tctOiyz1jq7J90tXBhNupoM92x5fxgvFC/LDvDfddsbxltiQK36joF2hA==
+X-Received: by 2002:aa7:951c:: with SMTP id b28mr3849168pfp.242.1588700583810;
+        Tue, 05 May 2020 10:43:03 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:6a9])
+        by smtp.gmail.com with ESMTPSA id a16sm1881501pgg.23.2020.05.05.10.43.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 10:43:02 -0700 (PDT)
+Date:   Tue, 5 May 2020 10:43:00 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
+ compatibility
+Message-ID: <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
+References: <b581438a16e78559b4cea28cf8bc74158791a9b3.1588273491.git.jpoimboe@redhat.com>
+ <20200501190930.ptxyml5o4rviyo26@ast-mbp.dhcp.thefacebook.com>
+ <20200501192204.cepwymj3fln2ngpi@treble>
+ <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
+ <20200501195617.czrnfqqcxfnliz3k@treble>
+ <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
+ <20200502192105.xp2osi5z354rh4sm@treble>
 MIME-Version: 1.0
-References: <20200505133602.25987-1-geert+renesas@glider.be>
-In-Reply-To: <20200505133602.25987-1-geert+renesas@glider.be>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Tue, 5 May 2020 10:38:07 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXO8TJ09vNQaCyoMgfoFVouNQRw7Evx2Vfko1k_03q8GHA@mail.gmail.com>
-Message-ID: <CA+ASDXO8TJ09vNQaCyoMgfoFVouNQRw7Evx2Vfko1k_03q8GHA@mail.gmail.com>
-Subject: Re: [PATCH v4 resend 2] dt-bindings: net: btusb: DT fix s/interrupt-name/interrupt-names/
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Rajat Jain <rajatja@google.com>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200502192105.xp2osi5z354rh4sm@treble>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 5, 2020 at 6:36 AM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
->
-> The standard DT property name is "interrupt-names".
->
-> Fixes: fd913ef7ce619467 ("Bluetooth: btusb: Add out-of-band wakeup support")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Acked-by: Rob Herring <robh@kernel.org>
+On Sat, May 02, 2020 at 02:21:05PM -0500, Josh Poimboeuf wrote:
+> 
+> Ideally we would get rid of that label and just change all the 'goto
+> select_insn' to 'goto *jumptable[insn->code]'.  That allows objtool to
+> follow the code in both retpoline and non-retpoline cases.  It also
+> simplifies the code flow and (IMO) makes it easier for GCC to find
+> optimizations.
 
-If it matters:
+No. It's the opposite. It's not simplifying the code. It pessimizes
+compilers.
 
-Reviewed-by: Brian Norris <briannorris@chromium.org>
+> 
+> However, for the RETPOLINE=y case, that simplification actually would
+> cause GCC to grow the function text size by 40%.  
 
-We're definitely using the plural ("interrupt-names") not the
-singular, so this was just a typo.
+It pessimizes and causes text increase, since the version of gcc
+you're testing with cannot combine indirect gotos back into direct.
 
-Brian
+> I thought we were in
+> agreement that significant text growth would be universally bad,
+> presumably because of i-cache locality/pressure issues.  
+
+No. As I explained before the extra code could give performance
+increase depending on how branch predictor is designed in HW.
+
+> Or, if you want to minimize the patch's impact on other arches, and keep
+> the current patch the way it is (with bug fixed and changed patch
+> description), that's fine too.  I can change the patch description
+> accordingly.
+> 
+> Or if you want me to measure the performance impact of the +40% code
+> growth, and *then* decide what to do, that's also fine.  But you'd need
+> to tell me what tests to run.
+
+I'd like to minimize the risk and avoid code churn,
+so how about we step back and debug it first?
+Which version of gcc are you using and what .config?
+I've tried:
+Linux version 5.7.0-rc2 (gcc version 10.0.1 20200505 (prerelease) (GCC)
+CONFIG_UNWINDER_ORC=y
+# CONFIG_RETPOLINE is not set
+
+and objtool didn't complain.
+I would like to reproduce it first before making any changes.
+
+Also since objtool cannot follow the optimizations compiler is doing
+how about admit the design failure and teach objtool to build ORC
+(and whatever else it needs to build) based on dwarf for the functions where
+it cannot understand the assembly code ?
+Otherwise objtool will forever be playing whackamole with compilers.
