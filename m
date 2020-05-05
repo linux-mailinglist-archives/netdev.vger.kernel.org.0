@@ -2,74 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCD491C5D48
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:20:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D947E1C5D5A
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:21:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729561AbgEEQUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 12:20:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43976 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729289AbgEEQUM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 12:20:12 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EC4AD206B9;
-        Tue,  5 May 2020 16:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588695612;
-        bh=UMDwU909vupsjtahcTxzxLjvsqMmXgYUqSOmkhh7xpA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DIq6Exya23je/ToZ+mHXBR9NzdJ+3so6e80FQZhm9lLwJXB2hNhUExQlpMlvbzY+N
-         zQd+AMN5WdNslcdj0OhEpv+60ibuJ2qdbaI4bLYaOOmLhbykKEXQ5Wl4+a5OnQwRjZ
-         +AF0QMKrbnlVk64Q0IO2kDgyQ7v1PmY+iuuaIXxk=
-Date:   Tue, 5 May 2020 09:20:09 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     davem@davemloft.net, jiri@resnulli.us, netdev@vger.kernel.org,
-        kernel-team@fb.com, jacob.e.keller@intel.com
-Subject: Re: [PATCH iproute2-next v3] devlink: support kernel-side snapshot
- id allocation
-Message-ID: <20200505092009.1cfe01c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <af7fae65-1187-65c5-9c40-0b0703cf4053@gmail.com>
-References: <20200430175759.1301789-1-kuba@kernel.org>
-        <20200430175759.1301789-5-kuba@kernel.org>
-        <af7fae65-1187-65c5-9c40-0b0703cf4053@gmail.com>
+        id S1730134AbgEEQVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 12:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729119AbgEEQVT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:21:19 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B537C061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 09:21:19 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id t3so2914558qkg.1
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 09:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OhY6T2+oI+ia1B+xr+YNleF/AfPXm2IqHaD/tj9TVV0=;
+        b=Cp8yrExq2LrEulHGuQ+tC8QAgWlA7rZghg2IyYLbYsW+A+s5ALB35LUizqdY8hrLO3
+         CSjUhP5NTxMDmh2utMR7iG0lZI83u0ICyPeFJS+HilhFaLbKPMHi7DkJcp4NZIntXvm/
+         LOavkHSsYJu36/bJgieLND7ML721iNCEwRyWx1iE7Q1b/3vYofDtLXCY9Vl1fFok9gTg
+         bfSxQsgrPpWrDcDEayLSzIu+a2QRrLp2YXP2Z/0GE4QdB0NItUGSWxRRG/gGm1q2tJex
+         ZgmHyC/QQip0PBDuniDF/cR93HN1JixHjUkaGsuFy4oBMX+4f1eHN9VFGQsdDkwJmmxC
+         B5Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OhY6T2+oI+ia1B+xr+YNleF/AfPXm2IqHaD/tj9TVV0=;
+        b=d7f5ntvLtHI8STo+w+4STClcJiWzSscbM7GUMwiJ1ap4nrkdCX4NdoIYgB3BV2iV2y
+         2AzHIPPykfp5zCn7b1ZYyZZxJ8NKL69FxV3rj694VgV9dLQLjfwYm1TOYxhIsqcwQleF
+         N5kJbCQdJVuqZdqSOixF9g5Gjg+bB+uVI1naS/7MPDodbRu5979sT3nFQpl8m2x4UFA/
+         uSGuK/oNodgMnFu12c5K4F8GKh8SjqudZ0Kh2ClnfaipN+a+dc5fgB0ZqpBMTIg9a6Pe
+         XsJkIRBEX/n2EfeZRrAMtEwVpzhLQulFzxK7YrIgf7VISDrlXCymNqCTeXxuxMhBPo+T
+         l4KA==
+X-Gm-Message-State: AGi0PuYLDxTbqCIFT8jsc2lK1IQnddgkJLZoDdNOxnMh01dUVu/rI99x
+        AojoQ4LRjiT4xqzkFESTKcI=
+X-Google-Smtp-Source: APiQypL63PNgZWMJwMe6W0nDaUcb50xpMCB0bpLwJ1IMzwVsp6NUYbnpMI0K6Yt+fjlN+kDtDzQYyQ==
+X-Received: by 2002:a37:5846:: with SMTP id m67mr3967594qkb.78.1588695678583;
+        Tue, 05 May 2020 09:21:18 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c19:a884:3b89:d8b6? ([2601:282:803:7700:c19:a884:3b89:d8b6])
+        by smtp.googlemail.com with ESMTPSA id c63sm2129268qkf.131.2020.05.05.09.21.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 May 2020 09:21:17 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2] tc: full JSON support for 'bpf' filter
+To:     Davide Caratti <dcaratti@redhat.com>, aclaudi@redhat.com,
+        stephen@networkplumber.org, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, jhs@mojatatu.com
+References: <0f53a3a2bf42de2ff399c8396c3d0bc76c8344ea.1588269623.git.dcaratti@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ed429cab-db8b-f46f-d766-d29d4ad43ec8@gmail.com>
+Date:   Tue, 5 May 2020 10:21:16 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <0f53a3a2bf42de2ff399c8396c3d0bc76c8344ea.1588269623.git.dcaratti@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 May 2020 10:14:24 -0600 David Ahern wrote:
-> On 4/30/20 11:57 AM, Jakub Kicinski wrote:
-> > Make ID argument optional and read the snapshot info
-> > that kernel sends us.
-> > 
-> > $ devlink region new netdevsim/netdevsim1/dummy
-> > netdevsim/netdevsim1/dummy: snapshot 0
-> > $ devlink -jp region new netdevsim/netdevsim1/dummy
-> > {
-> >     "regions": {
-> >         "netdevsim/netdevsim1/dummy": {
-> >             "snapshot": [ 1 ]
-> >         }
-> >     }
-> > }
-> > $ devlink region show netdevsim/netdevsim1/dummy
-> > netdevsim/netdevsim1/dummy: size 32768 snapshot [0 1]
-> > 
-> > v3: back to v1..
-> > 
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> > ---
-> >  devlink/devlink.c | 26 +++++++++++++++++++++++---
-> >  1 file changed, 23 insertions(+), 3 deletions(-)  
+On 4/30/20 12:03 PM, Davide Caratti wrote:
+> example using eBPF:
 > 
-> this does not apply to current iproute2-next
+>  # tc filter add dev dummy0 ingress bpf \
+>  > direct-action obj ./bpf/filter.o sec tc-ingress
+>  # tc  -j filter show dev dummy0 ingress | jq
+>  [
+>    {
+>      "protocol": "all",
+>      "pref": 49152,
+>      "kind": "bpf",
+>      "chain": 0
+>    },
+>    {
+>      "protocol": "all",
+>      "pref": 49152,
+>      "kind": "bpf",
+>      "chain": 0,
+>      "options": {
+>        "handle": "0x1",
+>        "bpf_name": "filter.o:[tc-ingress]",
+>        "direct-action": true,
+>        "not_in_hw": true,
+>        "prog": {
+>          "id": 101,
+>          "tag": "a04f5eef06a7f555",
+>          "jited": 1
+>        }
+>      }
+>    }
+>  ]
+> 
+> v2:
+>  - use print_nl(), thanks to Andrea Claudi
+>  - use print_0xhex() for filter handle, thanks to Stephen Hemminger
+> 
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> ---
+>  tc/f_bpf.c | 29 +++++++++++++++--------------
+>  1 file changed, 15 insertions(+), 14 deletions(-)
+> 
+>
 
-Hm. This was on top of Jake's patch, but Stephen took that one into
-iproute2, since the kernel feature is in 5.7 already. What is the
-protocol here? Can you merge iproute2 into iproute2-next? :S
+applied to iproute2-next. Thanks,
+
