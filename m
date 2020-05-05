@@ -2,211 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D211C60FA
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1A961C60FF
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 21:25:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728990AbgEETVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 15:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40594 "EHLO
+        id S1728609AbgEETZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 15:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728749AbgEETVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:21:12 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BAFC061A10
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 12:21:10 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id e16so4097266wra.7
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 12:21:10 -0700 (PDT)
+        with ESMTP id S1727857AbgEETZl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 15:25:41 -0400
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF17C061A41
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 12:25:40 -0700 (PDT)
+Received: by mail-oi1-x243.google.com with SMTP id o7so3045330oif.2
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 12:25:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=V8VssKTGe0n+GWzx49VVHpJibdflGSIBy499NinEmyM=;
-        b=ARwEP+Gm40kGrsT55TNRVmAUARaHmAHwKaMQaEqPBUOF4qowO7WeDlFmmDHVAZGjWb
-         xpZYx5y0Gnv/HTelwwfAt1r3KlyBra3NwmR2rsx25YcOFvaOsUcxcS1eD8L5sD1N8pA3
-         0QmzdNBvvnBIXJzvb8+jF02qOlJJygtLNimbzJBzf4IRjDH05VO4PK3zxFE1oLYFNYRw
-         I2FNdC0LuZQAg2AHEb+KYg32u2siw7vgA5hCKOga/eGwQUIZOrFXY+vJ4W1ZStIz/K+T
-         54+qUYKm3udJkjPQGQmaJMRIn3nFFEBv+IPq8WyJ3rsq2RWEm6NHaQGPBA29VQXRxwp6
-         Pixw==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RKLj+Bvazx+0GBaDeiW8XR54CzGKY4AHaP4cILqovw8=;
+        b=SJdtgGTW5rf7rigkvrS0mGJrpwJvn5sAzRAkkSYrU2yWA/lI6TmCZF0sq1SvNFwlg1
+         kREVUdbiAPDNjSfxcJ7oIXu434wnGVlmGdtL6WbnnD9hbqTKUgJpUSsrG2XH0oFtkDpS
+         blRYXGrjL79B5wOO2fnZ53Ph/JTysPZXNngkk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=V8VssKTGe0n+GWzx49VVHpJibdflGSIBy499NinEmyM=;
-        b=l3enzp2jrkLaESezESsfoHQj7txEScXSS2nuJYYrzwu70e5VUfCASAHOHJIl26ZvBa
-         BSxKQdAJh2avNP9S6hyaBC8LOGF/miZp9oqK4g+Wj+cYEbng8/2s5LRtSpf/ovMEHz0Q
-         M4rEr5LihQgM+6Z3pwv4CFcTiDXPdany80EJgYTyqeUcEyCpLRYgyUtFRuffXkL/Q8Wg
-         o+SlyxHJK/xm5p8tVlRWZUHQGJOBmZsqj7eIwMAtkFTmEC7Zw0cDWA+51RqKnMRJzbns
-         OK4tBIJjUXrH+t4R19Ptiz9arNrDZjiLxpqzheMwlTPP1g9fVOZt2l27K8tUDXa5XrGl
-         sqsw==
-X-Gm-Message-State: AGi0PubBpPT9sNdlmqJGH2Su4DDQwf54iv89wDxxf7O/dCW+pM3NjyG7
-        ktCMJx/nR9rhk2JQtEgHtQZOtXhV
-X-Google-Smtp-Source: APiQypJbvoyzkvr04F2SlGjJnfXIsUTyWDCjKeWQuDKqL0AZVYdatlmQ66am60w4BIrchAny3+//SQ==
-X-Received: by 2002:a5d:6692:: with SMTP id l18mr5629619wru.423.1588706468888;
-        Tue, 05 May 2020 12:21:08 -0700 (PDT)
-Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id z16sm5090681wrl.0.2020.05.05.12.21.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2020 12:21:08 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        vinicius.gomes@intel.com, po.liu@nxp.com
-Subject: [PATCH v3 net-next 6/6] docs: net: dsa: sja1105: document intended usage of virtual links
-Date:   Tue,  5 May 2020 22:20:57 +0300
-Message-Id: <20200505192057.9086-7-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200505192057.9086-1-olteanv@gmail.com>
-References: <20200505192057.9086-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RKLj+Bvazx+0GBaDeiW8XR54CzGKY4AHaP4cILqovw8=;
+        b=CxXirK9Am/VVulxeFDeOGLvysfOQKpfahXGh1Wt1fbUNXPB9sZNjfKKALq/HP4ENCJ
+         WWWqTo4qA0Z7lR/MdamYSFFPrMRFG6bISnK70WtKCpmqhuk9OvyZCuhfX8kAwZw4mTcD
+         +C1HNriU45hhpDlviK71StT0A0ZMV3ZlLKv1K4kqCYtR5jsOGCl5P+RXyQBaODVmubn8
+         ZdH2BKypeBG1esCEpBEipEQBK9Lw4Tf41r6DKS6EQjjnH6ZDFQv7ArrGE4boO4RMQpeD
+         MnpUpHW5dwvXJ+VgIeWKUqiFsmQSdp3VLJr26J/LboXKGREHBs5//UCXL0Qt+X/eX7k8
+         iz7Q==
+X-Gm-Message-State: AGi0PubgLd/1SUh4mbFCbvVdHHecouH640dRUSW2ueMduqoW2iVcDbTA
+        ZO7uDRWn/DeuXgQC6/XfzX0yHYIC6VAwbSmfaJQDdA==
+X-Google-Smtp-Source: APiQypJj1DkGUZt7VIZXosUiRMoBR0Hk5xmD/ibsZ1474R2bICyoP6W/sR5eJX+NBmdVffk3jmYWOAdQstorpI7Bi6g=
+X-Received: by 2002:aca:403:: with SMTP id 3mr227565oie.166.1588706739870;
+ Tue, 05 May 2020 12:25:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200505140231.16600-1-brgl@bgdev.pl> <20200505140231.16600-6-brgl@bgdev.pl>
+In-Reply-To: <20200505140231.16600-6-brgl@bgdev.pl>
+From:   Edwin Peer <edwin.peer@broadcom.com>
+Date:   Tue, 5 May 2020 12:25:03 -0700
+Message-ID: <CAKOOJTzcNr7mc9xusQm3nCzkq5P=ha-si3fizeEL2_KJUOC3-Q@mail.gmail.com>
+Subject: Re: [PATCH 05/11] net: core: provide devm_register_netdev()
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Felix Fietkau <nbd@openwrt.org>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, May 5, 2020 at 7:05 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+>
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+>
+> Provide devm_register_netdev() - a device resource managed variant
+> of register_netdev(). This new helper will only work for net_device
+> structs that have a parent device assigned and are devres managed too.
+>
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> ---
+>  include/linux/netdevice.h |  4 ++++
+>  net/core/dev.c            | 48 +++++++++++++++++++++++++++++++++++++++
+>  net/ethernet/eth.c        |  1 +
+>  3 files changed, 53 insertions(+)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 130a668049ab..433bd5ca2efc 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1515,6 +1515,8 @@ struct net_device_ops {
+>   * @IFF_FAILOVER_SLAVE: device is lower dev of a failover master device
+>   * @IFF_L3MDEV_RX_HANDLER: only invoke the rx handler of L3 master device
+>   * @IFF_LIVE_RENAME_OK: rename is allowed while device is up and running
+> + * @IFF_IS_DEVRES: this structure was allocated dynamically and is managed by
+> + *     devres
+>   */
+>  enum netdev_priv_flags {
+>         IFF_802_1Q_VLAN                 = 1<<0,
+> @@ -1548,6 +1550,7 @@ enum netdev_priv_flags {
+>         IFF_FAILOVER_SLAVE              = 1<<28,
+>         IFF_L3MDEV_RX_HANDLER           = 1<<29,
+>         IFF_LIVE_RENAME_OK              = 1<<30,
+> +       IFF_IS_DEVRES                   = 1<<31,
+>  };
+>
+>  #define IFF_802_1Q_VLAN                        IFF_802_1Q_VLAN
+> @@ -4206,6 +4209,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+>                          count)
+>
+>  int register_netdev(struct net_device *dev);
+> +int devm_register_netdev(struct net_device *ndev);
+>  void unregister_netdev(struct net_device *dev);
+>
+>  /* General hardware address lists handling functions */
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 522288177bbd..99db537c9468 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9519,6 +9519,54 @@ int register_netdev(struct net_device *dev)
+>  }
+>  EXPORT_SYMBOL(register_netdev);
+>
+> +struct netdevice_devres {
+> +       struct net_device *ndev;
+> +};
+> +
+> +static void devm_netdev_release(struct device *dev, void *this)
+> +{
+> +       struct netdevice_devres *res = this;
+> +
+> +       unregister_netdev(res->ndev);
+> +}
+> +
+> +/**
+> + *     devm_register_netdev - resource managed variant of register_netdev()
+> + *     @ndev: device to register
+> + *
+> + *     This is a devres variant of register_netdev() for which the unregister
+> + *     function will be call automatically when the parent device of ndev
+> + *     is detached.
+> + */
+> +int devm_register_netdev(struct net_device *ndev)
+> +{
+> +       struct netdevice_devres *dr;
+> +       int ret;
+> +
+> +       /* struct net_device itself must be devres managed. */
+> +       BUG_ON(!(ndev->priv_flags & IFF_IS_DEVRES));
+> +       /* struct net_device must have a parent device - it will be the device
+> +        * managing this resource.
+> +        */
 
-Add some verbiage describing how the hardware features of the switch are
-exposed to users through tc-flower.
+Catching static programming errors seems like an expensive use of the
+last runtime flag in the enum. It would be weird to devres manage the
+unregister and not also choose to manage the underlying memory in the
+same fashion, so it wouldn't be an obvious mistake to make. If it must
+be enforced, one could also iterate over the registered release
+functions and check for the presence of devm_free_netdev without
+burning the flag.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes from v2:
-None.
+> +       BUG_ON(!ndev->dev.parent);
+> +
+> +       dr = devres_alloc(devm_netdev_release, sizeof(*dr), GFP_KERNEL);
+> +       if (!dr)
+> +               return -ENOMEM;
+> +
+> +       ret = register_netdev(ndev);
+> +       if (ret) {
+> +               devres_free(dr);
+> +               return ret;
+> +       }
+> +
+> +       dr->ndev = ndev;
+> +       devres_add(ndev->dev.parent, dr);
+> +
+> +       return 0;
+> +}
+> +EXPORT_SYMBOL(devm_register_netdev);
+> +
+>  int netdev_refcnt_read(const struct net_device *dev)
+>  {
+>         int i, refcnt = 0;
+> diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+> index c8b903302ff2..ce9b5e576f20 100644
+> --- a/net/ethernet/eth.c
+> +++ b/net/ethernet/eth.c
+> @@ -423,6 +423,7 @@ struct net_device *devm_alloc_etherdev_mqs(struct device *dev, int sizeof_priv,
+>
+>         *dr = netdev;
+>         devres_add(dev, dr);
+> +       netdev->priv_flags |= IFF_IS_DEVRES;
+>
+>         return netdev;
+>  }
+> --
+> 2.25.0
+>
 
-Changes from v1:
-None.
-
-Changes from RFC:
-Patch is new.
-
- Documentation/networking/dsa/sja1105.rst | 116 +++++++++++++++++++++++
- 1 file changed, 116 insertions(+)
-
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-index 64553d8d91cb..34581629dd3f 100644
---- a/Documentation/networking/dsa/sja1105.rst
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -230,6 +230,122 @@ simultaneously on two ports. The driver checks the consistency of the schedules
- against this restriction and errors out when appropriate. Schedule analysis is
- needed to avoid this, which is outside the scope of the document.
- 
-+Routing actions (redirect, trap, drop)
-+--------------------------------------
-+
-+The switch is able to offload flow-based redirection of packets to a set of
-+destination ports specified by the user. Internally, this is implemented by
-+making use of Virtual Links, a TTEthernet concept.
-+
-+The driver supports 2 types of keys for Virtual Links:
-+
-+- VLAN-aware virtual links: these match on destination MAC address, VLAN ID and
-+  VLAN PCP.
-+- VLAN-unaware virtual links: these match on destination MAC address only.
-+
-+The VLAN awareness state of the bridge (vlan_filtering) cannot be changed while
-+there are virtual link rules installed.
-+
-+Composing multiple actions inside the same rule is supported. When only routing
-+actions are requested, the driver creates a "non-critical" virtual link. When
-+the action list also contains tc-gate (more details below), the virtual link
-+becomes "time-critical" (draws frame buffers from a reserved memory partition,
-+etc).
-+
-+The 3 routing actions that are supported are "trap", "drop" and "redirect".
-+
-+Example 1: send frames received on swp2 with a DA of 42:be:24:9b:76:20 to the
-+CPU and to swp3. This type of key (DA only) when the port's VLAN awareness
-+state is off::
-+
-+  tc qdisc add dev swp2 clsact
-+  tc filter add dev swp2 ingress flower skip_sw dst_mac 42:be:24:9b:76:20 \
-+          action mirred egress redirect dev swp3 \
-+          action trap
-+
-+Example 2: drop frames received on swp2 with a DA of 42:be:24:9b:76:20, a VID
-+of 100 and a PCP of 0::
-+
-+  tc filter add dev swp2 ingress protocol 802.1Q flower skip_sw \
-+          dst_mac 42:be:24:9b:76:20 vlan_id 100 vlan_prio 0 action drop
-+
-+Time-based ingress policing
-+---------------------------
-+
-+The TTEthernet hardware abilities of the switch can be constrained to act
-+similarly to the Per-Stream Filtering and Policing (PSFP) clause specified in
-+IEEE 802.1Q-2018 (formerly 802.1Qci). This means it can be used to perform
-+tight timing-based admission control for up to 1024 flows (identified by a
-+tuple composed of destination MAC address, VLAN ID and VLAN PCP). Packets which
-+are received outside their expected reception window are dropped.
-+
-+This capability can be managed through the offload of the tc-gate action. As
-+routing actions are intrinsic to virtual links in TTEthernet (which performs
-+explicit routing of time-critical traffic and does not leave that in the hands
-+of the FDB, flooding etc), the tc-gate action may never appear alone when
-+asking sja1105 to offload it. One (or more) redirect or trap actions must also
-+follow along.
-+
-+Example: create a tc-taprio schedule that is phase-aligned with a tc-gate
-+schedule (the clocks must be synchronized by a 1588 application stack, which is
-+outside the scope of this document). No packet delivered by the sender will be
-+dropped. Note that the reception window is larger than the transmission window
-+(and much more so, in this example) to compensate for the packet propagation
-+delay of the link (which can be determined by the 1588 application stack).
-+
-+Receiver (sja1105)::
-+
-+  tc qdisc add dev swp2 clsact
-+  now=$(phc_ctl /dev/ptp1 get | awk '/clock time is/ {print $5}') && \
-+          sec=$(echo $now | awk -F. '{print $1}') && \
-+          base_time="$(((sec + 2) * 1000000000))" && \
-+          echo "base time ${base_time}"
-+  tc filter add dev swp2 ingress flower skip_sw \
-+          dst_mac 42:be:24:9b:76:20 \
-+          action gate base-time ${base_time} \
-+          sched-entry OPEN  60000 -1 -1 \
-+          sched-entry CLOSE 40000 -1 -1 \
-+          action trap
-+
-+Sender::
-+
-+  now=$(phc_ctl /dev/ptp0 get | awk '/clock time is/ {print $5}') && \
-+          sec=$(echo $now | awk -F. '{print $1}') && \
-+          base_time="$(((sec + 2) * 1000000000))" && \
-+          echo "base time ${base_time}"
-+  tc qdisc add dev eno0 parent root taprio \
-+          num_tc 8 \
-+          map 0 1 2 3 4 5 6 7 \
-+          queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 \
-+          base-time ${base_time} \
-+          sched-entry S 01  50000 \
-+          sched-entry S 00  50000 \
-+          flags 2
-+
-+The engine used to schedule the ingress gate operations is the same that the
-+one used for the tc-taprio offload. Therefore, the restrictions regarding the
-+fact that no two gate actions (either tc-gate or tc-taprio gates) may fire at
-+the same time (during the same 200 ns slot) still apply.
-+
-+To come in handy, it is possible to share time-triggered virtual links across
-+more than 1 ingress port, via flow blocks. In this case, the restriction of
-+firing at the same time does not apply because there is a single schedule in
-+the system, that of the shared virtual link::
-+
-+  tc qdisc add dev swp2 ingress_block 1 clsact
-+  tc qdisc add dev swp3 ingress_block 1 clsact
-+  tc filter add block 1 flower skip_sw dst_mac 42:be:24:9b:76:20 \
-+          action gate index 2 \
-+          base-time 0 \
-+          sched-entry OPEN 50000000 -1 -1 \
-+          sched-entry CLOSE 50000000 -1 -1 \
-+          action trap
-+
-+Hardware statistics for each flow are also available ("pkts" counts the number
-+of dropped frames, which is a sum of frames dropped due to timing violations,
-+lack of destination ports and MTU enforcement checks). Byte-level counters are
-+not available.
-+
- Device Tree bindings and board design
- =====================================
- 
--- 
-2.17.1
-
+Regards,
+Edwin Peer
