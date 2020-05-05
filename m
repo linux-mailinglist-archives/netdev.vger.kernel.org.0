@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1CDE1C4B6F
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 03:18:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F018A1C4B71
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 03:18:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgEEBSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 21:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        id S1727982AbgEEBSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 21:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726449AbgEEBSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 21:18:09 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012F2C061A0F;
-        Mon,  4 May 2020 18:18:08 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id k22so410304eds.6;
-        Mon, 04 May 2020 18:18:08 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726449AbgEEBSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 21:18:44 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84403C061A0F;
+        Mon,  4 May 2020 18:18:44 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id t12so492396edw.3;
+        Mon, 04 May 2020 18:18:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=p0UOcxbWlSK6+9fa27qUm+SWDGL9EIT24NJ6czHj5BM=;
-        b=AY7OcslRaoXoQW29fSK+NEzdEwwpLDIwo88jBTvyaTdWgZ8sGFjSvZQI0dP72wGHqE
-         n8+CG6gmF3y5BQu+OEsFKU45E2eMLF9nUk9JNwFlwI7DNS8/GD9ZdulW+HdA6MLja2Rx
-         xAdpyqNItnqNrDnKuNVbF37pLfQLgB6L5/RvzKYnti21OFrxGnrgVzUIqYXpB6JvE+mf
-         E6IIlbssNbxVAgnkaHMddpW6hwuDAT0YBS8QbEmQjVc9OJKRE6X718+/LxMHKh6Amsr+
-         TjCxJ+KzW3Zu8QvOo8ZES5EEul/Jx9+Do0a+O0NdAJC/LikV7PiaT4LyZfsCNHqHJu2q
-         Xm0A==
+        bh=ESLjKLI3zYKevyA1VvOR4LQx91uhZUxxvAK2raOSXD0=;
+        b=icIu7NgqMHtcY7DCmx9AgDtkHSZkehYOeZWh0ch8MNJ2Hiv5PpHPvE0aRkvRH4G3AQ
+         AYzSMGB0Ui+v75cb2Kw4847rJLA0WaBjqSNmo14ZINnIkgPBte6Rhc7Y0gAg0ornrIWP
+         R+iXo7REy8hnwxJpTm1apYtnE/wUg4UHmYqVNM/Ct0dYlCqNH6bSOOxFSgQq/Fteo4XN
+         2PIPZg9c9Ivhq/Iliv43xFnuRGMMxM+fzJ1WY6XALk7H3NlcPwQRR2ZxmBRCtVRmkepP
+         2UJAzTupK2XI/56tuA1hMjMq04kcGHb+JpeoPyu9kQxUeP1Q9zMl4dYpiXaBBF54gU+X
+         FS3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=p0UOcxbWlSK6+9fa27qUm+SWDGL9EIT24NJ6czHj5BM=;
-        b=mj20DtwcFHSwwROa7g1RQZGiZ02sU53dTn5Y3zJYmCF31pIzUHlLPlGCscqI+kHdX9
-         5RCPIbYGA8Wbf9hVQ6QvUU5No3jl2Ue8tJXJiDBB0ZG+R7r9SrJKz2JLpI4DUgm61a4q
-         C/ORAgTQcV/DzD5uULMyp1Z18X392LcFDLCPeI+C+gbxZzP+4tt/67MAE9e8AFlQfFRL
-         c3LSLafvTfGJSMNE4ddXhs5a8JSMjCK6r092160U+d4LTa+VxuZ+YljKuxPUdZP5SdrN
-         JYTbzeHjAxt0IVEfkzvM27eP33TOswUKF0ycnLMzgAlvzXT23JAbTBu0hyepBWLF8gbE
-         +i2w==
-X-Gm-Message-State: AGi0PuZL3bHaVm1EAF0j4ij1UMTeRFjc2lzip2eBOCWwpsxhOS6CSO+K
-        8ay/BhqppcFtSyGLVAbC4T5MS+NT
-X-Google-Smtp-Source: APiQypJdeNCnt6nkRozY7HEr/tZW75u2GOXa4MIoD5BQ9TUo62rGgPf93Tr4tiPmLOe6ruNsBRDcmg==
-X-Received: by 2002:a50:e8c7:: with SMTP id l7mr587418edn.309.1588641487550;
-        Mon, 04 May 2020 18:18:07 -0700 (PDT)
+        bh=ESLjKLI3zYKevyA1VvOR4LQx91uhZUxxvAK2raOSXD0=;
+        b=MXre/x0MMn3hmnueTAP2nExl8tQjtZMzO5i5LdPT68M3mtwg33WMM8sUbNWkD66v38
+         W8rhpZmgea+kDHCIWuX99V5Qp6YuT/Ev8JhjsG1V/hJdN9CUcCUGGo/iHSWsSwgtJ+TX
+         5J/2mWK+wRNnertlyI+cNrtD3hszlx4JCubm6ANza/xZvuPsSO/uaJjdskW8p9c3eGGY
+         toBSZJGhzFmyTyZdQofeo42zXj6EHga5uqEu/w5OSRoQTkKdI36eZ/2GZ1WROQF+QbRu
+         HnPCGqhmNnD3EB9N2pSMMSMs1ITY8qtKj0TuR3cwE0f6P4J2QN5NorgvwHNiJckdYBnm
+         6vTw==
+X-Gm-Message-State: AGi0PuYtoz/knHzhpV4kTw++NJaRHLoaNiVVNnVR96gZUU/1zcLc2+KP
+        Pa0eDaZlLI5ZFBXPsqGllfk=
+X-Google-Smtp-Source: APiQypJfYvNzTBzbY10pp3ua4pMFxVPTarhOZ/sh9pBKuZpg9Vw4f5p9IViNoAB/yFezfoYLHnmNjA==
+X-Received: by 2002:a50:99c4:: with SMTP id n4mr648565edb.187.1588641523237;
+        Mon, 04 May 2020 18:18:43 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id u26sm81238eje.35.2020.05.04.18.18.05
+        by smtp.gmail.com with ESMTPSA id ch17sm87693edb.42.2020.05.04.18.18.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 May 2020 18:18:06 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 1/3] net: phy: add concept of shared storage
- for PHYs
+        Mon, 04 May 2020 18:18:42 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/3] net: phy: bcm54140: use
+ phy_package_shared
 To:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,14 +59,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Antoine Tenart <antoine.tenart@bootlin.com>
 References: <20200504213136.26458-1-michael@walle.cc>
- <20200504213136.26458-2-michael@walle.cc>
+ <20200504213136.26458-3-michael@walle.cc>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <770d75c8-3afe-0b33-8129-3672122dafd0@gmail.com>
-Date:   Mon, 4 May 2020 18:18:03 -0700
+Message-ID: <99574d6f-8a64-c04a-f244-525e48d008ea@gmail.com>
+Date:   Mon, 4 May 2020 18:18:39 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200504213136.26458-2-michael@walle.cc>
+In-Reply-To: <20200504213136.26458-3-michael@walle.cc>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -78,11 +78,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 5/4/2020 2:31 PM, Michael Walle wrote:
-> There are packages which contain multiple PHY devices, eg. a quad PHY
-> transceiver. Provide functions to allocate and free shared storage.
-> 
-> Usually, a quad PHY contains global registers, which don't belong to any
-> PHY. Provide convenience functions to access these registers.
+> Use the new phy_package_shared common storage to ease the package
+> initialization and to access the global registers.
 > 
 > Signed-off-by: Michael Walle <michael@walle.cc>
 
