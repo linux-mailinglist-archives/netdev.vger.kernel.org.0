@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 146751C630F
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 23:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35BE61C631A
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 23:31:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728965AbgEEV3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 17:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
+        id S1729307AbgEEVbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 17:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728737AbgEEV3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 17:29:20 -0400
+        by vger.kernel.org with ESMTP id S1729294AbgEEVbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 17:31:03 -0400
 Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8872AC061A0F;
-        Tue,  5 May 2020 14:29:20 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id k12so3384555qtm.4;
-        Tue, 05 May 2020 14:29:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC9CC061A0F;
+        Tue,  5 May 2020 14:31:03 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id o10so3378404qtr.6;
+        Tue, 05 May 2020 14:31:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=q5y6wSZrPYeT5Tn8QEDzVFrDmjHP6VBbR44zyDeHrzc=;
-        b=lPBE1psPjy6Bwb4vxGWEqn1DljS9jR78QxQSlD/Xd6i//S8l89VPav9aJmPR407ZSL
-         R05oc+nKPtjyIrut0wn1LfOzxmliNCX17i1CEKl4AhO5DCJnXgkDdHx3KZMzybPzTeOk
-         GjM8ZmovFm6KyRgwYmZwWKuRqAXzQwkcw298RkR6lFh9JZWF33yCpfTeTZGtb5P3bbrn
-         5HTd/bFtyvmurtIKP9Z2kn9LaRJen+nKNs0kpZoNGSlUQsbgz5Jv1Y+aIljJQ/+5nGEC
-         /Ow3F+3N7S/bU4LVjN92e1BVplbXSUi03DzejnqmN2rPl7q1Zx/QAqMhRDOcLOWGEmaL
-         As7Q==
+        bh=YooUIlaxiccVXKiDrx8umDqkzGjh29q5oZQ4NLVRE8A=;
+        b=hWlcfyrxoR1rUGN/pwLfGUU27O6i8gvNiVpPqram6WRxm4l/XpjzN2tGtbEDfGrT1y
+         ju9gXgccs69ZFvaQJZ8nwTLXEOUDwozTDoX3h9SOyf/20V9L+6n3YbuAzLmT99KVNfZE
+         d2yPp/MohO8cKontoc0+375JsskrYchAVVlh4EmJBq0714MIaktpkkhj5lQbRWTCw4I9
+         V55nKUZYH/oVfuk/DeEZAJcLGhxMQJNM1Zicpon21un3W2xRDnnEHDGGvga48zkZo/b/
+         dNlZGuTha6MdlP8iC7UqvhFkDakc4o38hiiUFxu4GdXi0RnLgHuGkD2bYswv5zvr7Wl5
+         5nEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=q5y6wSZrPYeT5Tn8QEDzVFrDmjHP6VBbR44zyDeHrzc=;
-        b=cSlBfm2S3DLQHoFOshmfr2JJ4GyBqT2PkcYdG6t+YEXzOHhlbwYg4ZxgNbhJe0D8CS
-         ZQXuFpnjN7wW017OjTPRSmzxUZuedOdCS9LNqmxkqh//rcD0ei/CzsC/aOVM/9DwRxtz
-         +S4v4hxtISZyDGbl6PqrK377bnkvV0riTnoxTCoBYnZczEH+kf4N7jUrHLlXPRjUXB50
-         mqmY1FuKz0C9XLXiK2B5s3tywEjc2yRx0myX2eNXLAxETIrS/w32o8COrw3+ai3zSMKC
-         SnOYiG0mC3UeAHMNPH/dlqTAmzhNh5uthk2RGJQXvcKNQ+oyP93/ydE7Lj8lV7WgbWvZ
-         e81w==
-X-Gm-Message-State: AGi0PuaH35ZrG/HADTurhdZIu7gVg8lgKjLzfn20A1fGBkEDRG6Idg2t
-        k0ddessWFv+sshWobhrvavc9ShtleQNgybngbPpjDw==
-X-Google-Smtp-Source: APiQypLIDRFMwJCOfKBbhOCHZHAh8cCTGQPAmk9QJy7tmbmIDmAju1P78M0ftzNJ4vlMwUFOGTo65hEI0zSq8NGrFhY=
-X-Received: by 2002:ac8:193d:: with SMTP id t58mr4616126qtj.93.1588714159580;
- Tue, 05 May 2020 14:29:19 -0700 (PDT)
+        bh=YooUIlaxiccVXKiDrx8umDqkzGjh29q5oZQ4NLVRE8A=;
+        b=i3TVhLURnMlcNiz8CRwIFp7Z5LWnYA95akt4Kz8Q/Vdi8ylNLxmDdFKKrdVmP5fH6V
+         ehtTMq806pn8hM4vnWadEkkvc6aAho8Tm0OwafsxKwAr/VkShIsvIe00MK7FcowrMOZL
+         wWWAoK5VF5ZeXx/IyfY6fNFm7VtkwHOU2KMR1K6A2kMj5Vpo02gbgfARntq/6sbjcdGa
+         y/v/k/E63NdUiT8F4iCA0J61mraS7xRLJdR3ZyRZFwD/Sk9P0iE0Jw6Ml4F0TQVRuFNB
+         FbGE/Y7cgPL5e+nzLWYOx/bEEr7jsjVpTCLzMWE0qgVYeFVosgGAzBEFxVaDZnL0TJ/A
+         eunQ==
+X-Gm-Message-State: AGi0PuZtuDiWPxMKC0SCYPUGQ0IxLXAQ49m8KxYS39KeGjkhtO4h8YDz
+        5FEUkmx7KmSBxrApGiOruV2XszJ8ez93hD/0yoA=
+X-Google-Smtp-Source: APiQypJ3xdop6PBqewfwEoDyzAwXzgE8QdicCqgCGiNcd8z2dTP4AgCTZ+vuPd8FIFYMYNBii6m6LhxqDr9aasNngKg=
+X-Received: by 2002:ac8:468d:: with SMTP id g13mr4755736qto.59.1588714262664;
+ Tue, 05 May 2020 14:31:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200504062547.2047304-1-yhs@fb.com> <20200504062548.2047454-1-yhs@fb.com>
-In-Reply-To: <20200504062548.2047454-1-yhs@fb.com>
+References: <20200504062547.2047304-1-yhs@fb.com> <20200504062549.2047531-1-yhs@fb.com>
+In-Reply-To: <20200504062549.2047531-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 May 2020 14:29:08 -0700
-Message-ID: <CAEf4BzY456K4YJt6JhGD4y0uDfdwmzJvHDjze=Cct9Akf1-9gA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 02/20] bpf: allow loading of a bpf_iter program
+Date:   Tue, 5 May 2020 14:30:51 -0700
+Message-ID: <CAEf4BzYxTwmxEVk6DG9GzkqHDF--VqvZWik0YJigzdrn3whcXA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 03/20] bpf: support bpf tracing/iter programs
+ for BPF_LINK_CREATE
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -65,102 +66,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sun, May 3, 2020 at 11:26 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> A bpf_iter program is a tracing program with attach type
-> BPF_TRACE_ITER. The load attribute
->   attach_btf_id
-> is used by the verifier against a particular kernel function,
-> which represents a target, e.g., __bpf_iter__bpf_map
-> for target bpf_map which is implemented later.
+> Given a bpf program, the step to create an anonymous bpf iterator is:
+>   - create a bpf_iter_link, which combines bpf program and the target.
+>     In the future, there could be more information recorded in the link.
+>     A link_fd will be returned to the user space.
+>   - create an anonymous bpf iterator with the given link_fd.
 >
-> The program return value must be 0 or 1 for now.
->   0 : successful, except potential seq_file buffer overflow
->       which is handled by seq_file reader.
->   1 : request to restart the same object
-
-This bit is interesting. Is the idea that if BPF program also wants to
-send something over, say, perf_buffer, but fails, it can "request"
-same execution again? I wonder if typical libc fread() implementation
-would handle EAGAIN properly, it seems more driven towards
-non-blocking I/O?
-
-On the other hand, following start/show/next logic for seq_file
-iteration, requesting skipping element seems useful. It would allow
-(in some cases) to "speculatively" generate output and at some point
-realize that this is not an element we actually want in the output and
-request to ignore that output.
-
-Don't know how useful the latter is going to be in practice, but just
-something to keep in mind for the future, I guess...
-
+> The bpf_iter_link can be pinned to bpffs mount file system to
+> create a file based bpf iterator as well.
 >
-> In the future, other return values may be used for filtering or
-> teminating the iterator.
+> The benefit to use of bpf_iter_link:
+>   - using bpf link simplifies design and implementation as bpf link
+>     is used for other tracing bpf programs.
+>   - for file based bpf iterator, bpf_iter_link provides a standard
+>     way to replace underlying bpf programs.
+>   - for both anonymous and free based iterators, bpf link query
+>     capability can be leveraged.
+>
+> The patch added support of tracing/iter programs for BPF_LINK_CREATE.
+> A new link type BPF_LINK_TYPE_ITER is added to facilitate link
+> querying. Currently, only prog_id is needed, so there is no
+> additional in-kernel show_fdinfo() and fill_link_info() hook
+> is needed for BPF_LINK_TYPE_ITER link.
 >
 > Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
->  include/linux/bpf.h            |  3 +++
+
+LGTM. See small nit about __GFP_NOWARN.
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+
+>  include/linux/bpf.h            |  1 +
+>  include/linux/bpf_types.h      |  1 +
 >  include/uapi/linux/bpf.h       |  1 +
->  kernel/bpf/bpf_iter.c          | 30 ++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c          | 21 +++++++++++++++++++++
+>  kernel/bpf/bpf_iter.c          | 62 ++++++++++++++++++++++++++++++++++
+>  kernel/bpf/syscall.c           | 14 ++++++++
 >  tools/include/uapi/linux/bpf.h |  1 +
->  5 files changed, 56 insertions(+)
+>  6 files changed, 80 insertions(+)
 >
 
 [...]
 
-
-> +
-> +bool bpf_iter_prog_supported(struct bpf_prog *prog)
+> +int bpf_iter_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
 > +{
-> +       const char *attach_fname = prog->aux->attach_func_name;
-> +       u32 prog_btf_id = prog->aux->attach_btf_id;
-> +       const char *prefix = BPF_ITER_FUNC_PREFIX;
+> +       struct bpf_link_primer link_primer;
 > +       struct bpf_iter_target_info *tinfo;
-> +       int prefix_len = strlen(prefix);
-> +       bool supported = false;
+> +       struct bpf_iter_link *link;
+> +       bool existed = false;
+> +       u32 prog_btf_id;
+> +       int err;
 > +
-> +       if (strncmp(attach_fname, prefix, prefix_len))
-> +               return false;
+> +       if (attr->link_create.target_fd || attr->link_create.flags)
+> +               return -EINVAL;
 > +
+> +       prog_btf_id = prog->aux->attach_btf_id;
 > +       mutex_lock(&targets_mutex);
 > +       list_for_each_entry(tinfo, &targets, list) {
-> +               if (tinfo->btf_id && tinfo->btf_id == prog_btf_id) {
-> +                       supported = true;
-> +                       break;
-> +               }
-> +               if (!strcmp(attach_fname + prefix_len, tinfo->target)) {
-> +                       tinfo->btf_id = prog->aux->attach_btf_id;
-
-This target_info->btf_id caching here is a bit subtle and easy to
-miss, it would be nice to have a code calling this out explicitly.
-Thanks!
-
-> +                       supported = true;
+> +               if (tinfo->btf_id == prog_btf_id) {
+> +                       existed = true;
 > +                       break;
 > +               }
 > +       }
 > +       mutex_unlock(&targets_mutex);
+> +       if (!existed)
+> +               return -ENOENT;
 > +
-> +       return supported;
+> +       link = kzalloc(sizeof(*link), GFP_USER | __GFP_NOWARN);
+
+nit: all existing link implementation don't specify __GFP_NOWARN,
+wonder if bpf_iter_link should be special?
+
+> +       if (!link)
+> +               return -ENOMEM;
+> +
+> +       bpf_link_init(&link->link, BPF_LINK_TYPE_ITER, &bpf_iter_link_lops, prog);
+> +       link->tinfo = tinfo;
+> +
+> +       err  = bpf_link_prime(&link->link, &link_primer);
+> +       if (err) {
+> +               kfree(link);
+> +               return err;
+> +       }
+> +
+> +       return bpf_link_settle(&link_primer);
 > +}
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 70ad009577f8..d725ff7d11db 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -7101,6 +7101,10 @@ static int check_return_code(struct bpf_verifier_env *env)
->                         return 0;
->                 range = tnum_const(0);
->                 break;
-> +       case BPF_PROG_TYPE_TRACING:
-> +               if (env->prog->expected_attach_type != BPF_TRACE_ITER)
-> +                       return 0;
-
-Commit message mentions enforcing [0, 1], shouldn't it be done here?
-
-
-> +               break;
->         default:
->                 return 0;
->         }
 
 [...]
