@@ -2,77 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96C6C1C5EF0
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A85331C5F01
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 19:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730359AbgEERe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 13:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
+        id S1730472AbgEERiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 13:38:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729663AbgEERe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 13:34:28 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320DDC061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 10:34:28 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id v2so1096625plp.9
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 10:34:28 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730342AbgEERiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 13:38:24 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342B6C061A41
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 10:38:23 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id h4so2512299ljg.12
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 10:38:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7JLqCYuJVayCNWZ1ofB2Z3sXmxXGsoqa/HAhVS82vFQ=;
-        b=FZPIWdq0ihiP4hoxVfh0TAOv9Icoz8PwZgx2O1bZPeo0SvFTAi9uS0obXv+XMNmuWf
-         XbDRw7dH0J63yMu6O8xGlwTnQ+OM+CiyePUCM/H0cXnsE9EcZCT+pttxqlKIPSguxVpZ
-         pz1y6V5ToDHKstJWbX7XfBVV3VgEZ0jNM1rRp2TBlyy0/Xw3ftdw08mtiGuwQbeYtVqg
-         btpChm/lWxomoV79CvarYEUmOKMB3p/HgHL8V7uGzHt/DswaTMdN1tO/fgGMmr6xNbLo
-         fMh3VsLHj2b3eyl34np28WkFfcw0dYQA52qyK3Y+o4WnNMmegPUhDf7zJfql6iNAOnpy
-         qGpg==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Nv0AIZrWlMo4m0rNhQ0hmb2K7EScYgYrwU3TenVEmog=;
+        b=EZSQQZlIteDqtbEIcl/sEkeBUfzjC+YtuCRNGMwWCq1AIeFJ3n4lyDDj8t67g6lgOv
+         vG2erCqH5ghfC7q0wRU3CL4Hc1X83XBVUxV/+FOuE8DVCZL3q7jY7Hj7QYyF0Vc85oqH
+         jyFcaDUaWWrs9ZE+JHUIH20XmBu1l0lK2xrnU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7JLqCYuJVayCNWZ1ofB2Z3sXmxXGsoqa/HAhVS82vFQ=;
-        b=E5BiEWaqAp8aO02osLe7WkZizQQKJ6uUl9Gspl95euC4mYAAPFEskF7qG0hLvpv4Ib
-         dsTwrH4RbvgaVoJbnY1Nl2koPueRAPwecyv0RX8Fvl3IihNEwBkvwOE+C/zILcJIJHje
-         OrlP3Nei5iPsj2ytGp0keHUb7ZHZl3FqquC8AXTUBGu5vKP1Flq6dX7IHasnSaP/swO1
-         nzcTL0JA3CkfDoLeMKXGw8T63qEn5t/mazJ2v9z48XbPbbQ8lbfq+TKSu+a5R67LHpR1
-         FsE4472p9Jzrvoi1AxTIRKxlEM+NqrCJzG74rIMx+pSXYB0e/hX6CPYeHE2kg2x4TgLR
-         MeTg==
-X-Gm-Message-State: AGi0PuYf2qNLEufhmkph9g3RWEPUD8T0vNXj+3Y0rCWQ4dCXIF+SgVuM
-        c5bau0jvJkN0Ew35Xu5ME6uTHQ==
-X-Google-Smtp-Source: APiQypKGj130SDYKeCM71sKVZaknc8rVL3DFIyPBk4zQNaK8g1wdy2/LhvyvlDDMveWl1GHixo6/AA==
-X-Received: by 2002:a17:902:cf87:: with SMTP id l7mr4090089ply.307.1588700067533;
-        Tue, 05 May 2020 10:34:27 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q19sm2573552pfh.34.2020.05.05.10.34.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 May 2020 10:34:27 -0700 (PDT)
-Date:   Tue, 5 May 2020 10:34:19 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH iproute2] tc: fq: fix two issues
-Message-ID: <20200505103419.590146ce@hermes.lan>
-In-Reply-To: <20200505154348.224941-1-edumazet@google.com>
-References: <20200505154348.224941-1-edumazet@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Nv0AIZrWlMo4m0rNhQ0hmb2K7EScYgYrwU3TenVEmog=;
+        b=LL4XOR+jNeubUpmCnkfYIMkQTzYEakMqj9YC8CDHe7tgwtR9CF/VPPUl6ZjeQ/Gs4i
+         L5XFHwDU3gMzH4DXBSkEzrQzfrsCx5l1ySj6e1zfHUW3g//wLrXsLycvyk93zy2VbBYx
+         z10jG73a8PbqRQo+td0WB4vH9svcC5zFEePDbF03cp7dCTgk0RvnI8Y+go+nTbZEPWyj
+         wY0gsl0YYvPZ0Z1BhFHvKli2TD+9kPwmVEgr30wfdGzGI8yQZPtZnhXMOoZTgnaYS7nU
+         lAUJ5ysv5pnZsIjW1IWrWehr7rWSeodU73wTMFscA66Takug80si/UpqtsbbaovaA4q9
+         O/Xg==
+X-Gm-Message-State: AGi0PuZ/AkGvbWVoWa3PWHQZ992vDgdnaD4vqUXifnKXUyVsSwowO7iY
+        RN+ffyrA8WtN0wYscDNHCafABck0ors=
+X-Google-Smtp-Source: APiQypJWbI/y9dKGi+ZReKRPdLAT2LRgxdryqQE9LNt/02eV3+48kVQf2VaOT9W24onyVt93F7KXGQ==
+X-Received: by 2002:a2e:9882:: with SMTP id b2mr2574455ljj.35.1588700300661;
+        Tue, 05 May 2020 10:38:20 -0700 (PDT)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
+        by smtp.gmail.com with ESMTPSA id w9sm168348ljw.39.2020.05.05.10.38.19
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 May 2020 10:38:19 -0700 (PDT)
+Received: by mail-lf1-f54.google.com with SMTP id w14so2064990lfk.3
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 10:38:19 -0700 (PDT)
+X-Received: by 2002:a19:c394:: with SMTP id t142mr2441981lff.129.1588700298965;
+ Tue, 05 May 2020 10:38:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200505133602.25987-1-geert+renesas@glider.be>
+In-Reply-To: <20200505133602.25987-1-geert+renesas@glider.be>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Tue, 5 May 2020 10:38:07 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXO8TJ09vNQaCyoMgfoFVouNQRw7Evx2Vfko1k_03q8GHA@mail.gmail.com>
+Message-ID: <CA+ASDXO8TJ09vNQaCyoMgfoFVouNQRw7Evx2Vfko1k_03q8GHA@mail.gmail.com>
+Subject: Re: [PATCH v4 resend 2] dt-bindings: net: btusb: DT fix s/interrupt-name/interrupt-names/
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Rajat Jain <rajatja@google.com>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  5 May 2020 08:43:48 -0700
-Eric Dumazet <edumazet@google.com> wrote:
+On Tue, May 5, 2020 at 6:36 AM Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+>
+> The standard DT property name is "interrupt-names".
+>
+> Fixes: fd913ef7ce619467 ("Bluetooth: btusb: Add out-of-band wakeup support")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-> My latest patch missed the fact that this file got JSON support.
-> 
-> Also fixes a spelling error added during JSON change.
-> 
-> Fixes: be9ca9d54123 ("tc: fq: add timer_slack parameter")
-> Fixes: d15e2bfc042b ("tc: fq: add support for JSON output")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+If it matters:
 
-Applied
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+
+We're definitely using the plural ("interrupt-names") not the
+singular, so this was just a typo.
+
+Brian
