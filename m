@@ -2,114 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D947E1C5D5A
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB7951C5D5C
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 18:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730134AbgEEQVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 12:21:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729119AbgEEQVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:21:19 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B537C061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 09:21:19 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id t3so2914558qkg.1
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 09:21:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OhY6T2+oI+ia1B+xr+YNleF/AfPXm2IqHaD/tj9TVV0=;
-        b=Cp8yrExq2LrEulHGuQ+tC8QAgWlA7rZghg2IyYLbYsW+A+s5ALB35LUizqdY8hrLO3
-         CSjUhP5NTxMDmh2utMR7iG0lZI83u0ICyPeFJS+HilhFaLbKPMHi7DkJcp4NZIntXvm/
-         LOavkHSsYJu36/bJgieLND7ML721iNCEwRyWx1iE7Q1b/3vYofDtLXCY9Vl1fFok9gTg
-         bfSxQsgrPpWrDcDEayLSzIu+a2QRrLp2YXP2Z/0GE4QdB0NItUGSWxRRG/gGm1q2tJex
-         ZgmHyC/QQip0PBDuniDF/cR93HN1JixHjUkaGsuFy4oBMX+4f1eHN9VFGQsdDkwJmmxC
-         B5Mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OhY6T2+oI+ia1B+xr+YNleF/AfPXm2IqHaD/tj9TVV0=;
-        b=d7f5ntvLtHI8STo+w+4STClcJiWzSscbM7GUMwiJ1ap4nrkdCX4NdoIYgB3BV2iV2y
-         2AzHIPPykfp5zCn7b1ZYyZZxJ8NKL69FxV3rj694VgV9dLQLjfwYm1TOYxhIsqcwQleF
-         N5kJbCQdJVuqZdqSOixF9g5Gjg+bB+uVI1naS/7MPDodbRu5979sT3nFQpl8m2x4UFA/
-         uSGuK/oNodgMnFu12c5K4F8GKh8SjqudZ0Kh2ClnfaipN+a+dc5fgB0ZqpBMTIg9a6Pe
-         XsJkIRBEX/n2EfeZRrAMtEwVpzhLQulFzxK7YrIgf7VISDrlXCymNqCTeXxuxMhBPo+T
-         l4KA==
-X-Gm-Message-State: AGi0PuYLDxTbqCIFT8jsc2lK1IQnddgkJLZoDdNOxnMh01dUVu/rI99x
-        AojoQ4LRjiT4xqzkFESTKcI=
-X-Google-Smtp-Source: APiQypL63PNgZWMJwMe6W0nDaUcb50xpMCB0bpLwJ1IMzwVsp6NUYbnpMI0K6Yt+fjlN+kDtDzQYyQ==
-X-Received: by 2002:a37:5846:: with SMTP id m67mr3967594qkb.78.1588695678583;
-        Tue, 05 May 2020 09:21:18 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c19:a884:3b89:d8b6? ([2601:282:803:7700:c19:a884:3b89:d8b6])
-        by smtp.googlemail.com with ESMTPSA id c63sm2129268qkf.131.2020.05.05.09.21.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 May 2020 09:21:17 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2] tc: full JSON support for 'bpf' filter
-To:     Davide Caratti <dcaratti@redhat.com>, aclaudi@redhat.com,
-        stephen@networkplumber.org, netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, jhs@mojatatu.com
-References: <0f53a3a2bf42de2ff399c8396c3d0bc76c8344ea.1588269623.git.dcaratti@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ed429cab-db8b-f46f-d766-d29d4ad43ec8@gmail.com>
-Date:   Tue, 5 May 2020 10:21:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1730520AbgEEQVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 12:21:37 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:45014 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729119AbgEEQVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 12:21:37 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 045GLVnj022356;
+        Tue, 5 May 2020 11:21:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1588695691;
+        bh=OxUyjvjTpC4dkBUPPz1IUnY359iQO02H2M1zKF1GPlc=;
+        h=From:To:CC:Subject:Date;
+        b=RbzphmRfOpEU1RoFFZjjFWb0wr6p1BzWmY3ZnlTL9AQT3O0gTHH4Xr7copS1vrCeu
+         quUAd71JiKxoQTk9o7HDQCbCu23xb3OXLWrUD/oKWp9QR67+RhJs8pFR7i65K7kC2o
+         kvWBkrD5XX8CX4PH3nwZwUs5DEhf9Z/GMfYGnUAk=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 045GLV6Y087775
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 May 2020 11:21:31 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 5 May
+ 2020 11:21:31 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 5 May 2020 11:21:31 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 045GLUkF026653;
+        Tue, 5 May 2020 11:21:30 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Anders Roxell <anders.roxell@linaro.org>
+CC:     <netdev@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next] net: ethernet: ti: am65-cpts: fix build
+Date:   Tue, 5 May 2020 19:21:23 +0300
+Message-ID: <20200505162123.13366-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <0f53a3a2bf42de2ff399c8396c3d0bc76c8344ea.1588269623.git.dcaratti@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/20 12:03 PM, Davide Caratti wrote:
-> example using eBPF:
-> 
->  # tc filter add dev dummy0 ingress bpf \
->  > direct-action obj ./bpf/filter.o sec tc-ingress
->  # tc  -j filter show dev dummy0 ingress | jq
->  [
->    {
->      "protocol": "all",
->      "pref": 49152,
->      "kind": "bpf",
->      "chain": 0
->    },
->    {
->      "protocol": "all",
->      "pref": 49152,
->      "kind": "bpf",
->      "chain": 0,
->      "options": {
->        "handle": "0x1",
->        "bpf_name": "filter.o:[tc-ingress]",
->        "direct-action": true,
->        "not_in_hw": true,
->        "prog": {
->          "id": 101,
->          "tag": "a04f5eef06a7f555",
->          "jited": 1
->        }
->      }
->    }
->  ]
-> 
-> v2:
->  - use print_nl(), thanks to Andrea Claudi
->  - use print_0xhex() for filter handle, thanks to Stephen Hemminger
-> 
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
->  tc/f_bpf.c | 29 +++++++++++++++--------------
->  1 file changed, 15 insertions(+), 14 deletions(-)
-> 
->
+It's possible to have build configuration which will force PTP_1588_CLOCK=m
+and so TI_K3_AM65_CPTS=m while still have TI_K3_AM65_CPSW_NUSS=y. This will
+cause build failures:
 
-applied to iproute2-next. Thanks,
+aarch64-linux-gnu-ld: ../drivers/net/ethernet/ti/am65-cpsw-nuss.o: in function `am65_cpsw_init_cpts':
+../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1685: undefined reference to `am65_cpts_create'
+aarch64-linux-gnu-ld: ../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1685:(.text+0x2e20):
+relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `am65_cpts_create'
+
+Fix it by adding dependencies from CPTS in TI_K3_AM65_CPSW_NUSS as below:
+   config TI_K3_AM65_CPSW_NUSS
+   ...
+     depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS
+
+Note. This will create below dependencies and for NFS boot + CPTS all of them
+have to be built-in.
+  PTP_1588_CLOCK -> TI_K3_AM65_CPTS -> TI_K3_AM65_CPSW_NUSS
+
+While here, clean up TI_K3_AM65_CPTS definition.
+
+Fixes: b1f66a5bee07 ("net: ethernet: ti: am65-cpsw-nuss: enable packet timestamping support")
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Reported-by: Anders Roxell <anders.roxell@linaro.org>
+---
+ drivers/net/ethernet/ti/Kconfig | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+index 4ab35ce7b451..988e907e3322 100644
+--- a/drivers/net/ethernet/ti/Kconfig
++++ b/drivers/net/ethernet/ti/Kconfig
+@@ -99,7 +99,7 @@ config TI_K3_AM65_CPSW_NUSS
+ 	depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
+ 	select TI_DAVINCI_MDIO
+ 	imply PHY_TI_GMII_SEL
+-	imply TI_AM65_CPTS
++	depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS
+ 	help
+ 	  This driver supports TI K3 AM654/J721E CPSW2G Ethernet SubSystem.
+ 	  The two-port Gigabit Ethernet MAC (MCU_CPSW0) subsystem provides
+@@ -112,9 +112,8 @@ config TI_K3_AM65_CPSW_NUSS
+ 
+ config TI_K3_AM65_CPTS
+ 	tristate "TI K3 AM65x CPTS"
+-	depends on ARCH_K3 && OF && PTP_1588_CLOCK
++	depends on ARCH_K3 && OF
+ 	depends on PTP_1588_CLOCK
+-	select NET_PTP_CLASSIFY
+ 	help
+ 	  Say y here to support the TI K3 AM65x CPTS with 1588 features such as
+ 	  PTP hardware clock for each CPTS device and network packets
+-- 
+2.17.1
 
