@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5337A1C4B3C
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 03:06:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1CDE1C4B6F
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 03:18:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726630AbgEEBG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 May 2020 21:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726421AbgEEBGZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 21:06:25 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D715C061A0F;
-        Mon,  4 May 2020 18:06:25 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id z25so253433otq.13;
-        Mon, 04 May 2020 18:06:25 -0700 (PDT)
+        id S1726641AbgEEBSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 May 2020 21:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726449AbgEEBSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 May 2020 21:18:09 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012F2C061A0F;
+        Mon,  4 May 2020 18:18:08 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id k22so410304eds.6;
+        Mon, 04 May 2020 18:18:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CdwxcUFpDpRXJQYQA4tNofTIdp6JTfVxZhsYvwhhuio=;
-        b=nWAYyQPhoAediHBMdLD5YT5596BfKZq6FPTPVXsb1xqpqhfvtCdD1WEDWCr0xWVwWN
-         x3FWG5i9v/O5cjy+6zhs7CGdQHkebZFOozOCgbpLp0vjLIr3Y9X7kxf8zsIvFUMYh2xI
-         0KBXg6V61tVBxeSLF10nQW5EwFNiLBI5iTabGx6KphnnFdAXKI0wNo7YmxIogC0Wzd4D
-         /tITPGjGT8aagOkGzgobTGFyaiVA3qPUotQbXXiG/qSDfcPAmO3Dj6At/MnJq+x8qv6V
-         C3R0EsiPYuQq2KfVXEQpHu74XmAV2sz61TtVAVJMnE9rY4bjQlQxNp9Oz4dQ3e13OYrt
-         VZOg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=p0UOcxbWlSK6+9fa27qUm+SWDGL9EIT24NJ6czHj5BM=;
+        b=AY7OcslRaoXoQW29fSK+NEzdEwwpLDIwo88jBTvyaTdWgZ8sGFjSvZQI0dP72wGHqE
+         n8+CG6gmF3y5BQu+OEsFKU45E2eMLF9nUk9JNwFlwI7DNS8/GD9ZdulW+HdA6MLja2Rx
+         xAdpyqNItnqNrDnKuNVbF37pLfQLgB6L5/RvzKYnti21OFrxGnrgVzUIqYXpB6JvE+mf
+         E6IIlbssNbxVAgnkaHMddpW6hwuDAT0YBS8QbEmQjVc9OJKRE6X718+/LxMHKh6Amsr+
+         TjCxJ+KzW3Zu8QvOo8ZES5EEul/Jx9+Do0a+O0NdAJC/LikV7PiaT4LyZfsCNHqHJu2q
+         Xm0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CdwxcUFpDpRXJQYQA4tNofTIdp6JTfVxZhsYvwhhuio=;
-        b=ucee1zRyjqIlN1LxRlouY3qeJsQIT5lXchfgIHkINTERaPlmBzlRZRRGOniFPh9qqj
-         35XRGD0spMPyiUF50plW249Tl9hI2fpSf9YlF6xP6FVc5a7QqyXzga40G+RvlDHTRh7n
-         rsl+r7FTlzLNO71FqsyNSPKrbCBJUktvXoTdBVonr6VjpfyGfi8kjHNApxfKHIoM6VQW
-         R/+9yotnfwByDEtZqoKIm6Rxoe/Lmq3p4kclEtNY4XhmwnVNxrdM8GSFgTrQaDyqBolU
-         pT4o2OhmNQGyUj95s4hVJaCdJhNWraIG4wiAYq2zeXe4kRdun9t6KRMXYsXXPUyoyqUt
-         zYxA==
-X-Gm-Message-State: AGi0PuYLWj0jcNNpgpOJx+IO7nO5CkKNu+MfiJkZ4tsWD0JtbdcUDzGY
-        9k9YZDjCneINgW6symsl+0i753UHc2NaI2VEdgw=
-X-Google-Smtp-Source: APiQypIeUyYLu4PyVWEwcNM4KHou+LK6yqrKBTIIm3x+Utq3dMUUOEn1pRhdtOx7zI5xQ14fOIU0eNEWBOrKMPKSoe4=
-X-Received: by 2002:a9d:107:: with SMTP id 7mr648193otu.48.1588640784669; Mon,
- 04 May 2020 18:06:24 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=p0UOcxbWlSK6+9fa27qUm+SWDGL9EIT24NJ6czHj5BM=;
+        b=mj20DtwcFHSwwROa7g1RQZGiZ02sU53dTn5Y3zJYmCF31pIzUHlLPlGCscqI+kHdX9
+         5RCPIbYGA8Wbf9hVQ6QvUU5No3jl2Ue8tJXJiDBB0ZG+R7r9SrJKz2JLpI4DUgm61a4q
+         C/ORAgTQcV/DzD5uULMyp1Z18X392LcFDLCPeI+C+gbxZzP+4tt/67MAE9e8AFlQfFRL
+         c3LSLafvTfGJSMNE4ddXhs5a8JSMjCK6r092160U+d4LTa+VxuZ+YljKuxPUdZP5SdrN
+         JYTbzeHjAxt0IVEfkzvM27eP33TOswUKF0ycnLMzgAlvzXT23JAbTBu0hyepBWLF8gbE
+         +i2w==
+X-Gm-Message-State: AGi0PuZL3bHaVm1EAF0j4ij1UMTeRFjc2lzip2eBOCWwpsxhOS6CSO+K
+        8ay/BhqppcFtSyGLVAbC4T5MS+NT
+X-Google-Smtp-Source: APiQypJdeNCnt6nkRozY7HEr/tZW75u2GOXa4MIoD5BQ9TUo62rGgPf93Tr4tiPmLOe6ruNsBRDcmg==
+X-Received: by 2002:a50:e8c7:: with SMTP id l7mr587418edn.309.1588641487550;
+        Mon, 04 May 2020 18:18:07 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id u26sm81238eje.35.2020.05.04.18.18.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 May 2020 18:18:06 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 1/3] net: phy: add concept of shared storage
+ for PHYs
+To:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+References: <20200504213136.26458-1-michael@walle.cc>
+ <20200504213136.26458-2-michael@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <770d75c8-3afe-0b33-8129-3672122dafd0@gmail.com>
+Date:   Mon, 4 May 2020 18:18:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <0000000000005a8fe005a4b8a114@google.com> <20200504190348.iphzmd7micvidh46@treble>
-In-Reply-To: <20200504190348.iphzmd7micvidh46@treble>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 4 May 2020 18:06:13 -0700
-Message-ID: <CAM_iQpVu11xwKS5OEhDKmtbnP83oFNy9jBoAROS78-ECPEBWdw@mail.gmail.com>
-Subject: Re: BUG: stack guard page was hit in unwind_next_frame
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        shile.zhang@linux.alibaba.com,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Thomas Gleixner <tglx@linutronix.de>, x86 <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200504213136.26458-2-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 4, 2020 at 12:08 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
->
-> On Sat, May 02, 2020 at 11:36:11PM -0700, syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    8999dc89 net/x25: Fix null-ptr-deref in x25_disconnect
-> > git tree:       net
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=16004440100000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=b7a70e992f2f9b68
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=e73ceacfd8560cc8a3ca
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >
-> > Unfortunately, I don't have any reproducer for this crash yet.
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com
->
-> Infinite loop in network code.
 
-It is not a loop, it is an unbound recursion where netdev events
-trigger between bond master and slave back and forth.
 
-Let me see how this can be fixed properly.
+On 5/4/2020 2:31 PM, Michael Walle wrote:
+> There are packages which contain multiple PHY devices, eg. a quad PHY
+> transceiver. Provide functions to allocate and free shared storage.
+> 
+> Usually, a quad PHY contains global registers, which don't belong to any
+> PHY. Provide convenience functions to access these registers.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Thanks!
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
