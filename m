@@ -2,58 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 775171C5FC6
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 20:12:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C441C5FD0
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 20:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730673AbgEESMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 14:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729663AbgEESMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 14:12:14 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE456C061A0F;
-        Tue,  5 May 2020 11:12:14 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D08A127EDD2C;
-        Tue,  5 May 2020 11:12:10 -0700 (PDT)
-Date:   Tue, 05 May 2020 11:12:06 -0700 (PDT)
-Message-Id: <20200505.111206.118627398774406136.davem@davemloft.net>
-To:     zhengdejin5@gmail.com
-Cc:     swboyd@chromium.org, ynezz@true.cz, netdev@vger.kernel.org,
-        jonathan.richardson@broadcom.com, linux-kernel@vger.kernel.org,
-        scott.branden@broadcom.com, ray.jui@broadcom.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH net v1] net: broadcom: fix a mistake about ioremap
- resource
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200505020329.31638-1-zhengdejin5@gmail.com>
-References: <20200505020329.31638-1-zhengdejin5@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 May 2020 11:12:11 -0700 (PDT)
+        id S1730852AbgEESN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 14:13:58 -0400
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:34964 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730184AbgEESN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 14:13:57 -0400
+Received: by mail-pj1-f65.google.com with SMTP id ms17so1504886pjb.0;
+        Tue, 05 May 2020 11:13:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Rx9dL5oa5s/IWarikU/6m95Ws4R/Z6DJqOhAk9cf0GY=;
+        b=kQIpA2YBaMOtB6ta6bLZvjkXBLGM0M7dmqilAUDqjqr8PvKbHi4n+Qzqs5si5Q9tTr
+         uuEk/zEo/J+/CerIeOMbWxQiqSpZgtNPjnbmDR7uYlSnCmpGRGrRV3WcHoIVAY87RvWL
+         2EMd9FWoz2HB+5pFaKU2M+0DcCXj13tdY83n+a7tTIh3r8WqliCfW26v1MDQPpZ0vVV9
+         sd0pHNIIJkeXQICVflNUv4xRAzK+wEDhVwUhqNJOkfgSwlstDKFwFN8ISpfNwawbb2qI
+         ZnZ3Xth6QKCUgkKY4CJ2c/Ggvm4lgg8PEWbuYOcsMdRpKhJj1t1ru1QbBPXx4v+SZcw1
+         K1Yw==
+X-Gm-Message-State: AGi0PubOLNlyYduzyJ2tSJNcTldQHyC6OUpW09CzVOBn+JYcdq98MWmt
+        Iz1J4/uR4OcrbR03XgdFlAk=
+X-Google-Smtp-Source: APiQypImOVLkOUOTDok7p5dA4mGR36U7jY91wjj8nHDq58TvLlNEmXj6aAgniC7vxDKm0EoG2OVrTw==
+X-Received: by 2002:a17:902:bc86:: with SMTP id bb6mr3908263plb.243.1588702436564;
+        Tue, 05 May 2020 11:13:56 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id g74sm2543148pfb.69.2020.05.05.11.13.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 11:13:55 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id 547C4403EA; Tue,  5 May 2020 18:13:54 +0000 (UTC)
+Date:   Tue, 5 May 2020 18:13:54 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] sysctl: fix unused function warning
+Message-ID: <20200505181354.GU11244@42.do-not-panic.com>
+References: <20200505140734.503701-1-arnd@arndb.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200505140734.503701-1-arnd@arndb.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dejin Zheng <zhengdejin5@gmail.com>
-Date: Tue,  5 May 2020 10:03:29 +0800
-
-> Commit d7a5502b0bb8b ("net: broadcom: convert to
-> devm_platform_ioremap_resource_byname()") will broke this driver.
-> idm_base and nicpm_base were optional, after this change, they are
-> mandatory. it will probe fails with -22 when the dtb doesn't have them
-> defined. so revert part of this commit and make idm_base and nicpm_base
-> as optional.
+On Tue, May 05, 2020 at 04:07:12PM +0200, Arnd Bergmann wrote:
+> The newly added bpf_stats_handler function has the wrong #ifdef
+> check around it, leading to an unused-function warning when
+> CONFIG_SYSCTL is disabled:
 > 
-> Fixes: d7a5502b0bb8bde ("net: broadcom: convert to devm_platform_ioremap_resource_byname()")
-> Reported-by: Jonathan Richardson <jonathan.richardson@broadcom.com>
-> Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+> kernel/sysctl.c:205:12: error: unused function 'bpf_stats_handler' [-Werror,-Wunused-function]
+> static int bpf_stats_handler(struct ctl_table *table, int write,
+> 
+> Fix the check to match the reference.
+> 
+> Fixes: d46edd671a14 ("bpf: Sharing bpf runtime stats with BPF_ENABLE_STATS")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Applied, thank you.
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+
+  Luis
