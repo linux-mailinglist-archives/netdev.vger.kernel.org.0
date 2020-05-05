@@ -2,229 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 658FC1C59BA
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 16:35:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4EAA1C59BD
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 16:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729359AbgEEOfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 10:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52296 "EHLO
+        id S1729472AbgEEOg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 10:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729282AbgEEOfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 10:35:55 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5D2C061A0F
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 07:35:54 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id q8so1855435eja.2
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 07:35:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B3CTbQj7+T5lQ2eAoPyur9Oo1co6LLPaOcAEjbkl5sM=;
-        b=ApZZlOlV1lKNX9z4hmjYqVay6xIO6Yex1ltjEU9eUGf3Vo8rDELxUxD7yfnXk55v7m
-         TqscFA1V3Y7ezYy+4f7l9OqMMPn1PcFCxFqVytKRpEyJp8J+xVwxMeWAUhbF42SCaqMJ
-         8rqnTvtM3ClzyU8zD5BW9aHw2D5h2FG+VWn0xDMXCLVANj7MnP7l6DT/qKfQORatZFSQ
-         4K1G/VZoLVRW9Jj60HdEpO8DUcwEqGtAvXH4sOO8VSGkey/vnY7CsuHLszkOpPRZIjm1
-         tKsBAURwcGAFY6iAwPRM/Yemo0jA0ic5vsLvvELqsmppKomnXYjDCcarAb3bwKxMG04K
-         +gIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B3CTbQj7+T5lQ2eAoPyur9Oo1co6LLPaOcAEjbkl5sM=;
-        b=FgLyi2bDAnuU7l/ktaIFto1dtNeANWLWTjQzQqDBn9BEpbsfwMw+8rbhAn13YeT387
-         28E3W9z3nJSLoadNiSAFsBA3CWNjSp5uTYkiP0igl5DH+5Yyx7Zm4SRdDdN1M/ZZDCrX
-         r2ERuJiy+Fhr1Xf1/DqkjZ9D8+bWLGjxaB2GKZn81tDpIOsKRN5h8JKQ2Vmk0BLZkYci
-         gci+xyR5skMnOVbKpOmtF2wLX6nps7BhU3DSrGmm4wwBMVf7DVwjBKEMF6zaEAVRMrMG
-         cYqxbHwkY0SmhG7+VbTRKjF9/cGQ9yP1+D2s0G8nobQjRYgl/+BFcoGHjBAC4iOSuA/m
-         3h6w==
-X-Gm-Message-State: AGi0PuZBgc5xEuaOAgQMBCpnBroNUNtI4uDhzM4EQgnfKZ+/4zeiP+FO
-        Yv6lcf35DPBMc2xOm8U/GO9seS9P8CHADjkuy3o=
-X-Google-Smtp-Source: APiQypI1VvZV7PVtdc83u0cMwUfVgDNFRErDe60mASwbcaKyck2/BWrLeLTsyxCvuQgsOh5LZDiVTSTpP0NJrZQLbTs=
-X-Received: by 2002:a17:906:add7:: with SMTP id lb23mr3149739ejb.6.1588689353347;
- Tue, 05 May 2020 07:35:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200503211035.19363-6-olteanv@gmail.com> <202005052245.XuBbZqBH%lkp@intel.com>
-In-Reply-To: <202005052245.XuBbZqBH%lkp@intel.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 5 May 2020 17:35:42 +0300
-Message-ID: <CA+h21hrLiXuWFqPd-qrbfGHdF1tfMJR-o8wWp8x3RbYdZs824w@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/6] net: dsa: sja1105: implement tc-gate using
- time-triggered virtual links
-To:     kbuild test robot <lkp@intel.com>
-Cc:     netdev <netdev@vger.kernel.org>, kbuild-all@lists.01.org,
+        by vger.kernel.org with ESMTP id S1729123AbgEEOg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 10:36:29 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1B9C061A0F;
+        Tue,  5 May 2020 07:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=JHqeW2n9o8eTf4Hj7Xby8dss3L4FHej0u+cvFpm1AoA=; b=GDDaMxFr/i1udh9LrXu6dWreK
+        r28SRTfpehqGgO/3BlnNRVwB7mdrW7xBnVPGeiIGVOAiDzF0/5vmc8zgNIAfZQvFfXyZATf+kRN+3
+        iRS+dtALs24P+0ElYCsS78KRX48bXcODPVQFpR878hQogOs4f7kOvk3XkpCGUd/wKpQ+GKJfNPbRF
+        rIDFJgJdyViOV9mRsMuoGh3ylNSsPtvnj5y2YDGOSxZj3GIOnP0q8WHr+39iLDLynHDCNF0ILLypd
+        HixG9HokCuyUkZhIe9aAENG+VoIYS13gGtzTZnjundmF+bmjSQJlnUSDMFlVclzcDlgHfo1hRslzS
+        EpnQu/4QA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56510)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jVyfz-0002xZ-I8; Tue, 05 May 2020 15:36:03 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jVyfv-0007Dz-PQ; Tue, 05 May 2020 15:35:59 +0100
+Date:   Tue, 5 May 2020 15:35:59 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>, linux.cj@gmail.com,
+        Jeremy Linton <jeremy.linton@arm.com>,
         Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Po Liu <po.liu@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang@nxp.com>,
-        Mingkai Hu <mingkai.hu@nxp.com>,
-        Christian Herber <christian.herber@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [net-next PATCH v3 3/5] phylink: Introduce
+ phylink_fwnode_phy_connect()
+Message-ID: <20200505143559.GJ1551@shell.armlinux.org.uk>
+References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
+ <20200505132905.10276-4-calvin.johnson@oss.nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200505132905.10276-4-calvin.johnson@oss.nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 May 2020 at 17:26, kbuild test robot <lkp@intel.com> wrote:
->
-> Hi Vladimir,
->
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on net-next/master]
-> [also build test ERROR on net/master linus/master v5.7-rc4 next-20200505]
-> [if your patch is applied to the wrong git tree, please drop us a note to help
-> improve the system. BTW, we also suggest to use '--base' option to specify the
-> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
->
-> url:    https://github.com/0day-ci/linux/commits/Vladimir-Oltean/tc-gate-offload-for-SJA1105-DSA-switch/20200505-040345
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 627642f07b3093f501495d226c7a0b9d56a0c870
-> config: i386-randconfig-h001-20200503 (attached as .config)
-> compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-> reproduce:
->         # save the attached .config to linux build tree
->         make ARCH=i386
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kbuild test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    drivers/net/dsa/sja1105/sja1105_flower.c: In function 'sja1105_cls_flower_add':
-> >> drivers/net/dsa/sja1105/sja1105_flower.c:406:9: error: implicit declaration of function 'sja1105_init_scheduling'; did you mean 'sja1105_get_strings'? [-Werror=implicit-function-declaration]
->        rc = sja1105_init_scheduling(priv);
->             ^~~~~~~~~~~~~~~~~~~~~~~
->             sja1105_get_strings
->    cc1: some warnings being treated as errors
->
-> vim +406 drivers/net/dsa/sja1105/sja1105_flower.c
->
->    303
->    304  int sja1105_cls_flower_add(struct dsa_switch *ds, int port,
->    305                             struct flow_cls_offload *cls, bool ingress)
->    306  {
->    307          struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
->    308          struct netlink_ext_ack *extack = cls->common.extack;
->    309          struct sja1105_private *priv = ds->priv;
->    310          const struct flow_action_entry *act;
->    311          unsigned long cookie = cls->cookie;
->    312          bool routing_rule = false;
->    313          struct sja1105_key key;
->    314          bool gate_rule = false;
->    315          bool vl_rule = false;
->    316          int rc, i;
->    317
->    318          rc = sja1105_flower_parse_key(priv, extack, cls, &key);
->    319          if (rc)
->    320                  return rc;
->    321
->    322          rc = -EOPNOTSUPP;
->    323
->    324          flow_action_for_each(i, act, &rule->action) {
->    325                  switch (act->id) {
->    326                  case FLOW_ACTION_POLICE:
->    327                          rc = sja1105_flower_policer(priv, port, extack, cookie,
->    328                                                      &key,
->    329                                                      act->police.rate_bytes_ps,
->    330                                                      act->police.burst);
->    331                          if (rc)
->    332                                  goto out;
->    333                          break;
->    334                  case FLOW_ACTION_TRAP: {
->    335                          int cpu = dsa_upstream_port(ds, port);
->    336
->    337                          routing_rule = true;
->    338                          vl_rule = true;
->    339
->    340                          rc = sja1105_vl_redirect(priv, port, extack, cookie,
->    341                                                   &key, BIT(cpu), true);
->    342                          if (rc)
->    343                                  goto out;
->    344                          break;
->    345                  }
->    346                  case FLOW_ACTION_REDIRECT: {
->    347                          struct dsa_port *to_dp;
->    348
->    349                          if (!dsa_slave_dev_check(act->dev)) {
->    350                                  NL_SET_ERR_MSG_MOD(extack,
->    351                                                     "Destination not a switch port");
->    352                                  return -EOPNOTSUPP;
->    353                          }
->    354
->    355                          to_dp = dsa_slave_to_port(act->dev);
->    356                          routing_rule = true;
->    357                          vl_rule = true;
->    358
->    359                          rc = sja1105_vl_redirect(priv, port, extack, cookie,
->    360                                                   &key, BIT(to_dp->index), true);
->    361                          if (rc)
->    362                                  goto out;
->    363                          break;
->    364                  }
->    365                  case FLOW_ACTION_DROP:
->    366                          vl_rule = true;
->    367
->    368                          rc = sja1105_vl_redirect(priv, port, extack, cookie,
->    369                                                   &key, 0, false);
->    370                          if (rc)
->    371                                  goto out;
->    372                          break;
->    373                  case FLOW_ACTION_GATE:
->    374                          gate_rule = true;
->    375                          vl_rule = true;
->    376
->    377                          rc = sja1105_vl_gate(priv, port, extack, cookie,
->    378                                               &key, act->gate.index,
->    379                                               act->gate.prio,
->    380                                               act->gate.basetime,
->    381                                               act->gate.cycletime,
->    382                                               act->gate.cycletimeext,
->    383                                               act->gate.num_entries,
->    384                                               act->gate.entries);
->    385                          if (rc)
->    386                                  goto out;
->    387                          break;
->    388                  default:
->    389                          NL_SET_ERR_MSG_MOD(extack,
->    390                                             "Action not supported");
->    391                          rc = -EOPNOTSUPP;
->    392                          goto out;
->    393                  }
->    394          }
->    395
->    396          if (vl_rule && !rc) {
->    397                  /* Delay scheduling configuration until DESTPORTS has been
->    398                   * populated by all other actions.
->    399                   */
->    400                  if (gate_rule) {
->    401                          if (!routing_rule) {
->    402                                  NL_SET_ERR_MSG_MOD(extack,
->    403                                                     "Can only offload gate action together with redirect or trap");
->    404                                  return -EOPNOTSUPP;
->    405                          }
->  > 406                          rc = sja1105_init_scheduling(priv);
->    407                          if (rc)
->    408                                  goto out;
->    409                  }
->    410
->    411                  rc = sja1105_static_config_reload(priv, SJA1105_VIRTUAL_LINKS);
->    412          }
->    413
->    414  out:
->    415          return rc;
->    416  }
->    417
->
+On Tue, May 05, 2020 at 06:59:03PM +0530, Calvin Johnson wrote:
+> Define phylink_fwnode_phy_connect() to connect phy specified by
+> a fwnode to a phylink instance.
+> 
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 > ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
+> Changes in v3:
+>   remove NULL return check as it is invalid
+>   remove unused phylink_device_phy_connect()
+> 
+> Changes in v2:
+>   replace of_ and acpi_ code with generic fwnode to get phy-handle.
+> 
+>  drivers/net/phy/phylink.c | 48 +++++++++++++++++++++++++++++++++++++++
+>  include/linux/phylink.h   |  3 +++
+>  2 files changed, 51 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index 0f23bec431c1..560d1069426c 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -961,6 +961,54 @@ int phylink_connect_phy(struct phylink *pl, struct phy_device *phy)
+>  }
+>  EXPORT_SYMBOL_GPL(phylink_connect_phy);
+>  
+> +/**
+> + * phylink_fwnode_phy_connect() - connect the PHY specified in the fwnode.
+> + * @pl: a pointer to a &struct phylink returned from phylink_create()
+> + * @fwnode: a pointer to a &struct fwnode_handle.
+> + * @flags: PHY-specific flags to communicate to the PHY device driver
+> + *
+> + * Connect the phy specified @fwnode to the phylink instance specified
+> + * by @pl. Actions specified in phylink_connect_phy() will be
+> + * performed.
+> + *
+> + * Returns 0 on success or a negative errno.
+> + */
+> +int phylink_fwnode_phy_connect(struct phylink *pl,
+> +			       struct fwnode_handle *fwnode,
+> +			       u32 flags)
+> +{
+> +	struct fwnode_handle *phy_fwnode;
+> +	struct phy_device *phy_dev;
+> +	int ret = 0;
+> +
+> +	/* Fixed links and 802.3z are handled without needing a PHY */
+> +	if (pl->cfg_link_an_mode == MLO_AN_FIXED ||
+> +	    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
+> +	     phy_interface_mode_is_8023z(pl->link_interface)))
+> +		return 0;
+> +
+> +	phy_fwnode = fwnode_get_phy_node(fwnode);
+> +	if ((IS_ERR(phy_fwnode)) && pl->cfg_link_an_mode == MLO_AN_PHY)
+> +		return -ENODEV;
 
-Whoops, I forgot to provide a shim implementation
-sja1105_init_scheduling for the case where NET_DSA_SJA1105_TAS is not
-enabled.
-If there are no other comments I'll send a v3 soon with just this change.
+This doesn't reflect the behaviour of phylink_of_phy_connect() - it is
+*not* a cleanup of what is there, which is:
 
--Vladimir
+                if (!phy_node) {
+                        if (pl->cfg_link_an_mode == MLO_AN_PHY)
+                                return -ENODEV;
+                        return 0;
+                }
+
+which does:
+
+- if there is a PHY node, find the PHY and connect it.
+- if there is no PHY node, then:
+   + if we are expecting a PHY to be present, return an error.
+   + otherwise, it is not a problem, continue.
+
+That is very important behaviour - it allows drivers to call
+phylink_*_phy_connect() without knowing whether there should or should
+not be a PHY - and keeps that knowledge within phylink.  It means
+network drivers don't have to parse the firmware to find out if there's
+a fixed link or SFP cage attached, and decide whether to call these
+functions.
+
+> +
+> +	phy_dev = fwnode_phy_find_device(phy_fwnode);
+> +	fwnode_handle_put(phy_fwnode);
+> +	if (!phy_dev)
+> +		return -ENODEV;
+> +
+> +	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
+> +				pl->link_interface);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
+> +	if (ret)
+> +		phy_detach(phy_dev);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(phylink_fwnode_phy_connect);
+> +
+
+I think we need to go further with this, and we need to have
+phylink_fwnode_phy_connect() functionally identical to
+phylink_of_phy_connect() for DT-based fwnodes.  Doing so will avoid
+introducing errors such as the one you've added above.
+
+The only difference between these two is that DT has a number of
+legacy properties - these can be omitted if the fwnode is not a DT
+node.
+
+Remember that fwnode is compatible with DT, so fwnode_phy_find_device()
+can internally decide whether to look for the ACPI property or one of
+the three DT properties.
+
+It also means that phylink_of_phy_connect() can become:
+
+int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
+                           u32 flags)
+{
+        return phylink_fwnode_phy_connect(pl, of_fwnode_handle(dn), flags);
+}
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
