@@ -2,94 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39FB41C6498
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 01:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADA71C64A2
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 01:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729502AbgEEXkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 19:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727895AbgEEXkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 19:40:24 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426FEC061A0F;
-        Tue,  5 May 2020 16:40:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=i7LzIqelxTirgC24kz7WiSVTVMleXcRWmalGKIurdBs=; b=NWIDf8yHMHJLmpK5AJ7C6BGBW
-        KEplB4MxY0qLv8jphSm5OygZjvB3GdaGb0ILO1+Iuog6hNiuZk/fzt8OKgPoSOY8rx/wOFyGr0LvN
-        p6ILzTHq5VEXfDmaI7Lne6pbEHQWn18kfXMD0JrVNYcM9oo7jqT66EHvuQRVY13tu3Fpa5BM5JNUv
-        80DIn4PNi5bvPxZfIvrXWXsHCIhVE3kOztJA3d3fIrt6X7tLSG4JmYjwrULrjjeKPjoHJBVGba3VH
-        fIjarqLFLVRQe5xD23tnJEVkjIvataodA5AOnAA+1PVFLlAfXesdTj8b1RtFCdUUaKPb4iczk7aW4
-        E+UmKE29A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56670)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jW7AM-0005GA-9P; Wed, 06 May 2020 00:39:58 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jW7AE-0007aX-E1; Wed, 06 May 2020 00:39:50 +0100
-Date:   Wed, 6 May 2020 00:39:50 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>, linux.cj@gmail.com,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next PATCH v3 1/5] net: phy: Introduce phy related fwnode
- functions
-Message-ID: <20200505233950.GM1551@shell.armlinux.org.uk>
-References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
- <20200505132905.10276-2-calvin.johnson@oss.nxp.com>
+        id S1729332AbgEEXtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 19:49:14 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:52971 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728717AbgEEXtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 19:49:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588722552;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UG7vYCK2n8vNTaJJBh9eDS3ck+miSuSAAzIYvH4kXUg=;
+        b=KSejZ1PbHPbAraohMYQuqelaSqQOHCEuqtGilYX8ckaIi40AJofspFBiZa//lLpcWncCBQ
+        iBlJVgLFvYT5fY7ZN/DISBtc0Ef4SudaIhwpdSRq1296Ll8+OHyhYC5rTLBrdCHx37jpVh
+        fc5emB6+8ijMPO9e7yuC2jvo3w8DHv0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-269-oO4sI7pdNHmr_psiGQ-Dew-1; Tue, 05 May 2020 19:49:08 -0400
+X-MC-Unique: oO4sI7pdNHmr_psiGQ-Dew-1
+Received: by mail-wm1-f69.google.com with SMTP id u11so92354wmc.7
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 16:49:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UG7vYCK2n8vNTaJJBh9eDS3ck+miSuSAAzIYvH4kXUg=;
+        b=TvsOSLm7n4qFr+kf7bYzQS3oIEy1zj9siLx4L8A9GCEa1b9SV6PFJeLUf2G3b16Cdu
+         YZRYJSvuiJaq2sPv8g06XZ+bY/71hg6BQ5ZcnYG/AaPE8nwnZWw6QqdxmROnJELRq+Q0
+         /wU+XeqUq6r2nC84Y/mxLlT4SMVlc47Kv9xxnAe39WqlGXO+LE+ves29gJyKCGko8j+L
+         QK7FX4oYoLuOhShPsQZHOlkUD5b1ar77bdE+XBMDBK3jZvPTu4SddJVxIfJIKPn8l9QD
+         6+8JAcINexJiiNwEfnGKiciFGbTLjihVHog0Lo4OavzqXhb6umf2DwuyH/En6DLg40be
+         PKsQ==
+X-Gm-Message-State: AGi0PubIFwnuVljrUwyeC21wr5+SAZ3i5MHArdGRhbNfNJ/+ioCnMnL8
+        wa8GVKE+TDlK6GcVMi1O+aecA/XYX5DDykT3qtJS+/vgP+GEekkxehiVTyxt9v8fAlUua804tzr
+        8kr5yOgGsIQXHjxdn
+X-Received: by 2002:a1c:1b88:: with SMTP id b130mr1068929wmb.75.1588722547669;
+        Tue, 05 May 2020 16:49:07 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLaHOZmk16dWoTpYztScgAnmfECe22JhEpgqFlPjSJJY/fgVY6imHEtT/Jf0EYcbHpDEeKPeg==
+X-Received: by 2002:a1c:1b88:: with SMTP id b130mr1068919wmb.75.1588722547457;
+        Tue, 05 May 2020 16:49:07 -0700 (PDT)
+Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
+        by smtp.gmail.com with ESMTPSA id 77sm30243wrc.6.2020.05.05.16.49.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 16:49:06 -0700 (PDT)
+Date:   Tue, 5 May 2020 19:49:04 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [BUG] Inconsistent lock state in virtnet poll
+Message-ID: <20200505194320-mutt-send-email-mst@kernel.org>
+References: <87lfm6oa7b.fsf@nanos.tec.linutronix.de>
+ <20200505120352-mutt-send-email-mst@kernel.org>
+ <87v9lanher.fsf@nanos.tec.linutronix.de>
+ <98c4d934-5a27-1cf7-119a-ce0c5a501864@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200505132905.10276-2-calvin.johnson@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <98c4d934-5a27-1cf7-119a-ce0c5a501864@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 06:59:01PM +0530, Calvin Johnson wrote:
-> +static inline struct phy_device *device_phy_find_device(struct device *dev)
-> +{
-> +	return NULL;
-> +}
-> +
-> +struct fwnode_handle *fwnode_get_phy_node(struct fwnode_handle *fwnode)
-> +{
-> +	return NULL;
-> +}
+On Tue, May 05, 2020 at 03:40:09PM -0700, Eric Dumazet wrote:
+> 
+> 
+> On 5/5/20 3:30 PM, Thomas Gleixner wrote:
+> > "Michael S. Tsirkin" <mst@redhat.com> writes:
+> >> On Tue, May 05, 2020 at 02:08:56PM +0200, Thomas Gleixner wrote:
+> >>>
+> >>> The following lockdep splat happens reproducibly on 5.7-rc4
+> >>
+> >>> ================================
+> >>> WARNING: inconsistent lock state
+> >>> 5.7.0-rc4+ #79 Not tainted
+> >>> --------------------------------
+> >>> inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+> >>> ip/356 [HC0[0]:SC1[1]:HE1:SE0] takes:
+> >>> f3ee4cd8 (&syncp->seq#2){+.?.}-{0:0}, at: net_rx_action+0xfb/0x390
+> >>> {SOFTIRQ-ON-W} state was registered at:
+> >>>   lock_acquire+0x82/0x300
+> >>>   try_fill_recv+0x39f/0x590
+> >>
+> >> Weird. Where does try_fill_recv acquire any locks?
+> > 
+> >   u64_stats_update_begin(&rq->stats.syncp);
+> > 
+> > That's a 32bit kernel which uses a seqcount for this. sequence counts
+> > are "lock" constructs where you need to make sure that writers are
+> > serialized.
+> > 
+> > Actually the problem at hand is that try_fill_recv() is called from
+> > fully preemptible context initialy and then from softirq context.
+> > 
+> > Obviously that's for the open() path a non issue, but lockdep does not
+> > know about that. OTOH, there is other code which calls that from
+> > non-softirq context.
+> > 
+> > The hack below made it shut up. It's obvioulsy not ideal, but at least
+> > it let me look at the actual problem I was chasing down :)
+> > 
+> > Thanks,
+> > 
+> >         tglx
+> > 
+> > 8<-----------
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -1243,9 +1243,11 @@ static bool try_fill_recv(struct virtnet
+> >  			break;
+> >  	} while (rq->vq->num_free);
+> >  	if (virtqueue_kick_prepare(rq->vq) && virtqueue_notify(rq->vq)) {
+> > +		local_bh_disable();
+> 
+> Or use u64_stats_update_begin_irqsave() whic is a NOP on 64bit kernels
 
-This wants to be "static inline" to avoid the issue the 0-day robot
-found.
+I like this better I think.
 
-Thanks.
+Will send a patch now.
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+MST
+
