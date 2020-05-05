@@ -2,151 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3EAB1C6214
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 22:30:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 872B61C6218
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 22:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729089AbgEEUag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 16:30:36 -0400
-Received: from mail-eopbgr20083.outbound.protection.outlook.com ([40.107.2.83]:3079
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726350AbgEEUaf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 May 2020 16:30:35 -0400
+        id S1729159AbgEEUbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 16:31:13 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:60648 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726350AbgEEUbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 16:31:13 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 045KT6Yg031510;
+        Tue, 5 May 2020 13:30:50 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=a5oQX2x5ajE7dxJwxWssS87YV/ZKQnEHeg/ZdkyGO+M=;
+ b=bI0AqY4TJaF+bfDcIyqpjAeda2Ut72pxEkdbvAz5Iiouf202tbcdLYjejDghFJqxq0UI
+ 65osqsW5ZAUD/3ZQzmK9J0lwYeTC1sQ0Jh2SAviiNF7UVBOmDCClg4/f5GP4SC0XpPKL
+ KqKJZqTwBFgSB4qixQJAER2kfZUaDvuz7z0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 30srvywdkc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 05 May 2020 13:30:50 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 5 May 2020 13:30:49 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DxKnusg7SxJ0ojMbQ7DjCAxv5OJoCEhMTpizHGS5MKNqbqOxlgfY+EWXy77Rxfl8byR4kHETh4tv9KDPc0gFfXC2DOUAi0Sg4AYN3sPr8j0835EIS5t4nypS4lr4SoRVwZjj+4KIY4izWLTawH+PLrnTSL8cubY2FlgVEtDmd0g/CyAe2VxvqX4wRD8iHZiPwHsMrS5BkPbjUpKp1CpkuLf5QHRue6h6hoWSb6YrLMu6EmkZ/B+0bPiwbalFKFUwpeoCJ1yPuqgCtCv+PW/hqxKsK8FlYBe7jqlR1Ada/mEEORyY1BaM63jzA5oIZt613Rv5+Ggs4Xv1Gmb0Jgosvw==
+ b=I6C8KIvz/LrYENJDV1G9xgEnwIFj0zeMi8LjgeHd7afqBnzDxHd6Apl9ZkUViV7ji4q/uUzHI2Ij+7t6+BFusLIHRlO6GzQEqydu6UshLHVmMaxLwlKtCYne/R+3OyG69L4x81k6gTcN581ZND6SKGJSEfI2eca41KuHCLo93qwE9BWF20A0XQjO4JvXyB3QTeFNs8P4th5D0FTAq4nfcPx1193vLkVuJICZbUV5xh2OfdLkwTG8+WXxTJbDNAqPb41tHUKF9Xme8jBccf5WOpanfO2dc4Yagv4IcXoeCRgsYySk+6UsMuwE2IFnlWKT1bNfBGM3avmRas2MLPJpZQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TQcTYS0tvs8l6+Bcw2969g5h6EQJQDTsaiu8DB7+R1w=;
- b=YGIT178uVuDLlxlHG+XbHrQOQMKgMUP1snqvkfilzSMJb1sMLKSzhkFr7Sfj8UUNDW6dbOm7yN2qgYPlbPsVzJ258as3S9BjFuCsw3lSQwk88Eu1pviFRxmDT++cbBO+k0frEhuQF+U0rXuS1GPNIapkoEPiNw7YBi0N+UR9ZRgWiQrQkp2WISQKHXM31f2N8ka1fK2Yjnyadd/COlFBWKN60vsXCp+PKNJvJ8XarTYPw4oIfsK7T+VF1pYmghNeZ48+3tfnPyoE7nETXUKktUnXofLuIx/3K+D5EUyxqeOPzDrL37Oe6qR8n9tIickXS7OO3k+FcCmmT0+iXEnFKw==
+ bh=a5oQX2x5ajE7dxJwxWssS87YV/ZKQnEHeg/ZdkyGO+M=;
+ b=ZLNKvesnGXnbr8FLOt+IfClpynHh7+7fIjcZiialsnWpkuVVRqFCtzkhOlAeWGW4RWcpfxXAbUYNGnsAacAC0wk91/YL12DHbzwhLZZ7ArFm362Dfav9Cb5uCkcXwsJIgneC2lU8+/5RKuS+mu7XZTmgSM81D/wAddAdL1eUld2d5572clh8tP9e8uzqyYSDbdEaRHo+JBouckZKGghrFd/YCFjZfhptH4wxesOx8Pc7Gf7TuQa9oKCBuw3uSASzGvmzNYQfCbotPyZGdpFt1sHZYLRUfENf7tmpEeLhp0IeVoQ9FZCGEtSuLLILT95erSueRG9EM7BCKrXhB5kQBA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TQcTYS0tvs8l6+Bcw2969g5h6EQJQDTsaiu8DB7+R1w=;
- b=guBzv5p57hfbR0XmBhKYVvGOcY309kFqCE1pSPOGomvNAwPEddw8VQWtA9Ct8+Fn1hMluWe/w3zJDICcFQBBrIzjbngDemzBTBhEXztjk+ruVUjbiBLqk+/DGtmOErMhnpximyecYR4wXdffOYbiLFKIKSS1mkfVwVWahbabmmI=
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com (2603:10a6:10:113::21)
- by DB8PR04MB6380.eurprd04.prod.outlook.com (2603:10a6:10:10c::18) with
+ bh=a5oQX2x5ajE7dxJwxWssS87YV/ZKQnEHeg/ZdkyGO+M=;
+ b=hy6ICjeyCHpKBZZLusLSQ/cJt53nXfroJjmiHl2xb26q8/X7ma4MPaMQX6iRNiO95XtU23qlI9vZS9l04C26nkd5yPykFbhGq89vDunRa8KrnZCL2FK34St2VXRrahiDBggbjvkdndenUlOth/wtlONWMH8J4ma6pFjMeakA/IE=
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB3398.namprd15.prod.outlook.com (2603:10b6:a03:10e::31) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Tue, 5 May
- 2020 20:30:29 +0000
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::58e6:c037:d476:da0d]) by DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::58e6:c037:d476:da0d%9]) with mapi id 15.20.2958.030; Tue, 5 May 2020
- 20:30:29 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Leo Li <leoyang.li@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Youri Querry <youri.querry_1@nxp.com>
-Subject: RE: [PATCH net] soc: fsl: dpio: properly compute the consumer index
-Thread-Topic: [PATCH net] soc: fsl: dpio: properly compute the consumer index
-Thread-Index: AQHWIxnwftGr9QjI3EaSI/Mop7aGF6iZ8TmAgAAAJpA=
-Date:   Tue, 5 May 2020 20:30:29 +0000
-Message-ID: <DB8PR04MB682898FB5705B70B1A54A661E0A70@DB8PR04MB6828.eurprd04.prod.outlook.com>
-References: <20200505201429.24360-1-ioana.ciornei@nxp.com>
- <VE1PR04MB668714A83CC2EB638BC273208FA70@VE1PR04MB6687.eurprd04.prod.outlook.com>
-In-Reply-To: <VE1PR04MB668714A83CC2EB638BC273208FA70@VE1PR04MB6687.eurprd04.prod.outlook.com>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.29; Tue, 5 May
+ 2020 20:30:46 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::8988:aa27:5d70:6923]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::8988:aa27:5d70:6923%5]) with mapi id 15.20.2958.030; Tue, 5 May 2020
+ 20:30:46 +0000
+Subject: Re: [PATCH bpf-next v2 08/20] bpf: implement common macros/helpers
+ for target iterators
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+References: <20200504062547.2047304-1-yhs@fb.com>
+ <20200504062555.2048028-1-yhs@fb.com>
+ <CAEf4BzZnzKrTX4sN+PJC8fhdv=+gXMTAan=OUfgRFtvusfnaWQ@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <2794c31e-c750-7488-5e2b-a72a8791082b@fb.com>
+Date:   Tue, 5 May 2020 13:30:44 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
+In-Reply-To: <CAEf4BzZnzKrTX4sN+PJC8fhdv=+gXMTAan=OUfgRFtvusfnaWQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [86.121.118.29]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 75e1389d-085f-48e0-5283-08d7f13326c8
-x-ms-traffictypediagnostic: DB8PR04MB6380:|DB8PR04MB6380:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB6380D0BCAA5DF86F944B78C9E0A70@DB8PR04MB6380.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-forefront-prvs: 0394259C80
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +Yz8w00UMw6HikZWRrhMzlWMkBjQIuX48zZUre7dNIbMCB+1jMAQQ1xfILOWdf++KLe8VskR6/kriWie+AtFZkKdUbCKx3YS14voElOCsbCINi7eAf/vdHiNkqyHUVUo4wbUeL1DYGkVZOuXJ8eXIWAWzwEdVp+tPX7j99lQKLmwapdEFg9x9jJSw/3jF1V9mxFDaWvrp3x7dCOgObAFL4WTKMPtgUhmBCj+Vf+DMKVFtBlCqSyx9en29iuK/gybo/ZeRGzK9DHBr5IxMlA7SE/14L+K2itsmoqkW1TaTFdqc/BfBL3F0sshjJLsPAaMqlNyPyidYeUb/c82SPPZRAVTaF7+kVzniDkTKRl3xVlBBOP63IM49j0jTLhjHXXGUCHHfRYg3VT8W9XSg2WwQYrGfzCozuQekwCrvM58Hme7CqJDlBY11Id/X9NHjd7P9hxiUki/IlMDrviCxIcLhw0YUTDb3nCPeIpsc1GbW7dHNgox8eOOIm8XxQEz/r1dBNTiRLElBJ6uNu0BQ0YX6g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6828.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(376002)(366004)(136003)(39840400004)(33430700001)(9686003)(55016002)(33656002)(2906002)(33440700001)(26005)(44832011)(71200400001)(4326008)(52536014)(186003)(53546011)(6506007)(7696005)(478600001)(66556008)(8936002)(8676002)(76116006)(5660300002)(64756008)(66446008)(66476007)(66946007)(86362001)(316002)(110136005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: BVN9/JZBaWojuHagAWKgFl5A5aLv0GuFAJX5fyl8H1nx7OiMDONBK+mxs2yKF5Bs8Lw8oy7TRXSVval2OaEzEEMC+JLFmlZVt0LbtZy3w4/TksunpoijgeDrblu/RDdFocyuyjCt7tod69Rwoo65KERj84zChoAVxeSuL57oMtTX15mLwkzS7x1MJy/I/zZaZk6zgNbu5+KlWX7DJYHw3gNZfbC+Rbp7gLkdzIGpo4BLTNj8MoP29dWLZh+f/0JDk4vuRrfNn/Kx4BaVxHCVbCHXOgCRhNUYEbkjfujjBBXwobpRatLXWaSmuNJAq6JmhOdILJ2a1jkMjCSDk/SKKVbKDsUfSlE4Za8wRtbeebUrA+4EE/R35SQU1k4GXVCieavRKp/MEpUC/ta8RI9ZJYPDbOpv4MwSziQPEF8tLw8zAMB35ovm4hbKH8e6otc4TCvIFR+NnSHEjMLbY/92Z3MuS38ma/V70r+IXw1YAtatGben5siIu5DCzvjDMkiDwRIKZ4GIL7HqmoIPQKiKah8DaxV5PiLk0LDZjCXur++OwkGJrPTa97tr9MT540OKJvn/J1PqWtE5OCsx4RLILQomFSfwbmYJM/QkhHD3SZhGRlv9c3djzXnjHmngT/8kEUdYWY4zyM4iXkOldNa7oPbVVbTHumDqhCFiqSr6JYn6jzNEw0zqxyi0GdgTdENNeTqQzqBLEhtTvsY/Du+QmJj9+M1uDYfLuD/d0RcQExMPnonzODq0cSLK8DZ7X/9sDIaq9fhydjM6tFNbmu3XFu/DPMNiB/9jGygKIaCFEgM=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR07CA0068.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::45) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75e1389d-085f-48e0-5283-08d7f13326c8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 May 2020 20:30:29.1462
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:99aa) by BYAPR07CA0068.namprd07.prod.outlook.com (2603:10b6:a03:60::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Tue, 5 May 2020 20:30:45 +0000
+X-Originating-IP: [2620:10d:c090:400::5:99aa]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ceb542af-1ac5-417b-795a-08d7f13330da
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3398:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3398F70B96ECEC16758E11FDD3A70@BYAPR15MB3398.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Forefront-PRVS: 0394259C80
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IiG7zE4v7C6IjtBz/c/qHBHztS1rlc2CtKZGFYX6LsLvxbrIVc67lnm41u4vmVehUvYs579CwSX1u9+diAnw0vcIAgOEmkrqJhTZBQWxchaDipXos1Y+TxkkLDeuB1Cum2cU2JzOucmIavFvAFQDMePvx8bnWI+4wvZz5jLz8xt+1nRAqu0UTALg7ibLeOOXa6SZw6o02dNu4tYcABOX4H54sISOPURGqQYxMzEOPuKZqa+7D0GMAgsREmptFJ+dN+HD96GWT5gahtSnN4m4GnNK5ZJhmg3Sa3Ehn40i9ze8fhdphbSRypmzLsGZJKSn7btgR4zMZP2uvn6J5O7aCMOMntDz06brdbbW22lGaefPx8p9Yymbm66o1qhWLLqQdcvLzTym8ehj5akG9ysm04byNoC/Q59v0r9sCBppJ0gjCX+oJSTQatrk9fnLQtaHrEFMbbUULCL61QwwF777GnyOFdYnqvu4EByVaPYuyZefH/ujB/4MAtcMzjXVweNjkiCqntZ06dkxLz98NEznvQvYr0D0NbXHWaSz+Vs5RHYubrm2q+nry0Bo67lp0rj+
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(39850400004)(376002)(366004)(136003)(346002)(33430700001)(16526019)(66946007)(316002)(8676002)(66556008)(66476007)(186003)(53546011)(54906003)(478600001)(8936002)(4326008)(33440700001)(52116002)(6506007)(31686004)(6512007)(6486002)(2906002)(86362001)(2616005)(31696002)(36756003)(6916009)(5660300002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: alYwVSr4Zdj/MxU8dvFBD+GQUx48at1Y6ox/tGbdi2kXYr6xpbwadZhAaRBpUETWc2YbdECNI1VOWTkFSn2jcJaKHA2VCQymBzDKeSCon8rxBoyUR0XV0lUrfRi93v7tva5PXHHcr8rmWTLxX7g3n9EIQpBVE+Z6PCXRHJ24Y55zN8zHRWWw3Kk36hYsjTJ5O+RQC+wx+JQkOfBQeb0FUx9SJ7jtxVw8k0bGrmr30cFIFGhNbTXM7LLbZQR6ZE47Ao2QuVcBWrecrFvFKhRYdsEXRUOB9eeNZRLLc2i5wJwWdF1vLuR6eF42l8BnnOuNjaE/z60+6xGldjhwKS1Y79hLek8WYBdRTumVcnOWHnymIOf7F+hV13mrTqC2GYJUBgLnuDmq3I0H4FKA0aIM+E9VIjBvGBtzW3zTUAgdQGDtDcNcFFY+7TfVjiUzO2mJ5X9y+YJO84d96YJZz0xADf2gQ4vEp0jA9uOVOKQwJlQ1dG+6aNeejoaegUejqG9I+vhFr3DedhmzV+KqCH0ra7UQr3RP7cKj5Qtw6fx+yOp0RhhuNYKY6ZCteGP7MEuvfpJLuJQ8ClAC62YJWdmews84lqR1j7bSsWF1Ap7olV6WR6QkJ7HSifJA06tWV9tnhv5ohw0OPcP6Kqa6dKSG3nmKCXPCJj45fJwuPOkzu49rRxIG4H/a8iTxHTHMb939ZWpcvEm3H8OOueIRpVnMwav8wq2mdEk3rOZnYqYpxpxn7XldIP2tEaWaUC/yW4RICQpgjdd3QE6BNhjBmfzpFktImqRT95fAPFcCo9ZA7xLAzvCOca3ctZo3n37SyCYYx98/zuxBfB62/UMCLYVJGw==
+X-MS-Exchange-CrossTenant-Network-Message-Id: ceb542af-1ac5-417b-795a-08d7f13330da
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2020 20:30:46.3543
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Mzsmf//4XZ/FaEam/Ev09/OFOHJyKuja85PakWO5OW8YEcAVJhq2hTnVIdR2pyPoc5q5ccaq+VjKRQgXP0OY7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6380
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3hOxg+OK7zFbtRfpYXsIRC9dapguhchoYtOfOGPUkvC9VpV7Ql+Z7fS+Xz7X+I5w
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3398
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-05-05_10:2020-05-04,2020-05-05 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 phishscore=0 clxscore=1015 impostorscore=0
+ lowpriorityscore=0 priorityscore=1501 spamscore=0 suspectscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005050158
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: RE: [PATCH net] soc: fsl: dpio: properly compute the consumer in=
-dex
->=20
->=20
->=20
-> > -----Original Message-----
-> > From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > Sent: Tuesday, May 5, 2020 3:14 PM
-> > To: davem@davemloft.net; netdev@vger.kernel.org; linux-
-> > kernel@vger.kernel.org
-> > Cc: Youri Querry <youri.querry_1@nxp.com>; Leo Li
-> > <leoyang.li@nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>
-> > Subject: [PATCH net] soc: fsl: dpio: properly compute the consumer
-> > index
-> >
-> > Mask the consumer index before using it. Without this, we would be
-> > writing frame descriptors beyond the ring size supported by the QBMAN b=
-lock.
-> >
-> > Fixes: 3b2abda7d28c ("soc: fsl: dpio: Replace QMAN array mode with
-> > ring mode enqueue")
-> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
->=20
-> If you would like it go through net tree.
->=20
-> Acked-by: Li Yang <leoyang.li@nxp.com>
->=20
-> > ---
-> >
-> > I am sending this fix through the net tree since the bug manifests
-> > itself only on net-next and not the soc trees. This way it would be
-> > easier to integrate this sooner rather than later.
->=20
-> Since the description of the patch says it fixes a patch included from so=
-c tree, it
-> is not very clear why this problem only exists on net-next.
->=20
 
-The problem is only observed when we enqueue multiple frame descriptors at =
-once, which is happening only with my latest patch set on net-next that add=
-s this for the XDP_REDIRECT path.=20
 
-> >
-> >  drivers/soc/fsl/dpio/qbman-portal.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/soc/fsl/dpio/qbman-portal.c
-> > b/drivers/soc/fsl/dpio/qbman-portal.c
-> > index 804b8ba9bf5c..23a1377971f4 100644
-> > --- a/drivers/soc/fsl/dpio/qbman-portal.c
-> > +++ b/drivers/soc/fsl/dpio/qbman-portal.c
-> > @@ -669,6 +669,7 @@ int qbman_swp_enqueue_multiple_direct(struct
-> > qbman_swp *s,
-> >  		eqcr_ci =3D s->eqcr.ci;
-> >  		p =3D s->addr_cena + QBMAN_CENA_SWP_EQCR_CI;
-> >  		s->eqcr.ci =3D qbman_read_register(s,
-> QBMAN_CINH_SWP_EQCR_CI);
-> > +		s->eqcr.ci &=3D full_mask;
-> >
-> >  		s->eqcr.available =3D qm_cyc_diff(s->eqcr.pi_ring_size,
-> >  					eqcr_ci, s->eqcr.ci);
-> > --
-> > 2.17.1
+On 5/5/20 1:25 PM, Andrii Nakryiko wrote:
+> On Sun, May 3, 2020 at 11:28 PM Yonghong Song <yhs@fb.com> wrote:
+>>
+>> Macro DEFINE_BPF_ITER_FUNC is implemented so target
+>> can define an init function to capture the BTF type
+>> which represents the target.
+>>
+>> The bpf_iter_meta is a structure holding meta data, common
+>> to all targets in the bpf program.
+>>
+>> Additional marker functions are called before/after
+>> bpf_seq_read() show() and stop() callback functions
+>> to help calculate precise seq_num and whether call bpf_prog
+>> inside stop().
+>>
+>> Two functions, bpf_iter_get_info() and bpf_iter_run_prog(),
+>> are implemented so target can get needed information from
+>> bpf_iter infrastructure and can run the program.
+>>
+>> Signed-off-by: Yonghong Song <yhs@fb.com>
+>> ---
+>>   include/linux/bpf.h   | 11 +++++
+>>   kernel/bpf/bpf_iter.c | 94 ++++++++++++++++++++++++++++++++++++++++---
+>>   2 files changed, 100 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index 26daf85cba10..70c71c3cd9e8 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -1129,6 +1129,9 @@ int bpf_obj_pin_user(u32 ufd, const char __user *pathname);
+>>   int bpf_obj_get_user(const char __user *pathname, int flags);
+>>
+>>   #define BPF_ITER_FUNC_PREFIX "__bpf_iter__"
+>> +#define DEFINE_BPF_ITER_FUNC(target, args...)                  \
+>> +       extern int __bpf_iter__ ## target(args);                \
+>> +       int __init __bpf_iter__ ## target(args) { return 0; }
+> 
+> Why is extern declaration needed here? Doesn't the same macro define
 
+Silence sparse warning. Apparently in kernel, any global function, they 
+want a declaration?
+
+> global function itself? I'm probably missing some C semantics thingy,
+> sorry...
+> 
+>>
+>>   typedef int (*bpf_iter_init_seq_priv_t)(void *private_data);
+>>   typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
+>> @@ -1141,11 +1144,19 @@ struct bpf_iter_reg {
+>>          u32 seq_priv_size;
+>>   };
+>>
+>> +struct bpf_iter_meta {
+>> +       __bpf_md_ptr(struct seq_file *, seq);
+>> +       u64 session_id;
+>> +       u64 seq_num;
+>> +};
+>> +
+> 
+> [...]
+> 
+>>   /* bpf_seq_read, a customized and simpler version for bpf iterator.
+>>    * no_llseek is assumed for this file.
+>>    * The following are differences from seq_read():
+>> @@ -83,12 +119,15 @@ static ssize_t bpf_seq_read(struct file *file, char __user *buf, size_t size,
+>>          if (!p || IS_ERR(p))
+>>                  goto Stop;
+>>
+>> +       bpf_iter_inc_seq_num(seq);
+> 
+> so seq_num is one-based, not zero-based? So on first show() call it
+> will be set to 1, not 0, right?
+
+It is 1 based, we need to document this clearly. I forgot to adjust my 
+bpf program for this. Will adjust them properly in the next revision.
+> 
+>>          err = seq->op->show(seq, p);
+>>          if (seq_has_overflowed(seq)) {
+>> +               bpf_iter_dec_seq_num(seq);
+>>                  err = -E2BIG;
+>>                  goto Error_show;
+>>          } else if (err) {
+>>                  /* < 0: go out, > 0: skip */
+>> +               bpf_iter_dec_seq_num(seq);
+>>                  if (likely(err < 0))
+>>                          goto Error_show;
+>>                  seq->count = 0;
+> 
+> [...]
+> 
