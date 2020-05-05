@@ -2,189 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A7DD1C54EB
-	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 13:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 574491C550F
+	for <lists+netdev@lfdr.de>; Tue,  5 May 2020 14:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728683AbgEEL7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 07:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55640 "EHLO
+        id S1728784AbgEEMJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 08:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728238AbgEEL7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 07:59:22 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C69C061A10
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 04:59:22 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id s9so1131330lfp.1
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 04:59:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uvyOYLDN9I6G44mzBr+eJp9UfWHxSSZYkeApkR1DRBs=;
-        b=hHN3cpNowtbVxjqPXfJfjcZuJmb+J5Kee+wNPfV9hQkfN6yoyfeyUucbR++axL8aVO
-         fpMlI4YRF0nBgFxj0vf15GhO5Tu6ZjZhlnzuV7hw2ZRQQlbMzyng/Z8bKQscC6Oaufq8
-         l1GmOUQksiW11jYhrFJ4wBF5dsH0k9uAhQH7d8UQF4PlFwcA3sCFOfkX/xyTMNnoIWOF
-         qytR5uXEloKnzfJ+g5FAPbCMc/nIfqmt+qIm3f1NMUgRG9dwDyRuYHU5O9nE8S85orQx
-         hNBEhK7Z/1qq73yW5LxMcV/YZUA6QH8SQO/N9TvmN4GiDfJHntWV+shP19bozbSAO+Xp
-         rBkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uvyOYLDN9I6G44mzBr+eJp9UfWHxSSZYkeApkR1DRBs=;
-        b=IGVdUHA78meOdin4kzX6WJw1sZ9VJJqmQPc6kmaeBgDT5GSzCr2ZEvVmY4sgbwH6r9
-         XmRqwC7clZ4cRFt38Cj3q68WK2Tr4nGFP+MDp+cKzcFfy3+oshTgkYM5+nzSKk/TPEvq
-         0mtP9V7KHFwObWVI/FNf+B4B5A0T9mXs/QQAj5qnAzKzU8BYtjd47hCUshI7KlmpeB6S
-         usLuqw1TR3Z4dn/MUfz/Jv05BDS/5xKgaMJSKHk91RKJUft63I+XHoLIeKubrXc/8Bal
-         4KNebIcQ0Zo4JG0O5Qgt6yGWCAmxWeva22lheaa0XsAeexkbUXugwxOa0a2wtUqkUsiK
-         Sf8g==
-X-Gm-Message-State: AGi0PuaFfmA0VYRbun4kTxAbm33koXMQsplmk0uSwOgKsDJryXDaK9Ez
-        YxXVBllbW1NjApfgK4KPoW5o+LE1vUYuhx5R+HUwoQ==
-X-Google-Smtp-Source: APiQypIOI/I3XWJ7qttW55NOmWj7VnuraK3AIGYXqHuHAPnirsq/4IwWVzOkmHsLKcQv2q+P2ChRK+/WFoZed5VuL3Y=
-X-Received: by 2002:a05:6512:1109:: with SMTP id l9mr1543834lfg.12.1588679960671;
- Tue, 05 May 2020 04:59:20 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728660AbgEEMJA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 08:09:00 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39509C061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 05:09:00 -0700 (PDT)
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jVwNe-0005dI-9E; Tue, 05 May 2020 14:08:58 +0200
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id 8D6F21001F5; Tue,  5 May 2020 14:08:56 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [BUG] Inconsistent lock state in virtnet poll
+Date:   Tue, 05 May 2020 14:08:56 +0200
+Message-ID: <87lfm6oa7b.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-References: <20200501205011.14899-1-grygorii.strashko@ti.com>
- <20200501205011.14899-4-grygorii.strashko@ti.com> <CADYN=9L+RtruRYKah0Bomh7UaPGQ==N9trd0ZoVQ3GTc-VY8Dg@mail.gmail.com>
- <1bf51157-9fee-1948-f9ff-116799d12731@ti.com> <CADYN=9LfqLLmKNHPfXEiQbaX8ELF78BL-vWUcX-VP3aQ86csNg@mail.gmail.com>
-In-Reply-To: <CADYN=9LfqLLmKNHPfXEiQbaX8ELF78BL-vWUcX-VP3aQ86csNg@mail.gmail.com>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Tue, 5 May 2020 13:59:09 +0200
-Message-ID: <CADYN=9LDCE2sQca12D4ow3BkaxXi1_bnc4Apu7pP4vnA=5AOKA@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/7] net: ethernet: ti: am65-cpsw-nuss: enable
- packet timestamping support
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tero Kristo <t-kristo@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Networking <netdev@vger.kernel.org>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Nishanth Menon <nm@ti.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 May 2020 at 13:16, Anders Roxell <anders.roxell@linaro.org> wrote:
->
-> On Tue, 5 May 2020 at 13:05, Grygorii Strashko <grygorii.strashko@ti.com> wrote:
-> >
-> > hi Anders,
->
-> Hi Grygorii,
 
-Hi again,
+The following lockdep splat happens reproducibly on 5.7-rc4
 
->
-> >
-> > On 05/05/2020 13:17, Anders Roxell wrote:
-> > > On Fri, 1 May 2020 at 22:50, Grygorii Strashko <grygorii.strashko@ti.com> wrote:
-> > >>
-> > >> The MCU CPSW Common Platform Time Sync (CPTS) provides possibility to
-> > >> timestamp TX PTP packets and all RX packets.
-> > >>
-> > >> This enables corresponding support in TI AM65x/J721E MCU CPSW driver.
-> > >>
-> > >> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> > >> ---
-> > >>   drivers/net/ethernet/ti/Kconfig             |   1 +
-> > >>   drivers/net/ethernet/ti/am65-cpsw-ethtool.c |  24 ++-
-> > >>   drivers/net/ethernet/ti/am65-cpsw-nuss.c    | 172 ++++++++++++++++++++
-> > >>   drivers/net/ethernet/ti/am65-cpsw-nuss.h    |   6 +-
-> > >>   4 files changed, 201 insertions(+), 2 deletions(-)
-> > >>
-> > >> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-> > >> index 1f4e5b6dc686..2c7bd1ccaaec 100644
-> > >> --- a/drivers/net/ethernet/ti/Kconfig
-> > >> +++ b/drivers/net/ethernet/ti/Kconfig
-> > >> @@ -100,6 +100,7 @@ config TI_K3_AM65_CPSW_NUSS
-> > >>          depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
-> > >>          select TI_DAVINCI_MDIO
-> > >>          imply PHY_TI_GMII_SEL
-> > >> +       imply TI_AM65_CPTS
-> > >
-> > > Should this be TI_K3_AM65_CPTS ?
+Thanks,
 
-instead of 'imply TI_K3_AM65_CPTS' don't you want to do this:
-'depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS'
+        tglx
 
+================================
+WARNING: inconsistent lock state
+5.7.0-rc4+ #79 Not tainted
+--------------------------------
+inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+ip/356 [HC0[0]:SC1[1]:HE1:SE0] takes:
+f3ee4cd8 (&syncp->seq#2){+.?.}-{0:0}, at: net_rx_action+0xfb/0x390
+{SOFTIRQ-ON-W} state was registered at:
+  lock_acquire+0x82/0x300
+  try_fill_recv+0x39f/0x590
+  virtnet_open+0xe0/0x180
+  __dev_open+0xbe/0x160
+  __dev_change_flags+0x152/0x1b0
+  dev_change_flags+0x23/0x60
+  do_setlink+0x814/0xa30
+  __rtnl_newlink+0x583/0x8e0
+  rtnl_newlink+0x36/0x60
+  rtnetlink_rcv_msg+0x139/0x470
+  netlink_rcv_skb+0x6a/0xe0
+  rtnetlink_rcv+0xd/0x10
+  netlink_unicast+0x175/0x250
+  netlink_sendmsg+0x263/0x440
+  sock_sendmsg+0x5c/0x60
+  ____sys_sendmsg+0x182/0x1d0
+  ___sys_sendmsg+0x59/0x90
+  __sys_sendmsg+0x39/0x80
+  __ia32_sys_socketcall+0x2d2/0x330
+  do_fast_syscall_32+0x82/0x340
+  entry_SYSENTER_32+0xaa/0x102
+irq event stamp: 2276
+hardirqs last  enabled at (2276): [<c18e419e>] net_rx_action+0x7e/0x390
+hardirqs last disabled at (2275): [<c18e4178>] net_rx_action+0x58/0x390
+softirqs last  enabled at (2272): [<c16f87ee>] virtnet_napi_enable+0xe/0x50
+softirqs last disabled at (2273): [<c101fb10>] call_on_stack+0x40/0x50
 
-Cheers,
-Anders
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
-> > >
-> > > I did an arm64 allmodconfig build on todays next tag: next-20200505
-> > > and got this undefined symbol:
-> > >
-> > > aarch64-linux-gnu-ld: drivers/net/ethernet/ti/am65-cpsw-nuss.o: in
-> > > function `am65_cpsw_init_cpts':
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1685:
-> > > undefined reference to `am65_cpts_create'
-> > > aarch64-linux-gnu-ld:
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1685:(.text+0x2e20):
-> > > relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol
-> > > `am65_cpts_create'
-> > > aarch64-linux-gnu-ld: drivers/net/ethernet/ti/am65-cpsw-nuss.o: in
-> > > function `am65_cpsw_nuss_tx_compl_packets':
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-nuss.c:923:
-> > > undefined reference to `am65_cpts_tx_timestamp'
-> > > aarch64-linux-gnu-ld:
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-nuss.c:923:(.text+0x4cf0):
-> > > relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol
-> > > `am65_cpts_tx_timestamp'
-> > > aarch64-linux-gnu-ld: drivers/net/ethernet/ti/am65-cpsw-nuss.o: in
-> > > function `am65_cpsw_nuss_ndo_slave_xmit':
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1018:
-> > > undefined reference to `am65_cpts_prep_tx_timestamp'
-> > > aarch64-linux-gnu-ld:
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1018:(.text+0x58fc):
-> > > relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol
-> > > `am65_cpts_prep_tx_timestamp'
-> > > aarch64-linux-gnu-ld: drivers/net/ethernet/ti/am65-cpsw-nuss.o: in
-> > > function `am65_cpsw_nuss_hwtstamp_set':
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1265:
-> > > undefined reference to `am65_cpts_rx_enable'
-> > > aarch64-linux-gnu-ld:
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1265:(.text+0x7564):
-> > > relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol
-> > > `am65_cpts_rx_enable'
-> > > aarch64-linux-gnu-ld: drivers/net/ethernet/ti/am65-cpsw-ethtool.o: in
-> > > function `am65_cpsw_get_ethtool_ts_info':
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-ethtool.c:713:
-> > > undefined reference to `am65_cpts_phc_index'
-> > > aarch64-linux-gnu-ld:
-> > > /srv/src/kernel/next/obj-arm64-next-20200505/../drivers/net/ethernet/ti/am65-cpsw-ethtool.c:713:(.text+0xbe8):
-> > > relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol
-> > > `am65_cpts_phc_index'
-> > > make[1]: *** [/srv/src/kernel/next/Makefile:1114: vmlinux] Error 1
-> > > make[1]: Target 'Image' not remade because of errors.
-> > > make: *** [Makefile:180: sub-make] Error 2
-> > > make: Target 'Image' not remade because of errors.
-> >
-> > Sry, I can't reproduce it net-next.
->
-> Oh I forgot to try net-next, sorry.
->
-> > trying next...
->
-> Thank you.
->
-> > What's your config?
->
-> This is the config [1] I used.
->
-> Cheers,
-> Anders
-> [1] https://people.linaro.org/~anders.roxell/kernel-next-20200505.config
->
-> >
-> > --
-> > Best regards,
-> > grygorii
+       CPU0
+       ----
+  lock(&syncp->seq#2);
+  <Interrupt>
+    lock(&syncp->seq#2);
+
+ *** DEADLOCK ***
+
+1 lock held by ip/356:
+ #0: c20a4a38 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x118/0x470
+
+stack backtrace:
+CPU: 2 PID: 356 Comm: ip Not tainted 5.7.0-rc4+ #79
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
+Call Trace:
+ <SOFTIRQ>
+ dump_stack+0x6e/0x9e
+ print_usage_bug.cold+0x15a/0x162
+ mark_lock+0x58d/0x6e0
+ ? check_usage_backwards+0x180/0x180
+ __lock_acquire+0xdd7/0x24f0
+ ? select_task_rq_fair+0xbb/0xfe0
+ ? __lock_acquire+0x35f/0x24f0
+ ? __lock_acquire+0x35f/0x24f0
+ ? __lock_acquire+0x35f/0x24f0
+ lock_acquire+0x82/0x300
+ ? net_rx_action+0xfb/0x390
+ ? find_held_lock+0x24/0x80
+ ? lock_release+0x8a/0x260
+ ? virtnet_poll+0xd0/0x3d9
+ virtnet_poll+0x1d3/0x3d9
+ ? net_rx_action+0xfb/0x390
+ ? trace_hardirqs_on+0x4a/0xf0
+ net_rx_action+0xfb/0x390
+ ? __do_softirq+0x84/0x3ca
+ ? virtnet_napi_enable+0xe/0x50
+ __do_softirq+0xb1/0x3ca
+ ? virtnet_napi_enable+0xe/0x50
+ ? __irqentry_text_end+0x8/0x8
+ call_on_stack+0x40/0x50
+ </SOFTIRQ>
+ ? do_softirq.part.0+0x4e/0x50
+ ? __local_bh_enable_ip+0xd1/0xe0
+ ? virtnet_napi_enable+0x41/0x50
+ ? virtnet_open+0x7f/0x180
+ ? __dev_open+0xbe/0x160
+ ? __dev_change_flags+0x152/0x1b0
+ ? dev_change_flags+0x23/0x60
+ ? do_setlink+0x814/0xa30
+ ? __lock_acquire+0x35f/0x24f0
+ ? __nla_parse+0x1c/0x30
+ ? __rtnl_newlink+0x583/0x8e0
+ ? lock_acquire+0x82/0x300
+ ? handle_mm_fault+0x6e6/0xa10
+ ? find_held_lock+0x24/0x80
+ ? __lock_acquire+0x35f/0x24f0
+ ? lock_acquire+0x82/0x300
+ ? __lock_acquire+0x35f/0x24f0
+ ? rtnl_newlink+0x23/0x60
+ ? rcu_read_lock_sched_held+0x3f/0x70
+ ? kmem_cache_alloc_trace+0x235/0x260
+ ? rtnl_newlink+0x36/0x60
+ ? __rtnl_newlink+0x8e0/0x8e0
+ ? rtnetlink_rcv_msg+0x139/0x470
+ ? netlink_deliver_tap+0x81/0x3a0
+ ? find_held_lock+0x24/0x80
+ ? rtnl_bridge_getlink+0x240/0x240
+ ? netlink_rcv_skb+0x6a/0xe0
+ ? rtnl_bridge_getlink+0x240/0x240
+ ? rtnetlink_rcv+0xd/0x10
+ ? netlink_unicast+0x175/0x250
+ ? netlink_sendmsg+0x263/0x440
+ ? netlink_unicast+0x250/0x250
+ ? sock_sendmsg+0x5c/0x60
+ ? ____sys_sendmsg+0x182/0x1d0
+ ? ___sys_sendmsg+0x59/0x90
+ ? lock_acquire+0x82/0x300
+ ? __might_fault+0x39/0x80
+ ? __sys_sendmsg+0x39/0x80
+ ? __ia32_sys_socketcall+0x2d2/0x330
+ ? do_fast_syscall_32+0x82/0x340
+ ? entry_SYSENTER_32+0xaa/0x102
+
