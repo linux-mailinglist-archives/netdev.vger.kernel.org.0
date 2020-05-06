@@ -2,127 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A67A01C7867
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 19:45:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D453D1C7877
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 19:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730446AbgEFRoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 13:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
+        id S1730500AbgEFRpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 13:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730433AbgEFRog (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 13:44:36 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B543C0610D5
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 10:44:36 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id t2so2091370lfc.3
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 10:44:36 -0700 (PDT)
+        with ESMTP id S1730302AbgEFRpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 13:45:11 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E490DC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 10:45:10 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id e10so1562434vsp.12
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 10:45:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
          :cc;
-        bh=uNt2KHwB8PiMSyUUcvWbb3LmQf/yl99wmVRwAMCe6Sw=;
-        b=QfIhp8bnkHziXy45j6AZQvnQuPZVCBRmkYNh4Qk1yBWY/AbDih3c468GHPPi0NxUWC
-         +RsQItHsCm4TW5y+JMWQZhOFGKrkw/OMHO8k0Ff3ChO35z8KVI8vHTXhfxO6dpDN2zOT
-         R/3GLd58rAk/zgyKNOtvPikt/JEPwM8VJVw+4=
+        bh=hASypAIk45GMe7rNlqwCahNdX4a/8GjI8mpvIJTl9Ko=;
+        b=XUm+4DSLaZTib4G4rwrclbXvrUPp7deXDVqdCGNwBJJAInEVvCyRA/TKTV9CgW6/zb
+         frnDzXkjnUuAu4UqwkNICXLdK4ipZ5/o3s0+UFpykDmbkZwKKFzVxYDJV//mVNGz28vY
+         QAW8KzSeaAkybaE6p1lmbFB7IkbdpWNc/KbLVdYIhdZYkY6IDR1+JQIVuHZ5Lra1/+mG
+         AEKyhlbsKrX62neMPf9h0L+piNHKwlinI1GUHQauw6PpPNhToARRG4KbjiyKNQozHq5h
+         m9TZvPguYN0FvTz8NeEdr3e62IbvVQZnpP0+RK07ORTIV4IMikSMuCEApB9RXUhDp/gD
+         XdUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
          :message-id:subject:to:cc;
-        bh=uNt2KHwB8PiMSyUUcvWbb3LmQf/yl99wmVRwAMCe6Sw=;
-        b=eksM0LxyXAfaSE1Y6VrD5o9Qsg2dZ4R9ZuN/XJmGCnpMqF62gp5NBqXQfdka3f1/wX
-         Zdj8hEz1AqfbGYIbeiaKLc/4EWGTeOZLC1pO/A9AcjDll+isUzfQ1szOVij3jV0+Dm4+
-         mgFrgRWRfgzRDKJSCgUtjhYy5T/AfCqevDJB63PdKWkk8VC8vsjdPSqH4G2hP8hg/FCj
-         GosM2zxWEUT/8wGKVqNiFwODS/SCQNX5yRgSvNxKc5BuytR0D+PsbHi3IzAP/qz0r79P
-         HRBYJtu6YpmwX5js867rOA5vymx+o3P4O4A1aOX2bE4usfmL6ivrccEv1bwYJxmWzFD9
-         ii2g==
-X-Gm-Message-State: AGi0PubjLlYrA3bxEJDM028p2r6GbDv3ytdh1+iXYM5RCwlJaizZ80fq
-        jXgR2dZQshKdrDSwBGIh56XMGQUzhrE=
-X-Google-Smtp-Source: APiQypLcGuBST19irUGYXyKG6WPrAPJwpq9CJ7Q0omLAl+YGc3Zb7Wf4hjOQA88H4p467BmKHh2iDw==
-X-Received: by 2002:ac2:5282:: with SMTP id q2mr4690973lfm.100.1588787073209;
-        Wed, 06 May 2020 10:44:33 -0700 (PDT)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id b4sm2021069lfo.33.2020.05.06.10.44.31
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 May 2020 10:44:32 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id d25so2072345lfi.11
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 10:44:31 -0700 (PDT)
-X-Received: by 2002:a19:6e4e:: with SMTP id q14mr5836440lfk.192.1588787071388;
- Wed, 06 May 2020 10:44:31 -0700 (PDT)
+        bh=hASypAIk45GMe7rNlqwCahNdX4a/8GjI8mpvIJTl9Ko=;
+        b=X6XiywlqSpcgKZMJoIjqnpouTmzQufw6+wOrFtaS1fm2JSe0vVgzlVAFn68LmNYPy3
+         wTLEE5vAgIOx8N8gnfTqPZFDrP8N51Ppmj0EHU1iyPyY1odVJndGi5dWFzRTYNjYM+cq
+         0zfbHFPDbYYfkGfdZ/eMbp8IAP/ie47iYgIr22nO8ySGnxCyuZtJb8WI2Tmjcn4KZPxr
+         UTCxjexdyCRXs30XaYCiqKqW287YVTwTNuZTdxg733zEtMrHGd7G9xX8QllBebL1Nlpp
+         OeQb9lZLHMbTBgtREIKRVolSyHcCTEn37AGsegujnN4UPoh5yWRvF66iZuw1f5tLmAqq
+         Nh/A==
+X-Gm-Message-State: AGi0PuZXVTvQbxVH2R3ZR6kGmReZ/9P4UxJFaHk/8PADEn5BiyWl+6cZ
+        7mqz/KDSCOxIsdaixvQcjKlceoS/r5HX47NDrlqOJ8HCnTo=
+X-Google-Smtp-Source: APiQypL/wGyZmmThGEOlpd/cNRmnkXpEo7ZnS7XnOJ1QEWQGjyC+WREYlCQ733Eu1Qg8FzfGzyF4o/KGpM1Rb7DAh1E=
+X-Received: by 2002:a67:1502:: with SMTP id 2mr9161458vsv.80.1588787110104;
+ Wed, 06 May 2020 10:45:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200506062223.30032-1-hch@lst.de> <20200506062223.30032-9-hch@lst.de>
-In-Reply-To: <20200506062223.30032-9-hch@lst.de>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 6 May 2020 10:44:15 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj3T6u_kj8r9f3aGXCjuyN210_gJC=AXPFm9=wL-dGALA@mail.gmail.com>
-Message-ID: <CAHk-=wj3T6u_kj8r9f3aGXCjuyN210_gJC=AXPFm9=wL-dGALA@mail.gmail.com>
-Subject: Re: [PATCH 08/15] maccess: rename strnlen_unsafe_user to strnlen_user_unsafe
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org,
-        linux-um <linux-um@lists.infradead.org>,
-        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Received: by 2002:ab0:768:0:0:0:0:0 with HTTP; Wed, 6 May 2020 10:45:09 -0700 (PDT)
+X-Originating-IP: [5.35.46.227]
+In-Reply-To: <005a01d622fa$25745e40$705d1ac0$@xen.org>
+References: <1588581474-18345-1-git-send-email-kda@linux-powerpc.org>
+ <1588581474-18345-2-git-send-email-kda@linux-powerpc.org> <004201d622e8$2fff5cf0$8ffe16d0$@xen.org>
+ <CAOJe8K3sByKRgecjYBnm35_Kijaqu0TTruQwvddEu1tkF-TEVg@mail.gmail.com> <005a01d622fa$25745e40$705d1ac0$@xen.org>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Wed, 6 May 2020 20:45:09 +0300
+Message-ID: <CAOJe8K3ieApcY_VmEx1fm4=vgKgWOs3__WSr4m+F8kkAAKX_uQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 2/2] xen networking: add XDP offset adjustment
+ to xen-netback
+To:     paul@xen.org
+Cc:     netdev@vger.kernel.org, jgross@suse.com, wei.liu@kernel.org,
+        ilias.apalodimas@linaro.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 5, 2020 at 11:22 PM Christoph Hellwig <hch@lst.de> wrote:
+On 5/5/20, Paul Durrant <xadimgnik@gmail.com> wrote:
+>> -----Original Message-----
+>> >> @@ -417,6 +431,11 @@ static void frontend_changed(struct xenbus_device
+>> >> *dev,
+>> >>  		set_backend_state(be, XenbusStateConnected);
+>> >>  		break;
+>> >>
+>> >> +	case XenbusStateReconfiguring:
+>> >> +		read_xenbus_frontend_xdp(be, dev);
+>> >
+>> > Is the frontend always expected to trigger a re-configure, or could
+>> > feature-xdp already be enabled prior to connection?
+>>
+>> Yes, feature-xdp is set by the frontend when  xdp code is loaded.
+>>
 >
-> This matches the convention of always having _unsafe as a suffix, as
-> well as match the naming of strncpy_from_user_unsafe.
+> That's still ambiguous... what I'm getting at is whether you also need to
+> read the xdp state when transitioning into Connected as well as
+> Reconfiguring?
 
-Hmm. While renaming them, can we perhaps clarify what the rules are?
+I have to read the state only during the Reconfiguring state since
+that's where an XDP program is loaded / unloaded and then we transition
+from Reconfigred to Connected
 
-We now have two different kinds of "unsafe". We have the
-"unsafe_get_user()" kind of unsafe: the user pointer itself is unsafe
-because it isn't checked, and you need to use a "user_access_begin()"
-to verify.
-
-It's the new form of "__get_user()".
-
-And then we have the strncpy_from_user_unsafe(), which is really more
-like the "probe_kernel_read()" kind of funtion, in that it's about the
-context, and not faulting.
-
-Honestly, I don't like the "unsafe" in the second case, because
-there's nothing "unsafe" about the function. It's used in odd
-contexts. I guess to some degree those are "unsafe" contexts, but I
-think it might be better to clarify.
-
-So while I think using a consistent convention is good, and it's true
-that there is a difference in the convention between the two cases
-("unsafe" at the beginning vs end), one of them is actually about the
-safety and security of the operation (and we have automated logic
-these days to verify it on x86), the other has nothing to do with
-"safety", really.
-
-Would it be better to standardize around a "probe_xyz()" naming?
-
-Or perhaps a "xyz_nofault()" naming?
-
-I'm not a huge fan of the "probe" naming, but it sure is descriptive,
-which is a really good thing.
-
-Another option would be to make it explicitly about _what_ is
-"unsafe", ie that it's about not having a process context that can be
-faulted in. But "xyz_unsafe_context()" is much too verbose.
-"xyz_noctx()" might work.
-
-I realize this is nit-picky, and I think the patch series as-is is
-already an improvement, but I do think our naming in this area is
-really quite bad.
-
-The fact that we have "probe_kernel_read()" but then
-"strncpy_from_user_unsafe()" for the _same_ conceptual difference
-really tells me how inconsistent the naming for these kinds of "we
-can't take page faults" is. No?
-
-                   Linus
+>
+>   Paul
+>
+>
