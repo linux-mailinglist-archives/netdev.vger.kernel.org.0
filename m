@@ -2,130 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 727331C7574
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7741C75B2
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 18:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729447AbgEFPzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 11:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        id S1729431AbgEFQFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 12:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729059AbgEFPzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:55:53 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2B2C061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 08:55:53 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id p13so949670qvt.12
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 08:55:53 -0700 (PDT)
+        with ESMTP id S1729418AbgEFQFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 12:05:55 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63BEC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 09:05:54 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id 23so2530196qkf.0
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 09:05:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=M3Pl222wqifdcDoK6PLhBKqxaMI2qOgcnUmVMcPdDbk=;
-        b=B4H6sdn0TE06NXC1g8r5sMQEMu8oerm0CYJcla7l2oFGp5bAEUCRvddo3zVzR2NccG
-         n9fPvXzsJe8JV45RlKCntWoMF4CcUxNA4LjWiXggab0Db2u7cacpilckI1rrwgSfseYJ
-         lfs9hUooPHwbiej0OI2rdWDCpPgB1vtn/3SmydxiaRBEaVLuCOjaBX6d0gzpLgWSYZla
-         OY0W4hQ7cs8T64UObyZ41WyyCSE+K8dZsH17DpSLdzX/ignO1EgHs6VbosnyQ38/inCd
-         vCy4NeXCBLKl+lgX8fIIusLg60o1fU4SpuYZvR89eXTwQKuYDXpT4zEEdHlXv/9dIGw0
-         LuIQ==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=nrpp2T2sh7pMsL3PvoDrM5y2fqkhAxlK1sJUOu9QA9o=;
+        b=Tr83kb/F9G2VBLcHu7x37pNyprDcqbHUZZYB0zOv2RBd+1BHPvHEVKPvXuZIqMslJt
+         WRxGZOJikpMi5eBYxtKo6yrCLuOJLq7J+DscjOjKTQnnrd1h3WeKKt2DEqB7XbQZtVAL
+         HjYOHAHRL+9QCK2KRb/fFvNSoqI3wQyv9hUkPCYhePvKjEIK1pVf4JsL1DBCueLXJJOL
+         n3UuzknRW57RSsLv47vAxS4EZIkUvB4yn9aPp6niVhcBLpY/PAfsvJL15u7Cnwdkb1Dd
+         2SzCfTuoD4Kp2AXjh5L2+oXey2AyrWZ8VC4q2ZxpUBuGIddwsFS8rNWnuZ5sOm5uYuVr
+         5Zbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=M3Pl222wqifdcDoK6PLhBKqxaMI2qOgcnUmVMcPdDbk=;
-        b=spo0qUAnz61aymNWkR4bNmP49mjlqnJTrqDIzh/ELjrckusTgeAhl5rfFzpD8R3sOZ
-         kGuZNuehl6NekfbVd0fcMqNdoO0//0xgeU2y6LlkCsVoxXmGUlwP2/rvH3Pkn692BgPb
-         JK4zm7Ym5tPloaK/EfyhKR91KajIF9mdXYjOm+vJAStVlkMkwakKm+Ba6wQHPpHY9eV6
-         JLyVQ2MH4cewBw74f8DnlvA+/mLsVVoYEe9TLbtXDpxbz24ovd29fpS+zlIzDMeT/Z1b
-         pk8CkHcQ84C0X2VwF4YW/KAx+189rexUdPM+SBxpBIEmGawm9efTUs4dkXZ5v01SDB4o
-         tm4A==
-X-Gm-Message-State: AGi0Pub1uJbV1N71szBn8t9gs2R9l2x09krz0a+DHLbnBFRaEwc4jAvc
-        OBKBXx47lsc8n4Nu4wjvycA=
-X-Google-Smtp-Source: APiQypLngiMp8FlC0sihQf8aip8ZepzgXzdOwOEPMLdh7SIIBqUxL4fRN0SIRrFo0w8gHMb0ilZusw==
-X-Received: by 2002:a0c:aa85:: with SMTP id f5mr8705709qvb.51.1588780552475;
-        Wed, 06 May 2020 08:55:52 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id c33sm1890982qtb.76.2020.05.06.08.55.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2020 08:55:51 -0700 (PDT)
-Date:   Wed, 6 May 2020 11:55:50 -0400
-Message-ID: <20200506115550.GB1265908@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        vinicius.gomes@intel.com, po.liu@nxp.com
-Subject: Re: [PATCH v3 net-next 1/6] net: dsa: introduce a
- dsa_port_from_netdev public helper
-In-Reply-To: <20200505192057.9086-2-olteanv@gmail.com>
-References: <20200505192057.9086-1-olteanv@gmail.com>
- <20200505192057.9086-2-olteanv@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=nrpp2T2sh7pMsL3PvoDrM5y2fqkhAxlK1sJUOu9QA9o=;
+        b=LwnZFr1Nt6krLPKreMkWRx+blVMi1n6PBitL/FUE+kqCxNTvE9k2yLXYJYbH4OJ9xp
+         XGIphW61jxWcqQXO5oeJ9bH89fdgjCFf4zIJIE1MvCWjTpoSRy7Uz+mRqkGhmfIQqeCU
+         hegqvbWuYdyvBAf7z0dNvPlrKKyQggmthCgtEDxv6OsJ6IOirJ3sMWTWDGARDNhEWFyt
+         XBi6OITGbk3tHJv8NYiNDkLQV15vSRcMJKrxMlJKEfth6BDSekxSel6Fap7KMyJMG+Yi
+         hLOhixTosNjo592mBEAgMSP+IJywPbSViUW3+bRkUFOeGh6bXwA9j///xyoeZmGAB9Ad
+         YLJA==
+X-Gm-Message-State: AGi0PuZqFhRtWALfif0fbRpvoxh5TrtTWyjRppGD83ig8zl6r+ujn9eM
+        qOSCeiCeZEgxJzDhu4FYVFI1Wg==
+X-Google-Smtp-Source: APiQypLzPtnV2MpsE+MV+xNWnkm78v9QYjriPWAQthkfamFRT+pYJFignvWriiKBLQ0XkQ6F6UKvgw==
+X-Received: by 2002:a05:620a:219a:: with SMTP id g26mr9661209qka.228.1588781153930;
+        Wed, 06 May 2020 09:05:53 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id q9sm1879221qkm.130.2020.05.06.09.05.53
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 06 May 2020 09:05:53 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jWMYS-0002c7-Qa; Wed, 06 May 2020 13:05:52 -0300
+Date:   Wed, 6 May 2020 13:05:52 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Niranjana Vishwanathapura <niranjana.vishwanathapura@intel.com>,
+        rds-devel@oss.oracle.com,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        target-devel@vger.kernel.org, Ursula Braun <ubraun@linux.ibm.com>
+Subject: Re: [PATCH rdma-next] RDMA: Allow ib_client's to fail when add() is
+ called
+Message-ID: <20200506160552.GA9993@ziepe.ca>
+References: <20200421172440.387069-1-leon@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200421172440.387069-1-leon@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  5 May 2020 22:20:52 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, Apr 21, 2020 at 08:24:40PM +0300, Leon Romanovsky wrote:
+> From: Jason Gunthorpe <jgg@mellanox.com>
 > 
-> As its implementation shows, this is synonimous with calling
-> dsa_slave_dev_check followed by dsa_slave_to_port, so it is quite simple
-> already and provides functionality which is already there.
+> When a client is added it isn't allowed to fail, but all the client's have
+> various failure paths within their add routines.
 > 
-> However there is now a need for these functions outside dsa_priv.h, for
-> example in drivers that perform mirroring and redirection through
-> tc-flower offloads (they are given raw access to the flow_cls_offload
-> structure), where they need to call this function on act->dev.
+> This creates the very fringe condition where the client was added, failed
+> during add and didn't set the client_data. The core code will then still
+> call other client_data centric ops like remove(), rename(), get_nl_info(),
+> and get_net_dev_by_params() with NULL client_data - which is confusing and
+> unexpected.
 > 
-> But simply exporting dsa_slave_to_port would make it non-inline and
-> would result in an extra function call in the hotpath, as can be seen
-> for example in sja1105:
+> If the add() callback fails, then do not call any more client ops for the
+> device, even remove.
 > 
-> Before:
+> Remove all the now redundant checks for NULL client_data in ops callbacks.
 > 
-> 000006dc <sja1105_xmit>:
-> {
->  6dc:	e92d4ff0 	push	{r4, r5, r6, r7, r8, r9, sl, fp, lr}
->  6e0:	e1a04000 	mov	r4, r0
->  6e4:	e591958c 	ldr	r9, [r1, #1420]	; 0x58c <- Inline dsa_slave_to_port
->  6e8:	e1a05001 	mov	r5, r1
->  6ec:	e24dd004 	sub	sp, sp, #4
-> 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
->  6f0:	e1c901d8 	ldrd	r0, [r9, #24]
->  6f4:	ebfffffe 	bl	0 <dsa_8021q_tx_vid>
-> 			6f4: R_ARM_CALL	dsa_8021q_tx_vid
-> 	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
->  6f8:	e1d416b0 	ldrh	r1, [r4, #96]	; 0x60
-> 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
->  6fc:	e1a08000 	mov	r8, r0
+> Update all the add() callbacks to return error codes
+> appropriately. EOPNOTSUPP is used for cases where the ULP does not support
+> the ib_device - eg because it only works with IB.
 > 
-> After:
-> 
-> 000006e4 <sja1105_xmit>:
-> {
->  6e4:	e92d4ff0 	push	{r4, r5, r6, r7, r8, r9, sl, fp, lr}
->  6e8:	e1a04000 	mov	r4, r0
->  6ec:	e24dd004 	sub	sp, sp, #4
-> 	struct dsa_port *dp = dsa_slave_to_port(netdev);
->  6f0:	e1a00001 	mov	r0, r1
-> {
->  6f4:	e1a05001 	mov	r5, r1
-> 	struct dsa_port *dp = dsa_slave_to_port(netdev);
->  6f8:	ebfffffe 	bl	0 <dsa_slave_to_port>
-> 			6f8: R_ARM_CALL	dsa_slave_to_port
->  6fc:	e1a09000 	mov	r9, r0
-> 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
->  700:	e1c001d8 	ldrd	r0, [r0, #24]
->  704:	ebfffffe 	bl	0 <dsa_8021q_tx_vid>
-> 			704: R_ARM_CALL	dsa_8021q_tx_vid
-> 
-> Because we want to avoid possible performance regressions, introduce
-> this new function which is designed to be public.
-> 
-> Suggested-by: Vivien Didelot <vivien.didelot@gmail.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> Acked-by: Ursula Braun <ubraun@linux.ibm.com>
+> ---
+>  drivers/infiniband/core/cm.c                  | 24 ++++++++++--------
+>  drivers/infiniband/core/cma.c                 | 23 +++++++++--------
+>  drivers/infiniband/core/device.c              | 16 ++++++++++--
+>  drivers/infiniband/core/mad.c                 | 17 ++++++++++---
+>  drivers/infiniband/core/multicast.c           | 12 ++++-----
+>  drivers/infiniband/core/sa_query.c            | 22 ++++++++--------
+>  drivers/infiniband/core/user_mad.c            | 22 ++++++++--------
+>  drivers/infiniband/core/uverbs_main.c         | 24 +++++++++---------
+>  drivers/infiniband/ulp/ipoib/ipoib_main.c     | 15 ++++-------
+>  .../infiniband/ulp/opa_vnic/opa_vnic_vema.c   | 12 ++++-----
+>  drivers/infiniband/ulp/srp/ib_srp.c           | 21 ++++++++--------
+>  drivers/infiniband/ulp/srpt/ib_srpt.c         | 25 ++++++++-----------
+>  include/rdma/ib_verbs.h                       |  2 +-
+>  net/rds/ib.c                                  | 21 ++++++++++------
+>  net/smc/smc_ib.c                              | 10 +++-----
+>  15 files changed, 142 insertions(+), 124 deletions(-)
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+Applied to for-next
+
+Jason
