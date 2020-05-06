@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1EE11C7C81
+	by mail.lfdr.de (Postfix) with ESMTP id 6491F1C7C80
 	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:33:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730003AbgEFVdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 17:33:33 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:55147 "EHLO mail.zx2c4.com"
+        id S1729962AbgEFVdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 17:33:31 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:53575 "EHLO mail.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728621AbgEFVd1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729152AbgEFVd1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 6 May 2020 17:33:27 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 50d3269b;
-        Wed, 6 May 2020 21:20:41 +0000 (UTC)
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 009af1fd;
+        Wed, 6 May 2020 21:20:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
         :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=6SZ2ShOF3NA13UH2PvVv0pokh
-        70=; b=e3sgm4SL0HGi2lbq7khL6YwFjH/gY7LilQ9ozQhGApUoiKJIMdE38stCk
-        rQCazLIve1+VZXem0s7yUDQXSV6y+foTYXTr155GTwEPPOsOucLKDfePfmElP9PV
-        4dxLN3O5Ml42B7Fwq3m03Dv9f+2kaX/1ZQ8i8wCSThSLe2xvcEWtiSD2U7apF0gy
-        Gl37jwGTC4EAmsd4cxH8beoBlExPrYGtYZHp2gCiNsv9OwnH48hd5/lTv2cqkSNO
-        OjgXH1UOQJ9okJ+khVw0sU1ncwJBkt2aQQ2AJevzlkPKb5syDPp5wgqYe3NFGNbJ
-        U+/SxZB+T40lEco6GxhO+q2XD1Usw==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ecfd542f (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Wed, 6 May 2020 21:20:40 +0000 (UTC)
+        :content-transfer-encoding; s=mail; bh=iKaIY/IfgB+5XH5ZbMMcDObHv
+        hc=; b=lacZfV2bP5Hv2l9t4Z0D5x+8oUs+uHtosILJsV3+1DXmj43ZQOZn8MYu9
+        56c9qBxHSKJ98b+/VGFmPZ9BM/uExi6F+iUQkymg1cR86rILAuXDHBbQ0UF2f8zE
+        d7rTykxxOLOrJ5iFJ8dklRBUJcVj2obQXv6DZdsjLa0x33rulMZ7jwKdGUKVQZ8b
+        ZtVUtuaJAlx+ZsNQJcJ2hu8SnmHuu6hIpkEfrTMWrQyAvAGtqCD0zuntzZ6jaWhc
+        qT8klRKLzTN9FrrNzQ0ZWl7HwSoqe0VwwP/UmcwAHeqa0oxbnIsjhoa9ybFsMLd1
+        2ihKzq59qBrWu4JCegQ30ahJtoNbQ==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 70d827dd (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 6 May 2020 21:20:41 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH net 4/5] wireguard: selftests: initalize ipv6 members to NULL to squelch clang warning
-Date:   Wed,  6 May 2020 15:33:05 -0600
-Message-Id: <20200506213306.1344212-5-Jason@zx2c4.com>
+        Sultan Alsawaf <sultan@kerneltoast.com>
+Subject: [PATCH net 5/5] wireguard: send/receive: use explicit unlikely branch instead of implicit coalescing
+Date:   Wed,  6 May 2020 15:33:06 -0600
+Message-Id: <20200506213306.1344212-6-Jason@zx2c4.com>
 In-Reply-To: <20200506213306.1344212-1-Jason@zx2c4.com>
 References: <20200506213306.1344212-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -40,49 +40,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Without setting these to NULL, clang complains in certain
-configurations that have CONFIG_IPV6=n:
+It's very unlikely that send will become true. It's nearly always false
+between 0 and 120 seconds of a session, and in most cases becomes true
+only between 120 and 121 seconds before becoming false again. So,
+unlikely(send) is clearly the right option here.
 
-In file included from drivers/net/wireguard/ratelimiter.c:223:
-drivers/net/wireguard/selftest/ratelimiter.c:173:34: error: variable 'skb6' is uninitialized when used here [-Werror,-Wuninitialized]
-                ret = timings_test(skb4, hdr4, skb6, hdr6, &test_count);
-                                               ^~~~
-drivers/net/wireguard/selftest/ratelimiter.c:123:29: note: initialize the variable 'skb6' to silence this warning
-        struct sk_buff *skb4, *skb6;
-                                   ^
-                                    = NULL
-drivers/net/wireguard/selftest/ratelimiter.c:173:40: error: variable 'hdr6' is uninitialized when used here [-Werror,-Wuninitialized]
-                ret = timings_test(skb4, hdr4, skb6, hdr6, &test_count);
-                                                     ^~~~
-drivers/net/wireguard/selftest/ratelimiter.c:125:22: note: initialize the variable 'hdr6' to silence this warning
-        struct ipv6hdr *hdr6;
-                            ^
+What happened before was that we had this complex boolean expression
+with multiple likely and unlikely clauses nested. Since this is
+evaluated left-to-right anyway, the whole thing got converted to
+unlikely. So, we can clean this up to better represent what's going on.
 
-We silence this warning by setting the variables to NULL as the warning
-suggests.
+The generated code is the same.
 
-Reported-by: Arnd Bergmann <arnd@arndb.de>
+Suggested-by: Sultan Alsawaf <sultan@kerneltoast.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/net/wireguard/selftest/ratelimiter.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireguard/receive.c | 13 ++++++-------
+ drivers/net/wireguard/send.c    | 15 ++++++---------
+ 2 files changed, 12 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/wireguard/selftest/ratelimiter.c b/drivers/net/wireguard/selftest/ratelimiter.c
-index bcd6462e4540..007cd4457c5f 100644
---- a/drivers/net/wireguard/selftest/ratelimiter.c
-+++ b/drivers/net/wireguard/selftest/ratelimiter.c
-@@ -120,9 +120,9 @@ bool __init wg_ratelimiter_selftest(void)
- 	enum { TRIALS_BEFORE_GIVING_UP = 5000 };
- 	bool success = false;
- 	int test = 0, trials;
--	struct sk_buff *skb4, *skb6;
-+	struct sk_buff *skb4, *skb6 = NULL;
- 	struct iphdr *hdr4;
--	struct ipv6hdr *hdr6;
-+	struct ipv6hdr *hdr6 = NULL;
+diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
+index 2566e13a292d..3bb5b9ae7cd1 100644
+--- a/drivers/net/wireguard/receive.c
++++ b/drivers/net/wireguard/receive.c
+@@ -226,21 +226,20 @@ void wg_packet_handshake_receive_worker(struct work_struct *work)
+ static void keep_key_fresh(struct wg_peer *peer)
+ {
+ 	struct noise_keypair *keypair;
+-	bool send = false;
++	bool send;
  
- 	if (IS_ENABLED(CONFIG_KASAN) || IS_ENABLED(CONFIG_UBSAN))
- 		return true;
+ 	if (peer->sent_lastminute_handshake)
+ 		return;
+ 
+ 	rcu_read_lock_bh();
+ 	keypair = rcu_dereference_bh(peer->keypairs.current_keypair);
+-	if (likely(keypair && READ_ONCE(keypair->sending.is_valid)) &&
+-	    keypair->i_am_the_initiator &&
+-	    unlikely(wg_birthdate_has_expired(keypair->sending.birthdate,
+-			REJECT_AFTER_TIME - KEEPALIVE_TIMEOUT - REKEY_TIMEOUT)))
+-		send = true;
++	send = keypair && READ_ONCE(keypair->sending.is_valid) &&
++	       keypair->i_am_the_initiator &&
++	       wg_birthdate_has_expired(keypair->sending.birthdate,
++			REJECT_AFTER_TIME - KEEPALIVE_TIMEOUT - REKEY_TIMEOUT);
+ 	rcu_read_unlock_bh();
+ 
+-	if (send) {
++	if (unlikely(send)) {
+ 		peer->sent_lastminute_handshake = true;
+ 		wg_packet_send_queued_handshake_initiation(peer, false);
+ 	}
+diff --git a/drivers/net/wireguard/send.c b/drivers/net/wireguard/send.c
+index dc3079e17c7f..6687db699803 100644
+--- a/drivers/net/wireguard/send.c
++++ b/drivers/net/wireguard/send.c
+@@ -124,20 +124,17 @@ void wg_packet_send_handshake_cookie(struct wg_device *wg,
+ static void keep_key_fresh(struct wg_peer *peer)
+ {
+ 	struct noise_keypair *keypair;
+-	bool send = false;
++	bool send;
+ 
+ 	rcu_read_lock_bh();
+ 	keypair = rcu_dereference_bh(peer->keypairs.current_keypair);
+-	if (likely(keypair && READ_ONCE(keypair->sending.is_valid)) &&
+-	    (unlikely(atomic64_read(&keypair->sending.counter.counter) >
+-		      REKEY_AFTER_MESSAGES) ||
+-	     (keypair->i_am_the_initiator &&
+-	      unlikely(wg_birthdate_has_expired(keypair->sending.birthdate,
+-						REKEY_AFTER_TIME)))))
+-		send = true;
++	send = keypair && READ_ONCE(keypair->sending.is_valid) &&
++	       (atomic64_read(&keypair->sending.counter.counter) > REKEY_AFTER_MESSAGES ||
++		(keypair->i_am_the_initiator &&
++		 wg_birthdate_has_expired(keypair->sending.birthdate, REKEY_AFTER_TIME)));
+ 	rcu_read_unlock_bh();
+ 
+-	if (send)
++	if (unlikely(send))
+ 		wg_packet_send_queued_handshake_initiation(peer, false);
+ }
+ 
 -- 
 2.26.2
 
