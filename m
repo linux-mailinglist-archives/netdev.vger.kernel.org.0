@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CFEF1C7817
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 19:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E8421C781E
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 19:38:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728796AbgEFRhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 13:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51478 "EHLO
+        id S1729286AbgEFRih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 13:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728047AbgEFRhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 13:37:18 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEDDC061A0F;
-        Wed,  6 May 2020 10:37:17 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id ep1so1186121qvb.0;
-        Wed, 06 May 2020 10:37:17 -0700 (PDT)
+        with ESMTP id S1728047AbgEFRig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 13:38:36 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BB5C061A0F;
+        Wed,  6 May 2020 10:38:36 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id g16so2130061qtp.11;
+        Wed, 06 May 2020 10:38:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xGQ1yPvQQ2d4yvO8gdt7qP/fesK+KhSPBz1cJgt/Fi8=;
-        b=p5htD8f6a1n0wY4Jrj+ZCOU9SNlOYr4wlPux+phOYLxaCTKigviRybNj9mETW6lH1d
-         2Uc3Rtx2y4eZcnTmyfKRDUL4moSWezV+r0q8yFnLcklFiYvkda2ROWfHD32pxXmHpbwJ
-         Fh9tAnclKYh/imRJSIrZm/KPXbEMVZ+5FYXOdxqCYSX5GR9zZqikorfCrESi3sSjP/22
-         Dn6qedSrNJKtMrO4OVr59Su94gaLrvBANOUDlVXptgvsT+/GlY95vzUiQPG9N6gFaqBt
-         WgkCaD19S93TIes+R1UgycBwB2n2Mn6PPXfQaW3nBGth+p3vVJRO1QRQ+YHDALBrkyz6
-         guuA==
+        bh=xtjvvnsyUlerv9jnVC13/UW3IPozn5dgWUxdZ9Fi8Ew=;
+        b=K+ZtP7scBBE/4qrdOn4pWC10BwgJEFLU2NiIY4QLArITvMlnUDatXDUOGPabxsHIWP
+         fzi6SZZzKxwceL8QKwy+meUsiaRNRVmfVsQz6fEtjFTRontt7UupTHRCcikNe52nJrP4
+         otY1Ob68jwJvCfeS6/M3inZGKHWYoezBgOn3jwaRfP/8IXGchqwg3m+SaHIK2IUvDv/a
+         gZbhTUbIHDQiW66rUjrpJMUjlrIPj4iYLTlAtJdHL8r9gzwyuKGl6biik0OSlUT9q239
+         OberuEAs7OgOMcavTaGP/hHh1ofaxCBwg+0mwt39deoSFmiOKACATQG62w+JykTyLGLV
+         hlYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xGQ1yPvQQ2d4yvO8gdt7qP/fesK+KhSPBz1cJgt/Fi8=;
-        b=lrkHzJJhmatHUxGmbn447FpG7HUPM58VMe/90lUMHuWnT45Yz7TRRW5weWfQlIP+l2
-         05w+vjzB24jAmgAw/D8t6xCNEX+sGeMuMiQt+IZXkcE4nUxCkV7or73fbeQ8wuN7OnJf
-         C0987eDhORrVb1YCv8TlCyFPJD/cZMCQumKH9ElXBGBwWeIryrF8AlUZ2mtawTxV7Ehp
-         xd2717ibL3qZ9gw4B3Qeaywff5S0kHR6FZuxaWbWWeAy5xQFn6WxymT65c3YmvYsk+jL
-         JmSdsHMk1X/6rl6P09b1bKKKFYuXrIbiT8H2j3Dj2setHK8fjfksyU+2kWDEP1WsRbGz
-         EHBw==
-X-Gm-Message-State: AGi0PuaoeEP/rbRByPZ7+tEUQCYFQDlR/Cq5/9/xZAUCjsrHFMTlSsM4
-        LleSr2NhjA5b2O+eP4zcBPiNPxpVi5PH/kiiSRc=
-X-Google-Smtp-Source: APiQypJNrTQqVgeCfmB2Fgzz3cOX0vvjdesEjI2sB2q1Haxlem+GAPwMgVEx3W0bheLpcqqECoimkbhXEFD3QBe6yNg=
-X-Received: by 2002:a0c:a892:: with SMTP id x18mr9048466qva.247.1588786636546;
- Wed, 06 May 2020 10:37:16 -0700 (PDT)
+        bh=xtjvvnsyUlerv9jnVC13/UW3IPozn5dgWUxdZ9Fi8Ew=;
+        b=G+jjwBYQPjP+Lh7SxKstEuxK3nIVQMxkD73SA94UwDDXG5iqqrr5U94lMfbBO5q7oY
+         UqzCssD7e9dxsL3YVs2Bk2gZzbb3aPVJK++tfPf6MYfEDc0VuIUDllmpbc3xas0T8KOW
+         +pahqGBIy59uRUHoaJSZ+GLnhtv/CwtRruY1eztkEMNvcIjMo+WmBBKWDp3UayBRrMQ2
+         zh1PfAienNCEWuw6oB67HeCoBer1hgRXlpspoVdv7IIgC/2h0xLo+J/6KSSQsCWxVs94
+         nkT6Ist46dPIP3i4OLeYcdSYJspWj2uMvh1bOy4Nulq52sBqkaLsNvhu6G7zlqU05zmW
+         QZJA==
+X-Gm-Message-State: AGi0PuZTrwWxg169qUNkW484uWEPM0TuNzQnQYRqg75h4ocytfCeA6ZM
+        QH1SV3vZ5nPiUnkqwzYyjPB/Mw87K688BXIGvg4=
+X-Google-Smtp-Source: APiQypJJFNj3bN9ODHZu+joNGsIzrL1xWA0uUmx9+XOrSHyr6oMPICVeKfVzmdQIX5LqyJz2TeE02W0VhLEzgUCb5D8=
+X-Received: by 2002:ac8:3f6d:: with SMTP id w42mr9452630qtk.171.1588786715999;
+ Wed, 06 May 2020 10:38:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200504062547.2047304-1-yhs@fb.com> <20200504062602.2048597-1-yhs@fb.com>
-In-Reply-To: <20200504062602.2048597-1-yhs@fb.com>
+References: <20200504062547.2047304-1-yhs@fb.com> <20200504062603.2048735-1-yhs@fb.com>
+In-Reply-To: <20200504062603.2048735-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 6 May 2020 10:37:05 -0700
-Message-ID: <CAEf4Bzb-COkgcLB=HK4ahtnEFD7QGY0s=Qb-kWTBKK56319JAg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 13/20] bpf: add bpf_seq_printf and
- bpf_seq_write helpers
+Date:   Wed, 6 May 2020 10:38:24 -0700
+Message-ID: <CAEf4BzYkuiCf0Wo7vQn03kiW_L7t_tica87HcOmYGHWwK+ipdQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 14/20] bpf: handle spilled PTR_TO_BTF_ID
+ properly when checking stack_boundary
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -64,193 +64,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 3, 2020 at 11:26 PM Yonghong Song <yhs@fb.com> wrote:
+On Sun, May 3, 2020 at 11:28 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> Two helpers bpf_seq_printf and bpf_seq_write, are added for
-> writing data to the seq_file buffer.
+> This specifically to handle the case like below:
+>    // ptr below is a socket ptr identified by PTR_TO_BTF_ID
+>    u64 param[2] = { ptr, val };
+>    bpf_seq_printf(seq, fmt, sizeof(fmt), param, sizeof(param));
 >
-> bpf_seq_printf supports common format string flag/width/type
-> fields so at least I can get identical results for
-> netlink and ipv6_route targets.
+> In this case, the 16 bytes stack for "param" contains:
+>    8 bytes for ptr with spilled PTR_TO_BTF_ID
+>    8 bytes for val as STACK_MISC
 >
-
-Does seq_printf() has its own format string specification? Is there
-any documentation explaining? I was confused by few different checks
-below...
-
-> For bpf_seq_printf and bpf_seq_write, return value -EOVERFLOW
-> specifically indicates a write failure due to overflow, which
-> means the object will be repeated in the next bpf invocation
-> if object collection stays the same. Note that if the object
-> collection is changed, depending how collection traversal is
-> done, even if the object still in the collection, it may not
-> be visited.
+> The current verifier will complain the ptr should not be visible
+> to the helper.
+>    ...
+>    16: (7b) *(u64 *)(r10 -64) = r2
+>    18: (7b) *(u64 *)(r10 -56) = r1
+>    19: (bf) r4 = r10
+>    ;
+>    20: (07) r4 += -64
+>    ; BPF_SEQ_PRINTF(seq, fmt1, (long)s, s->sk_protocol);
+>    21: (bf) r1 = r6
+>    22: (18) r2 = 0xffffa8d00018605a
+>    24: (b4) w3 = 10
+>    25: (b4) w5 = 16
+>    26: (85) call bpf_seq_printf#125
+>     R0=inv(id=0) R1_w=ptr_seq_file(id=0,off=0,imm=0)
+>     R2_w=map_value(id=0,off=90,ks=4,vs=144,imm=0) R3_w=inv10
+>     R4_w=fp-64 R5_w=inv16 R6=ptr_seq_file(id=0,off=0,imm=0)
+>     R7=ptr_netlink_sock(id=0,off=0,imm=0) R10=fp0 fp-56_w=mmmmmmmm
+>     fp-64_w=ptr_
+>    last_idx 26 first_idx 13
+>    regs=8 stack=0 before 25: (b4) w5 = 16
+>    regs=8 stack=0 before 24: (b4) w3 = 10
+>    invalid indirect read from stack off -64+0 size 16
 >
-> bpf_seq_printf may return -EBUSY meaning that internal percpu
-> buffer for memory copy of strings or other pointees is
-> not available. Bpf program can return 1 to indicate it
-> wants the same object to be repeated. Right now, this should not
-> happen on no-RT kernels since migrate_enable(), which guards
-> bpf prog call, calls preempt_enable().
-
-You probably meant migrate_disable()/preempt_disable(), right? But
-could it still happen, at least due to NMI? E.g., perf_event BPF
-program gets triggered during bpf_iter program execution? I think for
-perf_event_output function, we have 3 levels, for one of each possible
-"contexts"? Should we do something like that here as well?
-
+> Let us permit this if the program is a tracing/iter program.
 >
 > Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
->  include/uapi/linux/bpf.h       |  32 +++++-
->  kernel/trace/bpf_trace.c       | 195 +++++++++++++++++++++++++++++++++
->  scripts/bpf_helpers_doc.py     |   2 +
->  tools/include/uapi/linux/bpf.h |  32 +++++-
->  4 files changed, 259 insertions(+), 2 deletions(-)
+
+LGTM, but I wonder why enabling this only for iterator programs?
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+
+>  kernel/bpf/verifier.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 >
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 97ceb0f2e539..e440a9d5cca2 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3076,6 +3076,34 @@ union bpf_attr {
->   *             See: clock_gettime(CLOCK_BOOTTIME)
->   *     Return
->   *             Current *ktime*.
-> + *
-
-[...]
-
-> +BPF_CALL_5(bpf_seq_printf, struct seq_file *, m, char *, fmt, u32, fmt_size,
-> +          const void *, data, u32, data_len)
-> +{
-> +       int err = -EINVAL, fmt_cnt = 0, memcpy_cnt = 0;
-> +       int i, buf_used, copy_size, num_args;
-> +       u64 params[MAX_SEQ_PRINTF_VARARGS];
-> +       struct bpf_seq_printf_buf *bufs;
-> +       const u64 *args = data;
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 36b2a38a06fe..4884b6fd7bad 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -3494,6 +3494,14 @@ static int check_stack_boundary(struct bpf_verifier_env *env, int regno,
+>                         *stype = STACK_MISC;
+>                         goto mark;
+>                 }
 > +
-> +       buf_used = this_cpu_inc_return(bpf_seq_printf_buf_used);
-> +       if (WARN_ON_ONCE(buf_used > 1)) {
-> +               err = -EBUSY;
-> +               goto out;
-> +       }
-> +
-> +       bufs = this_cpu_ptr(&bpf_seq_printf_buf);
-> +
-> +       /*
-> +        * bpf_check()->check_func_arg()->check_stack_boundary()
-> +        * guarantees that fmt points to bpf program stack,
-> +        * fmt_size bytes of it were initialized and fmt_size > 0
-> +        */
-> +       if (fmt[--fmt_size] != 0)
+> +               /* pointer value can be visible to tracing/iter program */
+> +               if (env->prog->type == BPF_PROG_TYPE_TRACING &&
+> +                   env->prog->expected_attach_type == BPF_TRACE_ITER &&
 
-If we allow fmt_size == 0, this will need to be changed.
+What's the problem allowing this for all program types?
 
-> +               goto out;
+> +                   state->stack[spi].slot_type[0] == STACK_SPILL &&
+> +                   state->stack[spi].spilled_ptr.type == PTR_TO_BTF_ID)
+> +                       goto mark;
 > +
-> +       if (data_len & 7)
-> +               goto out;
-> +
-> +       for (i = 0; i < fmt_size; i++) {
-> +               if (fmt[i] == '%' && (!data || !data_len))
-
-So %% escaping is not supported?
-
-> +                       goto out;
-> +       }
-> +
-> +       num_args = data_len / 8;
-> +
-> +       /* check format string for allowed specifiers */
-> +       for (i = 0; i < fmt_size; i++) {
-> +               if ((!isprint(fmt[i]) && !isspace(fmt[i])) || !isascii(fmt[i]))
-
-why these restrictions? are they essential?
-
-> +                       goto out;
-> +
-> +               if (fmt[i] != '%')
-> +                       continue;
-> +
-> +               if (fmt_cnt >= MAX_SEQ_PRINTF_VARARGS) {
-> +                       err = -E2BIG;
-> +                       goto out;
-> +               }
-> +
-> +               if (fmt_cnt >= num_args)
-> +                       goto out;
-> +
-> +               /* fmt[i] != 0 && fmt[last] == 0, so we can access fmt[i + 1] */
-> +               i++;
-> +
-> +               /* skip optional "[0+-][num]" width formating field */
-> +               while (fmt[i] == '0' || fmt[i] == '+'  || fmt[i] == '-')
-
-There could be space as well, as an alternative to 0.
-
-> +                       i++;
-> +               if (fmt[i] >= '1' && fmt[i] <= '9') {
-> +                       i++;
-> +                       while (fmt[i] >= '0' && fmt[i] <= '9')
-> +                               i++;
-> +               }
-> +
-> +               if (fmt[i] == 's') {
-> +                       /* disallow any further format extensions */
-> +                       if (fmt[i + 1] != 0 &&
-> +                           !isspace(fmt[i + 1]) &&
-> +                           !ispunct(fmt[i + 1]))
-> +                               goto out;
-
-I'm not sure I follow this check either. printf("%sbla", "whatever")
-is a perfectly fine format string. Unless seq_printf has some
-additional restrictions?
-
-> +
-> +                       /* try our best to copy */
-> +                       if (memcpy_cnt >= MAX_SEQ_PRINTF_MAX_MEMCPY) {
-> +                               err = -E2BIG;
-> +                               goto out;
-> +                       }
-> +
-
-[...]
-
-> +
-> +static int bpf_seq_printf_btf_ids[5];
-> +static const struct bpf_func_proto bpf_seq_printf_proto = {
-> +       .func           = bpf_seq_printf,
-> +       .gpl_only       = true,
-> +       .ret_type       = RET_INTEGER,
-> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
-> +       .arg2_type      = ARG_PTR_TO_MEM,
-> +       .arg3_type      = ARG_CONST_SIZE,
-
-It feels like allowing zero shouldn't hurt too much?
-
-> +       .arg4_type      = ARG_PTR_TO_MEM_OR_NULL,
-> +       .arg5_type      = ARG_CONST_SIZE_OR_ZERO,
-> +       .btf_id         = bpf_seq_printf_btf_ids,
-> +};
-> +
-> +BPF_CALL_3(bpf_seq_write, struct seq_file *, m, const void *, data, u32, len)
-> +{
-> +       return seq_write(m, data, len) ? -EOVERFLOW : 0;
-> +}
-> +
-> +static int bpf_seq_write_btf_ids[5];
-> +static const struct bpf_func_proto bpf_seq_write_proto = {
-> +       .func           = bpf_seq_write,
-> +       .gpl_only       = true,
-> +       .ret_type       = RET_INTEGER,
-> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
-> +       .arg2_type      = ARG_PTR_TO_MEM,
-> +       .arg3_type      = ARG_CONST_SIZE,
-
-Same, ARG_CONST_SIZE_OR_ZERO?
-
-> +       .btf_id         = bpf_seq_write_btf_ids,
-> +};
-> +
-
-[...]
+>                 if (state->stack[spi].slot_type[0] == STACK_SPILL &&
+>                     state->stack[spi].spilled_ptr.type == SCALAR_VALUE) {
+>                         __mark_reg_unknown(env, &state->stack[spi].spilled_ptr);
+> --
+> 2.24.1
+>
