@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EEA81C69CA
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 09:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E1D21C69D1
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 09:10:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728244AbgEFHIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 03:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
+        id S1728069AbgEFHKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 03:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727832AbgEFHIe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 03:08:34 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3770CC061A0F;
-        Wed,  6 May 2020 00:08:34 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id r26so1271508wmh.0;
-        Wed, 06 May 2020 00:08:34 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727832AbgEFHKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 03:10:05 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B78C061A10
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 00:10:03 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id w4so1064913ioc.6
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 00:10:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=i1McQv5JxS+S3dpHPfoR+SRFx7AO1GcGwXm3Mh9ZmIw=;
-        b=FLnYnHqJH1U3gU09Sqx/ZBdsyli2VND4iZgspbc9VISSBTT3y17lgp5dXe4LxMa81+
-         md7sot+kcTyCqcu6EeTMAt+0L0RSrhzzaZ4jQgttSiZnI/geHJzSEYoGJCsyx/LFb+7l
-         7eTHJKjUzfChc54f6iBO9xmmVE6VudIAtGAgwdD24JErTkCb8gUWQrfj6rViGZ2T4h9I
-         74bqVkmvA4qIHe9VW30CK3fvIsnh0d3FkTw0PPEuMwxasv3hi0HwiZClysYya7VZ23ym
-         0edoLm+0RDqUPgNpZCzrnY08bARddy+4zf3/0ZYjSQE1lklzrXFIUpfRPOxCipSizBvL
-         WpjQ==
+        bh=TNeZGBvQE65OD4RI/VJlF9TAoXRNVe2+IJUTG86DGbA=;
+        b=WQsD3+apXpq3/3yaFrL3/0+eSLnGTDQTR0Fsp8/qK2Rthwbduv7jAJSEPLt4Z4Kevh
+         NPCy2rzwD2NCLi8cWzq0DSsLTh0aoWwbMoRMOpvTno8FVluR5qx/lR7XFhsyAEV9sSHm
+         c4VEg2dEhbt+Yk6QWE+yeBtAVjIv2B7YyuEttTHMLuDTailXpL5mtUQKNO9Y6OXVNZsO
+         rY9KPUlOp9yTonJ3djuZnrAf68VmjVZc1wbWDHX43bgfMzTyteYwq7VthJBFsuribOf/
+         ljdtuRUMLFbAroFkewRsGn2i4ldJtX0iI6wHQxUFNnYnSeRqYSkRSrPw6Yrupk0QHyVw
+         EFmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=i1McQv5JxS+S3dpHPfoR+SRFx7AO1GcGwXm3Mh9ZmIw=;
-        b=n5+jcICRX4XUjIzlRrl/Cu6nbkd2Nk6Lanhn+WivKZ9qVrXFZlnk8cI5iqxWWovRl1
-         fJvruIcyaL7x6y5bEHqajVG6kypQGfuDJQgCGgA3lszeDBWcREnRR6G0+YIfRpczGFfN
-         jvm6C5LrKGGji+eOR3ztR9H3FvquDcjiRPlMJRkl437S3Hrzy4wdJgQHiCHRRIlYUnb9
-         cUpYIzT9EU/szr4i0FgE3AGMzT1Pyyzj18Eo5o3hBxuqzYb0ieuUfWb+roXgT2PbZwG4
-         ofngDPPRsy0swBqxSsRA+1iqlcbkC3Pq7+QWWtlPzJbFqdK8uHEf/X6EK0kbNVcJ+ION
-         Gksw==
-X-Gm-Message-State: AGi0PuaxW56ne3R9/lx+LOzP0dmXiyA+A0WnNv7qmfRZ06eAtYb9/zAE
-        piWxpBZ91asWWvk61+OGHi2JXkQdaFcIa9E2j+M=
-X-Google-Smtp-Source: APiQypLonxc2SJgZ3t+ABye4ETFW+KuYGgzgoiH27uLerIQZ3u+pO2iInq911uZepzHOpZi9JGpmgKNSZrBBZK/DNrc=
-X-Received: by 2002:a1c:6787:: with SMTP id b129mr2820878wmc.165.1588748912923;
- Wed, 06 May 2020 00:08:32 -0700 (PDT)
+        bh=TNeZGBvQE65OD4RI/VJlF9TAoXRNVe2+IJUTG86DGbA=;
+        b=LX/LIto9ms2iMhTO+0p6KkigipXIDhN8rXuj3fAWkL1Nu6lZ9l9NOyawEyNHCTkN4K
+         GT3aXQIT+TfwhqjWKYJ86ZRRi+HZCe8fqkGbF8RE1i26QF29V929qzLQowFI8NFMQhs9
+         hdfL1wxBkBpyevyKQdCaH6acH88heE8Ci7PR3M3QQGB43+L+DEcDTov482nfIFr3puvc
+         gqKNpTapLCoPaf9e94efxCjW391cjFtQi+DVWQ+/XncIKQAlGBnu5AaOlxoNlnv1ZAvR
+         roadAICBRm0ffoFNmLSzl5D6dQpgX05/cWQOr/M9L8QvTl/h28IC6pGAHZg/ZZit1Uc9
+         828A==
+X-Gm-Message-State: AGi0PuaalIpntQA7DEZH3LvYh4+Ycis2kQg+bMLsxFo6YEh/0J0Jlo+b
+        CnoQ1f3DS0xPk7feC2vQb/vSo6uUyG9SaTr5ywNEgw==
+X-Google-Smtp-Source: APiQypK8JUTpUHWQidMAM1RM6r/RYgCmN3qiFqNGsyI2sRX+0s50wlApjk2j2yJQrSBljYxkxedUj9ER2mJ5DgL7aSU=
+X-Received: by 2002:a6b:8bd2:: with SMTP id n201mr7183055iod.131.1588749002876;
+ Wed, 06 May 2020 00:10:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200506000320.28965-1-luke.r.nels@gmail.com>
-In-Reply-To: <20200506000320.28965-1-luke.r.nels@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 6 May 2020 09:08:21 +0200
-Message-ID: <CAJ+HfNgbuBoMTrU+TM3JCd1stEM1Zi3hG5k=PazT=CxAWa4wBQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/4] RV64 BPF JIT Optimizations
-To:     Luke Nelson <lukenels@cs.washington.edu>
-Cc:     bpf <bpf@vger.kernel.org>, Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20200505140231.16600-1-brgl@bgdev.pl> <20200505140231.16600-7-brgl@bgdev.pl>
+ <20200505110447.2404985c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200505110447.2404985c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Wed, 6 May 2020 09:09:52 +0200
+Message-ID: <CAMRc=MfmuKd64YaqrkhGFThDZd0_tRecR5H0QLY0cDJWSM-VgQ@mail.gmail.com>
+Subject: Re: [PATCH 06/11] net: ethernet: mtk-eth-mac: new driver
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -72,37 +73,210 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 May 2020 at 02:03, Luke Nelson <lukenels@cs.washington.edu> wrote=
-:
+Hi Jakub,
+
+thanks for the review.
+
+wt., 5 maj 2020 o 20:04 Jakub Kicinski <kuba@kernel.org> napisa=C5=82(a):
 >
-> This patch series introduces a set of optimizations to the BPF JIT
-> on RV64. The optimizations are related to the verifier zero-extension
-> optimization and BPF_JMP BPF_K.
+> > +/* Represents the actual structure of descriptors used by the MAC. We =
+can
+> > + * reuse the same structure for both TX and RX - the layout is the sam=
+e, only
+> > + * the flags differ slightly.
+> > + */
+> > +struct mtk_mac_ring_desc {
+> > +     /* Contains both the status flags as well as packet length. */
+> > +     u32 status;
+> > +     u32 data_ptr;
+> > +     u32 vtag;
+> > +     u32 reserved;
+> > +} __aligned(4) __packed;
 >
-> We tested the optimizations on a QEMU riscv64 virt machine, using
-> lib/test_bpf and test_verifier, and formally verified their correctness
-> using Serval.
+> It will be aligned to 4, because the members are all 4B. And there is
+> no possibility of holes. You can safely remove those attrs.
 >
 
-Luke and Xi,
+I noticed some other drivers whose descriptors are well aligned define
+these attributes anyway so I assumed it's a convention. I'll drop them
+in v2.
 
-Thanks a lot for working on this! Very nice series!
+>
+> > +     status =3D desc->status;
+> > +
+> > +     if (!(status & MTK_MAC_DESC_BIT_COWN))
+> > +             return -1;
+> > +
+> > +     desc_data->len =3D status & MTK_MAC_DESC_MSK_LEN;
+> > +     desc_data->flags =3D status & ~MTK_MAC_DESC_MSK_LEN;
+> > +     desc_data->dma_addr =3D desc->data_ptr;
+> > +     desc_data->skb =3D ring->skbs[ring->tail];
+> > +
+> > +     desc->data_ptr =3D 0;
+> > +     desc->status =3D MTK_MAC_DESC_BIT_COWN;
+> > +     if (status & MTK_MAC_DESC_BIT_EOR)
+> > +             desc->status |=3D MTK_MAC_DESC_BIT_EOR;
+> > +
+> > +     dma_wmb();
+>
+> What is this separating?
 
-For the series:
-Reviewed-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+I'll add comments to barriers in v2.
 
-> Luke Nelson (4):
->   bpf, riscv: Enable missing verifier_zext optimizations on RV64
->   bpf, riscv: Optimize FROM_LE using verifier_zext on RV64
->   bpf, riscv: Optimize BPF_JMP BPF_K when imm =3D=3D 0 on RV64
->   bpf, riscv: Optimize BPF_JSET BPF_K using andi on RV64
 >
->  arch/riscv/net/bpf_jit_comp64.c | 64 ++++++++++++++++++++++-----------
->  1 file changed, 44 insertions(+), 20 deletions(-)
+> > +/* All processing for TX and RX happens in the napi poll callback. */
+> > +static irqreturn_t mtk_mac_handle_irq(int irq, void *data)
+> > +{
+> > +     struct mtk_mac_priv *priv;
+> > +     struct net_device *ndev;
+> > +     unsigned int status;
+> > +
+> > +     ndev =3D data;
+> > +     priv =3D netdev_priv(ndev);
+> > +
+> > +     if (netif_running(ndev)) {
+> > +             mtk_mac_intr_mask_all(priv);
+> > +             status =3D mtk_mac_intr_read_and_clear(priv);
+> > +
+> > +             /* RX Complete */
+> > +             if (status & MTK_MAC_BIT_INT_STS_FNRC)
+> > +                     napi_schedule(&priv->napi);
+> > +
+> > +             /* TX Complete */
+> > +             if (status & MTK_MAC_BIT_INT_STS_TNTC)
+> > +                     schedule_work(&priv->tx_work);
+> > +
+> > +             /* One of the counter reached 0x8000000 */
+> > +             if (status & MTK_MAC_REG_INT_STS_MIB_CNT_TH) {
+> > +                     mtk_mac_update_stats(priv);
+> > +                     mtk_mac_reset_counters(priv);
+> > +             }
+> > +
+> > +             mtk_mac_intr_unmask_all(priv);
 >
-> Cc: Xi Wang <xi.wang@gmail.com>
+> Why do you unmask all IRQs here? The usual way to operate is to leave
+> TX and RX IRQs masked until NAPI finishes.
 >
-> --
-> 2.17.1
+
+I actually did it before as the leftover comment says above the
+function. Then I thought this way we mask interrupt for a shorter
+period of time. I can go back to the previous approach.
+
+> > +     }
+> > +
+> > +     return IRQ_HANDLED;
+> > +}
 >
+> > +static int mtk_mac_enable(struct net_device *ndev)
+> > +{
+> > +     /* Reset all counters */
+> > +     mtk_mac_reset_counters(priv);
+>
+> This doesn't reset the counters to zero, right?
+>
+
+Yes, it does actually. I'll drop it in v2 - it's not necessary.
+
+>
+> > +static void mtk_mac_tx_work(struct work_struct *work)
+> > +{
+> > +     struct mtk_mac_priv *priv;
+> > +     struct mtk_mac_ring *ring;
+> > +     struct net_device *ndev;
+> > +     bool wake =3D false;
+> > +     int ret;
+> > +
+> > +     priv =3D container_of(work, struct mtk_mac_priv, tx_work);
+> > +     ndev =3D mtk_mac_get_netdev(priv);
+> > +     ring =3D &priv->tx_ring;
+> > +
+> > +     for (;;) {
+> > +             mtk_mac_lock(priv);
+> > +
+> > +             if (!mtk_mac_ring_descs_available(ring)) {
+> > +                     mtk_mac_unlock(priv);
+> > +                     break;
+> > +             }
+> > +
+> > +             ret =3D mtk_mac_tx_complete(priv);
+> > +             mtk_mac_unlock(priv);
+> > +             if (ret)
+> > +                     break;
+> > +
+> > +             wake =3D true;
+> > +     }
+> > +
+> > +     if (wake)
+> > +             netif_wake_queue(ndev);
+>
+> This looks racy, if the TX path runs in parallel the queue may have
+> already been filled up at the point you wake it up.
+>
+> > +}
+>
+> Why do you clean the TX ring from a work rather than from the NAPI
+> context?
+>
+
+So this was unclear to me, that's why I went with a workqueue. The
+budget argument in napi poll is for RX. Should I put some cap on the
+number of TX descriptors processed in napi context?
+
+>
+> > +static int mtk_mac_receive_packet(struct mtk_mac_priv *priv)
+> > +{
+> > +     struct net_device *ndev =3D mtk_mac_get_netdev(priv);
+> > +     struct mtk_mac_ring *ring =3D &priv->rx_ring;
+> > +     struct device *dev =3D mtk_mac_get_dev(priv);
+> > +     struct mtk_mac_ring_desc_data desc_data;
+> > +     struct sk_buff *new_skb;
+> > +     int ret;
+> > +
+> > +     mtk_mac_lock(priv);
+> > +     ret =3D mtk_mac_ring_pop_tail(ring, &desc_data);
+> > +     mtk_mac_unlock(priv);
+> > +     if (ret)
+> > +             return -1;
+> > +
+> > +     mtk_mac_dma_unmap_rx(priv, &desc_data);
+> > +
+> > +     if ((desc_data.flags & MTK_MAC_DESC_BIT_RX_CRCE) ||
+> > +         (desc_data.flags & MTK_MAC_DESC_BIT_RX_OSIZE)) {
+> > +             /* Error packet -> drop and reuse skb. */
+> > +             new_skb =3D desc_data.skb;
+> > +             goto map_skb;
+> > +     }
+> > +
+> > +     new_skb =3D mtk_mac_alloc_skb(ndev);
+> > +     if (!new_skb) {
+> > +             netdev_err(ndev, "out of memory for skb\n");
+>
+> No need for printing, kernel will complain loudly about oom.
+>
+> > +             ndev->stats.rx_dropped++;
+> > +             new_skb =3D desc_data.skb;
+> > +             goto map_skb;
+> > +     }
+> > +
+> > +     skb_put(desc_data.skb, desc_data.len);
+> > +     desc_data.skb->ip_summed =3D CHECKSUM_NONE;
+> > +     desc_data.skb->protocol =3D eth_type_trans(desc_data.skb, ndev);
+> > +     desc_data.skb->dev =3D ndev;
+> > +     netif_receive_skb(desc_data.skb);
+> > +
+> > +map_skb:
+> > +     desc_data.dma_addr =3D mtk_mac_dma_map_rx(priv, new_skb);
+> > +     if (dma_mapping_error(dev, desc_data.dma_addr)) {
+> > +             dev_kfree_skb(new_skb);
+> > +             netdev_err(ndev, "DMA mapping error of RX descriptor\n");
+> > +             return -ENOMEM;
+>
+> In this case nothing will ever replenish the RX ring right? If we hit
+> this condition 128 times the ring will be empty?
+>
+
+Indeed. What should I do if this fails though?
+
+I'll address all other issues in v2.
+
+Bart
