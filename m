@@ -2,165 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9ABF1C7981
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 20:35:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1BCB1C79A4
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 20:46:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729997AbgEFSe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 14:34:58 -0400
-Received: from correo.us.es ([193.147.175.20]:34354 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729757AbgEFSe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 14:34:58 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 8936781692
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 20:34:56 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 7A22711541A
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 20:34:56 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 6DB2611540E; Wed,  6 May 2020 20:34:56 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 48920115407;
-        Wed,  6 May 2020 20:34:54 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 06 May 2020 20:34:54 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 06D1342EF42A;
-        Wed,  6 May 2020 20:34:53 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
-        kuba@kernel.org, ecree@solarflare.com
-Subject: [PATCH net,v4] net: flow_offload: skip hw stats check for FLOW_ACTION_HW_STATS_DONT_CARE
-Date:   Wed,  6 May 2020 20:34:50 +0200
-Message-Id: <20200506183450.4125-1-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
+        id S1730505AbgEFSqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 14:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730317AbgEFSqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 14:46:52 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F725C061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 11:46:52 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id k133so2484816oih.12
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 11:46:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=psm6jQDVPGIqv6WhwYYfrIzlhdm6RfobGbWpw/VDeq4=;
+        b=isYggL+a4ZZKEdAYZZPGbAH3GXAPtyqYlGeX2Jui/RPim2UkFzSa77TECsAWXQZ2OT
+         Ta6uXYDpkwOkzx+jQf0O/0tB90CNj5PxxRXvRRSYTxOe5r4JoxhdR78T4mRVQaqSf2yZ
+         hmg4EzVyMVME+a++6iq0bocvyu7vGFVtrVEtNhgNgDQ5bIUXa2qZcss/0IAeT2nbHloa
+         PtlXhiH5Ll7XQ8t3RnnWtTXWZv2yESoYx40mHvFH+x82v9GpbFWZkT48jBevAsCluL7c
+         MakA/ZmwvPrvmOzfKH4CO+LQHZ2bZemDx8CGKvHoO+Jo1zHF+AAabfALPNQsK4TLEynB
+         WjYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=psm6jQDVPGIqv6WhwYYfrIzlhdm6RfobGbWpw/VDeq4=;
+        b=nDFGgZMUfkbw8EhI4eNl+g/DP0ptQLuFSuQB5LPATHpc8BbSDlpnX/L3hfGbkI2qnN
+         E+ecMJv176E7FMIuIj8D6fSEJKr7R7A/W1d6X3aoImt2uZhLOcV2n175J1pKPDAdT7Ul
+         rxiAKf5nzciiuirYmHt6jQRV86dIHy0AW2efSz/px1f2jKOXVGn4CXhA61JRP7DW/FJ+
+         YydeVoBW6aC78Hbefa7+MvtaudelGU3XCgr6rhG5RJTuxW0UwvhnYpgm2+krDTFedcoZ
+         KDoDDoCFiRH7yXRPQrqAV0ZRLo7iAxX1yYakrtQFkVIIoQ+t6C2qReAmeO7UxEZ/pWz5
+         398A==
+X-Gm-Message-State: AGi0Pub5WJiAEvrCBknvUXkGBLnV9TNYk2+Eo0WSZCbWmV4Q2TnxF0uu
+        3JCZT0q309n4HQofjFbrDCL+hHQ/QLTiav99mng=
+X-Google-Smtp-Source: APiQypKWB3uA84VFWgreHREhOcJxpwyNv2nPSuIMyC55i1ukUrOhQu+WUFIyAsmSWM2IKrebCviYjvHVkwaZNHRn8mI=
+X-Received: by 2002:a54:4e84:: with SMTP id c4mr3894914oiy.142.1588790811051;
+ Wed, 06 May 2020 11:46:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20200505215819.1997-1-xiyou.wangcong@gmail.com> <2833.1588718397@famine>
+In-Reply-To: <2833.1588718397@famine>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 6 May 2020 11:46:40 -0700
+Message-ID: <CAM_iQpUiKS-dcC11uyb_jK+Uwu+AgGDQw_ytZKP8QxmkcmH4Xw@mail.gmail.com>
+Subject: Re: [Patch net] net: fix a potential recursive NETDEV_FEAT_CHANGE
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
+        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
+        Jarod Wilson <jarod@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jann Horn <jannh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
-that the frontend does not need counters, this hw stats type request
-never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
-the driver to disable the stats, however, if the driver cannot disable
-counters, it bails out.
+On Tue, May 5, 2020 at 3:42 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>
+> Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> >syzbot managed to trigger a recursive NETDEV_FEAT_CHANGE event
+> >between bonding master and slave. I managed to find a reproducer
+> >for this:
+> >
+> >  ip li set bond0 up
+> >  ifenslave bond0 eth0
+> >  brctl addbr br0
+> >  ethtool -K eth0 lro off
+> >  brctl addif br0 bond0
+> >  ip li set br0 up
+>
+>         Presumably this is tied to the LRO feature being special in
+> netdev_sync_lower_features (via NETIF_F_UPPER_DISABLES), but why doesn't
+> LRO become disabled and stop the recursion once the test
+>
+>                 if (!(features & feature) && (lower->features & feature)) {
+>
+>         no longer evalutes to true (in theory)?
 
-TCA_ACT_HW_STATS_* maintains the 1:1 mapping with FLOW_ACTION_HW_STATS_*
-except by disabled which is mapped to FLOW_ACTION_HW_STATS_DISABLED
-(this is 0 in tc). Add tc_act_hw_stats() to perform the mapping between
-TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*.
+Good point!
 
-Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-v4: Update mlxsw as Jiri prefers.
+Actually the LRO feature fails to disable:
 
- .../net/ethernet/mellanox/mlxsw/spectrum_flower.c  |  3 ++-
- include/net/flow_offload.h                         |  9 ++++++++-
- net/sched/cls_api.c                                | 14 ++++++++++++--
- 3 files changed, 22 insertions(+), 4 deletions(-)
+[   62.559537] netdevice: bond0: failed to disable 0x0000000000008000 on eth0!
+...
+[   78.312003] netdevice: eth0: failed to disable LRO!
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index 51117a5a6bbf..890b078851c9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -36,7 +36,8 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
- 		if (err)
- 			return err;
--	} else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED) {
-+	} else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED &&
-+		   act->hw_stats != FLOW_ACTION_HW_STATS_DONT_CARE) {
- 		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 3619c6acf60f..efc8350b42fb 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -166,15 +166,18 @@ enum flow_action_mangle_base {
- enum flow_action_hw_stats_bit {
- 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
- 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
-+	FLOW_ACTION_HW_STATS_DISABLED_BIT,
- };
- 
- enum flow_action_hw_stats {
--	FLOW_ACTION_HW_STATS_DISABLED = 0,
-+	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
- 	FLOW_ACTION_HW_STATS_IMMEDIATE =
- 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
- 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
- 	FLOW_ACTION_HW_STATS_ANY = FLOW_ACTION_HW_STATS_IMMEDIATE |
- 				   FLOW_ACTION_HW_STATS_DELAYED,
-+	FLOW_ACTION_HW_STATS_DISABLED =
-+		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
- };
- 
- typedef void (*action_destr)(void *priv);
-@@ -325,7 +328,11 @@ __flow_action_hw_stats_check(const struct flow_action *action,
- 		return true;
- 	if (!flow_action_mixed_hw_stats_check(action, extack))
- 		return false;
-+
- 	action_entry = flow_action_first_entry_get(action);
-+	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
-+		return true;
-+
- 	if (!check_allow_bit &&
- 	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
- 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 55bd1429678f..56cf1b9e1e24 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3523,6 +3523,16 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
- #endif
+It seems we should only skip netdev_update_features() for such case,
+like below. Note __netdev_update_features() intentionally returns -1
+for this failure, so I am afraid we just have to live with it.
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 522288177bbd..8040b07214fa 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8907,11 +8907,13 @@ static void netdev_sync_lower_features(struct
+net_device *upper,
+                        netdev_dbg(upper, "Disabling feature %pNF on
+lower dev %s.\n",
+                                   &feature, lower->name);
+                        lower->wanted_features &= ~feature;
+-                       netdev_update_features(lower);
++                       __netdev_update_features(lower);
+
+                        if (unlikely(lower->features & feature))
+                                netdev_WARN(upper, "failed to disable
+%pNF on %s!\n",
+                                            &feature, lower->name);
++                       else
++                               netdev_update_features(lower);
+                }
+        }
  }
- 
-+static enum flow_action_hw_stats tc_act_hw_stats(u8 hw_stats)
-+{
-+	if (WARN_ON_ONCE(hw_stats > TCA_ACT_HW_STATS_ANY))
-+		return FLOW_ACTION_HW_STATS_DONT_CARE;
-+	else if (!hw_stats)
-+		return FLOW_ACTION_HW_STATS_DISABLED;
-+
-+	return hw_stats;
-+}
-+
- int tc_setup_flow_action(struct flow_action *flow_action,
- 			 const struct tcf_exts *exts)
- {
-@@ -3546,7 +3556,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 		if (err)
- 			goto err_out_locked;
- 
--		entry->hw_stats = act->hw_stats;
-+		entry->hw_stats = tc_act_hw_stats(act->hw_stats);
- 
- 		if (is_tcf_gact_ok(act)) {
- 			entry->id = FLOW_ACTION_ACCEPT;
-@@ -3614,7 +3624,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 				entry->mangle.mask = tcf_pedit_mask(act, k);
- 				entry->mangle.val = tcf_pedit_val(act, k);
- 				entry->mangle.offset = tcf_pedit_offset(act, k);
--				entry->hw_stats = act->hw_stats;
-+				entry->hw_stats = tc_act_hw_stats(act->hw_stats);
- 				entry = &flow_action->entries[++j];
- 			}
- 		} else if (is_tcf_csum(act)) {
--- 
-2.20.1
-
