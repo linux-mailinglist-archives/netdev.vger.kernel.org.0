@@ -2,132 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F46F1C79ED
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 21:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD7A91C79E9
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 21:08:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728106AbgEFTIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 15:08:54 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:46648 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725966AbgEFTIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 15:08:53 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 046J8cfg025249;
-        Wed, 6 May 2020 14:08:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588792118;
-        bh=CkQcWvSupPtqAC83l9V2HATNhdv6etMnpYNqdDhGzCk=;
-        h=From:To:CC:Subject:Date;
-        b=VcWlc7x0b58T1r0AO8MO+KLmi2KTUFjnCS6YsRS7SqGJ9CIP3Kp9zfPIoCmRHwS82
-         4PA2qm1wQA2JjJGW7P+A8fHilcCxrnirlR9YOtKBbvVfms530CF2Rk+66UPS9I9F34
-         f0TLE2KaJJPkKIn7bEgj8JX6X9QrqeVnAMVR4W4c=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 046J8cTV045838;
-        Wed, 6 May 2020 14:08:38 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 6 May
- 2020 14:08:37 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 6 May 2020 14:08:37 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 046J8asH116543;
-        Wed, 6 May 2020 14:08:37 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     Tony Lindgren <tony@atomide.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: [PATCH next] ARM: dts: am437x: fix networking on boards with ksz9031 phy
-Date:   Wed, 6 May 2020 22:08:35 +0300
-Message-ID: <20200506190835.31342-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728065AbgEFTIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 15:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728052AbgEFTIr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 15:08:47 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3414C061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 12:08:47 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id t3so2306289otp.3
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 12:08:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ecBYceWjDgZ/2fZ72buGKHk7iZ9mzG9U5SbQIXW25v0=;
+        b=P19XaUFk7DUdpT3aNVnbXtOBBudH0AirMDp8PbA5ONffgmpZpXaxVtSq6GmJ9egVEK
+         oYCtdbQc5wLThf42yTL+PFg533NYbFVEvU89iEACIjpqigYyp+rJoneiELtEO3Iz2pK7
+         Ymt+j8nGkw1lebLWn9ippYqtEX66oFaqp63rkYtbr7Yrp6vqDOZF8FiZi58BM9XX3aPQ
+         QFFXBAMZlVnVuEhg0s29IK9gvKAq/vFKTjwvJJbt5v8+DyZG83YG/7OpTOIRkpBYBwUf
+         10Cmv4W3wJVOCXRAUxIXClih8/Tk+84D+7QuvR6hICJOL8vHWPLiEhIhA/8kZrPGldUv
+         cRTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ecBYceWjDgZ/2fZ72buGKHk7iZ9mzG9U5SbQIXW25v0=;
+        b=arbyr5Yg5Tqnkgcz8cuqbg+jWkM39WsgYSkxI0uzki/dlBffc3ldLpONnc9zOu0q+E
+         GaSfyxh6F81+KSSkcc5uvOlQll7jckDhk23x8VONeIIicJxIovQ/1fZs3cOI2A5LvlJq
+         dmGdVD82sMxORNxIG+5NdU51NdXE7+FWrsKbERfoGU/bWdD388hdC0pYo3vuT+CpY08t
+         SL9vVzA3wwik3eDFSllmWYzSsnB+eerL1lmKxuj3LlWYxRpmn+HVpDwkNMu+wCxC0Lpq
+         olpfbZrPitYc0Mjgp8GLKteM8GVNXZKI4Vp2be6e8LIJaE3V3uErgeThyQwl1cjlL6vA
+         I+Gw==
+X-Gm-Message-State: AGi0Pub6VqNC4nrdpVCYnFTVK6M24y86yjFtg4jbOZVg7vxlW0Qk/ddQ
+        AVHumMn9fKRIcX7QsD4timKVPAdfrgIJSdc0NTQ=
+X-Google-Smtp-Source: APiQypJ5ivykOe62LZsJi7h0gUqNl7dRfWpM13n67j6dYZssP4yCG6l6k40lAbPi4+TL3syZgOpolegehiKg8CYiSpg=
+X-Received: by 2002:a9d:1c97:: with SMTP id l23mr5966495ota.189.1588792127042;
+ Wed, 06 May 2020 12:08:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20200505215819.1997-1-xiyou.wangcong@gmail.com>
+ <20200505222748.GQ8237@lion.mk-sys.cz> <CAM_iQpWf95vVC4dsWTuxCNbNLN6RAMJQYdNeB37VZMN2P2Xf2w@mail.gmail.com>
+ <20200506052604.GM5989@lion.mk-sys.cz>
+In-Reply-To: <20200506052604.GM5989@lion.mk-sys.cz>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 6 May 2020 12:08:35 -0700
+Message-ID: <CAM_iQpWTW_O7WHx5-4BLXqiV3e-eYowGRv-aG-LRZmJwvdyt5A@mail.gmail.com>
+Subject: Re: [Patch net] net: fix a potential recursive NETDEV_FEAT_CHANGE
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
+        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
+        Jarod Wilson <jarod@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Jann Horn <jannh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the
-KSZ9031 PHY") the networking is broken on boards:
- am437x-gp-evm
- am437x-sk-evm
- am437x-idk-evm
+On Tue, May 5, 2020 at 10:26 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+>
+> On Tue, May 05, 2020 at 03:35:27PM -0700, Cong Wang wrote:
+> > On Tue, May 5, 2020 at 3:27 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+> > > On Tue, May 05, 2020 at 02:58:19PM -0700, Cong Wang wrote:
+> > > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > > index 522288177bbd..ece50ae346c3 100644
+> > > > --- a/net/core/dev.c
+> > > > +++ b/net/core/dev.c
+> > > > @@ -8907,7 +8907,7 @@ static void netdev_sync_lower_features(struct net_device *upper,
+> > > >                       netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
+> > > >                                  &feature, lower->name);
+> > > >                       lower->wanted_features &= ~feature;
+> > > > -                     netdev_update_features(lower);
+> > > > +                     __netdev_update_features(lower);
+> > > >
+> > > >                       if (unlikely(lower->features & feature))
+> > > >                               netdev_WARN(upper, "failed to disable %pNF on %s!\n",
+> > >
+> > > Wouldn't this mean that when we disable LRO on a bond manually with
+> > > "ethtool -K", LRO will be also disabled on its slaves but no netlink
+> > > notification for them would be sent to userspace?
+> >
+> > What netlink notification are you talking about?
+>
+> There is ethtool notification sent by ethnl_netdev_event() and rtnetlink
+> notification sent by rtnetlink_event(). Both are triggered by
+> NETDEV_FEAT_CHANGE notifier so unless I missed something, when you
+> suppress the notifier, there will be no netlink notifications to
+> userspace.
 
-All above boards have phy-mode = "rgmii" and this is worked before, because
-KSZ9031 PHY started with default RGMII internal delays configuration (TX
-off, RX on 1.2 ns) and MAC provided TX delay. After above commit, the
-KSZ9031 PHY starts handling phy mode properly and disables RX delay, as
-result networking is become broken.
+Oh, interesting, why ethtool_notify() can't be called directly, for example,
+in netdev_update_features()? To me, using a NETDEV_FEAT_CHANGE
+event handler seems unnecessary for ethtool netlink.
 
-Fix it by switching to phy-mode = "rgmii-rxid" to reflect previous
-behavior.
+BTW, as pointed out by Jay, actually we only need to skip
+NETDEV_FEAT_CHANGE for failure case, so I will update my patch.
 
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Philippe Schenker <philippe.schenker@toradex.com>
-Fixes: commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the KSZ9031 PHY")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- arch/arm/boot/dts/am437x-gp-evm.dts  | 2 +-
- arch/arm/boot/dts/am437x-idk-evm.dts | 2 +-
- arch/arm/boot/dts/am437x-sk-evm.dts  | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/arch/arm/boot/dts/am437x-gp-evm.dts b/arch/arm/boot/dts/am437x-gp-evm.dts
-index 811c8cae315b..d692e3b2812a 100644
---- a/arch/arm/boot/dts/am437x-gp-evm.dts
-+++ b/arch/arm/boot/dts/am437x-gp-evm.dts
-@@ -943,7 +943,7 @@
- 
- &cpsw_emac0 {
- 	phy-handle = <&ethphy0>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- };
- 
- &elm {
-diff --git a/arch/arm/boot/dts/am437x-idk-evm.dts b/arch/arm/boot/dts/am437x-idk-evm.dts
-index 9f66f96d09c9..a7495fb364bf 100644
---- a/arch/arm/boot/dts/am437x-idk-evm.dts
-+++ b/arch/arm/boot/dts/am437x-idk-evm.dts
-@@ -504,7 +504,7 @@
- 
- &cpsw_emac0 {
- 	phy-handle = <&ethphy0>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-id";
- };
- 
- &rtc {
-diff --git a/arch/arm/boot/dts/am437x-sk-evm.dts b/arch/arm/boot/dts/am437x-sk-evm.dts
-index 25222497f828..4d5a7ca2e25d 100644
---- a/arch/arm/boot/dts/am437x-sk-evm.dts
-+++ b/arch/arm/boot/dts/am437x-sk-evm.dts
-@@ -833,13 +833,13 @@
- 
- &cpsw_emac0 {
- 	phy-handle = <&ethphy0>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- 	dual_emac_res_vlan = <1>;
- };
- 
- &cpsw_emac1 {
- 	phy-handle = <&ethphy1>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- 	dual_emac_res_vlan = <2>;
- };
- 
--- 
-2.17.1
-
+Thanks.
