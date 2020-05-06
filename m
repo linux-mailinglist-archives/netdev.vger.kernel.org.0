@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63D6E1C7D6A
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 00:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2B311C7D6D
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 00:32:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730203AbgEFWcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 18:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
+        id S1730317AbgEFWc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 18:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730110AbgEFWcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 18:32:20 -0400
-Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6A0C061A10
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 15:32:19 -0700 (PDT)
-Received: by mail-qk1-x74a.google.com with SMTP id 11so3444808qkh.7
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 15:32:19 -0700 (PDT)
+        with ESMTP id S1730225AbgEFWcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 18:32:23 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE267C061A10
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 15:32:21 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id j4so4444279ybj.20
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 15:32:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=BwxAOhrP+L/inT5n9mADwhDyhK1A3A0kERGdPlhNudo=;
-        b=SN/d7RyY2/ZXgJ1/Z8OZ0RAxCK6DjgHpGA3t+lrVYOOp7vVisA+RQ9bND12aztJcHp
-         epNdpT8OvO6IQlva937XGphuUkBs9RAWEmJvD8djyXdTBqKWEZX8ywA04oUSXU2QZEWm
-         cV4hVKGR48XB9N8lft/WfN0JFI1pkhkSh2x7mCynM4iaP4Pkws8g+3NNvvfhrYy1cIKR
-         8SrDL65Qg++5cC1FUHaLvQF7xHojlS8it0mvbLx3K9QTudEBD6nc0geytSbCwsxjL+ZA
-         PZ9LQf630Xt+YNY4/ni2mOzWDbAYnvxpV0QrKNc0n38ZxunpUr58JweEzraN5Cd18g4r
-         XYpw==
+        bh=5RD3nmqtmGGcRCOLEPBuZsiM4xP4zdNHEi9o6uJppYM=;
+        b=u28yOWbhgpcLEh8KyHy5N2AocBeL8VX9tbdNliL+iUrGUdv4MBR9u0H4700Vtbvb3S
+         oFknahUxI06LJPsvf/+PvwW8cxBF7PwrqOweNztbJtBbqtOOLlS4dp1+G37WcC+MD4v6
+         p0ns9Nb/3aVxWrp3vxGV6eE8FzKvX+fuYAltVKIHzQfp++OSI6wbx/XndTh8xTdoOzl0
+         b1OOcqEHJYlvWImuD6szrLZPCq3vck2kP3W57z6JcfvXN5uBEDj1NioqOWu/S2yOKtBQ
+         z78bqTlkw3zSdfjTctZCJUlNzieYZbiRgElNlXFL+VxOX1HtcAIq8drlSlysdqN+bHe2
+         EOaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=BwxAOhrP+L/inT5n9mADwhDyhK1A3A0kERGdPlhNudo=;
-        b=SQLbL94aDirlgPyeFS2dMAUPh997QTsQS1aLFIAH/Z6OwFtoEWmc2q5K7jukopXS4K
-         CW2LAuZDE1mDHjNmjkzApw+boqnEDtEy3tYGMZGJOOwmvj7Rc5DeEwgIhfCg+U6byThH
-         i5U5yMjyzisCS7X6iYmkJ0uMigTSrMhfV65ypHKnuE0VUBT8uyUFiSu3R1PrMB2Q/Spl
-         R4ITd47LdokWRMPoZDwlwCpEcPHXHtllh25rD/UCnqINElu5wQldt7KuKW6u4Vs/D4Ki
-         yS10Og/p3R4FSdtiGFpktvzaBEiKK6JSLTjLFov83nW1qekLK0LSamWI7pUV12IisVNz
-         l2JA==
-X-Gm-Message-State: AGi0PuY/lg6PeUZlshjaYXTakalMRdEh0IauUHk88q+5xkyuqpWwl/wa
-        GMzBlWl0EJ7McCMKD+kqFxkEbDUMokUSHDMJB/5qs/1zlz4tFEcMAL3aLP6RWU99nmAYUZeu43F
-        kxVNPEuN0NaP8zbG9rBo/FZyLijehQ3zDR4c/hRX2jBgDO4J1nZzPQw==
-X-Google-Smtp-Source: APiQypKkwQmITUpBD/ZDt4z83QAJLOa8VHE5M2PeVXkBGeQz+cJRPAiwFTUmWWgHaWJfAglETDVbomY=
-X-Received: by 2002:a05:6214:114d:: with SMTP id b13mr4170402qvt.44.1588804339009;
- Wed, 06 May 2020 15:32:19 -0700 (PDT)
-Date:   Wed,  6 May 2020 15:32:09 -0700
+        bh=5RD3nmqtmGGcRCOLEPBuZsiM4xP4zdNHEi9o6uJppYM=;
+        b=WO3dZ4eluvvGaHOwErA4dqXx/eoiEnzyS3z4/X0aVHvduYHWT+jOByshCbisMqK+sb
+         Kl3yP/sDCarWTnbojfsIbyw5UmKghqh0i8OHXaf8Oz216oto81WEL8DzhojML4fqCJoO
+         ZYxEJs3CIam1VweHzhOSoi/RaVWIxdp9W6+NZCmTgS2tgva7yDvkUB3ovm2T2020YNLH
+         yvqW4DIXIcGpa8RamdiAZRBdh6Rvt+yrXb0XJCVfVSk2HiX8UWkwFPWZyj9DPq3uaW5o
+         p4GDjfvhERl2HSlykprf+Q2/O2b/MNCxlQ7tCmWUY+YZOreMac9pLQmNRwD9MJ7gGaQs
+         VJhg==
+X-Gm-Message-State: AGi0PuaH1sShsgfhARXBnG5Xj5EC4qgNiTpUU+xbHi/4iFy+puFo1iOK
+        nCplnoQ2snKOMUINFBDd666lTaWoi7Sg9QbzuLgZUqVbnbNBvwgitRBchTV21ShPWKmKX0oyWI8
+        m+5beGk4p/BD6XxKkIb2TRF1a+B+uonpYPLtUMCsFPRuSCpIfFytQ1g==
+X-Google-Smtp-Source: APiQypIyLDfLYLtTNVrxe6DFZhJWcOuLsJKN/AZRWrULzDRrohlRf6TlPj0yG78b42RQbiMF0fyMVd4=
+X-Received: by 2002:a25:db87:: with SMTP id g129mr17864515ybf.491.1588804340886;
+ Wed, 06 May 2020 15:32:20 -0700 (PDT)
+Date:   Wed,  6 May 2020 15:32:10 -0700
 In-Reply-To: <20200506223210.93595-1-sdf@google.com>
-Message-Id: <20200506223210.93595-5-sdf@google.com>
+Message-Id: <20200506223210.93595-6-sdf@google.com>
 Mime-Version: 1.0
 References: <20200506223210.93595-1-sdf@google.com>
 X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH bpf-next v3 4/5] net: refactor arguments of inet{,6}_bind
+Subject: [PATCH bpf-next v3 5/5] bpf: allow any port in bpf_bind helper
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
@@ -62,173 +62,374 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The intent is to add an additional bind parameter in the next commit.
-Instead of adding another argument, let's convert all existing
-flag arguments into an extendable bit field.
+We want to have a tighter control on what ports we bind to in
+the BPF_CGROUP_INET{4,6}_CONNECT hooks even if it means
+connect() becomes slightly more expensive. The expensive part
+comes from the fact that we now need to call inet_csk_get_port()
+that verifies that the port is not used and allocates an entry
+in the hash table for it.
 
-No functional changes.
+Since we can't rely on "snum || !bind_address_no_port" to prevent
+us from calling POST_BIND hook anymore, let's add another bind flag
+to indicate that the call site is BPF program.
+
+v3:
+* More bpf_bind documentation refinements (Martin KaFai Lau)
+* Add UDP tests as well (Martin KaFai Lau)
+* Don't start the thread, just do socket+bind+listen (Martin KaFai Lau)
+
+v2:
+* Update documentation (Andrey Ignatov)
+* Pass BIND_FORCE_ADDRESS_NO_PORT conditionally (Andrey Ignatov)
 
 Cc: Andrey Ignatov <rdna@fb.com>
 Cc: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- include/net/inet_common.h |  6 +++++-
- include/net/ipv6_stubs.h  |  2 +-
- net/core/filter.c         |  6 ++++--
- net/ipv4/af_inet.c        | 10 +++++-----
- net/ipv6/af_inet6.c       | 10 +++++-----
- 5 files changed, 20 insertions(+), 14 deletions(-)
+ include/net/inet_common.h                     |   2 +
+ include/uapi/linux/bpf.h                      |   9 +-
+ net/core/filter.c                             |  18 ++-
+ net/ipv4/af_inet.c                            |  10 +-
+ net/ipv6/af_inet6.c                           |  12 +-
+ tools/include/uapi/linux/bpf.h                |   9 +-
+ .../bpf/prog_tests/connect_force_port.c       | 115 ++++++++++++++++++
+ .../selftests/bpf/progs/connect_force_port4.c |  28 +++++
+ .../selftests/bpf/progs/connect_force_port6.c |  28 +++++
+ 9 files changed, 203 insertions(+), 28 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/connect_force_port.c
+ create mode 100644 tools/testing/selftests/bpf/progs/connect_force_port4.c
+ create mode 100644 tools/testing/selftests/bpf/progs/connect_force_port6.c
 
 diff --git a/include/net/inet_common.h b/include/net/inet_common.h
-index ae2ba897675c..c38f4f7d660a 100644
+index c38f4f7d660a..cb2818862919 100644
 --- a/include/net/inet_common.h
 +++ b/include/net/inet_common.h
-@@ -35,8 +35,12 @@ int inet_shutdown(struct socket *sock, int how);
- int inet_listen(struct socket *sock, int backlog);
- void inet_sock_destruct(struct sock *sk);
- int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
-+/* Don't allocate port at this moment, defer to connect. */
-+#define BIND_FORCE_ADDRESS_NO_PORT	(1 << 0)
-+/* Grab and release socket lock. */
-+#define BIND_WITH_LOCK			(1 << 1)
+@@ -39,6 +39,8 @@ int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
+ #define BIND_FORCE_ADDRESS_NO_PORT	(1 << 0)
+ /* Grab and release socket lock. */
+ #define BIND_WITH_LOCK			(1 << 1)
++/* Called from BPF program. */
++#define BIND_FROM_BPF			(1 << 2)
  int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
--		bool force_bind_address_no_port, bool with_lock);
-+		u32 flags);
+ 		u32 flags);
  int inet_getname(struct socket *sock, struct sockaddr *uaddr,
- 		 int peer);
- int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
-diff --git a/include/net/ipv6_stubs.h b/include/net/ipv6_stubs.h
-index a5f7c12c326a..6e622dd3122e 100644
---- a/include/net/ipv6_stubs.h
-+++ b/include/net/ipv6_stubs.h
-@@ -63,7 +63,7 @@ extern const struct ipv6_stub *ipv6_stub __read_mostly;
- /* A stub used by bpf helpers. Similarly ugly as ipv6_stub */
- struct ipv6_bpf_stub {
- 	int (*inet6_bind)(struct sock *sk, struct sockaddr *uaddr, int addr_len,
--			  bool force_bind_address_no_port, bool with_lock);
-+			  u32 flags);
- 	struct sock *(*udp6_lib_lookup)(struct net *net,
- 				     const struct in6_addr *saddr, __be16 sport,
- 				     const struct in6_addr *daddr, __be16 dport,
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index b3643e27e264..6e5e7caa3739 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1994,10 +1994,11 @@ union bpf_attr {
+  *
+  * 		This helper works for IPv4 and IPv6, TCP and UDP sockets. The
+  * 		domain (*addr*\ **->sa_family**) must be **AF_INET** (or
+- * 		**AF_INET6**). Looking for a free port to bind to can be
+- * 		expensive, therefore binding to port is not permitted by the
+- * 		helper: *addr*\ **->sin_port** (or **sin6_port**, respectively)
+- * 		must be set to zero.
++ * 		**AF_INET6**). It's advised to pass zero port (**sin_port**
++ * 		or **sin6_port**) which triggers IP_BIND_ADDRESS_NO_PORT-like
++ * 		behavior and lets the kernel efficiently pick up an unused
++ * 		port as long as 4-tuple is unique. Passing non-zero port might
++ * 		lead to degraded performance.
+  * 	Return
+  * 		0 on success, or a negative error in case of failure.
+  *
 diff --git a/net/core/filter.c b/net/core/filter.c
-index dfaf5df13722..fa9ddab5dd1f 100644
+index fa9ddab5dd1f..da0634979f53 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -4538,7 +4538,8 @@ BPF_CALL_3(bpf_bind, struct bpf_sock_addr_kern *, ctx, struct sockaddr *, addr,
+@@ -4525,32 +4525,28 @@ BPF_CALL_3(bpf_bind, struct bpf_sock_addr_kern *, ctx, struct sockaddr *, addr,
+ {
+ #ifdef CONFIG_INET
+ 	struct sock *sk = ctx->sk;
++	u32 flags = BIND_FROM_BPF;
+ 	int err;
+ 
+-	/* Binding to port can be expensive so it's prohibited in the helper.
+-	 * Only binding to IP is supported.
+-	 */
+ 	err = -EINVAL;
+ 	if (addr_len < offsetofend(struct sockaddr, sa_family))
+ 		return err;
+ 	if (addr->sa_family == AF_INET) {
+ 		if (addr_len < sizeof(struct sockaddr_in))
  			return err;
- 		if (((struct sockaddr_in *)addr)->sin_port != htons(0))
- 			return err;
--		return __inet_bind(sk, addr, addr_len, true, false);
-+		return __inet_bind(sk, addr, addr_len,
-+				   BIND_FORCE_ADDRESS_NO_PORT);
+-		if (((struct sockaddr_in *)addr)->sin_port != htons(0))
+-			return err;
+-		return __inet_bind(sk, addr, addr_len,
+-				   BIND_FORCE_ADDRESS_NO_PORT);
++		if (((struct sockaddr_in *)addr)->sin_port == htons(0))
++			flags |= BIND_FORCE_ADDRESS_NO_PORT;
++		return __inet_bind(sk, addr, addr_len, flags);
  #if IS_ENABLED(CONFIG_IPV6)
  	} else if (addr->sa_family == AF_INET6) {
  		if (addr_len < SIN6_LEN_RFC2133)
-@@ -4548,7 +4549,8 @@ BPF_CALL_3(bpf_bind, struct bpf_sock_addr_kern *, ctx, struct sockaddr *, addr,
+ 			return err;
+-		if (((struct sockaddr_in6 *)addr)->sin6_port != htons(0))
+-			return err;
++		if (((struct sockaddr_in6 *)addr)->sin6_port == htons(0))
++			flags |= BIND_FORCE_ADDRESS_NO_PORT;
  		/* ipv6_bpf_stub cannot be NULL, since it's called from
  		 * bpf_cgroup_inet6_connect hook and ipv6 is already loaded
  		 */
--		return ipv6_bpf_stub->inet6_bind(sk, addr, addr_len, true, false);
-+		return ipv6_bpf_stub->inet6_bind(sk, addr, addr_len,
-+						 BIND_FORCE_ADDRESS_NO_PORT);
+-		return ipv6_bpf_stub->inet6_bind(sk, addr, addr_len,
+-						 BIND_FORCE_ADDRESS_NO_PORT);
++		return ipv6_bpf_stub->inet6_bind(sk, addr, addr_len, flags);
  #endif /* CONFIG_IPV6 */
  	}
  #endif /* CONFIG_INET */
 diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 6177c4ba0037..68e74b1b0f26 100644
+index 68e74b1b0f26..fcf0d12a407a 100644
 --- a/net/ipv4/af_inet.c
 +++ b/net/ipv4/af_inet.c
-@@ -450,12 +450,12 @@ int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 	if (err)
- 		return err;
- 
--	return __inet_bind(sk, uaddr, addr_len, false, true);
-+	return __inet_bind(sk, uaddr, addr_len, BIND_WITH_LOCK);
- }
- EXPORT_SYMBOL(inet_bind);
- 
- int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
--		bool force_bind_address_no_port, bool with_lock)
-+		u32 flags)
- {
- 	struct sockaddr_in *addr = (struct sockaddr_in *)uaddr;
- 	struct inet_sock *inet = inet_sk(sk);
-@@ -506,7 +506,7 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 	 *      would be illegal to use them (multicast/broadcast) in
- 	 *      which case the sending device address is used.
- 	 */
--	if (with_lock)
-+	if (flags & BIND_WITH_LOCK)
- 		lock_sock(sk);
- 
- 	/* Check these errors (active socket, double bind). */
-@@ -520,7 +520,7 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 
- 	/* Make sure we are allowed to bind here. */
- 	if (snum || !(inet->bind_address_no_port ||
--		      force_bind_address_no_port)) {
-+		      (flags & BIND_FORCE_ADDRESS_NO_PORT))) {
- 		if (sk->sk_prot->get_port(sk, snum)) {
- 			inet->inet_saddr = inet->inet_rcv_saddr = 0;
+@@ -526,10 +526,12 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
  			err = -EADDRINUSE;
-@@ -543,7 +543,7 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 	sk_dst_reset(sk);
- 	err = 0;
- out_release_sock:
--	if (with_lock)
-+	if (flags & BIND_WITH_LOCK)
- 		release_sock(sk);
- out:
- 	return err;
+ 			goto out_release_sock;
+ 		}
+-		err = BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk);
+-		if (err) {
+-			inet->inet_saddr = inet->inet_rcv_saddr = 0;
+-			goto out_release_sock;
++		if (!(flags & BIND_FROM_BPF)) {
++			err = BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk);
++			if (err) {
++				inet->inet_saddr = inet->inet_rcv_saddr = 0;
++				goto out_release_sock;
++			}
+ 		}
+ 	}
+ 
 diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 345baa0a754f..552c2592b81c 100644
+index 552c2592b81c..771a462a8322 100644
 --- a/net/ipv6/af_inet6.c
 +++ b/net/ipv6/af_inet6.c
-@@ -273,7 +273,7 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
- }
+@@ -407,11 +407,13 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
+ 			err = -EADDRINUSE;
+ 			goto out;
+ 		}
+-		err = BPF_CGROUP_RUN_PROG_INET6_POST_BIND(sk);
+-		if (err) {
+-			sk->sk_ipv6only = saved_ipv6only;
+-			inet_reset_saddr(sk);
+-			goto out;
++		if (!(flags & BIND_FROM_BPF)) {
++			err = BPF_CGROUP_RUN_PROG_INET6_POST_BIND(sk);
++			if (err) {
++				sk->sk_ipv6only = saved_ipv6only;
++				inet_reset_saddr(sk);
++				goto out;
++			}
+ 		}
+ 	}
  
- static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
--			bool force_bind_address_no_port, bool with_lock)
-+			u32 flags)
- {
- 	struct sockaddr_in6 *addr = (struct sockaddr_in6 *)uaddr;
- 	struct inet_sock *inet = inet_sk(sk);
-@@ -297,7 +297,7 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 	    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
- 		return -EACCES;
- 
--	if (with_lock)
-+	if (flags & BIND_WITH_LOCK)
- 		lock_sock(sk);
- 
- 	/* Check these errors (active socket, double bind). */
-@@ -400,7 +400,7 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 
- 	/* Make sure we are allowed to bind here. */
- 	if (snum || !(inet->bind_address_no_port ||
--		      force_bind_address_no_port)) {
-+		      (flags & BIND_FORCE_ADDRESS_NO_PORT))) {
- 		if (sk->sk_prot->get_port(sk, snum)) {
- 			sk->sk_ipv6only = saved_ipv6only;
- 			inet_reset_saddr(sk);
-@@ -423,7 +423,7 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 	inet->inet_dport = 0;
- 	inet->inet_daddr = 0;
- out:
--	if (with_lock)
-+	if (flags & BIND_WITH_LOCK)
- 		release_sock(sk);
- 	return err;
- out_unlock:
-@@ -451,7 +451,7 @@ int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 	if (err)
- 		return err;
- 
--	return __inet6_bind(sk, uaddr, addr_len, false, true);
-+	return __inet6_bind(sk, uaddr, addr_len, BIND_WITH_LOCK);
- }
- EXPORT_SYMBOL(inet6_bind);
- 
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index b3643e27e264..6e5e7caa3739 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -1994,10 +1994,11 @@ union bpf_attr {
+  *
+  * 		This helper works for IPv4 and IPv6, TCP and UDP sockets. The
+  * 		domain (*addr*\ **->sa_family**) must be **AF_INET** (or
+- * 		**AF_INET6**). Looking for a free port to bind to can be
+- * 		expensive, therefore binding to port is not permitted by the
+- * 		helper: *addr*\ **->sin_port** (or **sin6_port**, respectively)
+- * 		must be set to zero.
++ * 		**AF_INET6**). It's advised to pass zero port (**sin_port**
++ * 		or **sin6_port**) which triggers IP_BIND_ADDRESS_NO_PORT-like
++ * 		behavior and lets the kernel efficiently pick up an unused
++ * 		port as long as 4-tuple is unique. Passing non-zero port might
++ * 		lead to degraded performance.
+  * 	Return
+  * 		0 on success, or a negative error in case of failure.
+  *
+diff --git a/tools/testing/selftests/bpf/prog_tests/connect_force_port.c b/tools/testing/selftests/bpf/prog_tests/connect_force_port.c
+new file mode 100644
+index 000000000000..47fbb20cb6a6
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/connect_force_port.c
+@@ -0,0 +1,115 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <test_progs.h>
++#include "cgroup_helpers.h"
++#include "network_helpers.h"
++
++static int verify_port(int family, int fd, int expected)
++{
++	struct sockaddr_storage addr;
++	socklen_t len = sizeof(addr);
++	__u16 port;
++
++	if (getsockname(fd, (struct sockaddr *)&addr, &len)) {
++		log_err("Failed to get server addr");
++		return -1;
++	}
++
++	if (family == AF_INET)
++		port = ((struct sockaddr_in *)&addr)->sin_port;
++	else
++		port = ((struct sockaddr_in6 *)&addr)->sin6_port;
++
++	if (ntohs(port) != expected) {
++		log_err("Unexpected port %d, expected %d", ntohs(port),
++			expected);
++		return -1;
++	}
++
++	return 0;
++}
++
++static int run_test(int cgroup_fd, int server_fd, int family, int type)
++{
++	struct bpf_prog_load_attr attr = {
++		.prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
++	};
++	struct bpf_object *obj;
++	int expected_port;
++	int prog_fd;
++	int err;
++	int fd;
++
++	if (family == AF_INET) {
++		attr.file = "./connect_force_port4.o";
++		attr.expected_attach_type = BPF_CGROUP_INET4_CONNECT;
++		expected_port = 22222;
++	} else {
++		attr.file = "./connect_force_port6.o";
++		attr.expected_attach_type = BPF_CGROUP_INET6_CONNECT;
++		expected_port = 22223;
++	}
++
++	err = bpf_prog_load_xattr(&attr, &obj, &prog_fd);
++	if (err) {
++		log_err("Failed to load BPF object");
++		return -1;
++	}
++
++	err = bpf_prog_attach(prog_fd, cgroup_fd, attr.expected_attach_type,
++			      0);
++	if (err) {
++		log_err("Failed to attach BPF program");
++		goto close_bpf_object;
++	}
++
++	fd = connect_to_fd(family, type, server_fd);
++	if (fd < 0) {
++		err = -1;
++		goto close_bpf_object;
++	}
++
++	err = verify_port(family, fd, expected_port);
++
++	close(fd);
++
++close_bpf_object:
++	bpf_object__close(obj);
++	return err;
++}
++
++void test_connect_force_port(void)
++{
++	int server_fd, cgroup_fd;
++
++	cgroup_fd = test__join_cgroup("/connect_force_port");
++	if (CHECK_FAIL(cgroup_fd < 0))
++		return;
++
++	server_fd = start_server(AF_INET, SOCK_STREAM);
++	if (CHECK_FAIL(server_fd < 0))
++		goto close_cgroup_fd;
++	CHECK_FAIL(run_test(cgroup_fd, server_fd, AF_INET, SOCK_STREAM));
++	close(server_fd);
++
++	server_fd = start_server(AF_INET6, SOCK_STREAM);
++	if (CHECK_FAIL(server_fd < 0))
++		goto close_cgroup_fd;
++	CHECK_FAIL(run_test(cgroup_fd, server_fd, AF_INET6, SOCK_STREAM));
++	close(server_fd);
++
++	server_fd = start_server(AF_INET, SOCK_DGRAM);
++	if (CHECK_FAIL(server_fd < 0))
++		goto close_cgroup_fd;
++	CHECK_FAIL(run_test(cgroup_fd, server_fd, AF_INET, SOCK_DGRAM));
++	close(server_fd);
++
++	server_fd = start_server(AF_INET6, SOCK_DGRAM);
++	if (CHECK_FAIL(server_fd < 0))
++		goto close_cgroup_fd;
++	CHECK_FAIL(run_test(cgroup_fd, server_fd, AF_INET6, SOCK_DGRAM));
++	close(server_fd);
++
++close_cgroup_fd:
++	close(cgroup_fd);
++}
+diff --git a/tools/testing/selftests/bpf/progs/connect_force_port4.c b/tools/testing/selftests/bpf/progs/connect_force_port4.c
+new file mode 100644
+index 000000000000..1b8eb34b2db0
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/connect_force_port4.c
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <string.h>
++
++#include <linux/bpf.h>
++#include <linux/in.h>
++#include <linux/in6.h>
++#include <sys/socket.h>
++
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++
++char _license[] SEC("license") = "GPL";
++int _version SEC("version") = 1;
++
++SEC("cgroup/connect4")
++int _connect4(struct bpf_sock_addr *ctx)
++{
++	struct sockaddr_in sa = {};
++
++	sa.sin_family = AF_INET;
++	sa.sin_port = bpf_htons(22222);
++	sa.sin_addr.s_addr = bpf_htonl(0x7f000001); /* 127.0.0.1 */
++
++	if (bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)) != 0)
++		return 0;
++
++	return 1;
++}
+diff --git a/tools/testing/selftests/bpf/progs/connect_force_port6.c b/tools/testing/selftests/bpf/progs/connect_force_port6.c
+new file mode 100644
+index 000000000000..8cd1a9e81f64
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/connect_force_port6.c
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <string.h>
++
++#include <linux/bpf.h>
++#include <linux/in.h>
++#include <linux/in6.h>
++#include <sys/socket.h>
++
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++
++char _license[] SEC("license") = "GPL";
++int _version SEC("version") = 1;
++
++SEC("cgroup/connect6")
++int _connect6(struct bpf_sock_addr *ctx)
++{
++	struct sockaddr_in6 sa = {};
++
++	sa.sin6_family = AF_INET;
++	sa.sin6_port = bpf_htons(22223);
++	sa.sin6_addr.s6_addr32[3] = bpf_htonl(1); /* ::1 */
++
++	if (bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)) != 0)
++		return 0;
++
++	return 1;
++}
 -- 
 2.26.2.526.g744177e7f7-goog
 
