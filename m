@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF0661C7C42
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A81641C7C46
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729938AbgEFVTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 17:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58052 "EHLO
+        id S1730071AbgEFVUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 17:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728621AbgEFVTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 17:19:53 -0400
+        by vger.kernel.org with ESMTP id S1729543AbgEFVUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 17:20:02 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B6DC061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 14:19:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E172C061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 14:20:02 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 94E30123229ED;
-        Wed,  6 May 2020 14:19:53 -0700 (PDT)
-Date:   Wed, 06 May 2020 14:19:52 -0700 (PDT)
-Message-Id: <20200506.141952.1186042608656705578.davem@davemloft.net>
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0ABF6123229ED;
+        Wed,  6 May 2020 14:20:02 -0700 (PDT)
+Date:   Wed, 06 May 2020 14:20:01 -0700 (PDT)
+Message-Id: <20200506.142001.248657277909510674.davem@davemloft.net>
 To:     wangyunjian@huawei.com
 Cc:     netdev@vger.kernel.org, jerry.lilijun@huawei.com,
         xudingke@huawei.com
-Subject: Re: [PATCH net-next] net: socionext: Fix use correct return type
+Subject: Re: [PATCH net-next] net: mediatek: Fix use correct return type
  for ndo_start_xmit()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1588763099-15812-1-git-send-email-wangyunjian@huawei.com>
-References: <1588763099-15812-1-git-send-email-wangyunjian@huawei.com>
+In-Reply-To: <1588763588-9536-1-git-send-email-wangyunjian@huawei.com>
+References: <1588763588-9536-1-git-send-email-wangyunjian@huawei.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 06 May 2020 14:19:53 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 06 May 2020 14:20:02 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: wangyunjian <wangyunjian@huawei.com>
-Date: Wed, 6 May 2020 19:04:59 +0800
+Date: Wed, 6 May 2020 19:13:08 +0800
 
 > From: Yunjian Wang <wangyunjian@huawei.com>
 > 
