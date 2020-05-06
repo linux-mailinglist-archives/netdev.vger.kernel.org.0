@@ -2,34 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 928151C7C7D
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:33:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 722E61C7C7C
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729398AbgEFVdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729804AbgEFVdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 6 May 2020 17:33:23 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:55147 "EHLO mail.zx2c4.com"
+Received: from mail.zx2c4.com ([192.95.5.64]:53575 "EHLO mail.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726927AbgEFVdW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729152AbgEFVdW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 6 May 2020 17:33:22 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id a0b16c4b;
-        Wed, 6 May 2020 21:20:32 +0000 (UTC)
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id c1797ad1;
+        Wed, 6 May 2020 21:20:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
-        :subject:date:message-id:mime-version:content-transfer-encoding;
-         s=mail; bh=Nu6DVaIpf9mUhchBmoy5f+VStO8=; b=e3WsBxjWZfEYOP9QvFqD
-        OmE2sHfT56fKf88qNogjzq0WVWl/cwsPrw8pzi21B+e/YkrCWp9itVcoDMVbsixa
-        2Z1K6sl35E/htEp+9AxH49oTB+ueyS44wCfJdz5iUsNo6TJlfpG9RacvNkOCqTyD
-        jGQ8AoR87tT9Am7MGSVeS6Vofm6qmz83Yq3tUuCPMaxA366en/UYZq24JXxODmIc
-        itVEfH9JJXYxDsoLor4Pwv1Ju5SZyw8NbRN5JsjbnjmUtAZyVftetCHs0594i8VU
-        F6QxMKDgCnf+Msc2pPeV5lRFlt/wGso49qumNx1oC+S2khDgxgkOsRsFDfq8BLwN
-        EA==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a6c0d54c (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Wed, 6 May 2020 21:20:32 +0000 (UTC)
+        :subject:date:message-id:in-reply-to:references:mime-version
+        :content-transfer-encoding; s=mail; bh=SZ+7gT7++HRheT9GPfZjo5R/I
+        cw=; b=Al5TclrdIGH9fhTsPxxbGYXp+n6d/V8wc/+vREbb/+HERF5JSlC7kQ956
+        eklLV8PeKlCUvtwU4rdnc8l23k8EWLxCRrSS0JYI22wffzeNBMW/m2r5wKLgW18/
+        aij0aapfounXSseM/maB0mPq1iyvvQKlJAOHPf2+phh1ww/Gg8GRQIEcLExkAurO
+        0ogMni6APDIfX/WLlxoWBNvIWX6xobbkjGTeADBFk+gL2fh1nn8o4TYy9e0ikHBh
+        T+jTB/MQsKJSayKaMCG1JyMbE/SWf0W0Pg1CP4hDTvu0CxyWp16z7nSyGtRJWrBu
+        LH883eilUopBipcCCuccoIlMiz+2Q==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4ffbcace (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 6 May 2020 21:20:36 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH net 0/5] wireguard fixes for 5.7-rc5
-Date:   Wed,  6 May 2020 15:33:01 -0600
-Message-Id: <20200506213306.1344212-1-Jason@zx2c4.com>
+Subject: [PATCH net 1/5] wireguard: selftests: use normal kernel stack size on ppc64
+Date:   Wed,  6 May 2020 15:33:02 -0600
+Message-Id: <20200506213306.1344212-2-Jason@zx2c4.com>
+In-Reply-To: <20200506213306.1344212-1-Jason@zx2c4.com>
+References: <20200506213306.1344212-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -37,54 +39,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+While at some point it might have made sense to be running these tests
+on ppc64 with 4k stacks, the kernel hasn't actually used 4k stacks on
+64-bit powerpc in a long time, and more interesting things that we test
+don't really work when we deviate from the default (16k). So, we stop
+pushing our luck in this commit, and return to the default instead of
+the minimum.
 
-With Ubuntu and Debian having backported this into their kernels, we're
-finally seeing testing from places we hadn't seen prior, which is nice.
-With that comes more fixes:
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config | 1 +
+ 1 file changed, 1 insertion(+)
 
-1) The CI for PPC64 was running with extremely small stacks for 64-bit,
-   causing spurious crashes in surprising places.
-
-2) There's was an old leftover routing loop restriction, which no longer
-   makes sense given the queueing architecture, and was causing problems
-   for people who really did want nested routing.
-
-3) Not yielding our kthread on CONFIG_PREEMPT_VOLUNTARY systems caused
-   RCU stalls and other issues, reported by Wang Jian, with the fix
-   suggested by Sultan Alsawaf.
-
-4) Clang spewed warnings in a selftest for CONFIG_IPV6=n, reported by
-   Arnd Bergmann.
-
-5) A complicated if statement was simplified to an assignment while also
-   making the likely/unlikely hinting more correct and simple, and
-   increasing readability, suggested by Sultan.
-
-Patches (2) and (3) have Fixes: lines and are probably good candidates
-for stable.
-
-Thanks,
-Jason
-
-Jason A. Donenfeld (5):
-  wireguard: selftests: use normal kernel stack size on ppc64
-  wireguard: socket: remove errant restriction on looping to self
-  wireguard: send/receive: cond_resched() when processing worker
-    ringbuffers
-  wireguard: selftests: initalize ipv6 members to NULL to squelch clang
-    warning
-  wireguard: send/receive: use explicit unlikely branch instead of
-    implicit coalescing
-
- drivers/net/wireguard/receive.c               | 15 +++---
- drivers/net/wireguard/selftest/ratelimiter.c  |  4 +-
- drivers/net/wireguard/send.c                  | 19 +++----
- drivers/net/wireguard/socket.c                | 12 -----
- tools/testing/selftests/wireguard/netns.sh    | 54 +++++++++++++++++--
- .../wireguard/qemu/arch/powerpc64le.config    |  1 +
- 6 files changed, 72 insertions(+), 33 deletions(-)
-
+diff --git a/tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config b/tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config
+index 990c510a9cfa..f52f1e2bc7f6 100644
+--- a/tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config
++++ b/tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config
+@@ -10,3 +10,4 @@ CONFIG_CMDLINE_BOOL=y
+ CONFIG_CMDLINE="console=hvc0 wg.success=hvc1"
+ CONFIG_SECTION_MISMATCH_WARN_ONLY=y
+ CONFIG_FRAME_WARN=1280
++CONFIG_THREAD_SHIFT=14
 -- 
 2.26.2
 
