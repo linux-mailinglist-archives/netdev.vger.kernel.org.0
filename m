@@ -2,93 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0112D1C73CE
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC7D71C7427
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729192AbgEFPPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 11:15:14 -0400
-Received: from smtprelay0241.hostedemail.com ([216.40.44.241]:60978 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728821AbgEFPPN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:15:13 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id B51AB246E;
-        Wed,  6 May 2020 15:15:11 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3871:3872:3874:4250:4321:5007:8603:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12048:12220:12296:12297:12438:12663:12740:12760:12895:13069:13161:13229:13255:13311:13357:13439:14096:14097:14181:14659:14721:21080:21627:30054:30055:30069:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: bears23_ff76a315943a
-X-Filterd-Recvd-Size: 2948
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf10.hostedemail.com (Postfix) with ESMTPA;
-        Wed,  6 May 2020 15:15:09 +0000 (UTC)
-Message-ID: <2208e464cd8bd399cfb9b49abb5aed211f27b3a8.camel@perches.com>
-Subject: Re: [PATCH -next] iwlwifi: pcie: Use bitwise instead of arithmetic
- operator for flags
-From:   Joe Perches <joe@perches.com>
-To:     Luciano Coelho <luciano.coelho@intel.com>,
-        Samuel Zou <zou_wei@huawei.com>, johannes.berg@intel.com,
-        emmanuel.grumbach@intel.com, linuxwifi@intel.com,
-        kvalo@codeaurora.org, davem@davemloft.net,
-        Julia Lawall <julia.lawall@lip6.fr>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, cocci <cocci@systeme.lip6.fr>
-Date:   Wed, 06 May 2020 08:15:08 -0700
-In-Reply-To: <bfd6b3a7db0c50cd3d084510bd43c9e540688edd.camel@intel.com>
-References: <1588734423-33988-1-git-send-email-zou_wei@huawei.com>
-         <f8b258e0c8bb073c445090e637195df2fc989543.camel@perches.com>
-         <bfd6b3a7db0c50cd3d084510bd43c9e540688edd.camel@intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
+        id S1729364AbgEFPU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 11:20:59 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:38474 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728821AbgEFPU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:20:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1588778458; x=1620314458;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   mime-version;
+  bh=Qxz8YBQJMe0tFK5dHJ7HQYaq14w58zhXEZxLWPuYNeE=;
+  b=BC/sLKzDzARc1pQD/WzENadvk+JG4VV1rJZFWINw4+iGfN/1vkBz/vXW
+   RPsmLPCiyKzkOtQYD7r+1hTMugPzpgq6r+HHWSA5tpD7a7scq7OCXGetp
+   jrZxMWGf2f4vl/Mvy8pOTbTxTgEM8rrW/oJ4xb+uFBWzSWwhea76UzLDx
+   o=;
+IronPort-SDR: Ld8GMMi8Y88G+q0R5NC/a+LOiUcKRXJWMBHS1Vb9+4Qrjo2+QlB9FolQxA3SnFKWn7ta1QRKpi
+ +ozPwuTuHyJA==
+X-IronPort-AV: E=Sophos;i="5.73,359,1583193600"; 
+   d="scan'208";a="43082169"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 06 May 2020 15:20:56 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id A05A4A2171;
+        Wed,  6 May 2020 15:20:52 +0000 (UTC)
+Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 6 May 2020 15:20:51 +0000
+Received: from u886c93fd17d25d.ant.amazon.com (10.43.162.37) by
+ EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 6 May 2020 15:20:43 +0000
+From:   SeongJae Park <sjpark@amazon.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+CC:     SeongJae Park <sjpark@amazon.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        "Al Viro" <viro@zeniv.linux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        <sj38.park@gmail.com>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        SeongJae Park <sjpark@amazon.de>, <snu@amazon.com>,
+        <amit@kernel.org>, <stable@vger.kernel.org>
+Subject: Re: Re: Re: Re: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
+Date:   Wed, 6 May 2020 17:20:25 +0200
+Message-ID: <20200506152025.22085-1-sjpark@amazon.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200506144151.GZ2869@paulmck-ThinkPad-P72> (raw)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.37]
+X-ClientProxiedBy: EX13d09UWC004.ant.amazon.com (10.43.162.114) To
+ EX13D31EUA001.ant.amazon.com (10.43.165.15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-05-06 at 16:51 +0300, Luciano Coelho wrote:
-> On Tue, 2020-05-05 at 20:19 -0700, Joe Perches wrote:
-> > On Wed, 2020-05-06 at 11:07 +0800, Samuel Zou wrote:
-> > > This silences the following coccinelle warning:
-> > > 
-> > > "WARNING: sum of probable bitmasks, consider |"
+On Wed, 6 May 2020 07:41:51 -0700 "Paul E. McKenney" <paulmck@kernel.org> wrote:
+
+> On Wed, May 06, 2020 at 02:59:26PM +0200, SeongJae Park wrote:
+> > TL; DR: It was not kernel's fault, but the benchmark program.
 > > 
-> > I suggest instead ignoring bad and irrelevant warnings.
+> > So, the problem is reproducible using the lebench[1] only.  I carefully read
+> > it's code again.
 > > 
-> > PREFIX_LEN is 32 not 0x20 or BIT(5)
-> > PCI_DUMP_SIZE is 352
+> > Before running the problem occurred "poll big" sub test, lebench executes
+> > "context switch" sub test.  For the test, it sets the cpu affinity[2] and
+> > process priority[3] of itself to '0' and '-20', respectively.  However, it
+> > doesn't restore the values to original value even after the "context switch" is
+> > finished.  For the reason, "select big" sub test also run binded on CPU 0 and
+> > has lowest nice value.  Therefore, it can disturb the RCU callback thread for
+> > the CPU 0, which processes the deferred deallocations of the sockets, and as a
+> > result it triggers the OOM.
 > > 
-> > > diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-> > []
-> > > @@ -109,9 +109,9 @@ void iwl_trans_pcie_dump_regs(struct iwl_trans *trans)
-> > >  
-> > >  	/* Alloc a max size buffer */
-> > >  	alloc_size = PCI_ERR_ROOT_ERR_SRC +  4 + PREFIX_LEN;
-> > > -	alloc_size = max_t(u32, alloc_size, PCI_DUMP_SIZE + PREFIX_LEN);
-> > > -	alloc_size = max_t(u32, alloc_size, PCI_MEM_DUMP_SIZE + PREFIX_LEN);
-> > > -	alloc_size = max_t(u32, alloc_size, PCI_PARENT_DUMP_SIZE + PREFIX_LEN);
-> > > +	alloc_size = max_t(u32, alloc_size, PCI_DUMP_SIZE | PREFIX_LEN);
-> > > +	alloc_size = max_t(u32, alloc_size, PCI_MEM_DUMP_SIZE | PREFIX_LEN);
-> > > +	alloc_size = max_t(u32, alloc_size, PCI_PARENT_DUMP_SIZE | PREFIX_LEN);
-> > >  
-> > >  	buf = kmalloc(alloc_size, GFP_ATOMIC);
-> > >  	if (!buf)
+> > We confirmed the problem disappears by offloading the RCU callbacks from the
+> > CPU 0 using rcu_nocbs=0 boot parameter or simply restoring the affinity and/or
+> > priority.
+> > 
+> > Someone _might_ still argue that this is kernel problem because the problem
+> > didn't occur on the old kernels prior to the Al's patches.  However, setting
+> > the affinity and priority was available because the program received the
+> > permission.  Therefore, it would be reasonable to blame the system
+> > administrators rather than the kernel.
+> > 
+> > So, please ignore this patchset, apology for making confuse.  If you still has
+> > some doubts or need more tests, please let me know.
+> > 
+> > [1] https://github.com/LinuxPerfStudy/LEBench
+> > [2] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L820
+> > [3] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L822
 > 
-> Yeah, those macros are clearly not bitmasks.  I'm dropping this patch.
+> Thank you for chasing this down!
+> 
+> I have had this sort of thing on my list as a potential issue, but given
+> that it is now really showing up, it sounds like it is time to bump
+> up its priority a bit.  Of course there are limits, so if userspace is
+> running at any of the real-time priorities, making sufficient CPU time
+> available to RCU's kthreads becomes userspace's responsibility.  But if
+> everything is running at SCHED_OTHER (which is this case here, correct?),
 
-Can the cocci script that generated this warning
+Correct.
 
-scripts/coccinelle/misc/orplus.cocci
+> then it is reasonable for RCU to do some work to avoid this situation.
 
-be dropped or improved to validate the likelihood that
-the defines or constants used are more likely than
-not are bit values?
+That would be also great!
 
-Maybe these should be defined as hex or BIT or BIT_ULL
-or GENMASK or the like?
+> 
+> But still, yes, the immediate job is fixing the benchmark.  ;-)
+
+Totally agreed.
+
+> 
+> 							Thanx, Paul
+> 
+> PS.  Why not just attack all potential issues on my list?  Because I
+>      usually learn quite a bit from seeing the problem actually happen.
+>      And sometimes other changes in RCU eliminate the potential issue
+>      before it has a chance to happen.
+
+Sounds interesting, I will try some of those in my spare time ;)
 
 
-Right now it seems it just tests for two constants.
-
-
+Thanks,
+SeongJae Park
