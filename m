@@ -2,125 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7741C75B2
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 18:05:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9581C75C3
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 18:09:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729431AbgEFQFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 12:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
+        id S1730030AbgEFQIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 12:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729418AbgEFQFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 12:05:55 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63BEC061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 09:05:54 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id 23so2530196qkf.0
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 09:05:54 -0700 (PDT)
+        with ESMTP id S1729418AbgEFQIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 12:08:53 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168D8C061A0F;
+        Wed,  6 May 2020 09:08:53 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id x73so1827306lfa.2;
+        Wed, 06 May 2020 09:08:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nrpp2T2sh7pMsL3PvoDrM5y2fqkhAxlK1sJUOu9QA9o=;
-        b=Tr83kb/F9G2VBLcHu7x37pNyprDcqbHUZZYB0zOv2RBd+1BHPvHEVKPvXuZIqMslJt
-         WRxGZOJikpMi5eBYxtKo6yrCLuOJLq7J+DscjOjKTQnnrd1h3WeKKt2DEqB7XbQZtVAL
-         HjYOHAHRL+9QCK2KRb/fFvNSoqI3wQyv9hUkPCYhePvKjEIK1pVf4JsL1DBCueLXJJOL
-         n3UuzknRW57RSsLv47vAxS4EZIkUvB4yn9aPp6niVhcBLpY/PAfsvJL15u7Cnwdkb1Dd
-         2SzCfTuoD4Kp2AXjh5L2+oXey2AyrWZ8VC4q2ZxpUBuGIddwsFS8rNWnuZ5sOm5uYuVr
-         5Zbg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=if5qgNlscRmpJPzG9Z3gnyaxZ0iIBynHsVjhr1Dlctg=;
+        b=eyheCbu3Wl4jWBLi16KmwXC3GUZfSR8nyYtYtWYhHzvEAIgisTgNndWd+2/Dmn4Fu3
+         1/oZO1IAPn6+vOlMTBDdlshLkF7l+t81nke8HHUt/QG94oWJqyYv91zK/x8cIh2JkzYY
+         SiY6Acsis1eShDIqatzkzYNXXugeecGd27RlgztExMUWAy7ZyTg+hq899Yt9jwljo6NT
+         oTUEHhn9ghJ9p/zYohANqpmvT5SK6bz6NY+aHmz3H2IcRdRkvmLUpcLxtsR0QBj8Wziu
+         Vesw1YJeeNK8g67yToViiZOrPAaIQJBycwOimRy0oehpSLGYq4Y838PHAzbbzZBH0LR8
+         sHlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nrpp2T2sh7pMsL3PvoDrM5y2fqkhAxlK1sJUOu9QA9o=;
-        b=LwnZFr1Nt6krLPKreMkWRx+blVMi1n6PBitL/FUE+kqCxNTvE9k2yLXYJYbH4OJ9xp
-         XGIphW61jxWcqQXO5oeJ9bH89fdgjCFf4zIJIE1MvCWjTpoSRy7Uz+mRqkGhmfIQqeCU
-         hegqvbWuYdyvBAf7z0dNvPlrKKyQggmthCgtEDxv6OsJ6IOirJ3sMWTWDGARDNhEWFyt
-         XBi6OITGbk3tHJv8NYiNDkLQV15vSRcMJKrxMlJKEfth6BDSekxSel6Fap7KMyJMG+Yi
-         hLOhixTosNjo592mBEAgMSP+IJywPbSViUW3+bRkUFOeGh6bXwA9j///xyoeZmGAB9Ad
-         YLJA==
-X-Gm-Message-State: AGi0PuZqFhRtWALfif0fbRpvoxh5TrtTWyjRppGD83ig8zl6r+ujn9eM
-        qOSCeiCeZEgxJzDhu4FYVFI1Wg==
-X-Google-Smtp-Source: APiQypLzPtnV2MpsE+MV+xNWnkm78v9QYjriPWAQthkfamFRT+pYJFignvWriiKBLQ0XkQ6F6UKvgw==
-X-Received: by 2002:a05:620a:219a:: with SMTP id g26mr9661209qka.228.1588781153930;
-        Wed, 06 May 2020 09:05:53 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id q9sm1879221qkm.130.2020.05.06.09.05.53
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 06 May 2020 09:05:53 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jWMYS-0002c7-Qa; Wed, 06 May 2020 13:05:52 -0300
-Date:   Wed, 6 May 2020 13:05:52 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Niranjana Vishwanathapura <niranjana.vishwanathapura@intel.com>,
-        rds-devel@oss.oracle.com,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        target-devel@vger.kernel.org, Ursula Braun <ubraun@linux.ibm.com>
-Subject: Re: [PATCH rdma-next] RDMA: Allow ib_client's to fail when add() is
- called
-Message-ID: <20200506160552.GA9993@ziepe.ca>
-References: <20200421172440.387069-1-leon@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=if5qgNlscRmpJPzG9Z3gnyaxZ0iIBynHsVjhr1Dlctg=;
+        b=iHd6nt9IcjtqEYsGsJqaL+Ll2ZHXzeeiPgI56bQu28tzvsIQF6Zans+BjzBHEQ+mlH
+         RGAZTGfnqd0Ea1NjUv/J+qPTeiFL0oX7WYgdeyaMQMGqlKLRXOwrDgMmo97RaiSaXInZ
+         ZXVgpqFxoxTRXF61ciDivbaTPMNjigKok40ddkjV2JeEH5EewhwXMvs3Nhg+R7q8dDIL
+         /iZkLNy9iOy2QQLGXwLSnvoDdgX2aHZyFGEXenxhWzm4UacrZGsG1FLfbifjx3qi+8Yw
+         mDkR7R3U1ZkAa+RGfP6xAm+oAiC8xDB2P4n1+2muBXCIg6VQCO77+NK16aPAQt4lCYVR
+         elGw==
+X-Gm-Message-State: AGi0Pubbj+LscFvT8jQXhpE4Wb50njhBJxa/SLBTyRtOC1NumS8Hncwf
+        qYCXi8wQk9yFseJvujT18WGR2M1y6pR28Fo/WZ0=
+X-Google-Smtp-Source: APiQypIkTeJRFv9Pb7bCztfKTE6r/gqFVdDFRACyd8JugwVuYo9Fzohu16CEHDV6PG4WB2H/mhehSpBDfnzO3UangrI=
+X-Received: by 2002:ac2:4105:: with SMTP id b5mr5786969lfi.94.1588781331398;
+ Wed, 06 May 2020 09:08:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200421172440.387069-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <1588706059-4208-1-git-send-email-jrdr.linux@gmail.com>
+ <0bfe4a8a-0d91-ef9b-066f-2ea7c68571b3@nvidia.com> <CAFqt6zZMsQkOdjAb2k1EjwX=DtZ8gKfbRzwvreHOX-0vJLngNg@mail.gmail.com>
+ <20200506100649.GI17863@quack2.suse.cz> <CAFqt6zYaNkJ4AfVzutXS=JsN4fE41ZAvnw03vHWpdyiRHY1m_w@mail.gmail.com>
+ <20200506125930.GJ17863@quack2.suse.cz>
+In-Reply-To: <20200506125930.GJ17863@quack2.suse.cz>
+From:   Souptick Joarder <jrdr.linux@gmail.com>
+Date:   Wed, 6 May 2020 21:38:40 +0530
+Message-ID: <CAFqt6zZztn_AiaGAhV+_uwrnVdKY-xLsxOwYBt-zGmLaat+OhQ@mail.gmail.com>
+Subject: Re: [RFC] mm/gup.c: Updated return value of {get|pin}_user_pages_fast()
+To:     Jan Kara <jack@suse.cz>
+Cc:     John Hubbard <jhubbard@nvidia.com>,
+        Tony Luck <tony.luck@intel.com>, fenghua.yu@intel.com,
+        Rob Springer <rspringer@google.com>,
+        Todd Poynor <toddpoynor@google.com>, benchan@chromium.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        santosh.shilimkar@oracle.com,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Ira Weiny <ira.weiny@intel.com>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        inux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "open list:ANDROID DRIVERS" <devel@driverdev.osuosl.org>,
+        tee-dev@lists.linaro.org, Linux-MM <linux-mm@kvack.org>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 08:24:40PM +0300, Leon Romanovsky wrote:
-> From: Jason Gunthorpe <jgg@mellanox.com>
-> 
-> When a client is added it isn't allowed to fail, but all the client's have
-> various failure paths within their add routines.
-> 
-> This creates the very fringe condition where the client was added, failed
-> during add and didn't set the client_data. The core code will then still
-> call other client_data centric ops like remove(), rename(), get_nl_info(),
-> and get_net_dev_by_params() with NULL client_data - which is confusing and
-> unexpected.
-> 
-> If the add() callback fails, then do not call any more client ops for the
-> device, even remove.
-> 
-> Remove all the now redundant checks for NULL client_data in ops callbacks.
-> 
-> Update all the add() callbacks to return error codes
-> appropriately. EOPNOTSUPP is used for cases where the ULP does not support
-> the ib_device - eg because it only works with IB.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> Acked-by: Ursula Braun <ubraun@linux.ibm.com>
-> ---
->  drivers/infiniband/core/cm.c                  | 24 ++++++++++--------
->  drivers/infiniband/core/cma.c                 | 23 +++++++++--------
->  drivers/infiniband/core/device.c              | 16 ++++++++++--
->  drivers/infiniband/core/mad.c                 | 17 ++++++++++---
->  drivers/infiniband/core/multicast.c           | 12 ++++-----
->  drivers/infiniband/core/sa_query.c            | 22 ++++++++--------
->  drivers/infiniband/core/user_mad.c            | 22 ++++++++--------
->  drivers/infiniband/core/uverbs_main.c         | 24 +++++++++---------
->  drivers/infiniband/ulp/ipoib/ipoib_main.c     | 15 ++++-------
->  .../infiniband/ulp/opa_vnic/opa_vnic_vema.c   | 12 ++++-----
->  drivers/infiniband/ulp/srp/ib_srp.c           | 21 ++++++++--------
->  drivers/infiniband/ulp/srpt/ib_srpt.c         | 25 ++++++++-----------
->  include/rdma/ib_verbs.h                       |  2 +-
->  net/rds/ib.c                                  | 21 ++++++++++------
->  net/smc/smc_ib.c                              | 10 +++-----
->  15 files changed, 142 insertions(+), 124 deletions(-)
+On Wed, May 6, 2020 at 6:29 PM Jan Kara <jack@suse.cz> wrote:
+>
+> On Wed 06-05-20 17:51:39, Souptick Joarder wrote:
+> > On Wed, May 6, 2020 at 3:36 PM Jan Kara <jack@suse.cz> wrote:
+> > >
+> > > On Wed 06-05-20 02:06:56, Souptick Joarder wrote:
+> > > > On Wed, May 6, 2020 at 1:08 AM John Hubbard <jhubbard@nvidia.com> wrote:
+> > > > >
+> > > > > On 2020-05-05 12:14, Souptick Joarder wrote:
+> > > > > > Currently {get|pin}_user_pages_fast() have 3 return value 0, -errno
+> > > > > > and no of pinned pages. The only case where these two functions will
+> > > > > > return 0, is for nr_pages <= 0, which doesn't find a valid use case.
+> > > > > > But if at all any, then a -ERRNO will be returned instead of 0, which
+> > > > > > means {get|pin}_user_pages_fast() will have 2 return values -errno &
+> > > > > > no of pinned pages.
+> > > > > >
+> > > > > > Update all the callers which deals with return value 0 accordingly.
+> > > > >
+> > > > > Hmmm, seems a little shaky. In order to do this safely, I'd recommend
+> > > > > first changing gup_fast/pup_fast so so that they return -EINVAL if
+> > > > > the caller specified nr_pages==0, and of course auditing all callers,
+> > > > > to ensure that this won't cause problems.
+> > > >
+> > > > While auditing it was figured out, there are 5 callers which cares for
+> > > > return value
+> > > > 0 of gup_fast/pup_fast. What problem it might cause if we change
+> > > > gup_fast/pup_fast
+> > > > to return -EINVAL and update all the callers in a single commit ?
+> > >
+> > > Well, first I'd ask a different question: Why do you want to change the
+> > > current behavior? It's not like the current behavior is confusing.  Callers
+> > > that pass >0 pages can happily rely on the simple behavior of < 0 return on
+> > > error or > 0 return if we mapped some pages. Callers that can possibly ask
+> > > to map 0 pages can get 0 pages back - kind of expected - and I don't see
+> > > any benefit in trying to rewrite these callers to handle -EINVAL instead...
+> >
+> > Callers with a request to map 0 pages doesn't have a valid use case. But if any
+> > caller end up doing it mistakenly, -errno should be returned to caller
+> > rather than 0
+> > which will indicate more precisely that map 0 pages is not a valid
+> > request from caller.
+>
+> Well, I believe this depends on the point of view. Similarly as reading 0
+> bytes is successful, we could consider mapping 0 pages successful as well.
+> And there can be valid cases where number of pages to map is computed from
+> some input and when 0 pages should be mapped, it is not a problem and your
+> change would force such callers to special case this with explicitely
+> checking for 0 pages to map and not calling GUP in that case at all.
+>
+> I'm not saying what you propose is necessarily bad, I just say I don't find
+> it any better than the current behavior and so IMO it's not worth the
+> churn. Now if you can come up with some examples of current in-kernel users
+> who indeed do get the handling of the return value wrong, I could be
+> convinced otherwise.
 
-Applied to for-next
+There are 5 callers of {get|pin}_user_pages_fast().
 
-Jason
+arch/ia64/kernel/err_inject.c#L145
+staging/gasket/gasket_page_table.c#L489
+
+Checking return value 0 doesn't make sense for above 2.
+
+drivers/platform/goldfish/goldfish_pipe.c#L277
+net/rds/rdma.c#L165
+drivers/tee/tee_shm.c#L262
+
+These 3 callers have calculated the no of pages value before passing it to
+{get|pin}_user_pages_fast(). But if they end up passing nr_pages <= 0, a return
+value of either 0 or -EINVAL doesn't going to harm any existing
+behavior of callers.
+
+IMO, it is safe to return -errno for nr_pages <= 0, for
+{get|pin}_user_pages_fast().
