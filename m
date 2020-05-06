@@ -2,101 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72D3B1C78FF
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 20:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 276701C7915
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 20:14:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730188AbgEFSJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 14:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729331AbgEFSJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 14:09:13 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE6BC061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 11:09:11 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id d206so3555681ybh.7
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 11:09:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=8rkuEK/M4k/6mBO+AczCR37g8EM1TmsE8zFkIPSGk+8=;
-        b=AMYjxIXKJW/bAphWl99wnFxTJsi22v33F5RhKTheV6i9daqvgTogypva+jyGwL54d7
-         dLI0ibNR42sF4kFvTMrC6EtLWduk8yAAc8AEACPAlyUPqcdhMREKzIg5AXd9hrPxwgbf
-         QDI9e5m6eh6DI6ao4PVYNy2vwRNjQzHSFJh/oqF1cw3uRfN+mZLDw90SoyE9zkYs3/Fl
-         4kfdPKdOw6gSBLqjCmFRI8Ms5VVDqVpPq/ToVl1v0C6x1/86yu+rzqWMGZ4ueeoBvaJN
-         8JrWcExHxPMq+6i3rE87/dTS/ZDyI97tdOeURXt/cA7wRuwxHIAxBFBO5YPvTFBEWlQH
-         2+eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=8rkuEK/M4k/6mBO+AczCR37g8EM1TmsE8zFkIPSGk+8=;
-        b=QPvSu4ZJDM1bkpiuE6dRo5VHgrKcEJdrivz96mGi1gkRBAkL/t1nQYUeoRtx/KvTma
-         X9DDg2obtle+m0HjWDAOxs6+cpgNrs4oKkEloGmHjFOXosXxl3VlTy7Ywy0SYJaqvA0C
-         AOypS9gAdaEFf4nNjh99ec249xwrPsMyTzmbxRpOliMGVyte4hJDSlW0IHe15/6AM5Or
-         ofX7Ogol5ls53JToXRLAr2Gtgc/z2cfOBD3GF8r3ILbY26EbTfk2vJ4Dj+JQ7B3cTAAo
-         kKoNGra1xL5796mOsk+nCoipISl9w9Gs1JmI6vBR3ZbaVBr7EB6WL123B2Xqaxk3yeZO
-         zPtg==
-X-Gm-Message-State: AGi0PuYPKMY8TtVKqC9k3EJ8wjeQwDzhiN/dy4tqjXahyAbEM8SPnmZ4
-        fkjqsxrG40gmKgONQ9c0YzCi9lg=
-X-Google-Smtp-Source: APiQypKqLbs/RZosZRMJDPo72e/mYm7mF66WU6WRD+BwlY75AjEkSSlU7KGZAQsSqMkeBN5ZyF1fUwo=
-X-Received: by 2002:a25:c08b:: with SMTP id c133mr15532456ybf.286.1588788550657;
- Wed, 06 May 2020 11:09:10 -0700 (PDT)
-Date:   Wed, 6 May 2020 11:09:09 -0700
-In-Reply-To: <20200506174844.pedoqguvunnwmnih@kafai-mbp>
-Message-Id: <20200506180909.GI241848@google.com>
-Mime-Version: 1.0
-References: <20200505202730.70489-1-sdf@google.com> <20200505202730.70489-2-sdf@google.com>
- <20200506070025.kidlrs7ngtaue2nu@kafai-mbp> <20200506162802.GH241848@google.com>
- <20200506174844.pedoqguvunnwmnih@kafai-mbp>
-Subject: Re: [PATCH bpf-next v2 1/5] selftests/bpf: generalize helpers to
- control background listener
-From:   sdf@google.com
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, Andrey Ignatov <rdna@fb.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S1729882AbgEFSOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 14:14:25 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:40632 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728082AbgEFSOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 14:14:25 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 046IEArB011357;
+        Wed, 6 May 2020 13:14:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1588788850;
+        bh=i7DjKQcoyf7U+urYm+53KnmXgF7F3NKsTjU/TUs3Ap4=;
+        h=From:To:CC:Subject:Date;
+        b=Hbyib1JuMEfN/K7GtiOT/POTCc+fGJl0VEjbG2JF5TSq+sk7jXeUcUdXE4ogchrSX
+         sqgEoS+yLARGLRQ6qNmL8OWWZKHxW+Y3+oi4w65lbBqNxuZ6LL5fL6+mnstaCAeMlQ
+         /uGuo1YN3o8AyJzMZ9FGcflaTByVgDUEhgESOn8s=
+Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 046IEAVl093986
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 May 2020 13:14:10 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 6 May
+ 2020 13:14:09 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 6 May 2020 13:14:09 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 046IE8Qu064547;
+        Wed, 6 May 2020 13:14:09 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        Tero Kristo <t-kristo@ti.com>
+CC:     <netdev@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next 0/3] net: ethernet: ti: am65x-cpts: follow up dt bindings update
+Date:   Wed, 6 May 2020 21:13:58 +0300
+Message-ID: <20200506181401.28699-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/06, Martin KaFai Lau wrote:
-> On Wed, May 06, 2020 at 09:28:02AM -0700, sdf@google.com wrote:
-> > On 05/06, Martin KaFai Lau wrote:
-> > > On Tue, May 05, 2020 at 01:27:26PM -0700, Stanislav Fomichev wrote:
-> > > > Move the following routines that let us start a background listener
-> > > > thread and connect to a server by fd to the test_prog:
-> > > > * start_server_thread - start background INADDR_ANY thread
-> > > > * stop_server_thread - stop the thread
-> > > > * connect_to_fd - connect to the server identified by fd
-> > > >
-> > > > These will be used in the next commit.
-> > > The refactoring itself looks fine.
-> >
-> > > If I read it correctly, it is a simple connect() test.
-> > > I am not sure a thread is even needed.  accept() is also unnecessary.
-> > > Can all be done in one thread?
-> > I'm looking at the socket address after connection is established (to
-> If I read it correctly, it is checking the local address (getsockname())
-> of the client's connect-ed() fd instead of the server's accept-ed() fd.
+Hi Rob, David,
 
-> > verify that the port is the one we were supposed to be using), so
-> > I fail to understand how accept() is unnecessary. Care to clarify?
-> >
-> > I thought about doing a "listen() > non-blocking connect() > accept()"
-> It should not need non-blocking connect().
-> The client connect() (3WHS) can still finish before the server side
-> accept() is called.  If the test does not need the accept-ed() fd,
-> then calling it or not is optional.
-Ah, I see what you're saying, in this case I can expose extra
-helper from network_helpers to do only socket+bind part for
-the server. Thanks for the explanation!
+This series is follow update for  TI A65x/J721E Common platform time sync (CPTS)
+driver [1] to implement  DT bindings review comments from
+Rob Herring <robh@kernel.org> [2].
+ - "reg" and "compatible" properties are made required for CPTS DT nodes which
+   also required to change K3 CPSW driver to use of_platform_device_create()
+   instead of of_platform_populate() for proper CPTS and MDIO initialization
+ - minor DT bindings format changes
+ - K3 CPTS example added to K3 MCU CPSW bindings
 
-> Just took a quick look, sk_assign.c and test_sock_addr.c could be
-> good examples.  They use SO_RCVTIMEO/SO_SNDTIMEO for timeout also.
+[1] https://lwn.net/Articles/819313/
+[2] https://lwn.net/ml/linux-kernel/20200505040419.GA8509@bogus/
+Grygorii Strashko (3):
+  net: ethernet: ti: am65-cpsw-nuss: use of_platform_device_create() for
+    mdio
+  dt-binding: net: ti: am65x-cpts: make reg and compatible required
+  arm64: dts: ti: k3-am65/j721e-mcu: update cpts node
 
-> > in a single thread instead of background thread, but then decided that
-> > it's better to reuse existing helpers and do proper connection instead
-> > of writing all this new code.
+ .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 15 ++++++++++-
+ .../bindings/net/ti,k3-am654-cpts.yaml        | 25 +++++++------------
+ arch/arm64/boot/dts/ti/k3-am65-mcu.dtsi       |  4 ++-
+ .../boot/dts/ti/k3-j721e-mcu-wakeup.dtsi      |  4 ++-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      | 24 +++++++++++++-----
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h      |  2 ++
+ 6 files changed, 49 insertions(+), 25 deletions(-)
+
+-- 
+2.17.1
+
