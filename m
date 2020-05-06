@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7AB51C70F1
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 14:55:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED9211C70F6
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 14:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728710AbgEFMz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 08:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35322 "EHLO
+        id S1728673AbgEFMzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 08:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728681AbgEFMzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 08:55:22 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEF8C061A41
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 05:55:21 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id e16so2069771wra.7
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 05:55:21 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728690AbgEFMzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 08:55:24 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E66C061A41
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 05:55:23 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id z6so2543136wml.2
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 05:55:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FvXoRuhTO+OxNF0cbAiPa+Gek9SWWsXi4MoNMSh2OYs=;
-        b=Xd8Rqi9daAx3iYnyrr5t/LQBsjNXCh6OSPWaI9M/K3s+TxH5LqpakcBYtZsTyKM4uE
-         Jy2pmxpnXS4RaOha9xrU2R7MpdTkjacg9UQ9k7Iq0txMc59CSIDTA/CL2LmWwXeJjJye
-         bLmHzddGCL5J474DqbL+cG22404VPn7/ldIwU=
+        bh=9noGy2vUCBDrAPWtCIVb+XgnFMrL8ORFJKJL+2qZn1o=;
+        b=subZHrfeZrSkhLKvlxF+cgcnZvaZFhQFzfmVPLrwXBschatyTmNWKrbbe562MZumg6
+         IIi2doG3i+DNThndw/6qYjNKqOIiqzBjl1HmeeKoHjkGdmBqm50iPvDUdvIy5/oeL7iY
+         yH3Iag4R8DLXKOEfYgHp17jOsXKYSaZSbH/UM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FvXoRuhTO+OxNF0cbAiPa+Gek9SWWsXi4MoNMSh2OYs=;
-        b=p6VME61wZdwYx43P8AMoUc0Xv+exBJWqt7XwgiZxiFx6kPWvz2m9uhJGpiErYrHW7k
-         3rdTmHcZf2h+4rKP6kfeBrye7fBgGCPqFZ9/8cqjLH58LCHxDnX0u3ZkZxVH07iyBvcZ
-         U5hU0YIOzl5PRHN7BVtDU8mk9ekQ1JaKctabPc2NyGsBI/s4USktP6hfMzyiUKUo/g0k
-         I+QVyukwW4O3nJqIXwM4JojoJsyrup/nBzyw23J9AfdbUiSmBtv5Xl1pt88BiIoM83Tb
-         NEgSq5VC/pfN6VwJkPKJrjc5nVH0nZXUlj1ONXXXScy8YSAcBXbO9MtBDMeDBM4oGGnT
-         y3gQ==
-X-Gm-Message-State: AGi0PubiFxBJIAKn3V492lm7PQAnnnXB6gB8/fcUbrfJD9RWGdZK51wr
-        +3dxsRQWn89MIJ4wJMLWG8lbv/5WU+w=
-X-Google-Smtp-Source: APiQypIw9GWmg8+jYFghcU+u+Ul8dI8H/abrLQvalKNXzcXrvflItoBKf5rx8JTbnK9RGVPl9Mggyw==
-X-Received: by 2002:a05:6000:1209:: with SMTP id e9mr8969813wrx.45.1588769720299;
-        Wed, 06 May 2020 05:55:20 -0700 (PDT)
+        bh=9noGy2vUCBDrAPWtCIVb+XgnFMrL8ORFJKJL+2qZn1o=;
+        b=jYb2HNWw7rvxO2gLHvVKFlau83jzwOnO+vceUI+zsjfxyYbAQkIjcKKM0dX3WBoQag
+         yAWKNoIjaCcKainGmqgOFaIQ6GyY7YHeRsRux7jBDJf6UZ3U0Ol/rWp79GC2CpSyzHkJ
+         zRn4bxQcrKG1EQsTXmW42VMkQ+0Ywh+9ttmHqNUbjePb0mIxC/I6B9/iOAOhIeMN3Sqq
+         dhK7wc+r/IkN6BwISIsRtXK8AXCPiMti4jfQ6VHYVJhe4VZadvbM5JF1784cF4FWBIn3
+         +DL77vNbqIYgLFcKr69GW8DLWIP9IPO+QNYSUxvY9GL0R+MSwGQE55GHHXHZfNwDUsw/
+         OF/g==
+X-Gm-Message-State: AGi0Pubup62y8U8voFyk4jGc5BitBk+iEOq8vAME+JXcJbr/Jgtf5OKE
+        AyEjiH3PDYu4n0Q57wDSvyvqsgrOcWo=
+X-Google-Smtp-Source: APiQypJ1UOHuoN8Fu7Vf0zRSExRkqTtB6p/AZfDaJOIe9cEGDR7TXWpBep19ZVSoGE4+cN7Lv9lFLQ==
+X-Received: by 2002:a05:600c:2a52:: with SMTP id x18mr4205205wme.37.1588769721770;
+        Wed, 06 May 2020 05:55:21 -0700 (PDT)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id i1sm2647901wrx.22.2020.05.06.05.55.19
+        by smtp.gmail.com with ESMTPSA id k23sm2681520wmi.46.2020.05.06.05.55.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2020 05:55:19 -0700 (PDT)
+        Wed, 06 May 2020 05:55:21 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     dccp@vger.kernel.org, kernel-team@cloudflare.com,
@@ -52,11 +52,10 @@ Cc:     dccp@vger.kernel.org, kernel-team@cloudflare.com,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH bpf-next 03/17] inet: Store layer 4 protocol in inet_hashinfo
-Date:   Wed,  6 May 2020 14:54:59 +0200
-Message-Id: <20200506125514.1020829-4-jakub@cloudflare.com>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH bpf-next 04/17] inet: Extract helper for selecting socket from reuseport group
+Date:   Wed,  6 May 2020 14:55:00 +0200
+Message-Id: <20200506125514.1020829-5-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.25.3
 In-Reply-To: <20200506125514.1020829-1-jakub@cloudflare.com>
 References: <20200506125514.1020829-1-jakub@cloudflare.com>
@@ -67,60 +66,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make it possible to identify the protocol of sockets stored in hashinfo
-without looking up a socket.
+Prepare for calling into reuseport from __inet_lookup_listener as well.
 
-Subsequent patches make use the new field at the socket lookup time to
-ensure that BPF program selects only sockets with matching protocol.
-
-Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- include/net/inet_hashtables.h | 3 +++
- net/dccp/proto.c              | 2 +-
- net/ipv4/tcp_ipv4.c           | 2 +-
- 3 files changed, 5 insertions(+), 2 deletions(-)
+ net/ipv4/inet_hashtables.c | 29 ++++++++++++++++++++---------
+ 1 file changed, 20 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index ad64ba6a057f..6072dfbd1078 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -144,6 +144,9 @@ struct inet_hashinfo {
- 	unsigned int			lhash2_mask;
- 	struct inet_listen_hashbucket	*lhash2;
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 2bbaaf0c7176..ab64834837c8 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -246,6 +246,21 @@ static inline int compute_score(struct sock *sk, struct net *net,
+ 	return score;
+ }
  
-+	/* Layer 4 protocol of the stored sockets */
-+	int				protocol;
++static inline struct sock *lookup_reuseport(struct net *net, struct sock *sk,
++					    struct sk_buff *skb, int doff,
++					    __be32 saddr, __be16 sport,
++					    __be32 daddr, unsigned short hnum)
++{
++	struct sock *reuse_sk = NULL;
++	u32 phash;
 +
- 	/* All the above members are written once at bootup and
- 	 * never written again _or_ are predominantly read-access.
- 	 *
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index 4af8a98fe784..c826419e68e6 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -45,7 +45,7 @@ EXPORT_SYMBOL_GPL(dccp_statistics);
- struct percpu_counter dccp_orphan_count;
- EXPORT_SYMBOL_GPL(dccp_orphan_count);
++	if (sk->sk_reuseport) {
++		phash = inet_ehashfn(net, daddr, hnum, saddr, sport);
++		reuse_sk = reuseport_select_sock(sk, phash, skb, doff);
++	}
++	return reuse_sk;
++}
++
+ /*
+  * Here are some nice properties to exploit here. The BSD API
+  * does not allow a listening sock to specify the remote port nor the
+@@ -265,21 +280,17 @@ static struct sock *inet_lhash2_lookup(struct net *net,
+ 	struct inet_connection_sock *icsk;
+ 	struct sock *sk, *result = NULL;
+ 	int score, hiscore = 0;
+-	u32 phash = 0;
  
--struct inet_hashinfo dccp_hashinfo;
-+struct inet_hashinfo dccp_hashinfo = { .protocol = IPPROTO_DCCP };
- EXPORT_SYMBOL_GPL(dccp_hashinfo);
- 
- /* the maximum queue length for tx in packets. 0 is no limit */
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 6c05f1ceb538..77e4f4e4c73c 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -87,7 +87,7 @@ static int tcp_v4_md5_hash_hdr(char *md5_hash, const struct tcp_md5sig_key *key,
- 			       __be32 daddr, __be32 saddr, const struct tcphdr *th);
- #endif
- 
--struct inet_hashinfo tcp_hashinfo;
-+struct inet_hashinfo tcp_hashinfo = { .protocol = IPPROTO_TCP };
- EXPORT_SYMBOL(tcp_hashinfo);
- 
- static u32 tcp_v4_init_seq(const struct sk_buff *skb)
+ 	inet_lhash2_for_each_icsk_rcu(icsk, &ilb2->head) {
+ 		sk = (struct sock *)icsk;
+ 		score = compute_score(sk, net, hnum, daddr,
+ 				      dif, sdif, exact_dif);
+ 		if (score > hiscore) {
+-			if (sk->sk_reuseport) {
+-				phash = inet_ehashfn(net, daddr, hnum,
+-						     saddr, sport);
+-				result = reuseport_select_sock(sk, phash,
+-							       skb, doff);
+-				if (result)
+-					return result;
+-			}
++			result = lookup_reuseport(net, sk, skb, doff,
++						  saddr, sport, daddr, hnum);
++			if (result)
++				return result;
++
+ 			result = sk;
+ 			hiscore = score;
+ 		}
 -- 
 2.25.3
 
