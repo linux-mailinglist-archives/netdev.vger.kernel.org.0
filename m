@@ -2,65 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D26A1C724F
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 16:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0F441C726C
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 16:04:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728792AbgEFOAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 10:00:08 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:47761 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728629AbgEFOAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 10:00:08 -0400
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id E123A60013;
-        Wed,  6 May 2020 14:00:02 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, sd@queasysnail.net,
-        mstarovoitov@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: macsec: fix rtnl locking issue
-Date:   Wed,  6 May 2020 15:58:30 +0200
-Message-Id: <20200506135830.587297-1-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.26.2
+        id S1728913AbgEFOEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 10:04:45 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:37996 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726268AbgEFOEp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 10:04:45 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 9BDB53F1DD6459DB08CA;
+        Wed,  6 May 2020 22:04:42 +0800 (CST)
+Received: from huawei.com (10.175.124.28) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Wed, 6 May 2020
+ 22:04:35 +0800
+From:   Jason Yan <yanaijie@huawei.com>
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <udknight@gmail.com>,
+        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <x86@kernel.org>, <hpa@zytor.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <andriin@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@chromium.org>, <lukenels@cs.washington.edu>,
+        <xi.wang@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Jason Yan <yanaijie@huawei.com>
+Subject: [PATCH v2] bpf, i386: remove unneeded conversion to bool
+Date:   Wed, 6 May 2020 22:03:52 +0800
+Message-ID: <20200506140352.37154-1-yanaijie@huawei.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.28]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netdev_update_features() must be called with the rtnl lock taken. Not
-doing so triggers a warning, as ASSERT_RTNL() is used in
-__netdev_update_features(), the first function called by
-netdev_update_features(). Fix this.
+The '==' expression itself is bool, no need to convert it to bool again.
+This fixes the following coccicheck warning:
 
-Fixes: c850240b6c41 ("net: macsec: report real_dev features when HW offloading is enabled")
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+arch/x86/net/bpf_jit_comp32.c:1478:50-55: WARNING: conversion to bool
+not needed here
+arch/x86/net/bpf_jit_comp32.c:1479:50-55: WARNING: conversion to bool
+not needed here
+
+Signed-off-by: Jason Yan <yanaijie@huawei.com>
 ---
- drivers/net/macsec.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ v2: change the name 'x32' to 'i386'.
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index d4034025c87c..d0d31cb99180 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -2641,11 +2641,12 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
- 	if (ret)
- 		goto rollback;
- 
--	rtnl_unlock();
- 	/* Force features update, since they are different for SW MACSec and
- 	 * HW offloading cases.
- 	 */
- 	netdev_update_features(dev);
-+
-+	rtnl_unlock();
- 	return 0;
- 
- rollback:
+ arch/x86/net/bpf_jit_comp32.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/net/bpf_jit_comp32.c b/arch/x86/net/bpf_jit_comp32.c
+index 66cd150b7e54..96fde03aa987 100644
+--- a/arch/x86/net/bpf_jit_comp32.c
++++ b/arch/x86/net/bpf_jit_comp32.c
+@@ -1475,8 +1475,8 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
+ 	for (i = 0; i < insn_cnt; i++, insn++) {
+ 		const s32 imm32 = insn->imm;
+ 		const bool is64 = BPF_CLASS(insn->code) == BPF_ALU64;
+-		const bool dstk = insn->dst_reg == BPF_REG_AX ? false : true;
+-		const bool sstk = insn->src_reg == BPF_REG_AX ? false : true;
++		const bool dstk = insn->dst_reg != BPF_REG_AX;
++		const bool sstk = insn->src_reg != BPF_REG_AX;
+ 		const u8 code = insn->code;
+ 		const u8 *dst = bpf2ia32[insn->dst_reg];
+ 		const u8 *src = bpf2ia32[insn->src_reg];
 -- 
-2.26.2
+2.21.1
 
