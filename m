@@ -2,88 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16ABC1C6DFA
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 12:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8281C6E28
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 12:15:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729101AbgEFKGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 06:06:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:53192 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726354AbgEFKGx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 06:06:53 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id E1564AF85;
-        Wed,  6 May 2020 10:06:53 +0000 (UTC)
-Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 6FC051E12B1; Wed,  6 May 2020 12:06:49 +0200 (CEST)
-Date:   Wed, 6 May 2020 12:06:49 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Souptick Joarder <jrdr.linux@gmail.com>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
-        Tony Luck <tony.luck@intel.com>, fenghua.yu@intel.com,
-        Rob Springer <rspringer@google.com>,
-        Todd Poynor <toddpoynor@google.com>, benchan@chromium.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        santosh.shilimkar@oracle.com,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Jan Kara <jack@suse.cz>, Ira Weiny <ira.weiny@intel.com>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        inux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "open list:ANDROID DRIVERS" <devel@driverdev.osuosl.org>,
-        tee-dev@lists.linaro.org, Linux-MM <linux-mm@kvack.org>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com
-Subject: Re: [RFC] mm/gup.c: Updated return value of
- {get|pin}_user_pages_fast()
-Message-ID: <20200506100649.GI17863@quack2.suse.cz>
-References: <1588706059-4208-1-git-send-email-jrdr.linux@gmail.com>
- <0bfe4a8a-0d91-ef9b-066f-2ea7c68571b3@nvidia.com>
- <CAFqt6zZMsQkOdjAb2k1EjwX=DtZ8gKfbRzwvreHOX-0vJLngNg@mail.gmail.com>
+        id S1729114AbgEFKPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 06:15:06 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:58645 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726354AbgEFKPG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 06:15:06 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E833922EDE;
+        Wed,  6 May 2020 12:15:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1588760104;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nAAw+xDlfmFE1PfS+rEU4ez9NFhnFnvHiViZ3xvNAjw=;
+        b=EqiyYX8rMFKm4ilqILTgN1nc1EwQkfTsMRvUtxdbWGDMPV//E1lru0wM/ukjLURl1X48OP
+        suuwpvyMemfPmvR3qgZJnnwXlzuKxxEmGxXjSBH8fRm8/1qJXxxp/olDPtcEQEmsriMABz
+        MQang03KtcdxXv6b0rpAvfz54QJGy4A=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFqt6zZMsQkOdjAb2k1EjwX=DtZ8gKfbRzwvreHOX-0vJLngNg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 06 May 2020 12:15:01 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Matthias May <matthias.may@neratec.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC net-next] net: phy: at803x: add cable diagnostics support
+In-Reply-To: <00e8202e-1786-27f4-3bfc-accc5a01787d@neratec.com>
+References: <20200503181517.4538-1-michael@walle.cc>
+ <00e8202e-1786-27f4-3bfc-accc5a01787d@neratec.com>
+User-Agent: Roundcube Webmail/1.4.4
+Message-ID: <c09c5c851e64f374fe9f7f575113f432@walle.cc>
+X-Sender: michael@walle.cc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 06-05-20 02:06:56, Souptick Joarder wrote:
-> On Wed, May 6, 2020 at 1:08 AM John Hubbard <jhubbard@nvidia.com> wrote:
-> >
-> > On 2020-05-05 12:14, Souptick Joarder wrote:
-> > > Currently {get|pin}_user_pages_fast() have 3 return value 0, -errno
-> > > and no of pinned pages. The only case where these two functions will
-> > > return 0, is for nr_pages <= 0, which doesn't find a valid use case.
-> > > But if at all any, then a -ERRNO will be returned instead of 0, which
-> > > means {get|pin}_user_pages_fast() will have 2 return values -errno &
-> > > no of pinned pages.
-> > >
-> > > Update all the callers which deals with return value 0 accordingly.
-> >
-> > Hmmm, seems a little shaky. In order to do this safely, I'd recommend
-> > first changing gup_fast/pup_fast so so that they return -EINVAL if
-> > the caller specified nr_pages==0, and of course auditing all callers,
-> > to ensure that this won't cause problems.
+Am 2020-05-06 11:01, schrieb Matthias May:
+> I've worked with this PHY quite often and we've hacked together some
+> support for the CDT in uboot.
 > 
-> While auditing it was figured out, there are 5 callers which cares for
-> return value
-> 0 of gup_fast/pup_fast. What problem it might cause if we change
-> gup_fast/pup_fast
-> to return -EINVAL and update all the callers in a single commit ?
+> Have you done any tests with the cable on the other side being plugged 
+> in?
 
-Well, first I'd ask a different question: Why do you want to change the
-current behavior? It's not like the current behavior is confusing.  Callers
-that pass >0 pages can happily rely on the simple behavior of < 0 return on
-error or > 0 return if we mapped some pages. Callers that can possibly ask
-to map 0 pages can get 0 pages back - kind of expected - and I don't see
-any benefit in trying to rewrite these callers to handle -EINVAL instead...
+yes
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+> 
+> With the cable being plugged in, we something (1 out of 10 or so)
+> observed that the test returns with a failure.
+> --> AT803X_CDT_STATUS_STAT_FAIL in AT803X_CDT_STATUS
+> 
+> Often you get the correct result if you simply try again. Sometimes
+> however it gets into a "stuck" state where it just
+> returns FAIL for ~3~10 seconds. After some that it seems to recover
+> and gets the correct result again.
+
+its actually pretty stable for the following sequence (see also code
+above):
+
+restart AN -> wait 1.5s -> start test
+
+Only thing I've noticed is that if you perform the test without
+waiting for the AN to complete beforehand there might be some
+failed states. Seems like the "restart an" doesn't work while
+AN is still running. But that seems to be the link partner
+who disturbs the measurement.
+And it seems that AN is a requirement to do successful testing
+(or to silence the link partner I guess).
+
+-michael
