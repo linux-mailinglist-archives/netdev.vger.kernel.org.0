@@ -2,143 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF511C71C2
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 15:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C96261C71CF
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 15:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728729AbgEFNag convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 6 May 2020 09:30:36 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:36296 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728667AbgEFNae (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 09:30:34 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-144-w3BmCtTrPTq4FU6pS-g0LA-1; Wed, 06 May 2020 09:30:31 -0400
-X-MC-Unique: w3BmCtTrPTq4FU6pS-g0LA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8A9851902EA1;
-        Wed,  6 May 2020 13:30:29 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.192.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 344A4605DD;
-        Wed,  6 May 2020 13:30:26 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 9/9] selftests/bpf: Add verifier test for d_path helper
-Date:   Wed,  6 May 2020 15:29:46 +0200
-Message-Id: <20200506132946.2164578-10-jolsa@kernel.org>
-In-Reply-To: <20200506132946.2164578-1-jolsa@kernel.org>
-References: <20200506132946.2164578-1-jolsa@kernel.org>
+        id S1728403AbgEFNjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 09:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728081AbgEFNjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 09:39:32 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C144C061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 06:39:31 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id x25so2655282wmc.0
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 06:39:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lcPD9YjV/lamWRQSC6aAzi/tnH6cdrik+yDLBVMFIX0=;
+        b=CinjkHs9KXZN0PJwhUFVa212qoM6imGI1DTALy31/ixpg04lFlwGAuBNlLUgzuKYEE
+         /fiE02ozGdrCRzL8fiGRhHp3F9YxgiHlhvqzxYjseocMvjfD3i3VT6xCFbIIreMd0trY
+         DPYDa5/9XW1EOcsFMOS/HyaaRjigZKndoHUXyW2rlKOMniYyiuCSCIYAVzUPrv0/7bY2
+         fNPvPrRl8a3sACj/D4A5UmrjWXl8nwKkyBG0LL07AKiRirCRB6yEEhMTZ2NqhHyLiCi5
+         6lkKPexP4ZcsurGbPuSfTntrZWdQS0Nrf1ap6JCXVQonhAAt6VWxsuQ97W1WTdb2cV0Y
+         FxTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lcPD9YjV/lamWRQSC6aAzi/tnH6cdrik+yDLBVMFIX0=;
+        b=RISJ+0h6t3sLp3c8ftDOS84AsFpEEhDy0NVvZoySnGr15ZXJmjcw7HsqsnHlMYkt6U
+         pbBdWQTjk3fbB05iRRjvOwgt/Y2RusLn9WM7oOpZZicYggC3Qw0OoY2NrRk9pu4sSwFh
+         8jj9lmYX2gJ6vpGg2ZbJnkN7v1egtQuk9jtpbwfPIWbA9IkGvoszqMWFTbsn1w1xon2p
+         KQN8EP/O42DUVT2YnAu6W/8LHLKdTycZlqyZoEPnQI5ukrxJ9X+C/TjZkCRfe+CDV0n6
+         JTaSb1B3pLrsxOcUkqcEtMv0+dEzSF81hQ0dyGvqCkTZJbtdGC7Au2u0PXA7D3xJystK
+         fBJQ==
+X-Gm-Message-State: AGi0Pub9Q3XmIgiRv1XT7iccYr6gyjdRdTGRYYcjPOo4TL8bd5vEvKpI
+        1H2SigUs274f/SB3IU4YLHEXR8E9TLLHk047WYXD2w==
+X-Google-Smtp-Source: APiQypLwj5OWLAeM2fQIAflfyNaGBDZ5ALHJ4TpehOjRpbh8rUzcClerYA53WxygCHy0bqNSf6upmdBsPSmnJfu5fZQ=
+X-Received: by 2002:a1c:f20f:: with SMTP id s15mr4241471wmc.114.1588772369252;
+ Wed, 06 May 2020 06:39:29 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+References: <20200506035106.187948-1-edumazet@google.com>
+In-Reply-To: <20200506035106.187948-1-edumazet@google.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Wed, 6 May 2020 09:38:51 -0400
+Message-ID: <CACSApvZWWFnTHV7KCQOekh_265_vKGk=3+P4qbwY+EpwHO2QyQ@mail.gmail.com>
+Subject: Re: [PATCH net] selftests: net: tcp_mmap: clear whole
+ tcp_zerocopy_receive struct
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Arjun Roy <arjunroy@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding verifier test for attaching tracing program and
-calling d_path helper from within and testing that it's
-allowed for dentry_open function and denied for 'd_path'
-function with appropriate error.
+On Tue, May 5, 2020 at 11:51 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> We added fields in tcp_zerocopy_receive structure,
+> so make sure to clear all fields to not pass garbage to the kernel.
+>
+> We were lucky because recent additions added 'out' parameters,
+> still we need to clean our reference implementation, before folks
+> copy/paste it.
+>
+> Fixes: c8856c051454 ("tcp-zerocopy: Return inq along with tcp receive zerocopy.")
+> Fixes: 33946518d493 ("tcp-zerocopy: Return sk_err (if set) along with tcp receive zerocopy.")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Arjun Roy <arjunroy@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/test_verifier.c   | 13 ++++++-
- tools/testing/selftests/bpf/verifier/d_path.c | 37 +++++++++++++++++++
- 2 files changed, 49 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/verifier/d_path.c
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-index 21a1ce219c1c..1e38179f0dbf 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -114,6 +114,7 @@ struct bpf_test {
- 		bpf_testdata_struct_t retvals[MAX_TEST_RUNS];
- 	};
- 	enum bpf_attach_type expected_attach_type;
-+	const char *kfunc;
- };
- 
- /* Note we want this to be 64 bit aligned so that the end of our array is
-@@ -961,8 +962,18 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
- 		attr.log_level = 4;
- 	attr.prog_flags = pflags;
- 
-+	if (prog_type == BPF_PROG_TYPE_TRACING && test->kfunc) {
-+		attr.attach_btf_id = libbpf_find_vmlinux_btf_id(test->kfunc,
-+						attr.expected_attach_type);
-+	}
-+
- 	fd_prog = bpf_load_program_xattr(&attr, bpf_vlog, sizeof(bpf_vlog));
--	if (fd_prog < 0 && !bpf_probe_prog_type(prog_type, 0)) {
-+
-+	/* BPF_PROG_TYPE_TRACING requires more setup and
-+	 * bpf_probe_prog_type won't give correct answer
-+	 */
-+	if (fd_prog < 0 && (prog_type != BPF_PROG_TYPE_TRACING) &&
-+	    !bpf_probe_prog_type(prog_type, 0)) {
- 		printf("SKIP (unsupported program type %d)\n", prog_type);
- 		skips++;
- 		goto close_fds;
-diff --git a/tools/testing/selftests/bpf/verifier/d_path.c b/tools/testing/selftests/bpf/verifier/d_path.c
-new file mode 100644
-index 000000000000..b988396379a7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/verifier/d_path.c
-@@ -0,0 +1,37 @@
-+{
-+	"d_path accept",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_MOV64_IMM(BPF_REG_6, 0),
-+	BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_6, 0),
-+	BPF_LD_IMM64(BPF_REG_3, 8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_d_path),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACING,
-+	.expected_attach_type = BPF_TRACE_FENTRY,
-+	.kfunc = "dentry_open",
-+},
-+{
-+	"d_path reject",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_1, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_MOV64_IMM(BPF_REG_6, 0),
-+	BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_6, 0),
-+	BPF_LD_IMM64(BPF_REG_3, 8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_d_path),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.errstr = "helper call is not allowed in probe",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_TRACING,
-+	.expected_attach_type = BPF_TRACE_FENTRY,
-+	.kfunc = "d_path",
-+},
--- 
-2.25.4
+Thank you for fixing the self test!
 
+> ---
+>  tools/testing/selftests/net/tcp_mmap.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/net/tcp_mmap.c b/tools/testing/selftests/net/tcp_mmap.c
+> index 35505b31e5cc092453ea7b72d9dba45bed2d6549..62171fd638c817dabe2d988f3cfae74522112584 100644
+> --- a/tools/testing/selftests/net/tcp_mmap.c
+> +++ b/tools/testing/selftests/net/tcp_mmap.c
+> @@ -165,9 +165,10 @@ void *child_thread(void *arg)
+>                         socklen_t zc_len = sizeof(zc);
+>                         int res;
+>
+> +                       memset(&zc, 0, sizeof(zc));
+>                         zc.address = (__u64)((unsigned long)addr);
+>                         zc.length = chunk_size;
+> -                       zc.recv_skip_hint = 0;
+> +
+>                         res = getsockopt(fd, IPPROTO_TCP, TCP_ZEROCOPY_RECEIVE,
+>                                          &zc, &zc_len);
+>                         if (res == -1)
+> --
+> 2.26.2.526.g744177e7f7-goog
+>
