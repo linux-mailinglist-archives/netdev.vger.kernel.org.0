@@ -2,83 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64EAB1C7C75
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 928151C7C7D
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:33:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729787AbgEFVbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 17:31:12 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:50710 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726927AbgEFVbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 17:31:12 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 046LV8NS099833;
-        Wed, 6 May 2020 16:31:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588800668;
-        bh=1E4Aar7eIyqkUMWdPEbVw1rTuDiTTWmcpK8rxV5WG2g=;
-        h=From:To:Subject:Date;
-        b=x/JTzjYIe4Scls675CEJQvpuOinkt2f0uV+O3b4+0TVQYr8gN1+nzMZr6vJCNKAZL
-         qpqYN81Yw6kdoGfdGCv3inv8/LNyjAP0NG+BivKHx2YhYdxrL2/wv+h2wc3XceTcWN
-         3rr/I3OkXUGsv/H+1OevYMKt6qCt1zo4Wd46E5+o=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 046LV8p3056330
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 May 2020 16:31:08 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 6 May
- 2020 16:31:08 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 6 May 2020 16:31:08 -0500
-Received: from uda0868495.fios-router.home (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 046LV7UB025450;
-        Wed, 6 May 2020 16:31:08 -0500
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [net PATCH v2] net: hsr: fix incorrect type usage for protocol variable
-Date:   Wed, 6 May 2020 17:31:07 -0400
-Message-ID: <20200506213107.28291-1-m-karicheri2@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729398AbgEFVdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 17:33:23 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:55147 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726927AbgEFVdW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 17:33:22 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id a0b16c4b;
+        Wed, 6 May 2020 21:20:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-transfer-encoding;
+         s=mail; bh=Nu6DVaIpf9mUhchBmoy5f+VStO8=; b=e3WsBxjWZfEYOP9QvFqD
+        OmE2sHfT56fKf88qNogjzq0WVWl/cwsPrw8pzi21B+e/YkrCWp9itVcoDMVbsixa
+        2Z1K6sl35E/htEp+9AxH49oTB+ueyS44wCfJdz5iUsNo6TJlfpG9RacvNkOCqTyD
+        jGQ8AoR87tT9Am7MGSVeS6Vofm6qmz83Yq3tUuCPMaxA366en/UYZq24JXxODmIc
+        itVEfH9JJXYxDsoLor4Pwv1Ju5SZyw8NbRN5JsjbnjmUtAZyVftetCHs0594i8VU
+        F6QxMKDgCnf+Msc2pPeV5lRFlt/wGso49qumNx1oC+S2khDgxgkOsRsFDfq8BLwN
+        EA==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a6c0d54c (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 6 May 2020 21:20:32 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net 0/5] wireguard fixes for 5.7-rc5
+Date:   Wed,  6 May 2020 15:33:01 -0600
+Message-Id: <20200506213306.1344212-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix following sparse checker warning:-
+Hi Dave,
 
-net/hsr/hsr_slave.c:38:18: warning: incorrect type in assignment (different base types)
-net/hsr/hsr_slave.c:38:18:    expected unsigned short [unsigned] [usertype] protocol
-net/hsr/hsr_slave.c:38:18:    got restricted __be16 [usertype] h_proto
-net/hsr/hsr_slave.c:39:25: warning: restricted __be16 degrades to integer
-net/hsr/hsr_slave.c:39:57: warning: restricted __be16 degrades to integer
+With Ubuntu and Debian having backported this into their kernels, we're
+finally seeing testing from places we hadn't seen prior, which is nice.
+With that comes more fixes:
 
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- v2 : Added Acked-by from Vinicius Costa Gomes
- net/hsr/hsr_slave.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+1) The CI for PPC64 was running with extremely small stacks for 64-bit,
+   causing spurious crashes in surprising places.
 
-diff --git a/net/hsr/hsr_slave.c b/net/hsr/hsr_slave.c
-index f4b9f7a3ce51..25b6ffba26cd 100644
---- a/net/hsr/hsr_slave.c
-+++ b/net/hsr/hsr_slave.c
-@@ -18,7 +18,7 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
- {
- 	struct sk_buff *skb = *pskb;
- 	struct hsr_port *port;
--	u16 protocol;
-+	__be16 protocol;
- 
- 	if (!skb_mac_header_was_set(skb)) {
- 		WARN_ONCE(1, "%s: skb invalid", __func__);
+2) There's was an old leftover routing loop restriction, which no longer
+   makes sense given the queueing architecture, and was causing problems
+   for people who really did want nested routing.
+
+3) Not yielding our kthread on CONFIG_PREEMPT_VOLUNTARY systems caused
+   RCU stalls and other issues, reported by Wang Jian, with the fix
+   suggested by Sultan Alsawaf.
+
+4) Clang spewed warnings in a selftest for CONFIG_IPV6=n, reported by
+   Arnd Bergmann.
+
+5) A complicated if statement was simplified to an assignment while also
+   making the likely/unlikely hinting more correct and simple, and
+   increasing readability, suggested by Sultan.
+
+Patches (2) and (3) have Fixes: lines and are probably good candidates
+for stable.
+
+Thanks,
+Jason
+
+Jason A. Donenfeld (5):
+  wireguard: selftests: use normal kernel stack size on ppc64
+  wireguard: socket: remove errant restriction on looping to self
+  wireguard: send/receive: cond_resched() when processing worker
+    ringbuffers
+  wireguard: selftests: initalize ipv6 members to NULL to squelch clang
+    warning
+  wireguard: send/receive: use explicit unlikely branch instead of
+    implicit coalescing
+
+ drivers/net/wireguard/receive.c               | 15 +++---
+ drivers/net/wireguard/selftest/ratelimiter.c  |  4 +-
+ drivers/net/wireguard/send.c                  | 19 +++----
+ drivers/net/wireguard/socket.c                | 12 -----
+ tools/testing/selftests/wireguard/netns.sh    | 54 +++++++++++++++++--
+ .../wireguard/qemu/arch/powerpc64le.config    |  1 +
+ 6 files changed, 72 insertions(+), 33 deletions(-)
+
 -- 
-2.17.1
+2.26.2
 
