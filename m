@@ -2,168 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 019201C7B4A
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 22:31:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 696811C7B4C
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 22:32:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728665AbgEFUbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 16:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725966AbgEFUbd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 16:31:33 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEF6C061A0F;
-        Wed,  6 May 2020 13:31:33 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49HSt76qF7z9sRY;
-        Thu,  7 May 2020 06:31:27 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1588797091;
-        bh=KqKCx/ji5Q8MNDlPdmAtbxR6gXS0SDdrL49oxUt0fjs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eQzEg2vLKY+eRIOixhgFyx61PBJFGcBv3S0WESeDWLlavZhLPkkK3Fb8D6yi9d69Z
-         Rlyia0v0r9PvEk5ndpNM+bV+pm2Czb4azbBQ7wf8je6t5IcSbfpKtZKmLSeDw9O/Hv
-         nB7ktELofJEzkewK/jACFZCpfaWYL7WQ5NXCyI+yEu2QoNSoyblu3LX5x1xku5ehxK
-         HcftZ/JxlOjuOmODXfTRO7P2/aluVZL1jNnqBJaoBYv/aVG/DgT+X+rH+JLnD4xOJg
-         RSelZQPNiYOylUoqBTHLeqQ4hhtHzCiLL/Pw/QpsT809M3Y8ozZdX3khl9/sFciwSC
-         gZ/Gj1IWHPvHg==
-Date:   Thu, 7 May 2020 06:31:25 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Amol Grover <frextrite@gmail.com>
-Cc:     Qian Cai <cai@lca.pw>, Dmitry Vyukov <dvyukov@google.com>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        syzbot <syzbot+1519f497f2f9f08183c6@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        "paul E. McKenney" <paulmck@kernel.org>,
-        "Joel Fernandes (Google)" <joel@joelfernandes.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Subject: Re: linux-next boot error: WARNING: suspicious RCU usage in
- ipmr_get_table
-Message-ID: <20200507063125.79827a7f@canb.auug.org.au>
-In-Reply-To: <20200506153941.GA16135@kernel-dev-lenovo>
-References: <000000000000df9a9805a455e07b@google.com>
-        <CACT4Y+YnjK+kq0pfb5fe-q1bqe2T1jq_mvKHf--Z80Z3wkyK1Q@mail.gmail.com>
-        <34558B83-103E-4205-8D3D-534978D5A498@lca.pw>
-        <20200506153941.GA16135@kernel-dev-lenovo>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/aJ3qZd9Qbn.Jw1EcTQ/PqS4";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S1728535AbgEFUci (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 16:32:38 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:43472 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727102AbgEFUci (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 16:32:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588797156;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1VXIoJyVGTqnv0xmGyjiKd0uopuusoRfelVhVxRM1M0=;
+        b=dW3kreN06TogibFj3ir5CE4exSsnCRLzFbg4EV2kEC/Jbc9JPmDLRBQSAL1TuOLvyegXmx
+        5h8BrPjhsZOO6/WVr66ZdUBTVKdXWJCC61ElRut9342rLlHzFhSq9zIphWRMx+FyYjOj/p
+        T8aQlH9LEpnbQ/2evrsYE5ZmCzxhMNk=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-199-W59yRL--OpeQnGv3LKEGIA-1; Wed, 06 May 2020 16:32:34 -0400
+X-MC-Unique: W59yRL--OpeQnGv3LKEGIA-1
+Received: by mail-wr1-f70.google.com with SMTP id f2so1933419wrm.9
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 13:32:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:from:mime-version
+         :subject:date:message-id:references:cc:in-reply-to:to;
+        bh=1VXIoJyVGTqnv0xmGyjiKd0uopuusoRfelVhVxRM1M0=;
+        b=MkW1C5dTe50vZ3oRiT6y6lxltB1RHMQkkGgm3dN+V9oSkRnLTHx2pZ5sO2NUfqtW2S
+         ZTy7E76Vv06pKJPxHwylJcNH+91GZbkcFkub6Yn9nF7CKPQYssePVW9IQEFD0MdOr9et
+         7eaHKALLqxUU9+IQDlhT4AUpNtPQ7uqrvtWyCalP9DVEl7zFgXiOPtIb2A97rz5XmX+o
+         VgCT++1hNALaw/m7PsDvqy/PPnjxoDzwczcHrmMLwEemdWPSrJbPAfXStQynxPIbVw7w
+         WuxOe1o/jvuAbdjkbxwOiufHPu0rNyJZiFdkWAGhsEKbvuo6QgU8mCKIhcF7HX+6VXv1
+         di1A==
+X-Gm-Message-State: AGi0Puah1XfoVlqqAZDoa3R+qjuT8S6WPEaXD0/xAc7a28j9gstzq9ot
+        /7LFMyfcpkpPwaau7xXbmL4Dyy+VDrvaDUeGrUZ2w6kvKGLfVeLVYdVnaKpymioxvSGlhYfQzBO
+        9czmBX1Ny2nZdE92g
+X-Received: by 2002:a1c:1985:: with SMTP id 127mr6863941wmz.13.1588797153238;
+        Wed, 06 May 2020 13:32:33 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJv7PfYup3I6WYvehP//5E0f+r/yzOVi/hf1AH4YTqq+ORSfr5YBr27by97VoXD8zbqpFHwKQ==
+X-Received: by 2002:a1c:1985:: with SMTP id 127mr6863918wmz.13.1588797152983;
+        Wed, 06 May 2020 13:32:32 -0700 (PDT)
+Received: from [192.168.3.122] (p5B0C679D.dip0.t-ipconnect.de. [91.12.103.157])
+        by smtp.gmail.com with ESMTPSA id i25sm4449561wml.43.2020.05.06.13.32.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 May 2020 13:32:32 -0700 (PDT)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   David Hildenbrand <david@redhat.com>
+Mime-Version: 1.0 (1.0)
+Subject: Re: [vhost:vhost 8/22] drivers/virtio/virtio_mem.c:1375:20: error: implicit declaration of function 'kzalloc'; did you mean 'vzalloc'?
+Date:   Wed, 6 May 2020 22:32:31 +0200
+Message-Id: <37C99432-6290-4130-B0AF-953DDE09D5DC@redhat.com>
+References: <20200506162751-mutt-send-email-mst@kernel.org>
+Cc:     David Hildenbrand <david@redhat.com>,
+        kbuild test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, Pankaj Gupta <pankaj.gupta.linux@gmail.com>
+In-Reply-To: <20200506162751-mutt-send-email-mst@kernel.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+X-Mailer: iPhone Mail (17D50)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/aJ3qZd9Qbn.Jw1EcTQ/PqS4
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-On Wed, 6 May 2020 21:09:41 +0530 Amol Grover <frextrite@gmail.com> wrote:
->
-> On Tue, Apr 28, 2020 at 09:56:59AM -0400, Qian Cai wrote:
-> >=20
-> > >> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D
-> > >> WARNING: suspicious RCU usage
-> > >> 5.7.0-rc3-next-20200428-syzkaller #0 Not tainted
-> > >> -----------------------------
-> > >> security/integrity/evm/evm_main.c:231 RCU-list traversed in non-read=
-er section!! =20
-> >=20
-> > Ditto.
-> >  =20
-> > >>=20
-> > >> other info that might help us debug this:
-> > >>=20
-> > >>=20
-> > >> rcu_scheduler_active =3D 2, debug_locks =3D 1
-> > >> 2 locks held by systemd/1:
-> > >> #0: ffff888098dfa450 (sb_writers#8){.+.+}-{0:0}, at: sb_start_write =
-include/linux/fs.h:1659 [inline]
-> > >> #0: ffff888098dfa450 (sb_writers#8){.+.+}-{0:0}, at: mnt_want_write+=
-0x3a/0xb0 fs/namespace.c:354
-> > >> #1: ffff8880988e8310 (&type->i_mutex_dir_key#6){++++}-{3:3}, at: ino=
-de_lock include/linux/fs.h:799 [inline]
-> > >> #1: ffff8880988e8310 (&type->i_mutex_dir_key#6){++++}-{3:3}, at: vfs=
-_setxattr+0x92/0xf0 fs/xattr.c:219
-> > >>=20
-> > >> stack backtrace:
-> > >> CPU: 0 PID: 1 Comm: systemd Not tainted 5.7.0-rc3-next-20200428-syzk=
-aller #0
-> > >> Hardware name: Google Google Compute Engine/Google Compute Engine, B=
-IOS Google 01/01/2011
-> > >> Call Trace:
-> > >> __dump_stack lib/dump_stack.c:77 [inline]
-> > >> dump_stack+0x18f/0x20d lib/dump_stack.c:118
-> > >> evm_protected_xattr+0x1c2/0x210 security/integrity/evm/evm_main.c:231
-> > >> evm_protect_xattr.isra.0+0xb6/0x3d0 security/integrity/evm/evm_main.=
-c:318
-> > >> evm_inode_setxattr+0xc4/0xf0 security/integrity/evm/evm_main.c:387
-> > >> security_inode_setxattr+0x18f/0x200 security/security.c:1297
-> > >> vfs_setxattr+0xa7/0xf0 fs/xattr.c:220
-> > >> setxattr+0x23d/0x330 fs/xattr.c:451
-> > >> path_setxattr+0x170/0x190 fs/xattr.c:470
-> > >> __do_sys_setxattr fs/xattr.c:485 [inline]
-> > >> __se_sys_setxattr fs/xattr.c:481 [inline]
-> > >> __x64_sys_setxattr+0xc0/0x160 fs/xattr.c:481
-> > >> do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
-> > >> entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> > >> RIP: 0033:0x7fe46005e67a
-> > >> Code: 48 8b 0d 21 18 2b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f=
- 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 bc 00 00 00 0f 05 <48> 3d 01 =
-f0 ff ff 73 01 c3 48 8b 0d ee 17 2b 00 f7 d8 64 89 01 48
-> > >> RSP: 002b:00007fffef423568 EFLAGS: 00000246 ORIG_RAX: 00000000000000=
-bc
-> > >> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe46005e67a
-> > >> RDX: 00007fffef4235e0 RSI: 0000556ea53ddf9b RDI: 0000556ea6766760
-> > >> RBP: 0000556ea53ddf9b R08: 0000000000000000 R09: 0000000000000030
-> > >> R10: 0000000000000020 R11: 0000000000000246 R12: 00007fffef4235e0
-> > >> R13: 0000000000000020 R14: 0000000000000000 R15: 0000556ea6751700
-> > >>=20
-> > >> security/device_cgroup.c:357 RCU-list traversed in non-reader sectio=
-n!! =20
-> >=20
-> > https://lore.kernel.org/lkml/20200406105950.GA2285@workstation-kernel-d=
-ev/
-> >=20
-> > The same story. The patch had been ignored for a while.
-> >  =20
+> Am 06.05.2020 um 22:28 schrieb Michael S. Tsirkin <mst@redhat.com>:
 >=20
-> Thank you for reminding! I will resend the patches and try to get them
-> merged ASAP.
+> =EF=BB=BFOn Tue, May 05, 2020 at 06:22:51PM +0200, David Hildenbrand wrote=
+:
+>>> On 05.05.20 18:20, Michael S. Tsirkin wrote:
+>>> On Tue, May 05, 2020 at 05:46:44PM +0200, David Hildenbrand wrote:
+>>>> On 05.05.20 17:44, Michael S. Tsirkin wrote:
+>>>>> On Tue, May 05, 2020 at 04:50:13PM +0200, David Hildenbrand wrote:
+>>>>>> On 05.05.20 16:15, kbuild test robot wrote:
+>>>>>>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.gi=
+t vhost
+>>>>>>> head:   da1742791d8c0c0a8e5471f181549c4726a5c5f9
+>>>>>>> commit: 7527631e900d464ed2d533f799cb0da2b29cc6f0 [8/22] virtio-mem: P=
+aravirtualized memory hotplug
+>>>>>>> config: x86_64-randconfig-b002-20200505 (attached as .config)
+>>>>>>> compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+>>>>>>> reproduce:
+>>>>>>>        git checkout 7527631e900d464ed2d533f799cb0da2b29cc6f0
+>>>>>>>        # save the attached .config to linux build tree
+>>>>>>>        make ARCH=3Dx86_64=20
+>>>>>>>=20
+>>>>>>> If you fix the issue, kindly add following tag as appropriate
+>>>>>>> Reported-by: kbuild test robot <lkp@intel.com>
+>>>>>>>=20
+>>>>>>> All error/warnings (new ones prefixed by >>):
+>>>>>>>=20
+>>>>>>>   drivers/virtio/virtio_mem.c: In function 'virtio_mem_probe':
+>>>>>>>>> drivers/virtio/virtio_mem.c:1375:20: error: implicit declaration o=
+f function 'kzalloc'; did you mean 'vzalloc'? [-Werror=3Dimplicit-function-d=
+eclaration]
+>>>>>>>     vdev->priv =3D vm =3D kzalloc(sizeof(*vm), GFP_KERNEL);
+>>>>>>>                       ^~~~~~~
+>>>>>>>                       vzalloc
+>>>>>>>>> drivers/virtio/virtio_mem.c:1375:18: warning: assignment makes poi=
+nter from integer without a cast [-Wint-conversion]
+>>>>>>>     vdev->priv =3D vm =3D kzalloc(sizeof(*vm), GFP_KERNEL);
+>>>>>>>                     ^
+>>>>>>>>> drivers/virtio/virtio_mem.c:1419:2: error: implicit declaration of=
+ function 'kfree'; did you mean 'vfree'? [-Werror=3Dimplicit-function-declar=
+ation]
+>>>>>>>     kfree(vm);
+>>>>>>>     ^~~~~
+>>>>>>>     vfree
+>>>>>>>   cc1: some warnings being treated as errors
+>>>>>>>=20
+>>>>>>> vim +1375 drivers/virtio/virtio_mem.c
+>>>>>>=20
+>>>>>> Guess we simply need
+>>>>>>=20
+>>>>>> #include <linux/slab.h>
+>>>>>>=20
+>>>>>> to make it work for that config.
+>>>>>=20
+>>>>>=20
+>>>>> OK I added that in the 1st commit that introduced virtio-mem.
+>>>>=20
+>>>> Thanks. I have some addon-patches ready, what's the best way to continu=
+e
+>>>> with these?
+>>>=20
+>>> If these are bugfixes, just respin the series (including this fix).
+>>=20
+>> There are two really minor bugfixes for corner-case error handling and
+>> one simplification. I can squash them and resend, makes things easier.
+>=20
+> OK try to do it ASAP, we don't want to repeat the drama we had with vdpa.
+>=20
 
-I have also applied the above patch to by fixes tree from today and
-will remove it when a solution is applied to some other tree.
+Yeah, did some more testing today. Will send v3 out tomorrow.
 
---=20
-Cheers,
-Stephen Rothwell
+Cheers!=
 
---Sig_/aJ3qZd9Qbn.Jw1EcTQ/PqS4
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6zHp0ACgkQAVBC80lX
-0Gwm1Qf/VrIceBzwt3yjxiUvEZgAwnP+zwIgFwvbW3CMzAf0QOjPM/Qx68+WaSjP
-N+OxxgKbLUZa5ccequc9doY0bjsUHtKeev5Z4rCptR7TYzlWltn+PmeJkDJ8qIEt
-I0WYrIrBzMO4Xf7LvC19OJbQdrQoRvIl+c6HExzXPlFFYdV9km0QRKxBtoEjW9S/
-WkTHDUm7Z3Zm9yqDquQnqhgaHiESplYc+L516d6EmDXkDIJfGqZk0HjhZOjQkLQA
-2wQUOrD+8E8dS7u/niRm63NlQeaq+DyHdVGqkmWZxaxzARspx89x5YPI7hKcG7rv
-SOBnOvswUIgoK1ZBHb0cWnPgFPPQCg==
-=+XnA
------END PGP SIGNATURE-----
-
---Sig_/aJ3qZd9Qbn.Jw1EcTQ/PqS4--
