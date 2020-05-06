@@ -2,117 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CF571C76E2
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 18:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36F291C772A
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 18:51:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730352AbgEFQpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 12:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43258 "EHLO
+        id S1730793AbgEFQvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 12:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729443AbgEFQpP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 12:45:15 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F915C061A0F;
-        Wed,  6 May 2020 09:45:15 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id a21so3068271ljj.11;
-        Wed, 06 May 2020 09:45:15 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730444AbgEFQsU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 12:48:20 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F83EC061A0F;
+        Wed,  6 May 2020 09:48:20 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id a21so3087597ljb.9;
+        Wed, 06 May 2020 09:48:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MMJ57z7gyime8JUbPPTxoLaqhFOSgbz56a0mqbrKKmU=;
-        b=rfsmTOrWnb8AT7pSMRewv20SzwAbPx5OxdUQSAlPuypsh96/n+P4HvmwqSHOwuF2q7
-         LyqsibwbMRusPiHBjOzIBAtAXGIjW/Ysxsp830wc04cezAVwVFKuHfreRP93sAcXwxI6
-         0EIcYyVCez9xGy9sS2Tlj2LFkWRKoHWaOOIbgQkSCt280OeIs594hg2kvApmgsuFtF2e
-         BB03lFupEiju1cv25/xg5yv5XFVdK6Sthf2DkUUnStx4A2I8RC/IUtvyw6MQ977GT2my
-         i+boDP1UnRbQ89qglSJKAqfP1P9WYyr6G8U3gsK15ef0o+cw1KdDszEwk3nnqOwCTIM3
-         nv5Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=IlweazdekYqS94U1Xj1r4OmuyOC1Nv3qU7YSDeCBRlM=;
+        b=AN3uHAOGD4JKrw8xuzUE7vpMKBJ5J8AJ/7JmX91Bmlt+py0Z7v16qngoQx+tkwuEVh
+         gDpn6xF1T0uGoHJmF8E0ezr227yjEmehoFoC75hYmJJ+AMM2GsbPnaoWgepSJv+B/vXa
+         PJT/p93k7uV1awCS2I4lP5lov50nMdUvCqkj9GU8Ua4CVJMEViYfoc9UKixCMp1mU4x4
+         A7iQ4nCVxlfU8K+H5FOSAfPpL6x8VVJBBx6YGA5VM+/2oythOg7/4oVj6mxPOt4mGHwK
+         ZcfNzwyMyLlHugrgi58R2Dr/grZOWsFfQPr+lewnPi6AYqpI44xbxkbMWTTIDE5JyL9I
+         pMUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MMJ57z7gyime8JUbPPTxoLaqhFOSgbz56a0mqbrKKmU=;
-        b=haRdtC+P6O5fTOXeddn1ZXcGVo8nmNfG4J4wytFWEosG8B9WfeBEAZCNlLMMA+Axve
-         PTfi0laRDbo82mwEruLL0K2GwuM9xXYHziOHbjIb8E0b4jwr9yyTfY/XuHmQPYggFOI6
-         /kFdHa499F0pL4Sv1PHTB/3IrLxveGZA9wDqelg71hP7w5xi2gnVGzaKp8idptK84tWj
-         9E45Z8QHxt+MoFClHAFlqMiUK6z1Rm9uoeWm83i3Zzyy1JwQA7YYA19QLvgmcp9I1AeM
-         +fvqNRLzmRGurypZ1VRs/0SVFCEh7Unxjx+UVuXz1dSxtBaMmnUEMGMW+5izIf4lfe2g
-         NwYg==
-X-Gm-Message-State: AGi0PuZxbRZA4KL5LEEVy1Z2gWnUpR9AgYnDkH0Ul1YlXI/cQlPkPuVs
-        jealIlI4woOu0q6qPKymvfqM543rEEV2/xEenCM=
-X-Google-Smtp-Source: APiQypITXZ7XxLeHgER4itpYg0oH53NvUDXD6iE/CeuNaxMVseabfH6r/ENyVn6h5hAkP262ZIYTbFUzmMETktxGj/0=
-X-Received: by 2002:a2e:b80b:: with SMTP id u11mr5753394ljo.212.1588783512822;
- Wed, 06 May 2020 09:45:12 -0700 (PDT)
+         :message-id:subject:to;
+        bh=IlweazdekYqS94U1Xj1r4OmuyOC1Nv3qU7YSDeCBRlM=;
+        b=uO4dendeLXG1enmS0QZc5KIIr+yCo+02YCdu8NKt10G6M9MKQyQum3bfOjuBcj/LkY
+         ul0kuFOiV1Q+bLsbV8NFiBesUXCCTaeiBI3SfmX2vN1J2NU4ysWl+u2ziFJPXZtQgn1C
+         Y1ScKLcs0VTedGZrDFvlQqObLNKKxM0MzGCXgPraDMIYAW4K0d5CE71QH5US/yNPVqjL
+         AbrcKJiUWOMMfIQ5ma3uV21v/0l7DcZhNzL5CJpfvInCPNvsNPjwfDE45OQqahZw2f0c
+         VB0ulBcjkadaSLOB21Vm0MjVp3odAG6Jj6Fj/m9yx4DLYXS2gFA+Nb5rv2sT0YY9D7Rb
+         BQlg==
+X-Gm-Message-State: AGi0PuYNXh4Qr5w2eWD5aD/Ai4ymzBWYpIJOq1Xq321d/DkNj32SIfpo
+        M7VKtellgQQy723UroGSAFHDn1gTF9SaeSIo1+CuCw==
+X-Google-Smtp-Source: APiQypI2hjOb8TJaiPFfUG3oI9wfgz7TFR6gbZ+bohBeA0V3R1j0LyOpgLqQFPK3JItM2/KSqOJkEQ1G8J7Bw/Zepdo=
+X-Received: by 2002:a2e:9011:: with SMTP id h17mr5839071ljg.138.1588783698970;
+ Wed, 06 May 2020 09:48:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200501192204.cepwymj3fln2ngpi@treble> <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
- <20200501195617.czrnfqqcxfnliz3k@treble> <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
- <20200502192105.xp2osi5z354rh4sm@treble> <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
- <20200505181108.hwcqanvw3qf5qyxk@treble> <20200505195320.lyphpnprn3sjijf6@ast-mbp.dhcp.thefacebook.com>
- <20200505202823.zkmq6t55fxspqazk@treble> <20200505235939.utnmzqsn22cec643@ast-mbp.dhcp.thefacebook.com>
- <20200506155343.7x3slq3uasponb6w@treble>
-In-Reply-To: <20200506155343.7x3slq3uasponb6w@treble>
+References: <CAADnVQJfD1dLVsfg4=c4f6ftRNF_4z0wELjFq8z=7voi-Ak=7w@mail.gmail.com>
+ <CAADnVQ+GOn4ZRGMZ+RScdSvM8gpXD9xbe3EYHCcUHdSs=i_NGA@mail.gmail.com>
+In-Reply-To: <CAADnVQ+GOn4ZRGMZ+RScdSvM8gpXD9xbe3EYHCcUHdSs=i_NGA@mail.gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 6 May 2020 09:45:01 -0700
-Message-ID: <CAADnVQJZ1rj1DB-Y=85itvfcHxnXVKjhJXpzqs6zZ6ZLpexhCQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool compatibility
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
+Date:   Wed, 6 May 2020 09:48:07 -0700
+Message-ID: <CAADnVQLKuLu8wMJNO5w3AtFqyUTMmwzpctJMw0ORyUJM=M3bwA@mail.gmail.com>
+Subject: Re: pulling cap_perfmon
+To:     Ingo Molnar <mingo@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
         bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        X86 ML <x86@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
+        Thomas Gleixner <tglx@linutronix.de>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 6, 2020 at 8:53 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+On Mon, May 4, 2020 at 1:52 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On Tue, May 05, 2020 at 04:59:39PM -0700, Alexei Starovoitov wrote:
-> > As far as workaround I prefer the following:
-> > From 94bbc27c5a70d78846a5cb675df4cf8732883564 Mon Sep 17 00:00:00 2001
-> > From: Alexei Starovoitov <ast@kernel.org>
-> > Date: Tue, 5 May 2020 16:52:41 -0700
-> > Subject: [PATCH] bpf,objtool: tweak interpreter compilation flags to help objtool
+> On Thu, Apr 30, 2020 at 11:03 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
 > >
-> > tbd
+> > Hi Ingo,
 > >
-> > Fixes: 3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
-> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> > Reported-by: Arnd Bergmann <arnd@arndb.de>
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > ---
-> >  include/linux/compiler-gcc.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > I'd like to pull
+> > commit 980737282232 ("capabilities: Introduce CAP_PERFMON to kernel
+> > and user space")
+> > into bpf-next to base my CAP_BPF work on top of it.
+> > could you please prepare a stable tag for me to pull ?
+> > Last release cycle Thomas did a tag for bpf+rt prerequisite patches and
+> > it all worked well during the merge window.
+> > I think that one commit will suffice.
 > >
-> > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-> > index d7ee4c6bad48..05104c3cc033 100644
-> > --- a/include/linux/compiler-gcc.h
-> > +++ b/include/linux/compiler-gcc.h
-> > @@ -171,4 +171,4 @@
-> >  #define __diag_GCC_8(s)
-> >  #endif
-> >
-> > -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
-> > +#define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
-> > --
-> > 2.23.0
-> >
-> > I've tested it with gcc 8,9,10 and clang 11 with FP=y and with ORC=y.
-> > All works.
-> > I think it's safer to go with frame pointers even for ORC=y considering
-> > all the pain this issue had caused. Even if objtool gets confused again
-> > in the future __bpf_prog_run() will have frame pointers and kernel stack
-> > unwinding can fall back from ORC to FP for that frame.
-> > wdyt?
+> > Thanks!
 >
-> It seems dangerous to me.  The GCC manual recommends against it.
+> Looks like Ingo is offline.
+> Thomas,
+> could you please create a branch for me to pull?
+>
+> Thanks!
 
-The manual can says that it's broken. That won't stop the world from using it.
-Just google projects that are using it. For example: qt, lz4, unreal engine, etc
-Telling compiler to disable gcse via flag is a guaranteed way to avoid
-that optimization that breaks objtool whereas messing with C code is nothing
-but guess work. gcc can still do gcse.
+ping
