@@ -2,112 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4631C6F62
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:33:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB4F1C6F77
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:41:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbgEFLdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 07:33:38 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:53606 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725887AbgEFLdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:33:38 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4784F6007C;
-        Wed,  6 May 2020 11:33:37 +0000 (UTC)
-Received: from us4-mdac16-58.ut7.mdlocal (unknown [10.7.66.29])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 45D762009A;
-        Wed,  6 May 2020 11:33:37 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.35])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C2C761C004F;
-        Wed,  6 May 2020 11:33:36 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EA1EF480059;
-        Wed,  6 May 2020 11:33:35 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 6 May 2020
- 12:33:29 +0100
-Subject: Re: [PATCH net,v2] net: flow_offload: skip hw stats check for
- FLOW_ACTION_HW_STATS_DONT_CARE
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     <netfilter-devel@vger.kernel.org>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <jiri@resnulli.us>
-References: <20200505174736.29414-1-pablo@netfilter.org>
- <20200505114010.132abebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200505193145.GA9789@salvia>
- <20200505124343.27897ad6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200505214321.GA13591@salvia>
- <20200505162942.393ed266@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <e8de6def-8232-598a-6724-e790296a251b@solarflare.com>
-Date:   Wed, 6 May 2020 12:33:27 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727771AbgEFLlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 07:41:52 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:2166 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726734AbgEFLlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:41:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1588765312; x=1620301312;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gXKvzJw9g7LAOQgi97R5QafLHw2jX68aP/tQVwVwRa4=;
+  b=KC5O09eW3WS3b+9zsfoL3P+MuTQcujtUAlrvEE4FyDpyTgW08w8MmVz+
+   o5WY5/L+vIzbF+slD8pxcC4HavqJOan23lknbC5b3ieqHrYoiWsetptYH
+   Xo0TYoBG0DgSJ9aCe86n+X+mEQDIwn/SLcP/hxjIC5dTiUHGpppLaSgQm
+   g+JccwusnX5J+BGEc6+7XPvhS9CGbS+tcC1qU+QXFWMPExl5EQk1g++Vi
+   G6+xOTOsQ5GvQ/6YMBCePKK09dU7Ojwgm7VhlEbXcwtLaydqudg/sIdjo
+   xqaMoYKmUN8GSiKPMC4AhyZl26FhwgAIFMHvHeVKCzYmqEJREMP2+12xg
+   w==;
+IronPort-SDR: pV2N48h6LeiTsUHgpKHyNfJ/PapuF0UDYwEHle6+16FTUWVt5NCG1LTvntaKbTycJbxpt9FUIj
+ gSAg8fYnXWgPu7+QoAaZS9SFojxNpQG9HaAwAmFkdOwz7BevhML/RudCL0McHBueMd2r7JDCAw
+ GaSYiBPXJhdkJ2HLgSaoMS7v6ydcANGgICNe5XRAbw1+H1IfWGfVAU1usQERCIYN8pH9ewJ6vH
+ 4d9xA6jCV9Dn7PMgDD1b8fzW1FKfdFWNW9W8hYkUr+8UvFo5UFTDl+GznHrd6eR3ZBIEqyGua6
+ ShM=
+X-IronPort-AV: E=Sophos;i="5.73,358,1583218800"; 
+   d="scan'208";a="74979844"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 May 2020 04:41:52 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 6 May 2020 04:41:52 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Wed, 6 May 2020 04:41:47 -0700
+From:   <nicolas.ferre@microchip.com>
+To:     <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        "Claudiu Beznea" <claudiu.beznea@microchip.com>,
+        <harini.katakam@xilinx.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        <antoine.tenart@bootlin.com>, <f.fainelli@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: [PATCH v4 0/5] net: macb: Wake-on-Lan magic packet fixes and GEM handling
+Date:   Wed, 6 May 2020 13:37:36 +0200
+Message-ID: <cover.1588763703.git.nicolas.ferre@microchip.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200505162942.393ed266@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25402.001
-X-TM-AS-Result: No-1.360000-8.000000-10
-X-TMASE-MatchedRID: xcONGPdDH5q8rRvefcjeTfZvT2zYoYOwC/ExpXrHizz6I9i0e8hghcfB
-        RYvA7Qimi2Vy1lps1qHlUb21iTHhT6ZY4PxfRMWEQ24lJ40XApgbAqzdFRyxuESbbPTiMagTgMp
-        BuJUGNe3B0ki7dmSgF3rBsLkzYdezjaYSACRQiDd3wUVuihU/jpAoP2KG7EfPAa6hrn8pQDCNBv
-        RmKMdxcCoLt8AP659Oeb3f20kKgFL4kBiMXhevoVD5LQ3Tl9H7AQ8mtiWx//qbuvvgpZZI+ZGE1
-        OovlhYFD6bYMz71y+Jy8eYYZSzHFUKPluOEKT3/GJADAbBHGUxUIaneDj+GO9EZrmyNM/Ru1gVf
-        qaZEz0Y93QAR2QK7TAdcruc0/YQGWAPmaH6lUzUcLuEDP+gqcn2K69afcnwqwCTIeJgMBBt2UK6
-        xU6n4PzxhqvlusG8LCn8TaV9gGVxNfs8n85Te8oMbH85DUZXy3QfwsVk0UbsIoUKaF27lxRLFe2
-        Pv+4fcApe+rkXSUUsw2YFU65oCoKvPjrTp1tjW26FBdjXvnBXnoooiiK1rxT14trqG5oXoSMDTC
-        Dmd7+xum14wZGJWfaKAQfLsnhLrKWSt4DmvbhpicKLmK2TeKmsPn5C6nWpTnqg/VrSZEiM=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.360000-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25402.001
-X-MDID: 1588764817-23GW24dK6FNV
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/05/2020 00:29, Jakub Kicinski wrote:
-> IIRC we went from the pure bitfield implementation (which was my
-> preference) to one where 0 means disabled.
->
-> Unfortunately we ended up with a convoluted API where drivers have to
-> check for magic 0 or 'any' values.
-Yeah, I said something dumb a couple of threads ago and combined the
- good idea (a DISABLED bit) with the bad idea (0 as magic DONT_CARE
- value), sorry for leading Pablo on a bit of a wild goose chase there.
-(It has some slightly nice properties if you're trying to write out-of-
- tree drivers that work with multiple kernel versions, but that's never
- a good argument for anything, especially when it requires a bunch of
- extra code in the in-tree drivers to handle it.)
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-> On Tue, 5 May 2020 23:43:21 +0200 Pablo Neira Ayuso wrote:
->> And what is the semantic for 0 (no bit set) in the kernel in your
->> proposal?
-It's illegal, the kernel never does it, and if it ever does then the
- correct response from drivers is to say "None of the things I can
- support (including DISABLED) were in the bitmask, so -EOPNOTSUPP".
-Which is what drivers written in the natural way will do, for free.
+Hi,
+Here is a split series to fix WoL magic-packet on the current macb driver. Only
+fixes in this one based on current net/master.
 
->> Jiri mentioned there will be more bits coming soon. How will you
->> extend this model (all bit set on for DONT_CARE) if new bits with
->> specific semantics are showing up?
-If those bits are additive (e.g. a new type like IMMEDIATE and
- DISABLED), then all-bits-on works fine.  If they're orthogonal flags,
- ideally there should be two bits, one for "flag OFF is acceptable"
- and one for "flag ON is acceptable", that way 0b11 still means don't
- care.  And 0b00 gets EOPNOTSUPP regardless of the rest of the bits.
+Best regards,
+  Nicolas
 
->> Combining ANY | DISABLED is non-sense, it should be rejected.
-It's not nonsense; it means what it says ("I accept any of the modes
- (which enable stats); I also accept disabled stats").
+Changes in v4:
+- Pure bug fix series for 'net'. GEM addition and MACB update removed: will be
+  sent later.
 
--ed
+Changes in v3:
+- Revert some of the v2 changes done in macb_resume(). Now the resume function
+  supports in-depth re-configuration of the controller in order to deal with
+  deeper sleep states. Basically as it was before changes introduced by this
+  series
+- Tested for non-regression with our deeper Power Management mode which cuts
+  power to the controller completely
+
+Changes in v2:
+- Add patch 4/7 ("net: macb: fix macb_suspend() by removing call to netif_carrier_off()")
+  needed for keeping phy state consistent
+- Add patch 5/7 ("net: macb: fix call to pm_runtime in the suspend/resume functions") that prevent
+  putting the macb in runtime pm suspend mode when WoL is used
+- Collect review tags on 3 first patches from Florian: Thanks!
+- Review of macb_resume() function
+- Addition of pm_wakeup_event() in both MACB and GEM WoL IRQ handlers
+
+
+Nicolas Ferre (5):
+  net: macb: fix wakeup test in runtime suspend/resume routines
+  net: macb: mark device wake capable when "magic-packet" property
+    present
+  net: macb: fix macb_get/set_wol() when moving to phylink
+  net: macb: fix macb_suspend() by removing call to netif_carrier_off()
+  net: macb: fix call to pm_runtime in the suspend/resume functions
+
+ drivers/net/ethernet/cadence/macb_main.c | 31 +++++++++++++-----------
+ 1 file changed, 17 insertions(+), 14 deletions(-)
+
+-- 
+2.26.2
+
