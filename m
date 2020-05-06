@@ -2,111 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F4121C7567
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:53:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 727331C7574
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:55:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729745AbgEFPxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 11:53:55 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:35179 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729724AbgEFPxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:53:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588780433;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IIPWhemhWOivhkyMoHAaTDjhY+Cd4+/PKB7r/lBHTsk=;
-        b=U/6zCOMfNOeW4VavTUCyedfZ641XjR9HC1ya7kyJLUzYkEpqI/5aBC3rnK5Aufh36JoAuk
-        c8xhVe32an5F5VTMbNKa9SchMBqtdiC0s5BAATs2KbBxid60r2xxI5guL4DTVrgWLauYqy
-        qev3312VHSLGRQuNEJ93bK89mi4W2l4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-313-lZeX6d8kP4GU7xA9uNEoKg-1; Wed, 06 May 2020 11:53:49 -0400
-X-MC-Unique: lZeX6d8kP4GU7xA9uNEoKg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42FE145F;
-        Wed,  6 May 2020 15:53:47 +0000 (UTC)
-Received: from treble (ovpn-115-96.rdu2.redhat.com [10.10.115.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C1D605D9C5;
-        Wed,  6 May 2020 15:53:45 +0000 (UTC)
-Date:   Wed, 6 May 2020 10:53:43 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
- compatibility
-Message-ID: <20200506155343.7x3slq3uasponb6w@treble>
-References: <20200501192204.cepwymj3fln2ngpi@treble>
- <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
- <20200501195617.czrnfqqcxfnliz3k@treble>
- <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
- <20200502192105.xp2osi5z354rh4sm@treble>
- <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
- <20200505181108.hwcqanvw3qf5qyxk@treble>
- <20200505195320.lyphpnprn3sjijf6@ast-mbp.dhcp.thefacebook.com>
- <20200505202823.zkmq6t55fxspqazk@treble>
- <20200505235939.utnmzqsn22cec643@ast-mbp.dhcp.thefacebook.com>
+        id S1729447AbgEFPzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 11:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729059AbgEFPzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:55:53 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2B2C061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 08:55:53 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id p13so949670qvt.12
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 08:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=M3Pl222wqifdcDoK6PLhBKqxaMI2qOgcnUmVMcPdDbk=;
+        b=B4H6sdn0TE06NXC1g8r5sMQEMu8oerm0CYJcla7l2oFGp5bAEUCRvddo3zVzR2NccG
+         n9fPvXzsJe8JV45RlKCntWoMF4CcUxNA4LjWiXggab0Db2u7cacpilckI1rrwgSfseYJ
+         lfs9hUooPHwbiej0OI2rdWDCpPgB1vtn/3SmydxiaRBEaVLuCOjaBX6d0gzpLgWSYZla
+         OY0W4hQ7cs8T64UObyZ41WyyCSE+K8dZsH17DpSLdzX/ignO1EgHs6VbosnyQ38/inCd
+         vCy4NeXCBLKl+lgX8fIIusLg60o1fU4SpuYZvR89eXTwQKuYDXpT4zEEdHlXv/9dIGw0
+         LuIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=M3Pl222wqifdcDoK6PLhBKqxaMI2qOgcnUmVMcPdDbk=;
+        b=spo0qUAnz61aymNWkR4bNmP49mjlqnJTrqDIzh/ELjrckusTgeAhl5rfFzpD8R3sOZ
+         kGuZNuehl6NekfbVd0fcMqNdoO0//0xgeU2y6LlkCsVoxXmGUlwP2/rvH3Pkn692BgPb
+         JK4zm7Ym5tPloaK/EfyhKR91KajIF9mdXYjOm+vJAStVlkMkwakKm+Ba6wQHPpHY9eV6
+         JLyVQ2MH4cewBw74f8DnlvA+/mLsVVoYEe9TLbtXDpxbz24ovd29fpS+zlIzDMeT/Z1b
+         pk8CkHcQ84C0X2VwF4YW/KAx+189rexUdPM+SBxpBIEmGawm9efTUs4dkXZ5v01SDB4o
+         tm4A==
+X-Gm-Message-State: AGi0Pub1uJbV1N71szBn8t9gs2R9l2x09krz0a+DHLbnBFRaEwc4jAvc
+        OBKBXx47lsc8n4Nu4wjvycA=
+X-Google-Smtp-Source: APiQypLngiMp8FlC0sihQf8aip8ZepzgXzdOwOEPMLdh7SIIBqUxL4fRN0SIRrFo0w8gHMb0ilZusw==
+X-Received: by 2002:a0c:aa85:: with SMTP id f5mr8705709qvb.51.1588780552475;
+        Wed, 06 May 2020 08:55:52 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id c33sm1890982qtb.76.2020.05.06.08.55.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 08:55:51 -0700 (PDT)
+Date:   Wed, 6 May 2020 11:55:50 -0400
+Message-ID: <20200506115550.GB1265908@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        vinicius.gomes@intel.com, po.liu@nxp.com
+Subject: Re: [PATCH v3 net-next 1/6] net: dsa: introduce a
+ dsa_port_from_netdev public helper
+In-Reply-To: <20200505192057.9086-2-olteanv@gmail.com>
+References: <20200505192057.9086-1-olteanv@gmail.com>
+ <20200505192057.9086-2-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200505235939.utnmzqsn22cec643@ast-mbp.dhcp.thefacebook.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 05, 2020 at 04:59:39PM -0700, Alexei Starovoitov wrote:
-> As far as workaround I prefer the following:
-> From 94bbc27c5a70d78846a5cb675df4cf8732883564 Mon Sep 17 00:00:00 2001
-> From: Alexei Starovoitov <ast@kernel.org>
-> Date: Tue, 5 May 2020 16:52:41 -0700
-> Subject: [PATCH] bpf,objtool: tweak interpreter compilation flags to help objtool
+On Tue,  5 May 2020 22:20:52 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> tbd
+> As its implementation shows, this is synonimous with calling
+> dsa_slave_dev_check followed by dsa_slave_to_port, so it is quite simple
+> already and provides functionality which is already there.
 > 
-> Fixes: 3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
->  include/linux/compiler-gcc.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> However there is now a need for these functions outside dsa_priv.h, for
+> example in drivers that perform mirroring and redirection through
+> tc-flower offloads (they are given raw access to the flow_cls_offload
+> structure), where they need to call this function on act->dev.
 > 
-> diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-> index d7ee4c6bad48..05104c3cc033 100644
-> --- a/include/linux/compiler-gcc.h
-> +++ b/include/linux/compiler-gcc.h
-> @@ -171,4 +171,4 @@
->  #define __diag_GCC_8(s)
->  #endif
+> But simply exporting dsa_slave_to_port would make it non-inline and
+> would result in an extra function call in the hotpath, as can be seen
+> for example in sja1105:
 > 
-> -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
-> +#define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
-> --
-> 2.23.0
+> Before:
 > 
-> I've tested it with gcc 8,9,10 and clang 11 with FP=y and with ORC=y.
-> All works.
-> I think it's safer to go with frame pointers even for ORC=y considering
-> all the pain this issue had caused. Even if objtool gets confused again
-> in the future __bpf_prog_run() will have frame pointers and kernel stack
-> unwinding can fall back from ORC to FP for that frame.
-> wdyt?
+> 000006dc <sja1105_xmit>:
+> {
+>  6dc:	e92d4ff0 	push	{r4, r5, r6, r7, r8, r9, sl, fp, lr}
+>  6e0:	e1a04000 	mov	r4, r0
+>  6e4:	e591958c 	ldr	r9, [r1, #1420]	; 0x58c <- Inline dsa_slave_to_port
+>  6e8:	e1a05001 	mov	r5, r1
+>  6ec:	e24dd004 	sub	sp, sp, #4
+> 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
+>  6f0:	e1c901d8 	ldrd	r0, [r9, #24]
+>  6f4:	ebfffffe 	bl	0 <dsa_8021q_tx_vid>
+> 			6f4: R_ARM_CALL	dsa_8021q_tx_vid
+> 	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
+>  6f8:	e1d416b0 	ldrh	r1, [r4, #96]	; 0x60
+> 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
+>  6fc:	e1a08000 	mov	r8, r0
+> 
+> After:
+> 
+> 000006e4 <sja1105_xmit>:
+> {
+>  6e4:	e92d4ff0 	push	{r4, r5, r6, r7, r8, r9, sl, fp, lr}
+>  6e8:	e1a04000 	mov	r4, r0
+>  6ec:	e24dd004 	sub	sp, sp, #4
+> 	struct dsa_port *dp = dsa_slave_to_port(netdev);
+>  6f0:	e1a00001 	mov	r0, r1
+> {
+>  6f4:	e1a05001 	mov	r5, r1
+> 	struct dsa_port *dp = dsa_slave_to_port(netdev);
+>  6f8:	ebfffffe 	bl	0 <dsa_slave_to_port>
+> 			6f8: R_ARM_CALL	dsa_slave_to_port
+>  6fc:	e1a09000 	mov	r9, r0
+> 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
+>  700:	e1c001d8 	ldrd	r0, [r0, #24]
+>  704:	ebfffffe 	bl	0 <dsa_8021q_tx_vid>
+> 			704: R_ARM_CALL	dsa_8021q_tx_vid
+> 
+> Because we want to avoid possible performance regressions, introduce
+> this new function which is designed to be public.
+> 
+> Suggested-by: Vivien Didelot <vivien.didelot@gmail.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-It seems dangerous to me.  The GCC manual recommends against it.
-
-And how do we know what other flags are getting removed for various
-arches (now or in the future)?
-
--- 
-Josh
-
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
