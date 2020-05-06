@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 489A01C678E
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 07:44:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CC1C1C67D1
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgEFFoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 01:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
+        id S1727863AbgEFGB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 02:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725771AbgEFFoc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 01:44:32 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77995C061A0F;
-        Tue,  5 May 2020 22:44:30 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id j2so432706qtr.12;
-        Tue, 05 May 2020 22:44:30 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725771AbgEFGB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:01:27 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB55C061A0F;
+        Tue,  5 May 2020 23:01:27 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id b6so797078qkh.11;
+        Tue, 05 May 2020 23:01:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=iuXQC6UATbUhdTWUBQYNdBX+Tj6TKYe03Ph3Iuc5xS8=;
-        b=vC0MqmhpGX5tfqbt3vJKdMy+ZAgEOE/dbahj2eS71QozT77eCLdLf3BRIz754DLiPw
-         YLTAtPCLBaLPDk5oO3H99qTyY61uvj2yWQQUSijrRLy+DWJTfB25hmnxIjv/ApIn8JDI
-         kg0j5EYQNjhbCCdfLKz55M/G5ewMGoro3jnCoivOCwPOQfoFkHh43/hSLcZv/mNdh0Pj
-         JKp80beVdCtA1Oit1Q24QIQkiGDtugqSfTD8IK2HN1yFBtNoTUv7gZSkHYHb+yNsXG4q
-         dasMn0q9hvpFcYMfENUBAEq99wN7965fWjhN7Aj0jZbg5v1FxkENGN+T2koGKke9EC2u
-         d8KQ==
+        bh=+JO6i0n3BKhKys7BXtPUEzF0yojiQcWesZP2vQRQIxA=;
+        b=P9GVNwZ5pGrLU9e6S75s00C7k7Q/gqLg4drFxyx4hub8E7plw+Q04G+323WoLjeWrX
+         EruWMXyOCv4lA0WgWWhw3nWvdIAgn1GYXOTfx18ArOVbTrD5g0HgEDZk/Tu/j8yA1l1g
+         ncmImIsx6haBSkGblFHrA+VDjRAQkcLm9wKavrdbwx/3ol5lKPhAImMzY6x0TsEM+HrY
+         /3Ugoc3jKL1XF2h74Znk7cbiHBNyBIIsPvPQkD3576c5a3vmgEKi9vn1IhcX9ovybHIN
+         I4ZehDvM4yhojG9kJoXkA6AI7wVNTCAbyY7MlVW1isGqM6QSEKafn1wpDJeaG5MKrmzL
+         I4mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iuXQC6UATbUhdTWUBQYNdBX+Tj6TKYe03Ph3Iuc5xS8=;
-        b=s1gxxGY7XwlKx92J++132hcZujGp+VVaN/mAWeBNCLkXppsYmaxTdz1e1rTXjoZ+W5
-         JTmeKE3ZcPX0Z0G5XcJtMURC0jEkJak1rdU03rXB2CbbaqAWXFB5eLPqW5K2QzrrfqNB
-         0yYWwG1zw7M30GW2ew0OFkPwGFS0EeqfAERFaCe7hhS7CB3Y6kBGUPREtZ6je6v02vZN
-         sNgXRU+G3yROkYKZhFb6f0qkNZRz6n8ox7A3BBVcbs/+uUahYTSTBT2q1c5Nokk9MFwo
-         XySt4QwtGToB/sOKogZVeZVL1oE/4biFFmQ5el7nbrJxZPMAXR+tRpkmJQTH7lX9iRLD
-         hIXQ==
-X-Gm-Message-State: AGi0PubShZlGsh/QZLxP80WAobFfVCuXjM6NQ98xW6hItCza5+69qNgc
-        Gd+gzmzfHvoSr+rs05FhBqnWtO6yDjvU53wIAT8=
-X-Google-Smtp-Source: APiQypJhAcvQO0yuzZqPexR8C/tid+RjFe6SPEXB56tr6+Si3+O1VYaQrcIY2mhwL3XOql4PXyJdT2dedVdCDggCBx0=
-X-Received: by 2002:aed:2e24:: with SMTP id j33mr6351490qtd.117.1588743869521;
- Tue, 05 May 2020 22:44:29 -0700 (PDT)
+        bh=+JO6i0n3BKhKys7BXtPUEzF0yojiQcWesZP2vQRQIxA=;
+        b=nARXu2ZOqq6BuJQKgIa+se9oqpoUuGqRdy9dwvHdJRs3EkOAH1oQUXWl/9iLlTbPik
+         WW7gONGLip2OCYCSqLiE7LTLV4yDeIKHqnoEgywoJ9n2+Ggi5H4CEkQaQ4LbTDl49rmI
+         SUazwCGF9Pjdn+cgN6qBjuLRXLsZEySZ/L7Gfq/BuO+KoA9K5sV/heq2QH94iLgWAiTk
+         lMK2PKsaPgxvedovHxifnkxjdCFiW13UKUnaukdjOBQOk9/2HktoARmOqL1ZiDkhp9xe
+         1TvDmROUMdvCEWGt9xqefmh4CIfLUIj7snwcHIimZDz0K5Vi7qQP9gB+DKmfE7TC5fNs
+         v4Gw==
+X-Gm-Message-State: AGi0Pubzx5zEq8MFgfqHFJ/U3vFCwmQtDJba7BNbODrWRdV4KTTNDa+M
+        TMKkuSZCwcYIif/HsTJci8yyySphm/hh4l4UUH0=
+X-Google-Smtp-Source: APiQypIuvoVsMMx/ygq+c38uJY64J4U+3kVGaxFQE3h17xtrH87AIJCSvprAmZ2v8JW0oYDTXz+nW2YpcAb8TUskVh0=
+X-Received: by 2002:a37:68f:: with SMTP id 137mr7289382qkg.36.1588744886373;
+ Tue, 05 May 2020 23:01:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200504062547.2047304-1-yhs@fb.com> <20200504062605.2048882-1-yhs@fb.com>
-In-Reply-To: <20200504062605.2048882-1-yhs@fb.com>
+References: <20200504062547.2047304-1-yhs@fb.com> <20200504062608.2049044-1-yhs@fb.com>
+In-Reply-To: <20200504062608.2049044-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 May 2020 22:44:18 -0700
-Message-ID: <CAEf4BzbWVtiyCk12jxtG=N-b1bwvt1NNUrAxJ9LgHU8Ki9F1gw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 16/20] tools/libbpf: add bpf_iter support
+Date:   Tue, 5 May 2020 23:01:15 -0700
+Message-ID: <CAEf4Bzae=1h4Rky+ojeoaxUR6OHM5Q6OzXFqPrhoOM4D3EYuCA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 18/20] tools/bpf: selftests: add iterator
+ programs for ipv6_route and netlink
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -63,127 +64,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 3, 2020 at 11:27 PM Yonghong Song <yhs@fb.com> wrote:
+On Sun, May 3, 2020 at 11:30 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> Two new libbpf APIs are added to support bpf_iter:
->   - bpf_program__attach_iter
->     Given a bpf program and additional parameters, which is
->     none now, returns a bpf_link.
->   - bpf_iter_create
->     syscall level API to create a bpf iterator.
+> Two bpf programs are added in this patch for netlink and ipv6_route
+> target. On my VM, I am able to achieve identical
+> results compared to /proc/net/netlink and /proc/net/ipv6_route.
 >
-> The macro BPF_SEQ_PRINTF are also introduced. The format
-> looks like:
->   BPF_SEQ_PRINTF(seq, "task id %d\n", pid);
+>   $ cat /proc/net/netlink
+>   sk               Eth Pid        Groups   Rmem     Wmem     Dump  Locks    Drops    Inode
+>   000000002c42d58b 0   0          00000000 0        0        0     2        0        7
+>   00000000a4e8b5e1 0   1          00000551 0        0        0     2        0        18719
+>   00000000e1b1c195 4   0          00000000 0        0        0     2        0        16422
+>   000000007e6b29f9 6   0          00000000 0        0        0     2        0        16424
+>   ....
+>   00000000159a170d 15  1862       00000002 0        0        0     2        0        1886
+>   000000009aca4bc9 15  3918224839 00000002 0        0        0     2        0        19076
+>   00000000d0ab31d2 15  1          00000002 0        0        0     2        0        18683
+>   000000008398fb08 16  0          00000000 0        0        0     2        0        27
+>   $ cat /sys/fs/bpf/my_netlink
+>   sk               Eth Pid        Groups   Rmem     Wmem     Dump  Locks    Drops    Inode
+>   000000002c42d58b 0   0          00000000 0        0        0     2        0        7
+>   00000000a4e8b5e1 0   1          00000551 0        0        0     2        0        18719
+>   00000000e1b1c195 4   0          00000000 0        0        0     2        0        16422
+>   000000007e6b29f9 6   0          00000000 0        0        0     2        0        16424
+>   ....
+>   00000000159a170d 15  1862       00000002 0        0        0     2        0        1886
+>   000000009aca4bc9 15  3918224839 00000002 0        0        0     2        0        19076
+>   00000000d0ab31d2 15  1          00000002 0        0        0     2        0        18683
+>   000000008398fb08 16  0          00000000 0        0        0     2        0        27
 >
-> This macro can help bpf program writers with
-> nicer bpf_seq_printf syntax similar to the kernel one.
+>   $ cat /proc/net/ipv6_route
+>   fe800000000000000000000000000000 40 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000001 00000000 00000001     eth0
+>   00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+>   00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000003 00000000 80200001       lo
+>   fe80000000000000c04b03fffe7827ce 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80200001     eth0
+>   ff000000000000000000000000000000 08 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000003 00000000 00000001     eth0
+>   00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+>   $ cat /sys/fs/bpf/my_ipv6_route
+>   fe800000000000000000000000000000 40 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000001 00000000 00000001     eth0
+>   00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+>   00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000003 00000000 80200001       lo
+>   fe80000000000000c04b03fffe7827ce 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80200001     eth0
+>   ff000000000000000000000000000000 08 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000003 00000000 00000001     eth0
+>   00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
 >
 > Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
 
-Looks great! Just few nits.
+Looks good, but something weird with printf below...
 
->  tools/lib/bpf/bpf.c         | 11 +++++++++
->  tools/lib/bpf/bpf.h         |  2 ++
->  tools/lib/bpf/bpf_tracing.h | 16 +++++++++++++
->  tools/lib/bpf/libbpf.c      | 45 +++++++++++++++++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h      |  9 ++++++++
->  tools/lib/bpf/libbpf.map    |  2 ++
->  6 files changed, 85 insertions(+)
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  .../selftests/bpf/progs/bpf_iter_ipv6_route.c | 63 ++++++++++++++++
+>  .../selftests/bpf/progs/bpf_iter_netlink.c    | 74 +++++++++++++++++++
+>  2 files changed, 137 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
 >
-> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> index 43322f0d6c7f..1756ae47ddf2 100644
-> --- a/tools/lib/bpf/bpf.c
-> +++ b/tools/lib/bpf/bpf.c
-> @@ -619,6 +619,17 @@ int bpf_link_update(int link_fd, int new_prog_fd,
->         return sys_bpf(BPF_LINK_UPDATE, &attr, sizeof(attr));
->  }
->
-> +int bpf_iter_create(int link_fd, unsigned int flags)
-
-As discussed in previous thread, given we don't anticipate needing
-anything beyond link_fd, let's do bpf_iter_create(int link_fd), nice
-and simple. Once we need to add any extensibility, we can add
-bpf_iter_create_xattr() variant with opts.
-
-> +{
-> +       union bpf_attr attr;
+> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c b/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
+> new file mode 100644
+> index 000000000000..0dee4629298f
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
+> @@ -0,0 +1,63 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Facebook */
+> +#include "vmlinux.h"
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+> +#include <bpf/bpf_endian.h>
 > +
-> +       memset(&attr, 0, sizeof(attr));
-> +       attr.iter_create.link_fd = link_fd;
-> +       attr.iter_create.flags = flags;
+> +char _license[] SEC("license") = "GPL";
 > +
-> +       return sys_bpf(BPF_ITER_CREATE, &attr, sizeof(attr));
-> +}
+> +extern bool CONFIG_IPV6_SUBTREES __kconfig __weak;
+> +
+> +#define        RTF_GATEWAY             0x0002
+> +#define IFNAMSIZ               16
+
+nit: these look weirdly unaligned :)
+
+> +#define fib_nh_gw_family        nh_common.nhc_gw_family
+> +#define fib_nh_gw6              nh_common.nhc_gw.ipv6
+> +#define fib_nh_dev              nh_common.nhc_dev
 > +
 
 [...]
 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 977add1b73e2..93355a257405 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -6629,6 +6629,9 @@ static const struct bpf_sec_def section_defs[] = {
->                 .is_attach_btf = true,
->                 .expected_attach_type = BPF_LSM_MAC,
->                 .attach_fn = attach_lsm),
-> +       SEC_DEF("iter/", TRACING,
-> +               .expected_attach_type = BPF_TRACE_ITER,
-> +               .is_attach_btf = true),
 
-Another nit. As discussed, I think auto-attach is a nice feature,
-which, if user doesn't want/need, can be skipped.
+> +       dev = fib6_nh->fib_nh_dev;
+> +       if (dev)
+> +               BPF_SEQ_PRINTF(seq, "%08x %08x %08x %08x %8s\n", rt->fib6_metric,
+> +                              rt->fib6_ref.refs.counter, 0, flags, dev->name);
+> +       else
+> +               BPF_SEQ_PRINTF(seq, "%08x %08x %08x %08x %8s\n", rt->fib6_metric,
+> +                              rt->fib6_ref.refs.counter, 0, flags);
 
->         BPF_PROG_SEC("xdp",                     BPF_PROG_TYPE_XDP),
->         BPF_PROG_SEC("perf_event",              BPF_PROG_TYPE_PERF_EVENT),
->         BPF_PROG_SEC("lwt_in",                  BPF_PROG_TYPE_LWT_IN),
-> @@ -6891,6 +6894,7 @@ static int bpf_object__collect_st_ops_relos(struct bpf_object *obj,
->
+hmm... how does it work? you specify 4 params, but format string
+expects 5. Shouldn't this fail?
 
-[...]
-
->
-> +struct bpf_link *
-> +bpf_program__attach_iter(struct bpf_program *prog,
-> +                        const struct bpf_iter_attach_opts *opts)
-> +{
-> +       enum bpf_attach_type attach_type;
-> +       char errmsg[STRERR_BUFSIZE];
-> +       struct bpf_link *link;
-> +       int prog_fd, link_fd;
 > +
-> +       if (!OPTS_VALID(opts, bpf_iter_attach_opts))
-> +               return ERR_PTR(-EINVAL);
-> +
-> +       prog_fd = bpf_program__fd(prog);
-> +       if (prog_fd < 0) {
-> +               pr_warn("program '%s': can't attach before loaded\n",
-> +                       bpf_program__title(prog, false));
-> +               return ERR_PTR(-EINVAL);
-> +       }
-> +
-> +       link = calloc(1, sizeof(*link));
-> +       if (!link)
-> +               return ERR_PTR(-ENOMEM);
-> +       link->detach = &bpf_link__detach_fd;
-> +
-> +       attach_type = BPF_TRACE_ITER;
-> +       link_fd = bpf_link_create(prog_fd, 0, attach_type, NULL);
-
-nit: attach_type variable doesn't seem to be necessary
-
-> +       if (link_fd < 0) {
-> +               link_fd = -errno;
-> +               free(link);
-> +               pr_warn("program '%s': failed to attach to iterator: %s\n",
-> +                       bpf_program__title(prog, false),
-> +                       libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
-> +               return ERR_PTR(link_fd);
-> +       }
-> +       link->fd = link_fd;
-> +       return link;
+> +       return 0;
 > +}
+> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+> new file mode 100644
+> index 000000000000..0a85a621a36d
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+> @@ -0,0 +1,74 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Facebook */
+> +#include "vmlinux.h"
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+> +#include <bpf/bpf_endian.h>
 > +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +#define sk_rmem_alloc  sk_backlog.rmem_alloc
+> +#define sk_refcnt      __sk_common.skc_refcnt
+> +
+> +#define offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
+> +#define container_of(ptr, type, member)                                \
+> +       ({                                                      \
+> +               void *__mptr = (void *)(ptr);                   \
+> +               ((type *)(__mptr - offsetof(type, member)));    \
+> +       })
+
+we should probably put offsetof(), offsetofend() and container_of()
+macro into bpf_helpers.h, seems like universal things for kernel
+datastructs :)
 
 [...]
