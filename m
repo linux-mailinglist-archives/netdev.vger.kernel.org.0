@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 340251C6F7B
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 177AE1C6F7D
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:42:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727825AbgEFLl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 07:41:57 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:2166 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726734AbgEFLl4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:41:56 -0400
+        id S1727917AbgEFLmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 07:42:03 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:49378 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726734AbgEFLmB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:42:01 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1588765316; x=1620301316;
+  t=1588765320; x=1620301320;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Cg4BPRaGxfrS+/zj5AePP2N7TWIwyo2J9Tr/Whwu38k=;
-  b=esXWWGUoYXKMhvWlD6oJSVv1dqgxj56qnjLhGPPXIUEWDEIOStLAwlSx
-   Ryq/uWSASXfBBwByVbTbzsx5SasbJ0+MvN3loguImF6bPVqBKXGhEi87l
-   6q0unMlMlOxkYkWl7dhs9pqvp6a12kQSaZTwW43XU+AYMjoEKpwxtbRoz
-   oH6PRkvpbbamyTftIK04CIqiHkIZbgqUPbdqFvDXdL/qy5smPRoqah2/y
-   wcV9LKRvpeV3xocGxHw8Gyhu/Xvy7ihwum43LLFf/nzz27hZig8/vGulm
-   wkhHh8EHuLKqEFTl3mZIpkBX0D030rh68lDeF0sk6AAv/u6HjjNvqmQPB
-   Q==;
-IronPort-SDR: knYoS5+AmJ0w/4fuKWSH/HCpZ9HI9CXeWtZXpjH4z1cXRlc9VIIGG9MlTYO84n1IKNQtIwbFSe
- g2gPQVNq5lBkCVVvN/4AwplWkSpO5jaUbFlGZovKwm/wksU8RiP3GQcsBmMGAuY9pc8W0Q+Rpg
- SKJ61T0VB6ntzXnLFUQHlrmGOr74elIPn7r7UQEIfsDLxi7MoIZ78YaLo3Ek1UofO0qnz1dwlY
- 7OQpAOQ4wLrinSc4+5jwTdRIguY5Ez/JMqh+BqZ4x7jgUkY9A20CILE/nIpNnyHAnurfH+O2Uz
- wHU=
+  bh=Tv6yJ7LbbY1iSVkwSqx5jSF+okHW//DxXRB/JfgHvV0=;
+  b=VhZ8fIKI4inrpF/KGLglfHydjFWixJEL5sqy3TWy6I6fSk+lrMapvtXD
+   aCNCZ/VeP+BZgbH0wImnkmTkXcM0UAWqmvmWmVSTFcv6ujskz23ZGlk2q
+   kc7/omkGF3D8VtR1BJBuICpMXWoioIF/ILNhRiED2pPUT9Arm3srQB4ju
+   eHuiqI5KtTR9hdtGSgFRR7Pe5a5aHM9ednN8pWCiQA7G/GfLc5EWy0lH2
+   QEzTDvXeAfVBuNYeunZk81APHEUUHmqiKts7BnObnG4ANbPnk7ezR3YFZ
+   BVOVDDZqcckguIJxNC0vR52nnK4RmCcPx225lxw0IZ521J1+H6c0m9221
+   g==;
+IronPort-SDR: /qz0F12LrMVzDtxM0Yzbwgc1vdt5nba7jH4t4WMGJHJuxo/pGUMRASLobG/IZU3Ap6oh01JaqE
+ n837HY/8jb2foWC78+Yg/oUs461tqzCfoJSuobWogRxvOX6VG9ZAdsuKdGwqNM7zqDNp+K5rZz
+ 5mLCqYeRgBahGpNWa7LyWQzvy0WJXLMT3w6ZwOIyKBDPQfaVvbWD3sP7n81KnLglrCFTYriJZE
+ Uv3wu7Cn0Y1lqBGQoVaz/JNKMPG9ULYY5JLLnfwvBjdWFMvawPYOTANZfPReVrbrOPwKn0iNq6
+ QZY=
 X-IronPort-AV: E=Sophos;i="5.73,358,1583218800"; 
-   d="scan'208";a="74979852"
+   d="scan'208";a="11483896"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 May 2020 04:41:56 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 May 2020 04:41:59 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 6 May 2020 04:41:55 -0700
+ 15.1.1713.5; Wed, 6 May 2020 04:42:01 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Wed, 6 May 2020 04:41:51 -0700
+ 15.1.1713.5 via Frontend Transport; Wed, 6 May 2020 04:41:55 -0700
 From:   <nicolas.ferre@microchip.com>
 To:     <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
         "Claudiu Beznea" <claudiu.beznea@microchip.com>,
@@ -48,10 +48,11 @@ CC:     <linux-kernel@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         <antoine.tenart@bootlin.com>, <f.fainelli@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH v4 1/5] net: macb: fix wakeup test in runtime suspend/resume routines
-Date:   Wed, 6 May 2020 13:37:37 +0200
-Message-ID: <dc30ff1d17cb5a75ddd10966eab001f67ac744ef.1588763703.git.nicolas.ferre@microchip.com>
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Sergio Prado <sergio.prado@e-labworks.com>
+Subject: [PATCH v4 2/5] net: macb: mark device wake capable when "magic-packet" property present
+Date:   Wed, 6 May 2020 13:37:38 +0200
+Message-ID: <a9b3da7295473d77459242a9a672cc8913cdb80d.1588763703.git.nicolas.ferre@microchip.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1588763703.git.nicolas.ferre@microchip.com>
 References: <cover.1588763703.git.nicolas.ferre@microchip.com>
@@ -65,45 +66,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-Use the proper struct device pointer to check if the wakeup flag
-and wakeup source are positioned.
-Use the one passed by function call which is equivalent to
-&bp->dev->dev.parent.
+Change the way the "magic-packet" DT property is handled in the
+macb_probe() function, matching DT binding documentation.
+Now we mark the device as "wakeup capable" instead of calling the
+device_init_wakeup() function that would enable the wakeup source.
 
-It's preventing the trigger of a spurious interrupt in case the
-Wake-on-Lan feature is used.
+For Ethernet WoL, enabling the wakeup_source is done by
+using ethtool and associated macb_set_wol() function that
+already calls device_set_wakeup_enable() for this purpose.
 
-Fixes: bc1109d04c39 ("net: macb: Add pm runtime support")
+That would reduce power consumption by cutting more clocks if
+"magic-packet" property is set but WoL is not configured by ethtool.
+
+Fixes: 3e2a5e153906 ("net: macb: add wake-on-lan support via magic packet")
 Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
 Cc: Harini Katakam <harini.katakam@xilinx.com>
+Cc: Sergio Prado <sergio.prado@e-labworks.com>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 36290a8e2a84..d11fae37d46b 100644
+index d11fae37d46b..53e81ab048ae 100644
 --- a/drivers/net/ethernet/cadence/macb_main.c
 +++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4616,7 +4616,7 @@ static int __maybe_unused macb_runtime_suspend(struct device *dev)
- 	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct macb *bp = netdev_priv(netdev);
+@@ -4384,7 +4384,7 @@ static int macb_probe(struct platform_device *pdev)
+ 	bp->wol = 0;
+ 	if (of_get_property(np, "magic-packet", NULL))
+ 		bp->wol |= MACB_WOL_HAS_MAGIC_PACKET;
+-	device_init_wakeup(&pdev->dev, bp->wol & MACB_WOL_HAS_MAGIC_PACKET);
++	device_set_wakeup_capable(&pdev->dev, bp->wol & MACB_WOL_HAS_MAGIC_PACKET);
  
--	if (!(device_may_wakeup(&bp->dev->dev))) {
-+	if (!(device_may_wakeup(dev))) {
- 		clk_disable_unprepare(bp->tx_clk);
- 		clk_disable_unprepare(bp->hclk);
- 		clk_disable_unprepare(bp->pclk);
-@@ -4632,7 +4632,7 @@ static int __maybe_unused macb_runtime_resume(struct device *dev)
- 	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct macb *bp = netdev_priv(netdev);
+ 	spin_lock_init(&bp->lock);
  
--	if (!(device_may_wakeup(&bp->dev->dev))) {
-+	if (!(device_may_wakeup(dev))) {
- 		clk_prepare_enable(bp->pclk);
- 		clk_prepare_enable(bp->hclk);
- 		clk_prepare_enable(bp->tx_clk);
 -- 
 2.26.2
 
