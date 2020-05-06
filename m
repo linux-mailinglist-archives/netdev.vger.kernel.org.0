@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76BA01C7C84
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:34:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DC011C7C89
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 23:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730058AbgEFVdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 17:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
+        id S1729822AbgEFVgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 17:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728621AbgEFVdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 17:33:49 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510A0C061A0F;
-        Wed,  6 May 2020 14:33:49 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id q13so2923016qtp.7;
-        Wed, 06 May 2020 14:33:49 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729391AbgEFVgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 17:36:35 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D8CDC061A0F;
+        Wed,  6 May 2020 14:36:35 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id o16so2535051qtb.13;
+        Wed, 06 May 2020 14:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Oxq/+H+xeQ+mv0tMvO5y3IYe9t01YqrY24EF/jtyldM=;
-        b=JzpDNdPYTPxFaUJBI4wO/veVbXFJgJkPrBP/OfGrsNnX8LGz5nuLs4oG3lltFk3/Fx
-         TEa+XtZ6C0J+Hesq1mQ2zPg28GjbJLBMCRvNxplqEgB6fxuIlW71tmMwP3ug/tsjYI35
-         BbqKWHvsh59x1F5iv5dzK8HfxhUPWKpJu1KKqZR5+/SYKaZbCopPzJ8XQUjQ2PG4Z5jp
-         V/qHPrTnifNUjqOi+es8cWAkIx4x6zk03HngHsEV/Q+x3gVZdIXnoxFLWlpYhCIMOCaV
-         4RVshHt6yYWgeEwypEmCLp8j62Fr/jWtYYe+AQi6nK1nYSSu/KGmCN7bVEzpY2sAsn+u
-         PBFw==
+        bh=sLuNCU2JM/epZOTJGI+BJEI5qSqulxTn0n+nKtPntxY=;
+        b=sQak3jbP3LldPznsXSiqinAFTq/1BN0yY6SzjCKuEsVT1MyrGLHPxcgCs6t9TH2Mgg
+         jSlb9WYTP1Bn5tG7b4PdUvo0Wc/rywdiT4C5700AeCFMQDEqXvt3uBjMa7UdWKDrYZ1h
+         ODAMrTb11R5oX/qtRcuBoZaKfkgRAScdSR11lRmQmIYOf3GdpvhQVJ/D8cxSmAaMmC3f
+         34F5Fp0wp/hlJailM8yiVav93Ce4YWgrUzDX6uOK1jglli3PFHn1E2Xxd5o+qAlAcwTk
+         vrDHuKKMP/j1MBr2A8WOXHAzuf8vv1AJzsaGM96Wbprudd38vk1mNKMn6gI4foICxv7s
+         O9Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Oxq/+H+xeQ+mv0tMvO5y3IYe9t01YqrY24EF/jtyldM=;
-        b=bTH5j1wh4Bkn0QNlueRx+l9NFL0UcDEkTaMr9cT5WzlsipG6JNG9yBsAvv8ML6cO/u
-         jafQF3DisB9OP3UvB3b3F9D0g43XTtCGboVpRi1pxM7mzyQ4bYSEzfQ0qIp+THlQRfOK
-         0KWeWFZqMJcmf1bO4TfREAZwJM3uD06hbUWfyc8iQux8+hYESY08vo18kfc+zK2JDArC
-         XQ+Z1K4DBpJA8zJTo7+eImI8EzATFvDhhXf1BrN9PRf0nGeh1NDwDyvLnhqHPV4llst6
-         4/bRHjT3VJHUdEY98McDLDI2E3sPMhJF6fn+h2ujfxi7RZRdHPaLV1Va+7Zvc0tLgy+x
-         NsNg==
-X-Gm-Message-State: AGi0PubLH42G3jDfXvrlANdCaJziN2V1BOzVs6UiciQG0cOO6S9kUBnI
-        JzQd8yNTrhgJbIbcBlyoX5B7GhBKyEFghvR6g0I=
-X-Google-Smtp-Source: APiQypJpsaSQT2qGJ86FLuFicIlyv3y+HBRJHzXrPJic7JUYJNR9KUObIce/p0SIw7yu2XjUcR0G7ZmOo+OyrDJyboo=
-X-Received: by 2002:aed:2e24:: with SMTP id j33mr10425153qtd.117.1588800828042;
- Wed, 06 May 2020 14:33:48 -0700 (PDT)
+        bh=sLuNCU2JM/epZOTJGI+BJEI5qSqulxTn0n+nKtPntxY=;
+        b=cB83K9Y78mjiwHgaAswznyPOmoHZ2nGwf580ftvgzlGo14l3wTBESDyv9eFvYgCGZx
+         9tZ5pVUZc9xvrkdIeuMiCinWSqMzuYCD9f3j8/KsFQp1IG9MigZBq+F9bBNHUOeJzkk4
+         Y49OQbpTqD2uBqPHwshMS5rLa34Ai7ZmmUmaa2jCmxam3da+s2CijZfzrSQMXO4M6BT8
+         x9F17iAaE7HgoXPM9BdkHKEOZL5Rym5DDoxFly33HR/SAL3UBx/e5fNz3SL2cDy40ZJu
+         2TPOLXfj5CJNO3yvJVSwvK+Lf7YmjQGE8gF5jiTaXLWsHJpfKNkcl8+jhtQZiuDpbkRF
+         XISA==
+X-Gm-Message-State: AGi0PuaSVjozdrcgZcFQ16Birzpy1XcgkRUkNnadjnrRS+R52P1fkrl7
+        C0bP/sqpI9P2CAgoUyEQJ29nE2P6FjLvFMLPkHM=
+X-Google-Smtp-Source: APiQypJ23cVvg3sBAZTMMKR8v6RGmzYOYb19GQxmrT2w7HUNN0KTGaqSVZDx79d1hs/O6Q0HOsGVfxaFm/JLzThXot0=
+X-Received: by 2002:ac8:468d:: with SMTP id g13mr10321977qto.59.1588800994307;
+ Wed, 06 May 2020 14:36:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200506205257.8964-1-irogers@google.com> <20200506205257.8964-2-irogers@google.com>
-In-Reply-To: <20200506205257.8964-2-irogers@google.com>
+References: <20200506205257.8964-1-irogers@google.com> <20200506205257.8964-3-irogers@google.com>
+In-Reply-To: <20200506205257.8964-3-irogers@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 6 May 2020 14:33:37 -0700
-Message-ID: <CAEf4BzZRmiEds_8R8g4vaAeWvJzPb4xYLnpF0X2VNY8oTzkphQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] lib/bpf hashmap: increase portability
+Date:   Wed, 6 May 2020 14:36:23 -0700
+Message-ID: <CAEf4BzYJanGO+XrTBQoEzGoB_D6xQYYm9tT70+Kie4hyKCxhjQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] lib/bpf hashmap: fixes to hashmap__clear
 To:     Ian Rogers <irogers@google.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -66,39 +66,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 6, 2020 at 1:54 PM Ian Rogers <irogers@google.com> wrote:
+On Wed, May 6, 2020 at 1:55 PM Ian Rogers <irogers@google.com> wrote:
 >
-> Don't include libbpf_internal.h as it is unused and has conflicting
-> definitions, for example, with tools/perf/util/debug.h.
-> Fix a non-glibc include path.
+> hashmap_find_entry assumes that if buckets is NULL then there are no
+> entries. NULL the buckets in clear to ensure this.
+> Free hashmap entries and not just the bucket array.
 >
 > Signed-off-by: Ian Rogers <irogers@google.com>
 > ---
->  tools/lib/bpf/hashmap.h | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+
+This is already fixed in bpf-next ([0]). Seems to be 1-to-1 character
+by character :)
+
+  [0] https://patchwork.ozlabs.org/project/netdev/patch/20200429012111.277390-5-andriin@fb.com/
+
+>  tools/lib/bpf/hashmap.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 >
-> diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-> index bae8879cdf58..d5ef212a55ba 100644
-> --- a/tools/lib/bpf/hashmap.h
-> +++ b/tools/lib/bpf/hashmap.h
-> @@ -13,9 +13,8 @@
->  #ifdef __GLIBC__
->  #include <bits/wordsize.h>
->  #else
-> -#include <bits/reg.h>
-> +#include <linux/bitops.h>
-
-why this change? It might be ok for libbpf built from kernel source,
-but it will break Github libbpf.
-
->  #endif
-> -#include "libbpf_internal.h"
-
-Dropping this seems ok, don't remember why I had it here in the first place.
-
+> diff --git a/tools/lib/bpf/hashmap.c b/tools/lib/bpf/hashmap.c
+> index 54c30c802070..1a1bca1ff5cd 100644
+> --- a/tools/lib/bpf/hashmap.c
+> +++ b/tools/lib/bpf/hashmap.c
+> @@ -59,7 +59,13 @@ struct hashmap *hashmap__new(hashmap_hash_fn hash_fn,
 >
->  static inline size_t hash_bits(size_t h, int bits)
+>  void hashmap__clear(struct hashmap *map)
 >  {
+> +       struct hashmap_entry *cur, *tmp;
+> +       size_t bkt;
+> +
+> +       hashmap__for_each_entry_safe(map, cur, tmp, bkt)
+> +               free(cur);
+>         free(map->buckets);
+> +       map->buckets = NULL;
+>         map->cap = map->cap_bits = map->sz = 0;
+>  }
+>
 > --
 > 2.26.2.526.g744177e7f7-goog
 >
