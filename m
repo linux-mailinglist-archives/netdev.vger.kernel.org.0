@@ -2,151 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD72A1C6B7D
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 10:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCB141C6BC0
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 10:30:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728927AbgEFIVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 04:21:38 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:22054 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728371AbgEFIVh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 04:21:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588753296;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rsgh1dLxGFSdxuzsdLh/uv8qhBvMPuP+xGju+ifbTRc=;
-        b=Joa9o9sUGegw8TqNzDdth1AV4ddxpMtM/asN0uNtHFJS+h700gGz1fyzdqkYpk43KHop0V
-        XrYI9sXFQTY/bl9tk5LTIg+1j7qW+uOWXRuoODRpmT+hiOwEYaC6Y+7dg3B4jo2sGD/xEb
-        LHVIVrSV4bYiLb8oBixh4lhI+FJpHjI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-355-fsNNCIaXOyCRvQJwUVOw2A-1; Wed, 06 May 2020 04:21:34 -0400
-X-MC-Unique: fsNNCIaXOyCRvQJwUVOw2A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728710AbgEFIai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 04:30:38 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:61172 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726935AbgEFIai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 04:30:38 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1588753838; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=kOsCE+K1+9vGSPSNsL0vsTI07a8frxFk3jreyDx93Jg=;
+ b=k7B/WAvYmV073emRTGr4qIe8P/WnRWENOhRsFmHeTbkNaReoTV/w2Ub85J1gd9ky2F4ezdw0
+ 5iovSUVYbfz0WxWUl7if/pkHWSmt0s/8S43t1/563+sIvwN0F7iA292c+YCD5QslFNHpGsFp
+ 8xWTlC5kLf0qelAmtumXZbN+CbI=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5eb27592.7f42392bf730-smtp-out-n02;
+ Wed, 06 May 2020 08:30:10 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id DE136C44798; Wed,  6 May 2020 08:30:08 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 962E718FE866;
-        Wed,  6 May 2020 08:21:33 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D4A7919C4F;
-        Wed,  6 May 2020 08:21:25 +0000 (UTC)
-Date:   Wed, 6 May 2020 10:21:23 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, brouer@redhat.com,
-        "Jubran, Samih" <sameehj@amazon.com>
-Subject: Re: [PATCH net-next 1/2] virtio-net: don't reserve space for vnet
- header for XDP
-Message-ID: <20200506102123.739f1233@carbon>
-In-Reply-To: <20200506061633.16327-1-jasowang@redhat.com>
-References: <20200506061633.16327-1-jasowang@redhat.com>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 695A9C44793;
+        Wed,  6 May 2020 08:30:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 695A9C44793
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Subject: Re: [PATCH v2 1/2] iopoll: Introduce read_poll_timeout_atomic macro
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200424184918.30360-1-kai.heng.feng@canonical.com>
+References: <20200424184918.30360-1-kai.heng.feng@canonical.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     yhchuang@realtek.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dejin Zheng <zhengdejin5@gmail.com>,
+        Allison Randal <allison@lohutok.net>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org (open list)
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200506083008.DE136C44798@smtp.codeaurora.org>
+Date:   Wed,  6 May 2020 08:30:08 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  6 May 2020 14:16:32 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
 
-> We tried to reserve space for vnet header before
-> xdp.data_hard_start. But this is useless since the packet could be
-> modified by XDP which may invalidate the information stored in the
-> header and
-
-IMHO above statements are wrong. XDP cannot access memory before
-xdp.data_hard_start. Thus, it is safe to store a vnet headers before
-xdp.data_hard_start. (The sfc driver also use this "before" area).
-
-> there's no way for XDP to know the existence of the vnet header currently.
-
-It is true that XDP is unaware of this area, which is the way it
-should be.  Currently the area will survive after calling BPF/XDP.
-After your change it will be overwritten in xdp_frame cases.
-
-
-> So let's just not reserve space for vnet header in this case.
-
-I think this is a wrong approach!
-
-We are working on supporting GRO multi-buffer for XDP.  The vnet header
-contains GRO information (see pahole below sign). It is currently not
-used in the XDP case, but we will be working towards using it.  There
-are a lot of unanswered questions on how this will be implemented.
-Thus, I cannot layout how we are going to leverage this info yet, but
-your patch are killing this info, which IHMO is going in the wrong
-direction.
-
-
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/net/virtio_net.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> Like read_poll_timeout, an atomic variant for multiple parameter read
+> function can be useful.
 > 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 11f722460513..98dd75b665a5 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -684,8 +684,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
->  			page = xdp_page;
->  		}
->  
-> -		xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
-> -		xdp.data = xdp.data_hard_start + xdp_headroom;
-> +		xdp.data_hard_start = buf + VIRTNET_RX_PAD;
-> +		xdp.data = xdp.data_hard_start + xdp_headroom + vi->hdr_len;
->  		xdp.data_end = xdp.data + len;
->  		xdp.data_meta = xdp.data;
->  		xdp.rxq = &rq->xdp_rxq;
-> @@ -845,7 +845,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  		 * the descriptor on if we get an XDP_TX return code.
->  		 */
->  		data = page_address(xdp_page) + offset;
-> -		xdp.data_hard_start = data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
-> +		xdp.data_hard_start = data - VIRTIO_XDP_HEADROOM;
->  		xdp.data = data + vi->hdr_len;
->  		xdp.data_end = xdp.data + (len - vi->hdr_len);
->  		xdp.data_meta = xdp.data;
+> Will be used by a later patch.
+> 
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
+Patch applied to wireless-drivers-next.git, thanks.
 
+57a29df34146 iopoll: Introduce read_poll_timeout_atomic macro
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+https://patchwork.kernel.org/patch/11508809/
 
-
-
-$ pahole -C virtio_net_hdr_mrg_rxbuf drivers/net/virtio_net.o
-struct virtio_net_hdr_mrg_rxbuf {
-	struct virtio_net_hdr hdr;                       /*     0    10 */
-	__virtio16                 num_buffers;          /*    10     2 */
-
-	/* size: 12, cachelines: 1, members: 2 */
-	/* last cacheline: 12 bytes */
-};
-
-
-$ pahole -C virtio_net_hdr drivers/net/virtio_net.o
-struct virtio_net_hdr {
-	__u8                       flags;                /*     0     1 */
-	__u8                       gso_type;             /*     1     1 */
-	__virtio16                 hdr_len;              /*     2     2 */
-	__virtio16                 gso_size;             /*     4     2 */
-	__virtio16                 csum_start;           /*     6     2 */
-	__virtio16                 csum_offset;          /*     8     2 */
-
-	/* size: 10, cachelines: 1, members: 6 */
-	/* last cacheline: 10 bytes */
-};
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
