@@ -2,106 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D82951C792C
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 20:16:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CAD91C7946
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 20:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728834AbgEFSQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 14:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57650 "EHLO
+        id S1730263AbgEFSVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 14:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728082AbgEFSQ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 14:16:27 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00013C061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 11:16:26 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id u127so3820756wmg.1
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 11:16:26 -0700 (PDT)
+        with ESMTP id S1729313AbgEFSVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 14:21:13 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DFBC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 11:21:12 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id e20so2149387otk.12
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 11:21:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gEsdkbpjSSud3rBKiZEKc6BAa94PnVJY+KjLicPdAok=;
-        b=p14/TxlHuHfyz77uSOpupAaWfxDx/OQ/URKaInfN6cjbSQCrdfCroZkEmtp6bjG0ea
-         htjmSRr9Fa9Zj3SAN+rEyevU3ugJTWWNIDQAjeTIgcWJTHZbjJCP2d1maclZDUR9pqNi
-         /hRCuPOmQFFXhIJqCDVCJ6zvpqPmpQY3pkhTHQsgJ3rgzunR/stdkohoTHfKB/F2bLwc
-         dmwshWE//QtgqRxn5Vjrp4syWcWKO+4ER7o7TuCf8NCVrOcwS+OdD+pd0MgqTG5FhzjS
-         FnCuv1R1xUG2pau/QSqJHcEGTjMy9+aMOnoIjgW3RmrZU3rk55d2cNlyhsuP8oYsqXTf
-         X3pg==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D2taJJRTg2UNCEqvPUHeisc7wYhhWEOMV6TUWaPz7kg=;
+        b=JaXZicmLPCbQ1s4wEPLd+sV+a4q0wnzPoifqdGpBSL8D7Z8GrydmvQGqC8UT22nL2I
+         WZa/znMpgXW+q41TZVo9zK6nCks5GJUhUduUAyuXBbeNVH+4lSu2c8TsdwQTipW46XE8
+         2YvlAWllyGrBAxfyw+wCC3p4SEMWY6eYou+Co=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gEsdkbpjSSud3rBKiZEKc6BAa94PnVJY+KjLicPdAok=;
-        b=GsnfVX7mYdnPOv8aKTOL0nX2JCJKoHLkuXBpBgWFQT0XinIXmVSvrmLzWQsF683rBM
-         YexVGBNa/QVeOz4EHzhBfeDKTdvMcz4wzeziO+1sPYQpubZEse4O9aSelaFENeaQ695P
-         pvjpHEO65rPzUFMIbfsYeUxFp+6R/thGc4u255uJety8atD/8N+Vc8Av3Uo6WxqPB1CK
-         NrIcwNWt5UcJnrh+ScUZqVkdlmn/seiqevILs4zjgSeTj9D2A7kHKNXAAGfOm/XO8XxS
-         P1kBl8qzzbpxKmxx3/1btKuN26ycWpdw6+Odw0cL9llrTWj/AuvxKxUBQDfBZPQSpLYP
-         tUzQ==
-X-Gm-Message-State: AGi0PuY1iOF2O8UhwR149ISfjIGUTCxFUfqc7vAt9MW3crZQ7fFPaToG
-        +oO5dTE4bojQWSfB39VjAaJWjQ==
-X-Google-Smtp-Source: APiQypLFsR+p/YR8vk2oyyPjQ3oflcDldNRNiRy/olMaH3pCQSBZNRnrs0Hh/emY5jFHAi28Itmpjw==
-X-Received: by 2002:a7b:c7d2:: with SMTP id z18mr6151593wmk.72.1588788985747;
-        Wed, 06 May 2020 11:16:25 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id d5sm3953874wrp.44.2020.05.06.11.16.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2020 11:16:25 -0700 (PDT)
-Date:   Wed, 6 May 2020 20:16:24 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, ecree@solarflare.com, kuba@kernel.org
-Subject: Re: [PATCH net,v3] net: flow_offload: skip hw stats check for
- FLOW_ACTION_HW_STATS_DONT_CARE
-Message-ID: <20200506181624.GC2269@nanopsycho.orion>
-References: <20200506115539.21018-1-pablo@netfilter.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D2taJJRTg2UNCEqvPUHeisc7wYhhWEOMV6TUWaPz7kg=;
+        b=kqmgPdey2GC1iOau97nF6rqmEoi/7tbmZInVuDDxdyOgEh8yedgcGJUz5qzZszV8+X
+         KxTol8BNK7P0MUOw1kjcyAMBIJNjLbmYzO7dkCrxJ5jzr3Y8RLqP5w0YkbrqMsd4yhbE
+         +6+9ETjyndsh5ruL5Ff5KAmDlQ8pSxM0rYS4tGNh/CA+ninM+ML1EumJnzlJ/s3RpGtz
+         YZsaJKqrTQTB7/1eCQUelDzMmhPZ+hlhq6py3Q5+gphULzjBPdbM9dFm3LT5lcVJt6dG
+         9j7vjPhTeX9P08oTu3nAi40Rh5kkfKtEIiaBs+PlaNZCxUr3wPdNuRb/cbH0lxIuBUYd
+         l7TQ==
+X-Gm-Message-State: AGi0Pua2uRV0IMaAEhpkt0onpVjPkI8RXbDmpCBbEJKMHnYNBOrx123I
+        K65ZFdBmwJ5AwlPOC+kp6Y/ZkXtfkOyrBH3mefMv3Q==
+X-Google-Smtp-Source: APiQypInw39ygS3P/++U3PAE3LlMt925jYmNYdu8cvU7nnL+hmn3yH1R3d09MJ5VoLDPJl2XHnEM/8wYsJ8wMTKfCVI=
+X-Received: by 2002:a9d:490d:: with SMTP id e13mr7509661otf.356.1588789271980;
+ Wed, 06 May 2020 11:21:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200506115539.21018-1-pablo@netfilter.org>
+References: <20200505140231.16600-1-brgl@bgdev.pl> <20200505140231.16600-6-brgl@bgdev.pl>
+ <CAKOOJTzcNr7mc9xusQm3nCzkq5P=ha-si3fizeEL2_KJUOC3-Q@mail.gmail.com> <CAMRc=Md7gLMThfGF-7YLqW17MpMhU=UFbdTvfjbr9fFHTLir8g@mail.gmail.com>
+In-Reply-To: <CAMRc=Md7gLMThfGF-7YLqW17MpMhU=UFbdTvfjbr9fFHTLir8g@mail.gmail.com>
+From:   Edwin Peer <edwin.peer@broadcom.com>
+Date:   Wed, 6 May 2020 11:20:35 -0700
+Message-ID: <CAKOOJTxkcaq0bF34bcz3HZzqsNgfmJH=Hd+odNNMX5gDq4to=w@mail.gmail.com>
+Subject: Re: [PATCH 05/11] net: core: provide devm_register_netdev()
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, May 06, 2020 at 01:55:39PM CEST, pablo@netfilter.org wrote:
->This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
->that the frontend does not need counters, this hw stats type request
->never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
->the driver to disable the stats, however, if the driver cannot disable
->counters, it bails out.
->
->TCA_ACT_HW_STATS_* maintains the 1:1 mapping with FLOW_ACTION_HW_STATS_*
->except by disabled which is mapped to FLOW_ACTION_HW_STATS_DISABLED
->(this is 0 in tc). Add tc_act_hw_stats() to perform the mapping between
->TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*.
->
->Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
->Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
->---
->v3: update mlxsw to handle _DONT_CARE.
->
-> .../net/ethernet/mellanox/mlxsw/spectrum_flower.c  |  2 +-
-> include/net/flow_offload.h                         |  9 ++++++++-
-> net/sched/cls_api.c                                | 14 ++++++++++++--
-> 3 files changed, 21 insertions(+), 4 deletions(-)
->
->diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
->index 51117a5a6bbf..81d0b3481479 100644
->--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
->+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
->@@ -36,7 +36,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
-> 		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
-> 		if (err)
-> 			return err;
->-	} else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED) {
->+	} else if (act->hw_stats == FLOW_ACTION_HW_STATS_DELAYED) {
+On Tue, May 5, 2020 at 11:46 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
 
-I think that better is:
-	} else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED &&
-		   act->hw_stats != FLOW_ACTION_HW_STATS_DONT_CARE) {
+> Re the last bit in priv_flags: is this really a problem though? It's
+> not like struct net_device must remain stable - e.g. we can make
+> priv_flags a bitmap.
 
-> 		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
-> 		return -EOPNOTSUPP;
-> 	}
+Fair enough.
+
+Regards,
+Edwin Peer
