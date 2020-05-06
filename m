@@ -2,105 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B750C1C731A
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 16:42:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DAC1C734A
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 16:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729217AbgEFOly (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 10:41:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43626 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729181AbgEFOlw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 10:41:52 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 002D920836;
-        Wed,  6 May 2020 14:41:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588776112;
-        bh=O3LspY81ApWe1Iq+AqJ0X2EUV2ZVKqQhPFqaiCs4ILI=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Ek/Ios8sbnUGAl4FTAV3pJyGZgasnE9YxGPtG+67Q0R7KYyZMJukCv+ENy9bLUZFQ
-         bhKpISS+lmAXCIODlGZBWXZSSd4TteVaO/KWFz8KhcVBNNFXO2qv9G5cAtM+zoGdwU
-         +y9UJXxGWC2L/q0AUGWLIPzDmmD97n0QjFL1iIJI=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id DCDEA35227D0; Wed,  6 May 2020 07:41:51 -0700 (PDT)
-Date:   Wed, 6 May 2020 07:41:51 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     SeongJae Park <sjpark@amazon.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        sj38.park@gmail.com, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        SeongJae Park <sjpark@amazon.de>, snu@amazon.com,
-        amit@kernel.org, stable@vger.kernel.org
-Subject: Re: Re: Re: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc'
- life cycle change
-Message-ID: <20200506144151.GZ2869@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200505184955.GO2869@paulmck-ThinkPad-P72>
- <20200506125926.29844-1-sjpark@amazon.com>
+        id S1729241AbgEFOsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 10:48:54 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:43439 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbgEFOsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 10:48:54 -0400
+Received: from chumthang.blr.asicdesigners.com (chumthang.blr.asicdesigners.com [10.193.186.96])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 046EmaCK024883;
+        Wed, 6 May 2020 07:48:37 -0700
+From:   Ayush Sawal <ayush.sawal@chelsio.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au
+Cc:     linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        manojmalaviya@chelsio.com, Ayush Sawal <ayush.sawal@chelsio.com>
+Subject: [PATCH net-next] Revert "crypto: chelsio - Inline single pdu only"
+Date:   Wed,  6 May 2020 20:17:19 +0530
+Message-Id: <20200506144719.3725-1-ayush.sawal@chelsio.com>
+X-Mailer: git-send-email 2.26.0.rc1.11.g30e9940
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200506125926.29844-1-sjpark@amazon.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 06, 2020 at 02:59:26PM +0200, SeongJae Park wrote:
-> TL; DR: It was not kernel's fault, but the benchmark program.
-> 
-> So, the problem is reproducible using the lebench[1] only.  I carefully read
-> it's code again.
-> 
-> Before running the problem occurred "poll big" sub test, lebench executes
-> "context switch" sub test.  For the test, it sets the cpu affinity[2] and
-> process priority[3] of itself to '0' and '-20', respectively.  However, it
-> doesn't restore the values to original value even after the "context switch" is
-> finished.  For the reason, "select big" sub test also run binded on CPU 0 and
-> has lowest nice value.  Therefore, it can disturb the RCU callback thread for
-> the CPU 0, which processes the deferred deallocations of the sockets, and as a
-> result it triggers the OOM.
-> 
-> We confirmed the problem disappears by offloading the RCU callbacks from the
-> CPU 0 using rcu_nocbs=0 boot parameter or simply restoring the affinity and/or
-> priority.
-> 
-> Someone _might_ still argue that this is kernel problem because the problem
-> didn't occur on the old kernels prior to the Al's patches.  However, setting
-> the affinity and priority was available because the program received the
-> permission.  Therefore, it would be reasonable to blame the system
-> administrators rather than the kernel.
-> 
-> So, please ignore this patchset, apology for making confuse.  If you still has
-> some doubts or need more tests, please let me know.
-> 
-> [1] https://github.com/LinuxPerfStudy/LEBench
-> [2] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L820
-> [3] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L822
+This reverts commit 27c6feb0fb33a665a746346e76714826a5be5d10.
 
-Thank you for chasing this down!
+For ipsec offload the chelsio's ethernet driver expects a single mtu
+sized packet.
 
-I have had this sort of thing on my list as a potential issue, but given
-that it is now really showing up, it sounds like it is time to bump
-up its priority a bit.  Of course there are limits, so if userspace is
-running at any of the real-time priorities, making sufficient CPU time
-available to RCU's kthreads becomes userspace's responsibility.  But if
-everything is running at SCHED_OTHER (which is this case here, correct?),
-then it is reasonable for RCU to do some work to avoid this situation.
+But when ipsec traffic is running using iperf, most of the packets in
+that traffic are gso packets(large sized skbs) because GSO is enabled by
+default in TCP, due to this commit 0a6b2a1dc2a2 ("tcp: switch to GSO
+being always on"), so chcr_ipsec_offload_ok() receives a gso
+skb(with gso_size non zero).
 
-But still, yes, the immediate job is fixing the benchmark.  ;-)
+Due to the check in chcr_ipsec_offload_ok(), this function returns false
+for most of the packet, then ipsec offload is skipped and the skb goes
+out taking the coprocessor path which reduces the bandwidth for inline
+ipsec.
 
-							Thanx, Paul
+If this check is removed then for most of the packets(large sized skbs)
+the chcr_ipsec_offload_ok() returns true and then as GSO is on, the
+segmentation of the packet happens in the kernel and then finally the
+driver_xmit is called, which receives a segmented mtu sized packet which
+is what the driver expects for ipsec offload. So this case becomes
+unnecessary here, therefore removing it.
 
-PS.  Why not just attack all potential issues on my list?  Because I
-     usually learn quite a bit from seeing the problem actually happen.
-     And sometimes other changes in RCU eliminate the potential issue
-     before it has a chance to happen.
+Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
+---
+ drivers/crypto/chelsio/chcr_ipsec.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/crypto/chelsio/chcr_ipsec.c b/drivers/crypto/chelsio/chcr_ipsec.c
+index 9fd3b9d1ec2f..d25689837b26 100644
+--- a/drivers/crypto/chelsio/chcr_ipsec.c
++++ b/drivers/crypto/chelsio/chcr_ipsec.c
+@@ -294,9 +294,6 @@ static bool chcr_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
+ 		if (ipv6_ext_hdr(ipv6_hdr(skb)->nexthdr))
+ 			return false;
+ 	}
+-	/* Inline single pdu */
+-	if (skb_shinfo(skb)->gso_size)
+-		return false;
+ 	return true;
+ }
+ 
+-- 
+2.26.0.rc1.11.g30e9940
+
