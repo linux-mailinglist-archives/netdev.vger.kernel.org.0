@@ -2,91 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 196391C6F70
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4631C6F62
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727970AbgEFLe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 07:34:27 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:35426 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727940AbgEFLeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:34:25 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 046BXfMs011164;
-        Wed, 6 May 2020 04:34:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=9WQlIkhrKQD1xazHU2HslZIiKo7E0Lul5qopz3Q3g14=;
- b=lasdXtTKgyU+Ods4s/RfOgoRWiDSXiEtf9aW44QwBih8/FfRCLeKro3brSTXa6O52u5i
- rCN92udEJ09/mrmOgBBZfFe7ZgX8B9xvpi0ntHP2qUwvyLVqqFNa9Bn75HzbfLUJikpE
- tUJFdCG5MLnR88qAM5CnqtwVsMEjbFeuPKDjlgUp5ls3XVhCCULYzIVxWtCGMOEzyt/7
- 5j0yk35aTeNtgcIXxUI5C1/OsV5pCuRPRkf8qwagFYDYM5JjbxaTN2mHIV9Fm+tT9eGm
- 7f4c8qeBMVBE2EW2yCGhI6xBVRTaXix0Zg5/dBTP/03NGfQwvJ8bqG94BhFZWH4+rSab qA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 30uaukvqnp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 06 May 2020 04:34:24 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 6 May
- 2020 04:34:21 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 May 2020 04:34:22 -0700
-Received: from NN-LT0019.marvell.com (unknown [10.193.46.2])
-        by maili.marvell.com (Postfix) with ESMTP id 7FB2A3F703F;
-        Wed,  6 May 2020 04:34:19 -0700 (PDT)
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Denis Bolotin <dbolotin@marvell.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Ariel Elior <ariel.elior@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>
-Subject: [PATCH net-next 12/12] net: qed: fix bad formatting
-Date:   Wed, 6 May 2020 14:33:14 +0300
-Message-ID: <b22da6629c37b0ebec5a917ecf9c7544bca4b24e.1588758464.git.irusskikh@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1588758463.git.irusskikh@marvell.com>
-References: <cover.1588758463.git.irusskikh@marvell.com>
+        id S1726807AbgEFLdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 07:33:38 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:53606 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725887AbgEFLdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:33:38 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4784F6007C;
+        Wed,  6 May 2020 11:33:37 +0000 (UTC)
+Received: from us4-mdac16-58.ut7.mdlocal (unknown [10.7.66.29])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 45D762009A;
+        Wed,  6 May 2020 11:33:37 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.35])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C2C761C004F;
+        Wed,  6 May 2020 11:33:36 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EA1EF480059;
+        Wed,  6 May 2020 11:33:35 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 6 May 2020
+ 12:33:29 +0100
+Subject: Re: [PATCH net,v2] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DONT_CARE
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     <netfilter-devel@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <jiri@resnulli.us>
+References: <20200505174736.29414-1-pablo@netfilter.org>
+ <20200505114010.132abebd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200505193145.GA9789@salvia>
+ <20200505124343.27897ad6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200505214321.GA13591@salvia>
+ <20200505162942.393ed266@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <e8de6def-8232-598a-6724-e790296a251b@solarflare.com>
+Date:   Wed, 6 May 2020 12:33:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-05-06_05:2020-05-05,2020-05-06 signatures=0
+In-Reply-To: <20200505162942.393ed266@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25402.001
+X-TM-AS-Result: No-1.360000-8.000000-10
+X-TMASE-MatchedRID: xcONGPdDH5q8rRvefcjeTfZvT2zYoYOwC/ExpXrHizz6I9i0e8hghcfB
+        RYvA7Qimi2Vy1lps1qHlUb21iTHhT6ZY4PxfRMWEQ24lJ40XApgbAqzdFRyxuESbbPTiMagTgMp
+        BuJUGNe3B0ki7dmSgF3rBsLkzYdezjaYSACRQiDd3wUVuihU/jpAoP2KG7EfPAa6hrn8pQDCNBv
+        RmKMdxcCoLt8AP659Oeb3f20kKgFL4kBiMXhevoVD5LQ3Tl9H7AQ8mtiWx//qbuvvgpZZI+ZGE1
+        OovlhYFD6bYMz71y+Jy8eYYZSzHFUKPluOEKT3/GJADAbBHGUxUIaneDj+GO9EZrmyNM/Ru1gVf
+        qaZEz0Y93QAR2QK7TAdcruc0/YQGWAPmaH6lUzUcLuEDP+gqcn2K69afcnwqwCTIeJgMBBt2UK6
+        xU6n4PzxhqvlusG8LCn8TaV9gGVxNfs8n85Te8oMbH85DUZXy3QfwsVk0UbsIoUKaF27lxRLFe2
+        Pv+4fcApe+rkXSUUsw2YFU65oCoKvPjrTp1tjW26FBdjXvnBXnoooiiK1rxT14trqG5oXoSMDTC
+        Dmd7+xum14wZGJWfaKAQfLsnhLrKWSt4DmvbhpicKLmK2TeKmsPn5C6nWpTnqg/VrSZEiM=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.360000-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25402.001
+X-MDID: 1588764817-23GW24dK6FNV
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On some adjacent code, fix bad code formatting
+On 06/05/2020 00:29, Jakub Kicinski wrote:
+> IIRC we went from the pure bitfield implementation (which was my
+> preference) to one where 0 means disabled.
+>
+> Unfortunately we ended up with a convoluted API where drivers have to
+> check for magic 0 or 'any' values.
+Yeah, I said something dumb a couple of threads ago and combined the
+ good idea (a DISABLED bit) with the bad idea (0 as magic DONT_CARE
+ value), sorry for leading Pablo on a bit of a wild goose chase there.
+(It has some slightly nice properties if you're trying to write out-of-
+ tree drivers that work with multiple kernel versions, but that's never
+ a good argument for anything, especially when it requires a bunch of
+ extra code in the in-tree drivers to handle it.)
 
-Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- include/linux/qed/qed_if.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+> On Tue, 5 May 2020 23:43:21 +0200 Pablo Neira Ayuso wrote:
+>> And what is the semantic for 0 (no bit set) in the kernel in your
+>> proposal?
+It's illegal, the kernel never does it, and if it ever does then the
+ correct response from drivers is to say "None of the things I can
+ support (including DISABLED) were in the bitmask, so -EOPNOTSUPP".
+Which is what drivers written in the natural way will do, for free.
 
-diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
-index 7b47fd7b77e2..2f58a9b722a8 100644
---- a/include/linux/qed/qed_if.h
-+++ b/include/linux/qed/qed_if.h
-@@ -821,12 +821,11 @@ enum qed_nvm_flash_cmd {
- 
- struct qed_common_cb_ops {
- 	void (*arfs_filter_op)(void *dev, void *fltr, u8 fw_rc);
--	void	(*link_update)(void			*dev,
--			       struct qed_link_output	*link);
-+	void (*link_update)(void *dev, struct qed_link_output *link);
- 	void (*schedule_recovery_handler)(void *dev);
- 	void (*schedule_hw_err_handler)(void *dev,
- 					enum qed_hw_err_type err_type);
--	void	(*dcbx_aen)(void *dev, struct qed_dcbx_get *get, u32 mib_type);
-+	void (*dcbx_aen)(void *dev, struct qed_dcbx_get *get, u32 mib_type);
- 	void (*get_generic_tlv_data)(void *dev, struct qed_generic_tlvs *data);
- 	void (*get_protocol_tlv_data)(void *dev, void *data);
- };
--- 
-2.25.1
+>> Jiri mentioned there will be more bits coming soon. How will you
+>> extend this model (all bit set on for DONT_CARE) if new bits with
+>> specific semantics are showing up?
+If those bits are additive (e.g. a new type like IMMEDIATE and
+ DISABLED), then all-bits-on works fine.  If they're orthogonal flags,
+ ideally there should be two bits, one for "flag OFF is acceptable"
+ and one for "flag ON is acceptable", that way 0b11 still means don't
+ care.  And 0b00 gets EOPNOTSUPP regardless of the rest of the bits.
 
+>> Combining ANY | DISABLED is non-sense, it should be rejected.
+It's not nonsense; it means what it says ("I accept any of the modes
+ (which enable stats); I also accept disabled stats").
+
+-ed
