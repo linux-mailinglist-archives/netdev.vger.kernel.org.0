@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1A171C684E
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00D7B1C6851
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727871AbgEFGRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 02:17:11 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3808 "EHLO huawei.com"
+        id S1727942AbgEFGRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 02:17:19 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:57678 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726495AbgEFGRK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 02:17:10 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 2F845A04B3344AC12140;
-        Wed,  6 May 2020 14:17:05 +0800 (CST)
-Received: from huawei.com (10.175.124.28) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Wed, 6 May 2020
- 14:16:55 +0800
+        id S1725873AbgEFGRT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 02:17:19 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id B6409B257A0EA51397D2;
+        Wed,  6 May 2020 14:17:16 +0800 (CST)
+Received: from huawei.com (10.175.124.28) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Wed, 6 May 2020
+ 14:17:09 +0800
 From:   Jason Yan <yanaijie@huawei.com>
-To:     <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
+To:     <tariqt@mellanox.com>, <davem@davemloft.net>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <kuba@kernel.org>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bpf@vger.kernel.org>
 CC:     Jason Yan <yanaijie@huawei.com>
-Subject: [PATCH net-next] net: bridge: return false in br_mrp_enabled()
-Date:   Wed, 6 May 2020 14:16:16 +0800
-Message-ID: <20200506061616.18929-1-yanaijie@huawei.com>
+Subject: [PATCH net-next] net: mlx4: remove unneeded variable "err" in mlx4_en_get_rxfh()
+Date:   Wed, 6 May 2020 14:16:30 +0800
+Message-ID: <20200506061630.19010-1-yanaijie@huawei.com>
 X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -39,27 +40,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fix the following coccicheck warning:
 
-net/bridge/br_private.h:1334:8-9: WARNING: return of 0/1 in function
-'br_mrp_enabled' with return type bool
+drivers/net/ethernet/mellanox/mlx4/en_ethtool.c:1238:5-8: Unneeded
+variable: "err". Return "0" on line 1252
 
 Signed-off-by: Jason Yan <yanaijie@huawei.com>
 ---
- net/bridge/br_private.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx4/en_ethtool.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index c35647cb138a..78d3a951180d 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -1331,7 +1331,7 @@ static inline int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+index 8a5ea2543670..216e6b2e9eed 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+@@ -1235,7 +1235,6 @@ static int mlx4_en_get_rxfh(struct net_device *dev, u32 *ring_index, u8 *key,
+ 	struct mlx4_en_priv *priv = netdev_priv(dev);
+ 	u32 n = mlx4_en_get_rxfh_indir_size(dev);
+ 	u32 i, rss_rings;
+-	int err = 0;
  
- static inline bool br_mrp_enabled(struct net_bridge *br)
- {
--	return 0;
-+	return false;
+ 	rss_rings = priv->prof->rss_rings ?: n;
+ 	rss_rings = rounddown_pow_of_two(rss_rings);
+@@ -1249,7 +1248,7 @@ static int mlx4_en_get_rxfh(struct net_device *dev, u32 *ring_index, u8 *key,
+ 		memcpy(key, priv->rss_key, MLX4_EN_RSS_KEY_SIZE);
+ 	if (hfunc)
+ 		*hfunc = priv->rss_hash_fn;
+-	return err;
++	return 0;
  }
  
- static inline void br_mrp_port_del(struct net_bridge *br,
+ static int mlx4_en_set_rxfh(struct net_device *dev, const u32 *ring_index,
 -- 
 2.21.1
 
