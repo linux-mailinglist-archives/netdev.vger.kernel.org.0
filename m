@@ -2,91 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A995B1C68DC
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:25:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35BED1C686F
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbgEFGZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 02:25:00 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:21786 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726480AbgEFGZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:25:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1588746299; x=1620282299;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   in-reply-to:content-transfer-encoding;
-  bh=uP/BhJmSmX3L3+P3MYiFUKs9vkkg39y9yHhc2FQC2CE=;
-  b=AWpURNSlT6NY+dMJNU7IbbIjkpxAHKe2yVEyddxuvV6/ef8KyVNnuFf+
-   OUYTrLLGHNw6CKmVgQNgp8BtpqRm1g6P5CclrZ6ttJcyh+M0gXHxTGlzw
-   xK5e2xOaLjz1GDPZQuvHF2vW28bSNZ4PEt/bh0cgq9pkcCkT2cqqQmRkq
-   w=;
-IronPort-SDR: qhyU6KFoz/1V89gyCJYv+kd3k1uEGCYFRYrs/Ix3poJbo/3VkCLYcuvefjU+v8VD2IW0xCvhJK
- Ty9ZARoFU/og==
-X-IronPort-AV: E=Sophos;i="5.73,358,1583193600"; 
-   d="scan'208";a="28845370"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1a-16acd5e0.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 06 May 2020 06:24:47 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-16acd5e0.us-east-1.amazon.com (Postfix) with ESMTPS id B1839A218C;
-        Wed,  6 May 2020 06:24:45 +0000 (UTC)
-Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 6 May 2020 06:24:44 +0000
-Received: from u886c93fd17d25d.ant.amazon.com (10.43.160.180) by
- EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 6 May 2020 06:24:39 +0000
-From:   SeongJae Park <sjpark@amazon.com>
-To:     David Miller <davem@davemloft.net>
-CC:     <sjpark@amazon.com>, <viro@zeniv.linux.org.uk>, <kuba@kernel.org>,
-        <gregkh@linuxfoundation.org>, <edumazet@google.com>,
-        <sj38.park@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sjpark@amazon.de>
-Subject: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
-Date:   Wed, 6 May 2020 08:24:23 +0200
-Message-ID: <20200506062423.28873-1-sjpark@amazon.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728062AbgEFGVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 02:21:31 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3857 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726438AbgEFGVa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 02:21:30 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id E8BFBC046390BB51FE86;
+        Wed,  6 May 2020 14:21:28 +0800 (CST)
+Received: from linux-lmwb.huawei.com (10.175.103.112) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 6 May 2020 14:21:19 +0800
+From:   Samuel Zou <zou_wei@huawei.com>
+To:     <nbd@openwrt.org>, <john@phrozen.org>, <sean.wang@mediatek.com>,
+        <Mark-MC.Lee@mediatek.com>, <davem@davemloft.net>,
+        <matthias.bgg@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, "Samuel Zou" <zou_wei@huawei.com>
+Subject: [PATCH -next] net: ethernet: mediatek: Make mtk_m32 static
+Date:   Wed, 6 May 2020 14:27:30 +0800
+Message-ID: <1588746450-35911-1-git-send-email-zou_wei@huawei.com>
+X-Mailer: git-send-email 2.6.2
 MIME-Version: 1.0
-In-Reply-To: <20200505.120049.635223866062154775.davem@davemloft.net> (raw)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.43.160.180]
-X-ClientProxiedBy: EX13D02UWC003.ant.amazon.com (10.43.162.199) To
- EX13D31EUA001.ant.amazon.com (10.43.165.15)
+Content-Type: text/plain
+X-Originating-IP: [10.175.103.112]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 05 May 2020 12:00:49 -0700 (PDT) David Miller <davem@davemloft.net> wrote:
+Fix the following sparse warning:
 
-> From: David Miller <davem@davemloft.net>
-> Date: Tue, 05 May 2020 11:48:25 -0700 (PDT)
-> 
-> > Series applied and queued up for -stable, thanks.
-> 
-> Nevermind, this doesn't even compile.
-> 
-> net/smc/af_smc.c: In function ‘smc_switch_to_fallback’:
-> net/smc/af_smc.c:473:19: error: ‘smc->clcsock->wq’ is a pointer; did you mean to use ‘->’?
->   473 |   smc->clcsock->wq.fasync_list =
->       |                   ^
->       |                   ->
-> net/smc/af_smc.c:474:25: error: ‘smc->sk.sk_socket->wq’ is a pointer; did you mean to use ‘->’?
->   474 |    smc->sk.sk_socket->wq.fasync_list;
->       |                         ^
->       |                         ->
-> 
-> So I had to revert these changes.
-> 
-> When you make a change of this magnitude and scope you must do an
-> allmodconfig build.
+drivers/net/ethernet/mediatek/mtk_eth_soc.c:68:5: warning:
+symbol 'mtk_m32' was not declared. Should it be static?
 
-Definitely my fault.  I will fix this in next spin.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Samuel Zou <zou_wei@huawei.com>
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 0904710..2822268 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -65,7 +65,7 @@ u32 mtk_r32(struct mtk_eth *eth, unsigned reg)
+ 	return __raw_readl(eth->base + reg);
+ }
+ 
+-u32 mtk_m32(struct mtk_eth *eth, u32 mask, u32 set, unsigned reg)
++static u32 mtk_m32(struct mtk_eth *eth, u32 mask, u32 set, unsigned reg)
+ {
+ 	u32 val;
+ 
+-- 
+2.6.2
 
-Thanks,
-SeongJae Park
-
-> 
-> Thank you.
