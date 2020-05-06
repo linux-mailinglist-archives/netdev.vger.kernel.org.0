@@ -2,97 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6FFC1C7B91
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 22:53:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 176B01C7B9B
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 22:57:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729363AbgEFUxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 16:53:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729219AbgEFUxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 16:53:06 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E97C0610D5
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 13:53:05 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id n205so4158216ybf.14
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 13:53:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=SB+0qR8XBn8IFJQ/MG0Miycx8pxpjR3L5u9CDE0na6s=;
-        b=Xr+iZOjvxcNqSpKCGofVocwfNYahKeswTd3EUNRVcV6W1+/yk6KkvpVOHowLJgRnTQ
-         +bm+jG/e2f0TpEX6VaspQ3/LKIOohlS4DZ++8/cjk/v9az6hCTs3spdYcclANMkZiUJu
-         btxV+qnCtPj1EJlGIMCYVCcebOTMKbdwOxAthGT/iJXib711W+dOlmFgR/63Q4KCMH9e
-         oCcVtnM8qQd0qqRA4Oq5laRGzDKX2NFtzoUOjys9BfzK3a2DXZpH9C1YgZ7XebptGl6x
-         Wl1uyB+UjheCRiRevb5m+IiXrOQv1LUxb7q8yiRFdFPCFwyFKgmoxpZKS90b9TYrDPiN
-         Ae+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=SB+0qR8XBn8IFJQ/MG0Miycx8pxpjR3L5u9CDE0na6s=;
-        b=oYEEaBm2vLWUchRjhAUYjLdUG9vKdQeeJbJQzJj6/sZSfcd+ABUg4XAcLY4Ki8uhkJ
-         NbPed5QJqPOInEnGHnDRhZpugHYQ5mIuXPW6JyLApcBriM4lUfSVg+I5M5+nVFPx8LTJ
-         BMkCyE16cxOWfxP0Bfi3TdjTGAJ5VhdCHiTCZS/clX+kGrQRdlBI+Dywd+1zW8IMZQ3V
-         f1vYYuEoZ2BSzzC/s6ZBQRNIKNjar56GeH+Hh4kMoP6XBes9x0n87YQnIarVmOeEPvmt
-         ln1t0sjZSjUa/ZwXtGn8t8OAwB6ahzTyKS+61TNzbm9bbRaswi8SxHL+gL4bI5Osp0z8
-         2+vQ==
-X-Gm-Message-State: AGi0PuYaAaJXGoNNIVc3Cq0MUiaMXIaAg66aa0FtVocX+keekRaeJQkn
-        /ZSZArl99rwmUF5vAHPdn7g9ah7DkvX3
-X-Google-Smtp-Source: APiQypIK8JSaVfoCzIrg6e3WCCDvIPqs+/RQUmEbxLMoi1zTKYaJYw7eV7fYGNtJKA8UWjfLwBNT6BzkrEvd
-X-Received: by 2002:a25:9384:: with SMTP id a4mr16176208ybm.79.1588798384256;
- Wed, 06 May 2020 13:53:04 -0700 (PDT)
-Date:   Wed,  6 May 2020 13:52:57 -0700
-In-Reply-To: <20200506205257.8964-1-irogers@google.com>
-Message-Id: <20200506205257.8964-3-irogers@google.com>
-Mime-Version: 1.0
-References: <20200506205257.8964-1-irogers@google.com>
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH 2/2] lib/bpf hashmap: fixes to hashmap__clear
-From:   Ian Rogers <irogers@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728821AbgEFU5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 16:57:33 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:47400 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726815AbgEFU5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 16:57:33 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 046Kui98091661;
+        Wed, 6 May 2020 15:56:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1588798604;
+        bh=WC2aBjr6iCQTQw2lr1Yyk+xrI/M0eVGwOwtMPjsKnbw=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=Rndq67NlN2lHEUXyT7jVZCcToac28Ol1pr9Ne8fdhHotn5szrumPVTmv7qNuEl2Wl
+         7ZJzhMsEtzLJJZvngVnggYqyhGTHVpUHJVZvhDFVvqqaQ4Obs+lJyR/FevNlAATiP6
+         QvAcI1PdVhOABhgu5k4A+G8xXPlobJ3iYCYVDM5Y=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 046Kui5N020143
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 May 2020 15:56:44 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 6 May
+ 2020 15:56:43 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 6 May 2020 15:56:43 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 046KubRW051537;
+        Wed, 6 May 2020 15:56:38 -0500
+Subject: Re: [PATCH v2] net: ethernet: ti: Remove TI_CPTS_MOD workaround
+To:     Clay McClure <clay@daemons.net>
+CC:     Arnd Bergmann <arnd@arndb.de>, kbuild test robot <lkp@intel.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tony Lindgren <tony@atomide.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+References: <CAK8P3a1m-zmiTx0_KJb-9PTW0iK+Zkh10gKsaBzge0OJALBFmQ@mail.gmail.com>
+ <20200504165711.5621-1-clay@daemons.net>
+ <f07c695b-5537-41bf-e4f8-0d8012532f64@ti.com>
+ <20200506065105.GA3226@arctic-shiba-lx>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <1654101f-9dd7-2e10-7344-0d08e32bc309@ti.com>
+Date:   Wed, 6 May 2020 23:56:35 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200506065105.GA3226@arctic-shiba-lx>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hashmap_find_entry assumes that if buckets is NULL then there are no
-entries. NULL the buckets in clear to ensure this.
-Free hashmap entries and not just the bucket array.
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/lib/bpf/hashmap.c | 6 ++++++
- 1 file changed, 6 insertions(+)
 
-diff --git a/tools/lib/bpf/hashmap.c b/tools/lib/bpf/hashmap.c
-index 54c30c802070..1a1bca1ff5cd 100644
---- a/tools/lib/bpf/hashmap.c
-+++ b/tools/lib/bpf/hashmap.c
-@@ -59,7 +59,13 @@ struct hashmap *hashmap__new(hashmap_hash_fn hash_fn,
- 
- void hashmap__clear(struct hashmap *map)
- {
-+	struct hashmap_entry *cur, *tmp;
-+	size_t bkt;
-+
-+	hashmap__for_each_entry_safe(map, cur, tmp, bkt)
-+		free(cur);
- 	free(map->buckets);
-+	map->buckets = NULL;
- 	map->cap = map->cap_bits = map->sz = 0;
- }
- 
+On 06/05/2020 09:51, Clay McClure wrote:
+> On Tue, May 05, 2020 at 10:41:26AM +0300, Grygorii Strashko wrote:
+> 
+>> It's better if you send v2 not as reply to v1.
+> 
+> Noted, thank you, and thank you for taking the time to review my patch.
+> 
+>> just to clarify. After these two patches
+>>   - the PTP_1588_CLOCK can still be set to "M"
+>>   - which will cause TI_CPTS to be "M",
+>>   - but TI_CPSW will still be "Y".
+>>
+>> and all above will build and produce built-in CPSW without CPTS support
+>> and cpts.ko which is loadable, but not functional.
+>>
+>> Sorry, I'm a little bit lost regarding the target you'are trying to achieve.
+>> At least previously "imply PTP_1588_CLOCK" allowed to select properly PTP_1588_CLOCK
+>> without modifying every defconfig.
+> 
+> Well, I just wanted to squelch a WARN_ON(). As Arnd pointed out in [1],
+> code that uses the stubbed cpts functions is supposed to gracefully
+> handle receiving a null pointer. Splatting a warning is not graceful,
+> and that's what I was trying to fix.
+> 
+> But your question in [2] prompted me to consider whether it should be
+> possible to build TI_CPTS without PTP_1588_CLOCK at all. I think the
+> answer is no, so I tried to fix it, but you're right, it's still
+> possible to end up with a nonfunctional module after my patch.
+> 
+> If you prefer to revert, that's fine with me. Should I post a patch, or
+> just ask David to revert?
+> 
+
+Ok. After some thinking and hence you commit b6d49cab44b5 ("net: Make PTP-specific drivers depend on PTP_1588_CLOCK")
+seems was merged in net (not net-next)
+1) for-net: defconfig changes can be separated to fix build fail, but add change for multi_v7_defconfig
+2) for-net-next: rest of changes plus below diff on top of it
+
+diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+index f3f8bb724294..62f809b67469 100644
+--- a/drivers/net/ethernet/ti/Kconfig
++++ b/drivers/net/ethernet/ti/Kconfig
+@@ -49,6 +49,7 @@ config TI_CPSW_PHY_SEL
+  config TI_CPSW
+         tristate "TI CPSW Switch Support"
+         depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
++       depends on TI_CPTS || !TI_CPTS
+         select TI_DAVINCI_MDIO
+         select MFD_SYSCON
+         select PAGE_POOL
+@@ -64,6 +65,7 @@ config TI_CPSW_SWITCHDEV
+         tristate "TI CPSW Switch Support with switchdev"
+         depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
+         depends on NET_SWITCHDEV
++       depends on TI_CPTS || !TI_CPTS
+         select PAGE_POOL
+         select TI_DAVINCI_MDIO
+         select MFD_SYSCON
+@@ -78,11 +80,9 @@ config TI_CPSW_SWITCHDEV
+  
+  config TI_CPTS
+         tristate "TI Common Platform Time Sync (CPTS) Support"
+-       depends on TI_CPSW || TI_KEYSTONE_NETCP || TI_CPSW_SWITCHDEV || COMPILE_TEST
++       depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || COMPILE_TEST
+         depends on COMMON_CLK
+         depends on PTP_1588_CLOCK
+-       default y if TI_CPSW=y || TI_KEYSTONE_NETCP=y || TI_CPSW_SWITCHDEV=y
+-       default m
+         ---help---
+           This driver supports the Common Platform Time Sync unit of
+           the CPSW Ethernet Switch and Keystone 2 1g/10g Switch Subsystem.
+@@ -109,6 +109,7 @@ config TI_KEYSTONE_NETCP
+         select TI_DAVINCI_MDIO
+         depends on OF
+         depends on KEYSTONE_NAVIGATOR_DMA && KEYSTONE_NAVIGATOR_QMSS
++       depends on TI_CPTS || !TI_CPTS
+         ---help---
+           This driver supports TI's Keystone NETCP Core.
+
+It should properly resolve "M" vs "Y" dependencies between
+  PTP_1588_CLOCK->TI_CPTS->TI_CPSW
+
+On thing, TI_CPTS can be selected without TI_CPSW, but it's probably ok.
+
 -- 
-2.26.2.526.g744177e7f7-goog
-
+Best regards,
+grygorii
