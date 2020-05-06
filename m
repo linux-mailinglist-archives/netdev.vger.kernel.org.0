@@ -2,434 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2B311C7D6D
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 00:32:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D62D1C7D90
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 00:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730317AbgEFWc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 18:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
+        id S1730323AbgEFWpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 18:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730225AbgEFWcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 18:32:23 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE267C061A10
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 15:32:21 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id j4so4444279ybj.20
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 15:32:21 -0700 (PDT)
+        with ESMTP id S1728888AbgEFWpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 18:45:14 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB1AC061A0F;
+        Wed,  6 May 2020 15:45:14 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id l18so4059582wrn.6;
+        Wed, 06 May 2020 15:45:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=5RD3nmqtmGGcRCOLEPBuZsiM4xP4zdNHEi9o6uJppYM=;
-        b=u28yOWbhgpcLEh8KyHy5N2AocBeL8VX9tbdNliL+iUrGUdv4MBR9u0H4700Vtbvb3S
-         oFknahUxI06LJPsvf/+PvwW8cxBF7PwrqOweNztbJtBbqtOOLlS4dp1+G37WcC+MD4v6
-         p0ns9Nb/3aVxWrp3vxGV6eE8FzKvX+fuYAltVKIHzQfp++OSI6wbx/XndTh8xTdoOzl0
-         b1OOcqEHJYlvWImuD6szrLZPCq3vck2kP3W57z6JcfvXN5uBEDj1NioqOWu/S2yOKtBQ
-         z78bqTlkw3zSdfjTctZCJUlNzieYZbiRgElNlXFL+VxOX1HtcAIq8drlSlysdqN+bHe2
-         EOaA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Xzs/Kjvpb+Bur4dwOG66eDftXF7VVBOIkEWHXdV8Ezc=;
+        b=kWmi9VLqH4Jbm/yDYVVIYklJy4C82ABfqo+2aSRFKrm0baEfzTcF71bUab/rukbU+F
+         btz2HIWRg80PgSJkntipQIcleerbKCph8jlGEmMcUrC6Irvpun7DJoqIguZSVNu/lT1j
+         INL3F9AyJAPPVgbM31rpJPLQqz5AfDJZJ0fTNuRM4JTm0okY7O3SzlnHBHLkwfx3RqKw
+         5o+5ZDllWJE6oU79nD6dk1sMbF4gz9pnyf4wGIvGB5DT8YYflzVjMPWpOX5D6/5HXitX
+         I1rj+IOPudnuQsUhlzzIfa/gfBfeGoMsZpsNc33RZwjuyydCoNB89PVp+ZUjRlvgSift
+         pXcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=5RD3nmqtmGGcRCOLEPBuZsiM4xP4zdNHEi9o6uJppYM=;
-        b=WO3dZ4eluvvGaHOwErA4dqXx/eoiEnzyS3z4/X0aVHvduYHWT+jOByshCbisMqK+sb
-         Kl3yP/sDCarWTnbojfsIbyw5UmKghqh0i8OHXaf8Oz216oto81WEL8DzhojML4fqCJoO
-         ZYxEJs3CIam1VweHzhOSoi/RaVWIxdp9W6+NZCmTgS2tgva7yDvkUB3ovm2T2020YNLH
-         yvqW4DIXIcGpa8RamdiAZRBdh6Rvt+yrXb0XJCVfVSk2HiX8UWkwFPWZyj9DPq3uaW5o
-         p4GDjfvhERl2HSlykprf+Q2/O2b/MNCxlQ7tCmWUY+YZOreMac9pLQmNRwD9MJ7gGaQs
-         VJhg==
-X-Gm-Message-State: AGi0PuaH1sShsgfhARXBnG5Xj5EC4qgNiTpUU+xbHi/4iFy+puFo1iOK
-        nCplnoQ2snKOMUINFBDd666lTaWoi7Sg9QbzuLgZUqVbnbNBvwgitRBchTV21ShPWKmKX0oyWI8
-        m+5beGk4p/BD6XxKkIb2TRF1a+B+uonpYPLtUMCsFPRuSCpIfFytQ1g==
-X-Google-Smtp-Source: APiQypIyLDfLYLtTNVrxe6DFZhJWcOuLsJKN/AZRWrULzDRrohlRf6TlPj0yG78b42RQbiMF0fyMVd4=
-X-Received: by 2002:a25:db87:: with SMTP id g129mr17864515ybf.491.1588804340886;
- Wed, 06 May 2020 15:32:20 -0700 (PDT)
-Date:   Wed,  6 May 2020 15:32:10 -0700
-In-Reply-To: <20200506223210.93595-1-sdf@google.com>
-Message-Id: <20200506223210.93595-6-sdf@google.com>
-Mime-Version: 1.0
-References: <20200506223210.93595-1-sdf@google.com>
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [PATCH bpf-next v3 5/5] bpf: allow any port in bpf_bind helper
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Andrey Ignatov <rdna@fb.com>, Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Xzs/Kjvpb+Bur4dwOG66eDftXF7VVBOIkEWHXdV8Ezc=;
+        b=eJL2Zg7NLApB1X3iYMQI/2ZJFgb8Rv8T5DhRJpR93+Dte6jDKbfzm1RdqwcmwVGBo/
+         t1kRycakaGJzJkIh0jY2KKbzLagmakbgHXUQRXJuZWOccADfy6U27rFFMMEDMod3f7dQ
+         wcyL85HfodGQJqBFa8OqJDBPaNKQgGV26CVwv92aZSzR+6tlQjjgm64iRjikt/cfoIOd
+         X6fphpAgWljSPlTjL2TXwX4mis+B0KueeqipYgwXCO2SOJeUCY8g9vusjthdlJ16my6I
+         P51r6cQ8+ffuFQEyQtPnMQ11M1rIQvrv1tnWbLZxODoZ227sqhMgqbKjwfLPh1uqK566
+         5m0w==
+X-Gm-Message-State: AGi0PuYvTQkl/Zo228stN+yrykRdcWVaRGhTL9zwjFmj9ieKQ7un9MLr
+        +NxTTe7tcrIWdZK7IooOtfwQIjpB
+X-Google-Smtp-Source: APiQypJrXBV0Jqvdn9YGs9vGJDgAOFrPfAwOn4vgQjb+k2HiNPcQD5mngDn/UDlb8ftheGPJNq85sA==
+X-Received: by 2002:a5d:6a85:: with SMTP id s5mr11737214wru.122.1588805112574;
+        Wed, 06 May 2020 15:45:12 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x6sm4745410wrv.57.2020.05.06.15.45.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 May 2020 15:45:11 -0700 (PDT)
+Subject: Re: [RFC net] net: dsa: Add missing reference counting
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20200505210253.20311-1-f.fainelli@gmail.com>
+ <20200505172302.GB1170406@t480s.localdomain>
+ <d681a82b-5d4b-457f-56de-3a439399cb3d@gmail.com>
+ <CA+h21hpvC6ST2iv-4xjpwpmRHQJvk-AufYFvG0J=5KzUgcnC5A@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <97c93b65-3631-e694-78ac-7e520e063f95@gmail.com>
+Date:   Wed, 6 May 2020 15:45:08 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <CA+h21hpvC6ST2iv-4xjpwpmRHQJvk-AufYFvG0J=5KzUgcnC5A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We want to have a tighter control on what ports we bind to in
-the BPF_CGROUP_INET{4,6}_CONNECT hooks even if it means
-connect() becomes slightly more expensive. The expensive part
-comes from the fact that we now need to call inet_csk_get_port()
-that verifies that the port is not used and allocates an entry
-in the hash table for it.
 
-Since we can't rely on "snum || !bind_address_no_port" to prevent
-us from calling POST_BIND hook anymore, let's add another bind flag
-to indicate that the call site is BPF program.
 
-v3:
-* More bpf_bind documentation refinements (Martin KaFai Lau)
-* Add UDP tests as well (Martin KaFai Lau)
-* Don't start the thread, just do socket+bind+listen (Martin KaFai Lau)
+On 5/6/2020 2:40 PM, Vladimir Oltean wrote:
+> Hi Florian,
+> 
+> On Thu, 7 May 2020 at 00:24, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>>
+>>
+>>
+>> On 5/5/2020 2:23 PM, Vivien Didelot wrote:
+>>> On Tue,  5 May 2020 14:02:53 -0700, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>>>> If we are probed through platform_data we would be intentionally
+>>>> dropping the reference count on master after dev_to_net_device()
+>>>> incremented it. If we are probed through Device Tree,
+>>>> of_find_net_device() does not do a dev_hold() at all.
+>>>>
+>>>> Ensure that the DSA master device is properly reference counted by
+>>>> holding it as soon as the CPU port is successfully initialized and later
+>>>> released during dsa_switch_release_ports(). dsa_get_tag_protocol() does
+>>>> a short de-reference, so we hold and release the master at that time,
+>>>> too.
+>>>>
+>>>> Fixes: 83c0afaec7b7 ("net: dsa: Add new binding implementation")
+>>>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>>>
+>>> Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+>>>
+>> Andrew, Vladimir, any thoughts on that?
+>> --
+>> Florian
+> 
+> I might be completely off because I guess I just don't understand what
+> is the goal of keeping a reference to the DSA master in this way for
+> the entire lifetime of the DSA switch. I think that dev_hold is for
+> short-term things that cannot complete atomically, but I think that
+> you are trying to prevent the DSA master from getting freed from under
+> our feet, which at the moment would fault the kernel instantaneously?
 
-v2:
-* Update documentation (Andrey Ignatov)
-* Pass BIND_FORCE_ADDRESS_NO_PORT conditionally (Andrey Ignatov)
+Yes, that's the idea, you should not be able to rmmod/unbind the DSA
+master while there is a DSA switch tree hanging off of it.
 
-Cc: Andrey Ignatov <rdna@fb.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- include/net/inet_common.h                     |   2 +
- include/uapi/linux/bpf.h                      |   9 +-
- net/core/filter.c                             |  18 ++-
- net/ipv4/af_inet.c                            |  10 +-
- net/ipv6/af_inet6.c                           |  12 +-
- tools/include/uapi/linux/bpf.h                |   9 +-
- .../bpf/prog_tests/connect_force_port.c       | 115 ++++++++++++++++++
- .../selftests/bpf/progs/connect_force_port4.c |  28 +++++
- .../selftests/bpf/progs/connect_force_port6.c |  28 +++++
- 9 files changed, 203 insertions(+), 28 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/connect_force_port.c
- create mode 100644 tools/testing/selftests/bpf/progs/connect_force_port4.c
- create mode 100644 tools/testing/selftests/bpf/progs/connect_force_port6.c
+> 
+> If this is correct, it certainly doesn't do what it intends to do:
+> echo 0000\:00\:00.5> /sys/bus/pci/drivers/mscc_felix/unbind
+> [   71.576333] unregister_netdevice: waiting for swp0 to become free.
+> Usage count = 1
+> (hangs there)
 
-diff --git a/include/net/inet_common.h b/include/net/inet_common.h
-index c38f4f7d660a..cb2818862919 100644
---- a/include/net/inet_common.h
-+++ b/include/net/inet_common.h
-@@ -39,6 +39,8 @@ int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
- #define BIND_FORCE_ADDRESS_NO_PORT	(1 << 0)
- /* Grab and release socket lock. */
- #define BIND_WITH_LOCK			(1 << 1)
-+/* Called from BPF program. */
-+#define BIND_FROM_BPF			(1 << 2)
- int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 		u32 flags);
- int inet_getname(struct socket *sock, struct sockaddr *uaddr,
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b3643e27e264..6e5e7caa3739 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1994,10 +1994,11 @@ union bpf_attr {
-  *
-  * 		This helper works for IPv4 and IPv6, TCP and UDP sockets. The
-  * 		domain (*addr*\ **->sa_family**) must be **AF_INET** (or
-- * 		**AF_INET6**). Looking for a free port to bind to can be
-- * 		expensive, therefore binding to port is not permitted by the
-- * 		helper: *addr*\ **->sin_port** (or **sin6_port**, respectively)
-- * 		must be set to zero.
-+ * 		**AF_INET6**). It's advised to pass zero port (**sin_port**
-+ * 		or **sin6_port**) which triggers IP_BIND_ADDRESS_NO_PORT-like
-+ * 		behavior and lets the kernel efficiently pick up an unused
-+ * 		port as long as 4-tuple is unique. Passing non-zero port might
-+ * 		lead to degraded performance.
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-  *
-diff --git a/net/core/filter.c b/net/core/filter.c
-index fa9ddab5dd1f..da0634979f53 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4525,32 +4525,28 @@ BPF_CALL_3(bpf_bind, struct bpf_sock_addr_kern *, ctx, struct sockaddr *, addr,
- {
- #ifdef CONFIG_INET
- 	struct sock *sk = ctx->sk;
-+	u32 flags = BIND_FROM_BPF;
- 	int err;
- 
--	/* Binding to port can be expensive so it's prohibited in the helper.
--	 * Only binding to IP is supported.
--	 */
- 	err = -EINVAL;
- 	if (addr_len < offsetofend(struct sockaddr, sa_family))
- 		return err;
- 	if (addr->sa_family == AF_INET) {
- 		if (addr_len < sizeof(struct sockaddr_in))
- 			return err;
--		if (((struct sockaddr_in *)addr)->sin_port != htons(0))
--			return err;
--		return __inet_bind(sk, addr, addr_len,
--				   BIND_FORCE_ADDRESS_NO_PORT);
-+		if (((struct sockaddr_in *)addr)->sin_port == htons(0))
-+			flags |= BIND_FORCE_ADDRESS_NO_PORT;
-+		return __inet_bind(sk, addr, addr_len, flags);
- #if IS_ENABLED(CONFIG_IPV6)
- 	} else if (addr->sa_family == AF_INET6) {
- 		if (addr_len < SIN6_LEN_RFC2133)
- 			return err;
--		if (((struct sockaddr_in6 *)addr)->sin6_port != htons(0))
--			return err;
-+		if (((struct sockaddr_in6 *)addr)->sin6_port == htons(0))
-+			flags |= BIND_FORCE_ADDRESS_NO_PORT;
- 		/* ipv6_bpf_stub cannot be NULL, since it's called from
- 		 * bpf_cgroup_inet6_connect hook and ipv6 is already loaded
- 		 */
--		return ipv6_bpf_stub->inet6_bind(sk, addr, addr_len,
--						 BIND_FORCE_ADDRESS_NO_PORT);
-+		return ipv6_bpf_stub->inet6_bind(sk, addr, addr_len, flags);
- #endif /* CONFIG_IPV6 */
- 	}
- #endif /* CONFIG_INET */
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 68e74b1b0f26..fcf0d12a407a 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -526,10 +526,12 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 			err = -EADDRINUSE;
- 			goto out_release_sock;
- 		}
--		err = BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk);
--		if (err) {
--			inet->inet_saddr = inet->inet_rcv_saddr = 0;
--			goto out_release_sock;
-+		if (!(flags & BIND_FROM_BPF)) {
-+			err = BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk);
-+			if (err) {
-+				inet->inet_saddr = inet->inet_rcv_saddr = 0;
-+				goto out_release_sock;
-+			}
- 		}
- 	}
- 
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 552c2592b81c..771a462a8322 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -407,11 +407,13 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 			err = -EADDRINUSE;
- 			goto out;
- 		}
--		err = BPF_CGROUP_RUN_PROG_INET6_POST_BIND(sk);
--		if (err) {
--			sk->sk_ipv6only = saved_ipv6only;
--			inet_reset_saddr(sk);
--			goto out;
-+		if (!(flags & BIND_FROM_BPF)) {
-+			err = BPF_CGROUP_RUN_PROG_INET6_POST_BIND(sk);
-+			if (err) {
-+				sk->sk_ipv6only = saved_ipv6only;
-+				inet_reset_saddr(sk);
-+				goto out;
-+			}
- 		}
- 	}
- 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index b3643e27e264..6e5e7caa3739 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1994,10 +1994,11 @@ union bpf_attr {
-  *
-  * 		This helper works for IPv4 and IPv6, TCP and UDP sockets. The
-  * 		domain (*addr*\ **->sa_family**) must be **AF_INET** (or
-- * 		**AF_INET6**). Looking for a free port to bind to can be
-- * 		expensive, therefore binding to port is not permitted by the
-- * 		helper: *addr*\ **->sin_port** (or **sin6_port**, respectively)
-- * 		must be set to zero.
-+ * 		**AF_INET6**). It's advised to pass zero port (**sin_port**
-+ * 		or **sin6_port**) which triggers IP_BIND_ADDRESS_NO_PORT-like
-+ * 		behavior and lets the kernel efficiently pick up an unused
-+ * 		port as long as 4-tuple is unique. Passing non-zero port might
-+ * 		lead to degraded performance.
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-  *
-diff --git a/tools/testing/selftests/bpf/prog_tests/connect_force_port.c b/tools/testing/selftests/bpf/prog_tests/connect_force_port.c
-new file mode 100644
-index 000000000000..47fbb20cb6a6
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/connect_force_port.c
-@@ -0,0 +1,115 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <test_progs.h>
-+#include "cgroup_helpers.h"
-+#include "network_helpers.h"
-+
-+static int verify_port(int family, int fd, int expected)
-+{
-+	struct sockaddr_storage addr;
-+	socklen_t len = sizeof(addr);
-+	__u16 port;
-+
-+	if (getsockname(fd, (struct sockaddr *)&addr, &len)) {
-+		log_err("Failed to get server addr");
-+		return -1;
-+	}
-+
-+	if (family == AF_INET)
-+		port = ((struct sockaddr_in *)&addr)->sin_port;
-+	else
-+		port = ((struct sockaddr_in6 *)&addr)->sin6_port;
-+
-+	if (ntohs(port) != expected) {
-+		log_err("Unexpected port %d, expected %d", ntohs(port),
-+			expected);
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int run_test(int cgroup_fd, int server_fd, int family, int type)
-+{
-+	struct bpf_prog_load_attr attr = {
-+		.prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
-+	};
-+	struct bpf_object *obj;
-+	int expected_port;
-+	int prog_fd;
-+	int err;
-+	int fd;
-+
-+	if (family == AF_INET) {
-+		attr.file = "./connect_force_port4.o";
-+		attr.expected_attach_type = BPF_CGROUP_INET4_CONNECT;
-+		expected_port = 22222;
-+	} else {
-+		attr.file = "./connect_force_port6.o";
-+		attr.expected_attach_type = BPF_CGROUP_INET6_CONNECT;
-+		expected_port = 22223;
-+	}
-+
-+	err = bpf_prog_load_xattr(&attr, &obj, &prog_fd);
-+	if (err) {
-+		log_err("Failed to load BPF object");
-+		return -1;
-+	}
-+
-+	err = bpf_prog_attach(prog_fd, cgroup_fd, attr.expected_attach_type,
-+			      0);
-+	if (err) {
-+		log_err("Failed to attach BPF program");
-+		goto close_bpf_object;
-+	}
-+
-+	fd = connect_to_fd(family, type, server_fd);
-+	if (fd < 0) {
-+		err = -1;
-+		goto close_bpf_object;
-+	}
-+
-+	err = verify_port(family, fd, expected_port);
-+
-+	close(fd);
-+
-+close_bpf_object:
-+	bpf_object__close(obj);
-+	return err;
-+}
-+
-+void test_connect_force_port(void)
-+{
-+	int server_fd, cgroup_fd;
-+
-+	cgroup_fd = test__join_cgroup("/connect_force_port");
-+	if (CHECK_FAIL(cgroup_fd < 0))
-+		return;
-+
-+	server_fd = start_server(AF_INET, SOCK_STREAM);
-+	if (CHECK_FAIL(server_fd < 0))
-+		goto close_cgroup_fd;
-+	CHECK_FAIL(run_test(cgroup_fd, server_fd, AF_INET, SOCK_STREAM));
-+	close(server_fd);
-+
-+	server_fd = start_server(AF_INET6, SOCK_STREAM);
-+	if (CHECK_FAIL(server_fd < 0))
-+		goto close_cgroup_fd;
-+	CHECK_FAIL(run_test(cgroup_fd, server_fd, AF_INET6, SOCK_STREAM));
-+	close(server_fd);
-+
-+	server_fd = start_server(AF_INET, SOCK_DGRAM);
-+	if (CHECK_FAIL(server_fd < 0))
-+		goto close_cgroup_fd;
-+	CHECK_FAIL(run_test(cgroup_fd, server_fd, AF_INET, SOCK_DGRAM));
-+	close(server_fd);
-+
-+	server_fd = start_server(AF_INET6, SOCK_DGRAM);
-+	if (CHECK_FAIL(server_fd < 0))
-+		goto close_cgroup_fd;
-+	CHECK_FAIL(run_test(cgroup_fd, server_fd, AF_INET6, SOCK_DGRAM));
-+	close(server_fd);
-+
-+close_cgroup_fd:
-+	close(cgroup_fd);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/connect_force_port4.c b/tools/testing/selftests/bpf/progs/connect_force_port4.c
-new file mode 100644
-index 000000000000..1b8eb34b2db0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/connect_force_port4.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <string.h>
-+
-+#include <linux/bpf.h>
-+#include <linux/in.h>
-+#include <linux/in6.h>
-+#include <sys/socket.h>
-+
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+char _license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
-+
-+SEC("cgroup/connect4")
-+int _connect4(struct bpf_sock_addr *ctx)
-+{
-+	struct sockaddr_in sa = {};
-+
-+	sa.sin_family = AF_INET;
-+	sa.sin_port = bpf_htons(22222);
-+	sa.sin_addr.s_addr = bpf_htonl(0x7f000001); /* 127.0.0.1 */
-+
-+	if (bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)) != 0)
-+		return 0;
-+
-+	return 1;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/connect_force_port6.c b/tools/testing/selftests/bpf/progs/connect_force_port6.c
-new file mode 100644
-index 000000000000..8cd1a9e81f64
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/connect_force_port6.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <string.h>
-+
-+#include <linux/bpf.h>
-+#include <linux/in.h>
-+#include <linux/in6.h>
-+#include <sys/socket.h>
-+
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+char _license[] SEC("license") = "GPL";
-+int _version SEC("version") = 1;
-+
-+SEC("cgroup/connect6")
-+int _connect6(struct bpf_sock_addr *ctx)
-+{
-+	struct sockaddr_in6 sa = {};
-+
-+	sa.sin6_family = AF_INET;
-+	sa.sin6_port = bpf_htons(22223);
-+	sa.sin6_addr.s6_addr32[3] = bpf_htonl(1); /* ::1 */
-+
-+	if (bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)) != 0)
-+		return 0;
-+
-+	return 1;
-+}
+Is this with the sja1105 switch hanging off felix? If so, is not it
+working as expected because you still have sja1150 being bound to one of
+those ports? If not, then I will look into why.
+
+> 
+> But if I'm right and that's indeed what you want to achieve, shouldn't
+> we be using device links instead?
+> https://www.kernel.org/doc/html/v4.14/driver-api/device_link.html
+
+device links could work but given that the struct device and struct
+net_device have almost the same lifetime, with the net_device being a
+little bit shorter, and that is what DSA uses, I am not sure whether
+device link would bring something better.
 -- 
-2.26.2.526.g744177e7f7-goog
-
+Florian
