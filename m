@@ -2,92 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7F001C739D
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0112D1C73CE
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:15:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729311AbgEFPHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 11:07:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45264 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728428AbgEFPHw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 11:07:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=nhr9qd9ThMfni7QzQ5SF9W0ZpuyW47KCsL9Tm7+P44g=; b=Hy7KlVWCuIvr3QKj0XXtpllydw
-        UINzSvoHOwbVO4XMFtC4xzbpUQy1A+v9fbAV9wVkKCXTsQ8yiIQj5y0PYIoZCCUkT03lKIjkX9HKO
-        FIdp2/ubpCX0vdavYJmOTzzfPK9EDEGWe92ijdKO888WYD4uXbggRdmvzVemksyj+jsI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jWLeE-0016AI-QR; Wed, 06 May 2020 17:07:46 +0200
-Date:   Wed, 6 May 2020 17:07:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v1] dt-bindings: net: nxp,tja11xx: rework validation
- support
-Message-ID: <20200506150746.GJ224913@lunn.ch>
-References: <20200505104215.8975-1-o.rempel@pengutronix.de>
- <20200505140127.GJ208718@lunn.ch>
- <20200506051134.mrm4nuqxssw255tl@pengutronix.de>
+        id S1729192AbgEFPPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 11:15:14 -0400
+Received: from smtprelay0241.hostedemail.com ([216.40.44.241]:60978 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728821AbgEFPPN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:15:13 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id B51AB246E;
+        Wed,  6 May 2020 15:15:11 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3871:3872:3874:4250:4321:5007:8603:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12048:12220:12296:12297:12438:12663:12740:12760:12895:13069:13161:13229:13255:13311:13357:13439:14096:14097:14181:14659:14721:21080:21627:30054:30055:30069:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: bears23_ff76a315943a
+X-Filterd-Recvd-Size: 2948
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf10.hostedemail.com (Postfix) with ESMTPA;
+        Wed,  6 May 2020 15:15:09 +0000 (UTC)
+Message-ID: <2208e464cd8bd399cfb9b49abb5aed211f27b3a8.camel@perches.com>
+Subject: Re: [PATCH -next] iwlwifi: pcie: Use bitwise instead of arithmetic
+ operator for flags
+From:   Joe Perches <joe@perches.com>
+To:     Luciano Coelho <luciano.coelho@intel.com>,
+        Samuel Zou <zou_wei@huawei.com>, johannes.berg@intel.com,
+        emmanuel.grumbach@intel.com, linuxwifi@intel.com,
+        kvalo@codeaurora.org, davem@davemloft.net,
+        Julia Lawall <julia.lawall@lip6.fr>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, cocci <cocci@systeme.lip6.fr>
+Date:   Wed, 06 May 2020 08:15:08 -0700
+In-Reply-To: <bfd6b3a7db0c50cd3d084510bd43c9e540688edd.camel@intel.com>
+References: <1588734423-33988-1-git-send-email-zou_wei@huawei.com>
+         <f8b258e0c8bb073c445090e637195df2fc989543.camel@perches.com>
+         <bfd6b3a7db0c50cd3d084510bd43c9e540688edd.camel@intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200506051134.mrm4nuqxssw255tl@pengutronix.de>
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Hi Oleksij
+On Wed, 2020-05-06 at 16:51 +0300, Luciano Coelho wrote:
+> On Tue, 2020-05-05 at 20:19 -0700, Joe Perches wrote:
+> > On Wed, 2020-05-06 at 11:07 +0800, Samuel Zou wrote:
+> > > This silences the following coccinelle warning:
+> > > 
+> > > "WARNING: sum of probable bitmasks, consider |"
 > > 
-> > reg is normally 0 to 31, since that is the address range for MDIO. 
-> > Did you use 14 here because of what strapping allows?
+> > I suggest instead ignoring bad and irrelevant warnings.
+> > 
+> > PREFIX_LEN is 32 not 0x20 or BIT(5)
+> > PCI_DUMP_SIZE is 352
+> > 
+> > > diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+> > []
+> > > @@ -109,9 +109,9 @@ void iwl_trans_pcie_dump_regs(struct iwl_trans *trans)
+> > >  
+> > >  	/* Alloc a max size buffer */
+> > >  	alloc_size = PCI_ERR_ROOT_ERR_SRC +  4 + PREFIX_LEN;
+> > > -	alloc_size = max_t(u32, alloc_size, PCI_DUMP_SIZE + PREFIX_LEN);
+> > > -	alloc_size = max_t(u32, alloc_size, PCI_MEM_DUMP_SIZE + PREFIX_LEN);
+> > > -	alloc_size = max_t(u32, alloc_size, PCI_PARENT_DUMP_SIZE + PREFIX_LEN);
+> > > +	alloc_size = max_t(u32, alloc_size, PCI_DUMP_SIZE | PREFIX_LEN);
+> > > +	alloc_size = max_t(u32, alloc_size, PCI_MEM_DUMP_SIZE | PREFIX_LEN);
+> > > +	alloc_size = max_t(u32, alloc_size, PCI_PARENT_DUMP_SIZE | PREFIX_LEN);
+> > >  
+> > >  	buf = kmalloc(alloc_size, GFP_ATOMIC);
+> > >  	if (!buf)
 > 
-> Yes. Only BITs 1:3 are configurable. BIT(0) is always 0 for the PHY0 and 1
-> for the PHY1
+> Yeah, those macros are clearly not bitmasks.  I'm dropping this patch.
 
-O.K. good.
+Can the cocci script that generated this warning
 
-> > > +required:
-> > > +  - compatible
-> > > +  - reg
-> > > +  - '#address-cells'
-> > > +  - '#size-cells'
-> > 
-> > So we have two different meanings of 'required' here.
-> > 
-> > One meaning is the code requires it. compatible is not required, the
-> > driver will correctly be bind to the device based on its ID registers.
-> > Is reg also required by the code?
-> > 
-> > The second meaning is about keeping the yaml verifier happy. It seems
-> > like compatible is needed for the verifier. Is reg also required? We
-> > do recommend having reg, but the generic code does not require it.
-> 
-> reg is used by:
-> tja1102_p0_probe()
->   tja1102_p1_register()
->     of_mdio_parse_addr()
-> 
-> But this is required for the slave PHY. I assume the reg can be
-> optional for the master PHY. Should I?
+scripts/coccinelle/misc/orplus.cocci
 
-It is recommended to have a reg value. So lets leave it as is for the
-moment. If anybody really does need it to be optional, we can change
-it later.
+be dropped or improved to validate the likelihood that
+the defines or constants used are more likely than
+not are bit values?
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Maybe these should be defined as hex or BIT or BIT_ULL
+or GENMASK or the like?
 
-    Andrew
+
+Right now it seems it just tests for two constants.
+
+
