@@ -2,71 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 155E31C6D59
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 11:42:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46BCE1C6D67
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 11:44:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729217AbgEFJmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 05:42:07 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:33518 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729193AbgEFJmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 05:42:06 -0400
-Received: by mail-io1-f72.google.com with SMTP id w4so1104507iol.0
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 02:42:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=1duKq7szTDTyKaohCShGnT1dGsbqpgWG34qMl98tMGg=;
-        b=Dsif15iqiciuMXHa4bMqA0Iyj+OhZLGVFVZtNsQ9eBLgcEsFlo1l1UfTCwHZAJUmuq
-         Yp+ncLAY/lF0V6Jkzu/CVL+MnmJAk/t5CYjGtSbiMWIMJb6j9C9clI+jusurWE8OHPh7
-         9LCdd2qptcrWEpn7MjClu0HmjW1R6+j34dpz/UpvUYf+uyPzCkHDAGawW8Q22CoNYDAY
-         +6pMjDiOdwrxte02npjUbFzmomxCNT1K0Z1eRPQK87XdmY5XDAaKG5m1BqX9aTwyRMmA
-         Ah7PYEUPcEgBMi03ZQSw8LVQhYfeUMdcDrlkB1JWcIvfDZVWkHw543kwIZAsw4+mRL6C
-         LlrQ==
-X-Gm-Message-State: AGi0PuarAGlIYvYgYaP+x7ZOzzldY+xgHLQx8DNjqXl57DZWQcm3EfrT
-        uPeH53IYiGd9Qxd24ymTFVZq7ZKRceaH1RQm1zH3RFO+9rsf
-X-Google-Smtp-Source: APiQypJdwS6IXvlDyKFYWvKC1sYkUXaqiXSGvXeFx1JBzzoNX6kOusu0ZBrpShP3tyhlc/K/ZMXCl6oWgZdHai1LkL1RSXAx1RFO
+        id S1729145AbgEFJoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 05:44:08 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:47044 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728663AbgEFJoH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 05:44:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1588758247; x=1620294247;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zuKmMeWgZ/UFqq1rP7zWa/wg5C9p4yCyko5/mVu0JcE=;
+  b=SrAiDA2tnZpefq9ardbX68VMzxjTy9GT5bV5cSbc2FBt49ZvseAwN5fG
+   HTaX30y/lgLNyZAEFqZeFRNIWwKqKecWgzqjNwSYHDdCA2rnP3j3aZKPg
+   Ij6y5DJTwil04A92ydLaZNzAvxeE/LERBSpe2H7/o7oYcap6p65GSPP0R
+   DfTVbppjIK7y66UWhm/i7NKWqj58xncwIOIH7KXFZnhDr//MzzEhXYzwZ
+   9GNpBWGqbmCCIk9b21vtNv4G4OdKP/13MXJLd884QqtefAT8/9vI0HcQH
+   XLjH2Z73wxSFyhxVOxvMEowZQ7s+niOjNcvvAkzFyTHlJvRW+vxQdjL/6
+   w==;
+IronPort-SDR: 8diXjE1BHUCwR7ruJb2Js1oQxx0NR1FxldPu2olFVYsbtwhEjA2IX5vVtD7hMdpcje4QuVxrya
+ U0qvMjPIrnkOLvfsY6HIz8V+ounKPbUlIq7AazdCN/BCU8WCG6e/mAWNoQ7o0e9bNRtGeLE/2b
+ Vizg3pTMDwOApMBNkDnoxyRNp8d7LJQ6JoWisGN3QkwnO3hr/NcYANbuFN9FgmyROeuHlaeWQ4
+ SsFqn/3nkkU/TJeV2vVeNpaDg4KnGww+ZJgonrQ0Ictd0jQZdk+LL/EIDPKxYVmm0vThUr9MEQ
+ zmw=
+X-IronPort-AV: E=Sophos;i="5.73,358,1583218800"; 
+   d="scan'208";a="75696370"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 May 2020 02:43:46 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 6 May 2020 02:43:46 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Wed, 6 May 2020 02:43:46 -0700
+Date:   Wed, 6 May 2020 11:43:45 +0200
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+CC:     <po.liu@nxp.com>, <claudiu.manoil@nxp.com>,
+        <alexandru.marginean@nxp.com>, <vladimir.oltean@nxp.com>,
+        <leoyang.li@nxp.com>, <mingkai.hu@nxp.com>, <andrew@lunn.ch>,
+        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
+        <davem@davemloft.net>, <jiri@resnulli.us>, <idosch@idosch.org>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <horatiu.vultur@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <joergen.andreasen@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <nikolay@cumulusnetworks.com>,
+        <roopa@cumulusnetworks.com>, <linux-devel@linux.nxdi.nxp.com>
+Subject: Re: [PATCH v1 net-next 4/6] net: mscc: ocelot: VCAP IS1 support
+Message-ID: <20200506094345.n4zdgjvctwiz4pkh@ws.localdomain>
+References: <20200506074900.28529-1-xiaoliang.yang_1@nxp.com>
+ <20200506074900.28529-5-xiaoliang.yang_1@nxp.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:5c57:: with SMTP id q84mr8119397ilb.203.1588758125215;
- Wed, 06 May 2020 02:42:05 -0700 (PDT)
-Date:   Wed, 06 May 2020 02:42:05 -0700
-In-Reply-To: <000000000000ea641705a350d2ee@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b0077705a4f79399@google.com>
-Subject: Re: WARNING: proc registration bug in snmp6_register_dev
-From:   syzbot <syzbot+1d51c8b74efa4c44adeb@syzkaller.appspotmail.com>
-To:     ap420073@gmail.com, davem@davemloft.net, edumazet@google.com,
-        hdanton@sina.com, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20200506074900.28529-5-xiaoliang.yang_1@nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+Hi Xiaoliang,
 
-commit e0a4b99773d3d8d3fb40087805f8fd858a23e582
-Author: Taehee Yoo <ap420073@gmail.com>
-Date:   Fri Feb 28 18:02:10 2020 +0000
+On 06.05.2020 15:48, Xiaoliang Yang wrote:
+>VCAP IS1 is a VCAP module which can filter MAC, IP, VLAN, protocol, and
+>TCP/UDP ports keys, and do Qos and VLAN retag actions.
+>This patch added VCAP IS1 support in ocelot ace driver, which can supports
+>vlan modify action of tc filter.
+>Usage:
+>        tc qdisc add dev swp0 ingress
+>        tc filter add dev swp0 protocol 802.1Q parent ffff: flower \
+>        skip_sw vlan_id 1 vlan_prio 1 action vlan modify id 2 priority 2
+I skimmed skimmed through the patch serie, and the way I understood it
+is that you look at the action, and if it is a VLAN operation, then you
+put it in IS1 and if it is one of the other then put it in IS2.
 
-    hsr: use upper/lower device infrastructure
+This is how the HW is designed - I'm aware of that.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14811182100000
-start commit:   ac935d22 Add linux-next specific files for 20200415
-git tree:       linux-next
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=16811182100000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12811182100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bc498783097e9019
-dashboard link: https://syzkaller.appspot.com/bug?extid=1d51c8b74efa4c44adeb
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=148e6150100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=115c379c100000
+But how will this work if you have 2 rules, 1 modifying the VLAN and
+another rule dropping certain packets?
 
-Reported-by: syzbot+1d51c8b74efa4c44adeb@syzkaller.appspotmail.com
-Fixes: e0a4b99773d3 ("hsr: use upper/lower device infrastructure")
+The SW model have these two rules in the same table, and can stop
+process at the first match. SW will do the action of the first frame
+matching.
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+The HW will how-ever do both, as they are in independent TCAMs.
+
+If we want to enable all the TCAM lookups in Ocelot/Felix, then we need
+to find a way where we will get the same results when doing the
+operation in HW and in SW.
+
+/Allan
+
