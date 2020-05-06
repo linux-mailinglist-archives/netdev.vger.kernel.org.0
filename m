@@ -2,99 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16BE11C7138
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 15:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC25B1C7131
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 14:59:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728622AbgEFM77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 08:59:59 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:3969 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728081AbgEFM77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 08:59:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1588769999; x=1620305999;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   mime-version;
-  bh=hzNQ5w8A6cYw04c6yt2I+QRIddI3RMJ0UShL/31p7vY=;
-  b=O7wbrp3+hc61Ubb6f/QioHNMd4ypqhClz5kTK/WeNPwDYHLg0vhvW0kb
-   s4sMXUe5gIYJHmiOg39qy2v2mi/E3ZkuLVa/Qt3Cgi4/qrTYHOYQcVUvW
-   GCg6EBe8P7obU+wQWWDAKaS/uAeSQDmKo2qm4VDshxATOCMiER/QTuYuX
-   4=;
-IronPort-SDR: xgLqf4VcV6A5KTjgLiK+37uZzeJclYtKvvSu+1j2P9BEIN7sDK2pOZZGVgYvWutqahP88n8hsS
- 1u5J2RKWL8Ow==
-X-IronPort-AV: E=Sophos;i="5.73,359,1583193600"; 
-   d="scan'208";a="43050805"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-1968f9fa.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 06 May 2020 12:59:57 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-1968f9fa.us-west-2.amazon.com (Postfix) with ESMTPS id D9095A2400;
-        Wed,  6 May 2020 12:59:55 +0000 (UTC)
-Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 6 May 2020 12:59:55 +0000
-Received: from u886c93fd17d25d.ant.amazon.com (10.43.160.180) by
- EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 6 May 2020 12:59:48 +0000
-From:   SeongJae Park <sjpark@amazon.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-CC:     SeongJae Park <sjpark@amazon.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        "Al Viro" <viro@zeniv.linux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <sj38.park@gmail.com>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        SeongJae Park <sjpark@amazon.de>, <snu@amazon.com>,
-        <amit@kernel.org>, <stable@vger.kernel.org>
-Subject: Re: Re: Re: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
-Date:   Wed, 6 May 2020 14:59:26 +0200
-Message-ID: <20200506125926.29844-1-sjpark@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200505184955.GO2869@paulmck-ThinkPad-P72> (raw)
+        id S1728463AbgEFM7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 08:59:35 -0400
+Received: from mx2.suse.de ([195.135.220.15]:56334 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728081AbgEFM7e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 08:59:34 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id D694CAC90;
+        Wed,  6 May 2020 12:59:34 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id CEA541E12A8; Wed,  6 May 2020 14:59:30 +0200 (CEST)
+Date:   Wed, 6 May 2020 14:59:30 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Souptick Joarder <jrdr.linux@gmail.com>
+Cc:     Jan Kara <jack@suse.cz>, John Hubbard <jhubbard@nvidia.com>,
+        Tony Luck <tony.luck@intel.com>, fenghua.yu@intel.com,
+        Rob Springer <rspringer@google.com>,
+        Todd Poynor <toddpoynor@google.com>, benchan@chromium.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        santosh.shilimkar@oracle.com,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Ira Weiny <ira.weiny@intel.com>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        inux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "open list:ANDROID DRIVERS" <devel@driverdev.osuosl.org>,
+        tee-dev@lists.linaro.org, Linux-MM <linux-mm@kvack.org>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+Subject: Re: [RFC] mm/gup.c: Updated return value of
+ {get|pin}_user_pages_fast()
+Message-ID: <20200506125930.GJ17863@quack2.suse.cz>
+References: <1588706059-4208-1-git-send-email-jrdr.linux@gmail.com>
+ <0bfe4a8a-0d91-ef9b-066f-2ea7c68571b3@nvidia.com>
+ <CAFqt6zZMsQkOdjAb2k1EjwX=DtZ8gKfbRzwvreHOX-0vJLngNg@mail.gmail.com>
+ <20200506100649.GI17863@quack2.suse.cz>
+ <CAFqt6zYaNkJ4AfVzutXS=JsN4fE41ZAvnw03vHWpdyiRHY1m_w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.180]
-X-ClientProxiedBy: EX13D12UWA003.ant.amazon.com (10.43.160.50) To
- EX13D31EUA001.ant.amazon.com (10.43.165.15)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFqt6zYaNkJ4AfVzutXS=JsN4fE41ZAvnw03vHWpdyiRHY1m_w@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TL; DR: It was not kernel's fault, but the benchmark program.
+On Wed 06-05-20 17:51:39, Souptick Joarder wrote:
+> On Wed, May 6, 2020 at 3:36 PM Jan Kara <jack@suse.cz> wrote:
+> >
+> > On Wed 06-05-20 02:06:56, Souptick Joarder wrote:
+> > > On Wed, May 6, 2020 at 1:08 AM John Hubbard <jhubbard@nvidia.com> wrote:
+> > > >
+> > > > On 2020-05-05 12:14, Souptick Joarder wrote:
+> > > > > Currently {get|pin}_user_pages_fast() have 3 return value 0, -errno
+> > > > > and no of pinned pages. The only case where these two functions will
+> > > > > return 0, is for nr_pages <= 0, which doesn't find a valid use case.
+> > > > > But if at all any, then a -ERRNO will be returned instead of 0, which
+> > > > > means {get|pin}_user_pages_fast() will have 2 return values -errno &
+> > > > > no of pinned pages.
+> > > > >
+> > > > > Update all the callers which deals with return value 0 accordingly.
+> > > >
+> > > > Hmmm, seems a little shaky. In order to do this safely, I'd recommend
+> > > > first changing gup_fast/pup_fast so so that they return -EINVAL if
+> > > > the caller specified nr_pages==0, and of course auditing all callers,
+> > > > to ensure that this won't cause problems.
+> > >
+> > > While auditing it was figured out, there are 5 callers which cares for
+> > > return value
+> > > 0 of gup_fast/pup_fast. What problem it might cause if we change
+> > > gup_fast/pup_fast
+> > > to return -EINVAL and update all the callers in a single commit ?
+> >
+> > Well, first I'd ask a different question: Why do you want to change the
+> > current behavior? It's not like the current behavior is confusing.  Callers
+> > that pass >0 pages can happily rely on the simple behavior of < 0 return on
+> > error or > 0 return if we mapped some pages. Callers that can possibly ask
+> > to map 0 pages can get 0 pages back - kind of expected - and I don't see
+> > any benefit in trying to rewrite these callers to handle -EINVAL instead...
+> 
+> Callers with a request to map 0 pages doesn't have a valid use case. But if any
+> caller end up doing it mistakenly, -errno should be returned to caller
+> rather than 0
+> which will indicate more precisely that map 0 pages is not a valid
+> request from caller.
 
-So, the problem is reproducible using the lebench[1] only.  I carefully read
-it's code again.
+Well, I believe this depends on the point of view. Similarly as reading 0
+bytes is successful, we could consider mapping 0 pages successful as well.
+And there can be valid cases where number of pages to map is computed from
+some input and when 0 pages should be mapped, it is not a problem and your
+change would force such callers to special case this with explicitely
+checking for 0 pages to map and not calling GUP in that case at all.
 
-Before running the problem occurred "poll big" sub test, lebench executes
-"context switch" sub test.  For the test, it sets the cpu affinity[2] and
-process priority[3] of itself to '0' and '-20', respectively.  However, it
-doesn't restore the values to original value even after the "context switch" is
-finished.  For the reason, "select big" sub test also run binded on CPU 0 and
-has lowest nice value.  Therefore, it can disturb the RCU callback thread for
-the CPU 0, which processes the deferred deallocations of the sockets, and as a
-result it triggers the OOM.
+I'm not saying what you propose is necessarily bad, I just say I don't find
+it any better than the current behavior and so IMO it's not worth the
+churn. Now if you can come up with some examples of current in-kernel users
+who indeed do get the handling of the return value wrong, I could be
+convinced otherwise.
 
-We confirmed the problem disappears by offloading the RCU callbacks from the
-CPU 0 using rcu_nocbs=0 boot parameter or simply restoring the affinity and/or
-priority.
-
-Someone _might_ still argue that this is kernel problem because the problem
-didn't occur on the old kernels prior to the Al's patches.  However, setting
-the affinity and priority was available because the program received the
-permission.  Therefore, it would be reasonable to blame the system
-administrators rather than the kernel.
-
-So, please ignore this patchset, apology for making confuse.  If you still has
-some doubts or need more tests, please let me know.
-
-[1] https://github.com/LinuxPerfStudy/LEBench
-[2] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L820
-[3] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L822
-
-
-Thanks,
-SeongJae Park
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
