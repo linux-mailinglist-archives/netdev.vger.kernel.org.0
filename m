@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D711C71B8
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 15:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03BF31C71BA
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 15:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728664AbgEFNaU convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 6 May 2020 09:30:20 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:37191 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728483AbgEFNaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 09:30:20 -0400
+        id S1728679AbgEFNaY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 6 May 2020 09:30:24 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:59418 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728668AbgEFNaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 09:30:23 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-459-w_mcWS0RPaiftR-2fN3aAQ-1; Wed, 06 May 2020 09:30:11 -0400
-X-MC-Unique: w_mcWS0RPaiftR-2fN3aAQ-1
+ us-mta-417-UvnxjWGxN3Wur39OBX0BsQ-1; Wed, 06 May 2020 09:30:16 -0400
+X-MC-Unique: UvnxjWGxN3Wur39OBX0BsQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 65FCC460;
-        Wed,  6 May 2020 13:30:09 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2E4CD1902EB7;
+        Wed,  6 May 2020 13:30:14 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.192.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 10A3F64430;
-        Wed,  6 May 2020 13:30:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B7A40605F7;
+        Wed,  6 May 2020 13:30:09 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -36,9 +36,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
         Florent Revest <revest@chromium.org>,
         Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 4/9] bpf: Allow nested BTF object to be refferenced by BTF object + offset
-Date:   Wed,  6 May 2020 15:29:41 +0200
-Message-Id: <20200506132946.2164578-5-jolsa@kernel.org>
+Subject: [PATCH 5/9] bpf: Add support to check on BTF id whitelist for d_path helper
+Date:   Wed,  6 May 2020 15:29:42 +0200
+Message-Id: <20200506132946.2164578-6-jolsa@kernel.org>
 In-Reply-To: <20200506132946.2164578-1-jolsa@kernel.org>
 References: <20200506132946.2164578-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -52,171 +52,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding btf_struct_address function that takes 2 BTF objects
-and offset as arguments and checks wether object A is nested
-in object B on given offset.
+The BPF helper whitelist checking works as follows:
 
-This function is be used when checking the helper function
-PTR_TO_BTF_ID arguments. If the argument has an offset value,
-the btf_struct_address will check if the final address is
-the expected BTF ID.
+  - helper's whitelist is defined as list of functions in file:
+    kernel/bpf/helpers-whitelist/helper
 
-This way we can access nested BTF objects under PTR_TO_BTF_ID
-pointer type and pass them to helpers, while they still point
-to valid kernel BTF objects.
+  - at vmlinux linking time, the bpfwl tool reads the whitelist
+    and translates functions into BTF IDs, which are compiled as
+    following data section into vmlinux object:
+
+      .BTF_whitelist
+          BTF_whitelist_<helper1>
+          BTF_whitelist_<helper2>
+          BTF_whitelist_<helper3>
+
+    Each BTF_whitelist_<helperX> data is a sorted array of BTF ids.
+
+  - new 'allowed' function is added to 'struct bpf_func_proto',
+    which is used by verifier code to check (if defined) on whether
+    the helper is called from allowed function (from whitelist).
+
+Currently it's needed and implemented only for d_path helper,
+but it's easy to add for another helper.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/bpf.h   |  3 ++
- kernel/bpf/btf.c      | 69 +++++++++++++++++++++++++++++++++++++++++++
- kernel/bpf/verifier.c | 32 +++++++++++++-------
- 3 files changed, 94 insertions(+), 10 deletions(-)
+ include/asm-generic/vmlinux.lds.h |  5 +++++
+ include/linux/bpf.h               |  1 +
+ kernel/bpf/verifier.c             |  5 +++++
+ kernel/trace/bpf_trace.c          | 23 +++++++++++++++++++++++
+ 4 files changed, 34 insertions(+)
 
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 71e387a5fe90..6f7ca4f36ed7 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -631,6 +631,11 @@
+ 		__start_BTF = .;					\
+ 		*(.BTF)							\
+ 		__stop_BTF = .;						\
++	}								\
++	.BTF_whitelist : AT(ADDR(.BTF_whitelist) - LOAD_OFFSET) {	\
++		__start_BTF_whitelist_d_path = .;			\
++		*(.BTF_whitelist_d_path)				\
++		__stop_BTF_whitelist_d_path = .;			\
+ 	}
+ #else
+ #define BTF
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 1262ec460ab3..bc589cdd8c34 100644
+index bc589cdd8c34..ccacf488429f 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -1213,6 +1213,9 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 		      const struct btf_type *t, int off, int size,
- 		      enum bpf_access_type atype,
- 		      u32 *next_btf_id);
-+int btf_struct_address(struct bpf_verifier_log *log,
-+		     const struct btf_type *t,
-+		     u32 off, u32 exp_id);
- int btf_resolve_helper_id(struct bpf_verifier_log *log,
- 			  const struct bpf_func_proto *fn, int);
+@@ -275,6 +275,7 @@ struct bpf_func_proto {
+ 		enum bpf_arg_type arg_type[5];
+ 	};
+ 	int *btf_id; /* BTF ids of arguments */
++	bool (*allowed)(const struct bpf_prog *prog);
+ };
  
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index a2cfba89a8e1..07f22469acab 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -4004,6 +4004,75 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 	return -EINVAL;
- }
+ /* bpf_context is intentionally undefined structure. Pointer to bpf_context is
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index b988df5ada20..55995de954a0 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -4525,6 +4525,11 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+ 		return -EINVAL;
+ 	}
  
-+int btf_struct_address(struct bpf_verifier_log *log,
-+		       const struct btf_type *t,
-+		       u32 off, u32 exp_id)
-+{
-+	u32 i, moff, mtrue_end, msize = 0;
-+	const struct btf_member *member;
-+	const struct btf_type *mtype;
-+	const char *tname, *mname;
-+
-+again:
-+	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
-+	if (!btf_type_is_struct(t)) {
-+		bpf_log(log, "Type '%s' is not a struct\n", tname);
++	if (fn->allowed && !fn->allowed(env->prog)) {
++		verbose(env, "helper call is not allowed in probe\n");
 +		return -EINVAL;
 +	}
 +
-+	if (off > t->size) {
-+		bpf_log(log, "address beyond struct %s at off %u size %u\n",
-+			tname, off, t->size);
-+		return -EACCES;
-+	}
+ 	/* With LD_ABS/IND some JITs save/restore skb from r1. */
+ 	changes_data = bpf_helper_changes_pkt_data(fn->func);
+ 	if (changes_data && fn->arg1_type != ARG_PTR_TO_CTX) {
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 3097ab04bdc4..55682d610534 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -13,6 +13,7 @@
+ #include <linux/kprobes.h>
+ #include <linux/syscalls.h>
+ #include <linux/error-injection.h>
++#include <linux/bsearch.h>
+ 
+ #include <asm/tlb.h>
+ 
+@@ -797,6 +798,27 @@ BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
+ 	return len;
+ }
+ 
++extern char __weak __start_BTF_whitelist_d_path[];
++extern char __weak __stop_BTF_whitelist_d_path[];
 +
-+	for_each_member(i, t, member) {
-+		/* offset of the field in bytes */
-+		moff = btf_member_bit_offset(t, member) / 8;
-+		if (off < moff)
-+			/* won't find anything, field is already too far */
-+			break;
++static int btf_id_cmp_func(const void *a, const void *b)
++{
++	const unsigned long *pa = a;
++	const unsigned long *pb = b;
 +
-+		/* we found the member */
-+		if (off == moff && member->type == exp_id)
-+			return 0;
-+
-+		/* type of the field */
-+		mtype = btf_type_by_id(btf_vmlinux, member->type);
-+		mname = __btf_name_by_offset(btf_vmlinux, member->name_off);
-+
-+		mtype = btf_resolve_size(btf_vmlinux, mtype, &msize,
-+					 NULL, NULL);
-+		if (IS_ERR(mtype)) {
-+			bpf_log(log, "field %s doesn't have size\n", mname);
-+			return -EFAULT;
-+		}
-+
-+		mtrue_end = moff + msize;
-+		if (off >= mtrue_end)
-+			/* no overlap with member, keep iterating */
-+			continue;
-+
-+		/* the 'off' we're looking for is either equal to start
-+		 * of this field or inside of this struct
-+		 */
-+		if (btf_type_is_struct(mtype)) {
-+			/* our field must be inside that union or struct */
-+			t = mtype;
-+
-+			/* adjust offset we're looking for */
-+			off -= moff;
-+			goto again;
-+		}
-+
-+		bpf_log(log, "struct %s doesn't have struct field at offset %d\n", tname, off);
-+		return -EACCES;
-+	}
-+
-+	bpf_log(log, "struct %s doesn't have field at offset %d\n", tname, off);
-+	return -EACCES;
++	return *pa - *pb;
 +}
 +
- static int __btf_resolve_helper_id(struct bpf_verifier_log *log, void *fn,
- 				   int arg)
- {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 70ad009577f8..b988df5ada20 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3665,6 +3665,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
- {
- 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
- 	enum bpf_reg_type expected_type, type = reg->type;
-+	const struct btf_type *btf_type;
- 	int err = 0;
- 
- 	if (arg_type == ARG_DONTCARE)
-@@ -3743,17 +3744,28 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
- 		expected_type = PTR_TO_BTF_ID;
- 		if (type != expected_type)
- 			goto err_type;
--		if (reg->btf_id != meta->btf_id) {
--			verbose(env, "Helper has type %s got %s in R%d\n",
--				kernel_type_name(meta->btf_id),
--				kernel_type_name(reg->btf_id), regno);
-+		if (reg->off) {
-+			btf_type = btf_type_by_id(btf_vmlinux, reg->btf_id);
-+			if (btf_struct_address(&env->log, btf_type, reg->off, meta->btf_id)) {
-+				verbose(env, "Helper has type %s got %s in R%d, off %d\n",
-+					kernel_type_name(meta->btf_id),
-+					kernel_type_name(reg->btf_id), regno, reg->off);
- 
--			return -EACCES;
--		}
--		if (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off) {
--			verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
--				regno);
--			return -EACCES;
-+				return -EACCES;
-+			}
-+		} else {
-+			if (reg->btf_id != meta->btf_id) {
-+				verbose(env, "Helper has type %s got %s in R%d\n",
-+					kernel_type_name(meta->btf_id),
-+					kernel_type_name(reg->btf_id), regno);
++static bool bpf_d_path_allowed(const struct bpf_prog *prog)
++{
++	unsigned long *start = (unsigned long *) __start_BTF_whitelist_d_path;
++	unsigned long *stop  = (unsigned long *) __stop_BTF_whitelist_d_path;
++	unsigned long id = prog->aux->attach_btf_id;
 +
-+				return -EACCES;
-+			}
-+			if (!tnum_is_const(reg->var_off) || reg->var_off.value) {
-+				verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
-+					regno);
-+				return -EACCES;
-+			}
- 		}
- 	} else if (arg_type == ARG_PTR_TO_SPIN_LOCK) {
- 		if (meta->func_id == BPF_FUNC_spin_lock) {
++	return bsearch(&id, start, stop - start, sizeof(unsigned long),
++		       btf_id_cmp_func) != NULL;
++}
++
+ static u32 bpf_d_path_btf_ids[3];
+ static const struct bpf_func_proto bpf_d_path_proto = {
+ 	.func		= bpf_d_path,
+@@ -806,6 +828,7 @@ static const struct bpf_func_proto bpf_d_path_proto = {
+ 	.arg2_type	= ARG_PTR_TO_MEM,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.btf_id		= bpf_d_path_btf_ids,
++	.allowed	= bpf_d_path_allowed,
+ };
+ 
+ const struct bpf_func_proto *
 -- 
 2.25.4
 
