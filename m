@@ -2,144 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2409B1C6763
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 07:21:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5E41C6768
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 07:22:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbgEFFV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 01:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        id S1727101AbgEFFWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 01:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725771AbgEFFV5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 01:21:57 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BDF2C061A0F;
-        Tue,  5 May 2020 22:21:57 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id j2so405228qtr.12;
-        Tue, 05 May 2020 22:21:57 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725771AbgEFFWO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 01:22:14 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9514CC061A0F
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 22:22:13 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id l18so572442wrn.6
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 22:22:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pv+HrQ8QZJZWWwdQFbQldF8NsVO28BKs1xF18zhP+u4=;
-        b=p8A1ZZUcYigjVr0O4HQPGSbor+9rco8hNU0bGEoUXo6hmGNYtVP+z3DWd5ZpRX9C+X
-         nxougCmtzeDODBT/CY1VlDbYfGe+cD1P8bJ+qIcP2cKsppdM9bA9UrKSPvvMWB0wHuTX
-         XDjCGJKTavUUHPOHB0vYuQrs7PtPojSgNHPWY0/KPVhT9sB6fFaicXlHluyS5JNCY2v/
-         U3FKW6xwB2gJDuW06lafxeXQC+P1J/ujXoTLdf7SiCVl/0if4Q9Q8BWYYrVWrXnnSPGJ
-         kfZLk7g2AF0Aw6CTvzeZrvhxxbRva1n40Yz+67ZXDBnfGQsAvbhjR2MRIPB/MqWrZNEX
-         h5fg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Kh12ddWMPPjxzbUQh9yFibL/KncP4qVkRvXKfZG1YFs=;
+        b=actWQjK3kBuUYr4g+cS1koVmgwLpZxnHKeQToZxrFZfBMHHM31kFJsDgFYGYWMSHHj
+         V30EsLgehM7TnDyPTy4cskztczTlX5l63TigBWuj9BxGiJ3n5NRJzIk5zrTxfPWgcFpQ
+         4fefupCL+imDpoevJQZ1EiXJleSFT8qvuNLqYDFmrZ+//uGClbcCSa2yfo/vl73cbO73
+         VVs6P/glE4gqpOPi880JthWq14M+uyaJtxUOldR5V1QEZlE9t8NTngL0syKagBAOJ4zv
+         Arwic6HmzMqcmvaYo3nLhH1a5eF46bmOozAWCa3ATng7zcvV9YIOBECtyJGRRBO3+ca8
+         T/hA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pv+HrQ8QZJZWWwdQFbQldF8NsVO28BKs1xF18zhP+u4=;
-        b=IkripkaUUzEDFWovN2Vt83hKCU7ap/IhTCGhmrLA/5zFV2lebFMDWYrbea3kDiFEwy
-         akQfsyLdn/5QLnp1YHjLL9ntLBnFDPDSg58ixAewOr5HaiYAHhl7vyU+JUw/owHtWaba
-         pZiUuDQVuZCoT1zClt2D8A60GvXhbk/3MpNBvVlpgsKivTKqzBB4Ly67atP+4JP0aiT9
-         H88XJAV0btuvfvIegsbOss+Ct6fDX8pwQ56ddN/rTT+WXC7EGuEFjXW644/00ebrmdyE
-         KnddJCI6QDu8xSWZKqr5nuf+UZ/nH8inWawHZvqUGKI/R5ETP47uAi+7S9uldB2R7y9J
-         C73A==
-X-Gm-Message-State: AGi0PuasRO7grI8P8P4/1dYNHq7kwvOkTzW6QrbkeSMMzWA6D7nhKRkS
-        zZ96PL4tK3xQ1zMqIxnVj2bMGvjXTPnS0VCaj/M=
-X-Google-Smtp-Source: APiQypIH8zDlUBDSMfYUJXR3ewdsKUlxrKN7m8ESwWhC/5zkfXrCthkBa5DIqtLpuC17Cv7b82aPIHB/SJdtWUU+fXU=
-X-Received: by 2002:ac8:51d3:: with SMTP id d19mr4169497qtn.141.1588742516671;
- Tue, 05 May 2020 22:21:56 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Kh12ddWMPPjxzbUQh9yFibL/KncP4qVkRvXKfZG1YFs=;
+        b=jp+dmGAlLBc5+F+p+Iroe/rK0FXvpvOxEHcsEkTR5vUDT98hBEYQf9cA1qGqUOWwcA
+         L2bK5q7JYQQbGkmzish6kGaOHpnofolTyva9r6KGRK6eIR5q2uxtIsAX/jeYUOSdwJPB
+         hMkapx2DOZJhMQco187ZeI8JJ26bLQliggusJKHlY5ttH/ZU0ZCti6pL3cn6PU93ndmB
+         jwMuxtUPSfbro5U/lw9LLZhs3TneTXiY9Ks5LJTjGjumLjlUv3dSTem78iISWvSphSS2
+         9D8C/xTIkGo+rdyRuCvqYKsAZ36IMnbJkGOddFAZoTpLiBwqmp8T9Q9KizbRJXYZQEoe
+         SA8g==
+X-Gm-Message-State: AGi0PubjK9iOw8w8KZi+D5Pb7JTQSmg3nldmqoFrdJVTjoyShyn+FyMj
+        iQfW9+hiv/RYkwB7XMFSA/XxjA==
+X-Google-Smtp-Source: APiQypI+rpSMlMLCLgo0LHAB1jA9StdRgGHnnW6T98ROnU9jxru/NxrR43rzOtI7CIHvNHvaOGFDWQ==
+X-Received: by 2002:adf:e7cb:: with SMTP id e11mr6974313wrn.145.1588742532268;
+        Tue, 05 May 2020 22:22:12 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id h1sm1158046wme.42.2020.05.05.22.22.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 22:22:11 -0700 (PDT)
+Date:   Wed, 6 May 2020 07:22:10 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, ecree@solarflare.com
+Subject: Re: [PATCH net,v2] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DONT_CARE
+Message-ID: <20200506052210.GA2269@nanopsycho.orion>
+References: <20200505174736.29414-1-pablo@netfilter.org>
+ <20200505183643.GI14398@nanopsycho.orion>
+ <20200505114616.221fc9af@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200504062547.2047304-1-yhs@fb.com> <20200504062558.2048168-1-yhs@fb.com>
-In-Reply-To: <20200504062558.2048168-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 May 2020 22:21:45 -0700
-Message-ID: <CAEf4BzbtR71iWPdNmjy0kvfQC4xQr+MFe6Vh2k6Kzu0cfsVVzg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 10/20] net: bpf: add netlink and ipv6_route
- bpf_iter targets
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200505114616.221fc9af@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 3, 2020 at 11:29 PM Yonghong Song <yhs@fb.com> wrote:
+Tue, May 05, 2020 at 08:46:16PM CEST, kuba@kernel.org wrote:
+>On Tue, 5 May 2020 20:36:43 +0200 Jiri Pirko wrote:
+>> Tue, May 05, 2020 at 07:47:36PM CEST, pablo@netfilter.org wrote:
+>> >This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
+>> >that the frontend does not need counters, this hw stats type request
+>> >never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
+>> >the driver to disable the stats, however, if the driver cannot disable
+>> >counters, it bails out.
+>> >
+>> >TCA_ACT_HW_STATS_* maintains the 1:1 mapping with FLOW_ACTION_HW_STATS_*
+>> >except by disabled which is mapped to FLOW_ACTION_HW_STATS_DISABLED
+>> >(this is 0 in tc). Add tc_act_hw_stats() to perform the mapping between
+>> >TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*.
+>> >
+>> >Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
+>> >Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>  
+>> 
+>> Looks great. Thanks!
+>> 
+>> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 >
-> This patch added netlink and ipv6_route targets, using
-> the same seq_ops (except show() and minor changes for stop())
-> for /proc/net/{netlink,ipv6_route}.
+>Is this going to "just work" for mlxsw?
 >
-> The net namespace for these targets are the current net
-> namespace at file open stage, similar to
-> /proc/net/{netlink,ipv6_route} reference counting
-> the net namespace at seq_file open stage.
+>        act = flow_action_first_entry_get(flow_action);                         
+>        if (act->hw_stats == FLOW_ACTION_HW_STATS_ANY ||                        
+>            act->hw_stats == FLOW_ACTION_HW_STATS_IMMEDIATE) {                  
+>                /* Count action is inserted first */                            
+>                err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);    
+>                if (err)                                                        
+>                        return err;                                             
+>        } else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED) {            
+>                NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type"); 
+>                return -EOPNOTSUPP;                                             
+>        }
 >
-> Since module is not supported for now, ipv6_route is
-> supported only if the IPV6 is built-in, i.e., not compiled
-> as a module. The restriction can be lifted once module
-> is properly supported for bpf_iter.
+>if hw_stats is 0 we'll get into the else and bail.
 >
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  fs/proc/proc_net.c       | 19 +++++++++
->  include/linux/proc_fs.h  |  3 ++
->  net/ipv6/ip6_fib.c       | 65 +++++++++++++++++++++++++++++-
->  net/ipv6/route.c         | 27 +++++++++++++
->  net/netlink/af_netlink.c | 87 +++++++++++++++++++++++++++++++++++++++-
->  5 files changed, 197 insertions(+), 4 deletions(-)
->
+>That doesn't deliver on the "don't care" promise, no?
 
-[...]
-
->  int __init ip6_route_init(void)
->  {
->         int ret;
-> @@ -6455,6 +6474,14 @@ int __init ip6_route_init(void)
->         if (ret)
->                 goto out_register_late_subsys;
->
-> +#if IS_BUILTIN(CONFIG_IPV6)
-> +#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
-> +       ret = bpf_iter_register();
-> +       if (ret)
-> +               goto out_register_late_subsys;
-
-Seems like bpf_iter infra is missing unregistering API.
-ip6_route_init(), if fails, undoes all the registrations, so probably
-should also unregister ipv6_route target as well?
-
-> +#endif
-> +#endif
-> +
->         for_each_possible_cpu(cpu) {
->                 struct uncached_list *ul = per_cpu_ptr(&rt6_uncached_list, cpu);
->
-
-[...]
-
-> +static void netlink_seq_stop(struct seq_file *seq, void *v)
-> +{
-> +       struct bpf_iter_meta meta;
-> +       struct bpf_prog *prog;
-> +
-> +       if (!v) {
-> +               meta.seq = seq;
-> +               prog = bpf_iter_get_info(&meta, true);
-> +               if (prog)
-> +                       netlink_prog_seq_show(prog, &meta, v);
-
-nit: netlink_prog_seq_show() can return failure (from BPF program),
-but you are not returning it. Given seq_file's stop is not supposed to
-fail, you can explicitly cast result to (void)? I think it's done in
-few other places in BPF code, when return result is explicitly
-ignored.
-
-
-> +       }
-> +
-> +       netlink_native_seq_stop(seq, v);
-> +}
-> +#else
-
-[...]
+Yeah, we need to handle dontcare there, you are right.
