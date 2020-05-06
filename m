@@ -2,154 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F3EE1C6577
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 03:25:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC831C6578
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 03:25:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729778AbgEFBZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 May 2020 21:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728717AbgEFBZw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 21:25:52 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C5AC061A0F;
-        Tue,  5 May 2020 18:25:51 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id d25so2966990lfi.11;
-        Tue, 05 May 2020 18:25:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=R8S5HdybhlovzUPCTk9Jk+qbEBW/OQLluce9QD/haJY=;
-        b=f+0mA+UluyywJdzAbSZ+S07Dn3UuRprlr7OqNJJTdb4q3dgRRB/HFmHQPiF9qJLGTN
-         SenVPax3AN6/xo7smc8N+L8W/BW5KWLovp3fQRANzSeXp0waG8X8QXsx7DNKU2w0Yu9h
-         mQK/pR4+SAzvhA8I04ubAek4tM5wFmdkKRGLhtguis2C0AEbYP8ZqcM5oNiYWE1ndDRN
-         AHg9Dp0ZAN6lgEXpzBrvxDGZ7y3Jg+T2VoJSzZHLU1rBJJ/lbOz2UFpQBnvaJiaHTdKy
-         GIB+Rj189fj1G3z0PQ5BP+DbdBYkoFmySlugeUxppPOtkiMcuwz+x6wLvU8cSj4suPXP
-         27Xw==
+        id S1729782AbgEFBZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 May 2020 21:25:55 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:46907 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728609AbgEFBZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 May 2020 21:25:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588728351;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=salWLcTCFQSdinV1WS2cAX975nD5l1MSiQYd88R2EQs=;
+        b=aLBhHXUSmdgv/l/xTOsprZ9KO2W+rJcocA+8klkbyLoshkNTmpXrkGp9caDQz4N7h7riEh
+        j5rKxh/wjp6aa8bKhQfjMZ59at8Z16sfzKVchy2DtZRzUezLeg1VjoRUGbvW1iWOhYCQKH
+        rs/qpCmINXdkIE2GwmmaLbIeXtbEMwc=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-170-ZbUYmPvLML2HXF4fZ4nu4A-1; Tue, 05 May 2020 21:25:49 -0400
+X-MC-Unique: ZbUYmPvLML2HXF4fZ4nu4A-1
+Received: by mail-wr1-f71.google.com with SMTP id g7so383414wrw.18
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 18:25:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=R8S5HdybhlovzUPCTk9Jk+qbEBW/OQLluce9QD/haJY=;
-        b=I5iAebtBW+OEddh/UHAhn6OrEZ8sRUDr6MN/elhVsWs67RwrGMat7Rm5CBskdi8P45
-         F0cUr2MqCcL66w1462i113CXAtMWbbvotbsDGMGXbg31EFixX2+m1x9cNWN3LxUhLoIv
-         MQfnFJqfsF7MBUyVe1OIb37bu7ldqhI8eAptk/H7oJZYvXKpMTqm9ReUTkQoY/74EmNJ
-         mAv4InYZYQ1EQaLchTlhx453Y2F3sLAVqnYeAGB1OF3gu8NKYzftYbHaii3FMSjwytyU
-         yiBZm6FHqmp2FgGiZXm9IozZz4T2MVeS3+oezE1XmrL1BX1CGZRZZaqHl1xT3Y4xNlba
-         /pTw==
-X-Gm-Message-State: AGi0PuY74EjXxyZ1DqFzHEyslfynsZIbAAj07LmGFOcEjaEpZdJIFtBJ
-        7O6Gsrz6obah0pezp9MJ2NyYS+E0DTp2+c8vYaI=
-X-Google-Smtp-Source: APiQypLOpg4/tYn03s637jE2G1bJDVdGixwGQ8OvYymZpqxqACDkAG7Vi5EcqCFFDP9TytC6duf4OnhDbE/8g8qbHxA=
-X-Received: by 2002:ac2:5607:: with SMTP id v7mr3436836lfd.134.1588728350093;
- Tue, 05 May 2020 18:25:50 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=salWLcTCFQSdinV1WS2cAX975nD5l1MSiQYd88R2EQs=;
+        b=ujLvRgBFCOdFnZ4tZ+Z1GFjbZYsdGttICnhdJQrJFHUVdECHFHOsK6AlA3FkZbFp4g
+         /7tKX/dE1UjQ6ZrugXodNu4TOSLscI1PnCNF/CvBwmItI3bWpxk1F2kXWpiD2m6vfDSG
+         UdlCqHev9ssDv9/pxrk4Iy1yGLTNw3lNI6DQQ2GWinT/fsXXc57RxY3stf+NFLG/+485
+         CZGZ6y7KS7ucVIfKv1CynwKquqCXYiPnj8ieWR2xISoae5NQw40jNzPLowSb0V2oVf7Z
+         3TEQEbUGi8PME3kzi0JdEpI/UcBzlKjN9KWM3JFOAXgIlopQl17LEf8Q7U6B/LjtC2F1
+         Qe1g==
+X-Gm-Message-State: AGi0PubifqCvUGq3V1Fw0jUJ49qF3NGfTvm9y3luB/MDlRtB52fns2Cf
+        xw5Jy6vle8aohzvE0TgVm7hmLNSWYwmU+S/O/SwFriPFvTTTK8PTe9KgtqL8lu+wUXSgXCU1vS3
+        mlhDP1pkkNf8RydDC
+X-Received: by 2002:adf:ea44:: with SMTP id j4mr7236128wrn.38.1588728348522;
+        Tue, 05 May 2020 18:25:48 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJbljK98TfYDJ3DRHBfijjaciSi1fRGOwIMo3P1sbmyqGK+14qEWcV/E2LUJo+A8aEdqXruOA==
+X-Received: by 2002:adf:ea44:: with SMTP id j4mr7236113wrn.38.1588728348245;
+        Tue, 05 May 2020 18:25:48 -0700 (PDT)
+Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
+        by smtp.gmail.com with ESMTPSA id n6sm100160wrs.81.2020.05.05.18.25.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 18:25:47 -0700 (PDT)
+Date:   Tue, 5 May 2020 21:25:45 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [BUG] Inconsistent lock state in virtnet poll
+Message-ID: <20200505212325-mutt-send-email-mst@kernel.org>
+References: <87lfm6oa7b.fsf@nanos.tec.linutronix.de>
+ <20200505120352-mutt-send-email-mst@kernel.org>
+ <87v9lanher.fsf@nanos.tec.linutronix.de>
+ <98c4d934-5a27-1cf7-119a-ce0c5a501864@gmail.com>
+ <20200505204015-mutt-send-email-mst@kernel.org>
+ <4ea7fb92-c4fb-1a31-d83b-483da2fb7a1a@gmail.com>
 MIME-Version: 1.0
-References: <158453675319.3043.5779623595270458781.stgit@xdp-tutorial>
- <819b1b3a-c801-754b-e805-7ec8266e5dfa@fb.com> <D0164AC9-7AF7-4434-B6D1-0A761DC626FB@redhat.com>
- <fefda00a-1a08-3a53-efbc-93c36292b77d@fb.com> <CAADnVQ+SCu97cF5Li6nBBCkshjF45U-nPEO5jO8DQrY5PqPqyg@mail.gmail.com>
- <F97A3E80-9C99-49CF-84C5-F09C940F7029@redhat.com> <20200428040424.wvozrsy6uviz33ha@ast-mbp.dhcp.thefacebook.com>
- <78EFC9DD-48A2-49BB-8C76-1E6FDE808067@redhat.com> <20200428121947.GC2245@kernel.org>
- <20200501114420.5a33d7483f43aaeff95d31dc@kernel.org>
-In-Reply-To: <20200501114420.5a33d7483f43aaeff95d31dc@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 5 May 2020 18:25:38 -0700
-Message-ID: <CAADnVQKyfJPujoef6+sV7hJf9kVBjZKur_yjW8GJtTYS-c_Knw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/3] bpf: add tracing for XDP programs using
- the BPF_PROG_TEST_RUN API
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4ea7fb92-c4fb-1a31-d83b-483da2fb7a1a@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 30, 2020 at 7:44 PM Masami Hiramatsu <mhiramat@kernel.org> wrot=
-e:
->
-> On Tue, 28 Apr 2020 09:19:47 -0300
-> Arnaldo Carvalho de Melo <acme@kernel.org> wrote:
->
-> > Em Tue, Apr 28, 2020 at 12:47:53PM +0200, Eelco Chaudron escreveu:
-> > > On 28 Apr 2020, at 6:04, Alexei Starovoitov wrote:
-> > > > On Fri, Apr 24, 2020 at 02:29:56PM +0200, Eelco Chaudron wrote:
-> >
-> > > > > > But in reality I think few kprobes in the prog will be enough t=
-o
-> > > > > > debug the program and XDP prog may still process millions of
-> > > > > > packets because your kprobe could be in error path and the user
-> > > > > > may want to capture only specific things when it triggers.
-> >
-> > > > > > kprobe bpf prog will execute in such case and it can capture
-> > > > > > necessary state from xdp prog, from packet or from maps that xd=
-p
-> > > > > > prog is using.
-> >
-> > > > > > Some sort of bpf-gdb would be needed in user space.  Obviously
-> > > > > > people shouldn't be writing such kprob-bpf progs that debug
-> > > > > > other bpf progs by hand. bpf-gdb should be able to generate the=
-m
-> > > > > > automatically.
-> >
-> > > > > See my opening comment. What you're describing here is more when
-> > > > > the right developer has access to the specific system. But this
-> > > > > might not even be possible in some environments.
-> >
-> > > > All I'm saying that kprobe is a way to trace kernel.
-> > > > The same facility should be used to trace bpf progs.
-> >
-> > > perf doesn=E2=80=99t support tracing bpf programs, do you know of any=
- tools that
-> > > can, or you have any examples that would do this?
-> >
-> > I'm discussing with Yonghong and Masami what would be needed for 'perf
-> > probe' to be able to add kprobes to BPF jitted areas in addition to
-> > vmlinux and modules.
->
-> At a grance, at first we need a debuginfo which maps the source code and
-> BPF binaries. We also need to get a map from the kernel indicating
-> which instructions the bpf code was jited to.
-> Are there any such information?
+On Tue, May 05, 2020 at 06:19:09PM -0700, Eric Dumazet wrote:
+> 
+> 
+> On 5/5/20 5:43 PM, Michael S. Tsirkin wrote:
+> > On Tue, May 05, 2020 at 03:40:09PM -0700, Eric Dumazet wrote:
+> >>
+> >>
+> >> On 5/5/20 3:30 PM, Thomas Gleixner wrote:
+> >>> "Michael S. Tsirkin" <mst@redhat.com> writes:
+> >>>> On Tue, May 05, 2020 at 02:08:56PM +0200, Thomas Gleixner wrote:
+> >>>>>
+> >>>>> The following lockdep splat happens reproducibly on 5.7-rc4
+> >>>>
+> >>>>> ================================
+> >>>>> WARNING: inconsistent lock state
+> >>>>> 5.7.0-rc4+ #79 Not tainted
+> >>>>> --------------------------------
+> >>>>> inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+> >>>>> ip/356 [HC0[0]:SC1[1]:HE1:SE0] takes:
+> >>>>> f3ee4cd8 (&syncp->seq#2){+.?.}-{0:0}, at: net_rx_action+0xfb/0x390
+> >>>>> {SOFTIRQ-ON-W} state was registered at:
+> >>>>>   lock_acquire+0x82/0x300
+> >>>>>   try_fill_recv+0x39f/0x590
+> >>>>
+> >>>> Weird. Where does try_fill_recv acquire any locks?
+> >>>
+> >>>   u64_stats_update_begin(&rq->stats.syncp);
+> >>>
+> >>> That's a 32bit kernel which uses a seqcount for this. sequence counts
+> >>> are "lock" constructs where you need to make sure that writers are
+> >>> serialized.
+> >>>
+> >>> Actually the problem at hand is that try_fill_recv() is called from
+> >>> fully preemptible context initialy and then from softirq context.
+> >>>
+> >>> Obviously that's for the open() path a non issue, but lockdep does not
+> >>> know about that. OTOH, there is other code which calls that from
+> >>> non-softirq context.
+> >>>
+> >>> The hack below made it shut up. It's obvioulsy not ideal, but at least
+> >>> it let me look at the actual problem I was chasing down :)
+> >>>
+> >>> Thanks,
+> >>>
+> >>>         tglx
+> >>>
+> >>> 8<-----------
+> >>> --- a/drivers/net/virtio_net.c
+> >>> +++ b/drivers/net/virtio_net.c
+> >>> @@ -1243,9 +1243,11 @@ static bool try_fill_recv(struct virtnet
+> >>>  			break;
+> >>>  	} while (rq->vq->num_free);
+> >>>  	if (virtqueue_kick_prepare(rq->vq) && virtqueue_notify(rq->vq)) {
+> >>> +		local_bh_disable();
+> >>
+> >> Or use u64_stats_update_begin_irqsave() whic is a NOP on 64bit kernels
+> > 
+> > I applied this, but am still trying to think of something that
+> > is 0 overhead for all configs.
+> > Maybe we can select a lockdep class depending on whether napi
+> > is enabled?
+> 
+> 
+> Do you _really_ need 64bit counter for stats.kicks on 32bit kernels ?
+> 
+> Adding 64bit counters just because we can might be overhead anyway.
 
-it's already there. Try 'bpftool prog dump jited id N'
-It will show something like this:
-; data =3D ({typeof(errors.leaf) *leaf =3D
-bpf_map_lookup_elem_(bpf_pseudo_fd(1, -11), &type_key); if (!leaf) {
-bpf_map_update_elem_(bpf_pseudo_fd(1, -11), &type_key, &zero,
-BPF_NOEXIST); leaf =3D bpf_map_lookup_elem_(bpf_pseudo_fd(1, -11), &t;
- 81d:    movabs $0xffff8881a0679000,%rdi
-; return bpf_map_lookup_elem((void *)map, key);
- 827:    mov    %rbx,%rsi
- 82a:    callq  0xffffffffe0f7f448
- 82f:    test   %rax,%rax
- 832:    je     0x0000000000000838
- 834:    add    $0x40,%rax
-; if (!data)
- 838:    test   %rax,%rax
- 83b:    je     0x0000000000000846
- 83d:    mov    $0x1,%edi
-; lock_xadd(data, 1);
- 842:    lock add %edi,0x0(%rax)
+Well 32 bit kernels don't fundamentally kick less than 64 bit ones,
+and we kick more or less per packet, sometimes per batch,
+people expect these to be in sync ..
 
-> Also, I would like to know the target BPF (XDP) is running in kprobes
-> context or not. BPF tracer sometimes use the kprobes to hook the event
-> and run in the kprobe (INT3) context. That will be need more work to
-> probe it.
-> For the BPF code which just runs in tracepoint context, it will be easy
-> to probe it. (we may need to break a limitation of notrace, which we
-> already has a kconfig)
+> > 
+> > 
+> >>>  		u64_stats_update_begin(&rq->stats.syncp);
+> >>>  		rq->stats.kicks++;
+> >>>  		u64_stats_update_end(&rq->stats.syncp);
+> >>> +		local_bh_enable();
+> >>>  	}
+> >>>  
+> >>>  	return !oom;
+> >>>
+> > 
 
-yeah. this mechanism won't be able to debug bpf progs that are
-attached to kprobes via int3. But that is rare case.
-Most kprobe+bpf are for function entry and adding int3 to jited bpf code
-will work just like for normal kernel functions.
