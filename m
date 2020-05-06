@@ -2,132 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7D71C7427
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 124A51C7438
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:22:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729364AbgEFPU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 11:20:59 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:38474 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728821AbgEFPU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:20:59 -0400
+        id S1729462AbgEFPVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 11:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729443AbgEFPVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:21:49 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945CBC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 08:21:48 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id a5so1062666pjh.2
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 08:21:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1588778458; x=1620314458;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   mime-version;
-  bh=Qxz8YBQJMe0tFK5dHJ7HQYaq14w58zhXEZxLWPuYNeE=;
-  b=BC/sLKzDzARc1pQD/WzENadvk+JG4VV1rJZFWINw4+iGfN/1vkBz/vXW
-   RPsmLPCiyKzkOtQYD7r+1hTMugPzpgq6r+HHWSA5tpD7a7scq7OCXGetp
-   jrZxMWGf2f4vl/Mvy8pOTbTxTgEM8rrW/oJ4xb+uFBWzSWwhea76UzLDx
-   o=;
-IronPort-SDR: Ld8GMMi8Y88G+q0R5NC/a+LOiUcKRXJWMBHS1Vb9+4Qrjo2+QlB9FolQxA3SnFKWn7ta1QRKpi
- +ozPwuTuHyJA==
-X-IronPort-AV: E=Sophos;i="5.73,359,1583193600"; 
-   d="scan'208";a="43082169"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 06 May 2020 15:20:56 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id A05A4A2171;
-        Wed,  6 May 2020 15:20:52 +0000 (UTC)
-Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 6 May 2020 15:20:51 +0000
-Received: from u886c93fd17d25d.ant.amazon.com (10.43.162.37) by
- EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 6 May 2020 15:20:43 +0000
-From:   SeongJae Park <sjpark@amazon.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-CC:     SeongJae Park <sjpark@amazon.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        "Al Viro" <viro@zeniv.linux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <sj38.park@gmail.com>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        SeongJae Park <sjpark@amazon.de>, <snu@amazon.com>,
-        <amit@kernel.org>, <stable@vger.kernel.org>
-Subject: Re: Re: Re: Re: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
-Date:   Wed, 6 May 2020 17:20:25 +0200
-Message-ID: <20200506152025.22085-1-sjpark@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200506144151.GZ2869@paulmck-ThinkPad-P72> (raw)
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=l3dvl4KUVW6lOYjk9hPMXPvcXmJ6hlVZhKPWrOvasd0=;
+        b=XsLCj3cbL0qXcpaGnYJ+pvkth0mpbhYdjiVyqlK1a4thH9KlvZQ6S9vg0C5M5uuMCM
+         mASFpDbRVQRlfUdKJYhvC1nXCdOWvgwjWZ0X+QA/IJKG2AFDb9YKiSAF/ft4dR4pwuKC
+         DlyUogAWlJAU6XfQVAfQIoC92KD8eYuzCQjM3vMVIuOajaWBVre2GEXpCCUa5MG6IU+0
+         Hi3yXyMUjrPsa9S9QybHlcZVDBGptarfLfubZAzlGAmhQutDUJ3g+xLR0lc1KLO+28A2
+         kmazSm1h1IKzKZCXYaTck5/J0d9yJ9HENYKVDD1uq1QrakTyxGNd7DqwBKdJcprUJBxq
+         2loA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=l3dvl4KUVW6lOYjk9hPMXPvcXmJ6hlVZhKPWrOvasd0=;
+        b=Gwgu9u5Bi3Y6UvDX143oF3xj8DMa0hVc0lfdX19+hb+UX7NNzY9JkN2UGEtxKzEXjy
+         4Rz8JihC3j2zpTidU53T47RVRtxH5ZMapMPKKrReLpfYlf7RFyvqW9qC3GFhqCCo3t84
+         pyogVI1s3qVpTjohx4SQam7OgInBE8OycKUsMWlwLQhlZEuUUQpRLPt1Ua2OHVZXYVg8
+         9SZyhrJIzw+1aRkvikplQHorGcAJac4Ht54zh1Z/XTJh6jDsKMA5I21+dgjlLJOfWz6r
+         Nqmdhlh6bjudASHHarbpKxKt5HvHshJ6gXYNbnWs3g2JaqF+KPAl4dmJ9MJJGYrmLlSU
+         AsAA==
+X-Gm-Message-State: AGi0PuaR4Foa/1wJbdzrR4Fr1z/PmSlJeeTgQ18cjeUwqvfCQDvdTZYf
+        XETe4g/iU/z0Se0hcC+84Ufe7g==
+X-Google-Smtp-Source: APiQypIRqbdsbg6eMigkHYaGO2ldIooYnkYRCiQwznGcabDVCdyPDkuqXpty5XxiCeBTGEXP0X35Yw==
+X-Received: by 2002:a17:90b:19d7:: with SMTP id nm23mr8124949pjb.211.1588778508025;
+        Wed, 06 May 2020 08:21:48 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id a17sm2190402pfr.24.2020.05.06.08.21.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 08:21:47 -0700 (PDT)
+Date:   Wed, 6 May 2020 08:21:39 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Po Liu <Po.Liu@nxp.com>
+Cc:     dsahern@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, vinicius.gomes@intel.com,
+        davem@davemloft.net, vlad@buslov.dev, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, alexandru.marginean@nxp.com
+Subject: Re: [v4,iproute2-next 1/2] iproute2-next:tc:action: add a gate
+ control action
+Message-ID: <20200506082139.58dff261@hermes.lan>
+In-Reply-To: <20200506084020.18106-1-Po.Liu@nxp.com>
+References: <20200503063251.10915-2-Po.Liu@nxp.com>
+        <20200506084020.18106-1-Po.Liu@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.37]
-X-ClientProxiedBy: EX13d09UWC004.ant.amazon.com (10.43.162.114) To
- EX13D31EUA001.ant.amazon.com (10.43.165.15)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 May 2020 07:41:51 -0700 "Paul E. McKenney" <paulmck@kernel.org> wrote:
+On Wed,  6 May 2020 16:40:19 +0800
+Po Liu <Po.Liu@nxp.com> wrote:
 
-> On Wed, May 06, 2020 at 02:59:26PM +0200, SeongJae Park wrote:
-> > TL; DR: It was not kernel's fault, but the benchmark program.
-> > 
-> > So, the problem is reproducible using the lebench[1] only.  I carefully read
-> > it's code again.
-> > 
-> > Before running the problem occurred "poll big" sub test, lebench executes
-> > "context switch" sub test.  For the test, it sets the cpu affinity[2] and
-> > process priority[3] of itself to '0' and '-20', respectively.  However, it
-> > doesn't restore the values to original value even after the "context switch" is
-> > finished.  For the reason, "select big" sub test also run binded on CPU 0 and
-> > has lowest nice value.  Therefore, it can disturb the RCU callback thread for
-> > the CPU 0, which processes the deferred deallocations of the sockets, and as a
-> > result it triggers the OOM.
-> > 
-> > We confirmed the problem disappears by offloading the RCU callbacks from the
-> > CPU 0 using rcu_nocbs=0 boot parameter or simply restoring the affinity and/or
-> > priority.
-> > 
-> > Someone _might_ still argue that this is kernel problem because the problem
-> > didn't occur on the old kernels prior to the Al's patches.  However, setting
-> > the affinity and priority was available because the program received the
-> > permission.  Therefore, it would be reasonable to blame the system
-> > administrators rather than the kernel.
-> > 
-> > So, please ignore this patchset, apology for making confuse.  If you still has
-> > some doubts or need more tests, please let me know.
-> > 
-> > [1] https://github.com/LinuxPerfStudy/LEBench
-> > [2] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L820
-> > [3] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L822
-> 
-> Thank you for chasing this down!
-> 
-> I have had this sort of thing on my list as a potential issue, but given
-> that it is now really showing up, it sounds like it is time to bump
-> up its priority a bit.  Of course there are limits, so if userspace is
-> running at any of the real-time priorities, making sufficient CPU time
-> available to RCU's kthreads becomes userspace's responsibility.  But if
-> everything is running at SCHED_OTHER (which is this case here, correct?),
+> 		} else if (matches(*argv, "base-time") == 0) {
+> +			NEXT_ARG();
+> +			if (get_u64(&base_time, *argv, 10)) {
+> +				invalidarg = "base-time";
+> +				goto err_arg;
+> +			}
+> +		} else if (matches(*argv, "cycle-time") == 0) {
+> +			NEXT_ARG();
+> +			if (get_u64(&cycle_time, *argv, 10)) {
+> +				invalidarg = "cycle-time";
+> +				goto err_arg;
+> +			}
+> +		} else if (matches(*argv, "cycle-time-ext") == 0) {
+> +			NEXT_ARG();
+> +			if (get_u64(&cycle_time_ext, *argv, 10)) {
+> +				invalidarg = "cycle-time-ext";
+> +				goto err_arg;
+> +			}
 
-Correct.
+Could all these time values use existing TC helper routines?
+See get_time().  The way you have it makes sense for hardware
+but stands out versus the rest of tc.
 
-> then it is reasonable for RCU to do some work to avoid this situation.
-
-That would be also great!
-
-> 
-> But still, yes, the immediate job is fixing the benchmark.  ;-)
-
-Totally agreed.
-
-> 
-> 							Thanx, Paul
-> 
-> PS.  Why not just attack all potential issues on my list?  Because I
->      usually learn quite a bit from seeing the problem actually happen.
->      And sometimes other changes in RCU eliminate the potential issue
->      before it has a chance to happen.
-
-Sounds interesting, I will try some of those in my spare time ;)
-
-
-Thanks,
-SeongJae Park
+It maybe that the kernel UAPI is wrong, and should be using same
+time units as rest of tc. Forgot to review that part of the patch.
