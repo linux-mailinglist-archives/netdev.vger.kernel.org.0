@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE551C71AF
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 15:30:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07EF31C71B4
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 15:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728564AbgEFNaB convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 6 May 2020 09:30:01 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46703 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728081AbgEFNaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 09:30:01 -0400
+        id S1728621AbgEFNaJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 6 May 2020 09:30:09 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45593 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728455AbgEFNaG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 09:30:06 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-147-pFw9-MQOOZm0HegEa3po5A-1; Wed, 06 May 2020 09:29:53 -0400
-X-MC-Unique: pFw9-MQOOZm0HegEa3po5A-1
+ us-mta-504-rSjBDC2HOjmkwiHKJvkIpw-1; Wed, 06 May 2020 09:29:57 -0400
+X-MC-Unique: rSjBDC2HOjmkwiHKJvkIpw-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 84FAF835B45;
-        Wed,  6 May 2020 13:29:51 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2BD031902EA1;
+        Wed,  6 May 2020 13:29:55 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.192.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E0EAB64441;
-        Wed,  6 May 2020 13:29:47 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E0BF26443B;
+        Wed,  6 May 2020 13:29:51 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -36,9 +36,11 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
         Florent Revest <revest@chromium.org>,
         Al Viro <viro@zeniv.linux.org.uk>
-Subject: [RFCv2 0/9] bpf: Add d_path helper
-Date:   Wed,  6 May 2020 15:29:37 +0200
-Message-Id: <20200506132946.2164578-1-jolsa@kernel.org>
+Subject: [PATCH 1/9] bpf: Add d_path helper
+Date:   Wed,  6 May 2020 15:29:38 +0200
+Message-Id: <20200506132946.2164578-2-jolsa@kernel.org>
+In-Reply-To: <20200506132946.2164578-1-jolsa@kernel.org>
+References: <20200506132946.2164578-1-jolsa@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 X-Mimecast-Spam-Score: 0
@@ -50,96 +52,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-adding d_path helper to return full path for 'path' object.
+Adding d_path helper function that returns full path
+for give 'struct path' object, which needs to be the
+kernel BTF 'path' object.
 
-I originally added and used 'file_path' helper, which did the same,
-but used 'struct file' object. Then realized that file_path is just
-a wrapper for d_path, so we'd cover more calling sites if we add
-d_path helper and allowed resolving BTF object within another object,
-so we could call d_path also with file pointer, like:
+The helper calls directly d_path function.
 
-  bpf_d_path(&file->f_path, buf, size);
+Updating also bpf.h tools uapi header and adding
+'path' to bpf_helpers_doc.py script.
 
-This feature is mainly to be able to add dpath (filepath originally)
-function to bpftrace, which seems to work nicely now, like:
-
-  # bpftrace -e 'kfunc:vfs_open { printf("%s\n", dpath(args->path)); }'
-
-
-RFC v2 changes:
-
-  - added whitelist support, d_path helper is allowed only for
-    list of functions, the whitelist checking works as follows:
-
-      - helper's whitelist is defined as list of functions in file:
-        kernel/bpf/helpers-whitelist/helper
-      - at vmlinux linking time, the bpfwl tool reads the whitelist
-        and translates functions into BTF IDs, which are then compiled
-        as following data section into vmlinux object:
-
-          .BTF_whitelist
-              BTF_whitelist_<helper1>
-              BTF_whitelist_<helper2>
-              BTF_whitelist_<helper3>
-
-        Each BTF_whitelist_<helperX> data is a sorted array of BTF ids.
-      - new 'allowed' function is added to 'struct bpf_func_proto',
-        which is used by verifier code to check (if defined) on whether
-        the helper is called from allowed function (from whitelist).
-
-    Currently it's needed and implemented only for d_path helper,
-    but it's easy to add support for another helper.
-
-  - I don't change the btf_id value in check_func_arg as suggested by Alexei
-  - added new test_verifier test
-
-Also available at:
-  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-  bpf/d_path
-
-thoughts? thanks,
-jirka
-
-
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
-Jiri Olsa (9):
-      bpf: Add d_path helper
-      bpf: Add d_path whitelist
-      bpf: Add bpfwl tool to construct bpf whitelists
-      bpf: Allow nested BTF object to be refferenced by BTF object + offset
-      bpf: Add support to check on BTF id whitelist for d_path helper
-      bpf: Compile bpfwl tool at kernel compilation start
-      bpf: Compile the BTF id whitelist data in vmlinux
-      selftests/bpf: Add test for d_path helper
-      selftests/bpf: Add verifier test for d_path helper
+ include/uapi/linux/bpf.h       | 14 +++++++++++++-
+ kernel/trace/bpf_trace.c       | 31 +++++++++++++++++++++++++++++++
+ scripts/bpf_helpers_doc.py     |  2 ++
+ tools/include/uapi/linux/bpf.h | 14 +++++++++++++-
+ 4 files changed, 59 insertions(+), 2 deletions(-)
 
- Makefile                                        |  24 +++++++--
- include/asm-generic/vmlinux.lds.h               |   5 ++
- include/linux/bpf.h                             |   4 ++
- include/uapi/linux/bpf.h                        |  14 +++++-
- kernel/bpf/btf.c                                |  69 +++++++++++++++++++++++++
- kernel/bpf/helpers-whitelist/d_path             |   8 +++
- kernel/bpf/verifier.c                           |  37 ++++++++++----
- kernel/trace/bpf_trace.c                        |  54 ++++++++++++++++++++
- scripts/bpf_helpers_doc.py                      |   2 +
- scripts/link-vmlinux.sh                         |  20 ++++++--
- tools/Makefile                                  |   3 ++
- tools/bpf/Makefile                              |   5 +-
- tools/bpf/bpfwl/Build                           |  11 ++++
- tools/bpf/bpfwl/Makefile                        |  60 ++++++++++++++++++++++
- tools/bpf/bpfwl/bpfwl.c                         | 285 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h                  |  14 +++++-
- tools/testing/selftests/bpf/prog_tests/d_path.c | 196 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- tools/testing/selftests/bpf/progs/test_d_path.c |  71 ++++++++++++++++++++++++++
- tools/testing/selftests/bpf/test_verifier.c     |  13 ++++-
- tools/testing/selftests/bpf/verifier/d_path.c   |  37 ++++++++++++++
- 20 files changed, 908 insertions(+), 24 deletions(-)
- create mode 100644 kernel/bpf/helpers-whitelist/d_path
- create mode 100644 tools/bpf/bpfwl/Build
- create mode 100644 tools/bpf/bpfwl/Makefile
- create mode 100644 tools/bpf/bpfwl/bpfwl.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
- create mode 100644 tools/testing/selftests/bpf/verifier/d_path.c
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index b3643e27e264..bc13cad27872 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3068,6 +3068,17 @@ union bpf_attr {
+  * 		See: clock_gettime(CLOCK_BOOTTIME)
+  * 	Return
+  * 		Current *ktime*.
++ *
++ * int bpf_d_path(struct path *path, char *buf, u32 sz)
++ *	Description
++ *		Return full path for given 'struct path' object, which
++ *		needs to be the kernel BTF 'path' object. The path is
++ *		returned in buffer provided 'buf' of size 'sz'.
++ *
++ *	Return
++ *		length of returned string on success, or a negative
++ *		error in case of failure
++ *
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3195,7 +3206,8 @@ union bpf_attr {
+ 	FN(get_netns_cookie),		\
+ 	FN(get_current_ancestor_cgroup_id),	\
+ 	FN(sk_assign),			\
+-	FN(ktime_get_boot_ns),
++	FN(ktime_get_boot_ns),		\
++	FN(d_path),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index e875c95d3ced..3097ab04bdc4 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -779,6 +779,35 @@ static const struct bpf_func_proto bpf_send_signal_thread_proto = {
+ 	.arg1_type	= ARG_ANYTHING,
+ };
+ 
++BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
++{
++	char *p = d_path(path, buf, sz - 1);
++	int len;
++
++	if (IS_ERR(p)) {
++		len = PTR_ERR(p);
++	} else {
++		len = strlen(p);
++		if (len && p != buf) {
++			memmove(buf, p, len);
++			buf[len] = 0;
++		}
++	}
++
++	return len;
++}
++
++static u32 bpf_d_path_btf_ids[3];
++static const struct bpf_func_proto bpf_d_path_proto = {
++	.func		= bpf_d_path,
++	.gpl_only	= true,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_BTF_ID,
++	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_CONST_SIZE,
++	.btf_id		= bpf_d_path_btf_ids,
++};
++
+ const struct bpf_func_proto *
+ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ {
+@@ -1226,6 +1255,8 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 	case BPF_FUNC_xdp_output:
+ 		return &bpf_xdp_output_proto;
+ #endif
++	case BPF_FUNC_d_path:
++		return &bpf_d_path_proto;
+ 	default:
+ 		return raw_tp_prog_func_proto(func_id, prog);
+ 	}
+diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
+index f43d193aff3a..8f62cbc4c3ff 100755
+--- a/scripts/bpf_helpers_doc.py
++++ b/scripts/bpf_helpers_doc.py
+@@ -418,6 +418,7 @@ class PrinterHelpers(Printer):
+             'struct __sk_buff',
+             'struct sk_msg_md',
+             'struct xdp_md',
++            'struct path',
+     ]
+     known_types = {
+             '...',
+@@ -450,6 +451,7 @@ class PrinterHelpers(Printer):
+             'struct sk_reuseport_md',
+             'struct sockaddr',
+             'struct tcphdr',
++            'struct path',
+     }
+     mapped_types = {
+             'u8': '__u8',
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index b3643e27e264..bc13cad27872 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3068,6 +3068,17 @@ union bpf_attr {
+  * 		See: clock_gettime(CLOCK_BOOTTIME)
+  * 	Return
+  * 		Current *ktime*.
++ *
++ * int bpf_d_path(struct path *path, char *buf, u32 sz)
++ *	Description
++ *		Return full path for given 'struct path' object, which
++ *		needs to be the kernel BTF 'path' object. The path is
++ *		returned in buffer provided 'buf' of size 'sz'.
++ *
++ *	Return
++ *		length of returned string on success, or a negative
++ *		error in case of failure
++ *
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3195,7 +3206,8 @@ union bpf_attr {
+ 	FN(get_netns_cookie),		\
+ 	FN(get_current_ancestor_cgroup_id),	\
+ 	FN(sk_assign),			\
+-	FN(ktime_get_boot_ns),
++	FN(ktime_get_boot_ns),		\
++	FN(d_path),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+-- 
+2.25.4
 
