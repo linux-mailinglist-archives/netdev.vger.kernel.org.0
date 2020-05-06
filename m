@@ -2,130 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC5C11C7D0B
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 00:14:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD7B21C7D63
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 00:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729543AbgEFWOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 18:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728621AbgEFWOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 18:14:05 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43EBEC061A41
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 15:14:04 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id d128so1843953ybb.2
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 15:14:04 -0700 (PDT)
+        id S1729654AbgEFWcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 18:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729114AbgEFWcM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 18:32:12 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2F0C061A10
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 15:32:12 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id z11so4522613ybk.2
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 15:32:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5seMAfg/V9IKlpMN7xejCaTLjyWdju1CY7lui7OxwBs=;
-        b=OqErgpFAnFtDzsIwLFxC5R1yRWO7kawz9wrlJN5IVsCLmaZh+cNFX7aac9daeT8aXu
-         JyLg1kvfN4RYMiFbBebROwAweaFyzWRZ0uRjF66OsXfKaRRIIpgbkF34EAW3klLl3NO4
-         RNiEF+zwcz3XG8CiXmaqZFK7Shy5fzutwMUZ3guxL8pBTQOktU7qvu0yhOYFROPf6hi/
-         5ZI0agfyjjlIp+sDg18gGPl7TpnPl7fG5HVWZSuDWnJCl8dPdXA+EVef2tnracXPQm0s
-         yd//RdLhfEkryPciEoFEM3+1239isEvhjUbd/DrmIdYmMVGTQETdiWWWNMfCCB72lRt5
-         nFRw==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=dAZbFcNNcrqaMDJSxZ8NNSIupNkALoG+H1k3vHmbQEg=;
+        b=jxd18T3qpdHSoFOeOkP1+RW3DuJAP0ydFciP80dgv9rh5qMHswzIs93lbm4JCusun6
+         5+W+lKxp8+3Q2HOSMGo0s8tJvg3rt6W3lsT3vHlpgOBpbXgVE4IGbfkjbWVjdHCHw73c
+         7Zmy6kJYjv2TAcVs2lYrSHzHymKWqmccmP5K/06JrwxqrFuhKeDNq8e4UJ+/5sOnEACJ
+         H1fK4URpbhccXgsH0FCcIGLeHZYbfwxDDKk4FkuFOIywkMhRu2x/OaR8U5o4fZfD9rUq
+         ODuCjPS2LUBDrhzjFVUKxOOVWeD4yo/k/X6NhczxCFRaXM+YIC6zboiwYexsDvenBbT7
+         aK6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5seMAfg/V9IKlpMN7xejCaTLjyWdju1CY7lui7OxwBs=;
-        b=sdrmqxoWNkKN/wrBz8yL8nstPdrG282TVXRo2KffsyEfB848loxAlrOfU6CiWoKx0l
-         4jsWqoVyaDbDbdbD630/89j86HlUIYhwWTtPJq5nql/Sn+0xO/Ugz7rv3a5lmQvZLmFE
-         TxP9fIJbt30BdmBSSwXDRR2AV80E+CMMr6u4AQb+G49B2+iAp3oxYpJjYFdJL/XP3aQh
-         nvJA+34PHi9kwzfOPViU56Ms89HLC/r5pZcXyy+8kd1EE+9XBiOIaBBnLdHaqPpD7sEZ
-         8+N5gcPB6aem04ak7+oLa949WWm+OX+joP6z3Cg1HCYYXy26I3YMDSMkr5h1tSOfB5i0
-         CVmw==
-X-Gm-Message-State: AGi0PuYvtIAXo2EVOzGAxRYVGpVTvf3fs7Zpa7gHCyiHZph3T7Qs4dnn
-        iuyHetyYWajWY+nd4DwQEKM+eMJa1PAQOaP8neIfkQ==
-X-Google-Smtp-Source: APiQypJ0Gbbt5GtTiUTjtfkgqcIR1Bvzw1yf+uU7LUdAPHzx0wjrWiZXl/QayU3OVMt4dcX/L2A0Ipz8Qv2ODlnl5EY=
-X-Received: by 2002:a25:4443:: with SMTP id r64mr16498352yba.41.1588803243107;
- Wed, 06 May 2020 15:14:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200506205257.8964-1-irogers@google.com> <20200506205257.8964-2-irogers@google.com>
- <CAEf4BzZRmiEds_8R8g4vaAeWvJzPb4xYLnpF0X2VNY8oTzkphQ@mail.gmail.com>
- <CAP-5=fXUxcGZbrJMONLBasui2S=pvta7YZENEqSkenvZis58VA@mail.gmail.com> <CAEf4BzYxTTND7T7X0dLr2CbkEvUuKtarOeoJYYROefij+qds0w@mail.gmail.com>
-In-Reply-To: <CAEf4BzYxTTND7T7X0dLr2CbkEvUuKtarOeoJYYROefij+qds0w@mail.gmail.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 6 May 2020 15:13:51 -0700
-Message-ID: <CAP-5=fVvybBywqTYmyEQPK4ai7qc7ye2-eDoFj87r2KDeOZnsA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] lib/bpf hashmap: increase portability
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=dAZbFcNNcrqaMDJSxZ8NNSIupNkALoG+H1k3vHmbQEg=;
+        b=KC7Hcn2MQJrjjnBFQvWgjz6KXfRviQDYpJSC52yMrHP0ilmCjEWD5INYl12SIfhP8B
+         6Eiqx94rMJkYrNxYbX6ztOIHzYAEwsWjNVE9y2z38V9gNbUrx1bHo8QYiXpECMRebjtr
+         IORvYofmgPJdnmSZDEqRHoctYqrA9Th6/zpoPQ8wRPTdP4KVXziJ5KHtFJJIiLmGsCTf
+         iIWuTF4sc4FzLtIdjePCmMCM5kCTUH+stHffDWF98b6W+EWHw+daqQXo5rqflEKfjGN/
+         3o0X/UDMHCQa1NJDFYH8WIumu/N1dUNIKYdKrCmYQVJ1CYJkVwZjpjpRW5EAgh/fjSem
+         cE0A==
+X-Gm-Message-State: AGi0PuZhvGtfVBJZ9QideTAxII7v9yGgLPOLJgbjG8GBpFj+gbYibe6t
+        UG6Lwva7TuS6zPdq2/xSrQGwrOyqxWsUcoVqjLYJc5G47wOzlOVunyegbw1MGX3Zh0BaeMRwXno
+        9vHhnlzBRnJk3O7nAkx4gqN8nLNkyY6E5nGBOb0RU/SIbRZ3GWNFDPg==
+X-Google-Smtp-Source: APiQypJztU2wIiQaI47vNdo6RECihXFhl/qizJP8bT8DXuaE45Aqq3RB+Fzgz+1PlQAO4upgu8iZ0mM=
+X-Received: by 2002:a5b:443:: with SMTP id s3mr17123818ybp.14.1588804331609;
+ Wed, 06 May 2020 15:32:11 -0700 (PDT)
+Date:   Wed,  6 May 2020 15:32:05 -0700
+Message-Id: <20200506223210.93595-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
+Subject: [PATCH bpf-next v3 0/5] bpf: allow any port in bpf_bind helper
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrey Ignatov <rdna@fb.com>, Martin KaFai Lau <kafai@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 6, 2020 at 2:56 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, May 6, 2020 at 2:47 PM Ian Rogers <irogers@google.com> wrote:
-> >
-> > On Wed, May 6, 2020 at 2:33 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Wed, May 6, 2020 at 1:54 PM Ian Rogers <irogers@google.com> wrote:
-> > > >
-> > > > Don't include libbpf_internal.h as it is unused and has conflicting
-> > > > definitions, for example, with tools/perf/util/debug.h.
-> > > > Fix a non-glibc include path.
-> > > >
-> > > > Signed-off-by: Ian Rogers <irogers@google.com>
-> > > > ---
-> > > >  tools/lib/bpf/hashmap.h | 3 +--
-> > > >  1 file changed, 1 insertion(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-> > > > index bae8879cdf58..d5ef212a55ba 100644
-> > > > --- a/tools/lib/bpf/hashmap.h
-> > > > +++ b/tools/lib/bpf/hashmap.h
-> > > > @@ -13,9 +13,8 @@
-> > > >  #ifdef __GLIBC__
-> > > >  #include <bits/wordsize.h>
-> > > >  #else
-> > > > -#include <bits/reg.h>
-> > > > +#include <linux/bitops.h>
-> > >
-> > > why this change? It might be ok for libbpf built from kernel source,
-> > > but it will break Github libbpf.
-> >
-> > Without this change my debian based machine wasn't able to build
-> > within the kernel tree. I see bits/wordsize.h on the machine. Perhaps
-> > the __WORDSIZE computation could just be based on __LP64__ to remove
-> > any #include?
->
-> It might work. Do you mind forking https://github.com/libbpf/libbpf
-> and trying to execute travis CI tests with such change? It compiles
-> across a range of distros and arches. You might need to set up Travis
-> CI login, hope that's not a problem. Thanks!
+We want to have a tighter control on what ports we bind to in
+the BPF_CGROUP_INET{4,6}_CONNECT hooks even if it means
+connect() becomes slightly more expensive.
 
-I'll try to find time. Thanks,
-Ian
+The series goes like this:
+1. selftests: move existing helpers that make it easy to create
+   listener threads into common test_progs part
+2. selftests: make sure the helpers above don't get stuck forever
+   in case the tests fails
+3. selftests: move some common functionality into network_helpers
+4. do small refactoring of __inet{,6}_bind() flags to make it easy
+   to extend them with the additional flags
+5. remove the restriction on port being zero in bpf_bind() helper;
+   add new bind flag to prevent POST_BIND hook from being called
 
-> >
-> > Thanks,
-> > Ian
-> >
-> > > >  #endif
-> > > > -#include "libbpf_internal.h"
-> > >
-> > > Dropping this seems ok, don't remember why I had it here in the first place.
-> > >
-> > > >
-> > > >  static inline size_t hash_bits(size_t h, int bits)
-> > > >  {
-> > > > --
-> > > > 2.26.2.526.g744177e7f7-goog
-> > > >
+Acked-by: Andrey Ignatov <rdna@fb.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+
+Stanislav Fomichev (5):
+  selftests/bpf: generalize helpers to control background listener
+  selftests/bpf: adopt accept_timeout from sockmap_listen
+  selftests/bpf: move existing common networking parts into
+    network_helpers
+  net: refactor arguments of inet{,6}_bind
+  bpf: allow any port in bpf_bind helper
+
+ include/net/inet_common.h                     |   8 +-
+ include/net/ipv6_stubs.h                      |   2 +-
+ include/uapi/linux/bpf.h                      |   9 +-
+ net/core/filter.c                             |  16 +-
+ net/ipv4/af_inet.c                            |  20 +-
+ net/ipv6/af_inet6.c                           |  22 +-
+ tools/include/uapi/linux/bpf.h                |   9 +-
+ tools/testing/selftests/bpf/Makefile          |   2 +-
+ tools/testing/selftests/bpf/network_helpers.c | 208 ++++++++++++++++++
+ tools/testing/selftests/bpf/network_helpers.h |  45 ++++
+ .../bpf/prog_tests/connect_force_port.c       | 115 ++++++++++
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |   1 +
+ .../selftests/bpf/prog_tests/flow_dissector.c |   1 +
+ .../prog_tests/flow_dissector_load_bytes.c    |   1 +
+ .../selftests/bpf/prog_tests/global_data.c    |   1 +
+ .../selftests/bpf/prog_tests/kfree_skb.c      |   1 +
+ .../selftests/bpf/prog_tests/l4lb_all.c       |   1 +
+ .../selftests/bpf/prog_tests/map_lock.c       |  14 ++
+ .../selftests/bpf/prog_tests/pkt_access.c     |   1 +
+ .../selftests/bpf/prog_tests/pkt_md_access.c  |   1 +
+ .../selftests/bpf/prog_tests/prog_run_xattr.c |   1 +
+ .../bpf/prog_tests/queue_stack_map.c          |   1 +
+ .../selftests/bpf/prog_tests/signal_pending.c |   1 +
+ .../selftests/bpf/prog_tests/skb_ctx.c        |   1 +
+ .../selftests/bpf/prog_tests/sockmap_listen.c |  35 +--
+ .../selftests/bpf/prog_tests/spinlock.c       |  14 ++
+ .../selftests/bpf/prog_tests/tcp_rtt.c        | 116 +---------
+ tools/testing/selftests/bpf/prog_tests/xdp.c  |   1 +
+ .../bpf/prog_tests/xdp_adjust_tail.c          |   1 +
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    |   1 +
+ .../selftests/bpf/prog_tests/xdp_noinline.c   |   1 +
+ .../selftests/bpf/progs/connect_force_port4.c |  28 +++
+ .../selftests/bpf/progs/connect_force_port6.c |  28 +++
+ tools/testing/selftests/bpf/test_progs.c      |  30 ---
+ tools/testing/selftests/bpf/test_progs.h      |  23 --
+ 35 files changed, 522 insertions(+), 238 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/network_helpers.c
+ create mode 100644 tools/testing/selftests/bpf/network_helpers.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/connect_force_port.c
+ create mode 100644 tools/testing/selftests/bpf/progs/connect_force_port4.c
+ create mode 100644 tools/testing/selftests/bpf/progs/connect_force_port6.c
+
+-- 
+2.26.2.526.g744177e7f7-goog
