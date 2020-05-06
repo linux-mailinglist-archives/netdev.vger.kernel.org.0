@@ -2,151 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80AC31C683F
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A171C684E
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:17:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727924AbgEFGPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 02:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726495AbgEFGPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:15:09 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB101C061A0F;
-        Tue,  5 May 2020 23:15:07 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id n14so830109qke.8;
-        Tue, 05 May 2020 23:15:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IbAkNjcaFmar4aPjN7+DvzPMwhKo6sHjCis4p0bqYOY=;
-        b=T/HlFfPUdAjwdFgOBelJYC1zALFgT0/GuvvG8mePq5sVOdbsuSlNhFCX7HHZLecf9Y
-         ujxRoySYk5Hyq5Ve38uUJmEM05fAeiLrvibsnasD0jydl/oGK69FopkMhqwtaNPL8Jdm
-         RITkSYjrpNfJazsS/m56knCnm3lLp2TtfIJ1wxd591ANX9uoGYfVbPyl7azzZUqCXZD5
-         j6na4d9uUNDlPPVnLiyVmUwxSjnuj+aXK1yV0H5zgAriZ616DLw8TP8oo7gAub+gj7p7
-         saQSb64rll3gIH3fTAo9oZCNgZAJwfF8dwYepnkBvn7KKcTaqS5b87LJKQfu1ly9WuZg
-         080Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IbAkNjcaFmar4aPjN7+DvzPMwhKo6sHjCis4p0bqYOY=;
-        b=ieesnKv6C0+F7VvHA5VGA2blBt/c6ARb+J8T9Qk9ZQaQHAQKtF9DtZ98dSvsh8DiQW
-         4IhsyTLIBPacs0uRt2W21y2R75Gz1847rvaIL7ENux/Astb2uVCExPbjLN6dIlqozUh9
-         JMceQCrJ+q8NRPYCgfWbJX9OHLxBVdeasJGvocbWWgtyqxvFOv6IiitZCLW79OuAsHg/
-         nO5angRMyc6vz50t8zA+qcRtoZc5gYt1glzfRNo0qQ4Bn2arKmGiYtaDYxrLb1VqIm3p
-         LVy0ZVNIgGSK5Dr2iG6ZYCpd+MbhNfSq+6it8BWlxq9sg1EkrsgSmEG4Q8Mom9KfiF7j
-         wuGw==
-X-Gm-Message-State: AGi0Pub2QkQi4+Vq9vXcOHJoSuyITElr3bfMChfv92Ubt4CwTMMmCkMT
-        VhEYVHUHl9lJsRpH9boS0v7/fLYb2/lIoYlS+dujDg==
-X-Google-Smtp-Source: APiQypIeXDRf934Bxr5hKdZWWGztldMWyL8G2QSZ7bpigJ1mXcBoSOG1f2yLCP106B7E8HRoAqgYPvVDn9WNWQq0Thg=
-X-Received: by 2002:a05:620a:14a1:: with SMTP id x1mr7094835qkj.92.1588745707169;
- Tue, 05 May 2020 23:15:07 -0700 (PDT)
+        id S1727871AbgEFGRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 02:17:11 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3808 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726495AbgEFGRK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 02:17:10 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 2F845A04B3344AC12140;
+        Wed,  6 May 2020 14:17:05 +0800 (CST)
+Received: from huawei.com (10.175.124.28) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Wed, 6 May 2020
+ 14:16:55 +0800
+From:   Jason Yan <yanaijie@huawei.com>
+To:     <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Jason Yan <yanaijie@huawei.com>
+Subject: [PATCH net-next] net: bridge: return false in br_mrp_enabled()
+Date:   Wed, 6 May 2020 14:16:16 +0800
+Message-ID: <20200506061616.18929-1-yanaijie@huawei.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-References: <20200504062547.2047304-1-yhs@fb.com> <20200504062609.2049143-1-yhs@fb.com>
-In-Reply-To: <20200504062609.2049143-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 May 2020 23:14:56 -0700
-Message-ID: <CAEf4BzazZ4esM0z5ZTM9PGfODfTtQB1AskPc1g139t5emUWb1Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 19/20] tools/bpf: selftests: add iter progs
- for bpf_map/task/task_file
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.28]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 3, 2020 at 11:27 PM Yonghong Song <yhs@fb.com> wrote:
->
-> The implementation is arbitrary, just to show how the bpf programs
-> can be written for bpf_map/task/task_file. They can be costomized
-> for specific needs.
->
-> For example, for bpf_map, the iterator prints out:
->   $ cat /sys/fs/bpf/my_bpf_map
->       id   refcnt  usercnt  locked_vm
->        3        2        0         20
->        6        2        0         20
->        9        2        0         20
->       12        2        0         20
->       13        2        0         20
->       16        2        0         20
->       19        2        0         20
->       === END ===
->
-> For task, the iterator prints out:
->   $ cat /sys/fs/bpf/my_task
->     tgid      gid
->        1        1
->        2        2
->     ....
->     1944     1944
->     1948     1948
->     1949     1949
->     1953     1953
->     === END ===
->
-> For task/file, the iterator prints out:
->   $ cat /sys/fs/bpf/my_task_file
->     tgid      gid       fd      file
->        1        1        0 ffffffff95c97600
->        1        1        1 ffffffff95c97600
->        1        1        2 ffffffff95c97600
->     ....
->     1895     1895      255 ffffffff95c8fe00
->     1932     1932        0 ffffffff95c8fe00
->     1932     1932        1 ffffffff95c8fe00
->     1932     1932        2 ffffffff95c8fe00
->     1932     1932        3 ffffffff95c185c0
->
-> This is able to print out all open files (fd and file->f_op), so user can compare
-> f_op against a particular kernel file operations to find what it is.
-> For example, from /proc/kallsyms, we can find
->   ffffffff95c185c0 r eventfd_fops
-> so we will know tgid 1932 fd 3 is an eventfd file descriptor.
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
+Fix the following coccicheck warning:
 
-LGTM.
+net/bridge/br_private.h:1334:8-9: WARNING: return of 0/1 in function
+'br_mrp_enabled' with return type bool
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Jason Yan <yanaijie@huawei.com>
+---
+ net/bridge/br_private.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  .../selftests/bpf/progs/bpf_iter_bpf_map.c    | 29 +++++++++++++++++++
->  .../selftests/bpf/progs/bpf_iter_task.c       | 26 +++++++++++++++++
->  .../selftests/bpf/progs/bpf_iter_task_file.c  | 27 +++++++++++++++++
->  3 files changed, 82 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_bpf_map.c
->  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task.c
->  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_file.c
->
-> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_map.c b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_map.c
-> new file mode 100644
-> index 000000000000..d0af0e82b74c
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_map.c
-> @@ -0,0 +1,29 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2020 Facebook */
-> +#include "vmlinux.h"
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +#include <bpf/bpf_endian.h>
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index c35647cb138a..78d3a951180d 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1331,7 +1331,7 @@ static inline int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
+ 
+ static inline bool br_mrp_enabled(struct net_bridge *br)
+ {
+-	return 0;
++	return false;
+ }
+ 
+ static inline void br_mrp_port_del(struct net_bridge *br,
+-- 
+2.21.1
 
-bpf_endian.h doesn't seem to be really used and it's actually
-incompatible with vmlinux.h, so maybe let's drop it?
-Same for previous patch, I believe.
-
-> +
-> +char _license[] SEC("license") = "GPL";
-> +
-
-[...]
