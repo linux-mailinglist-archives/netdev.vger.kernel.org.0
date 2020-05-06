@@ -2,75 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6DAC1C734A
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 16:48:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0D081C735B
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 16:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729241AbgEFOsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 10:48:54 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:43439 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726114AbgEFOsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 10:48:54 -0400
-Received: from chumthang.blr.asicdesigners.com (chumthang.blr.asicdesigners.com [10.193.186.96])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 046EmaCK024883;
-        Wed, 6 May 2020 07:48:37 -0700
-From:   Ayush Sawal <ayush.sawal@chelsio.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au
-Cc:     linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        manojmalaviya@chelsio.com, Ayush Sawal <ayush.sawal@chelsio.com>
-Subject: [PATCH net-next] Revert "crypto: chelsio - Inline single pdu only"
-Date:   Wed,  6 May 2020 20:17:19 +0530
-Message-Id: <20200506144719.3725-1-ayush.sawal@chelsio.com>
-X-Mailer: git-send-email 2.26.0.rc1.11.g30e9940
+        id S1729282AbgEFOy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 10:54:59 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:44863 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729078AbgEFOy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 10:54:59 -0400
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 20DBA22EDE;
+        Wed,  6 May 2020 16:54:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1588776897;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zolYeUhjgGOAZ1l2pBLLJhfufCbpl7VPTkzn4MCpjFo=;
+        b=DJqQ5bZJ7QL13ss2Pj/EU4PvZNf9rNaxIKDKd+DnWULltK9HFBFldIrmMBpb/shtjcLIeY
+        X8Snv6A6f5ipupw5gH+i6Cr8iT3G+ZUXPaWaSDKAMPPGODnp3biNalChTZLxpm4FXEdg8X
+        N6pytg7t3E3D4yuJORKDlutYS8C2FFE=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next v3 0/3] add phy shared storage
+Date:   Wed,  6 May 2020 16:53:12 +0200
+Message-Id: <20200506145315.13967-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 27c6feb0fb33a665a746346e76714826a5be5d10.
+Introduce the concept of a shared PHY storage which can be used by some
+QSGMII PHYs to ease initialization and access to global per-package
+registers.
 
-For ipsec offload the chelsio's ethernet driver expects a single mtu
-sized packet.
+Changes since v2:
+ - restore page to standard after reading the base address in the mscc
+   driver, thanks Antoine.
 
-But when ipsec traffic is running using iperf, most of the packets in
-that traffic are gso packets(large sized skbs) because GSO is enabled by
-default in TCP, due to this commit 0a6b2a1dc2a2 ("tcp: switch to GSO
-being always on"), so chcr_ipsec_offload_ok() receives a gso
-skb(with gso_size non zero).
+Changes since v1:
+ - fix typos and add a comment, thanks Florian.
+ - check for "addr < 0" in phy_package_join()
+ - remove multiple blank lines and make "checkpatch.pl --strict" happy
 
-Due to the check in chcr_ipsec_offload_ok(), this function returns false
-for most of the packet, then ipsec offload is skipped and the skb goes
-out taking the coprocessor path which reduces the bandwidth for inline
-ipsec.
+Changes since RFC:
+ - check return code of kzalloc()
+ - fix local variable ordering (reverse christmas tree)
+ - add priv_size argument to phy_package_join()
+ - add Tested-by tag, thanks Vladimir.
 
-If this check is removed then for most of the packets(large sized skbs)
-the chcr_ipsec_offload_ok() returns true and then as GSO is on, the
-segmentation of the packet happens in the kernel and then finally the
-driver_xmit is called, which receives a segmented mtu sized packet which
-is what the driver expects for ipsec offload. So this case becomes
-unnecessary here, therefore removing it.
+Michael Walle (3):
+  net: phy: add concept of shared storage for PHYs
+  net: phy: bcm54140: use phy_package_shared
+  net: phy: mscc: use phy_package_shared
 
-Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
----
- drivers/crypto/chelsio/chcr_ipsec.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/phy/bcm54140.c       |  57 +++----------
+ drivers/net/phy/mdio_bus.c       |   1 +
+ drivers/net/phy/mscc/mscc.h      |   1 -
+ drivers/net/phy/mscc/mscc_main.c | 101 +++++++---------------
+ drivers/net/phy/phy_device.c     | 138 +++++++++++++++++++++++++++++++
+ include/linux/phy.h              |  90 ++++++++++++++++++++
+ 6 files changed, 271 insertions(+), 117 deletions(-)
 
-diff --git a/drivers/crypto/chelsio/chcr_ipsec.c b/drivers/crypto/chelsio/chcr_ipsec.c
-index 9fd3b9d1ec2f..d25689837b26 100644
---- a/drivers/crypto/chelsio/chcr_ipsec.c
-+++ b/drivers/crypto/chelsio/chcr_ipsec.c
-@@ -294,9 +294,6 @@ static bool chcr_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
- 		if (ipv6_ext_hdr(ipv6_hdr(skb)->nexthdr))
- 			return false;
- 	}
--	/* Inline single pdu */
--	if (skb_shinfo(skb)->gso_size)
--		return false;
- 	return true;
- }
- 
 -- 
-2.26.0.rc1.11.g30e9940
+2.20.1
 
