@@ -2,98 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F21FD1C7B04
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 22:15:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13B7A1C7B0A
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 22:16:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728621AbgEFUPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 16:15:18 -0400
-Received: from mx2.suse.de ([195.135.220.15]:46894 "EHLO mx2.suse.de"
+        id S1728659AbgEFUQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 16:16:44 -0400
+Received: from ozlabs.org ([203.11.71.1]:51295 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726538AbgEFUPS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 16:15:18 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id C2692ABBD;
-        Wed,  6 May 2020 20:15:19 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 90AA1602B9; Wed,  6 May 2020 22:15:16 +0200 (CEST)
-Date:   Wed, 6 May 2020 22:15:16 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
-        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
-        Jarod Wilson <jarod@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Jann Horn <jannh@google.com>
-Subject: Re: [Patch net] net: fix a potential recursive NETDEV_FEAT_CHANGE
-Message-ID: <20200506201516.GS5989@lion.mk-sys.cz>
-References: <20200505215819.1997-1-xiyou.wangcong@gmail.com>
- <20200505222748.GQ8237@lion.mk-sys.cz>
- <CAM_iQpWf95vVC4dsWTuxCNbNLN6RAMJQYdNeB37VZMN2P2Xf2w@mail.gmail.com>
- <20200506052604.GM5989@lion.mk-sys.cz>
- <CAM_iQpWTW_O7WHx5-4BLXqiV3e-eYowGRv-aG-LRZmJwvdyt5A@mail.gmail.com>
+        id S1726538AbgEFUQn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 16:16:43 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49HSY1481kz9sRY;
+        Thu,  7 May 2020 06:16:37 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1588796201;
+        bh=XCFvNjeS2kjOQNihxDVpNQIvU0ggraBRLa25yNrgmPY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BokniRZ7+PcvdLb7ypmiIA8wgN0IOJfe3dM8POjJgVycNSMpvg9Zn7kKU+ia7W5k6
+         BqRL/Zs5TAbIF+20AYROSV9p+ixyBmhX9I4WI2p304ardBN3ljflftW6wzhmT4KRCf
+         BwyypipOaS9qUy+8lST7hVeaKAaF08EKd2Yv79UNIO2xB8HjT+fQn0M+UL90nWresL
+         FL2HBEXZNfdhXeeEDa2Mq7Pj+/yIUguFmpxUS/GcagrlRrzb0jB7fFnZV41xrp/xly
+         kCjWVv6iX2xIESNojwW6Q8XrCoR19mZycXIzGD7KTt9KLfXjN6Qi6xVUMqrMtUEJvG
+         vY1V0z56ckH1g==
+Date:   Thu, 7 May 2020 06:16:35 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Qian Cai <cai@lca.pw>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        Amol Grover <frextrite@gmail.com>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        syzbot <syzbot+1519f497f2f9f08183c6@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        "paul E. McKenney" <paulmck@kernel.org>,
+        "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Subject: Re: linux-next boot error: WARNING: suspicious RCU usage in
+ ipmr_get_table
+Message-ID: <20200507061635.449f9495@canb.auug.org.au>
+In-Reply-To: <34558B83-103E-4205-8D3D-534978D5A498@lca.pw>
+References: <000000000000df9a9805a455e07b@google.com>
+        <CACT4Y+YnjK+kq0pfb5fe-q1bqe2T1jq_mvKHf--Z80Z3wkyK1Q@mail.gmail.com>
+        <34558B83-103E-4205-8D3D-534978D5A498@lca.pw>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpWTW_O7WHx5-4BLXqiV3e-eYowGRv-aG-LRZmJwvdyt5A@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/signed; boundary="Sig_/YytghheW+C8MhpkfUUQolXM";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 06, 2020 at 12:08:35PM -0700, Cong Wang wrote:
-> On Tue, May 5, 2020 at 10:26 PM Michal Kubecek <mkubecek@suse.cz> wrote:
-> >
-> > On Tue, May 05, 2020 at 03:35:27PM -0700, Cong Wang wrote:
-> > > On Tue, May 5, 2020 at 3:27 PM Michal Kubecek <mkubecek@suse.cz> wrote:
-> > > > On Tue, May 05, 2020 at 02:58:19PM -0700, Cong Wang wrote:
-> > > > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > > > index 522288177bbd..ece50ae346c3 100644
-> > > > > --- a/net/core/dev.c
-> > > > > +++ b/net/core/dev.c
-> > > > > @@ -8907,7 +8907,7 @@ static void netdev_sync_lower_features(struct net_device *upper,
-> > > > >                       netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
-> > > > >                                  &feature, lower->name);
-> > > > >                       lower->wanted_features &= ~feature;
-> > > > > -                     netdev_update_features(lower);
-> > > > > +                     __netdev_update_features(lower);
-> > > > >
-> > > > >                       if (unlikely(lower->features & feature))
-> > > > >                               netdev_WARN(upper, "failed to disable %pNF on %s!\n",
-> > > >
-> > > > Wouldn't this mean that when we disable LRO on a bond manually with
-> > > > "ethtool -K", LRO will be also disabled on its slaves but no netlink
-> > > > notification for them would be sent to userspace?
-> > >
-> > > What netlink notification are you talking about?
-> >
-> > There is ethtool notification sent by ethnl_netdev_event() and rtnetlink
-> > notification sent by rtnetlink_event(). Both are triggered by
-> > NETDEV_FEAT_CHANGE notifier so unless I missed something, when you
-> > suppress the notifier, there will be no netlink notifications to
-> > userspace.
-> 
-> Oh, interesting, why ethtool_notify() can't be called directly, for example,
-> in netdev_update_features()? To me, using a NETDEV_FEAT_CHANGE
-> event handler seems unnecessary for ethtool netlink.
+--Sig_/YytghheW+C8MhpkfUUQolXM
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-It is certainly an option and as this is the only use of netdev
-notifiers in ethtool code, it might even be more convenient. I rather
-felt that when the call of notifier chain is in netdev_features_change()
-already, it would be cleaner to use it. But my point rather was that the
-NETDEV_FEAT_CHANGE event is used for more than only feature propagation
-between upper/lower devices so that suppressing it may have unwanted
-side effects (ethtool notifications were of course the first example
-that came to my mind).
+Hi Qian,
 
-> BTW, as pointed out by Jay, actually we only need to skip
-> NETDEV_FEAT_CHANGE for failure case, so I will update my patch.
+On Tue, 28 Apr 2020 09:56:59 -0400 Qian Cai <cai@lca.pw> wrote:
+>
+> > On Apr 28, 2020, at 4:57 AM, Dmitry Vyukov <dvyukov@google.com> wrote: =
+=20
+> >> net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!! =20
+>=20
+> https://lore.kernel.org/netdev/20200222063835.14328-2-frextrite@gmail.com/
+>=20
+> Never been picked up for a few months due to some reasons. You could prob=
+ably
+> need to convince David, Paul, Steven or Linus to unblock the bot or carry=
+ patches
+> on your own?
 
-Sounds like a good idea. I was wondering about this myself yesterday but
-I didn't have time to look into it deeper so I only realized the problem
-would probably be a difference between features and wanted_features.
+Did you resubmit the patch series as Dave Miller asked you to (now that
+net-next is based on v5.7-rc1+)?
 
-Michal
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/YytghheW+C8MhpkfUUQolXM
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6zGyMACgkQAVBC80lX
+0GxkPAgAgtdMC+N8fp+9bijZVMliMNmdDUaF1yrYtfT6QMbxZ0GvHpootI5oO9nj
+YyXZglK3aoFmMKvCkX2bf4MubylQ7dX6Xq4fnj+qY+8gjrvSlT5NUWNLReMDKnYy
+7DkIlvXQMBW7UJ/KZ1kUqBfgG3CgA8bB5cL51GK3mpMb1pE0+Uf49U0Ep5EcmoJq
+F1/fj4yGCv3OdC3romgceBDhd5twJdd0xatlM/6gTf5U3fHZZf07dVksUt4PwfPz
+MK4m5LJQUDpBpknmNVAtVY/a/Ku3ym7js6Nlq8A0aUVg6SQPW8gMBu81Q2RjTLsl
+Op+hURRi9SaJ/J4NDnnJ2GpuSYjlAA==
+=4TP7
+-----END PGP SIGNATURE-----
+
+--Sig_/YytghheW+C8MhpkfUUQolXM--
