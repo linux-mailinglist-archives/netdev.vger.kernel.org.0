@@ -2,85 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C46B1C79A9
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 20:48:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F7541C79AB
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 20:49:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730482AbgEFSsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 14:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
+        id S1730476AbgEFSt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 14:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730145AbgEFSsw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 14:48:52 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3633C061A10
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 11:48:51 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id j3so3511660ljg.8
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 11:48:51 -0700 (PDT)
+        with ESMTP id S1730112AbgEFStZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 14:49:25 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F0DC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 11:49:24 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id z17so2248661oto.4
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 11:49:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=X288OaVurKdukegnulZAEmVQ4pDlcfHNVaAG2YEQ3y8=;
-        b=LEQN64F2V4A+8YiuwoPA0zkTKbpVQtVTBzVgrPJcXw1qtpXhjXLZ8Tsq4h3ywPop9e
-         fRlqsmBsRs/mLYg2/OuDloL8vg/PGWFGPuQaSgL1Dc00vZe+xih0p78ySiojlp87Rmdi
-         LwcL4ZPsYaMOmEeXoYxLnOuKmQ7w/jzhZ1fvMtA65tbi+KhKJfONs1cDeQ3KNWwCSsK/
-         /o+mkerCu6VulXGg5ugIPI8Nb+szcj73EFu9lCMYHU9MbK1zX8gWpzvRWmt3XLFL2zOI
-         L7R90obbwIKOMXhNKKGYb9WAPariksocM/u/GHEtktElPzbbTPsFCdgDqjGzkMvcu3XV
-         qNyg==
+        bh=DVPpSzSk9AOKCSii01Cyt4pisQUerWRcja2SR2dR4w8=;
+        b=Owmhrq8Q3Lz5eoHbLDgumLMztPFDNJIk4NVbOTwcGBbsxbGsiT87ZZHLzlQOtzQ+wg
+         tfBLNw9b9cnlOJScJaEhuXMnnwp8Ua8YsMY5GsaXn+Rs2qxAYD2ygTR6vE3841fVserK
+         6IF9fiypmb9W/0atRnooW2QfbjI77RbK1ggy9v5q+XrJDGh0wbsP0j6GVVibv3jnO3Q5
+         Ld3SXuTGKOyAPmi0khPaB9KgxupMHTqCcBHSy26Dax/nY001MYz1ojAV3nzicqLxHGBO
+         mgteiVWrY3fSOHhEo1aQGuiSAfSoIFyrAXt3bjOzpule3QeN5SH38XsSR17EzFbTDE6v
+         N+Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=X288OaVurKdukegnulZAEmVQ4pDlcfHNVaAG2YEQ3y8=;
-        b=Y8teN2V8uwqDk7PH9vW5LpxUG+Pq3O2CAfzknp4qQ/BRNM5MfZH/AoCF8inXJM2O8I
-         5yb9I7pPLS6ZWl29tooBNTjZ4AYPpVUDeKKXAGXV/KSOYHSZ2N3n2kORo1JJuCjXKRxF
-         yDcbyLd52yn73kkxNJ3dwlWYz4rXFe3/vRScXqhW+mVm569kCVs6cvGs2k7oieMsgGL0
-         sUdeU/cXv0t7cp0lEPEURPuDOptVHEsbSQtmZ3r/fqL5yp1axrR/M5X+FKMLByew3jP6
-         08/yRWgT/2FXewbql+EeLqQ06nt2CNIKXMdo9VHF4/mWxTlJhaaoRA4hHYF4FQinCKAV
-         gU6w==
-X-Gm-Message-State: AGi0PubaT2mIAynXYpyjn/Omo0IVGVZo/C6ro/CGQ9iRcq2mf6F+yGno
-        FSm7BbICXnA7dwDqvJxEiNJ4f9Bu5BOvUpP5SL9XlJDc
-X-Google-Smtp-Source: APiQypLLZoPNRlHUtRNsU2Uf1M/SP49hVCJR6Pr7fzEevP8WabBtlc94fXbOrs3iAv4ccFfKjuN+v3N0m0lQAR2Fb/c=
-X-Received: by 2002:a2e:9012:: with SMTP id h18mr6002694ljg.28.1588790929673;
- Wed, 06 May 2020 11:48:49 -0700 (PDT)
+        bh=DVPpSzSk9AOKCSii01Cyt4pisQUerWRcja2SR2dR4w8=;
+        b=gxq5WFgiw6BPOffeF2gk3wNers7qAfWaSJUvVqpS0zWACxc8gbnMH5dCiKcrMk78mX
+         +ZSQmGIpjxdOiUBdfg4ZXw+7bmhqGQsZJ5+KJIyaTVzDLG1Fzwxtm/Yv0uRUIVnMv1nc
+         vyjNxhdkz0bxo+FyBvnru7yM65KNL93av63ZKTMrLw6og6FhYmcrWG6sa5JtwraImaS7
+         klRBDh5V5Ar3DmFstssRulyZCHmkOYBQ3WEWZHJb08IPdBlbXol1DNFgDkD5fZiMg+zK
+         FIRwrdyfrmPhrksU+WpyvOKLyFKnQSzV8aYqcFIrVn7+6qPPJsXQ3ATLgYY0llm2COOO
+         ejHw==
+X-Gm-Message-State: AGi0PuYVsGxVdXWclhui31HBcBIkhSyvJhH1nTRnMWNnl2eSm0mopkyY
+        4kQ+/X8SRgLYsZKPTH/cpPBw/AWHS24Zd+lIq3w=
+X-Google-Smtp-Source: APiQypLnH7Sh8IERiYJr75hmt3eYU2m5UcMpGty3KnsDxeshp6XifAUXHRMPPnVa5Smma6EFFULTY5WCHTdNxPqv/Qc=
+X-Received: by 2002:a9d:4a1:: with SMTP id 30mr7090626otm.319.1588790963645;
+ Wed, 06 May 2020 11:49:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200505133602.25987-1-geert+renesas@glider.be> <CA+ASDXO8TJ09vNQaCyoMgfoFVouNQRw7Evx2Vfko1k_03q8GHA@mail.gmail.com>
-In-Reply-To: <CA+ASDXO8TJ09vNQaCyoMgfoFVouNQRw7Evx2Vfko1k_03q8GHA@mail.gmail.com>
-From:   Rajat Jain <rajatja@google.com>
-Date:   Wed, 6 May 2020 11:48:12 -0700
-Message-ID: <CACK8Z6HLhE+n=RUJLMsee5mMktzsaQqCbbkO95YmdD8SY3ntew@mail.gmail.com>
-Subject: Re: [PATCH v4 resend 2] dt-bindings: net: btusb: DT fix s/interrupt-name/interrupt-names/
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>
+References: <20200505215819.1997-1-xiyou.wangcong@gmail.com>
+ <2833.1588718397@famine> <CAM_iQpUiKS-dcC11uyb_jK+Uwu+AgGDQw_ytZKP8QxmkcmH4Xw@mail.gmail.com>
+In-Reply-To: <CAM_iQpUiKS-dcC11uyb_jK+Uwu+AgGDQw_ytZKP8QxmkcmH4Xw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 6 May 2020 11:49:12 -0700
+Message-ID: <CAM_iQpUA_wcmo+d0jcb=G4WiQimJ3FcBiyx2H1fjQm9Xv8gSGg@mail.gmail.com>
+Subject: Re: [Patch net] net: fix a potential recursive NETDEV_FEAT_CHANGE
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
+        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
+        Jarod Wilson <jarod@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jann Horn <jannh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 5, 2020 at 10:38 AM Brian Norris <briannorris@chromium.org> wrote:
+On Wed, May 6, 2020 at 11:46 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> On Tue, May 5, 2020 at 6:36 AM Geert Uytterhoeven
-> <geert+renesas@glider.be> wrote:
+> On Tue, May 5, 2020 at 3:42 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
 > >
-> > The standard DT property name is "interrupt-names".
+> > Cong Wang <xiyou.wangcong@gmail.com> wrote:
 > >
-> > Fixes: fd913ef7ce619467 ("Bluetooth: btusb: Add out-of-band wakeup support")
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > Acked-by: Rob Herring <robh@kernel.org>
+> > >syzbot managed to trigger a recursive NETDEV_FEAT_CHANGE event
+> > >between bonding master and slave. I managed to find a reproducer
+> > >for this:
+> > >
+> > >  ip li set bond0 up
+> > >  ifenslave bond0 eth0
+> > >  brctl addbr br0
+> > >  ethtool -K eth0 lro off
+> > >  brctl addif br0 bond0
+> > >  ip li set br0 up
+> >
+> >         Presumably this is tied to the LRO feature being special in
+> > netdev_sync_lower_features (via NETIF_F_UPPER_DISABLES), but why doesn't
+> > LRO become disabled and stop the recursion once the test
+> >
+> >                 if (!(features & feature) && (lower->features & feature)) {
+> >
+> >         no longer evalutes to true (in theory)?
 >
-> If it matters:
+> Good point!
 >
-> Reviewed-by: Brian Norris <briannorris@chromium.org>
-Acked-by: Rajat Jain <rajatja@google.com>
+> Actually the LRO feature fails to disable:
 >
-> We're definitely using the plural ("interrupt-names") not the
-> singular, so this was just a typo.
+> [   62.559537] netdevice: bond0: failed to disable 0x0000000000008000 on eth0!
+> ...
+> [   78.312003] netdevice: eth0: failed to disable LRO!
 >
-> Brian
+> It seems we should only skip netdev_update_features() for such case,
+> like below. Note __netdev_update_features() intentionally returns -1
+> for this failure, so I am afraid we just have to live with it.
+
+Oops, I meant netdev_features_change() of course.
