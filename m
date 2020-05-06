@@ -2,134 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D1F41C79EF
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 21:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0F0B1C79F4
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 21:10:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728166AbgEFTJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 15:09:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37282 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725966AbgEFTJN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 15:09:13 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AABE52076D;
-        Wed,  6 May 2020 19:09:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588792151;
-        bh=JB/U+dDA75gzNNkOVg/PFlM5PN3c/4blmUkvxYzuEPc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=q1iMqCcl5IYzsiOGDMuf71DOK3McCYmHRBrnN2s9CAZZOuaLf+MygDdvfULV8jnjT
-         Hg/iGlwkOWO+jTrD9ac142jGHEt4+/ZjZ6wYEzGCm1xZu3UHVxTCEcCjVl5JpEcNsT
-         kWytiQs6fiu+6Y2RzlUCGSdabEFphylRlqg805IY=
-Date:   Wed, 6 May 2020 12:09:09 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH net-next 10/11] s390/qeth: allow reset via ethtool
-Message-ID: <20200506120909.3e7d88ff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <104f8e57-42d2-8853-d540-76b8516043d5@linux.ibm.com>
-References: <20200505162559.14138-1-jwi@linux.ibm.com>
-        <20200505162559.14138-11-jwi@linux.ibm.com>
-        <20200505102149.1fd5b9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <a19ccf27-2280-036c-057f-8e6d2319bb28@linux.ibm.com>
-        <20200505112940.6fe70918@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <6788c6f1-52cb-c421-7251-500a391bb48b@linux.ibm.com>
-        <20200505142855.24b7c1bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <104f8e57-42d2-8853-d540-76b8516043d5@linux.ibm.com>
+        id S1728187AbgEFTKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 15:10:36 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:46766 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725915AbgEFTKf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 15:10:35 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 046JATR1025746;
+        Wed, 6 May 2020 14:10:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1588792229;
+        bh=y91BBsQ57bVF9REySvrUgz895w+ukgRT8Z+er1kUntc=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=c5USd9SijAl0GB88Xk18IuhI9Z+ZmZFrqv2RsPq+Psc4dNDeXEXiR5RJYFdflZAVL
+         e+yWnTkj0Rqjjk3Ic2O/f0/yVJVprZAguuDDVkEpIit9QSKUCp1vJddtnU5xbWZsdF
+         uj2xHCnRvHBdbmOXudFt9tR+Wui8Oc/S5xRLWPE8=
+Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 046JATcE086681
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 May 2020 14:10:29 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 6 May
+ 2020 14:10:29 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 6 May 2020 14:10:29 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 046JAOLR036216;
+        Wed, 6 May 2020 14:10:25 -0500
+Subject: Re: [PATCH net-next 1/7] dt-binding: ti: am65x: document common
+ platform time sync cpts module
+To:     Rob Herring <robh@kernel.org>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Tero Kristo <t-kristo@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        netdev <netdev@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, Nishanth Menon <nm@ti.com>
+References: <20200501205011.14899-1-grygorii.strashko@ti.com>
+ <20200501205011.14899-2-grygorii.strashko@ti.com>
+ <20200505040419.GA8509@bogus> <b8bb1076-e345-5146-62d3-e1da1d35da4f@ti.com>
+ <CAL_Jsq+P_OEFDBbAsvyCCOKZnQuAUYYnyDDwm7aNudN3pRK78g@mail.gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <c401b0fe-c946-af11-9b1d-fcc28cc8ee19@ti.com>
+Date:   Wed, 6 May 2020 22:10:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CAL_Jsq+P_OEFDBbAsvyCCOKZnQuAUYYnyDDwm7aNudN3pRK78g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 May 2020 09:56:41 +0200 Julian Wiedmann wrote:
-> On 05.05.20 23:28, Jakub Kicinski wrote:
-> > On Tue, 5 May 2020 21:57:43 +0200 Julian Wiedmann wrote:  
-> >>> This is the comment from the uAPI header:
-> >>>
-> >>> /* The reset() operation must clear the flags for the components which
-> >>>  * were actually reset.  On successful return, the flags indicate the
-> >>>  * components which were not reset, either because they do not exist
-> >>>  * in the hardware or because they cannot be reset independently.  The
-> >>>  * driver must never reset any components that were not requested.
-> >>>  */
-> >>>
-> >>> Now let's take ETH_RESET_PHY as an example. Surely you're not resetting
-> >>> any PHY here, so that bit should not be cleared. Please look at the
-> >>> bits and select the ones which make sense, add whatever is missing.
-> >>>     
-> >>
-> >> It's a virtual device, _none_ of them make much sense?! We better not be
-> >> resetting any actual HW components, the other interfaces on the same
-> >> adapter would be quite unhappy about that.  
-> > 
-> > Well, then, you can't use the API in its current form. You can't say
-> > none of the sub-options are applicable, but the sum of them does.
+
+
+On 06/05/2020 22:07, Rob Herring wrote:
+> On Tue, May 5, 2020 at 10:01 AM Grygorii Strashko
+> <grygorii.strashko@ti.com> wrote:
+>>
+>>
+>>
+>> On 05/05/2020 07:04, Rob Herring wrote:
+>>> On Fri, May 01, 2020 at 11:50:05PM +0300, Grygorii Strashko wrote:
+>>>> Document device tree bindings for TI AM654/J721E SoC The Common Platform
+>>>> Time Sync (CPTS) module. The CPTS module is used to facilitate host control
+>>>> of time sync operations. Main features of CPTS module are:
+>>>>     - selection of multiple external clock sources
+>>>>     - 64-bit timestamp mode in ns with ppm and nudge adjustment.
+>>>>     - control of time sync events via interrupt or polling
+>>>>     - hardware timestamp of ext. events (HWx_TS_PUSH)
+>>>>     - periodic generator function outputs (TS_GENFx)
+>>>>     - PPS in combination with timesync router
+>>>>     - Depending on integration it enables compliance with the IEEE 1588-2008
+>>>> standard for a precision clock synchronization protocol, Ethernet Enhanced
+>>>> Scheduled Traffic Operations (CPTS_ESTFn) and PCIe Subsystem Precision Time
+>>>> Measurement (PTM).
+>>>>
+>>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>>>> ---
+>>>>    .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   |   7 +
+>>>>    .../bindings/net/ti,k3-am654-cpts.yaml        | 152 ++++++++++++++++++
+>>>>    2 files changed, 159 insertions(+)
+>>>>    create mode 100644 Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>>>> index 78bf511e2892..0f3fde45e200 100644
+>>>> --- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>>>> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>>>> @@ -144,6 +144,13 @@ patternProperties:
+>>>>        description:
+>>>>          CPSW MDIO bus.
+>>>>
+>>>> +  "^cpts$":
+>>
+>> ok
+>>
+>>>
+>>> Fixed strings go under 'properties'.
+>>>
+>>>> +    type: object
+>>>> +    allOf:
+>>>> +      - $ref: "ti,am654-cpts.yaml#"
+>>>> +    description:
+>>>> +      CPSW Common Platform Time Sync (CPTS) module.
+>>>> +
+>>>>    required:
+>>>>      - compatible
+>>>>      - reg
+>>>> diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
+>>>> new file mode 100644
+>>>> index 000000000000..1b535d41e5c6
+>>>> --- /dev/null
+>>>> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
+>>>> @@ -0,0 +1,152 @@
+>>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>>> +%YAML 1.2
+>>>> +---
+>>>> +$id: http://devicetree.org/schemas/net/ti,am654-cpts.yaml#
+>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>>> +
+>>>> +title: The TI AM654x/J721E Common Platform Time Sync (CPTS) module Device Tree Bindings
+>>>> +
+>>>> +maintainers:
+>>>> +  - Grygorii Strashko <grygorii.strashko@ti.com>
+>>>> +  - Sekhar Nori <nsekhar@ti.com>
+>>>> +
+>>>> +description: |+
+>>>> +  The TI AM654x/J721E CPTS module is used to facilitate host control of time
+>>>> +  sync operations.
+>>>> +  Main features of CPTS module are
+>>>> +  - selection of multiple external clock sources
+>>>> +  - Software control of time sync events via interrupt or polling
+>>>> +  - 64-bit timestamp mode in ns with PPM and nudge adjustment.
+>>>> +  - hardware timestamp push inputs (HWx_TS_PUSH)
+>>>> +  - timestamp counter compare output (TS_COMP)
+>>>> +  - timestamp counter bit output (TS_SYNC)
+>>>> +  - periodic Generator function outputs (TS_GENFx)
+>>>> +  - Ethernet Enhanced Scheduled Traffic Operations (CPTS_ESTFn) (TSN)
+>>>> +  - external hardware timestamp push inputs (HWx_TS_PUSH) timestamping
+>>>> +
+>>>> +   Depending on integration it enables compliance with the IEEE 1588-2008
+>>>> +   standard for a precision clock synchronization protocol, Ethernet Enhanced
+>>>> +   Scheduled Traffic Operations (CPTS_ESTFn) and PCIe Subsystem Precision Time
+>>>> +   Measurement (PTM).
+>>>> +
+>>>> +  TI AM654x/J721E SoCs has several similar CPTS modules integrated into the
+>>>> +  different parts of the system which could be synchronized with each other
+>>>> +  - Main CPTS
+>>>> +  - MCU CPSW CPTS with IEEE 1588-2008 support
+>>>> +  - PCIe subsystem CPTS for PTM support
+>>>> +
+>>>> +  Depending on CPTS module integration and when CPTS is integral part of
+>>>> +  another module (MCU CPSW for example) "compatible" and "reg" can
+>>>> +  be omitted - parent module is fully responsible for CPTS enabling and
+>>>> +  configuration.
+>>>
+>>> That's fine, but you should still have compatible and reg.
+>>
+>> I'll add reg as below. But compatible is an issue, because
+>> k3-am654-cpsw-nuss call of_platform_populate() to create mdio device.
+>> But for CPTS I do not want to create device as k3-am654-cpsw-nuss uses direct
+>> function calls to CPTS.
+>>
+>> Will it be correct to switch to of_platform_device_create() instead of
+>> of_platform_populate()?
 > 
-> Agreed, that's my take as well. So we'll basically need a ETH_RESET_FULL bit,
-> for devices that don't fit into the fine-grained component model.
+> That should be fine I think.
 
-I'd say you're barely re-opening all communication channels with the
-device, without any loss of configuration, right? So perhaps
-RESET_DRV_IFC? Not great but best I can come up with :S
+Thanks. I've sent follow up patches.
 
-> >> Sorry for being dense, and I appreciate that the API leaves a lot of room
-> >> for sophisticated partial resets where the driver/HW allows it.
-> >> But it sounds like what you're suggesting is
-> >> (1) we select a rather arbitrary set of components that _might_ represent a
-> >>     full "virtual" reset, and then
-> >> (2) expect the user to guess a super-set of these features. And not worry
-> >>     when they selected too much, and this obscure PHY thing failed to reset.  
-> > 
-> > No, please see the code I provided below, and read how the interface 
-> > is supposed to work. I posted the code comment in my previous reply. 
-> > I don't know what else I can do for you.
-> > 
-> > User can still pass "all" but you can't _clear_ all bits, 'cause you
-> > didn't reset any PHY, MAC, etc.
-> >   
-> >> So I looked at gve's implementation and thought "yep, looks simple enough".  
-> > 
-> > Ugh, yeah, gve is not a good example.
-> >   
-> >> But if we start asking users to interpret HW bits that hardly make any
-> >> sense to them, we're worse off than with the existing custom sysfs trigger...  
-> > 
-> > Actually - operationally, how do you expect people to use this reset?
-> > Some user space system detects the NIC is in a bad state? Does the
-> > interface communicate that via some log messages or such?
-> > 
-> > The commit message doesn't really explain the "why".
-> >   
-> 
-> Usually the driver will detect a hung condition itself, and trigger an
-> automatic reset internally (eg. from the TX watchdog).
-> But if that doesn't work, you'll hopefully get enough noisy log warnings
-> to investigate & reset the interface manually.
-> Besides that, it's just an easy way to exercise/test the reset code.
-
-Perhaps a better path would be using devlink health? There's currently
-no way to force a recovery, but that's effectively what you're doing
-here, right? We can extend the devlink API.
-
-> Integration with a daemon / management layer definitely sounds like an
-> option, and I'd much rather point those people towards ethtool instead
-> of sysfs.
-> 
-> >>> Then my suggestion would be something like:
-> >>>
-> >>>   #define QETH_RESET_FLAGS (flag | flag | flag)
-> >>>
-> >>>   if ((*flags & QETH_RESET_FLAGS) != QETH_RESET_FLAGS))
-> >>> 	return -EINVAL;
-> >>>   ...
-> >>>   *flags &= ~QETH_RESET_FLAGS;  
+-- 
+Best regards,
+grygorii
