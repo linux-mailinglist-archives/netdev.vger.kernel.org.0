@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F4C81C6AFF
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 10:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DC8A1C6B11
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 10:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728730AbgEFIKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 04:10:01 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:5966 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728704AbgEFIKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 04:10:00 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 046825xK160218;
-        Wed, 6 May 2020 04:09:57 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30s4v8y8ws-1
+        id S1728763AbgEFIKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 04:10:17 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:60192 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728694AbgEFIJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 04:09:59 -0400
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 046831mK144533;
+        Wed, 6 May 2020 04:09:58 -0400
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 30u8sp5kvp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 May 2020 04:09:56 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 04686EuW019043;
+        Wed, 06 May 2020 04:09:57 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 04685Kai008423;
         Wed, 6 May 2020 08:09:55 GMT
 Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 30s0g5rpek-1
+        by ppma01fra.de.ibm.com with ESMTP id 30s0g5bj34-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Wed, 06 May 2020 08:09:55 +0000
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 04689q7m55443582
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 04689q7n57999384
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Wed, 6 May 2020 08:09:52 GMT
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 25DB0A4054;
+        by IMSVA (Postfix) with ESMTP id 7BE81A405B;
         Wed,  6 May 2020 08:09:52 +0000 (GMT)
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E8A29A405F;
-        Wed,  6 May 2020 08:09:51 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 3C339A4064;
+        Wed,  6 May 2020 08:09:52 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 May 2020 08:09:51 +0000 (GMT)
+        Wed,  6 May 2020 08:09:52 +0000 (GMT)
 From:   Julian Wiedmann <jwi@linux.ibm.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -45,121 +45,420 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Heiko Carstens <heiko.carstens@de.ibm.com>,
         Ursula Braun <ubraun@linux.ibm.com>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH v2 net-next 01/10] s390/qeth: keep track of LP2LP capability for csum offload
-Date:   Wed,  6 May 2020 10:09:40 +0200
-Message-Id: <20200506080949.3915-2-jwi@linux.ibm.com>
+Subject: [PATCH v2 net-next 02/10] s390/qeth: process local address events
+Date:   Wed,  6 May 2020 10:09:41 +0200
+Message-Id: <20200506080949.3915-3-jwi@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200506080949.3915-1-jwi@linux.ibm.com>
 References: <20200506080949.3915-1-jwi@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
  definitions=2020-05-06_02:2020-05-04,2020-05-06 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- suspectscore=0 adultscore=0 clxscore=1015 impostorscore=0
- lowpriorityscore=0 bulkscore=0 phishscore=0 mlxscore=0 mlxlogscore=759
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005060058
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
+ impostorscore=0 priorityscore=1501 phishscore=0 mlxscore=0 malwarescore=0
+ suspectscore=0 lowpriorityscore=0 adultscore=0 spamscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2005060062
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When enabling TX CSO, make a note of whether the device has support for
-LP2LP offloading. This will become relevant in subsequent patches.
+In configurations where specific HW offloads are in use, OSA adapters
+will raise notifications to their virtual devices about the IP addresses
+that currently reside on the same adapter.
+Cache these addresses in two RCU-enabled hash tables, and flush the
+tables once the relevant HW offload(s) get disabled.
 
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core.h      |  3 +++
- drivers/s390/net/qeth_core_main.c | 23 ++++++++++++++---------
- 2 files changed, 17 insertions(+), 9 deletions(-)
+ drivers/s390/net/qeth_core.h      |  13 ++
+ drivers/s390/net/qeth_core_main.c | 217 ++++++++++++++++++++++++++++++
+ drivers/s390/net/qeth_core_mpc.h  |  25 ++++
+ drivers/s390/net/qeth_l2_main.c   |   1 +
+ drivers/s390/net/qeth_l3_main.c   |   1 +
+ 5 files changed, 257 insertions(+)
 
 diff --git a/drivers/s390/net/qeth_core.h b/drivers/s390/net/qeth_core.h
-index e0b26310ecab..2ac7771394d8 100644
+index 2ac7771394d8..b92af3735dd4 100644
 --- a/drivers/s390/net/qeth_core.h
 +++ b/drivers/s390/net/qeth_core.h
-@@ -688,6 +688,9 @@ struct qeth_card_info {
- 	u8 promisc_mode:1;
- 	u8 use_v1_blkt:1;
- 	u8 is_vm_nic:1;
-+	/* no bitfield, we take a pointer on these two: */
-+	u8 has_lp2lp_cso_v6;
-+	u8 has_lp2lp_cso_v4;
- 	enum qeth_card_types type;
- 	enum qeth_link_types link_type;
- 	int broadcast_capable;
+@@ -21,8 +21,10 @@
+ #include <linux/seq_file.h>
+ #include <linux/hashtable.h>
+ #include <linux/ip.h>
++#include <linux/rcupdate.h>
+ #include <linux/refcount.h>
+ #include <linux/timer.h>
++#include <linux/types.h>
+ #include <linux/wait.h>
+ #include <linux/workqueue.h>
+ 
+@@ -356,6 +358,12 @@ static inline bool qeth_l3_same_next_hop(struct qeth_hdr_layer3 *h1,
+ 			       &h2->next_hop.ipv6_addr);
+ }
+ 
++struct qeth_local_addr {
++	struct hlist_node hnode;
++	struct rcu_head rcu;
++	struct in6_addr addr;
++};
++
+ enum qeth_qdio_info_states {
+ 	QETH_QDIO_UNINITIALIZED,
+ 	QETH_QDIO_ALLOCATED,
+@@ -800,6 +808,10 @@ struct qeth_card {
+ 	wait_queue_head_t wait_q;
+ 	DECLARE_HASHTABLE(mac_htable, 4);
+ 	DECLARE_HASHTABLE(ip_htable, 4);
++	DECLARE_HASHTABLE(local_addrs4, 4);
++	DECLARE_HASHTABLE(local_addrs6, 4);
++	spinlock_t local_addrs4_lock;
++	spinlock_t local_addrs6_lock;
+ 	struct mutex ip_lock;
+ 	DECLARE_HASHTABLE(ip_mc_htable, 4);
+ 	struct work_struct rx_mode_work;
+@@ -1025,6 +1037,7 @@ void qeth_notify_cmd(struct qeth_cmd_buffer *iob, int reason);
+ void qeth_put_cmd(struct qeth_cmd_buffer *iob);
+ 
+ void qeth_schedule_recovery(struct qeth_card *);
++void qeth_flush_local_addrs(struct qeth_card *card);
+ int qeth_poll(struct napi_struct *napi, int budget);
+ void qeth_clear_ipacmd_list(struct qeth_card *);
+ int qeth_qdio_clear_card(struct qeth_card *, int);
 diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index f7689461c242..ef96890eea5c 100644
+index ef96890eea5c..6b5d42a4501c 100644
 --- a/drivers/s390/net/qeth_core_main.c
 +++ b/drivers/s390/net/qeth_core_main.c
-@@ -6300,7 +6300,7 @@ static int qeth_set_csum_off(struct qeth_card *card, enum qeth_ipa_funcs cstype,
+@@ -26,6 +26,7 @@
+ #include <linux/if_vlan.h>
+ #include <linux/netdevice.h>
+ #include <linux/netdev_features.h>
++#include <linux/rcutree.h>
+ #include <linux/skbuff.h>
+ #include <linux/vmalloc.h>
+ 
+@@ -623,6 +624,187 @@ void qeth_notify_cmd(struct qeth_cmd_buffer *iob, int reason)
  }
+ EXPORT_SYMBOL_GPL(qeth_notify_cmd);
  
- static int qeth_set_csum_on(struct qeth_card *card, enum qeth_ipa_funcs cstype,
--			    enum qeth_prot_versions prot)
-+			    enum qeth_prot_versions prot, u8 *lp2lp)
- {
- 	u32 required_features = QETH_IPA_CHECKSUM_UDP | QETH_IPA_CHECKSUM_TCP;
- 	struct qeth_cmd_buffer *iob;
-@@ -6352,8 +6352,11 @@ static int qeth_set_csum_on(struct qeth_card *card, enum qeth_ipa_funcs cstype,
- 
- 	dev_info(&card->gdev->dev, "HW Checksumming (%sbound IPv%d) enabled\n",
- 		 cstype == IPA_INBOUND_CHECKSUM ? "in" : "out", prot);
--	if (!qeth_ipa_caps_enabled(&caps, QETH_IPA_CHECKSUM_LP2LP) &&
--	    cstype == IPA_OUTBOUND_CHECKSUM)
++static void qeth_flush_local_addrs4(struct qeth_card *card)
++{
++	struct qeth_local_addr *addr;
++	struct hlist_node *tmp;
++	unsigned int i;
 +
-+	if (lp2lp)
-+		*lp2lp = qeth_ipa_caps_enabled(&caps, QETH_IPA_CHECKSUM_LP2LP);
++	spin_lock_irq(&card->local_addrs4_lock);
++	hash_for_each_safe(card->local_addrs4, i, tmp, addr, hnode) {
++		hash_del_rcu(&addr->hnode);
++		kfree_rcu(addr, rcu);
++	}
++	spin_unlock_irq(&card->local_addrs4_lock);
++}
 +
-+	if (lp2lp && !*lp2lp)
- 		dev_warn(&card->gdev->dev,
- 			 "Hardware checksumming is performed only if %s and its peer use different OSA Express 3 ports\n",
- 			 QETH_CARD_IFNAME(card));
-@@ -6361,9 +6364,9 @@ static int qeth_set_csum_on(struct qeth_card *card, enum qeth_ipa_funcs cstype,
- }
- 
- static int qeth_set_ipa_csum(struct qeth_card *card, bool on, int cstype,
--			     enum qeth_prot_versions prot)
-+			     enum qeth_prot_versions prot, u8 *lp2lp)
++static void qeth_flush_local_addrs6(struct qeth_card *card)
++{
++	struct qeth_local_addr *addr;
++	struct hlist_node *tmp;
++	unsigned int i;
++
++	spin_lock_irq(&card->local_addrs6_lock);
++	hash_for_each_safe(card->local_addrs6, i, tmp, addr, hnode) {
++		hash_del_rcu(&addr->hnode);
++		kfree_rcu(addr, rcu);
++	}
++	spin_unlock_irq(&card->local_addrs6_lock);
++}
++
++void qeth_flush_local_addrs(struct qeth_card *card)
++{
++	qeth_flush_local_addrs4(card);
++	qeth_flush_local_addrs6(card);
++}
++EXPORT_SYMBOL_GPL(qeth_flush_local_addrs);
++
++static void qeth_add_local_addrs4(struct qeth_card *card,
++				  struct qeth_ipacmd_local_addrs4 *cmd)
++{
++	unsigned int i;
++
++	if (cmd->addr_length !=
++	    sizeof_field(struct qeth_ipacmd_local_addr4, addr)) {
++		dev_err_ratelimited(&card->gdev->dev,
++				    "Dropped IPv4 ADD LOCAL ADDR event with bad length %u\n",
++				    cmd->addr_length);
++		return;
++	}
++
++	spin_lock(&card->local_addrs4_lock);
++	for (i = 0; i < cmd->count; i++) {
++		unsigned int key = ipv4_addr_hash(cmd->addrs[i].addr);
++		struct qeth_local_addr *addr;
++		bool duplicate = false;
++
++		hash_for_each_possible(card->local_addrs4, addr, hnode, key) {
++			if (addr->addr.s6_addr32[3] == cmd->addrs[i].addr) {
++				duplicate = true;
++				break;
++			}
++		}
++
++		if (duplicate)
++			continue;
++
++		addr = kmalloc(sizeof(*addr), GFP_ATOMIC);
++		if (!addr) {
++			dev_err(&card->gdev->dev,
++				"Failed to allocate local addr object. Traffic to %pI4 might suffer.\n",
++				&cmd->addrs[i].addr);
++			continue;
++		}
++
++		ipv6_addr_set(&addr->addr, 0, 0, 0, cmd->addrs[i].addr);
++		hash_add_rcu(card->local_addrs4, &addr->hnode, key);
++	}
++	spin_unlock(&card->local_addrs4_lock);
++}
++
++static void qeth_add_local_addrs6(struct qeth_card *card,
++				  struct qeth_ipacmd_local_addrs6 *cmd)
++{
++	unsigned int i;
++
++	if (cmd->addr_length !=
++	    sizeof_field(struct qeth_ipacmd_local_addr6, addr)) {
++		dev_err_ratelimited(&card->gdev->dev,
++				    "Dropped IPv6 ADD LOCAL ADDR event with bad length %u\n",
++				    cmd->addr_length);
++		return;
++	}
++
++	spin_lock(&card->local_addrs6_lock);
++	for (i = 0; i < cmd->count; i++) {
++		u32 key = ipv6_addr_hash(&cmd->addrs[i].addr);
++		struct qeth_local_addr *addr;
++		bool duplicate = false;
++
++		hash_for_each_possible(card->local_addrs6, addr, hnode, key) {
++			if (ipv6_addr_equal(&addr->addr, &cmd->addrs[i].addr)) {
++				duplicate = true;
++				break;
++			}
++		}
++
++		if (duplicate)
++			continue;
++
++		addr = kmalloc(sizeof(*addr), GFP_ATOMIC);
++		if (!addr) {
++			dev_err(&card->gdev->dev,
++				"Failed to allocate local addr object. Traffic to %pI6c might suffer.\n",
++				&cmd->addrs[i].addr);
++			continue;
++		}
++
++		addr->addr = cmd->addrs[i].addr;
++		hash_add_rcu(card->local_addrs6, &addr->hnode, key);
++	}
++	spin_unlock(&card->local_addrs6_lock);
++}
++
++static void qeth_del_local_addrs4(struct qeth_card *card,
++				  struct qeth_ipacmd_local_addrs4 *cmd)
++{
++	unsigned int i;
++
++	if (cmd->addr_length !=
++	    sizeof_field(struct qeth_ipacmd_local_addr4, addr)) {
++		dev_err_ratelimited(&card->gdev->dev,
++				    "Dropped IPv4 DEL LOCAL ADDR event with bad length %u\n",
++				    cmd->addr_length);
++		return;
++	}
++
++	spin_lock(&card->local_addrs4_lock);
++	for (i = 0; i < cmd->count; i++) {
++		struct qeth_ipacmd_local_addr4 *addr = &cmd->addrs[i];
++		unsigned int key = ipv4_addr_hash(addr->addr);
++		struct qeth_local_addr *tmp;
++
++		hash_for_each_possible(card->local_addrs4, tmp, hnode, key) {
++			if (tmp->addr.s6_addr32[3] == addr->addr) {
++				hash_del_rcu(&tmp->hnode);
++				kfree_rcu(tmp, rcu);
++				break;
++			}
++		}
++	}
++	spin_unlock(&card->local_addrs4_lock);
++}
++
++static void qeth_del_local_addrs6(struct qeth_card *card,
++				  struct qeth_ipacmd_local_addrs6 *cmd)
++{
++	unsigned int i;
++
++	if (cmd->addr_length !=
++	    sizeof_field(struct qeth_ipacmd_local_addr6, addr)) {
++		dev_err_ratelimited(&card->gdev->dev,
++				    "Dropped IPv6 DEL LOCAL ADDR event with bad length %u\n",
++				    cmd->addr_length);
++		return;
++	}
++
++	spin_lock(&card->local_addrs6_lock);
++	for (i = 0; i < cmd->count; i++) {
++		struct qeth_ipacmd_local_addr6 *addr = &cmd->addrs[i];
++		u32 key = ipv6_addr_hash(&addr->addr);
++		struct qeth_local_addr *tmp;
++
++		hash_for_each_possible(card->local_addrs6, tmp, hnode, key) {
++			if (ipv6_addr_equal(&tmp->addr, &addr->addr)) {
++				hash_del_rcu(&tmp->hnode);
++				kfree_rcu(tmp, rcu);
++				break;
++			}
++		}
++	}
++	spin_unlock(&card->local_addrs6_lock);
++}
++
+ static void qeth_issue_ipa_msg(struct qeth_ipa_cmd *cmd, int rc,
+ 		struct qeth_card *card)
  {
--	return on ? qeth_set_csum_on(card, cstype, prot) :
-+	return on ? qeth_set_csum_on(card, cstype, prot, lp2lp) :
- 		    qeth_set_csum_off(card, cstype, prot);
+@@ -686,9 +868,19 @@ static struct qeth_ipa_cmd *qeth_check_ipa_data(struct qeth_card *card,
+ 	case IPA_CMD_MODCCID:
+ 		return cmd;
+ 	case IPA_CMD_REGISTER_LOCAL_ADDR:
++		if (cmd->hdr.prot_version == QETH_PROT_IPV4)
++			qeth_add_local_addrs4(card, &cmd->data.local_addrs4);
++		else if (cmd->hdr.prot_version == QETH_PROT_IPV6)
++			qeth_add_local_addrs6(card, &cmd->data.local_addrs6);
++
+ 		QETH_CARD_TEXT(card, 3, "irla");
+ 		return NULL;
+ 	case IPA_CMD_UNREGISTER_LOCAL_ADDR:
++		if (cmd->hdr.prot_version == QETH_PROT_IPV4)
++			qeth_del_local_addrs4(card, &cmd->data.local_addrs4);
++		else if (cmd->hdr.prot_version == QETH_PROT_IPV6)
++			qeth_del_local_addrs6(card, &cmd->data.local_addrs6);
++
+ 		QETH_CARD_TEXT(card, 3, "urla");
+ 		return NULL;
+ 	default:
+@@ -1376,6 +1568,10 @@ static void qeth_setup_card(struct qeth_card *card)
+ 	qeth_init_qdio_info(card);
+ 	INIT_DELAYED_WORK(&card->buffer_reclaim_work, qeth_buffer_reclaim_work);
+ 	INIT_WORK(&card->close_dev_work, qeth_close_dev_handler);
++	hash_init(card->local_addrs4);
++	hash_init(card->local_addrs6);
++	spin_lock_init(&card->local_addrs4_lock);
++	spin_lock_init(&card->local_addrs6_lock);
  }
  
-@@ -6451,13 +6454,13 @@ static int qeth_set_ipa_rx_csum(struct qeth_card *card, bool on)
+ static void qeth_core_sl_print(struct seq_file *m, struct service_level *slr)
+@@ -6496,6 +6692,24 @@ void qeth_enable_hw_features(struct net_device *dev)
+ }
+ EXPORT_SYMBOL_GPL(qeth_enable_hw_features);
  
- 	if (qeth_is_supported(card, IPA_INBOUND_CHECKSUM))
- 		rc_ipv4 = qeth_set_ipa_csum(card, on, IPA_INBOUND_CHECKSUM,
--					    QETH_PROT_IPV4);
-+					    QETH_PROT_IPV4, NULL);
- 	if (!qeth_is_supported6(card, IPA_INBOUND_CHECKSUM_V6))
- 		/* no/one Offload Assist available, so the rc is trivial */
- 		return rc_ipv4;
- 
- 	rc_ipv6 = qeth_set_ipa_csum(card, on, IPA_INBOUND_CHECKSUM,
--				    QETH_PROT_IPV6);
-+				    QETH_PROT_IPV6, NULL);
- 
- 	if (on)
- 		/* enable: success if any Assist is active */
-@@ -6504,13 +6507,15 @@ int qeth_set_features(struct net_device *dev, netdev_features_t features)
- 
- 	if ((changed & NETIF_F_IP_CSUM)) {
- 		rc = qeth_set_ipa_csum(card, features & NETIF_F_IP_CSUM,
--				       IPA_OUTBOUND_CHECKSUM, QETH_PROT_IPV4);
-+				       IPA_OUTBOUND_CHECKSUM, QETH_PROT_IPV4,
-+				       &card->info.has_lp2lp_cso_v4);
- 		if (rc)
- 			changed ^= NETIF_F_IP_CSUM;
++static void qeth_check_restricted_features(struct qeth_card *card,
++					   netdev_features_t changed,
++					   netdev_features_t actual)
++{
++	netdev_features_t ipv6_features = NETIF_F_TSO6;
++	netdev_features_t ipv4_features = NETIF_F_TSO;
++
++	if (!card->info.has_lp2lp_cso_v6)
++		ipv6_features |= NETIF_F_IPV6_CSUM;
++	if (!card->info.has_lp2lp_cso_v4)
++		ipv4_features |= NETIF_F_IP_CSUM;
++
++	if ((changed & ipv6_features) && !(actual & ipv6_features))
++		qeth_flush_local_addrs6(card);
++	if ((changed & ipv4_features) && !(actual & ipv4_features))
++		qeth_flush_local_addrs4(card);
++}
++
+ int qeth_set_features(struct net_device *dev, netdev_features_t features)
+ {
+ 	struct qeth_card *card = dev->ml_priv;
+@@ -6537,6 +6751,9 @@ int qeth_set_features(struct net_device *dev, netdev_features_t features)
+ 			changed ^= NETIF_F_TSO6;
  	}
- 	if (changed & NETIF_F_IPV6_CSUM) {
- 		rc = qeth_set_ipa_csum(card, features & NETIF_F_IPV6_CSUM,
--				       IPA_OUTBOUND_CHECKSUM, QETH_PROT_IPV6);
-+				       IPA_OUTBOUND_CHECKSUM, QETH_PROT_IPV6,
-+				       &card->info.has_lp2lp_cso_v6);
- 		if (rc)
- 			changed ^= NETIF_F_IPV6_CSUM;
- 	}
+ 
++	qeth_check_restricted_features(card, dev->features ^ features,
++				       dev->features ^ changed);
++
+ 	/* everything changed successfully? */
+ 	if ((dev->features ^ features) == changed)
+ 		return 0;
+diff --git a/drivers/s390/net/qeth_core_mpc.h b/drivers/s390/net/qeth_core_mpc.h
+index d89a04bfd8b0..9d6f39d8f9ab 100644
+--- a/drivers/s390/net/qeth_core_mpc.h
++++ b/drivers/s390/net/qeth_core_mpc.h
+@@ -772,6 +772,29 @@ struct qeth_ipacmd_addr_change {
+ 	struct qeth_ipacmd_addr_change_entry entry[];
+ } __packed;
+ 
++/* [UN]REGISTER_LOCAL_ADDRESS notifications */
++struct qeth_ipacmd_local_addr4 {
++	__be32 addr;
++	u32 flags;
++};
++
++struct qeth_ipacmd_local_addrs4 {
++	u32 count;
++	u32 addr_length;
++	struct qeth_ipacmd_local_addr4 addrs[];
++};
++
++struct qeth_ipacmd_local_addr6 {
++	struct in6_addr addr;
++	u32 flags;
++};
++
++struct qeth_ipacmd_local_addrs6 {
++	u32 count;
++	u32 addr_length;
++	struct qeth_ipacmd_local_addr6 addrs[];
++};
++
+ /* Header for each IPA command */
+ struct qeth_ipacmd_hdr {
+ 	__u8   command;
+@@ -803,6 +826,8 @@ struct qeth_ipa_cmd {
+ 		struct qeth_ipacmd_setbridgeport	sbp;
+ 		struct qeth_ipacmd_addr_change		addrchange;
+ 		struct qeth_ipacmd_vnicc		vnicc;
++		struct qeth_ipacmd_local_addrs4		local_addrs4;
++		struct qeth_ipacmd_local_addrs6		local_addrs6;
+ 	} data;
+ } __attribute__ ((packed));
+ 
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index 0bd5b09e7a22..47f624b37040 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
+@@ -291,6 +291,7 @@ static void qeth_l2_stop_card(struct qeth_card *card)
+ 	qeth_qdio_clear_card(card, 0);
+ 	qeth_clear_working_pool_list(card);
+ 	flush_workqueue(card->event_wq);
++	qeth_flush_local_addrs(card);
+ 	card->info.promisc_mode = 0;
+ }
+ 
+diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+index 0742a749d26e..fec4ac41e946 100644
+--- a/drivers/s390/net/qeth_l3_main.c
++++ b/drivers/s390/net/qeth_l3_main.c
+@@ -1176,6 +1176,7 @@ static void qeth_l3_stop_card(struct qeth_card *card)
+ 	qeth_qdio_clear_card(card, 0);
+ 	qeth_clear_working_pool_list(card);
+ 	flush_workqueue(card->event_wq);
++	qeth_flush_local_addrs(card);
+ 	card->info.promisc_mode = 0;
+ }
+ 
 -- 
 2.17.1
 
