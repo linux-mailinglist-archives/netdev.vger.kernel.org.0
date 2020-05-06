@@ -2,76 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D06D1C7120
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 14:56:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16BE11C7138
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 15:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728856AbgEFM4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 08:56:20 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:3869 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728855AbgEFM4T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 08:56:19 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id F16146EFEB742B0604A7;
-        Wed,  6 May 2020 20:55:59 +0800 (CST)
-Received: from localhost (10.173.251.152) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Wed, 6 May 2020
- 20:55:53 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <jerry.lilijun@huawei.com>,
-        <xudingke@huawei.com>, Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net-next] net: 7990: Fix use correct return type for ndo_start_xmit()
-Date:   Wed, 6 May 2020 20:55:52 +0800
-Message-ID: <1588769752-5200-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+        id S1728622AbgEFM77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 08:59:59 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:3969 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728081AbgEFM77 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 08:59:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1588769999; x=1620305999;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   mime-version;
+  bh=hzNQ5w8A6cYw04c6yt2I+QRIddI3RMJ0UShL/31p7vY=;
+  b=O7wbrp3+hc61Ubb6f/QioHNMd4ypqhClz5kTK/WeNPwDYHLg0vhvW0kb
+   s4sMXUe5gIYJHmiOg39qy2v2mi/E3ZkuLVa/Qt3Cgi4/qrTYHOYQcVUvW
+   GCg6EBe8P7obU+wQWWDAKaS/uAeSQDmKo2qm4VDshxATOCMiER/QTuYuX
+   4=;
+IronPort-SDR: xgLqf4VcV6A5KTjgLiK+37uZzeJclYtKvvSu+1j2P9BEIN7sDK2pOZZGVgYvWutqahP88n8hsS
+ 1u5J2RKWL8Ow==
+X-IronPort-AV: E=Sophos;i="5.73,359,1583193600"; 
+   d="scan'208";a="43050805"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-1968f9fa.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 06 May 2020 12:59:57 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-1968f9fa.us-west-2.amazon.com (Postfix) with ESMTPS id D9095A2400;
+        Wed,  6 May 2020 12:59:55 +0000 (UTC)
+Received: from EX13D31EUA001.ant.amazon.com (10.43.165.15) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 6 May 2020 12:59:55 +0000
+Received: from u886c93fd17d25d.ant.amazon.com (10.43.160.180) by
+ EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 6 May 2020 12:59:48 +0000
+From:   SeongJae Park <sjpark@amazon.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+CC:     SeongJae Park <sjpark@amazon.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        "Al Viro" <viro@zeniv.linux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        <sj38.park@gmail.com>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        SeongJae Park <sjpark@amazon.de>, <snu@amazon.com>,
+        <amit@kernel.org>, <stable@vger.kernel.org>
+Subject: Re: Re: Re: Re: Re: [PATCH net v2 0/2] Revert the 'socket_alloc' life cycle change
+Date:   Wed, 6 May 2020 14:59:26 +0200
+Message-ID: <20200506125926.29844-1-sjpark@amazon.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200505184955.GO2869@paulmck-ThinkPad-P72> (raw)
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.173.251.152]
-X-CFilter-Loop: Reflected
+X-Originating-IP: [10.43.160.180]
+X-ClientProxiedBy: EX13D12UWA003.ant.amazon.com (10.43.160.50) To
+ EX13D31EUA001.ant.amazon.com (10.43.165.15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+TL; DR: It was not kernel's fault, but the benchmark program.
 
-The method ndo_start_xmit() returns a value of type netdev_tx_t. Fix
-the ndo function to use the correct type.
+So, the problem is reproducible using the lebench[1] only.  I carefully read
+it's code again.
 
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/net/ethernet/amd/7990.c | 2 +-
- drivers/net/ethernet/amd/7990.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Before running the problem occurred "poll big" sub test, lebench executes
+"context switch" sub test.  For the test, it sets the cpu affinity[2] and
+process priority[3] of itself to '0' and '-20', respectively.  However, it
+doesn't restore the values to original value even after the "context switch" is
+finished.  For the reason, "select big" sub test also run binded on CPU 0 and
+has lowest nice value.  Therefore, it can disturb the RCU callback thread for
+the CPU 0, which processes the deferred deallocations of the sockets, and as a
+result it triggers the OOM.
 
-diff --git a/drivers/net/ethernet/amd/7990.c b/drivers/net/ethernet/amd/7990.c
-index cf3562e8..50fb663 100644
---- a/drivers/net/ethernet/amd/7990.c
-+++ b/drivers/net/ethernet/amd/7990.c
-@@ -536,7 +536,7 @@ void lance_tx_timeout(struct net_device *dev, unsigned int txqueue)
- }
- EXPORT_SYMBOL_GPL(lance_tx_timeout);
- 
--int lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
-+netdev_tx_t lance_start_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct lance_private *lp = netdev_priv(dev);
- 	volatile struct lance_init_block *ib = lp->init_block;
-diff --git a/drivers/net/ethernet/amd/7990.h b/drivers/net/ethernet/amd/7990.h
-index 8266b3c..e53551d 100644
---- a/drivers/net/ethernet/amd/7990.h
-+++ b/drivers/net/ethernet/amd/7990.h
-@@ -241,7 +241,7 @@ struct lance_private {
- /* Now the prototypes we export */
- int lance_open(struct net_device *dev);
- int lance_close(struct net_device *dev);
--int lance_start_xmit(struct sk_buff *skb, struct net_device *dev);
-+netdev_tx_t lance_start_xmit(struct sk_buff *skb, struct net_device *dev);
- void lance_set_multicast(struct net_device *dev);
- void lance_tx_timeout(struct net_device *dev, unsigned int txqueue);
- #ifdef CONFIG_NET_POLL_CONTROLLER
--- 
-1.8.3.1
+We confirmed the problem disappears by offloading the RCU callbacks from the
+CPU 0 using rcu_nocbs=0 boot parameter or simply restoring the affinity and/or
+priority.
+
+Someone _might_ still argue that this is kernel problem because the problem
+didn't occur on the old kernels prior to the Al's patches.  However, setting
+the affinity and priority was available because the program received the
+permission.  Therefore, it would be reasonable to blame the system
+administrators rather than the kernel.
+
+So, please ignore this patchset, apology for making confuse.  If you still has
+some doubts or need more tests, please let me know.
+
+[1] https://github.com/LinuxPerfStudy/LEBench
+[2] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L820
+[3] https://github.com/LinuxPerfStudy/LEBench/blob/master/TEST_DIR/OS_Eval.c#L822
 
 
+Thanks,
+SeongJae Park
