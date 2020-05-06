@@ -2,81 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E68C81C7524
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:41:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE041C7547
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729613AbgEFPlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 11:41:12 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:52748 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729391AbgEFPlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:41:12 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 046Ff8dl104430;
-        Wed, 6 May 2020 10:41:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588779668;
-        bh=6nWDbJgIfHVMYHr00BNhoOQF9D8Xop5E0as19GqWrzc=;
-        h=From:To:Subject:Date;
-        b=bAatsS2zxkUhlHOrAa+kuNuAejsyF4BSbED039TamP4Bd5qNC09UFPaHaqGzIN6XJ
-         DVicJ4l/rT9/OwS37MOO+eAflVyBzpZFRLmzipXnog8U5JVa3QO82GRM695nd5CwM/
-         XNTEY94iZ9X7/VymsKUTe0yyy44Bzcth89zKoD0E=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 046Ff86L022647
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 May 2020 10:41:08 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 6 May
- 2020 10:41:08 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 6 May 2020 10:41:08 -0500
-Received: from uda0868495.fios-router.home (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 046Ff8k7028145;
-        Wed, 6 May 2020 10:41:08 -0500
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [net-next PATCH] net: hsr: fix incorrect type usage for protocol variable
-Date:   Wed, 6 May 2020 11:41:07 -0400
-Message-ID: <20200506154107.575-1-m-karicheri2@ti.com>
+        id S1729698AbgEFPqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 11:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729148AbgEFPqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:46:42 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918DEC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 08:46:42 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id a32so1084844pje.5
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 08:46:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=dFcfaGK+YW9/7hUe01vze5nROPa4vpk0jsys3j1ArXI=;
+        b=J7pLYjncdlUKmGoKrMKJZ5OQpl3drdWR3KqmSBN+U2yWPu0nYSCcq8zjb6GqU9ENP4
+         1w3ei8kXs/C6WLPgnT5Z9UumT56lnnQXOf4Nr2ivuDpQsWcnpNvInKv2CUy9vwBfOipf
+         HwxJa3rwQAYrsddn79fAx2PUZU0/LMIFWgk8oHxqMVYbFikwrZelqtJaQzMSA5qlhYwe
+         vt+fTkBGCZ1G4sFbXXs/YgRkCLNuuQKelpUdFkWFXYc9FMwcswQBbMUVWA2hhVkWhrSy
+         u3JyT3VFkhQeIjEa90TPOfmvuJnR0Tsf3qksluX4nbTtaxTfUJjH9somuR4grYxyfTSK
+         WcZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dFcfaGK+YW9/7hUe01vze5nROPa4vpk0jsys3j1ArXI=;
+        b=C1sdvw00gEw7AVT4LsNgb5+Qbcy7rRTcPazVWHhDVXcGWIotZTp4f55TYJP3Vp3Eyq
+         hlotWbk9pv9NHGeoDaRipX9JeXteWt/xs8DrU8lMfVDD9d8/wvHPLWbHaKw0qX3fRhIy
+         R2F3dJoHbM+X3ZqakjM+65jVpjz4O5b4VSks2TFsPJJKxWiLJAlHSSt4j6XtcIJXZAhW
+         vHnHTOu9SmN1wd0Q816DkcOS80CR1YLlA5P0NCnsYgtPzqpmCrd8ShI4NzHsAxmVOMIg
+         M8ZamHQe85GK4NzbTjpb8XjC6mHanPb8x6bKsf2MKY/kV6HAwpHTeBuYkU5Nu5iseF0Z
+         n+2Q==
+X-Gm-Message-State: AGi0PuZ2NfS2qblv5RAig1QEbt9T9RfOXAqyIfq+wPdqXnDS5XPuXjMo
+        PS+ABOhPdYKauCo4KDcaIVI=
+X-Google-Smtp-Source: APiQypLJeEeIRL7LYnPeJUNOBNPL3MjKsdjdwbvbjZlyRwiHJ9omSwICqjaqBOhnjjg2HTLv8QD9SQ==
+X-Received: by 2002:a17:90b:3598:: with SMTP id mm24mr10721529pjb.132.1588780001798;
+        Wed, 06 May 2020 08:46:41 -0700 (PDT)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id e196sm2201563pfh.43.2020.05.06.08.46.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 08:46:40 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net-next 0/2] hsr: hsr code refactoring
+Date:   Wed,  6 May 2020 15:46:34 +0000
+Message-Id: <20200506154634.12352-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix following sparse checker warning:-
+There are some unnecessary routine in the hsr module.
+This patch removes these routines.
 
-net/hsr/hsr_slave.c:38:18: warning: incorrect type in assignment (different base types)
-net/hsr/hsr_slave.c:38:18:    expected unsigned short [unsigned] [usertype] protocol
-net/hsr/hsr_slave.c:38:18:    got restricted __be16 [usertype] h_proto
-net/hsr/hsr_slave.c:39:25: warning: restricted __be16 degrades to integer
-net/hsr/hsr_slave.c:39:57: warning: restricted __be16 degrades to integer
+The first patch removes incorrect comment.
+The second patch removes unnecessary WARN_ONCE() macro.
 
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
----
- net/hsr/hsr_slave.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Taehee Yoo (2):
+  hsr: remove incorrect comment
+  hsr: remove WARN_ONCE() in hsr_fill_frame_info()
 
-diff --git a/net/hsr/hsr_slave.c b/net/hsr/hsr_slave.c
-index f4b9f7a3ce51..25b6ffba26cd 100644
---- a/net/hsr/hsr_slave.c
-+++ b/net/hsr/hsr_slave.c
-@@ -18,7 +18,7 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
- {
- 	struct sk_buff *skb = *pskb;
- 	struct hsr_port *port;
--	u16 protocol;
-+	__be16 protocol;
- 
- 	if (!skb_mac_header_was_set(skb)) {
- 		WARN_ONCE(1, "%s: skb invalid", __func__);
+ net/hsr/hsr_forward.c | 2 +-
+ net/hsr/hsr_main.c    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
 -- 
 2.17.1
 
