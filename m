@@ -2,120 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F951C7B5F
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 22:35:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A7FA1C7B6C
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 22:42:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728665AbgEFUf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 16:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        id S1728206AbgEFUmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 16:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726093AbgEFUf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 16:35:29 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A30C061A0F;
-        Wed,  6 May 2020 13:35:29 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49HSyh6XhJz9sRY;
-        Thu,  7 May 2020 06:35:24 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1588797326;
-        bh=NwcnAUxzQxfI5RiY9l3BwK9CdPv/e/PbCfVJoOYWUoM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FYshvVMM/U1YFW6ccHtYPqBwXN9gzBFM6KbNPSf8D9LJya7mLJAZO09pReDd/HxBA
-         qC7nPQ/xsYpMdL72AnjM4zLiypLJkB7mjfwRq1NYtTTFKOftI3oiuVr1AK4gMUnzmP
-         lnaL+Nos6LzPqziaj9wE8D6vbZoZTMZm+GOZd7Sjl6knIQX9HnEeHCBKinav4ObBby
-         vjUD/eUfbhTTrWsdwuqV2hnrl3S3uxglxdDglaUajv1qVknQr9Jfr17np26FGH+OY5
-         DyN8h++jD9DsgOlQh3zbklaG4qEkdZEZRx16anIK7RPnJlKMGf85hFxYIWwnFRIgig
-         2TyJAKyoOAJOQ==
-Date:   Thu, 7 May 2020 06:35:24 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Qian Cai <cai@lca.pw>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        Amol Grover <frextrite@gmail.com>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        syzbot <syzbot+1519f497f2f9f08183c6@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        "paul E. McKenney" <paulmck@kernel.org>,
-        "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Subject: Re: linux-next boot error: WARNING: suspicious RCU usage in
- ipmr_get_table
-Message-ID: <20200507063524.5356b923@canb.auug.org.au>
-In-Reply-To: <1D570330-8E3E-4596-AD9B-21CE6A86F146@lca.pw>
-References: <000000000000df9a9805a455e07b@google.com>
-        <CACT4Y+YnjK+kq0pfb5fe-q1bqe2T1jq_mvKHf--Z80Z3wkyK1Q@mail.gmail.com>
-        <34558B83-103E-4205-8D3D-534978D5A498@lca.pw>
-        <20200507061635.449f9495@canb.auug.org.au>
-        <1D570330-8E3E-4596-AD9B-21CE6A86F146@lca.pw>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/ucjhpYCb9TG.8NNMwqXguvb";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        by vger.kernel.org with ESMTP id S1726538AbgEFUmQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 16:42:16 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84666C061A0F;
+        Wed,  6 May 2020 13:42:16 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E7CF21210A3F0;
+        Wed,  6 May 2020 13:42:12 -0700 (PDT)
+Date:   Wed, 06 May 2020 13:42:09 -0700 (PDT)
+Message-Id: <20200506.134209.2202487070619689100.davem@davemloft.net>
+To:     mst@redhat.com
+Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de,
+        eric.dumazet@gmail.com, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] virtio_net: fix lockdep warning on 32 bit
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200506000006.196646-1-mst@redhat.com>
+References: <20200506000006.196646-1-mst@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 06 May 2020 13:42:13 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/ucjhpYCb9TG.8NNMwqXguvb
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Date: Tue, 5 May 2020 20:01:31 -0400
 
-Hi Qian,
+> -		u64_stats_update_end(&rq->stats.syncp);
+> +		u64_stats_update_end_irqrestore(&rq->stats.syncp);
 
-On Wed, 6 May 2020 16:21:05 -0400 Qian Cai <cai@lca.pw> wrote:
->
-> > On May 6, 2020, at 4:16 PM, Stephen Rothwell <sfr@canb.auug.org.au> wro=
-te:
-> >=20
-> > Hi Qian,
-> >=20
-> > On Tue, 28 Apr 2020 09:56:59 -0400 Qian Cai <cai@lca.pw> wrote: =20
-> >>  =20
-> >>> On Apr 28, 2020, at 4:57 AM, Dmitry Vyukov <dvyukov@google.com> wrote=
-:   =20
-> >>>> net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!!   =20
-> >>=20
-> >> https://lore.kernel.org/netdev/20200222063835.14328-2-frextrite@gmail.=
-com/
-> >>=20
-> >> Never been picked up for a few months due to some reasons. You could p=
-robably
-> >> need to convince David, Paul, Steven or Linus to unblock the bot or ca=
-rry patches
-> >> on your own? =20
-> >=20
-> > Did you resubmit the patch series as Dave Miller asked you to (now that
-> > net-next is based on v5.7-rc1+)? =20
->=20
-> Actually, it was Amol not me who submit the patch, so let him to answer t=
-hat.
-
-Oops, sorry.
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/ucjhpYCb9TG.8NNMwqXguvb
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6zH4wACgkQAVBC80lX
-0Gw2Lgf/VFgex0t54wjG2dK6n/EDR0ThAd6SoZHRqdGtVbVRAHps0PhM62aD/GQ5
-D2KAQzZixnpRDBLLATL+ksUDeDCFm0xWDtuMy82wSSJXw4Klvflxu/PgsNmer104
-IrJ8SJ1JYPPmKdA/vdvXr054Hqp9/BRU8PuNV93NjZ/5iSLcYZWUR+WAh3lUrwm1
-b9hq27kuMuY7pKVbDZBHpMz7IXxhPjmnupnx/56TdkcPvyojbUCvkCC89fARxpTi
-5L+qvYr5PSUMYRiV5TcU4gg0Vq8KBIqhCQ2synBC7Phf6mFwrr8tcAhj0Girhtmg
-/KZz18qsGXOpST/GFHMe9qqS23VRqA==
-=P1M5
------END PGP SIGNATURE-----
-
---Sig_/ucjhpYCb9TG.8NNMwqXguvb--
+Need to pass flags to this function.
