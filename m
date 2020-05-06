@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 235DE1C7CEF
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 00:02:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0678B1C7CFE
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 00:03:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729759AbgEFWCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 18:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
+        id S1729582AbgEFWDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 18:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728851AbgEFWCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 18:02:00 -0400
+        by vger.kernel.org with ESMTP id S1728621AbgEFWDw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 18:03:52 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F35F5C061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 15:02:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0821FC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 15:03:52 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7DEC61273C096;
-        Wed,  6 May 2020 15:02:00 -0700 (PDT)
-Date:   Wed, 06 May 2020 15:01:59 -0700 (PDT)
-Message-Id: <20200506.150159.1761695149307486444.davem@davemloft.net>
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9F3271273D970;
+        Wed,  6 May 2020 15:03:51 -0700 (PDT)
+Date:   Wed, 06 May 2020 15:03:50 -0700 (PDT)
+Message-Id: <20200506.150350.1822978926046518592.davem@davemloft.net>
 To:     edumazet@google.com
 Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com, soheil@google.com,
         arjunroy@google.com
@@ -33,7 +33,7 @@ X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 06 May 2020 15:02:00 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 06 May 2020 15:03:51 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -50,4 +50,4 @@ Date: Wed,  6 May 2020 09:21:15 -0700
 > Fixes: 597b01edafac ("selftests: net: avoid ptl lock contention in tcp_mmap")
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Applied, thanks Eric.
+Applied and queued up for -stable.
