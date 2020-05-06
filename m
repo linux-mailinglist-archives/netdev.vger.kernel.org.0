@@ -2,83 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9782B1C754D
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4121C7567
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:53:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729521AbgEFPrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 11:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728428AbgEFPrw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:47:52 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02F9C061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 08:47:52 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id s20so644110plp.6
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 08:47:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=VmVT3hJTHH3yWPGozeeDd4qcjrfr8L+7vkXNizT13wM=;
-        b=FqxmfmOxhqVUJwi2YGsaixJ9xh7Rn+BZYk9kATVWgscLmsjs5Dsf4N4KdHOTBcmAzm
-         RrupuHSFM3ZlVvOwhc3RV6xKxo8Cn7mWNjLedU4lHIjiuBegoXgFnat0lHnY0Ug6dB3a
-         JKtH7zdpdsY5vgNxb2W1m/9QVglii/xukbYiUsDd0mEYzCNjAHdgBkLMcTNifrPU6UjJ
-         AIVnqp9gRIk9uS0XseEx64K3Y1h533QSBi3Br/jpcM9HAJt/LNpXW9bsREg9S84/kZmu
-         RuXUHLksyNshPOPSKCArRZPWz2cL/3HK1I2n2q3bIYd7sMkXDrwkkNGq+K1I26VIW84f
-         2QIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=VmVT3hJTHH3yWPGozeeDd4qcjrfr8L+7vkXNizT13wM=;
-        b=haRHP0jRlCxHtbacCHzVkmYoPk123zTyPaGS2FO/DzHvClD7DnKYvrNW5kHaoNR35N
-         +mPiJA+1aBOKpdjcG6qTuyccrJFWEPCwIvX8TDyfJLcbbQonAbe9+N6Mj/8DXqI446SS
-         z56Lz4+XAhvDTO+/KEoFcRed8wngR8vfvhswyDWYNucaxhIgXS2dSst2xx7Q4YyOji71
-         DSucqVOZh5J3kp7fed38vXq1vPL+5UUcZTCE0OXhgVJWLAo7zCshZqWusR4K4o0NVQew
-         khN+Pm+He+UpjRgrabCiYvKJIaY+AD8NQrccf3XZ+VpMVSfl4Izfw8By03r9cqxV2OVe
-         SJcQ==
-X-Gm-Message-State: AGi0Pubd/ZF31hdALwfLA9wuAhMLylKitfk2re/fkUbKXCIWWI/ntCHZ
-        0Ao9RzjrRD4sTZ4BnXLLfcs=
-X-Google-Smtp-Source: APiQypIs3lOmp251KYNOpWPGGygZwBDsTF8ChXN9L5sCr68S9s4E6tU/AItKMi+05SflzQ21ytg9bA==
-X-Received: by 2002:a17:90a:ea0b:: with SMTP id w11mr7560569pjy.221.1588780072162;
-        Wed, 06 May 2020 08:47:52 -0700 (PDT)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id t14sm1920066pgr.61.2020.05.06.08.47.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2020 08:47:51 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net-next 2/2] hsr: remove WARN_ONCE() in hsr_fill_frame_info()
-Date:   Wed,  6 May 2020 15:47:45 +0000
-Message-Id: <20200506154745.12627-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729745AbgEFPxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 11:53:55 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:35179 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729724AbgEFPxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 11:53:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588780433;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IIPWhemhWOivhkyMoHAaTDjhY+Cd4+/PKB7r/lBHTsk=;
+        b=U/6zCOMfNOeW4VavTUCyedfZ641XjR9HC1ya7kyJLUzYkEpqI/5aBC3rnK5Aufh36JoAuk
+        c8xhVe32an5F5VTMbNKa9SchMBqtdiC0s5BAATs2KbBxid60r2xxI5guL4DTVrgWLauYqy
+        qev3312VHSLGRQuNEJ93bK89mi4W2l4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-313-lZeX6d8kP4GU7xA9uNEoKg-1; Wed, 06 May 2020 11:53:49 -0400
+X-MC-Unique: lZeX6d8kP4GU7xA9uNEoKg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42FE145F;
+        Wed,  6 May 2020 15:53:47 +0000 (UTC)
+Received: from treble (ovpn-115-96.rdu2.redhat.com [10.10.115.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C1D605D9C5;
+        Wed,  6 May 2020 15:53:45 +0000 (UTC)
+Date:   Wed, 6 May 2020 10:53:43 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
+ compatibility
+Message-ID: <20200506155343.7x3slq3uasponb6w@treble>
+References: <20200501192204.cepwymj3fln2ngpi@treble>
+ <20200501194053.xyahhknjjdu3gqix@ast-mbp.dhcp.thefacebook.com>
+ <20200501195617.czrnfqqcxfnliz3k@treble>
+ <20200502030622.yrszsm54r6s6k6gq@ast-mbp.dhcp.thefacebook.com>
+ <20200502192105.xp2osi5z354rh4sm@treble>
+ <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
+ <20200505181108.hwcqanvw3qf5qyxk@treble>
+ <20200505195320.lyphpnprn3sjijf6@ast-mbp.dhcp.thefacebook.com>
+ <20200505202823.zkmq6t55fxspqazk@treble>
+ <20200505235939.utnmzqsn22cec643@ast-mbp.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200505235939.utnmzqsn22cec643@ast-mbp.dhcp.thefacebook.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When VLAN frame is being sent, hsr calls WARN_ONCE() because hsr doesn't
-support VLAN. But using WARN_ONCE() is overdoing.
-Using netdev_warn_once() is enough.
+On Tue, May 05, 2020 at 04:59:39PM -0700, Alexei Starovoitov wrote:
+> As far as workaround I prefer the following:
+> From 94bbc27c5a70d78846a5cb675df4cf8732883564 Mon Sep 17 00:00:00 2001
+> From: Alexei Starovoitov <ast@kernel.org>
+> Date: Tue, 5 May 2020 16:52:41 -0700
+> Subject: [PATCH] bpf,objtool: tweak interpreter compilation flags to help objtool
+> 
+> tbd
+> 
+> Fixes: 3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  include/linux/compiler-gcc.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> index d7ee4c6bad48..05104c3cc033 100644
+> --- a/include/linux/compiler-gcc.h
+> +++ b/include/linux/compiler-gcc.h
+> @@ -171,4 +171,4 @@
+>  #define __diag_GCC_8(s)
+>  #endif
+> 
+> -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
+> +#define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
+> --
+> 2.23.0
+> 
+> I've tested it with gcc 8,9,10 and clang 11 with FP=y and with ORC=y.
+> All works.
+> I think it's safer to go with frame pointers even for ORC=y considering
+> all the pain this issue had caused. Even if objtool gets confused again
+> in the future __bpf_prog_run() will have frame pointers and kernel stack
+> unwinding can fall back from ORC to FP for that frame.
+> wdyt?
 
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- net/hsr/hsr_forward.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It seems dangerous to me.  The GCC manual recommends against it.
 
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index ddd9605bad04..ed13760463de 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -321,7 +321,7 @@ static int hsr_fill_frame_info(struct hsr_frame_info *frame,
- 	if (ethhdr->h_proto == htons(ETH_P_8021Q)) {
- 		frame->is_vlan = true;
- 		/* FIXME: */
--		WARN_ONCE(1, "HSR: VLAN not yet supported");
-+		netdev_warn_once(skb->dev, "VLAN not yet supported");
- 	}
- 	if (ethhdr->h_proto == htons(ETH_P_PRP) ||
- 	    ethhdr->h_proto == htons(ETH_P_HSR)) {
+And how do we know what other flags are getting removed for various
+arches (now or in the future)?
+
 -- 
-2.17.1
+Josh
 
