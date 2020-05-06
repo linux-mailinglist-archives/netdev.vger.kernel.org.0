@@ -2,210 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C13CC1C690D
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:38:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B55E71C6916
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727991AbgEFGif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 02:38:35 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:21961 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727879AbgEFGie (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:38:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588747112;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IAGX7ieJWnKg6o+Mvr+RcVA2IUtXEmAgF0tWsnQPrmA=;
-        b=ShGrlc9JHhW/jz080f6hn2NZUsvPw9UH/9no3y8tkMBqLMnczdETmyvWclKsdrpLB5Q7LS
-        EFUN+qM56EQjqnhpn5s8uA9Gi9DRNa3YRHe6MOtQrSrFdSKlRvj/jk13NjNPbxzuXhUGTT
-        BAueSp3FYtX0KBRWAsWNT1swzzR1V3w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-15-bmnkPDwdNMqDNPwqLDKhjg-1; Wed, 06 May 2020 02:38:28 -0400
-X-MC-Unique: bmnkPDwdNMqDNPwqLDKhjg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D49E7800687;
-        Wed,  6 May 2020 06:38:25 +0000 (UTC)
-Received: from [10.72.13.165] (ovpn-13-165.pek2.redhat.com [10.72.13.165])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EE54060C18;
-        Wed,  6 May 2020 06:38:12 +0000 (UTC)
-Subject: Re: [PATCH net-next 21/33] virtio_net: add XDP frame size in two code
- paths
-From:   Jason Wang <jasowang@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        steffen.klassert@secunet.com
-References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
- <158757174774.1370371.14395462229209766397.stgit@firesoul>
- <3958d9c6-a7d1-6a3d-941d-0a2915cc6b09@redhat.com>
- <20200427163224.6445d4bb@carbon>
- <d939445b-9713-2b2f-9830-38c2867bb963@redhat.com>
-Message-ID: <a197ea65-eb78-23aa-eab3-406f95edc199@redhat.com>
-Date:   Wed, 6 May 2020 14:38:11 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728111AbgEFGj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 02:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726843AbgEFGj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:39:57 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3B0C061A0F;
+        Tue,  5 May 2020 23:39:56 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id p13so193246qvt.12;
+        Tue, 05 May 2020 23:39:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y/Sv+P+9llwkKL5rRoqkcSud7Yg3ZcZ2k+WEatZrTTw=;
+        b=CwVtsZzE0QC5J8DCTwC5TG0u93u4uB9TGg9srs4xZW0eovhU471fNAaqkRbOVmO8Fp
+         YaqZUiVgsDy/6LAVPXIFSYjUNUfW8TPDoM1Lf5YYvzcy7AHcb3gEYaMr3rmVo9BsLtPG
+         i0TBWSUEZS9rGGcFyH49t8ppXmAdmctZ6N/i3PsfMnnd/0zI6o5C4jHc70SzWHP8u06z
+         v2EMgYmSmSR4aljBpiiX6fO2+nPe/wJ+kX7RcnfXBycQH58vYsRZgjPjP4I5uLqu/HiQ
+         tvg6TVePV0AMzQNNkTSkQjLxHg2AQtJZ9lvJMjDT0XNZcXfXFwSwnrceBEJpu1gX4gyE
+         ziJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y/Sv+P+9llwkKL5rRoqkcSud7Yg3ZcZ2k+WEatZrTTw=;
+        b=goSxhgxFySWTPzAbm0JlsldoSyShRioqBpWoJIyCrfWzZ1ZkrMHyjmJEbBsHlVB+Ch
+         4eG+e3SJdD+zlNPMkyINYxScmhEgVn1tkjs17ndbxFnm35yY74QyFibDEqLJ+KGk5bRr
+         bDE0O/fyjagqEPCen3CmdhTkZ4jG8bOiO4XBqCH0sg1gOpV6nFlxDl8Dseo5VomDALTL
+         8SIwImfq4Gw3Us/ePYXyLBy81bk10lR0VYg5y3x5YTrT3mDGMBivuKArw0Zq+HTvuIIj
+         ZmPdFW3YmGhg42v6mrzQYPjF1WVShkALxdlLMefWN3C+w39z1Pt0HtS8k8EOz4N3rrat
+         ZCpQ==
+X-Gm-Message-State: AGi0PuY6GeVOmVXBVC0m+fF7AI6rul0TY0L03oTaocCgv25tj7UK97rp
+        7DgGBztignhEpixVRhMcV1MjCQB38ddyFmnbVs4=
+X-Google-Smtp-Source: APiQypLxCced2MRd2SxGb2UL9AaXz5iFoKjtI/uM+9glYvIdeZLEhNZVpiASZTnCMLYTAfItGcHf1V+LvV+NAOar01k=
+X-Received: by 2002:ad4:4c03:: with SMTP id bz3mr6426901qvb.224.1588747195968;
+ Tue, 05 May 2020 23:39:55 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <d939445b-9713-2b2f-9830-38c2867bb963@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Content-Transfer-Encoding: quoted-printable
+References: <20200504062547.2047304-1-yhs@fb.com> <20200504062610.2049229-1-yhs@fb.com>
+In-Reply-To: <20200504062610.2049229-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 5 May 2020 23:39:44 -0700
+Message-ID: <CAEf4BzZ7Jx9ZkHbRpj4Nzy1nJLhLaUoX6MTiTKvrLO2zPKFrBg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 20/20] tools/bpf: selftests: add bpf_iter selftests
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/4/28 =E4=B8=8B=E5=8D=885:50, Jason Wang wrote:
+On Sun, May 3, 2020 at 11:26 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> On 2020/4/27 =E4=B8=8B=E5=8D=8810:32, Jesper Dangaard Brouer wrote:
->> On Mon, 27 Apr 2020 15:21:02 +0800
->> Jason Wang<jasowang@redhat.com> wrote:
->>
->>> On 2020/4/23 =E4=B8=8A=E5=8D=8812:09, Jesper Dangaard Brouer wrote:
->>>> The virtio_net driver is running inside the guest-OS. There are two
->>>> XDP receive code-paths in virtio_net, namely receive_small() and
->>>> receive_mergeable(). The receive_big() function does not support XDP=
-.
->>>>
->>>> In receive_small() the frame size is available in buflen. The buffer
->>>> backing these frames are allocated in add_recvbuf_small() with same
->>>> size, except for the headroom, but tailroom have reserved room for
->>>> skb_shared_info. The headroom is encoded in ctx pointer as a value.
->>>>
->>>> In receive_mergeable() the frame size is more dynamic. There are two
->>>> basic cases: (1) buffer size is based on a exponentially weighted
->>>> moving average (see DECLARE_EWMA) of packet length. Or (2) in case
->>>> virtnet_get_headroom() have any headroom then buffer size is
->>>> PAGE_SIZE. The ctx pointer is this time used for encoding two values=
-;
->>>> the buffer len "truesize" and headroom. In case (1) if the rx buffer
->>>> size is underestimated, the packet will have been split over more
->>>> buffers (num_buf info in virtio_net_hdr_mrg_rxbuf placed in top of
->>>> buffer area). If that happens the XDP path does a xdp_linearize_page
->>>> operation.
->>>>
->>>> Cc: Jason Wang<jasowang@redhat.com>
->>>> Signed-off-by: Jesper Dangaard Brouer<brouer@redhat.com>
->>>> ---
->>>> =C2=A0=C2=A0 drivers/net/virtio_net.c |=C2=A0=C2=A0 15 ++++++++++++-=
---
->>>> =C2=A0=C2=A0 1 file changed, 12 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>> index 11f722460513..1df3676da185 100644
->>>> --- a/drivers/net/virtio_net.c
->>>> +++ b/drivers/net/virtio_net.c
->>>> @@ -689,6 +689,7 @@ static struct sk_buff *receive_small(struct=20
->>>> net_device *dev,
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.dat=
-a_end =3D xdp.data + len;
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.dat=
-a_meta =3D xdp.data;
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.rxq=
- =3D &rq->xdp_rxq;
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.frame_sz =3D buflen;
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 orig_da=
-ta =3D xdp.data;
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 act =3D=
- bpf_prog_run_xdp(xdp_prog, &xdp);
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stats->=
-xdp_packets++;
->>>> @@ -797,10 +798,11 @@ static struct sk_buff=20
->>>> *receive_mergeable(struct net_device *dev,
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int offset =3D buf - page_addre=
-ss(page);
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct sk_buff *head_skb, *curr=
-_skb;
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct bpf_prog *xdp_prog;
->>>> -=C2=A0=C2=A0=C2=A0 unsigned int truesize;
->>>> +=C2=A0=C2=A0=C2=A0 unsigned int truesize =3D mergeable_ctx_to_trues=
-ize(ctx);
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int headroom =3D merge=
-able_ctx_to_headroom(ctx);
->>>> -=C2=A0=C2=A0=C2=A0 int err;
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int metasize =3D 0;
->>>> +=C2=A0=C2=A0=C2=A0 unsigned int frame_sz;
->>>> +=C2=A0=C2=A0=C2=A0 int err;
->>>> =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 head_skb =3D NULL;
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stats->bytes +=3D len - vi->hdr=
-_len;
->>>> @@ -821,6 +823,11 @@ static struct sk_buff=20
->>>> *receive_mergeable(struct net_device *dev,
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (unl=
-ikely(hdr->hdr.gso_type))
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 goto err_xdp;
->>>> =C2=A0=C2=A0 +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Buffers =
-with headroom use PAGE_SIZE as alloc size,
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * see add_recvbuf_=
-mergeable() + get_mergeable_buf_len()
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 frame_sz =3D headroom ? =
-PAGE_SIZE : truesize;
->>>> +
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* This=
- happens when rx buffer size is underestimated
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *=
- or headroom is not enough because of the buffer
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *=
- was refilled before XDP is set. This should only
->>>> @@ -834,6 +841,8 @@ static struct sk_buff *receive_mergeable(struct=20
->>>> net_device *dev,
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 page, offset,
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 VIRTIO_XDP_HEADROOM,
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &len);
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-frame_sz =3D PAGE_SIZE;
->>> Should this be PAGE_SIZE -=C2=A0 SKB_DATA_ALIGN(sizeof(struct=20
->>> skb_shared_info))?
->> No, frame_sz include the SKB_DATA_ALIGN(sizeof(struct=20
->> skb_shared_info)) length.
+> The added test includes the following subtests:
+>   - test verifier change for btf_id_or_null
+>   - test load/create_iter/read for
+>     ipv6_route/netlink/bpf_map/task/task_file
+>   - test anon bpf iterator
+>   - test anon bpf iterator reading one char at a time
+>   - test file bpf iterator
+>   - test overflow (single bpf program output not overflow)
+>   - test overflow (single bpf program output overflows)
 >
+> Th ipv6_route tests the following verifier change
+>   - access fields in the variable length array of the structure.
 >
-> Ok, consider mergeable buffer path depends on the truesize which is=20
-> encoded in ctx.
+> The netlink load tests th following verifier change
+>   - put a btf_id ptr value in a stack and accessible to
+>     tracing/iter programs.
 >
-> It looks to the the calculation in add_recvfbuf_mergeable() is wrong,=20
-> we need count both headroom and tailroom there.
+>   $ test_progs -n 2
+>   #2/1 btf_id_or_null:OK
+>   #2/2 ipv6_route:OK
+>   #2/3 netlink:OK
+>   #2/4 bpf_map:OK
+>   #2/5 task:OK
+>   #2/6 task_file:OK
+>   #2/7 anon:OK
+>   #2/8 anon-read-one-char:OK
+>   #2/9 file:OK
+>   #2/10 overflow:OK
+>   #2/11 overflow-e2big:OK
+>   #2 bpf_iter:OK
+>   Summary: 1/11 PASSED, 0 SKIPPED, 0 FAILED
 >
-> We probably need the attached 2 patches to fix this.
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+
+Looks good overall. bpf_link__disconnect() is wrong, though, please
+remove it. With that:
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  .../selftests/bpf/prog_tests/bpf_iter.c       | 390 ++++++++++++++++++
+>  .../selftests/bpf/progs/bpf_iter_test_kern1.c |   4 +
+>  .../selftests/bpf/progs/bpf_iter_test_kern2.c |   4 +
+>  .../selftests/bpf/progs/bpf_iter_test_kern3.c |  18 +
+>  .../selftests/bpf/progs/bpf_iter_test_kern4.c |  48 +++
+>  .../bpf/progs/bpf_iter_test_kern_common.h     |  22 +
+>  6 files changed, 486 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_test_kern1.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_test_kern2.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_test_kern3.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_test_kern_common.h
 >
-> (untested, will test it tomorrow).
 
+[...]
 
-Sorry for the late reply. I gave a test and post the attached two=20
-patches (with minor tweaks).
+> +
+> +free_link:
+> +       bpf_link__disconnect(link);
 
-It looks to me they are required for this patch to work since=20
-data_hard_start excludes vnet hdr len without the attached patches which=20
-means PAGE_SIZE could not be used as frame_sz.
+bpf_link__disconnect() actually will make destroy() below not close
+link. So no need for it. Same below in few places.
 
-Thanks
+> +       bpf_link__destroy(link);
+> +}
+> +
 
-
->
-> Thanks
-
+[...]
