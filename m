@@ -2,113 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F17FD1C695C
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE5991C695E
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727981AbgEFGuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 02:50:19 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:60306 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726843AbgEFGuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:50:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588747817;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Sj0L9bzOMe10y/BYGkxLOxe7uHdN6rzSZBZfMomA/94=;
-        b=gEb3+sLedbYvDTXk0IcwmnR4W1PcLp90p+YhV15Rr5CRKZnqiqgiN/eE+DncRLRL3+YhS2
-        Y8MYjc3iIkbiqfdwGGCeaIVh8czf3pyiF1/udpkRX+rJehVYU7M2p7PbK498DdJlSmn0X7
-        vEN6TaDnn0xqoTnxSOa3JCL6zX+e8vg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-220-vsPC0njcP5-SPjAR2JWACw-1; Wed, 06 May 2020 02:50:13 -0400
-X-MC-Unique: vsPC0njcP5-SPjAR2JWACw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 27FE245F;
-        Wed,  6 May 2020 06:50:11 +0000 (UTC)
-Received: from [10.72.13.165] (ovpn-13-165.pek2.redhat.com [10.72.13.165])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BAB196297D;
-        Wed,  6 May 2020 06:49:58 +0000 (UTC)
-Subject: Re: [PATCH net-next v2 20/33] vhost_net: also populate XDP frame size
-From:   Jason Wang <jasowang@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, sameehj@amazon.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
-        akiyano@amazon.com, gtzalik@amazon.com,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        steffen.klassert@secunet.com
-References: <158824557985.2172139.4173570969543904434.stgit@firesoul>
- <158824572308.2172139.1144470511173466125.stgit@firesoul>
- <0a875a6e-8b8d-b55f-2b50-1c8dc0017a92@redhat.com>
-Message-ID: <482c0099-a8b7-534e-7c91-a57cd50e9b50@redhat.com>
-Date:   Wed, 6 May 2020 14:49:56 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <0a875a6e-8b8d-b55f-2b50-1c8dc0017a92@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Content-Transfer-Encoding: quoted-printable
+        id S1728047AbgEFGuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 02:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726843AbgEFGui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:50:38 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB927C061A0F;
+        Tue,  5 May 2020 23:50:38 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id p25so513196pfn.11;
+        Tue, 05 May 2020 23:50:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=ydko4XrYs4w1KKatK31nfPnq11ga6bQcsiSda7KjcmE=;
+        b=W406yqoHA1efuiQF2WOnQJueVHN5DzZWZ4QTMRuQjpvHq4Xi79poFnuyn3Y74eEGCW
+         eGWp35uZJiTsXrMyr4b+0BFLLj/peWJQHTqDNuDkPKU5L9ZV4qewPBtAg/LENRRrMd3P
+         0gbUcBsUSp99sQgcZBwGTJ23Kn+xzKwDx91964cfsgqZZvjxWL1ScXVCAsCtKTjcAjlh
+         ICSd04dynZRjp9bFtLcOxRYLZ32Aa9hQGxk2eEpw9lKBZtwiAMQFpzT6WW4OIitUdKH1
+         +psAdhMsuwohMl1Qz3UnM15qvVAP5lbj/F2TLiOPd/9HdqBcHOOAyjn5+3w0VLxFYSDE
+         QLpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ydko4XrYs4w1KKatK31nfPnq11ga6bQcsiSda7KjcmE=;
+        b=EtMbfOknYPG6Rx8IBPNJ6pfXoVrRL1lpSgdwIlSiCk5W2cUBXDM6tXYi7gnB+1lOF5
+         KgT7lxFvBYKdySf1rHUYRYWmyV4xSGNcN4LD+axxo1Q4zS3emqkvwGHbP0B4rL+IIz90
+         OXoAjSMzT5hbrLqGXUQODuayhuIXGvZQffuh9boeJjYRPXw5nOU0i7I+BNkxQvD9VfoD
+         my0gaCf2uPCj2vr4BD5Mckq0nvRGuVkQuehbhCQjihrbnKKUv7VXRymiZzhsXZVXETci
+         ZySEKuaUxvZ/8vo5b5/qYNTE8eBEoaL0L8C6akRCUcz9xdAYlhLF71EvaoU84fBgU4Ja
+         W4qA==
+X-Gm-Message-State: AGi0PuZYelNNsYgmZ6DQ84Gd/yXYCKRxjj2MzQEvmCfxZgK84jzfChrL
+        xDo4026/75LtQd17EJC96jk=
+X-Google-Smtp-Source: APiQypL0to3E2l1EVPw1+VbbevsDmw05pqwYr4q2mGN9v3c81J+Uv7fWCGTb66X7c+eVOhevTUSHtQ==
+X-Received: by 2002:a63:d501:: with SMTP id c1mr5677377pgg.186.1588747838073;
+        Tue, 05 May 2020 23:50:38 -0700 (PDT)
+Received: from DESKTOP-9405E5V.localdomain ([185.173.93.36])
+        by smtp.gmail.com with ESMTPSA id v94sm3970608pjb.39.2020.05.05.23.50.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 23:50:37 -0700 (PDT)
+From:   Huang Qijun <dknightjun@gmail.com>
+To:     pablo@netfilter.org
+Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Huang Qijun <dknightjun@gmail.com>
+Subject: [PATCH] netfilter: fix make target xt_TCPMSS.o error.
+Date:   Wed,  6 May 2020 14:50:21 +0800
+Message-Id: <20200506065021.2881-1-dknightjun@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When compiling netfilter, there will be an error
+"No rule to make target 'net/netfilter/xt_TCPMSS.o'",
+because the xt_TCPMSS.c in the makefile is uppercase,
+and the file name of the source file (xt_tcpmss.c) is lowercase.
+Therefore, change the xt_TCPMSS.c name in the makefile to all lowercase.
 
-On 2020/5/6 =E4=B8=8B=E5=8D=882:41, Jason Wang wrote:
->
-> On 2020/4/30 =E4=B8=8B=E5=8D=887:22, Jesper Dangaard Brouer wrote:
->> In vhost_net_build_xdp() the 'buf' that gets queued via an xdp_buff
->> have embedded a struct tun_xdp_hdr (located at xdp->data_hard_start)
->> which contains the buffer length 'buflen' (with tailroom for
->> skb_shared_info). Also storing this buflen in xdp->frame_sz, does not
->> obsolete struct tun_xdp_hdr, as it also contains a struct
->> virtio_net_hdr with other information.
->>
->> Cc: Jason Wang <jasowang@redhat.com>
->> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->> ---
->> =C2=A0 drivers/vhost/net.c |=C2=A0=C2=A0=C2=A0 1 +
->> =C2=A0 1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
->> index 2927f02cc7e1..516519dcc8ff 100644
->> --- a/drivers/vhost/net.c
->> +++ b/drivers/vhost/net.c
->> @@ -747,6 +747,7 @@ static int vhost_net_build_xdp(struct=20
->> vhost_net_virtqueue *nvq,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp->data =3D buf + pad;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp->data_end =3D xdp->data + len;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 hdr->buflen =3D buflen;
->> +=C2=A0=C2=A0=C2=A0 xdp->frame_sz =3D buflen;
->> =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 --net->refcnt_bias;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 alloc_frag->offset +=3D buflen;
->
->
-> Hi Jesper:
->
-> As I said in v1, tun will do this for us (patch 19) via hdr->buflen.=20
-> So it looks to me this is not necessary?
->
-> Thanks=20
+Signed-off-by: Huang Qijun <dknightjun@gmail.com>
+---
+ net/netfilter/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-Miss your reply. So
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
+diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
+index 0e0ded87e27b..b974ade24556 100644
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
+@@ -157,7 +157,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_REDIRECT) += xt_REDIRECT.o
+ obj-$(CONFIG_NETFILTER_XT_TARGET_MASQUERADE) += xt_MASQUERADE.o
+ obj-$(CONFIG_NETFILTER_XT_TARGET_SECMARK) += xt_SECMARK.o
+ obj-$(CONFIG_NETFILTER_XT_TARGET_TPROXY) += xt_TPROXY.o
+-obj-$(CONFIG_NETFILTER_XT_TARGET_TCPMSS) += xt_TCPMSS.o
++obj-$(CONFIG_NETFILTER_XT_TARGET_TCPMSS) += xt_tcpmss.o
+ obj-$(CONFIG_NETFILTER_XT_TARGET_TCPOPTSTRIP) += xt_TCPOPTSTRIP.o
+ obj-$(CONFIG_NETFILTER_XT_TARGET_TEE) += xt_TEE.o
+ obj-$(CONFIG_NETFILTER_XT_TARGET_TRACE) += xt_TRACE.o
+-- 
+2.17.1
 
