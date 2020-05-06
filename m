@@ -2,77 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4CCF1C7886
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 19:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A55141C7888
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 19:48:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729460AbgEFRrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 13:47:51 -0400
-Received: from verein.lst.de ([213.95.11.211]:42252 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728566AbgEFRrv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 13:47:51 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id C3AAB68C7B; Wed,  6 May 2020 19:47:47 +0200 (CEST)
-Date:   Wed, 6 May 2020 19:47:47 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org,
-        linux-um <linux-um@lists.infradead.org>,
-        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 08/15] maccess: rename strnlen_unsafe_user to
- strnlen_user_unsafe
-Message-ID: <20200506174747.GA7549@lst.de>
-References: <20200506062223.30032-1-hch@lst.de> <20200506062223.30032-9-hch@lst.de> <CAHk-=wj3T6u_kj8r9f3aGXCjuyN210_gJC=AXPFm9=wL-dGALA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wj3T6u_kj8r9f3aGXCjuyN210_gJC=AXPFm9=wL-dGALA@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+        id S1729301AbgEFRsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 13:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727872AbgEFRsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 13:48:21 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40FDC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 10:48:20 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id z8so3246414wrw.3
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 10:48:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=8UNugCipw+QrgTWdqbm0O80mBvZ2lj7/H0gFxOkgBBQ=;
+        b=ql7RMad1yCZLc9uPAOOO8L24yoyiWJ6r1nonj3RI/XAW+nAo7tj/J0X/8DBDHF7m4P
+         IXwEOHUXwO7QgO8e/8ZQoqrJFaisYJbvvyt2qyJo4IvtwtWQZQ4UwZpAEAlTBt1Rt/BI
+         NyENjaQWnZ4De9S19wv+sgcS4QLusxMBWq6NHQOd7qV+UK7w1XQ96oS8F5UV5jxbpVv7
+         Mu84h9z6p2z2PTSId6CCalVry2pEf6Wq+V5nOVRiLYV/arsFL606mUMvd32gk6U9ydTF
+         WT2ORm9Kegv6rivxlhNP1/720AK5MtAPVah12B2kzfYXNxukzO7hNQmlTLAowIahpC0p
+         ohcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8UNugCipw+QrgTWdqbm0O80mBvZ2lj7/H0gFxOkgBBQ=;
+        b=XoAYtOUsVw651np/Wcm0c72pIO6OzyaNJF2vDJ+bbuXGJuORaXp6MDHHmxXPiu4qxl
+         vLAfc6YHDbIwS7DN6vkoJxfpI9hQLumPvYDIPcHhdOPgGatdlVpiuDmrRPuSbInwFleA
+         c7bybxboJpoo6W2C4Mt22SrxnCkvRuqJGOWRqczZ2GBSn3AYyQVvmKe54axknOZ+Arv4
+         WApk+sQodpR8mJh9sPYkO3mpPr4JOkb6+3v8kmmaTnkcyGKdOeENqdjH4O8mE0RHibUK
+         AuUCrgRiM6LcmYdJl4dx/2CO3ZlRZZC1X/22r1TLEYLpA5qpJAMtBMxRw8a02UQmzhWw
+         s4Qg==
+X-Gm-Message-State: AGi0PuZuOv10fg9sqx8ErYy68GQaS5qh+mD4P3gMLxHx4rP2vBponEcE
+        PshG0lzbF02gJNooqTBJmeg=
+X-Google-Smtp-Source: APiQypJLuuaEx3XC/bKJlFXbox0ZIn8vXOxsfIVri+9lNJLbJqJghwt0rWdHIcGlQwpP0En1vZ8ZsQ==
+X-Received: by 2002:adf:fe51:: with SMTP id m17mr10536597wrs.414.1588787299521;
+        Wed, 06 May 2020 10:48:19 -0700 (PDT)
+Received: from localhost.localdomain ([86.121.118.29])
+        by smtp.gmail.com with ESMTPSA id h74sm3402566wrh.76.2020.05.06.10.48.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 10:48:18 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, richardcochran@gmail.com
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        christian.herber@nxp.com, yangbo.lu@nxp.com, netdev@vger.kernel.org
+Subject: [PATCH net] net: dsa: sja1105: the PTP_CLK extts input reacts on both edges
+Date:   Wed,  6 May 2020 20:48:13 +0300
+Message-Id: <20200506174813.14587-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 06, 2020 at 10:44:15AM -0700, Linus Torvalds wrote:
-> So while I think using a consistent convention is good, and it's true
-> that there is a difference in the convention between the two cases
-> ("unsafe" at the beginning vs end), one of them is actually about the
-> safety and security of the operation (and we have automated logic
-> these days to verify it on x86), the other has nothing to do with
-> "safety", really.
-> 
-> Would it be better to standardize around a "probe_xyz()" naming?
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-So:
+It looks like the sja1105 external timestamping input is not as generic
+as we thought. When fed a signal with 50% duty cycle, it will timestamp
+both the rising and the falling edge. When fed a short pulse signal,
+only the timestamp of the falling edge will be seen in the PTPSYNCTS
+register, because that of the rising edge had been overwritten. So the
+moral is: don't feed it short pulse inputs.
 
-  probe_strncpy, probe_strncpy_user, probe_strnlen_user?
+Luckily this is not a complete deal breaker, as we can still work with
+1 Hz square waves. But the problem is that the extts polling period was
+not dimensioned enough for this input signal. If we leave the period at
+half a second, we risk losing timestamps due to jitter in the measuring
+process. So we need to increase it to 4 times per second.
 
-Sounds weird, but at least it is consistent.
+Also, the very least we can do to inform the user is to deny any other
+flags combination than with PTP_RISING_EDGE and PTP_FALLING_EDGE both
+set.
 
-> Or perhaps a "xyz_nofault()" naming?
+Fixes: 747e5eb31d59 ("net: dsa: sja1105: configure the PTP_CLK pin as EXT_TS or PER_OUT")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/sja1105/sja1105_ptp.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-That sounds a little better:
+diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
+index a22f8e3fc06b..bc0e47c1dbb9 100644
+--- a/drivers/net/dsa/sja1105/sja1105_ptp.c
++++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
+@@ -16,14 +16,15 @@
+ 
+ /* PTPSYNCTS has no interrupt or update mechanism, because the intended
+  * hardware use case is for the timestamp to be collected synchronously,
+- * immediately after the CAS_MASTER SJA1105 switch has triggered a CASSYNC
+- * pulse on the PTP_CLK pin. When used as a generic extts source, it needs
+- * polling and a comparison with the old value. The polling interval is just
+- * the Nyquist rate of a canonical PPS input (e.g. from a GPS module).
+- * Anything of higher frequency than 1 Hz will be lost, since there is no
+- * timestamp FIFO.
++ * immediately after the CAS_MASTER SJA1105 switch has performed a CASSYNC
++ * one-shot toggle (no return to level) on the PTP_CLK pin. When used as a
++ * generic extts source, the PTPSYNCTS register needs polling and a comparison
++ * with the old value. The polling interval is configured as the Nyquist rate
++ * of a signal with 50% duty cycle and 1Hz frequency, which is sadly all that
++ * this hardware can do (but may be enough for some setups). Anything of higher
++ * frequency than 1 Hz will be lost, since there is no timestamp FIFO.
+  */
+-#define SJA1105_EXTTS_INTERVAL		(HZ / 2)
++#define SJA1105_EXTTS_INTERVAL		(HZ / 4)
+ 
+ /*            This range is actually +/- SJA1105_MAX_ADJ_PPB
+  *            divided by 1000 (ppb -> ppm) and with a 16-bit
+@@ -754,7 +755,16 @@ static int sja1105_extts_enable(struct sja1105_private *priv,
+ 		return -EOPNOTSUPP;
+ 
+ 	/* Reject requests with unsupported flags */
+-	if (extts->flags)
++	if (extts->flags & ~(PTP_ENABLE_FEATURE |
++			     PTP_RISING_EDGE |
++			     PTP_FALLING_EDGE |
++			     PTP_STRICT_FLAGS))
++		return -EOPNOTSUPP;
++
++	/* We can only enable time stamping on both edges, sadly. */
++	if ((extts->flags & PTP_STRICT_FLAGS) &&
++	    (extts->flags & PTP_ENABLE_FEATURE) &&
++	    (extts->flags & PTP_EXTTS_EDGES) != PTP_EXTTS_EDGES)
+ 		return -EOPNOTSUPP;
+ 
+ 	rc = sja1105_change_ptp_clk_pin_func(priv, PTP_PF_EXTTS);
+-- 
+2.17.1
 
-   strncpy_nofault, strncpy_user_nofault, strnlen_user_nofault
-
-> I realize this is nit-picky, and I think the patch series as-is is
-> already an improvement, but I do think our naming in this area is
-> really quite bad.
-
-Always open for improvements :)
-
-> The fact that we have "probe_kernel_read()" but then
-> "strncpy_from_user_unsafe()" for the _same_ conceptual difference
-> really tells me how inconsistent the naming for these kinds of "we
-> can't take page faults" is. No?
-
-True.  If we wanted to do _nofaul, what would the basic read/write
-versions be?
