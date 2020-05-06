@@ -2,128 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67CF71C693A
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:46:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3224F1C6941
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:47:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727999AbgEFGqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 02:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725882AbgEFGqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:46:23 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0914FC061A41
-        for <netdev@vger.kernel.org>; Tue,  5 May 2020 23:46:22 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id f82so714832ilh.8
-        for <netdev@vger.kernel.org>; Tue, 05 May 2020 23:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=+/CvsVsRvsIe2fdwin42oKRwBiHMUNkSBi3zIOYY4k4=;
-        b=DT6WmVJOSFGWbwoJzWlGLC1MHvldjbW1aPbGsebQDxlwZe7iwnSNTolfUa76eOd29p
-         bY4+DyIu0HM7Ux+b79wpjv1HEfzbH79157RfuHSyksqzSHLknytmZWYPfXFm5QGWRjr4
-         trPVXMgze6AHFPvmnwrxjqlJKc728qaSJfARZbGbfhF4give+X0eaTP+oNhRMf+5ac8P
-         Arpc631AY/NRljNjuR5I9hcJdirqymusRyVIeUrXArJFWuT3SoexMOmMizUv/8UFF/8J
-         GTpCWHc3c1BWYWTjKwX/5uBZaJK6C+gV4m4MOKsh1M5DtywTmEZjpryYodVi30SRoDCo
-         EcOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=+/CvsVsRvsIe2fdwin42oKRwBiHMUNkSBi3zIOYY4k4=;
-        b=sJ6v2q21lRvEi9UF+8T6bWQ7YhhTgkE6u54lyU6kzg2Ji9TlMxgvGKdDb45laZ5mHF
-         wKiuQ5dMWQkeZlurlmIO9bNncXyrX/wGat5lyDSvgPOQZUPNBDB5iVSGb3V5IqMHGsVH
-         Oqk4zA6Oqu1GPckzxZlrVSeR1S2ZawPIYgllkd16IRnNgvz3OtWhxF21/7rklUOxeG51
-         sl7rPhOaWK5Yw+5Yskfu7mAg6ITwDt1N8JUX70zxBgEp1eu0V8e3BDDd5Q2SaNVSXbnY
-         Cr9tUf/hiKiQdnVB9gV57sThgO9oQ0zWMXGBIBZ1p9rbs+3y6LAtQyHL2SSEHBds+XHu
-         BmmQ==
-X-Gm-Message-State: AGi0PuYhtktgw50f+DNrY1eGfB020Trt9OJqvTYx1rvLjiGybXdP84dr
-        z2RNvUXWk8zCma1Q8H+YEXPRltv5cj8R6MFufbPmgg==
-X-Google-Smtp-Source: APiQypKJEgnZebPwGNweIcvVeYvS0XTuBvG2j4m7bwSAxW9ci9eJ/kiRyX1pjwNIRh6SnysmSCqDdQb9gXdF8OxrFFg=
-X-Received: by 2002:a92:aa07:: with SMTP id j7mr7777424ili.40.1588747581285;
- Tue, 05 May 2020 23:46:21 -0700 (PDT)
+        id S1728073AbgEFGrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 02:47:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33978 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727859AbgEFGrG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 02:47:06 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 298CB206F9;
+        Wed,  6 May 2020 06:47:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588747625;
+        bh=aKk/pN/cUJn3REjudMML6/onOxG2p84gG9MnT2qH7i8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gUeRsQ1vavsKSFzz7n4A7lOGR8bCY2r4BfX+SAquJ5tN9tZLG7gzyGHRUkfTkYXqs
+         eqcY44b+nMHndqsryyu1Yn1bnQIOoByxTXhRRVbBRn8c9hQzRqHK1ASoesDxwMwS5C
+         UCphDaZHGPuEMdE5/zc0VkhhiRlBt+6eHfxBfm7k=
+Date:   Wed, 6 May 2020 08:47:03 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     ashwin-h <ashwinh@vmware.com>
+Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, srivatsab@vmware.com,
+        srivatsa@csail.mit.edu, rostedt@goodmis.org, srostedt@vmware.com,
+        ashwin.hiranniah@gmail.com
+Subject: Re: [PATCH 0/2] Backport to 4.19 - sctp: fully support memory
+ accounting
+Message-ID: <20200506064703.GA2273049@kroah.com>
+References: <cover.1588242081.git.ashwinh@vmware.com>
 MIME-Version: 1.0
-References: <20200505140231.16600-1-brgl@bgdev.pl> <20200505140231.16600-6-brgl@bgdev.pl>
- <CAKOOJTzcNr7mc9xusQm3nCzkq5P=ha-si3fizeEL2_KJUOC3-Q@mail.gmail.com>
-In-Reply-To: <CAKOOJTzcNr7mc9xusQm3nCzkq5P=ha-si3fizeEL2_KJUOC3-Q@mail.gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 6 May 2020 08:46:10 +0200
-Message-ID: <CAMRc=Md7gLMThfGF-7YLqW17MpMhU=UFbdTvfjbr9fFHTLir8g@mail.gmail.com>
-Subject: Re: [PATCH 05/11] net: core: provide devm_register_netdev()
-To:     Edwin Peer <edwin.peer@broadcom.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1588242081.git.ashwinh@vmware.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-wt., 5 maj 2020 o 21:25 Edwin Peer <edwin.peer@broadcom.com> napisa=C5=82(a=
-):
-> > +
-> > +static void devm_netdev_release(struct device *dev, void *this)
-> > +{
-> > +       struct netdevice_devres *res =3D this;
-> > +
-> > +       unregister_netdev(res->ndev);
-> > +}
-> > +
-> > +/**
-> > + *     devm_register_netdev - resource managed variant of register_net=
-dev()
-> > + *     @ndev: device to register
-> > + *
-> > + *     This is a devres variant of register_netdev() for which the unr=
-egister
-> > + *     function will be call automatically when the parent device of n=
-dev
-> > + *     is detached.
-> > + */
-> > +int devm_register_netdev(struct net_device *ndev)
-> > +{
-> > +       struct netdevice_devres *dr;
-> > +       int ret;
-> > +
-> > +       /* struct net_device itself must be devres managed. */
-> > +       BUG_ON(!(ndev->priv_flags & IFF_IS_DEVRES));
-> > +       /* struct net_device must have a parent device - it will be the=
- device
-> > +        * managing this resource.
-> > +        */
->
-> Catching static programming errors seems like an expensive use of the
-> last runtime flag in the enum. It would be weird to devres manage the
-> unregister and not also choose to manage the underlying memory in the
-> same fashion, so it wouldn't be an obvious mistake to make. If it must
-> be enforced, one could also iterate over the registered release
-> functions and check for the presence of devm_free_netdev without
-> burning the flag.
->
+On Wed, May 06, 2020 at 07:50:52PM +0530, ashwin-h wrote:
+> Backport below upstream commits to 4.19 to address CVE-2019-3874.
+> 1033990ac5b2ab6cee93734cb6d301aa3a35bcaa
+> sctp: implement memory accounting on tx path
+> 
+> 9dde27de3e5efa0d032f3c891a0ca833a0d31911
+> sctp: implement memory accounting on rx path
+> 
+> Xin Long (2):
+>   sctp: implement memory accounting on tx path
+>   sctp: implement memory accounting on rx path
+> 
+>  include/net/sctp/sctp.h |  2 +-
+>  net/sctp/sm_statefuns.c |  6 ++++--
+>  net/sctp/socket.c       | 10 ++++++++--
+>  net/sctp/ulpevent.c     | 19 ++++++++-----------
+>  net/sctp/ulpqueue.c     |  3 ++-
+>  5 files changed, 23 insertions(+), 17 deletions(-)
+> 
+> -- 
+> 2.7.4
+> 
 
-Hi Edwin,
+<formletter>
 
-I've submitted this patch some time ago already and was told to check
-if the underlying memory is managed too. I guess I could try to use
-devres_find() here though.
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
 
-Re the last bit in priv_flags: is this really a problem though? It's
-not like struct net_device must remain stable - e.g. we can make
-priv_flags a bitmap.
-
-Bart
+</formletter>
