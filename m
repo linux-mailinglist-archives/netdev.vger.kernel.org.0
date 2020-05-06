@@ -2,148 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D624D1C7DE7
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 01:32:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 441B71C7DEF
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 01:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727955AbgEFXco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 19:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
+        id S1727994AbgEFXdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 19:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727088AbgEFXco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 19:32:44 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1B8C061A0F;
-        Wed,  6 May 2020 16:32:43 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id k8so2946853ejv.3;
-        Wed, 06 May 2020 16:32:43 -0700 (PDT)
+        with ESMTP id S1726645AbgEFXdK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 19:33:10 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66179C061A0F;
+        Wed,  6 May 2020 16:33:10 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id z1so1986941pfn.3;
+        Wed, 06 May 2020 16:33:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PyQtyzfpEi11D12YIo9CY2Ai/69JbjG0nmbCVjCYT+Q=;
-        b=F4Io3OgGcJpxtvJtxEwwIQOL+8gShv7UL9fM8M+vuC5/ZU2s8LRdB7GuUsDXLvtcL1
-         ML+/afleaQR+tNqZFburj0jhDpa5CLwvJjOFaNGlOYDE6PPDk2I0XoA3TXJSjy07yEEm
-         JxxyQXm9Po+5iwgAuVEHXMBdQX85kUBKOtqhJzNEaiRUxvsSS0tp4RoYAtExXssFtUti
-         2tWnRMAR641gO49w72cQChLHv3oRt/da9UEeV39DR0rjBpMbUJscoJKgdzGK0EBc+n1T
-         K2yUgvvSkkOawmCQYMRkHAHD9FqXNzbN6KOO/Qu7GWsQNNzamHHpyPHyV6FT1PlASSk6
-         jRow==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JjMAyO4tLtAmhwV/k9L9sSW04zGeh8HxdZQAYEG4VoQ=;
+        b=QdjVM5UlTNqjrwlvQ986J0UXLLGo+1dLtobwrQZQ4upd5rLRtGAP6EPxakQ6azs23H
+         YdPS15KLLvDutw5Oodla6OPPC4dyprA7KXsA6BckMxD22jBVmOnjuuFdTOrhF4mjm5sR
+         F2ePfcsd0b3pjfbACz5giT7H1GJEVF79DEoMkYcV5T9jYM+A+eXD9ewLVLxcElHAfbHl
+         sju3zPBHP5G7lpByn7kETGsf7RjIsH8VQBhKTjwTHgkV020wIqiPdB8DwT08SuHPSRCJ
+         MpQ5neNt1OIqKjKn7iLOdzF9uTVCzl80vih6B6WkesaZCdG3pRJ+HKUyrhcs6vu+Tct2
+         d4Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PyQtyzfpEi11D12YIo9CY2Ai/69JbjG0nmbCVjCYT+Q=;
-        b=OSipleIq0CBfzS5ZUkjtk8KAjEqAt020XtUFXnJzU6TuWa+Wbo4uVQEpdVyD0Li4uu
-         n6d0drKvlSVs2DnYCxpXacnctHrBqgwmUo/2wPEBA671z2SLoawj2p8Sgqj9yJv0+mH4
-         5eRt8M3ylqIqeTVl3MdJhNrhvavzYOZdX9y0vf+dBxEekEQO/kEwI5DoeLkGnP0rzx4F
-         pU/6JDPKHJfMOzxCNLV5II5m5pknbq090tpsWD7tiYqoWp6TCDIF8EzlT0LXCztsaEXp
-         w4Z9C56G68sX9Q6OTysNkm4r2BexO/3zaUUkRao3XG3zbdSEiCAVCGz2Zsrl63oUNJtk
-         i8Ug==
-X-Gm-Message-State: AGi0PuZTwkX1RE6yHRRmYVKV3syrUXXTJjbunLyNsRvPKBKJeJhKvftN
-        Ks2MTA3L8Pq1MZ47fRZXXT0XFX/jq9Y2U6S6VT4=
-X-Google-Smtp-Source: APiQypIQCyTIuPEEp1VjyAMeJ0nSR+gVWjNQWhEv4iJMafIi9Jc3YYJF/ceHOIfQmoxB+sYXp2PumtD92nOc/dJC2t4=
-X-Received: by 2002:a17:906:355b:: with SMTP id s27mr9781545eja.184.1588807962270;
- Wed, 06 May 2020 16:32:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JjMAyO4tLtAmhwV/k9L9sSW04zGeh8HxdZQAYEG4VoQ=;
+        b=gQd59t/FrxFjk/0ehf2ie/l+deCKg6OmJp5YWxvMDRPL7WfzJeQxlsONf75VOOSWCL
+         56IkK8VC9YWV1UpGsfzs8mdhn2NBj7J1TBSMMkNIJSIJ4XTnPjHK9CiSxMFaBzgHskwh
+         xEvO2UbJC3k+b2PyLWaDlD4bVBSLVufFAGeT5chPagLtRjbKK6QLLtLz2g0S+1w+Bpsg
+         2eircCwULsQAIoNBqLUI2wFgBRmheAY+iI4bIXbgfzi13QrsVVDbYxvoxfPWAQIF+x2t
+         2SIGTWt6AgTWUXDeiqVY7yyEoNG7WWITc9U41VA8jUuT+zJb8xChKnc9rutmlkK9NdNN
+         2n9g==
+X-Gm-Message-State: AGi0PuYO0L92pJhQ9jUw8juU91FrBexivjgWqxPIoN8nN4n3AimMJjf/
+        swrRc5/Lw3YL6ZlRfmJmWkc=
+X-Google-Smtp-Source: APiQypJD92evuW6PsqCb4b+CNaSBoXZV67yCaBLIOsXAwbF5B3yXxXX1rC/eMZ8rZ+3deuQNTWyIog==
+X-Received: by 2002:a63:3006:: with SMTP id w6mr8752880pgw.18.1588807989768;
+        Wed, 06 May 2020 16:33:09 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id u188sm2957158pfu.33.2020.05.06.16.33.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 16:33:08 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH v2] net: bpf: permit redirect from L3 to L2 devices at near max mtu
+Date:   Wed,  6 May 2020 16:32:59 -0700
+Message-Id: <20200506233259.112545-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
+In-Reply-To: <20200420231427.63894-1-zenczykowski@gmail.com>
+References: <20200420231427.63894-1-zenczykowski@gmail.com>
 MIME-Version: 1.0
-References: <20200505210253.20311-1-f.fainelli@gmail.com> <20200505172302.GB1170406@t480s.localdomain>
- <d681a82b-5d4b-457f-56de-3a439399cb3d@gmail.com> <CA+h21hpvC6ST2iv-4xjpwpmRHQJvk-AufYFvG0J=5KzUgcnC5A@mail.gmail.com>
- <97c93b65-3631-e694-78ac-7e520e063f95@gmail.com>
-In-Reply-To: <97c93b65-3631-e694-78ac-7e520e063f95@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 7 May 2020 02:32:31 +0300
-Message-ID: <CA+h21hp0-3n7OBuBxXiAeicicpkbXu9XnURjONvgfYgd=b1zLA@mail.gmail.com>
-Subject: Re: [RFC net] net: dsa: Add missing reference counting
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 May 2020 at 01:45, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 5/6/2020 2:40 PM, Vladimir Oltean wrote:
-> > Hi Florian,
-> >
-> > On Thu, 7 May 2020 at 00:24, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>
-> >>
-> >>
-> >> On 5/5/2020 2:23 PM, Vivien Didelot wrote:
-> >>> On Tue,  5 May 2020 14:02:53 -0700, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>>> If we are probed through platform_data we would be intentionally
-> >>>> dropping the reference count on master after dev_to_net_device()
-> >>>> incremented it. If we are probed through Device Tree,
-> >>>> of_find_net_device() does not do a dev_hold() at all.
-> >>>>
-> >>>> Ensure that the DSA master device is properly reference counted by
-> >>>> holding it as soon as the CPU port is successfully initialized and later
-> >>>> released during dsa_switch_release_ports(). dsa_get_tag_protocol() does
-> >>>> a short de-reference, so we hold and release the master at that time,
-> >>>> too.
-> >>>>
-> >>>> Fixes: 83c0afaec7b7 ("net: dsa: Add new binding implementation")
-> >>>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> >>>
-> >>> Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
-> >>>
-> >> Andrew, Vladimir, any thoughts on that?
-> >> --
-> >> Florian
-> >
-> > I might be completely off because I guess I just don't understand what
-> > is the goal of keeping a reference to the DSA master in this way for
-> > the entire lifetime of the DSA switch. I think that dev_hold is for
-> > short-term things that cannot complete atomically, but I think that
-> > you are trying to prevent the DSA master from getting freed from under
-> > our feet, which at the moment would fault the kernel instantaneously?
->
-> Yes, that's the idea, you should not be able to rmmod/unbind the DSA
-> master while there is a DSA switch tree hanging off of it.
->
-> >
-> > If this is correct, it certainly doesn't do what it intends to do:
-> > echo 0000\:00\:00.5> /sys/bus/pci/drivers/mscc_felix/unbind
-> > [   71.576333] unregister_netdevice: waiting for swp0 to become free.
-> > Usage count = 1
-> > (hangs there)
->
-> Is this with the sja1105 switch hanging off felix?
+From: Maciej Żenczykowski <maze@google.com>
 
-Yes, but it actually doesn't matter that the DSA master is a DSA slave too.
+__bpf_skb_max_len(skb) is used from:
+  bpf_skb_adjust_room
+  __bpf_skb_change_tail
+  __bpf_skb_change_head
 
-> If so, is not it
-> working as expected because you still have sja1150 being bound to one of
-> those ports? If not, then I will look into why.
->
+but in the case of forwarding we're likely calling these functions
+during receive processing on ingress and bpf_redirect()'ing at
+a later point in time to egress on another interface, thus these
+mtu checks are for the wrong device (input instead of output).
 
-I just unbound the driver for the DSA master and the shell got stuck
-in kernel process context telling me that it's waiting for the
-reference to be freed. So I think it's just that my "expected" is not
-the same as yours - it looks like what I'm doing would qualify as
-"incorrect usage".
+This is particularly problematic if we're receiving on an L3 1500 mtu
+cellular interface, trying to add an L2 header and forwarding to
+an L3 mtu 1500 mtu wifi/ethernet device (which is thus L2 1514).
 
-> >
-> > But if I'm right and that's indeed what you want to achieve, shouldn't
-> > we be using device links instead?
-> > https://www.kernel.org/doc/html/v4.14/driver-api/device_link.html
->
-> device links could work but given that the struct device and struct
-> net_device have almost the same lifetime, with the net_device being a
-> little bit shorter, and that is what DSA uses, I am not sure whether
-> device link would bring something better.
+The mtu check prevents us from adding the 14 byte ethernet header prior
+to forwarding the packet.
 
-At the very least, I think they would bring us graceful teardown of
-consumers of the DSA master device.
+After the packet has already been redirected, we'd need to add
+an additional 2nd ebpf program on the target device's egress tc hook,
+but then we'd also see non-redirected traffic and have no easy
+way to tell apart normal egress with ethernet header packets
+from forwarded ethernet headerless packets.
 
-> --
-> Florian
+Credits to Alexei Starovoitov for the suggestion on how to 'fix' this.
 
-Thanks,
--Vladimir
+This probably should be further fixed up *somehow*, just
+not at all clear how.  This does at least make things work.
+
+Cc: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+---
+ net/core/filter.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 7d6ceaa54d21..811aba77e24b 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3159,8 +3159,20 @@ static int bpf_skb_net_shrink(struct sk_buff *skb, u32 off, u32 len_diff,
+ 
+ static u32 __bpf_skb_max_len(const struct sk_buff *skb)
+ {
+-	return skb->dev ? skb->dev->mtu + skb->dev->hard_header_len :
+-			  SKB_MAX_ALLOC;
++	if (skb->dev) {
++		unsigned short header_len = skb->dev->hard_header_len;
++
++		/* HACK: Treat 0 as ETH_HLEN to allow redirect while
++		 * adding ethernet header from an L3 (tun, rawip, cellular)
++		 * to an L2 device (tap, ethernet, wifi)
++		 */
++		if (!header_len)
++			header_len = ETH_HLEN;
++
++		return skb->dev->mtu + header_len;
++	} else {
++		return SKB_MAX_ALLOC;
++	}
+ }
+ 
+ BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *, skb, s32, len_diff,
+-- 
+2.26.2.526.g744177e7f7-goog
+
