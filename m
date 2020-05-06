@@ -2,62 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB5E1C6EE0
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C15DD1C6EEC
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727955AbgEFLFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 07:05:10 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:50156 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727893AbgEFLFJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 07:05:09 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 877F32AC311049E5CA69;
-        Wed,  6 May 2020 19:05:07 +0800 (CST)
-Received: from localhost (10.173.251.152) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Wed, 6 May 2020
- 19:04:59 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <jerry.lilijun@huawei.com>,
-        <xudingke@huawei.com>, Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net-next] net: socionext: Fix use correct return type for ndo_start_xmit()
-Date:   Wed, 6 May 2020 19:04:59 +0800
-Message-ID: <1588763099-15812-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.173.251.152]
-X-CFilter-Loop: Reflected
+        id S1728038AbgEFLJa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 6 May 2020 07:09:30 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:56688 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727861AbgEFLJa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:09:30 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 93695CED03;
+        Wed,  6 May 2020 13:19:09 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH] Bluetooth: Terminate the link if pairing is cancelled
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CABBYNZ+1XLttkvoBzLR6iCguB2Atrr0+PA5isnD9Cg2af2TFKA@mail.gmail.com>
+Date:   Wed, 6 May 2020 13:09:27 +0200
+Cc:     Manish Mandlik <mmandlik@google.com>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <96B8EB2A-BDFB-49F5-B168-F8FD2991FC33@holtmann.org>
+References: <20200414115512.1.I9dd050ead919f2cc3ef83d4e866de537c7799cf3@changeid>
+ <DF70A2DA-9E5F-4524-8F20-2EC7CF70597F@holtmann.org>
+ <CABBYNZ+1XLttkvoBzLR6iCguB2Atrr0+PA5isnD9Cg2af2TFKA@mail.gmail.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+Hi Luiz,
 
-The method ndo_start_xmit() returns a value of type netdev_tx_t. Fix
-the ndo function to use the correct type.
+>>> If user decides to cancel ongoing pairing process (e.g. by clicking
+>>> the cancel button on the pairing/passkey window), abort any ongoing
+>>> pairing and then terminate the link.
+>>> 
+>>> Signed-off-by: Manish Mandlik <mmandlik@google.com>
+>>> ---
+>>> Hello Linux-Bluetooth,
+>>> 
+>>> This patch aborts any ongoing pairing and then terminates the link
+>>> by calling hci_abort_conn() in cancel_pair_device() function.
+>>> 
+>>> However, I'm not very sure if hci_abort_conn() should be called here
+>>> in cancel_pair_device() or in smp for example to terminate the link
+>>> after it had sent the pairing failed PDU.
+>>> 
+> 
+> Id recommend leaving the hci_abort_conn out since that is a policy
+> decision the userspace should be in charge to decide if the link
+> should be disconnected or not.
 
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/net/ethernet/socionext/sni_ave.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+eventually the link will disconnect anyway if we have no users. However maybe we should try to track if we created the link because Pair Device action. If created the link, then aborting the pairing should disconnect the link right away. Otherwise we can leave it around.
 
-diff --git a/drivers/net/ethernet/socionext/sni_ave.c b/drivers/net/ethernet/socionext/sni_ave.c
-index 67ddf78..f263844 100644
---- a/drivers/net/ethernet/socionext/sni_ave.c
-+++ b/drivers/net/ethernet/socionext/sni_ave.c
-@@ -1394,7 +1394,7 @@ static int ave_stop(struct net_device *ndev)
- 	return 0;
- }
- 
--static int ave_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-+static netdev_tx_t ave_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- {
- 	struct ave_private *priv = netdev_priv(ndev);
- 	u32 proc_idx, done_idx, ndesc, cmdsts;
--- 
-1.8.3.1
+Regards
 
+Marcel
 
