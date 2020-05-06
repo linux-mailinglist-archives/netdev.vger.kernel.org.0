@@ -2,89 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F33881C6AE6
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 10:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 545631C6AEB
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 10:08:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728591AbgEFIId (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 04:08:33 -0400
-Received: from www62.your-server.de ([213.133.104.62]:35208 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728345AbgEFIIc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 04:08:32 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jWF6Q-0001an-HW; Wed, 06 May 2020 10:08:26 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jWF6P-0005kQ-Vt; Wed, 06 May 2020 10:08:26 +0200
-Subject: Re: [PATCH bpf-next 0/4] RV64 BPF JIT Optimizations
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Luke Nelson <lukenels@cs.washington.edu>
-Cc:     bpf <bpf@vger.kernel.org>, Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20200506000320.28965-1-luke.r.nels@gmail.com>
- <CAJ+HfNgbuBoMTrU+TM3JCd1stEM1Zi3hG5k=PazT=CxAWa4wBQ@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <76105702-4f84-ead9-6568-48f718cf85c2@iogearbox.net>
-Date:   Wed, 6 May 2020 10:08:24 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728616AbgEFIIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 04:08:37 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:31557 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728605AbgEFIIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 04:08:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588752513;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=CBWxp/RqrAZHRhIdtBhb3xri0XLzwh+Ch7QU+ftNF34=;
+        b=X5aij9Dcg2c93UiXjCx3F/VgGLUlK7pOUCYpH/bYM3QYiDkBSGh0H+oceIGQiF7O03vaEV
+        tAM8Jk8uRuPne4OoGVMRylpzKyTsqwfgTWG3njDnYngWMNqaZ2x5ZG5UaL+8YXkyqaIw5v
+        GGwZCsCSe+cvN9YtNFcYgdbqxo+4S5M=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-360-cAjZpfPUM6Sff_igWw0p0Q-1; Wed, 06 May 2020 04:08:32 -0400
+X-MC-Unique: cAjZpfPUM6Sff_igWw0p0Q-1
+Received: by mail-wm1-f71.google.com with SMTP id h6so793102wmi.7
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 01:08:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=CBWxp/RqrAZHRhIdtBhb3xri0XLzwh+Ch7QU+ftNF34=;
+        b=NGERMH2mWACkmtEhXZdx7nYGIbemSAmzft7GYFMquVlOb8i+Bwgneu6l5aHOErk3GP
+         OPPCEGgtx7HFgyDYIOxEzMrCh1XwWhQSQqQXyH1KdYaRk5WHKuq+EKfAPtfvYeuVFi0u
+         ykvKaPRxWmJat//WL4Kn3qTmoFYXeQbmnzrt20aeDpZRCxXINe6V7RNgfvZDLHy795t+
+         RV9cSR6KktdMu7WQxfIsHqqiuYMEoEYXGKMs+ApoDRB29kvgJWD/Dw1kKvH+WcKt/sYi
+         HsDPh9vQGxD84LX4AG2eosp1b9q9/1bKTBI6dSBYL3rhRK/er8BJpzpNBU/JkDoBnwg1
+         dpPA==
+X-Gm-Message-State: AGi0PuZJi826QNJOsyLa1vdlYQ5rXd29gmgdDQDrmI9xE2ygMpRt7jv6
+        1984uv0HWYsNL4IRITqlGRgOyv7Y+qVZcImhbCB/1KeBeb8Qc99KNRDYU+5val3OazLchx/Dt8q
+        MRqrTj3N7gX3mjHnR
+X-Received: by 2002:a5d:54c4:: with SMTP id x4mr8713633wrv.73.1588752511065;
+        Wed, 06 May 2020 01:08:31 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKoYFzRFdcs5OUqDOntDuXyJrKD5k/C6ihqMqcjU/DctdS4/KReL94LfbKFGzcZw7Aen1K6xw==
+X-Received: by 2002:a5d:54c4:: with SMTP id x4mr8713617wrv.73.1588752510881;
+        Wed, 06 May 2020 01:08:30 -0700 (PDT)
+Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
+        by smtp.gmail.com with ESMTPSA id g25sm1724902wmh.24.2020.05.06.01.08.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 01:08:30 -0700 (PDT)
+Date:   Wed, 6 May 2020 04:08:27 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eugenio Perez Martin <eperezma@redhat.com>
+Subject: performance bug in virtio net xdp
+Message-ID: <20200506035704-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAJ+HfNgbuBoMTrU+TM3JCd1stEM1Zi3hG5k=PazT=CxAWa4wBQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25803/Tue May  5 14:19:25 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/6/20 9:08 AM, Björn Töpel wrote:
-> On Wed, 6 May 2020 at 02:03, Luke Nelson <lukenels@cs.washington.edu> wrote:
->>
->> This patch series introduces a set of optimizations to the BPF JIT
->> on RV64. The optimizations are related to the verifier zero-extension
->> optimization and BPF_JMP BPF_K.
->>
->> We tested the optimizations on a QEMU riscv64 virt machine, using
->> lib/test_bpf and test_verifier, and formally verified their correctness
->> using Serval.
->>
-> 
-> Luke and Xi,
-> 
-> Thanks a lot for working on this! Very nice series!
-> 
-> For the series:
-> Reviewed-by: Björn Töpel <bjorn.topel@gmail.com>
-> Acked-by: Björn Töpel <bjorn.topel@gmail.com>
-> 
->> Luke Nelson (4):
->>    bpf, riscv: Enable missing verifier_zext optimizations on RV64
->>    bpf, riscv: Optimize FROM_LE using verifier_zext on RV64
->>    bpf, riscv: Optimize BPF_JMP BPF_K when imm == 0 on RV64
->>    bpf, riscv: Optimize BPF_JSET BPF_K using andi on RV64
->>
->>   arch/riscv/net/bpf_jit_comp64.c | 64 ++++++++++++++++++++++-----------
->>   1 file changed, 44 insertions(+), 20 deletions(-)
->>
->> Cc: Xi Wang <xi.wang@gmail.com>
+So for mergeable bufs, we use ewma machinery to guess the correct buffer
+size. If we don't guess correctly, XDP has to do aggressive copies.
 
-Applied, thanks everyone!
+Problem is, xdp paths do not update the ewma at all, except
+sometimes with XDP_PASS. So whatever we happen to have
+before we attach XDP, will mostly stay around.
+
+The fix is probably to update ewma unconditionally.
+
+-- 
+MST
+
