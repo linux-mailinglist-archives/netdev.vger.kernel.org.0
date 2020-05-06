@@ -2,164 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6991C6FB4
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A22E1C6FBB
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbgEFLzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 07:55:47 -0400
-Received: from correo.us.es ([193.147.175.20]:55596 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726558AbgEFLzq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 07:55:46 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 9EE354FFE13
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 13:55:44 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8FEA24F0CB
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 13:55:44 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 7B3BD1158E7; Wed,  6 May 2020 13:55:44 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 44C5820C5C;
-        Wed,  6 May 2020 13:55:42 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 06 May 2020 13:55:42 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 0763F42EE38E;
-        Wed,  6 May 2020 13:55:41 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, ecree@solarflare.com,
-        kuba@kernel.org, jiri@resnulli.us
-Subject: [PATCH net,v3] net: flow_offload: skip hw stats check for FLOW_ACTION_HW_STATS_DONT_CARE
-Date:   Wed,  6 May 2020 13:55:39 +0200
-Message-Id: <20200506115539.21018-1-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
+        id S1727943AbgEFL5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 07:57:21 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38965 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726924AbgEFL5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:57:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588766239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7sOis2/3Mg9JApCu6b61p44e2yvITngtwxXPAS7QTXw=;
+        b=UBlgQJH6QxfFDxC4dEaoujWqYhQ6ZjmIPQbSxxcU74femYNSbWM21KeIXOtdWBWvoZb1Z6
+        ESCawFAJcxq3HwsGLhu3fY91S3UY7PGpmPTwbSgZ7lJW921mkirdIzcyNNAvgstLb9Rxlw
+        7Fau85FHepcD9uD4/f8qKxfU9oTC6UY=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-278-kYzev3QdOdGR2VTwN40iIQ-1; Wed, 06 May 2020 07:57:15 -0400
+X-MC-Unique: kYzev3QdOdGR2VTwN40iIQ-1
+Received: by mail-wr1-f72.google.com with SMTP id r11so1176367wrx.21
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 04:57:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7sOis2/3Mg9JApCu6b61p44e2yvITngtwxXPAS7QTXw=;
+        b=sNRHsVswSccoQFpDqGM9iH4YZWCMxOlqznCB6IpqXDtt/G5fCldTyA3YP0sVBwLeMp
+         h1rOX12AogkNwHBCRLeu0Lg//5aj3YogWvXdC+HYYxS1TSX1UqYiaC1izmFbqkdM87x0
+         rs5MUGSe/T5XBSGYvBQLNJhzHkpLfOfdcZIGmmWOKDkBSfSd082oKT+9htV+HC1p9sq8
+         86Jxgey6jYLSikpbPP1x4vET2bzJ4bvWRL2Rm3rUVzZiubsNjwQ6jiMDy3pw2x1aO/Iv
+         OwHsvGkqhunqqgOnhCtZU3SqXOB2hrjJb2PwhUfeTuNBmjV9uiNgQKgG5U7246dlgL60
+         EKvg==
+X-Gm-Message-State: AGi0PuYiIGqldJhqyyPLJEVeLh0Dolr2CkMf9po8utFjBUr0rP2bjhlb
+        DYHBFbM11tze2Yk0vLKFYK3enz3j5fOc2G2IWVxcsyw7LxTtz2N35hvfXbTKBv0nSL6py+KNAkZ
+        rjLAGfI9RN0ARQLtB
+X-Received: by 2002:adf:8162:: with SMTP id 89mr8736336wrm.387.1588766233798;
+        Wed, 06 May 2020 04:57:13 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKH40QoEgrQmuxv8rKi91gxvjeAgTSB72BOZzkNW3MxEIsk2JLG9yyMv1mIo8Hc/alFqaSzSg==
+X-Received: by 2002:adf:8162:: with SMTP id 89mr8736315wrm.387.1588766233499;
+        Wed, 06 May 2020 04:57:13 -0700 (PDT)
+Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
+        by smtp.gmail.com with ESMTPSA id w4sm2398660wro.28.2020.05.06.04.57.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 04:57:12 -0700 (PDT)
+Date:   Wed, 6 May 2020 07:57:10 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Eugenio Perez Martin <eperezma@redhat.com>
+Subject: Re: performance bug in virtio net xdp
+Message-ID: <20200506075226-mutt-send-email-mst@kernel.org>
+References: <20200506035704-mutt-send-email-mst@kernel.org>
+ <20200506103757.4bc78b3a@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200506103757.4bc78b3a@carbon>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds FLOW_ACTION_HW_STATS_DONT_CARE which tells the driver
-that the frontend does not need counters, this hw stats type request
-never fails. The FLOW_ACTION_HW_STATS_DISABLED type explicitly requests
-the driver to disable the stats, however, if the driver cannot disable
-counters, it bails out.
+On Wed, May 06, 2020 at 10:37:57AM +0200, Jesper Dangaard Brouer wrote:
+> On Wed, 6 May 2020 04:08:27 -0400
+> "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> 
+> > So for mergeable bufs, we use ewma machinery to guess the correct buffer
+> > size. If we don't guess correctly, XDP has to do aggressive copies.
+> > 
+> > Problem is, xdp paths do not update the ewma at all, except
+> > sometimes with XDP_PASS. So whatever we happen to have
+> > before we attach XDP, will mostly stay around.
+> > 
+> > The fix is probably to update ewma unconditionally.
+> 
+> I personally find the code hard to follow, and (I admit) that it took
+> me some time to understand this code path (so I might still be wrong).
+> 
+> In patch[1] I tried to explain (my understanding):
+> 
+>   In receive_mergeable() the frame size is more dynamic. There are two
+>   basic cases: (1) buffer size is based on a exponentially weighted
+>   moving average (see DECLARE_EWMA) of packet length. Or (2) in case
+>   virtnet_get_headroom() have any headroom then buffer size is
+>   PAGE_SIZE. The ctx pointer is this time used for encoding two values;
+>   the buffer len "truesize" and headroom. In case (1) if the rx buffer
+>   size is underestimated, the packet will have been split over more
+>   buffers (num_buf info in virtio_net_hdr_mrg_rxbuf placed in top of
+>   buffer area). If that happens the XDP path does a xdp_linearize_page
+>   operation.
+> 
+> 
+> The EWMA code is not used when headroom is defined, which e.g. gets
+> enabled when running XDP.
+> 
+> 
+> [1] https://lore.kernel.org/netdev/158824572816.2172139.1358700000273697123.stgit@firesoul/
 
-TCA_ACT_HW_STATS_* maintains the 1:1 mapping with FLOW_ACTION_HW_STATS_*
-except by disabled which is mapped to FLOW_ACTION_HW_STATS_DISABLED
-(this is 0 in tc). Add tc_act_hw_stats() to perform the mapping between
-TCA_ACT_HW_STATS_* and FLOW_ACTION_HW_STATS_*.
+You are right.
+So I guess the problem is just inconsistency?
 
-Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-v3: update mlxsw to handle _DONT_CARE.
+When XDP program returns XDP_PASS, and it all fits in one page,
+then we trigger
+	        ewma_pkt_len_add(&rq->mrg_avg_pkt_len, head_skb->len);
 
- .../net/ethernet/mellanox/mlxsw/spectrum_flower.c  |  2 +-
- include/net/flow_offload.h                         |  9 ++++++++-
- net/sched/cls_api.c                                | 14 ++++++++++++--
- 3 files changed, 21 insertions(+), 4 deletions(-)
+if it does not trigger XDP_PASS, or does not fit in one page,
+then we don't.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index 51117a5a6bbf..81d0b3481479 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -36,7 +36,7 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 		err = mlxsw_sp_acl_rulei_act_count(mlxsw_sp, rulei, extack);
- 		if (err)
- 			return err;
--	} else if (act->hw_stats != FLOW_ACTION_HW_STATS_DISABLED) {
-+	} else if (act->hw_stats == FLOW_ACTION_HW_STATS_DELAYED) {
- 		NL_SET_ERR_MSG_MOD(extack, "Unsupported action HW stats type");
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 3619c6acf60f..efc8350b42fb 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -166,15 +166,18 @@ enum flow_action_mangle_base {
- enum flow_action_hw_stats_bit {
- 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
- 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
-+	FLOW_ACTION_HW_STATS_DISABLED_BIT,
- };
- 
- enum flow_action_hw_stats {
--	FLOW_ACTION_HW_STATS_DISABLED = 0,
-+	FLOW_ACTION_HW_STATS_DONT_CARE = 0,
- 	FLOW_ACTION_HW_STATS_IMMEDIATE =
- 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
- 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
- 	FLOW_ACTION_HW_STATS_ANY = FLOW_ACTION_HW_STATS_IMMEDIATE |
- 				   FLOW_ACTION_HW_STATS_DELAYED,
-+	FLOW_ACTION_HW_STATS_DISABLED =
-+		BIT(FLOW_ACTION_HW_STATS_DISABLED_BIT),
- };
- 
- typedef void (*action_destr)(void *priv);
-@@ -325,7 +328,11 @@ __flow_action_hw_stats_check(const struct flow_action *action,
- 		return true;
- 	if (!flow_action_mixed_hw_stats_check(action, extack))
- 		return false;
-+
- 	action_entry = flow_action_first_entry_get(action);
-+	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
-+		return true;
-+
- 	if (!check_allow_bit &&
- 	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
- 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 55bd1429678f..56cf1b9e1e24 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3523,6 +3523,16 @@ static void tcf_sample_get_group(struct flow_action_entry *entry,
- #endif
- }
- 
-+static enum flow_action_hw_stats tc_act_hw_stats(u8 hw_stats)
-+{
-+	if (WARN_ON_ONCE(hw_stats > TCA_ACT_HW_STATS_ANY))
-+		return FLOW_ACTION_HW_STATS_DONT_CARE;
-+	else if (!hw_stats)
-+		return FLOW_ACTION_HW_STATS_DISABLED;
-+
-+	return hw_stats;
-+}
-+
- int tc_setup_flow_action(struct flow_action *flow_action,
- 			 const struct tcf_exts *exts)
- {
-@@ -3546,7 +3556,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 		if (err)
- 			goto err_out_locked;
- 
--		entry->hw_stats = act->hw_stats;
-+		entry->hw_stats = tc_act_hw_stats(act->hw_stats);
- 
- 		if (is_tcf_gact_ok(act)) {
- 			entry->id = FLOW_ACTION_ACCEPT;
-@@ -3614,7 +3624,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
- 				entry->mangle.mask = tcf_pedit_mask(act, k);
- 				entry->mangle.val = tcf_pedit_val(act, k);
- 				entry->mangle.offset = tcf_pedit_offset(act, k);
--				entry->hw_stats = act->hw_stats;
-+				entry->hw_stats = tc_act_hw_stats(act->hw_stats);
- 				entry = &flow_action->entries[++j];
- 			}
- 		} else if (is_tcf_csum(act)) {
--- 
-2.20.1
+Given XDP does not use ewma for sizing, let's not update the average
+either.
+
+
+> -- 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
 
