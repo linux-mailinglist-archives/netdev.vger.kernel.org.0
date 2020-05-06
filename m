@@ -2,92 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 787FD1C7781
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 19:12:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCBBB1C7783
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 19:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730381AbgEFRMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 13:12:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34922 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725799AbgEFRMj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 13:12:39 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 93D802080D;
-        Wed,  6 May 2020 17:12:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588785159;
-        bh=Ku4krUxbTherJ1BmYQGERwCK85kJqmidRIcKAfQ+LUs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Bl45Xx9kN8e0nI9GisLHFuEbadb0UmmV/OXVRIFerYwtfJVsE3S16UNt3cKepxZhh
-         tvvGIeKyNDcMwKISdVoioIUzWXNYKID7abt59NSW0pBsVWd0xkOofIu2LboxsTI6F0
-         WYE7TUQyrQj6ZMojfQt96oGAkpCCCRZXKrVj1tXM=
-Date:   Wed, 6 May 2020 10:12:36 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: Re: [PATCH 05/11] net: core: provide devm_register_netdev()
-Message-ID: <20200506101236.25a13609@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAMRc=Mf0ipaeLKhHCZaq2YeZKzi=QBAse7bEz2hHxXN5OL=ptg@mail.gmail.com>
-References: <20200505140231.16600-1-brgl@bgdev.pl>
-        <20200505140231.16600-6-brgl@bgdev.pl>
-        <20200505103105.1c8b0ce3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAMRc=Mf0ipaeLKhHCZaq2YeZKzi=QBAse7bEz2hHxXN5OL=ptg@mail.gmail.com>
+        id S1730419AbgEFRMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 13:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725799AbgEFRMn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 13:12:43 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E078C061A0F;
+        Wed,  6 May 2020 10:12:43 -0700 (PDT)
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jWNb7-0000F7-Md; Wed, 06 May 2020 19:12:41 +0200
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id 1F961100C8A; Wed,  6 May 2020 19:12:41 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: pulling cap_perfmon
+In-Reply-To: <CAADnVQJfD1dLVsfg4=c4f6ftRNF_4z0wELjFq8z=7voi-Ak=7w@mail.gmail.com>
+References: <CAADnVQJfD1dLVsfg4=c4f6ftRNF_4z0wELjFq8z=7voi-Ak=7w@mail.gmail.com>
+Date:   Wed, 06 May 2020 19:12:41 +0200
+Message-ID: <87sggdj8c6.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 May 2020 08:39:47 +0200 Bartosz Golaszewski wrote:
-> wt., 5 maj 2020 o 19:31 Jakub Kicinski <kuba@kernel.org> napisa=C5=82(a):
-> >
-> > On Tue,  5 May 2020 16:02:25 +0200 Bartosz Golaszewski wrote: =20
-> > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > >
-> > > Provide devm_register_netdev() - a device resource managed variant
-> > > of register_netdev(). This new helper will only work for net_device
-> > > structs that have a parent device assigned and are devres managed too.
-> > >
-> > > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com> =20
-> > =20
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index 522288177bbd..99db537c9468 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -9519,6 +9519,54 @@ int register_netdev(struct net_device *dev)
-> > >  }
-> > >  EXPORT_SYMBOL(register_netdev);
-> > >
-> > > +struct netdevice_devres {
-> > > +     struct net_device *ndev;
-> > > +}; =20
-> >
-> > Is there really a need to define a structure if we only need a pointer?
-> > =20
->=20
-> There is no need for that, but it really is more readable this way.
-> Also: using a pointer directly doesn't save us any memory nor code
-> here.
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>
+> I'd like to pull
+> commit 980737282232 ("capabilities: Introduce CAP_PERFMON to kernel
+> and user space")
+> into bpf-next to base my CAP_BPF work on top of it.
+> could you please prepare a stable tag for me to pull ?
+> Last release cycle Thomas did a tag for bpf+rt prerequisite patches and
+> it all worked well during the merge window.
+> I think that one commit will suffice.
 
-I don't care either way but devm_alloc_etherdev_mqs() and co. are using
-the double pointer directly. Please make things consistent. Either do
-the same, or define the structure in some header and convert other
-helpers to also make use of it.
+I'll have a look.
