@@ -2,115 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FCDE1C6A8E
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 09:54:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 389661C6A73
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 09:51:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728614AbgEFHyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 03:54:12 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:46462 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728532AbgEFHyG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 03:54:06 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 47EDC1A0B0B;
-        Wed,  6 May 2020 09:54:04 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1AA261A0887;
-        Wed,  6 May 2020 09:53:55 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 34F054030E;
-        Wed,  6 May 2020 15:53:42 +0800 (SGT)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     xiaoliang.yang_1@nxp.com, po.liu@nxp.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, mingkai.hu@nxp.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, jiri@resnulli.us, idosch@idosch.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        linux-devel@linux.nxdi.nxp.com
-Subject: [PATCH v1 net-next 6/6] net: dsa: tag_ocelot: use VLAN information from tagging header when available
-Date:   Wed,  6 May 2020 15:49:00 +0800
-Message-Id: <20200506074900.28529-7-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200506074900.28529-1-xiaoliang.yang_1@nxp.com>
-References: <20200506074900.28529-1-xiaoliang.yang_1@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1728487AbgEFHvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 03:51:45 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3814 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728280AbgEFHvp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 03:51:45 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id C8507BAD909D4E3D7B84;
+        Wed,  6 May 2020 15:51:40 +0800 (CST)
+Received: from [10.133.206.78] (10.133.206.78) by smtp.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 6 May 2020
+ 15:51:32 +0800
+Subject: Re: cgroup pointed by sock is leaked on mode switch
+From:   Zefan Li <lizefan@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        Tejun Heo <tj@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
+        <netdev@vger.kernel.org>,
+        "Libin (Huawei)" <huawei.libin@huawei.com>, <guofan5@huawei.com>,
+        <wangkefeng.wang@huawei.com>
+References: <03dab6ab-0ffe-3cae-193f-a7f84e9b14c5@huawei.com>
+ <20200505160639.GG12217@mtj.thefacebook.com>
+ <c9879fd2-cb91-2a08-8293-c6a436b5a539@huawei.com>
+ <0a6ae984-e647-5ada-8849-3fa2fb994ff3@huawei.com>
+Message-ID: <1edd6b6c-ab3c-6a51-6460-6f5d7f37505e@huawei.com>
+Date:   Wed, 6 May 2020 15:51:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
+MIME-Version: 1.0
+In-Reply-To: <0a6ae984-e647-5ada-8849-3fa2fb994ff3@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.133.206.78]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 2020/5/6 10:16, Zefan Li wrote:
+> On 2020/5/6 9:50, Yang Yingliang wrotee:
+>> +cc lizefan@huawei.com
+>>
+>> On 2020/5/6 0:06, Tejun Heo wrote:
+>>> Hello, Yang.
+>>>
+>>> On Sat, May 02, 2020 at 06:27:21PM +0800, Yang Yingliang wrote:
+>>>> I find the number nr_dying_descendants is increasing:
+>>>> linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep
+>>>> '^nr_dying_descendants [^0]'  {} +
+>>>> /sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 80
+>>>> /sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
+>>>> /sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants
+>>>> 1
+>>>> /sys/fs/cgroup/unified/lxc/cgroup.stat:nr_dying_descendants 79
+>>>> /sys/fs/cgroup/unified/lxc/5f1fdb8c54fa40c3e599613dab6e4815058b76ebada8a27bc1fe80c0d4801764/cgroup.stat:nr_dying_descendants
+>>>> 78
+>>>> /sys/fs/cgroup/unified/lxc/5f1fdb8c54fa40c3e599613dab6e4815058b76ebada8a27bc1fe80c0d4801764/system.slice/cgroup.stat:nr_dying_descendants
+>>>> 78
+>>> Those numbers are nowhere close to causing oom issues. There are some
+>>> aspects of page and other cache draining which is being improved but unless
+>>> you're seeing numbers multiple orders of magnitude higher, this isn't the
+>>> source of your problem.
+>>>
+>>>> The situation is as same as the commit bd1060a1d671 ("sock, cgroup: add
+>>>> sock->sk_cgroup") describes.
+>>>> "On mode switch, cgroup references which are already being pointed to by
+>>>> socks may be leaked."
+>>> I'm doubtful that you're hitting that issue. Mode switching means memcg
+>>> being switched between cgroup1 and cgroup2 hierarchies, which is unlikely to
+>>> be what's happening when you're launching docker containers.
+>>>
+>>> The first step would be identifying where memory is going and finding out
+>>> whether memcg is actually being switched between cgroup1 and 2 - look at the
+>>> hierarchy number in /proc/cgroups, if that's switching between 0 and
+>>> someting not zero, it is switching.
+>>>
+> 
+> I think there's a bug here which can lead to unlimited memory leak.
+> This should reproduce the bug:
+> 
+>     # mount -t cgroup -o netprio xxx /cgroup/netprio
+>     # mkdir /cgroup/netprio/xxx
+>     # echo PID > /cgroup/netprio/xxx/tasks
+>     /* this PID process starts to do some network thing and then exits */
+>     # rmdir /cgroup/netprio/xxx
+>     /* now this cgroup will never be freed */
+> 
 
-When the Extraction Frame Header contains a valid classified VLAN, use
-that instead of the VLAN header present in the packet.
+Correction (still not tested):
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/tag_ocelot.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+     # mount -t cgroup2 none /cgroup/v2
+     # mkdir /cgroup/v2/xxx
+     # echo PID > /cgroup/v2/xxx/cgroup.procs
+     /* this PID process starts to do some network thing */
 
-diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-index 59de1315100f..8c93a78bda5b 100644
---- a/net/dsa/tag_ocelot.c
-+++ b/net/dsa/tag_ocelot.c
-@@ -181,9 +181,16 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
- 				  struct net_device *netdev,
- 				  struct packet_type *pt)
- {
-+	struct dsa_port *cpu_dp = netdev->dsa_ptr;
-+	struct dsa_switch *ds = cpu_dp->ds;
-+	struct ocelot *ocelot = ds->priv;
-+	struct ocelot_port *ocelot_port;
- 	u64 src_port, qos_class;
- 	u8 *start = skb->data;
-+	struct ethhdr *hdr;
- 	u8 *extraction;
-+	u64 vlan_tci;
-+	u16 vid;
- 
- 	/* Revert skb->data by the amount consumed by the DSA master,
- 	 * so it points to the beginning of the frame.
-@@ -211,6 +218,7 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
- 
- 	packing(extraction, &src_port,  46, 43, OCELOT_TAG_LEN, UNPACK, 0);
- 	packing(extraction, &qos_class, 19, 17, OCELOT_TAG_LEN, UNPACK, 0);
-+	packing(extraction, &vlan_tci,  15,  0, OCELOT_TAG_LEN, UNPACK, 0);
- 
- 	skb->dev = dsa_master_find_slave(netdev, 0, src_port);
- 	if (!skb->dev)
-@@ -225,6 +233,27 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
- 	skb->offload_fwd_mark = 1;
- 	skb->priority = qos_class;
- 
-+	/* The VID from the extraction header contains the classified VLAN. But
-+	 * if VLAN awareness is off and no retagging is done via VCAP IS1, that
-+	 * classified VID will always be the pvid of the src_port.
-+	 * port. We want Linux to see the classified VID, but only if the switch
-+	 * intended to send the packet as untagged, i.e. if the VID is different
-+	 * than the CPU port's untagged (native) VID.
-+	 */
-+	vid = vlan_tci & VLAN_VID_MASK;
-+	hdr = eth_hdr(skb);
-+	ocelot_port = ocelot->ports[src_port];
-+	if (hdr->h_proto == htons(ETH_P_8021Q) && vid != ocelot_port->pvid) {
-+		u16 dummy_vlan_tci;
-+
-+		skb_push_rcsum(skb, ETH_HLEN);
-+		__skb_vlan_pop(skb, &dummy_vlan_tci);
-+		skb_pull_rcsum(skb, ETH_HLEN);
-+		skb_reset_network_header(skb);
-+		skb_reset_transport_header(skb);
-+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tci);
-+	}
-+
- 	return skb;
- }
- 
--- 
-2.17.1
+     # mount -t cgroup -o netprio xxx /cgroup/netprio
+     # mkdir /cgroup/netprio/xxx
+     # echo PID > /cgroup/netprio/xxx/tasks
+     ...
+     /* the PID process exits */
+
+     rmdir /cgroup/netprio/xxx
+     rmdir /cgroup/v2/xxx
+     /* now looks like this v2 cgroup will never be freed */
+
+> Look at the code:
+> 
+> static inline void sock_update_netprioidx(struct sock_cgroup_data *skcd)
+> {
+>      ...
+>      sock_cgroup_set_prioidx(skcd, task_netprioidx(current));
+> }
+> 
+> static inline void sock_cgroup_set_prioidx(struct sock_cgroup_data *skcd,
+>                      u16 prioidx)
+> {
+>      ...
+>      if (sock_cgroup_prioidx(&skcd_buf) == prioidx)
+>          return ;
+>      ...
+>      skcd_buf.prioidx = prioidx;
+>      WRITE_ONCE(skcd->val, skcd_buf.val);
+> }
+> 
+> task_netprioidx() will be the cgrp id of xxx which is not 1, but
+> sock_cgroup_prioidx(&skcd_buf) is 1 because it thought it's in v2 mode.
+> Now we have a memory leak.
+> 
+> I think the eastest fix is to do the mode switch here:
+> 
+> diff --git a/net/core/netprio_cgroup.c b/net/core/netprio_cgroup.c
+> index b905747..2397866 100644
+> --- a/net/core/netprio_cgroup.c
+> +++ b/net/core/netprio_cgroup.c
+> @@ -240,6 +240,8 @@ static void net_prio_attach(struct cgroup_taskset *tset)
+>          struct task_struct *p;
+>          struct cgroup_subsys_state *css;
+> 
+> +       cgroup_sk_alloc_disable();
+> +
+>          cgroup_taskset_for_each(p, css, tset) {
+>                  void *v = (void *)(unsigned long)css->cgroup->id;
 
