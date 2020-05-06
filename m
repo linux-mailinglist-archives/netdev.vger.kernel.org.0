@@ -2,106 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD7A91C79E9
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 21:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1F41C79EF
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 21:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728065AbgEFTIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 15:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728052AbgEFTIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 15:08:47 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3414C061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 12:08:47 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id t3so2306289otp.3
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 12:08:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ecBYceWjDgZ/2fZ72buGKHk7iZ9mzG9U5SbQIXW25v0=;
-        b=P19XaUFk7DUdpT3aNVnbXtOBBudH0AirMDp8PbA5ONffgmpZpXaxVtSq6GmJ9egVEK
-         oYCtdbQc5wLThf42yTL+PFg533NYbFVEvU89iEACIjpqigYyp+rJoneiELtEO3Iz2pK7
-         Ymt+j8nGkw1lebLWn9ippYqtEX66oFaqp63rkYtbr7Yrp6vqDOZF8FiZi58BM9XX3aPQ
-         QFFXBAMZlVnVuEhg0s29IK9gvKAq/vFKTjwvJJbt5v8+DyZG83YG/7OpTOIRkpBYBwUf
-         10Cmv4W3wJVOCXRAUxIXClih8/Tk+84D+7QuvR6hICJOL8vHWPLiEhIhA/8kZrPGldUv
-         cRTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ecBYceWjDgZ/2fZ72buGKHk7iZ9mzG9U5SbQIXW25v0=;
-        b=arbyr5Yg5Tqnkgcz8cuqbg+jWkM39WsgYSkxI0uzki/dlBffc3ldLpONnc9zOu0q+E
-         GaSfyxh6F81+KSSkcc5uvOlQll7jckDhk23x8VONeIIicJxIovQ/1fZs3cOI2A5LvlJq
-         dmGdVD82sMxORNxIG+5NdU51NdXE7+FWrsKbERfoGU/bWdD388hdC0pYo3vuT+CpY08t
-         SL9vVzA3wwik3eDFSllmWYzSsnB+eerL1lmKxuj3LlWYxRpmn+HVpDwkNMu+wCxC0Lpq
-         olpfbZrPitYc0Mjgp8GLKteM8GVNXZKI4Vp2be6e8LIJaE3V3uErgeThyQwl1cjlL6vA
-         I+Gw==
-X-Gm-Message-State: AGi0Pub6VqNC4nrdpVCYnFTVK6M24y86yjFtg4jbOZVg7vxlW0Qk/ddQ
-        AVHumMn9fKRIcX7QsD4timKVPAdfrgIJSdc0NTQ=
-X-Google-Smtp-Source: APiQypJ5ivykOe62LZsJi7h0gUqNl7dRfWpM13n67j6dYZssP4yCG6l6k40lAbPi4+TL3syZgOpolegehiKg8CYiSpg=
-X-Received: by 2002:a9d:1c97:: with SMTP id l23mr5966495ota.189.1588792127042;
- Wed, 06 May 2020 12:08:47 -0700 (PDT)
+        id S1728166AbgEFTJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 15:09:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37282 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725966AbgEFTJN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 15:09:13 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AABE52076D;
+        Wed,  6 May 2020 19:09:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588792151;
+        bh=JB/U+dDA75gzNNkOVg/PFlM5PN3c/4blmUkvxYzuEPc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q1iMqCcl5IYzsiOGDMuf71DOK3McCYmHRBrnN2s9CAZZOuaLf+MygDdvfULV8jnjT
+         Hg/iGlwkOWO+jTrD9ac142jGHEt4+/ZjZ6wYEzGCm1xZu3UHVxTCEcCjVl5JpEcNsT
+         kWytiQs6fiu+6Y2RzlUCGSdabEFphylRlqg805IY=
+Date:   Wed, 6 May 2020 12:09:09 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH net-next 10/11] s390/qeth: allow reset via ethtool
+Message-ID: <20200506120909.3e7d88ff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <104f8e57-42d2-8853-d540-76b8516043d5@linux.ibm.com>
+References: <20200505162559.14138-1-jwi@linux.ibm.com>
+        <20200505162559.14138-11-jwi@linux.ibm.com>
+        <20200505102149.1fd5b9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a19ccf27-2280-036c-057f-8e6d2319bb28@linux.ibm.com>
+        <20200505112940.6fe70918@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <6788c6f1-52cb-c421-7251-500a391bb48b@linux.ibm.com>
+        <20200505142855.24b7c1bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <104f8e57-42d2-8853-d540-76b8516043d5@linux.ibm.com>
 MIME-Version: 1.0
-References: <20200505215819.1997-1-xiyou.wangcong@gmail.com>
- <20200505222748.GQ8237@lion.mk-sys.cz> <CAM_iQpWf95vVC4dsWTuxCNbNLN6RAMJQYdNeB37VZMN2P2Xf2w@mail.gmail.com>
- <20200506052604.GM5989@lion.mk-sys.cz>
-In-Reply-To: <20200506052604.GM5989@lion.mk-sys.cz>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 6 May 2020 12:08:35 -0700
-Message-ID: <CAM_iQpWTW_O7WHx5-4BLXqiV3e-eYowGRv-aG-LRZmJwvdyt5A@mail.gmail.com>
-Subject: Re: [Patch net] net: fix a potential recursive NETDEV_FEAT_CHANGE
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
-        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
-        Jarod Wilson <jarod@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Jann Horn <jannh@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 5, 2020 at 10:26 PM Michal Kubecek <mkubecek@suse.cz> wrote:
->
-> On Tue, May 05, 2020 at 03:35:27PM -0700, Cong Wang wrote:
-> > On Tue, May 5, 2020 at 3:27 PM Michal Kubecek <mkubecek@suse.cz> wrote:
-> > > On Tue, May 05, 2020 at 02:58:19PM -0700, Cong Wang wrote:
-> > > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > > index 522288177bbd..ece50ae346c3 100644
-> > > > --- a/net/core/dev.c
-> > > > +++ b/net/core/dev.c
-> > > > @@ -8907,7 +8907,7 @@ static void netdev_sync_lower_features(struct net_device *upper,
-> > > >                       netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
-> > > >                                  &feature, lower->name);
-> > > >                       lower->wanted_features &= ~feature;
-> > > > -                     netdev_update_features(lower);
-> > > > +                     __netdev_update_features(lower);
-> > > >
-> > > >                       if (unlikely(lower->features & feature))
-> > > >                               netdev_WARN(upper, "failed to disable %pNF on %s!\n",
-> > >
-> > > Wouldn't this mean that when we disable LRO on a bond manually with
-> > > "ethtool -K", LRO will be also disabled on its slaves but no netlink
-> > > notification for them would be sent to userspace?
-> >
-> > What netlink notification are you talking about?
->
-> There is ethtool notification sent by ethnl_netdev_event() and rtnetlink
-> notification sent by rtnetlink_event(). Both are triggered by
-> NETDEV_FEAT_CHANGE notifier so unless I missed something, when you
-> suppress the notifier, there will be no netlink notifications to
-> userspace.
+On Wed, 6 May 2020 09:56:41 +0200 Julian Wiedmann wrote:
+> On 05.05.20 23:28, Jakub Kicinski wrote:
+> > On Tue, 5 May 2020 21:57:43 +0200 Julian Wiedmann wrote:  
+> >>> This is the comment from the uAPI header:
+> >>>
+> >>> /* The reset() operation must clear the flags for the components which
+> >>>  * were actually reset.  On successful return, the flags indicate the
+> >>>  * components which were not reset, either because they do not exist
+> >>>  * in the hardware or because they cannot be reset independently.  The
+> >>>  * driver must never reset any components that were not requested.
+> >>>  */
+> >>>
+> >>> Now let's take ETH_RESET_PHY as an example. Surely you're not resetting
+> >>> any PHY here, so that bit should not be cleared. Please look at the
+> >>> bits and select the ones which make sense, add whatever is missing.
+> >>>     
+> >>
+> >> It's a virtual device, _none_ of them make much sense?! We better not be
+> >> resetting any actual HW components, the other interfaces on the same
+> >> adapter would be quite unhappy about that.  
+> > 
+> > Well, then, you can't use the API in its current form. You can't say
+> > none of the sub-options are applicable, but the sum of them does.
+> 
+> Agreed, that's my take as well. So we'll basically need a ETH_RESET_FULL bit,
+> for devices that don't fit into the fine-grained component model.
 
-Oh, interesting, why ethtool_notify() can't be called directly, for example,
-in netdev_update_features()? To me, using a NETDEV_FEAT_CHANGE
-event handler seems unnecessary for ethtool netlink.
+I'd say you're barely re-opening all communication channels with the
+device, without any loss of configuration, right? So perhaps
+RESET_DRV_IFC? Not great but best I can come up with :S
 
-BTW, as pointed out by Jay, actually we only need to skip
-NETDEV_FEAT_CHANGE for failure case, so I will update my patch.
+> >> Sorry for being dense, and I appreciate that the API leaves a lot of room
+> >> for sophisticated partial resets where the driver/HW allows it.
+> >> But it sounds like what you're suggesting is
+> >> (1) we select a rather arbitrary set of components that _might_ represent a
+> >>     full "virtual" reset, and then
+> >> (2) expect the user to guess a super-set of these features. And not worry
+> >>     when they selected too much, and this obscure PHY thing failed to reset.  
+> > 
+> > No, please see the code I provided below, and read how the interface 
+> > is supposed to work. I posted the code comment in my previous reply. 
+> > I don't know what else I can do for you.
+> > 
+> > User can still pass "all" but you can't _clear_ all bits, 'cause you
+> > didn't reset any PHY, MAC, etc.
+> >   
+> >> So I looked at gve's implementation and thought "yep, looks simple enough".  
+> > 
+> > Ugh, yeah, gve is not a good example.
+> >   
+> >> But if we start asking users to interpret HW bits that hardly make any
+> >> sense to them, we're worse off than with the existing custom sysfs trigger...  
+> > 
+> > Actually - operationally, how do you expect people to use this reset?
+> > Some user space system detects the NIC is in a bad state? Does the
+> > interface communicate that via some log messages or such?
+> > 
+> > The commit message doesn't really explain the "why".
+> >   
+> 
+> Usually the driver will detect a hung condition itself, and trigger an
+> automatic reset internally (eg. from the TX watchdog).
+> But if that doesn't work, you'll hopefully get enough noisy log warnings
+> to investigate & reset the interface manually.
+> Besides that, it's just an easy way to exercise/test the reset code.
 
-Thanks.
+Perhaps a better path would be using devlink health? There's currently
+no way to force a recovery, but that's effectively what you're doing
+here, right? We can extend the devlink API.
+
+> Integration with a daemon / management layer definitely sounds like an
+> option, and I'd much rather point those people towards ethtool instead
+> of sysfs.
+> 
+> >>> Then my suggestion would be something like:
+> >>>
+> >>>   #define QETH_RESET_FLAGS (flag | flag | flag)
+> >>>
+> >>>   if ((*flags & QETH_RESET_FLAGS) != QETH_RESET_FLAGS))
+> >>> 	return -EINVAL;
+> >>>   ...
+> >>>   *flags &= ~QETH_RESET_FLAGS;  
