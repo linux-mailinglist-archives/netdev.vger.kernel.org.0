@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CC1C1C67D1
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F171C67D6
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 08:04:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727863AbgEFGB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 02:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
+        id S1726603AbgEFGEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 02:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725771AbgEFGB1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:01:27 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB55C061A0F;
-        Tue,  5 May 2020 23:01:27 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id b6so797078qkh.11;
-        Tue, 05 May 2020 23:01:27 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725771AbgEFGEf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 02:04:35 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0039BC061A0F;
+        Tue,  5 May 2020 23:04:34 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id q13so477649qtp.7;
+        Tue, 05 May 2020 23:04:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+JO6i0n3BKhKys7BXtPUEzF0yojiQcWesZP2vQRQIxA=;
-        b=P9GVNwZ5pGrLU9e6S75s00C7k7Q/gqLg4drFxyx4hub8E7plw+Q04G+323WoLjeWrX
-         EruWMXyOCv4lA0WgWWhw3nWvdIAgn1GYXOTfx18ArOVbTrD5g0HgEDZk/Tu/j8yA1l1g
-         ncmImIsx6haBSkGblFHrA+VDjRAQkcLm9wKavrdbwx/3ol5lKPhAImMzY6x0TsEM+HrY
-         /3Ugoc3jKL1XF2h74Znk7cbiHBNyBIIsPvPQkD3576c5a3vmgEKi9vn1IhcX9ovybHIN
-         I4ZehDvM4yhojG9kJoXkA6AI7wVNTCAbyY7MlVW1isGqM6QSEKafn1wpDJeaG5MKrmzL
-         I4mQ==
+        bh=ChezaoH4CBgiAK6q2eFr5RaJbWQCYEoCXpcIjPeuga0=;
+        b=O97Q0TAsHxn5Ou3PCxlC743R3Jvz7GgyzXYBwVwmHT2kLgIp3uxIpWXhdtASaBsYKB
+         HHwsJtecyinvArseEPboRMKw9xZgsytjp3YT89PScSkgvJGfnGxJbSzNRcSmQeLnkJEy
+         DW4UZKsv+ArLvcRNlk1z5tETASuhD6/rlblRxv/MUcDCxr+cOKKSnMhqk1puXr2On+bi
+         NEsxqOy3QhF1eAGnh+FNsSnlaNWnidFGDiW/Hi4SFFN6vUcEeQhOwok/RdNZLmjq5vlD
+         Gt+FhDXM0Lsx4ElC2sHvvcYhbhfqjAsiFyp1SoMYn8ezrRxCzJX1WCBsKv6WHXBgrQ1M
+         WXDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=+JO6i0n3BKhKys7BXtPUEzF0yojiQcWesZP2vQRQIxA=;
-        b=nARXu2ZOqq6BuJQKgIa+se9oqpoUuGqRdy9dwvHdJRs3EkOAH1oQUXWl/9iLlTbPik
-         WW7gONGLip2OCYCSqLiE7LTLV4yDeIKHqnoEgywoJ9n2+Ggi5H4CEkQaQ4LbTDl49rmI
-         SUazwCGF9Pjdn+cgN6qBjuLRXLsZEySZ/L7Gfq/BuO+KoA9K5sV/heq2QH94iLgWAiTk
-         lMK2PKsaPgxvedovHxifnkxjdCFiW13UKUnaukdjOBQOk9/2HktoARmOqL1ZiDkhp9xe
-         1TvDmROUMdvCEWGt9xqefmh4CIfLUIj7snwcHIimZDz0K5Vi7qQP9gB+DKmfE7TC5fNs
-         v4Gw==
-X-Gm-Message-State: AGi0Pubzx5zEq8MFgfqHFJ/U3vFCwmQtDJba7BNbODrWRdV4KTTNDa+M
-        TMKkuSZCwcYIif/HsTJci8yyySphm/hh4l4UUH0=
-X-Google-Smtp-Source: APiQypIuvoVsMMx/ygq+c38uJY64J4U+3kVGaxFQE3h17xtrH87AIJCSvprAmZ2v8JW0oYDTXz+nW2YpcAb8TUskVh0=
-X-Received: by 2002:a37:68f:: with SMTP id 137mr7289382qkg.36.1588744886373;
- Tue, 05 May 2020 23:01:26 -0700 (PDT)
+        bh=ChezaoH4CBgiAK6q2eFr5RaJbWQCYEoCXpcIjPeuga0=;
+        b=trQH6Sk4Z3T83wx01gm8EIg5TmVVf87heyi58xGe/YzqEhwKJSVgOKzD+UFnipS5He
+         VoWfZFl6AJtkyC7HFegc/7EdplJKKrKjU8s6Wr2dP2VCCzmszgfzf1Ntir0LHdgXduHI
+         XGFcoibC/4xw6Ykvq1I1j78QRZvJXUNvrzViDcF6Vep/7tNLtygLjlCToVkkzns4Fhpf
+         5rI2kU1wvlOfQ3mQyU0rvPzYp6kFGIge1jivKDY7qjeTMCarofgMj8wSwo+7M8ia6spC
+         s860kM0FYjhzohJJGnq48CEhUWX6MPghMVOKuDEmb3kVngPQS8dh61LGZGiQIDWroH44
+         Orfw==
+X-Gm-Message-State: AGi0PuaLR62Fa+U0tiGX6Te+zJXopjH+khNYneAa1vj6DIxh8WTwh5Ri
+        u+Ps0dbEgJ8pJjKzgaj1o6r5hoGIoM3tV/FcL5w=
+X-Google-Smtp-Source: APiQypK0c0RlP045t4Z+aO4PZO6BAF78PBVGPNf5+s6eqALIrVyd3c6h2O0wN5FKfAzRTf8iV3VYQS+7oE4lowiTTvg=
+X-Received: by 2002:ac8:468d:: with SMTP id g13mr6316293qto.59.1588745074062;
+ Tue, 05 May 2020 23:04:34 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200504062547.2047304-1-yhs@fb.com> <20200504062608.2049044-1-yhs@fb.com>
 In-Reply-To: <20200504062608.2049044-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 May 2020 23:01:15 -0700
-Message-ID: <CAEf4Bzae=1h4Rky+ojeoaxUR6OHM5Q6OzXFqPrhoOM4D3EYuCA@mail.gmail.com>
+Date:   Tue, 5 May 2020 23:04:22 -0700
+Message-ID: <CAEf4BzaGsk2hgLHvU=9b2gv7V0y788MNw0hwkSQxE4kg4zSe=w@mail.gmail.com>
 Subject: Re: [PATCH bpf-next v2 18/20] tools/bpf: selftests: add iterator
  programs for ipv6_route and netlink
 To:     Yonghong Song <yhs@fb.com>
@@ -111,9 +111,10 @@ On Sun, May 3, 2020 at 11:30 PM Yonghong Song <yhs@fb.com> wrote:
 > Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
 
-Looks good, but something weird with printf below...
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Just realized, this is only BPF programs, right? It would be good to
+have at least minimal user-space program that would verify and load
+it. Otherwise we'll be just testing compilation and it might "bit rot"
+a bit...
 
 >  .../selftests/bpf/progs/bpf_iter_ipv6_route.c | 63 ++++++++++++++++
 >  .../selftests/bpf/progs/bpf_iter_netlink.c    | 74 +++++++++++++++++++
@@ -121,77 +122,5 @@ Acked-by: Andrii Nakryiko <andriin@fb.com>
 >  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
 >  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
 >
-> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c b/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
-> new file mode 100644
-> index 000000000000..0dee4629298f
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
-> @@ -0,0 +1,63 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2020 Facebook */
-> +#include "vmlinux.h"
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +#include <bpf/bpf_endian.h>
-> +
-> +char _license[] SEC("license") = "GPL";
-> +
-> +extern bool CONFIG_IPV6_SUBTREES __kconfig __weak;
-> +
-> +#define        RTF_GATEWAY             0x0002
-> +#define IFNAMSIZ               16
-
-nit: these look weirdly unaligned :)
-
-> +#define fib_nh_gw_family        nh_common.nhc_gw_family
-> +#define fib_nh_gw6              nh_common.nhc_gw.ipv6
-> +#define fib_nh_dev              nh_common.nhc_dev
-> +
-
-[...]
-
-
-> +       dev = fib6_nh->fib_nh_dev;
-> +       if (dev)
-> +               BPF_SEQ_PRINTF(seq, "%08x %08x %08x %08x %8s\n", rt->fib6_metric,
-> +                              rt->fib6_ref.refs.counter, 0, flags, dev->name);
-> +       else
-> +               BPF_SEQ_PRINTF(seq, "%08x %08x %08x %08x %8s\n", rt->fib6_metric,
-> +                              rt->fib6_ref.refs.counter, 0, flags);
-
-hmm... how does it work? you specify 4 params, but format string
-expects 5. Shouldn't this fail?
-
-> +
-> +       return 0;
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
-> new file mode 100644
-> index 000000000000..0a85a621a36d
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
-> @@ -0,0 +1,74 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2020 Facebook */
-> +#include "vmlinux.h"
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +#include <bpf/bpf_endian.h>
-> +
-> +char _license[] SEC("license") = "GPL";
-> +
-> +#define sk_rmem_alloc  sk_backlog.rmem_alloc
-> +#define sk_refcnt      __sk_common.skc_refcnt
-> +
-> +#define offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
-> +#define container_of(ptr, type, member)                                \
-> +       ({                                                      \
-> +               void *__mptr = (void *)(ptr);                   \
-> +               ((type *)(__mptr - offsetof(type, member)));    \
-> +       })
-
-we should probably put offsetof(), offsetofend() and container_of()
-macro into bpf_helpers.h, seems like universal things for kernel
-datastructs :)
 
 [...]
