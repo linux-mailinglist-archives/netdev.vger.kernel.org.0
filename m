@@ -2,113 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B9EF1C66A0
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 06:15:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0BAD1C6716
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 06:50:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725858AbgEFEO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 00:14:56 -0400
-Received: from mail-eopbgr70079.outbound.protection.outlook.com ([40.107.7.79]:5444
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725300AbgEFEO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 00:14:56 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bs2tODpNZ5/yGy2VChJ9u70xTATPZVa0M1XpQ8IK61v26oCTpu9bi/thUuykRx0SYYPx+PtqDyFFgC3XXzDggrswp6Jb4YBiqJ674gtEdiwHY7ngZ6W2HJLbtzChPTlddkKuEGWy5jX/LyLekx5BmTNpeZBsGOnyCrIygWRGxpSFmuu5ZEBpJdufr5r7ynKPFYMpYAmDS39yBYyU/ySdpyF4YJW/Pbt7mvw7ZQl1/bJzqEtlHe7+8yKkvEaqCDt/+B5lHlt2tVn8LPEmWDSDkCPILt1UaQnfo3RcBDR5vdanx4bQX4X/mvFrRnOc2uEq0P5B7wmLnhFrqAjRyqNDoQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w1nC//0ruIVF8uSTmZzNPy5WxR9oB39H0X5Lq3MxMwM=;
- b=YvOngeA9/05o+Gk+TJd8+jZ18JLyfcOGfQC/0hbdy13Z6R46oJJMRb7+VmrmucsleBsQ5OKoXuqDAMk2PrY/HFQYLfv5uEMQwuHON0BI2IgGRlK0tlVU1HPfHZtrfqX/0qBQd1hfyMaGVZn1n3ODIyfxvdhBL4G2US6axNV9ctvLrjJIJuXBnXAMWYbBM1JT8bjMYcLP5Mv2elKtjH2cbraRGFwiVdc/lpM3ugN8/JRgzGLM/yUZNBMknsq1vaPGARjYbEBzY7fxHNj+T+hvGOBCgbQHSXUnVxANbwEk67zmmD80/jnKr2lB5s01udNthZ+/oHJazbH32NObueIIYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w1nC//0ruIVF8uSTmZzNPy5WxR9oB39H0X5Lq3MxMwM=;
- b=T4cSJXJNcPm7EQuHCPU/nDLUMfAb5caOBZAfNnhOKVZizGW/H7s18M1ssAaJkFADZ9iNsznhHFQt+u8wwgB/sRRsohrtCdKLKVPJh7/zdoPhGxoNk+Cwqo54+vifdfFHLdh2c4pYKE9iW7SWTQZLPN8vs7nXz0DphC5uKF8LfG4=
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
- by VE1PR04MB6526.eurprd04.prod.outlook.com (2603:10a6:803:11d::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19; Wed, 6 May
- 2020 04:14:50 +0000
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::1479:38ea:d4f7:a173]) by VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::1479:38ea:d4f7:a173%7]) with mapi id 15.20.2958.030; Wed, 6 May 2020
- 04:14:50 +0000
-From:   Po Liu <po.liu@nxp.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: RE:  [PATCH net-next] enetc: Fix use after free in
- stream_filter_unref()
-Thread-Topic: [PATCH net-next] enetc: Fix use after free in
- stream_filter_unref()
-Thread-Index: AdYjXNNfSiDFKk+lRwOD0iff3ewHXQ==
-Date:   Wed, 6 May 2020 04:14:49 +0000
-Message-ID: <VE1PR04MB6496EA13ABB5C079D314EE8792A40@VE1PR04MB6496.eurprd04.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: oracle.com; dkim=none (message not signed)
- header.d=none;oracle.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [123.123.61.219]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5ff4e9cc-b7c3-4b91-ad0e-08d7f1740523
-x-ms-traffictypediagnostic: VE1PR04MB6526:|VE1PR04MB6526:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6526B0145D631509584A3F3092A40@VE1PR04MB6526.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 03950F25EC
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: eVq7oECH0BH/lyAOl7pzJc9a63xnGMrDWeMVbMKDGHCVsdI4UPgAshh/N9nYwq0NyU7oLGi370lVphNTvqHiNyIAHzaPUPvgKDWQ4b21roFArDs5eVtu8j4r/1EMOWkUg0Lwme+5GI7GpM4sq6WP4mn8NWSM6V0PuF75ew6h0VilyAg3p25yQWdWlA9ejP1Psujm8jHLnZz8Vh1Cn5JgL+l4lWdyHISYQ1AHJmLShs5LKAezWVFDhNA5eF/LqZPfUcmCrL4ES2bsKFDfkbB8cGO6Nne5H2Vv9lBe2OZXIDkNTHQBshxJpELLnj2opOrZIKuzTezGfp4YtOkNb5irrZdZbWd7QjuAZn0wEZZEBlIpFY9IjkH6WdvtlqbgEVQ/hHUlbEYYqy33vAKDMeWf48h0NAExnTN4MIcOQI42X3eKbJKJltJ2p4bFQfV1TqGfihXV9avgvBWAN9o4x9DHPiJVFas3r8z0Fgturfv/E/aHpqqvJnrecrCxzHvi4nKd37RaimWpaCb0WtkkyIFOtyA9tKLJlGmfWMHcncuSsH8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(346002)(376002)(366004)(39860400002)(136003)(33430700001)(8676002)(6636002)(7696005)(26005)(8936002)(5660300002)(9686003)(55016002)(53546011)(6506007)(186003)(110136005)(54906003)(52536014)(478600001)(33440700001)(316002)(71200400001)(33656002)(66476007)(66946007)(66556008)(66446008)(4326008)(2906002)(64756008)(76116006)(44832011)(86362001)(9126004);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: e9e3RFKxKSwRsx+ztSFfBrW4LlVV0BIdyyvFN15C40tkITEW3Zocx6T26uhwUlnSVPgiB0m4a1QGiHE+0rwNmouVlUvmO/soBo4lVXK4fHEFeAeMK38ayxC4VhJZTAY3tNi0w+PhVoEAeqa7UCFHhHQAy5EqEVk7Ta9tnGs3tozRK+wMVNVomqGBCb8Ij4i5D7yK9ybXfz9Qk1mnZdwHvzr/2NJvToWa1VOXOBg+CtzfmD7XFJgGvd8/QIfydBspNrudIr/2Ta/aYk5bVqyDqDYakH3hJ/2QJhGfRnOdp6JS9QGOAT6Rw2+O31+usM3cOlA1Sv4FBaomuhX0vvm2hMfVdoRW6kzoEQKBM08f7vaj7b24XkWUSU6A7/ZF4Y8u5EaXyS8MrAuBlK7X94+IqzrtdZzB0LbY3MTjlH5HojCfwm08p3VzhK4aMj9FKxMsIT3ZjZMjkWT24ekmIcjnrr1VPbx/iBO/bEp50KK/fTotmM/xk5dEqLkTaPnKVzb0xkdKy4iFBmvG3plJeq2oa24Fz1lOQit6hQV7BnSN0qow8KDmpAqSJR3OIKY+tfGOLbWP2PztAZWp5qhNZ9HylGSLhKIK+z8HweUiO1DiGIk/32T+RdktGCwMjyy2CzmyGT6lIObHfgo7i1t+5Ve+xBx8Kb0/PnwviTPGyFvxOopISvRpG3nMaPqxX1ZT8Jga8mqXY+jswXXmvgkfMkYnJD3KCneZ3fIAkCbjKk62orgpMfelLdqaI/aajlb2sQXCzandscIZzAmkMpOSUHwa7Vm239kwfLEa5L3SH87U70o=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ff4e9cc-b7c3-4b91-ad0e-08d7f1740523
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 May 2020 04:14:49.9889
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3SAlJATjcSYDvPMFkPtHV+3vFDbKTy4WXa14xUdtZl0ysRqZrHK7DIMctgjBrpps
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6526
+        id S1726518AbgEFEup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 00:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725824AbgEFEuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 00:50:44 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDE9C061A41
+        for <netdev@vger.kernel.org>; Tue,  5 May 2020 21:50:44 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id h11so25503plr.11
+        for <netdev@vger.kernel.org>; Tue, 05 May 2020 21:50:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=xeD4fhXXLKw695JxM+Psz6fMHOU1+fBrBm0clKJ80mY=;
+        b=G/KtkBuKiEjsfoatkD/ZeVYejX0UZTvibW3Zcw5Jvdo/xcB7IV2KiYHlCfb18ZrWLE
+         6Xgkg/e0KdUbtyAisRfZFduyr8HIfztgL+jjlYM0dRj/pc+w8q0JE0VAhseEiNgS1zUQ
+         dYwl0G2JZKeEkaSPKv1oiCnESeKvobB/d/Z37Sa+FLMhhRawK30hhA96LeIE4n8CYFwX
+         qwGg4DIvR6wgr0RV3CUqRC59idX5t6vO9wcdVW0NejyBxNQ6JMYRWtvh4J08l5qIFAmG
+         1tM/BW6R/YSnCZXj5SUNXK6nRa1nHkxGxk5IAqB6zP//dLTfRAOk6Efo9TP8mTiaAxHp
+         A8RA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=xeD4fhXXLKw695JxM+Psz6fMHOU1+fBrBm0clKJ80mY=;
+        b=HvGMhD2BawfUYDjqsdoAUUG2cgv+8qN7W3EhLNW2NsJhKuPf7GJOZDLLMf+2tDeE4g
+         wZropRFDEgFNbCeExZ/qcQ/McDJFeBBY6aSqKl9lHOgxzWW1Zh2ckfoLLYInWrJLHHtK
+         AEWV9NdmQU/fuy6tgroLwyYsad9DdAvDkGb8Xi55KleFUtdN6qEhZB+0C3nk/fJaSH2E
+         LfBSpR8U8YVm/wME5mNzoCVumxkuWP+Vifwv0HN7+D29EV3Or1N92fnYT41wC/TG8OxD
+         KfDbl7bvcedk7C/odFWdbRe9W7zgbtKxLU42OZQaFtu4VWmgUD2PP5D6ghR17JuZ4mds
+         7SuQ==
+X-Gm-Message-State: AGi0PubTiYDy4Or2LciRxYpn4d6jysFHgjcNOR71Emfs2bOvp9cOA1xx
+        kLwbRLj9NKPzRSVOAP20lEAL
+X-Google-Smtp-Source: APiQypItLRlwJgfdazvZv/g+NPME6wtexg28p0c+2zudmwz7W9rjo94AVwGAnad/TY2AGuOXzAEJJQ==
+X-Received: by 2002:a17:90a:23ad:: with SMTP id g42mr6809422pje.35.1588740643613;
+        Tue, 05 May 2020 21:50:43 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:6e88:ac9a:a18c:3139:9aa9:bb73])
+        by smtp.gmail.com with ESMTPSA id n69sm3491840pjc.8.2020.05.05.21.50.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 May 2020 21:50:42 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     davem@davemloft.net
+Cc:     kvalo@codeaurora.org, bjorn.andersson@linaro.org,
+        hemantk@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clew@codeaurora.org,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 1/2] net: qrtr: Add MHI transport layer
+Date:   Wed,  6 May 2020 10:20:14 +0530
+Message-Id: <20200506045015.13421-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgRGFuLA0KDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRGFuIENh
-cnBlbnRlciA8ZGFuLmNhcnBlbnRlckBvcmFjbGUuY29tPg0KPiBTZW50OiAyMDIwxOo11MI2yNUg
-NDo0Nw0KPiBUbzogQ2xhdWRpdSBNYW5vaWwgPGNsYXVkaXUubWFub2lsQG54cC5jb20+OyBQbyBM
-aXUgPHBvLmxpdUBueHAuY29tPg0KPiBDYzogRGF2aWQgUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxv
-ZnQubmV0PjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4ga2VybmVsLWphbml0b3JzQHZnZXIu
-a2VybmVsLm9yZw0KPiBTdWJqZWN0OiBbUEFUQ0ggbmV0LW5leHRdIGVuZXRjOiBGaXggdXNlIGFm
-dGVyIGZyZWUgaW4NCj4gc3RyZWFtX2ZpbHRlcl91bnJlZigpDQo+IA0KPiANCj4gVGhpcyBjb2Rl
-IGZyZWVzICJzZmkiIGFuZCB0aGVuIGRlcmVmZXJlbmNlcyBpdCBvbiB0aGUgbmV4dCBsaW5lLg0K
-PiANCj4gRml4ZXM6IDg4OGFlNWEzOTUyYiAoIm5ldDogZW5ldGM6IGFkZCB0YyBmbG93ZXIgcHNm
-cCBvZmZsb2FkIGRyaXZlciIpDQo+IFNpZ25lZC1vZmYtYnk6IERhbiBDYXJwZW50ZXIgPGRhbi5j
-YXJwZW50ZXJAb3JhY2xlLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVl
-c2NhbGUvZW5ldGMvZW5ldGNfcW9zLmMgfCAyICstDQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNl
-cnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9mcmVlc2NhbGUvZW5ldGMvZW5ldGNfcW9zLmMNCj4gYi9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9mcmVlc2NhbGUvZW5ldGMvZW5ldGNfcW9zLmMNCj4gaW5kZXggNDhlNTg5ZTlkMGY3Yy4u
-MTBkNzllYjQ2YzJlOCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNj
-YWxlL2VuZXRjL2VuZXRjX3Fvcy5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVz
-Y2FsZS9lbmV0Yy9lbmV0Y19xb3MuYw0KPiBAQCAtOTAyLDggKzkwMiw4IEBAIHN0YXRpYyB2b2lk
-IHN0cmVhbV9maWx0ZXJfdW5yZWYoc3RydWN0DQo+IGVuZXRjX25kZXZfcHJpdiAqcHJpdiwgdTMy
-IGluZGV4KQ0KPiAgICAgICAgIGlmICh6KSB7DQo+ICAgICAgICAgICAgICAgICBlbmV0Y19zdHJl
-YW1maWx0ZXJfaHdfc2V0KHByaXYsIHNmaSwgZmFsc2UpOw0KPiAgICAgICAgICAgICAgICAgaGxp
-c3RfZGVsKCZzZmktPm5vZGUpOw0KPiAtICAgICAgICAgICAgICAga2ZyZWUoc2ZpKTsNCj4gICAg
-ICAgICAgICAgICAgIGNsZWFyX2JpdChzZmktPmluZGV4LCBlcHNmcC5wc2ZwX3NmaV9iaXRtYXAp
-Ow0KDQpUaGlzICJzZmktPmluZGV4IiBzaG91bGQgYmUgImluZGV4IiwgYnV0IHRoZSBwYXRjaCBp
-cyBhbHNvIGZpeCBpdC4NCg0KPiArICAgICAgICAgICAgICAga2ZyZWUoc2ZpKTsNCj4gICAgICAg
-ICB9DQo+ICB9DQo+IA0KPiAtLQ0KPiAyLjI2LjINCg0KVGhhbmtzIGEgbG90Lg0KDQpCciwNClBv
-IExpdQ0KDQo=
+MHI is the transport layer used for communicating to the external modems.
+Hence, this commit adds MHI transport layer support to QRTR for
+transferring the QMI messages over IPC Router.
+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ net/qrtr/Kconfig  |   7 +++
+ net/qrtr/Makefile |   2 +
+ net/qrtr/mhi.c    | 127 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 136 insertions(+)
+ create mode 100644 net/qrtr/mhi.c
+
+diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
+index 63f89cc6e82c..8eb876471564 100644
+--- a/net/qrtr/Kconfig
++++ b/net/qrtr/Kconfig
+@@ -29,4 +29,11 @@ config QRTR_TUN
+ 	  implement endpoints of QRTR, for purpose of tunneling data to other
+ 	  hosts or testing purposes.
+ 
++config QRTR_MHI
++	tristate "MHI IPC Router channels"
++	depends on MHI_BUS
++	help
++	  Say Y here to support MHI based ipcrouter channels. MHI is the
++	  transport used for communicating to external modems.
++
+ endif # QRTR
+diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
+index 32d4e923925d..1b1411d158a7 100644
+--- a/net/qrtr/Makefile
++++ b/net/qrtr/Makefile
+@@ -5,3 +5,5 @@ obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
+ qrtr-smd-y	:= smd.o
+ obj-$(CONFIG_QRTR_TUN) += qrtr-tun.o
+ qrtr-tun-y	:= tun.o
++obj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o
++qrtr-mhi-y	:= mhi.o
+diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+new file mode 100644
+index 000000000000..2a2abf5b070d
+--- /dev/null
++++ b/net/qrtr/mhi.c
+@@ -0,0 +1,127 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
++ */
++
++#include <linux/mhi.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/skbuff.h>
++#include <net/sock.h>
++
++#include "qrtr.h"
++
++struct qrtr_mhi_dev {
++	struct qrtr_endpoint ep;
++	struct mhi_device *mhi_dev;
++	struct device *dev;
++};
++
++/* From MHI to QRTR */
++static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
++				      struct mhi_result *mhi_res)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++	int rc;
++
++	if (!qdev || mhi_res->transaction_status)
++		return;
++
++	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
++				mhi_res->bytes_xferd);
++	if (rc == -EINVAL)
++		dev_err(qdev->dev, "invalid ipcrouter packet\n");
++}
++
++/* From QRTR to MHI */
++static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
++				      struct mhi_result *mhi_res)
++{
++	struct sk_buff *skb = (struct sk_buff *)mhi_res->buf_addr;
++
++	if (skb->sk)
++		sock_put(skb->sk);
++	consume_skb(skb);
++}
++
++/* Send data over MHI */
++static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
++{
++	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
++	int rc;
++
++	rc = skb_linearize(skb);
++	if (rc)
++		goto free_skb;
++
++	rc = mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
++			   MHI_EOT);
++	if (rc)
++		goto free_skb;
++
++	if (skb->sk)
++		sock_hold(skb->sk);
++
++	return rc;
++
++free_skb:
++	kfree_skb(skb);
++
++	return rc;
++}
++
++static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
++			       const struct mhi_device_id *id)
++{
++	struct qrtr_mhi_dev *qdev;
++	int rc;
++
++	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
++	if (!qdev)
++		return -ENOMEM;
++
++	qdev->mhi_dev = mhi_dev;
++	qdev->dev = &mhi_dev->dev;
++	qdev->ep.xmit = qcom_mhi_qrtr_send;
++
++	dev_set_drvdata(&mhi_dev->dev, qdev);
++	rc = qrtr_endpoint_register(&qdev->ep, QRTR_EP_NID_AUTO);
++	if (rc)
++		return rc;
++
++	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
++
++	return 0;
++}
++
++static void qcom_mhi_qrtr_remove(struct mhi_device *mhi_dev)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++
++	qrtr_endpoint_unregister(&qdev->ep);
++	dev_set_drvdata(&mhi_dev->dev, NULL);
++}
++
++static const struct mhi_device_id qcom_mhi_qrtr_id_table[] = {
++	{ .chan = "IPCR" },
++	{}
++};
++MODULE_DEVICE_TABLE(mhi, qcom_mhi_qrtr_id_table);
++
++static struct mhi_driver qcom_mhi_qrtr_driver = {
++	.probe = qcom_mhi_qrtr_probe,
++	.remove = qcom_mhi_qrtr_remove,
++	.dl_xfer_cb = qcom_mhi_qrtr_dl_callback,
++	.ul_xfer_cb = qcom_mhi_qrtr_ul_callback,
++	.id_table = qcom_mhi_qrtr_id_table,
++	.driver = {
++		.name = "qcom_mhi_qrtr",
++	},
++};
++
++module_mhi_driver(qcom_mhi_qrtr_driver);
++
++MODULE_AUTHOR("Chris Lew <clew@codeaurora.org>");
++MODULE_AUTHOR("Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>");
++MODULE_DESCRIPTION("Qualcomm IPC-Router MHI interface driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.17.1
+
