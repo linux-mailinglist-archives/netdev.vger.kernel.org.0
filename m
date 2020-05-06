@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30F181C74C6
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDFC1C749B
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 17:26:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730326AbgEFP2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 11:28:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48514 "EHLO mail.kernel.org"
+        id S1730199AbgEFP0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 11:26:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48880 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729374AbgEFP03 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 11:26:29 -0400
+        id S1729745AbgEFP0g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 11:26:36 -0400
 Received: from quaco.ghostprotocols.net (unknown [179.97.37.151])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8EB8920A8B;
-        Wed,  6 May 2020 15:26:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9ADAC21835;
+        Wed,  6 May 2020 15:26:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588778788;
-        bh=jGOTpCXWr3wQ4TFvH8say5n5l0hIGbXFTCn/0tUritE=;
+        s=default; t=1588778795;
+        bh=gpeHsbQYIMCw/XN0uo0kt3PaA/xuMHH+5/zEPC0K5Vo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LWMqc4rAYVVojKQlTak64/susOeSZK6J40whWh64tHcTsob1xAICDHMSYPDW6nS9o
-         C+y/92ZjDrTHVUOnxdN97h0N7G/yUK86KjAaULFp3/F2S36kPoJlW8Qcf2idQcRBla
-         RCqhzdb0FW5XuRcmVv78ue+eh/M+8uf6ZC/jwGqA=
+        b=CCHJOhFjoAakrzne+tZydiDAEoAVmGcmSCcMJmoOLTMqvLvTJhevgoKK4X9MQqmgP
+         XtUI+vOJ4jEVXTOCYvKEeVBdUjT5zxGghgiTJZT8qn1XNSljgXDAXC+tjOE31gnJBb
+         fwC5yQmHfPPHzU7R42TMSUCghuQ/MybQJ1YHR0Iw=
 From:   Arnaldo Carvalho de Melo <acme@kernel.org>
 To:     Ingo Molnar <mingo@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>
@@ -52,9 +52,9 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
         Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, yuzhoujian <yuzhoujian@didichuxing.com>,
         Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 65/91] tools feature: Add support for detecting libpfm4
-Date:   Wed,  6 May 2020 12:22:08 -0300
-Message-Id: <20200506152234.21977-66-acme@kernel.org>
+Subject: [PATCH 66/91] perf pmu: Add perf_pmu__find_by_type helper
+Date:   Wed,  6 May 2020 12:22:09 -0300
+Message-Id: <20200506152234.21977-67-acme@kernel.org>
 X-Mailer: git-send-email 2.21.1
 In-Reply-To: <20200506152234.21977-1-acme@kernel.org>
 References: <20200506152234.21977-1-acme@kernel.org>
@@ -67,7 +67,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stephane Eranian <eranian@google.com>
 
-libpfm4 provides an alternate command line encoding of perf events.
+This is used by libpfm4 during event parsing to locate the pmu for an
+event.
 
 Signed-off-by: Stephane Eranian <eranian@google.com>
 Reviewed-by: Ian Rogers <irogers@google.com>
@@ -96,68 +97,47 @@ Cc: Yonghong Song <yhs@fb.com>
 Cc: bpf@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Cc: yuzhoujian <yuzhoujian@didichuxing.com>
-Link: http://lore.kernel.org/lkml/20200429231443.207201-3-irogers@google.com
+Link: http://lore.kernel.org/lkml/20200429231443.207201-4-irogers@google.com
 Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 ---
- tools/build/Makefile.feature       | 3 ++-
- tools/build/feature/Makefile       | 6 +++++-
- tools/build/feature/test-libpfm4.c | 9 +++++++++
- 3 files changed, 16 insertions(+), 2 deletions(-)
- create mode 100644 tools/build/feature/test-libpfm4.c
+ tools/perf/util/pmu.c | 11 +++++++++++
+ tools/perf/util/pmu.h |  1 +
+ 2 files changed, 12 insertions(+)
 
-diff --git a/tools/build/Makefile.feature b/tools/build/Makefile.feature
-index 3e0c019ef297..3abd4316cd4f 100644
---- a/tools/build/Makefile.feature
-+++ b/tools/build/Makefile.feature
-@@ -98,7 +98,8 @@ FEATURE_TESTS_EXTRA :=                  \
-          llvm                           \
-          llvm-version                   \
-          clang                          \
--         libbpf
-+         libbpf                         \
-+         libpfm4
+diff --git a/tools/perf/util/pmu.c b/tools/perf/util/pmu.c
+index 5642de7f8be7..92bd7fafcce6 100644
+--- a/tools/perf/util/pmu.c
++++ b/tools/perf/util/pmu.c
+@@ -871,6 +871,17 @@ static struct perf_pmu *pmu_find(const char *name)
+ 	return NULL;
+ }
  
- FEATURE_TESTS ?= $(FEATURE_TESTS_BASIC)
- 
-diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
-index 92012381393a..84f845b9627d 100644
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -69,7 +69,8 @@ FILES=                                          \
-          test-libaio.bin			\
-          test-libzstd.bin			\
-          test-clang-bpf-global-var.bin		\
--         test-file-handle.bin
-+         test-file-handle.bin			\
-+         test-libpfm4.bin
- 
- FILES := $(addprefix $(OUTPUT),$(FILES))
- 
-@@ -331,6 +332,9 @@ $(OUTPUT)test-clang-bpf-global-var.bin:
- $(OUTPUT)test-file-handle.bin:
- 	$(BUILD)
- 
-+$(OUTPUT)test-libpfm4.bin:
-+	$(BUILD) -lpfm
-+
- ###############################
- 
- clean:
-diff --git a/tools/build/feature/test-libpfm4.c b/tools/build/feature/test-libpfm4.c
-new file mode 100644
-index 000000000000..af49b259459e
---- /dev/null
-+++ b/tools/build/feature/test-libpfm4.c
-@@ -0,0 +1,9 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <sys/types.h>
-+#include <perfmon/pfmlib.h>
-+
-+int main(void)
++struct perf_pmu *perf_pmu__find_by_type(unsigned int type)
 +{
-+	pfm_initialize();
-+	return 0;
++	struct perf_pmu *pmu;
++
++	list_for_each_entry(pmu, &pmus, list)
++		if (pmu->type == type)
++			return pmu;
++
++	return NULL;
 +}
++
+ struct perf_pmu *perf_pmu__scan(struct perf_pmu *pmu)
+ {
+ 	/*
+diff --git a/tools/perf/util/pmu.h b/tools/perf/util/pmu.h
+index 1edd214b75a5..cb6fbec50313 100644
+--- a/tools/perf/util/pmu.h
++++ b/tools/perf/util/pmu.h
+@@ -72,6 +72,7 @@ struct perf_pmu_alias {
+ };
+ 
+ struct perf_pmu *perf_pmu__find(const char *name);
++struct perf_pmu *perf_pmu__find_by_type(unsigned int type);
+ int perf_pmu__config(struct perf_pmu *pmu, struct perf_event_attr *attr,
+ 		     struct list_head *head_terms,
+ 		     struct parse_events_error *error);
 -- 
 2.21.1
 
