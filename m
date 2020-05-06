@@ -2,130 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1D2F1C6E6F
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 12:34:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 416381C6EC2
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 12:53:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729194AbgEFKec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 06:34:32 -0400
-Received: from mail-eopbgr60070.outbound.protection.outlook.com ([40.107.6.70]:28619
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728716AbgEFKeb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 May 2020 06:34:31 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L1AGCCE5foCBdpxx0PI2aaJ8krGOcCTgfxnxJUEmyNlUuLOGNcCDLSygdnDuLCWYAC+IOx9zvRr/chRfmQjGBh7PxaV6+bridyiNnGlKxv7J6g/NcXqI0lbMnU35dMReraaqzphJqNpMEf/oBH/70HWW7RPEOlBFGd9WnlXK+e8DD2eLj5r9duoqTMsp2bUs5OrHF3F3gvztJDHC0qOQ0xDQkNeGKeCI0oJ9l7QZdlRdYGPIoMMs8nys/pnCqUHK672XJxH1EBX7gZbFa/hi9xxP/grQouxLkrWWkdqmMTGcdVlyJdV3OH3Fapvzzdpy3nhvLyoqVXNGIa0BNPh0ig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c02mXJR2ooGxLAfT0hk4DZw8EOUPKezxn12qKu/UL4c=;
- b=WTswuhn2aAv4DmZOlt2kVhO+HL5EfEKCdI1MzcsfzQ1GZVQh/H/Ui1TOBB0BihSpZ6qDh9xWO0fP2NPrCX7zvdVJjmbDZClhrpvJ8lciow+kQUxH6FHPXwHjKu/bFHj1Ke7uKs0EQCRWGkrBnBl7a39WT3WYRYAFg67f/AAM52P/BObwxsnOzPr2Hdc7QJaxTDj1ELAIF+08LbwSjuij8WHmMLcxPZggGsEjkvhmh2RLD95FRfgdFi+vu/0f+AWF4nurICIwLRzGTWFYI4nZIz5le0CjskIqS8e46WYVPOPG408BAmkSllzUZK8OY3i2PRn0BYCgPbSWFLPWbaSpmw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c02mXJR2ooGxLAfT0hk4DZw8EOUPKezxn12qKu/UL4c=;
- b=lNRB3uhS8SrfV6/PnwwuLkusr79VSWGafiIoako2Eq0e8yh6HMOofpPbYOChozKvBYqDcC2NxWEybaETsq9KeT8YBy+T7Gia/g/XU7XedHeCedzBGE7VeUp550pMY5hUjK8W3srO2PvvuAjoO4QDeUWGSyRzyfTvFS64IEtQSHI=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from AM0PR05MB5089.eurprd05.prod.outlook.com (2603:10a6:208:cd::25)
- by AM0PR05MB6164.eurprd05.prod.outlook.com (2603:10a6:208:116::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Wed, 6 May
- 2020 10:34:28 +0000
-Received: from AM0PR05MB5089.eurprd05.prod.outlook.com
- ([fe80::a8a8:5862:d11d:627e]) by AM0PR05MB5089.eurprd05.prod.outlook.com
- ([fe80::a8a8:5862:d11d:627e%6]) with mapi id 15.20.2979.025; Wed, 6 May 2020
- 10:34:28 +0000
-Subject: Re: [PATCH v2 1/3] net/mlx5e: Implicitly decap the tunnel packet when
- necessary
-To:     xiangxia.m.yue@gmail.com, saeedm@mellanox.com, roid@mellanox.com,
-        gerlitz.or@gmail.com
-Cc:     netdev@vger.kernel.org
-References: <1588731393-6973-1-git-send-email-xiangxia.m.yue@gmail.com>
-From:   Paul Blakey <paulb@mellanox.com>
-Message-ID: <1fa1ddbe-44cb-3251-998b-29e7b8b8bcb6@mellanox.com>
-Date:   Wed, 6 May 2020 13:34:23 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-In-Reply-To: <1588731393-6973-1-git-send-email-xiangxia.m.yue@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-ClientProxiedBy: AM3PR07CA0135.eurprd07.prod.outlook.com
- (2603:10a6:207:8::21) To AM0PR05MB5089.eurprd05.prod.outlook.com
- (2603:10a6:208:cd::25)
+        id S1727792AbgEFKxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 06:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725882AbgEFKxf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 06:53:35 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42400C061A0F;
+        Wed,  6 May 2020 03:53:34 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id pg17so929161ejb.9;
+        Wed, 06 May 2020 03:53:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0ZCSjwl3dWty6i1/QxOKSEagP/YVG1NrqycYLPOUigA=;
+        b=lUdkqNo35GvfXfKpdsgzcHdahvF49WBeIzAnW/FLwSXSHStkhHvht8c4yhMroCBZpo
+         xwSr36TCt9j3TzZEVO2JfbyrRqYsSxDiQOVjuJPZb10mlEuOptGJQPOXrUmsxsuKcgQL
+         Vd2WLPvfdGxrOzRhCfE9+oNa2snFdoVxvV5g3RvZ3Pq0gFFBvpMAEJET7rfkE7E9G96E
+         EJNJ7ScdwPnv3kwzhStT6H57ghplQ+qNZyDUmKtBHCVHB/3l5CJBrNnkAcpj7k0cHO3Q
+         4NFI0WVsU7kCzcJyzLxWWsTTyhHrm2wwIr8Jqwran8F+yLIrzZNbMjT6ApfTUGpQkLxq
+         2tLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0ZCSjwl3dWty6i1/QxOKSEagP/YVG1NrqycYLPOUigA=;
+        b=H3fES/xg4gbRpT7m2H8ugKB6RtTQhMDuMyY42eHv8ee92Mmzl1F6apOSn1HnKHdZxt
+         zgCZug2sX+onWhsFvNKYOJy+doZ7DY+LaPzGIiB0j76DMCim427SyKFNGE1z6lOUezOT
+         mDu0tQD5yuiqgJKdfwo0YXKgvVLcEjWfB8XuwZ2l6altfcV5yaDa0h8TtmbJ6WSLgzzq
+         zFK3UJjI1WYrGOjheJhSIUe1FhvaiTyJ9kzKxV1nfCGAwzHbH0lTo77CNEImdDwwF81J
+         YPYMlnGZznsS28fVcclStWOJN4JGZhSrwmFHPHg91TcpmAr0gpk5A9tdXZK23UaPfLoZ
+         IYlQ==
+X-Gm-Message-State: AGi0PuaZGDn1wufOR1QXaT36tIkBJ/GjlQiTgvw1rpdAIuje8O+SBzSe
+        iVA6w9LlwO4zeFsrsKZDc0Ahda7dYWEdyD4JqWQ=
+X-Google-Smtp-Source: APiQypIPWhYdWrQxjVUWUwNUJYb+HMj605jznsCxp9aXjQkVAc8Fl1O9qa+CEjoPDEL0eeFJFRwOM5ct0BAZYcy9N6o=
+X-Received: by 2002:a17:906:f1d7:: with SMTP id gx23mr6649673ejb.176.1588762412772;
+ Wed, 06 May 2020 03:53:32 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.50.62] (5.29.240.93) by AM3PR07CA0135.eurprd07.prod.outlook.com (2603:10a6:207:8::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.11 via Frontend Transport; Wed, 6 May 2020 10:34:27 +0000
-X-Originating-IP: [5.29.240.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d93220c6-8b4e-400c-f513-08d7f1a90dc1
-X-MS-TrafficTypeDiagnostic: AM0PR05MB6164:|AM0PR05MB6164:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB61648BDBC68B91EF7703E426CFA40@AM0PR05MB6164.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:660;
-X-Forefront-PRVS: 03950F25EC
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dEmnNpRaFhcDa/yrLm0ysXZByGEylvgDabcWhwZbLzujIO8ysDL35jjViC2P7Vlbp9/SK7r+9wVUwmFKxXCZj+AgDXl0o+IP/UB1b7WnbfSuhPEqhoB0hsb99cNee4+SipSOJAq4Kxx5dTHz2eVqpoS1mWn0fwNJ0r5vPxN6M1UB+7zEVCs7PB6/ezunli8jmUSvdEbAQoXmrGt+OfciaATCvS48ayjMnmbYB4UWxbiSrxAJ3YM7yx0qzPodoQXAgKqsPOr9ql9H2A9t1+x4OQERZaPVA1ux5NjhC5HmJx6f4AiMeYkKQzsAbS8MX+KvwPq0B1hndY0Hc43N3BALO7Pm8yuceuDoLk756QHoIZuBaGsHc9wRMQfEby97zyTrGoM5/TSgGGDy4HmDS9XAG0eb58O2eo9uCmdJOmu3WWoVG+4lxGiPwI9UKX3aZA8s+C/42W3ZSLsaeoKwCtUia2K+YKAaZvEMgRgvbUg2zxR5kOtSWtdy81uV19R/IfMc/LBL7Zwxqze4RtPu/iMX0SXwupS+0OL4Rl6iUBav4hswfh1rIQ6cQBfb4TGdM0OL
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB5089.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(39860400002)(376002)(366004)(346002)(33430700001)(31696002)(16526019)(316002)(66556008)(66476007)(16576012)(6486002)(4326008)(52116002)(36756003)(26005)(2616005)(6666004)(956004)(66946007)(86362001)(53546011)(2906002)(186003)(478600001)(5660300002)(31686004)(8676002)(33440700001)(8936002)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: mT0hjB9JtgT4F7SVaQI4xq1oAmzB4I1nJODjlYCu2+X69u5Zqb7h9nSGuboIZlOqC7UeTeOoFLCTc2Qv+j7p7rEr/fXBLllrfXGD76jjHZQ69No/kyQvBNEOMtDJjxKPhvZr1aLT/v4ukhR3Aj9no0Hze2dJuJ+bI2hKVU8pjWITJcfiPNYFexLsxmbdg1pbv1WIuw2Yk5WjZjAVUa9crtUfLaALp/a4ZKiB2xmqWqUizERwh00BCUU7VfItRi+dIqFgCK+zO2b+mGNJMAYFIUZMwatQqwYNeCjvAQ00WY7VrRlTaotNjIF1KEyFHnMzvK9Nu+b/Kuu69DuSmNoZxT7MSO2/R2TwEQJOq1XorbF2wnV0vBHK6K93a7h3LOLzP1d5y3HC7pPhQJLZi7TGNTXFuZYBwjAImkWOn1b+brHXUqhVqo909og5k1la+j7OIsGpU4Ru5KqfL2xrA3CdwztUG9RzrL1vuJlPg/6GtLJqoZi4Rq+9Ly3eLDq6k5tMTEA4h6fh0AABek9kqVZOXcypoW54DvgjI8e9Gl32j2+UcTKZas93BviilIgvgcZXr+IPBUULEz4a8gmLVL9KspEEYwh1BZS/tUtWPyrJJZq9wMzgjbpOb8Unl8Ys0N4KYcFzyqsHaJliasemTbdk6K7ah/51eQsM24T/rcuMKV2yaAocVGdHcyndFFky13mRMovpYS7kE9mp34a3+RE1VDTN/0cpJyMoQ3td0D/ncaOQRS2xbCu4Kmr0l1vBCNgjqqfd7TM0bAtMRHC4QTI/y83c0rp6SxtuCkNV+zwA8k0=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d93220c6-8b4e-400c-f513-08d7f1a90dc1
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2020 10:34:28.1385
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N0l5wbaYLeITq423dfTyEJUE0fclxnonLshFQErdcfcnZ5ep/xdAdcsifHhlA+YR3Csf4IGrIxlZ97+fmNp3HA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6164
+References: <20200506074900.28529-1-xiaoliang.yang_1@nxp.com>
+ <20200506074900.28529-5-xiaoliang.yang_1@nxp.com> <20200506094345.n4zdgjvctwiz4pkh@ws.localdomain>
+In-Reply-To: <20200506094345.n4zdgjvctwiz4pkh@ws.localdomain>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 6 May 2020 13:53:21 +0300
+Message-ID: <CA+h21hoqJC_CJB=Sg=-JanXw3S_WANgjsfYjU+ffqn6YCDMzrA@mail.gmail.com>
+Subject: Re: [PATCH v1 net-next 4/6] net: mscc: ocelot: VCAP IS1 support
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        linux-devel@linux.nxdi.nxp.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Allan,
 
-
-On 5/6/2020 5:16 AM, xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Wed, 6 May 2020 at 12:45, Allan W. Nielsen
+<allan.nielsen@microchip.com> wrote:
 >
-> The commit 0a7fcb78cc21 ("net/mlx5e: Support inner header rewrite with
-> goto action"), will decapsulate the tunnel packets if there is a goto
-> action in chain 0. But in some case, we don't want do that, for example:
+> Hi Xiaoliang,
 >
-> $ tc filter add dev $VXLAN protocol ip parent ffff: prio 1 chain 0	\
-> 	flower enc_dst_ip 2.2.2.100 enc_dst_port 4789			\
-> 	action goto chain 2
-> $ tc filter add dev $VXLAN protocol ip parent ffff: prio 1 chain 2	\
-> 	flower dst_mac 00:11:22:33:44:55 enc_src_ip 2.2.2.200		\
-> 	enc_dst_ip 2.2.2.100 enc_dst_port 4789 enc_key_id 100		\
-> 	action tunnel_key unset action mirred egress redirect dev enp130s0f0_0
-> $ tc filter add dev $VXLAN protocol ip parent ffff: prio 1 chain 2	\
-> 	flower dst_mac 00:11:22:33:44:66 enc_src_ip 2.2.2.200		\
-> 	enc_dst_ip 2.2.2.100 enc_dst_port 4789 enc_key_id 200		\
-> 	action tunnel_key unset action mirred egress redirect dev enp130s0f0_1
+> On 06.05.2020 15:48, Xiaoliang Yang wrote:
+> >VCAP IS1 is a VCAP module which can filter MAC, IP, VLAN, protocol, and
+> >TCP/UDP ports keys, and do Qos and VLAN retag actions.
+> >This patch added VCAP IS1 support in ocelot ace driver, which can supports
+> >vlan modify action of tc filter.
+> >Usage:
+> >        tc qdisc add dev swp0 ingress
+> >        tc filter add dev swp0 protocol 802.1Q parent ffff: flower \
+> >        skip_sw vlan_id 1 vlan_prio 1 action vlan modify id 2 priority 2
+> I skimmed skimmed through the patch serie, and the way I understood it
+> is that you look at the action, and if it is a VLAN operation, then you
+> put it in IS1 and if it is one of the other then put it in IS2.
+>
+> This is how the HW is designed - I'm aware of that.
+>
+> But how will this work if you have 2 rules, 1 modifying the VLAN and
+> another rule dropping certain packets?
+>
 
-Also the workaround for these to be actually offloaded is to use the same tunnel
-match in chain 0 as well.
+At the moment, the driver does not support more than 1 action. We
+might need to change that, but we can still install more filters with
+the same key and still be fine (see more below). When there is more
+than 1 action, the IS1 stuff will be combined into a single rule
+programmed into IS1, and the IS2 stuff will be combined into a single
+new rule with the same keys installed into VCAP IS2. Would that not
+work?
 
-$ tc filter add dev $VXLAN protocol ip parent ffff: prio 1 chain 0	\
-	flower enc_dst_ip 2.2.2.100 enc_dst_port 4789			\
-	enc_src_ip 2.2.2.200 enc_dst_ip 2.2.2.100 enc_dst_port 4789	\
-        enc_key_id 100	\
-        action goto chain 2
-$ tc filter add dev $VXLAN protocol ip parent ffff: prio 1 chain 2	\
-	flower dst_mac 00:11:22:33:44:55 enc_src_ip 2.2.2.200		\
-	enc_dst_ip 2.2.2.100 enc_dst_port 4789 enc_key_id 100		\
-	action tunnel_key unset action mirred egress redirect dev enp130s0f0_0
-$ tc filter add dev $VXLAN protocol ip parent ffff: prio 1 chain 2	\
-	flower dst_mac 00:11:22:33:44:66 enc_src_ip 2.2.2.200		\
-	enc_dst_ip 2.2.2.100 enc_dst_port 4789 enc_key_id 200		\
-	action tunnel_key unset action mirred egress redirect dev enp130s0f0_1
+> The SW model have these two rules in the same table, and can stop
+> process at the first match. SW will do the action of the first frame
+> matching.
+>
 
-or just make chain 2 chain 0 :|
+Actually I think this is an incorrect assumption - software stops at
+the first action only if told to do so. Let me copy-paste a text from
+a different email thread.
+
+"
+Thank you for the good discussion today.
+I think the key talking points were:
+- How to express with tc filters the fact that some actions are
+executed by different hardware pipelines than others (VCAP IS1: vlan
+retagging and QoS classification, VCAP IS2: trap, drop, police), and
+that those pipelines can be completely independent, as well as chained
+via a policy
+- How to express the fact that VCAP IS1 can perform up to 3 parallel
+lookups (and VCAP IS2 can perform 2 lookups) per frame with
+potentially different key types and different actions.
+
+I am trying to take a different (top-down) approach than Allan, which
+is to try to express the capabilities that we are interested in
+offloading to Ocelot/Felix as software (skip_hw) tc filters first.
+It was said during the call that flow classification stops at the
+first action that matches a frame, which would prevent us from adding
+actions for the VCAP IS1 in the same chain as actions for the VCAP
+IS2.
+
+Actually it seems that it is possible to specify to the flow
+classifier what to do after each individual action, as can be seen in
+the man page of tc-actions
+(http://man7.org/linux/man-pages/man8/tc-actions.8.html):
+
+       CONTROL
+              The CONTROL indicates how tc should proceed after executing
+              the action. Any of the following are valid:
+
+              reclassify
+                     Restart the classifiction by jumping back to the first
+                     filter attached to the action's parent.
+
+              pipe   Continue with the next action. This is the default
+                     control.
+
+              drop   Drop the packed without running any further actions.
+
+              continue
+                     Continue the classification with the next filter.
+
+              pass   Return to the calling qdisc for packet processing, and
+                     end classification of this packet.
+
+In the above description, it says that "pipe" is the default action
+control. My experience does not seem to coincide with that.
+
+I wrote this quick list of software filters:
+
+tc qdisc add dev swp0 clsact
+# IS1
+tc filter add dev swp0 ingress protocol ip flower skip_hw src_ip
+192.168.1.1 hw_tc 5
+tc filter add dev swp0 ingress protocol all flower skip_hw action vlan push id 3
+tc filter add dev swp0 egress protocol 802.1Q flower skip_hw action vlan pop
+# IS2
+swp0_mac=$(ip link show dev swp0 | awk '/link\/ether/ {print $2}')
+tc filter add dev swp0 ingress protocol all flower skip_hw dst_mac
+${swp0_mac} action police rate 37Mbit burst 64k
+
+ip link add link swp0 name swp0.3 type vlan id 3 && ip link set dev swp0.3 up
+
+which would permit me to terminate IP traffic on the swp0.3 VLAN
+sub-interface, over which I ran an iperf3 test.
+
+The traffic _was_ successfully rate limited at 37 Mbps, _and_
+retagged, but I got a lot of these errors coming from tcf_classify:
+
+[  321.100883] net_ratelimit: 150766 callbacks suppressed
+[  321.100896] 0: reclassify loop, rule prio 0, protocol 03
+[  321.112613] 0: reclassify loop, rule prio 0, protocol 03
+[  321.118625] 0: reclassify loop, rule prio 0, protocol 03
+[  321.124575] 0: reclassify loop, rule prio 0, protocol 03
+[  321.130566] 0: reclassify loop, rule prio 0, protocol 03
+[  321.136630] 0: reclassify loop, rule prio 0, protocol 03
+[  321.142610] 0: reclassify loop, rule prio 0, protocol 03
+[  321.148603] 0: reclassify loop, rule prio 0, protocol 03
+[  321.154625] 0: reclassify loop, rule prio 0, protocol 03
+[  321.160569] 0: reclassify loop, rule prio 0, protocol 03
+
+And looking at the rules themselves:
+
+tc -s filter show dev swp0 ingress
+filter protocol all pref 49150 flower chain 0
+filter protocol all pref 49150 flower chain 0 handle 0x1
+  dst_mac 26:cc:e4:73:9f:9b
+  skip_hw
+  not_in_hw
+        action order 1:  police 0x1 rate 37Mbit burst 64Kb mtu 2Kb
+action reclassify overhead 0b
+        ref 1 bind 1 installed 20 sec used 6 sec
+        Action statistics:
+        Sent 1994574813 bytes 1351356 pkt (dropped 0, overlimits
+1319959 requeues 0)
+        backlog 0b 0p requeues 0
+
+filter protocol all pref 49151 flower chain 0
+filter protocol all pref 49151 flower chain 0 handle 0x1
+  skip_hw
+  not_in_hw
+        action order 1: vlan  push id 3 protocol 802.1Q priority 0 pipe
+         index 1 ref 1 bind 1 installed 20 sec used 0 sec
+        Action statistics:
+        Sent 1263 bytes 21 pkt (dropped 0, overlimits 0 requeues 0)
+        backlog 0b 0p requeues 0
+
+filter protocol ip pref 49152 flower chain 0
+filter protocol ip pref 49152 flower chain 0 handle 0x1 hw_tc 5
+  eth_type ipv4
+  src_ip 192.168.1.1
+  skip_hw
+  not_in_hw
+
+basically the "vlan push" rule matches on way less packets than I was
+expecting, and the default control for the police action is to
+reclassify, not to pipe. I think this is an odd choice for a default
+value, but it looks like I can specify the police rule like this
+(using conform-exceed):
+
+tc filter add dev swp0 ingress protocol all flower skip_hw dst_mac
+${swp0_mac} action police rate 37Mbit burst 64k conform-exceed
+drop/pipe
+
+Basically the idea I want to transmit is that the impression we had
+during the call does not seem to hold true. The default action control
+is "pipe" (well, it's "almost" default), which has the effect of going
+through all rules and not just through the first one that matches
+(that would be the "pass" control). So in principle I don't see why we
+couldn't model the actions that require VLAN retagging or QoS
+classification as lookups in IS1 (ES0 might also need to be involved
+in the retagging case, I am not 100% sure how the egress rewriter is
+involved in the retagging process, but it seems like it is), and the
+actions that require dropping, trapping or policing as lookups in IS2.
+I am not sure that chains would be necessary, nor that we could use
+them anyway (given that we can't make a chain template based on action
+types).
+
+As for the other point (multiple TCAM lookups in the same block), I
+think some concrete examples would definitely help.
+The example of supporting matches on src_mac and src_ip simultaneously
+is a valid one, but it can be dealt with just privately by the driver.
+Looking for concrete examples where that would not be enough.
+
+Another item I would like to bring up is how to perform QoS
+classification. In my example I used the "hw_tc" action from
+tc-flower, but not being offloaded, I couldn't test it. Is this how it
+should be done? Is there an equivalent to hw_tc in tc-matchall and in
+tc-u32? We might need them there too.
+"
 
 
+> The HW will how-ever do both, as they are in independent TCAMs.
+>
+> If we want to enable all the TCAM lookups in Ocelot/Felix, then we need
+> to find a way where we will get the same results when doing the
+> operation in HW and in SW.
+>
+> /Allan
+>
+
+Thanks,
+-Vladimir
