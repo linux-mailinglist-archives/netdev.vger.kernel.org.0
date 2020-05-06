@@ -2,282 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 168CF1C6A15
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 09:30:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1117B1C6A18
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 09:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728193AbgEFHaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 03:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40994 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727067AbgEFHaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 03:30:15 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CC3C061A0F;
-        Wed,  6 May 2020 00:30:15 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id b6so943872qkh.11;
-        Wed, 06 May 2020 00:30:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y8H3v1in/yldZzKXzjwYAl5OsrPTXL+w2BtzihawKeg=;
-        b=Vi9utcwOydH0OKy07Z1Z3JGyCRJEU7byku6e0Y8xyONuU7rrgK8K/EB9NOGWq8eO4A
-         nUsgIX1z6YuroHxtxBle+Htx+z9anXIcyAPEQ39gQaotzhsCIkA034SW+9qT52+O3zWQ
-         ZEorzimKEm85q4XZDSlnH860aonXPFD8oBQZzxqfIfPydUbDBdTKNHmHVkvgCQ4U9E59
-         pHXm3SHjtwedPe1W+3n2vac5uiGzivHdk7p2Dmx1XnNVN+tN5xriE3ohXcSixV5oIb06
-         KEXeEWLdwXrM8XXafP8AYbPu927aWGOeiM6yE6QLZwZ5nfFOicuYj0rvQDOX8/nMSwrC
-         tICA==
+        id S1728180AbgEFHcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 03:32:06 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:35651 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727067AbgEFHcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 03:32:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588750325;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HP/mARJSFaRZB8Uw1gs0N8a3hG9u3MSy81dFgfdpRwU=;
+        b=WRg2I0lTpiZbb4Bs9gWKIL9EasyMn4ZazOIuyp3wRJAkF0OI1XC7F2VbVZEToefBRxGMw4
+        7izMeuDzPt0umfykYMn4gJf5U54srx1kIAFSmdyMifzQWzOLqfX/tXITiIKjjCnBptzChj
+        4ZqG20U0KX+S3W84dDzJCzphI1m1OgU=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-118-GiYhWrjTOBOunLsfCb0v7g-1; Wed, 06 May 2020 03:32:02 -0400
+X-MC-Unique: GiYhWrjTOBOunLsfCb0v7g-1
+Received: by mail-wr1-f70.google.com with SMTP id v17so861403wrq.8
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 00:32:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y8H3v1in/yldZzKXzjwYAl5OsrPTXL+w2BtzihawKeg=;
-        b=mlPeya5UyHBhPPIPmW4VlsqkE10brLZJsCvuPyDnKHHW2XO7TmP4NW3WWW99NNS42M
-         PAYyIiHN8w7H2ncCwkFrIRTtyoaX42BZ/pYDcZkBDXDcObhX5Z4H9WdfvaWKcGEncfiF
-         VtYb4SFAeWrbhD7VNE4Z5+xRnbi+aDeL3o43hb7cZW/XUAD9+ttSUBl2fvNvqJPAezmO
-         YGcDpdAgwg+3acSdsB6Eyo2DbukQlzGJvQYzb5+xbVwCFHyRRUvmNcCvkwpMgI2iyG8E
-         zkWIYZIQOerzcEQv0tRmcdICbeMPASHzmbTR1GPpZEEwheffojWWuLJS5TP6I1ik6x4R
-         Nn0A==
-X-Gm-Message-State: AGi0PuaqG/tVVYUXcYx0YF0FjDyVLy7sgQqQwc/cmSD+nSv+lDZv+OoL
-        adKltWmGbNY7pq0qbdlYvS21LmIUUaySatBNdB4ESsgZ
-X-Google-Smtp-Source: APiQypJwB2DWGkRMoHR7cAVgt0s6h62qKpnSUVRRU8+EsMyfqbD3dnty637FmpR+YGBXXb5cinyldmnLu/EC2s3BCrs=
-X-Received: by 2002:ae9:e713:: with SMTP id m19mr7422561qka.39.1588750214663;
- Wed, 06 May 2020 00:30:14 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HP/mARJSFaRZB8Uw1gs0N8a3hG9u3MSy81dFgfdpRwU=;
+        b=DG7ahF1vMrqd4V6nudXr7JX2mK0hy8YbwSIEnS+RPjdaPJNhS+IsJCQQHSfmL7iJYd
+         X1KsjRYmJz0PuSTNgjjMsgimAHNs1hBaehTNrdthgi43KTPEO6l1Xm6w4kT48YNIBPGK
+         /w9CXXmw0lA8GhNF/Mp6dYXxKpv2MbHEaQuWbkqvWFHGHKjEc17+XseACL1u/8PBEzDM
+         njiY56xW1hih1vIIJbUvvQnTwbO4tNkuYV6qhtTMyE5egfil5efkayS4Vw2kU4tybKJA
+         wK3qOLa2qWT5g3ko53oZiml+CLi4vVBBSyr3GULgWGMrtG7k0lFpIHY0za5jqkplCfqV
+         dApQ==
+X-Gm-Message-State: AGi0PuaLkvCxmxI9yMk2+exzach3yFWcMKlDaPqG0MODYgUtXbgYwONU
+        xkrLJZJRaeaaBAoAJq12EI9ZC4ZU5cXKsulrqS5netnzBM7E8fhhGL0LK08TRfHdCSYKXddU366
+        Ko2H0210u4J99xp7f
+X-Received: by 2002:a05:6000:1048:: with SMTP id c8mr7269899wrx.1.1588750321274;
+        Wed, 06 May 2020 00:32:01 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJEtAvDnoogiQvtnt2ssGvAjfh/VYKMVYUCDUyIfEO4lWsJL1Z/1uyrb/dUdfsIIdGyVt3a6Q==
+X-Received: by 2002:a05:6000:1048:: with SMTP id c8mr7269878wrx.1.1588750321029;
+        Wed, 06 May 2020 00:32:01 -0700 (PDT)
+Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
+        by smtp.gmail.com with ESMTPSA id n25sm1691117wmk.9.2020.05.06.00.31.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 00:32:00 -0700 (PDT)
+Date:   Wed, 6 May 2020 03:31:58 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [BUG] Inconsistent lock state in virtnet poll
+Message-ID: <20200506032237-mutt-send-email-mst@kernel.org>
+References: <87lfm6oa7b.fsf@nanos.tec.linutronix.de>
+ <20200505120352-mutt-send-email-mst@kernel.org>
+ <87v9lanher.fsf@nanos.tec.linutronix.de>
+ <98c4d934-5a27-1cf7-119a-ce0c5a501864@gmail.com>
+ <20200505204015-mutt-send-email-mst@kernel.org>
+ <4ea7fb92-c4fb-1a31-d83b-483da2fb7a1a@gmail.com>
+ <20200505212325-mutt-send-email-mst@kernel.org>
+ <71b1b9dd-78e3-9694-2daa-5723355293d4@gmail.com>
 MIME-Version: 1.0
-References: <20200504062547.2047304-1-yhs@fb.com> <20200504062559.2048228-1-yhs@fb.com>
-In-Reply-To: <20200504062559.2048228-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 6 May 2020 00:30:03 -0700
-Message-ID: <CAEf4BzbySjaBQSMTET=HGD_K748GOXZZQ7zMhgtEqE-JgJGbdQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 11/20] bpf: add task and task/file iterator targets
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <71b1b9dd-78e3-9694-2daa-5723355293d4@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 3, 2020 at 11:28 PM Yonghong Song <yhs@fb.com> wrote:
->
-> Only the tasks belonging to "current" pid namespace
-> are enumerated.
->
-> For task/file target, the bpf program will have access to
->   struct task_struct *task
->   u32 fd
->   struct file *file
-> where fd/file is an open file for the task.
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
+On Tue, May 05, 2020 at 07:24:18PM -0700, Eric Dumazet wrote:
+> 
+> 
+> On 5/5/20 6:25 PM, Michael S. Tsirkin wrote:
+> > On Tue, May 05, 2020 at 06:19:09PM -0700, Eric Dumazet wrote:
+> >>
+> >>
+> >> On 5/5/20 5:43 PM, Michael S. Tsirkin wrote:
+> >>> On Tue, May 05, 2020 at 03:40:09PM -0700, Eric Dumazet wrote:
+> >>>>
+> >>>>
+> >>>> On 5/5/20 3:30 PM, Thomas Gleixner wrote:
+> >>>>> "Michael S. Tsirkin" <mst@redhat.com> writes:
+> >>>>>> On Tue, May 05, 2020 at 02:08:56PM +0200, Thomas Gleixner wrote:
+> >>>>>>>
+> >>>>>>> The following lockdep splat happens reproducibly on 5.7-rc4
+> >>>>>>
+> >>>>>>> ================================
+> >>>>>>> WARNING: inconsistent lock state
+> >>>>>>> 5.7.0-rc4+ #79 Not tainted
+> >>>>>>> --------------------------------
+> >>>>>>> inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+> >>>>>>> ip/356 [HC0[0]:SC1[1]:HE1:SE0] takes:
+> >>>>>>> f3ee4cd8 (&syncp->seq#2){+.?.}-{0:0}, at: net_rx_action+0xfb/0x390
+> >>>>>>> {SOFTIRQ-ON-W} state was registered at:
+> >>>>>>>   lock_acquire+0x82/0x300
+> >>>>>>>   try_fill_recv+0x39f/0x590
+> >>>>>>
+> >>>>>> Weird. Where does try_fill_recv acquire any locks?
+> >>>>>
+> >>>>>   u64_stats_update_begin(&rq->stats.syncp);
+> >>>>>
+> >>>>> That's a 32bit kernel which uses a seqcount for this. sequence counts
+> >>>>> are "lock" constructs where you need to make sure that writers are
+> >>>>> serialized.
+> >>>>>
+> >>>>> Actually the problem at hand is that try_fill_recv() is called from
+> >>>>> fully preemptible context initialy and then from softirq context.
+> >>>>>
+> >>>>> Obviously that's for the open() path a non issue, but lockdep does not
+> >>>>> know about that. OTOH, there is other code which calls that from
+> >>>>> non-softirq context.
+> >>>>>
+> >>>>> The hack below made it shut up. It's obvioulsy not ideal, but at least
+> >>>>> it let me look at the actual problem I was chasing down :)
+> >>>>>
+> >>>>> Thanks,
+> >>>>>
+> >>>>>         tglx
+> >>>>>
+> >>>>> 8<-----------
+> >>>>> --- a/drivers/net/virtio_net.c
+> >>>>> +++ b/drivers/net/virtio_net.c
+> >>>>> @@ -1243,9 +1243,11 @@ static bool try_fill_recv(struct virtnet
+> >>>>>  			break;
+> >>>>>  	} while (rq->vq->num_free);
+> >>>>>  	if (virtqueue_kick_prepare(rq->vq) && virtqueue_notify(rq->vq)) {
+> >>>>> +		local_bh_disable();
+> >>>>
+> >>>> Or use u64_stats_update_begin_irqsave() whic is a NOP on 64bit kernels
+> >>>
+> >>> I applied this, but am still trying to think of something that
+> >>> is 0 overhead for all configs.
+> >>> Maybe we can select a lockdep class depending on whether napi
+> >>> is enabled?
+> >>
+> >>
+> >> Do you _really_ need 64bit counter for stats.kicks on 32bit kernels ?
+> >>
+> >> Adding 64bit counters just because we can might be overhead anyway.
+> > 
+> > Well 32 bit kernels don't fundamentally kick less than 64 bit ones,
+> > and we kick more or less per packet, sometimes per batch,
+> > people expect these to be in sync ..
+> 
+> Well, we left many counters in networking stack as 'unsigned long'
+> and nobody complained yet of overflows on 32bit kernels.
 
-I might be missing some subtleties with task refcounting for task_file
-iterator, asked few questions below...
+Right.  For TX it is helpful that everything is maintained
+atomically so we do need the seqlock machinery anyway:
 
->  kernel/bpf/Makefile    |   2 +-
->  kernel/bpf/task_iter.c | 336 +++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 337 insertions(+), 1 deletion(-)
->  create mode 100644 kernel/bpf/task_iter.c
->
-> diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-> index b2b5eefc5254..37b2d8620153 100644
-> --- a/kernel/bpf/Makefile
-> +++ b/kernel/bpf/Makefile
-> @@ -2,7 +2,7 @@
->  obj-y := core.o
->  CFLAGS_core.o += $(call cc-disable-warning, override-init)
->
-> -obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o
-> +obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o
->  obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o
->  obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o
->  obj-$(CONFIG_BPF_SYSCALL) += disasm.o
-> diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-> new file mode 100644
-> index 000000000000..1ca258f6e9f4
-> --- /dev/null
-> +++ b/kernel/bpf/task_iter.c
-> @@ -0,0 +1,336 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (c) 2020 Facebook */
-> +
-> +#include <linux/init.h>
-> +#include <linux/namei.h>
-> +#include <linux/pid_namespace.h>
-> +#include <linux/fs.h>
-> +#include <linux/fdtable.h>
-> +#include <linux/filter.h>
-> +
-> +struct bpf_iter_seq_task_common {
-> +       struct pid_namespace *ns;
-> +};
-> +
-> +struct bpf_iter_seq_task_info {
-> +       struct bpf_iter_seq_task_common common;
+        u64_stats_update_begin(&sq->stats.syncp);
+        sq->stats.bytes += bytes;
+        sq->stats.packets += packets;
+        sq->stats.xdp_tx += n;
+        sq->stats.xdp_tx_drops += drops;
+        sq->stats.kicks += kicks;
+        u64_stats_update_end(&sq->stats.syncp);
 
-you have comment below in init_seq_pidns() that common is supposed to
-be the very first field, but I think it's more important and
-appropriate here, so that whoever adds anything here knows that order
-of field is important.
+for RX kicks are currently updated separately.  Which I guess is more or
+less a minor bug.
 
-> +       struct task_struct *task;
-> +       u32 id;
-> +};
-> +
+        if (rq->vq->num_free > min((unsigned int)budget, virtqueue_get_vring_size(rq->vq)) / 2) {
+                if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+                        schedule_delayed_work(&vi->refill, 0);
+        }
 
-[...]
+        u64_stats_update_begin(&rq->stats.syncp);
+        for (i = 0; i < VIRTNET_RQ_STATS_LEN; i++) {
+                size_t offset = virtnet_rq_stats_desc[i].offset;
+                u64 *item;
 
-> +static int __task_seq_show(struct seq_file *seq, void *v, bool in_stop)
-> +{
-> +       struct bpf_iter_meta meta;
-> +       struct bpf_iter__task ctx;
-> +       struct bpf_prog *prog;
-> +       int ret = 0;
-> +
-> +       meta.seq = seq;
-> +       prog = bpf_iter_get_info(&meta, in_stop);
-> +       if (prog) {
+                item = (u64 *)((u8 *)&rq->stats + offset);
+                *item += *(u64 *)((u8 *)&stats + offset);
+        }
+        u64_stats_update_end(&rq->stats.syncp);
+
+we should update kicks in virtnet_receive.
+
+And as long as we do that there's no cost to 64 bit counters ...
 
 
-nit: `if (!prog) return 0;` here would reduce nesting level below
+> SNMP agents are used to the fact that counters do overflow.
+> 
+> Problems might happen if the overflows happen too fast, say every 10 seconds,
+> but other than that, forcing 64bit counters for something which is not
+> _required_ for the data path is adding pain.
+> 
+> I am mentioning this, because trying to add lockdep stuff and associated
+> maintenance cost for 32bit kernels in 2020 makes little sense to me,
+> considering I added include/linux/u64_stats_sync.h 10 years ago.
+> 
 
-> +               meta.seq = seq;
-> +               ctx.meta = &meta;
-> +               ctx.task = v;
-> +               ret = bpf_iter_run_prog(prog, &ctx);
-> +       }
-> +
-> +       return 0;
+Not sure what do you suggest here...
 
-return **ret**; ?
 
-> +}
-> +
+> 
+> 
+> 
 
-[...]
-
-> +
-> +static struct file *task_file_seq_get_next(struct pid_namespace *ns, u32 *id,
-> +                                          int *fd, struct task_struct **task,
-> +                                          struct files_struct **fstruct)
-> +{
-> +       struct files_struct *files;
-> +       struct task_struct *tk;
-> +       u32 sid = *id;
-> +       int sfd;
-> +
-> +       /* If this function returns a non-NULL file object,
-> +        * it held a reference to the files_struct and file.
-> +        * Otherwise, it does not hold any reference.
-> +        */
-> +again:
-> +       if (*fstruct) {
-> +               files = *fstruct;
-> +               sfd = *fd;
-> +       } else {
-> +               tk = task_seq_get_next(ns, &sid);
-> +               if (!tk)
-> +                       return NULL;
-> +
-> +               files = get_files_struct(tk);
-> +               put_task_struct(tk);
-
-task is put here, but is still used below.. is there some additional
-hidden refcounting involved?
-
-> +               if (!files) {
-> +                       sid = ++(*id);
-> +                       *fd = 0;
-> +                       goto again;
-> +               }
-> +               *fstruct = files;
-> +               *task = tk;
-> +               if (sid == *id) {
-> +                       sfd = *fd;
-> +               } else {
-> +                       *id = sid;
-> +                       sfd = 0;
-> +               }
-> +       }
-> +
-> +       rcu_read_lock();
-> +       for (; sfd < files_fdtable(files)->max_fds; sfd++) {
-
-files_fdtable does rcu_dereference on each iteration, would it be
-better to just cache files_fdtable(files)->max_fds into local
-variable? It's unlikely that there will be many iterations, but
-still...
-
-> +               struct file *f;
-> +
-> +               f = fcheck_files(files, sfd);
-> +               if (!f)
-> +                       continue;
-> +               *fd = sfd;
-> +               get_file(f);
-> +               rcu_read_unlock();
-> +               return f;
-> +       }
-> +
-> +       /* the current task is done, go to the next task */
-> +       rcu_read_unlock();
-> +       put_files_struct(files);
-> +       *fstruct = NULL;
-
-*task = NULL; for completeness?
-
-> +       sid = ++(*id);
-> +       *fd = 0;
-> +       goto again;
-> +}
-> +
-> +static void *task_file_seq_start(struct seq_file *seq, loff_t *pos)
-> +{
-> +       struct bpf_iter_seq_task_file_info *info = seq->private;
-> +       struct files_struct *files = NULL;
-> +       struct task_struct *task = NULL;
-> +       struct file *file;
-> +       u32 id = info->id;
-> +       int fd = info->fd;
-> +
-> +       file = task_file_seq_get_next(info->common.ns, &id, &fd, &task, &files);
-> +       if (!file) {
-> +               info->files = NULL;
-
-what about info->task here?
-
-> +               return NULL;
-> +       }
-> +
-> +       ++*pos;
-> +       info->id = id;
-> +       info->fd = fd;
-> +       info->task = task;
-> +       info->files = files;
-> +
-> +       return file;
-> +}
-> +
-
-[...]
-
-> +
-> +struct bpf_iter__task_file {
-> +       __bpf_md_ptr(struct bpf_iter_meta *, meta);
-> +       __bpf_md_ptr(struct task_struct *, task);
-> +       u32 fd;
-
-nit: sort of works by accident (due to all other field being 8-byte
-aligned pointers), shall we add __attribute__((aligned(8)))?
-
-> +       __bpf_md_ptr(struct file *, file);
-> +};
-> +
-
-[...]
