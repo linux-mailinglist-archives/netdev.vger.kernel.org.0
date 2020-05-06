@@ -2,90 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23C1F1C6F48
-	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:26:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5254A1C6F50
+	for <lists+netdev@lfdr.de>; Wed,  6 May 2020 13:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727774AbgEFL0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 07:26:35 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38472 "EHLO
+        id S1727940AbgEFL1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 07:27:37 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43812 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727802AbgEFL0e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:26:34 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 6 May 2020 14:26:32 +0300
+        with ESMTP id S1725796AbgEFL1h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 07:27:37 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 6 May 2020 14:27:32 +0300
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 046BQWek017451;
-        Wed, 6 May 2020 14:26:32 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 046BRWg1017764;
+        Wed, 6 May 2020 14:27:32 +0300
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Roi Dayan <roid@mellanox.com>, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@mellanox.com>
 Cc:     netfilter-devel@vger.kernel.org
-Subject: [PATCH net] netfilter: flowtable: Add pending bit for offload work
-Date:   Wed,  6 May 2020 14:24:39 +0300
-Message-Id: <1588764279-12166-1-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net] netfilter: flowtable: Fix expired flow not being deleted from software
+Date:   Wed,  6 May 2020 14:27:29 +0300
+Message-Id: <1588764449-12706-1-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gc step can queue offloaded flow del work or stats work.
-Those work items can race each other and a flow could be freed
-before the stats work is executed and querying it.
-To avoid that, add a pending bit that if a work exists for a flow
-don't queue another work for it.
-This will also avoid adding multiple stats works in case stats work
-didn't complete but gc step started again.
+Once a flow is considered expired, it is marked as DYING, and
+scheduled a delete from hardware. The flow will be deleted from
+software, in the next gc_step after hardware deletes the flow
+(and flow is marked DEAD). Till that happens, the flow's timeout
+might be updated from a previous scheduled stats, or software packets
+(refresh). This will cause the gc_step to no longer consider the flow
+expired, and it will not be deleted from software.
 
+Fix that by looking at the DYING flag as in deciding
+a flow should be deleted from software.
+
+Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
+Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
 ---
- include/net/netfilter/nf_flow_table.h | 1 +
- net/netfilter/nf_flow_table_offload.c | 8 +++++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ net/netfilter/nf_flow_table_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index 6bf6965..c54a7f7 100644
---- a/include/net/netfilter/nf_flow_table.h
-+++ b/include/net/netfilter/nf_flow_table.h
-@@ -127,6 +127,7 @@ enum nf_flow_flags {
- 	NF_FLOW_HW_DYING,
- 	NF_FLOW_HW_DEAD,
- 	NF_FLOW_HW_REFRESH,
-+	NF_FLOW_HW_PENDING,
- };
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index c0cb7949..b0e9f7a 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -362,7 +362,8 @@ static void nf_flow_offload_gc_step(struct flow_offload *flow, void *data)
+ 	struct nf_flowtable *flow_table = data;
  
- enum flow_offload_type {
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index b9d5ecc..731d738 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -817,6 +817,7 @@ static void flow_offload_work_handler(struct work_struct *work)
- 			WARN_ON_ONCE(1);
- 	}
- 
-+	clear_bit(NF_FLOW_HW_PENDING, &offload->flow->flags);
- 	kfree(offload);
- }
- 
-@@ -831,9 +832,14 @@ static void flow_offload_queue_work(struct flow_offload_work *offload)
- {
- 	struct flow_offload_work *offload;
- 
-+	if (test_and_set_bit(NF_FLOW_HW_PENDING, &flow->flags))
-+		return NULL;
-+
- 	offload = kmalloc(sizeof(struct flow_offload_work), GFP_ATOMIC);
--	if (!offload)
-+	if (!offload) {
-+		clear_bit(NF_FLOW_HW_PENDING, &flow->flags);
- 		return NULL;
-+	}
- 
- 	offload->cmd = cmd;
- 	offload->flow = flow;
+ 	if (nf_flow_has_expired(flow) || nf_ct_is_dying(flow->ct) ||
+-	    test_bit(NF_FLOW_TEARDOWN, &flow->flags)) {
++	    test_bit(NF_FLOW_TEARDOWN, &flow->flags) ||
++	    test_bit(NF_FLOW_HW_DYING, &flow->flags)) {
+ 		if (test_bit(NF_FLOW_HW, &flow->flags)) {
+ 			if (!test_bit(NF_FLOW_HW_DYING, &flow->flags))
+ 				nf_flow_offload_del(flow_table, flow);
 -- 
 1.8.3.1
 
