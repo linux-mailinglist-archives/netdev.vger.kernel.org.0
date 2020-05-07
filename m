@@ -2,99 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04A231C8D77
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:04:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0DF01C8D9F
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727986AbgEGOEH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 7 May 2020 10:04:07 -0400
-Received: from mga07.intel.com ([134.134.136.100]:24102 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727867AbgEGOEG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 10:04:06 -0400
-IronPort-SDR: d7LDCZBAKaNgicm17JVxcWiuZQiqLFdxIgeG+DtT613Xfzfn0biZvjSWXBcZBKNdfHNf/xWxoc
- SFUWH76cCxgQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2020 07:04:05 -0700
-IronPort-SDR: 0zPLsjjUtQT1m1L3DSg05Otkjpwgb29rQWpGc4SyeQREyY+ItAl78NRHcuYg7GSoxPSRinPVi2
- t2KoQRAh8NCg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,363,1583222400"; 
-   d="scan'208";a="278608262"
-Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
-  by orsmga002.jf.intel.com with ESMTP; 07 May 2020 07:04:05 -0700
-Received: from fmsmsx119.amr.corp.intel.com (10.18.124.207) by
- fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 7 May 2020 07:04:05 -0700
-Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.70]) by
- FMSMSX119.amr.corp.intel.com ([169.254.14.63]) with mapi id 14.03.0439.000;
- Thu, 7 May 2020 07:04:04 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: RE: [net-next v3 2/9] ice: Create and register virtual bus for RDMA
-Thread-Topic: [net-next v3 2/9] ice: Create and register virtual bus for RDMA
-Thread-Index: AQHWI+1r2JNfe9cvUUWx8AZJyUPthaicvW2A///jz2A=
-Date:   Thu, 7 May 2020 14:04:04 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7DCD6B850@fmsmsx124.amr.corp.intel.com>
-References: <20200506210505.507254-1-jeffrey.t.kirsher@intel.com>
- <20200506210505.507254-3-jeffrey.t.kirsher@intel.com>
- <20200507081737.GC1024567@kroah.com>
-In-Reply-To: <20200507081737.GC1024567@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.107]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1728018AbgEGOHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:07:51 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:49883 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727903AbgEGOHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:07:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588860467;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1AoI+9FyMu82WK4bZhrAK5V8JQ6RWrNZsFQbYJw2lb8=;
+        b=FFapW094jQ9WBDEl0IojAueYo/At3cqKBXNx+ggioYK0N1wECr+W7CvagYXDfYV/RxBq2a
+        1t5FV7ro3HNaLGv0zzo1dNu91HhOyjwC1SdU0w9z+r+x8I0Nj1g6pVZyx8rU5W3CZFW0oJ
+        fcKk0XLGdIFo+uPrwh39S8wIBICDAEg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-61-vKGhe_kQMd-SMc6q1mPVXw-1; Thu, 07 May 2020 10:07:39 -0400
+X-MC-Unique: vKGhe_kQMd-SMc6q1mPVXw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 422AA460;
+        Thu,  7 May 2020 14:07:37 +0000 (UTC)
+Received: from treble (ovpn-115-96.rdu2.redhat.com [10.10.115.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 059E670545;
+        Thu,  7 May 2020 14:07:35 +0000 (UTC)
+Date:   Thu, 7 May 2020 09:07:33 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        X86 ML <x86@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
+ compatibility
+Message-ID: <20200507140733.v4xlzjogtnpgu5lc@treble>
+References: <20200502192105.xp2osi5z354rh4sm@treble>
+ <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
+ <20200505181108.hwcqanvw3qf5qyxk@treble>
+ <20200505195320.lyphpnprn3sjijf6@ast-mbp.dhcp.thefacebook.com>
+ <20200505202823.zkmq6t55fxspqazk@treble>
+ <20200505235939.utnmzqsn22cec643@ast-mbp.dhcp.thefacebook.com>
+ <20200506155343.7x3slq3uasponb6w@treble>
+ <CAADnVQJZ1rj1DB-Y=85itvfcHxnXVKjhJXpzqs6zZ6ZLpexhCQ@mail.gmail.com>
+ <20200506211945.4qhrxqplzmt4ul66@treble>
+ <20200507000357.grprluieqa324v5c@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200507000357.grprluieqa324v5c@ast-mbp.dhcp.thefacebook.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [net-next v3 2/9] ice: Create and register virtual bus for RDMA
+On Wed, May 06, 2020 at 05:03:57PM -0700, Alexei Starovoitov wrote:
+> > > > > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> > > > > index d7ee4c6bad48..05104c3cc033 100644
+> > > > > --- a/include/linux/compiler-gcc.h
+> > > > > +++ b/include/linux/compiler-gcc.h
+> > > > > @@ -171,4 +171,4 @@
+> > > > >  #define __diag_GCC_8(s)
+> > > > >  #endif
+> > > > >
+> > > > > -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
+> > > > > +#define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
+> > > > > --
+> > > > > 2.23.0
+> > > > >
+> > > > > I've tested it with gcc 8,9,10 and clang 11 with FP=y and with ORC=y.
+> > > > > All works.
+> > > > > I think it's safer to go with frame pointers even for ORC=y considering
+> > > > > all the pain this issue had caused. Even if objtool gets confused again
+> > > > > in the future __bpf_prog_run() will have frame pointers and kernel stack
+> > > > > unwinding can fall back from ORC to FP for that frame.
+> > > > > wdyt?
+> > > >
+> > > > It seems dangerous to me.  The GCC manual recommends against it.
+> > > 
+> > > The manual can says that it's broken. That won't stop the world from using it.
+> > > Just google projects that are using it. For example: qt, lz4, unreal engine, etc
+> > > Telling compiler to disable gcse via flag is a guaranteed way to avoid
+> > > that optimization that breaks objtool whereas messing with C code is nothing
+> > > but guess work. gcc can still do gcse.
+> > 
+> > But the manual's right, it is broken.  How do you know other important
+> > flags won't also be stripped?
 > 
-> On Wed, May 06, 2020 at 02:04:58PM -0700, Jeff Kirsher wrote:
-> > From: Dave Ertman <david.m.ertman@intel.com>
-> >
-> > The RDMA block does not have its own PCI function, instead it must
-> > utilize the ice driver to gain access to the PCI device. Create a
-> > virtual bus device so the irdma driver can register a virtual bus
-> > driver to bind to it and receive device data. The device data contains
-> > all of the relevant information that the irdma peer will need to
-> > access this PF's IIDC API callbacks.
-> 
-> But there is no virtual bus driver in this patch!
+> What flags are you worried about?
+> I've checked that important things like -mno-red-zone, -fsanitize are preserved.
 
-Hi Greg - 
+It's not any specific flags I'm worried about, it's all of them.  There
+are a lot of possibilities, with all the different configs, and arches.
+Flags are usually added for a good reason, so one randomly missing flag
+could have unforeseen results.
 
-The irdma driver is the virtbus driver that would bind to the virtual devices created
-in this netdev driver.
+And I don't have any visibility into how GCC decides which flags to
+drop, and when.  But the docs aren't comforting.
 
-It is decoupled from this series as it was deemed in a prior discussion that irdma driver
-would go in a +1 cycle from net series to avoid conflicts. See discussion here --
-https://lore.kernel.org/netdev/46ed855e75f9eda89118bfad9c6f7b16dd372c71.camel@intel.com/
+Even if things seem to work now, that could (silently) change at any
+point in time.  This time objtool warned about the missing frame
+pointer, but that's not necessarily going to happen for other flags.
 
-The irdma driver is currently posted as an RFC series with its most recent submission here --
-https://lore.kernel.org/linux-rdma/20200417171251.1533371-1-jeffrey.t.kirsher@intel.com/
+If we go this route, I would much rather do -fno-gcse on a file-wide
+basis.
 
-Shiraz
+-- 
+Josh
+
