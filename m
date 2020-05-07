@@ -2,89 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 097BC1C840A
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 09:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 269881C8411
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 09:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726308AbgEGH6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 03:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725858AbgEGH6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 03:58:15 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242A7C061A10
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 00:58:14 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 207so2487601pgc.6
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 00:58:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d9gjnubS63tvlYTBfTQRcvuipQYZtycVKe2DmQLBUFQ=;
-        b=ljN8fdLOCYgjepN3wjPsNHnZ9ZTXanyLQ9NFx4/GKfliXyUYWEG2ed/1ycQQ5nd2eW
-         qibuUwT+0yrcZUVgL9A+hBjZqfsr+N7Hov34nuCXboqzLQj6aXxmO+0gFDQU/lXbK1Kw
-         86sVOrjTH79MV8gfLfNxo8g0gO3us1V8Vy/pSbjzPUXBSnv7d78OebUI+Pl3ZovN7hsr
-         Ab2UlUm+SFxW5GLciQDbIXYT9waNBO+1YUEF+Kn6d/EiyTklqMFY2/W9AXIDdo3OdwXs
-         aWn1FBVvQLEw7wIBqTLwQpFFk3avvc5bf2F6SBvj8nc4yXRH6mByyDF9B11i+MFmRloJ
-         CrrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d9gjnubS63tvlYTBfTQRcvuipQYZtycVKe2DmQLBUFQ=;
-        b=B8YhEUGuA2Ydjn9TEQE5PrH/iSQffVlqLQkV4Zn8nQujh+1El/UicMcvkrz4jPRuC6
-         rQ0zhkBHLodDQzBUU4VN3kTnZinmqRlp5yNzUOswUTMevYEhkV5AZVvhKt88YN5QQUNV
-         x6LbA9ZEcl1T8cL9gIwYdclxmhHmMHviFTBu4CKddxqEsXDfU3FqI6BdvsrllStIuWm9
-         EHoNm7pa9SLHmrDdO7Y22luNtuzvOMABS+KMZp32udK1331qpQAylHyzkNRIUlT+j0on
-         hDlFug4A+EHkg2k93yJ/Uf1gS8utTOFufOTn+FfETv/UhjUhhFHAnArn8A9R7gnQtaad
-         0IBg==
-X-Gm-Message-State: AGi0PuaQUxiiQdIP47P4QUiqeTBMycQruSvosD8GbcEsPlPB1l6tcxSe
-        7RKPTZ77ER2ywkXonlhBNTdwvPAp
-X-Google-Smtp-Source: APiQypIbUgD4db0QpGJMVVDi0iT6lE812i+YmlEZLGR7yis+k9UOtRUHNkFEIeYomU8Qs3IWm0ktIA==
-X-Received: by 2002:a63:ed02:: with SMTP id d2mr5011058pgi.119.1588838293569;
-        Thu, 07 May 2020 00:58:13 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id p10sm4094749pff.210.2020.05.07.00.58.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2020 00:58:12 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>
-Subject: [PATCH] net: remove spurious declaration of tcp_default_init_rwnd()
-Date:   Thu,  7 May 2020 00:58:05 -0700
-Message-Id: <20200507075805.4831-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
+        id S1726533AbgEGH7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 03:59:33 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:46846 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725879AbgEGH7d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 03:59:33 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 56786EBB9CFDFC6BB918;
+        Thu,  7 May 2020 15:59:31 +0800 (CST)
+Received: from huawei.com (10.175.113.25) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Thu, 7 May 2020
+ 15:59:23 +0800
+From:   Zheng Zengkai <zhengzengkai@huawei.com>
+To:     <andrew@lunn.ch>, <davem@davemloft.net>, <rjui@broadcom.com>
+CC:     <f.fainelli@gmail.com>, <bcm-kernel-feedback-list@broadcom.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <zhengzengkai@huawei.com>
+Subject: [PATCH net-next] net: phy: Make iproc_mdio_resume static
+Date:   Thu, 7 May 2020 16:03:26 +0800
+Message-ID: <20200507080326.111896-1-zhengzengkai@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+Fix sparse warnings:
 
-it doesn't actually exist...
+drivers/net/phy/mdio-bcm-iproc.c:182:5: warning:
+ symbol 'iproc_mdio_resume' was not declared. Should it be static?
 
-Test: builds and 'git grep tcp_default_init_rwnd' comes up empty
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
 ---
- include/net/tcp.h | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/phy/mdio-bcm-iproc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index dcf9a72eeaa6..64f84683feae 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1376,7 +1376,6 @@ static inline void tcp_sack_reset(struct tcp_options_received *rx_opt)
- 	rx_opt->num_sacks = 0;
+diff --git a/drivers/net/phy/mdio-bcm-iproc.c b/drivers/net/phy/mdio-bcm-iproc.c
+index f1ded03f0229..89bdfcc0e506 100644
+--- a/drivers/net/phy/mdio-bcm-iproc.c
++++ b/drivers/net/phy/mdio-bcm-iproc.c
+@@ -179,7 +179,7 @@ static int iproc_mdio_remove(struct platform_device *pdev)
  }
  
--u32 tcp_default_init_rwnd(u32 mss);
- void tcp_cwnd_restart(struct sock *sk, s32 delta);
- 
- static inline void tcp_slow_start_after_idle_check(struct sock *sk)
+ #ifdef CONFIG_PM_SLEEP
+-int iproc_mdio_resume(struct device *dev)
++static int iproc_mdio_resume(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct iproc_mdio_priv *priv = platform_get_drvdata(pdev);
 -- 
-2.26.2.526.g744177e7f7-goog
+2.20.1
 
