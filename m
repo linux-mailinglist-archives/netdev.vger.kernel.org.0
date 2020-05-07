@@ -2,123 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 883D51C9CF2
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 23:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 827831C9D15
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 23:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgEGVGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 17:06:08 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40234 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbgEGVGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 17:06:07 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jWniO-0004wi-CU; Thu, 07 May 2020 23:05:56 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jWniO-0008Ol-3O; Thu, 07 May 2020 23:05:56 +0200
-Subject: Re: [PATCH v3] net: bpf: permit redirect from ingress L3 to egress L2
- devices at near max mtu
-To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <CANP3RGduts2FJ2M5MLcf23GaRa=-fwUC7oPf-S4zp39f63jHMg@mail.gmail.com>
- <20200507023606.111650-1-zenczykowski@gmail.com>
- <ae1e5602-a2fd-661b-155c-d32ff0059ce6@iogearbox.net>
- <CANP3RGcz3VE6kS8JUNw4gR1tbCGGbF=-u99_j9QZRrz6559=kw@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <a711e527-5283-cf3f-6866-06ee0a010d74@iogearbox.net>
-Date:   Thu, 7 May 2020 23:05:55 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726768AbgEGVTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 17:19:03 -0400
+Received: from mx2.suse.de ([195.135.220.15]:50014 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726218AbgEGVTD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 17:19:03 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 4D2F5ACFE;
+        Thu,  7 May 2020 21:19:03 +0000 (UTC)
+From:   NeilBrown <neilb@suse.de>
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Date:   Fri, 08 May 2020 07:18:53 +1000
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.4 26/35] SUNRPC: defer slow parts of rpc_free_client() to a workqueue.
+In-Reply-To: <20200507142830.26239-26-sashal@kernel.org>
+References: <20200507142830.26239-1-sashal@kernel.org> <20200507142830.26239-26-sashal@kernel.org>
+Message-ID: <878si3cuki.fsf@notabene.neil.brown.name>
 MIME-Version: 1.0
-In-Reply-To: <CANP3RGcz3VE6kS8JUNw4gR1tbCGGbF=-u99_j9QZRrz6559=kw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25805/Thu May  7 14:14:46 2020)
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/7/20 6:46 PM, Maciej Żenczykowski wrote:
-> (a) not clear why the max is SKB_MAX_ALLOC in the first place (this is
-> PAGE_SIZE << 2, ie. 16K on x86), while lo mtu is 64k
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Agreed, tbh, it's not clear to me either atm. :) The SKB_MAX_ALLOC constant itself
-should be replaced with something more appropriate. Also as a small side note,
-the !skb->dev check should be removed since in tc ingress/egress the skb->dev
-is never NULL. (See also tc_cls_act_convert_ctx_access() on struct __sk_buff,
-ifindex conversion.)
+On Thu, May 07 2020, Sasha Levin wrote:
 
-> (b) hmm, if we're not redirecting, then exceeding the ingress device's
-> mtu doesn't seem to be a problem.
-> 
-> Indeed AFAIK this can already happen, some devices will round mtu up
-> when they configure the device mru buffers.
-> (ie. you configure L3 mtu 1500, they treat that as L2 1536 or 1532 [-4
-> fcs], simply because 3 * 512 is a nice amount of buffers, or they'll
-> accept not only 1514 L2, but also 1518 L2 or even 1522 L2 for VLAN and
-> Q-IN-Q -- even if the packets aren't actually VLAN'ed, so your non
-> VLAN mru might be 1504 or 1508)
-> 
-> Indeed my corp dell workstation with some standard 1 gigabit
-> motherboard nic has a standard default mtu of 1500, and I've seen it
-> receive L3 mtu 1520 packets (apparently due to misconfiguration in our
-> hardware [cisco? juniper?] ipv4->ipv6 translator which can take 1500
-> mtu ipv4 packets and convert them to 1520 mtu ipv6 packets without
-> fragmenting or generating icmp too big errors).  While it's obviously
-> wrong, it does just work (the network paths themselves are also
-> obviously 1520 clean).
+> From: NeilBrown <neilb@suse.de>
+>
+> [ Upstream commit 7c4310ff56422ea43418305d22bbc5fe19150ec4 ]
 
-Right, agree on tc ingress side when skb goes further up the stack.
+This one is buggy - it introduces a use-after-free.  Best delay it for
+now.
 
-> (c) If we are redirecting we'll eventually (after bpf program returns)
-> hit dev_queue_xmit(), and shouldn't that be what returns an error?
+NeilBrown
 
-You mean whether the check should be inside __dev_queue_xmit() itself
-instead? Maybe. From a cursory glance the MTU checks are spread in upper
-layer protos. As mentioned, we would need to have coverage for BPF progs
-attached on the tc ingress and egress (sch_handle_{ingress,egress}())
-hook where for each case an skb can be just TC_ACT_OK'ed (up to stack or
-down to driver), redirected via ____dev_forward_skb() or dev_queue_xmit().
-The ____dev_forward_skb() has us covered and for TC_ACT_OK on tc ingress,
-we'd only need a generic upper cap. So for the rest of the cases, we'd
-need to have some sort of sanity check somewhere.
+>
+> The rpciod workqueue is on the write-out path for freeing dirty memory,
+> so it is important that it never block waiting for memory to be
+> allocated - this can lead to a deadlock.
+>
+> rpc_execute() - which is often called by an rpciod work item - calls
+> rcp_task_release_client() which can lead to rpc_free_client().
+>
+> rpc_free_client() makes two calls which could potentially block wating
+> for memory allocation.
+>
+> rpc_clnt_debugfs_unregister() calls into debugfs and will block while
+> any of the debugfs files are being accessed.  In particular it can block
+> while any of the 'open' methods are being called and all of these use
+> malloc for one thing or another.  So this can deadlock if the memory
+> allocation waits for NFS to complete some writes via rpciod.
+>
+> rpc_clnt_remove_pipedir() can take the inode_lock() and while it isn't
+> obvious that memory allocations can happen while the lock it held, it is
+> safer to assume they might and to not let rpciod call
+> rpc_clnt_remove_pipedir().
+>
+> So this patch moves these two calls (together with the final kfree() and
+> rpciod_down()) into a work-item to be run from the system work-queue.
+> rpciod can continue its important work, and the final stages of the free
+> can happen whenever they happen.
+>
+> I have seen this deadlock on a 4.12 based kernel where debugfs used
+> synchronize_srcu() when removing objects.  synchronize_srcu() requires a
+> workqueue and there were no free workther threads and none could be
+> allocated.  While debugsfs no longer uses SRCU, I believe the deadlock
+> is still possible.
+>
+> Signed-off-by: NeilBrown <neilb@suse.de>
+> Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  include/linux/sunrpc/clnt.h |  8 +++++++-
+>  net/sunrpc/clnt.c           | 21 +++++++++++++++++----
+>  2 files changed, 24 insertions(+), 5 deletions(-)
+>
+> diff --git a/include/linux/sunrpc/clnt.h b/include/linux/sunrpc/clnt.h
+> index abc63bd1be2b5..d99d39d45a494 100644
+> --- a/include/linux/sunrpc/clnt.h
+> +++ b/include/linux/sunrpc/clnt.h
+> @@ -71,7 +71,13 @@ struct rpc_clnt {
+>  #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+>  	struct dentry		*cl_debugfs;	/* debugfs directory */
+>  #endif
+> -	struct rpc_xprt_iter	cl_xpi;
+> +	/* cl_work is only needed after cl_xpi is no longer used,
+> +	 * and that are of similar size
+> +	 */
+> +	union {
+> +		struct rpc_xprt_iter	cl_xpi;
+> +		struct work_struct	cl_work;
+> +	};
+>  	const struct cred	*cl_cred;
+>  };
+>=20=20
+> diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+> index f7f78566be463..a7430b66c7389 100644
+> --- a/net/sunrpc/clnt.c
+> +++ b/net/sunrpc/clnt.c
+> @@ -877,6 +877,20 @@ EXPORT_SYMBOL_GPL(rpc_shutdown_client);
+>  /*
+>   * Free an RPC client
+>   */
+> +static void rpc_free_client_work(struct work_struct *work)
+> +{
+> +	struct rpc_clnt *clnt =3D container_of(work, struct rpc_clnt, cl_work);
+> +
+> +	/* These might block on processes that might allocate memory,
+> +	 * so they cannot be called in rpciod, so they are handled separately
+> +	 * here.
+> +	 */
+> +	rpc_clnt_debugfs_unregister(clnt);
+> +	rpc_clnt_remove_pipedir(clnt);
+> +
+> +	kfree(clnt);
+> +	rpciod_down();
+> +}
+>  static struct rpc_clnt *
+>  rpc_free_client(struct rpc_clnt *clnt)
+>  {
+> @@ -887,17 +901,16 @@ rpc_free_client(struct rpc_clnt *clnt)
+>  			rcu_dereference(clnt->cl_xprt)->servername);
+>  	if (clnt->cl_parent !=3D clnt)
+>  		parent =3D clnt->cl_parent;
+> -	rpc_clnt_debugfs_unregister(clnt);
+> -	rpc_clnt_remove_pipedir(clnt);
+>  	rpc_unregister_client(clnt);
+>  	rpc_free_iostats(clnt->cl_metrics);
+>  	clnt->cl_metrics =3D NULL;
+>  	xprt_put(rcu_dereference_raw(clnt->cl_xprt));
+>  	xprt_iter_destroy(&clnt->cl_xpi);
+> -	rpciod_down();
+>  	put_cred(clnt->cl_cred);
+>  	rpc_free_clid(clnt);
+> -	kfree(clnt);
+> +
+> +	INIT_WORK(&clnt->cl_work, rpc_free_client_work);
+> +	schedule_work(&clnt->cl_work);
+>  	return parent;
+>  }
+>=20=20
+> --=20
+> 2.20.1
 
-> btw. is_skb_forwardable() actually tests
-> - device is up && (packet is gso || skb->len < dev->mtu +
-> dev->hard_header_len + VLAN_HLEN);
-> 
-> which is also wrong and in 2 ways, cause VLAN_HLEN makes no sense on
-> non ethernet, and the __bpf_skb_max_len function doesn't account for
-> VLAN...  (which possibly has implications if you try to redirect to a
-> vlan interface)
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Yeah, it probably would for QinQ which is probably why noone was running
-into it so far. At least the skb_vlan_push() would first store the tag
-via __vlan_hwaccel_put_tag() in the skb itself.
+-----BEGIN PGP SIGNATURE-----
 
-> I think having an mtu check is useful, but I think the mtu should be
-> selectable by the bpf program.  Because it might not even be device
-> mtu at all, it might be path mtu which we should be testing against.
-> It should also be checked for gso frames, since the max post
-> segmentation size should be enforced.
-> 
-> I agree we should expose dev->mtu (and dev->hard_header_len and hatype)
-> 
-> I'll mull this over a bit more, but I'm not convinced this patch isn't ok as is.
-> There just is probably more we should do.
-
-Ok, makes sense. Thanks for looking into it!
+iQIzBAEBCAAdFiEEG8Yp69OQ2HB7X0l6Oeye3VZigbkFAl60ez0ACgkQOeye3VZi
+gbkTlxAAhHKw2SYW5PnmU2uD/cyIddjxyuhSkumoo6COwdVY0602KufdxCiP5mfe
+vSOjHjYICTnZMcbaSYEd3PHZEzezAh3DZggn7sXc+8I3cJb1JU2EcZeVArClZv0n
+b/5jvqW525cmCpg1XIUGwbOZcgMsSVE4N6FmfMD/JMNrp3pA/k4NLvyS//Qd+/8P
+OG+TPIljq8lermJmhVyckBVSBojXtUuEkR9kG0+o87JJwR8JaeIKeR+CFTKuIMub
+E9ql7aDYQrPQzfKiiE4jPNSl1cqO5qQUkuEIsc/ziKHdRJR1E8txD2IvKsL6zL2y
+yV9ptqTmDT+o7M2qf7irjxamriaPM5xUMPibHUSOhdVILPY6strqeWSRqblf8C+D
+9DLpk3KM0t9oeQwiG2ODLImkzZJ3SdXXKH2oL0HwFdl/GYqb6pY5xbSF2QbX6uda
++52AZka4B4TxIwe+SBi5W0jh6wrrJqWL02djWQWLFT2WXwVgh2gSgstUwD1+y0hg
+BvAcs8Zj+RXFq1/yUz5JSQ6EbjQaMSXD7hZ6ponFXLlODy8YkesWvsHLJVDoFu+v
+3okAx1WOUgSqujM/qeWzrYKYEYopi14fhlJeN7qY2vaSKCAJUGxChMC314nGLHrH
+unLW37ThQF4XTp9LhwgaIj9LVNhzkWHPlN5L88ff5Ai/q5XhkIk=
+=cDQC
+-----END PGP SIGNATURE-----
+--=-=-=--
