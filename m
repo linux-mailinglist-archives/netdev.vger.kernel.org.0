@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0EB71C8728
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A31FD1C872B
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:44:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727794AbgEGKoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 06:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
+        id S1727815AbgEGKoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 06:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725900AbgEGKoL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:44:11 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8543FC061A10;
-        Thu,  7 May 2020 03:44:11 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id z1so2832129pfn.3;
-        Thu, 07 May 2020 03:44:11 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725900AbgEGKoQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:44:16 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37821C061A10;
+        Thu,  7 May 2020 03:44:16 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id w65so2813256pfc.12;
+        Thu, 07 May 2020 03:44:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tz8I1ofrUYKZZa7+UlEDx8Su4gDS1jJlBTe3ya5G/ds=;
-        b=hAin0dEfa8D0QT/xdbYwtSmY+r/ADzs/RPbx2NxEa/jKNukKs4rwsNguI24CIp6oTf
-         gmtWMp5Fp6TJhu+iSldZKsyr9EcJZe+amBQs0Fyro1du0s74NdVqBX7ashXchIFoiZBK
-         Rzx3vBfVsBxZNMjeZIQBCy74WhlkOxhCohnT64oWhUz+r5gutgpq6rDrmnZ2jwBOQkhV
-         Tgqt/+w/Zp5vljfRZkDy9npt5mCCOKu7kzqR+JSsNy7zJ2E58+4ickhJ4ZfWH67Z21IA
-         ACnB0xTW80+ptgxCStBbEadbJxULXX1Yk7ccye9KwhZ7lOlYi4VZSjDKACqCV1ZMLLLM
-         ar1g==
+        bh=xaI+dxdkWV4VACAfg0MAccpixvtxpKG2nAQ8/ucBdvg=;
+        b=Bba8PWdqw0XbgJQcVEegxpO9h2qH3y7Z/8O1ydDWEpSEu2ZPOQHKbpbx6SamsS5w85
+         BjaS/PZ5LceHgeENlsZSppBFG5izah894hixihxP3NU3XpPPkr5q/ksx3nATlXFoCb4W
+         Awmak+lmMqnXO2Z39+QCyGxKulDkz1hmjcYTWIYIaB7MM98xCBH0qPnbQSrf6cj3Gx+H
+         oabMNCbzlJus4PwT87yKWKPpk96k3JmJ9nm/eQki0IuqBhHMwxkkV4kN3qSXIVvF9rEu
+         tnoJydCWzkAq6FPcE6pYBEss2Y2m+IhnRFXfbc9GOuNLCk5Pmi0XUSPdRpAVCntosGCq
+         fhow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tz8I1ofrUYKZZa7+UlEDx8Su4gDS1jJlBTe3ya5G/ds=;
-        b=b1WI6bp8s4ZIsdirijey4tAeVlkH18plLw/6er8hJNdxQGTSF0qfp2fRXI7SE48fiN
-         Zr32LKhPBcRSkssmVisXwiOp5az5Nc1ZDWFOT5F0NudbIA52A6jzUhunb9qtJ3QbUbR4
-         yrTEVjQNrjB/A/NLxneWw7cXCqUojiohKXXp7Xfkjfu35y2NudSWcY/knLM/XjfqA+VB
-         f5VZyqljpnYVrnDXOOtACfiy2plwhpHB/NO9oiZ0Nz6aldE8bkZjZq5BENFXCf0tIvkZ
-         59IS2l1TszZa0xHyb0p/S6fMNbnGkT4cGtF26wIzFC3cYNQtb4lHyvkqGkhJ2UPgcjZs
-         VIGQ==
-X-Gm-Message-State: AGi0Pubbda2Owlk0x+DGKF/gnEbofc/6HlcXVNdZ4jFMfhpQHETviPgJ
-        y6bbTzf+zlFHoFVCtZfytEE=
-X-Google-Smtp-Source: APiQypKbdaq3C7zr1ivVJbvbFSEBssGigWYGEZNCrfHBlivoeLmBnZs2pCPAgqtUg9m0K3FwFbyBWQ==
-X-Received: by 2002:a63:db03:: with SMTP id e3mr5482597pgg.413.1588848250940;
-        Thu, 07 May 2020 03:44:10 -0700 (PDT)
+        bh=xaI+dxdkWV4VACAfg0MAccpixvtxpKG2nAQ8/ucBdvg=;
+        b=siR338NWPI2Eql8QgtYr4a4kBDKdZJ37A42KRiOsDmMnW5RbDIlcafgtQqaLjTWTaG
+         I5MV3GpAEO12SnGI30LAv6eYsHSKILLb1IpFviCRSJp02YYFspSG8HFbCO4RheOVf5qS
+         8G3kHeRyMNScdAwJ/mPHz5r3Mk92hInCEynEj9d21yz+oOQ3nSyFkGICkxO6dp35kWhd
+         b0CPUK72LVXbGR3FFWySbtr7SL90uGn4keU2OthfBINEvJKl2b+/M5CrjIkeWGkOU5sD
+         hjdHPgmtvmEudlh30SsxBI0FnOP5LgWgsxFJGAt/2Ep8tjP2hY5hVVQvhNSw4Ng8W71W
+         7cSQ==
+X-Gm-Message-State: AGi0Puax3OxdScDgOsDpAbi2uK3yNjz7enUmDTcfFZM9J2X/aIvwDbwD
+        cUxpAyUxqrC7OhhTidWykoc=
+X-Google-Smtp-Source: APiQypKYT7vH/cqy2AgbTCJJED3LtTPO1R2dq1nAnfZukTilEtzOQSHKvrB/qHu2RRKtEA6lt2xurg==
+X-Received: by 2002:a62:154:: with SMTP id 81mr13290251pfb.115.1588848255625;
+        Thu, 07 May 2020 03:44:15 -0700 (PDT)
 Received: from btopel-mobl.ger.intel.com ([192.55.55.43])
-        by smtp.gmail.com with ESMTPSA id j14sm7450673pjm.27.2020.05.07.03.44.06
+        by smtp.gmail.com with ESMTPSA id j14sm7450673pjm.27.2020.05.07.03.44.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2020 03:44:10 -0700 (PDT)
+        Thu, 07 May 2020 03:44:14 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
         kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
@@ -55,9 +55,9 @@ To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
         jeffrey.t.kirsher@intel.com
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         maximmi@mellanox.com, maciej.fijalkowski@intel.com
-Subject: [PATCH bpf-next 12/14] xdp: simplify xdp_return_{frame,frame_rx_napi,buff}
-Date:   Thu,  7 May 2020 12:42:50 +0200
-Message-Id: <20200507104252.544114-13-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next 13/14] xsk: explicitly inline functions and move definitions
+Date:   Thu,  7 May 2020 12:42:51 +0200
+Message-Id: <20200507104252.544114-14-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200507104252.544114-1-bjorn.topel@gmail.com>
 References: <20200507104252.544114-1-bjorn.topel@gmail.com>
@@ -71,87 +71,419 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-The xdp_return_{frame,frame_rx_napi,buff} function are never used,
-except in xdp_convert_zc_to_xdp_frame(), by the MEM_TYPE_XSK_BUFF_POOL
-memory type.
+In order to reduce the number of function calls, the struct
+xsk_buff_pool definition is moved to xsk_buff_pool.h. The functions
+xp_get_dma(), xp_dma_sync_for_cpu(), xp_dma_sync_for_device(),
+xp_validate_desc() and various helper functions are explicitly
+inlined.
 
-To simplify and reduce code, change so that
-xdp_convert_zc_to_xdp_frame() calls xsk_buff_free() directly since the
-type is know, and remove MEM_TYPE_XSK_BUFF_POOL from the switch
-statement in __xdp_return() function.
+Further, move xp_get_handle() and xp_release() to xsk.c, to allow for
+the compiler to perform inlining.
 
-Suggested-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+rfc->v1: Make sure xp_validate_desc() is inlined for Tx perf. (Maxim)
+
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- net/core/xdp.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ include/net/xsk_buff_pool.h |  92 +++++++++++++++++++++--
+ net/xdp/xsk.c               |  15 ++++
+ net/xdp/xsk_buff_pool.c     | 142 ++----------------------------------
+ net/xdp/xsk_queue.h         |  45 ++++++++++++
+ 4 files changed, 151 insertions(+), 143 deletions(-)
 
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 11273c976e19..7ab1f9014c5e 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -334,10 +334,11 @@ EXPORT_SYMBOL_GPL(xdp_rxq_info_reg_mem_model);
-  * scenarios (e.g. queue full), it is possible to return the xdp_frame
-  * while still leveraging this protection.  The @napi_direct boolean
-  * is used for those calls sites.  Thus, allowing for faster recycling
-- * of xdp_frames/pages in those cases.
-+ * of xdp_frames/pages in those cases. This path is never used by the
-+ * MEM_TYPE_XSK_BUFF_POOL memory type, so it's explicitly not part of
-+ * the switch-statement.
-  */
--static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
--			 struct xdp_buff *xdp)
-+static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct)
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index 9abef166441d..029522696ccb 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -4,6 +4,7 @@
+ #ifndef XSK_BUFF_POOL_H_
+ #define XSK_BUFF_POOL_H_
+ 
++#include <linux/if_xdp.h>
+ #include <linux/types.h>
+ #include <linux/dma-mapping.h>
+ #include <net/xdp.h>
+@@ -24,6 +25,27 @@ struct xdp_buff_xsk {
+ 	struct list_head free_list_node;
+ };
+ 
++struct xsk_buff_pool {
++	struct xsk_queue *fq;
++	struct list_head free_list;
++	dma_addr_t *dma_pages;
++	struct xdp_buff_xsk *heads;
++	u64 chunk_mask;
++	u64 addrs_cnt;
++	u32 free_list_cnt;
++	u32 dma_pages_cnt;
++	u32 heads_cnt;
++	u32 free_heads_cnt;
++	u32 headroom;
++	u32 chunk_size;
++	u32 frame_len;
++	bool cheap_dma;
++	bool unaligned;
++	void *addrs;
++	struct device *dev;
++	struct xdp_buff_xsk *free_heads[];
++};
++
+ /* AF_XDP core. */
+ struct xsk_buff_pool *xp_create(struct page **pages, u32 nr_pages, u32 chunks,
+ 				u32 chunk_size, u32 headroom, u64 size,
+@@ -31,8 +53,6 @@ struct xsk_buff_pool *xp_create(struct page **pages, u32 nr_pages, u32 chunks,
+ void xp_set_fq(struct xsk_buff_pool *pool, struct xsk_queue *fq);
+ void xp_destroy(struct xsk_buff_pool *pool);
+ void xp_release(struct xdp_buff_xsk *xskb);
+-u64 xp_get_handle(struct xdp_buff_xsk *xskb);
+-bool xp_validate_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc);
+ 
+ /* AF_XDP, and XDP core. */
+ void xp_free(struct xdp_buff_xsk *xskb);
+@@ -46,9 +66,69 @@ struct xdp_buff *xp_alloc(struct xsk_buff_pool *pool);
+ bool xp_can_alloc(struct xsk_buff_pool *pool, u32 count);
+ void *xp_raw_get_data(struct xsk_buff_pool *pool, u64 addr);
+ dma_addr_t xp_raw_get_dma(struct xsk_buff_pool *pool, u64 addr);
+-dma_addr_t xp_get_dma(struct xdp_buff_xsk *xskb);
+-void xp_dma_sync_for_cpu(struct xdp_buff_xsk *xskb);
+-void xp_dma_sync_for_device(struct xsk_buff_pool *pool, dma_addr_t dma,
+-			    size_t size);
++static inline dma_addr_t xp_get_dma(struct xdp_buff_xsk *xskb)
++{
++	return xskb->dma;
++}
++
++void xp_dma_sync_for_cpu_slow(struct xdp_buff_xsk *xskb);
++static inline void xp_dma_sync_for_cpu(struct xdp_buff_xsk *xskb)
++{
++	if (xskb->pool->cheap_dma)
++		return;
++
++	xp_dma_sync_for_cpu_slow(xskb);
++}
++
++void xp_dma_sync_for_device_slow(struct xsk_buff_pool *pool, dma_addr_t dma,
++				 size_t size);
++static inline void xp_dma_sync_for_device(struct xsk_buff_pool *pool,
++					  dma_addr_t dma, size_t size)
++{
++	if (pool->cheap_dma)
++		return;
++
++	xp_dma_sync_for_device_slow(pool, dma, size);
++}
++
++/* Masks for xdp_umem_page flags.
++ * The low 12-bits of the addr will be 0 since this is the page address, so we
++ * can use them for flags.
++ */
++#define XSK_NEXT_PG_CONTIG_SHIFT 0
++#define XSK_NEXT_PG_CONTIG_MASK BIT_ULL(XSK_NEXT_PG_CONTIG_SHIFT)
++
++static inline bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
++						 u64 addr, u32 len)
++{
++	bool cross_pg = (addr & (PAGE_SIZE - 1)) + len > PAGE_SIZE;
++
++	if (pool->dma_pages_cnt && cross_pg) {
++		return !(pool->dma_pages[addr >> PAGE_SHIFT] &
++			 XSK_NEXT_PG_CONTIG_MASK);
++	}
++	return false;
++}
++
++static inline u64 xp_aligned_extract_addr(struct xsk_buff_pool *pool, u64 addr)
++{
++	return addr & pool->chunk_mask;
++}
++
++static inline u64 xp_unaligned_extract_addr(u64 addr)
++{
++	return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
++}
++
++static inline u64 xp_unaligned_extract_offset(u64 addr)
++{
++	return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
++}
++
++static inline u64 xp_unaligned_add_offset_to_addr(u64 addr)
++{
++	return xp_unaligned_extract_addr(addr) +
++		xp_unaligned_extract_offset(addr);
++}
+ 
+ #endif /* XSK_BUFF_POOL_H_ */
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 3f2ab732ab8b..b6c0f08bd80d 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -99,6 +99,21 @@ bool xsk_umem_uses_need_wakeup(struct xdp_umem *umem)
+ }
+ EXPORT_SYMBOL(xsk_umem_uses_need_wakeup);
+ 
++void xp_release(struct xdp_buff_xsk *xskb)
++{
++	xskb->pool->free_heads[xskb->pool->free_heads_cnt++] = xskb;
++}
++
++static u64 xp_get_handle(struct xdp_buff_xsk *xskb)
++{
++	u64 offset = xskb->xdp.data - xskb->xdp.data_hard_start;
++
++	offset += xskb->pool->headroom;
++	if (!xskb->pool->unaligned)
++		return xskb->orig_addr + offset;
++	return xskb->orig_addr + (offset << XSK_UNALIGNED_BUF_OFFSET_SHIFT);
++}
++
+ static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
  {
- 	struct xdp_mem_allocator *xa;
- 	struct page *page;
-@@ -359,33 +360,29 @@ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
- 		page = virt_to_page(data); /* Assumes order0 page*/
- 		put_page(page);
- 		break;
--	case MEM_TYPE_XSK_BUFF_POOL:
--		/* NB! Only valid from an xdp_buff! */
--		xsk_buff_free(xdp);
--		break;
- 	default:
- 		/* Not possible, checked in xdp_rxq_info_reg_mem_model() */
-+		WARN(1, "Incorrect XDP memory type (%d) usage", mem->type);
- 		break;
- 	}
- }
+ 	struct xdp_buff_xsk *xskb = container_of(xdp, struct xdp_buff_xsk, xdp);
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 365bdb5749cc..20ea583133de 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -8,34 +8,6 @@
  
- void xdp_return_frame(struct xdp_frame *xdpf)
+ #include "xsk_queue.h"
+ 
+-/* Masks for xdp_umem_page flags.
+- * The low 12-bits of the addr will be 0 since this is the page address, so we
+- * can use them for flags.
+- */
+-#define XSK_NEXT_PG_CONTIG_SHIFT 0
+-#define XSK_NEXT_PG_CONTIG_MASK BIT_ULL(XSK_NEXT_PG_CONTIG_SHIFT)
+-
+-struct xsk_buff_pool {
+-	struct xsk_queue *fq;
+-	struct list_head free_list;
+-	dma_addr_t *dma_pages;
+-	struct xdp_buff_xsk *heads;
+-	u64 chunk_mask;
+-	u64 addrs_cnt;
+-	u32 free_list_cnt;
+-	u32 dma_pages_cnt;
+-	u32 heads_cnt;
+-	u32 free_heads_cnt;
+-	u32 headroom;
+-	u32 chunk_size;
+-	u32 frame_len;
+-	bool cheap_dma;
+-	bool unaligned;
+-	void *addrs;
+-	struct device *dev;
+-	struct xdp_buff_xsk *free_heads[];
+-};
+-
+ static void xp_addr_unmap(struct xsk_buff_pool *pool)
  {
--	__xdp_return(xdpf->data, &xdpf->mem, false, NULL);
-+	__xdp_return(xdpf->data, &xdpf->mem, false);
+ 	vunmap(pool->addrs);
+@@ -227,50 +199,12 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
  }
- EXPORT_SYMBOL_GPL(xdp_return_frame);
+ EXPORT_SYMBOL(xp_dma_map);
  
- void xdp_return_frame_rx_napi(struct xdp_frame *xdpf)
+-static bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
+-					  u64 addr, u32 len)
+-{
+-	bool cross_pg = (addr & (PAGE_SIZE - 1)) + len > PAGE_SIZE;
+-
+-	if (pool->dma_pages_cnt && cross_pg) {
+-		return !(pool->dma_pages[addr >> PAGE_SHIFT] &
+-			 XSK_NEXT_PG_CONTIG_MASK);
+-	}
+-	return false;
+-}
+-
+ static bool xp_addr_crosses_non_contig_pg(struct xsk_buff_pool *pool,
+ 					  u64 addr)
  {
--	__xdp_return(xdpf->data, &xdpf->mem, true, NULL);
-+	__xdp_return(xdpf->data, &xdpf->mem, true);
+ 	return xp_desc_crosses_non_contig_pg(pool, addr, pool->chunk_size);
  }
- EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
  
- void xdp_return_buff(struct xdp_buff *xdp)
+-void xp_release(struct xdp_buff_xsk *xskb)
+-{
+-	xskb->pool->free_heads[xskb->pool->free_heads_cnt++] = xskb;
+-}
+-
+-static u64 xp_aligned_extract_addr(struct xsk_buff_pool *pool, u64 addr)
+-{
+-	return addr & pool->chunk_mask;
+-}
+-
+-static u64 xp_unaligned_extract_addr(u64 addr)
+-{
+-	return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
+-}
+-
+-static u64 xp_unaligned_extract_offset(u64 addr)
+-{
+-	return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
+-}
+-
+-static u64 xp_unaligned_add_offset_to_addr(u64 addr)
+-{
+-	return xp_unaligned_extract_addr(addr) +
+-		xp_unaligned_extract_offset(addr);
+-}
+-
+ static bool xp_check_unaligned(struct xsk_buff_pool *pool, u64 *addr)
  {
--	__xdp_return(xdp->data, &xdp->rxq->mem, true, xdp);
-+	__xdp_return(xdp->data, &xdp->rxq->mem, true);
+ 	*addr = xp_unaligned_extract_addr(*addr);
+@@ -368,60 +302,6 @@ void xp_free(struct xdp_buff_xsk *xskb)
  }
--EXPORT_SYMBOL_GPL(xdp_return_buff);
+ EXPORT_SYMBOL(xp_free);
  
- /* Only called for MEM_TYPE_PAGE_POOL see xdp.h */
- void __xdp_release_frame(void *data, struct xdp_mem_info *mem)
-@@ -466,7 +463,7 @@ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp)
- 	xdpf->metasize = metasize;
- 	xdpf->mem.type = MEM_TYPE_PAGE_ORDER0;
- 
--	xdp_return_buff(xdp);
-+	xsk_buff_free(xdp);
- 	return xdpf;
+-static bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
+-				     struct xdp_desc *desc)
+-{
+-	u64 chunk, chunk_end;
+-
+-	chunk = xp_aligned_extract_addr(pool, desc->addr);
+-	chunk_end = xp_aligned_extract_addr(pool, desc->addr + desc->len);
+-	if (chunk != chunk_end)
+-		return false;
+-
+-	if (chunk >= pool->addrs_cnt)
+-		return false;
+-
+-	if (desc->options)
+-		return false;
+-	return true;
+-}
+-
+-static bool xp_unaligned_validate_desc(struct xsk_buff_pool *pool,
+-				       struct xdp_desc *desc)
+-{
+-	u64 addr, base_addr;
+-
+-	base_addr = xp_unaligned_extract_addr(desc->addr);
+-	addr = xp_unaligned_add_offset_to_addr(desc->addr);
+-
+-	if (desc->len > pool->chunk_size)
+-		return false;
+-
+-	if (base_addr >= pool->addrs_cnt || addr >= pool->addrs_cnt ||
+-	    xp_desc_crosses_non_contig_pg(pool, addr, desc->len))
+-		return false;
+-
+-	if (desc->options)
+-		return false;
+-	return true;
+-}
+-
+-bool xp_validate_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc)
+-{
+-	return pool->unaligned ? xp_unaligned_validate_desc(pool, desc) :
+-		xp_aligned_validate_desc(pool, desc);
+-}
+-
+-u64 xp_get_handle(struct xdp_buff_xsk *xskb)
+-{
+-	u64 offset = xskb->xdp.data - xskb->xdp.data_hard_start;
+-
+-	offset += xskb->pool->headroom;
+-	if (!xskb->pool->unaligned)
+-		return xskb->orig_addr + offset;
+-	return xskb->orig_addr + (offset << XSK_UNALIGNED_BUF_OFFSET_SHIFT);
+-}
+-
+ void *xp_raw_get_data(struct xsk_buff_pool *pool, u64 addr)
+ {
+ 	addr = pool->unaligned ? xp_unaligned_add_offset_to_addr(addr) : addr;
+@@ -438,32 +318,20 @@ dma_addr_t xp_raw_get_dma(struct xsk_buff_pool *pool, u64 addr)
  }
- EXPORT_SYMBOL_GPL(xdp_convert_zc_to_xdp_frame);
+ EXPORT_SYMBOL(xp_raw_get_dma);
+ 
+-dma_addr_t xp_get_dma(struct xdp_buff_xsk *xskb)
+-{
+-	return xskb->dma;
+-}
+-EXPORT_SYMBOL(xp_get_dma);
+-
+-void xp_dma_sync_for_cpu(struct xdp_buff_xsk *xskb)
++void xp_dma_sync_for_cpu_slow(struct xdp_buff_xsk *xskb)
+ {
+ 	size_t size;
+ 
+-	if (xskb->pool->cheap_dma)
+-		return;
+-
+ 	size = xskb->xdp.data_end - xskb->xdp.data;
+ 	dma_sync_single_range_for_cpu(xskb->pool->dev, xskb->dma, 0,
+ 				      size, DMA_BIDIRECTIONAL);
+ }
+-EXPORT_SYMBOL(xp_dma_sync_for_cpu);
++EXPORT_SYMBOL(xp_dma_sync_for_cpu_slow);
+ 
+-void xp_dma_sync_for_device(struct xsk_buff_pool *pool, dma_addr_t dma,
+-			    size_t size)
++void xp_dma_sync_for_device_slow(struct xsk_buff_pool *pool, dma_addr_t dma,
++				 size_t size)
+ {
+-	if (pool->cheap_dma)
+-		return;
+-
+ 	dma_sync_single_range_for_device(pool->dev, dma, 0,
+ 					 size, DMA_BIDIRECTIONAL);
+ }
+-EXPORT_SYMBOL(xp_dma_sync_for_device);
++EXPORT_SYMBOL(xp_dma_sync_for_device_slow);
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index 16bf15864788..5b5d24d2dd37 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -118,6 +118,51 @@ static inline bool xskq_cons_read_addr_unchecked(struct xsk_queue *q, u64 *addr)
+ 	return false;
+ }
+ 
++static inline bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
++					    struct xdp_desc *desc)
++{
++	u64 chunk, chunk_end;
++
++	chunk = xp_aligned_extract_addr(pool, desc->addr);
++	chunk_end = xp_aligned_extract_addr(pool, desc->addr + desc->len);
++	if (chunk != chunk_end)
++		return false;
++
++	if (chunk >= pool->addrs_cnt)
++		return false;
++
++	if (desc->options)
++		return false;
++	return true;
++}
++
++static inline bool xp_unaligned_validate_desc(struct xsk_buff_pool *pool,
++					      struct xdp_desc *desc)
++{
++	u64 addr, base_addr;
++
++	base_addr = xp_unaligned_extract_addr(desc->addr);
++	addr = xp_unaligned_add_offset_to_addr(desc->addr);
++
++	if (desc->len > pool->chunk_size)
++		return false;
++
++	if (base_addr >= pool->addrs_cnt || addr >= pool->addrs_cnt ||
++	    xp_desc_crosses_non_contig_pg(pool, addr, desc->len))
++		return false;
++
++	if (desc->options)
++		return false;
++	return true;
++}
++
++static inline bool xp_validate_desc(struct xsk_buff_pool *pool,
++				    struct xdp_desc *desc)
++{
++	return pool->unaligned ? xp_unaligned_validate_desc(pool, desc) :
++		xp_aligned_validate_desc(pool, desc);
++}
++
+ static inline bool xskq_cons_is_valid_desc(struct xsk_queue *q,
+ 					   struct xdp_desc *d,
+ 					   struct xdp_umem *umem)
 -- 
 2.25.1
 
