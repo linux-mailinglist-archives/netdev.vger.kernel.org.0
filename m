@@ -2,60 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4395B1C7F60
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 02:48:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83ABA1C7F6B
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 02:52:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728641AbgEGAr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 20:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725887AbgEGAr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 20:47:56 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88FEC061A0F;
-        Wed,  6 May 2020 17:47:55 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4D38112783B16;
-        Wed,  6 May 2020 17:47:55 -0700 (PDT)
-Date:   Wed, 06 May 2020 17:47:54 -0700 (PDT)
-Message-Id: <20200506.174754.1326538013917922662.davem@davemloft.net>
-To:     arnd@arndb.de
-Cc:     olteanv@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, vladimir.oltean@nxp.com,
-        natechancellor@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] [net-next, v2] dsa: sja1105: dynamically allocate
- stats structure
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200505153834.1437767-1-arnd@arndb.de>
-References: <20200505153834.1437767-1-arnd@arndb.de>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 06 May 2020 17:47:55 -0700 (PDT)
+        id S1728130AbgEGAvT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 6 May 2020 20:51:19 -0400
+Received: from mga07.intel.com ([134.134.136.100]:46852 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725887AbgEGAvS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 20:51:18 -0400
+IronPort-SDR: 5tgD+6MoHKz5UehpIvmV+3Ev0QTlvZfNsy4UI10TDX/eBtar1oPWVfWsmKrX/fBa1oO/tE35zY
+ HRC7HTXG0KEA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2020 17:51:18 -0700
+IronPort-SDR: I4Z52cp2qylLuLNRjjCP9KqTe9cmDW2wjSh0woPGMMkBMBMg8MOb3u7JmqdCi8Pkz5g3weg85B
+ nnJJTVolaEVQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,361,1583222400"; 
+   d="scan'208";a="260362665"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by orsmga003.jf.intel.com with ESMTP; 06 May 2020 17:51:18 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.248]) by
+ ORSMSX106.amr.corp.intel.com ([169.254.1.150]) with mapi id 14.03.0439.000;
+ Wed, 6 May 2020 17:51:18 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     David Miller <davem@davemloft.net>,
+        "yanaijie@huawei.com" <yanaijie@huawei.com>
+CC:     "Azarewicz, Piotr" <piotr.azarewicz@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next] i40e: Make i40e_shutdown_adminq() return void
+Thread-Topic: [PATCH net-next] i40e: Make i40e_shutdown_adminq() return void
+Thread-Index: AQHWI25tmvA42/9KCUuzJLtjmKxV26icAdWA///KUoA=
+Date:   Thu, 7 May 2020 00:51:16 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D940449868CF1C@ORSMSX112.amr.corp.intel.com>
+References: <20200506061835.19662-1-yanaijie@huawei.com>
+ <20200506.140239.2129195871879981516.davem@davemloft.net>
+In-Reply-To: <20200506.140239.2129195871879981516.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Tue,  5 May 2020 17:38:19 +0200
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Wednesday, May 6, 2020 14:03
+> To: yanaijie@huawei.com
+> Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; Azarewicz, Piotr
+> <piotr.azarewicz@intel.com>; intel-wired-lan@lists.osuosl.org;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH net-next] i40e: Make i40e_shutdown_adminq() return void
+> 
+> From: Jason Yan <yanaijie@huawei.com>
+> Date: Wed, 6 May 2020 14:18:35 +0800
+> 
+> > Fix the following coccicheck warning:
+> >
+> > drivers/net/ethernet/intel/i40e/i40e_adminq.c:699:13-21: Unneeded
+> > variable: "ret_code". Return "0" on line 710
+> >
+> > Signed-off-by: Jason Yan <yanaijie@huawei.com>
+> 
+> Jeff, please pick this up.
+> 
+> Thank you.
+[Kirsher, Jeffrey T] 
 
-> The addition of sja1105_port_status_ether structure into the
-> statistics causes the frame size to go over the warning limit:
-> 
-> drivers/net/dsa/sja1105/sja1105_ethtool.c:421:6: error: stack frame size of 1104 bytes in function 'sja1105_get_ethtool_stats' [-Werror,-Wframe-larger-than=]
-> 
-> Use dynamic allocation to avoid this.
-> 
-> Fixes: 336aa67bd027 ("net: dsa: sja1105: show more ethtool statistics counters for P/Q/R/S")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> v2: remove extra ';'
->     remove bogus include/linux/warnings.h change
-
-Applied, thanks Arnd.
+Yep already added it to my queue, thanks.
