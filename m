@@ -2,113 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 407A21C9498
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:15:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 373F71C94FA
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:24:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726572AbgEGPO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 11:14:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43302 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725914AbgEGPO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 11:14:56 -0400
-Received: from embeddedor (unknown [189.207.59.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726558AbgEGPYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 11:24:46 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:38110 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725948AbgEGPYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:24:46 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 30B3C6010D;
+        Thu,  7 May 2020 15:24:46 +0000 (UTC)
+Received: from us4-mdac16-11.ut7.mdlocal (unknown [10.7.65.208])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 2FB22800A4;
+        Thu,  7 May 2020 15:24:46 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.198])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 71F3B8005D;
+        Thu,  7 May 2020 15:24:45 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6FEBE207DD;
-        Thu,  7 May 2020 15:14:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588864496;
-        bh=nH4zzLyFJaaR6EBGr6MwECFJ0OIX3tGLz6Ht3UbWkZM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=P/qI5XcxnpOU2JlzciA5QWZCZGmLZfddp8qb5bxXx45rDzjJdI2SqlGqYARDzuB84
-         TnO5gSmseGqu/btra6/WZaf7T3sS1E1uKVzKPJOzReH3MiUYqUUkXonvPEgfpQzHoh
-         1Zn0pmhSYAXfa6as0z/2b2XL/DF+K29mcfG4Pofo=
-Date:   Thu, 7 May 2020 10:19:21 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] carl9170: Replace zero-length array with flexible-array
-Message-ID: <20200507151921.GA5083@embeddedor>
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D907C8005C;
+        Thu,  7 May 2020 15:24:44 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 7 May 2020
+ 16:24:36 +0100
+Subject: Re: [net-next v3 2/9] ice: Create and register virtual bus for RDMA
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>
+CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>,
+        Martin Habets <mhabets@solarflare.com>
+References: <20200506210505.507254-1-jeffrey.t.kirsher@intel.com>
+ <20200506210505.507254-3-jeffrey.t.kirsher@intel.com>
+ <20200507081737.GC1024567@kroah.com>
+ <9DD61F30A802C4429A01CA4200E302A7DCD6B850@fmsmsx124.amr.corp.intel.com>
+ <20200507150658.GA1886648@kroah.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <ef4bb479-1669-7611-81c8-cd21497d9103@solarflare.com>
+Date:   Thu, 7 May 2020 16:24:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200507150658.GA1886648@kroah.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25404.003
+X-TM-AS-Result: No-2.816400-8.000000-10
+X-TMASE-MatchedRID: 9zTThWtzImui6/VcDv9f0PZvT2zYoYOwC/ExpXrHizxTbQ95zRbWVuQS
+        CMu2pzo2V+Tv6DTyreybymr8/mqLG3ChPHB61wQjIwk7p1qp3JapE7BSysLIIlIxScKXZnK06q/
+        JR//r0aKEgl0njLljkkOYDRKaRR11Im+xW0g7UUOVOwZbcOalSzQAl7cHmp8GQ2acZEMNHfOjxY
+        yRBa/qJZj9/HNwzYskxx7l0wJgoV3dB/CxWTRRuwihQpoXbuXFjGW2NKvxCj9jYZ/NGxgT2CFrQ
+        BvXllNFLnAzKbHHg4wJviDLF0FH1OMHwvOdkGP9G7oA4Dt6vtMb5upnEBIKy43H+tbaVNuxooBB
+        8uyeEuspZK3gOa9uGmJwouYrZN4qaw+fkLqdalOeqD9WtJkSIw==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.816400-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25404.003
+X-MDID: 1588865085-jKzinsEFD_cD
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+On 07/05/2020 16:06, Greg KH wrote:
+> I can't accept that this series is using a virtual bus properly without
+> actually using the virtual bus driver code, can you?
+I might be misunderstanding, but I *think* a hardware driver likeice is
+ the 'provider' of a virtbus, and it's only 'consumers' of it (like an
+ RDMA device talking to that ice instance) that are virtbus_drivers.
+Though tbh I'm not entirely happy either with a series that adds the
+ provider side but not any users... and either way, the documentation
+ *really* doesn't make it clear whether it works the way I think it does
+ or not.
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
-
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
-
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
-
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
-
-sizeof(flexible-array-member) triggers a warning because flexible array
-members have incomplete type[1]. There are some instances of code in
-which the sizeof operator is being incorrectly/erroneously applied to
-zero-length arrays and the result is zero. Such instances may be hiding
-some bugs. So, this work (flexible-array member conversions) will also
-help to get completely rid of those sorts of issues.
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/wireless/ath/carl9170/fwcmd.h | 2 +-
- drivers/net/wireless/ath/carl9170/hw.h    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/carl9170/fwcmd.h b/drivers/net/wireless/ath/carl9170/fwcmd.h
-index ea1d80f9a50e..56999a3b9d3b 100644
---- a/drivers/net/wireless/ath/carl9170/fwcmd.h
-+++ b/drivers/net/wireless/ath/carl9170/fwcmd.h
-@@ -127,7 +127,7 @@ struct carl9170_write_reg {
- struct carl9170_write_reg_byte {
- 	__le32	addr;
- 	__le32  count;
--	u8	val[0];
-+	u8	val[];
- } __packed;
- 
- #define	CARL9170FW_PHY_HT_ENABLE		0x4
-diff --git a/drivers/net/wireless/ath/carl9170/hw.h b/drivers/net/wireless/ath/carl9170/hw.h
-index 08e0ae9c5836..555ad4975970 100644
---- a/drivers/net/wireless/ath/carl9170/hw.h
-+++ b/drivers/net/wireless/ath/carl9170/hw.h
-@@ -851,7 +851,7 @@ struct ar9170_stream {
- 	__le16 length;
- 	__le16 tag;
- 
--	u8 payload[0];
-+	u8 payload[];
- } __packed __aligned(4);
- #define AR9170_STREAM_LEN				4
- 
--- 
-2.26.2
-
+-ed
