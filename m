@@ -2,95 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F6B1C99C9
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 20:50:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D5041C9992
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 20:46:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728466AbgEGSuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 14:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726558AbgEGSuE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 14:50:04 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8571C05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 11:50:03 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id u4so5369369lfm.7
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 11:50:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9+nO6ZEmApWAsoC8i6mMVVzQ6ZYdxQXskyH9PvsUp4M=;
-        b=SMJU3C05jSHBg9KjQF4pJwEc2Z34KSC1LDa7NaIYia+k4eFz3godYMYxsdEhX9t3dr
-         xYe+vqlJ64hqM5htzIoH+gB1O6a5M0Y7pfJotfrGz9OYKT56lqQrlFZxyPCckZOudIhd
-         E3oRRp86dJ79PtC7+XpFBpgKedlSikOIxjGuM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9+nO6ZEmApWAsoC8i6mMVVzQ6ZYdxQXskyH9PvsUp4M=;
-        b=W1AWQC2xD9AJPCNLYJlphXV06xzANXV3KAjVbclOqHFkgg/m1PX+ltxAdh+/tSkIq5
-         bsKbtjyWMcKd/kUao+5K8ae90LS5m/AtwX1JGuyMuAFt6+v3N+U3EzNc3p+WEMAZ3bsl
-         PBG7xAtdOZADVJKecsB3dKHJ5POt+CBQfokv5EbeSw7Rzr13MFs4BZ2bVeR9hWtVmlre
-         sf+eJezJDC2Dyct4+lkmMs/5wGtRcZTMZax4F2rtsHLlzMa64S/vjOTWNsUHo/VcB8/B
-         yiDNuwus2BqiOXayXD6Z9VsD+3Cx+d8go+yuyn5bKIkhAv6s48koGR9V+fRG6su2lSzV
-         EqiQ==
-X-Gm-Message-State: AGi0PubUPNf8Ye/fp/fNAAvUK8JHaL1ivnUmecBmminMzuOLTZsCaZv/
-        pX0x0X6TrPgnLzuWn3kfsrzXwQ==
-X-Google-Smtp-Source: APiQypLObk/R6SLqNQolhhlWfHKDr5nwzejD56Lga2clsE2LI6YVhLNRYOJJrD7t9WQZTI9shHp4+w==
-X-Received: by 2002:ac2:4c3b:: with SMTP id u27mr9554725lfq.212.1588877402426;
-        Thu, 07 May 2020 11:50:02 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id c2sm4485184lfb.43.2020.05.07.11.50.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 May 2020 11:50:01 -0700 (PDT)
-Subject: Re: [Patch net v2] net: fix a potential recursive NETDEV_FEAT_CHANGE
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
-        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Jann Horn <jannh@google.com>
-References: <20200506194613.18342-1-xiyou.wangcong@gmail.com>
- <aa811b5e-9408-a078-59ea-2a20c9bff98f@cumulusnetworks.com>
- <CAM_iQpXMZ1u+a+c1eNFThYar4eDFVs2G2F7otHHPK-zye+vzww@mail.gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <65667dcb-5678-2744-8d05-b66bff325f05@cumulusnetworks.com>
-Date:   Thu, 7 May 2020 21:50:00 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1728399AbgEGSqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 14:46:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47102 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726467AbgEGSqc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 14:46:32 -0400
+Received: from embeddedor (unknown [189.207.59.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 159D8216FD;
+        Thu,  7 May 2020 18:46:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588877192;
+        bh=8VacPoTbGjqVXDTwPuYe3Mg/26pmSYjPzGz8cwswqJk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=DedEP2mq6qrgUzakngn8r7xcVr2pM0OAetbvOrCdCURunFj9j6oKw6liEDu3jaFMc
+         7Xi0YhSgFEwnnm2wNZpibhKLlRtWfnsmN9RgFbAaOfIB7lBjmh46w4XTWJGbyCuAMb
+         OS8MV6bw4czSSQxV0exZm1/fIuoApmNvHSn2tSlY=
+Date:   Thu, 7 May 2020 13:50:57 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] libbpf: Replace zero-length array with flexible-array
+Message-ID: <20200507185057.GA13981@embeddedor>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpXMZ1u+a+c1eNFThYar4eDFVs2G2F7otHHPK-zye+vzww@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/05/2020 21:45, Cong Wang wrote:
-> On Wed, May 6, 2020 at 1:31 PM Nikolay Aleksandrov
-> <nikolay@cumulusnetworks.com> wrote:
->> The patch looks good, but note that __netdev_update_features() used to return -1
->> before the commit in the Fixes tag above (between 6cb6a27c45ce and 00ee59271777).
->> It only restored that behaviour.
-> 
-> Good point! But commit fd867d51f889 is the one which started
-> using netdev_update_features() in netdev_sync_lower_features(),
-> your commits 00ee59271777 and 17b85d29e82c are both after it,
-> and returning whatever doesn't matter before commit fd867d51f889,
-> therefore, commit fd867d51f889 is the right one to blame?
-> 
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-Right, that should be the one.
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-> I will send V3 to just update this Fixes tag.
-> 
-> Thanks!
-> 
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-Cheers,
- Nik
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
+
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+sizeof(flexible-array-member) triggers a warning because flexible array
+members have incomplete type[1]. There are some instances of code in
+which the sizeof operator is being incorrectly/erroneously applied to
+zero-length arrays and the result is zero. Such instances may be hiding
+some bugs. So, this work (flexible-array member conversions) will also
+help to get completely rid of those sorts of issues.
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ kernel/bpf/queue_stack_maps.c                        |    2 +-
+ tools/lib/bpf/libbpf.c                               |    2 +-
+ tools/lib/bpf/libbpf_internal.h                      |    2 +-
+ tools/testing/selftests/bpf/progs/core_reloc_types.h |    2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.c
+index f697647ceb54..30e1373fd437 100644
+--- a/kernel/bpf/queue_stack_maps.c
++++ b/kernel/bpf/queue_stack_maps.c
+@@ -19,7 +19,7 @@ struct bpf_queue_stack {
+ 	u32 head, tail;
+ 	u32 size; /* max_entries + 1 */
+ 
+-	char elements[0] __aligned(8);
++	char elements[] __aligned(8);
+ };
+ 
+ static struct bpf_queue_stack *bpf_queue_stack(struct bpf_map *map)
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 8f480e29a6b0..b9335c686353 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8035,7 +8035,7 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+ struct perf_sample_raw {
+ 	struct perf_event_header header;
+ 	uint32_t size;
+-	char data[0];
++	char data[];
+ };
+ 
+ struct perf_sample_lost {
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index 8c3afbd97747..50d70e90d5f1 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -153,7 +153,7 @@ struct btf_ext_info_sec {
+ 	__u32	sec_name_off;
+ 	__u32	num_info;
+ 	/* Followed by num_info * record_size number of bytes */
+-	__u8	data[0];
++	__u8	data[];
+ };
+ 
+ /* The minimum bpf_func_info checked by the loader */
+diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
+index 6d598cfbdb3e..34d84717c946 100644
+--- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
++++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
+@@ -379,7 +379,7 @@ struct core_reloc_arrays___equiv_zero_sz_arr {
+ 	struct core_reloc_arrays_substruct c[3];
+ 	struct core_reloc_arrays_substruct d[1][2];
+ 	/* equivalent to flexible array */
+-	struct core_reloc_arrays_substruct f[0][2];
++	struct core_reloc_arrays_substruct f[][2];
+ };
+ 
+ struct core_reloc_arrays___fixed_arr {
+
