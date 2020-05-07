@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07EE61C9A1B
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 20:57:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B11BE1C9A24
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 20:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727937AbgEGS5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 14:57:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58496 "EHLO mail.kernel.org"
+        id S1728374AbgEGS5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 14:57:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59178 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726320AbgEGS5I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 14:57:08 -0400
+        id S1726926AbgEGS5u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 14:57:50 -0400
 Received: from embeddedor (unknown [189.207.59.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1A9AF20575;
-        Thu,  7 May 2020 18:57:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EAA9820575;
+        Thu,  7 May 2020 18:57:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588877827;
-        bh=WOf9xpQ5HsvErqveasmOo+6FbaiSq7EMDBqA6Zuvr9g=;
+        s=default; t=1588877870;
+        bh=mzjCxewRj9P2nva9AGQCzVblWiicOrzlTnaX6AyDD8k=;
         h=Date:From:To:Cc:Subject:From;
-        b=CZVkXBlqK81ZHEkhF1UydIa0D9wZ9bRa9JmpvmtRjbh0+WYW04qHnCaqXuGcXvY3V
-         48pWDiywx9NuKbmQNtITowylWMtvROmmq+p6rcRmo3Ft8wmy0KxuX1q0YWPlwBrKQA
-         jiIPE0lWR8D0TZuZJkz/+NzN+Es+QCp1xbf+vtz4=
-Date:   Thu, 7 May 2020 14:01:33 -0500
+        b=J1oCEdjxhnYVugeeMwUbT4+O0jX0WrjBTQ8YcTl/+gDSvokcEgA72t9lJ+g/wDxdg
+         43Ply6JSMo2/bUCpngLE2KYS6G8hqsjPq70xqLs1z5yzESFL7liVOWoDgEbwEMrk7k
+         AAIcLS1WXPZnKBuGhmIELfedZeyK+Aog6EXjRR7I=
+Date:   Thu, 7 May 2020 14:02:16 -0500
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: atarilance: Replace zero-length array with
- flexible-array
-Message-ID: <20200507190133.GA15348@embeddedor>
+Subject: [PATCH] ipv6: Replace zero-length array with flexible-array
+Message-ID: <20200507190216.GA15407@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -76,20 +76,20 @@ This issue was found with the help of Coccinelle.
 
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/ethernet/amd/atarilance.c |    2 +-
+ include/net/if_inet6.h |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amd/atarilance.c b/drivers/net/ethernet/amd/atarilance.c
-index 4e36122609a3..961796abab35 100644
---- a/drivers/net/ethernet/amd/atarilance.c
-+++ b/drivers/net/ethernet/amd/atarilance.c
-@@ -156,7 +156,7 @@ struct lance_memory {
- 	struct lance_init_block	init;
- 	struct lance_tx_head	tx_head[TX_RING_SIZE];
- 	struct lance_rx_head	rx_head[RX_RING_SIZE];
--	char					packet_area[0];	/* packet data follow after the
-+	char					packet_area[];	/* packet data follow after the
- 											 * init block and the ring
- 											 * descriptors and are located
- 											 * at runtime */
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index a01981d7108f..514dd6e423b1 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -78,7 +78,7 @@ struct inet6_ifaddr {
+ struct ip6_sf_socklist {
+ 	unsigned int		sl_max;
+ 	unsigned int		sl_count;
+-	struct in6_addr		sl_addr[0];
++	struct in6_addr		sl_addr[];
+ };
+ 
+ #define IP6_SFLSIZE(count)	(sizeof(struct ip6_sf_socklist) + \
 
