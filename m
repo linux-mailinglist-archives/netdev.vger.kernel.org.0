@@ -2,151 +2,563 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE0441C8AC8
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 14:31:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEDA01C8B2F
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 14:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726756AbgEGMbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 08:31:14 -0400
-Received: from mail-eopbgr150050.outbound.protection.outlook.com ([40.107.15.50]:8054
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725903AbgEGMbN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 08:31:13 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AzZWH77awuVF6SQ3/90ykz5dDRbj9W94Vaex0AZS/VPGJX174+0SEIDIjPzHnPu49bXoQ/QgIMd8F2kdXZUXDw97v2YiJWkiydnx+24jIzzAOrpS8OaUrebMiLSwR88eNe8bdBHngYmP0m/9FdISKUETMmue4ulfXI+jpfbR83/n4czoT6LFJKp/gTQ5cgEe1JO3aMUhEfwWQ3/9TicjI4fqLOSEBQEAKht5R5soUH44/j50QGiI5pEBoqiw1t3ckSjBBTBFC2XBADTpPuo9gsUV/u+s5npO91XfKKs5b14QVXiAVCI7roO6SfAPxUXALcxFEdn5ngCEVb5gv9GiQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B58YjQ9kc8CqaFtbGgeCStNXvqNpvpY1ssz74Aw8PIY=;
- b=HDtbI4xm37KFHWdQHc5XcROIsX/YbFMJgizrBN5BIxKIkDCK0hd3MZM8gwmwdHzDi21KTiWrLTqC7H8+umnBFYikPS8rsG5PO8VZq34KOf1GU7NgdbHanh4JedA7AiCpzSQ/WohjdvGAZFwH7hDlJIrMv9rrZsfEijlLLGSn0Szru9/jgv0L1RbsmQK2NulsOBp9kreOkZiLuDMy/9dZKfN41GIcF1Bct3yXb66vdsKCkVqOz6Vymbyo02V4Hy2cZsdZglv9FCfH2GEUNhonugOVKp/WMgPGaqPWKd8DbKwKpcG6DcBQsMZdXxRTCB8deviTRnLZIDFNO20efGSXZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B58YjQ9kc8CqaFtbGgeCStNXvqNpvpY1ssz74Aw8PIY=;
- b=Dn94Rci1Vj0vCXhlptGIDZ57K5OHJZh5hFmrqWWaFALOAlbtnxzXM9egn/OgTbs2VFOKlvAbPiS4g6I3wv3Tr0r1zyRex9RT4DQvIwLl/NDzfz/hKljx0a2CIXwk9IdLJdU7/r5dwUaCk2Bf4762yeXJ5xt+iCtNSOo/2zyupz0=
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
- by VE1PR04MB6623.eurprd04.prod.outlook.com (2603:10a6:803:125::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27; Thu, 7 May
- 2020 12:31:09 +0000
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::1479:38ea:d4f7:a173]) by VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::1479:38ea:d4f7:a173%7]) with mapi id 15.20.2958.034; Thu, 7 May 2020
- 12:31:09 +0000
-From:   Po Liu <po.liu@nxp.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "vlad@buslov.dev" <vlad@buslov.dev>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>
-Subject: RE: Re: [v4,iproute2-next 1/2] iproute2-next:tc:action: add a gate
- control action
-Thread-Topic: Re: [v4,iproute2-next 1/2] iproute2-next:tc:action: add a gate
- control action
-Thread-Index: AdYkGP/813CTQ3HyQZuckXvjuAsisQAUBulw
-Date:   Thu, 7 May 2020 12:31:09 +0000
-Message-ID: <VE1PR04MB6496B92955CD21BC70A7CFAC92A50@VE1PR04MB6496.eurprd04.prod.outlook.com>
-References: <VE1PR04MB64969AC550AE3A762DADEF5292A50@VE1PR04MB6496.eurprd04.prod.outlook.com>
-In-Reply-To: <VE1PR04MB64969AC550AE3A762DADEF5292A50@VE1PR04MB6496.eurprd04.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: networkplumber.org; dkim=none (message not signed)
- header.d=none;networkplumber.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 04893759-e321-4c45-0c33-08d7f282858b
-x-ms-traffictypediagnostic: VE1PR04MB6623:|VE1PR04MB6623:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6623BB4C679768A7F607F98C92A50@VE1PR04MB6623.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 03965EFC76
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mqqE55z0E38u+ZBYxQ7W1DT8qIUe89FPc07r4A3DSU+4vVTWdfcnIacrUUKNsDeuOFuzWRo8XLMUTJcKLeUDhLfQh3PPziAxGWSoyaWsB6za/aIwGKB0zFUThAQD62zi6Y6Oftffr2nxz5TMXXHYcQKqPzgP3A7iaeSs1wmeVi6S0epP/Zy1m0H85jCjzaiwCJfsg/9n/1LP9nNXiIzwKlky2Ce5KuixlGAxHp2EzN0Rm/PDOhN6015Ul/mIg4By6tXzh378roERvy1I5Mw8Gor7iLnXaln/SBtSWuLDJlctLnMQ4b6SigQYWvSGxikRyMP6K9o7Pn850hbJckdO1Zlub30kKhtA+f/IZqXv/M/nIjOpreGxK/Q2BT9Gp4n+jgXCPUae9ACfaN1/UGaIVAtZyDMEN6B2GnMZHVPY+SvcIxbRCoVw0U/iB+owMUAm2pl2QSr+NMlGa9TExAgv4+wdSaOIghmsGqWQNPcAC7iswttD+C+ie5YpX1BGoupq4OYn+S1mO92yOgACHv+M2g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(376002)(346002)(136003)(366004)(33430700001)(5660300002)(478600001)(4326008)(2906002)(55016002)(53546011)(33440700001)(66946007)(52536014)(66446008)(6506007)(66476007)(76116006)(64756008)(54906003)(66556008)(83300400001)(6916009)(83320400001)(83280400001)(83310400001)(83290400001)(9686003)(86362001)(33656002)(7696005)(71200400001)(8936002)(186003)(2940100002)(44832011)(316002)(8676002)(26005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: UKkrcyhs9o5oqjs3gw3mZaGOgvWpHZyDtod8xMrKcuqu/waLdlX2wlj+dhybo0+YIuawxidB4bHBy0RvJYGcCUB/UWTpHDsEKxY4HEZ07Vkm05/qJ/bKlZGrmHifdN2enUZZMc+EkZbmEitB4IiRVz+BI1ohXSbbG1n9U3GZMqTD8T2sn1yAgeEjRitBPHdqXI7Wl7IsK/NvkvZjhNmbJ6/fgutkIMYKguqm2O1YzgsnDRxAHw4F7tzNywMnUJ3QZ4PEhrn+1ToyMOWIKWz17N4/zHf5+vtYV6TrHAlpcz1s+eCc3gpxzMYfR/r8GSdDzIsxZQGkl6ctFQ+gGhtH9688LnovyNfFsKdUp//1EHJpcw/84wl3CpbUdxDWZzySD3Xl8UfkZtNDYwSkqJ4MhXAeC/E5vpCCqsZSRg0cB8cDnPZNgqMznfXD6ELCzGrM84Qnw6Fv7IjwUJ2tIo0+CcvaCkGm6fG2hVZ/1C9xrcbWBuOsyNk+1WPsv0ewUazkG0ScV7eALhoacO4e6GjlI5uYJwEZVxoJHZYhx55aiE777Ty/3yEVqoundIKFTmDVwnRTXNBt03yOg6ot5cPj77wW1G+BAzP2x+S4T0Z+xcIy9tLl5hSSGfzA1qP0KZcT0hRkHtVKlNyCvcfAjbhTH1iwioHsXJtUv3gB1x9CGrMLc7ak0quDqsbNZ/nxhnmiUbVghpu0VXcVWSFCbGX2MeCUMSMEC3Hdvm7OPCUVAbJIpxnlVKWzsVBew+rPuIHZOEhEMyTktVXFTHvs6PqQaR7Jwr46N8byya/8W/9NBzI=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04893759-e321-4c45-0c33-08d7f282858b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 May 2020 12:31:09.4768
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9RmtP+OE6g2KxjBzTU4i+dL9JqqAyxfNYZo1Y/afZGGrY5xkepjIG8WXr54tt33o
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6623
+        id S1726542AbgEGMl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 08:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725900AbgEGMl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 08:41:27 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768AEC05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 05:41:27 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id 188so4330181lfa.10
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 05:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=TL8NVVuTbOYmQkvo4FupcJLfpChRMjkNj3lCEelqq2E=;
+        b=lS61ANT7fqiKyBBnKpBR+6kCkoNHfk0WV2mcsBHYMXDk5S1ZSPxd57eKSm8SefQ3eI
+         Vy8UqmwaosJAJTRzZfaJaTV8l0hphze29cFRmMQcBKTEbg3iufuFQ3DcHhmAJ1Kl22/E
+         zqeQwZ9SaAikoPaaBauX+ijHLqiOVYV+8l1mQ1MQzix22IlCtJdRjw9zNw0ud/l+PB4/
+         5kuL0Zs0/x51XxL+l5GVxQFa0OIuo71yRDRh3L34H3OGq7Z9Pluek7UA9uIt80cMW9cE
+         97xqyHrt1kVllBqnIeUaUkt2LLGpWjDG6oRZ4hprnrvZLlK9J9rTxrAOslMW2c7fKSCw
+         PJbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=TL8NVVuTbOYmQkvo4FupcJLfpChRMjkNj3lCEelqq2E=;
+        b=MJupgrOHMJ4OEke4mIE69C7Ill3j/FT8ECMxNBsnm8DDxchBiwqQWq0wP5tjZiAVMu
+         wkVr22fJNPuotEiHrMEYpNgemmWAeymW0V2z+7IWOoaHQ3v4w8vmC/hcmdh9jGQ29wnx
+         wgTD9DoiIS26/RYHH9m7BfQcHw6HS7bwfvpRW9dNW5IkMQsbjaOy02D9FtQE0mtzs+Oy
+         MOOOrTVP1oYqZVTArTAz6OQr2QCoKk9pZjzAA9T0UarSAsZlr1GWwShCIJYTB1BaoZFk
+         Q8lVh6qqCoiQqzNnRB5maUMGoeYDSQMLKPDD9Brtc/OQkhTCCvsAdF00fn4vX2ISBfZz
+         clMw==
+X-Gm-Message-State: AGi0PuaJV8U7JeADuUMGzk3J9+6OfSFdhVsxkgNMvq+ZUVNcdWoaaRvG
+        df8xRoQFX+ePNc5xIwrB60xZ79mkzVoVTA==
+X-Google-Smtp-Source: APiQypIm4k8a+HaKoIG1OMQQbI1EKnHXHle0Nmh+WqOEuwLStXJbW29G1fFm6tFRAEzlvDB2uy1QTQ==
+X-Received: by 2002:a05:6512:1109:: with SMTP id l9mr8890534lfg.12.1588855285294;
+        Thu, 07 May 2020 05:41:25 -0700 (PDT)
+Received: from centos7-pv-guest.localdomain ([5.35.46.227])
+        by smtp.gmail.com with ESMTPSA id i76sm3744231lfi.83.2020.05.07.05.41.24
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 07 May 2020 05:41:24 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+To:     netdev@vger.kernel.org
+Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
+        paul@xen.org, ilias.apalodimas@linaro.org
+Subject: [PATCH net-next v8 1/3] xen networking: add basic XDP support for xen-netfront
+Date:   Thu,  7 May 2020 15:40:39 +0300
+Message-Id: <1588855241-29141-1-git-send-email-kda@linux-powerpc.org>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU3RlcGhlbiwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQbyBM
-aXUNCj4gU2VudDogMjAyMMTqNdTCN8jVIDEwOjUzDQo+IFRvOiBTdGVwaGVuIEhlbW1pbmdlciA8
-c3RlcGhlbkBuZXR3b3JrcGx1bWJlci5vcmc+DQo+IENjOiBkc2FoZXJuQGdtYWlsLmNvbTsgbGlu
-dXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgdmlu
-aWNpdXMuZ29tZXNAaW50ZWwuY29tOw0KPiBkYXZlbUBkYXZlbWxvZnQubmV0OyB2bGFkQGJ1c2xv
-di5kZXY7IENsYXVkaXUgTWFub2lsDQo+IDxjbGF1ZGl1Lm1hbm9pbEBueHAuY29tPjsgVmxhZGlt
-aXIgT2x0ZWFuIDx2bGFkaW1pci5vbHRlYW5AbnhwLmNvbT47DQo+IEFsZXhhbmRydSBNYXJnaW5l
-YW4gPGFsZXhhbmRydS5tYXJnaW5lYW5AbnhwLmNvbT4NCj4gU3ViamVjdDogUkU6IFJlOiBbdjQs
-aXByb3V0ZTItbmV4dCAxLzJdIGlwcm91dGUyLW5leHQ6dGM6YWN0aW9uOiBhZGQgYSBnYXRlDQo+
-IGNvbnRyb2wgYWN0aW9uDQo+IA0KPiBIaSBTdGVwaGVuLA0KPiANCj4gDQo+ID4gLS0tLS1Pcmln
-aW5hbCBNZXNzYWdlLS0tLS0NCj4gPiBGcm9tOiBTdGVwaGVuIEhlbW1pbmdlciA8c3RlcGhlbkBu
-ZXR3b3JrcGx1bWJlci5vcmc+DQo+ID4gU2VudDogMjAyMMTqNdTCNsjVIDIzOjIyDQo+ID4gVG86
-IFBvIExpdSA8cG8ubGl1QG54cC5jb20+DQo+ID4gQ2M6IGRzYWhlcm5AZ21haWwuY29tOyBsaW51
-eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOw0KPiA+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IHZp
-bmljaXVzLmdvbWVzQGludGVsLmNvbTsNCj4gZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsNCj4gPiB2bGFk
-QGJ1c2xvdi5kZXY7IENsYXVkaXUgTWFub2lsIDxjbGF1ZGl1Lm1hbm9pbEBueHAuY29tPjsgVmxh
-ZGltaXINCj4gPiBPbHRlYW4gPHZsYWRpbWlyLm9sdGVhbkBueHAuY29tPjsgQWxleGFuZHJ1IE1h
-cmdpbmVhbg0KPiA+IDxhbGV4YW5kcnUubWFyZ2luZWFuQG54cC5jb20+DQo+ID4gU3ViamVjdDog
-UmU6IFt2NCxpcHJvdXRlMi1uZXh0IDEvMl0gaXByb3V0ZTItbmV4dDp0YzphY3Rpb246IGFkZCBh
-DQo+ID4gZ2F0ZSBjb250cm9sIGFjdGlvbiBPbiBXZWQsICA2IE1heSAyMDIwIDE2OjQwOjE5ICsw
-ODAwIFBvIExpdQ0KPiA+IDxQby5MaXVAbnhwLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiA+ICAgICAg
-ICAgICAgICAgfSBlbHNlIGlmIChtYXRjaGVzKCphcmd2LCAiYmFzZS10aW1lIikgPT0gMCkgew0K
-PiA+ID4gKyAgICAgICAgICAgICAgICAgICAgIE5FWFRfQVJHKCk7DQo+ID4gPiArICAgICAgICAg
-ICAgICAgICAgICAgaWYgKGdldF91NjQoJmJhc2VfdGltZSwgKmFyZ3YsIDEwKSkgew0KPiA+ID4g
-KyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaW52YWxpZGFyZyA9ICJiYXNlLXRpbWUiOw0K
-PiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ290byBlcnJfYXJnOw0KPiA+ID4g
-KyAgICAgICAgICAgICAgICAgICAgIH0NCj4gPiA+ICsgICAgICAgICAgICAgfSBlbHNlIGlmICht
-YXRjaGVzKCphcmd2LCAiY3ljbGUtdGltZSIpID09IDApIHsNCj4gPiA+ICsgICAgICAgICAgICAg
-ICAgICAgICBORVhUX0FSRygpOw0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgIGlmIChnZXRf
-dTY0KCZjeWNsZV90aW1lLCAqYXJndiwgMTApKSB7DQo+ID4gPiArICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICBpbnZhbGlkYXJnID0gImN5Y2xlLXRpbWUiOw0KPiA+ID4gKyAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgZ290byBlcnJfYXJnOw0KPiA+ID4gKyAgICAgICAgICAgICAgICAg
-ICAgIH0NCj4gPiA+ICsgICAgICAgICAgICAgfSBlbHNlIGlmIChtYXRjaGVzKCphcmd2LCAiY3lj
-bGUtdGltZS1leHQiKSA9PSAwKSB7DQo+ID4gPiArICAgICAgICAgICAgICAgICAgICAgTkVYVF9B
-UkcoKTsNCj4gPiA+ICsgICAgICAgICAgICAgICAgICAgICBpZiAoZ2V0X3U2NCgmY3ljbGVfdGlt
-ZV9leHQsICphcmd2LCAxMCkpIHsNCj4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IGludmFsaWRhcmcgPSAiY3ljbGUtdGltZS1leHQiOw0KPiA+ID4gKyAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgZ290byBlcnJfYXJnOw0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgIH0N
-Cj4gPg0KPiA+IENvdWxkIGFsbCB0aGVzZSB0aW1lIHZhbHVlcyB1c2UgZXhpc3RpbmcgVEMgaGVs
-cGVyIHJvdXRpbmVzPw0KPiANCj4gSSBhZ3JlZSB0byBrZWVwIHRoZSB0YyByb3V0aW5lcyBpbnB1
-dC4NCj4gVGhlIG5hbWVzIG9mIHRpbWVyIGlucHV0IGFuZCB0eXBlIGlzIG1vcmUgcmVmZXJlbmNl
-IHRoZSB0YXByaW8gaW5wdXQuDQo+IA0KDQpTaGFsbCBJIHN1cHBvcnQgYm90aCBpbnB1dCBtZXRo
-b2QuIFRoZSBkZWZhdWx0IGRlY2ltYWwgaW5wdXQgbGlrZSAxMjAwMDAgZGVmYXVsdCB0byBuYW5v
-LXNlY29uZCBhbmQgZm9ybWFsIHRpbWUgcm91dGluZXMgbGlrZSAxMjB1cy4NClRoZW4gdGhlIHRj
-IHNob3cgY29tbWFuZCBzaG93cyBmb3JtYWwgdGltZSByb3V0aW5lcyBsaWtlIDEyMHVzIHdoYXRl
-dmVyIGluIG5vbi1qc29uIGZvcm1hdC4gSnNvbiBmb3JtYXQgc2hvd3MgYSBkZWNpbWFsIG51bWJl
-ciBvbmx5IHdoaWNoIGlzIGFsd2F5cyBkb25lIGJ5IG90aGVyIHRjIGNvbW1hbmQuDQoNClNvIHRo
-aXMgd291bGQgY29tcGF0aWJsZSB3aXRoIGtlcm5lbCBjb21taXQgY29tbWFuZHMgZXhhbXBsZXMu
-IEJ1dCBJIHdvdWxkIG1lbnRpb24gaW4gdGhlIG1hbiBwYWdlcyBzdXBwb3J0aW5nIHRoZSB0aW1l
-ciByb3V0aW5lcyBpbnB1dC4NCg0KPiA+IFNlZSBnZXRfdGltZSgpLiAgVGhlIHdheSB5b3UgaGF2
-ZSBpdCBtYWtlcyBzZW5zZSBmb3IgaGFyZHdhcmUgYnV0DQo+ID4gc3RhbmRzIG91dCB2ZXJzdXMg
-dGhlIHJlc3Qgb2YgdGMuDQo+ID4NCj4gPiBJdCBtYXliZSB0aGF0IHRoZSBrZXJuZWwgVUFQSSBp
-cyB3cm9uZywgYW5kIHNob3VsZCBiZSB1c2luZyBzYW1lIHRpbWUNCj4gPiB1bml0cyBhcyByZXN0
-IG9mIHRjLiBGb3Jnb3QgdG8gcmV2aWV3IHRoYXQgcGFydCBvZiB0aGUgcGF0Y2guDQo+IA0KPiBJ
-IHdvdWxkIGFsc28gc3luYyB3aXRoIGtlcm5lbCBVQVBJIGlmIG5lZWRlZC4NCg0KSSBjaGVja2Vk
-IHRoZSBnYXRlIFVBUEkgZmlsZSwgdGhlcmUgaXMgbm90aGluZyBuZWVkIHRvIGNoYW5nZWQgZm9y
-IHRpbWUgZm9ybWF0Lg0KDQo+IA0KPiANCj4gQnIsDQo+IFBvIExpdQ0KDQoNCg0KQnIsDQpQbyBM
-aXUNCg==
+The patch adds a basic XDP processing to xen-netfront driver.
+
+We ran an XDP program for an RX response received from netback
+driver. Also we request xen-netback to adjust data offset for
+bpf_xdp_adjust_head() header space for custom headers.
+
+synchronization between frontend and backend parts is done
+by using xenbus state switching:
+Reconfiguring -> Reconfigured- > Connected
+
+UDP packets drop rate using xdp program is around 310 kpps
+using ./pktgen_sample04_many_flows.sh and 160 kpps without the patch.
+
+v8:
+- add PAGE_POOL config dependency
+- keep the state of XDP processing in netfront_xdp_enabled
+- fixed allocator type in xdp_rxq_info_reg_mem_model()
+- minor cleanups in xen-netback
+
+v7:
+- use page_pool_dev_alloc_pages() on page allocation
+- remove the leftover break statement from netback_changed
+
+v6:
+- added the missing SOB line
+- fixed subject
+
+v5:
+- split netfront/netback changes
+- added a sync point between backend/frontend on switching to XDP
+- added pagepool API
+
+v4:
+- added verbose patch descriprion
+- don't expose the XDP headroom offset to the domU guest
+- add a modparam to netback to toggle XDP offset
+- don't process jumbo frames for now
+
+v3:
+- added XDP_TX support (tested with xdping echoserver)
+- added XDP_REDIRECT support (tested with modified xdp_redirect_kern)
+- moved xdp negotiation to xen-netback
+
+v2:
+- avoid data copying while passing to XDP
+- tell xen-netback that we need the headroom space
+
+Signed-off-by: Denis Kirjanov <denis.kirjanov@suse.com>
+---
+ drivers/net/xen-netfront.c | 311 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 307 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 482c6c8..3bba0f0 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -44,6 +44,9 @@
+ #include <linux/mm.h>
+ #include <linux/slab.h>
+ #include <net/ip.h>
++#include <linux/bpf.h>
++#include <net/page_pool.h>
++#include <linux/bpf_trace.h>
+ 
+ #include <xen/xen.h>
+ #include <xen/xenbus.h>
+@@ -102,6 +105,8 @@ struct netfront_queue {
+ 	char name[QUEUE_NAME_SIZE]; /* DEVNAME-qN */
+ 	struct netfront_info *info;
+ 
++	struct bpf_prog __rcu *xdp_prog;
++
+ 	struct napi_struct napi;
+ 
+ 	/* Split event channels support, tx_* == rx_* when using
+@@ -144,6 +149,9 @@ struct netfront_queue {
+ 	struct sk_buff *rx_skbs[NET_RX_RING_SIZE];
+ 	grant_ref_t gref_rx_head;
+ 	grant_ref_t grant_rx_ref[NET_RX_RING_SIZE];
++
++	struct page_pool *page_pool;
++	struct xdp_rxq_info xdp_rxq;
+ };
+ 
+ struct netfront_info {
+@@ -159,6 +167,10 @@ struct netfront_info {
+ 	struct netfront_stats __percpu *rx_stats;
+ 	struct netfront_stats __percpu *tx_stats;
+ 
++	/* XDP state */
++	bool netback_has_xdp_headroom;
++	bool netfront_xdp_enabled;
++
+ 	atomic_t rx_gso_checksum_fixup;
+ };
+ 
+@@ -167,6 +179,9 @@ struct netfront_rx_info {
+ 	struct xen_netif_extra_info extras[XEN_NETIF_EXTRA_TYPE_MAX - 1];
+ };
+ 
++static int xennet_xdp_xmit(struct net_device *dev, int n,
++			   struct xdp_frame **frames, u32 flags);
++
+ static void skb_entry_set_link(union skb_entry *list, unsigned short id)
+ {
+ 	list->link = id;
+@@ -265,8 +280,8 @@ static struct sk_buff *xennet_alloc_one_rx_buffer(struct netfront_queue *queue)
+ 	if (unlikely(!skb))
+ 		return NULL;
+ 
+-	page = alloc_page(GFP_ATOMIC | __GFP_NOWARN);
+-	if (!page) {
++	page = page_pool_dev_alloc_pages(queue->page_pool);
++	if (unlikely(!page)) {
+ 		kfree_skb(skb);
+ 		return NULL;
+ 	}
+@@ -778,6 +793,53 @@ static int xennet_get_extras(struct netfront_queue *queue,
+ 	return err;
+ }
+ 
++u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
++		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
++		   struct xdp_buff *xdp)
++{
++	struct xdp_frame *xdpf;
++	u32 len = rx->status;
++	u32 act = XDP_PASS;
++	int err;
++
++	xdp->data_hard_start = page_address(pdata);
++	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
++	xdp_set_data_meta_invalid(xdp);
++	xdp->data_end = xdp->data + len;
++	xdp->rxq = &queue->xdp_rxq;
++	xdp->handle = 0;
++
++	act = bpf_prog_run_xdp(prog, xdp);
++	switch (act) {
++	case XDP_TX:
++		get_page(pdata);
++		xdpf = convert_to_xdp_frame(xdp);
++		err = xennet_xdp_xmit(queue->info->netdev, 1, &xdpf, 0);
++		if (unlikely(err < 0))
++			trace_xdp_exception(queue->info->netdev, prog, act);
++		break;
++	case XDP_REDIRECT:
++		get_page(pdata);
++		err = xdp_do_redirect(queue->info->netdev, xdp, prog);
++		if (unlikely(err))
++			trace_xdp_exception(queue->info->netdev, prog, act);
++		xdp_do_flush();
++		break;
++	case XDP_PASS:
++	case XDP_DROP:
++		break;
++
++	case XDP_ABORTED:
++		trace_xdp_exception(queue->info->netdev, prog, act);
++		break;
++
++	default:
++		bpf_warn_invalid_xdp_action(act);
++	}
++
++	return act;
++}
++
+ static int xennet_get_responses(struct netfront_queue *queue,
+ 				struct netfront_rx_info *rinfo, RING_IDX rp,
+ 				struct sk_buff_head *list)
+@@ -792,6 +854,9 @@ static int xennet_get_responses(struct netfront_queue *queue,
+ 	int slots = 1;
+ 	int err = 0;
+ 	unsigned long ret;
++	struct bpf_prog *xdp_prog;
++	struct xdp_buff xdp;
++	u32 verdict;
+ 
+ 	if (rx->flags & XEN_NETRXF_extra_info) {
+ 		err = xennet_get_extras(queue, extras, rp);
+@@ -827,9 +892,20 @@ static int xennet_get_responses(struct netfront_queue *queue,
+ 
+ 		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
+ 
+-		__skb_queue_tail(list, skb);
+-
++		rcu_read_lock();
++		xdp_prog = rcu_dereference(queue->xdp_prog);
++		if (xdp_prog && !(rx->flags & XEN_NETRXF_more_data)) {
++			/* currently only a single page contains data */
++			WARN_ON_ONCE(skb_shinfo(skb)->nr_frags != 1);
++			verdict = xennet_run_xdp(queue,
++				       skb_frag_page(&skb_shinfo(skb)->frags[0]),
++				       rx, xdp_prog, &xdp);
++			if (verdict != XDP_PASS)
++				err = -EINVAL;
++		}
++		rcu_read_unlock();
+ next:
++		__skb_queue_tail(list, skb);
+ 		if (!(rx->flags & XEN_NETRXF_more_data))
+ 			break;
+ 
+@@ -997,6 +1073,7 @@ static int xennet_poll(struct napi_struct *napi, int budget)
+ 	struct sk_buff_head rxq;
+ 	struct sk_buff_head errq;
+ 	struct sk_buff_head tmpq;
++	struct bpf_prog *xdp_prog;
+ 	int err;
+ 
+ 	spin_lock(&queue->rx_lock);
+@@ -1014,6 +1091,12 @@ static int xennet_poll(struct napi_struct *napi, int budget)
+ 		memcpy(rx, RING_GET_RESPONSE(&queue->rx, i), sizeof(*rx));
+ 		memset(extras, 0, sizeof(rinfo.extras));
+ 
++		rcu_read_lock();
++		xdp_prog = rcu_dereference(queue->xdp_prog);
++		if (xdp_prog)
++			rx->offset = XDP_PACKET_HEADROOM;
++		rcu_read_unlock();
++
+ 		err = xennet_get_responses(queue, &rinfo, rp, &tmpq);
+ 
+ 		if (unlikely(err)) {
+@@ -1261,6 +1344,157 @@ static void xennet_poll_controller(struct net_device *dev)
+ }
+ #endif
+ 
++#define NETBACK_XDP_HEADROOM_DISABLE	0
++#define NETBACK_XDP_HEADROOM_ENABLE	1
++
++static int talk_to_netback_xdp(struct netfront_info *np, int xdp)
++{
++	int err;
++
++	err = xenbus_printf(XBT_NIL, np->xbdev->nodename,
++			     "feature-xdp", "%u", xdp);
++	if (err)
++		pr_debug("Error writing feature-xdp\n");
++
++	return err;
++}
++
++static int xennet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
++			struct netlink_ext_ack *extack)
++{
++	struct netfront_info *np = netdev_priv(dev);
++	struct bpf_prog *old_prog;
++	unsigned int i, err;
++	unsigned long int max_mtu = XEN_PAGE_SIZE - XDP_PACKET_HEADROOM;
++
++	if (dev->mtu > max_mtu) {
++		netdev_warn(dev, "XDP requires MTU less than %lu\n", max_mtu);
++		return -EINVAL;
++	}
++
++	if (!np->netback_has_xdp_headroom)
++		return 0;
++
++	old_prog = rtnl_dereference(np->queues[0].xdp_prog);
++	if (!old_prog && !prog)
++		return 0;
++
++	if (prog)
++		bpf_prog_add(prog, dev->real_num_tx_queues);
++
++	for (i = 0; i < dev->real_num_tx_queues; ++i)
++		rcu_assign_pointer(np->queues[i].xdp_prog, prog);
++
++	if (old_prog)
++		for (i = 0; i < dev->real_num_tx_queues; ++i)
++			bpf_prog_put(old_prog);
++
++	xenbus_switch_state(np->xbdev, XenbusStateReconfiguring);
++
++	err = talk_to_netback_xdp(np, prog ? NETBACK_XDP_HEADROOM_ENABLE:
++				  NETBACK_XDP_HEADROOM_DISABLE);
++	if (err)
++		return err;
++
++	/* avoid race with XDP headroom adjustment */
++	wait_event(module_wq,
++		   xenbus_read_driver_state(np->xbdev->otherend) ==
++		   XenbusStateReconfigured);
++	np->netfront_xdp_enabled = true;
++	xenbus_switch_state(np->xbdev, XenbusStateConnected);
++
++	return 0;
++}
++
++static u32 xennet_xdp_query(struct net_device *dev)
++{
++	struct netfront_info *np = netdev_priv(dev);
++	unsigned int num_queues = dev->real_num_tx_queues;
++	unsigned int i;
++	struct netfront_queue *queue;
++	const struct bpf_prog *xdp_prog;
++
++	for (i = 0; i < num_queues; ++i) {
++		queue = &np->queues[i];
++		xdp_prog = rtnl_dereference(queue->xdp_prog);
++		if (xdp_prog)
++			return xdp_prog->aux->id;
++	}
++
++	return 0;
++}
++
++static int xennet_xdp(struct net_device *dev, struct netdev_bpf *xdp)
++{
++	switch (xdp->command) {
++	case XDP_SETUP_PROG:
++		return xennet_xdp_set(dev, xdp->prog, xdp->extack);
++	case XDP_QUERY_PROG:
++		xdp->prog_id = xennet_xdp_query(dev);
++		return 0;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int xennet_xdp_xmit_one(struct net_device *dev, struct xdp_frame *xdpf)
++{
++	struct netfront_info *np = netdev_priv(dev);
++	struct netfront_stats *tx_stats = this_cpu_ptr(np->tx_stats);
++	struct netfront_queue *queue = NULL;
++	unsigned int num_queues = dev->real_num_tx_queues;
++	unsigned long flags;
++	int notify;
++	struct xen_netif_tx_request *tx;
++
++	queue = &np->queues[smp_processor_id() % num_queues];
++
++	spin_lock_irqsave(&queue->tx_lock, flags);
++
++	tx = xennet_make_first_txreq(queue, NULL,
++				     virt_to_page(xdpf->data),
++				     offset_in_page(xdpf->data),
++				     xdpf->len);
++
++	RING_PUSH_REQUESTS_AND_CHECK_NOTIFY(&queue->tx, notify);
++	if (notify)
++		notify_remote_via_irq(queue->tx_irq);
++
++	u64_stats_update_begin(&tx_stats->syncp);
++	tx_stats->bytes += xdpf->len;
++	tx_stats->packets++;
++	u64_stats_update_end(&tx_stats->syncp);
++
++	xennet_tx_buf_gc(queue);
++
++	spin_unlock_irqrestore(&queue->tx_lock, flags);
++	return 0;
++}
++
++static int xennet_xdp_xmit(struct net_device *dev, int n,
++			   struct xdp_frame **frames, u32 flags)
++{
++	int drops = 0;
++	int i, err;
++
++	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
++		return -EINVAL;
++
++	for (i = 0; i < n; i++) {
++		struct xdp_frame *xdpf = frames[i];
++
++		if (!xdpf)
++			continue;
++		err = xennet_xdp_xmit_one(dev, xdpf);
++		if (err) {
++			xdp_return_frame_rx_napi(xdpf);
++			drops++;
++		}
++	}
++
++	return n - drops;
++}
++
+ static const struct net_device_ops xennet_netdev_ops = {
+ 	.ndo_open            = xennet_open,
+ 	.ndo_stop            = xennet_close,
+@@ -1272,6 +1506,8 @@ static void xennet_poll_controller(struct net_device *dev)
+ 	.ndo_fix_features    = xennet_fix_features,
+ 	.ndo_set_features    = xennet_set_features,
+ 	.ndo_select_queue    = xennet_select_queue,
++	.ndo_bpf            = xennet_xdp,
++	.ndo_xdp_xmit	    = xennet_xdp_xmit,
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 	.ndo_poll_controller = xennet_poll_controller,
+ #endif
+@@ -1331,6 +1567,7 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
+ 	SET_NETDEV_DEV(netdev, &dev->dev);
+ 
+ 	np->netdev = netdev;
++	np->netfront_xdp_enabled = false;
+ 
+ 	netif_carrier_off(netdev);
+ 
+@@ -1419,6 +1656,8 @@ static void xennet_disconnect_backend(struct netfront_info *info)
+ 		queue->rx_ring_ref = GRANT_INVALID_REF;
+ 		queue->tx.sring = NULL;
+ 		queue->rx.sring = NULL;
++
++		page_pool_destroy(queue->page_pool);
+ 	}
+ }
+ 
+@@ -1754,6 +1993,51 @@ static void xennet_destroy_queues(struct netfront_info *info)
+ 	info->queues = NULL;
+ }
+ 
++
++
++static int xennet_create_page_pool(struct netfront_queue *queue)
++{
++	int err;
++	struct page_pool_params pp_params = {
++		.order = 0,
++		.flags = 0,
++		.pool_size = NET_RX_RING_SIZE,
++		.nid = NUMA_NO_NODE,
++		.dev = &queue->info->netdev->dev,
++		.offset = XDP_PACKET_HEADROOM,
++		.max_len = XEN_PAGE_SIZE - XDP_PACKET_HEADROOM,
++	};
++
++	queue->page_pool = page_pool_create(&pp_params);
++	if (IS_ERR(queue->page_pool)) {
++		 err = PTR_ERR(queue->page_pool);
++		 queue->page_pool = NULL;
++		 return err;
++	}
++
++	err = xdp_rxq_info_reg(&queue->xdp_rxq, queue->info->netdev,
++			       queue->id);
++	if (err) {
++		netdev_err(queue->info->netdev, "xdp_rxq_info_reg failed\n");
++		goto err_free_pp;
++	}
++
++	err = xdp_rxq_info_reg_mem_model(&queue->xdp_rxq,
++					 MEM_TYPE_PAGE_POOL, queue->page_pool);
++	if (err) {
++		netdev_err(queue->info->netdev, "xdp_rxq_info_reg_mem_model failed\n");
++		goto err_unregister_rxq;
++	}
++	return 0;
++
++err_unregister_rxq:
++	xdp_rxq_info_unreg(&queue->xdp_rxq);
++err_free_pp:
++	page_pool_destroy(queue->page_pool);
++	queue->page_pool = NULL;
++	return err;
++}
++
+ static int xennet_create_queues(struct netfront_info *info,
+ 				unsigned int *num_queues)
+ {
+@@ -1779,6 +2063,14 @@ static int xennet_create_queues(struct netfront_info *info,
+ 			break;
+ 		}
+ 
++		/* use page pool recycling instead of buddy allocator */
++		ret = xennet_create_page_pool(queue);
++		if (ret < 0) {
++			dev_err(&info->xbdev->dev, "can't allocate page pool\n");
++			*num_queues = i;
++			return ret;
++		}
++
+ 		netif_napi_add(queue->info->netdev, &queue->napi,
+ 			       xennet_poll, 64);
+ 		if (netif_running(info->netdev))
+@@ -1825,6 +2117,15 @@ static int talk_to_netback(struct xenbus_device *dev,
+ 		goto out_unlocked;
+ 	}
+ 
++	info->netback_has_xdp_headroom = xenbus_read_unsigned(info->xbdev->otherend,
++							      "feature-xdp-headroom", 0);
++	/* set the current xen-netfront xdp state */
++	err = talk_to_netback_xdp(info, info->netfront_xdp_enabled ?
++				  NETBACK_XDP_HEADROOM_ENABLE:
++				  NETBACK_XDP_HEADROOM_DISABLE);
++	if (err)
++		goto out_unlocked;
++
+ 	rtnl_lock();
+ 	if (info->queues)
+ 		xennet_destroy_queues(info);
+@@ -1959,6 +2260,8 @@ static int xennet_connect(struct net_device *dev)
+ 	err = talk_to_netback(np->xbdev, np);
+ 	if (err)
+ 		return err;
++	if (np->netback_has_xdp_headroom)
++		pr_info("backend supports XDP headroom\n");
+ 
+ 	/* talk_to_netback() sets the correct number of queues */
+ 	num_queues = dev->real_num_tx_queues;
+-- 
+1.8.3.1
+
