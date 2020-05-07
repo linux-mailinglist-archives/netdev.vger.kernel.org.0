@@ -2,177 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A901C86DB
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:35:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0AAC1C870D
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:42:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726776AbgEGKca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 06:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        id S1726712AbgEGKmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 06:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726683AbgEGKc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:32:26 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBB6C061A10;
-        Thu,  7 May 2020 03:32:26 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id e25so5735320ljg.5;
-        Thu, 07 May 2020 03:32:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lxR8iUX+nq/8LE2/542OxQ8ktlSJ6cXRsEzWoH8lfzA=;
-        b=abEqiduRP5XA93Rx8i0WKwGEH53+CCt70vEpJwG+coIZSFwLyoUVgyzxNQnhjSMrhr
-         6zKwL9MZfH+5sx9PZfTjosjryBVs8a7aq6aXudAxh15XVqz6iPDDQSVO08IHWKbBZFhH
-         CYQgB0X/jVcaIR/7aGSsp0v7BTgC1XfXRGaRSP+5nSf409yP6qAEQupO9gEmqRFwLcEe
-         H0pnccwikFJtaFyj3dxp7wVF9McYQ8TKb9l/rbtyEudKRCSQDWTnnKv9kipYQ+rsuQFD
-         CS+QGZ/zIXq6iK4F2JEY1s6tyYuYIM07mjId6iMVZCrPXuWYp4/siWmeNVpn7W+WWJCx
-         t9tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lxR8iUX+nq/8LE2/542OxQ8ktlSJ6cXRsEzWoH8lfzA=;
-        b=nv57GHHrL58/4wW7PIU/UyrG4IC1izrEB1e3g/QqleKYfazlwByHivX5WTeeJWUXy+
-         Hta+zuOQn2lJvoHZ9glWsKkfDhgSf6Dt/zzxYVhmmuFJq3Lg11lHzfVVHhSyQKNUt1q4
-         GBqViQG+QfJmHr+/RKFYMayyVf9T9Obp+AOIVMEEGG+VTpxjgXlFYXVaq9QM5rLFyt/g
-         3jmbJrli66hsnUuI2EyayHwO8FHSC0Ywpt9j1FcS3D6INN1LD6o+kK7i8Vw4Go0ZfcDb
-         6IDIWEboHOUI67JD223ieH1Q3Fjlozm4KWYDSAF29nFhQ2i03QRBydQJbjmespb8TNTw
-         SPQA==
-X-Gm-Message-State: AGi0PuY2tXRnf8H/+jegyhYwkoU42eIhwArRUhBjM3SdzsjmFDhv4o8s
-        CPCcOj7ZKuLqfH8b75YlAU6hZcbRdTpKpGnsJAQ=
-X-Google-Smtp-Source: APiQypLqntGlzwMTPnOwy1h5uEIH4hExzJxYqIPLwFHTltoybWYvpOoMaGdS9r61zRjkIUO9oVrCQTWqJErRd8MJv5U=
-X-Received: by 2002:a2e:7613:: with SMTP id r19mr7726906ljc.29.1588847542720;
- Thu, 07 May 2020 03:32:22 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725834AbgEGKmX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:42:23 -0400
+X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 May 2020 03:42:23 PDT
+Received: from smail.fem.tu-ilmenau.de (smail.fem.tu-ilmenau.de [IPv6:2001:638:904:ffbf::41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AC3C061A10
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 03:42:23 -0700 (PDT)
+Received: from mail.fem.tu-ilmenau.de (mail-zuse.net.fem.tu-ilmenau.de [172.21.220.54])
+        (using TLSv1 with cipher ADH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by smail.fem.tu-ilmenau.de (Postfix) with ESMTPS id E938A20013;
+        Thu,  7 May 2020 12:32:41 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.fem.tu-ilmenau.de (Postfix) with ESMTP id A56E06207;
+        Thu,  7 May 2020 12:32:41 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at fem.tu-ilmenau.de
+Received: from mail.fem.tu-ilmenau.de ([127.0.0.1])
+        by localhost (mail.fem.tu-ilmenau.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id TKvELitrPHO1; Thu,  7 May 2020 12:32:38 +0200 (CEST)
+Received: from mail-backup.fem.tu-ilmenau.de (mail-backup.net.fem.tu-ilmenau.de [10.42.40.22])
+        (using TLSv1 with cipher ADH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mail.fem.tu-ilmenau.de (Postfix) with ESMTPS;
+        Thu,  7 May 2020 12:32:38 +0200 (CEST)
+Received: from a234.fem.tu-ilmenau.de (ray-controller.net.fem.tu-ilmenau.de [10.42.51.234])
+        by mail-backup.fem.tu-ilmenau.de (Postfix) with ESMTP id 3C36956052;
+        Thu,  7 May 2020 12:32:38 +0200 (CEST)
+Received: by a234.fem.tu-ilmenau.de (Postfix, from userid 1000)
+        id 1E735306A950; Thu,  7 May 2020 12:32:38 +0200 (CEST)
+From:   Michael Braun <michael-dev@fami-braun.de>
+To:     netdev@vger.kernel.org
+Cc:     Michael Braun <michael-dev@fami-braun.de>,
+        Li RongQing <roy.qing.li@gmail.com>
+Subject: [PATCH] bridge: increase mtu to 64K
+Date:   Thu,  7 May 2020 12:32:28 +0200
+Message-Id: <aa8b1f36e80728f6fae31d98ba990a2b509b1e34.1588847509.git.michael-dev@fami-braun.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <1588706059-4208-1-git-send-email-jrdr.linux@gmail.com>
- <0bfe4a8a-0d91-ef9b-066f-2ea7c68571b3@nvidia.com> <CAFqt6zZMsQkOdjAb2k1EjwX=DtZ8gKfbRzwvreHOX-0vJLngNg@mail.gmail.com>
- <20200506100649.GI17863@quack2.suse.cz> <CAFqt6zYaNkJ4AfVzutXS=JsN4fE41ZAvnw03vHWpdyiRHY1m_w@mail.gmail.com>
- <20200506125930.GJ17863@quack2.suse.cz> <CAFqt6zZztn_AiaGAhV+_uwrnVdKY-xLsxOwYBt-zGmLaat+OhQ@mail.gmail.com>
- <20200507101322.GB30922@quack2.suse.cz>
-In-Reply-To: <20200507101322.GB30922@quack2.suse.cz>
-From:   Souptick Joarder <jrdr.linux@gmail.com>
-Date:   Thu, 7 May 2020 16:02:10 +0530
-Message-ID: <CAFqt6zZ2pj_6q=5kf9dxOsSkHc7vJEHgCjuRmSELQF9KnoKCxA@mail.gmail.com>
-Subject: Re: [RFC] mm/gup.c: Updated return value of {get|pin}_user_pages_fast()
-To:     Jan Kara <jack@suse.cz>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
-        Tony Luck <tony.luck@intel.com>, fenghua.yu@intel.com,
-        Rob Springer <rspringer@google.com>,
-        Todd Poynor <toddpoynor@google.com>, benchan@chromium.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        santosh.shilimkar@oracle.com,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Ira Weiny <ira.weiny@intel.com>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        inux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "open list:ANDROID DRIVERS" <devel@driverdev.osuosl.org>,
-        tee-dev@lists.linaro.org, Linux-MM <linux-mm@kvack.org>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 7, 2020 at 3:43 PM Jan Kara <jack@suse.cz> wrote:
->
-> On Wed 06-05-20 21:38:40, Souptick Joarder wrote:
-> > On Wed, May 6, 2020 at 6:29 PM Jan Kara <jack@suse.cz> wrote:
-> > >
-> > > On Wed 06-05-20 17:51:39, Souptick Joarder wrote:
-> > > > On Wed, May 6, 2020 at 3:36 PM Jan Kara <jack@suse.cz> wrote:
-> > > > >
-> > > > > On Wed 06-05-20 02:06:56, Souptick Joarder wrote:
-> > > > > > On Wed, May 6, 2020 at 1:08 AM John Hubbard <jhubbard@nvidia.com> wrote:
-> > > > > > >
-> > > > > > > On 2020-05-05 12:14, Souptick Joarder wrote:
-> > > > > > > > Currently {get|pin}_user_pages_fast() have 3 return value 0, -errno
-> > > > > > > > and no of pinned pages. The only case where these two functions will
-> > > > > > > > return 0, is for nr_pages <= 0, which doesn't find a valid use case.
-> > > > > > > > But if at all any, then a -ERRNO will be returned instead of 0, which
-> > > > > > > > means {get|pin}_user_pages_fast() will have 2 return values -errno &
-> > > > > > > > no of pinned pages.
-> > > > > > > >
-> > > > > > > > Update all the callers which deals with return value 0 accordingly.
-> > > > > > >
-> > > > > > > Hmmm, seems a little shaky. In order to do this safely, I'd recommend
-> > > > > > > first changing gup_fast/pup_fast so so that they return -EINVAL if
-> > > > > > > the caller specified nr_pages==0, and of course auditing all callers,
-> > > > > > > to ensure that this won't cause problems.
-> > > > > >
-> > > > > > While auditing it was figured out, there are 5 callers which cares for
-> > > > > > return value
-> > > > > > 0 of gup_fast/pup_fast. What problem it might cause if we change
-> > > > > > gup_fast/pup_fast
-> > > > > > to return -EINVAL and update all the callers in a single commit ?
-> > > > >
-> > > > > Well, first I'd ask a different question: Why do you want to change the
-> > > > > current behavior? It's not like the current behavior is confusing.  Callers
-> > > > > that pass >0 pages can happily rely on the simple behavior of < 0 return on
-> > > > > error or > 0 return if we mapped some pages. Callers that can possibly ask
-> > > > > to map 0 pages can get 0 pages back - kind of expected - and I don't see
-> > > > > any benefit in trying to rewrite these callers to handle -EINVAL instead...
-> > > >
-> > > > Callers with a request to map 0 pages doesn't have a valid use case. But if any
-> > > > caller end up doing it mistakenly, -errno should be returned to caller
-> > > > rather than 0
-> > > > which will indicate more precisely that map 0 pages is not a valid
-> > > > request from caller.
-> > >
-> > > Well, I believe this depends on the point of view. Similarly as reading 0
-> > > bytes is successful, we could consider mapping 0 pages successful as well.
-> > > And there can be valid cases where number of pages to map is computed from
-> > > some input and when 0 pages should be mapped, it is not a problem and your
-> > > change would force such callers to special case this with explicitely
-> > > checking for 0 pages to map and not calling GUP in that case at all.
-> > >
-> > > I'm not saying what you propose is necessarily bad, I just say I don't find
-> > > it any better than the current behavior and so IMO it's not worth the
-> > > churn. Now if you can come up with some examples of current in-kernel users
-> > > who indeed do get the handling of the return value wrong, I could be
-> > > convinced otherwise.
-> >
-> > There are 5 callers of {get|pin}_user_pages_fast().
->
-> Oh, there are *much* more callers that 5. It's more like 70. Just grep the
-> source... And then you have all other {get|pin}_user_pages() variants that
-> need to be kept consistent. So overall we have over 200 calls to some
-> variant of GUP.
+A linux bridge always adopts the smallest MTU of the enslaved devices.
+When no device are enslaved, it defaults to a MTU of 1500 and refuses to
+use a larger one. This is problematic when using bridges enslaving only
+virtual NICs (vnetX) like it's common with KVM guests.
 
-Sorry, I mean, there are 5 callers of {get|pin}_user_pages_fast() who
-have interest in
-return value 0, out of total 42.
+Steps to reproduce the problem
 
->
-> > arch/ia64/kernel/err_inject.c#L145
-> > staging/gasket/gasket_page_table.c#L489
-> >
-> > Checking return value 0 doesn't make sense for above 2.
-> >
-> > drivers/platform/goldfish/goldfish_pipe.c#L277
-> > net/rds/rdma.c#L165
-> > drivers/tee/tee_shm.c#L262
-> >
-> > These 3 callers have calculated the no of pages value before passing it to
-> > {get|pin}_user_pages_fast(). But if they end up passing nr_pages <= 0, a return
-> > value of either 0 or -EINVAL doesn't going to harm any existing
-> > behavior of callers.
-> >
-> > IMO, it is safe to return -errno for nr_pages <= 0, for
-> > {get|pin}_user_pages_fast().
->
-> OK, so no real problem with any of these callers. I still don't see a
-> justification for the churn you suggest... Auditting all those code sites
-> is going to be pretty tedious.
+1) sudo ip link add br-test0 type bridge # create an empty bridge
+2) sudo ip link set br-test0 mtu 9000 # attempt to set MTU > 1500
+3) ip link show dev br-test0 # confirm MTU
 
-I try to audit all 42 callers of {get|pin}_user_pages_fast() and
-figure out these 5 callers
-which need to be updated and I think, other callers of
-{get|pin}_user_pages_fast() will not be
-effected.
+Here, 2) returns "RTNETLINK answers: Invalid argument". One (cumbersome)
+way around this is:
 
-But I didn't go through other variants of gup/pup except
-{get|pin}_user_pages_fast().
+4) sudo modprobe dummy
+5) sudo ip link set dummy0 mtu 9000 master br-test0
+
+Then the bridge's MTU can be changed from anywhere to 9000.
+
+This is especially annoying for the virtualization case because the
+KVM's tap driver will by default adopt the bridge's MTU on startup
+making it impossible (without the workaround) to use a large MTU on the
+guest VMs.
+
+https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1399064
+
+Signed-off-by: Michael Braun <michael-dev@fami-braun.de>
+Reported-by: Li RongQing <roy.qing.li@gmail.com>
+
+--
+If found https://patchwork.ozlabs.org/project/netdev/patch/1456133351-10292-1-git-send-email-roy.qing.li@gmail.com/
+but I am missing any follow up. So here comes a refresh patch that
+addresses the issue raised.
+---
+ net/bridge/br_if.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
+index 4fe30b182ee7..f14e7d2329bd 100644
+--- a/net/bridge/br_if.c
++++ b/net/bridge/br_if.c
+@@ -496,7 +496,7 @@ static int br_mtu_min(const struct net_bridge *br)
+ 		if (!ret_mtu || ret_mtu > p->dev->mtu)
+ 			ret_mtu = p->dev->mtu;
+ 
+-	return ret_mtu ? ret_mtu : ETH_DATA_LEN;
++	return ret_mtu ? ret_mtu : (64 * 1024);
+ }
+ 
+ void br_mtu_auto_adjust(struct net_bridge *br)
+-- 
+2.20.1
+
