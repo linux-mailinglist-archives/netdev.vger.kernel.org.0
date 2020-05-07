@@ -2,279 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F009F1C9590
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 743C01C959A
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:56:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727849AbgEGPy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 11:54:59 -0400
-Received: from www62.your-server.de ([213.133.104.62]:54908 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726641AbgEGPy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:54:59 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jWirD-00080B-VR; Thu, 07 May 2020 17:54:44 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jWirD-000Uj4-Fm; Thu, 07 May 2020 17:54:43 +0200
-Subject: Re: [PATCH v3] net: bpf: permit redirect from ingress L3 to egress L2
- devices at near max mtu
-To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <CANP3RGduts2FJ2M5MLcf23GaRa=-fwUC7oPf-S4zp39f63jHMg@mail.gmail.com>
- <20200507023606.111650-1-zenczykowski@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ae1e5602-a2fd-661b-155c-d32ff0059ce6@iogearbox.net>
-Date:   Thu, 7 May 2020 17:54:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727794AbgEGP4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 11:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727067AbgEGP4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:56:31 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE8DC05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 08:56:24 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id y24so7441161wma.4
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 08:56:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AC1Za5zGOrYrzQ3ylTOdqDCV+DmhaWJwcek7sOgv4R4=;
+        b=HkWWYV1O/oVabut+gRYAoj3de0MhAZImS+wodZxgDtmRf79dhCApqzRvU6Qkejx+ty
+         Ka9o27W+bwldjm8I6WH0hv5ZWFlGNDMdn0Kvp4L/Mviga04Q1L0t8eussqdVb6gZC0ec
+         E7qbCFnDtVrWE4nsHFAjyNhbyS0Jf4iG4lp/U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AC1Za5zGOrYrzQ3ylTOdqDCV+DmhaWJwcek7sOgv4R4=;
+        b=ROE0XX+S3fOwBbcgwE7epxLcWbILoaWnYQlVKceNxnF3TaiAHYr3AYqhThsedXQsVK
+         ACOz38QFEMH+mz3mwQ/2RGJ3TKig/nol67CmISSZgQiRxDKhZ/etVl65z4drW8LENE3F
+         omIgeDA7ldtGZoL8tpSSvSWrbSpNDbWbj+l1nKq+2yZrDvZ1e7HPjpPnYpIE3rq+eC6a
+         D6QEVGZ+Uggia/uZkkG+O7TLj9JjF3ddVBWCwVzcrEHcgBXGexwYiF6+cjgsDart4whs
+         B2ka0r/bWhe2hoRDYm7b0zURqOS464dG6qm2j6H4zIB2jotjtzioBLul5Bxv8zllKP65
+         D2rA==
+X-Gm-Message-State: AGi0PuaVLNAxcq9vWKaKGhD1AXSdVMI1QcjEWcCNUwlZntEmMWYzR7JJ
+        Ua4os4vGz/N2FOTBwwM9FeKlnA==
+X-Google-Smtp-Source: APiQypI3AKtAy1ug1pJSQMa35znl0oHFFwOfJZIeElPHJqnWWOYzUspzckoB3+IFBrrhSvRiwoX1tw==
+X-Received: by 2002:a1c:7212:: with SMTP id n18mr11825240wmc.53.1588866983573;
+        Thu, 07 May 2020 08:56:23 -0700 (PDT)
+Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id g12sm465321wmk.1.2020.05.07.08.56.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 May 2020 08:56:23 -0700 (PDT)
+Date:   Thu, 7 May 2020 17:56:15 +0200
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin KaFai Lau <kafai@fb.com>,
+        Stanislav Fomichev <sdf@google.com>
+Cc:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <davem@davemloft.net>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>
+Subject: Re: [PATCH bpf-next v3 1/5] selftests/bpf: generalize helpers to
+ control background listener
+Message-ID: <20200507175615.69909ea0@toad>
+In-Reply-To: <20200507060921.bns5nfxuoy5c3tcu@kafai-mbp>
+References: <20200506223210.93595-1-sdf@google.com>
+        <20200506223210.93595-2-sdf@google.com>
+        <20200507060921.bns5nfxuoy5c3tcu@kafai-mbp>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20200507023606.111650-1-zenczykowski@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25805/Thu May  7 14:14:46 2020)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/7/20 4:36 AM, Maciej Żenczykowski wrote:
-> From: Maciej Żenczykowski <maze@google.com>
+On Wed, 6 May 2020 23:09:21 -0700
+Martin KaFai Lau <kafai@fb.com> wrote:
+
+> On Wed, May 06, 2020 at 03:32:06PM -0700, Stanislav Fomichev wrote:
+> > Move the following routines that let us start a background listener
+> > thread and connect to a server by fd to the test_prog:
+> > * start_server_thread - start background INADDR_ANY thread
+> > * stop_server_thread - stop the thread
+> > * connect_to_fd - connect to the server identified by fd
+> > 
+> > These will be used in the next commit.
+> > 
+> > Also, extend these helpers to support AF_INET6 and accept the family
+> > as an argument.
+> > 
+> > v3:
+> > * export extra helper to start server without a thread (Martin KaFai Lau)
+> > 
+> > v2:
+> > * put helpers into network_helpers.c (Andrii Nakryiko)
+> > 
+> > Cc: Andrey Ignatov <rdna@fb.com>
+> > Cc: Martin KaFai Lau <kafai@fb.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+
+Thanks for extracting network_helpers. I've seen network syscall
+wrappers repeat between the tests I've touched. Will be super useful to
+have it in one place.
+
+[...]
+
+> I still don't see a thread is needed in this existing test_tcp_rtt also.
 > 
-> __bpf_skb_max_len(skb) is used from:
->    bpf_skb_adjust_room
->    __bpf_skb_change_tail
->    __bpf_skb_change_head
+> I was hoping the start/stop_server_thread() helpers can be removed.
+> I am not positive the future tests will find start/stop_server_thread()
+> useful as is because it only does accept() and there is no easy way to
+> get the accept-ed() fd.
 > 
-> but in the case of forwarding we're likely calling these functions
-> during receive processing on ingress and bpf_redirect()'ing at
-> a later point in time to egress on another interface, thus these
-> mtu checks are for the wrong device (input instead of output).
+> If this test needs to keep the thread, may be only keep the
+> start/stop_server_thread() in this test for now until
+> there is another use case that can benefit from them.
 > 
-> This is particularly problematic if we're receiving on an L3 1500 mtu
-> cellular interface, trying to add an L2 header and forwarding to
-> an L3 mtu 1500 mtu wifi/ethernet device (which is thus L2 1514).
+> Keep the start_server() and connect_to_fd() in the new
+> network_helpers.c.  I think at least sk_assign.c (and likely
+> a few others) should be able to reuse them later.  They
+> are doing something very close to start_server() and
+> connect_to_fd().
 > 
-> The mtu check prevents us from adding the 14 byte ethernet header prior
-> to forwarding the packet.
-> 
-> After the packet has already been redirected, we'd need to add
-> an additional 2nd ebpf program on the target device's egress tc hook,
-> but then we'd also see non-redirected traffic and have no easy
-> way to tell apart normal egress with ethernet header packets
-> from forwarded ethernet headerless packets.
-> 
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Maciej Żenczykowski <maze@google.com>
-> ---
->   net/core/filter.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 7d6ceaa54d21..5c8243930462 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -3159,8 +3159,9 @@ static int bpf_skb_net_shrink(struct sk_buff *skb, u32 off, u32 len_diff,
->   
->   static u32 __bpf_skb_max_len(const struct sk_buff *skb)
->   {
-> -	return skb->dev ? skb->dev->mtu + skb->dev->hard_header_len :
-> -			  SKB_MAX_ALLOC;
-> +	if (skb_at_tc_ingress(skb) || !skb->dev)
-> +		return SKB_MAX_ALLOC;
-> +	return skb->dev->mtu + skb->dev->hard_header_len;
->   }
+> Thoughts?
 
-But then why even have any MTU check in the first place? Above would basically
-break for the case where I'd have a one-legged load-balancer. skb comes in at
-tc ingress, we adjust its size and are allowed to do so up to SKB_MAX_ALLOC.
-Then we redirect it out through the same device through bpf where it came from.
+IMHO starting a thread to accept() a connection and close it is an
+overkill. I wouldn't spawn a thread if I can get away with interleaving
+client and server operations on sockets on the main thread. Makes the
+test code easier to follow, and strace, for me.
 
-I suppose we are the ones responsible to assert here that it doesn't exceed MTU.
-There are 3 cases when skb exits the prog on tc ingress or egress: i) we redirect
-via ingress, then ii) we redirect via egress, and iii) we just do tc_act_ok. Case
-i) is asserted already via ____dev_forward_skb() today. If we fix/relax the
-__bpf_skb_max_len(), we would also need to assert the other two locations,
-something hacked up like the below. And on this it probably makes sense to expose
-the current MTU, but that can be optional.
-
-Thoughts?
-
-Thanks,
-Daniel
-
- From 95464f75ed8d520b9ff068b72687a422465686cd Mon Sep 17 00:00:00 2001
-From: Daniel Borkmann <daniel@iogearbox.net>
-Date: Thu, 7 May 2020 16:46:30 +0200
-Subject: [PATCH] bpf: xxx
-
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
----
-  include/linux/netdevice.h | 25 +++++++++++++++++++++++--
-  include/uapi/linux/bpf.h  |  1 +
-  net/core/dev.c            | 24 +++---------------------
-  net/core/filter.c         | 22 +++++++++++++++++-----
-  4 files changed, 44 insertions(+), 28 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 5a8d40f1ffe2..19770744d5b5 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3787,8 +3787,29 @@ int xdp_umem_query(struct net_device *dev, u16 queue_id);
-
-  int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
-  int dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
--bool is_skb_forwardable(const struct net_device *dev,
--			const struct sk_buff *skb);
-+
-+static __always_inline bool is_skb_size_ok(const struct net_device *dev,
-+					   const struct sk_buff *skb)
-+{
-+	static const u32 vlan_header_len = 4;
-+
-+	if (skb->len <= dev->mtu + dev->hard_header_len + vlan_header_len)
-+		return true;
-+
-+	/* If TSO is enabled, we don't care about the length as the packet
-+	 * could be forwarded without being segmented before.
-+	 */
-+	return skb_is_gso(skb);
-+}
-+
-+static __always_inline bool is_skb_forwardable(const struct net_device *dev,
-+					       const struct sk_buff *skb)
-+{
-+	if (unlikely(!(dev->flags & IFF_UP)))
-+		return false;
-+
-+	return is_skb_size_ok(dev, skb);
-+}
-
-  static __always_inline int ____dev_forward_skb(struct net_device *dev,
-  					       struct sk_buff *skb)
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b3643e27e264..0239e415a469 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3370,6 +3370,7 @@ struct __sk_buff {
-  	__u32 gso_segs;
-  	__bpf_md_ptr(struct bpf_sock *, sk);
-  	__u32 gso_size;
-+	__u32 mtu;
-  };
-
-  struct bpf_tunnel_key {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index afff16849c26..b3bf738fc36f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2100,27 +2100,6 @@ static inline void net_timestamp_set(struct sk_buff *skb)
-  			__net_timestamp(SKB);			\
-  	}							\
-
--bool is_skb_forwardable(const struct net_device *dev, const struct sk_buff *skb)
--{
--	unsigned int len;
--
--	if (!(dev->flags & IFF_UP))
--		return false;
--
--	len = dev->mtu + dev->hard_header_len + VLAN_HLEN;
--	if (skb->len <= len)
--		return true;
--
--	/* if TSO is enabled, we don't care about the length as the packet
--	 * could be forwarded without being segmented before
--	 */
--	if (skb_is_gso(skb))
--		return true;
--
--	return false;
--}
--EXPORT_SYMBOL_GPL(is_skb_forwardable);
--
-  int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
-  {
-  	int ret = ____dev_forward_skb(dev, skb);
-@@ -3786,8 +3765,11 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
-  	case TC_ACT_OK:
-  	case TC_ACT_RECLASSIFY:
-  		skb->tc_index = TC_H_MIN(cl_res.classid);
-+		if (unlikely(!is_skb_size_ok(dev, skb)))
-+			goto drop;
-  		break;
-  	case TC_ACT_SHOT:
-+drop:
-  		mini_qdisc_qstats_cpu_drop(miniq);
-  		*ret = NET_XMIT_DROP;
-  		kfree_skb(skb);
-diff --git a/net/core/filter.c b/net/core/filter.c
-index dfaf5df13722..54db75bf15c5 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2037,10 +2037,11 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
-  {
-  	int ret;
-
--	if (dev_xmit_recursion()) {
-+	if (unlikely(!is_skb_forwardable(dev, skb)))
-+		goto drop;
-+	if (unlikely(dev_xmit_recursion())) {
-  		net_crit_ratelimited("bpf: recursion limit reached on datapath, buggy bpf program?\n");
--		kfree_skb(skb);
--		return -ENETDOWN;
-+		goto drop;
-  	}
-
-  	skb->dev = dev;
-@@ -2051,6 +2052,10 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
-  	dev_xmit_recursion_dec();
-
-  	return ret;
-+drop:
-+	atomic_long_inc(&dev->rx_dropped);
-+	kfree_skb(skb);
-+	return -EIO;
-  }
-
-  static int __bpf_redirect_no_mac(struct sk_buff *skb, struct net_device *dev,
-@@ -3148,8 +3153,7 @@ static int bpf_skb_net_shrink(struct sk_buff *skb, u32 off, u32 len_diff,
-
-  static u32 __bpf_skb_max_len(const struct sk_buff *skb)
-  {
--	return skb->dev ? skb->dev->mtu + skb->dev->hard_header_len :
--			  SKB_MAX_ALLOC;
-+	return SKB_MAX_ALLOC;
-  }
-
-  BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *, skb, s32, len_diff,
-@@ -7831,6 +7835,14 @@ static u32 tc_cls_act_convert_ctx_access(enum bpf_access_type type,
-  				      bpf_target_off(struct net_device, ifindex, 4,
-  						     target_size));
-  		break;
-+	case offsetof(struct __sk_buff, mtu):
-+		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, dev),
-+				      si->dst_reg, si->src_reg,
-+				      offsetof(struct sk_buff, dev));
-+		*insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->dst_reg,
-+				      bpf_target_off(struct net_device, mtu, 4,
-+						     target_size));
-+		break;
-  	default:
-  		return bpf_convert_ctx_access(type, si, insn_buf, prog,
-  					      target_size);
--- 
-2.21.0
