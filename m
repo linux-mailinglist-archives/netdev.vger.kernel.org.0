@@ -2,85 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95B581C8D21
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 15:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BBAD1C8D31
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726393AbgEGN6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 09:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
+        id S1726572AbgEGOAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726356AbgEGN6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 09:58:49 -0400
-Received: from mail-vk1-xa41.google.com (mail-vk1-xa41.google.com [IPv6:2607:f8b0:4864:20::a41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47FCC05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 06:58:47 -0700 (PDT)
-Received: by mail-vk1-xa41.google.com with SMTP id p5so1643272vke.1
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 06:58:47 -0700 (PDT)
+        with ESMTP id S1725947AbgEGOAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:00:34 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1266AC05BD43;
+        Thu,  7 May 2020 07:00:34 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id h9so6550796wrt.0;
+        Thu, 07 May 2020 07:00:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c8uA/76nadpV0n48ft4J9yLac2K2FRVkb2Mza3nvzUg=;
-        b=k1IXCCD6gwOb9/zG8+an07w7jiYj0aQw60c/HzXzi+stYofZck4z1cU+2a/wHp6S0v
-         Tr9MkNPKc25284f3xq828G2gnzHOlwSVZEh8WQHjvUxjMywiKOalXNRQakg+DdLEf7Vg
-         wTqdMLRiI7MF0mdm/3zzXb8EDZSY6opYAihyY1zJHZIQLUhhYF9fUs2LQdRTOPu3njQN
-         jXQkZi42bH6tv3rJ4BdDlvUr+I9OM3EysNTgBYQesLyuzdKuDEfZ3CzLiRcdM1cj5AKY
-         SOZMm9uJJYdMLXNNnbxqyH8LP9zA5FpIytCXtbZSFLxX7udG6kwjWxeVuolWD9tlHAdS
-         M8dg==
+         :cc:content-transfer-encoding;
+        bh=h1WpxjPdyCBE7KAla9iO5P4bZZoKPEKo563S8bN0HCI=;
+        b=sBk6kKvAGS4In8Q8py/eXSV9EjvovXYsypizSjw5hvFDJpLj2W5MJDyZ2qq95Wbeb1
+         4SDHjPtRiHmzqNGUbcc2Efjf3F2eelcZelnsPLA/wiaUJqwvMX/nYFXQOgGYUVljOcLr
+         bSR5574lbhRAnScqLpRTqeGtRQd0KpJSdzUjJtHsz1llWx51lGgphJVM+VifTrobHSjn
+         3+EDncYp1Ifba+WYMcpBpNqSL23Sfx0zu2mIOmdcFhioO2AAal2NY2VMjTbEDEtUDZja
+         aha/k1rZ/crR/Blxkp/QSstjUzfMj9f7BMYt+oIBYs4HPNN19ZMb3+Fx9y3FvM863nJC
+         TDrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c8uA/76nadpV0n48ft4J9yLac2K2FRVkb2Mza3nvzUg=;
-        b=OkN0W9KlIwVjFaKA4n5m7wXhZU5Ie7x1NGLzl8yTMIDg4hcMYNMegG6dmYd3o8p5n2
-         SQhbSSGx6cypeuBVDx0umstIqBtsyyNqkLvHUWOg8imiF9H4bYVBe0H+ZQk6SWoT4x+t
-         G8jb8Q+0x8Ed5UHOWrYEXEXaO6/yHTS+HXpvktUN1m1jxQ+nwzWIeB09P5oTZWA3bLEL
-         NGOdI1UXIY4ujWfTNEHaQVhFZAHYtrZDoyHMK0CD/jgNjhdAje+38GOAZ0gcIzYtvB1b
-         zwr29ezMmnnf86ektHdJnN3yln1lYNmWdCfwvy6Bbg/0ByBC0y4cfIUl1NnRyW1w8lQd
-         0zlw==
-X-Gm-Message-State: AGi0PuYLd7zoMx/eqV+3tn3pdSwDmhf6l9+mgrCxHLrwZqqNrz6XWJaK
-        PlA+85bd2dSx2JSMp8cmjzp7H8SQrTMBmMkZ2DnUaw==
-X-Google-Smtp-Source: APiQypIVMdFFosBKgh9kPxEDx0LR9JFOui3me6wN/Kd42lIjdVbhfKEzg5i2MNps+tviQkkMfhcLiY0icQBRD7TpS3w=
-X-Received: by 2002:a1f:9a93:: with SMTP id c141mr11495460vke.4.1588859926782;
- Thu, 07 May 2020 06:58:46 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=h1WpxjPdyCBE7KAla9iO5P4bZZoKPEKo563S8bN0HCI=;
+        b=chTWUXx7cQ0GP0YBGAB5r9b7Y+jWnb5IGkSRYSYd4YpSnOd+oihXijI/G1IcBAD1vJ
+         /wm3fCOHylX7DiZYUB/rgb+ErE30cbq/pWfvhGYdWrUU6qsuDpgkyD9Cq8rGieZsdc32
+         deH8S3umKhKGJKReIX/o6VaQmvtz8eLzmaQtgkJR6cysX2WRc1ujGRg4p2q9izkFb4jV
+         KnEl66n25EIr8ciWiUvZPu5pH9qCvwPTsmrr+4p05hBHUBMTSmT/lEce8w/3/9Ekc7Jt
+         /A2VEhKSUphMwcOhTI03SvOCEv77KjoGSknuCqreIgOqzB5gSES0EWu4Kyntn02ocrGb
+         6CXA==
+X-Gm-Message-State: AGi0Pua8h9Qwwz0OcTUGONYtDAHr8hlbpC66hzxEiMVgKS6uefc0eoZp
+        uZjcKqBeEmeFqAo7lnJhIyuyIwCtvyS4wJB66tI=
+X-Google-Smtp-Source: APiQypL1Kp/ABv534LtfGV8dmXs8pCbQlD4SIU85WagRPFd7hgdlZNSjkg4/6551ILrUP3UGRzwNGQlRBBAKhbdnNPE=
+X-Received: by 2002:adf:e910:: with SMTP id f16mr15150333wrm.176.1588860032651;
+ Thu, 07 May 2020 07:00:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200507030830.GA8611@toolchain>
-In-Reply-To: <20200507030830.GA8611@toolchain>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 7 May 2020 09:58:30 -0400
-Message-ID: <CADVnQym+O5tgCyRO+MJopXzwcxsGGkCpTpdX648fTsAjMZO3Gw@mail.gmail.com>
-Subject: Re: [PATCH] tcp: tcp_mark_head_lost is only valid for sack-tcp
-To:     zhang kai <zhangkaiheb@126.com>
-Cc:     Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>
+References: <CAJ+HfNidbgwtLinLQohwocUmoYyRcAG454ggGkCbseQPSA1cpw@mail.gmail.com>
+ <877dxnkggf.fsf@toke.dk>
+In-Reply-To: <877dxnkggf.fsf@toke.dk>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 7 May 2020 16:00:21 +0200
+Message-ID: <CAJ+HfNhvzZ4JKLRS5=esxCd7o39-OCuDSmdkxCuxR9Y6g5DC0A@mail.gmail.com>
+Subject: Re: XDP bpf_tail_call_redirect(): yea or nay?
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 6, 2020 at 11:09 PM zhang kai <zhangkaiheb@126.com> wrote:
+On Thu, 7 May 2020 at 15:44, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.=
+com> wrote:
 >
-> so tcp_is_sack/reno checks are removed from tcp_mark_head_lost.
+> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
 >
-> Signed-off-by: zhang kai <zhangkaiheb@126.com>
-> ---
+> > Before I start hacking on this, I might as well check with the XDP
+> > folks if this considered a crappy idea or not. :-)
+> >
+> > The XDP redirect flow for a packet is typical a dance of
+> > bpf_redirect_map() that updates the bpf_redirect_info structure with
+> > maps type/items, which is then followed by an xdp_do_redirect(). That
+> > function takes an action based on the bpf_redirect_info content.
+> >
+> > I'd like to get rid of the xdp_do_redirect() call, and the
+> > bpf_redirect_info (per-cpu) lookup. The idea is to introduce a new
+> > (oh-no!) XDP action, say, XDP_CONSUMED and a built-in helper with
+> > tail-call semantics.
+> >
+> > Something across the lines of:
+> >
+> > --8<--
+> >
+> > struct {
+> >         __uint(type, BPF_MAP_TYPE_XSKMAP);
+> >         __uint(max_entries, MAX_SOCKS);
+> >         __uint(key_size, sizeof(int));
+> >         __uint(value_size, sizeof(int));
+> > } xsks_map SEC(".maps");
+> >
+> > SEC("xdp1")
+> > int xdp_prog1(struct xdp_md *ctx)
+> > {
+> >         bpf_tail_call_redirect(ctx, &xsks_map, 0);
+> >         // Redirect the packet to an AF_XDP socket at entry 0 of the
+> >         // map.
+> >         //
+> >         // After a successful call, ctx is said to be
+> >         // consumed. XDP_CONSUMED will be returned by the program.
+> >         // Note that if the call is not successful, the buffer is
+> >         // still valid.
+> >         //
+> >         // XDP_CONSUMED in the driver means that the driver should not
+> >         // issue an xdp_do_direct() call, but only xdp_flush().
+> >         //
+> >         // The verifier need to be taught that XDP_CONSUMED can only
+> >         // be returned "indirectly", meaning a bpf_tail_call_XXX()
+> >         // call. An explicit "return XDP_CONSUMED" should be
+> >         // rejected. Can that be implemented?
+> >         return XDP_PASS; // or any other valid action.
+> > }
+> >
+> > -->8--
+> >
+> > The bpf_tail_call_redirect() would work with all redirectable maps.
+> >
+> > Thoughts? Tomatoes? Pitchforks?
+>
+> The above answers the 'what'. Might be easier to evaluate if you also
+> included the 'why'? :)
+>
 
-Nice clean-up, thanks.
+Ah! Sorry! Performance, performance, performance. Getting rid of a
+bunch of calls/instructions per packet, which helps my (AF_XDP) case.
+This would be faster than the regular REDIRECT path. Today, in
+bpf_redirect_map(), instead of actually performing the action, we
+populate the bpf_redirect_info structure, just to look up the action
+again in xdp_do_redirect().
 
-Acked-by: Neal Cardwell <ncardwell@google.com>
+I'm pretty certain this would be a gain for AF_XDP (quite easy to do a
+quick hack, and measure). It would also shave off the same amount of
+instructions for "vanilla" XDP_REDIRECT cases. The bigger issue; Is
+this new semantic something people would be comfortable being added to
+XDP.
 
-As Eric noted in previous threads, this clean-up is now possible after:
 
-6ac06ecd3a5d1dd1aaea5c2a8f6d6e4c81d5de6a ("tcp: simpler NewReno implementation")
-
-As Yuchung noted, the tcp_mark_head_lost() function is not used today
-when RACK is enabled (which is by
-default).
-
-neal
+Cheers,
+Bj=C3=B6rn
