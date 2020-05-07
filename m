@@ -2,175 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 590C81C85E7
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 11:36:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5339D1C860C
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 11:47:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbgEGJgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 05:36:17 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:47010 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbgEGJgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 05:36:16 -0400
-Received: by mail-il1-f199.google.com with SMTP id g17so5349723iln.13
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 02:36:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=zgr12NG/96S5pfuI0okSGWF9x6WfA1Zy9V4M4WnWAMM=;
-        b=mfJSBIffB5bIJU4HFJBq0KW/NqPUJpF2NbWKtS8DULKey3wV4tt2hEIVN3klUfYvfT
-         FvQgCao5WQCpHFRlk17W+hAwqiFNgllg0FsayeLir014weynizYgPqwroKTDc7BY2iXZ
-         D5rzsrO3yPQS+7n2pb7nmUvoqCDQ8gG/7ldrQLqZaqo6MjWjmDKfQYEinRFqRZY/I5qe
-         WbOHiFqcTWrKlCbZyWYPLi0UPI4O19nVq7TjsIKERcKHDwo4LZOwpo88MmAe4ijweM/Q
-         yKuslfMBJKlVShF49IDbNHgA5SOlygR/TvSfB6SLgtwDK6ZfOLgKBpeL9NE5aW8GwbGV
-         vyTA==
-X-Gm-Message-State: AGi0Puag1n0ZYnFydr7WHKHp10WCadlmZfXcSKX3LHV8G+VJDCh4dk/u
-        ucnPhLrUfdxDveN/ptOBaycvllJLMSoQqGKJsqBakXOiMbbx
-X-Google-Smtp-Source: APiQypJUExR5SSgw0gyrpqPlg6LOLXBmXfah4Ewhloj32cSZgjhr8+4KKOwzOxYkPeUrgIepVI9nKfDmy+bwCbmD5rUFzEg7sNu1
+        id S1725948AbgEGJrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 05:47:00 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:39760 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbgEGJrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 05:47:00 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200507094658euoutp0161d18747e20d120a9b02630065e2e065~MtfHBK2ij3240732407euoutp019
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 09:46:58 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200507094658euoutp0161d18747e20d120a9b02630065e2e065~MtfHBK2ij3240732407euoutp019
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1588844818;
+        bh=1wsC40WzFUpfzSznWf2jwxe9vrquMK/0mvf6RWwMERU=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=a6GmPJVjKfLp+Flw8jMx/2luN1LxfuSATEVD8/2bO1C17CYfONX3hyEDxH97rqEIb
+         TtJLJehfyRmE/sAQwSX5SAtWHcJj/McqEg6BU/842OxiMICr4uKKdP9nnNQPYR0Vxn
+         LzE+tslD01yZFKQa56xfhJpB1VxZMhMQFMBbs3/I=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20200507094658eucas1p186723bf227b1df6597c3942a4e6bbada~MtfGt-hR41300113001eucas1p1C;
+        Thu,  7 May 2020 09:46:58 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 9B.B0.60679.219D3BE5; Thu,  7
+        May 2020 10:46:58 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20200507094657eucas1p2e785a6b277c732ba4417fa9d1c9c8d5f~MtfGTZuqB0085000850eucas1p2L;
+        Thu,  7 May 2020 09:46:57 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20200507094657eusmtrp23bad71932a3809fe73fd59cf076708dd~MtfGSr4ze2652826528eusmtrp2i;
+        Thu,  7 May 2020 09:46:57 +0000 (GMT)
+X-AuditID: cbfec7f4-0e5ff7000001ed07-33-5eb3d912bb2a
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 45.21.07950.119D3BE5; Thu,  7
+        May 2020 10:46:57 +0100 (BST)
+Received: from [106.210.88.143] (unknown [106.210.88.143]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20200507094657eusmtip1eaa1246eb850f8793dfc8ded22397514~MtfFxFBtx1825018250eusmtip1i;
+        Thu,  7 May 2020 09:46:57 +0000 (GMT)
+Subject: Re: [PATCH net v2] net: bcmgenet: Clear ID_MODE_DIS in
+ EXT_RGMII_OOB_CTRL when not needed
+To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Stefan Wahren <wahrenst@gmx.net>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <cf07fae3-bd8f-a645-0007-a317832c51c1@samsung.com>
+Date:   Thu, 7 May 2020 11:46:58 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+        Thunderbird/68.7.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:d1c4:: with SMTP id u4mr12749363ilg.183.1588844173612;
- Thu, 07 May 2020 02:36:13 -0700 (PDT)
-Date:   Thu, 07 May 2020 02:36:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000925dda05a50b9c13@google.com>
-Subject: KASAN: use-after-free Read in rpc_net_ns
-From:   syzbot <syzbot+22b5ef302c7c40d94ea8@syzkaller.appspotmail.com>
-To:     anna.schumaker@netapp.com, bfields@fieldses.org,
-        chuck.lever@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        neilb@suse.de, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, trond.myklebust@hammerspace.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200225131159.26602-1-nsaenzjulienne@suse.de>
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA01SaUgUYRjm2xlnx83VcTz2VTsXEyq8IwYyu2ULSn9ERbHqpINKrsquR1o/
+        LCVz6bREWxVFwROPXDXdH1peW5lrZIcrihhKHqilRimiNY2W/57nfZ7ne98HPhKj9RbOZFRM
+        PKeOYaPlhARv6l4yudNmfbDXcB3OVN/rwpn8vnScWZ7tFDP9hnyC6S5yZJp0ZQSzkPUEMcZX
+        mdgRUqEb6SUUDRVmkaJFNyxWlNS3EQp9z3XFQv32IOKSxC+ci45K5NSe/qGSSP1CKRE3SV/r
+        b8lEqajKRossSaD2Q6chW6xFEpKmyhGkP+60EMgigqyW5nWygMCcM45tRKaK09YjZQhKzD8w
+        gcwhyJ98g3iXHRUOuQ++/xXsqbcIhjtGxbyAUSysVa1Y8JigvEE7oyV4LKX8YS6zH9ciksQp
+        V8goD+ChA6WEnE/nBIctvH46hvPYkvKDb0UDhPDiDkhrzMMELIPBsUIRvxaoVjFkd6wQwtUn
+        IK/GvN7ADqaMDWIBb4W1lo1AGoJRU7VYIHcR9N/KRYLrIAyZlgn+IozaA7UGT2F8FIqbG0T8
+        GChrGJixFY6whqymHEwYS+HObVpwu4HOWPNv7ct377GHSK7bVE23qY5uUx3d/71FCK9EMi5B
+        o4rgND4xXJKHhlVpEmIiPMJiVfXoz1fqWTUuNiPDypV2RJFIbiV9UVofTFuwiZpkVTsCEpPb
+        S61+PQumpeFscgqnjg1RJ0RzmnbkQuJymdS3eFJJUxFsPHeV4+I49YYqIi2dU5FbsktA6+5H
+        S8e3jeyrdDygdDo888W1N1sU2DsfS7OmqK5etU+fTdoF8+UbdGiSfZCTSpbvdfbnefPOZSYj
+        /eP9i7k5gROFBbVDDmN1reXGzyetTbumVgdOn/rqGxY0e+aQ33zFtHvITf104/S4x/OCD1vo
+        Y8rBlJWoCZlEqe/JbpPjmkjWey+m1rC/AXTbhcdGAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrCIsWRmVeSWpSXmKPExsVy+t/xu7qCNzfHGVxarGqxtvcoi8Wc8y0s
+        Fr/eHWG3uLxrDpvFsQViFttmLWez+DxpCqPF8ROdzA4cHrPun2Xz2LLyJpPHzll32T0Wb9rP
+        5rH5dLXH501yAWxRejZF+aUlqQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZ
+        ZalF+nYJehmbPy9jK3gpVHF5ZydjA+Nq/i5GTg4JAROJV4ua2bsYuTiEBJYySjx+/JcdIiEj
+        cXJaAyuELSzx51oXG0TRW0aJvT3P2UASwgIpEjP6PzKDJEQEzjBKfP04lwkkwSyQKLFk304w
+        W0jAWuL6kkNgNpuAoUTX2y6wZl4BO4n3nZdZuhg5OFgEVCTaV7iBmKICsRItFzUhKgQlTs58
+        wgJicwrYSHxYcIMNYrqZxLzND5khbHmJ5q2zoWxxiVtP5jNNYBSahaR9FpKWWUhaZiFpWcDI
+        sopRJLW0ODc9t9hIrzgxt7g0L10vOT93EyMwBrcd+7llB2PXu+BDjAIcjEo8vAeWbYoTYk0s
+        K67MPcQowcGsJMLL82NjnBBvSmJlVWpRfnxRaU5q8SFGU6DXJjJLiSbnA9NDXkm8oamhuYWl
+        obmxubGZhZI4b4fAwRghgfTEktTs1NSC1CKYPiYOTqkGxonVx+sfOQRr39MUehlnP+F5T26x
+        pftuJc5pJeLNVyrE3v++02vL+vLKq7wNmSUz8gLMi5u1nEqyo4VratwF1ku8N/JWcPm+btaH
+        fE7ZjXwf7kRt3FL+V2Je9Qsd9Qpuo6sPdl3VueAnOq9xcdWvOD6Bzb+d7XhKH9y48vVYxKKy
+        L6e3FNh5KrEUZyQaajEXFScCAHE/YSXXAgAA
+X-CMS-MailID: 20200507094657eucas1p2e785a6b277c732ba4417fa9d1c9c8d5f
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20200507094657eucas1p2e785a6b277c732ba4417fa9d1c9c8d5f
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200507094657eucas1p2e785a6b277c732ba4417fa9d1c9c8d5f
+References: <20200225131159.26602-1-nsaenzjulienne@suse.de>
+        <CGME20200507094657eucas1p2e785a6b277c732ba4417fa9d1c9c8d5f@eucas1p2.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi
 
-syzbot found the following crash on:
+On 25.02.2020 14:11, Nicolas Saenz Julienne wrote:
+> Outdated Raspberry Pi 4 firmware might configure the external PHY as
+> rgmii although the kernel currently sets it as rgmii-rxid. This makes
+> connections unreliable as ID_MODE_DIS is left enabled. To avoid this,
+> explicitly clear that bit whenever we don't need it.
+>
+> Fixes: da38802211cc ("net: bcmgenet: Add RGMII_RXID support")
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 
-HEAD commit:    f66ed1eb Merge tag 'iomap-5.7-fixes-1' of git://git.kernel..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13a4fa9c100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5b075813ec8b93cd
-dashboard link: https://syzkaller.appspot.com/bug?extid=22b5ef302c7c40d94ea8
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12315918100000
+I've finally bisected the network issue I have on my RPi4 used for 
+testing mainline builds. The bisect pointed to this patch. Once it got 
+applied in v5.7-rc1, the networking is broken on my RPi4 in ARM32bit 
+mode and kernel compiled from bcm2835_defconfig. I'm using u-boot to 
+tftp zImage/dtb/initrd there. After reverting this patch network is 
+working fine again. The strange thing is that networking works fine if 
+kernel is compiled from multi_v7_defconfig but I don't see any obvious 
+difference there.
 
-The bug was bisected to:
+I'm not sure if u-boot is responsible for this break, but kernel 
+definitely should be able to properly reset the hardware to the valid state.
 
-commit 7c4310ff56422ea43418305d22bbc5fe19150ec4
-Author: NeilBrown <neilb@suse.de>
-Date:   Fri Apr 3 03:33:41 2020 +0000
+I can provide more information, just let me know what is needed. Here is 
+the log, I hope it helps:
 
-    SUNRPC: defer slow parts of rpc_free_client() to a workqueue.
+[   11.881784] bcmgenet fd580000.ethernet eth0: Link is Up - 1Gbps/Full 
+- flow control off
+[   11.889935] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12176e60100000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=11176e60100000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16176e60100000
+root@target:~# ping host
+PING host (192.168.100.1) 56(84) bytes of data.
+ From 192.168.100.53 icmp_seq=1 Destination Host Unreachable
+...
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+22b5ef302c7c40d94ea8@syzkaller.appspotmail.com
-Fixes: 7c4310ff5642 ("SUNRPC: defer slow parts of rpc_free_client() to a workqueue.")
+> ---
+>
+> Changes since v1:
+>   - Fix tags ordering
+>   - Add targeted tree
+>
+>   drivers/net/ethernet/broadcom/genet/bcmmii.c | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> index 6392a2530183..10244941a7a6 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> @@ -294,6 +294,7 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
+>   	 */
+>   	if (priv->ext_phy) {
+>   		reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
+> +		reg &= ~ID_MODE_DIS;
+>   		reg |= id_mode_dis;
+>   		if (GENET_IS_V1(priv) || GENET_IS_V2(priv) || GENET_IS_V3(priv))
+>   			reg |= RGMII_MODE_EN_V123;
 
-IPv6: ADDRCONF(NETDEV_CHANGE): veth1_vlan: link becomes ready
-IPv6: ADDRCONF(NETDEV_CHANGE): veth0_vlan: link becomes ready
-==================================================================
-BUG: KASAN: use-after-free in rpc_net_ns+0x222/0x230 net/sunrpc/clnt.c:1506
-Read of size 8 at addr ffff8880a7c888d8 by task kworker/0:3/2690
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-CPU: 0 PID: 2690 Comm: kworker/0:3 Not tainted 5.7.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events rpc_free_client_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:382
- __kasan_report.cold+0x35/0x4d mm/kasan/report.c:511
- kasan_report+0x33/0x50 mm/kasan/common.c:625
- rpc_net_ns+0x222/0x230 net/sunrpc/clnt.c:1506
- rpc_clnt_remove_pipedir net/sunrpc/clnt.c:111 [inline]
- rpc_free_client_work+0x1a/0x60 net/sunrpc/clnt.c:892
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2268
- worker_thread+0x96/0xe20 kernel/workqueue.c:2414
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 8372:
- save_stack+0x1b/0x40 mm/kasan/common.c:49
- set_track mm/kasan/common.c:57 [inline]
- __kasan_kmalloc mm/kasan/common.c:495 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:468
- __do_kmalloc mm/slab.c:3656 [inline]
- __kmalloc+0x161/0x7a0 mm/slab.c:3665
- kmalloc include/linux/slab.h:560 [inline]
- kzalloc include/linux/slab.h:669 [inline]
- xprt_alloc+0x2d/0x800 net/sunrpc/xprt.c:1658
- xs_setup_xprt.part.0+0x56/0x2e0 net/sunrpc/xprtsock.c:2735
- xs_setup_xprt net/sunrpc/xprtsock.c:2906 [inline]
- xs_setup_udp+0x9e/0x890 net/sunrpc/xprtsock.c:2850
- xprt_create_transport+0xf9/0x480 net/sunrpc/xprt.c:1905
- rpc_create+0x282/0x680 net/sunrpc/clnt.c:581
- nfs_create_rpc_client+0x4eb/0x680 fs/nfs/client.c:535
- nfs_init_client fs/nfs/client.c:652 [inline]
- nfs_init_client+0x6d/0xf0 fs/nfs/client.c:639
- nfs_get_client+0x1098/0x1430 fs/nfs/client.c:429
- nfs_init_server+0x305/0xf00 fs/nfs/client.c:691
- nfs_create_server+0x15c/0x700 fs/nfs/client.c:978
- nfs_try_get_tree+0x166/0x8d0 fs/nfs/super.c:922
- nfs_get_tree+0x95a/0x13a0 fs/nfs/fs_context.c:1291
- vfs_get_tree+0x89/0x2f0 fs/super.c:1547
- do_new_mount fs/namespace.c:2816 [inline]
- do_mount+0x1306/0x1b30 fs/namespace.c:3141
- __do_sys_mount fs/namespace.c:3350 [inline]
- __se_sys_mount fs/namespace.c:3327 [inline]
- __x64_sys_mount+0x18f/0x230 fs/namespace.c:3327
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-
-Freed by task 23:
- save_stack+0x1b/0x40 mm/kasan/common.c:49
- set_track mm/kasan/common.c:57 [inline]
- kasan_set_free_info mm/kasan/common.c:317 [inline]
- __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:456
- __cache_free mm/slab.c:3426 [inline]
- kmem_cache_free_bulk+0x7d/0x280 mm/slab.c:3721
- kfree_bulk include/linux/slab.h:412 [inline]
- kfree_rcu_work+0x1a1/0x480 kernel/rcu/tree.c:2859
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2268
- worker_thread+0x96/0xe20 kernel/workqueue.c:2414
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-The buggy address belongs to the object at ffff8880a7c88000
- which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 2264 bytes inside of
- 4096-byte region [ffff8880a7c88000, ffff8880a7c89000)
-The buggy address belongs to the page:
-page:ffffea00029f2200 refcount:1 mapcount:0 mapping:00000000862db9cd index:0x0 head:ffffea00029f2200 order:1 compound_mapcount:0
-flags: 0xfffe0000010200(slab|head)
-raw: 00fffe0000010200 ffffea00029ca708 ffffea00029a1c88 ffff8880aa002000
-raw: 0000000000000000 ffff8880a7c88000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880a7c88780: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880a7c88800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8880a7c88880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                    ^
- ffff8880a7c88900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880a7c88980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
