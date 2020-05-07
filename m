@@ -2,301 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87DCB1C847C
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 10:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFD0B1C8486
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 10:15:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725948AbgEGIPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 04:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727113AbgEGIPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 04:15:02 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4CFC0610D5
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 01:15:02 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id o134so6050343yba.18
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 01:15:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=x8VCoNbOxLZFLMlYxTaRHwkq1NLOLyg87hzu7d14hyY=;
-        b=DnIDWylkv4QP0E/qzQWQUCOw7DqAcUr3dRnGPEmlynHVcgCTSSNtA34J5/WXyDy/aP
-         ngFsSIAbn63mO9dCCMLqNc3lZvV1x6HE7yJHCH8kUOPz+osOzAkEMLoD85q/cvoCppbw
-         WAkFdMs1zJurIznD2whL+nIGeLl4D3OjIh9edCTiXHsgxu1WKRpnKw7KWh8xRzsy/U9/
-         aZkK1eF48qBvbFmqvtFI9UkiW87sJD4lVGmj5AgzvrWz0P/0S2o60DvWmM5aw+hD0cCg
-         PQTUYFUCFZRmmyYktlnTmLdcOxiks64/8k0cWu2D7wedXZNPmJqnnQN+zXCzl0eICorv
-         D9pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=x8VCoNbOxLZFLMlYxTaRHwkq1NLOLyg87hzu7d14hyY=;
-        b=RbEMGhpIK7BvTffqurg7OxZoNxhyA9pwlKqVQ8ruAtcHGlwECi5GIiqBemp1Gcoj1w
-         sH7s3h2AQRLz4uBP7puh2FtZ4Ikp+YWeQ/0lFmitHSfPYP3u1IKmJNcuZHxMsadcOv39
-         6RKf0EGpuJZycTMEPGnnQDihq21fVP7tzVYdZ5Jpc1gzGPXiV2ynpApq5AknHpiORQyD
-         D7mgu6rOSHbkjtTPAePT6CuJP7aMCLBMGSi5BKo/RU4IBwGzqw/u4LKO0zSLiSJ9mIHf
-         fJRh0jO+XkIIaFoYZroLNZXuVHpXGZ3qGd2hGqWiQOQvG83hu5uc0pg93D9NmH9gh4Q3
-         PXmw==
-X-Gm-Message-State: AGi0PubdqiFJGah1rNoEnvtedC3GDcznlXO9SeT0yE8VrMLqQT8SUV/K
-        eTSWtwxjXvxq8Vi5CLkjuO0RmtBy34M6
-X-Google-Smtp-Source: APiQypL08ol3QAGdJ7KqVpm246M96AzQ5bgXecR762VCaNSOfpazYEMEu4altrjVLdXdV0ZaiO5/RSEmHw81
-X-Received: by 2002:a25:8b02:: with SMTP id i2mr20129800ybl.283.1588839301174;
- Thu, 07 May 2020 01:15:01 -0700 (PDT)
-Date:   Thu,  7 May 2020 01:14:36 -0700
-In-Reply-To: <20200507081436.49071-1-irogers@google.com>
-Message-Id: <20200507081436.49071-8-irogers@google.com>
-Mime-Version: 1.0
-References: <20200507081436.49071-1-irogers@google.com>
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [RFC PATCH 7/7] perf metricgroup: remove duped metric group events
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        linux-kernel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727816AbgEGIPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 04:15:31 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:8324 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726235AbgEGIP3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 04:15:29 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0478AhMH019767;
+        Thu, 7 May 2020 01:15:26 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=Uo/ljGH8JpHJFaPOKvwIqlvkqYoRW2qcK1mk0/eSXIM=;
+ b=ih8fhFI9XCH52bzMyCBiX5Ba4on4N/V5f580653E242D2IFAaHbE/qTh6x8qFBcI0hc4
+ msbjr/lkvtun1e6pLFIX1KDU9cEpYPWZCNlalFBxwB5BUKQW6AKuak148sqawqi/mq1g
+ MKZg/x/kmpS/Bv/fno2JkjErInliOGR1cW0wwladc7TWTGst41VWPPRVpEFkm7KiGtfp
+ LwfeJs9VoVxkImnWb4dbiYBQ+9WNbN0TfRazOsKhlC62tDT2OZcwjl46pQr1K9DrOYXy
+ dbgiS2ynqjeuN7o71js3EwHtYT3Ykhy1XkQzZ2vHYVdLBbDxHtTRHeBQ4nnnBtV3+2xJ BQ== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 30uaum1aqw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 07 May 2020 01:15:26 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 May
+ 2020 01:15:24 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 May 2020 01:15:25 -0700
+Received: from NN-LT0019.marvell.com (unknown [10.193.46.2])
+        by maili.marvell.com (Postfix) with ESMTP id C62963F7041;
+        Thu,  7 May 2020 01:15:23 -0700 (PDT)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Mark Starovoytov <mstarovoitov@marvell.com>
+Subject: [PATCH net-next 0/7] net: atlantic: driver updates
+Date:   Thu, 7 May 2020 11:15:03 +0300
+Message-ID: <20200507081510.2120-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-07_04:2020-05-05,2020-05-07 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A metric group contains multiple metrics. These metrics may use the same
-events. If metrics use separate events then it leads to more
-multiplexing and overall metric counts fail to sum to 100%.
-Modify how metrics are associated with events so that if the events in
-an earlier group satisfy the current metric, the same events are used.
-A record of used events is kept and at the end of processing unnecessary
-events are eliminated.
+From: Mark Starovoytov <mstarovoitov@marvell.com>
 
-Before:
-$ perf stat -a -M TopDownL1 sleep 1
+This patch series contains several minor cleanups for the previously
+submitted series.
 
- Performance counter stats for 'system wide':
+We also add Marvell copyrights on newly touched files.
 
-       920,211,343      uops_issued.any           #      0.5 Backend_Bound            (16.56%)
-     1,977,733,128      idq_uops_not_delivered.core                                     (16.56%)
-        51,668,510      int_misc.recovery_cycles                                      (16.56%)
-       732,305,692      uops_retired.retire_slots                                     (16.56%)
-     1,497,621,849      cycles                                                        (16.56%)
-       721,098,274      uops_issued.any           #      0.1 Bad_Speculation          (16.79%)
-     1,332,681,791      cycles                                                        (16.79%)
-       552,475,482      uops_retired.retire_slots                                     (16.79%)
-        47,708,340      int_misc.recovery_cycles                                      (16.79%)
-     1,383,713,292      cycles
-                                                  #      0.4 Frontend_Bound           (16.76%)
-     2,013,757,701      idq_uops_not_delivered.core                                     (16.76%)
-     1,373,363,790      cycles
-                                                  #      0.1 Retiring                 (33.54%)
-       577,302,589      uops_retired.retire_slots                                     (33.54%)
-       392,766,987      inst_retired.any          #      0.3 IPC                      (50.24%)
-     1,351,873,350      cpu_clk_unhalted.thread                                       (50.24%)
-     1,332,510,318      cycles
-                                                  # 5330041272.0 SLOTS                (49.90%)
+Mark Starovoytov (7):
+  net: atlantic: use __packed instead of the full expansion.
+  net: atlantic: minor MACSec code cleanup
+  net: atlantic: rename AQ_NIC_RATE_2GS to AQ_NIC_RATE_2G5
+  net: atlantic: remove TPO2 check from A0 code
+  net: atlantic: remove hw_atl_b0_hw_rss_set call from A2 code
+  net: atlantic: remove check for boot code survivability before reset
+    request
+  net: atlantic: unify get_mac_permanent
 
-       1.006336145 seconds time elapsed
+ .../ethernet/aquantia/atlantic/aq_common.h    | 11 ++---
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   |  2 +-
+ .../ethernet/aquantia/atlantic/aq_hw_utils.c  | 41 +++++++++++++++++--
+ .../ethernet/aquantia/atlantic/aq_hw_utils.h  |  9 ++--
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 13 +++---
+ .../aquantia/atlantic/hw_atl/hw_atl_a0.c      | 18 ++++----
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 19 +++++----
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.h      |  9 ++--
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |  9 ++--
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |  9 ++--
+ .../atlantic/hw_atl/hw_atl_utils_fw2x.c       | 36 ++++------------
+ .../aquantia/atlantic/hw_atl2/hw_atl2.c       |  4 +-
+ .../aquantia/atlantic/hw_atl2/hw_atl2_utils.c |  8 ----
+ .../aquantia/atlantic/hw_atl2/hw_atl2_utils.h |  4 +-
+ .../atlantic/hw_atl2/hw_atl2_utils_fw.c       | 26 ++----------
+ .../aquantia/atlantic/macsec/macsec_api.c     |  6 +--
+ 16 files changed, 111 insertions(+), 113 deletions(-)
 
-After:
-$ perf stat -a -M TopDownL1 sleep 1
-
- Performance counter stats for 'system wide':
-
-       765,949,145      uops_issued.any           #      0.1 Bad_Speculation
-                                                  #      0.5 Backend_Bound            (50.09%)
-     1,883,830,591      idq_uops_not_delivered.core #      0.3 Frontend_Bound           (50.09%)
-        48,237,080      int_misc.recovery_cycles                                      (50.09%)
-       581,798,385      uops_retired.retire_slots #      0.1 Retiring                 (50.09%)
-     1,361,628,527      cycles
-                                                  # 5446514108.0 SLOTS                (50.09%)
-       391,415,714      inst_retired.any          #      0.3 IPC                      (49.91%)
-     1,336,486,781      cpu_clk_unhalted.thread                                       (49.91%)
-
-       1.005469298 seconds time elapsed
-
-Note: Bad_Speculation + Backend_Bound + Frontend_Bound + Retiring = 100%
-after, where as before it is 110%. After there are 2 groups, whereas
-before there are 6. After the cycles event appears once, before it
-appeared 5 times.
-
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/util/metricgroup.c | 97 ++++++++++++++++++++++-------------
- 1 file changed, 61 insertions(+), 36 deletions(-)
-
-diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
-index 25e3e8df6b45..8bb2aeeb70ad 100644
---- a/tools/perf/util/metricgroup.c
-+++ b/tools/perf/util/metricgroup.c
-@@ -93,44 +93,72 @@ struct egroup {
- 	bool has_constraint;
- };
- 
-+/**
-+ * Find a group of events in perf_evlist that correpond to those from a parsed
-+ * metric expression.
-+ * @perf_evlist: a list of events something like: {metric1 leader, metric1
-+ * sibling, metric1 sibling}:W,duration_time,{metric2 leader, metric2 sibling,
-+ * metric2 sibling}:W,duration_time
-+ * @pctx: the parse context for the metric expression.
-+ * @has_constraint: is there a contraint on the group of events? In which case
-+ * the events won't be grouped.
-+ * @metric_events: out argument, null terminated array of evsel's associated
-+ * with the metric.
-+ * @evlist_used: in/out argument, bitmap tracking which evlist events are used.
-+ * @return the first metric event or NULL on failure.
-+ */
- static struct evsel *find_evsel_group(struct evlist *perf_evlist,
- 				      struct expr_parse_ctx *pctx,
-+				      bool has_constraint,
- 				      struct evsel **metric_events,
- 				      unsigned long *evlist_used)
- {
--	struct evsel *ev;
--	bool leader_found;
--	const size_t idnum = hashmap__size(&pctx->ids);
--	size_t i = 0;
--	int j = 0;
--	double *val_ptr;
-+	struct evsel *ev, *current_leader = NULL;
-+        double *val_ptr;
-+	int i = 0, matched_events = 0, events_to_match;
-+	const int idnum = (int)hashmap__size(&pctx->ids);
-+
-+	/* duration_time is grouped separately. */
-+	if (!has_constraint &&
-+	    hashmap__find(&pctx->ids, "duration_time", (void**)&val_ptr))
-+		events_to_match = idnum - 1;
-+	else
-+		events_to_match = idnum;
- 
- 	evlist__for_each_entry (perf_evlist, ev) {
--		if (test_bit(j++, evlist_used))
-+		/*
-+		 * Events with a constraint aren't grouped and match the first
-+		 * events available.
-+		 */
-+		if (has_constraint && ev->weak_group)
- 			continue;
--		if (hashmap__find(&pctx->ids, ev->name, (void**)&val_ptr)) {
--			if (!metric_events[i])
--				metric_events[i] = ev;
--			i++;
--			if (i == idnum)
--				break;
--		} else {
--			/* Discard the whole match and start again */
--			i = 0;
-+		if (!has_constraint && ev->leader != current_leader) {
-+			/*
-+			 * Start of a new group, discard the whole match and
-+			 * start again.
-+			 */
-+			matched_events = 0;
- 			memset(metric_events, 0,
- 				sizeof(struct evsel *) * idnum);
-+			current_leader = ev->leader;
-+		}
-+		if (hashmap__find(&pctx->ids, ev->name, (void**)&val_ptr))
-+			metric_events[matched_events++] = ev;
-+		if (matched_events == events_to_match)
-+			break;
-+	}
- 
--			if (hashmap__find(&pctx->ids, ev->name, (void**)&val_ptr)) {
--				if (!metric_events[i])
--					metric_events[i] = ev;
--				i++;
--				if (i == idnum)
--					break;
-+	if (events_to_match != idnum) {
-+		/* Add the first duration_time. */
-+		evlist__for_each_entry (perf_evlist, ev) {
-+			if (!strcmp(ev->name, "duration_time")) {
-+				metric_events[matched_events++] = ev;
-+				break;
- 			}
- 		}
- 	}
- 
--	if (i != idnum) {
-+	if (matched_events != idnum) {
- 		/* Not whole match */
- 		return NULL;
- 	}
-@@ -138,18 +166,8 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
- 	metric_events[idnum] = NULL;
- 
- 	for (i = 0; i < idnum; i++) {
--		leader_found = false;
--		evlist__for_each_entry(perf_evlist, ev) {
--			if (!leader_found && (ev == metric_events[i]))
--				leader_found = true;
--
--			if (leader_found &&
--			    !strcmp(ev->name, metric_events[i]->name)) {
--				ev->metric_leader = metric_events[i];
--			}
--			j++;
--		}
- 		ev = metric_events[i];
-+		ev->metric_leader = ev;
- 		set_bit(ev->idx, evlist_used);
- 	}
- 
-@@ -165,7 +183,7 @@ static int metricgroup__setup_events(struct list_head *groups,
- 	int i = 0;
- 	int ret = 0;
- 	struct egroup *eg;
--	struct evsel *evsel;
-+	struct evsel *evsel, *tmp;
- 	unsigned long *evlist_used;
- 
- 	evlist_used = bitmap_alloc(perf_evlist->core.nr_entries);
-@@ -181,7 +199,8 @@ static int metricgroup__setup_events(struct list_head *groups,
- 			ret = -ENOMEM;
- 			break;
- 		}
--		evsel = find_evsel_group(perf_evlist, &eg->pctx, metric_events,
-+		evsel = find_evsel_group(perf_evlist, &eg->pctx,
-+					eg->has_constraint, metric_events,
- 					evlist_used);
- 		if (!evsel) {
- 			pr_debug("Cannot resolve %s: %s\n",
-@@ -211,6 +230,12 @@ static int metricgroup__setup_events(struct list_head *groups,
- 		list_add(&expr->nd, &me->head);
- 	}
- 
-+	evlist__for_each_entry_safe (perf_evlist, tmp, evsel) {
-+		if (!test_bit(evsel->idx, evlist_used)) {
-+			evlist__remove(perf_evlist, evsel);
-+			evsel__delete(evsel);
-+		}
-+	}
- 	bitmap_free(evlist_used);
- 
- 	return ret;
 -- 
-2.26.2.526.g744177e7f7-goog
+2.20.1
 
