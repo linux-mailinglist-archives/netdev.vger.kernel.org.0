@@ -2,95 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3436B1C8A33
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 14:14:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 123C91C8A3F
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 14:16:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726093AbgEGMOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 08:14:19 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:58204 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbgEGMOT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 08:14:19 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 047CEFbJ108738;
-        Thu, 7 May 2020 07:14:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588853655;
-        bh=QlxtLs1bYV4C6jrPTOhXGflRMXFMssbJhOKrVMLzTN0=;
-        h=Subject:From:To:References:Date:In-Reply-To;
-        b=Ie60NRuJqjwdkAvw7IinN8tbXCo7CFNz/K3MIBDpQIXfBurz3ESY73yfX90/TJ5MD
-         aLALtdy+m6o8Z7S63jWpjMia9b8l2otNHqxnBUwp7EK8opNixMmzbwuTRBbWhisVXL
-         yvQ2N8s5E816yZ9sQiFc42y74NLh+hbPXBSD4qno=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 047CEFIa109561;
-        Thu, 7 May 2020 07:14:15 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 7 May
- 2020 07:14:15 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 7 May 2020 07:14:15 -0500
-Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 047CEFgQ105716;
-        Thu, 7 May 2020 07:14:15 -0500
-Subject: Re: [net PATCH v2] net: hsr: fix incorrect type usage for protocol
- variable
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20200506213107.28291-1-m-karicheri2@ti.com>
-Message-ID: <76101ccc-0a9d-dad9-1d34-f3d204a1dbe5@ti.com>
-Date:   Thu, 7 May 2020 08:14:15 -0400
+        id S1726792AbgEGMPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 08:15:52 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45612 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725903AbgEGMPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 08:15:52 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8DA95600C1;
+        Thu,  7 May 2020 12:15:51 +0000 (UTC)
+Received: from us4-mdac16-48.ut7.mdlocal (unknown [10.7.66.15])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8CA518009B;
+        Thu,  7 May 2020 12:15:51 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.197])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0D079280050;
+        Thu,  7 May 2020 12:15:48 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 81D4AA40063;
+        Thu,  7 May 2020 12:15:47 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 7 May 2020
+ 13:15:41 +0100
+Subject: Re: [PATCH net,v4] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DONT_CARE
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     <netfilter-devel@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <jiri@resnulli.us>, <kuba@kernel.org>
+References: <20200506183450.4125-1-pablo@netfilter.org>
+ <828ef810-9768-5b5c-7847-0edeb666af9b@solarflare.com>
+ <20200507114400.GA2179@salvia>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <dbe545f3-b041-ffe4-a908-f7e29afa322d@solarflare.com>
+Date:   Thu, 7 May 2020 13:15:37 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200506213107.28291-1-m-karicheri2@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20200507114400.GA2179@salvia>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25404.003
+X-TM-AS-Result: No-3.248000-8.000000-10
+X-TMASE-MatchedRID: oTBA/+sdKaa8rRvefcjeTR4ejJMDGBzF69aS+7/zbj+qvcIF1TcLYHzW
+        dSUbujfyiK4AoRG6tnCbymr8/mqLG0BfEFcIy7hycI7vRACwF0L5awEvkHdlMSBQRBOQhaJiT6Y
+        y0anPBpbQmQgkxwKCie74hCpKBA1e33y2DTfklpBtFkauyh5b+MtEPnVvPlFk1R/ptYWR8C4pQP
+        60tO0L4QGHuSswFJxukXSJzFJzhLxCUInNiru3wJ4CIKY/Hg3AnCGS1WQEGtDGr09tQ7Cw/1BIV
+        svVu9ABWBd6ltyXuvuCAFz5q9+UxhhkEtEZPu3D9SJ8jSHFJScyRwp2j1O6EWOSjM7Z9tRA57Dp
+        dQ4myEV+crsQOY4ObTywjVKEq7yyQjkYVKz3GsTwHX5+Q8jjw1wuriZ3P6dErIJZJbQfMXRqaM5
+        LmpUkwzunJXJz8X1QftwZ3X11IV0=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--3.248000-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25404.003
+X-MDID: 1588853748-aCa3zDxaJ2Z2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On 07/05/2020 12:44, Pablo Neira Ayuso wrote:
+> Could you point to what driver might have any problem with this update?
+Drivers *can* implement the API in this patch.  It's just that the
+ alternative API Jakub proposed would make for simpler driver code.
+I.e. I'm not saying it's bad, just that it could be made better.
+That's why I didn't hard-NACK it at any point.
+I guess I should send the change I'm suggesting as a patch, rather
+ than asking it of you — I'll try to get that done today.
+(Although I'm not sure if it's really 'net' material or if I should
+ wait for David to merge net into net-next and make the patch
+ against the latter — wdyt?)
 
-On 5/6/20 5:31 PM, Murali Karicheri wrote:
-> Fix following sparse checker warning:-
-> 
-> net/hsr/hsr_slave.c:38:18: warning: incorrect type in assignment (different base types)
-> net/hsr/hsr_slave.c:38:18:    expected unsigned short [unsigned] [usertype] protocol
-> net/hsr/hsr_slave.c:38:18:    got restricted __be16 [usertype] h_proto
-> net/hsr/hsr_slave.c:39:25: warning: restricted __be16 degrades to integer
-> net/hsr/hsr_slave.c:39:57: warning: restricted __be16 degrades to integer
-> 
-> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
-> Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> ---
->   v2 : Added Acked-by from Vinicius Costa Gomes
->   net/hsr/hsr_slave.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/hsr/hsr_slave.c b/net/hsr/hsr_slave.c
-> index f4b9f7a3ce51..25b6ffba26cd 100644
-> --- a/net/hsr/hsr_slave.c
-> +++ b/net/hsr/hsr_slave.c
-> @@ -18,7 +18,7 @@ static rx_handler_result_t hsr_handle_frame(struct sk_buff **pskb)
->   {
->   	struct sk_buff *skb = *pskb;
->   	struct hsr_port *port;
-> -	u16 protocol;
-> +	__be16 protocol;
->   
->   	if (!skb_mac_header_was_set(skb)) {
->   		WARN_ONCE(1, "%s: skb invalid", __func__);
-> 
-I saw that you have applied the initial patch to net-next. Please ignore 
-this.
-
--- 
-Murali Karicheri
-Texas Instruments
+-ed
