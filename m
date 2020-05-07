@@ -2,140 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6115B1C9E2A
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 00:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D1A1C9E57
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 00:21:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726770AbgEGWFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 18:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35638 "EHLO
+        id S1727104AbgEGWVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 18:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726533AbgEGWFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 18:05:16 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267C9C05BD09
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 15:05:16 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id f18so8006710lja.13
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 15:05:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=nPPvWhYSDBZH/W9ZzOHKWz2UFG4yFEnZgxOOVnctufk=;
-        b=kOcLODoKztByz0UBmzjXeqlmhusevIjl+c2HbLw3k5rPnNKk0UOKclN/cgZBe7f2BE
-         KEqsud4Rf5RdhjLb6rTlhUM5ds3Xzk7FnKfAsKFuTOitseFo/B4W7DCsQHn6MIDZOtdM
-         XpjV+SB82Z1h1ka5YTJZ7+6LcnBoSsPmQiuy7w3g1RSKnALtjhnggH/JTqnX8Bs27TGN
-         ood1tyTML/spLGCWlwrocHp6j+kCbFQp1TxUGnP/5eZHSKTDWrjMVOJMV0mMmz5OWK8f
-         xD7VPnGMNREiVpMw0n8DDrvcOIkqDBd0J/2WjILG0vEpGGnV+iSSQP4JFsm6KT8nJ2Q/
-         xEMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=nPPvWhYSDBZH/W9ZzOHKWz2UFG4yFEnZgxOOVnctufk=;
-        b=jXCqlGd3u1zxzCoHGfSgOgemrCFu/Ms2BPXHaUVoibrvW+azRnB0Db9EzYmeE+5tj8
-         /D1+DuHTd1V84Js+q8hfZlECdgg472f0L2cGrVJIvhz4lMCJ0L5qR8owsgLF6U1NB2pw
-         SjNZsOvY2tSZfvKWKe+f5AHSpTnxGLXArAx3e19W1GXsG0eJDt/aX3lfrhNfXCyisVtk
-         qRq0bwqgNda41Pslwka2EWczUqEczTe6XIXorY8BXBc2C9IqFThKj+V1hKZAAMRedJvT
-         M/f7WBm39cegRDeCJ8nPF57y/xbs5+q/QerdEo77a2aT08zvQkXu2gyrYw3klBGv9Iav
-         vQBQ==
-X-Gm-Message-State: AGi0PuYYOuA0huqvMtfjl/Hb07ck2VoIGzw7r7bWtbc//ZJQZShOved9
-        C5T1e28FX5LvL7zjMbHY/m966TWRcyrsQdJewpn9Vw==
-X-Google-Smtp-Source: APiQypKNdCY3OtiIkeJWX0PcE2nxNIMwzLCH+DsayspwmtDmIkVB8t6LffEY5ZO8WubCZPRo18ZG04Dd+peMVypsg08=
-X-Received: by 2002:a2e:2e16:: with SMTP id u22mr10215821lju.243.1588889114309;
- Thu, 07 May 2020 15:05:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <1480357509-28074-1-git-send-email-johan@kernel.org>
- <1480357509-28074-12-git-send-email-johan@kernel.org> <CA+G9fYvBjUVkVhtRHVm6xXcKe2+tZN4rGdB9FzmpcfpaLhY1+g@mail.gmail.com>
- <20200507064412.GL2042@localhost> <20200507064734.GA798308@kroah.com> <20200507111312.GA1497799@kroah.com>
-In-Reply-To: <20200507111312.GA1497799@kroah.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Fri, 8 May 2020 03:35:02 +0530
-Message-ID: <CA+G9fYu2SrkEHyAzF57xJz5WjgHv361qdL2wPqON_pGS4Vtxmw@mail.gmail.com>
-Subject: Re: [PATCH net 11/16] net: ethernet: marvell: mvneta: fix fixed-link
- phydev leaks
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>
-Cc:     linux- stable <stable@vger.kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
+        with ESMTP id S1727029AbgEGWVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 18:21:20 -0400
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on0729.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe02::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC10C05BD43;
+        Thu,  7 May 2020 15:14:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Lfrznmgiyx97wQtYztY0lIMLQBRUD/ffxTI7nH+s/T+XBTiB6w0gevpxAkz5oRZy30x1bIedstn3giG5Vd+KelPOfNi8SNxKhwG6sxdrlv/7OmlTOFt2xO8nkWCHxs24sPNjIzssIRIayvxA6kHU/byk2s3pm3GQKQ1ej3iyddgyXBEhPQy9FszQDx1jHTYLVjDb6qbREN1FiZx0wq8DZx+x+LODG615xU/wVEX2rMbFGCEJjASmxVQVZV2E9TwrF2d759BUkBwbEDjP6kSapQTC1c178ByBBg2FAsMKtlKLO2n8lG/nUEPLxuDxMwT1T/IscJN9RjHTY53qH/kkfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OpX+LulVK4KF2QCHRgf+FaJ8qLCSrjPQZA1aBvpvpsU=;
+ b=WPY5dzhuOPyr9dlw0eu70J0XA3VcG0FtzA9tdfNjRekH0qRamaVpjb/GY7PasXpUgsWniME/gXD6txizgt+HipgGQmO61fatoEV24yBO5v1vVspfDZDohvY3wnwR8HxKCoqJA31MFg9mPdDH12EsoTvBILTKxb9mFxHnb42Orc29dVtjlfd9jqTdjcx8M52psrUl0zw4N5dV5Vuu8ikSQ11KEfvkjeD//crshNbl3+WcMo6STaLt1kfGH7J8zZGzD/8aFKnnF75r+FV4Tpf+gfO+1CQMlfpfKjM3xqG7RahFIA4uifwGYQm80ipSpqaIwbmM7WDDHyLVzTi0r4QXCg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=criteo.com; dmarc=pass action=none header.from=criteo.com;
+ dkim=pass header.d=criteo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=criteo.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OpX+LulVK4KF2QCHRgf+FaJ8qLCSrjPQZA1aBvpvpsU=;
+ b=g2bHM1wT5JjcYtIlQEWZb5E9eJz1yAUfybo0oayCvYhRAHAf+HSxmKtiRrkBB3NOssd5akhcs5+Ad7eABpQOg2/Ic1cpA0JxQBGEKb6CBXcRKdfbbgTyIILqOIGW2uf2dcvbrErkSqDS+HGQksUcFl2h1mJXsxlbzGUWBo1KjZg=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=criteo.com;
+Received: from AM6PR04MB4230.eurprd04.prod.outlook.com (2603:10a6:209:41::33)
+ by AM6PR04MB6247.eurprd04.prod.outlook.com (2603:10a6:20b:be::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20; Thu, 7 May
+ 2020 22:14:46 +0000
+Received: from AM6PR04MB4230.eurprd04.prod.outlook.com
+ ([fe80::f151:2536:ba90:6629]) by AM6PR04MB4230.eurprd04.prod.outlook.com
+ ([fe80::f151:2536:ba90:6629%5]) with mapi id 15.20.2979.028; Thu, 7 May 2020
+ 22:14:45 +0000
+From:   Vincent Minet <v.minet@criteo.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Netdev <netdev@vger.kernel.org>,
-        nios2-dev@lists.rocketboards.org,
-        open list <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-mediatek@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org, linux-omap@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Vincent Minet <v.minet@criteo.com>
+Subject: [PATCH] umh: fix memory leak on execve failure
+Date:   Fri,  8 May 2020 00:14:22 +0200
+Message-Id: <20200507221422.19338-1-v.minet@criteo.com>
+X-Mailer: git-send-email 2.26.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: PR3P193CA0037.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:102:51::12) To AM6PR04MB4230.eurprd04.prod.outlook.com
+ (2603:10a6:209:41::33)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (5.196.75.236) by PR3P193CA0037.EURP193.PROD.OUTLOOK.COM (2603:10a6:102:51::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Thu, 7 May 2020 22:14:44 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [5.196.75.236]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0e37a00b-56a7-4998-1ac5-08d7f2d40c6c
+X-MS-TrafficTypeDiagnostic: AM6PR04MB6247:|AM6PR04MB6247:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR04MB624759DE6B3743C40D20CC2C90A50@AM6PR04MB6247.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Forefront-PRVS: 03965EFC76
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TcDBE5OwoFD1vdWWhSo/xsOOQxKk8Tk6TfauJGXcJ43doQeyqwTGIdii1WPCaUBNNzINL3j2L1FEF4IUOOGZQ8U+oqdZphKn8FJ8Ye6o6wEfGsg8IEodh4K5uo1n5QbOD6btiqE/jwWHi5mpNGk0aUmhThUhubQ3CcbDVNH11pwI5YRBxrylQ945eqHTEUGrv+xUAD1v9aPyKhYy6xyYvrmVlNDSEauKxCxSjKXnaXFhvqUSn62z8h6xgbQI7wgsGJa3gaMu745gI5dg6HctPdRtuxOMxVvp6NL+64nDPT+ww8x1iGV0LkoECzQf+TyZdEoPYI6V9zQ9SmLWB8H6jYIYQhtFPreXhwSqalv0SwPBsw6KvP9RHC8kpklVpiCcx5kxEFS0Qzkw5e29SCGWc18Q3NkMME66zgQG4iluy95kaOFoE6IjAzaiW7W/ECGbl1X+BcEtVgWYbSyojfb9dl9MULJSA7GLs1CI3uWRuivsjmoGMZCovd/GJ5zjinfF6ih3e6BHGr/rsz6WjcTuljtMUVDQEaOyb6CEIqZu+Lpg3j7YuxX3nX/MWkzo0T2u
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB4230.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(366004)(346002)(39860400002)(396003)(136003)(33430700001)(66556008)(83280400001)(83290400001)(6512007)(6916009)(8936002)(36756003)(1076003)(66476007)(8676002)(107886003)(2906002)(6486002)(33440700001)(86362001)(2616005)(478600001)(956004)(4326008)(5660300002)(69590400007)(83320400001)(83310400001)(83300400001)(6666004)(186003)(54906003)(55236004)(316002)(52116002)(6506007)(16526019)(26005)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 86jiMfTlQ2BdiePor19gwjsuMSqjs3myWqImkTf7bQ/4Q4sYHhmk5QW8fz2xKyjIiGQ9nT3AxVuK5JCgfr/ZPJ7dDScgNbjy+NyLLFY/7ZlIlVepkQMhFPfIFCxVGGgvhDP6hWF2Jrz61Age4Inlh19r4e6aauizb8OMHHwiemHTiZOXqINvMAqqLxXmjJni9mqXaA0OCb4SdWrYQ47yhpry118QUbnpI5kKDhZaYfCb4FJ+nPW1KoIXWhZO4llhzfA49yygxBHG5BuQ6fM0YfND/aZ/1XuoW0zMU98cIZu25if0U7CKkQjG53ITIBci5hgm73Om5UCgViPstRt7Q1AlQ3Kiql5dEUMckzRFhGNw3v8JNbD5xzgl6DstJ0Gp0lgZFVRUqBOkdSigd1opx5ED0aD+4v9DrNYxtwAum3sm0od9IImUGH6aAoWx3ibZw6lZw/ysWfIj/Oa+WJwfnQHY6PKsBhQtGL5YxHRdquqJVPuN4aPSR9kkMhOa74STGAuLJ88cahoPLaspP27rl6mNxyjeNb7YA5IpAUP0ZqvpPHiGeUxHlRhdf57q3sFgSiEfAf8B/6s7JQU5FbnqVniyDARJXd1YZzG6dCt+K+TlIAAfV3pDyAX8Eb439rO8e7DuraaYcEC7wLbP0Nz+rF2HhdkGpfnSv7RvQTP/Lx1YsPpFE12HIy2ilZKcwaaYC2wldBdlwKXRdB8Xv48oXPgc3mFOD1i1HqyQYimg3cGHVsc0imUQ3xicUNHNx7VrFIWzY/5KjHI4/95eBs529MF4bJmmefrVDIndRc9gLFE=
+X-OriginatorOrg: criteo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e37a00b-56a7-4998-1ac5-08d7f2d40c6c
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2020 22:14:45.8440
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 2a35d8fd-574d-48e3-927c-8c398e225a01
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V8jhr+KMxkPbp+D3iovXTk1caY4e6Y0FdHenhGLYZ/cXZBYUlvRpOiNfMw3aHF2EtuPp5dglvIhd49DGBvzpmg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6247
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 May 2020 at 16:43, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-<trim>
-> > >
-> > > Greg, 3f65047c853a ("of_mdio: add helper to deregister fixed-link
-> > > PHYs") needs to be backported as well for these.
-> > >
-> > > Original series can be found here:
-> > >
-> > >     https://lkml.kernel.org/r/1480357509-28074-1-git-send-email-johan=
-@kernel.org
-> >
-> > Ah, thanks for that, I thought I dropped all of the ones that caused
-> > build errors, but missed the above one.  I'll go take the whole series
-> > instead.
->
-> This should now all be fixed up, thanks.
+If a UMH process created by fork_usermode_blob() fails to execute,
+a pair of struct file allocated by umh_pipe_setup() will leak.
 
-While building kernel Image for arm architecture on stable-rc 4.4 branch
-the following build error found.
+Under normal conditions, the caller (like bpfilter) needs to manage the
+lifetime of the UMH and its two pipes. But when fork_usermode_blob()
+fails, the caller doesn't really have a way to know what needs to be
+done. It seems better to do the cleanup ourselves in this case.
 
-of_mdio: add helper to deregister fixed-link PHYs
-commit 3f65047c853a2a5abcd8ac1984af3452b5df4ada upstream.
+Fixes: 449325b52b7a ("umh: introduce fork_usermode_blob() helper")
+Signed-off-by: Vincent Minet <v.minet@criteo.com>
+---
+ kernel/umh.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Add helper to deregister fixed-link PHYs registered using
-of_phy_register_fixed_link().
+diff --git a/kernel/umh.c b/kernel/umh.c
+index 7f255b5a8845..20d51e0957e0 100644
+--- a/kernel/umh.c
++++ b/kernel/umh.c
+@@ -475,6 +475,12 @@ static void umh_clean_and_save_pid(struct subprocess_info *info)
+ {
+ 	struct umh_info *umh_info = info->data;
+ 
++	/* cleanup if umh_pipe_setup() was successful but exec failed */
++	if (info->pid && info->retval) {
++		fput(umh_info->pipe_to_umh);
++		fput(umh_info->pipe_from_umh);
++	}
++
+ 	argv_free(info->argv);
+ 	umh_info->pid = info->pid;
+ }
+-- 
+2.26.2
 
-Convert the two drivers that care to deregister their fixed-link PHYs to
-use the new helper, but note that most drivers currently fail to do so.
-
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-[only take helper function for 4.4.y - gregkh]
-
- # make -sk KBUILD_BUILD_USER=3DTuxBuild -C/linux -j16 ARCH=3Darm
-CROSS_COMPILE=3Darm-linux-gnueabihf- HOSTCC=3Dgcc CC=3D"sccache
-arm-linux-gnueabihf-gcc" O=3Dbuild zImage
-70 #
-71 ../drivers/of/of_mdio.c: In function =E2=80=98of_phy_deregister_fixed_li=
-nk=E2=80=99:
-72 ../drivers/of/of_mdio.c:379:2: error: implicit declaration of
-function =E2=80=98fixed_phy_unregister=E2=80=99; did you mean =E2=80=98fixe=
-d_phy_register=E2=80=99?
-[-Werror=3Dimplicit-function-declaration]
-73  379 | fixed_phy_unregister(phydev);
-74  | ^~~~~~~~~~~~~~~~~~~~
-75  | fixed_phy_register
-76 ../drivers/of/of_mdio.c:381:22: error: =E2=80=98struct phy_device=E2=80=
-=99 has no
-member named =E2=80=98mdio=E2=80=99; did you mean =E2=80=98mdix=E2=80=99?
-77  381 | put_device(&phydev->mdio.dev); /* of_phy_find_device() */
-78  | ^~~~
-79  | mdix
-
->
-> greg k-h
