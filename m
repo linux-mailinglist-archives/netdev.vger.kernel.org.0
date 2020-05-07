@@ -2,83 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 123C91C8A3F
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 14:16:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2125E1C8A7A
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 14:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726792AbgEGMPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 08:15:52 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45612 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725903AbgEGMPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 08:15:52 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8DA95600C1;
-        Thu,  7 May 2020 12:15:51 +0000 (UTC)
-Received: from us4-mdac16-48.ut7.mdlocal (unknown [10.7.66.15])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8CA518009B;
-        Thu,  7 May 2020 12:15:51 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.197])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0D079280050;
-        Thu,  7 May 2020 12:15:48 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 81D4AA40063;
-        Thu,  7 May 2020 12:15:47 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 7 May 2020
- 13:15:41 +0100
-Subject: Re: [PATCH net,v4] net: flow_offload: skip hw stats check for
- FLOW_ACTION_HW_STATS_DONT_CARE
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     <netfilter-devel@vger.kernel.org>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <jiri@resnulli.us>, <kuba@kernel.org>
-References: <20200506183450.4125-1-pablo@netfilter.org>
- <828ef810-9768-5b5c-7847-0edeb666af9b@solarflare.com>
- <20200507114400.GA2179@salvia>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <dbe545f3-b041-ffe4-a908-f7e29afa322d@solarflare.com>
-Date:   Thu, 7 May 2020 13:15:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1725903AbgEGMUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 08:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726792AbgEGMUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 08:20:19 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B1CC05BD43;
+        Thu,  7 May 2020 05:20:19 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id z8so6147627wrw.3;
+        Thu, 07 May 2020 05:20:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=hwmbNEyOXecqf1sQXaRulabPe6vBkolg6IuHt5TdHTU=;
+        b=dDEpo5qzjTDuan13RkxLtpTn8Inx853I6PSWjaaD4AX63ZsZSAq40CWM7R6utKw3zq
+         Y8hfOpUoDjAFnLbepyEIOpcJgZ+d1s+5TAf4xaPcAQISdXdNqtoH0R6gXqFffw9px6vH
+         26Ik3TYaDmvQJNxfpd8gxOpwRw5hHdP6m4yM7IFlcFJHlvH0rjyl2xvG1EA22S0fvzNU
+         Mi+A+NC15tnf9QEDp+UbHbcKojAyHc7xEJxg5Sm49TbbX+fSMUR9TUJu4GfGcH2k1XRi
+         HMlRv1sfmZqy7LjMjK3w31EEx3iCAM4/v42Y4+CfdYPqwGNyTV0m/J+Q3FFvNw9EG2CW
+         ur9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
+         :content-transfer-encoding;
+        bh=hwmbNEyOXecqf1sQXaRulabPe6vBkolg6IuHt5TdHTU=;
+        b=setl7jqb4iCmXd5RKawCsrWT9D9L08oRT3eGfqODHPYwyaFFV9zZNFymVvg4orsq/6
+         CZCfWCRFkKmDXodom3n2jvjTapQq1Rfk6XRYmbTjHJV9T9b0jynbnBxnwQ4w8e3x9QeS
+         nFLNH2fwyyKmHkyaf4QuTPWcWceuTqqyDKvrlEgdgsjv9c42kiMEZKXW4V4oUk6V+lRT
+         5B1hxntAm1VfFb8y7+BU0/WmID0DABMi0gvxgZD0aI5mimR1cynCKV12NLNITtt15msC
+         1uPnLC1ALMZcaF/MQr3U0uxdpmhkU/sjkpemH7qG1KFof4W6DKjs0g927BLwgiHnJpjO
+         TnWQ==
+X-Gm-Message-State: AGi0PubyB2eQiWbZcgf3zuk22lZ/TdQ0Gs8c1+XfEI5Z3D3/a0YFhuA+
+        5YFXnPoc7J50ZXfqewfMlpQG4VXTeoqgNilIcOLblG1Cu1bfvw==
+X-Google-Smtp-Source: APiQypKS0G3RRdM+DuJDKJ4SmMErUIgMQYL9h1mPTXwYjhZjf3Ow6omNyyqG+hqlwo4cQY+F0vaWCi9mIj3hUH84+8c=
+X-Received: by 2002:adf:decb:: with SMTP id i11mr15230905wrn.172.1588854017421;
+ Thu, 07 May 2020 05:20:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200507114400.GA2179@salvia>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25404.003
-X-TM-AS-Result: No-3.248000-8.000000-10
-X-TMASE-MatchedRID: oTBA/+sdKaa8rRvefcjeTR4ejJMDGBzF69aS+7/zbj+qvcIF1TcLYHzW
-        dSUbujfyiK4AoRG6tnCbymr8/mqLG0BfEFcIy7hycI7vRACwF0L5awEvkHdlMSBQRBOQhaJiT6Y
-        y0anPBpbQmQgkxwKCie74hCpKBA1e33y2DTfklpBtFkauyh5b+MtEPnVvPlFk1R/ptYWR8C4pQP
-        60tO0L4QGHuSswFJxukXSJzFJzhLxCUInNiru3wJ4CIKY/Hg3AnCGS1WQEGtDGr09tQ7Cw/1BIV
-        svVu9ABWBd6ltyXuvuCAFz5q9+UxhhkEtEZPu3D9SJ8jSHFJScyRwp2j1O6EWOSjM7Z9tRA57Dp
-        dQ4myEV+crsQOY4ObTywjVKEq7yyQjkYVKz3GsTwHX5+Q8jjw1wuriZ3P6dErIJZJbQfMXRqaM5
-        LmpUkwzunJXJz8X1QftwZ3X11IV0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.248000-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25404.003
-X-MDID: 1588853748-aCa3zDxaJ2Z2
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Thu, 7 May 2020 14:20:06 +0200
+Message-ID: <CAJ+HfNidbgwtLinLQohwocUmoYyRcAG454ggGkCbseQPSA1cpw@mail.gmail.com>
+Subject: XDP bpf_tail_call_redirect(): yea or nay?
+To:     bpf <bpf@vger.kernel.org>
+Cc:     Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/05/2020 12:44, Pablo Neira Ayuso wrote:
-> Could you point to what driver might have any problem with this update?
-Drivers *can* implement the API in this patch.  It's just that the
- alternative API Jakub proposed would make for simpler driver code.
-I.e. I'm not saying it's bad, just that it could be made better.
-That's why I didn't hard-NACK it at any point.
-I guess I should send the change I'm suggesting as a patch, rather
- than asking it of you — I'll try to get that done today.
-(Although I'm not sure if it's really 'net' material or if I should
- wait for David to merge net into net-next and make the patch
- against the latter — wdyt?)
+Before I start hacking on this, I might as well check with the XDP
+folks if this considered a crappy idea or not. :-)
 
--ed
+The XDP redirect flow for a packet is typical a dance of
+bpf_redirect_map() that updates the bpf_redirect_info structure with
+maps type/items, which is then followed by an xdp_do_redirect(). That
+function takes an action based on the bpf_redirect_info content.
+
+I'd like to get rid of the xdp_do_redirect() call, and the
+bpf_redirect_info (per-cpu) lookup. The idea is to introduce a new
+(oh-no!) XDP action, say, XDP_CONSUMED and a built-in helper with
+tail-call semantics.
+
+Something across the lines of:
+
+--8<--
+
+struct {
+        __uint(type, BPF_MAP_TYPE_XSKMAP);
+        __uint(max_entries, MAX_SOCKS);
+        __uint(key_size, sizeof(int));
+        __uint(value_size, sizeof(int));
+} xsks_map SEC(".maps");
+
+SEC("xdp1")
+int xdp_prog1(struct xdp_md *ctx)
+{
+        bpf_tail_call_redirect(ctx, &xsks_map, 0);
+        // Redirect the packet to an AF_XDP socket at entry 0 of the
+        // map.
+        //
+        // After a successful call, ctx is said to be
+        // consumed. XDP_CONSUMED will be returned by the program.
+        // Note that if the call is not successful, the buffer is
+        // still valid.
+        //
+        // XDP_CONSUMED in the driver means that the driver should not
+        // issue an xdp_do_direct() call, but only xdp_flush().
+        //
+        // The verifier need to be taught that XDP_CONSUMED can only
+        // be returned "indirectly", meaning a bpf_tail_call_XXX()
+        // call. An explicit "return XDP_CONSUMED" should be
+        // rejected. Can that be implemented?
+        return XDP_PASS; // or any other valid action.
+}
+
+-->8--
+
+The bpf_tail_call_redirect() would work with all redirectable maps.
+
+Thoughts? Tomatoes? Pitchforks?
+
+
+Bj=C3=B6rn
