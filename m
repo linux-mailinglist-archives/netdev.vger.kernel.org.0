@@ -2,112 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2125E1C8A7A
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 14:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D6C11C8A9E
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 14:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725903AbgEGMUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 08:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726792AbgEGMUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 08:20:19 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B1CC05BD43;
-        Thu,  7 May 2020 05:20:19 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id z8so6147627wrw.3;
-        Thu, 07 May 2020 05:20:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=hwmbNEyOXecqf1sQXaRulabPe6vBkolg6IuHt5TdHTU=;
-        b=dDEpo5qzjTDuan13RkxLtpTn8Inx853I6PSWjaaD4AX63ZsZSAq40CWM7R6utKw3zq
-         Y8hfOpUoDjAFnLbepyEIOpcJgZ+d1s+5TAf4xaPcAQISdXdNqtoH0R6gXqFffw9px6vH
-         26Ik3TYaDmvQJNxfpd8gxOpwRw5hHdP6m4yM7IFlcFJHlvH0rjyl2xvG1EA22S0fvzNU
-         Mi+A+NC15tnf9QEDp+UbHbcKojAyHc7xEJxg5Sm49TbbX+fSMUR9TUJu4GfGcH2k1XRi
-         HMlRv1sfmZqy7LjMjK3w31EEx3iCAM4/v42Y4+CfdYPqwGNyTV0m/J+Q3FFvNw9EG2CW
-         ur9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=hwmbNEyOXecqf1sQXaRulabPe6vBkolg6IuHt5TdHTU=;
-        b=setl7jqb4iCmXd5RKawCsrWT9D9L08oRT3eGfqODHPYwyaFFV9zZNFymVvg4orsq/6
-         CZCfWCRFkKmDXodom3n2jvjTapQq1Rfk6XRYmbTjHJV9T9b0jynbnBxnwQ4w8e3x9QeS
-         nFLNH2fwyyKmHkyaf4QuTPWcWceuTqqyDKvrlEgdgsjv9c42kiMEZKXW4V4oUk6V+lRT
-         5B1hxntAm1VfFb8y7+BU0/WmID0DABMi0gvxgZD0aI5mimR1cynCKV12NLNITtt15msC
-         1uPnLC1ALMZcaF/MQr3U0uxdpmhkU/sjkpemH7qG1KFof4W6DKjs0g927BLwgiHnJpjO
-         TnWQ==
-X-Gm-Message-State: AGi0PubyB2eQiWbZcgf3zuk22lZ/TdQ0Gs8c1+XfEI5Z3D3/a0YFhuA+
-        5YFXnPoc7J50ZXfqewfMlpQG4VXTeoqgNilIcOLblG1Cu1bfvw==
-X-Google-Smtp-Source: APiQypKS0G3RRdM+DuJDKJ4SmMErUIgMQYL9h1mPTXwYjhZjf3Ow6omNyyqG+hqlwo4cQY+F0vaWCi9mIj3hUH84+8c=
-X-Received: by 2002:adf:decb:: with SMTP id i11mr15230905wrn.172.1588854017421;
- Thu, 07 May 2020 05:20:17 -0700 (PDT)
+        id S1726678AbgEGMVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 08:21:48 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:59136 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726467AbgEGMVs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 08:21:48 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 047CLhEB001501;
+        Thu, 7 May 2020 07:21:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1588854103;
+        bh=JWvfWclonD6Bzo7rOxCtbpXK+eT3Sd1HK3Ywfsl3O74=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=UlqZVAVwqKHMxIbsp/jESft2kwHiF+ZGJnylzVhQkZm00r81DBp9SozLFPcNGqYwi
+         brY2OYCCxmamjCXqcDyMpEG8xA9HnizYeVwomF3hhzN/4MzJRnADpXHrfz5xrAkJ9c
+         e+f5kR5H8ldo5P/pTivAImrohllDn7gQHI4pyjJE=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 047CLhum124434
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 7 May 2020 07:21:43 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 7 May
+ 2020 07:21:42 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 7 May 2020 07:21:42 -0500
+Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 047CLgUC119441;
+        Thu, 7 May 2020 07:21:42 -0500
+Subject: Re: net: dsa: HSR/PRP support
+To:     George McCollister <george.mccollister@gmail.com>,
+        <netdev@vger.kernel.org>
+CC:     <vinicius.gomes@intel.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <CAFSKS=Mr+V0zFVBZyZu2zoY-yF3VZuOu+if6=P_0pJiaCDwmRA@mail.gmail.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <79fd0e39-4f01-d111-c22b-34da1ff8cc9b@ti.com>
+Date:   Thu, 7 May 2020 08:21:42 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 7 May 2020 14:20:06 +0200
-Message-ID: <CAJ+HfNidbgwtLinLQohwocUmoYyRcAG454ggGkCbseQPSA1cpw@mail.gmail.com>
-Subject: XDP bpf_tail_call_redirect(): yea or nay?
-To:     bpf <bpf@vger.kernel.org>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAFSKS=Mr+V0zFVBZyZu2zoY-yF3VZuOu+if6=P_0pJiaCDwmRA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before I start hacking on this, I might as well check with the XDP
-folks if this considered a crappy idea or not. :-)
+Hi George,
 
-The XDP redirect flow for a packet is typical a dance of
-bpf_redirect_map() that updates the bpf_redirect_info structure with
-maps type/items, which is then followed by an xdp_do_redirect(). That
-function takes an action based on the bpf_redirect_info content.
+On 2/18/20 12:15 PM, George McCollister wrote:
+> I'd like to add a switch to DSA that has hardware support for HSR (IEC
+> 62439-3 Clause 5) and PRP (IEC 62439-3 Clause 4).
+> 
+> As well as many common switch features, it supports:
+> Self-address filtering
+> Forwarding of frames with cut-through
+> Automatic insertion of HSR tag and PRP trailer
+> Automatic removal of HSR tag and PRP trailer
+> Automatic duplicate generation for HSR and PRP
+> 
+> I've also seen other switches that support a subset of these features
+> and require software support for the rest (like insertion and removal
+> of tag/trailer).
+> 
+> Currently there is software HSR support in net/hsr. I've seen some
+> past discussions on the list about adding PRP support and adding
+> support for offloading HSR and PRP to a switch.
+> 
+> Is anyone still working on any of this? If not, has anyone made
+> progress on any of this they'd like to share as a starting point for
+> getting some of this upstreamed? Has anyone run across any problems
+> along the way they'd like to share. I've read that the TI vendor
+> kernel may have support for some of these features on the CPSW.
+> 
+> Thanks,
+> George McCollister
+> 
+Yes. We have support for PRP and HSR/PRP offload support in our internal
+Kernel tree. I have posted the RFC for PRP support to existing HSR
+driver to the list. I think that is the first thing to do and then work 
+to add offload support for devices that support this in hardware. It
+would be great if you could review this series and test it on your
+platform.
 
-I'd like to get rid of the xdp_do_redirect() call, and the
-bpf_redirect_info (per-cpu) lookup. The idea is to introduce a new
-(oh-no!) XDP action, say, XDP_CONSUMED and a built-in helper with
-tail-call semantics.
-
-Something across the lines of:
-
---8<--
-
-struct {
-        __uint(type, BPF_MAP_TYPE_XSKMAP);
-        __uint(max_entries, MAX_SOCKS);
-        __uint(key_size, sizeof(int));
-        __uint(value_size, sizeof(int));
-} xsks_map SEC(".maps");
-
-SEC("xdp1")
-int xdp_prog1(struct xdp_md *ctx)
-{
-        bpf_tail_call_redirect(ctx, &xsks_map, 0);
-        // Redirect the packet to an AF_XDP socket at entry 0 of the
-        // map.
-        //
-        // After a successful call, ctx is said to be
-        // consumed. XDP_CONSUMED will be returned by the program.
-        // Note that if the call is not successful, the buffer is
-        // still valid.
-        //
-        // XDP_CONSUMED in the driver means that the driver should not
-        // issue an xdp_do_direct() call, but only xdp_flush().
-        //
-        // The verifier need to be taught that XDP_CONSUMED can only
-        // be returned "indirectly", meaning a bpf_tail_call_XXX()
-        // call. An explicit "return XDP_CONSUMED" should be
-        // rejected. Can that be implemented?
-        return XDP_PASS; // or any other valid action.
-}
-
--->8--
-
-The bpf_tail_call_redirect() would work with all redirectable maps.
-
-Thoughts? Tomatoes? Pitchforks?
-
-
-Bj=C3=B6rn
+https://lkml.org/lkml/2020/5/6/909
+-- 
+Murali Karicheri
+Texas Instruments
