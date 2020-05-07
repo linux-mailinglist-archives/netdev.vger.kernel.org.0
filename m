@@ -2,112 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B2A1C87EC
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 13:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36F421C878B
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 13:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726222AbgEGLUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 07:20:05 -0400
-Received: from mail-db8eur05on2074.outbound.protection.outlook.com ([40.107.20.74]:6034
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725893AbgEGLUE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 07:20:04 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h1zTZ12Qz1bQJS4TAbV85kizjhUbqGvmWBOHDbFHSJrkcItPKCELX089DRYigVhbDn0KDnYjM5ry0CneLi8jxeKMNYegI76jrbo8g/SOR4HPKU7FiBSg75BXgue3gYG9j13/EanhoqS5pNRmak/z/p1tyPEBNpshfgNVcUU23zgrKkYuE3oQnnz/eK3iYgKr51cq8GQeLM2ZZQS9e6k2h3iu4dPmV70YDad10kLSdL2RB/jmYXGWqQ0mXoGNP+4sXAesP91CVCwmNnppNTHtl9fZFtkb842sgI5SnYlJb7Q1EotTwtoQs/r93dPoj/1ipLRTWb25q645LHbkvp3p9w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pxESHQTuITx6QIsVbB5cR7thnQX+JdHLMPEG//ICSXo=;
- b=g/Z/JkhdVx58EBdMfoF8G2+XG0MNhKiyplZ8+4bvp35eUOTa/Oslh+/gBOhaMAkl717YXAt7duv7E6xLTIHHEyL+llKs8oaQMq94UWglK583B4jE7l5S6ElWFM4SE9hQl55uGPCAKH4aepEMkFb0rFqqIG+IY91CQdD7aJ02DvjA7abMRdtnkmjOtDtCtMKx7IDAPaU5iFZkv/6QeidBstRLebhfUhTduKQVCFqRFWlYZ34MLJOBY9YMUgC/5ZdgO+h3f1BZ9KqNer/5WSI9rYJUtgSa2M0PgxiJ9LHpJro7P4FPBGx1RdBnlHtAjSFI2l/85rQ9fxMZcM1z2Ubqlw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pxESHQTuITx6QIsVbB5cR7thnQX+JdHLMPEG//ICSXo=;
- b=Y28Fkkb90NuGKfFZg1/Wich0+wk8xch3pHX+JNy7Te3kA2+GhtIs15UBCIeOZZApudwk5Isxi80uAhQfnOzwWlQE9Aet9wwZY4maOJ3uXIxUoyRXpqh5sVjhFgLXSW63ZVtnElTv3fxifDMV+c2iMddp0v4tpTom7gkc9RqdToI=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
- by VE1PR04MB6416.eurprd04.prod.outlook.com (2603:10a6:803:12a::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27; Thu, 7 May
- 2020 11:20:00 +0000
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::1479:38ea:d4f7:a173]) by VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::1479:38ea:d4f7:a173%7]) with mapi id 15.20.2958.034; Thu, 7 May 2020
- 11:19:59 +0000
-From:   Po Liu <Po.Liu@nxp.com>
-To:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        netdev@vger.kernel.org, dan.carpenter@oracle.com
-Cc:     davem@davemloft.net, claudiu.manoil@nxp.com,
-        Po Liu <Po.Liu@nxp.com>
-Subject: [net-next] net:enetc: bug fix for qos sfi operate space after freed
-Date:   Thu,  7 May 2020 18:57:38 +0800
-Message-Id: <20200507105738.29961-1-Po.Liu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0049.apcprd02.prod.outlook.com
- (2603:1096:4:54::13) To VE1PR04MB6496.eurprd04.prod.outlook.com
- (2603:10a6:803:11c::29)
+        id S1726518AbgEGLG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 07:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726074AbgEGLG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 07:06:27 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A8DC05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 04:06:25 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id 188so4095517lfa.10
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 04:06:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MQs6yIrKvyzos8MjJCet7P+baRzk4bTFuPxV4WLxdUQ=;
+        b=OTZikvhEK6QYFupO4joDEcys6ZAiOBBbpLganygHOvX3CHBCS6XF/Zfahi3gdEeuCd
+         6A5aBfqmUUChRYLf4iW3UcvjJV48yZ7ZwjLFV1UH1WmD85wz5CouKH66nNjtyAM9qw2m
+         wmBnX+Ztyz7U5WlXFYu2BAyFUaZBNl8kPuD+Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MQs6yIrKvyzos8MjJCet7P+baRzk4bTFuPxV4WLxdUQ=;
+        b=PsPFN+OVo84RCaZPumdpt8A9jbt0G3gk29owyTANpPeP7cHI5rjk8mxmeqGwE0u5ij
+         k+gKlrKEJuLD5CJChThBjuYpZ4vUFVQcV6h+A1TkmDWELR8QnPPAtzK0n7ZcQFnZVN3j
+         jXLFJhywlhP90pZjLr61Dk22WCIZxSf06JI6eNQhtPAQzAj6FzvVUd1n4FlL7gBkX5vA
+         ipVCoRODyP9PxYAA/i1J0AkqbwRR5ekq2SNRg4XadeZnksV28/a04mIaDlDtVs9KWly7
+         u1MR+Lt+KSLFtOJtvxcMGZP1vzN3hrijBKE9vobLmh8TezvtyN2KabO3XmEvSDZUFdQA
+         aUOw==
+X-Gm-Message-State: AGi0PuaRzE3pgIeVAgrzpfSmV1r+39VP5QMf6AIh/kpsCaURStkCFFSw
+        rgqU0anODKtPiQ9toaaxjiIFctoSjL/mag==
+X-Google-Smtp-Source: APiQypIkSRBpNZQXcj2cfQH18HDKLx0bwGM9/LC4asCtFbvjv57zr5ulHQ05h2V0fad0INRDUPbASw==
+X-Received: by 2002:ac2:5691:: with SMTP id 17mr8676103lfr.128.1588849584060;
+        Thu, 07 May 2020 04:06:24 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id x83sm3604401lfa.65.2020.05.07.04.06.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 May 2020 04:06:23 -0700 (PDT)
+Subject: Re: [PATCH] bridge: increase mtu to 64K
+To:     Michael Braun <michael-dev@fami-braun.de>, netdev@vger.kernel.org
+Cc:     Li RongQing <roy.qing.li@gmail.com>
+References: <aa8b1f36e80728f6fae31d98ba990a2b509b1e34.1588847509.git.michael-dev@fami-braun.de>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <5e214486-5e65-36ce-5145-b3cb77a81503@cumulusnetworks.com>
+Date:   Thu, 7 May 2020 14:06:22 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.73) by SG2PR02CA0049.apcprd02.prod.outlook.com (2603:1096:4:54::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26 via Frontend Transport; Thu, 7 May 2020 11:19:56 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [119.31.174.73]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 8e42c3b0-b276-46b1-1807-08d7f27893e6
-X-MS-TrafficTypeDiagnostic: VE1PR04MB6416:|VE1PR04MB6416:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB6416B57F9B5BC54B2243B53692A50@VE1PR04MB6416.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:923;
-X-Forefront-PRVS: 03965EFC76
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bLexLgFKzMtkyU/1vRcpkUN6v0Itzj2G/vp+QTROnnANNPlcBssfJl9ffWq/a1KPYl9x77m85LKx1lLSFz73MlXfk4usjLf64DbWHq4lVypl36vm9eG9WJUlAvER7euOblv8PWOU7j7eOEjGXWO1GZqL3Ps3tCPCUSpQxtJTyxG3/NdYpI7SJnLzlYIEkdct/PVDDCW/2aSZpYyFoNZKYtPH3Nz1vgkCyUcpkchtNUTZBO0RudAiF92fSXwRf4wZl9t7FAjfLHzOT6aR33PZhikKUKf7AglbB/bJWtj6584zs/+//Fk1PM/m/BpE9r5wzrcYO4j0VpZPXQgGUA7cHEecZ1qTBN3UePlnrqC+km5Q56rABD1ZycBboQIFjcLWYk41TuNhj4VsFj9cmZpmrn5i75lW0FEUt778Y9dkAlpt6kKGa6e3CO6lY9U6VnVoVrWdYsS4tMSWn/tsOpzhheN2z8U+zVdge0wOxpt62/4TnOJOVG8eSc2ZKqvP4cwIdRQG0GDnG9oPaegPPEDBnVtjtBU3Y4aGQ3Hot7ZINxIsKpQA4Jyiimt+ey4LBi66
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(346002)(136003)(376002)(396003)(33430700001)(316002)(5660300002)(69590400007)(33440700001)(6512007)(186003)(8676002)(6506007)(2906002)(86362001)(16526019)(6666004)(26005)(83300400001)(83320400001)(83280400001)(83310400001)(83290400001)(4326008)(52116002)(956004)(66946007)(66476007)(8936002)(1076003)(66556008)(36756003)(4744005)(6486002)(478600001)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: BnlkqZhVxQ/iWbdLKM+Y+phrcQC2OKF8vMBMgEyJBTIGnlwieNm/Qtden1CfhYUH02Eo/TuB7fAruOqevOp8ppGjpBDm/cy3b+Z+uR8n2QuSdGZuTQTZbM7/x6R+OHmIUsW91NWIYiv76kIpcFftAp2s+4r2iYZyXxEMNAdSorHl9s9SjFLT8kCwpj0RjAEfOFaAeQIm8JcOu7r7ySnwYW22OB2hkCq7P2zULzc+szSKcjG3hPHteXM/j0hUlCr2Lf09qpc3P8Rl2sC4s7pREWqhpm6+GszhnG2sH3eFXEiHY/I1nSt7WXuBcllYXdGr/V/BqwAqBPshIEaQSzXEB0pg0z6g2E/aXB8xbXv2BcTOUh9bUDAOK67oFejoWM3KJtLdZ8+ARRVoKHuCwHAWwSSKAS4uQKMGohh49loF+kx4g/C35kIPYoT+KO+5KFugUO+mcqpe6DV5nlxLxL1vn46JEOdm+k28LDc1dIzqxk1w7rNy0clJemt3C6OoVZ5SlVU3EAqNj/5QKCQOOATnuo94+9VqaUt4YQTMxf9BIJIGJCRgCF+NcVzakG6aZ8b8umWzxKIHiObFIVS67CYuU7+pgwXq/OiTAGwwfe8t49NTQ8L13T0aOyEyob7OgpoE3p+zQx++/sSoUgdYtNl6dTY2WnM+9ecCCvXPFZlS0Mxxu9w89NqgjJxCD9yOlpTDDrKWGqLrLumttc74RH5kvsC7z4uScCaw0EKFQQcKZAeznz6IhsNZLp2k03VgywGvrNEJ3td7/Ei7FOTWvWv6zFG16SQHRwU68dHvQYVj5eE=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e42c3b0-b276-46b1-1807-08d7f27893e6
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2020 11:19:59.7716
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Y4sBHYysN4mIv9uZNxbBwNbGtdxHKIAi5YxyrrDcoAhHV1DjWSbDHCKTrj9n2NBV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6416
+In-Reply-To: <aa8b1f36e80728f6fae31d98ba990a2b509b1e34.1588847509.git.michael-dev@fami-braun.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'Dan Carpenter' reported:
-This code frees "sfi" and then dereferences it on the next line:
->                 kfree(sfi);
->                 clear_bit(sfi->index, epsfp.psfp_sfi_bitmap);
+On 07/05/2020 13:32, Michael Braun wrote:
+> A linux bridge always adopts the smallest MTU of the enslaved devices.
+> When no device are enslaved, it defaults to a MTU of 1500 and refuses to
+> use a larger one. This is problematic when using bridges enslaving only
+> virtual NICs (vnetX) like it's common with KVM guests.
+> 
+> Steps to reproduce the problem
+> 
+> 1) sudo ip link add br-test0 type bridge # create an empty bridge
+> 2) sudo ip link set br-test0 mtu 9000 # attempt to set MTU > 1500
+> 3) ip link show dev br-test0 # confirm MTU
+> 
+> Here, 2) returns "RTNETLINK answers: Invalid argument". One (cumbersome)
+> way around this is:
+> 
+> 4) sudo modprobe dummy
+> 5) sudo ip link set dummy0 mtu 9000 master br-test0
+> 
+> Then the bridge's MTU can be changed from anywhere to 9000.
+> 
+> This is especially annoying for the virtualization case because the
+> KVM's tap driver will by default adopt the bridge's MTU on startup
+> making it impossible (without the workaround) to use a large MTU on the
+> guest VMs.
+> 
 
-This "sfi->index" should be "index".
+Hi Michael,
+That isn't correct, have you tested with a recent kernel?
+After:
+commit 804b854d374e
+Author: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Date:   Fri Mar 30 13:46:19 2018 +0300
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Po Liu <Po.Liu@nxp.com>
----
- drivers/net/ethernet/freescale/enetc/enetc_qos.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+    net: bridge: disable bridge MTU auto tuning if it was set manually
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-index 48e589e9d0f7..77f110e24505 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -903,7 +903,7 @@ static void stream_filter_unref(struct enetc_ndev_priv *priv, u32 index)
- 		enetc_streamfilter_hw_set(priv, sfi, false);
- 		hlist_del(&sfi->node);
- 		kfree(sfi);
--		clear_bit(sfi->index, epsfp.psfp_sfi_bitmap);
-+		clear_bit(index, epsfp.psfp_sfi_bitmap);
- 	}
- }
+You can set the bridge MTU to anything before adding ports.
+
+E.g.:
+$ ip l add br1 type bridge
+$ ip l set br1 mtu 65000
+$ ip l sh dev br1
+12: br1: <BROADCAST,MULTICAST> mtu 65000 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether b6:ad:91:dc:5f:39 brd ff:ff:ff:ff:ff:ff
+
+And a second one (ens17, ens18 with MTU 1500, br0 new with MTU 1500):
+$ ip l set ens17 master br0
+$ ip l set ens18 master br0
+$ ip l set br0 mtu 65000
+$ ip l sh dev br0
+11: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 65000 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether fe:ed:3f:df:94:1f brd ff:ff:ff:ff:ff:ff
+$ ip l sh dev ens17
+8: ens17: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast master br0 state UP mode DEFAULT group default qlen 1000
+    link/ether 52:54:00:23:5f:13 brd ff:ff:ff:ff:ff:ff
+
  
--- 
-2.17.1
+> https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1399064
+> 
+> Signed-off-by: Michael Braun <michael-dev@fami-braun.de>
+> Reported-by: Li RongQing <roy.qing.li@gmail.com>
+> 
+> --
+> If found https://patchwork.ozlabs.org/project/netdev/patch/1456133351-10292-1-git-send-email-roy.qing.li@gmail.com/
+> but I am missing any follow up. So here comes a refresh patch that
+> addresses the issue raised.
+> ---
+>  net/bridge/br_if.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
+> index 4fe30b182ee7..f14e7d2329bd 100644
+> --- a/net/bridge/br_if.c
+> +++ b/net/bridge/br_if.c
+> @@ -496,7 +496,7 @@ static int br_mtu_min(const struct net_bridge *br)
+>  		if (!ret_mtu || ret_mtu > p->dev->mtu)
+>  			ret_mtu = p->dev->mtu;
+>  
+> -	return ret_mtu ? ret_mtu : ETH_DATA_LEN;
+> +	return ret_mtu ? ret_mtu : (64 * 1024);
+>  }
+>  
+>  void br_mtu_auto_adjust(struct net_bridge *br)
+> 
+Please CC bridge maintainers on bridge patches.
+Note that there's a mechanism in the bridge to disable auto-MTU tuning if the user *changes*
+the MTU manually (it's important the MTU actually changes by the op). The auto-tuning has
+been a constant headache.
 
+The patch also has a problem - it sets the MTU over ETH_MAX_MTU (65535).
+
+Cheers,
+ Nik
