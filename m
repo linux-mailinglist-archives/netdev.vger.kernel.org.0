@@ -2,166 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA311C8644
+	by mail.lfdr.de (Postfix) with ESMTP id 8B5971C8645
 	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726393AbgEGJ7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 05:59:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38312 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725893AbgEGJ7u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 05:59:50 -0400
-Received: from localhost.localdomain (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9027C20643;
-        Thu,  7 May 2020 09:59:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588845589;
-        bh=1dH5G1leAYENAhuCpe5L02sl2FX0JniYY4i2b+iiscs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=1aUldhiQbHoUUq98QeyZox9aJSM7fUex2qh2uKAqXjx1zIHigKYWqndTApyZ8Q6h+
-         kmOaWmRVk1MiImGIY8H0404e2ryIMSTusCdfZi2zrrVtdCKI+4inXLc8iYKXrGtO//
-         UKpQuhTXij4WrjkTmPbAG530abAmO1w29UVHXsHQ=
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Wang Nan <wangnan0@huawei.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [RFC PATCH 0/3] kprobes: Support nested kprobes
-Date:   Thu,  7 May 2020 18:59:42 +0900
-Message-Id: <158884558272.12656.7654266361809594662.stgit@devnote2>
-X-Mailer: git-send-email 2.20.1
-User-Agent: StGit/0.17.1-dirty
+        id S1726948AbgEGKAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 06:00:40 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:35182 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726612AbgEGKAF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:00:05 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0479vNLP155967;
+        Thu, 7 May 2020 09:59:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=pUuuZ4frW2b/D0q4zeTBVFD+qrgsDvbjXe8pI8eyV00=;
+ b=P/nXN+7bJ0lBDilfVqWPSledLohvAZ5Q1tprCcAAWCZXBo7ZqzX2hCe5xrSm1xzfZ92X
+ g5+rPuyH45uDTb0nJsCKWVZIiKtUBQPX2NFkmJqEj/MSLieOo5P/W7JQa6bLM2MkfYVX
+ 9ZysOG7UyX4nYS9598QxfNW8OMcN1b7lKMTIfRl1xpP+eAnGlTh+wzBeTcxf9f2WwIxo
+ tP+HI1+J0JXHrjfBZ/C9p2RtmsVnt16YIVG+kcDK0wXH3+SSLpb7ubCg+ARXG9Lhz6sD
+ jFkJ4W7H1rKmWWMYRGLJoNZ87cW+1QlZ9cGLkzz8yRYQu+++nXkHLDd8APKbFan44Azx rg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 30usgq6a5u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 07 May 2020 09:59:57 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0479wiuM051284;
+        Thu, 7 May 2020 09:59:57 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 30us7q4n8s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 07 May 2020 09:59:57 +0000
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0479xt41008072;
+        Thu, 7 May 2020 09:59:56 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 07 May 2020 02:59:55 -0700
+Date:   Thu, 7 May 2020 12:59:49 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: BUG: stack guard page was hit in unwind_next_frame
+Message-ID: <20200507095949.GD9365@kadam>
+References: <0000000000005a8fe005a4b8a114@google.com>
+ <20200503102220.3848-1-hdanton@sina.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200503102220.3848-1-hdanton@sina.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9613 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0 suspectscore=0
+ mlxlogscore=999 malwarescore=0 phishscore=0 mlxscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2005070081
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9613 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 mlxscore=0
+ priorityscore=1501 lowpriorityscore=0 malwarescore=0 clxscore=1011
+ mlxlogscore=999 spamscore=0 adultscore=0 bulkscore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005070081
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, May 03, 2020 at 06:22:20PM +0800, Hillf Danton wrote:
+> Bail out if it's detected to handle the event more than once.
+> 
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -3273,9 +3273,19 @@ static int bond_netdev_event(struct noti
+>  			return ret;
+>  	}
+>  
+> -	if (event_dev->flags & IFF_SLAVE)
+> -		return bond_slave_netdev_event(event, event_dev);
+> +	if (event_dev->flags & IFF_SLAVE) {
+> +		static void *tail_spin = NULL;
+                             ^^^^^^^^^^^^^^^^
+assigning NULL
 
-Here is a series to add nested-kprobes support to x86, arm64
-and arm (which I can test).
+> +		void *token = (void *) this + (void *) event_dev;
 
-These make kprobes to accept 1-level nesting instead of incrementing
-missed count.
+Adding a pointer to a pointer doesn't make any sense.  But the result
+is non-NULL because event_dev is non-NULL.
 
-Any kprobes hits in kprobes pre/post handler context can be nested
-at once. If the other kprobes hits in the nested pre/post handler
-context or in the single-stepping context, that will be still
-missed.
+> +
+> +		if (tail_spin == token) {
+                    ^^^^^^^^^^^^^^^^^^
+Impossible because tail_spin is NULL and token is non-NULL.
 
-The nest level is actually easily extended, but too many nest
-level can lead the overflow of the kernel stack (for each nest,
-the stack will be consumed by saving registers, handling kprobes
-and pre/post handlers.) Thus, at this moment it allows only one
-level nest.
+> +			tail_spin = NULL;
+                        ^^^^^^^^^^^^^^^^
+re-assigning NULL.  local variable assigned right before a return is
+pointless.
 
-This feature allows BPF or ftrace user to put a kprobe on BPF
-jited code or ftrace internal code running in the kprobe context
-for debugging.
+> +			return NOTIFY_DONE;
+> +		}
+> +		if (tail_spin == NULL)
 
-We can test this feature on the kernel with
-CONFIG_KPROBE_EVENTS_ON_NOTRACE=y as below.
+Always true condition.
 
-  # cd /sys/kernel/debug/tracing
-  # echo p ring_buffer_lock_reserve > kprobe_events
-  # echo p vfs_read >> kprobe_events
-  # echo stacktrace > events/kprobes/p_ring_buffer_lock_reserve_0/trigger
-  # echo 1 > events/kprobes/enable
-  # cat trace
-  ...
-               cat-151   [000] ...1    48.669190: p_vfs_read_0: (vfs_read+0x0/0x160)
-               cat-151   [000] ...2    48.669276: p_ring_buffer_lock_reserve_0: (ring_buffer_lock_reserve+0x0/0x400)
-               cat-151   [000] ...2    48.669288: <stack trace>
-   => kprobe_dispatcher
-   => opt_pre_handler
-   => optimized_callback
-   => 0xffffffffa0002331
-   => ring_buffer_lock_reserve
-   => kprobe_trace_func
-   => kprobe_dispatcher
-   => opt_pre_handler
-   => optimized_callback
-   => 0xffffffffa00023b0
-   => vfs_read
-   => load_elf_phdrs
-   => load_elf_binary
-   => search_binary_handler.part.0
-   => __do_execve_file.isra.0
-   => __x64_sys_execve
-   => do_syscall_64
-   => entry_SYSCALL_64_after_hwframe
-  
-To check unoptimized code, disable optprobe and dump the log.
+> +			tail_spin = token;
 
-  # echo 0 > /proc/sys/debug/kprobes-optimization
-  # echo > trace
-  # cat trace
-               cat-153   [000] d..1   140.581433: p_vfs_read_0: (vfs_read+0x0/0x160)
-               cat-153   [000] d..2   140.581780: p_ring_buffer_lock_reserve_0: (ring_buffer_lock_reserve+0x0/0x400)
-               cat-153   [000] d..2   140.581811: <stack trace>
-   => kprobe_dispatcher
-   => aggr_pre_handler
-   => kprobe_int3_handler
-   => do_int3
-   => int3
-   => ring_buffer_lock_reserve
-   => kprobe_trace_func
-   => kprobe_dispatcher
-   => aggr_pre_handler
-   => kprobe_int3_handler
-   => do_int3
-   => int3
-   => vfs_read
-   => load_elf_phdrs
-   => load_elf_binary
-   => search_binary_handler.part.0
-   => __do_execve_file.isra.0
-   => __x64_sys_execve
-   => do_syscall_64
-   => entry_SYSCALL_64_after_hwframe
+Pointless assign.
 
-So we can see the kprobe can be nested.
+>  
+> +		return bond_slave_netdev_event(event, event_dev);
 
-Thank you,
+This whole patch is a very complicated no-op.  :P  I'm not sure at all
+what was intended by this patch.
 
----
+> +	}
+>  	return NOTIFY_DONE;
+>  }
 
-Masami Hiramatsu (3):
-      x86/kprobes: Support nested kprobes
-      arm64: kprobes: Support nested kprobes
-      arm: kprobes: Support nested kprobes
-
-
- arch/arm/include/asm/kprobes.h     |    5 ++
- arch/arm/probes/kprobes/core.c     |   79 ++++++++++++++----------------
- arch/arm/probes/kprobes/core.h     |   30 +++++++++++
- arch/arm/probes/kprobes/opt-arm.c  |    6 ++
- arch/arm64/include/asm/kprobes.h   |    5 ++
- arch/arm64/kernel/probes/kprobes.c |   75 ++++++++++++++++------------
- arch/x86/include/asm/kprobes.h     |    5 ++
- arch/x86/kernel/kprobes/common.h   |   39 ++++++++++++++-
- arch/x86/kernel/kprobes/core.c     |   96 +++++++++++++++---------------------
- arch/x86/kernel/kprobes/ftrace.c   |    6 ++
- arch/x86/kernel/kprobes/opt.c      |   13 +++--
- 11 files changed, 214 insertions(+), 145 deletions(-)
-
---
-Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
+regards,
+dan carpenter
