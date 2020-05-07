@@ -2,116 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 965691C855D
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 11:11:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DE71C856C
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 11:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725939AbgEGJLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 05:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725848AbgEGJLA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 05:11:00 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE05C061A10;
-        Thu,  7 May 2020 02:11:00 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id u10so1830978pls.8;
-        Thu, 07 May 2020 02:11:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JBT6KrKPDV5CjqbR8NDCy7mpTcDdeEp7C5NBrNvcrDY=;
-        b=kVxUpNAU2X5gF8L0wi+DyBySR80rdREgOTCndFcxAxZ5o1/ZAGVfUqtsWKwLF0Pa/u
-         5VlziewE/8fe6NnCkGc3Ph2U6L2/oSl/f8uR72qd3yHNwaqdpv2dvNMAW1V6ZK6GmZpF
-         XufJCfMyHxhC43y07FPPo6k6b4e6UWM1L9UIseHpeJakHL2EDV8nuqNy1lOlb7/Lvovx
-         +Qr8DuTQ62XSzBiO9K+0Sy9zPbrwHFV3jEPKUwqIHxZfJQ6mIwmROmv/B8yYWXUa1+Hd
-         afZ9rgolKYC6b4dwrtUFVeaOonYWK/bbkkYwAxSkHn4eQ5RuvJlmrbmxTSe3vpUhlwXO
-         i/9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JBT6KrKPDV5CjqbR8NDCy7mpTcDdeEp7C5NBrNvcrDY=;
-        b=mKk58xCj7IrgyFPzlX4HP0/1UQ6jAl4gS3mGosze9G5sR1uZeD1PUBQnBF2WwnQEqO
-         ohTdy693f95D52qms3rIreJhdaml6/nLBabmw7IbHCGJyYV8CI1RFCLllXRnMOfp6q5s
-         9XBIHF31rQxYMCypBjcxUJlAT5QUmTRG6CKCSxfXD2HJi50kgHR/3sDr81dsc3rO96YM
-         Qi9cAodITc1BqfNmcWElFvgAHzlV/NT0PSgaJZEwLNi4UsEqAmQVNiHZ+MGqpH/yQwUU
-         5AEArHZJ9QPll3uy7mfhIhAxT8mHMU4y5VwY3CjkYZodgDnXbEnC5741KUeFcxPLyf8g
-         jr4g==
-X-Gm-Message-State: AGi0Pubt88k8/P26Bs2QGLaij4qRkB0W5jV4afOfG+rn+dI0oiShJZN4
-        6HdH2pYkC/06F0iaZWrFOPCScPBZe6cEkGdT88g=
-X-Google-Smtp-Source: APiQypLSmUDlB8+hESCKFexeV6yOLtQ3+jQd1hZaeXg3Qh7fHvakmbggZLIgn4AzvrXWYYT9Q3xQHb/UA6E5FX3UzOE=
-X-Received: by 2002:a17:90a:340c:: with SMTP id o12mr13739254pjb.22.1588842660053;
- Thu, 07 May 2020 02:11:00 -0700 (PDT)
+        id S1726521AbgEGJMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 05:12:35 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:60428 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725848AbgEGJMe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 05:12:34 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id A8AD12FAB35445FAE711;
+        Thu,  7 May 2020 17:12:31 +0800 (CST)
+Received: from [127.0.0.1] (10.74.221.148) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Thu, 7 May 2020
+ 17:12:23 +0800
+Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <20200116.042722.153124126288244814.davem@davemloft.net>
+ <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com>
+ <1b3aaddf-22f5-1846-90f1-42e68583c1e4@gmail.com>
+ <430496fc-9f26-8cb4-91d8-505fda9af230@hisilicon.com>
+ <20200117123253.GC14879@hirez.programming.kicks-ass.net>
+ <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com>
+ <20200117180324.GA2623847@rani.riverdale.lan>
+ <94573cea-a833-9b48-6581-8cc5cdd19b89@gmail.com>
+ <20200117183800.GA2649345@rani.riverdale.lan>
+ <45224c36-9941-aae5-aca4-e2c8e3723355@gmail.com>
+ <20200120081858.GI14879@hirez.programming.kicks-ass.net>
+CC:     Arvind Sankar <nivedita@alum.mit.edu>,
+        David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <jinyuqi@huawei.com>,
+        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
+        <edumazet@google.com>, <guoyang2@huawei.com>,
+        Will Deacon <will@kernel.org>
+From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
+Message-ID: <39ddacf9-adbe-c3f5-45a8-9c5280ef11bb@hisilicon.com>
+Date:   Thu, 7 May 2020 17:12:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.1.1
 MIME-Version: 1.0
-References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
- <20200505132905.10276-6-calvin.johnson@oss.nxp.com> <CAHp75VfOcQiACsOcfWyJSP1dzdYpaCa-_KKf==4YCkaM_Wk3Tg@mail.gmail.com>
- <20200507074435.GA10296@lsv03152.swis.in-blr01.nxp.com>
-In-Reply-To: <20200507074435.GA10296@lsv03152.swis.in-blr01.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 7 May 2020 12:10:48 +0300
-Message-ID: <CAHp75VeFCzJ97c7AZD8ksA-r3C-XyM24Rt30+Obw6tCaR4xprA@mail.gmail.com>
-Subject: Re: [net-next PATCH v3 5/5] net: mdiobus: Introduce fwnode_mdiobus_register_phy()
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200120081858.GI14879@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.74.221.148]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 7, 2020 at 10:44 AM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
->
-> On Tue, May 05, 2020 at 05:22:00PM +0300, Andy Shevchenko wrote:
-> > On Tue, May 5, 2020 at 4:30 PM Calvin Johnson
-> > <calvin.johnson@oss.nxp.com> wrote:
+Hi Peter/Eric,
 
-...
+Shall we use atomic_add_return() unconditionally and add some comments? Or I missed
+something.
 
-> > > +       bool is_c45 = false;
-> >
-> > Redundant assignment, see below.
-> >
-> > > +       const char *cp;
-> > > +       u32 phy_id;
-> > > +       int rc;
+Thanks,
+Shaokun
 
-> > > +       fwnode_property_read_string(child, "compatible", &cp);
-> >
-> > Consider rc = ...; otherwise you will have UB below.
-> >
-> > > +       if (!strcmp(cp, "ethernet-phy-ieee802.3-c45"))
-> >
-> > UB!
->
-> Thanks for the comments! I've considered all of them.
-> What is UB, by the way? :)-
+On 2020/1/20 16:18, Peter Zijlstra wrote:
+> On Fri, Jan 17, 2020 at 10:48:19AM -0800, Eric Dumazet wrote:
+>>
+>>
+>> On 1/17/20 10:38 AM, Arvind Sankar wrote:
+>>> On Fri, Jan 17, 2020 at 10:16:45AM -0800, Eric Dumazet wrote:
+>>>> Wasńt it the case back in 2016 already for linux-4.8 ?
+>>>>
+>>>> What will prevent someone to send another report to netdev/lkml ?
+>>>>
+>>>>  -fno-strict-overflow support is not a prereq for CONFIG_UBSAN.
+>>>>
+>>>> Fact that we kept in lib/ubsan.c and lib/test_ubsan.c code for 
+>>>> test_ubsan_add_overflow() and test_ubsan_sub_overflow() is disturbing.
+>>>>
+>>>
+>>> No, it was bumped in 2018 in commit cafa0010cd51 ("Raise the minimum
+>>> required gcc version to 4.6"). That raised it from 3.2 -> 4.6.
+>>>
+>>
+>> This seems good to me, for gcc at least.
+>>
+>> Maybe it is time to enfore -fno-strict-overflow in KBUILD_CFLAGS 
+>> instead of making it conditional.
+> 
+> IIRC there was a bug in UBSAN vs -fwrapv/-fno-strict-overflow that was
+> only fixed in gcc-8 or 9 or so.
+> 
+> So while the -fwrapv/-fno-strict-overflow flag has been correctly
+> supported since like forever, UBSAN was buggy until quite recent when
+> used in conjustion with that flag.
+> 
+> .
+> 
 
-Undefined Behaviour.
-
--- 
-With Best Regards,
-Andy Shevchenko
