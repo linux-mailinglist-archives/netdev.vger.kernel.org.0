@@ -2,84 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F8481C9736
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 19:11:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BB551C97B8
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 19:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbgEGRLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 13:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
+        id S1726778AbgEGR1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 13:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726074AbgEGRLo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 13:11:44 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41505C05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 10:11:44 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id z90so5394400qtd.10
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 10:11:44 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726222AbgEGR1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 13:27:52 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6C4C05BD43;
+        Thu,  7 May 2020 10:27:51 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id v63so3307695pfb.10;
+        Thu, 07 May 2020 10:27:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IHCzuoRXAe5mRjkbjNi3gOcr7sUj+9tYT+cGill7uqI=;
-        b=LpkAY2AQK4yvzeKDup4oOfhTcYxL7TymnvTf2RIwrC8PgiKDYBIBG2gwRln4fJTksM
-         MNsQ8zE1xx4WyG2uqyHhg93T4AO0UIOx+GZEQ4opIDaSqc2B8TS8bxRcHfm7B7YIAIim
-         VY9zc/uI6nlGZ3irCCkoFJPZ2pAz3Tw4AYbEqE8RjslkeHXHsAeXC1DalJ6m9pibuQcn
-         Du3mimQFJ9oZo16n0tZs3MWfH0HRWEvH1oWPT5HMf4+2cP8aUVEjiSWPHE17s1f0KicU
-         NoQaKFYHQAlWCO9D055HKz+Jn/WYEF8cjt2qRsQaL97hEDvd7+hNRBkrLLe6AnDfw9xm
-         Cr3Q==
+        bh=sI6MW+ENUHkNJh2ieEfqb2bnhAZ3RCNTWxJcYdnJPQ0=;
+        b=fw6712JF9/XP6LQunEFLYb0L3Hu5ZvOjiwZaYjUOYARWSTU6cUpPwT1mREY73Q0lcz
+         Ux/KeXELOEUHJXhu+fQdD2m+PvZLEgLRXD9LHp5MtiJP9eimFksIXjI/cy3nfvc3vo6c
+         EnHUBiCI3w93ddm9j9zO6dnfk9CkchHGY/+2IAZNTQoXNwBPgeZyh71Spr8dvDJIyw/+
+         UbXKl1uzTrdWUsPYYMIzS4tnSCKePPqGcXUK7g5HcX9zheTZs6yjaODjo8LMj7+RYfuG
+         Z0ayJgokLlO3FWlitIERjSFHHzD510h8OGBamTktyIiycyrQAc/XdIxYy0AJQpUE4o6R
+         lJSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IHCzuoRXAe5mRjkbjNi3gOcr7sUj+9tYT+cGill7uqI=;
-        b=ppjtehcIHm/5S2wGYNbYUxoBSkrfD2YuSJ7Fr/jpDxQ4n0hKMFOVGH8RQ/wiHGEr2d
-         Qydfb89aZYyaMMMg3qZ0m2maqy4p2Cy6OrMO7zft5omV6hiCaDtTQEbndnXujyXHoKFu
-         h4cSgIltOg8uPRKIVzMf9KV1L9NjSup+8MD7p3xnQW2sZvsk7B2FjFWmLJkkSrcs0vhJ
-         Ao5sDHqHOs/ZKCrOS7RiIOLdlTNbqYfjDG6iflKpSvHYy7ospqBt5+2tXIFuaV6Pb5rv
-         uVgLPR24q58fDkHUWyszNTBZju/GJJ90w8iUSeIAuCRVSCpA4Y/hWYDoqqbyO8Rf9y4a
-         yC1w==
-X-Gm-Message-State: AGi0PuaQEPuJ7Z6V029OwkjREWbHTBsMwlgniiW9808n2Cvzq2wgXEZo
-        ETX5wSzSV78IY7KUySv/63WaOLUc
-X-Google-Smtp-Source: APiQypISOVxBRuC15aZm07cZdmBiguaXFbDhqeJdhQeqhSaH4wln89/BhvPWDIHh8aCxluwyoxemAQ==
-X-Received: by 2002:ac8:31d3:: with SMTP id i19mr8271092qte.210.1588871502731;
-        Thu, 07 May 2020 10:11:42 -0700 (PDT)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id q17sm4729329qkq.111.2020.05.07.10.11.41
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 May 2020 10:11:42 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id d197so3297191ybh.6
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 10:11:41 -0700 (PDT)
-X-Received: by 2002:a25:3187:: with SMTP id x129mr24600606ybx.428.1588871501366;
- Thu, 07 May 2020 10:11:41 -0700 (PDT)
+        bh=sI6MW+ENUHkNJh2ieEfqb2bnhAZ3RCNTWxJcYdnJPQ0=;
+        b=Fo3tyPYzLH09wk65N029Gl23MuTtFwe8juh7+QRzBV/XCGrV7fKqG5oS5JbAznQAMp
+         4XziOia+nCLZsOUOZYgPxpglTHhWpmalCuhCZXmMq1eMw+z4XMjUHcLokSk8YaOaZAGd
+         hqWp71FWc/2dA8bgEyBNNzGxvM1E+hvR08Q1+Xt6u67lNKt7c+HY7g8Q8EhVoPSa/Vze
+         Aqrov8i7lr9OsjYA0B51R1WVW9MrWHnwQU8MPwT2LJA4JZb/Q7/sh8U/r4iHCTwkkLJw
+         kUqYXzjOJ7PlvkV/vS1Pa1d1CLHo25RWIfCWSzhaxE4wMF2LKNcEVg4mkpE5d+jndaMD
+         kLWQ==
+X-Gm-Message-State: AGi0PubCWR604p4UBy0gWOgsAc6ZasAqwacVQbQg+lreVLPLWTx2XNdA
+        +n5IymJZKAU7qvFsz+GI8yGSlHxGJjgzsllOYG4=
+X-Google-Smtp-Source: APiQypI7YgiQ9vvHBaf8ZcHCNpabxiuE+6U2dZsbLwFTkafu86kfC64HTxUYw0xpEU0ELMf7TkAsxj3N30X42MNPPSc=
+X-Received: by 2002:aa7:8f26:: with SMTP id y6mr15059528pfr.36.1588872471304;
+ Thu, 07 May 2020 10:27:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200507170539.157454-1-edumazet@google.com>
-In-Reply-To: <20200507170539.157454-1-edumazet@google.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 7 May 2020 13:11:04 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScacw8w_bf+bnR4KYUTVrWSqfbnZFbtzATsqFZerGS5eg@mail.gmail.com>
-Message-ID: <CA+FuTScacw8w_bf+bnR4KYUTVrWSqfbnZFbtzATsqFZerGS5eg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: relax SO_TXTIME CAP_NET_ADMIN check
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
+ <20200505132905.10276-5-calvin.johnson@oss.nxp.com> <67e263cf-5cd7-98d1-56ff-ebd9ac2265b6@arm.com>
+In-Reply-To: <67e263cf-5cd7-98d1-56ff-ebd9ac2265b6@arm.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 7 May 2020 20:27:44 +0300
+Message-ID: <CAHp75Vew8Fh6HEoOACk+J9KCpw+AE2t2+oFnXteK1eShopfYAA@mail.gmail.com>
+Subject: Re: [net-next PATCH v3 4/5] net: phy: Introduce fwnode_get_phy_id()
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        linux.cj@gmail.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 7, 2020 at 1:05 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> Now sch_fq has horizon feature, we want to allow QUIC/UDP applications
-> to use EDT model so that pacing can be offloaded to the kernel (sch_fq)
-> or the NIC.
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Willem de Bruijn <willemb@google.com>
+On Thu, May 7, 2020 at 4:26 PM Jeremy Linton <jeremy.linton@arm.com> wrote:
+> On 5/5/20 8:29 AM, Calvin Johnson wrote:
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+> > +             if (sscanf(cp, "ethernet-phy-id%4x.%4x",
+> > +                        &upper, &lower) == 2) {
+> > +                     *phy_id = ((upper & 0xFFFF) << 16) | (lower & 0xFFFF);
+> > +                     return 0;
+> > +             }
 
-Thanks Eric! This will really help with enabling pacing offload in
-real workloads.
+> Isn't the ACPI _CID() conceptually similar to the DT compatible
+> property?
+
+Where?
+
+> It even appears to be getting used in a similar way to
+> identify particular phy drivers in this case.
+
+_CID() is a string. It can't be used as pure number.
+
+-- 
+With Best Regards,
+Andy Shevchenko
