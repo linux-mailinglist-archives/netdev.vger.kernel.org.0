@@ -2,111 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D38F81C7F55
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 02:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4395B1C7F60
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 02:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729058AbgEGAra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 20:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        id S1728641AbgEGAr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 20:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729084AbgEGAr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 20:47:26 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92987C061A41
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 17:47:26 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id w11so4278682iov.8
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 17:47:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uYSzKMOk3or2uFoTZZzRJZRiS035mjjJocvNWlKm6tM=;
-        b=dSM6qpbUf+qLjqBHYANWC6rRaGEkZVYX7hCaUGcJC4jffs2/nlqOD1bGMOPdjX+0+u
-         a0tj0jTWA0vqVQieHoGIHDnsiNYn7Dw+2q0mr2Gkf68qDvpGO82TQyegMyE/Z4LiOJ3b
-         GRJ84a2QIlYNH31ggzEgMyWSqShuOj+CH5JvSNPUzWdeAQutmWJ3P1ZvJ86vbBd6iuHN
-         n7389hKng19UxWWQQEuY62XlkhD1bR4w7Zd7sbnyOUdPU72sUqC4eCcSP5J7GiTdAQQB
-         9y6MfecM3KC1F5nVtFVqksBFcaWUYIxAFWHlo3HuzbCvAuzZoI38OKi7Mr/JvPGr4KE1
-         /whA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uYSzKMOk3or2uFoTZZzRJZRiS035mjjJocvNWlKm6tM=;
-        b=m2CqL0t2MuzOCe/L5Nvzih+G6KUaCciC7NJ0SM7IJfjnWVPTa7eqWsqVD/8L9FDbRS
-         mNxLACaxA1Drbpl0U/Nzf0tDM4bqaUCLw3Yi25hzQK6PjFKlouOV7m2RvmPMb/SMYY2N
-         FSQl+cYm9IZIxpYyB48vDcezf0fsFuYviSLusTdVlWxyxztIL6dV5UpZtHWpqIAKwOOV
-         kMHibVU/Uo9s68SoheW9JFuDYs/G5T6xxu+Qsjk066lM0QBzHKN+CgRSTxnqyKXtY6On
-         KeJQJzdVxbQ/vFNWOAvFMIWygrwcGsr4aP3mSUUgZD52DFLOTBtcAMTDNatYlSbAJvJe
-         J36g==
-X-Gm-Message-State: AGi0PubwkfJ1rdPdAVG9995syZO965/hydqQCNISZ3yBbWhPtakrvYG8
-        6Iz3Ut8Ps0xuJ/UE8QBrzrfgLo6SD6XgYyjrc4sc5g==
-X-Google-Smtp-Source: APiQypJvM5QMB5Afb5RNgm1KdSj0U7xDMShFulj/eorpksz8gZajXOONziEH5xmbd7Mj52enCkEHqDk9ToBBgmsDRQU=
-X-Received: by 2002:a02:cd03:: with SMTP id g3mr10773598jaq.61.1588812445532;
- Wed, 06 May 2020 17:47:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200420231427.63894-1-zenczykowski@gmail.com>
- <20200506233259.112545-1-zenczykowski@gmail.com> <20200506165517.140d39ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200506165517.140d39ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Wed, 6 May 2020 17:47:12 -0700
-Message-ID: <CANP3RGc4aWPM09SoD3gk1R9f1UL4Ef57LHGiTKMBvYBLotwPGQ@mail.gmail.com>
-Subject: Re: [PATCH v2] net: bpf: permit redirect from L3 to L2 devices at
- near max mtu
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S1725887AbgEGAr4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 20:47:56 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88FEC061A0F;
+        Wed,  6 May 2020 17:47:55 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4D38112783B16;
+        Wed,  6 May 2020 17:47:55 -0700 (PDT)
+Date:   Wed, 06 May 2020 17:47:54 -0700 (PDT)
+Message-Id: <20200506.174754.1326538013917922662.davem@davemloft.net>
+To:     arnd@arndb.de
+Cc:     olteanv@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, vladimir.oltean@nxp.com,
+        natechancellor@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] [net-next, v2] dsa: sja1105: dynamically allocate
+ stats structure
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200505153834.1437767-1-arnd@arndb.de>
+References: <20200505153834.1437767-1-arnd@arndb.de>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 06 May 2020 17:47:55 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I thought we have established that checking device MTU (m*T*u)
-> at ingress makes a very limited amount of sense, no?
->
-> Shooting from the hip here, but won't something like:
->
->     if (!skb->dev || skb->tc_at_ingress)
->         return SKB_MAX_ALLOC;
->     return skb->dev->mtu + skb->dev->hard_header_len;
->
-> Solve your problem?
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Tue,  5 May 2020 17:38:19 +0200
 
-I believe that probably does indeed solve the ingress case of tc
-ingress hook on cellular redirecting to wifi.
+> The addition of sja1105_port_status_ether structure into the
+> statistics causes the frame size to go over the warning limit:
+> 
+> drivers/net/dsa/sja1105/sja1105_ethtool.c:421:6: error: stack frame size of 1104 bytes in function 'sja1105_get_ethtool_stats' [-Werror,-Wframe-larger-than=]
+> 
+> Use dynamic allocation to avoid this.
+> 
+> Fixes: 336aa67bd027 ("net: dsa: sja1105: show more ethtool statistics counters for P/Q/R/S")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> v2: remove extra ';'
+>     remove bogus include/linux/warnings.h change
 
-However, there's 2 possible uplinks - cellular (rawip, L3), and wifi
-(ethernet, L2).
-Thus, there's actually 4 things I'm trying to support:
-
-- ipv6 ingress on cellular uplink (L3/rawip), translate to ipv4,
-forward to wifi/ethernet <- need to add ethernet header
-
-- ipv6 ingress on wifi uplink (L2/ether), translate to ipv4, forward
-to wifi/ethernet <- trivial, no packet size change
-
-- ipv4 egressing through tun (L3), translate to ipv6, forward to
-cellular uplink <- trivial, no packet size change
-
-- ipv4 egressing through tun (L3), translate to ipv6, forward to wifi
-uplink <- need to add ethernet header [*]
-
-I think your approach doesn't solve the reverse path (* up above):
-
-ie. ipv4 packets hitting a tun device (owned by a clat daemon doing
-ipv4<->ipv6 translation in userspace), being stolen by a tc egress
-ebpf hook, mutated to ipv6 by ebpf and bpf_redirect'ed to egress
-through a wifi ipv6-only uplink.
-
-Though arguably in this case I could probably simply increase the tun
-device mtu by another 14, while keeping ipv4 route mtus low...
-(tun mtu already has to be 28 bytes lower then wifi mtu to allow
-replacement of ipv4 with ipv6 header (20 bytes extra), with possibly
-an ipv6 frag header (8 more bytes))
-
-Any further thoughts?
+Applied, thanks Arnd.
