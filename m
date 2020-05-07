@@ -2,114 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 606171C8E48
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:23:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50EC51C8E4B
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbgEGOXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 10:23:05 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:50049 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbgEGOXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:23:05 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 49HwfV5bQ2z1rvxr;
-        Thu,  7 May 2020 16:22:56 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 49HwfS22d2z1qtwL;
-        Thu,  7 May 2020 16:22:56 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id IQuIkgUGNwyE; Thu,  7 May 2020 16:22:54 +0200 (CEST)
-X-Auth-Info: Wg/ORJIuFpCTYPu3flAkNpAUaeA7tGhQ6nReo6L5z1s=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu,  7 May 2020 16:22:54 +0200 (CEST)
-Subject: Re: [PATCH V4 07/19] net: ks8851: Remove ks8851_rdreg32()
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-References: <20200414182029.183594-1-marex@denx.de>
- <20200414182029.183594-8-marex@denx.de>
- <20200420140700.6632hztejwcgjwsf@wunner.de>
- <99104102-7973-e80f-9006-9a448403562b@denx.de>
- <20200420142002.2l57umsi3rh5ka7e@wunner.de>
- <e8924fbc-b515-527c-a772-b5ac5cfc1cf4@denx.de>
- <20200420144403.eoo47sq7pwp6yc7d@wunner.de>
- <0edb18eb-0c18-c3cd-a0b7-4ba23428f354@denx.de>
- <20200420155057.GC917792@lunn.ch>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <d5ad39e3-c7a2-d5ee-3066-6b1f3b0a9290@denx.de>
-Date:   Thu, 7 May 2020 16:22:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200420155057.GC917792@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726218AbgEGOYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:24:33 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:64364 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725914AbgEGOYd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:24:33 -0400
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 047E2H67179639;
+        Thu, 7 May 2020 10:24:32 -0400
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 30u8t85phd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 May 2020 10:24:31 -0400
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 047EJjAM022373;
+        Thu, 7 May 2020 14:24:29 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03fra.de.ibm.com with ESMTP id 30s0g5mncn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 May 2020 14:24:29 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 047EOQkj54526154
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 7 May 2020 14:24:26 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 702B1A4064;
+        Thu,  7 May 2020 14:24:26 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3E282A4054;
+        Thu,  7 May 2020 14:24:26 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  7 May 2020 14:24:26 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next] net/smc: remove set but not used variables 'del_llc, del_llc_resp'
+Date:   Thu,  7 May 2020 16:24:06 +0200
+Message-Id: <20200507142406.14638-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-07_08:2020-05-07,2020-05-07 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ adultscore=0 suspectscore=1 bulkscore=0 spamscore=0 mlxlogscore=999
+ malwarescore=0 priorityscore=1501 phishscore=0 clxscore=1015
+ impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005070111
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/20/20 5:50 PM, Andrew Lunn wrote:
-> On Mon, Apr 20, 2020 at 05:38:16PM +0200, Marek Vasut wrote:
->> On 4/20/20 4:44 PM, Lukas Wunner wrote:
->>> On Mon, Apr 20, 2020 at 04:24:05PM +0200, Marek Vasut wrote:
->>>> On 4/20/20 4:20 PM, Lukas Wunner wrote:
->>>>> On Mon, Apr 20, 2020 at 04:12:59PM +0200, Marek Vasut wrote:
->>>>>> On 4/20/20 4:07 PM, Lukas Wunner wrote:
->>>>>>> On Tue, Apr 14, 2020 at 08:20:17PM +0200, Marek Vasut wrote:
->>>>>>>> The ks8851_rdreg32() is used only in one place, to read two registers
->>>>>>>> using a single read. To make it easier to support 16-bit accesses via
->>>>>>>> parallel bus later on, replace this single read with two 16-bit reads
->>>>>>>> from each of the registers and drop the ks8851_rdreg32() altogether.
->>>>>>>>
->>>>>>>> If this has noticeable performance impact on the SPI variant of KS8851,
->>>>>>>> then we should consider using regmap to abstract the SPI and parallel
->>>>>>>> bus options and in case of SPI, permit regmap to merge register reads
->>>>>>>> of neighboring registers into single, longer, read.
->>>>>>>
->>>>>>> Bisection has shown this patch to be the biggest cause of the performance
->>>>>>> regression introduced by this series:  Latency increases by about 9 usec.
->>>>>>
->>>>>> Just for completeness, did you perform this bisect on current linux-next
->>>>>> without any patches except this series OR your patched rpi downstream
->>>>>> vendor tree Linux 4.19 with preempt-rt patch applied ?
->>>>>
->>>>> The latter because latency without CONFIG_PREEMPT_RT_FULL=y is too imprecise
->>>>> to really see the difference and that's the configuration we care about.
->>>>
->>>> Why am I not able to see the same on the RPi3 then ?
->>>> How can I replicate this observation ?
->>>
->>> Compile this branch with CONFIG_PREEMPT_RT_FULL=y:
->>>
->>> https://github.com/l1k/linux/commits/revpi-4.19-marek-v4
->>>
->>> Alternatively, download this file:
->>>
->>> http://wunner.de/ks8851-marekv4.tar
->>>
->>> Install the "raspberrypi-kernel" deb-package included in the tarball on a
->>> stock Raspbian image and copy one of the included ks8851.ko to:
->>> /lib/modules/4.19.95-rt38-v7+/kernel/drivers/net/ethernet/micrel
->>
->> Why don't you rather try to replicate this problem in linux-next?
-> 
-> Hi Lukas
-> 
-> 4.19 is dead in terms of development work. It is now over 18 months
-> old. All mainline development work is done against either the last
-> -rc1 kernel, or a subsystems specific 'for-next' branch.
-> 
-> Please test Marek patches against net-next. If there are performance
-> regressions with net-next, they should be addressed, but mainline does
-> not care about some random long time dead tree.
+From: YueHaibing <yuehaibing@huawei.com>
 
-Are there any news on this one ?
+Fixes gcc '-Wunused-but-set-variable' warning:
+
+net/smc/smc_llc.c: In function 'smc_llc_cli_conf_link':
+net/smc/smc_llc.c:753:31: warning:
+ variable 'del_llc' set but not used [-Wunused-but-set-variable]
+  struct smc_llc_msg_del_link *del_llc;
+                               ^
+net/smc/smc_llc.c: In function 'smc_llc_process_srv_delete_link':
+net/smc/smc_llc.c:1311:33: warning:
+ variable 'del_llc_resp' set but not used [-Wunused-but-set-variable]
+    struct smc_llc_msg_del_link *del_llc_resp;
+                                 ^
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+---
+ net/smc/smc_llc.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
+index 4cc583678ac7..391237b601fe 100644
+--- a/net/smc/smc_llc.c
++++ b/net/smc/smc_llc.c
+@@ -750,7 +750,6 @@ static int smc_llc_cli_conf_link(struct smc_link *link,
+ 				 enum smc_lgr_type lgr_new_t)
+ {
+ 	struct smc_link_group *lgr = link->lgr;
+-	struct smc_llc_msg_del_link *del_llc;
+ 	struct smc_llc_qentry *qentry = NULL;
+ 	int rc = 0;
+ 
+@@ -764,7 +763,6 @@ static int smc_llc_cli_conf_link(struct smc_link *link,
+ 	}
+ 	if (qentry->msg.raw.hdr.common.type != SMC_LLC_CONFIRM_LINK) {
+ 		/* received DELETE_LINK instead */
+-		del_llc = &qentry->msg.delete_link;
+ 		qentry->msg.raw.hdr.flags |= SMC_LLC_FLAG_RESP;
+ 		smc_llc_send_message(link, &qentry->msg);
+ 		smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
+@@ -1308,16 +1306,12 @@ static void smc_llc_process_srv_delete_link(struct smc_link_group *lgr)
+ 		 * enqueued DELETE_LINK request (forward it)
+ 		 */
+ 		if (!smc_llc_send_message(lnk, &qentry->msg)) {
+-			struct smc_llc_msg_del_link *del_llc_resp;
+ 			struct smc_llc_qentry *qentry2;
+ 
+ 			qentry2 = smc_llc_wait(lgr, lnk, SMC_LLC_WAIT_TIME,
+ 					       SMC_LLC_DELETE_LINK);
+-			if (!qentry2) {
+-			} else {
+-				del_llc_resp = &qentry2->msg.delete_link;
++			if (qentry2)
+ 				smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
+-			}
+ 		}
+ 	}
+ 	smcr_link_clear(lnk_del, true);
+-- 
+2.17.1
+
