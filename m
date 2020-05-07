@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF971C8710
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:43:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C0361C8712
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbgEGKnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 06:43:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41858 "EHLO
+        id S1726843AbgEGKnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 06:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725939AbgEGKnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:43:14 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E84C061A10;
-        Thu,  7 May 2020 03:43:14 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id s18so2341214pgl.12;
-        Thu, 07 May 2020 03:43:14 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725939AbgEGKnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:43:18 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBFEC061A10;
+        Thu,  7 May 2020 03:43:18 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id 7so3704651pjo.0;
+        Thu, 07 May 2020 03:43:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g1egyuSINNSTTaOrqc4Xih94IzvES/v8BLU25z1rtww=;
-        b=ua6piP9tpHhhZQlpj4CEBpNwJ5Kfgwuw3dHji+jIhrwoMJeSQSpqhpK+JqwjzqZjHi
-         f6xQC9Tr4jY4FShU15z7MCz4qZRJzDLrKnqcw53E0i9T//BrMwKwpII0wK27gR+CUppR
-         O3rH9C3Bz0/tDbYERbYjUR0rOS4saWhHx9wKaEex+zbVBiBaP8TWFNNGdgsYyI5ZJfl/
-         3buKbVcktKM48a8Sta1T56e0y7DmV7oNnSALTdB4jUuggup8zBbhzEzckJXVVWvOH9Tg
-         7iASzz9kK/6+918nyvtUAg85RFo1en2JzUOm5lS42VOjS0fBiEqpAzn71kPqAC10o/l+
-         8/vQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PZ9D2rWETxJeMbOwyem4NTJb62OkvrfxOPBxyjThJ8Y=;
+        b=LIYFJi+ldOaym36zI8WGxR8F6O7sqgKE2aJocbqCRqKhHgWszZvHU0PGeJyuuf9js8
+         d0UxoxMdzo6o/aRYEh7SrYLG7njhJQUHWFTMcKf3cU1fRcBjnhpI1rFSJYrWFjRfVm6L
+         yZpeLxQGGp2B3ROFMNxzK3UWRomVsj3uw3k57UCls0jkcUsikVfYaOtLLnvA/jDV8zq5
+         BBDHpM/pBKCGTvw54HjwZNIQt3S/Kd+oQMthsgvtGtj5aFy+5jzEA72d2vbBft5tNKbf
+         qRpFxFzZbaTBE+vZQbYyjHWMGqwTloxVytl3sVOwjaVtjnBns9kED1VFdg5cTl/15y7G
+         BQPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g1egyuSINNSTTaOrqc4Xih94IzvES/v8BLU25z1rtww=;
-        b=qTwSrepmnYSsRdfE0s9bHdNxf/hR8yaO/iwr27bYHQF+vj1fM+QiCTnCJKAUKV/JCI
-         s2zy+rVIoyoBfXnQFB9iKzZLtVOkF2GPZGys/W12CRtC4XAFb3qwzUh1t1IocDLncyaw
-         1gxud/arIRx8lo1zDzP/waoWDToCjUXCrsrMk3lJvyMJG5f81M2gTMPszZz6Qnqa/7PO
-         NymBYX3Np+C4K+aJ37WFnV36iuXbYQXMwbKEP+n3iDCYIkmjAHWblIl5S7oit3Fidfh1
-         h/6U1h6B6U6nUKWFRboGcmpqvMl5gz0MjluDQYqETVtY7vdaxXymyrJdlcvFuWLbbwnr
-         xlZA==
-X-Gm-Message-State: AGi0Pubm35nGRCn5COzhI3KafkzMnGFi/hUeJAvHSXgfLcbo/f5Gs7C/
-        gMznPSHV1MOpfgBqTLOOrR0=
-X-Google-Smtp-Source: APiQypIscyuqpg1BpQbjHv2wHomdc2n/L+Titc4WOzrRSFBlkU4tnyYkE/BQXCAUekdhPoS5YOKEig==
-X-Received: by 2002:aa7:82d4:: with SMTP id f20mr13319745pfn.253.1588848193614;
-        Thu, 07 May 2020 03:43:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PZ9D2rWETxJeMbOwyem4NTJb62OkvrfxOPBxyjThJ8Y=;
+        b=hac7dYWiOdAmO0yldX13f07FqhHf9JCVQlHtS2dYgBedO3rJ7iTfkjE51niZ0YsbU8
+         DtlLIT/Cs9Xwhu8gEN/RH1qdTkrKeyc76Yc6qGQzPNn4qejhJbHpC6b8uGrtDMI+LGqh
+         oBQ3E+e742bCQRQhKAVKe8jgasu/KNuyUt3laO05QjM6GkKW6KfmS/csBKWBzzv2iga8
+         ZmgMmDIP3qEOWcYonKNmNWuch5hTZywmIcq5synF12XfV8ZU8ie7UiRpcAx5VqsAJj09
+         H/TIkzDoFbRTI5ddq1GZVl/MTPGXi26IZl+qxeM3gY01+8VI6SyznaqOxV9cATag9wry
+         imwQ==
+X-Gm-Message-State: AGi0PubJ+hSOA+sjo4M/1RIfNvFq+mNay8RyE22if08O21G39ZX1xt7j
+        3Mayrs0Uj4ADJn4omHt1xHhk/I0/OuTUpA==
+X-Google-Smtp-Source: APiQypLDi7twSR1uqw/uRHtp/UEy5dXFtll1EqjPqoQBozmfpPBiNnF0RED24dckRiiYDLRKOQiVeQ==
+X-Received: by 2002:a17:902:9002:: with SMTP id a2mr12796160plp.220.1588848198255;
+        Thu, 07 May 2020 03:43:18 -0700 (PDT)
 Received: from btopel-mobl.ger.intel.com ([192.55.55.43])
-        by smtp.gmail.com with ESMTPSA id j14sm7450673pjm.27.2020.05.07.03.43.08
+        by smtp.gmail.com with ESMTPSA id j14sm7450673pjm.27.2020.05.07.03.43.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2020 03:43:12 -0700 (PDT)
+        Thu, 07 May 2020 03:43:17 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
         kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
         jeffrey.t.kirsher@intel.com
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        maximmi@mellanox.com, maciej.fijalkowski@intel.com,
-        bjorn.topel@intel.com
-Subject: [PATCH bpf-next 00/14] Introduce AF_XDP buffer allocation API
-Date:   Thu,  7 May 2020 12:42:38 +0200
-Message-Id: <20200507104252.544114-1-bjorn.topel@gmail.com>
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        maximmi@mellanox.com, maciej.fijalkowski@intel.com
+Subject: [PATCH bpf-next 01/14] xsk: move xskmap.c to net/xdp/
+Date:   Thu,  7 May 2020 12:42:39 +0200
+Message-Id: <20200507104252.544114-2-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200507104252.544114-1-bjorn.topel@gmail.com>
+References: <20200507104252.544114-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -68,185 +69,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Overview
-========
+From: Björn Töpel <bjorn.topel@intel.com>
 
-Driver adoption for AF_XDP has been slow. The amount of code required
-to proper support AF_XDP is substantial and the driver/core APIs are
-vague or even non-existing. Drivers have to manually adjust data
-offsets, updating AF_XDP handles differently for different modes
-(aligned/unaligned).
+The XSKMAP is partly implemented by net/xdp/xsk.c. Move xskmap.c from
+kernel/bpf/ to net/xdp/, which is the logical place for AF_XDP related
+code. Also, move AF_XDP struct definitions, and function declarations
+only used by AF_XDP internals into net/xdp/xsk.h.
 
-This series attempts to improve the situation by introducing an AF_XDP
-buffer allocation API. The implementation is based on a single core
-(single producer/consumer) buffer pool for the AF_XDP UMEM.
-    
-A buffer is allocated using the xsk_buff_alloc() function, and
-returned using xsk_buff_free(). If a buffer is disassociated with the
-pool, e.g. when a buffer is passed to an AF_XDP socket, a buffer is
-said to be released. Currently, the release function is only used by
-the AF_XDP internals and not visible to the driver.
-    
-Drivers using this API should register the XDP memory model with the
-new MEM_TYPE_XSK_BUFF_POOL type, which will supersede the
-MEM_TYPE_ZERO_COPY type.
-
-The buffer type is struct xdp_buff, and follows the lifetime of
-regular xdp_buffs, i.e.  the lifetime of an xdp_buff is restricted to
-a NAPI context. In other words, the API is not replacing xdp_frames.
-
-DMA mapping/synching is folded into the buffer handling as well.
-
-@JeffK The Intel drivers changes should go through the bpf-next tree,
-       and not your regular Intel tree, since multiple (non-Intel)
-       drivers are affected.
-
-The outline of the series is as following:
-
-Patch 1 to 3 are restructures/clean ups. The XSKMAP implementation is
-moved to net/xdp/. Functions/defines/enums that are only used by the
-AF_XDP internals are moved from the global include/net/xdp_sock.h to
-net/xdp/xsk.h. We are also introducing a new "driver include file",
-include/net/xdp_sock_drv.h, which is the only file NIC driver
-developers adding AF_XDP zero-copy support should care about.
-
-Patch 4 adds the new API, and migrates the "copy-mode"/skb-mode AF_XDP
-path to the new API.
-
-Patch 5 to 10 migrates the existing zero-copy drivers to the new API.
-
-Patch 11 removes the MEM_TYPE_ZERO_COPY memory type, and the "handle"
-member of struct xdp_buff.
-
-Patch 12 simplifies the xdp_return_{frame,frame_rx_napi,buff}
-functions.
-
-Patch 13 is a performance patch, where some functions are inlined.
-
-Finally, patch 14 updates the MAINTAINERS file to correctly mirror the
-new file layout.
-
-Note that this series removes the "handle" member from struct
-xdp_buff, which reduces the xdp_buff size.
-
-After this series, the diff stat of drivers/net/ is:
-  27 files changed, 378 insertions(+), 1264 deletions(-)
-
-This series is a first step of simplifying the driver side of
-AF_XDP. I think more of the AF_XDP logic can be moved from the drivers
-to the AF_XDP core, e.g. the "need wakeup" set/clear functionality.
-
-Statistics when allocation fails can now be added to the socket
-statistics via the XDP_STATISTICS getsockopt(). This will be added in
-a follow up series.
-
-
-Performance
-===========
-
-As a nice side effect, performance is up a bit as well (40 GbE, 64B
-packets, i40e):
-
-rxdrop, zero-copy, aligned:
-  baseline: 20.4
-  new API : 21.3
-
-rxdrop, zero-copy, unaligned:
-  baseline: 19.5
-  new API : 21.2
-
-
-Changelog
-=========
-
-  * Fixed build errors/warnings for m68k and riscv. (kbuild test
-    robot)
-  * Added headroom/chunk size getter. (Maxim/Björn)
-  * mlx5: Put back the sanity check for XSK params, use XSK API to get
-    the total headroom size. (Maxim)
-  * Fixed spelling in commit message. (Björn)
-  * Make sure xp_validate_desc() is inlined for Tx perf. (Maxim)
-  * Sorted file entries. (Joe)
-  * Added xdp_return_{frame,frame_rx_napi,buff} simplification (Björn)
-
-
-Thanks for all the comments/input/help!
-
-Cheers,
-Björn
-
-
-Björn Töpel (13):
-  xsk: move xskmap.c to net/xdp/
-  xsk: move defines only used by AF_XDP internals to xsk.h
-  xsk: introduce AF_XDP buffer allocation API
-  i40e: refactor rx_bi accesses
-  i40e: separate kernel allocated rx_bi rings from AF_XDP rings
-  i40e, xsk: migrate to new MEM_TYPE_XSK_BUFF_POOL
-  ice, xsk: migrate to new MEM_TYPE_XSK_BUFF_POOL
-  ixgbe, xsk: migrate to new MEM_TYPE_XSK_BUFF_POOL
-  mlx5, xsk: migrate to new MEM_TYPE_XSK_BUFF_POOL
-  xsk: remove MEM_TYPE_ZERO_COPY and corresponding code
-  xdp: simplify xdp_return_{frame,frame_rx_napi,buff}
-  xsk: explicitly inline functions and move definitions
-  MAINTAINERS, xsk: update AF_XDP section after moves/adds
-
-Magnus Karlsson (1):
-  xsk: move driver interface to xdp_sock_drv.h
-
- MAINTAINERS                                   |   6 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c   |  28 +-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 134 +++----
- drivers/net/ethernet/intel/i40e/i40e_txrx.h   |  17 +-
- .../ethernet/intel/i40e/i40e_txrx_common.h    |  40 +-
- drivers/net/ethernet/intel/i40e/i40e_type.h   |   5 +-
- drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 376 +++---------------
- drivers/net/ethernet/intel/i40e/i40e_xsk.h    |   3 +-
- drivers/net/ethernet/intel/ice/ice_base.c     |  16 +-
- drivers/net/ethernet/intel/ice/ice_txrx.h     |   8 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c      | 374 ++---------------
- drivers/net/ethernet/intel/ice/ice_xsk.h      |  13 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   9 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  15 +-
- .../ethernet/intel/ixgbe/ixgbe_txrx_common.h  |   2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 307 +++-----------
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  11 +-
- .../ethernet/mellanox/mlx5/core/en/params.c   |  13 +-
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  32 +-
- .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |   2 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 111 +-----
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |   8 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   |   6 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/tx.h   |   2 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/umem.c |  51 +--
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  15 +-
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  43 +-
- drivers/net/hyperv/netvsc_bpf.c               |   1 -
- include/net/xdp.h                             |   9 +-
- include/net/xdp_sock.h                        | 276 +------------
- include/net/xdp_sock_drv.h                    | 220 ++++++++++
- include/net/xsk_buff_pool.h                   | 134 +++++++
- include/trace/events/xdp.h                    |   2 +-
- kernel/bpf/Makefile                           |   3 -
- net/core/xdp.c                                |  51 +--
- net/ethtool/channels.c                        |   2 +-
- net/ethtool/ioctl.c                           |   2 +-
- net/xdp/Makefile                              |   3 +-
- net/xdp/xdp_umem.c                            |  55 +--
- net/xdp/xdp_umem.h                            |   2 +-
- net/xdp/xsk.c                                 | 204 ++++------
- net/xdp/xsk.h                                 |  30 ++
- net/xdp/xsk_buff_pool.c                       | 337 ++++++++++++++++
- net/xdp/xsk_diag.c                            |   2 +-
- net/xdp/xsk_queue.c                           |  62 ---
- net/xdp/xsk_queue.h                           | 117 ++----
- {kernel/bpf => net/xdp}/xskmap.c              |   2 +
- 47 files changed, 1249 insertions(+), 1912 deletions(-)
- create mode 100644 include/net/xdp_sock_drv.h
- create mode 100644 include/net/xsk_buff_pool.h
- create mode 100644 net/xdp/xsk_buff_pool.c
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+---
+ include/net/xdp_sock.h           | 20 --------------------
+ kernel/bpf/Makefile              |  3 ---
+ net/xdp/Makefile                 |  2 +-
+ net/xdp/xsk.h                    | 16 ++++++++++++++++
+ {kernel/bpf => net/xdp}/xskmap.c |  2 ++
+ 5 files changed, 19 insertions(+), 24 deletions(-)
  rename {kernel/bpf => net/xdp}/xskmap.c (99%)
 
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index 67191ccaab85..a26d6c80e43d 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -65,22 +65,12 @@ struct xdp_umem {
+ 	struct list_head xsk_tx_list;
+ };
+ 
+-/* Nodes are linked in the struct xdp_sock map_list field, and used to
+- * track which maps a certain socket reside in.
+- */
+-
+ struct xsk_map {
+ 	struct bpf_map map;
+ 	spinlock_t lock; /* Synchronize map updates */
+ 	struct xdp_sock *xsk_map[];
+ };
+ 
+-struct xsk_map_node {
+-	struct list_head node;
+-	struct xsk_map *map;
+-	struct xdp_sock **map_entry;
+-};
+-
+ struct xdp_sock {
+ 	/* struct sock must be the first member of struct xdp_sock */
+ 	struct sock sk;
+@@ -114,7 +104,6 @@ struct xdp_sock {
+ struct xdp_buff;
+ #ifdef CONFIG_XDP_SOCKETS
+ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp);
+-bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs);
+ /* Used from netdev driver */
+ bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt);
+ bool xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr);
+@@ -133,10 +122,6 @@ void xsk_clear_rx_need_wakeup(struct xdp_umem *umem);
+ void xsk_clear_tx_need_wakeup(struct xdp_umem *umem);
+ bool xsk_umem_uses_need_wakeup(struct xdp_umem *umem);
+ 
+-void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+-			     struct xdp_sock **map_entry);
+-int xsk_map_inc(struct xsk_map *map);
+-void xsk_map_put(struct xsk_map *map);
+ int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp);
+ void __xsk_map_flush(void);
+ 
+@@ -242,11 +227,6 @@ static inline int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+ 	return -ENOTSUPP;
+ }
+ 
+-static inline bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
+-{
+-	return false;
+-}
+-
+ static inline bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
+ {
+ 	return false;
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index f2d7be596966..c4334132816e 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -12,9 +12,6 @@ obj-$(CONFIG_BPF_JIT) += dispatcher.o
+ ifeq ($(CONFIG_NET),y)
+ obj-$(CONFIG_BPF_SYSCALL) += devmap.o
+ obj-$(CONFIG_BPF_SYSCALL) += cpumap.o
+-ifeq ($(CONFIG_XDP_SOCKETS),y)
+-obj-$(CONFIG_BPF_SYSCALL) += xskmap.o
+-endif
+ obj-$(CONFIG_BPF_SYSCALL) += offload.o
+ endif
+ ifeq ($(CONFIG_PERF_EVENTS),y)
+diff --git a/net/xdp/Makefile b/net/xdp/Makefile
+index 71e2bdafb2ce..90b5460d6166 100644
+--- a/net/xdp/Makefile
++++ b/net/xdp/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-obj-$(CONFIG_XDP_SOCKETS) += xsk.o xdp_umem.o xsk_queue.o
++obj-$(CONFIG_XDP_SOCKETS) += xsk.o xdp_umem.o xsk_queue.o xskmap.o
+ obj-$(CONFIG_XDP_SOCKETS_DIAG) += xsk_diag.o
+diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+index 4cfd106bdb53..d6a0979050e6 100644
+--- a/net/xdp/xsk.h
++++ b/net/xdp/xsk.h
+@@ -17,9 +17,25 @@ struct xdp_mmap_offsets_v1 {
+ 	struct xdp_ring_offset_v1 cr;
+ };
+ 
++/* Nodes are linked in the struct xdp_sock map_list field, and used to
++ * track which maps a certain socket reside in.
++ */
++
++struct xsk_map_node {
++	struct list_head node;
++	struct xsk_map *map;
++	struct xdp_sock **map_entry;
++};
++
+ static inline struct xdp_sock *xdp_sk(struct sock *sk)
+ {
+ 	return (struct xdp_sock *)sk;
+ }
+ 
++bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs);
++void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
++			     struct xdp_sock **map_entry);
++int xsk_map_inc(struct xsk_map *map);
++void xsk_map_put(struct xsk_map *map);
++
+ #endif /* XSK_H_ */
+diff --git a/kernel/bpf/xskmap.c b/net/xdp/xskmap.c
+similarity index 99%
+rename from kernel/bpf/xskmap.c
+rename to net/xdp/xskmap.c
+index 2cc5c8f4c800..1dc7208c71ba 100644
+--- a/kernel/bpf/xskmap.c
++++ b/net/xdp/xskmap.c
+@@ -9,6 +9,8 @@
+ #include <linux/slab.h>
+ #include <linux/sched.h>
+ 
++#include "xsk.h"
++
+ int xsk_map_inc(struct xsk_map *map)
+ {
+ 	bpf_map_inc(&map->map);
 -- 
 2.25.1
 
