@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EDB71C9002
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2AFA1C8F10
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:35:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728727AbgEGOgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 10:36:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54428 "EHLO mail.kernel.org"
+        id S1728409AbgEGO3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:29:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56214 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727978AbgEGO2K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 10:28:10 -0400
+        id S1728390AbgEGO3D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 10:29:03 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C2D802083B;
-        Thu,  7 May 2020 14:28:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B195E20838;
+        Thu,  7 May 2020 14:29:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588861689;
-        bh=Dek+MGDDA1gIbGByUT5XOUMDdXthngPtNd3pio84ldc=;
+        s=default; t=1588861743;
+        bh=8hdS+zn0szNmoYXCOAEWvvvEI600objqG6lSWWGUNso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xtc9G+odZRk3kQaWCw06CGd9FFmF4dz1vGM2GYvdWALgYPN88Movj/1VYNt3aaBb7
-         HR2Nq3jvgwnxG3bkYDWiE6sJRiOR6xXlssX5NEniIC94wijjnzkkaPpTVSUn+t65r4
-         kQcE308K6qTdjOc7q6QyJHxb5dZ3qOC5O9YpGiJM=
+        b=JhVCVSZIvXTeLrqmxBV31C6ha7OgozBaalp9siCDHg6wpdwikOCX+tnRIKp6YIbHY
+         JUVksnliMBFw7/C9weZG6uUOa0noK0NK1LF2zn4r3tppel8au95gTB2bbaQoH1TBZ4
+         DXlFgW3if3fckEBzUk5fck1yMyulpMSzGdNpZaP4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     NeilBrown <neilb@suse.de>,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 34/50] SUNRPC: defer slow parts of rpc_free_client() to a workqueue.
-Date:   Thu,  7 May 2020 10:27:10 -0400
-Message-Id: <20200507142726.25751-34-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 26/35] SUNRPC: defer slow parts of rpc_free_client() to a workqueue.
+Date:   Thu,  7 May 2020 10:28:20 -0400
+Message-Id: <20200507142830.26239-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200507142726.25751-1-sashal@kernel.org>
-References: <20200507142726.25751-1-sashal@kernel.org>
+In-Reply-To: <20200507142830.26239-1-sashal@kernel.org>
+References: <20200507142830.26239-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -89,7 +89,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 24 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/sunrpc/clnt.h b/include/linux/sunrpc/clnt.h
-index ca7e108248e21..7bd124e06b36f 100644
+index abc63bd1be2b5..d99d39d45a494 100644
 --- a/include/linux/sunrpc/clnt.h
 +++ b/include/linux/sunrpc/clnt.h
 @@ -71,7 +71,13 @@ struct rpc_clnt {
@@ -108,10 +108,10 @@ index ca7e108248e21..7bd124e06b36f 100644
  };
  
 diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index 7324b21f923e6..a2c215a6980d8 100644
+index f7f78566be463..a7430b66c7389 100644
 --- a/net/sunrpc/clnt.c
 +++ b/net/sunrpc/clnt.c
-@@ -880,6 +880,20 @@ EXPORT_SYMBOL_GPL(rpc_shutdown_client);
+@@ -877,6 +877,20 @@ EXPORT_SYMBOL_GPL(rpc_shutdown_client);
  /*
   * Free an RPC client
   */
@@ -132,7 +132,7 @@ index 7324b21f923e6..a2c215a6980d8 100644
  static struct rpc_clnt *
  rpc_free_client(struct rpc_clnt *clnt)
  {
-@@ -890,17 +904,16 @@ rpc_free_client(struct rpc_clnt *clnt)
+@@ -887,17 +901,16 @@ rpc_free_client(struct rpc_clnt *clnt)
  			rcu_dereference(clnt->cl_xprt)->servername);
  	if (clnt->cl_parent != clnt)
  		parent = clnt->cl_parent;
