@@ -2,123 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50EC51C8E4B
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EDB71C9002
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726218AbgEGOYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 10:24:33 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:64364 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725914AbgEGOYd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:24:33 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 047E2H67179639;
-        Thu, 7 May 2020 10:24:32 -0400
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30u8t85phd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 May 2020 10:24:31 -0400
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 047EJjAM022373;
-        Thu, 7 May 2020 14:24:29 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03fra.de.ibm.com with ESMTP id 30s0g5mncn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 May 2020 14:24:29 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 047EOQkj54526154
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 7 May 2020 14:24:26 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 702B1A4064;
-        Thu,  7 May 2020 14:24:26 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3E282A4054;
-        Thu,  7 May 2020 14:24:26 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  7 May 2020 14:24:26 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net-next] net/smc: remove set but not used variables 'del_llc, del_llc_resp'
-Date:   Thu,  7 May 2020 16:24:06 +0200
-Message-Id: <20200507142406.14638-1-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-07_08:2020-05-07,2020-05-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 suspectscore=1 bulkscore=0 spamscore=0 mlxlogscore=999
- malwarescore=0 priorityscore=1501 phishscore=0 clxscore=1015
- impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2005070111
+        id S1728727AbgEGOgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:36:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54428 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727978AbgEGO2K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 10:28:10 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C2D802083B;
+        Thu,  7 May 2020 14:28:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588861689;
+        bh=Dek+MGDDA1gIbGByUT5XOUMDdXthngPtNd3pio84ldc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Xtc9G+odZRk3kQaWCw06CGd9FFmF4dz1vGM2GYvdWALgYPN88Movj/1VYNt3aaBb7
+         HR2Nq3jvgwnxG3bkYDWiE6sJRiOR6xXlssX5NEniIC94wijjnzkkaPpTVSUn+t65r4
+         kQcE308K6qTdjOc7q6QyJHxb5dZ3qOC5O9YpGiJM=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 34/50] SUNRPC: defer slow parts of rpc_free_client() to a workqueue.
+Date:   Thu,  7 May 2020 10:27:10 -0400
+Message-Id: <20200507142726.25751-34-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200507142726.25751-1-sashal@kernel.org>
+References: <20200507142726.25751-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: NeilBrown <neilb@suse.de>
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+[ Upstream commit 7c4310ff56422ea43418305d22bbc5fe19150ec4 ]
 
-net/smc/smc_llc.c: In function 'smc_llc_cli_conf_link':
-net/smc/smc_llc.c:753:31: warning:
- variable 'del_llc' set but not used [-Wunused-but-set-variable]
-  struct smc_llc_msg_del_link *del_llc;
-                               ^
-net/smc/smc_llc.c: In function 'smc_llc_process_srv_delete_link':
-net/smc/smc_llc.c:1311:33: warning:
- variable 'del_llc_resp' set but not used [-Wunused-but-set-variable]
-    struct smc_llc_msg_del_link *del_llc_resp;
-                                 ^
+The rpciod workqueue is on the write-out path for freeing dirty memory,
+so it is important that it never block waiting for memory to be
+allocated - this can lead to a deadlock.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+rpc_execute() - which is often called by an rpciod work item - calls
+rcp_task_release_client() which can lead to rpc_free_client().
+
+rpc_free_client() makes two calls which could potentially block wating
+for memory allocation.
+
+rpc_clnt_debugfs_unregister() calls into debugfs and will block while
+any of the debugfs files are being accessed.  In particular it can block
+while any of the 'open' methods are being called and all of these use
+malloc for one thing or another.  So this can deadlock if the memory
+allocation waits for NFS to complete some writes via rpciod.
+
+rpc_clnt_remove_pipedir() can take the inode_lock() and while it isn't
+obvious that memory allocations can happen while the lock it held, it is
+safer to assume they might and to not let rpciod call
+rpc_clnt_remove_pipedir().
+
+So this patch moves these two calls (together with the final kfree() and
+rpciod_down()) into a work-item to be run from the system work-queue.
+rpciod can continue its important work, and the final stages of the free
+can happen whenever they happen.
+
+I have seen this deadlock on a 4.12 based kernel where debugfs used
+synchronize_srcu() when removing objects.  synchronize_srcu() requires a
+workqueue and there were no free workther threads and none could be
+allocated.  While debugsfs no longer uses SRCU, I believe the deadlock
+is still possible.
+
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_llc.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ include/linux/sunrpc/clnt.h |  8 +++++++-
+ net/sunrpc/clnt.c           | 21 +++++++++++++++++----
+ 2 files changed, 24 insertions(+), 5 deletions(-)
 
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index 4cc583678ac7..391237b601fe 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -750,7 +750,6 @@ static int smc_llc_cli_conf_link(struct smc_link *link,
- 				 enum smc_lgr_type lgr_new_t)
+diff --git a/include/linux/sunrpc/clnt.h b/include/linux/sunrpc/clnt.h
+index ca7e108248e21..7bd124e06b36f 100644
+--- a/include/linux/sunrpc/clnt.h
++++ b/include/linux/sunrpc/clnt.h
+@@ -71,7 +71,13 @@ struct rpc_clnt {
+ #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+ 	struct dentry		*cl_debugfs;	/* debugfs directory */
+ #endif
+-	struct rpc_xprt_iter	cl_xpi;
++	/* cl_work is only needed after cl_xpi is no longer used,
++	 * and that are of similar size
++	 */
++	union {
++		struct rpc_xprt_iter	cl_xpi;
++		struct work_struct	cl_work;
++	};
+ 	const struct cred	*cl_cred;
+ };
+ 
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index 7324b21f923e6..a2c215a6980d8 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -880,6 +880,20 @@ EXPORT_SYMBOL_GPL(rpc_shutdown_client);
+ /*
+  * Free an RPC client
+  */
++static void rpc_free_client_work(struct work_struct *work)
++{
++	struct rpc_clnt *clnt = container_of(work, struct rpc_clnt, cl_work);
++
++	/* These might block on processes that might allocate memory,
++	 * so they cannot be called in rpciod, so they are handled separately
++	 * here.
++	 */
++	rpc_clnt_debugfs_unregister(clnt);
++	rpc_clnt_remove_pipedir(clnt);
++
++	kfree(clnt);
++	rpciod_down();
++}
+ static struct rpc_clnt *
+ rpc_free_client(struct rpc_clnt *clnt)
  {
- 	struct smc_link_group *lgr = link->lgr;
--	struct smc_llc_msg_del_link *del_llc;
- 	struct smc_llc_qentry *qentry = NULL;
- 	int rc = 0;
+@@ -890,17 +904,16 @@ rpc_free_client(struct rpc_clnt *clnt)
+ 			rcu_dereference(clnt->cl_xprt)->servername);
+ 	if (clnt->cl_parent != clnt)
+ 		parent = clnt->cl_parent;
+-	rpc_clnt_debugfs_unregister(clnt);
+-	rpc_clnt_remove_pipedir(clnt);
+ 	rpc_unregister_client(clnt);
+ 	rpc_free_iostats(clnt->cl_metrics);
+ 	clnt->cl_metrics = NULL;
+ 	xprt_put(rcu_dereference_raw(clnt->cl_xprt));
+ 	xprt_iter_destroy(&clnt->cl_xpi);
+-	rpciod_down();
+ 	put_cred(clnt->cl_cred);
+ 	rpc_free_clid(clnt);
+-	kfree(clnt);
++
++	INIT_WORK(&clnt->cl_work, rpc_free_client_work);
++	schedule_work(&clnt->cl_work);
+ 	return parent;
+ }
  
-@@ -764,7 +763,6 @@ static int smc_llc_cli_conf_link(struct smc_link *link,
- 	}
- 	if (qentry->msg.raw.hdr.common.type != SMC_LLC_CONFIRM_LINK) {
- 		/* received DELETE_LINK instead */
--		del_llc = &qentry->msg.delete_link;
- 		qentry->msg.raw.hdr.flags |= SMC_LLC_FLAG_RESP;
- 		smc_llc_send_message(link, &qentry->msg);
- 		smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
-@@ -1308,16 +1306,12 @@ static void smc_llc_process_srv_delete_link(struct smc_link_group *lgr)
- 		 * enqueued DELETE_LINK request (forward it)
- 		 */
- 		if (!smc_llc_send_message(lnk, &qentry->msg)) {
--			struct smc_llc_msg_del_link *del_llc_resp;
- 			struct smc_llc_qentry *qentry2;
- 
- 			qentry2 = smc_llc_wait(lgr, lnk, SMC_LLC_WAIT_TIME,
- 					       SMC_LLC_DELETE_LINK);
--			if (!qentry2) {
--			} else {
--				del_llc_resp = &qentry2->msg.delete_link;
-+			if (qentry2)
- 				smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
--			}
- 		}
- 	}
- 	smcr_link_clear(lnk_del, true);
 -- 
-2.17.1
+2.20.1
 
