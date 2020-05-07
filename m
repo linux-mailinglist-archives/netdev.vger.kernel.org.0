@@ -2,130 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E65511C958B
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F009F1C9590
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727794AbgEGPye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 11:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726451AbgEGPyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:54:33 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F0EC05BD43;
-        Thu,  7 May 2020 08:54:32 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id f7so3182030pfa.9;
-        Thu, 07 May 2020 08:54:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qODBvlvixTIM4uF++H0GbJezfoy8iTUvBUc/JVUBYxA=;
-        b=ThQynXjQezxuTaKhw2P2xZXcypd1fLvesj058Lm/QfVygms1wxRVgrwZJ8E6VZyCAU
-         a/tIrJ4oUID7VucfjsVZhlujX0P/iLP1pavLPBc1pGgojhP4kWqL/HT4iTGYEPL6MZF5
-         iJdOBAULSeVwFCs/nyjZ6cA/cjDXQJVb2cFgdw1MidNng46W6fIbqhave1digP801gOj
-         ZUdPvfhNM8TXiTLx2Cg1ng/mBxGNWlfbRdoBb/9WDxby74I/hiPVtM4f5mjK2EkUSo07
-         YZbgoU53WQKH7BZ32FmzRjSGCLq4/ehjKYc8T3y4AO7K78XafmV1b6vPtcXdYa6/z8ZD
-         wMKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qODBvlvixTIM4uF++H0GbJezfoy8iTUvBUc/JVUBYxA=;
-        b=Q5nLh1TWzDhMoOag4c/EJjK2ygZP77CoYni6P9Po6xkaj68fWto4dWvOLgcNN3EuUc
-         +98npuxuoPb/fX+tHQRxiJOfk3dBWBMjLAWv73g3CEFAEHspEZDfL2E4R+c5k0aENzF8
-         /8pyLfPw5l5x09hNu7v9ls7ODhJj5JsXeyNjgcFLYvz3OzZ9SCyi/lDlAMnBIWu2lMo+
-         pG9yCT10sPbtvQne5+6U83DtxkOx3VNEmbEllzOAVuSG7YK10vJ3Ujf766+e0Uv1qbYh
-         ygav4pAmA7CKWgvBR3b3zZeY8SgUIVTljbljsIPEVpHcY/Ft1/bp7jtGQYXL/+/U1oOi
-         E91w==
-X-Gm-Message-State: AGi0PuZ7AUFiQf4HUuGqTSS6mZKNlGF5fcF/rayIA2H6L09RuXO5A4Mn
-        H+xQvDC2V6yPQt+n17+Cw6ebJtWH
-X-Google-Smtp-Source: APiQypKgQitqAVNooiWscmGva4UImYjtJXRZeHamNUycjPKQVBAqUgiTEZu9zk0Skxn/ZM/jxvhEZA==
-X-Received: by 2002:a62:18d7:: with SMTP id 206mr1283594pfy.299.1588866871142;
-        Thu, 07 May 2020 08:54:31 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y63sm5191194pfg.138.2020.05.07.08.54.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 May 2020 08:54:30 -0700 (PDT)
-Subject: Re: [PATCH net v2] net: bcmgenet: Clear ID_MODE_DIS in
- EXT_RGMII_OOB_CTRL when not needed
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Stefan Wahren <wahrenst@gmx.net>
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200225131159.26602-1-nsaenzjulienne@suse.de>
- <cf07fae3-bd8f-a645-0007-a317832c51c1@samsung.com>
- <CGME20200507100347eucas1p2bad4d58e4eb23e8abd22b43f872fc865@eucas1p2.samsung.com>
- <a3df217d-f35c-9d74-4069-d47dee89173e@samsung.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <09f9fdff-867f-687f-e5af-a4f82a75e105@gmail.com>
-Date:   Thu, 7 May 2020 08:54:28 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        id S1727849AbgEGPy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 11:54:59 -0400
+Received: from www62.your-server.de ([213.133.104.62]:54908 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726641AbgEGPy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:54:59 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jWirD-00080B-VR; Thu, 07 May 2020 17:54:44 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jWirD-000Uj4-Fm; Thu, 07 May 2020 17:54:43 +0200
+Subject: Re: [PATCH v3] net: bpf: permit redirect from ingress L3 to egress L2
+ devices at near max mtu
+To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <CANP3RGduts2FJ2M5MLcf23GaRa=-fwUC7oPf-S4zp39f63jHMg@mail.gmail.com>
+ <20200507023606.111650-1-zenczykowski@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ae1e5602-a2fd-661b-155c-d32ff0059ce6@iogearbox.net>
+Date:   Thu, 7 May 2020 17:54:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <a3df217d-f35c-9d74-4069-d47dee89173e@samsung.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200507023606.111650-1-zenczykowski@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25805/Thu May  7 14:14:46 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/7/2020 3:03 AM, Marek Szyprowski wrote:
-> Hi
+On 5/7/20 4:36 AM, Maciej Żenczykowski wrote:
+> From: Maciej Żenczykowski <maze@google.com>
 > 
-> On 07.05.2020 11:46, Marek Szyprowski wrote:
->> On 25.02.2020 14:11, Nicolas Saenz Julienne wrote:
->>> Outdated Raspberry Pi 4 firmware might configure the external PHY as
->>> rgmii although the kernel currently sets it as rgmii-rxid. This makes
->>> connections unreliable as ID_MODE_DIS is left enabled. To avoid this,
->>> explicitly clear that bit whenever we don't need it.
->>>
->>> Fixes: da38802211cc ("net: bcmgenet: Add RGMII_RXID support")
->>> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
->>
->> I've finally bisected the network issue I have on my RPi4 used for 
->> testing mainline builds. The bisect pointed to this patch. Once it got 
->> applied in v5.7-rc1, the networking is broken on my RPi4 in ARM32bit 
->> mode and kernel compiled from bcm2835_defconfig. I'm using u-boot to 
->> tftp zImage/dtb/initrd there. After reverting this patch network is 
->> working fine again. The strange thing is that networking works fine if 
->> kernel is compiled from multi_v7_defconfig but I don't see any obvious 
->> difference there.
->>
->> I'm not sure if u-boot is responsible for this break, but kernel 
->> definitely should be able to properly reset the hardware to the valid 
->> state.
->>
->> I can provide more information, just let me know what is needed. Here 
->> is the log, I hope it helps:
->>
->> [   11.881784] bcmgenet fd580000.ethernet eth0: Link is Up - 
->> 1Gbps/Full - flow control off
->> [   11.889935] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
->>
->> root@target:~# ping host
->> PING host (192.168.100.1) 56(84) bytes of data.
->> From 192.168.100.53 icmp_seq=1 Destination Host Unreachable
->> ...
+> __bpf_skb_max_len(skb) is used from:
+>    bpf_skb_adjust_room
+>    __bpf_skb_change_tail
+>    __bpf_skb_change_head
 > 
-> Okay, I've played a bit more with this and found that enabling 
-> CONFIG_BROADCOM_PHY fixes this network issue. I wonder if Genet driver 
-> should simply select CONFIG_BROADCOM_PHY the same way as it selects 
-> CONFIG_BCM7XXX_PHY.
+> but in the case of forwarding we're likely calling these functions
+> during receive processing on ingress and bpf_redirect()'ing at
+> a later point in time to egress on another interface, thus these
+> mtu checks are for the wrong device (input instead of output).
+> 
+> This is particularly problematic if we're receiving on an L3 1500 mtu
+> cellular interface, trying to add an L2 header and forwarding to
+> an L3 mtu 1500 mtu wifi/ethernet device (which is thus L2 1514).
+> 
+> The mtu check prevents us from adding the 14 byte ethernet header prior
+> to forwarding the packet.
+> 
+> After the packet has already been redirected, we'd need to add
+> an additional 2nd ebpf program on the target device's egress tc hook,
+> but then we'd also see non-redirected traffic and have no easy
+> way to tell apart normal egress with ethernet header packets
+> from forwarded ethernet headerless packets.
+> 
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Maciej Żenczykowski <maze@google.com>
+> ---
+>   net/core/filter.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 7d6ceaa54d21..5c8243930462 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3159,8 +3159,9 @@ static int bpf_skb_net_shrink(struct sk_buff *skb, u32 off, u32 len_diff,
+>   
+>   static u32 __bpf_skb_max_len(const struct sk_buff *skb)
+>   {
+> -	return skb->dev ? skb->dev->mtu + skb->dev->hard_header_len :
+> -			  SKB_MAX_ALLOC;
+> +	if (skb_at_tc_ingress(skb) || !skb->dev)
+> +		return SKB_MAX_ALLOC;
+> +	return skb->dev->mtu + skb->dev->hard_header_len;
+>   }
 
-Historically GENET has been deployed with an internal PHY and this is
-still 90% of the GENET users out there on classic Broadcom STB
-platforms, not counting the 2711. For external PHYs, there is a variety
-of options here, so selecting CONFIG_BROADCOM_PHY would be just one of
-the possibilities, I would rather fix this with the bcm2835_defconfig
-and multi_v7_defconfig update. Would that work for you?
+But then why even have any MTU check in the first place? Above would basically
+break for the case where I'd have a one-legged load-balancer. skb comes in at
+tc ingress, we adjust its size and are allowed to do so up to SKB_MAX_ALLOC.
+Then we redirect it out through the same device through bpf where it came from.
+
+I suppose we are the ones responsible to assert here that it doesn't exceed MTU.
+There are 3 cases when skb exits the prog on tc ingress or egress: i) we redirect
+via ingress, then ii) we redirect via egress, and iii) we just do tc_act_ok. Case
+i) is asserted already via ____dev_forward_skb() today. If we fix/relax the
+__bpf_skb_max_len(), we would also need to assert the other two locations,
+something hacked up like the below. And on this it probably makes sense to expose
+the current MTU, but that can be optional.
+
+Thoughts?
+
+Thanks,
+Daniel
+
+ From 95464f75ed8d520b9ff068b72687a422465686cd Mon Sep 17 00:00:00 2001
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Thu, 7 May 2020 16:46:30 +0200
+Subject: [PATCH] bpf: xxx
+
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+  include/linux/netdevice.h | 25 +++++++++++++++++++++++--
+  include/uapi/linux/bpf.h  |  1 +
+  net/core/dev.c            | 24 +++---------------------
+  net/core/filter.c         | 22 +++++++++++++++++-----
+  4 files changed, 44 insertions(+), 28 deletions(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 5a8d40f1ffe2..19770744d5b5 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3787,8 +3787,29 @@ int xdp_umem_query(struct net_device *dev, u16 queue_id);
+
+  int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
+  int dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
+-bool is_skb_forwardable(const struct net_device *dev,
+-			const struct sk_buff *skb);
++
++static __always_inline bool is_skb_size_ok(const struct net_device *dev,
++					   const struct sk_buff *skb)
++{
++	static const u32 vlan_header_len = 4;
++
++	if (skb->len <= dev->mtu + dev->hard_header_len + vlan_header_len)
++		return true;
++
++	/* If TSO is enabled, we don't care about the length as the packet
++	 * could be forwarded without being segmented before.
++	 */
++	return skb_is_gso(skb);
++}
++
++static __always_inline bool is_skb_forwardable(const struct net_device *dev,
++					       const struct sk_buff *skb)
++{
++	if (unlikely(!(dev->flags & IFF_UP)))
++		return false;
++
++	return is_skb_size_ok(dev, skb);
++}
+
+  static __always_inline int ____dev_forward_skb(struct net_device *dev,
+  					       struct sk_buff *skb)
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index b3643e27e264..0239e415a469 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3370,6 +3370,7 @@ struct __sk_buff {
+  	__u32 gso_segs;
+  	__bpf_md_ptr(struct bpf_sock *, sk);
+  	__u32 gso_size;
++	__u32 mtu;
+  };
+
+  struct bpf_tunnel_key {
+diff --git a/net/core/dev.c b/net/core/dev.c
+index afff16849c26..b3bf738fc36f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2100,27 +2100,6 @@ static inline void net_timestamp_set(struct sk_buff *skb)
+  			__net_timestamp(SKB);			\
+  	}							\
+
+-bool is_skb_forwardable(const struct net_device *dev, const struct sk_buff *skb)
+-{
+-	unsigned int len;
+-
+-	if (!(dev->flags & IFF_UP))
+-		return false;
+-
+-	len = dev->mtu + dev->hard_header_len + VLAN_HLEN;
+-	if (skb->len <= len)
+-		return true;
+-
+-	/* if TSO is enabled, we don't care about the length as the packet
+-	 * could be forwarded without being segmented before
+-	 */
+-	if (skb_is_gso(skb))
+-		return true;
+-
+-	return false;
+-}
+-EXPORT_SYMBOL_GPL(is_skb_forwardable);
+-
+  int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
+  {
+  	int ret = ____dev_forward_skb(dev, skb);
+@@ -3786,8 +3765,11 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+  	case TC_ACT_OK:
+  	case TC_ACT_RECLASSIFY:
+  		skb->tc_index = TC_H_MIN(cl_res.classid);
++		if (unlikely(!is_skb_size_ok(dev, skb)))
++			goto drop;
+  		break;
+  	case TC_ACT_SHOT:
++drop:
+  		mini_qdisc_qstats_cpu_drop(miniq);
+  		*ret = NET_XMIT_DROP;
+  		kfree_skb(skb);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index dfaf5df13722..54db75bf15c5 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2037,10 +2037,11 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
+  {
+  	int ret;
+
+-	if (dev_xmit_recursion()) {
++	if (unlikely(!is_skb_forwardable(dev, skb)))
++		goto drop;
++	if (unlikely(dev_xmit_recursion())) {
+  		net_crit_ratelimited("bpf: recursion limit reached on datapath, buggy bpf program?\n");
+-		kfree_skb(skb);
+-		return -ENETDOWN;
++		goto drop;
+  	}
+
+  	skb->dev = dev;
+@@ -2051,6 +2052,10 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
+  	dev_xmit_recursion_dec();
+
+  	return ret;
++drop:
++	atomic_long_inc(&dev->rx_dropped);
++	kfree_skb(skb);
++	return -EIO;
+  }
+
+  static int __bpf_redirect_no_mac(struct sk_buff *skb, struct net_device *dev,
+@@ -3148,8 +3153,7 @@ static int bpf_skb_net_shrink(struct sk_buff *skb, u32 off, u32 len_diff,
+
+  static u32 __bpf_skb_max_len(const struct sk_buff *skb)
+  {
+-	return skb->dev ? skb->dev->mtu + skb->dev->hard_header_len :
+-			  SKB_MAX_ALLOC;
++	return SKB_MAX_ALLOC;
+  }
+
+  BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *, skb, s32, len_diff,
+@@ -7831,6 +7835,14 @@ static u32 tc_cls_act_convert_ctx_access(enum bpf_access_type type,
+  				      bpf_target_off(struct net_device, ifindex, 4,
+  						     target_size));
+  		break;
++	case offsetof(struct __sk_buff, mtu):
++		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, dev),
++				      si->dst_reg, si->src_reg,
++				      offsetof(struct sk_buff, dev));
++		*insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->dst_reg,
++				      bpf_target_off(struct net_device, mtu, 4,
++						     target_size));
++		break;
+  	default:
+  		return bpf_convert_ctx_access(type, si, insn_buf, prog,
+  					      target_size);
 -- 
-Florian
+2.21.0
