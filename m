@@ -2,105 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FE141C872D
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:44:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5F8E1C8745
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727824AbgEGKoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 06:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725900AbgEGKoV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:44:21 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8E2C061A10;
-        Thu,  7 May 2020 03:44:20 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id w65so2813349pfc.12;
-        Thu, 07 May 2020 03:44:20 -0700 (PDT)
+        id S1726877AbgEGKuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 06:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726069AbgEGKu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:50:27 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B55AC061A10
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 03:50:27 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id s9so5437511qkm.6
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 03:50:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bFQHmMlHHcwUStjNmfU6XXDKqYEB7JfBFL8YRcOFE5Y=;
-        b=AXJGxb8tfuLMPb7qMZwoK7U09+JCMcqKoZfQG6lafeCRW0hnczvQigdk+2cg9F8Whl
-         7TJXMt2abyCUiIy/2M9HWKeKTxVhm6jsrpUHxmplE+MIJj9OpYbPFsbw8sA6ZqW25rZK
-         4HY+uNTPDUfp59HadZJ7w2EicQBsRqN6mKePZuo9cp8vHaMIDber9Xy0K0w/CoMpNg3p
-         4sdGLt3r0FkwSZpaZuke+s0o7NDA/+h13fgr1NuCpdAa3v+YMDNqXjFSoUoYEY2DZJcV
-         Y4S46ItKFNkEhhf3BxHN049J4Ut+13KQiTTSP5A11H0l0U5zLsdiwA+yAurVrrTmqcLO
-         WXyw==
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1TQDLXk4eka+0Oxp2Bn8b1wcydmS2119xNQQ8v9Of3A=;
+        b=1lm1uYG4FqWg47V6Y+gYDIshBO9zX4KSYru04NwBJPv6kFFVFfM5JuAxDs6tZvphbJ
+         oTJilxGIAeSQOYU0i6u9kVh9LY2c67xWbyrpnSBiPqECpZSiW2moygN7fZbQTfav8QK2
+         PVhyXc4CtEJIGCrd0bzJhiTefp0mzyZ+EbOyJMUDZqyQufbiHgLItmYN1hQD9wMB44pb
+         +U7sR5l34T2+ELpQdAtOqjowgdxN4GWWNkcVU6+j6hZhi4t6FdtitjmBcfH4EYiq0eXp
+         4P1xej1eG3C2yyeUwdIE9QTRIDhAZrZ/5hXNsRThBODI7DVg3bGoIKHJESig7V88bGr5
+         VM8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bFQHmMlHHcwUStjNmfU6XXDKqYEB7JfBFL8YRcOFE5Y=;
-        b=tplvOIBaJ44QZIxSkUnD+SiJwe7QkUrBPCHF5np9GDazuc9TGvG5S3XmcLkYAhCmQ+
-         +rQt8FTG671oPix+KVnUEtOUN0AZn0pEH7iA4SO9ixlNPXQ05giLAO1XI4mrIF6MI0S6
-         PdsBtzXvurxoODyhyJnCUjH3LSlSh3VSrVKAbuTgi7PnkAv4wdPM6VUAUsEgExBsiHf7
-         gV7eaZKcnHP7/SzvSn1q07smT8w3FNIAN2r3a8sAwT0svfPnmvbbebfPB90mbhQOO9JN
-         e2/3DR0EvZv/whJwd8eZCN87uy+rN265EK0LmhxTdxd+xyLl2UG/LvUf85EvWDy9BEAZ
-         97/A==
-X-Gm-Message-State: AGi0PuaRt+O9JrS8B0obSqw03ncm9Ox4U7Y+HbG++bMov4CLbf65gCjS
-        Xy3VV8wbXv4Su24SuXxs9xA=
-X-Google-Smtp-Source: APiQypKu2EY+5rnudVsc+vqfbWZ1IARULo/OOxzvoQgq3KNzLdT5N+HAt7RmFtIzY52wGvjuZmU47Q==
-X-Received: by 2002:aa7:9f5a:: with SMTP id h26mr13489016pfr.281.1588848260373;
-        Thu, 07 May 2020 03:44:20 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.55.43])
-        by smtp.gmail.com with ESMTPSA id j14sm7450673pjm.27.2020.05.07.03.44.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2020 03:44:19 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        jeffrey.t.kirsher@intel.com
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        maximmi@mellanox.com, maciej.fijalkowski@intel.com,
-        Joe Perches <joe@perches.com>
-Subject: [PATCH bpf-next 14/14] MAINTAINERS, xsk: update AF_XDP section after moves/adds
-Date:   Thu,  7 May 2020 12:42:52 +0200
-Message-Id: <20200507104252.544114-15-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200507104252.544114-1-bjorn.topel@gmail.com>
-References: <20200507104252.544114-1-bjorn.topel@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1TQDLXk4eka+0Oxp2Bn8b1wcydmS2119xNQQ8v9Of3A=;
+        b=L5Bhg+MPeEe/blxMyqgD6jx6N28PGa+0t5spDmhZReK5BmMlRrEP9KnVrAyyanEKfV
+         yxrgLCvx3OyxhMNPxiGGCgZFnrG/vUr8iI+8bHvfiU1XQ5HPNwJ9JDD3tZU4yir/qo+z
+         bkH0BCewo+JBsmIWQt902P4n0X2zy+/lzZGUqufoCFK+wSJGbxDyivVmRQhk5H+3CvJT
+         TB1Mpd/w1vVNLsHPiVTDSbQZ6peUBn31TeQy/vkdhKPCviUjfDakDxManlMogyTp36IG
+         iBt9jd2yUHXq1ySyT4fb5+Cl+ufV9ppcaBBm2kdeRk7lV+Mb/UTPq0dAl1+9pk1vOf0m
+         9Xeg==
+X-Gm-Message-State: AGi0PuYXaWcFdsKRvhjAJJd69shu6SmvsIevNzCd9LwKoLXFluBVEVYF
+        gDDe2BrXQ67TdI5s4ef3151vxoTdOBXSg7WYNEX5Vg==
+X-Google-Smtp-Source: APiQypJYXCCd2c3pYbt+kfphPDDGvjl+YT7aIrmnou1JUBqsathcHJRlRjCQ8fMwJjvYV4gCZxU1KJCPXjpaGZcnQi0=
+X-Received: by 2002:a05:620a:1f1:: with SMTP id x17mr13989074qkn.330.1588848626441;
+ Thu, 07 May 2020 03:50:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20200505140231.16600-1-brgl@bgdev.pl> <20200505140231.16600-7-brgl@bgdev.pl>
+ <1588844771.5921.27.camel@mtksdccf07>
+In-Reply-To: <1588844771.5921.27.camel@mtksdccf07>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Thu, 7 May 2020 12:50:15 +0200
+Message-ID: <CAMpxmJW4qZ_Wnp_oRa=j=YnvTzVa3HZ13Hgwy71jS6L3Bd3oMQ@mail.gmail.com>
+Subject: Re: [PATCH 06/11] net: ethernet: mtk-eth-mac: new driver
+To:     "Mark-MC.Lee" <Mark-MC.Lee@mediatek.com>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Felix Fietkau <nbd@openwrt.org>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+czw., 7 maj 2020 o 11:46 Mark-MC.Lee <Mark-MC.Lee@mediatek.com> napisa=C5=
+=82(a):
+>
+> Hi Bartosz:
+>  I think the naming of this driver and its Kconfig option is too generic
+> that will confuse with current mediatek SoCs eth driver architecture(for
+> all mt7xxx SoCs).
+>   Since mtk_eth_mac.c is not a common MAC part for all mediatek SoC but
+> only a specific eth driver for mt85xx, it will be more reasonable to
+> name it as mt85xx_eth.c and change NET_MEDIATEK_MAC to
+> NET_MEDIATEK_MT85XX. How do you think?
+>
 
-Update MAINTAINERS to correctly mirror the current AF_XDP socket file
-layout. Also, add the AF_XDP files of libbpf.
+Hi Mark,
 
-rfc->v1: Sorted file entries. (Joe)
+I actually consulted this with MediaTek and the name is their idea.
+Many drivers in drivers/net/ethernet have very vague names. I guess
+this isn't a problem.
 
-Cc: Joe Perches <joe@perches.com>
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- MAINTAINERS | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index db7a6d462dff..79e2bb1280e6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18451,8 +18451,12 @@ R:	Jonathan Lemon <jonathan.lemon@gmail.com>
- L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Maintained
--F:	kernel/bpf/xskmap.c
-+F:	include/net/xdp_sock*
-+F:	include/net/xsk_buffer_pool.h
-+F:	include/uapi/linux/if_xdp.h
- F:	net/xdp/
-+F:	samples/bpf/xdpsock*
-+F:	tools/lib/bpf/xsk*
- 
- XEN BLOCK SUBSYSTEM
- M:	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
--- 
-2.25.1
-
+Bart
