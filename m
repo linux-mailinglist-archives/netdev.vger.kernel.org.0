@@ -2,116 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA3F91C98DE
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 20:09:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 181D71C98E6
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 20:11:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727837AbgEGSJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 14:09:25 -0400
-Received: from mga01.intel.com ([192.55.52.88]:28106 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727092AbgEGSJZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 14:09:25 -0400
-IronPort-SDR: s76za/UhaHC15ngBpvCD2cWKJEUoQbphkETl9JfhV97psMRSPwcIF7m2PRWHFBPTLIGY6hXIEh
- r6uSckYkzevg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2020 11:09:25 -0700
-IronPort-SDR: eLRRNEO+LV4Ah0RljpbSCMCiXtZjxFquKpaYZKHLBDjqlagMnxfL3DeHV40pF+Wy2KwYU/ZWeR
- nZhJROVPIxkw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,364,1583222400"; 
-   d="scan'208";a="462231494"
-Received: from unknown (HELO ellie) ([10.213.191.132])
-  by fmsmga006.fm.intel.com with ESMTP; 07 May 2020 11:09:24 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net-next] net: relax SO_TXTIME CAP_NET_ADMIN check
-In-Reply-To: <20200507170539.157454-1-edumazet@google.com>
-References: <20200507170539.157454-1-edumazet@google.com>
-Date:   Thu, 07 May 2020 11:09:24 -0700
-Message-ID: <87mu6jsjl7.fsf@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1728372AbgEGSKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 14:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728261AbgEGSKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 14:10:32 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67B9C05BD09;
+        Thu,  7 May 2020 11:10:32 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id y26so2313010ioj.2;
+        Thu, 07 May 2020 11:10:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Gd3RPRk/hJEPhKUzjU78kN4h+seKUcUFVx6IytlV+As=;
+        b=VzoW3DZBILKoElYj2TEiHdQTkxBcm2wFCWzfQxfDcnHcGbLIuFDOP614l2Gr6xn8fB
+         xz/EdTckE9mZZk/jvlAqKZ7D2htG042wmXkXnSROCKrcXo50BRDJ2UHoUkGTYiuGI96k
+         wajd1ruNMW121S1UMTZS4eiGxpNZiGhBUizBufay+l1eb677FH8Z/3w9zAMzSOfga94F
+         UcUiDZ5XTckeD9Ldbk1cEv24yNUKPz1huwYYWk9ghnfrIy/ON1bsy6nIONP/ipE6qTjY
+         K+t2C1DEw/7uhDoTgxbNgs6GxGwEY7pSYUu/BJoXEZQIaAA2rzpD1sbzLpaAR6nnSMaf
+         6Zeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Gd3RPRk/hJEPhKUzjU78kN4h+seKUcUFVx6IytlV+As=;
+        b=CmPeo3m/tU0TrfZDJzj/m5i/gGuZuqWVmlfFvYe/v8nOeHoV5TTyIk1YdWXS6Z9V0o
+         MWT144zT6ypBiCFpnqVfKWJ++7sHqOo9Kui7Aep1HRAQDf/K2i+Q5m/Qyem/HsFOz2Rn
+         QodMRxFuu2mhNg6nd9OyPMOSFvz7dT1fxGD9gu6A8T/Swo0XsWbvKz7553E9ohQIzt24
+         iRwHvJl9h2i/YfG1M6Zpc30ywlD9RNYLcJNzfwogAfpxI+CblJJekPWfuLnJheakUm1L
+         5Slf1No+mRWbKMZfJMt65/ld1A3kfbveFuY5mau09udAdeGeMBHttBqs+BzU0PwqjJOc
+         1Pkg==
+X-Gm-Message-State: AGi0PubxOj8nLj1noazA7Df6NNzyw49fL8kGG3NW8O13k5avPQyOhkwR
+        glB2KhLKlflyAyY4pTFZy4o=
+X-Google-Smtp-Source: APiQypLum2t/r+agPTzUNR0velxp46G4ahGjE1MBLJud7sWGcXmM1SsTWSh8zpljyqdp6297pWrQAg==
+X-Received: by 2002:a02:6ccf:: with SMTP id w198mr14023160jab.8.1588875032098;
+        Thu, 07 May 2020 11:10:32 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id s12sm3055951ill.82.2020.05.07.11.10.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 May 2020 11:10:31 -0700 (PDT)
+Date:   Thu, 07 May 2020 11:10:25 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     lmb@cloudflare.com, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org
+Message-ID: <5eb44f11d1697_22a22b23544285b843@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200507102902.6b27705c@toad>
+References: <158871160668.7537.2576154513696580062.stgit@john-Precision-5820-Tower>
+ <158871183500.7537.4803419328947579658.stgit@john-Precision-5820-Tower>
+ <20200507102902.6b27705c@toad>
+Subject: Re: [bpf-next PATCH 03/10] bpf: selftests, sockmap test prog run
+ without setting cgroup
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Jakub Sitnicki wrote:
+> On Tue, 05 May 2020 13:50:35 -0700
+> John Fastabend <john.fastabend@gmail.com> wrote:
+> 
+> > Running test_sockmap with arguments to specify a test pattern requires
+> > including a cgroup argument. Instead of requiring this if the option is
+> > not provided create one
+> > 
+> > This is not used by selftest runs but I use it when I want to test a
+> > specific test. Most useful when developing new code and/or tests.
+> > 
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > ---
 
-Eric Dumazet <edumazet@google.com> writes:
+[...]
 
-> Now sch_fq has horizon feature, we want to allow QUIC/UDP applications
-> to use EDT model so that pacing can be offloaded to the kernel (sch_fq)
-> or the NIC.
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Willem de Bruijn <willemb@google.com>
-> ---
->  net/core/sock.c | 28 ++++++++++++++++++----------
->  1 file changed, 18 insertions(+), 10 deletions(-)
->
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index b714162213aeae98bfee24d8b457547fe7abab4f..fd85e651ce284b6987f0e8fae94f76ec2c432899 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1152,23 +1152,31 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
->  		break;
->  
->  	case SO_TXTIME:
-> -		if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN)) {
-> -			ret = -EPERM;
-> -		} else if (optlen != sizeof(struct sock_txtime)) {
-> +		if (optlen != sizeof(struct sock_txtime)) {
->  			ret = -EINVAL;
-> +			break;
->  		} else if (copy_from_user(&sk_txtime, optval,
->  			   sizeof(struct sock_txtime))) {
->  			ret = -EFAULT;
-> +			break;
->  		} else if (sk_txtime.flags & ~SOF_TXTIME_FLAGS_MASK) {
->  			ret = -EINVAL;
-> -		} else {
-> -			sock_valbool_flag(sk, SOCK_TXTIME, true);
-> -			sk->sk_clockid = sk_txtime.clockid;
-> -			sk->sk_txtime_deadline_mode =
-> -				!!(sk_txtime.flags & SOF_TXTIME_DEADLINE_MODE);
-> -			sk->sk_txtime_report_errors =
-> -				!!(sk_txtime.flags & SOF_TXTIME_REPORT_ERRORS);
-> +			break;
->  		}
-> +		/* CLOCK_MONOTONIC is only used by sch_fq, and this packet
-> +		 * scheduler has enough safe guards.
-> +		 */
-> +		if (sk_txtime.clockid != CLOCK_MONOTONIC &&
-> +		    !ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN)) {
-> +			ret = -EPERM;
-> +			break;
-> +		}
+> >  	if (!cg_fd) {
+> > -		fprintf(stderr, "%s requires cgroup option: --cgroup <path>\n",
+> > -			argv[0]);
+> > -		return -1;
+> > +		if (setup_cgroup_environment()) {
+> > +			fprintf(stderr, "ERROR: cgroup env failed\n");
+> > +			return -EINVAL;
+> > +		}
+> > +
+> > +		cg_fd = create_and_get_cgroup(CG_PATH);
+> > +		if (cg_fd < 0) {
+> > +			fprintf(stderr,
+> > +				"ERROR: (%i) open cg path failed: %s\n",
+> > +				cg_fd, optarg);
+> 
+> Looks like you wanted to log strerror(errno) instead of optarg here.
+> 
+> > +			return cg_fd;
+> > +		}
 
-I was a bit worried until I saw the check above.
-
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-
-
-> +		sock_valbool_flag(sk, SOCK_TXTIME, true);
-> +		sk->sk_clockid = sk_txtime.clockid;
-> +		sk->sk_txtime_deadline_mode =
-> +			!!(sk_txtime.flags & SOF_TXTIME_DEADLINE_MODE);
-> +		sk->sk_txtime_report_errors =
-> +			!!(sk_txtime.flags & SOF_TXTIME_REPORT_ERRORS);
->  		break;
->  
->  	case SO_BINDTOIFINDEX:
-> -- 
-> 2.26.2.526.g744177e7f7-goog
->
-
--- 
-Vinicius
+cut'n'paste error thanks.
