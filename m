@@ -2,122 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 184FE1C8010
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 04:36:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D6BC1C8015
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 04:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728182AbgEGCgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 22:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
+        id S1728148AbgEGCmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 22:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726218AbgEGCgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 22:36:20 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0519CC061A0F;
-        Wed,  6 May 2020 19:36:19 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id q24so1946471pjd.1;
-        Wed, 06 May 2020 19:36:19 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726625AbgEGCmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 22:42:02 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A5DC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 19:42:02 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id fu13so1945162pjb.5
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 19:42:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Asj4Gooor/CKFIxMQNTckF+7GZoXmy3s4w3DaaXlqd4=;
-        b=Ul0LZ38+URJljiZUX/ceNT+o3aSsX2EBZjVpE7QpFEycmvZzs68AgK1f766sCOpRmh
-         Z6nByGJ50T3n9trYcO6e+TqhEcgCadUJ1jUPQUFR1jssVPmf1/uBPe17ll836xCjXABP
-         I1dNNAWM0xmhLPXMDpnwRr9wdvdie1zBqfgi7ZbS+phVrQ7v/gztoIxAgEufpYnC+60c
-         Z0UBfCsMpMiVBFeSc0kqbpyoSdgVvOxNoL7tcbIqWfJ0+YV/LK0/hXpjk8Pp5xH2BeVE
-         +nCUS3pjsw/vZ73IQjh5ATzn/ffZ7fJZom0/3A11uLhnNROsI9xqb5tR82e5wtmvd6pH
-         mqoA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=I/eCHNKi9wkby6SPWUg39vUKZpyXpuIo6pEQnWN892k=;
+        b=DQBwFoSHoC9cgNcneAbor5aihyp2MZAufbHmu8Gwh1H0a6hLJYE3fgst5M2vty8Mc9
+         pe20C9+ATdisCDDhrMBVKHOs7DY56ERJb1UEXXdIR7CvWLUIpIUwv4UC6N8InyEGYvt3
+         XjjgIpshYemlxnudxBgKak9TxeD1cyzjBjDweZMXAS53RWSVbjjCM2/CuiwcOOr2YSua
+         SNZSW05kQLzbPZNkiybcu53OqTd3o8XoNdCJig1c3gPOsgGvQrm9Cz/i6nGY0FvHbxAT
+         KQMxv4uA2Xm/LKP2znpS3lHW9w/+7ZOwqC7lbdruWUSnq6p8GtVET2HdM9LB4kAL7CYj
+         cHXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Asj4Gooor/CKFIxMQNTckF+7GZoXmy3s4w3DaaXlqd4=;
-        b=HniiyUh07z0w6YrM8CooWfs0ivhiRfYS1S88xs/PM55gk0RCwm25FCCq6MvuG1v4Uh
-         2D+sG8gP/OKZeA9JPlVK44P9ymUWyixA3FXWDKrolw1dSYJOG25boVh9etog9wDgNgjO
-         BBIoco0PclFPzYvNLeVztaFc7crvIaT6ckErVbQXaC6bKtz2uyKkgejl89KI5AT553bH
-         ujpm4rVa85/pAK0ctzgSifrZBA37Ponnbf9zZDArsckkTvTM4Y3xzblH0Ldhf71pIot2
-         rcbj3tg+Cz0nUctzs2oi2ulvADAmeuBOnSn+z526TECGNmQ8aCKdsNdtDGkXkKvLTdSP
-         6Rxg==
-X-Gm-Message-State: AGi0PuansGf6AJAra8/tKCOvy7MaVQ/DYo8NaQgUUX9ehe8jyYzareJx
-        X/W19ztBg8keaPZShqfErmc=
-X-Google-Smtp-Source: APiQypKGB0sTNVtLUk/zocKj0OVAZ+6YQSpG4rSI293EPok9beWnMccBqCHJ/3pMXeJisc/l4Nsucg==
-X-Received: by 2002:a17:902:b286:: with SMTP id u6mr11031868plr.11.1588818978010;
-        Wed, 06 May 2020 19:36:18 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id n16sm3259976pfq.61.2020.05.06.19.36.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2020 19:36:17 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v3] net: bpf: permit redirect from ingress L3 to egress L2 devices at near max mtu
-Date:   Wed,  6 May 2020 19:36:06 -0700
-Message-Id: <20200507023606.111650-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-In-Reply-To: <CANP3RGduts2FJ2M5MLcf23GaRa=-fwUC7oPf-S4zp39f63jHMg@mail.gmail.com>
-References: <CANP3RGduts2FJ2M5MLcf23GaRa=-fwUC7oPf-S4zp39f63jHMg@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=I/eCHNKi9wkby6SPWUg39vUKZpyXpuIo6pEQnWN892k=;
+        b=FmszMgowVGWY3Da544LoIgy0jOXaWwXxh6Hone8PZEvAk55MYxpzKLpvVcvfnnJ6On
+         r+XFn3Gnil91JTDwNVulU+AT7wZC4QSSgb66EOoY0xCZgqv6psZ5DkrqiPo3U7KEXRaA
+         0umfcugZc64Bc0d76RH6lh+KYgBN86yt/jNGTc1rRI/SyCPmI5pnUSPqTPoxh6grMlga
+         j0iOXzbzsavnm76lhfh5pncqF4bZxaKVqRqaoaxttwVerxCMjvRb+TwjNly2PRkJFzdG
+         Q/zOJeIn462g3pivuti2r6c83+o5qi5FTLy41SfOa28OeQhWO6qlbJFo1cVQMvzgJ4e7
+         Ng9A==
+X-Gm-Message-State: AGi0PuZJvTv2a5/OYhfo6JUsE76NZWCyAbo+HAL6bj/f02Q8pBEB7CXu
+        JUk/e6v9mbKAD7lSfTzABwg=
+X-Google-Smtp-Source: APiQypKfJeDa6qvGEiUwHymPpL/b9ph6DRuUqMtVZsZ0/ndaJ6tGDDGRXTSnVAyvz2hSd/ZlIq92Qg==
+X-Received: by 2002:a17:90a:a78f:: with SMTP id f15mr12631150pjq.120.1588819322119;
+        Wed, 06 May 2020 19:42:02 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id w75sm3170123pfc.156.2020.05.06.19.42.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 May 2020 19:42:01 -0700 (PDT)
+Subject: Re: [PATCHv2] erspan: Add type I version 0 support.
+To:     William Tu <u9012063@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net
+References: <1588694706-26433-1-git-send-email-u9012063@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <9a4d33eb-7429-b852-cfa9-b47838672f37@gmail.com>
+Date:   Wed, 6 May 2020 19:41:59 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1588694706-26433-1-git-send-email-u9012063@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
 
-__bpf_skb_max_len(skb) is used from:
-  bpf_skb_adjust_room
-  __bpf_skb_change_tail
-  __bpf_skb_change_head
 
-but in the case of forwarding we're likely calling these functions
-during receive processing on ingress and bpf_redirect()'ing at
-a later point in time to egress on another interface, thus these
-mtu checks are for the wrong device (input instead of output).
+On 5/5/20 9:05 AM, William Tu wrote:
+> The Type I ERSPAN frame format is based on the barebones
+> IP + GRE(4-byte) encapsulation on top of the raw mirrored frame.
+> Both type I and II use 0x88BE as protocol type. Unlike type II
+> and III, no sequence number or key is required.
+> To creat a type I erspan tunnel device:
+>   $ ip link add dev erspan11 type erspan \
+>             local 172.16.1.100 remote 172.16.1.200 \
+>             erspan_ver 0
+> 
+> Signed-off-by: William Tu <u9012063@gmail.com>
+> ---
+> v2:
+>   remove the inline keyword, let compiler decide.
+> v1:
+> I didn't notice there is Type I when I did first erspan implementation
+> because it is not in the ietf draft 00 and 01. It's until recently I got
+> request for adding type I. Spec is below at draft 02:
+> https://tools.ietf.org/html/draft-foschiano-erspan-02#section-4.1
+> 
+> To verify with Wireshark, make sure you have:
+> commit ef76d65fc61d01c2ce5184140f4b1bba0019078b
+> Author: Guy Harris <guy@alum.mit.edu>
+> Date:   Mon Sep 30 16:35:35 2019 -0700
+> 
+>     Fix checks for "do we have an ERSPAN header?"
+> ---
+>  include/net/erspan.h | 19 +++++++++++++++--
+>  net/ipv4/ip_gre.c    | 58 ++++++++++++++++++++++++++++++++++++++--------------
+>  2 files changed, 60 insertions(+), 17 deletions(-)
+> 
+> diff --git a/include/net/erspan.h b/include/net/erspan.h
+> index b39643ef4c95..0d9e86bd9893 100644
+> --- a/include/net/erspan.h
+> +++ b/include/net/erspan.h
+> @@ -2,7 +2,19 @@
+>  #define __LINUX_ERSPAN_H
+>  
+>  /*
+> - * GRE header for ERSPAN encapsulation (8 octets [34:41]) -- 8 bytes
+> + * GRE header for ERSPAN type I encapsulation (4 octets [34:37])
+> + *      0                   1                   2                   3
+> + *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+> + *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> + *     |0|0|0|0|0|00000|000000000|00000|    Protocol Type for ERSPAN   |
+> + *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> + *
+> + *  The Type I ERSPAN frame format is based on the barebones IP + GRE
+> + *  encapsulation (as described above) on top of the raw mirrored frame.
+> + *  There is no extra ERSPAN header.
+> + *
+> + *
+> + * GRE header for ERSPAN type II and II encapsulation (8 octets [34:41])
+>   *       0                   1                   2                   3
+>   *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+>   *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> @@ -43,7 +55,7 @@
+>   * |                  Platform Specific Info                       |
+>   * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+>   *
+> - * GRE proto ERSPAN type II = 0x88BE, type III = 0x22EB
+> + * GRE proto ERSPAN type I/II = 0x88BE, type III = 0x22EB
+>   */
+>  
+>  #include <uapi/linux/erspan.h>
+> @@ -139,6 +151,9 @@ static inline u8 get_hwid(const struct erspan_md2 *md2)
+>  
+>  static inline int erspan_hdr_len(int version)
+>  {
+> +	if (version == 0)
+> +		return 0;
+> +
+>  	return sizeof(struct erspan_base_hdr) +
+>  	       (version == 1 ? ERSPAN_V1_MDSIZE : ERSPAN_V2_MDSIZE);
+>  }
+> diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+> index 029b24eeafba..e29cd48674d7 100644
+> --- a/net/ipv4/ip_gre.c
+> +++ b/net/ipv4/ip_gre.c
+> @@ -248,6 +248,15 @@ static void gre_err(struct sk_buff *skb, u32 info)
+>  	ipgre_err(skb, info, &tpi);
+>  }
+>  
+> +static bool is_erspan_type1(int gre_hdr_len)
+> +{
+> +	/* Both ERSPAN type I (version 0) and type II (version 1) use
+> +	 * protocol 0x88BE, but the type I has only 4-byte GRE header,
+> +	 * while type II has 8-byte.
+> +	 */
+> +	return gre_hdr_len == 4;
+> +}
+> +
+>  static int erspan_rcv(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+>  		      int gre_hdr_len)
+>  {
+> @@ -262,17 +271,26 @@ static int erspan_rcv(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+>  	int len;
+>  
+>  	itn = net_generic(net, erspan_net_id);
+> -
+>  	iph = ip_hdr(skb);
+> -	ershdr = (struct erspan_base_hdr *)(skb->data + gre_hdr_len);
+> -	ver = ershdr->ver;
+> -
+> -	tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
+> -				  tpi->flags | TUNNEL_KEY,
+> -				  iph->saddr, iph->daddr, tpi->key);
+> +	if (is_erspan_type1(gre_hdr_len)) {
+> +		ver = 0;
+> +		tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
+> +					  tpi->flags | TUNNEL_NO_KEY,
+> +					  iph->saddr, iph->daddr, 0);
+> +	} else {
+> +		ershdr = (struct erspan_base_hdr *)(skb->data + gre_hdr_len);
+> +		ver = ershdr->ver;
+> +		tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
+> +					  tpi->flags | TUNNEL_KEY,
+> +					  iph->saddr, iph->daddr, tpi->key);
+> +	}
+>  
+>  	if (tunnel) {
+> -		len = gre_hdr_len + erspan_hdr_len(ver);
+> +		if (is_erspan_type1(gre_hdr_len))
+> +			len = gre_hdr_len;
+> +		else
+> +			len = gre_hdr_len + erspan_hdr_len(ver);
+> +
+>  		if (unlikely(!pskb_may_pull(skb, len)))
+>  			return PACKET_REJECT;
+>  
+> @@ -665,7 +683,10 @@ static netdev_tx_t erspan_xmit(struct sk_buff *skb,
+>  	}
+>  
+>  	/* Push ERSPAN header */
+> -	if (tunnel->erspan_ver == 1) {
+> +	if (tunnel->erspan_ver == 0) {
+> +		proto = htons(ETH_P_ERSPAN);
+> +		tunnel->parms.o_flags &= ~TUNNEL_SEQ;
+> +	} else if (tunnel->erspan_ver == 1) {
+>  		erspan_build_header(skb, ntohl(tunnel->parms.o_key),
+>  				    tunnel->index,
+>  				    truncate, true);
+> @@ -1066,7 +1087,10 @@ static int erspan_validate(struct nlattr *tb[], struct nlattr *data[],
+>  	if (ret)
+>  		return ret;
+>  
+> -	/* ERSPAN should only have GRE sequence and key flag */
+> +	if (nla_get_u8(data[IFLA_GRE_ERSPAN_VER]) == 0)
 
-This is particularly problematic if we're receiving on an L3 1500 mtu
-cellular interface, trying to add an L2 header and forwarding to
-an L3 mtu 1500 mtu wifi/ethernet device (which is thus L2 1514).
+I do not see anything in the code making sure IFLA_GRE_ERSPAN_VER has been provided by the user ?
 
-The mtu check prevents us from adding the 14 byte ethernet header prior
-to forwarding the packet.
 
-After the packet has already been redirected, we'd need to add
-an additional 2nd ebpf program on the target device's egress tc hook,
-but then we'd also see non-redirected traffic and have no easy
-way to tell apart normal egress with ethernet header packets
-from forwarded ethernet headerless packets.
 
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- net/core/filter.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 7d6ceaa54d21..5c8243930462 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3159,8 +3159,9 @@ static int bpf_skb_net_shrink(struct sk_buff *skb, u32 off, u32 len_diff,
- 
- static u32 __bpf_skb_max_len(const struct sk_buff *skb)
- {
--	return skb->dev ? skb->dev->mtu + skb->dev->hard_header_len :
--			  SKB_MAX_ALLOC;
-+	if (skb_at_tc_ingress(skb) || !skb->dev)
-+		return SKB_MAX_ALLOC;
-+	return skb->dev->mtu + skb->dev->hard_header_len;
- }
- 
- BPF_CALL_4(bpf_skb_adjust_room, struct sk_buff *, skb, s32, len_diff,
--- 
-2.26.2.526.g744177e7f7-goog
-
+> +		return 0;
+> +
+> +	/* ERSPAN type II/III should only have GRE sequence and key flag */
+>  	if (data[IFLA_GRE_OFLAGS])
+>  		flags |= nla_get_be16(data[IFLA_GRE_OFLAGS]);
+>  	if (data[IFLA_GRE_IFLAGS])
+> @@ -1174,7 +1198,7 @@ static int erspan_netlink_parms(struct net_device *dev,
+>  	if (data[IFLA_GRE_ERSPAN_VER]) {
+>  		t->erspan_ver = nla_get_u8(data[IFLA_GRE_ERSPAN_VER]);
+>  
+> -		if (t->erspan_ver != 1 && t->erspan_ver != 2)
+> +		if (t->erspan_ver > 2)
+>  			return -EINVAL;
+>  	}
+>  
+> @@ -1259,7 +1283,11 @@ static int erspan_tunnel_init(struct net_device *dev)
+>  {
+>  	struct ip_tunnel *tunnel = netdev_priv(dev);
+>  
+> -	tunnel->tun_hlen = 8;
+> +	if (tunnel->erspan_ver == 0)
+> +		tunnel->tun_hlen = 4; /* 4-byte GRE hdr. */
+> +	else
+> +		tunnel->tun_hlen = 8; /* 8-byte GRE hdr. */
+> +
+>  	tunnel->parms.iph.protocol = IPPROTO_GRE;
+>  	tunnel->hlen = tunnel->tun_hlen + tunnel->encap_hlen +
+>  		       erspan_hdr_len(tunnel->erspan_ver);
+> @@ -1456,8 +1484,8 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
+>  	struct ip_tunnel_parm *p = &t->parms;
+>  	__be16 o_flags = p->o_flags;
+>  
+> -	if (t->erspan_ver == 1 || t->erspan_ver == 2) {
+> -		if (!t->collect_md)
+> +	if (t->erspan_ver <= 2) {
+> +		if (t->erspan_ver != 0 && !t->collect_md)
+>  			o_flags |= TUNNEL_KEY;
+>  
+>  		if (nla_put_u8(skb, IFLA_GRE_ERSPAN_VER, t->erspan_ver))
+> @@ -1466,7 +1494,7 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
+>  		if (t->erspan_ver == 1) {
+>  			if (nla_put_u32(skb, IFLA_GRE_ERSPAN_INDEX, t->index))
+>  				goto nla_put_failure;
+> -		} else {
+> +		} else if (t->erspan_ver == 2) {
+>  			if (nla_put_u8(skb, IFLA_GRE_ERSPAN_DIR, t->dir))
+>  				goto nla_put_failure;
+>  			if (nla_put_u16(skb, IFLA_GRE_ERSPAN_HWID, t->hwid))
+> 
