@@ -2,93 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4B31C9AD1
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 21:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8322F1C9B0F
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 21:29:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728526AbgEGTUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 15:20:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42272 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726598AbgEGTUk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 15:20:40 -0400
-Received: from embeddedor (unknown [189.207.59.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1730C208D6;
-        Thu,  7 May 2020 19:20:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588879240;
-        bh=ghifpifTV9Rkgth0xg+/OPnqO8C7ujrV3AOGLvxsFjo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=i3XWUVmdPNza+f4FZYASq/bAHlSB4YDEpjVyWpmF+gGX+ortRqmDygQFiFhc0IuVy
-         mB6o448L/xY1bIdgPr0sxczGP0ap7YQ3ys2TVWhhHDrSJak8kyZeoDxX3b4F5ippnh
-         ZSEYI5vkNRO+7+xZk2luTe8vk7huQWlyiTdE2KgM=
-Date:   Thu, 7 May 2020 14:25:07 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] team: Replace zero-length array with flexible-array
-Message-ID: <20200507192507.GA16516@embeddedor>
+        id S1728377AbgEGT3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 15:29:06 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:5100 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726320AbgEGT3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 15:29:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1588879745; x=1620415745;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kUD9Cq9Eg8ZUdHPqFwtCoPURI8ru60H4eEns1xViiDA=;
+  b=IPI0L4Ld8Isq9gzEcfU5EWq8hg0Z/x/OfVcwok82FWFiy8VBNKWURSn2
+   5POY55TcbRexO9tQLdlxlizWjY9qI6wfS3V9DktVANapLqr1c/EjpyLOp
+   YDbceQ845CeTo77g3SIeikLbiGtK6X/grbi8kZ8DDfBitb9RbxPEHWTii
+   YRhCaeFIUN8+cmcFqoI6OS/1i//PClbi0zEgljndY3iXOhOzvsVh1v6DF
+   lpcr8CyaUF1Ypsfrbl3gPS1Y/5xUMqFNCGuKog3UXVSN/AH7cidiXnJY/
+   K/Z0q5P8A7BGcXu4yw77HJG2U+lgFw63ckmat50R8a74IXHaVdrn6vpc7
+   A==;
+IronPort-SDR: ZCUPRRcnf/MRnKA9qCq6C0dwZ3PinEIW3bMjCNlH1zDuOMehmOXu2tGFZuLt7UU7W+m/kxgYPs
+ K8FLFUKJnBP/OAEHjabKiovbWrr9NuMmG2aI77FjGAwF8MYV5q3TlYxdSPy7i6jqfM4wEPRQsn
+ LwNZIpVKM4aUwgz3liRLtZrnOJ/RBTgA/TOaGgDz168j6F1/k4zCN6BBdqAh1JvDekJJg3WTph
+ ftAcXQMyi7/N7pCLxiv2JqiZFLAYNjsW3O4Ae0m1+wZYU19WBpQ8O8vxU+Ms12QwZ/OxpYm9us
+ fvg=
+X-IronPort-AV: E=Sophos;i="5.73,364,1583218800"; 
+   d="scan'208";a="78739973"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 May 2020 12:29:04 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 7 May 2020 12:29:04 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 7 May 2020 12:29:04 -0700
+Date:   Thu, 7 May 2020 21:29:03 +0200
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+CC:     Vladimir Oltean <olteanv@gmail.com>, Po Liu <po.liu@nxp.com>,
+        "Claudiu Manoil" <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "Leo Li" <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jiri Pirko" <jiri@resnulli.us>, Ido Schimmel <idosch@idosch.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        "linux-devel@linux.nxdi.nxp.com" <linux-devel@linux.nxdi.nxp.com>
+Subject: Re: [EXT] Re: [PATCH v1 net-next 4/6] net: mscc: ocelot: VCAP IS1
+ support
+Message-ID: <20200507192903.whnx2j3f35ga7jzx@ws.localdomain>
+References: <20200506074900.28529-1-xiaoliang.yang_1@nxp.com>
+ <20200506074900.28529-5-xiaoliang.yang_1@nxp.com>
+ <20200506094345.n4zdgjvctwiz4pkh@ws.localdomain>
+ <CA+h21hoqJC_CJB=Sg=-JanXw3S_WANgjsfYjU+ffqn6YCDMzrA@mail.gmail.com>
+ <20200506211551.cf6mlad7ysmuqfvq@ws.localdomain>
+ <DB8PR04MB5785BE9AC6FAC6F395C8A20DF0A50@DB8PR04MB5785.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <DB8PR04MB5785BE9AC6FAC6F395C8A20DF0A50@DB8PR04MB5785.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+On 07.05.2020 11:23, Xiaoliang Yang wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>Hi Allan,
+>
+>
+>> Hi Vladimir,
+>>
+>> On 06.05.2020 13:53, Vladimir Oltean wrote:
+>[snip]
+>> >At the moment, the driver does not support more than 1 action. We might
+>> >need to change that, but we can still install more filters with the
+>> >same key and still be fine (see more below). When there is more than 1
+>> >action, the IS1 stuff will be combined into a single rule programmed
+>> >into IS1, and the IS2 stuff will be combined into a single new rule
+>> >with the same keys installed into VCAP IS2. Would that not work?
+>> >
+>> >> The SW model have these two rules in the same table, and can stop
+>> >> process at the first match. SW will do the action of the first frame
+>> >> matching.
+>> >>
+>> >
+>> >Actually I think this is an incorrect assumption - software stops at
+>> >the first action only if told to do so. Let me copy-paste a text from a
+>> >different email thread.
+>>
+>> I'm still not able to see how this proposal will give us the same behavioral in SW and in HW.
+>>
+>> A simple example:
+>>
+>> tc qdisc add dev enp0s3 ingress
+>> tc filter add dev enp0s3 protocol 802.1Q parent ffff: \
+>>      prio 10 flower vlan_id 5 action vlan modify id 10 tc filter add dev enp0s3 protocol 802.1Q parent ffff: \
+>>      prio 20 flower src_mac 00:00:00:00:00:08 action drop
+>>
+>> We can then inject a frame with VID 5 and smac ::08:
+>> $ ef tx tap0 eth smac 00:00:00:00:00:08 ctag vid 5
+>>
+>> We can then check the filter and see that it only hit the first rule:
+>>
+>> $ tc -s filter show dev enp0s3 ingress
+>> filter protocol 802.1Q pref 10 flower chain 0 filter protocol 802.1Q pref 10 flower chain 0 handle 0x1
+>>    vlan_id 5
+>>    not_in_hw
+>>          action order 1: vlan  modify id 10 protocol 802.1Q priority 0 pipe
+>>           index 1 ref 1 bind 1 installed 19 sec used 6 sec
+>>          Action statistics:
+>>          Sent 42 bytes 1 pkt (dropped 0, overlimits 0 requeues 0)
+>>          backlog 0b 0p requeues 0
+>>
+>> filter protocol 802.1Q pref 20 flower chain 0 filter protocol 802.1Q pref 20 flower chain 0 handle 0x1
+>>   src_mac 00:00:00:00:00:08
+>>   not_in_hw
+>>         action order 1: gact action drop
+>>          random type none pass val 0
+>>          index 1 ref 1 bind 1 installed 11 sec used 11 sec
+>>         Action statistics:
+>>         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>>         backlog 0b 0p requeues 0
+>>
+>> If this was done with the proposed HW offload, then both rules would have been hit and we would have a different behavioral.
+>>
+>> This can be fixed by adding the "continue" action to the first rule:
+>
+>> tc filter add dev enp0s3 protocol 802.1Q parent ffff: \
+>>      prio 10 flower vlan_id 5 action vlan modify id 10 continue tc filter add dev enp0s3 protocol 802.1Q parent ffff: \
+>>      prio 20 flower src_mac 00:00:00:00:00:08 action drop
+>>
+>> But that would again break if we add 2 rules manipulating the VLAN (as the HW does not continue with in a single TCAM).
+>>
+>> My point is: I do not think we can hide the fact that this is done in independent TCAMs in the silicon.
+>>
+>> I think it is possible to do this with the chain feature (even though it is not a perfect match), but it would require more analysis.
+>>
+>> /Allan
+>
+>Do you mean it's better to set vlan modify filters in a different chain, and write the filter entries with a same chain in the same VCAP TCAM?
+>For example:
+>        tc filter add dev enp0s3 protocol 802.1Q chain 11 parent ffff: prio 10 flower skip_sw vlan_id 5 action vlan modify id 10
+>        tc filter add dev enp0s3 protocol 802.1Q chain 22 parent ffff: prio 20 flower skip_sw src_mac 00:00:00:00:00:08 action drop
+>for this usage, we only need to ensure a chain corresponding to a VCAP in ocelot ace driver. I'm not sure is my understanding right?
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+I still have not found a satisfying solution to this. As I understand
+the chains, they require the "goto" action to be used to tie them
+together.
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
+We could use that to represent a single lookup in is1 and link that to a
+lookup in is2. Not sure if we should, it will also require
+(non-backwards compatible) changes in how the existing IS2 support is
+working.
 
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
+Again, I do not have the answer (I'm also looking for it), but I think
+we need something where it is clear to the user that this end up in
+different lists.
 
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
+/Allan
 
-sizeof(flexible-array-member) triggers a warning because flexible array
-members have incomplete type[1]. There are some instances of code in
-which the sizeof operator is being incorrectly/erroneously applied to
-zero-length arrays and the result is zero. Such instances may be hiding
-some bugs. So, this work (flexible-array member conversions) will also
-help to get completely rid of those sorts of issues.
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- include/linux/if_team.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/if_team.h b/include/linux/if_team.h
-index ec7e4bd07f82..c9bdccd67ffb 100644
---- a/include/linux/if_team.h
-+++ b/include/linux/if_team.h
-@@ -67,7 +67,7 @@ struct team_port {
- 	u16 queue_id;
- 	struct list_head qom_list; /* node in queue override mapping list */
- 	struct rcu_head	rcu;
--	long mode_priv[0];
-+	long mode_priv[];
- };
- 
- static inline struct team_port *team_port_get_rcu(const struct net_device *dev)
 
