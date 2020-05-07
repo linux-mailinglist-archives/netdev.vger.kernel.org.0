@@ -2,180 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 010291C811E
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 06:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED4B41C812A
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 06:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725841AbgEGElG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 00:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
+        id S1725862AbgEGEwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 00:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725763AbgEGElG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 00:41:06 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33503C061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 21:41:06 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jWYLF-0003h9-8y; Thu, 07 May 2020 06:41:01 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jWYLA-0004p6-67; Thu, 07 May 2020 06:40:56 +0200
-Date:   Thu, 7 May 2020 06:40:56 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: Re: [PATCH next] ARM: dts: am437x: fix networking on boards with
- ksz9031 phy
-Message-ID: <20200507044056.4smicagmxve5yshn@pengutronix.de>
-References: <20200506190835.31342-1-grygorii.strashko@ti.com>
+        by vger.kernel.org with ESMTP id S1725601AbgEGEwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 00:52:09 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7999FC061A0F
+        for <netdev@vger.kernel.org>; Wed,  6 May 2020 21:52:09 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id u22so1565653plq.12
+        for <netdev@vger.kernel.org>; Wed, 06 May 2020 21:52:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FYkaUuQ0Hcijpg8fXzFbNqstsBym+T1ZVc+9xfGMFXI=;
+        b=rjy+p4PWdreHUZMb3DXmAQFd1efDM9tlKf0HJE+/ybAFXUpRwsj+qLj6/nikE0BrxH
+         8O4xAdkgqHHyoUiPY4fxdQZXZRJVRnPo0gfhbhNGMu188qw/TZR/WlWbskfmuVqcNzH0
+         wTxY4fLXM3RIVF9eomTo8zVDKmZ0lwZajSMe5zSjFw4Et7KM2etVYhzFwE1Zxg9XQ2U5
+         X2EbBuxDl0qfzMxhUKJEv0yipky959uomgqO1+rGozNrnVogJcutrSYylnKL8UzwcUP9
+         uFTxX7kyHHCdM4VWNP8xRM1SiAJvDVE6JuyTCj8G8ZJFb1ed3LiXCIShV0wh7XdxZNaE
+         6vZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FYkaUuQ0Hcijpg8fXzFbNqstsBym+T1ZVc+9xfGMFXI=;
+        b=uP+gOqiO68C2k44YzxlOlu0wqlh9h4+F/VfBbqEyPDgJfty1WxUNhTEqggWWaWRopi
+         fjjGcoqS/CnpAgOwJmNFcJo1adR65yxphKyX2KTOaDRWsBirp6SNagb9iqGQvCpi28oh
+         QmupmsNlh/4vZWsz80i/McjBJpBh+iF9T6mDaHp6Cw2NIFZoU7bOn/nlTgsbLQpA/87O
+         oVP/CXnhtv9aRl2YbXd0P1NASTRO3nACWeYm9PQI0UaUVDa9ZkIZIj01oJ0rSv4Ve2tv
+         DktoxqLlPlhh9Y9oZSgxa/Yu2YiV8JKtMS3b3VHe27mCCiacbnD/2AkqMqwoV7Z/JB10
+         WxSw==
+X-Gm-Message-State: AGi0PuaeQB6m9sJc2T9StQV1XmAS1qu+8M+FBAgFyrcT1XaKax0LAv81
+        /C/+hksoB2zDJpCS4wrPdyWfBIAUnOE=
+X-Google-Smtp-Source: APiQypJeThSOJg6sXA6qEy1XEL6FUsr6CHGbZUU7u6C7pBB/gU3FNKMkjcI6fPvCUeZkEcANxv0tsg==
+X-Received: by 2002:a17:90a:8d12:: with SMTP id c18mr13335798pjo.144.1588827128685;
+        Wed, 06 May 2020 21:52:08 -0700 (PDT)
+Received: from builder.lan (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id i128sm3501379pfc.149.2020.05.06.21.52.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 May 2020 21:52:08 -0700 (PDT)
+Date:   Wed, 6 May 2020 21:52:55 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, marcel@holtmann.org,
+        andy.gross@linaro.org, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] wcn36xx: Fix error handling path in 'wcn36xx_probe()'
+Message-ID: <20200507045255.GB3236072@builder.lan>
+References: <20200507043619.200051-1-christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="rlbyhlusgguuba5b"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200506190835.31342-1-grygorii.strashko@ti.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 06:38:58 up 173 days, 19:57, 178 users,  load average: 0.00, 0.02,
- 0.00
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20200507043619.200051-1-christophe.jaillet@wanadoo.fr>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed 06 May 21:36 PDT 2020, Christophe JAILLET wrote:
 
---rlbyhlusgguuba5b
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> In case of error, 'qcom_wcnss_open_channel()' must be undone by a call to
+> 'rpmsg_destroy_ept()', as already done in the remove function.
+> 
+> Fixes: 5052de8deff5 ("soc: qcom: smd: Transition client drivers from smd to rpmsg")
 
-Hi Grygorii,
+It seems I introduced this bug in f303a9311065 ("wcn36xx: Transition
+driver to SMD client"), but your patch should should apply back to your
+Fixes, so I think it's good.
 
-thank you for you patches!
-
-On Wed, May 06, 2020 at 10:08:35PM +0300, Grygorii Strashko wrote:
-> Since commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the
-> KSZ9031 PHY") the networking is broken on boards:
->  am437x-gp-evm
->  am437x-sk-evm
->  am437x-idk-evm
->=20
-> All above boards have phy-mode =3D "rgmii" and this is worked before, bec=
-ause
-> KSZ9031 PHY started with default RGMII internal delays configuration (TX
-> off, RX on 1.2 ns) and MAC provided TX delay. After above commit, the
-> KSZ9031 PHY starts handling phy mode properly and disables RX delay, as
-> result networking is become broken.
->=20
-> Fix it by switching to phy-mode =3D "rgmii-rxid" to reflect previous
-> behavior.
->=20
-> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Philippe Schenker <philippe.schenker@toradex.com>
-> Fixes: commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for t=
-he KSZ9031 PHY")
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> ---
->  arch/arm/boot/dts/am437x-gp-evm.dts  | 2 +-
->  arch/arm/boot/dts/am437x-idk-evm.dts | 2 +-
->  arch/arm/boot/dts/am437x-sk-evm.dts  | 4 ++--
->  3 files changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/arch/arm/boot/dts/am437x-gp-evm.dts b/arch/arm/boot/dts/am43=
-7x-gp-evm.dts
-> index 811c8cae315b..d692e3b2812a 100644
-> --- a/arch/arm/boot/dts/am437x-gp-evm.dts
-> +++ b/arch/arm/boot/dts/am437x-gp-evm.dts
-> @@ -943,7 +943,7 @@
-> =20
->  &cpsw_emac0 {
->  	phy-handle =3D <&ethphy0>;
-> -	phy-mode =3D "rgmii";
-> +	phy-mode =3D "rgmii-rxid";
->  };
-> =20
->  &elm {
-> diff --git a/arch/arm/boot/dts/am437x-idk-evm.dts b/arch/arm/boot/dts/am4=
-37x-idk-evm.dts
-> index 9f66f96d09c9..a7495fb364bf 100644
-> --- a/arch/arm/boot/dts/am437x-idk-evm.dts
-> +++ b/arch/arm/boot/dts/am437x-idk-evm.dts
-> @@ -504,7 +504,7 @@
-> =20
->  &cpsw_emac0 {
->  	phy-handle =3D <&ethphy0>;
-> -	phy-mode =3D "rgmii";
-> +	phy-mode =3D "rgmii-id";
->  };
-
-Do you have here really rgmii-id?
-
-
->  &rtc {
-> diff --git a/arch/arm/boot/dts/am437x-sk-evm.dts b/arch/arm/boot/dts/am43=
-7x-sk-evm.dts
-> index 25222497f828..4d5a7ca2e25d 100644
-> --- a/arch/arm/boot/dts/am437x-sk-evm.dts
-> +++ b/arch/arm/boot/dts/am437x-sk-evm.dts
-> @@ -833,13 +833,13 @@
-> =20
->  &cpsw_emac0 {
->  	phy-handle =3D <&ethphy0>;
-> -	phy-mode =3D "rgmii";
-> +	phy-mode =3D "rgmii-rxid";
->  	dual_emac_res_vlan =3D <1>;
->  };
-> =20
->  &cpsw_emac1 {
->  	phy-handle =3D <&ethphy1>;
-> -	phy-mode =3D "rgmii";
-> +	phy-mode =3D "rgmii-rxid";
->  	dual_emac_res_vlan =3D <2>;
->  };
-> =20
-> --=20
-> 2.17.1
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
 Regards,
-Oleksij
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Bjorn
 
---rlbyhlusgguuba5b
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl6zkVMACgkQ4omh9DUa
-UbO2Og//azHJ/HWp+TB9hH+8UujDum628rQwsaH2rFDUmtm0XYBoRTp4L4v4Yn10
-u1eSJxvBl38sfyvDqM2v2visX1Hrr72khBrpSlsZZi+SBaN59cLs97vDRqZxohS6
-R8U2SfVYIHMuiJY0v7J9XuScocVNtQCRJ/tiy9sY2FIQp9U0ny2ghqDpDXkw4FYG
-uzQKPyPSHbqanUlvU2lqapPj8JP6EBprJcUS00DTv5Tqkw9t2A5Xi+S2tfT9CtZj
-jsmQcjpgAKgPuuYsbHzAouvv2E2yxPiOSYrFoKoB+q4STtIojdzAkUxb7G2f/kPi
-u+d2t2lvjaAbVj3fhOmXKqUZVu9fwCqhXTZQzv2pYy4vV4Qi3AgzRSCh42NOZjvU
-Bp/3HiBOiDZsFI2DFjJtk1bPgGbVcStgPW6a853ZrfLZy4RJBopddqedWJBsu8jj
-pHmubJQiZeUu2eAtdxSFNbvTeEzyk+1vuf/zHiO1guXA0Sndm5pbv8b8RE+Uwghf
-CwLUxVRq9AnNDcFZujrFOH3yDN4tYPYG+TjtoxSultHge+7gKs78FirA18DuGpIN
-qh+DSsiOuRLEkN8NzWU/1Xve7qpYb9gOmMoL1WLq96GlgINjcjw0XlEGRJFjl/LU
-hTGgNMOCdxZZJ42p69ESuYZL6bRCH9XphXlYllOfcU0RDYltl+Q=
-=Tt1L
------END PGP SIGNATURE-----
-
---rlbyhlusgguuba5b--
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> Not 100% sure of the commit for Fixes, but it is consistent with the
+> analysis in efad8396e906 where the same call has been added in the remove
+> function.
+> ---
+>  drivers/net/wireless/ath/wcn36xx/main.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
+> index e49c306e0eef..1acdc13a74fc 100644
+> --- a/drivers/net/wireless/ath/wcn36xx/main.c
+> +++ b/drivers/net/wireless/ath/wcn36xx/main.c
+> @@ -1339,7 +1339,7 @@ static int wcn36xx_probe(struct platform_device *pdev)
+>  	if (addr && ret != ETH_ALEN) {
+>  		wcn36xx_err("invalid local-mac-address\n");
+>  		ret = -EINVAL;
+> -		goto out_wq;
+> +		goto out_channel;
+>  	} else if (addr) {
+>  		wcn36xx_info("mac address: %pM\n", addr);
+>  		SET_IEEE80211_PERM_ADDR(wcn->hw, addr);
+> @@ -1347,7 +1347,7 @@ static int wcn36xx_probe(struct platform_device *pdev)
+>  
+>  	ret = wcn36xx_platform_get_resources(wcn, pdev);
+>  	if (ret)
+> -		goto out_wq;
+> +		goto out_channel;
+>  
+>  	wcn36xx_init_ieee80211(wcn);
+>  	ret = ieee80211_register_hw(wcn->hw);
+> @@ -1359,6 +1359,8 @@ static int wcn36xx_probe(struct platform_device *pdev)
+>  out_unmap:
+>  	iounmap(wcn->ccu_base);
+>  	iounmap(wcn->dxe_base);
+> +out_channel:
+> +	rpmsg_destroy_ept(wcn->smd_channel);
+>  out_wq:
+>  	ieee80211_free_hw(hw);
+>  out_err:
+> -- 
+> 2.25.1
+> 
