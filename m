@@ -2,94 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A144B1C9C11
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 22:19:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EF931C9C30
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 22:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728582AbgEGUTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 16:19:42 -0400
-Received: from www62.your-server.de ([213.133.104.62]:33822 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbgEGUTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 16:19:41 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jWmzZ-0000uo-43; Thu, 07 May 2020 22:19:37 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jWmzY-000Pq5-CQ; Thu, 07 May 2020 22:19:36 +0200
-Subject: Re: [RFC PATCH bpf-next 2/3] bpf, arm64: Optimize AND,OR,XOR,JSET
- BPF_K using arm64 logical immediates
-To:     Luke Nelson <lukenels@cs.washington.edu>, bpf@vger.kernel.org
-Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Enrico Weigelt <info@metux.net>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Christoffer Dall <christoffer.dall@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <20200507010504.26352-1-luke.r.nels@gmail.com>
- <20200507010504.26352-3-luke.r.nels@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2b05950b-5f7a-e5e7-81fe-27703c3ef77f@iogearbox.net>
-Date:   Thu, 7 May 2020 22:19:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200507010504.26352-3-luke.r.nels@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S1728757AbgEGUVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 16:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728531AbgEGUVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 16:21:37 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33D9C05BD43;
+        Thu,  7 May 2020 13:21:37 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DABA611950516;
+        Thu,  7 May 2020 13:21:36 -0700 (PDT)
+Date:   Thu, 07 May 2020 13:21:36 -0700 (PDT)
+Message-Id: <20200507.132136.2063178280963548327.davem@davemloft.net>
+To:     manivannan.sadhasivam@linaro.org
+Cc:     kvalo@codeaurora.org, bjorn.andersson@linaro.org,
+        hemantk@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clew@codeaurora.org,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] Add QRTR MHI client driver
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200507125306.32157-1-manivannan.sadhasivam@linaro.org>
+References: <20200507125306.32157-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25805/Thu May  7 14:14:46 2020)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 07 May 2020 13:21:37 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/7/20 3:05 AM, Luke Nelson wrote:
-> The current code for BPF_{AND,OR,XOR,JSET} BPF_K loads the immediate to
-> a temporary register before use.
-> 
-> This patch changes the code to avoid using a temporary register
-> when the BPF immediate is encodable using an arm64 logical immediate
-> instruction. If the encoding fails (due to the immediate not being
-> encodable), it falls back to using a temporary register.
-> 
-> Example of generated code for BPF_ALU32_IMM(BPF_AND, R0, 0x80000001):
-> 
-> without optimization:
-> 
->    24: mov  w10, #0x8000ffff
->    28: movk w10, #0x1
->    2c: and  w7, w7, w10
-> 
-> with optimization:
-> 
->    24: and  w7, w7, #0x80000001
-> 
-> Since the encoding process is quite complex, the JIT reuses existing
-> functionality in arch/arm64/kernel/insn.c for encoding logical immediates
-> rather than duplicate it in the JIT.
-> 
-> Co-developed-by: Xi Wang <xi.wang@gmail.com>
-> Signed-off-by: Xi Wang <xi.wang@gmail.com>
-> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Date: Thu,  7 May 2020 18:23:04 +0530
 
-Great find, thanks! Given Will wanted to queue them:
+> Here is the series adding MHI client driver support to Qualcomm IPC router
+> protocol. MHI is a newly added bus to kernel which is used to communicate to
+> external modems over a physical interface like PCI-E. This driver is used to
+> transfer the QMI messages between the host processor and external modems over
+> the "IPCR" channel.
+> 
+> For QRTR, this driver is just another driver acting as a transport layer like
+> SMD.
+> 
+> Currently this driver is needed to control the QCA6390 WLAN device from ath11k.
+> The ath11k MHI controller driver will take care of booting up QCA6390 and
+> bringing it to operating state. Later, this driver will be used to transfer QMI
+> messages over the MHI-IPCR channel.
+> 
+> The second patch of this series removes the ARCH_QCOM dependency for QRTR. This
+> is needed because the QRTR driver will be used with x86 machines as well to talk
+> to devices like QCA6390.
 
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Series applied to net-next, thanks.
