@@ -2,116 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEE2F1C9568
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E65511C958B
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726950AbgEGPt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 11:49:27 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54828 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725914AbgEGPt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:49:27 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 05633200DB;
-        Thu,  7 May 2020 15:49:26 +0000 (UTC)
-Received: from us4-mdac16-75.at1.mdlocal (unknown [10.110.50.193])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 02215600A1;
-        Thu,  7 May 2020 15:49:26 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.105])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 79FDF220071;
-        Thu,  7 May 2020 15:49:25 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1E0829C0059;
-        Thu,  7 May 2020 15:49:25 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 7 May 2020
- 16:49:19 +0100
-Subject: Re: [RFC PATCH net] net: flow_offload: simplify hw stats check
- handling
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <netfilter-devel@vger.kernel.org>, <jiri@resnulli.us>,
-        <kuba@kernel.org>
-References: <49176c41-3696-86d9-f0eb-c20207cd6d23@solarflare.com>
- <20200507153231.GA10250@salvia>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <9000b990-9a25-936e-6063-0034429256f0@solarflare.com>
-Date:   Thu, 7 May 2020 16:49:15 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727794AbgEGPye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 11:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726451AbgEGPyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:54:33 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F0EC05BD43;
+        Thu,  7 May 2020 08:54:32 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id f7so3182030pfa.9;
+        Thu, 07 May 2020 08:54:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qODBvlvixTIM4uF++H0GbJezfoy8iTUvBUc/JVUBYxA=;
+        b=ThQynXjQezxuTaKhw2P2xZXcypd1fLvesj058Lm/QfVygms1wxRVgrwZJ8E6VZyCAU
+         a/tIrJ4oUID7VucfjsVZhlujX0P/iLP1pavLPBc1pGgojhP4kWqL/HT4iTGYEPL6MZF5
+         iJdOBAULSeVwFCs/nyjZ6cA/cjDXQJVb2cFgdw1MidNng46W6fIbqhave1digP801gOj
+         ZUdPvfhNM8TXiTLx2Cg1ng/mBxGNWlfbRdoBb/9WDxby74I/hiPVtM4f5mjK2EkUSo07
+         YZbgoU53WQKH7BZ32FmzRjSGCLq4/ehjKYc8T3y4AO7K78XafmV1b6vPtcXdYa6/z8ZD
+         wMKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qODBvlvixTIM4uF++H0GbJezfoy8iTUvBUc/JVUBYxA=;
+        b=Q5nLh1TWzDhMoOag4c/EJjK2ygZP77CoYni6P9Po6xkaj68fWto4dWvOLgcNN3EuUc
+         +98npuxuoPb/fX+tHQRxiJOfk3dBWBMjLAWv73g3CEFAEHspEZDfL2E4R+c5k0aENzF8
+         /8pyLfPw5l5x09hNu7v9ls7ODhJj5JsXeyNjgcFLYvz3OzZ9SCyi/lDlAMnBIWu2lMo+
+         pG9yCT10sPbtvQne5+6U83DtxkOx3VNEmbEllzOAVuSG7YK10vJ3Ujf766+e0Uv1qbYh
+         ygav4pAmA7CKWgvBR3b3zZeY8SgUIVTljbljsIPEVpHcY/Ft1/bp7jtGQYXL/+/U1oOi
+         E91w==
+X-Gm-Message-State: AGi0PuZ7AUFiQf4HUuGqTSS6mZKNlGF5fcF/rayIA2H6L09RuXO5A4Mn
+        H+xQvDC2V6yPQt+n17+Cw6ebJtWH
+X-Google-Smtp-Source: APiQypKgQitqAVNooiWscmGva4UImYjtJXRZeHamNUycjPKQVBAqUgiTEZu9zk0Skxn/ZM/jxvhEZA==
+X-Received: by 2002:a62:18d7:: with SMTP id 206mr1283594pfy.299.1588866871142;
+        Thu, 07 May 2020 08:54:31 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y63sm5191194pfg.138.2020.05.07.08.54.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 May 2020 08:54:30 -0700 (PDT)
+Subject: Re: [PATCH net v2] net: bcmgenet: Clear ID_MODE_DIS in
+ EXT_RGMII_OOB_CTRL when not needed
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Stefan Wahren <wahrenst@gmx.net>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200225131159.26602-1-nsaenzjulienne@suse.de>
+ <cf07fae3-bd8f-a645-0007-a317832c51c1@samsung.com>
+ <CGME20200507100347eucas1p2bad4d58e4eb23e8abd22b43f872fc865@eucas1p2.samsung.com>
+ <a3df217d-f35c-9d74-4069-d47dee89173e@samsung.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <09f9fdff-867f-687f-e5af-a4f82a75e105@gmail.com>
+Date:   Thu, 7 May 2020 08:54:28 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200507153231.GA10250@salvia>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25404.003
-X-TM-AS-Result: No-3.237200-8.000000-10
-X-TMASE-MatchedRID: HXSqh3WYKfu8rRvefcjeTR4ejJMDGBzF69aS+7/zbj+qvcIF1TcLYHWQ
-        EG9fkFjnBsHk0c28yIFTtuW5X/TasP7tHrro2/8xoxjrap5AGQsX2zxRNhh61ahHWxx1acUUwOW
-        nbwsz43KkOO100bSZNV7pYW/UsTx9Nfo8TyvB3qEqsMfMfrOZRUloPruIq9jT0fdJMjDg/DLzPv
-        RcNNSOxi+vBc4/NAwnAGyNPhznEz9JxzdMxVoC9pU7Bltw5qVLwCx/VTlAePqbKItl61J/ycnjL
-        TA/UDoASXhbxZVQ5H+OhzOa6g8KrefhcPyBtEzPjgrh35LW8ry5rk5R+EBE4JnzTmj6cLSx/g3I
-        edOBH38+hOvIJEYQOBeqwX5fidXjeswl8UtIMAtGSq2MHFuGT+L59MzH0po2K2yzo9Rrj9wPoYC
-        35RuihKPUI7hfQSp53zHerOgw3HE=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.237200-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25404.003
-X-MDID: 1588866566-T8A8QSxSbPCB
+In-Reply-To: <a3df217d-f35c-9d74-4069-d47dee89173e@samsung.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/05/2020 16:32, Pablo Neira Ayuso wrote:
-> On Thu, May 07, 2020 at 03:59:09PM +0100, Edward Cree wrote:
->> Make FLOW_ACTION_HW_STATS_DONT_CARE be all bits, rather than none, so that
->>  drivers and __flow_action_hw_stats_check can use simple bitwise checks.
-> 
-> You have have to explain why this makes sense in terms of semantics.
-> 
-> _DISABLED and _ANY are contradicting each other.
-No, they aren't.  The DISABLED bit means "I will accept disabled", it doesn't
- mean "I insist on disabled".  What _does_ mean "I insist on disabled" is if
- the DISABLED bit is set and no other bits are.
-So DISABLED | ANY means "I accept disabled; I also accept immediate or
- delayed".  A.k.a. "I don't care, do what you like".
 
->> In mlxsw we check for DISABLED first, because we'd rather save the counter
->>  resources in the DONT_CARE case.
-> 
-> And this also is breaking netfilter again.
-> 
-> Turning DONT_CARE gives us nothing back at all.
-If you set DONT_CARE, then because that includes the DISABLED bit, you will
- get no counter on mlxsw.  I thought that was what netfilter wanted (no
- counters by default)?
 
-On 07/05/2020 16:36, Pablo Neira Ayuso wrote:
-> What if the driver does not support to disable counters?
+On 5/7/2020 3:03 AM, Marek Szyprowski wrote:
+> Hi
 > 
-> It will have to check for _DONT_CARE here.
-No, it would just go
-    if (hw_stats & _IMMEDIATE) {
-        configure_me_a_counter();
-    } else {
-        error("Only hw_stats_type immediate supported");
-    }
-And this will work fine, because _DONT_CARE & _IMMEDIATE == _IMMEDIATE,
- whereas _DISABLED & _IMMEDIATE == 0.
+> On 07.05.2020 11:46, Marek Szyprowski wrote:
+>> On 25.02.2020 14:11, Nicolas Saenz Julienne wrote:
+>>> Outdated Raspberry Pi 4 firmware might configure the external PHY as
+>>> rgmii although the kernel currently sets it as rgmii-rxid. This makes
+>>> connections unreliable as ID_MODE_DIS is left enabled. To avoid this,
+>>> explicitly clear that bit whenever we don't need it.
+>>>
+>>> Fixes: da38802211cc ("net: bcmgenet: Add RGMII_RXID support")
+>>> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+>>
+>> I've finally bisected the network issue I have on my RPi4 used for 
+>> testing mainline builds. The bisect pointed to this patch. Once it got 
+>> applied in v5.7-rc1, the networking is broken on my RPi4 in ARM32bit 
+>> mode and kernel compiled from bcm2835_defconfig. I'm using u-boot to 
+>> tftp zImage/dtb/initrd there. After reverting this patch network is 
+>> working fine again. The strange thing is that networking works fine if 
+>> kernel is compiled from multi_v7_defconfig but I don't see any obvious 
+>> difference there.
+>>
+>> I'm not sure if u-boot is responsible for this break, but kernel 
+>> definitely should be able to properly reset the hardware to the valid 
+>> state.
+>>
+>> I can provide more information, just let me know what is needed. Here 
+>> is the log, I hope it helps:
+>>
+>> [   11.881784] bcmgenet fd580000.ethernet eth0: Link is Up - 
+>> 1Gbps/Full - flow control off
+>> [   11.889935] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+>>
+>> root@target:~# ping host
+>> PING host (192.168.100.1) 56(84) bytes of data.
+>> From 192.168.100.53 icmp_seq=1 Destination Host Unreachable
+>> ...
+> 
+> Okay, I've played a bit more with this and found that enabling 
+> CONFIG_BROADCOM_PHY fixes this network issue. I wonder if Genet driver 
+> should simply select CONFIG_BROADCOM_PHY the same way as it selects 
+> CONFIG_BCM7XXX_PHY.
 
-> And _DISABLED implies "bail out if you cannot disable".
-See above; with the new semantics, the "bail out" condition is "if you
- cannot satisfy any of the bits that were set".  Which means if
- _DISABLED is the only bit set, and you cannot disable, you bail out;
- but if _DISABLED and (say) _IMMEDIATE are both set, that means "bail
- out if you don't support _IMMEDIATE *and* cannot disable" (i.e. if you
- only support _DELAYED).
-
--ed
+Historically GENET has been deployed with an internal PHY and this is
+still 90% of the GENET users out there on classic Broadcom STB
+platforms, not counting the 2711. For external PHYs, there is a variety
+of options here, so selecting CONFIG_BROADCOM_PHY would be just one of
+the possibilities, I would rather fix this with the bcm2835_defconfig
+and multi_v7_defconfig update. Would that work for you?
+-- 
+Florian
