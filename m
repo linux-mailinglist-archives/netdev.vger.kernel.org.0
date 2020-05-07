@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E66F1C8DF2
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0207B1C8DC3
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:11:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727124AbgEGOKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 10:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46076 "EHLO
+        id S1727910AbgEGOIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728231AbgEGOIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:08:47 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ADDDC05BD0E
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 07:08:46 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id o196so4041659ybg.8
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 07:08:46 -0700 (PDT)
+        with ESMTP id S1728244AbgEGOIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:08:48 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134E3C05BD09
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 07:08:48 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id n205so7153375ybf.14
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 07:08:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=AHFzEJzKwt9ZFy0jBf7TvY8PgdaHSeTdOsEZQJRrnBk=;
-        b=pjk7DTKLtiRTq8RaQKPSfDS+QAHg7b/zLHHOzWIr+ajkFNHMDPswuqd1TjfZo6/wed
-         9wSDaOsghl6wu7NGB/RFAHUvZiCOTpr2eO+GrjbwrJZVqLUaijEOqmLUdwNy15fdIC+h
-         Awq2Io4GhIwuU0pvBkIog+tUCFdRPEIryon+bhclkath9Bv4EzTNaIi3Yf31s5Ckjm6f
-         cRa9YMB9vFon/BJsC+5pJJ+LpSl8RXxkaIE5ti63+dXsi5axvNcZyBpzqYRAOHEe+pnX
-         fuDBKKRdR0MlCejuMVWh2aIRwHtSJX4RiCeHEzfiRrWWKcwjU/c4XGyLP7jFyrZeo5qi
-         NBsg==
+         :cc;
+        bh=rIGhmr2k2fsuEkFgHHc3VNTSROpqunp3er0RiFQ8AOI=;
+        b=sA6oZ5FyVrY8dQglX1KLmjYSulIYTUtv7sgrgC62rtFBGDO8ifcNw7Vakk6sn8TyKF
+         CVGKrX/06P/E49URHd5MT8FpVd3RQrm+6DeesVhVVCOwlIKKTbmix/RQyMU2UI/X5ehT
+         g30Pj+gmCu1uxvTagvvA98fm0cjfP0+PJcXBNy9e8GEQq5DiuYhQlADhy6tFgwgu25ZK
+         FyjhGeaUJMY0kjaM8H6+4eH+SfhAlKYGPrMQph+x97MU/BRxiXxlVwKZOHh9nyjOJQo4
+         bGfWvOMOsd4izEbUHK4INqgWzGiABtZ8LsvVJWyiNKPKMUSb/L7Y+o5S+gjHg8Tm2Jq/
+         PGYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=AHFzEJzKwt9ZFy0jBf7TvY8PgdaHSeTdOsEZQJRrnBk=;
-        b=jkmnsd6duA12ZMBpPudF9FsKN7BK9UGksrzvqsNf9go5bfIfIlBIjQP53KyPhPn15Y
-         uorOPANdgtn1cdQpu1TKRmldX31Bbu1gPCanjYY99tcd76jyyj5TQBNtnpY8e1wVrJxT
-         IDydQemDC8+AeR8nFCKUCxJ1BZwEezJyYbc2WUz1P/jTAoF6of0Na/UzmNUhscqShD7A
-         GdB8WFBVY8nqEG+2Z8maKeYRaJ35KwXhmHYfZ+UjdMz8CvNYbHwdbOg+A0Wto/MFmYSe
-         08jqhUwNAqVBME9q9a/H6rv4JGtc4Tg8MiYEU45hesFzhcbyRWygMBAyNIaKL72Oyz8g
-         JU6g==
-X-Gm-Message-State: AGi0PubA2vCcU6xRITdNjBFKzyhXj4zZH7IW2Ls14gjl/ZsrEw20L5tB
-        O8blxINSJWiz/CjtBajl5yFa0MWPDHZv
-X-Google-Smtp-Source: APiQypL/hFJrqwwKaj6ek8kRxBKAQ374dewfXaX1Mj+trxMhmQFFCHRx3wUdbM1dEkga5lREwkgOEg3fqlrL
-X-Received: by 2002:a25:c78d:: with SMTP id w135mr15778148ybe.11.1588860525306;
- Thu, 07 May 2020 07:08:45 -0700 (PDT)
-Date:   Thu,  7 May 2020 07:08:07 -0700
+         :references:subject:from:to:cc;
+        bh=rIGhmr2k2fsuEkFgHHc3VNTSROpqunp3er0RiFQ8AOI=;
+        b=fAOIDjSI7V9vWtWhy3T7k/rWFm7u3xGW31xL1KeehGoZwMlXjwB8ootEVD3c6O0YsI
+         ngAoscoBnlfR4pGZ0e3M5ByjwlQ0z0dpBflhgHF07b/C+Za7JDE1HP0/EZpnkihBPLor
+         Hhav2eh4qSlyiPV2wW5h/y3RbwH0nR6bpX+fTZ4zB08UfWNDy8Z/YEuWwyrecv3A0SNj
+         bQn8PUQC82BiiJVqzP1pRjB8uwQW4anRXaKQveVfNUR3AXB1guxhkH0KU/yeI64sJ0wH
+         sxWb/vQJ+vOi0w0Z8KOACmzADw6IB8oWVHGXsnHbhzmBQguXOARBKjmJ3XjqlGE8Or7e
+         h/1w==
+X-Gm-Message-State: AGi0PualNJCXJQXBI52YxtmcJ+/r42tzZrW6le+1pgBfzq+Y7YUNU3d8
+        0++ySRm6dfS+rdkGNsdlqfh53NxOOpwd
+X-Google-Smtp-Source: APiQypKitkprOUX6Ty32h3Hvvn+AL1eOiIeSJ2wkpA4G/oYuee3HlrAoqUdkBxc6K4PWHTN6ksoIH+EZnRsn
+X-Received: by 2002:a5b:58a:: with SMTP id l10mr23253413ybp.483.1588860527214;
+ Thu, 07 May 2020 07:08:47 -0700 (PDT)
+Date:   Thu,  7 May 2020 07:08:08 -0700
 In-Reply-To: <20200507140819.126960-1-irogers@google.com>
-Message-Id: <20200507140819.126960-12-irogers@google.com>
+Message-Id: <20200507140819.126960-13-irogers@google.com>
 Mime-Version: 1.0
 References: <20200507140819.126960-1-irogers@google.com>
 X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [RFC PATCH v2 11/23] perf parse-events: expand add PMU error/verbose messages
+Subject: [RFC PATCH v2 12/23] perf test: improve pmu event metric testing
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -78,361 +78,258 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Stephane Eranian <eranian@google.com>,
         Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On a CPU like skylakex an uncore_iio_0 PMU may alias with
-uncore_iio_free_running_0. The latter PMU doesn't support fc_mask
-as a parameter and so pmu_config_term fails. Typically
-parse_events_add_pmu is called in a loop where if one alias succeeds
-errors are ignored, however, if multiple errors occur
-parse_events__handle_error will currently give a WARN_ONCE.
+Add a basic floating point number test to expr.
+Break pmu-events test into 2 and add a test to verify that all pmu metric
+expressions simply parse. Try to parse all metric ids/events, failing if
+metrics for the current architecture fail to parse.
 
-This change removes the WARN_ONCE in parse_events__handle_error and
-makes it a pr_debug. It adds verbose messages to parse_events_add_pmu
-warning that non-fatal errors may occur, while giving details on the pmu
-and config terms for useful context. pmu_config_term is altered so the
-failing term and pmu are present in the case of the 'unknown term'
-error which makes spotting the free_running case more straightforward.
-
-Before:
-$ perf --debug verbose=3D3 stat -M llc_misses.pcie_read sleep 1
-Using CPUID GenuineIntel-6-55-4
-metric expr unc_iio_data_req_of_cpu.mem_read.part0 + unc_iio_data_req_of_cp=
-u.mem_read.part1 + unc_iio_data_req_of_cpu.mem_read.part2 + unc_iio_data_re=
-q_of_cpu.mem_read.part3 for LLC_MISSES.PCIE_READ
-found event unc_iio_data_req_of_cpu.mem_read.part0
-found event unc_iio_data_req_of_cpu.mem_read.part1
-found event unc_iio_data_req_of_cpu.mem_read.part2
-found event unc_iio_data_req_of_cpu.mem_read.part3
-metric expr unc_iio_data_req_of_cpu.mem_read.part0 + unc_iio_data_req_of_cp=
-u.mem_read.part1 + unc_iio_data_req_of_cpu.mem_read.part2 + unc_iio_data_re=
-q_of_cpu.mem_read.part3 for LLC_MISSES.PCIE_READ
-found event unc_iio_data_req_of_cpu.mem_read.part0
-found event unc_iio_data_req_of_cpu.mem_read.part1
-found event unc_iio_data_req_of_cpu.mem_read.part2
-found event unc_iio_data_req_of_cpu.mem_read.part3
-adding {unc_iio_data_req_of_cpu.mem_read.part0,unc_iio_data_req_of_cpu.mem_=
-read.part1,unc_iio_data_req_of_cpu.mem_read.part2,unc_iio_data_req_of_cpu.m=
-em_read.part3}:W,{unc_iio_data_req_of_cpu.mem_read.part0,unc_iio_data_req_o=
-f_cpu.mem_read.part1,unc_iio_data_req_of_cpu.mem_read.part2,unc_iio_data_re=
-q_of_cpu.mem_read.part3}:W
-intel_pt default config: tsc,mtc,mtc_period=3D3,psb_period=3D3,pt,branch
-WARNING: multiple event parsing errors
-...
-Invalid event/parameter 'fc_mask'
-...
-
-After:
-$ perf --debug verbose=3D3 stat -M llc_misses.pcie_read sleep 1
-Using CPUID GenuineIntel-6-55-4
-metric expr unc_iio_data_req_of_cpu.mem_read.part0 + unc_iio_data_req_of_cp=
-u.mem_read.part1 + unc_iio_data_req_of_cpu.mem_read.part2 + unc_iio_data_re=
-q_of_cpu.mem_read.part3 for LLC_MISSES.PCIE_READ
-found event unc_iio_data_req_of_cpu.mem_read.part0
-found event unc_iio_data_req_of_cpu.mem_read.part1
-found event unc_iio_data_req_of_cpu.mem_read.part2
-found event unc_iio_data_req_of_cpu.mem_read.part3
-metric expr unc_iio_data_req_of_cpu.mem_read.part0 + unc_iio_data_req_of_cp=
-u.mem_read.part1 + unc_iio_data_req_of_cpu.mem_read.part2 + unc_iio_data_re=
-q_of_cpu.mem_read.part3 for LLC_MISSES.PCIE_READ
-found event unc_iio_data_req_of_cpu.mem_read.part0
-found event unc_iio_data_req_of_cpu.mem_read.part1
-found event unc_iio_data_req_of_cpu.mem_read.part2
-found event unc_iio_data_req_of_cpu.mem_read.part3
-adding {unc_iio_data_req_of_cpu.mem_read.part0,unc_iio_data_req_of_cpu.mem_=
-read.part1,unc_iio_data_req_of_cpu.mem_read.part2,unc_iio_data_req_of_cpu.m=
-em_read.part3}:W,{unc_iio_data_req_of_cpu.mem_read.part0,unc_iio_data_req_o=
-f_cpu.mem_read.part1,unc_iio_data_req_of_cpu.mem_read.part2,unc_iio_data_re=
-q_of_cpu.mem_read.part3}:W
-intel_pt default config: tsc,mtc,mtc_period=3D3,psb_period=3D3,pt,branch
-Attempting to add event pmu 'uncore_iio_free_running_5' with 'unc_iio_data_=
-req_of_cpu.mem_read.part0,' that may result in non-fatal errors
-After aliases, add event pmu 'uncore_iio_free_running_5' with 'fc_mask,ch_m=
-ask,umask,event,' that may result in non-fatal errors
-Attempting to add event pmu 'uncore_iio_free_running_3' with 'unc_iio_data_=
-req_of_cpu.mem_read.part0,' that may result in non-fatal errors
-After aliases, add event pmu 'uncore_iio_free_running_3' with 'fc_mask,ch_m=
-ask,umask,event,' that may result in non-fatal errors
-Attempting to add event pmu 'uncore_iio_free_running_1' with 'unc_iio_data_=
-req_of_cpu.mem_read.part0,' that may result in non-fatal errors
-After aliases, add event pmu 'uncore_iio_free_running_1' with 'fc_mask,ch_m=
-ask,umask,event,' that may result in non-fatal errors
-Multiple errors dropping message: unknown term 'fc_mask' for pmu 'uncore_ii=
-o_free_running_3' (valid terms: event,umask,config,config1,config2,name,per=
-iod,percore)
-...
+Tested on skylakex with the patch set in place. May fail on other
+architectures if metrics are invalid.
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/perf/arch/x86/util/intel-pt.c | 32 +++++++++++++++++-----------
- tools/perf/tests/pmu.c              |  4 ++--
- tools/perf/util/parse-events.c      | 29 ++++++++++++++++++++++++-
- tools/perf/util/pmu.c               | 33 ++++++++++++++++++-----------
- tools/perf/util/pmu.h               |  2 +-
- 5 files changed, 72 insertions(+), 28 deletions(-)
+ tools/perf/tests/builtin-test.c |   5 +
+ tools/perf/tests/expr.c         |   1 +
+ tools/perf/tests/pmu-events.c   | 158 ++++++++++++++++++++++++++++++--
+ tools/perf/tests/tests.h        |   2 +
+ 4 files changed, 160 insertions(+), 6 deletions(-)
 
-diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util=
-/intel-pt.c
-index 3f7c20cc7b79..0f63fd2fa3ad 100644
---- a/tools/perf/arch/x86/util/intel-pt.c
-+++ b/tools/perf/arch/x86/util/intel-pt.c
-@@ -59,7 +59,8 @@ struct intel_pt_recording {
- 	size_t				priv_size;
- };
-=20
--static int intel_pt_parse_terms_with_default(struct list_head *formats,
-+static int intel_pt_parse_terms_with_default(const char *pmu_name,
-+					     struct list_head *formats,
- 					     const char *str,
- 					     u64 *config)
+diff --git a/tools/perf/tests/builtin-test.c b/tools/perf/tests/builtin-test.c
+index 3471ec52ea11..8147c17c71ab 100644
+--- a/tools/perf/tests/builtin-test.c
++++ b/tools/perf/tests/builtin-test.c
+@@ -75,6 +75,11 @@ static struct test generic_tests[] = {
+ 	{
+ 		.desc = "PMU events",
+ 		.func = test__pmu_events,
++		.subtest = {
++			.get_nr		= test__pmu_events_subtest_get_nr,
++			.get_desc	= test__pmu_events_subtest_get_desc,
++		},
++
+ 	},
+ 	{
+ 		.desc = "DSO data read",
+diff --git a/tools/perf/tests/expr.c b/tools/perf/tests/expr.c
+index f9e8e5628836..3f742612776a 100644
+--- a/tools/perf/tests/expr.c
++++ b/tools/perf/tests/expr.c
+@@ -39,6 +39,7 @@ int test__expr(struct test *t __maybe_unused, int subtest __maybe_unused)
+ 	ret |= test(&ctx, "min(1,2) + 1", 2);
+ 	ret |= test(&ctx, "max(1,2) + 1", 3);
+ 	ret |= test(&ctx, "1+1 if 3*4 else 0", 2);
++	ret |= test(&ctx, "1.1 + 2.1", 3.2);
+ 
+ 	if (ret)
+ 		return ret;
+diff --git a/tools/perf/tests/pmu-events.c b/tools/perf/tests/pmu-events.c
+index d64261da8bf7..c18b9ce8cace 100644
+--- a/tools/perf/tests/pmu-events.c
++++ b/tools/perf/tests/pmu-events.c
+@@ -8,6 +8,10 @@
+ #include <linux/zalloc.h>
+ #include "debug.h"
+ #include "../pmu-events/pmu-events.h"
++#include "util/evlist.h"
++#include "util/expr.h"
++#include "util/parse-events.h"
++#include <ctype.h>
+ 
+ struct perf_pmu_test_event {
+ 	struct pmu_event event;
+@@ -144,7 +148,7 @@ static struct pmu_events_map *__test_pmu_get_events_map(void)
+ }
+ 
+ /* Verify generated events from pmu-events.c is as expected */
+-static int __test_pmu_event_table(void)
++static int test_pmu_event_table(void)
  {
-@@ -78,7 +79,8 @@ static int intel_pt_parse_terms_with_default(struct list_=
-head *formats,
- 		goto out_free;
-=20
- 	attr.config =3D *config;
--	err =3D perf_pmu__config_terms(formats, &attr, terms, true, NULL);
-+	err =3D perf_pmu__config_terms(pmu_name, formats, &attr, terms, true,
-+				     NULL);
- 	if (err)
- 		goto out_free;
-=20
-@@ -88,11 +90,12 @@ static int intel_pt_parse_terms_with_default(struct lis=
-t_head *formats,
- 	return err;
+ 	struct pmu_events_map *map = __test_pmu_get_events_map();
+ 	struct pmu_event *table;
+@@ -347,14 +351,11 @@ static int __test__pmu_event_aliases(char *pmu_name, int *count)
+ 	return res;
  }
-=20
--static int intel_pt_parse_terms(struct list_head *formats, const char *str=
-,
--				u64 *config)
-+static int intel_pt_parse_terms(const char *pmu_name, struct list_head *fo=
-rmats,
-+				const char *str, u64 *config)
+ 
+-int test__pmu_events(struct test *test __maybe_unused,
+-		     int subtest __maybe_unused)
++
++static int test_aliases(void)
  {
- 	*config =3D 0;
--	return intel_pt_parse_terms_with_default(formats, str, config);
-+	return intel_pt_parse_terms_with_default(pmu_name, formats, str,
-+						 config);
- }
-=20
- static u64 intel_pt_masked_bits(u64 mask, u64 bits)
-@@ -229,7 +232,8 @@ static u64 intel_pt_default_config(struct perf_pmu *int=
-el_pt_pmu)
-=20
- 	pr_debug2("%s default config: %s\n", intel_pt_pmu->name, buf);
-=20
--	intel_pt_parse_terms(&intel_pt_pmu->format, buf, &config);
-+	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format, buf,
-+			     &config);
-=20
- 	return config;
- }
-@@ -337,13 +341,16 @@ static int intel_pt_info_fill(struct auxtrace_record =
-*itr,
- 	if (priv_size !=3D ptr->priv_size)
- 		return -EINVAL;
-=20
--	intel_pt_parse_terms(&intel_pt_pmu->format, "tsc", &tsc_bit);
--	intel_pt_parse_terms(&intel_pt_pmu->format, "noretcomp",
--			     &noretcomp_bit);
--	intel_pt_parse_terms(&intel_pt_pmu->format, "mtc", &mtc_bit);
-+	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
-+			     "tsc", &tsc_bit);
-+	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
-+			     "noretcomp", &noretcomp_bit);
-+	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
-+			     "mtc", &mtc_bit);
- 	mtc_freq_bits =3D perf_pmu__format_bits(&intel_pt_pmu->format,
- 					      "mtc_period");
--	intel_pt_parse_terms(&intel_pt_pmu->format, "cyc", &cyc_bit);
-+	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
-+			     "cyc", &cyc_bit);
-=20
- 	intel_pt_tsc_ctc_ratio(&tsc_ctc_ratio_n, &tsc_ctc_ratio_d);
-=20
-@@ -769,7 +776,8 @@ static int intel_pt_recording_options(struct auxtrace_r=
-ecord *itr,
- 		}
- 	}
-=20
--	intel_pt_parse_terms(&intel_pt_pmu->format, "tsc", &tsc_bit);
-+	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
-+			     "tsc", &tsc_bit);
-=20
- 	if (opts->full_auxtrace && (intel_pt_evsel->core.attr.config & tsc_bit))
- 		have_timing_info =3D true;
-diff --git a/tools/perf/tests/pmu.c b/tools/perf/tests/pmu.c
-index 74379ff1f7fa..5c11fe2b3040 100644
---- a/tools/perf/tests/pmu.c
-+++ b/tools/perf/tests/pmu.c
-@@ -156,8 +156,8 @@ int test__pmu(struct test *test __maybe_unused, int sub=
-test __maybe_unused)
- 		if (ret)
- 			break;
-=20
--		ret =3D perf_pmu__config_terms(&formats, &attr, terms,
--					     false, NULL);
-+		ret =3D perf_pmu__config_terms("perf-pmu-test", &formats, &attr,
-+					     terms, false, NULL);
- 		if (ret)
- 			break;
-=20
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.=
-c
-index b7a0518d607d..17c42de24e8e 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -204,7 +204,8 @@ void parse_events__handle_error(struct parse_events_err=
-or *err, int idx,
- 		err->help =3D help;
- 		break;
- 	default:
--		WARN_ONCE(1, "WARNING: multiple event parsing errors\n");
-+		pr_debug("Multiple errors dropping message: %s (%s)\n",
-+			err->str, err->help);
- 		free(err->str);
- 		err->str =3D str;
- 		free(err->help);
-@@ -1424,6 +1425,19 @@ int parse_events_add_pmu(struct parse_events_state *=
-parse_state,
- 	bool use_uncore_alias;
- 	LIST_HEAD(config_terms);
-=20
-+	if (verbose > 1) {
-+		fprintf(stderr, "Attempting to add event pmu '%s' with '",
-+			name);
-+		if (head_config) {
-+			struct parse_events_term *term;
-+
-+			list_for_each_entry(term, head_config, list) {
-+				fprintf(stderr, "%s,", term->config);
-+			}
-+		}
-+		fprintf(stderr, "' that may result in non-fatal errors\n");
-+	}
-+
- 	pmu =3D perf_pmu__find(name);
- 	if (!pmu) {
- 		char *err_str;
-@@ -1460,6 +1474,19 @@ int parse_events_add_pmu(struct parse_events_state *=
-parse_state,
- 	if (perf_pmu__check_alias(pmu, head_config, &info))
- 		return -EINVAL;
-=20
-+	if (verbose > 1) {
-+		fprintf(stderr, "After aliases, add event pmu '%s' with '",
-+			name);
-+		if (head_config) {
-+			struct parse_events_term *term;
-+
-+			list_for_each_entry(term, head_config, list) {
-+				fprintf(stderr, "%s,", term->config);
-+			}
-+		}
-+		fprintf(stderr, "' that may result in non-fatal errors\n");
-+	}
-+
- 	/*
- 	 * Configure hardcoded terms first, no need to check
- 	 * return value when called with fail =3D=3D 0 ;)
-diff --git a/tools/perf/util/pmu.c b/tools/perf/util/pmu.c
-index 92bd7fafcce6..71d0290b616a 100644
---- a/tools/perf/util/pmu.c
-+++ b/tools/perf/util/pmu.c
-@@ -1056,7 +1056,8 @@ static char *pmu_formats_string(struct list_head *for=
-mats)
-  * Setup one of config[12] attr members based on the
-  * user input data - term parameter.
-  */
--static int pmu_config_term(struct list_head *formats,
-+static int pmu_config_term(const char *pmu_name,
-+			   struct list_head *formats,
- 			   struct perf_event_attr *attr,
- 			   struct parse_events_term *term,
- 			   struct list_head *head_terms,
-@@ -1082,16 +1083,24 @@ static int pmu_config_term(struct list_head *format=
-s,
-=20
- 	format =3D pmu_find_format(formats, term->config);
- 	if (!format) {
--		if (verbose > 0)
--			printf("Invalid event/parameter '%s'\n", term->config);
-+		char *pmu_term =3D pmu_formats_string(formats);
-+		char *unknown_term;
-+		char *help_msg;
-+
-+		if (asprintf(&unknown_term,
-+				"unknown term '%s' for pmu '%s'",
-+				term->config, pmu_name) < 0)
-+			unknown_term =3D strdup("unknown term");
-+		help_msg =3D parse_events_formats_error_string(pmu_term);
- 		if (err) {
--			char *pmu_term =3D pmu_formats_string(formats);
+ 	struct perf_pmu *pmu = NULL;
+ 
+-	if (__test_pmu_event_table())
+-		return -1;
 -
- 			parse_events__handle_error(err, term->err_term,
--				strdup("unknown term"),
--				parse_events_formats_error_string(pmu_term));
--			free(pmu_term);
-+						   unknown_term,
-+						   help_msg);
-+		} else {
-+			pr_debug("%s (%s)\n", unknown_term, help_msg);
-+			free(unknown_term);
- 		}
-+		free(pmu_term);
- 		return -EINVAL;
- 	}
-=20
-@@ -1168,7 +1177,7 @@ static int pmu_config_term(struct list_head *formats,
+ 	while ((pmu = perf_pmu__scan(pmu)) != NULL) {
+ 		int count = 0;
+ 
+@@ -377,3 +378,148 @@ int test__pmu_events(struct test *test __maybe_unused,
+ 
  	return 0;
  }
-=20
--int perf_pmu__config_terms(struct list_head *formats,
-+int perf_pmu__config_terms(const char *pmu_name, struct list_head *formats=
-,
- 			   struct perf_event_attr *attr,
- 			   struct list_head *head_terms,
- 			   bool zero, struct parse_events_error *err)
-@@ -1176,7 +1185,7 @@ int perf_pmu__config_terms(struct list_head *formats,
- 	struct parse_events_term *term;
-=20
- 	list_for_each_entry(term, head_terms, list) {
--		if (pmu_config_term(formats, attr, term, head_terms,
-+		if (pmu_config_term(pmu_name, formats, attr, term, head_terms,
- 				    zero, err))
- 			return -EINVAL;
- 	}
-@@ -1196,8 +1205,8 @@ int perf_pmu__config(struct perf_pmu *pmu, struct per=
-f_event_attr *attr,
- 	bool zero =3D !!pmu->default_config;
-=20
- 	attr->type =3D pmu->type;
--	return perf_pmu__config_terms(&pmu->format, attr, head_terms,
--				      zero, err);
-+	return perf_pmu__config_terms(pmu->name, &pmu->format, attr,
-+				      head_terms, zero, err);
- }
-=20
- static struct perf_pmu_alias *pmu_find_alias(struct perf_pmu *pmu,
-diff --git a/tools/perf/util/pmu.h b/tools/perf/util/pmu.h
-index cb6fbec50313..cd85689977b4 100644
---- a/tools/perf/util/pmu.h
-+++ b/tools/perf/util/pmu.h
-@@ -76,7 +76,7 @@ struct perf_pmu *perf_pmu__find_by_type(unsigned int type=
-);
- int perf_pmu__config(struct perf_pmu *pmu, struct perf_event_attr *attr,
- 		     struct list_head *head_terms,
- 		     struct parse_events_error *error);
--int perf_pmu__config_terms(struct list_head *formats,
-+int perf_pmu__config_terms(const char *pmu_name, struct list_head *formats=
-,
- 			   struct perf_event_attr *attr,
- 			   struct list_head *head_terms,
- 			   bool zero, struct parse_events_error *error);
---=20
++
++static bool is_number(const char *str)
++{
++	size_t i;
++
++	for (i = 0; i < strlen(str); i++) {
++		if (!isdigit(str[i]) && str[i] != '.')
++			return false;
++	}
++	return true;
++}
++
++static int check_parse_id(const char *id, bool same_cpu, struct pmu_event *pe)
++{
++	struct parse_events_error error;
++	struct evlist *evlist;
++	int ret;
++
++	/* Numbers are always valid. */
++	if (is_number(id))
++		return 0;
++
++	evlist = evlist__new();
++	memset(&error, 0, sizeof(error));
++	ret = parse_events(evlist, id, &error);
++	if (ret && same_cpu) {
++		fprintf(stderr,
++			"\nWARNING: Parse event failed metric '%s' id '%s' expr '%s'\n",
++			pe->metric_name, id, pe->metric_expr);
++		fprintf(stderr, "Error string '%s' help '%s'\n",
++			error.str, error.help);
++	} else if (ret) {
++		pr_debug3("Parse event failed, but for an event that may not be supported by this CPU.\nid '%s' metric '%s' expr '%s'\n",
++			id, pe->metric_name, pe->metric_expr);
++	}
++	evlist__delete(evlist);
++	free(error.str);
++	free(error.help);
++	free(error.first_str);
++	free(error.first_help);
++	/* TODO: too many metrics are broken to fail on this test currently. */
++	return 0;
++}
++
++static int test_parsing(void)
++{
++	struct pmu_events_map *cpus_map = perf_pmu__find_map(NULL);
++	struct pmu_events_map *map;
++	struct pmu_event *pe;
++	int i, j, k;
++	const char **ids;
++	int idnum;
++	int ret = 0;
++	struct expr_parse_ctx ctx;
++	double result;
++
++	i = 0;
++	for (;;) {
++		map = &pmu_events_map[i++];
++		if (!map->table) {
++			map = NULL;
++			break;
++		}
++		j = 0;
++		for (;;) {
++			pe = &map->table[j++];
++			if (!pe->name && !pe->metric_group && !pe->metric_name)
++				break;
++			if (!pe->metric_expr)
++				continue;
++			if (expr__find_other(pe->metric_expr, NULL,
++						&ids, &idnum, 0) < 0) {
++				pr_debug("Parse other failed for map %s %s %s\n",
++					map->cpuid, map->version, map->type);
++				pr_debug("On metric %s\n", pe->metric_name);
++				pr_debug("On expression %s\n", pe->metric_expr);
++				ret++;
++				continue;
++			}
++			expr__ctx_init(&ctx);
++
++			/*
++			 * Add all ids with a made up value. The value may
++			 * trigger divide by zero when subtracted and so try to
++			 * make them unique.
++			 */
++			for (k = 0; k < idnum; k++)
++				expr__add_id(&ctx, ids[k], k + 1);
++
++			for (k = 0; k < idnum; k++) {
++				if (check_parse_id(ids[k], map == cpus_map, pe))
++					ret++;
++			}
++
++			if (expr__parse(&result, &ctx, pe->metric_expr, 0)) {
++				pr_debug("Parse failed for map %s %s %s\n",
++					map->cpuid, map->version, map->type);
++				pr_debug("On metric %s\n", pe->metric_name);
++				pr_debug("On expression %s\n", pe->metric_expr);
++				ret++;
++			}
++			for (k = 0; k < idnum; k++)
++				zfree(&ids[k]);
++			free(ids);
++		}
++	}
++	return ret;
++}
++
++static const struct {
++	int (*func)(void);
++	const char *desc;
++} pmu_events_testcase_table[] = {
++	{
++		.func = test_pmu_event_table,
++		.desc = "PMU event table sanity",
++	},
++	{
++		.func = test_aliases,
++		.desc = "PMU event map aliases",
++	},
++	{
++		.func = test_parsing,
++		.desc = "Parsing of PMU event table metrics",
++	},
++};
++
++const char *test__pmu_events_subtest_get_desc(int i)
++{
++	if (i < 0 || i >= (int)ARRAY_SIZE(pmu_events_testcase_table))
++		return NULL;
++	return pmu_events_testcase_table[i].desc;
++}
++
++int test__pmu_events_subtest_get_nr(void)
++{
++	return (int)ARRAY_SIZE(pmu_events_testcase_table);
++}
++
++int test__pmu_events(struct test *test __maybe_unused, int i)
++{
++	if (i < 0 || i >= (int)ARRAY_SIZE(pmu_events_testcase_table))
++		return TEST_FAIL;
++	return pmu_events_testcase_table[i].func();
++}
+diff --git a/tools/perf/tests/tests.h b/tools/perf/tests/tests.h
+index d6d4ac34eeb7..8e316c30ed3c 100644
+--- a/tools/perf/tests/tests.h
++++ b/tools/perf/tests/tests.h
+@@ -50,6 +50,8 @@ int test__perf_evsel__tp_sched_test(struct test *test, int subtest);
+ int test__syscall_openat_tp_fields(struct test *test, int subtest);
+ int test__pmu(struct test *test, int subtest);
+ int test__pmu_events(struct test *test, int subtest);
++const char *test__pmu_events_subtest_get_desc(int subtest);
++int test__pmu_events_subtest_get_nr(void);
+ int test__attr(struct test *test, int subtest);
+ int test__dso_data(struct test *test, int subtest);
+ int test__dso_data_cache(struct test *test, int subtest);
+-- 
 2.26.2.526.g744177e7f7-goog
 
