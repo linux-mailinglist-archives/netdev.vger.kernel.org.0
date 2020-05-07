@@ -2,153 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 556F91C8658
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:04:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C12E1C866A
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgEGKDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 06:03:51 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:45825 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726308AbgEGKDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:03:50 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200507100348euoutp015427178cc35b5c5789baa81bc10fad2d~Mttz3KKnN1626116261euoutp01a
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 10:03:48 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200507100348euoutp015427178cc35b5c5789baa81bc10fad2d~Mttz3KKnN1626116261euoutp01a
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1588845828;
-        bh=n1hyo1ZZivHMwjURuyCwQt/gyOD2+hA6O4SxbPqP0Ps=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=nL4O4Cj70JWGFZLxZdmIGRGJ/teTkq1VN/br6vwpa0k2yaNwU33m4HmSXvWGr/5a6
-         uDNmv6VOc7I8jI7PDtVoBoCTsvLRUB1ZXB2bxopwgPC3pjp0fertbOJGmQeV5svxls
-         b2pL/JS4cWMi6O5wROYVG3ppcZZipDcYfElNI+Qw=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20200507100348eucas1p25e26193811e0d61a01e14aaaaaeffe18~MttzofAi12132621326eucas1p2N;
-        Thu,  7 May 2020 10:03:48 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id 9D.2E.61286.40DD3BE5; Thu,  7
-        May 2020 11:03:48 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20200507100347eucas1p2bad4d58e4eb23e8abd22b43f872fc865~MttzJ7BSN2137321373eucas1p2F;
-        Thu,  7 May 2020 10:03:47 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200507100347eusmtrp2d7aae0ca429747cf812959bf1ae24c23~MttzJABXy0420904209eusmtrp2C;
-        Thu,  7 May 2020 10:03:47 +0000 (GMT)
-X-AuditID: cbfec7f2-f0bff7000001ef66-33-5eb3dd04bec0
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 60.26.08375.30DD3BE5; Thu,  7
-        May 2020 11:03:47 +0100 (BST)
-Received: from [106.210.88.143] (unknown [106.210.88.143]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200507100347eusmtip278840cc17e60b3a216025b769e33a67b~MttyqfPQb0642406424eusmtip2d;
-        Thu,  7 May 2020 10:03:47 +0000 (GMT)
-Subject: Re: [PATCH net v2] net: bcmgenet: Clear ID_MODE_DIS in
- EXT_RGMII_OOB_CTRL when not needed
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Stefan Wahren <wahrenst@gmx.net>
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-ID: <a3df217d-f35c-9d74-4069-d47dee89173e@samsung.com>
-Date:   Thu, 7 May 2020 12:03:48 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
-        Thunderbird/68.7.0
+        id S1726495AbgEGKN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 06:13:27 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44474 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725809AbgEGKN0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 06:13:26 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 696B8AF99;
+        Thu,  7 May 2020 10:13:26 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id 17D0D1E12B0; Thu,  7 May 2020 12:13:22 +0200 (CEST)
+Date:   Thu, 7 May 2020 12:13:22 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Souptick Joarder <jrdr.linux@gmail.com>
+Cc:     Jan Kara <jack@suse.cz>, John Hubbard <jhubbard@nvidia.com>,
+        Tony Luck <tony.luck@intel.com>, fenghua.yu@intel.com,
+        Rob Springer <rspringer@google.com>,
+        Todd Poynor <toddpoynor@google.com>, benchan@chromium.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        santosh.shilimkar@oracle.com,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Ira Weiny <ira.weiny@intel.com>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        inux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "open list:ANDROID DRIVERS" <devel@driverdev.osuosl.org>,
+        tee-dev@lists.linaro.org, Linux-MM <linux-mm@kvack.org>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+Subject: Re: [RFC] mm/gup.c: Updated return value of
+ {get|pin}_user_pages_fast()
+Message-ID: <20200507101322.GB30922@quack2.suse.cz>
+References: <1588706059-4208-1-git-send-email-jrdr.linux@gmail.com>
+ <0bfe4a8a-0d91-ef9b-066f-2ea7c68571b3@nvidia.com>
+ <CAFqt6zZMsQkOdjAb2k1EjwX=DtZ8gKfbRzwvreHOX-0vJLngNg@mail.gmail.com>
+ <20200506100649.GI17863@quack2.suse.cz>
+ <CAFqt6zYaNkJ4AfVzutXS=JsN4fE41ZAvnw03vHWpdyiRHY1m_w@mail.gmail.com>
+ <20200506125930.GJ17863@quack2.suse.cz>
+ <CAFqt6zZztn_AiaGAhV+_uwrnVdKY-xLsxOwYBt-zGmLaat+OhQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <cf07fae3-bd8f-a645-0007-a317832c51c1@samsung.com>
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCKsWRmVeSWpSXmKPExsWy7djPc7osdzfHGbT8FLVY23uUxWLO+RYW
-        i1/vjrBbXN41h83i2AIxi22zlrNZfJ40hdHi+IlOZgcOj1n3z7J5bFl5k8lj56y77B6LN+1n
-        89h8utrj8ya5ALYoLpuU1JzMstQifbsEroydl2azFqzir5i9voexgXELTxcjJ4eEgInEsT1v
-        WLoYuTiEBFYwSly7sxPK+cIocXbJRGYI5zOjxNV9nUwwLW83XmCHSCxnlDj2dgmU855RYv7s
-        zawgVcICKRIz+j8yg9hsAoYSXW+72ECKRATOMErcPfyQHSTBLJAo8X/1H7AGXgE7idtTIJpZ
-        BFQkLp9fAWRzcIgKxEpMvxYCUSIocXLmExYQm1PAXuLTjj9MEGPkJZq3zmaGsMUlbj2ZzwSy
-        S0JgF7tEz+1NUGe7SGw9NYUVwhaWeHV8CzuELSPxfydMQzOjxMNza9khnB5GictNMxghqqwl
-        7pz7xQZyEbOApsT6XfoQYUeJ/kcr2UHCEgJ8EjfeCkIcwScxadt0Zogwr0RHmxBEtZrErOPr
-        4NYevHCJeQKj0iwkr81C8s4sJO/MQti7gJFlFaN4amlxbnpqsWFearlecWJucWleul5yfu4m
-        RmBaOv3v+KcdjF8vJR1iFOBgVOLhPbBsU5wQa2JZcWXuIUYJDmYlEV6eHxvjhHhTEiurUovy
-        44tKc1KLDzFKc7AoifMaL3oZKySQnliSmp2aWpBaBJNl4uCUamA04dDbFNZeetf/vOEJye3L
-        NY16GLy59tXY2FmZbJnI//64blTgXpuVdZxuJgYWXN8l8nUYcuZ6bbzb2FkYxjOf61quVGhT
-        Y9PlimWzdzxb3BP5hDmo7UlD4+qdTTNOsNg5SAS9vvNP0Dk8etLeTvVrQV9Ptzt1fd2U1PPy
-        W/lNPxfJe1KTFiixFGckGmoxFxUnAgBigBfgRwMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrKIsWRmVeSWpSXmKPExsVy+t/xe7rMdzfHGfy/a2qxtvcoi8Wc8y0s
-        Fr/eHWG3uLxrDpvFsQViFttmLWez+DxpCqPF8ROdzA4cHrPun2Xz2LLyJpPHzll32T0Wb9rP
-        5rH5dLXH501yAWxRejZF+aUlqQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZ
-        ZalF+nYJehk7L81mLVjFXzF7fQ9jA+MWni5GTg4JAROJtxsvsHcxcnEICSxllFh2/BYrREJG
-        4uS0BihbWOLPtS42iKK3jBK/554BSwgLpEjM6P/IDGKzCRhKdL2FKBIROMMo8fXjXCaQBLNA
-        osSSfTvBbCGBAol/85eCNfMK2EncnrIZzGYRUJG4fH4FkM3BISoQK9FyUROiRFDi5MwnLCA2
-        p4C9xKcdf6BGmknM2/yQGcKWl2jeOhvKFpe49WQ+0wRGoVlI2mchaZmFpGUWkpYFjCyrGEVS
-        S4tz03OLDfWKE3OLS/PS9ZLzczcxAqNw27Gfm3cwXtoYfIhRgINRiYf3wLJNcUKsiWXFlbmH
-        GCU4mJVEeHl+bIwT4k1JrKxKLcqPLyrNSS0+xGgK9NtEZinR5HxggsgriTc0NTS3sDQ0NzY3
-        NrNQEuftEDgYIySQnliSmp2aWpBaBNPHxMEp1cDoY/9y8bLnfRzdCfckL+7x3m7JZP3t8Ofq
-        LNVg89s9D1jXhXauF269tXez+c9XO1KeVXPuf2Kissih6XXWsZ/qmn/efXrOdv3OJ8Mdcn1n
-        J0kF/Ko8d4PxhqKm08INJmdv8VXMbXixvnzas1lam3MnMSUpmMSFTCuYfvGt+PoHMY2+T/a/
-        +798oRJLcUaioRZzUXEiAHf4TnzYAgAA
-X-CMS-MailID: 20200507100347eucas1p2bad4d58e4eb23e8abd22b43f872fc865
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200507100347eucas1p2bad4d58e4eb23e8abd22b43f872fc865
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200507100347eucas1p2bad4d58e4eb23e8abd22b43f872fc865
-References: <20200225131159.26602-1-nsaenzjulienne@suse.de>
-        <cf07fae3-bd8f-a645-0007-a317832c51c1@samsung.com>
-        <CGME20200507100347eucas1p2bad4d58e4eb23e8abd22b43f872fc865@eucas1p2.samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFqt6zZztn_AiaGAhV+_uwrnVdKY-xLsxOwYBt-zGmLaat+OhQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+On Wed 06-05-20 21:38:40, Souptick Joarder wrote:
+> On Wed, May 6, 2020 at 6:29 PM Jan Kara <jack@suse.cz> wrote:
+> >
+> > On Wed 06-05-20 17:51:39, Souptick Joarder wrote:
+> > > On Wed, May 6, 2020 at 3:36 PM Jan Kara <jack@suse.cz> wrote:
+> > > >
+> > > > On Wed 06-05-20 02:06:56, Souptick Joarder wrote:
+> > > > > On Wed, May 6, 2020 at 1:08 AM John Hubbard <jhubbard@nvidia.com> wrote:
+> > > > > >
+> > > > > > On 2020-05-05 12:14, Souptick Joarder wrote:
+> > > > > > > Currently {get|pin}_user_pages_fast() have 3 return value 0, -errno
+> > > > > > > and no of pinned pages. The only case where these two functions will
+> > > > > > > return 0, is for nr_pages <= 0, which doesn't find a valid use case.
+> > > > > > > But if at all any, then a -ERRNO will be returned instead of 0, which
+> > > > > > > means {get|pin}_user_pages_fast() will have 2 return values -errno &
+> > > > > > > no of pinned pages.
+> > > > > > >
+> > > > > > > Update all the callers which deals with return value 0 accordingly.
+> > > > > >
+> > > > > > Hmmm, seems a little shaky. In order to do this safely, I'd recommend
+> > > > > > first changing gup_fast/pup_fast so so that they return -EINVAL if
+> > > > > > the caller specified nr_pages==0, and of course auditing all callers,
+> > > > > > to ensure that this won't cause problems.
+> > > > >
+> > > > > While auditing it was figured out, there are 5 callers which cares for
+> > > > > return value
+> > > > > 0 of gup_fast/pup_fast. What problem it might cause if we change
+> > > > > gup_fast/pup_fast
+> > > > > to return -EINVAL and update all the callers in a single commit ?
+> > > >
+> > > > Well, first I'd ask a different question: Why do you want to change the
+> > > > current behavior? It's not like the current behavior is confusing.  Callers
+> > > > that pass >0 pages can happily rely on the simple behavior of < 0 return on
+> > > > error or > 0 return if we mapped some pages. Callers that can possibly ask
+> > > > to map 0 pages can get 0 pages back - kind of expected - and I don't see
+> > > > any benefit in trying to rewrite these callers to handle -EINVAL instead...
+> > >
+> > > Callers with a request to map 0 pages doesn't have a valid use case. But if any
+> > > caller end up doing it mistakenly, -errno should be returned to caller
+> > > rather than 0
+> > > which will indicate more precisely that map 0 pages is not a valid
+> > > request from caller.
+> >
+> > Well, I believe this depends on the point of view. Similarly as reading 0
+> > bytes is successful, we could consider mapping 0 pages successful as well.
+> > And there can be valid cases where number of pages to map is computed from
+> > some input and when 0 pages should be mapped, it is not a problem and your
+> > change would force such callers to special case this with explicitely
+> > checking for 0 pages to map and not calling GUP in that case at all.
+> >
+> > I'm not saying what you propose is necessarily bad, I just say I don't find
+> > it any better than the current behavior and so IMO it's not worth the
+> > churn. Now if you can come up with some examples of current in-kernel users
+> > who indeed do get the handling of the return value wrong, I could be
+> > convinced otherwise.
+> 
+> There are 5 callers of {get|pin}_user_pages_fast().
 
-On 07.05.2020 11:46, Marek Szyprowski wrote:
-> On 25.02.2020 14:11, Nicolas Saenz Julienne wrote:
->> Outdated Raspberry Pi 4 firmware might configure the external PHY as
->> rgmii although the kernel currently sets it as rgmii-rxid. This makes
->> connections unreliable as ID_MODE_DIS is left enabled. To avoid this,
->> explicitly clear that bit whenever we don't need it.
->>
->> Fixes: da38802211cc ("net: bcmgenet: Add RGMII_RXID support")
->> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
->
-> I've finally bisected the network issue I have on my RPi4 used for 
-> testing mainline builds. The bisect pointed to this patch. Once it got 
-> applied in v5.7-rc1, the networking is broken on my RPi4 in ARM32bit 
-> mode and kernel compiled from bcm2835_defconfig. I'm using u-boot to 
-> tftp zImage/dtb/initrd there. After reverting this patch network is 
-> working fine again. The strange thing is that networking works fine if 
-> kernel is compiled from multi_v7_defconfig but I don't see any obvious 
-> difference there.
->
-> I'm not sure if u-boot is responsible for this break, but kernel 
-> definitely should be able to properly reset the hardware to the valid 
-> state.
->
-> I can provide more information, just let me know what is needed. Here 
-> is the log, I hope it helps:
->
-> [   11.881784] bcmgenet fd580000.ethernet eth0: Link is Up - 
-> 1Gbps/Full - flow control off
-> [   11.889935] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
->
-> root@target:~# ping host
-> PING host (192.168.100.1) 56(84) bytes of data.
-> From 192.168.100.53 icmp_seq=1 Destination Host Unreachable
-> ...
+Oh, there are *much* more callers that 5. It's more like 70. Just grep the
+source... And then you have all other {get|pin}_user_pages() variants that
+need to be kept consistent. So overall we have over 200 calls to some
+variant of GUP.
 
-Okay, I've played a bit more with this and found that enabling 
-CONFIG_BROADCOM_PHY fixes this network issue. I wonder if Genet driver 
-should simply select CONFIG_BROADCOM_PHY the same way as it selects 
-CONFIG_BCM7XXX_PHY.
+> arch/ia64/kernel/err_inject.c#L145
+> staging/gasket/gasket_page_table.c#L489
+> 
+> Checking return value 0 doesn't make sense for above 2.
+> 
+> drivers/platform/goldfish/goldfish_pipe.c#L277
+> net/rds/rdma.c#L165
+> drivers/tee/tee_shm.c#L262
+> 
+> These 3 callers have calculated the no of pages value before passing it to
+> {get|pin}_user_pages_fast(). But if they end up passing nr_pages <= 0, a return
+> value of either 0 or -EINVAL doesn't going to harm any existing
+> behavior of callers.
+> 
+> IMO, it is safe to return -errno for nr_pages <= 0, for
+> {get|pin}_user_pages_fast().
 
-Best regards
+OK, so no real problem with any of these callers. I still don't see a
+justification for the churn you suggest... Auditting all those code sites
+is going to be pretty tedious.
+
+								Honza
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
