@@ -2,122 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8603F1C82CD
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 08:47:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A09FC1C82F5
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 09:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726495AbgEGGrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 02:47:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36338 "EHLO mail.kernel.org"
+        id S1726471AbgEGHAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 03:00:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42840 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725763AbgEGGrh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 02:47:37 -0400
+        id S1726320AbgEGHAL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 03:00:11 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D794F2078C;
-        Thu,  7 May 2020 06:47:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D41ED207DD;
+        Thu,  7 May 2020 07:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588834056;
-        bh=hUD5exA4dNKvCcKV83BYNh5VFO685TqU5GU5ToDg3us=;
+        s=default; t=1588834811;
+        bh=jEttYpxCR1pQOCpq/7bhNKiXaeKh7rbfeTCzjCdEEMY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dCZ6mLUcN1lIcruUpjFnEcOhlyrmSgxjeyHHlnFw/4co12Hwb9W/Qsgzq6nZ+HnJp
-         DibKlr9P4RQGxGYL3/8X8BfHpXRz53ezegCOp/1lVZvRByJvVXChNS4+D1DL4tpB3T
-         fOVh6T5cCACfVwnSp8ZDtkKBDaj/Y7C6rRFAF5rg=
-Date:   Thu, 7 May 2020 08:47:34 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        linux- stable <stable@vger.kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vince Bridgers <vbridger@opensource.altera.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Vitaly Bordug <vbordug@ru.mvista.com>,
-        Claudiu Manoil <claudiu.manoil@freescale.com>,
-        Li Yang <leoli@freescale.com>,
-        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        John Crispin <blogic@openwrt.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Lars Persson <lars.persson@axis.com>,
-        Mugunthan V N <mugunthanvnm@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
-        Netdev <netdev@vger.kernel.org>,
-        nios2-dev@lists.rocketboards.org,
-        open list <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-mediatek@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org, linux-omap@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, lkft-triage@lists.linaro.org
-Subject: Re: [PATCH net 11/16] net: ethernet: marvell: mvneta: fix fixed-link
- phydev leaks
-Message-ID: <20200507064734.GA798308@kroah.com>
-References: <1480357509-28074-1-git-send-email-johan@kernel.org>
- <1480357509-28074-12-git-send-email-johan@kernel.org>
- <CA+G9fYvBjUVkVhtRHVm6xXcKe2+tZN4rGdB9FzmpcfpaLhY1+g@mail.gmail.com>
- <20200507064412.GL2042@localhost>
+        b=qcCX8/Pw+g4KEBJQzFzGBJz978QrAPH1SX+qhXTKNGlSNz1fkXtp3kY2wrhMaMicf
+         KYNFGHRRx+AV+DmtMShaBbx+bDHwvmCxsHkbVvmww6FZY/7TB1ypYPcf75ofW7iE1D
+         CR2NNyzqpAzdaY+eGgksLAZgBGlK9QQwfYemyvL8=
+Date:   Thu, 7 May 2020 09:00:08 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, jgg@ziepe.ca, parav@mellanox.com,
+        galpress@amazon.com, selvin.xavier@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, benve@cisco.com,
+        bharat@chelsio.com, xavier.huwei@huawei.com, yishaih@mellanox.com,
+        leonro@mellanox.com, mkalderon@marvell.com, aditr@vmware.com,
+        ranjani.sridharan@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com
+Subject: Re: [net-next v3 0/9][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2020-05-05
+Message-ID: <20200507070008.GA841650@kroah.com>
+References: <20200506210505.507254-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200507064412.GL2042@localhost>
+In-Reply-To: <20200506210505.507254-1-jeffrey.t.kirsher@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 07, 2020 at 08:44:12AM +0200, Johan Hovold wrote:
-> On Thu, May 07, 2020 at 12:27:53AM +0530, Naresh Kamboju wrote:
-> > On Tue, 29 Nov 2016 at 00:00, Johan Hovold <johan@kernel.org> wrote:
-> > >
-> > > Make sure to deregister and free any fixed-link PHY registered using
-> > > of_phy_register_fixed_link() on probe errors and on driver unbind.
-> > >
-> > > Fixes: 83895bedeee6 ("net: mvneta: add support for fixed links")
-> > > Signed-off-by: Johan Hovold <johan@kernel.org>
-> > > ---
-> > >  drivers/net/ethernet/marvell/mvneta.c | 5 +++++
-> > >  1 file changed, 5 insertions(+)
-> > >
-> > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> > > index 0c0a45af950f..707bc4680b9b 100644
-> > > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > > @@ -4191,6 +4191,8 @@ static int mvneta_probe(struct platform_device *pdev)
-> > >         clk_disable_unprepare(pp->clk);
-> > >  err_put_phy_node:
-> > >         of_node_put(phy_node);
-> > > +       if (of_phy_is_fixed_link(dn))
-> > > +               of_phy_deregister_fixed_link(dn);
-> > 
-> > While building kernel Image for arm architecture on stable-rc 4.4 branch
-> > the following build error found.
-> > 
-> > drivers/net/ethernet/marvell/mvneta.c:3442:3: error: implicit
-> > declaration of function 'of_phy_deregister_fixed_link'; did you mean
-> > 'of_phy_register_fixed_link'? [-Werror=implicit-function-declaration]
-> > |    of_phy_deregister_fixed_link(dn);
-> > |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > |    of_phy_register_fixed_link
-> > 
-> > ref:
-> > https://gitlab.com/Linaro/lkft/kernel-runs/-/jobs/541374729
+On Wed, May 06, 2020 at 02:04:56PM -0700, Jeff Kirsher wrote:
+> This series contains the initial implementation of the Virtual Bus,
+> virtbus_device, virtbus_driver, updates to 'ice' and 'i40e' to use the new
+> Virtual Bus.
 > 
-> Greg, 3f65047c853a ("of_mdio: add helper to deregister fixed-link
-> PHYs") needs to be backported as well for these.
+> The primary purpose of the Virtual bus is to put devices on it and hook the
+> devices up to drivers.  This will allow drivers, like the RDMA drivers, to
+> hook up to devices via this Virtual bus.
 > 
-> Original series can be found here:
+> The associated irdma driver designed to use this new interface, is still
+> in RFC currently and was sent in a separate series.  A new RFC version
+> is expected later this week.
 > 
-> 	https://lkml.kernel.org/r/1480357509-28074-1-git-send-email-johan@kernel.org
+> This series currently builds against net-next tree.
+> 
+> Revision history:
+> v2: Made changes based on community feedback, like Pierre-Louis's and
+>     Jason's comments to update virtual bus interface.
+> v3: Updated the virtual bus interface based on feedback from Jason and
+>     Greg KH.  Also updated the initial ice driver patch to handle the
+>     virtual bus changes and changes requested by Jason and Greg KH.
+> 
+> The following are changes since commit f989d546a2d5a9f001f6f8be49d98c10ab9b1897:
+>   erspan: Add type I version 0 support.
+> and are available in the git repository at:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
 
-Ah, thanks for that, I thought I dropped all of the ones that caused
-build errors, but missed the above one.  I'll go take the whole series
-instead.
+pull request?
+
+Come on, give us a chance to review this mess please, give me a week or
+so.
 
 greg k-h
