@@ -2,273 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D6BC1C8015
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 04:42:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BCA01C8032
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 04:53:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728148AbgEGCmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 May 2020 22:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726625AbgEGCmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 May 2020 22:42:02 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A5DC061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 19:42:02 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id fu13so1945162pjb.5
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 19:42:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=I/eCHNKi9wkby6SPWUg39vUKZpyXpuIo6pEQnWN892k=;
-        b=DQBwFoSHoC9cgNcneAbor5aihyp2MZAufbHmu8Gwh1H0a6hLJYE3fgst5M2vty8Mc9
-         pe20C9+ATdisCDDhrMBVKHOs7DY56ERJb1UEXXdIR7CvWLUIpIUwv4UC6N8InyEGYvt3
-         XjjgIpshYemlxnudxBgKak9TxeD1cyzjBjDweZMXAS53RWSVbjjCM2/CuiwcOOr2YSua
-         SNZSW05kQLzbPZNkiybcu53OqTd3o8XoNdCJig1c3gPOsgGvQrm9Cz/i6nGY0FvHbxAT
-         KQMxv4uA2Xm/LKP2znpS3lHW9w/+7ZOwqC7lbdruWUSnq6p8GtVET2HdM9LB4kAL7CYj
-         cHXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=I/eCHNKi9wkby6SPWUg39vUKZpyXpuIo6pEQnWN892k=;
-        b=FmszMgowVGWY3Da544LoIgy0jOXaWwXxh6Hone8PZEvAk55MYxpzKLpvVcvfnnJ6On
-         r+XFn3Gnil91JTDwNVulU+AT7wZC4QSSgb66EOoY0xCZgqv6psZ5DkrqiPo3U7KEXRaA
-         0umfcugZc64Bc0d76RH6lh+KYgBN86yt/jNGTc1rRI/SyCPmI5pnUSPqTPoxh6grMlga
-         j0iOXzbzsavnm76lhfh5pncqF4bZxaKVqRqaoaxttwVerxCMjvRb+TwjNly2PRkJFzdG
-         Q/zOJeIn462g3pivuti2r6c83+o5qi5FTLy41SfOa28OeQhWO6qlbJFo1cVQMvzgJ4e7
-         Ng9A==
-X-Gm-Message-State: AGi0PuZJvTv2a5/OYhfo6JUsE76NZWCyAbo+HAL6bj/f02Q8pBEB7CXu
-        JUk/e6v9mbKAD7lSfTzABwg=
-X-Google-Smtp-Source: APiQypKfJeDa6qvGEiUwHymPpL/b9ph6DRuUqMtVZsZ0/ndaJ6tGDDGRXTSnVAyvz2hSd/ZlIq92Qg==
-X-Received: by 2002:a17:90a:a78f:: with SMTP id f15mr12631150pjq.120.1588819322119;
-        Wed, 06 May 2020 19:42:02 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id w75sm3170123pfc.156.2020.05.06.19.42.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 May 2020 19:42:01 -0700 (PDT)
-Subject: Re: [PATCHv2] erspan: Add type I version 0 support.
-To:     William Tu <u9012063@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net
-References: <1588694706-26433-1-git-send-email-u9012063@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <9a4d33eb-7429-b852-cfa9-b47838672f37@gmail.com>
-Date:   Wed, 6 May 2020 19:41:59 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <1588694706-26433-1-git-send-email-u9012063@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1728388AbgEGCxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 May 2020 22:53:03 -0400
+Received: from mail-db8eur05on2086.outbound.protection.outlook.com ([40.107.20.86]:12165
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725827AbgEGCxB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 May 2020 22:53:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ACpXuDHxLDKSYdhjAz2iKlASzh3zrk5gLNfG8c26dQKlYavD/SZsJdS1yf4D2Ds8dl/9lsg0jsLUUwpziFMN6UdXxpmZWqYJSTjiMoVPNaT5EhsdMDI6k4qQY6eDfnnvbW9mW+l7CYPs4TwnyjD1lft53wmMW/YJ30U5EderI4JP/kaLRSSELxoAt6RAKRfWWz1+499auMPjJNeWx/GNbRnvG0YYQ6iscrp7+bLBvUarT3amOV6Eqtjv0lwZYrXba7rtYMZwkzOr3rrID29nJJB+xFIcXdioIzWrheIuyqM2sZACGJpk8TsBeBI7L5VBB+IuDWA62EJUdAzI7k0paw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BeH+x+d1OI91WnjW+uFClHA1gAB4zH8lqjlkhfEF5b8=;
+ b=V2MjcSAIr98jsPtnFRiCo0PbefgxwZExfLoFdTtId9YJR4h75uaZ6yZ1tyZ35PdEVAaLUz6WxZ11jw5s9I13Z8XZOBPyA0GDR7ELRNzeSNrzkT+ejUYnkJWqkhvrPn4eb3W9fqoOxaZIZ0dDB7ZW/qbMDdv+Gw1SEV0/7oYrGmYhzkkYl31TLl4Jw6N+n5JEbIOVH3tmcjZWZWGwyamXbqkjWW1Bd9mNP3FXJTrza/kxKo9keakUIpBUE+ZV7AIKTt7ProLeukAkiFJzn/eeKVZi2P3iwSJRaf6HEksziwI4FjW7VEOYjH+DuShNdiguBJ71HwnOhsfuD+CHCP+7/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BeH+x+d1OI91WnjW+uFClHA1gAB4zH8lqjlkhfEF5b8=;
+ b=XN7mNqB381bF3uDyvoN95fjm09Ijq2lvwSQTQ70ZPFW0oKQEZeKEh6GyioAiP3MTBaWCqnSJvttz3uJHkK2ip5fDffydBjkRVkaDrE1DxeuECH0ZN3DHo1tiMGFyIM6bt3dXi3GZ9A0zcJUTxV2c8bGaLWNuGbdg/a5xWsHcu5o=
+Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
+ by VE1PR04MB6445.eurprd04.prod.outlook.com (2603:10a6:803:11c::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28; Thu, 7 May
+ 2020 02:52:56 +0000
+Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
+ ([fe80::1479:38ea:d4f7:a173]) by VE1PR04MB6496.eurprd04.prod.outlook.com
+ ([fe80::1479:38ea:d4f7:a173%7]) with mapi id 15.20.2958.030; Thu, 7 May 2020
+ 02:52:56 +0000
+From:   Po Liu <po.liu@nxp.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     "dsahern@gmail.com" <dsahern@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "vlad@buslov.dev" <vlad@buslov.dev>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>
+Subject: RE: Re: [v4,iproute2-next 1/2] iproute2-next:tc:action: add a gate
+ control action
+Thread-Topic: Re: [v4,iproute2-next 1/2] iproute2-next:tc:action: add a gate
+ control action
+Thread-Index: AdYkGP/813CTQ3HyQZuckXvjuAsisQ==
+Date:   Thu, 7 May 2020 02:52:56 +0000
+Message-ID: <VE1PR04MB64969AC550AE3A762DADEF5292A50@VE1PR04MB6496.eurprd04.prod.outlook.com>
+Accept-Language: zh-CN, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 595e83a7-e875-48af-ed63-08d7f231bf01
+x-ms-traffictypediagnostic: VE1PR04MB6445:|VE1PR04MB6445:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB64451DE3AB5DAE9F5B15FE5E92A50@VE1PR04MB6445.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 03965EFC76
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wElIhp+yCNxD0uZZwaqoFAm977uM45pPFNn7MBgqWU4CxffQmznWI5kRLXpIP85YoPQ5bF1jCLPsRZGZ31z+2TyPH7leFIQ4zJ0jWkVdEPgq2TtHowaE0bGidQgFj0mCz6VJAiE6BPuOWtgxxNp+LZfkJHaQm1qozW8Mmbu9sc3aRatJ/so2hwXKmYOMNUTTLmps5YwwI9Xg8hN/CYcNnsGTqhg06NMknWMVN9/8aR7Iia+5cdckocf56hZbiejqCS4wrIqzZ/2vIwO9oH7+KpHyogl32v+sFNjfKZervy6kJMKMu4EL8/R1MdZoxYno5ABGUJ97bv7YOF5eaYEsADfqaVw4c0nYvNYXKRr4ZOPnPvV500gEOrq0qv/KxGMEAy8P52+gwJFG+ePzWhiz2IRyVZpnSLjeoWWfz3hyE+gthC1CUUZgQw+3aCmb4p0ljCwIW0SVk2FuIqAaz+psFbZR5+lgRdL/0K8wG2vbueQHrVurLMWeArJHoUR8yWo/8bKxSxwqVibdhiw2od/gFQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6496.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(136003)(366004)(39860400002)(376002)(33430700001)(71200400001)(4326008)(478600001)(66446008)(5660300002)(9686003)(33440700001)(83300400001)(83290400001)(83280400001)(83320400001)(83310400001)(8676002)(66556008)(66476007)(316002)(54906003)(66946007)(55016002)(64756008)(186003)(44832011)(76116006)(8936002)(86362001)(33656002)(6916009)(52536014)(6506007)(2906002)(53546011)(26005)(7696005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 1Osem7V5aZBFYj2SrIHT0Fhqv9Lu0Qa5NfEUR+GAAJua0WnqDBclblBXY7rvvmE50fQTolu77eiatdVuxJL9VniyeXULg0Ua40M9Gi1nohLfB5Z97Ql/ejJb7owZg0jVqawul5lW3orFbE3uDqsSauUGQgj1hvVl2bG04hnAO2M6EIaNHCLfdb/ALA3GbDlTUk67t+GB3fPZI+J5Mlu/22mTyPk0dgOq4zZwyxdDEBSthwgcjLI2aoXx0unqDzCvAjgVK43Maw+pouJDBn2aceGz28i36GH4ycGyn+BToRuitaWuSIp2KeSma5VhrEHg4dfBr5tITeYjMz1jHgR+csREoYWb3E8mi+5NT5YdDn+4jn0ZG+0/jjs5midRrKmR55cuqcsyCi/TXfHbg/dYAt1VbfEENSud4YVHZ2j9A5JPy7rOCOqep4tjX+yfNSKJVjHi2XCK24DN/t/XXF7CL6EdQQibZ4Tt6IBHUamVZYmSLPLqHgHdabAKH1BbaGhBJ7Kv5xsGPD9n9Nl7VD/Ax6MLtqlkJ/3Dw7jqbnq0p1az1YUaGodza/szJ8RiXjA/XeW2deaV7Y4xpIVD9E50VG2sRUQPCVnhiTaggZxIId8NPjudwiktsPJWR19vD+Ial7T+qQRaH9WDjDYevfU3W+Upn6ay+AQx3yhHuPmYigwHHMvl9W5OX6FwPu5Z/7jrdb6qNJh3uzKmUdPrRuRO806z9PJioJQWDnIILKUyxzO0zvcLiUWziO/ZLylNKPDL+WJB2BCm7B7GGeRWSYvM7tHHii0ZnJKcl/ievhO+qXM=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 595e83a7-e875-48af-ed63-08d7f231bf01
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 May 2020 02:52:56.7069
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JCUs7m8AVQsSAHyuBT8UIlqUSs9MSBU7O9Em8Yhw/2Ex1FYG5pvRT8IyBcwfmMX7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6445
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/5/20 9:05 AM, William Tu wrote:
-> The Type I ERSPAN frame format is based on the barebones
-> IP + GRE(4-byte) encapsulation on top of the raw mirrored frame.
-> Both type I and II use 0x88BE as protocol type. Unlike type II
-> and III, no sequence number or key is required.
-> To creat a type I erspan tunnel device:
->   $ ip link add dev erspan11 type erspan \
->             local 172.16.1.100 remote 172.16.1.200 \
->             erspan_ver 0
-> 
-> Signed-off-by: William Tu <u9012063@gmail.com>
-> ---
-> v2:
->   remove the inline keyword, let compiler decide.
-> v1:
-> I didn't notice there is Type I when I did first erspan implementation
-> because it is not in the ietf draft 00 and 01. It's until recently I got
-> request for adding type I. Spec is below at draft 02:
-> https://tools.ietf.org/html/draft-foschiano-erspan-02#section-4.1
-> 
-> To verify with Wireshark, make sure you have:
-> commit ef76d65fc61d01c2ce5184140f4b1bba0019078b
-> Author: Guy Harris <guy@alum.mit.edu>
-> Date:   Mon Sep 30 16:35:35 2019 -0700
-> 
->     Fix checks for "do we have an ERSPAN header?"
-> ---
->  include/net/erspan.h | 19 +++++++++++++++--
->  net/ipv4/ip_gre.c    | 58 ++++++++++++++++++++++++++++++++++++++--------------
->  2 files changed, 60 insertions(+), 17 deletions(-)
-> 
-> diff --git a/include/net/erspan.h b/include/net/erspan.h
-> index b39643ef4c95..0d9e86bd9893 100644
-> --- a/include/net/erspan.h
-> +++ b/include/net/erspan.h
-> @@ -2,7 +2,19 @@
->  #define __LINUX_ERSPAN_H
->  
->  /*
-> - * GRE header for ERSPAN encapsulation (8 octets [34:41]) -- 8 bytes
-> + * GRE header for ERSPAN type I encapsulation (4 octets [34:37])
-> + *      0                   1                   2                   3
-> + *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-> + *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> + *     |0|0|0|0|0|00000|000000000|00000|    Protocol Type for ERSPAN   |
-> + *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> + *
-> + *  The Type I ERSPAN frame format is based on the barebones IP + GRE
-> + *  encapsulation (as described above) on top of the raw mirrored frame.
-> + *  There is no extra ERSPAN header.
-> + *
-> + *
-> + * GRE header for ERSPAN type II and II encapsulation (8 octets [34:41])
->   *       0                   1                   2                   3
->   *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
->   *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> @@ -43,7 +55,7 @@
->   * |                  Platform Specific Info                       |
->   * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->   *
-> - * GRE proto ERSPAN type II = 0x88BE, type III = 0x22EB
-> + * GRE proto ERSPAN type I/II = 0x88BE, type III = 0x22EB
->   */
->  
->  #include <uapi/linux/erspan.h>
-> @@ -139,6 +151,9 @@ static inline u8 get_hwid(const struct erspan_md2 *md2)
->  
->  static inline int erspan_hdr_len(int version)
->  {
-> +	if (version == 0)
-> +		return 0;
-> +
->  	return sizeof(struct erspan_base_hdr) +
->  	       (version == 1 ? ERSPAN_V1_MDSIZE : ERSPAN_V2_MDSIZE);
->  }
-> diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-> index 029b24eeafba..e29cd48674d7 100644
-> --- a/net/ipv4/ip_gre.c
-> +++ b/net/ipv4/ip_gre.c
-> @@ -248,6 +248,15 @@ static void gre_err(struct sk_buff *skb, u32 info)
->  	ipgre_err(skb, info, &tpi);
->  }
->  
-> +static bool is_erspan_type1(int gre_hdr_len)
-> +{
-> +	/* Both ERSPAN type I (version 0) and type II (version 1) use
-> +	 * protocol 0x88BE, but the type I has only 4-byte GRE header,
-> +	 * while type II has 8-byte.
-> +	 */
-> +	return gre_hdr_len == 4;
-> +}
-> +
->  static int erspan_rcv(struct sk_buff *skb, struct tnl_ptk_info *tpi,
->  		      int gre_hdr_len)
->  {
-> @@ -262,17 +271,26 @@ static int erspan_rcv(struct sk_buff *skb, struct tnl_ptk_info *tpi,
->  	int len;
->  
->  	itn = net_generic(net, erspan_net_id);
-> -
->  	iph = ip_hdr(skb);
-> -	ershdr = (struct erspan_base_hdr *)(skb->data + gre_hdr_len);
-> -	ver = ershdr->ver;
-> -
-> -	tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
-> -				  tpi->flags | TUNNEL_KEY,
-> -				  iph->saddr, iph->daddr, tpi->key);
-> +	if (is_erspan_type1(gre_hdr_len)) {
-> +		ver = 0;
-> +		tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
-> +					  tpi->flags | TUNNEL_NO_KEY,
-> +					  iph->saddr, iph->daddr, 0);
-> +	} else {
-> +		ershdr = (struct erspan_base_hdr *)(skb->data + gre_hdr_len);
-> +		ver = ershdr->ver;
-> +		tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
-> +					  tpi->flags | TUNNEL_KEY,
-> +					  iph->saddr, iph->daddr, tpi->key);
-> +	}
->  
->  	if (tunnel) {
-> -		len = gre_hdr_len + erspan_hdr_len(ver);
-> +		if (is_erspan_type1(gre_hdr_len))
-> +			len = gre_hdr_len;
-> +		else
-> +			len = gre_hdr_len + erspan_hdr_len(ver);
-> +
->  		if (unlikely(!pskb_may_pull(skb, len)))
->  			return PACKET_REJECT;
->  
-> @@ -665,7 +683,10 @@ static netdev_tx_t erspan_xmit(struct sk_buff *skb,
->  	}
->  
->  	/* Push ERSPAN header */
-> -	if (tunnel->erspan_ver == 1) {
-> +	if (tunnel->erspan_ver == 0) {
-> +		proto = htons(ETH_P_ERSPAN);
-> +		tunnel->parms.o_flags &= ~TUNNEL_SEQ;
-> +	} else if (tunnel->erspan_ver == 1) {
->  		erspan_build_header(skb, ntohl(tunnel->parms.o_key),
->  				    tunnel->index,
->  				    truncate, true);
-> @@ -1066,7 +1087,10 @@ static int erspan_validate(struct nlattr *tb[], struct nlattr *data[],
->  	if (ret)
->  		return ret;
->  
-> -	/* ERSPAN should only have GRE sequence and key flag */
-> +	if (nla_get_u8(data[IFLA_GRE_ERSPAN_VER]) == 0)
-
-I do not see anything in the code making sure IFLA_GRE_ERSPAN_VER has been provided by the user ?
-
-
-
-
-> +		return 0;
-> +
-> +	/* ERSPAN type II/III should only have GRE sequence and key flag */
->  	if (data[IFLA_GRE_OFLAGS])
->  		flags |= nla_get_be16(data[IFLA_GRE_OFLAGS]);
->  	if (data[IFLA_GRE_IFLAGS])
-> @@ -1174,7 +1198,7 @@ static int erspan_netlink_parms(struct net_device *dev,
->  	if (data[IFLA_GRE_ERSPAN_VER]) {
->  		t->erspan_ver = nla_get_u8(data[IFLA_GRE_ERSPAN_VER]);
->  
-> -		if (t->erspan_ver != 1 && t->erspan_ver != 2)
-> +		if (t->erspan_ver > 2)
->  			return -EINVAL;
->  	}
->  
-> @@ -1259,7 +1283,11 @@ static int erspan_tunnel_init(struct net_device *dev)
->  {
->  	struct ip_tunnel *tunnel = netdev_priv(dev);
->  
-> -	tunnel->tun_hlen = 8;
-> +	if (tunnel->erspan_ver == 0)
-> +		tunnel->tun_hlen = 4; /* 4-byte GRE hdr. */
-> +	else
-> +		tunnel->tun_hlen = 8; /* 8-byte GRE hdr. */
-> +
->  	tunnel->parms.iph.protocol = IPPROTO_GRE;
->  	tunnel->hlen = tunnel->tun_hlen + tunnel->encap_hlen +
->  		       erspan_hdr_len(tunnel->erspan_ver);
-> @@ -1456,8 +1484,8 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
->  	struct ip_tunnel_parm *p = &t->parms;
->  	__be16 o_flags = p->o_flags;
->  
-> -	if (t->erspan_ver == 1 || t->erspan_ver == 2) {
-> -		if (!t->collect_md)
-> +	if (t->erspan_ver <= 2) {
-> +		if (t->erspan_ver != 0 && !t->collect_md)
->  			o_flags |= TUNNEL_KEY;
->  
->  		if (nla_put_u8(skb, IFLA_GRE_ERSPAN_VER, t->erspan_ver))
-> @@ -1466,7 +1494,7 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
->  		if (t->erspan_ver == 1) {
->  			if (nla_put_u32(skb, IFLA_GRE_ERSPAN_INDEX, t->index))
->  				goto nla_put_failure;
-> -		} else {
-> +		} else if (t->erspan_ver == 2) {
->  			if (nla_put_u8(skb, IFLA_GRE_ERSPAN_DIR, t->dir))
->  				goto nla_put_failure;
->  			if (nla_put_u16(skb, IFLA_GRE_ERSPAN_HWID, t->hwid))
-> 
+SGkgU3RlcGhlbiwNCg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFN0
+ZXBoZW4gSGVtbWluZ2VyIDxzdGVwaGVuQG5ldHdvcmtwbHVtYmVyLm9yZz4NCj4gU2VudDogMjAy
+MMTqNdTCNsjVIDIzOjIyDQo+IFRvOiBQbyBMaXUgPHBvLmxpdUBueHAuY29tPg0KPiBDYzogZHNh
+aGVybkBnbWFpbC5jb207IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IG5ldGRldkB2
+Z2VyLmtlcm5lbC5vcmc7IHZpbmljaXVzLmdvbWVzQGludGVsLmNvbTsNCj4gZGF2ZW1AZGF2ZW1s
+b2Z0Lm5ldDsgdmxhZEBidXNsb3YuZGV2OyBDbGF1ZGl1IE1hbm9pbA0KPiA8Y2xhdWRpdS5tYW5v
+aWxAbnhwLmNvbT47IFZsYWRpbWlyIE9sdGVhbiA8dmxhZGltaXIub2x0ZWFuQG54cC5jb20+Ow0K
+PiBBbGV4YW5kcnUgTWFyZ2luZWFuIDxhbGV4YW5kcnUubWFyZ2luZWFuQG54cC5jb20+DQo+IFN1
+YmplY3Q6IFJlOiBbdjQsaXByb3V0ZTItbmV4dCAxLzJdIGlwcm91dGUyLW5leHQ6dGM6YWN0aW9u
+OiBhZGQgYQ0KPiBnYXRlIGNvbnRyb2wgYWN0aW9uDQo+IE9uIFdlZCwgIDYgTWF5IDIwMjAgMTY6
+NDA6MTkgKzA4MDANCj4gUG8gTGl1IDxQby5MaXVAbnhwLmNvbT4gd3JvdGU6DQo+IA0KPiA+ICAg
+ICAgICAgICAgICAgfSBlbHNlIGlmIChtYXRjaGVzKCphcmd2LCAiYmFzZS10aW1lIikgPT0gMCkg
+ew0KPiA+ICsgICAgICAgICAgICAgICAgICAgICBORVhUX0FSRygpOw0KPiA+ICsgICAgICAgICAg
+ICAgICAgICAgICBpZiAoZ2V0X3U2NCgmYmFzZV90aW1lLCAqYXJndiwgMTApKSB7DQo+ID4gKyAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgaW52YWxpZGFyZyA9ICJiYXNlLXRpbWUiOw0KPiA+
+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gZXJyX2FyZzsNCj4gPiArICAgICAg
+ICAgICAgICAgICAgICAgfQ0KPiA+ICsgICAgICAgICAgICAgfSBlbHNlIGlmIChtYXRjaGVzKCph
+cmd2LCAiY3ljbGUtdGltZSIpID09IDApIHsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgTkVY
+VF9BUkcoKTsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgaWYgKGdldF91NjQoJmN5Y2xlX3Rp
+bWUsICphcmd2LCAxMCkpIHsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnZh
+bGlkYXJnID0gImN5Y2xlLXRpbWUiOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IGdvdG8gZXJyX2FyZzsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgfQ0KPiA+ICsgICAgICAg
+ICAgICAgfSBlbHNlIGlmIChtYXRjaGVzKCphcmd2LCAiY3ljbGUtdGltZS1leHQiKSA9PSAwKSB7
+DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIE5FWFRfQVJHKCk7DQo+ID4gKyAgICAgICAgICAg
+ICAgICAgICAgIGlmIChnZXRfdTY0KCZjeWNsZV90aW1lX2V4dCwgKmFyZ3YsIDEwKSkgew0KPiA+
+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGludmFsaWRhcmcgPSAiY3ljbGUtdGltZS1l
+eHQiOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gZXJyX2FyZzsNCj4g
+PiArICAgICAgICAgICAgICAgICAgICAgfQ0KPiANCj4gQ291bGQgYWxsIHRoZXNlIHRpbWUgdmFs
+dWVzIHVzZSBleGlzdGluZyBUQyBoZWxwZXIgcm91dGluZXM/DQoNCkkgYWdyZWUgdG8ga2VlcCB0
+aGUgdGMgcm91dGluZXMgaW5wdXQuDQpUaGUgbmFtZXMgb2YgdGltZXIgaW5wdXQgYW5kIHR5cGUg
+aXMgbW9yZSByZWZlcmVuY2UgdGhlIHRhcHJpbyBpbnB1dC4NCg0KPiBTZWUgZ2V0X3RpbWUoKS4g
+IFRoZSB3YXkgeW91IGhhdmUgaXQgbWFrZXMgc2Vuc2UgZm9yIGhhcmR3YXJlIGJ1dCBzdGFuZHMN
+Cj4gb3V0IHZlcnN1cyB0aGUgcmVzdCBvZiB0Yy4NCj4gDQo+IEl0IG1heWJlIHRoYXQgdGhlIGtl
+cm5lbCBVQVBJIGlzIHdyb25nLCBhbmQgc2hvdWxkIGJlIHVzaW5nIHNhbWUgdGltZQ0KPiB1bml0
+cyBhcyByZXN0IG9mIHRjLiBGb3Jnb3QgdG8gcmV2aWV3IHRoYXQgcGFydCBvZiB0aGUgcGF0Y2gu
+DQoNCkkgd291bGQgYWxzbyBzeW5jIHdpdGgga2VybmVsIFVBUEkgaWYgbmVlZGVkLg0KDQoNCkJy
+LA0KUG8gTGl1DQo=
