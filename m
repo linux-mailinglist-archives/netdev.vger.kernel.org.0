@@ -2,120 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0DF01C8D9F
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:08:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13B531C8DB4
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:10:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728018AbgEGOHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 10:07:51 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:49883 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727903AbgEGOHt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:07:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588860467;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1AoI+9FyMu82WK4bZhrAK5V8JQ6RWrNZsFQbYJw2lb8=;
-        b=FFapW094jQ9WBDEl0IojAueYo/At3cqKBXNx+ggioYK0N1wECr+W7CvagYXDfYV/RxBq2a
-        1t5FV7ro3HNaLGv0zzo1dNu91HhOyjwC1SdU0w9z+r+x8I0Nj1g6pVZyx8rU5W3CZFW0oJ
-        fcKk0XLGdIFo+uPrwh39S8wIBICDAEg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-61-vKGhe_kQMd-SMc6q1mPVXw-1; Thu, 07 May 2020 10:07:39 -0400
-X-MC-Unique: vKGhe_kQMd-SMc6q1mPVXw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 422AA460;
-        Thu,  7 May 2020 14:07:37 +0000 (UTC)
-Received: from treble (ovpn-115-96.rdu2.redhat.com [10.10.115.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 059E670545;
-        Thu,  7 May 2020 14:07:35 +0000 (UTC)
-Date:   Thu, 7 May 2020 09:07:33 -0500
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S1728066AbgEGOI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727909AbgEGOIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:08:25 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CEAC05BD0B
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 07:08:24 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id m138so7083385ybf.12
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 07:08:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=D7KOOGg6DlWXW7nMSsDPxBVh53JMWXM+HIMGKr6WXds=;
+        b=gddQNX5skQvK8IPzIX3LvuXftFfhK6k/66grQoAObuU49YF41KgKO89AlvU8DKuT8A
+         8dPZp87dqYug80DNzaJrdRRwZ668Qx681zfzDluWLyEoMRcOUqmIo2wCr3H7obEvyUo/
+         yD47n94mD5EBpz0FWjvR8NArnXkC2K70vxa43vBuhLbmAW8+o6M3UwYGa6Q2/KbErEzD
+         KN2U7wGeuD+X7fepQ4EntZYgR1BwqytWHS0hr8rcQSJ4EwgehxkpxLbCge0is+JmgMPq
+         XT9Iwqco1QGH22WuvKvgphDjI83XN/ThTpWF/8Dd4bW32LmSHRgP5PWZr+5N6S2ywVTL
+         QshA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=D7KOOGg6DlWXW7nMSsDPxBVh53JMWXM+HIMGKr6WXds=;
+        b=VGyXRC76MpCBiJqb5gubAr5Ju0jVO3FHkYs/GimZMHKiwFeBfGvNFPq4pwKQxTCbhD
+         JzBtPmBKc0SwOvQxrbHsltC4IQAjFB7Sj3mbeIf5WydrMJxcxJ/BYNZ0zEhra/jCX36l
+         KLmAZ0nE8dpAJcdMRXwhQJ4d2DQoLv7sTBCDyB3sKu2q734O2N3XLMkOIVx+GCBOBQ7W
+         RMBSZdsmTHKIcDrCbDUlwXsCaJxPK2dlhEm77bjXaGvcqylH730RfNs1NH43R5g3fbQp
+         zWXFrrzqmQR3mGzcGbLJoHoVtrUZnpL0cOM0H/+35+PZtMjcRGFB2vNEKwiucSeFuxIG
+         8ESw==
+X-Gm-Message-State: AGi0PuZJuE5/jHykexxPaZZl+p0KF+UZQuXQoR7xaDUJwZQdeTmi/l38
+        SSS0+WQCWrA1hFYlFy1MILK+xINrDqsZ
+X-Google-Smtp-Source: APiQypKbl5bdeu8rHSldwn7J0SyoYBJpMwOkD7Rmb+vRKdgmu57Ub9MDLbq3L25C3JvonV9L3bYUH/xPr053
+X-Received: by 2002:a25:d2d5:: with SMTP id j204mr19534444ybg.269.1588860503768;
+ Thu, 07 May 2020 07:08:23 -0700 (PDT)
+Date:   Thu,  7 May 2020 07:07:56 -0700
+Message-Id: <20200507140819.126960-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
+Subject: [RFC PATCH v2 00/23] Share events between metrics
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        X86 ML <x86@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
- compatibility
-Message-ID: <20200507140733.v4xlzjogtnpgu5lc@treble>
-References: <20200502192105.xp2osi5z354rh4sm@treble>
- <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
- <20200505181108.hwcqanvw3qf5qyxk@treble>
- <20200505195320.lyphpnprn3sjijf6@ast-mbp.dhcp.thefacebook.com>
- <20200505202823.zkmq6t55fxspqazk@treble>
- <20200505235939.utnmzqsn22cec643@ast-mbp.dhcp.thefacebook.com>
- <20200506155343.7x3slq3uasponb6w@treble>
- <CAADnVQJZ1rj1DB-Y=85itvfcHxnXVKjhJXpzqs6zZ6ZLpexhCQ@mail.gmail.com>
- <20200506211945.4qhrxqplzmt4ul66@treble>
- <20200507000357.grprluieqa324v5c@ast-mbp.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200507000357.grprluieqa324v5c@ast-mbp.dhcp.thefacebook.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 06, 2020 at 05:03:57PM -0700, Alexei Starovoitov wrote:
-> > > > > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-> > > > > index d7ee4c6bad48..05104c3cc033 100644
-> > > > > --- a/include/linux/compiler-gcc.h
-> > > > > +++ b/include/linux/compiler-gcc.h
-> > > > > @@ -171,4 +171,4 @@
-> > > > >  #define __diag_GCC_8(s)
-> > > > >  #endif
-> > > > >
-> > > > > -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
-> > > > > +#define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
-> > > > > --
-> > > > > 2.23.0
-> > > > >
-> > > > > I've tested it with gcc 8,9,10 and clang 11 with FP=y and with ORC=y.
-> > > > > All works.
-> > > > > I think it's safer to go with frame pointers even for ORC=y considering
-> > > > > all the pain this issue had caused. Even if objtool gets confused again
-> > > > > in the future __bpf_prog_run() will have frame pointers and kernel stack
-> > > > > unwinding can fall back from ORC to FP for that frame.
-> > > > > wdyt?
-> > > >
-> > > > It seems dangerous to me.  The GCC manual recommends against it.
-> > > 
-> > > The manual can says that it's broken. That won't stop the world from using it.
-> > > Just google projects that are using it. For example: qt, lz4, unreal engine, etc
-> > > Telling compiler to disable gcse via flag is a guaranteed way to avoid
-> > > that optimization that breaks objtool whereas messing with C code is nothing
-> > > but guess work. gcc can still do gcse.
-> > 
-> > But the manual's right, it is broken.  How do you know other important
-> > flags won't also be stripped?
-> 
-> What flags are you worried about?
-> I've checked that important things like -mno-red-zone, -fsanitize are preserved.
+Metric groups contain metrics. Metrics create groups of events to
+ideally be scheduled together. Often metrics refer to the same events,
+for example, a cache hit and cache miss rate. Using separate event
+groups means these metrics are multiplexed at different times and the
+counts don't sum to 100%. More multiplexing also decreases the
+accuracy of the measurement.
 
-It's not any specific flags I'm worried about, it's all of them.  There
-are a lot of possibilities, with all the different configs, and arches.
-Flags are usually added for a good reason, so one randomly missing flag
-could have unforeseen results.
+This change orders metrics from groups or the command line, so that
+the ones with the most events are set up first. Later metrics see if
+groups already provide their events, and reuse them if
+possible. Unnecessary events and groups are eliminated.
 
-And I don't have any visibility into how GCC decides which flags to
-drop, and when.  But the docs aren't comforting.
+RFC because:
+ - without this change events within a metric may get scheduled
+   together, after they may appear as part of a larger group and be
+   multiplexed at different times, lowering accuracy - however, less
+   multiplexing may compensate for this.
+ - libbpf's hashmap is used, however, libbpf is an optional
+   requirement for building perf.
+ - other things I'm not thinking of.
 
-Even if things seem to work now, that could (silently) change at any
-point in time.  This time objtool warned about the missing frame
-pointer, but that's not necessarily going to happen for other flags.
+Thanks!
 
-If we go this route, I would much rather do -fno-gcse on a file-wide
-basis.
+v2. is the entire patch set based on acme's perf/core tree and includes a
+cherry-picks. Patch 13 was sent for review to the bpf maintainers here:
+https://lore.kernel.org/lkml/20200506205257.8964-2-irogers@google.com/
+v1. was based on the perf metrics fixes and test sent here:
+https://lore.kernel.org/lkml/20200501173333.227162-1-irogers@google.com/
+
+Andrii Nakryiko (1):
+  libbpf: Fix memory leak and possible double-free in hashmap__clear
+
+Ian Rogers (22):
+  perf expr: unlimited escaped characters in a symbol
+  perf metrics: fix parse errors in cascade lake metrics
+  perf metrics: fix parse errors in skylake metrics
+  perf expr: allow ',' to be an other token
+  perf expr: increase max other
+  perf expr: parse numbers as doubles
+  perf expr: debug lex if debugging yacc
+  perf metrics: fix parse errors in power8 metrics
+  perf metrics: fix parse errors in power9 metrics
+  perf expr: print a debug message for division by zero
+  perf parse-events: expand add PMU error/verbose messages
+  perf test: improve pmu event metric testing
+  lib/bpf hashmap: increase portability
+  perf expr: fix memory leaks in bison
+  perf evsel: fix 2 memory leaks
+  perf expr: migrate expr ids table to libbpf's hashmap
+  perf metricgroup: change evlist_used to a bitmap
+  perf metricgroup: free metric_events on error
+  perf metricgroup: always place duration_time last
+  perf metricgroup: delay events string creation
+  perf metricgroup: order event groups by size
+  perf metricgroup: remove duped metric group events
+
+ tools/lib/bpf/hashmap.c                       |   7 +
+ tools/lib/bpf/hashmap.h                       |   3 +-
+ tools/perf/arch/x86/util/intel-pt.c           |  32 ++-
+ .../arch/powerpc/power8/metrics.json          |   2 +-
+ .../arch/powerpc/power9/metrics.json          |   2 +-
+ .../arch/x86/cascadelakex/clx-metrics.json    |  10 +-
+ .../arch/x86/skylakex/skx-metrics.json        |   4 +-
+ tools/perf/tests/builtin-test.c               |   5 +
+ tools/perf/tests/expr.c                       |  33 ++-
+ tools/perf/tests/pmu-events.c                 | 158 +++++++++++-
+ tools/perf/tests/pmu.c                        |   4 +-
+ tools/perf/tests/tests.h                      |   2 +
+ tools/perf/util/evsel.c                       |   2 +
+ tools/perf/util/expr.c                        | 126 ++++-----
+ tools/perf/util/expr.h                        |  22 +-
+ tools/perf/util/expr.l                        |  16 +-
+ tools/perf/util/expr.y                        |  41 ++-
+ tools/perf/util/metricgroup.c                 | 242 +++++++++++-------
+ tools/perf/util/parse-events.c                |  29 ++-
+ tools/perf/util/pmu.c                         |  33 ++-
+ tools/perf/util/pmu.h                         |   2 +-
+ tools/perf/util/stat-shadow.c                 |  46 ++--
+ 22 files changed, 545 insertions(+), 276 deletions(-)
 
 -- 
-Josh
+2.26.2.526.g744177e7f7-goog
 
