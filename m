@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1CDF1C9859
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 19:52:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A72211C985E
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 19:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728171AbgEGRwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 13:52:01 -0400
-Received: from muru.com ([72.249.23.125]:53490 "EHLO muru.com"
+        id S1728237AbgEGRwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 13:52:22 -0400
+Received: from muru.com ([72.249.23.125]:53506 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726367AbgEGRwB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 13:52:01 -0400
+        id S1726558AbgEGRwW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 13:52:22 -0400
 Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id CCE4480CD;
-        Thu,  7 May 2020 17:52:49 +0000 (UTC)
-Date:   Thu, 7 May 2020 10:51:58 -0700
+        by muru.com (Postfix) with ESMTPS id B2F2680CD;
+        Thu,  7 May 2020 17:53:10 +0000 (UTC)
+Date:   Thu, 7 May 2020 10:52:19 -0700
 From:   Tony Lindgren <tony@atomide.com>
 To:     Philippe Schenker <philippe.schenker@toradex.com>
 Cc:     "davem@davemloft.net" <davem@davemloft.net>,
@@ -24,31 +24,30 @@ Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
         "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH next] ARM: dts: am57xx: fix networking on boards with
+Subject: Re: [PATCH v2] ARM: dts: am437x: fix networking on boards with
  ksz9031 phy
-Message-ID: <20200507175158.GW37466@atomide.com>
-References: <20200506191124.31569-1-grygorii.strashko@ti.com>
- <eab549aed345683a3ee79835369169c99e003488.camel@toradex.com>
+Message-ID: <20200507175219.GX37466@atomide.com>
+References: <20200507151244.24218-1-grygorii.strashko@ti.com>
+ <91c1ba87f2dfa66e11681d2660782a2efce2615d.camel@toradex.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <eab549aed345683a3ee79835369169c99e003488.camel@toradex.com>
+In-Reply-To: <91c1ba87f2dfa66e11681d2660782a2efce2615d.camel@toradex.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* Philippe Schenker <philippe.schenker@toradex.com> [200507 08:43]:
-> On Wed, 2020-05-06 at 22:11 +0300, Grygorii Strashko wrote:
+* Philippe Schenker <philippe.schenker@toradex.com> [200507 15:17]:
+> On Thu, 2020-05-07 at 18:12 +0300, Grygorii Strashko wrote:
 > > Since commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for
 > > the
 > > KSZ9031 PHY") the networking is broken on boards:
-> >  am571x-idk
-> >  am572x-idk
-> >  am574x-idk
-> >  am57xx-beagle-x15
+> >  am437x-gp-evm
+> >  am437x-sk-evm
+> >  am437x-idk-evm
 > > 
-> > All above boards have phy-mode = "rgmii" and this is worked before
+> > All above boards have phy-mode = "rgmii" and this is worked before,
 > > because
 > > KSZ9031 PHY started with default RGMII internal delays configuration
 > > (TX
@@ -67,11 +66,8 @@ X-Mailing-List: netdev@vger.kernel.org
 > > for the KSZ9031 PHY")
 > > Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 > 
-> Thanks Grygorii!
-> 
-> Reviewed-by: Philippe Schenker <
-> philippe.schenker@toradex.com>
+> Reviewed-by: Philippe Schenker <philippe.schenker@toradex.com>
 
-Thanks applying this into fixes.
+Thanks applying into fixes.
 
 Tony
