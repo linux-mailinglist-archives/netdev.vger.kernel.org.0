@@ -2,128 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C6231C9AC9
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 21:19:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4B31C9AD1
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 21:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728126AbgEGTTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 15:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726367AbgEGTTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 15:19:12 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E375FC05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 12:19:11 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id b8so2914242pgi.11
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 12:19:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fYIeEHlwbR9WF7AcFWuRUhAarSzHOe+pf/pZmtiKlAU=;
-        b=qtmXirxDYQeLlcxViKvLgIxjDuFa2c7VNp4OdLiI9t5p5cdB5jxkf+G1kFrab6TEMK
-         SYxCG88B4eGjmimDB9ZLegIRKl89OcStp8SrvsxmBeOqhkzXIFttF3yRzR4Qmw2sP1Ow
-         oq12H96b3eXaww52wVbrs64R0klzb4rQTZ4V2wApuDk1sMlbMtPNUbj2+3GNw/f9K956
-         Rxmtj4BsNJpCKxRgCm0bC3Ns4nh2WC3oFeI+ulNoyMyOTzYyxyrPRLBTkJPIIZy6wbpk
-         BI5RGzn2/T+UqZXYQluglYOKZfxKKMFlMmxcmN6DKN+bdZAl73HaESVAEYFGBx3Q2GsV
-         J5Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fYIeEHlwbR9WF7AcFWuRUhAarSzHOe+pf/pZmtiKlAU=;
-        b=EANxd0PheH5fbwu1fvS8Zh5Qo7gGQf9Ka6IPjIgDQiwn1r2d3prWtVeeq5zJ9cLJxu
-         WY4lmJn3NvVxhjH9W9+ZSGYXbEbK953GSoz7vj3Ow7/eDeJSo4LXjWMk26qWNKL1nbvK
-         Xz+dEOyerurnIPu3LFh101JAT1KHplOnbEGh7+tMkem9F53KBt6VcSqvX7lJPg5HXE44
-         +vaKgc0akPF+nHs5cDbC+HQ8EYdCYgXMdB3PdtBGI8SmTwKYsEliFPvW5lXVFk1gG6Xm
-         vbOVdzBLrQDpy0aGNAXzV/T4J0up09+wPPt/6NyOCnTZGqG37ceCl8i+JdcgZYzPO1Mm
-         b/Vw==
-X-Gm-Message-State: AGi0PuZT6PJ0iYNcRJBL1+18Kl3RaXDJe3vhF7ywUIy3eMPwMoFFh/tX
-        zii7vADkaDeL8SkWuwQ81Qi7el90aCE=
-X-Google-Smtp-Source: APiQypIWKbSYMunbyL0S2LwdTtGbvU4suupXWHhW0CVZA+wdn36LRIVyUVCEELtSd0ZCxlTIZlgzNA==
-X-Received: by 2002:a65:534d:: with SMTP id w13mr1912099pgr.161.1588879151174;
-        Thu, 07 May 2020 12:19:11 -0700 (PDT)
-Received: from MacBookAir.linux-6brj.site (99-174-169-255.lightspeed.sntcca.sbcglobal.net. [99.174.169.255])
-        by smtp.gmail.com with ESMTPSA id f76sm5517389pfa.167.2020.05.07.12.19.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2020 12:19:10 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com,
-        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
-        Jarod Wilson <jarod@redhat.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jann Horn <jannh@google.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>
-Subject: [Patch net v3] net: fix a potential recursive NETDEV_FEAT_CHANGE
-Date:   Thu,  7 May 2020 12:19:03 -0700
-Message-Id: <20200507191903.4090-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S1728526AbgEGTUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 15:20:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42272 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726598AbgEGTUk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 15:20:40 -0400
+Received: from embeddedor (unknown [189.207.59.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1730C208D6;
+        Thu,  7 May 2020 19:20:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588879240;
+        bh=ghifpifTV9Rkgth0xg+/OPnqO8C7ujrV3AOGLvxsFjo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=i3XWUVmdPNza+f4FZYASq/bAHlSB4YDEpjVyWpmF+gGX+ortRqmDygQFiFhc0IuVy
+         mB6o448L/xY1bIdgPr0sxczGP0ap7YQ3ys2TVWhhHDrSJak8kyZeoDxX3b4F5ippnh
+         ZSEYI5vkNRO+7+xZk2luTe8vk7huQWlyiTdE2KgM=
+Date:   Thu, 7 May 2020 14:25:07 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] team: Replace zero-length array with flexible-array
+Message-ID: <20200507192507.GA16516@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot managed to trigger a recursive NETDEV_FEAT_CHANGE event
-between bonding master and slave. I managed to find a reproducer
-for this:
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-  ip li set bond0 up
-  ifenslave bond0 eth0
-  brctl addbr br0
-  ethtool -K eth0 lro off
-  brctl addif br0 bond0
-  ip li set br0 up
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-When a NETDEV_FEAT_CHANGE event is triggered on a bonding slave,
-it captures this and calls bond_compute_features() to fixup its
-master's and other slaves' features. However, when syncing with
-its lower devices by netdev_sync_lower_features() this event is
-triggered again on slaves when the LRO feature fails to change,
-so it goes back and forth recursively until the kernel stack is
-exhausted.
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
 
-Commit 17b85d29e82c intentionally lets __netdev_update_features()
-return -1 for such a failure case, so we have to just rely on
-the existing check inside netdev_sync_lower_features() and skip
-NETDEV_FEAT_CHANGE event only for this specific failure case.
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
 
-Fixes: fd867d51f889 ("net/core: generic support for disabling netdev features down stack")
-Reported-by: syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com
-Reported-by: syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com
-Cc: Jarod Wilson <jarod@redhat.com>
-Cc: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Jann Horn <jannh@google.com>
-Reviewed-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+sizeof(flexible-array-member) triggers a warning because flexible array
+members have incomplete type[1]. There are some instances of code in
+which the sizeof operator is being incorrectly/erroneously applied to
+zero-length arrays and the result is zero. Such instances may be hiding
+some bugs. So, this work (flexible-array member conversions) will also
+help to get completely rid of those sorts of issues.
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- net/core/dev.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/if_team.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 522288177bbd..6d327b7aa813 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8907,11 +8907,13 @@ static void netdev_sync_lower_features(struct net_device *upper,
- 			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
- 				   &feature, lower->name);
- 			lower->wanted_features &= ~feature;
--			netdev_update_features(lower);
-+			__netdev_update_features(lower);
+diff --git a/include/linux/if_team.h b/include/linux/if_team.h
+index ec7e4bd07f82..c9bdccd67ffb 100644
+--- a/include/linux/if_team.h
++++ b/include/linux/if_team.h
+@@ -67,7 +67,7 @@ struct team_port {
+ 	u16 queue_id;
+ 	struct list_head qom_list; /* node in queue override mapping list */
+ 	struct rcu_head	rcu;
+-	long mode_priv[0];
++	long mode_priv[];
+ };
  
- 			if (unlikely(lower->features & feature))
- 				netdev_WARN(upper, "failed to disable %pNF on %s!\n",
- 					    &feature, lower->name);
-+			else
-+				netdev_features_change(lower);
- 		}
- 	}
- }
--- 
-2.26.2
+ static inline struct team_port *team_port_get_rcu(const struct net_device *dev)
 
