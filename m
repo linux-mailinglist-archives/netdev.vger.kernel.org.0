@@ -2,53 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C98271C80B4
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 06:05:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA2BF1C80BE
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 06:10:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726946AbgEGEFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 00:05:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46374 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725446AbgEGEFE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 00:05:04 -0400
-Subject: Re: [GIT] Networking
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588824304;
-        bh=zR6eET3bphOeSZcysi3IrmzpPhYrELY85eVha97LOyo=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=giY/MpGPhIfcsIbyF9/Lzmn+YTqfhUy9Xrdv5EYQNcx9A6+fAccmwkKfvMa5wXRQ/
-         DRzTkAYJPijIJSzpgTYUj2ZJcOQQPFcw9hRzeko7Dn5QPNsUoD28d4e+JQpkunZu2Q
-         KEFtcainv5tgHeElK/zAK3muploVM/xR6lkRKKtA=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20200506.204039.425872525231159617.davem@davemloft.net>
-References: <20200506.204039.425872525231159617.davem@davemloft.net>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200506.204039.425872525231159617.davem@davemloft.net>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
- refs/heads/master
-X-PR-Tracked-Commit-Id: 16f8036086a929694c3c62f577bb5925fe4fd607
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: a811c1fa0a02c062555b54651065899437bacdbe
-Message-Id: <158882430420.24952.15328615514936952931.pr-tracker-bot@kernel.org>
-Date:   Thu, 07 May 2020 04:05:04 +0000
-To:     David Miller <davem@davemloft.net>
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S1726007AbgEGEKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 00:10:38 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3875 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725601AbgEGEKi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 00:10:38 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 5E42A59B51338C268F28;
+        Thu,  7 May 2020 12:10:33 +0800 (CST)
+Received: from [127.0.0.1] (10.166.212.180) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Thu, 7 May 2020
+ 12:10:28 +0800
+Subject: Re: [PATCH -next] iwlwifi: pcie: Use bitwise instead of arithmetic
+ operator for flags
+To:     Joe Perches <joe@perches.com>,
+        Luciano Coelho <luciano.coelho@intel.com>,
+        <johannes.berg@intel.com>, <emmanuel.grumbach@intel.com>,
+        <linuxwifi@intel.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, "Julia Lawall" <julia.lawall@lip6.fr>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, cocci <cocci@systeme.lip6.fr>
+References: <1588734423-33988-1-git-send-email-zou_wei@huawei.com>
+ <f8b258e0c8bb073c445090e637195df2fc989543.camel@perches.com>
+ <bfd6b3a7db0c50cd3d084510bd43c9e540688edd.camel@intel.com>
+ <2208e464cd8bd399cfb9b49abb5aed211f27b3a8.camel@perches.com>
+From:   Samuel Zou <zou_wei@huawei.com>
+Message-ID: <8431ed30-b9c7-e91b-e6e6-2afd03dde360@huawei.com>
+Date:   Thu, 7 May 2020 12:10:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <2208e464cd8bd399cfb9b49abb5aed211f27b3a8.camel@perches.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.166.212.180]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Wed, 06 May 2020 20:40:39 -0700 (PDT):
+Both of you are right.
+I neglected, and this patch is wrong.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+Thanks.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/a811c1fa0a02c062555b54651065899437bacdbe
+On 2020/5/6 23:15, Joe Perches wrote:
+> On Wed, 2020-05-06 at 16:51 +0300, Luciano Coelho wrote:
+>> On Tue, 2020-05-05 at 20:19 -0700, Joe Perches wrote:
+>>> On Wed, 2020-05-06 at 11:07 +0800, Samuel Zou wrote:
+>>>> This silences the following coccinelle warning:
+>>>>
+>>>> "WARNING: sum of probable bitmasks, consider |"
+>>>
+>>> I suggest instead ignoring bad and irrelevant warnings.
+>>>
+>>> PREFIX_LEN is 32 not 0x20 or BIT(5)
+>>> PCI_DUMP_SIZE is 352
+>>>
+>>>> diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+>>> []
+>>>> @@ -109,9 +109,9 @@ void iwl_trans_pcie_dump_regs(struct iwl_trans *trans)
+>>>>   
+>>>>   	/* Alloc a max size buffer */
+>>>>   	alloc_size = PCI_ERR_ROOT_ERR_SRC +  4 + PREFIX_LEN;
+>>>> -	alloc_size = max_t(u32, alloc_size, PCI_DUMP_SIZE + PREFIX_LEN);
+>>>> -	alloc_size = max_t(u32, alloc_size, PCI_MEM_DUMP_SIZE + PREFIX_LEN);
+>>>> -	alloc_size = max_t(u32, alloc_size, PCI_PARENT_DUMP_SIZE + PREFIX_LEN);
+>>>> +	alloc_size = max_t(u32, alloc_size, PCI_DUMP_SIZE | PREFIX_LEN);
+>>>> +	alloc_size = max_t(u32, alloc_size, PCI_MEM_DUMP_SIZE | PREFIX_LEN);
+>>>> +	alloc_size = max_t(u32, alloc_size, PCI_PARENT_DUMP_SIZE | PREFIX_LEN);
+>>>>   
+>>>>   	buf = kmalloc(alloc_size, GFP_ATOMIC);
+>>>>   	if (!buf)
+>>
+>> Yeah, those macros are clearly not bitmasks.  I'm dropping this patch.
+> 
+> Can the cocci script that generated this warning
+> 
+> scripts/coccinelle/misc/orplus.cocci
+> 
+> be dropped or improved to validate the likelihood that
+> the defines or constants used are more likely than
+> not are bit values?
+> 
+> Maybe these should be defined as hex or BIT or BIT_ULL
+> or GENMASK or the like?
+> 
+> 
+> Right now it seems it just tests for two constants.
+> 
+> 
+> 
+> .
+> 
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
