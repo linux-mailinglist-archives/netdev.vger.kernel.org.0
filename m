@@ -2,119 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C552B1C8353
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 09:18:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE2C51C835D
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 09:24:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725848AbgEGHSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 03:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725802AbgEGHSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 03:18:49 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF62C061A10
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 00:18:47 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id r26so5502623wmh.0
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 00:18:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:reply-to:to:cc:references:in-reply-to:subject:date:message-id
-         :mime-version:content-transfer-encoding:thread-index
-         :content-language;
-        bh=/83oAbY9HuET575P1iiSrUMJVpsBpJcdwnH0NxV4nfA=;
-        b=SfhvcyKq+aOvm3nL0nAMhXO39Kpoq1JJfQca4QVwn6RXkijOlea7kaecoOWrGMYBJ3
-         X5kSSvyuz55P+HRFC7u5RXgUK4XqG6/NAunJ70CW0XWr4p6ZPYn66RR025yK88VEpOZJ
-         f02xfE8+aTmUaVMqG5zOBORw5k+VLZv7Z7UFydx01udxW/dHsmCTSHt1yqQujXLrzs7o
-         PwH7aDbtLKtXojNm37TWqNHFO/W7/so5fVyXPtaGRnXnE/OlWAM/m05+nl1nKxpmKj35
-         6nG8N1mffXZiwefnxQFnJTEznfCi3yK/bLJFLB3ce0kcKbET8z/eOcmAdEBe1buB41MM
-         VDhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:reply-to:to:cc:references:in-reply-to
-         :subject:date:message-id:mime-version:content-transfer-encoding
-         :thread-index:content-language;
-        bh=/83oAbY9HuET575P1iiSrUMJVpsBpJcdwnH0NxV4nfA=;
-        b=B55DQIOnk1CP/2GWILtdak5LPPgZ8VHHdHxi4aFhSblCp3OZ9so0FPTbTyw1QPUixD
-         31VkqH34MPZzlJe3YkqwToW05iO8lOj9/dNeAxT7eAsCPHfrhlV7+06i78B423EzRubX
-         No0Iap0sywRzX52SY5BML9uyEVWzxwZ7CkxucNhG44ILmvWsbCAXaFEVNf1QXYe9MBV0
-         4RDH3LkuXWevHoODRnwdiYcnlcSngKqQAfwLWbDPfmkmNmBW9MY49HmX+aTalVVtM69G
-         NrnTykywrTP9lkTNZPSYp02zNxbgQjrOZvGIkwMZ6dC6i50+8keHbG9FKYQxuwNSXG33
-         tz9w==
-X-Gm-Message-State: AGi0PuY53TXsGPXXwdYFRDUiliIJOBP/v4XnK7Zwy+q8IgxzmXu7k0Ip
-        rxUfdF7QelWJLhZ+RkCiLJE=
-X-Google-Smtp-Source: APiQypJGp+Dkh7Uu7E7S2A0UM29cbvbjhb0zPwz1y7c8gzfAH63mCWl3HA5L+ejlFVYxoQXb5BtJxw==
-X-Received: by 2002:a1c:44b:: with SMTP id 72mr8579112wme.58.1588835926327;
-        Thu, 07 May 2020 00:18:46 -0700 (PDT)
-Received: from CBGR90WXYV0 ([54.239.6.185])
-        by smtp.gmail.com with ESMTPSA id l6sm6784317wrb.75.2020.05.07.00.18.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 07 May 2020 00:18:45 -0700 (PDT)
-From:   Paul Durrant <xadimgnik@gmail.com>
-X-Google-Original-From: "Paul Durrant" <paul@xen.org>
-Reply-To: <paul@xen.org>
-To:     "'Denis Kirjanov'" <kda@linux-powerpc.org>
-Cc:     <netdev@vger.kernel.org>, <jgross@suse.com>, <wei.liu@kernel.org>,
-        <ilias.apalodimas@linaro.org>
-References: <1588581474-18345-1-git-send-email-kda@linux-powerpc.org> <1588581474-18345-2-git-send-email-kda@linux-powerpc.org> <004201d622e8$2fff5cf0$8ffe16d0$@xen.org> <CAOJe8K3sByKRgecjYBnm35_Kijaqu0TTruQwvddEu1tkF-TEVg@mail.gmail.com> <005a01d622fa$25745e40$705d1ac0$@xen.org> <CAOJe8K3ieApcY_VmEx1fm4=vgKgWOs3__WSr4m+F8kkAAKX_uQ@mail.gmail.com>
-In-Reply-To: <CAOJe8K3ieApcY_VmEx1fm4=vgKgWOs3__WSr4m+F8kkAAKX_uQ@mail.gmail.com>
-Subject: RE: [PATCH net-next v7 2/2] xen networking: add XDP offset adjustment to xen-netback
-Date:   Thu, 7 May 2020 08:18:44 +0100
-Message-ID: <00aa01d6243f$bedafad0$3c90f070$@xen.org>
+        id S1725858AbgEGHYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 03:24:20 -0400
+Received: from mout.web.de ([212.227.17.12]:35925 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725802AbgEGHYT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 03:24:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1588836241;
+        bh=MSRiNNksVbOkIX9Otcxvv8e+072C9Icjsw6N++UnbSc=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=iWx3kPOZfZTXNC2ZXOHvh5AyZbBkFrSkmty43PEZOZz0zEUqe5kFoeSV5kKIcKPFg
+         8U5GeP1v4aTMeVhhfdAX3IVszPk4AO4InDKKFRcBMEyH/3ivYZ1oR3mh7cQ/w9C9b0
+         9W/V/5apwYCFyk6FgFuyRndqYqfIp8BlMg2idPnk=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.132.29.220]) by smtp.web.de (mrweb102
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LnS4I-1ivaqE35qA-00hhg2; Thu, 07
+ May 2020 09:24:00 +0200
+Subject: Re: [v3] nfp: abm: University research groups?
+To:     Kangjie Lu <kjlu@umn.edu>, Qiushi Wu <wu000273@umn.edu>,
+        netdev@vger.kernel.org
+Cc:     LKML <linux-kernel@vger.kernel.org>, oss-drivers@netronome.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20200503204932.11167-1-wu000273@umn.edu>
+ <20200504100300.28438c70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAMV6ehFC=efyD81rtNRcWW9gbiD4t6z4G2TkLk7WqLS+Qg9X-Q@mail.gmail.com>
+ <ca694a38-14c5-bb9e-c140-52a6d847017b@web.de>
+ <CAMV6ehE=GXooHwG1TQ-LZqpepceAudX=P63o139UgKG7TMRxwQ@mail.gmail.com>
+ <6f0e483f-95d8-e30b-6688-e7c3fa6051c4@web.de>
+ <CAMV6ehEP-X+5bXj6VXMpZCPkr6YZWsB0Z_sTBxFxNpwa6D0Z0Q@mail.gmail.com>
+ <956f4891-e85d-abfd-0177-2a175bf51357@web.de>
+ <CAMV6ehE9YRxakbP9ahXkiZEPut8E3qYsN0cxiLqCWasfvLAWFw@mail.gmail.com>
+ <e6989cd8-42b8-d1ab-1fe3-aad26840ae05@web.de>
+ <CAMV6ehFCcSZtqpxonfbp6i_v5zzmnLJ9Gncx=5Y36R35wqTtDw@mail.gmail.com>
+ <ce3917f4-8fd5-d9b6-e481-6118cdb504f2@web.de>
+ <CAK8KejrEuumVxdbBmuHbhjXQa7KH_jP-XLmAHjp1+AC7DUa9WQ@mail.gmail.com>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
+ +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
+ mpVJgXGKkNJ1ey+QOXouzlErVvE2fRh+KXXN1Q7fSmTJlAW9XJYHS3BDHb0uRpymRSX3O+E2
+ lA87C7R8qAigPDZi6Z7UmwIA83ZMKXQ5stA0lhPyYgQcM7fh7V4ZYhnR0I5/qkUoxKpqaYLp
+ YHBczVP+Zx/zHOM0KQphOMbU7X3c1pmMruoe6ti9uZzqZSLsF+NKXFEPBS665tQr66HJvZvY
+ GMDlntZFAZ6xQvCC1r3MGoxEC1tuEa24vPCC9RZ9wk2sY5Csbva0WwYv3WKRZZBv8eIhGMxs
+ rcpeGShRFyZ/0BYO53wZAPV1pEhGLLxd8eLN/nEWjJE0ejakPC1H/mt5F+yQBJAzz9JzbToU
+ 5jKLu0SugNI18MspJut8AiA1M44CIWrNHXvWsQ+nnBKHDHHYZu7MoXlOmB32ndsfPthR3GSv
+ jN7YD4Ad724H8fhRijmC1+RpuSce7w2JLj5cYj4MlccmNb8YUxsE8brY2WkXQYS8Ivse39MX
+ BE66MQN0r5DQ6oqgoJ4gHIVBUv/ZwgcmUNS5gQkNCFA0dWXznQARAQABtCZNYXJrdXMgRWxm
+ cmluZyA8TWFya3VzLkVsZnJpbmdAd2ViLmRlPokCVAQTAQgAPhYhBHDP0hzibeXjwQ/ITuU9
+ Figxg9azBQJYNvsQAhsjBQkJZgGABQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEOU9Figx
+ g9azcyMP/iVihZkZ4VyH3/wlV3nRiXvSreqg+pGPI3c8J6DjP9zvz7QHN35zWM++1yNek7Ar
+ OVXwuKBo18ASlYzZPTFJZwQQdkZSV+atwIzG3US50ZZ4p7VyUuDuQQVVqFlaf6qZOkwHSnk+
+ CeGxlDz1POSHY17VbJG2CzPuqMfgBtqIU1dODFLpFq4oIAwEOG6fxRa59qbsTLXxyw+PzRaR
+ LIjVOit28raM83Efk07JKow8URb4u1n7k9RGAcnsM5/WMLRbDYjWTx0lJ2WO9zYwPgRykhn2
+ sOyJVXk9xVESGTwEPbTtfHM+4x0n0gC6GzfTMvwvZ9G6xoM0S4/+lgbaaa9t5tT/PrsvJiob
+ kfqDrPbmSwr2G5mHnSM9M7B+w8odjmQFOwAjfcxoVIHxC4Cl/GAAKsX3KNKTspCHR0Yag78w
+ i8duH/eEd4tB8twcqCi3aCgWoIrhjNS0myusmuA89kAWFFW5z26qNCOefovCx8drdMXQfMYv
+ g5lRk821ZCNBosfRUvcMXoY6lTwHLIDrEfkJQtjxfdTlWQdwr0mM5ye7vd83AManSQwutgpI
+ q+wE8CNY2VN9xAlE7OhcmWXlnAw3MJLW863SXdGlnkA3N+U4BoKQSIToGuXARQ14IMNvfeKX
+ NphLPpUUnUNdfxAHu/S3tPTc/E/oePbHo794dnEm57LuuQINBFg2+xABEADZg/T+4o5qj4cw
+ nd0G5pFy7ACxk28mSrLuva9tyzqPgRZ2bdPiwNXJUvBg1es2u81urekeUvGvnERB/TKekp25
+ 4wU3I2lEhIXj5NVdLc6eU5czZQs4YEZbu1U5iqhhZmKhlLrhLlZv2whLOXRlLwi4jAzXIZAu
+ 76mT813jbczl2dwxFxcT8XRzk9+dwzNTdOg75683uinMgskiiul+dzd6sumdOhRZR7YBT+xC
+ wzfykOgBKnzfFscMwKR0iuHNB+VdEnZw80XGZi4N1ku81DHxmo2HG3icg7CwO1ih2jx8ik0r
+ riIyMhJrTXgR1hF6kQnX7p2mXe6K0s8tQFK0ZZmYpZuGYYsV05OvU8yqrRVL/GYvy4Xgplm3
+ DuMuC7/A9/BfmxZVEPAS1gW6QQ8vSO4zf60zREKoSNYeiv+tURM2KOEj8tCMZN3k3sNASfoG
+ fMvTvOjT0yzMbJsI1jwLwy5uA2JVdSLoWzBD8awZ2X/eCU9YDZeGuWmxzIHvkuMj8FfX8cK/
+ 2m437UA877eqmcgiEy/3B7XeHUipOL83gjfq4ETzVmxVswkVvZvR6j2blQVr+MhCZPq83Ota
+ xNB7QptPxJuNRZ49gtT6uQkyGI+2daXqkj/Mot5tKxNKtM1Vbr/3b+AEMA7qLz7QjhgGJcie
+ qp4b0gELjY1Oe9dBAXMiDwARAQABiQI8BBgBCAAmFiEEcM/SHOJt5ePBD8hO5T0WKDGD1rMF
+ Alg2+xACGwwFCQlmAYAACgkQ5T0WKDGD1rOYSw/+P6fYSZjTJDAl9XNfXRjRRyJSfaw6N1pA
+ Ahuu0MIa3djFRuFCrAHUaaFZf5V2iW5xhGnrhDwE1Ksf7tlstSne/G0a+Ef7vhUyeTn6U/0m
+ +/BrsCsBUXhqeNuraGUtaleatQijXfuemUwgB+mE3B0SobE601XLo6MYIhPh8MG32MKO5kOY
+ hB5jzyor7WoN3ETVNQoGgMzPVWIRElwpcXr+yGoTLAOpG7nkAUBBj9n9TPpSdt/npfok9ZfL
+ /Q+ranrxb2Cy4tvOPxeVfR58XveX85ICrW9VHPVq9sJf/a24bMm6+qEg1V/G7u/AM3fM8U2m
+ tdrTqOrfxklZ7beppGKzC1/WLrcr072vrdiN0icyOHQlfWmaPv0pUnW3AwtiMYngT96BevfA
+ qlwaymjPTvH+cTXScnbydfOQW8220JQwykUe+sHRZfAF5TS2YCkQvsyf7vIpSqo/ttDk4+xc
+ Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
+ x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
+ pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
+Message-ID: <2be8f7c7-2df9-33fe-74b1-43f783c281ff@web.de>
+Date:   Thu, 7 May 2020 09:23:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
+In-Reply-To: <CAK8KejrEuumVxdbBmuHbhjXQa7KH_jP-XLmAHjp1+AC7DUa9WQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQE3/rdtCvsSNPb5s7Kxs8cJj/qIbwLQYVL2AY7IqSUBQOo04QIlemOzALzHgDWplG3jsA==
-Content-Language: en-gb
+X-Provags-ID: V03:K1:L2cLK2Xb8zF2nedlHGp91/vQkl6r8dBDov8HbnVZG91f3GjihDO
+ 70F9OKg5rtvA/qH3/LnCj6419W9aV+2DHY1WZQxgNf8phJK3dWPuIJSJKk4j/RC2ZQO1GQC
+ hldl411SVDoNOSRhlRm2v0efSpAOSeJJ3h1R3hPsxsoswuyCPnTvrJemp5MF13M7pIsUCos
+ geNom8Sa8Px1OGOrufhNg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LNccG5OfLwk=:5OHxPkoeOwQ17LSCn6kola
+ uz8GKhvr1RQS+sfXFavCiXRhzOhdFwemfkFoAX1jdGBGfQe1iQeKmN3GhUnOXQW6v41qLCvyQ
+ uDV6gAUFNa+htB0LWh19ThWqr0otQgjBLh1D37ob0QWoBnZKmHBBlbh0wUzYQbe1QEQooWDuU
+ Y1SY5MccqvIiFWaYkDxkrhl+yzBcHRx3Xg/AlIz0vDdH8HRgiZStGBmN9Jv3jqYPlw0pcZcfO
+ L80t+HvdjfARNGKVWOHzQf2bkqVtYOHe4CKK8oerSnudJjLvDGcAaySnNOSb0CqZAR/c9tyXO
+ Tw+CtSIXbns3GqkkP+/OqWOQXDjcMkZcG1APv5ifM+EFtPoik2ESgLIWCLui7wpHkXHUb6V0w
+ /CMYRWiZqYSD4h41J4c6NGCCR+E/1l/nQQnlmoZwccIiUdRz97WWwTfA6eM8aSmk3/wOOUWVm
+ 6H6bww54KLTLKwMHkm4zMQtvR0kBWx/OEQOGfHzBfNQ/SgZCbsRfExKQ3JQhjNPTYTHAEmbyJ
+ 8vvVOGFt+3H+uevZDmqFVeUkn4K/mXyfvniecpkpmOmCVNxeb/hDGUCG8N5w4unBdgOgdbLFl
+ WgYOEnUrpZsJcMpMCFpnLw99GkPyVnWmcS1y87sBstAzfLRdBNN0tkaJ2sVynW/cpSZjn1CYf
+ V5RHnFMQHSjrBayPQNZR2q1vljhRPo0AnXjPBSnhV47tKTu42EjHcut3FvdoxdI4pjSPtiQMQ
+ II/rTs794eVrAwWs0i79nMUunzZWVYeDMOJD+n2zdZIQWO1BKr3Cm3QOf6oafcVzngLsyzhic
+ M0esQlVqW/WhN2m3sGoLVLrYkEVCC3FSTEZlV51IEUKYGzjoffvAGFh4bpVaF9ZYJ3k+LWji+
+ e/SUgUMiVEZfmqKS2viNaP8l0ntVfht8/VvzlNbYzbff6NYBS3f7Q2iAK0EAGP55Th3cCNH6n
+ FTJza4WOwT/jxhe1cErd5ZAdzwkkVy8607JeLfCV5JhTf9uen4i40077uN8ZB6Vp0//INI+KE
+ ApeJM9clBA3ZyaP/X0PQmHJnDvwXAKV5V3lhYhtvDY3TtVemGNahVQi0qOFe/MhvAXN0krqkn
+ 4ZKWdFnMvpw9SvU2+34QNY+g+D9AXJmWUHOcDy1Fsj3YVg1dtoPg1kTw7N8vZ55iYgm3Ig+5e
+ /ze+wxHYQjzgvhwXmNVN0Tf/4nl1DLyAH4wH/8lARi4v0j/CWCI9s8w5IaFhy/YzjHdtmpBbf
+ MmI/Jwo/jzqcWEiWA
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Denis Kirjanov <kda@linux-powerpc.org>
-> Sent: 06 May 2020 18:45
-> To: paul@xen.org
-> Cc: netdev@vger.kernel.org; jgross@suse.com; wei.liu@kernel.org; =
-ilias.apalodimas@linaro.org
-> Subject: Re: [PATCH net-next v7 2/2] xen networking: add XDP offset =
-adjustment to xen-netback
->=20
-> On 5/5/20, Paul Durrant <xadimgnik@gmail.com> wrote:
-> >> -----Original Message-----
-> >> >> @@ -417,6 +431,11 @@ static void frontend_changed(struct =
-xenbus_device
-> >> >> *dev,
-> >> >>  		set_backend_state(be, XenbusStateConnected);
-> >> >>  		break;
-> >> >>
-> >> >> +	case XenbusStateReconfiguring:
-> >> >> +		read_xenbus_frontend_xdp(be, dev);
-> >> >
-> >> > Is the frontend always expected to trigger a re-configure, or =
-could
-> >> > feature-xdp already be enabled prior to connection?
-> >>
-> >> Yes, feature-xdp is set by the frontend when  xdp code is loaded.
-> >>
-> >
-> > That's still ambiguous... what I'm getting at is whether you also =
-need to
-> > read the xdp state when transitioning into Connected as well as
-> > Reconfiguring?
->=20
-> I have to read the state only during the Reconfiguring state since
-> that's where an XDP program is loaded / unloaded and then we =
-transition
-> from Reconfigred to Connected
->=20
+> > I imagined that the bug report (combined with a patch) was triggered b=
+y
+> > an evolving source code analysis approach which will be explained
+> > in another research paper. Is such a view appropriate?
+> > https://github.com/umnsec/cheq/
+>
+> Could you elaborate more on "university research groups?"
 
-Ok, but what about netback re-connection? It is possible that netback =
-can be disconnected, unloaded, reloaded and re-attached to a running =
-frontend. In this case XDP would be active so I still think =
-read_xenbus_frontend_xdp() needs to form part of ring connection (if =
-only in this case).
+You are working together for the publishing of some papers which will
+eventually be presented at conferences.
+You might build additional relationships and participate in further work g=
+roups.
 
-  Paul
 
+> We are continuously working on automated kernel analysis
+
+This is good to know.
+
+
+> to improve the unfortunately very buggy kernel.
+
+There are various software development challenges to consider.
+
+Have you got a desire to express connections to recent research results
+also in commit messages?
+
+Regards,
+Markus
