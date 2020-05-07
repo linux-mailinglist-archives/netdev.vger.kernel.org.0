@@ -2,118 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D291C8533
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 10:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 965691C855D
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 11:11:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726268AbgEGI4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 04:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53408 "EHLO
+        id S1725939AbgEGJLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 05:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbgEGI4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 04:56:17 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEFDC061A41
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 01:56:16 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id g12so5853155wmh.3
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 01:56:16 -0700 (PDT)
+        with ESMTP id S1725848AbgEGJLA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 05:11:00 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE05C061A10;
+        Thu,  7 May 2020 02:11:00 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id u10so1830978pls.8;
+        Thu, 07 May 2020 02:11:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hLWaQUTnJ7f7DgBuYKSFC32i9PCp8zzauvLXWUcYmNc=;
-        b=N8WW7vEdih/4X6y8BA9cfZcTgB+tDYkRfBKAbgsvVDJg7ZGE9p3rrq/03IkuDkT6Ev
-         6MyjgkRjsN/k9awGsZMiNiGQ/KKKYg9n+kFg3rIithm+DTExseBN/yUN4j89GmrQDcN4
-         wbFm4iX1j1+3h/M3EQyXzLbTuY5vQr5J+1z00=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JBT6KrKPDV5CjqbR8NDCy7mpTcDdeEp7C5NBrNvcrDY=;
+        b=kVxUpNAU2X5gF8L0wi+DyBySR80rdREgOTCndFcxAxZ5o1/ZAGVfUqtsWKwLF0Pa/u
+         5VlziewE/8fe6NnCkGc3Ph2U6L2/oSl/f8uR72qd3yHNwaqdpv2dvNMAW1V6ZK6GmZpF
+         XufJCfMyHxhC43y07FPPo6k6b4e6UWM1L9UIseHpeJakHL2EDV8nuqNy1lOlb7/Lvovx
+         +Qr8DuTQ62XSzBiO9K+0Sy9zPbrwHFV3jEPKUwqIHxZfJQ6mIwmROmv/B8yYWXUa1+Hd
+         afZ9rgolKYC6b4dwrtUFVeaOonYWK/bbkkYwAxSkHn4eQ5RuvJlmrbmxTSe3vpUhlwXO
+         i/9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hLWaQUTnJ7f7DgBuYKSFC32i9PCp8zzauvLXWUcYmNc=;
-        b=AmlEumpgmYFb+nPZ+fqBL5o7SD/S436apFXBMBVKbrodADoNFR8X50TWn6vm5rzuVe
-         D1csCQddLU6QEcyEMlseydJaGHESZRS4Fk6iaM0Ty/kj55U2kDD8bjBpLyZR/XHeylhn
-         gA0s5VCBsmS2I+ITQsFJkOU5XCRQn8Hjcv4wCinJe28klvvC1JBVqqIF3LYQG4MlRpoX
-         D/sxgAs2MoVYVGOp9StXx4PBWHx4b4IDsBlgQOS6Sjcov8O/4e9Hp3eiLT6+Leq4iztj
-         gsRSwZMD1i64+0xU90s/qhRKKPLymJsLylrDXWVv7HkGot8PEI5invE79Gj+4/A7qSAt
-         T1Ig==
-X-Gm-Message-State: AGi0PuZNz4vs3mYXUbkTZPUUO+fSf5LrQClGIX1ZtQJ3t3d+KNoI1lZu
-        TOPO7lM9io0UlMykENHqRvPh3A==
-X-Google-Smtp-Source: APiQypIarRKCDwwq9BJ7HIOIQBZ5gaFvnSebCKJDXnJg51HpGccvWC6okg6H+MBNXtWjjLEoH7mqFw==
-X-Received: by 2002:a1c:e444:: with SMTP id b65mr9612793wmh.6.1588841774781;
-        Thu, 07 May 2020 01:56:14 -0700 (PDT)
-Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id 17sm6740090wmo.2.2020.05.07.01.56.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2020 01:56:14 -0700 (PDT)
-Date:   Thu, 7 May 2020 10:55:50 +0200
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     lmb@cloudflare.com, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, ast@kernel.org
-Subject: Re: [bpf-next PATCH 05/10] bpf: selftests, improve test_sockmap
- total bytes counter
-Message-ID: <20200507105550.35adc82f@toad>
-In-Reply-To: <158871187408.7537.17124775242608386871.stgit@john-Precision-5820-Tower>
-References: <158871160668.7537.2576154513696580062.stgit@john-Precision-5820-Tower>
-        <158871187408.7537.17124775242608386871.stgit@john-Precision-5820-Tower>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JBT6KrKPDV5CjqbR8NDCy7mpTcDdeEp7C5NBrNvcrDY=;
+        b=mKk58xCj7IrgyFPzlX4HP0/1UQ6jAl4gS3mGosze9G5sR1uZeD1PUBQnBF2WwnQEqO
+         ohTdy693f95D52qms3rIreJhdaml6/nLBabmw7IbHCGJyYV8CI1RFCLllXRnMOfp6q5s
+         9XBIHF31rQxYMCypBjcxUJlAT5QUmTRG6CKCSxfXD2HJi50kgHR/3sDr81dsc3rO96YM
+         Qi9cAodITc1BqfNmcWElFvgAHzlV/NT0PSgaJZEwLNi4UsEqAmQVNiHZ+MGqpH/yQwUU
+         5AEArHZJ9QPll3uy7mfhIhAxT8mHMU4y5VwY3CjkYZodgDnXbEnC5741KUeFcxPLyf8g
+         jr4g==
+X-Gm-Message-State: AGi0Pubt88k8/P26Bs2QGLaij4qRkB0W5jV4afOfG+rn+dI0oiShJZN4
+        6HdH2pYkC/06F0iaZWrFOPCScPBZe6cEkGdT88g=
+X-Google-Smtp-Source: APiQypLSmUDlB8+hESCKFexeV6yOLtQ3+jQd1hZaeXg3Qh7fHvakmbggZLIgn4AzvrXWYYT9Q3xQHb/UA6E5FX3UzOE=
+X-Received: by 2002:a17:90a:340c:: with SMTP id o12mr13739254pjb.22.1588842660053;
+ Thu, 07 May 2020 02:11:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
+ <20200505132905.10276-6-calvin.johnson@oss.nxp.com> <CAHp75VfOcQiACsOcfWyJSP1dzdYpaCa-_KKf==4YCkaM_Wk3Tg@mail.gmail.com>
+ <20200507074435.GA10296@lsv03152.swis.in-blr01.nxp.com>
+In-Reply-To: <20200507074435.GA10296@lsv03152.swis.in-blr01.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 7 May 2020 12:10:48 +0300
+Message-ID: <CAHp75VeFCzJ97c7AZD8ksA-r3C-XyM24Rt30+Obw6tCaR4xprA@mail.gmail.com>
+Subject: Re: [net-next PATCH v3 5/5] net: mdiobus: Introduce fwnode_mdiobus_register_phy()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 05 May 2020 13:51:14 -0700
-John Fastabend <john.fastabend@gmail.com> wrote:
+On Thu, May 7, 2020 at 10:44 AM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> On Tue, May 05, 2020 at 05:22:00PM +0300, Andy Shevchenko wrote:
+> > On Tue, May 5, 2020 at 4:30 PM Calvin Johnson
+> > <calvin.johnson@oss.nxp.com> wrote:
 
-> The recv thread in test_sockmap waits to receive all bytes from sender but
-> in the case we use pop data it may wait for more bytes then actually being
-> sent. This stalls the test harness for multiple seconds. Because this
-> happens in multiple tests it slows time to run the selftest.
-> 
-> Fix by doing a better job of accounting for total bytes when pop helpers
-> are used.
-> 
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
->  tools/testing/selftests/bpf/test_sockmap.c |    9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-> index a81ed5d..36aca86 100644
-> --- a/tools/testing/selftests/bpf/test_sockmap.c
-> +++ b/tools/testing/selftests/bpf/test_sockmap.c
-> @@ -502,9 +502,10 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
->  		 * paths.
->  		 */
->  		total_bytes = (float)iov_count * (float)iov_length * (float)cnt;
-> -		txmsg_pop_total = txmsg_pop;
->  		if (txmsg_apply)
-> -			txmsg_pop_total *= (total_bytes / txmsg_apply);
-> +			txmsg_pop_total = txmsg_pop * (total_bytes / txmsg_apply);
-> +		else
-> +			txmsg_pop_total = txmsg_pop * cnt;
->  		total_bytes -= txmsg_pop_total;
->  		err = clock_gettime(CLOCK_MONOTONIC, &s->start);
->  		if (err < 0)
-> @@ -638,9 +639,13 @@ static int sendmsg_test(struct sockmap_options *opt)
->  
->  	rxpid = fork();
->  	if (rxpid == 0) {
-> +		iov_buf -= (txmsg_pop - txmsg_start_pop + 1);
->  		if (opt->drop_expected)
->  			exit(0);
->  
-> +		if (!iov_buf) /* zero bytes sent case */
-> +			exit(0);
+...
 
-You probably want to call _exit() from the child to prevent flushing
-stdio buffers twice.
+> > > +       bool is_c45 = false;
+> >
+> > Redundant assignment, see below.
+> >
+> > > +       const char *cp;
+> > > +       u32 phy_id;
+> > > +       int rc;
 
-> +
->  		if (opt->sendpage)
->  			iov_count = 1;
->  		err = msg_loop(rx_fd, iov_count, iov_buf,
-> 
+> > > +       fwnode_property_read_string(child, "compatible", &cp);
+> >
+> > Consider rc = ...; otherwise you will have UB below.
+> >
+> > > +       if (!strcmp(cp, "ethernet-phy-ieee802.3-c45"))
+> >
+> > UB!
+>
+> Thanks for the comments! I've considered all of them.
+> What is UB, by the way? :)-
 
+Undefined Behaviour.
+
+-- 
+With Best Regards,
+Andy Shevchenko
