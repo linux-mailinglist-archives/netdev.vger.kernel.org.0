@@ -2,126 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED4B41C812A
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 06:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7657C1C8161
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 07:12:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725862AbgEGEwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 00:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43780 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725601AbgEGEwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 00:52:09 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7999FC061A0F
-        for <netdev@vger.kernel.org>; Wed,  6 May 2020 21:52:09 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id u22so1565653plq.12
-        for <netdev@vger.kernel.org>; Wed, 06 May 2020 21:52:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FYkaUuQ0Hcijpg8fXzFbNqstsBym+T1ZVc+9xfGMFXI=;
-        b=rjy+p4PWdreHUZMb3DXmAQFd1efDM9tlKf0HJE+/ybAFXUpRwsj+qLj6/nikE0BrxH
-         8O4xAdkgqHHyoUiPY4fxdQZXZRJVRnPo0gfhbhNGMu188qw/TZR/WlWbskfmuVqcNzH0
-         wTxY4fLXM3RIVF9eomTo8zVDKmZ0lwZajSMe5zSjFw4Et7KM2etVYhzFwE1Zxg9XQ2U5
-         X2EbBuxDl0qfzMxhUKJEv0yipky959uomgqO1+rGozNrnVogJcutrSYylnKL8UzwcUP9
-         uFTxX7kyHHCdM4VWNP8xRM1SiAJvDVE6JuyTCj8G8ZJFb1ed3LiXCIShV0wh7XdxZNaE
-         6vZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FYkaUuQ0Hcijpg8fXzFbNqstsBym+T1ZVc+9xfGMFXI=;
-        b=uP+gOqiO68C2k44YzxlOlu0wqlh9h4+F/VfBbqEyPDgJfty1WxUNhTEqggWWaWRopi
-         fjjGcoqS/CnpAgOwJmNFcJo1adR65yxphKyX2KTOaDRWsBirp6SNagb9iqGQvCpi28oh
-         QmupmsNlh/4vZWsz80i/McjBJpBh+iF9T6mDaHp6Cw2NIFZoU7bOn/nlTgsbLQpA/87O
-         oVP/CXnhtv9aRl2YbXd0P1NASTRO3nACWeYm9PQI0UaUVDa9ZkIZIj01oJ0rSv4Ve2tv
-         DktoxqLlPlhh9Y9oZSgxa/Yu2YiV8JKtMS3b3VHe27mCCiacbnD/2AkqMqwoV7Z/JB10
-         WxSw==
-X-Gm-Message-State: AGi0PuaeQB6m9sJc2T9StQV1XmAS1qu+8M+FBAgFyrcT1XaKax0LAv81
-        /C/+hksoB2zDJpCS4wrPdyWfBIAUnOE=
-X-Google-Smtp-Source: APiQypJeThSOJg6sXA6qEy1XEL6FUsr6CHGbZUU7u6C7pBB/gU3FNKMkjcI6fPvCUeZkEcANxv0tsg==
-X-Received: by 2002:a17:90a:8d12:: with SMTP id c18mr13335798pjo.144.1588827128685;
-        Wed, 06 May 2020 21:52:08 -0700 (PDT)
-Received: from builder.lan (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id i128sm3501379pfc.149.2020.05.06.21.52.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 May 2020 21:52:08 -0700 (PDT)
-Date:   Wed, 6 May 2020 21:52:55 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, marcel@holtmann.org,
-        andy.gross@linaro.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] wcn36xx: Fix error handling path in 'wcn36xx_probe()'
-Message-ID: <20200507045255.GB3236072@builder.lan>
-References: <20200507043619.200051-1-christophe.jaillet@wanadoo.fr>
+        id S1725905AbgEGFMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 01:12:18 -0400
+Received: from verein.lst.de ([213.95.11.211]:44501 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725783AbgEGFMR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 May 2020 01:12:17 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 990EF68B05; Thu,  7 May 2020 07:12:13 +0200 (CEST)
+Date:   Thu, 7 May 2020 07:12:13 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 15/15] x86: use non-set_fs based maccess routines
+Message-ID: <20200507051213.GB4501@lst.de>
+References: <20200506062223.30032-1-hch@lst.de> <20200506062223.30032-16-hch@lst.de> <CAHk-=wi6E5z_aKr9NX+QcEJqJvSyrDbO3ypPugxstcPV5EPSMQ@mail.gmail.com> <20200506181543.GA7873@lst.de> <CAHk-=wghKpGdTmD4EDfwX2uyppwxksU+nFyS1B--kbopcQAgwg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200507043619.200051-1-christophe.jaillet@wanadoo.fr>
+In-Reply-To: <CAHk-=wghKpGdTmD4EDfwX2uyppwxksU+nFyS1B--kbopcQAgwg@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 06 May 21:36 PDT 2020, Christophe JAILLET wrote:
+On Wed, May 06, 2020 at 12:01:32PM -0700, Linus Torvalds wrote:
+> Oh, absolutely. I did *NOT* mean that you'd use "unsafe_get_user()" as
+> the actual interface. I just meant that as an implementation detail on
+> x86, using "unsafe_get_user()" instead of "__get_user_size()"
+> internally both simplifies the implementation, and means that it
+> doesn't clash horribly with my local changes.
 
-> In case of error, 'qcom_wcnss_open_channel()' must be undone by a call to
-> 'rpmsg_destroy_ept()', as already done in the remove function.
+I had a version that just wrapped them, but somehow wasn't able to
+make it work due to all the side effects vs macros issues.  Maybe I
+need to try again, the current version seemed like a nice way out
+as it avoided a lot of the silly casting.
+
+
+> Btw, that brings up another issue: so that people can't mis-use those
+> kernel accessors and use them for user addresses, they probably should
+> actually do something like
 > 
-> Fixes: 5052de8deff5 ("soc: qcom: smd: Transition client drivers from smd to rpmsg")
-
-It seems I introduced this bug in f303a9311065 ("wcn36xx: Transition
-driver to SMD client"), but your patch should should apply back to your
-Fixes, so I think it's good.
-
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-Regards,
-Bjorn
-
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> Not 100% sure of the commit for Fixes, but it is consistent with the
-> analysis in efad8396e906 where the same call has been added in the remove
-> function.
-> ---
->  drivers/net/wireless/ath/wcn36xx/main.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>         if ((long)addr >= 0)
+>                 goto error_label;
 > 
-> diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-> index e49c306e0eef..1acdc13a74fc 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/main.c
-> +++ b/drivers/net/wireless/ath/wcn36xx/main.c
-> @@ -1339,7 +1339,7 @@ static int wcn36xx_probe(struct platform_device *pdev)
->  	if (addr && ret != ETH_ALEN) {
->  		wcn36xx_err("invalid local-mac-address\n");
->  		ret = -EINVAL;
-> -		goto out_wq;
-> +		goto out_channel;
->  	} else if (addr) {
->  		wcn36xx_info("mac address: %pM\n", addr);
->  		SET_IEEE80211_PERM_ADDR(wcn->hw, addr);
-> @@ -1347,7 +1347,7 @@ static int wcn36xx_probe(struct platform_device *pdev)
->  
->  	ret = wcn36xx_platform_get_resources(wcn, pdev);
->  	if (ret)
-> -		goto out_wq;
-> +		goto out_channel;
->  
->  	wcn36xx_init_ieee80211(wcn);
->  	ret = ieee80211_register_hw(wcn->hw);
-> @@ -1359,6 +1359,8 @@ static int wcn36xx_probe(struct platform_device *pdev)
->  out_unmap:
->  	iounmap(wcn->ccu_base);
->  	iounmap(wcn->dxe_base);
-> +out_channel:
-> +	rpmsg_destroy_ept(wcn->smd_channel);
->  out_wq:
->  	ieee80211_free_hw(hw);
->  out_err:
-> -- 
-> 2.25.1
+> on x86. IOW, have the "strict" kernel pointer behavior.
 > 
+> Otherwise somebody will start using them for user pointers, and it
+> will happen to work on old x86 without CLAC/STAC support.
+> 
+> Of course, maybe CLAC/STAC is so common these days (at least with
+> developers) that we don't have to worry about it.
+
+The actual public routines (probe_kernel_read and co) get these
+checks through probe_kernel_read_allowed, which is implemented by
+the x86 code.  Doing this for every 1-8 byte access might be a little
+slow, though.  Do you really fear drivers starting to use the low-level
+helper?  Maybe we need to move those into a different header than
+<asm/uaccess.h> that makes it more clear that they are internal?
+
+> But here you see what it is, if you want to. __get_user_size()
+> technically still exists, but it has the "target branch" semantics in
+> here, so your patch clashes badly with it.
+
+The target branch semantics actually are what I want, that is how the
+maccess code is structured.  This is the diff I'd need for the calling
+conventions in your bundle:
+
+
+diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+index 765e18417b3ba..d1c8aacedade1 100644
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -526,14 +526,8 @@ do {									\
+ #define HAVE_ARCH_PROBE_KERNEL
+ 
+ #define arch_kernel_read(dst, src, type, err_label)			\
+-do {									\
+-        int __kr_err;							\
+-									\
+ 	__get_user_size(*((type *)dst), (__force type __user *)src,	\
+-			sizeof(type), __kr_err);			\
+-        if (unlikely(__kr_err))						\
+-		goto err_label;						\
+-} while (0)
++			sizeof(type), err_label);			\
+ 
+ #define arch_kernel_write(dst, src, type, err_label)			\
+ 	__put_user_size(*((type *)(src)), (__force type __user *)(dst),	\
