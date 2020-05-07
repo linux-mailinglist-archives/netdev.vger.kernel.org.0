@@ -2,81 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B60C1C9533
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E7CF1C9547
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:43:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgEGPg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 11:36:28 -0400
-Received: from correo.us.es ([193.147.175.20]:56432 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725969AbgEGPg2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 11:36:28 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 61F4CEB46E
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 17:36:26 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 52EB01158F3
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 17:36:26 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 46EA71158ED; Thu,  7 May 2020 17:36:26 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 46DB911540B;
-        Thu,  7 May 2020 17:36:24 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 07 May 2020 17:36:24 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 2402D42EF4E0;
-        Thu,  7 May 2020 17:36:24 +0200 (CEST)
-Date:   Thu, 7 May 2020 17:36:23 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        netfilter-devel@vger.kernel.org, jiri@resnulli.us, kuba@kernel.org
-Subject: Re: [RFC PATCH net] net: flow_offload: simplify hw stats check
- handling
-Message-ID: <20200507153623.GA10305@salvia>
-References: <49176c41-3696-86d9-f0eb-c20207cd6d23@solarflare.com>
+        id S1726638AbgEGPn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 11:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725914AbgEGPn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:43:29 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11FAC05BD43;
+        Thu,  7 May 2020 08:43:28 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id u127so7352088wmg.1;
+        Thu, 07 May 2020 08:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nxytJDY25nkqSUWT50yMCdYYj0ekyfNznUK4WOz0DVI=;
+        b=L1/MOuVDUG0p7mIYU33P0f9znn3dYJoLcPCAKSwVbXOk9lbvjqpYPCRJHaJuXF30WW
+         3l20IAb8hqT3l5LowVj7NtdFryxksvUaWyG5/b+EG4eJYqUoqOOC9TkTx4K4nv3Z9vn/
+         zsDLO1Es61ahEOl0B6PmHUFB9+RV8gkYA3fLzr2tjEw26R2/cUocW+QyGOjgIsqPLUCE
+         6t5Ae711fJAUW6auxtBpE4xVcqSyQIcmRdAteu6gapcoLntYqqndM6Hfq243dkuE5maf
+         CdVdEzDrmgFaGo/dNknWRbyWcuCfFLP5rxK3yLR23BoJMeZgL758MErarcwGnXq3r8VL
+         G0NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nxytJDY25nkqSUWT50yMCdYYj0ekyfNznUK4WOz0DVI=;
+        b=bcwh5giACgm8mFqItqxKEW0Yxm3xRBUVIMGT4j4SIcgbr0Wnvug/N1sQXNHLlO4Kua
+         qV1NTogrLollga6NoRLVpDm6Nn5w1ZENWntss5c2vsynUApsommn4X6DDcg2V5ohmTqr
+         2fUuliVWYwe0kGPT0byVWNT2rL8oVc3RYEhpQews7iiEBgXKOCy0p76jk5HHs2aXJZ7O
+         4qtUTBuUJ/GFAag63qhSmE2vKmT/bqjandHnAnEifyy/pT5jwTx2nP7r2VwCS7sJF15R
+         GdwgPX98PkufG/Y+6E2K0NxpCiK6WoYkDXW1P7pUXMCZXY2QplU9N46I22VAbJ1vuN78
+         x23w==
+X-Gm-Message-State: AGi0PubydcEIIrFshZKpa4BQ66Da/93NBto6c6BV1sqw9yC8OkBPAk94
+        ikPvvGejkJ5pRCQc0iJ6iiCzQOwb
+X-Google-Smtp-Source: APiQypKQeq5CTQAI7fzpE5u6Z/ho8YrJPrFOJrx/0Zv0oBHCGZQHBuH6WIeYS2CbapVvNTMfg6kTng==
+X-Received: by 2002:a1c:96c6:: with SMTP id y189mr11682288wmd.106.1588866204369;
+        Thu, 07 May 2020 08:43:24 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b22sm16534632wmj.1.2020.05.07.08.43.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 May 2020 08:43:23 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: phy: Make iproc_mdio_resume static
+To:     Zheng Zengkai <zhengzengkai@huawei.com>, andrew@lunn.ch,
+        davem@davemloft.net, rjui@broadcom.com
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200507080326.111896-1-zhengzengkai@huawei.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <5c4526bc-f405-7c88-d4fb-53a5eb518934@gmail.com>
+Date:   Thu, 7 May 2020 08:43:20 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <49176c41-3696-86d9-f0eb-c20207cd6d23@solarflare.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200507080326.111896-1-zhengzengkai@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 07, 2020 at 03:59:09PM +0100, Edward Cree wrote:
-[...]
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-> index 890b078851c9..1f0caeae24e1 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-> @@ -30,14 +30,14 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
->  		return -EOPNOTSUPP;
->  
->  	act = flow_action_first_entry_get(flow_action);
-> -	if (act->hw_stats == FLOW_ACTION_HW_STATS_ANY ||
-> -	    act->hw_stats == FLOW_ACTION_HW_STATS_IMMEDIATE) {
-> +	if (act->hw_stats & FLOW_ACTION_HW_STATS_DISABLED) {
-> +		/* Nothing to do */
 
-What if the driver does not support to disable counters?
 
-It will have to check for _DONT_CARE here.
+On 5/7/2020 1:03 AM, Zheng Zengkai wrote:
+> Fix sparse warnings:
+> 
+> drivers/net/phy/mdio-bcm-iproc.c:182:5: warning:
+>  symbol 'iproc_mdio_resume' was not declared. Should it be static?
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
 
-And _DISABLED implies "bail out if you cannot disable".
-
-You cannot assume _DISABLE != _DONT_CARE, it's the driver that decides
-this.
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
