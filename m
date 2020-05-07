@@ -2,116 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1ED71C9985
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 20:44:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFDB71C9989
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 20:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728097AbgEGSoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 14:44:24 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:5956 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbgEGSoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 14:44:24 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5eb456c00000>; Thu, 07 May 2020 11:43:12 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 07 May 2020 11:44:23 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 07 May 2020 11:44:23 -0700
-Received: from [10.2.55.176] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 7 May
- 2020 18:44:23 +0000
-Subject: Re: [RFC] mm/gup.c: Updated return value of
- {get|pin}_user_pages_fast()
-To:     Souptick Joarder <jrdr.linux@gmail.com>, Jan Kara <jack@suse.cz>
-CC:     Tony Luck <tony.luck@intel.com>, <fenghua.yu@intel.com>,
-        Rob Springer <rspringer@google.com>,
-        Todd Poynor <toddpoynor@google.com>, <benchan@chromium.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>, <kuba@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        <inux-ia64@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "open list:ANDROID DRIVERS" <devel@driverdev.osuosl.org>,
-        <tee-dev@lists.linaro.org>, Linux-MM <linux-mm@kvack.org>,
-        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <rds-devel@oss.oracle.com>
-References: <1588706059-4208-1-git-send-email-jrdr.linux@gmail.com>
- <0bfe4a8a-0d91-ef9b-066f-2ea7c68571b3@nvidia.com>
- <CAFqt6zZMsQkOdjAb2k1EjwX=DtZ8gKfbRzwvreHOX-0vJLngNg@mail.gmail.com>
- <20200506100649.GI17863@quack2.suse.cz>
- <CAFqt6zYaNkJ4AfVzutXS=JsN4fE41ZAvnw03vHWpdyiRHY1m_w@mail.gmail.com>
- <20200506125930.GJ17863@quack2.suse.cz>
- <CAFqt6zZztn_AiaGAhV+_uwrnVdKY-xLsxOwYBt-zGmLaat+OhQ@mail.gmail.com>
- <20200507101322.GB30922@quack2.suse.cz>
- <CAFqt6zZ2pj_6q=5kf9dxOsSkHc7vJEHgCjuRmSELQF9KnoKCxA@mail.gmail.com>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <03bbc0f3-8edc-6110-6391-e540f773954c@nvidia.com>
-Date:   Thu, 7 May 2020 11:44:23 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728305AbgEGSpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 14:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726367AbgEGSpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 14:45:50 -0400
+Received: from mail-oo1-xc42.google.com (mail-oo1-xc42.google.com [IPv6:2607:f8b0:4864:20::c42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD88C05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 11:45:50 -0700 (PDT)
+Received: by mail-oo1-xc42.google.com with SMTP id t3so1574964oou.8
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 11:45:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UKXI3Z5lp062CxQ3udZQbmK+KBJfWzlKCPk8saoygmw=;
+        b=KUZ1g8BhWwpAMmfdLYLvfSevbClWArEJ9XL9pt6e6hFfuHXg1lzcihnX9xjNJdfmNJ
+         awiBc9rPIywkDFdeWCXVnYFRmZgaZviVP97tBOHhY4H7oErmFd4pVOQaI3Id9EWBTnlz
+         Wus/ySbjWOTwNhV4r4Qk8Kcrz8ZbxkSTzjP6cy7kDMyveslgQd6TjON032Gon8YtwP8+
+         cGjJNH+BjGCVxfRiwn1DLcLZbiuYw2F/PtoEyahAbbgvWNrIAaqIn/Vh+pyKT8iljQp0
+         4ddKYlj32eVah888q5EEcYyNIF450mGf2bSnAjDH4mwdbzN5K1AqYBOGyH7CKPHC2DrV
+         e9cA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UKXI3Z5lp062CxQ3udZQbmK+KBJfWzlKCPk8saoygmw=;
+        b=QhqjMSKMGcm0wRCg77z0ddzjQh5pIxAqscY7v/ks+h/NWH8HfogKgV9dY5yh/+rnYS
+         RcGF3c/Wh6ljvshVfMZcA/cDu0FSIp2sbXF8ZYozucUo4rBa8gTEk9Vu77zOARSIVtBM
+         6nViKqXlP7ZqfJX3Aps5crzQCLrRUwoksnpCNuiBdO/YID9ok38FTnz3K3WDQ+h0abQP
+         G0NRaAXZIUOQ3UAbe+sT/soUSOKIh5RocGVk/22Fj6kqZ+Qg1cB8E0MRsXwW+izmIqFo
+         tXFofT08zv9cmWAg1u1GjOCg+RXSSVBieKs0vbAVAfvH2dJq3msfT925nWHT10gVaBFH
+         3yhw==
+X-Gm-Message-State: AGi0PuYQmr1vlrP3hZV0AwiFDTTU0PWTJ3LDD3ElsU9aCihMaGcijG88
+        VDPYEhJwxVnaht3/KwgXKZY9Qt+69/FIXvaPVhc=
+X-Google-Smtp-Source: APiQypJmEvtplD/cC1MXC/ZqbpYbjYNfqWp8Pdumqhf+W8qjBgeE/Nt9aYSU3aCyXjCInMucbSUXhfZopqIEqUJXUG0=
+X-Received: by 2002:a4a:5147:: with SMTP id s68mr8249503ooa.86.1588877149202;
+ Thu, 07 May 2020 11:45:49 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAFqt6zZ2pj_6q=5kf9dxOsSkHc7vJEHgCjuRmSELQF9KnoKCxA@mail.gmail.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1588876992; bh=s0GB/xjC+YXiEqpbpZ38ACIIfPDrfZoEl489zOuwW70=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=FkNbon+/lZBBjz9hvkzpf8XLqnxFhTzELzTdyEKvRurk0aqMSHwD85ZQ4E7KrBaQR
-         yvRSZEof1rMLcBARCOie6dDXHCRtJ6bX5o0M/30EtLT8wkidpsRgm1sAq5o8X1AYEf
-         ig/myAgWJBZambQrAm4QfpVWNRzk5lA/cuF17BMOs/H00NIHnt/EiCv2Mi0MJgUaW8
-         h/Tgfv4rUsuFQMKZC8/Z5izGkLhmkLb136CD93D+e6sy5bQZdnUnwN6nDSEOWnLbny
-         Lxw9pZdGOYtcDe5ymjtNUpKpBQUA87UMJMZ88DSlXVfnnIQYcIsGYSNMo4qeVJRrUS
-         szSLg14PEX/NQ==
+References: <20200506194613.18342-1-xiyou.wangcong@gmail.com> <aa811b5e-9408-a078-59ea-2a20c9bff98f@cumulusnetworks.com>
+In-Reply-To: <aa811b5e-9408-a078-59ea-2a20c9bff98f@cumulusnetworks.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 7 May 2020 11:45:37 -0700
+Message-ID: <CAM_iQpXMZ1u+a+c1eNFThYar4eDFVs2G2F7otHHPK-zye+vzww@mail.gmail.com>
+Subject: Re: [Patch net v2] net: fix a potential recursive NETDEV_FEAT_CHANGE
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com>,
+        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Jann Horn <jannh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-07 03:32, Souptick Joarder wrote:
-...
->> OK, so no real problem with any of these callers. I still don't see a
->> justification for the churn you suggest... Auditting all those code sites
->> is going to be pretty tedious.
-> 
-> I try to audit all 42 callers of {get|pin}_user_pages_fast() and
-> figure out these 5 callers
-> which need to be updated and I think, other callers of
-> {get|pin}_user_pages_fast() will not be
-> effected.
-> 
-> But I didn't go through other variants of gup/pup except
-> {get|pin}_user_pages_fast().
+On Wed, May 6, 2020 at 1:31 PM Nikolay Aleksandrov
+<nikolay@cumulusnetworks.com> wrote:
+> The patch looks good, but note that __netdev_update_features() used to return -1
+> before the commit in the Fixes tag above (between 6cb6a27c45ce and 00ee59271777).
+> It only restored that behaviour.
 
+Good point! But commit fd867d51f889 is the one which started
+using netdev_update_features() in netdev_sync_lower_features(),
+your commits 00ee59271777 and 17b85d29e82c are both after it,
+and returning whatever doesn't matter before commit fd867d51f889,
+therefore, commit fd867d51f889 is the right one to blame?
 
-I feel the need to apologize for suggesting that a change to -EINVAL
-would help. :)
+I will send V3 to just update this Fixes tag.
 
-If you change what the return value means, but only apply it the
-gup/pup _fast() variants of this API set, that would make
-the API significantly *worse*.
-
-Also, no one has been able to come up with a scenario in which the call
-sites actually have a problem handling return values of zero. In fact,
-on the contrary: there are call site where returning 0 after being
-requested to pin zero pages, helps simplify the code. For example, if
-they're just doing math such as "if(nr_expected != nr_pages_pinned) ...".
-
-
-This looks like a complete dead end, sorry.
-
-thanks,
--- 
-John Hubbard
-NVIDIA
+Thanks!
