@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E68041C8490
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 10:16:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7333C1C8485
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 10:15:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726904AbgEGIOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 04:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
+        id S1727805AbgEGIPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 04:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726701AbgEGIOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 04:14:52 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FFBC061A41
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 01:14:52 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id h129so6031387ybc.3
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 01:14:52 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726942AbgEGIOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 04:14:55 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4394FC061A10
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 01:14:54 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id r14so6005277ybk.21
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 01:14:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=4jAiujVPIH0XWZpTZgSL+DGkUTq2TxINaqAiEYunye0=;
-        b=U7wRbdfzR+TPabVXRkSFeJE9tthG2dbucEQJlAe7mIkrJqQjNyRHem0kHXtghq8bnr
-         D5W15KCkFJS8JPclkWuahr8m2Or7W3s1CRJK6fwG+ha+JsvVJK6oHhAhhaQ+53kgckBX
-         jo0+hIoMrvB++vfIC/LRimiKx41T5K6kdLlQi0AWa4ykCIJCFJGXa2NhsIC7LoB8wikT
-         jx/5iUJ6bIJ/75C1HiSa2uzwXOvqkOW/tLz/fSHRtA0uk/PJ/11XwFNOGH3bgv3gXs3n
-         B+2rSOwVUo+gQoTo/Rh8zPvAp6P9EVr9PTU9s/+KCG4AAgfUVIvxV30NhAkerMPUB5+/
-         02Fg==
+        bh=laqIw2e8BtvC1AZBZIJa3w6PXohYXYOFdU6fqXlT6Ys=;
+        b=Koz8yhPrUge2qVVcAlXS3xyTi6AXWgzlfI0d/AGJIRthsuF8fw+v2Ec78xvYT1vOlR
+         kEr+40q4sqVBX2wHSELJg/ziCcyodqffvKB8cPN3wNTjlV6wa4O2bY/SrAuIct2lInpT
+         jK7ZTZQwfp8xM4w1f59/gu1d6VSLBWgPWsuWz7YKC+dPriJw4tMIwIc6XhMjtUe7OZXU
+         GtvOIuWm3IX4nSFjVVpokhNFSTVvIpatY3gOP40uSJbWKHDv5/mSbK+j+fDMdFJjpw5W
+         YRoGylIfifN6N++4ritkfMUA/OFQaHaOyelTbptoqRdfKQ9CfYVCOlOYx/e9SqoD7/jn
+         OgAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=4jAiujVPIH0XWZpTZgSL+DGkUTq2TxINaqAiEYunye0=;
-        b=I9MdsMGLSGYiZ6zTvCM4ANhcZwClAsaTBl1N4fYguoCxZF4dtpMAAMyXqO9GL9wvmE
-         t6pdwaUCZPtwfhkDlC8dyJ8cMyuwfzKpwOrN1RtZTbaQewFxMLDkZ6/4k8YWeAvVA/TB
-         RcEuHcbEhLdkqcOKiflhqiK1bshPBKQwRC+izMvxrW9pSw74fjmcl6DzzC29WTRVGLZj
-         cj2S8RRlNovAMYr9dLVIm4HnFoqi7U81ra/L9C4wiJXvAvOwpNRJgnswSYxyFK9+jO7p
-         4W/vHtrclcZy7JK6PZ5IqyReHHjXTb+WCDipWiWqA4hONQhXvF6HnXenWgaiIi8ri10z
-         fBVQ==
-X-Gm-Message-State: AGi0PuY8FTV7/LssqC/8xaoSUPv+FR/5hmzfMTdiJP4Qe/+R930c80y8
-        q24LXBn2KGqnr+HndIPMUZTf87w9QzvL
-X-Google-Smtp-Source: APiQypKwLkD+uB2It9ZWT/f91/xVIyTeXDlbilbCRc/Jf9xhtrEOmeGyY8IG713wAfAF70bC8hWyMwFCX2YI
-X-Received: by 2002:a25:6f56:: with SMTP id k83mr20697937ybc.248.1588839291471;
- Thu, 07 May 2020 01:14:51 -0700 (PDT)
-Date:   Thu,  7 May 2020 01:14:31 -0700
+        bh=laqIw2e8BtvC1AZBZIJa3w6PXohYXYOFdU6fqXlT6Ys=;
+        b=DecDPKzMc+npDkuhppWR9UvvtZw4Qu9dcyU91nioxbg3HCaaj1Fn/Z4HMs2mmahN0s
+         HKPJWEWoXLc38PjfK9Hmg3yStaVQ8Cw9uYNTSk0niWGoSLvvs5wIX98uhpZWyq0FbzUM
+         tJlcpko2QpEOxEliTP1nX/gzsdOhtf2f3oN1PZqlNt4WB617u0od0PCfh+QcKdJQIECV
+         VJxD1uPBmFj0bwMs/GleQoikP5LuHFmBrM7fDVP83A2gOZkK0u7Ofp/RWsJHNmhoLWA5
+         YE4JyyOhsJBqTow0IfCJpwOHuMAafhLy94FPIEmAxHmkH3lHxIdLsr8ZBP5eZY65PiZu
+         VOYg==
+X-Gm-Message-State: AGi0Puam0kZsTMybZ2SRf6gFi75C/RCwYxshHZyuzhBDYN+djUaqUFt/
+        9Dm8CZ4l125y8WvltaLupMl90CeT6vGs
+X-Google-Smtp-Source: APiQypLaC9JqxCmf6Bc+54GwEgoHzPXMW94TycpXOg7SlZklfTr4XBRhXJ0pzY3K1F7ZAs3iNOA7yPXtwrAv
+X-Received: by 2002:a25:d1c1:: with SMTP id i184mr8537881ybg.165.1588839293414;
+ Thu, 07 May 2020 01:14:53 -0700 (PDT)
+Date:   Thu,  7 May 2020 01:14:32 -0700
 In-Reply-To: <20200507081436.49071-1-irogers@google.com>
-Message-Id: <20200507081436.49071-3-irogers@google.com>
+Message-Id: <20200507081436.49071-4-irogers@google.com>
 Mime-Version: 1.0
 References: <20200507081436.49071-1-irogers@google.com>
 X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [RFC PATCH 2/7] perf metricgroup: change evlist_used to a bitmap
+Subject: [RFC PATCH 3/7] perf metricgroup: free metric_events on error
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -83,71 +83,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use a bitmap rather than an array of bools.
+Avoid a simple memory leak.
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/perf/util/metricgroup.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+ tools/perf/util/metricgroup.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
-index 2f92dbc05226..dcd175c05872 100644
+index dcd175c05872..2356dda92a07 100644
 --- a/tools/perf/util/metricgroup.c
 +++ b/tools/perf/util/metricgroup.c
-@@ -95,7 +95,7 @@ struct egroup {
- static struct evsel *find_evsel_group(struct evlist *perf_evlist,
- 				      struct expr_parse_ctx *pctx,
- 				      struct evsel **metric_events,
--				      bool *evlist_used)
-+				      unsigned long *evlist_used)
- {
- 	struct evsel *ev;
- 	bool leader_found;
-@@ -105,7 +105,7 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
- 	double *val_ptr;
- 
- 	evlist__for_each_entry (perf_evlist, ev) {
--		if (evlist_used[j++])
-+		if (test_bit(j++, evlist_used))
+@@ -185,6 +185,7 @@ static int metricgroup__setup_events(struct list_head *groups,
+ 		if (!evsel) {
+ 			pr_debug("Cannot resolve %s: %s\n",
+ 					eg->metric_name, eg->metric_expr);
++			free(metric_events);
  			continue;
- 		if (hashmap__find(&pctx->ids, ev->name, (void**)&val_ptr)) {
- 			if (!metric_events[i])
-@@ -149,7 +149,7 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
- 			j++;
  		}
- 		ev = metric_events[i];
--		evlist_used[ev->idx] = true;
-+		set_bit(ev->idx, evlist_used);
- 	}
- 
- 	return metric_events[0];
-@@ -165,13 +165,11 @@ static int metricgroup__setup_events(struct list_head *groups,
- 	int ret = 0;
- 	struct egroup *eg;
- 	struct evsel *evsel;
--	bool *evlist_used;
-+	unsigned long *evlist_used;
- 
--	evlist_used = calloc(perf_evlist->core.nr_entries, sizeof(bool));
--	if (!evlist_used) {
--		ret = -ENOMEM;
--		return ret;
--	}
-+	evlist_used = bitmap_alloc(perf_evlist->core.nr_entries);
-+	if (!evlist_used)
-+		return -ENOMEM;
- 
- 	list_for_each_entry (eg, groups, nd) {
- 		struct evsel **metric_events;
-@@ -209,7 +207,7 @@ static int metricgroup__setup_events(struct list_head *groups,
- 		list_add(&expr->nd, &me->head);
- 	}
- 
--	free(evlist_used);
-+	bitmap_free(evlist_used);
- 
- 	return ret;
- }
+ 		for (i = 0; metric_events[i]; i++)
+@@ -192,11 +193,13 @@ static int metricgroup__setup_events(struct list_head *groups,
+ 		me = metricgroup__lookup(metric_events_list, evsel, true);
+ 		if (!me) {
+ 			ret = -ENOMEM;
++			free(metric_events);
+ 			break;
+ 		}
+ 		expr = malloc(sizeof(struct metric_expr));
+ 		if (!expr) {
+ 			ret = -ENOMEM;
++			free(metric_events);
+ 			break;
+ 		}
+ 		expr->metric_expr = eg->metric_expr;
 -- 
 2.26.2.526.g744177e7f7-goog
 
