@@ -2,85 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F26811C8BE0
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 15:17:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9041C8BF3
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 15:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbgEGNQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 09:16:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47176 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725948AbgEGNQv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 09:16:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Vk41FiGE7OzvR4Ex8ve/e7chOhsCEpaO414K5RXlxrY=; b=tTp2bzTIB3i1MnLPqrNbuPXcsY
-        WfQt9FVPRWRBztAkewuKACD/1WAg2q6auQUsYJkw/msyPR0OQHQUOfsrFWcF1lafu47rbBSjN6NPB
-        Qbfxri/uC9wv8/ac2eZpekCVKVOOnEnfoIX3VyRlq9uVhbKjNL/MKC3Cpp8aRITHl6Jo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jWgOL-001E3q-DR; Thu, 07 May 2020 15:16:45 +0200
-Date:   Thu, 7 May 2020 15:16:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc:     "Mark-MC.Lee" <Mark-MC.Lee@mediatek.com>,
-        linux-devicetree <devicetree@vger.kernel.org>,
-        Felix Fietkau <nbd@openwrt.org>, Arnd Bergmann <arnd@arndb.de>,
-        netdev <netdev@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sean Wang <sean.wang@mediatek.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Fabien Parent <fparent@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        John Crispin <john@phrozen.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 06/11] net: ethernet: mtk-eth-mac: new driver
-Message-ID: <20200507131645.GM208718@lunn.ch>
-References: <20200505140231.16600-1-brgl@bgdev.pl>
- <20200505140231.16600-7-brgl@bgdev.pl>
- <1588844771.5921.27.camel@mtksdccf07>
- <CAMpxmJW4qZ_Wnp_oRa=j=YnvTzVa3HZ13Hgwy71jS6L3Bd3oMQ@mail.gmail.com>
+        id S1726308AbgEGNUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 09:20:19 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:36923 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbgEGNUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 09:20:19 -0400
+Received: from mail-qk1-f172.google.com ([209.85.222.172]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MHVWT-1jJoI23TO5-00DWcT for <netdev@vger.kernel.org>; Thu, 07 May 2020
+ 15:20:16 +0200
+Received: by mail-qk1-f172.google.com with SMTP id b188so5888660qkd.9
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 06:20:15 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYmaTiQzAPp5OsFIS7gSR70LehrVrsgLwHKKe4T0RC0pawcztj9
+        KdjVV69dD3M3bH487BzGRQ8ndUTj+Mreq2O+t1Y=
+X-Google-Smtp-Source: APiQypL0U2yJ/Dg1rnUS/0g63qyrt1AlT1Xsq0c8GDIdF7up9+D+UGYEfBDTGvXU9IeB2pcNVxSgNZizIeuITHvhq5Q=
+X-Received: by 2002:a05:620a:3c5:: with SMTP id r5mr14632505qkm.138.1588857614685;
+ Thu, 07 May 2020 06:20:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMpxmJW4qZ_Wnp_oRa=j=YnvTzVa3HZ13Hgwy71jS6L3Bd3oMQ@mail.gmail.com>
+References: <20200507114205.24621-1-geert+renesas@glider.be>
+In-Reply-To: <20200507114205.24621-1-geert+renesas@glider.be>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 7 May 2020 15:19:58 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0sDAsG9cnuqMG0Au-KAW1KEx9o-sg3C_dCDh_GmJhNrA@mail.gmail.com>
+Message-ID: <CAK8P3a0sDAsG9cnuqMG0Au-KAW1KEx9o-sg3C_dCDh_GmJhNrA@mail.gmail.com>
+Subject: Re: [PATCH] via-rhine: Add platform dependencies
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Tony Prisk <linux@prisktech.co.nz>,
+        Networking <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:/VVGwNEkRv6zXv8sHvSwyaB+Gt0h92HNp0ejSMUSZLMabGOrllO
+ +Ry8blwT6eFimgKS51A7rfWMOLkcYjMBqcbGhhksPN9cdeombK3wlm3EBmJDeIIaBxwsfDP
+ igW8qy3s6CIiHHoxfRfF9+FQbYLeup9gDQraqZhl1e29pOmDzlXLaBBlMsOG5Ro3JaydZBP
+ zBwHMS+OzXdMkuNvoQH5A==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:XUEqf0tDsWo=:Ig2oZXXXzZsdX7zSx41bPa
+ IB2wTG8NQrsFKGkKxJGHrCafajbWFF+7PIq25rpifdVl/xxDTo5QrQ67/rdS9Vr5Q4oB1XPnI
+ SD2bKDkxW/0K57hhnMXfmjuJxSZ7iIdxTs71fOtKCBAt+4TOoyJaDNArkXd3gqA1ZadFu6tTU
+ s3daOrPp3U4+a+OOPe45BIUyXD6UX2/hTxZCoBBHwMdPBtv46rUQa2nW9hsAGJ4QwRNi79Qoe
+ dT2P3NkMXXUEWqKUzA6oOuqLjOFYsU2VaE1xGlsWCn9wF/ZvIGANRsfE8L/sLcbaecaH/4rIj
+ Xrxj1qr3cOgnx4YeTFt1AYhpLeJ/3eAuKiRvUBqExcoL1bmB9Hfewoypjv+TNG5XwPD4k5EdJ
+ 1Eu/vQ8D+4otqYcjEKJOLy1plBGjdWbkuZz2+VSefyrhof+BFrNfb0lkNMZ8kbaPIrg9+xBst
+ Ix7Z77fI3ESrdPoXt9E0DAJoIU3cietwIINuO/7DAL1DcqE41/jijaa1HI2mcQ8xNynvkKXe/
+ 3FMdcAqqcHpiqOd4apa+WyoKPGjuyF1ocaVOJNwWl8jlphmW40I1C039tmzVdT6HdeBmNkQOc
+ AgPWLQMCC69v0+nJU3p6U6Tv6fzTNZVOALZ/QJRdVrrhV2MStzeUxq0hrQxTOWLKIpVMWvMX0
+ QCrvbAROTRTS7xBY6U8lNDdlnis8tZvZYzoq6erEA2V2S+I0kuPm/clKTAKqKMol3CsR0EOrn
+ o1PZEKugEKOyX0LqWebM61wG+E8K3JYZXADICU6aqmrsOVQiqxdDukJE0ocvTrzUQLA8Yb+em
+ 6n8wraachBEGIjnzebmdEqs01prXUx8B1KD6hGsRVBA7TPUYxk=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 07, 2020 at 12:50:15PM +0200, Bartosz Golaszewski wrote:
-> czw., 7 maj 2020 o 11:46 Mark-MC.Lee <Mark-MC.Lee@mediatek.com> napisał(a):
-> >
-> > Hi Bartosz:
-> >  I think the naming of this driver and its Kconfig option is too generic
-> > that will confuse with current mediatek SoCs eth driver architecture(for
-> > all mt7xxx SoCs).
-> >   Since mtk_eth_mac.c is not a common MAC part for all mediatek SoC but
-> > only a specific eth driver for mt85xx, it will be more reasonable to
-> > name it as mt85xx_eth.c and change NET_MEDIATEK_MAC to
-> > NET_MEDIATEK_MT85XX. How do you think?
-> >
-> 
-> Hi Mark,
-> 
-> I actually consulted this with MediaTek and the name is their idea.
-> Many drivers in drivers/net/ethernet have very vague names. I guess
-> this isn't a problem.
+On Thu, May 7, 2020 at 1:42 PM Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+>
+> The VIA Rhine Ethernet interface is only present on PCI devices or
+> VIA/WonderMedia VT8500/WM85xx SoCs.  Add platform dependencies to the
+> VIA_RHINE config symbol, to avoid asking the user about it when
+> configuring a kernel without PCI or VT8500/WM85xx support.
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-They have vague names, but they tend to be not confusing.
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-NET_MEDIATEK_MAC vs NET_MEDIATEK_SOC is confusing.
+I suppose it might be used on VIA/Zhaoxin SoCs, but presumably those
+would always show it as a PCI device.
 
-I think the proposed name, mt85xx_eth.c and NET_MEDIATEK_MT85XX is
-good. Or some variant on this, mt8xxx?
-
-    Andrew
+      Arnd
