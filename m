@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E4951C947E
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE84D1C9489
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 17:14:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727923AbgEGPNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 11:13:14 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:45950 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726495AbgEGPNN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:13:13 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 047FCqlM092059;
-        Thu, 7 May 2020 10:12:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588864372;
-        bh=uHPwV69Dhv7IS63ZpxLzpMltxKOgBIIHLVDM5YZVhN0=;
-        h=From:To:CC:Subject:Date;
-        b=kT8IjwRgE2gl+b9P3zAs5HOYtpWHYrNjlZkW9khLiAPIX0ip7/GQgkmCrzv+GGDDe
-         NJ9ISUCTJeLtlxEW7oUSRY9ZZr7HNCvLBHiim8+UsBbVl5HrtMGsbCjn6f9yv/sh6Q
-         1BqAqX5VhKE1RsTRz9kLiX+GA3b6/4/PY+PNs/mI=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 047FCqD0043780;
-        Thu, 7 May 2020 10:12:52 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 7 May
- 2020 10:12:51 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 7 May 2020 10:12:51 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 047FCosF070313;
-        Thu, 7 May 2020 10:12:51 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     Tony Lindgren <tony@atomide.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: [PATCH v2] ARM: dts: am437x: fix networking on boards with ksz9031 phy
-Date:   Thu, 7 May 2020 18:12:44 +0300
-Message-ID: <20200507151244.24218-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726495AbgEGPN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 11:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727945AbgEGPN3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 11:13:29 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055EBC05BD09;
+        Thu,  7 May 2020 08:13:29 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a5so2759972pjh.2;
+        Thu, 07 May 2020 08:13:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yiQVRmgp68ZxdiqvhT5ZYHUwpUlX6w91CPHLUh7nmBg=;
+        b=pN6IJddrdMCePMv1pI1BDBoa0F276DfKumJlIhN92BfEjCfkgb9/MsOMSDHejXopqf
+         ucnuX1K9/ZKZZDF86o4brCuH3Y7XaY/axqfiF1yS2eonYLcFVB5VJatK5d/b/4O+ZEzU
+         kqRSjzXIn3CmbhhUaRxrK6/b8x7nbL+SHBwjXlX9ztneg3GW9DwmtwkLn8iWdXP2jiTM
+         3k2x6lv2Zdal7LW1hKTegJGT8gYRQHwieHCbLTehqCBaLDRzd0lPgh1PHDm5oaV2Ss/B
+         HE4trkhopv1dU2xvipduIRBvtdPYN01tMTh0lf2ehXRlFxKApdkr7JsOXPFIzq0xRQzG
+         m1ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yiQVRmgp68ZxdiqvhT5ZYHUwpUlX6w91CPHLUh7nmBg=;
+        b=T4Vg0rDX7UAfJXS4yIBOljNDbzWLbt8YWtkIcav5RCuJD0AzQ/5alZeQ1nC81mbPKY
+         AreVsrI27wR1cLCVJ1f6xbfQb2HSaV3R3MzhBytfj1lwRcJEKw3F4am21EvC4kRxm19B
+         gBwkqDhVMAzYV9KxYZ9m3L3TSPzk0qGbAfhOYtaydb1a+td8yegl/qvKS9rUG51ayyJ4
+         1evNeZL7eGCrLKiQznRP9mj6WYmgeoDgjf9a3oFHpzKgtLZ20GUkFhyUvG6eZo1HJZ2m
+         O/dSLc/hyoQU32my1ZLN5kHD8a75J/AIQkVEjMwpd5q3JpMs/ZJ0DUOZ8PBQr4hD/Tbc
+         lRYA==
+X-Gm-Message-State: AGi0PuYeUj3iBM5E+EQbV2KTWLudabufqPrK3m8Qz7E0VMtvi9qpONv6
+        V56S97CVbVLtd7QwYy6R39A=
+X-Google-Smtp-Source: APiQypKFZJEGtv+7FjTJJO7j8FyFw9dJ/N0Kv8o2MoO68KoAp7Upx1lEnDahwA4pfht1tw9xQLKung==
+X-Received: by 2002:a17:90a:c7c8:: with SMTP id gf8mr607996pjb.226.1588864408655;
+        Thu, 07 May 2020 08:13:28 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.gmail.com with ESMTPSA id f76sm5094969pfa.167.2020.05.07.08.13.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 May 2020 08:13:28 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] net: microchip: encx24j600: add missed kthread_stop
+Date:   Thu,  7 May 2020 23:13:20 +0800
+Message-Id: <20200507151320.792759-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the
-KSZ9031 PHY") the networking is broken on boards:
- am437x-gp-evm
- am437x-sk-evm
- am437x-idk-evm
+This driver calls kthread_run() in probe, but forgets to call
+kthread_stop() in probe failure and remove.
+Add the missed kthread_stop() to fix it.
 
-All above boards have phy-mode = "rgmii" and this is worked before, because
-KSZ9031 PHY started with default RGMII internal delays configuration (TX
-off, RX on 1.2 ns) and MAC provided TX delay. After above commit, the
-KSZ9031 PHY starts handling phy mode properly and disables RX delay, as
-result networking is become broken.
-
-Fix it by switching to phy-mode = "rgmii-rxid" to reflect previous
-behavior.
-
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Philippe Schenker <philippe.schenker@toradex.com>
-Fixes: commit bcf3440c6dd7 ("net: phy: micrel: add phy-mode support for the KSZ9031 PHY")
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- arch/arm/boot/dts/am437x-gp-evm.dts  | 2 +-
- arch/arm/boot/dts/am437x-idk-evm.dts | 2 +-
- arch/arm/boot/dts/am437x-sk-evm.dts  | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/microchip/encx24j600.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/am437x-gp-evm.dts b/arch/arm/boot/dts/am437x-gp-evm.dts
-index 811c8cae315b..d692e3b2812a 100644
---- a/arch/arm/boot/dts/am437x-gp-evm.dts
-+++ b/arch/arm/boot/dts/am437x-gp-evm.dts
-@@ -943,7 +943,7 @@
+diff --git a/drivers/net/ethernet/microchip/encx24j600.c b/drivers/net/ethernet/microchip/encx24j600.c
+index 39925e4bf2ec..b25a13da900a 100644
+--- a/drivers/net/ethernet/microchip/encx24j600.c
++++ b/drivers/net/ethernet/microchip/encx24j600.c
+@@ -1070,7 +1070,7 @@ static int encx24j600_spi_probe(struct spi_device *spi)
+ 	if (unlikely(ret)) {
+ 		netif_err(priv, probe, ndev, "Error %d initializing card encx24j600 card\n",
+ 			  ret);
+-		goto out_free;
++		goto out_stop;
+ 	}
  
- &cpsw_emac0 {
- 	phy-handle = <&ethphy0>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- };
+ 	eidled = encx24j600_read_reg(priv, EIDLED);
+@@ -1088,6 +1088,8 @@ static int encx24j600_spi_probe(struct spi_device *spi)
  
- &elm {
-diff --git a/arch/arm/boot/dts/am437x-idk-evm.dts b/arch/arm/boot/dts/am437x-idk-evm.dts
-index 9f66f96d09c9..a958f9ee4a5a 100644
---- a/arch/arm/boot/dts/am437x-idk-evm.dts
-+++ b/arch/arm/boot/dts/am437x-idk-evm.dts
-@@ -504,7 +504,7 @@
+ out_unregister:
+ 	unregister_netdev(priv->ndev);
++out_stop:
++	kthread_stop(priv->kworker_task);
+ out_free:
+ 	free_netdev(ndev);
  
- &cpsw_emac0 {
- 	phy-handle = <&ethphy0>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- };
+@@ -1100,6 +1102,7 @@ static int encx24j600_spi_remove(struct spi_device *spi)
+ 	struct encx24j600_priv *priv = dev_get_drvdata(&spi->dev);
  
- &rtc {
-diff --git a/arch/arm/boot/dts/am437x-sk-evm.dts b/arch/arm/boot/dts/am437x-sk-evm.dts
-index 25222497f828..4d5a7ca2e25d 100644
---- a/arch/arm/boot/dts/am437x-sk-evm.dts
-+++ b/arch/arm/boot/dts/am437x-sk-evm.dts
-@@ -833,13 +833,13 @@
+ 	unregister_netdev(priv->ndev);
++	kthread_stop(priv->kworker_task);
  
- &cpsw_emac0 {
- 	phy-handle = <&ethphy0>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- 	dual_emac_res_vlan = <1>;
- };
- 
- &cpsw_emac1 {
- 	phy-handle = <&ethphy1>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- 	dual_emac_res_vlan = <2>;
- };
+ 	free_netdev(priv->ndev);
  
 -- 
-2.17.1
+2.26.2
 
