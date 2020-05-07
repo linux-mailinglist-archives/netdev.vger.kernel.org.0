@@ -2,96 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 141F01C96E9
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 18:54:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6095F1C96FF
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 19:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbgEGQyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 12:54:01 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55676 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725949AbgEGQyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 12:54:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588870439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=lRyCCHtqD2ugnTKtNjOaqqDPYhRh1IzwBWdHRRd2dY8=;
-        b=gIRHEfO8w9Di7goOxo/Sn8Y2yTZ/61dI8bUhLfXz55nIlFY8oC3G5j632t6FC7j27Tu5g4
-        kEKZpKfw+tM0rLHy5qmzTFCkX6S7NdK3w0LgVC4QG2H1p8iLB83SBdpvkX3VcKYasMsE4U
-        nEqWTsl2SAyNGnYQGAVBTQIbLkIuIeo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-386-VuOuRZ_DMOqtZ2T8seO3jA-1; Thu, 07 May 2020 12:53:57 -0400
-X-MC-Unique: VuOuRZ_DMOqtZ2T8seO3jA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3410518FF660;
-        Thu,  7 May 2020 16:53:56 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-91.ams2.redhat.com [10.36.114.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 92AA662A10;
-        Thu,  7 May 2020 16:53:54 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
-Subject: [PATCH net] mptcp: set correct vfs info for subflows
-Date:   Thu,  7 May 2020 18:53:24 +0200
-Message-Id: <a2fde8fb93863b0ffdeea94b5f44ba64b7601c5d.1588865446.git.pabeni@redhat.com>
+        id S1727960AbgEGRBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 13:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726661AbgEGRBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 13:01:54 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BABC05BD0B
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 10:01:54 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id b1so1171784qtt.1
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 10:01:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=AogGO7KQ2cbQNwYsj968bylJ7TQTugwVFwFQ369LPww=;
+        b=B9521p8GGVcZpv1qM6GfYzouKvPp4grKwjYFaXKUDPG4zfEuTqq3geopKa9AL0tOb+
+         5Mxtar2ygaAjvMyZDIRb0W9xvnacTchxTSMHI1tZPA2PbNDtQCUh8e9BQackKUrAvFvD
+         K/r3KBj6JEFLxpFwhYYzgnUafXu+gr4v+lpgKsj9w51U75EBYUNEN5AEE+mpiXIoVLfX
+         YUCLKWuxDU6umtMxIF3sS2wwRZWavK4GF7RBR78va/EV/Trd0n92xXmWZM15cG1YUCPE
+         447hhPafKpmEgEnBqlAtJlVO7nr1VcdIbXbeVCxKhZwsqhFlAFqrzadqLRKUS34zqkYz
+         Sbkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AogGO7KQ2cbQNwYsj968bylJ7TQTugwVFwFQ369LPww=;
+        b=XO/10z2iMrGE3OibRmndppRLBkBl4vg0BvGlZasjdZohuvWTNAjzzGYYMP4vJ6Quzl
+         /c7EFlby5wy8xTS6abc851g90WIF3b3k6hZFzNBDTz37b+4avhrqO2xOEK1MTwDTgPlM
+         quzC+3TZpsqS4o3VLi0vB9xwQ2NsBQ8PSTlWdCjUx4V7q5E8+VVrwCtCrq88o23tjO/Q
+         FX2feztYiCxoOY2uqNWtiebkqWCMYAkhczGZPBrmUJyBcxArcX9vtZwVCMDM0ZhmHNxW
+         CCqQk6D+PAqzLQhLzJR5t5eUDEq9ubIa5aNWykO0J2bzTW7sVXnO1Ggynza6/Gc7hmRQ
+         XzsA==
+X-Gm-Message-State: AGi0PuZVd1Vx0f0hlhtMMtGHeRpqWbrSLwgnqRO8Yw66FBSX4Gw/Bjjw
+        p/Ecb4q74PMFGG/gq/KOL8o5YNKJItdobLZF7Jsbnw==
+X-Google-Smtp-Source: APiQypIICB3A2kzpJhwMTKVrN3+4Xn62nAmH23vrPICDvrpFzW7p9tV7KhQx84nSLJLOK2UmDVQW8wd1hjqshOZqSn0=
+X-Received: by 2002:ac8:568b:: with SMTP id h11mr15009985qta.197.1588870913354;
+ Thu, 07 May 2020 10:01:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+References: <20200505140231.16600-1-brgl@bgdev.pl> <20200505140231.16600-7-brgl@bgdev.pl>
+ <1588844771.5921.27.camel@mtksdccf07> <CAMpxmJW4qZ_Wnp_oRa=j=YnvTzVa3HZ13Hgwy71jS6L3Bd3oMQ@mail.gmail.com>
+ <20200507131645.GM208718@lunn.ch>
+In-Reply-To: <20200507131645.GM208718@lunn.ch>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Thu, 7 May 2020 19:01:42 +0200
+Message-ID: <CAMpxmJV7xGhE4DoZAEYg=wjE-a1MEnc7carZ39zdvWtKAp+qfA@mail.gmail.com>
+Subject: Re: [PATCH 06/11] net: ethernet: mtk-eth-mac: new driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "Mark-MC.Lee" <Mark-MC.Lee@mediatek.com>,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        Felix Fietkau <nbd@openwrt.org>, Arnd Bergmann <arnd@arndb.de>,
+        netdev <netdev@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sean Wang <sean.wang@mediatek.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        John Crispin <john@phrozen.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a subflow is created via mptcp_subflow_create_socket(),
-a new 'struct socket' is allocated, with a new i_ino value.
+czw., 7 maj 2020 o 15:16 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
+>
+> On Thu, May 07, 2020 at 12:50:15PM +0200, Bartosz Golaszewski wrote:
+> > czw., 7 maj 2020 o 11:46 Mark-MC.Lee <Mark-MC.Lee@mediatek.com> napisa=
+=C5=82(a):
+> > >
+> > > Hi Bartosz:
+> > >  I think the naming of this driver and its Kconfig option is too gene=
+ric
+> > > that will confuse with current mediatek SoCs eth driver architecture(=
+for
+> > > all mt7xxx SoCs).
+> > >   Since mtk_eth_mac.c is not a common MAC part for all mediatek SoC b=
+ut
+> > > only a specific eth driver for mt85xx, it will be more reasonable to
+> > > name it as mt85xx_eth.c and change NET_MEDIATEK_MAC to
+> > > NET_MEDIATEK_MT85XX. How do you think?
+> > >
+> >
+> > Hi Mark,
+> >
+> > I actually consulted this with MediaTek and the name is their idea.
+> > Many drivers in drivers/net/ethernet have very vague names. I guess
+> > this isn't a problem.
+>
+> They have vague names, but they tend to be not confusing.
+>
+> NET_MEDIATEK_MAC vs NET_MEDIATEK_SOC is confusing.
+>
+> I think the proposed name, mt85xx_eth.c and NET_MEDIATEK_MT85XX is
+> good. Or some variant on this, mt8xxx?
+>
 
-When inspecting TCP sockets via the procfs and or the diag
-interface, the above ones are not related to the process owning
-the MPTCP master socket, even if they are a logical part of it
-('ss -p' shows an empty process field)
+I've just verified with MediaTek that this IP will be used in future
+designs as well - even on ones that don't share the mt8* prefix. It
+doesn't really have a name though by itself. How much confusion can it
+cause anyway? People who want to compile this driver will know which
+one to choose, right? It's not like it's an i2c component shared
+across many board designs.
 
-Additionally, subflows created by the path manager get
-the uid/gid from the running workqueue.
-
-Subflows are part of the owning MPTCP master socket, let's
-adjust the vfs info to reflect this.
-
-After this patch, 'ss' correctly displays subflows as belonging
-to the msk socket creator.
-
-Fixes: 2303f994b3e1 ("mptcp: Associate MPTCP context with TCP socket")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/subflow.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 67a4e35d4838..4931a29a6f08 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1012,6 +1012,16 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
- 	if (err)
- 		return err;
- 
-+	/* the newly created socket really belongs to the owning MPTCP master
-+	 * socket, even if for additional subflows the allocation is performed
-+	 * by a kernel workqueue. Adjust inode references, so that the
-+	 * procfs/diag interaces really show this one belonging to the correct
-+	 * user.
-+	 */
-+	SOCK_INODE(sf)->i_ino = SOCK_INODE(sk->sk_socket)->i_ino;
-+	SOCK_INODE(sf)->i_uid = SOCK_INODE(sk->sk_socket)->i_uid;
-+	SOCK_INODE(sf)->i_gid = SOCK_INODE(sk->sk_socket)->i_gid;
-+
- 	subflow = mptcp_subflow_ctx(sf->sk);
- 	pr_debug("subflow=%p", subflow);
- 
--- 
-2.21.1
-
+Bart
