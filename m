@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B24241C88B3
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 13:45:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A8C1C88D6
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 13:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727096AbgEGLpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 07:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726235AbgEGLpP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 07:45:15 -0400
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B7DC05BD09
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 04:45:14 -0700 (PDT)
-Received: from ramsan ([IPv6:2a02:1810:ac12:ed60:6572:4a1f:d283:9ae8])
-        by michel.telenet-ops.be with bizsmtp
-        id bnlC2200M3ZRV0X06nlCSR; Thu, 07 May 2020 13:45:13 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jWexk-0007Qx-N2; Thu, 07 May 2020 13:45:12 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jWexk-0006TJ-L5; Thu, 07 May 2020 13:45:12 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        huangdaode <huangdaode@hisilicon.com>,
-        Kenneth Lee <liguozhu@huawei.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        id S1727086AbgEGLu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 07:50:26 -0400
+Received: from cmccmta2.chinamobile.com ([221.176.66.80]:13180 "EHLO
+        cmccmta2.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726768AbgEGLuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 07:50:24 -0400
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.11]) by rmmx-syy-dmz-app07-12007 (RichMail) with SMTP id 2ee75eb3f5d03fa-3f90d; Thu, 07 May 2020 19:49:37 +0800 (CST)
+X-RM-TRANSID: 2ee75eb3f5d03fa-3f90d
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost.localdomain (unknown[112.0.146.193])
+        by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee65eb3f5ce9a8-d2e33;
+        Thu, 07 May 2020 19:49:37 +0800 (CST)
+X-RM-TRANSID: 2ee65eb3f5ce9a8-d2e33
+From:   Tang Bin <tangbin@cmss.chinamobile.com>
+To:     davem@davemloft.net, saeedm@mellanox.com, leon@kernel.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] net: hisilicon: Make CONFIG_HNS invisible
-Date:   Thu,  7 May 2020 13:45:11 +0200
-Message-Id: <20200507114511.24835-1-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
+        Tang Bin <tangbin@cmss.chinamobile.com>,
+        Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+Subject: [PATCH] net/mlx5e: Use IS_ERR() to check and simplify code
+Date:   Thu,  7 May 2020 19:50:10 +0800
+Message-Id: <20200507115010.10380-1-tangbin@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.20.1.windows.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The HNS config symbol enables the framework support for the Hisilicon
-Network Subsystem.  It is already selected by all of its users, so there
-is no reason to make it visible.
+Use IS_ERR() and PTR_ERR() instead of PTR_ZRR_OR_ZERO()
+to simplify code, avoid redundant judgements.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
 ---
- drivers/net/ethernet/hisilicon/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/Kconfig b/drivers/net/ethernet/hisilicon/Kconfig
-index 3892a2062404eee6..2fff435090983395 100644
---- a/drivers/net/ethernet/hisilicon/Kconfig
-+++ b/drivers/net/ethernet/hisilicon/Kconfig
-@@ -64,7 +64,7 @@ config HNS_MDIO
- 	  the PHY
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
+index af4ebd295..00e7add0b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
+@@ -93,9 +93,8 @@ static int mlx5e_route_lookup_ipv4(struct mlx5e_priv *priv,
+ 	}
  
- config HNS
--	tristate "Hisilicon Network Subsystem Support (Framework)"
-+	tristate
- 	---help---
- 	  This selects the framework support for Hisilicon Network Subsystem. It
- 	  is needed by any driver which provides HNS acceleration engine or make
+ 	rt = ip_route_output_key(dev_net(mirred_dev), fl4);
+-	ret = PTR_ERR_OR_ZERO(rt);
+-	if (ret)
+-		return ret;
++	if (IS_ERR(rt))
++		return PTR_ERR(rt);
+ 
+ 	if (mlx5_lag_is_multipath(mdev) && rt->rt_gw_family != AF_INET) {
+ 		ip_rt_put(rt);
 -- 
-2.17.1
+2.20.1.windows.1
+
+
 
