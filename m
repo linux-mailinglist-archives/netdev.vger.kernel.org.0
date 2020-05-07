@@ -2,105 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 206F91C8DED
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:11:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E581C8E11
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:11:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbgEGOKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 10:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46354 "EHLO
+        id S1728404AbgEGOLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:11:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727887AbgEGOKJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:10:09 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B18C05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 07:10:08 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id s10so2104826plr.1
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 07:10:08 -0700 (PDT)
+        with ESMTP id S1728098AbgEGOLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:11:25 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B29C05BD09
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 07:11:25 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id b8so3010600ybn.0
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 07:11:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+8DfqjNZ53g+33+QKC252T8QlAeBW815WGE9HHk2qy4=;
-        b=SOoC9Uy7KvQ1OTjQL+PvJxwICLGH21b+HbdweiqkEz1AYP9xQ0dRXDbsXp6S98+9rj
-         QTTtiJnxgxEC0VXp714ibIMz7ziI+/3ij+mb9m3xQ1ZiwQ6iOkwZ+QSRVIucursSQlES
-         q5V+cd1PkXhaLHpapTCFG9Jbef9WXooiKUCCslOF2Eu+SbvaNqgsLxko3L7cA8rzqvyB
-         hsaGYqLeONB2Y6cBWP8HcOzi6ZU+U8ypJQf2Vb0rRzK8NsokG2gbVUpj5p4d6ShNZ5ol
-         iX3EWd/v51OFhCsrR+Ycv+YdV/GZHqQkvV2sEXZdfB9+TzMmbsosT93OHZBO1Fb8MI+B
-         lTHg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HRnl8Tpss8sV+8qAbPp6PP/Ne93Fee+ZUxdVeA7Qh/8=;
+        b=nyaiilSdEzsyngYHWVOhJUOYMuLu0nyMP5cn89kuxniR67R7NBMwToctGaWrxwqqx/
+         06jAm/rREUhduGB/palaqAV2r4aLiYS7+OPMTCXCmak/8Rm/603lUe8zJ8dKDoW35Ae5
+         wmItNoEfivFGxgO9UPISQQAQd6BRTJX47paJy1SXJqGcNNmAC74/BjIOyIhQBSvMCUCV
+         GoCqG43ne3wjaqoLGRB0iA3FNBOasOssVuIJytOKKzyGwSXnxk59MSWbFuqiR+3P1iaQ
+         GD837db9O4OUEowEvz8KzYeglyvnYej3rgoCzqt4CJgNbkmSadvjcW7rrnhCUCepzPEt
+         bWtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+8DfqjNZ53g+33+QKC252T8QlAeBW815WGE9HHk2qy4=;
-        b=GUd2V5OJAEpY5uF6AKftuyGBSwX7GGmILpdF96Yh69sfVEWMBf1TLr5Re8L4zzDw1q
-         mIUqCPU+IIOpFKPOVlrazy3iECgh/PPwP+5jAgj7VC1RaJaF1nFeKWP36mNGUUIr8SHX
-         iTrCiK+NJvJhpeZ0UEPPjgdk50xZHTX275nX+hjs0GGTAcfgh09AmeBIWK+dW6sb9dK9
-         Mw/cLWtp5S1rZR2zeCaOgPwUGqA1d+6VPHBaNoAVI3N/OPOaiE6gWl9ExQmks6Eg/ypU
-         ljfdDoA50bJVldKO2PDdNF46yvQBnqJ56WcEojNfHmtBxWeGSO4/k1Mytn3xq5j5YOfL
-         Qf7Q==
-X-Gm-Message-State: AGi0PuZb7JjDA727Jr3ZQtZ86fU6rgMWaFXwWZMsnf4CnJB8xr23rik4
-        RZoYuwkp1oVeNEpzr39M5dme51SB
-X-Google-Smtp-Source: APiQypKNwSW2BxT8/qG7pSl9x3XllWUrkJksjYUWSWmyQFzBFAuamyovfysKB+i9ymAbters/n8b2w==
-X-Received: by 2002:a17:90a:a05:: with SMTP id o5mr242076pjo.226.1588860607923;
-        Thu, 07 May 2020 07:10:07 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id w126sm4887397pfb.117.2020.05.07.07.10.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 May 2020 07:10:07 -0700 (PDT)
-Subject: Re: [PATCH] net: remove spurious declaration of
- tcp_default_init_rwnd()
-To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>
-References: <20200507075805.4831-1-zenczykowski@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <1e307670-79b2-3a8e-65b1-09be046a638b@gmail.com>
-Date:   Thu, 7 May 2020 07:10:05 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HRnl8Tpss8sV+8qAbPp6PP/Ne93Fee+ZUxdVeA7Qh/8=;
+        b=X/niR+JGHChl91ReZ8Bz1Sq1I/LY08xLxlSxtZ8AKyBz03sK/O+3CWJj6DkhZd078R
+         dYxPDaAHErOgcrSXCywbFjHld5Z7Epp3fE4tSwcFSHviqkTHghKLoqzRz4AAB8RPeVai
+         /BUvsW2iTz2AQ3HF2c1vmAIeJeNPy1poBi5tzU1IbUVO5TT9rxOKlqhZxKXLqJJt4hCD
+         TTymiAMzVTDSO7kd2vQ/mYmok2RvpKKQKUFPC1lBEcDZZSZmXVh4fduZV3lDgB1yxze+
+         Pp5wG9faTFeSh3xw57VmtN8Ct33oz2Ed+niYxJHqsFt4Axoh3lhxpEvILQJO6rtTaMwa
+         cSng==
+X-Gm-Message-State: AGi0PuYsWAMDM0uh7gKIcK4OGiZK9aSKKSMn+bQbcMAUPs9lUYx51muo
+        JeNBXQeKt1qzXxUVQocAQfOh0OacjCBKYqjgzpXqcQ==
+X-Google-Smtp-Source: APiQypJFREC/4DF6ySewOZt6hUFNS7y74v6hNDrlmDlJKMX5CRaZo87v+FDWdm3C6SMfdy6SGnzTQ9kVeDBbR3DdEBk=
+X-Received: by 2002:a25:4446:: with SMTP id r67mr1612320yba.41.1588860684521;
+ Thu, 07 May 2020 07:11:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200507075805.4831-1-zenczykowski@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200507081436.49071-1-irogers@google.com> <20200507134939.GA2804092@krava>
+In-Reply-To: <20200507134939.GA2804092@krava>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 7 May 2020 07:11:13 -0700
+Message-ID: <CAP-5=fWyV_tcEe_zss7HE7u_3JLkkBeJ5JYLVbWWuO3Q2RpRnw@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/7] Share events between metrics
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 7, 2020 at 6:49 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Thu, May 07, 2020 at 01:14:29AM -0700, Ian Rogers wrote:
+> > Metric groups contain metrics. Metrics create groups of events to
+> > ideally be scheduled together. Often metrics refer to the same events,
+> > for example, a cache hit and cache miss rate. Using separate event
+> > groups means these metrics are multiplexed at different times and the
+> > counts don't sum to 100%. More multiplexing also decreases the
+> > accuracy of the measurement.
+> >
+> > This change orders metrics from groups or the command line, so that
+> > the ones with the most events are set up first. Later metrics see if
+> > groups already provide their events, and reuse them if
+> > possible. Unnecessary events and groups are eliminated.
+> >
+> > RFC because:
+> >  - without this change events within a metric may get scheduled
+> >    together, after they may appear as part of a larger group and be
+> >    multiplexed at different times, lowering accuracy - however, less
+> >    multiplexing may compensate for this.
+> >  - libbpf's hashmap is used, however, libbpf is an optional
+> >    requirement for building perf.
+> >  - other things I'm not thinking of.
+>
+> hi,
+> I can't apply this, what branch/commit is this based on?
+>
+>         Applying: perf expr: migrate expr ids table to libbpf's hashmap
+>         error: patch failed: tools/perf/tests/pmu-events.c:428
+>         error: tools/perf/tests/pmu-events.c: patch does not apply
+>         error: patch failed: tools/perf/util/expr.h:2
+>         error: tools/perf/util/expr.h: patch does not apply
+>         error: patch failed: tools/perf/util/expr.y:73
+>         error: tools/perf/util/expr.y: patch does not apply
+>         Patch failed at 0001 perf expr: migrate expr ids table to libbpf's hashmap
+>
+> thanks,
+> jirka
 
+Thanks for trying! I have resent the entire patch series here:
+https://lore.kernel.org/lkml/20200507140819.126960-1-irogers@google.com/
+It is acme's perf/core tree + metric fix/test CLs + some minor fixes.
+Details in the cover letter.
 
-On 5/7/20 12:58 AM, Maciej Żenczykowski wrote:
-> From: Maciej Żenczykowski <maze@google.com>
-> 
-> it doesn't actually exist...
-> 
-> Test: builds and 'git grep tcp_default_init_rwnd' comes up empty
-> Signed-off-by: Maciej Żenczykowski <maze@google.com>
-> ---
->  include/net/tcp.h | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index dcf9a72eeaa6..64f84683feae 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -1376,7 +1376,6 @@ static inline void tcp_sack_reset(struct tcp_options_received *rx_opt)
->  	rx_opt->num_sacks = 0;
->  }
->  
-> -u32 tcp_default_init_rwnd(u32 mss);
->  void tcp_cwnd_restart(struct sock *sk, s32 delta);
->  
->  static inline void tcp_slow_start_after_idle_check(struct sock *sk)
-> 
+Thanks,
+Ian
 
-Right, we should have removed this at the time commit a337531b942b
- ("tcp: up initial rmem to 128KB and SYN rwin to around 64KB") went in.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-
-Thanks !
-
+> >
+> > Thanks!
+> >
+> > Ian Rogers (7):
+> >   perf expr: migrate expr ids table to libbpf's hashmap
+> >   perf metricgroup: change evlist_used to a bitmap
+> >   perf metricgroup: free metric_events on error
+> >   perf metricgroup: always place duration_time last
+> >   perf metricgroup: delay events string creation
+> >   perf metricgroup: order event groups by size
+> >   perf metricgroup: remove duped metric group events
+> >
+> >  tools/perf/tests/expr.c       |  32 ++---
+> >  tools/perf/tests/pmu-events.c |  22 ++--
+> >  tools/perf/util/expr.c        | 125 ++++++++++--------
+> >  tools/perf/util/expr.h        |  22 ++--
+> >  tools/perf/util/expr.y        |  22 +---
+> >  tools/perf/util/metricgroup.c | 242 +++++++++++++++++++++-------------
+> >  tools/perf/util/stat-shadow.c |  46 ++++---
+> >  7 files changed, 280 insertions(+), 231 deletions(-)
+> >
+> > --
+> > 2.26.2.526.g744177e7f7-goog
+> >
+>
