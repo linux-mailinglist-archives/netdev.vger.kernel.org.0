@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5023B1C9AA1
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 21:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C6231C9AC9
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 21:19:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728485AbgEGTOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 15:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
+        id S1728126AbgEGTTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 15:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726470AbgEGTON (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 15:14:13 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85EBC05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 12:14:12 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id i14so27488qka.10
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 12:14:12 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726367AbgEGTTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 15:19:12 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E375FC05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 12:19:11 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id b8so2914242pgi.11
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 12:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wX5XMHdz/M+4Ly0oHrP6bxAEiJLYb6cRVv2K95uxWwg=;
-        b=T5BWfYqNoQpnrJCv2Ie2wfQiVRMiIaKJyfhlfrVqofUztNcEQUPykFlaw/fEkXaftJ
-         IFMjTrwM5xiQ7gMyBdrIrSvMGzAmcAFrhWFM/G10PVdY/mT419WU3MP4OneVGI7Ha2kv
-         PDp8jTbBPD6hECoa40AYj2kN6YAFtJneX1VgtqJE2hn3pGhDADp2kJr9ydJucBT5ciHn
-         +a19RDzcDiGTOKZe6l7WmR2rOCE+yyKnfQzHt62nNUroJsZQNsWqAimJVxY/V7Me7Vuk
-         WLQTtkXUsMghQp00pN/Lh8VswyWGwvi+bP/8IOaVZc4ijatKaOeKM+SYvxUevZ46Iog7
-         jheA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fYIeEHlwbR9WF7AcFWuRUhAarSzHOe+pf/pZmtiKlAU=;
+        b=qtmXirxDYQeLlcxViKvLgIxjDuFa2c7VNp4OdLiI9t5p5cdB5jxkf+G1kFrab6TEMK
+         SYxCG88B4eGjmimDB9ZLegIRKl89OcStp8SrvsxmBeOqhkzXIFttF3yRzR4Qmw2sP1Ow
+         oq12H96b3eXaww52wVbrs64R0klzb4rQTZ4V2wApuDk1sMlbMtPNUbj2+3GNw/f9K956
+         Rxmtj4BsNJpCKxRgCm0bC3Ns4nh2WC3oFeI+ulNoyMyOTzYyxyrPRLBTkJPIIZy6wbpk
+         BI5RGzn2/T+UqZXYQluglYOKZfxKKMFlMmxcmN6DKN+bdZAl73HaESVAEYFGBx3Q2GsV
+         J5Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wX5XMHdz/M+4Ly0oHrP6bxAEiJLYb6cRVv2K95uxWwg=;
-        b=tHiffQUotzFfeQYIg3dAGcUDj/PUnnVXUiE7pEX2wKAQGmNwesa1umIr9KMS4ljXoz
-         6axmMtMEVUAfC9WBamCruU9VgW5rv4ArVWYLHZC4D77oG2WaP1UabjGm2maYd6zqBkyL
-         eHXXD4i3iK5XKCzL1IRvzxYG1/6hErAdG8o4QMR5ivF+1JToiF4H21M2kufvb/Uu+PNQ
-         /j1Azr9a9FYHAcJI3jVn4x4PMjhrcNbUBYGZtc7S59B0ogXswm/zgnYDi8oDCvCquV9R
-         cRcRy6zYykoQTUPRoZ6CwLtqOCL+Pt8AByyktVUhZVG79RtSK0c06HXd+LTFwoEALR2p
-         3A9A==
-X-Gm-Message-State: AGi0PubIIEmO42ZPjPxncTIzoIdlNrWKBpeWMR1D3salGhyc6E5fNQjT
-        73jZqyrpexbjjwbqbpdB+XhmsQ==
-X-Google-Smtp-Source: APiQypJGLda9xBHWwenDCQAcn6P3cH5cZURCVuyFJBA8E3DVDslgKP5Y2647O3Sycr93BkqdJvg8wA==
-X-Received: by 2002:a05:620a:13b5:: with SMTP id m21mr15794630qki.208.1588878852049;
-        Thu, 07 May 2020 12:14:12 -0700 (PDT)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id j8sm5094236qtk.85.2020.05.07.12.14.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fYIeEHlwbR9WF7AcFWuRUhAarSzHOe+pf/pZmtiKlAU=;
+        b=EANxd0PheH5fbwu1fvS8Zh5Qo7gGQf9Ka6IPjIgDQiwn1r2d3prWtVeeq5zJ9cLJxu
+         WY4lmJn3NvVxhjH9W9+ZSGYXbEbK953GSoz7vj3Ow7/eDeJSo4LXjWMk26qWNKL1nbvK
+         Xz+dEOyerurnIPu3LFh101JAT1KHplOnbEGh7+tMkem9F53KBt6VcSqvX7lJPg5HXE44
+         +vaKgc0akPF+nHs5cDbC+HQ8EYdCYgXMdB3PdtBGI8SmTwKYsEliFPvW5lXVFk1gG6Xm
+         vbOVdzBLrQDpy0aGNAXzV/T4J0up09+wPPt/6NyOCnTZGqG37ceCl8i+JdcgZYzPO1Mm
+         b/Vw==
+X-Gm-Message-State: AGi0PuZT6PJ0iYNcRJBL1+18Kl3RaXDJe3vhF7ywUIy3eMPwMoFFh/tX
+        zii7vADkaDeL8SkWuwQ81Qi7el90aCE=
+X-Google-Smtp-Source: APiQypIWKbSYMunbyL0S2LwdTtGbvU4suupXWHhW0CVZA+wdn36LRIVyUVCEELtSd0ZCxlTIZlgzNA==
+X-Received: by 2002:a65:534d:: with SMTP id w13mr1912099pgr.161.1588879151174;
+        Thu, 07 May 2020 12:19:11 -0700 (PDT)
+Received: from MacBookAir.linux-6brj.site (99-174-169-255.lightspeed.sntcca.sbcglobal.net. [99.174.169.255])
+        by smtp.gmail.com with ESMTPSA id f76sm5517389pfa.167.2020.05.07.12.19.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2020 12:14:11 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net
-Cc:     evgreen@chromium.org.net, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] net: ipa: use tag process on modem crash
-Date:   Thu,  7 May 2020 14:14:04 -0500
-Message-Id: <20200507191404.31626-3-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200507191404.31626-1-elder@linaro.org>
-References: <20200507191404.31626-1-elder@linaro.org>
+        Thu, 07 May 2020 12:19:10 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com,
+        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
+        Jarod Wilson <jarod@redhat.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jann Horn <jannh@google.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>
+Subject: [Patch net v3] net: fix a potential recursive NETDEV_FEAT_CHANGE
+Date:   Thu,  7 May 2020 12:19:03 -0700
+Message-Id: <20200507191903.4090-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,53 +68,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-One part of recovering from a modem crash is performing a "tag
-sequence" of several IPA immediate commands, to clear the hardware
-pipeline.  The sequence ends with a data transfer request on the
-command endpoint (which is not otherwise done).  Unfortunately,
-attempting to do the data transfer led to a hang, so that request
-plus two other commands were commented out.
+syzbot managed to trigger a recursive NETDEV_FEAT_CHANGE event
+between bonding master and slave. I managed to find a reproducer
+for this:
 
-The previous commit fixes the bug that was causing that hang.  And
-with that bug fixed we can properly issue the tag sequence when the
-modem crashes, to return the hardware to a known state.
+  ip li set bond0 up
+  ifenslave bond0 eth0
+  brctl addbr br0
+  ethtool -K eth0 lro off
+  brctl addif br0 bond0
+  ip li set br0 up
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+When a NETDEV_FEAT_CHANGE event is triggered on a bonding slave,
+it captures this and calls bond_compute_features() to fixup its
+master's and other slaves' features. However, when syncing with
+its lower devices by netdev_sync_lower_features() this event is
+triggered again on slaves when the LRO feature fails to change,
+so it goes back and forth recursively until the kernel stack is
+exhausted.
+
+Commit 17b85d29e82c intentionally lets __netdev_update_features()
+return -1 for such a failure case, so we have to just rely on
+the existing check inside netdev_sync_lower_features() and skip
+NETDEV_FEAT_CHANGE event only for this specific failure case.
+
+Fixes: fd867d51f889 ("net/core: generic support for disabling netdev features down stack")
+Reported-by: syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com
+Reported-by: syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com
+Cc: Jarod Wilson <jarod@redhat.com>
+Cc: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Jann Horn <jannh@google.com>
+Reviewed-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- drivers/net/ipa/ipa_cmd.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ net/core/dev.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index d226b858742d..cee417181f98 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -628,23 +628,15 @@ static void ipa_cmd_transfer_add(struct gsi_trans *trans, u16 size)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 522288177bbd..6d327b7aa813 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8907,11 +8907,13 @@ static void netdev_sync_lower_features(struct net_device *upper,
+ 			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
+ 				   &feature, lower->name);
+ 			lower->wanted_features &= ~feature;
+-			netdev_update_features(lower);
++			__netdev_update_features(lower);
  
- void ipa_cmd_tag_process_add(struct gsi_trans *trans)
- {
--	ipa_cmd_register_write_add(trans, 0, 0, 0, true);
--#if 1
--	/* Reference these functions to avoid a compile error */
--	(void)ipa_cmd_ip_packet_init_add;
--	(void)ipa_cmd_ip_tag_status_add;
--	(void) ipa_cmd_transfer_add;
--#else
- 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
--	struct gsi_endpoint *endpoint;
-+	struct ipa_endpoint *endpoint;
- 
- 	endpoint = ipa->name_map[IPA_ENDPOINT_AP_LAN_RX];
-+
-+	ipa_cmd_register_write_add(trans, 0, 0, 0, true);
- 	ipa_cmd_ip_packet_init_add(trans, endpoint->endpoint_id);
--
- 	ipa_cmd_ip_tag_status_add(trans, 0xcba987654321);
--
- 	ipa_cmd_transfer_add(trans, 4);
--#endif
+ 			if (unlikely(lower->features & feature))
+ 				netdev_WARN(upper, "failed to disable %pNF on %s!\n",
+ 					    &feature, lower->name);
++			else
++				netdev_features_change(lower);
+ 		}
+ 	}
  }
- 
- /* Returns the number of commands required for the tag process */
 -- 
-2.20.1
+2.26.2
 
