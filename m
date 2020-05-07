@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B13D81C8DC9
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A85B1C8DCA
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 16:11:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728301AbgEGOI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 10:08:58 -0400
+        id S1726975AbgEGOJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 10:09:00 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbgEGOIz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:08:55 -0400
-Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5023CC05BD0A
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 07:08:54 -0700 (PDT)
-Received: by mail-qk1-x749.google.com with SMTP id d187so5855029qkc.18
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 07:08:54 -0700 (PDT)
+        with ESMTP id S1728292AbgEGOI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 10:08:56 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C14DC05BD0E
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 07:08:56 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id h185so7085414ybg.6
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 07:08:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=O3s1th6kwHV7OYn1BOC0SkexVvWRfaB4W2WMHJ3+QAE=;
-        b=CK1m+ecJfjS+4WckyJ+MIAJmu9NSdTFzbnEvuTlhNhN2suAzSw1T5RCN8pFKx7qCp4
-         n8nnqkhcZQAmfewVBnzZ6SAJQ+TjfCy93ePBEh5Frx6f707haJ1ZrHUlcr7n6906D2DN
-         ojqiStE90Xd10Qio2tmn6XzaetPKq7lCzsFLSnIsfHSjm5vbOBl9vWzRWTiiM+ZvHAFN
-         hC1/0b5t+keN9XBkOOOUKcIjiW4lsqVd0R1fMzlrlrGhAN0EIoQW7WWxeueiYqiI5D9N
-         wAc4DchPEq05tJn/O4RH4yGj03qsYJkUcITNMNLGCEhgB8FQeT8TYfOhk24A/N4h+t8x
-         7k8g==
+        bh=WNLwvCLfBBjUXdSm9htdY2ZIrU9tK5abqhIDyW74dxc=;
+        b=biQh+rIPaJjiWmCdpodETgccn4Y8n5FVL+Mpr1MGuwevY0+0SykmjiYjnIyHYQMSBY
+         IR4+qgSztOBizqP2lGvsdWjUQzlUnfjxI9lZ8cNpebFxnizLjDTBQQ8NfHsAa93Htouv
+         mrQ8GovuR/j5bV1vGV8e9R1zTUZmDbrcjuldLL2/J3s++NkilCKmBluMxqXG2cIbRqEU
+         dAq/VoetqTDUKRgLyWw/0o6+WAtaMsG+6YWBCiJvb2V9KMeq3j6eLqL7LV45hnvhutcN
+         j1/j0E36THBQDBgTLTFMupBXqIgInb0pLME/AOQ3nEmGnsF+BJe4lZ5MxcqCuUH015zI
+         grMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=O3s1th6kwHV7OYn1BOC0SkexVvWRfaB4W2WMHJ3+QAE=;
-        b=qE0ioJoFYvokPgjEnXXTxK7zvaSgHYPha5NL0uLaEDwna4lQqJeBEcrHJbj92o7mQy
-         FIpmEUlZwdJdQXy0mTwGrj4Hyhwh05AIonv14/500Hg5K543dVVX1TmEhlqdq6p3v2ow
-         5rN54WVnHcB7b38UlLmiYxAD22xlyJva1kkujMLp34NYDQXuuvBOx7qYJTjo0w/nOg2k
-         hQPfpinpFMakx7gO00uRF5BKzTmRKbJ333Mj0O3HhVdFk9Z8tzHVK9GCYwxx5VVFLK7F
-         FTzRIAKJz6jAIRnk+vA1CIKfyKHjbxk59ihkuiF061AN7px73Dx4py2oDFvjRle5QmkW
-         2lNA==
-X-Gm-Message-State: AGi0PuZVADzICdfe8OtwC2zDHhfT0dtoXUNK0Lu1g3mGbvftkfLDjfq1
-        JrHdis8yfr8Eljqa1Rd5iW7ZHIvdclPe
-X-Google-Smtp-Source: APiQypIHBeiQoZpM97RY/NesSn20dHYkSwzLM+BOs1oCir4+ihIeJWG35Y9jkK+FwGLI1ItCDPmH/CkTnit7
-X-Received: by 2002:ad4:5a48:: with SMTP id ej8mr14045295qvb.122.1588860533355;
- Thu, 07 May 2020 07:08:53 -0700 (PDT)
-Date:   Thu,  7 May 2020 07:08:11 -0700
+        bh=WNLwvCLfBBjUXdSm9htdY2ZIrU9tK5abqhIDyW74dxc=;
+        b=S3ued05dVkDijaiQPO3HLsc1X9BwdLBCBBOHnBHRye9/tZCQ43F7BBB2lDNogJ70k9
+         vjUPNSRVuMkmWT7BljPcclWyKvxs3Yp1oICz6hQ/hpd5wQ57abWxbV0zR8IyhjJ88Vuj
+         4b0/uteEFtyp6P9XL9k8FwVNw2PS5YZKz6rDOrrR0EVGG3aGEJLqqEtzivSrvT2aTSHd
+         G2FghhfNPxLFPLSR7GyMkd70kGl7GGVetEpcwNZAZ/aMlmOhdSv3S5ukiqvq45s+2uZ+
+         1M+HiE6XTUEAqNBMhp3P0LlZ2OzprK/KxSWfG2Kx9WRdR2ygVWFaBhH3aH6WXyFOMVMT
+         yF6A==
+X-Gm-Message-State: AGi0Puaw0U+tiePJuM8gtr7+JMHzxYukozr3Lf3D7MQ0kjISB1cy1YTW
+        eb37erco0FVdUHiXG4NcxEZjxwUXnmCK
+X-Google-Smtp-Source: APiQypK7cb30cBnYwkBB+E9mLL262GSv1zCyE6oU2nAP4RqCHtNPorpKhkR4Mmq+RPtTBEFQtMYEM/rnQiQh
+X-Received: by 2002:a25:b951:: with SMTP id s17mr23122292ybm.205.1588860535288;
+ Thu, 07 May 2020 07:08:55 -0700 (PDT)
+Date:   Thu,  7 May 2020 07:08:12 -0700
 In-Reply-To: <20200507140819.126960-1-irogers@google.com>
-Message-Id: <20200507140819.126960-16-irogers@google.com>
+Message-Id: <20200507140819.126960-17-irogers@google.com>
 Mime-Version: 1.0
 References: <20200507140819.126960-1-irogers@google.com>
 X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-Subject: [RFC PATCH v2 15/23] perf expr: fix memory leaks in bison
+Subject: [RFC PATCH v2 16/23] perf evsel: fix 2 memory leaks
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -83,37 +83,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a destructor for strings to reclaim memory in the event of errors.
-Free the ID given for a lookup.
+If allocated, perf_pkg_mask and metric_events need freeing.
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/perf/util/expr.y | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/perf/util/evsel.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/perf/util/expr.y b/tools/perf/util/expr.y
-index 21e82a1e11a2..3b49b230b111 100644
---- a/tools/perf/util/expr.y
-+++ b/tools/perf/util/expr.y
-@@ -27,6 +27,7 @@
- %token EXPR_PARSE EXPR_OTHER EXPR_ERROR
- %token <num> NUMBER
- %token <str> ID
-+%destructor { free ($$); } <str>
- %token MIN MAX IF ELSE SMT_ON
- %left MIN MAX IF
- %left '|'
-@@ -94,8 +95,10 @@ if_expr:
- expr:	  NUMBER
- 	| ID			{ if (lookup_id(ctx, $1, &$$) < 0) {
- 					pr_debug("%s not found\n", $1);
-+					free($1);
- 					YYABORT;
- 				  }
-+				  free($1);
- 				}
- 	| expr '|' expr		{ $$ = (long)$1 | (long)$3; }
- 	| expr '&' expr		{ $$ = (long)$1 & (long)$3; }
+diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+index f3e60c45d59a..d5c28e583986 100644
+--- a/tools/perf/util/evsel.c
++++ b/tools/perf/util/evsel.c
+@@ -1268,6 +1268,8 @@ void evsel__exit(struct evsel *evsel)
+ 	zfree(&evsel->group_name);
+ 	zfree(&evsel->name);
+ 	zfree(&evsel->pmu_name);
++	zfree(&evsel->per_pkg_mask);
++	zfree(&evsel->metric_events);
+ 	perf_evsel__object.fini(evsel);
+ }
+ 
 -- 
 2.26.2.526.g744177e7f7-goog
 
