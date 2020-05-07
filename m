@@ -2,129 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C55E1C9B18
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 21:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF5AA1C9B32
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 21:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728451AbgEGTaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 15:30:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49126 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726515AbgEGTaA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 15:30:00 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4B51720CC7;
-        Thu,  7 May 2020 19:29:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588879799;
-        bh=pXnEGT4dONImvx6xzc21bnn5kRprj8/jQkS/jDE/T+g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cgu9DhUyhRRs/iF2OpKadRWe/PhrUTERE33DbcFdb/Ujw4Drbwfwg/jY5gZwoKXZQ
-         pvhH4N3xlleL2mat9ACSnhiwYHzRniyR6Gxr5c2PFpFyJxzS++JLKWFNO7Y0tP7eeT
-         1p0SfUnTpnPlKDN++ARbZEacxaQY8C39f1oNvLWQ=
-Date:   Thu, 7 May 2020 12:29:57 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Mark Starovoytov <mstarovoitov@marvell.com>
-Subject: Re: [PATCH net-next 7/7] net: atlantic: unify get_mac_permanent
-Message-ID: <20200507122957.5dd4b84b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200507081510.2120-8-irusskikh@marvell.com>
-References: <20200507081510.2120-1-irusskikh@marvell.com>
-        <20200507081510.2120-8-irusskikh@marvell.com>
+        id S1726926AbgEGTfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 15:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726470AbgEGTfw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 15:35:52 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E1AC05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 12:35:51 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id t11so5491314lfe.4
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 12:35:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HPlr9sD2Ll9EpKLHu8EjB8MDTy97Lj8XEY2HdhdY0EU=;
+        b=ZbLwYw0eulobzQcQKKwcIaJmWnD4MCQ+Op/ELdLK9vRkfZi4v1evd8jS9wtRZdWxNq
+         86eGs9ZHvz9euWxbh8SuX6fABcAXK1Wrheq4MfObQKN2tN5kjeyy+sm3+2H/TmEU3skn
+         GKCdu3W7Q1WKuzVSJDlo1Pr+EzUHB2EzMPz0Q=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HPlr9sD2Ll9EpKLHu8EjB8MDTy97Lj8XEY2HdhdY0EU=;
+        b=suPoFI6XW+VjQfdXKvu/K+elSBgm5Fw2598jz0dwSXR1QQcYWT82haCImJL7ft1Qg4
+         aN9kjZ0jwnJ9q0Dlxsv+pnQIwG4dXnkjTCwsl1cnqNVXjS6/EAGxzmt5o+dTBPl3U7CK
+         PoI28ArHBsOarMVzqRb8ca6EcOjjYUPFirAVpgmQCXYTS0dHlFgMdtQIjVGbezY66X8T
+         WvbWiQQjB0NZGvsyZnB+kSoIBkConr6w0EyGYiRd3k1xhT6rhZ8pY3o5m9A+wF/lqH02
+         9d3UQZRSxBdO1bGUqFl8yk0ITqucgNAN6LxachZvwAtKqPd/ZHd6cysIvl+B/mpEeWJC
+         KWMA==
+X-Gm-Message-State: AGi0PubkI32C+vcWhY0dxKu8dbAm4qnPfiqwCHCkVYpcdjtUii+RIqrX
+        zKBAODjhpROa36gXtqNUCmgcHw==
+X-Google-Smtp-Source: APiQypK1G7eBHv6bEd/Mn/OKM5ZWiktNd/ga052MYJ/8BQU+UsDbajBhXIggLYIRA/D2ni2gdnJtFg==
+X-Received: by 2002:ac2:5f73:: with SMTP id c19mr9663846lfc.135.1588880149594;
+        Thu, 07 May 2020 12:35:49 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id 134sm2974057lfj.20.2020.05.07.12.35.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 May 2020 12:35:48 -0700 (PDT)
+Subject: Re: [Patch net v3] net: fix a potential recursive NETDEV_FEAT_CHANGE
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com,
+        syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com,
+        Jarod Wilson <jarod@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jann Horn <jannh@google.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>
+References: <20200507191903.4090-1-xiyou.wangcong@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <953527d0-6b77-960d-47b9-cbbb136c902d@cumulusnetworks.com>
+Date:   Thu, 7 May 2020 22:35:47 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200507191903.4090-1-xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 May 2020 11:15:10 +0300 Igor Russkikh wrote:
-> From: Mark Starovoytov <mstarovoitov@marvell.com>
+On 07/05/2020 22:19, Cong Wang wrote:
+> syzbot managed to trigger a recursive NETDEV_FEAT_CHANGE event
+> between bonding master and slave. I managed to find a reproducer
+> for this:
 > 
-> MAC generation in case if MAC is not populated is the same for both A1 and
-> A2.
-> This patch moves MAC generation into a separate function, which is called
-> from both places to reduce the amount of copy/paste.
-
-Right, but why do you have your own mac generation rather than using
-eth_hw_addr_random(). You need to set NET_ADDR_RANDOM for example,
-just use standard helpers, please.
-
-> Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
-> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+>   ip li set bond0 up
+>   ifenslave bond0 eth0
+>   brctl addbr br0
+>   ethtool -K eth0 lro off
+>   brctl addif br0 bond0
+>   ip li set br0 up
+> 
+> When a NETDEV_FEAT_CHANGE event is triggered on a bonding slave,
+> it captures this and calls bond_compute_features() to fixup its
+> master's and other slaves' features. However, when syncing with
+> its lower devices by netdev_sync_lower_features() this event is
+> triggered again on slaves when the LRO feature fails to change,
+> so it goes back and forth recursively until the kernel stack is
+> exhausted.
+> 
+> Commit 17b85d29e82c intentionally lets __netdev_update_features()
+> return -1 for such a failure case, so we have to just rely on
+> the existing check inside netdev_sync_lower_features() and skip
+> NETDEV_FEAT_CHANGE event only for this specific failure case.
+> 
+> Fixes: fd867d51f889 ("net/core: generic support for disabling netdev features down stack")
+> Reported-by: syzbot+e73ceacfd8560cc8a3ca@syzkaller.appspotmail.com
+> Reported-by: syzbot+c2fb6f9ddcea95ba49b5@syzkaller.appspotmail.com
+> Cc: Jarod Wilson <jarod@redhat.com>
+> Cc: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+> Cc: Jann Horn <jannh@google.com>
+> Reviewed-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 > ---
->  .../ethernet/aquantia/atlantic/aq_hw_utils.c  | 41 +++++++++++++++++--
->  .../ethernet/aquantia/atlantic/aq_hw_utils.h  |  9 ++--
->  .../atlantic/hw_atl/hw_atl_utils_fw2x.c       | 23 +----------
->  .../atlantic/hw_atl2/hw_atl2_utils_fw.c       | 24 ++---------
->  4 files changed, 49 insertions(+), 48 deletions(-)
+>  net/core/dev.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c b/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c
-> index 7dbf49adcea6..0bc01772ead2 100644
-> --- a/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c
-> +++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw_utils.c
-> @@ -1,7 +1,8 @@
->  // SPDX-License-Identifier: GPL-2.0-only
-> -/*
-> - * aQuantia Corporation Network Driver
-> - * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
-> +/* Atlantic Network Driver
-> + *
-> + * Copyright (C) 2014-2019 aQuantia Corporation
-> + * Copyright (C) 2019-2020 Marvell International Ltd.
->   */
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 522288177bbd..6d327b7aa813 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -8907,11 +8907,13 @@ static void netdev_sync_lower_features(struct net_device *upper,
+>  			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
+>  				   &feature, lower->name);
+>  			lower->wanted_features &= ~feature;
+> -			netdev_update_features(lower);
+> +			__netdev_update_features(lower);
 >  
->  /* File aq_hw_utils.c: Definitions of helper functions used across
-> @@ -79,3 +80,37 @@ int aq_hw_err_from_flags(struct aq_hw_s *hw)
->  err_exit:
->  	return err;
+>  			if (unlikely(lower->features & feature))
+>  				netdev_WARN(upper, "failed to disable %pNF on %s!\n",
+>  					    &feature, lower->name);
+> +			else
+> +				netdev_features_change(lower);
+>  		}
+>  	}
 >  }
-> +
-> +static inline bool aq_hw_is_zero_ether_addr(const u8 *addr)
+> 
 
-No static inlines in C files, please. Let compiler decide inlineing &
-generate a warning when function becomes unused.
-
-> +{
-> +	return (*(const u16 *)(addr) | addr[2]) == 0;
-
-It's probably fine in practice but the potentially u16 read is entirely
-unnecessary. This is not performance sensitive code.
-
-> +}
-> +
-> +bool aq_hw_is_valid_ether_addr(const u8 *addr)
-> +{
-> +	return !is_multicast_ether_addr(addr) &&
-> +	       !aq_hw_is_zero_ether_addr(addr);
-> +}
-> +
-> +void aq_hw_eth_random_addr(u8 *mac)
-> +{
-> +	unsigned int rnd = 0;
-> +	u32 h = 0U;
-> +	u32 l = 0U;
-> +
-> +	get_random_bytes(&rnd, sizeof(unsigned int));
-> +	l = 0xE300 0000U | (0xFFFFU & rnd) | (0x00 << 16);
-> +	h = 0x8001300EU;
-> +
-> +	mac[5] = (u8)(0xFFU & l);
-> +	l >>= 8;
-> +	mac[4] = (u8)(0xFFU & l);
-> +	l >>= 8;
-> +	mac[3] = (u8)(0xFFU & l);
-> +	l >>= 8;
-> +	mac[2] = (u8)(0xFFU & l);
-> +	mac[1] = (u8)(0xFFU & h);
-> +	h >>= 8;
-> +	mac[0] = (u8)(0xFFU & h);
-
-This can be greatly simplified using helpers from etherdevice.h, if
-it's really needed.
-
-> +}
+Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
