@@ -2,134 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 085CB1C8CF5
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 15:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87E571C8CF7
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 15:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgEGNt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 09:49:57 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25723 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726382AbgEGNt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 09:49:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588859396;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mtfeKIrFwLIEu5xU9YDtgCdmdoqxZ0ztvTPMoqop3dw=;
-        b=AGxBZ0fMxXikV1tTe5JLTsiS9m4aU/KMHz0DhgJOPPGdh0EQygERYLkL7YYB/HkZN3TLQr
-        2jGBc3AdyWFxk30suf92l9eFIExR7bZbPhTMwfc4hgpEJfndS/rrA4/8tXECeUT1GQgRFV
-        k5zOe4dVNJ1s5FIO2j16xexDxN4VfYY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-428-pIKrsyx3PpWPxylVzzPlvg-1; Thu, 07 May 2020 09:49:52 -0400
-X-MC-Unique: pIKrsyx3PpWPxylVzzPlvg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C0D3E1895A29;
-        Thu,  7 May 2020 13:49:48 +0000 (UTC)
-Received: from krava (unknown [10.40.194.212])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E28AD10016E8;
-        Thu,  7 May 2020 13:49:41 +0000 (UTC)
-Date:   Thu, 7 May 2020 15:49:39 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [RFC PATCH 0/7] Share events between metrics
-Message-ID: <20200507134939.GA2804092@krava>
-References: <20200507081436.49071-1-irogers@google.com>
+        id S1726776AbgEGNuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 09:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42994 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726644AbgEGNuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 09:50:00 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D46C05BD09
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 06:50:00 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id r14so2941802ybm.12
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 06:49:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RmR99xx+Yesm6oorgLPy7gPshtSDq8wvp8OCFeJfg9c=;
+        b=e2346PGDvrAMzUO2Mv86gFcgr729Ua8DFn3nGE4JDikbENkM6tT559dmqxIbt0UUTm
+         hdoTkstFceX+NH9kO5ZGH/Ho4VsjAV3Nhrr4h9wZnztBpuISSGImg27AgICD+D4IKoSK
+         ro5WFuh7ssWcEXH+dL8zYlG/k8XW/7gSHrNeyGgcuy2g/7LiQau37jTLz3hhbEK8BQ9W
+         Ghxo54dMjeYBAG1BKRjC2/63ZCIrkuaHQ9PR6GAf7cgniEZ7HMYbEgvtHGp3f3UYwPRj
+         QK1rCytsf4HMLSf7luqvIPBWLSDGoX1xMaaQBSb7XIOks2Z/JmXc6Lue2+7EjSTpc4W2
+         nl3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RmR99xx+Yesm6oorgLPy7gPshtSDq8wvp8OCFeJfg9c=;
+        b=CW8AvsqGx1BK7cEQUCEAsp5IwsMgxC3bD7+iGXNHyOJrXwEXbuIv/u3h1GUZM0Bn3y
+         YHFH/DbbnWPVGoj80hqqGqlPg7DvXJYdvGQP8LdtEv8L6/JDBTdjEySZM1kzJBbYEZN4
+         Cslh21aQ0ULaLsg5KII0ZqKPkQCAzo4DoUOpM697Y2PkioT/cjdzg4BN6usB1sG1aezs
+         844Q9kBQ7N7j7lop5CoIZrrW9ygqOav3wwn+t2yj+VXyuQQFaC9dxlS0J+MvlQr8u+Nt
+         5Sm9sZAGlnXUl12GE4ehnQZCaKSM9m3eqt2qKcHNOcI5joDHOOYteAB0tiF9rvXpho7X
+         6VVg==
+X-Gm-Message-State: AGi0PubA88nnLgDOiPxJBx7d32kdQ7sU/Dfbsdcgf6ChzoVFZ+Rma5xG
+        SRJ07UdUPElgTq6XuX8gxS0XkZtLaDPdaAU8DleO6A==
+X-Google-Smtp-Source: APiQypLlJOWtkmwdaWITNck8f5md4q8BhjXx4Z8R7bfcHESuPPrXnBHYT7/OO3pZmn63Xy6S5NhzTEqO/S7CJJgevM4=
+X-Received: by 2002:a25:1484:: with SMTP id 126mr22422004ybu.380.1588859398853;
+ Thu, 07 May 2020 06:49:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200507081436.49071-1-irogers@google.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+References: <20200116.042722.153124126288244814.davem@davemloft.net>
+ <930faaff-4d18-452d-2e44-ef05b65dc858@gmail.com> <1b3aaddf-22f5-1846-90f1-42e68583c1e4@gmail.com>
+ <430496fc-9f26-8cb4-91d8-505fda9af230@hisilicon.com> <20200117123253.GC14879@hirez.programming.kicks-ass.net>
+ <7e6c6202-24bb-a532-adde-d53dd6fb14c3@gmail.com> <20200117180324.GA2623847@rani.riverdale.lan>
+ <94573cea-a833-9b48-6581-8cc5cdd19b89@gmail.com> <20200117183800.GA2649345@rani.riverdale.lan>
+ <45224c36-9941-aae5-aca4-e2c8e3723355@gmail.com> <20200120081858.GI14879@hirez.programming.kicks-ass.net>
+ <39ddacf9-adbe-c3f5-45a8-9c5280ef11bb@hisilicon.com>
+In-Reply-To: <39ddacf9-adbe-c3f5-45a8-9c5280ef11bb@hisilicon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 7 May 2020 06:49:46 -0700
+Message-ID: <CANn89iLiCh-LDw9WsB=3Wm=V-Ey80JRrC8yf8fsy=vbVc9FuPQ@mail.gmail.com>
+Subject: Re: [PATCH] net: optimize cmpxchg in ip_idents_reserve
+To:     Shaokun Zhang <zhangshaokun@hisilicon.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, jinyuqi@huawei.com,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        guoyang2@huawei.com, Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 07, 2020 at 01:14:29AM -0700, Ian Rogers wrote:
-> Metric groups contain metrics. Metrics create groups of events to
-> ideally be scheduled together. Often metrics refer to the same events,
-> for example, a cache hit and cache miss rate. Using separate event
-> groups means these metrics are multiplexed at different times and the
-> counts don't sum to 100%. More multiplexing also decreases the
-> accuracy of the measurement.
-> 
-> This change orders metrics from groups or the command line, so that
-> the ones with the most events are set up first. Later metrics see if
-> groups already provide their events, and reuse them if
-> possible. Unnecessary events and groups are eliminated.
-> 
-> RFC because:
->  - without this change events within a metric may get scheduled
->    together, after they may appear as part of a larger group and be
->    multiplexed at different times, lowering accuracy - however, less
->    multiplexing may compensate for this.
->  - libbpf's hashmap is used, however, libbpf is an optional
->    requirement for building perf.
->  - other things I'm not thinking of.
+On Thu, May 7, 2020 at 2:12 AM Shaokun Zhang <zhangshaokun@hisilicon.com> wrote:
+>
+> Hi Peter/Eric,
+>
+> Shall we use atomic_add_return() unconditionally and add some comments? Or I missed
+> something.
+>
 
-hi,
-I can't apply this, what branch/commit is this based on?
 
-	Applying: perf expr: migrate expr ids table to libbpf's hashmap
-	error: patch failed: tools/perf/tests/pmu-events.c:428
-	error: tools/perf/tests/pmu-events.c: patch does not apply
-	error: patch failed: tools/perf/util/expr.h:2
-	error: tools/perf/util/expr.h: patch does not apply
-	error: patch failed: tools/perf/util/expr.y:73
-	error: tools/perf/util/expr.y: patch does not apply
-	Patch failed at 0001 perf expr: migrate expr ids table to libbpf's hashmap
-
-thanks,
-jirka
-
-> 
-> Thanks!
-> 
-> Ian Rogers (7):
->   perf expr: migrate expr ids table to libbpf's hashmap
->   perf metricgroup: change evlist_used to a bitmap
->   perf metricgroup: free metric_events on error
->   perf metricgroup: always place duration_time last
->   perf metricgroup: delay events string creation
->   perf metricgroup: order event groups by size
->   perf metricgroup: remove duped metric group events
-> 
->  tools/perf/tests/expr.c       |  32 ++---
->  tools/perf/tests/pmu-events.c |  22 ++--
->  tools/perf/util/expr.c        | 125 ++++++++++--------
->  tools/perf/util/expr.h        |  22 ++--
->  tools/perf/util/expr.y        |  22 +---
->  tools/perf/util/metricgroup.c | 242 +++++++++++++++++++++-------------
->  tools/perf/util/stat-shadow.c |  46 ++++---
->  7 files changed, 280 insertions(+), 231 deletions(-)
-> 
-> -- 
-> 2.26.2.526.g744177e7f7-goog
-> 
-
+Yes. A big fat comment, because I do not want yet another bogus
+complaint from someone playing with a buggy UBSAN.
