@@ -2,106 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0AAC1C870D
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:42:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D08E91C8702
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 12:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726712AbgEGKmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 06:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
+        id S1726587AbgEGKhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 06:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725834AbgEGKmX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:42:23 -0400
-X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 May 2020 03:42:23 PDT
-Received: from smail.fem.tu-ilmenau.de (smail.fem.tu-ilmenau.de [IPv6:2001:638:904:ffbf::41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AC3C061A10
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 03:42:23 -0700 (PDT)
-Received: from mail.fem.tu-ilmenau.de (mail-zuse.net.fem.tu-ilmenau.de [172.21.220.54])
-        (using TLSv1 with cipher ADH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by smail.fem.tu-ilmenau.de (Postfix) with ESMTPS id E938A20013;
-        Thu,  7 May 2020 12:32:41 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.fem.tu-ilmenau.de (Postfix) with ESMTP id A56E06207;
-        Thu,  7 May 2020 12:32:41 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at fem.tu-ilmenau.de
-Received: from mail.fem.tu-ilmenau.de ([127.0.0.1])
-        by localhost (mail.fem.tu-ilmenau.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id TKvELitrPHO1; Thu,  7 May 2020 12:32:38 +0200 (CEST)
-Received: from mail-backup.fem.tu-ilmenau.de (mail-backup.net.fem.tu-ilmenau.de [10.42.40.22])
-        (using TLSv1 with cipher ADH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mail.fem.tu-ilmenau.de (Postfix) with ESMTPS;
-        Thu,  7 May 2020 12:32:38 +0200 (CEST)
-Received: from a234.fem.tu-ilmenau.de (ray-controller.net.fem.tu-ilmenau.de [10.42.51.234])
-        by mail-backup.fem.tu-ilmenau.de (Postfix) with ESMTP id 3C36956052;
-        Thu,  7 May 2020 12:32:38 +0200 (CEST)
-Received: by a234.fem.tu-ilmenau.de (Postfix, from userid 1000)
-        id 1E735306A950; Thu,  7 May 2020 12:32:38 +0200 (CEST)
-From:   Michael Braun <michael-dev@fami-braun.de>
-To:     netdev@vger.kernel.org
-Cc:     Michael Braun <michael-dev@fami-braun.de>,
-        Li RongQing <roy.qing.li@gmail.com>
-Subject: [PATCH] bridge: increase mtu to 64K
-Date:   Thu,  7 May 2020 12:32:28 +0200
-Message-Id: <aa8b1f36e80728f6fae31d98ba990a2b509b1e34.1588847509.git.michael-dev@fami-braun.de>
-X-Mailer: git-send-email 2.20.1
+        by vger.kernel.org with ESMTP id S1726467AbgEGKhL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 06:37:11 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A7EC061A41
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 03:37:11 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id x4so5911331wmj.1
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 03:37:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xNBtuAL7sLh2yugT8pt2RsLeMgaeOsR548PH1XS3X6g=;
+        b=P0KfJJ2qYaO4hu3V0dqbKoJ7dM+loGZAH1bCy+sHSfup2mRckyEjMwF5JVzCNrvjv2
+         6bEYWYZcMWrJbFy5RRMTh3yKlfakziWN3X6/YIvAwFeZAwviQjHOv+J4hFlUiO7Tq2qu
+         6iKGdO/lMzv+CAH1wB1lGUMHe+lzFDPuXM8e8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xNBtuAL7sLh2yugT8pt2RsLeMgaeOsR548PH1XS3X6g=;
+        b=ks2cw39RlqgeAbkGurxpfdmhnr0EjRdo7E1u9yu581LvkOrv1xODKebrXI8KuhRg34
+         yBBF4nrGxw5jJywE9WrThWotPWQ9QhAqlWRhixjkp+aZ1Oi+dBaXIg9HBsa66NfE+zvP
+         qMC/lKyUAsQPWz0ArEokdMa6eXsB2JwaJ9k2W1IeTZ57PUIFRSI27gVDR0xQ/15CmAZ/
+         jygExAJjX47MkgTCz+m18PNv98YJDh+yELSwMhzWhMlJ4KxOdE/4BngMHv4XKFscuACj
+         JAJoNn8Y/Cs63J4yQEYipTgkjFhMAim4rpEcXYQ+bU3qg6mhD/iOiVJ7D5ykVHssJ8D8
+         AB0w==
+X-Gm-Message-State: AGi0PuaKNn1fIrFDFaaCBgVW5so/z8cb9D7RUFrTW6N5efI2lbqyGj/B
+        TGaeKdJFHU6KiG6BEan4NB/xhw==
+X-Google-Smtp-Source: APiQypIabltafW3/eC3x1JpuisQ2nUoG7QPWZfnJB8iw3zmE2kMllxRUxoU4syaP7VYg2F7ChffWwQ==
+X-Received: by 2002:a1c:3985:: with SMTP id g127mr9861780wma.102.1588847829813;
+        Thu, 07 May 2020 03:37:09 -0700 (PDT)
+Received: from toad ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id e9sm3081094wrv.83.2020.05.07.03.37.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 May 2020 03:37:09 -0700 (PDT)
+Date:   Thu, 7 May 2020 12:37:07 +0200
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     lmb@cloudflare.com, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org
+Subject: Re: [bpf-next PATCH 00/10] bpf: selftests, test_sockmap
+ improvements
+Message-ID: <20200507123707.4b4a0fe1@toad>
+In-Reply-To: <158871160668.7537.2576154513696580062.stgit@john-Precision-5820-Tower>
+References: <158871160668.7537.2576154513696580062.stgit@john-Precision-5820-Tower>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A linux bridge always adopts the smallest MTU of the enslaved devices.
-When no device are enslaved, it defaults to a MTU of 1500 and refuses to
-use a larger one. This is problematic when using bridges enslaving only
-virtual NICs (vnetX) like it's common with KVM guests.
+On Tue, 05 May 2020 13:49:36 -0700
+John Fastabend <john.fastabend@gmail.com> wrote:
 
-Steps to reproduce the problem
+> Update test_sockmap to add ktls tests and in the process make output
+> easier to understand and reduce overall runtime significantly. Before
+> this series test_sockmap did a poor job of tracking sent bytes causing
+> the recv thread to wait for a timeout even though all expected bytes
+> had been received. Doing this many times causes significant delays.
+> Further, we did many redundant tests because the send/recv test we used
+> was not specific to the parameters we were testing. For example testing
+> a failure case that always fails many times with different send sizes
+> is mostly useless. If the test condition catches 10B in the kernel code
+> testing 100B, 1kB, 4kB, and so on is just noise.
+> 
+> The main motivation for this is to add ktls tests, the last patch. Until
+> now I have been running these locally but we haven't had them checked in
+> to selftests. And finally I'm hoping to get these pushed into the libbpf
+> test infrastructure so we can get more testing. For that to work we need
+> ability to white and blacklist tests based on kernel features so we add
+> that here as well.
+> 
+> The new output looks like this broken into test groups with subtest
+> counters,
+> 
+>  $ time sudo ./test_sockmap
+>  # 1/ 6  sockmap:txmsg test passthrough:OK
+>  # 2/ 6  sockmap:txmsg test redirect:OK
+>  ...
+>  #22/ 1 sockhash:txmsg test push/pop data:OK
+>  Pass: 22 Fail: 0
+> 
+>  real    0m9.790s
+>  user    0m0.093s
+>  sys     0m7.318s
+> 
+> The old output printed individual subtest and was rather noisy
+> 
+>  $ time sudo ./test_sockmap
+>  [TEST 0]: (1, 1, 1, sendmsg, pass,): PASS
+>  ...
+>  [TEST 823]: (16, 1, 100, sendpage, ... ,pop (1599,1609),): PASS
+>  Summary: 824 PASSED 0 FAILED 
+> 
+>  real    0m56.761s
+>  user    0m0.455s
+>  sys     0m31.757s
+> 
+> So we are able to reduce time from ~56s to ~10s. To recover older more
+> verbose output simply run with --verbose option. To whitelist and
+> blacklist tests use the new --whitelist and --blacklist flags added. For
+> example to run cork sockhash tests but only ones that don't have a receive
+> hang (used to test negative cases) we could do,
+> 
+>  $ ./test_sockmap --whitelist="cork" --blacklist="sockmap,hang"
+> 
+> ---
 
-1) sudo ip link add br-test0 type bridge # create an empty bridge
-2) sudo ip link set br-test0 mtu 9000 # attempt to set MTU > 1500
-3) ip link show dev br-test0 # confirm MTU
+These are very nice improvements so thanks for putting time into it.
 
-Here, 2) returns "RTNETLINK answers: Invalid argument". One (cumbersome)
-way around this is:
+I run these whenever I touch sockmap, and they do currently take long to
+run, especially on 1 vCPU (which sometimes catches interesting bugs).
 
-4) sudo modprobe dummy
-5) sudo ip link set dummy0 mtu 9000 master br-test0
+I've also ran before into the CLI quirks you've ironed out, like having
+to pass path to cgroup to get verbose output.
 
-Then the bridge's MTU can be changed from anywhere to 9000.
+Feel free to add my:
 
-This is especially annoying for the virtualization case because the
-KVM's tap driver will by default adopt the bridge's MTU on startup
-making it impossible (without the workaround) to use a large MTU on the
-guest VMs.
-
-https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1399064
-
-Signed-off-by: Michael Braun <michael-dev@fami-braun.de>
-Reported-by: Li RongQing <roy.qing.li@gmail.com>
-
---
-If found https://patchwork.ozlabs.org/project/netdev/patch/1456133351-10292-1-git-send-email-roy.qing.li@gmail.com/
-but I am missing any follow up. So here comes a refresh patch that
-addresses the issue raised.
----
- net/bridge/br_if.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-index 4fe30b182ee7..f14e7d2329bd 100644
---- a/net/bridge/br_if.c
-+++ b/net/bridge/br_if.c
-@@ -496,7 +496,7 @@ static int br_mtu_min(const struct net_bridge *br)
- 		if (!ret_mtu || ret_mtu > p->dev->mtu)
- 			ret_mtu = p->dev->mtu;
- 
--	return ret_mtu ? ret_mtu : ETH_DATA_LEN;
-+	return ret_mtu ? ret_mtu : (64 * 1024);
- }
- 
- void br_mtu_auto_adjust(struct net_bridge *br)
--- 
-2.20.1
-
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
