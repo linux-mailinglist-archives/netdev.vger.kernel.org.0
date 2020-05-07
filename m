@@ -2,98 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB8AC1C9DCB
-	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 23:48:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9297D1C9DFB
+	for <lists+netdev@lfdr.de>; Thu,  7 May 2020 23:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgEGVrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 17:47:01 -0400
-Received: from mga09.intel.com ([134.134.136.24]:30012 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726437AbgEGVrA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 17:47:00 -0400
-IronPort-SDR: lZy1lW9BpjeakLNig3qvWwA18fGMQhtZVfMP07O7UGbbtjgYhWNCdb45cw1jmvINoSVmYsad0d
- qoq8vHXJ1c0A==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2020 14:46:54 -0700
-IronPort-SDR: XSzS7dTe6Wy7C+q//uzNDJRFqXYcvr54hWsflNNGVA2u2d/Yo2Vb3KSk0fM0DqTCqOyLDGNX46
- U16slWjhO8sQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,365,1583222400"; 
-   d="scan'208";a="462004281"
-Received: from tassilo.jf.intel.com (HELO tassilo.localdomain) ([10.7.201.21])
-  by fmsmga005.fm.intel.com with ESMTP; 07 May 2020 14:46:52 -0700
-Received: by tassilo.localdomain (Postfix, from userid 1000)
-        id 5A34B301C1B; Thu,  7 May 2020 14:46:52 -0700 (PDT)
-Date:   Thu, 7 May 2020 14:46:52 -0700
-From:   Andi Kleen <ak@linux.intel.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [RFC PATCH 0/7] Share events between metrics
-Message-ID: <20200507214652.GC3538@tassilo.jf.intel.com>
-References: <20200507081436.49071-1-irogers@google.com>
- <20200507174835.GB3538@tassilo.jf.intel.com>
- <CAP-5=fUdoGJs+yViq3BOcJa7YyF53AD9RGQm8aRW72nMH0sKDA@mail.gmail.com>
+        id S1726612AbgEGV4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 17:56:37 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:40540 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726437AbgEGV4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 17:56:37 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 047LuXPq128510;
+        Thu, 7 May 2020 16:56:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1588888593;
+        bh=CiepMYUrdU135wGqDDohzrYL5klayaRYK1fM6UEdabY=;
+        h=From:To:CC:Subject:Date;
+        b=QQ30FGN+86wlgo3hAxA42imaQxX3nvLS9K4Acs6RwxcFsIPP1gjifF2Am7I8igzjh
+         EYQzkUKJq2/ktgetS9rqK/NBNTg7rmBXvpJH5RTd8OqteoXy4lBlLOFoX/jCXuphyK
+         K28GDlRM25/Q6A87fyg8FDXnHdaJ6GBpnM9NfKWc=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 047LuX9A027239
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 7 May 2020 16:56:33 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 7 May
+ 2020 16:56:32 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 7 May 2020 16:56:32 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 047LuWu3010621;
+        Thu, 7 May 2020 16:56:32 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <davem@davemloft.net>, <richardcochran@gmail.com>,
+        <ivan.khoronzhuk@linaro.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net/master] net: ethernet: ti: cpts: Fix linker issue when TI_CPTS is defined
+Date:   Thu, 7 May 2020 16:47:40 -0500
+Message-ID: <20200507214740.14693-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP-5=fUdoGJs+yViq3BOcJa7YyF53AD9RGQm8aRW72nMH0sKDA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > - without this change events within a metric may get scheduled
-> >   together, after they may appear as part of a larger group and be
-> >   multiplexed at different times, lowering accuracy - however, less
-> >   multiplexing may compensate for this.
-> 
-> I agree the heuristic in this patch set is naive and would welcome to
-> improve it from your toplev experience. I think this change is
-> progress on TopDownL1 - would you agree?
+Fix build issue when CONFIG_TI_CPTS is defined in the defconfig but
+CONFIG_TI_CPTS_MOD is not set.
 
-TopdownL1 in non SMT mode should always fit. Inside a group
-deduping always makes sense. 
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw.o: in function `cpsw_ndo_stop':
+drivers/net/ethernet/ti/cpsw.c:886: undefined reference to `cpts_unregister'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw.o: in function `cpsw_remove':
+drivers/net/ethernet/ti/cpsw.c:1742: undefined reference to `cpts_release'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw.o: in function `cpsw_rx_handler':
+drivers/net/ethernet/ti/cpsw.c:437: undefined reference to `cpts_rx_timestamp'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw.o: in function `cpsw_ndo_open':
+drivers/net/ethernet/ti/cpsw.c:840: undefined reference to `cpts_register'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw.o: in function `cpsw_probe':
+drivers/net/ethernet/ti/cpsw.c:1717: undefined reference to `cpts_release'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw_priv.o: in function `cpsw_tx_handler':
+drivers/net/ethernet/ti/cpsw_priv.c:68: undefined reference to `cpts_tx_timestamp'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw_priv.o: in function `cpsw_init_common':
+drivers/net/ethernet/ti/cpsw_priv.c:525: undefined reference to `cpts_create'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw_new.o: in function `cpsw_ndo_stop':
+drivers/net/ethernet/ti/cpsw_new.c:814: undefined reference to `cpts_unregister'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw_new.o: in function `cpsw_remove':
+drivers/net/ethernet/ti/cpsw_new.c:2029: undefined reference to `cpts_release'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw_new.o: in function `cpsw_rx_handler':
+drivers/net/ethernet/ti/cpsw_new.c:379: undefined reference to `cpts_rx_timestamp'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw_new.o: in function `cpsw_probe':
+drivers/net/ethernet/ti/cpsw_new.c:2005: undefined reference to `cpts_release'
+arm-none-linux-gnueabihf-ld: drivers/net/ethernet/ti/cpsw_new.o: in function `cpsw_ndo_open':
+drivers/net/ethernet/ti/cpsw_new.c:874: undefined reference to `cpts_register'
 
-The problem is SMT mode where it doesn't fit. toplev tries
-to group each node and each level together.
+The header file needs to check if the CONFIG_TI_CPTS_MOD is set in order
+to build the prototypes.  If not then the inline functions should be
+used.
 
-> 
-> I'm wondering if what is needed are flags to control behavior. For
-> example, avoiding the use of groups altogether. For TopDownL1 I see.
+Once this change was made then a follow up error occured due to the same
+flag error in the code.
 
-Yes the current situation isn't great.
+drivers/net/ethernet/ti/cpsw_ethtool.c:724:30: error: dereferencing pointer to incomplete type ‘struct cpts’
+ info->phc_index = cpsw->cpts->phc_index;
 
-For Topdown your patch clearly is an improvement, I'm not sure
-it's for everything though.
+CC: Grygorii Strashko <grygorii.strashko@ti.com>
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
+ drivers/net/ethernet/ti/cpsw_ethtool.c | 2 +-
+ drivers/net/ethernet/ti/cpts.h         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Probably the advanced heuristics are only useful for a few
-formulas, most are very simple. So maybe it's ok. I guess
-would need some testing over the existing formulas.
+diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
+index fa54efe3be63..31e8a76d4407 100644
+--- a/drivers/net/ethernet/ti/cpsw_ethtool.c
++++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
+@@ -709,7 +709,7 @@ int cpsw_set_ringparam(struct net_device *ndev,
+ 	return ret;
+ }
+ 
+-#if IS_ENABLED(CONFIG_TI_CPTS)
++#if IS_ENABLED(CONFIG_TI_CPTS_MOD)
+ int cpsw_get_ts_info(struct net_device *ndev, struct ethtool_ts_info *info)
+ {
+ 	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
+diff --git a/drivers/net/ethernet/ti/cpts.h b/drivers/net/ethernet/ti/cpts.h
+index bb997c11ee15..548af47fa938 100644
+--- a/drivers/net/ethernet/ti/cpts.h
++++ b/drivers/net/ethernet/ti/cpts.h
+@@ -8,7 +8,7 @@
+ #ifndef _TI_CPTS_H_
+ #define _TI_CPTS_H_
+ 
+-#if IS_ENABLED(CONFIG_TI_CPTS)
++#if IS_ENABLED(CONFIG_TI_CPTS_MOD)
+ 
+ #include <linux/clk.h>
+ #include <linux/clkdev.h>
+-- 
+2.25.1
 
-
--Andi
