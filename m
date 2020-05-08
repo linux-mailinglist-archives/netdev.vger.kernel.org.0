@@ -2,127 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82A3F1CB6CA
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:13:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FCFE1CB6DB
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727812AbgEHSNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 14:13:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49760 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726797AbgEHSNM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 14:13:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=wWNCGA+EwqVktP3Bvv8WPRuSGI2htUTB8ahmxkxy++o=; b=cnTTDe7IEMZQkOtb+qm05miDls
-        qWpgdgwqMbp0QDQSa8AkoBwo0d0VM5xkLtPW4k6zxwQi6z8HB0tr28cuy0ZDKjRHX9EAa0FbYWmHj
-        QWynS9sMpHL3874vkA6Ctk6HUGYbaoReKgS6pAqdqplDkHSybpgFsPJDClHsAzkBWUb0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jX7Ub-001P3h-KM; Fri, 08 May 2020 20:13:01 +0200
-Date:   Fri, 8 May 2020 20:13:01 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        linux.cj@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next PATCH v3 4/5] net: phy: Introduce fwnode_get_phy_id()
-Message-ID: <20200508181301.GF298574@lunn.ch>
-References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
- <20200505132905.10276-5-calvin.johnson@oss.nxp.com>
- <67e263cf-5cd7-98d1-56ff-ebd9ac2265b6@arm.com>
- <CAHp75Vew8Fh6HEoOACk+J9KCpw+AE2t2+oFnXteK1eShopfYAA@mail.gmail.com>
- <83ab4ca4-9c34-4cdd-4413-3b4cdf96727d@arm.com>
- <20200508160755.GB10296@lsv03152.swis.in-blr01.nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200508160755.GB10296@lsv03152.swis.in-blr01.nxp.com>
+        id S1727105AbgEHSQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 14:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726797AbgEHSP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:15:59 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C96AC05BD43
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 11:15:59 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id m7so1090980plt.5
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 11:15:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cs.washington.edu; s=goo201206;
+        h=from:to:cc:subject:date:message-id;
+        bh=SpXTpjywTMwNg9TSFFzsjIj59xv1CBVoV4EOvzTnkkE=;
+        b=OUaIAWfx/D+534tHqEjPc5LhTV0i1FVt0Kt5hR3t1Yp7olGvCqp/H+sefJAIfUfMTo
+         lsTfQ0r47jEml60qGikpE/Q4n5MWvrp5ySbMDcj83f4zkSJNh3q1ELFkn5xeYt41li+N
+         Pg4VgAJ9/SlQaHUatqfDxchdOtITEwVOUOSPI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=SpXTpjywTMwNg9TSFFzsjIj59xv1CBVoV4EOvzTnkkE=;
+        b=ixaAMiNkeSGWuJhE8TJOtlK2zz/BkpkyrjMsRFqxYDfpY78/HSM6ZrMyKAyiNapLXE
+         w84sWhN5Y2fk6iuqXrgEVCgDmeMAXvhqmdPAF2pJV3CWMQXSF8Rfb2LyK8Th+KB1idNj
+         BLDqWNa/pdiwc477ombLt9TDaUNYYOP5S/Z1LDbnai2+2s6xhm4svmAnHhumvvX81JJ8
+         68lkRaAsHflwHmk0JXmVg6JxnikeMwCtvZmYGRveN7YRBb/d5KKneKJFVqlrRVKJg9cq
+         Ygv1jM1gob15QJULhXWNAOjSMDJJnF6+D13XrEHsYtvKdNsVfBFKBIGxWGONQQ9/tI0j
+         xGlA==
+X-Gm-Message-State: AGi0PuZvi64WZu/Mnw1hUwyYO2SENtGRfOLzooG1d7Qs0+MzWnwSp4eL
+        N7iU9wEmriJTXqeN093zCf+XkA==
+X-Google-Smtp-Source: APiQypJi63IfRpNFJ9QMnCB3d7uQo9kOMqYx5rt13VDzmIabXyqW/KZU/7OgFnhyxpXQwSQA+CUfQg==
+X-Received: by 2002:a17:902:9a43:: with SMTP id x3mr3623548plv.332.1588961758604;
+        Fri, 08 May 2020 11:15:58 -0700 (PDT)
+Received: from localhost.localdomain (c-73-53-94-119.hsd1.wa.comcast.net. [73.53.94.119])
+        by smtp.gmail.com with ESMTPSA id e11sm2349463pfl.85.2020.05.08.11.15.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2020 11:15:57 -0700 (PDT)
+From:   Luke Nelson <lukenels@cs.washington.edu>
+X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Christoffer Dall <christoffer.dall@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH bpf-next v2 0/3] arm64 BPF JIT Optimizations
+Date:   Fri,  8 May 2020 11:15:43 -0700
+Message-Id: <20200508181547.24783-1-luke.r.nels@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > It does have a numeric version defined for EISA types. OTOH I suspect that
-> > your right. If there were a "PHY\VEN_IDvvvv&ID_DDDD" definition, it may not
-> > be ideal to parse it. Instead the normal ACPI model of exactly matching the
-> > complete string in the phy driver might be more appropriate.
-> 
-> IMO, it should be fine to parse the string to extract the phy_id. Is there any
-> reason why we cannot do this?
+This patch series introduces several optimizations to the arm64 BPF JIT.
+The optimizations make use of arm64 immediate instructions to avoid
+loading BPF immediates to temporary registers, when possible.
 
-Some background here, about what the PHY core does.
+In the process, we discovered two bugs in the logical immediate encoding
+function in arch/arm64/kernel/insn.c using Serval. The series also fixes
+the two bugs before introducing the optimizations.
 
-PHYs have two ID registers. This contains vendor, device, and often
-revision of the PHY. Only the vendor part is standardised, vendors can
-decide how to use the device part, but it is common for the lowest
-nibble to be revision. The core will read these ID registers, and then
-go through all the PHY drivers registered and ask them if they support
-this ID. The drivers provide a table of IDs and masks. The mask is
-applied, and then if the ID matches, the driver is used. The mask
-allows the revision to be ignored, etc.
+Tested on aarch64 QEMU virt machine using test_bpf and test_verifier.
 
-There is a very small number of devices where the vendor messed up,
-and did not put valid contents in the ID registers. In such cases, we
-can read the IDs from device tree. These are then used in exactly the
-same way as if they were read from the device.
+v2:
+ - Cleaned up patch to insn.c.
+   (Marc Zyngier, Will Deacon) 
 
-If you want the ACPI model to be used, an exact match on the string,
-you are going to have to modify the core and the drivers. They
-currently don't have any string, and have no idea about different
-revisions which are out in the wild.
+Luke Nelson (3):
+  arm64: insn: Fix two bugs in encoding 32-bit logical immediates
+  bpf, arm64: Optimize AND,OR,XOR,JSET BPF_K using arm64 logical
+    immediates
+  bpf, arm64: Optimize ADD,SUB,JMP BPF_K using arm64 add/sub immediates
 
-> > Similarly to how I suspect the next patch's use of "compatible" isn't ideal
-> > either, because whether a device is c45 or not, should tend to be fixed to a
-> > particular vendor/device implementation and not a firmware provided
-> > property.
+ arch/arm64/kernel/insn.c      | 14 +++----
+ arch/arm64/net/bpf_jit.h      | 22 +++++++++++
+ arch/arm64/net/bpf_jit_comp.c | 73 ++++++++++++++++++++++++++++-------
+ 3 files changed, 88 insertions(+), 21 deletions(-)
 
-Not exactly true. It is the combination of can the bus master do C45
-and can the device do C45. Unfortunately, we have no knowledge of the
-bus masters capabilities, if it can do C45. And many MDIO drivers will
-do a C22 transaction when asked to perform a C45 transaction. All new
-submissions for MDIO drivers i ask for EOPNOTSUPP to be returned if
-C45 is not supported. But we cannot rely on that. Too much history.
+Cc: Xi Wang <xi.wang@gmail.com>
 
-> 
-> I tend to agree with you on this. Even for DT, ideal case, IMO should be:
-> 
-> 1) mdiobus_scan scans the mdiobus for c22 devices by reading phy id from
-> registers 2 and 3
-> 2) if not found scan for c45 devices <= looks like this is missing in Linux
-> 3) look for phy_id from compatible string.
+-- 
+2.17.1
 
-It is somewhat more complex, in that there are a small number of
-devices which will respond to both C22 and C45. Generally, you want to
-use C45 if supported. So you would want to do the C45 scan first. But
-then the earlier problem comes to play, you have no idea if the bus
-master actually correctly supports C45.
-
-Given the issues, we assume all bus masters and PHY devices are C22
-unless DT says the bus master and PHY combination is compatible with
-C45.
-
-	   Andrew
