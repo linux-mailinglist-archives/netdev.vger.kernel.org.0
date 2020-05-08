@@ -2,61 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39AD51CA17B
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 05:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AACF21CA1CC
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 06:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbgEHD2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 23:28:34 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:4291 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726661AbgEHD2e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 23:28:34 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id AD250219FAB06A086AD7;
-        Fri,  8 May 2020 11:28:31 +0800 (CST)
-Received: from huawei.com (10.175.101.78) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Fri, 8 May 2020
- 11:28:26 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <alex.aring@gmail.com>, <stefan@datenfreihafen.org>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-wpan@vger.kernel.org>,
-        <yangyingliang@huawei.com>
-Subject: [PATCH net-next] ieee802154: 6lowpan: remove unnecessary comparison
-Date:   Fri, 8 May 2020 11:52:08 +0800
-Message-ID: <1588909928-58230-1-git-send-email-yangyingliang@huawei.com>
-X-Mailer: git-send-email 1.8.3
+        id S1725774AbgEHELD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 00:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725550AbgEHELC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 00:11:02 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0A2C05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 21:11:02 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id s9so377175qkm.6
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 21:11:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yVpEo0UedCf0TPfhwSNlxYq1Ls6+l+mUJc/6UQ3cs7I=;
+        b=ozRi3HYftwDbzjTLGdF02sreNKiVvfkAB17H25V090hTVEAuw+z68bMTGFDQRCcr2a
+         M2u119wbilEsdXl4cX8Zq08yz2aFfy6usdRWN4MLSUWmDIEWAqCZPfFSlJQssXLhg6QT
+         fWrLDp70dNnCwuZpx0UpGF0KI8wZkZEsLD8oSVfBjF6K1m45GKHKtzP54FkBm6MXTH+O
+         oBzq1cgopHgg/4yGKiKtXQUNDq+o64EOjWedZ4okoFOzTpBWEE10vssQRPZGzZaU/F4G
+         4ugFmTYEsly5UJKPH/LrPG3x6RF5jefMaVMnOdguLRWbyy1Lwa3rNlQO/x4ySvYIhoXM
+         +5Bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yVpEo0UedCf0TPfhwSNlxYq1Ls6+l+mUJc/6UQ3cs7I=;
+        b=Z6g6duJbfCFsSWRo2T29CCDQ3h2ayehtO7Tj56FMrGWzFwfv+qG5E29qqsM5kcfxpJ
+         IBIkjUcHU2lJqIfvGwfr20KpBok1tNOdaBZAh6Zbyx/zE/TG01AouCWiNZdrpklfLpNN
+         eYTWBaJ042o+jYWtHGea/lsWCPdvi2vIl9IkVpvjWZDuoG4hB3aeAJUPhP98qyu6x+Y2
+         LOQvPZFCKX7np9f758gR5iKJOmC7OZWu6/DkBDLWQ0EjINieBAX3Fl6Z42byq8uPiACd
+         c5wXM1kGNEYaBx9g00QUr+wT5O/GRf5jGpSzH2+fmv4yQ8B0SiOAerBr9uR2K7HD47uo
+         nrmA==
+X-Gm-Message-State: AGi0PuZE2BHk7YgB8WEHqxBh/AEUuoiJNdshxvGdWzhe2P1K03xs9vhY
+        ASLA1KDTNE2AAQYBG+LJW5oJio2lBII=
+X-Google-Smtp-Source: APiQypIAdfAVkF4kWqs9zq+4PA7tILpCqVu+1dzsCr4JS41JzsRlO8bTdNpbLwbWo0Yw2kkRZ+jUyg==
+X-Received: by 2002:a37:bd0:: with SMTP id 199mr823216qkl.454.1588911060969;
+        Thu, 07 May 2020 21:11:00 -0700 (PDT)
+Received: from pek-lpggp6.wrs.com (unknown-105-123.windriver.com. [147.11.105.123])
+        by smtp.gmail.com with ESMTPSA id p22sm490946qtb.91.2020.05.07.21.10.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 07 May 2020 21:11:00 -0700 (PDT)
+From:   Kevin Hao <haokexin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>, davem@davemloft.net
+Subject: [PATCH] octeontx2-pf: Use the napi_alloc_frag() to alloc the pool buffers
+Date:   Fri,  8 May 2020 12:07:28 +0800
+Message-Id: <20200508040728.24202-1-haokexin@gmail.com>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.78]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The type of dispatch is u8 which is always '<=' 0xff, so the
-dispatch <= 0xff is always true, we can remove this comparison.
+In the current codes, the octeontx2 uses its own method to allocate
+the pool buffers, but there are some issues in this implementation.
+1. We have to run the otx2_get_page() for each allocation cycle and
+   this is pretty error prone. As I can see there is no invocation
+   of the otx2_get_page() in otx2_pool_refill_task(), this will leave
+   the allocated pages have the wrong refcount and may be freed wrongly.
+2. It wastes memory. For example, if we only receive one packet in a
+   NAPI RX cycle, and then allocate a 2K buffer with otx2_alloc_rbuf()
+   to refill the pool buffers and leave the remain area of the allocated
+   page wasted. On a kernel with 64K page, 62K area is wasted.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+IMHO it is really unnecessary to implement our own method for the
+buffers allocate, we can reuse the napi_alloc_frag() to simplify
+our code.
+
+Signed-off-by: Kevin Hao <haokexin@gmail.com>
 ---
- net/ieee802154/6lowpan/rx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../marvell/octeontx2/nic/otx2_common.c       | 51 ++++++++-----------
+ .../marvell/octeontx2/nic/otx2_common.h       | 15 +-----
+ .../marvell/octeontx2/nic/otx2_txrx.c         |  3 +-
+ .../marvell/octeontx2/nic/otx2_txrx.h         |  4 --
+ 4 files changed, 22 insertions(+), 51 deletions(-)
 
-diff --git a/net/ieee802154/6lowpan/rx.c b/net/ieee802154/6lowpan/rx.c
-index ee17938..b34d050 100644
---- a/net/ieee802154/6lowpan/rx.c
-+++ b/net/ieee802154/6lowpan/rx.c
-@@ -240,7 +240,7 @@ static inline bool lowpan_is_reserved(u8 dispatch)
- 	return ((dispatch >= 0x44 && dispatch <= 0x4F) ||
- 		(dispatch >= 0x51 && dispatch <= 0x5F) ||
- 		(dispatch >= 0xc8 && dispatch <= 0xdf) ||
--		(dispatch >= 0xe8 && dispatch <= 0xff));
-+		dispatch >= 0xe8);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index f1d2dea90a8c..15fa1ad57f88 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -379,40 +379,32 @@ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx)
+ 		     (pfvf->hw.cq_ecount_wait - 1));
  }
  
- /* lowpan_rx_h_check checks on generic 6LoWPAN requirements
+-dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+-			   gfp_t gfp)
++dma_addr_t _otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
+ {
+ 	dma_addr_t iova;
++	u8 *buf;
+ 
+-	/* Check if request can be accommodated in previous allocated page */
+-	if (pool->page && ((pool->page_offset + pool->rbsize) <=
+-	    (PAGE_SIZE << pool->rbpage_order))) {
+-		pool->pageref++;
+-		goto ret;
+-	}
+-
+-	otx2_get_page(pool);
+-
+-	/* Allocate a new page */
+-	pool->page = alloc_pages(gfp | __GFP_COMP | __GFP_NOWARN,
+-				 pool->rbpage_order);
+-	if (unlikely(!pool->page))
++	buf = napi_alloc_frag(pool->rbsize);
++	if (unlikely(!buf))
+ 		return -ENOMEM;
+ 
+-	pool->page_offset = 0;
+-ret:
+-	iova = (u64)otx2_dma_map_page(pfvf, pool->page, pool->page_offset,
+-				      pool->rbsize, DMA_FROM_DEVICE);
+-	if (!iova) {
+-		if (!pool->page_offset)
+-			__free_pages(pool->page, pool->rbpage_order);
+-		pool->page = NULL;
++	iova = dma_map_single(pfvf->dev, buf, pool->rbsize, DMA_FROM_DEVICE);
++	if (unlikely(dma_mapping_error(pfvf->dev, iova)))
+ 		return -ENOMEM;
+-	}
+-	pool->page_offset += pool->rbsize;
++
+ 	return iova;
+ }
+ 
++static dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
++{
++	dma_addr_t addr;
++
++	local_bh_disable();
++	addr = _otx2_alloc_rbuf(pfvf, pool);
++	local_bh_enable();
++	return addr;
++}
++
+ void otx2_tx_timeout(struct net_device *netdev, unsigned int txq)
+ {
+ 	struct otx2_nic *pfvf = netdev_priv(netdev);
+@@ -805,7 +797,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
+ 	free_ptrs = cq->pool_ptrs;
+ 
+ 	while (cq->pool_ptrs) {
+-		bufptr = otx2_alloc_rbuf(pfvf, rbpool, GFP_KERNEL);
++		bufptr = otx2_alloc_rbuf(pfvf, rbpool);
+ 		if (bufptr <= 0) {
+ 			/* Schedule a WQ if we fails to free atleast half of the
+ 			 * pointers else enable napi for this RQ.
+@@ -1064,7 +1056,6 @@ static int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
+ 		return err;
+ 
+ 	pool->rbsize = buf_size;
+-	pool->rbpage_order = get_order(buf_size);
+ 
+ 	/* Initialize this pool's context via AF */
+ 	aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
+@@ -1152,13 +1143,12 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
+ 			return -ENOMEM;
+ 
+ 		for (ptr = 0; ptr < num_sqbs; ptr++) {
+-			bufptr = otx2_alloc_rbuf(pfvf, pool, GFP_KERNEL);
++			bufptr = otx2_alloc_rbuf(pfvf, pool);
+ 			if (bufptr <= 0)
+ 				return bufptr;
+ 			otx2_aura_freeptr(pfvf, pool_id, bufptr);
+ 			sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
+ 		}
+-		otx2_get_page(pool);
+ 	}
+ 
+ 	return 0;
+@@ -1204,13 +1194,12 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
+ 	for (pool_id = 0; pool_id < hw->rqpool_cnt; pool_id++) {
+ 		pool = &pfvf->qset.pool[pool_id];
+ 		for (ptr = 0; ptr < num_ptrs; ptr++) {
+-			bufptr = otx2_alloc_rbuf(pfvf, pool, GFP_KERNEL);
++			bufptr = otx2_alloc_rbuf(pfvf, pool);
+ 			if (bufptr <= 0)
+ 				return bufptr;
+ 			otx2_aura_freeptr(pfvf, pool_id,
+ 					  bufptr + OTX2_HEAD_ROOM);
+ 		}
+-		otx2_get_page(pool);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 0b1c653b3449..5d806252efd0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -434,18 +434,6 @@ static inline void otx2_aura_freeptr(struct otx2_nic *pfvf,
+ 		      otx2_get_regaddr(pfvf, NPA_LF_AURA_OP_FREE0));
+ }
+ 
+-/* Update page ref count */
+-static inline void otx2_get_page(struct otx2_pool *pool)
+-{
+-	if (!pool->page)
+-		return;
+-
+-	if (pool->pageref)
+-		page_ref_add(pool->page, pool->pageref);
+-	pool->pageref = 0;
+-	pool->page = NULL;
+-}
+-
+ static inline int otx2_get_pool_idx(struct otx2_nic *pfvf, int type, int idx)
+ {
+ 	if (type == AURA_NIX_SQ)
+@@ -589,8 +577,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl);
+ int otx2_txsch_alloc(struct otx2_nic *pfvf);
+ int otx2_txschq_stop(struct otx2_nic *pfvf);
+ void otx2_sqb_flush(struct otx2_nic *pfvf);
+-dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+-			   gfp_t gfp);
++dma_addr_t _otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool);
+ int otx2_rxtx_enable(struct otx2_nic *pfvf, bool enable);
+ void otx2_ctx_disable(struct mbox *mbox, int type, bool npa);
+ int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index 45abe0cd0e7b..62e95c6f38eb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -286,7 +286,7 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
+ 
+ 	/* Refill pool with new buffers */
+ 	while (cq->pool_ptrs) {
+-		bufptr = otx2_alloc_rbuf(pfvf, cq->rbpool, GFP_ATOMIC);
++		bufptr = _otx2_alloc_rbuf(pfvf, cq->rbpool);
+ 		if (unlikely(bufptr <= 0)) {
+ 			struct refill_work *work;
+ 			struct delayed_work *dwork;
+@@ -304,7 +304,6 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
+ 		otx2_aura_freeptr(pfvf, cq->cq_idx, bufptr + OTX2_HEAD_ROOM);
+ 		cq->pool_ptrs--;
+ 	}
+-	otx2_get_page(cq->rbpool);
+ 
+ 	return processed_cqe;
+ }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+index 4ab32d3adb78..da97f2d4416f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+@@ -113,11 +113,7 @@ struct otx2_cq_poll {
+ struct otx2_pool {
+ 	struct qmem		*stack;
+ 	struct qmem		*fc_addr;
+-	u8			rbpage_order;
+ 	u16			rbsize;
+-	u32			page_offset;
+-	u16			pageref;
+-	struct page		*page;
+ };
+ 
+ struct otx2_cq_queue {
 -- 
-1.8.3
+2.26.0
 
