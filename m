@@ -2,147 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DF51CA2A8
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 07:30:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F36341CA2B8
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 07:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725937AbgEHFaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 01:30:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
+        id S1726761AbgEHFgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 01:36:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725875AbgEHFaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 01:30:23 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9A7C05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 22:30:22 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id h26so362962qtu.8
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 22:30:22 -0700 (PDT)
+        with ESMTP id S1725681AbgEHFge (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 01:36:34 -0400
+Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287AAC05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 22:36:34 -0700 (PDT)
+Received: by mail-qv1-xf4a.google.com with SMTP id m20so684485qvy.13
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 22:36:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8Twha4r7DnWpU5y1uh8/ygFgFxB6QBolAggUkORRRac=;
-        b=kVY4d9jF1HmknnubpQVrunfmu8qIfzSojBk6loFj0wKuignRCNGDAfnLYJxfdTKLT9
-         BqX455HsQjgwaRRvZd2+SjAY37ZSDs3r2ERyyVFMQP458ry/mulA8DzN7nLXg/NKVg1v
-         Izun5U/c7o5heGB5/hpgFjmMHVc4M5RM37c3/KgVH5U2jIWbul8t0uLH1zyNesaQO3L3
-         ezKI2m1VvENbSJ5nIjvMGp+M5hgNquy9gUciDcvSZwsZgb1Fy1LMPB7um7381Uq8FEib
-         HnXX75k7L1s0uBmrxemH7nM+5XGr4mvgAG17KQ0Ox6NWZ65V7TfvhbKvkGv5BnXQwE3+
-         rHzw==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=NVxIVOTpUFm5R6D1Ik0bw3E1/vQaVLUz9mgqWgfmQ4M=;
+        b=tvp8IsOM9NJeODYcUfrQdDk+mbK5pXcoU54CyXgGc9nlNplTAcXH2kjFPV4ToT5RVu
+         ob/9ZHHnprIfIcW4hvYigRy+mEKhMmY0wH6kMTvsVurPm8bSSw4imsP9w9KWF7SouF/o
+         5ipucGk9a4i/rpvKU5sVwzfLj7CyKWNP3SfNtAFWOaNvg/UwzRNOzLbesmH/idhQZukl
+         m86Qoyo4NxTfBRTO7t8VrBQxR5TUrK5NsJE/iCeCjzTPp+UIE5dgSgIYPtPdp2cJjJRz
+         7xxCRa5LDU/rijB2c3bdYXCva3gcoF9rCn8cfGw/Na17zLgn+oQ/+ntgok1PfkcLzDBX
+         J1sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8Twha4r7DnWpU5y1uh8/ygFgFxB6QBolAggUkORRRac=;
-        b=SvCyZ89Jk8Vxf3m98Ycc6/PX6ISVsXPvBAqSHGwKYZs1GYGM6YMoZLr6LYxgmTuMS7
-         bCpV8sbrW4sGBkm8RK6lA1F0mvcF4mCtLaw2rTLoNHdeROiJAF1urGHIWXNE5frZ3iNq
-         X0QkshPmYX8GueW+5Z2nEYii2UB5hy6jF1FZ7mZSfR8SfGZkpMi3ryoZCFsmi8EJLn9R
-         VScsLO6ufWVYyEGVQPkL3oAn3StB5WG4vCSmm0ttTpwfUVoVhqgj1MdL/Pd2hoMvS4ND
-         T2v3f1fDhX+OXccCtmkCOQgfqIVAIGX4+fs0E4FtR5/uC6nVzv+k1hWkl9eUvwZ31/IQ
-         OZrA==
-X-Gm-Message-State: AGi0PuZx3u8tLx6lQ0W7SkzwFY+A4LHXUosspI1f/+tXVdrkwnu1vlea
-        /wPbG5Do0I8sH9/SVrQ0Gn0=
-X-Google-Smtp-Source: APiQypI4yaGgS4+56ZimT0w5YlhV1BgU2Po8TMR3iM/GN4RlybCHnEuBhAUPccw4km8t4qjLjYlgbg==
-X-Received: by 2002:ac8:6159:: with SMTP id d25mr1190500qtm.70.1588915822086;
-        Thu, 07 May 2020 22:30:22 -0700 (PDT)
-Received: from pek-khao-d2.corp.ad.wrs.com (unknown-105-123.windriver.com. [147.11.105.123])
-        by smtp.gmail.com with ESMTPSA id v2sm619695qth.66.2020.05.07.22.30.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2020 22:30:21 -0700 (PDT)
-Date:   Fri, 8 May 2020 13:30:15 +0800
-From:   Kevin Hao <haokexin@gmail.com>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] octeontx2-pf: Use the napi_alloc_frag() to alloc the
- pool buffers
-Message-ID: <20200508053015.GB3222151@pek-khao-d2.corp.ad.wrs.com>
-References: <20200508040728.24202-1-haokexin@gmail.com>
- <CA+sq2CfMoOhrVz7tMkKiM3BwAgoyMj6i2RWz0JWwvpBMCO3Whg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="3uo+9/B/ebqu+fSQ"
-Content-Disposition: inline
-In-Reply-To: <CA+sq2CfMoOhrVz7tMkKiM3BwAgoyMj6i2RWz0JWwvpBMCO3Whg@mail.gmail.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=NVxIVOTpUFm5R6D1Ik0bw3E1/vQaVLUz9mgqWgfmQ4M=;
+        b=bxBb8vaVTsyVgOSkBDIRUvYE4/aEaauNVjFfyXyVQLHX1f4xByHrSncnFOBhRiLsH/
+         f7vwGlNBdQhKu9vIBmQUBaRg8XXku5pTw0ZaCMb3yU7NcO9RoLIj77ZBUMzpBKAnlxLx
+         XgtYqEMK6jGf2VivnW9tjr5Hq7ies1w22W4k7Ss9axiprHpqhVn3K8jPU8k7XcvQPQJB
+         p+Gs8QKkOPJWkE1OSXmNFSExtrzR1brQxzrUE9BdiN7vPBtMJqvUI08RQl6bxlwUnPPs
+         pmKFXwygL+mEwC9buq4ks3kjDolhqyb7yTr7NyjRp51uxmkE6OhV0txNGb/AyB6+APPh
+         YmnA==
+X-Gm-Message-State: AGi0PublMWdTN6VWPpYo5XqrrWz/U1SAspEBT0IP6n1qHBYpgInAR4FX
+        S81wlAmayu3DY2WpwR1unj9/LB8x+OxI
+X-Google-Smtp-Source: APiQypJ6oQcDstyt4s+HU1dq0c4aqe7RVxAX5TfQEd0U9dQnkRzl3SL1aOuROG0bLAIF56J2nyjgxhgE7Am3
+X-Received: by 2002:a0c:ec07:: with SMTP id y7mr1059063qvo.183.1588916193207;
+ Thu, 07 May 2020 22:36:33 -0700 (PDT)
+Date:   Thu,  7 May 2020 22:36:15 -0700
+Message-Id: <20200508053629.210324-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.2.645.ge9eca65c58-goog
+Subject: [RFC PATCH v3 00/14] Share events between metrics
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Vince Weaver <vincent.weaver@maine.edu>,
+        Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Metric groups contain metrics. Metrics create groups of events to
+ideally be scheduled together. Often metrics refer to the same events,
+for example, a cache hit and cache miss rate. Using separate event
+groups means these metrics are multiplexed at different times and the
+counts don't sum to 100%. More multiplexing also decreases the
+accuracy of the measurement.
 
---3uo+9/B/ebqu+fSQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This change orders metrics from groups or the command line, so that
+the ones with the most events are set up first. Later metrics see if
+groups already provide their events, and reuse them if
+possible. Unnecessary events and groups are eliminated.
 
-On Fri, May 08, 2020 at 10:18:27AM +0530, Sunil Kovvuri wrote:
-> On Fri, May 8, 2020 at 9:43 AM Kevin Hao <haokexin@gmail.com> wrote:
-> >
-> > In the current codes, the octeontx2 uses its own method to allocate
-> > the pool buffers, but there are some issues in this implementation.
-> > 1. We have to run the otx2_get_page() for each allocation cycle and
-> >    this is pretty error prone. As I can see there is no invocation
-> >    of the otx2_get_page() in otx2_pool_refill_task(), this will leave
-> >    the allocated pages have the wrong refcount and may be freed wrongly.
->=20
-> Thanks for pointing, will fix.
->=20
-> > 2. It wastes memory. For example, if we only receive one packet in a
-> >    NAPI RX cycle, and then allocate a 2K buffer with otx2_alloc_rbuf()
-> >    to refill the pool buffers and leave the remain area of the allocated
-> >    page wasted. On a kernel with 64K page, 62K area is wasted.
-> >
-> > IMHO it is really unnecessary to implement our own method for the
-> > buffers allocate, we can reuse the napi_alloc_frag() to simplify
-> > our code.
-> >
-> > Signed-off-by: Kevin Hao <haokexin@gmail.com>
->=20
-> Have you measured performance with and without your patch ?
+The option --metric-no-group is added so that metrics aren't placed in
+groups. This affects multiplexing and may increase sharing.
 
-I will do performance compare later. But I don't think there will be measur=
-able
-difference.
+The option --metric-mo-merge is added and with this option the
+existing grouping behavior is preserved.
 
-> I didn't use napi_alloc_frag() as it's too costly, if in one NAPI
-> instance driver
-> receives 32 pkts, then 32 calls to napi_alloc_frag() and updates to page =
-ref
-> count per fragment etc are costly.
+RFC because:
+ - without this change events within a metric may get scheduled
+   together, after they may appear as part of a larger group and be
+   multiplexed at different times, lowering accuracy - however, less
+   multiplexing may compensate for this.
+ - libbpf's hashmap is used, however, libbpf is an optional
+   requirement for building perf.
+ - other things I'm not thinking of.
 
-No, the page ref only be updated at the page allocation and all the space a=
-re
-used. In general, the invocation of napi_alloc_frag() will not cause the up=
-date
-of the page ref. So in theory, the count of updating page ref should be red=
-uced
-by using of napi_alloc_frag() compare to the current otx2 implementation.
+Thanks!
 
-Thanks,
-Kevin
+Example on Sandybridge:
 
-> When traffic rate is less then it
-> may not matter
-> much.
->=20
-> Thanks,
-> Sunil.
+$ perf stat -a --metric-no-merge -M TopDownL1_SMT sleep 1
 
---3uo+9/B/ebqu+fSQ
-Content-Type: application/pgp-signature; name="signature.asc"
+ Performance counter stats for 'system wide':
 
------BEGIN PGP SIGNATURE-----
+          14931177      cpu_clk_unhalted.one_thread_active #     0.47 Backend_Bound_SMT        (12.45%)
+          32314653      int_misc.recovery_cycles_any                                     (16.23%)
+         555020905      uops_issued.any                                               (18.85%)
+        1038651176      idq_uops_not_delivered.core                                     (24.95%)
+          43003170      cpu_clk_unhalted.ref_xclk                                     (25.20%)
+        1154926272      cpu_clk_unhalted.thread                                       (31.50%)
+         656873544      uops_retired.retire_slots                                     (31.11%)
+          16491988      cpu_clk_unhalted.one_thread_active #     0.06 Bad_Speculation_SMT      (31.10%)
+          32064061      int_misc.recovery_cycles_any                                     (31.04%)
+         648394934      uops_issued.any                                               (31.14%)
+          42107506      cpu_clk_unhalted.ref_xclk                                     (24.94%)
+        1124565282      cpu_clk_unhalted.thread                                       (31.14%)
+         523430886      uops_retired.retire_slots                                     (31.05%)
+          12328380      cpu_clk_unhalted.one_thread_active #     0.35 Frontend_Bound_SMT       (10.08%)
+          42651836      cpu_clk_unhalted.ref_xclk                                     (10.08%)
+        1006287722      idq_uops_not_delivered.core                                     (10.08%)
+        1130593027      cpu_clk_unhalted.thread                                       (10.08%)
+          14209258      cpu_clk_unhalted.one_thread_active #     0.18 Retiring_SMT             (6.39%)
+          41904474      cpu_clk_unhalted.ref_xclk                                     (6.39%)
+         522251584      uops_retired.retire_slots                                     (6.39%)
+        1111257754      cpu_clk_unhalted.thread                                       (6.39%)
+          12930094      cpu_clk_unhalted.one_thread_active # 2865823806.05 SLOTS_SMT           (11.06%)
+          40975376      cpu_clk_unhalted.ref_xclk                                     (11.06%)
+        1089204936      cpu_clk_unhalted.thread                                       (11.06%)
 
-iQEzBAEBCAAdFiEEHc6qFoLCZqgJD98Zk1jtMN6usXEFAl607mcACgkQk1jtMN6u
-sXGR/Qf/V1TmW4Q7zG57kgJjHWXTai8WhGbHoiQ/hU6nvkcQFXFyuf5L7J7mQdcr
-Pl9d/PIKEmq1kq2R4CX5pyhzXDu2gvomtPCswm7fhOEDSHcBpsRuHQLkQSihVG0T
-Ox6C6tyGCxi9cMCp++K6rRXgkxT8qgpAacBLOCmAj+oLFXAtxirxKhR+9V9AdKHt
-qMCvvlBNtg7wX17ZmcCEiwerLJV3Ght2Q+Iy9kxfqKmuqJXhbzf5f80hqX+gH1bB
-RbFI56jt8i1ZyYzJKR7jKBYU3rgnTnm7TgBj8WJMf1e1oJKh6O5cPzWmsNWD66uv
-6Xi6K1pOp+VSANkP57xdFtD7agqatw==
-=dV6V
------END PGP SIGNATURE-----
+       1.002165509 seconds time elapsed
 
---3uo+9/B/ebqu+fSQ--
+$ perf stat -a -M TopDownL1_SMT sleep 1
+
+ Performance counter stats for 'system wide':
+
+          11893411      cpu_clk_unhalted.one_thread_active # 2715516883.49 SLOTS_SMT         
+                                                  #     0.19 Retiring_SMT           
+                                                  #     0.33 Frontend_Bound_SMT     
+                                                  #     0.04 Bad_Speculation_SMT    
+                                                  #     0.44 Backend_Bound_SMT        (71.46%)
+          28458253      int_misc.recovery_cycles_any                                     (71.44%)
+         562710994      uops_issued.any                                               (71.42%)
+         907105260      idq_uops_not_delivered.core                                     (57.12%)
+          39797715      cpu_clk_unhalted.ref_xclk                                     (57.12%)
+        1045357060      cpu_clk_unhalted.thread                                       (71.41%)
+         504809283      uops_retired.retire_slots                                     (71.44%)
+
+       1.001939294 seconds time elapsed
+
+Note that without merging the metrics sum to 1.06, but with merging
+the sum is 1.
+
+Example on Cascadelake:
+
+$ perf stat -a --metric-no-merge -M TopDownL1_SMT sleep 1
+
+ Performance counter stats for 'system wide':
+
+          13678949      cpu_clk_unhalted.one_thread_active #     0.59 Backend_Bound_SMT        (13.35%)
+         121286613      int_misc.recovery_cycles_any                                     (18.58%)
+        4041490966      uops_issued.any                                               (18.81%)
+        2665605457      idq_uops_not_delivered.core                                     (24.81%)
+         111757608      cpu_clk_unhalted.ref_xclk                                     (25.03%)
+        7579026491      cpu_clk_unhalted.thread                                       (31.27%)
+        3848429110      uops_retired.retire_slots                                     (31.23%)
+          15554046      cpu_clk_unhalted.one_thread_active #     0.02 Bad_Speculation_SMT      (31.19%)
+         119582342      int_misc.recovery_cycles_any                                     (31.16%)
+        3813943706      uops_issued.any                                               (31.14%)
+         113151605      cpu_clk_unhalted.ref_xclk                                     (24.89%)
+        7621196102      cpu_clk_unhalted.thread                                       (31.12%)
+        3735690253      uops_retired.retire_slots                                     (31.12%)
+          13727352      cpu_clk_unhalted.one_thread_active #     0.16 Frontend_Bound_SMT       (12.50%)
+         115441454      cpu_clk_unhalted.ref_xclk                                     (12.50%)
+        2824946246      idq_uops_not_delivered.core                                     (12.50%)
+        7817227775      cpu_clk_unhalted.thread                                       (12.50%)
+          13267908      cpu_clk_unhalted.one_thread_active #     0.21 Retiring_SMT             (6.31%)
+         114015605      cpu_clk_unhalted.ref_xclk                                     (6.31%)
+        3722498773      uops_retired.retire_slots                                     (6.31%)
+        7771438396      cpu_clk_unhalted.thread                                       (6.31%)
+          14948307      cpu_clk_unhalted.one_thread_active # 18085611559.36 SLOTS_SMT          (6.30%)
+         115632797      cpu_clk_unhalted.ref_xclk                                     (6.30%)
+        8007628156      cpu_clk_unhalted.thread                                       (6.30%)
+
+       1.006256703 seconds time elapsed
+
+$ perf stat -a -M TopDownL1_SMT sleep 1
+
+ Performance counter stats for 'system wide':
+
+          35999534      cpu_clk_unhalted.one_thread_active # 25969550384.66 SLOTS_SMT        
+                                                  #     0.40 Retiring_SMT           
+                                                  #     0.14 Frontend_Bound_SMT     
+                                                  #     0.02 Bad_Speculation_SMT    
+                                                  #     0.44 Backend_Bound_SMT        (71.35%)
+         133499018      int_misc.recovery_cycles_any                                     (71.36%)
+       10736468874      uops_issued.any                                               (71.40%)
+        3518076530      idq_uops_not_delivered.core                                     (57.24%)
+          78296616      cpu_clk_unhalted.ref_xclk                                     (57.25%)
+        8894997400      cpu_clk_unhalted.thread                                       (71.50%)
+       10409738753      uops_retired.retire_slots                                     (71.40%)
+
+       1.011611791 seconds time elapsed
+
+Note that without merging the metrics sum to 0.98, but with merging
+the sum is 1.
+
+v3. is a rebase with following the merging of patches in v2. It also
+adds the metric-no-group and metric-no-merge flags.
+v2. is the entire patch set based on acme's perf/core tree and includes a
+cherry-picks. Patch 13 was sent for review to the bpf maintainers here:
+https://lore.kernel.org/lkml/20200506205257.8964-2-irogers@google.com/
+v1. was based on the perf metrics fixes and test sent here:
+https://lore.kernel.org/lkml/20200501173333.227162-1-irogers@google.com/
+
+Andrii Nakryiko (1):
+  libbpf: Fix memory leak and possible double-free in hashmap__clear
+
+Ian Rogers (13):
+  perf parse-events: expand add PMU error/verbose messages
+  perf test: improve pmu event metric testing
+  lib/bpf hashmap: increase portability
+  perf expr: fix memory leaks in bison
+  perf evsel: fix 2 memory leaks
+  perf expr: migrate expr ids table to libbpf's hashmap
+  perf metricgroup: change evlist_used to a bitmap
+  perf metricgroup: free metric_events on error
+  perf metricgroup: always place duration_time last
+  perf metricgroup: delay events string creation
+  perf metricgroup: order event groups by size
+  perf metricgroup: remove duped metric group events
+  perf metricgroup: add options to not group or merge
+
+ tools/lib/bpf/hashmap.c                |   7 +
+ tools/lib/bpf/hashmap.h                |   3 +-
+ tools/perf/Documentation/perf-stat.txt |  19 ++
+ tools/perf/arch/x86/util/intel-pt.c    |  32 +--
+ tools/perf/builtin-stat.c              |  11 +-
+ tools/perf/tests/builtin-test.c        |   5 +
+ tools/perf/tests/expr.c                |  41 ++--
+ tools/perf/tests/pmu-events.c          | 159 +++++++++++++-
+ tools/perf/tests/pmu.c                 |   4 +-
+ tools/perf/tests/tests.h               |   2 +
+ tools/perf/util/evsel.c                |   2 +
+ tools/perf/util/expr.c                 | 129 +++++++-----
+ tools/perf/util/expr.h                 |  22 +-
+ tools/perf/util/expr.y                 |  25 +--
+ tools/perf/util/metricgroup.c          | 277 ++++++++++++++++---------
+ tools/perf/util/metricgroup.h          |   6 +-
+ tools/perf/util/parse-events.c         |  29 ++-
+ tools/perf/util/pmu.c                  |  33 +--
+ tools/perf/util/pmu.h                  |   2 +-
+ tools/perf/util/stat-shadow.c          |  49 +++--
+ tools/perf/util/stat.h                 |   2 +
+ 21 files changed, 592 insertions(+), 267 deletions(-)
+
+-- 
+2.26.2.645.ge9eca65c58-goog
+
