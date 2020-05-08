@@ -2,80 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78FD91CBB21
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 01:14:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B751D1CBB29
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 01:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728176AbgEHXOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 19:14:50 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54522 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727774AbgEHXOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 19:14:50 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jXCCd-00064O-A7; Fri, 08 May 2020 23:14:47 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][V2] net: tg3: tidy up loop, remove need to compute off with a multiply
-Date:   Sat,  9 May 2020 00:14:47 +0100
-Message-Id: <20200508231447.485241-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        id S1728260AbgEHXRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 19:17:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38398 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727110AbgEHXRi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 May 2020 19:17:38 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C9C562184D;
+        Fri,  8 May 2020 23:17:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588979858;
+        bh=HdxMD6V3GovGFdAWvIpqPfwDPjmn/95Q4cBC+m8zd+U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FBcm+yB+xlOqGW9vk4JDw/fF5yLyAzv8kq1ucJPN/bNlOkFfwbTnaDzdEfE2TZ2Rv
+         L1Y81gTtgmR+WGyZgWnz5fEOLqM6EqMQNca23yOjAdtja74XtLLqYQsTKY8J1qFQTC
+         HqBBfQm8xbmKy7jtYrFm37z5u3SqNSq9qWEnOteE=
+Date:   Fri, 8 May 2020 16:17:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kelly Littlepage <kelly@klittlepage.com>
+Cc:     davem@davemloft.net, edumazet@google.com, iris@onechronos.com,
+        kelly@onechronos.com, kuznet@ms2.inr.ac.ru, maloney@google.com,
+        netdev@vger.kernel.org, soheil@google.com,
+        willemdebruijn.kernel@gmail.com, yoshfuji@linux-ipv6.org,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH v4] net: tcp: fix rx timestamp behavior for tcp_recvmsg
+Message-ID: <20200508161735.5ca945c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <MN2PR19MB36463B624F9DF2C29771E147B6A20@MN2PR19MB3646.namprd19.prod.outlook.com>
+References: <20200508112920.141e722f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <MN2PR19MB36463B624F9DF2C29771E147B6A20@MN2PR19MB3646.namprd19.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Fri,  8 May 2020 19:58:46 +0000 Kelly Littlepage wrote:
+> From: Kelly Littlepage <kelly@onechronos.com>
+> 
+> The stated intent of the original commit is to is to "return the timestamp
+> corresponding to the highest sequence number data returned." The current
+> implementation returns the timestamp for the last byte of the last fully
+> read skb, which is not necessarily the last byte in the recv buffer. This
+> patch converts behavior to the original definition, and to the behavior of
+> the previous draft versions of commit 98aaa913b4ed ("tcp: Extend
+> SOF_TIMESTAMPING_RX_SOFTWARE to TCP recvmsg") which also match this
+> behavior.
 
-Currently the value for 'off' is computed using a multiplication and
-a couple of statements later off is being incremented by len and
-this value is never read.  Clean up the code by removing the
-multiplication and just increment off by len on each iteration.
-
-Addresses-Coverity: ("Unused value")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
-
-V2: Use reverse Christmas tree variable declaration style
-
----
- drivers/net/ethernet/broadcom/tg3.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index ff98a82b7bc4..7a3b22b35238 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -10797,17 +10797,15 @@ static int tg3_init_hw(struct tg3 *tp, bool reset_phy)
- #ifdef CONFIG_TIGON3_HWMON
- static void tg3_sd_scan_scratchpad(struct tg3 *tp, struct tg3_ocir *ocir)
- {
-+	u32 off, len = TG3_OCIR_LEN;
- 	int i;
- 
--	for (i = 0; i < TG3_SD_NUM_RECS; i++, ocir++) {
--		u32 off = i * TG3_OCIR_LEN, len = TG3_OCIR_LEN;
--
-+	for (i = 0, off = 0; i < TG3_SD_NUM_RECS; i++, ocir++, off += len) {
- 		tg3_ape_scratchpad_read(tp, (u32 *) ocir, off, len);
--		off += len;
- 
- 		if (ocir->signature != TG3_OCIR_SIG_MAGIC ||
- 		    !(ocir->version_flags & TG3_OCIR_FLAG_ACTIVE))
--			memset(ocir, 0, TG3_OCIR_LEN);
-+			memset(ocir, 0, len);
- 	}
- }
- 
--- 
-2.25.1
-
+Applied, thank you!
