@@ -2,82 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04091CA4D3
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 09:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58C371CA4DD
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 09:12:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbgEHHKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 03:10:33 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:32835 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725991AbgEHHKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 03:10:32 -0400
-Received: by mail-ot1-f65.google.com with SMTP id j26so740922ots.0
-        for <netdev@vger.kernel.org>; Fri, 08 May 2020 00:10:32 -0700 (PDT)
+        id S1726843AbgEHHMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 03:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726009AbgEHHMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 03:12:10 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8483C05BD43;
+        Fri,  8 May 2020 00:12:09 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id g16so489188qtp.11;
+        Fri, 08 May 2020 00:12:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WT8dz7lOh/SMir2tdDotI3JRi9SKgaJFh8CCLOK2p14=;
+        b=WcNavMyxO3Mk9BoeN2PBmT3sie1iK9pvecFYWrBWDGJsOnmAIIVREK8+HLk/y+6/Mz
+         9QyqwRruohhAlsmXSwILe7LpKvI6tZaeU8KRfEutWhqw1l1AA3WSCAmRj2aWAMZIc7BO
+         eyVwB2FkCpRp3m85Oh0JeKVX89XeR4u8CxKcBkHAQghk5D7SjMpAVxiDFM0h03snhSfb
+         P6KLRsbO+ludyu3zxYS0t0LAqfO4urxX9MswrxMJyBe887fQik40irwbBzYNgcCD7EPN
+         i1nB06F5oN/2ULXBKAGTZq2bY8kP/tI3lZT5wGVO5Ci3QYYL71rmWLquK1GDJEelL/9i
+         xEMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=GOlMaUcUCIagIbGPkPB65+Xmsmk5MMCxY0mc+nB8v6I=;
-        b=nl6bRcYqFUbHKfEGHLZGT2B+rzw0GEy+2zgextmGXzuFdUhfgalNV+oGDakiNl8ovR
-         2xKZ4C2oCCf88nI7b/Ku2yHWTmBTBDj9RcnxDvKpGmtinTTZGjGjgDcEj2LSoC1pFa9a
-         kGHOhQ5TeGKljUp0VbzSpn3aVEQfsWamsZ7jjRcFRU0hGaIe00mbeYWgjlJisXK+17pl
-         I0Qosmr8NzSHtm9D0DR7a1o2+WZwyM1lpm5cU4Rxq2WexxKOtajxhjndnBD7YfSelksE
-         bACnkBixseWuI6mnea2IHy1wAM2GLMlL/apd3ZpbPhGvFHj6xELDzYgfBeyUY34ycfOg
-         V7Uw==
-X-Gm-Message-State: AGi0Pub6kyAxhYIBQud0IwZE45guGnhtKmfmUEedaoQa70AbBDEL1rng
-        pOTOLWIN/LVAfqpYVW7vwq3aDys4E7elp4TQZqzUuGpO
-X-Google-Smtp-Source: APiQypLoRwk4xrJv1+DWP+dKcYHdmvI2adBZ9RZ2XhJqCuKSTOJxFhVFCsMf6fa2r++fxlEjLPWgg06pTBeGB3QS2kI=
-X-Received: by 2002:a9d:7990:: with SMTP id h16mr977818otm.145.1588921831681;
- Fri, 08 May 2020 00:10:31 -0700 (PDT)
+        bh=WT8dz7lOh/SMir2tdDotI3JRi9SKgaJFh8CCLOK2p14=;
+        b=UxZy9DA6kp0HWIFrvZWTV30ICEQ0UWyNYbbp0UBvL7s1S5K6U0xzChhE20bn3Wt6sg
+         pDRfET9gzVVjel5NfRH7PQkmXgwjt/uyPpMlrTkEkHGOS10lrTOj4vtAnCcYW1P2SLK3
+         5Y7YtrBut9Gs7lQrNOajfR1d2MEdCep14bcmaM+VBJ7CZBBwktwjTZcSNgOsm8u8oVMf
+         bqmhfmisswhB3hXhiY6RGEcS+Fqq2uWTlMty6OSh17FN1nuWjHkyGcxp1mfCy1lqmbnr
+         cMLjzhCH/vbQLbqMuKC8PEZbKe7KsxKruG9UuWJ8d+jNQsspbBZoqhveeOcjWxYtFTHL
+         2T7Q==
+X-Gm-Message-State: AGi0PuZhYxQQhVg7F5sn31dh7HR85h9dLu/KR+sFFuA8i4T0PVLBsB3u
+        5t/eqtn+1FPEHpMP3unGRtmdQzsTGSt1R4EE1YU=
+X-Google-Smtp-Source: APiQypIfu9u/Lc+W4qYjRKAPm2hXU/HeHXuHYx++wXVUFF8CTwwgiS9VfwTOSCshvz9lOhItnpEjrfpsibom5FWpqVU=
+X-Received: by 2002:aed:2e24:: with SMTP id j33mr1456847qtd.117.1588921929065;
+ Fri, 08 May 2020 00:12:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200507114205.24621-1-geert+renesas@glider.be> <20200507.131727.907589220898369492.davem@davemloft.net>
-In-Reply-To: <20200507.131727.907589220898369492.davem@davemloft.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 8 May 2020 09:10:20 +0200
-Message-ID: <CAMuHMdWKp5X3VsiHHFxaVgenmx=M8ScP98Lqu+DoavWGJhowLQ@mail.gmail.com>
-Subject: Re: [PATCH] via-rhine: Add platform dependencies
-To:     David Miller <davem@davemloft.net>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tony Prisk <linux@prisktech.co.nz>,
-        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
+References: <20200508063954.256593-1-irogers@google.com>
+In-Reply-To: <20200508063954.256593-1-irogers@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 8 May 2020 00:11:58 -0700
+Message-ID: <CAEf4BzYT5FfDt2oqctHC6dXNmwg5gaaNcFu1StObuYk-jKocLQ@mail.gmail.com>
+Subject: Re: [PATCH] libbpf hashmap: fix undefined behavior in hash_bits
+To:     Ian Rogers <irogers@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
-
-On Thu, May 7, 2020 at 10:17 PM David Miller <davem@davemloft.net> wrote:
-> From: Geert Uytterhoeven <geert+renesas@glider.be>
-> Date: Thu,  7 May 2020 13:42:05 +0200
+On Thu, May 7, 2020 at 11:40 PM Ian Rogers <irogers@google.com> wrote:
 >
-> > The VIA Rhine Ethernet interface is only present on PCI devices or
-> > VIA/WonderMedia VT8500/WM85xx SoCs.  Add platform dependencies to the
-> > VIA_RHINE config symbol, to avoid asking the user about it when
-> > configuring a kernel without PCI or VT8500/WM85xx support.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> If bits is 0, the case when the map is empty, then the >> is the size of
+> the register which is undefined behavior - on x86 it is the same as a
+> shift by 0. Fix by handling the 0 case explicitly.
 >
-> Applied to net-next.
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
 
-Thank you!
+No need. The only case when bits can be 0 is when hashmap is
+completely empty (no elements have ever been added yet). In that case,
+it doesn't matter what value hash_bits() returns,
+hashmap__for_each_key_entry/hashmap__for_each_key_entry_safe will
+behave correctly, because map->buckets will be NULL.
 
-> Although I hope that the COMPILE_TEST guard is not too loose and
-> now we'll have randconfig build failures for some reason.
-
-I only added a dependency line, and didn't replace the old one.
-
-The "depends on PCI || (OF_IRQ && GENERIC_PCI_IOMAP)" is still there.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>  tools/lib/bpf/hashmap.h | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+> index d5ef212a55ba..781db653d16c 100644
+> --- a/tools/lib/bpf/hashmap.h
+> +++ b/tools/lib/bpf/hashmap.h
+> @@ -19,6 +19,8 @@
+>  static inline size_t hash_bits(size_t h, int bits)
+>  {
+>         /* shuffle bits and return requested number of upper bits */
+> +       if (bits == 0)
+> +               return 0;
+>         return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
+>  }
+>
+> --
+> 2.26.2.645.ge9eca65c58-goog
+>
