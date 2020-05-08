@@ -2,118 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45F351CA517
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 09:21:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 154551CA519
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 09:21:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727912AbgEHHVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 03:21:34 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38413 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727878AbgEHHVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 03:21:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588922489;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2Br08xsHGKfeLVOMiVN60m3nJFUGu/8fKIrpljGmQBQ=;
-        b=SW5HzAPaTam2gXGJurbBJuGTGFTMzjmSeqljSpccqMAOFfwGU4zMkwNCfwYKEobEDU94I6
-        Tf19xUX4OA/NOcKZXxt76cuAcpl4bQRRqhjMarZPjV36zO1EfF/QuDUPufx6T6D4h/CvOK
-        LbKPw+x7rFb+VCdOI8SRzNr3EqoZzaA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-487-EoFpNJIaOdOdcO56R3SJ6A-1; Fri, 08 May 2020 03:21:25 -0400
-X-MC-Unique: EoFpNJIaOdOdcO56R3SJ6A-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 59D9C1902EA0;
-        Fri,  8 May 2020 07:21:23 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 73476605CE;
-        Fri,  8 May 2020 07:21:09 +0000 (UTC)
-Date:   Fri, 8 May 2020 09:21:07 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, sameehj@amazon.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
-        akiyano@amazon.com, gtzalik@amazon.com,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4?= =?UTF-8?B?cmdlbnNlbg==?= 
-        <toke@redhat.com>, Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        steffen.klassert@secunet.com, brouer@redhat.com
-Subject: Re: [PATCH net-next v2 21/33] virtio_net: add XDP frame size in two
- code paths
-Message-ID: <20200508092107.01b2066f@carbon>
-In-Reply-To: <6e86e5de-8558-0f3b-53ce-ab0f611cc649@redhat.com>
-References: <158824557985.2172139.4173570969543904434.stgit@firesoul>
-        <158824572816.2172139.1358700000273697123.stgit@firesoul>
-        <20200506163414-mutt-send-email-mst@kernel.org>
-        <6e86e5de-8558-0f3b-53ce-ab0f611cc649@redhat.com>
+        id S1727886AbgEHHVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 03:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727860AbgEHHV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 03:21:28 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51FB1C05BD09
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 00:21:28 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id b8so460573ybn.0
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 00:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ghSLWmPTjJa1N7MEynHoO3xq1duNAQVUBZp+ZfGFuUE=;
+        b=PvpvLe2fjNxojvQSID9SqgyPUOOpkTHnRBJ4bKWtgUvCTb1sqFaHRGvTkaAOfucQjA
+         ybn2zA/+aGvjSF4YEBRK4zlBdZgfmQkmyM4ZU3TyWAaRapPBD0eDc56ti633wmr/mj9K
+         MuJ8LzN2rwCYRWSQKAMPomnzvvD7JgBZXstlRUzd8Vzszd7okoFqLSk8KypFJqtizd88
+         dG9jgLNAVqgfGbfG+eUDUgSJWFovkUxrMBRo9lw9N7zehkqs0JGQ6XZzqlwx5oEVT1VG
+         YxfnyfGAt/Rv+yVKMWjChUJJrrJtJzv9ZNfbjBdMrTI0JuN5jnfKCG7M4Hx84OXWOG60
+         m1qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ghSLWmPTjJa1N7MEynHoO3xq1duNAQVUBZp+ZfGFuUE=;
+        b=FT3YmLkTdE+PJ0QrmWXx9VCMRv1tJWUx76f4hIk9f0JcAy+jGtjMnEYBocPf22iF6c
+         +w2dkupz6PqoxXRpSgtpcc8CqkXDvWpVp1s00vrGboEZaAMhjrKxmFNtH4zoqFMoxraS
+         +b5uEgGghamGWECqMAYe7yaEvGOhHyljJH2AHDHhHbWPKlazkKjH1n2IwFS7SY+MX/1W
+         mEoJtNdjhVM5oWZWJt1UWC4BFp0o16pfVCQyMIaWCFaJTShEH9qF1Hc+jy1Z/wEwxrs1
+         aSAIKmxamOgJ5QH8ZWEd4kqGi0TFfN1zd3sozAaZ0WXdpAxFWi+OOsZ+8qVmNitpYkSn
+         K6Ew==
+X-Gm-Message-State: AGi0PuY0mf+kXHvCn3M9YP+u3INvKDmeRsEI4lbQQ2iIbKrbqpNNppZa
+        1fEM5zrwps7Pb/5+DX/Ya7hua5NB/4xOI5jL9rAXjg==
+X-Google-Smtp-Source: APiQypJ4LfbqVmL56J7m3SlKiNGelvh5pQdV/+Uielt+V3/tJezOCmC5ry3w7km1U2msTfPMA+0Jm8HumNdz8jGZrS4=
+X-Received: by 2002:a05:6902:4ee:: with SMTP id w14mr1110079ybs.383.1588922487266;
+ Fri, 08 May 2020 00:21:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20200508063954.256593-1-irogers@google.com> <CAEf4BzYT5FfDt2oqctHC6dXNmwg5gaaNcFu1StObuYk-jKocLQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzYT5FfDt2oqctHC6dXNmwg5gaaNcFu1StObuYk-jKocLQ@mail.gmail.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Fri, 8 May 2020 00:21:16 -0700
+Message-ID: <CAP-5=fU-QxfdkQoHP=Ksqeb9gPTE4xYcgEcp9Ej6trZpkCDvPA@mail.gmail.com>
+Subject: Re: [PATCH] libbpf hashmap: fix undefined behavior in hash_bits
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 May 2020 10:05:46 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+On Fri, May 8, 2020 at 12:12 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, May 7, 2020 at 11:40 PM Ian Rogers <irogers@google.com> wrote:
+> >
+> > If bits is 0, the case when the map is empty, then the >> is the size of
+> > the register which is undefined behavior - on x86 it is the same as a
+> > shift by 0. Fix by handling the 0 case explicitly.
+> >
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+>
+> No need. The only case when bits can be 0 is when hashmap is
+> completely empty (no elements have ever been added yet). In that case,
+> it doesn't matter what value hash_bits() returns,
+> hashmap__for_each_key_entry/hashmap__for_each_key_entry_safe will
+> behave correctly, because map->buckets will be NULL.
 
-> On 2020/5/7 =E4=B8=8A=E5=8D=884:34, Michael S. Tsirkin wrote:
-> > On Thu, Apr 30, 2020 at 01:22:08PM +0200, Jesper Dangaard Brouer wrote:=
- =20
-> >> The virtio_net driver is running inside the guest-OS. There are two
-> >> XDP receive code-paths in virtio_net, namely receive_small() and
-> >> receive_mergeable(). The receive_big() function does not support XDP.
-> >>
-> >> In receive_small() the frame size is available in buflen. The buffer
-> >> backing these frames are allocated in add_recvbuf_small() with same
-> >> size, except for the headroom, but tailroom have reserved room for
-> >> skb_shared_info. The headroom is encoded in ctx pointer as a value.
-> >>
-> >> In receive_mergeable() the frame size is more dynamic. There are two
-> >> basic cases: (1) buffer size is based on a exponentially weighted
-> >> moving average (see DECLARE_EWMA) of packet length. Or (2) in case
-> >> virtnet_get_headroom() have any headroom then buffer size is
-> >> PAGE_SIZE. The ctx pointer is this time used for encoding two values;
-> >> the buffer len "truesize" and headroom. In case (1) if the rx buffer
-> >> size is underestimated, the packet will have been split over more
-> >> buffers (num_buf info in virtio_net_hdr_mrg_rxbuf placed in top of
-> >> buffer area). If that happens the XDP path does a xdp_linearize_page
-> >> operation.
-> >>
-> >> Cc: Jason Wang<jasowang@redhat.com>
-> >> Signed-off-by: Jesper Dangaard Brouer<brouer@redhat.com> =20
-> > Acked-by: Michael S. Tsirkin<mst@redhat.com> =20
->=20
->=20
-> Note that we do:
->=20
->  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 xdp.data_hard_start =3D data - VIR=
-TIO_XDP_HEADROOM + vi->hdr_len;
->=20
-> So using PAGE_SIZE here is probably not correct.
+Agreed. Unfortunately the LLVM undefined behavior sanitizer (I've not
+tested with GCC to the same extent) will cause an exit when it sees >>
+64 regardless of whether the value is used or not. It'd be possible to
+#ifdef this code on whether a sanitizer was present.
 
-Yes, you are correct.  I will fix this up in V3.  We need to
-adjust/reduce xdp.frame_sz with these offsets, as frame_sz is an offset
-size from xdp.data_hard_start.
+Thanks,
+Ian
 
-Thanks for pointing this out again, I will fix.
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+> >  tools/lib/bpf/hashmap.h | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+> > index d5ef212a55ba..781db653d16c 100644
+> > --- a/tools/lib/bpf/hashmap.h
+> > +++ b/tools/lib/bpf/hashmap.h
+> > @@ -19,6 +19,8 @@
+> >  static inline size_t hash_bits(size_t h, int bits)
+> >  {
+> >         /* shuffle bits and return requested number of upper bits */
+> > +       if (bits == 0)
+> > +               return 0;
+> >         return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
+> >  }
+> >
+> > --
+> > 2.26.2.645.ge9eca65c58-goog
+> >
