@@ -2,62 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E691C9FB0
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 02:32:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A24891C9FB1
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 02:33:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbgEHAcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 20:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58572 "EHLO
+        id S1726644AbgEHAdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 20:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726470AbgEHAcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 20:32:20 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E077C05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 17:32:20 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 078C41193B1B0;
-        Thu,  7 May 2020 17:32:18 -0700 (PDT)
-Date:   Thu, 07 May 2020 17:32:17 -0700 (PDT)
-Message-Id: <20200507.173217.1917825431576882441.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, vinicius.gomes@intel.com, po.liu@nxp.com
-Subject: Re: [PATCH v3 net-next 0/6] tc-gate offload for SJA1105 DSA switch
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200505192057.9086-1-olteanv@gmail.com>
-References: <20200505192057.9086-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 07 May 2020 17:32:19 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726470AbgEHAdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 20:33:22 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C0EC05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 17:33:22 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id q10so3006635ile.0
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 17:33:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HEgZghBRE5caRpA+b3xP0tZuQX+UeTdUYn81e/Sbp2I=;
+        b=sH3GxCfUfTAveY1ze+9FoxuupXdF2xGQ+zECzyLLrBtHkGdu9yYZAB10p5lbxgtyjH
+         FWsPBlIbbI2OQ30nuzBD4fzZgI3Qb7umesdpFfs1eoxICBAZTfuXIX+NBbwAeKhOjGCf
+         qekLL9lcysD9jKewm442Cq6vcPdciBgAtGahPNlicYuyXCnhZA64RIx3gFzbofvgxeTs
+         mCmGhZePY137qxrcbFar0KTzmR8xUIU2hfXrvbVVEv+aUxwHFXK+eYxwDBmcXxuK+ABm
+         g1qZf7z/nc+xG27ShXOElZhV6AnzDYwWtG0hREW44h0S/7CjGcEB7DrD8ohlg+E58xh3
+         CthA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HEgZghBRE5caRpA+b3xP0tZuQX+UeTdUYn81e/Sbp2I=;
+        b=F6dsIR249OJEs9M0fBS/vR4jkgqutGfcDFTFZHa5Kj0tr52xRm8SZjiR9oBgbBOrke
+         DnnlH5iTCc3OBdRDkehpfpnJFiQtkj+39PeZHrR4CupRMrk25Vzb6jUaRkLWC2Z/zqGs
+         UteX3v5K9EkKOMyZ2jxMCIz6nmBF6vOnLnq7hnd7nIuT4h5fK+1I+tb8Le+ycHghqrS9
+         AyqXoOEH7lvL4mkA8N+3osIUkUyXNa7SrSgGrBlA9bI8EEL3QrZsuurnJYog8tIxM310
+         bSrXFiGpJjyTo0mjrU2nik6GHb3quh5w4DkIaXwjKkeIredvOTzmG3LsM2VvurUa9YuY
+         3qTQ==
+X-Gm-Message-State: AGi0PuYVYdILvqBfeFf+NtKoya9PIvwN5wjPvNsmrVozlyNIqAJn/33y
+        Phd0dZxKOpYeEG58PfXjBqAZQ1JUlJ+kg3fUbhjK3g==
+X-Google-Smtp-Source: APiQypLCXx4cxYvjViSL/kQGW+iSxgRlRVlcBn1LQ9x6VdTRrdobG2W6tP+/M7jHLZki5Kz0fgSDLT9zDurTxc1fBYw=
+X-Received: by 2002:a92:c8d0:: with SMTP id c16mr16583185ilq.278.1588898001333;
+ Thu, 07 May 2020 17:33:21 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200505185723.191944-1-zenczykowski@gmail.com> <20200507.173004.1881498730999455740.davem@davemloft.net>
+In-Reply-To: <20200507.173004.1881498730999455740.davem@davemloft.net>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Thu, 7 May 2020 17:33:08 -0700
+Message-ID: <CANP3RGd652sWgu3dmtK6yz_CxH61Jh0hiF832cDrzAwq28NaQA@mail.gmail.com>
+Subject: Re: [PATCH] Revert "ipv6: add mtu lock check in __ip6_rt_update_pmtu"
+To:     David Miller <davem@davemloft.net>
+Cc:     Linux NetDev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem Bruijn <willemb@google.com>, lucien.xin@gmail.com,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Tue,  5 May 2020 22:20:51 +0300
+> I've thought about this some more and decided to apply this and
+> queue it up for -stable, thank you.
 
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Expose the TTEthernet hardware features of the switch using standard
-> tc-flower actions: trap, drop, redirect and gate.
-> 
-> v1 was submitted at:
-> https://patchwork.ozlabs.org/project/netdev/cover/20200503211035.19363-1-olteanv@gmail.com/
-> 
-> v2 was submitted at:
-> https://patchwork.ozlabs.org/project/netdev/cover/20200503211035.19363-1-olteanv@gmail.com/
-> 
-> Changes in v3:
-> Made sure there are no compilation warnings when
-> CONFIG_NET_DSA_SJA1105_TAS or CONFIG_NET_DSA_SJA1105_VL are disabled.
-> 
-> Changes in v2:
-> Using a newly introduced dsa_port_from_netdev public helper.
-
-Series applied, thanks.
+Thank you!
