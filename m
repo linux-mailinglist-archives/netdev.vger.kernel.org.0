@@ -2,153 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7E91CAE64
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 15:11:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0B7F1CAE54
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 15:11:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730623AbgEHNJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 09:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S1729511AbgEHNIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 09:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730499AbgEHNFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 09:05:25 -0400
-Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880D0C05BD0E;
-        Fri,  8 May 2020 06:05:23 -0700 (PDT)
-Received: from [5.158.153.53] (helo=tip-bot2.lab.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tip-bot2@linutronix.de>)
-        id 1jX2gQ-0007I7-S1; Fri, 08 May 2020 15:04:55 +0200
-Received: from [127.0.1.1] (localhost [IPv6:::1])
-        by tip-bot2.lab.linutronix.de (Postfix) with ESMTP id A275B1C0475;
-        Fri,  8 May 2020 15:04:49 +0200 (CEST)
-Date:   Fri, 08 May 2020 13:04:49 -0000
-From:   "tip-bot2 for Ian Rogers" <tip-bot2@linutronix.de>
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf doc: Pass ASCIIDOC_EXTRA as an argument
-Cc:     Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@redhat.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Igor Lubashev <ilubashe@akamai.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Jiwei Sun <jiwei.sun@windriver.com>,
-        John Garry <john.garry@huawei.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, yuzhoujian <yuzhoujian@didichuxing.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        x86 <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>
-In-Reply-To: <20200429231443.207201-2-irogers@google.com>
-References: <20200429231443.207201-2-irogers@google.com>
+        by vger.kernel.org with ESMTP id S1728556AbgEHNIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 09:08:51 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45362C05BD43;
+        Fri,  8 May 2020 06:08:51 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id x17so1772640wrt.5;
+        Fri, 08 May 2020 06:08:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fzVBitGbGs6c9vSFlRa8yyVPwH/mTWCu5Nt0AL3hOL8=;
+        b=Qa61DywqFbLV0WLEZ8qPfW6fmbNb5o8K76MIqacgRZbUYASTn/yfK6gvzHhf6ZFgA2
+         yVfH/u/GW6+JVKo08ceC+7gzZsxJtwzcJTE1kNZtP2xOh9UcQDnjvsypJJuuJ8cYWlJ/
+         bF6UFZOM67NG/fOsIBU2u6tAgYc9VNAG1p58u7YA0KNsU/c626PSPE4D9RjZzt171OTZ
+         LiNqs2JTLPX07p+s5/padAsUvkG+AYZJ7K1n+0wW6D+1n2m47ni1rlN+K3gTMPIq+cEV
+         +PH9aXciDFdTazV99Y8fqp8Gs8IGYD0mXT3ngKt+tbc2oYM2+u5xNbLx3lTuRaw8dIsJ
+         xGKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fzVBitGbGs6c9vSFlRa8yyVPwH/mTWCu5Nt0AL3hOL8=;
+        b=HnPkoSg0IVDr9yUplHReUVPk+cMKfr+GtsdM24dwf0JhvoEoFB2EYoVBq3pxcA4Rq1
+         dqPIWGsyNFYo2KhRVAQIq7HXOHQgymE300l2hTJu6xDqcU6s1G1lVjKMZi99pciddQlO
+         H7pC2FbZiavec4KpMjAXoIrWOZElA2GCFM0aYRUsY7CFIev00cKrgM67xnn8BG7gK7ta
+         Y60bCoeP+VCsKnUJ7QORLB3Qn+Y79DuwB+W6pj5BoBoNHtfOFtxNoEAZYksJLztQ2hJ3
+         ZRc4AnL0ztAJ28kCbtJ7zNWfBpEPI3ID+7PKvMSgfbeqHAFDlnB5UmX/vqTWZd1OdgiC
+         bUpg==
+X-Gm-Message-State: AGi0Pub5a6t71m9YQrRFNiCKRZcDDfy+7K8Ggi34eydb4qK7F4M8xw3R
+        x9aWGHvV46hH2V3WPLokvE+JXm+g9f6anLRXRoI=
+X-Google-Smtp-Source: APiQypK5JWV/0lunuRXSm9bmWF8GTMrH8ZZtDEZCWSihlQms/jeatRDrLMdpIpchZGyScCDmrXjd8Js6R/z8ZjqMjjM=
+X-Received: by 2002:adf:e910:: with SMTP id f16mr2812017wrm.176.1588943329981;
+ Fri, 08 May 2020 06:08:49 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <158894308957.8414.16891288926414860571.tip-bot2@tip-bot2>
-X-Mailer: tip-git-log-daemon
-Robot-ID: <tip-bot2.linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+References: <20200507104252.544114-1-bjorn.topel@gmail.com>
+ <20200507104252.544114-11-bjorn.topel@gmail.com> <40eb57c7-9c47-87dc-bda9-5a1729352c43@mellanox.com>
+ <3c42954a-8bb3-85b1-8740-a096b0a76a98@intel.com> <cf65cc80-f16a-5b76-5577-57c55e952a52@mellanox.com>
+In-Reply-To: <cf65cc80-f16a-5b76-5577-57c55e952a52@mellanox.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 8 May 2020 15:08:38 +0200
+Message-ID: <CAJ+HfNiU8jyNMC1VMCgqGqz76Q8G1Pui09==TO8Qi73Y_2xViQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 10/14] mlx5, xsk: migrate to new MEM_TYPE_XSK_BUFF_POOL
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+On Fri, 8 May 2020 at 15:01, Maxim Mikityanskiy <maximmi@mellanox.com> wrot=
+e:
+>
+> On 2020-05-08 15:27, Bj=C3=B6rn T=C3=B6pel wrote:
+> > On 2020-05-08 13:55, Maxim Mikityanskiy wrote:
+> >> On 2020-05-07 13:42, Bj=C3=B6rn T=C3=B6pel wrote:
+> >>> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >>>
+> >>> Use the new MEM_TYPE_XSK_BUFF_POOL API in lieu of MEM_TYPE_ZERO_COPY =
+in
+> >>> mlx5e. It allows to drop a lot of code from the driver (which is now
+> >>> common in AF_XDP core and was related to XSK RX frame allocation, DMA
+> >>> mapping, etc.) and slightly improve performance.
+> >>>
+> >>> rfc->v1: Put back the sanity check for XSK params, use XSK API to get
+> >>>           the total headroom size. (Maxim)
+> >>>
+> >>> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >>> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> >>
+> >> I did some functional and performance tests.
+> >>
+> >> Unfortunately, something is wrong with the traffic: I get zeros in
+> >> XDP_TX, XDP_PASS and XSK instead of packet data. I set DEBUG_HEXDUMP
+> >> in xdpsock, and it shows the packets of the correct length, but all
+> >> bytes are 0 after these patches. It might be wrong xdp_buff pointers,
+> >> however, I still have to investigate it. Bj=C3=B6rn, does it also affe=
+ct
+> >> Intel drivers, or is it Mellanox-specific?
+> >>
+> >
+> > Are you getting zeros for TX, PASS *and* in xdpsock (REDIRECT:ed
+> > packets), or just TX and PASS?
+>
+> Yes, in all modes: XDP_TX, XDP_PASS and XDP_REDIRECT to XSK (xdpsock).
+>
+> > No, I get correct packet data for AF_XDP zero-copy XDP_REDIRECT,
+> > XDP_PASS, and XDP_TX for Intel.
+>
+> Hmm, weird - with the new API I expected the same behavior on all
+> drivers. Thanks for the information, I'll know that I need to look in
+> mlx5 code to find the issue.
+>
 
-Commit-ID:     4b1984491e65c9592f9f2bfbe8fb5bf4d4e51587
-Gitweb:        https://git.kernel.org/tip/4b1984491e65c9592f9f2bfbe8fb5bf4d4e51587
-Author:        Ian Rogers <irogers@google.com>
-AuthorDate:    Wed, 29 Apr 2020 16:14:40 -07:00
-Committer:     Arnaldo Carvalho de Melo <acme@redhat.com>
-CommitterDate: Tue, 05 May 2020 16:35:31 -03:00
+All zeros hints that you're probably putting in the wrong DMA address somew=
+here.
 
-perf doc: Pass ASCIIDOC_EXTRA as an argument
+> >> For performance, I got +1.0..+1.2 Mpps on RX. TX performance got
+> >> better after Bj=C3=B6rn inlined the relevant UMEM functions, however, =
+there
+> >> is still a slight decrease compared to the old code. I'll try to find
+> >> the possible reason, but the good thing is that it's not significant
+> >> anymore.
+> >>
+> >
+> > Ok, so for Rx mlx5 it's the same as for i40e. Good! :-)
+> >
+> > How much decrease on Tx?
+>
+> ~0.8 Mpps (was 3.1 before you inlined the functions).
+>
 
-commit e9cfa47e687d ("perf doc: allow ASCIIDOC_EXTRA to be an argument")
-allowed ASCIIDOC_EXTRA to be passed as an option to the Documentation
-Makefile. This change passes ASCIIDOC_EXTRA, set by detected features or
-command line options, prior to doing a Documentation build. This is
-necessary to allow conditional compilation, based on configuration
-variables, in asciidoc code.
+Thanks. Still a bit much. What does perf say?
 
-Signed-off-by: Ian Rogers <irogers@google.com>
-Acked-by: Jiri Olsa <jolsa@redhat.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Alexey Budankov <alexey.budankov@linux.intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Igor Lubashev <ilubashe@akamai.com>
-Cc: Jin Yao <yao.jin@linux.intel.com>
-Cc: Jiwei Sun <jiwei.sun@windriver.com>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: yuzhoujian <yuzhoujian@didichuxing.com>
-Link: http://lore.kernel.org/lkml/20200429231443.207201-2-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/perf/Makefile.perf | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
-index d15a311..94a4955 100644
---- a/tools/perf/Makefile.perf
-+++ b/tools/perf/Makefile.perf
-@@ -188,7 +188,7 @@ AWK     = awk
- # non-config cases
- config := 1
- 
--NON_CONFIG_TARGETS := clean python-clean TAGS tags cscope help install-doc install-man install-html install-info install-pdf doc man html info pdf
-+NON_CONFIG_TARGETS := clean python-clean TAGS tags cscope help
- 
- ifdef MAKECMDGOALS
- ifeq ($(filter-out $(NON_CONFIG_TARGETS),$(MAKECMDGOALS)),)
-@@ -832,7 +832,7 @@ INSTALL_DOC_TARGETS += quick-install-doc quick-install-man quick-install-html
- 
- # 'make doc' should call 'make -C Documentation all'
- $(DOC_TARGETS):
--	$(Q)$(MAKE) -C $(DOC_DIR) O=$(OUTPUT) $(@:doc=all)
-+	$(Q)$(MAKE) -C $(DOC_DIR) O=$(OUTPUT) $(@:doc=all) ASCIIDOC_EXTRA=$(ASCIIDOC_EXTRA)
- 
- TAG_FOLDERS= . ../lib ../include
- TAG_FILES= ../../include/uapi/linux/perf_event.h
-@@ -959,7 +959,7 @@ install-python_ext:
- 
- # 'make install-doc' should call 'make -C Documentation install'
- $(INSTALL_DOC_TARGETS):
--	$(Q)$(MAKE) -C $(DOC_DIR) O=$(OUTPUT) $(@:-doc=)
-+	$(Q)$(MAKE) -C $(DOC_DIR) O=$(OUTPUT) $(@:-doc=) ASCIIDOC_EXTRA=$(ASCIIDOC_EXTRA)
- 
- ### Cleaning rules
- 
+Bj=C3=B6rn
