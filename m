@@ -2,213 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C850C1CB6F1
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:17:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB5B71CB6F4
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:17:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbgEHSRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 14:17:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55290 "EHLO
+        id S1727803AbgEHSRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 14:17:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726885AbgEHSRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:17:08 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDE6C061A0C
-        for <netdev@vger.kernel.org>; Fri,  8 May 2020 11:17:08 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id a8so1396999ybs.3
-        for <netdev@vger.kernel.org>; Fri, 08 May 2020 11:17:08 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726817AbgEHSRn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:17:43 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B8FC061A0C;
+        Fri,  8 May 2020 11:17:42 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id w11so2716594iov.8;
+        Fri, 08 May 2020 11:17:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=WkMBg1tvS7TrfE9B9aCdbZubv6/9XFTMvqN92Jgd9aE=;
-        b=CL0FqssipefQFxP8ostEfRFiH3ODlz/5vL4IO8sg2T1MpdC7VS95jxuQPXqQ3zwBf+
-         ysjYzU2aM6hZC6Kn3M/RCQ9Fw+gP6AuNstEpAtd7Ie+gjIcjZzmWU+UxWyg5dFezKEzf
-         kCxyTPsH0YVS1bu1VIkD7Vm6lgP2WnIZERCKCP1vnubdQ8itcduZYpPiMvNhYlGRy8IQ
-         VxGGuJ9T4GVeSj5SpM3R2mW0daFbIx/HOYhi+HZbzjcq40E7WlnK8vUmueH8tlwUAc5s
-         xkFDANYEPiphh/ykd4G1/IWoq18iTJ9JJjddMpx9z4bnbvxBWC6X1WdVUFnJaGRAOj0F
-         g9tA==
+        bh=lBILQLPraCZ2i92EwfiMwaPKp0mpCtSZogr00s6stp4=;
+        b=gPeGqdkOSOPk7Ttl7bsdHZRVmVAdFIeMnmWaQBdGSkmAUH07gxUzaJfzOJ9nRoFhts
+         yNmK4/82zNr3PxaVSgtyQT3lzXhAT2/U7d+YfRqcnlqCF80kEoGAW+1AvgJsDs1wymJO
+         kKdhr9rF9n5e//6rpfXrOTscp2xOwJAZKu6uvK1cCtwhGicJ/UGMnoFwv8xlW8fYY3JC
+         NOx6v3CkhTZDNIAig9v3CFJa1QujL/cr/wC8368KT+6kRotpW8ZO4RR7Wz+Rkc1YgFLL
+         AnUXA4Wrwt3fnKFRJnsXcqrHq4Q2Kygy9WBIgFQl/Rjy1jlyzBPQKWj4GxaTqCWPjsd+
+         Ewgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WkMBg1tvS7TrfE9B9aCdbZubv6/9XFTMvqN92Jgd9aE=;
-        b=I68PebXVxBTfOrTXrB0SROziA/0zbz1eGygnKwm+4yWxJvadecarHt+Gerwzu2Jq9C
-         AUC25990bqeBKo1yevXYtcIq3AAZQdMrGLfdRA2UKNJ44KKaH2CEkvnJ2iOhAEmY1j3F
-         dqHQJsac0z+u/11fRCpBNhzGouiswdSoNQ8FY8vVRThhj6DH14LNEUoNwNUcszStP2gg
-         lgkz3UaGPSIj1NHHHIc0FdCNrJLdZ7vNJSPSl0iMdkxFYihdQmK0oIJMtaK6mtpiqvRb
-         HqoFteA7vz+8v+5VZTDg8o5PqOVxH+nIj2//2dDZhJlChjKYtGTxXyu419vV24TdsQCu
-         xuGg==
-X-Gm-Message-State: AGi0PuYkEJc1QoX9n3ALT2kJoEKCjgOM5zCWVAwgeD3Mnmuco8XCU8Xt
-        X42V9/SvcFhFJAG8s0zlC0gHuAu18/mulY1+NQB6gg==
-X-Google-Smtp-Source: APiQypKdPMzNceOPqKogm/JEIajAlJEQEZIAYXVMjL6uOxWACsMJjYKPioHrniOsmJ3lvn1Eg16oNW6GKsUR2Kfdxis=
-X-Received: by 2002:a25:bc53:: with SMTP id d19mr6542768ybk.395.1588961827137;
- Fri, 08 May 2020 11:17:07 -0700 (PDT)
+        bh=lBILQLPraCZ2i92EwfiMwaPKp0mpCtSZogr00s6stp4=;
+        b=ns0Y7nPVVOE6gF0qVAjiSFZFmhZ0wIx0FGDn2SCImGEcKis3LAy2kgSFkuB7cwPR5o
+         54MjJBYtc4QPKvSUYd9Qz851O6PC+O66Jmnm1D4R3KQ8ep5BcoQ/WXpPf5F75CeyYh8O
+         jT24p8P9RZ107Lh4RgIDrk5kG4gUdtUPk0XLXqpFkUaL2f+OwBPl5vI+JAZNl3/L4+CO
+         gTtDm4r1bcwnm4SuQGtUH5xKj/hJbUDO93szjMSCJvVAWrpqEJlQh0DcWrrMNALmj1kM
+         mb8Ov7o2gZKuYlk7B7F0QBpwg3et2YAHm1TUJ7pP+XSwGwtOK5rf1exu1ZQRMaBxRBM9
+         TRSw==
+X-Gm-Message-State: AGi0PuYOcLAB8pKKgIWLaItMc3u8SONiwPgb9O2JryvfN9GPHmcQFmeK
+        5waaw0JsGMOkSqQ3Ct66FPHy28KdowNa487FwLA=
+X-Google-Smtp-Source: APiQypKMd4Z+FXMqxKi0I6RnhY5kANFP6OCiZlSFMBO6dLAnEUGYRj78FFiz0Los+cS/msti453hUidCnEwmU/ktkZ8=
+X-Received: by 2002:a6b:6c0a:: with SMTP id a10mr4081965ioh.140.1588961862116;
+ Fri, 08 May 2020 11:17:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200508015810.46023-1-edumazet@google.com> <CABCgpaUqymfoGGyExvKv65UDvLfHnw2cavVCr1Pq8coz21ujKA@mail.gmail.com>
- <CANn89iKk8aZ=wwbet8q_U=inbksvWhJvUewMGP+FfLYiD+yOCQ@mail.gmail.com>
-In-Reply-To: <CANn89iKk8aZ=wwbet8q_U=inbksvWhJvUewMGP+FfLYiD+yOCQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 8 May 2020 11:16:55 -0700
-Message-ID: <CANn89i+Ltt+oidFvLawa_TKiqvwtr2uPBKCMD7xZ4-UaxgXTgQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/dst: use a smaller percpu_counter batch for
- dst entries accounting
-To:     Brian Vazquez <brianvv.kernel@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+References: <20200504062547.2047304-1-yhs@fb.com> <20200504062608.2049044-1-yhs@fb.com>
+ <CAEf4Bzae=1h4Rky+ojeoaxUR6OHM5Q6OzXFqPrhoOM4D3EYuCA@mail.gmail.com> <318a33ef-4b9e-e25c-f153-c063b87b2c50@fb.com>
+In-Reply-To: <318a33ef-4b9e-e25c-f153-c063b87b2c50@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 8 May 2020 11:17:31 -0700
+Message-ID: <CAEf4BzbROqT_nu0zXhN3dDVc9zNFrC1Dv9kBGnvPhqHxfgbB7Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 18/20] tools/bpf: selftests: add iterator
+ programs for ipv6_route and netlink
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 11:06 AM Eric Dumazet <edumazet@google.com> wrote:
+On Wed, May 6, 2020 at 6:09 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> On Fri, May 8, 2020 at 10:30 AM Brian Vazquez <brianvv.kernel@gmail.com> wrote:
+>
+>
+> On 5/5/20 11:01 PM, Andrii Nakryiko wrote:
+> > On Sun, May 3, 2020 at 11:30 PM Yonghong Song <yhs@fb.com> wrote:
+> >>
+> >> Two bpf programs are added in this patch for netlink and ipv6_route
+> >> target. On my VM, I am able to achieve identical
+> >> results compared to /proc/net/netlink and /proc/net/ipv6_route.
+> >>
+> >>    $ cat /proc/net/netlink
+> >>    sk               Eth Pid        Groups   Rmem     Wmem     Dump  Locks    Drops    Inode
+> >>    000000002c42d58b 0   0          00000000 0        0        0     2        0        7
+> >>    00000000a4e8b5e1 0   1          00000551 0        0        0     2        0        18719
+> >>    00000000e1b1c195 4   0          00000000 0        0        0     2        0        16422
+> >>    000000007e6b29f9 6   0          00000000 0        0        0     2        0        16424
+> >>    ....
+> >>    00000000159a170d 15  1862       00000002 0        0        0     2        0        1886
+> >>    000000009aca4bc9 15  3918224839 00000002 0        0        0     2        0        19076
+> >>    00000000d0ab31d2 15  1          00000002 0        0        0     2        0        18683
+> >>    000000008398fb08 16  0          00000000 0        0        0     2        0        27
+> >>    $ cat /sys/fs/bpf/my_netlink
+> >>    sk               Eth Pid        Groups   Rmem     Wmem     Dump  Locks    Drops    Inode
+> >>    000000002c42d58b 0   0          00000000 0        0        0     2        0        7
+> >>    00000000a4e8b5e1 0   1          00000551 0        0        0     2        0        18719
+> >>    00000000e1b1c195 4   0          00000000 0        0        0     2        0        16422
+> >>    000000007e6b29f9 6   0          00000000 0        0        0     2        0        16424
+> >>    ....
+> >>    00000000159a170d 15  1862       00000002 0        0        0     2        0        1886
+> >>    000000009aca4bc9 15  3918224839 00000002 0        0        0     2        0        19076
+> >>    00000000d0ab31d2 15  1          00000002 0        0        0     2        0        18683
+> >>    000000008398fb08 16  0          00000000 0        0        0     2        0        27
+> >>
+> >>    $ cat /proc/net/ipv6_route
+> >>    fe800000000000000000000000000000 40 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000001 00000000 00000001     eth0
+> >>    00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+> >>    00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000003 00000000 80200001       lo
+> >>    fe80000000000000c04b03fffe7827ce 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80200001     eth0
+> >>    ff000000000000000000000000000000 08 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000003 00000000 00000001     eth0
+> >>    00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+> >>    $ cat /sys/fs/bpf/my_ipv6_route
+> >>    fe800000000000000000000000000000 40 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000001 00000000 00000001     eth0
+> >>    00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+> >>    00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000003 00000000 80200001       lo
+> >>    fe80000000000000c04b03fffe7827ce 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80200001     eth0
+> >>    ff000000000000000000000000000000 08 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000003 00000000 00000001     eth0
+> >>    00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+> >>
+> >> Signed-off-by: Yonghong Song <yhs@fb.com>
+> >> ---
 > >
-> > On Thu, May 7, 2020 at 7:00 PM Eric Dumazet <edumazet@google.com> wrote:
-> > >
-> > > percpu_counter_add() uses a default batch size which is quite big
-> > > on platforms with 256 cpus. (2*256 -> 512)
-> > >
-> > > This means dst_entries_get_fast() can be off by +/- 2*(nr_cpus^2)
-> > > (131072 on servers with 256 cpus)
-> > >
-> > > Reduce the batch size to something more reasonable, and
-> > > add logic to ip6_dst_gc() to call dst_entries_get_slow()
-> > > before calling the _very_ expensive fib6_run_gc() function.
-> > >
-> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > > ---
-> > >  include/net/dst_ops.h | 4 +++-
-> > >  net/core/dst.c        | 8 ++++----
-> > >  net/ipv6/route.c      | 3 +++
-> > >  3 files changed, 10 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
-> > > index 443863c7b8da362476c15fd290ac2a32a8aa86e3..88ff7bb2bb9bd950cc54fd5e0ae4573d4c66873d 100644
-> > > --- a/include/net/dst_ops.h
-> > > +++ b/include/net/dst_ops.h
-> > > @@ -53,9 +53,11 @@ static inline int dst_entries_get_slow(struct dst_ops *dst)
-> > >         return percpu_counter_sum_positive(&dst->pcpuc_entries);
-> > >  }
-> > >
-> > > +#define DST_PERCPU_COUNTER_BATCH 32
-> > >  static inline void dst_entries_add(struct dst_ops *dst, int val)
-> > >  {
-> > > -       percpu_counter_add(&dst->pcpuc_entries, val);
-> > > +       percpu_counter_add_batch(&dst->pcpuc_entries, val,
-> > > +                                DST_PERCPU_COUNTER_BATCH);
-> > >  }
-> > >
-> > >  static inline int dst_entries_init(struct dst_ops *dst)
-> > > diff --git a/net/core/dst.c b/net/core/dst.c
-> > > index 193af526e908afa4b868cf128470f0fbc3850698..d6b6ced0d451a39c0ccb88ae39dba225ea9f5705 100644
-> > > --- a/net/core/dst.c
-> > > +++ b/net/core/dst.c
-> > > @@ -81,11 +81,11 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
-> > >  {
-> > >         struct dst_entry *dst;
-> > >
-> > > -       if (ops->gc && dst_entries_get_fast(ops) > ops->gc_thresh) {
-> > > +       if (ops->gc &&
-> > > +           !(flags & DST_NOCOUNT) &&
-> > > +           dst_entries_get_fast(ops) > ops->gc_thresh) {
-> > >                 if (ops->gc(ops)) {
-> > > -                       printk_ratelimited(KERN_NOTICE "Route cache is full: "
-> > > -                                          "consider increasing sysctl "
-> > > -                                          "net.ipv[4|6].route.max_size.\n");
-> > > +                       pr_notice_ratelimited("Route cache is full: consider increasing sysctl net.ipv6.route.max_size.\n");
-> > >                         return NULL;
-> > >                 }
-> > >         }
-> > > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> > > index 1ff142393c768f85c495474a1d05e1ae1642301c..a9072dba00f4fb0b61bce1fc0f44a3a81ba702fa 100644
-> > > --- a/net/ipv6/route.c
-> > > +++ b/net/ipv6/route.c
-> > > @@ -3195,6 +3195,9 @@ static int ip6_dst_gc(struct dst_ops *ops)
-> > >         int entries;
-> > >
-> > >         entries = dst_entries_get_fast(ops);
-> > > +       if (entries > rt_max_size)
-> > > +               entries = dst_entries_get_slow(ops);
-> > > +
-> > >         if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
-> > if this part of the condition is not satisfied, you are going to call
-> > fib6_run_gc anyways and after that you will update the entries. So I
-> > was wondering if code here could be something like:
-> > --- a/net/ipv6/route.c
-> > +++ b/net/ipv6/route.c
-> > @@ -3197,11 +3197,16 @@ static int ip6_dst_gc(struct dst_ops *ops)
-> >         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
-> >         int entries;
+> > Looks good, but something weird with printf below...
 > >
-> > +       if (time_before(rt_last_gc + rt_min_interval, jiffies)
-> > +               goto run_gc;
-> > +
-> >         entries = dst_entries_get_fast(ops);
-> > -       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
-> > -           entries <= rt_max_size)
-> > +       if (entries > rt_max_size)
-> > +               entries = dst_entries_get_slow(ops);
-> > +       if (entries <= rt_max_size)
-> >                 goto out;
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
 > >
-> > +run_gc:
-> >         net->ipv6.ip6_rt_gc_expire++;
-> >         fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
-> >         entries = dst_entries_get_slow(ops);
+> >>   .../selftests/bpf/progs/bpf_iter_ipv6_route.c | 63 ++++++++++++++++
+> >>   .../selftests/bpf/progs/bpf_iter_netlink.c    | 74 +++++++++++++++++++
+> >>   2 files changed, 137 insertions(+)
+> >>   create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
+> >>   create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+> >>
+> >> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c b/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
+> >> new file mode 100644
+> >> index 000000000000..0dee4629298f
+> >> --- /dev/null
+> >> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c
+> >> @@ -0,0 +1,63 @@
+> >> +// SPDX-License-Identifier: GPL-2.0
+> >> +/* Copyright (c) 2020 Facebook */
+> >> +#include "vmlinux.h"
+> >> +#include <bpf/bpf_helpers.h>
+> >> +#include <bpf/bpf_tracing.h>
+> >> +#include <bpf/bpf_endian.h>
+> >> +
+> >> +char _license[] SEC("license") = "GPL";
+> >> +
+> >> +extern bool CONFIG_IPV6_SUBTREES __kconfig __weak;
+> >> +
+> >> +#define        RTF_GATEWAY             0x0002
+> >> +#define IFNAMSIZ               16
 > >
-> > That way you could potentially avoid an extra call to
-> > dst_entries_get_slow when you know for sure that fib6_run_gc will be
-> > run. WDYT?
+> > nit: these look weirdly unaligned :)
+> >
+> >> +#define fib_nh_gw_family        nh_common.nhc_gw_family
+> >> +#define fib_nh_gw6              nh_common.nhc_gw.ipv6
+> >> +#define fib_nh_dev              nh_common.nhc_dev
+> >> +
+> >
+> > [...]
+> >
+> >
+> >> +       dev = fib6_nh->fib_nh_dev;
+> >> +       if (dev)
+> >> +               BPF_SEQ_PRINTF(seq, "%08x %08x %08x %08x %8s\n", rt->fib6_metric,
+> >> +                              rt->fib6_ref.refs.counter, 0, flags, dev->name);
+> >> +       else
+> >> +               BPF_SEQ_PRINTF(seq, "%08x %08x %08x %08x %8s\n", rt->fib6_metric,
+> >> +                              rt->fib6_ref.refs.counter, 0, flags);
+> >
+> > hmm... how does it work? you specify 4 params, but format string
+> > expects 5. Shouldn't this fail?
 >
-> The problem is that you might still return a wrong status in the final :
+> Thanks for catching this. Unfortunately, we can only detech this at
+> runtime when BPF_SEQ_PRINTF is executed since only then we do
+> format/argument checking.
 >
-> return entries > rt_max_size;
+> In the above, if I flip condition "if (dev)" to "if (!dev)", the
+> BPF_SEQ_PRRINTF will not print anything and returns -EINVAL.
 >
-> If we are in ip6_dst_gc(), we know for sure entries might be wrong,
-> if it holds dst_entries_get_fast(ops)
+> I am wondering whether verifier should do some verification at prog load
+> time to ensure
+>    # of args in packed u64 array >= # of format specifier
+> This should capture this case. Or we just assume users should do
+> adequate testing to capture such cases.
 >
-> If you prefer, the patch is really (since the caller calls us only if
-> dst_entries_get_fast(ops) was suspect)
->
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index ff847a324220bc4cac8b103640f7e1a5db374a87..78e7f3c14e8a9c937866361aaf641cecfe1fed43
-> 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -3196,7 +3196,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
->         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
->         int entries;
->
-> -       entries = dst_entries_get_fast(ops);
-> +       entries = dst_entries_get_slow(ops);
->         if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
->             entries <= rt_max_size)
->                 goto out;
 
-BTW, we do not _have_ to force a gc if entries (the more accurate
-value) is below gc_thresh
+My initial thought is that it would be too specific knowledge for
+verifier, but maybe as we add more generic logging/printf
+capabilities, it might come in handy. But I'd defer for later on.
 
-That would be a separate patch :
-
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 4292653af533bb641ae8571fffe45b39327d0380..69a90802a70f830b286795c9c75c13c4ba345a72
-100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3194,10 +3194,9 @@ static int ip6_dst_gc(struct dst_ops *ops)
-        unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
-        int entries;
-
--       entries = dst_entries_get_fast(ops);
--       if (entries > rt_max_size)
--               entries = dst_entries_get_slow(ops);
--
-+       entries = dst_entries_get_slow(ops);
-+       if (entries < ops->gc_thresh)
-+               return 0;
-        if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
-            entries <= rt_max_size)
-                goto out;
+> Note that this won't affect safety of the program so it is totally
+> okay for verifier to delay the checking to runtime.
+>
+> >
+> >> +
+> >> +       return 0;
+> >> +}
+> >> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+> >> new file mode 100644
+> >> index 000000000000..0a85a621a36d
+> >> --- /dev/null
+> >> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_netlink.c
+> >> @@ -0,0 +1,74 @@
+> >> +// SPDX-License-Identifier: GPL-2.0
+> >> +/* Copyright (c) 2020 Facebook */
+> >> +#include "vmlinux.h"
+> >> +#include <bpf/bpf_helpers.h>
+> >> +#include <bpf/bpf_tracing.h>
+> >> +#include <bpf/bpf_endian.h>
+> >> +
+> >> +char _license[] SEC("license") = "GPL";
+> >> +
+> >> +#define sk_rmem_alloc  sk_backlog.rmem_alloc
+> >> +#define sk_refcnt      __sk_common.skc_refcnt
+> >> +
+> >> +#define offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
+> >> +#define container_of(ptr, type, member)                                \
+> >> +       ({                                                      \
+> >> +               void *__mptr = (void *)(ptr);                   \
+> >> +               ((type *)(__mptr - offsetof(type, member)));    \
+> >> +       })
+> >
+> > we should probably put offsetof(), offsetofend() and container_of()
+> > macro into bpf_helpers.h, seems like universal things for kernel
+> > datastructs :)
+> >
+> > [...]
+> >
