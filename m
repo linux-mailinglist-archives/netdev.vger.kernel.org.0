@@ -2,145 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 458F61CA6A1
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 10:54:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 448901CA6A0
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 10:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726746AbgEHIyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726864AbgEHIyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 8 May 2020 04:54:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726025AbgEHIyL (ORCPT
+        with ESMTP id S1726091AbgEHIyL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 04:54:11 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27971C05BD0B;
-        Fri,  8 May 2020 01:54:10 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id l12so570849pgr.10;
-        Fri, 08 May 2020 01:54:10 -0700 (PDT)
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079EFC05BD0A
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 01:54:09 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id l18so923509wrn.6
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 01:54:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Xw7bneDncMYCvfrqJQk2sk2OzlKsXn2ZHAE5/n/nUqU=;
-        b=Yv1fksitw+AWzD0vX5DRmG7H3DzQ0ngiJoN/Ra8IcObAxgHNdO2oxChm5owTD6VbRJ
-         2Yc/Jaltsgh6TuQl1+dSM9QjYZJ3nZNHZsJ7LC7zKZqDHQenuWtDe9vHJbEeMp4uygtx
-         4ULbpY6M4vCCjaTstUru05lQHpg2weWFReX3gmLfhZmg2dPMs9mQHWb48lhRRKra7X0o
-         RY3ByUXt4c6qPT9HY5OFZsaTINeq9KR3BQP/FdDgEP/utN3Js9F55JWR7AbRzPU7yauR
-         pfuOF6ViVf419PaVTedq4jnFeqh+OTxH7mEOExAEakiVQyYlen9foGnqmLn+qkFP53vQ
-         sKYA==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=sAzrRdwhen6mcsuV4DQ0ozpHVnETNzjd3US+qiFlROM=;
+        b=NhDDygFhw7HFB+9OdYLggWRA13mUS1gZpYuDL147LM4MF5hYWEyAz6x3+JdXyV+9XT
+         CWSMxcKc4sEX2FfxOesI4nYCooVtP34M0MVLA4CLzdiACWBb94K0tdoIEqOb0HiWrv8o
+         lo7VmdWYybIC5zs+jc4hsncwcstaZYr0IfLJc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Xw7bneDncMYCvfrqJQk2sk2OzlKsXn2ZHAE5/n/nUqU=;
-        b=RrhN+UhbUt567VW086h+plTD8CXvYNyiNNJiLQzpyN+1dZ0mxd7//v6xoY1SPPa3k1
-         QjyupYN/kc+4LOkj81I2M0244mVnsrvFFhi5QyCuUHSEy+/5rHQG7T6d3cMwVyRJhV0u
-         LR06abRbMKscgVvMEMXLREaoi5oUf3vWF1OtxDVb7zx0dCR1X+spfYDH8lXDtECJsyKu
-         A8q2YjpDt4TW55c/+8BvefLj2wlEhtvcSg5wfDo0IA3g/cFT3l2e+uIZ4WUi/I1XDlrY
-         HmxkxFhxYMKq4yIUjSVRV03Nvh44lmjyslaa0NU7DrWpbm5H4TYPFg1AHNEYB+7Q2Dey
-         j6kQ==
-X-Gm-Message-State: AGi0PuZWHxPrh1RWmkjlNpeplDghqNdVERUzG44Bm3fQIwuBG+K/1tCL
-        X7/92uFPH6Yq6sc2Sg2N6jo=
-X-Google-Smtp-Source: APiQypJO/dtADwtpU8CPBwaXVW3np6XIDRWXsduTzJj8Rrr2pk98xyGATFoIgJlw5pCb+VkfSWnPjA==
-X-Received: by 2002:a62:e211:: with SMTP id a17mr1791003pfi.250.1588928049517;
-        Fri, 08 May 2020 01:54:09 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id c1sm1124222pfo.152.2020.05.08.01.54.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=sAzrRdwhen6mcsuV4DQ0ozpHVnETNzjd3US+qiFlROM=;
+        b=fa9JoAirshR4JWsfK/roWhrGLBxNxUUGyOtcIuGuFiA+rG0OaBOhcXJhCCSIiXdcUF
+         Bp6Nc5HgIvBXjDSntmgUGP+6hl7bbGo6PWVC1Lrv9qQZZXS9Jl2d2X44gGHpoIjhjNC6
+         fXwdaMB1A5Do44bznSPcuiNw6HHChwb9FOO0Gq8IVbIC7Seup2APIAa1HTaUNDmndyck
+         iWxmZUUxGWsfHYW9LQbxjl9BxQhdiApjNBJthV1b5W1xDx7leHZy0hWCpVupKG59Mmav
+         k3GfYjKaQpEp2E5edRs168J572pzSW1mILG4XQwHbADj2kJwgcSGx6m+nhcJhLs83uhg
+         D7oA==
+X-Gm-Message-State: AGi0PuYCfk46jTfDjx3mA+Ei0+XBfBIaHBmTpbxpppiHrsOL7Lth9viI
+        mRGn9YNOndYHf4WvOs5CuSxBLA==
+X-Google-Smtp-Source: APiQypITN6wxpUpGf8yFlRte62yeifNq3OTqk52/CjQnS1e+IK/w1uVj80MCvBPNZm+RuFxo4oHVkA==
+X-Received: by 2002:adf:f5cb:: with SMTP id k11mr1699535wrp.300.1588928048585;
         Fri, 08 May 2020 01:54:08 -0700 (PDT)
-Date:   Fri, 8 May 2020 16:53:57 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Subject: Re: [RFC PATCHv2 bpf-next 1/2] xdp: add a new helper for dev map
- multicast support
-Message-ID: <20200508085357.GC102436@dhcp-12-153.nay.redhat.com>
-References: <20200415085437.23028-1-liuhangbin@gmail.com>
- <20200424085610.10047-1-liuhangbin@gmail.com>
- <20200424085610.10047-2-liuhangbin@gmail.com>
- <87r1wd2bqu.fsf@toke.dk>
- <20200506091442.GA102436@dhcp-12-153.nay.redhat.com>
- <874kstmlhz.fsf@toke.dk>
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id x23sm11771158wmj.6.2020.05.08.01.54.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2020 01:54:07 -0700 (PDT)
+References: <20200506125514.1020829-1-jakub@cloudflare.com> <20200506125514.1020829-3-jakub@cloudflare.com> <CACAyw9-ro_Dit=3M46=JSrkuc8y+UcsvJgVQuG98KdtmM9mCCA@mail.gmail.com> <87eerxuq3k.fsf@cloudflare.com> <20200507205524.pv2pnujxdrbktdc4@kafai-mbp>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        dccp@vger.kernel.org, kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>
+Subject: Re: [PATCH bpf-next 02/17] bpf: Introduce SK_LOOKUP program type with a dedicated attach point
+In-reply-to: <20200507205524.pv2pnujxdrbktdc4@kafai-mbp>
+Date:   Fri, 08 May 2020 10:54:06 +0200
+Message-ID: <87blmyvmc1.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <874kstmlhz.fsf@toke.dk>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 06, 2020 at 12:00:08PM +0200, Toke Høiland-Jørgensen wrote:
-> > No, I haven't test the performance. Do you have any suggestions about how
-> > to test it? I'd like to try forwarding pkts to 10+ ports. But I don't know
-> > how to test the throughput. I don't think netperf or iperf supports
-> > this.
-> 
-> What I usually do when benchmarking XDP_REDIRECT is to just use pktgen
-> (samples/pktgen in the kernel source tree) on another machine,
-> specifically, like this:
-> 
-> ./pktgen_sample03_burst_single_flow.sh  -i enp1s0f1 -d 10.70.2.2 -m ec:0d:9a:db:11:35 -t 4  -s 64
-> 
-> (adjust iface, IP and MAC address to your system, of course). That'll
-> flood the target machine with small UDP packets. On that machine, I then
-> run the 'xdp_redirect_map' program from samples/bpf. The bpf program
-> used by that sample will update an internal counter for every packet,
-> and the userspace prints it out, which gives you the performance (in
-> PPS). So just modifying that sample to using your new multicast helper
-> (and comparing it to regular REDIRECT to a single device) would be a
-> first approximation of a performance test.
-
-Thanks for this method. I will update the sample and do some more tests.
-> 
-> You could do something like:
-> 
-> bool first = true;
-> for (;;) {
-> 
-> [...]
-> 
->            if (!first) {
->    		nxdpf = xdpf_clone(xdpf);
->    		if (unlikely(!nxdpf))
->    			return -ENOMEM;
->    		bq_enqueue(dev, nxdpf, dev_rx);
->            } else {
->    		bq_enqueue(dev, xdpf, dev_rx);
->    		first = false;
->            }
-> }
-> 
-> /* didn't find anywhere to forward to, free buf */
-> if (first)
->    xdp_return_frame_rx_napi(xdpf);
-
-I think the first xdpf will be consumed by the driver and the later
-xdpf_clone() will failed, won't it?
-
-How about just do a xdp_return_frame_rx_napi(xdpf) after all nxdpf enqueue?
-
-> > @@ -3534,6 +3539,8 @@ int xdp_do_redirect(struct net_device *dev, struct
-> > xdp_buff *xdp,
-> >                   struct bpf_prog *xdp_prog)
-> >  {
-> >       struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-> > +     bool exclude_ingress = !!(ri->flags & BPF_F_EXCLUDE_INGRESS);
-> > +     struct bpf_map *ex_map = READ_ONCE(ri->ex_map);
+On Thu, May 07, 2020 at 10:55 PM CEST, Martin KaFai Lau wrote:
+> On Wed, May 06, 2020 at 03:53:35PM +0200, Jakub Sitnicki wrote:
+>> On Wed, May 06, 2020 at 03:16 PM CEST, Lorenz Bauer wrote:
+>> > On Wed, 6 May 2020 at 13:55, Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>
+>> [...]
+>>
+>> >> @@ -4012,4 +4051,18 @@ struct bpf_pidns_info {
+>> >>         __u32 pid;
+>> >>         __u32 tgid;
+>> >>  };
+>> >> +
+>> >> +/* User accessible data for SK_LOOKUP programs. Add new fields at the end. */
+>> >> +struct bpf_sk_lookup {
+>> >> +       __u32 family;           /* AF_INET, AF_INET6 */
+>> >> +       __u32 protocol;         /* IPPROTO_TCP, IPPROTO_UDP */
+>> >> +       /* IP addresses allows 1, 2, and 4 bytes access */
+>> >> +       __u32 src_ip4;
+>> >> +       __u32 src_ip6[4];
+>> >> +       __u32 src_port;         /* network byte order */
+>> >> +       __u32 dst_ip4;
+>> >> +       __u32 dst_ip6[4];
+>> >> +       __u32 dst_port;         /* host byte order */
+>> >
+>> > Jakub and I have discussed this off-list, but we couldn't come to an
+>> > agreement and decided to invite
+>> > your opinion.
+>> >
+>> > I think that dst_port should be in network byte order, since it's one
+>> > less exception to the
+>> > rule to think about when writing BPF programs.
+>> >
+>> > Jakub's argument is that this follows __sk_buff->local_port precedent,
+>> > which is also in host
+>> > byte order.
+>>
+>> Yes, would be great to hear if there is a preference here.
+>>
+>> Small correction, proposed sk_lookup program doesn't have access to
+>> __sk_buff, so perhaps that case matters less.
+>>
+>> bpf_sk_lookup->dst_port, the packet destination port, is in host byte
+>> order so that it can be compared against bpf_sock->src_port, socket
+>> local port, without conversion.
+>>
+>> But I also see how it can be a surprise for a BPF user that one field has
+>> a different byte order.
+> I would also prefer port and addr were all in the same byte order.
+> However, it is not the cases for the other prog_type ctx.
+> People has stomped on it from time to time.  May be something
+> can be done at the libbpf to hide this difference.
 >
-> I don't think you need the READ_ONCE here since there's already one
-> below?
+> I think uapi consistency with other existing ctx is more important here.
+> (i.e. keep the "local" port in host order).  Otherwise, the user will
+> be slapped left and right when writting bpf_prog in different prog_type.
+>
+> Armed with the knowledge on skc_num, the "local" port is
+> in host byte order in the current existing prog ctx.  It is
+> unfortunate that the "dst"_port in this patch is the "local" port.
+> The "local" port in "struct bpf_sock" is actually the "src"_port. :/
+> Would "local"/"remote" be clearer than "src"/dst" in this patch?
 
-BTW, I forgot to ask, why we don't need the READ_ONCE for ex_map?
-I though the map and ex_map are two different pointers.
+I went and compared the field naming and byte order in existing structs:
 
-> >       struct bpf_map *map = READ_ONCE(ri->map);
+  | struct         | field      | byte order |
+  |----------------+------------+------------|
+  | __sk_buff      | local_port | host       |
+  | sk_msg_md      | local_port | host       |
+  | bpf_sock_ops   | local_port | host       |
+  | bpf_sock       | src_port   | host       |
+  | bpf_fib_lookup | dport      | network    |
+  | bpf_flow_keys  | dport      | network    |
+  | bpf_sock_tuple | dport      | network    |
+  | bpf_sock_addr  | user_port  | network    |
 
-Thanks
-Hangbin
+It does look like "local"/"remote" prefix is the sensible choice.
+
+I got carried away trying to match the field names with bpf_sock, which
+actually doesn't follow the naming convention.
+
+Will rename fields to local_*, remote_* in v2.
