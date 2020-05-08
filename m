@@ -2,92 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A71A21CB0F4
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 15:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA6F01CB0FB
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 15:51:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728066AbgEHNuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 09:50:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49374 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726904AbgEHNuU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 09:50:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=0CvO3nzCeYzmAG7v4H3v1bnPTQEvZI0XVb0THrLVHZU=; b=qEbku4E7tGdn4bvZ2AqCPogEiY
-        yJJ/wVjw710t9vomjNZoyvJwryIFnxXfumu6ROEH1IwG01MvQWyABUTALl0EFi2XAispGNha+aVUr
-        bnngalDTZHRWZPQdmasRhs3qYNJDw9FJkDqSaQTHlgMXpROGlGclCZ3iQJhgIOaT57fA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jX3OM-001NQQ-H2; Fri, 08 May 2020 15:50:18 +0200
-Date:   Fri, 8 May 2020 15:50:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Mark Starovoytov <mstarovoitov@marvell.com>
-Subject: Re: [EXT] Re: [PATCH net-next 7/7] net: atlantic: unify
- get_mac_permanent
-Message-ID: <20200508135018.GE298574@lunn.ch>
-References: <20200507081510.2120-1-irusskikh@marvell.com>
- <20200507081510.2120-8-irusskikh@marvell.com>
- <20200507122957.5dd4b84b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <628e45f4-048a-2b8f-10c8-5b1908d54cc8@marvell.com>
- <20200508131042.GP208718@lunn.ch>
- <41cbd649-6896-9284-694d-316c10ca17ea@marvell.com>
+        id S1728208AbgEHNvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 09:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726904AbgEHNvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 09:51:43 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F23AC05BD43
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 06:51:43 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id c10so1564413qka.4
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 06:51:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4rjmf0HiWsNkEuyKdmRN/KU2HIDzCJFo+pFGzbQdFlg=;
+        b=USzjpXXlVw9+JUGUd5u1/Nd7NL1Mh+Xc+ctZEwg3ULkYwUFDjtxN5XCr76H745DuL6
+         axftEDyTvpelDIkneiBErRLHWG0YtiQBRdUY8WU314kbk2goO0ZHhBpkctUmTlb+Hcgl
+         t+FtpkMM35SlEvaVVtPN4Lv/hjbXxFmd7l7ESUYFWfkNzXVbHawe21/SIDxJpTeDm/UP
+         VxYINHdR/IiMRAPBmMLYxZiEcKhKBtDAElin99hKtLxA+onF1ucIsLePux2zkvcgr019
+         tG/ChLQevkYR7UzQpBub9TrjT+6wi4bMz5QvQnpzAs5XfCNDBv6kdbpo/e5veIGmzBlb
+         twCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4rjmf0HiWsNkEuyKdmRN/KU2HIDzCJFo+pFGzbQdFlg=;
+        b=nlIA/e8B9I8pxGrCRItvkyh0GI24+Elw9nzroM04QmrfKJb78MwbQGfyxvrzZcV4nW
+         Hiq74VEnU5CwjfGkotYfbtAX9NuX8zbP1Hpkb3LLF9W/PyUxMU7JjWiX+WpFxniio5OR
+         ITaqdND0BgxoVgQtOkYJ0qBHGhczGLQeV04cdYP/p4DnaWG53Md0bLQU/1uWrL6/oon+
+         JHER3gzz22htecZcET2zP02Aml8+XmaiqpHGKJqE4q2SnI2qPuzLs74h003WsWE0NWo1
+         cXVyStc5fUwSWgfXrMaMEkkS35kDb9Cw1TN2oLdBn7wOuaX0qSRe57RL5gWA2/nskIXk
+         4SYg==
+X-Gm-Message-State: AGi0PubKmzAo+0q83Uz66R6wviUXPwJSWgTKhz6Umx7AMI+rfGLPF59p
+        OHbNQgeCpOfi85MKtga30uM3MWbG
+X-Google-Smtp-Source: APiQypKcCYjuitDxaR0VCHrGYxRffv0QFAjythsxBbJk9mxZS9vwwUPl35iW1w4jizhWfB5GbT79iA==
+X-Received: by 2002:a05:620a:1521:: with SMTP id n1mr2945057qkk.430.1588945902330;
+        Fri, 08 May 2020 06:51:42 -0700 (PDT)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id u190sm1137993qkb.102.2020.05.08.06.51.40
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 May 2020 06:51:41 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id c2so959144ybi.7
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 06:51:40 -0700 (PDT)
+X-Received: by 2002:a25:3187:: with SMTP id x129mr5028349ybx.428.1588945899597;
+ Fri, 08 May 2020 06:51:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <41cbd649-6896-9284-694d-316c10ca17ea@marvell.com>
+References: <CA+FuTSeDRPh2XEa6QnKYX-ROdBEhaQ0W-ak9z3npZKn7mQuHyA@mail.gmail.com>
+ <20200508005021.9998-1-kelly@onechronos.com>
+In-Reply-To: <20200508005021.9998-1-kelly@onechronos.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 8 May 2020 09:51:03 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfCfK049956d6HJ-jP5QX5rBcMCXm+2qQfQcEb7GSgvsg@mail.gmail.com>
+Message-ID: <CA+FuTSfCfK049956d6HJ-jP5QX5rBcMCXm+2qQfQcEb7GSgvsg@mail.gmail.com>
+Subject: Re: [PATCH v2] net: tcp: fixes commit 98aaa913b4ed ("tcp: Extend
+ SOF_TIMESTAMPING_RX_SOFTWARE to TCP recvmsg")
+To:     Kelly Littlepage <kelly@onechronos.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Iris Liu <iris@onechronos.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Mike Maloney <maloney@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 08, 2020 at 04:22:40PM +0300, Igor Russkikh wrote:
-> 
-> >>> Right, but why do you have your own mac generation rather than using
-> >>> eth_hw_addr_random(). You need to set NET_ADDR_RANDOM for example,
-> >>> just use standard helpers, please.
-> >>
-> >> We want this still be an Aquantia vendor id MAC, not a fully random mac.
-> >> Thats why the logic below randomizes only low three octets.
-> > 
-> > Hi Igor
-> > 
-> > How safe is that?  It reduces the available pool space by 22
-> > bits. It greatly increases the likelihood of a collision.
-> 
-> >>>> +	get_random_bytes(&rnd, sizeof(unsigned int));
-> >>>> +	l = 0xE300 0000U | (0xFFFFU & rnd) | (0x00 << 16);
-> >>>> +	h = 0x8001300EU;
-> > 
-> > Is this Marvell/Aquantias OUI? Are you setting the locally
-> > administered bit? You probably should be, since this is local, not
-> > issued with a guarantee of being unique. 
-> 
-> Yes, thats Aquantia's ID: 300EE3
-> 
-> Honestly, the subject of the discussion are only adapters with zeroed, not
-> burned MACs. In production there could not exist such adapters. We do have
-> this code mainly to cover engineering samples some of which comes unflashed.
-> 
-> So overall, I feel its abit overkill to care about collisions.
-> But we still like to see our engineering samples to have our OUI for ease of
-> scripting and maintenance.
+On Thu, May 7, 2020 at 9:18 PM Kelly Littlepage <kelly@onechronos.com> wrote:
+>
+> The stated intent of the original commit is to is to "return the timestamp
+> corresponding to the highest sequence number data returned." The current
+> implementation returns the timestamp for the last byte of the last fully
+> read skb, which is not necessarily the last byte in the recv buffer. This
+> patch converts behavior to the original definition, and to the behavior of
+> the previous draft versions of commit 98aaa913b4ed ("tcp: Extend
+> SOF_TIMESTAMPING_RX_SOFTWARE to TCP recvmsg") which also match this
+> behavior.
+>
+> Co-developed-by: Iris Liu <iris@onechronos.com>
+> Signed-off-by: Iris Liu <iris@onechronos.com>
+> Signed-off-by: Kelly Littlepage <kelly@onechronos.com>
+> ---
+> Thanks and credit to Willem de Bruijn for the revised commit language
 
-Hi Igor
+Thanks for resubmitting. I did not mean to put the Fixes tag in the
+subject line.
 
-At minimum, you need to put this as a comment.
+The Fixes tag goes at the top of the block of signs-offs. If unclear,
+please look at a couple of examples on the mailing list or in git log.
 
-And since it is not supposed to happen, you might want to throw a
-WARN_ON(). The fact you are somewhat hiding the problem the FLASH is
-empty, makes it more likely you actually ship unflashed devices to the
-customers. A big scary looking kernel stack trace should swing the
-risk back towards the safer side, and if manufacturing does mess up,
-you are likely to get feedback from customers pretty quickly.
+The existing subject from v1 was fine. It is now too long. Could you
+resubmit a v3?
 
-     Andrew
+Thanks
+
+
+
+
+>
+>  net/ipv4/tcp.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 6d87de434377..e72bd651d21a 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -2154,13 +2154,15 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
+>                         tp->urg_data = 0;
+>                         tcp_fast_path_check(sk);
+>                 }
+> -               if (used + offset < skb->len)
+> -                       continue;
+>
+>                 if (TCP_SKB_CB(skb)->has_rxtstamp) {
+>                         tcp_update_recv_tstamps(skb, &tss);
+>                         cmsg_flags |= 2;
+>                 }
+> +
+> +               if (used + offset < skb->len)
+> +                       continue;
+> +
+>                 if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)
+>                         goto found_fin_ok;
+>                 if (!(flags & MSG_PEEK))
+> --
+> 2.26.2
+>
+>
+> --
+> This email and any attachments thereto may contain private, confidential,
+> and privileged material for the sole use of the intended recipient. If you
+> are not the intended recipient or otherwise believe that you have received
+> this message in error, please notify the sender immediately and delete the
+> original. Any review, copying, or distribution of this email (or any
+> attachments thereto) by others is strictly prohibited. If this message was
+> misdirected, OCX Group Inc. does not waive any confidentiality or privilege.
