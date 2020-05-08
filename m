@@ -2,341 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01CCD1CB6E6
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C850C1CB6F1
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727067AbgEHSQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 14:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
+        id S1727792AbgEHSRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 14:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727785AbgEHSQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:16:04 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C71C05BD0A;
-        Fri,  8 May 2020 11:16:02 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id r2so2262679ilo.6;
-        Fri, 08 May 2020 11:16:02 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726885AbgEHSRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:17:08 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDE6C061A0C
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 11:17:08 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id a8so1396999ybs.3
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 11:17:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EMKYipfxfwTIPATxi6cwzN5o+N57K9koFSEGCPry7gY=;
-        b=iYo9FJiduPwU0lQA3dD3sf8yH5Csdu9NKLXthi8ttxFIR7gb0Jsx5nGnXvND3+OZ0G
-         NCVY5vg3LEwV9/RF9g9RxmMAg9Q7uLg9h8l9/q6ch3QO3jiBLcskV+FE3aLCrBj5Bh5Z
-         JCfWQzhNi+IT2l4c6b6y0FMJRvj25Clk6adTxg2QTNG9x7qMtzE6SYyOdkexgrI5QYOJ
-         TN30f/bzPYKHeDA4m17KbQWQ44lK9zY96JkRLT7ENsZKeliYBaQ5hZzVopQef1Hmj+B+
-         JIFCvBziVQRGJs00WmVIzj4Y03i7Vmb49y7UB7gBYDSd4ifIh+zSDtROPCedOocPkYxs
-         Lpdw==
+        bh=WkMBg1tvS7TrfE9B9aCdbZubv6/9XFTMvqN92Jgd9aE=;
+        b=CL0FqssipefQFxP8ostEfRFiH3ODlz/5vL4IO8sg2T1MpdC7VS95jxuQPXqQ3zwBf+
+         ysjYzU2aM6hZC6Kn3M/RCQ9Fw+gP6AuNstEpAtd7Ie+gjIcjZzmWU+UxWyg5dFezKEzf
+         kCxyTPsH0YVS1bu1VIkD7Vm6lgP2WnIZERCKCP1vnubdQ8itcduZYpPiMvNhYlGRy8IQ
+         VxGGuJ9T4GVeSj5SpM3R2mW0daFbIx/HOYhi+HZbzjcq40E7WlnK8vUmueH8tlwUAc5s
+         xkFDANYEPiphh/ykd4G1/IWoq18iTJ9JJjddMpx9z4bnbvxBWC6X1WdVUFnJaGRAOj0F
+         g9tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EMKYipfxfwTIPATxi6cwzN5o+N57K9koFSEGCPry7gY=;
-        b=O8bO04b2qb3AqEtSFt7SCJzUJQAu4+oOGySTgcG8XO2NVMywmr/9q0G/x86DrEVJ8F
-         rtPbBNii27IpKR9SJo37Es7ORk+2FnlnxTSdDfVBNeNrZk2/byrg6NcCk/+OFmOuAlZM
-         xl8wDvNiPh/Vc7pOGz7AoM533f6mGEi7vnWzp0/rolW8yGJDJjz4Rp7Sc6jfO2A9DSdf
-         nUTZ12MIUVMH3s5JWC44Y/SYpPUcNHK/uAQ2Kuy6Y6gREZaPugK/hTWQ5SrH7qH9EZL2
-         ABQuYr10UUi9dP/1I9DaLAEeSJMBkhMorHjCf4PerXIAkNiUolwSe92j02nQDtiBgzRf
-         EP/Q==
-X-Gm-Message-State: AGi0Pubvha5rVLRZFALW0t5/P8PF+F4iN+H3TDrjH6G5AedXd+a006qj
-        rxjZrnu4mp2dOnQGVm/T2WLnAgXyB+6ZZVj0Vw8=
-X-Google-Smtp-Source: APiQypK+yq31/hfLfegSEavOHigyedthQ4ZpAopxDE1kbFCDpU6y0WcDjB1bYrW3HIvhDxQhV6OLuy9v2t54s+E09SM=
-X-Received: by 2002:a92:a053:: with SMTP id b19mr3849735ilm.156.1588961762038;
- Fri, 08 May 2020 11:16:02 -0700 (PDT)
+        bh=WkMBg1tvS7TrfE9B9aCdbZubv6/9XFTMvqN92Jgd9aE=;
+        b=I68PebXVxBTfOrTXrB0SROziA/0zbz1eGygnKwm+4yWxJvadecarHt+Gerwzu2Jq9C
+         AUC25990bqeBKo1yevXYtcIq3AAZQdMrGLfdRA2UKNJ44KKaH2CEkvnJ2iOhAEmY1j3F
+         dqHQJsac0z+u/11fRCpBNhzGouiswdSoNQ8FY8vVRThhj6DH14LNEUoNwNUcszStP2gg
+         lgkz3UaGPSIj1NHHHIc0FdCNrJLdZ7vNJSPSl0iMdkxFYihdQmK0oIJMtaK6mtpiqvRb
+         HqoFteA7vz+8v+5VZTDg8o5PqOVxH+nIj2//2dDZhJlChjKYtGTxXyu419vV24TdsQCu
+         xuGg==
+X-Gm-Message-State: AGi0PuYkEJc1QoX9n3ALT2kJoEKCjgOM5zCWVAwgeD3Mnmuco8XCU8Xt
+        X42V9/SvcFhFJAG8s0zlC0gHuAu18/mulY1+NQB6gg==
+X-Google-Smtp-Source: APiQypKdPMzNceOPqKogm/JEIajAlJEQEZIAYXVMjL6uOxWACsMJjYKPioHrniOsmJ3lvn1Eg16oNW6GKsUR2Kfdxis=
+X-Received: by 2002:a25:bc53:: with SMTP id d19mr6542768ybk.395.1588961827137;
+ Fri, 08 May 2020 11:17:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200504062547.2047304-1-yhs@fb.com> <20200504062602.2048597-1-yhs@fb.com>
- <CAEf4Bzb-COkgcLB=HK4ahtnEFD7QGY0s=Qb-kWTBKK56319JAg@mail.gmail.com> <71cff8d8-05b9-87ef-8a12-1da3e38c4b55@fb.com>
-In-Reply-To: <71cff8d8-05b9-87ef-8a12-1da3e38c4b55@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 May 2020 11:15:50 -0700
-Message-ID: <CAEf4Bza0n3_uukQu_gUxn3X46kVOHeu3rJPdHkh8=QYxunFiig@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 13/20] bpf: add bpf_seq_printf and
- bpf_seq_write helpers
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+References: <20200508015810.46023-1-edumazet@google.com> <CABCgpaUqymfoGGyExvKv65UDvLfHnw2cavVCr1Pq8coz21ujKA@mail.gmail.com>
+ <CANn89iKk8aZ=wwbet8q_U=inbksvWhJvUewMGP+FfLYiD+yOCQ@mail.gmail.com>
+In-Reply-To: <CANn89iKk8aZ=wwbet8q_U=inbksvWhJvUewMGP+FfLYiD+yOCQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 8 May 2020 11:16:55 -0700
+Message-ID: <CANn89i+Ltt+oidFvLawa_TKiqvwtr2uPBKCMD7xZ4-UaxgXTgQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/dst: use a smaller percpu_counter batch for
+ dst entries accounting
+To:     Brian Vazquez <brianvv.kernel@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 6, 2020 at 2:42 PM Yonghong Song <yhs@fb.com> wrote:
+On Fri, May 8, 2020 at 11:06 AM Eric Dumazet <edumazet@google.com> wrote:
 >
->
->
-> On 5/6/20 10:37 AM, Andrii Nakryiko wrote:
-> > On Sun, May 3, 2020 at 11:26 PM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >> Two helpers bpf_seq_printf and bpf_seq_write, are added for
-> >> writing data to the seq_file buffer.
-> >>
-> >> bpf_seq_printf supports common format string flag/width/type
-> >> fields so at least I can get identical results for
-> >> netlink and ipv6_route targets.
-> >>
+> On Fri, May 8, 2020 at 10:30 AM Brian Vazquez <brianvv.kernel@gmail.com> wrote:
 > >
-> > Does seq_printf() has its own format string specification? Is there
-> > any documentation explaining? I was confused by few different checks
-> > below...
->
-> Not really. Similar to bpf_trace_printk(), since we need to
-> parse format string, so we may only support a subset of
-> what seq_printf() does. But we should not invent new
-> formats.
->
+> > On Thu, May 7, 2020 at 7:00 PM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > percpu_counter_add() uses a default batch size which is quite big
+> > > on platforms with 256 cpus. (2*256 -> 512)
+> > >
+> > > This means dst_entries_get_fast() can be off by +/- 2*(nr_cpus^2)
+> > > (131072 on servers with 256 cpus)
+> > >
+> > > Reduce the batch size to something more reasonable, and
+> > > add logic to ip6_dst_gc() to call dst_entries_get_slow()
+> > > before calling the _very_ expensive fib6_run_gc() function.
+> > >
+> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > > ---
+> > >  include/net/dst_ops.h | 4 +++-
+> > >  net/core/dst.c        | 8 ++++----
+> > >  net/ipv6/route.c      | 3 +++
+> > >  3 files changed, 10 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
+> > > index 443863c7b8da362476c15fd290ac2a32a8aa86e3..88ff7bb2bb9bd950cc54fd5e0ae4573d4c66873d 100644
+> > > --- a/include/net/dst_ops.h
+> > > +++ b/include/net/dst_ops.h
+> > > @@ -53,9 +53,11 @@ static inline int dst_entries_get_slow(struct dst_ops *dst)
+> > >         return percpu_counter_sum_positive(&dst->pcpuc_entries);
+> > >  }
+> > >
+> > > +#define DST_PERCPU_COUNTER_BATCH 32
+> > >  static inline void dst_entries_add(struct dst_ops *dst, int val)
+> > >  {
+> > > -       percpu_counter_add(&dst->pcpuc_entries, val);
+> > > +       percpu_counter_add_batch(&dst->pcpuc_entries, val,
+> > > +                                DST_PERCPU_COUNTER_BATCH);
+> > >  }
+> > >
+> > >  static inline int dst_entries_init(struct dst_ops *dst)
+> > > diff --git a/net/core/dst.c b/net/core/dst.c
+> > > index 193af526e908afa4b868cf128470f0fbc3850698..d6b6ced0d451a39c0ccb88ae39dba225ea9f5705 100644
+> > > --- a/net/core/dst.c
+> > > +++ b/net/core/dst.c
+> > > @@ -81,11 +81,11 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
+> > >  {
+> > >         struct dst_entry *dst;
+> > >
+> > > -       if (ops->gc && dst_entries_get_fast(ops) > ops->gc_thresh) {
+> > > +       if (ops->gc &&
+> > > +           !(flags & DST_NOCOUNT) &&
+> > > +           dst_entries_get_fast(ops) > ops->gc_thresh) {
+> > >                 if (ops->gc(ops)) {
+> > > -                       printk_ratelimited(KERN_NOTICE "Route cache is full: "
+> > > -                                          "consider increasing sysctl "
+> > > -                                          "net.ipv[4|6].route.max_size.\n");
+> > > +                       pr_notice_ratelimited("Route cache is full: consider increasing sysctl net.ipv6.route.max_size.\n");
+> > >                         return NULL;
+> > >                 }
+> > >         }
+> > > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> > > index 1ff142393c768f85c495474a1d05e1ae1642301c..a9072dba00f4fb0b61bce1fc0f44a3a81ba702fa 100644
+> > > --- a/net/ipv6/route.c
+> > > +++ b/net/ipv6/route.c
+> > > @@ -3195,6 +3195,9 @@ static int ip6_dst_gc(struct dst_ops *ops)
+> > >         int entries;
+> > >
+> > >         entries = dst_entries_get_fast(ops);
+> > > +       if (entries > rt_max_size)
+> > > +               entries = dst_entries_get_slow(ops);
+> > > +
+> > >         if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+> > if this part of the condition is not satisfied, you are going to call
+> > fib6_run_gc anyways and after that you will update the entries. So I
+> > was wondering if code here could be something like:
+> > --- a/net/ipv6/route.c
+> > +++ b/net/ipv6/route.c
+> > @@ -3197,11 +3197,16 @@ static int ip6_dst_gc(struct dst_ops *ops)
+> >         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+> >         int entries;
 > >
-> >> For bpf_seq_printf and bpf_seq_write, return value -EOVERFLOW
-> >> specifically indicates a write failure due to overflow, which
-> >> means the object will be repeated in the next bpf invocation
-> >> if object collection stays the same. Note that if the object
-> >> collection is changed, depending how collection traversal is
-> >> done, even if the object still in the collection, it may not
-> >> be visited.
-> >>
-> >> bpf_seq_printf may return -EBUSY meaning that internal percpu
-> >> buffer for memory copy of strings or other pointees is
-> >> not available. Bpf program can return 1 to indicate it
-> >> wants the same object to be repeated. Right now, this should not
-> >> happen on no-RT kernels since migrate_enable(), which guards
-> >> bpf prog call, calls preempt_enable().
+> > +       if (time_before(rt_last_gc + rt_min_interval, jiffies)
+> > +               goto run_gc;
+> > +
+> >         entries = dst_entries_get_fast(ops);
+> > -       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+> > -           entries <= rt_max_size)
+> > +       if (entries > rt_max_size)
+> > +               entries = dst_entries_get_slow(ops);
+> > +       if (entries <= rt_max_size)
+> >                 goto out;
 > >
-> > You probably meant migrate_disable()/preempt_disable(), right? But
+> > +run_gc:
+> >         net->ipv6.ip6_rt_gc_expire++;
+> >         fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
+> >         entries = dst_entries_get_slow(ops);
+> >
+> > That way you could potentially avoid an extra call to
+> > dst_entries_get_slow when you know for sure that fib6_run_gc will be
+> > run. WDYT?
 >
-> Yes, sorry for typo.
+> The problem is that you might still return a wrong status in the final :
 >
-> > could it still happen, at least due to NMI? E.g., perf_event BPF
-> > program gets triggered during bpf_iter program execution? I think for
-> > perf_event_output function, we have 3 levels, for one of each possible
-> > "contexts"? Should we do something like that here as well?
+> return entries > rt_max_size;
 >
-> Currently bpf_seq_printf() and bpf_seq_write() helpers can
-> only be called by iter bpf programs. The iter bpf program can only
-> be run on process context as it is triggered by a read() syscall.
-> So one level should be enough for non-RT kernel.
+> If we are in ip6_dst_gc(), we know for sure entries might be wrong,
+> if it holds dst_entries_get_fast(ops)
 >
-> For RT kernel, migrate_disable does not prevent preemption,
-> so it is possible task in the middle of bpf_seq_printf() might
-> be preempted, so I implemented the logic to return -EBUSY.
-> I think this case should be extremely rare so I only implemented
-> one level nesting.
+> If you prefer, the patch is really (since the caller calls us only if
+> dst_entries_get_fast(ops) was suspect)
+>
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index ff847a324220bc4cac8b103640f7e1a5db374a87..78e7f3c14e8a9c937866361aaf641cecfe1fed43
+> 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -3196,7 +3196,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
+>         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+>         int entries;
+>
+> -       entries = dst_entries_get_fast(ops);
+> +       entries = dst_entries_get_slow(ops);
+>         if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+>             entries <= rt_max_size)
+>                 goto out;
 
-yeah, makes sense
+BTW, we do not _have_ to force a gc if entries (the more accurate
+value) is below gc_thresh
 
->
-> >
-> >>
-> >> Signed-off-by: Yonghong Song <yhs@fb.com>
-> >> ---
-> >>   include/uapi/linux/bpf.h       |  32 +++++-
-> >>   kernel/trace/bpf_trace.c       | 195 +++++++++++++++++++++++++++++++++
-> >>   scripts/bpf_helpers_doc.py     |   2 +
-> >>   tools/include/uapi/linux/bpf.h |  32 +++++-
-> >>   4 files changed, 259 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> >> index 97ceb0f2e539..e440a9d5cca2 100644
-> >> --- a/include/uapi/linux/bpf.h
-> >> +++ b/include/uapi/linux/bpf.h
-> >> @@ -3076,6 +3076,34 @@ union bpf_attr {
-> >>    *             See: clock_gettime(CLOCK_BOOTTIME)
-> >>    *     Return
-> >>    *             Current *ktime*.
-> >> + *
-> >
-> > [...]
-> >
-> >> +BPF_CALL_5(bpf_seq_printf, struct seq_file *, m, char *, fmt, u32, fmt_size,
-> >> +          const void *, data, u32, data_len)
-> >> +{
-> >> +       int err = -EINVAL, fmt_cnt = 0, memcpy_cnt = 0;
-> >> +       int i, buf_used, copy_size, num_args;
-> >> +       u64 params[MAX_SEQ_PRINTF_VARARGS];
-> >> +       struct bpf_seq_printf_buf *bufs;
-> >> +       const u64 *args = data;
-> >> +
-> >> +       buf_used = this_cpu_inc_return(bpf_seq_printf_buf_used);
-> >> +       if (WARN_ON_ONCE(buf_used > 1)) {
-> >> +               err = -EBUSY;
-> >> +               goto out;
-> >> +       }
-> >> +
-> >> +       bufs = this_cpu_ptr(&bpf_seq_printf_buf);
-> >> +
-> >> +       /*
-> >> +        * bpf_check()->check_func_arg()->check_stack_boundary()
-> >> +        * guarantees that fmt points to bpf program stack,
-> >> +        * fmt_size bytes of it were initialized and fmt_size > 0
-> >> +        */
-> >> +       if (fmt[--fmt_size] != 0)
-> >
-> > If we allow fmt_size == 0, this will need to be changed.
->
-> Currently, we do not support fmt_size == 0. Yes, if we allow, this
-> needs change.
->
-> >
-> >> +               goto out;
-> >> +
-> >> +       if (data_len & 7)
-> >> +               goto out;
-> >> +
-> >> +       for (i = 0; i < fmt_size; i++) {
-> >> +               if (fmt[i] == '%' && (!data || !data_len))
-> >
-> > So %% escaping is not supported?
->
-> Yes, have not seen a need yet my ipv6_route/netlink example.
-> Can certain add if there is a use case.
+That would be a separate patch :
 
-I can imagine this being used quite often when trying to print out
-percentages... Would just suck to have to upgrade kernel just to be
-able to print % character :)
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 4292653af533bb641ae8571fffe45b39327d0380..69a90802a70f830b286795c9c75c13c4ba345a72
+100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3194,10 +3194,9 @@ static int ip6_dst_gc(struct dst_ops *ops)
+        unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+        int entries;
 
->
-> >
-> >> +                       goto out;
-> >> +       }
-> >> +
-> >> +       num_args = data_len / 8;
-> >> +
-> >> +       /* check format string for allowed specifiers */
-> >> +       for (i = 0; i < fmt_size; i++) {
-> >> +               if ((!isprint(fmt[i]) && !isspace(fmt[i])) || !isascii(fmt[i]))
-> >
-> > why these restrictions? are they essential?
->
-> This is the same restriction in bpf_trace_printk(). I guess the purpose
-> is to avoid weird print. To promote bpf_iter to dump beyond asscii, I
-> guess we can remove this restriction.
-
-well, if underlying seq_printf() will fail for those "more liberal"
-strings, then that would be bad. Basically, we should try to not
-impose additional restrictions compared to seq_printf, but also no
-need to allow more, which will be rejected by it. I haven't checked
-seq_printf implementation though, so don't know what are those
-restrictions.
-
->
-> >
-> >> +                       goto out;
-> >> +
-> >> +               if (fmt[i] != '%')
-> >> +                       continue;
-> >> +
-> >> +               if (fmt_cnt >= MAX_SEQ_PRINTF_VARARGS) {
-> >> +                       err = -E2BIG;
-> >> +                       goto out;
-> >> +               }
-> >> +
-> >> +               if (fmt_cnt >= num_args)
-> >> +                       goto out;
-> >> +
-> >> +               /* fmt[i] != 0 && fmt[last] == 0, so we can access fmt[i + 1] */
-> >> +               i++;
-> >> +
-> >> +               /* skip optional "[0+-][num]" width formating field */
-> >> +               while (fmt[i] == '0' || fmt[i] == '+'  || fmt[i] == '-')
-> >
-> > There could be space as well, as an alternative to 0.
->
-> We can allow space. But '0' is used more common, right?
-
-I use both space and 0 quite often, space especially with aligned strings.
-
->
-> >
-> >> +                       i++;
-> >> +               if (fmt[i] >= '1' && fmt[i] <= '9') {
-> >> +                       i++;
-> >> +                       while (fmt[i] >= '0' && fmt[i] <= '9')
-> >> +                               i++;
-> >> +               }
-> >> +
-> >> +               if (fmt[i] == 's') {
-> >> +                       /* disallow any further format extensions */
-> >> +                       if (fmt[i + 1] != 0 &&
-> >> +                           !isspace(fmt[i + 1]) &&
-> >> +                           !ispunct(fmt[i + 1]))
-> >> +                               goto out;
-> >
-> > I'm not sure I follow this check either. printf("%sbla", "whatever")
-> > is a perfectly fine format string. Unless seq_printf has some
-> > additional restrictions?
->
-> Yes, just some restriction inherited from bpf_trace_printk().
-> Will remove.
-
-see comment above, if we allow it here, but seq_printf() will reject
-it, then there is no point
-
->
-> >
-> >> +
-> >> +                       /* try our best to copy */
-> >> +                       if (memcpy_cnt >= MAX_SEQ_PRINTF_MAX_MEMCPY) {
-> >> +                               err = -E2BIG;
-> >> +                               goto out;
-> >> +                       }
-> >> +
-> >
-> > [...]
-> >
-> >> +
-> >> +static int bpf_seq_printf_btf_ids[5];
-> >> +static const struct bpf_func_proto bpf_seq_printf_proto = {
-> >> +       .func           = bpf_seq_printf,
-> >> +       .gpl_only       = true,
-> >> +       .ret_type       = RET_INTEGER,
-> >> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
-> >> +       .arg2_type      = ARG_PTR_TO_MEM,
-> >> +       .arg3_type      = ARG_CONST_SIZE,
-> >
-> > It feels like allowing zero shouldn't hurt too much?
->
-> This is the format string, I would prefer to keep it non-zero.
-
-yeah, makes sense, I suppose
-
->
-> >
-> >> +       .arg4_type      = ARG_PTR_TO_MEM_OR_NULL,
-> >> +       .arg5_type      = ARG_CONST_SIZE_OR_ZERO,
-> >> +       .btf_id         = bpf_seq_printf_btf_ids,
-> >> +};
-> >> +
-> >> +BPF_CALL_3(bpf_seq_write, struct seq_file *, m, const void *, data, u32, len)
-> >> +{
-> >> +       return seq_write(m, data, len) ? -EOVERFLOW : 0;
-> >> +}
-> >> +
-> >> +static int bpf_seq_write_btf_ids[5];
-> >> +static const struct bpf_func_proto bpf_seq_write_proto = {
-> >> +       .func           = bpf_seq_write,
-> >> +       .gpl_only       = true,
-> >> +       .ret_type       = RET_INTEGER,
-> >> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
-> >> +       .arg2_type      = ARG_PTR_TO_MEM,
-> >> +       .arg3_type      = ARG_CONST_SIZE,
-> >
-> > Same, ARG_CONST_SIZE_OR_ZERO?
->
-> This one, possible. Let me check.
-
-I just remember how much trouble perf_event_output() was causing me
-because it enforced >0 for data length. Even though my variable-sized
-output was always >0, proving that to (especially older) verifier was
-extremely hard. So the less unnecessary restrictions - the better.
-
->
-> >
-> >> +       .btf_id         = bpf_seq_write_btf_ids,
-> >> +};
-> >> +
-> >
-> > [...]
-> >
+-       entries = dst_entries_get_fast(ops);
+-       if (entries > rt_max_size)
+-               entries = dst_entries_get_slow(ops);
+-
++       entries = dst_entries_get_slow(ops);
++       if (entries < ops->gc_thresh)
++               return 0;
+        if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+            entries <= rt_max_size)
+                goto out;
