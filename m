@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D53BD1CBAF1
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 00:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E601CBAFB
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 00:58:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728301AbgEHWxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 18:53:04 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54023 "EHLO
+        id S1728010AbgEHW6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 18:58:15 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:54071 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727110AbgEHWxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 18:53:04 -0400
+        with ESMTP id S1726843AbgEHW6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 18:58:14 -0400
 Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
         by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <colin.king@canonical.com>)
-        id 1jXBrZ-0002Yc-W6; Fri, 08 May 2020 22:53:02 +0000
+        id 1jXBwY-0003Ra-MI; Fri, 08 May 2020 22:58:10 +0000
 From:   Colin King <colin.king@canonical.com>
-To:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
+To:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
         "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: tg3: tidy up loop, remove need to compute off with a multiply
-Date:   Fri,  8 May 2020 23:53:01 +0100
-Message-Id: <20200508225301.484094-1-colin.king@canonical.com>
+Subject: [PATCH] net: lio_core: remove redundant assignment to variable tx_done
+Date:   Fri,  8 May 2020 23:58:10 +0100
+Message-Id: <20200508225810.484331-1-colin.king@canonical.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -36,42 +36,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Colin Ian King <colin.king@canonical.com>
 
-Currently the value for 'off' is computed using a multiplication and
-a couple of statements later off is being incremented by len and
-this value is never read.  Clean up the code by removing the
-multiplication and just increment off by len on each iteration. Also
-use len instead of TG3_OCIR_LEN.
+The variable tx_done is being assigned with a value that is never read
+as the function returns a few statements later.  The assignment is
+redundant and can be removed.
 
 Addresses-Coverity: ("Unused value")
 Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- drivers/net/ethernet/broadcom/tg3.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/cavium/liquidio/lio_core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index ff98a82b7bc4..9dd9bd506bcc 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -10798,16 +10798,14 @@ static int tg3_init_hw(struct tg3 *tp, bool reset_phy)
- static void tg3_sd_scan_scratchpad(struct tg3 *tp, struct tg3_ocir *ocir)
- {
- 	int i;
-+	u32 off, len = TG3_OCIR_LEN;
+diff --git a/drivers/net/ethernet/cavium/liquidio/lio_core.c b/drivers/net/ethernet/cavium/liquidio/lio_core.c
+index d7e805749a5b..e40c64b79f66 100644
+--- a/drivers/net/ethernet/cavium/liquidio/lio_core.c
++++ b/drivers/net/ethernet/cavium/liquidio/lio_core.c
+@@ -782,7 +782,6 @@ static int liquidio_napi_poll(struct napi_struct *napi, int budget)
+ 	if ((work_done < budget && tx_done) ||
+ 	    (iq && iq->pkt_in_done >= MAX_REG_CNT) ||
+ 	    (droq->pkt_count >= MAX_REG_CNT)) {
+-		tx_done = 1;
+ 		napi_complete_done(napi, work_done);
  
--	for (i = 0; i < TG3_SD_NUM_RECS; i++, ocir++) {
--		u32 off = i * TG3_OCIR_LEN, len = TG3_OCIR_LEN;
--
-+	for (i = 0, off = 0; i < TG3_SD_NUM_RECS; i++, ocir++, off += len) {
- 		tg3_ape_scratchpad_read(tp, (u32 *) ocir, off, len);
--		off += len;
- 
- 		if (ocir->signature != TG3_OCIR_SIG_MAGIC ||
- 		    !(ocir->version_flags & TG3_OCIR_FLAG_ACTIVE))
--			memset(ocir, 0, TG3_OCIR_LEN);
-+			memset(ocir, 0, len);
- 	}
- }
- 
+ 		octeon_enable_irq(droq->oct_dev, droq->q_no);
 -- 
 2.25.1
 
