@@ -2,69 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 067601CA560
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 09:44:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0031C1CA587
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 10:00:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbgEHHow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 03:44:52 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4350 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726036AbgEHHov (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 03:44:51 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 2B9E19B48087109A6A1F;
-        Fri,  8 May 2020 15:44:47 +0800 (CST)
-Received: from huawei.com (10.175.124.28) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Fri, 8 May 2020
- 15:44:37 +0800
-From:   Jason Yan <yanaijie@huawei.com>
-To:     <arend.vanspriel@broadcom.com>, <franky.lin@broadcom.com>,
-        <hante.meuleman@broadcom.com>, <chi-hsien.lin@cypress.com>,
-        <wright.feng@cypress.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>
-CC:     Jason Yan <yanaijie@huawei.com>
-Subject: [PATCH v2] brcmfmac: remove Comparison to bool in brcmf_p2p_send_action_frame()
-Date:   Fri, 8 May 2020 15:43:51 +0800
-Message-ID: <20200508074351.19193-1-yanaijie@huawei.com>
-X-Mailer: git-send-email 2.21.1
+        id S1727096AbgEHIAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 04:00:31 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:36642 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727030AbgEHIAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 04:00:30 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0487p98J021513;
+        Fri, 8 May 2020 01:00:26 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0818;
+ bh=0JOSp3O9OivyzD1QuluLkQBX4z8mjZPuRutwsVwPaVA=;
+ b=S7MasBn/gIgbxyl+fIS0OS6ezj4KDSU7X6TBS8AIVlraALHyP01ANgA0Meu8YtJECqUY
+ VjjVA7CyQoijRFmCtRxjaQauqyv+klv3kGte64dFO84OhZ+TbsGMHBand1wj63XU/Wfm
+ lgWrVvbezJ17Eqw/JOGlXtuWeIZWrY5rLzgdOEJbG8A9Fl2gyxpvcv2qE3tgzum7C/NS
+ nmy6Cjbo13JRTH0WqA8scrry764BqXNpSXsoggPRVHsYmkJwidox8i0FOoEEd6gkppla
+ ByvRts55TUE/qbPD5MxzSSfc8xIjxbzg9IDCv7PU5xbyrDiJrHAM6R+Ch+MgIvK0qZhR Ww== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 30vtdv9wng-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 08 May 2020 01:00:26 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 8 May
+ 2020 01:00:24 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 8 May 2020 01:00:24 -0700
+Received: from [10.193.46.2] (unknown [10.193.46.2])
+        by maili.marvell.com (Postfix) with ESMTP id D64B83F703F;
+        Fri,  8 May 2020 01:00:22 -0700 (PDT)
+Subject: Re: [PATCH net-next 06/12] net: qed: gather debug data on hw errors
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        "Ariel Elior" <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        "Denis Bolotin" <dbolotin@marvell.com>
+References: <cover.1588758463.git.irusskikh@marvell.com>
+ <a380a45a885034c9b19cd1fe786854e8a65a8088.1588758463.git.irusskikh@marvell.com>
+ <20200506123120.02d4c04f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Igor Russkikh <irusskikh@marvell.com>
+Message-ID: <01a9d7a5-3f8c-1799-cd0e-bb2dc8c7f177@marvell.com>
+Date:   Fri, 8 May 2020 11:00:21 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101
+ Thunderbird/76.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.28]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20200506123120.02d4c04f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-08_08:2020-05-07,2020-05-08 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warning:
 
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c:1785:5-8:
-WARNING: Comparison to bool
+> On Wed, 6 May 2020 14:33:08 +0300 Igor Russkikh wrote:
+>> To implement debug dump retrieval on a live system we add callbacks to
+>> collect the same data which is collected now during manual `ethtool -d`
+>> call.
+>>
+>> But we instead collect the dump immediately at the moment bad thing
+>> happens, and save it for later retrieval by the same `ethtool -d`.
+>>
+>> To have ability to track this event, we add kobject uevent trigger,
+>> so udev event handler script could be used to automatically collect
+> dumps.
+> 
+> No way. Please use devlink health. Instead of magic ethtool dumps and
+> custom udev.
+> 
 
-Signed-off-by: Jason Yan <yanaijie@huawei.com>
-Reviewed-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
----
- v2: Rebased on top of wireless-drivers-next and drop one already fixed line.
+Hi Jakub,
 
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for the suggestion. I've looked into devlink health infrastructure, but
+what's warned me is that our device health dumps are huge (~3Mb). I'm not sure
+if health dump infrastructure is designed to push that amounts of data.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-index e32c24a2670d..8cde31675dfb 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
-@@ -1836,7 +1836,7 @@ bool brcmf_p2p_send_action_frame(struct brcmf_cfg80211_info *cfg,
- 		dwell_overflow = brcmf_p2p_check_dwell_overflow(requested_dwell,
- 								dwell_jiffies);
- 	}
--	if (ack == false) {
-+	if (!ack) {
- 		bphy_err(drvr, "Failed to send Action Frame(retry %d)\n",
- 			 tx_retry);
- 		clear_bit(BRCMF_P2P_STATUS_GO_NEG_PHASE, &p2p->status);
--- 
-2.21.1
+I'll check if that's feasible.
 
+Thanks,
+  Igor
