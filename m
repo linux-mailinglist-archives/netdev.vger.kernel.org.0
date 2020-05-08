@@ -2,163 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 618571CB881
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 21:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9C11CB88C
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 21:45:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbgEHTl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 15:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
+        id S1727777AbgEHTpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 15:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726797AbgEHTl6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 15:41:58 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5C4C061A0C;
-        Fri,  8 May 2020 12:41:58 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id t3so2431743otp.3;
-        Fri, 08 May 2020 12:41:58 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726797AbgEHTpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 15:45:03 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CF0C061A0C;
+        Fri,  8 May 2020 12:45:02 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id i68so2394347qtb.5;
+        Fri, 08 May 2020 12:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SF7w4IVLXKR2MN5g9z0w/WoW8pEbm4v0BnCRIDC/Omw=;
-        b=MMlHVCrYNt8/FKkH14O8Mb8KKWNzpOvTnGtPi/pg2/d55abXEK6K4BXYx+JWYaZIKn
-         21dr3qgLJVft+JV0agpkwz7lZ6dIFf3J9LpBh6eIoBX3pHizf3mhCyCbXDIO+Sgftyfm
-         NfKv5YPTThpuZepy1mg0MHUaZcwfZ9wodBmM0aOCi7Lmyw3xsLUAmdvblehzjAcSv73O
-         oXndWT72ezLE3WpSSFnaIn2kLAm0dlMnnVgV2NhpRIHBE0deEVE9C7nJKqKZJjN9JyPg
-         tPFTLsXGbEkRln1K8htoYEDJZafzmCBwlU3NvVWnd87CW65C5cq4yQxP8PD338+8GM4e
-         /8wQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CLoXogYT6eDReWHnMq2ZAz0NW+OJb5gmwN5c8u8bjlo=;
+        b=Mqn6wjVSwQhFoMTaELZUxbJDIV+79EZdfBbf/P7qKNojaOcqB3dfOkLCa5K3Oa6xaL
+         +k8/JNPZ8U7FidvCuC5kq9uYKJQwzFY2lwqxeX1oaLT38X4X/oGRHkwK2PTueKcj2Tv3
+         v5CW9tP7EM1Ru2rvTNVdl0phRzhC8HxEqkl/VQhlozfdZohvCnL1Skg02uCuevkhmDAY
+         SJHLOm0B762uJwGdHvjkBqYGmiM+fcveRXtx9F9tlFywNyyJ6F3ceXmRaTTaS4wRQw9X
+         W11QXmWAkobOR+syCLCOvK05bbJrEKNh+CzxyW/YqdRzbLBMtOvvbxB680KpgS32/hHX
+         kDtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SF7w4IVLXKR2MN5g9z0w/WoW8pEbm4v0BnCRIDC/Omw=;
-        b=o2kmuaNCqIh8qU/E86CiMmc+m++pbqMcc0k4pjqRY7+X3PKwfvgyO9PEEqj3r+8H4V
-         iyqwjHX/sK8U370xYMD8Cb7IEhZSVKWzXPcrvMs/+LWj+kOOoVuX55KnuOCbcEslQzvz
-         Rj5zmUfCdhf5Mer71UA9UpzLExoXOumxOdiV036qEL3cz9IQSY9JDmVkkVheDDQtDajZ
-         yZZ1ACbXmfusYlTYoUbsQSmbvxCYW/Sc9GepJKyokaIcbC2df353YSu0g6wfyehLaf45
-         mNpb7hr5mk2LSoY8/UhbkvUR8ueaLVkxa3evhibYL50N9J5lnMAOaHPTn3V23Q4dS3eB
-         zC1g==
-X-Gm-Message-State: AGi0PubC3X48M10STs14mnKmx9XBL7QdudxYWZZ+b6ynwBkVp5reLi6f
-        vj1Q8H47qc7vBotynxj2YSE=
-X-Google-Smtp-Source: APiQypI+yZ/q+n9vOWzjkzHKWX+cCC3fC1eMEiyn/b8lAySJ9BQDFG+p68lSw7hsK1v+oIE3KSoncQ==
-X-Received: by 2002:a9d:a55:: with SMTP id 79mr3629382otg.295.1588966917698;
-        Fri, 08 May 2020 12:41:57 -0700 (PDT)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id q3sm715371oom.12.2020.05.08.12.41.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2020 12:41:57 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Alex Elder <elder@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH net-next] net: ipa: Remove ipa_endpoint_stop{,_rx_dma} again
-Date:   Fri,  8 May 2020 12:41:33 -0700
-Message-Id: <20200508194132.3412384-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CLoXogYT6eDReWHnMq2ZAz0NW+OJb5gmwN5c8u8bjlo=;
+        b=bTRFw0xURSnwj7PVG4P5xUI3ZiBB+/WyloTDFMC3e0/LROQ6OPQe3SgQ1HcZFcVfjn
+         1mPpRad2os45CmJ4gWnylAF5BMaxHym5apwuZfRsNLVJeCrdl3c6dpU+JmPsQJ04vKLZ
+         eCb10vT0wLW1OF/RBo4txw9CwwuLAdHoIlrQlUOCXrIs1NAomDKSBL42e5rQG+SfbEDI
+         XY46Kt76B3IUNULNDXxBdmYSukcNgS3ZugyufCXiU61tknVCqS31cNvC2wM3ZRzjE7KX
+         ifyQQD3RHN1PcI+Z30gitIDavtHQ+BK+u/5zVEaBaxTKt8spXL1Da7Sf+At7RlWg/RSm
+         144Q==
+X-Gm-Message-State: AGi0PubpJVhl6/6Gkoc1WbDyhK7B6u6GB6Ma3aR0PHlhAcs8a0tXr2tQ
+        3xs2HFGv+4xEXuHPLvLzlyoN975rGn67HT3ofUg2jbzN
+X-Google-Smtp-Source: APiQypJr7EUUdpNMEDoWsG8jekWypEMvZE+sGncyfrPieqy1gSsAw6kxJY/Zi0KakLpUl08io0FluZl5DYjUY3NuVSQ=
+X-Received: by 2002:ac8:193d:: with SMTP id t58mr4449862qtj.93.1588967102041;
+ Fri, 08 May 2020 12:45:02 -0700 (PDT)
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+References: <20200507053915.1542140-1-yhs@fb.com> <20200507053930.1544090-1-yhs@fb.com>
+In-Reply-To: <20200507053930.1544090-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 8 May 2020 12:44:50 -0700
+Message-ID: <CAEf4BzabLpaMvJtTNtb88xJZzdjwwvcnfqSH=hq3bMiEt-gtmw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 13/21] bpf: add bpf_seq_printf and
+ bpf_seq_write helpers
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building arm64 allyesconfig:
+On Wed, May 6, 2020 at 10:40 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> Two helpers bpf_seq_printf and bpf_seq_write, are added for
+> writing data to the seq_file buffer.
+>
+> bpf_seq_printf supports common format string flag/width/type
+> fields so at least I can get identical results for
+> netlink and ipv6_route targets.
+>
+> For bpf_seq_printf and bpf_seq_write, return value -EOVERFLOW
+> specifically indicates a write failure due to overflow, which
+> means the object will be repeated in the next bpf invocation
+> if object collection stays the same. Note that if the object
+> collection is changed, depending how collection traversal is
+> done, even if the object still in the collection, it may not
+> be visited.
+>
+> bpf_seq_printf may return -EBUSY meaning that internal percpu
+> buffer for memory copy of strings or other pointees is
+> not available. Bpf program can return 1 to indicate it
+> wants the same object to be repeated. Right now, this should not
+> happen on no-RT kernels since migrate_disable(), which guards
+> bpf prog call, calls preempt_disable().
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  include/uapi/linux/bpf.h       |  32 +++++-
+>  kernel/trace/bpf_trace.c       | 200 +++++++++++++++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |   2 +
+>  tools/include/uapi/linux/bpf.h |  32 +++++-
+>  4 files changed, 264 insertions(+), 2 deletions(-)
+>
 
-drivers/net/ipa/ipa_endpoint.c: In function 'ipa_endpoint_stop_rx_dma':
-drivers/net/ipa/ipa_endpoint.c:1274:13: error: 'IPA_ENDPOINT_STOP_RX_SIZE' undeclared (first use in this function)
-drivers/net/ipa/ipa_endpoint.c:1274:13: note: each undeclared identifier is reported only once for each function it appears in
-drivers/net/ipa/ipa_endpoint.c:1289:2: error: implicit declaration of function 'ipa_cmd_dma_task_32b_addr_add' [-Werror=implicit-function-declaration]
-drivers/net/ipa/ipa_endpoint.c:1291:45: error: 'ENDPOINT_STOP_DMA_TIMEOUT' undeclared (first use in this function)
-drivers/net/ipa/ipa_endpoint.c: In function 'ipa_endpoint_stop':
-drivers/net/ipa/ipa_endpoint.c:1309:16: error: 'IPA_ENDPOINT_STOP_RX_RETRIES' undeclared (first use in this function)
+Was a bit surprised by behavior on failed memory read, I think it's
+important to emphasize and document this. But otherwise:
 
-These functions were removed in a series, merged in as
-commit 33395f4a5c1b ("Merge branch 'net-ipa-kill-endpoint-stop-workaround'").
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Remove them again so that the build works properly.
+[...]
 
-Fixes: 3793faad7b5b ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/ipa/ipa_endpoint.c | 61 ----------------------------------
- 1 file changed, 61 deletions(-)
+> +               if (fmt[i] == 's') {
+> +                       /* try our best to copy */
+> +                       if (memcpy_cnt >= MAX_SEQ_PRINTF_MAX_MEMCPY) {
+> +                               err = -E2BIG;
+> +                               goto out;
+> +                       }
+> +
+> +                       bufs->buf[memcpy_cnt][0] = 0;
+> +                       strncpy_from_unsafe(bufs->buf[memcpy_cnt],
+> +                                           (void *) (long) args[fmt_cnt],
+> +                                           MAX_SEQ_PRINTF_STR_LEN);
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 5fec30e542cb..82066a223a67 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1269,67 +1269,6 @@ static void ipa_endpoint_reset(struct ipa_endpoint *endpoint)
- 			ret, endpoint->channel_id, endpoint->endpoint_id);
- }
- 
--static int ipa_endpoint_stop_rx_dma(struct ipa *ipa)
--{
--	u16 size = IPA_ENDPOINT_STOP_RX_SIZE;
--	struct gsi_trans *trans;
--	dma_addr_t addr;
--	int ret;
--
--	trans = ipa_cmd_trans_alloc(ipa, 1);
--	if (!trans) {
--		dev_err(&ipa->pdev->dev,
--			"no transaction for RX endpoint STOP workaround\n");
--		return -EBUSY;
--	}
--
--	/* Read into the highest part of the zero memory area */
--	addr = ipa->zero_addr + ipa->zero_size - size;
--
--	ipa_cmd_dma_task_32b_addr_add(trans, size, addr, false);
--
--	ret = gsi_trans_commit_wait_timeout(trans, ENDPOINT_STOP_DMA_TIMEOUT);
--	if (ret)
--		gsi_trans_free(trans);
--
--	return ret;
--}
--
--/**
-- * ipa_endpoint_stop() - Stops a GSI channel in IPA
-- * @client:	Client whose endpoint should be stopped
-- *
-- * This function implements the sequence to stop a GSI channel
-- * in IPA. This function returns when the channel is is STOP state.
-- *
-- * Return value: 0 on success, negative otherwise
-- */
--int ipa_endpoint_stop(struct ipa_endpoint *endpoint)
--{
--	u32 retries = IPA_ENDPOINT_STOP_RX_RETRIES;
--	int ret;
--
--	do {
--		struct ipa *ipa = endpoint->ipa;
--		struct gsi *gsi = &ipa->gsi;
--
--		ret = gsi_channel_stop(gsi, endpoint->channel_id);
--		if (ret != -EAGAIN || endpoint->toward_ipa)
--			break;
--
--		/* For IPA v3.5.1, send a DMA read task and check again */
--		if (ipa->version == IPA_VERSION_3_5_1) {
--			ret = ipa_endpoint_stop_rx_dma(ipa);
--			if (ret)
--				break;
--		}
--
--		msleep(1);
--	} while (retries--);
--
--	return retries ? ret : -EIO;
--}
--
- static void ipa_endpoint_program(struct ipa_endpoint *endpoint)
- {
- 	if (endpoint->toward_ipa) {
+So the behavior is that we try to read string, but if it fails, we
+treat it as empty string? That needs to be documented, IMHO. My
+expectation was that entire printf would fail.
 
-base-commit: 30e2206e11ce27ae910cc0dab21472429e400a87
--- 
-2.26.2
+Same for pointers below, right?
 
+> +                       params[fmt_cnt] = (u64)(long)bufs->buf[memcpy_cnt];
+> +
+> +                       fmt_cnt++;
+> +                       memcpy_cnt++;
+> +                       continue;
+> +               }
+> +
+
+[...]
