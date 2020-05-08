@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F36341CA2B8
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 07:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E10621CA2DE
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 07:38:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbgEHFgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 01:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49266 "EHLO
+        id S1726897AbgEHFgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 01:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725681AbgEHFge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 01:36:34 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287AAC05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 22:36:34 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id m20so684485qvy.13
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 22:36:34 -0700 (PDT)
+        with ESMTP id S1726807AbgEHFgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 01:36:36 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01977C05BD0B
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 22:36:36 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id i2so743276ybg.17
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 22:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=NVxIVOTpUFm5R6D1Ik0bw3E1/vQaVLUz9mgqWgfmQ4M=;
-        b=tvp8IsOM9NJeODYcUfrQdDk+mbK5pXcoU54CyXgGc9nlNplTAcXH2kjFPV4ToT5RVu
-         ob/9ZHHnprIfIcW4hvYigRy+mEKhMmY0wH6kMTvsVurPm8bSSw4imsP9w9KWF7SouF/o
-         5ipucGk9a4i/rpvKU5sVwzfLj7CyKWNP3SfNtAFWOaNvg/UwzRNOzLbesmH/idhQZukl
-         m86Qoyo4NxTfBRTO7t8VrBQxR5TUrK5NsJE/iCeCjzTPp+UIE5dgSgIYPtPdp2cJjJRz
-         7xxCRa5LDU/rijB2c3bdYXCva3gcoF9rCn8cfGw/Na17zLgn+oQ/+ntgok1PfkcLzDBX
-         J1sQ==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=j2DWTKjCez9WaKW/YskFPCoMAe0qTcBQQHk9f6RNmbA=;
+        b=rqfdEfU+rQ5dJRYkpZYYypFOiCKuj89t+WJ9zuiazNBoNEAzPeLBRmBMtTxGZSc9pH
+         +WmJAq/KbgxI6wNSalCoir50LtGuYsHLIFwqHcp2BOIrxZcBSc3ZaYbmM4XMY1/qqbyM
+         0okalejqABrfqtuBkMCPM4bwxGNVY50i/+S5J38NPVZI33NLGF6xdQWyglvMDH09Mpua
+         xvDMTo6qxaFOjjxaIeuy9mb1BnxpPu9L7AT+kJ0/1H0t0Jf/vL8Qu/p6eiEIYMYYa83w
+         JcVQ4bDCD4whP1Ku3nSDNfyLWW0ssRyc5ZLsCDyaGEwzRZ7g3n4Ew/uIUPqNBOc99Nos
+         epqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=NVxIVOTpUFm5R6D1Ik0bw3E1/vQaVLUz9mgqWgfmQ4M=;
-        b=bxBb8vaVTsyVgOSkBDIRUvYE4/aEaauNVjFfyXyVQLHX1f4xByHrSncnFOBhRiLsH/
-         f7vwGlNBdQhKu9vIBmQUBaRg8XXku5pTw0ZaCMb3yU7NcO9RoLIj77ZBUMzpBKAnlxLx
-         XgtYqEMK6jGf2VivnW9tjr5Hq7ies1w22W4k7Ss9axiprHpqhVn3K8jPU8k7XcvQPQJB
-         p+Gs8QKkOPJWkE1OSXmNFSExtrzR1brQxzrUE9BdiN7vPBtMJqvUI08RQl6bxlwUnPPs
-         pmKFXwygL+mEwC9buq4ks3kjDolhqyb7yTr7NyjRp51uxmkE6OhV0txNGb/AyB6+APPh
-         YmnA==
-X-Gm-Message-State: AGi0PublMWdTN6VWPpYo5XqrrWz/U1SAspEBT0IP6n1qHBYpgInAR4FX
-        S81wlAmayu3DY2WpwR1unj9/LB8x+OxI
-X-Google-Smtp-Source: APiQypJ6oQcDstyt4s+HU1dq0c4aqe7RVxAX5TfQEd0U9dQnkRzl3SL1aOuROG0bLAIF56J2nyjgxhgE7Am3
-X-Received: by 2002:a0c:ec07:: with SMTP id y7mr1059063qvo.183.1588916193207;
- Thu, 07 May 2020 22:36:33 -0700 (PDT)
-Date:   Thu,  7 May 2020 22:36:15 -0700
-Message-Id: <20200508053629.210324-1-irogers@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=j2DWTKjCez9WaKW/YskFPCoMAe0qTcBQQHk9f6RNmbA=;
+        b=SBciHI3S5EvcLtS1/2IoHVpTs0pybPGD8xYgAs7Yj/VA3Q8dmri8V2Lt0SLtQCFdUm
+         Vvt6ONNs8eXRbxjFXXwzIzTg6DzCMGroHdf/k0j9jcZ/8hsi4neE7R76OJCxAqk4ub1b
+         wiksgGvXElfNCRHyiMXalgtOpkYbzjP/eoe6LYAFDZ96GmcRHXGkMGUMJwNa9KzU3Tf6
+         F3Cs0m8ytRa9Np+5PFJX5E6c/Wmee2TJcusI0D2NSldXShABTZGYCNNqjLZaYgs2ZNPF
+         RFfOfdXsDYbBFEsVHGk1ZWO3OQhtiPILBEHrXnsdPrN1zifJSlPYs2l5tZ/DfgsPcnjV
+         4Gng==
+X-Gm-Message-State: AGi0PuashI4wH6mSbGeGks3/jybNcUVHwMzyFBlXX4p3BEyt45xruo0u
+        9NpTEyiA20MhcZ4g6zCXhjVPfgpp9QKc
+X-Google-Smtp-Source: APiQypLoZQHXBIekwvmuWASM3+gEyPjk6k9vl05BMzG7idoH3cx0f3KA5LQ7/UqqeMmvFVKksXjJoZSmkYQl
+X-Received: by 2002:a5b:5c6:: with SMTP id w6mr1969712ybp.339.1588916195084;
+ Thu, 07 May 2020 22:36:35 -0700 (PDT)
+Date:   Thu,  7 May 2020 22:36:16 -0700
+In-Reply-To: <20200508053629.210324-1-irogers@google.com>
+Message-Id: <20200508053629.210324-2-irogers@google.com>
 Mime-Version: 1.0
+References: <20200508053629.210324-1-irogers@google.com>
 X-Mailer: git-send-email 2.26.2.645.ge9eca65c58-goog
-Subject: [RFC PATCH v3 00/14] Share events between metrics
+Subject: [RFC PATCH v3 01/14] perf parse-events: expand add PMU error/verbose messages
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -75,197 +79,361 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Stephane Eranian <eranian@google.com>,
         Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Metric groups contain metrics. Metrics create groups of events to
-ideally be scheduled together. Often metrics refer to the same events,
-for example, a cache hit and cache miss rate. Using separate event
-groups means these metrics are multiplexed at different times and the
-counts don't sum to 100%. More multiplexing also decreases the
-accuracy of the measurement.
+On a CPU like skylakex an uncore_iio_0 PMU may alias with
+uncore_iio_free_running_0. The latter PMU doesn't support fc_mask
+as a parameter and so pmu_config_term fails. Typically
+parse_events_add_pmu is called in a loop where if one alias succeeds
+errors are ignored, however, if multiple errors occur
+parse_events__handle_error will currently give a WARN_ONCE.
 
-This change orders metrics from groups or the command line, so that
-the ones with the most events are set up first. Later metrics see if
-groups already provide their events, and reuse them if
-possible. Unnecessary events and groups are eliminated.
+This change removes the WARN_ONCE in parse_events__handle_error and
+makes it a pr_debug. It adds verbose messages to parse_events_add_pmu
+warning that non-fatal errors may occur, while giving details on the pmu
+and config terms for useful context. pmu_config_term is altered so the
+failing term and pmu are present in the case of the 'unknown term'
+error which makes spotting the free_running case more straightforward.
 
-The option --metric-no-group is added so that metrics aren't placed in
-groups. This affects multiplexing and may increase sharing.
+Before:
+$ perf --debug verbose=3D3 stat -M llc_misses.pcie_read sleep 1
+Using CPUID GenuineIntel-6-55-4
+metric expr unc_iio_data_req_of_cpu.mem_read.part0 + unc_iio_data_req_of_cp=
+u.mem_read.part1 + unc_iio_data_req_of_cpu.mem_read.part2 + unc_iio_data_re=
+q_of_cpu.mem_read.part3 for LLC_MISSES.PCIE_READ
+found event unc_iio_data_req_of_cpu.mem_read.part0
+found event unc_iio_data_req_of_cpu.mem_read.part1
+found event unc_iio_data_req_of_cpu.mem_read.part2
+found event unc_iio_data_req_of_cpu.mem_read.part3
+metric expr unc_iio_data_req_of_cpu.mem_read.part0 + unc_iio_data_req_of_cp=
+u.mem_read.part1 + unc_iio_data_req_of_cpu.mem_read.part2 + unc_iio_data_re=
+q_of_cpu.mem_read.part3 for LLC_MISSES.PCIE_READ
+found event unc_iio_data_req_of_cpu.mem_read.part0
+found event unc_iio_data_req_of_cpu.mem_read.part1
+found event unc_iio_data_req_of_cpu.mem_read.part2
+found event unc_iio_data_req_of_cpu.mem_read.part3
+adding {unc_iio_data_req_of_cpu.mem_read.part0,unc_iio_data_req_of_cpu.mem_=
+read.part1,unc_iio_data_req_of_cpu.mem_read.part2,unc_iio_data_req_of_cpu.m=
+em_read.part3}:W,{unc_iio_data_req_of_cpu.mem_read.part0,unc_iio_data_req_o=
+f_cpu.mem_read.part1,unc_iio_data_req_of_cpu.mem_read.part2,unc_iio_data_re=
+q_of_cpu.mem_read.part3}:W
+intel_pt default config: tsc,mtc,mtc_period=3D3,psb_period=3D3,pt,branch
+WARNING: multiple event parsing errors
+...
+Invalid event/parameter 'fc_mask'
+...
 
-The option --metric-mo-merge is added and with this option the
-existing grouping behavior is preserved.
+After:
+$ perf --debug verbose=3D3 stat -M llc_misses.pcie_read sleep 1
+Using CPUID GenuineIntel-6-55-4
+metric expr unc_iio_data_req_of_cpu.mem_read.part0 + unc_iio_data_req_of_cp=
+u.mem_read.part1 + unc_iio_data_req_of_cpu.mem_read.part2 + unc_iio_data_re=
+q_of_cpu.mem_read.part3 for LLC_MISSES.PCIE_READ
+found event unc_iio_data_req_of_cpu.mem_read.part0
+found event unc_iio_data_req_of_cpu.mem_read.part1
+found event unc_iio_data_req_of_cpu.mem_read.part2
+found event unc_iio_data_req_of_cpu.mem_read.part3
+metric expr unc_iio_data_req_of_cpu.mem_read.part0 + unc_iio_data_req_of_cp=
+u.mem_read.part1 + unc_iio_data_req_of_cpu.mem_read.part2 + unc_iio_data_re=
+q_of_cpu.mem_read.part3 for LLC_MISSES.PCIE_READ
+found event unc_iio_data_req_of_cpu.mem_read.part0
+found event unc_iio_data_req_of_cpu.mem_read.part1
+found event unc_iio_data_req_of_cpu.mem_read.part2
+found event unc_iio_data_req_of_cpu.mem_read.part3
+adding {unc_iio_data_req_of_cpu.mem_read.part0,unc_iio_data_req_of_cpu.mem_=
+read.part1,unc_iio_data_req_of_cpu.mem_read.part2,unc_iio_data_req_of_cpu.m=
+em_read.part3}:W,{unc_iio_data_req_of_cpu.mem_read.part0,unc_iio_data_req_o=
+f_cpu.mem_read.part1,unc_iio_data_req_of_cpu.mem_read.part2,unc_iio_data_re=
+q_of_cpu.mem_read.part3}:W
+intel_pt default config: tsc,mtc,mtc_period=3D3,psb_period=3D3,pt,branch
+Attempting to add event pmu 'uncore_iio_free_running_5' with 'unc_iio_data_=
+req_of_cpu.mem_read.part0,' that may result in non-fatal errors
+After aliases, add event pmu 'uncore_iio_free_running_5' with 'fc_mask,ch_m=
+ask,umask,event,' that may result in non-fatal errors
+Attempting to add event pmu 'uncore_iio_free_running_3' with 'unc_iio_data_=
+req_of_cpu.mem_read.part0,' that may result in non-fatal errors
+After aliases, add event pmu 'uncore_iio_free_running_3' with 'fc_mask,ch_m=
+ask,umask,event,' that may result in non-fatal errors
+Attempting to add event pmu 'uncore_iio_free_running_1' with 'unc_iio_data_=
+req_of_cpu.mem_read.part0,' that may result in non-fatal errors
+After aliases, add event pmu 'uncore_iio_free_running_1' with 'fc_mask,ch_m=
+ask,umask,event,' that may result in non-fatal errors
+Multiple errors dropping message: unknown term 'fc_mask' for pmu 'uncore_ii=
+o_free_running_3' (valid terms: event,umask,config,config1,config2,name,per=
+iod,percore)
+...
 
-RFC because:
- - without this change events within a metric may get scheduled
-   together, after they may appear as part of a larger group and be
-   multiplexed at different times, lowering accuracy - however, less
-   multiplexing may compensate for this.
- - libbpf's hashmap is used, however, libbpf is an optional
-   requirement for building perf.
- - other things I'm not thinking of.
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/arch/x86/util/intel-pt.c | 32 +++++++++++++++++-----------
+ tools/perf/tests/pmu.c              |  4 ++--
+ tools/perf/util/parse-events.c      | 29 ++++++++++++++++++++++++-
+ tools/perf/util/pmu.c               | 33 ++++++++++++++++++-----------
+ tools/perf/util/pmu.h               |  2 +-
+ 5 files changed, 72 insertions(+), 28 deletions(-)
 
-Thanks!
-
-Example on Sandybridge:
-
-$ perf stat -a --metric-no-merge -M TopDownL1_SMT sleep 1
-
- Performance counter stats for 'system wide':
-
-          14931177      cpu_clk_unhalted.one_thread_active #     0.47 Backend_Bound_SMT        (12.45%)
-          32314653      int_misc.recovery_cycles_any                                     (16.23%)
-         555020905      uops_issued.any                                               (18.85%)
-        1038651176      idq_uops_not_delivered.core                                     (24.95%)
-          43003170      cpu_clk_unhalted.ref_xclk                                     (25.20%)
-        1154926272      cpu_clk_unhalted.thread                                       (31.50%)
-         656873544      uops_retired.retire_slots                                     (31.11%)
-          16491988      cpu_clk_unhalted.one_thread_active #     0.06 Bad_Speculation_SMT      (31.10%)
-          32064061      int_misc.recovery_cycles_any                                     (31.04%)
-         648394934      uops_issued.any                                               (31.14%)
-          42107506      cpu_clk_unhalted.ref_xclk                                     (24.94%)
-        1124565282      cpu_clk_unhalted.thread                                       (31.14%)
-         523430886      uops_retired.retire_slots                                     (31.05%)
-          12328380      cpu_clk_unhalted.one_thread_active #     0.35 Frontend_Bound_SMT       (10.08%)
-          42651836      cpu_clk_unhalted.ref_xclk                                     (10.08%)
-        1006287722      idq_uops_not_delivered.core                                     (10.08%)
-        1130593027      cpu_clk_unhalted.thread                                       (10.08%)
-          14209258      cpu_clk_unhalted.one_thread_active #     0.18 Retiring_SMT             (6.39%)
-          41904474      cpu_clk_unhalted.ref_xclk                                     (6.39%)
-         522251584      uops_retired.retire_slots                                     (6.39%)
-        1111257754      cpu_clk_unhalted.thread                                       (6.39%)
-          12930094      cpu_clk_unhalted.one_thread_active # 2865823806.05 SLOTS_SMT           (11.06%)
-          40975376      cpu_clk_unhalted.ref_xclk                                     (11.06%)
-        1089204936      cpu_clk_unhalted.thread                                       (11.06%)
-
-       1.002165509 seconds time elapsed
-
-$ perf stat -a -M TopDownL1_SMT sleep 1
-
- Performance counter stats for 'system wide':
-
-          11893411      cpu_clk_unhalted.one_thread_active # 2715516883.49 SLOTS_SMT         
-                                                  #     0.19 Retiring_SMT           
-                                                  #     0.33 Frontend_Bound_SMT     
-                                                  #     0.04 Bad_Speculation_SMT    
-                                                  #     0.44 Backend_Bound_SMT        (71.46%)
-          28458253      int_misc.recovery_cycles_any                                     (71.44%)
-         562710994      uops_issued.any                                               (71.42%)
-         907105260      idq_uops_not_delivered.core                                     (57.12%)
-          39797715      cpu_clk_unhalted.ref_xclk                                     (57.12%)
-        1045357060      cpu_clk_unhalted.thread                                       (71.41%)
-         504809283      uops_retired.retire_slots                                     (71.44%)
-
-       1.001939294 seconds time elapsed
-
-Note that without merging the metrics sum to 1.06, but with merging
-the sum is 1.
-
-Example on Cascadelake:
-
-$ perf stat -a --metric-no-merge -M TopDownL1_SMT sleep 1
-
- Performance counter stats for 'system wide':
-
-          13678949      cpu_clk_unhalted.one_thread_active #     0.59 Backend_Bound_SMT        (13.35%)
-         121286613      int_misc.recovery_cycles_any                                     (18.58%)
-        4041490966      uops_issued.any                                               (18.81%)
-        2665605457      idq_uops_not_delivered.core                                     (24.81%)
-         111757608      cpu_clk_unhalted.ref_xclk                                     (25.03%)
-        7579026491      cpu_clk_unhalted.thread                                       (31.27%)
-        3848429110      uops_retired.retire_slots                                     (31.23%)
-          15554046      cpu_clk_unhalted.one_thread_active #     0.02 Bad_Speculation_SMT      (31.19%)
-         119582342      int_misc.recovery_cycles_any                                     (31.16%)
-        3813943706      uops_issued.any                                               (31.14%)
-         113151605      cpu_clk_unhalted.ref_xclk                                     (24.89%)
-        7621196102      cpu_clk_unhalted.thread                                       (31.12%)
-        3735690253      uops_retired.retire_slots                                     (31.12%)
-          13727352      cpu_clk_unhalted.one_thread_active #     0.16 Frontend_Bound_SMT       (12.50%)
-         115441454      cpu_clk_unhalted.ref_xclk                                     (12.50%)
-        2824946246      idq_uops_not_delivered.core                                     (12.50%)
-        7817227775      cpu_clk_unhalted.thread                                       (12.50%)
-          13267908      cpu_clk_unhalted.one_thread_active #     0.21 Retiring_SMT             (6.31%)
-         114015605      cpu_clk_unhalted.ref_xclk                                     (6.31%)
-        3722498773      uops_retired.retire_slots                                     (6.31%)
-        7771438396      cpu_clk_unhalted.thread                                       (6.31%)
-          14948307      cpu_clk_unhalted.one_thread_active # 18085611559.36 SLOTS_SMT          (6.30%)
-         115632797      cpu_clk_unhalted.ref_xclk                                     (6.30%)
-        8007628156      cpu_clk_unhalted.thread                                       (6.30%)
-
-       1.006256703 seconds time elapsed
-
-$ perf stat -a -M TopDownL1_SMT sleep 1
-
- Performance counter stats for 'system wide':
-
-          35999534      cpu_clk_unhalted.one_thread_active # 25969550384.66 SLOTS_SMT        
-                                                  #     0.40 Retiring_SMT           
-                                                  #     0.14 Frontend_Bound_SMT     
-                                                  #     0.02 Bad_Speculation_SMT    
-                                                  #     0.44 Backend_Bound_SMT        (71.35%)
-         133499018      int_misc.recovery_cycles_any                                     (71.36%)
-       10736468874      uops_issued.any                                               (71.40%)
-        3518076530      idq_uops_not_delivered.core                                     (57.24%)
-          78296616      cpu_clk_unhalted.ref_xclk                                     (57.25%)
-        8894997400      cpu_clk_unhalted.thread                                       (71.50%)
-       10409738753      uops_retired.retire_slots                                     (71.40%)
-
-       1.011611791 seconds time elapsed
-
-Note that without merging the metrics sum to 0.98, but with merging
-the sum is 1.
-
-v3. is a rebase with following the merging of patches in v2. It also
-adds the metric-no-group and metric-no-merge flags.
-v2. is the entire patch set based on acme's perf/core tree and includes a
-cherry-picks. Patch 13 was sent for review to the bpf maintainers here:
-https://lore.kernel.org/lkml/20200506205257.8964-2-irogers@google.com/
-v1. was based on the perf metrics fixes and test sent here:
-https://lore.kernel.org/lkml/20200501173333.227162-1-irogers@google.com/
-
-Andrii Nakryiko (1):
-  libbpf: Fix memory leak and possible double-free in hashmap__clear
-
-Ian Rogers (13):
-  perf parse-events: expand add PMU error/verbose messages
-  perf test: improve pmu event metric testing
-  lib/bpf hashmap: increase portability
-  perf expr: fix memory leaks in bison
-  perf evsel: fix 2 memory leaks
-  perf expr: migrate expr ids table to libbpf's hashmap
-  perf metricgroup: change evlist_used to a bitmap
-  perf metricgroup: free metric_events on error
-  perf metricgroup: always place duration_time last
-  perf metricgroup: delay events string creation
-  perf metricgroup: order event groups by size
-  perf metricgroup: remove duped metric group events
-  perf metricgroup: add options to not group or merge
-
- tools/lib/bpf/hashmap.c                |   7 +
- tools/lib/bpf/hashmap.h                |   3 +-
- tools/perf/Documentation/perf-stat.txt |  19 ++
- tools/perf/arch/x86/util/intel-pt.c    |  32 +--
- tools/perf/builtin-stat.c              |  11 +-
- tools/perf/tests/builtin-test.c        |   5 +
- tools/perf/tests/expr.c                |  41 ++--
- tools/perf/tests/pmu-events.c          | 159 +++++++++++++-
- tools/perf/tests/pmu.c                 |   4 +-
- tools/perf/tests/tests.h               |   2 +
- tools/perf/util/evsel.c                |   2 +
- tools/perf/util/expr.c                 | 129 +++++++-----
- tools/perf/util/expr.h                 |  22 +-
- tools/perf/util/expr.y                 |  25 +--
- tools/perf/util/metricgroup.c          | 277 ++++++++++++++++---------
- tools/perf/util/metricgroup.h          |   6 +-
- tools/perf/util/parse-events.c         |  29 ++-
- tools/perf/util/pmu.c                  |  33 +--
- tools/perf/util/pmu.h                  |   2 +-
- tools/perf/util/stat-shadow.c          |  49 +++--
- tools/perf/util/stat.h                 |   2 +
- 21 files changed, 592 insertions(+), 267 deletions(-)
-
--- 
+diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util=
+/intel-pt.c
+index fd9e22d1e366..0fe401ad3347 100644
+--- a/tools/perf/arch/x86/util/intel-pt.c
++++ b/tools/perf/arch/x86/util/intel-pt.c
+@@ -59,7 +59,8 @@ struct intel_pt_recording {
+ 	size_t				priv_size;
+ };
+=20
+-static int intel_pt_parse_terms_with_default(struct list_head *formats,
++static int intel_pt_parse_terms_with_default(const char *pmu_name,
++					     struct list_head *formats,
+ 					     const char *str,
+ 					     u64 *config)
+ {
+@@ -78,7 +79,8 @@ static int intel_pt_parse_terms_with_default(struct list_=
+head *formats,
+ 		goto out_free;
+=20
+ 	attr.config =3D *config;
+-	err =3D perf_pmu__config_terms(formats, &attr, terms, true, NULL);
++	err =3D perf_pmu__config_terms(pmu_name, formats, &attr, terms, true,
++				     NULL);
+ 	if (err)
+ 		goto out_free;
+=20
+@@ -88,11 +90,12 @@ static int intel_pt_parse_terms_with_default(struct lis=
+t_head *formats,
+ 	return err;
+ }
+=20
+-static int intel_pt_parse_terms(struct list_head *formats, const char *str=
+,
+-				u64 *config)
++static int intel_pt_parse_terms(const char *pmu_name, struct list_head *fo=
+rmats,
++				const char *str, u64 *config)
+ {
+ 	*config =3D 0;
+-	return intel_pt_parse_terms_with_default(formats, str, config);
++	return intel_pt_parse_terms_with_default(pmu_name, formats, str,
++						 config);
+ }
+=20
+ static u64 intel_pt_masked_bits(u64 mask, u64 bits)
+@@ -229,7 +232,8 @@ static u64 intel_pt_default_config(struct perf_pmu *int=
+el_pt_pmu)
+=20
+ 	pr_debug2("%s default config: %s\n", intel_pt_pmu->name, buf);
+=20
+-	intel_pt_parse_terms(&intel_pt_pmu->format, buf, &config);
++	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format, buf,
++			     &config);
+=20
+ 	return config;
+ }
+@@ -337,13 +341,16 @@ static int intel_pt_info_fill(struct auxtrace_record =
+*itr,
+ 	if (priv_size !=3D ptr->priv_size)
+ 		return -EINVAL;
+=20
+-	intel_pt_parse_terms(&intel_pt_pmu->format, "tsc", &tsc_bit);
+-	intel_pt_parse_terms(&intel_pt_pmu->format, "noretcomp",
+-			     &noretcomp_bit);
+-	intel_pt_parse_terms(&intel_pt_pmu->format, "mtc", &mtc_bit);
++	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
++			     "tsc", &tsc_bit);
++	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
++			     "noretcomp", &noretcomp_bit);
++	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
++			     "mtc", &mtc_bit);
+ 	mtc_freq_bits =3D perf_pmu__format_bits(&intel_pt_pmu->format,
+ 					      "mtc_period");
+-	intel_pt_parse_terms(&intel_pt_pmu->format, "cyc", &cyc_bit);
++	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
++			     "cyc", &cyc_bit);
+=20
+ 	intel_pt_tsc_ctc_ratio(&tsc_ctc_ratio_n, &tsc_ctc_ratio_d);
+=20
+@@ -768,7 +775,8 @@ static int intel_pt_recording_options(struct auxtrace_r=
+ecord *itr,
+ 		}
+ 	}
+=20
+-	intel_pt_parse_terms(&intel_pt_pmu->format, "tsc", &tsc_bit);
++	intel_pt_parse_terms(intel_pt_pmu->name, &intel_pt_pmu->format,
++			     "tsc", &tsc_bit);
+=20
+ 	if (opts->full_auxtrace && (intel_pt_evsel->core.attr.config & tsc_bit))
+ 		have_timing_info =3D true;
+diff --git a/tools/perf/tests/pmu.c b/tools/perf/tests/pmu.c
+index 74379ff1f7fa..5c11fe2b3040 100644
+--- a/tools/perf/tests/pmu.c
++++ b/tools/perf/tests/pmu.c
+@@ -156,8 +156,8 @@ int test__pmu(struct test *test __maybe_unused, int sub=
+test __maybe_unused)
+ 		if (ret)
+ 			break;
+=20
+-		ret =3D perf_pmu__config_terms(&formats, &attr, terms,
+-					     false, NULL);
++		ret =3D perf_pmu__config_terms("perf-pmu-test", &formats, &attr,
++					     terms, false, NULL);
+ 		if (ret)
+ 			break;
+=20
+diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.=
+c
+index e9464b04f149..0ebc0fd9385a 100644
+--- a/tools/perf/util/parse-events.c
++++ b/tools/perf/util/parse-events.c
+@@ -204,7 +204,8 @@ void parse_events__handle_error(struct parse_events_err=
+or *err, int idx,
+ 		err->help =3D help;
+ 		break;
+ 	default:
+-		WARN_ONCE(1, "WARNING: multiple event parsing errors\n");
++		pr_debug("Multiple errors dropping message: %s (%s)\n",
++			err->str, err->help);
+ 		free(err->str);
+ 		err->str =3D str;
+ 		free(err->help);
+@@ -1422,6 +1423,19 @@ int parse_events_add_pmu(struct parse_events_state *=
+parse_state,
+ 	bool use_uncore_alias;
+ 	LIST_HEAD(config_terms);
+=20
++	if (verbose > 1) {
++		fprintf(stderr, "Attempting to add event pmu '%s' with '",
++			name);
++		if (head_config) {
++			struct parse_events_term *term;
++
++			list_for_each_entry(term, head_config, list) {
++				fprintf(stderr, "%s,", term->config);
++			}
++		}
++		fprintf(stderr, "' that may result in non-fatal errors\n");
++	}
++
+ 	pmu =3D perf_pmu__find(name);
+ 	if (!pmu) {
+ 		char *err_str;
+@@ -1458,6 +1472,19 @@ int parse_events_add_pmu(struct parse_events_state *=
+parse_state,
+ 	if (perf_pmu__check_alias(pmu, head_config, &info))
+ 		return -EINVAL;
+=20
++	if (verbose > 1) {
++		fprintf(stderr, "After aliases, add event pmu '%s' with '",
++			name);
++		if (head_config) {
++			struct parse_events_term *term;
++
++			list_for_each_entry(term, head_config, list) {
++				fprintf(stderr, "%s,", term->config);
++			}
++		}
++		fprintf(stderr, "' that may result in non-fatal errors\n");
++	}
++
+ 	/*
+ 	 * Configure hardcoded terms first, no need to check
+ 	 * return value when called with fail =3D=3D 0 ;)
+diff --git a/tools/perf/util/pmu.c b/tools/perf/util/pmu.c
+index 92bd7fafcce6..71d0290b616a 100644
+--- a/tools/perf/util/pmu.c
++++ b/tools/perf/util/pmu.c
+@@ -1056,7 +1056,8 @@ static char *pmu_formats_string(struct list_head *for=
+mats)
+  * Setup one of config[12] attr members based on the
+  * user input data - term parameter.
+  */
+-static int pmu_config_term(struct list_head *formats,
++static int pmu_config_term(const char *pmu_name,
++			   struct list_head *formats,
+ 			   struct perf_event_attr *attr,
+ 			   struct parse_events_term *term,
+ 			   struct list_head *head_terms,
+@@ -1082,16 +1083,24 @@ static int pmu_config_term(struct list_head *format=
+s,
+=20
+ 	format =3D pmu_find_format(formats, term->config);
+ 	if (!format) {
+-		if (verbose > 0)
+-			printf("Invalid event/parameter '%s'\n", term->config);
++		char *pmu_term =3D pmu_formats_string(formats);
++		char *unknown_term;
++		char *help_msg;
++
++		if (asprintf(&unknown_term,
++				"unknown term '%s' for pmu '%s'",
++				term->config, pmu_name) < 0)
++			unknown_term =3D strdup("unknown term");
++		help_msg =3D parse_events_formats_error_string(pmu_term);
+ 		if (err) {
+-			char *pmu_term =3D pmu_formats_string(formats);
+-
+ 			parse_events__handle_error(err, term->err_term,
+-				strdup("unknown term"),
+-				parse_events_formats_error_string(pmu_term));
+-			free(pmu_term);
++						   unknown_term,
++						   help_msg);
++		} else {
++			pr_debug("%s (%s)\n", unknown_term, help_msg);
++			free(unknown_term);
+ 		}
++		free(pmu_term);
+ 		return -EINVAL;
+ 	}
+=20
+@@ -1168,7 +1177,7 @@ static int pmu_config_term(struct list_head *formats,
+ 	return 0;
+ }
+=20
+-int perf_pmu__config_terms(struct list_head *formats,
++int perf_pmu__config_terms(const char *pmu_name, struct list_head *formats=
+,
+ 			   struct perf_event_attr *attr,
+ 			   struct list_head *head_terms,
+ 			   bool zero, struct parse_events_error *err)
+@@ -1176,7 +1185,7 @@ int perf_pmu__config_terms(struct list_head *formats,
+ 	struct parse_events_term *term;
+=20
+ 	list_for_each_entry(term, head_terms, list) {
+-		if (pmu_config_term(formats, attr, term, head_terms,
++		if (pmu_config_term(pmu_name, formats, attr, term, head_terms,
+ 				    zero, err))
+ 			return -EINVAL;
+ 	}
+@@ -1196,8 +1205,8 @@ int perf_pmu__config(struct perf_pmu *pmu, struct per=
+f_event_attr *attr,
+ 	bool zero =3D !!pmu->default_config;
+=20
+ 	attr->type =3D pmu->type;
+-	return perf_pmu__config_terms(&pmu->format, attr, head_terms,
+-				      zero, err);
++	return perf_pmu__config_terms(pmu->name, &pmu->format, attr,
++				      head_terms, zero, err);
+ }
+=20
+ static struct perf_pmu_alias *pmu_find_alias(struct perf_pmu *pmu,
+diff --git a/tools/perf/util/pmu.h b/tools/perf/util/pmu.h
+index e119333e93ba..85e0c7f2515c 100644
+--- a/tools/perf/util/pmu.h
++++ b/tools/perf/util/pmu.h
+@@ -76,7 +76,7 @@ struct perf_pmu *perf_pmu__find_by_type(unsigned int type=
+);
+ int perf_pmu__config(struct perf_pmu *pmu, struct perf_event_attr *attr,
+ 		     struct list_head *head_terms,
+ 		     struct parse_events_error *error);
+-int perf_pmu__config_terms(struct list_head *formats,
++int perf_pmu__config_terms(const char *pmu_name, struct list_head *formats=
+,
+ 			   struct perf_event_attr *attr,
+ 			   struct list_head *head_terms,
+ 			   bool zero, struct parse_events_error *error);
+--=20
 2.26.2.645.ge9eca65c58-goog
 
