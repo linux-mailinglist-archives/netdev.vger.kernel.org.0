@@ -2,198 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D50CE1CA16F
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 05:16:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12E781CA174
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 05:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgEHDQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 23:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55886 "EHLO
+        id S1726974AbgEHDS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 23:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726542AbgEHDQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 23:16:55 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E1CC05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 20:16:55 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id x1so134335ejd.8
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 20:16:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kqWpr1GXZNFnjNayAhdo+Jt+qtlRUzJbGqaz3WYxlwE=;
-        b=eG6tGXCFGmrP/gB7pjmRUEYQAKMttJSgQUdbbviV90ip6Hlglyl2Q5MQkzYXBMJ8G+
-         8GqUZjnxnDE25UAHnF5oTcNleIQAzlZlcI1LCfW8T8Iic75Ec6oiFxqh/K0qEGtIrK7k
-         Uo5cLXk5c/hLeKNH4GWK+D1ZEACrec0eK7xPPdylhGt9ZiMdmtKHjJuZUq0+8+goWd8L
-         K3i0O8Jk/7D4s/Q5UOiEzo8v/odBgG0HyT4YQDGCJQX5h0PJBEqfLrEl+kEWSh8zipFR
-         ZEdOrfkcQWihu4QYIHJH5BAT8+Del0G0VsLABvzFbuHjhnVFROonT/W5RePVUYI+3igz
-         Tasw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kqWpr1GXZNFnjNayAhdo+Jt+qtlRUzJbGqaz3WYxlwE=;
-        b=I4JNy61y0IBCzoVfGdgd1RTsD622FgPMAbawK4n1Szx1fiDmQ8YtFPXqpSs0J7cn6I
-         Lk4qafzlyhoZW0cGOszjorTn3sltup91u8ZU4rLFLU5bc/L8P/FYa/y8QxxIonB9RW3l
-         u52k/31fU3x5Bzqy4xD2JJqyIV/zRjm9dCxcoOKixlezo9D1C8TqPS6O+5xadMX2palm
-         6/MWdhfygLdr6TGUWv1iqhYi0tGf9Fim39q7dpiadEXjyg9GHrW178xLhaoWdssWjfq5
-         y2fbbqxm0LhD+Rr2xSZB2c+zRHmZ2ZTx3IxiHWoo9UNK8tj3wK1LwH63tvKNcUes7aaz
-         85Vw==
-X-Gm-Message-State: AGi0PuYptMr7lypROunMSBmGHpDTMEWoeLseWNuMrh2JdJ/d9aDaC5Eh
-        YpC/8bK8n/U5aLLqlzKZyf1z9VEf
-X-Google-Smtp-Source: APiQypIudXNSsnvY2f+1CILLaibz+A/j1XmnqbbaJwwvOiw+9mpdlc3fN+sWEgSJzaI++OYGRyGVbw==
-X-Received: by 2002:a17:906:3b18:: with SMTP id g24mr166469ejf.65.1588907813937;
-        Thu, 07 May 2020 20:16:53 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id m5sm190871edq.71.2020.05.07.20.16.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 May 2020 20:16:53 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: permit cross-chip bridging
- between all trees in the system
-To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, davem@davemloft.net
-Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
-        netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
-        roopa@cumulusnetworks.com, mingkai.hu@nxp.com
-References: <20200503221228.10928-1-olteanv@gmail.com>
- <20200503221228.10928-3-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <d4e0a8cf-a059-ff41-8e3e-0bd1fd7b0523@gmail.com>
-Date:   Thu, 7 May 2020 20:16:49 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        with ESMTP id S1726542AbgEHDS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 23:18:56 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EACC05BD43;
+        Thu,  7 May 2020 20:18:56 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49JFsn3wgHz9sRf;
+        Fri,  8 May 2020 13:18:52 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1588907934;
+        bh=B4uY3Ex4bWgXSuVrB2Et/OmOJWIppEgzW97Ll3wlefI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=A2vwtIRtSVg424z6C+2p//DAZ1FfgTNGTd7Ht/TnyTrxFRbiED6Sjqy3UGKXisBKB
+         7aXVz4UeXGXWR0yqAuLYIdVDEoTqLa4JblvWnpibfa8pHN4lUkg6OOiPqd6aPp9Nti
+         84khbuLjIfqBEMvYHMgW/IahPT54oQYTpQZFR7+g/bKNDyvrY6jpf04DbeAGpWx2mS
+         S0dkHilRC3tdSdIP4/9zNTb0IZjkEeoMj7EgHATjYg14SRtZHvVg+k7YGmqaP+NKIC
+         B0KxSUi0WZQBYn6RP3ALsu9zb28l8Z1c7O6c81lgz3PT1pTDkcgByE74OBKdb1SrJ3
+         yos+AtoGdhDRw==
+Date:   Fri, 8 May 2020 13:18:51 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Maor Gottlieb <maorg@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: linux-next: manual merge of the net-next tree with the rdma tree
+Message-ID: <20200508131851.5818d84d@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20200503221228.10928-3-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/CRmOGYW+uQitPtT5btr_GSR";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/CRmOGYW+uQitPtT5btr_GSR
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 5/3/2020 3:12 PM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> One way of utilizing DSA is by cascading switches which do not all have
-> compatible taggers. Consider the following real-life topology:
-> 
->       +---------------------------------------------------------------+
->       | LS1028A                                                       |
->       |               +------------------------------+                |
->       |               |      DSA master for Felix    |                |
->       |               |(internal ENETC port 2: eno2))|                |
->       |  +------------+------------------------------+-------------+  |
->       |  | Felix embedded L2 switch                                |  |
->       |  |                                                         |  |
->       |  | +--------------+   +--------------+   +--------------+  |  |
->       |  | |DSA master for|   |DSA master for|   |DSA master for|  |  |
->       |  | |  SJA1105 1   |   |  SJA1105 2   |   |  SJA1105 3   |  |  |
->       |  | |(Felix port 1)|   |(Felix port 2)|   |(Felix port 3)|  |  |
->       +--+-+--------------+---+--------------+---+--------------+--+--+
-> 
-> +-----------------------+ +-----------------------+ +-----------------------+
-> |   SJA1105 switch 1    | |   SJA1105 switch 2    | |   SJA1105 switch 3    |
-> +-----+-----+-----+-----+ +-----+-----+-----+-----+ +-----+-----+-----+-----+
-> |sw1p0|sw1p1|sw1p2|sw1p3| |sw2p0|sw2p1|sw2p2|sw2p3| |sw3p0|sw3p1|sw3p2|sw3p3|
-> +-----+-----+-----+-----+ +-----+-----+-----+-----+ +-----+-----+-----+-----+
-> 
-> The above can be described in the device tree as follows (obviously not
-> complete):
-> 
-> mscc_felix {
-> 	dsa,member = <0 0>;
-> 	ports {
-> 		port@4 {
-> 			ethernet = <&enetc_port2>;
-> 		};
-> 	};
-> };
-> 
-> sja1105_switch1 {
-> 	dsa,member = <1 1>;
-> 	ports {
-> 		port@4 {
-> 			ethernet = <&mscc_felix_port1>;
-> 		};
-> 	};
-> };
-> 
-> sja1105_switch2 {
-> 	dsa,member = <2 2>;
-> 	ports {
-> 		port@4 {
-> 			ethernet = <&mscc_felix_port2>;
-> 		};
-> 	};
-> };
-> 
-> sja1105_switch3 {
-> 	dsa,member = <3 3>;
-> 	ports {
-> 		port@4 {
-> 			ethernet = <&mscc_felix_port3>;
-> 		};
-> 	};
-> };
-> 
-> Basically we instantiate one DSA switch tree for every hardware switch
-> in the system, but we still give them globally unique switch IDs (will
-> come back to that later). Having 3 disjoint switch trees makes the
-> tagger drivers "just work", because net devices are registered for the
-> 3 Felix DSA master ports, and they are also DSA slave ports to the ENETC
-> port. So packets received on the ENETC port are stripped of their
-> stacked DSA tags one by one.
-> 
-> Currently, hardware bridging between ports on the same sja1105 chip is
-> possible, but switching between sja1105 ports on different chips is
-> handled by the software bridge. This is fine, but we can do better.
-> 
-> In fact, the dsa_8021q tag used by sja1105 is compatible with cascading.
-> In other words, a sja1105 switch can correctly parse and route a packet
-> containing a dsa_8021q tag. So if we could enable hardware bridging on
-> the Felix DSA master ports, cross-chip bridging could be completely
-> offloaded.
-> 
-> Such as system would be used as follows:
-> 
-> ip link add dev br0 type bridge && ip link set dev br0 up
-> for port in sw0p0 sw0p1 sw0p2 sw0p3 \
-> 	    sw1p0 sw1p1 sw1p2 sw1p3 \
-> 	    sw2p0 sw2p1 sw2p2 sw2p3; do
-> 	ip link set dev $port master br0
-> done
-> 
-> The above makes switching between ports on the same row be performed in
-> hardware, and between ports on different rows in software. Now assume
-> the Felix switch ports are called swp0, swp1, swp2. By running the
-> following extra commands:
-> 
-> ip link add dev br1 type bridge && ip link set dev br1 up
-> for port in swp0 swp1 swp2; do
-> 	ip link set dev $port master br1
-> done
-> 
-> the CPU no longer sees packets which traverse sja1105 switch boundaries
-> and can be forwarded directly by Felix. The br1 bridge would not be used
-> for any sort of traffic termination.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Is there anything that prevents br1 from terminating traffic though
-(just curious)?
+  drivers/net/bonding/bond_main.c
 
-> 
-> For this to work, we need to give drivers an opportunity to listen for
-> bridging events on DSA trees other than their own, and pass that other
-> tree index as argument. I have made the assumption, for the moment, that
-> the other existing DSA notifiers don't need to be broadcast to other
-> trees. That assumption might turn out to be incorrect. But in the
-> meantime, introduce a dsa_broadcast function, similar in purpose to
-> dsa_port_notify, which is used only by the bridging notifiers.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+between commits:
+
+  ed7d4f023b1a ("bonding: Rename slave_arr to usable_slaves")
+  c071d91d2a89 ("bonding: Add helper function to get the xmit slave based o=
+n hash")
+  29d5bbccb3a1 ("bonding: Add helper function to get the xmit slave in rr m=
+ode")
+
+from the rdma and mlx5-next trees and commit:
+
+  ae46f184bc1f ("bonding: propagate transmit status")
+
+from the net-next tree.
+
+I fixed it up (I think - see below) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/bonding/bond_main.c
+index 39b1ad7edbb4,4f9e7c421f57..000000000000
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@@ -4022,32 -4024,12 +4022,30 @@@ static struct slave *bond_xmit_roundrob
+  non_igmp:
+  	slave_cnt =3D READ_ONCE(bond->slave_cnt);
+  	if (likely(slave_cnt)) {
+ -		slave_id =3D bond_rr_gen_slave_id(bond);
+ -		return bond_xmit_slave_id(bond, skb, slave_id % slave_cnt);
+ +		slave_id =3D bond_rr_gen_slave_id(bond) % slave_cnt;
+ +		return bond_get_slave_by_id(bond, slave_id);
+  	}
+ +	return NULL;
+ +}
+ +
+ +static netdev_tx_t bond_xmit_roundrobin(struct sk_buff *skb,
+ +					struct net_device *bond_dev)
+ +{
+ +	struct bonding *bond =3D netdev_priv(bond_dev);
+ +	struct slave *slave;
+ +
+ +	slave =3D bond_xmit_roundrobin_slave_get(bond, skb);
+ +	if (slave)
+- 		bond_dev_queue_xmit(bond, skb, slave->dev);
+- 	else
+- 		bond_tx_drop(bond_dev, skb);
+- 	return NETDEV_TX_OK;
+++		return bond_dev_queue_xmit(bond, skb, slave->dev);
++ 	return bond_tx_drop(bond_dev, skb);
+  }
+ =20
+ +static struct slave *bond_xmit_activebackup_slave_get(struct bonding *bon=
+d,
+ +						      struct sk_buff *skb)
+ +{
+ +	return rcu_dereference(bond->curr_active_slave);
+ +}
+ +
+  /* In active-backup mode, we know that bond->curr_active_slave is always =
+valid if
+   * the bond has a usable interface.
+   */
+@@@ -4057,13 -4039,11 +4055,11 @@@ static netdev_tx_t bond_xmit_activeback
+  	struct bonding *bond =3D netdev_priv(bond_dev);
+  	struct slave *slave;
+ =20
+ -	slave =3D rcu_dereference(bond->curr_active_slave);
+ +	slave =3D bond_xmit_activebackup_slave_get(bond, skb);
+  	if (slave)
+- 		bond_dev_queue_xmit(bond, skb, slave->dev);
+- 	else
+- 		bond_tx_drop(bond_dev, skb);
++ 		return bond_dev_queue_xmit(bond, skb, slave->dev);
+ =20
+- 	return NETDEV_TX_OK;
++ 	return bond_tx_drop(bond_dev, skb);
+  }
+ =20
+  /* Use this to update slave_array when (a) it's not appropriate to update
+@@@ -4254,17 -4178,17 +4250,14 @@@ static netdev_tx_t bond_3ad_xor_xmit(st
+  				     struct net_device *dev)
+  {
+  	struct bonding *bond =3D netdev_priv(dev);
+ -	struct slave *slave;
+  	struct bond_up_slave *slaves;
+ -	unsigned int count;
+ +	struct slave *slave;
+ =20
+ -	slaves =3D rcu_dereference(bond->slave_arr);
+ -	count =3D slaves ? READ_ONCE(slaves->count) : 0;
+ -	if (likely(count)) {
+ -		slave =3D slaves->arr[bond_xmit_hash(bond, skb) % count];
+ +	slaves =3D rcu_dereference(bond->usable_slaves);
+ +	slave =3D bond_xmit_3ad_xor_slave_get(bond, skb, slaves);
+ +	if (likely(slave))
+- 		bond_dev_queue_xmit(bond, skb, slave->dev);
+- 	else
+- 		bond_tx_drop(dev, skb);
+-=20
+- 	return NETDEV_TX_OK;
++ 		return bond_dev_queue_xmit(bond, skb, slave->dev);
+ -	}
++ 	return bond_tx_drop(dev, skb);
+  }
+ =20
+  /* in broadcast mode, we send everything to all usable interfaces. */
+
+--Sig_/CRmOGYW+uQitPtT5btr_GSR
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl60z5sACgkQAVBC80lX
+0Gxkdwf+Iiz1xXqu9tmYBlt2uVHfYlCJyyD/bHqzdGntC6aAUn2IKsQG0FG8LnND
+2NwBhOhSbsmRelrVZSgl8c4n1Q9zIkQxNlHqVA4OdGGUaDPrfOUEeUtprOqF7IYf
+zGtsf7AgTESiv4aqJJTlGRdhNMXwZAD25oLeWukLAVIdwNgmW79rnvq2nV3OyMXD
+vGaBcFdF0KrhDH+Jzbhj6PWr/Dsv2b+QLIw15ynH5xwP8kKaB4bhA9FFORz+a52S
+A/4emvBL7pC32EmwhrRdjPKxZ47QBWvE0CZrTfBHJPkxY2iyaZw/2G9fhxyQu5YV
+Gjw1twFjQEx6kRQ/FG8lc4TPmGn3Kg==
+=/Djr
+-----END PGP SIGNATURE-----
+
+--Sig_/CRmOGYW+uQitPtT5btr_GSR--
