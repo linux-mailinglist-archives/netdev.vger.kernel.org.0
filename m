@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC0DA1C9FD4
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 02:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 687B71C9FDA
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 02:56:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbgEHAv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 20:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
+        id S1726612AbgEHA4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 20:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726470AbgEHAvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 20:51:25 -0400
+        by vger.kernel.org with ESMTP id S1726509AbgEHA4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 20:56:32 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0ACC05BD43;
-        Thu,  7 May 2020 17:51:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E048C05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 17:56:32 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DE2761193777F;
-        Thu,  7 May 2020 17:51:24 -0700 (PDT)
-Date:   Thu, 07 May 2020 17:51:24 -0700 (PDT)
-Message-Id: <20200507.175124.699169292892309991.davem@davemloft.net>
-To:     grygorii.strashko@ti.com
-Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org, t-kristo@ti.com,
-        netdev@vger.kernel.org, nsekhar@ti.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next 0/3] net: ethernet: ti: am65x-cpts: follow up
- dt bindings update
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 099B911937794;
+        Thu,  7 May 2020 17:56:30 -0700 (PDT)
+Date:   Thu, 07 May 2020 17:56:30 -0700 (PDT)
+Message-Id: <20200507.175630.494283287134243359.davem@davemloft.net>
+To:     jacob.e.keller@intel.com
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, apw@canonical.com,
+        joe@perches.com
+Subject: Re: [PATCH net-next] net: remove newlines in NL_SET_ERR_MSG_MOD
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200506181401.28699-1-grygorii.strashko@ti.com>
-References: <20200506181401.28699-1-grygorii.strashko@ti.com>
+In-Reply-To: <20200507005827.3919243-1-jacob.e.keller@intel.com>
+References: <20200507005827.3919243-1-jacob.e.keller@intel.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 07 May 2020 17:51:25 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 07 May 2020 17:56:31 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
-Date: Wed, 6 May 2020 21:13:58 +0300
+From: Jacob Keller <jacob.e.keller@intel.com>
+Date: Wed,  6 May 2020 17:58:27 -0700
 
-> This series is follow update for  TI A65x/J721E Common platform time sync (CPTS)
-> driver [1] to implement  DT bindings review comments from
-> Rob Herring <robh@kernel.org> [2].
->  - "reg" and "compatible" properties are made required for CPTS DT nodes which
->    also required to change K3 CPSW driver to use of_platform_device_create()
->    instead of of_platform_populate() for proper CPTS and MDIO initialization
->  - minor DT bindings format changes
->  - K3 CPTS example added to K3 MCU CPSW bindings
+> The NL_SET_ERR_MSG_MOD macro is used to report a string describing an
+> error message to userspace via the netlink extended ACK structure. It
+> should not have a trailing newline.
 > 
-> [1] https://lwn.net/Articles/819313/
-> [2] https://lwn.net/ml/linux-kernel/20200505040419.GA8509@bogus/
+> Add a cocci script which catches cases where the newline marker is
+> present. Using this script, fix the handful of cases which accidentally
+> included a trailing new line.
+> 
+> I couldn't figure out a way to get a patch mode working, so this script
+> only implements context, report, and org.
+> 
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-Series applied, thanks.
+Applied, thank you.
