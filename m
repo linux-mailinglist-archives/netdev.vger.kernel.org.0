@@ -2,171 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9604B1CA98E
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 13:26:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B911CA9BE
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 13:37:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727789AbgEHL0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 07:26:45 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:36290 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727783AbgEHL0p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 07:26:45 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 048BQWHx080043;
-        Fri, 8 May 2020 06:26:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588937192;
-        bh=59VYB5TqRFxnmRNyD8u6HRAxzU/a6sf4iKSTn4oOQzA=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=HCblZ/SSbdo4z7ACUnywHRQk9hZwl8xh8IAKwgMlb92rREXbgD/4+8OTaQHvbW74+
-         94Pi4sXtL/EufgBOD68f52by7vsMdKJQKL13Cd2JX7/rV1uuZ6Poe1wp7GpxjXpW4R
-         +2Eusl0qWBvv/bDqD7Dugwlybn7jgMkg3aFFFWcY=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 048BQWkj126699
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 8 May 2020 06:26:32 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 8 May
- 2020 06:26:31 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 8 May 2020 06:26:31 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 048BQTEB060866;
-        Fri, 8 May 2020 06:26:29 -0500
-Subject: Re: [PATCH net-next v2] net: ethernet: ti: fix some return value
- check of cpsw_ale_create()
-To:     Wei Yongjun <weiyongjun1@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Colin Ian King <colin.king@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        Hulk Robot <hulkci@huawei.com>
-References: <20200508021059.172001-1-weiyongjun1@huawei.com>
- <20200508100649.1112-1-weiyongjun1@huawei.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <da50aa53-a967-83b7-0737-701ab30228e4@ti.com>
-Date:   Fri, 8 May 2020 14:26:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726843AbgEHLhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 07:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726616AbgEHLhV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 07:37:21 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528EFC05BD43
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 04:37:20 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id t11so766279pgg.2
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 04:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mfR52MDsyjTnA9H4OVuPQexLyhkWHIlQ6KYc6kdbY4w=;
+        b=EviDW83F6yoRUNdJ2LuuOOiSQFHnz2Y7NDZYujogmKzSrm0AKwf7Rpin+DLPCVJznP
+         fIquQQAblPXtdt0m3Shrgwpmh38zbjQdjKDoyy1LktePbA8yEHytYnIick4nbOFonM84
+         vNYOzvRz3sLkqIFtrPQpTk5xYyYlFQJaSbsjXqeJFA4kRgh6rJj42VgOoqpqN/wjFHgl
+         6H9VVpSTS5ymywkFZXAWOJ/aISaRAzunRacY+qUoAXfaEvKb7Cw0+DBxBO2Xlc6RJdm4
+         bJ175sz/hQ41BupviNaasYlPf7C10FnEI9elosNGheOX+wbV1R0tcKxgRqNnGBVl2YML
+         nPrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mfR52MDsyjTnA9H4OVuPQexLyhkWHIlQ6KYc6kdbY4w=;
+        b=nA+xGCFakQziJ7u0By9efLG1Ac1BxFn6UoHLl/rQL9coi+WnYNveBmwsEf8ZGv8vng
+         KszNyX+3gEWe8PWOhTPJzdHEbYCKN4M0X8xtZ/QZLyVTlo48QcAmiW9Rq/h106HMggB3
+         XRPwnPIg3hAjqAUcwgXSQGj3mI7QvwC0jJ1iYO7RX4qnTsyb8nv1vxRoVW+VdDhEKCX5
+         hxP5h/5PARLwQlY2Ln4a+F4KaJeocbOngiCV6gFISz7TiIednmyZqit8IxrZ/3t30jF3
+         /FV+Vuk4xFPYi649aWJRBPQBuXVPS593FeWJE9QeI0P3c7Lo1tRpdPy4ruhRBCigVH/K
+         AoJw==
+X-Gm-Message-State: AGi0Pua1koARFmXY37xLkU7i7GVvOZOzhtdb1pG/Z/tVWHeahpkC+i7K
+        siiuhVWPBU3JcQho0bwD/1CguucU8Qo=
+X-Google-Smtp-Source: APiQypJC924mDNfbRws7or60M1n8mAp5Ewz4rJHjFQDJebMWe6O47woBPEqx8skHXkKVFHMeaSDalg==
+X-Received: by 2002:a63:5fc1:: with SMTP id t184mr1864324pgb.48.1588937839730;
+        Fri, 08 May 2020 04:37:19 -0700 (PDT)
+Received: from pek-khao-d2.corp.ad.wrs.com (unknown-105-123.windriver.com. [147.11.105.123])
+        by smtp.gmail.com with ESMTPSA id p7sm1219006pgg.91.2020.05.08.04.37.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2020 04:37:18 -0700 (PDT)
+Date:   Fri, 8 May 2020 19:37:10 +0800
+From:   Kevin Hao <haokexin@gmail.com>
+To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] octeontx2-pf: Use the napi_alloc_frag() to alloc the
+ pool buffers
+Message-ID: <20200508113710.GJ3222151@pek-khao-d2.corp.ad.wrs.com>
+References: <20200508040728.24202-1-haokexin@gmail.com>
+ <CA+sq2CfoY1aRC2BernvqaMGgTgCByM+yq19-Vak0KJqxEU-5Eg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200508100649.1112-1-weiyongjun1@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="IJFRpmOek+ZRSQoz"
+Content-Disposition: inline
+In-Reply-To: <CA+sq2CfoY1aRC2BernvqaMGgTgCByM+yq19-Vak0KJqxEU-5Eg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--IJFRpmOek+ZRSQoz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 08/05/2020 13:06, Wei Yongjun wrote:
-> cpsw_ale_create() can return both NULL and PTR_ERR(), but all of
-> the caller only check NULL for error handling. This patch convert
-> it to only return PTR_ERR() in all error cases, all the caller using
-> IS_ERR() install of NULL test.
-> 
-> Also fix a return negative error code from the cpsw_ale_create()
-> error handling case instead of 0 in am65_cpsw_nuss_probe().
-> 
-> Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
-> Fixes: 4b41d3436796 ("net: ethernet: ti: cpsw: allow untagged traffic on host port")
+On Fri, May 08, 2020 at 01:10:00PM +0530, Sunil Kovvuri wrote:
+> On Fri, May 8, 2020 at 9:43 AM Kevin Hao <haokexin@gmail.com> wrote:
+> >
+> > In the current codes, the octeontx2 uses its own method to allocate
+> > the pool buffers, but there are some issues in this implementation.
+> > 1. We have to run the otx2_get_page() for each allocation cycle and
+> >    this is pretty error prone. As I can see there is no invocation
+> >    of the otx2_get_page() in otx2_pool_refill_task(), this will leave
+> >    the allocated pages have the wrong refcount and may be freed wrongly.
+> > 2. It wastes memory. For example, if we only receive one packet in a
+> >    NAPI RX cycle, and then allocate a 2K buffer with otx2_alloc_rbuf()
+> >    to refill the pool buffers and leave the remain area of the allocated
+> >    page wasted. On a kernel with 64K page, 62K area is wasted.
+> >
+> > IMHO it is really unnecessary to implement our own method for the
+> > buffers allocate, we can reuse the napi_alloc_frag() to simplify
+> > our code.
+> >
+> > Signed-off-by: Kevin Hao <haokexin@gmail.com>
+> > ---
+> >  .../marvell/octeontx2/nic/otx2_common.c       | 51 ++++++++-----------
+> >  .../marvell/octeontx2/nic/otx2_common.h       | 15 +-----
+> >  .../marvell/octeontx2/nic/otx2_txrx.c         |  3 +-
+> >  .../marvell/octeontx2/nic/otx2_txrx.h         |  4 --
+> >  4 files changed, 22 insertions(+), 51 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b=
+/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> > index f1d2dea90a8c..15fa1ad57f88 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> > @@ -379,40 +379,32 @@ void otx2_config_irq_coalescing(struct otx2_nic *=
+pfvf, int qidx)
+> >                      (pfvf->hw.cq_ecount_wait - 1));
+> >  }
+> >
+> > -dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *po=
+ol,
+> > -                          gfp_t gfp)
+> > +dma_addr_t _otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *p=
+ool)
+> >  {
+> >         dma_addr_t iova;
+> > +       u8 *buf;
+> >
+> > -       /* Check if request can be accommodated in previous allocated p=
+age */
+> > -       if (pool->page && ((pool->page_offset + pool->rbsize) <=3D
+> > -           (PAGE_SIZE << pool->rbpage_order))) {
+> > -               pool->pageref++;
+> > -               goto ret;
+> > -       }
+> > -
+> > -       otx2_get_page(pool);
+> > -
+> > -       /* Allocate a new page */
+> > -       pool->page =3D alloc_pages(gfp | __GFP_COMP | __GFP_NOWARN,
+> > -                                pool->rbpage_order);
+> > -       if (unlikely(!pool->page))
+> > +       buf =3D napi_alloc_frag(pool->rbsize);
+> > +       if (unlikely(!buf))
+> >                 return -ENOMEM;
+> >
+> > -       pool->page_offset =3D 0;
+> > -ret:
+> > -       iova =3D (u64)otx2_dma_map_page(pfvf, pool->page, pool->page_of=
+fset,
+> > -                                     pool->rbsize, DMA_FROM_DEVICE);
+> > -       if (!iova) {
+> > -               if (!pool->page_offset)
+> > -                       __free_pages(pool->page, pool->rbpage_order);
+> > -               pool->page =3D NULL;
+> > +       iova =3D dma_map_single(pfvf->dev, buf, pool->rbsize, DMA_FROM_=
+DEVICE);
+> > +       if (unlikely(dma_mapping_error(pfvf->dev, iova)))
+> >                 return -ENOMEM;
+>=20
+> Use DMA_ATTR_SKIP_CPU_SYNC while mapping the buffer.
 
-^ I do not think it can be back-ported so far back.
-So, or drop second "Fixes: 4b41d3436796"
-or split am65-cpsw-nuss.c changes
+Sure. V2 is coming.
 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-> ---
-> v1 -> v2: fix cpsw_ale_create() to retuen PTR_ERR() in all places as Grygorii's suggest
+Thanks,
+Kevin
 
-Pls, do not send v2 as reply on v1.
+>=20
+> Thanks,
+> Sunil.
 
+--IJFRpmOek+ZRSQoz
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> ---
->   drivers/net/ethernet/ti/am65-cpsw-nuss.c | 3 ++-
->   drivers/net/ethernet/ti/cpsw_ale.c       | 2 +-
->   drivers/net/ethernet/ti/cpsw_priv.c      | 4 ++--
->   drivers/net/ethernet/ti/netcp_ethss.c    | 4 ++--
->   4 files changed, 7 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> index 8cdbb2b9b13a..5530d7ef77a6 100644
-> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> @@ -2074,8 +2074,9 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
->   	ale_params.nu_switch_ale = true;
->   
->   	common->ale = cpsw_ale_create(&ale_params);
-> -	if (!common->ale) {
-> +	if (IS_ERR(common->ale)) {
->   		dev_err(dev, "error initializing ale engine\n");
-> +		ret = ERR_PTR(common->ale);
+-----BEGIN PGP SIGNATURE-----
 
-../include/linux/err.h:24:35: note: expected ‘long int’ but argument is of type ‘struct cpsw_ale *’
-  static inline void * __must_check ERR_PTR(long error)
-                                    ^~~~~~~
-../drivers/net/ethernet/ti/am65-cpsw-nuss.c:1900:7: warning: assignment makes integer from pointer without a cast [-Wint-conversion]
-    ret = ERR_PTR(common->ale);
-        ^
+iQEzBAEBCAAdFiEEHc6qFoLCZqgJD98Zk1jtMN6usXEFAl61RGYACgkQk1jtMN6u
+sXHuowf/SM05rbMyhVLFR3Q1w5bCy8IGTjTa/04u2599Li6EL8xmk+f03U+LmP4L
+B93rig06OQaFf/AUlI9xu7BjArKyigEL4YuX60y03It6qx/G0RHBIZgHyz2eFYgj
+GvZfMsJV0KWYgaTgysqgSO10UkQwcOo4ctYnAP9BTAeiF2TyqhY4rEDFz4EvOEWZ
+S/nnJ4aKl996XVRaH3OxRdK0tV5htuKWfMEBM80QB49ozE8XqvdlvK0wTLufAhXK
+uGkfNn+FmFzcosU9oNAy/b1PUn+Ys8uC3xVnm2CNLtfb3ba21uuPEsvEpnYtLTxd
+BM2kXvncbwG8mOc2gDqEJWaLA5Ckpg==
+=lzrr
+-----END PGP SIGNATURE-----
 
-
->   		goto err_of_clear;
->   	}
->   
-> diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
-> index 0374e6936091..8dc6be11b2ff 100644
-> --- a/drivers/net/ethernet/ti/cpsw_ale.c
-> +++ b/drivers/net/ethernet/ti/cpsw_ale.c
-> @@ -955,7 +955,7 @@ struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
->   
->   	ale = devm_kzalloc(params->dev, sizeof(*ale), GFP_KERNEL);
->   	if (!ale)
-> -		return NULL;
-> +		return ERR_PTR(-ENOMEM);
->   
->   	ale->p0_untag_vid_mask =
->   		devm_kmalloc_array(params->dev, BITS_TO_LONGS(VLAN_N_VID),
-> diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-> index 9d098c802c6d..d940628bff8d 100644
-> --- a/drivers/net/ethernet/ti/cpsw_priv.c
-> +++ b/drivers/net/ethernet/ti/cpsw_priv.c
-> @@ -504,9 +504,9 @@ int cpsw_init_common(struct cpsw_common *cpsw, void __iomem *ss_regs,
->   	ale_params.ale_ports		= CPSW_ALE_PORTS_NUM;
->   
->   	cpsw->ale = cpsw_ale_create(&ale_params);
-> -	if (!cpsw->ale) {
-> +	if (IS_ERR(cpsw->ale)) {
->   		dev_err(dev, "error initializing ale engine\n");
-> -		return -ENODEV;
-> +		return PTR_ERR(cpsw->ale);
->   	}
->   
->   	dma_params.dev		= dev;
-> diff --git a/drivers/net/ethernet/ti/netcp_ethss.c b/drivers/net/ethernet/ti/netcp_ethss.c
-> index 9d6e27fb710e..28093923a7fb 100644
-> --- a/drivers/net/ethernet/ti/netcp_ethss.c
-> +++ b/drivers/net/ethernet/ti/netcp_ethss.c
-> @@ -3704,9 +3704,9 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
->   		ale_params.nu_switch_ale = true;
->   	}
->   	gbe_dev->ale = cpsw_ale_create(&ale_params);
-> -	if (!gbe_dev->ale) {
-> +	if (IS_ERR(gbe_dev->ale)) {
->   		dev_err(gbe_dev->dev, "error initializing ale engine\n");
-> -		ret = -ENODEV;
-> +		ret = PTR_ERR(gbe_dev->ale);
->   		goto free_sec_ports;
->   	} else {
->   		dev_dbg(gbe_dev->dev, "Created a gbe ale engine\n");
-> 
-
--- 
-Best regards,
-grygorii
+--IJFRpmOek+ZRSQoz--
