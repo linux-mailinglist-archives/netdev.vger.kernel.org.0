@@ -2,99 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D96A61CB9DC
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 23:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C55FB1CB9DA
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 23:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728063AbgEHVdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 17:33:20 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:39935 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726811AbgEHVdT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 17:33:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588973598;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+H9gfY0KMqcl7s0gN7cY3Jbt3qmRtoGXjfBzgncuN1Y=;
-        b=OhuH6InJbZK+XlvPMBxGXAfQ4qQhO/EJ11t6ERw6nsFB2AFh1y3+r4l/BRbvJV+cBLiSLe
-        G7Hya2DHBLWxeVIgnUUyZWyDjL3/PnHkYwFPKZGh5BgLoUoxFulYXP6PIm3q2yosHdD4FS
-        5BU7jRLmjH+Vf9xUBKMixMTfqFbYkJQ=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-143-0iOrkO8SPNWSD7H6Nd-72g-1; Fri, 08 May 2020 17:33:16 -0400
-X-MC-Unique: 0iOrkO8SPNWSD7H6Nd-72g-1
-Received: by mail-ed1-f72.google.com with SMTP id b7so1185828edf.9
-        for <netdev@vger.kernel.org>; Fri, 08 May 2020 14:33:16 -0700 (PDT)
+        id S1727789AbgEHVdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 17:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726811AbgEHVdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 17:33:06 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69476C05BD0A
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 14:33:06 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id k1so3589414wrx.4
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 14:33:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Aca/976qWiqzQz319I/1ZeKQgri8fptuMZ4rzXYLtiM=;
+        b=khfMGIxp7o/hGvcG6CwyGcMR9bk9/eSoAIl631d0LdHTX9to+lGbXYVzdvJ30nU+8s
+         JZtZXdYEupiy2UOW1/N3wqE1Np0k00F8rCFzpP6Y7jiCfHJvwui+oqk+xl/oytIDDXUl
+         fVD2v9SeC60PlaHMCHoGvKjwtuXTR9TsT7MQotpPiVmtWq4lNz692+/5wcSHiFuzD2km
+         XoXPVczQ89UlqV5Dhgd69FXT5n324rr1I+s/7mQ1/uhOJBxh8JHky7OpE9l4bpWadpk0
+         LtF2XlwHSoPLx5zHQ9MgN81007Yp9ONHAFmK8OH8tUA3gj+1m6K5VtaPekQpl9qhkA6q
+         MIyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+H9gfY0KMqcl7s0gN7cY3Jbt3qmRtoGXjfBzgncuN1Y=;
-        b=DTmd+HkGWkG/8KaYHi7jhpJ2Y+t2Ysy9QHpD+jB6LLRACdSoxuOMttqycL92UBw3lJ
-         AxnaO+QWVREhiU2lsEKiRTmhGoujRFyP0o4f6P3EqEgEwJ1p7eX7EqSiTU7Zxq0wxhMx
-         +dg1yf1Fw5Ro0Na/MLdG1TgTzwYbTIMLn//bhn7chyQQ1a/FjM8EgTeevk0LYoX4oxlB
-         gUJRVZrBpSrAiNSqiERiBAfX7/1TMOgOpPxLOxU8c4/uMmXKrSYURyQ8YDM1Ate8wkR/
-         wR33y3BrEpSdWBvjElt9E6hinEApn8zPt5umFFVMM+6Ma1+Dmha3U9E5fExOy1NO7e/5
-         pJ2g==
-X-Gm-Message-State: AGi0PuZh+bmVe19sJiwQq1tuGcALhIE8kMuQNaKzhgxzf/byOHHUVsOa
-        cKDDIcOLpA8rkB8RQ/esdonAvtusnWPHQPmXHNZdM0u2Nh19+J5DZkDPU3Xmx3RJzR0GCam0lqO
-        HEcS14j+BTom99VBdMucMk1XKQnORUxvb
-X-Received: by 2002:a05:6402:b2a:: with SMTP id bo10mr4129369edb.366.1588973595556;
-        Fri, 08 May 2020 14:33:15 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLRi5hQTFPQlTZ195xdzNxpyl5BtaV77q52+iFQs62RiNsdmly7ZMm54x5TbFUeeEs7Y4Fty3Q2g2CqPg2zdDs=
-X-Received: by 2002:a05:6402:b2a:: with SMTP id bo10mr4129358edb.366.1588973595324;
- Fri, 08 May 2020 14:33:15 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Aca/976qWiqzQz319I/1ZeKQgri8fptuMZ4rzXYLtiM=;
+        b=eJoBwtN9pLVIfj4958+68xHkq2fd/4Kkoa0I9zVZChWD0wrebeXZmZSgfjrDpv4h39
+         WYCsHRcrb9ZzEtjQUwILPvVEBSsPln2WkxdW7b60nHX9nHQvDq3oI0PlJwhagJ33hHMT
+         sH90yZUG7eY8kZHvSX+ra4DHIWC9kbDCFycHQ48DYgKXQvCryrlRAlRcnTELAGaV1I66
+         xZfQ3PUVHrmH5Y1jJEXXMLPaR4cZWa8n3SHlg95UMuc7rSvMIh1qGt6NFSGrTDN3WS2a
+         ZBH85rbFThLZnSID36xqSI/VC016oPaHPtQlY2dq6x3q8nWT5oe1u820n2sZ6DiIOV0k
+         GwDQ==
+X-Gm-Message-State: AGi0PuZdg2FqwNx23RvwBnDUjL7lV0LRvDYhlX1Vqik7eKOFdJ7V420Y
+        3HyfjbMT+fFZ87GXU+J5yJMHdEE5
+X-Google-Smtp-Source: APiQypL4ovWRo4TnYTGp6zXAmCumNk1XjbcgbaK8okQ91GCuGWPIKE8/vBAh1kc1mPiBUk4B9CWn0w==
+X-Received: by 2002:adf:e802:: with SMTP id o2mr4986057wrm.110.1588973584890;
+        Fri, 08 May 2020 14:33:04 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f28:5200:b9ec:f867:184c:fa95? (p200300EA8F285200B9ECF867184CFA95.dip0.t-ipconnect.de. [2003:ea:8f28:5200:b9ec:f867:184c:fa95])
+        by smtp.googlemail.com with ESMTPSA id d13sm15226679wmb.39.2020.05.08.14.33.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 May 2020 14:33:04 -0700 (PDT)
+Subject: [PATCH net-next 4/4] r8169: improve reset handling for chips from
+ RTL8168g
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <ae5fb819-26e4-d796-2783-2ed5212d0146@gmail.com>
+Message-ID: <fdeb08fa-854a-ba65-e257-8da0393da0cb@gmail.com>
+Date:   Fri, 8 May 2020 23:32:49 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200414194753.GB25745@shell.armlinux.org.uk> <20200414.164825.457585417402726076.davem@davemloft.net>
-In-Reply-To: <20200414.164825.457585417402726076.davem@davemloft.net>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Fri, 8 May 2020 23:32:39 +0200
-Message-ID: <CAGnkfhw45WBjaYFcrO=vK0pbYvhzan970vtxVj8urexhh=WU_A@mail.gmail.com>
-Subject: Re: [PATCH net v2 0/2] Fix 88x3310 leaving power save mode
-To:     David Miller <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <ae5fb819-26e4-d796-2783-2ed5212d0146@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 1:48 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> Date: Tue, 14 Apr 2020 20:47:53 +0100
->
-> > This series fixes a problem with the 88x3310 PHY on Macchiatobin
-> > coming out of powersave mode noticed by Matteo Croce.  It seems
-> > that certain PHY firmwares do not properly exit powersave mode,
-> > resulting in a fibre link not coming up.
-> >
-> > The solution appears to be to soft-reset the PHY after clearing
-> > the powersave bit.
-> >
-> > We add support for reporting the PHY firmware version to the kernel
-> > log, and use it to trigger this new behaviour if we have v0.3.x.x
-> > or more recent firmware on the PHY.  This, however, is a guess as
-> > the firmware revision documentation does not mention this issue,
-> > and we know that v0.2.1.0 works without this fix but v0.3.3.0 and
-> > later does not.
->
-> Series applied, thanks.
->
+Sync the reset preparation for chips from RTL8168g with the r8168 and
+r8125 vendor drivers.
 
-Hi,
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-should we queue this to -stable?
-The 10 gbit ports don't work without this fix.
-
-Regards,
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 7ea58bd9b..0e96d0de2 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2537,10 +2537,13 @@ static void rtl8169_hw_reset(struct rtl8169_private *tp)
+ 		rtl_loop_wait_low(tp, &rtl_npq_cond, 20, 2000);
+ 		break;
+ 	case RTL_GIGA_MAC_VER_34 ... RTL_GIGA_MAC_VER_38:
+-	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_52:
+ 		RTL_W8(tp, ChipCmd, RTL_R8(tp, ChipCmd) | StopReq);
+ 		rtl_loop_wait_high(tp, &rtl_txcfg_empty_cond, 100, 666);
+ 		break;
++	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_61:
++		rtl_enable_rxdvgate(tp);
++		fsleep(2000);
++		break;
+ 	default:
+ 		RTL_W8(tp, ChipCmd, RTL_R8(tp, ChipCmd) | StopReq);
+ 		udelay(100);
 -- 
-Matteo Croce
-per aspera ad upstream
+2.26.2
+
 
