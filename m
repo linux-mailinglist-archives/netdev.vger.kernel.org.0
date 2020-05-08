@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7861CBB2E
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 01:20:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1F661CBB32
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 01:20:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728128AbgEHXUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 19:20:49 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:16460 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728140AbgEHXUs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 19:20:48 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 048NFdTh017450
-        for <netdev@vger.kernel.org>; Fri, 8 May 2020 16:20:47 -0700
+        id S1728289AbgEHXUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 19:20:55 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15406 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727110AbgEHXUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 19:20:50 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 048NEQOd005334
+        for <netdev@vger.kernel.org>; Fri, 8 May 2020 16:20:48 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-type : content-transfer-encoding; s=facebook;
- bh=FO7AVr1QnNoclHuHJMc+/AY2inC1AzFC3qF+Nzjrl6M=;
- b=gcVT/m/uwjUAMNPiK3v7c+i0UJl81ZpUNS2M2nyw84DSvK1YjjdWOXA/VZsjGeT8hMJM
- WVNVRK5rmsAdg9qYg+sv+nyUzW2keFto052PJjxcTdxDX0nvufLmhKv+eJJR9d0j+QF3
- 3GxlBVXDnhhNvC592V42mZkdhMBa1zt1qKs= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30wet48n4e-6
+ bh=ztVEm21APc/fosbQ/TajSxS5qcr0EFSdvknqAl5HY2w=;
+ b=qqe8YsCKelO1GZMbAU6ZhRWEmLxiUbXyt2YGcHI1X34zwcBD1G8bqbakXB5/MKjLpwiY
+ j2WukeKfmWqvnVR1lXsm8ACPA+pqlHmsCVfjhtTrA3My8Xm/KZYwGNDQLcxsa+E8Z+W/
+ /QvRTL8pX6n7i3X85lj1FBENZ3pYSsY8+7Q= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 30vtdf6ngs-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 08 May 2020 16:20:47 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 16:20:48 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Fri, 8 May 2020 16:20:44 -0700
+ 15.1.1847.3; Fri, 8 May 2020 16:20:46 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 5B5C22EC321F; Fri,  8 May 2020 16:20:40 -0700 (PDT)
+        id 8D0892EC321F; Fri,  8 May 2020 16:20:42 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -40,9 +40,9 @@ CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 2/3] selftest/bpf: fmod_ret prog and implement test_overhead as part of bench
-Date:   Fri, 8 May 2020 16:20:31 -0700
-Message-ID: <20200508232032.1974027-3-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 3/3] selftest/bpf: add BPF triggering benchmark
+Date:   Fri, 8 May 2020 16:20:32 -0700
+Message-ID: <20200508232032.1974027-4-andriin@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200508232032.1974027-1-andriin@fb.com>
 References: <20200508232032.1974027-1-andriin@fb.com>
@@ -52,10 +52,10 @@ Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
  definitions=2020-05-08_20:2020-05-08,2020-05-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- lowpriorityscore=0 clxscore=1015 impostorscore=0 mlxscore=0 malwarescore=0
- suspectscore=9 mlxlogscore=999 priorityscore=1501 bulkscore=0 adultscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ bulkscore=0 mlxscore=0 clxscore=1015 lowpriorityscore=0 suspectscore=9
+ impostorscore=0 priorityscore=1501 mlxlogscore=999 spamscore=0
+ adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2003020000 definitions=main-2005080195
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -63,166 +63,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add fmod_ret BPF program to existing test_overhead selftest. Also re-impl=
-ement
-user-space benchmarking part into benchmark runner to compare results.  R=
-esults
-with ./bench are consistently somewhat lower than test_overhead's, but re=
-lative
-performance of various types of BPF programs stay consisten (e.g., kretpr=
-obe is
-noticeably slower).
+It is sometimes desirable to be able to trigger BPF program from user-spa=
+ce
+with minimal overhead. sys_enter would seem to be a good candidate, yet i=
+n
+a lot of cases there will be a lot of noise from syscalls triggered by ot=
+her
+processes on the system. So while searching for low-overhead alternative,=
+ I've
+stumbled upon getpgid() syscall, which seems to be specific enough to not
+suffer from accidental syscall by other apps.
 
-run_bench_rename.sh script (in benchs/ directory) was used to produce the
-following numbers:
+This set of benchmarks compares tp, raw_tp w/ filtering by syscall ID, kp=
+robe,
+fentry and fmod_ret with returning error (so that syscall would not be
+executed), to determine the lowest-overhead way. Here are results on my
+machine (using benchs/run_bench_trigger.sh script):
 
-  base      :    3.975 =C2=B1 0.065M/s
-  kprobe    :    3.268 =C2=B1 0.095M/s
-  kretprobe :    2.496 =C2=B1 0.040M/s
-  rawtp     :    3.899 =C2=B1 0.078M/s
-  fentry    :    3.836 =C2=B1 0.049M/s
-  fexit     :    3.660 =C2=B1 0.082M/s
-  fmodret   :    3.776 =C2=B1 0.033M/s
+  base      :    9.200 =C2=B1 0.319M/s
+  tp        :    6.690 =C2=B1 0.125M/s
+  rawtp     :    8.571 =C2=B1 0.214M/s
+  kprobe    :    6.431 =C2=B1 0.048M/s
+  fentry    :    8.955 =C2=B1 0.241M/s
+  fmodret   :    8.903 =C2=B1 0.135M/s
 
-While running test_overhead gives:
+So it seems like fmodret doesn't give much benefit for such lightweight
+syscall. Raw tracepoint is pretty decent despite additional filtering log=
+ic,
+but it will be called for any other syscall in the system, which rules it=
+ out.
+Fentry, though, seems to be adding the least amoung of overhead and achie=
+ves
+97.3% of performance of baseline no-BPF-attached syscall.
 
-  task_rename base        4457K events per sec
-  task_rename kprobe      3849K events per sec
-  task_rename kretprobe   2729K events per sec
-  task_rename raw_tp      4506K events per sec
-  task_rename fentry      4381K events per sec
-  task_rename fexit       4349K events per sec
-  task_rename fmod_ret    4130K events per sec
+Using getpgid() seems to be preferable to set_task_comm() approach from
+test_overhead, as it's about 2.35x faster in a baseline performance.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
  tools/testing/selftests/bpf/Makefile          |   4 +-
- tools/testing/selftests/bpf/bench.c           |  14 ++
- .../selftests/bpf/benchs/bench_rename.c       | 195 ++++++++++++++++++
- .../selftests/bpf/benchs/run_bench_rename.sh  |   9 +
- .../selftests/bpf/prog_tests/test_overhead.c  |  14 +-
- .../selftests/bpf/progs/test_overhead.c       |   6 +
- 6 files changed, 240 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/benchs/bench_rename.c
- create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_rename.s=
-h
+ tools/testing/selftests/bpf/bench.c           |  12 ++
+ .../selftests/bpf/benchs/bench_trigger.c      | 167 ++++++++++++++++++
+ .../selftests/bpf/benchs/run_bench_trigger.sh |   9 +
+ .../selftests/bpf/progs/trigger_bench.c       |  47 +++++
+ 5 files changed, 238 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_trigger.c
+ create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_trigger.=
+sh
+ create mode 100644 tools/testing/selftests/bpf/progs/trigger_bench.c
 
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
 ts/bpf/Makefile
-index 289fffbf975e..29a02abf81a3 100644
+index 29a02abf81a3..45c68111fb48 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -409,10 +409,12 @@ $(OUTPUT)/test_cpp: test_cpp.cpp $(OUTPUT)/test_cor=
-e_extern.skel.h $(BPFOBJ)
- $(OUTPUT)/bench_%.o: benchs/bench_%.c bench.h
+@@ -410,11 +410,13 @@ $(OUTPUT)/bench_%.o: benchs/bench_%.c bench.h
  	$(call msg,CC,,$@)
  	$(CC) $(CFLAGS) -c $(filter %.c,$^) $(LDLIBS) -o $@
-+$(OUTPUT)/bench_rename.o: $(OUTPUT)/test_overhead.skel.h
+ $(OUTPUT)/bench_rename.o: $(OUTPUT)/test_overhead.skel.h
++$(OUTPUT)/bench_trigger.o: $(OUTPUT)/trigger_bench.skel.h
  $(OUTPUT)/bench.o: bench.h
  $(OUTPUT)/bench: LDLIBS +=3D -lm
  $(OUTPUT)/bench: $(OUTPUT)/bench.o \
--		 $(OUTPUT)/bench_count.o
-+		 $(OUTPUT)/bench_count.o \
-+		 $(OUTPUT)/bench_rename.o
+ 		 $(OUTPUT)/bench_count.o \
+-		 $(OUTPUT)/bench_rename.o
++		 $(OUTPUT)/bench_rename.o \
++		 $(OUTPUT)/bench_trigger.o
  	$(call msg,BINARY,,$@)
  	$(CC) $(LDFLAGS) -o $@ $(filter %.a %.o,$^) $(LDLIBS)
 =20
 diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftest=
 s/bpf/bench.c
-index dddc97cd4db6..650697df47af 100644
+index 650697df47af..03ce436fee3e 100644
 --- a/tools/testing/selftests/bpf/bench.c
 +++ b/tools/testing/selftests/bpf/bench.c
-@@ -254,10 +254,24 @@ const struct bench *bench =3D NULL;
-=20
- extern const struct bench bench_count_global;
- extern const struct bench bench_count_local;
-+extern const struct bench bench_rename_base;
-+extern const struct bench bench_rename_kprobe;
-+extern const struct bench bench_rename_kretprobe;
-+extern const struct bench bench_rename_rawtp;
-+extern const struct bench bench_rename_fentry;
-+extern const struct bench bench_rename_fexit;
-+extern const struct bench bench_rename_fmodret;
+@@ -261,6 +261,12 @@ extern const struct bench bench_rename_rawtp;
+ extern const struct bench bench_rename_fentry;
+ extern const struct bench bench_rename_fexit;
+ extern const struct bench bench_rename_fmodret;
++extern const struct bench bench_trig_base;
++extern const struct bench bench_trig_tp;
++extern const struct bench bench_trig_rawtp;
++extern const struct bench bench_trig_kprobe;
++extern const struct bench bench_trig_fentry;
++extern const struct bench bench_trig_fmodret;
 =20
  static const struct bench *benchs[] =3D {
  	&bench_count_global,
- 	&bench_count_local,
-+	&bench_rename_base,
-+	&bench_rename_kprobe,
-+	&bench_rename_kretprobe,
-+	&bench_rename_rawtp,
-+	&bench_rename_fentry,
-+	&bench_rename_fexit,
-+	&bench_rename_fmodret,
+@@ -272,6 +278,12 @@ static const struct bench *benchs[] =3D {
+ 	&bench_rename_fentry,
+ 	&bench_rename_fexit,
+ 	&bench_rename_fmodret,
++	&bench_trig_base,
++	&bench_trig_tp,
++	&bench_trig_rawtp,
++	&bench_trig_kprobe,
++	&bench_trig_fentry,
++	&bench_trig_fmodret,
  };
 =20
  static void setup_benchmark()
-diff --git a/tools/testing/selftests/bpf/benchs/bench_rename.c b/tools/te=
-sting/selftests/bpf/benchs/bench_rename.c
+diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/t=
+esting/selftests/bpf/benchs/bench_trigger.c
 new file mode 100644
-index 000000000000..e74cff40f4fe
+index 000000000000..49c22832f216
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/benchs/bench_rename.c
-@@ -0,0 +1,195 @@
++++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
+@@ -0,0 +1,167 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2020 Facebook */
-+#include <fcntl.h>
 +#include "bench.h"
-+#include "test_overhead.skel.h"
++#include "trigger_bench.skel.h"
 +
 +/* BPF triggering benchmarks */
-+static struct ctx {
-+	struct test_overhead *skel;
-+	struct counter hits;
-+	int fd;
++static struct trigger_ctx {
++	struct trigger_bench *skel;
 +} ctx;
 +
-+static void validate()
++static struct counter base_hits;
++
++static void trigger_validate()
 +{
-+	if (env.producer_cnt !=3D 1) {
-+		fprintf(stderr, "benchmark doesn't support multi-producer!\n");
-+		exit(1);
-+	}
 +	if (env.consumer_cnt !=3D 1) {
 +		fprintf(stderr, "benchmark doesn't support multi-consumer!\n");
 +		exit(1);
 +	}
 +}
 +
-+static void *producer(void *input)
++static void *trigger_base_producer(void *input)
 +{
-+	char buf[] =3D "test_overhead";
-+	int err;
-+
 +	while (true) {
-+		err =3D write(ctx.fd, buf, sizeof(buf));
-+		if (err < 0) {
-+			fprintf(stderr, "write failed\n");
-+			exit(1);
-+		}
-+		atomic_inc(&ctx.hits.value);
++		(void)syscall(__NR_getpgid);
++		atomic_inc(&base_hits.value);
 +	}
++	return NULL;
 +}
 +
-+static void measure(struct bench_res *res)
++static void trigger_base_measure(struct bench_res *res)
 +{
-+	res->hits =3D atomic_swap(&ctx.hits.value, 0);
++	res->hits =3D atomic_swap(&base_hits.value, 0);
++}
++
++static void *trigger_producer(void *input)
++{
++	while (true)
++		(void)syscall(__NR_getpgid);
++	return NULL;
++}
++
++static void trigger_measure(struct bench_res *res)
++{
++	res->hits =3D atomic_swap(&ctx.skel->bss->hits, 0);
 +}
 +
 +static void setup_ctx()
 +{
 +	setup_libbpf();
 +
-+	ctx.skel =3D test_overhead__open_and_load();
++	ctx.skel =3D trigger_bench__open_and_load();
 +	if (!ctx.skel) {
 +		fprintf(stderr, "failed to open skeleton\n");
-+		exit(1);
-+	}
-+
-+	ctx.fd =3D open("/proc/self/comm", O_WRONLY|O_TRUNC);
-+	if (ctx.fd < 0) {
-+		fprintf(stderr, "failed to open /proc/self/comm: %d\n", -errno);
 +		exit(1);
 +	}
 +}
@@ -238,204 +239,176 @@ index 000000000000..e74cff40f4fe
 +	}
 +}
 +
-+static void setup_base()
++static void trigger_tp_setup()
 +{
 +	setup_ctx();
++	attach_bpf(ctx.skel->progs.bench_trigger_tp);
 +}
 +
-+static void setup_kprobe()
++static void trigger_rawtp_setup()
 +{
 +	setup_ctx();
-+	attach_bpf(ctx.skel->progs.prog1);
++	attach_bpf(ctx.skel->progs.bench_trigger_raw_tp);
 +}
 +
-+static void setup_kretprobe()
++static void trigger_kprobe_setup()
 +{
 +	setup_ctx();
-+	attach_bpf(ctx.skel->progs.prog2);
++	attach_bpf(ctx.skel->progs.bench_trigger_kprobe);
 +}
 +
-+static void setup_rawtp()
++static void trigger_fentry_setup()
 +{
 +	setup_ctx();
-+	attach_bpf(ctx.skel->progs.prog3);
++	attach_bpf(ctx.skel->progs.bench_trigger_fentry);
 +}
 +
-+static void setup_fentry()
++static void trigger_fmodret_setup()
 +{
 +	setup_ctx();
-+	attach_bpf(ctx.skel->progs.prog4);
++	attach_bpf(ctx.skel->progs.bench_trigger_fmodret);
 +}
 +
-+static void setup_fexit()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.prog5);
-+}
-+
-+static void setup_fmodret()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.prog6);
-+}
-+
-+static void *consumer(void *input)
++static void *trigger_consumer(void *input)
 +{
 +	return NULL;
 +}
 +
-+const struct bench bench_rename_base =3D {
-+	.name =3D "rename-base",
-+	.validate =3D validate,
-+	.setup =3D setup_base,
-+	.producer_thread =3D producer,
-+	.consumer_thread =3D consumer,
-+	.measure =3D measure,
++const struct bench bench_trig_base =3D {
++	.name =3D "trig-base",
++	.validate =3D trigger_validate,
++	.producer_thread =3D trigger_base_producer,
++	.consumer_thread =3D trigger_consumer,
++	.measure =3D trigger_base_measure,
 +	.report_progress =3D hits_drops_report_progress,
 +	.report_final =3D hits_drops_report_final,
 +};
 +
-+const struct bench bench_rename_kprobe =3D {
-+	.name =3D "rename-kprobe",
-+	.validate =3D validate,
-+	.setup =3D setup_kprobe,
-+	.producer_thread =3D producer,
-+	.consumer_thread =3D consumer,
-+	.measure =3D measure,
++const struct bench bench_trig_tp =3D {
++	.name =3D "trig-tp",
++	.validate =3D trigger_validate,
++	.setup =3D trigger_tp_setup,
++	.producer_thread =3D trigger_producer,
++	.consumer_thread =3D trigger_consumer,
++	.measure =3D trigger_measure,
 +	.report_progress =3D hits_drops_report_progress,
 +	.report_final =3D hits_drops_report_final,
 +};
 +
-+const struct bench bench_rename_kretprobe =3D {
-+	.name =3D "rename-kretprobe",
-+	.validate =3D validate,
-+	.setup =3D setup_kretprobe,
-+	.producer_thread =3D producer,
-+	.consumer_thread =3D consumer,
-+	.measure =3D measure,
++const struct bench bench_trig_rawtp =3D {
++	.name =3D "trig-rawtp",
++	.validate =3D trigger_validate,
++	.setup =3D trigger_rawtp_setup,
++	.producer_thread =3D trigger_producer,
++	.consumer_thread =3D trigger_consumer,
++	.measure =3D trigger_measure,
 +	.report_progress =3D hits_drops_report_progress,
 +	.report_final =3D hits_drops_report_final,
 +};
 +
-+const struct bench bench_rename_rawtp =3D {
-+	.name =3D "rename-rawtp",
-+	.validate =3D validate,
-+	.setup =3D setup_rawtp,
-+	.producer_thread =3D producer,
-+	.consumer_thread =3D consumer,
-+	.measure =3D measure,
++const struct bench bench_trig_kprobe =3D {
++	.name =3D "trig-kprobe",
++	.validate =3D trigger_validate,
++	.setup =3D trigger_kprobe_setup,
++	.producer_thread =3D trigger_producer,
++	.consumer_thread =3D trigger_consumer,
++	.measure =3D trigger_measure,
 +	.report_progress =3D hits_drops_report_progress,
 +	.report_final =3D hits_drops_report_final,
 +};
 +
-+const struct bench bench_rename_fentry =3D {
-+	.name =3D "rename-fentry",
-+	.validate =3D validate,
-+	.setup =3D setup_fentry,
-+	.producer_thread =3D producer,
-+	.consumer_thread =3D consumer,
-+	.measure =3D measure,
++const struct bench bench_trig_fentry =3D {
++	.name =3D "trig-fentry",
++	.validate =3D trigger_validate,
++	.setup =3D trigger_fentry_setup,
++	.producer_thread =3D trigger_producer,
++	.consumer_thread =3D trigger_consumer,
++	.measure =3D trigger_measure,
 +	.report_progress =3D hits_drops_report_progress,
 +	.report_final =3D hits_drops_report_final,
 +};
 +
-+const struct bench bench_rename_fexit =3D {
-+	.name =3D "rename-fexit",
-+	.validate =3D validate,
-+	.setup =3D setup_fexit,
-+	.producer_thread =3D producer,
-+	.consumer_thread =3D consumer,
-+	.measure =3D measure,
++const struct bench bench_trig_fmodret =3D {
++	.name =3D "trig-fmodret",
++	.validate =3D trigger_validate,
++	.setup =3D trigger_fmodret_setup,
++	.producer_thread =3D trigger_producer,
++	.consumer_thread =3D trigger_consumer,
++	.measure =3D trigger_measure,
 +	.report_progress =3D hits_drops_report_progress,
 +	.report_final =3D hits_drops_report_final,
 +};
-+
-+const struct bench bench_rename_fmodret =3D {
-+	.name =3D "rename-fmodret",
-+	.validate =3D validate,
-+	.setup =3D setup_fmodret,
-+	.producer_thread =3D producer,
-+	.consumer_thread =3D consumer,
-+	.measure =3D measure,
-+	.report_progress =3D hits_drops_report_progress,
-+	.report_final =3D hits_drops_report_final,
-+};
-diff --git a/tools/testing/selftests/bpf/benchs/run_bench_rename.sh b/too=
-ls/testing/selftests/bpf/benchs/run_bench_rename.sh
+diff --git a/tools/testing/selftests/bpf/benchs/run_bench_trigger.sh b/to=
+ols/testing/selftests/bpf/benchs/run_bench_trigger.sh
 new file mode 100755
-index 000000000000..16f774b1cdbe
+index 000000000000..78e83f243294
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/benchs/run_bench_rename.sh
++++ b/tools/testing/selftests/bpf/benchs/run_bench_trigger.sh
 @@ -0,0 +1,9 @@
 +#!/bin/bash
 +
 +set -eufo pipefail
 +
-+for i in base kprobe kretprobe rawtp fentry fexit fmodret
++for i in base tp rawtp kprobe fentry fmodret
 +do
-+	summary=3D$(sudo ./bench -w2 -d5 -a rename-$i | tail -n1 | cut -d'(' -f=
-1 | cut -d' ' -f3-)
++	summary=3D$(sudo ./bench -w2 -d5 -a trig-$i | tail -n1 | cut -d'(' -f1 =
+| cut -d' ' -f3-)
 +	printf "%-10s: %s\n" $i "$summary"
 +done
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_overhead.c b/too=
-ls/testing/selftests/bpf/prog_tests/test_overhead.c
-index 465b371a561d..2702df2b2343 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_overhead.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_overhead.c
-@@ -61,9 +61,10 @@ void test_test_overhead(void)
- 	const char *raw_tp_name =3D "raw_tp/task_rename";
- 	const char *fentry_name =3D "fentry/__set_task_comm";
- 	const char *fexit_name =3D "fexit/__set_task_comm";
-+	const char *fmodret_name =3D "fmod_ret/__set_task_comm";
- 	const char *kprobe_func =3D "__set_task_comm";
- 	struct bpf_program *kprobe_prog, *kretprobe_prog, *raw_tp_prog;
--	struct bpf_program *fentry_prog, *fexit_prog;
-+	struct bpf_program *fentry_prog, *fexit_prog, *fmodret_prog;
- 	struct bpf_object *obj;
- 	struct bpf_link *link;
- 	int err, duration =3D 0;
-@@ -96,6 +97,10 @@ void test_test_overhead(void)
- 	if (CHECK(!fexit_prog, "find_probe",
- 		  "prog '%s' not found\n", fexit_name))
- 		goto cleanup;
-+	fmodret_prog =3D bpf_object__find_program_by_title(obj, fmodret_name);
-+	if (CHECK(!fmodret_prog, "find_probe",
-+		  "prog '%s' not found\n", fmodret_name))
-+		goto cleanup;
-=20
- 	err =3D bpf_object__load(obj);
- 	if (CHECK(err, "obj_load", "err %d\n", err))
-@@ -142,6 +147,13 @@ void test_test_overhead(void)
- 		goto cleanup;
- 	test_run("fexit");
- 	bpf_link__destroy(link);
+diff --git a/tools/testing/selftests/bpf/progs/trigger_bench.c b/tools/te=
+sting/selftests/bpf/progs/trigger_bench.c
+new file mode 100644
+index 000000000000..8b36b6640e7e
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/trigger_bench.c
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0
++// Copyright (c) 2020 Facebook
 +
-+	/* attach fmod_ret */
-+	link =3D bpf_program__attach_trace(fmodret_prog);
-+	if (CHECK(IS_ERR(link), "attach fmod_ret", "err %ld\n", PTR_ERR(link)))
-+		goto cleanup;
-+	test_run("fmod_ret");
-+	bpf_link__destroy(link);
- cleanup:
- 	prctl(PR_SET_NAME, comm, 0L, 0L, 0L);
- 	bpf_object__close(obj);
-diff --git a/tools/testing/selftests/bpf/progs/test_overhead.c b/tools/te=
-sting/selftests/bpf/progs/test_overhead.c
-index 56a50b25cd33..450bf819beac 100644
---- a/tools/testing/selftests/bpf/progs/test_overhead.c
-+++ b/tools/testing/selftests/bpf/progs/test_overhead.c
-@@ -39,4 +39,10 @@ int BPF_PROG(prog5, struct task_struct *tsk, const cha=
-r *buf, bool exec)
- 	return !tsk;
- }
-=20
-+SEC("fmod_ret/__set_task_comm")
-+int BPF_PROG(prog6, struct task_struct *tsk, const char *buf, bool exec)
++#include <linux/bpf.h>
++#include <asm/unistd.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") =3D "GPL";
++
++long hits =3D 0;
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int bench_trigger_tp(void *ctx)
 +{
-+	return !tsk;
++	__sync_add_and_fetch(&hits, 1);
++	return 0;
 +}
 +
- char _license[] SEC("license") =3D "GPL";
++SEC("raw_tp/sys_enter")
++int BPF_PROG(bench_trigger_raw_tp, struct pt_regs *regs, long id)
++{
++	if (id =3D=3D __NR_getpgid)
++		__sync_add_and_fetch(&hits, 1);
++	return 0;
++}
++
++SEC("kprobe/__x64_sys_getpgid")
++int bench_trigger_kprobe(void *ctx)
++{
++	__sync_add_and_fetch(&hits, 1);
++	return 0;
++}
++
++SEC("fentry/__x64_sys_getpgid")
++int bench_trigger_fentry(void *ctx)
++{
++	__sync_add_and_fetch(&hits, 1);
++	return 0;
++}
++
++SEC("fmod_ret/__x64_sys_getpgid")
++int bench_trigger_fmodret(void *ctx)
++{
++	__sync_add_and_fetch(&hits, 1);
++	return -22;
++}
 --=20
 2.24.1
 
