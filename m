@@ -2,70 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 287641CB26F
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 17:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA8011CB2A1
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 17:16:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727861AbgEHPEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 11:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726767AbgEHPEA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 11:04:00 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92148C061A0C
-        for <netdev@vger.kernel.org>; Fri,  8 May 2020 08:04:00 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id g16so705464qtp.11
-        for <netdev@vger.kernel.org>; Fri, 08 May 2020 08:04:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QeoWvumS9qi1Gy3H41jW6MV5mxSMg6K3dWIQfbfT1Yc=;
-        b=Fpb39XBCNv95qUlSExlDtCMcEDHwu4OoU0W2XMmwNNeh7IxItgQjwUkeAKE/aOrub8
-         IBp59G59+EeX2j0ZZsapFOh2PiWELw7GztOL4h4PXbPigjMbWTtcBLphDucK6f6VR7c4
-         gZKAhrR7GsNHUGrN7QjbTs8zRdnUslwk6mGVJvIoWEBiZ4LfKt8K2SCx8bXxs5e9V6If
-         Mjmbk8Cga80boOEj+6KfVG8iol3mpanjUu9mxBVWmkJqgT5JMu1e3Kki2nTdo04QtRlt
-         eXSkPuSOF5Oj2PkmgNN5ncXPuSSkpCmdsMaTDsJ9iAGFYHhiirixCb8S9Ps0K4Yf0GYR
-         W35Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QeoWvumS9qi1Gy3H41jW6MV5mxSMg6K3dWIQfbfT1Yc=;
-        b=fdVqChDyBORAt2eyjFxvQQZfwS08z6jcd85Ho+eXDsdLUAhmOazM8AEYWE3aMoROOp
-         Ks4CVU9a72N6nHi+rMr2NcCeN+z2PfS8xBOUe0/v5PU+KOMtzMYbWTdvmCCi1bYemi0w
-         XpynGvtj11Nn0dSSRqKbjL3c/VOwjBHdEdhjpzlVu7RV9aN7Wj4O4sq5uN8odIvzAbHQ
-         mXJFhvYcfunHKL/dCZyaD2JW9k/8bW93FS4f56MGvprOqOQsclWf3NSaLtNN7Qy8duED
-         v1lt/kOvDoeJ+CiqWnIGP+nkVVXEdT/S36GDkUqHHbfECP17j1FiGX+yKAcx3mH9Lb1f
-         5Ncw==
-X-Gm-Message-State: AGi0Pua80M60FCs5gI+3x/G1A66LP/ghL7jLbjtVXtga/g+IdzmMjewJ
-        aBm2UcpBqsixRwBPhIuzMkM=
-X-Google-Smtp-Source: APiQypJdCPhMBkOJ8TR22e30bgrMozKTo4YNjjnxgaayI4ZdVUFtvIkwPvfuhWcZlYoio4K1RDxU4g==
-X-Received: by 2002:ac8:2f15:: with SMTP id j21mr3612458qta.259.1588950239851;
-        Fri, 08 May 2020 08:03:59 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c09e:cbdc:b4a2:7243? ([2601:282:803:7700:c09e:cbdc:b4a2:7243])
-        by smtp.googlemail.com with ESMTPSA id t15sm1669550qtc.64.2020.05.08.08.03.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 May 2020 08:03:59 -0700 (PDT)
-Subject: Re: [PATCH net-next] ipv6: use DST_NOCOUNT in ip6_rt_pcpu_alloc()
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        David Ahern <dsahern@kernel.org>, Wei Wang <weiwan@google.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>
-References: <20200508143414.42022-1-edumazet@google.com>
- <362c2030-6e7f-512d-4285-d904b4a433b6@gmail.com>
- <a5f381b0-e2bf-05f9-a849-d9d45aa38212@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <92c6ab11-3022-a01a-95db-13f6da8637cc@gmail.com>
-Date:   Fri, 8 May 2020 09:03:57 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1726897AbgEHPQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 11:16:00 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:32910 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726627AbgEHPQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 11:16:00 -0400
+X-Greylist: delayed 370 seconds by postgrey-1.27 at vger.kernel.org; Fri, 08 May 2020 11:15:59 EDT
+Received: from PC192.168.2.51 (p200300E9D7489C6046CAB6DD825DF9A4.dip0.t-ipconnect.de [IPv6:2003:e9:d748:9c60:46ca:b6dd:825d:f9a4])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 0789FC06E3;
+        Fri,  8 May 2020 17:09:44 +0200 (CEST)
+Subject: Re: [PATCH net-next] ieee802154: 6lowpan: remove unnecessary
+ comparison
+To:     Yang Yingliang <yangyingliang@huawei.com>, alex.aring@gmail.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-wpan@vger.kernel.org
+References: <1588909928-58230-1-git-send-email-yangyingliang@huawei.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <e9ce1e47-79aa-aca2-e182-b9063d17fad8@datenfreihafen.org>
+Date:   Fri, 8 May 2020 17:09:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <a5f381b0-e2bf-05f9-a849-d9d45aa38212@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1588909928-58230-1-git-send-email-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -73,23 +40,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/8/20 8:43 AM, Eric Dumazet wrote:
-> This patch can be backported without any pains ;)
+Hello.
 
-sure, but you tagged it as net-next, not net.
-
+On 08.05.20 05:52, Yang Yingliang wrote:
+> The type of dispatch is u8 which is always '<=' 0xff, so the
+> dispatch <= 0xff is always true, we can remove this comparison.
 > 
-> Getting rid of limits, even for exceptions ?
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>   net/ieee802154/6lowpan/rx.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ieee802154/6lowpan/rx.c b/net/ieee802154/6lowpan/rx.c
+> index ee17938..b34d050 100644
+> --- a/net/ieee802154/6lowpan/rx.c
+> +++ b/net/ieee802154/6lowpan/rx.c
+> @@ -240,7 +240,7 @@ static inline bool lowpan_is_reserved(u8 dispatch)
+>   	return ((dispatch >= 0x44 && dispatch <= 0x4F) ||
+>   		(dispatch >= 0x51 && dispatch <= 0x5F) ||
+>   		(dispatch >= 0xc8 && dispatch <= 0xdf) ||
+> -		(dispatch >= 0xe8 && dispatch <= 0xff));
+> +		dispatch >= 0xe8);
+>   }
+>   
+>   /* lowpan_rx_h_check checks on generic 6LoWPAN requirements
+> 
 
-Running through where dst entries are created in IPv6:
-1. pcpu cache
-2. uncached_list
-3. exceptions like pmtu and redirect
+This looks good to me. Thanks for fixing this.
 
-All of those match IPv4 and as I recall IPv4 does not have any limits,
-even on exceptions and redirect. If IPv4 does not have limits, why
-should IPv6? And if the argument is uncontrolled memory consumption, is
-there an expectation that IPv6 generates more exceptions?
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 
-My argument really just boils down to consistency between them. IPv4
-does not use DST_NOCOUNT, so why put that burden on v6?
+Dave, can you apply this directly to your net tree? I have no other 
+ieee802154 fixes pending to fill a pull request.
+
+regards
+Stefan Schmidt
