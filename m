@@ -2,177 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93A141CB4F7
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 18:27:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 127DD1CB502
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 18:32:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727944AbgEHQ1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 12:27:13 -0400
-Received: from lists.nic.cz ([217.31.204.67]:37406 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727933AbgEHQ1M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 12:27:12 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id 5C1ED13FB54;
-        Fri,  8 May 2020 18:27:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1588955227; bh=suGhchY1ulLQY4RmZQ2UnoGzrm4wLfhZyj9JhNM/N+U=;
-        h=Date:From:To;
-        b=qvenYKtuXZXy/Q8B6XFT3pX7s1Hw3ctTE4+kniO0mW3jyDV/9e1oC6TrWXfMEl/G0
-         bQRXi00s6vrdFiDRrpi0jYNoZK/ESoh5RBTQtTW7CpYB8wbwQPJ1a+GdeAn2J4zJ96
-         /RYXdyR2QON/9SENASmnODd1rU5W+eEgDn/HXlrM=
-Date:   Fri, 8 May 2020 18:27:06 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: sfp: add some quirks for FreeTel direct
- attach modules
-Message-ID: <20200508182706.06394c88@nic.cz>
-In-Reply-To: <20200508152844.GV1551@shell.armlinux.org.uk>
-References: <20200507132135.316-1-marek.behun@nic.cz>
-        <20200508152844.GV1551@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726891AbgEHQcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 12:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726767AbgEHQcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 12:32:09 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688DFC061A0C
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 09:32:09 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id h26so1898176lfg.6
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 09:32:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+chJwT9WOsYaCIfHDXL7LdOBvpGtCOGdtDOQ6Xwe5qM=;
+        b=dOqcUoOz0+wGOjYc2mjQlxFLuEMWdU8GlxZJvJ7sqJW6u56dKqsVCD2YySZAbTqm3G
+         l+uEzTkW+4i8Wxc4vHi1u1vQ5/LI1ZeKr/0m24OWc9q0JDcy+ZIvyFh9fCUo4ZzcVR6/
+         WbMML4Kj0rsD4oayo4Vvf4NPmSHjX6dJcKialHTe6cEZGS2RXdyrrwFG/qv29cLJ+CYM
+         IvlSYCdRqOTt06S2cfqoP6AoulqJ2IEMciPQgqVjdM2mpGa+2C6+3mrGf5kk0X0rH8cZ
+         16xYUg6jpuP5Hxx2CDqYP10ehRHDGfgpIeiaS/iXXqp9lFyuVyQA1VChRzLyOSEeNzaF
+         MzqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+chJwT9WOsYaCIfHDXL7LdOBvpGtCOGdtDOQ6Xwe5qM=;
+        b=TzIOIsMNWN3jhlX7scieBfsStOZpOQDFyRDBqkS2QKuTZXaZiW16GWzojn/GrdCjE+
+         8HqE4w8oHBooMfOOF/CW/zlJc2nio+R6ZPkO8Er3U1sWQsLIXj12HFumpZxX8Rk1tjD+
+         DSkg9DkI0rLlimuWZwpC2ssergy01wlZgwuAOnZd8ZhDS7OdVqU96DLSjio0rs8QcK2v
+         zi0tHkyp2J8SFKjORLfUfKidSCN9z7lcxrdcqG968bLGySH8Tt2PSn0RINGRAT/d/XQ3
+         bWmJjO2ZZf7eha6ptkkqcwSM9z5TK9pF4nKaGiRfOI0L7tJFi3Wp0yAcD10Khxvm0UW7
+         Gp8A==
+X-Gm-Message-State: AOAM531qTApeYW+qxqpg5q4I62rGp6fkvgHs7xkuaAKhtgAsmFMEfYUH
+        aSSlqhJLQU9DF1W5wQT31sc0oqC3mjaiIGy3yHxwuDuD
+X-Google-Smtp-Source: ABdhPJz2KPE3os8OikKA4HP+YvI8Rk+mw/dfwoK+OoW7Fgc+/UEhJKxPVRuRoqU2UXUZigScjZxr2EDGAeRMK6xC0wQ=
+X-Received: by 2002:ac2:5215:: with SMTP id a21mr2414917lfl.13.1588955527500;
+ Fri, 08 May 2020 09:32:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20200508143414.42022-1-edumazet@google.com>
+In-Reply-To: <20200508143414.42022-1-edumazet@google.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Fri, 8 May 2020 09:31:55 -0700
+Message-ID: <CAEA6p_DvwnM+sFqmDN04_QSMz8qHPZJb-PbG0C4WP=Zg0BU2Kw@mail.gmail.com>
+Subject: Re: [PATCH net-next] ipv6: use DST_NOCOUNT in ip6_rt_pcpu_alloc()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Ahern <dsahern@kernel.org>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
-        USER_IN_WHITELIST shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 May 2020 16:28:44 +0100
-Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+On Fri, May 8, 2020 at 7:34 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> We currently have to adjust ipv6 route gc_thresh/max_size depending
+> on number of cpus on a server, this makes very little sense.
+>
+> If the kernels sets /proc/sys/net/ipv6/route/gc_thresh to 1024
+> and /proc/sys/net/ipv6/route/max_size to 4096, then we better
+> not track the percpu dst that our implementation uses.
+>
+> Only routes not added (directly or indirectly) by the admin
+> should be tracked and limited.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: Wei Wang <weiwan@google.com>
+> Cc: Maciej =C5=BBenczykowski <maze@google.com>
+> ---
 
-> On Thu, May 07, 2020 at 03:21:35PM +0200, Marek Beh=C3=BAn wrote:
-> > FreeTel P.C30.2 and P.C30.3 may fail to report anything useful from
-> > their EEPROM. They report correct nominal bitrate of 10300 MBd, but do
-> > not report sfp_ct_passive nor sfp_ct_active in their ERPROM.
-> >=20
-> > These modules can also operate at 1000baseX and 2500baseX.
-> >=20
-> > Signed-off-by: Marek Beh=C3=BAn <marek.behun@nic.cz>
-> > Cc: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  drivers/net/phy/sfp-bus.c | 20 ++++++++++++++++++++
-> >  1 file changed, 20 insertions(+)
-> >=20
-> > diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-> > index 6900c68260e0..f021709bedcc 100644
-> > --- a/drivers/net/phy/sfp-bus.c
-> > +++ b/drivers/net/phy/sfp-bus.c
-> > @@ -44,6 +44,14 @@ static void sfp_quirk_2500basex(const struct sfp_eep=
-rom_id *id,
-> >  	phylink_set(modes, 2500baseX_Full);
-> >  }
-> > =20
-> > +static void sfp_quirk_direct_attach_10g(const struct sfp_eeprom_id *id,
-> > +					unsigned long *modes)
-> > +{
-> > +	phylink_set(modes, 10000baseCR_Full);
-> > +	phylink_set(modes, 2500baseX_Full);
-> > +	phylink_set(modes, 1000baseX_Full);
-> > +}
-> > +
-> >  static const struct sfp_quirk sfp_quirks[] =3D {
-> >  	{
-> >  		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
-> > @@ -63,6 +71,18 @@ static const struct sfp_quirk sfp_quirks[] =3D {
-> >  		.vendor =3D "HUAWEI",
-> >  		.part =3D "MA5671A",
-> >  		.modes =3D sfp_quirk_2500basex,
-> > +	}, {
-> > +		// FreeTel P.C30.2 is a SFP+ direct attach that can operate at
-> > +		// at 1000baseX, 2500baseX and 10000baseCR, but may report none
-> > +		// of these in their EEPROM
-> > +		.vendor =3D "FreeTel",
-> > +		.part =3D "P.C30.2",
-> > +		.modes =3D sfp_quirk_direct_attach_10g,
-> > +	}, {
-> > +		// same as previous
-> > +		.vendor =3D "FreeTel",
-> > +		.part =3D "P.C30.3",
-> > +		.modes =3D sfp_quirk_direct_attach_10g, =20
->=20
-> Looking at the EEPROM capabilities, it seems that these modules give
-> either:
->=20
-> Transceiver codes     : 0x01 0x00 0x00 0x00 0x00 0x04 0x80 0x00 0x00
-> Transceiver type      : Infiniband: 1X Copper Passive
-> Transceiver type      : Passive Cable
-> Transceiver type      : FC: Twin Axial Pair (TW)
-> Encoding              : 0x06 (64B/66B)
-> BR, Nominal           : 10300MBd
-> Passive Cu cmplnce.   : 0x01 (SFF-8431 appendix E) [SFF-8472 rev10.4 only]
-> BR margin, max        : 0%
-> BR margin, min        : 0%
->=20
-> or:
->=20
-> Transceiver codes     : 0x00 0x00 0x00 0x00 0x00 0x04 0x80 0x00 0x00
-> Transceiver type      : Passive Cable
-> Transceiver type      : FC: Twin Axial Pair (TW)
-> Encoding              : 0x06 (64B/66B)
-> BR, Nominal           : 10300MBd
-> Passive Cu cmplnce.   : 0x01 (SFF-8431 appendix E) [SFF-8472 rev10.4 only]
-> BR margin, max        : 0%
-> BR margin, min        : 0%
->=20
-> These give ethtool capability mask of 000,00000600,0000e040, which
-> is:
->=20
-> 	2500baseX (bit 15)
-> 	1000baseX (bit 41)
-> 	10000baseCR (bit 42)
->=20
-> 10000baseCR, 2500baseX and 1000baseX comes from:
->=20
->         if ((id->base.sfp_ct_passive || id->base.sfp_ct_active) && br_nom=
-) {
->                 /* This may look odd, but some manufacturers use 12000MBd=
- */
->                 if (br_min <=3D 12000 && br_max >=3D 10300)
->                         phylink_set(modes, 10000baseCR_Full);
->                 if (br_min <=3D 3200 && br_max >=3D 3100)
->                         phylink_set(modes, 2500baseX_Full);
->                 if (br_min <=3D 1300 && br_max >=3D 1200)
->                         phylink_set(modes, 1000baseX_Full);
->=20
-> since id->base.sfp_ct_passive is true, and br_nom =3D br_max =3D 10300 and
-> br_min =3D 0.
->=20
-> 10000baseCR will also come from:
->=20
->         if (id->base.sfp_ct_passive) {
->                 if (id->base.passive.sff8431_app_e)
->                         phylink_set(modes, 10000baseCR_Full);
->         }
->=20
-> You claimed in your patch description that sfp_ct_passive is not set,
-> but the EEPROM dumps contain:
->=20
-> 	Transceiver type      : Passive Cable
->=20
-> which is correctly parsed by the kernel.
->=20
-> So, I'm rather confused, and I don't see why this patch is needed.
->=20
 
-Russell,
+Acked-by: Wei Wang <weiwan@google.com>
 
-something is wrong here, and it is my bad. I hope I didn't mix
-the EEPROM images from when I was playing with the contents, but it
-seems possible now :( I probably sent you modified images and lost the
-original ones.
-
-The thing I know for sure is that it did not work when I got the
-cables and also that they had different contents inside - ie at least
-one side of one cable did not report ct_passive nor ct_active. And I
-think that they reported different things on each side.
-
-I will try to get another such cable and return to this.
-
-Marek
+>
+>  net/ipv6/route.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index a9072dba00f4fb0b61bce1fc0f44a3a81ba702fa..4292653af533bb641ae8571ff=
+fe45b39327d0380 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -1377,7 +1377,7 @@ static struct rt6_info *ip6_rt_pcpu_alloc(const str=
+uct fib6_result *res)
+>
+>         rcu_read_lock();
+>         dev =3D ip6_rt_get_dev_rcu(res);
+> -       pcpu_rt =3D ip6_dst_alloc(dev_net(dev), dev, flags);
+> +       pcpu_rt =3D ip6_dst_alloc(dev_net(dev), dev, flags | DST_NOCOUNT)=
+;
+>         rcu_read_unlock();
+>         if (!pcpu_rt) {
+>                 fib6_info_release(f6i);
+> --
+> 2.26.2.645.ge9eca65c58-goog
+>
