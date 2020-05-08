@@ -2,121 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28D131CB612
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 19:33:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 478951CB61D
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 19:34:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727898AbgEHRcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 13:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726746AbgEHRcx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 13:32:53 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62700C061A0C;
-        Fri,  8 May 2020 10:32:53 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id h26so1926535qtu.8;
-        Fri, 08 May 2020 10:32:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8u1vbu5bJ69YihL8GWipXODDQVOvMStlxTqzIrRkPUQ=;
-        b=CevGhA3drB9rx9GAhf7Jd40EnNtr3XglCd18jTPTpJsgn56s0Q9ZugmY0aQqMnSGTH
-         7aagHQfF3X78TVXApqMaxjd66mhtOXvmL/4HYUWJW/adXA8e8n5GfPBPmQNAL19OfDE5
-         LKmSVl8km7PxkynymVQEPV4lk577a7G6pryLd8OTLGPtsbCEaAV29/jnVDoGOchK+oXF
-         ADZkHhl+hkYYLZCeFVTd3IXBBgi7Vcs9qr0dwPmfQ9/ULwOPvDSa/PgxDmkfuyvSzJ6H
-         sC+yukRWl+pPdTIl3k+mflFAJ1SndgezVfhRdzQGFW2qCsOZjs94dn27Zb6+yY1dofoM
-         xFPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8u1vbu5bJ69YihL8GWipXODDQVOvMStlxTqzIrRkPUQ=;
-        b=RN422PLdjE8go6AuR72FJuTgiBzmtnpYBWzaGZYP3BNaZGF4ofuRufgeE4QXVRyFXS
-         wT6Uqp4sZb8OzRfgzSlVEHpCPSzJHK4+SX0n2pLrZTG7qjNKk0W3Rvri0CJYSilJXc/H
-         4kL8nlGnSVgj6O0wEhLFBWL3sMvvQtsNBfHfbyLPqFUpfCXSsojm9Bi/u2vKBWbxJyUZ
-         5Rbzwv+mK39nx495fsByG58gzAwTOXGSK9UwSEBZJuJ1VYo5iWkDVYK3k/kBBMfEoXM6
-         eR17In0P35gkRK9xxc8aYddKHScusjFhJYNdGmUDIIBnISNwRrS1TqFdXqG+HzTdAwDP
-         E0kA==
-X-Gm-Message-State: AGi0PuZ/W84N46cblyjD6WQwXcQ/wTq7XnqgYu3XaKJNd1Qcr0JiEJ15
-        xLZnwcQyn9sZVQX4X0JqcqDx0CoSRnww8Z3Mk1kJPgN0
-X-Google-Smtp-Source: APiQypI1ltj7u5Bq7am8qePoEo4cQ/trbraNCdyogcK0LAAg4BY0jq2I7/GsLnM1GzSePjDroYbXz+4CAgFA1/GrFDU=
-X-Received: by 2002:ac8:51d3:: with SMTP id d19mr4033765qtn.141.1588959172426;
- Fri, 08 May 2020 10:32:52 -0700 (PDT)
+        id S1727106AbgEHRe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 13:34:56 -0400
+Received: from mail-eopbgr60066.outbound.protection.outlook.com ([40.107.6.66]:37095
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726807AbgEHRez (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 May 2020 13:34:55 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AQQG3+SzwMb+qlfQDg1OgnJZN+mOnKTiYGV0Conm9KgQ3doTVhVjMOFiq0foTNKHQqvdrTF9U4pYhUdIibze5XqBznx0NdDQFfg8AcnZYuiRtkRrzIzUU5RPtZVD/V7gUEGuv0gMF13IJF4BDyRdO8FazjQZT1G3SVDQvsCvj2LsQ4pnSebXoXGgRFuwg8z9bfPFW3TgUIRgKiSRVaXx7IGReQsrbrKsKreYIoDieOc1/95aPkbw7VfjnAsLnFf5W6kSG0fZsxYhgzELK/FBJ284sGUv+jRyZizuo1XulaC/s+OqO9W/f50u85TsiKUkmbtn9g+BbK3CYcCqHinYAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=n8GbNR8CL1UIDcfqSdoLRyVZ7wA2l2fH5scp9/IFb34=;
+ b=J0H9TSfswex40mkpJ3in5n0lbSbnTwQNuktqfGd6PiXOlsikRP0zkXrZNYSmDZ6btx4l0rT/3eFzQqzzo/PNBytzTPsSGT/inGgwosX5d9vC94mFOFzAzGFiao9Oe8y030G92wMtD9lLZbWoA7GfgrV33K3XPrpIVX9v0rM9gG3Hl8Ewkj9+CCIpiJ195BmxIQqu6LcvZipinPuV6RJZkaxbnaVoxaE6lbIF0cc4z6ZSJQv8qbQSKWwj1auHbt1Igiv6NRVlPaAKkYpIhxmRJHQcmcqvdBnvKBWEISjYXU56DCivZ3BJJh5JUcMprQPdmftD/ZaM8BH8BKS1TVj4vg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=n8GbNR8CL1UIDcfqSdoLRyVZ7wA2l2fH5scp9/IFb34=;
+ b=FlXQ6emRzNYbLjJD+9UFL8dzCRbjHu0dVV6D8V8PDXfZdrDXNlk5GLJbin+BUCbGAMB8pBatGc5LvNH2vt89a9jPnl3LrXXSBpslV2KnM5NNY8b9zlFFnPQmFl8Fm8WTCUiDP3pMdK6vXeA8+hx+n+wczSaj6AiqgHEOIMPwxBU=
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
+Received: from AM7PR05MB6632.eurprd05.prod.outlook.com (2603:10a6:20b:136::12)
+ by AM7PR05MB6881.eurprd05.prod.outlook.com (2603:10a6:20b:1a9::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Fri, 8 May
+ 2020 17:34:51 +0000
+Received: from AM7PR05MB6632.eurprd05.prod.outlook.com
+ ([fe80::94da:ac7a:611:781f]) by AM7PR05MB6632.eurprd05.prod.outlook.com
+ ([fe80::94da:ac7a:611:781f%9]) with mapi id 15.20.2958.030; Fri, 8 May 2020
+ 17:34:51 +0000
+Subject: Re: [PATCH bpf-next 10/14] mlx5, xsk: migrate to new
+ MEM_TYPE_XSK_BUFF_POOL
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
+References: <20200507104252.544114-1-bjorn.topel@gmail.com>
+ <20200507104252.544114-11-bjorn.topel@gmail.com>
+ <40eb57c7-9c47-87dc-bda9-5a1729352c43@mellanox.com>
+ <3c42954a-8bb3-85b1-8740-a096b0a76a98@intel.com>
+ <cf65cc80-f16a-5b76-5577-57c55e952a52@mellanox.com>
+ <CAJ+HfNiU8jyNMC1VMCgqGqz76Q8G1Pui09==TO8Qi73Y_2xViQ@mail.gmail.com>
+ <CAJ+HfNiBuDWX77PbR4ZPR_vuUyOTLA5MOGfyQrGO3EtQC1WwJQ@mail.gmail.com>
+From:   Maxim Mikityanskiy <maximmi@mellanox.com>
+Message-ID: <4c627f32-bbe6-21ff-f06f-c151093ec0e8@mellanox.com>
+Date:   Fri, 8 May 2020 20:34:46 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+In-Reply-To: <CAJ+HfNiBuDWX77PbR4ZPR_vuUyOTLA5MOGfyQrGO3EtQC1WwJQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BE0P281CA0002.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:a::12) To AM7PR05MB6632.eurprd05.prod.outlook.com
+ (2603:10a6:20b:136::12)
 MIME-Version: 1.0
-References: <20200508153634.249933-1-hch@lst.de> <20200508153634.249933-5-hch@lst.de>
-In-Reply-To: <20200508153634.249933-5-hch@lst.de>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 May 2020 10:32:41 -0700
-Message-ID: <CAEf4BzZ-gE87RVLPHGBfoNhHB+H7AnPbb7UUE7EGq8T5p_en_w@mail.gmail.com>
-Subject: Re: [PATCH 04/12] bpf: use __anon_inode_getfd
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-integrity@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, io-uring@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.57.1.235] (159.224.90.213) by BE0P281CA0002.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:a::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28 via Frontend Transport; Fri, 8 May 2020 17:34:50 +0000
+X-Originating-IP: [159.224.90.213]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 08e8abb3-cecb-45ff-9b0e-08d7f3761cdc
+X-MS-TrafficTypeDiagnostic: AM7PR05MB6881:
+X-Microsoft-Antispam-PRVS: <AM7PR05MB688182E295FEB8D81BDEA62BD1A20@AM7PR05MB6881.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-Forefront-PRVS: 039735BC4E
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8L0ZmEO9/D3xo0a7SXxvhFMck3czwEZqXxt7lc2Z6o2mJwLRXXnNxdlGqZP0PULpl00agNrOrx1MLCSl7PBSSCXN2De8nSaUC3BdgqZHRY+fPtELetgQaLwqMtN0c9bWu55ZPjLBWg0SEHC2/QB398W7M6YwdHerjMmBzAEmio3cDjOsuoVEOT42I4nn9mVr7VRpaKn9jL0w4vcijLqyg6eBYVADRDUPdnu0CXSreiLoFI86DSdIQexah4cA3VnhC4B8p11fQHdooktodEV8b7Zir5sdjSb+VdP+2y31oa2c82+OBhXW/SV3Osi6koeED9/lNeNPGouoV9/KPT+NLfIE53BIISw55GRahkWe2ZBgtfsHVb5vQZTWZ4ANB5mqn3NGPgF/NIn6pgl5u3HVNsrorTshzuE8VoD2thdZuX9esJceWmOT1hJ/x9wrklbauUwxtRr33h59NnttV8rqq5A5lEVNPEZ09jBtl8O03YLCDuR5THN7J2Kq01o2nBIvL/RJ/0LMzcOlm2syvGtUuE/ImZYkQ+L3spd0h5NNMb582H05OS9/qwcPXX5peI1a
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR05MB6632.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(376002)(346002)(136003)(366004)(33430700001)(52116002)(31696002)(478600001)(2616005)(36756003)(66476007)(8936002)(316002)(16576012)(66556008)(83300400001)(83280400001)(33440700001)(54906003)(83310400001)(83320400001)(83290400001)(956004)(6666004)(7416002)(5660300002)(86362001)(4326008)(55236004)(6486002)(66946007)(16526019)(2906002)(6916009)(4744005)(31686004)(8676002)(186003)(53546011)(26005)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: UbwHCj9lFPCw1/cznSlIV3dv6nteOtXf8KasvFxRu/v8zOEFuoQhGKuf+wO47dj3Jt5PvknVjLop4PCCYQnfwCZXfb9ighm+yuWRvUg1645OWx2HHtqQUdYCy7oxzZfwycqF39XQJzisQN0HY4HOWunGc0yKJxKjOBZ8AXw3ZcYd/PS5SM59w2gDZIFzc18f9cs+f7LEv5ZAHqgnDsMECqN9V/n7d7ubRymiwWXPEL4u8wljxBn46czDV6betGAUSeX5VDD4XuPxhlYgYsyFX+TKRGdBRiAvXTWOBY1DiXK+En+gQdseMW3w+Fj97CY/DujkByb9gRaK71FslE/LKNJ9xglqsNRTycvFFTmq/w6qAEuF18P8Sc9RtTydUSH90FlAs4ek2OQzBBRnFoi0z+VKM2so8XRjnciE4NnACZt8gczcX+MnWqZOIAfjodHnK+gUaKvIAdIVCHjc8d1tGqelPMzYb/fJf3xsU08MZLbx4Z0ZFbughym+nOrLez4f
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08e8abb3-cecb-45ff-9b0e-08d7f3761cdc
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2020 17:34:51.3578
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QJc36IBkr+eogg8HATLHcaii5iM2LdBqlCUCMZn7aTxelYj76GvPmDU7nLzszd1zVis6PmdabDNOjKCkHLZIvA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR05MB6881
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 8:39 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> Use __anon_inode_getfd instead of opencoding the logic using
-> get_unused_fd_flags + anon_inode_getfile.  Also switch the
-> bpf_link_new_file calling conventions to match __anon_inode_getfd.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  include/linux/bpf.h  |  2 +-
->  kernel/bpf/cgroup.c  |  6 +++---
->  kernel/bpf/syscall.c | 31 +++++++++----------------------
->  3 files changed, 13 insertions(+), 26 deletions(-)
->
+On 2020-05-08 16:14, Björn Töpel wrote:
+> On Fri, 8 May 2020 at 15:08, Björn Töpel <bjorn.topel@gmail.com> wrote:
+>>
+>> On Fri, 8 May 2020 at 15:01, Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
+>>>
+> []
+>>
+>> All zeros hints that you're probably putting in the wrong DMA address somewhere.
+>>
+> 
+> Hmm, I can't see that you're using xsk_buff_xdp_get_dma() anywhere in
+> the code. Probably it?
 
-[...]
+You are right, thanks, it was indeed missing. However, adding it was not 
+enough, I still get zeros, will continue investigating on Monday.
 
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 64783da342020..cb2364e17423c 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2307,23 +2307,10 @@ int bpf_link_new_fd(struct bpf_link *link)
->   * complicated and expensive operations and should be delayed until all the fd
->   * reservation and anon_inode creation succeeds.
->   */
+> 
+> Björn
+> 
 
-The comment above explains the reason why we do want to split getting
-fd, getting file, and installing fd later. I'd like to keep it this
-way. Also, this code was refactored in bpf-next by [0] (it still uses
-get_unused_fd_flag + anon_inode_getfile + fd_install, by design).
-
-  [0] https://patchwork.ozlabs.org/project/netdev/patch/20200429001614.1544-3-andriin@fb.com/
-
-> -struct file *bpf_link_new_file(struct bpf_link *link, int *reserved_fd)
-> +int bpf_link_new_file(struct bpf_link *link, struct file **file)
->  {
-> -       struct file *file;
-> -       int fd;
-> -
-> -       fd = get_unused_fd_flags(O_CLOEXEC);
-> -       if (fd < 0)
-> -               return ERR_PTR(fd);
-> -
-> -       file = anon_inode_getfile("bpf_link", &bpf_link_fops, link, O_CLOEXEC);
-> -       if (IS_ERR(file)) {
-> -               put_unused_fd(fd);
-> -               return file;
-> -       }
-> -
-> -       *reserved_fd = fd;
-> -       return file;
-> +       return __anon_inode_getfd("bpf_link", &bpf_link_fops, link, O_CLOEXEC,
-> +                       file);
->  }
->
-
-[...]
