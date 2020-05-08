@@ -2,90 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0031C1CA587
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 10:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 809D01CA64B
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 10:42:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727096AbgEHIAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 04:00:31 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:36642 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727030AbgEHIAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 04:00:30 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0487p98J021513;
-        Fri, 8 May 2020 01:00:26 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0818;
- bh=0JOSp3O9OivyzD1QuluLkQBX4z8mjZPuRutwsVwPaVA=;
- b=S7MasBn/gIgbxyl+fIS0OS6ezj4KDSU7X6TBS8AIVlraALHyP01ANgA0Meu8YtJECqUY
- VjjVA7CyQoijRFmCtRxjaQauqyv+klv3kGte64dFO84OhZ+TbsGMHBand1wj63XU/Wfm
- lgWrVvbezJ17Eqw/JOGlXtuWeIZWrY5rLzgdOEJbG8A9Fl2gyxpvcv2qE3tgzum7C/NS
- nmy6Cjbo13JRTH0WqA8scrry764BqXNpSXsoggPRVHsYmkJwidox8i0FOoEEd6gkppla
- ByvRts55TUE/qbPD5MxzSSfc8xIjxbzg9IDCv7PU5xbyrDiJrHAM6R+Ch+MgIvK0qZhR Ww== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 30vtdv9wng-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 08 May 2020 01:00:26 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 8 May
- 2020 01:00:24 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 May 2020 01:00:24 -0700
-Received: from [10.193.46.2] (unknown [10.193.46.2])
-        by maili.marvell.com (Postfix) with ESMTP id D64B83F703F;
-        Fri,  8 May 2020 01:00:22 -0700 (PDT)
-Subject: Re: [PATCH net-next 06/12] net: qed: gather debug data on hw errors
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        "Ariel Elior" <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "Denis Bolotin" <dbolotin@marvell.com>
-References: <cover.1588758463.git.irusskikh@marvell.com>
- <a380a45a885034c9b19cd1fe786854e8a65a8088.1588758463.git.irusskikh@marvell.com>
- <20200506123120.02d4c04f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-Message-ID: <01a9d7a5-3f8c-1799-cd0e-bb2dc8c7f177@marvell.com>
-Date:   Fri, 8 May 2020 11:00:21 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101
- Thunderbird/76.0
+        id S1727051AbgEHImJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 04:42:09 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:46252 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726598AbgEHImI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 May 2020 04:42:08 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 5E30D201E4;
+        Fri,  8 May 2020 10:42:06 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Okqu4Pui0qEm; Fri,  8 May 2020 10:42:05 +0200 (CEST)
+Received: from mail-essen-02.secunet.de (mail-essen-02.secunet.de [10.53.40.205])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id DEB1A201CC;
+        Fri,  8 May 2020 10:42:05 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ MAIL-ESSEN-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Fri, 8 May 2020 10:42:05 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 8 May 2020
+ 10:42:05 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id D8BA43180197;
+ Fri,  8 May 2020 10:42:04 +0200 (CEST)
+Date:   Fri, 8 May 2020 10:42:04 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     <netdev@vger.kernel.org>
+Subject: Re: [PATCH ipsec-next v2 0/7] xfrm: remove three more indirect calls
+ from packet path
+Message-ID: <20200508084204.GE13121@gauss3.secunet.de>
+References: <20200504080609.14648-1-fw@strlen.de>
 MIME-Version: 1.0
-In-Reply-To: <20200506123120.02d4c04f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-08_08:2020-05-07,2020-05-08 signatures=0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200504080609.14648-1-fw@strlen.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> On Wed, 6 May 2020 14:33:08 +0300 Igor Russkikh wrote:
->> To implement debug dump retrieval on a live system we add callbacks to
->> collect the same data which is collected now during manual `ethtool -d`
->> call.
->>
->> But we instead collect the dump immediately at the moment bad thing
->> happens, and save it for later retrieval by the same `ethtool -d`.
->>
->> To have ability to track this event, we add kobject uevent trigger,
->> so udev event handler script could be used to automatically collect
-> dumps.
+On Mon, May 04, 2020 at 10:06:02AM +0200, Florian Westphal wrote:
+> v2: rebase on top of ipsec-next, no other changes.
 > 
-> No way. Please use devlink health. Instead of magic ethtool dumps and
-> custom udev.
+> This patch series removes three more indirect calls from the state_afinfo
+> struct.
 > 
+> These are:
+> - extract_input (no dependencies on other modules)
+> - output_finish (same)
+> - extract_output (has dependency on ipv6 module, but
+>   that is only needed for pmtu detection, so the indirect
+>   call cost is not required for each packet).
+> 
+> Functions get moved to net/xfrm and the indirections are removed.
+> pmtu detection will be handled via ipv6_stubs.
+> 
+> Florian Westphal (7):
+>       xfrm: avoid extract_output indirection for ipv4
+>       xfrm: state: remove extract_input indirection from xfrm_state_afinfo
+>       xfrm: move xfrm4_extract_header to common helper
+>       xfrm: expose local_rxpmtu via ipv6_stubs
+>       xfrm: place xfrm6_local_dontfrag in xfrm.h
+>       xfrm: remove extract_output indirection from xfrm_state_afinfo
+>       xfrm: remove output_finish indirection from xfrm_state_afinfo
 
-Hi Jakub,
-
-Thanks for the suggestion. I've looked into devlink health infrastructure, but
-what's warned me is that our device health dumps are huge (~3Mb). I'm not sure
-if health dump infrastructure is designed to push that amounts of data.
-
-I'll check if that's feasible.
-
-Thanks,
-  Igor
+Series applied, thanks Florian!
