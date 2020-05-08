@@ -2,219 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B431CB774
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:39:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C67951CB77C
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:39:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726942AbgEHSjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 14:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
+        id S1727771AbgEHSjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 14:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726756AbgEHSi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:38:59 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D79C061A0C
-        for <netdev@vger.kernel.org>; Fri,  8 May 2020 11:38:58 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id e25so2717742ljg.5
-        for <netdev@vger.kernel.org>; Fri, 08 May 2020 11:38:58 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726817AbgEHSjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:39:35 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51004C061A0C
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 11:39:34 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id c16so2329597ilr.3
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 11:39:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a6+xBbRgF5KM884gMTB9yzWmorjjz4zA2+XFqsMIIu0=;
-        b=clFWuTLGcCDkSy1U4yIYdXzjoZiB5t9xTCfJvaknJtvn2HAGlD2tA6vOQl6ciaiMDx
-         D+o+uBjfh3UdyeQaWxbWMM7Jpj9Le6xHBBJTJ8lzSwemEAnF5czqsLlFRtAoWd5kCIf4
-         sFGr+K0+m6QkeeFq35cO01LTnVcyGy5tnaD+kQOhlJqv9qfnce3x8xqqBRPJ7VHadAX1
-         DVro2+9dWM35INbGy0v0kczcyYt7EPvMM/V5BUUYPRHGA1rKLbGlEFRxzTVbLY6+YFJG
-         lFyefey2jmZrEC5HP9rBhf0ByRHphX8Fbc+KSBNWGaZBKuDv75L/P4YnSIgopkJd7XkC
-         x8ng==
+         :cc:content-transfer-encoding;
+        bh=RGIpRsn9hXDxHTNl/QnLM0SbzmG3DHjOVcysfR1ByLg=;
+        b=bqJnS5vane6smgkAuFEEcD0f6Ycc9yf0lJgeJRU4JjUw54yjKs7BXh8x7lk1vbGGnV
+         0f+IMGeKn3Gw8E15EFVxSoihcpqVq3H2ka3HfRPYyf0OuTLXCPToeBb+OyVQEtZC7lHl
+         zuolyQtCP3X66zQBV9+hARMxLnivHPtSnxXf5rUK+0xz88gPQQ3kiIwNSw4silZ09ksy
+         iZesm817N+ct23uLjo+cnMxE5KHcCYtZJFFhLRXkIQCkpT0bZ5O/5lBtIwyt1tjgyZpr
+         XXPJFtNZ04z6cdHl7rsn9ul842f84tS91OI8taD3ChAh0ODWd61l9meBxJla50/OQul7
+         oA8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a6+xBbRgF5KM884gMTB9yzWmorjjz4zA2+XFqsMIIu0=;
-        b=e7ttfap9u6kk5pKL5oOpRfG+3N9jsUIyL4vjKKh6X6zdv00MuZUS22/VaKdEM5mGuF
-         Q8AZzLKKksT/NHFeLJHPfuwfUTeBj9MMHg7zuP/SD3Y0MniGmAGtdawWq3ql4fkpe1op
-         3LDt9VpajE9wYLi5Nb6oS1VI+3l5wObB4yD1HwVZ979tSRklBPNMUdkw5GSszTAUxiHp
-         arJh3ATMc1Vj3/er5oyakYBXvEM+zFVTicq9IYy6GdJPGALUCgAPpFhCX8503TRwfe8V
-         phYEdUiKwxDXP0SFjQL8XpBU4bha4LUgwNmBy4UirAYk/aooglli5Y7Eg83btry8ik7h
-         jx4A==
-X-Gm-Message-State: AOAM532V3CeHmaoYgk9vTFrlsgO6KF3EDjzn1IDl+Jp5m5vhns3fBO9O
-        V3Xp8fUiXEhtgWzkPrA4/ORHDVLSTcq06cSJ6LY=
-X-Google-Smtp-Source: ABdhPJx/+RBlZRvOJeICbS/zRB9tdN6Rbe7r1IbrZNE32rfeOwDCK3/R3U18hN52IOYLIOxwiU7TIV7yZ0BIu6JO4Y0=
-X-Received: by 2002:a2e:9490:: with SMTP id c16mr2634745ljh.110.1588963136591;
- Fri, 08 May 2020 11:38:56 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RGIpRsn9hXDxHTNl/QnLM0SbzmG3DHjOVcysfR1ByLg=;
+        b=HicJFEzXEGLgre8R4k+YqnLaWdFf9SHOUIiq49xInqr96CAkQRCi6HafNx+LFUFjYM
+         tDrqzOkaI1UH6OtgnzXEOsfmcqiMpQW7JttEItsdLk51ssQsuqieE0tceVKmSHzfvTRI
+         tIklkfnRlPAsmYhWn8aLpoIbVYaYj6Z/OYJYDKvBe50+aFHgd8Ft8xvnIJd1SbUGBHHQ
+         E7opL8ClKiN85ubYgMrdDY1YmikmUZCDSgyne9NckKBHhCLfxqYygWp8yG6GOFxl5qkD
+         aZuuYRiHTxp20Y7Ivqqr8XfRnUz3LQrrMB70HzN4x/X/rMO3h4hRPDGd+LWI/8ew4OyH
+         G2dQ==
+X-Gm-Message-State: AGi0PuZq3WqQ5bmIOiWB+m4wu6reme9nKGHAY21xq+VZiFjEZ6ouV2DA
+        Qc0V48yNuH/AnbryvfY9XOy6Be1FUCWgYlN0s+8FqA==
+X-Google-Smtp-Source: APiQypIK7HVLTAX4pxfdG4Np+jILsEOGqiII5aB+gQC6LJN5kcIhjqNVKZy0G/G/rBz+o1NbRC9W4C8NgLZeDmRHgVw=
+X-Received: by 2002:a92:aa07:: with SMTP id j7mr4467857ili.40.1588963173745;
+ Fri, 08 May 2020 11:39:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200508015810.46023-1-edumazet@google.com> <CABCgpaUqymfoGGyExvKv65UDvLfHnw2cavVCr1Pq8coz21ujKA@mail.gmail.com>
- <CANn89iKk8aZ=wwbet8q_U=inbksvWhJvUewMGP+FfLYiD+yOCQ@mail.gmail.com> <CANn89i+Ltt+oidFvLawa_TKiqvwtr2uPBKCMD7xZ4-UaxgXTgQ@mail.gmail.com>
-In-Reply-To: <CANn89i+Ltt+oidFvLawa_TKiqvwtr2uPBKCMD7xZ4-UaxgXTgQ@mail.gmail.com>
-From:   Brian Vazquez <brianvv.kernel@gmail.com>
-Date:   Fri, 8 May 2020 11:38:44 -0700
-Message-ID: <CABCgpaU_ek2d6cyAXsSAGZ98u+-_izCv2zUGVu+FD-C4OdDVww@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/dst: use a smaller percpu_counter batch for
- dst entries accounting
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+References: <20200505140231.16600-1-brgl@bgdev.pl> <20200505140231.16600-6-brgl@bgdev.pl>
+ <20200505103105.1c8b0ce3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAMRc=Mf0ipaeLKhHCZaq2YeZKzi=QBAse7bEz2hHxXN5OL=ptg@mail.gmail.com>
+ <20200506101236.25a13609@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAMpxmJWckQdKvUGFDAJ1WMtD9WoGWmGe3kyKYhcfRT2nOB93xw@mail.gmail.com>
+ <20200507095315.1154a1a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAMpxmJUEk3itZs4HujJOXUiL80kmEvGBvLF0NFc2UQoVDVTWRg@mail.gmail.com>
+ <20200507155650.0c19229e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <c6e12eb6-d6ea-9ba9-4559-b2eda326601f@gmail.com>
+In-Reply-To: <c6e12eb6-d6ea-9ba9-4559-b2eda326601f@gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Fri, 8 May 2020 20:39:22 +0200
+Message-ID: <CAMRc=MdKjZbHFfTYV12DjMet3sXbBht+qgiViddxs9csDvrf-Q@mail.gmail.com>
+Subject: Re: [PATCH 05/11] net: core: provide devm_register_netdev()
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 11:17 AM Eric Dumazet <edumazet@google.com> wrote:
+pt., 8 maj 2020 o 07:54 Heiner Kallweit <hkallweit1@gmail.com> napisa=C5=82=
+(a):
 >
-> On Fri, May 8, 2020 at 11:06 AM Eric Dumazet <edumazet@google.com> wrote:
+> On 08.05.2020 00:56, Jakub Kicinski wrote:
+> > On Thu, 7 May 2020 19:03:44 +0200 Bartosz Golaszewski wrote:
+> >>> To implement Edwin's suggestion? Makes sense, but I'm no expert, let'=
+s
+> >>> also CC Heiner since he was asking about it last time.
+> >>
+> >> Yes, because taking the last bit of priv_flags from net_device seems
+> >> to be more controversial but if net maintainers are fine with that I
+> >> can simply go with the current approach.
 > >
-> > On Fri, May 8, 2020 at 10:30 AM Brian Vazquez <brianvv.kernel@gmail.com> wrote:
-> > >
-> > > On Thu, May 7, 2020 at 7:00 PM Eric Dumazet <edumazet@google.com> wrote:
-> > > >
-> > > > percpu_counter_add() uses a default batch size which is quite big
-> > > > on platforms with 256 cpus. (2*256 -> 512)
-> > > >
-> > > > This means dst_entries_get_fast() can be off by +/- 2*(nr_cpus^2)
-> > > > (131072 on servers with 256 cpus)
-> > > >
-> > > > Reduce the batch size to something more reasonable, and
-> > > > add logic to ip6_dst_gc() to call dst_entries_get_slow()
-> > > > before calling the _very_ expensive fib6_run_gc() function.
-> > > >
-> > > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > > > ---
-> > > >  include/net/dst_ops.h | 4 +++-
-> > > >  net/core/dst.c        | 8 ++++----
-> > > >  net/ipv6/route.c      | 3 +++
-> > > >  3 files changed, 10 insertions(+), 5 deletions(-)
-> > > >
-> > > > diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
-> > > > index 443863c7b8da362476c15fd290ac2a32a8aa86e3..88ff7bb2bb9bd950cc54fd5e0ae4573d4c66873d 100644
-> > > > --- a/include/net/dst_ops.h
-> > > > +++ b/include/net/dst_ops.h
-> > > > @@ -53,9 +53,11 @@ static inline int dst_entries_get_slow(struct dst_ops *dst)
-> > > >         return percpu_counter_sum_positive(&dst->pcpuc_entries);
-> > > >  }
-> > > >
-> > > > +#define DST_PERCPU_COUNTER_BATCH 32
-> > > >  static inline void dst_entries_add(struct dst_ops *dst, int val)
-> > > >  {
-> > > > -       percpu_counter_add(&dst->pcpuc_entries, val);
-> > > > +       percpu_counter_add_batch(&dst->pcpuc_entries, val,
-> > > > +                                DST_PERCPU_COUNTER_BATCH);
-> > > >  }
-> > > >
-> > > >  static inline int dst_entries_init(struct dst_ops *dst)
-> > > > diff --git a/net/core/dst.c b/net/core/dst.c
-> > > > index 193af526e908afa4b868cf128470f0fbc3850698..d6b6ced0d451a39c0ccb88ae39dba225ea9f5705 100644
-> > > > --- a/net/core/dst.c
-> > > > +++ b/net/core/dst.c
-> > > > @@ -81,11 +81,11 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
-> > > >  {
-> > > >         struct dst_entry *dst;
-> > > >
-> > > > -       if (ops->gc && dst_entries_get_fast(ops) > ops->gc_thresh) {
-> > > > +       if (ops->gc &&
-> > > > +           !(flags & DST_NOCOUNT) &&
-> > > > +           dst_entries_get_fast(ops) > ops->gc_thresh) {
-> > > >                 if (ops->gc(ops)) {
-> > > > -                       printk_ratelimited(KERN_NOTICE "Route cache is full: "
-> > > > -                                          "consider increasing sysctl "
-> > > > -                                          "net.ipv[4|6].route.max_size.\n");
-> > > > +                       pr_notice_ratelimited("Route cache is full: consider increasing sysctl net.ipv6.route.max_size.\n");
-> > > >                         return NULL;
-> > > >                 }
-> > > >         }
-> > > > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> > > > index 1ff142393c768f85c495474a1d05e1ae1642301c..a9072dba00f4fb0b61bce1fc0f44a3a81ba702fa 100644
-> > > > --- a/net/ipv6/route.c
-> > > > +++ b/net/ipv6/route.c
-> > > > @@ -3195,6 +3195,9 @@ static int ip6_dst_gc(struct dst_ops *ops)
-> > > >         int entries;
-> > > >
-> > > >         entries = dst_entries_get_fast(ops);
-> > > > +       if (entries > rt_max_size)
-> > > > +               entries = dst_entries_get_slow(ops);
-> > > > +
-> > > >         if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
-> > > if this part of the condition is not satisfied, you are going to call
-> > > fib6_run_gc anyways and after that you will update the entries. So I
-> > > was wondering if code here could be something like:
-> > > --- a/net/ipv6/route.c
-> > > +++ b/net/ipv6/route.c
-> > > @@ -3197,11 +3197,16 @@ static int ip6_dst_gc(struct dst_ops *ops)
-> > >         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
-> > >         int entries;
-> > >
-> > > +       if (time_before(rt_last_gc + rt_min_interval, jiffies)
-> > > +               goto run_gc;
-> > > +
-> > >         entries = dst_entries_get_fast(ops);
-> > > -       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
-> > > -           entries <= rt_max_size)
-> > > +       if (entries > rt_max_size)
-> > > +               entries = dst_entries_get_slow(ops);
-> > > +       if (entries <= rt_max_size)
-> > >                 goto out;
-> > >
-> > > +run_gc:
-> > >         net->ipv6.ip6_rt_gc_expire++;
-> > >         fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
-> > >         entries = dst_entries_get_slow(ops);
-> > >
-> > > That way you could potentially avoid an extra call to
-> > > dst_entries_get_slow when you know for sure that fib6_run_gc will be
-> > > run. WDYT?
+> > From my perspective what Edwin suggests makes sense. Apart from
+> > little use for the bit after probe, it also seems cleaner for devres
+> > to be able to recognize managed objects based on its own state.
 > >
-> > The problem is that you might still return a wrong status in the final :
-> >
-> > return entries > rt_max_size;
+> What I was saying is that we should catch the case that a driver
+> author uses a device-managed register() w/o doing the same for the
+> alloc(). A core function should not assume that driver authors do
+> sane things only.
+> I don't have a strong preference how it should be done.
+> Considering what is being discussed, have a look at get_pci_dr() and
+> find_pci_dr(), they deal with managing which parts of the PCI
+> subsystem are device-managed.
 
-Oh that's right, thanks for explaining!
+Yes, I have - that's why I asked if anyone objects to me moving all
+networking devres functions into their own source file. The reason for
+that being: devres_find() needs to know the address of the release
+function, meanwhile devm_register_netdev() would have to go into
+net/core, while devm_alloc_etherdev() lives in net/ethernet.
 
-> >
-> > If we are in ip6_dst_gc(), we know for sure entries might be wrong,
-> > if it holds dst_entries_get_fast(ops)
-> >
-> > If you prefer, the patch is really (since the caller calls us only if
-> > dst_entries_get_fast(ops) was suspect)
-> >
-> > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> > index ff847a324220bc4cac8b103640f7e1a5db374a87..78e7f3c14e8a9c937866361aaf641cecfe1fed43
-> > 100644
-> > --- a/net/ipv6/route.c
-> > +++ b/net/ipv6/route.c
-> > @@ -3196,7 +3196,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
-> >         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
-> >         int entries;
-> >
-> > -       entries = dst_entries_get_fast(ops);
-> > +       entries = dst_entries_get_slow(ops);
-> >         if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
-> >             entries <= rt_max_size)
-> >                 goto out;
->
-> BTW, we do not _have_ to force a gc if entries (the more accurate
-> value) is below gc_thresh
->
-> That would be a separate patch :
->
-> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> index 4292653af533bb641ae8571fffe45b39327d0380..69a90802a70f830b286795c9c75c13c4ba345a72
-> 100644
-> --- a/net/ipv6/route.c
-> +++ b/net/ipv6/route.c
-> @@ -3194,10 +3194,9 @@ static int ip6_dst_gc(struct dst_ops *ops)
->         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
->         int entries;
->
-> -       entries = dst_entries_get_fast(ops);
-> -       if (entries > rt_max_size)
-> -               entries = dst_entries_get_slow(ops);
-> -
-> +       entries = dst_entries_get_slow(ops);
-> +       if (entries < ops->gc_thresh)
-> +               return 0;
->         if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
->             entries <= rt_max_size)
->                 goto out;
-This makes sense, thanks!
+Bart
