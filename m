@@ -2,206 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A61D1CB780
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC291CB7A9
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:52:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727789AbgEHSkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 14:40:13 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38378 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726817AbgEHSkM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:40:12 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 048IdiAt016934;
-        Fri, 8 May 2020 11:39:51 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=7gOQfgFoSkNs27GeJjtWC/h+dq9fDTUWn/7frZdok0I=;
- b=CVm5DlV9VpMEyeFMebEC3xlclBXJpFUxmF9Rb1BB0m1KHWomKyw+9Yj40XFV4G+6Awbh
- MIwNw93b0o3C4tUWWLoOiZWUY9VVdv20fU4Qx1WH9T5Ll4zxzm5OTzoE10gIphjOXKU3
- R7eH31JwZTMP/yqdilpLmwIEf7kJ1aN4uRE= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30vtd6dat9-10
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 08 May 2020 11:39:50 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Fri, 8 May 2020 11:39:33 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gTpKoVocf/Z2RViZYl21DiDXe1HSFkyG4Eedr2Gi5D8MMTNF8POVj+k4e8kxIw+ifyxMMXSqD/f2WFXFVShryXM/8Wa2x+eA6s0TQ9Jn557IQ+VtLfrmsCqriR9/B27icaWXDEkp24OhNqJZ4CCgaKRLIkq2+KIhA643eXXMMCgObGiz37A9isB0DKIve80yCFXkPSE3QhyK5u2oquzAcXsGid9J8cCESkbiIFLxx/6VmD82WdXZzOcCjOjit1MYDgeAigvWLu7o7ObkQupccAB7RMaZ9UzltsUsfg/hMtrhBAihvtc3jC4QHc9HO74dt3EPoufZuOisdMSObOH74w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7gOQfgFoSkNs27GeJjtWC/h+dq9fDTUWn/7frZdok0I=;
- b=CTHUVK3bt7fFFYnM7oZnxPpsPLYThdQjkHaedFktSLbqZlKiduSwtGQe3PioG3ueKM+njeb7iwb+09ctD5D/YwQhrWUw6BCYFINefSdKdam+sSB/u4C3uGRcNMFcDv0ZQVm27ZSAj1AFjS+2K599IuYjV3uANjmGXB+0AWo9z9PdEt5gmK0bK4/porIZmONyKDbUsYldpe+CRjYgMB+TvTqViHg4uTYt7jhpLL0UM4roSHoiYo3B5D3tg9Ri5ctsrqQlKawp1HSZ3++Xrclo+Kq2K0jm0CEu/TFiVw3fgTuvZffPHzWAszAgc3v89H7eR3QMoqGSnyoCGFGcc01ukw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7gOQfgFoSkNs27GeJjtWC/h+dq9fDTUWn/7frZdok0I=;
- b=jYuO3gb3HP5Z/hlKcCK9aI7i5bty4RyGVlos1PP+vvsE0NnJwzFZQtZL1tabb3VNxY+aEj6kpGSA4Vpp5phwT1+2lUWKQzOPSn6jLT1RZqYMY3Kj58qNmF3yQqpDTjdtwDZDmMkM6Gpr3fuDPhCDy4rJenAVca25NI2buACBTDg=
-Authentication-Results: cloudflare.com; dkim=none (message not signed)
- header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
-Received: from MW3PR15MB4044.namprd15.prod.outlook.com (2603:10b6:303:4b::24)
- by MW3PR15MB4057.namprd15.prod.outlook.com (2603:10b6:303:47::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.29; Fri, 8 May
- 2020 18:39:32 +0000
-Received: from MW3PR15MB4044.namprd15.prod.outlook.com
- ([fe80::e5c5:aeff:ca99:aae0]) by MW3PR15MB4044.namprd15.prod.outlook.com
- ([fe80::e5c5:aeff:ca99:aae0%5]) with mapi id 15.20.2979.033; Fri, 8 May 2020
- 18:39:32 +0000
-Date:   Fri, 8 May 2020 11:39:28 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <dccp@vger.kernel.org>, <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [PATCH bpf-next 02/17] bpf: Introduce SK_LOOKUP program type
- with a dedicated attach point
-Message-ID: <20200508183928.ofudkphlb3vgpute@kafai-mbp.dhcp.thefacebook.com>
-References: <20200506125514.1020829-1-jakub@cloudflare.com>
- <20200506125514.1020829-3-jakub@cloudflare.com>
- <20200508070638.pqe73q4v3paxpkq5@kafai-mbp.dhcp.thefacebook.com>
- <87a72ivh6t.fsf@cloudflare.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87a72ivh6t.fsf@cloudflare.com>
-User-Agent: NeoMutt/20180716
-X-ClientProxiedBy: BY5PR04CA0020.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::30) To MW3PR15MB4044.namprd15.prod.outlook.com
- (2603:10b6:303:4b::24)
+        id S1726942AbgEHSwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 14:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726767AbgEHSwU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:52:20 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5BCC061A0C;
+        Fri,  8 May 2020 11:52:20 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id f13so2146765qkh.2;
+        Fri, 08 May 2020 11:52:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fSKGmHfI5bkIbAkbzqkR7HWpcZ5IXf1t3WO5eo8bzwo=;
+        b=EFUgFQUk0+Ya9G8IyqXEaGH0Nlc6yCsUWOz06o2Cbkg148vfoCq7a9Z002lEKCKXVP
+         7L/eFavxmwJTb32V3F8IOH/NmY5/l0nvKNHA+DaQie92CYRI1lpnVT9xRgaDpBUGWY48
+         EAl/xJwha72KvmYZMQJ4gJ7133V3GSgfR+9bf5C/jT2lI9wGpwjyv+1J5Ckr1lcmGFcs
+         0K6eNx1fkAvCtSGlXcbrsNhnw8QDoYlXUgNvwEc44vc8AX45RnSvpT2TuZReZYdeNbWY
+         yfQdTKlB1xEBYwvS3U6QRel+WT+SWy13Q9ks9Y9a4fyUtlvjwxItWnPMroQ7NNlKEsKM
+         elIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fSKGmHfI5bkIbAkbzqkR7HWpcZ5IXf1t3WO5eo8bzwo=;
+        b=gJWmJIh6zFC9DL7pBsaghKzlF1UttmvS7V25S7hwAgmP/PpiGpW9GYlZXlvZ0kCuvm
+         +DOyAfLRl9jNmdN2kVeUU1E95B6irRyQ8T79JuLMzfkcUi8vwMYzs1lb6UqnxZ4KlS6g
+         dD6ad4S9ggtpJF4mZZqp/ntIV6S+w+q5zJ0TDlNAA3shvuK7W9BQ00up6dTeoYMsJhKI
+         eRHwWwsydokQwvUVeae0tacRxekOiLMakO96LnUhcTfQtW55BZi0uGxtL+F4xq8VpswJ
+         B8gYmaLM8b7a3JQ/2KbqoFXjH173mvf8UCfzO57Mixz3FV/ImELFRyzOZPlgYldPfvRm
+         Cb0Q==
+X-Gm-Message-State: AGi0PuY22piREhVgVq5iN1NKSlmKp4VF4EKV2rifSyxPJMGSZHPMaZji
+        bacPZXNcQzqH6SK3DEUry3/hc7mAKtLD3tzfsuQ=
+X-Google-Smtp-Source: APiQypJHggJpAuKOpiafWUfIqRTpagarOz43HgytiKH4zIp+6p0C757wc/vaDELakJe2wORckGKOQAh4pJbNWf/Qsw4=
+X-Received: by 2002:a05:620a:14a1:: with SMTP id x1mr4170452qkj.92.1588963939470;
+ Fri, 08 May 2020 11:52:19 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:fac5) by BY5PR04CA0020.namprd04.prod.outlook.com (2603:10b6:a03:1d0::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28 via Frontend Transport; Fri, 8 May 2020 18:39:31 +0000
-X-Originating-IP: [2620:10d:c090:400::5:fac5]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1dfe21d6-5bfe-479a-6e38-08d7f37f2613
-X-MS-TrafficTypeDiagnostic: MW3PR15MB4057:
-X-Microsoft-Antispam-PRVS: <MW3PR15MB40579C40BC8ED3A7524DBED7D5A20@MW3PR15MB4057.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-Forefront-PRVS: 039735BC4E
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: x6UlM/YkGT9gWfKWDbwGofqu2GBSqedQ5DYoPiQenxHzG5izeu6UZ5rsa9MvfsYbIE8inv5HExpWfmsP0F9sWGgAtSQNWzZFW+Y/JO4SEx3B8mfn4TEgpruXGTOTRBDFG74lCBSKcQyjraV2kGD9ryco1DHnt4ZY8FDkLrjpdfZsbnQoHOaH5XJ/rlY97rFT/B8w5H+AQNtLn/mP6qF4DyykBcXBdAvB+mbGfypg+nI/1ggjfRvrqkMslyh9+i6D5Zp2ZaTI2GnTrEYelg6vukowIMWn5g3Y6mN3KP8WVIYjI24SE4sbbxbauCRnDaZLaOb1evyQhh7RZHulcr3PqLcPJP5Hjrtv4NCjSlYonUe7aJyjLp6LcQp1ejF+bCGsnviAN9Jx32rCWRy3aovPcUVWJ2DUGDIScbox0ZjrJvOqW2qL3a9LGyJsz9K6KAaU9z/KXGfCT5pHLs+KGJWxUdlRmbNLEw/e+e8mSG5i09bQS60LlqnnJt892G2YURbOwHBd6EO+qDrWX9pM7l+a1A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB4044.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(376002)(366004)(39860400002)(346002)(136003)(33430700001)(5660300002)(478600001)(83290400001)(54906003)(316002)(8936002)(186003)(4326008)(8676002)(6506007)(16526019)(7696005)(53546011)(52116002)(83280400001)(33440700001)(83310400001)(83320400001)(83300400001)(55016002)(9686003)(66476007)(7416002)(6916009)(6666004)(66946007)(2906002)(86362001)(66556008)(1076003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: in7kAbEsuA/e34igKm321tjrakruiz0WPtkSaJUO4BcqbkmgeuWDaQz4pTgCfYnT16wrvS5ktR5bhuu+NfeOWgnRRL8KJK7+gIoy81YcbJ7SIRak+6CZAdYVJOXrrlgQ63Nhgi3saZh8sFfOKJxQjwm1kGnstfgXV/NZZkPahFOyU/MXWlze7555gWpACWYPmmXikRwVZz3Mjc1fw06suK0pGMbEzAZkNaYNx3YqRCVUsjaOn1BaO4CB5R1BQLfl57rYML+Hgkt4vDqGKiB+P7A0crDGm7/ny6gsdRiyXxLT+Umlerbq6elltn+dab4edST/6Lc+FcNIF5YhJ6l1WijTCmXfVTgdxwONOjsNdauHplR6v/VjL70qyleXe5eRYW1Lf0qcZoV4Vz5ehRkobx9NknySa77ON+aQgt8De4nOfSRI+1HfSpYflo3wiJC+3xF+FVyWgNZwOet4C/8lrOco2EkSNZ5EuQtrw2KUy2gmPpYcsgrYc9vhZI4LZPGabS6tm69B3Ai+yu72lsWaZA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1dfe21d6-5bfe-479a-6e38-08d7f37f2613
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2020 18:39:32.4853
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tUCAaij//LXrXsqjdQVvjMH7nPpJ8EWUQxzCAk7PHZtIwoQbcHrH81eBsaqyreCD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB4057
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-08_16:2020-05-08,2020-05-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- mlxlogscore=999 phishscore=0 adultscore=0 suspectscore=0
- lowpriorityscore=0 bulkscore=0 clxscore=1015 mlxscore=0 priorityscore=1501
- spamscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2005080158
-X-FB-Internal: deliver
+References: <20200507053915.1542140-1-yhs@fb.com> <20200507053920.1542763-1-yhs@fb.com>
+In-Reply-To: <20200507053920.1542763-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 8 May 2020 11:52:08 -0700
+Message-ID: <CAEf4BzZ_TnCdvTucUpr1CRiGqnf7GZfdyXmszToTTLYyQxbk4Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 05/21] bpf: implement bpf_seq_read() for bpf iterator
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 08, 2020 at 12:45:14PM +0200, Jakub Sitnicki wrote:
-> On Fri, May 08, 2020 at 09:06 AM CEST, Martin KaFai Lau wrote:
-> > On Wed, May 06, 2020 at 02:54:58PM +0200, Jakub Sitnicki wrote:
-> >> Add a new program type BPF_PROG_TYPE_SK_LOOKUP and a dedicated attach type
-> >> called BPF_SK_LOOKUP. The new program kind is to be invoked by the
-> >> transport layer when looking up a socket for a received packet.
-> >>
-> >> When called, SK_LOOKUP program can select a socket that will receive the
-> >> packet. This serves as a mechanism to overcome the limits of what bind()
-> >> API allows to express. Two use-cases driving this work are:
-> >>
-> >>  (1) steer packets destined to an IP range, fixed port to a socket
-> >>
-> >>      192.0.2.0/24, port 80 -> NGINX socket
-> >>
-> >>  (2) steer packets destined to an IP address, any port to a socket
-> >>
-> >>      198.51.100.1, any port -> L7 proxy socket
-> >>
-> >> In its run-time context, program receives information about the packet that
-> >> triggered the socket lookup. Namely IP version, L4 protocol identifier, and
-> >> address 4-tuple. Context can be further extended to include ingress
-> >> interface identifier.
-> >>
-> >> To select a socket BPF program fetches it from a map holding socket
-> >> references, like SOCKMAP or SOCKHASH, and calls bpf_sk_assign(ctx, sk, ...)
-> >> helper to record the selection. Transport layer then uses the selected
-> >> socket as a result of socket lookup.
-> >>
-> >> This patch only enables the user to attach an SK_LOOKUP program to a
-> >> network namespace. Subsequent patches hook it up to run on local delivery
-> >> path in ipv4 and ipv6 stacks.
-> >>
-> >> Suggested-by: Marek Majkowski <marek@cloudflare.com>
-> >> Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
-> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> >> ---
-> 
+On Wed, May 6, 2020 at 10:39 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> bpf iterator uses seq_file to provide a lossless
+> way to transfer data to user space. But we want to call
+> bpf program after all objects have been traversed, and
+> bpf program may write additional data to the
+> seq_file buffer. The current seq_read() does not work
+> for this use case.
+>
+> Besides allowing stop() function to write to the buffer,
+> the bpf_seq_read() also fixed the buffer size to one page.
+> If any single call of show() or stop() will emit data
+> more than one page to cause overflow, -E2BIG error code
+> will be returned to user space.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
 
-[...]
+This loop is much simpler and more streamlined now, thanks a lot! I
+think it's correct, see below about one confusing (but apparently
+correct) bit, though. Either way:
 
-> >> +BPF_CALL_3(bpf_sk_lookup_assign, struct bpf_sk_lookup_kern *, ctx,
-> >> +	   struct sock *, sk, u64, flags)
-> >> +{
-> >> +	if (unlikely(flags != 0))
-> >> +		return -EINVAL;
-> >> +	if (unlikely(!sk_fullsock(sk)))
-> > May be ARG_PTR_TO_SOCKET instead?
-> 
-> I had ARG_PTR_TO_SOCKET initially, then switched to SOCK_COMMON to match
-> the TC bpf_sk_assign proto. Now that you point it out, it makes more
-> sense to be more specific in the helper proto.
-> 
-> >
-> >> +		return -ESOCKTNOSUPPORT;
-> >> +
-> >> +	/* Check if socket is suitable for packet L3/L4 protocol */
-> >> +	if (sk->sk_protocol != ctx->protocol)
-> >> +		return -EPROTOTYPE;
-> >> +	if (sk->sk_family != ctx->family &&
-> >> +	    (sk->sk_family == AF_INET || ipv6_only_sock(sk)))
-> >> +		return -EAFNOSUPPORT;
-> >> +
-> >> +	/* Select socket as lookup result */
-> >> +	ctx->selected_sk = sk;
-> > Could sk be a TCP_ESTABLISHED sk?
-> 
-> Yes, and what's worse, it could be ref-counted. This is a bug. I should
-> be rejecting ref counted sockets here.
-Agree. ref-counted (i.e. checking rcu protected or not) is the right check
-here.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-An unrelated quick thought, it may still be fine for the
-TCP_ESTABLISHED tcp_sk returned from sock_map because of the
-"call_rcu(&psock->rcu, sk_psock_destroy);" in sk_psock_drop().
-I was more thinking about in the future, what if this helper can take
-other sk not coming from sock_map.
+>  kernel/bpf/bpf_iter.c | 118 ++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 118 insertions(+)
+>
+> diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
+> index 0542a243b78c..f198597b0ea4 100644
+> --- a/kernel/bpf/bpf_iter.c
+> +++ b/kernel/bpf/bpf_iter.c
+> @@ -26,6 +26,124 @@ static DEFINE_MUTEX(targets_mutex);
+>  /* protect bpf_iter_link changes */
+>  static DEFINE_MUTEX(link_mutex);
+>
+> +/* bpf_seq_read, a customized and simpler version for bpf iterator.
+> + * no_llseek is assumed for this file.
+> + * The following are differences from seq_read():
+> + *  . fixed buffer size (PAGE_SIZE)
+> + *  . assuming no_llseek
+> + *  . stop() may call bpf program, handling potential overflow there
+> + */
+> +static ssize_t bpf_seq_read(struct file *file, char __user *buf, size_t size,
+> +                           loff_t *ppos)
+> +{
+> +       struct seq_file *seq = file->private_data;
+> +       size_t n, offs, copied = 0;
+> +       int err = 0;
+> +       void *p;
+> +
+> +       mutex_lock(&seq->lock);
+> +
+> +       if (!seq->buf) {
+> +               seq->size = PAGE_SIZE;
+> +               seq->buf = kmalloc(seq->size, GFP_KERNEL);
+> +               if (!seq->buf) {
+> +                       err = -ENOMEM;
+> +                       goto done;
 
-> 
-> Callers of __inet_lookup_listener() and inet6_lookup_listener() expect
-> an RCU-freed socket on return.
-> 
-> For UDP lookup, returning a TCP_ESTABLISHED (connected) socket is okay.
-> 
-> 
-> Thank you for valuable comments. Will fix all of the above in v2.
+oh, thank you for converting to all lower-case label names! :)
+
+> +               }
+> +       }
+> +
+> +       if (seq->count) {
+> +               n = min(seq->count, size);
+> +               err = copy_to_user(buf, seq->buf + seq->from, n);
+> +               if (err) {
+> +                       err = -EFAULT;
+> +                       goto done;
+> +               }
+> +               seq->count -= n;
+> +               seq->from += n;
+> +               copied = n;
+> +               goto done;
+> +       }
+> +
+> +       seq->from = 0;
+> +       p = seq->op->start(seq, &seq->index);
+> +       if (IS_ERR_OR_NULL(p))
+> +               goto stop;
+
+if start() returns IS_ERR(p), stop(p) below won't produce any output
+(because BPF program is called only for p == NULL), so we'll just
+return 0 with no error, do I interpret the code correctly? I think
+seq_file's read actually returns PTR_ERR(p) as a result in this case.
+
+so I think you need err = PTR_ERR(p); before goto stop here?
+
+> +
+> +       err = seq->op->show(seq, p);
+> +       if (err > 0) {
+> +               seq->count = 0;
+> +       } else if (err < 0 || seq_has_overflowed(seq)) {
+> +               if (!err)
+> +                       err = -E2BIG;
+> +               seq->count = 0;
+> +               seq->op->stop(seq, p);
+> +               goto done;
+> +       }
+> +
+> +       while (1) {
+> +               loff_t pos = seq->index;
+> +
+> +               offs = seq->count;
+> +               p = seq->op->next(seq, p, &seq->index);
+> +               if (pos == seq->index) {
+> +                       pr_info_ratelimited("buggy seq_file .next function %ps "
+> +                               "did not updated position index\n",
+> +                               seq->op->next);
+> +                       seq->index++;
+> +               }
+> +
+> +               if (IS_ERR_OR_NULL(p)) {
+> +                       err = PTR_ERR(p);
+> +                       break;
+> +               }
+> +               if (seq->count >= size)
+> +                       break;
+> +
+> +               err = seq->op->show(seq, p);
+> +               if (err > 0) {
+> +                       seq->count = offs;
+> +               } else if (err < 0 || seq_has_overflowed(seq)) {
+> +                       seq->count = offs;
+> +                       if (!err)
+> +                               err = -E2BIG;
+
+nit: this -E2BIG is set unconditionally even for 2nd+ show(). This
+will work, because it will get ignored on next iteration, but I think
+it will be much more obvious if written as:
+
+if (!err && offs = 0)
+    err = -E2BIG;
+
+It took me few re-readings of the code I'm pretty familiar with
+already to realize that this is ok.
+
+I had to write the below piece to realize that this is fine :) Just
+leaving here just in case you find it useful:
+
+else if (err < 0 || seq_has_overflowed(seq)) {
+    if (!err && offs == 0) /* overflow in first show() output */
+        err = -E2BIG;
+    if (err) {             /* overflow in first show() or real error happened */
+        seq->count = 0; /* not strictly necessary, but shows that we
+are truncating output */
+        seq->op->stop(seq, p);
+        goto done; /* done will return err */
+    }
+    /* no error and overflow for 2nd+ show(), roll back output and stop */
+    seq->count = offs;
+    break;
+}
+
+> +                       if (offs == 0) {
+> +                               seq->op->stop(seq, p);
+> +                               goto done;
+> +                       }
+> +                       break;
+> +               }
+> +       }
+> +stop:
+> +       offs = seq->count;
+> +       /* bpf program called if !p */
+> +       seq->op->stop(seq, p);
+> +       if (!p && seq_has_overflowed(seq)) {
+> +               seq->count = offs;
+> +               if (offs == 0) {
+> +                       err = -E2BIG;
+> +                       goto done;
+> +               }
+> +       }
+> +
+> +       n = min(seq->count, size);
+> +       err = copy_to_user(buf, seq->buf, n);
+> +       if (err) {
+> +               err = -EFAULT;
+> +               goto done;
+> +       }
+> +       copied = n;
+> +       seq->count -= n;
+> +       seq->from = n;
+> +done:
+> +       if (!copied)
+> +               copied = err;
+> +       else
+> +               *ppos += copied;
+> +       mutex_unlock(&seq->lock);
+> +       return copied;
+> +}
+> +
+>  int bpf_iter_reg_target(struct bpf_iter_reg *reg_info)
+>  {
+>         struct bpf_iter_target_info *tinfo;
+> --
+> 2.24.1
+>
