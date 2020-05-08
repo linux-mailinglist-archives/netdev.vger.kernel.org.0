@@ -2,193 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3AA21CB89C
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 21:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48DE31CB8A1
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 21:53:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbgEHTwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 15:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        id S1727844AbgEHTxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 15:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726767AbgEHTwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 15:52:11 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF092C061A0C;
-        Fri,  8 May 2020 12:52:10 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id h26so2403437qtu.8;
-        Fri, 08 May 2020 12:52:10 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727838AbgEHTw7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 15:52:59 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E802C061A0C
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 12:52:58 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id k81so2987196qke.5
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 12:52:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KWsc3qLdfyIdfQRdfJq6wUQZM+jp1CytRuZbpnEGJAQ=;
-        b=J3zpykXKSUx9Px1Jq4f77PefwP2HzaFKtGHYfHdrNVjwBoKDv5vD+xQgvoK4mZgFSA
-         +uLLGbyoMFD7IBVyRfyqTwkjiy+pOPhfltsNOdmrzvstDx0Xi93qG5lWwfyfyOUoQqX3
-         aTkyDUIo+C6ZwIvGmVcwMdSN39VC9ahA4ISXRL3HF5CngtpGoh2arfcNho61Hd0KjGnW
-         75Inc1hlHQhPE53Nad3Cjyc7Re4KMHY+ZI8ZhdrQfDLXv48heI3CzsB8pVM2AXR6/9Sa
-         XjfBs+2ckDV37n8tOgvNTc0VLcC4zxKMwem54iGHP7dtK5l4aHTF1u39CuKqxPL4rFj/
-         SPJw==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+PiQ6ckxUTnSDo+AGLRh/Fg+o3k0O3ko3wY06x3JoKE=;
+        b=Ts3CIrENqZECosUV9ufuB6NplQ4bZIANry4cTq9ctiFl2W3eKhj5UpDDQOEaY6A2Yd
+         mNvqS8MpDNbFmXG47isv0LHHuWhU9DrWeNeUqpMHP3rRP+c5b6gcvtAg+8ZLRMd/gdoD
+         1i8v4D54gKF1JaotzplFLT3nMfQ5VKcTVTMjFomlH2d9ykBhs9YeoAV4r0fEyjl3TlPr
+         v2KDioACvLG1JOHWROC3jtqtFiE8v+6chVfwhJVwQ6LpHrO+DnmO5kWS3VjbGmk9WNEY
+         aeK1VQ7Ix6UqBc9nyw9EdxtaWdyBCOYz2f1ZZWBmiN42UGRN2WCkIjnAj9hWJy7yjUPW
+         HsMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KWsc3qLdfyIdfQRdfJq6wUQZM+jp1CytRuZbpnEGJAQ=;
-        b=eb/wZoyCNsS+1hK1GFH64N8GEE4VYwe3iJ/EQcCV7Bh55OpvCkjNV+eGr94ViBqqTH
-         etyYXLJkvlHTTAJAmrf+60o1MNuYU0UF+a0JlQe7+SEUA8iq/3MvUaCxLU4RwwMI89O7
-         RBmV6AN0n0Kuc2ffCX5vteYdUk9AWiOgm++FrmWFD2TyT3PEU/tnw0WaV8UDRcWuHqqs
-         51FjyGOE//qrLQ3SO7GeHPg1FPA8SKIVf8PQPNbGhwy7wHi8htdCuqGloAtZvU+Cpm2F
-         CLURYn0iOXgZ46RQQXln5VtEccRY+ObRF12A70EridXbe3TxtDH13dhOpahlKNMlratS
-         EGjg==
-X-Gm-Message-State: AGi0PuYlaWFwHfoqJlAhQQjxTMiM6Ve+5bzg1plNwV36dJ6eKeD1X53B
-        sEQBSiPRtHLzAIHbYEIWFmjMDkF7zyqNkXjQNgmpTy6I
-X-Google-Smtp-Source: APiQypKrZhZG8T3TVSds4GTFlBuWfttFxwdbMCavACswRepjvkBRb+pdxLCzgaRyuLH66c7YMdZFLIOZr/rdxg33XAE=
-X-Received: by 2002:ac8:51d3:: with SMTP id d19mr4623372qtn.141.1588967529889;
- Fri, 08 May 2020 12:52:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+PiQ6ckxUTnSDo+AGLRh/Fg+o3k0O3ko3wY06x3JoKE=;
+        b=WJoRItStvZhUQg6+xir/eUlJxGjI5k8bZGzbTJy3CoY8NseENZt52Hn98dhZf9n3Ho
+         CVDGFVe6nx9oEWZUoNz5CHsLrIefyTgcDYQzlP0cIn3bU/lxR6ddyedBHRo2kfnnbajS
+         018H+6kJGTsL6OaNYbOOK+qJA8C2YXOvsaGKtrUvgxf9bO6UwEPFbL5ygJ4zI2KYOcoZ
+         7wgEX4VTF2uv9Pg3/y+U10MermbfFjx2xV51+JUGs3nSeu/IguCuh9tp7rpkXzq9fnlX
+         gREwbuLLLsUlyEhc6f7+RBE/tiZtN5J8nW4nybXrueb3vgD4uVorkevPFwjgeNj6rGwn
+         0FXw==
+X-Gm-Message-State: AGi0PuYpc/AGSRJJwkJn+RmmoTDaZsc6UwTYkOOaIsntD8Y2/JoBE6EW
+        Kvu7+77oepJpRqdXVRKvnlhBIQ==
+X-Google-Smtp-Source: APiQypJ92/0qZ5iunL9hikarn4eDK0RllMv8mjTvIrEJ1zjbLNqAjWeKqDY9cc4vVlZEbqAojJlNqA==
+X-Received: by 2002:a37:a4d8:: with SMTP id n207mr4488919qke.354.1588967577470;
+        Fri, 08 May 2020 12:52:57 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id c4sm1945896qkf.120.2020.05.08.12.52.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 08 May 2020 12:52:56 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jX93I-0002SQ-9Q; Fri, 08 May 2020 16:52:56 -0300
+Date:   Fri, 8 May 2020 16:52:56 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 09/12] rdma: use __anon_inode_getfd
+Message-ID: <20200508195256.GA8912@ziepe.ca>
+References: <20200508153634.249933-1-hch@lst.de>
+ <20200508153634.249933-10-hch@lst.de>
 MIME-Version: 1.0
-References: <20200507053915.1542140-1-yhs@fb.com> <20200507053936.1545284-1-yhs@fb.com>
-In-Reply-To: <20200507053936.1545284-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 May 2020 12:51:58 -0700
-Message-ID: <CAEf4Bzb1VJj5gWvL0Jiip8P9KhSfT6seCRH8N7Q49Fw3_jNOGQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 18/21] tools/bpftool: add bpf_iter support for bptool
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200508153634.249933-10-hch@lst.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 6, 2020 at 10:40 PM Yonghong Song <yhs@fb.com> wrote:
->
-> Currently, only one command is supported
->   bpftool iter pin <bpf_prog.o> <path>
->
-> It will pin the trace/iter bpf program in
-> the object file <bpf_prog.o> to the <path>
-> where <path> should be on a bpffs mount.
->
-> For example,
->   $ bpftool iter pin ./bpf_iter_ipv6_route.o \
->     /sys/fs/bpf/my_route
-> User can then do a `cat` to print out the results:
->   $ cat /sys/fs/bpf/my_route
->     fe800000000000000000000000000000 40 00000000000000000000000000000000 ...
->     00000000000000000000000000000000 00 00000000000000000000000000000000 ...
->     00000000000000000000000000000001 80 00000000000000000000000000000000 ...
->     fe800000000000008c0162fffebdfd57 80 00000000000000000000000000000000 ...
->     ff000000000000000000000000000000 08 00000000000000000000000000000000 ...
->     00000000000000000000000000000000 00 00000000000000000000000000000000 ...
->
-> The implementation for ipv6_route iterator is in one of subsequent
-> patches.
->
-> This patch also added BPF_LINK_TYPE_ITER to link query.
->
-> In the future, we may add additional parameters to pin command
-> by parameterizing the bpf iterator. For example, a map_id or pid
-> may be added to let bpf program only traverses a single map or task,
-> similar to kernel seq_file single_open().
->
-> We may also add introspection command for targets/iterators by
-> leveraging the bpf_iter itself.
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
+On Fri, May 08, 2020 at 05:36:31PM +0200, Christoph Hellwig wrote:
+> Use __anon_inode_getfd instead of opencoding the logic using
+> get_unused_fd_flags + anon_inode_getfile.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->  .../bpftool/Documentation/bpftool-iter.rst    | 83 ++++++++++++++++++
->  tools/bpf/bpftool/bash-completion/bpftool     | 13 +++
->  tools/bpf/bpftool/iter.c                      | 84 +++++++++++++++++++
->  tools/bpf/bpftool/link.c                      |  1 +
->  tools/bpf/bpftool/main.c                      |  3 +-
->  tools/bpf/bpftool/main.h                      |  1 +
->  6 files changed, 184 insertions(+), 1 deletion(-)
->  create mode 100644 tools/bpf/bpftool/Documentation/bpftool-iter.rst
->  create mode 100644 tools/bpf/bpftool/iter.c
->
+>  drivers/infiniband/core/rdma_core.c | 17 ++++-------------
+>  1 file changed, 4 insertions(+), 13 deletions(-)
 
-[...]
+ 
+> diff --git a/drivers/infiniband/core/rdma_core.c b/drivers/infiniband/core/rdma_core.c
+> index 5128cb16bb485..541e5e06347f6 100644
+> --- a/drivers/infiniband/core/rdma_core.c
+> +++ b/drivers/infiniband/core/rdma_core.c
+> @@ -462,30 +462,21 @@ alloc_begin_fd_uobject(const struct uverbs_api_object *obj,
+>  	if (WARN_ON(fd_type->fops->release != &uverbs_uobject_fd_release))
+>  		return ERR_PTR(-EINVAL);
+>  
+> -	new_fd = get_unused_fd_flags(O_CLOEXEC);
+> -	if (new_fd < 0)
+> -		return ERR_PTR(new_fd);
+> -
+>  	uobj = alloc_uobj(attrs, obj);
+>  	if (IS_ERR(uobj))
+> -		goto err_fd;
+> +		return uobj;
+>  
+>  	/* Note that uverbs_uobject_fd_release() is called during abort */
+> -	filp = anon_inode_getfile(fd_type->name, fd_type->fops, NULL,
+> -				  fd_type->flags);
+> -	if (IS_ERR(filp)) {
+> -		uobj = ERR_CAST(filp);
+> +	new_fd = __anon_inode_getfd(fd_type->name, fd_type->fops, NULL,
+> +			fd_type->flags | O_CLOEXEC, &filp);
+> +	if (new_fd < 0)
+>  		goto err_uobj;
 
-> diff --git a/tools/bpf/bpftool/iter.c b/tools/bpf/bpftool/iter.c
-> new file mode 100644
-> index 000000000000..a8fb1349c103
-> --- /dev/null
-> +++ b/tools/bpf/bpftool/iter.c
-> @@ -0,0 +1,84 @@
-> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +// Copyright (C) 2020 Facebook
-> +
-> +#define _GNU_SOURCE
-> +#include <linux/err.h>
-> +#include <bpf/libbpf.h>
-> +
-> +#include "main.h"
-> +
-> +static int do_pin(int argc, char **argv)
-> +{
-> +       const char *objfile, *path;
-> +       struct bpf_program *prog;
-> +       struct bpf_object *obj;
-> +       struct bpf_link *link;
-> +       int err;
-> +
-> +       if (!REQ_ARGS(2))
-> +               usage();
-> +
-> +       objfile = GET_ARG();
-> +       path = GET_ARG();
-> +
-> +       obj = bpf_object__open(objfile);
-> +       if (IS_ERR_OR_NULL(obj)) {
+This will conflict with a fix (83a267021221 'RDMA/core: Fix
+overwriting of uobj in case of error') that is going to go to -rc
+soon.
 
-nit: can't be NULL
+Also the above misses returning an ERR_PTR if __anon_inode_getfd fails, it
+returns a uobj that had been freed.. I suppose it should be something
+like
 
-> +               p_err("can't open objfile %s", objfile);
-> +               return -1;
-> +       }
-> +
-> +       err = bpf_object__load(obj);
-> +       if (err) {
-> +               p_err("can't load objfile %s", objfile);
-> +               goto close_obj;
-> +       }
-> +
-> +       prog = bpf_program__next(NULL, obj);
+if (new_fd < 0) {
+   uverbs_uobject_put(uobj);
+   return ERR_PTR(new_fd)
+}
 
-check for null and printf error? Crashing is not good.
+?
 
-> +       link = bpf_program__attach_iter(prog, NULL);
-> +       if (IS_ERR(link)) {
-> +               err = PTR_ERR(link);
-> +               p_err("attach_iter failed for program %s",
-> +                     bpf_program__name(prog));
-> +               goto close_obj;
-> +       }
-> +
-> +       err = mount_bpffs_for_pin(path);
-> +       if (err)
-> +               goto close_link;
-> +
-> +       err = bpf_link__pin(link, path);
-> +       if (err) {
-> +               p_err("pin_iter failed for program %s to path %s",
-> +                     bpf_program__name(prog), path);
-> +               goto close_link;
-> +       }
-> +
-> +close_link:
-> +       bpf_link__disconnect(link);
-
-this is wrong, just destroy()
-
-> +       bpf_link__destroy(link);
-> +close_obj:
-> +       bpf_object__close(obj);
-> +       return err;
-> +}
-> +
-
-[...]
+Jason
