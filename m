@@ -2,288 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EF81CBA3B
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 23:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D404D1CBA9E
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 00:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728103AbgEHVxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 17:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728034AbgEHVxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 17:53:50 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F0C0C061A0C;
-        Fri,  8 May 2020 14:53:50 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id e6so4873604pjt.4;
-        Fri, 08 May 2020 14:53:50 -0700 (PDT)
+        id S1728272AbgEHWSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 18:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36618 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727082AbgEHWSf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 18:18:35 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6090DC061A0C;
+        Fri,  8 May 2020 15:18:35 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id v63so1656702pfb.10;
+        Fri, 08 May 2020 15:18:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=R0TzPmISdcMqHvmE7QsPNNAq61zop0SzUXYI+ioXbng=;
-        b=P4TTwC5KDY+KSaEHFTDVyA3iC5nO9qRGp6K7eZwBYK7gp6iqCL0hLOXdbEbecOGwXh
-         v0Ta/IZ0VSwsoLPlGxxOzi9l4bEAF0XwpQta4YYVoQIC1Pg2smp8g/qdzO2Y/3njwqIL
-         WSxHFvR2+XiBiGbyWyzhkCCMgXFBZdwlDOfHBPzUtCeb9kPVfrGQ+ZoKDCndA9glTa7Y
-         80NXo+sya6BG7CHIHVs3CVkJhNXswdqiKehIZvxbkcz7wg1S+MfuddxuTdEFPRbM0Ame
-         gXqCp21xtn9f/cRx7u7WuY6Z3QHaPl9FfJUTezWMw8oc/ilTg29gv0ZIA9Lk+5Er+MO3
-         8wSg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=slBeDdO+NLXpUllYxpa7W5p3QR99sLP2SUFK9a8TVgY=;
+        b=m1SEovlOEzStu6rpmVOzUq+28OLBDJ0YCj9SwngPILA0/lelPEAybDX2LlFdhQ5uRf
+         8FRNlABALiyFQPMPwhM+qJrczbFshSWQMiMk81+0KC4VpuGKa314QNjwpRE1iJg3OpRl
+         eSKuKnZiddvhDfQr8OwAbmC094r5b6ZnDvM/fuEXDWo/X892TZyf3LXHuCdXNDBl2bW5
+         q5Ma3XlCvXzL9Y7C6H2UAVLLjkGz+h2AdGvLK8jCNiOBy+pOqx1x6+Dx6s82NRQ7h5Zi
+         DbVz9gBu3nQJM9ALm6diYF3PCHKeJWwUlbigzdi65xXrXW16smEBD3sA4ecR6lFpRvKS
+         eRMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=R0TzPmISdcMqHvmE7QsPNNAq61zop0SzUXYI+ioXbng=;
-        b=EWQgJeYbYLjcHjmrD2uXrf6LT2puqZQi8627JceC0cvVZUNZci/PL7/DjrVFbPDzxl
-         fEy60IdySanHO2+waoG00yLDSI2xU2z8IpzQqM/kO5t+tFXwuwq6/PshsMoEt2pqJrSa
-         ah585SzunX9R3X99ONmxqSTVKXUgwxLjuYKOpA9MZIMnwQJ7T/bcAkjFordLwb6HbEvF
-         WuaF5Qh9y9GjC0LOZwIXj+fTJjZ0+RmBRQDe3bD3pCDBVgIftCkFQMGrs4z/uENgeXLH
-         D3cGuPROj97GLbqrGz03gNgTcu/l62KRO3eolYNLMVEpkL4U6uWm8W+PHPtPOg5+AYZB
-         TNVw==
-X-Gm-Message-State: AGi0PuaOxA1P/L2wqaoe4pwo2EpfJejejV/whVyVyE5Gul1UCUbKDaoD
-        ZDsQ6lO9cFrtQzdA0tAgAwVNaby2
-X-Google-Smtp-Source: APiQypINnuwSreCCDy74AZN/FvZ+XE4fra6x8GmoC9IpBAwqbJ0yJ54RnyV0M92qW5BjML/48UwFNQ==
-X-Received: by 2002:a17:90a:24ea:: with SMTP id i97mr8318204pje.189.1588974829850;
-        Fri, 08 May 2020 14:53:49 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id 20sm2720763pfx.116.2020.05.08.14.53.47
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 08 May 2020 14:53:49 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=slBeDdO+NLXpUllYxpa7W5p3QR99sLP2SUFK9a8TVgY=;
+        b=BliqN6+ZK7ELAHjBxPHAYjEXilAQt5x36tyDgbwpuac1Z/rUkkdzHGMTM5NF9AV7/e
+         0n1ZM1k4sNs00YLoud5pWxB9aX3Jgep5aVe/YGreGdZFQkfIBaFom67PKAELJgPkkf2p
+         dFNukQK+/kVyj4RRCbxX2QaPNIJNzkUkEL0KoYvmtdqZvdnin4UQmT2MQrZuNz5Q0aeQ
+         4oJ4BDSqeU7btfiA68T5Ub1r+HIB7oUVzTXmE1+p4lV7v3nfPDvJs5vtVDn8zrXQrqur
+         gesJkTFpWawgOR+ZIKxCOJRtIKx8U0OtUVHGKS1j08QyOkZxZBhCWcbVaJFBsjEb9I3j
+         gNUw==
+X-Gm-Message-State: AGi0PuahHqHEP4LRNuLw6FJnYM5s8TZzrzchoD6O/Ya9w50hyj5X5KuZ
+        FTAW4S/UmzRtOnhIfv0a6l4v274P
+X-Google-Smtp-Source: APiQypJGsg/+91OUBPAr4UGfb+rF5Qcfq90zvKPEBXSYZH+bSQIpyscPZ9BAGtYViDhbv216BibTOA==
+X-Received: by 2002:a62:5cc7:: with SMTP id q190mr4907996pfb.98.1588976314732;
+        Fri, 08 May 2020 15:18:34 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:d7c7])
+        by smtp.gmail.com with ESMTPSA id w192sm2831148pff.126.2020.05.08.15.18.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2020 15:18:33 -0700 (PDT)
+Date:   Fri, 8 May 2020 15:18:31 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com, linux-security-module@vger.kernel.org,
-        acme@redhat.com, jamorris@linux.microsoft.com, jannh@google.com,
-        kpsingh@google.com
-Subject: [PATCH v5 bpf-next 3/3] selftests/bpf: use CAP_BPF and CAP_PERFMON in tests
-Date:   Fri,  8 May 2020 14:53:40 -0700
-Message-Id: <20200508215340.41921-4-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
-In-Reply-To: <20200508215340.41921-1-alexei.starovoitov@gmail.com>
-References: <20200508215340.41921-1-alexei.starovoitov@gmail.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        X86 ML <x86@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] bpf: Tweak BPF jump table optimizations for objtool
+ compatibility
+Message-ID: <20200508221831.g6rdviekaqtcxh5f@ast-mbp.dhcp.thefacebook.com>
+References: <20200505174300.gech3wr5v6kkho35@ast-mbp.dhcp.thefacebook.com>
+ <20200505181108.hwcqanvw3qf5qyxk@treble>
+ <20200505195320.lyphpnprn3sjijf6@ast-mbp.dhcp.thefacebook.com>
+ <20200505202823.zkmq6t55fxspqazk@treble>
+ <20200505235939.utnmzqsn22cec643@ast-mbp.dhcp.thefacebook.com>
+ <20200506155343.7x3slq3uasponb6w@treble>
+ <CAADnVQJZ1rj1DB-Y=85itvfcHxnXVKjhJXpzqs6zZ6ZLpexhCQ@mail.gmail.com>
+ <20200506211945.4qhrxqplzmt4ul66@treble>
+ <20200507000357.grprluieqa324v5c@ast-mbp.dhcp.thefacebook.com>
+ <20200507140733.v4xlzjogtnpgu5lc@treble>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200507140733.v4xlzjogtnpgu5lc@treble>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+On Thu, May 07, 2020 at 09:07:33AM -0500, Josh Poimboeuf wrote:
+> On Wed, May 06, 2020 at 05:03:57PM -0700, Alexei Starovoitov wrote:
+> > > > > > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> > > > > > index d7ee4c6bad48..05104c3cc033 100644
+> > > > > > --- a/include/linux/compiler-gcc.h
+> > > > > > +++ b/include/linux/compiler-gcc.h
+> > > > > > @@ -171,4 +171,4 @@
+> > > > > >  #define __diag_GCC_8(s)
+> > > > > >  #endif
+> > > > > >
+> > > > > > -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
+> > > > > > +#define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
+> > > > > > --
+> > > > > > 2.23.0
+> > > > > >
+> > > > > > I've tested it with gcc 8,9,10 and clang 11 with FP=y and with ORC=y.
+> > > > > > All works.
+> > > > > > I think it's safer to go with frame pointers even for ORC=y considering
+> > > > > > all the pain this issue had caused. Even if objtool gets confused again
+> > > > > > in the future __bpf_prog_run() will have frame pointers and kernel stack
+> > > > > > unwinding can fall back from ORC to FP for that frame.
+> > > > > > wdyt?
+> > > > >
+> > > > > It seems dangerous to me.  The GCC manual recommends against it.
+> > > > 
+> > > > The manual can says that it's broken. That won't stop the world from using it.
+> > > > Just google projects that are using it. For example: qt, lz4, unreal engine, etc
+> > > > Telling compiler to disable gcse via flag is a guaranteed way to avoid
+> > > > that optimization that breaks objtool whereas messing with C code is nothing
+> > > > but guess work. gcc can still do gcse.
+> > > 
+> > > But the manual's right, it is broken.  How do you know other important
+> > > flags won't also be stripped?
+> > 
+> > What flags are you worried about?
+> > I've checked that important things like -mno-red-zone, -fsanitize are preserved.
+> 
+> It's not any specific flags I'm worried about, it's all of them.  There
+> are a lot of possibilities, with all the different configs, and arches.
+> Flags are usually added for a good reason, so one randomly missing flag
+> could have unforeseen results.
+> 
+> And I don't have any visibility into how GCC decides which flags to
+> drop, and when.  But the docs aren't comforting.
 
-Make all test_verifier test exercise CAP_BPF and CAP_PERFMON
+That doc change landed 5 years ago:
+https://patchwork.ozlabs.org/project/gcc/patch/20151213081911.GA320@x4/
+Sure it's 'broken' by whatever definition of broken.
+Yet gcc has
+$ git grep '__attribute__((optimize' gcc/testsuite/|wc -l
+34 tests to make sure it stays working.
+And gcc is using it to bootstrap itself. See LIBGCC2_UNWIND_ATTRIBUTE.
+The doc is expressing desire and trying to discourage its use,
+but that attribute is not going anywhere.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- tools/testing/selftests/bpf/test_verifier.c   | 44 +++++++++++++++----
- tools/testing/selftests/bpf/verifier/calls.c  | 16 +++----
- .../selftests/bpf/verifier/dead_code.c        | 10 ++---
- 3 files changed, 49 insertions(+), 21 deletions(-)
+> Even if things seem to work now, that could (silently) change at any
+> point in time.  This time objtool warned about the missing frame
+> pointer, but that's not necessarily going to happen for other flags.
+> 
+> If we go this route, I would much rather do -fno-gcse on a file-wide
+> basis.
 
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-index 21a1ce219c1c..78a6bae56ea6 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -818,10 +818,18 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 	}
- }
- 
-+struct libcap {
-+	struct __user_cap_header_struct hdr;
-+	struct __user_cap_data_struct data[2];
-+};
-+
- static int set_admin(bool admin)
- {
- 	cap_t caps;
--	const cap_value_t cap_val = CAP_SYS_ADMIN;
-+	/* need CAP_BPF, CAP_NET_ADMIN, CAP_PERFMON to load progs */
-+	const cap_value_t cap_net_admin = CAP_NET_ADMIN;
-+	const cap_value_t cap_sys_admin = CAP_SYS_ADMIN;
-+	struct libcap *cap;
- 	int ret = -1;
- 
- 	caps = cap_get_proc();
-@@ -829,11 +837,26 @@ static int set_admin(bool admin)
- 		perror("cap_get_proc");
- 		return -1;
- 	}
--	if (cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_val,
-+	cap = (struct libcap *)caps;
-+	if (cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_sys_admin, CAP_CLEAR)) {
-+		perror("cap_set_flag clear admin");
-+		goto out;
-+	}
-+	if (cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_admin,
- 				admin ? CAP_SET : CAP_CLEAR)) {
--		perror("cap_set_flag");
-+		perror("cap_set_flag set_or_clear net");
- 		goto out;
- 	}
-+	/* libcap is likely old and simply ignores CAP_BPF and CAP_PERFMON,
-+	 * so update effective bits manually
-+	 */
-+	if (admin) {
-+		cap->data[1].effective |= 1 << (38 /* CAP_PERFMON */ - 32);
-+		cap->data[1].effective |= 1 << (39 /* CAP_BPF */ - 32);
-+	} else {
-+		cap->data[1].effective &= ~(1 << (38 - 32));
-+		cap->data[1].effective &= ~(1 << (39 - 32));
-+	}
- 	if (cap_set_proc(caps)) {
- 		perror("cap_set_proc");
- 		goto out;
-@@ -1067,9 +1090,11 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
- 
- static bool is_admin(void)
- {
-+	cap_flag_value_t net_priv = CAP_CLEAR;
-+	bool perfmon_priv = false;
-+	bool bpf_priv = false;
-+	struct libcap *cap;
- 	cap_t caps;
--	cap_flag_value_t sysadmin = CAP_CLEAR;
--	const cap_value_t cap_val = CAP_SYS_ADMIN;
- 
- #ifdef CAP_IS_SUPPORTED
- 	if (!CAP_IS_SUPPORTED(CAP_SETFCAP)) {
-@@ -1082,11 +1107,14 @@ static bool is_admin(void)
- 		perror("cap_get_proc");
- 		return false;
- 	}
--	if (cap_get_flag(caps, cap_val, CAP_EFFECTIVE, &sysadmin))
--		perror("cap_get_flag");
-+	cap = (struct libcap *)caps;
-+	bpf_priv = cap->data[1].effective & (1 << (39/* CAP_BPF */ - 32));
-+	perfmon_priv = cap->data[1].effective & (1 << (38/* CAP_PERFMON */ - 32));
-+	if (cap_get_flag(caps, CAP_NET_ADMIN, CAP_EFFECTIVE, &net_priv))
-+		perror("cap_get_flag NET");
- 	if (cap_free(caps))
- 		perror("cap_free");
--	return (sysadmin == CAP_SET);
-+	return bpf_priv && perfmon_priv && net_priv == CAP_SET;
- }
- 
- static void get_unpriv_disabled()
-diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
-index 2d752c4f8d9d..7629a0cebb9b 100644
---- a/tools/testing/selftests/bpf/verifier/calls.c
-+++ b/tools/testing/selftests/bpf/verifier/calls.c
-@@ -19,7 +19,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 2),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 1,
-@@ -315,7 +315,7 @@
- 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_1),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "allowed for root only",
-+	.errstr_unpriv = "allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = POINTER_VALUE,
-@@ -346,7 +346,7 @@
- 	BPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_2),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "allowed for root only",
-+	.errstr_unpriv = "allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = TEST_DATA_LEN + TEST_DATA_LEN - ETH_HLEN - ETH_HLEN,
-@@ -397,7 +397,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 1),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.fixup_map_hash_48b = { 3 },
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
-@@ -1064,7 +1064,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 0),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "allowed for root only",
-+	.errstr_unpriv = "allowed for",
- 	.result_unpriv = REJECT,
- 	.errstr = "R0 !read_ok",
- 	.result = REJECT,
-@@ -1977,7 +1977,7 @@
- 	BPF_EXIT_INSN(),
- 	},
- 	.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- },
-@@ -2003,7 +2003,7 @@
- 	BPF_EXIT_INSN(),
- 	},
- 	.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.errstr = "!read_ok",
- 	.result = REJECT,
- },
-@@ -2028,7 +2028,7 @@
- 	BPF_EXIT_INSN(),
- 	},
- 	.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.errstr = "!read_ok",
- 	.result = REJECT,
- },
-diff --git a/tools/testing/selftests/bpf/verifier/dead_code.c b/tools/testing/selftests/bpf/verifier/dead_code.c
-index 50a8a63be4ac..5cf361d8eb1c 100644
---- a/tools/testing/selftests/bpf/verifier/dead_code.c
-+++ b/tools/testing/selftests/bpf/verifier/dead_code.c
-@@ -85,7 +85,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 12),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 7,
-@@ -103,7 +103,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 12),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 7,
-@@ -121,7 +121,7 @@
- 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, -5),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 7,
-@@ -137,7 +137,7 @@
- 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_1),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 2,
-@@ -152,7 +152,7 @@
- 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_1),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 2,
--- 
-2.23.0
-
+The fix for broken commit 3193c0836f20 has to be backported all the way
+to 5.3 release. I'd like to minimize conflicts.
+For that very reason I'm not even renaming #define __no_fgcse.
