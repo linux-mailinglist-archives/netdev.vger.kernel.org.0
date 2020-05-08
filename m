@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6FDD1CB7EA
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 21:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A2881CB808
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 21:17:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727770AbgEHTIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 15:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
+        id S1727071AbgEHTR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 15:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726807AbgEHTIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 15:08:00 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443C9C061A0C;
-        Fri,  8 May 2020 12:08:00 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id s9so1876091qkm.6;
-        Fri, 08 May 2020 12:08:00 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726767AbgEHTR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 15:17:26 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE44C061A0C;
+        Fri,  8 May 2020 12:17:26 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id b6so1726912qkh.11;
+        Fri, 08 May 2020 12:17:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=AJhpJQVrwpI8jjESK3Ar5T0fYNUUN9gvceX5UjwQhS4=;
-        b=ao/ZPvBw4HIHlR/M/7SV23PDrSSYiMQ/M82PpjmpOom9o5jU/uM5Mm/s2V7WpVxwta
-         q+cX10N/1YUenmWB7v7TJvOYiHnjga/6N612B127MZOSunxWlFsAcgEgQxQ23vdSYH0n
-         wa+/0xPRx+ZNeYdQWx2akiShFc1hwkHFnyZDOdd+ZcEhVG4Pt1wS735QttvL/oz+3Jxj
-         CFjNUG0OOTcbgbBQzWpkXHB/Bk70gaITFAEZ1bxfR+raM5ZuBdqRtdQ1VJCdLxflO2lU
-         Jy5pB0A1eNBEG/b3nyQf58IJcprR9xslPGXlnLaXQoq54VuNbomzkIzmQT5+95Hn8zDm
-         RsxQ==
+        bh=8qkd1Vxkbdock9qtJb1K8tFWR6V/0xtrk6Iu1YkChhk=;
+        b=eHNFfeUwolwUVcCoIod6HU1+w7hIOl+k1q3vHap3/nTidpOktOndoQE1lOoQMKs6Ot
+         F+JdA8Uhs6gox9Cf7SHLi49cf15ZpJJCcyM6O/MTXN7kkCsgwT2ODvKGS2OBdpJVGFgf
+         Woo1liK+S3h9S16y/MBCVFBCS5tdccYK66Jm/J6unPR5F9+pFyvLfhvjJyZD4UNQpFIf
+         N8NrqpVwGnW3DHoxeR6Nh9C0i+nu8+Flf8Ge9YpQEQr7pC9CLnutaY+irJpzweGJlUav
+         kbogUZC1n9lelzWH2ufUzK+oG6e0nZeRoewOi1J5Nf3+q3r/ozfiFk5vW/reJyntarOp
+         bBag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=AJhpJQVrwpI8jjESK3Ar5T0fYNUUN9gvceX5UjwQhS4=;
-        b=fHYseEIdk/N/OyFGjqQnd55ir0mSBmvWr+dCn/B3EXhhZQui3NPZYIg2jZgRjZZ0oD
-         Ud+f/4MXkvpWcxPJGYEjzNoZj3hbpLFOeZlWwQyLGOgYKvSIivS9jQTjTu/QHW3J9uSV
-         dUqsvQpR0mb5eTDgQmeDalXTeZd1hrkJ5Zh2zYME9dvmCm7ET6wR4lcWVOkBV+mWsEvQ
-         /7NglMff7w8zpEmRNUUIWAOwDVV0k/GXfGMSR0XtKQgahcF2Ye6DI81ygzHa3U7Y5YAZ
-         V7MllmqqgAJqiY4i+6mT2Gsx2RzulsD8tu+Jz8vuOWQ1COE1FrVbl/CuN7YOV176Nkha
-         RptA==
-X-Gm-Message-State: AGi0PuYuN+w7eeuaVH3tuZpVnJ9zE3qUMIlvaE+lXxmqMpZIF/DR+XGP
-        KMVI39bzd3N60/7e6YWUGhj7LGu42m87n7clPdwkQu8e
-X-Google-Smtp-Source: APiQypL80ObNgJMVAo/8CeFapg0XVJIviObRAZkADCoqAQtM9B8WbMyHc3Eod6CZ4xDx3oCR+9jjsEOXMkv6AX6o7n0=
-X-Received: by 2002:a37:68f:: with SMTP id 137mr4351977qkg.36.1588964879303;
- Fri, 08 May 2020 12:07:59 -0700 (PDT)
+        bh=8qkd1Vxkbdock9qtJb1K8tFWR6V/0xtrk6Iu1YkChhk=;
+        b=C0MyqvOlTTjhnYzrs2PZe0pCH3tY0d5Xw/OjhjXHaXn/BXIQsM0OAB8ye5VgVKdgFW
+         71EH1MAwwduUvRIwGSyOW8F2kODDfufqsCFCTTiEkxgF91aEKtTBOuOH0Inl3hrMC5ne
+         rUY+2SCw8D80loQM0X4BcQyQXu6D9aKP1V6iOkPlRPnQEm0gSbXtJM+wnBgI7Ohw3Ipv
+         IPlubfsAZAoYIImvv7kJUFUZaT3JEb1puf6XrpR3yqvr+6UijXmpUSEtBgoWsjxq4KIW
+         LJnCarUubZ3m1ATsk4sZfmOa1/DW16Xq7lKpRTp8VNlZ1uEZRRB7mKZYb8e0vj/siIhV
+         c6bg==
+X-Gm-Message-State: AGi0PuaX8puMwkxzUwarvUEMa0yh0oTKmmMc54qfO7AeR505NKG3m0w/
+        mRhXJyyxHvRDwkY/1Dbd96dDthdaqGQ4+DKR2qWvxbX/
+X-Google-Smtp-Source: APiQypInEDI2ZEkQtiPnf0RkqYHZYktNakLE873Mauna+yIMgftIRTGpEF+U+czKJfrtx3rwcFFPjI5V8n/uZvs7+fk=
+X-Received: by 2002:a05:620a:14a1:: with SMTP id x1mr4280505qkj.92.1588965445914;
+ Fri, 08 May 2020 12:17:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200507053915.1542140-1-yhs@fb.com> <20200507053924.1543103-1-yhs@fb.com>
-In-Reply-To: <20200507053924.1543103-1-yhs@fb.com>
+References: <20200507053915.1542140-1-yhs@fb.com> <20200507053926.1543403-1-yhs@fb.com>
+In-Reply-To: <20200507053926.1543403-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 May 2020 12:07:48 -0700
-Message-ID: <CAEf4BzZ1vD_F74gy5mx_s8+cbw4OuZwJxpW36CijE-RWxOf__g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 08/21] bpf: implement common macros/helpers
- for target iterators
+Date:   Fri, 8 May 2020 12:17:15 -0700
+Message-ID: <CAEf4BzYvwCaG9sTFM-mJXRF-BosuRRe+URZpVUvrke-nXABivA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 10/21] net: bpf: add netlink and ipv6_route
+ bpf_iter targets
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -66,65 +66,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, May 6, 2020 at 10:40 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> Macro DEFINE_BPF_ITER_FUNC is implemented so target
-> can define an init function to capture the BTF type
-> which represents the target.
+> This patch added netlink and ipv6_route targets, using
+> the same seq_ops (except show() and minor changes for stop())
+> for /proc/net/{netlink,ipv6_route}.
 >
-> The bpf_iter_meta is a structure holding meta data, common
-> to all targets in the bpf program.
+> The net namespace for these targets are the current net
+> namespace at file open stage, similar to
+> /proc/net/{netlink,ipv6_route} reference counting
+> the net namespace at seq_file open stage.
 >
-> Additional marker functions are called before or after
-> bpf_seq_read() show()/next()/stop() callback functions
-> to help calculate precise seq_num and whether call bpf_prog
-> inside stop().
->
-> Two functions, bpf_iter_get_info() and bpf_iter_run_prog(),
-> are implemented so target can get needed information from
-> bpf_iter infrastructure and can run the program.
+> Since module is not supported for now, ipv6_route is
+> supported only if the IPV6 is built-in, i.e., not compiled
+> as a module. The restriction can be lifted once module
+> is properly supported for bpf_iter.
 >
 > Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
->  include/linux/bpf.h   | 11 ++++++
->  kernel/bpf/bpf_iter.c | 86 ++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 92 insertions(+), 5 deletions(-)
->
 
-Looks good. I was worried about re-using seq_num when element is
-skipped, but this could already happen that same seq_num is associated
-with different objects: overflow + retry returns different object
-(because iteration is not a snapshot, so the element could be gone on
-retry). Both cases will have to be handled in about the same fashion,
-so it's fine.
-
-Hm... Could this be a problem for start() implementation? E.g., if
-object is still there, but iterator wants to skip it permanently.
-Re-using seq_num will mean that start() will keep trying to fetch same
-to-be-skipped element? Not sure, please think about it, but we can fix
-it up later, if necessary.
+Looks correct.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
+>  fs/proc/proc_net.c       | 19 +++++++++
+>  include/linux/proc_fs.h  |  3 ++
+>  net/ipv6/ip6_fib.c       | 65 +++++++++++++++++++++++++++++-
+>  net/ipv6/route.c         | 37 +++++++++++++++++
+>  net/netlink/af_netlink.c | 87 +++++++++++++++++++++++++++++++++++++++-
+>  5 files changed, 207 insertions(+), 4 deletions(-)
+>
+
 [...]
 
-> @@ -112,11 +143,16 @@ static ssize_t bpf_seq_read(struct file *file, char __user *buf, size_t size,
->                         err = PTR_ERR(p);
->                         break;
->                 }
-> +
-> +               /* get a valid next object, increase seq_num */
-
-typo: get -> got
-
-> +               bpf_iter_inc_seq_num(seq);
-> +
->                 if (seq->count >= size)
->                         break;
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index 3912aac7854d..25f6d3e619d0 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -6393,6 +6393,30 @@ void __init ip6_route_init_special_entries(void)
+>    #endif
+>  }
 >
->                 err = seq->op->show(seq, p);
->                 if (err > 0) {
-> +                       bpf_iter_dec_seq_num(seq);
->                         seq->count = offs;
->                 } else if (err < 0 || seq_has_overflowed(seq)) {
->                         seq->count = offs;
+> +#if IS_BUILTIN(CONFIG_IPV6)
+> +#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
+> +DEFINE_BPF_ITER_FUNC(ipv6_route, struct bpf_iter_meta *meta, struct fib6_info *rt)
+> +
+> +static int __init bpf_iter_register(void)
+> +{
+> +       struct bpf_iter_reg reg_info = {
+> +               .target                 = "ipv6_route",
+> +               .seq_ops                = &ipv6_route_seq_ops,
+> +               .init_seq_private       = bpf_iter_init_seq_net,
+> +               .fini_seq_private       = bpf_iter_fini_seq_net,
+> +               .seq_priv_size          = sizeof(struct ipv6_route_iter),
+> +       };
+> +
+> +       return bpf_iter_reg_target(&reg_info);
+> +}
+> +
+> +static void bpf_iter_unregister(void)
+> +{
+> +       bpf_iter_unreg_target("ipv6_route");
+
+Nit. This string duplication is unfortunate. If bpf_iter_unreg_target
+took same `struct bpf_iter_ret *` as bpf_iter_reg_target(), it would
+be symmetrical and not dependent on magic strings anymore. That
+reg_info struct would just be static const struct global variable
+passed to both register/unregister.
+
+> +}
+> +#endif
+> +#endif
+> +
 
 [...]
