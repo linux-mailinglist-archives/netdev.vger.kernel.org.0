@@ -2,103 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2885F1CB297
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 17:13:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E8571CB2CC
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 17:28:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbgEHPNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 11:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54734 "EHLO
+        id S1726904AbgEHP2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 11:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726627AbgEHPNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 11:13:24 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1AAC061A0C
-        for <netdev@vger.kernel.org>; Fri,  8 May 2020 08:13:24 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id f5so1104205ybo.4
-        for <netdev@vger.kernel.org>; Fri, 08 May 2020 08:13:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DKpTqkjAnviw6zqXamQ6vXKxTa/70Egj1B44LG78reU=;
-        b=MIxiHaRTfMwe2KMjWpEktjt8zmAgT34C2uT3C6O92wxhPSOEwnw+VLnFp5vKRooHWm
-         BvDIY30iqOw1GGO3fOdlFI5dc4TE9e4RyAh3tS4vS3gVevmeynYPX3qDkypydxWHW+qk
-         J9wioUq0+0LckbGBdfYXoiI6NQDgAU78SlEaKCVh9/LDtUyOE2waMCtLLFYhxWiYNZtB
-         kMMtCmM1eWgacVjCPijxpCupdBaA1iy/ccB9T0irc+0oIEnZRQ8zxXxDkOI1+jHPya3f
-         ur8VUQgZegILPcI5jBeNZluEYuTcQmICNRfhyBwDR7r6UXaFqOFqQEEGvDP9J+MWSrrZ
-         PlzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DKpTqkjAnviw6zqXamQ6vXKxTa/70Egj1B44LG78reU=;
-        b=Bl92uQqkTPKVposcnbru7NPqQHhU2UopCmHmx8j4CbCaWRRw5GH3KQopBK1DVwJKq0
-         Z/Vxf5dzFOkXRe0OB8zmV3eT2S2WqFCmPmgYltV7Uxa299x33//lT3f3/ayYuJbRM/yz
-         +7D2fu5HL2hqTimKyt2ZO7ZktX/OSwk0z10mbh4hOJj1gmI9qmR8QC1nkWPuK5BFzdNs
-         0qLWjInpJkiEuTLcF66aML8TrCoBXz0Q0vfqMkqtn0P0z5zuJ4pXIGA0OkgbIrmkBGJh
-         xIlzPppYV/nW/gtCMbbTxbo+ztOt5KdrNeMxldTDcfLFug57vV3gZ5fXjDlXLmxjUInG
-         mYzA==
-X-Gm-Message-State: AGi0PubF0cV0/gY5QgECVjC31gVB9J++b4kwaFsWERd/CNsigWH2O4BC
-        4WmlpaGnEC1Av1S+IKnlhWkYMIygH14bs6fQgRsLVADb
-X-Google-Smtp-Source: APiQypJ0Fs3PcwKfkKcHyjgGgxhfZuNgVa8e5iaXVKwFo+zNUp9biaTLwEjGUEdLemWZY4+uL2UF7KcIqKLjdPeKCrU=
-X-Received: by 2002:a25:abcc:: with SMTP id v70mr5165263ybi.364.1588950803175;
- Fri, 08 May 2020 08:13:23 -0700 (PDT)
+        with ESMTP id S1726636AbgEHP2u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 11:28:50 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1A0C061A0C
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 08:28:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=ZGiqTkw2DY4uq73TtCb3ENDFOPr8DHMj0a0PIEGWFjA=; b=l7fC3qnEkJUymmrnwUar8yKYl
+        Tj7Rff4PZz+QwzypGtSnfOYK0IkDVC7sB4tYZOtgHgauRLqE162/7KjCri0GW0WkG4QQegoJ0JHDS
+        NtFgIbXNBu63a8CJMtltNKzS2XRBnAQ5Del5MSnEsIN86aWCyiI1CIul5xMIXS1SInsD4kTR+OdWf
+        ckhBAcycEfk3Hg1arghIOaDQMRaKkEDguRtzp2gOKMEmquFgyZKowtz8ybmb4uB8udM9D1WinbrGj
+        dcgk0nchOxjhmbbFkDCk9KRXYrzy/iYbeBl5t22I/yE3fz8GtTgTO+vggKkWynq2Sr7gr/13V+Ew/
+        v4iz6qnyw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:37634)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jX4vd-0001IB-DT; Fri, 08 May 2020 16:28:45 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jX4vc-0001uw-Px; Fri, 08 May 2020 16:28:44 +0100
+Date:   Fri, 8 May 2020 16:28:44 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: sfp: add some quirks for FreeTel direct
+ attach modules
+Message-ID: <20200508152844.GV1551@shell.armlinux.org.uk>
+References: <20200507132135.316-1-marek.behun@nic.cz>
 MIME-Version: 1.0
-References: <20200508143414.42022-1-edumazet@google.com> <362c2030-6e7f-512d-4285-d904b4a433b6@gmail.com>
- <a5f381b0-e2bf-05f9-a849-d9d45aa38212@gmail.com> <92c6ab11-3022-a01a-95db-13f6da8637cc@gmail.com>
-In-Reply-To: <92c6ab11-3022-a01a-95db-13f6da8637cc@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 8 May 2020 08:13:11 -0700
-Message-ID: <CANn89iJFZCid4eKEx+HW25rLEfyDTzLvPK391aT5tCZzSBCX5w@mail.gmail.com>
-Subject: Re: [PATCH net-next] ipv6: use DST_NOCOUNT in ip6_rt_pcpu_alloc()
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        David Ahern <dsahern@kernel.org>, Wei Wang <weiwan@google.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200507132135.316-1-marek.behun@nic.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 8:04 AM David Ahern <dsahern@gmail.com> wrote:
->
-> On 5/8/20 8:43 AM, Eric Dumazet wrote:
-> > This patch can be backported without any pains ;)
->
-> sure, but you tagged it as net-next, not net.
+On Thu, May 07, 2020 at 03:21:35PM +0200, Marek Behún wrote:
+> FreeTel P.C30.2 and P.C30.3 may fail to report anything useful from
+> their EEPROM. They report correct nominal bitrate of 10300 MBd, but do
+> not report sfp_ct_passive nor sfp_ct_active in their ERPROM.
+> 
+> These modules can also operate at 1000baseX and 2500baseX.
+> 
+> Signed-off-by: Marek Behún <marek.behun@nic.cz>
+> Cc: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/phy/sfp-bus.c | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+> 
+> diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+> index 6900c68260e0..f021709bedcc 100644
+> --- a/drivers/net/phy/sfp-bus.c
+> +++ b/drivers/net/phy/sfp-bus.c
+> @@ -44,6 +44,14 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
+>  	phylink_set(modes, 2500baseX_Full);
+>  }
+>  
+> +static void sfp_quirk_direct_attach_10g(const struct sfp_eeprom_id *id,
+> +					unsigned long *modes)
+> +{
+> +	phylink_set(modes, 10000baseCR_Full);
+> +	phylink_set(modes, 2500baseX_Full);
+> +	phylink_set(modes, 1000baseX_Full);
+> +}
+> +
+>  static const struct sfp_quirk sfp_quirks[] = {
+>  	{
+>  		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
+> @@ -63,6 +71,18 @@ static const struct sfp_quirk sfp_quirks[] = {
+>  		.vendor = "HUAWEI",
+>  		.part = "MA5671A",
+>  		.modes = sfp_quirk_2500basex,
+> +	}, {
+> +		// FreeTel P.C30.2 is a SFP+ direct attach that can operate at
+> +		// at 1000baseX, 2500baseX and 10000baseCR, but may report none
+> +		// of these in their EEPROM
+> +		.vendor = "FreeTel",
+> +		.part = "P.C30.2",
+> +		.modes = sfp_quirk_direct_attach_10g,
+> +	}, {
+> +		// same as previous
+> +		.vendor = "FreeTel",
+> +		.part = "P.C30.3",
+> +		.modes = sfp_quirk_direct_attach_10g,
 
-Because it is not a recent regression.
-We are late in rc cycle.
+Looking at the EEPROM capabilities, it seems that these modules give
+either:
 
-I tend to push patches on net-next, then ask later for stable
-backports once we are sure no regression was added,
-even for patches that look 'very safe'  ;)
+Transceiver codes     : 0x01 0x00 0x00 0x00 0x00 0x04 0x80 0x00 0x00
+Transceiver type      : Infiniband: 1X Copper Passive
+Transceiver type      : Passive Cable
+Transceiver type      : FC: Twin Axial Pair (TW)
+Encoding              : 0x06 (64B/66B)
+BR, Nominal           : 10300MBd
+Passive Cu cmplnce.   : 0x01 (SFF-8431 appendix E) [SFF-8472 rev10.4 only]
+BR margin, max        : 0%
+BR margin, min        : 0%
 
+or:
 
+Transceiver codes     : 0x00 0x00 0x00 0x00 0x00 0x04 0x80 0x00 0x00
+Transceiver type      : Passive Cable
+Transceiver type      : FC: Twin Axial Pair (TW)
+Encoding              : 0x06 (64B/66B)
+BR, Nominal           : 10300MBd
+Passive Cu cmplnce.   : 0x01 (SFF-8431 appendix E) [SFF-8472 rev10.4 only]
+BR margin, max        : 0%
+BR margin, min        : 0%
 
->
-> >
-> > Getting rid of limits, even for exceptions ?
->
-> Running through where dst entries are created in IPv6:
-> 1. pcpu cache
-> 2. uncached_list
-> 3. exceptions like pmtu and redirect
->
-> All of those match IPv4 and as I recall IPv4 does not have any limits,
-> even on exceptions and redirect. If IPv4 does not have limits, why
-> should IPv6? And if the argument is uncontrolled memory consumption, is
-> there an expectation that IPv6 generates more exceptions?
->
-> My argument really just boils down to consistency between them. IPv4
-> does not use DST_NOCOUNT, so why put that burden on v6?
+These give ethtool capability mask of 000,00000600,0000e040, which
+is:
 
-That is something that needs further investigation.
-Too many fires at this moment on my plate.
+	2500baseX (bit 15)
+	1000baseX (bit 41)
+	10000baseCR (bit 42)
 
-My patch stops bleeding right now.
+10000baseCR, 2500baseX and 1000baseX comes from:
 
-Thanks.
+        if ((id->base.sfp_ct_passive || id->base.sfp_ct_active) && br_nom) {
+                /* This may look odd, but some manufacturers use 12000MBd */
+                if (br_min <= 12000 && br_max >= 10300)
+                        phylink_set(modes, 10000baseCR_Full);
+                if (br_min <= 3200 && br_max >= 3100)
+                        phylink_set(modes, 2500baseX_Full);
+                if (br_min <= 1300 && br_max >= 1200)
+                        phylink_set(modes, 1000baseX_Full);
+
+since id->base.sfp_ct_passive is true, and br_nom = br_max = 10300 and
+br_min = 0.
+
+10000baseCR will also come from:
+
+        if (id->base.sfp_ct_passive) {
+                if (id->base.passive.sff8431_app_e)
+                        phylink_set(modes, 10000baseCR_Full);
+        }
+
+You claimed in your patch description that sfp_ct_passive is not set,
+but the EEPROM dumps contain:
+
+	Transceiver type      : Passive Cable
+
+which is correctly parsed by the kernel.
+
+So, I'm rather confused, and I don't see why this patch is needed.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
