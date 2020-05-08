@@ -2,118 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADABA1CB69B
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:04:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A01001CB6AF
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 20:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbgEHSEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 14:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53310 "EHLO
+        id S1726767AbgEHSG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 14:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726756AbgEHSEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:04:41 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39321C061A0C;
-        Fri,  8 May 2020 11:04:41 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id z2so2655181iol.11;
-        Fri, 08 May 2020 11:04:41 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726746AbgEHSG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 14:06:28 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3953C061A0C
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 11:06:28 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id b8so1389486ybn.0
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 11:06:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6n7N9OP5xGlbdCY3wbnFvbe92wVnKtN4kGkgM+TDOk0=;
-        b=V7+iqsCA8GIu6utgH2UMhByKaA2/FCf7MLe6adjxHlKp1CGufE5CkcjrPULjDhUhw7
-         C1SLnkOu88d+kq7GTGEhYnndx2U218EuNKPCi15Iiw9YgiVEqobpg1xfBRNb565+4Dp3
-         Iiv0OGfmbGMgvKl8dp8hg3QClDCHjoK/AFnzaxFngSlMIQlWZm8eFljIrCJRE/7Iq8K0
-         HMUTpORzJaindByoGANqSJKIIRJvXnTjroQPEYkH81WLuEqy43XDfVcdpMmIGcTdpzrq
-         +rtv6Ksf7hvlvzZ3bFK0I66nt123P7WSrgDRR7mDmyqiaVEKZwGriVhn0/jackUrHwl1
-         IXFg==
+        bh=uAlBu8SMURqxDUbt8GgIpem8C7ql67Dv+Tr8gF2aESg=;
+        b=kq7vugtujJ5vxoZBw3u9S9dSw5gIiw04tv0nSkdBlOt2xUFQWEQCZkDs1f8y6uVO3G
+         yRT+rFegE2jqgsTH17YbiCmFkGotyagStIwU+RxsorkCw/RRL+KfWfOxrNRxhN7dZYk7
+         orw0sw+UdBSVzQ9MOPKI2NX/BAnqwensu6ndb2OpOMIhURSoNbh3sAqxmmE2zO4iyoaJ
+         yzSX5VxkXJWa3wr7qEZurzaHLBE6o3XkkSctpQv9AcnKcH4DnSbvNheJWanCefglUekK
+         sHPm7chftIbEM/jN0sUNNkcqLpLmqzIZAgYblycLPtM0RejjcehqdvH4NaNbbSK7v/Hr
+         92hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6n7N9OP5xGlbdCY3wbnFvbe92wVnKtN4kGkgM+TDOk0=;
-        b=LhrwEZqrpCH8wKGSqb9GllcoaQ/qCDlAe6RlGIJLjOWQG/5ewZdTaWuVk4kHvdwZ50
-         CB3gc9t/Jogikce2+KY4H2WnJzHlOA58CW3hZeriJaKxJt7SZa/seCXSNRU4TH7NXtbj
-         6gs9Z7ATzB6ls07S81LKySdnQJuWTt2tqs26PWqwJmZq1ri+Dw6abf4cEFNC7a+mcH4O
-         qbpoyGztkL6Es7OO0hka5IufZWYbR76Og0gfH4018Fz93bzjaoP1qngqSIawdzQuU1tc
-         gwZfvkgykaR3Z/HSWqTeD+4En2kmMhIaI69rmgC60uLWGYt/12jDI9nV8/dp5Gbp/xv5
-         onyA==
-X-Gm-Message-State: AGi0PubhBT9Ag+8O5xt51tmoWq1nHdhjWic+uW8FwRP2Xyabeff/AP6z
-        dJYtn6Eh6abKkMg8QF6mLqFPl8xHjYEAK4Orwsg=
-X-Google-Smtp-Source: APiQypLb5fZO4mkjqTLGPaD0VhNwGL/3AK5hbJeXdURVDlAJjd5J9F30z8u63HbQu6cSTn9Iu36jeUpzMGuIYDHUQ6I=
-X-Received: by 2002:a5d:970e:: with SMTP id h14mr3769395iol.117.1588961080652;
- Fri, 08 May 2020 11:04:40 -0700 (PDT)
+        bh=uAlBu8SMURqxDUbt8GgIpem8C7ql67Dv+Tr8gF2aESg=;
+        b=jFEW+SmMNbQ1+6Cj4oJVrmYvrE+gecQxeJqSzavCG3ILS1tABN1tsFzQKALs3ozfEJ
+         /FKL9a2akJtMiCAFYgPrjf1ONUXCwj6u+V2Pk/TRwuiDwNoZp7nVGcf2HdlERdrT4CiG
+         e//+109Ub8fdH/iUpQ9unTFgmQKHpHzkWB4WkC6UVSE07J+X7fceYR0nQXfrssdXQH1f
+         IZbASjIV1/SHesOHE2U6plwVw2Xwp19eu01aw/mNlmA/BPmQVXJ1Y8F6rkQzg5MTmjVJ
+         I38o+ZA8VlFaXpjdsCWaq0ZD7ZsOLh3/WoD1OID1gKvrnSSWuF8zrZJt8NQiSOKMSE3D
+         tynA==
+X-Gm-Message-State: AGi0Publ1UXbBdtmUYwpzLbFZxode7iCS1jvhMtZ3jB9UWZcjm1XWkdc
+        C3GbqrgQ1iJFV3trAUSHpYJbyoLhBx+jdSP58eGSiA==
+X-Google-Smtp-Source: APiQypKMGBkKZWfx5NlblA5Dee7bC7/k9PXZNodfIPqzfCeyQtVZ3PG4/B54OXTYfRCl2KH+N8BX1MZiCFmBGkehwGw=
+X-Received: by 2002:a25:6f86:: with SMTP id k128mr6529346ybc.520.1588961187542;
+ Fri, 08 May 2020 11:06:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200508063954.256593-1-irogers@google.com> <CAEf4BzYT5FfDt2oqctHC6dXNmwg5gaaNcFu1StObuYk-jKocLQ@mail.gmail.com>
- <CAP-5=fU-QxfdkQoHP=Ksqeb9gPTE4xYcgEcp9Ej6trZpkCDvPA@mail.gmail.com>
-In-Reply-To: <CAP-5=fU-QxfdkQoHP=Ksqeb9gPTE4xYcgEcp9Ej6trZpkCDvPA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 May 2020 11:04:29 -0700
-Message-ID: <CAEf4BzZFWsRKz+dUj6MHw2=qOpXpmna6ommRE9OxQZEoHH6UmA@mail.gmail.com>
-Subject: Re: [PATCH] libbpf hashmap: fix undefined behavior in hash_bits
-To:     Ian Rogers <irogers@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20200508015810.46023-1-edumazet@google.com> <CABCgpaUqymfoGGyExvKv65UDvLfHnw2cavVCr1Pq8coz21ujKA@mail.gmail.com>
+In-Reply-To: <CABCgpaUqymfoGGyExvKv65UDvLfHnw2cavVCr1Pq8coz21ujKA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 8 May 2020 11:06:16 -0700
+Message-ID: <CANn89iKk8aZ=wwbet8q_U=inbksvWhJvUewMGP+FfLYiD+yOCQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/dst: use a smaller percpu_counter batch for
+ dst entries accounting
+To:     Brian Vazquez <brianvv.kernel@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 12:21 AM Ian Rogers <irogers@google.com> wrote:
+On Fri, May 8, 2020 at 10:30 AM Brian Vazquez <brianvv.kernel@gmail.com> wrote:
 >
-> On Fri, May 8, 2020 at 12:12 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
+> On Thu, May 7, 2020 at 7:00 PM Eric Dumazet <edumazet@google.com> wrote:
 > >
-> > On Thu, May 7, 2020 at 11:40 PM Ian Rogers <irogers@google.com> wrote:
-> > >
-> > > If bits is 0, the case when the map is empty, then the >> is the size of
-> > > the register which is undefined behavior - on x86 it is the same as a
-> > > shift by 0. Fix by handling the 0 case explicitly.
-> > >
-> > > Signed-off-by: Ian Rogers <irogers@google.com>
-> > > ---
+> > percpu_counter_add() uses a default batch size which is quite big
+> > on platforms with 256 cpus. (2*256 -> 512)
 > >
-> > No need. The only case when bits can be 0 is when hashmap is
-> > completely empty (no elements have ever been added yet). In that case,
-> > it doesn't matter what value hash_bits() returns,
-> > hashmap__for_each_key_entry/hashmap__for_each_key_entry_safe will
-> > behave correctly, because map->buckets will be NULL.
+> > This means dst_entries_get_fast() can be off by +/- 2*(nr_cpus^2)
+> > (131072 on servers with 256 cpus)
+> >
+> > Reduce the batch size to something more reasonable, and
+> > add logic to ip6_dst_gc() to call dst_entries_get_slow()
+> > before calling the _very_ expensive fib6_run_gc() function.
+> >
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > ---
+> >  include/net/dst_ops.h | 4 +++-
+> >  net/core/dst.c        | 8 ++++----
+> >  net/ipv6/route.c      | 3 +++
+> >  3 files changed, 10 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/include/net/dst_ops.h b/include/net/dst_ops.h
+> > index 443863c7b8da362476c15fd290ac2a32a8aa86e3..88ff7bb2bb9bd950cc54fd5e0ae4573d4c66873d 100644
+> > --- a/include/net/dst_ops.h
+> > +++ b/include/net/dst_ops.h
+> > @@ -53,9 +53,11 @@ static inline int dst_entries_get_slow(struct dst_ops *dst)
+> >         return percpu_counter_sum_positive(&dst->pcpuc_entries);
+> >  }
+> >
+> > +#define DST_PERCPU_COUNTER_BATCH 32
+> >  static inline void dst_entries_add(struct dst_ops *dst, int val)
+> >  {
+> > -       percpu_counter_add(&dst->pcpuc_entries, val);
+> > +       percpu_counter_add_batch(&dst->pcpuc_entries, val,
+> > +                                DST_PERCPU_COUNTER_BATCH);
+> >  }
+> >
+> >  static inline int dst_entries_init(struct dst_ops *dst)
+> > diff --git a/net/core/dst.c b/net/core/dst.c
+> > index 193af526e908afa4b868cf128470f0fbc3850698..d6b6ced0d451a39c0ccb88ae39dba225ea9f5705 100644
+> > --- a/net/core/dst.c
+> > +++ b/net/core/dst.c
+> > @@ -81,11 +81,11 @@ void *dst_alloc(struct dst_ops *ops, struct net_device *dev,
+> >  {
+> >         struct dst_entry *dst;
+> >
+> > -       if (ops->gc && dst_entries_get_fast(ops) > ops->gc_thresh) {
+> > +       if (ops->gc &&
+> > +           !(flags & DST_NOCOUNT) &&
+> > +           dst_entries_get_fast(ops) > ops->gc_thresh) {
+> >                 if (ops->gc(ops)) {
+> > -                       printk_ratelimited(KERN_NOTICE "Route cache is full: "
+> > -                                          "consider increasing sysctl "
+> > -                                          "net.ipv[4|6].route.max_size.\n");
+> > +                       pr_notice_ratelimited("Route cache is full: consider increasing sysctl net.ipv6.route.max_size.\n");
+> >                         return NULL;
+> >                 }
+> >         }
+> > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> > index 1ff142393c768f85c495474a1d05e1ae1642301c..a9072dba00f4fb0b61bce1fc0f44a3a81ba702fa 100644
+> > --- a/net/ipv6/route.c
+> > +++ b/net/ipv6/route.c
+> > @@ -3195,6 +3195,9 @@ static int ip6_dst_gc(struct dst_ops *ops)
+> >         int entries;
+> >
+> >         entries = dst_entries_get_fast(ops);
+> > +       if (entries > rt_max_size)
+> > +               entries = dst_entries_get_slow(ops);
+> > +
+> >         if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+> if this part of the condition is not satisfied, you are going to call
+> fib6_run_gc anyways and after that you will update the entries. So I
+> was wondering if code here could be something like:
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -3197,11 +3197,16 @@ static int ip6_dst_gc(struct dst_ops *ops)
+>         unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+>         int entries;
 >
-> Agreed. Unfortunately the LLVM undefined behavior sanitizer (I've not
-> tested with GCC to the same extent) will cause an exit when it sees >>
-> 64 regardless of whether the value is used or not. It'd be possible to
-> #ifdef this code on whether a sanitizer was present.
+> +       if (time_before(rt_last_gc + rt_min_interval, jiffies)
+> +               goto run_gc;
+> +
+>         entries = dst_entries_get_fast(ops);
+> -       if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+> -           entries <= rt_max_size)
+> +       if (entries > rt_max_size)
+> +               entries = dst_entries_get_slow(ops);
+> +       if (entries <= rt_max_size)
+>                 goto out;
+>
+> +run_gc:
+>         net->ipv6.ip6_rt_gc_expire++;
+>         fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
+>         entries = dst_entries_get_slow(ops);
+>
+> That way you could potentially avoid an extra call to
+> dst_entries_get_slow when you know for sure that fib6_run_gc will be
+> run. WDYT?
 
-Yeah, let's do that rather than slowing down hashing function.
+The problem is that you might still return a wrong status in the final :
 
->
-> Thanks,
-> Ian
->
-> > >  tools/lib/bpf/hashmap.h | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >
-> > > diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-> > > index d5ef212a55ba..781db653d16c 100644
-> > > --- a/tools/lib/bpf/hashmap.h
-> > > +++ b/tools/lib/bpf/hashmap.h
-> > > @@ -19,6 +19,8 @@
-> > >  static inline size_t hash_bits(size_t h, int bits)
-> > >  {
-> > >         /* shuffle bits and return requested number of upper bits */
-> > > +       if (bits == 0)
-> > > +               return 0;
-> > >         return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
-> > >  }
-> > >
-> > > --
-> > > 2.26.2.645.ge9eca65c58-goog
-> > >
+return entries > rt_max_size;
+
+If we are in ip6_dst_gc(), we know for sure entries might be wrong,
+if it holds dst_entries_get_fast(ops)
+
+If you prefer, the patch is really (since the caller calls us only if
+dst_entries_get_fast(ops) was suspect)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index ff847a324220bc4cac8b103640f7e1a5db374a87..78e7f3c14e8a9c937866361aaf641cecfe1fed43
+100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3196,7 +3196,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
+        unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
+        int entries;
+
+-       entries = dst_entries_get_fast(ops);
++       entries = dst_entries_get_slow(ops);
+        if (time_after(rt_last_gc + rt_min_interval, jiffies) &&
+            entries <= rt_max_size)
+                goto out;
