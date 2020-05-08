@@ -2,129 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE5E11CB41C
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 17:55:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6CAA1CB430
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 17:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbgEHPzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 11:55:17 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41799 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727815AbgEHPzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 11:55:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588953315;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=o2NuVDMsNek1XqDZ23KXOT0aYU3U9mtuti+eij0cQ3Y=;
-        b=RH/5e3x/Aznsbd5AM1J6BO+2cqjJRQKQ+ghv58yZ4onqXKu52Yll3jfDrYllFqRXnZ0nKO
-        3f2rtaNllTzDrvWbaSRolJ2itxGSdcZE0opMh4qcFX2KXuNbcI3CtqooBvkUkAiwE+/gsb
-        us/8o0UifSojcAi6TAgXtPfpSD3kH2Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-172-tB1ktjf7Nd6ZDjXX8AJRsw-1; Fri, 08 May 2020 11:55:11 -0400
-X-MC-Unique: tB1ktjf7Nd6ZDjXX8AJRsw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 59A41107ACCA;
-        Fri,  8 May 2020 15:55:09 +0000 (UTC)
-Received: from w520.home (ovpn-113-111.phx2.redhat.com [10.3.113.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 615F6341E3;
-        Fri,  8 May 2020 15:55:08 +0000 (UTC)
-Date:   Fri, 8 May 2020 09:55:07 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 08/12] vfio: use __anon_inode_getfd
-Message-ID: <20200508095507.54051943@w520.home>
-In-Reply-To: <20200508153634.249933-9-hch@lst.de>
-References: <20200508153634.249933-1-hch@lst.de>
-        <20200508153634.249933-9-hch@lst.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        id S1727082AbgEHP54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 11:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726776AbgEHP5z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 11:57:55 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8540C061A0C;
+        Fri,  8 May 2020 08:57:55 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id b18so1862387ilf.2;
+        Fri, 08 May 2020 08:57:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=+zs5D709Kcq02wF+wQySn8tSW4QeeIBgzdWz3Xh4pgA=;
+        b=S+uaB25lMCKKzFoTbl6GIjt09lJvzZEWVG68w0Kr8cp1altO76iccX+eOaoOYR+wTH
+         yEGp5yssYnDDLOPBbqfR2NLFd+iPafHsdKIxIeW5w6OFXKjSlndNE5QqtC/YQRTDT4mg
+         00LARhWyRdFm9PU3YOhYmN5fM39zEufngLf3srYNPntjH/RWvZj7jCay4PUwYXYPfAr7
+         nnOg2Q4mOakwA24IB9p0w1yvQo1hSpEIeEYvcpLVTw/rb37Il8GdqRxFAPNaRadGoUex
+         YW2omROLt8USuNH4mRM7BtDZXmhtiDuUylFQthcpDLngf731MKsZK2JkgFjYQplNpeDx
+         oAow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=+zs5D709Kcq02wF+wQySn8tSW4QeeIBgzdWz3Xh4pgA=;
+        b=pg1MZsSaoCAqZPaU6BE12hKHrtTbceKRKzF7X2MzEWftew3Cq29tSi+vdLvv4QCoZb
+         jP6CUGIVS76s78wSXr9+EsQYSjX6zmY6+9TNinjwByStuTLmQXZWsX9HvYKIzDPbyUu2
+         LmRQTVAh/2JxIXuKpr9562vY4KyZ6TJzdC065Y0xaBA9CzSSXSrxe6OlXOuoGS2AoIfy
+         xkqQpOgb4vZ5gQAAyz16UlXqZ8heG84gmE8PMzVN20B/wWD3XUKQ7s+zHlLmR44gUN/m
+         Ywg93WiZs1fn5ptj0Frpj/YmvkR+1pYKma+r4ptu7jOydH1Umw8HVMji1tuvVo04qazy
+         8cuQ==
+X-Gm-Message-State: AGi0PuavPCiWaQkNTnxpEtDiIxHZ4PneiklR2mvM2YPZEqxVl1vMNs9S
+        VKBwjI8Yj5E6HlHoIVonlds=
+X-Google-Smtp-Source: APiQypJUoHtmWb13Y6e0Yv8sjQLE7cXPzhv2atgih5xjZQKmVGIiHq8kl/9jJUBzF6Kj7TGjObn6Hw==
+X-Received: by 2002:a92:aa0f:: with SMTP id j15mr3526097ili.211.1588953474755;
+        Fri, 08 May 2020 08:57:54 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id u203sm809842iod.54.2020.05.08.08.57.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 May 2020 08:57:53 -0700 (PDT)
+Date:   Fri, 08 May 2020 08:57:47 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>
+Message-ID: <5eb5817b12a3b_2a992ad50b5cc5b4b7@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200508070548.2358701-3-andriin@fb.com>
+References: <20200508070548.2358701-1-andriin@fb.com>
+ <20200508070548.2358701-3-andriin@fb.com>
+Subject: RE: [PATCH bpf-next 2/3] selftest/bpf: fmod_ret prog and implement
+ test_overhead as part of bench
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  8 May 2020 17:36:30 +0200
-Christoph Hellwig <hch@lst.de> wrote:
+Andrii Nakryiko wrote:
+> Add fmod_ret BPF program to existing test_overhead selftest. Also re-im=
+plement
+> user-space benchmarking part into benchmark runner to compare results. =
+ Results
+> with ./bench are consistently somewhat lower than test_overhead's, but =
+relative
+> performance of various types of BPF programs stay consisten (e.g., kret=
+probe is
+> noticeably slower).
+> =
 
-> Use __anon_inode_getfd instead of opencoding the logic using
-> get_unused_fd_flags + anon_inode_getfile.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> To test with ./bench, the following command was used:
+> =
+
+> for i in base kprobe kretprobe rawtp fentry fexit fmodret; \
+> do \
+>     summary=3D$(sudo ./bench -w2 -d5 -a rename-$i | \
+>               tail -n1 | cut -d'(' -f1 | cut -d' ' -f3-) && \
+>     printf "%-10s: %s\n" $i "$summary"; \
+> done
+
+might be nice to have a script ./bench_tracing_overhead.sh when its in it=
+s
+own directory ./bench. Otherwise I'll have to look this up every single
+time I'm sure.
+
+> =
+
+> This gives the following numbers:
+> =
+
+>   base      :    3.975 =C2=B1 0.065M/s
+>   kprobe    :    3.268 =C2=B1 0.095M/s
+>   kretprobe :    2.496 =C2=B1 0.040M/s
+>   rawtp     :    3.899 =C2=B1 0.078M/s
+>   fentry    :    3.836 =C2=B1 0.049M/s
+>   fexit     :    3.660 =C2=B1 0.082M/s
+>   fmodret   :    3.776 =C2=B1 0.033M/s
+> =
+
+> While running test_overhead gives:
+> =
+
+>   task_rename base        4457K events per sec
+>   task_rename kprobe      3849K events per sec
+>   task_rename kretprobe   2729K events per sec
+>   task_rename raw_tp      4506K events per sec
+>   task_rename fentry      4381K events per sec
+>   task_rename fexit       4349K events per sec
+>   task_rename fmod_ret    4130K events per sec
+> =
+
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 > ---
->  drivers/vfio/vfio.c | 37 ++++++++-----------------------------
->  1 file changed, 8 insertions(+), 29 deletions(-)
 
+LGTM
 
-Thanks!
-
-Acked-by: Alex Williamson <alex.williamson@redhat.com>
-
-> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-> index 765e0e5d83ed9..33a88103f857f 100644
-> --- a/drivers/vfio/vfio.c
-> +++ b/drivers/vfio/vfio.c
-> @@ -1451,42 +1451,21 @@ static int vfio_group_get_device_fd(struct vfio_group *group, char *buf)
->  		return ret;
->  	}
->  
-> -	/*
-> -	 * We can't use anon_inode_getfd() because we need to modify
-> -	 * the f_mode flags directly to allow more than just ioctls
-> -	 */
-> -	ret = get_unused_fd_flags(O_CLOEXEC);
-> -	if (ret < 0) {
-> -		device->ops->release(device->device_data);
-> -		vfio_device_put(device);
-> -		return ret;
-> -	}
-> -
-> -	filep = anon_inode_getfile("[vfio-device]", &vfio_device_fops,
-> -				   device, O_RDWR);
-> -	if (IS_ERR(filep)) {
-> -		put_unused_fd(ret);
-> -		ret = PTR_ERR(filep);
-> -		device->ops->release(device->device_data);
-> -		vfio_device_put(device);
-> -		return ret;
-> -	}
-> -
-> -	/*
-> -	 * TODO: add an anon_inode interface to do this.
-> -	 * Appears to be missing by lack of need rather than
-> -	 * explicitly prevented.  Now there's need.
-> -	 */
-> +	ret = __anon_inode_getfd("[vfio-device]", &vfio_device_fops,
-> +				   device, O_CLOEXEC | O_RDWR, &filep);
-> +	if (ret < 0)
-> +		goto release;
->  	filep->f_mode |= (FMODE_LSEEK | FMODE_PREAD | FMODE_PWRITE);
-> -
->  	atomic_inc(&group->container_users);
-> -
->  	fd_install(ret, filep);
->  
->  	if (group->noiommu)
->  		dev_warn(device->dev, "vfio-noiommu device opened by user "
->  			 "(%s:%d)\n", current->comm, task_pid_nr(current));
-> -
-> +	return ret;
-> +release:
-> +	device->ops->release(device->device_data);
-> +	vfio_device_put(device);
->  	return ret;
->  }
->  
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>=
