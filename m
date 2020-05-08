@@ -2,123 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 478951CB61D
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 19:34:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1FE1CB62A
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 19:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727106AbgEHRe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 13:34:56 -0400
-Received: from mail-eopbgr60066.outbound.protection.outlook.com ([40.107.6.66]:37095
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726807AbgEHRez (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 13:34:55 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AQQG3+SzwMb+qlfQDg1OgnJZN+mOnKTiYGV0Conm9KgQ3doTVhVjMOFiq0foTNKHQqvdrTF9U4pYhUdIibze5XqBznx0NdDQFfg8AcnZYuiRtkRrzIzUU5RPtZVD/V7gUEGuv0gMF13IJF4BDyRdO8FazjQZT1G3SVDQvsCvj2LsQ4pnSebXoXGgRFuwg8z9bfPFW3TgUIRgKiSRVaXx7IGReQsrbrKsKreYIoDieOc1/95aPkbw7VfjnAsLnFf5W6kSG0fZsxYhgzELK/FBJ284sGUv+jRyZizuo1XulaC/s+OqO9W/f50u85TsiKUkmbtn9g+BbK3CYcCqHinYAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n8GbNR8CL1UIDcfqSdoLRyVZ7wA2l2fH5scp9/IFb34=;
- b=J0H9TSfswex40mkpJ3in5n0lbSbnTwQNuktqfGd6PiXOlsikRP0zkXrZNYSmDZ6btx4l0rT/3eFzQqzzo/PNBytzTPsSGT/inGgwosX5d9vC94mFOFzAzGFiao9Oe8y030G92wMtD9lLZbWoA7GfgrV33K3XPrpIVX9v0rM9gG3Hl8Ewkj9+CCIpiJ195BmxIQqu6LcvZipinPuV6RJZkaxbnaVoxaE6lbIF0cc4z6ZSJQv8qbQSKWwj1auHbt1Igiv6NRVlPaAKkYpIhxmRJHQcmcqvdBnvKBWEISjYXU56DCivZ3BJJh5JUcMprQPdmftD/ZaM8BH8BKS1TVj4vg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n8GbNR8CL1UIDcfqSdoLRyVZ7wA2l2fH5scp9/IFb34=;
- b=FlXQ6emRzNYbLjJD+9UFL8dzCRbjHu0dVV6D8V8PDXfZdrDXNlk5GLJbin+BUCbGAMB8pBatGc5LvNH2vt89a9jPnl3LrXXSBpslV2KnM5NNY8b9zlFFnPQmFl8Fm8WTCUiDP3pMdK6vXeA8+hx+n+wczSaj6AiqgHEOIMPwxBU=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=mellanox.com;
-Received: from AM7PR05MB6632.eurprd05.prod.outlook.com (2603:10a6:20b:136::12)
- by AM7PR05MB6881.eurprd05.prod.outlook.com (2603:10a6:20b:1a9::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Fri, 8 May
- 2020 17:34:51 +0000
-Received: from AM7PR05MB6632.eurprd05.prod.outlook.com
- ([fe80::94da:ac7a:611:781f]) by AM7PR05MB6632.eurprd05.prod.outlook.com
- ([fe80::94da:ac7a:611:781f%9]) with mapi id 15.20.2958.030; Fri, 8 May 2020
- 17:34:51 +0000
-Subject: Re: [PATCH bpf-next 10/14] mlx5, xsk: migrate to new
- MEM_TYPE_XSK_BUFF_POOL
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        id S1726942AbgEHRl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 13:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726746AbgEHRl6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 13:41:58 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47527C061A0C;
+        Fri,  8 May 2020 10:41:58 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id h26so1955659qtu.8;
+        Fri, 08 May 2020 10:41:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f7T7yAvFeKSgSXmGunQdOXMhLRz3I+Bw3xWzVb3xqOk=;
+        b=UI40pK+Ew+JfV9Jl0iizHGBHBXzAAYw+ik8fLqZYnP5T9BGHDxKYWClQbIgZZGxAA5
+         0hCrEXGGJkecH6WKmDc80+QccDKowOigNM/MpHSpjLGvw5F6kMlvuHUYpF7TIE1Lplfh
+         Y1JlvsmiVvy8zul0iqkkvxQWhpMHQOq6+hOrZZKyxpVhfcyUArR79YGhjUvVKDr0FH3B
+         leUhXlSS0YPWIBvtqsDMTckRp1wUFh+ZLZ3ZMIEGNaRx4pWV+seB/MogNtUN0fXW2lU2
+         6EZefCbG02fEQBpQslnNpYeOXP75YMKpLT9zNp18hATajWoimu1EbM57lR2xP8okmRDg
+         b4NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f7T7yAvFeKSgSXmGunQdOXMhLRz3I+Bw3xWzVb3xqOk=;
+        b=DAF2y+rCKTbcdQb6soLLXfg7F/PT7jDqQG3hkJLtYus5w5hfsZbQ50bUX0kJICFVki
+         nx6B8QTviQAOhGd1EgR2QQLxeerYjj0MOccK+LQGdSjSNZKWFiiFgFgQtIkApRGUELFj
+         0iIwgCHeTOQZdr/uNsvA/Pds9KJHMqJiMuJc3j2VCdNQzHa8G27iYlqUEkdUD5Tfit5Y
+         yyA2DBPPfTyhTJZBNicfpAk4sRF99Vcji4HE2tg51S5Q6r6E6hLmNv6qc5VxFyBtira+
+         dXJvrETwNuWzd1u9BkfuzYxUPW/IaVd3ErxeLSDDx/qG6TM2knSx77eMMogrBkpgOEfP
+         g59A==
+X-Gm-Message-State: AGi0PubuWccisoht8tVAnDcuutfwtzaZB877aV8cAN6PNFS1+8Ooo4Kj
+        xgCyngF460hThoitTUgf243E/xlMqwa9Hfb1TdE=
+X-Google-Smtp-Source: APiQypKczQT7kzoOYs/Mh9S4j5YLkIasn1bTXadpyGxqo46s86e1uAvg0zS88L3BSEq5kqm7cNkLnPila3WKYiCBxqs=
+X-Received: by 2002:ac8:51d3:: with SMTP id d19mr4072641qtn.141.1588959717497;
+ Fri, 08 May 2020 10:41:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200506125514.1020829-1-jakub@cloudflare.com> <20200506125514.1020829-15-jakub@cloudflare.com>
+In-Reply-To: <20200506125514.1020829-15-jakub@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 8 May 2020 10:41:46 -0700
+Message-ID: <CAEf4BzaE=+0ZkwqetjDHg4MnE1WDQDKFHqEkM825h6YMCZAdNA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 14/17] libbpf: Add support for SK_LOOKUP program type
+To:     Jakub Sitnicki <jakub@cloudflare.com>, Yonghong Song <yhs@fb.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        dccp@vger.kernel.org, kernel-team@cloudflare.com,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
-References: <20200507104252.544114-1-bjorn.topel@gmail.com>
- <20200507104252.544114-11-bjorn.topel@gmail.com>
- <40eb57c7-9c47-87dc-bda9-5a1729352c43@mellanox.com>
- <3c42954a-8bb3-85b1-8740-a096b0a76a98@intel.com>
- <cf65cc80-f16a-5b76-5577-57c55e952a52@mellanox.com>
- <CAJ+HfNiU8jyNMC1VMCgqGqz76Q8G1Pui09==TO8Qi73Y_2xViQ@mail.gmail.com>
- <CAJ+HfNiBuDWX77PbR4ZPR_vuUyOTLA5MOGfyQrGO3EtQC1WwJQ@mail.gmail.com>
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-Message-ID: <4c627f32-bbe6-21ff-f06f-c151093ec0e8@mellanox.com>
-Date:   Fri, 8 May 2020 20:34:46 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-In-Reply-To: <CAJ+HfNiBuDWX77PbR4ZPR_vuUyOTLA5MOGfyQrGO3EtQC1WwJQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BE0P281CA0002.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:a::12) To AM7PR05MB6632.eurprd05.prod.outlook.com
- (2603:10a6:20b:136::12)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.57.1.235] (159.224.90.213) by BE0P281CA0002.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:a::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28 via Frontend Transport; Fri, 8 May 2020 17:34:50 +0000
-X-Originating-IP: [159.224.90.213]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 08e8abb3-cecb-45ff-9b0e-08d7f3761cdc
-X-MS-TrafficTypeDiagnostic: AM7PR05MB6881:
-X-Microsoft-Antispam-PRVS: <AM7PR05MB688182E295FEB8D81BDEA62BD1A20@AM7PR05MB6881.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
-X-Forefront-PRVS: 039735BC4E
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8L0ZmEO9/D3xo0a7SXxvhFMck3czwEZqXxt7lc2Z6o2mJwLRXXnNxdlGqZP0PULpl00agNrOrx1MLCSl7PBSSCXN2De8nSaUC3BdgqZHRY+fPtELetgQaLwqMtN0c9bWu55ZPjLBWg0SEHC2/QB398W7M6YwdHerjMmBzAEmio3cDjOsuoVEOT42I4nn9mVr7VRpaKn9jL0w4vcijLqyg6eBYVADRDUPdnu0CXSreiLoFI86DSdIQexah4cA3VnhC4B8p11fQHdooktodEV8b7Zir5sdjSb+VdP+2y31oa2c82+OBhXW/SV3Osi6koeED9/lNeNPGouoV9/KPT+NLfIE53BIISw55GRahkWe2ZBgtfsHVb5vQZTWZ4ANB5mqn3NGPgF/NIn6pgl5u3HVNsrorTshzuE8VoD2thdZuX9esJceWmOT1hJ/x9wrklbauUwxtRr33h59NnttV8rqq5A5lEVNPEZ09jBtl8O03YLCDuR5THN7J2Kq01o2nBIvL/RJ/0LMzcOlm2syvGtUuE/ImZYkQ+L3spd0h5NNMb582H05OS9/qwcPXX5peI1a
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR05MB6632.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(376002)(346002)(136003)(366004)(33430700001)(52116002)(31696002)(478600001)(2616005)(36756003)(66476007)(8936002)(316002)(16576012)(66556008)(83300400001)(83280400001)(33440700001)(54906003)(83310400001)(83320400001)(83290400001)(956004)(6666004)(7416002)(5660300002)(86362001)(4326008)(55236004)(6486002)(66946007)(16526019)(2906002)(6916009)(4744005)(31686004)(8676002)(186003)(53546011)(26005)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: UbwHCj9lFPCw1/cznSlIV3dv6nteOtXf8KasvFxRu/v8zOEFuoQhGKuf+wO47dj3Jt5PvknVjLop4PCCYQnfwCZXfb9ighm+yuWRvUg1645OWx2HHtqQUdYCy7oxzZfwycqF39XQJzisQN0HY4HOWunGc0yKJxKjOBZ8AXw3ZcYd/PS5SM59w2gDZIFzc18f9cs+f7LEv5ZAHqgnDsMECqN9V/n7d7ubRymiwWXPEL4u8wljxBn46czDV6betGAUSeX5VDD4XuPxhlYgYsyFX+TKRGdBRiAvXTWOBY1DiXK+En+gQdseMW3w+Fj97CY/DujkByb9gRaK71FslE/LKNJ9xglqsNRTycvFFTmq/w6qAEuF18P8Sc9RtTydUSH90FlAs4ek2OQzBBRnFoi0z+VKM2so8XRjnciE4NnACZt8gczcX+MnWqZOIAfjodHnK+gUaKvIAdIVCHjc8d1tGqelPMzYb/fJf3xsU08MZLbx4Z0ZFbughym+nOrLez4f
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08e8abb3-cecb-45ff-9b0e-08d7f3761cdc
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2020 17:34:51.3578
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QJc36IBkr+eogg8HATLHcaii5iM2LdBqlCUCMZn7aTxelYj76GvPmDU7nLzszd1zVis6PmdabDNOjKCkHLZIvA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR05MB6881
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-08 16:14, Björn Töpel wrote:
-> On Fri, 8 May 2020 at 15:08, Björn Töpel <bjorn.topel@gmail.com> wrote:
->>
->> On Fri, 8 May 2020 at 15:01, Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
->>>
-> []
->>
->> All zeros hints that you're probably putting in the wrong DMA address somewhere.
->>
-> 
-> Hmm, I can't see that you're using xsk_buff_xdp_get_dma() anywhere in
-> the code. Probably it?
+On Wed, May 6, 2020 at 5:58 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> Make libbpf aware of the newly added program type, and assign it a
+> section name.
+>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  tools/lib/bpf/libbpf.c        | 3 +++
+>  tools/lib/bpf/libbpf.h        | 2 ++
+>  tools/lib/bpf/libbpf.map      | 2 ++
+>  tools/lib/bpf/libbpf_probes.c | 1 +
+>  4 files changed, 8 insertions(+)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 977add1b73e2..74f4a15dc19e 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -6524,6 +6524,7 @@ BPF_PROG_TYPE_FNS(perf_event, BPF_PROG_TYPE_PERF_EVENT);
+>  BPF_PROG_TYPE_FNS(tracing, BPF_PROG_TYPE_TRACING);
+>  BPF_PROG_TYPE_FNS(struct_ops, BPF_PROG_TYPE_STRUCT_OPS);
+>  BPF_PROG_TYPE_FNS(extension, BPF_PROG_TYPE_EXT);
+> +BPF_PROG_TYPE_FNS(sk_lookup, BPF_PROG_TYPE_SK_LOOKUP);
+>
+>  enum bpf_attach_type
+>  bpf_program__get_expected_attach_type(struct bpf_program *prog)
+> @@ -6684,6 +6685,8 @@ static const struct bpf_sec_def section_defs[] = {
+>         BPF_EAPROG_SEC("cgroup/setsockopt",     BPF_PROG_TYPE_CGROUP_SOCKOPT,
+>                                                 BPF_CGROUP_SETSOCKOPT),
+>         BPF_PROG_SEC("struct_ops",              BPF_PROG_TYPE_STRUCT_OPS),
+> +       BPF_EAPROG_SEC("sk_lookup",             BPF_PROG_TYPE_SK_LOOKUP,
+> +                                               BPF_SK_LOOKUP),
+>  };
+>
+>  #undef BPF_PROG_SEC_IMPL
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index f1dacecb1619..8373fbacbba3 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -337,6 +337,7 @@ LIBBPF_API int bpf_program__set_perf_event(struct bpf_program *prog);
+>  LIBBPF_API int bpf_program__set_tracing(struct bpf_program *prog);
+>  LIBBPF_API int bpf_program__set_struct_ops(struct bpf_program *prog);
+>  LIBBPF_API int bpf_program__set_extension(struct bpf_program *prog);
+> +LIBBPF_API int bpf_program__set_sk_lookup(struct bpf_program *prog);
+>
+>  LIBBPF_API enum bpf_prog_type bpf_program__get_type(struct bpf_program *prog);
+>  LIBBPF_API void bpf_program__set_type(struct bpf_program *prog,
+> @@ -364,6 +365,7 @@ LIBBPF_API bool bpf_program__is_perf_event(const struct bpf_program *prog);
+>  LIBBPF_API bool bpf_program__is_tracing(const struct bpf_program *prog);
+>  LIBBPF_API bool bpf_program__is_struct_ops(const struct bpf_program *prog);
+>  LIBBPF_API bool bpf_program__is_extension(const struct bpf_program *prog);
+> +LIBBPF_API bool bpf_program__is_sk_lookup(const struct bpf_program *prog);
 
-You are right, thanks, it was indeed missing. However, adding it was not 
-enough, I still get zeros, will continue investigating on Monday.
+cc Yonghong, bpf_iter programs should probably have similar
+is_xxx/set_xxx functions?..
 
-> 
-> Björn
-> 
+>
+>  /*
+>   * No need for __attribute__((packed)), all members of 'bpf_map_def'
+> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> index e03bd4db827e..113ac0a669c2 100644
+> --- a/tools/lib/bpf/libbpf.map
+> +++ b/tools/lib/bpf/libbpf.map
+> @@ -253,6 +253,8 @@ LIBBPF_0.0.8 {
+>                 bpf_program__set_attach_target;
+>                 bpf_program__set_lsm;
+>                 bpf_set_link_xdp_fd_opts;
+> +               bpf_program__is_sk_lookup;
+> +               bpf_program__set_sk_lookup;
+>  } LIBBPF_0.0.7;
+>
 
+0.0.8 is sealed, please add them into 0.0.9 map below
+
+>  LIBBPF_0.0.9 {
+> diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+> index 2c92059c0c90..5c6d3e49f254 100644
+> --- a/tools/lib/bpf/libbpf_probes.c
+> +++ b/tools/lib/bpf/libbpf_probes.c
+> @@ -109,6 +109,7 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
+>         case BPF_PROG_TYPE_STRUCT_OPS:
+>         case BPF_PROG_TYPE_EXT:
+>         case BPF_PROG_TYPE_LSM:
+> +       case BPF_PROG_TYPE_SK_LOOKUP:
+>         default:
+>                 break;
+>         }
+> --
+> 2.25.3
+>
