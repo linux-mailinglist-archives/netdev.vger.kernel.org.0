@@ -2,67 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76B281CA02C
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 03:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8610F1CA034
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 03:42:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbgEHBjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 May 2020 21:39:12 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:4284 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726514AbgEHBjM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 May 2020 21:39:12 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 98546C53397FFD92BD33;
-        Fri,  8 May 2020 09:39:10 +0800 (CST)
-Received: from linux-ibm.site (10.175.102.37) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 8 May 2020 09:39:04 +0800
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-To:     <bfields@fieldses.org>, <chuck.lever@oracle.com>,
-        <trond.myklebust@hammerspace.com>, <anna.schumaker@netapp.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <wangxiongfeng2@huawei.com>
-Subject: [PATCH 2/2] sunrpc: add missing newline when printing parameter 'auth_hashtable_size' by sysfs
-Date:   Fri, 8 May 2020 09:33:00 +0800
-Message-ID: <1588901580-44687-3-git-send-email-wangxiongfeng2@huawei.com>
-X-Mailer: git-send-email 1.7.12.4
-In-Reply-To: <1588901580-44687-1-git-send-email-wangxiongfeng2@huawei.com>
-References: <1588901580-44687-1-git-send-email-wangxiongfeng2@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.102.37]
-X-CFilter-Loop: Reflected
+        id S1726689AbgEHBmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 May 2020 21:42:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726509AbgEHBmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 May 2020 21:42:22 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8914C05BD43;
+        Thu,  7 May 2020 18:42:21 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 47096119376EF;
+        Thu,  7 May 2020 18:42:19 -0700 (PDT)
+Date:   Thu, 07 May 2020 18:42:18 -0700 (PDT)
+Message-Id: <20200507.184218.1566941439994191513.davem@davemloft.net>
+To:     elder@linaro.org
+Cc:     evgreen@chromium.org.net, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/2] net: ipa: fix cleanup after modem crash
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200507191404.31626-1-elder@linaro.org>
+References: <20200507191404.31626-1-elder@linaro.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 07 May 2020 18:42:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When I cat parameter
-'/sys/module/sunrpc/parameters/auth_hashtable_size', it displays as
-follows. It is better to add a newline for easy reading.
+From: Alex Elder <elder@linaro.org>
+Date: Thu,  7 May 2020 14:14:02 -0500
 
-[root@hulk-202 ~]# cat /sys/module/sunrpc/parameters/auth_hashtable_size
-16[root@hulk-202 ~]#
+> The first patch in this series fixes a bug where the size of a data
+> transfer request was never set, meaning it was 0.  The consequence
+> of this was that such a transfer request would never complete if
+> attempted, and led to a hung task timeout.
+> 
+> This data transfer is required for cleaning up IPA hardware state
+> when recovering from a modem crash.  The code to implement this
+> cleanup is already present, but its use was commented out because
+> it hit the bug described above.  So the second patch in this series
+> enables the use of that "tag process" cleanup code.
 
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
----
- net/sunrpc/auth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sunrpc/auth.c b/net/sunrpc/auth.c
-index 5748ad0..a9f0d17 100644
---- a/net/sunrpc/auth.c
-+++ b/net/sunrpc/auth.c
-@@ -81,7 +81,7 @@ static int param_get_hashtbl_sz(char *buffer, const struct kernel_param *kp)
- 	unsigned int nbits;
- 
- 	nbits = *(unsigned int *)kp->arg;
--	return sprintf(buffer, "%u", 1U << nbits);
-+	return sprintf(buffer, "%u\n", 1U << nbits);
- }
- 
- #define param_check_hashtbl_sz(name, p) __param_check(name, p, unsigned int);
--- 
-1.7.12.4
-
+Series applied, thanks.
