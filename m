@@ -2,111 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B371CA300
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 07:54:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8792E1CA3B5
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 08:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbgEHFyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 01:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52146 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbgEHFyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 01:54:36 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F8DC05BD43;
-        Thu,  7 May 2020 22:54:36 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id 188so8939745wmc.2;
-        Thu, 07 May 2020 22:54:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cBuXlY0lPbTzvqFi3J9oIqLP+OF/m7YpRIj6GR1Gj+U=;
-        b=K1VwBxCBXCfE4HZYWiqihZRJtx8ctP1mVKfq1o6aCJtu/K2DwQN6yjel0+96+k0mcG
-         0uuiGrKz4zsQBMXrSSEoq364xNTJ0XfUyV8v85i/bpTYtVg9HOLeugf599IF0IqQbtQ0
-         HFuvcYQomO1LBbkbc814Hmv+6PqZ8vuzbej4nEQDUqXoysFOc58ddm3QesuV+2jOOEki
-         fJy7J3YgVTkYXJsIaZHg+NAtJmVDKvdUCxK1SIi+tER4fIclIQXInU9RVQAgG+SaECXp
-         2NEaDBLaPWFmApTkZQjPaOAgRMoh6nbkR85XVuxIcheeDeBQLR48s6gZdmQ+i1xfKWoY
-         EByg==
+        id S1727093AbgEHGV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 02:21:28 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:44702 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726815AbgEHGV1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 02:21:27 -0400
+Received: by mail-lj1-f193.google.com with SMTP id a21so433224ljj.11;
+        Thu, 07 May 2020 23:21:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=cBuXlY0lPbTzvqFi3J9oIqLP+OF/m7YpRIj6GR1Gj+U=;
-        b=iKtH28/jAlYFNEUvovXt+m0ZK3pq0rUxU1dqgAb33jmxdFZ+n5HG/TAEW/2BWTjVF9
-         wxPyOphoSWlbSDbk7frDYrOP6jKcORBWFCTJUcdud/9NHxDxqPeUn0xFRkmSZQ2Msm4F
-         yv+hUzWQK8rWPjOZfGxLKck4EqtqNXKiQePjt/10Niz4cp9ePSmHq8Xmi85kHtoITS9m
-         G7OV4c9jwLtCEQgGNWBq9S5e5EWtXjYN3e9N1sxiGneKC0g7ypqjv89nSgRvkrALfCsh
-         n4XHzJiesSTiUSQlG+urstJZ75L9oOUcJRRG1ywDNQArGJIXQdKLSvxTiFCbPEtB0tmE
-         pEDg==
-X-Gm-Message-State: AGi0PuZX7SZTEICcrDLu24QEBZ49nBsEqM4hz5kd1s03tgvqhy1Z/2A5
-        1Qyxrs28g9JIRa/KpH8q1sw=
-X-Google-Smtp-Source: APiQypJN3BPfHFPyK3WDkQRQQXzBNgHR1dVgfWeEuUZhd4lAzK8YcVD4LeyB6dzQUvulSYABR4hCgg==
-X-Received: by 2002:a1c:5f46:: with SMTP id t67mr15219360wmb.156.1588917274753;
-        Thu, 07 May 2020 22:54:34 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f28:5200:e838:acb:794:1ab9? (p200300EA8F285200E8380ACB07941AB9.dip0.t-ipconnect.de. [2003:ea:8f28:5200:e838:acb:794:1ab9])
-        by smtp.googlemail.com with ESMTPSA id o6sm1177075wrw.63.2020.05.07.22.54.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 May 2020 22:54:34 -0700 (PDT)
-Subject: Re: [PATCH 05/11] net: core: provide devm_register_netdev()
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=l07sjg7wad11JybQiwBPplAsmA/VCV2GQr8sTEyBm88=;
+        b=C1Dt6HJA2i7OLmGNc9XeFfcM+njIJrh7SQ8MmMM0w10EYLGbB6nWl5tysAKbyh26NV
+         92Vr2fknGA27JOLMooDs/pi8KKnsaE4BJ8VLjEu3XWbuCgDKezm2PWVhZdNQT9VlF+Cr
+         e8xxoIPBQPiiPP32vzN0FV6FP2kMUjmQqt4kIXxuNJ/O1NMiyhRh68rZyxUfO85vMG3Y
+         7rEIjqd07d20ros4Bro7pnu6ce1GoDxeMYDUhLG8n1abhqKhxiK7h5EjO6DMHHYBcjqO
+         30Xp79qHVkpd6OIfZkp6oq6yP9TVUTqReasmmj5XZdnhXF6HGP8tdN1ONSzr+RMd1Gqe
+         uGtA==
+X-Gm-Message-State: AOAM532LnT/OWxDGsCuWXIkKI6J1NQMvV5HRcU++9B/lN68BdQtQcidF
+        /aD/BQBnht/6sdswbsr4/9I=
+X-Google-Smtp-Source: ABdhPJzQwccjomPZVXTofZDq7QNMtMm+acyePCPBUNykc5Wt6G9pf/ArU7L/ehrFMv9M6FmHt7FVvw==
+X-Received: by 2002:a05:651c:549:: with SMTP id q9mr624525ljp.236.1588918884533;
+        Thu, 07 May 2020 23:21:24 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id z64sm428692lfa.50.2020.05.07.23.21.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 May 2020 23:21:23 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@kernel.org>)
+        id 1jWwNr-0001TQ-0H; Fri, 08 May 2020 08:21:19 +0200
+Date:   Fri, 8 May 2020 08:21:19 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>,
+        linux- stable <stable@vger.kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org
-References: <20200505140231.16600-1-brgl@bgdev.pl>
- <20200505140231.16600-6-brgl@bgdev.pl>
- <20200505103105.1c8b0ce3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAMRc=Mf0ipaeLKhHCZaq2YeZKzi=QBAse7bEz2hHxXN5OL=ptg@mail.gmail.com>
- <20200506101236.25a13609@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAMpxmJWckQdKvUGFDAJ1WMtD9WoGWmGe3kyKYhcfRT2nOB93xw@mail.gmail.com>
- <20200507095315.1154a1a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAMpxmJUEk3itZs4HujJOXUiL80kmEvGBvLF0NFc2UQoVDVTWRg@mail.gmail.com>
- <20200507155650.0c19229e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <c6e12eb6-d6ea-9ba9-4559-b2eda326601f@gmail.com>
-Date:   Fri, 8 May 2020 07:54:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        Lars Persson <lars.persson@axis.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Netdev <netdev@vger.kernel.org>,
+        nios2-dev@lists.rocketboards.org,
+        open list <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-mediatek@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, lkft-triage@lists.linaro.org
+Subject: Re: [PATCH net 11/16] net: ethernet: marvell: mvneta: fix fixed-link
+ phydev leaks
+Message-ID: <20200508062119.GE25962@localhost>
+References: <1480357509-28074-1-git-send-email-johan@kernel.org>
+ <1480357509-28074-12-git-send-email-johan@kernel.org>
+ <CA+G9fYvBjUVkVhtRHVm6xXcKe2+tZN4rGdB9FzmpcfpaLhY1+g@mail.gmail.com>
+ <20200507064412.GL2042@localhost>
+ <20200507064734.GA798308@kroah.com>
+ <20200507111312.GA1497799@kroah.com>
+ <CA+G9fYu2SrkEHyAzF57xJz5WjgHv361qdL2wPqON_pGS4Vtxmw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200507155650.0c19229e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+G9fYu2SrkEHyAzF57xJz5WjgHv361qdL2wPqON_pGS4Vtxmw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.05.2020 00:56, Jakub Kicinski wrote:
-> On Thu, 7 May 2020 19:03:44 +0200 Bartosz Golaszewski wrote:
->>> To implement Edwin's suggestion? Makes sense, but I'm no expert, let's
->>> also CC Heiner since he was asking about it last time.  
->>
->> Yes, because taking the last bit of priv_flags from net_device seems
->> to be more controversial but if net maintainers are fine with that I
->> can simply go with the current approach.
+On Fri, May 08, 2020 at 03:35:02AM +0530, Naresh Kamboju wrote:
+> On Thu, 7 May 2020 at 16:43, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> <trim>
+> > > >
+> > > > Greg, 3f65047c853a ("of_mdio: add helper to deregister fixed-link
+> > > > PHYs") needs to be backported as well for these.
+> > > >
+> > > > Original series can be found here:
+> > > >
+> > > >     https://lkml.kernel.org/r/1480357509-28074-1-git-send-email-johan@kernel.org
+> > >
+> > > Ah, thanks for that, I thought I dropped all of the ones that caused
+> > > build errors, but missed the above one.  I'll go take the whole series
+> > > instead.
+> >
+> > This should now all be fixed up, thanks.
 > 
-> From my perspective what Edwin suggests makes sense. Apart from
-> little use for the bit after probe, it also seems cleaner for devres 
-> to be able to recognize managed objects based on its own state.
+> While building kernel Image for arm architecture on stable-rc 4.4 branch
+> the following build error found.
 > 
-What I was saying is that we should catch the case that a driver
-author uses a device-managed register() w/o doing the same for the
-alloc(). A core function should not assume that driver authors do
-sane things only.
-I don't have a strong preference how it should be done.
-Considering what is being discussed, have a look at get_pci_dr() and
-find_pci_dr(), they deal with managing which parts of the PCI
-subsystem are device-managed.
+> of_mdio: add helper to deregister fixed-link PHYs
+> commit 3f65047c853a2a5abcd8ac1984af3452b5df4ada upstream.
+> 
+> Add helper to deregister fixed-link PHYs registered using
+> of_phy_register_fixed_link().
+> 
+> Convert the two drivers that care to deregister their fixed-link PHYs to
+> use the new helper, but note that most drivers currently fail to do so.
+> 
+> Signed-off-by: Johan Hovold <johan@kernel.org>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> [only take helper function for 4.4.y - gregkh]
+> 
+>  # make -sk KBUILD_BUILD_USER=TuxBuild -C/linux -j16 ARCH=arm
+> CROSS_COMPILE=arm-linux-gnueabihf- HOSTCC=gcc CC="sccache
+> arm-linux-gnueabihf-gcc" O=build zImage
+> 70 #
+> 71 ../drivers/of/of_mdio.c: In function ‘of_phy_deregister_fixed_link’:
+> 72 ../drivers/of/of_mdio.c:379:2: error: implicit declaration of
+> function ‘fixed_phy_unregister’; did you mean ‘fixed_phy_register’?
+> [-Werror=implicit-function-declaration]
+> 73  379 | fixed_phy_unregister(phydev);
+> 74  | ^~~~~~~~~~~~~~~~~~~~
+> 75  | fixed_phy_register
+> 76 ../drivers/of/of_mdio.c:381:22: error: ‘struct phy_device’ has no
+> member named ‘mdio’; did you mean ‘mdix’?
+> 77  381 | put_device(&phydev->mdio.dev); /* of_phy_find_device() */
+> 78  | ^~~~
+> 79  | mdix
+
+Another dependency: 5bcbe0f35fb1 ("phy: fixed: Fix removal of phys.")
+
+Greg, these patches are from four years ago so can't really remember if
+there are other dependencies or reasons against backporting them (the
+missing stable tags are per Dave's preference), sorry.
+
+The cover letter also mentions another dependency, but that may just
+have been some context conflict.
+
+Perhaps you better drop these unless you want to review them closer.
+
+Johan
