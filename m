@@ -2,270 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AACF21CA1CC
-	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 06:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40FE01CA292
+	for <lists+netdev@lfdr.de>; Fri,  8 May 2020 07:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725774AbgEHELD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 00:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        id S1725937AbgEHFWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 01:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725550AbgEHELC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 00:11:02 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0A2C05BD43
-        for <netdev@vger.kernel.org>; Thu,  7 May 2020 21:11:02 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id s9so377175qkm.6
-        for <netdev@vger.kernel.org>; Thu, 07 May 2020 21:11:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yVpEo0UedCf0TPfhwSNlxYq1Ls6+l+mUJc/6UQ3cs7I=;
-        b=ozRi3HYftwDbzjTLGdF02sreNKiVvfkAB17H25V090hTVEAuw+z68bMTGFDQRCcr2a
-         M2u119wbilEsdXl4cX8Zq08yz2aFfy6usdRWN4MLSUWmDIEWAqCZPfFSlJQssXLhg6QT
-         fWrLDp70dNnCwuZpx0UpGF0KI8wZkZEsLD8oSVfBjF6K1m45GKHKtzP54FkBm6MXTH+O
-         oBzq1cgopHgg/4yGKiKtXQUNDq+o64EOjWedZ4okoFOzTpBWEE10vssQRPZGzZaU/F4G
-         4ugFmTYEsly5UJKPH/LrPG3x6RF5jefMaVMnOdguLRWbyy1Lwa3rNlQO/x4ySvYIhoXM
-         +5Bw==
+        with ESMTP id S1725872AbgEHFWl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 01:22:41 -0400
+X-Greylist: delayed 2594 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 May 2020 22:22:41 PDT
+Received: from omr2.cc.vt.edu (omr2.cc.ipv6.vt.edu [IPv6:2607:b400:92:8400:0:33:fb76:806e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4C0C05BD43
+        for <netdev@vger.kernel.org>; Thu,  7 May 2020 22:22:41 -0700 (PDT)
+Received: from mr1.cc.vt.edu (mr1.cc.vt.edu [IPv6:2607:b400:92:8300:0:31:1732:8aa4])
+        by omr2.cc.vt.edu (8.14.4/8.14.4) with ESMTP id 0484dPvt003158
+        for <netdev@vger.kernel.org>; Fri, 8 May 2020 00:39:25 -0400
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
+        by mr1.cc.vt.edu (8.14.7/8.14.7) with ESMTP id 0484dJYx018236
+        for <netdev@vger.kernel.org>; Fri, 8 May 2020 00:39:24 -0400
+Received: by mail-qk1-f200.google.com with SMTP id a18so752968qkl.0
+        for <netdev@vger.kernel.org>; Thu, 07 May 2020 21:39:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yVpEo0UedCf0TPfhwSNlxYq1Ls6+l+mUJc/6UQ3cs7I=;
-        b=Z6g6duJbfCFsSWRo2T29CCDQ3h2ayehtO7Tj56FMrGWzFwfv+qG5E29qqsM5kcfxpJ
-         IBIkjUcHU2lJqIfvGwfr20KpBok1tNOdaBZAh6Zbyx/zE/TG01AouCWiNZdrpklfLpNN
-         eYTWBaJ042o+jYWtHGea/lsWCPdvi2vIl9IkVpvjWZDuoG4hB3aeAJUPhP98qyu6x+Y2
-         LOQvPZFCKX7np9f758gR5iKJOmC7OZWu6/DkBDLWQ0EjINieBAX3Fl6Z42byq8uPiACd
-         c5wXM1kGNEYaBx9g00QUr+wT5O/GRf5jGpSzH2+fmv4yQ8B0SiOAerBr9uR2K7HD47uo
-         nrmA==
-X-Gm-Message-State: AGi0PuZE2BHk7YgB8WEHqxBh/AEUuoiJNdshxvGdWzhe2P1K03xs9vhY
-        ASLA1KDTNE2AAQYBG+LJW5oJio2lBII=
-X-Google-Smtp-Source: APiQypIAdfAVkF4kWqs9zq+4PA7tILpCqVu+1dzsCr4JS41JzsRlO8bTdNpbLwbWo0Yw2kkRZ+jUyg==
-X-Received: by 2002:a37:bd0:: with SMTP id 199mr823216qkl.454.1588911060969;
-        Thu, 07 May 2020 21:11:00 -0700 (PDT)
-Received: from pek-lpggp6.wrs.com (unknown-105-123.windriver.com. [147.11.105.123])
-        by smtp.gmail.com with ESMTPSA id p22sm490946qtb.91.2020.05.07.21.10.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 07 May 2020 21:11:00 -0700 (PDT)
-From:   Kevin Hao <haokexin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>, davem@davemloft.net
-Subject: [PATCH] octeontx2-pf: Use the napi_alloc_frag() to alloc the pool buffers
-Date:   Fri,  8 May 2020 12:07:28 +0800
-Message-Id: <20200508040728.24202-1-haokexin@gmail.com>
-X-Mailer: git-send-email 2.26.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:sender:from:to:cc:subject:mime-version
+         :content-transfer-encoding:date:message-id;
+        bh=Dm06ZAKZYIX7YP7mgGyJ/rXR8epdEB9fSQnJcSEERv0=;
+        b=n25uAzFDkEW7MxSxqT3pgeuyL+m1RnyeMuoGHTy0Bewq9BTxUa7TpZPvD5k5/mmgnb
+         7/BewcKS14pcYcBl2D+TQXOFAjtBemPx0YpKFKacF6VxxRcK5IulE1Q7rmbDuJ0IUeio
+         m4xYCtvtVOX1w+52dPVhK1uNRhEHHJT8QS4h9qcE3FHVbbgHVtbC8pwCFfwuQjZeckEj
+         uxrYtxx3iWglgNZ12r64eHwMxhWWriofO4iibYVYh39CFlbQk9EGa8EITyPCc3Xe/nGv
+         shHsaL19U5uI97zzm2MZwDH1/SV96no7L7ux7xWj0Z6rLCvir+VXrsMD0ft/NFgytgXk
+         wTPA==
+X-Gm-Message-State: AGi0PubMi40cMPFvo6vS5/ur5AiqCC085pJjdNFScDmQRjBLvkYgO6S/
+        2hXR4AeqI4PQmvhn4RsGhhZi4SzpYRN3E/La+YPUzdC4Gm09K16lfOSgsmn1DQ6z3mPwjamm401
+        zmaC7S1yZi7dw2TOD5nhXcQdBI1I=
+X-Received: by 2002:ac8:4ccc:: with SMTP id l12mr971151qtv.129.1588912759688;
+        Thu, 07 May 2020 21:39:19 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJZvgYBYOZoJzUErxWw9UD6lNr0XHDTIdHvnfdB1sZ9pIcck8dCVstQ+Px8izYngtQhOv/vLQ==
+X-Received: by 2002:ac8:4ccc:: with SMTP id l12mr971144qtv.129.1588912759384;
+        Thu, 07 May 2020 21:39:19 -0700 (PDT)
+Received: from turing-police ([2601:5c0:c001:c9e1::359])
+        by smtp.gmail.com with ESMTPSA id h2sm358428qkh.91.2020.05.07.21.39.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 May 2020 21:39:17 -0700 (PDT)
+From:   "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <valdis.kletnieks@vt.edu>
+X-Google-Original-From: "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <Valdis.Kletnieks@vt.edu>
+X-Mailer: exmh version 2.9.0 11/07/2018 with nmh-1.7+dev
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: linux-next 20200506 - build failure with net/bpfilter/bpfilter_umh
+Mime-Version: 1.0
+Content-Type: multipart/signed; boundary="==_Exmh_1588912756_228720P";
+         micalg=pgp-sha1; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 08 May 2020 00:39:16 -0400
+Message-ID: <251580.1588912756@turing-police>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the current codes, the octeontx2 uses its own method to allocate
-the pool buffers, but there are some issues in this implementation.
-1. We have to run the otx2_get_page() for each allocation cycle and
-   this is pretty error prone. As I can see there is no invocation
-   of the otx2_get_page() in otx2_pool_refill_task(), this will leave
-   the allocated pages have the wrong refcount and may be freed wrongly.
-2. It wastes memory. For example, if we only receive one packet in a
-   NAPI RX cycle, and then allocate a 2K buffer with otx2_alloc_rbuf()
-   to refill the pool buffers and leave the remain area of the allocated
-   page wasted. On a kernel with 64K page, 62K area is wasted.
+--==_Exmh_1588912756_228720P
+Content-Type: text/plain; charset=us-ascii
 
-IMHO it is really unnecessary to implement our own method for the
-buffers allocate, we can reuse the napi_alloc_frag() to simplify
-our code.
+My kernel build came to a screeching halt with:
 
-Signed-off-by: Kevin Hao <haokexin@gmail.com>
----
- .../marvell/octeontx2/nic/otx2_common.c       | 51 ++++++++-----------
- .../marvell/octeontx2/nic/otx2_common.h       | 15 +-----
- .../marvell/octeontx2/nic/otx2_txrx.c         |  3 +-
- .../marvell/octeontx2/nic/otx2_txrx.h         |  4 --
- 4 files changed, 22 insertions(+), 51 deletions(-)
+  CHECK   net/bpfilter/bpfilter_kern.c
+  CC [M]  net/bpfilter/bpfilter_kern.o
+  CC [U]  net/bpfilter/main.o
+  LD [U]  net/bpfilter/bpfilter_umh
+/usr/bin/ld: cannot find -lc
+collect2: error: ld returned 1 exit status
+make[2]: *** [scripts/Makefile.userprogs:36: net/bpfilter/bpfilter_umh] Error 1
+make[1]: *** [scripts/Makefile.build:494: net/bpfilter] Error 2
+make: *** [Makefile:1726: net] Error 2
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index f1d2dea90a8c..15fa1ad57f88 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -379,40 +379,32 @@ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx)
- 		     (pfvf->hw.cq_ecount_wait - 1));
- }
- 
--dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
--			   gfp_t gfp)
-+dma_addr_t _otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
- {
- 	dma_addr_t iova;
-+	u8 *buf;
- 
--	/* Check if request can be accommodated in previous allocated page */
--	if (pool->page && ((pool->page_offset + pool->rbsize) <=
--	    (PAGE_SIZE << pool->rbpage_order))) {
--		pool->pageref++;
--		goto ret;
--	}
--
--	otx2_get_page(pool);
--
--	/* Allocate a new page */
--	pool->page = alloc_pages(gfp | __GFP_COMP | __GFP_NOWARN,
--				 pool->rbpage_order);
--	if (unlikely(!pool->page))
-+	buf = napi_alloc_frag(pool->rbsize);
-+	if (unlikely(!buf))
- 		return -ENOMEM;
- 
--	pool->page_offset = 0;
--ret:
--	iova = (u64)otx2_dma_map_page(pfvf, pool->page, pool->page_offset,
--				      pool->rbsize, DMA_FROM_DEVICE);
--	if (!iova) {
--		if (!pool->page_offset)
--			__free_pages(pool->page, pool->rbpage_order);
--		pool->page = NULL;
-+	iova = dma_map_single(pfvf->dev, buf, pool->rbsize, DMA_FROM_DEVICE);
-+	if (unlikely(dma_mapping_error(pfvf->dev, iova)))
- 		return -ENOMEM;
--	}
--	pool->page_offset += pool->rbsize;
-+
- 	return iova;
- }
- 
-+static dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
-+{
-+	dma_addr_t addr;
-+
-+	local_bh_disable();
-+	addr = _otx2_alloc_rbuf(pfvf, pool);
-+	local_bh_enable();
-+	return addr;
-+}
-+
- void otx2_tx_timeout(struct net_device *netdev, unsigned int txq)
- {
- 	struct otx2_nic *pfvf = netdev_priv(netdev);
-@@ -805,7 +797,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
- 	free_ptrs = cq->pool_ptrs;
- 
- 	while (cq->pool_ptrs) {
--		bufptr = otx2_alloc_rbuf(pfvf, rbpool, GFP_KERNEL);
-+		bufptr = otx2_alloc_rbuf(pfvf, rbpool);
- 		if (bufptr <= 0) {
- 			/* Schedule a WQ if we fails to free atleast half of the
- 			 * pointers else enable napi for this RQ.
-@@ -1064,7 +1056,6 @@ static int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
- 		return err;
- 
- 	pool->rbsize = buf_size;
--	pool->rbpage_order = get_order(buf_size);
- 
- 	/* Initialize this pool's context via AF */
- 	aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
-@@ -1152,13 +1143,12 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
- 			return -ENOMEM;
- 
- 		for (ptr = 0; ptr < num_sqbs; ptr++) {
--			bufptr = otx2_alloc_rbuf(pfvf, pool, GFP_KERNEL);
-+			bufptr = otx2_alloc_rbuf(pfvf, pool);
- 			if (bufptr <= 0)
- 				return bufptr;
- 			otx2_aura_freeptr(pfvf, pool_id, bufptr);
- 			sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
- 		}
--		otx2_get_page(pool);
- 	}
- 
- 	return 0;
-@@ -1204,13 +1194,12 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
- 	for (pool_id = 0; pool_id < hw->rqpool_cnt; pool_id++) {
- 		pool = &pfvf->qset.pool[pool_id];
- 		for (ptr = 0; ptr < num_ptrs; ptr++) {
--			bufptr = otx2_alloc_rbuf(pfvf, pool, GFP_KERNEL);
-+			bufptr = otx2_alloc_rbuf(pfvf, pool);
- 			if (bufptr <= 0)
- 				return bufptr;
- 			otx2_aura_freeptr(pfvf, pool_id,
- 					  bufptr + OTX2_HEAD_ROOM);
- 		}
--		otx2_get_page(pool);
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 0b1c653b3449..5d806252efd0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -434,18 +434,6 @@ static inline void otx2_aura_freeptr(struct otx2_nic *pfvf,
- 		      otx2_get_regaddr(pfvf, NPA_LF_AURA_OP_FREE0));
- }
- 
--/* Update page ref count */
--static inline void otx2_get_page(struct otx2_pool *pool)
--{
--	if (!pool->page)
--		return;
--
--	if (pool->pageref)
--		page_ref_add(pool->page, pool->pageref);
--	pool->pageref = 0;
--	pool->page = NULL;
--}
--
- static inline int otx2_get_pool_idx(struct otx2_nic *pfvf, int type, int idx)
- {
- 	if (type == AURA_NIX_SQ)
-@@ -589,8 +577,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl);
- int otx2_txsch_alloc(struct otx2_nic *pfvf);
- int otx2_txschq_stop(struct otx2_nic *pfvf);
- void otx2_sqb_flush(struct otx2_nic *pfvf);
--dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
--			   gfp_t gfp);
-+dma_addr_t _otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool);
- int otx2_rxtx_enable(struct otx2_nic *pfvf, bool enable);
- void otx2_ctx_disable(struct mbox *mbox, int type, bool npa);
- int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-index 45abe0cd0e7b..62e95c6f38eb 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-@@ -286,7 +286,7 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
- 
- 	/* Refill pool with new buffers */
- 	while (cq->pool_ptrs) {
--		bufptr = otx2_alloc_rbuf(pfvf, cq->rbpool, GFP_ATOMIC);
-+		bufptr = _otx2_alloc_rbuf(pfvf, cq->rbpool);
- 		if (unlikely(bufptr <= 0)) {
- 			struct refill_work *work;
- 			struct delayed_work *dwork;
-@@ -304,7 +304,6 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
- 		otx2_aura_freeptr(pfvf, cq->cq_idx, bufptr + OTX2_HEAD_ROOM);
- 		cq->pool_ptrs--;
- 	}
--	otx2_get_page(cq->rbpool);
- 
- 	return processed_cqe;
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-index 4ab32d3adb78..da97f2d4416f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-@@ -113,11 +113,7 @@ struct otx2_cq_poll {
- struct otx2_pool {
- 	struct qmem		*stack;
- 	struct qmem		*fc_addr;
--	u8			rbpage_order;
- 	u16			rbsize;
--	u32			page_offset;
--	u16			pageref;
--	struct page		*page;
- };
- 
- struct otx2_cq_queue {
--- 
-2.26.0
+The culprit is this commit:
 
+commit 0592c3c367c4c823f2a939968e72d39360fce1f4
+Author: Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed Apr 29 12:45:15 2020 +0900
+
+    bpfilter: use 'userprogs' syntax to build bpfilter_umh
+
+and specifically, this line:
+
++userldflags += -static
+
+At least on Fedora, this dies an ugly death unless you have the glibc-static RPM
+installed (which is *not* part of the glibc-devel RPM).  Not sure how to fix this, or
+give a heads-up that there's a new requirement that might break the build.
+
+
+--==_Exmh_1588912756_228720P
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Comment: Exmh version 2.9.0 11/07/2018
+
+iQIVAwUBXrTicwdmEQWDXROgAQLCSA//UqzDH6Xrc8pTpaZYj6PQFrnX7JxNxPEw
+7XF4cADkh8YyVLIya15u3roNmb993e8UtqpJK2E4/kjDP5MB81NN/9qA/5r3Cb1g
+OaiYFTXl5wtwIyhc8vegiLqNrzs5ZV8VsHEt4o2QbY1tm/ubErebDSXbrdu1bQx9
+qPIBzhk6FDBik1NnyT4ouUbkL2L5xxK/+SIxkqKF56rWpjFyg1IvOCuJgq0zziN9
+RpDMjUzXqjty9AudhwTK/o/pNoJJ4VBBDpcA73+UWoiU0Rcxa8WTjf0qiLVhsF2j
+y6lT49uCsfG+mfzeGPZMxxziS4Mbaglq+LqZtsD6ni3+IaUckz4FY6nRdQys1Fy6
+wz7e97Yxem3qzWKuOum10cU6sF4WXbyp0mTK9STQZMN6o7lVO95GDhEZDYf6X4x3
+9z6K7CgqHceQNoXAPKm32hz3Zcwnz1XajB9zda+F103mXgldccmYba+uyk8YDCct
+B10n104eo3316gUz5k1/LMQtCjIOFBvj+2UQTaN6x1U514rJu2ddrQVrD+lVShvV
+M3jLq73GWXU07x4xO7CgQMwwbHKf3zD28i7wAOy4FY0LxIIDwtrsx9jGQsHaX4nm
+JuiPSWAGY8u7aikcoWVM5K0vk0Ea8Bjj9LlLzTHK0ZmDunKsAjTIE4/O3aQR3h6W
+6PQ9qiuQN7E=
+=SYBk
+-----END PGP SIGNATURE-----
+
+--==_Exmh_1588912756_228720P--
