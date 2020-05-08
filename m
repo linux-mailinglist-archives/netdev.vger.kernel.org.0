@@ -2,92 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D23E91CBB0A
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 01:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D4761CBB0E
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 01:05:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728187AbgEHXAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 19:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43720 "EHLO
+        id S1728296AbgEHXFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 19:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726843AbgEHXAp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 19:00:45 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71684C061A0C;
-        Fri,  8 May 2020 16:00:45 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id x15so1134252pfa.1;
-        Fri, 08 May 2020 16:00:45 -0700 (PDT)
+        with ESMTP id S1726843AbgEHXFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 19:05:03 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100C7C061A0C
+        for <netdev@vger.kernel.org>; Fri,  8 May 2020 16:05:03 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id c64so3547011qkf.12
+        for <netdev@vger.kernel.org>; Fri, 08 May 2020 16:05:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pi4iGLk6Iqw2U9dhbisdfCzZo8oBkEm8dn90sYqaEQ8=;
-        b=sZdflKUYXgN0b2+NUt7GZuTrsWAWtODPxRonqYIRglDOmrttJQp76y0M1d7gpFOwDI
-         Ai4Zle0D9LE3LQKL0hRYS2LJXEeNE6e6snm1zxELbQ/ODeVhGZDazWxGaELjaR8hqLi8
-         XNdhqEeD0XFv3saZQBYzj0UX45tYRNfVaVcTfzd/j5EVNUf6Cz4ABt5Cnwy+6QbA4v3x
-         4mp9xy4tRLnsCTl0BV5vRefVn26h2HLjivlEcC2VK1vG9zDAOq+tjtaDbJqnZamF1rbS
-         HOGUHEPodGXN85Ih2MmTS2VJKM0+Kp4QtG2mPrXPfH3K7KKZVQcaLPIEr0BX+vuhtv59
-         8y3g==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PiUVa5mVO89jeXQmai25H32mWUhzjICjk7pOMJIJk4M=;
+        b=aeIWvzPXDXfpoIWJD4RSKGQirPc8lgF0hCA7z+WnsTXlqRhUtPwt4ABFjTPGSQ4MmW
+         co9aA/P0GUUUWqi2b2tLG/UGKjI5T4MsFL7wOEefM5SJJFRdXctIb9yoofcvfMBAhpvX
+         J/QuNRxp4qHlOOtTwNwjrBQweLSXxjbnyo68o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pi4iGLk6Iqw2U9dhbisdfCzZo8oBkEm8dn90sYqaEQ8=;
-        b=M5bxQdYgdib0ICi/8xacVLNdqyIpcHkzxlen29iZvEPHD8uSuPL7MwhyZU5fgniDAe
-         7gImrVVAiapHd1W2sSiVobJsa5GvRTUakDzLWKjkcksIXebKmiCa7EImcZk6uIu+1Hs7
-         Rdzz91YoKvFoW7oj3/6Pg3Pq4xec3a3VLwJofi+BlY1fwvbnFx66iZYEqs+T68D/gQ6l
-         QQNh+P66CZUw/WkFfjYXzXKvyv8uG+gW99zWe2AZMETlzyg1GX6qZB7qXwaf+M/EwTp7
-         nr0rlKjH/Dvt99GNDhpx62pL3iRLHERq+akr3IYZvovhbZEm/o4P7XvGBePnUxElhS97
-         DGog==
-X-Gm-Message-State: AGi0PuYEy3tHb782tNrbW2t5QDZwIAvyvvusMZaFFsJ6Rcwla/iStWmk
-        2A1Yo+2ai/uoRqp/l2YEnSk=
-X-Google-Smtp-Source: APiQypJDOE5rzSDmg+tXx4CH+Ryq95Crs+V8O5vHJ64bK5E4fs2FUQwrNKXs2S4xJyWzpB1bBdCMDQ==
-X-Received: by 2002:aa7:9429:: with SMTP id y9mr5439514pfo.8.1588978844916;
-        Fri, 08 May 2020 16:00:44 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:d7c7])
-        by smtp.gmail.com with ESMTPSA id d4sm1684354pgk.2.2020.05.08.16.00.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 May 2020 16:00:43 -0700 (PDT)
-Date:   Fri, 8 May 2020 16:00:41 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com,
-        linux-security-module@vger.kernel.org, acme@redhat.com,
-        jamorris@linux.microsoft.com, jannh@google.com, kpsingh@google.com
-Subject: Re: [PATCH v5 bpf-next 0/3] Introduce CAP_BPF
-Message-ID: <20200508230041.uwsj7ubk3zvphioe@ast-mbp.dhcp.thefacebook.com>
-References: <20200508215340.41921-1-alexei.starovoitov@gmail.com>
- <71f66e31-02d9-a661-af3b-f493140a53e2@schaufler-ca.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PiUVa5mVO89jeXQmai25H32mWUhzjICjk7pOMJIJk4M=;
+        b=nvnnqHCXzwvby7eDYjG2aClV5kEt4AF/W4yeC4numqluS6v3bia5EQdJY/qS+JRzOx
+         NMbrNQGOtYSKXziKYmz7BZqDGgwUsrdTBz7O0m2+dio3NvpY4LGQ2s7KEEa+Qri56cvP
+         jIHv/FMTnMf5HAGmx3M9gKyggC0NdN5hbEErA8FdD8vDEjU2X4wqDIepXzdL9qyb8q87
+         RT+pCzyaADZnsb0X4YxT0hnah/GTTIJtgiiDON/EGAsXyVOZbI0y2kfsTfBoaxc1g17+
+         4eTy9iod6myflWGCZF6xFOIsavavEgGQ4lP13UHZVSozXCjskt2/AJC5iOmeEF1BlL5A
+         a0Gg==
+X-Gm-Message-State: AGi0PuZC5EivYuHX6tC8zkKf27uoGtnQMMCiaYHgppT3zauLAYQX2At9
+        SDUxh/e2Gk2vMQewnfI+3FZJj4OUPj5tpiQVletMlw==
+X-Google-Smtp-Source: APiQypKgAkoL81J9siZ6ExsdQxNJg8FR8V54RCPQtvmozJqNCBpzRhfXUIlX/5mNKADU/Vf82qndSg3c1Brdxm5ukPo=
+X-Received: by 2002:a05:620a:4f0:: with SMTP id b16mr5114221qkh.165.1588979101996;
+ Fri, 08 May 2020 16:05:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <71f66e31-02d9-a661-af3b-f493140a53e2@schaufler-ca.com>
+References: <20200508225301.484094-1-colin.king@canonical.com>
+In-Reply-To: <20200508225301.484094-1-colin.king@canonical.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Fri, 8 May 2020 16:04:50 -0700
+Message-ID: <CACKFLinpQFupdmq63RH527sDrAj4nrV4vcR+eDy5zh4KqLh8Dg@mail.gmail.com>
+Subject: Re: [PATCH] net: tg3: tidy up loop, remove need to compute off with a multiply
+To:     Colin King <colin.king@canonical.com>
+Cc:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 08, 2020 at 03:45:36PM -0700, Casey Schaufler wrote:
-> On 5/8/2020 2:53 PM, Alexei Starovoitov wrote:
-> > From: Alexei Starovoitov <ast@kernel.org>
-> >
-> > v4->v5:
-> >
-> > Split BPF operations that are allowed under CAP_SYS_ADMIN into combination of
-> > CAP_BPF, CAP_PERFMON, CAP_NET_ADMIN and keep some of them under CAP_SYS_ADMIN.
-> >
-> > The user process has to have
-> > - CAP_BPF and CAP_PERFMON to load tracing programs.
-> > - CAP_BPF and CAP_NET_ADMIN to load networking programs.
-> > (or CAP_SYS_ADMIN for backward compatibility).
-> 
-> Is there a case where CAP_BPF is useful in the absence of other capabilities?
-> I generally object to new capabilities in cases where existing capabilities
-> are already required.
+On Fri, May 8, 2020 at 3:53 PM Colin King <colin.king@canonical.com> wrote:
+>
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> Currently the value for 'off' is computed using a multiplication and
+> a couple of statements later off is being incremented by len and
+> this value is never read.  Clean up the code by removing the
+> multiplication and just increment off by len on each iteration. Also
+> use len instead of TG3_OCIR_LEN.
+>
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  drivers/net/ethernet/broadcom/tg3.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+> index ff98a82b7bc4..9dd9bd506bcc 100644
+> --- a/drivers/net/ethernet/broadcom/tg3.c
+> +++ b/drivers/net/ethernet/broadcom/tg3.c
+> @@ -10798,16 +10798,14 @@ static int tg3_init_hw(struct tg3 *tp, bool reset_phy)
+>  static void tg3_sd_scan_scratchpad(struct tg3 *tp, struct tg3_ocir *ocir)
+>  {
+>         int i;
+> +       u32 off, len = TG3_OCIR_LEN;
 
-You mean beyond what is written about CAP_BPF in include/uapi/linux/capability.h in patch 1?
-There are prog types that are neither tracing nor networking.
-Like LIRC2 and cgroup-device are not, but they were put under CAP_SYS_ADMIN + CAP_NET_ADMIN
-because there was no CAP_BPF. This patch keeps them under CAP_BPF + CAP_NET_ADMIN for now.
-May be that can be relaxed later. For sure future prog types won't have to deal with
-such binary decision.
+Please use reverse X-mas tree style variable declarations.  Other than
+that, it looks good.
+
+Thanks.
+
+>
+> -       for (i = 0; i < TG3_SD_NUM_RECS; i++, ocir++) {
+> -               u32 off = i * TG3_OCIR_LEN, len = TG3_OCIR_LEN;
+> -
+> +       for (i = 0, off = 0; i < TG3_SD_NUM_RECS; i++, ocir++, off += len) {
+>                 tg3_ape_scratchpad_read(tp, (u32 *) ocir, off, len);
+> -               off += len;
+>
+>                 if (ocir->signature != TG3_OCIR_SIG_MAGIC ||
+>                     !(ocir->version_flags & TG3_OCIR_FLAG_ACTIVE))
+> -                       memset(ocir, 0, TG3_OCIR_LEN);
+> +                       memset(ocir, 0, len);
+>         }
+>  }
+>
+> --
+> 2.25.1
+>
