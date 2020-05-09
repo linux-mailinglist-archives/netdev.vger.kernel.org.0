@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0FB1CBD62
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 06:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C5D41CBD6E
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 06:38:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728629AbgEIEgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 00:36:05 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:32789 "EHLO
+        id S1728758AbgEIEgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 00:36:09 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:37745 "EHLO
         mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725795AbgEIEgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 00:36:05 -0400
-Received: by mail-pl1-f193.google.com with SMTP id t7so1642694plr.0;
-        Fri, 08 May 2020 21:36:04 -0700 (PDT)
+        with ESMTP id S1728697AbgEIEgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 00:36:08 -0400
+Received: by mail-pl1-f193.google.com with SMTP id x10so1634669plr.4;
+        Fri, 08 May 2020 21:36:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VkP6GWOio7qtVGJiV0OeaEyHuFiaIWKPQxya3i5GDSA=;
-        b=l82iai2dqocs6iEfllINJe0nVEKcCUXwdS5lX4Pjfx0k+/tUN1vHDaBoNrCYxWa2un
-         94Ph1y67DrIxZDdfUDpHbIqhkWC0yuJ4gpRFGUQl7bFjmHviAh0MB3BPxPTWn+jLUXmg
-         v9W/gZd9Bcy4v7jQUjhQgQRw/KAyx9qYUthUMMmsSB8Vh/ghiACFRPKopHRtbiP8ByHQ
-         PQML9RjuEViYNSrHEv1zl7QXZNwpTQ5z7no6baNrndLk2vEz/3nv/xSqE282n9+UmWcG
-         rcXwxK5TfpKL9ayLxMG25cKRIJmdssADrz3N94OMmrQ9vmic9Hyw7US7d2J/AVG2OwEG
-         Kdfw==
-X-Gm-Message-State: AGi0Pub8O12eCz0m5xeyuajFUw33pAntvzncej+WQzEJF6toWCq1DVR+
-        iXFUgOOGU1Q4gcDqxk0oh6s=
-X-Google-Smtp-Source: APiQypIXyBqaBXyxzVqzZQbND5CCRopwmyiq2AWa34I4lmbuikMQ9/1Jk5F5GGDOQHUv7bOBuauRqA==
-X-Received: by 2002:a17:90a:3b42:: with SMTP id t2mr9742401pjf.11.1588998964576;
-        Fri, 08 May 2020 21:36:04 -0700 (PDT)
+        bh=520DVozYcI1durffcC1g+bgC7qwaN6rEN099XCz3lNk=;
+        b=ErLBxndXJV/denra0tDJsPiqL7DCh62lu4YZkMmO7wtaJ6MKbMwYqjPYHG29GLBXEm
+         0RY5cJLk1EmsMKBQe4TBzI705u78YZebiV4VHcG4JC0S8VmjY26zWJRaWkAF0aRXTrcm
+         Lyu25nbQ709R3mH+gUTfb+UcqOnf/kkxW1MjUG+ni4gtQqZOJ3Mxf3tjzeSlAYQOxHVZ
+         jCB6JhhQ4NhVebch6odmUZoWeOgmuNak/QOaIP8hK3KGyPwXbDzqMc6EnMvTrOG04pwx
+         jhfxAeHR8v4YWN6jHVzfPaNAx4pmT5tbnaRrvhJVvn4C1Mpmw6l+Oaz7mbB5rp2OmZea
+         68mQ==
+X-Gm-Message-State: AGi0PuZcLklntKBzGvIhQC5xJDZqQvpY842XTdy16plJOLpOsLCD/cTA
+        CmG0DBGox/F6PU/Zej7OnWg=
+X-Google-Smtp-Source: APiQypLhNxOZ9zSqwOivW1DuzLpv7GJhIJCq/zviwyHl3767b25FTJ1w7h//Pokrb8pRSaOfFnbSnw==
+X-Received: by 2002:a17:902:7203:: with SMTP id ba3mr5308169plb.202.1588998967262;
+        Fri, 08 May 2020 21:36:07 -0700 (PDT)
 Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id 138sm3331874pfz.31.2020.05.08.21.36.01
+        by smtp.gmail.com with ESMTPSA id l1sm678301pgj.48.2020.05.08.21.36.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 08 May 2020 21:36:01 -0700 (PDT)
 Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id C70A841405; Sat,  9 May 2020 04:36:00 +0000 (UTC)
+        id D829841D00; Sat,  9 May 2020 04:36:00 +0000 (UTC)
 From:   Luis Chamberlain <mcgrof@kernel.org>
 To:     jeyu@kernel.org
 Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
@@ -46,13 +46,12 @@ Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
         mchehab+samsung@kernel.org, kvalo@codeaurora.org,
         davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH 02/15] ethernet/839: use new module_firmware_crashed()
-Date:   Sat,  9 May 2020 04:35:39 +0000
-Message-Id: <20200509043552.8745-3-mcgrof@kernel.org>
+        Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com
+Subject: [PATCH 03/15] bnx2x: use new module_firmware_crashed()
+Date:   Sat,  9 May 2020 04:35:40 +0000
+Message-Id: <20200509043552.8745-4-mcgrof@kernel.org>
 X-Mailer: git-send-email 2.23.0.rc1
 In-Reply-To: <20200509043552.8745-1-mcgrof@kernel.org>
 References: <20200509043552.8745-1-mcgrof@kernel.org>
@@ -71,32 +70,26 @@ a reboot.
 
 Using a taint flag allows us to annotate when this happens clearly.
 
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Shannon Nelson <snelson@pensando.io>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Ariel Elior <aelior@marvell.com>
+Cc: Sudarsana Kalluru <skalluru@marvell.com>
+CC: GR-everest-linux-l2@marvell.com
 Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 ---
- drivers/net/ethernet/8390/axnet_cs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/8390/axnet_cs.c b/drivers/net/ethernet/8390/axnet_cs.c
-index aeae7966a082..8ad0200db8e9 100644
---- a/drivers/net/ethernet/8390/axnet_cs.c
-+++ b/drivers/net/ethernet/8390/axnet_cs.c
-@@ -1358,9 +1358,11 @@ static void ei_receive(struct net_device *dev)
- 		 */
- 		if ((netif_msg_rx_err(ei_local)) &&
- 		    this_frame != ei_local->current_page &&
--		    (this_frame != 0x0 || rxing_page != 0xFF))
-+		    (this_frame != 0x0 || rxing_page != 0xFF)) {
-+			module_firmware_crashed();
- 			netdev_err(dev, "mismatched read page pointers %2x vs %2x\n",
- 				   this_frame, ei_local->current_page);
-+		}
- 		
- 		if (this_frame == rxing_page)	/* Read all the frames? */
- 			break;				/* Done for now */
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index db5107e7937c..c38b8c9c8af0 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -909,6 +909,7 @@ void bnx2x_panic_dump(struct bnx2x *bp, bool disable_int)
+ 	bp->eth_stats.unrecoverable_error++;
+ 	DP(BNX2X_MSG_STATS, "stats_state - DISABLED\n");
+ 
++	module_firmware_crashed();
+ 	BNX2X_ERR("begin crash dump -----------------\n");
+ 
+ 	/* Indices */
 -- 
 2.25.1
 
