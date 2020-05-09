@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 046121CC2E2
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 18:52:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D3AC1CC2E4
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 18:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728219AbgEIQwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 12:52:53 -0400
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:38788 "EHLO
-        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726214AbgEIQwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 12:52:53 -0400
-Received: from mxbackcorp2j.mail.yandex.net (mxbackcorp2j.mail.yandex.net [IPv6:2a02:6b8:0:1619::119])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 29D672E0DF2;
-        Sat,  9 May 2020 19:52:49 +0300 (MSK)
+        id S1728294AbgEIQwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 12:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726214AbgEIQwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 12:52:54 -0400
+Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b6:217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA24C061A0C;
+        Sat,  9 May 2020 09:52:54 -0700 (PDT)
+Received: from mxbackcorp1g.mail.yandex.net (mxbackcorp1g.mail.yandex.net [IPv6:2a02:6b8:0:1402::301])
+        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id BE06B2E14DB;
+        Sat,  9 May 2020 19:52:51 +0300 (MSK)
 Received: from vla1-81430ab5870b.qloud-c.yandex.net (vla1-81430ab5870b.qloud-c.yandex.net [2a02:6b8:c0d:35a1:0:640:8143:ab5])
-        by mxbackcorp2j.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id MD8WDsPY7T-qlXqssvI;
-        Sat, 09 May 2020 19:52:49 +0300
+        by mxbackcorp1g.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id RvmXcuqFWP-qpAimdQ6;
+        Sat, 09 May 2020 19:52:51 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1589043169; bh=eY9ApoVEM+jffkVAX35mJ0Fa3hnBUudjCCNzhbqxNJA=;
+        t=1589043171; bh=8k209FJXinjPV43znfx17gvseR4z9Ra4J9eybSHcz/s=;
         h=In-Reply-To:Message-Id:References:Date:Subject:To:From:Cc;
-        b=luADOpYZbYLZcwfHbDI2pLY98TFP7659u6awPXe7YDRlHvjO/RRiKmgoSyiZap/kW
-         hWvWpeNcSksDo8NydqtquPhfzOGknHzkoW04g/K1yBZZW9VqXxVrLbcgK5Zx5rH8pY
-         NSjKtb43YqJUkmV0Izpic0D9hyJSeyRZxMsnXZ6U=
-Authentication-Results: mxbackcorp2j.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
+        b=jJOJvZfRM/NeBG6xUQsKebwBdxzXs55cw2qCbS+Px8HIM4apTo+xLIzUjbBsqjsCJ
+         g4mqVlXD4zzhL/URfDmpRaExHdhgkqdtCwflanMmw/w35k0IVv8/PzIIizsuavPp6l
+         vryQpH9gx3WTe2yz/OSBHkYzS7ic7KRw//u70u4k=
+Authentication-Results: mxbackcorp1g.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
 Received: from 178.154.191.33-vpn.dhcp.yndx.net (178.154.191.33-vpn.dhcp.yndx.net [178.154.191.33])
-        by vla1-81430ab5870b.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id lkcxSGO050-qlXa0QV4;
-        Sat, 09 May 2020 19:52:47 +0300
+        by vla1-81430ab5870b.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id lkcxSGO050-qoXaRVLJ;
+        Sat, 09 May 2020 19:52:50 +0300
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (Client certificate not present)
 From:   Dmitry Yakunin <zeil@yandex-team.ru>
 To:     netdev@vger.kernel.org, dsahern@gmail.com
 Cc:     cgroups@vger.kernel.org
-Subject: [PATCH iproute2-next v2 2/3] ss: add support for cgroup v2 information and filtering
-Date:   Sat,  9 May 2020 19:52:01 +0300
-Message-Id: <20200509165202.17959-2-zeil@yandex-team.ru>
+Subject: [PATCH iproute2-next v2 3/3] ss: add checks for bc filter support
+Date:   Sat,  9 May 2020 19:52:02 +0300
+Message-Id: <20200509165202.17959-3-zeil@yandex-team.ru>
 In-Reply-To: <20200509165202.17959-1-zeil@yandex-team.ru>
 References: <20200509165202.17959-1-zeil@yandex-team.ru>
 MIME-Version: 1.0
@@ -44,308 +47,285 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduces two new features: obtaining cgroup information and
-filtering sockets by cgroups. These features work based on cgroup v2 ID
-field in the socket (kernel should be compiled with CONFIG_SOCK_CGROUP_DATA).
-
-Cgroup information can be obtained by specifying --cgroup flag and now contains
-only pathname. For faster pathname lookups cgroup cache is implemented. This
-cache is filled on ss startup and missed entries are resolved and saved
-on the fly.
-
-Cgroup filter extends EXPRESSION and allows to specify cgroup pathname
-(relative or absolute) to obtain sockets attached only to this cgroup.
-Filter syntax: ss [ cgroup PATHNAME ]
-Examples:
-    ss -a cgroup /sys/fs/cgroup/unified (or ss -a cgroup .)
-    ss -a cgroup /sys/fs/cgroup/unified/cgroup1 (or ss -a cgroup cgroup1)
-
-v2:
-  - style fixes (David Ahern)
+As noted by David Ahern, now if some bytecode filter is not supported
+by running kernel printed error message is not clear. This patch is attempt to
+detect such case and print correct message. This is done by providing checking
+function for new filter types. As example check function for cgroup filter
+is implemented. It sends correct lightweight request (idiag_states = 0)
+with zero cgroup condition to the kernel and checks returned errno. If filter
+is not supported EINVAL is returned. Result of checking is cached to
+avoid extra checks if several same filters are specified.
 
 Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
 ---
- include/uapi/linux/inet_diag.h |  2 ++
- man/man8/ss.8                  |  9 +++++++
- misc/ss.c                      | 61 ++++++++++++++++++++++++++++++++++++++++++
- misc/ssfilter.h                |  2 ++
- misc/ssfilter.y                | 22 ++++++++++++++-
- 5 files changed, 95 insertions(+), 1 deletion(-)
+ misc/Makefile         |   2 +-
+ misc/ss.c             |  17 +--------
+ misc/ss_util.h        |  22 +++++++++++
+ misc/ssfilter.h       |  34 +++++++++--------
+ misc/ssfilter.y       |   9 ++++-
+ misc/ssfilter_check.c | 103 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 154 insertions(+), 33 deletions(-)
+ create mode 100644 misc/ss_util.h
+ create mode 100644 misc/ssfilter_check.c
 
-diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-index 0c1c781..f009abf 100644
---- a/include/uapi/linux/inet_diag.h
-+++ b/include/uapi/linux/inet_diag.h
-@@ -96,6 +96,7 @@ enum {
- 	INET_DIAG_BC_MARK_COND,
- 	INET_DIAG_BC_S_EQ,
- 	INET_DIAG_BC_D_EQ,
-+	INET_DIAG_BC_CGROUP_COND,   /* u64 cgroup v2 ID */
- };
+diff --git a/misc/Makefile b/misc/Makefile
+index 1debfb1..50dae79 100644
+--- a/misc/Makefile
++++ b/misc/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
+-SSOBJ=ss.o ssfilter.tab.o
++SSOBJ=ss.o ssfilter_check.o ssfilter.tab.o
+ LNSTATOBJ=lnstat.o lnstat_util.o
  
- struct inet_diag_hostcond {
-@@ -157,6 +158,7 @@ enum {
- 	INET_DIAG_MD5SIG,
- 	INET_DIAG_ULP_INFO,
- 	INET_DIAG_SK_BPF_STORAGES,
-+	INET_DIAG_CGROUP_ID,
- 	__INET_DIAG_MAX,
- };
- 
-diff --git a/man/man8/ss.8 b/man/man8/ss.8
-index 023d771..894cb20 100644
---- a/man/man8/ss.8
-+++ b/man/man8/ss.8
-@@ -281,6 +281,15 @@ Class id set by net_cls cgroup. If class is zero this shows priority
- set by SO_PRIORITY.
- .RE
- .TP
-+.B \-\-cgroup
-+Show cgroup information. Below fields may appear:
-+.RS
-+.P
-+.TP
-+.B cgroup
-+Cgroup v2 pathname. This pathname is relative to the mount point of the hierarchy.
-+.RE
-+.TP
- .B \-K, \-\-kill
- Attempts to forcibly close sockets. This option displays sockets that are
- successfully closed and silently skips sockets that the kernel does not support
+ TARGETS=ss nstat ifstat rtacct lnstat
 diff --git a/misc/ss.c b/misc/ss.c
-index 75fde23..b9e6b15 100644
+index b9e6b15..1891e9c 100644
 --- a/misc/ss.c
 +++ b/misc/ss.c
-@@ -36,6 +36,7 @@
- #include "namespace.h"
- #include "SNAPSHOT.h"
+@@ -29,6 +29,7 @@
+ #include <limits.h>
+ #include <stdarg.h>
+ 
++#include "ss_util.h"
+ #include "utils.h"
  #include "rt_names.h"
-+#include "cg_map.h"
+ #include "ll_map.h"
+@@ -39,8 +40,6 @@
+ #include "cg_map.h"
  
  #include <linux/tcp.h>
- #include <linux/sock_diag.h>
-@@ -122,6 +123,7 @@ static int follow_events;
- static int sctp_ino;
- static int show_tipcinfo;
- static int show_tos;
-+static int show_cgroup;
- int oneline;
+-#include <linux/sock_diag.h>
+-#include <linux/inet_diag.h>
+ #include <linux/unix_diag.h>
+ #include <linux/netdevice.h>	/* for MAX_ADDR_LEN */
+ #include <linux/filter.h>
+@@ -63,24 +62,10 @@
+ #define AF_VSOCK PF_VSOCK
+ #endif
  
- enum col_id {
-@@ -797,6 +799,7 @@ struct sockstat {
- 	char *name;
- 	char *peer_name;
- 	__u32		    mark;
-+	__u64		    cgroup_id;
- };
+-#define MAGIC_SEQ 123456
+ #define BUF_CHUNK (1024 * 1024)	/* Buffer chunk allocation size */
+ #define BUF_CHUNKS_MAX 5	/* Maximum number of allocated buffer chunks */
+ #define LEN_ALIGN(x) (((x) + 1) & ~1)
  
- struct dctcpstat {
-@@ -1417,6 +1420,9 @@ static void sock_details_print(struct sockstat *s)
- 
- 	if (s->mark)
- 		out(" fwmark:0x%x", s->mark);
+-#define DIAG_REQUEST(_req, _r)						    \
+-	struct {							    \
+-		struct nlmsghdr nlh;					    \
+-		_r;							    \
+-	} _req = {							    \
+-		.nlh = {						    \
+-			.nlmsg_type = SOCK_DIAG_BY_FAMILY,		    \
+-			.nlmsg_flags = NLM_F_ROOT|NLM_F_MATCH|NLM_F_REQUEST,\
+-			.nlmsg_seq = MAGIC_SEQ,				    \
+-			.nlmsg_len = sizeof(_req),			    \
+-		},							    \
+-	}
+-
+ #if HAVE_SELINUX
+ #include <selinux/selinux.h>
+ #else
+diff --git a/misc/ss_util.h b/misc/ss_util.h
+new file mode 100644
+index 0000000..f7e40bb
+--- /dev/null
++++ b/misc/ss_util.h
+@@ -0,0 +1,22 @@
++#ifndef __SS_UTIL_H__
++#define __SS_UTIL_H__
 +
-+	if (s->cgroup_id)
-+		out(" cgroup:%s", cg_id_to_path(s->cgroup_id));
- }
- 
- static void sock_addr_print(const char *addr, char *delim, const char *port,
-@@ -1643,6 +1649,7 @@ struct aafilter {
- 	unsigned int	iface;
- 	__u32		mark;
- 	__u32		mask;
-+	__u64		cgroup_id;
- 	struct aafilter *next;
- };
- 
-@@ -1771,6 +1778,12 @@ static int run_ssfilter(struct ssfilter *f, struct sockstat *s)
- 
- 		return (s->mark & a->mask) == a->mark;
- 	}
-+		case SSF_CGROUPCOND:
-+	{
-+		struct aafilter *a = (void *)f->pred;
++#include <linux/sock_diag.h>
++#include <linux/inet_diag.h>
 +
-+		return s->cgroup_id == a->cgroup_id;
-+	}
- 		/* Yup. It is recursion. Sorry. */
- 		case SSF_AND:
- 		return run_ssfilter(f->pred, s) && run_ssfilter(f->post, s);
-@@ -1963,6 +1976,23 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
- 
- 		return inslen;
- 	}
-+		case SSF_CGROUPCOND:
-+	{
-+		struct aafilter *a = (void *)f->pred;
-+		struct instr {
-+			struct inet_diag_bc_op op;
-+			__u64 cgroup_id;
-+		} __attribute__((packed));
-+		int inslen = sizeof(struct instr);
++#define MAGIC_SEQ 123456
 +
-+		if (!(*bytecode = malloc(inslen))) abort();
-+		((struct instr *)*bytecode)[0] = (struct instr) {
-+			{ INET_DIAG_BC_CGROUP_COND, inslen, inslen + 4 },
-+			a->cgroup_id,
-+		};
-+
-+		return inslen;
-+	}
- 		default:
- 		abort();
- 	}
-@@ -2300,6 +2330,22 @@ void *parse_markmask(const char *markmask)
- 	return res;
- }
- 
-+void *parse_cgroupcond(const char *path)
-+{
-+	struct aafilter *res;
-+	__u64 id;
-+
-+	id = get_cgroup2_id(path);
-+	if (!id)
-+		return NULL;
-+
-+	res = malloc(sizeof(*res));
-+	if (res)
-+		res->cgroup_id = id;
-+
-+	return res;
-+}
-+
- static void proc_ctx_print(struct sockstat *s)
- {
- 	char *buf;
-@@ -3104,6 +3150,9 @@ static void parse_diag_msg(struct nlmsghdr *nlh, struct sockstat *s)
- 	s->mark = 0;
- 	if (tb[INET_DIAG_MARK])
- 		s->mark = rta_getattr_u32(tb[INET_DIAG_MARK]);
-+	s->cgroup_id = 0;
-+	if (tb[INET_DIAG_CGROUP_ID])
-+		s->cgroup_id = rta_getattr_u64(tb[INET_DIAG_CGROUP_ID]);
- 	if (tb[INET_DIAG_PROTOCOL])
- 		s->raw_prot = rta_getattr_u8(tb[INET_DIAG_PROTOCOL]);
- 	else
-@@ -3171,6 +3220,11 @@ static int inet_show_sock(struct nlmsghdr *nlh,
- 			out(" class_id:%#x", rta_getattr_u32(tb[INET_DIAG_CLASS_ID]));
- 	}
- 
-+	if (show_cgroup) {
-+		if (tb[INET_DIAG_CGROUP_ID])
-+			out(" cgroup:%s", cg_id_to_path(rta_getattr_u64(tb[INET_DIAG_CGROUP_ID])));
++#define DIAG_REQUEST(_req, _r)						    \
++	struct {							    \
++		struct nlmsghdr nlh;					    \
++		_r;							    \
++	} _req = {							    \
++		.nlh = {						    \
++			.nlmsg_type = SOCK_DIAG_BY_FAMILY,		    \
++			.nlmsg_flags = NLM_F_ROOT|NLM_F_MATCH|NLM_F_REQUEST,\
++			.nlmsg_seq = MAGIC_SEQ,				    \
++			.nlmsg_len = sizeof(_req),			    \
++		},							    \
 +	}
 +
- 	if (show_mem || (show_tcpinfo && s->type != IPPROTO_UDP)) {
- 		if (!oneline)
- 			out("\n\t");
-@@ -4996,6 +5050,7 @@ static void _usage(FILE *dest)
- "       --tipcinfo      show internal tipc socket information\n"
- "   -s, --summary       show socket usage summary\n"
- "       --tos           show tos and priority information\n"
-+"       --cgroup        show cgroup information\n"
- "   -b, --bpf           show bpf filter socket information\n"
- "   -E, --events        continually display sockets as they are destroyed\n"
- "   -Z, --context       display process SELinux security contexts\n"
-@@ -5106,6 +5161,8 @@ static int scan_state(const char *state)
- /* Values of 'x' are already used so a non-character is used */
- #define OPT_XDPSOCK 260
- 
-+#define OPT_CGROUP 261
-+
- static const struct option long_opts[] = {
- 	{ "numeric", 0, 0, 'n' },
- 	{ "resolve", 0, 0, 'r' },
-@@ -5142,6 +5199,7 @@ static const struct option long_opts[] = {
- 	{ "net", 1, 0, 'N' },
- 	{ "tipcinfo", 0, 0, OPT_TIPCINFO},
- 	{ "tos", 0, 0, OPT_TOS },
-+	{ "cgroup", 0, 0, OPT_CGROUP },
- 	{ "kill", 0, 0, 'K' },
- 	{ "no-header", 0, 0, 'H' },
- 	{ "xdp", 0, 0, OPT_XDPSOCK},
-@@ -5329,6 +5387,9 @@ int main(int argc, char *argv[])
- 		case OPT_TOS:
- 			show_tos = 1;
- 			break;
-+		case OPT_CGROUP:
-+			show_cgroup = 1;
-+			break;
- 		case 'K':
- 			current_filter.kill = 1;
- 			break;
++#endif /* __SS_UTIL_H__ */
 diff --git a/misc/ssfilter.h b/misc/ssfilter.h
-index f5b0bc8..d85c084 100644
+index d85c084..0be3b1e 100644
 --- a/misc/ssfilter.h
 +++ b/misc/ssfilter.h
-@@ -11,6 +11,7 @@
- #define SSF_S_AUTO  9
- #define SSF_DEVCOND 10
- #define SSF_MARKMASK 11
-+#define SSF_CGROUPCOND 12
- 
+@@ -1,20 +1,24 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#define SSF_DCOND 0
+-#define SSF_SCOND 1
+-#define SSF_OR	  2
+-#define SSF_AND	  3
+-#define SSF_NOT	  4
+-#define SSF_D_GE  5
+-#define SSF_D_LE  6
+-#define SSF_S_GE  7
+-#define SSF_S_LE  8
+-#define SSF_S_AUTO  9
+-#define SSF_DEVCOND 10
+-#define SSF_MARKMASK 11
+-#define SSF_CGROUPCOND 12
+-
  #include <stdbool.h>
  
-@@ -25,3 +26,4 @@ int ssfilter_parse(struct ssfilter **f, int argc, char **argv, FILE *fp);
- void *parse_hostcond(char *addr, bool is_port);
- void *parse_devcond(char *name);
- void *parse_markmask(const char *markmask);
-+void *parse_cgroupcond(const char *path);
++enum {
++	SSF_DCOND,
++	SSF_SCOND,
++	SSF_OR,
++	SSF_AND,
++	SSF_NOT,
++	SSF_D_GE,
++	SSF_D_LE,
++	SSF_S_GE,
++	SSF_S_LE,
++	SSF_S_AUTO,
++	SSF_DEVCOND,
++	SSF_MARKMASK,
++	SSF_CGROUPCOND,
++	SSF__MAX
++};
++
++bool ssfilter_is_supported(int type);
++
+ struct ssfilter
+ {
+ 	int type;
 diff --git a/misc/ssfilter.y b/misc/ssfilter.y
-index a901ae7..b417579 100644
+index b417579..8e16b44 100644
 --- a/misc/ssfilter.y
 +++ b/misc/ssfilter.y
-@@ -36,7 +36,7 @@ static void yyerror(char *s)
+@@ -12,7 +12,14 @@ typedef struct ssfilter * ssfilter_t;
  
- %}
- 
--%token HOSTCOND DCOND SCOND DPORT SPORT LEQ GEQ NEQ AUTOBOUND DEVCOND DEVNAME MARKMASK FWMARK
-+%token HOSTCOND DCOND SCOND DPORT SPORT LEQ GEQ NEQ AUTOBOUND DEVCOND DEVNAME MARKMASK FWMARK CGROUPCOND CGROUPPATH
- %left '|'
- %left '&'
- %nonassoc '!'
-@@ -156,6 +156,14 @@ expr:	'(' exprlist ')'
-         {
-                 $$ = alloc_node(SSF_NOT, alloc_node(SSF_MARKMASK, $3));
-         }
-+        | CGROUPPATH eq CGROUPCOND
-+        {
-+                $$ = alloc_node(SSF_CGROUPCOND, $3);
-+        }
-+        | CGROUPPATH NEQ CGROUPCOND
-+        {
-+                $$ = alloc_node(SSF_NOT, alloc_node(SSF_CGROUPCOND, $3));
-+        }
-         | AUTOBOUND
-         {
-                 $$ = alloc_node(SSF_S_AUTO, NULL);
-@@ -276,6 +284,10 @@ int yylex(void)
- 		tok_type = FWMARK;
- 		return FWMARK;
- 	}
-+	if (strcmp(curtok, "cgroup") == 0) {
-+		tok_type = CGROUPPATH;
-+		return CGROUPPATH;
+ static struct ssfilter * alloc_node(int type, void *pred)
+ {
+-	struct ssfilter *n = malloc(sizeof(*n));
++	struct ssfilter *n;
++
++	if (!ssfilter_is_supported(type)) {
++		fprintf(stderr, "It looks like such filter is not supported! Too old kernel?\n");
++		exit(-1);
 +	}
- 	if (strcmp(curtok, ">=") == 0 ||
- 	    strcmp(curtok, "ge") == 0 ||
- 	    strcmp(curtok, "geq") == 0)
-@@ -318,6 +330,14 @@ int yylex(void)
- 		}
- 		return MARKMASK;
- 	}
-+	if (tok_type == CGROUPPATH) {
-+		yylval = (void*)parse_cgroupcond(curtok);
-+		if (yylval == NULL) {
-+			fprintf(stderr, "Cannot parse cgroup %s.\n", curtok);
-+			exit(1);
-+		}
-+		return CGROUPCOND;
++
++	n = malloc(sizeof(*n));
+ 	if (n == NULL)
+ 		abort();
+ 	n->type = type;
+diff --git a/misc/ssfilter_check.c b/misc/ssfilter_check.c
+new file mode 100644
+index 0000000..38c960c
+--- /dev/null
++++ b/misc/ssfilter_check.c
+@@ -0,0 +1,103 @@
++#include <stdio.h>
++#include <stdlib.h>
++#include <errno.h>
++
++#include "libnetlink.h"
++#include "ssfilter.h"
++#include "ss_util.h"
++
++static int dummy_filter(struct nlmsghdr *n, void *arg)
++{
++	/* just stops rtnl_dump_filter() */
++	return -1;
++}
++
++static bool cgroup_filter_check(void)
++{
++	struct sockaddr_nl nladdr = { .nl_family = AF_NETLINK };
++	DIAG_REQUEST(req, struct inet_diag_req_v2 r);
++	struct instr {
++		struct inet_diag_bc_op op;
++		__u64 cgroup_id;
++	} __attribute__((packed));
++	int inslen = sizeof(struct instr);
++	struct instr instr = {
++		{ INET_DIAG_BC_CGROUP_COND, inslen, inslen + 4 },
++		0
++	};
++	struct rtnl_handle rth;
++	struct iovec iov[3];
++	struct msghdr msg;
++	struct rtattr rta;
++	int ret = false;
++	int iovlen = 3;
++
++	if (rtnl_open_byproto(&rth, 0, NETLINK_SOCK_DIAG))
++		return false;
++	rth.dump = MAGIC_SEQ;
++	rth.flags = RTNL_HANDLE_F_SUPPRESS_NLERR;
++
++	memset(&req.r, 0, sizeof(req.r));
++	req.r.sdiag_family = AF_INET;
++	req.r.sdiag_protocol = IPPROTO_TCP;
++	req.nlh.nlmsg_len += RTA_LENGTH(inslen);
++
++	rta.rta_type = INET_DIAG_REQ_BYTECODE;
++	rta.rta_len = RTA_LENGTH(inslen);
++
++	iov[0] = (struct iovec) { &req, sizeof(req) };
++	iov[1] = (struct iovec) { &rta, sizeof(rta) };
++	iov[2] = (struct iovec) { &instr, inslen };
++
++	msg = (struct msghdr) {
++		.msg_name = (void *)&nladdr,
++		.msg_namelen = sizeof(nladdr),
++		.msg_iov = iov,
++		.msg_iovlen = iovlen,
++	};
++
++	if (sendmsg(rth.fd, &msg, 0) < 0)
++		goto out;
++
++	if (rtnl_dump_filter(&rth, dummy_filter, NULL) < 0) {
++		ret = (errno != EINVAL);
++		goto out;
 +	}
- 	yylval = (void*)parse_hostcond(curtok, tok_type == SPORT || tok_type == DPORT);
- 	if (yylval == NULL) {
- 		fprintf(stderr, "Cannot parse dst/src address.\n");
++
++	ret = true;
++
++out:
++	rtnl_close(&rth);
++
++	return ret;
++}
++
++
++struct filter_check_t {
++	bool (*check)(void);
++	int checked:1,
++	    supported:1;
++};
++
++static struct filter_check_t filter_checks[SSF__MAX] = {
++	[SSF_CGROUPCOND] = { cgroup_filter_check, 0 },
++};
++
++bool ssfilter_is_supported(int type)
++{
++	struct filter_check_t f;
++
++	if (type >= SSF__MAX)
++		return false;
++
++	f = filter_checks[type];
++	if (!f.check)
++		return true;
++
++	if (!f.checked) {
++		f.supported = f.check();
++		f.checked = 1;
++	}
++
++	return f.supported;
++}
 -- 
 2.7.4
 
