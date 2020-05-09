@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 799671CC3A1
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 20:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 948F11CC3B6
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 20:35:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728314AbgEISN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 14:13:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37602 "EHLO mail.kernel.org"
+        id S1728371AbgEISfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 14:35:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43740 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727106AbgEISN2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 May 2020 14:13:28 -0400
+        id S1727787AbgEISft (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 May 2020 14:35:49 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E6FBB21473;
-        Sat,  9 May 2020 18:13:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4BE57208E4;
+        Sat,  9 May 2020 18:35:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589048008;
-        bh=ZvfcP8iKmBJsOOsYuB1cFVtXFkMyiFexkKn+eQSnu1s=;
+        s=default; t=1589049349;
+        bh=QmAmcuBAZpUIMlw5HlYzqJsGCOS1nyVcTJJrmxl+o8I=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oHDtZjNMF4UUKE9+bMS4H/MSNGlbRT64LaiEVszUAFnG6h71myoEF453iy/2/h/Lh
-         YWzVRPaEKfXxualsCAS1x2XIRpANu61rt8CVUDEfiwD9d8N+1WPiP+s4PR00VNhgmX
-         M2fLqDQLI5dRxg4K6S0X68J6dj+F+c4Az8ThTUGE=
-Date:   Sat, 9 May 2020 11:13:21 -0700
+        b=CPNViKbJ4P2YAC4mzyMHEyU/Dv1agQ2e7Ez3A26Z29NotTIHzIODp7vylN3E+Sihi
+         9mfHXYRTMrbQvCTdFCJ47Jz92YHKcPv2iFoYP4EaBIJE2mJ3DvcANHMNDHFnMcWrxr
+         DVynt0+0pdboSAXxlG9zGQS1QHqyb34xz4rjKiPo=
+Date:   Sat, 9 May 2020 11:35:46 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     davem@davemloft.net, fthain@telegraphics.com.au,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] net/sonic: Fix some resource leaks in error handling
- paths
-Message-ID: <20200509111321.51419b19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <50ef36cd-d095-9abe-26ea-d363d11ce521@wanadoo.fr>
-References: <20200508172557.218132-1-christophe.jaillet@wanadoo.fr>
-        <20200508185402.41d9d068@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <50ef36cd-d095-9abe-26ea-d363d11ce521@wanadoo.fr>
+To:     Luis Chamberlain <mcgrof@kernel.org>, Jiri Pirko <jiri@resnulli.us>
+Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
+        rostedt@goodmis.org, mingo@redhat.com, aquini@redhat.com,
+        cai@lca.pw, dyoung@redhat.com, bhe@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de, gpiccoli@canonical.com,
+        pmladek@suse.com, tiwai@suse.de, schlad@suse.de,
+        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
+        daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/15] net: taint when the device driver firmware
+ crashes
+Message-ID: <20200509113546.7dcd1599@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200509043552.8745-1-mcgrof@kernel.org>
+References: <20200509043552.8745-1-mcgrof@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 9 May 2020 18:47:08 +0200 Christophe JAILLET wrote:
-> Le 09/05/2020 =C3=A0 03:54, Jakub Kicinski a =C3=A9crit=C2=A0:
-> > On Fri,  8 May 2020 19:25:57 +0200 Christophe JAILLET wrote: =20
-> >> @@ -527,8 +531,9 @@ static int mac_sonic_platform_remove(struct platfo=
-rm_device *pdev)
-> >>   	struct sonic_local* lp =3D netdev_priv(dev);
-> >>  =20
-> >>   	unregister_netdev(dev);
-> >> -	dma_free_coherent(lp->device, SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp=
-->dma_bitmode),
-> >> -	                  lp->descriptors, lp->descriptors_laddr);
-> >> +	dma_free_coherent(lp->device,
-> >> +			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
-> >> +			  lp->descriptors, lp->descriptors_laddr);
-> >>   	free_netdev(dev);
-> >>  =20
-> >>   	return 0; =20
-> > This is a white-space only change, right? Since this is a fix we should
-> > avoid making cleanups which are not strictly necessary.
->
-> Right.
->=20
-> The reason of this clean-up is that I wanted to avoid a checkpatch=20
-> warning with the proposed patch and I felt that having the same layout=20
-> in the error handling path of the probe function and in the remove=20
-> function was clearer.
-> So I updated also the remove function.
+On Sat,  9 May 2020 04:35:37 +0000 Luis Chamberlain wrote:
+> Device driver firmware can crash, and sometimes, this can leave your
+> system in a state which makes the device or subsystem completely
+> useless. Detecting this by inspecting /proc/sys/kernel/tainted instead
+> of scraping some magical words from the kernel log, which is driver
+> specific, is much easier. So instead this series provides a helper which
+> lets drivers annotate this and shows how to use this on networking
+> drivers.
+> 
+> My methodology for finding when firmware crashes is to git grep for
+> "crash" and then doing some study of the code to see if this indeed
+> a place where the firmware crashes. In some places this is quite
+> obvious.
+> 
+> I'm starting off with networking first, if this gets merged later on I
+> can focus on the other drivers, but I already have some work done on
+> other subsytems.
+> 
+> Review, flames, etc are greatly appreciated.
 
-I understand the motivation is good.
+Tainting itself may be useful, but that's just the first step. I'd much
+rather see folks start using the devlink health infrastructure. Devlink
+is netlink based, but it's _not_ networking specific (many of its
+optional features obviously are, but don't let that mislead you).
 
-> Fell free to ignore this hunk if not desired. I will not sent a V2 only=20
-> for that.
+With devlink health we get (a) a standard notification on the failure; 
+(b) information/state dump in a (somewhat) structured form, which can be
+collected & shared with vendors; (c) automatic remediation (usually
+device reset of some scope).
 
-That's not how it works. Busy maintainers don't have time to hand edit
-patches. I'm not applying this to the networking tree and I'm tossing it
-from patchwork. Please address the basic feedback.
+Now regarding the tainting - as I said it may be useful, but don't we
+have to define what constitutes a "firmware crash"? There are many
+failure modes, some perfectly recoverable (e.g. processing queue hang), 
+some mere bugs (e.g. device fails to initialize some functions). All of
+them may impact the functioning of the system. How do we choose those
+that taint? 
 
-Thank you.
