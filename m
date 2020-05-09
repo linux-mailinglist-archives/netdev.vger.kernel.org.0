@@ -2,274 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B11D91CBC8D
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 04:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1017D1CBC8E
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 04:31:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728601AbgEICbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 22:31:12 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4360 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728353AbgEICbM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 22:31:12 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 875F0357F44AF9147B08;
-        Sat,  9 May 2020 10:31:08 +0800 (CST)
-Received: from [127.0.0.1] (10.166.215.99) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Sat, 9 May 2020
- 10:31:01 +0800
-Subject: Re: cgroup pointed by sock is leaked on mode switch
-To:     Zefan Li <lizefan@huawei.com>, Tejun Heo <tj@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <netdev@vger.kernel.org>,
-        "Libin (Huawei)" <huawei.libin@huawei.com>, <guofan5@huawei.com>,
-        <wangkefeng.wang@huawei.com>
-References: <03dab6ab-0ffe-3cae-193f-a7f84e9b14c5@huawei.com>
- <20200505160639.GG12217@mtj.thefacebook.com>
- <c9879fd2-cb91-2a08-8293-c6a436b5a539@huawei.com>
- <0a6ae984-e647-5ada-8849-3fa2fb994ff3@huawei.com>
- <1edd6b6c-ab3c-6a51-6460-6f5d7f37505e@huawei.com>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <6ff6124e-72d9-5739-22cf-2f0aea938a19@huawei.com>
-Date:   Sat, 9 May 2020 10:31:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728667AbgEICbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 22:31:52 -0400
+Received: from smtprelay0160.hostedemail.com ([216.40.44.160]:58544 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728353AbgEICbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 22:31:52 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 105B4180A733F;
+        Sat,  9 May 2020 02:31:51 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3866:3867:3868:3872:3873:4321:5007:7809:9010:10004:10400:10848:10967:11026:11232:11473:11658:11914:12043:12297:12438:12740:12760:12895:13069:13311:13357:13439:13891:14096:14097:14181:14659:14721:21080:21324:21451:21627:21740:30054:30064:30083:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: pan63_4a25c479b7e55
+X-Filterd-Recvd-Size: 2571
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf19.hostedemail.com (Postfix) with ESMTPA;
+        Sat,  9 May 2020 02:31:49 +0000 (UTC)
+Message-ID: <fbd61323358554b00460c97ec303572189f99544.camel@perches.com>
+Subject: Re: [PATCH] net: tg3: tidy up loop, remove need to compute off with
+ a multiply
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.king@canonical.com>
+Cc:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Fri, 08 May 2020 19:31:48 -0700
+In-Reply-To: <20200508184814.45e10c12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200508225301.484094-1-colin.king@canonical.com>
+         <1890306fc8c9306abe11186d419d84f784ee6144.camel@perches.com>
+         <160ce1ee-3bb5-3357-64f3-e5dea8c0538d@canonical.com>
+         <20200508184814.45e10c12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.1-2 
 MIME-Version: 1.0
-In-Reply-To: <1edd6b6c-ab3c-6a51-6460-6f5d7f37505e@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.166.215.99]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/5/6 15:51, Zefan Li wrote:
-> On 2020/5/6 10:16, Zefan Li wrote:
->> On 2020/5/6 9:50, Yang Yingliang wrotee:
->>> +cc lizefan@huawei.com
->>>
->>> On 2020/5/6 0:06, Tejun Heo wrote:
->>>> Hello, Yang.
->>>>
->>>> On Sat, May 02, 2020 at 06:27:21PM +0800, Yang Yingliang wrote:
->>>>> I find the number nr_dying_descendants is increasing:
->>>>> linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep
->>>>> '^nr_dying_descendants [^0]'  {} +
->>>>> /sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 80
->>>>> /sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 
->>>>> 1
->>>>> /sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
->>>>>
->>>>> 1
->>>>> /sys/fs/cgroup/unified/lxc/cgroup.stat:nr_dying_descendants 79
->>>>> /sys/fs/cgroup/unified/lxc/5f1fdb8c54fa40c3e599613dab6e4815058b76ebada8a27bc1fe80c0d4801764/cgroup.stat:nr_dying_descendants 
->>>>>
->>>>> 78
->>>>> /sys/fs/cgroup/unified/lxc/5f1fdb8c54fa40c3e599613dab6e4815058b76ebada8a27bc1fe80c0d4801764/system.slice/cgroup.stat:nr_dying_descendants 
->>>>>
->>>>> 78
->>>> Those numbers are nowhere close to causing oom issues. There are some
->>>> aspects of page and other cache draining which is being improved 
->>>> but unless
->>>> you're seeing numbers multiple orders of magnitude higher, this 
->>>> isn't the
->>>> source of your problem.
->>>>
->>>>> The situation is as same as the commit bd1060a1d671 ("sock, 
->>>>> cgroup: add
->>>>> sock->sk_cgroup") describes.
->>>>> "On mode switch, cgroup references which are already being pointed 
->>>>> to by
->>>>> socks may be leaked."
->>>> I'm doubtful that you're hitting that issue. Mode switching means 
->>>> memcg
->>>> being switched between cgroup1 and cgroup2 hierarchies, which is 
->>>> unlikely to
->>>> be what's happening when you're launching docker containers.
->>>>
->>>> The first step would be identifying where memory is going and 
->>>> finding out
->>>> whether memcg is actually being switched between cgroup1 and 2 - 
->>>> look at the
->>>> hierarchy number in /proc/cgroups, if that's switching between 0 and
->>>> someting not zero, it is switching.
->>>>
->>
->> I think there's a bug here which can lead to unlimited memory leak.
->> This should reproduce the bug:
->>
->>     # mount -t cgroup -o netprio xxx /cgroup/netprio
->>     # mkdir /cgroup/netprio/xxx
->>     # echo PID > /cgroup/netprio/xxx/tasks
->>     /* this PID process starts to do some network thing and then 
->> exits */
->>     # rmdir /cgroup/netprio/xxx
->>     /* now this cgroup will never be freed */
->>
->
-> Correction (still not tested):
->
->     # mount -t cgroup2 none /cgroup/v2
->     # mkdir /cgroup/v2/xxx
->     # echo PID > /cgroup/v2/xxx/cgroup.procs
->     /* this PID process starts to do some network thing */
->
->     # mount -t cgroup -o netprio xxx /cgroup/netprio
->     # mkdir /cgroup/netprio/xxx
->     # echo PID > /cgroup/netprio/xxx/tasks
->     ...
->     /* the PID process exits */
->
->     rmdir /cgroup/netprio/xxx
->     rmdir /cgroup/v2/xxx
->     /* now looks like this v2 cgroup will never be freed */
->
->> Look at the code:
->>
->> static inline void sock_update_netprioidx(struct sock_cgroup_data *skcd)
->> {
->>      ...
->>      sock_cgroup_set_prioidx(skcd, task_netprioidx(current));
->> }
->>
->> static inline void sock_cgroup_set_prioidx(struct sock_cgroup_data 
->> *skcd,
->>                      u16 prioidx)
->> {
->>      ...
->>      if (sock_cgroup_prioidx(&skcd_buf) == prioidx)
->>          return ;
->>      ...
->>      skcd_buf.prioidx = prioidx;
->>      WRITE_ONCE(skcd->val, skcd_buf.val);
->> }
->>
->> task_netprioidx() will be the cgrp id of xxx which is not 1, but
->> sock_cgroup_prioidx(&skcd_buf) is 1 because it thought it's in v2 mode.
->> Now we have a memory leak.
->>
->> I think the eastest fix is to do the mode switch here:
->>
->> diff --git a/net/core/netprio_cgroup.c b/net/core/netprio_cgroup.c
->> index b905747..2397866 100644
->> --- a/net/core/netprio_cgroup.c
->> +++ b/net/core/netprio_cgroup.c
->> @@ -240,6 +240,8 @@ static void net_prio_attach(struct cgroup_taskset 
->> *tset)
->>          struct task_struct *p;
->>          struct cgroup_subsys_state *css;
->>
->> +       cgroup_sk_alloc_disable();
->> +
->>          cgroup_taskset_for_each(p, css, tset) {
->>                  void *v = (void *)(unsigned long)css->cgroup->id;
->
-I've do some test with this change, here is the test result:
+On Fri, 2020-05-08 at 18:48 -0700, Jakub Kicinski wrote:
+> On Sat, 9 May 2020 00:31:03 +0100 Colin Ian King wrote:
+> > > My preference would be for
+> > > 
+> > > {
+> > > 	int i;
+> > > 	u32 off = 0;
+> > > 
+> > > 	for (i = 0; i < TG3_SD_NUM_RECS; i++) {
+> > > 		tg3_ape_scratchpad_read(tp, (u32 *)ocir, off, TC3_OCIR_LEN);
+> > > 
+> > > 		if (ocir->signature != TG3_OCIR_SIG_MAGIC ||
+> > > 		    !(ocir->version_flags & TG3_OCIR_FLAG_ACTIVE))
+> > > 			memset(ocir, 0, TG3_OCIR_LEN);
+> > > 
+> > > 		off += TG3_OCIR_LEN;
+> > > 		ocir++;
+> > > 	}
+> > >   
+> > OK, I'll send a V3 tomorrow.
+> 
+> I already reviewed and applied v2, just waiting for builds to finish,
+> let's leave it.
 
 
-Without this change, nr_dying_descendants is increased and the cgroup is 
-leaked:
+I think clarity should be preferred.
+Are you a maintainer of this file?
 
-linux-dVpNUK:~ # mount | grep cgroup
-tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,mode=755)
-cgroup2 on /sys/fs/cgroup/unified type cgroup2 
-(rw,nosuid,nodev,noexec,relatime,nsdelegate)
-cgroup on /sys/fs/cgroup/systemd type cgroup 
-(rw,nosuid,nodev,noexec,relatime,xattr,name=systemd)
-cgroup on /sys/fs/cgroup/blkio type cgroup 
-(rw,nosuid,nodev,noexec,relatime,blkio)
-cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup 
-(rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)
-cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup 
-(rw,nosuid,nodev,noexec,relatime,net_cls,net_prio)
-cgroup on /sys/fs/cgroup/freezer type cgroup 
-(rw,nosuid,nodev,noexec,relatime,freezer)
-cgroup on /sys/fs/cgroup/devices type cgroup 
-(rw,nosuid,nodev,noexec,relatime,devices)
-cgroup on /sys/fs/cgroup/memory type cgroup 
-(rw,nosuid,nodev,noexec,relatime,memory)
-cgroup on /sys/fs/cgroup/cpuset type cgroup 
-(rw,nosuid,nodev,noexec,relatime,cpuset)
-cgroup on /sys/fs/cgroup/perf_event type cgroup 
-(rw,nosuid,nodev,noexec,relatime,perf_event)
-cgroup on /sys/fs/cgroup/pids type cgroup 
-(rw,nosuid,nodev,noexec,relatime,pids)
-cgroup on /sys/fs/cgroup/hugetlb type cgroup 
-(rw,nosuid,nodev,noexec,relatime,hugetlb)
-linux-dVpNUK:~ # mkdir /sys/fs/cgroup/net_cls,net_prio/test
-linux-dVpNUK:~ # ps -ef | grep bash
-root     12151 12150  0 00:31 pts/0    00:00:00 -bash
-root     12322 12321  0 00:31 pts/1    00:00:00 -bash
-root     12704 12703  0 00:31 pts/2    00:00:00 -bash
-root     13359 12704  0 00:31 pts/2    00:00:00 grep --color=auto bash
-linux-dVpNUK:~ # echo 12151 > /sys/fs/cgroup/net_cls,net_prio/test/tasks
-linux-dVpNUK:~ # echo 12322 > /sys/fs/cgroup/net_cls,net_prio/test/tasks
+$ ./scripts/get_maintainer.pl -f drivers/net/ethernet/broadcom/tg3.c
+Siva Reddy Kallam <siva.kallam@broadcom.com> (supporter:BROADCOM TG3 GIGABIT ETHERNET DRIVER)
+Prashant Sreedharan <prashant@broadcom.com> (supporter:BROADCOM TG3 GIGABIT ETHERNET DRIVER)
+Michael Chan <mchan@broadcom.com> (supporter:BROADCOM TG3 GIGABIT ETHERNET DRIVER)
+"David S. Miller" <davem@davemloft.net> (odd fixer:NETWORKING DRIVERS)
+netdev@vger.kernel.org (open list:BROADCOM TG3 GIGABIT ETHERNET DRIVER)
+linux-kernel@vger.kernel.org (open list)
 
-(Use bash(12151/12322) do some network things, then kill them, the 
-nr_dying_descendants is increased.)
-linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
-'^nr_dying_descendants [^0]'  {} +
-/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
-1
-linux-dVpNUK:~ # kill 12151 12322
-linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
-'^nr_dying_descendants [^0]'  {} +
-/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 3
-/sys/fs/cgroup/unified/user.slice/cgroup.stat:nr_dying_descendants 2
-/sys/fs/cgroup/unified/user.slice/user-0.slice/cgroup.stat:nr_dying_descendants 
-2
-/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
-1
-
-(after rmdir test, the nr_dying_descendants is not decreased.)
-linux-dVpNUK:~ # rmdir /sys/fs/cgroup/net_cls,net_prio/test
-linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
-'^nr_dying_descendants [^0]'  {} +
-/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 3
-/sys/fs/cgroup/unified/user.slice/cgroup.stat:nr_dying_descendants 2
-/sys/fs/cgroup/unified/user.slice/user-0.slice/cgroup.stat:nr_dying_descendants 
-2
-/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
-1
-
-
-With this change, nr_dying_descendants is not increased:
-
-linux-dVpNUK:~ # mkdir /sys/fs/cgroup/net_cls,net_prio/test
-linux-dVpNUK:~ # ps -ef | grep bash
-root      5466  5443  0 00:50 pts/1    00:00:00 -bash
-root      5724  5723  0 00:50 pts/2    00:00:00 -bash
-root      6701 17013  0 00:50 pts/0    00:00:00 grep --color=auto bash
-root     17013 17012  0 00:46 pts/0    00:00:00 -bash
-linux-dVpNUK:~ # echo 5466 > /sys/fs/cgroup/net_cls,net_prio/test/tasks
-linux-dVpNUK:~ # echo 5724 > /sys/fs/cgroup/net_cls,net_prio/test/tasks
-linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
-'^nr_dying_descendants [^0]'  {} +
-/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
-1
-linux-dVpNUK:~ # kill 5466 5724
-linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
-'^nr_dying_descendants [^0]'  {} +
-/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
-1
-linux-dVpNUK:~ # rmdir /sys/fs/cgroup/net_cls,net_prio/test/
-linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
-'^nr_dying_descendants [^0]'  {} +
-/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
-/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
-1
-
-> .
 
