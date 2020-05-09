@@ -2,143 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 705141CBE04
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 08:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF57F1CBE12
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 08:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728868AbgEIGPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 02:15:42 -0400
-Received: from mout.web.de ([217.72.192.78]:53217 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725822AbgEIGPl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 May 2020 02:15:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1589004925;
-        bh=ifcV3ZHs6w2S6xwGj4cy+pBXQRHSzpfPrRFt6UkrSUs=;
-        h=X-UI-Sender-Class:Cc:Subject:From:To:Date;
-        b=Zz6L1nYQou7GnhzbX5fOFkHQ3q67xI93xTaVAEcRfrb8BCqeb3f8ExMMpMwxUhyg9
-         w8ZjFGSzzLnL0NYZEjVPFq4GdT3cyQcM/nlBP0fpI9cHqY0r+JUhAvysfjvDw018jf
-         f9dM2RsIcqdBOZ1ZoLjyxr+oxm/Wyn+oEKkYMh8c=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.147.78]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MSrl3-1jfFMW28kn-00RnHW; Sat, 09
- May 2020 08:15:25 +0200
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Finn Thain <fthain@telegraphics.com.au>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] net/sonic: Fix some resource leaks in error handling
- paths
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-To:     Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org
-Message-ID: <b7651b26-ac1e-6281-efb2-7eff0018b158@web.de>
-Date:   Sat, 9 May 2020 08:15:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728922AbgEIGee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 02:34:34 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:49772 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726115AbgEIGee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 02:34:34 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0496VNPO013928;
+        Fri, 8 May 2020 23:33:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0818;
+ bh=r3/icDCoeCmjAYD8L9yr4pNwgvgXAZPIbBZGcN9ONZk=;
+ b=k+rPI3tKtvXk4oJeZLJJiFo/0oGrocGPIxBTTZbOWZRcZpHXfo/f7/gkIC01+F7p7CeN
+ dBpzrfi5bIN6/c2D51u43axCfCVR+kqEZcUlQwwAFmNPvJmPzP3cniAZ7aC7qEPlqirG
+ osoMunv9PP/jsnO6YW0/QLtNSAUQ2jSw/G2uGyB3SRvLW/ywhnFF2edmURAhrySG7U1H
+ gHo+z0uGs+AUfu1cVYfpdxE0tQmXSXPUkNMVQAa8x1xeKLVLXd1el7tIYYVF5h30EYWm
+ NJOnXsg54rpdfMiQyM+F71LxhQIodvjd4a/XCvIipfyn+vydr8TovPZSbJjUHJLOCgWA VQ== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 30wjj7gubg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 08 May 2020 23:33:34 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 8 May
+ 2020 23:33:32 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 8 May 2020 23:33:32 -0700
+Received: from [10.193.46.2] (unknown [10.193.46.2])
+        by maili.marvell.com (Postfix) with ESMTP id DE8483F703F;
+        Fri,  8 May 2020 23:32:56 -0700 (PDT)
+Subject: Re: [EXT] [PATCH 09/15] qed: use new module_firmware_crashed()
+To:     Luis Chamberlain <mcgrof@kernel.org>, <jeyu@kernel.org>
+CC:     <akpm@linux-foundation.org>, <arnd@arndb.de>,
+        <rostedt@goodmis.org>, <mingo@redhat.com>, <aquini@redhat.com>,
+        <cai@lca.pw>, <dyoung@redhat.com>, <bhe@redhat.com>,
+        <peterz@infradead.org>, <tglx@linutronix.de>,
+        <gpiccoli@canonical.com>, <pmladek@suse.com>, <tiwai@suse.de>,
+        <schlad@suse.de>, <andriy.shevchenko@linux.intel.com>,
+        <keescook@chromium.org>, <daniel.vetter@ffwll.ch>,
+        <will@kernel.org>, <mchehab+samsung@kernel.org>,
+        <kvalo@codeaurora.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
+References: <20200509043552.8745-1-mcgrof@kernel.org>
+ <20200509043552.8745-10-mcgrof@kernel.org>
+From:   Igor Russkikh <irusskikh@marvell.com>
+Message-ID: <2aaddb69-2292-ff3f-94c7-0ab9dbc8e53c@marvell.com>
+Date:   Sat, 9 May 2020 09:32:51 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101
+ Thunderbird/76.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:q7OD8yBSZzkshqpVZn9WpjIxXdZ5nl4Od1KAm8Ec1iweRgjciU9
- 9QrlqSHKp7XQfFV6Frxvf5Ept8+A9BKfmqNe6wPIHfOCvL00Wxr0xwxKBdeXDGzPMm72jFl
- +n+0Gi1Qk8JFwi68QsgdZ5clFawSWzhu1+nbINI2RynMDjhpoghCxCxRN8SZ3bopZe67/GK
- Rd+c1kekLKXQiVeny3GSQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:KBxsFh92u2w=:Oc2aNy8cfUMLfaP1GvpY/v
- q208mgYrSIT4f8Iy0I+FCbAs0/4jj5TJmjFqX8y4BBImXZYwFuZoAzRZcA9rNrSgXFdsxFk4w
- xvbaAvUcRk2WZVyFn1luAAngvYF5rBgeHvmqD/05ncRfOP21w2XQfzL3tLXPoT2HZoqRoiAxi
- ygr8QGsPZgb3qPvTnlmnsopDPGeuPnvtsSJZA3M87cS+tdZteu6z9+PcUP4lN2/jXzoiwahvu
- DC2Bt9X9WF98P1v3fPknlqdRD6rvpLig2SetqhX/KGNxhv7pkchn/Fju1LDxr+Xnp1wryRlTd
- 9YzUCJJAkqtpqlYlHEiZ/AGdnxBxqcOLNRmFmQWNCf0H9xXDI/caxn1/aPb/KaibLito+sYKG
- 89mMNHO3gyeCsI36NPtP6EMwJAgRY/GBZ4yKPzymjYUS6NfcxM2fUEwFEyWYz+pWSVD5xu1lM
- Sghc9qouJ1RBioHfYQtiofQH21/Jkok5bTf1bj5ZDGteYgiz38U5UchASkSqcg/a1GfKcm4On
- v/0TGqeW7uk7E1O9u3o/6qHQgliti9D0wG+I9uY4o7FVHFdaT3hndc3v7TRtOhjVf3y9BFt5y
- zgU4ZFxdTe+2p681GLy8Y0iTO8HI9Y60CH6b3tVQ/jJkI6qzRJ+tDerHEiks+gAKwe/XiWV/i
- i4pfszFFEYTpnneKiv7/4khTVGHBJ19MFiwTctyS900E1WhX/p/7sXxVotj11bT4wJc8fi7k3
- N6tLgNxjbIg3sRipbmWEWfWOS3lpNU6DlKRMHZZimcrmyaP7z2pkyVmtJ1FvC4/V965j1j7b7
- nVxKDswuIka1iXra1WJLEsyhAd6crNEzNFrsMI29JVcErWQG3A22x2SpBpwvXYepzcKf4ZSsZ
- 2r0LH0Lbn+OHaqpQ5MVCTQyNUkoFINN0r6FosDnQOQPDTZt4GWBkWB2E4HTxUTY8JYuAoRAfw
- /r9JEutL/oo8c0KLqZ8zmDZwpcxSo00e+zkhexQ7Aw5wVjS2Pg2oPRg+Nh/IVHGX8WF4s4zNA
- xyn1UIXPN8MTG0JvyGOmn2BB5TmAXLa+JK/hwfhDZoQ7L7QnNvQZ3lYe+adqs9MPh7P5OiaPd
- ZrPMz7ryBjRjIpHvawipzfG0zkEuS9iX4ZkG1RvccsOy/rkjB49/75fAgra5rNl+YomI9QEDJ
- oCk/Tbl7G+2/+JUnHthmhR5C49P4Pel4bsrW9gRgyOTGJPAqIqNTykZZl8hWDnOk3TK7OPwpw
- 5SsjemwsfzOMEyC/w
+In-Reply-To: <20200509043552.8745-10-mcgrof@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-09_01:2020-05-08,2020-05-09 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> While at it, rename a label in order to be slightly more informative and
-> split some too long lines.
 
-Would you like to add the tag =E2=80=9CFixes=E2=80=9D to the change descri=
-ption?
+> This makes use of the new module_firmware_crashed() to help
+> annotate when firmware for device drivers crash. When firmware
+> crashes devices can sometimes become unresponsive, and recovery
+> sometimes requires a driver unload / reload and in the worst cases
+> a reboot.
+> 
+> Using a taint flag allows us to annotate when this happens clearly.
+> 
+> Cc: Ariel Elior <aelior@marvell.com>
+> Cc: GR-everest-linux-l2@marvell.com
+> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+> ---
+>  drivers/net/ethernet/qlogic/qed/qed_debug.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c
+> b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+> index f4eebaabb6d0..9cc6287b889b 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+> @@ -7854,6 +7854,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void
+> *buffer)
+>  						 REGDUMP_HEADER_SIZE,
+>  						 &feature_size);
+>  		if (!rc) {
+> +			module_firmware_crashed();
+>  			*(u32 *)((u8 *)buffer + offset) =
+>  			    qed_calc_regdump_header(cdev,
+> PROTECTION_OVERRIDE,
+>  						    cur_engine,
+> @@ -7869,6 +7870,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void
+> *buffer)
+>  		rc = qed_dbg_fw_asserts(cdev, (u8 *)buffer + offset +
+>  					REGDUMP_HEADER_SIZE,
+> &feature_size);
+>  		if (!rc) {
+> +			module_firmware_crashed();
+>  			*(u32 *)((u8 *)buffer + offset) =
+>  			    qed_calc_regdump_header(cdev, FW_ASSERTS,
+>  						    cur_engine,
+> feature_size,
+> @@ -7906,6 +7908,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void
+> *buffer)
+>  		rc = qed_dbg_grc(cdev, (u8 *)buffer + offset +
+>  				 REGDUMP_HEADER_SIZE, &feature_size);
+>  		if (!rc) {
+> +			module_firmware_crashed();
+>  			*(u32 *)((u8 *)buffer + offset) =
+>  			    qed_calc_regdump_header(cdev, GRC_DUMP,
+>  						    cur_engine,
 
 
-=E2=80=A6
-> +++ b/drivers/net/ethernet/natsemi/macsonic.c
-> @@ -506,10 +506,14 @@ static int mac_sonic_platform_probe(struct platfor=
-m_device *pdev)
->
->  	err =3D register_netdev(dev);
->  	if (err)
-> -		goto out;
-> +		goto undo_probe1;
->
->  	return 0;
->
-> +undo_probe1:
-> +	dma_free_coherent(lp->device,
-> +			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
-> +			  lp->descriptors, lp->descriptors_laddr);
->  out:
-=E2=80=A6
+Hi Luis,
 
-How do you think about the possibility to use the label =E2=80=9Cfree_dma=
-=E2=80=9D?
+qed_dbg_all_data is being used to gather debug dump from device. Failures
+inside it may happen due to various reasons, but they normally do not indicate
+FW failure.
 
-Regards,
-Markus
+So I think its not a good place to insert this call.
+
+Its hard to find exact good place to insert it in qed.
+
+One more thing is that AFAIU taint flag gets permanent on kernel, but for
+example our device can recover itself from some FW crashes, thus it'd be
+transparent for user.
+
+Whats the logical purpose of module_firmware_crashed? Does it mean fatal
+unrecoverable error on device?
+
+Thanks,
+  Igor
+
