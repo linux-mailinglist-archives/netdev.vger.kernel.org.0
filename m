@@ -2,116 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFD371CC4F8
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 00:37:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A6821CC4FC
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 00:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728760AbgEIWhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 18:37:38 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:39705 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726472AbgEIWh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 18:37:27 -0400
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1728795AbgEIWiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 18:38:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46270 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726472AbgEIWiB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 May 2020 18:38:01 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 9F06723E3E;
-        Sun, 10 May 2020 00:37:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1589063845;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FEfXsSfJQkynE4NhXhtkDkgMaGwmoY5MqTSLZLKHVJ8=;
-        b=ogqzU8TcNWJHggWNzNEEeVbJk5a9nCcj8Vs4+nxL0Ujchov2j+7SiLK92E8zLeyDpgxgCF
-        IBfaeMlGHoJmfMOHGsC/8b9MPt60debR+/jeNh3gDiO6XUsrxJw6wZqNKGJLee/KL13tUS
-        a3ubWhnbyDwsqjKTlA2FFiYbe0u/FQs=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 4/4] net: phy: bcm54140: add cable diagnostics support
-Date:   Sun, 10 May 2020 00:37:14 +0200
-Message-Id: <20200509223714.30855-5-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200509223714.30855-1-michael@walle.cc>
-References: <20200509223714.30855-1-michael@walle.cc>
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B38120A8B;
+        Sat,  9 May 2020 22:38:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589063880;
+        bh=oYS8pVpHubeMt4zEQd8UsCbdge9BawlUQxDDV0KFlDk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=egFYyFb1Tjbb4GrOWuBSjp7vwxmTL4s1uXvdg9nB2bMRfG/WAw6EeA52jhMpqVHUF
+         XECCMGaEILcRfW0grNMzxVQWGdZdJkOfuGdF69XeX9POBHnZp2k4I8TZLu9Shu2xyy
+         0Sczu/55o3TMgGYI8wdclfd+eqOTR+ST5BA5lFVA=
+Date:   Sat, 9 May 2020 15:37:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luo bin <luobin9@huawei.com>
+Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
+Subject: Re: [PATCH net v2] hinic: fix a bug of ndo_stop
+Message-ID: <20200509153758.06f6947f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200508201933.5054-1-luobin9@huawei.com>
+References: <20200508201933.5054-1-luobin9@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the generic cable tester functions from bcm-phy-lib to add cable
-tester support.
+On Fri, 8 May 2020 20:19:33 +0000 Luo bin wrote:
+> if some function in ndo_stop interface returns failure because of
+> hardware fault, must go on excuting rest steps rather than return
+> failure directly, otherwise will cause memory leak.And bump the
+> timeout for SET_FUNC_STATE to ensure that cmd won't return failure
+> when hw is busy. Otherwise hw may stomp host memory if we free
+> memory regardless of the return value of SET_FUNC_STATE.
+> 
+> Signed-off-by: Luo bin <luobin9@huawei.com>
 
-100m cable, A/B/C/D open:
-  Cable test started for device eth0.
-  Cable test completed for device eth0.
-  Pair: Pair A, result: Open Circuit
-  Pair: Pair B, result: Open Circuit
-  Pair: Pair C, result: Open Circuit
-  Pair: Pair D, result: Open Circuit
-  Pair: Pair A, fault length: 106.60m
-  Pair: Pair B, fault length: 103.32m
-  Pair: Pair C, fault length: 104.96m
-  Pair: Pair D, fault length: 106.60m
+Doesn't apply to the net tree:
 
-1m cable, A/B connected, pair C shorted, D open:
-  Cable test started for device eth0.
-  Cable test completed for device eth0.
-  Pair: Pair A, result: OK
-  Pair: Pair B, result: OK
-  Pair: Pair C, result: Short within Pair
-  Pair: Pair D, result: Open Circuit
-  Pair: Pair C, fault length: 0.82m
-  Pair: Pair D, fault length: 1.64m
+error: patch failed: drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c:353
+error: drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c: patch does not apply
+error: patch failed: drivers/net/ethernet/huawei/hinic/hinic_main.c:504
+error: drivers/net/ethernet/huawei/hinic/hinic_main.c: patch does not apply
+hint: Use 'git am --show-current-patch' to see the failed patch
+Applying: hinic: fix a bug of ndo_stop
 
-1m cable, A/B connected, pair C shorted with D:
-  Cable test started for device eth0.
-  Cable test completed for device eth0.
-  Pair: Pair A, result: OK
-  Pair: Pair B, result: OK
-  Pair: Pair C, result: Short to another pair
-  Pair: Pair D, result: Short to another pair
-  Pair: Pair C, fault length: 1.64m
-  Pair: Pair D, fault length: 1.64m
-
-The granularity of the length measurement seems to be 82cm.
-
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/phy/bcm54140.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/phy/bcm54140.c b/drivers/net/phy/bcm54140.c
-index 9ef37a3bc2bb..8998e68bb26b 100644
---- a/drivers/net/phy/bcm54140.c
-+++ b/drivers/net/phy/bcm54140.c
-@@ -831,6 +831,7 @@ static struct phy_driver bcm54140_drivers[] = {
- 		.phy_id         = PHY_ID_BCM54140,
- 		.phy_id_mask    = BCM54140_PHY_ID_MASK,
- 		.name           = "Broadcom BCM54140",
-+		.flags		= PHY_POLL_CABLE_TEST,
- 		.features       = PHY_GBIT_FEATURES,
- 		.config_init    = bcm54140_config_init,
- 		.did_interrupt	= bcm54140_did_interrupt,
-@@ -842,6 +843,8 @@ static struct phy_driver bcm54140_drivers[] = {
- 		.soft_reset	= genphy_soft_reset,
- 		.get_tunable	= bcm54140_get_tunable,
- 		.set_tunable	= bcm54140_set_tunable,
-+		.cable_test_start = bcm_phy_cable_test_start_rdb,
-+		.cable_test_get_status = bcm_phy_cable_test_get_status_rdb,
- 	},
- };
- module_phy_driver(bcm54140_drivers);
--- 
-2.20.1
-
+Please also include a Fixes tag when you repost.
