@@ -2,93 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EDFF1CC4A8
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 23:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 771DF1CC4AE
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 23:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728500AbgEIVJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 17:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
+        id S1728301AbgEIVRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 17:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728187AbgEIVJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 17:09:50 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0393CC061A0C
-        for <netdev@vger.kernel.org>; Sat,  9 May 2020 14:09:50 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id n11so4829156ilj.4
-        for <netdev@vger.kernel.org>; Sat, 09 May 2020 14:09:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uw2e8xSDXKvDbB40xD0k2vw+FSrKLWjo3OjqNAKhaIM=;
-        b=opfUyiQizRxYOrveccTApQnB+hYN2it/UnLI0nmXhRT8xxE7PQEvhPn6RiEMSekHBh
-         dBLyNmbbs4v0qXMGaaJrNtsgSDftbfDs589LIGCs9IJo6zkgMo/WpQNyB+xyXivurIC1
-         6kYyAN9t44OUoAxRx5ykqUEa1/YjRwDhc0vbi/nAmylQctbRSyLmdeWTZqEEcynrbmnH
-         oQQLj5pvNHB6hBBOSenHG6GiViCHaAXoZSlKThO8CQRpgYsu0F2VfHT4n0Hb0whGcPF6
-         NS2vjPa0xZ6UyzruP/Qg3zCR2gatt3pm2cVvnNGp84WTVk2XINLDSqYB5VMxBHVi/aF8
-         rIsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uw2e8xSDXKvDbB40xD0k2vw+FSrKLWjo3OjqNAKhaIM=;
-        b=gHEZkwPavWPXAk+bmDQHrkZv80DVW7fud3DHQHsje+XEVhPALUs3gfJAh1urlhHufp
-         UNHa6hDHcpGvZwikfJZ34xLziWXUYRUT+w9VwBqaTSiXdgFiE64OCs3NO3hLJlHq0XcD
-         fYcT5uiw3MxoG9k+4VBhrjAwzIF42IaFophBFfKeevVxzmBy/jSpJTndEoIwC/3Pc8L5
-         uClV9iwamQb6n0wFDqVkzHZzuSf0FkXHsYzsnJEQOys41kuY2fejvHxMIP7cKnkhBBXk
-         pSKPLsxZPMWkHLkG10E9yAraQ6yL6olyykCJ1ifyF74Siyejn7Lt4zO7wfT/dPDMKQQk
-         4UUQ==
-X-Gm-Message-State: AGi0PuaQ8tetyqRxBSJrA7lK6w8b7dmoP7gZsKglMxdCCjKDO9fnhFLH
-        YH1CF3cALjxKwsQAg+/93FgMeTLT
-X-Google-Smtp-Source: APiQypI4qfkp9HlXE2oSEjGbWOzrLmarIyzwRmJ6x8SWuYqimCRfmqUI7qnuox3Jx3cwJBc+eKTNSQ==
-X-Received: by 2002:a92:cd01:: with SMTP id z1mr8960671iln.182.1589058589234;
-        Sat, 09 May 2020 14:09:49 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:d4f4:54fc:fab0:ac04? ([2601:282:803:7700:d4f4:54fc:fab0:ac04])
-        by smtp.googlemail.com with ESMTPSA id x75sm2815451ill.33.2020.05.09.14.09.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 May 2020 14:09:48 -0700 (PDT)
-Subject: Re: [PATCH] net-icmp: make icmp{,v6} (ping) sockets available to all
- by default
-To:     Ido Schimmel <idosch@idosch.org>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>
-References: <20200508234223.118254-1-zenczykowski@gmail.com>
- <20200509191536.GA370521@splinter>
- <CANP3RGftbDDATFi+4HBSbOFEU-uAddqg2p8+asMMRJtgOJy6mg@mail.gmail.com>
- <20200509193225.GA372881@splinter>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <682963e4-7434-c836-6874-55cc7f83ec31@gmail.com>
-Date:   Sat, 9 May 2020 15:09:47 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        with ESMTP id S1727108AbgEIVRs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 17:17:48 -0400
+X-Greylist: delayed 37485 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 09 May 2020 14:17:48 PDT
+Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4925CC061A0C;
+        Sat,  9 May 2020 14:17:48 -0700 (PDT)
+Received: by a3.inai.de (Postfix, from userid 65534)
+        id C67BC58769D1B; Sat,  9 May 2020 23:17:45 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on a3.inai.de
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.2
+Received: from a4.inai.de (a4.inai.de [IPv6:2a01:4f8:10b:45d8::f8])
+        by a3.inai.de (Postfix) with ESMTP id 31CFB58734C07;
+        Sat,  9 May 2020 23:17:44 +0200 (CEST)
+From:   Jan Engelhardt <jengelh@inai.de>
+To:     zenczykowski@gmail.com
+Cc:     maze@google.com, pablo@netfilter.org, fw@strlen.de,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: [PATCH] doc: document danger of applying REJECT to INVALID CTs
+Date:   Sat,  9 May 2020 23:17:44 +0200
+Message-Id: <20200509211744.8363-1-jengelh@inai.de>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <CANP3RGeL_VuCChw=YX5W0kenmXctMY0ROoxPYe_nRnuemaWUfg@mail.gmail.com>
+References: <CANP3RGeL_VuCChw=YX5W0kenmXctMY0ROoxPYe_nRnuemaWUfg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200509193225.GA372881@splinter>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/20 1:32 PM, Ido Schimmel wrote:
-> On Sat, May 09, 2020 at 12:17:47PM -0700, Maciej Żenczykowski wrote:
->> Argh.  I've never understood the faintest thing about VRF's.
-> 
-> :)
-> 
-> There are many resources that David created over the years. For example:
-> 
-> https://www.kernel.org/doc/Documentation/networking/vrf.txt
-> https://netdevconf.info/1.1/proceedings/slides/ahern-vrf-tutorial.pdf
-> https://netdevconf.info/1.2/session.html?david-ahern-talk
+Signed-off-by: Jan Engelhardt <jengelh@inai.de>
+---
 
-best one is from OSS N.A. 2017:
-    http://schd.ws/hosted_files/ossna2017/fe/vrf-tutorial-oss.pdf
+Maciej's explanation on how INVALID+REJECT can lead to problems looks
+convincing. I hereby present new manpage wording in the form of "if A, then B"
+to better build the argument of avoiding REJECT. So the issue is not caused by
+an _incoming_ TCP RST as the initial mail might have suggested,
+but by RST generated by REJECT (--reject-with tcp-reset).
 
-Maciej: Basically, VRF narrows the scope to an L3 domain - devices
-enslaved to the VRF device, their addresses and FIB entries in the VRF
-table.
+It is conceivable to me that a connection termination may occur with not only
+TCP+RST, but also with TCP+ICMP and UDP+ICMP, so I trimmed any
+protocol-specific wording too. Also trimmed is any mention of -j ACCEPT,
+because rule order is not the point of the argument.
+
+
+ extensions/libip6t_REJECT.man | 21 +++++++++++++++++++++
+ extensions/libipt_REJECT.man  | 21 +++++++++++++++++++++
+ 2 files changed, 42 insertions(+)
+
+diff --git a/extensions/libip6t_REJECT.man b/extensions/libip6t_REJECT.man
+index 0030a51f..38183dd7 100644
+--- a/extensions/libip6t_REJECT.man
++++ b/extensions/libip6t_REJECT.man
+@@ -30,3 +30,24 @@ TCP RST packet to be sent back.  This is mainly useful for blocking
+ hosts (which won't accept your mail otherwise).
+ \fBtcp\-reset\fP
+ can only be used with kernel versions 2.6.14 or later.
++.PP
++\fIWarning:\fP You should not indiscrimnately apply the REJECT target to
++packets whose connection state is classified as INVALID; instead, you should
++only DROP these:
++.PP
++Consider a source host retransmitting an original packet P as P_2 for any
++reason, and P_2 getting routed via a different path (load balancing/policy
++routing, or anything of the kind). Additionally, let P_2 experience so much
++delay that the source host issues \fIanother\fP retransmission, P_3, with P_3
++being succesful in reaching its destination and advancing the connection state
++normally. The delayed P_2, when it eventually is processed, may be considered
++to be not associated with any connection tracking entry. Generating a reject
++packet for such a belated packet would then terminate the healthy connection.
++.PP
++So, instead of:
++.PP
++-A INPUT -m conntrack --ctstate INVALID -j REJECT
++.PP
++do consider using:
++.PP
++-A INPUT -m conntrack --ctstate INVALID -j DROP
+diff --git a/extensions/libipt_REJECT.man b/extensions/libipt_REJECT.man
+index 8a360ce7..9e80d7ea 100644
+--- a/extensions/libipt_REJECT.man
++++ b/extensions/libipt_REJECT.man
+@@ -30,3 +30,24 @@ TCP RST packet to be sent back.  This is mainly useful for blocking
+ hosts (which won't accept your mail otherwise).
+ .IP
+ (*) Using icmp\-admin\-prohibited with kernels that do not support it will result in a plain DROP instead of REJECT
++.PP
++\fIWarning:\fP You should not indiscrimnately apply the REJECT target to
++packets whose connection state is classified as INVALID; instead, you should
++only DROP these:
++.PP
++Consider a source host retransmitting an original packet P as P_2 for any
++reason, and P_2 getting routed via a different path (load balancing/policy
++routing, or anything of the kind). Additionally, let P_2 experience so much
++delay that the source host issues \fIanother\fP retransmission, P_3, with P_3
++being succesful in reaching its destination and advancing the connection state
++normally. The delayed P_2, when it eventually is processed, may be considered
++to be not associated with any connection tracking entry. Generating a reject
++packet for such a belated packet would then terminate the healthy connection.
++.PP
++So, instead of:
++.PP
++-A INPUT -m conntrack --ctstate INVALID -j REJECT
++.PP
++do consider using:
++.PP
++-A INPUT -m conntrack --ctstate INVALID -j DROP
+-- 
+2.26.2
+
