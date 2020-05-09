@@ -2,134 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5D6E1CBE69
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 09:33:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBEC11CBE70
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 09:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728940AbgEIHdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 03:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728625AbgEIHdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 03:33:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7757FC061A0C
-        for <netdev@vger.kernel.org>; Sat,  9 May 2020 00:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=h+zkK0AP+yuAtI51LZ1qvVGlm7aYzOXHLUWK9RzDFK0=; b=vzyhZrqBlA0GasfbulocdZ6KK
-        oUrbQXB03DYW53zCnzBZmWeOfy9bM4l57/3sRtRTQN/+17DKo07oInmggqnezzxh5AntAZ3HKqrBP
-        VWeHgi/xW1bmg5g9e8/+dTKiUz8C4ePi+CGlrAdrMCRaBt481yAzH6TNRtfGbMsqU+BtEhZg9AIGr
-        am4ijD3+1LU8WVyUmeF/bZVIiDl2o3pqrNlXTFazxZQAE6yYQy/MXefLy70GWiGIrVSfHsyXfkORQ
-        fKPqFl8BTc9fG6UNnr4yfZ/hzBLpLehlwGm9kOPWaNGbGEc0BKyNfMqbGuT/WALbe+edEMoIvzb1q
-        z5SxwWjrw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:55650)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jXJym-0003CI-I9; Sat, 09 May 2020 08:33:00 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jXJyi-0002dd-7F; Sat, 09 May 2020 08:32:56 +0100
-Date:   Sat, 9 May 2020 08:32:56 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Matteo Croce <mcroce@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net v2 0/2] Fix 88x3310 leaving power save mode
-Message-ID: <20200509073256.GZ1551@shell.armlinux.org.uk>
-References: <20200414194753.GB25745@shell.armlinux.org.uk>
- <20200414.164825.457585417402726076.davem@davemloft.net>
- <CAGnkfhw45WBjaYFcrO=vK0pbYvhzan970vtxVj8urexhh=WU_A@mail.gmail.com>
- <20200508213816.GY1551@shell.armlinux.org.uk>
- <20200509063631.GA1691791@kroah.com>
+        id S1729005AbgEIHik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 03:38:40 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:41832 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728471AbgEIHik (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 03:38:40 -0400
+Received: by mail-oi1-f194.google.com with SMTP id 19so10585048oiy.8;
+        Sat, 09 May 2020 00:38:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9iOCtd8hInAFwZEEy5/s6oN5yN9LbAgaBCk+Pd2Zfpk=;
+        b=Bbw7gMGmNvBOeJy7+VCtYI+VCwrgpZXeuhgBsebMAdgQDjaCS/B0bZR0L0Qj9FcyuZ
+         vp/yZKTrk+njsHtalSUwDV+bATtkScXQbeYiZY6yPsDm0a5X71ZclR+fWpO7wIwOwhxx
+         HU31zIQNxRhU1QHkfVzGoTiLP6yhND51flb+sdIVulFxNzxjhB0ATjsWqO9p0VwQ5e6D
+         TIrMQ9X3zJIKd8OQNFYfirqa9XE1H+2Q1d3qnUqh8CYkjuqTtyOG5Lq/jU3LguHi7W5i
+         TkRK9SAG1FcHpsVoqeBvyvjGYipExAOqFkRwYRxxZ20D3swUbFEp4OEgOedyhKNahf/v
+         QCFg==
+X-Gm-Message-State: AGi0PuYWAylJItUjeVd0eXdRcGS6DS9Rzpvf8ZRs4rIygaOSKpkje5Cp
+        DvakIf5IqhyW1TbC5K/tsVFodMo9PkKPvjtUUMQ=
+X-Google-Smtp-Source: APiQypIhzI5S6MTE2Rw2TcjkhcBXQU/2d5QohGoiHGR4xXrGldruM5LIRhRBh3PQtIrtKIqOX4QC/wsnF6RwhSrReUE=
+X-Received: by 2002:aca:f541:: with SMTP id t62mr12715510oih.148.1589009919549;
+ Sat, 09 May 2020 00:38:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200509063631.GA1691791@kroah.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200508223216.6611-1-f.fainelli@gmail.com>
+In-Reply-To: <20200508223216.6611-1-f.fainelli@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sat, 9 May 2020 09:38:28 +0200
+Message-ID: <CAMuHMdU2A1rzqsnNZFt-Gd+ZO5qc6Mzeyunn-LXpbxk_6zq-Ng@mail.gmail.com>
+Subject: Re: [PATCH net] net: broadcom: Imply BROADCOM_PHY for BCMGENET
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Stefan Wahren <wahrenst@gmx.net>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tal Gilboa <talgi@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <gospo@broadcom.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 09, 2020 at 08:36:31AM +0200, Greg Kroah-Hartman wrote:
-> On Fri, May 08, 2020 at 10:38:16PM +0100, Russell King - ARM Linux admin wrote:
-> > On Fri, May 08, 2020 at 11:32:39PM +0200, Matteo Croce wrote:
-> > > On Wed, Apr 15, 2020 at 1:48 AM David Miller <davem@davemloft.net> wrote:
-> > > >
-> > > > From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> > > > Date: Tue, 14 Apr 2020 20:47:53 +0100
-> > > >
-> > > > > This series fixes a problem with the 88x3310 PHY on Macchiatobin
-> > > > > coming out of powersave mode noticed by Matteo Croce.  It seems
-> > > > > that certain PHY firmwares do not properly exit powersave mode,
-> > > > > resulting in a fibre link not coming up.
-> > > > >
-> > > > > The solution appears to be to soft-reset the PHY after clearing
-> > > > > the powersave bit.
-> > > > >
-> > > > > We add support for reporting the PHY firmware version to the kernel
-> > > > > log, and use it to trigger this new behaviour if we have v0.3.x.x
-> > > > > or more recent firmware on the PHY.  This, however, is a guess as
-> > > > > the firmware revision documentation does not mention this issue,
-> > > > > and we know that v0.2.1.0 works without this fix but v0.3.3.0 and
-> > > > > later does not.
-> > > >
-> > > > Series applied, thanks.
-> > > >
-> > > 
-> > > Hi,
-> > > 
-> > > should we queue this to -stable?
-> > > The 10 gbit ports don't work without this fix.
-> > 
-> > It has a "Fixes:" tag, so it should be backported automatically.
-> 
-> That is a wild guess that it might happen sometime in the future.
-> Please use the cc: stable@ tag as is documented for the past 15+ years
-> instead of relying on us to randomly notice a Fixes: tag.
+Hi Florian,
 
-Not for netdev material.  Netdev has its own rules:
+Thanks for your patch!
 
-https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+On Sat, May 9, 2020 at 12:32 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> The GENET controller on the Raspberry Pi 4 (2711) is typically
+> interfaced with an external Broadcom PHY via a RGMII electrical
+> interface. To make sure that delays are properly configured at the PHY
+> side, ensure that we get a chance to have the dedicated Broadcom PHY
+> driver (CONFIG_BROADCOM_PHY) enabled for this to happen.
 
-Q: I see a network patch and I think it should be backported to stable.
-   various stable releases?
+I guess it can be interfaced to a different external PHY, too?
 
-A: Normally Greg Kroah-Hartman collects stable commits himself, but
-   for networking, Dave collects up patches he deems critical for the
-   networking subsystem, and then hands them off to Greg.
-...
+> Fixes: 402482a6a78e ("net: bcmgenet: Clear ID_MODE_DIS in EXT_RGMII_OOB_CTRL when not needed")
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Q: I see a network patch and I think it should be backported to stable.
-   Should I request it via "stable@vger.kernel.org" like the references in
-   the kernel's Documentation/process/stable-kernel-rules.rst file say?
+> --- a/drivers/net/ethernet/broadcom/Kconfig
+> +++ b/drivers/net/ethernet/broadcom/Kconfig
+> @@ -69,6 +69,7 @@ config BCMGENET
+>         select BCM7XXX_PHY
+>         select MDIO_BCM_UNIMAC
+>         select DIMLIB
+> +       imply BROADCOM_PHY if ARCH_BCM2835
 
-A: No, not for networking.  Check the stable queues as per above 1st to see
-   if it is already queued.  If not, then send a mail to netdev, listing
-   the upstream commit ID and why you think it should be a stable candidate.
-...
+Which means support for the BROADCOM_PHY is always included
+on ARCH_BCM2835, even if a different PHY is used?
 
-Q: I have created a network patch and I think it should be backported to
-   stable.  Should I add a "Cc: stable@vger.kernel.org" like the references
-   in the kernel's Documentation/ directory say?
+>         help
+>           This driver supports the built-in Ethernet MACs found in the
+>           Broadcom BCM7xxx Set Top Box family chipset.
 
-A: No.  See above answer.  In short, if you think it really belongs in
-   stable, then ensure you write a decent commit log that describes who
-   gets impacted by the bugfix and how it manifests itself, and when the
-   bug was introduced.  If you do that properly, then the commit will
-   get handled appropriately and most likely get put in the patchworks
-   stable queue if it really warrants it.
-...
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
