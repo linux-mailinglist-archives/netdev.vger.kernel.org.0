@@ -2,105 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B6DE1CC122
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 14:05:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DC2A1CC129
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 14:07:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728396AbgEIMFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 08:05:30 -0400
-Received: from mout.kundenserver.de ([217.72.192.75]:43349 "EHLO
+        id S1728537AbgEIMHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 08:07:50 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:45837 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726600AbgEIMFa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 08:05:30 -0400
+        with ESMTP id S1727093AbgEIMHq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 08:07:46 -0400
 Received: from localhost.localdomain ([149.172.19.189]) by
- mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1MjjKf-1irD2q0wW3-00l9tC; Sat, 09 May 2020 14:05:11 +0200
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MHWvH-1jKU520UVt-00DX52; Sat, 09 May 2020 14:07:13 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Madalin Bucur <madalin.bucur@nxp.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Timur Tabi <timur@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: freescale: select CONFIG_FIXED_PHY where needed
-Date:   Sat,  9 May 2020 14:04:52 +0200
-Message-Id: <20200509120505.109218-1-arnd@arndb.de>
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Michal Kazior <michal.kazior@tieto.com>,
+        Kalle Valo <kvalo@qca.qualcomm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Wen Gong <wgong@codeaurora.org>,
+        Erik Stromdahl <erik.stromdahl@gmail.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/2] ath10k: fix gcc-10 zero-length-bounds warnings
+Date:   Sat,  9 May 2020 14:06:32 +0200
+Message-Id: <20200509120707.188595-1-arnd@arndb.de>
 X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:h9yFrIRXLw4ySr/K8T7dpgPAcNBfXpgdjuBXGgfTWi/oLO0O7b3
- 3QzmyhOdEV7ue+w9vVDiLKMpf6cEyPrhpuy9ycZaC+mDcp412OwvqT9hbNQh7gk5HYuSKDf
- K8mIzC0fQBKcYKur5cuxH4YbA41cpKAQcFPb1VACyQRuj3JBvecl++cD0n+A9N6SKNQvShy
- DGsRjhvWrXU5QOsgnjE1g==
+X-Provags-ID: V03:K1:md3rGtm9B4AL9nvSbhTd+KISJpmcfvjMjuz727nzZm2ZvFT08RI
+ 4X3GNiglYQmcZcXlGiFzAfI8qklVyu72RVyCSXUtfldCvePSj61BDEZlHHReaflvqiznmoE
+ 5HonKZMPDVDwN29blRt/Ip7sw3mul8n1tgqN9WkhOKVzXFNcOZT5DWfk95qwreYQPZT6ryz
+ eD7aa3o1noCIrZFf+tmXg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:zwWkj2Ibg9U=:kPVIN3cDzUWTdqnu8jFYIS
- nkUvo37MduvMt7rPN+/56KpH3gHA50HYZh1Esv2TFzth9glTaJKAt6rpzbexn0nFJpcxaI0rH
- 6MDLAWH+SkWx7YkmlTUJrnPX/pEQXPDxWKpChPb8lC/VaksFNfKlAyU9tgq4CJDHyhLHk7343
- sH+W4fPyfxGSrbCcJ+8k72jxX0hkp2mlaPOcVUuXb+/wPtG+sU57WqTSNudKhuno2wd0ESJz+
- 8JfWXCLUU4K8rXtpI5NScAbq5xmaMQ1pK6Y0iMkLJrB/H23ytjcIt0fH8xJW0RirIpKNWvtn4
- 8AvmemEwqRfe49r1yHUdTeT7UkjLffT0c1a7lvyOqdbpcuIa6dX6A9jJKCH+z5543FJ/9OV8B
- W59/BSZ1RU4XARJmu0bOEzy71RwNKuugm+Gx+CTRr/MhEEKKMILLgiJyaf6B2g0qflONINjy1
- IBdD1wRGG7aTLHrlS2mcnnXRyWFrFp64tRkwLpgzivoIjL8KRf/rKOXQwMYR7I+glV8YsAKR2
- DaHDBKnO55lv6IkGmT9H70XqF4NiDCkxPxcD3KYcWi2UmZyeqVdx/+nRJtQzT1h4l3hFNUtjS
- 8P+DUup30HMxmzHc3c++JQaNPWLZgfJVwdlpuEiyjGnoENYRbo0V9WI6DVjthnwwjwm70rlMy
- bQWWZR+d5dNbmkXB0YLXn7yOCudBFt0H2ZsAIFkYdGPyuGVXMLfH1fPGig5KXA1cnmzu1MmkA
- P9YIcEy1XFhvZEGJvEZrGcwpIcFzM4Yh6eMoCdmF0nGjhUUSkeIaVLkK3cKn0KTaNdsjtPwGu
- Geu1DvgMwtu/oKgqKJYnsV+aUqz9oKxOTVRdN3r5PicFaVO7C0=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xnYyufblF38=:aqdJovHTUmVD7l7sJtYi6R
+ O2VyTtN8cEC5i1EHJ/QrGJTzuZeDvWHv+4wBXmOdq+vCri1/O+O8ZHnHEU62SyfrF2VyfbL40
+ 3urDiERgiSr77LhdpxdMwRpoS8l2vfp6FvbIf2nz4ag/rn55duaDINqQSGCsJlTA/CNQQP0jA
+ l6hqytr7uwp+aJzEUwGvkOHrv83UTBoC/MSyc2w1eqkEFKPb0CpMoAFJgw60vU4nYI5YDse8p
+ TENge1jYBX1cKNmDact8vq15wBMtannapu9oLNfH4+OmRHVMRyiN/hUDOEQJCQgqT0aeotHkO
+ Csd33s0vb2GCnFTQRRfhulmPZikLXUglgEOJkvKdwVMgOXkbWnbjFTRbh98jb8XCzrHqAEo5c
+ RtjW1gozK+Ex0mMRGBCPUX5OcpV/WjDP4LdlMpbDPHYPfw2zA0slct/rVbfh3q6Y2U45h7OFp
+ T8+JCeAntbaV/B3DRDFUeW7EoheAdm4WGc+FOn1xP9r8QxDXlelhmOTDqJ6BqjIXxYl7NgZ/w
+ 2KPZp/Ra90JLJeLJrbK4XkYJNA3JE/YPLKLOVSlaTPT8tnn5FSOVKoQ92RVzs1qTjfk5kGREu
+ J05vfQLaHM3KrUEV79aUqy6k1iOi8ZPVrYEnyGH5EKHeNEkF0SfODkaDa6HhzDqKgQO/MN8d1
+ 9S0A+9/C/kF+KJhNTCmScZYK6WS4xkZa9tKHHZ3MCSOXS9+FGw7oIgvrs4U+IufVz3qsAGECG
+ JQiilaFIEJbIHBCoYPfe2Bq2WjwoZr+Uw83CMMw0aUvIJdeHeqv9MMZC07pzZyXotRlPTRJbz
+ FEJswylkJbsUwPMFx0fF8aI6b2RjADap9Uy5S4eazZvyxlM9dE=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I ran into a randconfig build failure with CONFIG_FIXED_PHY=m
-and CONFIG_GIANFAR=y:
+gcc-10 started warning about out-of-bounds access for zero-length
+arrays:
 
-x86_64-linux-ld: drivers/net/ethernet/freescale/gianfar.o:(.rodata+0x418): undefined reference to `fixed_phy_change_carrier'
+In file included from drivers/net/wireless/ath/ath10k/core.h:18,
+                 from drivers/net/wireless/ath/ath10k/htt_rx.c:8:
+drivers/net/wireless/ath/ath10k/htt_rx.c: In function 'ath10k_htt_rx_tx_fetch_ind':
+drivers/net/wireless/ath/ath10k/htt.h:1683:17: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'struct htt_tx_fetch_record[0]' [-Wzero-length-bounds]
+ 1683 |  return (void *)&ind->records[le16_to_cpu(ind->num_records)];
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/wireless/ath/ath10k/htt.h:1676:29: note: while referencing 'records'
+ 1676 |  struct htt_tx_fetch_record records[0];
+      |                             ^~~~~~~
 
-It seems the same thing can happen with dpaa and ucc_geth, so change
-all three to do an explicit 'select FIXED_PHY'.
+Make records[] a flexible array member to allow this, moving it behind
+the other zero-length member that is not accessed in a way that gcc
+warns about.
 
-The fixed-phy driver actually has an alternative stub function that
-theoretically allows building network drivers when fixed-phy is
-disabled, but I don't see how that would help here, as the drivers
-presumably would not work then.
-
+Fixes: 3ba225b506a2 ("treewide: Replace zero-length array with flexible-array member")
+Fixes: 22e6b3bc5d96 ("ath10k: add new htt definitions")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/freescale/Kconfig      | 2 ++
- drivers/net/ethernet/freescale/dpaa/Kconfig | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/net/wireless/ath/ath10k/htt.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
-index 2bd7ace0a953..bfc6bfe94d0a 100644
---- a/drivers/net/ethernet/freescale/Kconfig
-+++ b/drivers/net/ethernet/freescale/Kconfig
-@@ -77,6 +77,7 @@ config UCC_GETH
- 	depends on QUICC_ENGINE && PPC32
- 	select FSL_PQ_MDIO
- 	select PHYLIB
-+	select FIXED_PHY
- 	---help---
- 	  This driver supports the Gigabit Ethernet mode of the QUICC Engine,
- 	  which is available on some Freescale SOCs.
-@@ -90,6 +91,7 @@ config GIANFAR
- 	depends on HAS_DMA
- 	select FSL_PQ_MDIO
- 	select PHYLIB
-+	select FIXED_PHY
- 	select CRC32
- 	---help---
- 	  This driver supports the Gigabit TSEC on the MPC83xx, MPC85xx,
-diff --git a/drivers/net/ethernet/freescale/dpaa/Kconfig b/drivers/net/ethernet/freescale/dpaa/Kconfig
-index 3b325733a4f8..0a54c7e0e4ae 100644
---- a/drivers/net/ethernet/freescale/dpaa/Kconfig
-+++ b/drivers/net/ethernet/freescale/dpaa/Kconfig
-@@ -3,6 +3,7 @@ menuconfig FSL_DPAA_ETH
- 	tristate "DPAA Ethernet"
- 	depends on FSL_DPAA && FSL_FMAN
- 	select PHYLIB
-+	select FIXED_PHY
- 	select FSL_FMAN_MAC
- 	---help---
- 	  Data Path Acceleration Architecture Ethernet driver,
+diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
+index 8f3710cf28f4..aa056a186402 100644
+--- a/drivers/net/wireless/ath/ath10k/htt.h
++++ b/drivers/net/wireless/ath/ath10k/htt.h
+@@ -1673,8 +1673,8 @@ struct htt_tx_fetch_ind {
+ 	__le32 token;
+ 	__le16 num_resp_ids;
+ 	__le16 num_records;
+-	struct htt_tx_fetch_record records[0];
+ 	__le32 resp_ids[0]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
++	struct htt_tx_fetch_record records[];
+ } __packed;
+ 
+ static inline void *
 -- 
 2.26.0
 
