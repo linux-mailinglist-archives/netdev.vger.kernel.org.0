@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BE901CBBC3
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 02:25:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DAE31CBBDB
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 02:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728290AbgEIAZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 20:25:20 -0400
-Received: from mga18.intel.com ([134.134.136.126]:21538 "EHLO mga18.intel.com"
+        id S1728375AbgEIAib (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 20:38:31 -0400
+Received: from mga04.intel.com ([192.55.52.120]:3157 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727959AbgEIAZU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 20:25:20 -0400
-IronPort-SDR: pIo6F0/8O7TC2UXmiMHEksOej2ZCyC8bMh/SQpPqVqCot+CTTOOAmHk4vLT0ESPUil4bNWQTO1
- v2Ryrah2CXcw==
+        id S1727878AbgEIAib (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 May 2020 20:38:31 -0400
+IronPort-SDR: aopw/5m44GsnUnkU1UtPtopuLYOg5xUtm14EvccOz4UiwM0pFZW+oFS8saxF4FNlGpEQy55wKv
+ MdQkV1M55APg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2020 17:25:19 -0700
-IronPort-SDR: kp/Bvufejq8QaWyJR4D2rYpIQqVsAZcRWvpWTSQV2Ju9IakfrwneT2vv3QgUINgRL/7grVRuo7
- RISbptYjt02w==
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2020 17:38:30 -0700
+IronPort-SDR: q+sV77rbJRSonenXnHAbxIaNJcsxfDDnbUmDtOAuy5/ssIMbKCf1nWEdjdgakP2jskGvmkmC8t
+ JWZnt/bd8Y3w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.73,369,1583222400"; 
-   d="scan'208";a="370671781"
+   d="scan'208";a="279197066"
 Received: from tassilo.jf.intel.com (HELO tassilo.localdomain) ([10.7.201.21])
-  by fmsmga001.fm.intel.com with ESMTP; 08 May 2020 17:25:18 -0700
+  by orsmga002.jf.intel.com with ESMTP; 08 May 2020 17:38:30 -0700
 Received: by tassilo.localdomain (Postfix, from userid 1000)
-        id A22B6301C4C; Fri,  8 May 2020 17:25:18 -0700 (PDT)
-Date:   Fri, 8 May 2020 17:25:18 -0700
+        id 79BCB301C4C; Fri,  8 May 2020 17:38:30 -0700 (PDT)
+Date:   Fri, 8 May 2020 17:38:30 -0700
 From:   Andi Kleen <ak@linux.intel.com>
 To:     Ian Rogers <irogers@google.com>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -53,66 +53,44 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
         Vince Weaver <vincent.weaver@maine.edu>,
         Stephane Eranian <eranian@google.com>
-Subject: Re: [RFC PATCH v3 12/14] perf metricgroup: order event groups by size
-Message-ID: <20200509002518.GF3538@tassilo.jf.intel.com>
+Subject: Re: [RFC PATCH v3 13/14] perf metricgroup: remove duped metric group
+ events
+Message-ID: <20200509003830.GG3538@tassilo.jf.intel.com>
 References: <20200508053629.210324-1-irogers@google.com>
- <20200508053629.210324-13-irogers@google.com>
+ <20200508053629.210324-14-irogers@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200508053629.210324-13-irogers@google.com>
+In-Reply-To: <20200508053629.210324-14-irogers@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 07, 2020 at 10:36:27PM -0700, Ian Rogers wrote:
-> When adding event groups to the group list, insert them in size order.
-> This performs an insertion sort on the group list. By placing the
-> largest groups at the front of the group list it is possible to see if a
-> larger group contains the same events as a later group. This can make
-> the later group redundant - it can reuse the events from the large group.
-> A later patch will add this sharing.
+>  static struct evsel *find_evsel_group(struct evlist *perf_evlist,
+>  				      struct expr_parse_ctx *pctx,
+> +				      bool has_constraint,
+>  				      struct evsel **metric_events,
+>  				      unsigned long *evlist_used)
+>  {
+> -	struct evsel *ev;
+> -	bool leader_found;
+> -	const size_t idnum = hashmap__size(&pctx->ids);
+> -	size_t i = 0;
+> -	int j = 0;
+> +	struct evsel *ev, *current_leader = NULL;
+>  	double *val_ptr;
+> +	int i = 0, matched_events = 0, events_to_match;
+> +	const int idnum = (int)hashmap__size(&pctx->ids);
 
-I'm not sure if size is that great an heuristic. The dedup algorithm should
-work in any case even if you don't order by size, right?
+BTW standard perf data structure would be a rblist or strlist
 
-I suppose in theory some kind of topological sort would be better.
+I think it would be really better to do the deduping in a separate
+pass than trying to add it to find_evsel_group. This leads
+to very complicated logic.
+
+This will likely make it easier to implement more sophisticated
+algorithms too.
 
 -Andi
-> 
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/util/metricgroup.c | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
-> index 2a6456fa178b..69fbff47089f 100644
-> --- a/tools/perf/util/metricgroup.c
-> +++ b/tools/perf/util/metricgroup.c
-> @@ -520,7 +520,21 @@ static int __metricgroup__add_metric(struct list_head *group_list,
->  		return -EINVAL;
->  	}
->  
-> -	list_add_tail(&eg->nd, group_list);
-> +	if (list_empty(group_list))
-> +		list_add(&eg->nd, group_list);
-> +	else {
-> +		struct list_head *pos;
-> +
-> +		/* Place the largest groups at the front. */
-> +		list_for_each_prev(pos, group_list) {
-> +			struct egroup *old = list_entry(pos, struct egroup, nd);
-> +
-> +			if (hashmap__size(&eg->pctx.ids) <=
-> +			    hashmap__size(&old->pctx.ids))
-> +				break;
-> +		}
-> +		list_add(&eg->nd, pos);
-> +	}
->  
->  	return 0;
->  }
-> -- 
-> 2.26.2.645.ge9eca65c58-goog
-> 
+
