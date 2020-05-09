@@ -2,218 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A9311CC26A
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 17:32:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FFEA1CC27A
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 17:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727986AbgEIPcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 11:32:16 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28151 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727812AbgEIPcP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 11:32:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589038333;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/9k5BNMmUns9N4aHfKaKHFFWzY7YhzMz20SuR2GCOTs=;
-        b=ix+nhEVm8OpR7UTPBEb2SeHF7bKtlH0oM5/8IRGPlBlvBsoVDhnV+pYPcJ0IKDUtFlgeJZ
-        riKhmU4ngXGC2NvvICexcwwMl4b6JCe97+FwdBsDUmxQXirhxV3/Tmzuft2sh/rxyih86e
-        pexcFs/aPdc9/qX/lrff2+1VoV6QIl4=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-308-JagjvC0FNiCvEUPquY5ukQ-1; Sat, 09 May 2020 11:32:06 -0400
-X-MC-Unique: JagjvC0FNiCvEUPquY5ukQ-1
-Received: by mail-ed1-f70.google.com with SMTP id cf15so1780581edb.20
-        for <netdev@vger.kernel.org>; Sat, 09 May 2020 08:32:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/9k5BNMmUns9N4aHfKaKHFFWzY7YhzMz20SuR2GCOTs=;
-        b=r6K1cASCHlPD+ZkAzwbnWquZ3OebX4qzPzORTakGVpNolfTRu+Zk1VK/3YGFf4jwRl
-         nBPZcXywPtgpwzyunYm0uD+5m8vtuzT1Es4rBPTG1t9JYwE5aVvbi55rNIZgDKhqwopJ
-         p/cp0BujWssotZVWrXB0KGMsiC8fIMnI2kx9v0eKGLpUS5yyU4e/tY6whYZytifoeTVE
-         dU/EZnUS34FYcsgmxYwM3pxGCf5Q2tyijet2Svt703ooXDLw2AiUpEmVtZ5TyZr8eeVA
-         uauUNbuE+MVkc3/P+Sb0FUoahi1rVYoigcDe4FDmmcZblZxoUMaCkz4FHUW+PO7IxHX2
-         yP3g==
-X-Gm-Message-State: AGi0PuYuSlc0yZujyrblMq4hOb5JntmX2oE9HvjkaxxLDxCIEz0SVgkN
-        ZPFp1I9fFnPJ9t8CGqkr3eAbK2a6HLMUrWXNcHpZMg85E9CD7s+HtYcn69DtMqOxSwwOUGGRfsp
-        qvGJFgUCbAIr1fBEktOncuJ/qjlwwzp0s
-X-Received: by 2002:aa7:d513:: with SMTP id y19mr6798477edq.367.1589038325050;
-        Sat, 09 May 2020 08:32:05 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLHmxaulq4sibtabPh8vK4g9kwOFYxg+ENWK4nYZBXaiR+LlFbajDS9tno2sZp90fS9GhFC02fMGlNUNZrza+s=
-X-Received: by 2002:aa7:d513:: with SMTP id y19mr6798455edq.367.1589038324809;
- Sat, 09 May 2020 08:32:04 -0700 (PDT)
+        id S1728073AbgEIPnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 11:43:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39672 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726782AbgEIPnt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 May 2020 11:43:49 -0400
+Received: from embeddedor (unknown [189.207.59.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F2CEF2063A;
+        Sat,  9 May 2020 15:43:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589039029;
+        bh=o1bX8Zql/kQ5+2VP0PxQWxTrOXX0zwKggYwZhmcqNrs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DAXEZFtgE82+8ztfFy+75+0SXtIGD9rjTnRytb7gq+fU+tGx4hbaaWmS2NcxsN+Pt
+         jSeaNmSSiVN2iqylQqSMRdrnQ//OygB2q713StgEDppDnCYpiSQumAGbLQaolzFh+k
+         PJ9TtJmxAEV+9tAf+Z7IF89wjHUFlaKH1C2BrKBQ=
+Date:   Sat, 9 May 2020 10:48:18 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Michal Kazior <michal.kazior@tieto.com>,
+        Kalle Valo <kvalo@qca.qualcomm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Wen Gong <wgong@codeaurora.org>,
+        Erik Stromdahl <erik.stromdahl@gmail.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] ath10k: fix gcc-10 zero-length-bounds
+ warnings
+Message-ID: <20200509154818.GB27779@embeddedor>
+References: <20200509120707.188595-1-arnd@arndb.de>
 MIME-Version: 1.0
-References: <20190524100554.8606-1-maxime.chevallier@bootlin.com>
- <20190524100554.8606-4-maxime.chevallier@bootlin.com> <CAGnkfhzsx_uEPkZQC-_-_NamTigD8J0WgcDioqMLSHVFa3V6GQ@mail.gmail.com>
- <20200423170003.GT25745@shell.armlinux.org.uk> <CAGnkfhwOavaeUjcm4_+TG-xLxQA519o+fR8hxBCCfSy3qpcYhQ@mail.gmail.com>
- <DM5PR18MB1146686527DE66495F75D0DAB0A30@DM5PR18MB1146.namprd18.prod.outlook.com>
- <20200509114518.GB1551@shell.armlinux.org.uk> <CAGnkfhx8fEZCoLPzGxSzQnj1ZWcQtBMn+g_jO1Jxc4zF7pQwjQ@mail.gmail.com>
- <20200509135105.GE1551@shell.armlinux.org.uk> <20200509144845.GF1551@shell.armlinux.org.uk>
-In-Reply-To: <20200509144845.GF1551@shell.armlinux.org.uk>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Sat, 9 May 2020 17:31:29 +0200
-Message-ID: <CAGnkfhwfMTRm_WrdddDfKez1MbYqGtQOywZ56jy9rKFzQfjmZg@mail.gmail.com>
-Subject: Re: [EXT] Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts
- to handle RSS tables
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev <netdev@vger.kernel.org>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200509120707.188595-1-arnd@arndb.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 9, 2020 at 4:49 PM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> On Sat, May 09, 2020 at 02:51:05PM +0100, Russell King - ARM Linux admin wrote:
-> > On Sat, May 09, 2020 at 03:14:05PM +0200, Matteo Croce wrote:
-> > > On Sat, May 9, 2020 at 1:45 PM Russell King - ARM Linux admin
-> > > <linux@armlinux.org.uk> wrote:
-> > > >
-> > > > On Sat, May 09, 2020 at 11:15:58AM +0000, Stefan Chulski wrote:
-> > > > >
-> > > > >
-> > > > > > -----Original Message-----
-> > > > > > From: Matteo Croce <mcroce@redhat.com>
-> > > > > > Sent: Saturday, May 9, 2020 3:13 AM
-> > > > > > To: David S . Miller <davem@davemloft.net>
-> > > > > > Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>; netdev
-> > > > > > <netdev@vger.kernel.org>; LKML <linux-kernel@vger.kernel.org>; Antoine
-> > > > > > Tenart <antoine.tenart@bootlin.com>; Thomas Petazzoni
-> > > > > > <thomas.petazzoni@bootlin.com>; gregory.clement@bootlin.com;
-> > > > > > miquel.raynal@bootlin.com; Nadav Haklai <nadavh@marvell.com>; Stefan
-> > > > > > Chulski <stefanc@marvell.com>; Marcin Wojtas <mw@semihalf.com>; Linux
-> > > > > > ARM <linux-arm-kernel@lists.infradead.org>; Russell King - ARM Linux admin
-> > > > > > <linux@armlinux.org.uk>
-> > > > > > Subject: [EXT] Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts to
-> > > > > > handle RSS tables
-> > > > > >
-> > > > > > Hi,
-> > > > > >
-> > > > > > What do you think about temporarily disabling it like this?
-> > > > > >
-> > > > > > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > > > > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > > > > @@ -5775,7 +5775,8 @@ static int mvpp2_port_probe(struct platform_device
-> > > > > > *pdev,
-> > > > > >                             NETIF_F_HW_VLAN_CTAG_FILTER;
-> > > > > >
-> > > > > >         if (mvpp22_rss_is_supported()) {
-> > > > > > -               dev->hw_features |= NETIF_F_RXHASH;
-> > > > > > +               if (port->phy_interface != PHY_INTERFACE_MODE_SGMII)
-> > > > > > +                       dev->hw_features |= NETIF_F_RXHASH;
-> > > > > >                 dev->features |= NETIF_F_NTUPLE;
-> > > > > >         }
-> > > > > >
-> > > > > >
-> > > > > > David, is this "workaround" too bad to get accepted?
-> > > > >
-> > > > > Not sure that RSS related to physical interface(SGMII), better just remove NETIF_F_RXHASH as "workaround".
-> > > >
-> > > > Hmm, I'm not sure this is the right way forward.  This patch has the
-> > > > effect of disabling:
-> > > >
-> > > > d33ec4525007 ("net: mvpp2: add an RSS classification step for each flow")
-> > > >
-> > > > but the commit you're pointing at which caused the regression is:
-> > > >
-> > > > 895586d5dc32 ("net: mvpp2: cls: Use RSS contexts to handle RSS tables")
-> > > >
-> > > >
-> > >
-> > > Hi,
-> > >
-> > > When git bisect pointed to 895586d5dc32 ("net: mvpp2: cls: Use RSS
-> > > contexts to handle RSS tables"), which was merged
-> > > almost an year after d33ec4525007 ("net: mvpp2: add an RSS
-> > > classification step for each flow"), so I assume that between these
-> > > two commits either the feature was working or it was disable and we
-> > > didn't notice
-> > >
-> > > Without knowing what was happening, which commit should my Fixes tag point to?
-> >
-> > Let me make sure that I get this clear:
-> >
-> > - Prior to 895586d5dc32, you can turn on and off rxhash without issue
-> >   on any port.
-> > - After 895586d5dc32, turning rxhash on eth2 prevents reception.
-> >
-> > Prior to 895586d5dc32, with rxhash on, it looks like hashing using
-> > CRC32 is supported but only one context.  So, if it's possible to
-> > enable rxhash on any port on the mcbin without 895586d5dc32, and the
-> > port continues to work, I'd say the bug was introduced by
-> > 895586d5dc32.
-> >
-> > Of course, that would be reinforced if there was a measurable
-> > difference in performance due to rxhash on each port.
->
-> I've just run this test, but I can detect no difference in performance
-> with or without 895586d5dc32 on eth0 or eth2 on the mcbin (apart from
-> eth2 stopping working with 895586d5dc32 applied.)  I tested this by
-> reverting almost all changes to the mvpp2 driver between 5.6 and that
-> commit.
->
-> That's not too surprising; I'm using my cex7 platform with the Mellanox
-> card in for one end of the 10G link, and that platform doesn't seem to
-> be able to saturdate a 10G link - it only seems to manage around 4Gbps.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
->
+Arnd,
 
-Well it depends on the traffic type. I used to generate 5k flows with
-T-Rex and an Intel X710 card.
-This way t-rex changes the UDP port of every packet:
+On Sat, May 09, 2020 at 02:06:32PM +0200, Arnd Bergmann wrote:
+> gcc-10 started warning about out-of-bounds access for zero-length
+> arrays:
+> 
+> In file included from drivers/net/wireless/ath/ath10k/core.h:18,
+>                  from drivers/net/wireless/ath/ath10k/htt_rx.c:8:
+> drivers/net/wireless/ath/ath10k/htt_rx.c: In function 'ath10k_htt_rx_tx_fetch_ind':
+> drivers/net/wireless/ath/ath10k/htt.h:1683:17: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'struct htt_tx_fetch_record[0]' [-Wzero-length-bounds]
+>  1683 |  return (void *)&ind->records[le16_to_cpu(ind->num_records)];
+>       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ath/ath10k/htt.h:1676:29: note: while referencing 'records'
+>  1676 |  struct htt_tx_fetch_record records[0];
+>       |                             ^~~~~~~
+> 
+> Make records[] a flexible array member to allow this, moving it behind
+> the other zero-length member that is not accessed in a way that gcc
+> warns about.
+> 
+> Fixes: 3ba225b506a2 ("treewide: Replace zero-length array with flexible-array member")
 
-root@macchiatobin:~# tcpdump -tnni eth0
-tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
-IP 16.0.0.18.9874 > 48.0.0.81.2001: UDP, length 18
-IP 16.0.0.248.56289 > 48.0.192.56.2001: UDP, length 18
-IP 16.0.0.154.44965 > 48.0.128.26.2001: UDP, length 18
-IP 16.0.0.23.31363 > 48.0.0.86.2001: UDP, length 18
-IP 16.0.0.192.1674 > 48.0.192.63.2001: UDP, length 18
-IP 16.0.0.155.62370 > 48.0.128.27.2001: UDP, length 18
-IP 16.0.0.30.22126 > 48.0.0.93.2001: UDP, length 18
-IP 16.0.0.195.51329 > 48.0.192.66.2001: UDP, length 18
-IP 16.0.0.160.18323 > 48.0.128.32.2001: UDP, length 18
-IP 16.0.0.199.55413 > 48.0.192.70.2001: UDP, length 18
+This treewide patch no longer contains changes for ath10k. I removed them
+since Monday (05/04/2020). So, this "Fixes" tag does not apply.
 
-And here RX hash gives a huge performance gain.
+Thanks
+--
+Gustavo
 
-root@macchiatobin:~# utraf eth0
-tx: 0 bps 0 pps rx: 425.5 Mbps 886.5 Kpps
-tx: 0 bps 0 pps rx: 426.0 Mbps 887.6 Kpps
-tx: 0 bps 0 pps rx: 425.3 Mbps 886.1 Kpps
-tx: 0 bps 0 pps rx: 425.2 Mbps 885.8 Kpps
-root@macchiatobin:~# ethtool -K eth0 rxhash on
-root@macchiatobin:~# utraf eth0
-tx: 0 bps 0 pps rx: 1595 Mbps 3323 Kpps
-tx: 0 bps 0 pps rx: 1593 Mbps 3319 Kpps
-tx: 0 bps 0 pps rx: 1595 Mbps 3323 Kpps
-tx: 0 bps 0 pps rx: 1594 Mbps 3320 Kpps
-
-utraf is just a tool which reads netlink statistics, packets are
-dropped with a tc rule.
-
-Regards,
--- 
-Matteo Croce
-per aspera ad upstream
-
+> Fixes: 22e6b3bc5d96 ("ath10k: add new htt definitions")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/wireless/ath/ath10k/htt.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
+> index 8f3710cf28f4..aa056a186402 100644
+> --- a/drivers/net/wireless/ath/ath10k/htt.h
+> +++ b/drivers/net/wireless/ath/ath10k/htt.h
+> @@ -1673,8 +1673,8 @@ struct htt_tx_fetch_ind {
+>  	__le32 token;
+>  	__le16 num_resp_ids;
+>  	__le16 num_records;
+> -	struct htt_tx_fetch_record records[0];
+>  	__le32 resp_ids[0]; /* ath10k_htt_get_tx_fetch_ind_resp_ids() */
+> +	struct htt_tx_fetch_record records[];
+>  } __packed;
+>  
+>  static inline void *
+> -- 
+> 2.26.0
+> 
