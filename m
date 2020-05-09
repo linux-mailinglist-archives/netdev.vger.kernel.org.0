@@ -2,244 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3111CBD04
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 05:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A10F81CBD10
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 05:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728654AbgEIDqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 23:46:25 -0400
-Received: from conssluserg-01.nifty.com ([210.131.2.80]:64746 "EHLO
-        conssluserg-01.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726415AbgEIDqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 23:46:25 -0400
-Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 0493jxxE025229;
-        Sat, 9 May 2020 12:46:00 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 0493jxxE025229
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1588995960;
-        bh=/JfKiL/RGM8Ul2qInDwK96irbgr1Va5ryrfxFSjgTKg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=k06FdTzRKjrdElXIvitp9/Xdr2SgjgjsSFFy4/BhS8s79E3Dgq59mjxs15bqlSAxh
-         24Ga0Sa7FZAb1Bb7j/ZY3oj3d1igqMjP2fe6Ar5uq/YOXHmWE7Tmt7iPXwDIvImgg+
-         ElL5upiNatgE6IsDYO0EQdPVawNFPsrGHNOM3qJGzru2VF1bCQOsud3t+Eb39JEM1s
-         t0mP5B5k641KRmZlL905p65MdRB7nqrJXMuPlA9wU8ZjcwI8hTE4zjpdbRJNWq8F1X
-         9hI+9PpsuJiHkLvPIq8lzZeE/cZdLZ2OjpwCccBHxuyviPRkROx332ILPCIumpMGac
-         H5/S5LST1A6NQ==
-X-Nifty-SrcIP: [209.85.217.53]
-Received: by mail-vs1-f53.google.com with SMTP id 1so2356203vsl.9;
-        Fri, 08 May 2020 20:46:00 -0700 (PDT)
-X-Gm-Message-State: AGi0PuakDG59gIRJShThevXYfuAkzZ/ZK3fI5E20eVice06cIRNOgNJq
-        YNClJPKC5B6lnY9bIzn8+XgbCTVEUEfeN4TbF3A=
-X-Google-Smtp-Source: APiQypKq/Kh2fPpShJ26DNT0TDaeZkwkivL6BcM96eY8ViOawYkv31II+HXjEPNIT9vFQPyHbYsvWPbLtj3Evo3++EU=
-X-Received: by 2002:a67:db0d:: with SMTP id z13mr4634859vsj.155.1588995958737;
- Fri, 08 May 2020 20:45:58 -0700 (PDT)
+        id S1728720AbgEIDu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 23:50:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42172 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726415AbgEIDu2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 May 2020 23:50:28 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 112AF20722;
+        Sat,  9 May 2020 03:50:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588996227;
+        bh=XcyjVYykYKddPdKIWQPw8Qg8eEX39q7s1fcySboBfXw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=v+NOZ9ihS91D0GxdpfKFJeEKdSr3cMUz5sMum2mQtJ7ZDtDW/DEN19kUpISGgJ0XS
+         cuTQqwZuNX6c+To2TPjtHxABkyGArm+PA3b5EHotmBBAigvinDiYxDkiBxFLBqPJAM
+         wdKOdjwEJ2U4dA8pie5kE537dnD042DOnLQnGTmM=
+Date:   Fri, 8 May 2020 20:50:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Joe Perches <joe@perches.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: Protect INET_ADDR_COOKIE on 32-bit
+ architectures
+Message-ID: <20200508205025.3207a54e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200508120457.29422-1-steve@sk2.org>
+References: <20200508120457.29422-1-steve@sk2.org>
 MIME-Version: 1.0
-References: <251580.1588912756@turing-police>
-In-Reply-To: <251580.1588912756@turing-police>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 9 May 2020 12:45:22 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARbKdfGiozX+WrF7fTSf6tpXPUQ8Hr=jC_phUwZa_FONg@mail.gmail.com>
-Message-ID: <CAK7LNARbKdfGiozX+WrF7fTSf6tpXPUQ8Hr=jC_phUwZa_FONg@mail.gmail.com>
-Subject: Re: linux-next 20200506 - build failure with net/bpfilter/bpfilter_umh
-To:     =?UTF-8?Q?Valdis_Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>
-Cc:     Sam Ravnborg <sam@ravnborg.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 2:22 PM Valdis Kl=C4=93tnieks <valdis.kletnieks@vt.e=
-du> wrote:
->
-> My kernel build came to a screeching halt with:
->
->   CHECK   net/bpfilter/bpfilter_kern.c
->   CC [M]  net/bpfilter/bpfilter_kern.o
->   CC [U]  net/bpfilter/main.o
->   LD [U]  net/bpfilter/bpfilter_umh
-> /usr/bin/ld: cannot find -lc
-> collect2: error: ld returned 1 exit status
-> make[2]: *** [scripts/Makefile.userprogs:36: net/bpfilter/bpfilter_umh] E=
-rror 1
-> make[1]: *** [scripts/Makefile.build:494: net/bpfilter] Error 2
-> make: *** [Makefile:1726: net] Error 2
->
-> The culprit is this commit:
+On Fri,  8 May 2020 14:04:57 +0200 Stephen Kitt wrote:
+> Commit c7228317441f ("net: Use a more standard macro for
+> INET_ADDR_COOKIE") added a __deprecated marker to the cookie name on
+> 32-bit architectures, with the intent that the compiler would flag
+> uses of the name. However since commit 771c035372a0 ("deprecate the
+> '__deprecated' attribute warnings entirely and for good"),
+> __deprecated doesn't do anything and should be avoided.
+> 
+> This patch changes INET_ADDR_COOKIE to declare a dummy struct so that
+> any subsequent use of the cookie's name will in all likelihood break
+> the build. It also removes the __deprecated marker.
+> 
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
+> ---
+> Changes since v1:
+>   - use a dummy struct rather than a typedef
+> 
+>  include/net/inet_hashtables.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> index ad64ba6a057f..889d9b00c905 100644
+> --- a/include/net/inet_hashtables.h
+> +++ b/include/net/inet_hashtables.h
+> @@ -301,8 +301,9 @@ static inline struct sock *inet_lookup_listener(struct net *net,
+>  	  ((__sk)->sk_bound_dev_if == (__sdif)))		&&	\
+>  	 net_eq(sock_net(__sk), (__net)))
+>  #else /* 32-bit arch */
+> +/* Break the build if anything tries to use the cookie's name. */
 
-Thanks. I will try to fix it,
-but my commit is innocent because
-it is just textual cleanups.
-No functional change is intended.
+I think the macro is supposed to cause a warning when the variable
+itself is accessed. And I don't think that happens with your patch
+applied.
 
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 2bbaaf0c7176..6c4a3904ed8b 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -360,6 +360,8 @@ struct sock *__inet_lookup_established(struct net *net,
+        unsigned int slot = hash & hashinfo->ehash_mask;
+        struct inet_ehash_bucket *head = &hashinfo->ehash[slot];
+ 
++       kfree(&acookie);
+ begin:
+        sk_nulls_for_each_rcu(sk, node, &head->chain) {
+                if (sk->sk_hash != hash)
 
-This '-static' option has existed since
-the day 1 of bpfilter umh support.
-See commit d2ba09c17a0647f899d6c20a11bab9e6d3382f07
+$ make ARCH=i386
+make[1]: Entering directory `/netdev/net-next/build_allmodconfig_warn_32bit'
+  GEN     Makefile
+  CALL    ../scripts/atomic/check-atomics.sh
+  CALL    ../scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  CC      net/ipv4/inet_hashtables.o
+  CHK     kernel/kheaders_data.tar.xz
+  AR      net/ipv4/built-in.a
+  AR      net/built-in.a
+  GEN     .version
+  CHK     include/generated/compile.h
+  UPD     include/generated/compile.h
+  CC      init/version.o
+  AR      init/built-in.a
+  LD      vmlinux.o
+  MODPOST vmlinux.o
 
+Builds fine.
 
+>  #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
+> -	const int __name __deprecated __attribute__((unused))
+> +	struct {} __name __attribute__((unused))
+>  
+>  #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif, __sdif) \
+>  	(((__sk)->sk_portpair == (__ports))		&&		\
 
-I built the mainline kernel in
-Fedora running on docker.
-
-I was able to reproduce the same issue.
-
-
-[masahiro@ed7f2ae1915f linux]$ git log --oneline -1
-0e698dfa2822 (HEAD, tag: v5.7-rc4) Linux 5.7-rc4
-[masahiro@ed7f2ae1915f linux]$ make  defconfig
-  HOSTCC  scripts/basic/fixdep
-  HOSTCC  scripts/kconfig/conf.o
-  HOSTCC  scripts/kconfig/confdata.o
-  HOSTCC  scripts/kconfig/expr.o
-  LEX     scripts/kconfig/lexer.lex.c
-  YACC    scripts/kconfig/parser.tab.[ch]
-  HOSTCC  scripts/kconfig/lexer.lex.o
-  HOSTCC  scripts/kconfig/parser.tab.o
-  HOSTCC  scripts/kconfig/preprocess.o
-  HOSTCC  scripts/kconfig/symbol.o
-  HOSTCC  scripts/kconfig/util.o
-  HOSTLD  scripts/kconfig/conf
-*** Default configuration is based on 'x86_64_defconfig'
-#
-# configuration written to .config
-#
-[masahiro@ed7f2ae1915f linux]$ scripts/config -e BPFILTER
-[masahiro@ed7f2ae1915f linux]$ scripts/config -e BPFILTER_UMH
-[masahiro@ed7f2ae1915f linux]$ make -j24 net/bpfilter/
-scripts/kconfig/conf  --syncconfig Kconfig
-  SYSTBL  arch/x86/include/generated/asm/syscalls_32.h
-  SYSHDR  arch/x86/include/generated/asm/unistd_32_ia32.h
-  SYSHDR  arch/x86/include/generated/asm/unistd_64_x32.h
-  SYSTBL  arch/x86/include/generated/asm/syscalls_64.h
-  SYSHDR  arch/x86/include/generated/uapi/asm/unistd_32.h
-  SYSHDR  arch/x86/include/generated/uapi/asm/unistd_64.h
-  SYSHDR  arch/x86/include/generated/uapi/asm/unistd_x32.h
-  WRAP    arch/x86/include/generated/uapi/asm/bpf_perf_event.h
-  WRAP    arch/x86/include/generated/uapi/asm/errno.h
-  WRAP    arch/x86/include/generated/uapi/asm/ioctl.h
-  WRAP    arch/x86/include/generated/uapi/asm/ioctls.h
-  WRAP    arch/x86/include/generated/uapi/asm/fcntl.h
-  WRAP    arch/x86/include/generated/uapi/asm/param.h
-  WRAP    arch/x86/include/generated/uapi/asm/ipcbuf.h
-  WRAP    arch/x86/include/generated/uapi/asm/resource.h
-  WRAP    arch/x86/include/generated/uapi/asm/poll.h
-  WRAP    arch/x86/include/generated/uapi/asm/socket.h
-  WRAP    arch/x86/include/generated/uapi/asm/sockios.h
-  WRAP    arch/x86/include/generated/uapi/asm/termbits.h
-  WRAP    arch/x86/include/generated/uapi/asm/termios.h
-  WRAP    arch/x86/include/generated/uapi/asm/types.h
-  HOSTCC  arch/x86/tools/relocs_32.o
-  HOSTCC  arch/x86/tools/relocs_64.o
-  HOSTCC  arch/x86/tools/relocs_common.o
-  WRAP    arch/x86/include/generated/asm/export.h
-  WRAP    arch/x86/include/generated/asm/early_ioremap.h
-  WRAP    arch/x86/include/generated/asm/dma-contiguous.h
-  WRAP    arch/x86/include/generated/asm/mcs_spinlock.h
-  WRAP    arch/x86/include/generated/asm/mm-arch-hooks.h
-  WRAP    arch/x86/include/generated/asm/mmiowb.h
-  HOSTCC  scripts/kallsyms
-  HOSTCC  scripts/sorttable
-  HOSTCC  scripts/asn1_compiler
-  UPD     include/config/kernel.release
-  DESCEND  objtool
-  HOSTCC  scripts/selinux/mdp/mdp
-  HOSTCC  scripts/selinux/genheaders/genheaders
-  UPD     include/generated/utsrelease.h
-scripts/kallsyms.c: In function =E2=80=98read_symbol=E2=80=99:
-scripts/kallsyms.c:222:2: warning: =E2=80=98strcpy=E2=80=99 writing between=
- 1 and 128
-bytes into a region of size 0 [-Wstringop-overflow=3D]
-  222 |  strcpy(sym_name(sym), name);
-      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-  HOSTCC   /home/masahiro/ref/linux/tools/objtool/fixdep.o
-  HOSTLD  arch/x86/tools/relocs
-  HOSTLD   /home/masahiro/ref/linux/tools/objtool/fixdep-in.o
-  LINK     /home/masahiro/ref/linux/tools/objtool/fixdep
-  CC       /home/masahiro/ref/linux/tools/objtool/builtin-check.o
-  CC       /home/masahiro/ref/linux/tools/objtool/builtin-orc.o
-  CC       /home/masahiro/ref/linux/tools/objtool/check.o
-  CC       /home/masahiro/ref/linux/tools/objtool/orc_gen.o
-  CC       /home/masahiro/ref/linux/tools/objtool/orc_dump.o
-  CC       /home/masahiro/ref/linux/tools/objtool/elf.o
-  GEN      /home/masahiro/ref/linux/tools/objtool/arch/x86/lib/inat-tables.=
-c
-  CC       /home/masahiro/ref/linux/tools/objtool/special.o
-  CC       /home/masahiro/ref/linux/tools/objtool/objtool.o
-  CC       /home/masahiro/ref/linux/tools/objtool/libstring.o
-  CC       /home/masahiro/ref/linux/tools/objtool/libctype.o
-  CC       /home/masahiro/ref/linux/tools/objtool/str_error_r.o
-  CC       /home/masahiro/ref/linux/tools/objtool/librbtree.o
-  CC       /home/masahiro/ref/linux/tools/objtool/exec-cmd.o
-  CC       /home/masahiro/ref/linux/tools/objtool/help.o
-  CC       /home/masahiro/ref/linux/tools/objtool/pager.o
-  CC       /home/masahiro/ref/linux/tools/objtool/parse-options.o
-  CC       /home/masahiro/ref/linux/tools/objtool/run-command.o
-  CC       /home/masahiro/ref/linux/tools/objtool/sigchain.o
-  CC       /home/masahiro/ref/linux/tools/objtool/arch/x86/decode.o
-  CC       /home/masahiro/ref/linux/tools/objtool/subcmd-config.o
-  LD       /home/masahiro/ref/linux/tools/objtool/arch/x86/objtool-in.o
-  LD       /home/masahiro/ref/linux/tools/objtool/libsubcmd-in.o
-  AR       /home/masahiro/ref/linux/tools/objtool/libsubcmd.a
-  CC      scripts/mod/devicetable-offsets.s
-  CC      scripts/mod/empty.o
-  MKELF   scripts/mod/elfconfig.h
-  HOSTCC  scripts/mod/sumversion.o
-  HOSTCC  scripts/mod/modpost.o
-  UPD     scripts/mod/devicetable-offsets.h
-  HOSTCC  scripts/mod/file2alias.o
-  LD       /home/masahiro/ref/linux/tools/objtool/objtool-in.o
-  LINK     /home/masahiro/ref/linux/tools/objtool/objtool
-  HOSTLD  scripts/mod/modpost
-  CC      kernel/bounds.s
-  CALL    scripts/atomic/check-atomics.sh
-  UPD     include/generated/timeconst.h
-  UPD     include/generated/bounds.h
-  CC      arch/x86/kernel/asm-offsets.s
-  UPD     include/generated/asm-offsets.h
-  CALL    scripts/checksyscalls.sh
-  HOSTCC  net/bpfilter/main.o
-  CC      net/bpfilter/bpfilter_kern.o
-  HOSTLD  net/bpfilter/bpfilter_umh
-/usr/bin/ld: cannot find -lc
-collect2: error: ld returned 1 exit status
-make[2]: *** [scripts/Makefile.host:112: net/bpfilter/bpfilter_umh] Error 1
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [scripts/Makefile.build:488: net/bpfilter] Error 2
-make: *** [Makefile:1722: net] Error 2
-
-
-
-
-
-
-
-
-
->
-> commit 0592c3c367c4c823f2a939968e72d39360fce1f4
-> Author: Masahiro Yamada <masahiroy@kernel.org>
-> Date:   Wed Apr 29 12:45:15 2020 +0900
->
->     bpfilter: use 'userprogs' syntax to build bpfilter_umh
->
-> and specifically, this line:
->
-> +userldflags +=3D -static
->
-> At least on Fedora, this dies an ugly death unless you have the glibc-sta=
-tic RPM
-> installed (which is *not* part of the glibc-devel RPM).  Not sure how to =
-fix this, or
-> give a heads-up that there's a new requirement that might break the build=
-.
->
-
-
---=20
-Best Regards
-Masahiro Yamada
