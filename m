@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 949681CC45D
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 22:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17CBE1CC45E
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 22:07:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728689AbgEIUGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 16:06:44 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:40297 "EHLO
+        id S1728706AbgEIUGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 16:06:45 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:58041 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728667AbgEIUGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 16:06:42 -0400
+        by vger.kernel.org with ESMTP id S1728681AbgEIUGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 16:06:43 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 727C55C00CC;
-        Sat,  9 May 2020 16:06:41 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id D015C5C00D7;
+        Sat,  9 May 2020 16:06:42 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sat, 09 May 2020 16:06:41 -0400
+  by compute4.internal (MEProxy); Sat, 09 May 2020 16:06:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=iGx4yrqmPjHzehMQ0VkDup9CZaB6mJpOmc3yt+hrJGk=; b=eyZcx2Q6
-        vzyDCekuHHoF5wghjZA/szKXQzLhcPTqdI3h1oLAjNJgcr2JYxzCSWdokyeF4Nc2
-        0ErxEZfjBujYCQdihG0eawN4tNZYZ9j9KXoE8LYMIjzg+vFhwxWm00S4a7UVMjBD
-        YK93EhVv5XgYR+ArT+QkJs4LGfGJN3SGWfuQ+dfgF0OsaBzuLMHlozlwjsYsNnpL
-        z6Hwam5bVvM2Bf+nngiMHksfbqCN+9+pyb4iOka2tc9qQgFOBWZK+yyOoBo96D/M
-        z1NwkvDzVap5nYGYSGqZTB5akblrrP92eUiFaPc9R6lwD6hJ0oPzIXzXdUo9BntF
-        +0/pUE3xBkXySQ==
-X-ME-Sender: <xms:UQ23XkFeRC66m6RDg6LryHwp9wvi7-_mHS78DLCtfuQ5dET49TkATQ>
+        fm2; bh=g+4NoBN6AtALivwAWOmNWaXw9z66vrpYn4QyLoA0vNo=; b=ER9yXRu/
+        q40CZlnFyml7D2yn/Df2mfaKwi8EBblll89hPtfo3j8xdnnBqJ+QAgOwJietdVHO
+        6iowc+ps7GQ1NKOg3VxyQaRL5Fk7y5kvXWzqCikV7oMLXQKOkRUeza6d0m2nPoC0
+        sCleHMu6sw5Pt6EBRxW7dS4j+jBkmDmz2WIAYqLsq7+pIuyKqAdGuhfzUcYPK+Ww
+        TEs6hSwahcuUS9cfg9Bk5mQCiA8iDlb52NE1E82evZaM3xO+pi1lVnBRbifvt+6P
+        3UBhQPT5oG515kFXhF7TzLtC5vDbnkxCA+WQTKnD2t6hSnasN8m6LiA3U324es7R
+        2eesCis32o+ugw==
+X-ME-Sender: <xms:Ug23XlmkUKyEJaPcGg7_PGqAeztTBkCc9_bPirJxuyg8aBrZGUE2Jg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrkeehgddugeegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -36,20 +36,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrkeehgddugeegucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeejledrudejiedrvdegrddutdej
     necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:UQ23Xqje7ndo0TDun2D5hjxBTuaYoe03YXlzum8wO2FYSIOXxhHBvg>
-    <xmx:UQ23Xio2V5fa3bVzkwIgukwLK--P1PWkDEq4KFZ7y9u42TAR4taXWQ>
-    <xmx:UQ23XiTTTDsM_BQ9DEMuH-Z90oyzdr-xs_gg-_M0uh9TWb6Bxik9XA>
-    <xmx:UQ23Xk7tpLGU5Kxz0s6ZGPBqp6yMovFZCGOBf8lfdU4Aj0NytIG-qA>
+X-ME-Proxy: <xmx:Ug23Xq6U0yjwqwNBa5gvGdyXjsad8LQzjrm0GucwApN2eMVHgQm_XA>
+    <xmx:Ug23Xuj6j75bj00uxjN0wuFBJNVSkij-4OWpAorCgImoNm7VARHSJw>
+    <xmx:Ug23Xtgv_8V1bheZQNJJsTVRJlgBUMDi0aefAC9gHaqMDFpGYzKUBA>
+    <xmx:Ug23Xos_RY0UYQu8723DjblnRW8QTC7wqE_46wBEBom9PDkO4Rkikw>
 Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 27F3B306622F;
-        Sat,  9 May 2020 16:06:40 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 876B2306622F;
+        Sat,  9 May 2020 16:06:41 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 3/9] mlxsw: spectrum_matchall: Put matchall list into substruct of flow struct
-Date:   Sat,  9 May 2020 23:06:04 +0300
-Message-Id: <20200509200610.375719-4-idosch@idosch.org>
+Subject: [PATCH net-next 4/9] mlxsw: spectrum_matchall: Expose a function to get min and max rule priority
+Date:   Sat,  9 May 2020 23:06:05 +0300
+Message-Id: <20200509200610.375719-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200509200610.375719-1-idosch@idosch.org>
 References: <20200509200610.375719-1-idosch@idosch.org>
@@ -62,93 +62,117 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-As there are going to be other matchall specific fields in flow
-structure, put the existing list field into matchall substruct.
+Introduce an infrastructure that allows to get minimum and maximum
+rule priority for specified chain. This is going to be used by
+a subsequent patch to enforce ordering between flower and
+matchall filters.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.h         |  4 +++-
- drivers/net/ethernet/mellanox/mlxsw/spectrum_flow.c    |  2 +-
- .../net/ethernet/mellanox/mlxsw/spectrum_matchall.c    | 10 +++++-----
- 3 files changed, 9 insertions(+), 7 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  4 +++
+ .../mellanox/mlxsw/spectrum_matchall.c        | 34 +++++++++++++++++++
+ 2 files changed, 38 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index d9a963c77401..553693469805 100644
+index 553693469805..456dbaa5ee26 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -636,7 +636,9 @@ struct mlxsw_sp_acl_rule_info {
- /* spectrum_flow.c */
- struct mlxsw_sp_flow_block {
+@@ -638,6 +638,8 @@ struct mlxsw_sp_flow_block {
  	struct list_head binding_list;
--	struct list_head mall_list;
-+	struct {
-+		struct list_head list;
-+	} mall;
+ 	struct {
+ 		struct list_head list;
++		unsigned int min_prio;
++		unsigned int max_prio;
+ 	} mall;
  	struct mlxsw_sp_acl_ruleset *ruleset_zero;
  	struct mlxsw_sp *mlxsw_sp;
- 	unsigned int rule_count;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flow.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flow.c
-index ecab581ff956..76644f6a8121 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flow.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flow.c
-@@ -18,7 +18,7 @@ mlxsw_sp_flow_block_create(struct mlxsw_sp *mlxsw_sp, struct net *net)
- 	if (!block)
- 		return NULL;
- 	INIT_LIST_HEAD(&block->binding_list);
--	INIT_LIST_HEAD(&block->mall_list);
-+	INIT_LIST_HEAD(&block->mall.list);
- 	block->mlxsw_sp = mlxsw_sp;
- 	block->net = net;
- 	return block;
+@@ -900,6 +902,8 @@ int mlxsw_sp_mall_port_bind(struct mlxsw_sp_flow_block *block,
+ 			    struct mlxsw_sp_port *mlxsw_sp_port);
+ void mlxsw_sp_mall_port_unbind(struct mlxsw_sp_flow_block *block,
+ 			       struct mlxsw_sp_port *mlxsw_sp_port);
++int mlxsw_sp_mall_prio_get(struct mlxsw_sp_flow_block *block, u32 chain_index,
++			   unsigned int *p_min_prio, unsigned int *p_max_prio);
+ 
+ /* spectrum_flower.c */
+ int mlxsw_sp_flower_replace(struct mlxsw_sp *mlxsw_sp,
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-index c75661521bbc..d64ee31a611c 100644
+index d64ee31a611c..b11bab76b2e1 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-@@ -37,7 +37,7 @@ mlxsw_sp_mall_entry_find(struct mlxsw_sp_flow_block *block, unsigned long cookie
+@@ -23,6 +23,7 @@ struct mlxsw_sp_mall_mirror_entry {
+ struct mlxsw_sp_mall_entry {
+ 	struct list_head list;
+ 	unsigned long cookie;
++	unsigned int priority;
+ 	enum mlxsw_sp_mall_action_type type;
+ 	bool ingress;
+ 	union {
+@@ -175,6 +176,22 @@ mlxsw_sp_mall_port_rule_del(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	}
+ }
+ 
++static void mlxsw_sp_mall_prio_update(struct mlxsw_sp_flow_block *block)
++{
++	struct mlxsw_sp_mall_entry *mall_entry;
++
++	if (list_empty(&block->mall.list))
++		return;
++	block->mall.min_prio = UINT_MAX;
++	block->mall.max_prio = 0;
++	list_for_each_entry(mall_entry, &block->mall.list, list) {
++		if (mall_entry->priority < block->mall.min_prio)
++			block->mall.min_prio = mall_entry->priority;
++		if (mall_entry->priority > block->mall.max_prio)
++			block->mall.max_prio = mall_entry->priority;
++	}
++}
++
+ int mlxsw_sp_mall_replace(struct mlxsw_sp_flow_block *block,
+ 			  struct tc_cls_matchall_offload *f)
  {
- 	struct mlxsw_sp_mall_entry *mall_entry;
+@@ -203,6 +220,7 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp_flow_block *block,
+ 	if (!mall_entry)
+ 		return -ENOMEM;
+ 	mall_entry->cookie = f->cookie;
++	mall_entry->priority = f->common.prio;
+ 	mall_entry->ingress = mlxsw_sp_flow_block_is_ingress_bound(block);
  
--	list_for_each_entry(mall_entry, &block->mall_list, list)
-+	list_for_each_entry(mall_entry, &block->mall.list, list)
- 		if (mall_entry->cookie == cookie)
- 			return mall_entry;
- 
-@@ -244,7 +244,7 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp_flow_block *block,
- 		block->egress_blocker_rule_count++;
+ 	act = &f->rule->action.entries[0];
+@@ -245,6 +263,7 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp_flow_block *block,
  	else
  		block->ingress_blocker_rule_count++;
--	list_add_tail(&mall_entry->list, &block->mall_list);
-+	list_add_tail(&mall_entry->list, &block->mall.list);
+ 	list_add_tail(&mall_entry->list, &block->mall.list);
++	mlxsw_sp_mall_prio_update(block);
  	return 0;
  
  rollback:
-@@ -285,7 +285,7 @@ int mlxsw_sp_mall_port_bind(struct mlxsw_sp_flow_block *block,
- 	struct mlxsw_sp_mall_entry *mall_entry;
- 	int err;
+@@ -277,6 +296,7 @@ void mlxsw_sp_mall_destroy(struct mlxsw_sp_flow_block *block,
+ 	list_for_each_entry(binding, &block->binding_list, list)
+ 		mlxsw_sp_mall_port_rule_del(binding->mlxsw_sp_port, mall_entry);
+ 	kfree_rcu(mall_entry, rcu); /* sample RX packets may be in-flight */
++	mlxsw_sp_mall_prio_update(block);
+ }
  
--	list_for_each_entry(mall_entry, &block->mall_list, list) {
-+	list_for_each_entry(mall_entry, &block->mall.list, list) {
- 		err = mlxsw_sp_mall_port_rule_add(mlxsw_sp_port, mall_entry);
- 		if (err)
- 			goto rollback;
-@@ -293,7 +293,7 @@ int mlxsw_sp_mall_port_bind(struct mlxsw_sp_flow_block *block,
- 	return 0;
- 
- rollback:
--	list_for_each_entry_continue_reverse(mall_entry, &block->mall_list,
-+	list_for_each_entry_continue_reverse(mall_entry, &block->mall.list,
- 					     list)
- 		mlxsw_sp_mall_port_rule_del(mlxsw_sp_port, mall_entry);
- 	return err;
-@@ -304,6 +304,6 @@ void mlxsw_sp_mall_port_unbind(struct mlxsw_sp_flow_block *block,
- {
- 	struct mlxsw_sp_mall_entry *mall_entry;
- 
--	list_for_each_entry(mall_entry, &block->mall_list, list)
-+	list_for_each_entry(mall_entry, &block->mall.list, list)
+ int mlxsw_sp_mall_port_bind(struct mlxsw_sp_flow_block *block,
+@@ -307,3 +327,17 @@ void mlxsw_sp_mall_port_unbind(struct mlxsw_sp_flow_block *block,
+ 	list_for_each_entry(mall_entry, &block->mall.list, list)
  		mlxsw_sp_mall_port_rule_del(mlxsw_sp_port, mall_entry);
  }
++
++int mlxsw_sp_mall_prio_get(struct mlxsw_sp_flow_block *block, u32 chain_index,
++			   unsigned int *p_min_prio, unsigned int *p_max_prio)
++{
++	if (chain_index || list_empty(&block->mall.list))
++		/* In case there are no matchall rules, the caller
++		 * receives -ENOENT to indicate there is no need
++		 * to check the priorities.
++		 */
++		return -ENOENT;
++	*p_min_prio = block->mall.min_prio;
++	*p_max_prio = block->mall.max_prio;
++	return 0;
++}
 -- 
 2.26.2
 
