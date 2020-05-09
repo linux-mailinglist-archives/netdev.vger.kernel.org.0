@@ -2,95 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DAE31CBBDB
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 02:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB2081CBBDF
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 02:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728375AbgEIAib (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 20:38:31 -0400
-Received: from mga04.intel.com ([192.55.52.120]:3157 "EHLO mga04.intel.com"
+        id S1728486AbgEIAii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 20:38:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50808 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727878AbgEIAib (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 20:38:31 -0400
-IronPort-SDR: aopw/5m44GsnUnkU1UtPtopuLYOg5xUtm14EvccOz4UiwM0pFZW+oFS8saxF4FNlGpEQy55wKv
- MdQkV1M55APg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2020 17:38:30 -0700
-IronPort-SDR: q+sV77rbJRSonenXnHAbxIaNJcsxfDDnbUmDtOAuy5/ssIMbKCf1nWEdjdgakP2jskGvmkmC8t
- JWZnt/bd8Y3w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,369,1583222400"; 
-   d="scan'208";a="279197066"
-Received: from tassilo.jf.intel.com (HELO tassilo.localdomain) ([10.7.201.21])
-  by orsmga002.jf.intel.com with ESMTP; 08 May 2020 17:38:30 -0700
-Received: by tassilo.localdomain (Postfix, from userid 1000)
-        id 79BCB301C4C; Fri,  8 May 2020 17:38:30 -0700 (PDT)
-Date:   Fri, 8 May 2020 17:38:30 -0700
-From:   Andi Kleen <ak@linux.intel.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Vince Weaver <vincent.weaver@maine.edu>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [RFC PATCH v3 13/14] perf metricgroup: remove duped metric group
- events
-Message-ID: <20200509003830.GG3538@tassilo.jf.intel.com>
-References: <20200508053629.210324-1-irogers@google.com>
- <20200508053629.210324-14-irogers@google.com>
+        id S1727984AbgEIAif (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 May 2020 20:38:35 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0AF3620746;
+        Sat,  9 May 2020 00:38:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588984715;
+        bh=JYE9+M/aG072dPIHuxuvk9POKsJEMF02ttHiR9oDgzk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RtNYOnnITyiJrt+lymaFD888fAMBHMisLLXzR8M3Df5vC/vxfTCPQ1h1GFi9TZfOk
+         AzdQQgBrWMqdWP18lLH5o11gmgnFb10JQK5qjcsLu6bmuAEIsAR7TqvxCMGNmYzdUU
+         6vIbkVsVO5FpGhXS13jTjlTEyOb3jpj6QuZJkLBk=
+Date:   Fri, 8 May 2020 17:38:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kevin Hao <haokexin@gmail.com>
+Cc:     netdev@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>, davem@davemloft.net,
+        Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Subject: Re: [PATCH v2] octeontx2-pf: Use the napi_alloc_frag() to alloc the
+ pool buffers
+Message-ID: <20200508173833.0f48cccc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200508114953.2753-1-haokexin@gmail.com>
+References: <20200508114953.2753-1-haokexin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200508053629.210324-14-irogers@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  static struct evsel *find_evsel_group(struct evlist *perf_evlist,
->  				      struct expr_parse_ctx *pctx,
-> +				      bool has_constraint,
->  				      struct evsel **metric_events,
->  				      unsigned long *evlist_used)
+On Fri,  8 May 2020 19:49:53 +0800 Kevin Hao wrote:
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> index f1d2dea90a8c..612d33207326 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> @@ -379,40 +379,33 @@ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx)
+>  		     (pfvf->hw.cq_ecount_wait - 1));
+>  }
+>  
+> -dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+> -			   gfp_t gfp)
+> +dma_addr_t _otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
+
+If you need to respin please use double underscore as a prefix, it's
+a far more common style in the kernel.
+
 >  {
-> -	struct evsel *ev;
-> -	bool leader_found;
-> -	const size_t idnum = hashmap__size(&pctx->ids);
-> -	size_t i = 0;
-> -	int j = 0;
-> +	struct evsel *ev, *current_leader = NULL;
->  	double *val_ptr;
-> +	int i = 0, matched_events = 0, events_to_match;
-> +	const int idnum = (int)hashmap__size(&pctx->ids);
+>  	dma_addr_t iova;
+> +	u8 *buf;
+>  
+> -	/* Check if request can be accommodated in previous allocated page */
+> -	if (pool->page && ((pool->page_offset + pool->rbsize) <=
+> -	    (PAGE_SIZE << pool->rbpage_order))) {
+> -		pool->pageref++;
+> -		goto ret;
+> -	}
+> -
+> -	otx2_get_page(pool);
+> -
+> -	/* Allocate a new page */
+> -	pool->page = alloc_pages(gfp | __GFP_COMP | __GFP_NOWARN,
+> -				 pool->rbpage_order);
+> -	if (unlikely(!pool->page))
+> +	buf = napi_alloc_frag(pool->rbsize);
+> +	if (unlikely(!buf))
+>  		return -ENOMEM;
+>  
+> -	pool->page_offset = 0;
+> -ret:
+> -	iova = (u64)otx2_dma_map_page(pfvf, pool->page, pool->page_offset,
+> -				      pool->rbsize, DMA_FROM_DEVICE);
+> -	if (!iova) {
+> -		if (!pool->page_offset)
+> -			__free_pages(pool->page, pool->rbpage_order);
+> -		pool->page = NULL;
+> +	iova = dma_map_single_attrs(pfvf->dev, buf, pool->rbsize,
+> +				    DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
+> +	if (unlikely(dma_mapping_error(pfvf->dev, iova)))
 
-BTW standard perf data structure would be a rblist or strlist
+Thanks for doing this, but aren't you leaking the buf on DMA mapping
+error?
 
-I think it would be really better to do the deduping in a separate
-pass than trying to add it to find_evsel_group. This leads
-to very complicated logic.
-
-This will likely make it easier to implement more sophisticated
-algorithms too.
-
--Andi
-
+>  		return -ENOMEM;
+> -	}
+> -	pool->page_offset += pool->rbsize;
+> +
+>  	return iova;
+>  }
