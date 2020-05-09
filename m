@@ -2,207 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 129EC1CBC63
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 04:15:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B11D91CBC8D
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 04:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728542AbgEICPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 22:15:49 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:35649 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728353AbgEICPt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 May 2020 22:15:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588990547;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=35W7f4O3N2+IVnSePhHRorinIZLPPaeJSjwnMIh6Cys=;
-        b=iLg9DsuPgaD3Yte9Ei/lbVonh5g5gs529e7Q7DNFN0GBT6gL4aO8g4ffFbm9TDbLGBGtPT
-        oOhc0wJA3wrxWWJ6Xu5fQ+vCkSs9RfoC/4OJpEbLxh12lpBOHVchcEq1eiPDe4q4OqE3va
-        OTgzJNeWkVipXACEnVeobt+cOYEMlko=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-155-e6haWJxkOoGTXPXc61Zyiw-1; Fri, 08 May 2020 22:15:42 -0400
-X-MC-Unique: e6haWJxkOoGTXPXc61Zyiw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6C7A180058A;
-        Sat,  9 May 2020 02:15:40 +0000 (UTC)
-Received: from [10.72.13.128] (ovpn-13-128.pek2.redhat.com [10.72.13.128])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 50B415C3FA;
-        Sat,  9 May 2020 02:15:29 +0000 (UTC)
-Subject: Re: [PATCH net-next v3 21/33] virtio_net: add XDP frame size in two
- code paths
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, sameehj@amazon.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-References: <158893607924.2321140.16117992313983615627.stgit@firesoul>
- <158893623266.2321140.16885343338278337243.stgit@firesoul>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <ff22f513-6716-4025-e1bc-2c2f764b1df7@redhat.com>
-Date:   Sat, 9 May 2020 10:15:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+        id S1728601AbgEICbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 22:31:12 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4360 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728353AbgEICbM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 May 2020 22:31:12 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 875F0357F44AF9147B08;
+        Sat,  9 May 2020 10:31:08 +0800 (CST)
+Received: from [127.0.0.1] (10.166.215.99) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Sat, 9 May 2020
+ 10:31:01 +0800
+Subject: Re: cgroup pointed by sock is leaked on mode switch
+To:     Zefan Li <lizefan@huawei.com>, Tejun Heo <tj@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
+        <netdev@vger.kernel.org>,
+        "Libin (Huawei)" <huawei.libin@huawei.com>, <guofan5@huawei.com>,
+        <wangkefeng.wang@huawei.com>
+References: <03dab6ab-0ffe-3cae-193f-a7f84e9b14c5@huawei.com>
+ <20200505160639.GG12217@mtj.thefacebook.com>
+ <c9879fd2-cb91-2a08-8293-c6a436b5a539@huawei.com>
+ <0a6ae984-e647-5ada-8849-3fa2fb994ff3@huawei.com>
+ <1edd6b6c-ab3c-6a51-6460-6f5d7f37505e@huawei.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <6ff6124e-72d9-5739-22cf-2f0aea938a19@huawei.com>
+Date:   Sat, 9 May 2020 10:31:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <158893623266.2321140.16885343338278337243.stgit@firesoul>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <1edd6b6c-ab3c-6a51-6460-6f5d7f37505e@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Originating-IP: [10.166.215.99]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/5/8 下午7:10, Jesper Dangaard Brouer wrote:
-> The virtio_net driver is running inside the guest-OS. There are two
-> XDP receive code-paths in virtio_net, namely receive_small() and
-> receive_mergeable(). The receive_big() function does not support XDP.
+On 2020/5/6 15:51, Zefan Li wrote:
+> On 2020/5/6 10:16, Zefan Li wrote:
+>> On 2020/5/6 9:50, Yang Yingliang wrotee:
+>>> +cc lizefan@huawei.com
+>>>
+>>> On 2020/5/6 0:06, Tejun Heo wrote:
+>>>> Hello, Yang.
+>>>>
+>>>> On Sat, May 02, 2020 at 06:27:21PM +0800, Yang Yingliang wrote:
+>>>>> I find the number nr_dying_descendants is increasing:
+>>>>> linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep
+>>>>> '^nr_dying_descendants [^0]'  {} +
+>>>>> /sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 80
+>>>>> /sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 
+>>>>> 1
+>>>>> /sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
+>>>>>
+>>>>> 1
+>>>>> /sys/fs/cgroup/unified/lxc/cgroup.stat:nr_dying_descendants 79
+>>>>> /sys/fs/cgroup/unified/lxc/5f1fdb8c54fa40c3e599613dab6e4815058b76ebada8a27bc1fe80c0d4801764/cgroup.stat:nr_dying_descendants 
+>>>>>
+>>>>> 78
+>>>>> /sys/fs/cgroup/unified/lxc/5f1fdb8c54fa40c3e599613dab6e4815058b76ebada8a27bc1fe80c0d4801764/system.slice/cgroup.stat:nr_dying_descendants 
+>>>>>
+>>>>> 78
+>>>> Those numbers are nowhere close to causing oom issues. There are some
+>>>> aspects of page and other cache draining which is being improved 
+>>>> but unless
+>>>> you're seeing numbers multiple orders of magnitude higher, this 
+>>>> isn't the
+>>>> source of your problem.
+>>>>
+>>>>> The situation is as same as the commit bd1060a1d671 ("sock, 
+>>>>> cgroup: add
+>>>>> sock->sk_cgroup") describes.
+>>>>> "On mode switch, cgroup references which are already being pointed 
+>>>>> to by
+>>>>> socks may be leaked."
+>>>> I'm doubtful that you're hitting that issue. Mode switching means 
+>>>> memcg
+>>>> being switched between cgroup1 and cgroup2 hierarchies, which is 
+>>>> unlikely to
+>>>> be what's happening when you're launching docker containers.
+>>>>
+>>>> The first step would be identifying where memory is going and 
+>>>> finding out
+>>>> whether memcg is actually being switched between cgroup1 and 2 - 
+>>>> look at the
+>>>> hierarchy number in /proc/cgroups, if that's switching between 0 and
+>>>> someting not zero, it is switching.
+>>>>
+>>
+>> I think there's a bug here which can lead to unlimited memory leak.
+>> This should reproduce the bug:
+>>
+>>     # mount -t cgroup -o netprio xxx /cgroup/netprio
+>>     # mkdir /cgroup/netprio/xxx
+>>     # echo PID > /cgroup/netprio/xxx/tasks
+>>     /* this PID process starts to do some network thing and then 
+>> exits */
+>>     # rmdir /cgroup/netprio/xxx
+>>     /* now this cgroup will never be freed */
+>>
 >
-> In receive_small() the frame size is available in buflen. The buffer
-> backing these frames are allocated in add_recvbuf_small() with same
-> size, except for the headroom, but tailroom have reserved room for
-> skb_shared_info. The headroom is encoded in ctx pointer as a value.
+> Correction (still not tested):
 >
-> In receive_mergeable() the frame size is more dynamic. There are two
-> basic cases: (1) buffer size is based on a exponentially weighted
-> moving average (see DECLARE_EWMA) of packet length. Or (2) in case
-> virtnet_get_headroom() have any headroom then buffer size is
-> PAGE_SIZE. The ctx pointer is this time used for encoding two values;
-> the buffer len "truesize" and headroom. In case (1) if the rx buffer
-> size is underestimated, the packet will have been split over more
-> buffers (num_buf info in virtio_net_hdr_mrg_rxbuf placed in top of
-> buffer area). If that happens the XDP path does a xdp_linearize_page
-> operation.
+>     # mount -t cgroup2 none /cgroup/v2
+>     # mkdir /cgroup/v2/xxx
+>     # echo PID > /cgroup/v2/xxx/cgroup.procs
+>     /* this PID process starts to do some network thing */
 >
-> V3: Adjust frame_sz in receive_mergeable() case, spotted by Jason Wang.
+>     # mount -t cgroup -o netprio xxx /cgroup/netprio
+>     # mkdir /cgroup/netprio/xxx
+>     # echo PID > /cgroup/netprio/xxx/tasks
+>     ...
+>     /* the PID process exits */
 >
-> The code is really hard to follow,
+>     rmdir /cgroup/netprio/xxx
+>     rmdir /cgroup/v2/xxx
+>     /* now looks like this v2 cgroup will never be freed */
+>
+>> Look at the code:
+>>
+>> static inline void sock_update_netprioidx(struct sock_cgroup_data *skcd)
+>> {
+>>      ...
+>>      sock_cgroup_set_prioidx(skcd, task_netprioidx(current));
+>> }
+>>
+>> static inline void sock_cgroup_set_prioidx(struct sock_cgroup_data 
+>> *skcd,
+>>                      u16 prioidx)
+>> {
+>>      ...
+>>      if (sock_cgroup_prioidx(&skcd_buf) == prioidx)
+>>          return ;
+>>      ...
+>>      skcd_buf.prioidx = prioidx;
+>>      WRITE_ONCE(skcd->val, skcd_buf.val);
+>> }
+>>
+>> task_netprioidx() will be the cgrp id of xxx which is not 1, but
+>> sock_cgroup_prioidx(&skcd_buf) is 1 because it thought it's in v2 mode.
+>> Now we have a memory leak.
+>>
+>> I think the eastest fix is to do the mode switch here:
+>>
+>> diff --git a/net/core/netprio_cgroup.c b/net/core/netprio_cgroup.c
+>> index b905747..2397866 100644
+>> --- a/net/core/netprio_cgroup.c
+>> +++ b/net/core/netprio_cgroup.c
+>> @@ -240,6 +240,8 @@ static void net_prio_attach(struct cgroup_taskset 
+>> *tset)
+>>          struct task_struct *p;
+>>          struct cgroup_subsys_state *css;
+>>
+>> +       cgroup_sk_alloc_disable();
+>> +
+>>          cgroup_taskset_for_each(p, css, tset) {
+>>                  void *v = (void *)(unsigned long)css->cgroup->id;
+>
+I've do some test with this change, here is the test result:
 
 
-Yes, I plan to rework to make it more easier for reviewers.
+Without this change, nr_dying_descendants is increased and the cgroup is 
+leaked:
+
+linux-dVpNUK:~ # mount | grep cgroup
+tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,mode=755)
+cgroup2 on /sys/fs/cgroup/unified type cgroup2 
+(rw,nosuid,nodev,noexec,relatime,nsdelegate)
+cgroup on /sys/fs/cgroup/systemd type cgroup 
+(rw,nosuid,nodev,noexec,relatime,xattr,name=systemd)
+cgroup on /sys/fs/cgroup/blkio type cgroup 
+(rw,nosuid,nodev,noexec,relatime,blkio)
+cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup 
+(rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)
+cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup 
+(rw,nosuid,nodev,noexec,relatime,net_cls,net_prio)
+cgroup on /sys/fs/cgroup/freezer type cgroup 
+(rw,nosuid,nodev,noexec,relatime,freezer)
+cgroup on /sys/fs/cgroup/devices type cgroup 
+(rw,nosuid,nodev,noexec,relatime,devices)
+cgroup on /sys/fs/cgroup/memory type cgroup 
+(rw,nosuid,nodev,noexec,relatime,memory)
+cgroup on /sys/fs/cgroup/cpuset type cgroup 
+(rw,nosuid,nodev,noexec,relatime,cpuset)
+cgroup on /sys/fs/cgroup/perf_event type cgroup 
+(rw,nosuid,nodev,noexec,relatime,perf_event)
+cgroup on /sys/fs/cgroup/pids type cgroup 
+(rw,nosuid,nodev,noexec,relatime,pids)
+cgroup on /sys/fs/cgroup/hugetlb type cgroup 
+(rw,nosuid,nodev,noexec,relatime,hugetlb)
+linux-dVpNUK:~ # mkdir /sys/fs/cgroup/net_cls,net_prio/test
+linux-dVpNUK:~ # ps -ef | grep bash
+root     12151 12150  0 00:31 pts/0    00:00:00 -bash
+root     12322 12321  0 00:31 pts/1    00:00:00 -bash
+root     12704 12703  0 00:31 pts/2    00:00:00 -bash
+root     13359 12704  0 00:31 pts/2    00:00:00 grep --color=auto bash
+linux-dVpNUK:~ # echo 12151 > /sys/fs/cgroup/net_cls,net_prio/test/tasks
+linux-dVpNUK:~ # echo 12322 > /sys/fs/cgroup/net_cls,net_prio/test/tasks
+
+(Use bash(12151/12322) do some network things, then kill them, the 
+nr_dying_descendants is increased.)
+linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
+'^nr_dying_descendants [^0]'  {} +
+/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
+1
+linux-dVpNUK:~ # kill 12151 12322
+linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
+'^nr_dying_descendants [^0]'  {} +
+/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 3
+/sys/fs/cgroup/unified/user.slice/cgroup.stat:nr_dying_descendants 2
+/sys/fs/cgroup/unified/user.slice/user-0.slice/cgroup.stat:nr_dying_descendants 
+2
+/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
+1
+
+(after rmdir test, the nr_dying_descendants is not decreased.)
+linux-dVpNUK:~ # rmdir /sys/fs/cgroup/net_cls,net_prio/test
+linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
+'^nr_dying_descendants [^0]'  {} +
+/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 3
+/sys/fs/cgroup/unified/user.slice/cgroup.stat:nr_dying_descendants 2
+/sys/fs/cgroup/unified/user.slice/user-0.slice/cgroup.stat:nr_dying_descendants 
+2
+/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
+1
 
 
->   so some hints to reviewers.
-> The receive_mergeable() case gets frames that were allocated in
-> add_recvbuf_mergeable() which uses headroom=virtnet_get_headroom(),
-> and 'buf' ptr is advanced this headroom.  The headroom can only
-> be 0 or VIRTIO_XDP_HEADROOM, as virtnet_get_headroom is really
-> simple:
->
->    static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
->    {
-> 	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
->    }
->
-> As frame_sz is an offset size from xdp.data_hard_start, reviewers
-> should notice how this is calculated in receive_mergeable():
->
->    int offset = buf - page_address(page);
->    [...]
->    data = page_address(xdp_page) + offset;
->    xdp.data_hard_start = data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
->
-> The calculated offset will always be VIRTIO_XDP_HEADROOM when
-> reaching this code.  Thus, xdp.data_hard_start will be page-start
-> address plus vi->hdr_len.  Given this xdp.frame_sz need to be
-> reduced with vi->hdr_len size.
->
-> IMHO a followup patch should cleanup this code to make it easier
-> to maintain and understand, but it is outside the scope of this
-> patchset.
->
-> Cc: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+With this change, nr_dying_descendants is not increased:
 
+linux-dVpNUK:~ # mkdir /sys/fs/cgroup/net_cls,net_prio/test
+linux-dVpNUK:~ # ps -ef | grep bash
+root      5466  5443  0 00:50 pts/1    00:00:00 -bash
+root      5724  5723  0 00:50 pts/2    00:00:00 -bash
+root      6701 17013  0 00:50 pts/0    00:00:00 grep --color=auto bash
+root     17013 17012  0 00:46 pts/0    00:00:00 -bash
+linux-dVpNUK:~ # echo 5466 > /sys/fs/cgroup/net_cls,net_prio/test/tasks
+linux-dVpNUK:~ # echo 5724 > /sys/fs/cgroup/net_cls,net_prio/test/tasks
+linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
+'^nr_dying_descendants [^0]'  {} +
+/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
+1
+linux-dVpNUK:~ # kill 5466 5724
+linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
+'^nr_dying_descendants [^0]'  {} +
+/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
+1
+linux-dVpNUK:~ # rmdir /sys/fs/cgroup/net_cls,net_prio/test/
+linux-dVpNUK:~ # find /sys/fs/cgroup/ -name cgroup.stat -exec grep 
+'^nr_dying_descendants [^0]'  {} +
+/sys/fs/cgroup/unified/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/cgroup.stat:nr_dying_descendants 1
+/sys/fs/cgroup/unified/system.slice/system-hostos.slice/cgroup.stat:nr_dying_descendants 
+1
 
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-Thanks
-
-
-> ---
->   drivers/net/virtio_net.c |   15 ++++++++++++---
->   1 file changed, 12 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 11f722460513..9e1b5d748586 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -689,6 +689,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   		xdp.data_end = xdp.data + len;
->   		xdp.data_meta = xdp.data;
->   		xdp.rxq = &rq->xdp_rxq;
-> +		xdp.frame_sz = buflen;
->   		orig_data = xdp.data;
->   		act = bpf_prog_run_xdp(xdp_prog, &xdp);
->   		stats->xdp_packets++;
-> @@ -797,10 +798,11 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   	int offset = buf - page_address(page);
->   	struct sk_buff *head_skb, *curr_skb;
->   	struct bpf_prog *xdp_prog;
-> -	unsigned int truesize;
-> +	unsigned int truesize = mergeable_ctx_to_truesize(ctx);
->   	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
-> -	int err;
->   	unsigned int metasize = 0;
-> +	unsigned int frame_sz;
-> +	int err;
->   
->   	head_skb = NULL;
->   	stats->bytes += len - vi->hdr_len;
-> @@ -821,6 +823,11 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   		if (unlikely(hdr->hdr.gso_type))
->   			goto err_xdp;
->   
-> +		/* Buffers with headroom use PAGE_SIZE as alloc size,
-> +		 * see add_recvbuf_mergeable() + get_mergeable_buf_len()
-> +		 */
-> +		frame_sz = headroom ? PAGE_SIZE : truesize;
-> +
->   		/* This happens when rx buffer size is underestimated
->   		 * or headroom is not enough because of the buffer
->   		 * was refilled before XDP is set. This should only
-> @@ -834,6 +841,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   						      page, offset,
->   						      VIRTIO_XDP_HEADROOM,
->   						      &len);
-> +			frame_sz = PAGE_SIZE;
-> +
->   			if (!xdp_page)
->   				goto err_xdp;
->   			offset = VIRTIO_XDP_HEADROOM;
-> @@ -850,6 +859,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   		xdp.data_end = xdp.data + (len - vi->hdr_len);
->   		xdp.data_meta = xdp.data;
->   		xdp.rxq = &rq->xdp_rxq;
-> +		xdp.frame_sz = frame_sz - vi->hdr_len;
->   
->   		act = bpf_prog_run_xdp(xdp_prog, &xdp);
->   		stats->xdp_packets++;
-> @@ -924,7 +934,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   	}
->   	rcu_read_unlock();
->   
-> -	truesize = mergeable_ctx_to_truesize(ctx);
->   	if (unlikely(len > truesize)) {
->   		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
->   			 dev->name, len, (unsigned long)ctx);
->
->
+> .
 
