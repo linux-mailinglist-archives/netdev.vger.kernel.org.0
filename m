@@ -2,209 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 302611CC25A
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 17:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A9311CC26A
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 17:32:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727993AbgEIPSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 11:18:50 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:24657 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727105AbgEIPSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 11:18:50 -0400
+        id S1727986AbgEIPcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 11:32:16 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28151 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727812AbgEIPcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 11:32:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589037529;
+        s=mimecast20190719; t=1589038333;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=2hue1lsqi4XMQF5NNNjmHFzI6rV7rqILxUYM7fa3fzw=;
-        b=YJ2d8EYD4FVilA27YJAQh6Qx8P1toj7L5S1er+qPtC9LQmXJ2mOoqAyrJX1VN7pGJumy0B
-        19U/6PBRFR4vSiTkTEmYI/Lb5v3yqVwEWvnIMn6rEGNmGEHt963bVaMcJ3FwFyXGlmvQJM
-        NyEJGVmz0d8b2A/Cj7ucQoWTazOUsF8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-283-ibVo1IHvNMusTg053bOBew-1; Sat, 09 May 2020 11:18:45 -0400
-X-MC-Unique: ibVo1IHvNMusTg053bOBew-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C41331005510;
-        Sat,  9 May 2020 15:18:41 +0000 (UTC)
-Received: from x1-fbsd (unknown [10.3.128.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5E88F1001925;
-        Sat,  9 May 2020 15:18:31 +0000 (UTC)
-Date:   Sat, 9 May 2020 11:18:29 -0400
-From:   Rafael Aquini <aquini@redhat.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
-        rostedt@goodmis.org, mingo@redhat.com, cai@lca.pw,
-        dyoung@redhat.com, bhe@redhat.com, peterz@infradead.org,
-        tglx@linutronix.de, gpiccoli@canonical.com, pmladek@suse.com,
-        tiwai@suse.de, schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 01/15] taint: add module firmware crash taint support
-Message-ID: <20200509151829.GB6704@x1-fbsd>
-References: <20200509043552.8745-1-mcgrof@kernel.org>
- <20200509043552.8745-2-mcgrof@kernel.org>
+        bh=/9k5BNMmUns9N4aHfKaKHFFWzY7YhzMz20SuR2GCOTs=;
+        b=ix+nhEVm8OpR7UTPBEb2SeHF7bKtlH0oM5/8IRGPlBlvBsoVDhnV+pYPcJ0IKDUtFlgeJZ
+        riKhmU4ngXGC2NvvICexcwwMl4b6JCe97+FwdBsDUmxQXirhxV3/Tmzuft2sh/rxyih86e
+        pexcFs/aPdc9/qX/lrff2+1VoV6QIl4=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-308-JagjvC0FNiCvEUPquY5ukQ-1; Sat, 09 May 2020 11:32:06 -0400
+X-MC-Unique: JagjvC0FNiCvEUPquY5ukQ-1
+Received: by mail-ed1-f70.google.com with SMTP id cf15so1780581edb.20
+        for <netdev@vger.kernel.org>; Sat, 09 May 2020 08:32:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/9k5BNMmUns9N4aHfKaKHFFWzY7YhzMz20SuR2GCOTs=;
+        b=r6K1cASCHlPD+ZkAzwbnWquZ3OebX4qzPzORTakGVpNolfTRu+Zk1VK/3YGFf4jwRl
+         nBPZcXywPtgpwzyunYm0uD+5m8vtuzT1Es4rBPTG1t9JYwE5aVvbi55rNIZgDKhqwopJ
+         p/cp0BujWssotZVWrXB0KGMsiC8fIMnI2kx9v0eKGLpUS5yyU4e/tY6whYZytifoeTVE
+         dU/EZnUS34FYcsgmxYwM3pxGCf5Q2tyijet2Svt703ooXDLw2AiUpEmVtZ5TyZr8eeVA
+         uauUNbuE+MVkc3/P+Sb0FUoahi1rVYoigcDe4FDmmcZblZxoUMaCkz4FHUW+PO7IxHX2
+         yP3g==
+X-Gm-Message-State: AGi0PuYuSlc0yZujyrblMq4hOb5JntmX2oE9HvjkaxxLDxCIEz0SVgkN
+        ZPFp1I9fFnPJ9t8CGqkr3eAbK2a6HLMUrWXNcHpZMg85E9CD7s+HtYcn69DtMqOxSwwOUGGRfsp
+        qvGJFgUCbAIr1fBEktOncuJ/qjlwwzp0s
+X-Received: by 2002:aa7:d513:: with SMTP id y19mr6798477edq.367.1589038325050;
+        Sat, 09 May 2020 08:32:05 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLHmxaulq4sibtabPh8vK4g9kwOFYxg+ENWK4nYZBXaiR+LlFbajDS9tno2sZp90fS9GhFC02fMGlNUNZrza+s=
+X-Received: by 2002:aa7:d513:: with SMTP id y19mr6798455edq.367.1589038324809;
+ Sat, 09 May 2020 08:32:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200509043552.8745-2-mcgrof@kernel.org>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+References: <20190524100554.8606-1-maxime.chevallier@bootlin.com>
+ <20190524100554.8606-4-maxime.chevallier@bootlin.com> <CAGnkfhzsx_uEPkZQC-_-_NamTigD8J0WgcDioqMLSHVFa3V6GQ@mail.gmail.com>
+ <20200423170003.GT25745@shell.armlinux.org.uk> <CAGnkfhwOavaeUjcm4_+TG-xLxQA519o+fR8hxBCCfSy3qpcYhQ@mail.gmail.com>
+ <DM5PR18MB1146686527DE66495F75D0DAB0A30@DM5PR18MB1146.namprd18.prod.outlook.com>
+ <20200509114518.GB1551@shell.armlinux.org.uk> <CAGnkfhx8fEZCoLPzGxSzQnj1ZWcQtBMn+g_jO1Jxc4zF7pQwjQ@mail.gmail.com>
+ <20200509135105.GE1551@shell.armlinux.org.uk> <20200509144845.GF1551@shell.armlinux.org.uk>
+In-Reply-To: <20200509144845.GF1551@shell.armlinux.org.uk>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Sat, 9 May 2020 17:31:29 +0200
+Message-ID: <CAGnkfhwfMTRm_WrdddDfKez1MbYqGtQOywZ56jy9rKFzQfjmZg@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts
+ to handle RSS tables
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev <netdev@vger.kernel.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
+        Stefan Chulski <stefanc@marvell.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 09, 2020 at 04:35:38AM +0000, Luis Chamberlain wrote:
-> Device driver firmware can crash, and sometimes, this can leave your
-> system in a state which makes the device or subsystem completely
-> useless. Detecting this by inspecting /proc/sys/kernel/tainted instead
-> of scraping some magical words from the kernel log, which is driver
-> specific, is much easier. So instead provide a helper which lets drivers
-> annotate this.
-> 
-> Once this happens, scrapers can easily look for modules taint flags
-> for a firmware crash. This will taint both the kernel and respective
-> calling module.
-> 
-> The new helper module_firmware_crashed() uses LOCKDEP_STILL_OK as this
-> fact should in no way shape or form affect lockdep. This taint is device
-> driver specific.
-> 
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> ---
->  include/linux/kernel.h        |  3 ++-
->  include/linux/module.h        | 13 +++++++++++++
->  include/trace/events/module.h |  3 ++-
->  kernel/module.c               |  5 +++--
->  kernel/panic.c                |  1 +
->  5 files changed, 21 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-> index 04a5885cec1b..19e1541c82c7 100644
-> --- a/include/linux/kernel.h
-> +++ b/include/linux/kernel.h
-> @@ -601,7 +601,8 @@ extern enum system_states {
->  #define TAINT_LIVEPATCH			15
->  #define TAINT_AUX			16
->  #define TAINT_RANDSTRUCT		17
-> -#define TAINT_FLAGS_COUNT		18
-> +#define TAINT_FIRMWARE_CRASH		18
-> +#define TAINT_FLAGS_COUNT		19
+On Sat, May 9, 2020 at 4:49 PM Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Sat, May 09, 2020 at 02:51:05PM +0100, Russell King - ARM Linux admin wrote:
+> > On Sat, May 09, 2020 at 03:14:05PM +0200, Matteo Croce wrote:
+> > > On Sat, May 9, 2020 at 1:45 PM Russell King - ARM Linux admin
+> > > <linux@armlinux.org.uk> wrote:
+> > > >
+> > > > On Sat, May 09, 2020 at 11:15:58AM +0000, Stefan Chulski wrote:
+> > > > >
+> > > > >
+> > > > > > -----Original Message-----
+> > > > > > From: Matteo Croce <mcroce@redhat.com>
+> > > > > > Sent: Saturday, May 9, 2020 3:13 AM
+> > > > > > To: David S . Miller <davem@davemloft.net>
+> > > > > > Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>; netdev
+> > > > > > <netdev@vger.kernel.org>; LKML <linux-kernel@vger.kernel.org>; Antoine
+> > > > > > Tenart <antoine.tenart@bootlin.com>; Thomas Petazzoni
+> > > > > > <thomas.petazzoni@bootlin.com>; gregory.clement@bootlin.com;
+> > > > > > miquel.raynal@bootlin.com; Nadav Haklai <nadavh@marvell.com>; Stefan
+> > > > > > Chulski <stefanc@marvell.com>; Marcin Wojtas <mw@semihalf.com>; Linux
+> > > > > > ARM <linux-arm-kernel@lists.infradead.org>; Russell King - ARM Linux admin
+> > > > > > <linux@armlinux.org.uk>
+> > > > > > Subject: [EXT] Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts to
+> > > > > > handle RSS tables
+> > > > > >
+> > > > > > Hi,
+> > > > > >
+> > > > > > What do you think about temporarily disabling it like this?
+> > > > > >
+> > > > > > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > > > > > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > > > > > @@ -5775,7 +5775,8 @@ static int mvpp2_port_probe(struct platform_device
+> > > > > > *pdev,
+> > > > > >                             NETIF_F_HW_VLAN_CTAG_FILTER;
+> > > > > >
+> > > > > >         if (mvpp22_rss_is_supported()) {
+> > > > > > -               dev->hw_features |= NETIF_F_RXHASH;
+> > > > > > +               if (port->phy_interface != PHY_INTERFACE_MODE_SGMII)
+> > > > > > +                       dev->hw_features |= NETIF_F_RXHASH;
+> > > > > >                 dev->features |= NETIF_F_NTUPLE;
+> > > > > >         }
+> > > > > >
+> > > > > >
+> > > > > > David, is this "workaround" too bad to get accepted?
+> > > > >
+> > > > > Not sure that RSS related to physical interface(SGMII), better just remove NETIF_F_RXHASH as "workaround".
+> > > >
+> > > > Hmm, I'm not sure this is the right way forward.  This patch has the
+> > > > effect of disabling:
+> > > >
+> > > > d33ec4525007 ("net: mvpp2: add an RSS classification step for each flow")
+> > > >
+> > > > but the commit you're pointing at which caused the regression is:
+> > > >
+> > > > 895586d5dc32 ("net: mvpp2: cls: Use RSS contexts to handle RSS tables")
+> > > >
+> > > >
+> > >
+> > > Hi,
+> > >
+> > > When git bisect pointed to 895586d5dc32 ("net: mvpp2: cls: Use RSS
+> > > contexts to handle RSS tables"), which was merged
+> > > almost an year after d33ec4525007 ("net: mvpp2: add an RSS
+> > > classification step for each flow"), so I assume that between these
+> > > two commits either the feature was working or it was disable and we
+> > > didn't notice
+> > >
+> > > Without knowing what was happening, which commit should my Fixes tag point to?
+> >
+> > Let me make sure that I get this clear:
+> >
+> > - Prior to 895586d5dc32, you can turn on and off rxhash without issue
+> >   on any port.
+> > - After 895586d5dc32, turning rxhash on eth2 prevents reception.
+> >
+> > Prior to 895586d5dc32, with rxhash on, it looks like hashing using
+> > CRC32 is supported but only one context.  So, if it's possible to
+> > enable rxhash on any port on the mcbin without 895586d5dc32, and the
+> > port continues to work, I'd say the bug was introduced by
+> > 895586d5dc32.
+> >
+> > Of course, that would be reinforced if there was a measurable
+> > difference in performance due to rxhash on each port.
+>
+> I've just run this test, but I can detect no difference in performance
+> with or without 895586d5dc32 on eth0 or eth2 on the mcbin (apart from
+> eth2 stopping working with 895586d5dc32 applied.)  I tested this by
+> reverting almost all changes to the mvpp2 driver between 5.6 and that
+> commit.
+>
+> That's not too surprising; I'm using my cex7 platform with the Mellanox
+> card in for one end of the 10G link, and that platform doesn't seem to
+> be able to saturdate a 10G link - it only seems to manage around 4Gbps.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
 >
 
-We are still missing the documentation bits for this
-new flag, though.
+Well it depends on the traffic type. I used to generate 5k flows with
+T-Rex and an Intel X710 card.
+This way t-rex changes the UDP port of every packet:
 
-How about having a blurb similar to:
+root@macchiatobin:~# tcpdump -tnni eth0
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+IP 16.0.0.18.9874 > 48.0.0.81.2001: UDP, length 18
+IP 16.0.0.248.56289 > 48.0.192.56.2001: UDP, length 18
+IP 16.0.0.154.44965 > 48.0.128.26.2001: UDP, length 18
+IP 16.0.0.23.31363 > 48.0.0.86.2001: UDP, length 18
+IP 16.0.0.192.1674 > 48.0.192.63.2001: UDP, length 18
+IP 16.0.0.155.62370 > 48.0.128.27.2001: UDP, length 18
+IP 16.0.0.30.22126 > 48.0.0.93.2001: UDP, length 18
+IP 16.0.0.195.51329 > 48.0.192.66.2001: UDP, length 18
+IP 16.0.0.160.18323 > 48.0.128.32.2001: UDP, length 18
+IP 16.0.0.199.55413 > 48.0.192.70.2001: UDP, length 18
 
-diff --git a/Documentation/admin-guide/tainted-kernels.rst b/Documentation/admin-guide/tainted-kernels.rst
-index 71e9184a9079..5c6a9e2478b0 100644
---- a/Documentation/admin-guide/tainted-kernels.rst
-+++ b/Documentation/admin-guide/tainted-kernels.rst
-@@ -100,6 +100,7 @@ Bit  Log  Number  Reason that got the kernel tainted
-  15  _/K   32768  kernel has been live patched
-  16  _/X   65536  auxiliary taint, defined for and used by distros
-  17  _/T  131072  kernel was built with the struct randomization plugin
-+ 18  _/Q  262144  driver firmware crash annotation
- ===  ===  ======  ========================================================
+And here RX hash gives a huge performance gain.
 
- Note: The character ``_`` is representing a blank in this table to make reading
-@@ -162,3 +163,7 @@ More detailed explanation for tainting
-      produce extremely unusual kernel structure layouts (even performance
-      pathological ones), which is important to know when debugging. Set at
-      build time.
-+
-+ 18) ``Q`` Device drivers might annotate the kernel with this taint, in cases
-+     their firmware might have crashed leaving the driver in a crippled and
-+     potentially useless state.
+root@macchiatobin:~# utraf eth0
+tx: 0 bps 0 pps rx: 425.5 Mbps 886.5 Kpps
+tx: 0 bps 0 pps rx: 426.0 Mbps 887.6 Kpps
+tx: 0 bps 0 pps rx: 425.3 Mbps 886.1 Kpps
+tx: 0 bps 0 pps rx: 425.2 Mbps 885.8 Kpps
+root@macchiatobin:~# ethtool -K eth0 rxhash on
+root@macchiatobin:~# utraf eth0
+tx: 0 bps 0 pps rx: 1595 Mbps 3323 Kpps
+tx: 0 bps 0 pps rx: 1593 Mbps 3319 Kpps
+tx: 0 bps 0 pps rx: 1595 Mbps 3323 Kpps
+tx: 0 bps 0 pps rx: 1594 Mbps 3320 Kpps
 
+utraf is just a tool which reads netlink statistics, packets are
+dropped with a tc rule.
 
-
-
->  struct taint_flag {
->  	char c_true;	/* character printed when tainted */
-> diff --git a/include/linux/module.h b/include/linux/module.h
-> index 2c2e988bcf10..221200078180 100644
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -697,6 +697,14 @@ static inline bool is_livepatch_module(struct module *mod)
->  bool is_module_sig_enforced(void);
->  void set_module_sig_enforced(void);
->  
-> +void add_taint_module(struct module *mod, unsigned flag,
-> +		      enum lockdep_ok lockdep_ok);
-> +
-> +static inline void module_firmware_crashed(void)
-> +{
-> +	add_taint_module(THIS_MODULE, TAINT_FIRMWARE_CRASH, LOCKDEP_STILL_OK);
-> +}
-> +
->  #else /* !CONFIG_MODULES... */
->  
->  static inline struct module *__module_address(unsigned long addr)
-> @@ -844,6 +852,11 @@ void *dereference_module_function_descriptor(struct module *mod, void *ptr)
->  	return ptr;
->  }
->  
-> +static inline void module_firmware_crashed(void)
-> +{
-> +	add_taint(TAINT_FIRMWARE_CRASH, LOCKDEP_STILL_OK);
-> +}
-> +
->  #endif /* CONFIG_MODULES */
->  
->  #ifdef CONFIG_SYSFS
-> diff --git a/include/trace/events/module.h b/include/trace/events/module.h
-> index 097485c73c01..b749ea25affd 100644
-> --- a/include/trace/events/module.h
-> +++ b/include/trace/events/module.h
-> @@ -26,7 +26,8 @@ struct module;
->  	{ (1UL << TAINT_OOT_MODULE),		"O" },		\
->  	{ (1UL << TAINT_FORCED_MODULE),		"F" },		\
->  	{ (1UL << TAINT_CRAP),			"C" },		\
-> -	{ (1UL << TAINT_UNSIGNED_MODULE),	"E" })
-> +	{ (1UL << TAINT_UNSIGNED_MODULE),	"E" },		\
-> +	{ (1UL << TAINT_FIRMWARE_CRASH),	"Q" })
->  
->  TRACE_EVENT(module_load,
->  
-> diff --git a/kernel/module.c b/kernel/module.c
-> index 80faaf2116dd..f98e8c25c6b4 100644
-> --- a/kernel/module.c
-> +++ b/kernel/module.c
-> @@ -325,12 +325,13 @@ static inline int strong_try_module_get(struct module *mod)
->  		return -ENOENT;
->  }
->  
-> -static inline void add_taint_module(struct module *mod, unsigned flag,
-> -				    enum lockdep_ok lockdep_ok)
-> +void add_taint_module(struct module *mod, unsigned flag,
-> +		      enum lockdep_ok lockdep_ok)
->  {
->  	add_taint(flag, lockdep_ok);
->  	set_bit(flag, &mod->taints);
->  }
-> +EXPORT_SYMBOL_GPL(add_taint_module);
->  
->  /*
->   * A thread that wants to hold a reference to a module only while it
-> diff --git a/kernel/panic.c b/kernel/panic.c
-> index ec6d7d788ce7..504fb926947e 100644
-> --- a/kernel/panic.c
-> +++ b/kernel/panic.c
-> @@ -384,6 +384,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
->  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
->  	[ TAINT_AUX ]			= { 'X', ' ', true },
->  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
-> +	[ TAINT_FIRMWARE_CRASH ]	= { 'Q', ' ', true },
->  };
->  
->  /**
-> -- 
-> 2.25.1
-> 
+Regards,
+-- 
+Matteo Croce
+per aspera ad upstream
 
