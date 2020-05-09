@@ -2,90 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E2501CC422
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 21:30:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B80851CC423
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 21:32:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728309AbgEITau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 15:30:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727938AbgEITau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 15:30:50 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEA9C061A0C;
-        Sat,  9 May 2020 12:30:50 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id w2so4264183edx.4;
-        Sat, 09 May 2020 12:30:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9ZEjXtSSqmAnTaMJ6UavMO7wVhGYNiZDP1BIJgOKwDE=;
-        b=hQP3o137qadxKkpXc9GFR/8SoAtzlCDlGOKlH4lE96YavW6I2Z0saynbjK2ap2z2Lz
-         WwpXx6WTjghAjLt/LFR9KPbREpSCONEUKd6UuWCnP7i+WGUH/yrXCr7id4lM4QkHOR5R
-         MFP/w/K6fhhxzLPmJczs6PSXHHIk0amI7EC4EtrF75NyItetFWFnUbkh0beZ32iILtoQ
-         fRcQ6qNZOUM5QbavllcTtwe/+M8VERHhViOKzPe3ttGTsTxOQXRc654Hcu1LWDQsaiAV
-         AQZVRVXdX5H9uG11/4oV0cksOTONI0MpBqehwHbUKzuRQdLcacziw/4DCJaF1/Uwr23Z
-         FNEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9ZEjXtSSqmAnTaMJ6UavMO7wVhGYNiZDP1BIJgOKwDE=;
-        b=Zu9AESbQOhnAEtDfbK3aMKZNV8KhbJimq5JjMSujv8TVc65mL1rIZyBMZ2HLOQ2fWA
-         MC6FXkUdsBG3MNooFxeKIudLWhWDDUKrcIa7v67qz/IXERY00ejCziwUfJwlKuDuLa2k
-         HiFkaxnlPLogSacgLCLxfPyC0r0hmz68+PZwYahE6G4UmPf6fq5/GPkeeyEbivOlgwNO
-         Q27Xn2MNFEMfB3e1VamPlhTBxNMycDC5bfw0KvbvUPKUOuSHMthYMXEAcIy3srTwuXWr
-         Qefu0PAlwLdclfqgc8l27Atrj7tCcm+TYvNkmpb0K+w0SJZY5by3ZcgyoAsrFUSZgWmL
-         inbA==
-X-Gm-Message-State: AGi0Puaw1gqV/GyUoLGuLcwdof/2a/JxkBawET0R73Ad/p0AXlzLF+Ay
-        2d+inSAAS7cUFIamUpGEkIVZABFJtkzBhv1GY3vUgg==
-X-Google-Smtp-Source: APiQypLCy998LxGgk/+5CWPSVBoIcr2lo+DoyHzniWAWuvzPW2nBsj9YK0DimpeECuXDdno4UHCty703vQk3+OJcU9I=
-X-Received: by 2002:a05:6402:7d6:: with SMTP id u22mr7247211edy.149.1589052648805;
- Sat, 09 May 2020 12:30:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200421081542.108296-1-zenczykowski@gmail.com>
- <20200428000525.GD24002@salvia> <CAHo-OoxP6ZrvbXFH_tC9_wdVDg7y=8bzVY9oKZTieZL_mqS1NQ@mail.gmail.com>
- <20200428223006.GA30304@salvia>
-In-Reply-To: <20200428223006.GA30304@salvia>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Sat, 9 May 2020 12:30:37 -0700
-Message-ID: <CAHo-Oozx2qqQXCzXWz0sGbHH2gWgXTjJZ1=JS47p3FVZdPOPgQ@mail.gmail.com>
-Subject: Re: [PATCH] iptables: flush stdout after every verbose log.
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
+        id S1728340AbgEITc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 15:32:29 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:45567 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727938AbgEITc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 15:32:29 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 24FCF5C0004;
+        Sat,  9 May 2020 15:32:28 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sat, 09 May 2020 15:32:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=MaSnVBPSxxLeNG0GhsY+3wa6qXbJVePJ8Dk9XGTRc
+        0U=; b=ujZg6vzYO2PFtiqHkxnZ5o5SIOVKrqDyXZ/NNdgtdMc6OSMjOWIiL5Mn0
+        p58qvCARapq1DkuwhCkxHeZcaj+D4VuIk+nrh96ME9lDltHyf2pobzWGFHJgFNs+
+        lRoCvlnw5hRUyELnmLIIK3uzfZuN7/aO8Cu63U0943RHaFdm2CGitI9jmU5Bw6pi
+        5vG56Rmpp6dOfHAjygk8x67CqnQ1TJhHG65B9d686Cw8Gx0G6zsXHzcU9m15nemK
+        cm6YFxxg9KSzMEHop9RdbSXNIr4CQcOfliJMEG9kD0x8E5qi+1IBYlgEAmBcymWE
+        AFh6wt5ZeTUlZGiSGZ8DDQmJAdLsw==
+X-ME-Sender: <xms:SwW3XmZbqtIFKIpDNHzbWnekK3iJcz5mw61Odq48KxYB4Clohb9_yA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrkeehgddufeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtjeenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhepteekvdfgkeevueetudelkeefveeltdevjeegvefhiedvuedvieduffejvdel
+    fefgnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpnhgvthguvghvtghonhhfrdhinh
+    hfohenucfkphepjeelrddujeeirddvgedruddtjeenucevlhhushhtvghrufhiiigvpedt
+    necurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:SwW3XkKf2s6MafhmPT2UazOx2ad1U-uzTcQXtjAhczF-5kXO7xDWEw>
+    <xmx:SwW3Xv3qpZdIYv_1lR4vC3LNsYOIjtZuWp-RqXAHnFdGOcHcB5Ju7w>
+    <xmx:SwW3Xva0SEYcZT0V9MO_n0BuBuRX-mbx_xkMDlGVbsyw9gYe_A1eQw>
+    <xmx:TAW3XhZUq2Hd88vFprD_MuvPPDxKE-PTSy-KMkbrnF2YeGwR9Ib7qQ>
+Received: from localhost (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 96F3F328005D;
+        Sat,  9 May 2020 15:32:27 -0400 (EDT)
+Date:   Sat, 9 May 2020 22:32:25 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net-icmp: make icmp{,v6} (ping) sockets available to all
+ by default
+Message-ID: <20200509193225.GA372881@splinter>
+References: <20200508234223.118254-1-zenczykowski@gmail.com>
+ <20200509191536.GA370521@splinter>
+ <CANP3RGftbDDATFi+4HBSbOFEU-uAddqg2p8+asMMRJtgOJy6mg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANP3RGftbDDATFi+4HBSbOFEU-uAddqg2p8+asMMRJtgOJy6mg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I don't think it's ever been broken per say since Android has it's own
-copy of everything,
-and there are local changes to iptables (that I'm trying to
-cleanup/drop/upstream),
-so we've carried this patch for years.
+On Sat, May 09, 2020 at 12:17:47PM -0700, Maciej Żenczykowski wrote:
+> Argh.  I've never understood the faintest thing about VRF's.
 
-On Tue, Apr 28, 2020 at 3:30 PM Pablo Neira Ayuso <pablo@netfilter.org> wro=
-te:
->
-> On Mon, Apr 27, 2020 at 05:14:24PM -0700, Maciej =C5=BBenczykowski wrote:
-> > > Could you check if this slows down iptables-restore?
-> >
-> > per the iptables-restore man page
-> >        -v, --verbose
-> >               Print additional debug info during ruleset processing.
-> >
-> > Well, if you run it with verbose mode enabled you probably don't care
-> > about performance all that much...
->
-> Thanks for explaining.
->
-> How long has this been broken? I mean, netd has been there for quite a
-> while interacting with iptables. However, the existing behaviour was
-> not a problem? Or a recent bug?
+:)
+
+There are many resources that David created over the years. For example:
+
+https://www.kernel.org/doc/Documentation/networking/vrf.txt
+https://netdevconf.info/1.1/proceedings/slides/ahern-vrf-tutorial.pdf
+https://netdevconf.info/1.2/session.html?david-ahern-talk
+
+BTW, in the example it should be:
+
+ip link set dev veth-blue up master vrf-blue
+
+Instead of:
+
+ip link set dev veth-blue up master vrf-red
+
+(Obviously)
