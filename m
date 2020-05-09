@@ -2,134 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D1401CC10F
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 13:45:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B6DE1CC122
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 14:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728272AbgEILpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 07:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726063AbgEILpi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 07:45:38 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BB9C061A0C;
-        Sat,  9 May 2020 04:45:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=KiW60T3hTB2qpy6736Bxcw2MHOpni1wIvO5W/zMNZ1U=; b=dScxEOEPFAX93tSikUpNlmorU
-        Ud2kA2lUknBqfsPTkWQ2niqbdThBKyTUvRHH3rKqgp5Ikovwkw3E1j5LwaXgrODtJ1Q34TqSdZ3Lc
-        DJuqL9okq9w+0UJ+gG49wEiY7SbY7URGE520Z3WoWT3zGowMr1bQqXeX25ddgdWGmRWeuO4GZIcmo
-        tahxCA17P2BuoHENH/I0g5X9Ewa0e/vcpS25lTh7AE+nbBee1eNOLNGOrtA93dL19erh1olQjeALZ
-        8yG0PBo7SFlNS8hsROxrwr+tIRxsjNRl9qi5n94y8FuAvcAupkRKteByPPXw5GAK/bkoaFLlaBZID
-        CmNhNf3dA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:55720)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jXNv1-0003gT-TW; Sat, 09 May 2020 12:45:24 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jXNuw-0002pE-BR; Sat, 09 May 2020 12:45:18 +0100
-Date:   Sat, 9 May 2020 12:45:18 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Stefan Chulski <stefanc@marvell.com>,
-        Matteo Croce <mcroce@redhat.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [EXT] Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts
- to handle RSS tables
-Message-ID: <20200509114518.GB1551@shell.armlinux.org.uk>
-References: <20190524100554.8606-1-maxime.chevallier@bootlin.com>
- <20190524100554.8606-4-maxime.chevallier@bootlin.com>
- <CAGnkfhzsx_uEPkZQC-_-_NamTigD8J0WgcDioqMLSHVFa3V6GQ@mail.gmail.com>
- <20200423170003.GT25745@shell.armlinux.org.uk>
- <CAGnkfhwOavaeUjcm4_+TG-xLxQA519o+fR8hxBCCfSy3qpcYhQ@mail.gmail.com>
- <DM5PR18MB1146686527DE66495F75D0DAB0A30@DM5PR18MB1146.namprd18.prod.outlook.com>
+        id S1728396AbgEIMFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 08:05:30 -0400
+Received: from mout.kundenserver.de ([217.72.192.75]:43349 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726600AbgEIMFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 08:05:30 -0400
+Received: from localhost.localdomain ([149.172.19.189]) by
+ mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MjjKf-1irD2q0wW3-00l9tC; Sat, 09 May 2020 14:05:11 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Madalin Bucur <madalin.bucur@nxp.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Timur Tabi <timur@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: freescale: select CONFIG_FIXED_PHY where needed
+Date:   Sat,  9 May 2020 14:04:52 +0200
+Message-Id: <20200509120505.109218-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM5PR18MB1146686527DE66495F75D0DAB0A30@DM5PR18MB1146.namprd18.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:h9yFrIRXLw4ySr/K8T7dpgPAcNBfXpgdjuBXGgfTWi/oLO0O7b3
+ 3QzmyhOdEV7ue+w9vVDiLKMpf6cEyPrhpuy9ycZaC+mDcp412OwvqT9hbNQh7gk5HYuSKDf
+ K8mIzC0fQBKcYKur5cuxH4YbA41cpKAQcFPb1VACyQRuj3JBvecl++cD0n+A9N6SKNQvShy
+ DGsRjhvWrXU5QOsgnjE1g==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zwWkj2Ibg9U=:kPVIN3cDzUWTdqnu8jFYIS
+ nkUvo37MduvMt7rPN+/56KpH3gHA50HYZh1Esv2TFzth9glTaJKAt6rpzbexn0nFJpcxaI0rH
+ 6MDLAWH+SkWx7YkmlTUJrnPX/pEQXPDxWKpChPb8lC/VaksFNfKlAyU9tgq4CJDHyhLHk7343
+ sH+W4fPyfxGSrbCcJ+8k72jxX0hkp2mlaPOcVUuXb+/wPtG+sU57WqTSNudKhuno2wd0ESJz+
+ 8JfWXCLUU4K8rXtpI5NScAbq5xmaMQ1pK6Y0iMkLJrB/H23ytjcIt0fH8xJW0RirIpKNWvtn4
+ 8AvmemEwqRfe49r1yHUdTeT7UkjLffT0c1a7lvyOqdbpcuIa6dX6A9jJKCH+z5543FJ/9OV8B
+ W59/BSZ1RU4XARJmu0bOEzy71RwNKuugm+Gx+CTRr/MhEEKKMILLgiJyaf6B2g0qflONINjy1
+ IBdD1wRGG7aTLHrlS2mcnnXRyWFrFp64tRkwLpgzivoIjL8KRf/rKOXQwMYR7I+glV8YsAKR2
+ DaHDBKnO55lv6IkGmT9H70XqF4NiDCkxPxcD3KYcWi2UmZyeqVdx/+nRJtQzT1h4l3hFNUtjS
+ 8P+DUup30HMxmzHc3c++JQaNPWLZgfJVwdlpuEiyjGnoENYRbo0V9WI6DVjthnwwjwm70rlMy
+ bQWWZR+d5dNbmkXB0YLXn7yOCudBFt0H2ZsAIFkYdGPyuGVXMLfH1fPGig5KXA1cnmzu1MmkA
+ P9YIcEy1XFhvZEGJvEZrGcwpIcFzM4Yh6eMoCdmF0nGjhUUSkeIaVLkK3cKn0KTaNdsjtPwGu
+ Geu1DvgMwtu/oKgqKJYnsV+aUqz9oKxOTVRdN3r5PicFaVO7C0=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 09, 2020 at 11:15:58AM +0000, Stefan Chulski wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Matteo Croce <mcroce@redhat.com>
-> > Sent: Saturday, May 9, 2020 3:13 AM
-> > To: David S . Miller <davem@davemloft.net>
-> > Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>; netdev
-> > <netdev@vger.kernel.org>; LKML <linux-kernel@vger.kernel.org>; Antoine
-> > Tenart <antoine.tenart@bootlin.com>; Thomas Petazzoni
-> > <thomas.petazzoni@bootlin.com>; gregory.clement@bootlin.com;
-> > miquel.raynal@bootlin.com; Nadav Haklai <nadavh@marvell.com>; Stefan
-> > Chulski <stefanc@marvell.com>; Marcin Wojtas <mw@semihalf.com>; Linux
-> > ARM <linux-arm-kernel@lists.infradead.org>; Russell King - ARM Linux admin
-> > <linux@armlinux.org.uk>
-> > Subject: [EXT] Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts to
-> > handle RSS tables
-> > 
-> > Hi,
-> > 
-> > What do you think about temporarily disabling it like this?
-> > 
-> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > @@ -5775,7 +5775,8 @@ static int mvpp2_port_probe(struct platform_device
-> > *pdev,
-> >                             NETIF_F_HW_VLAN_CTAG_FILTER;
-> > 
-> >         if (mvpp22_rss_is_supported()) {
-> > -               dev->hw_features |= NETIF_F_RXHASH;
-> > +               if (port->phy_interface != PHY_INTERFACE_MODE_SGMII)
-> > +                       dev->hw_features |= NETIF_F_RXHASH;
-> >                 dev->features |= NETIF_F_NTUPLE;
-> >         }
-> > 
-> > 
-> > David, is this "workaround" too bad to get accepted?
-> 
-> Not sure that RSS related to physical interface(SGMII), better just remove NETIF_F_RXHASH as "workaround".
+I ran into a randconfig build failure with CONFIG_FIXED_PHY=m
+and CONFIG_GIANFAR=y:
 
-Hmm, I'm not sure this is the right way forward.  This patch has the
-effect of disabling:
+x86_64-linux-ld: drivers/net/ethernet/freescale/gianfar.o:(.rodata+0x418): undefined reference to `fixed_phy_change_carrier'
 
-d33ec4525007 ("net: mvpp2: add an RSS classification step for each flow")
+It seems the same thing can happen with dpaa and ucc_geth, so change
+all three to do an explicit 'select FIXED_PHY'.
 
-but the commit you're pointing at which caused the regression is:
+The fixed-phy driver actually has an alternative stub function that
+theoretically allows building network drivers when fixed-phy is
+disabled, but I don't see how that would help here, as the drivers
+presumably would not work then.
 
-895586d5dc32 ("net: mvpp2: cls: Use RSS contexts to handle RSS tables")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/freescale/Kconfig      | 2 ++
+ drivers/net/ethernet/freescale/dpaa/Kconfig | 1 +
+ 2 files changed, 3 insertions(+)
 
-
-Looking at the timeline here, it looks like Matteo raised the issue
-very quickly after the patch was sent on the 14th April, and despite
-following up on it, despite me following up on it, bootlin have
-remained quiet.  For a regression, that's not particularly good, and
-doesn't leave many options but to ask davem to revert a commit, or
-if possible fix it (which there doesn't seem to be any willingness
-for either - maybe it's a feature no one uses on this platform?)
-
-Would reverting the commit you point to as the cause (895586d5dc32)
-resolve the problem, and have any advantage over entirely disabling
-RSS?
-
+diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
+index 2bd7ace0a953..bfc6bfe94d0a 100644
+--- a/drivers/net/ethernet/freescale/Kconfig
++++ b/drivers/net/ethernet/freescale/Kconfig
+@@ -77,6 +77,7 @@ config UCC_GETH
+ 	depends on QUICC_ENGINE && PPC32
+ 	select FSL_PQ_MDIO
+ 	select PHYLIB
++	select FIXED_PHY
+ 	---help---
+ 	  This driver supports the Gigabit Ethernet mode of the QUICC Engine,
+ 	  which is available on some Freescale SOCs.
+@@ -90,6 +91,7 @@ config GIANFAR
+ 	depends on HAS_DMA
+ 	select FSL_PQ_MDIO
+ 	select PHYLIB
++	select FIXED_PHY
+ 	select CRC32
+ 	---help---
+ 	  This driver supports the Gigabit TSEC on the MPC83xx, MPC85xx,
+diff --git a/drivers/net/ethernet/freescale/dpaa/Kconfig b/drivers/net/ethernet/freescale/dpaa/Kconfig
+index 3b325733a4f8..0a54c7e0e4ae 100644
+--- a/drivers/net/ethernet/freescale/dpaa/Kconfig
++++ b/drivers/net/ethernet/freescale/dpaa/Kconfig
+@@ -3,6 +3,7 @@ menuconfig FSL_DPAA_ETH
+ 	tristate "DPAA Ethernet"
+ 	depends on FSL_DPAA && FSL_FMAN
+ 	select PHYLIB
++	select FIXED_PHY
+ 	select FSL_FMAN_MAC
+ 	---help---
+ 	  Data Path Acceleration Architecture Ethernet driver,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+2.26.0
+
