@@ -2,39 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E69E81CC2E0
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 18:52:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 046121CC2E2
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 18:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728101AbgEIQw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 12:52:28 -0400
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:38342 "EHLO
+        id S1728219AbgEIQwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 12:52:53 -0400
+Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:38788 "EHLO
         forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726214AbgEIQw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 12:52:27 -0400
-Received: from mxbackcorp1j.mail.yandex.net (mxbackcorp1j.mail.yandex.net [IPv6:2a02:6b8:0:1619::162])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id C1ED32E0DF2;
-        Sat,  9 May 2020 19:52:22 +0300 (MSK)
+        by vger.kernel.org with ESMTP id S1726214AbgEIQwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 12:52:53 -0400
+Received: from mxbackcorp2j.mail.yandex.net (mxbackcorp2j.mail.yandex.net [IPv6:2a02:6b8:0:1619::119])
+        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 29D672E0DF2;
+        Sat,  9 May 2020 19:52:49 +0300 (MSK)
 Received: from vla1-81430ab5870b.qloud-c.yandex.net (vla1-81430ab5870b.qloud-c.yandex.net [2a02:6b8:c0d:35a1:0:640:8143:ab5])
-        by mxbackcorp1j.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id XdwogZeIWl-qMWmaNAC;
-        Sat, 09 May 2020 19:52:22 +0300
+        by mxbackcorp2j.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id MD8WDsPY7T-qlXqssvI;
+        Sat, 09 May 2020 19:52:49 +0300
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1589043142; bh=8jFLpqTS7drSlAmHwwOWLmMftyzh4hpif5bq1HUzQG0=;
-        h=Message-Id:Date:Subject:To:From:Cc;
-        b=MJQZH00WHvpQNDpGyq2iS/yTFR78QR4SL6sI/WAzh+trZ8ezTEzUBD0iLrqSTzGs5
-         9RrZgCUCYOJ37rHLAKa+1DPpJk7KgWzVjYEK6vGU+fL+GbQwLFJcvUx+cI9mV3YRqy
-         oJWFV+3zXlPl8VV5V0LHnlMK6GR8a31bitFAH3d0=
-Authentication-Results: mxbackcorp1j.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
+        t=1589043169; bh=eY9ApoVEM+jffkVAX35mJ0Fa3hnBUudjCCNzhbqxNJA=;
+        h=In-Reply-To:Message-Id:References:Date:Subject:To:From:Cc;
+        b=luADOpYZbYLZcwfHbDI2pLY98TFP7659u6awPXe7YDRlHvjO/RRiKmgoSyiZap/kW
+         hWvWpeNcSksDo8NydqtquPhfzOGknHzkoW04g/K1yBZZW9VqXxVrLbcgK5Zx5rH8pY
+         NSjKtb43YqJUkmV0Izpic0D9hyJSeyRZxMsnXZ6U=
+Authentication-Results: mxbackcorp2j.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
 Received: from 178.154.191.33-vpn.dhcp.yndx.net (178.154.191.33-vpn.dhcp.yndx.net [178.154.191.33])
-        by vla1-81430ab5870b.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id lkcxSGO050-qLXaPCrk;
-        Sat, 09 May 2020 19:52:21 +0300
+        by vla1-81430ab5870b.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id lkcxSGO050-qlXa0QV4;
+        Sat, 09 May 2020 19:52:47 +0300
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (Client certificate not present)
 From:   Dmitry Yakunin <zeil@yandex-team.ru>
 To:     netdev@vger.kernel.org, dsahern@gmail.com
 Cc:     cgroups@vger.kernel.org
-Subject: [PATCH iproute2-next v2 1/3] ss: introduce cgroup2 cache and helper functions
-Date:   Sat,  9 May 2020 19:52:00 +0300
-Message-Id: <20200509165202.17959-1-zeil@yandex-team.ru>
+Subject: [PATCH iproute2-next v2 2/3] ss: add support for cgroup v2 information and filtering
+Date:   Sat,  9 May 2020 19:52:01 +0300
+Message-Id: <20200509165202.17959-2-zeil@yandex-team.ru>
+In-Reply-To: <20200509165202.17959-1-zeil@yandex-team.ru>
+References: <20200509165202.17959-1-zeil@yandex-team.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -42,397 +44,308 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch prepares infrastructure for matching sockets by cgroups.
-Two helper functions are added for transformation between cgroup v2 ID
-and pathname. Cgroup v2 cache is implemented as hash table indexed by ID.
-This cache is needed for faster lookups of socket cgroup.
+This patch introduces two new features: obtaining cgroup information and
+filtering sockets by cgroups. These features work based on cgroup v2 ID
+field in the socket (kernel should be compiled with CONFIG_SOCK_CGROUP_DATA).
+
+Cgroup information can be obtained by specifying --cgroup flag and now contains
+only pathname. For faster pathname lookups cgroup cache is implemented. This
+cache is filled on ss startup and missed entries are resolved and saved
+on the fly.
+
+Cgroup filter extends EXPRESSION and allows to specify cgroup pathname
+(relative or absolute) to obtain sockets attached only to this cgroup.
+Filter syntax: ss [ cgroup PATHNAME ]
+Examples:
+    ss -a cgroup /sys/fs/cgroup/unified (or ss -a cgroup .)
+    ss -a cgroup /sys/fs/cgroup/unified/cgroup1 (or ss -a cgroup cgroup1)
 
 v2:
   - style fixes (David Ahern)
 
 Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
 ---
- include/cg_map.h |   6 +++
- include/utils.h  |   4 +-
- ip/ipvrf.c       |   4 +-
- lib/Makefile     |   2 +-
- lib/cg_map.c     | 135 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- lib/fs.c         | 137 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- 6 files changed, 282 insertions(+), 6 deletions(-)
- create mode 100644 include/cg_map.h
- create mode 100644 lib/cg_map.c
+ include/uapi/linux/inet_diag.h |  2 ++
+ man/man8/ss.8                  |  9 +++++++
+ misc/ss.c                      | 61 ++++++++++++++++++++++++++++++++++++++++++
+ misc/ssfilter.h                |  2 ++
+ misc/ssfilter.y                | 22 ++++++++++++++-
+ 5 files changed, 95 insertions(+), 1 deletion(-)
 
-diff --git a/include/cg_map.h b/include/cg_map.h
-new file mode 100644
-index 0000000..d30517f
---- /dev/null
-+++ b/include/cg_map.h
-@@ -0,0 +1,6 @@
-+#ifndef __CG_MAP_H__
-+#define __CG_MAP_H__
-+
-+const char *cg_id_to_path(__u64 id);
-+
-+#endif /* __CG_MAP_H__ */
-diff --git a/include/utils.h b/include/utils.h
-index 001491a..7041c46 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -302,7 +302,9 @@ int get_real_family(int rtm_type, int rtm_family);
- int cmd_exec(const char *cmd, char **argv, bool do_fork,
- 	     int (*setup)(void *), void *arg);
- int make_path(const char *path, mode_t mode);
--char *find_cgroup2_mount(void);
-+char *find_cgroup2_mount(bool do_mount);
-+__u64 get_cgroup2_id(const char *path);
-+char *get_cgroup2_path(__u64 id, bool full);
- int get_command_name(const char *pid, char *comm, size_t len);
+diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
+index 0c1c781..f009abf 100644
+--- a/include/uapi/linux/inet_diag.h
++++ b/include/uapi/linux/inet_diag.h
+@@ -96,6 +96,7 @@ enum {
+ 	INET_DIAG_BC_MARK_COND,
+ 	INET_DIAG_BC_S_EQ,
+ 	INET_DIAG_BC_D_EQ,
++	INET_DIAG_BC_CGROUP_COND,   /* u64 cgroup v2 ID */
+ };
  
- int get_rtnl_link_stats_rta(struct rtnl_link_stats64 *stats64,
-diff --git a/ip/ipvrf.c b/ip/ipvrf.c
-index b9a4367..28dd8e2 100644
---- a/ip/ipvrf.c
-+++ b/ip/ipvrf.c
-@@ -225,7 +225,7 @@ static int ipvrf_pids(int argc, char **argv)
- 		return -1;
- 	}
+ struct inet_diag_hostcond {
+@@ -157,6 +158,7 @@ enum {
+ 	INET_DIAG_MD5SIG,
+ 	INET_DIAG_ULP_INFO,
+ 	INET_DIAG_SK_BPF_STORAGES,
++	INET_DIAG_CGROUP_ID,
+ 	__INET_DIAG_MAX,
+ };
  
--	mnt = find_cgroup2_mount();
-+	mnt = find_cgroup2_mount(true);
- 	if (!mnt)
- 		return -1;
- 
-@@ -366,7 +366,7 @@ static int vrf_switch(const char *name)
- 		}
- 	}
- 
--	mnt = find_cgroup2_mount();
-+	mnt = find_cgroup2_mount(true);
- 	if (!mnt)
- 		return -1;
- 
-diff --git a/lib/Makefile b/lib/Makefile
-index bab8cbf..7cba185 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -5,7 +5,7 @@ CFLAGS += -fPIC
- 
- UTILOBJ = utils.o rt_names.o ll_map.o ll_types.o ll_proto.o ll_addr.o \
- 	inet_proto.o namespace.o json_writer.o json_print.o \
--	names.o color.o bpf.o exec.o fs.o
-+	names.o color.o bpf.o exec.o fs.o cg_map.o
- 
- NLOBJ=libgenl.o libnetlink.o
- 
-diff --git a/lib/cg_map.c b/lib/cg_map.c
-new file mode 100644
-index 0000000..77f030e
---- /dev/null
-+++ b/lib/cg_map.c
-@@ -0,0 +1,135 @@
-+/*
-+ * cg_map.c	cgroup v2 cache
-+ *
-+ *		This program is free software; you can redistribute it and/or
-+ *		modify it under the terms of the GNU General Public License
-+ *		as published by the Free Software Foundation; either version
-+ *		2 of the License, or (at your option) any later version.
-+ *
-+ * Authors:	Dmitry Yakunin <zeil@yandex-team.ru>
-+ */
-+
-+#include <stdlib.h>
-+#include <string.h>
-+#include <stdio.h>
-+#include <stdbool.h>
-+#include <linux/types.h>
-+#include <linux/limits.h>
-+#include <ftw.h>
-+
+diff --git a/man/man8/ss.8 b/man/man8/ss.8
+index 023d771..894cb20 100644
+--- a/man/man8/ss.8
++++ b/man/man8/ss.8
+@@ -281,6 +281,15 @@ Class id set by net_cls cgroup. If class is zero this shows priority
+ set by SO_PRIORITY.
+ .RE
+ .TP
++.B \-\-cgroup
++Show cgroup information. Below fields may appear:
++.RS
++.P
++.TP
++.B cgroup
++Cgroup v2 pathname. This pathname is relative to the mount point of the hierarchy.
++.RE
++.TP
+ .B \-K, \-\-kill
+ Attempts to forcibly close sockets. This option displays sockets that are
+ successfully closed and silently skips sockets that the kernel does not support
+diff --git a/misc/ss.c b/misc/ss.c
+index 75fde23..b9e6b15 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -36,6 +36,7 @@
+ #include "namespace.h"
+ #include "SNAPSHOT.h"
+ #include "rt_names.h"
 +#include "cg_map.h"
-+#include "list.h"
-+#include "utils.h"
+ 
+ #include <linux/tcp.h>
+ #include <linux/sock_diag.h>
+@@ -122,6 +123,7 @@ static int follow_events;
+ static int sctp_ino;
+ static int show_tipcinfo;
+ static int show_tos;
++static int show_cgroup;
+ int oneline;
+ 
+ enum col_id {
+@@ -797,6 +799,7 @@ struct sockstat {
+ 	char *name;
+ 	char *peer_name;
+ 	__u32		    mark;
++	__u64		    cgroup_id;
+ };
+ 
+ struct dctcpstat {
+@@ -1417,6 +1420,9 @@ static void sock_details_print(struct sockstat *s)
+ 
+ 	if (s->mark)
+ 		out(" fwmark:0x%x", s->mark);
 +
-+struct cg_cache {
-+	struct hlist_node id_hash;
-+	__u64	id;
-+	char	path[];
-+};
++	if (s->cgroup_id)
++		out(" cgroup:%s", cg_id_to_path(s->cgroup_id));
+ }
+ 
+ static void sock_addr_print(const char *addr, char *delim, const char *port,
+@@ -1643,6 +1649,7 @@ struct aafilter {
+ 	unsigned int	iface;
+ 	__u32		mark;
+ 	__u32		mask;
++	__u64		cgroup_id;
+ 	struct aafilter *next;
+ };
+ 
+@@ -1771,6 +1778,12 @@ static int run_ssfilter(struct ssfilter *f, struct sockstat *s)
+ 
+ 		return (s->mark & a->mask) == a->mark;
+ 	}
++		case SSF_CGROUPCOND:
++	{
++		struct aafilter *a = (void *)f->pred;
 +
-+#define IDMAP_SIZE	1024
-+static struct hlist_head id_head[IDMAP_SIZE];
-+
-+static struct cg_cache *cg_get_by_id(__u64 id)
-+{
-+	unsigned int h = id & (IDMAP_SIZE - 1);
-+	struct hlist_node *n;
-+
-+	hlist_for_each(n, &id_head[h]) {
-+		struct cg_cache *cg;
-+
-+		cg = container_of(n, struct cg_cache, id_hash);
-+		if (cg->id == id)
-+			return cg;
++		return s->cgroup_id == a->cgroup_id;
 +	}
+ 		/* Yup. It is recursion. Sorry. */
+ 		case SSF_AND:
+ 		return run_ssfilter(f->pred, s) && run_ssfilter(f->post, s);
+@@ -1963,6 +1976,23 @@ static int ssfilter_bytecompile(struct ssfilter *f, char **bytecode)
+ 
+ 		return inslen;
+ 	}
++		case SSF_CGROUPCOND:
++	{
++		struct aafilter *a = (void *)f->pred;
++		struct instr {
++			struct inet_diag_bc_op op;
++			__u64 cgroup_id;
++		} __attribute__((packed));
++		int inslen = sizeof(struct instr);
 +
-+	return NULL;
-+}
++		if (!(*bytecode = malloc(inslen))) abort();
++		((struct instr *)*bytecode)[0] = (struct instr) {
++			{ INET_DIAG_BC_CGROUP_COND, inslen, inslen + 4 },
++			a->cgroup_id,
++		};
 +
-+static struct cg_cache *cg_entry_create(__u64 id, const char *path)
-+{
-+	unsigned int h = id & (IDMAP_SIZE - 1);
-+	struct cg_cache *cg;
-+
-+	cg = malloc(sizeof(*cg) + strlen(path) + 1);
-+	if (!cg) {
-+		fprintf(stderr,
-+			"Failed to allocate memory for cgroup2 cache entry");
-+		return NULL;
++		return inslen;
 +	}
-+	cg->id = id;
-+	strcpy(cg->path, path);
-+
-+	hlist_add_head(&cg->id_hash, &id_head[h]);
-+
-+	return cg;
-+}
-+
-+static int mntlen;
-+
-+static int nftw_fn(const char *fpath, const struct stat *sb,
-+		   int typeflag, struct FTW *ftw)
+ 		default:
+ 		abort();
+ 	}
+@@ -2300,6 +2330,22 @@ void *parse_markmask(const char *markmask)
+ 	return res;
+ }
+ 
++void *parse_cgroupcond(const char *path)
 +{
-+	const char *path;
++	struct aafilter *res;
 +	__u64 id;
 +
-+	if (typeflag != FTW_D)
-+		return 0;
-+
-+	id = get_cgroup2_id(fpath);
++	id = get_cgroup2_id(path);
 +	if (!id)
-+		return -1;
-+
-+	path = fpath + mntlen;
-+	if (*path == '\0')
-+		/* root cgroup */
-+		path = "/";
-+	if (!cg_entry_create(id, path))
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static void cg_init_map(void)
-+{
-+	char *mnt;
-+
-+	mnt = find_cgroup2_mount(false);
-+	if (!mnt)
-+		exit(1);
-+
-+	mntlen = strlen(mnt);
-+	if (nftw(mnt, nftw_fn, 1024, FTW_MOUNT) < 0)
-+		exit(1);
-+
-+	free(mnt);
-+}
-+
-+const char *cg_id_to_path(__u64 id)
-+{
-+	static int initialized;
-+	static char buf[64];
-+
-+	const struct cg_cache *cg;
-+	char *path;
-+
-+	if (!initialized) {
-+		cg_init_map();
-+		initialized = 1;
-+	}
-+
-+	cg = cg_get_by_id(id);
-+	if (cg)
-+		return cg->path;
-+
-+	path = get_cgroup2_path(id, false);
-+	if (path) {
-+		cg = cg_entry_create(id, path);
-+		free(path);
-+		if (cg)
-+			return cg->path;
-+	}
-+
-+	snprintf(buf, sizeof(buf), "unreachable:%llx", id);
-+	return buf;
-+}
-diff --git a/lib/fs.c b/lib/fs.c
-index 86efd4e..e265fc0 100644
---- a/lib/fs.c
-+++ b/lib/fs.c
-@@ -59,13 +59,18 @@ static char *find_fs_mount(const char *fs_to_find)
- }
- 
- /* caller needs to free string returned */
--char *find_cgroup2_mount(void)
-+char *find_cgroup2_mount(bool do_mount)
- {
- 	char *mnt = find_fs_mount(CGROUP2_FS_NAME);
- 
- 	if (mnt)
- 		return mnt;
- 
-+	if (!do_mount) {
-+		fprintf(stderr, "Failed to find cgroup2 mount\n");
 +		return NULL;
-+	}
 +
- 	mnt = strdup(MNT_CGRP2_PATH);
- 	if (!mnt) {
- 		fprintf(stderr, "Failed to allocate memory for cgroup2 path\n");
-@@ -74,7 +79,7 @@ char *find_cgroup2_mount(void)
++	res = malloc(sizeof(*res));
++	if (res)
++		res->cgroup_id = id;
++
++	return res;
++}
++
+ static void proc_ctx_print(struct sockstat *s)
+ {
+ 	char *buf;
+@@ -3104,6 +3150,9 @@ static void parse_diag_msg(struct nlmsghdr *nlh, struct sockstat *s)
+ 	s->mark = 0;
+ 	if (tb[INET_DIAG_MARK])
+ 		s->mark = rta_getattr_u32(tb[INET_DIAG_MARK]);
++	s->cgroup_id = 0;
++	if (tb[INET_DIAG_CGROUP_ID])
++		s->cgroup_id = rta_getattr_u64(tb[INET_DIAG_CGROUP_ID]);
+ 	if (tb[INET_DIAG_PROTOCOL])
+ 		s->raw_prot = rta_getattr_u8(tb[INET_DIAG_PROTOCOL]);
+ 	else
+@@ -3171,6 +3220,11 @@ static int inet_show_sock(struct nlmsghdr *nlh,
+ 			out(" class_id:%#x", rta_getattr_u32(tb[INET_DIAG_CLASS_ID]));
  	}
  
- 	if (make_path(mnt, 0755)) {
--		fprintf(stderr, "Failed to setup vrf cgroup2 directory\n");
-+		fprintf(stderr, "Failed to setup cgroup2 directory\n");
- 		free(mnt);
- 		return NULL;
- 	}
-@@ -99,6 +104,134 @@ out:
- 	return mnt;
- }
++	if (show_cgroup) {
++		if (tb[INET_DIAG_CGROUP_ID])
++			out(" cgroup:%s", cg_id_to_path(rta_getattr_u64(tb[INET_DIAG_CGROUP_ID])));
++	}
++
+ 	if (show_mem || (show_tcpinfo && s->type != IPPROTO_UDP)) {
+ 		if (!oneline)
+ 			out("\n\t");
+@@ -4996,6 +5050,7 @@ static void _usage(FILE *dest)
+ "       --tipcinfo      show internal tipc socket information\n"
+ "   -s, --summary       show socket usage summary\n"
+ "       --tos           show tos and priority information\n"
++"       --cgroup        show cgroup information\n"
+ "   -b, --bpf           show bpf filter socket information\n"
+ "   -E, --events        continually display sockets as they are destroyed\n"
+ "   -Z, --context       display process SELinux security contexts\n"
+@@ -5106,6 +5161,8 @@ static int scan_state(const char *state)
+ /* Values of 'x' are already used so a non-character is used */
+ #define OPT_XDPSOCK 260
  
-+__u64 get_cgroup2_id(const char *path)
-+{
-+	char fh_buf[sizeof(struct file_handle) + sizeof(__u64)] = { 0 };
-+	struct file_handle *fhp = (struct file_handle *)fh_buf;
-+	union {
-+		__u64 id;
-+		unsigned char bytes[sizeof(__u64)];
-+	} cg_id = { .id = 0 };
-+	char *mnt = NULL;
-+	int mnt_fd = -1;
-+	int mnt_id;
++#define OPT_CGROUP 261
 +
-+	if (!path) {
-+		fprintf(stderr, "Invalid cgroup2 path\n");
-+		return 0;
+ static const struct option long_opts[] = {
+ 	{ "numeric", 0, 0, 'n' },
+ 	{ "resolve", 0, 0, 'r' },
+@@ -5142,6 +5199,7 @@ static const struct option long_opts[] = {
+ 	{ "net", 1, 0, 'N' },
+ 	{ "tipcinfo", 0, 0, OPT_TIPCINFO},
+ 	{ "tos", 0, 0, OPT_TOS },
++	{ "cgroup", 0, 0, OPT_CGROUP },
+ 	{ "kill", 0, 0, 'K' },
+ 	{ "no-header", 0, 0, 'H' },
+ 	{ "xdp", 0, 0, OPT_XDPSOCK},
+@@ -5329,6 +5387,9 @@ int main(int argc, char *argv[])
+ 		case OPT_TOS:
+ 			show_tos = 1;
+ 			break;
++		case OPT_CGROUP:
++			show_cgroup = 1;
++			break;
+ 		case 'K':
+ 			current_filter.kill = 1;
+ 			break;
+diff --git a/misc/ssfilter.h b/misc/ssfilter.h
+index f5b0bc8..d85c084 100644
+--- a/misc/ssfilter.h
++++ b/misc/ssfilter.h
+@@ -11,6 +11,7 @@
+ #define SSF_S_AUTO  9
+ #define SSF_DEVCOND 10
+ #define SSF_MARKMASK 11
++#define SSF_CGROUPCOND 12
+ 
+ #include <stdbool.h>
+ 
+@@ -25,3 +26,4 @@ int ssfilter_parse(struct ssfilter **f, int argc, char **argv, FILE *fp);
+ void *parse_hostcond(char *addr, bool is_port);
+ void *parse_devcond(char *name);
+ void *parse_markmask(const char *markmask);
++void *parse_cgroupcond(const char *path);
+diff --git a/misc/ssfilter.y b/misc/ssfilter.y
+index a901ae7..b417579 100644
+--- a/misc/ssfilter.y
++++ b/misc/ssfilter.y
+@@ -36,7 +36,7 @@ static void yyerror(char *s)
+ 
+ %}
+ 
+-%token HOSTCOND DCOND SCOND DPORT SPORT LEQ GEQ NEQ AUTOBOUND DEVCOND DEVNAME MARKMASK FWMARK
++%token HOSTCOND DCOND SCOND DPORT SPORT LEQ GEQ NEQ AUTOBOUND DEVCOND DEVNAME MARKMASK FWMARK CGROUPCOND CGROUPPATH
+ %left '|'
+ %left '&'
+ %nonassoc '!'
+@@ -156,6 +156,14 @@ expr:	'(' exprlist ')'
+         {
+                 $$ = alloc_node(SSF_NOT, alloc_node(SSF_MARKMASK, $3));
+         }
++        | CGROUPPATH eq CGROUPCOND
++        {
++                $$ = alloc_node(SSF_CGROUPCOND, $3);
++        }
++        | CGROUPPATH NEQ CGROUPCOND
++        {
++                $$ = alloc_node(SSF_NOT, alloc_node(SSF_CGROUPCOND, $3));
++        }
+         | AUTOBOUND
+         {
+                 $$ = alloc_node(SSF_S_AUTO, NULL);
+@@ -276,6 +284,10 @@ int yylex(void)
+ 		tok_type = FWMARK;
+ 		return FWMARK;
+ 	}
++	if (strcmp(curtok, "cgroup") == 0) {
++		tok_type = CGROUPPATH;
++		return CGROUPPATH;
 +	}
-+
-+	fhp->handle_bytes = sizeof(__u64);
-+	if (name_to_handle_at(AT_FDCWD, path, fhp, &mnt_id, 0) < 0) {
-+		/* try at cgroup2 mount */
-+
-+		while (*path == '/')
-+			path++;
-+		if (*path == '\0') {
-+			fprintf(stderr, "Invalid cgroup2 path\n");
-+			goto out;
+ 	if (strcmp(curtok, ">=") == 0 ||
+ 	    strcmp(curtok, "ge") == 0 ||
+ 	    strcmp(curtok, "geq") == 0)
+@@ -318,6 +330,14 @@ int yylex(void)
+ 		}
+ 		return MARKMASK;
+ 	}
++	if (tok_type == CGROUPPATH) {
++		yylval = (void*)parse_cgroupcond(curtok);
++		if (yylval == NULL) {
++			fprintf(stderr, "Cannot parse cgroup %s.\n", curtok);
++			exit(1);
 +		}
-+
-+		mnt = find_cgroup2_mount(false);
-+		if (!mnt)
-+			goto out;
-+
-+		mnt_fd = open(mnt, O_RDONLY);
-+		if (mnt_fd < 0) {
-+			fprintf(stderr, "Failed to open cgroup2 mount\n");
-+			goto out;
-+		}
-+
-+		fhp->handle_bytes = sizeof(__u64);
-+		if (name_to_handle_at(mnt_fd, path, fhp, &mnt_id, 0) < 0) {
-+			fprintf(stderr, "Failed to get cgroup2 ID: %s\n",
-+					strerror(errno));
-+			goto out;
-+		}
-+		if (fhp->handle_bytes != sizeof(__u64)) {
-+			fprintf(stderr, "Invalid size of cgroup2 ID\n");
-+			goto out;
-+		}
++		return CGROUPCOND;
 +	}
-+
-+	memcpy(cg_id.bytes, fhp->f_handle, sizeof(__u64));
-+
-+out:
-+	close(mnt_fd);
-+	free(mnt);
-+
-+	return cg_id.id;
-+}
-+
-+#define FILEID_INO32_GEN 1
-+
-+/* caller needs to free string returned */
-+char *get_cgroup2_path(__u64 id, bool full)
-+{
-+	char fh_buf[sizeof(struct file_handle) + sizeof(__u64)] = { 0 };
-+	struct file_handle *fhp = (struct file_handle *)fh_buf;
-+	union {
-+		__u64 id;
-+		unsigned char bytes[sizeof(__u64)];
-+	} cg_id = { .id = id };
-+	int mnt_fd = -1, fd = -1;
-+	char link_buf[PATH_MAX];
-+	char *path = NULL;
-+	char fd_path[64];
-+	int link_len;
-+	char *mnt;
-+
-+	if (!id) {
-+		fprintf(stderr, "Invalid cgroup2 ID\n");
-+		return NULL;
-+	}
-+
-+	mnt = find_cgroup2_mount(false);
-+	if (!mnt)
-+		return NULL;
-+
-+	mnt_fd = open(mnt, O_RDONLY);
-+	if (mnt_fd < 0) {
-+		fprintf(stderr, "Failed to open cgroup2 mount\n");
-+		goto out;
-+	}
-+
-+	fhp->handle_bytes = sizeof(__u64);
-+	fhp->handle_type = FILEID_INO32_GEN;
-+	memcpy(fhp->f_handle, cg_id.bytes, sizeof(__u64));
-+
-+	fd = open_by_handle_at(mnt_fd, fhp, 0);
-+	if (fd < 0) {
-+		fprintf(stderr, "Failed to open cgroup2 by ID\n");
-+		goto out;
-+	}
-+
-+	snprintf(fd_path, sizeof(fd_path), "/proc/self/fd/%d", fd);
-+	link_len = readlink(fd_path, link_buf, sizeof(link_buf) - 1);
-+	if (link_len < 0) {
-+		fprintf(stderr,
-+			"Failed to read value of symbolic link %s\n",
-+			fd_path);
-+		goto out;
-+	}
-+	link_buf[link_len] = '\0';
-+
-+	if (full)
-+		path = strdup(link_buf);
-+	else
-+		path = strdup(link_buf + strlen(mnt));
-+	if (!path)
-+		fprintf(stderr,
-+			"Failed to allocate memory for cgroup2 path\n");
-+
-+out:
-+	close(fd);
-+	close(mnt_fd);
-+	free(mnt);
-+
-+	return path;
-+}
-+
- int make_path(const char *path, mode_t mode)
- {
- 	char *dir, *delim;
+ 	yylval = (void*)parse_hostcond(curtok, tok_type == SPORT || tok_type == DPORT);
+ 	if (yylval == NULL) {
+ 		fprintf(stderr, "Cannot parse dst/src address.\n");
 -- 
 2.7.4
 
