@@ -2,65 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F02DB1CC4FE
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 00:41:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 102FF1CC500
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 00:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728611AbgEIWjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 18:39:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46752 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726771AbgEIWjn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 May 2020 18:39:43 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3643821473;
-        Sat,  9 May 2020 22:39:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589063983;
-        bh=SwQUS2Nt2C8FBvN11lGb6nzUbV64QKYF4/J0HiSqlRU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CVNbL4ksp91+dUs+vz47oyZ7p/mbQA1Iby6izWutLBGFbm4+7KM3jeamMIbqGi5In
-         7OSkwBp3Dfny+nbscPdTYVHvP9MBH8lNGT9w58UB2ftCdRXhswFYYZJcd3hTOo2d/g
-         U4DYV/bRr1GGnf0MMA9xoL/wR00BVb0fdVgVx1ws=
-Date:   Sat, 9 May 2020 15:39:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Joe Perches <joe@perches.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: Protect INET_ADDR_COOKIE on 32-bit
- architectures
-Message-ID: <20200509153941.03088923@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200509224928.26d44ac4@heffalump.sk2.org>
-References: <20200508120457.29422-1-steve@sk2.org>
-        <20200508205025.3207a54e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200509101322.12651ba0@heffalump.sk2.org>
-        <20200509105914.04fd19c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200509210548.116c7385@heffalump.sk2.org>
-        <20200509224928.26d44ac4@heffalump.sk2.org>
+        id S1728332AbgEIWmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 18:42:40 -0400
+Received: from smtprelay0083.hostedemail.com ([216.40.44.83]:48244 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726771AbgEIWmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 18:42:40 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 0436318029123;
+        Sat,  9 May 2020 22:42:39 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:966:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2196:2199:2393:2553:2559:2562:2692:2828:2895:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3874:4250:4321:4385:4605:5007:7903:10004:10400:10848:10967:11026:11232:11473:11658:11914:12043:12296:12297:12438:12740:12895:13069:13311:13357:13439:13618:13894:13972:14096:14097:14659:14721:21080:21627:21740:21990:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: force24_16f61c6693f2a
+X-Filterd-Recvd-Size: 2622
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf13.hostedemail.com (Postfix) with ESMTPA;
+        Sat,  9 May 2020 22:42:37 +0000 (UTC)
+Message-ID: <fc5cf8da8e70ebb981a9fc3aec6834c74197f0ed.camel@perches.com>
+Subject: Re: [PATCH] net/sonic: Fix some resource leaks in error handling
+ paths
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     davem@davemloft.net, fthain@telegraphics.com.au,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Date:   Sat, 09 May 2020 15:42:36 -0700
+In-Reply-To: <20200509111321.51419b19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200508172557.218132-1-christophe.jaillet@wanadoo.fr>
+         <20200508185402.41d9d068@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <50ef36cd-d095-9abe-26ea-d363d11ce521@wanadoo.fr>
+         <20200509111321.51419b19@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 9 May 2020 22:49:28 +0200 Stephen Kitt wrote:
-> On Sat, 9 May 2020 21:05:48 +0200, Stephen Kitt <steve@sk2.org> wrote:
-> > On Sat, 9 May 2020 10:59:14 -0700, Jakub Kicinski <kuba@kernel.org> wro=
-te: =20
-> > > What if we went back to your original proposal of an empty struct but
-> > > added in an extern in front? That way we should get linker error on
-> > > pointer references.   =20
-> >=20
-> > That silently fails to fail if any other link object provides a definit=
-ion
-> > for the symbol, even if the type doesn=E2=80=99t match... =20
->=20
-> And it breaks the build if INET_ADDR_COOKIE is used twice in the same uni=
-t,
-> e.g. in inet_hashtables.c.
+On Sat, 2020-05-09 at 11:13 -0700, Jakub Kicinski wrote:
+> On Sat, 9 May 2020 18:47:08 +0200 Christophe JAILLET wrote:
+> > Le 09/05/2020 à 03:54, Jakub Kicinski a écrit :
+> > > On Fri,  8 May 2020 19:25:57 +0200 Christophe JAILLET wrote:  
+> > > > @@ -527,8 +531,9 @@ static int mac_sonic_platform_remove(struct platform_device *pdev)
+> > > >   	struct sonic_local* lp = netdev_priv(dev);
+> > > >   
+> > > >   	unregister_netdev(dev);
+> > > > -	dma_free_coherent(lp->device, SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+> > > > -	                  lp->descriptors, lp->descriptors_laddr);
+> > > > +	dma_free_coherent(lp->device,
+> > > > +			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+> > > > +			  lp->descriptors, lp->descriptors_laddr);
+> > > >   	free_netdev(dev);
+> > > >   
+> > > >   	return 0;  
+> > > This is a white-space only change, right? Since this is a fix we should
+> > > avoid making cleanups which are not strictly necessary.
+> > 
+> > Right.
+> > 
+> > The reason of this clean-up is that I wanted to avoid a checkpatch 
+> > warning with the proposed patch and I felt that having the same layout 
+> > in the error handling path of the probe function and in the remove 
+> > function was clearer.
+> > So I updated also the remove function.
+> 
+> I understand the motivation is good.
 
-Ah, so we'd have to use a valid type like, say, char.
+David, maybe I missed some notification about Jakub's role.
+
+What is Jakub's role in relation to the networking tree?
+
+
