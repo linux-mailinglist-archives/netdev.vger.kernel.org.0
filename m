@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03FF21CBEFE
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 10:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30C861CBEFF
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 10:29:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727902AbgEII3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 04:29:20 -0400
+        id S1727930AbgEII3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 04:29:24 -0400
 Received: from mail-eopbgr80077.outbound.protection.outlook.com ([40.107.8.77]:60182
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726214AbgEII3T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 May 2020 04:29:19 -0400
+        id S1727785AbgEII3X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 May 2020 04:29:23 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T/IH6SVchZ3/WJcYyudxmW+vlX3142nsuq1evHHGTThgoL4jeXtB6t/vJeOVjqyrQTHJa6b3Iad/6iCZXUwQHCbZCDZxG1qTnRPJXzhHkKo4x6qi0aMCUN9oCp7bDy83EJn8/1iDuSLrd8TZZ5SIX9z8DHS4cZQlUW8gohtPI30Ea6OoUjWYvTNfCrUFueu7QYUA9ck5NCHPFRBEoXu/mA8p+TVtyiLYx2+VFA3fy/jg3JW8E8Fu4pDJG/qGAnvB7p5YuV5Dz+IaaXFfrxP+4wwba4HvClSra6ZsNCupg+PWJTyjWL7I0JNmoKYZp52VZ45ZAmd4qEBqOAzFELcrWQ==
+ b=jTDp4bh4wAdFaQ/anX+WzZ9BdlwHV34yib+JAYD7uZCN+z0kfOr5XwqF9taiUzrUTbg3tfRm1Kgcq6CszMe4Eifn28U873ii5U/AxPIrDUSI0bT97bFVtT0rXOG2AKnhKBFK4pp6MgFNjzU/ywl5a7oLLcRS158o/7zumMFG/9fwkHp7IrnK7kW/bXrryH5sV5dysCX7uGv9ch/oEJDTN9YVlf1ycw9vq1/8R4v6NQGJOQ7cApwXIgfV2KAi0k0a+Cry732kywFVZHRbnBcK1QLsPmlmfjHvTiUfxzBGUks1A04UUYIw/XzXV1on5YK9JYjJ+SluUMoHHfR8iUt/UQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ctg7e/1F1GsebuD3036XsEpqmrRzBm0JrGQgQ2/Il7s=;
- b=bM/ZcVfUQFOKpXTumYn7l/kEODh7HI5KeH6C53MmWLtJhUARH9zne4cWxMgEomFG1h8Gnwi25qEFd/7n7SJZojUaeF+xZwmfJjg2JJ7g1NVyD6gJ6t/xWOpC/Br6iMXD5g2DfwaAuNoE2nrJtYKF3rFYrnXauPDRZzWVXIntxxViuCU//3Obe9VU9WmpSFt9VttcjLSubbJBBYcb4meeUtbUMcilEZtBEQMmb+zumEpyhutTSp++jaJttvWEBauVVmHR7Z1L/bH3BsbhMRctCflVGAym4GL1slhDgrh0HBPgqjBjqWJKMLNO2/PEbMiElQE+sh1p0NS/O80Dlv2vRg==
+ bh=h3JnDGZ35CBj9Dj/BZAiHQM0KRR1LPfKU1KZPAw0IMg=;
+ b=Yuqc7drgGn/aZfNUuF5xRtKFswjcOCcx8n2AiN/h4Hp9uP5D+CtQLVx8e4JMAFuWyY0ms0Yp688SRyzt3mrqTRYyfydcKEQ3cUfGRfjQlQugL2oECv84SJeC5hqx3DDkY8df78OklOgkWjlp7hN7/Q6A9mY3/u9Qvrd4QwYBnPKYpnHY+8j/Rm/H7VYN5DfRKmCpoQBWWrQl3gXf3kJEWWrrh9pjlg368f11R/7bqPUIwSWZSJSWcoezMo0zrm0bbIPl5JkPHC9FcFEzigS/TUXxWIPgZFbg1yevtWemp6/HdaYsrwOhUpcyomLJ9TIC3AgwHV/gK36BX5wvFLQpgg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ctg7e/1F1GsebuD3036XsEpqmrRzBm0JrGQgQ2/Il7s=;
- b=Z8lzs/sda42OiMlV5OQyJmHNbupP4EbLmyOFQ56oVFhiexJR/ReINbcoOq5s1VataI3kIFUxgf6K0BMuJ0QeSkyA+jbf2y710hDlIEunG5w9FobbDqYwfB64YnRbR/8TNtWjjbZvjXQp3040Yge0/bhQL2+kELH3/nFDtAbeHHQ=
+ bh=h3JnDGZ35CBj9Dj/BZAiHQM0KRR1LPfKU1KZPAw0IMg=;
+ b=XtjwHyjnwdGM+XfvcbHcPtnCVp0DaW0l38AmmH83Ax3tUWSfDo5ISK2/7nGuOH+UYwnH4fACaicZZ5UnJLAN8Fdr4tfVXEcGtD8WVfCxvM3Kh9xGoz7Nny2i9RNkBB4DO3/gRbIq9ViApy0DOUjOlNF3i8992ZMOVG32/iggMQQ=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB4813.eurprd05.prod.outlook.com (2603:10a6:803:52::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.29; Sat, 9 May
- 2020 08:29:14 +0000
+ 2020 08:29:17 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2979.033; Sat, 9 May 2020
- 08:29:14 +0000
+ 08:29:17 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-Subject: [pull request][net-next 00/13] Mellanox, mlx5 and bonding updates 2020-05-09
-Date:   Sat,  9 May 2020 01:28:43 -0700
-Message-Id: <20200509082856.97337-1-saeedm@mellanox.com>
+Cc:     netdev@vger.kernel.org, Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [net-next 01/13] net/mlx5e: Return bool from TLS and IPSEC offloads
+Date:   Sat,  9 May 2020 01:28:44 -0700
+Message-Id: <20200509082856.97337-2-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20200509082856.97337-1-saeedm@mellanox.com>
+References: <20200509082856.97337-1-saeedm@mellanox.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BYAPR07CA0011.namprd07.prod.outlook.com
@@ -52,129 +56,350 @@ X-ClientProxiedBy: BYAPR07CA0011.namprd07.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR07CA0011.namprd07.prod.outlook.com (2603:10b6:a02:bc::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26 via Frontend Transport; Sat, 9 May 2020 08:29:13 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR07CA0011.namprd07.prod.outlook.com (2603:10b6:a02:bc::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26 via Frontend Transport; Sat, 9 May 2020 08:29:14 +0000
 X-Mailer: git-send-email 2.25.4
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: ea25347a-0b92-4aef-e581-08d7f3f30e93
+X-MS-Office365-Filtering-Correlation-Id: 6bb287a1-9ea6-440e-8c59-08d7f3f30fec
 X-MS-TrafficTypeDiagnostic: VI1PR05MB4813:|VI1PR05MB4813:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB4813949F4AD03FFAC6A07A55BEA30@VI1PR05MB4813.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB48135D4DFABC34B81558D4A6BEA30@VI1PR05MB4813.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-Forefront-PRVS: 03982FDC1D
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lDZ1Ut8L50/JeOJ6wiZdaPS+mKJA57snGjgJe6CsDucVWvlo07zcendx7EUnmMe40LhvzC9wj3sYBd89tqCNAPVXOvkFUtxmB4hCM8hkYJJbDnPiQUsFgz78EzaOrQZVACcb45+6Xa+jW2oNwVpBUBu+CTLDZFDBLeTB/X4JKcggFYlimOjz8yD4S46y6YKDZx0S+OYoKJaq2IGO+U0bCsR+PbPLlOYD6jgcI+IjB9L02OW6+n8tVSICszWY4Kgm2AZl0ADlOkhr4KyY5MtlyjZ/G5vtbFdCBldyhMKphLFdLKAKllBLXDuHhYZ50ZC5xg6dfZkp3ojKq7mIDjetwYYPoxkrt/WNrpoUJ7c6i2gGg061ytLbcfTZC2AyzCNcOKJ6DrBgsU+p/gxyhSjBfTWV3ELpPl6KtuihVjv8RVnDCZ1CiAPxXOxc5Ks+zSC1Y08k800KGgnCgOe0/KTnwALiF+1XsFLEql8lXmN9pGkeCjdCMxzhS0OCCdpqFm2CespvVQZZ37QBpJrDqcBCIdNtRr5i2QMM7m0HGEaYvPfkM30JjyrZoGPv/91Vg8ZX
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(396003)(346002)(136003)(39860400002)(376002)(33430700001)(26005)(6506007)(2616005)(6666004)(15650500001)(4326008)(6512007)(1076003)(6486002)(36756003)(8936002)(33440700001)(66556008)(66476007)(5660300002)(956004)(8676002)(316002)(107886003)(66946007)(2906002)(16526019)(52116002)(86362001)(186003)(478600001)(54420400002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: WsTdMvVzlfyTtwxo2diTXvokH0cEybQJGcAdjRx3xbcwmo00G7nF01IDBzw1F6J7ps8f6uE6FCclEJtGtoPibjZPo1t+mbxUe7CZ4TcCcjFjGQIrOsv66SoCeqGy+SZW3TN7HsFwEmGi3h4ks7BZRLLitdSPwbv8xstRBgdvS6lBdratHjbIQyykYYkfHybK9ZPE0Fxdt1p6tVATJWf9FTPMh7ufw1KRdsCQRb/+vDgZyBO2CsZWN8PPq0xxKO4/0Xgbp3yjTxPxWJoIUoZpMlNqIAk2ETD148gRDUlP0jmyCoGBXnL26dCz8cQFHd3GYSNPC7cxmJ6+Ajjo1KdtEtVLDwmKUjWfbg9UhoGxTBmHvd9z51skshoaQo20r4GX7qJCLJmNMWZBINOzzoJiOvODqHlcn4pfl4Nn/p1X/YoVU2mm6zet4GlXT+jN0HX1ftg4PqJDRCaKxiOU7gLsQ0QkVq64SOAZ7Rg5+UZxdMk=
+X-Microsoft-Antispam-Message-Info: rVurbufS922wFGVv9G33XlesrX1zFo/naKnbyHdCgFq+Zga1dthfZFJjzRVT9OON7uNFz1GfP5M7/VYMsmnlxRqJ/xGfJNFNl++8ppr5N2cF1ftybpSddGGuQxPuOVG8NRO0yzyZj8ubBngBaxrS5Ny8P9YNlD1xLfzixX8OpK9C+UgrJK60LPiIZfyQxsp7oMnGjleQIGG8KUvud8EsdzI3We4LRmjfj+2rqj1biPhTzvA36xHIijZN5+vQE5yLgDOPlhOItp8NF18CmAKoq516+2ryAZgX9k0CInyVQJr4zwNaZZ0yR/Tc3XIz06k9H6ggo+VuFumytRCKD/ZV2YSHezCexNOSofAzzvDRjJWNyaLOJjWcgGrUiiWqRP1SkKni1plRFmLCKqaYmATpjC0mm9SwPJgfSnX4v7zLvtMAxMVAoz+s1hfTXtHQHQ6ujpeebAb52LssDPNU92xYn6Yyyn+UdNNTnPhy52bA+iE82eDJe5OAw/Frk8py2w8jGINFaEZlO72+UhvJi+oU5+KeNM8BjlBpRiDSY1HtyvirytG0PMgo3ehvDWF2f8QM
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(396003)(346002)(136003)(39860400002)(376002)(33430700001)(26005)(6506007)(2616005)(6666004)(4326008)(6512007)(30864003)(1076003)(6486002)(36756003)(8936002)(33440700001)(66556008)(66476007)(5660300002)(54906003)(956004)(8676002)(316002)(107886003)(66946007)(2906002)(16526019)(52116002)(86362001)(186003)(478600001)(54420400002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: ApOGrV9aZQNV5nvd9XFagqS0/MZbqly9P/87FrDCvOPPNfXh3D+rx73SE97wkofpQyVd7GI8AIUJmyCybqI9bbzlANajCB0iIkyZKwUuGcyHrzepQcLPhpLWyCAxb6v4vSeCRSckvXoh/7meMbEhE2JyhmSKCiD/LG7fO88d95bcNdmturQJ/lW479sgdvM0YQ88Q2fra6eLoUteNhMVoxJTyYACj/XJmZ2Idvqv0pGIXUUQ19JKMkpvf/UWZV3AXmg95q/sPufd+fG1g7VizmAhtYll/IAQ0i+RzIEdejDe/LHPWc0f9rGRduyYF6TkzTEJkJUfUzruwXpdTtOeTpDCXhN9uOPj6gMicGM3afYhJKUtFIbkZveNvgExPvbyPnn1PaKcbwoIgiZqjEVl2UzsJeDCN6iI4WFfiPpZZI9MxtskuVs9fHIAM2OD8fbF97WZOPjUquacgsYhRu0QG5i1T/vleiA0l8FFTkWvM+U=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea25347a-0b92-4aef-e581-08d7f3f30e93
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2020 08:29:14.5559
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bb287a1-9ea6-440e-8c59-08d7f3f30fec
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2020 08:29:16.9635
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6zBzxauk11OZjo31tsjHiTTNVSwvpUzNtTDZOehYNy06N/6ORsaY+9/gotA6+hrBYM93G/teYwnVd5B+ng5LAA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: h5KZ0SRb67xgDNgEqMFp7KXRroTP75YBB74oVHAJmLsnutxl3v0m80USSnp/vRh3NLEFyKQBbBhiy7xaw1fsFA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4813
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+From: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-This series includes updates to mlx5 driver and a merge commit to the
-earlier bonding series which was submitted by Maor to mlx5-next branch.
+TLS and IPSEC offloads currently return struct sk_buff *, but the value
+is either NULL or the same skb that was passed as a parameter. Return
+bool instead to provide stronger guarantees to the calling code (it
+won't need to support handling a different SKB that could be potentially
+returned before this change) and to simplify restructuring this code in
+the following commits.
 
-For more information please see tag log below.
-
-Please pull and let me know if there is any problem.
-
-Please note that the series starts with a merge of mlx5-next branch,
-to resolve and avoid dependency with rdma tree.
-
-A minor conflict between Maor's bonding series [1] and Eric's [2] is
-already handled in this merge commit.
-
-[1] bonding: Add support to get xmit slave
-[2] bonding: report transmit status to callers
-
-Thanks,
-Saeed.
-
+Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
-The following changes since commit 76cd622fe2c2b10c1f0a7311ca797feccacc329d:
+ .../mellanox/mlx5/core/en_accel/en_accel.h    | 23 ++++-----
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  | 12 ++---
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h  |  6 +--
+ .../mellanox/mlx5/core/en_accel/ktls.h        |  7 ++-
+ .../mellanox/mlx5/core/en_accel/ktls_tx.c     | 11 ++---
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.c    | 48 ++++++++-----------
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.h    |  8 ++--
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  3 +-
+ 8 files changed, 50 insertions(+), 68 deletions(-)
 
-  Merge branch 'mlx5-next' of git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux (2020-05-09 01:05:30 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-05-09
-
-for you to fetch changes up to 28bff09518e9ef942173e41e7521b93ea7be0cf0:
-
-  net/mlx5e: Enhance ICOSQ WQE info fields (2020-05-09 01:05:42 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2020-05-09
-
-This series includes updates to mlx5 netdev driver and bonding updates
-to support getting the next active tx slave.
-
-1) merge commit with mlx5-next that includes bonding updates from Maor
-   Bonding: Add support to get xmit slave
-2) Maxim makes some general code improvements to TX data path
-3) Tariq makes some general code improvements to kTLS and mlx5 accel layer
-in preparation for mlx5 TLS RX.
-
-----------------------------------------------------------------
-Maxim Mikityanskiy (7):
-      net/mlx5e: Return bool from TLS and IPSEC offloads
-      net/mlx5e: Unify checks of TLS offloads
-      net/mlx5e: Return void from mlx5e_sq_xmit and mlx5i_sq_xmit
-      net/mlx5e: Pass only eseg to IPSEC offload
-      net/mlx5e: Make TLS offload independent of wqe and pi
-      net/mlx5e: Update UDP fields of the SKB for GSO first
-      net/mlx5e: Split TX acceleration offloads into two phases
-
-Tariq Toukan (6):
-      net/mlx5e: kTLS, Fill work queue edge separately in TX flow
-      net/mlx5e: kTLS, Do not fill edge for the DUMP WQEs in TX flow
-      net/mlx5e: Take TX WQE info structures out of general EN header
-      net/mlx5e: Use struct assignment for WQE info updates
-      net/mlx5: Accel, Remove unnecessary header include
-      net/mlx5e: Enhance ICOSQ WQE info fields
-
- .../net/ethernet/mellanox/mlx5/core/accel/accel.h  |  1 -
- drivers/net/ethernet/mellanox/mlx5/core/en.h       | 31 +---------
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  | 29 ++++++++-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h   |  5 ++
- .../mellanox/mlx5/core/en_accel/en_accel.h         | 48 ++++++++++-----
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c       | 15 +++--
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h       |  6 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls.h    |  8 +--
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 66 +++++++--------------
- .../mellanox/mlx5/core/en_accel/tls_rxtx.c         | 69 +++++++++++-----------
- .../mellanox/mlx5/core/en_accel/tls_rxtx.h         | 13 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 16 ++---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 24 +++++---
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    | 35 ++++++-----
- drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c  |  7 ++-
- .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |  4 +-
- .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.h  |  5 +-
- 17 files changed, 197 insertions(+), 185 deletions(-)
-
-Saeed Mahameed (1):
-      Merge branch 'mlx5-next' of git://git.kernel.org/.../mellanox/linux
-
- drivers/net/bonding/bond_alb.c                |  39 +++++++++++++------
- drivers/net/bonding/bond_main.c               | 252 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--------------------------------
- drivers/net/ethernet/mellanox/mlx5/core/lag.c |  66 +++++++++++++++++++++-----------
- include/linux/mlx5/driver.h                   |   2 +
- include/linux/netdevice.h                     |  12 ++++++
- include/net/bond_alb.h                        |   4 ++
- include/net/bonding.h                         |   3 +-
- net/core/dev.c                                |  22 +++++++++++
- 8 files changed, 301 insertions(+), 99 deletions(-)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+index a6f65d4b2f36..6249998444c0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+@@ -102,33 +102,30 @@ mlx5e_udp_gso_handle_tx_skb(struct sk_buff *skb)
+ 	udp_hdr(skb)->len = htons(payload_len);
+ }
+ 
+-static inline struct sk_buff *
+-mlx5e_accel_handle_tx(struct sk_buff *skb,
+-		      struct mlx5e_txqsq *sq,
+-		      struct net_device *dev,
+-		      struct mlx5e_tx_wqe **wqe,
+-		      u16 *pi)
++static inline bool mlx5e_accel_handle_tx(struct sk_buff *skb,
++					 struct mlx5e_txqsq *sq,
++					 struct net_device *dev,
++					 struct mlx5e_tx_wqe **wqe,
++					 u16 *pi)
+ {
+ #ifdef CONFIG_MLX5_EN_TLS
+ 	if (test_bit(MLX5E_SQ_STATE_TLS, &sq->state)) {
+-		skb = mlx5e_tls_handle_tx_skb(dev, sq, skb, wqe, pi);
+-		if (unlikely(!skb))
+-			return NULL;
++		if (unlikely(!mlx5e_tls_handle_tx_skb(dev, sq, skb, wqe, pi)))
++			return false;
+ 	}
+ #endif
+ 
+ #ifdef CONFIG_MLX5_EN_IPSEC
+ 	if (test_bit(MLX5E_SQ_STATE_IPSEC, &sq->state)) {
+-		skb = mlx5e_ipsec_handle_tx_skb(dev, *wqe, skb);
+-		if (unlikely(!skb))
+-			return NULL;
++		if (unlikely(!mlx5e_ipsec_handle_tx_skb(dev, *wqe, skb)))
++			return false;
+ 	}
+ #endif
+ 
+ 	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
+ 		mlx5e_udp_gso_handle_tx_skb(skb);
+ 
+-	return skb;
++	return true;
+ }
+ 
+ #endif /* __MLX5E_EN_ACCEL_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+index 0dd17514caae..f60eb6a4b57c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+@@ -233,9 +233,9 @@ static void mlx5e_ipsec_set_metadata(struct sk_buff *skb,
+ 		   ntohs(mdata->content.tx.seq));
+ }
+ 
+-struct sk_buff *mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
+-					  struct mlx5e_tx_wqe *wqe,
+-					  struct sk_buff *skb)
++bool mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
++			       struct mlx5e_tx_wqe *wqe,
++			       struct sk_buff *skb)
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 	struct xfrm_offload *xo = xfrm_offload(skb);
+@@ -245,7 +245,7 @@ struct sk_buff *mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
+ 	struct sec_path *sp;
+ 
+ 	if (!xo)
+-		return skb;
++		return true;
+ 
+ 	sp = skb_sec_path(skb);
+ 	if (unlikely(sp->len != 1)) {
+@@ -281,11 +281,11 @@ struct sk_buff *mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
+ 	sa_entry->set_iv_op(skb, x, xo);
+ 	mlx5e_ipsec_set_metadata(skb, mdata, xo);
+ 
+-	return skb;
++	return true;
+ 
+ drop:
+ 	kfree_skb(skb);
+-	return NULL;
++	return false;
+ }
+ 
+ static inline struct xfrm_state *
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
+index db84500b024f..64e948cc3dc5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
+@@ -52,9 +52,9 @@ void mlx5e_ipsec_set_iv_esn(struct sk_buff *skb, struct xfrm_state *x,
+ 			    struct xfrm_offload *xo);
+ void mlx5e_ipsec_set_iv(struct sk_buff *skb, struct xfrm_state *x,
+ 			struct xfrm_offload *xo);
+-struct sk_buff *mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
+-					  struct mlx5e_tx_wqe *wqe,
+-					  struct sk_buff *skb);
++bool mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
++			       struct mlx5e_tx_wqe *wqe,
++			       struct sk_buff *skb);
+ 
+ #endif /* CONFIG_MLX5_EN_IPSEC */
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
+index 9daaec244385..742aca8782d6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
+@@ -95,10 +95,9 @@ mlx5e_get_ktls_tx_priv_ctx(struct tls_context *tls_ctx)
+ void mlx5e_ktls_build_netdev(struct mlx5e_priv *priv);
+ void mlx5e_ktls_tx_offload_set_pending(struct mlx5e_ktls_offload_context_tx *priv_tx);
+ 
+-struct sk_buff *mlx5e_ktls_handle_tx_skb(struct net_device *netdev,
+-					 struct mlx5e_txqsq *sq,
+-					 struct sk_buff *skb,
+-					 struct mlx5e_tx_wqe **wqe, u16 *pi);
++bool mlx5e_ktls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
++			      struct sk_buff *skb, struct mlx5e_tx_wqe **wqe,
++			      u16 *pi);
+ void mlx5e_ktls_tx_handle_resync_dump_comp(struct mlx5e_txqsq *sq,
+ 					   struct mlx5e_tx_wqe_info *wi,
+ 					   u32 *dma_fifo_cc);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+index ba973937f0b5..8fcd14803558 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
+@@ -413,10 +413,9 @@ mlx5e_ktls_tx_handle_ooo(struct mlx5e_ktls_offload_context_tx *priv_tx,
+ 	return MLX5E_KTLS_SYNC_FAIL;
+ }
+ 
+-struct sk_buff *mlx5e_ktls_handle_tx_skb(struct net_device *netdev,
+-					 struct mlx5e_txqsq *sq,
+-					 struct sk_buff *skb,
+-					 struct mlx5e_tx_wqe **wqe, u16 *pi)
++bool mlx5e_ktls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
++			      struct sk_buff *skb, struct mlx5e_tx_wqe **wqe,
++			      u16 *pi)
+ {
+ 	struct mlx5e_ktls_offload_context_tx *priv_tx;
+ 	struct mlx5e_sq_stats *stats = sq->stats;
+@@ -474,9 +473,9 @@ struct sk_buff *mlx5e_ktls_handle_tx_skb(struct net_device *netdev,
+ 	stats->tls_encrypted_bytes   += datalen;
+ 
+ out:
+-	return skb;
++	return true;
+ 
+ err_out:
+ 	dev_kfree_skb_any(skb);
+-	return NULL;
++	return false;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+index 1d7ddeb7a46b..e8f2c214a8de 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+@@ -184,12 +184,10 @@ static void mlx5e_tls_complete_sync_skb(struct sk_buff *skb,
+ 	nskb->queue_mapping = skb->queue_mapping;
+ }
+ 
+-static struct sk_buff *
+-mlx5e_tls_handle_ooo(struct mlx5e_tls_offload_context_tx *context,
+-		     struct mlx5e_txqsq *sq, struct sk_buff *skb,
+-		     struct mlx5e_tx_wqe **wqe,
+-		     u16 *pi,
+-		     struct mlx5e_tls *tls)
++static bool mlx5e_tls_handle_ooo(struct mlx5e_tls_offload_context_tx *context,
++				 struct mlx5e_txqsq *sq, struct sk_buff *skb,
++				 struct mlx5e_tx_wqe **wqe, u16 *pi,
++				 struct mlx5e_tls *tls)
+ {
+ 	u32 tcp_seq = ntohl(tcp_hdr(skb)->seq);
+ 	struct sync_info info;
+@@ -217,7 +215,7 @@ mlx5e_tls_handle_ooo(struct mlx5e_tls_offload_context_tx *context,
+ 		if (likely(payload <= -info.sync_len))
+ 			/* SKB payload doesn't require offload
+ 			 */
+-			return skb;
++			return true;
+ 
+ 		atomic64_inc(&tls->sw_stats.tx_tls_drop_bypass_required);
+ 		goto err_out;
+@@ -250,18 +248,16 @@ mlx5e_tls_handle_ooo(struct mlx5e_tls_offload_context_tx *context,
+ 	mlx5e_sq_xmit(sq, nskb, *wqe, *pi, true);
+ 	*pi = mlx5_wq_cyc_ctr2ix(&sq->wq, sq->pc);
+ 	*wqe = MLX5E_TX_FETCH_WQE(sq, *pi);
+-	return skb;
++	return true;
+ 
+ err_out:
+ 	dev_kfree_skb_any(skb);
+-	return NULL;
++	return false;
+ }
+ 
+-struct sk_buff *mlx5e_tls_handle_tx_skb(struct net_device *netdev,
+-					struct mlx5e_txqsq *sq,
+-					struct sk_buff *skb,
+-					struct mlx5e_tx_wqe **wqe,
+-					u16 *pi)
++bool mlx5e_tls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
++			     struct sk_buff *skb, struct mlx5e_tx_wqe **wqe,
++			     u16 *pi)
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 	struct mlx5e_tls_offload_context_tx *context;
+@@ -270,41 +266,35 @@ struct sk_buff *mlx5e_tls_handle_tx_skb(struct net_device *netdev,
+ 	int datalen;
+ 	u32 skb_seq;
+ 
+-	if (MLX5_CAP_GEN(sq->channel->mdev, tls_tx)) {
+-		skb = mlx5e_ktls_handle_tx_skb(netdev, sq, skb, wqe, pi);
+-		goto out;
+-	}
++	if (MLX5_CAP_GEN(sq->channel->mdev, tls_tx))
++		return mlx5e_ktls_handle_tx_skb(netdev, sq, skb, wqe, pi);
+ 
+ 	if (!skb->sk || !tls_is_sk_tx_device_offloaded(skb->sk))
+-		goto out;
++		return true;
+ 
+ 	datalen = skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb));
+ 	if (!datalen)
+-		goto out;
++		return true;
+ 
+ 	tls_ctx = tls_get_ctx(skb->sk);
+ 	if (unlikely(tls_ctx->netdev != netdev))
+-		goto out;
++		return true;
+ 
+ 	skb_seq = ntohl(tcp_hdr(skb)->seq);
+ 	context = mlx5e_get_tls_tx_context(tls_ctx);
+ 	expected_seq = context->expected_seq;
+ 
+-	if (unlikely(expected_seq != skb_seq)) {
+-		skb = mlx5e_tls_handle_ooo(context, sq, skb, wqe, pi, priv->tls);
+-		goto out;
+-	}
++	if (unlikely(expected_seq != skb_seq))
++		return mlx5e_tls_handle_ooo(context, sq, skb, wqe, pi, priv->tls);
+ 
+ 	if (unlikely(mlx5e_tls_add_metadata(skb, context->swid))) {
+ 		atomic64_inc(&priv->tls->sw_stats.tx_tls_drop_metadata);
+ 		dev_kfree_skb_any(skb);
+-		skb = NULL;
+-		goto out;
++		return false;
+ 	}
+ 
+ 	context->expected_seq = skb_seq + datalen;
+-out:
+-	return skb;
++	return true;
+ }
+ 
+ static int tls_update_resync_sn(struct net_device *netdev,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
+index 90bc1f2384c8..890d452bf1ae 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
+@@ -40,11 +40,9 @@
+ #include "en.h"
+ #include "en/txrx.h"
+ 
+-struct sk_buff *mlx5e_tls_handle_tx_skb(struct net_device *netdev,
+-					struct mlx5e_txqsq *sq,
+-					struct sk_buff *skb,
+-					struct mlx5e_tx_wqe **wqe,
+-					u16 *pi);
++bool mlx5e_tls_handle_tx_skb(struct net_device *netdev, struct mlx5e_txqsq *sq,
++			     struct sk_buff *skb, struct mlx5e_tx_wqe **wqe,
++			     u16 *pi);
+ 
+ void mlx5e_tls_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
+ 			     u32 *cqe_bcnt);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index 583e1b201b75..7a6ed72ae00a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -394,8 +394,7 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	wqe = MLX5E_TX_FETCH_WQE(sq, pi);
+ 
+ 	/* might send skbs and update wqe and pi */
+-	skb = mlx5e_accel_handle_tx(skb, sq, dev, &wqe, &pi);
+-	if (unlikely(!skb))
++	if (unlikely(!mlx5e_accel_handle_tx(skb, sq, dev, &wqe, &pi)))
+ 		return NETDEV_TX_OK;
+ 
+ 	return mlx5e_sq_xmit(sq, skb, wqe, pi, netdev_xmit_more());
+-- 
+2.25.4
 
