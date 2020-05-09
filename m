@@ -2,97 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05B031CBC94
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 04:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC3D61CBCC7
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 05:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728663AbgEICkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 May 2020 22:40:20 -0400
-Received: from mga18.intel.com ([134.134.136.126]:30259 "EHLO mga18.intel.com"
+        id S1728580AbgEIDKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 May 2020 23:10:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41248 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728158AbgEICkU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 May 2020 22:40:20 -0400
-IronPort-SDR: TuSkhEVgjw0jHxHBD9QScBk7J/rCtKt4ZkNIeig2YBvvrbY2mvWsTagCfPbh8bayvZkRcl+w7y
- YO1sUpswspVg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2020 19:40:19 -0700
-IronPort-SDR: otJ5RVTFD0D3ZcvB0S2H/Pn/WnlUlu/sS3X9/nqs7F9fN59s0mjHnss6MGr3Lr04NP7idNs4CT
- xw3SG3Z12uaQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,370,1583222400"; 
-   d="scan'208";a="261184041"
-Received: from tassilo.jf.intel.com (HELO tassilo.localdomain) ([10.7.201.21])
-  by orsmga003.jf.intel.com with ESMTP; 08 May 2020 19:40:19 -0700
-Received: by tassilo.localdomain (Postfix, from userid 1000)
-        id 8BF11301C4C; Fri,  8 May 2020 19:40:19 -0700 (PDT)
-Date:   Fri, 8 May 2020 19:40:19 -0700
-From:   Andi Kleen <ak@linux.intel.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Vince Weaver <vincent.weaver@maine.edu>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [RFC PATCH v3 12/14] perf metricgroup: order event groups by size
-Message-ID: <20200509024019.GI3538@tassilo.jf.intel.com>
-References: <20200508053629.210324-1-irogers@google.com>
- <20200508053629.210324-13-irogers@google.com>
- <20200509002518.GF3538@tassilo.jf.intel.com>
- <CAP-5=fWYO2e9yVPuXGVKZ7TBP4PP6MjyEFiSd+20DOxYSLC--w@mail.gmail.com>
+        id S1728353AbgEIDKH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 May 2020 23:10:07 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8ABA9216FD;
+        Sat,  9 May 2020 03:10:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588993806;
+        bh=muav7Ku8FbSohuOtsWfx+tFi4SClKLm/qhnXr9ZhIVs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Rao5aE9d1L3JuJRkP8qJ0JsHHgrNt2zaHB65rM5qJs3ncfsOzoW62rs63Ms988lnW
+         MoBX8Fd1hzZE8az2VHCfzv90Je4VGL37PRh8zhR0UkC9YSQIgj8YX1KghjIkGm+Xd0
+         9yDyG131HhI7A34i6iXT2scq+ZhqGFsjw+tm4Rt8=
+Date:   Fri, 8 May 2020 20:10:04 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "luobin (L)" <luobin9@huawei.com>
+Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
+Subject: Re: [PATCH net-next v1] hinic: add three net_device_ops of vf
+Message-ID: <20200508201004.0e2dc608@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <5253fd74-220d-d841-2bba-e9af98dbb1ba@huawei.com>
+References: <20200507182119.20494-1-luobin9@huawei.com>
+        <20200508144956.19d2af7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <5253fd74-220d-d841-2bba-e9af98dbb1ba@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP-5=fWYO2e9yVPuXGVKZ7TBP4PP6MjyEFiSd+20DOxYSLC--w@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I'm not sure if size is that great an heuristic. The dedup algorithm should
-> > work in any case even if you don't order by size, right?
+On Sat, 9 May 2020 10:56:55 +0800 luobin (L) wrote:
+> >> -	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
+> >> -		/* Wait up to 3 sec between port enable to link state */
+> >> -		msleep(3000);  
+> > Why is this no longer needed?
+> > ---When phsical port links up, hw will notify this event to hinic driver.Driver code can  
 > 
-> Consider two metrics:
->  - metric 1 with events {A,B}
->  - metric 2 with events {A,B,C,D}
-> If the list isn't sorted then as the matching takes the first group
-> with all the events, metric 1 will match {A,B} and metric 2 {A,B,C,D}.
-> If the order is sorted to {A,B,C,D},{A,B} then metric 1 matches within
-> the {A,B,C,D} group as does metric 2. The events in metric 1 aren't
-> used and are removed.
+> handle this event now, so need to wait for link up in hinic_open().
 
-Ok. It's better for the longer metric if they stay together.
-
-> 
-> The dedup algorithm is very naive :-)
-
-I guess what matters is that it gives reasonable results on the current
-metrics. I assume it does?
-
-How much deduping is happening if you run all metrics?
-
-For toplev on my long term todo list was to compare it against
-a hopefully better schedule generated by or-tools, but I never
-got around to coding that up.
-
--Andi
+Makes sense.
