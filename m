@@ -2,69 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A67E1CBD95
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 06:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C13B1CBDB0
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 07:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728761AbgEIEuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 00:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbgEIEuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 00:50:13 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73271C05BD0A
-        for <netdev@vger.kernel.org>; Fri,  8 May 2020 21:50:13 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id s9so3210024qkm.6
-        for <netdev@vger.kernel.org>; Fri, 08 May 2020 21:50:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o1JFY8qJmZXd/aUl9gDLLurD+wehBfsqo8Bz40G/nWw=;
-        b=J16hc94Nk376MVeMGTdJs5OJAz/Ehej4THCEf4foNANL5Yu/B80oKDrU/aEmsxYPfE
-         R6PyDEMbV0fqJYLmIXzRt4HBWSDOIp6+311zEYOxL2u8OEC7+60bkC3pBAib3EXph7Db
-         TEgkBKRmiOWR8nxpGR7MNewvquOMd6dRRkxm8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o1JFY8qJmZXd/aUl9gDLLurD+wehBfsqo8Bz40G/nWw=;
-        b=BrSkSqcrxBKlTiNCftFtC8nnbT2q5BAopANxxttOgNLJho0efkSC0dryS/H2uBexnH
-         m9OehJCNhSW1YXKwEmM08jS/hW/6Si1RmtFYj430a0QDVL6ayugF5O2Y8nw3h/ticBMm
-         LeYC5DRPBvKXNjYxnjn7p94ccDGCRHZT6wssdv5kxjP/oarhKN8dOcEAhzI2iLBdghF7
-         lSDPKKkqSbrIW20k6W+3rBm+9Zb5VYuQSJ1DwKMEcoyLZLO7pfgS0Qpot5kTReyOFZOi
-         UO/dS8kxd+Lb8McUiM9Sit861tzNQO5oN/EkuwXQcDCIAMZBSnu3DfTr7diGaWetXv0k
-         WC2w==
-X-Gm-Message-State: AGi0PuajsKFf61JYKUS3Y/4hTVeUUXTEAx6wf+nncUg51xt4sJ44SqT3
-        H9OueTJeMtf9DpHVC5qMqaNWlVc19z/M7s6Kr8QixW54
-X-Google-Smtp-Source: APiQypJBp2r6Es5PVpPUyc2m1NAUrTMh1P00GZIlWuu0gAXEIz+sgXN+lihgtlNrzkjKnptXRPhsXJbgN7ojbaB5dNU=
-X-Received: by 2002:a37:7443:: with SMTP id p64mr6032310qkc.269.1588999812631;
- Fri, 08 May 2020 21:50:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200508224026.483746-1-colin.king@canonical.com>
-In-Reply-To: <20200508224026.483746-1-colin.king@canonical.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Fri, 8 May 2020 21:50:01 -0700
-Message-ID: <CACKFLinBL4QCT6YcTn=exkHAitXHd_D_XR0zHwT1zuMfKTyWug@mail.gmail.com>
-Subject: Re: [PATCH] cnic: remove redundant assignment to variable ret
-To:     Colin King <colin.king@canonical.com>
+        id S1725901AbgEIFUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 01:20:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55228 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725795AbgEIFUV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 May 2020 01:20:21 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5A3920736;
+        Sat,  9 May 2020 05:20:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589001621;
+        bh=taWkGCnD8WwQuVwgjCX/fukm0lUXUhQsCvd9FCgEwbA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XfLGc1tLkUNjRq4GnxIEjTDtgi38IZHXz+rtq1q7cKwwOw2GuggL8yHGHhxVvejEg
+         5mU+3JaWadA8F5KZEuugLuM4l8MgcKXeR2ouWmg2FJVUOraGivdmuQiAwtKAwXLmMV
+         Ox/ydrPfwcXphKLSx0GcBb03DMGoQtP8WXp6GGac=
+Date:   Fri, 8 May 2020 22:20:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, kernel-janitors@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: [PATCH net-next] net/dst: use a smaller percpu_counter batch
+ for dst entries accounting
+Message-ID: <20200508222019.0f6319b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200508015810.46023-1-edumazet@google.com>
+References: <20200508015810.46023-1-edumazet@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 3:40 PM Colin King <colin.king@canonical.com> wrote:
->
-> From: Colin Ian King <colin.king@canonical.com>
->
-> The variable ret is being assigned with a value that is never read,
-> the assignment is redundant and can be removed.
->
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+On Thu,  7 May 2020 18:58:10 -0700 Eric Dumazet wrote:
+> percpu_counter_add() uses a default batch size which is quite big
+> on platforms with 256 cpus. (2*256 -> 512)
+> 
+> This means dst_entries_get_fast() can be off by +/- 2*(nr_cpus^2)
+> (131072 on servers with 256 cpus)
+> 
+> Reduce the batch size to something more reasonable, and
+> add logic to ip6_dst_gc() to call dst_entries_get_slow()
+> before calling the _very_ expensive fib6_run_gc() function.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+Applied, thank you!
