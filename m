@@ -2,104 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F191CC4B0
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 23:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E58541CC4B1
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 23:20:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728424AbgEIVTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 17:19:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59194 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727108AbgEIVTl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 May 2020 17:19:41 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C45721473;
-        Sat,  9 May 2020 21:19:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589059180;
-        bh=VmwPVJKT2v+erZFsLCasdEboGnLPwgraIeEZ+VZKOMs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wOsCHPDrh0mHaFSaxipTFAcZ+JRW6Ycicfqco2CcTCCoSv8LTi4yHScET00RKIYxj
-         XigbMqA5U4m4L26IkmKQZA2J7gSDX3c261EmTEcfeS5rO4ZHOTPzNW0Ygo5JRt10+d
-         WUiPtLUW6z1rpQW4iaBOK7mJf4U9EkLVQXYt+EmY=
-Date:   Sat, 9 May 2020 14:19:38 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Amol Grover <frextrite@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH net 2/2 RESEND] ipmr: Add lockdep expression to
- ipmr_for_each_table macro
-Message-ID: <20200509141938.028fa959@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200509072243.3141-2-frextrite@gmail.com>
-References: <20200509072243.3141-1-frextrite@gmail.com>
-        <20200509072243.3141-2-frextrite@gmail.com>
+        id S1728590AbgEIVUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 17:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727108AbgEIVUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 17:20:40 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7499FC061A0C
+        for <netdev@vger.kernel.org>; Sat,  9 May 2020 14:20:40 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id u11so5527979iow.4
+        for <netdev@vger.kernel.org>; Sat, 09 May 2020 14:20:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+xj/Y/zWB4lVUu6CUBMG5wqC3IQ4fTkBYR1Rj2yVv1c=;
+        b=U5lN6cg/6BESmG/AUp4Vb12MUULgKMPycTkQVGRVBUsdjTi6/LYRp1MgjFi+biBzsX
+         r8B0qAPXpXkOpFL+bKNQ5aKWsMR9p11pfJNK/iQF2Kb9h+bk08UtKC+mzVYH0GQxjnT5
+         z+fkxRA3tohMhjsQpK9y5pHdB77ivecoH0TF0KFhRSidh8NXQh6ehQxhIiKuAiMzZ07R
+         oxtdgDKZ/5MixLTsxN/P3hVAyIdvBN2uy3EDqEMv5HdGhwHHiOSbjmw+rXGhYM/IUYci
+         CjHC2vCf3HxYQqxlaLKYz6Q9Ykw2t9+4+z3jsJtoLFgBedvYjqCzJvD4LMLgrU0KxfBX
+         84jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+xj/Y/zWB4lVUu6CUBMG5wqC3IQ4fTkBYR1Rj2yVv1c=;
+        b=GNunzYBbZIx6cQm1/E9j6nEL+hCo6tyCTM+ig1BjECZm7qY9+VXwLTczKa6gYtAU5H
+         0CcbumFXktv80tVoVaX2EJ795FMOCn7t3SKfueKoDnz7ofFmTghy2BBrq+E63ECVv0UB
+         UsUGVoqC23/u9K9mFUjfsmeozfFD8XuLq5xRKHsbVzieaSJF5lwZpIpMjh3iK4j3k61Z
+         6/mwcrcQFqNIc2zaJRKfHRu46uLfhFh4QFPZww673GZTgfa2n7yZPvOC9G39ttR2+ttM
+         J5+QR1ASE4qKA2DUDM2facuLcsXXkd2NGT+l1w0g1VoP2y84pjTDK5FHNBnSHs2HUglL
+         vIVA==
+X-Gm-Message-State: AGi0PubVC/Pmmme1DOz02+Dj+yfWdL8uxA4bfK0oibUcKs88EylC75WR
+        KpL031MXuWGS1EBY1LWjyCcFGwMo
+X-Google-Smtp-Source: APiQypKP7/qTI3rzrOwLCSSbfXJs9bAg3kEot7JAS+fBa00i30ShdRI+yVBqZ/rc+oyGAnRWTkkzyg==
+X-Received: by 2002:a6b:d10f:: with SMTP id l15mr8784968iob.143.1589059239523;
+        Sat, 09 May 2020 14:20:39 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:d4f4:54fc:fab0:ac04? ([2601:282:803:7700:d4f4:54fc:fab0:ac04])
+        by smtp.googlemail.com with ESMTPSA id k2sm2379819ioq.20.2020.05.09.14.20.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 May 2020 14:20:38 -0700 (PDT)
+Subject: Re: [PATCH] net-icmp: make icmp{,v6} (ping) sockets available to all
+ by default
+To:     Ido Schimmel <idosch@idosch.org>,
+        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>
+Cc:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>
+References: <20200508234223.118254-1-zenczykowski@gmail.com>
+ <20200509191536.GA370521@splinter>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a4fefa7c-8e8a-6975-aa06-b71ba1885f7b@gmail.com>
+Date:   Sat, 9 May 2020 15:20:38 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200509191536.GA370521@splinter>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  9 May 2020 12:52:44 +0530 Amol Grover wrote:
-> ipmr_for_each_table() uses list_for_each_entry_rcu() for
-> traversing outside of an RCU read-side critical section but
-> under the protection of pernet_ops_rwsem. Hence add the
-> corresponding lockdep expression to silence the following
-> false-positive warning at boot:
-
-Thanks for the fix, the warning has been annoying me as well!
-
-> [    0.645292] =============================
-> [    0.645294] WARNING: suspicious RCU usage
-> [    0.645296] 5.5.4-stable #17 Not tainted
-> [    0.645297] -----------------------------
-> [    0.645299] net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!!
-
-please provide a fuller stack trace, it would have helped the review
-
-> Signed-off-by: Amol Grover <frextrite@gmail.com>
-> ---
->  net/ipv4/ipmr.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+On 5/9/20 1:15 PM, Ido Schimmel wrote:
 > 
-> diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-> index 99c864eb6e34..950ffe9943da 100644
-> --- a/net/ipv4/ipmr.c
-> +++ b/net/ipv4/ipmr.c
-> @@ -109,9 +109,10 @@ static void mroute_clean_tables(struct mr_table *mrt, int flags);
->  static void ipmr_expire_process(struct timer_list *t);
+> This will unfortunately cause regressions with VRFs because they don't
+> work correctly with ping sockets. Simple example:
+
+Thanks for catching this, Ido.
+
+> 
+> diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+> index 535427292194..8463b0e9e811 100644
+> --- a/net/ipv4/ping.c
+> +++ b/net/ipv4/ping.c
+> @@ -297,6 +297,7 @@ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
+>         struct net *net = sock_net(sk);
+>         if (sk->sk_family == AF_INET) {
+>                 struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
+> +               u32 tb_id = RT_TABLE_LOCAL;
+>                 int chk_addr_ret;
 >  
->  #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
-> -#define ipmr_for_each_table(mrt, net) \
-> -	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
-> -				lockdep_rtnl_is_held())
-> +#define ipmr_for_each_table(mrt, net)					\
-> +	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list,	\
-> +				lockdep_rtnl_is_held() ||		\
-> +				lockdep_is_held(&pernet_ops_rwsem))
+>                 if (addr_len < sizeof(*addr))
+> @@ -310,7 +311,15 @@ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
+>                 pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
+>                          sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
+>  
+> -               chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
+> +               if (sk->sk_bound_dev_if) {
 
-This is a strange condition, IMHO. How can we be fine with either
-lock.. This is supposed to be the writer side lock, one can't have 
-two writer side locks..
+that's the key point - checking sk->sk_bound_dev_if.
 
-I think what is happening is this:
+> +                       tb_id = l3mdev_fib_table_by_index(net,
+> +                                                         sk->sk_bound_dev_if);
+> +                       if (!tb_id)
+> +                               tb_id = RT_TABLE_LOCAL;
+> +               }
+> +
+> +               chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr,
+> +                                                   tb_id);
+>  
+>                 if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
+>                         chk_addr_ret = RTN_LOCAL;
+> 
 
-ipmr_net_init() -> ipmr_rules_init() -> ipmr_new_table()
-
-ipmr_new_table() returns an existing table if there is one, but
-obviously none can exist at init.  So a better fix would be:
-
-#define ipmr_for_each_table(mrt, net)					\
-	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list,	\
-				lockdep_rtnl_is_held() ||		\
-				list_empty(&net->ipv4.mr_tables))
-
-Thoughts?
+From a scan of the ipv4/ping.c code, ping_v4_sendmsg also does not
+acknowledge sk->sk_bound_dev_if.
