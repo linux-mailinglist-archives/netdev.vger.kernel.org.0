@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66DC81CBD6C
+	by mail.lfdr.de (Postfix) with ESMTP id D46941CBD6D
 	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 06:38:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbgEIEgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 00:36:04 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:40661 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725795AbgEIEgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 00:36:03 -0400
-Received: by mail-pl1-f193.google.com with SMTP id t16so1628929plo.7;
-        Fri, 08 May 2020 21:36:03 -0700 (PDT)
+        id S1728123AbgEIEgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 00:36:05 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:33239 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726120AbgEIEgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 00:36:04 -0400
+Received: by mail-pg1-f195.google.com with SMTP id a4so1871853pgc.0;
+        Fri, 08 May 2020 21:36:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Mn8gewim71f9MERlb7gA0NrH5NCnMa/YvuN+gI3bitk=;
-        b=HWFfRnGOGUvIT5VcT9f0YkgryhlYukuXmN8XhUzidvv+aaqrsFntfOSRXN5j9Kf/9c
-         olJHoR7E5WEDzA8kCahNlbnzQg9DsWyNuwvU89FOTN6IN7jNZbnYV2bnw6p/3U2bVHgB
-         dPRFopZXfRoG2CBh22jnXQY0owBug1C9u4zHJGM/2Ic0TuFcjXpRn+3kY+twvBq4U05W
-         kRe5Sb2SzqUKYQYTLOPRmspgprUL9NszVpJS8w/GLdqnfREaST8xTeDe85aBEULig4T8
-         8B0zy3PDxM8KmeNT94iYPD59jMkO8h0EsRDreD/cSDCI/EcopYQWcRwH5fXi5Z94Uba3
-         Dr0w==
-X-Gm-Message-State: AGi0PubjpNKtKXdj+eNN+xPu1+dKbGttW7Y0jsShpq0XEqu7XLTV4sGM
-        x8f0QRd6yyGprV0bkBi+/rw=
-X-Google-Smtp-Source: APiQypIl4pMOS2kvX+EgsVq1d+QYF+9vTl2JH1P6ntQ3rygaFhrG9ACBwQl0OeR7H5GcEcjmddEcOw==
-X-Received: by 2002:a17:902:549:: with SMTP id 67mr5435858plf.115.1588998962772;
-        Fri, 08 May 2020 21:36:02 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cBDEUQMC+fxVo+rJgGTTJoIY6zpQy1pm40eE67u+Uqg=;
+        b=PqTNg7ruGWk3ai1A4d7SqhsimzRkgpjhLulF3FMPBT2EsRC6e/t7UzmS2oPAVr+7A6
+         jnMA6t7AgURJHyIiReVAnsv7kwzWZs2ItzPGU5FyZjaAMXTk32ucUhJJwSbaAqQ/+lhT
+         YGS91gb1FNfTTZBZeC28JSyG0uQf1rTjhzv8i5RiJdeF2A/CczcWpexrySdLfIFs7BY+
+         5NPkHHTkl4hmHWNt4/u6frJsBJAGLd20fJu/c7ONeUcD16YPeJCHSG2+BQZmOgiFuXbi
+         9Y+/iNS/z1OfkgVAfvOmhr/Z0LlKxvfVl7Tjw71qDXQoMgjO6JABP5SKPovEi2dGuz8k
+         /klw==
+X-Gm-Message-State: AGi0PuYXf/J4IwfLwWkJJuqdd9hbY6KfP7y3BDdSvQdjbSbs6P7cZsRm
+        eti+HyxjYKTQ/kzYSFYDd+c=
+X-Google-Smtp-Source: APiQypJjvjDWOMPqgykaQj7RJnenYgarjSOjuLsWtrHeyobTh/wPyLwuHtwWcWuICsu5VeQKOL8DbA==
+X-Received: by 2002:a62:75d1:: with SMTP id q200mr6142351pfc.238.1588998963744;
+        Fri, 08 May 2020 21:36:03 -0700 (PDT)
 Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id fu12sm3684742pjb.20.2020.05.08.21.36.01
+        by smtp.gmail.com with ESMTPSA id o99sm3682368pjo.8.2020.05.08.21.36.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 08 May 2020 21:36:01 -0700 (PDT)
 Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id A9F844035F; Sat,  9 May 2020 04:36:00 +0000 (UTC)
+        id B4C334063E; Sat,  9 May 2020 04:36:00 +0000 (UTC)
 From:   Luis Chamberlain <mcgrof@kernel.org>
 To:     jeyu@kernel.org
 Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
@@ -46,12 +46,13 @@ Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
         mchehab+samsung@kernel.org, kvalo@codeaurora.org,
         davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH 00/15] net: taint when the device driver firmware crashes
-Date:   Sat,  9 May 2020 04:35:37 +0000
-Message-Id: <20200509043552.8745-1-mcgrof@kernel.org>
+Subject: [PATCH 01/15] taint: add module firmware crash taint support
+Date:   Sat,  9 May 2020 04:35:38 +0000
+Message-Id: <20200509043552.8745-2-mcgrof@kernel.org>
 X-Mailer: git-send-email 2.23.0.rc1
+In-Reply-To: <20200509043552.8745-1-mcgrof@kernel.org>
+References: <20200509043552.8745-1-mcgrof@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -62,65 +63,117 @@ Device driver firmware can crash, and sometimes, this can leave your
 system in a state which makes the device or subsystem completely
 useless. Detecting this by inspecting /proc/sys/kernel/tainted instead
 of scraping some magical words from the kernel log, which is driver
-specific, is much easier. So instead this series provides a helper which
-lets drivers annotate this and shows how to use this on networking
-drivers.
+specific, is much easier. So instead provide a helper which lets drivers
+annotate this.
 
-My methodology for finding when firmware crashes is to git grep for
-"crash" and then doing some study of the code to see if this indeed
-a place where the firmware crashes. In some places this is quite
-obvious.
+Once this happens, scrapers can easily look for modules taint flags
+for a firmware crash. This will taint both the kernel and respective
+calling module.
 
-I'm starting off with networking first, if this gets merged later on I
-can focus on the other drivers, but I already have some work done on
-other subsytems.
+The new helper module_firmware_crashed() uses LOCKDEP_STILL_OK as this
+fact should in no way shape or form affect lockdep. This taint is device
+driver specific.
 
-Review, flames, etc are greatly appreciated.
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+---
+ include/linux/kernel.h        |  3 ++-
+ include/linux/module.h        | 13 +++++++++++++
+ include/trace/events/module.h |  3 ++-
+ kernel/module.c               |  5 +++--
+ kernel/panic.c                |  1 +
+ 5 files changed, 21 insertions(+), 4 deletions(-)
 
-This work, only on networking drivers, can be found on my git tree as well:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git/log/?h=20200509-taint-firmware-net
-
-Luis Chamberlain (15):
-  taint: add module firmware crash taint support
-  ethernet/839: use new module_firmware_crashed()
-  bnx2x: use new module_firmware_crashed()
-  bnxt: use new module_firmware_crashed()
-  bna: use new module_firmware_crashed()
-  liquidio: use new module_firmware_crashed()
-  cxgb4: use new module_firmware_crashed()
-  ehea: use new module_firmware_crashed()
-  qed: use new module_firmware_crashed()
-  soc: qcom: ipa: use new module_firmware_crashed()
-  wimax/i2400m: use new module_firmware_crashed()
-  ath10k: use new module_firmware_crashed()
-  ath6kl: use new module_firmware_crashed()
-  brcm80211: use new module_firmware_crashed()
-  mwl8k: use new module_firmware_crashed()
-
- drivers/net/ethernet/8390/axnet_cs.c                |  4 +++-
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c    |  1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c   |  1 +
- drivers/net/ethernet/brocade/bna/bfa_ioc.c          |  1 +
- drivers/net/ethernet/cavium/liquidio/lio_main.c     |  1 +
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c     |  1 +
- drivers/net/ethernet/ibm/ehea/ehea_main.c           |  2 ++
- drivers/net/ethernet/qlogic/qed/qed_debug.c         |  3 +++
- drivers/net/ipa/ipa_modem.c                         |  1 +
- drivers/net/wimax/i2400m/rx.c                       |  1 +
- drivers/net/wireless/ath/ath10k/pci.c               |  2 ++
- drivers/net/wireless/ath/ath10k/sdio.c              |  2 ++
- drivers/net/wireless/ath/ath10k/snoc.c              |  1 +
- drivers/net/wireless/ath/ath6kl/hif.c               |  1 +
- .../net/wireless/broadcom/brcm80211/brcmfmac/core.c |  1 +
- drivers/net/wireless/marvell/mwl8k.c                |  1 +
- include/linux/kernel.h                              |  3 ++-
- include/linux/module.h                              | 13 +++++++++++++
- include/trace/events/module.h                       |  3 ++-
- kernel/module.c                                     |  5 +++--
- kernel/panic.c                                      |  1 +
- 21 files changed, 44 insertions(+), 5 deletions(-)
-
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 04a5885cec1b..19e1541c82c7 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -601,7 +601,8 @@ extern enum system_states {
+ #define TAINT_LIVEPATCH			15
+ #define TAINT_AUX			16
+ #define TAINT_RANDSTRUCT		17
+-#define TAINT_FLAGS_COUNT		18
++#define TAINT_FIRMWARE_CRASH		18
++#define TAINT_FLAGS_COUNT		19
+ 
+ struct taint_flag {
+ 	char c_true;	/* character printed when tainted */
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 2c2e988bcf10..221200078180 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -697,6 +697,14 @@ static inline bool is_livepatch_module(struct module *mod)
+ bool is_module_sig_enforced(void);
+ void set_module_sig_enforced(void);
+ 
++void add_taint_module(struct module *mod, unsigned flag,
++		      enum lockdep_ok lockdep_ok);
++
++static inline void module_firmware_crashed(void)
++{
++	add_taint_module(THIS_MODULE, TAINT_FIRMWARE_CRASH, LOCKDEP_STILL_OK);
++}
++
+ #else /* !CONFIG_MODULES... */
+ 
+ static inline struct module *__module_address(unsigned long addr)
+@@ -844,6 +852,11 @@ void *dereference_module_function_descriptor(struct module *mod, void *ptr)
+ 	return ptr;
+ }
+ 
++static inline void module_firmware_crashed(void)
++{
++	add_taint(TAINT_FIRMWARE_CRASH, LOCKDEP_STILL_OK);
++}
++
+ #endif /* CONFIG_MODULES */
+ 
+ #ifdef CONFIG_SYSFS
+diff --git a/include/trace/events/module.h b/include/trace/events/module.h
+index 097485c73c01..b749ea25affd 100644
+--- a/include/trace/events/module.h
++++ b/include/trace/events/module.h
+@@ -26,7 +26,8 @@ struct module;
+ 	{ (1UL << TAINT_OOT_MODULE),		"O" },		\
+ 	{ (1UL << TAINT_FORCED_MODULE),		"F" },		\
+ 	{ (1UL << TAINT_CRAP),			"C" },		\
+-	{ (1UL << TAINT_UNSIGNED_MODULE),	"E" })
++	{ (1UL << TAINT_UNSIGNED_MODULE),	"E" },		\
++	{ (1UL << TAINT_FIRMWARE_CRASH),	"Q" })
+ 
+ TRACE_EVENT(module_load,
+ 
+diff --git a/kernel/module.c b/kernel/module.c
+index 80faaf2116dd..f98e8c25c6b4 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -325,12 +325,13 @@ static inline int strong_try_module_get(struct module *mod)
+ 		return -ENOENT;
+ }
+ 
+-static inline void add_taint_module(struct module *mod, unsigned flag,
+-				    enum lockdep_ok lockdep_ok)
++void add_taint_module(struct module *mod, unsigned flag,
++		      enum lockdep_ok lockdep_ok)
+ {
+ 	add_taint(flag, lockdep_ok);
+ 	set_bit(flag, &mod->taints);
+ }
++EXPORT_SYMBOL_GPL(add_taint_module);
+ 
+ /*
+  * A thread that wants to hold a reference to a module only while it
+diff --git a/kernel/panic.c b/kernel/panic.c
+index ec6d7d788ce7..504fb926947e 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -384,6 +384,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+ 	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
+ 	[ TAINT_AUX ]			= { 'X', ' ', true },
+ 	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
++	[ TAINT_FIRMWARE_CRASH ]	= { 'Q', ' ', true },
+ };
+ 
+ /**
 -- 
 2.25.1
 
