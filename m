@@ -2,122 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 771DF1CC4AE
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 23:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06F191CC4B0
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 23:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728301AbgEIVRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 17:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52734 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727108AbgEIVRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 17:17:48 -0400
-X-Greylist: delayed 37485 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 09 May 2020 14:17:48 PDT
-Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4925CC061A0C;
-        Sat,  9 May 2020 14:17:48 -0700 (PDT)
-Received: by a3.inai.de (Postfix, from userid 65534)
-        id C67BC58769D1B; Sat,  9 May 2020 23:17:45 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on a3.inai.de
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.2
-Received: from a4.inai.de (a4.inai.de [IPv6:2a01:4f8:10b:45d8::f8])
-        by a3.inai.de (Postfix) with ESMTP id 31CFB58734C07;
-        Sat,  9 May 2020 23:17:44 +0200 (CEST)
-From:   Jan Engelhardt <jengelh@inai.de>
-To:     zenczykowski@gmail.com
-Cc:     maze@google.com, pablo@netfilter.org, fw@strlen.de,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH] doc: document danger of applying REJECT to INVALID CTs
-Date:   Sat,  9 May 2020 23:17:44 +0200
-Message-Id: <20200509211744.8363-1-jengelh@inai.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <CANP3RGeL_VuCChw=YX5W0kenmXctMY0ROoxPYe_nRnuemaWUfg@mail.gmail.com>
-References: <CANP3RGeL_VuCChw=YX5W0kenmXctMY0ROoxPYe_nRnuemaWUfg@mail.gmail.com>
+        id S1728424AbgEIVTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 17:19:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59194 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727108AbgEIVTl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 May 2020 17:19:41 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C45721473;
+        Sat,  9 May 2020 21:19:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589059180;
+        bh=VmwPVJKT2v+erZFsLCasdEboGnLPwgraIeEZ+VZKOMs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=wOsCHPDrh0mHaFSaxipTFAcZ+JRW6Ycicfqco2CcTCCoSv8LTi4yHScET00RKIYxj
+         XigbMqA5U4m4L26IkmKQZA2J7gSDX3c261EmTEcfeS5rO4ZHOTPzNW0Ygo5JRt10+d
+         WUiPtLUW6z1rpQW4iaBOK7mJf4U9EkLVQXYt+EmY=
+Date:   Sat, 9 May 2020 14:19:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Amol Grover <frextrite@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH net 2/2 RESEND] ipmr: Add lockdep expression to
+ ipmr_for_each_table macro
+Message-ID: <20200509141938.028fa959@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200509072243.3141-2-frextrite@gmail.com>
+References: <20200509072243.3141-1-frextrite@gmail.com>
+        <20200509072243.3141-2-frextrite@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Jan Engelhardt <jengelh@inai.de>
----
+On Sat,  9 May 2020 12:52:44 +0530 Amol Grover wrote:
+> ipmr_for_each_table() uses list_for_each_entry_rcu() for
+> traversing outside of an RCU read-side critical section but
+> under the protection of pernet_ops_rwsem. Hence add the
+> corresponding lockdep expression to silence the following
+> false-positive warning at boot:
 
-Maciej's explanation on how INVALID+REJECT can lead to problems looks
-convincing. I hereby present new manpage wording in the form of "if A, then B"
-to better build the argument of avoiding REJECT. So the issue is not caused by
-an _incoming_ TCP RST as the initial mail might have suggested,
-but by RST generated by REJECT (--reject-with tcp-reset).
+Thanks for the fix, the warning has been annoying me as well!
 
-It is conceivable to me that a connection termination may occur with not only
-TCP+RST, but also with TCP+ICMP and UDP+ICMP, so I trimmed any
-protocol-specific wording too. Also trimmed is any mention of -j ACCEPT,
-because rule order is not the point of the argument.
+> [    0.645292] =============================
+> [    0.645294] WARNING: suspicious RCU usage
+> [    0.645296] 5.5.4-stable #17 Not tainted
+> [    0.645297] -----------------------------
+> [    0.645299] net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!!
 
+please provide a fuller stack trace, it would have helped the review
 
- extensions/libip6t_REJECT.man | 21 +++++++++++++++++++++
- extensions/libipt_REJECT.man  | 21 +++++++++++++++++++++
- 2 files changed, 42 insertions(+)
+> Signed-off-by: Amol Grover <frextrite@gmail.com>
+> ---
+>  net/ipv4/ipmr.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+> index 99c864eb6e34..950ffe9943da 100644
+> --- a/net/ipv4/ipmr.c
+> +++ b/net/ipv4/ipmr.c
+> @@ -109,9 +109,10 @@ static void mroute_clean_tables(struct mr_table *mrt, int flags);
+>  static void ipmr_expire_process(struct timer_list *t);
+>  
+>  #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
+> -#define ipmr_for_each_table(mrt, net) \
+> -	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
+> -				lockdep_rtnl_is_held())
+> +#define ipmr_for_each_table(mrt, net)					\
+> +	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list,	\
+> +				lockdep_rtnl_is_held() ||		\
+> +				lockdep_is_held(&pernet_ops_rwsem))
 
-diff --git a/extensions/libip6t_REJECT.man b/extensions/libip6t_REJECT.man
-index 0030a51f..38183dd7 100644
---- a/extensions/libip6t_REJECT.man
-+++ b/extensions/libip6t_REJECT.man
-@@ -30,3 +30,24 @@ TCP RST packet to be sent back.  This is mainly useful for blocking
- hosts (which won't accept your mail otherwise).
- \fBtcp\-reset\fP
- can only be used with kernel versions 2.6.14 or later.
-+.PP
-+\fIWarning:\fP You should not indiscrimnately apply the REJECT target to
-+packets whose connection state is classified as INVALID; instead, you should
-+only DROP these:
-+.PP
-+Consider a source host retransmitting an original packet P as P_2 for any
-+reason, and P_2 getting routed via a different path (load balancing/policy
-+routing, or anything of the kind). Additionally, let P_2 experience so much
-+delay that the source host issues \fIanother\fP retransmission, P_3, with P_3
-+being succesful in reaching its destination and advancing the connection state
-+normally. The delayed P_2, when it eventually is processed, may be considered
-+to be not associated with any connection tracking entry. Generating a reject
-+packet for such a belated packet would then terminate the healthy connection.
-+.PP
-+So, instead of:
-+.PP
-+-A INPUT -m conntrack --ctstate INVALID -j REJECT
-+.PP
-+do consider using:
-+.PP
-+-A INPUT -m conntrack --ctstate INVALID -j DROP
-diff --git a/extensions/libipt_REJECT.man b/extensions/libipt_REJECT.man
-index 8a360ce7..9e80d7ea 100644
---- a/extensions/libipt_REJECT.man
-+++ b/extensions/libipt_REJECT.man
-@@ -30,3 +30,24 @@ TCP RST packet to be sent back.  This is mainly useful for blocking
- hosts (which won't accept your mail otherwise).
- .IP
- (*) Using icmp\-admin\-prohibited with kernels that do not support it will result in a plain DROP instead of REJECT
-+.PP
-+\fIWarning:\fP You should not indiscrimnately apply the REJECT target to
-+packets whose connection state is classified as INVALID; instead, you should
-+only DROP these:
-+.PP
-+Consider a source host retransmitting an original packet P as P_2 for any
-+reason, and P_2 getting routed via a different path (load balancing/policy
-+routing, or anything of the kind). Additionally, let P_2 experience so much
-+delay that the source host issues \fIanother\fP retransmission, P_3, with P_3
-+being succesful in reaching its destination and advancing the connection state
-+normally. The delayed P_2, when it eventually is processed, may be considered
-+to be not associated with any connection tracking entry. Generating a reject
-+packet for such a belated packet would then terminate the healthy connection.
-+.PP
-+So, instead of:
-+.PP
-+-A INPUT -m conntrack --ctstate INVALID -j REJECT
-+.PP
-+do consider using:
-+.PP
-+-A INPUT -m conntrack --ctstate INVALID -j DROP
--- 
-2.26.2
+This is a strange condition, IMHO. How can we be fine with either
+lock.. This is supposed to be the writer side lock, one can't have 
+two writer side locks..
 
+I think what is happening is this:
+
+ipmr_net_init() -> ipmr_rules_init() -> ipmr_new_table()
+
+ipmr_new_table() returns an existing table if there is one, but
+obviously none can exist at init.  So a better fix would be:
+
+#define ipmr_for_each_table(mrt, net)					\
+	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list,	\
+				lockdep_rtnl_is_held() ||		\
+				list_empty(&net->ipv4.mr_tables))
+
+Thoughts?
