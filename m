@@ -2,40 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5BA1CBDE7
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 07:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2997C1CBDF5
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 07:53:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728941AbgEIFtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 01:49:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34700 "EHLO mail.kernel.org"
+        id S1728928AbgEIFwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 01:52:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35526 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725820AbgEIFtK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 May 2020 01:49:10 -0400
+        id S1726115AbgEIFwP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 May 2020 01:52:15 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A5FCF21582;
-        Sat,  9 May 2020 05:49:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D3C2821582;
+        Sat,  9 May 2020 05:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589003350;
-        bh=HpzK77V7ZTe2xyZ7rSyEisyDueYQxUsKw8a/xbIsAuI=;
+        s=default; t=1589003535;
+        bh=azb8IZTfZ9uwHqosxAmOOn3r7g+Q3Nto+qIHqy30Mw8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gtqkZWqmYR0dJi17ciI60bEXnkrcFMQkQH0FDDdpNC0PU06bS55aSyoR17wRTPdP3
-         rHOblT5/5kcyL634rmb+iFJh2CSs5QJ0e4InZJqU2jkJvP4b4umx4Kv0pOnEZ8eoG+
-         Up4cRgOr54vwlJuy/dpcx0IJsAO0jEVgGQGluDV0=
-Date:   Fri, 8 May 2020 22:49:08 -0700
+        b=2jqzQtCzK92JUIKUEy346eZATjCw9y9sDyThE87uKCqffUNgoJSaWS7Xbb2cAPv3U
+         67P0ps4rHhmG5AkB7/nI0DzBP3WorRvno4vC4t1u0UI6d1WzOrvUab9XF0b2Qu4cid
+         xtqnGBxRAQxMvrDfh/SBzvkyY5jqmvTBsfbBJI08=
+Date:   Fri, 8 May 2020 22:52:13 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][V2] net: tg3: tidy up loop, remove need to compute off
- with a multiply
-Message-ID: <20200508224908.5c594f73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200508231447.485241-1-colin.king@canonical.com>
-References: <20200508231447.485241-1-colin.king@canonical.com>
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Alex Elder <elder@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: ipa: Remove ipa_endpoint_stop{,_rx_dma}
+ again
+Message-ID: <20200508225213.5e109221@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200508194132.3412384-1-natechancellor@gmail.com>
+References: <20200508194132.3412384-1-natechancellor@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,15 +42,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  9 May 2020 00:14:47 +0100 Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Fri,  8 May 2020 12:41:33 -0700 Nathan Chancellor wrote:
+> When building arm64 allyesconfig:
 > 
-> Currently the value for 'off' is computed using a multiplication and
-> a couple of statements later off is being incremented by len and
-> this value is never read.  Clean up the code by removing the
-> multiplication and just increment off by len on each iteration.
+> drivers/net/ipa/ipa_endpoint.c: In function 'ipa_endpoint_stop_rx_dma':
+> drivers/net/ipa/ipa_endpoint.c:1274:13: error: 'IPA_ENDPOINT_STOP_RX_SIZE' undeclared (first use in this function)
+> drivers/net/ipa/ipa_endpoint.c:1274:13: note: each undeclared identifier is reported only once for each function it appears in
+> drivers/net/ipa/ipa_endpoint.c:1289:2: error: implicit declaration of function 'ipa_cmd_dma_task_32b_addr_add' [-Werror=implicit-function-declaration]
+> drivers/net/ipa/ipa_endpoint.c:1291:45: error: 'ENDPOINT_STOP_DMA_TIMEOUT' undeclared (first use in this function)
+> drivers/net/ipa/ipa_endpoint.c: In function 'ipa_endpoint_stop':
+> drivers/net/ipa/ipa_endpoint.c:1309:16: error: 'IPA_ENDPOINT_STOP_RX_RETRIES' undeclared (first use in this function)
 > 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> These functions were removed in a series, merged in as
+> commit 33395f4a5c1b ("Merge branch 'net-ipa-kill-endpoint-stop-workaround'").
+> 
+> Remove them again so that the build works properly.
+> 
+> Fixes: 3793faad7b5b ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 
 Applied, thank you!
+
+I think I already said this, but would be great if IPA built on x86
+with COMPILE_TEST..
