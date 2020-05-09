@@ -2,118 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E58541CC4B1
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 23:20:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D45A21CC4B7
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 23:29:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728590AbgEIVUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 17:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
+        id S1728301AbgEIV3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 17:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727108AbgEIVUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 17:20:40 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7499FC061A0C
-        for <netdev@vger.kernel.org>; Sat,  9 May 2020 14:20:40 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id u11so5527979iow.4
-        for <netdev@vger.kernel.org>; Sat, 09 May 2020 14:20:40 -0700 (PDT)
+        with ESMTP id S1726771AbgEIV3K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 17:29:10 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA3DC05BD09
+        for <netdev@vger.kernel.org>; Sat,  9 May 2020 14:29:08 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id n11so4852332ilj.4
+        for <netdev@vger.kernel.org>; Sat, 09 May 2020 14:29:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+xj/Y/zWB4lVUu6CUBMG5wqC3IQ4fTkBYR1Rj2yVv1c=;
-        b=U5lN6cg/6BESmG/AUp4Vb12MUULgKMPycTkQVGRVBUsdjTi6/LYRp1MgjFi+biBzsX
-         r8B0qAPXpXkOpFL+bKNQ5aKWsMR9p11pfJNK/iQF2Kb9h+bk08UtKC+mzVYH0GQxjnT5
-         z+fkxRA3tohMhjsQpK9y5pHdB77ivecoH0TF0KFhRSidh8NXQh6ehQxhIiKuAiMzZ07R
-         oxtdgDKZ/5MixLTsxN/P3hVAyIdvBN2uy3EDqEMv5HdGhwHHiOSbjmw+rXGhYM/IUYci
-         CjHC2vCf3HxYQqxlaLKYz6Q9Ykw2t9+4+z3jsJtoLFgBedvYjqCzJvD4LMLgrU0KxfBX
-         84jw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/r+mneobwGheJFxkeH99ObM6GjbUjQh3TKRKScwkSHE=;
+        b=DS//8w5QxBS9p8LFqc/CK79rczOOiOteVXP3u/qUQUV8Kn8BNjE+ioWkGw03RGIgHy
+         7vzzHd0sx1H1Fd/Iij56UWvjV8zVOhU2KjcqnMpk/RhLhJD/Khy9qfWhSgHcjLu9P2yG
+         GvIsSkI7hXb0keuWDGLWhD/15WqJYhXQ7IbO8YtGLzdpuIgu4dbqriH9yaXwjvPW89Cf
+         vu7jHisinXwQpHGQSUHF8kZY345vq5EMvIYUluC3GSkNgom3VpKwoSG6SxQVDfqLOnWl
+         1sEAR6x8Wvo1EDoSGfvgyCgL0VtMXaxjLL/FPYYS8J64aXOJCjssE3NXI7A/MJWFEhSY
+         IEQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+xj/Y/zWB4lVUu6CUBMG5wqC3IQ4fTkBYR1Rj2yVv1c=;
-        b=GNunzYBbZIx6cQm1/E9j6nEL+hCo6tyCTM+ig1BjECZm7qY9+VXwLTczKa6gYtAU5H
-         0CcbumFXktv80tVoVaX2EJ795FMOCn7t3SKfueKoDnz7ofFmTghy2BBrq+E63ECVv0UB
-         UsUGVoqC23/u9K9mFUjfsmeozfFD8XuLq5xRKHsbVzieaSJF5lwZpIpMjh3iK4j3k61Z
-         6/mwcrcQFqNIc2zaJRKfHRu46uLfhFh4QFPZww673GZTgfa2n7yZPvOC9G39ttR2+ttM
-         J5+QR1ASE4qKA2DUDM2facuLcsXXkd2NGT+l1w0g1VoP2y84pjTDK5FHNBnSHs2HUglL
-         vIVA==
-X-Gm-Message-State: AGi0PubVC/Pmmme1DOz02+Dj+yfWdL8uxA4bfK0oibUcKs88EylC75WR
-        KpL031MXuWGS1EBY1LWjyCcFGwMo
-X-Google-Smtp-Source: APiQypKP7/qTI3rzrOwLCSSbfXJs9bAg3kEot7JAS+fBa00i30ShdRI+yVBqZ/rc+oyGAnRWTkkzyg==
-X-Received: by 2002:a6b:d10f:: with SMTP id l15mr8784968iob.143.1589059239523;
-        Sat, 09 May 2020 14:20:39 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:d4f4:54fc:fab0:ac04? ([2601:282:803:7700:d4f4:54fc:fab0:ac04])
-        by smtp.googlemail.com with ESMTPSA id k2sm2379819ioq.20.2020.05.09.14.20.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 May 2020 14:20:38 -0700 (PDT)
-Subject: Re: [PATCH] net-icmp: make icmp{,v6} (ping) sockets available to all
- by default
-To:     Ido Schimmel <idosch@idosch.org>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>
-References: <20200508234223.118254-1-zenczykowski@gmail.com>
- <20200509191536.GA370521@splinter>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a4fefa7c-8e8a-6975-aa06-b71ba1885f7b@gmail.com>
-Date:   Sat, 9 May 2020 15:20:38 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/r+mneobwGheJFxkeH99ObM6GjbUjQh3TKRKScwkSHE=;
+        b=eDGT/pytMsLBsk5nugrhK5R+Tgs0akjM2sakLsT6M0gHhhKF41hxuJujC7rvLCDnh2
+         ES7/Q1aRsWO/oAdPnw6xugwf3Xl9jwo3x4GaRnvj/ItUwohV+ObuR36EN8jHgtJGgJNa
+         7uxqRN1NEeCAoVW4hrwIrc5aCz1GvRuK0+fH+Cirpmiz/rtzbzRloubTu01MY9CqZfC/
+         1yM0geHKKZwnWNM0gWnGB9ulvfh5qZF1h4ea9HOhOo+aTByV+MLDf96yTAyzBK9+exw4
+         RHsoWzdxk3yrWhEq7s0dvVWUNN66VrXZCznhrpZAnOCE/FSEpEHgw/BWJzWTtOK0H1gs
+         tFGw==
+X-Gm-Message-State: AGi0PuaCqUJ/U+Dx/KvVdqj+wX0iwk+P5L6rlkp1F4l9hDZX09+IvgoK
+        sh5l3bKEShubwEhFk1ywl7C0U/gKOnYBJyVc2GczXg==
+X-Google-Smtp-Source: APiQypKup595uKk5SGg8Thg2wE/gnspaYFn9WOvzGSPAYkzwqUoy16ANh2vBrhqbQc9918q9bfTzwrMZOkIq0FsD3OQ=
+X-Received: by 2002:a05:6e02:4c4:: with SMTP id f4mr6158424ils.278.1589059747871;
+ Sat, 09 May 2020 14:29:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200509191536.GA370521@splinter>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CANP3RGeL_VuCChw=YX5W0kenmXctMY0ROoxPYe_nRnuemaWUfg@mail.gmail.com>
+ <20200509211744.8363-1-jengelh@inai.de>
+In-Reply-To: <20200509211744.8363-1-jengelh@inai.de>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Sat, 9 May 2020 14:28:55 -0700
+Message-ID: <CANP3RGe3fnCwj5NUxKu4VDcw=_95yNkCiC2Y4L9otJS1Hnyd-g@mail.gmail.com>
+Subject: Re: [PATCH] doc: document danger of applying REJECT to INVALID CTs
+To:     Jan Engelhardt <jengelh@inai.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/20 1:15 PM, Ido Schimmel wrote:
-> 
-> This will unfortunately cause regressions with VRFs because they don't
-> work correctly with ping sockets. Simple example:
+I *think* that your talk of 3 packets is not needed, ie. the initial
+delayed packet doesn't have to be a retransmission.
+It can be the first copy of that segment that gets massively delayed
+and arrives late and causes problems,
+by virtue of arriving after the retransmission already caused the
+connection to move on.
 
-Thanks for catching this, Ido.
-
-> 
-> diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-> index 535427292194..8463b0e9e811 100644
-> --- a/net/ipv4/ping.c
-> +++ b/net/ipv4/ping.c
-> @@ -297,6 +297,7 @@ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
->         struct net *net = sock_net(sk);
->         if (sk->sk_family == AF_INET) {
->                 struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
-> +               u32 tb_id = RT_TABLE_LOCAL;
->                 int chk_addr_ret;
->  
->                 if (addr_len < sizeof(*addr))
-> @@ -310,7 +311,15 @@ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
->                 pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
->                          sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
->  
-> -               chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
-> +               if (sk->sk_bound_dev_if) {
-
-that's the key point - checking sk->sk_bound_dev_if.
-
-> +                       tb_id = l3mdev_fib_table_by_index(net,
-> +                                                         sk->sk_bound_dev_if);
-> +                       if (!tb_id)
-> +                               tb_id = RT_TABLE_LOCAL;
-> +               }
-> +
-> +               chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr,
-> +                                                   tb_id);
->  
->                 if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
->                         chk_addr_ret = RTN_LOCAL;
-> 
-
-From a scan of the ipv4/ping.c code, ping_v4_sendmsg also does not
-acknowledge sk->sk_bound_dev_if.
+Other than that this does seem perhaps a bit cleared than what I wrote.
