@@ -2,60 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F21901CC41C
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 21:25:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E2501CC422
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 21:30:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728276AbgEITZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 15:25:54 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51256 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728065AbgEITZy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 May 2020 15:25:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Czp6EvuSD6gwFQUCZ8nVgdkjgi6dIzphR2cz7XGMCVE=; b=qT14cHTmIeRoBjxc7xnf3iDQNA
-        BNGOwr4or4MOJE23lFwsr7150k5OAKR8hz5R8AS2PXRC+diOI8hzWRWqHMWm2+wAAjbvodtEnkStK
-        k1UNhf4ZiPIANyiw3CPqZcmM/xJIctwKV+OUaWF3z6CNz9R2RcrnoUxPD8qVGKMinK38=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jXV6b-001XHl-NY; Sat, 09 May 2020 21:25:49 +0200
-Date:   Sat, 9 May 2020 21:25:49 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de
-Subject: Re: [PATCH v3 1/5] net: phy: Add support for microchip SMI0 MDIO bus
-Message-ID: <20200509192549.GB338317@lunn.ch>
-References: <20200508154343.6074-1-m.grzeschik@pengutronix.de>
- <20200508154343.6074-2-m.grzeschik@pengutronix.de>
- <08858b46-95f0-24d0-0e11-1eaec292187c@gmail.com>
+        id S1728309AbgEITau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 15:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727938AbgEITau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 15:30:50 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEA9C061A0C;
+        Sat,  9 May 2020 12:30:50 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id w2so4264183edx.4;
+        Sat, 09 May 2020 12:30:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9ZEjXtSSqmAnTaMJ6UavMO7wVhGYNiZDP1BIJgOKwDE=;
+        b=hQP3o137qadxKkpXc9GFR/8SoAtzlCDlGOKlH4lE96YavW6I2Z0saynbjK2ap2z2Lz
+         WwpXx6WTjghAjLt/LFR9KPbREpSCONEUKd6UuWCnP7i+WGUH/yrXCr7id4lM4QkHOR5R
+         MFP/w/K6fhhxzLPmJczs6PSXHHIk0amI7EC4EtrF75NyItetFWFnUbkh0beZ32iILtoQ
+         fRcQ6qNZOUM5QbavllcTtwe/+M8VERHhViOKzPe3ttGTsTxOQXRc654Hcu1LWDQsaiAV
+         AQZVRVXdX5H9uG11/4oV0cksOTONI0MpBqehwHbUKzuRQdLcacziw/4DCJaF1/Uwr23Z
+         FNEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9ZEjXtSSqmAnTaMJ6UavMO7wVhGYNiZDP1BIJgOKwDE=;
+        b=Zu9AESbQOhnAEtDfbK3aMKZNV8KhbJimq5JjMSujv8TVc65mL1rIZyBMZ2HLOQ2fWA
+         MC6FXkUdsBG3MNooFxeKIudLWhWDDUKrcIa7v67qz/IXERY00ejCziwUfJwlKuDuLa2k
+         HiFkaxnlPLogSacgLCLxfPyC0r0hmz68+PZwYahE6G4UmPf6fq5/GPkeeyEbivOlgwNO
+         Q27Xn2MNFEMfB3e1VamPlhTBxNMycDC5bfw0KvbvUPKUOuSHMthYMXEAcIy3srTwuXWr
+         Qefu0PAlwLdclfqgc8l27Atrj7tCcm+TYvNkmpb0K+w0SJZY5by3ZcgyoAsrFUSZgWmL
+         inbA==
+X-Gm-Message-State: AGi0Puaw1gqV/GyUoLGuLcwdof/2a/JxkBawET0R73Ad/p0AXlzLF+Ay
+        2d+inSAAS7cUFIamUpGEkIVZABFJtkzBhv1GY3vUgg==
+X-Google-Smtp-Source: APiQypLCy998LxGgk/+5CWPSVBoIcr2lo+DoyHzniWAWuvzPW2nBsj9YK0DimpeECuXDdno4UHCty703vQk3+OJcU9I=
+X-Received: by 2002:a05:6402:7d6:: with SMTP id u22mr7247211edy.149.1589052648805;
+ Sat, 09 May 2020 12:30:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <08858b46-95f0-24d0-0e11-1eaec292187c@gmail.com>
+References: <20200421081542.108296-1-zenczykowski@gmail.com>
+ <20200428000525.GD24002@salvia> <CAHo-OoxP6ZrvbXFH_tC9_wdVDg7y=8bzVY9oKZTieZL_mqS1NQ@mail.gmail.com>
+ <20200428223006.GA30304@salvia>
+In-Reply-To: <20200428223006.GA30304@salvia>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Sat, 9 May 2020 12:30:37 -0700
+Message-ID: <CAHo-Oozx2qqQXCzXWz0sGbHH2gWgXTjJZ1=JS47p3FVZdPOPgQ@mail.gmail.com>
+Subject: Re: [PATCH] iptables: flush stdout after every verbose log.
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > -		mdiobb_cmd(ctrl, MDIO_WRITE, phy, reg);
-> > +		mdiobb_cmd(ctrl, ctrl->op_c22_write, phy, reg);
-> 
-> There are other users of the mdio-bitbang.c file which I believe you are
-> going to break here because they will not initialize op_c22_write or
-> op_c22_read, and thus they will be using 0, instead of MDIO_READ and
-> MDIO_WRITE. I believe you need something like the patch attached.
+I don't think it's ever been broken per say since Android has it's own
+copy of everything,
+and there are local changes to iptables (that I'm trying to
+cleanup/drop/upstream),
+so we've carried this patch for years.
 
-Ah, totally missed that:
-
-https://elixir.bootlin.com/linux/latest/source/arch/powerpc/platforms/82xx/ep8248e.c#L98
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/8390/ax88796.c#L444
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/freescale/fs_enet/mii-bitbang.c#L103
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/renesas/ravb_main.c#L165
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/renesas/sh_eth.c#L1257
-
-	Andrew
+On Tue, Apr 28, 2020 at 3:30 PM Pablo Neira Ayuso <pablo@netfilter.org> wro=
+te:
+>
+> On Mon, Apr 27, 2020 at 05:14:24PM -0700, Maciej =C5=BBenczykowski wrote:
+> > > Could you check if this slows down iptables-restore?
+> >
+> > per the iptables-restore man page
+> >        -v, --verbose
+> >               Print additional debug info during ruleset processing.
+> >
+> > Well, if you run it with verbose mode enabled you probably don't care
+> > about performance all that much...
+>
+> Thanks for explaining.
+>
+> How long has this been broken? I mean, netd has been there for quite a
+> while interacting with iptables. However, the existing behaviour was
+> not a problem? Or a recent bug?
