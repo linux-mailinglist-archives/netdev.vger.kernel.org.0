@@ -2,182 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B2D31CC32A
-	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 19:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D98481CC330
+	for <lists+netdev@lfdr.de>; Sat,  9 May 2020 19:28:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728237AbgEIRYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 13:24:50 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15706 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726013AbgEIRYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 13:24:49 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 049HOZq0011683;
-        Sat, 9 May 2020 10:24:35 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=+7merY2PAgMauUnQazQtOv5Sgh9vtGDT1OW9GDkUaxs=;
- b=lQw/w+jBUKSNnAEfGloF7A/gMPQ9o851AJQQCY2FdpjGuCDs2GyNOhBNPHPRdTJulBZD
- TP0YCg+fqxQCIIzlpmYL7I7TFitEpbEuUYwa3ReZYgX9sNyJBGRzXcpHqkjQT+B8lNnf
- uiyscyPCbA84v8bYEw6PoRct0MYzIP1LxAk= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30wt8ssa8d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 09 May 2020 10:24:35 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Sat, 9 May 2020 10:23:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gfhuaxpltiTeJ49x4qgX6YDoceeEPa/n+p5XmV4sPtDYWunqncfzkOxGS6uH47dePrm0oxf02KjgExPpxePwPt9nMSa4plcWK9PdupS8DRAaAaTwVSiGD2ujBVrfIag/Nox77A8HuJ0xPVxm86XbcLgezBsuukGnJcPBq4uQG6n3cFm68t+jxXBkdRg6mZwJBrBOKKQwkOVmVnb3XKQ1om4nCWYTS/hevelyhUbiJL4cnMtAnQp2a32n3TI9hum8PFFaUKPqOjrDLMC5qGa2/VIldMXHLUIZUcitAU0TFYa5hbBx8lV6Xc8XY+VzcTIa0ZqtZhD2euTi1+ukIn52pQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+7merY2PAgMauUnQazQtOv5Sgh9vtGDT1OW9GDkUaxs=;
- b=D9Lq/4L+E5RWqsSDK82bQDisAgQuUXVLwfGaF6P+pGYAQoB9L1FUdYYbTxGhT8alYw2GQisywk4mK7f22Wpx+xdLWMqHDwkB7Hms9FEteqB2cvKDukYMkHp7w53Oq87+Ow+eWCwnSVslxWV+wbN1gXRKuoAOHUKouKe5KXUc5ItCO366JhRH2FZpsmE847Ed+D8VVngsm5a7O57Y8WybVzHlLiKBiDwCmjtM2uQyN3qUt4OfkL1j1xVL4cdh67jOmLOMHt/Q4hms2IWS1W+igQN5aVh4cQgdmLb5dCMF8/gEeS71SBlNLHoXCIxHi1sIsF2ekCWAPMw4oMFWRw1G8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+7merY2PAgMauUnQazQtOv5Sgh9vtGDT1OW9GDkUaxs=;
- b=Thgul+1IIdPenmfNQMztV9nSN/tQYrn2qYIecXebhn60lLGWLywEUEgH3XrSKgslvvf+TJWbbiH7cOQ7u68hpRJv2Xcfi0oEDz2SYL4olG8iz4vp9cs21oOa1UbSV56RYcp7XeVH9Mvvv5v+Vh31yZEU/VLRippxa3X1W/zx1z0=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (52.135.225.146) by
- BYAPR15MB2503.namprd15.prod.outlook.com (52.135.196.148) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2979.33; Sat, 9 May 2020 17:23:56 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::8988:aa27:5d70:6923]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::8988:aa27:5d70:6923%5]) with mapi id 15.20.2958.035; Sat, 9 May 2020
- 17:23:55 +0000
-Subject: Re: [PATCH v2 bpf-next 2/3] selftest/bpf: fmod_ret prog and implement
- test_overhead as part of bench
-To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <20200508232032.1974027-1-andriin@fb.com>
- <20200508232032.1974027-3-andriin@fb.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <c2fbefd2-6137-712e-47d4-200ef4d74775@fb.com>
-Date:   Sat, 9 May 2020 10:23:53 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
-In-Reply-To: <20200508232032.1974027-3-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BY5PR16CA0017.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::30) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1728276AbgEIR2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 13:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728210AbgEIR2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 13:28:08 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796F7C061A0C
+        for <netdev@vger.kernel.org>; Sat,  9 May 2020 10:28:08 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id y6so5704205pjc.4
+        for <netdev@vger.kernel.org>; Sat, 09 May 2020 10:28:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language;
+        bh=bUl10CVnOta8XuaRFc0DAdAKR4qbIrkPZNsUAUa6Sdo=;
+        b=HqlzjSQcdwQjx25qDyUcLV0tueTWMtiie5irtbyezl+abXBO/OR/php0KHKRLNvK+z
+         ktQAcytWdFFBwTtjOoxzEPKUrBxCFMKr0YUpp5JQu3h/XgS8r3ahvQtDeVM5wNjLVQEH
+         6uyecTaZYgviPT8zjUKBhu9acDA/Ttv2KceB3jvDibM4deQ7Jjjxhs41ZIVafPzPqvEB
+         gq/tioIVNiH41Nf2hE1fFJdqtB37xeipLjk+dO5D2FsIwCb1XiJut0U7UpeNHb4MpIhX
+         PDt5B920rdFZSmdK8iSFkeoWii3JmFeiCm1RDXPbdx/jkw1URF++Yacv2bt5CfDgDOrJ
+         TjyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language;
+        bh=bUl10CVnOta8XuaRFc0DAdAKR4qbIrkPZNsUAUa6Sdo=;
+        b=SWew7HScyY2m1pHcaLbr44BSBNV8TtJNN2ImhdoalN+8rZDqBtYHXh6GkrSGFSjlt9
+         Zvxbc2CHrWY4LClowhxkw+e6wCQQeD9cwDuV7UGyapj9musFArIR4PcKYu2i7qJhhYuj
+         62QSArn0au4Y7DE+ZodKrGm3xXwDuwm38Y+8/v2lE1zc/6UYLivwVlohToUOw0/WVbw5
+         ELVci39AAeGVMHEPyr9kIslJO90i45aXfcUH+YVZ074ajiWgsuJb9iMmpygk4CIuTOs5
+         7RD+llcCd0YTlMF19JSMuQ43BhtVK3335apHQNkftw8WCPy1ibUJcrKBkkMk9EiH6zzh
+         rzzQ==
+X-Gm-Message-State: AGi0PuZBmYom1bIPRx/gCWZWwx4lQBwxnnt6r0cY+Bf0nqQUkh3Qc4T+
+        Nlf6xFBMArTEmYYyYRJfbyUxxlIK
+X-Google-Smtp-Source: APiQypK0XMM37GfJZnuaU6sS8+de3OreUMk9/DdeFDbi1oQ36FGou0AsKP/dWj6lyp2bboAYXs6Ddw==
+X-Received: by 2002:a17:90a:a584:: with SMTP id b4mr12304590pjq.106.1589045287986;
+        Sat, 09 May 2020 10:28:07 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id q72sm5302640pjb.53.2020.05.09.10.28.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 May 2020 10:28:07 -0700 (PDT)
+Subject: Re: [PATCH v3 1/5] net: phy: Add support for microchip SMI0 MDIO bus
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>, andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de
+References: <20200508154343.6074-1-m.grzeschik@pengutronix.de>
+ <20200508154343.6074-2-m.grzeschik@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <08858b46-95f0-24d0-0e11-1eaec292187c@gmail.com>
+Date:   Sat, 9 May 2020 10:28:05 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from sprihad-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:e112) by BY5PR16CA0017.namprd16.prod.outlook.com (2603:10b6:a03:1a0::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.30 via Frontend Transport; Sat, 9 May 2020 17:23:55 +0000
-X-Originating-IP: [2620:10d:c090:400::5:e112]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 604f79d9-1342-434e-881e-08d7f43dc07b
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2503:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB250306F0B3DBDD09C853355FD3A30@BYAPR15MB2503.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:972;
-X-Forefront-PRVS: 03982FDC1D
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VASLfE8IIVtCEH+SRQPR+Dj/NXg1j9JSOd9Sd2no+R/ZsL6yMRb3H31C1nX2DOLuj83ycNKGJ4NaMZ46etv17u3gTgxNTdwuZiOD0/zp7wFiNaeOhkYdCfLoP4MMn/5TG4CxdlK0oYSiXVLJ3alZY+747O/LSlBJDTAmx5sCHcB2zGGkBKnvCtKkC9D2gNZnkZ5si+VILleSXe59uxj1sxbkpHAv5UNp/JkDjp3kpLbs8En7LElRvjYfWFZPS7lna0ulg3XCahdQC68dzDG+V0Vt/L2IeBDfnYL6pfviPwwgdipRiNRF6825SinjHuinknT3esGpfipzLHW+NvILpL7joBpr6nh3GHC94ChwpNDVtAxHbCmF3aHbpRTiy1kxnPcys0q/STrzCoaJONTTbpU+zpR08hDY8FfroDIsYy2lJMjXxPm86mbpr/wKliWOzaTL5JVy+fRc4iiQzHR4LqBrg3Fq81mHsI01wsUD0J8uzn8rNI2j4sjFpWbxQQHqy+7z0dBKnW1un0r/ipBRffbZlhQApA5zcQMvrX9jY6scVbg3uAORRNufmodTIoq4
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(136003)(346002)(366004)(39860400002)(396003)(33430700001)(316002)(6512007)(6506007)(8936002)(8676002)(16526019)(86362001)(53546011)(186003)(36756003)(6486002)(31696002)(66556008)(478600001)(5660300002)(2616005)(33440700001)(31686004)(52116002)(66476007)(4326008)(2906002)(66946007)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: Oim41uis6z0Lqq28SExLYaLoT8tYxxK5TeORPKuV5HruOaHvx2fhIbkM/cb8oqKNT5ub2AmrNc1f0WBsUqtoT8Bw9XGgGkP1CUcNDt57pMp1IwZb3X8nBlWQjESKE8QvcHWSXKRLlE2XKmGx8T0fCEo3DbscM+xKi6C3cfVQXaAe3DacbiVHRHxy/pn0/CMvnsYOc+hTPOq39AysUE4SIf6SmptQQtZZ/6fIRUH+mpwe9gCr+6walGzz9oM1u4FX41Tx7EH8LRk4llS7KgskjpKxg8lwdr8bsLjCQ72Ot3Vmu8E3g2x5YWLy9gPIjXBCr/7zdKpQUEsYX8WanndP+/A18z9wSK3FIwObgqI4jqpGr3DCM43i+vBuqgccM8VJISElQr1e1Si/JCoOV21WszYldApV+kEYulTwVWyiNZ8O+sCnduR3joJjnSPIPrNqq2m384uSgKA2HNrDHKlKlZ/vKX/NuT4VrJGjaI+iMBV0HbFimy+q2bH4+SrCjb+IBvm2/072kaMJr0u0uIUfiQ==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 604f79d9-1342-434e-881e-08d7f43dc07b
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2020 17:23:55.9036
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jj56rnrRX7CiPIjEhR9agFnwraNo6Hn1bP+o2w3LBx0mLWKETW2jLVZi5lId+WBX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2503
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-09_06:2020-05-08,2020-05-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- mlxlogscore=999 priorityscore=1501 impostorscore=0 bulkscore=0
- adultscore=0 mlxscore=0 spamscore=0 malwarescore=0 clxscore=1015
- suspectscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2005090150
-X-FB-Internal: deliver
+In-Reply-To: <20200508154343.6074-2-m.grzeschik@pengutronix.de>
+Content-Type: multipart/mixed;
+ boundary="------------AD416139D0778CA4E14A5F69"
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This is a multi-part message in MIME format.
+--------------AD416139D0778CA4E14A5F69
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
 
-On 5/8/20 4:20 PM, Andrii Nakryiko wrote:
-> Add fmod_ret BPF program to existing test_overhead selftest. Also re-implement
-> user-space benchmarking part into benchmark runner to compare results.  Results
-> with ./bench are consistently somewhat lower than test_overhead's, but relative
-> performance of various types of BPF programs stay consisten (e.g., kretprobe is
-> noticeably slower).
-> 
-> run_bench_rename.sh script (in benchs/ directory) was used to produce the
-> following numbers:
-> 
->    base      :    3.975 ± 0.065M/s
->    kprobe    :    3.268 ± 0.095M/s
->    kretprobe :    2.496 ± 0.040M/s
->    rawtp     :    3.899 ± 0.078M/s
->    fentry    :    3.836 ± 0.049M/s
->    fexit     :    3.660 ± 0.082M/s
->    fmodret   :    3.776 ± 0.033M/s
-> 
-> While running test_overhead gives:
-> 
->    task_rename base        4457K events per sec
->    task_rename kprobe      3849K events per sec
->    task_rename kretprobe   2729K events per sec
->    task_rename raw_tp      4506K events per sec
->    task_rename fentry      4381K events per sec
->    task_rename fexit       4349K events per sec
->    task_rename fmod_ret    4130K events per sec
 
-Do you where the overhead is and how we could provide options in
-bench to reduce the overhead so we can achieve similar numbers?
-For benchmarking, sometimes you really want to see "true"
-potential of a particular implementation.
-
+On 5/8/2020 8:43 AM, Michael Grzeschik wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
 > 
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> SMI0 is a mangled version of MDIO. The main low level difference is
+> the MDIO C22 OP code is always 0, not 0x2 or 0x1 for Read/Write. The
+> read/write information is instead encoded in the PHY address.
+> 
+> Extend the bit-bang code to allow the op code to be overridden, but
+> default to normal C22 values. Add an extra compatible to the mdio-gpio
+> driver, and when this compatible is present, set the op codes to 0.
+> 
+> A higher level driver, sitting on top of the basic MDIO bus driver can
+> then implement the rest of the microchip SMI0 odderties.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
 > ---
->   tools/testing/selftests/bpf/Makefile          |   4 +-
->   tools/testing/selftests/bpf/bench.c           |  14 ++
->   .../selftests/bpf/benchs/bench_rename.c       | 195 ++++++++++++++++++
->   .../selftests/bpf/benchs/run_bench_rename.sh  |   9 +
->   .../selftests/bpf/prog_tests/test_overhead.c  |  14 +-
->   .../selftests/bpf/progs/test_overhead.c       |   6 +
->   6 files changed, 240 insertions(+), 2 deletions(-)
->   create mode 100644 tools/testing/selftests/bpf/benchs/bench_rename.c
->   create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_rename.sh
+>   drivers/net/phy/mdio-bitbang.c |  7 ++-----
+>   drivers/net/phy/mdio-gpio.c    | 13 +++++++++++++
+>   include/linux/mdio-bitbang.h   |  2 ++
+>   3 files changed, 17 insertions(+), 5 deletions(-)
 > 
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 289fffbf975e..29a02abf81a3 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -409,10 +409,12 @@ $(OUTPUT)/test_cpp: test_cpp.cpp $(OUTPUT)/test_core_extern.skel.h $(BPFOBJ)
->   $(OUTPUT)/bench_%.o: benchs/bench_%.c bench.h
->   	$(call msg,CC,,$@)
->   	$(CC) $(CFLAGS) -c $(filter %.c,$^) $(LDLIBS) -o $@
-> +$(OUTPUT)/bench_rename.o: $(OUTPUT)/test_overhead.skel.h
->   $(OUTPUT)/bench.o: bench.h
->   $(OUTPUT)/bench: LDLIBS += -lm
->   $(OUTPUT)/bench: $(OUTPUT)/bench.o \
-> -		 $(OUTPUT)/bench_count.o
-> +		 $(OUTPUT)/bench_count.o \
-> +		 $(OUTPUT)/bench_rename.o
->   	$(call msg,BINARY,,$@)
->   	$(CC) $(LDFLAGS) -o $@ $(filter %.a %.o,$^) $(LDLIBS)
+> diff --git a/drivers/net/phy/mdio-bitbang.c b/drivers/net/phy/mdio-bitbang.c
+> index 5136275c8e7399..11255460ecb933 100644
+> --- a/drivers/net/phy/mdio-bitbang.c
+> +++ b/drivers/net/phy/mdio-bitbang.c
+> @@ -19,9 +19,6 @@
+>   #include <linux/types.h>
+>   #include <linux/delay.h>
 >   
-[...]
+> -#define MDIO_READ 2
+> -#define MDIO_WRITE 1
+> -
+>   #define MDIO_C45 (1<<15)
+>   #define MDIO_C45_ADDR (MDIO_C45 | 0)
+>   #define MDIO_C45_READ (MDIO_C45 | 3)
+> @@ -158,7 +155,7 @@ static int mdiobb_read(struct mii_bus *bus, int phy, int reg)
+>   		reg = mdiobb_cmd_addr(ctrl, phy, reg);
+>   		mdiobb_cmd(ctrl, MDIO_C45_READ, phy, reg);
+>   	} else
+> -		mdiobb_cmd(ctrl, MDIO_READ, phy, reg);
+> +		mdiobb_cmd(ctrl, ctrl->op_c22_read, phy, reg);
+>   
+>   	ctrl->ops->set_mdio_dir(ctrl, 0);
+>   
+> @@ -189,7 +186,7 @@ static int mdiobb_write(struct mii_bus *bus, int phy, int reg, u16 val)
+>   		reg = mdiobb_cmd_addr(ctrl, phy, reg);
+>   		mdiobb_cmd(ctrl, MDIO_C45_WRITE, phy, reg);
+>   	} else
+> -		mdiobb_cmd(ctrl, MDIO_WRITE, phy, reg);
+> +		mdiobb_cmd(ctrl, ctrl->op_c22_write, phy, reg);
+
+There are other users of the mdio-bitbang.c file which I believe you are 
+going to break here because they will not initialize op_c22_write or 
+op_c22_read, and thus they will be using 0, instead of MDIO_READ and 
+MDIO_WRITE. I believe you need something like the patch attached.
+-- 
+Florian
+
+--------------AD416139D0778CA4E14A5F69
+Content-Type: text/plain; charset=UTF-8;
+ name="mdio-bb.diff"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="mdio-bb.diff"
+
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3BoeS9tZGlvLWJpdGJhbmcuYyBiL2RyaXZlcnMv
+bmV0L3BoeS9tZGlvLWJpdGJhbmcuYwppbmRleCAxMTI1NTQ2MGVjYjkuLjUyOGUyNTVkMWZm
+ZSAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvcGh5L21kaW8tYml0YmFuZy5jCisrKyBiL2Ry
+aXZlcnMvbmV0L3BoeS9tZGlvLWJpdGJhbmcuYwpAQCAtMTksNiArMTksOSBAQAogI2luY2x1
+ZGUgPGxpbnV4L3R5cGVzLmg+CiAjaW5jbHVkZSA8bGludXgvZGVsYXkuaD4KIAorI2RlZmlu
+ZSBNRElPX1JFQUQgMgorI2RlZmluZSBNRElPX1dSSVRFIDEKKwogI2RlZmluZSBNRElPX0M0
+NSAoMTw8MTUpCiAjZGVmaW5lIE1ESU9fQzQ1X0FERFIgKE1ESU9fQzQ1IHwgMCkKICNkZWZp
+bmUgTURJT19DNDVfUkVBRCAoTURJT19DNDUgfCAzKQpAQCAtMjEyLDYgKzIxNSwxMCBAQCBz
+dHJ1Y3QgbWlpX2J1cyAqYWxsb2NfbWRpb19iaXRiYW5nKHN0cnVjdCBtZGlvYmJfY3RybCAq
+Y3RybCkKIAlidXMtPnJlYWQgPSBtZGlvYmJfcmVhZDsKIAlidXMtPndyaXRlID0gbWRpb2Ji
+X3dyaXRlOwogCWJ1cy0+cHJpdiA9IGN0cmw7CisJaWYgKCFjdHJsLT5vdmVycmlkZV9vcF9j
+MjIpIHsKKwkJY3RybC0+b3BfYzIyX3JlYWQgPSBNRElPX1JFQUQ7CisJCWN0cmwtPm9wX2My
+Ml93cml0ZSA9IE1ESU9fV1JJVEU7CisJfQogCiAJcmV0dXJuIGJ1czsKIH0KZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvbmV0L3BoeS9tZGlvLWdwaW8uYyBiL2RyaXZlcnMvbmV0L3BoeS9tZGlv
+LWdwaW8uYwppbmRleCBkODViYzFhOTg2NDcuLjEzZWMzMWU4OWU5NCAxMDA2NDQKLS0tIGEv
+ZHJpdmVycy9uZXQvcGh5L21kaW8tZ3Bpby5jCisrKyBiL2RyaXZlcnMvbmV0L3BoeS9tZGlv
+LWdwaW8uYwpAQCAtMjcsOSArMjcsNiBAQAogI2luY2x1ZGUgPGxpbnV4L2dwaW8vY29uc3Vt
+ZXIuaD4KICNpbmNsdWRlIDxsaW51eC9vZl9tZGlvLmg+CiAKLSNkZWZpbmUgTURJT19SRUFE
+IDIKLSNkZWZpbmUgTURJT19XUklURSAxCi0KIHN0cnVjdCBtZGlvX2dwaW9faW5mbyB7CiAJ
+c3RydWN0IG1kaW9iYl9jdHJsIGN0cmw7CiAJc3RydWN0IGdwaW9fZGVzYyAqbWRjLCAqbWRp
+bywgKm1kbzsKQEAgLTEzOSw5ICsxMzYsNyBAQCBzdGF0aWMgc3RydWN0IG1paV9idXMgKm1k
+aW9fZ3Bpb19idXNfaW5pdChzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJICAgIG9mX2RldmljZV9p
+c19jb21wYXRpYmxlKGRldi0+b2Zfbm9kZSwgIm1pY3JvY2hpcCxtZGlvLXNtaTAiKSkgewog
+CQliaXRiYW5nLT5jdHJsLm9wX2MyMl9yZWFkID0gMDsKIAkJYml0YmFuZy0+Y3RybC5vcF9j
+MjJfd3JpdGUgPSAwOwotCX0gZWxzZSB7Ci0JCWJpdGJhbmctPmN0cmwub3BfYzIyX3JlYWQg
+PSBNRElPX1JFQUQ7Ci0JCWJpdGJhbmctPmN0cmwub3BfYzIyX3dyaXRlID0gTURJT19XUklU
+RTsKKwkJYml0YmFuZy0+Y3RybC5vdmVycmlkZV9vcF9jMjIgPSAxOwogCX0KIAogCWRldl9z
+ZXRfZHJ2ZGF0YShkZXYsIG5ld19idXMpOwpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9t
+ZGlvLWJpdGJhbmcuaCBiL2luY2x1ZGUvbGludXgvbWRpby1iaXRiYW5nLmgKaW5kZXggOGFl
+MGIzODM1MjMzLi41MDE2ZTZmNjBkZTMgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvbWRp
+by1iaXRiYW5nLmgKKysrIGIvaW5jbHVkZS9saW51eC9tZGlvLWJpdGJhbmcuaApAQCAtMzMs
+NiArMzMsNyBAQCBzdHJ1Y3QgbWRpb2JiX29wcyB7CiAKIHN0cnVjdCBtZGlvYmJfY3RybCB7
+CiAJY29uc3Qgc3RydWN0IG1kaW9iYl9vcHMgKm9wczsKKwl1bnNpZ25lZCBpbnQgb3ZlcnJp
+ZGVfb3BfYzIyOwogCXU4IG9wX2MyMl9yZWFkOwogCXU4IG9wX2MyMl93cml0ZTsKIH07Cg==
+--------------AD416139D0778CA4E14A5F69--
