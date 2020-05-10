@@ -2,115 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D5171CCD5F
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 21:56:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D29141CCE41
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 23:46:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728873AbgEJT45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 15:56:57 -0400
-Received: from smtprelay0108.hostedemail.com ([216.40.44.108]:50394 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728468AbgEJT44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 15:56:56 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 96E952C14;
-        Sun, 10 May 2020 19:56:55 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2559:2562:2828:2902:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3870:3871:3872:3873:4250:4321:5007:6119:7903:8660:8957:10004:10400:10848:11026:11232:11658:11914:12043:12297:12555:12740:12760:12895:13095:13148:13230:13439:14180:14181:14659:14721:21060:21080:21324:21433:21451:21627:21809:21819:21939:30012:30022:30034:30054:30062:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: bag48_596f82e07ea1f
-X-Filterd-Recvd-Size: 3524
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf19.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 10 May 2020 19:56:54 +0000 (UTC)
-Message-ID: <19cc4fe7238358988950970a6f8af68a31b2e4bd.camel@perches.com>
-Subject: Re: [PATCH net-next] checkpatch: warn about uses of ENOTSUPP
-From:   Joe Perches <joe@perches.com>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Date:   Sun, 10 May 2020 12:56:53 -0700
-In-Reply-To: <20200510185148.2230767-1-kuba@kernel.org>
-References: <20200510185148.2230767-1-kuba@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
+        id S1727771AbgEJVqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 17:46:33 -0400
+Received: from correo.us.es ([193.147.175.20]:58468 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729240AbgEJVqd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 17:46:33 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D194EFB446
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 23:46:29 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B9482115416
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 23:46:29 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id AEA7E11540C; Sun, 10 May 2020 23:46:29 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 79F9E11540B;
+        Sun, 10 May 2020 23:46:27 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 10 May 2020 23:46:27 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 5938942EF4E1;
+        Sun, 10 May 2020 23:46:27 +0200 (CEST)
+Date:   Sun, 10 May 2020 23:46:27 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] netfilter: nf_conntrack_pptp: prevent buffer
+ overflows in debug code
+Message-ID: <20200510214627.GA7721@salvia>
+References: <20200506101753.GD77004@mwanda>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="IS0zKkzwUGydFO0o"
+Content-Disposition: inline
+In-Reply-To: <20200506101753.GD77004@mwanda>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2020-05-10 at 11:51 -0700, Jakub Kicinski wrote:
-> ENOTSUPP often feels like the right error code to use, but it's
-> in fact not a standard Unix error. E.g.:
 
-It is SUSv3 though.
+--IS0zKkzwUGydFO0o
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> $ python
-> > > > import errno
-> > > > errno.errorcode[errno.ENOTSUPP]
-> Traceback (most recent call last):
->   File "<stdin>", line 1, in <module>
-> AttributeError: module 'errno' has no attribute 'ENOTSUPP'
-> 
-> There were numerous commits converting the uses back to EOPNOTSUPP
-> but in some cases we are stuck with the high error code for backward
-> compatibility reasons.
-> 
-> Let's try prevent more ENOTSUPPs from getting into the kernel.
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> Hi Joe, I feel like I already talked to you about this, but I lost
-> my email archive, so appologies if you already said no.
+Hi Dan,
 
-Not so far as I can tell.
+On Wed, May 06, 2020 at 01:17:53PM +0300, Dan Carpenter wrote:
+> Smatch complains that the value for "cmd" comes from the network and
+> can't be trusted.  The value is actually checked at the end of these
+> functions so I just copied that here as well.
 
-This seems OK to me, but using checkpatch -f should probably
-not show this error.
+I'm attaching another patch, it's based on yours.
 
-You might include a link to where Andrew Lunn suggested it
-in the commit message.  I didn't find it with a trivial search.
+It's basically adding a pptp_msg_name() helper function, which is
+probably what should have been done in this code since the beginning.
 
-> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-[]
-> @@ -4199,6 +4199,14 @@ sub process {
->  			     "ENOSYS means 'invalid syscall nr' and nothing else\n" . $herecurr);
->  		}
->  
-> +# ENOTSUPP is not a standard error code and should be avoided.
-> +# Folks usually mean EOPNOTSUPP (also called ENOTSUP), when they type ENOTSUPP.
-> +# Similarly to ENOSYS warning a small number of false positives is expected.
-> +		if ($line =~ /\bENOTSUPP\b/) {
+There are many of msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] :
+pptp_msg_name[0].
 
-So to avoid having newbies and others trying to convert
-existing uses in files using checkpatch.pl -f, maybe:
----
- scripts/checkpatch.pl | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Thank you.
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index e5b6b9aa21d6..f1bc81d4d97c 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -4244,6 +4244,17 @@ sub process {
- 			     "ENOSYS means 'invalid syscall nr' and nothing else\n" . $herecurr);
- 		}
+--IS0zKkzwUGydFO0o
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="dan.patch"
+
+commit 8e6a4946266557234412cac3a5adbe88df974dd7
+Author: Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Wed May 6 13:17:53 2020 +0300
+
+    netfilter: nf_conntrack_pptp: prevent buffer overflows in debug code
+    
+    Smatch complains that the value for "cmd" comes from the network and
+    can't be trusted.
+    
+    Fixes: f09943fefe6b ("[NETFILTER]: nf_conntrack/nf_nat: add PPTP helper port")
+    Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+    Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+
+diff --git a/include/linux/netfilter/nf_conntrack_pptp.h b/include/linux/netfilter/nf_conntrack_pptp.h
+index fcc409de31a4..6a4ff6d5ebc2 100644
+--- a/include/linux/netfilter/nf_conntrack_pptp.h
++++ b/include/linux/netfilter/nf_conntrack_pptp.h
+@@ -10,7 +10,7 @@
+ #include <net/netfilter/nf_conntrack_expect.h>
+ #include <uapi/linux/netfilter/nf_conntrack_tuple_common.h>
  
-+# ENOTSUPP is not a standard error code and should be avoided in new patches.
-+# Folks usually mean EOPNOTSUPP (also called ENOTSUP), when they type ENOTSUPP.
-+# Similarly to ENOSYS warning a small number of false positives is expected.
-+		if (~$file && $line =~ /\bENOTSUPP\b/) {
-+			if (WARN("ENOTSUPP",
-+				 "ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP\n" . $herecurr) &&
-+			    $fix) {
-+				$fixed[$fixlinenr] =~ s/\bENOTSUPP\b/EOPNOTSUPP/;
-+			}
-+		}
+-extern const char *const pptp_msg_name[];
++extern const char *const pptp_msg_name(u_int16_t msg);
+ 
+ /* state of the control session */
+ enum pptp_ctrlsess_state {
+diff --git a/net/ipv4/netfilter/nf_nat_pptp.c b/net/ipv4/netfilter/nf_nat_pptp.c
+index 3c25a467b3ef..7afde8828b4c 100644
+--- a/net/ipv4/netfilter/nf_nat_pptp.c
++++ b/net/ipv4/netfilter/nf_nat_pptp.c
+@@ -166,8 +166,7 @@ pptp_outbound_pkt(struct sk_buff *skb,
+ 		break;
+ 	default:
+ 		pr_debug("unknown outbound packet 0x%04x:%s\n", msg,
+-			 msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] :
+-					       pptp_msg_name[0]);
++			 pptp_msg_name(msg));
+ 		fallthrough;
+ 	case PPTP_SET_LINK_INFO:
+ 		/* only need to NAT in case PAC is behind NAT box */
+@@ -268,9 +267,7 @@ pptp_inbound_pkt(struct sk_buff *skb,
+ 		pcid_off = offsetof(union pptp_ctrl_union, setlink.peersCallID);
+ 		break;
+ 	default:
+-		pr_debug("unknown inbound packet %s\n",
+-			 msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] :
+-					       pptp_msg_name[0]);
++		pr_debug("unknown inbound packet %s\n", pptp_msg_name(msg));
+ 		fallthrough;
+ 	case PPTP_START_SESSION_REQUEST:
+ 	case PPTP_START_SESSION_REPLY:
+diff --git a/net/netfilter/nf_conntrack_pptp.c b/net/netfilter/nf_conntrack_pptp.c
+index a971183f11af..512aae5bdb66 100644
+--- a/net/netfilter/nf_conntrack_pptp.c
++++ b/net/netfilter/nf_conntrack_pptp.c
+@@ -72,7 +72,7 @@ EXPORT_SYMBOL_GPL(nf_nat_pptp_hook_expectfn);
+ 
+ #if defined(DEBUG) || defined(CONFIG_DYNAMIC_DEBUG)
+ /* PptpControlMessageType names */
+-const char *const pptp_msg_name[] = {
++static const char *const pptp_msg_name_array[PPTP_MSG_MAX + 1] = {
+ 	"UNKNOWN_MESSAGE",
+ 	"START_SESSION_REQUEST",
+ 	"START_SESSION_REPLY",
+@@ -90,6 +90,14 @@ const char *const pptp_msg_name[] = {
+ 	"WAN_ERROR_NOTIFY",
+ 	"SET_LINK_INFO"
+ };
 +
- # function brace can't be on same line, except for #defines of do while,
- # or if closed on same line
- 		if ($perl_version_ok &&
++const char *const pptp_msg_name(u_int16_t msg)
++{
++	if (msg > PPTP_MSG_MAX)
++		return pptp_msg_name_array[0];
++
++	return pptp_msg_name_array[msg];
++}
+ EXPORT_SYMBOL(pptp_msg_name);
+ #endif
+ 
+@@ -276,7 +284,7 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ 	typeof(nf_nat_pptp_hook_inbound) nf_nat_pptp_inbound;
+ 
+ 	msg = ntohs(ctlh->messageType);
+-	pr_debug("inbound control message %s\n", pptp_msg_name[msg]);
++	pr_debug("inbound control message %s\n", pptp_msg_name(msg));
+ 
+ 	switch (msg) {
+ 	case PPTP_START_SESSION_REPLY:
+@@ -311,7 +319,7 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ 		pcid = pptpReq->ocack.peersCallID;
+ 		if (info->pns_call_id != pcid)
+ 			goto invalid;
+-		pr_debug("%s, CID=%X, PCID=%X\n", pptp_msg_name[msg],
++		pr_debug("%s, CID=%X, PCID=%X\n", pptp_msg_name(msg),
+ 			 ntohs(cid), ntohs(pcid));
+ 
+ 		if (pptpReq->ocack.resultCode == PPTP_OUTCALL_CONNECT) {
+@@ -328,7 +336,7 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ 			goto invalid;
+ 
+ 		cid = pptpReq->icreq.callID;
+-		pr_debug("%s, CID=%X\n", pptp_msg_name[msg], ntohs(cid));
++		pr_debug("%s, CID=%X\n", pptp_msg_name(msg), ntohs(cid));
+ 		info->cstate = PPTP_CALL_IN_REQ;
+ 		info->pac_call_id = cid;
+ 		break;
+@@ -347,7 +355,7 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ 		if (info->pns_call_id != pcid)
+ 			goto invalid;
+ 
+-		pr_debug("%s, PCID=%X\n", pptp_msg_name[msg], ntohs(pcid));
++		pr_debug("%s, PCID=%X\n", pptp_msg_name(msg), ntohs(pcid));
+ 		info->cstate = PPTP_CALL_IN_CONF;
+ 
+ 		/* we expect a GRE connection from PAC to PNS */
+@@ -357,7 +365,7 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ 	case PPTP_CALL_DISCONNECT_NOTIFY:
+ 		/* server confirms disconnect */
+ 		cid = pptpReq->disc.callID;
+-		pr_debug("%s, CID=%X\n", pptp_msg_name[msg], ntohs(cid));
++		pr_debug("%s, CID=%X\n", pptp_msg_name(msg), ntohs(cid));
+ 		info->cstate = PPTP_CALL_NONE;
+ 
+ 		/* untrack this call id, unexpect GRE packets */
+@@ -384,7 +392,7 @@ pptp_inbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ invalid:
+ 	pr_debug("invalid %s: type=%d cid=%u pcid=%u "
+ 		 "cstate=%d sstate=%d pns_cid=%u pac_cid=%u\n",
+-		 msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] : pptp_msg_name[0],
++		 pptp_msg_name(msg),
+ 		 msg, ntohs(cid), ntohs(pcid),  info->cstate, info->sstate,
+ 		 ntohs(info->pns_call_id), ntohs(info->pac_call_id));
+ 	return NF_ACCEPT;
+@@ -404,7 +412,7 @@ pptp_outbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ 	typeof(nf_nat_pptp_hook_outbound) nf_nat_pptp_outbound;
+ 
+ 	msg = ntohs(ctlh->messageType);
+-	pr_debug("outbound control message %s\n", pptp_msg_name[msg]);
++	pr_debug("outbound control message %s\n", pptp_msg_name(msg));
+ 
+ 	switch (msg) {
+ 	case PPTP_START_SESSION_REQUEST:
+@@ -426,7 +434,7 @@ pptp_outbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ 		info->cstate = PPTP_CALL_OUT_REQ;
+ 		/* track PNS call id */
+ 		cid = pptpReq->ocreq.callID;
+-		pr_debug("%s, CID=%X\n", pptp_msg_name[msg], ntohs(cid));
++		pr_debug("%s, CID=%X\n", pptp_msg_name(msg), ntohs(cid));
+ 		info->pns_call_id = cid;
+ 		break;
+ 
+@@ -440,7 +448,7 @@ pptp_outbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ 		pcid = pptpReq->icack.peersCallID;
+ 		if (info->pac_call_id != pcid)
+ 			goto invalid;
+-		pr_debug("%s, CID=%X PCID=%X\n", pptp_msg_name[msg],
++		pr_debug("%s, CID=%X PCID=%X\n", pptp_msg_name(msg),
+ 			 ntohs(cid), ntohs(pcid));
+ 
+ 		if (pptpReq->icack.resultCode == PPTP_INCALL_ACCEPT) {
+@@ -480,7 +488,7 @@ pptp_outbound_pkt(struct sk_buff *skb, unsigned int protoff,
+ invalid:
+ 	pr_debug("invalid %s: type=%d cid=%u pcid=%u "
+ 		 "cstate=%d sstate=%d pns_cid=%u pac_cid=%u\n",
+-		 msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] : pptp_msg_name[0],
++		 pptp_msg_name(msg),
+ 		 msg, ntohs(cid), ntohs(pcid),  info->cstate, info->sstate,
+ 		 ntohs(info->pns_call_id), ntohs(info->pac_call_id));
+ 	return NF_ACCEPT;
 
-
+--IS0zKkzwUGydFO0o--
