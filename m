@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CAB71CCCD8
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 20:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCB451CCCDF
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 20:22:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729122AbgEJSOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 14:14:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52222 "EHLO mail.kernel.org"
+        id S1728926AbgEJSVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 14:21:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55102 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728381AbgEJSOj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 14:14:39 -0400
+        id S1728381AbgEJSVn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 14:21:43 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 60F9320801;
-        Sun, 10 May 2020 18:14:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 71C1520801;
+        Sun, 10 May 2020 18:21:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589134478;
-        bh=WwBN30P51vXg7WQY6bZLhZOJRsWCwmtP9TBZN7uIZhQ=;
+        s=default; t=1589134902;
+        bh=c3BcTIC6SXMFE4zC+I8LcvNAaL7wSIvsn8x+Ob9psn0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pI2zBJTzs4fs8MD5RXCSBWNvQTJBOXv2uTnUIdc5viZ/7JdszbwLdd+EECVaUxu7K
-         /MHurI6PyeVKKB69u6YS4r2l02Mb3zF9vWTb2LGsKdXjH8Vp5M5mpFClv2R6p15ZIb
-         Jv3ZCWC3Rjb/v9FG4uHWObC+8VG+EkOct8x0EiP4=
-Date:   Sun, 10 May 2020 11:14:36 -0700
+        b=LPva1NKCjJ4OXpgh+4/WW5Q/hhkMFLAgBAmxWHOJ9C7T+xecxTYjgN+eD8qadlwaD
+         7QrXfzrNKls6yMsVV6xsY5oVGmjuSoDCmc3MLGDtuso773Hwerfuit4QCLWQwaip87
+         2nCEIIx1+Ut8f1qJxpT8Tnp1MFfsb06JpN3zImrg=
+Date:   Sun, 10 May 2020 11:21:40 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin King <colin.king@canonical.com>
-Cc:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: qmi_wwan: remove redundant assignment to
- variable status
-Message-ID: <20200510111436.66d8838f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200509215756.506840-2-colin.king@canonical.com>
-References: <20200509215756.506840-1-colin.king@canonical.com>
-        <20200509215756.506840-2-colin.king@canonical.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 0/4] net: phy: broadcom: cable tester support
+Message-ID: <20200510112140.0203889e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200509223714.30855-1-michael@walle.cc>
+References: <20200509223714.30855-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,14 +44,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  9 May 2020 22:57:56 +0100 Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Sun, 10 May 2020 00:37:10 +0200 Michael Walle wrote:
+> Add cable tester support for the Broadcom PHYs. Support for it was
+> developed on a BCM54140 Quad PHY which RDB register access.
 > 
-> The variable status is being initializeed with a value that is never read
-> and it is being updated later with a new value. The initialization
-> is redundant and can be removed.
+> If there is a link partner the results are not as good as with an open
+> cable. I guess we could retry if the measurement until all pairs had at
+> least one valid result.
 > 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Please note that this patch depends on Andrew's latest cable testing
+> series:
+> https://lore.kernel.org/netdev/20200509162851.362346-1-andrew@lunn.ch/
 
-Applied the 3 fixes from Saturday to net-next, thanks.
+Thanks for posting the patches early Michael, it's definitely useful,
+but I'd advise to post as RFC before the dependency is in the tree.
+CI bots won't understand English well enough to take care of this
+dependency, so we're loosing whatever test coverage they provide..
+
+Please repost once Andrew's patches get merged, I'm marking these as
+RFC in patchwork for now.
