@@ -2,81 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 409D71CCA5F
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 12:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A0551CCB03
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 14:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728882AbgEJK4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 06:56:00 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:50232 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728689AbgEJK4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 06:56:00 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from roid@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 10 May 2020 13:55:55 +0300
-Received: from dev-r-vrt-138.mtr.labs.mlnx (dev-r-vrt-138.mtr.labs.mlnx [10.212.138.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04AAttoN009099;
-        Sun, 10 May 2020 13:55:55 +0300
-From:   Roi Dayan <roid@mellanox.com>
-To:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, davem@davemloft.net
-Cc:     Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>
-Subject: [PATCH net] netfilter: nf_flow_table_offload: Remove WQ_MEM_RECLAIM from workqueue
-Date:   Sun, 10 May 2020 13:55:43 +0300
-Message-Id: <20200510105543.13546-1-roid@mellanox.com>
-X-Mailer: git-send-email 2.8.4
+        id S1728868AbgEJM1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 08:27:09 -0400
+Received: from mga17.intel.com ([192.55.52.151]:7062 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726863AbgEJM1J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 08:27:09 -0400
+IronPort-SDR: G1DqxdG7f+mp9v05dgHhl7UshxhKig6GhMlCSXvAotdQeBENEcrJ206romjbDybXUwbcRmnKvs
+ mAz0LklaSLjg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2020 05:27:09 -0700
+IronPort-SDR: KqFCW83fnqux2wcNKY31QPNSey7GZp3ISnG270L13hQlY6qG+KeRFU0nf9sY+CePlmRHz24Em1
+ XN7F0xjrn7Ew==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,375,1583222400"; 
+   d="scan'208";a="463091192"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 10 May 2020 05:27:07 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1jXl2w-000IZc-L8; Sun, 10 May 2020 20:27:06 +0800
+Date:   Sun, 10 May 2020 20:26:56 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, Vladimir Oltean <olteanv@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] dsa: sja1105: fix semicolon.cocci warnings
+Message-ID: <20200510122656.GA13196@fc4585639931>
+References: <202005102051.kMOxhZW6%lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202005102051.kMOxhZW6%lkp@intel.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This workqueue is in charge of handling offloaded flow tasks like
-add/del/stats we should not use WQ_MEM_RECLAIM flag.
-The flag can result in the following warning.
+From: kbuild test robot <lkp@intel.com>
 
-[  485.557189] ------------[ cut here ]------------
-[  485.562976] workqueue: WQ_MEM_RECLAIM nf_flow_table_offload:flow_offload_worr
-[  485.562985] WARNING: CPU: 7 PID: 3731 at kernel/workqueue.c:2610 check_flush0
-[  485.590191] Kernel panic - not syncing: panic_on_warn set ...
-[  485.597100] CPU: 7 PID: 3731 Comm: kworker/u112:8 Not tainted 5.7.0-rc1.21802
-[  485.606629] Hardware name: Dell Inc. PowerEdge R730/072T6D, BIOS 2.4.3 01/177
-[  485.615487] Workqueue: nf_flow_table_offload flow_offload_work_handler [nf_f]
-[  485.624834] Call Trace:
-[  485.628077]  dump_stack+0x50/0x70
-[  485.632280]  panic+0xfb/0x2d7
-[  485.636083]  ? check_flush_dependency+0x110/0x130
-[  485.641830]  __warn.cold.12+0x20/0x2a
-[  485.646405]  ? check_flush_dependency+0x110/0x130
-[  485.652154]  ? check_flush_dependency+0x110/0x130
-[  485.657900]  report_bug+0xb8/0x100
-[  485.662187]  ? sched_clock_cpu+0xc/0xb0
-[  485.666974]  do_error_trap+0x9f/0xc0
-[  485.671464]  do_invalid_op+0x36/0x40
-[  485.675950]  ? check_flush_dependency+0x110/0x130
-[  485.681699]  invalid_op+0x28/0x30
+drivers/net/dsa/sja1105/sja1105_ethtool.c:481:11-12: Unneeded semicolon
 
-Fixes: 7da182a998d6 ("netfilter: flowtable: Use work entry per offload command")
-Reported-by: Marcelo Ricardo Leitner <mleitner@redhat.com>
-Signed-off-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Paul Blakey <paulb@mellanox.com>
+
+ Remove unneeded semicolon.
+
+Generated by: scripts/coccinelle/misc/semicolon.cocci
+
+Fixes: ae1804de93f6 ("dsa: sja1105: dynamically allocate stats structure")
+CC: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: kbuild test robot <lkp@intel.com>
 ---
- net/netfilter/nf_flow_table_offload.c | 2 +-
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   30e2206e11ce27ae910cc0dab21472429e400a87
+commit: ae1804de93f6f1626906567ae7deec8e0111259d [6966/7905] dsa: sja1105: dynamically allocate stats structure
+
+ sja1105_ethtool.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index e3b099c14eff..148d3bd11fbc 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -1056,7 +1056,7 @@ static struct flow_indr_block_entry block_ing_entry = {
- int nf_flow_table_offload_init(void)
- {
- 	nf_flow_offload_wq  = alloc_workqueue("nf_flow_table_offload",
--					      WQ_UNBOUND | WQ_MEM_RECLAIM, 0);
-+					      WQ_UNBOUND, 0);
- 	if (!nf_flow_offload_wq)
- 		return -ENOMEM;
+--- a/drivers/net/dsa/sja1105/sja1105_ethtool.c
++++ b/drivers/net/dsa/sja1105/sja1105_ethtool.c
+@@ -478,7 +478,7 @@ void sja1105_get_ethtool_stats(struct ds
  
--- 
-2.8.4
-
+ 	if (priv->info->device_id == SJA1105E_DEVICE_ID ||
+ 	    priv->info->device_id == SJA1105T_DEVICE_ID)
+-		goto out;;
++		goto out;
+ 
+ 	memset(data + k, 0, ARRAY_SIZE(sja1105pqrs_extra_port_stats) *
+ 			sizeof(u64));
