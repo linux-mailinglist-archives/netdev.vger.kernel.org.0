@@ -2,104 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 183E01CCA08
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 12:02:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 409D71CCA5F
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 12:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728098AbgEJKCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 06:02:31 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:36215 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725994AbgEJKCa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 06:02:30 -0400
-Received: by mail-oi1-f195.google.com with SMTP id x7so11643762oic.3;
-        Sun, 10 May 2020 03:02:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uhGhXkwAnudsO1fllJWrpsXdeLLIzy97nFY9CXO1+nw=;
-        b=OAy+hG6hd1y/HtIUzzOIJQb//g+Wr30ddCKZCigY4tdApsP2QaIQJ6TBMGfmxfCpN4
-         /XqvJOq8MOcxe8UxdBFK01i1GNVvzkMU8Q5TMMghiQucz5HBUjyLlp9G9UoklVBREgjg
-         21tB/qoUDm6nhWOVFLhrHj7SdOBqeQLAd1qTFmoqxcJt7AavXWjSN2SBGvxFus7UMj4o
-         H0d8iOuEPRob8IIWRudRH+ocAzHcpbWWyYBn/MkoIisX4N5ypThQXnY9Q+oTCeXHID6g
-         gpZfZ2sQUsFFoG2ZuEBBzvXWf2nY/ovztUKo2Hhxe4eTg6EfJVtTRU9q+e8JzX6JimYc
-         fgKg==
-X-Gm-Message-State: AGi0PuZYYUYxFH4eNTCjyZ+tVWncrvKXElB8uFTsAKD+/JBsqjAfbn2L
-        l23it4TPdZe4U6Oj/f5EIQBKAcszswgcoLske9w=
-X-Google-Smtp-Source: APiQypI6MNOlMp5xNWwpK2JOi1MxHLYjrx64et3fqx4JVNC9XxBJFG/hK3FNkiB6iaWh1YqlXk9JjJ7Uj8XOOec3M4Q=
-X-Received: by 2002:aca:f541:: with SMTP id t62mr15608111oih.148.1589104949874;
- Sun, 10 May 2020 03:02:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200508223216.6611-1-f.fainelli@gmail.com> <CAMuHMdU2A1rzqsnNZFt-Gd+ZO5qc6Mzeyunn-LXpbxk_6zq-Ng@mail.gmail.com>
- <ebac4532-6dae-5609-9629-ba10197671c3@gmail.com>
-In-Reply-To: <ebac4532-6dae-5609-9629-ba10197671c3@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Sun, 10 May 2020 12:02:18 +0200
-Message-ID: <CAMuHMdVKAjh1TyNOFdNP_zXy8RNU8kD-Saoqha+wjcrR0v5YvQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: broadcom: Imply BROADCOM_PHY for BCMGENET
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tal Gilboa <talgi@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andy Gospodarek <gospo@broadcom.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728882AbgEJK4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 06:56:00 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:50232 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728689AbgEJK4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 06:56:00 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from roid@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 10 May 2020 13:55:55 +0300
+Received: from dev-r-vrt-138.mtr.labs.mlnx (dev-r-vrt-138.mtr.labs.mlnx [10.212.138.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04AAttoN009099;
+        Sun, 10 May 2020 13:55:55 +0300
+From:   Roi Dayan <roid@mellanox.com>
+To:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, davem@davemloft.net
+Cc:     Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>
+Subject: [PATCH net] netfilter: nf_flow_table_offload: Remove WQ_MEM_RECLAIM from workqueue
+Date:   Sun, 10 May 2020 13:55:43 +0300
+Message-Id: <20200510105543.13546-1-roid@mellanox.com>
+X-Mailer: git-send-email 2.8.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+This workqueue is in charge of handling offloaded flow tasks like
+add/del/stats we should not use WQ_MEM_RECLAIM flag.
+The flag can result in the following warning.
 
-On Sat, May 9, 2020 at 7:12 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> On 5/9/2020 12:38 AM, Geert Uytterhoeven wrote:
-> > On Sat, May 9, 2020 at 12:32 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >> The GENET controller on the Raspberry Pi 4 (2711) is typically
-> >> interfaced with an external Broadcom PHY via a RGMII electrical
-> >> interface. To make sure that delays are properly configured at the PHY
-> >> side, ensure that we get a chance to have the dedicated Broadcom PHY
-> >> driver (CONFIG_BROADCOM_PHY) enabled for this to happen.
-> >
-> > I guess it can be interfaced to a different external PHY, too?
->
-> Yes, although this has not happened yet to the best of my knowledge.
->
-> >
-> >> Fixes: 402482a6a78e ("net: bcmgenet: Clear ID_MODE_DIS in EXT_RGMII_OOB_CTRL when not needed")
-> >> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> >> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> >
-> >> --- a/drivers/net/ethernet/broadcom/Kconfig
-> >> +++ b/drivers/net/ethernet/broadcom/Kconfig
-> >> @@ -69,6 +69,7 @@ config BCMGENET
-> >>          select BCM7XXX_PHY
-> >>          select MDIO_BCM_UNIMAC
-> >>          select DIMLIB
-> >> +       imply BROADCOM_PHY if ARCH_BCM2835
-> >
-> > Which means support for the BROADCOM_PHY is always included
-> > on ARCH_BCM2835, even if a different PHY is used?
->
-> It is included by default on  and can be deselected if needed, which is
-> exactly what we want here, a sane default, but without the inflexibility
-> of "select".
+[  485.557189] ------------[ cut here ]------------
+[  485.562976] workqueue: WQ_MEM_RECLAIM nf_flow_table_offload:flow_offload_worr
+[  485.562985] WARNING: CPU: 7 PID: 3731 at kernel/workqueue.c:2610 check_flush0
+[  485.590191] Kernel panic - not syncing: panic_on_warn set ...
+[  485.597100] CPU: 7 PID: 3731 Comm: kworker/u112:8 Not tainted 5.7.0-rc1.21802
+[  485.606629] Hardware name: Dell Inc. PowerEdge R730/072T6D, BIOS 2.4.3 01/177
+[  485.615487] Workqueue: nf_flow_table_offload flow_offload_work_handler [nf_f]
+[  485.624834] Call Trace:
+[  485.628077]  dump_stack+0x50/0x70
+[  485.632280]  panic+0xfb/0x2d7
+[  485.636083]  ? check_flush_dependency+0x110/0x130
+[  485.641830]  __warn.cold.12+0x20/0x2a
+[  485.646405]  ? check_flush_dependency+0x110/0x130
+[  485.652154]  ? check_flush_dependency+0x110/0x130
+[  485.657900]  report_bug+0xb8/0x100
+[  485.662187]  ? sched_clock_cpu+0xc/0xb0
+[  485.666974]  do_error_trap+0x9f/0xc0
+[  485.671464]  do_invalid_op+0x36/0x40
+[  485.675950]  ? check_flush_dependency+0x110/0x130
+[  485.681699]  invalid_op+0x28/0x30
 
-I stand corrected: I can confirm the "imply" no longer selects the target
-symbol, but merely changes the default.
+Fixes: 7da182a998d6 ("netfilter: flowtable: Use work entry per offload command")
+Reported-by: Marcelo Ricardo Leitner <mleitner@redhat.com>
+Signed-off-by: Roi Dayan <roid@mellanox.com>
+Reviewed-by: Paul Blakey <paulb@mellanox.com>
+---
+ net/netfilter/nf_flow_table_offload.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+index e3b099c14eff..148d3bd11fbc 100644
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -1056,7 +1056,7 @@ static struct flow_indr_block_entry block_ing_entry = {
+ int nf_flow_table_offload_init(void)
+ {
+ 	nf_flow_offload_wq  = alloc_workqueue("nf_flow_table_offload",
+-					      WQ_UNBOUND | WQ_MEM_RECLAIM, 0);
++					      WQ_UNBOUND, 0);
+ 	if (!nf_flow_offload_wq)
+ 		return -ENOMEM;
+ 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.8.4
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
