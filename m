@@ -2,91 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78DE71CC5BD
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 02:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CABAE1CC5C1
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 02:30:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbgEJA1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 20:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53890 "EHLO
+        id S1728802AbgEJAal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 20:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726356AbgEJA1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 20:27:36 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED080C061A0C;
-        Sat,  9 May 2020 17:27:34 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id x15so2331314pfa.1;
-        Sat, 09 May 2020 17:27:34 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726356AbgEJAal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 20:30:41 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B19EC061A0C;
+        Sat,  9 May 2020 17:30:39 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id d22so2714799pgk.3;
+        Sat, 09 May 2020 17:30:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=ntICPQQf/XPztEleueLnx8mDIcrlCQG5u+4L30w6dNI=;
-        b=U1zNe4oV/5t5w/0/sDR1nCzUJhvWPBFebik68lo6xvLig5On5Nxhra7pOVFrTIHEVd
-         BiQsFBbfLMhLqUSFYnY3LRJrSEyBkQIKswF6Xu/+UHP/kp9XY1pbQdAzAkSV6zmL6iyg
-         gUwPCeCOPs/iAG6CrnMEdYdkBUbkDNYTu1VBfSbCLf//mEO3u+1FIiyxk3gB/ZXU0WqY
-         vj63bOTIGAmd8U/lumFT5FA1vjg64k3c8rr3YRvFb7PZTjc8FFAFjqMMZ79jxfUtqVpB
-         qoOg6WkIBRrm1LT7F+gxTBPf1RJDmXp/kDefrrh8G0AN+dFT+wLK+PiepFtnN5SXt0/V
-         lrfA==
+        bh=1TnOjzAhaCG9wfDY8OdCpYMCZYj6rLcaf71uTBktBf4=;
+        b=Lyr7Gu5AuMuU9rVrbGtScXaswAmFWHpkOoI4QZ+toMPsTt5F0Kp4/y/mYQXw9V+gHl
+         u0HyZEVbEwyKNWo1lubWjhSJja9+c0/Lw19HEaAIo2ZskZciGNxyzV7jKkQdPNAu1JTu
+         DU8CkeWdmw+LltBDqTya6D6rq8CSymECGvEMekHnBwosdFYV0w0pEG4jtuclcTcK0Lwz
+         YahejnDakW9GjaDrHbi5bFwzveL6+Kr5XP4YXloCkIKFbe96lMszepmkCGcthrNr9YX9
+         hQJAAqSn8GmMkDptHqK0uPUQro8hBEey+zYplYXnW4vY8K26ZmG5Xg7QwrLhm90kUHB6
+         IugA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ntICPQQf/XPztEleueLnx8mDIcrlCQG5u+4L30w6dNI=;
-        b=k2d7F5oo5AjvpefnS+6FB4c8kYfIJRn0I20aDQv3Ik0pAL3k8Y0FgdXeYjRt60cXjT
-         hIro5KoYlUxtnQz4k+ZYLzVEtxWnwqN9A4nDzhlkIaholnt0m1pKcFPy6q+md2E91DQN
-         rmFA5FZMcuWTgrn4JBENzgScZ7u13/ZNjbVJZCcErTOM50FxFOL84SIDz/HmUXsJi75q
-         6AsOXb0B5q1I8AA79djxPibAWgXCnOfClwBOHROQmttygiStqVQd2L1aP2Q5swyFpLIg
-         2cjNg9EMEpnemRGKLimcyWhct7yeDpNozaPnlY8gka+me3HewZ9YIhGpqKAFBcoGwCMR
-         2ckA==
-X-Gm-Message-State: AGi0Pua8n5OeQWwBK+yyCm6BoES37bW2qXxWUfU24V38Et0GSD2rhMlv
-        PRecJc92VHbLW3U4u+cKZ6A=
-X-Google-Smtp-Source: APiQypKvYxAMj6jjV/Nf7rHsgeLKR4z9bneKfmK0DsM+6rppl0GoU3dXBhuxPCTZNoqrm8l1HXmmcw==
-X-Received: by 2002:a62:8241:: with SMTP id w62mr3668343pfd.187.1589070454331;
-        Sat, 09 May 2020 17:27:34 -0700 (PDT)
+        bh=1TnOjzAhaCG9wfDY8OdCpYMCZYj6rLcaf71uTBktBf4=;
+        b=PiiUATMRTZOEwzSKKRu/FxoKA0R6cOmdFyvnx/PD1F0aYbBiO1IYPF06YvnJzvadYq
+         NnxOOAxK1kREfIUVwCA7HUG+k3nWb/X0f0AP29oPjmpk7q0RKkDyLPXvVNA6TNTpRzJ8
+         Z7rAKnTFjXG45iI6KftkS9WOlcL0qRMUnbe6dsICQDzOE74KmhRPmRbTHoBbf6TIHBh6
+         NLcBT9EnATOmLVKONv5VVDPa9umB87cCUvjVoswUMj/1x9qBcJGip919N54pH4byN+cJ
+         rdsVsY44lCQpilJakAW1FwC04vX/e/jVwz/6GG5ap4wP0EHA9/25A7lYlh2oKyltrgwI
+         b9/Q==
+X-Gm-Message-State: AGi0PuZzLDXPu5awU1p/I7pHsjl4U7n5ImIk3TzxYOmsYicq31nZNqOp
+        MFy99fqxgh8IzLAvImWH5UI=
+X-Google-Smtp-Source: APiQypIwMtb5CIsnCLEvtBSto/KEoPx9gGCZybIg1Zj53CflCmi6ym3m8DuiNQgxKI7Z8bLXfukNeQ==
+X-Received: by 2002:a63:e602:: with SMTP id g2mr8485819pgh.380.1589070639066;
+        Sat, 09 May 2020 17:30:39 -0700 (PDT)
 Received: from ast-mbp ([2620:10d:c090:400::5:7bdb])
-        by smtp.gmail.com with ESMTPSA id 9sm5853997pju.1.2020.05.09.17.27.32
+        by smtp.gmail.com with ESMTPSA id o9sm5926080pje.47.2020.05.09.17.30.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 May 2020 17:27:33 -0700 (PDT)
-Date:   Sat, 9 May 2020 17:27:31 -0700
+        Sat, 09 May 2020 17:30:38 -0700 (PDT)
+Date:   Sat, 9 May 2020 17:30:36 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
         Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next v4 00/21] bpf: implement bpf iterator for kernel
- data
-Message-ID: <20200510002731.ztx2inlfs65x2izc@ast-mbp>
+Subject: Re: [PATCH bpf-next v4 05/21] bpf: implement bpf_seq_read() for bpf
+ iterator
+Message-ID: <20200510003036.3xzunae5nd75ckc2@ast-mbp>
 References: <20200509175859.2474608-1-yhs@fb.com>
+ <20200509175904.2475468-1-yhs@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200509175859.2474608-1-yhs@fb.com>
+In-Reply-To: <20200509175904.2475468-1-yhs@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 09, 2020 at 10:58:59AM -0700, Yonghong Song wrote:
-> 
-> Changelog:
->   v3 -> v4:
->     - in bpf_seq_read(), if start() failed with an error, return that
->       error to user space (Andrii)
->     - in bpf_seq_printf(), if reading kernel memory failed for
->       %s and %p{i,I}{4,6}, set buffer to empty string or address 0.
->       Documented this behavior in uapi header (Andrii)
->     - fix a few error handling issues for bpftool (Andrii)
->     - A few other minor fixes and cosmetic changes.
+On Sat, May 09, 2020 at 10:59:04AM -0700, Yonghong Song wrote:
+> +
+> +		err = seq->op->show(seq, p);
+> +		if (err > 0) {
+> +			seq->count = offs;
 
-Looks great overall. Applied.
-But few follow ups are necessary.
-
-The main gotcha is that new tests need llvm with the fix
-https://reviews.llvm.org/D78466.
-I think it was applied to llvm 10 branch already,
-but please add selftests/bpf/README.rst and mention
-that above llvm commit is necessary to successfully pass the tests.
-Also mention the verifier error that folks will see when llvm is buggy.
-
-Few other nits I noticed in relevant patches.
+as far as I can see this condition can never happen.
+I understand that seq_read() has this logic, but four iterators
+implemented don't exercise this path.
+I guess it's ok to keep it, but may be add warn_once so we notice
+when things change?
