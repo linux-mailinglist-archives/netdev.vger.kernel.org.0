@@ -2,162 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC52F1CCC2A
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 18:15:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 099DD1CCC3E
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 18:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729154AbgEJQPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 12:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58694 "EHLO
+        id S1728630AbgEJQbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 12:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728762AbgEJQPN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 12:15:13 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8FFC061A0C;
-        Sun, 10 May 2020 09:15:12 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id 188so5372476lfa.10;
-        Sun, 10 May 2020 09:15:12 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726446AbgEJQbM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 12:31:12 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06863C061A0C
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:31:12 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id r2so6158137ilo.6
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:31:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cj0uMGGwd/aWJgBMokAal66cvuwiS2g36X+NWguojiY=;
-        b=Jlt5FkVzswaK4nE0BIJUqjEXdPhLaPJUgdGwQETpurC/Hwdg9AHJHmz6srE7pxssOc
-         NbWw4pOYo/js5Te2N0lv4bJ1K1MWgN8EKX8X4jeGXrTuKg2+45/n2Dd3SLnWJxO1nA8g
-         HQo2x3s2s8fpuXU3r6unls8MwQcOruG8XeS+vMfZSMl5H6ePnHhgsgY/K/dqM2hJ+d5I
-         nLCEx6uMdIdZU9jxrH+6jyErJrC5OGogp1ykLm0DIp/MJN+Op/PWUFggC2ry1i+taEyg
-         XYfVfV9phhdJVvYKTZvJL8NvJB8G3mtypdQ2nlRp04zUAxsBV4lS/14Mt8HP9OkPdBk9
-         YJGA==
+         :cc:content-transfer-encoding;
+        bh=R3Lh3zlbp+VgIx64Y0Z3m3xyvnLp02R3HuGaYMYp4Ho=;
+        b=EUikPIJEHM2YJ4VeE4pfAoo+eMWjIT2fteHV/Cy22/B8M6snUOKJmiK81GX1KAN70e
+         gnOWpOk6hQz1znkMRSTBQM5v3O5D2VGZcn4xW40bf42MQqfwika2KVOkweSwUJqZOOn2
+         p6sgmTV4JJKXAldYSScCudwVX78zZRppN1IpKkIzR6+KLxi0Da8mS7ejEeKnkVN+ZNF6
+         0IWZp8JuvpXfbi/aUJzPzJe1Gdp8HE9gNfkgwVfrq1hJbJV7oIfwxGy1ACcTTKSCWZBr
+         tZ9nptawM+kbsheJSzmEvHdhPBB9y5LWyiFeQxw9Rjg2Z+Ht8Rk4DIeO7lwQlYLTv7Aa
+         1N7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cj0uMGGwd/aWJgBMokAal66cvuwiS2g36X+NWguojiY=;
-        b=SpE+bUKYJCbQGpbkoQsaHWVGqiB0WUny9tJUwAMG2Dw5YAekdx/sGXKDJ8Nmx5hJFx
-         ZQidqPXrhmFeLdXB4F8Yse0s4fbthYjQs1gWuMAk+D7jFQVOgnUo++YJ8PelxoQTHGP2
-         SWw9M3AtWeSHsuBHcipE+/IlXibjlWl+jT4MnsMiObco5hBJtWsxepWB4873Ala7ymy7
-         FUV+7hZ5EixeJLFkcrWf4safuViYWTBmimCY7mD6yytK0MeAFpMMmIyaQK80NhPxTpPX
-         nlTtkiyObfeZ42WAntXVL5LKzrEw0fjqDbwJfYsubFUOyrJYNDgyVSdp0Ozt3+9toRdI
-         ScTA==
-X-Gm-Message-State: AOAM532feYuK38FtIoxTZjXk81vIKVpMsAJeHsQ8ozXCWZ9kN4btdsz5
-        kv2E5NPyk5e5A3EDYGkMwhYNsS4J5Y+mgTUT1Ds=
-X-Google-Smtp-Source: ABdhPJxD3btVu2OOBq0kZn2lxFPTk2vwYWgoa5FclsYSd09vt5Xzwx7dl3WUot4Ax6LXHA1zWgD7h0oyg97g+3dIkNk=
-X-Received: by 2002:a19:cbd3:: with SMTP id b202mr8193938lfg.157.1589127311156;
- Sun, 10 May 2020 09:15:11 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=R3Lh3zlbp+VgIx64Y0Z3m3xyvnLp02R3HuGaYMYp4Ho=;
+        b=ZTbriTudkjzZh3O0nbKU2DnFuJoiYLMzWuxXU/LoeLG/m9cWJb/3w7xgXEVK8DlktK
+         4mw7UfqP+93SlTuYdtgE2tDzU6Fs36oHqXkmbkn92eRV7gskdZWusHUC1t6JSeF8F+0N
+         Az/dyV3hlMJkI8CTWp83hn69SLdSnKww4O7NY0NJSbT4bGtIRP8It/1ykc59I/4/jJUa
+         u5BkKQLlzp93SKB1D5uMBJ3yaCf+dlZ+HU6C7C23R5zR3omXi7f39bDdm5yFkdky2W+i
+         qcMING6ZIqNHEVxPb/Ckpx3DGdLqaSbnYrGz1YHaJogXr2/GX10uE7qu+erCPea2LvO9
+         paPQ==
+X-Gm-Message-State: AGi0PubFpBwuzOE1f8KjLY/BWrnAad3dES96pjQGGelnePAkRktNLHCN
+        x+UVgPmoaMSBLQHEoYzYXW6lls4ihkTxy0P4sCI=
+X-Google-Smtp-Source: APiQypJH5HkG/gu/+M0KirfZOtIhOFZCVKtqlrgOHdbA9gA52oA1k3w61MTOCKNFJhxeoPnOB7ECWpd/PnyPnsok/UA=
+X-Received: by 2002:a05:6e02:f81:: with SMTP id v1mr2242784ilo.246.1589128271280;
+ Sun, 10 May 2020 09:31:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200509175859.2474608-1-yhs@fb.com> <20200509175923.2477637-1-yhs@fb.com>
- <20200510003402.3a4ozoynwm4mryi5@ast-mbp> <3b2b2e40-4e80-2a5d-e479-fc12a95162f2@fb.com>
-In-Reply-To: <3b2b2e40-4e80-2a5d-e479-fc12a95162f2@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 10 May 2020 09:14:59 -0700
-Message-ID: <CAADnVQKtSV=yjV9UjHQ5SRmAx9LB+ma6AOJstyCuAFbU0j40QA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 21/21] tools/bpf: selftests: add bpf_iter selftests
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+References: <20200501091449.GA25211@nanopsycho.orion> <20200510144557.GA7568@nanopsycho>
+In-Reply-To: <20200510144557.GA7568@nanopsycho>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Sun, 10 May 2020 09:30:59 -0700
+Message-ID: <CAA93jw7ROwOhZNS+dREeFurjn=YxUVWStL+WKZxHgZFLRX+X0w@mail.gmail.com>
+Subject: Re: [RFC v2] current devlink extension plan for NICs
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, parav@mellanox.com,
+        yuvalav@mellanox.com, jgg@ziepe.ca,
+        Saeed Mahameed <saeedm@mellanox.com>, leon@kernel.org,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
+        moshe@mellanox.com, ayal@mellanox.com,
+        Eran Ben Elisha <eranbe@mellanox.com>, vladbu@mellanox.com,
+        kliteyn@mellanox.com, dchickles@marvell.com, sburla@marvell.com,
+        fmanlunas@marvell.com, Tariq Toukan <tariqt@mellanox.com>,
+        oss-drivers@netronome.com, Shannon Nelson <snelson@pensando.io>,
+        drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        markz@mellanox.com, jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 9, 2020 at 10:01 PM Yonghong Song <yhs@fb.com> wrote:
+On Sun, May 10, 2020 at 7:46 AM Jiri Pirko <jiri@resnulli.us> wrote:
 >
+> Hello guys.
 >
+> Anyone has any opinion on the proposal? Or should I take it as a silent
+> agreement? :)
 >
-> On 5/9/20 5:34 PM, Alexei Starovoitov wrote:
-> > On Sat, May 09, 2020 at 10:59:23AM -0700, Yonghong Song wrote:
-> >> +static volatile const __u32 ret1;
-> >> +
-> >> +SEC("iter/bpf_map")
-> >> +int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
-> >> +{
-> >> +    struct seq_file *seq = ctx->meta->seq;
-> >> +    struct bpf_map *map = ctx->map;
-> >> +    __u64 seq_num;
-> >> +    int i, ret = 0;
-> >> +
-> >> +    if (map == (void *)0)
-> >> +            return 0;
-> >> +
-> >> +    /* only dump map1_id and map2_id */
-> >> +    if (map->id != map1_id && map->id != map2_id)
-> >> +            return 0;
-> >> +
-> >> +    seq_num = ctx->meta->seq_num;
-> >> +    if (map->id == map1_id) {
-> >> +            map1_seqnum = seq_num;
-> >> +            map1_accessed++;
-> >> +    }
-> >> +
-> >> +    if (map->id == map2_id) {
-> >> +            if (map2_accessed == 0) {
-> >> +                    map2_seqnum1 = seq_num;
-> >> +                    if (ret1)
-> >> +                            ret = 1;
-> >> +            } else {
-> >> +                    map2_seqnum2 = seq_num;
-> >> +            }
-> >> +            map2_accessed++;
-> >> +    }
-> >> +
-> >> +    /* fill seq_file buffer */
-> >> +    for (i = 0; i < print_len; i++)
-> >> +            bpf_seq_write(seq, &seq_num, sizeof(seq_num));
-> >> +
-> >> +    return ret;
-> >> +}
-> >
-> > I couldn't find where 'return 1' behavior is documented clearly.
->
-> It is in the commit comments:
->
-> commit 15d83c4d7cef5c067a8b075ce59e97df4f60706e
-> Author: Yonghong Song <yhs@fb.com>
-> Date:   Sat May 9 10:59:00 2020 -0700
->
->      bpf: Allow loading of a bpf_iter program
-> ...
->      The program return value must be 0 or 1 for now.
->        0 : successful, except potential seq_file buffer overflow
->            which is handled by seq_file reader.
->        1 : request to restart the same object
->
-> Internally, bpf program returning 1 will translate
-> show() return -EAGAIN and this error code will
-> return to user space.
->
-> I will add some comments in the code to
-> document this behavior.
->
-> > I think it's a workaround for overflow.
->
-> This can be used for overflow but overflow already been taken
-> care of by bpf_seq_read(). This is mostly used for other use
-> cases:
->     - currently under RT-linux, bpf_seq_printf() may return
->       -EBUSY. In this case, bpf program itself can request
->       retrying the same object.
->     - for other conditions where bpf program itself wants
->       to retry the same object. For example, hash table full,
->       the bpf progam can return 1, in which case, user space
->       read() will receive -EAGAIN and may check and make room
->       for hash table and then read() again.
->
-> > When bpf prog detects overflow it can request replay of the element?
->
-> It can. But it can return 0 too since bpf_seq_read() handles
-> this transparently.
->
-> > What if it keeps returning 1 ? read() will never finish?
->
-> The read() will finish and return -EAGAIN to user space.
-> It is up to user space to decide whether to call read()
-> again or not.
+> We would like to go ahead and start sending patchsets.
 
-Ahh. Got it. So that EAGAIN returned by bpf_iter_run_prog()
-propagates by bpf_seq_read() all the way to read() syscall.
-Now I see it. Thanks for explaining.
+I gotta say that the whole thing makes my head really hurt, and while
+this conversation is about how to go about configuring things,
+I've been unable to get a grip on how flows will actually behave with
+these offloads present.
+
+My overall starting point for thinking about this stuff was described
+in this preso to broadcom a few years back:
+http://flent-fremont.bufferbloat.net/~d/broadcom_aug9.pdf
+
+More recently I did what I think is my funniest talk ever on these
+subjects: https://blog.apnic.net/2020/01/22/bufferbloat-may-be-solved-but-i=
+ts-not-over-yet/
+
+Make some popcorn, take a look. :) I should probably have covered
+ecn's (mis)behaviors at the end, but I didn't.
+
+Steven hemminger's lca talk on these subjects was also a riot...
+
+so somehow going from my understanding of how stuff gets configured,
+to the actual result, is needed, for me to have any opinion at all.
+You
+have this stuff basically running already? Can you run various
+flent.org tests through it?
+
+>
+> Thanks!
+
+
+
+--=20
+"For a successful technology, reality must take precedence over public
+relations, for Mother Nature cannot be fooled" - Richard Feynman
+
+dave@taht.net <Dave T=C3=A4ht> CTO, TekLibre, LLC Tel: 1-831-435-0729
