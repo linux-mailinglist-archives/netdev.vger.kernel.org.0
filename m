@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 167F01CCC21
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 18:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B084B1CCC23
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 18:11:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729131AbgEJQJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 12:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57778 "EHLO
+        id S1729085AbgEJQLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 12:11:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728762AbgEJQJR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 12:09:17 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B159BC061A0C;
-        Sun, 10 May 2020 09:09:15 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id a21so6804319ljj.11;
-        Sun, 10 May 2020 09:09:15 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728762AbgEJQLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 12:11:35 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3E3C061A0C;
+        Sun, 10 May 2020 09:11:34 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id b26so5382587lfa.5;
+        Sun, 10 May 2020 09:11:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ry4sGaRz1hPd8ZrRZNs00n41ZYAYeYkvGcXZbHcvaBI=;
-        b=u+UUdnsGPq4lbMio+RJwnb3Rhh1b7AyrDJtjpg60O8Ja723hCidH1NvIENdBPHVOlQ
-         JL8wfY+LEv/uIDd79UEXHSrcUbEYLWYZIP+I3k/leRDu1x1cgVcxH+zuF+ougtsU+rRF
-         5ijLUIjecDH4WnP3WSs7s04NkDr7gi6vwZKL+0D/TQyEzYcWsq8m7f5EiPUJzCDR57yt
-         1k1q1wFzjvb2WC/tNar+SILoRHaQK893pLXnWyJUx+SC9SsuvSL28BIu32A0zbXkuD0+
-         /Lwp9oKrSOH8Fsqs5YYR2J4VGBnzdnTXqkCFSVMoXuXlqc5pRm3uGLo9CDYFsy6oOaGm
-         GHCg==
+        bh=BmfY3qFSf1+6Ag0paDgCisPxcIAT37R1HkP3Hpu+pJk=;
+        b=pS4JGb+K8jzCEeWFUbdoOXo2EjFeoyNDbNXtoyf4E3QZ2R3LyfqFDEUQ3hVzbg/tho
+         gv/KGGLv+nI7LdjKQTM7oycIL3rARHmjvQire7RVnsQqpRqYKh6fggWAjhDLP61wUdKD
+         ROJ5DA4eSg6XBYJAYhK77jErpvjaX6BLhYazLIG4BEuKULL9NbvYuJgud8uwc0idffIR
+         mAk1si5lMBUlzIagMyXC1E/AhPQaFY+H+Rz7Y3LPTfayW3M3QhP6/1IoW7S5ARBHRBCB
+         03s4fG/TKrG/xz5x85cfwzNN07uENHA1tcFyPw4B9CKylGypQqmPGxsfmQaR+TBEF/2K
+         9JmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ry4sGaRz1hPd8ZrRZNs00n41ZYAYeYkvGcXZbHcvaBI=;
-        b=XOqqie1mgBkb7f3uaauz7Wia8kvpipkZ7ItyiX0CocNq47+X9iYxov7y5d8xJ7zTX8
-         vpdOEgy7c+LsrdVEm/ZtqO7h7jAtsakCb17tW0mJ3nRyWHKrVvRTPvz8mqkDskfwAM3p
-         I41Ebxg13skjL3eEQScwVX3XWLEKTcF4Eexnw5YQ4htMyrjVwN3tuqGB4i1KcAghGOsE
-         vNyoKrMHAUMv0gwh1V0Je9caqqsWa6MatDFCNPnS4BS9uslyEqWtFiSyUipXnt9uspIm
-         u0Gzljh2pIQbbcVDU/7OACK3LMm4YSW8RVnTCHEdM62X4J3oos5oWFU/4GH4071FEcgI
-         kK7w==
-X-Gm-Message-State: AOAM531tqZPIapkyqhDJi1gIFOyZ2L3Spxx6VmeO36WbNirPs0z7cV6T
-        n2QDCcd/wJ/6AdRAL6nQleiK9AcKRczlLezy6UPhARwG
-X-Google-Smtp-Source: ABdhPJw8nNjWQHOZGAVDMPXONG7yr1BCIBDN0uzfqZCnZGp0znI10MaScZ8zUHnoXJueST5HO4+L22GTnpf13uHTcLc=
-X-Received: by 2002:a2e:9011:: with SMTP id h17mr7862445ljg.138.1589126954146;
- Sun, 10 May 2020 09:09:14 -0700 (PDT)
+        bh=BmfY3qFSf1+6Ag0paDgCisPxcIAT37R1HkP3Hpu+pJk=;
+        b=VcV6oWAwX02WSe3nNI+OiVuX0a1ls7Q/pawWYS4scd0I6wMNi7rPnqBYxGVBGlUf5g
+         zuu+pAga1t8jm447ahYninYHS68g2K5VvED9nt4Y+k7+2mKVHpon87P9tympRq1vHt/2
+         SMOvYh+mEr2XNd9t2hsqo4yBwo+HrOIo5K9CTTJOtNEZZiAo6r5H6sEIDGeaS7do00Nc
+         CLfBMzU5H+SgQODf4wxIMqMDSS8iCyfDxKRD7lzM/xGimCGz0ilFY9DjxxUZFcj6XQuX
+         ec0hoBXiIHDo0loBmSm0m+HcSHXpnepWmwJRRF3dd526V/J3qDV0InWKjbLVA4Sr0zKJ
+         sVFw==
+X-Gm-Message-State: AOAM530iU1RowKtsL9Vit1jUW0Dz6EXCWJrwDyAXxAogJXeeU4YpdHpx
+        d6G/7EW1ImKYfiAmuQq36+3Z1KKTg6q441AqBIE=
+X-Google-Smtp-Source: ABdhPJyVhR2zIkBz32aTQ714YPn+LMFxysWNQaP9FIT4wB1ZYCbUEj5KGMS9Vophnh5M5rgvaol5gss7BNZ4AiToNg0=
+X-Received: by 2002:ac2:5999:: with SMTP id w25mr7952640lfn.196.1589127092995;
+ Sun, 10 May 2020 09:11:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200509175859.2474608-1-yhs@fb.com> <20200509175917.2476936-1-yhs@fb.com>
- <20200510003535.rfnwiuunxst6lqe5@ast-mbp> <51a07f55-6117-58c2-e1f4-a1f38130976d@fb.com>
-In-Reply-To: <51a07f55-6117-58c2-e1f4-a1f38130976d@fb.com>
+References: <20200509175859.2474608-1-yhs@fb.com> <20200509175912.2476576-1-yhs@fb.com>
+ <20200510005059.d3zocagerrnsspez@ast-mbp> <d5b04ac9-3e3c-3e32-4058-afc29e3d34ce@fb.com>
+In-Reply-To: <d5b04ac9-3e3c-3e32-4058-afc29e3d34ce@fb.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 10 May 2020 09:09:02 -0700
-Message-ID: <CAADnVQ+90UtuXVj8sCmyQQZCxFFfmcUq05w5DBybWxSN_0AL4A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 16/21] tools/libbpf: add bpf_iter support
+Date:   Sun, 10 May 2020 09:11:21 -0700
+Message-ID: <CAADnVQKzhbFe4MQ0G4ZuPnjXbbzEfQMjvTwba4MkhyXQAuNP+Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 12/21] bpf: add PTR_TO_BTF_ID_OR_NULL support
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -64,38 +64,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 9, 2020 at 10:07 PM Yonghong Song <yhs@fb.com> wrote:
+On Sat, May 9, 2020 at 10:19 PM Yonghong Song <yhs@fb.com> wrote:
 >
 >
 >
-> On 5/9/20 5:35 PM, Alexei Starovoitov wrote:
-> > On Sat, May 09, 2020 at 10:59:17AM -0700, Yonghong Song wrote:
-> >> @@ -6891,6 +6897,7 @@ static int bpf_object__collect_st_ops_relos(struct bpf_object *obj,
+> On 5/9/20 5:50 PM, Alexei Starovoitov wrote:
+> > On Sat, May 09, 2020 at 10:59:12AM -0700, Yonghong Song wrote:
+> >> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> >> index a2cfba89a8e1..c490fbde22d4 100644
+> >> --- a/kernel/bpf/btf.c
+> >> +++ b/kernel/bpf/btf.c
+> >> @@ -3790,7 +3790,10 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+> >>              return true;
 > >>
-> >>   #define BTF_TRACE_PREFIX "btf_trace_"
-> >>   #define BTF_LSM_PREFIX "bpf_lsm_"
-> >> +#define BTF_ITER_PREFIX "__bpf_iter__"
-> >>   #define BTF_MAX_NAME_SIZE 128
+> >>      /* this is a pointer to another type */
+> >> -    info->reg_type = PTR_TO_BTF_ID;
+> >> +    if (off != 0 && prog->aux->btf_id_or_null_non0_off)
+> >> +            info->reg_type = PTR_TO_BTF_ID_OR_NULL;
+> >> +    else
+> >> +            info->reg_type = PTR_TO_BTF_ID;
 > >
-> > In the kernel source the prefix doesn't stand out, but on libbpf side it looks
-> > inconsistent. May be drop __ prefix and keep one _ in the suffix?
+> > I think the verifier should be smarter than this.
+> > It's too specific and inflexible. All ctx fields of bpf_iter execpt first
+> > will be such ? let's figure out a different way to tell verifier about this.
+> > How about using typedef with specific suffix? Like:
+> > typedef struct bpf_map *bpf_map_or_null;
+> >   struct bpf_iter__bpf_map {
+> >     struct bpf_iter_meta *meta;
+> >     bpf_map_or_null map;
+> >   };
+> > or use a union with specific second member? Like:
+> >   struct bpf_iter__bpf_map {
+> >     struct bpf_iter_meta *meta;
+> >     union {
+> >       struct bpf_map *map;
+> >       long null;
+> >     };
+> >   };
 >
-> Currently, I have context type as
->     struct bpf_iter__bpf_map
-> Based on the above proposal, we will have function name as
->     bpf_iter_bpf_map
-> It is quite similar to each other. My current usage to have
->      __bpf_iter__bpf_map
-> intends to make func name and struct type name quite different.
-> Or maybe
->      bpf_iter__bpf_map vs. bpf_iter_bpf_map
-> just fine as user should not care about func name
-> bpf_iter_bpf_map at all?
+> I have an alternative approach to refactor this for future
+> support for map elements as well.
+>
+> For example, for bpf_map_elements iterator the prog context type
+> can be
+>      struct bpf_iter_bpf_map_elem {
+>         struct bpf_iter_meta *meta;
+>         strruct bpf_map *map;
+>         <key type>  *key;
+>         <value type> *val;
+>     };
+>
+> target will pass the following information to bpf_iter registration:
+>     arg 1: PTR_TO_BTF_ID
+>     arg 2: PTR_TO_BTF_ID_OR_NULL
+>     arg 3: PTR_TO_BUFFER
+>     arg 4: PTR_TO_BUFFER
+>
+> verifier will retrieve the reg_type from target.
 
-Type names bpf_iter_bpf_map and bpf_iter_foo don't look
-unique, but I don't see why they should.
-If code really required type name uniqueness __bpf_iter__ prefix
-wouldn't provide that property anyway.
-I think bpf_iter_ falls into the same category of prefixes like
-those used by lsm, trace, struct_ops. Or I could be missing
-why iter has to be different.
+you mean to introduce something like 'struct bpf_func_proto'
+that describes types of helpers, but instead something similar
+to clarify the types in ctx ? That should work. Thanks
