@@ -2,124 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 156851CCE8A
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 00:26:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53CB61CCE94
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 00:35:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728763AbgEJW0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 18:26:44 -0400
-Received: from correo.us.es ([193.147.175.20]:41784 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729284AbgEJW0o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 18:26:44 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id C77C281409
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 00:26:42 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B61E996208
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 00:26:42 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id AB70C21FE3; Mon, 11 May 2020 00:26:42 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A179BDA736;
-        Mon, 11 May 2020 00:26:40 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 11 May 2020 00:26:40 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 8407342EF4E0;
-        Mon, 11 May 2020 00:26:40 +0200 (CEST)
-Date:   Mon, 11 May 2020 00:26:40 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     Oz Shlomo <ozsh@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net] netfilter: flowtable: Fix expired flow not being
- deleted from software
-Message-ID: <20200510222640.GA11645@salvia>
-References: <1588764449-12706-1-git-send-email-paulb@mellanox.com>
+        id S1729466AbgEJWe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 18:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32776 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729270AbgEJWe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 18:34:56 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A97C061A0C;
+        Sun, 10 May 2020 15:34:55 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id g16so6327033eds.1;
+        Sun, 10 May 2020 15:34:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B3Liuw5jPj3QJFxFHfKfy7ZMc74PTLZnt3p5YASlDKM=;
+        b=SdcvbjcF3JdGMCmXQKjJC4VrtNbyZL7JnFCg8ME3uRhjoiXwEB15CrSZnQME4J2DD2
+         DxO4QSlh81F3TWn9aryJtCbHpShD922IGnJbIUvodcpjRjZLGr+jYf2kaVsme2IXDLbY
+         4rDOHXaVnxiGBT4BqaQ8kI/nbf5iEGKYqTLSMz9cVTfRW+HNuhVcado+L3P1sCjh8SB5
+         rMEASJykb5AlP1LYw0dBugwJWhrgwISrTmI+VLnQC02LFbbzw4WoeRl2c3TUDuWrEqJJ
+         1dRey1jKhuUMz+aWUWNgJbUMfAtTbiJvPvHBorrsnrosXO1eItyzVsBZo99mbhd15P+C
+         pjzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B3Liuw5jPj3QJFxFHfKfy7ZMc74PTLZnt3p5YASlDKM=;
+        b=ljX5q4qh/yih1Cb4Q6sw7LdvWuhRUrxj8l7yc5ofA4EEHe3sav9tnD9nxvCq3SMJbP
+         LzUw8Djs9us96lVlSZFP+asp/oJfMPAdDX0mkhhxXDvOBnwlZ8bDF0S9jN561Xy3kc84
+         cvYBIZFBsNLoP4y8FQKhX8x2DfZnB98A1U/XlbCBRnFc9+HxXI9U7P7MaH9qQD4FQ3sL
+         lcDlb0Y8+vh9uR4VfK7IGwNniQgdFgF/nl7/Vzo9QDtwP/yVg8K+V7ibAj3sstrI3Rl5
+         SkUonmChdIjpZWy8SEM6h6XmOtUO3IqBIyfwIzIbPCgBoQQLIxq/g9mAnsam4m7Ev6si
+         OyFw==
+X-Gm-Message-State: AGi0PuasnAEaJNmkcsehYIBM+lKrwLcS+mqQ5u2QY1sjY2L5UNGUl0fe
+        u+PJcrKVPhvt8hCO4hNG1iYLSj6otlQNddjo6W1DueXD
+X-Google-Smtp-Source: APiQypJ0tOvAq/50pHoDwoV21V2Mrg8Ij7Mm0ejwS/L8ZfwzanfGxs+5RSeqRK/m+QrXGsgES5F7n8SL3G6ccbzOAtg=
+X-Received: by 2002:a50:fc06:: with SMTP id i6mr10603747edr.110.1589150094277;
+ Sun, 10 May 2020 15:34:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="7JfCtLOvnd9MIVvH"
-Content-Disposition: inline
-In-Reply-To: <1588764449-12706-1-git-send-email-paulb@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
+ <20200429201644.1144546-3-martin.blumenstingl@googlemail.com>
+ <20200501210942.GA27082@bogus> <CAFBinCDmps-Nd-HokSa5P7=bR+o3nuwxsS_eiH9A6CCYywpabQ@mail.gmail.com>
+In-Reply-To: <CAFBinCDmps-Nd-HokSa5P7=bR+o3nuwxsS_eiH9A6CCYywpabQ@mail.gmail.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 11 May 2020 00:34:43 +0200
+Message-ID: <CAFBinCDiQ3_ti60tQd3PMVM89oaMQcSKODMQ1Wr66P1SHWEZ5A@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 02/11] dt-bindings: net: dwmac-meson: Document the
+ "timing-adjustment" clock
+To:     Rob Herring <robh@kernel.org>, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com,
+        linux-amlogic@lists.infradead.org, jianxin.pan@amlogic.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello Rob,
 
---7JfCtLOvnd9MIVvH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Fri, May 1, 2020 at 11:53 PM Martin Blumenstingl
+<martin.blumenstingl@googlemail.com> wrote:
+>
+> Hi Rob,
+>
+> On Fri, May 1, 2020 at 11:09 PM Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Wed, 29 Apr 2020 22:16:35 +0200, Martin Blumenstingl wrote:
+> > > The PRG_ETHERNET registers can add an RX delay in RGMII mode. This
+> > > requires an internal re-timing circuit whose input clock is called
+> > > "timing adjustment clock". Document this clock input so the clock can be
+> > > enabled as needed.
+> > >
+> > > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > > ---
+> > >  .../devicetree/bindings/net/amlogic,meson-dwmac.yaml   | 10 +++++++---
+> > >  1 file changed, 7 insertions(+), 3 deletions(-)
+> > >
+> >
+> > My bot found errors running 'make dt_binding_check' on your patch:
+> >
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: clocks: Additional items are not allowed ([4294967295] was unexpected)
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: clocks: [[4294967295], [4294967295], [4294967295], [4294967295]] is too long
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: clocks: Additional items are not allowed ([4294967295] was unexpected)
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: clocks: [[4294967295], [4294967295], [4294967295], [4294967295]] is too long
+> I am seeing this on my own build machine as well, but only for the .yaml example
+> The .dts example does not emit this warning
+I found out what's going on here:
+- I built these patches against the net-next tree (including dt_binding_check)
+- and against linux-next (also including dt_binding_check)
 
-On Wed, May 06, 2020 at 02:27:29PM +0300, Paul Blakey wrote:
-> Once a flow is considered expired, it is marked as DYING, and
-> scheduled a delete from hardware. The flow will be deleted from
-> software, in the next gc_step after hardware deletes the flow
-> (and flow is marked DEAD). Till that happens, the flow's timeout
-> might be updated from a previous scheduled stats, or software packets
-> (refresh). This will cause the gc_step to no longer consider the flow
-> expired, and it will not be deleted from software.
-> 
-> Fix that by looking at the DYING flag as in deciding
-> a flow should be deleted from software.
+Your tree contains commit f22531438ff42c ("dt-bindings: net: dwmac:
+increase 'maxItems' for 'clocks', 'clock-names' properties") [0].
+The net-next tree doesn't have that commit but linux-next does.
+So when I run dt_binding_check with this series applied on top of
+linux-next all warnings/errors are gone.
+However when I run dt_binding_check with this series applied on top of
+net-next I get the same errors as you.
+The reason is that the additional patch in your tree increases the
+maximum number of clocks from three to five. With this patch the
+Amlogic DWMAC glue needs (up to) four clock inputs.
 
-Would this work for you?
+I have to re-send this series anyways due to a bug in another patch.
+Please let me know how to make your bot happy when when I re-send the patches.
 
-The idea is to skip the refresh if this has already expired.
 
-Thanks.
+Thank you!
+Martin
 
---7JfCtLOvnd9MIVvH
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="expired.patch"
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 4344e572b7f9..862efa7c606d 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -252,10 +252,18 @@ int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow)
- }
- EXPORT_SYMBOL_GPL(flow_offload_add);
- 
-+static inline bool nf_flow_has_expired(const struct flow_offload *flow)
-+{
-+	return nf_flow_timeout_delta(flow->timeout) <= 0;
-+}
-+
- void flow_offload_refresh(struct nf_flowtable *flow_table,
- 			  struct flow_offload *flow)
- {
--	flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
-+	if (!nf_flow_has_expired(flow)) {
-+		flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
-+		return;
-+	}
- 
- 	if (likely(!nf_flowtable_hw_offload(flow_table) ||
- 		   !test_and_clear_bit(NF_FLOW_HW_REFRESH, &flow->flags)))
-@@ -265,11 +273,6 @@ void flow_offload_refresh(struct nf_flowtable *flow_table,
- }
- EXPORT_SYMBOL_GPL(flow_offload_refresh);
- 
--static inline bool nf_flow_has_expired(const struct flow_offload *flow)
--{
--	return nf_flow_timeout_delta(flow->timeout) <= 0;
--}
--
- static void flow_offload_del(struct nf_flowtable *flow_table,
- 			     struct flow_offload *flow)
- {
-
---7JfCtLOvnd9MIVvH--
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git/commit/?h=dt/next&id=f22531438ff42ce568f81e346428461c71dea9e2
