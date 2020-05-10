@@ -2,81 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 711171DD83E
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 22:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B83B21CCD26
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 21:04:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728864AbgEUU06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 May 2020 16:26:58 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57448 "EHLO mx2.suse.de"
+        id S1729210AbgEJTEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 15:04:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52296 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728365AbgEUU06 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 May 2020 16:26:58 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 02CC1AB8F;
-        Thu, 21 May 2020 20:26:59 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 95971604F8; Thu, 21 May 2020 22:26:56 +0200 (CEST)
-From:   Michal Kubecek <mkubecek@suse.cz>
-Date:   Sun, 10 May 2020 21:04:09 +0200
-Subject: [PATCH net] ethtool: count header size in reply size estimate
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>
-Message-Id: <20200521202656.95971604F8@lion.mk-sys.cz>
+        id S1728385AbgEJTEi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 15:04:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=l/N1Ay1A6HSSGOawCmi/lQN5NwZW3PV2zfv6jgNU9r0=; b=F+EU+gfg/3I+GqHxl6nmVUZN/P
+        3YL26ocxp9fOv9gUOZbr8AAPo7ivD9VAqIF5l7jT6aHn8xXJeYvyTd/R6Olf83FU6BrmyIHCfaVmE
+        UhtMYSA9TkWyYr4TmyaEj4mnsZz7dEOyYlPZeShz+pd61dmgfju+aFgjj0As7RHEr+2U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jXrFY-001jYn-JA; Sun, 10 May 2020 21:04:32 +0200
+Date:   Sun, 10 May 2020 21:04:32 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Joe Perches <joe@perches.com>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] checkpatch: warn about uses of ENOTSUPP
+Message-ID: <20200510190432.GB411829@lunn.ch>
+References: <20200510185148.2230767-1-kuba@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200510185148.2230767-1-kuba@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As ethnl_request_ops::reply_size handlers do not include common header
-size into calculated/estimated reply size, it needs to be added in
-ethnl_default_doit() and ethnl_default_notify() before allocating the
-message. On the other hand, strset_reply_size() should not add common
-header size.
+On Sun, May 10, 2020 at 11:51:48AM -0700, Jakub Kicinski wrote:
+> ENOTSUPP often feels like the right error code to use, but it's
+> in fact not a standard Unix error. E.g.:
 
-Fixes: 728480f12442 ("ethtool: default handlers for GET requests")
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- net/ethtool/netlink.c | 4 ++--
- net/ethtool/strset.c  | 1 -
- 2 files changed, 2 insertions(+), 3 deletions(-)
+Hi Jakub
 
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 0c772318c023..ed5357210193 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -342,7 +342,7 @@ static int ethnl_default_doit(struct sk_buff *skb, struct genl_info *info)
- 	ret = ops->reply_size(req_info, reply_data);
- 	if (ret < 0)
- 		goto err_cleanup;
--	reply_len = ret;
-+	reply_len = ret + ethnl_reply_header_size();
- 	ret = -ENOMEM;
- 	rskb = ethnl_reply_init(reply_len, req_info->dev, ops->reply_cmd,
- 				ops->hdr_attr, info, &reply_payload);
-@@ -588,7 +588,7 @@ static void ethnl_default_notify(struct net_device *dev, unsigned int cmd,
- 	ret = ops->reply_size(req_info, reply_data);
- 	if (ret < 0)
- 		goto err_cleanup;
--	reply_len = ret;
-+	reply_len = ret + ethnl_reply_header_size();
- 	ret = -ENOMEM;
- 	skb = genlmsg_new(reply_len, GFP_KERNEL);
- 	if (!skb)
-diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
-index 95eae5c68a52..0eed4e4909ab 100644
---- a/net/ethtool/strset.c
-+++ b/net/ethtool/strset.c
-@@ -324,7 +324,6 @@ static int strset_reply_size(const struct ethnl_req_info *req_base,
- 	int len = 0;
- 	int ret;
- 
--	len += ethnl_reply_header_size();
- 	for (i = 0; i < ETH_SS_COUNT; i++) {
- 		const struct strset_info *set_info = &data->sets[i];
- 
--- 
-2.26.2
+You said ENOTSUPP is for NFS? Would it make sense to special case
+fs/nfs* files and not warn there? I assume that would reduce the number
+of false positives?
 
+   Andrew
