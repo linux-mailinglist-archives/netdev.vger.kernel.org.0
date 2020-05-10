@@ -2,91 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F2421CC5E3
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 03:04:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE4681CC5F5
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 03:24:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728795AbgEJBEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 21:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
+        id S1728667AbgEJBYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 21:24:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728597AbgEJBEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 21:04:46 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A43C061A0C;
-        Sat,  9 May 2020 18:04:45 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id s9so4475447lfp.1;
-        Sat, 09 May 2020 18:04:45 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726565AbgEJBYE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 21:24:04 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFF0C061A0C
+        for <netdev@vger.kernel.org>; Sat,  9 May 2020 18:24:03 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id d7so5823945ioq.5
+        for <netdev@vger.kernel.org>; Sat, 09 May 2020 18:24:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f9OMJ4QqO80W6llrJvtktoKcBibXIt97DfEYZTwrp+I=;
-        b=JfRiwM+DA54Yb3KW3YcaBNYYA7zjOFzPII3+AfFCs++UpE3u0ni3a57OSI8UoUa/py
-         y2tfRxfw/u71ojnNnOIebELUbuUCbUv9qunoV4ZgfKU0i/PnvHQH4+OC3NJdLUeD08a3
-         qm9KDZrT7kmvFHsjY7UN4lZXE2RHgK1n8acbF3JeFOtfkcXUYlOBNFRNgtK6RcYD9dhY
-         UwIwUHgv+vKGXDMpyjv6kI/Gewuqx8eJrMz7KZ9Jr3PF8/P7XpulWDcAj1uioZzpKQ0O
-         MblxCAHuXLpCTtvtwMh2xM3o25n6Z0ZA12Ul+jyPjYjVBwdhnrVcM8f3lgb5NOGJvPFK
-         kB0Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ofofrepbtz2cg9aeJRaQRwdznTFjw3+jge418i84nBQ=;
+        b=Ln8nttEnWk7omcFxCTcRU44Zqsw7di0c75vwlHjSbJ1w48QoN9bFSskG3zCTtlhDEZ
+         3LCi20wyvSpi5EFmbaDMtpIL616N0d5rnzxDdRDp+QbBR4APSH0RPRKO19DMdw7YhXT5
+         /o4flMr9Fv4VAoHuUtpauQ1oTBbpils9MOS5HQAMpaqMbthIJwVrzGSs9ESeEXFjYIyl
+         4DYhjC9SqlPtGvLpyj6TnI5HkirPrqUP+dL8sIdKOXa96ZwBoMPjP6dnh7nlyJ7K0H8U
+         swpYmu6Uao6ViWwhENAlA6qY3tTptAACHxvdBwhiS2Nru39uFJYDjKEHpwH9QET/QE3P
+         3vsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f9OMJ4QqO80W6llrJvtktoKcBibXIt97DfEYZTwrp+I=;
-        b=tE9vt3ERSFXB48/TTkwzXqdMb65+mKm5zLG/GHuxCjvFj2haGCk9ElfhxkRiSHY9Bz
-         9KWxayMI2F05PR9pr9am/A7JcH4CFvfQLQQeTtaBz1HD9i1njJJC6ivDdeLSbh23mWrQ
-         j0KdStMf417fB74P0u0M86CdxfzX3L+rfCy0QKy8NEkGF/GPISu7Wng6wOx4fRGCdC1e
-         8mRu/DVwuoW+nw9bn4K6l2pkmyGny/3iRubwORSn8HTl9O+DVIp/vLgkpNB56GRI2JCh
-         y2K0Q6wfJSHHWm/LQcVxtZjqfYlVxZ1P58rsHwsTT17H3D4loh8j06jZQXDkGHftWENP
-         +TAQ==
-X-Gm-Message-State: AOAM533HBJm44FfvB3SrV3WDof3PkmNsTzTDYMW1+6+u8DYwzlG4hizR
-        0myQOwLdbwvc6I2+iWgm4FEtOwwgb74tnhDTE+k=
-X-Google-Smtp-Source: ABdhPJyPxH8lACy7OQ9qPIfDShUjzuMcC8PErrHH9XH7PduJIqq/pVypBNAIZ9nYVSnE9O+0PX86JvGv8hSHbUBAPC8=
-X-Received: by 2002:ac2:442f:: with SMTP id w15mr6381987lfl.73.1589072684189;
- Sat, 09 May 2020 18:04:44 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ofofrepbtz2cg9aeJRaQRwdznTFjw3+jge418i84nBQ=;
+        b=DOgsk1t0NVCAWHtE6h9lRV+gGxe7uw9kXniCMIClGh3iM5TVGmLiUpiK5uxstDZs1f
+         Anr6l6l+kRXtGIbKf7ozJ6WReuTJWHhrxnaUCbTkNC1cbcMrlOwg4eHXKA6GqfXL2fAI
+         nv7X1wW2zT1RKdxduT3dXUx3aA+98CQUFT/b5fK3gXK1gzsu45QqM0UaAWMbM+0nHeDK
+         YB+E2aOeNBfigwMySl/NSZKCBUGXKNN88DdON/uxHYRaVZh18UfjdnCRPsXAIscufSIf
+         8ncXy6jdsqEgN+rB0uzwo4ajVdGi98JnzVaYUOh9/A9v8TzefV8B8oXiift9vr5ZDvzK
+         /MiA==
+X-Gm-Message-State: AGi0PuY0Pd3Z/mXmod3iWDAeQSZ2UoNmi/oNoeTE9JsK1WccG1KMlY+k
+        MXp1HwJE4lvf0Y66/qW1/FVv5N8p
+X-Google-Smtp-Source: APiQypJKT7Tap7HCgv/K0G4849rfRGtonfvl9bV31s38OrNj589B+SBeiHqaptuFoN7E9N/lVpbaKg==
+X-Received: by 2002:a02:a598:: with SMTP id b24mr3263877jam.104.1589073843061;
+        Sat, 09 May 2020 18:24:03 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:d4f4:54fc:fab0:ac04? ([2601:282:803:7700:d4f4:54fc:fab0:ac04])
+        by smtp.googlemail.com with ESMTPSA id n6sm2628338iom.39.2020.05.09.18.24.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 May 2020 18:24:02 -0700 (PDT)
+Subject: Re: [PATCH] net-icmp: make icmp{,v6} (ping) sockets available to all
+ by default
+To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>
+References: <20200508234223.118254-1-zenczykowski@gmail.com>
+ <20200509191536.GA370521@splinter>
+ <a4fefa7c-8e8a-6975-aa06-b71ba1885f7b@gmail.com>
+ <CANP3RGfr0ziZN9Jg175DD4OULhYtB2g2xFncCqeCnQA9vAYpdA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <55a5f7d2-89da-0b6f-3a19-807816574858@gmail.com>
+Date:   Sat, 9 May 2020 19:24:01 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200509073915.860588-1-masahiroy@kernel.org>
-In-Reply-To: <20200509073915.860588-1-masahiroy@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 9 May 2020 18:04:32 -0700
-Message-ID: <CAADnVQJvJWwziwDj0ZgPc02iHNNk8EJetDqNZ6SoWq045C-gXQ@mail.gmail.com>
-Subject: Re: [PATCH] bpfilter: check if $(CC) can static link in Kconfig
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Valdis Kletnieks <valdis.kletnieks@vt.edu>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CANP3RGfr0ziZN9Jg175DD4OULhYtB2g2xFncCqeCnQA9vAYpdA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 9, 2020 at 12:40 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Fedora, linking static libraries requires the glibc-static RPM
-> package, which is not part of the glibc-devel package.
->
-> CONFIG_CC_CAN_LINK does not check the capability of static linking,
-> so you can enable CONFIG_BPFILTER_UMH, then fail to build.
->
->   HOSTLD  net/bpfilter/bpfilter_umh
-> /usr/bin/ld: cannot find -lc
-> collect2: error: ld returned 1 exit status
->
-> Add CONFIG_CC_CAN_LINK_STATIC, and make CONFIG_BPFILTER_UMH depend
-> on it.
->
-> Reported-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+On 5/9/20 3:35 PM, Maciej Żenczykowski wrote:
+> Do we have some sort of beginner's introduction to Linux VRF somewhere?
+> What they are? How to use them?
 
-Thanks!
-Acked-by: Alexei Starovoitov <ast@kernel.org>
+Ido's response gave introductory commands which can also be found here:
+    https://www.kernel.org/doc/Documentation/networking/vrf.txt
+
+This should answer most questions about more advanced topics:
+    http://schd.ws/hosted_files/ossna2017/fe/vrf-tutorial-oss.pdf
+
+Lately, I am putting blogs on https://people.kernel.org/dsahern for
+recurring questions.
+
+> 
+> Currently the concept simply doesn't fit into my mental model of networking...
+
+network namespaces = device level separation and up
+VRF = Layer 3 and up separation
+
+> 
+> We've actually talked about maybe possibly using VRF's in Android (for
+> our multi network support)...
+> but no-one on our team has the faintest idea about how they work...
+> (and there's rumours that they don't work with ipv6 link local)
+> 
+
+Rumors are ugly. If in doubt, ask. LLA with VRF is a primary requirement
+from the beginning.
+
+With 5.3 and up, you can have IPv4 routes with IPv6 LLA gateways with
+and without VRFs.
