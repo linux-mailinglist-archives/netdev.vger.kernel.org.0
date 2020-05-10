@@ -2,119 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 099DD1CCC3E
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 18:33:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA4E41CCC41
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 18:38:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728630AbgEJQbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 12:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
+        id S1728385AbgEJQhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 12:37:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726446AbgEJQbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 12:31:12 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06863C061A0C
-        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:31:12 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id r2so6158137ilo.6
-        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:31:11 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726744AbgEJQhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 12:37:55 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29149C061A0C
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:37:55 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id e16so7909988wra.7
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:37:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=R3Lh3zlbp+VgIx64Y0Z3m3xyvnLp02R3HuGaYMYp4Ho=;
-        b=EUikPIJEHM2YJ4VeE4pfAoo+eMWjIT2fteHV/Cy22/B8M6snUOKJmiK81GX1KAN70e
-         gnOWpOk6hQz1znkMRSTBQM5v3O5D2VGZcn4xW40bf42MQqfwika2KVOkweSwUJqZOOn2
-         p6sgmTV4JJKXAldYSScCudwVX78zZRppN1IpKkIzR6+KLxi0Da8mS7ejEeKnkVN+ZNF6
-         0IWZp8JuvpXfbi/aUJzPzJe1Gdp8HE9gNfkgwVfrq1hJbJV7oIfwxGy1ACcTTKSCWZBr
-         tZ9nptawM+kbsheJSzmEvHdhPBB9y5LWyiFeQxw9Rjg2Z+Ht8Rk4DIeO7lwQlYLTv7Aa
-         1N7A==
+        h=from:to:cc:subject:date:message-id;
+        bh=MVChMKvN3cReFb28B+2P0aZuJ9VZT33oCre6sgR9g3Q=;
+        b=XAnmqeFWBzKMtsHC9lJwkzOK1eEURRHb47M2yDEVeG0x8k+Zewppp4VSIyv0elKlDE
+         +XqKLVEs5cU+dZtWdwUhjUGCLD24S4WSJGtvl8Egmfllb+Tm3xqmRBc4AjOXXRbO/W5b
+         Mk0BNeRoOypGCqyErzg2su4Sn52rY+x8WPywuD0xfjnv3Xx2huTlmB6kaviLMQ9KALdN
+         FyEY6fzeGeThA1SIENl0Z9hCvk+TkCnoEKeqKrgof6Sp5EwiyRPCkrOEzyeXMsnsWNaQ
+         md0AfWOFNtUSSCU5f52Zo+xdsEmVwPcDFs7IL7PIWEmK77FGBiatvGJqwUE2PcDTUKZG
+         X+Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=R3Lh3zlbp+VgIx64Y0Z3m3xyvnLp02R3HuGaYMYp4Ho=;
-        b=ZTbriTudkjzZh3O0nbKU2DnFuJoiYLMzWuxXU/LoeLG/m9cWJb/3w7xgXEVK8DlktK
-         4mw7UfqP+93SlTuYdtgE2tDzU6Fs36oHqXkmbkn92eRV7gskdZWusHUC1t6JSeF8F+0N
-         Az/dyV3hlMJkI8CTWp83hn69SLdSnKww4O7NY0NJSbT4bGtIRP8It/1ykc59I/4/jJUa
-         u5BkKQLlzp93SKB1D5uMBJ3yaCf+dlZ+HU6C7C23R5zR3omXi7f39bDdm5yFkdky2W+i
-         qcMING6ZIqNHEVxPb/Ckpx3DGdLqaSbnYrGz1YHaJogXr2/GX10uE7qu+erCPea2LvO9
-         paPQ==
-X-Gm-Message-State: AGi0PubFpBwuzOE1f8KjLY/BWrnAad3dES96pjQGGelnePAkRktNLHCN
-        x+UVgPmoaMSBLQHEoYzYXW6lls4ihkTxy0P4sCI=
-X-Google-Smtp-Source: APiQypJH5HkG/gu/+M0KirfZOtIhOFZCVKtqlrgOHdbA9gA52oA1k3w61MTOCKNFJhxeoPnOB7ECWpd/PnyPnsok/UA=
-X-Received: by 2002:a05:6e02:f81:: with SMTP id v1mr2242784ilo.246.1589128271280;
- Sun, 10 May 2020 09:31:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200501091449.GA25211@nanopsycho.orion> <20200510144557.GA7568@nanopsycho>
-In-Reply-To: <20200510144557.GA7568@nanopsycho>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Sun, 10 May 2020 09:30:59 -0700
-Message-ID: <CAA93jw7ROwOhZNS+dREeFurjn=YxUVWStL+WKZxHgZFLRX+X0w@mail.gmail.com>
-Subject: Re: [RFC v2] current devlink extension plan for NICs
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, parav@mellanox.com,
-        yuvalav@mellanox.com, jgg@ziepe.ca,
-        Saeed Mahameed <saeedm@mellanox.com>, leon@kernel.org,
-        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
-        moshe@mellanox.com, ayal@mellanox.com,
-        Eran Ben Elisha <eranbe@mellanox.com>, vladbu@mellanox.com,
-        kliteyn@mellanox.com, dchickles@marvell.com, sburla@marvell.com,
-        fmanlunas@marvell.com, Tariq Toukan <tariqt@mellanox.com>,
-        oss-drivers@netronome.com, Shannon Nelson <snelson@pensando.io>,
-        drivers@pensando.io, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        markz@mellanox.com, jacob.e.keller@intel.com, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com,
-        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MVChMKvN3cReFb28B+2P0aZuJ9VZT33oCre6sgR9g3Q=;
+        b=X+xQkiaq1Y6OIdbPIR+V8iBxZqJ2WHBSJgZtow68j/mjJHrfeBle9ZCsgc5lXvwxRT
+         oLwyXsJJl9pnkJOZDsyvSBdsmh6lmtMqNCj6croz+n9ZvBWrY+45SATe2kLDZsmf1xjg
+         /jUKJ0hmsHCZH+hCgVYgfjphBwqV3Mec4HTG9+fGGjb9Rw+RKbMDPEbqwBKNR7Xob6xV
+         CfKvZSET9/hApUre+cNgByYPRdJ4RnfWKnz8UKPYf1V+RX0e9IizCnR1mDW/kaax4Ntl
+         N1MHsfDn1XGCe8/YK0oYSYk6F8axcp+rJXjzD+RhJmk7ljOJyawKZelYNGzyFQy6fdwl
+         ztbA==
+X-Gm-Message-State: AGi0PuaPhnz/4RBY1hefCXQb94r4k4u0zcnqg2tzVv6pjEV4K7ttqkMJ
+        NduRkxooAOpQaBTVuRm+qQI=
+X-Google-Smtp-Source: APiQypJdSfytK3SwuNT8TmRJBQYTss+a7QTgt7qSmhGdOWAmTMNukwwKk6ZfG0aN7LyvBlaL27uz0Q==
+X-Received: by 2002:a05:6000:1106:: with SMTP id z6mr7467974wrw.336.1589128673756;
+        Sun, 10 May 2020 09:37:53 -0700 (PDT)
+Received: from localhost.localdomain ([86.121.118.29])
+        by smtp.gmail.com with ESMTPSA id d133sm25472394wmc.27.2020.05.10.09.37.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 May 2020 09:37:53 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net
+Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
+        netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
+        roopa@cumulusnetworks.com
+Subject: [PATCH v4 resend net-next 0/4] Cross-chip bridging for disjoint DSA trees
+Date:   Sun, 10 May 2020 19:37:39 +0300
+Message-Id: <20200510163743.18032-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 10, 2020 at 7:46 AM Jiri Pirko <jiri@resnulli.us> wrote:
->
-> Hello guys.
->
-> Anyone has any opinion on the proposal? Or should I take it as a silent
-> agreement? :)
->
-> We would like to go ahead and start sending patchsets.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I gotta say that the whole thing makes my head really hurt, and while
-this conversation is about how to go about configuring things,
-I've been unable to get a grip on how flows will actually behave with
-these offloads present.
+This series adds support for boards where DSA switches of multiple types
+are cascaded together. Actually this type of setup was brought up before
+on netdev, and it looks like utilizing disjoint trees is the way to go:
 
-My overall starting point for thinking about this stuff was described
-in this preso to broadcom a few years back:
-http://flent-fremont.bufferbloat.net/~d/broadcom_aug9.pdf
+https://lkml.org/lkml/2019/7/7/225
 
-More recently I did what I think is my funniest talk ever on these
-subjects: https://blog.apnic.net/2020/01/22/bufferbloat-may-be-solved-but-i=
-ts-not-over-yet/
+The trouble with disjoint trees (prior to this patch series) is that only
+bridging of ports within the same hardware switch can be offloaded.
+After scratching my head for a while, it looks like the easiest way to
+support hardware bridging between different DSA trees is to bridge their
+DSA masters and extend the crosschip bridging operations.
 
-Make some popcorn, take a look. :) I should probably have covered
-ecn's (mis)behaviors at the end, but I didn't.
+I have given some thought to bridging the DSA masters with the slaves
+themselves, but given the hardware topology described in the commit
+message of patch 4/4, virtually any number (and combination) of bridges
+(forwarding domains) can be created on top of those 3x4-port front-panel
+switches. So it becomes a lot less obvious, when the front-panel ports
+are enslaved to more than 1 bridge, which bridge should the DSA masters
+be enslaved to.
 
-Steven hemminger's lca talk on these subjects was also a riot...
+So the least awkward approach was to just create a completely separate
+bridge for the DSA masters, whose entire purpose is to permit hardware
+forwarding between the discrete switches beneath it.
 
-so somehow going from my understanding of how stuff gets configured,
-to the actual result, is needed, for me to have any opinion at all.
-You
-have this stuff basically running already? Can you run various
-flent.org tests through it?
+This is a direct resend of v3, which was deferred due to lack of review.
+In the meantime Florian has reviewed and tested some of them.
 
->
-> Thanks!
+v1 was submitted here:
+https://patchwork.ozlabs.org/project/netdev/cover/20200429161952.17769-1-olteanv@gmail.com/
 
+v2 was submitted here:
+https://patchwork.ozlabs.org/project/netdev/cover/20200430202542.11797-1-olteanv@gmail.com/
 
+v3 was submitted here:
+https://patchwork.ozlabs.org/project/netdev/cover/20200503221228.10928-1-olteanv@gmail.com/
 
---=20
-"For a successful technology, reality must take precedence over public
-relations, for Mother Nature cannot be fooled" - Richard Feynman
+Vladimir Oltean (4):
+  net: bridge: allow enslaving some DSA master network devices
+  net: dsa: permit cross-chip bridging between all trees in the system
+  net: dsa: introduce a dsa_switch_find function
+  net: dsa: sja1105: implement cross-chip bridging operations
 
-dave@taht.net <Dave T=C3=A4ht> CTO, TekLibre, LLC Tel: 1-831-435-0729
+ drivers/net/dsa/mv88e6xxx/chip.c       |  16 ++-
+ drivers/net/dsa/sja1105/sja1105.h      |   2 +
+ drivers/net/dsa/sja1105/sja1105_main.c |  90 +++++++++++++++
+ include/linux/dsa/8021q.h              |  45 ++++++++
+ include/net/dsa.h                      |  13 ++-
+ net/bridge/br_if.c                     |  32 ++++--
+ net/bridge/br_input.c                  |  23 +++-
+ net/bridge/br_private.h                |   6 +-
+ net/dsa/dsa2.c                         |  21 ++++
+ net/dsa/dsa_priv.h                     |   1 +
+ net/dsa/port.c                         |  23 +++-
+ net/dsa/switch.c                       |  21 +++-
+ net/dsa/tag_8021q.c                    | 151 +++++++++++++++++++++++++
+ 13 files changed, 414 insertions(+), 30 deletions(-)
+
+-- 
+2.17.1
+
