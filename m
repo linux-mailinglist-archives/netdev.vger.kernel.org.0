@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07E731CCD36
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 21:13:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 549521CCD3C
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 21:13:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729284AbgEJTNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 15:13:01 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52370 "EHLO vps0.lunn.ch"
+        id S1729325AbgEJTNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 15:13:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52424 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729246AbgEJTM7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 15:12:59 -0400
+        id S1729310AbgEJTNN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 15:13:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=y8WrBDCDpC/HTli4Cc2EZDrTMMb2e3/CK/gr9C1ti7E=; b=w3q6gaWTe5Pf42WlkBEY4x9qSX
-        Ko8tzBayvunYOLStFk/rHJ3bUsX9uE88YnSQk3qYjCrnRpjMK+a4FcAVbP4a8ZOKCJ3gU+acDohuv
-        z1DNDws1prv5XkRSLZs0+HrtoXC3pWMRm402MmUmHdr/TuH1NqqzkP8hKoI7xDDUn3OM=;
+        bh=KkRRIJM/X9DDFopl0N95PxE+jeMWi4TQJCcsbM6Qo6o=; b=R8vXAOLiX6wzXunXSAGdsLmm8J
+        BxNt8GXHSfsJPMPN0zXbzbjSXi42waQxSVawJhNjhOzWtwzAXIN3+CJ+IhS7himtozng058g4sJOJ
+        /qFjE6tEaBPcPMUSB9NjxFu9wSyWTAzk9xABinGg0Vp+Mz8FqnnC3tOy8QPRW9lAC7S8=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jXrNc-001je8-PR; Sun, 10 May 2020 21:12:52 +0200
+        id 1jXrNc-001jeE-QU; Sun, 10 May 2020 21:12:52 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -30,9 +30,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Chris Healy <cphealy@gmail.com>,
         Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v4 09/10] net: phy: Put interface into oper testing during cable test
-Date:   Sun, 10 May 2020 21:12:39 +0200
-Message-Id: <20200510191240.413699-11-andrew@lunn.ch>
+Subject: [PATCH net-next v4 10/10] net: phy: Send notifier when starting the cable test
+Date:   Sun, 10 May 2020 21:12:40 +0200
+Message-Id: <20200510191240.413699-12-andrew@lunn.ch>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200510191240.413699-1-andrew@lunn.ch>
 References: <20200510191240.413699-1-andrew@lunn.ch>
@@ -43,84 +43,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since running a cable test is disruptive, put the interface into
-operative state testing while the test is running.
+Given that it takes time to run a cable test, send a notify message at
+the start, as well as when it is completed.
+
+v3:
+EMSGSIZE when ethnl_bcastmsg_put() fails
+Print an error message on failure, since this is a void function.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/phy/phy.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ net/ethtool/cabletest.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index afdc1c2146ee..9bdc924eea83 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -492,6 +492,7 @@ static void phy_abort_cable_test(struct phy_device *phydev)
- int phy_start_cable_test(struct phy_device *phydev,
- 			 struct netlink_ext_ack *extack)
- {
-+	struct net_device *dev = phydev->attached_dev;
- 	int err = -ENOMEM;
+diff --git a/net/ethtool/cabletest.c b/net/ethtool/cabletest.c
+index e0c917918c70..5ba06eabe8c2 100644
+--- a/net/ethtool/cabletest.c
++++ b/net/ethtool/cabletest.c
+@@ -13,6 +13,43 @@ cable_test_act_policy[ETHTOOL_A_CABLE_TEST_MAX + 1] = {
+ 	[ETHTOOL_A_CABLE_TEST_HEADER]		= { .type = NLA_NESTED },
+ };
  
- 	if (!(phydev->drv &&
-@@ -525,8 +526,10 @@ int phy_start_cable_test(struct phy_device *phydev,
- 	/* Mark the carrier down until the test is complete */
- 	phy_link_down(phydev, true);
- 
-+	netif_testing_on(dev);
- 	err = phydev->drv->cable_test_start(phydev);
- 	if (err) {
-+		netif_testing_off(dev);
- 		phy_link_up(phydev);
- 		goto out_free;
- 	}
-@@ -879,6 +882,8 @@ EXPORT_SYMBOL(phy_free_interrupt);
-  */
- void phy_stop(struct phy_device *phydev)
- {
-+	struct net_device *dev = phydev->attached_dev;
++static int ethnl_cable_test_started(struct phy_device *phydev)
++{
++	struct sk_buff *skb;
++	int err = -ENOMEM;
++	void *ehdr;
 +
- 	if (!phy_is_started(phydev)) {
- 		WARN(1, "called from state %s\n",
- 		     phy_state_to_str(phydev->state));
-@@ -887,8 +892,10 @@ void phy_stop(struct phy_device *phydev)
- 
- 	mutex_lock(&phydev->lock);
- 
--	if (phydev->state == PHY_CABLETEST)
-+	if (phydev->state == PHY_CABLETEST) {
- 		phy_abort_cable_test(phydev);
-+		netif_testing_off(dev);
++	skb = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
++	if (!skb)
++		goto out;
++
++	ehdr = ethnl_bcastmsg_put(skb, ETHTOOL_MSG_CABLE_TEST_NTF);
++	if (!ehdr) {
++		err = -EMSGSIZE;
++		goto out;
 +	}
++
++	err = ethnl_fill_reply_header(skb, phydev->attached_dev,
++				      ETHTOOL_A_CABLE_TEST_NTF_HEADER);
++	if (err)
++		goto out;
++
++	err = nla_put_u8(skb, ETHTOOL_A_CABLE_TEST_NTF_STATUS,
++			 ETHTOOL_A_CABLE_TEST_NTF_STATUS_STARTED);
++	if (err)
++		goto out;
++
++	genlmsg_end(skb, ehdr);
++
++	return ethnl_multicast(skb, phydev->attached_dev);
++
++out:
++	nlmsg_free(skb);
++	phydev_err(phydev, "%s: Error %pe\n", __func__, ERR_PTR(err));
++
++	return err;
++}
++
+ int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct nlattr *tb[ETHTOOL_A_CABLE_TEST_MAX + 1];
+@@ -47,6 +84,10 @@ int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info)
+ 	ret = phy_start_cable_test(dev->phydev, info->extack);
  
- 	if (phydev->sfp_bus)
- 		sfp_upstream_stop(phydev->sfp_bus);
-@@ -950,6 +957,7 @@ void phy_state_machine(struct work_struct *work)
- 	struct delayed_work *dwork = to_delayed_work(work);
- 	struct phy_device *phydev =
- 			container_of(dwork, struct phy_device, state_queue);
-+	struct net_device *dev = phydev->attached_dev;
- 	bool needs_aneg = false, do_suspend = false;
- 	enum phy_state old_state;
- 	bool finished = false;
-@@ -975,6 +983,7 @@ void phy_state_machine(struct work_struct *work)
- 		err = phydev->drv->cable_test_get_status(phydev, &finished);
- 		if (err) {
- 			phy_abort_cable_test(phydev);
-+			netif_testing_off(dev);
- 			needs_aneg = true;
- 			phydev->state = PHY_UP;
- 			break;
-@@ -982,6 +991,7 @@ void phy_state_machine(struct work_struct *work)
- 
- 		if (finished) {
- 			ethnl_cable_test_finished(phydev);
-+			netif_testing_off(dev);
- 			needs_aneg = true;
- 			phydev->state = PHY_UP;
- 		}
+ 	ethnl_ops_complete(dev);
++
++	if (!ret)
++		ethnl_cable_test_started(dev->phydev);
++
+ out_rtnl:
+ 	rtnl_unlock();
+ out_dev_put:
 -- 
 2.26.2
 
