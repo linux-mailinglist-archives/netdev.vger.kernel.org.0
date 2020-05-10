@@ -2,106 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4681CC5F5
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 03:24:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D477B1CC619
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 03:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728667AbgEJBYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 21:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726565AbgEJBYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 21:24:04 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFF0C061A0C
-        for <netdev@vger.kernel.org>; Sat,  9 May 2020 18:24:03 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id d7so5823945ioq.5
-        for <netdev@vger.kernel.org>; Sat, 09 May 2020 18:24:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ofofrepbtz2cg9aeJRaQRwdznTFjw3+jge418i84nBQ=;
-        b=Ln8nttEnWk7omcFxCTcRU44Zqsw7di0c75vwlHjSbJ1w48QoN9bFSskG3zCTtlhDEZ
-         3LCi20wyvSpi5EFmbaDMtpIL616N0d5rnzxDdRDp+QbBR4APSH0RPRKO19DMdw7YhXT5
-         /o4flMr9Fv4VAoHuUtpauQ1oTBbpils9MOS5HQAMpaqMbthIJwVrzGSs9ESeEXFjYIyl
-         4DYhjC9SqlPtGvLpyj6TnI5HkirPrqUP+dL8sIdKOXa96ZwBoMPjP6dnh7nlyJ7K0H8U
-         swpYmu6Uao6ViWwhENAlA6qY3tTptAACHxvdBwhiS2Nru39uFJYDjKEHpwH9QET/QE3P
-         3vsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ofofrepbtz2cg9aeJRaQRwdznTFjw3+jge418i84nBQ=;
-        b=DOgsk1t0NVCAWHtE6h9lRV+gGxe7uw9kXniCMIClGh3iM5TVGmLiUpiK5uxstDZs1f
-         Anr6l6l+kRXtGIbKf7ozJ6WReuTJWHhrxnaUCbTkNC1cbcMrlOwg4eHXKA6GqfXL2fAI
-         nv7X1wW2zT1RKdxduT3dXUx3aA+98CQUFT/b5fK3gXK1gzsu45QqM0UaAWMbM+0nHeDK
-         YB+E2aOeNBfigwMySl/NSZKCBUGXKNN88DdON/uxHYRaVZh18UfjdnCRPsXAIscufSIf
-         8ncXy6jdsqEgN+rB0uzwo4ajVdGi98JnzVaYUOh9/A9v8TzefV8B8oXiift9vr5ZDvzK
-         /MiA==
-X-Gm-Message-State: AGi0PuY0Pd3Z/mXmod3iWDAeQSZ2UoNmi/oNoeTE9JsK1WccG1KMlY+k
-        MXp1HwJE4lvf0Y66/qW1/FVv5N8p
-X-Google-Smtp-Source: APiQypJKT7Tap7HCgv/K0G4849rfRGtonfvl9bV31s38OrNj589B+SBeiHqaptuFoN7E9N/lVpbaKg==
-X-Received: by 2002:a02:a598:: with SMTP id b24mr3263877jam.104.1589073843061;
-        Sat, 09 May 2020 18:24:03 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:d4f4:54fc:fab0:ac04? ([2601:282:803:7700:d4f4:54fc:fab0:ac04])
-        by smtp.googlemail.com with ESMTPSA id n6sm2628338iom.39.2020.05.09.18.24.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 May 2020 18:24:02 -0700 (PDT)
-Subject: Re: [PATCH] net-icmp: make icmp{,v6} (ping) sockets available to all
- by default
-To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>
-References: <20200508234223.118254-1-zenczykowski@gmail.com>
- <20200509191536.GA370521@splinter>
- <a4fefa7c-8e8a-6975-aa06-b71ba1885f7b@gmail.com>
- <CANP3RGfr0ziZN9Jg175DD4OULhYtB2g2xFncCqeCnQA9vAYpdA@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <55a5f7d2-89da-0b6f-3a19-807816574858@gmail.com>
-Date:   Sat, 9 May 2020 19:24:01 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1727072AbgEJB7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 21:59:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51592 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726320AbgEJB7Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 May 2020 21:59:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=KYzPxGASe4Z0zeXFbNOdd6hDwlKRo9S7QXx2n38ToH8=; b=07eBrn+uX16ClMVxs7RG+7moEE
+        cu86G4PVFlq45Z+OgIp3xqwvA4H85kE1Us2fP7Tcg1TgjDXU+kDXscLzOVjrIa56C3UCF+nRFdGYt
+        WqI2QBN14ENsKfSDgKTV63xM8LgXHB5XLCbnvYz4C5IO4kkxZBgtgovle0hnskPAB31s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jXbEM-001ZIw-ED; Sun, 10 May 2020 03:58:14 +0200
+Date:   Sun, 10 May 2020 03:58:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>, jeyu@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
+        schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/15] net: taint when the device driver firmware crashes
+Message-ID: <20200510015814.GE362499@lunn.ch>
+References: <20200509043552.8745-1-mcgrof@kernel.org>
+ <1e097eb0-6132-f549-8069-d13b678183f5@pensando.io>
 MIME-Version: 1.0
-In-Reply-To: <CANP3RGfr0ziZN9Jg175DD4OULhYtB2g2xFncCqeCnQA9vAYpdA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1e097eb0-6132-f549-8069-d13b678183f5@pensando.io>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/20 3:35 PM, Maciej Å»enczykowski wrote:
-> Do we have some sort of beginner's introduction to Linux VRF somewhere?
-> What they are? How to use them?
+On Sat, May 09, 2020 at 06:01:51PM -0700, Shannon Nelson wrote:
+> On 5/8/20 9:35 PM, Luis Chamberlain wrote:
+> > Device driver firmware can crash, and sometimes, this can leave your
+> > system in a state which makes the device or subsystem completely
+> > useless. Detecting this by inspecting /proc/sys/kernel/tainted instead
+> > of scraping some magical words from the kernel log, which is driver
+> > specific, is much easier. So instead this series provides a helper which
+> > lets drivers annotate this and shows how to use this on networking
+> > drivers.
+> > 
+> If the driver is able to detect that the device firmware has come back
+> alive, through user intervention or whatever, should there be a way to
+> "untaint" the kernel?  Or would you expect it to remain tainted?
 
-Ido's response gave introductory commands which can also be found here:
-    https://www.kernel.org/doc/Documentation/networking/vrf.txt
+Hi Shannon
 
-This should answer most questions about more advanced topics:
-    http://schd.ws/hosted_files/ossna2017/fe/vrf-tutorial-oss.pdf
+In general, you don't want to be able to untained. Say a non-GPL
+licenced module is loaded, which taints the kernel. It might then try
+to untaint the kernel to hide its.
 
-Lately, I am putting blogs on https://people.kernel.org/dsahern for
-recurring questions.
+As for firmware, how much damage can the firmware do as it crashed? If
+it is a DMA master, it could of splattered stuff through
+memory. Restarting the firmware is not going to reverse the damage it
+has done.
 
-> 
-> Currently the concept simply doesn't fit into my mental model of networking...
-
-network namespaces = device level separation and up
-VRF = Layer 3 and up separation
-
-> 
-> We've actually talked about maybe possibly using VRF's in Android (for
-> our multi network support)...
-> but no-one on our team has the faintest idea about how they work...
-> (and there's rumours that they don't work with ipv6 link local)
-> 
-
-Rumors are ugly. If in doubt, ask. LLA with VRF is a primary requirement
-from the beginning.
-
-With 5.3 and up, you can have IPv4 routes with IPv6 LLA gateways with
-and without VRFs.
+    Andrew
