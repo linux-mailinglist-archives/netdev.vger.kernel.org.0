@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A82971CCC43
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 18:38:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26BCB1CCC44
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 18:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728940AbgEJQh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 12:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
+        id S1729022AbgEJQiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 12:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728892AbgEJQh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 12:37:58 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD4AC061A0C
-        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:37:58 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id e26so15397404wmk.5
-        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:37:58 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728959AbgEJQiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 12:38:00 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70F5C061A0C
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:37:59 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id d207so2077769wmd.0
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 09:37:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=rH53CFBSBWJ7e00gOYK8G86J64m2HwFSCMB/ra3QTk8=;
-        b=fAnKRTnobUWtBMyDeaV7BFsAA2vj0QZexf83iASvfKBaLQgDAk1TaAEfDktl+M6BpQ
-         XjCqpVTF2A/LJjG2K8w3ig4/y2lezbDsYkQyGDlcnxW8wJFgwy9iblwuUsLxRKW2eKJj
-         QQD0x3iA5Gws/sxDDtqOi7cXIr4RL5nEZHQbUc47AuZ3h4Ftk0IhJE6p6Fq0sKSa2pBs
-         wBG5v1oab1xKZO8ZQwgKx2xHRUiLbMbWCychKAWRfBc5Cad3Gp/G2Nishove9I9KbbWs
-         LYKRilsai97YVwFsINYos5cqbSvj1BAUonOGliARZdoqwr5mG2CstqBv8kYeYDCa8HYa
-         oPUg==
+        bh=UN2ZLk26QiQJnU6kMVoB4gxHhYuk7BHlv7Yl7upapII=;
+        b=HBhhi+XkX0LJWjSeBaTfA06LdKIa3JbxjYgeeT/nRnbkr/hbmWIQv+LdnV5Z94K0Yk
+         KIfoplZtiCbWXe9O4c7n4LgdzQUxAPBLLhgOdRWHxF796NPglc7OU0WYL4pZ/nNugxWV
+         Xqbpli5eRAxfaarG1Sj0p1YpHaqoGmABd7IaZz4HtQZojAVcsu0UQLnz+bKOU35NcV4e
+         fW8+jt2xWBqKG8u73uMp0w1jZjVSP3JLjYjGpSpN/ONAdwgyas48nghsfDe8gCv1zL9v
+         WA303EkTD9kxFDPvyqeHk2yzBNyPb0HSK+WLlg0wmlXDOV42DpdnbcQ/ZB8yLo9TGnr9
+         MQPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=rH53CFBSBWJ7e00gOYK8G86J64m2HwFSCMB/ra3QTk8=;
-        b=kKzhk1Pvzil/tpRqph1eoodGgrhtZA/P7BpnvTkR79QvV4H2qmYNJvjJ3Bjlz0H1p0
-         pmHU6IW3qt0SDz4LnkZFC5yO0JNzEgVbDzcFZ4W9T9qD0J/T3VEvGMqsEvf0VsZ4IXi1
-         alnPQPMfY9IhT6ZFYRHkGxaaTf5+4ixyYrYUoMm1SeGCkVR/oUEQ9uLGQ+QoeNVp0D0X
-         QloujNjPKkTD5ARxN0z3FPDTxdxgfguvcpIhsoduIMhZ4XEpneXnKgEBnMHz3UsYuHN4
-         CIyDaD0MKUv1mW/fj5LkAdY0do86XMZjdVNBwaPul6QgTRZG+wXeuMLeID5usHoqF6E8
-         w5Iw==
-X-Gm-Message-State: AGi0Publ0mTSiOkHbnu6hxsqzJKwZ0dzA2kVebkJf0aQTLwhvG/pq29J
-        ymqCJ0x+I5+G6h+pguAVXWI=
-X-Google-Smtp-Source: APiQypKT1Xbmy2RL2M7YZSfBEkbtnDPNMwuCgTACxPeFSOdiEF/q7KAX6FuYfvDa0L07PpISV0lIVg==
-X-Received: by 2002:a1c:a793:: with SMTP id q141mr5872471wme.135.1589128677236;
-        Sun, 10 May 2020 09:37:57 -0700 (PDT)
+        bh=UN2ZLk26QiQJnU6kMVoB4gxHhYuk7BHlv7Yl7upapII=;
+        b=rkmZoOtuPKHdLgFpdT5pHnw81Yaz+XTj6n/BuefNLogJD+s0VxZ1YsgCqbIkm/4Uy6
+         NWgFJVc05lEwqWjnWJiKetDhYl7lGHBHXqk2cS9Lxy8dhZwDxma4OqF1Kb/oOuYNKeOd
+         0bnuPRZs4GrPfx+WIAVeDkiYj8ttAZqxXuD0YQjMBINWwhXZUh8t9eEXwsLlqX69S2H6
+         MFq/zjX5XAQlRhF/fVPlRIicE1jxt5Cg6eui6ex2+Mh9M8U23HZNGBtGQRydYluPAMTo
+         9yLX0anN4eapmLP8rLxmHw4jdUvuS3FG1TiCGf4Hv5peUek28ftJQOCF4K/6AeX/qM9E
+         TPsw==
+X-Gm-Message-State: AGi0Pubs4XLJKIRUrMNQ6dqxu+8hjS37P4MuXoGUNXrkYPB4XAqwNL82
+        HuWbW/8kZhe7UkzU3lakL1Y=
+X-Google-Smtp-Source: APiQypLC/vK/hHlamIFdC1EKBHvoxTzOshb1j3+exspSMbwnmyxkqIQPwmgWC8tx7GmvS11EFnYORA==
+X-Received: by 2002:a7b:c319:: with SMTP id k25mr14468709wmj.129.1589128678352;
+        Sun, 10 May 2020 09:37:58 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id d133sm25472394wmc.27.2020.05.10.09.37.56
+        by smtp.gmail.com with ESMTPSA id d133sm25472394wmc.27.2020.05.10.09.37.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2020 09:37:56 -0700 (PDT)
+        Sun, 10 May 2020 09:37:57 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net
 Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
         roopa@cumulusnetworks.com
-Subject: [PATCH v4 resend net-next 3/4] net: dsa: introduce a dsa_switch_find function
-Date:   Sun, 10 May 2020 19:37:42 +0300
-Message-Id: <20200510163743.18032-4-olteanv@gmail.com>
+Subject: [PATCH v4 resend net-next 4/4] net: dsa: sja1105: implement cross-chip bridging operations
+Date:   Sun, 10 May 2020 19:37:43 +0300
+Message-Id: <20200510163743.18032-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200510163743.18032-1-olteanv@gmail.com>
 References: <20200510163743.18032-1-olteanv@gmail.com>
@@ -65,11 +65,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Somewhat similar to dsa_tree_find, dsa_switch_find returns a dsa_switch
-structure pointer by searching for its tree index and switch index (the
-parameters from dsa,member). To be used, for example, by drivers who
-implement .crosschip_bridge_join and need a reference to the other
-switch indicated to by the tree_index and sw_index arguments.
+sja1105 uses dsa_8021q for DSA tagging, a format which is VLAN at heart
+and which is compatible with cascading. A complete description of this
+tagging format is in net/dsa/tag_8021q.c, but a quick summary is that
+each external-facing port tags incoming frames with a unique pvid, and
+this special VLAN is transmitted as tagged towards the inside of the
+system, and as untagged towards the exterior. The tag encodes the switch
+id and the source port index.
+
+This means that cross-chip bridging for dsa_8021q only entails adding
+the dsa_8021q pvids of one switch to the RX filter of the other
+switches. Everything else falls naturally into place, as long as the
+bottom-end of ports (the leaves in the tree) is comprised exclusively of
+dsa_8021q-compatible (i.e. sja1105 switches). Otherwise, there would be
+a chance that a front-panel switch transmits a packet tagged with a
+dsa_8021q header, header which it wouldn't be able to remove, and which
+would hence "leak" out.
+
+The only use case I tested (due to lack of board availability) was when
+the sja1105 switches are part of disjoint trees (however, this doesn't
+change the fact that multiple sja1105 switches still need unique switch
+identifiers in such a system). But in principle, even "true" single-tree
+setups (with DSA links) should work just as fine, except for a small
+change which I can't test: dsa_towards_port should be used instead of
+dsa_upstream_port (I made the assumption that the routing port that any
+sja1105 should use towards its neighbours is the CPU port. That might
+not hold true in other setups).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
@@ -78,59 +99,410 @@ Changes in v4:
 None.
 
 Changes in v3:
-None.
+* Moved the implementation in tag_8021q.c, because 1. it is generic
+  enough that is can be reused by anyone employing dsa_8021q tagging,
+  and 2. sja1105_main.c could use some de-cluttering.
+* Provided reference counting to the crosschip links to avoid
+  workarounds such as never deleting VLANs from the CPU port.
 
 Changes in v2:
-None.
+Now replaying the crosschip operations when toggling the VLAN filtering
+state (aka when we need to hide the dsa_8021q VLANs, as the VLAN
+filtering table becomes visible to the user so it needs to be cleared -
+and perhaps restored afterwards).
 
- include/net/dsa.h |  1 +
- net/dsa/dsa2.c    | 21 +++++++++++++++++++++
- 2 files changed, 22 insertions(+)
+ drivers/net/dsa/sja1105/sja1105.h      |   2 +
+ drivers/net/dsa/sja1105/sja1105_main.c |  90 +++++++++++++++
+ include/linux/dsa/8021q.h              |  45 ++++++++
+ net/dsa/tag_8021q.c                    | 151 +++++++++++++++++++++++++
+ 4 files changed, 288 insertions(+)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 0f4fc00239d9..312c2f067e65 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -672,6 +672,7 @@ static inline bool dsa_can_decode(const struct sk_buff *skb,
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index 8df2a5c53b02..a64ace07b89f 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -8,6 +8,7 @@
+ #include <linux/ptp_clock_kernel.h>
+ #include <linux/timecounter.h>
+ #include <linux/dsa/sja1105.h>
++#include <linux/dsa/8021q.h>
+ #include <net/dsa.h>
+ #include <linux/mutex.h>
+ #include "sja1105_static_config.h"
+@@ -185,6 +186,7 @@ struct sja1105_private {
+ 	struct gpio_desc *reset_gpio;
+ 	struct spi_device *spidev;
+ 	struct dsa_switch *ds;
++	struct list_head crosschip_links;
+ 	struct sja1105_flow_block flow_block;
+ 	struct sja1105_port ports[SJA1105_NUM_PORTS];
+ 	/* Serializes transmission of management frames so that
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 666e54565df0..d5de9305df25 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -25,6 +25,8 @@
+ #include "sja1105_sgmii.h"
+ #include "sja1105_tas.h"
  
- void dsa_unregister_switch(struct dsa_switch *ds);
- int dsa_register_switch(struct dsa_switch *ds);
-+struct dsa_switch *dsa_switch_find(int tree_index, int sw_index);
- #ifdef CONFIG_PM_SLEEP
- int dsa_switch_suspend(struct dsa_switch *ds);
- int dsa_switch_resume(struct dsa_switch *ds);
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index d90665b465b8..076908fdd29b 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -24,6 +24,27 @@ LIST_HEAD(dsa_tree_list);
- static const struct devlink_ops dsa_devlink_ops = {
- };
- 
-+struct dsa_switch *dsa_switch_find(int tree_index, int sw_index)
-+{
-+	struct dsa_switch_tree *dst;
-+	struct dsa_port *dp;
++static const struct dsa_switch_ops sja1105_switch_ops;
 +
-+	list_for_each_entry(dst, &dsa_tree_list, list) {
-+		if (dst->index != tree_index)
+ static void sja1105_hw_reset(struct gpio_desc *gpio, unsigned int pulse_len,
+ 			     unsigned int startup_delay)
+ {
+@@ -1791,6 +1793,84 @@ static int sja1105_vlan_apply(struct sja1105_private *priv, int port, u16 vid,
+ 	return 0;
+ }
+ 
++static int sja1105_crosschip_bridge_join(struct dsa_switch *ds,
++					 int tree_index, int sw_index,
++					 int other_port, struct net_device *br)
++{
++	struct dsa_switch *other_ds = dsa_switch_find(tree_index, sw_index);
++	struct sja1105_private *other_priv = other_ds->priv;
++	struct sja1105_private *priv = ds->priv;
++	int port, rc;
++
++	if (other_ds->ops != &sja1105_switch_ops)
++		return 0;
++
++	for (port = 0; port < ds->num_ports; port++) {
++		if (!dsa_is_user_port(ds, port))
++			continue;
++		if (dsa_to_port(ds, port)->bridge_dev != br)
 +			continue;
 +
-+		list_for_each_entry(dp, &dst->ports, list) {
-+			if (dp->ds->index != sw_index)
-+				continue;
++		rc = dsa_8021q_crosschip_bridge_join(ds, port, other_ds,
++						     other_port, br,
++						     &priv->crosschip_links);
++		if (rc)
++			return rc;
 +
-+			return dp->ds;
++		rc = dsa_8021q_crosschip_bridge_join(other_ds, other_port, ds,
++						     port, br,
++						     &other_priv->crosschip_links);
++		if (rc)
++			return rc;
++	}
++
++	return 0;
++}
++
++static void sja1105_crosschip_bridge_leave(struct dsa_switch *ds,
++					   int tree_index, int sw_index,
++					   int other_port,
++					   struct net_device *br)
++{
++	struct dsa_switch *other_ds = dsa_switch_find(tree_index, sw_index);
++	struct sja1105_private *other_priv = other_ds->priv;
++	struct sja1105_private *priv = ds->priv;
++	int port;
++
++	if (other_ds->ops != &sja1105_switch_ops)
++		return;
++
++	for (port = 0; port < ds->num_ports; port++) {
++		if (!dsa_is_user_port(ds, port))
++			continue;
++		if (dsa_to_port(ds, port)->bridge_dev != br)
++			continue;
++
++		dsa_8021q_crosschip_bridge_leave(ds, port, other_ds, other_port,
++						 br, &priv->crosschip_links);
++
++		dsa_8021q_crosschip_bridge_leave(other_ds, other_port, ds,
++						 port, br,
++						 &other_priv->crosschip_links);
++	}
++}
++
++static int sja1105_replay_crosschip_vlans(struct dsa_switch *ds, bool enabled)
++{
++	struct sja1105_private *priv = ds->priv;
++	struct dsa_8021q_crosschip_link *c;
++	int rc;
++
++	list_for_each_entry(c, &priv->crosschip_links, list) {
++		rc = dsa_8021q_crosschip_link_apply(ds, c->port, c->other_ds,
++						    c->other_port, enabled);
++		if (rc)
++			break;
++	}
++
++	return rc;
++}
++
+ static int sja1105_setup_8021q_tagging(struct dsa_switch *ds, bool enabled)
+ {
+ 	int rc, i;
+@@ -1803,6 +1883,12 @@ static int sja1105_setup_8021q_tagging(struct dsa_switch *ds, bool enabled)
+ 			return rc;
+ 		}
+ 	}
++	rc = sja1105_replay_crosschip_vlans(ds, enabled);
++	if (rc) {
++		dev_err(ds->dev, "Failed to replay crosschip VLANs: %d\n", rc);
++		return rc;
++	}
++
+ 	dev_info(ds->dev, "%s switch tagging\n",
+ 		 enabled ? "Enabled" : "Disabled");
+ 	return 0;
+@@ -2370,6 +2456,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.cls_flower_add		= sja1105_cls_flower_add,
+ 	.cls_flower_del		= sja1105_cls_flower_del,
+ 	.cls_flower_stats	= sja1105_cls_flower_stats,
++	.crosschip_bridge_join	= sja1105_crosschip_bridge_join,
++	.crosschip_bridge_leave	= sja1105_crosschip_bridge_leave,
+ };
+ 
+ static int sja1105_check_device_id(struct sja1105_private *priv)
+@@ -2472,6 +2560,8 @@ static int sja1105_probe(struct spi_device *spi)
+ 	mutex_init(&priv->ptp_data.lock);
+ 	mutex_init(&priv->mgmt_lock);
+ 
++	INIT_LIST_HEAD(&priv->crosschip_links);
++
+ 	sja1105_tas_setup(ds);
+ 	sja1105_flower_setup(ds);
+ 
+diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
+index c620d9139c28..b8daaec0896e 100644
+--- a/include/linux/dsa/8021q.h
++++ b/include/linux/dsa/8021q.h
+@@ -12,11 +12,33 @@ struct sk_buff;
+ struct net_device;
+ struct packet_type;
+ 
++struct dsa_8021q_crosschip_link {
++	struct list_head list;
++	int port;
++	struct dsa_switch *other_ds;
++	int other_port;
++	refcount_t refcount;
++};
++
+ #if IS_ENABLED(CONFIG_NET_DSA_TAG_8021Q)
+ 
+ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int index,
+ 				 bool enabled);
+ 
++int dsa_8021q_crosschip_link_apply(struct dsa_switch *ds, int port,
++				   struct dsa_switch *other_ds,
++				   int other_port, bool enabled);
++
++int dsa_8021q_crosschip_bridge_join(struct dsa_switch *ds, int port,
++				    struct dsa_switch *other_ds,
++				    int other_port, struct net_device *br,
++				    struct list_head *crosschip_links);
++
++int dsa_8021q_crosschip_bridge_leave(struct dsa_switch *ds, int port,
++				     struct dsa_switch *other_ds,
++				     int other_port, struct net_device *br,
++				     struct list_head *crosschip_links);
++
+ struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
+ 			       u16 tpid, u16 tci);
+ 
+@@ -36,6 +58,29 @@ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int index,
+ 	return 0;
+ }
+ 
++int dsa_8021q_crosschip_link_apply(struct dsa_switch *ds, int port,
++				   struct dsa_switch *other_ds,
++				   int other_port, bool enabled)
++{
++	return 0;
++}
++
++int dsa_8021q_crosschip_bridge_join(struct dsa_switch *ds, int port,
++				    struct dsa_switch *other_ds,
++				    int other_port, struct net_device *br,
++				    struct list_head *crosschip_links)
++{
++	return 0;
++}
++
++int dsa_8021q_crosschip_bridge_leave(struct dsa_switch *ds, int port,
++				     struct dsa_switch *other_ds,
++				     int other_port, struct net_device *br,
++				     struct list_head *crosschip_links)
++{
++	return 0;
++}
++
+ struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
+ 			       u16 tpid, u16 tci)
+ {
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index b97ad93d1c1a..ff9c5bf64bda 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -8,6 +8,7 @@
+  */
+ #include <linux/if_bridge.h>
+ #include <linux/if_vlan.h>
++#include <linux/dsa/8021q.h>
+ 
+ #include "dsa_priv.h"
+ 
+@@ -288,6 +289,156 @@ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int port, bool enabled)
+ }
+ EXPORT_SYMBOL_GPL(dsa_port_setup_8021q_tagging);
+ 
++int dsa_8021q_crosschip_link_apply(struct dsa_switch *ds, int port,
++				   struct dsa_switch *other_ds,
++				   int other_port, bool enabled)
++{
++	u16 rx_vid = dsa_8021q_rx_vid(ds, port);
++
++	/* @rx_vid of local @ds port @port goes to @other_port of
++	 * @other_ds
++	 */
++	return dsa_8021q_vid_apply(other_ds, other_port, rx_vid,
++				   BRIDGE_VLAN_INFO_UNTAGGED, enabled);
++}
++EXPORT_SYMBOL_GPL(dsa_8021q_crosschip_link_apply);
++
++static int dsa_8021q_crosschip_link_add(struct dsa_switch *ds, int port,
++					struct dsa_switch *other_ds,
++					int other_port,
++					struct list_head *crosschip_links)
++{
++	struct dsa_8021q_crosschip_link *c;
++
++	list_for_each_entry(c, crosschip_links, list) {
++		if (c->port == port && c->other_ds == other_ds &&
++		    c->other_port == other_port) {
++			refcount_inc(&c->refcount);
++			return 0;
 +		}
 +	}
 +
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(dsa_switch_find);
++	dev_dbg(ds->dev, "adding crosschip link from port %d to %s port %d\n",
++		port, dev_name(other_ds->dev), other_port);
 +
- static struct dsa_switch_tree *dsa_tree_find(int index)
++	c = kzalloc(sizeof(*c), GFP_KERNEL);
++	if (!c)
++		return -ENOMEM;
++
++	c->port = port;
++	c->other_ds = other_ds;
++	c->other_port = other_port;
++	refcount_set(&c->refcount, 1);
++
++	list_add(&c->list, crosschip_links);
++
++	return 0;
++}
++
++static void dsa_8021q_crosschip_link_del(struct dsa_switch *ds,
++					 struct dsa_8021q_crosschip_link *c,
++					 struct list_head *crosschip_links,
++					 bool *keep)
++{
++	*keep = !refcount_dec_and_test(&c->refcount);
++
++	if (*keep)
++		return;
++
++	dev_dbg(ds->dev,
++		"deleting crosschip link from port %d to %s port %d\n",
++		c->port, dev_name(c->other_ds->dev), c->other_port);
++
++	list_del(&c->list);
++	kfree(c);
++}
++
++/* Make traffic from local port @port be received by remote port @other_port.
++ * This means that our @rx_vid needs to be installed on @other_ds's upstream
++ * and user ports. The user ports should be egress-untagged so that they can
++ * pop the dsa_8021q VLAN. But the @other_upstream can be either egress-tagged
++ * or untagged: it doesn't matter, since it should never egress a frame having
++ * our @rx_vid.
++ */
++int dsa_8021q_crosschip_bridge_join(struct dsa_switch *ds, int port,
++				    struct dsa_switch *other_ds,
++				    int other_port, struct net_device *br,
++				    struct list_head *crosschip_links)
++{
++	/* @other_upstream is how @other_ds reaches us. If we are part
++	 * of disjoint trees, then we are probably connected through
++	 * our CPU ports. If we're part of the same tree though, we should
++	 * probably use dsa_towards_port.
++	 */
++	int other_upstream = dsa_upstream_port(other_ds, other_port);
++	int rc;
++
++	rc = dsa_8021q_crosschip_link_add(ds, port, other_ds,
++					  other_port, crosschip_links);
++	if (rc)
++		return rc;
++
++	if (!br_vlan_enabled(br)) {
++		rc = dsa_8021q_crosschip_link_apply(ds, port, other_ds,
++						    other_port, true);
++		if (rc)
++			return rc;
++	}
++
++	rc = dsa_8021q_crosschip_link_add(ds, port, other_ds,
++					  other_upstream,
++					  crosschip_links);
++	if (rc)
++		return rc;
++
++	if (!br_vlan_enabled(br)) {
++		rc = dsa_8021q_crosschip_link_apply(ds, port, other_ds,
++						    other_upstream, true);
++		if (rc)
++			return rc;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(dsa_8021q_crosschip_bridge_join);
++
++int dsa_8021q_crosschip_bridge_leave(struct dsa_switch *ds, int port,
++				     struct dsa_switch *other_ds,
++				     int other_port, struct net_device *br,
++				     struct list_head *crosschip_links)
++{
++	int other_upstream = dsa_upstream_port(other_ds, other_port);
++	struct dsa_8021q_crosschip_link *c, *n;
++
++	list_for_each_entry_safe(c, n, crosschip_links, list) {
++		if (c->port == port && c->other_ds == other_ds &&
++		    (c->other_port == other_port ||
++		     c->other_port == other_upstream)) {
++			struct dsa_switch *other_ds = c->other_ds;
++			int other_port = c->other_port;
++			bool keep;
++			int rc;
++
++			dsa_8021q_crosschip_link_del(ds, c, crosschip_links,
++						     &keep);
++			if (keep)
++				continue;
++
++			if (!br_vlan_enabled(br)) {
++				rc = dsa_8021q_crosschip_link_apply(ds, port,
++								    other_ds,
++								    other_port,
++								    false);
++				if (rc)
++					return rc;
++			}
++		}
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(dsa_8021q_crosschip_bridge_leave);
++
+ struct sk_buff *dsa_8021q_xmit(struct sk_buff *skb, struct net_device *netdev,
+ 			       u16 tpid, u16 tci)
  {
- 	struct dsa_switch_tree *dst;
 -- 
 2.17.1
 
