@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B441CCD34
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 21:13:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0AAA1CCD32
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 21:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729278AbgEJTM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 15:12:59 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52358 "EHLO vps0.lunn.ch"
+        id S1729242AbgEJTMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 15:12:55 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52324 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729265AbgEJTM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 15:12:58 -0400
+        id S1729113AbgEJTMy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 15:12:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=MXAkb6n8ox0CNUdGt+lWSjswMEnZ+Ow9tJWz5wEE7nU=; b=uODK8QSDgmXG7wINrX8yYh76su
-        ro3rdkofIG5BJcW4ZdAzyU9TYxPiacaBTU/07Gj7ZeN+Zo1CAI3/aT+/vQU36YYXr/FauNRn9RtgR
-        W2EGr7hZ4E/Ly8jWoC1TQcd61stA/GDJAEEsOi3ax7Un++Rz6LIlVsxvyhY0sIde5GSU=;
+        bh=KkRRIJM/X9DDFopl0N95PxE+jeMWi4TQJCcsbM6Qo6o=; b=gmEL78RjaTMa3DlU8Jzi/CRSNd
+        a2qn3BeQ2QU+EK6eq8sfukCZbiaO7MtElmwOOVObItEoTnnOgI3f9wHtXBGNJZWHbCsh1ZwB4ns8t
+        ISC/YiCrGfmfHULayXNwPe0PzFxvi9eB7zvQdwUf/1TwsK/IBBYnnVVtI5OEeAohZvH8=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jXrNc-001jdP-EU; Sun, 10 May 2020 21:12:52 +0200
+        id 1jXrNc-001jdU-GP; Sun, 10 May 2020 21:12:52 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -30,9 +30,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Chris Healy <cphealy@gmail.com>,
         Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v4 01/10] net: phy: Add cable test support to state machine
-Date:   Sun, 10 May 2020 21:12:30 +0200
-Message-Id: <20200510191240.413699-2-andrew@lunn.ch>
+Subject: [PATCH net-next v4 1/1] net: phy: Send notifier when starting the cable test
+Date:   Sun, 10 May 2020 21:12:31 +0200
+Message-Id: <20200510191240.413699-3-andrew@lunn.ch>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200510191240.413699-1-andrew@lunn.ch>
 References: <20200510191240.413699-1-andrew@lunn.ch>
@@ -43,219 +43,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Running a cable test is desruptive to normal operation of the PHY and
-can take a 5 to 10 seconds to complete. The RTNL lock cannot be held
-for this amount of time, and add a new state to the state machine for
-running a cable test.
+Given that it takes time to run a cable test, send a notify message at
+the start, as well as when it is completed.
 
-The driver is expected to implement two functions. The first is used
-to start a cable test. Once the test has started, it should return.
+v3:
+EMSGSIZE when ethnl_bcastmsg_put() fails
+Print an error message on failure, since this is a void function.
 
-The second function is called once per second, or on interrupt to
-check if the cable test is complete, and to allow the PHY to report
-the status.
-
-v2:
-Rename phy_cable_test_abort to phy_abort_cable_test
-Return different extack when already running test
-Use phy_init_hw() to reset the PHY
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/phy/phy.c | 76 +++++++++++++++++++++++++++++++++++++++++++
- include/linux/phy.h   | 28 ++++++++++++++++
- 2 files changed, 104 insertions(+)
+ net/ethtool/cabletest.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 8c22d02b4218..0f4b27215429 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -15,6 +15,7 @@
- #include <linux/interrupt.h>
- #include <linux/delay.h>
- #include <linux/netdevice.h>
-+#include <linux/netlink.h>
- #include <linux/etherdevice.h>
- #include <linux/skbuff.h>
- #include <linux/mm.h>
-@@ -44,6 +45,7 @@ static const char *phy_state_to_str(enum phy_state st)
- 	PHY_STATE_STR(UP)
- 	PHY_STATE_STR(RUNNING)
- 	PHY_STATE_STR(NOLINK)
-+	PHY_STATE_STR(CABLETEST)
- 	PHY_STATE_STR(HALTED)
- 	}
+diff --git a/net/ethtool/cabletest.c b/net/ethtool/cabletest.c
+index e0c917918c70..5ba06eabe8c2 100644
+--- a/net/ethtool/cabletest.c
++++ b/net/ethtool/cabletest.c
+@@ -13,6 +13,43 @@ cable_test_act_policy[ETHTOOL_A_CABLE_TEST_MAX + 1] = {
+ 	[ETHTOOL_A_CABLE_TEST_HEADER]		= { .type = NLA_NESTED },
+ };
  
-@@ -472,6 +474,62 @@ static void phy_trigger_machine(struct phy_device *phydev)
- 	phy_queue_state_machine(phydev, 0);
- }
- 
-+static void phy_abort_cable_test(struct phy_device *phydev)
++static int ethnl_cable_test_started(struct phy_device *phydev)
 +{
-+	int err;
++	struct sk_buff *skb;
++	int err = -ENOMEM;
++	void *ehdr;
 +
-+	err = phy_init_hw(phydev);
++	skb = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
++	if (!skb)
++		goto out;
++
++	ehdr = ethnl_bcastmsg_put(skb, ETHTOOL_MSG_CABLE_TEST_NTF);
++	if (!ehdr) {
++		err = -EMSGSIZE;
++		goto out;
++	}
++
++	err = ethnl_fill_reply_header(skb, phydev->attached_dev,
++				      ETHTOOL_A_CABLE_TEST_NTF_HEADER);
 +	if (err)
-+		phydev_err(phydev, "Error while aborting cable test");
-+}
-+
-+int phy_start_cable_test(struct phy_device *phydev,
-+			 struct netlink_ext_ack *extack)
-+{
-+	int err;
-+
-+	if (!(phydev->drv &&
-+	      phydev->drv->cable_test_start &&
-+	      phydev->drv->cable_test_get_status)) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY driver does not support cable testing");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	mutex_lock(&phydev->lock);
-+	if (phydev->state == PHY_CABLETEST) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY already performing a test");
-+		err = -EBUSY;
 +		goto out;
-+	}
 +
-+	if (phydev->state < PHY_UP ||
-+	    phydev->state > PHY_CABLETEST) {
-+		NL_SET_ERR_MSG(extack,
-+			       "PHY not configured. Try setting interface up");
-+		err = -EBUSY;
++	err = nla_put_u8(skb, ETHTOOL_A_CABLE_TEST_NTF_STATUS,
++			 ETHTOOL_A_CABLE_TEST_NTF_STATUS_STARTED);
++	if (err)
 +		goto out;
-+	}
 +
-+	/* Mark the carrier down until the test is complete */
-+	phy_link_down(phydev, true);
++	genlmsg_end(skb, ehdr);
 +
-+	err = phydev->drv->cable_test_start(phydev);
-+	if (err) {
-+		phy_link_up(phydev);
-+		goto out;
-+	}
-+
-+	phydev->state = PHY_CABLETEST;
++	return ethnl_multicast(skb, phydev->attached_dev);
 +
 +out:
-+	mutex_unlock(&phydev->lock);
++	nlmsg_free(skb);
++	phydev_err(phydev, "%s: Error %pe\n", __func__, ERR_PTR(err));
 +
 +	return err;
 +}
-+EXPORT_SYMBOL(phy_start_cable_test);
 +
- static int phy_config_aneg(struct phy_device *phydev)
+ int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info)
  {
- 	if (phydev->drv->config_aneg)
-@@ -810,6 +868,9 @@ void phy_stop(struct phy_device *phydev)
+ 	struct nlattr *tb[ETHTOOL_A_CABLE_TEST_MAX + 1];
+@@ -47,6 +84,10 @@ int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info)
+ 	ret = phy_start_cable_test(dev->phydev, info->extack);
  
- 	mutex_lock(&phydev->lock);
- 
-+	if (phydev->state == PHY_CABLETEST)
-+		phy_abort_cable_test(phydev);
+ 	ethnl_ops_complete(dev);
 +
- 	if (phydev->sfp_bus)
- 		sfp_upstream_stop(phydev->sfp_bus);
- 
-@@ -872,6 +933,7 @@ void phy_state_machine(struct work_struct *work)
- 			container_of(dwork, struct phy_device, state_queue);
- 	bool needs_aneg = false, do_suspend = false;
- 	enum phy_state old_state;
-+	bool finished = false;
- 	int err = 0;
- 
- 	mutex_lock(&phydev->lock);
-@@ -890,6 +952,20 @@ void phy_state_machine(struct work_struct *work)
- 	case PHY_RUNNING:
- 		err = phy_check_link_status(phydev);
- 		break;
-+	case PHY_CABLETEST:
-+		err = phydev->drv->cable_test_get_status(phydev, &finished);
-+		if (err) {
-+			phy_abort_cable_test(phydev);
-+			needs_aneg = true;
-+			phydev->state = PHY_UP;
-+			break;
-+		}
++	if (!ret)
++		ethnl_cable_test_started(dev->phydev);
 +
-+		if (finished) {
-+			needs_aneg = true;
-+			phydev->state = PHY_UP;
-+		}
-+		break;
- 	case PHY_HALTED:
- 		if (phydev->link) {
- 			phydev->link = 0;
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index a2b91b5f9d0a..632403fc34f4 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -15,6 +15,7 @@
- #include <linux/spinlock.h>
- #include <linux/ethtool.h>
- #include <linux/linkmode.h>
-+#include <linux/netlink.h>
- #include <linux/mdio.h>
- #include <linux/mii.h>
- #include <linux/mii_timestamper.h>
-@@ -372,6 +373,12 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr);
-  * - irq or timer will set NOLINK if link goes down
-  * - phy_stop moves to HALTED
-  *
-+ * CABLETEST: PHY is performing a cable test. Packet reception/sending
-+ * is not expected to work, carrier will be indicated as down. PHY will be
-+ * poll once per second, or on interrupt for it current state.
-+ * Once complete, move to UP to restart the PHY.
-+ * - phy_stop aborts the running test and moves to HALTED
-+ *
-  * HALTED: PHY is up, but no polling or interrupts are done. Or
-  * PHY is in an error state.
-  * - phy_start moves to UP
-@@ -383,6 +390,7 @@ enum phy_state {
- 	PHY_UP,
- 	PHY_RUNNING,
- 	PHY_NOLINK,
-+	PHY_CABLETEST,
- };
- 
- /**
-@@ -689,6 +697,13 @@ struct phy_driver {
- 	int (*module_eeprom)(struct phy_device *dev,
- 			     struct ethtool_eeprom *ee, u8 *data);
- 
-+	/* Start a cable test */
-+	int (*cable_test_start)(struct phy_device *dev);
-+	/* Once per second, or on interrupt, request the status of the
-+	 * test.
-+	 */
-+	int (*cable_test_get_status)(struct phy_device *dev, bool *finished);
-+
- 	/* Get statistics from the phy using ethtool */
- 	int (*get_sset_count)(struct phy_device *dev);
- 	void (*get_strings)(struct phy_device *dev, u8 *data);
-@@ -1227,6 +1242,19 @@ int phy_speed_up(struct phy_device *phydev);
- int phy_restart_aneg(struct phy_device *phydev);
- int phy_reset_after_clk_enable(struct phy_device *phydev);
- 
-+#if IS_ENABLED(CONFIG_PHYLIB)
-+int phy_start_cable_test(struct phy_device *phydev,
-+			 struct netlink_ext_ack *extack);
-+#else
-+static inline
-+int phy_start_cable_test(struct phy_device *phydev,
-+			 struct netlink_ext_ack *extack)
-+{
-+	NL_SET_ERR_MSG(extack, "Kernel not compiled with PHYLIB support");
-+	return -EOPNOTSUPP;
-+}
-+#endif
-+
- static inline void phy_device_reset(struct phy_device *phydev, int value)
- {
- 	mdio_device_reset(&phydev->mdio, value);
+ out_rtnl:
+ 	rtnl_unlock();
+ out_dev_put:
 -- 
 2.26.2
 
