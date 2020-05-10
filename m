@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 744C21CCD37
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 21:13:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D9C1CCD3D
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 21:13:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729298AbgEJTNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 15:13:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52346 "EHLO vps0.lunn.ch"
+        id S1729330AbgEJTNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 15:13:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52430 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729254AbgEJTM6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 15:12:58 -0400
+        id S1729254AbgEJTNP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 15:13:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=PBj/fJnWlERfIMy+9kS2YP2Zub3zLQBtC2dNQDGe8Vs=; b=42PKWZs4MuezckP7SeDthhFbhd
-        E/LzXsRgRJrHdcX60TzA/CMUY+RzfCmgHhA0Ol630c0D4mpAwXK4gQGID74zqaIKVy5ls3dBdhYUA
-        VM4EcuuJ3xsKZEvTBVrSJAhSanYvyJT1gGSdUuiO+OVIlVupwtVtld53QCYQV0i7UXLo=;
+        bh=mC8/SK80C58CKYagFaziO4BM3EWmFL3KdX/575m3eyw=; b=nIdgX7DFrjHyKQDFWfB3InRNAX
+        +ijyUg1v7sWavGhOuHf8CzKWB9/3Al5Kd0tu2Pq3X552UkNls6GOSxhWQv6VmNVaDluFrG8eXIoTL
+        56i3cIRk7wdrgBzt1rFopPd+R3TWh1D+pBpI9lZicalVzn5x2xwEW61XYuOQs2EOK+IY=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jXrNc-001jdy-N4; Sun, 10 May 2020 21:12:52 +0200
+        id 1jXrNc-001je3-OD; Sun, 10 May 2020 21:12:52 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -30,9 +30,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Chris Healy <cphealy@gmail.com>,
         Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v4 07/10] net: ethtool: Add helpers for reporting test results
-Date:   Sun, 10 May 2020 21:12:37 +0200
-Message-Id: <20200510191240.413699-9-andrew@lunn.ch>
+Subject: [PATCH net-next v4 08/10] net: phy: marvell: Add cable test support
+Date:   Sun, 10 May 2020 21:12:38 +0200
+Message-Id: <20200510191240.413699-10-andrew@lunn.ch>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200510191240.413699-1-andrew@lunn.ch>
 References: <20200510191240.413699-1-andrew@lunn.ch>
@@ -43,160 +43,307 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The PHY drivers can use these helpers for reporting the results. The
-results get translated into netlink attributes which are added to the
-pre-allocated skbuf.
+The Marvell PHYs have a couple of different register sets for
+performing cable tests. Page 7 provides the simplest to use.
 
 v3:
-Poison phydev->skb
-Return -EMSGSIZE when ethnl_bcastmsg_put() fails
-Return valid error code when nla_nest_start() fails
-Use u8 for results
-Actually put u32 length into message
-
-v4:
-s/ENOTSUPP/EOPNOTSUPP/g
+s/mavell/marvell/g
+Remove include of <uapi/linux/ethtool_netlink.h>
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- include/linux/ethtool_netlink.h | 15 +++++++++-
- include/linux/phy.h             |  4 +++
- net/ethtool/cabletest.c         | 53 ++++++++++++++++++++++++++++++++-
- 3 files changed, 70 insertions(+), 2 deletions(-)
+ drivers/net/phy/marvell.c | 201 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 201 insertions(+)
 
-diff --git a/include/linux/ethtool_netlink.h b/include/linux/ethtool_netlink.h
-index 7d763ba22f6f..e317fc99565e 100644
---- a/include/linux/ethtool_netlink.h
-+++ b/include/linux/ethtool_netlink.h
-@@ -20,10 +20,12 @@ struct phy_device;
- int ethnl_cable_test_alloc(struct phy_device *phydev);
- void ethnl_cable_test_free(struct phy_device *phydev);
- void ethnl_cable_test_finished(struct phy_device *phydev);
-+int ethnl_cable_test_result(struct phy_device *phydev, u8 pair, u8 result);
-+int ethnl_cable_test_fault_length(struct phy_device *phydev, u8 pair, u32 cm);
- #else
- static inline int ethnl_cable_test_alloc(struct phy_device *phydev)
- {
--	return -ENOTSUPP;
-+	return -EOPNOTSUPP;
- }
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 7fc8e10c5f33..4bc7febf9248 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -27,6 +27,7 @@
+ #include <linux/module.h>
+ #include <linux/mii.h>
+ #include <linux/ethtool.h>
++#include <linux/ethtool_netlink.h>
+ #include <linux/phy.h>
+ #include <linux/marvell_phy.h>
+ #include <linux/bitfield.h>
+@@ -42,6 +43,7 @@
+ #define MII_MARVELL_MSCR_PAGE		0x02
+ #define MII_MARVELL_LED_PAGE		0x03
+ #define MII_MARVELL_MISC_TEST_PAGE	0x06
++#define MII_MARVELL_VCT7_PAGE		0x07
+ #define MII_MARVELL_WOL_PAGE		0x11
  
- static inline void ethnl_cable_test_free(struct phy_device *phydev)
-@@ -33,5 +35,16 @@ static inline void ethnl_cable_test_free(struct phy_device *phydev)
- static inline void ethnl_cable_test_finished(struct phy_device *phydev)
- {
- }
-+static inline int ethnl_cable_test_result(struct phy_device *phydev, u8 pair,
-+					  u8 result)
-+{
-+	return -EOPNOTSUPP;
-+}
+ #define MII_M1011_IEVENT		0x13
+@@ -162,6 +164,36 @@
+ #define MII_88E1510_GEN_CTRL_REG_1_MODE_SGMII	0x1	/* SGMII to copper */
+ #define MII_88E1510_GEN_CTRL_REG_1_RESET	0x8000	/* Soft reset */
+ 
++#define MII_VCT7_PAIR_0_DISTANCE	0x10
++#define MII_VCT7_PAIR_1_DISTANCE	0x11
++#define MII_VCT7_PAIR_2_DISTANCE	0x12
++#define MII_VCT7_PAIR_3_DISTANCE	0x13
 +
-+static inline int ethnl_cable_test_fault_length(struct phy_device *phydev,
-+						u8 pair, u32 cm)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif /* IS_ENABLED(ETHTOOL_NETLINK) */
- #endif /* _LINUX_ETHTOOL_NETLINK_H_ */
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 169fae4249a9..5d8ff5428010 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1265,6 +1265,10 @@ int phy_start_cable_test(struct phy_device *phydev,
- }
- #endif
- 
-+int phy_cable_test_result(struct phy_device *phydev, u8 pair, u16 result);
-+int phy_cable_test_fault_length(struct phy_device *phydev, u8 pair,
-+				u16 cm);
++#define MII_VCT7_RESULTS	0x14
++#define MII_VCT7_RESULTS_PAIR3_MASK	0xf000
++#define MII_VCT7_RESULTS_PAIR2_MASK	0x0f00
++#define MII_VCT7_RESULTS_PAIR1_MASK	0x00f0
++#define MII_VCT7_RESULTS_PAIR0_MASK	0x000f
++#define MII_VCT7_RESULTS_PAIR3_SHIFT	12
++#define MII_VCT7_RESULTS_PAIR2_SHIFT	8
++#define MII_VCT7_RESULTS_PAIR1_SHIFT	4
++#define MII_VCT7_RESULTS_PAIR0_SHIFT	0
++#define MII_VCT7_RESULTS_INVALID	0
++#define MII_VCT7_RESULTS_OK		1
++#define MII_VCT7_RESULTS_OPEN		2
++#define MII_VCT7_RESULTS_SAME_SHORT	3
++#define MII_VCT7_RESULTS_CROSS_SHORT	4
++#define MII_VCT7_RESULTS_BUSY		9
 +
- static inline void phy_device_reset(struct phy_device *phydev, int value)
- {
- 	mdio_device_reset(&phydev->mdio, value);
-diff --git a/net/ethtool/cabletest.c b/net/ethtool/cabletest.c
-index ae8e63647663..e0c917918c70 100644
---- a/net/ethtool/cabletest.c
-+++ b/net/ethtool/cabletest.c
-@@ -81,13 +81,16 @@ int ethnl_cable_test_alloc(struct phy_device *phydev)
++#define MII_VCT7_CTRL		0x15
++#define MII_VCT7_CTRL_RUN_NOW			BIT(15)
++#define MII_VCT7_CTRL_RUN_ANEG			BIT(14)
++#define MII_VCT7_CTRL_DISABLE_CROSS		BIT(13)
++#define MII_VCT7_CTRL_RUN_AFTER_BREAK_LINK	BIT(12)
++#define MII_VCT7_CTRL_IN_PROGRESS		BIT(11)
++#define MII_VCT7_CTRL_METERS			BIT(10)
++#define MII_VCT7_CTRL_CENTIMETERS		0
++
+ #define LPA_PAUSE_FIBER		0x180
+ #define LPA_PAUSE_ASYM_FIBER	0x100
  
- 	phydev->nest = nla_nest_start(phydev->skb,
- 				      ETHTOOL_A_CABLE_TEST_NTF_NEST);
--	if (!phydev->nest)
-+	if (!phydev->nest) {
-+		err = -EMSGSIZE;
- 		goto out;
+@@ -1658,6 +1690,163 @@ static void marvell_get_stats(struct phy_device *phydev,
+ 		data[i] = marvell_get_stat(phydev, i);
+ }
+ 
++static int marvell_vct7_cable_test_start(struct phy_device *phydev)
++{
++	int bmcr, bmsr, ret;
++
++	/* If auto-negotiation is enabled, but not complete, the cable
++	 * test never completes. So disable auto-neg.
++	 */
++	bmcr = phy_read(phydev, MII_BMCR);
++	if (bmcr < 0)
++		return bmcr;
++
++	bmsr = phy_read(phydev, MII_BMSR);
++
++	if (bmsr < 0)
++		return bmsr;
++
++	if (bmcr & BMCR_ANENABLE) {
++		ret =  phy_modify(phydev, MII_BMCR, BMCR_ANENABLE, 0);
++		if (ret < 0)
++			return ret;
++		ret = genphy_soft_reset(phydev);
++		if (ret < 0)
++			return ret;
 +	}
- 
- 	return 0;
- 
- out:
- 	nlmsg_free(phydev->skb);
-+	phydev->skb = NULL;
- 	return err;
- }
- EXPORT_SYMBOL_GPL(ethnl_cable_test_alloc);
-@@ -95,6 +98,7 @@ EXPORT_SYMBOL_GPL(ethnl_cable_test_alloc);
- void ethnl_cable_test_free(struct phy_device *phydev)
++
++	/* If the link is up, allow it some time to go down */
++	if (bmsr & BMSR_LSTATUS)
++		msleep(1500);
++
++	return phy_write_paged(phydev, MII_MARVELL_VCT7_PAGE,
++			       MII_VCT7_CTRL,
++			       MII_VCT7_CTRL_RUN_NOW |
++			       MII_VCT7_CTRL_CENTIMETERS);
++}
++
++static int marvell_vct7_distance_to_length(int distance, bool meter)
++{
++	if (meter)
++		distance *= 100;
++
++	return distance;
++}
++
++static bool marvell_vct7_distance_valid(int result)
++{
++	switch (result) {
++	case MII_VCT7_RESULTS_OPEN:
++	case MII_VCT7_RESULTS_SAME_SHORT:
++	case MII_VCT7_RESULTS_CROSS_SHORT:
++		return true;
++	}
++	return false;
++}
++
++static int marvell_vct7_report_length(struct phy_device *phydev,
++				      int pair, bool meter)
++{
++	int length;
++	int ret;
++
++	ret = phy_read_paged(phydev, MII_MARVELL_VCT7_PAGE,
++			     MII_VCT7_PAIR_0_DISTANCE + pair);
++	if (ret < 0)
++		return ret;
++
++	length = marvell_vct7_distance_to_length(ret, meter);
++
++	ethnl_cable_test_fault_length(phydev, pair, length);
++
++	return 0;
++}
++
++static int marvell_vct7_cable_test_report_trans(int result)
++{
++	switch (result) {
++	case MII_VCT7_RESULTS_OK:
++		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
++	case MII_VCT7_RESULTS_OPEN:
++		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
++	case MII_VCT7_RESULTS_SAME_SHORT:
++		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
++	case MII_VCT7_RESULTS_CROSS_SHORT:
++		return ETHTOOL_A_CABLE_RESULT_CODE_CROSS_SHORT;
++	default:
++		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
++	}
++}
++
++static int marvell_vct7_cable_test_report(struct phy_device *phydev)
++{
++	int pair0, pair1, pair2, pair3;
++	bool meter;
++	int ret;
++
++	ret = phy_read_paged(phydev, MII_MARVELL_VCT7_PAGE,
++			     MII_VCT7_RESULTS);
++	if (ret < 0)
++		return ret;
++
++	pair3 = (ret & MII_VCT7_RESULTS_PAIR3_MASK) >>
++		MII_VCT7_RESULTS_PAIR3_SHIFT;
++	pair2 = (ret & MII_VCT7_RESULTS_PAIR2_MASK) >>
++		MII_VCT7_RESULTS_PAIR2_SHIFT;
++	pair1 = (ret & MII_VCT7_RESULTS_PAIR1_MASK) >>
++		MII_VCT7_RESULTS_PAIR1_SHIFT;
++	pair0 = (ret & MII_VCT7_RESULTS_PAIR0_MASK) >>
++		MII_VCT7_RESULTS_PAIR0_SHIFT;
++
++	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_A,
++				marvell_vct7_cable_test_report_trans(pair0));
++	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_B,
++				marvell_vct7_cable_test_report_trans(pair1));
++	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_C,
++				marvell_vct7_cable_test_report_trans(pair2));
++	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_D,
++				marvell_vct7_cable_test_report_trans(pair3));
++
++	ret = phy_read_paged(phydev, MII_MARVELL_VCT7_PAGE, MII_VCT7_CTRL);
++	if (ret < 0)
++		return ret;
++
++	meter = ret & MII_VCT7_CTRL_METERS;
++
++	if (marvell_vct7_distance_valid(pair0))
++		marvell_vct7_report_length(phydev, 0, meter);
++	if (marvell_vct7_distance_valid(pair1))
++		marvell_vct7_report_length(phydev, 1, meter);
++	if (marvell_vct7_distance_valid(pair2))
++		marvell_vct7_report_length(phydev, 2, meter);
++	if (marvell_vct7_distance_valid(pair3))
++		marvell_vct7_report_length(phydev, 3, meter);
++
++	return 0;
++}
++
++static int marvell_vct7_cable_test_get_status(struct phy_device *phydev,
++					      bool *finished)
++{
++	int ret;
++
++	*finished = false;
++
++	ret = phy_read_paged(phydev, MII_MARVELL_VCT7_PAGE,
++			     MII_VCT7_CTRL);
++
++	if (ret < 0)
++		return ret;
++
++	if (!(ret & MII_VCT7_CTRL_IN_PROGRESS)) {
++		*finished = true;
++
++		return marvell_vct7_cable_test_report(phydev);
++	}
++
++	return 0;
++}
++
+ #ifdef CONFIG_HWMON
+ static int m88e1121_get_temp(struct phy_device *phydev, long *temp)
  {
- 	nlmsg_free(phydev->skb);
-+	phydev->skb = NULL;
- }
- EXPORT_SYMBOL_GPL(ethnl_cable_test_free);
+@@ -2353,6 +2542,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.phy_id_mask = MARVELL_PHY_ID_MASK,
+ 		.name = "Marvell 88E1510",
+ 		.features = PHY_GBIT_FIBRE_FEATURES,
++		.flags = PHY_POLL_CABLE_TEST,
+ 		.probe = &m88e1510_probe,
+ 		.config_init = &m88e1510_config_init,
+ 		.config_aneg = &m88e1510_config_aneg,
+@@ -2372,12 +2562,15 @@ static struct phy_driver marvell_drivers[] = {
+ 		.set_loopback = genphy_loopback,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
++		.cable_test_start = marvell_vct7_cable_test_start,
++		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1540,
+ 		.phy_id_mask = MARVELL_PHY_ID_MASK,
+ 		.name = "Marvell 88E1540",
+ 		/* PHY_GBIT_FEATURES */
++		.flags = PHY_POLL_CABLE_TEST,
+ 		.probe = m88e1510_probe,
+ 		.config_init = &marvell_config_init,
+ 		.config_aneg = &m88e1510_config_aneg,
+@@ -2394,6 +2587,8 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1540_get_tunable,
+ 		.set_tunable = m88e1540_set_tunable,
++		.cable_test_start = marvell_vct7_cable_test_start,
++		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1545,
+@@ -2401,6 +2596,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.name = "Marvell 88E1545",
+ 		.probe = m88e1510_probe,
+ 		/* PHY_GBIT_FEATURES */
++		.flags = PHY_POLL_CABLE_TEST,
+ 		.config_init = &marvell_config_init,
+ 		.config_aneg = &m88e1510_config_aneg,
+ 		.read_status = &marvell_read_status,
+@@ -2416,6 +2612,8 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1540_get_tunable,
+ 		.set_tunable = m88e1540_set_tunable,
++		.cable_test_start = marvell_vct7_cable_test_start,
++		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E3016,
+@@ -2442,6 +2640,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.phy_id_mask = MARVELL_PHY_ID_MASK,
+ 		.name = "Marvell 88E6390",
+ 		/* PHY_GBIT_FEATURES */
++		.flags = PHY_POLL_CABLE_TEST,
+ 		.probe = m88e6390_probe,
+ 		.config_init = &marvell_config_init,
+ 		.config_aneg = &m88e6390_config_aneg,
+@@ -2458,6 +2657,8 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1540_get_tunable,
+ 		.set_tunable = m88e1540_set_tunable,
++		.cable_test_start = marvell_vct7_cable_test_start,
++		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 	},
+ };
  
-@@ -107,3 +111,50 @@ void ethnl_cable_test_finished(struct phy_device *phydev)
- 	ethnl_multicast(phydev->skb, phydev->attached_dev);
- }
- EXPORT_SYMBOL_GPL(ethnl_cable_test_finished);
-+
-+int ethnl_cable_test_result(struct phy_device *phydev, u8 pair, u8 result)
-+{
-+	struct nlattr *nest;
-+	int ret = -EMSGSIZE;
-+
-+	nest = nla_nest_start(phydev->skb, ETHTOOL_A_CABLE_NEST_RESULT);
-+	if (!nest)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u8(phydev->skb, ETHTOOL_A_CABLE_RESULT_PAIR, pair))
-+		goto err;
-+	if (nla_put_u8(phydev->skb, ETHTOOL_A_CABLE_RESULT_CODE, result))
-+		goto err;
-+
-+	nla_nest_end(phydev->skb, nest);
-+	return 0;
-+
-+err:
-+	nla_nest_cancel(phydev->skb, nest);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ethnl_cable_test_result);
-+
-+int ethnl_cable_test_fault_length(struct phy_device *phydev, u8 pair, u32 cm)
-+{
-+	struct nlattr *nest;
-+	int ret = -EMSGSIZE;
-+
-+	nest = nla_nest_start(phydev->skb,
-+			      ETHTOOL_A_CABLE_NEST_FAULT_LENGTH);
-+	if (!nest)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u8(phydev->skb, ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR, pair))
-+		goto err;
-+	if (nla_put_u32(phydev->skb, ETHTOOL_A_CABLE_FAULT_LENGTH_CM, cm))
-+		goto err;
-+
-+	nla_nest_end(phydev->skb, nest);
-+	return 0;
-+
-+err:
-+	nla_nest_cancel(phydev->skb, nest);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ethnl_cable_test_fault_length);
 -- 
 2.26.2
 
