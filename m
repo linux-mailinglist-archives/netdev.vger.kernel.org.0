@@ -2,101 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46A4C1CC94C
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 10:13:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE131CC955
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 10:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728815AbgEJIND (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 04:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726630AbgEJIND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 04:13:03 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD593C061A0E
-        for <netdev@vger.kernel.org>; Sun, 10 May 2020 01:13:02 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id y3so6914450wrt.1
-        for <netdev@vger.kernel.org>; Sun, 10 May 2020 01:13:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ssIBRk1mUsK2tjQtYuKlRUhxTwSn1Zuytj5wBBcYvEE=;
-        b=k48Mjdt8mfB5E2BXa793O+s0lIj82CYuRx8RWOXRRssZme9oMHZ+roJh7q+qS7NNTT
-         29lZPvVCyoK9LLq7NZITYIjXFDpDWPGpOo49XPnHp1CDHPKi3/IEr2BlYM10opOBKOXA
-         hQqzGv/QOXA9+IEMFA2diszgsWiSDInkIdtpEky7YQg90UQ/bcVsf28/1QWACHbft0Sq
-         5NDKkpGjr7317HJlB5WnFKpJwYHcSdnkSioEcnh5wEMQ5m+mMxXvkmXfGpacbOg0qszV
-         lHJ8nXXbVVuUHIZVg6tF6vEJWIn3ab3oHqRdyszjwkuH4iVdg4rqTx4RTSBICkeuuLVS
-         e44A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ssIBRk1mUsK2tjQtYuKlRUhxTwSn1Zuytj5wBBcYvEE=;
-        b=ovyioPCDcke3B7+xcGnhOzS33+23fG3ignJaTP1u1TyDWRIuhNc1yfifm2VXAQ2k9b
-         SVyIdIgAzQIC0hWurWciPWgSc8XCrB7OKTglEEUc2PNTUJanNy2QCYQyxYQDsi1D4u1Y
-         g9s1htwK68N+QHufv8qTZcmflHkNZnOeZHhEq3DrnXDhfYNkrHW5m76KEUMZ9Q7ERBid
-         XniH3dNKgnNhcNydfPFJHcN+krHXL+KV6kLij0D66stvKvXO6GBJLOga6oQ/5SSZa1l8
-         FQI8kH2LaIA16DPBAiXAEP41bCPoAXJN+WUIOySZ4Ft8g0qtDjwiRE67hJtxFmHwuwLq
-         v9Mg==
-X-Gm-Message-State: AGi0PubsNtt0o1Ke21ATJQ2JZqWkepmEoEUo8ksL3n/v55KDrmcI5/89
-        mY+edJSvya0/DPeOx0RI5k8rL86R
-X-Google-Smtp-Source: APiQypKpvzMCM637qFOd/CxYNZPCmu+HibfBiU3JDgn0YDj3G5eWPrx9sSJAcosfnO/eCKpHbNHVsw==
-X-Received: by 2002:a5d:5445:: with SMTP id w5mr12069686wrv.422.1589098381242;
-        Sun, 10 May 2020 01:13:01 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f28:5200:d448:ac33:cee7:aac0? (p200300EA8F285200D448AC33CEE7AAC0.dip0.t-ipconnect.de. [2003:ea:8f28:5200:d448:ac33:cee7:aac0])
-        by smtp.googlemail.com with ESMTPSA id 77sm12114597wrc.6.2020.05.10.01.13.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 May 2020 01:13:00 -0700 (PDT)
-Subject: [PATCH net-next 2/2] r8169: rely on sanity checks in
- phy_ethtool_set_eee
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <8e7df680-e3c2-24ae-81d3-e24776583966@gmail.com>
-Message-ID: <104d788a-68ee-9669-f920-656dcb1e6d83@gmail.com>
-Date:   Sun, 10 May 2020 10:12:40 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728660AbgEJIRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 04:17:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33994 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726345AbgEJIRT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 04:17:19 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6E39C208DB;
+        Sun, 10 May 2020 08:17:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589098639;
+        bh=r7BRAdnn3wClLyHBb6b5Txno2vhOO4/e0T6yw8USNQQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cnjWFLSb1eRJUlRpoiEfdxWjih/sRUDZ2XfJ4StqZXBXi1Kx32LONVDJRronbftjI
+         CvuEKXr3R5MLpgWcQNRpjOkBUNySLpmw5wHTQJkgMFEuZyK2ShwCrR6us01Bcrd72c
+         oE71LaMeZal9l/Su5PQb/3keB3jnB0HQxuYClfJc=
+Date:   Sun, 10 May 2020 11:17:14 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Maor Gottlieb <maorg@mellanox.com>, linux-rdma@vger.kernel.org,
+        Mark Bloch <markb@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: [PATCH mlx5-next v1 1/4] {IB/net}/mlx5: Simplify don't trap code
+Message-ID: <20200510081714.GA199306@unreal>
+References: <20200504053012.270689-1-leon@kernel.org>
+ <20200504053012.270689-2-leon@kernel.org>
+ <20200508195838.GA9696@ziepe.ca>
 MIME-Version: 1.0
-In-Reply-To: <8e7df680-e3c2-24ae-81d3-e24776583966@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200508195838.GA9696@ziepe.ca>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These checks are integrated in phy_ethtool_set_eee() now, therefore we
-can remove them from the driver.
+On Fri, May 08, 2020 at 04:58:38PM -0300, Jason Gunthorpe wrote:
+> On Mon, May 04, 2020 at 08:30:09AM +0300, Leon Romanovsky wrote:
+> > +	flow_act->action &=
+> > +		~MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO;
+> > +	flow_act->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
+> > +	handle = _mlx5_add_flow_rules(ft, spec, flow_act, dest, num_dest);
+> > +	if (IS_ERR_OR_NULL(handle))
+> > +		goto unlock;
+>
+> I never like seeing IS_ERR_OR_NULL()..
+>
+> In this case I see callers of mlx5_add_flow_rules() that crash if it
+> returns NULL, so this can't be right.
+>
+> Also, I don't see an obvious place where _mlx5_add_flow_rules()
+> returns NULL, does it?
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 6 ------
- 1 file changed, 6 deletions(-)
+You are right, I'll replace this IS_ERR_OR_NULL() to be IS_ERR() once
+will take it to mlx5-next.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 0e96d0de2..966192ef0 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1919,12 +1919,6 @@ static int rtl8169_set_eee(struct net_device *dev, struct ethtool_eee *data)
- 		goto out;
- 	}
- 
--	if (dev->phydev->autoneg == AUTONEG_DISABLE ||
--	    dev->phydev->duplex != DUPLEX_FULL) {
--		ret = -EPROTONOSUPPORT;
--		goto out;
--	}
--
- 	ret = phy_ethtool_set_eee(tp->phydev, data);
- 
- 	if (!ret)
--- 
-2.26.2
+Is it ok?
 
+Thanks
 
+>
+> Jason
