@@ -2,43 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80E8D1CCCC5
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 20:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8827B1CCCCC
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 20:08:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728600AbgEJSAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 14:00:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40912 "EHLO mail.kernel.org"
+        id S1728940AbgEJSIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 14:08:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48056 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728123AbgEJSAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 14:00:16 -0400
+        id S1728123AbgEJSIF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 14:08:05 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A51512082E;
-        Sun, 10 May 2020 18:00:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D4FE22082E;
+        Sun, 10 May 2020 18:08:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589133616;
-        bh=bm937qa0g14GW3Sr3DXXEaKI+z0a5+7m4i2VZMSO2pM=;
+        s=default; t=1589134085;
+        bh=q+p1x7jramLXjA1HgBdN5wJV5zpzaierkP/jplwSBS0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CSC1cSoDffEnhpzRycizpLTLk4t2ZncLbNRK2mfMpAu9hZEDz2hjWDdAyzoeWB2h0
-         aDsJ9J7OZyAygRaN0aVmOuuNzKK+ncpXjMqF4aYw9QEzhkNPhwkP+NAnf2j7bsyrBW
-         rLBMWsQQD4y4J8leE3lF2WF4Mx1rmku2bS8jV69E=
-Date:   Sun, 10 May 2020 11:00:13 -0700
+        b=M0smx+dPwpDHNw0JNGYFZAYHN7GQU9+Z9h7h12MBdOcewsUIzgUMlsV8eM7Y7f4Ms
+         Zw4cztSBo2pgefwmXG4Z6x/PPAAToLOr4xWK+uqyorEq1h4WyPThw4eJmpEYhuArsc
+         by9+E8dkx7N58zUSAE6v6lQr7VLAbt8PrH0v03Ts=
+Date:   Sun, 10 May 2020 11:08:02 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
+To:     kbuild test robot <lkp@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kbuild-all@lists.01.org,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Chris Healy <cphealy@gmail.com>, michael@walle.cc
-Subject: Re: [PATCH net-next v3 06/10] net: ethtool: Add infrastructure for
- reporting cable test results
-Message-ID: <20200510110013.0ae22016@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200510160758.GN362499@lunn.ch>
-References: <20200509162851.362346-1-andrew@lunn.ch>
-        <20200509162851.362346-7-andrew@lunn.ch>
-        <20200510151226.GI30711@lion.mk-sys.cz>
-        <20200510160758.GN362499@lunn.ch>
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] dsa: sja1105: fix semicolon.cocci warnings
+Message-ID: <20200510110802.2f3019f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200510122656.GA13196@fc4585639931>
+References: <202005102051.kMOxhZW6%lkp@intel.com>
+        <20200510122656.GA13196@fc4585639931>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -47,42 +45,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 May 2020 18:07:58 +0200 Andrew Lunn wrote:
-> On Sun, May 10, 2020 at 05:12:26PM +0200, Michal Kubecek wrote:
-> > On Sat, May 09, 2020 at 06:28:47PM +0200, Andrew Lunn wrote:  
-> > > Provide infrastructure for PHY drivers to report the cable test
-> > > results.  A netlink skb is associated to the phydev. Helpers will be
-> > > added which can add results to this skb. Once the test has finished
-> > > the results are sent to user space.
-> > > 
-> > > When netlink ethtool is not part of the kernel configuration stubs are
-> > > provided. It is also impossible to trigger a cable test, so the error
-> > > code returned by the alloc function is of no consequence.
-> > > 
-> > > v2:
-> > > Include the status complete in the netlink notification message
-> > > 
-> > > Signed-off-by: Andrew Lunn <andrew@lunn.ch>  
-> > 
-> > Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
-> > 
-> > It seems you applied the changes to ethnl_cable_test_alloc() suggested
-> > in v2 review as part of patch 7 rather than here. I don't think it's
-> > necessary to fix that unless there is some actual problem that would
-> > require a resubmit.  
+On Sun, 10 May 2020 20:26:56 +0800 kbuild test robot wrote:
+> From: kbuild test robot <lkp@intel.com>
 > 
-> Hi Michal
+> drivers/net/dsa/sja1105/sja1105_ethtool.c:481:11-12: Unneeded semicolon
 > 
-> Yes, squashed it into the wrong patch. But since all it does it change
-> one errno for another, it is unlikely to break bisect. As i agree, we
-> can live with this.
+> 
+>  Remove unneeded semicolon.
+> 
+> Generated by: scripts/coccinelle/misc/semicolon.cocci
+> 
+> Fixes: ae1804de93f6 ("dsa: sja1105: dynamically allocate stats structure")
+> CC: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: kbuild test robot <lkp@intel.com>
 
-Sorry Andrew, would you mind doing one more quick spin? :(
+Hm, looks like this didn't get into patchwork for some reason.
 
-Apart from what Michal pointed out there is a new line added after
-ETHTOOL_A_TSINFO_MAX in patch 3 and removed in patch 4. 
-
-More importantly we should not use the ENOTSUPP error code, AFAIU it's
-for NFS, it's not a standard error code and user space struggles to
-translate it with strerror(). Would you mind replacing all ENOTSUPPs
-with EOPNOTSUPPs?
+Applied, thanks.
