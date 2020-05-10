@@ -2,123 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B65C1CCBB9
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 17:04:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E1911CCBD3
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 17:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728888AbgEJPEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 11:04:14 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:59047 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726104AbgEJPEN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 11:04:13 -0400
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D42C62271F;
-        Sun, 10 May 2020 17:04:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1589123051;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hLojyfYNjEZhaHGJskL5dHK8If95RppJnGDENEZpXcI=;
-        b=mw4ydhCvvQbVl7hV+zSzE0T83jfbolJsVqw+WZe8tk4xUjQ3ofWeD7bOkl8pZqZ2ccwXk0
-        irMga3UJwzD64bDGWwXP9Y6rL1zdM2M3yfzOgG8Mq0BVG1dN3DI8tEv52ZNxRi2Oo3baL0
-        rd58z3gLqlCUQj0KXauBxUnTAzdy1ag=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Sun, 10 May 2020 17:04:11 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        id S1729133AbgEJPM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 11:12:28 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37048 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729124AbgEJPM2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 11:12:28 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id AFA29AC52;
+        Sun, 10 May 2020 15:12:29 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 4822F602CA; Sun, 10 May 2020 17:12:26 +0200 (CEST)
+Date:   Sun, 10 May 2020 17:12:26 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next] net: phy: at803x: add cable diagnostics support
-In-Reply-To: <20200510145250.GK362499@lunn.ch>
-References: <20200509221719.24334-1-michael@walle.cc>
- <20200510145250.GK362499@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.4
-Message-ID: <8e64c94a4306a93578d9092c00bbc827@walle.cc>
-X-Sender: michael@walle.cc
+        Chris Healy <cphealy@gmail.com>, michael@walle.cc
+Subject: Re: [PATCH net-next v3 06/10] net: ethtool: Add infrastructure for
+ reporting cable test results
+Message-ID: <20200510151226.GI30711@lion.mk-sys.cz>
+References: <20200509162851.362346-1-andrew@lunn.ch>
+ <20200509162851.362346-7-andrew@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200509162851.362346-7-andrew@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2020-05-10 16:52, schrieb Andrew Lunn:
-> More of a note to self:
+On Sat, May 09, 2020 at 06:28:47PM +0200, Andrew Lunn wrote:
+> Provide infrastructure for PHY drivers to report the cable test
+> results.  A netlink skb is associated to the phydev. Helpers will be
+> added which can add results to this skb. Once the test has finished
+> the results are sent to user space.
 > 
-> Now we have three implementations, we start to see bits of common code
-> which could be pulled out and shared.
+> When netlink ethtool is not part of the kernel configuration stubs are
+> provided. It is also impossible to trigger a cable test, so the error
+> code returned by the alloc function is of no consequence.
 > 
->> +static bool at803x_cdt_fault_length_valid(u16 status)
->> +{
->> +	switch (FIELD_GET(AT803X_CDT_STATUS_STAT_MASK, status)) {
->> +	case AT803X_CDT_STATUS_STAT_OPEN:
->> +	case AT803X_CDT_STATUS_STAT_SHORT:
->> +		return true;
->> +	}
->> +	return false;
->> +}
+> v2:
+> Include the status complete in the netlink notification message
 > 
-> If we uses the netlink attribute values, not the PHY specific values,
-> this could be put in the core.
-> 
->> +
->> +static int at803x_cdt_fault_length(u16 status)
->> +{
->> +	int dt;
->> +
->> +	/* According to the datasheet the distance to the fault is
->> +	 * DELTA_TIME * 0.824 meters.
->> +	 *
->> +	 * The author suspect the correct formula is:
->> +	 *
->> +	 *   fault_distance = DELTA_TIME * (c * VF) / 125MHz / 2
->> +	 *
->> +	 * where c is the speed of light, VF is the velocity factor of
->> +	 * the twisted pair cable, 125MHz the counter frequency and
->> +	 * we need to divide by 2 because the hardware will measure the
->> +	 * round trip time to the fault and back to the PHY.
->> +	 *
->> +	 * With a VF of 0.69 we get the factor 0.824 mentioned in the
->> +	 * datasheet.
->> +	 */
->> +	dt = FIELD_GET(AT803X_CDT_STATUS_DELTA_TIME_MASK, status);
->> +
->> +	return (dt * 824) / 10;
->> +}
-> 
-> There seems to be a general consensus of 0.824 meters. So we could
-> have helpers to convert back and forth in the core.
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-Yeah, but I don't know why VF is 0.69 (and it differs per cable, so
-its just some kind of sensible default value). According to
-https://en.wikipedia.org/wiki/Velocity_factor it should be something
-around 0.64 or 0.65.
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
 
--michael
+It seems you applied the changes to ethnl_cable_test_alloc() suggested
+in v2 review as part of patch 7 rather than here. I don't think it's
+necessary to fix that unless there is some actual problem that would
+require a resubmit.
 
-> 
->> +static int at803x_cable_test_start(struct phy_device *phydev)
->> +{
->> +	/* Enable auto-negotiation, but advertise no capabilities, no link
->> +	 * will be established. A restart of the auto-negotiation is not
->> +	 * required, because the cable test will automatically break the 
->> link.
->> +	 */
->> +	phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
->> +	phy_write(phydev, MII_ADVERTISE, ADVERTISE_CSMA);
->> +	phy_write(phydev, MII_CTRL1000, 0);
-> 
-> Could be a genphy_ helper.
-> 
-> Lets get the code merged, when we can come back and do some
-> refactoring.
-> 
-> 	Andrew
+Michal
