@@ -2,100 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00EB21CC5D3
-	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 02:51:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B21C81CC5DC
+	for <lists+netdev@lfdr.de>; Sun, 10 May 2020 03:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbgEJAvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 May 2020 20:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57516 "EHLO
+        id S1728620AbgEJBB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 May 2020 21:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725927AbgEJAvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 20:51:03 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E9AC061A0C;
-        Sat,  9 May 2020 17:51:03 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id x2so2938312pfx.7;
-        Sat, 09 May 2020 17:51:03 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726320AbgEJBB4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 May 2020 21:01:56 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FF0C061A0C
+        for <netdev@vger.kernel.org>; Sat,  9 May 2020 18:01:55 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id fu13so5972679pjb.5
+        for <netdev@vger.kernel.org>; Sat, 09 May 2020 18:01:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SJngHyL3xoBUmmywOxoE/zc4Jwe0BGO/NPlqdh97Cxk=;
-        b=G5X80piG+IGgC+PAAYXaBYC7Pa8zS63h64wwCUF/IduNKs0hhRjgY9A4SFS1qa2+AU
-         YINOYG2e00UZV8Mq69qhFH2hfdVREc7+NbL0QuLnQ3WFX7y/w8aNeV6RgIsePBu5bgNi
-         NykVYIboV3R8D2jJvLcG2Rql4toFVhM2Yd7qVCSN/ZFWX2sVzrpblLxllSTmdNIIQ82x
-         Okb5yhKG6t5JYiJ20heZScOgO9DnmnyXtC3cPRDNGo0PFXxirOwAp4HBHkcr7gITAGkZ
-         wOcymcwYFT8MkuewV3Og7ezarvghC6qSDNEEbmG3KyPyS6JQs1zlMMZ+pXeeuAz7MbFi
-         frqA==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=uSW1DMa2xFD1JwY5E5sO8XesFCa8M5X82K6mPTFeOlM=;
+        b=1+Cjd90dDpebl/lpjqKbNVokRT3OdtBCX464eur5zMRwc6sunR//0hTPKyGFMBYDn+
+         4s4EMDlJoNIkNgtkCHvFKvJ4BK+FSLcJcF3J0h1lFBJHpcGvBOOdoVJNuJuduxyhdptA
+         85j0f2zkLQyxEd/osyueYryePBBEKaHhfTf3pYUcyugloMOdyrOAfoJZ6gWHbUrjqQLj
+         Bq4Jez4NN0LmXePlsppUQ+3lVV2FHHGMRHWmUEdUPVdDZtvm3xP30rhd+ijoCYftHXaH
+         O/d9SbqFvB9iV52JjhqLOrwxcvZn53+35Gt30HqnEMHSXevbw+tJGlyzQoU9D+YGA4+g
+         K2Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SJngHyL3xoBUmmywOxoE/zc4Jwe0BGO/NPlqdh97Cxk=;
-        b=Cca13wCHN23FZFJcMAMOFehGCHV5e2joSUEaTnavAtKqSWaZDUNxZmr+0H494lZ2XM
-         24niuOry6VJhLeHHkteU414fLe2oISLGCPVNk9e46OlyH8bRhhoT5PMTa00Kk+ZUWXgk
-         5/Yw2SvhusBqnHRvFExKTWQqB3rV2MPgb65itQbPhXu79q3GNJIlLo0Aw4QUGK0ZCBv4
-         gtATd+X2o5G9YsyB7zFiy5vMcmmki0n9fQrkipu0jJXxcaiICQuEeg0xIQCbddC3NV5F
-         TQ0MWmo8foqqsDfsOPUPpyeGTrBKLJ/Zuh3FEYkg8N2QysHdKOjP/YdNwRmhDNZ30B6g
-         eWng==
-X-Gm-Message-State: AGi0Pub+BDpfqpMXHE3uERMRAVkDc0Wxm6PMlpZsafK57oeqBkmIkW20
-        f0TBELipN6uUOa0idv5ZqS7DtdXs
-X-Google-Smtp-Source: APiQypIY6Am0CycNqR/u+hT6VWOOLxAb5K88QLKXAXhklxRvfFZGzzF36UxbEoW4vPlUZLWYO9FCMw==
-X-Received: by 2002:a62:e70b:: with SMTP id s11mr9878653pfh.32.1589071861866;
-        Sat, 09 May 2020 17:51:01 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:7bdb])
-        by smtp.gmail.com with ESMTPSA id n30sm508434pgc.87.2020.05.09.17.51.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 May 2020 17:51:00 -0700 (PDT)
-Date:   Sat, 9 May 2020 17:50:59 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next v4 12/21] bpf: add PTR_TO_BTF_ID_OR_NULL support
-Message-ID: <20200510005059.d3zocagerrnsspez@ast-mbp>
-References: <20200509175859.2474608-1-yhs@fb.com>
- <20200509175912.2476576-1-yhs@fb.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=uSW1DMa2xFD1JwY5E5sO8XesFCa8M5X82K6mPTFeOlM=;
+        b=r6ZCDV2dJMcqzI5udZagpu7qfdawPkRdEAVyTER9HjmTJcKTU7t0irNqQvl21aKJxm
+         335LvdgfjI2N0j5ycQ/cBRoiZOuU1MhSN5rR4oINuEEhqwuN0hErXU9b9p385V/ntWox
+         9BLpff0svnpnGacejpCdZCOQGAfRSTSA6W4d1N/0WsFSfz84rLupsf6S1GTBS/TvyVk8
+         yvpyMv3Y9xd3YvNcOuoemISwf2KRIDFR8vZOa02zcvG1Zzzrjui56oRfpJ4r8VFfjSNh
+         swXSiT+q4PIVP7mA1/iEMLEA5wFsS+GvOPah3JPXO9g+W0BlQwY35IRe1j75oc9AKBjj
+         H97g==
+X-Gm-Message-State: AGi0Pub7Nmw4Hp5Kx5xD/gfXCzwmVl0IH4xaKjTUrAsVOKwVbOdo1urH
+        bTUNSbcZr+br32WP7zOJu335vQ==
+X-Google-Smtp-Source: APiQypK4urdSWKHAH3Iuz6cUfY7VBxMl/PQZvd82MG6IPFOmlk+5A2FE/bq13Bz5zOp9Fvriq0citA==
+X-Received: by 2002:a17:902:8545:: with SMTP id d5mr9040836plo.34.1589072514404;
+        Sat, 09 May 2020 18:01:54 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id b1sm5478906pfi.140.2020.05.09.18.01.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 May 2020 18:01:53 -0700 (PDT)
+Subject: Re: [PATCH 00/15] net: taint when the device driver firmware crashes
+To:     Luis Chamberlain <mcgrof@kernel.org>, jeyu@kernel.org
+Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
+        schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200509043552.8745-1-mcgrof@kernel.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <1e097eb0-6132-f549-8069-d13b678183f5@pensando.io>
+Date:   Sat, 9 May 2020 18:01:51 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200509175912.2476576-1-yhs@fb.com>
+In-Reply-To: <20200509043552.8745-1-mcgrof@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 09, 2020 at 10:59:12AM -0700, Yonghong Song wrote:
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index a2cfba89a8e1..c490fbde22d4 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -3790,7 +3790,10 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
->  		return true;
->  
->  	/* this is a pointer to another type */
-> -	info->reg_type = PTR_TO_BTF_ID;
-> +	if (off != 0 && prog->aux->btf_id_or_null_non0_off)
-> +		info->reg_type = PTR_TO_BTF_ID_OR_NULL;
-> +	else
-> +		info->reg_type = PTR_TO_BTF_ID;
+On 5/8/20 9:35 PM, Luis Chamberlain wrote:
+> Device driver firmware can crash, and sometimes, this can leave your
+> system in a state which makes the device or subsystem completely
+> useless. Detecting this by inspecting /proc/sys/kernel/tainted instead
+> of scraping some magical words from the kernel log, which is driver
+> specific, is much easier. So instead this series provides a helper which
+> lets drivers annotate this and shows how to use this on networking
+> drivers.
+>
+If the driver is able to detect that the device firmware has come back 
+alive, through user intervention or whatever, should there be a way to 
+"untaint" the kernel?  Or would you expect it to remain tainted?
 
-I think the verifier should be smarter than this.
-It's too specific and inflexible. All ctx fields of bpf_iter execpt first
-will be such ? let's figure out a different way to tell verifier about this.
-How about using typedef with specific suffix? Like:
-typedef struct bpf_map *bpf_map_or_null;
- struct bpf_iter__bpf_map {
-   struct bpf_iter_meta *meta;
-   bpf_map_or_null map;
- };
-or use a union with specific second member? Like:
- struct bpf_iter__bpf_map {
-   struct bpf_iter_meta *meta;
-   union {
-     struct bpf_map *map;
-     long null;
-   };
- };
+sln
+
