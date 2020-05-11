@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E44211CE94F
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 01:48:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CCB71CE950
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 01:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728050AbgEKXrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 19:47:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
+        id S1728109AbgEKXrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 19:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725854AbgEKXrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 19:47:21 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4FBC061A0C;
-        Mon, 11 May 2020 16:47:21 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id 18so5474776pfx.6;
-        Mon, 11 May 2020 16:47:20 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725854AbgEKXrW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 19:47:22 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C17EC061A0C;
+        Mon, 11 May 2020 16:47:22 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id u15so639385plm.2;
+        Mon, 11 May 2020 16:47:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=L6AglJXCa+EJEHahDbV4YE95BEBUMI16CtBRayEme+o=;
-        b=r6fZnmIauZZ/IYawlQTWe2DEKcrw3IZUcO3CwzUbBIq+sGXUYNnlwegTj4sOMm/G/n
-         147ZVuIT/5JltcIDDJaG8HpFBDKxuP6OiF2s7YnyNgL55KyYUsL06iki5O7caDUHwXxa
-         UaVpVMT6wZTNhG3wW8XuSM+YhejfRzoZtRfvrog6kg8mcIpUAjL53w4MUAmn9zEjksla
-         Tg/Fy0ZugW8Gw8/HMYA3t+qXTDuj1LDjo9KrnoMxSIJSeSQuKv7zDTDb4OWCV7JrAJQ1
-         f4jzrpZyNw83pBonz0BWf24XhW8UYh2YzVJbq8Sh/6rGfFYJMrGRK0wyaAyHufTzJlAZ
-         272Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=2aN7Cc+ecLn2AN4hTPEYCcEFGy0vCnbNbuGEAazl+nE=;
+        b=trGriItODDn5LxmZY499BPD3ZM64n7iI7WWrfrCAPKogO+9XzYEYD00ZKfGoTdviWy
+         c+QSa4DH5InfBU1Hp7WZnL4ptS7Eg6hpQMqiuNEbaj0C2gJDRiem1DVZK+Q2QAeNNc+c
+         xtzXQptz4rAZhpXSG/Rlo/Ti4tEAXvhYnhkrS/IeB95G7Luqp+WlEXwYrrYf8MIJ0Ek4
+         YttsdIzNqjdT0WgtpOA/rAyY5+Wc4zb0LAlEU62PrOQgk0YNKMfKbzc1ivnQpg/iVhDF
+         sTuJv/E9cuJ4+fn2avmWeqvKCH4Art+tVCZMABP9ecm5PmZLdURShfXxnZ7ycmX5sU7g
+         94Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=L6AglJXCa+EJEHahDbV4YE95BEBUMI16CtBRayEme+o=;
-        b=mhW2NjN9y7LzVGktpU6dfUipfBlay2PEI+RSgak4q3ROPF4QWqvfsLyoYEUWS1idIm
-         MBZMnocRyo06ceWE+xdTHYRDeJYYMVuKVYUOnLGn2bM+4Z4ZJaVzrEFRrEmGEt/io+dw
-         Bk7EpMqGyZqYApnGJ9C0dM40mQ/obwtlPBIEdkCDaSgi6WTFTtP0yb0NNFQz6wWU3kDW
-         r9j6zq7YYnRZKCfUEeoZmqOXYYqoYFzimrqvUBTIJ61vKb31WaBZcMDK39ra0eZD0Gay
-         j6Y7GhePX2bgXTqG/sLMNjL4fNDAYXngOg1jjuaC6pPC0Di5Gf/ZmylgkqbZXBmsZXzL
-         n3vQ==
-X-Gm-Message-State: AGi0PuYvptZyFoPUa9kO8WRTihjD9AN/rQWiDAYshUoFnyiMkARB+vXu
-        nuZlo2FLgIjrINQRrMUk92DbAQq2
-X-Google-Smtp-Source: APiQypJxJqV1PMuLyo3VOEIat3+8TE7/PT6bqvnfvVEdvScRA13or5TkjU6aSxePYezQYJS510odMg==
-X-Received: by 2002:aa7:9689:: with SMTP id f9mr18232016pfk.24.1589240839912;
-        Mon, 11 May 2020 16:47:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=2aN7Cc+ecLn2AN4hTPEYCcEFGy0vCnbNbuGEAazl+nE=;
+        b=nk4EqVEXTkVzFNzikEPda3mIkAb5hyz9QGih3TwTeNxMrpXkCcH4qezzWIvqdKfTyk
+         bNUpXBh+28M2etO6hh0IVimY85hTn4OEurzUMVpuEFB5BlShQLsxLJK1D1AjlE9CbkKV
+         bwLMZdjFBbh8T76g8yIUNEHgLl0Ebvf0upfbP+sDnFExSXzvzzWy4Ig8XAsOltC+cm0H
+         g9tu4U6dCocNcJVRwPYro/vpCP2C+X5y7cuH10TuVfh10Khn1twA3UtDWiTaDMLggiPq
+         FwwBveTC95teQGklHfUF1PmsCO2smQgk1doopynMFt9vMXQwRqst3sQbs4hqBsry9G2O
+         hUeg==
+X-Gm-Message-State: AGi0PuahFwBqdX7WfBHqqyeMgN4HScjDer2lMgW8iJ0Unee5iL+bIVZz
+        5y5yxbysPWcwwi4Cm07Xz6+14KaM
+X-Google-Smtp-Source: APiQypLGj292GQzlhfWzELk6GcRUwWP/XqlPXNZA4N/npKSfaUkeV1FQMABKnmIPq3a1L7aqLiyi9g==
+X-Received: by 2002:a17:902:740a:: with SMTP id g10mr17389067pll.137.1589240841704;
+        Mon, 11 May 2020 16:47:21 -0700 (PDT)
 Received: from localhost.localdomain ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id e21sm3455317pga.71.2020.05.11.16.47.18
+        by smtp.gmail.com with ESMTPSA id e21sm3455317pga.71.2020.05.11.16.47.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 16:47:19 -0700 (PDT)
+        Mon, 11 May 2020 16:47:21 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -55,25 +56,38 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next 0/2] net: dsa: Constify two tagger ops
-Date:   Mon, 11 May 2020 16:47:13 -0700
-Message-Id: <20200511234715.23566-1-f.fainelli@gmail.com>
+Subject: [PATCH net-next 1/2] net: dsa: ocelot: Constify dsa_device_ops
+Date:   Mon, 11 May 2020 16:47:14 -0700
+Message-Id: <20200511234715.23566-2-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200511234715.23566-1-f.fainelli@gmail.com>
+References: <20200511234715.23566-1-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series constifies the dsa_device_ops for ocelot and sja1105
+ocelot_netdev_ops should be const since that is what the DSA layer
+expects.
 
-Florian Fainelli (2):
-  net: dsa: ocelot: Constify dsa_device_ops
-  net: dsa: tag_sja1105: Constify dsa_device_ops
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ net/dsa/tag_ocelot.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- net/dsa/tag_ocelot.c  | 2 +-
- net/dsa/tag_sja1105.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
+diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
+index 59de1315100f..b0c98ee4e13b 100644
+--- a/net/dsa/tag_ocelot.c
++++ b/net/dsa/tag_ocelot.c
+@@ -228,7 +228,7 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
+ 	return skb;
+ }
+ 
+-static struct dsa_device_ops ocelot_netdev_ops = {
++static const struct dsa_device_ops ocelot_netdev_ops = {
+ 	.name			= "ocelot",
+ 	.proto			= DSA_TAG_PROTO_OCELOT,
+ 	.xmit			= ocelot_xmit,
 -- 
 2.17.1
 
