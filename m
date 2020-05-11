@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 898051CDC32
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 15:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 248F51CDC2F
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 15:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730487AbgEKNyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 09:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33974 "EHLO
+        id S1730474AbgEKNyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 09:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730296AbgEKNx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 09:53:56 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB79C061A0C;
-        Mon, 11 May 2020 06:53:54 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id g12so19351003wmh.3;
-        Mon, 11 May 2020 06:53:54 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730352AbgEKNx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 09:53:57 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16623C061A0E;
+        Mon, 11 May 2020 06:53:56 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id j5so11088410wrq.2;
+        Mon, 11 May 2020 06:53:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5N3ENsJZJg9Tw3PfN0/AL9v74uEGkOjDfNKmyoBqZfE=;
-        b=RZRlmTNjtUWxH2s0w8/3OQs9b4LmHtDTxX3kny9XXJwHVRV7VJTi9v51ecle1hkV4A
-         LUNV80vzSyAu35MYi4MH9z/kK6d/waQJUACp+QKeMq5mXAz5BVMLjAKZUYi4yh+22wou
-         noL96BfxCZe0CCgjpnThTLxbtuZWHi9aD9dLoOCHxLV3mprpHekZ35WyT4r5BoUd6fs7
-         +BEaN2HTUygUQNTq/3Lh22zzgBLDdqRWASD9yEfqFUnbxuxJogwtqk1me1K5JgeUeXz9
-         97QJx5oRTBf7RjvKwevM/tpu5yTsjg3vNOCvnRlZMZhi+NsXDjZMQnB+Ye+h+eoLUsTn
-         BR3A==
+        bh=V8mlDWecQSyX2mssBOMsBiZI+MANvLYpX262jCYYdwg=;
+        b=G7dE5d36sbeMwUYcoPmcdZL+KhahOF+dCM/D2sl/KDgg+tmDDqKUybY3a/xulVPnAw
+         Z3JYUIfsS4Z/qxromZyDEWNmCM8VGt2T2UZ9rygFsmFQSMnAXqxhL+jnaMvSLhC5ZvT8
+         6WMmWyO0ovevE08qpRdAY1EaubZ5O78i7Srca8LU8DMp1jiBA++VMY7sEE+k1+8tdH/4
+         B3eLetXpAfCEMMPe+fcUoZYtgt0ZYJH4oXOG9HdpPrD1wmR7fPCTN5544AZpZfomwJCV
+         7RVfQIyyH0sOJUpKs+HSRQwmmB3gEu7UoZ4qYtrPeKZ9EatoeSVlaRhWkaTao9pPGsJu
+         ITRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=5N3ENsJZJg9Tw3PfN0/AL9v74uEGkOjDfNKmyoBqZfE=;
-        b=Sgvo1Q9OBNoPRZ7U8rJOnunCT9FJZ7ejFKqhuhzW/p5QbTsh0wVtfbcC+1JI6v2jbY
-         HpzVJyZ/8AtEkFjIvFnHi9GUmETePcXvYAka/E5m8uuAStf/JwtCVocOuad5p4hK6wIO
-         Gll1/JtpfLla8HPxHcO/6/hjnSWvgN3/oCyK9xXjuhiS2F2rkQc399NoDyCQ6I45C5L3
-         EhcABEH0EJp7c4Xlh3sW51Df7rPVQ483cnukMTKSLdcc8uTLJlz69vV/4+DfhdaEvDr4
-         +wF0UrMo5qhhMx4sRQh64Av8/Yqs3q+8svJbGzjq7WqETosTK4oS5QgLQa9fGEW8hni1
-         ESyQ==
-X-Gm-Message-State: AGi0Pub+KteCzC/grN0XHjM7dU0EXHAHq6w7WcImS3fS00MDcZ5dfQXO
-        rUPbLNHQu+8wm1tttP+e2i0=
-X-Google-Smtp-Source: APiQypJIWSS0RrPJchpZ4nG7qqMcoaR+hx84nHM5Jjh7skEIWDgAFxurl3YSD4kwP9ZQ+94O/K4Srw==
-X-Received: by 2002:a1c:7e82:: with SMTP id z124mr24141030wmc.53.1589205233425;
-        Mon, 11 May 2020 06:53:53 -0700 (PDT)
+        bh=V8mlDWecQSyX2mssBOMsBiZI+MANvLYpX262jCYYdwg=;
+        b=GpxDjJlIODTcw5EU4/d8m+UBbRNoveBOrjmUJRgLnTUcf+HJtuFf07efnh04VUk3Nw
+         r6gCc0R7FXMk6zUxadCQ+zLloVZkkKiANBgN1gA4c8KOifC5shl6jslYAwDoNmTdjnwX
+         hZEceddbN0U04lOUx5NFD5MeOoP6jzKTeVFUebF5yuOjBYOme8tQm2a36KFIdSIPS5vy
+         cnnERc6eoFuZyVK5RrkKsc7ICJZzC88swMR6Dh043rUYW2YOOdUho/SzfBbV8AP3ED2T
+         F3hOPP3t3VPq8v9iTvuy+0w2pDjrPm80NISTHB17vG66YtwuUy5/Cc7icf1+HOdHFmhT
+         Pt7w==
+X-Gm-Message-State: AGi0PuYCuSpz9Gxmdxd4Cl/K021JXm60mDzcIM7WekH2abju8uL/7EvZ
+        E736ywXncRX93XTqm7acEbk=
+X-Google-Smtp-Source: APiQypJYPJOx0lt5P8+Zq9IenPsFEEEMKmEM+VagUZo+P5VrWwCepVbv641fGt4wBNia+LHKPl+J6Q==
+X-Received: by 2002:a5d:6988:: with SMTP id g8mr12736862wru.47.1589205234776;
+        Mon, 11 May 2020 06:53:54 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id 2sm17596413wre.25.2020.05.11.06.53.52
+        by smtp.gmail.com with ESMTPSA id 2sm17596413wre.25.2020.05.11.06.53.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 06:53:52 -0700 (PDT)
+        Mon, 11 May 2020 06:53:54 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         idosch@idosch.org, rmk+kernel@armlinux.org.uk,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 07/15] net: dsa: sja1105: exit sja1105_vlan_filtering when called multiple times
-Date:   Mon, 11 May 2020 16:53:30 +0300
-Message-Id: <20200511135338.20263-8-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 08/15] net: dsa: sja1105: prepare tagger for handling DSA tags and VLAN simultaneously
+Date:   Mon, 11 May 2020 16:53:31 +0300
+Message-Id: <20200511135338.20263-9-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200511135338.20263-1-olteanv@gmail.com>
 References: <20200511135338.20263-1-olteanv@gmail.com>
@@ -64,38 +64,207 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-VLAN filtering is a global property for sja1105, and that means that we
-rely on the DSA core to not call us more than once.
+In VLAN-unaware mode, sja1105 uses VLAN tags with a custom TPID of
+0xdadb. While in the yet-to-be introduced best_effort_vlan_filtering
+mode, it needs to work with normal VLAN TPID values.
 
-But we need to introduce some per-port state for the tagger, namely the
-xmit_tpid, and the best place to do that is where the xmit_tpid changes,
-namely in sja1105_vlan_filtering. So at the moment, exit early from the
-function to avoid unnecessarily resetting the switch for each port call.
-Then we'll change the xmit_tpid prior to the early exit in the next
-patch.
+A complication arises when we must transmit a VLAN-tagged packet to the
+switch when it's in VLAN-aware mode. We need to construct a packet with
+2 VLAN tags, and the switch will use the outer header for routing and
+pop it on egress. But sadly, here the 2 hardware generations don't
+behave the same:
+
+- E/T switches won't pop an ETH_P_8021AD tag on egress, it seems
+  (packets will remain double-tagged).
+- P/Q/R/S switches will drop a packet with 2 ETH_P_8021Q tags (it looks
+  like it tries to prevent VLAN hopping).
+
+But looks like the reverse is also true:
+
+- E/T switches have no problem popping the outer tag from packets with
+  2 ETH_P_8021Q tags.
+- P/Q/R/S will have no problem popping a single tag even if that is
+  ETH_P_8021AD.
+
+So it is clear that if we want the hardware to work with dsa_8021q
+tagging in VLAN-aware mode, we need to send different TPIDs depending on
+revision. Keep that information in priv->info->qinq_tpid.
+
+The per-port tagger structure will hold an xmit_tpid value that depends
+not only upon the qinq_tpid, but also upon the VLAN awareness state
+itself (in case we must transmit using 0xdadb).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
 None.
 
- drivers/net/dsa/sja1105/sja1105_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/dsa/sja1105/sja1105.h      |  6 ++++++
+ drivers/net/dsa/sja1105/sja1105_main.c | 10 ++++++++++
+ drivers/net/dsa/sja1105/sja1105_spi.c  |  6 ++++++
+ include/linux/dsa/sja1105.h            |  2 ++
+ net/dsa/tag_sja1105.c                  | 17 +++++++----------
+ 5 files changed, 31 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index c80f1999c694..a019ffae38f1 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -87,6 +87,12 @@ struct sja1105_info {
+ 	const struct sja1105_dynamic_table_ops *dyn_ops;
+ 	const struct sja1105_table_ops *static_ops;
+ 	const struct sja1105_regs *regs;
++	/* Both E/T and P/Q/R/S have quirks when it comes to popping the S-Tag
++	 * from double-tagged frames. E/T will pop it only when it's equal to
++	 * TPID from the General Parameters Table, while P/Q/R/S will only
++	 * pop it when it's equal to TPID2.
++	 */
++	u16 qinq_tpid;
+ 	int (*reset_cmd)(struct dsa_switch *ds);
+ 	int (*setup_rgmii_delay)(const void *ctx, int port);
+ 	/* Prototypes from include/net/dsa.h */
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index d2755ab2853d..82b424a03658 100644
+index 82b424a03658..042ecbbc5572 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2158,6 +2158,9 @@ static int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled)
- 	else
- 		state = SJA1105_VLAN_FILTERING_FULL;
+@@ -2153,6 +2153,15 @@ static int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled)
+ 		tpid2 = ETH_P_SJA1105;
+ 	}
  
-+	if (priv->vlan_state == state)
-+		return 0;
++	for (port = 0; port < ds->num_ports; port++) {
++		struct sja1105_port *sp = &priv->ports[port];
 +
- 	priv->vlan_state = state;
++		if (enabled)
++			sp->xmit_tpid = priv->info->qinq_tpid;
++		else
++			sp->xmit_tpid = ETH_P_SJA1105;
++	}
++
+ 	if (!enabled)
+ 		state = SJA1105_VLAN_UNAWARE;
+ 	else
+@@ -2874,6 +2883,7 @@ static int sja1105_probe(struct spi_device *spi)
+ 			goto out;
+ 		}
+ 		skb_queue_head_init(&sp->xmit_queue);
++		sp->xmit_tpid = ETH_P_SJA1105;
+ 	}
  
- 	table = &priv->static_config.tables[BLK_IDX_GENERAL_PARAMS];
+ 	return 0;
+diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+index 0be75c49e6c3..a0dacae803cc 100644
+--- a/drivers/net/dsa/sja1105/sja1105_spi.c
++++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+@@ -512,6 +512,7 @@ struct sja1105_info sja1105e_info = {
+ 	.part_no		= SJA1105ET_PART_NO,
+ 	.static_ops		= sja1105e_table_ops,
+ 	.dyn_ops		= sja1105et_dyn_ops,
++	.qinq_tpid		= ETH_P_8021Q,
+ 	.ptp_ts_bits		= 24,
+ 	.ptpegr_ts_bytes	= 4,
+ 	.reset_cmd		= sja1105et_reset_cmd,
+@@ -526,6 +527,7 @@ struct sja1105_info sja1105t_info = {
+ 	.part_no		= SJA1105ET_PART_NO,
+ 	.static_ops		= sja1105t_table_ops,
+ 	.dyn_ops		= sja1105et_dyn_ops,
++	.qinq_tpid		= ETH_P_8021Q,
+ 	.ptp_ts_bits		= 24,
+ 	.ptpegr_ts_bytes	= 4,
+ 	.reset_cmd		= sja1105et_reset_cmd,
+@@ -540,6 +542,7 @@ struct sja1105_info sja1105p_info = {
+ 	.part_no		= SJA1105P_PART_NO,
+ 	.static_ops		= sja1105p_table_ops,
+ 	.dyn_ops		= sja1105pqrs_dyn_ops,
++	.qinq_tpid		= ETH_P_8021AD,
+ 	.ptp_ts_bits		= 32,
+ 	.ptpegr_ts_bytes	= 8,
+ 	.setup_rgmii_delay	= sja1105pqrs_setup_rgmii_delay,
+@@ -555,6 +558,7 @@ struct sja1105_info sja1105q_info = {
+ 	.part_no		= SJA1105Q_PART_NO,
+ 	.static_ops		= sja1105q_table_ops,
+ 	.dyn_ops		= sja1105pqrs_dyn_ops,
++	.qinq_tpid		= ETH_P_8021AD,
+ 	.ptp_ts_bits		= 32,
+ 	.ptpegr_ts_bytes	= 8,
+ 	.setup_rgmii_delay	= sja1105pqrs_setup_rgmii_delay,
+@@ -570,6 +574,7 @@ struct sja1105_info sja1105r_info = {
+ 	.part_no		= SJA1105R_PART_NO,
+ 	.static_ops		= sja1105r_table_ops,
+ 	.dyn_ops		= sja1105pqrs_dyn_ops,
++	.qinq_tpid		= ETH_P_8021AD,
+ 	.ptp_ts_bits		= 32,
+ 	.ptpegr_ts_bytes	= 8,
+ 	.setup_rgmii_delay	= sja1105pqrs_setup_rgmii_delay,
+@@ -586,6 +591,7 @@ struct sja1105_info sja1105s_info = {
+ 	.static_ops		= sja1105s_table_ops,
+ 	.dyn_ops		= sja1105pqrs_dyn_ops,
+ 	.regs			= &sja1105pqrs_regs,
++	.qinq_tpid		= ETH_P_8021AD,
+ 	.ptp_ts_bits		= 32,
+ 	.ptpegr_ts_bytes	= 8,
+ 	.setup_rgmii_delay	= sja1105pqrs_setup_rgmii_delay,
+diff --git a/include/linux/dsa/sja1105.h b/include/linux/dsa/sja1105.h
+index 136481ce3c6f..e47acf0965c5 100644
+--- a/include/linux/dsa/sja1105.h
++++ b/include/linux/dsa/sja1105.h
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/skbuff.h>
+ #include <linux/etherdevice.h>
++#include <linux/dsa/8021q.h>
+ #include <net/dsa.h>
+ 
+ #define ETH_P_SJA1105				ETH_P_DSA_8021Q
+@@ -59,6 +60,7 @@ struct sja1105_port {
+ 	struct sja1105_tagger_data *data;
+ 	struct dsa_port *dp;
+ 	bool hwts_tx_en;
++	u16 xmit_tpid;
+ };
+ 
+ bool sja1105_can_use_vlan_as_tags(struct dsa_switch *ds);
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 5368cd34bcf4..0a95fdd7bff8 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -96,6 +96,11 @@ static struct sk_buff *sja1105_defer_xmit(struct sja1105_port *sp,
+ 	return NULL;
+ }
+ 
++static u16 sja1105_xmit_tpid(struct sja1105_port *sp)
++{
++	return sp->xmit_tpid;
++}
++
+ static struct sk_buff *sja1105_xmit(struct sk_buff *skb,
+ 				    struct net_device *netdev)
+ {
+@@ -111,15 +116,7 @@ static struct sk_buff *sja1105_xmit(struct sk_buff *skb,
+ 	if (unlikely(sja1105_is_link_local(skb)))
+ 		return sja1105_defer_xmit(dp->priv, skb);
+ 
+-	/* If we are under a vlan_filtering bridge, IP termination on
+-	 * switch ports based on 802.1Q tags is simply too brittle to
+-	 * be passable. So just defer to the dsa_slave_notag_xmit
+-	 * implementation.
+-	 */
+-	if (dsa_port_is_vlan_filtering(dp))
+-		return skb;
+-
+-	return dsa_8021q_xmit(skb, netdev, ETH_P_SJA1105,
++	return dsa_8021q_xmit(skb, netdev, sja1105_xmit_tpid(dp->priv),
+ 			     ((pcp << VLAN_PRIO_SHIFT) | tx_vid));
+ }
+ 
+@@ -258,7 +255,7 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 
+ 	hdr = eth_hdr(skb);
+ 	tpid = ntohs(hdr->h_proto);
+-	is_tagged = (tpid == ETH_P_SJA1105);
++	is_tagged = (tpid == ETH_P_SJA1105 || tpid == ETH_P_8021Q);
+ 	is_link_local = sja1105_is_link_local(skb);
+ 	is_meta = sja1105_is_meta_frame(skb);
+ 
 -- 
 2.17.1
 
