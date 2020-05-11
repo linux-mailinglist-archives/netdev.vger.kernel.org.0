@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6D151CE549
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 22:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 637B11CE54A
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 22:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731644AbgEKUVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 16:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37940 "EHLO
+        id S1731648AbgEKUVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 16:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731639AbgEKUVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 16:21:04 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0305BC061A0C
+        with ESMTP id S1731643AbgEKUVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 16:21:05 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F408DC061A0C
         for <netdev@vger.kernel.org>; Mon, 11 May 2020 13:21:04 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id n5so5939112wmd.0
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 13:21:03 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id v12so12585562wrp.12
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 13:21:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XgrvFHBlyVCjUHEjV8Ov/RrMWZAxZtozBiAwsbt9CSM=;
-        b=CBJp+6D0h8GSvD8timYI9dpjjD63i/Nhb27odaRR/6/M6/hCdDko6emepc8MqAD6gN
-         AsrqGBeink05mP/CkCXdau30kysWFvyAKKE4xSTosp0YP2hxueh2S3u08FBSorYEGoeO
-         VvHGcBDy4Zd2zP1Qac6/TygTNh/6yVHw42J3/VazCUHpGAuF795UN17zhtAg4kCxF1Ym
-         mLsVpAu1lLQCNWTojBLiC6X+HEHEg5xIDQoT+HhGAF3VmQkmazAaqQU8eYjAiF03rAhA
-         qZxhUyCq91s8gnHwATI2gcRZTjBpSQ54YnPu5MT6vTD4I3nUb0aozTAavdrLht6+QKvr
-         xHaA==
+        bh=Cdsx2WX8yPPEU5dLItXwoTRbVwB3nAkT886pyVghIII=;
+        b=V/6yYWVmoreYze+lQHnIekVB6+Jf31c+H9aXVOTC491a1Urz2NUOp4IlYPJ/wXFLFt
+         z29ILAj6VjZD/HZx1G4e90SM9B7zk7pCUIglz29hamQPnGemfQV7ab2j9DtNLq56KjV8
+         i4ri3IptprulPGeqqQrUWZNgpYmDXDXzWPfpR9l1ivrgiM00uBFbRhhmfbNL9lxzdpSE
+         KM4UFjTtSdfScN7mwn9jw/xmWszyH0y2UoGRAtpMFHWybl0E6Nv14Jtb0Csmk1uyitUj
+         FRkcPpJI55jG/xcU5/qHWc0r/OS1zZEC9ynGen41OQieimQ2SJ6hBgceuTxk8Rp4tAqa
+         teBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=XgrvFHBlyVCjUHEjV8Ov/RrMWZAxZtozBiAwsbt9CSM=;
-        b=PCOnh+dfXkhO7IFE1sdApT3oNaImoX69lYsJ2/dbdZvR+zEhxgT/ec8FlVZa/fBROP
-         kXS9YaZyqnwe7V/06q0nMR5cjGOmO+K6dfFR2lTT/pNBBFn2cR0Xh/BsVZu+OuQtn7eI
-         IvgAAnQYGdVmvynxDeOCs9qAbCgXxGaMD5uYiNrJ6rE0rTbAkmLknEbiRPPCcn2Df17U
-         2yrFIM0iJeCvHu3V2ECo3cXwgzNxlAwodM4DeTKtLESBEzrKEpnlMYzfL5p1iuVTtefc
-         ZJ6UbZuEEQlmRK8leMzhNczRYb05uE2faKXogb+VLB6rxT4u48hNGepaCtsx0LnEOs/J
-         h7zA==
-X-Gm-Message-State: AGi0PuZoLMQP8q1EFygJuF54aQ09rgeP5hd3RLgVjUr3hpWO1pPhn1Sp
-        QJXy198rvktJsnZ9AKHpzyw=
-X-Google-Smtp-Source: APiQypJX5+22+NpEmmNM0hAY2FTxGjFWWHYiNC9DsqOArlexRCRMIp/SIxeEva6pOi7tTOUAKn6jAw==
-X-Received: by 2002:a1c:4e0a:: with SMTP id g10mr4236093wmh.75.1589228462683;
-        Mon, 11 May 2020 13:21:02 -0700 (PDT)
+        bh=Cdsx2WX8yPPEU5dLItXwoTRbVwB3nAkT886pyVghIII=;
+        b=BKOk76ZKnfsBhG8KvNQdba5ECTb+ttS9mZWkbF7AuQICp8HpzfKza/AO3wmPOW8mh8
+         PBQQ92EavhkkddUg6X1RTMHnVgQ3jPfHfO/dNHLwF63oS2tQuoLUL33uFTjRXDxpsuhC
+         CKPBjkoNtdCSniebKBJfPDwpKDEC3iHdmmo7yP2Vderg9lFK9R/Yszt4pn215hhNFWiC
+         Bqkl2/dvBeayYNLl0p2AxmQFhcUDZwTGhlpHLH1ZLSBk2bjqSqm8MMCpDIztvSto4+aU
+         MoE60aebNpfIDQ48zBNiD0jtAF/4ODEYilJ/DHeRkHPU0EGp1/V0e3BL2oN12VYcJgPt
+         PBwQ==
+X-Gm-Message-State: AGi0PubhPCOBZnOwUepWv6tQM5qfHftEmlTSprahMj0zprfuC76p2wdq
+        UJyxNtZyrTcBfZ3lzaFbME15O6Pu
+X-Google-Smtp-Source: APiQypIERmIpkuX4G5Vwiza2PrBQ7D/faMDvrxV24H4jv2MQij0h3f3FkYP6MqD7nf2mMzbRRisLJg==
+X-Received: by 2002:adf:f8c1:: with SMTP id f1mr20629589wrq.171.1589228463712;
+        Mon, 11 May 2020 13:21:03 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id 77sm19811305wrc.6.2020.05.11.13.21.01
+        by smtp.gmail.com with ESMTPSA id 77sm19811305wrc.6.2020.05.11.13.21.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 13:21:02 -0700 (PDT)
+        Mon, 11 May 2020 13:21:03 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 3/4] net: dsa: tag_ocelot: use a short prefix on both ingress and egress
-Date:   Mon, 11 May 2020 23:20:45 +0300
-Message-Id: <20200511202046.20515-4-olteanv@gmail.com>
+Subject: [PATCH net-next 4/4] net: dsa: implement and use a generic procedure for the flow dissector
+Date:   Mon, 11 May 2020 23:20:46 +0300
+Message-Id: <20200511202046.20515-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200511202046.20515-1-olteanv@gmail.com>
 References: <20200511202046.20515-1-olteanv@gmail.com>
@@ -62,146 +62,245 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-There are 2 goals that we follow:
+For all DSA formats that don't use tail tags, it looks like behind the
+obscure number crunching they're all doing the same thing: locating the
+real EtherType behind the DSA tag. Nonetheless, this is not immediately
+obvious, so create a generic helper for those DSA taggers that put the
+header before the EtherType.
 
-- Reduce the header size
-- Make the header size equal between RX and TX
-
-The issue that required long prefix on RX was the fact that the ocelot
-DSA tag, being put before Ethernet as it is, would overlap with the area
-that a DSA master uses for RX filtering (destination MAC address
-mainly).
-
-Now that we can ask DSA to put the master in promiscuous mode, in theory
-we could remove the prefix altogether and call it a day, but it looks
-like we can't. Using no prefix on ingress, some packets (such as ICMP)
-would be received, while others (such as PTP) would not be received.
-This is because the DSA master we use (enetc) triggers parse errors
-("MAC rx frame errors") presumably because it sees Ethernet frames with
-a bad length. And indeed, when using no prefix, the EtherType (bytes
-12-13 of the frame, bits 96-111) falls over the REW_VAL field from the
-extraction header, aka the PTP timestamp.
-
-When turning the short (32-bit) prefix on, the EtherType overlaps with
-bits 64-79 of the extraction header, which are a reserved area
-transmitted as zero by the switch. The packets are not dropped by the
-DSA master with a short prefix. Actually, the frames look like this in
-tcpdump (below is a PTP frame, with an extra dsa_8021q tag - dadb 0482 -
-added by a downstream sja1105).
-
-89:0c:a9:f2:01:00 > 88:80:00:0a:00:1d, 802.3, length 0: LLC, \
-	dsap Unknown (0x10) Individual, ssap ProWay NM (0x0e) Response, \
-	ctrl 0x0004: Information, send seq 2, rcv seq 0, \
-	Flags [Response], length 78
-
-0x0000:  8880 000a 001d 890c a9f2 0100 0000 100f  ................
-0x0010:  0400 0000 0180 c200 000e 001f 7b63 0248  ............{c.H
-0x0020:  dadb 0482 88f7 1202 0036 0000 0000 0000  .........6......
-0x0030:  0000 0000 0000 0000 0000 001f 7bff fe63  ............{..c
-0x0040:  0248 0001 1f81 0500 0000 0000 0000 0000  .H..............
-0x0050:  0000 0000 0000 0000 0000 0000            ............
-
-So the short prefix is our new default: we've shortened our RX frames by
-12 octets, increased TX by 4, and headers are now equal between RX and
-TX. Note that we still need promiscuous mode for the DSA master to not
-drop it.
+Another assumption for the generic function is that the DSA tags are of
+equal length on RX and on TX. Prior to the previous patch, this was not
+true for ocelot and for gswip. The problem was resolved for ocelot, but
+for gswip it still remains, so that hasn't been converted.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c |  5 +++--
- net/dsa/tag_ocelot.c           | 20 +++++++++++++++-----
- 2 files changed, 18 insertions(+), 7 deletions(-)
+ net/dsa/dsa_priv.h    | 22 ++++++++++++++++++++++
+ net/dsa/tag_ar9331.c  |  9 +++++++++
+ net/dsa/tag_brcm.c    |  5 +++--
+ net/dsa/tag_dsa.c     |  4 ++--
+ net/dsa/tag_edsa.c    |  4 ++--
+ net/dsa/tag_lan9303.c |  9 +++++++++
+ net/dsa/tag_mtk.c     |  3 +--
+ net/dsa/tag_ocelot.c  |  9 +++++++++
+ net/dsa/tag_qca.c     |  3 +--
+ net/dsa/tag_sja1105.c | 13 +++++++++++++
+ 10 files changed, 71 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index a2dfd73f8a1a..8b8d463223d5 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -545,8 +545,8 @@ static int felix_setup(struct dsa_switch *ds)
- 		/* Bring up the CPU port module and configure the NPI port */
- 		if (dsa_is_cpu_port(ds, port))
- 			ocelot_configure_cpu(ocelot, port,
--					     OCELOT_TAG_PREFIX_NONE,
--					     OCELOT_TAG_PREFIX_LONG);
-+					     OCELOT_TAG_PREFIX_SHORT,
-+					     OCELOT_TAG_PREFIX_SHORT);
- 	}
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index a1a0ae242012..cad276ff28d1 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -195,6 +195,28 @@ dsa_slave_to_master(const struct net_device *dev)
+ 	return dp->cpu_dp->master;
+ }
  
- 	/* Include the CPU port module in the forwarding mask for unknown
-@@ -564,6 +564,7 @@ static int felix_setup(struct dsa_switch *ds)
- 				 ANA_FLOODING_FLD_UNICAST(PGID_UC),
- 				 ANA_FLOODING, tc);
- 
-+	ds->promisc_on_master = true;
- 	ds->mtu_enforcement_ingress = true;
- 	/* It looks like the MAC/PCS interrupt register - PM0_IEVENT (0x8040)
- 	 * isn't instantiated for the Felix PF.
-diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-index 59de1315100f..778a7f34f8ec 100644
---- a/net/dsa/tag_ocelot.c
-+++ b/net/dsa/tag_ocelot.c
-@@ -5,6 +5,9 @@
- #include <linux/packing.h>
- #include "dsa_priv.h"
- 
-+#define OCELOT_PREFIX_VAL	0x8880000a
-+#define OCELOT_TOTAL_TAG_LEN	(OCELOT_SHORT_PREFIX_LEN + OCELOT_TAG_LEN)
++/* All DSA tags that push the EtherType to the right (basically all except tail
++ * tags, which don't break dissection) can be treated the same from the
++ * perspective of the flow dissector.
++ *
++ * We need to return:
++ *  - offset: the (B - A) difference between:
++ *    A. the position of the real EtherType and
++ *    B. the current skb->data (aka ETH_HLEN bytes into the frame, aka 2 bytes
++ *       after the normal EtherType was supposed to be)
++ *    The offset in bytes is exactly equal to the tagger overhead (and half of
++ *    that, in __be16 shorts).
++ *
++ *  - proto: the value of the real EtherType.
++ */
++static inline void dsa_tag_generic_flow_dissect(const struct sk_buff *skb,
++						__be16 *proto, int *offset,
++						int tag_len)
++{
++	*offset = tag_len;
++	*proto = ((__be16 *)skb->data)[(tag_len / 2) - 1];
++}
 +
- /* The CPU injection header and the CPU extraction header can have 3 types of
-  * prefixes: long, short and no prefix. The format of the header itself is the
-  * same in all 3 cases.
-@@ -143,8 +146,11 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 	struct ocelot *ocelot = ds->priv;
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	u8 *injection;
-+	u32 *prefix;
-+	int rc;
- 
--	if (unlikely(skb_cow_head(skb, OCELOT_TAG_LEN) < 0)) {
-+	rc = skb_cow_head(skb, OCELOT_TOTAL_TAG_LEN);
-+	if (unlikely(rc < 0)) {
- 		netdev_err(netdev, "Cannot make room for tag.\n");
- 		return NULL;
- 	}
-@@ -174,6 +180,10 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 		packing(injection, &rew_op, 125, 117, OCELOT_TAG_LEN, PACK, 0);
- 	}
- 
-+	prefix = skb_push(skb, OCELOT_SHORT_PREFIX_LEN);
-+
-+	*prefix = cpu_to_be32(OCELOT_PREFIX_VAL);
-+
+ /* switch.c */
+ int dsa_switch_register_notifier(struct dsa_switch *ds);
+ void dsa_switch_unregister_notifier(struct dsa_switch *ds);
+diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
+index 55b00694cdba..9aaae107483b 100644
+--- a/net/dsa/tag_ar9331.c
++++ b/net/dsa/tag_ar9331.c
+@@ -83,12 +83,21 @@ static struct sk_buff *ar9331_tag_rcv(struct sk_buff *skb,
  	return skb;
  }
  
-@@ -189,11 +199,11 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
- 	 * so it points to the beginning of the frame.
- 	 */
- 	skb_push(skb, ETH_HLEN);
--	/* We don't care about the long prefix, it is just for easy entrance
-+	/* We don't care about the short prefix, it is just for easy entrance
- 	 * into the DSA master's RX filter. Discard it now by moving it into
- 	 * the headroom.
- 	 */
--	skb_pull(skb, OCELOT_LONG_PREFIX_LEN);
-+	skb_pull(skb, OCELOT_SHORT_PREFIX_LEN);
- 	/* And skb->data now points to the extraction frame header.
- 	 * Keep a pointer to it.
- 	 */
-@@ -207,7 +217,7 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
- 	skb_pull(skb, ETH_HLEN);
++static int ar9331_flow_dissect(const struct sk_buff *skb, __be16 *proto,
++			       int *offset)
++{
++	dsa_tag_generic_flow_dissect(skb, proto, offset, AR9331_HDR_LEN);
++
++	return 0;
++}
++
+ static const struct dsa_device_ops ar9331_netdev_ops = {
+ 	.name	= "ar9331",
+ 	.proto	= DSA_TAG_PROTO_AR9331,
+ 	.xmit	= ar9331_tag_xmit,
+ 	.rcv	= ar9331_tag_rcv,
+ 	.overhead = AR9331_HDR_LEN,
++	.flow_dissect = ar9331_flow_dissect,
+ };
  
- 	/* Remove from inet csum the extraction header */
--	skb_postpull_rcsum(skb, start, OCELOT_LONG_PREFIX_LEN + OCELOT_TAG_LEN);
-+	skb_postpull_rcsum(skb, start, OCELOT_TOTAL_TAG_LEN);
+ MODULE_LICENSE("GPL v2");
+diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+index cc8512b5f9e2..9c6c30649d13 100644
+--- a/net/dsa/tag_brcm.c
++++ b/net/dsa/tag_brcm.c
+@@ -160,9 +160,10 @@ static int brcm_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+ 	 * skb->data points 2 bytes before the actual Ethernet type field and
+ 	 * we have an offset of 4bytes between where skb->data and where the
+ 	 * payload starts.
++	 * So we can use the generic helper in both cases.
+ 	 */
+-	*offset = BRCM_TAG_LEN;
+-	*proto = ((__be16 *)skb->data)[1];
++	dsa_tag_generic_flow_dissect(skb, proto, offset, BRCM_TAG_LEN);
++
+ 	return 0;
+ }
+ #endif
+diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
+index 7ddec9794477..09479ab9a325 100644
+--- a/net/dsa/tag_dsa.c
++++ b/net/dsa/tag_dsa.c
+@@ -145,8 +145,8 @@ static struct sk_buff *dsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ static int dsa_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+ 				int *offset)
+ {
+-	*offset = 4;
+-	*proto = ((__be16 *)skb->data)[1];
++	dsa_tag_generic_flow_dissect(skb, proto, offset, DSA_HLEN);
++
+ 	return 0;
+ }
  
- 	packing(extraction, &src_port,  46, 43, OCELOT_TAG_LEN, UNPACK, 0);
- 	packing(extraction, &qos_class, 19, 17, OCELOT_TAG_LEN, UNPACK, 0);
-@@ -233,7 +243,7 @@ static struct dsa_device_ops ocelot_netdev_ops = {
+diff --git a/net/dsa/tag_edsa.c b/net/dsa/tag_edsa.c
+index e8eaa804ccb9..af16910a06c0 100644
+--- a/net/dsa/tag_edsa.c
++++ b/net/dsa/tag_edsa.c
+@@ -164,8 +164,8 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
+ static int edsa_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+ 				 int *offset)
+ {
+-	*offset = 8;
+-	*proto = ((__be16 *)skb->data)[3];
++	dsa_tag_generic_flow_dissect(skb, proto, offset, EDSA_HLEN);
++
+ 	return 0;
+ }
+ 
+diff --git a/net/dsa/tag_lan9303.c b/net/dsa/tag_lan9303.c
+index eb0e7a32e53d..2ec1c9092bb2 100644
+--- a/net/dsa/tag_lan9303.c
++++ b/net/dsa/tag_lan9303.c
+@@ -128,12 +128,21 @@ static struct sk_buff *lan9303_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	return skb;
+ }
+ 
++static int lan9303_flow_dissect(const struct sk_buff *skb, __be16 *proto,
++				int *offset)
++{
++	dsa_tag_generic_flow_dissect(skb, proto, offset, LAN9303_TAG_LEN);
++
++	return 0;
++}
++
+ static const struct dsa_device_ops lan9303_netdev_ops = {
+ 	.name = "lan9303",
+ 	.proto	= DSA_TAG_PROTO_LAN9303,
+ 	.xmit = lan9303_xmit,
+ 	.rcv = lan9303_rcv,
+ 	.overhead = LAN9303_TAG_LEN,
++	.flow_dissect = lan9303_flow_dissect,
+ };
+ 
+ MODULE_LICENSE("GPL");
+diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+index b5705cba8318..e6cf8f68dffc 100644
+--- a/net/dsa/tag_mtk.c
++++ b/net/dsa/tag_mtk.c
+@@ -92,8 +92,7 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+ static int mtk_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+ 				int *offset)
+ {
+-	*offset = 4;
+-	*proto = ((__be16 *)skb->data)[1];
++	dsa_tag_generic_flow_dissect(skb, proto, offset, MTK_HDR_LEN);
+ 
+ 	return 0;
+ }
+diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
+index 778a7f34f8ec..5a2de13b108f 100644
+--- a/net/dsa/tag_ocelot.c
++++ b/net/dsa/tag_ocelot.c
+@@ -238,12 +238,21 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
+ 	return skb;
+ }
+ 
++static int ocelot_flow_dissect(const struct sk_buff *skb, __be16 *proto,
++			       int *offset)
++{
++	dsa_tag_generic_flow_dissect(skb, proto, offset, OCELOT_TOTAL_TAG_LEN);
++
++	return 0;
++}
++
+ static struct dsa_device_ops ocelot_netdev_ops = {
+ 	.name			= "ocelot",
  	.proto			= DSA_TAG_PROTO_OCELOT,
  	.xmit			= ocelot_xmit,
  	.rcv			= ocelot_rcv,
--	.overhead		= OCELOT_TAG_LEN + OCELOT_LONG_PREFIX_LEN,
-+	.overhead		= OCELOT_TOTAL_TAG_LEN,
+ 	.overhead		= OCELOT_TOTAL_TAG_LEN,
++	.flow_dissect		= ocelot_flow_dissect,
+ };
+ 
+ MODULE_LICENSE("GPL v2");
+diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
+index 70db7c909f74..43a5a4eebf16 100644
+--- a/net/dsa/tag_qca.c
++++ b/net/dsa/tag_qca.c
+@@ -90,8 +90,7 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev,
+ static int qca_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+                                 int *offset)
+ {
+-	*offset = QCA_HDR_LEN;
+-	*proto = ((__be16 *)skb->data)[0];
++	dsa_tag_generic_flow_dissect(skb, proto, offset, QCA_HDR_LEN);
+ 
+ 	return 0;
+ }
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index d553bf36bd41..55cc51a71b13 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -304,6 +304,18 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 					      is_meta);
+ }
+ 
++static int sja1105_flow_dissect(const struct sk_buff *skb, __be16 *proto,
++				int *offset)
++{
++	/* No tag added for management frames, all ok */
++	if (unlikely(sja1105_is_link_local(skb)))
++		return 0;
++
++	dsa_tag_generic_flow_dissect(skb, proto, offset, VLAN_HLEN);
++
++	return 0;
++}
++
+ static struct dsa_device_ops sja1105_netdev_ops = {
+ 	.name = "sja1105",
+ 	.proto = DSA_TAG_PROTO_SJA1105,
+@@ -311,6 +323,7 @@ static struct dsa_device_ops sja1105_netdev_ops = {
+ 	.rcv = sja1105_rcv,
+ 	.filter = sja1105_filter,
+ 	.overhead = VLAN_HLEN,
++	.flow_dissect = sja1105_flow_dissect,
  };
  
  MODULE_LICENSE("GPL v2");
