@@ -2,152 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4D071CDC13
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 15:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6171F1CDC29
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 15:55:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730303AbgEKNxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 09:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33936 "EHLO
+        id S1730339AbgEKNxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 09:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730272AbgEKNxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 09:53:46 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB79C061A0C;
-        Mon, 11 May 2020 06:53:46 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id v12so11037247wrp.12;
-        Mon, 11 May 2020 06:53:46 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730304AbgEKNxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 09:53:47 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C8FC061A0C;
+        Mon, 11 May 2020 06:53:47 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id h4so18130092wmb.4;
+        Mon, 11 May 2020 06:53:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DWt/wZ7mmPAQXQOu5mlkf9aGiZr82IVGoApLaprsibc=;
-        b=s4FYq0euNJOaf10ErT8ojnM/K0FKxONCHXk+61YMwdnHmsDwa3VdU+CnYo7AO/EeO5
-         Pf/u2B4mUOPqYO4tRNpy6pev2G/BZv7sMqQB1/FnqCL36uz5LSblfF+e+g+xk1sWJlEx
-         eDFayl8lLeBn759hTo3A8v5z0RNDnKF/5dkPu5bwV+WwPixLRio1dv8t6t0el/l4FDEV
-         tGoa09orA1M9iYpw+kiOm/jUpQmAUo+ue2/PXCjqp6f5apgBji689YI7Zjc755P+5F5H
-         CdZDmNEnTsy/xaDeHTHnhe/JTC+diCoTbldCnjRggSAjdk2EY0im+MATjRfJ8qEVPAlM
-         gVmA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=w7sHFzJhr2tK8ydSlUjLjM+S66Oe6IzTGv2PezfyhBo=;
+        b=FCrxx2bJZzMes6ueRtHeYV1yQaeeqfaUrCy7wT1/kLp9kVfhqcl85HZcdOCoJO0lXR
+         G5SzhF+0kWqvkw0nEySZiQetW6ReXevxs3k7Dwm1zOfwhkRO4DJhCuUP2FDVSE2Xb/Iv
+         CrkCZShxAzM21YPZafbP281MBodyNKm4pliclRMb3TP16Tdy183nOFh8eQ0nRBGiyHIl
+         U/clu5QGSJd8QEp/Kv9J64hky87X3qqOI1zJZGuNYOI8dFL4MYMyCiawPxZHCeFYUAma
+         RGbfSS22RdiSGkioEKhLsnKwD6ZfyHJCb5NnjL46wOk65oBU9FFImMU1Xh7xoZV2bPHh
+         QycA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DWt/wZ7mmPAQXQOu5mlkf9aGiZr82IVGoApLaprsibc=;
-        b=X6dTXmS+vUi3gpiGc2Hq9/aP8XSNxCgyPj3ZbzQqxDfyMMAoFf7/D4VJg2gKaYYCPd
-         nyC+k+4z6/OiOJruCZfB41BPX4h1miBdrkURoUE+jnNgcJp8EDvRwzj0xFpSmmVUP7Pz
-         iFWx1r6WsR1t7IKjpQeEPtqbmNN1spwHP78Dal1IngwLwea80E5qMPK0vydLhatmyS9I
-         2uSgJYi6jcii1/1mWrPwy3YeAOVsymXEsDZV8oB9j/OYLQuUUKy48M6S/VM2mcyxnBJQ
-         xRrQ8v2HuNb6sxc9XSFG9tRuyHpJkvk3D0fWnOa28NuKE59NNxXQyyHlg4qgBm5iZKNW
-         fHLQ==
-X-Gm-Message-State: AGi0PuaokFKQWaaf+IilxejX+CMbN+kd90sVUZ1Wfu5HbxB6yfON7Wak
-        QSGsCr/D9AIik4vwSIIB4Ho=
-X-Google-Smtp-Source: APiQypLtlc6SYID6KBCDA++125iB+xlVDhcNY23F6cYVHOZmHqJXbZtklEkadlytqGgK5OKneceJ7A==
-X-Received: by 2002:a5d:56c6:: with SMTP id m6mr18873848wrw.78.1589205224786;
-        Mon, 11 May 2020 06:53:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=w7sHFzJhr2tK8ydSlUjLjM+S66Oe6IzTGv2PezfyhBo=;
+        b=Ixw4GPKVjVUexkEk19RyJ/tch6+0HG7O0TA2Vp/h5+Ajd45cl0Z9JBjxH5EuoWiVzf
+         VGACrqN3g86N1lRo29wwV5SJ1lQehcBu5mKK1+ycMwNO43ECeE1BfHH0C2oIcuqL8udH
+         64fjejkpVb03FeNWBpHIrSAKShONIzvLWSfWvhXn968lRoBc9NYTrOW/z3BfPbDDzfWx
+         UzRLmKVUAS41NaCOV76GmYVnLWVETydO9iFrEe8FXHSZPCs6c2fmZNLgCVZwNAFHXieo
+         70BIItKuHCHT1k/mop3QAYQUuHOndUTyyQFzntG+lNLvlGz6ioLfNZ7Lz1KWfVFoWsQf
+         M0mw==
+X-Gm-Message-State: AGi0Publ9ntH+AF8aLcd9uhC8bXCaS1AnYiWkrDDvgT7C+b/KouGK8/Z
+        Sd7Me41QUYl0L5mnXM1bk/4=
+X-Google-Smtp-Source: APiQypISezmnWzUAR/l6E9PnGoeC4DoSA89UZOIyUsFxY7iZJW6aSeqciqE5WTvr+Bl7L7aL55gG3A==
+X-Received: by 2002:a1c:f012:: with SMTP id a18mr30127503wmb.116.1589205226004;
+        Mon, 11 May 2020 06:53:46 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id 2sm17596413wre.25.2020.05.11.06.53.43
+        by smtp.gmail.com with ESMTPSA id 2sm17596413wre.25.2020.05.11.06.53.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 06:53:44 -0700 (PDT)
+        Mon, 11 May 2020 06:53:45 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         idosch@idosch.org, rmk+kernel@armlinux.org.uk,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next 00/15] Traffic support for dsa_8021q in vlan_filtering=1 mode
-Date:   Mon, 11 May 2020 16:53:23 +0300
-Message-Id: <20200511135338.20263-1-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 01/15] net: dsa: provide an option for drivers to always receive bridge VLANs
+Date:   Mon, 11 May 2020 16:53:24 +0300
+Message-Id: <20200511135338.20263-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200511135338.20263-1-olteanv@gmail.com>
+References: <20200511135338.20263-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Russell King <rmk+kernel@armlinux.org.uk>
 
-This series is an attempt to support as much as possible in terms of
-traffic I/O from the network stack with the only dsa_8021q user thus
-far, sja1105.
+DSA assumes that a bridge which has vlan filtering disabled is not
+vlan aware, and ignores all vlan configuration. However, the kernel
+software bridge code allows configuration in this state.
 
-The hardware doesn't support pushing a second VLAN tag to packets that
-are already tagged, so our only option is to combine the dsa_8021q with
-the user tag into a single tag and decode that on the CPU.
+This causes the kernel's idea of the bridge vlan state and the
+hardware state to disagree, so "bridge vlan show" indicates a correct
+configuration but the hardware lacks all configuration. Even worse,
+enabling vlan filtering on a DSA bridge immediately blocks all traffic
+which, given the output of "bridge vlan show", is very confusing.
 
-The assumption is that there is a type of use cases for which 7 VLANs
-per port are more than sufficient, and that there's another type of use
-cases where the full 4096 entries are barely enough. Those use cases are
-very different from one another, so I prefer trying to give both the
-best experience by creating this best_effort_vlan_filtering knob to
-select the mode in which they want to operate in.
+Provide an option that drivers can set to indicate they want to receive
+vlan configuration even when vlan filtering is disabled. At the very
+least, this is safe for Marvell DSA bridges, which do not look up
+ingress traffic in the VTU if the port is in 8021Q disabled state. It is
+also safe for the Ocelot switch family. Whether this change is suitable
+for all DSA bridges is not known.
 
-v1 was submitted here:
-https://patchwork.ozlabs.org/project/netdev/cover/20200510164255.19322-1-olteanv@gmail.com/
-
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
 Changes in v2:
-Patch 01/15:
-- Rename variable from vlan_bridge_vtu to configure_vlans_while_disabled.
-Patch 03/15:
-- Be much more thorough, and make sure that things like virtual links
-  and FDB operations still work properly.
-Patch 05/15:
-- Free the vlan lists on teardown.
-- Simplify sja1105_classify_vlan: only look at priv->expect_dsa_8021q.
-- Keep vid 1 in the list of dsa_8021q VLANs, to make sure that untagged
-  packets transmitted from the stack, like PTP, continue to work in
-  VLAN-unaware mode.
-Patch 06/15:
-- Adapt to vlan_bridge_vtu variable name change.
-Patch 11/15:
-- In sja1105_best_effort_vlan_filtering_set, get the vlan_filtering
-  value of each port instead of just one time for port 0. Normally this
-  shouldn't matter, but it avoids issues when port 0 is disabled in
-  device tree.
-Patch 14/14:
-- Only do anything in sja1105_build_subvlans and in
-  sja1105_build_crosschip_subvlans when operating in
-  SJA1105_VLAN_BEST_EFFORT state. This avoids installing VLAN retagging
-  rules in unaware mode, which would cost us a penalty in terms of
-  usable frame memory.
+Rename variable from vlan_bridge_vtu to configure_vlans_while_disabled.
 
-Russell King (1):
-  net: dsa: provide an option for drivers to always receive bridge VLANs
+ include/net/dsa.h |  7 +++++++
+ net/dsa/slave.c   | 12 ++++++++----
+ 2 files changed, 15 insertions(+), 4 deletions(-)
 
-Vladimir Oltean (14):
-  net: dsa: tag_8021q: introduce a vid_is_dsa_8021q helper
-  net: dsa: sja1105: keep the VLAN awareness state in a driver variable
-  net: dsa: sja1105: deny alterations of dsa_8021q VLANs from the bridge
-  net: dsa: sja1105: save/restore VLANs using a delta commit method
-  net: dsa: sja1105: allow VLAN configuration from the bridge in all
-    states
-  net: dsa: sja1105: exit sja1105_vlan_filtering when called multiple
-    times
-  net: dsa: sja1105: prepare tagger for handling DSA tags and VLAN
-    simultaneously
-  net: dsa: tag_8021q: support up to 8 VLANs per port using sub-VLANs
-  net: dsa: tag_sja1105: implement sub-VLAN decoding
-  net: dsa: sja1105: add a new best_effort_vlan_filtering devlink
-    parameter
-  net: dsa: sja1105: add packing ops for the Retagging Table
-  net: dsa: sja1105: implement a common frame memory partitioning
-    function
-  net: dsa: sja1105: implement VLAN retagging for dsa_8021q sub-VLANs
-  docs: net: dsa: sja1105: document the best_effort_vlan_filtering
-    option
-
- .../networking/devlink-params-sja1105.txt     |   27 +
- Documentation/networking/dsa/sja1105.rst      |  211 ++-
- drivers/net/dsa/sja1105/sja1105.h             |   29 +
- .../net/dsa/sja1105/sja1105_dynamic_config.c  |   33 +
- drivers/net/dsa/sja1105/sja1105_main.c        | 1128 +++++++++++++++--
- drivers/net/dsa/sja1105/sja1105_spi.c         |    6 +
- .../net/dsa/sja1105/sja1105_static_config.c   |   62 +-
- .../net/dsa/sja1105/sja1105_static_config.h   |   16 +
- drivers/net/dsa/sja1105/sja1105_vl.c          |   44 +-
- include/linux/dsa/8021q.h                     |   42 +-
- include/linux/dsa/sja1105.h                   |    5 +
- include/net/dsa.h                             |    7 +
- net/dsa/slave.c                               |   12 +-
- net/dsa/tag_8021q.c                           |  108 +-
- net/dsa/tag_sja1105.c                         |   38 +-
- 15 files changed, 1508 insertions(+), 260 deletions(-)
- create mode 100644 Documentation/networking/devlink-params-sja1105.txt
-
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 312c2f067e65..e794c15d27de 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -282,6 +282,13 @@ struct dsa_switch {
+ 	 */
+ 	bool			vlan_filtering_is_global;
+ 
++	/* Pass .port_vlan_add and .port_vlan_del to drivers even for bridges
++	 * that have vlan_filtering=0. All drivers should ideally set this (and
++	 * then the option would get removed), but it is unknown whether this
++	 * would break things or not.
++	 */
++	bool			configure_vlans_while_disabled;
++
+ 	/* In case vlan_filtering_is_global is set, the VLAN awareness state
+ 	 * should be retrieved from here and not from the per-port settings.
+ 	 */
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 61b0de52040a..06ac7641438e 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -314,7 +314,8 @@ static int dsa_slave_vlan_add(struct net_device *dev,
+ 	if (obj->orig_dev != dev)
+ 		return -EOPNOTSUPP;
+ 
+-	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
++	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev) &&
++	    !dp->ds->configure_vlans_while_disabled)
+ 		return 0;
+ 
+ 	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
+@@ -381,7 +382,8 @@ static int dsa_slave_vlan_del(struct net_device *dev,
+ 	if (obj->orig_dev != dev)
+ 		return -EOPNOTSUPP;
+ 
+-	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
++	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev) &&
++	    !dp->ds->configure_vlans_while_disabled)
+ 		return 0;
+ 
+ 	/* Do not deprogram the CPU port as it may be shared with other user
+@@ -1240,7 +1242,8 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
+ 	 * need to emulate the switchdev prepare + commit phase.
+ 	 */
+ 	if (dp->bridge_dev) {
+-		if (!br_vlan_enabled(dp->bridge_dev))
++		if (!dp->ds->configure_vlans_while_disabled &&
++		    !br_vlan_enabled(dp->bridge_dev))
+ 			return 0;
+ 
+ 		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
+@@ -1274,7 +1277,8 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+ 	 * need to emulate the switchdev prepare + commit phase.
+ 	 */
+ 	if (dp->bridge_dev) {
+-		if (!br_vlan_enabled(dp->bridge_dev))
++		if (!dp->ds->configure_vlans_while_disabled &&
++		    !br_vlan_enabled(dp->bridge_dev))
+ 			return 0;
+ 
+ 		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
 -- 
 2.17.1
 
