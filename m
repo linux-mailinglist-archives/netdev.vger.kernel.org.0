@@ -2,128 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A20D1CD149
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 07:34:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 185BF1CD14D
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 07:34:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726319AbgEKFeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 01:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726287AbgEKFeC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 01:34:02 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E28C061A0C
-        for <netdev@vger.kernel.org>; Sun, 10 May 2020 22:34:01 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id n5so2730094wmd.0
-        for <netdev@vger.kernel.org>; Sun, 10 May 2020 22:34:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yXW3upB1ZZMV2jZFkfjSF6rS0fu0dx5/uaDft0i8oJA=;
-        b=vVRz0IsSwuCc+qTKLWJXsL0RpUAUtQeeMmHfTs+7DotrrmQQ9s1rIemqceWcjrVDaJ
-         Qo7NWKb+gHlv8v94mP3+AzCpbF1xRku8iHfciM9uUXYweeGoclqM7vEcefX6Uz6V5e/D
-         S0XXm2vYSer5t0yrL8qbloQUpyAW6dQYl/c61vuwlcB+E/WXxo2yR0CGKHRI8WZstlGC
-         8C04ghmWR2cVw5Wfl4i7P9YaHU5/QcbKR2CikpnsNmXyUHiRKQLhkfojxkV/olqBnEfv
-         v8kEZoIjZe7KeXfj6fqWo1KyacDt6GY9HCty7lkksh4OSRRYhzRzv1pCY79fE/d1Hgrt
-         llcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yXW3upB1ZZMV2jZFkfjSF6rS0fu0dx5/uaDft0i8oJA=;
-        b=KqkWGebAogb7sa1nAay3Xm14N6CdXQm5dKQRfTag0gFPJQk/B9oamPmmi3C2GfcLBa
-         dVXFvqh1I+/YoAFXE7Rwz5uWLODbjTri0+bMIXsmwQV7bzDoCv9TwMk/oAeq0OzmRiOI
-         xe5YC3YeUSnAkzDJStnbpYTzrVcWRxm4X7mWKXJPG4vRQA9ORhmH2agzUlnU8r9wmYsc
-         8Ga4ASE1vWqJAElvevtnCll+ywasoZtzAlVi1wnNl+ZFKcfsqsT6J40IULKEZ00BeLfO
-         f/DJKFeelWrwbG3GEphld+Jl5D2bliaX//l90Ko83OaLj+qZR0DPi8Xef8iFX5uFMa8S
-         +D1A==
-X-Gm-Message-State: AGi0PuakTLkwc4Hl4vRhPJZtxnlKQ5Z0+US0JIAu/UP+2x7u9t2gkn1P
-        mGWA/T51jkwU9Gpq6gabBwZr29I9A9M=
-X-Google-Smtp-Source: APiQypKkIn9NRpi/Ul5rkldsAt/3GFey21aTDyeDscPlxFo+Hfb25LJ/ECiHh6fOzlpqoFvhHzrzww==
-X-Received: by 2002:a1c:5502:: with SMTP id j2mr31342772wmb.56.1589175240437;
-        Sun, 10 May 2020 22:34:00 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id y70sm26391759wmc.36.2020.05.10.22.33.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 May 2020 22:33:59 -0700 (PDT)
-Date:   Mon, 11 May 2020 07:33:59 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Edward Cree <ecree@solarflare.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, netfilter-devel@vger.kernel.org
-Subject: Re: [RFC PATCH net] net: flow_offload: simplify hw stats check
- handling
-Message-ID: <20200511053359.GC2245@nanopsycho>
-References: <49176c41-3696-86d9-f0eb-c20207cd6d23@solarflare.com>
- <20200507153231.GA10250@salvia>
- <9000b990-9a25-936e-6063-0034429256f0@solarflare.com>
- <20200507164643.GA10994@salvia>
- <20200507164820.0f48c36b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200507164820.0f48c36b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1728061AbgEKFeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 01:34:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57778 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726287AbgEKFeZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 01:34:25 -0400
+Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4C3D20820;
+        Mon, 11 May 2020 05:34:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589175264;
+        bh=kJeeoG5B4GJ20AKrkDh4g08qYgdhU/B7Z2q3qT5KBO4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=1ZLquqNbdRM35ixYt8goE15L+L0zW7urVMSquV2381Iy2xMXhen8mFe4x78yq0hiT
+         iOuA7G0/2/IUZA5afnkyKXZz0ZS4YwiZxEfUqKYGdiLjjw6OydvLziYsImwAhLiSIV
+         jQrtSyuYsHcqevnI6GxJKR00aaE1S3dlApsCSjKA=
+Date:   Mon, 11 May 2020 14:34:19 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 11/15] maccess: remove strncpy_from_unsafe
+Message-Id: <20200511143419.7511026ba60cbf9f6843a153@kernel.org>
+In-Reply-To: <20200506062223.30032-12-hch@lst.de>
+References: <20200506062223.30032-1-hch@lst.de>
+        <20200506062223.30032-12-hch@lst.de>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, May 08, 2020 at 01:48:20AM CEST, kuba@kernel.org wrote:
->On Thu, 7 May 2020 18:46:43 +0200 Pablo Neira Ayuso wrote:
->> On Thu, May 07, 2020 at 04:49:15PM +0100, Edward Cree wrote:
->> > On 07/05/2020 16:32, Pablo Neira Ayuso wrote:  
->> > > On Thu, May 07, 2020 at 03:59:09PM +0100, Edward Cree wrote:  
->> > >> Make FLOW_ACTION_HW_STATS_DONT_CARE be all bits, rather than none, so that
->> > >>  drivers and __flow_action_hw_stats_check can use simple bitwise checks.  
->> > > 
->> > > You have have to explain why this makes sense in terms of semantics.
->> > > 
->> > > _DISABLED and _ANY are contradicting each other.  
->> > No, they aren't.  The DISABLED bit means "I will accept disabled", it doesn't
->> >  mean "I insist on disabled".  What _does_ mean "I insist on disabled" is if
->> >  the DISABLED bit is set and no other bits are.
->> > So DISABLED | ANY means "I accept disabled; I also accept immediate or
->> >  delayed".  A.k.a. "I don't care, do what you like".  
->> 
->> Jiri said Disabled means: bail out if you cannot disable it.
->
->That's in TC uAPI Jiri chose... doesn't mean we have to do the same
->internally.
+On Wed,  6 May 2020 08:22:19 +0200
+Christoph Hellwig <hch@lst.de> wrote:
 
-Yeah, but if TC user says "disabled", please don't assign counter or
-fail.
+> All three callers really should try the explicit kernel and user
+> copies instead.  One has already deprecated the somewhat dangerous
+> either kernel or user address concept, the other two still need to
+> follow up eventually.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+
+This looks good to me.
+
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+
+Thank you,
+
+> ---
+>  include/linux/uaccess.h     |  1 -
+>  kernel/trace/bpf_trace.c    | 40 ++++++++++++++++++++++++++-----------
+>  kernel/trace/trace_kprobe.c |  5 ++++-
+>  mm/maccess.c                | 39 +-----------------------------------
+>  4 files changed, 33 insertions(+), 52 deletions(-)
+> 
+> diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+> index f8c47395a92df..09d6e358883cc 100644
+> --- a/include/linux/uaccess.h
+> +++ b/include/linux/uaccess.h
+> @@ -311,7 +311,6 @@ extern long probe_user_read(void *dst, const void __user *src, size_t size);
+>  extern long notrace probe_kernel_write(void *dst, const void *src, size_t size);
+>  extern long notrace probe_user_write(void __user *dst, const void *src, size_t size);
+>  
+> -extern long strncpy_from_unsafe(char *dst, const void *unsafe_addr, long count);
+>  extern long strncpy_from_kernel_unsafe(char *dst, const void *unsafe_addr,
+>  				       long count);
+>  extern long strncpy_from_user_unsafe(char *dst, const void __user *unsafe_addr,
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index e4e202f433903..ffe841433caa1 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -229,9 +229,10 @@ bpf_probe_read_kernel_str_common(void *dst, u32 size, const void *unsafe_ptr,
+>  	int ret = security_locked_down(LOCKDOWN_BPF_READ);
+>  
+>  	if (unlikely(ret < 0))
+> -		goto out;
+> +		goto fail;
+> +
+>  	/*
+> -	 * The strncpy_from_unsafe_*() call will likely not fill the entire
+> +	 * The strncpy_from_*_unsafe() call will likely not fill the entire
+>  	 * buffer, but that's okay in this circumstance as we're probing
+>  	 * arbitrary memory anyway similar to bpf_probe_read_*() and might
+>  	 * as well probe the stack. Thus, memory is explicitly cleared
+> @@ -239,11 +240,18 @@ bpf_probe_read_kernel_str_common(void *dst, u32 size, const void *unsafe_ptr,
+>  	 * code altogether don't copy garbage; otherwise length of string
+>  	 * is returned that can be used for bpf_perf_event_output() et al.
+>  	 */
+> -	ret = compat ? strncpy_from_unsafe(dst, unsafe_ptr, size) :
+> -	      strncpy_from_kernel_unsafe(dst, unsafe_ptr, size);
+> -	if (unlikely(ret < 0))
+> -out:
+> -		memset(dst, 0, size);
+> +	ret = strncpy_from_kernel_unsafe(dst, unsafe_ptr, size);
+> +	if (unlikely(ret < 0)) {
+> +		if (compat)
+> +			ret = strncpy_from_user_unsafe(dst,
+> +					(__force const void __user *)unsafe_ptr,
+> +					size);
+> +		if (ret < 0)
+> +			goto fail;
+> +	}
+> +	return 0;
+> +fail:
+> +	memset(dst, 0, size);
+>  	return ret;
+>  }
+>  
+> @@ -321,6 +329,17 @@ static const struct bpf_func_proto *bpf_get_probe_write_proto(void)
+>  	return &bpf_probe_write_user_proto;
+>  }
+>  
+> +#define BPF_STRNCPY_LEN 64
+> +
+> +static void bpf_strncpy(char *buf, long unsafe_addr)
+> +{
+> +	buf[0] = 0;
+> +	if (strncpy_from_kernel_unsafe(buf, (void *)unsafe_addr,
+> +			BPF_STRNCPY_LEN))
+> +		strncpy_from_user_unsafe(buf, (void __user *)unsafe_addr,
+> +				BPF_STRNCPY_LEN);
+> +}
+> +
+>  /*
+>   * Only limited trace_printk() conversion specifiers allowed:
+>   * %d %i %u %x %ld %li %lu %lx %lld %lli %llu %llx %p %s
+> @@ -332,7 +351,7 @@ BPF_CALL_5(bpf_trace_printk, char *, fmt, u32, fmt_size, u64, arg1,
+>  	int mod[3] = {};
+>  	int fmt_cnt = 0;
+>  	u64 unsafe_addr;
+> -	char buf[64];
+> +	char buf[BPF_STRNCPY_LEN];
+>  	int i;
+>  
+>  	/*
+> @@ -387,10 +406,7 @@ BPF_CALL_5(bpf_trace_printk, char *, fmt, u32, fmt_size, u64, arg1,
+>  					arg3 = (long) buf;
+>  					break;
+>  				}
+> -				buf[0] = 0;
+> -				strncpy_from_unsafe(buf,
+> -						    (void *) (long) unsafe_addr,
+> -						    sizeof(buf));
+> +				bpf_strncpy(buf, unsafe_addr);
+>  			}
+>  			continue;
+>  		}
+> diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+> index a7f43c7ec9880..525d12137325c 100644
+> --- a/kernel/trace/trace_kprobe.c
+> +++ b/kernel/trace/trace_kprobe.c
+> @@ -1238,7 +1238,10 @@ fetch_store_string(unsigned long addr, void *dest, void *base)
+>  	 * Try to get string again, since the string can be changed while
+>  	 * probing.
+>  	 */
+> -	ret = strncpy_from_unsafe(__dest, (void *)addr, maxlen);
+> +	ret = strncpy_from_kernel_unsafe(__dest, (void *)addr, maxlen);
+> +	if (ret < 0)
+> +		ret = strncpy_from_user_unsafe(__dest, (void __user *)addr,
+> +				maxlen);
+>  	if (ret >= 0)
+>  		*(u32 *)dest = make_data_loc(ret, __dest - base);
+>  
+> diff --git a/mm/maccess.c b/mm/maccess.c
+> index 11563129cd490..cbd9d668aa46e 100644
+> --- a/mm/maccess.c
+> +++ b/mm/maccess.c
+> @@ -8,8 +8,6 @@
+>  
+>  static long __probe_kernel_read(void *dst, const void *src, size_t size,
+>  		bool strict);
+> -static long __strncpy_from_unsafe(char *dst, const void *unsafe_addr,
+> -		long count, bool strict);
+>  
+>  bool __weak probe_kernel_read_allowed(void *dst, const void *unsafe_src,
+>  		size_t size, bool strict)
+> @@ -156,35 +154,6 @@ long probe_user_write(void __user *dst, const void *src, size_t size)
+>  	return 0;
+>  }
+>  
+> -/**
+> - * strncpy_from_unsafe: - Copy a NUL terminated string from unsafe address.
+> - * @dst:   Destination address, in kernel space.  This buffer must be at
+> - *         least @count bytes long.
+> - * @unsafe_addr: Unsafe address.
+> - * @count: Maximum number of bytes to copy, including the trailing NUL.
+> - *
+> - * Copies a NUL-terminated string from unsafe address to kernel buffer.
+> - *
+> - * On success, returns the length of the string INCLUDING the trailing NUL.
+> - *
+> - * If access fails, returns -EFAULT (some data may have been copied
+> - * and the trailing NUL added).
+> - *
+> - * If @count is smaller than the length of the string, copies @count-1 bytes,
+> - * sets the last byte of @dst buffer to NUL and returns @count.
+> - *
+> - * Same as strncpy_from_kernel_unsafe() except that for architectures with
+> - * not fully separated user and kernel address spaces this function also works
+> - * for user address tanges.
+> - *
+> - * DO NOT USE THIS FUNCTION - it is broken on architectures with entirely
+> - * separate kernel and user address spaces, and also a bad idea otherwise.
+> - */
+> -long strncpy_from_unsafe(char *dst, const void *unsafe_addr, long count)
+> -{
+> -	return __strncpy_from_unsafe(dst, unsafe_addr, count, false);
+> -}
+> -
+>  /**
+>   * strncpy_from_kernel_unsafe: - Copy a NUL terminated string from unsafe
+>   *				 address.
+> @@ -204,12 +173,6 @@ long strncpy_from_unsafe(char *dst, const void *unsafe_addr, long count)
+>   * sets the last byte of @dst buffer to NUL and returns @count.
+>   */
+>  long strncpy_from_kernel_unsafe(char *dst, const void *unsafe_addr, long count)
+> -{
+> -	return __strncpy_from_unsafe(dst, unsafe_addr, count, true);
+> -}
+> -
+> -static long __strncpy_from_unsafe(char *dst, const void *unsafe_addr,
+> -		long count, bool strict)
+>  {
+>  	mm_segment_t old_fs = get_fs();
+>  	const void *src = unsafe_addr;
+> @@ -217,7 +180,7 @@ static long __strncpy_from_unsafe(char *dst, const void *unsafe_addr,
+>  
+>  	if (unlikely(count <= 0))
+>  		return 0;
+> -	if (!probe_kernel_read_allowed(dst, unsafe_addr, count, strict))
+> +	if (!probe_kernel_read_allowed(dst, unsafe_addr, count, true))
+>  		return -EFAULT;
+>  
+>  	set_fs(KERNEL_DS);
+> -- 
+> 2.26.2
+> 
 
 
->
->> If the driver cannot disable, then it will have to check if the
->> frontend is asking for Disabled (hence, report error to the frontend)
->> or if it is actually asking for Don't care.
->> 
->> What you propose is a context-based interpretation of the bits. So
->> semantics depend on how you accumulate/combine bits.
->> 
->> I really think bits semantics should be interpreted on the bit alone
->> itself.
->
->These 3 paragraphs sound to me like you were arguing for Ed's approach..
->
->> There is one exception though, that is _ANY case, where you let the
->> driver pick between delayed or immediate. But if the driver does not
->> support for counters, it bails out in any case, so the outcome in both
->> request is basically the same.
->> 
->> You are asking for different outcome depending on how bits are
->> combined, which can be done, but it sounds innecessarily complicated
->> to me.
->
->No, quite the opposite, the code as committed to net has magic values
->which drivers have to check.
->
->The counter-proposal is that each bit represents a configuration, and
->if more than one bit is set the driver gets to choose which it prefers. 
->What could be simpler?
->
->netfilter just has to explicitly set the field to DONT_CARE rather than 
->depending on 0 form zalloc() coinciding with the correct value.
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
