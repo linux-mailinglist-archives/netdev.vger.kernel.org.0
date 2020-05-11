@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 168B21CD0E8
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 06:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 387C01CD107
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 06:50:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728149AbgEKEp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 00:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33420 "EHLO
+        id S1729250AbgEKErN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 00:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728017AbgEKEp4 (ORCPT
+        by vger.kernel.org with ESMTP id S1728030AbgEKEp4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 00:45:56 -0400
 Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAFF9C061A0C;
-        Sun, 10 May 2020 21:45:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DE5C061A0E;
+        Sun, 10 May 2020 21:45:56 -0700 (PDT)
 Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jY0KA-005jHr-AP; Mon, 11 May 2020 04:45:54 +0000
+        id 1jY0KA-005jHy-GI; Mon, 11 May 2020 04:45:54 +0000
 From:   Al Viro <viro@ZenIV.linux.org.uk>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, viro@zeniv.linux.org.uk,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 05/19] set_mcast_msfilter(): take the guts of setsockopt(MCAST_MSFILTER) into a helper
-Date:   Mon, 11 May 2020 05:45:39 +0100
-Message-Id: <20200511044553.1365660-5-viro@ZenIV.linux.org.uk>
+Subject: [PATCH 06/19] ipv4: do compat setsockopt for MCAST_MSFILTER directly
+Date:   Mon, 11 May 2020 05:45:40 +0100
+Message-Id: <20200511044553.1365660-6-viro@ZenIV.linux.org.uk>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200511044553.1365660-1-viro@ZenIV.linux.org.uk>
 References: <20200511044328.GP23230@ZenIV.linux.org.uk>
@@ -36,118 +36,78 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Al Viro <viro@zeniv.linux.org.uk>
 
+Parallel to what the native setsockopt() does, except that unlike
+the native setsockopt() we do not use memdup_user() - we want
+the sockaddr_storage fields properly aligned, so we allocate
+4 bytes more and copy compat_group_filter at the offset 4,
+which yields the proper alignments.
+
 Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 ---
- net/ipv4/ip_sockglue.c | 73 +++++++++++++++++++++++++++-----------------------
- 1 file changed, 40 insertions(+), 33 deletions(-)
+ net/ipv4/ip_sockglue.c | 48 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 47 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index 6bdaf43236ea..8c14a474870d 100644
+index 8c14a474870d..dc1f5276be4e 100644
 --- a/net/ipv4/ip_sockglue.c
 +++ b/net/ipv4/ip_sockglue.c
-@@ -587,6 +587,43 @@ static bool setsockopt_needs_rtnl(int optname)
- 	return false;
- }
- 
-+static int set_mcast_msfilter(struct sock *sk, int ifindex,
-+			      int numsrc, int fmode,
-+			      struct sockaddr_storage *group,
-+			      struct sockaddr_storage *list)
-+{
-+	int msize = IP_MSFILTER_SIZE(numsrc);
-+	struct ip_msfilter *msf;
-+	struct sockaddr_in *psin;
-+	int err, i;
+@@ -1286,9 +1286,55 @@ int compat_ip_setsockopt(struct sock *sk, int level, int optname,
+ 	case MCAST_LEAVE_SOURCE_GROUP:
+ 	case MCAST_BLOCK_SOURCE:
+ 	case MCAST_UNBLOCK_SOURCE:
+-	case MCAST_MSFILTER:
+ 		return compat_mc_setsockopt(sk, level, optname, optval, optlen,
+ 			ip_setsockopt);
++	case MCAST_MSFILTER:
++	{
++		const int size0 = offsetof(struct compat_group_filter, gf_slist);
++		struct compat_group_filter *gf32;
++		void *p;
++		int n;
 +
-+	msf = kmalloc(msize, GFP_KERNEL);
-+	if (!msf)
-+		return -ENOBUFS;
++		if (optlen < size0)
++			return -EINVAL;
++		if (optlen > sysctl_optmem_max - 4)
++			return -ENOBUFS;
 +
-+	psin = (struct sockaddr_in *)group;
-+	if (psin->sin_family != AF_INET)
-+		goto Eaddrnotavail;
-+	msf->imsf_multiaddr = psin->sin_addr.s_addr;
-+	msf->imsf_interface = 0;
-+	msf->imsf_fmode = fmode;
-+	msf->imsf_numsrc = numsrc;
-+	for (i = 0; i < numsrc; ++i) {
-+		psin = (struct sockaddr_in *)&list[i];
++		p = kmalloc(optlen + 4, GFP_KERNEL);
++		if (!p)
++			return -ENOMEM;
++		gf32 = p + 4; /* we want ->gf_group and ->gf_slist aligned */
++		if (copy_from_user(gf32, optval, optlen)) {
++			err = -EFAULT;
++			goto mc_msf_out;
++		}
 +
-+		if (psin->sin_family != AF_INET)
-+			goto Eaddrnotavail;
-+		msf->imsf_slist[i] = psin->sin_addr.s_addr;
++		n = gf32->gf_numsrc;
++		/* numsrc >= (4G-140)/128 overflow in 32 bits */
++		if (n >= 0x1ffffff) {
++			err = -ENOBUFS;
++			goto mc_msf_out;
++		}
++		if (offsetof(struct compat_group_filter, gf_slist[n]) > optlen) {
++			err = -EINVAL;
++			goto mc_msf_out;
++		}
++
++		rtnl_lock();
++		lock_sock(sk);
++		/* numsrc >= (4G-140)/128 overflow in 32 bits */
++		if (n > sock_net(sk)->ipv4.sysctl_igmp_max_msf)
++			err = -ENOBUFS;
++		else
++			err = set_mcast_msfilter(sk, gf32->gf_interface,
++						 n, gf32->gf_fmode,
++						 &gf32->gf_group, gf32->gf_slist);
++		release_sock(sk);
++		rtnl_unlock();
++mc_msf_out:
++		kfree(p);
++		return err;
 +	}
-+	err = ip_mc_msfilter(sk, msf, ifindex);
-+	kfree(msf);
-+	return err;
-+
-+Eaddrnotavail:
-+	kfree(msf);
-+	return -EADDRNOTAVAIL;
-+}
-+
- static int do_ip_setsockopt(struct sock *sk, int level,
- 			    int optname, char __user *optval, unsigned int optlen)
- {
-@@ -1079,10 +1116,7 @@ static int do_ip_setsockopt(struct sock *sk, int level,
  	}
- 	case MCAST_MSFILTER:
- 	{
--		struct sockaddr_in *psin;
--		struct ip_msfilter *msf = NULL;
- 		struct group_filter *gsf = NULL;
--		int msize, i, ifindex;
  
- 		if (optlen < GROUP_FILTER_SIZE(0))
- 			goto e_inval;
-@@ -1095,7 +1129,6 @@ static int do_ip_setsockopt(struct sock *sk, int level,
- 			err = PTR_ERR(gsf);
- 			break;
- 		}
--
- 		/* numsrc >= (4G-140)/128 overflow in 32 bits */
- 		if (gsf->gf_numsrc >= 0x1ffffff ||
- 		    gsf->gf_numsrc > net->ipv4.sysctl_igmp_max_msf) {
-@@ -1106,36 +1139,10 @@ static int do_ip_setsockopt(struct sock *sk, int level,
- 			err = -EINVAL;
- 			goto mc_msf_out;
- 		}
--		msize = IP_MSFILTER_SIZE(gsf->gf_numsrc);
--		msf = kmalloc(msize, GFP_KERNEL);
--		if (!msf) {
--			err = -ENOBUFS;
--			goto mc_msf_out;
--		}
--		ifindex = gsf->gf_interface;
--		psin = (struct sockaddr_in *)&gsf->gf_group;
--		if (psin->sin_family != AF_INET) {
--			err = -EADDRNOTAVAIL;
--			goto mc_msf_out;
--		}
--		msf->imsf_multiaddr = psin->sin_addr.s_addr;
--		msf->imsf_interface = 0;
--		msf->imsf_fmode = gsf->gf_fmode;
--		msf->imsf_numsrc = gsf->gf_numsrc;
--		err = -EADDRNOTAVAIL;
--		for (i = 0; i < gsf->gf_numsrc; ++i) {
--			psin = (struct sockaddr_in *)&gsf->gf_slist[i];
--
--			if (psin->sin_family != AF_INET)
--				goto mc_msf_out;
--			msf->imsf_slist[i] = psin->sin_addr.s_addr;
--		}
--		kfree(gsf);
--		gsf = NULL;
--
--		err = ip_mc_msfilter(sk, msf, ifindex);
-+		err = set_mcast_msfilter(sk, gsf->gf_interface,
-+					 gsf->gf_numsrc, gsf->gf_fmode,
-+					 &gsf->gf_group, gsf->gf_slist);
- mc_msf_out:
--		kfree(msf);
- 		kfree(gsf);
- 		break;
- 	}
+ 	err = do_ip_setsockopt(sk, level, optname, optval, optlen);
 -- 
 2.11.0
 
