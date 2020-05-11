@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FC831CD9DC
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D9D31CD9DF
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729959AbgEKM3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 08:29:44 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:58156 "EHLO
+        id S1729809AbgEKM36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 08:29:58 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:59278 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729544AbgEKM3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:29:44 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8F0756008E;
-        Mon, 11 May 2020 12:29:43 +0000 (UTC)
-Received: from us4-mdac16-20.ut7.mdlocal (unknown [10.7.65.244])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8DAC52009B;
-        Mon, 11 May 2020 12:29:43 +0000 (UTC)
+        by vger.kernel.org with ESMTP id S1729022AbgEKM35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:29:57 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 173F26007B;
+        Mon, 11 May 2020 12:29:57 +0000 (UTC)
+Received: from us4-mdac16-42.ut7.mdlocal (unknown [10.7.64.24])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 1610F2009A;
+        Mon, 11 May 2020 12:29:57 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.37])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0AE5522006C;
-        Mon, 11 May 2020 12:29:43 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.198])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 88EA61C0055;
+        Mon, 11 May 2020 12:29:56 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id AEFDFB4005A;
-        Mon, 11 May 2020 12:29:42 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 37BD780079;
+        Mon, 11 May 2020 12:29:56 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 11 May
- 2020 13:29:37 +0100
+ 2020 13:29:49 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 6/8] sfc: move rx_rss_context_exclusive into struct
- efx_mcdi_filter_table
+Subject: [PATCH net-next 7/8] sfc: make filter table probe caller responsible
+ for adding VLANs
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <8154dba6-b312-7dcf-7d49-cd6c6801ffc2@solarflare.com>
-Message-ID: <b73dbc35-da87-abc2-36c4-efc63779caa2@solarflare.com>
-Date:   Mon, 11 May 2020 13:29:34 +0100
+Message-ID: <13c2c7e5-9989-237d-3ca6-fbc16cdadca4@solarflare.com>
+Date:   Mon, 11 May 2020 13:29:45 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -48,111 +48,94 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25412.003
-X-TM-AS-Result: No-2.588600-8.000000-10
-X-TMASE-MatchedRID: m7WZ8aMCXJBAzKbF/mdxtuW/ghHXKl4uB4Id7CiQcz9jLp8Cm8vwFwoe
-        RRhCZWIBnvBWG5GT8Jdw5T4Iaj538mJZXQNDzktSR/j040fRFpK6hgVvSdGKo1VkJxysad/Is20
-        IP1TczPgh1dFwqj8QiF+AaPS23fvgwlUZfPqWFzIqsMfMfrOZRRA5wxKjT3bqi7p9NckzZOsVAs
-        f1+cZFJ9u9HSeKDBZ/avgXozbP4yzgYQ4tT+k+HVkxnoxnQfVSOtlHh2+ppE9D9iPiuXvzgXPWW
-        DY7hSSV8pUbVzcvWp8dF8BZ6EBXsE1+zyfzlN7ygxsfzkNRlfLDm6Dz1lUoy/oLR4+zsDTtfxVE
-        I3DSSIOpobK3g/0DgnwT/XVNWktlAYgUr3OsuNkBqoxZw3y8IEoaO9Ch2Wx8yBaSZex8oQgw3FP
-        h5NOljL3yZEEcxDgddU/2kdQe0J585uoYr0mmWaKdpX90rRoSErdW3Lyhe2TZKwvJjiAfi8C+ks
-        T6a9fy
+X-TM-AS-Result: No-1.679600-8.000000-10
+X-TMASE-MatchedRID: K1T06JdS/ECfP0bGoIxVn1b0VO9AmFFdNV9S7O+u3KazU0R+5DbDbMiT
+        Wug2C4DNl1M7KT9/aqA65JDztUKj+SHhSBQfglfsA9lly13c/gHYuVu0X/rOkAH6Rn3/TmOQF+j
+        AV5A5r0NbdScq6YVMbuD1s559rHmydpvo/nKASz5tawJSSsDgSaeRyy08vvizXEqzvealB56jxY
+        yRBa/qJQPTK4qtAgwIPcCXjNqUmkVYF3qW3Je6+2eURATc+6DV/KfnZZqAvSrHf6LrmLvmXfUB/
+        5ydiXBL8f1CxEQQi2QHLHxTLrhUfmAA9s9qHiT580phQtnye4ZIi8tpVsTteTHCqV7rv9Y1QDMF
+        uK2P9FjtoWavEW7HRE3Z8jKJCdR04mqLFh5vfmx+3BndfXUhXQ==
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.588600-8.000000
+X-TMASE-Result: 10--1.679600-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25412.003
-X-MDID: 1589200183-eBy4wMLQChha
+X-MDID: 1589200197-AQb1yhK9Xyp4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's both set and used solely by mcdi_filters.c, so there's no reason
- for it to be in ef10-specific nic_data.
+By making the caller of efx_mcdi_filter_table_probe() loop over the
+ vlan_list calling efx_mcdi_filter_add_vlan(), instead of doing it in
+ efx_mcdi_filter_table_probe(), the latter avoids looking in ef10-
+ specific nic_data.
 
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/mcdi_filters.c | 10 +++++-----
- drivers/net/ethernet/sfc/mcdi_filters.h |  2 ++
- drivers/net/ethernet/sfc/nic.h          |  2 --
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/sfc/ef10.c         | 10 ++++++++++
+ drivers/net/ethernet/sfc/mcdi_filters.c | 12 ------------
+ 2 files changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/mcdi_filters.c b/drivers/net/ethernet/sfc/mcdi_filters.c
-index d3c2e6eb3191..e99b3149c4ae 100644
---- a/drivers/net/ethernet/sfc/mcdi_filters.c
-+++ b/drivers/net/ethernet/sfc/mcdi_filters.c
-@@ -2031,14 +2031,14 @@ void efx_mcdi_rx_free_indir_table(struct efx_nic *efx)
- static int efx_mcdi_filter_rx_push_shared_rss_config(struct efx_nic *efx,
- 					      unsigned *context_size)
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 0779dda7d29f..d7d2edc4d81a 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -2447,6 +2447,7 @@ static int efx_ef10_filter_table_probe(struct efx_nic *efx)
  {
--	struct efx_ef10_nic_data *nic_data = efx->nic_data;
-+	struct efx_mcdi_filter_table *table = efx->filter_state;
- 	int rc = efx_mcdi_filter_alloc_rss_context(efx, false, &efx->rss_context,
- 					    context_size);
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+ 	int rc = efx_ef10_probe_multicast_chaining(efx);
++	struct efx_mcdi_filter_vlan *vlan;
  
- 	if (rc != 0)
+ 	if (rc)
+ 		return rc;
+@@ -2455,7 +2456,16 @@ static int efx_ef10_filter_table_probe(struct efx_nic *efx)
+ 	if (rc)
  		return rc;
  
--	nic_data->rx_rss_context_exclusive = false;
-+	table->rx_rss_context_exclusive = false;
- 	efx_set_default_rx_indir_table(efx, &efx->rss_context);
++	list_for_each_entry(vlan, &nic_data->vlan_list, list) {
++		rc = efx_mcdi_filter_add_vlan(efx, vlan->vid);
++		if (rc)
++			goto fail_add_vlan;
++	}
  	return 0;
++
++fail_add_vlan:
++	efx_mcdi_filter_table_remove(efx);
++	return rc;
  }
-@@ -2047,12 +2047,12 @@ static int efx_mcdi_filter_rx_push_exclusive_rss_config(struct efx_nic *efx,
- 						 const u32 *rx_indir_table,
- 						 const u8 *key)
+ 
+ /* This creates an entry in the RX descriptor queue */
+diff --git a/drivers/net/ethernet/sfc/mcdi_filters.c b/drivers/net/ethernet/sfc/mcdi_filters.c
+index e99b3149c4ae..88de95a8c08c 100644
+--- a/drivers/net/ethernet/sfc/mcdi_filters.c
++++ b/drivers/net/ethernet/sfc/mcdi_filters.c
+@@ -1285,10 +1285,8 @@ efx_mcdi_filter_table_probe_matches(struct efx_nic *efx,
+ 
+ int efx_mcdi_filter_table_probe(struct efx_nic *efx, bool multicast_chaining)
  {
-+	struct efx_mcdi_filter_table *table = efx->filter_state;
- 	u32 old_rx_rss_context = efx->rss_context.context_id;
 -	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+ 	struct net_device *net_dev = efx->net_dev;
+ 	struct efx_mcdi_filter_table *table;
+-	struct efx_mcdi_filter_vlan *vlan;
  	int rc;
  
- 	if (efx->rss_context.context_id == EFX_MCDI_RSS_CONTEXT_INVALID ||
--	    !nic_data->rx_rss_context_exclusive) {
-+	    !table->rx_rss_context_exclusive) {
- 		rc = efx_mcdi_filter_alloc_rss_context(efx, true, &efx->rss_context,
- 						NULL);
- 		if (rc == -EOPNOTSUPP)
-@@ -2069,7 +2069,7 @@ static int efx_mcdi_filter_rx_push_exclusive_rss_config(struct efx_nic *efx,
- 	if (efx->rss_context.context_id != old_rx_rss_context &&
- 	    old_rx_rss_context != EFX_MCDI_RSS_CONTEXT_INVALID)
- 		WARN_ON(efx_mcdi_filter_free_rss_context(efx, old_rx_rss_context) != 0);
--	nic_data->rx_rss_context_exclusive = true;
-+	table->rx_rss_context_exclusive = true;
- 	if (rx_indir_table != efx->rss_context.rx_indir_table)
- 		memcpy(efx->rss_context.rx_indir_table, rx_indir_table,
- 		       sizeof(efx->rss_context.rx_indir_table));
-diff --git a/drivers/net/ethernet/sfc/mcdi_filters.h b/drivers/net/ethernet/sfc/mcdi_filters.h
-index 15b5d62e3670..03a8bf74c733 100644
---- a/drivers/net/ethernet/sfc/mcdi_filters.h
-+++ b/drivers/net/ethernet/sfc/mcdi_filters.h
-@@ -55,6 +55,8 @@ struct efx_mcdi_filter_table {
- 	u32 rx_match_mcdi_flags[
- 		MC_CMD_GET_PARSER_DISP_INFO_OUT_SUPPORTED_MATCHES_MAXNUM * 2];
- 	unsigned int rx_match_count;
-+	/* Our RSS context is exclusive (as opposed to shared) */
-+	bool rx_rss_context_exclusive;
+ 	if (!efx_rwsem_assert_write_locked(&efx->filter_sem))
+@@ -1337,17 +1335,7 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx, bool multicast_chaining)
  
- 	struct rw_semaphore lock; /* Protects entries */
- 	struct {
-diff --git a/drivers/net/ethernet/sfc/nic.h b/drivers/net/ethernet/sfc/nic.h
-index 46583ba8fa24..8f73c5d996eb 100644
---- a/drivers/net/ethernet/sfc/nic.h
-+++ b/drivers/net/ethernet/sfc/nic.h
-@@ -368,7 +368,6 @@ enum {
-  * @piobuf_size: size of a single PIO buffer
-  * @must_restore_piobufs: Flag: PIO buffers have yet to be restored after MC
-  *	reboot
-- * @rx_rss_context_exclusive: Whether our RSS context is exclusive or shared
-  * @stats: Hardware statistics
-  * @workaround_35388: Flag: firmware supports workaround for bug 35388
-  * @workaround_26807: Flag: firmware supports workaround for bug 26807
-@@ -405,7 +404,6 @@ struct efx_ef10_nic_data {
- 	unsigned int piobuf_handle[EF10_TX_PIOBUF_COUNT];
- 	u16 piobuf_size;
- 	bool must_restore_piobufs;
--	bool rx_rss_context_exclusive;
- 	u64 stats[EF10_STAT_COUNT];
- 	bool workaround_35388;
- 	bool workaround_26807;
+ 	efx->filter_state = table;
+ 
+-	list_for_each_entry(vlan, &nic_data->vlan_list, list) {
+-		rc = efx_mcdi_filter_add_vlan(efx, vlan->vid);
+-		if (rc)
+-			goto fail_add_vlan;
+-	}
+-
+ 	return 0;
+-
+-fail_add_vlan:
+-	efx_mcdi_filter_cleanup_vlans(efx);
+-	efx->filter_state = NULL;
+ fail:
+ 	kfree(table);
+ 	return rc;
 
