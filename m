@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30D9F1CD9D7
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98DFC1CD9DA
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:30:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729876AbgEKM3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 08:29:21 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:42242 "EHLO
+        id S1729943AbgEKM3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 08:29:38 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:56956 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728084AbgEKM3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:29:20 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id ADE346009F;
-        Mon, 11 May 2020 12:29:19 +0000 (UTC)
-Received: from us4-mdac16-58.ut7.mdlocal (unknown [10.7.66.29])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id ACD3F8009B;
-        Mon, 11 May 2020 12:29:19 +0000 (UTC)
+        by vger.kernel.org with ESMTP id S1729544AbgEKM3e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:29:34 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A385B60085;
+        Mon, 11 May 2020 12:29:33 +0000 (UTC)
+Received: from us4-mdac16-35.ut7.mdlocal (unknown [10.7.66.154])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A21802009A;
+        Mon, 11 May 2020 12:29:33 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.36])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2673628006E;
-        Mon, 11 May 2020 12:29:19 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.175])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 178F71C0059;
+        Mon, 11 May 2020 12:29:33 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A5A27B40088;
-        Mon, 11 May 2020 12:29:18 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 979DC700080;
+        Mon, 11 May 2020 12:29:32 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 11 May
- 2020 13:29:13 +0100
+ 2020 13:29:27 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 4/8] sfc: move 'must restore' flags out of
- ef10-specific nic_data
+Subject: [PATCH net-next 5/8] sfc: rework handling of (firmware) multicast
+ chaining state
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <8154dba6-b312-7dcf-7d49-cd6c6801ffc2@solarflare.com>
-Message-ID: <2788420e-eb17-ec74-e734-af050bd108f3@solarflare.com>
-Date:   Mon, 11 May 2020 13:29:09 +0100
+Message-ID: <6dea102b-1241-63c6-8e2e-a34099248e12@solarflare.com>
+Date:   Mon, 11 May 2020 13:29:23 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -48,248 +48,328 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25412.003
-X-TM-AS-Result: No-8.952000-8.000000-10
-X-TMASE-MatchedRID: Uxn1FEKTNW97h43UaXHBh8zSKGx9g8xhOyBTDrxRCtgmeuMNSQOJxsiT
-        Wug2C4DNl1M7KT9/aqA0uSYsteWBcgihmwiXCMoGPwKTD1v8YV5MkOX0UoduuYqFeIXGsrr98FS
-        rkmy6/FJPncvnf9/rJwI6/EcTRFqOkXoWBThuuCiI8hHRrWLqF6m9/6ObPjnDq4++j0vqJoiBlT
-        +jl6FrYeIkog2fXJ1JmD4B2XRg96g2jeY+Udg/IlMsVuL5ry7dGIMg4+U4kbX6eV5+LAaaX1XT6
-        v5x8gQLP+hIH7VezSClL/C3qPNuFs1Ku5XXgtDND3uYMxd01bfMBINgV4CMF3T7g/hbrl6OhnOL
-        yflyxrM1n9fUOU7FVMoLp7NAW1Bbdm4kbLKk/25JUdgxNDUXWsu99zcLpJbCzFjbcpor5QpwDtY
-        JWjotBQIqXBPeS82Coa4GM6KoDS2VK7w4d0IaXHYZxYoZm58F8Ql85K8KnzOHY81LcCWMu+4L5A
-        pNcJPz8EG42fasHIpopprqjDetVNfOfGcoM5ITBzS99BLPiYrihJ3Xxt2bAo5JUK9UdYknOsAUR
-        sBevgfi8zVgXoAltkWL4rBlm20vjaPj0W1qn0SyO81X3yak833nroCrv/SlRJcWQCwtVfMHkmyR
-        82Gytou/nIhqpI1x8vOu2V+5sLV+3BndfXUhXQ==
+X-TM-AS-Result: No-10.738600-8.000000-10
+X-TMASE-MatchedRID: Ojaueh+HKT9Tj03Jjr4vPQlpVkdtt3WuRiPTMMc/MmnbqdHxGsFfafOP
+        Ra/sN+oGhkOf78j1+sybZkVCatrPSKH2g9syPs888Kg68su2wyE/pOSL72dTfwdkFovAReUoaUX
+        s6FguVy0fVLDIDiHvdO00FyVc4yHvSGsRClC1CmfbTbThIInD+pYaT3cL9WdKmXw0RNbqkoJHKo
+        wsiP9YDQ1Bnq55lTg3F6w8puyi5jH55ocwjacbqh3IeIGfKJW/4oSd18bdmwLWXfwzppZ8SPzos
+        tNASZmb26bKvjJzaWMrdEKOY+7gNvKJu1A4gJa5FqifzwY4bVp0f6daRtk8Sl9QIc+ez/4+CgBj
+        jp+WlmGG5KUa7FdvCvAJhtRHt4BiIiC/wzCK1DMPe5gzF3TVt7ovx3KX3L+EVI7KaIl9Nhd4I1X
+        WYyL/jpIj3AH8mhdE+kJpEGVLY8VbCLz0g5c8jCNHByyOpYYCy733NwuklsKMJxigKCCiS7Lnxn
+        7dN6NWhvg0bLyWXzVebJqqJm1oLBSy+Y19jTwZfDrjzXCwK0KpR2kMGcsw7XLutXdeITtopIson
+        G6IBJLXnS1WgMMINZGTpe1iiCJq71zr0FZRMbALbigRnpKlKSPzRlrdFGDwnbTQ2XEAT0eVuVxQ
+        3JnPRn3feM3HHqFXQI0HUb7l5vVOll8Awlduig==
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.952000-8.000000
+X-TMASE-Result: 10--10.738600-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25412.003
-X-MDID: 1589200159-NpP3IHLPd62a
+X-MDID: 1589200173-FLdZBrXZ4S5I
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Common code in mcdi_filters.c uses these flags, so by moving them to
- either struct efx_nic (in the case of must_realloc_vis) or struct
- efx_mcdi_filter_table (for must_restore_rss_contexts and
- must_restore_filters), decouple this code from ef10's nic_data.
+Store the mc_chaining bit in struct efx_mcdi_filter_table, so that common
+ code in mcdi_filters.c doesn't need to get it from ef10-specific nic_data.
+Also, probe the firmware workaround just before the call to
+ efx_mcdi_filter_table_probe(), rather than in a random other part of the
+ driver bringup, to ensure that (a) it gets probed in time and (b) it gets
+ reprobed as necessary on resets, no matter how the surrounding code gets
+ reorganised and reordered.
 
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/ef10.c         | 14 ++++++--------
- drivers/net/ethernet/sfc/mcdi_filters.c | 24 ++++++++++++++++--------
- drivers/net/ethernet/sfc/mcdi_filters.h |  6 ++++++
- drivers/net/ethernet/sfc/net_driver.h   |  2 ++
- drivers/net/ethernet/sfc/nic.h          |  7 -------
- 5 files changed, 30 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/sfc/ef10.c         | 141 +++++++++++++-----------
+ drivers/net/ethernet/sfc/mcdi_filters.c |  15 ++-
+ drivers/net/ethernet/sfc/mcdi_filters.h |   9 +-
+ 3 files changed, 90 insertions(+), 75 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 7b3c6214dee6..b33bd6b77501 100644
+index b33bd6b77501..0779dda7d29f 100644
 --- a/drivers/net/ethernet/sfc/ef10.c
 +++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -1281,13 +1281,13 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
- 		nic_data->must_check_datapath_caps = false;
+@@ -2388,6 +2388,76 @@ static void efx_ef10_tx_write(struct efx_tx_queue *tx_queue)
  	}
- 
--	if (nic_data->must_realloc_vis) {
-+	if (efx->must_realloc_vis) {
- 		/* We cannot let the number of VIs change now */
- 		rc = efx_ef10_alloc_vis(efx, nic_data->n_allocated_vis,
- 					nic_data->n_allocated_vis);
- 		if (rc)
- 			return rc;
--		nic_data->must_realloc_vis = false;
-+		efx->must_realloc_vis = false;
- 	}
- 
- 	if (nic_data->must_restore_piobufs && nic_data->n_piobufs) {
-@@ -1326,9 +1326,8 @@ static void efx_ef10_table_reset_mc_allocations(struct efx_nic *efx)
- #endif
- 
- 	/* All our allocations have been reset */
--	nic_data->must_realloc_vis = true;
--	nic_data->must_restore_rss_contexts = true;
--	nic_data->must_restore_filters = true;
-+	efx->must_realloc_vis = true;
-+	efx_mcdi_filter_table_reset_mc_allocations(efx);
- 	nic_data->must_restore_piobufs = true;
- 	efx_ef10_forget_old_piobufs(efx);
- 	efx->rss_context.context_id = EFX_MCDI_RSS_CONTEXT_INVALID;
-@@ -3100,16 +3099,15 @@ void efx_ef10_handle_drain_event(struct efx_nic *efx)
- 
- static int efx_ef10_fini_dmaq(struct efx_nic *efx)
- {
--	struct efx_ef10_nic_data *nic_data = efx->nic_data;
--	struct efx_channel *channel;
- 	struct efx_tx_queue *tx_queue;
- 	struct efx_rx_queue *rx_queue;
-+	struct efx_channel *channel;
- 	int pending;
- 
- 	/* If the MC has just rebooted, the TX/RX queues will have already been
- 	 * torn down, but efx->active_queues needs to be set to zero.
- 	 */
--	if (nic_data->must_realloc_vis) {
-+	if (efx->must_realloc_vis) {
- 		atomic_set(&efx->active_queues, 0);
- 		return 0;
- 	}
-diff --git a/drivers/net/ethernet/sfc/mcdi_filters.c b/drivers/net/ethernet/sfc/mcdi_filters.c
-index 39f8a91c1222..bb29fc0063bf 100644
---- a/drivers/net/ethernet/sfc/mcdi_filters.c
-+++ b/drivers/net/ethernet/sfc/mcdi_filters.c
-@@ -331,7 +331,6 @@ static s32 efx_mcdi_filter_insert_locked(struct efx_nic *efx,
- 					 bool replace_equal)
- {
- 	DECLARE_BITMAP(mc_rem_map, EFX_EF10_FILTER_SEARCH_LIMIT);
--	struct efx_ef10_nic_data *nic_data = efx->nic_data;
- 	struct efx_mcdi_filter_table *table;
- 	struct efx_filter_spec *saved_spec;
- 	struct efx_rss_context *ctx = NULL;
-@@ -460,7 +459,7 @@ static s32 efx_mcdi_filter_insert_locked(struct efx_nic *efx,
- 	rc = efx_mcdi_filter_push(efx, spec, &table->entry[ins_index].handle,
- 				  ctx, replacing);
- 
--	if (rc == -EINVAL && nic_data->must_realloc_vis)
-+	if (rc == -EINVAL && efx->must_realloc_vis)
- 		/* The MC rebooted under us, causing it to reject our filter
- 		 * insertion as pointing to an invalid VI (spec->dmaq_id).
- 		 */
-@@ -1355,6 +1354,16 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx)
- 	return rc;
  }
  
-+void efx_mcdi_filter_table_reset_mc_allocations(struct efx_nic *efx)
++static int efx_ef10_probe_multicast_chaining(struct efx_nic *efx)
 +{
-+	struct efx_mcdi_filter_table *table = efx->filter_state;
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
++	unsigned int enabled, implemented;
++	bool want_workaround_26807;
++	int rc;
 +
-+	if (table) {
-+		table->must_restore_filters = true;
-+		table->must_restore_rss_contexts = true;
++	rc = efx_mcdi_get_workarounds(efx, &implemented, &enabled);
++	if (rc == -ENOSYS) {
++		/* GET_WORKAROUNDS was implemented before this workaround,
++		 * thus it must be unavailable in this firmware.
++		 */
++		nic_data->workaround_26807 = false;
++		return 0;
 +	}
++	if (rc)
++		return rc;
++	want_workaround_26807 =
++		implemented & MC_CMD_GET_WORKAROUNDS_OUT_BUG26807;
++	nic_data->workaround_26807 =
++		!!(enabled & MC_CMD_GET_WORKAROUNDS_OUT_BUG26807);
++
++	if (want_workaround_26807 && !nic_data->workaround_26807) {
++		unsigned int flags;
++
++		rc = efx_mcdi_set_workaround(efx,
++					     MC_CMD_WORKAROUND_BUG26807,
++					     true, &flags);
++		if (!rc) {
++			if (flags &
++			    1 << MC_CMD_WORKAROUND_EXT_OUT_FLR_DONE_LBN) {
++				netif_info(efx, drv, efx->net_dev,
++					   "other functions on NIC have been reset\n");
++
++				/* With MCFW v4.6.x and earlier, the
++				 * boot count will have incremented,
++				 * so re-read the warm_boot_count
++				 * value now to ensure this function
++				 * doesn't think it has changed next
++				 * time it checks.
++				 */
++				rc = efx_ef10_get_warm_boot_count(efx);
++				if (rc >= 0) {
++					nic_data->warm_boot_count = rc;
++					rc = 0;
++				}
++			}
++			nic_data->workaround_26807 = true;
++		} else if (rc == -EPERM) {
++			rc = 0;
++		}
++	}
++	return rc;
 +}
 +
- /*
-  * Caller must hold efx->filter_sem for read if race against
-  * efx_mcdi_filter_table_remove() is possible
-@@ -1362,7 +1371,6 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx)
- void efx_mcdi_filter_table_restore(struct efx_nic *efx)
++static int efx_ef10_filter_table_probe(struct efx_nic *efx)
++{
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
++	int rc = efx_ef10_probe_multicast_chaining(efx);
++
++	if (rc)
++		return rc;
++	rc = efx_mcdi_filter_table_probe(efx, nic_data->workaround_26807);
++
++	if (rc)
++		return rc;
++
++	return 0;
++}
++
+ /* This creates an entry in the RX descriptor queue */
+ static inline void
+ efx_ef10_build_rx_desc(struct efx_rx_queue *rx_queue, unsigned int index)
+@@ -2463,75 +2533,14 @@ static int efx_ef10_ev_init(struct efx_channel *channel)
+ {
+ 	struct efx_nic *efx = channel->efx;
+ 	struct efx_ef10_nic_data *nic_data;
+-	unsigned int enabled, implemented;
+ 	bool use_v2, cut_thru;
+-	int rc;
+ 
+ 	nic_data = efx->nic_data;
+ 	use_v2 = nic_data->datapath_caps2 &
+ 			    1 << MC_CMD_GET_CAPABILITIES_V2_OUT_INIT_EVQ_V2_LBN;
+ 	cut_thru = !(nic_data->datapath_caps &
+ 			      1 << MC_CMD_GET_CAPABILITIES_OUT_RX_BATCHING_LBN);
+-	rc = efx_mcdi_ev_init(channel, cut_thru, use_v2);
+-
+-	/* IRQ return is ignored */
+-	if (channel->channel || rc)
+-		return rc;
+-
+-	/* Successfully created event queue on channel 0 */
+-	rc = efx_mcdi_get_workarounds(efx, &implemented, &enabled);
+-	if (rc == -ENOSYS) {
+-		/* GET_WORKAROUNDS was implemented before this workaround,
+-		 * thus it must be unavailable in this firmware.
+-		 */
+-		nic_data->workaround_26807 = false;
+-		rc = 0;
+-	} else if (rc) {
+-		goto fail;
+-	} else {
+-		nic_data->workaround_26807 =
+-			!!(enabled & MC_CMD_GET_WORKAROUNDS_OUT_BUG26807);
+-
+-		if (implemented & MC_CMD_GET_WORKAROUNDS_OUT_BUG26807 &&
+-		    !nic_data->workaround_26807) {
+-			unsigned int flags;
+-
+-			rc = efx_mcdi_set_workaround(efx,
+-						     MC_CMD_WORKAROUND_BUG26807,
+-						     true, &flags);
+-
+-			if (!rc) {
+-				if (flags &
+-				    1 << MC_CMD_WORKAROUND_EXT_OUT_FLR_DONE_LBN) {
+-					netif_info(efx, drv, efx->net_dev,
+-						   "other functions on NIC have been reset\n");
+-
+-					/* With MCFW v4.6.x and earlier, the
+-					 * boot count will have incremented,
+-					 * so re-read the warm_boot_count
+-					 * value now to ensure this function
+-					 * doesn't think it has changed next
+-					 * time it checks.
+-					 */
+-					rc = efx_ef10_get_warm_boot_count(efx);
+-					if (rc >= 0) {
+-						nic_data->warm_boot_count = rc;
+-						rc = 0;
+-					}
+-				}
+-				nic_data->workaround_26807 = true;
+-			} else if (rc == -EPERM) {
+-				rc = 0;
+-			}
+-		}
+-	}
+-
+-	if (!rc)
+-		return 0;
+-
+-fail:
+-	efx_mcdi_ev_fini(channel);
+-	return rc;
++	return efx_mcdi_ev_init(channel, cut_thru, use_v2);
+ }
+ 
+ static void efx_ef10_handle_rx_wrong_queue(struct efx_rx_queue *rx_queue,
+@@ -3185,7 +3194,7 @@ static int efx_ef10_vport_set_mac_address(struct efx_nic *efx)
+ 		goto reset_nic;
+ restore_filters:
+ 	down_write(&efx->filter_sem);
+-	rc2 = efx_mcdi_filter_table_probe(efx);
++	rc2 = efx_ef10_filter_table_probe(efx);
+ 	up_write(&efx->filter_sem);
+ 	if (rc2)
+ 		goto reset_nic;
+@@ -3227,7 +3236,7 @@ static int efx_ef10_set_mac_address(struct efx_nic *efx)
+ 	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_VADAPTOR_SET_MAC, inbuf,
+ 				sizeof(inbuf), NULL, 0, NULL);
+ 
+-	efx_mcdi_filter_table_probe(efx);
++	efx_ef10_filter_table_probe(efx);
+ 	up_write(&efx->filter_sem);
+ 	mutex_unlock(&efx->mac_lock);
+ 
+@@ -4041,7 +4050,7 @@ const struct efx_nic_type efx_hunt_a0_vf_nic_type = {
+ 	.ev_process = efx_ef10_ev_process,
+ 	.ev_read_ack = efx_ef10_ev_read_ack,
+ 	.ev_test_generate = efx_ef10_ev_test_generate,
+-	.filter_table_probe = efx_mcdi_filter_table_probe,
++	.filter_table_probe = efx_ef10_filter_table_probe,
+ 	.filter_table_restore = efx_mcdi_filter_table_restore,
+ 	.filter_table_remove = efx_mcdi_filter_table_remove,
+ 	.filter_update_rx_scatter = efx_mcdi_update_rx_scatter,
+@@ -4154,7 +4163,7 @@ const struct efx_nic_type efx_hunt_a0_nic_type = {
+ 	.ev_process = efx_ef10_ev_process,
+ 	.ev_read_ack = efx_ef10_ev_read_ack,
+ 	.ev_test_generate = efx_ef10_ev_test_generate,
+-	.filter_table_probe = efx_mcdi_filter_table_probe,
++	.filter_table_probe = efx_ef10_filter_table_probe,
+ 	.filter_table_restore = efx_mcdi_filter_table_restore,
+ 	.filter_table_remove = efx_mcdi_filter_table_remove,
+ 	.filter_update_rx_scatter = efx_mcdi_update_rx_scatter,
+diff --git a/drivers/net/ethernet/sfc/mcdi_filters.c b/drivers/net/ethernet/sfc/mcdi_filters.c
+index bb29fc0063bf..d3c2e6eb3191 100644
+--- a/drivers/net/ethernet/sfc/mcdi_filters.c
++++ b/drivers/net/ethernet/sfc/mcdi_filters.c
+@@ -811,7 +811,7 @@ static int efx_mcdi_filter_insert_def(struct efx_nic *efx,
+ 				      enum efx_encap_type encap_type,
+ 				      bool multicast, bool rollback)
+ {
+-	struct efx_ef10_nic_data *nic_data = efx->nic_data;
++	struct efx_mcdi_filter_table *table = efx->filter_state;
+ 	enum efx_filter_flags filter_flags;
+ 	struct efx_filter_spec spec;
+ 	u8 baddr[ETH_ALEN];
+@@ -896,7 +896,7 @@ static int efx_mcdi_filter_insert_def(struct efx_nic *efx,
+ 
+ 		EFX_WARN_ON_PARANOID(*id != EFX_EF10_FILTER_ID_INVALID);
+ 		*id = efx_mcdi_filter_get_unsafe_id(rc);
+-		if (!nic_data->workaround_26807 && !encap_type) {
++		if (!table->mc_chaining && !encap_type) {
+ 			/* Also need an Ethernet broadcast filter */
+ 			efx_filter_init_rx(&spec, EFX_FILTER_PRI_AUTO,
+ 					   filter_flags, 0);
+@@ -962,7 +962,6 @@ static void efx_mcdi_filter_vlan_sync_rx_mode(struct efx_nic *efx,
+ 					      struct efx_mcdi_filter_vlan *vlan)
  {
  	struct efx_mcdi_filter_table *table = efx->filter_state;
 -	struct efx_ef10_nic_data *nic_data = efx->nic_data;
- 	unsigned int invalid_filters = 0, failed = 0;
- 	struct efx_mcdi_filter_vlan *vlan;
- 	struct efx_filter_spec *spec;
-@@ -1374,7 +1382,7 @@ void efx_mcdi_filter_table_restore(struct efx_nic *efx)
  
- 	WARN_ON(!rwsem_is_locked(&efx->filter_sem));
- 
--	if (!nic_data->must_restore_filters)
-+	if (!table->must_restore_filters)
- 		return;
- 
- 	if (!table)
-@@ -1453,7 +1461,7 @@ void efx_mcdi_filter_table_restore(struct efx_nic *efx)
- 		netif_err(efx, hw, efx->net_dev,
- 			  "unable to restore %u filters\n", failed);
- 	else
--		nic_data->must_restore_filters = false;
-+		table->must_restore_filters = false;
+ 	/*
+ 	 * Do not install unspecified VID if VLAN filtering is enabled.
+@@ -1009,11 +1008,10 @@ static void efx_mcdi_filter_vlan_sync_rx_mode(struct efx_nic *efx,
+ 	 * If changing promiscuous state with cascaded multicast filters, remove
+ 	 * old filters first, so that packets are dropped rather than duplicated
+ 	 */
+-	if (nic_data->workaround_26807 &&
+-	    table->mc_promisc_last != table->mc_promisc)
++	if (table->mc_chaining && table->mc_promisc_last != table->mc_promisc)
+ 		efx_mcdi_filter_remove_old(efx);
+ 	if (table->mc_promisc) {
+-		if (nic_data->workaround_26807) {
++		if (table->mc_chaining) {
+ 			/*
+ 			 * If we failed to insert promiscuous filters, rollback
+ 			 * and fall back to individual multicast filters
+@@ -1048,7 +1046,7 @@ static void efx_mcdi_filter_vlan_sync_rx_mode(struct efx_nic *efx,
+ 		 */
+ 		if (efx_mcdi_filter_insert_addr_list(efx, vlan, true, true)) {
+ 			/* Changing promisc state, so remove old filters */
+-			if (nic_data->workaround_26807)
++			if (table->mc_chaining)
+ 				efx_mcdi_filter_remove_old(efx);
+ 			if (efx_mcdi_filter_insert_def(efx, vlan,
+ 						       EFX_ENCAP_TYPE_NONE,
+@@ -1285,7 +1283,7 @@ efx_mcdi_filter_table_probe_matches(struct efx_nic *efx,
+ 	return 0;
  }
  
- void efx_mcdi_filter_table_remove(struct efx_nic *efx)
-@@ -2176,13 +2184,13 @@ int efx_mcdi_rx_pull_rss_config(struct efx_nic *efx)
- 
- void efx_mcdi_rx_restore_rss_contexts(struct efx_nic *efx)
+-int efx_mcdi_filter_table_probe(struct efx_nic *efx)
++int efx_mcdi_filter_table_probe(struct efx_nic *efx, bool multicast_chaining)
  {
--	struct efx_ef10_nic_data *nic_data = efx->nic_data;
-+	struct efx_mcdi_filter_table *table = efx->filter_state;
- 	struct efx_rss_context *ctx;
- 	int rc;
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+ 	struct net_device *net_dev = efx->net_dev;
+@@ -1303,6 +1301,7 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx)
+ 	if (!table)
+ 		return -ENOMEM;
  
- 	WARN_ON(!mutex_is_locked(&efx->rss_lock));
- 
--	if (!nic_data->must_restore_rss_contexts)
-+	if (!table->must_restore_rss_contexts)
- 		return;
- 
- 	list_for_each_entry(ctx, &efx->rss_context.list, list) {
-@@ -2198,7 +2206,7 @@ void efx_mcdi_rx_restore_rss_contexts(struct efx_nic *efx)
- 				   "; RSS filters may fail to be applied\n",
- 				   ctx->user_id, rc);
- 	}
--	nic_data->must_restore_rss_contexts = false;
-+	table->must_restore_rss_contexts = false;
- }
- 
- int efx_mcdi_pf_rx_push_rss_config(struct efx_nic *efx, bool user,
++	table->mc_chaining = multicast_chaining;
+ 	table->rx_match_count = 0;
+ 	rc = efx_mcdi_filter_table_probe_matches(efx, table, false);
+ 	if (rc)
 diff --git a/drivers/net/ethernet/sfc/mcdi_filters.h b/drivers/net/ethernet/sfc/mcdi_filters.h
-index 1837f4f5d661..884ba9731131 100644
+index 884ba9731131..15b5d62e3670 100644
 --- a/drivers/net/ethernet/sfc/mcdi_filters.h
 +++ b/drivers/net/ethernet/sfc/mcdi_filters.h
-@@ -75,6 +75,10 @@ struct efx_mcdi_filter_table {
- /* Whether in multicast promiscuous mode when last changed */
- 	bool mc_promisc_last;
- 	bool mc_overflow; /* Too many MC addrs; should always imply mc_promisc */
-+	/* RSS contexts have yet to be restored after MC reboot */
-+	bool must_restore_rss_contexts;
-+	/* filters have yet to be restored after MC reboot */
-+	bool must_restore_filters;
+@@ -79,11 +79,18 @@ struct efx_mcdi_filter_table {
+ 	bool must_restore_rss_contexts;
+ 	/* filters have yet to be restored after MC reboot */
+ 	bool must_restore_filters;
++	/* Multicast filter chaining allows less-specific filters to receive
++	 * multicast packets that matched more-specific filters.  Early EF10
++	 * firmware didn't support this (SF bug 26807); if mc_chaining == false
++	 * then we still subscribe the dev_mc_list even when mc_promisc to
++	 * prevent another VI stealing the traffic.
++	 */
++	bool mc_chaining;
  	bool vlan_filter;
  	struct list_head vlan_list;
  };
-@@ -83,6 +87,8 @@ int efx_mcdi_filter_table_probe(struct efx_nic *efx);
+ 
+-int efx_mcdi_filter_table_probe(struct efx_nic *efx);
++int efx_mcdi_filter_table_probe(struct efx_nic *efx, bool multicast_chaining);
  void efx_mcdi_filter_table_remove(struct efx_nic *efx);
  void efx_mcdi_filter_table_restore(struct efx_nic *efx);
  
-+void efx_mcdi_filter_table_reset_mc_allocations(struct efx_nic *efx);
-+
- /*
-  * The filter table(s) are managed by firmware and we have write-only
-  * access.  When removing filters we must identify them to the
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index bdeea48ff938..ae9756811dfe 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -890,6 +890,7 @@ struct efx_async_filter_insertion {
-  * @vport_id: The function's vport ID, only relevant for PFs
-  * @int_error_count: Number of internal errors seen recently
-  * @int_error_expire: Time at which error count will be expired
-+ * @must_realloc_vis: Flag: VIs have yet to be reallocated after MC reboot
-  * @irq_soft_enabled: Are IRQs soft-enabled? If not, IRQ handler will
-  *	acknowledge but do nothing else.
-  * @irq_status: Interrupt status buffer
-@@ -1050,6 +1051,7 @@ struct efx_nic {
- 	unsigned int_error_count;
- 	unsigned long int_error_expire;
- 
-+	bool must_realloc_vis;
- 	bool irq_soft_enabled;
- 	struct efx_buffer irq_status;
- 	unsigned irq_zero_count;
-diff --git a/drivers/net/ethernet/sfc/nic.h b/drivers/net/ethernet/sfc/nic.h
-index 9e2e387a4b1c..46583ba8fa24 100644
---- a/drivers/net/ethernet/sfc/nic.h
-+++ b/drivers/net/ethernet/sfc/nic.h
-@@ -360,10 +360,6 @@ enum {
-  * @warm_boot_count: Last seen MC warm boot count
-  * @vi_base: Absolute index of first VI in this function
-  * @n_allocated_vis: Number of VIs allocated to this function
-- * @must_realloc_vis: Flag: VIs have yet to be reallocated after MC reboot
-- * @must_restore_rss_contexts: Flag: RSS contexts have yet to be restored after
-- *	MC reboot
-- * @must_restore_filters: Flag: filters have yet to be restored after MC reboot
-  * @n_piobufs: Number of PIO buffers allocated to this function
-  * @wc_membase: Base address of write-combining mapping of the memory BAR
-  * @pio_write_base: Base address for writing PIO buffers
-@@ -403,9 +399,6 @@ struct efx_ef10_nic_data {
- 	u16 warm_boot_count;
- 	unsigned int vi_base;
- 	unsigned int n_allocated_vis;
--	bool must_realloc_vis;
--	bool must_restore_rss_contexts;
--	bool must_restore_filters;
- 	unsigned int n_piobufs;
- 	void __iomem *wc_membase, *pio_write_base;
- 	unsigned int pio_write_vi_base;
 
