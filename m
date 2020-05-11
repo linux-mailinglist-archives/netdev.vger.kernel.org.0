@@ -2,192 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F3CC1CD676
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:22:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24BE81CD693
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729495AbgEKKWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 06:22:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729439AbgEKKWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 06:22:48 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59A9C061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 03:22:47 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id u4so7024787lfm.7
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 03:22:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/dAscbGex4Z26Q8pLRBBuS1XkReHZTzfb+uXyS2LklM=;
-        b=QWXXt2j+qqsp85WfVoydmf4MzRtJME4X8YsS3yc1U6NQODTQGU+ld8AV3eNtv0Nfbb
-         pPtI/p9ZMgmj1o7+ZSDYQQ9pbJGjtxGv5eSBdogDPru61IH0GkGnMpzPpzI2fQ00jicd
-         4/Lg9DBzoy4r8gFDCcAM5BpCfpe/GKzU3Rz49de6cQwo0yNlIXNMRPI+Qtje6wp0qhAm
-         CUjML3FIL4SCE0Uu6twM9YkH2ulJ/otKqE+tQ7c4hlGZMxMK8UBVgt52xp+hek5zc2t0
-         r97lLUF8T7hxFPgwbXPkKvKF6dH9zLrpoybN1r/EWfMPnryRYAZXU2BVKaoFK/R+Vd9P
-         dtlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=/dAscbGex4Z26Q8pLRBBuS1XkReHZTzfb+uXyS2LklM=;
-        b=HC3n7O3umrHb4GD2NYMPOBtj3dq/DHTCHdOLJ4O5Js0wToA2V5VG0So8EfuIwwEBhx
-         Nj0AFq/ZH2TxEooMB9GUs/1eWFUa0poY8fvrb0rNYFhpriTw0T1LZ9MPBQ3Rj/EMEu2O
-         CcIUHWGaj2l+9HxPqfxuC4x56tELSWcUMG/ex/JbsYUTP/pGbC6tYp3F6T3FkZlBIV3h
-         WwUqKSmD3d4wvKIovmkDkBKnILXHPzsN76FoIn9e1MibeblMIWPPKgKH4XkmIV0jG1vq
-         HFREEOYUdMw8+j7KBOapyMV3Q9ssQfmnJWa5BHi4kzNxqeB/3jnvK2HUgVe2+ZoShwQ+
-         X9Ww==
-X-Gm-Message-State: AOAM533KW44MaYUYdBMKDY5kmRBw1t0z8UdG0YrYFzCLD1lzrdMTA1SH
-        IdFMrzCXuV7Ssn1G+rtuCzOYXTGqSm0gRA==
-X-Google-Smtp-Source: ABdhPJzjsRA0WNjkMuY556DNSPi+bLOltbJVozIfyKZdHNqnSznLe3qEMHRvG6p79fDvD620daGIdQ==
-X-Received: by 2002:ac2:5607:: with SMTP id v7mr10636137lfd.134.1589192565905;
-        Mon, 11 May 2020 03:22:45 -0700 (PDT)
-Received: from centos7-pv-guest.localdomain ([5.35.46.227])
-        by smtp.gmail.com with ESMTPSA id j15sm10199453lji.18.2020.05.11.03.22.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 May 2020 03:22:45 -0700 (PDT)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-To:     netdev@vger.kernel.org
-Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
-        paul@xen.org, ilias.apalodimas@linaro.org
-Subject: [PATCH net-next v9 2/2] xen networking: add XDP offset adjustment to xen-netback
-Date:   Mon, 11 May 2020 13:22:21 +0300
-Message-Id: <1589192541-11686-3-git-send-email-kda@linux-powerpc.org>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1589192541-11686-1-git-send-email-kda@linux-powerpc.org>
-References: <1589192541-11686-1-git-send-email-kda@linux-powerpc.org>
+        id S1729521AbgEKK3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 06:29:48 -0400
+Received: from mail-eopbgr50084.outbound.protection.outlook.com ([40.107.5.84]:12099
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728613AbgEKK3r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 06:29:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=St385KSDRRBh724Buu6zuqmeBPNZmr25G/FuGLLwOtQ561ozKsCs7VTJZl5FOX6lp5BVSPxlLB77vZLQ4cVSYkNc7PBWDICoK+uqDdFXXah9QareaxBEwrVX7dq3zbALC3jNbZWOafsfLrQAYQViQBErdc7PYbnwd2TRlGXRvS2I9cMAdI323MxDt65lyZ7ad/L33oD2KCxlX4/yJQOVqHnSsJLOJXKof6ht94TPaO5FQjD4XJ/JvQtyZ5fvyvEv7bUsTpPiCaBQOoRYKb0rI9B8qcPd0inCctwOoJjsPLDfltQJkq2nTjtCmhoajnC2DT9ZDyZrD6P26np6RKDoTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sIESJWP9sN6pblS+ft2ZZQP9sZXjL2756IqPJXGnV34=;
+ b=faD07XzMrxR5WRc5BZ4a5g+C7KhtXEvqfih1iyYXEO6QxH/GeHCJFsYnDyK4m036v3D47w3UkUeuKb6FJTYAEH0EEVK736FBtKQlUEvxF3g5eOjlXetZLmxq7ND3qqmJ+H0l4vh/BbecrxEFcsrvAa+wyovyikAKmLU8v9AICAe4vE6xLTW31jgHv7vfUmC5JmxSHkuptoqkVSvyrjwGUkbvbvjG8MvBzWDemQEVeVWYYmASathcuWSy9CR9Vr2QY/zKDq9IAKMy/b30sR4I3ZOnYTJNq02iBePDxWH6A6AzaJ/BZ5oy/gPANINBC+1BCfm4qQCyOC9miisZm7C3cQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sIESJWP9sN6pblS+ft2ZZQP9sZXjL2756IqPJXGnV34=;
+ b=RpriqQqm9CUudC8lNPugC3EipiBF4hJKKI9igQGBBnsZ0CMGZCqy8vAtBRcQ3Py3r1CtuwilearPhlEBycrt1qN9eNjFlSAo/fyHyC9QUiorq1oXazhvNz6+hiH3Hh1fUksAfc1WGf7451q9GZTBLkRGQxVf/xZS3UyYSJ7Ngpg=
+Authentication-Results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=oss.nxp.com;
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB5106.eurprd04.prod.outlook.com (2603:10a6:208:ca::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Mon, 11 May
+ 2020 10:29:43 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2979.033; Mon, 11 May 2020
+ 10:29:43 +0000
+Date:   Mon, 11 May 2020 15:59:30 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>, linux.cj@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [net-next PATCH v3 4/5] net: phy: Introduce fwnode_get_phy_id()
+Message-ID: <20200511102930.GA24687@lsv03152.swis.in-blr01.nxp.com>
+References: <CAHp75Vew8Fh6HEoOACk+J9KCpw+AE2t2+oFnXteK1eShopfYAA@mail.gmail.com>
+ <83ab4ca4-9c34-4cdd-4413-3b4cdf96727d@arm.com>
+ <20200508160755.GB10296@lsv03152.swis.in-blr01.nxp.com>
+ <20200508181301.GF298574@lunn.ch>
+ <1e33605e-42fd-baf8-7584-e8fcd5ca6fd3@arm.com>
+ <20200508202722.GI298574@lunn.ch>
+ <97a9e145-bbaa-efb8-6215-dc3109ee7290@arm.com>
+ <20200508234257.GA338317@lunn.ch>
+ <20200511080040.GC12725@lsv03152.swis.in-blr01.nxp.com>
+ <20200511093849.GO1551@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200511093849.GO1551@shell.armlinux.org.uk>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: SG2PR01CA0126.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::30) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR01CA0126.apcprd01.prod.exchangelabs.com (2603:1096:4:40::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Mon, 11 May 2020 10:29:37 +0000
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: f9102ab9-d3c4-48fa-8e23-08d7f59637e1
+X-MS-TrafficTypeDiagnostic: AM0PR04MB5106:|AM0PR04MB5106:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB5106B0EF926DDE946A7BE938D2A10@AM0PR04MB5106.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 04004D94E2
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mE1NnbKk4PpJ7rbbQJfqMDaILHX9YFwc/yxgu5ktw2dUpprvPDOu/P+EVO9kTMOqCDMQWjzDK1wQ5t2KoCCj8UxWdVJh93zvkBHF275GElL4396Kdr7Bphx49E1R5iJNG4P9RIFOYofiSQpTB27uAGmSFU3O5J7bk8h6EJz0Tq5k5bYTRW0fPVNeTmN992dEfrKpaWG3e6UAN8CxBm9iTx96qJtt3WQqWxGeJ86VWMHeEh58YvLKWxWmUm61aCLz3mXcbUKcqUlTqfXzR3E1aRwARaplGb6Q0Gc5phMu82po7A+1Aj6rpHKFH5tAeJdPoALFGqZ777dFcnsFgkXB+ThOl/5uPJ2V1HBJ81/cZFl7cb32h8QWR4TLMYOzyNvYuXJMQbCVb/ejSzj6sPUl9UayiuxViXJAHl4MUPUZhPQC2Z/NCJAm3rFikAk3KCrqpKVnvnIdyZPk2rrleX2LRSjI1Ull3juWwbN1LYI7iiP6alJ4bAufhJuPuKicIvtGEgDL30JSC8f6iqJWG44ctio+5NcvdI/u7fMiNx0eldjI5ruDkEHwT1VC22WaAEXZ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(136003)(346002)(39860400002)(396003)(33430700001)(6916009)(2906002)(478600001)(66476007)(8676002)(33440700001)(66946007)(44832011)(7416002)(86362001)(66556008)(1006002)(6666004)(6506007)(54906003)(5660300002)(16526019)(55236004)(316002)(53546011)(186003)(26005)(8936002)(33656002)(4326008)(7696005)(956004)(52116002)(9686003)(1076003)(55016002)(110426005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: tA6OnSoTpT2ymZIZdWE7J8DVTuQskNfTak72x3xpetFUWUxgxtyyLNOTrUnB41GbcRWXA0TX/NNWDzELEim4pbE9KA9w/7113oUalVWVFMfL5nXAYILu1/IavWH3p9PSV4FFQxg3XlWeItz7B3M2fEtiHQletxtpfPr2l8jgFxjHeKUUVS4vB/BggCpoVzVBOt9FWH8VhGE0d7snFcG+CNXxzAglKj9fGeFd5HliyW4ua2N+AuF3OLmj6p3PePVDOjve+O0tzZOTRenAE3j/ofNMfRRN+VpQcu5l6SpvjYAzyUdHji0Qlt6ileD/ADfHqg71xDrn42TXrh+EPJ9CisGxiOUfau+vqGDyyvQ4/+vm0dKyqQBtc1nQlzorvihAsjAUyMWjpu/iSYyTGO8nosFO2av3z4TIVjA6DiVp3Hu97KkhHy09g6JzumC5m86qqFR5+Xb2d59vZkhYRn99+olJBLj6cTekTk4YZJ5VZSo=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9102ab9-d3c4-48fa-8e23-08d7f59637e1
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 10:29:43.1460
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dQH7T8twCaqPKiECZPg0d1eP0r9NldeQM+Vf9LBtDC+Xc7DgGFUxUUy4ppSunXBlSUBrm/D0eNPGWnAzS+pMpQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5106
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the patch basically adds the offset adjustment and netfront
-state reading to make XDP work on netfront side.
+On Mon, May 11, 2020 at 10:38:49AM +0100, Russell King - ARM Linux admin wrote:
+> On Mon, May 11, 2020 at 01:30:40PM +0530, Calvin Johnson wrote:
+> > On Sat, May 09, 2020 at 01:42:57AM +0200, Andrew Lunn wrote:
+> > > On Fri, May 08, 2020 at 05:48:33PM -0500, Jeremy Linton wrote:
+> > > > Hi,
+> > > > 
+> > > > On 5/8/20 3:27 PM, Andrew Lunn wrote:
+> > > > > > > There is a very small number of devices where the vendor messed up,
+> > > > > > > and did not put valid contents in the ID registers. In such cases, we
+> > > > > > > can read the IDs from device tree. These are then used in exactly the
+> > > > > > > same way as if they were read from the device.
+> > > > > > > 
+> > > > > > 
+> > > > > > Is that the case here?
+> > > > > 
+> > > > > Sorry, I don't understand the question?
+> > > > 
+> > > > I was asking in general, does this machine report the ID's correctly.
+> > > 
+> > > Very likely, it does.
+> > > 
+> > > > The embedded single mac:mdio per nic case seems like the normal case, and
+> > > > most of the existing ACPI described devices are setup that way.
+> > > 
+> > > Somebody in this thread pointed to ACPI patches for the
+> > > MACCHIATOBin. If i remember the hardware correctly, it has 4 Ethernet
+> > > interfaces, and two MDIO bus masters. One of the bus masters can only
+> > > do C22 and the other can only do C45. It is expected that the busses
+> > > are shared, not a nice one to one mapping.
+> > > 
+> > > > But at the same time, that shifts the c22/45 question to the nic
+> > > > driver, where use of a DSD property before instantiating/probing
+> > > > MDIO isn't really a problem if needed.
+> > > 
+> > > This in fact does not help you. The MAC driver has no idea what PHY is
+> > > connected to it. The MAC does not know if it is C22 or C45. It uses
+> > > the phylib abstraction which hides all this. Even if you assume 1:1,
+> > > use phy_find_first(), it will not find a C45 PHY because without
+> > > knowing there is a C45 PHY, we don't scan for it. And we should expect
+> > > C45 PHYs to become more popular in the next few years.
+> > 
+> > Agree.
+> > 
+> > NXP's LX2160ARDB platform currently has the following MDIO-PHY connection.
+> > 
+> > MDIO-1 ==> one 40G PHY, two 1G PHYs(C45), two 10G PHYs(C22)
+> 
+> I'm not entirely sure you have that correct.  The Clause 45 register set
+> as defined by IEEE 802.3 does not define registers for 1G negotiation,
+> unless the PHY either supports Clause 22 accesses, or implements some
+> kind of vendor extension.  For a 1G PHY, this would be wasteful, and
+> likely incompatible with a lot of hardware/software.
+> 
+> Conversely, Clause 22 does not define registers for 10G speeds, except
+> accessing Clause 45 registers indirectly through clause 22 registers,
+> which would also be wasteful.
+> 
+Got your point.
+Let me try to clarify.
 
-Signed-off-by: Denis Kirjanov <denis.kirjanov@suse.com>
----
- drivers/net/xen-netback/common.h  |  2 ++
- drivers/net/xen-netback/netback.c |  7 +++++++
- drivers/net/xen-netback/rx.c      |  7 ++++++-
- drivers/net/xen-netback/xenbus.c  | 28 ++++++++++++++++++++++++++++
- 4 files changed, 43 insertions(+), 1 deletion(-)
+MDIO-1 ==> one 40G PHY, two 1G PHYs(C45), two 10G PHYs(C22)
+MDIO-2 ==> one 25G PHY
+This is the physical connection of MDIO & PHYs on the platform.
 
-diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
-index 05847eb..4a148d6 100644
---- a/drivers/net/xen-netback/common.h
-+++ b/drivers/net/xen-netback/common.h
-@@ -280,6 +280,7 @@ struct xenvif {
- 	u8 ip_csum:1;
- 	u8 ipv6_csum:1;
- 	u8 multicast_control:1;
-+	u8 xdp_enabled:1;
- 
- 	/* Is this interface disabled? True when backend discovers
- 	 * frontend is rogue.
-@@ -395,6 +396,7 @@ static inline pending_ring_idx_t nr_pending_reqs(struct xenvif_queue *queue)
- irqreturn_t xenvif_interrupt(int irq, void *dev_id);
- 
- extern bool separate_tx_rx_irq;
-+extern bool provides_xdp_headroom;
- 
- extern unsigned int rx_drain_timeout_msecs;
- extern unsigned int rx_stall_timeout_msecs;
-diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
-index 315dfc6..6dfca72 100644
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -96,6 +96,13 @@
- module_param_named(hash_cache_size, xenvif_hash_cache_size, uint, 0644);
- MODULE_PARM_DESC(hash_cache_size, "Number of flows in the hash cache");
- 
-+/* The module parameter tells that we have to put data
-+ * for xen-netfront with the XDP_PACKET_HEADROOM offset
-+ * needed for XDP processing
-+ */
-+bool provides_xdp_headroom = true;
-+module_param(provides_xdp_headroom, bool, 0644);
-+
- static void xenvif_idx_release(struct xenvif_queue *queue, u16 pending_idx,
- 			       u8 status);
- 
-diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
-index ef58870..c97c98e 100644
---- a/drivers/net/xen-netback/rx.c
-+++ b/drivers/net/xen-netback/rx.c
-@@ -33,6 +33,11 @@
- #include <xen/xen.h>
- #include <xen/events.h>
- 
-+static int xenvif_rx_xdp_offset(struct xenvif *vif)
-+{
-+	return vif->xdp_enabled ? XDP_PACKET_HEADROOM : 0;
-+}
-+
- static bool xenvif_rx_ring_slots_available(struct xenvif_queue *queue)
- {
- 	RING_IDX prod, cons;
-@@ -356,7 +361,7 @@ static void xenvif_rx_data_slot(struct xenvif_queue *queue,
- 				struct xen_netif_rx_request *req,
- 				struct xen_netif_rx_response *rsp)
- {
--	unsigned int offset = 0;
-+	unsigned int offset = xenvif_rx_xdp_offset(queue->vif);
- 	unsigned int flags;
- 
- 	do {
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index 286054b..d447191 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -393,6 +393,20 @@ static void set_backend_state(struct backend_info *be,
- 	}
- }
- 
-+static void read_xenbus_frontend_xdp(struct backend_info *be,
-+				     struct xenbus_device *dev)
-+{
-+	struct xenvif *vif = be->vif;
-+	unsigned int val;
-+	int err;
-+
-+	err = xenbus_scanf(XBT_NIL, dev->otherend,
-+			   "feature-xdp", "%u", &val);
-+	if (err != 1)
-+		return;
-+	vif->xdp_enabled = val;
-+}
-+
- /**
-  * Callback received when the frontend's state changes.
-  */
-@@ -417,6 +431,11 @@ static void frontend_changed(struct xenbus_device *dev,
- 		set_backend_state(be, XenbusStateConnected);
- 		break;
- 
-+	case XenbusStateReconfiguring:
-+		read_xenbus_frontend_xdp(be, dev);
-+		xenbus_switch_state(dev, XenbusStateReconfigured);
-+		break;
-+
- 	case XenbusStateClosing:
- 		set_backend_state(be, XenbusStateClosing);
- 		break;
-@@ -1036,6 +1055,15 @@ static int netback_probe(struct xenbus_device *dev,
- 			goto abort_transaction;
- 		}
- 
-+		/* we can adjust a headroom for netfront XDP processing */
-+		err = xenbus_printf(xbt, dev->nodename,
-+				    "feature-xdp-headroom", "%d",
-+				    provides_xdp_headroom);
-+		if (err) {
-+			message = "writing feature-xdp-headroom";
-+			goto abort_transaction;
-+		}
-+
- 		/* We don't support rx-flip path (except old guests who
- 		 * don't grok this feature flag).
- 		 */
--- 
-1.8.3.1
+For the c45 PHYs(two 10G), we use compatible "ethernet-phy-ieee802.3-c45"(not
+yet upstreamed).
+For c22 PHYs(two 1G), we don't mention the c45 compatible string and hence the
+access also will be using c22, if I'm not wrong.
 
+Regards
+Calvin
+k
