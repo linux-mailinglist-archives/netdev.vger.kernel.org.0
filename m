@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 436021CE77E
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 23:34:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B02041CE780
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 23:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbgEKVeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 17:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
+        id S1727812AbgEKVeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 17:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725895AbgEKVeB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 17:34:01 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251AFC061A0C;
-        Mon, 11 May 2020 14:34:01 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id a5so8490614pjh.2;
-        Mon, 11 May 2020 14:34:01 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725895AbgEKVeK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 17:34:10 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD37C061A0C;
+        Mon, 11 May 2020 14:34:09 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id x77so5341898pfc.0;
+        Mon, 11 May 2020 14:34:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=lbgIdJ/aL+x7yqr49pyrmYPxLoAsTpYoiESdy7iQrUY=;
-        b=NqAHlu2A1agoX4CCVujsL6LsUQT0GKOG/1T+vxs7MNtyFVgRblmo3oBTkg/wFWqaep
-         FwgINMXmFijwwBbqbfLm40dbySaZ2Bk1eqjfXKoabY0ZwQ5smyQNl6SoJkbQxCXyzZnY
-         WYWuqFsdPhox5F4u8MdYT07MWimbU1uTA6MBGgSaZeheFmtI6OHxUM9hYDwwBg0nUNQr
-         nLqAL7CQ2dPKUn4HhK8Ihin6yExQGdkjp+N0yxV+ESc5jAMVJQahJNRNyCzOO6GxmtXD
-         youeJYnkEW5kKcC1SCzPxeiV2vL7XoMtiZx0RQy4sQGYT+JfeBpsfzSGJ++Usr71DNBw
-         57UA==
+        bh=sXCysljLfLXX410q/6YrEuNh3qGEuRfM8YNbcTjsua4=;
+        b=nWzNmvBU+sA+7DdNALZrh5mspbr0Y5vKHKodfOkPjLrdOUvb8TKOOIGckyMqbCMyrO
+         k3mWuzrYolK+27+wfsTRBsqu9ScekAzpyFgQgPZMyrHHvg0PZ+Z71cLSEvKlvRfVh3wM
+         ItqbcjlKJdconjzhlVEf2RMO2EpIno4jxSF5la8iZNIfcTO14gpgkkzPDKDaQEQHcPYX
+         b+r0nCDXYqa11fq08hyECPwsGE06+u4+mUwOwITDJQoFwbHAqXbZkLkh8wMAIoBYI9fE
+         EtcEm0awMOaiIcsvhnhNFTsBPctKZZ9RGTSO1Wu6yxSfOSKoGrzpRZ0oV1v+khXK0eFG
+         vnjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=lbgIdJ/aL+x7yqr49pyrmYPxLoAsTpYoiESdy7iQrUY=;
-        b=V5JwJ0YJ3ERi7kFnr6gKT7R3/5FM3g/HCIgWd20eTPxcPgSvsdDdJolE/C/5bAmhdp
-         +yMvZiMolL7jG7ad60GXsNz/xkZubzGBHBRcbINoe+kNvhbE1//fWUz+ncboqfyfmtCC
-         18LGH0/BTXHpO48vaNOHNeJfUCKB4xXyh5snx0hNJJ3GOpVWtrmji3aQABIpAko0pNwo
-         MTj2SF35V+yyq4aoid4zjXGcPIc84c1+Bf2j101rbIFEdA0PPK03vXMJXHmhX4Pl/jPI
-         H00WdEcoNv2oqZ+DFkaFNPSUuku0FVx2+ounvGEhScphhYmM9YoAzu3ildxcLb5wZXa+
-         73Lg==
-X-Gm-Message-State: AGi0PuYJ7sGPEqb9SdU9pkD9h1icKHECtF/sVbWF09wl8bv53yWlmX9i
-        hkbbc1HDKIeFsjHzwAg+BEk/1MZE
-X-Google-Smtp-Source: APiQypIXEXsz03zbjw+rgJ+XcXRTDtPSai0/CzZvHBsVBvSv40QWrxAbTiCo2RNFo0OsNH0hYsnbJw==
-X-Received: by 2002:a17:902:eb12:: with SMTP id l18mr17171749plb.269.1589232840552;
-        Mon, 11 May 2020 14:34:00 -0700 (PDT)
+        bh=sXCysljLfLXX410q/6YrEuNh3qGEuRfM8YNbcTjsua4=;
+        b=gy6XMsZJ7J5xPkpJvr1Sah1bVHI7o6ffeCqPT8YoNuupdtgQxNSQIgHDMy25FzM9Ng
+         umFhYevW9WVS0wNq4Z4ZZ5aEEctHpEEZzOpb01DtiEYkdhapXpzylGt22NSiTSN0CNw+
+         +aZc3zdbRz1eCexx3+DeOLQHQFEqMBXWIKPagRqpgNzPubgXDVw8wHUHPERsdsyM9Pw7
+         fmroQPBssc4/jUKQHg8EP/EVbXcHYKBzPfBnOxflGOL9U2YmIFkytG68Y0nVeG/ZePQo
+         A56eT/iBSun31jGc+gG+GKg/xaboAUFFXU7CaT2EEbBtl/0oNUliEL1UQskoSC+4qRw7
+         EnvA==
+X-Gm-Message-State: AGi0PubhW+iECLoOmDgdob7NmQM0v5oLQ67azZsy7uWeK5NN3I20zpV/
+        zJe+NlKNttSScTgfyY/SK0zAFqc0
+X-Google-Smtp-Source: APiQypJx4fWNNQJzXlqv7c4r75k2Ax5UXOPYZb0usCL1VF0QvKCgVSNIQDCxzpa2PtgLqoVlqsV85w==
+X-Received: by 2002:a63:1a01:: with SMTP id a1mr15493278pga.87.1589232849175;
+        Mon, 11 May 2020 14:34:09 -0700 (PDT)
 Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id c2sm10068665pfp.118.2020.05.11.14.33.59
+        by smtp.gmail.com with ESMTPSA id f6sm10340071pfd.175.2020.05.11.14.34.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 14:33:59 -0700 (PDT)
+        Mon, 11 May 2020 14:34:08 -0700 (PDT)
 From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
 To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
@@ -54,9 +54,9 @@ To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
 Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
         Netfilter Development Mailing List 
         <netfilter-devel@vger.kernel.org>
-Subject: [PATCH] libip6t_srh.t: switch to lowercase, add /128 suffix, require success
-Date:   Mon, 11 May 2020 14:33:49 -0700
-Message-Id: <20200511213349.248618-1-zenczykowski@gmail.com>
+Subject: [PATCH] libiptc.c: pragma disable a gcc compiler warning
+Date:   Mon, 11 May 2020 14:34:04 -0700
+Message-Id: <20200511213404.248715-1-zenczykowski@gmail.com>
 X-Mailer: git-send-email 2.26.2.645.ge9eca65c58-goog
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -68,41 +68,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maciej Żenczykowski <maze@google.com>
 
-This looks like an oversight which is easy to fix.
+Fixes:
+  In file included from libip4tc.c:113:
+  In function ‘iptcc_compile_chain’,
+      inlined from ‘iptcc_compile_table’ at libiptc.c:1246:13,
+      inlined from ‘iptc_commit’ at libiptc.c:2575:8,
+      inlined from ‘iptc_commit’ at libiptc.c:2513:1:
+  libiptc.c:1172:2: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
+   1172 |  memcpy(&foot->e.counters, &c->counters, sizeof(STRUCT_COUNTERS));
+        |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  In file included from ../include/libiptc/libiptc.h:12,
+                   from libip4tc.c:29:
+  libiptc.c: In function ‘iptc_commit’:
+  ../include/linux/netfilter_ipv4/ip_tables.h:202:19: note: at offset 0 to object ‘entries’ with size 0 declared here
+    202 |  struct ipt_entry entries[0];
+        |                   ^~~~~~~
 
-Furthermore:
-  git grep ';;OK'
-does not find any other matches, so this is the last unverified test case.
+Which was found via compilation on Fedora 32.
 
-Test:
-  [root@f32vm IPT]# uname -r
-  5.6.10-300.fc32.x86_64
-
-  [root@f32vm IPT]# md5sum extensions/libip6t_srh.t
-  b98864bdd6c39a0dd96022c47e652edb  extensions/libip6t_srh.t
-
-  [root@f32vm IPT]# ./iptables-test.py extensions/libip6t_srh.t
-  extensions/libip6t_srh.t: OK
-  1 test files, 27 unit tests, 27 passed
-
+Test: builds without warnings
 Signed-off-by: Maciej Żenczykowski <maze@google.com>
 ---
- extensions/libip6t_srh.t | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ libiptc/libiptc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/extensions/libip6t_srh.t b/extensions/libip6t_srh.t
-index 07b54031..5b02a71b 100644
---- a/extensions/libip6t_srh.t
-+++ b/extensions/libip6t_srh.t
-@@ -23,6 +23,6 @@
- -m srh ! --srh-tag 0;=;OK
- -m srh --srh-next-hdr 17 --srh-segs-left-eq 1 --srh-last-entry-eq 4 --srh-tag 0;=;OK
- -m srh ! --srh-next-hdr 17 ! --srh-segs-left-eq 0 --srh-tag 0;=;OK
---m srh --srh-psid A::/64 --srh-nsid B:: --srh-lsid C::/0;;OK
---m srh ! --srh-psid A::/64 ! --srh-nsid B:: ! --srh-lsid C::/0;;OK
-+-m srh --srh-psid a::/64 --srh-nsid b::/128 --srh-lsid c::/0;=;OK
-+-m srh ! --srh-psid a::/64 ! --srh-nsid b::/128 ! --srh-lsid c::/0;=;OK
- -m srh;=;OK
+diff --git a/libiptc/libiptc.c b/libiptc/libiptc.c
+index 58882015..1a92b267 100644
+--- a/libiptc/libiptc.c
++++ b/libiptc/libiptc.c
+@@ -1169,7 +1169,10 @@ static int iptcc_compile_chain(struct xtc_handle *h, STRUCT_REPLACE *repl, struc
+ 	else
+ 		foot->target.verdict = RETURN;
+ 	/* set policy-counters */
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wstringop-overflow"
+ 	memcpy(&foot->e.counters, &c->counters, sizeof(STRUCT_COUNTERS));
++#pragma GCC diagnostic pop
+ 
+ 	return 0;
+ }
 -- 
 2.26.2.645.ge9eca65c58-goog
 
