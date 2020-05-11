@@ -2,89 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C78C41CD94E
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 251F21CD952
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729811AbgEKMFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 08:05:10 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:36053 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729591AbgEKMFJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:05:09 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589198708; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=Jmzs0E9+O1pVr2sYnBpw6y1FlvUw8+1YyjOY/kdYnfg=; b=Vv0khaGW9ocUPj51J11eIHVrmwREP5yHIcU3kRnsJHaTSNBVGzoDodsszAikYy7Ggw5oAvkr
- 27+9sQ6RGOrBnyhViC2pv7/6IypTHZxdU9hH3eRayELi6uenpX7a5xoGBxg21anm5E1nDXc+
- 0EJdKcoa1CN6eZdLKCiLxeqhzkE=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5eb93f73.7fb15c6e5c00-smtp-out-n04;
- Mon, 11 May 2020 12:05:07 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 714F3C433BA; Mon, 11 May 2020 12:05:06 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 94199C433F2;
-        Mon, 11 May 2020 12:05:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 94199C433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Maharaja Kennadyrajan <mkenna@codeaurora.org>,
+        id S1729884AbgEKMFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 08:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45096 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729609AbgEKMFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:05:17 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75807C061A0C;
+        Mon, 11 May 2020 05:05:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=6BY9a4o3dc19VMkNFrNKaCYN9JljLbH41xl/EE7VkJk=; b=IBzBl1ggMvRdMZdzLLRRjPTgQ
+        PDrHiaPnOold/ViWrvBPTkONjO2CtKLb0YFOFlrfgvdZ11gVieckKZxgp12G3dXJcA8EmHjQfixND
+        5S97RrgZCLVYAzM59/JiW5jReUZQng7aVtsBmzJDcFiwvoMoSO8hpG37Q1fyxj+L+PLCbExJb3c1e
+        U9KsQF1di5AM5qVoOBi1kn8EMibLRUmzK9nI8hqZcxaHqjCs6qCuWD1DkGJPl3C35I4Medb30iNL7
+        T/u5b/fZjinRVxtn/GxJ0qftK9/QsbaLRONZv/3Eb7MMDumYBY0lwFo8TjDRTZwdy3R8mrrspBp9S
+        nzfSfgPAQ==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:56614)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jY7BF-00069E-VZ; Mon, 11 May 2020 13:05:10 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jY7BF-0005en-65; Mon, 11 May 2020 13:05:09 +0100
+Date:   Mon, 11 May 2020 13:05:09 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] ath10k: fix ath10k_pci struct layout
-References: <20200509120707.188595-1-arnd@arndb.de>
-        <20200509120707.188595-2-arnd@arndb.de>
-Date:   Mon, 11 May 2020 15:05:01 +0300
-In-Reply-To: <20200509120707.188595-2-arnd@arndb.de> (Arnd Bergmann's message
-        of "Sat, 9 May 2020 14:06:33 +0200")
-Message-ID: <87v9l24qz6.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 01/15] net: dsa: provide an option for drivers
+ to always receive bridge VLANs
+Message-ID: <20200511120509.GS1551@shell.armlinux.org.uk>
+References: <20200510164255.19322-1-olteanv@gmail.com>
+ <20200510164255.19322-2-olteanv@gmail.com>
+ <20200511113850.GQ1551@shell.armlinux.org.uk>
+ <CA+h21hpsBvjDJpRKwOj8ncN_NyE1Qh+HQfYLFu3eb_wgyS__bg@mail.gmail.com>
+ <20200511115412.GR1551@shell.armlinux.org.uk>
+ <CA+h21ho1NQS=9DGhXbrQA7SxKR2N-hXjyYH32SKGTwYLZ1TUMA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21ho1NQS=9DGhXbrQA7SxKR2N-hXjyYH32SKGTwYLZ1TUMA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@arndb.de> writes:
+On Mon, May 11, 2020 at 02:59:12PM +0300, Vladimir Oltean wrote:
+> On Mon, 11 May 2020 at 14:54, Russell King - ARM Linux admin
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Mon, May 11, 2020 at 02:40:29PM +0300, Vladimir Oltean wrote:
+> > > On Mon, 11 May 2020 at 14:38, Russell King - ARM Linux admin
+> > > <linux@armlinux.org.uk> wrote:
+> > > >
+> > > > On Sun, May 10, 2020 at 07:42:41PM +0300, Vladimir Oltean wrote:
+> > > > > From: Russell King <rmk+kernel@armlinux.org.uk>
+> > > > >
+> > > > > DSA assumes that a bridge which has vlan filtering disabled is not
+> > > > > vlan aware, and ignores all vlan configuration. However, the kernel
+> > > > > software bridge code allows configuration in this state.
+> > > > >
+> > > > > This causes the kernel's idea of the bridge vlan state and the
+> > > > > hardware state to disagree, so "bridge vlan show" indicates a correct
+> > > > > configuration but the hardware lacks all configuration. Even worse,
+> > > > > enabling vlan filtering on a DSA bridge immediately blocks all traffic
+> > > > > which, given the output of "bridge vlan show", is very confusing.
+> > > > >
+> > > > > Provide an option that drivers can set to indicate they want to receive
+> > > > > vlan configuration even when vlan filtering is disabled. At the very
+> > > > > least, this is safe for Marvell DSA bridges, which do not look up
+> > > > > ingress traffic in the VTU if the port is in 8021Q disabled state. It is
+> > > > > also safe for the Ocelot switch family. Whether this change is suitable
+> > > > > for all DSA bridges is not known.
+> > > > >
+> > > > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > >
+> > > > This patch was NAK'd because of objections to the "vlan_bridge_vtu"
+> > > > name.  Unfortunately, this means that the bug for Marvell switches
+> > > > remains unfixed to this day.
+> > > >
+> > >
+> > > How about "accept_vlan_while_unaware"?
+> >
+> > It's up to DSA maintainers.
+> >
+> > However, I find that rather confusing. What's "unaware"? The point of
+> > this boolean is to program the vlan tables while vlan filtering is
+> > disabled. "accept_vlan_while_vlan_filtering_disabled" is way too long.
+> >
+> 
+> Considering the VLAN filtering modes as "disabled", "check",
+> "fallback" and "secure", I think a slight improvement over your
+> wording might be "install_vlans_while_disabled". I hope that is not
+> confusing and also not too long.
 
-> gcc-10 correctly points out a bug with a zero-length array in
-> struct ath10k_pci:
->
-> drivers/net/wireless/ath/ath10k/ahb.c: In function 'ath10k_ahb_remove':
-> drivers/net/wireless/ath/ath10k/ahb.c:30:9: error: array subscript 0
-> is outside the bounds of an interior zero-length array 'struct
-> ath10k_ahb[0]' [-Werror=zero-length-bounds]
->    30 |  return &((struct ath10k_pci *)ar->drv_priv)->ahb[0];
->       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> In file included from drivers/net/wireless/ath/ath10k/ahb.c:13:
-> drivers/net/wireless/ath/ath10k/pci.h:185:20: note: while referencing 'ahb'
->   185 |  struct ath10k_ahb ahb[0];
->       |                    ^~~
->
-> The last addition to the struct ignored the comments and added
-> new members behind the array that must remain last.
->
-> Change it to a flexible-array member and move it last again to
-> make it work correctly, prevent the same thing from happening
-> again (all compilers warn about flexible-array members in the
-> middle of a struct) and get it to build without warnings.
-
-Very good find, thanks! This bug would cause all sort of strange memory
-corruption issues.
+Well, it's not only about "installing" vlans, but also about removing
+them as well.  "configure_vlans_while_disabled" would probably work
+better.
 
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
