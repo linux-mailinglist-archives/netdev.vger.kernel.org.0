@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27FD91CDE29
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F29251CDE2D
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:09:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730319AbgEKPIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 11:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
+        id S1730351AbgEKPId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 11:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730295AbgEKPI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 11:08:29 -0400
+        by vger.kernel.org with ESMTP id S1730299AbgEKPIa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 11:08:30 -0400
 Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C01C05BD09
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:08:28 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id y3so11432300wrt.1
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:08:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE45C061A0E
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:08:29 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id y3so11432417wrt.1
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:08:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TLMq2XwRgUC25FFpg44rE1jATuYcYABivRm1tKC5XTM=;
-        b=lGEfjqd/Aqo91nNbYHQC/XXhvPNRro/VrpfSU0EKrgUiO5UJ0lZXxyaNjy0vwymwSb
-         uxwP22CTUu7BkW2bIoeK3qhHOwvoFsYhIhZngMUlHLW4GZlrj2EaI2Od7rJuyEum2hPJ
-         mOOddMd5+KhA4BsHVTsFc1TO02ZsDR/PDJsjrmcYeCSNntHIyaYLDAKJYR4kDyHYUkdo
-         fa8cnqPq4/GDF/sZDgDOT2ZTLehxieagSqPBErq+zM756mvMYXQKGiraMxfd2vT4/Pq4
-         A/Z1mAM/jRHFEXGLC9eB34BPWmePWBU9/Ou4b7W0qT+98gs2/rruU5IXXYcZJR3Y5Amy
-         Dh+g==
+        bh=s+yFWYJIlSICmhm10tVUfzLOMvlRQ6VDJMbx/0w2dnM=;
+        b=SmAkdPP0jE3BYbiFt3lr72UkgHGUkjSuQm8bShe2tuyqXAzuCPDMDQyUFfoOcYJxQs
+         X7/hfnmrZ+3CGGpg5PAx2pLMmsfVTHITKCgA78xfZKArQcBdLdGVSnXyQfRv4vZAamdc
+         RfDgo6F0cOb2UUeOG5mKdiFwvngZ3aH5syHFicWSY33HRBFa3qPiMGALIb8BvnG2u1bm
+         cGswP3fLQrQy3OVd8IY2Dba85GQi0ALNEgc0nfOq6XDhNG0SZ9nr4FjwHlHP2P0DAwKr
+         ONbhAO+gxjP8fAt48rrAMTfhwY4oH+c1hpajtaunQsYwUq88GljRM6Frp4Okd3EgPbDo
+         qsjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TLMq2XwRgUC25FFpg44rE1jATuYcYABivRm1tKC5XTM=;
-        b=rSVninHdkrflVf677xcD9YycHmJaQfYUSgfg/hE1bnG+QjSHPYkSCvUcoB7h+jKf1m
-         J9ipRfLKx3DliscFL8RiGfD7pNUtseFCE9IOakmsMzCwApCzggcnIjPIaKhoJTZ57Q3q
-         OdB8NZX+fAiUjkI8KHq5NQWxFcRq9D9/94s/9zaemyK6b3bnfug/WHEKnHp+NbnCBqmL
-         ptWca/vMEBK1SIMv06+z1bDpJXOa6XWQZl7g6uunUdNAEO7UbowxkKN+AXOoXp0KUnhR
-         CsbazKplQ0cQYK4jBjzP6H0bDyWcu5zIxy1i3X35QxYkp6Y6pcZvAU7boIRvulsZivUm
-         5j8g==
-X-Gm-Message-State: AGi0PuaKfK7zF9t9ShmaiBWv9cKkhE6ukfz5N5V9p3//onHiwYroy/oG
-        7WOnwfB1Fgh+37Ihd2LDEkQvaA==
-X-Google-Smtp-Source: APiQypLrstV08k3pPp3S+tVHPnE3B6GnlgxYC6jtUQXLXJtg4uaQOjgd0DZV0NaM/PAy80Q8A9SMbg==
-X-Received: by 2002:a5d:4801:: with SMTP id l1mr18746418wrq.235.1589209706975;
-        Mon, 11 May 2020 08:08:26 -0700 (PDT)
+        bh=s+yFWYJIlSICmhm10tVUfzLOMvlRQ6VDJMbx/0w2dnM=;
+        b=hwXG+wZ8D7uR4IJdrdIW+gZ92N+qsTazGmEJ7b7PD7XpiSfYeF5AOCXVKkI5d7+Zu+
+         4mporZILBvqRjOG3498OPEj7rBaOiJOg/zw0jcIskcrKYqEegmAQgujxjVpg8Y/OLesS
+         622adKpK+Zv9i6yHTaE1BYjbIx/qKL51gbRan56rugxfhd8wQ8YMTLKLaG0sMZ2D4QWR
+         Ee6odCada052gpxtfLx36W9xEEtoz6YuZ2FeOE3PrVSsfjemF/PP3ZhSjqSqVeLVsuap
+         EMJbB+tKI6tig7gNZqTl4EMpiMxN6fRVPiTmwo5LT8HfbOiGs/UwJ/tF3V/RxlrIXLFP
+         baDg==
+X-Gm-Message-State: AGi0Pub/zqzSjw3jwt7Q63X76FVDf9v0XeUDsY3evMyYDiNG/agDKG25
+        teTRiS7XMblGwYkNC5bctye0ag==
+X-Google-Smtp-Source: APiQypL7U7FCIqoR+5fUOgb8Brn5/csPmcNbtYR6D1nX6AB5HzyaBv4cbIHTLjGUWxF2dpbb9P2Sig==
+X-Received: by 2002:adf:9264:: with SMTP id 91mr19344203wrj.362.1589209708479;
+        Mon, 11 May 2020 08:08:28 -0700 (PDT)
 Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
-        by smtp.gmail.com with ESMTPSA id 94sm3514792wrf.74.2020.05.11.08.08.25
+        by smtp.gmail.com with ESMTPSA id 94sm3514792wrf.74.2020.05.11.08.08.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 08:08:26 -0700 (PDT)
+        Mon, 11 May 2020 08:08:27 -0700 (PDT)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Rob Herring <robh+dt@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
@@ -66,9 +66,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Pedro Tsai <pedro.tsai@mediatek.com>,
         Andrew Perepech <andrew.perepech@mediatek.com>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH v2 05/14] net: core: provide priv_to_netdev()
-Date:   Mon, 11 May 2020 17:07:50 +0200
-Message-Id: <20200511150759.18766-6-brgl@bgdev.pl>
+Subject: [PATCH v2 06/14] net: move devres helpers into a separate source file
+Date:   Mon, 11 May 2020 17:07:51 +0200
+Message-Id: <20200511150759.18766-7-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200511150759.18766-1-brgl@bgdev.pl>
 References: <20200511150759.18766-1-brgl@bgdev.pl>
@@ -81,48 +81,115 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Appropriate amount of extra memory for private data is allocated at
-the end of struct net_device. We have a helper - netdev_priv() - that
-returns its address but we don't have the reverse: a function which
-given the address of the private data, returns the address of struct
-net_device.
-
-This has caused many drivers to store the pointer to net_device in
-the private data structure, which basically means storing the pointer
-to a structure in this very structure.
-
-This patch proposes to add priv_to_netdev() - a helper which converts
-the address of the private data to the address of the associated
-net_device.
+There's currently only a single devres helper in net/ - devm variant
+of alloc_etherdev. Let's move it to net/devres.c with the intention of
+assing a second one: devm_register_netdev(). This new routine will need
+to know the address of the release function of devm_alloc_etherdev() so
+that it can verify (using devres_find()) that the struct net_device
+that's being passed to it is also resource managed.
 
 Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 ---
- include/linux/netdevice.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/Makefile       |  2 +-
+ net/devres.c       | 36 ++++++++++++++++++++++++++++++++++++
+ net/ethernet/eth.c | 28 ----------------------------
+ 3 files changed, 37 insertions(+), 29 deletions(-)
+ create mode 100644 net/devres.c
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 130a668049ab..933c6808a87f 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2249,6 +2249,18 @@ static inline void *netdev_priv(const struct net_device *dev)
- 	return (char *)dev + ALIGN(sizeof(struct net_device), NETDEV_ALIGN);
- }
+diff --git a/net/Makefile b/net/Makefile
+index 07ea48160874..5744bf1997fd 100644
+--- a/net/Makefile
++++ b/net/Makefile
+@@ -6,7 +6,7 @@
+ # Rewritten to use lists instead of if-statements.
+ #
  
-+/**
-+ *	priv_to_netdev - get the net_device from private data
-+ *	@priv: net_device private data
-+ *
-+ * Get the address of network device associated with this private data.
+-obj-$(CONFIG_NET)		:= socket.o core/
++obj-$(CONFIG_NET)		:= devres.o socket.o core/
+ 
+ tmp-$(CONFIG_COMPAT) 		:= compat.o
+ obj-$(CONFIG_NET)		+= $(tmp-y)
+diff --git a/net/devres.c b/net/devres.c
+new file mode 100644
+index 000000000000..c1465d9f9019
+--- /dev/null
++++ b/net/devres.c
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * This file contains all networking devres helpers.
 + */
-+static inline struct net_device *priv_to_netdev(void *priv)
++
++#include <linux/device.h>
++#include <linux/etherdevice.h>
++#include <linux/netdevice.h>
++
++static void devm_free_netdev(struct device *dev, void *res)
 +{
-+	priv = (char *)priv - ALIGN(sizeof(struct net_device), NETDEV_ALIGN);
-+	return (struct net_device *)priv;
++	free_netdev(*(struct net_device **)res);
 +}
 +
- /* Set the sysfs physical device reference for the network logical device
-  * if set prior to registration will cause a symlink during initialization.
-  */
++struct net_device *devm_alloc_etherdev_mqs(struct device *dev, int sizeof_priv,
++					   unsigned int txqs, unsigned int rxqs)
++{
++	struct net_device **dr;
++	struct net_device *netdev;
++
++	dr = devres_alloc(devm_free_netdev, sizeof(*dr), GFP_KERNEL);
++	if (!dr)
++		return NULL;
++
++	netdev = alloc_etherdev_mqs(sizeof_priv, txqs, rxqs);
++	if (!netdev) {
++		devres_free(dr);
++		return NULL;
++	}
++
++	*dr = netdev;
++	devres_add(dev, dr);
++
++	return netdev;
++}
++EXPORT_SYMBOL(devm_alloc_etherdev_mqs);
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index c8b903302ff2..dac65180c4ef 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -400,34 +400,6 @@ struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
+ }
+ EXPORT_SYMBOL(alloc_etherdev_mqs);
+ 
+-static void devm_free_netdev(struct device *dev, void *res)
+-{
+-	free_netdev(*(struct net_device **)res);
+-}
+-
+-struct net_device *devm_alloc_etherdev_mqs(struct device *dev, int sizeof_priv,
+-					   unsigned int txqs, unsigned int rxqs)
+-{
+-	struct net_device **dr;
+-	struct net_device *netdev;
+-
+-	dr = devres_alloc(devm_free_netdev, sizeof(*dr), GFP_KERNEL);
+-	if (!dr)
+-		return NULL;
+-
+-	netdev = alloc_etherdev_mqs(sizeof_priv, txqs, rxqs);
+-	if (!netdev) {
+-		devres_free(dr);
+-		return NULL;
+-	}
+-
+-	*dr = netdev;
+-	devres_add(dev, dr);
+-
+-	return netdev;
+-}
+-EXPORT_SYMBOL(devm_alloc_etherdev_mqs);
+-
+ ssize_t sysfs_format_mac(char *buf, const unsigned char *addr, int len)
+ {
+ 	return scnprintf(buf, PAGE_SIZE, "%*phC\n", len, addr);
 -- 
 2.25.0
 
