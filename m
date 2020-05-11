@@ -2,87 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB1D41CE1AD
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 19:28:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5DFD1CE1BC
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 19:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730944AbgEKR2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 13:28:06 -0400
-Received: from correo.us.es ([193.147.175.20]:37348 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730731AbgEKR2G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 13:28:06 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id A0C341C41C1
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 19:28:04 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8F06A11541C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 19:28:04 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 84BD711540C; Mon, 11 May 2020 19:28:04 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9105A52CB1;
-        Mon, 11 May 2020 19:28:02 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 11 May 2020 19:28:02 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 71BA942EF52A;
-        Mon, 11 May 2020 19:28:02 +0200 (CEST)
-Date:   Mon, 11 May 2020 19:28:02 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Roi Dayan <roid@mellanox.com>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, Paul Blakey <paulb@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>
-Subject: Re: [PATCH net] netfilter: nf_flow_table_offload: Remove
- WQ_MEM_RECLAIM from workqueue
-Message-ID: <20200511172802.GA2064@salvia>
-References: <20200510105543.13546-1-roid@mellanox.com>
+        id S1730864AbgEKRbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 13:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729698AbgEKRbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 13:31:21 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22910C061A0C
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 10:31:21 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id w7so12017988wre.13
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 10:31:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=YsuFJhtSrJ1y5b4db9UFLFWpJ7Htm3EnF9uKj6yAR7o=;
+        b=pkU+/39s+NtqQOeXP4Z+MPMmXyqFmiELiAAHbmEz8KXnz0QIc1ipsT9Bo8bo84+cql
+         OizXFO+uRo5wPTik5GRGOxeWcoOie+iQsDOhEaJOoHYuhDpqa2AJ4gU8yLQL88F4jvm6
+         dmrzn5HtMAm7MoVnUgHlXhvLffzxzI2MtUpHIVGhAIrV2TqtFO0IhqyI3KslYJSR5CMh
+         YlXaEVik9zcipX0lqfvUfM9+Z7CZ0ltQu0RRMGkXCvmdIdPl20gDVYrsKko9WzWTV4H8
+         /0Ol6ijXsXwq/1jCoFJgauIFiXgOlYHsY+KUQ2HRN07siK6rbbOweZMkBbcdkaMO8LUg
+         yU0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=YsuFJhtSrJ1y5b4db9UFLFWpJ7Htm3EnF9uKj6yAR7o=;
+        b=QUwuPwhBiz3Ojb5dzXDsyDI1QE48Yo/hyq1YXZGPZLihoWp3M8MAYRCO1KENyGQ5hb
+         BH3yVXOhRHXANWmAfpm0sQp/4DLZ0+ijOQ1F/aFVun4iqcttjw/wKT5Z5EM7C0c1PxW+
+         Q+FR7JIBI4hcX3MbtjCEZtD4CjLNK9nzz8wt8BsmlU9HZ5kyAUHMPjbJYlNqP9OAIQJ4
+         WK+THi3gN/HJ0C3pzRD6bvjf713jBMI87GYd9WqCCJ22aQU7dvnCDBxiFmu1/esPVckq
+         EjXRXGZ/ynrswP2jsK9WTKDSYj+KHT+2c4qQH7FV+Dtdkq2TV0kIWaVXikj5Ygf/WwzJ
+         Lenw==
+X-Gm-Message-State: AGi0Pub9VJ6XvcDhmttHWZiYDuOJd/Zd6j5S88Ce9gQl3PVvHzHWLOSU
+        ARL0RFgmuBeuYaD1Rkg21FjoqQ==
+X-Google-Smtp-Source: APiQypJtvLeGxAa87KTc9HUrH1Qk+4wFwzBmDKjUcQRW4CIcl5IE9xroZdjeqDG0dCoLfrscUV80Hw==
+X-Received: by 2002:a5d:4e81:: with SMTP id e1mr11886550wru.83.1589218279908;
+        Mon, 11 May 2020 10:31:19 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id 2sm18415523wre.25.2020.05.11.10.31.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2020 10:31:19 -0700 (PDT)
+Date:   Mon, 11 May 2020 19:31:18 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Subject: Re: [RFC next-next v2 3/5] net: marvell: prestera: Add ethtool
+ interface support
+Message-ID: <20200511173118.GL2245@nanopsycho>
+References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
+ <20200430232052.9016-4-vadym.kochan@plvision.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200510105543.13546-1-roid@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200430232052.9016-4-vadym.kochan@plvision.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 10, 2020 at 01:55:43PM +0300, Roi Dayan wrote:
-> This workqueue is in charge of handling offloaded flow tasks like
-> add/del/stats we should not use WQ_MEM_RECLAIM flag.
-> The flag can result in the following warning.
-> 
-> [  485.557189] ------------[ cut here ]------------
-> [  485.562976] workqueue: WQ_MEM_RECLAIM nf_flow_table_offload:flow_offload_worr
-> [  485.562985] WARNING: CPU: 7 PID: 3731 at kernel/workqueue.c:2610 check_flush0
-> [  485.590191] Kernel panic - not syncing: panic_on_warn set ...
-> [  485.597100] CPU: 7 PID: 3731 Comm: kworker/u112:8 Not tainted 5.7.0-rc1.21802
-> [  485.606629] Hardware name: Dell Inc. PowerEdge R730/072T6D, BIOS 2.4.3 01/177
-> [  485.615487] Workqueue: nf_flow_table_offload flow_offload_work_handler [nf_f]
-> [  485.624834] Call Trace:
-> [  485.628077]  dump_stack+0x50/0x70
-> [  485.632280]  panic+0xfb/0x2d7
-> [  485.636083]  ? check_flush_dependency+0x110/0x130
-> [  485.641830]  __warn.cold.12+0x20/0x2a
-> [  485.646405]  ? check_flush_dependency+0x110/0x130
-> [  485.652154]  ? check_flush_dependency+0x110/0x130
-> [  485.657900]  report_bug+0xb8/0x100
-> [  485.662187]  ? sched_clock_cpu+0xc/0xb0
-> [  485.666974]  do_error_trap+0x9f/0xc0
-> [  485.671464]  do_invalid_op+0x36/0x40
-> [  485.675950]  ? check_flush_dependency+0x110/0x130
-> [  485.681699]  invalid_op+0x28/0x30
+Fri, May 01, 2020 at 01:20:50AM CEST, vadym.kochan@plvision.eu wrote:
+>The ethtool API provides support for the configuration of the following
+>features: speed and duplex, auto-negotiation, MDI-x, forward error
+>correction, port media type. The API also provides information about the
+>port status, hardware and software statistic.  The following limitation
 
-Applied, thanks.
+No double space.
+
+
+>exists:
+>
+>    - port media type should be configured before speed setting
+>    - ethtool –m option is not supported
+>    - ethtool –p option is not supported
+
+Those are some odd dashes...
+
+
+>    - ethtool -r option is supported for RJ45 port only
+>    - the following combination of parameters is not supported:
+>
+>          ethtool -s sw1pX port XX autoneg on
+>
+>    - forward error correction feature is supported only on SFP ports, 10G
+>      speed
+>
+>    - auto-negotiation and MDI-x features are not supported on
+>      Copper-to-Fiber SFP module
+>
+
+[...]
+
+
+>+static const struct ethtool_ops ethtool_ops = {
+>+	.get_drvinfo = prestera_port_get_drvinfo,
+>+	.get_link_ksettings = prestera_port_get_link_ksettings,
+>+	.set_link_ksettings = prestera_port_set_link_ksettings,
+>+	.get_fecparam = prestera_port_get_fecparam,
+>+	.set_fecparam = prestera_port_set_fecparam,
+>+	.get_sset_count = prestera_port_get_sset_count,
+>+	.get_strings = prestera_port_get_strings,
+>+	.get_ethtool_stats = prestera_port_get_ethtool_stats,
+>+	.get_link = ethtool_op_get_link,
+>+	.nway_reset = prestera_port_nway_reset
+>+};
+
+I wonder, wouldn't it be better to put the ethtool bits into a separate
+.c file. You have a separate .c file for less :)
+
+
+>+
+> static int prestera_port_create(struct prestera_switch *sw, u32 id)
+> {
+> 	struct prestera_port *port;
+>@@ -264,6 +1023,7 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+> 
+> 	dev->features |= NETIF_F_NETNS_LOCAL;
+> 	dev->netdev_ops = &netdev_ops;
+>+	dev->ethtool_ops = &ethtool_ops;
+> 
+> 	netif_carrier_off(dev);
+> 
+
+[...]
