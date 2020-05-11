@@ -2,54 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2255C1CD02E
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 05:10:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A10271CD0DE
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 06:44:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728224AbgEKDH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 23:07:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55184 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726661AbgEKDH7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 23:07:59 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D55F624974;
-        Mon, 11 May 2020 03:07:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589166479;
-        bh=abxYgNFlEwXNGsZ6KzRy0a5qyRKkv3JxtvsGEpHaz6g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tD6ftBHV+/dCUNFdV0XFZbv7+/SeqX//OcrEvRt/xU5KfXvkNxcAOLXZ8mKbXpd6B
-         vXIDtn3CHRfTNksR4vz5GWQfZIcHxNLEQhQ/zqgl1iEcLATxabqmgYoTstZ4MclJx+
-         OLQXU07sPvZ+NxqBQvD/PVXwKA0S3axrX45+/HsU=
-Date:   Sun, 10 May 2020 20:07:57 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luo bin <luobin9@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-Subject: Re: [PATCH net v3] hinic: fix a bug of ndo_stop
-Message-ID: <20200510200757.13df2439@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200510190108.22847-1-luobin9@huawei.com>
-References: <20200510190108.22847-1-luobin9@huawei.com>
+        id S1726075AbgEKEnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 00:43:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725790AbgEKEnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 00:43:35 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC6AC061A0C;
+        Sun, 10 May 2020 21:43:34 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jY0Ho-005jBz-CV; Mon, 11 May 2020 04:43:28 +0000
+Date:   Mon, 11 May 2020 05:43:28 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, viro@zeniv.linux.org.uk,
+        linux-kernel@vger.kernel.org
+Subject: [RFC][PATCHES] uaccess-related stuff in net/*
+Message-ID: <20200511044328.GP23230@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 May 2020 19:01:08 +0000 Luo bin wrote:
-> if some function in ndo_stop interface returns failure because of
-> hardware fault, must go on excuting rest steps rather than return
-> failure directly, otherwise will cause memory leak.And bump the
-> timeout for SET_FUNC_STATE to ensure that cmd won't return failure
-> when hw is busy. Otherwise hw may stomp host memory if we free
-> memory regardless of the return value of SET_FUNC_STATE.
-> 
-> Fixes: 51ba902a16e6 ("net-next/hinic: Initialize hw interface")
-> Signed-off-by: Luo bin <luobin9@huawei.com>
+	Assorted uaccess-related work in net/*.  First, there's
+getting rid of compat_alloc_user_space() mess in MCAST_...
+[gs]etsockopt() - no need to play with copying to/from temporary
+object on userland stack, etc., when ->compat_[sg]etsockopt()
+instances in question can easly do everything without that.
+That's the first 13 patches.  Then there's a trivial bit in
+net/batman-adv (completely unrelated to everything else) and
+finally getting the atm compat ioctls into simpler shape.
 
-Applied, thank you.
+	Please, review and comment.  Individual patches in followups,
+the entire branch (on top of current net/master) is in
+git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git #uaccess.net
+
+Shortlog:
+Al Viro (19):
+      lift compat definitions of mcast [sg]etsockopt requests into net/compat.h
+      compat_ip{,v6}_setsockopt(): enumerate MCAST_... options explicitly
+      ip*_mc_gsfget(): lift copyout of struct group_filter into callers
+      get rid of compat_mc_getsockopt()
+      set_mcast_msfilter(): take the guts of setsockopt(MCAST_MSFILTER) into a helper
+      ipv4: do compat setsockopt for MCAST_MSFILTER directly
+      ip6_mc_msfilter(): pass the address list separately
+      ipv6: do compat setsockopt for MCAST_MSFILTER directly
+      ipv[46]: do compat setsockopt for MCAST_{JOIN,LEAVE}_GROUP directly
+      ipv4: take handling of group_source_req options into a helper
+      ipv6: take handling of group_source_req options into a helper
+      handle the group_source_req options directly
+      get rid of compat_mc_setsockopt()
+      batadv_socket_read(): get rid of pointless access_ok()
+      atm: separate ATM_GETNAMES handling from the rest of atm_dev_ioctl()
+      atm: move copyin from atm_getnames() into the caller
+      atm: switch do_atm_iobuf() to direct use of atm_getnames()
+      atm: lift copyin from atm_dev_ioctl()
+      atm: switch do_atmif_sioc() to direct use of atm_dev_ioctl()
+Diffstat:
+ include/linux/igmp.h         |   2 +-
+ include/net/compat.h         |  29 +++-
+ include/net/ipv6.h           |   5 +-
+ net/atm/ioctl.c              |  96 +++++++------
+ net/atm/resources.c          | 108 +++++---------
+ net/atm/resources.h          |   5 +-
+ net/batman-adv/icmp_socket.c |   3 -
+ net/compat.c                 | 194 -------------------------
+ net/ipv4/igmp.c              |  18 +--
+ net/ipv4/ip_sockglue.c       | 329 ++++++++++++++++++++++++++++++++-----------
+ net/ipv6/ipv6_sockglue.c     | 233 ++++++++++++++++++++++++------
+ net/ipv6/mcast.c             |  17 +--
+ 12 files changed, 567 insertions(+), 472 deletions(-)
