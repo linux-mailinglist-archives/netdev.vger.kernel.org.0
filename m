@@ -2,62 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 515561CE039
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 18:15:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B48131CE03C
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 18:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730641AbgEKQPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 12:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        id S1730651AbgEKQPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 12:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730634AbgEKQPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 12:15:45 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6CDC061A0E
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:15:44 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id i15so11686498wrx.10
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:15:43 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730640AbgEKQPr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 12:15:47 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3586BC05BD0C
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:15:45 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id 50so11176794wrc.11
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:15:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BeM3yfMB5vX2Kgioa2PToWWe+/ytXj3p9vZHiizHUAg=;
-        b=Xvf0A9mpULSca+qoqEnPGmWznG0o7r2cC/BIgxXsKWMyoBYQQUFtRWluRox24ofWOl
-         Ib3Q5dj51DGsH0Hl1UKWG44wU6caVy8ThpsiPBINvfVoTzTf7cmzZggsFQXfRvPWzavy
-         xswrQsS1zbW0k29XMZmE+AqqSV/QVr+VFBnRd6zrPg8RKPFdAAWa/69JCt6li95/SDGG
-         S/uWae/E13QpWlKNUzpEwZWQpYx18fQQf28W/8QqbVfsQtp3JQUu9T0ZSAMzjFK/7YQz
-         kROKdOH924jggCo1stLGeCbsPu2+kH8Y+gwI+LA+65ZfomPHf3uoCKAoGE87BZbP+dqa
-         NgOQ==
+        bh=nn3QJVCLtMqQCDVuxpusYbBzp2Vc+q+5U4KtJW9U8QA=;
+        b=VV+NnFUZRb+94s4QQUkdDxme4/gQSD8VC8wcdrq6/FBViNTISmzX2OK9newXpWZ9ZL
+         MLF/lkqaqIBjagKP8knJEDfG+kh3KVqtWHtRPEEkb+Z8e3nngna7npedy2r/0tSAciMg
+         rn0YqM/aGj4hT3IeNidIoqRd25VYOJDnaXjeesTZwMyUNEXgj+vRV1A/6//VE9zpIySA
+         aSLk1VgOt9gAGRhO2AEKRAOHBzjJIBmrVB11YE2J0KHvEMvG/qA3/mSlWio9T++QpNZY
+         63xSRtfQq+s+yD5+lmH2nCmkOBwM5GNVXILmfebo1HuziRh9b7egW8K3PAf+o6v8WSZv
+         wEsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BeM3yfMB5vX2Kgioa2PToWWe+/ytXj3p9vZHiizHUAg=;
-        b=JiovqCC7G5/riUXfTJrHfacSV0gfD1maiM09YBl08L5lVLOpQ6g0Az8DQO2e1HTpdA
-         Rc8BVODevAOB60LkQ+LfJqmIQIHLx7m0SF0cWCo5bQ/J/Q/OWlwfTkLL8lpbkmjMromm
-         DRlbnd0A00hp+kXe8RyQw5E8NscLdsXM6ecTstI5kUTTeSeROQZe7VTQirddV9muQGRU
-         HeU56o8INPn8ks9CYdg60k5mzG7mKI/GcPeZRKF7yjVtsD8Qi2GbPe9nZmNeE4PS5lTe
-         a6LUuZqwq0LQ3lXq75u6qfqbFHkusBRtfW9BOXnUjU5wcS9iz5UHWGxGKN3ICwhtXFHY
-         kyPw==
-X-Gm-Message-State: AGi0PuYVNCYqmToKCJNxDzkORKTtujVwMsLOAtGMWPMSnAA+aCIr7iuR
-        Gfx/ByR2eW1w+0QXUGyJT8gQXQ==
-X-Google-Smtp-Source: APiQypLoVZSUqQCCmI/AdOQABfkPu6y+X7yhz5SYdV2cRzseb1PH8RjsjDEc9E1uuBUf8NG5qDp2EQ==
-X-Received: by 2002:a5d:4d05:: with SMTP id z5mr19578776wrt.130.1589213742673;
-        Mon, 11 May 2020 09:15:42 -0700 (PDT)
+        bh=nn3QJVCLtMqQCDVuxpusYbBzp2Vc+q+5U4KtJW9U8QA=;
+        b=LVsMwGx0DpHo8shjQAD1bxtF45Ca3Pnu788BNbjMdfxLDHvN7KgLGZbFEg7ehXb1ih
+         qsBYxRBVS9CcRkghybd53niGaldUk3152voahd7R5RsxmmpBoP9r0CWQlcGNY+wyFeiN
+         vZThIrqkSM3BuFENjgIpPJgGPqzlgFiUVNH/uhnPgHN31YU2gDt63xJICRbpB9EQNKY4
+         8Wk8zKfsmIDjUfEoILA4y+H2TfAOggD2mhGF4Ftl6cK93X6DPz0TK3WXJbqfHzcvYFuh
+         mx10pUjKIUe9jwg557OkNXV6t9Tq2Zr3iVlu8RhLmdSpatMbOpcVyJfBhanfdhZaVEep
+         s8qw==
+X-Gm-Message-State: AGi0PuYWvsoAxDMNb3SOMb0GX7c7xfMfmn9Iy9G5Gt8OhdmArCOi5ncu
+        yafhiOZrSZ82ymI9eecDkrvx4vEjly/jiw==
+X-Google-Smtp-Source: APiQypKITtSGqTQH7N2eiumguqWih+VodpzPrw/9j2W8ImXqTv3BAE3eyHj7kS8kmUl+fo3B2cP4Dw==
+X-Received: by 2002:adf:f388:: with SMTP id m8mr11588038wro.160.1589213743726;
+        Mon, 11 May 2020 09:15:43 -0700 (PDT)
 Received: from localhost.localdomain ([194.53.185.84])
-        by smtp.gmail.com with ESMTPSA id v131sm54734wmb.27.2020.05.11.09.15.41
+        by smtp.gmail.com with ESMTPSA id v131sm54734wmb.27.2020.05.11.09.15.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 09:15:42 -0700 (PDT)
+        Mon, 11 May 2020 09:15:43 -0700 (PDT)
 From:   Quentin Monnet <quentin@isovalent.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        Richard Palethorpe <rpalethorpe@suse.com>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Subject: [PATCH bpf-next v2 3/4] bpf: minor fixes to BPF helpers documentation
-Date:   Mon, 11 May 2020 17:15:35 +0100
-Message-Id: <20200511161536.29853-4-quentin@isovalent.com>
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v2 4/4] tools: bpf: synchronise BPF UAPI header with tools
+Date:   Mon, 11 May 2020 17:15:36 +0100
+Message-Id: <20200511161536.29853-5-quentin@isovalent.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200511161536.29853-1-quentin@isovalent.com>
 References: <20200511161536.29853-1-quentin@isovalent.com>
@@ -68,36 +65,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Minor improvements to the documentation for BPF helpers:
+Synchronise the bpf.h header under tools, to report the fixes recently
+brought to the documentation for the BPF helpers.
 
-* Fix formatting for the description of "bpf_socket" for
-  bpf_getsockopt() and bpf_setsockopt(), thus suppressing two warnings
-  from rst2man about "Unexpected indentation".
-* Fix formatting for return values for bpf_sk_assign() and seq_file
-  helpers.
-* Fix and harmonise formatting, in particular for function/struct names.
-* Remove blank lines before "Return:" sections.
-* Replace tabs found in the middle of text lines.
-* Fix typos.
-* Add a note to the footer (in Python script) about "bpftool feature
-  probe", including for listing features available to unprivileged
-  users, and add a reference to bpftool man page.
-
-Thanks to Florian for reporting two typos (duplicated words).
-
-Cc: Florian Weimer <fw@deneb.enyo.de>
-Cc: Richard Palethorpe <rpalethorpe@suse.com>
-Cc: Michael Kerrisk <mtk.manpages@gmail.com>
 Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 ---
- include/uapi/linux/bpf.h   | 109 ++++++++++++++++++++-----------------
- scripts/bpf_helpers_doc.py |   6 ++
- 2 files changed, 65 insertions(+), 50 deletions(-)
+ tools/include/uapi/linux/bpf.h | 109 ++++++++++++++++++---------------
+ 1 file changed, 59 insertions(+), 50 deletions(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
 index 9d1932e23cec..bfb31c1be219 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
 @@ -675,8 +675,8 @@ union bpf_attr {
   * 		For tracing programs, safely attempt to read *size* bytes from
   * 		kernel space address *unsafe_ptr* and store the data in *dst*.
@@ -380,30 +359,6 @@ index 9d1932e23cec..bfb31c1be219 100644
   */
  #define __BPF_FUNC_MAPPER(FN)		\
  	FN(unspec),			\
-diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
-index ded304c96a05..91fa668fa860 100755
---- a/scripts/bpf_helpers_doc.py
-+++ b/scripts/bpf_helpers_doc.py
-@@ -318,6 +318,11 @@ may be interested in:
-   of eBPF maps are used with a given helper function.
- * *kernel/bpf/* directory contains other files in which additional helpers are
-   defined (for cgroups, sockmaps, etc.).
-+* The bpftool utility can be used to probe the availability of helper functions
-+  on the system (as well as supported program and map types, and a number of
-+  other parameters). To do so, run **bpftool feature probe** (see
-+  **bpftool-feature**\ (8) for details). Add the **unprivileged** keyword to
-+  list features available to unprivileged users.
- 
- Compatibility between helper functions and program types can generally be found
- in the files where helper functions are defined. Look for the **struct
-@@ -338,6 +343,7 @@ SEE ALSO
- ========
- 
- **bpf**\ (2),
-+**bpftool**\ (8),
- **cgroups**\ (7),
- **ip**\ (8),
- **perf_event_open**\ (2),
 -- 
 2.20.1
 
