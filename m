@@ -2,116 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 378981CE76F
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 23:28:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 436021CE77E
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 23:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbgEKV2W convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 11 May 2020 17:28:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:30090 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725810AbgEKV2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 17:28:22 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-28--i5qIbC7M1CyJBNmWST7JA-1; Mon, 11 May 2020 22:28:18 +0100
-X-MC-Unique: -i5qIbC7M1CyJBNmWST7JA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 11 May 2020 22:28:18 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 11 May 2020 22:28:18 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'David Miller' <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next] net/ipv4/raw Optimise ipv4 raw sends when
- IP_HDRINCL set.
-Thread-Topic: [PATCH net-next] net/ipv4/raw Optimise ipv4 raw sends when
- IP_HDRINCL set.
-Thread-Index: AdYm44GMpCoVm8MoQ+GQh1uj0J52IAA6cwwAAALP/JA=
-Date:   Mon, 11 May 2020 21:28:18 +0000
-Message-ID: <7e8f6c9831244d2bb7c39f9aa4204e90@AcuMS.aculab.com>
-References: <6d52098964b54d848cbfd1957f093bd8@AcuMS.aculab.com>
- <20200511.134938.651986318503897703.davem@davemloft.net>
-In-Reply-To: <20200511.134938.651986318503897703.davem@davemloft.net>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726531AbgEKVeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 17:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725895AbgEKVeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 17:34:01 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251AFC061A0C;
+        Mon, 11 May 2020 14:34:01 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a5so8490614pjh.2;
+        Mon, 11 May 2020 14:34:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lbgIdJ/aL+x7yqr49pyrmYPxLoAsTpYoiESdy7iQrUY=;
+        b=NqAHlu2A1agoX4CCVujsL6LsUQT0GKOG/1T+vxs7MNtyFVgRblmo3oBTkg/wFWqaep
+         FwgINMXmFijwwBbqbfLm40dbySaZ2Bk1eqjfXKoabY0ZwQ5smyQNl6SoJkbQxCXyzZnY
+         WYWuqFsdPhox5F4u8MdYT07MWimbU1uTA6MBGgSaZeheFmtI6OHxUM9hYDwwBg0nUNQr
+         nLqAL7CQ2dPKUn4HhK8Ihin6yExQGdkjp+N0yxV+ESc5jAMVJQahJNRNyCzOO6GxmtXD
+         youeJYnkEW5kKcC1SCzPxeiV2vL7XoMtiZx0RQy4sQGYT+JfeBpsfzSGJ++Usr71DNBw
+         57UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lbgIdJ/aL+x7yqr49pyrmYPxLoAsTpYoiESdy7iQrUY=;
+        b=V5JwJ0YJ3ERi7kFnr6gKT7R3/5FM3g/HCIgWd20eTPxcPgSvsdDdJolE/C/5bAmhdp
+         +yMvZiMolL7jG7ad60GXsNz/xkZubzGBHBRcbINoe+kNvhbE1//fWUz+ncboqfyfmtCC
+         18LGH0/BTXHpO48vaNOHNeJfUCKB4xXyh5snx0hNJJ3GOpVWtrmji3aQABIpAko0pNwo
+         MTj2SF35V+yyq4aoid4zjXGcPIc84c1+Bf2j101rbIFEdA0PPK03vXMJXHmhX4Pl/jPI
+         H00WdEcoNv2oqZ+DFkaFNPSUuku0FVx2+ounvGEhScphhYmM9YoAzu3ildxcLb5wZXa+
+         73Lg==
+X-Gm-Message-State: AGi0PuYJ7sGPEqb9SdU9pkD9h1icKHECtF/sVbWF09wl8bv53yWlmX9i
+        hkbbc1HDKIeFsjHzwAg+BEk/1MZE
+X-Google-Smtp-Source: APiQypIXEXsz03zbjw+rgJ+XcXRTDtPSai0/CzZvHBsVBvSv40QWrxAbTiCo2RNFo0OsNH0hYsnbJw==
+X-Received: by 2002:a17:902:eb12:: with SMTP id l18mr17171749plb.269.1589232840552;
+        Mon, 11 May 2020 14:34:00 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id c2sm10068665pfp.118.2020.05.11.14.33.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2020 14:33:59 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Subject: [PATCH] libip6t_srh.t: switch to lowercase, add /128 suffix, require success
+Date:   Mon, 11 May 2020 14:33:49 -0700
+Message-Id: <20200511213349.248618-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.26.2.645.ge9eca65c58-goog
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller
-> Sent: 11 May 2020 21:50
-> To: David Laight <David.Laight@ACULAB.COM>
-> Cc: netdev@vger.kernel.org
-> Subject: Re: [PATCH net-next] net/ipv4/raw Optimise ipv4 raw sends when IP_HDRINCL set.
-> 
-> From: David Laight <David.Laight@ACULAB.COM>
-> Date: Sun, 10 May 2020 16:00:41 +0000
-> 
-> > The final routing for ipv4 packets may be done with the IP address
-> > from the message header not that from the address buffer.
-> > If the addresses are different FLOWI_FLAG_KNOWN_NH must be set so
-> > that a temporary 'struct rtable' entry is created to send the message.
-> > However the allocate + free (under RCU) is relatively expensive
-> > and can be avoided by a quick check shows the addresses match.
-> >
-> > Signed-off-by: David Laight <david.laight@aculab.com>
-> 
-> The user can change the daddr field in userspace between when you do
-> this test and when the iphdr is copied into the sk_buff.
-> 
-> Also, you are obfuscating what you are doing in the way you have coded
-> this check.  You extract 4 bytes from a magic offset (16), which is
-> hard to understand.
+From: Maciej Żenczykowski <maze@google.com>
 
-Ok, that should at least be the structure offset.
+This looks like an oversight which is easy to fix.
 
-> Just explicitly code out the fact that you are accessing the daddr
-> field of an ip header.
-> 
-> But nonetheless you have to solve the "modified in userspace
-> meanwhile" problem, as this is a bug we fix often in the kernel so we
-> don't want to add new instances.
+Furthermore:
+  git grep ';;OK'
+does not find any other matches, so this is the last unverified test case.
 
-In this case the "modified in userspace meanwhile" just breaks the
-application - it isn't any kind of security issue.
+Test:
+  [root@f32vm IPT]# uname -r
+  5.6.10-300.fc32.x86_64
 
-The problem is that you can't read the data into an skb until you
-have the offset - which is got by looking up the destination address.
-But you need the actual destination (from the packet data) to match
-the address buffer if you don't want to create a temporary rtable entry.
+  [root@f32vm IPT]# md5sum extensions/libip6t_srh.t
+  b98864bdd6c39a0dd96022c47e652edb  extensions/libip6t_srh.t
 
-I didn't find the commit that make rtable entries shared.
-I though the same table was used for routes and arps  - but
-it looks like they got separated at some point.
+  [root@f32vm IPT]# ./iptables-test.py extensions/libip6t_srh.t
+  extensions/libip6t_srh.t: OK
+  1 test files, 27 unit tests, 27 passed
 
-The code could put the address it read back into the skb, but that would
-look even worse.
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+---
+ extensions/libip6t_srh.t | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-At the moment the performance is horrid when hundreds of the rtable
-entries get deleted under rcu all together.
-They are also added to a single locked linked list.
-
-I'm running 500 RTP streams which each send one UDP message every 20ms.
-It really needs to used the cached rtable entries.
-The only sane way to send the data is through a raw socket and to get
-the UDP checksum set you have to sort out the both IP addresses.
-(A UPD socket would be given rx data - which needs to go elsewhere.)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/extensions/libip6t_srh.t b/extensions/libip6t_srh.t
+index 07b54031..5b02a71b 100644
+--- a/extensions/libip6t_srh.t
++++ b/extensions/libip6t_srh.t
+@@ -23,6 +23,6 @@
+ -m srh ! --srh-tag 0;=;OK
+ -m srh --srh-next-hdr 17 --srh-segs-left-eq 1 --srh-last-entry-eq 4 --srh-tag 0;=;OK
+ -m srh ! --srh-next-hdr 17 ! --srh-segs-left-eq 0 --srh-tag 0;=;OK
+--m srh --srh-psid A::/64 --srh-nsid B:: --srh-lsid C::/0;;OK
+--m srh ! --srh-psid A::/64 ! --srh-nsid B:: ! --srh-lsid C::/0;;OK
++-m srh --srh-psid a::/64 --srh-nsid b::/128 --srh-lsid c::/0;=;OK
++-m srh ! --srh-psid a::/64 ! --srh-nsid b::/128 ! --srh-lsid c::/0;=;OK
+ -m srh;=;OK
+-- 
+2.26.2.645.ge9eca65c58-goog
 
