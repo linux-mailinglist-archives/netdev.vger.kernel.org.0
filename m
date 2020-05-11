@@ -2,121 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 284241CDFA0
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:51:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00A091CDFEB
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 18:05:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730761AbgEKPuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 11:50:46 -0400
-Received: from mail-mw2nam12on2062.outbound.protection.outlook.com ([40.107.244.62]:17760
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730648AbgEKPui (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 11:50:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bs/aVAgZv9VqwODNdXkkcW924ZsbFuOkboNRkkN8WMGZk1lM/Is1aEG+p2C/5OhJYYwnk83sNmRRjovxeT9uRNQJOripFff17t3B0Y7epTIPV6zJWVn+uiZlAwnAnHxzmyJvaAFtx3Pd2g4VzwRMn99qsb7bPkqAD/yHTuAwhYhzT4gaxzj5yOJVztzrQA9hrexPRiw2EqLnM5W2WMwabI8ACEyVWlghiX+rija8zX2iSmIjiJ/TO5PPxgVvaMkYjm2KTx7Dz1TiRdhWUTuEnfVh0mrwbdGsrv+qVUEfHJSHKe7CyAsTVb42rprr3SUPnQiQeMIGvlqTW5XU3/gUOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iT/OMJBcfsRkPe6vAx1P07qFqYJx6s8Pt4Ip2IXw6Ic=;
- b=g+gvNdrbD/OipuIxaXAd7HPzcHRo5jXZNbwFXYundMP40TfQbsOYUGi86LnfXJh7+LMoEbFkIo+EAzaNcIg90TcDc8BalHZiv4PFhggC082Yx3AcGt3NkKayr9Kj5RiZ37cJJUtGOtvED6+T+uuz3DyTVE/CtquAuwZyoxTBEdfX8HzJMgOy28OiZkOj4RnIxcGcVwuQvzrFQ0MDcksPxKY8d0ysblxV9nxF73ey+SLYMS3q3TuwGCxfNy1b7DdJa2E1U7/IEkd2VW+EMe5MiKHM/LYPD/1GRXTXn8lhs50Nr9jStJn6gmeCRS2oNhJVBgvmGL05n1wParlueNmYCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+        id S1730610AbgEKQFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 12:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729556AbgEKQFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 12:05:49 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B562C061A0E
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:05:49 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id m12so13711605wmc.0
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:05:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iT/OMJBcfsRkPe6vAx1P07qFqYJx6s8Pt4Ip2IXw6Ic=;
- b=oDE+VGiHC0w1Uj+B9WVLDSvcbRXgO6fhFn/gBCAPApJHnOh554VjW2GcZZgtifBrWwF0bCTGfLW98E/htVGhxldsrLwSXJqH1sEm6YnbfrnlL6igrRXL+lhXsy7Px3gNHuo9NEA2dJzCDdahAd5AF4FLsrD4N0sSeumF3x3CxzI=
-Authentication-Results: driverdev.osuosl.org; dkim=none (message not signed)
- header.d=none;driverdev.osuosl.org; dmarc=none action=none
- header.from=silabs.com;
-Received: from MWHPR11MB1775.namprd11.prod.outlook.com (2603:10b6:300:10e::14)
- by MWHPR11MB1968.namprd11.prod.outlook.com (2603:10b6:300:113::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Mon, 11 May
- 2020 15:50:21 +0000
-Received: from MWHPR11MB1775.namprd11.prod.outlook.com
- ([fe80::e055:3e6d:ff4:56da]) by MWHPR11MB1775.namprd11.prod.outlook.com
- ([fe80::e055:3e6d:ff4:56da%5]) with mapi id 15.20.2979.033; Mon, 11 May 2020
- 15:50:21 +0000
-From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
-To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>
-Subject: [PATCH 17/17] staging: wfx: update TODO
-Date:   Mon, 11 May 2020 17:49:30 +0200
-Message-Id: <20200511154930.190212-18-Jerome.Pouiller@silabs.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200511154930.190212-1-Jerome.Pouiller@silabs.com>
-References: <20200511154930.190212-1-Jerome.Pouiller@silabs.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-ClientProxiedBy: SN6PR2101CA0026.namprd21.prod.outlook.com
- (2603:10b6:805:106::36) To MWHPR11MB1775.namprd11.prod.outlook.com
- (2603:10b6:300:10e::14)
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XSBbYEPUjFSpzCt6ADMl+351ottRgxXUnYo0HFyHqs8=;
+        b=ZWQ/89RHr7imqniXVaiAI1SrBs7ZJyPBxOFfRyS9gzNS16Fs2zefbmpcIIOtBTW38F
+         g6AQx1E4SHw9Kx9tNOJsMPf8e2gBvAViW6qf1zoMdRkgHM+x7Bqw3H2NsVJMd5eofHMa
+         OUR4EuJ6GIJ1ecfdIuRvmiOo2Q3TX0STOiBWKKnyiyDElrenLdlAHRIvd15p/Zz9jCxa
+         JotUuycV5l+kMR6A/yzrMIXgQc3BOFHnmdx5hjPdVtswuoB88MrTr3uQ1JHEifMiNQxZ
+         L3uidtGJnn6R1iyHqK6wyf65Ube5sWPBbgJPy/9A7uGnhZGQQsIku/4lXo9mwuhicPNz
+         o9VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XSBbYEPUjFSpzCt6ADMl+351ottRgxXUnYo0HFyHqs8=;
+        b=Zz/SOzYSWmchC/yN7B9U6TrFA0jhV6G69eVZiY2l3IQeWhA+0246D3/zaYHr+XeRfX
+         Jxs7az+HOR71Xv91u6R2VJA5iEJgCvPW9pqGO79KqaFNUM6aUQLBcealOQzIpyqo3tKr
+         fgTvNPd22+0SfXoC7TzgYtgexfJty7HTG7CYk1WGVRt9PWXkAwlSClT5pAeagP2CHs8y
+         ZH3UnI3vSmHkxxfiUU/QPG3SHp8L9DtUsM6iVOvqgGmvOaDgW/f7jXbse0xURMq81yaG
+         Py6s9H1kquWh3Pxqvin4AHZkUeIwQpe8y5zLZ5jjbpbGuCASdfvVQZAMZcyeoop5E7oO
+         m27A==
+X-Gm-Message-State: AGi0Pua6wmddN9USmBTST8b8DautC646xLfswmbCIju5Bi0o2J9LKI1h
+        tiQ/IwK1TwiTwRE/X9aQSzR1ys1Y6Tew3Q==
+X-Google-Smtp-Source: APiQypLF+9XK9xmOIjpKvJvyhyJdNgGLYDamRjMI8S5rn+mdACJIPXY1q9xNRlVTBzZlD32no3IvMw==
+X-Received: by 2002:a1c:6402:: with SMTP id y2mr32938638wmb.116.1589213147735;
+        Mon, 11 May 2020 09:05:47 -0700 (PDT)
+Received: from [192.168.1.10] ([194.53.185.84])
+        by smtp.gmail.com with ESMTPSA id b14sm15284020wmb.18.2020.05.11.09.05.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 May 2020 09:05:47 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 2/4] tools: bpftool: minor fixes for
+ documentation
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+References: <20200511133807.26495-1-quentin@isovalent.com>
+ <20200511133807.26495-3-quentin@isovalent.com>
+ <673bcb25-1949-f0d8-c690-4f0a75819a80@iogearbox.net>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <6671c199-713d-fb5f-b6d1-11187301e6e4@isovalent.com>
+Date:   Mon, 11 May 2020 17:05:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc-42.silabs.com (82.67.86.106) by SN6PR2101CA0026.namprd21.prod.outlook.com (2603:10b6:805:106::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.2 via Frontend Transport; Mon, 11 May 2020 15:50:19 +0000
-X-Mailer: git-send-email 2.26.2
-X-Originating-IP: [82.67.86.106]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c7692626-b90f-4fed-8a01-08d7f5c30283
-X-MS-TrafficTypeDiagnostic: MWHPR11MB1968:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MWHPR11MB19686A3DF12B2CF5743E966893A10@MWHPR11MB1968.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 04004D94E2
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n2VCt/2IJYavhsazcLKJF0P+cFbP0Ek6kfmq6/r8Da/qhtsE7lxX/KppV/k2w/atz36CFh9yCRZv4EEpmWuZqyvrOPRflpeTqdSlNLvMBY5PY5dOadFL+iMJld7afi4XJXOEIRjiykxVeMWp19n+p0vufC3NhgnHoLIpO8KaijiDpc5EsfQqGOCwtzQfQjJSZ6jshx7xBb5euDfaI6WlK7G+Pzc7iTugUsdHhXLrJjxvZsGfLEXNsFl83lMZJ7NO81fok5RbaC7btOBRFDfJUxiQxvODA1KFbMfiE6R978TAgPuyte8h8qcjDO7ZFrSJ7z9PouRgaQc5nppzYYxjderTBRx0K6GPJRYIyOSz69WyoqvMwroOnfuQYQvNd+so4iAEETD+td36batsJgwXIuFi02va7F1DtIZq6KQ98hb31vfhQ82f1iWimsDmJ6bQtcgLgLttC48LPiFd8j4bEf+DYvrEQDFPzLmQBshi7okhvVcjxoHpAwmzeG/DDhV5E5A2vZeER7MdTWdHLuJg343ubIk29ZbYVoL5+S8Sl2OX2gH0Kk7v/SOEPxzdpFm1Qysjns9oc/jtICWGG4DboV7beiiovOJdV+RehasEdyI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1775.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39850400004)(346002)(136003)(396003)(376002)(366004)(33430700001)(186003)(52116002)(86362001)(316002)(5660300002)(7696005)(6486002)(33440700001)(478600001)(54906003)(6666004)(4326008)(107886003)(66574014)(36756003)(16526019)(26005)(15650500001)(8936002)(956004)(2616005)(8676002)(1076003)(66476007)(66946007)(966005)(66556008)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: wXcEZIaYbKYHeapouqHpJDPlxtG63wGOGsCqA4IgVLSm9bzBwi8mBXiRQfzh3lOrrV4xsCJOWpnZyI4er/mZ09XAi95fcKpRVmw6ZyqB9dcI73yluuGNdqnDJkFSJaeM3FPmOBCoLWKn0xxAcvhnaKWmnnx94Xnpgkt46LLL/+AozfLC0Br7wHPjjouBQyYIqYHc9rJtLxvrdG6f8HCTA77TLCCDrSXqMfMTtZkHnaeHOohDu4HH2ihgESy4leOavI9H+xpSDUdhBUqgj+lpGPISB19oo+03d8PCC/+i/qwCpBPMF8wosLhEZ5wl2bgSt7wLWVCe6HgiJP3xLLBD14R7W32k/gG7zxU46lmn2jT2MPTLXKWCl+rJW7T491WdqgvwGUYbn6HTDvWa1m4bmWMDn8RQAx+Y/ujXBz8hK5awAKzjzQ9zJocKsq5wJh43mH6J4aMmFeSKjtqs9JG/4jqokWKawcEXIqfbnij/N2c=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7692626-b90f-4fed-8a01-08d7f5c30283
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 15:50:20.8796
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vq26kolM0H+KiHNKi5hDNJJSRLBS0u7xZhOyLT9DrMqktMicV/i2BYmdWeNQvwV7/dnjx+NfWK8Yinr3030MNA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1968
+In-Reply-To: <673bcb25-1949-f0d8-c690-4f0a75819a80@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKVXBk
-YXRlIHRoZSBUT0RPIGxpc3QgYXNzb2NpYXRlZCB0byB0aGUgd2Z4IGRyaXZlciB3aXRoIHRoZSBs
-YXN0CnByb2dyZXNzZXMuCgpTaWduZWQtb2ZmLWJ5OiBKw6lyw7RtZSBQb3VpbGxlciA8amVyb21l
-LnBvdWlsbGVyQHNpbGFicy5jb20+Ci0tLQogZHJpdmVycy9zdGFnaW5nL3dmeC9UT0RPIHwgMTkg
-LS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDE5IGRlbGV0aW9ucygtKQoKZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy93ZngvVE9ETyBiL2RyaXZlcnMvc3RhZ2luZy93Zngv
-VE9ETwppbmRleCBmY2EzMzMyZTQyY2UuLjQyYmYzNmQ0Mzk3MCAxMDA2NDQKLS0tIGEvZHJpdmVy
-cy9zdGFnaW5nL3dmeC9UT0RPCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvVE9ETwpAQCAtMywz
-MiArMywxMyBAQCBzdGFnaW5nIGRpcmVjdG9yeS4KIAogICAtIFRoZSBISUYgQVBJIGlzIG5vdCB5
-ZXQgY2xlYW4gZW5vdWdoLgogCi0gIC0gRml4IHN1cHBvcnQgZm9yIGJpZyBlbmRpYW4gYXJjaGl0
-ZWN0dXJlcy4gU2VlOgotICAgICAgIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMjAxOTEx
-MTEyMDI4NTIuR1gyNjUzMEBaZW5JVi5saW51eC5vcmcudWsKLQotICAtIFRoZSBwb2ludGVycyBy
-ZXR1cm5lZCBieSBhbGxvY2F0aW9uIGZ1bmN0aW9ucyBhcmUgYWx3YXlzIGNoZWNrZWQuCi0KICAg
-LSBUaGUgY29kZSB0aGF0IGNoZWNrIHRoZSBjb3JlY3RuZXNzIG9mIHJlY2VpdmVkIG1lc3NhZ2Ug
-KGluIHJ4X2hlbHBlcigpKSBjYW4KICAgICBiZSBpbXByb3ZlZC4gU2VlOgogICAgICAgIGh0dHBz
-Oi8vbG9yZS5rZXJuZWwub3JnL2RyaXZlcmRldi1kZXZlbC8yMzAyNzg1LjZDN09EQzJMWW1AcGMt
-NDIvCiAKLSAgLSBTdXBwb3J0IGZvciBTRElPIHdpdGggZXh0ZXJuYWwgSVJRIGlzIGJyb2tlbi4K
-LQogICAtIEFzIHN1Z2dlc3RlZCBieSBGZWxpeCwgcmF0ZSBjb250cm9sIGNvdWxkIGJlIGltcHJv
-dmVkIGZvbGxvd2luZyB0aGlzIGlkZWE6CiAgICAgICAgIGh0dHBzOi8vbG9yZS5rZXJuZWwub3Jn
-L2xrbWwvMzA5OTU1OS5ndjNRNzVLbk4xQHBjLTQyLwogCi0gIC0gV2hlbiBkcml2ZXIgaXMgYWJv
-dXQgdG8gbG9vc2UgQlNTLCBpdCBmb3JnZSBpdHMgb3duIE51bGwgRnVuYyByZXF1ZXN0IChzZWUK
-LSAgICB3ZnhfY3FtX2Jzc2xvc3Nfc20oKSkuIEl0IHNob3VsZCB1c2UgbWVjaGFuaXNtIHByb3Zp
-ZGVkIGJ5IG1hYzgwMjExLgotCi0gIC0gTW9uaXRvcmluZyBtb2RlIGlzIG5vdCBpbXBsZW1lbnRl
-ZCBkZXNwaXRlIGJlaW5nIG1hbmRhdG9yeSBieSBtYWM4MDIxMS4KLQotICAtIFRoZSAic3RhdGUi
-IGZpZWxkIGZyb20gd2Z4X3ZpZiBzaG91bGQgYmUgcmVwbGFjZWQgYnkgInZpZi0+dHlwZSIuCi0K
-LSAgLSBJdCBzZWVtcyB0aGF0IHdmeF91cGxvYWRfa2V5cygpIGlzIHVzZWxlc3MuCi0KLSAgLSAi
-ZXZlbnRfcXVldWUiIGZyb20gd2Z4X3ZpZiBzZWVtcyBvdmVya2lsbC4gVGhlc2UgZXZlbnQgYXJl
-IHJhcmUgYW5kIHRoZXkKLSAgICAgcHJvYmFibHkgY291bGQgYmUgaGFuZGxlZCBpbiBhIHNpbXBs
-ZXIgZmFzaGlvbi4KLQogICAtIEZlYXR1cmUgY2FsbGVkICJzZWN1cmUgbGluayIgc2hvdWxkIGJl
-IGVpdGhlciBkZXZlbG9wZWQgKHVzaW5nIGtlcm5lbAogICAgIGNyeXB0byBBUEkpIG9yIGRyb3Bw
-ZWQuCiAKLS0gCjIuMjYuMgoK
+2020-05-11 17:25 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
+> On 5/11/20 3:38 PM, Quentin Monnet wrote:
+>> Bring minor improvements to bpftool documentation. Fix or harmonise
+>> formatting, update map types (including in interactive help), improve
+>> description for "map create", fix a build warning due to a missing line
+>> after the double-colon for the "bpftool prog profile" example,
+>> complete/harmonise/sort the list of related bpftool man pages in
+>> footers.
+>>
+>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> [...]
+>> @@ -116,24 +123,24 @@ DESCRIPTION
+>>             receiving events if it installed its rings earlier.
+>>         **bpftool map peek**  *MAP*
+>> -          Peek next **value** in the queue or stack.
+>> +          Peek next value in the queue or stack.
+> 
+> Looks great overall. Was about to push, but noticed above inconsistency.
+> Should this
+> be `*VALUE*` as well?
+
+Hm I don't think so, there is no "VALUE" passed on the command line in
+that case.
+
+But then I should probably have removed mark-up on "value" for "bpftool
+map pop|dequeue", instead of changing it, as those commands do not use
+any value on the command line either. Thanks for the review, I'll send a
+v2 with that change.
+
+> 
+>>       **bpftool map push**  *MAP* **value** *VALUE*
+>> -          Push **value** onto the stack.
+>> +          Push *VALUE* onto the stack.
+>>         **bpftool map pop**  *MAP*
+>> -          Pop and print **value** from the stack.
+>> +          Pop and print *VALUE* from the stack.
+>>         **bpftool map enqueue**  *MAP* **value** *VALUE*
+>> -          Enqueue **value** into the queue.
+>> +          Enqueue *VALUE* into the queue.
+>>         **bpftool map dequeue**  *MAP*
+>> -          Dequeue and print **value** from the queue.
+>> +          Dequeue and print *VALUE* from the queue.
