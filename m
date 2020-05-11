@@ -2,81 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C73391CDCC6
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 16:13:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75231CDD50
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 16:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730474AbgEKONa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 10:13:30 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37778 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730158AbgEKONa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 10:13:30 -0400
-Received: by mail-pl1-f194.google.com with SMTP id x10so3992299plr.4;
-        Mon, 11 May 2020 07:13:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OZEIorHaxAgVk8tXwMYpPYJTnU15riroFxTlZzxMGoY=;
-        b=NFwnbaRdKb/MG0EhIoKzcerRLvdISY08pDODi09BCWepHTec4ARyeTzmgH5mKEzLep
-         khF5Ho0acAdDLc1JzSxJFTZPF4RNkV+ZNRUzcyPQMi8y4GCzr0JK4bZr9fLSSMlx5eNH
-         quY80wmvM43Sp2ZErumQ1sudYWckLUKPbjciHZ2OGDKqHCeuq4PsidBQbXbY1lCFsnS8
-         RbrPAaPm5FFa7OO6XzjmFRrJ3p0xML64tT6/p2af71b5JuOoU0h89i4fFOJqOyCKGz1k
-         V6RegZTrdIQU91zM6ggJ6XOUbxzziFOYdECMtiAVX0ohcAkFJfT65X642AcOTCxE+SIh
-         6UhA==
-X-Gm-Message-State: AGi0PuakkDQJbuVeisQ6nZwGkQUO2Mn83Po0h1mXRI632R9eSOvGZqM+
-        NFgNUXMUrqhjgtyDaJ1ukpU=
-X-Google-Smtp-Source: APiQypKUuFyt94VWg5zbOUc0tpZSyVaLJaz5nZz5HPWNK22nq+c7IWmoodIm6WEFGB2pMV3qQbTqlg==
-X-Received: by 2002:a17:90a:ead6:: with SMTP id ev22mr22563757pjb.94.1589206409284;
-        Mon, 11 May 2020 07:13:29 -0700 (PDT)
-Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id q62sm4723143pfc.132.2020.05.11.07.13.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 07:13:27 -0700 (PDT)
-Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id 0DB6940605; Mon, 11 May 2020 14:13:27 +0000 (UTC)
-Date:   Mon, 11 May 2020 14:13:27 +0000
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     Andrew Lunn <andrew@lunn.ch>, jeyu@kernel.org,
-        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
-        schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/15] net: taint when the device driver firmware crashes
-Message-ID: <20200511141326.GQ11244@42.do-not-panic.com>
-References: <20200509043552.8745-1-mcgrof@kernel.org>
- <1e097eb0-6132-f549-8069-d13b678183f5@pensando.io>
- <20200510015814.GE362499@lunn.ch>
- <01831b19-5890-e7e0-3801-068dfab5c92a@pensando.io>
+        id S1730320AbgEKOdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 10:33:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53732 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728683AbgEKOdq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 10:33:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Mwae2KvTbiEeDM+Ihkjwa5GcbZ/X5g2Mvj9LCuhgqwI=; b=E8s9KGLEyptNB/d8E5IWsylI7y
+        PANj3gT/wxQj90IqmEmto+J2PAHmgVWdSU96Ejm6mfPoj2T1bTLYysFRJ/6JGWmWWkxzgMyd5ss9Y
+        qi+CD92i3+DxWyAvR4bxcwQ28ylkMTFYWK6JbWQShVKTHCaeZ89ZlvXztsdIPwTNzA0Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jY9Uv-001raJ-MF; Mon, 11 May 2020 16:33:37 +0200
+Date:   Mon, 11 May 2020 16:33:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>
+Subject: Re: signal quality and cable diagnostic
+Message-ID: <20200511143337.GC413878@lunn.ch>
+References: <20200511141310.GA2543@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <01831b19-5890-e7e0-3801-068dfab5c92a@pensando.io>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200511141310.GA2543@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 09, 2020 at 07:15:23PM -0700, Shannon Nelson wrote:
-> On 5/9/20 6:58 PM, Andrew Lunn wrote:
-> > On Sat, May 09, 2020 at 06:01:51PM -0700, Shannon Nelson wrote:
-> > As for firmware, how much damage can the firmware do as it crashed? If
-> > it is a DMA master, it could of splattered stuff through
-> > memory. Restarting the firmware is not going to reverse the damage it
-> > has done.
-> > 
-> True, and tho' the driver might get the thing restarted, it wouldn't
-> necessarily know what kind of damage had ensued.
+On Mon, May 11, 2020 at 04:13:10PM +0200, Oleksij Rempel wrote:
+> Hi Andrew,
+> 
+> First of all, great work! As your cable diagnostic patches are in
+> net-next now and can be used as base for the follow-up discussion.
+> 
+> Do you already have ethtool patches somewhere? :=) Can you please give a
+> link for testing?
 
-Indeed, it is those uknowns which we currently assume is just fine, but
-in reality can be damaging. Today we just move on with life, but such
-information is useful for analysis.
+Hi Oleksij
 
-  Luis
+It was mentioned in the cover note
+
+https://github.com/lunn/ethtool/tree/feature/cable-test-v4
+
+> 
+> I continue to work on TJA11xx PHY and need to export some additional
+> cable diagnostic/link stability information: Signal Quality Index (SQI).
+
+Is this something you want to continually make available, or just as
+part of cable diagnostics. Additional nested attributes can be added
+to the cable test results structure, and the user space code just
+dumps whatever it finds. So it should be easy to have something like:
+
+Pair A: OK
+Pair A: Signal Quality Index class D
+
+Are the classes part of the Open Alliance specification? Ideally we
+want to report something standardized, not something proprietary to
+NXP.
+
+	Andrew
