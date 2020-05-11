@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E174D1CDC49
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 15:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC3701CDC51
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 15:59:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730281AbgEKN56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 09:57:58 -0400
-Received: from mail-eopbgr130051.outbound.protection.outlook.com ([40.107.13.51]:56398
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        id S1730385AbgEKN6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 09:58:23 -0400
+Received: from mail-eopbgr20083.outbound.protection.outlook.com ([40.107.2.83]:31855
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730153AbgEKN55 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 09:57:57 -0400
+        id S1730153AbgEKN6X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 09:58:23 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z9vyYvQE0Y1H+sODxGeXzkdkSIJEsdkfk05h+xKNNYjq5gAtpjOp1A5zkNe/emPl9vsV4JyeEcsE4rd/suuzQJgcGYGx0bINe6PKN+ePEKyQ09WHOJECljdMA+0e76JewRqOh2sW+j01Kf9xcIdizV6IXd9Ms17xHOFkVkWJJuRuG64XM4I7+JRShYVvaS1PDqk4q6LdRj4/V7zkz1/owy/ixp9XIR9RU0AG2V6fL7n7vZkgY22JiZVbgfAXMnGeSRN1KURLZd9C3ae5HvnV2EjeY2r0u05ES7CqbtZrX+7TBqwbyJHx073D5hNiO2z3j9wGuDlOPexWWOjV3focEw==
+ b=axbLzXV4JYFP01dvZ9fPapdswcnvbaHfuPhtgoYShCHwGizamxujxbUgljx/MGUjPDI+OwlR7yZCNjvA0ULEhaEFaIZ1dCtcJf77mkddqb/qtIeAxywa6/rJFTRgePWPaNFfQ4ADa5v4Kn9NevUqEJMZfV7upRhYId97Pi6n9UnWvl87qEfWTXOd0NBIB08n+GvSgIZ2B43FHaRYtPZrvvXtxYU0zvCtsJULEedpUsQ6HBmhYZdA8YqeMDer8G1eKiKTuXyL0h0oZ+Rp7iQvghfZBshGsZ1DZMVBiN2DfF3Czsa5LXIXTfR34ArHz5wuzYVmef32lNL7unQcYNsamg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uVcuYLdJZr9S6GcEW5P+kCsikj+h0gCMfB1dH2Ul9OU=;
- b=VQZhaMjbepVUyUuSUnandEf83X/BPiUsZ3zMZGVKZFcGLG8CaBb08obUU+vdIcIMAQSmt9bRmTwYJqJ6SqbNH8b48Vog9XWdWgPgWtqMnoAZ5Xkqcf7gIQ2gNJ8mpyDQENUwdqqG/HrJZNfwRfIyEDDjCIWj/wzGrEEgb8StYbUa2EYi0VL//9wIBZtnpo4VdZB98ohQx+Vn9KVQZuirG0BHqjXoChtpILzGnwJChpxhxq6GUUaiE64L73DsC0icgyqjTokBn34GN6enJRU37cLvES2W2e0MW/0Dk0izY5n7UGsOD/YLL7myhHi/xqhVsrvcG/izV1PVtQtzct7rNg==
+ bh=DOLbZ3UmbUowll4ZdmR+gDRr5We3ir4G0hBKTUh/OVU=;
+ b=dTnZi8sMsr2AdU5btTS/qanoXzviugMovrvMxERLUMqcRSe1zaZn+SBO30jGdsuVmrnjLxbz6rAxYWQNlGdLPPrH1f02y83F/dC0Wqrz19yRfJro6BNJsa2Vbzn1OcpcRl8TeJBS7H5fnGxA6S/AY411GxTGjfDAbY8WdZFjbDneK8Oyl7TGmpEJx7MUb0OQvKwLhmvdilEIEnzPsyfzTOr4Eax/VEM3D8g5UWKNUoNtRY8xA4swg4fAfZWSAYD8GSEljQFBsm9Zz1NFhhGn+rZjmERFT1Veu/E8xY0gGEbrvgr3RGTEZMnYICynmbk0JKIoOvTrOYAM4oB1qH/jWA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uVcuYLdJZr9S6GcEW5P+kCsikj+h0gCMfB1dH2Ul9OU=;
- b=daWz36oukSS2WVPTYaKp4O+Ib2EpfVyOY4gIZ50nkilhhVm9olJmVopTDrmespAuIfJz+FHrd0h0ErI4wHLhAzPLFO/QPRgPoEZl5eVw6a7HIRnfwa7c62AmVEBfGr4rmfl2BqIg4udmJRx/9HV6skTcFpYM9035Ex254EW1T1A=
+ bh=DOLbZ3UmbUowll4ZdmR+gDRr5We3ir4G0hBKTUh/OVU=;
+ b=GfS5JcgS6Uf8jpurok35lXgSF1+dWcVwP+c5fawxiPIeogENLvXKfWwSz7LRZFUjEn760kDp/wuti4iN93jOEq1dNqgWo6fZ6Up15ClD14jthTIvbove99d56PaDtCZIa+JGFvmkmqNsF3U3E2zf+loQGyDtwqlLZiVpdY9T/f4=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none
  header.from=mellanox.com;
 Received: from DB7PR05MB4156.eurprd05.prod.outlook.com (2603:10a6:5:18::21) by
- DB7PR05MB4873.eurprd05.prod.outlook.com (2603:10a6:10:1e::19) with Microsoft
+ DB7PR05MB5066.eurprd05.prod.outlook.com (2603:10a6:10:15::14) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2979.33; Mon, 11 May 2020 13:57:53 +0000
+ 15.20.2979.33; Mon, 11 May 2020 13:58:17 +0000
 Received: from DB7PR05MB4156.eurprd05.prod.outlook.com
  ([fe80::39ab:622c:b05b:c86]) by DB7PR05MB4156.eurprd05.prod.outlook.com
  ([fe80::39ab:622c:b05b:c86%3]) with mapi id 15.20.2979.033; Mon, 11 May 2020
- 13:57:53 +0000
+ 13:58:17 +0000
 Subject: Re: [PATCH net] netfilter: flowtable: Add pending bit for offload
  work
 To:     Pablo Neira Ayuso <pablo@netfilter.org>,
@@ -50,43 +50,43 @@ References: <1588764279-12166-1-git-send-email-paulb@mellanox.com>
  <9dff92fe-15cd-348d-ff1c-7a102ea9263c@mellanox.com>
  <20200511115939.GA19979@salvia>
 From:   Roi Dayan <roid@mellanox.com>
-Message-ID: <28366c05-8293-6c9e-bfea-47f86bfc422e@mellanox.com>
-Date:   Mon, 11 May 2020 16:57:50 +0300
+Message-ID: <a06b3615-3765-a0e0-202a-71a018597a42@mellanox.com>
+Date:   Mon, 11 May 2020 16:58:14 +0300
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 In-Reply-To: <20200511115939.GA19979@salvia>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM0PR03CA0006.eurprd03.prod.outlook.com
- (2603:10a6:208:14::19) To DB7PR05MB4156.eurprd05.prod.outlook.com
+X-ClientProxiedBy: AM0PR03CA0003.eurprd03.prod.outlook.com
+ (2603:10a6:208:14::16) To DB7PR05MB4156.eurprd05.prod.outlook.com
  (2603:10a6:5:18::21)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.170] (176.231.113.172) by AM0PR03CA0006.eurprd03.prod.outlook.com (2603:10a6:208:14::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28 via Frontend Transport; Mon, 11 May 2020 13:57:52 +0000
+Received: from [192.168.1.170] (176.231.113.172) by AM0PR03CA0003.eurprd03.prod.outlook.com (2603:10a6:208:14::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28 via Frontend Transport; Mon, 11 May 2020 13:58:16 +0000
 X-Originating-IP: [176.231.113.172]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2034b9c2-ce76-436e-4c47-08d7f5b34cf4
-X-MS-TrafficTypeDiagnostic: DB7PR05MB4873:|DB7PR05MB4873:
+X-MS-Office365-Filtering-Correlation-Id: 1cb312ce-a3c7-40ff-5f63-08d7f5b35b4c
+X-MS-TrafficTypeDiagnostic: DB7PR05MB5066:|DB7PR05MB5066:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB7PR05MB487313A13839F8406266F1BDB5A10@DB7PR05MB4873.eurprd05.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DB7PR05MB5066E27AD54E9BCE84CFAB9AB5A10@DB7PR05MB5066.eurprd05.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-Forefront-PRVS: 04004D94E2
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nNJew+S4RmJDULGVjmnmbxHCXuEobFh6pyGWvlIuTiUl7bMM7AgD3MNhGYNBioi8tYBV8L7Aq+nQxFzmPXW/0i6outv52gIOZvsw+BVV0DDaqtpz/55qgC913frrYDw2V/rls0WXrN8lP4raIFbL/g+sV2bJfIhBPaGeWw1SKgko5Ckbi1LXXxEiBr+iCE6K0rA2+FUXxkpjNkm19mLsA51GbexHb6SKpFGrXb2FlI3M/QOJ8gepRw1pKxaL1MW9waUQlUqpi9QOxs3qKI60tcL81+eJ56JnshgGX21uh+uhmx5vY0ur5OHjkB/g1z+9C6PJHNO8G5gFGuyqigOq2Z4CKXPXzB/cyouejWjKrnHKraW83zVbRf8dlJC/RuvpS+LzY22W52dg+QvtIM2jpBZ2SsMeZIYFX5YfPbuSQOmBTpKzTVtDD8mNTOLqNQL2dYez/rlL1q3yiX2Fcdh4lBUQHT5LCCtIW0QD1VpD8hrVR5U9VXz5LUZQHP0lfpxE4L2mlV3+QA6gZ6a9JpseBUlVWe+LcjvwZziHXTccaOEINp9mqk8FIJEpWG9X3G3d
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4156.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(396003)(136003)(346002)(366004)(33430700001)(86362001)(478600001)(33440700001)(52116002)(6486002)(4326008)(5660300002)(31696002)(6636002)(31686004)(2616005)(8676002)(956004)(110136005)(2906002)(36756003)(16526019)(26005)(16576012)(66476007)(186003)(54906003)(66946007)(8936002)(316002)(53546011)(66556008)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: X6Rm+Vp+NokL4VSEP4pEPAJ6EqBmPcmKnZCApezaIm0Qs2ZCxucueAyUFWqmQskqUPeYcws6BYDL4MKv1gfr1gSvCerXdHhQMV5bVya/woPXHlnFj3oYMyKb8BGwKCjQXFeJUfi/uuLbyziUvZaspAluIMgLEEr+P/jt7pQc6agxAhCIYssfq3RBiyDd7pzkW9zsJAE5klKifBV6MtrmCrT8Mit9G9B1RANNAfIDb4y9CNulOHxyeWUMrPlM2lMbKl2m3fGFO9GHq3C6XX4vju4DKQltwANuUqMhavFU8XR3ejCHXWZHitBhbetB4Ge0KTZg6YX36XXwb+7dykXuHzpQFhqSdk582Szq5LLRlhMvAth416zwl29D7oR7HdFh6cYfNXa9f6Q9Ygh0labfbaaF/xI/2Z//WHdMn5rtm3Q9pJZ1rZLKq+x9pGO3k9VwD/kz4bw87pWzTQ7eeJE88rodAvSpuHvYpzbjvbe9rwAe69Y5Du7eHoPQ31+y8Pd/
+X-Microsoft-Antispam-Message-Info: 9mrBmTAAy4a1CAqDHtF8q0d2KrflexuNSaa+nz6v7MPhyPLjGuWvrF7DWMl7qwwMwrqSfn0iYA9Z2/u9IV3/7l0ZCtIi8SYmvOkq1D6C67q3AyBXEFsDgRCaDufLO6s9pYLmdi8PpfWpzRzzHSNOxFLfmcsZVxY7ZpF1bIIaBd/jfKFHdAb4PuWh4HvlDwlQyw4Hm/Ip0HU6aJayYJnFl8l4DbR1GRpop4gnhFDdH3kvbu0LmApHDoNKUeP30ZwXiTqKD+X0CmEmVbT2yJqum98TTsg4wmTUT/RwQmLr9FGUf5YFfhU/67XhEd9LNQBEj02k9Qi518wryMGN7/e6B6yjH0pGCx8hE4caQlKPYyUXVT68ZdO2UuU95Sa6ucFY0L4b8CF/Tm1KAjS/az49nRpeus0MtbpblKrcRD0fePAocWO/kKDjDIwxSKScRK/pygM7BGbkneLvtCOOpRj+Eti3ufKhaBestvcKYJz2UApbIglWx7EhE52Vb4i/T5g3rRTevTy5tRUoLC3TUH8+lZVt0SFgB4BvJHSdqhPSQDy76j+FCpZhJVZ61eqqfD8a
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4156.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(346002)(136003)(366004)(376002)(33430700001)(66946007)(66476007)(8936002)(4326008)(6636002)(2906002)(2616005)(956004)(186003)(52116002)(54906003)(16526019)(31686004)(36756003)(53546011)(26005)(316002)(8676002)(66556008)(16576012)(478600001)(6486002)(110136005)(31696002)(86362001)(33440700001)(5660300002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: Xt7n6FJKoArAZP60WyFGuzDSEP9Zdv7zlG7QwnyMcS9vemRlfunUdGedg1MJmlJJCd6N0cemiiXkzcJogidm2ELFRXbadWvmniPUUonGsZymbyBX991NuzBtdKn+gW3K9huISI7SYeerqnybWg8PYMcJdnJVizjYU1d7nTy1Gx/TeBk8We2L9JYrlZfU3vX7u2VPsMq2LC5yiol5/jFYRVirpe+9oZGo++a0oeE9jMilwf6CMNE45AwnEfwZb7tAbGpXTEcR3jUN1wSRachzz+vTsv9ktqajPkIPDI0DuR0YOTQp9ECYkOJ3ooaQJlyAwTuxVqorz0ZPYko0als3LtRnsic0vCViFoVIHhIaVM2DCjLMbU2LXhwkFrCinBp9z7gtyVG3sT3IXbU+xmiLdcHKHR2JLxNludIcxwRtmTS1JzXrvnjBL4aMXw/CEO0+CGQJLllfbZ8Nw4vd16AAedS2FcDbhEF+slmRtYhyllKOs1FJzTomHUvWpMrnCS7p
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2034b9c2-ce76-436e-4c47-08d7f5b34cf4
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 13:57:53.7493
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1cb312ce-a3c7-40ff-5f63-08d7f5b35b4c
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 13:58:17.7766
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nNUzRu0m9/TjrtbdoKiYaKmR3RLKO5csOHRc4iIxzenGIqzOR0D9jYKmZIPHpa50nR9WaCoGGyXwVLtXgr8aEg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB4873
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0qM5epCWsPICugndhAzEJ8SOG6szkSsA7jz1WQhu5nh02cX6TOkwd/S9P7CZWftgM8Fs4O7wKKWdvBm/at4nhA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB5066
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -138,4 +138,4 @@ On 2020-05-11 2:59 PM, Pablo Neira Ayuso wrote:
 > this problem?
 > 
 
-ordered workqueue executed one work at a time.
+ordered workqueue executes one work at a time.
