@@ -2,84 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5999C1CE15F
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 19:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACC961CE17D
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 19:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730744AbgEKRQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 13:16:38 -0400
-Received: from smtprelay0153.hostedemail.com ([216.40.44.153]:34178 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728556AbgEKRQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 13:16:37 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id B80131802EF0E;
-        Mon, 11 May 2020 17:16:36 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 10,1,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2525:2565:2682:2685:2828:2859:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3872:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4362:5007:6119:7875:7903:7974:8660:8957:9025:10004:10400:10848:11232:11658:11914:12043:12295:12297:12555:12696:12737:12740:12760:12895:12986:13069:13148:13230:13311:13357:13439:14096:14097:14157:14181:14659:14721:21080:21433:21451:21627:21811:21939:30012:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: feast86_39949ece28c5c
-X-Filterd-Recvd-Size: 2164
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf16.hostedemail.com (Postfix) with ESMTPA;
-        Mon, 11 May 2020 17:16:35 +0000 (UTC)
-Message-ID: <c4c6fee41ceb2eb4b583df37ad0d659357cd81d8.camel@perches.com>
-Subject: Re: [PATCH net-next v3] checkpatch: warn about uses of ENOTSUPP
-From:   Joe Perches <joe@perches.com>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 11 May 2020 10:16:34 -0700
-In-Reply-To: <20200511170807.2252749-1-kuba@kernel.org>
-References: <20200511170807.2252749-1-kuba@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
+        id S1730922AbgEKRTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 13:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730888AbgEKRTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 13:19:44 -0400
+Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D3DC061A0C
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 10:19:44 -0700 (PDT)
+Received: by mail-oo1-xc43.google.com with SMTP id r1so2102797oog.7
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 10:19:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=xMthw49hZu9qHb1A3FQZQpIzp6MT1FOKf7dSwlMye7w=;
+        b=VGRj2q3e930L5ryDZgc6E85P/FSMzA76cEf5xaPcFQOASmSyD7iUPSlxsxhnr5VtsN
+         Qg5/psxwnZbaIRdjwu6xFc6D9/nPw/r+l12dC6hyfiHIYMRcjegpkIh+sglRdhld8Mym
+         cLy4kaVauwBeCoSX9TH67xwWh7Fgsn98SOuKm5trnhdVfPM7SzKeoEmHsXRGdMVs/Kn3
+         ZNId8wwc3vU5tQximBBXTQ37dgmCV/KZa6gTtTiXO7I/A3PjcjV0OvDfU18xY2A2vqzm
+         zhbfQlN2g5v+hcPIaByouFs41YLOHKdtP9yb3NIDAtwAbAZxLU7QOiYdWb1GQR3C6ggi
+         o6Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=xMthw49hZu9qHb1A3FQZQpIzp6MT1FOKf7dSwlMye7w=;
+        b=k34XA77VWTR39nJJarvWkmm1sZAiB86F55ColWqDFwzW3Ry3dipqONH96vv0iuRLNC
+         6+DGiciTyOlFt0T5b64NSVRDOCHFWC2Ksao7liw8iGCAEpYEwNuudMPacmnbTioJEqVP
+         4wQrbnxAC0vKndN8WtMQccliVOBYYLaFlcheCngCFpGzHD+hua35eWLUH/NOJlULoHgU
+         fMnBarIGQrJS1cPy8XKAcXiJ3QLWcYxh4T2h+x28/02Nv9LcU6+LJGXnFbOVc0xKSmbZ
+         UH00J71qA4/prP3Jf5iSE/YQrX1Xw9YjzdGy27/1eKKenMsOkjC7VYhcJ2x+nTp7/b2H
+         dMGQ==
+X-Gm-Message-State: AGi0PuZo4JO2od++khlACNrTv96bDkCm1Tk4HTX0jBVuDM6O6PaoUnu+
+        L48F1h4h1QAXZosFi7RA3ICTgfJIeQTBH7azUvEvRe/t3H0=
+X-Google-Smtp-Source: APiQypLZ1Ar1HU2UuHvbAVGrjWT9piFW2b3ZhI4vXizQLynETy5Lh/KkX6wll7eqe4z42tCNzxxBgmLRbuYIKPR3e90=
+X-Received: by 2002:a4a:615d:: with SMTP id u29mr14734644ooe.15.1589217583479;
+ Mon, 11 May 2020 10:19:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a9d:5aa:0:0:0:0:0 with HTTP; Mon, 11 May 2020 10:19:43 -0700 (PDT)
+Reply-To: lawsonamegan343@gmail.com
+From:   "Mr. Lawson Amegan." <francageorge854@gmail.com>
+Date:   Mon, 11 May 2020 19:19:43 +0200
+Message-ID: <CACzJfQypySe1Vnf_QJUXxFcSCTqdkrfq=2GZdFDJverUQNKkhQ@mail.gmail.com>
+Subject: Good Day..
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-05-11 at 10:08 -0700, Jakub Kicinski wrote:
-> ENOTSUPP often feels like the right error code to use, but it's
-> in fact not a standard Unix error. E.g.:
-> 
-> $ python
-> > > > import errno
-> > > > errno.errorcode[errno.ENOTSUPP]
-> Traceback (most recent call last):
->   File "<stdin>", line 1, in <module>
-> AttributeError: module 'errno' has no attribute 'ENOTSUPP'
-> 
-> There were numerous commits converting the uses back to EOPNOTSUPP
-> but in some cases we are stuck with the high error code for backward
-> compatibility reasons.
-> 
-> Let's try prevent more ENOTSUPPs from getting into the kernel.
-> 
-> Recent example:
-> https://lore.kernel.org/netdev/20200510182252.GA411829@lunn.ch/
-> 
-> v3 (Joe):
->  - fix the "not file" condition.
-> 
-> v2 (Joe):
->  - add a link to recent discussion,
->  - don't match when scanning files, not patches to avoid sudden
->    influx of conversion patches.
-> https://lore.kernel.org/netdev/20200511165319.2251678-1-kuba@kernel.org/
-> 
-> v1:
-> https://lore.kernel.org/netdev/20200510185148.2230767-1-kuba@kernel.org/
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> Acked-by: Joe Perches <joe@perches.com>
-> ---
+Good Day..
 
-Thanks.
+I contacted you earlier for an important info, kindly get back to me.
 
-No worries here and it's not worth a respin, but
-typically the patch changelog goes below the --- line.
-
-
+Best regards,
