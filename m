@@ -2,120 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F052B1CD92A
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 13:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 519661CD932
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729696AbgEKL7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 07:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
+        id S1729988AbgEKL7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 07:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727873AbgEKL7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 07:59:25 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6D3C05BD09;
-        Mon, 11 May 2020 04:59:25 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id s3so7671730eji.6;
-        Mon, 11 May 2020 04:59:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U5ZXxiY+Vm4cmvVPkyq6B2NhB+MtOkJX978j6E6fG+4=;
-        b=qb8X3CpnIIceryP3gBWgaDyDmNyHT4zOBmwhw3/JKgmw2XSgMvBbThBxyy4SpNCbdE
-         mHSoUe/mD22GwXm3bCO2HLwVU0Xn/lQHj150o64WHzvlhjCZePRZ8Y39kcwFSDsALe4b
-         XkqrDb//Y43DacnfyCe126PMEpuV4ST/9oJrLQFStaHJCyqbNjISR97AyXvKR69NC78j
-         hzjgj/WOOLHsTJktJervvJklZMr47zrVFdIaBTT7pXd24k+MPQW/LZVSkQzmvWDwIMR3
-         ehxR0trEAtVLyFVQl9encN9QbCnHJjP/BHqtkMny3epMVY/N3MPUmBOUYSviRZcgcNYS
-         Vcfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U5ZXxiY+Vm4cmvVPkyq6B2NhB+MtOkJX978j6E6fG+4=;
-        b=cR+dvYhNHa8q5Zp0n42b+LsLDuKa8rUIeLQJHpFBPtn0yr0h9jhSgULLgkuXM9gRhx
-         OrSjkgbgsVqjQPMjbZXSRKwI8p7aRNwdDH4ilG/xin4ajO7/WJORkoGShSLlkiZ8+fLl
-         brVx8tmzvF/erQqpCj8GcYpS9QPleXxg6dsJCZshLetgjt0DqdVArUCtIcNg12CI60Gx
-         ww5HSrgZM58gSI0bL71WWqPpVMuO4iM2tzD2ahWf9TGWCk40pT4hC44bitB5EdcT8sJG
-         SLTIaGrj6LUsQmvMe3m/qAsPZoVt2nFYaa2It2NiycOuFCjAqdq4BVd5XCeodKZVCgNs
-         wSug==
-X-Gm-Message-State: AGi0PuaC+Lpcy5z3MwDKvKYbn/vr6Rb5m73EyFglCW3qEEPQ4ufZZJyr
-        qsZRrJszZH+ogCjHmopVIA4AMpOfGNyIBz0JZ64=
-X-Google-Smtp-Source: APiQypJJg8KkPWWbIEaaeTeo0z+VJjjE7t1OX2mvwN4z3m9H7eWIhdGyrtYNpETBiUKmKgYZHhWsORtA4iI2wxjVYBg=
-X-Received: by 2002:a17:906:660f:: with SMTP id b15mr12112963ejp.113.1589198364261;
- Mon, 11 May 2020 04:59:24 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729680AbgEKL7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 07:59:22 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA3CC061A0C;
+        Mon, 11 May 2020 04:59:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=uRorWmjDh2u9B9We3v9BbbBR+7nfbQ1nnHrY1zlliV4=; b=Y4LeXXEiOkgV4G0f6dFcjoINw7
+        pGV0LUx/72qNLNvIUlPj+U+wnUbpC/mh+a4n00JCvbaoBbF7D/vGJPlqCTa2F4bI6Z1u6KgsaST+b
+        3E0zhroVS92SX/ShM89H2Lt26IORGxshU15vhFozhXr+IUINEo84fKfyPrcM4ZeYnnBF4WNgwSJ7F
+        iJI3RWCkpVuoMw7tgyN5HsBkAX6IEefwBo4DGQCRkFPu1sdD2qZhN/y0DlfnwLr8dGUZCLiPZ1qhr
+        S3Mwn4/CY9r0JDtdFAdtggX/PvCBZ3Y8vYKgAwkOdOxNSVCM5gh3Kp/7mzzDnHLs2ydMQ693g8KUC
+        L/z+jvyQ==;
+Received: from [2001:4bb8:180:9d3f:c70:4a89:bc61:2] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jY75d-0007Tf-76; Mon, 11 May 2020 11:59:21 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] net/scm: cleanup scm_detach_fds
+Date:   Mon, 11 May 2020 13:59:12 +0200
+Message-Id: <20200511115913.1420836-3-hch@lst.de>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200511115913.1420836-1-hch@lst.de>
+References: <20200511115913.1420836-1-hch@lst.de>
 MIME-Version: 1.0
-References: <20200510164255.19322-1-olteanv@gmail.com> <20200510164255.19322-2-olteanv@gmail.com>
- <20200511113850.GQ1551@shell.armlinux.org.uk> <CA+h21hpsBvjDJpRKwOj8ncN_NyE1Qh+HQfYLFu3eb_wgyS__bg@mail.gmail.com>
- <20200511115412.GR1551@shell.armlinux.org.uk>
-In-Reply-To: <20200511115412.GR1551@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 11 May 2020 14:59:12 +0300
-Message-ID: <CA+h21ho1NQS=9DGhXbrQA7SxKR2N-hXjyYH32SKGTwYLZ1TUMA@mail.gmail.com>
-Subject: Re: [PATCH net-next 01/15] net: dsa: provide an option for drivers to
- always receive bridge VLANs
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 May 2020 at 14:54, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> On Mon, May 11, 2020 at 02:40:29PM +0300, Vladimir Oltean wrote:
-> > On Mon, 11 May 2020 at 14:38, Russell King - ARM Linux admin
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Sun, May 10, 2020 at 07:42:41PM +0300, Vladimir Oltean wrote:
-> > > > From: Russell King <rmk+kernel@armlinux.org.uk>
-> > > >
-> > > > DSA assumes that a bridge which has vlan filtering disabled is not
-> > > > vlan aware, and ignores all vlan configuration. However, the kernel
-> > > > software bridge code allows configuration in this state.
-> > > >
-> > > > This causes the kernel's idea of the bridge vlan state and the
-> > > > hardware state to disagree, so "bridge vlan show" indicates a correct
-> > > > configuration but the hardware lacks all configuration. Even worse,
-> > > > enabling vlan filtering on a DSA bridge immediately blocks all traffic
-> > > > which, given the output of "bridge vlan show", is very confusing.
-> > > >
-> > > > Provide an option that drivers can set to indicate they want to receive
-> > > > vlan configuration even when vlan filtering is disabled. At the very
-> > > > least, this is safe for Marvell DSA bridges, which do not look up
-> > > > ingress traffic in the VTU if the port is in 8021Q disabled state. It is
-> > > > also safe for the Ocelot switch family. Whether this change is suitable
-> > > > for all DSA bridges is not known.
-> > > >
-> > > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > >
-> > > This patch was NAK'd because of objections to the "vlan_bridge_vtu"
-> > > name.  Unfortunately, this means that the bug for Marvell switches
-> > > remains unfixed to this day.
-> > >
-> >
-> > How about "accept_vlan_while_unaware"?
->
-> It's up to DSA maintainers.
->
-> However, I find that rather confusing. What's "unaware"? The point of
-> this boolean is to program the vlan tables while vlan filtering is
-> disabled. "accept_vlan_while_vlan_filtering_disabled" is way too long.
->
+Factor out two helpes to keep the code tidy.
 
-Considering the VLAN filtering modes as "disabled", "check",
-"fallback" and "secure", I think a slight improvement over your
-wording might be "install_vlans_while_disabled". I hope that is not
-confusing and also not too long.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ net/core/scm.c | 94 +++++++++++++++++++++++++++-----------------------
+ 1 file changed, 51 insertions(+), 43 deletions(-)
 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+diff --git a/net/core/scm.c b/net/core/scm.c
+index abfdc85a64c1b..168b006a52ff9 100644
+--- a/net/core/scm.c
++++ b/net/core/scm.c
+@@ -277,78 +277,86 @@ void put_cmsg_scm_timestamping(struct msghdr *msg, struct scm_timestamping_inter
+ }
+ EXPORT_SYMBOL(put_cmsg_scm_timestamping);
+ 
++static int __scm_install_fd(struct file *file, int __user *ufd, int o_flags)
++{
++	struct socket *sock;
++	int new_fd;
++	int error;
++
++	error = security_file_receive(file);
++	if (error)
++		return error;
++
++	new_fd = get_unused_fd_flags(o_flags);
++	if (new_fd < 0)
++		return new_fd;
++
++	error = put_user(new_fd, ufd);
++	if (error) {
++		put_unused_fd(new_fd);
++		return error;
++	}
++
++	/* Bump the usage count and install the file. */
++	sock = sock_from_file(file, &error);
++	if (sock) {
++		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
++		sock_update_classid(&sock->sk->sk_cgrp_data);
++	}
++	fd_install(new_fd, get_file(file));
++	return error;
++}
++
++static int scm_max_fds(struct msghdr *msg)
++{
++	if (msg->msg_controllen <= sizeof(struct cmsghdr))
++		return 0;
++	return (msg->msg_controllen - sizeof(struct cmsghdr)) / sizeof(int);
++}
++
+ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
+ {
+ 	struct cmsghdr __user *cm
+ 		= (__force struct cmsghdr __user*)msg->msg_control;
+-
+-	int fdmax = 0;
+-	int fdnum = scm->fp->count;
+-	struct file **fp = scm->fp->fp;
+-	int __user *cmfptr;
++	int o_flags = (msg->msg_flags & MSG_CMSG_CLOEXEC) ? O_CLOEXEC : 0;
++	int fdmax = min_t(int, scm_max_fds(msg), scm->fp->count);
++	int __user *cmsg_data = CMSG_USER_DATA(cm);
+ 	int err = 0, i;
+ 
+-	if (MSG_CMSG_COMPAT & msg->msg_flags) {
++	if (msg->msg_flags & MSG_CMSG_COMPAT) {
+ 		scm_detach_fds_compat(msg, scm);
+ 		return;
+ 	}
+ 
+-	if (msg->msg_controllen > sizeof(struct cmsghdr))
+-		fdmax = ((msg->msg_controllen - sizeof(struct cmsghdr))
+-			 / sizeof(int));
+-
+-	if (fdnum < fdmax)
+-		fdmax = fdnum;
+-
+-	for (i=0, cmfptr =(int __user *)CMSG_USER_DATA(cm); i<fdmax;
+-	     i++, cmfptr++)
+-	{
+-		struct socket *sock;
+-		int new_fd;
+-		err = security_file_receive(fp[i]);
++	for (i = 0; i < fdmax; i++) {
++		err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
+ 		if (err)
+ 			break;
+-		err = get_unused_fd_flags(MSG_CMSG_CLOEXEC & msg->msg_flags
+-					  ? O_CLOEXEC : 0);
+-		if (err < 0)
+-			break;
+-		new_fd = err;
+-		err = put_user(new_fd, cmfptr);
+-		if (err) {
+-			put_unused_fd(new_fd);
+-			break;
+-		}
+-		/* Bump the usage count and install the file. */
+-		sock = sock_from_file(fp[i], &err);
+-		if (sock) {
+-			sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+-			sock_update_classid(&sock->sk->sk_cgrp_data);
+-		}
+-		fd_install(new_fd, get_file(fp[i]));
+ 	}
+ 
+-	if (i > 0)
+-	{
+-		int cmlen = CMSG_LEN(i*sizeof(int));
++	if (i > 0)  {
++		int cmlen = CMSG_LEN(i * sizeof(int));
++
+ 		err = put_user(SOL_SOCKET, &cm->cmsg_level);
+ 		if (!err)
+ 			err = put_user(SCM_RIGHTS, &cm->cmsg_type);
+ 		if (!err)
+ 			err = put_user(cmlen, &cm->cmsg_len);
+ 		if (!err) {
+-			cmlen = CMSG_SPACE(i*sizeof(int));
++			cmlen = CMSG_SPACE(i * sizeof(int));
+ 			if (msg->msg_controllen < cmlen)
+ 				cmlen = msg->msg_controllen;
+ 			msg->msg_control += cmlen;
+ 			msg->msg_controllen -= cmlen;
+ 		}
+ 	}
+-	if (i < fdnum || (fdnum && fdmax <= 0))
++
++	if (i < scm->fp->count || (scm->fp->count && fdmax <= 0))
+ 		msg->msg_flags |= MSG_CTRUNC;
+ 
+ 	/*
+-	 * All of the files that fit in the message have had their
+-	 * usage counts incremented, so we just free the list.
++	 * All of the files that fit in the message have had their usage counts
++	 * incremented, so we just free the list.
+ 	 */
+ 	__scm_destroy(scm);
+ }
+-- 
+2.26.2
+
