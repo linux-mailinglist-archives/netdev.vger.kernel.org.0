@@ -2,98 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87F3B1CDA32
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D78D41CDA37
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729919AbgEKMjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 08:39:42 -0400
-Received: from mout.kundenserver.de ([217.72.192.75]:53087 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbgEKMjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:39:41 -0400
-Received: from mail-qv1-f52.google.com ([209.85.219.52]) by
- mrelayeu.kundenserver.de (mreue109 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1N0o3X-1jD1w72qKz-00wj7v; Mon, 11 May 2020 14:39:38 +0200
-Received: by mail-qv1-f52.google.com with SMTP id x13so2480304qvr.2;
-        Mon, 11 May 2020 05:39:38 -0700 (PDT)
-X-Gm-Message-State: AOAM532QioAGWDZuITaSW7oiOoIH4dW1cne4KwD3g3F6c3+GDsSZV6Vz
-        c/X6sOoJENybWLcssGEjVjlbSk+ibPAYsSV+yZY=
-X-Google-Smtp-Source: ABdhPJy3yFsBWp1nK1ImGF0MitXLs6M20wf6JJjlnmGirp/X0hBOy7mBcRbBLXQAjFiEonL+pzBlJFwyLyikux1+b14=
-X-Received: by 2002:a05:6214:2f1:: with SMTP id h17mr2676901qvu.222.1589200777391;
- Mon, 11 May 2020 05:39:37 -0700 (PDT)
+        id S1729476AbgEKMkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 08:40:36 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:23836 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728084AbgEKMkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:40:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589200834;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=hfjikQ9p1CZNbHLDaNQ5BqLvccZnhPT1ZB3ciPyyTvU=;
+        b=MA4pkNDfrv86SI79F3A/pbR4kAfAu/lQphd0LlthEdy2tfd5wXvea/tFBQtwgCuNt6kyp0
+        jeGy9K4Ias0XdEWi6ju3KeJDop3QPgKKvGfgOgbXdvYN5xMW8fvIvn6S6W23oBimky/ZVi
+        BafiA0zehcsJJlZFRXdsZxHUx0vWz6w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-348-Tjp6mZU4NUO83RNPbf5WdQ-1; Mon, 11 May 2020 08:40:30 -0400
+X-MC-Unique: Tjp6mZU4NUO83RNPbf5WdQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E2065107ACCD;
+        Mon, 11 May 2020 12:40:28 +0000 (UTC)
+Received: from ebuild.redhat.com (ovpn-115-161.ams2.redhat.com [10.36.115.161])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ECA8D610FD;
+        Mon, 11 May 2020 12:40:23 +0000 (UTC)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, andriin@fb.com, toke@redhat.com
+Subject: [PATCH bpf-next v3] libbpf: fix probe code to return EPERM if encountered
+Date:   Mon, 11 May 2020 14:40:18 +0200
+Message-Id: <158920079637.7533.5703299045869368435.stgit@ebuild>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-References: <20200509120707.188595-1-arnd@arndb.de> <20200509120707.188595-2-arnd@arndb.de>
- <87v9l24qz6.fsf@kamboji.qca.qualcomm.com> <87r1vq4qev.fsf@kamboji.qca.qualcomm.com>
-In-Reply-To: <87r1vq4qev.fsf@kamboji.qca.qualcomm.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 11 May 2020 14:39:21 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2kRPcpv=xR6yYvFQ5bnFbOWAzyPyzzqufyzFmk2WW2fA@mail.gmail.com>
-Message-ID: <CAK8P3a2kRPcpv=xR6yYvFQ5bnFbOWAzyPyzzqufyzFmk2WW2fA@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] ath10k: fix ath10k_pci struct layout
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Maharaja Kennadyrajan <mkenna@codeaurora.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        ath10k@lists.infradead.org, "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:4nh7np8KnWzZji1NSOLcEqFznUScdP31/SObguYzHTHKeLhM8dR
- vbBNs3lYuCnlSH4508vs4sSp0Heto3UeiEC/VJDIdjgjwRrexfHZ9OSx/KX6Xu+tYBEVn1Z
- c0KntIR4iBSjdsUWywTYTuiJ4Lgd9h+kkj/5tVZBhjL0x1vEQnv8v8s+PvESIUY9TfvI9ko
- MFDMQa5eyhCQ1FN2xrCOg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:N13znjD/Nx4=:nGpiXOL5OENPjtKIQ3VHnG
- KcdQ5d1Ha/yqDoZa7svXovW36CKkgCmGQnhNI46XwRAUCmyk2G5Dc23BBucE7VIfajLtuMTsp
- 1kf3R/BJJgQWyMhqLD7vr1wblcu7x+NKGCPaoFDeqzqyEdF04OzJzE0Rlp9B6LGu071ptZoti
- HdMF50SshcnFgArlBIjdtJUIdDBah3vDekM4kV1VUARuL0xMm77bBNgkbVyXFPlIM1t45RYwy
- 0GvY/IPnTnnrBLfZaA6dnZuDuYtW3FfvQRxDM6r2ArxgJ8WMOILktZl6eOKOOFfqhE0uqdBnz
- asveuBfSCX7D2sR2+LLuHTsbrLlk/ExoDLbHiEkDAf1GZchVUbiO0BFHtL/iV2ebUXAch0NfM
- Q/u1tAca8LnVwseS4gSXjPOboIiPxblYGRqAWmurCywHiQhZwVqR89g8yhLewciYQwD2XBUtq
- 67GDSTk9oaAD4yr5X7D9dSTBJ6Qv2ib4IN5rqtLMFZn6CY5GN7XmPpi9uF/2ihy+g1DC4x9w+
- XPNYL9D9afKkCf18m3m93G9nLj+uD29htrCFlEvxmArgiW8NFr88O2LPBB9YMILgmjIzJhFzH
- Mp1Z7X5L6iYwWxA87hNrTBw7tntaZyG2c/Mhq1thblmAT5HJ57CrPpz/TmJOpgVA9aCZWnHLp
- UehbCNoUsg+s+N8gtAXTxJItV2azc0J50ZbTQR1ubPfBrPSLemIMpLhCn0P+ZfWT2CSXRqfSS
- Nl0aAYPTfpbj8jHURrV5MpsRhZYkEsK4THLMEgQyjDLlCYAkCviN3/ypJfkkIr3AKGY8kkhab
- AMXYzNbyZAKnPIH0Smlpqg9Y6rO1CZnxgPVm11sMUIH7M0oqtg=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 2:17 PM Kalle Valo <kvalo@codeaurora.org> wrote:
->
-> Kalle Valo <kvalo@codeaurora.org> writes:
-> >>
-> >> Change it to a flexible-array member and move it last again to
-> >> make it work correctly, prevent the same thing from happening
-> >> again (all compilers warn about flexible-array members in the
-> >> middle of a struct) and get it to build without warnings.
-> >
-> > Very good find, thanks! This bug would cause all sort of strange memory
-> > corruption issues.
->
-> This motivated me to switch to using GCC 10.x and I noticed that you had
-> already upgraded crosstool so it was a trivial thing to do, awesome :)
->
-> https://mirrors.edge.kernel.org/pub/tools/crosstool/
->
-> I use crosstool like this using GNUmakefile:
->
-> CROSS_COMPILE=/opt/cross/gcc-10.1.0-nolibc/x86_64-linux/bin/x86_64-linux-
-> include Makefile
+When the probe code was failing for any reason ENOTSUP was returned, even
+if this was due to no having enough lock space. This patch fixes this by
+returning EPERM to the user application, so it can respond and increase
+the RLIMIT_MEMLOCK size.
 
-Right, I have something similar (with many more additional things)
-in a local makefile here.  I mainly use that to pick the correct cross
-toolchain based on ${ARCH}, and to build multiple randconfig kernels
-in parallel with 'make -j${NR_CPUS}' for better CPU utilization.
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
+v3: Updated error message to be more specific as suggested by Andrii
+v2: Split bpf_object__probe_name() in two functions as suggested by Andrii
 
-> I think it's handy trick and would be good to mention that in the
-> crosstool main page. That way I could just point people to the crosstool
-> main page when they are using ancient compilers and would need to
-> upgrade.
+ tools/lib/bpf/libbpf.c |   31 ++++++++++++++++++++++++++-----
+ 1 file changed, 26 insertions(+), 5 deletions(-)
 
-I actually started working on a script that I'd like to include the kernel
-sources to list the installed compilers, automatically pick on that
-works for the current architecture, or download one for local installation.
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 8f480e29a6b0..ad3043c5db13 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -3149,7 +3149,7 @@ int bpf_map__resize(struct bpf_map *map, __u32 max_entries)
+ }
+ 
+ static int
+-bpf_object__probe_name(struct bpf_object *obj)
++bpf_object__probe_loading(struct bpf_object *obj)
+ {
+ 	struct bpf_load_program_attr attr;
+ 	char *cp, errmsg[STRERR_BUFSIZE];
+@@ -3170,14 +3170,34 @@ bpf_object__probe_name(struct bpf_object *obj)
+ 	ret = bpf_load_program_xattr(&attr, NULL, 0);
+ 	if (ret < 0) {
+ 		cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
+-		pr_warn("Error in %s():%s(%d). Couldn't load basic 'r0 = 0' BPF program.\n",
+-			__func__, cp, errno);
++		pr_warn("Error in %s():%s(%d). Couldn't load trivial BPF "
++			"program. Make sure your kernel supports BPF "
++			"(CONFIG_BPF_SYSCALL=y) and/or that RLIMIT_MEMLOCK is "
++			"set to big enough value.\n", __func__, cp, errno);
+ 		return -errno;
+ 	}
+ 	close(ret);
+ 
+-	/* now try the same program, but with the name */
++	return 0;
++}
++
++static int
++bpf_object__probe_name(struct bpf_object *obj)
++{
++	struct bpf_load_program_attr attr;
++	struct bpf_insn insns[] = {
++		BPF_MOV64_IMM(BPF_REG_0, 0),
++		BPF_EXIT_INSN(),
++	};
++	int ret;
++
++	/* make sure loading with name works */
+ 
++	memset(&attr, 0, sizeof(attr));
++	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
++	attr.insns = insns;
++	attr.insns_cnt = ARRAY_SIZE(insns);
++	attr.license = "GPL";
+ 	attr.name = "test";
+ 	ret = bpf_load_program_xattr(&attr, NULL, 0);
+ 	if (ret >= 0) {
+@@ -5386,7 +5406,8 @@ int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
+ 
+ 	obj->loaded = true;
+ 
+-	err = bpf_object__probe_caps(obj);
++	err = bpf_object__probe_loading(obj);
++	err = err ? : bpf_object__probe_caps(obj);
+ 	err = err ? : bpf_object__resolve_externs(obj, obj->kconfig);
+ 	err = err ? : bpf_object__sanitize_and_load_btf(obj);
+ 	err = err ? : bpf_object__sanitize_maps(obj);
 
-      Arnd
