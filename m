@@ -2,213 +2,1879 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D591CE43D
+	by mail.lfdr.de (Postfix) with ESMTP id C7A6A1CE43E
 	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 21:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731350AbgEKTY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 15:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729453AbgEKTY1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 15:24:27 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A23C061A0C;
-        Mon, 11 May 2020 12:24:27 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id u16so20645037wmc.5;
-        Mon, 11 May 2020 12:24:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uxtARxCkPHWXnqT8lNpH00A1Ut0N5U8vfZ7iT6ckY1E=;
-        b=AG7MZsX4ZOvpaULyOTIRKeZi/M6nLPWkPou4BnwRwJjZZDbwmwc2GN+LFtRg6wIESO
-         vDwFcsA0F9F8GADGT963+l1vut2xgX7EXRxhHkCv6hTX5WfGbNkIvpOrqt1P8oTzAJz/
-         m5qsiNAMDXCrGhAu62TssTPTyLX86ziIjlYQYM28Z3sLDG7euOQE0FHm9wmb/jvmSBPV
-         KXJj34jfWOCW4evwPoBU2tc+6EDIbrbGKo00RF3+ioMJPD8pnCrwjacGigLPWEAZQdRO
-         mH1+73oEcvkmFLleEXiquqHS2lIN9MqN2mLm+NJaK2yDyzE4nh5a5CG9TexWJG6o0TWy
-         oyoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uxtARxCkPHWXnqT8lNpH00A1Ut0N5U8vfZ7iT6ckY1E=;
-        b=Xg9hdysoE3KkZu0il9CNMK/6vq58uuFuFfbnAaXAWc6JBt288Qsv91C+xXts9OP/7q
-         PMH6XmpApW2M8+Km+gEVJ+8sHozwRLRiiy9OJpNnjYMrptuRTC0ei9BNdB45R5XY5qhJ
-         12lu9Xhcrfcb99LZI+WGAnVq0nwHH9f7Hccp/Dy1x+D3gSpa5mfjpCI2gFiF1MJ3qQRa
-         uGdJssDVfAeq6Sf30FnacLVI7xUdZIBHCpQmbXQsMgrNcQ/f3HJNYji/DOjff6YefXhA
-         rI1I+6layG3SicCvEAY1B/g1wuoRwaAPOrkHOevyYdskMt66SIyThVEc4ymKiL//njDT
-         cVqQ==
-X-Gm-Message-State: AGi0PuasNtS1aIYhDjCKo0p/fkATtl09lFy/vMjDvBUDI5fmhD5LRMJk
-        8uaTTutH7tmxJRfRV20QC5Q=
-X-Google-Smtp-Source: APiQypJW5vvk30z5iWdY0hSQCc1Ykgc7TXvbdxesRiVaoSvVocTszQuT5j6sF6kDtbT7WU3aCncc9w==
-X-Received: by 2002:a1c:6402:: with SMTP id y2mr33787682wmb.116.1589225065733;
-        Mon, 11 May 2020 12:24:25 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p4sm8187632wrq.31.2020.05.11.12.24.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 May 2020 12:24:25 -0700 (PDT)
-Subject: Re: [PATCH v2 09/14] net: ethernet: mtk-eth-mac: new driver
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Edwin Peer <edwin.peer@broadcom.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-References: <20200511150759.18766-1-brgl@bgdev.pl>
- <20200511150759.18766-10-brgl@bgdev.pl>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <dab80587-a196-e0ab-ae97-f8e5cc4a71d4@gmail.com>
-Date:   Mon, 11 May 2020 12:24:20 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.0
+        id S1731397AbgEKTYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 15:24:46 -0400
+Received: from mail-eopbgr20128.outbound.protection.outlook.com ([40.107.2.128]:1444
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729453AbgEKTYp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 15:24:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F1LJsZbYClHnq4+3id9vhPup/cgExdQx+T+9btQEPUlEJ7iZ2S615SBQ43RZ7GoxzHtOBzWuyKvGTPdD1jJERaMYxUqKEsra09hPW8+XcyAr4Y0Z8bvaQJ6lclLhfoLEIIaFGD8KJwEaXMtCakegFtgaQx508b9F2s/6pk08gU5NUWPhEVgiOiiYk7f/QwK2OYfV+q+V6HocWw2hDfrs8D+UgFXaLWokBUUfwjEo4CDJk4ERDnRfqWpSaRwXk9PR34cVkr/eGGcKBzVCc/FeAIrkrIaEOu1/kE/YTEQcdWWgFrCnvDvWKgE49cCMBBOxGzJ5DXJD5b4uW+hRKCrGIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tEuKIowH+smn3aqK8sz/sha8WVDGjQM9JwuDp0+1MbQ=;
+ b=X4HotOTwt8p3FQHejjB9V1t/bGubkTrAF09HIL+4a8Mqq9XDkqKGy6ey7kstpkixpon+coCCNf1pD3qrBPPz4L27y83njn2ZKcwIHcPJyh8EtX4NnVmp6GiT2vebWt7RySNfa8MZWKCZwGc15WMiFPnbh04Lfv0L0Sb0Rxqed5uFtPKh0M4+V198Q7UhhpWIuVpzuBTMJkmqzuz8p/KnnWLeDiTcBDvGz9zZtlueDPsqRaH4aBqpOCchyV6uWYgXpiizi/BeP3/gZ8F6qPLrp2n/8wp+0+VVomBLz5Ob1X4lrDJjv9Blgn7KKcWkVuK1m2IXMt+BgnkBA0kt7n6/Nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tEuKIowH+smn3aqK8sz/sha8WVDGjQM9JwuDp0+1MbQ=;
+ b=VmxpZW5IKGjNB3zn6SEPTJ25AIWH8Qij0s5W8XyDoYe0mwx8iLlyZcah9PGswxLPUTrKxakZQWlVz3VAJVap0r59p4NmtAYgnuseG30nQDQeaErHAvj0uttdgq5pLks+44vQj3VraJ7irkOc4K61gj3oKqEeVxrCDT6sijiIhCk=
+Authentication-Results: resnulli.us; dkim=none (message not signed)
+ header.d=none;resnulli.us; dmarc=none action=none header.from=plvision.eu;
+Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::10)
+ by VI1P190MB0174.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:a3::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28; Mon, 11 May
+ 2020 19:24:26 +0000
+Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ ([fe80::f983:c9a8:573a:751c]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ ([fe80::f983:c9a8:573a:751c%7]) with mapi id 15.20.2979.033; Mon, 11 May 2020
+ 19:24:26 +0000
+Date:   Mon, 11 May 2020 22:24:22 +0300
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Subject: Re: [RFC next-next v2 1/5] net: marvell: prestera: Add driver for
+ Prestera family ASIC devices
+Message-ID: <20200511192422.GH25096@plvision.eu>
+References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
+ <20200430232052.9016-2-vadym.kochan@plvision.eu>
+ <20200511125723.GI2245@nanopsycho>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200511125723.GI2245@nanopsycho>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: AM6P194CA0001.EURP194.PROD.OUTLOOK.COM
+ (2603:10a6:209:90::14) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:802:35::10)
 MIME-Version: 1.0
-In-Reply-To: <20200511150759.18766-10-brgl@bgdev.pl>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from plvision.eu (217.20.186.93) by AM6P194CA0001.EURP194.PROD.OUTLOOK.COM (2603:10a6:209:90::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26 via Frontend Transport; Mon, 11 May 2020 19:24:24 +0000
+X-Originating-IP: [217.20.186.93]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 766c205e-6f59-4a21-704a-08d7f5e0eacd
+X-MS-TrafficTypeDiagnostic: VI1P190MB0174:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1P190MB0174CD494D93EAF60F37985A95A10@VI1P190MB0174.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:284;
+X-Forefront-PRVS: 04004D94E2
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LJ1YQLreRbmq912HySY/uAjScrZsxO2bKa+SDxbNXds7/Mwl6P/IgZMJgKgyGimQEjFZs+0Af+zR0eZJxga6ME2JCC65U7pR5qelKuN6Pd9qNgBd8wT7pGMWi5V4ppFuguueyws/0f2WY9dga+EZiw54L5jGV/AIJG/Sq3xn03T1IHnCDOjqC6fL3X2A6UKMH0kjNN/8sOSWGQ2vpLK0JWgyqnAnDzHcH3Z1z0qgCVqTcLWVm1PGPe1q5ELrS+2/x7HPS54wgpAwSvVjoleM0syDpOMTPrf8DwwOGopXHlGxEjUF77WeyEm2Q4ym1TkRSlNOtn0PCMHOIHI6HFSOfOWa/J06FKUyaMacaT/NYMuZZQsSXxmbmWmM7LY9donvUsyv4dsD/3xLW7YoXxSLWtAK7vjsfeqZF+SYxeVJd8ebVpXYwFXYL5mH3yoP7RnkLizMls1CIofHtkkLXesl+hz7fWt1dy7SbL5EIdFrHAoN5AC4vNnEonzipOkCdl/+jQRQT5F46gPsjqprpUXcMw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(376002)(346002)(136003)(366004)(396003)(39830400003)(33430700001)(26005)(66556008)(54906003)(1076003)(86362001)(956004)(52116002)(7696005)(2616005)(4326008)(33656002)(30864003)(8936002)(6916009)(8676002)(508600001)(33440700001)(66946007)(36756003)(5660300002)(44832011)(55016002)(2906002)(8886007)(186003)(16526019)(316002)(66476007)(559001)(579004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: i9iHe/htyvQOSYMJPehnHvut6nco7ofKMZQKzIn5BbMDvEbBTOT+Skk9eBXR73A7IHAOmIpPc8vCRqarN5v5eN9icyrU+ziPAgtHoRBotJ9rY4n89mPCSVzAqAbEdX0zLvDyN9Ar9ffpuy7GLELHS0In8RrlAn9U2iQXRHOpdR3Ej4b9LzFnFdO4EE3hT5bvcX7EeENe3isUKhXtpaO/xTAi0OVPs9XFj8LFQd4a+lRvTc2ZeZYzPMFw7v2BSOs1BQJgVbFTbelTWi1fyylX2+uvd8ors/Ho9fnKofC6pKVm41hVaFlDmKhA11t3F7fcA7AIiYJH9/80g3QCYO2srESaPkRRQcox9p74idfpzhPqXqdjQm4YwNkGDMUN3FlHMfL2ETJQcWpt4bVuTYBIlKd1vx4ZMeOZwMdKBATrNDqh9uzQJmhA6zWJTxkwgAPk/LRipylwEWL7dTg81+P0elw67BxSmZ+BCcCbarlERLw=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 766c205e-6f59-4a21-704a-08d7f5e0eacd
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 19:24:25.9354
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6rW8qppl/UpmCQV7X96SdQDz3BVPOgoeqbB8KfWJdKhPhGUGEv1ZJpD9xausvNVJDu9W+StI6eJpZyxxSHRTDGbskHBtDvZ4ep81hDSool0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0174
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 5/11/2020 8:07 AM, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+On Mon, May 11, 2020 at 02:57:23PM +0200, Jiri Pirko wrote:
+> [...]
 > 
-> This adds the driver for the MediaTek Ethernet MAC used on the MT8* SoC
-> family. For now we only support full-duplex.
+> >diff --git a/drivers/net/ethernet/marvell/prestera/prestera_dsa.c b/drivers/net/ethernet/marvell/prestera/prestera_dsa.c
+> >new file mode 100644
+> >index 000000000000..c4f7d9f6edcb
+> >--- /dev/null
+> >+++ b/drivers/net/ethernet/marvell/prestera/prestera_dsa.c
+> >@@ -0,0 +1,134 @@
+> >+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+> >+/* Copyright (c) 2020 Marvell International Ltd. All rights reserved */
+> >+
+> >+#include "prestera_dsa.h"
+> >+
+> >+#include <linux/string.h>
+> >+#include <linux/bitops.h>
+> >+#include <linux/bitfield.h>
+> >+#include <linux/errno.h>
+> >+
+> >+#define W0_MASK_IS_TAGGED	BIT(29)
+> >+
+> >+/* TrgDev[4:0] = {Word0[28:24]} */
+> >+#define W0_MASK_HW_DEV_NUM	GENMASK(28, 24)
+> >+
+> >+/* SrcPort/TrgPort extended to 8b
+> >+ * SrcPort/TrgPort[7:0] = {Word2[20], Word1[11:10], Word0[23:19]}
+> >+ */
+> >+#define W0_MASK_IFACE_PORT_NUM	GENMASK(23, 19)
+> >+
+> >+/* bits 30:31 - TagCommand 1 = FROM_CPU */
+> >+#define W0_MASK_DSA_CMD		GENMASK(31, 30)
+> >+
+> >+/* bits 13:15 -- UP */
+> >+#define W0_MASK_VPT		GENMASK(15, 13)
+> >+
+> >+#define W0_MASK_EXT_BIT		BIT(12)
+> >+
+> >+/* bits 0:11 -- VID */
+> >+#define W0_MASK_VID		GENMASK(11, 0)
+> >+
+> >+/* SrcPort/TrgPort extended to 8b
+> >+ * SrcPort/TrgPort[7:0] = {Word2[20], Word1[11:10], Word0[23:19]}
+> >+ */
+> >+#define W1_MASK_IFACE_PORT_NUM	GENMASK(11, 10)
+> >+
+> >+#define W1_MASK_EXT_BIT		BIT(31)
+> >+#define W1_MASK_CFI_BIT		BIT(30)
+> >+
+> >+/* SrcPort/TrgPort extended to 8b
+> >+ * SrcPort/TrgPort[7:0] = {Word2[20], Word1[11:10], Word0[23:19]}
+> >+ */
+> >+#define W2_MASK_IFACE_PORT_NUM	BIT(20)
+> >+
+> >+#define W2_MASK_EXT_BIT		BIT(31)
+> >+
+> >+/* trgHwDev and trgPort
+> >+ * TrgDev[11:5] = {Word3[6:0]}
+> >+ */
+> >+#define W3_MASK_HW_DEV_NUM	GENMASK(6, 0)
+> >+
+> >+/* VID 16b [15:0] = {Word3[30:27], Word0[11:0]} */
+> >+#define W3_MASK_VID		GENMASK(30, 27)
+> >+
+> >+/* TRGePort[16:0] = {Word3[23:7]} */
+> >+#define W3_MASK_DST_EPORT	GENMASK(23, 7)
+> >+
+> >+#define DEV_NUM_MASK		GENMASK(11, 5)
+> >+#define VID_MASK		GENMASK(15, 12)
 > 
-> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> ---
+> Looks like you forgot to add the "prestera" prefix here.
+> 
+> 
+> >+
+> >+int prestera_dsa_parse(struct prestera_dsa *dsa, const u8 *dsa_buf)
+> >+{
+> >+	u32 *dsa_words = (u32 *)dsa_buf;
+> >+	enum prestera_dsa_cmd cmd;
+> >+	u32 words[4] = { 0 };
+> >+	u32 field;
+> >+
+> >+	words[0] = ntohl((__force __be32)dsa_words[0]);
+> >+	words[1] = ntohl((__force __be32)dsa_words[1]);
+> >+	words[2] = ntohl((__force __be32)dsa_words[2]);
+> >+	words[3] = ntohl((__force __be32)dsa_words[3]);
+> >+
+> >+	/* set the common parameters */
+> >+	cmd = (enum prestera_dsa_cmd)FIELD_GET(W0_MASK_DSA_CMD, words[0]);
+> >+
+> >+	/* only to CPU is supported */
+> >+	if (unlikely(cmd != PRESTERA_DSA_CMD_TO_CPU_E))
+> >+		return -EINVAL;
+> >+
+> >+	if (FIELD_GET(W0_MASK_EXT_BIT, words[0]) == 0)
+> >+		return -EINVAL;
+> >+	if (FIELD_GET(W1_MASK_EXT_BIT, words[1]) == 0)
+> >+		return -EINVAL;
+> >+	if (FIELD_GET(W2_MASK_EXT_BIT, words[2]) == 0)
+> >+		return -EINVAL;
+> >+
+> >+	field = FIELD_GET(W3_MASK_VID, words[3]);
+> >+
+> >+	dsa->vlan.is_tagged = (bool)FIELD_GET(W0_MASK_IS_TAGGED, words[0]);
+> >+	dsa->vlan.cfi_bit = (u8)FIELD_GET(W1_MASK_CFI_BIT, words[1]);
+> >+	dsa->vlan.vpt = (u8)FIELD_GET(W0_MASK_VPT, words[0]);
+> >+	dsa->vlan.vid = (u16)FIELD_GET(W0_MASK_VID, words[0]);
+> >+	dsa->vlan.vid &= ~VID_MASK;
+> >+	dsa->vlan.vid |= FIELD_PREP(VID_MASK, field);
+> >+
+> >+	field = FIELD_GET(W3_MASK_HW_DEV_NUM, words[3]);
+> >+
+> >+	dsa->hw_dev_num = FIELD_GET(W0_MASK_HW_DEV_NUM, words[0]);
+> >+	dsa->hw_dev_num &= W3_MASK_HW_DEV_NUM;
+> >+	dsa->hw_dev_num |= FIELD_PREP(DEV_NUM_MASK, field);
+> >+
+> >+	dsa->port_num = (FIELD_GET(W0_MASK_IFACE_PORT_NUM, words[0]) << 0) |
+> >+			(FIELD_GET(W1_MASK_IFACE_PORT_NUM, words[1]) << 5) |
+> >+			(FIELD_GET(W2_MASK_IFACE_PORT_NUM, words[2]) << 7);
+> >+	return 0;
+> >+}
+> >+
+> >+int prestera_dsa_build(const struct prestera_dsa *dsa, u8 *dsa_buf)
+> >+{
+> >+	__be32 *dsa_words = (__be32 *)dsa_buf;
+> >+	u32 words[4] = { 0 };
+> >+
+> >+	if (dsa->hw_dev_num >= BIT(12))
+> >+		return -EINVAL;
+> >+	if (dsa->port_num >= BIT(17))
+> >+		return -EINVAL;
+> >+
+> >+	words[0] |= FIELD_PREP(W0_MASK_DSA_CMD, PRESTERA_DSA_CMD_FROM_CPU_E);
+> >+
+> >+	words[0] |= FIELD_PREP(W0_MASK_HW_DEV_NUM, dsa->hw_dev_num);
+> >+	words[3] |= FIELD_PREP(W3_MASK_HW_DEV_NUM, (dsa->hw_dev_num >> 5));
+> >+	words[3] |= FIELD_PREP(W3_MASK_DST_EPORT, dsa->port_num);
+> >+
+> >+	words[0] |= FIELD_PREP(W0_MASK_EXT_BIT, 1);
+> >+	words[1] |= FIELD_PREP(W1_MASK_EXT_BIT, 1);
+> >+	words[2] |= FIELD_PREP(W2_MASK_EXT_BIT, 1);
+> >+
+> >+	dsa_words[0] = htonl(words[0]);
+> >+	dsa_words[1] = htonl(words[1]);
+> >+	dsa_words[2] = htonl(words[2]);
+> >+	dsa_words[3] = htonl(words[3]);
+> >+
+> >+	return 0;
+> >+}
+> >diff --git a/drivers/net/ethernet/marvell/prestera/prestera_dsa.h b/drivers/net/ethernet/marvell/prestera/prestera_dsa.h
+> >new file mode 100644
+> >index 000000000000..34cb260f1a74
+> >--- /dev/null
+> >+++ b/drivers/net/ethernet/marvell/prestera/prestera_dsa.h
+> >@@ -0,0 +1,37 @@
+> >+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+> >+ *
+> >+ * Copyright (c) 2020 Marvell International Ltd. All rights reserved.
+> >+ *
+> >+ */
+> >+#ifndef __PRESTERA_DSA_H_
+> >+#define __PRESTERA_DSA_H_
+> >+
+> >+#include <linux/types.h>
+> >+
+> >+#define PRESTERA_DSA_HLEN	16
+> >+
+> >+enum prestera_dsa_cmd {
+> >+	/* DSA command is "To CPU" */
+> >+	PRESTERA_DSA_CMD_TO_CPU_E = 0,
+> >+
+> >+	/* DSA command is "FROM CPU" */
+> >+	PRESTERA_DSA_CMD_FROM_CPU_E,
+> >+};
+> >+
+> >+struct prestera_dsa_vlan {
+> >+	u16 vid;
+> >+	u8 vpt;
+> >+	u8 cfi_bit;
+> >+	bool is_tagged;
+> >+};
+> >+
+> >+struct prestera_dsa {
+> >+	struct prestera_dsa_vlan vlan;
+> >+	u32 hw_dev_num;
+> >+	u32 port_num;
+> >+};
+> >+
+> >+int prestera_dsa_parse(struct prestera_dsa *dsa, const u8 *dsa_buf);
+> >+int prestera_dsa_build(const struct prestera_dsa *dsa, u8 *dsa_buf);
+> >+
+> >+#endif /* _PRESTERA_DSA_H_ */
+> >diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
+> >new file mode 100644
+> >index 000000000000..b4626cf288b6
+> >--- /dev/null
+> >+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
+> >@@ -0,0 +1,614 @@
+> >+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+> >+/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+> >+
+> >+#include <linux/etherdevice.h>
+> >+#include <linux/ethtool.h>
+> >+#include <linux/netdevice.h>
+> >+#include <linux/list.h>
+> >+
+> >+#include "prestera.h"
+> >+#include "prestera_hw.h"
+> >+
+> >+#define PRESTERA_SWITCH_INIT_TIMEOUT 30000000	/* 30sec */
+> >+#define PRESTERA_MIN_MTU 64
+> >+
+> >+enum prestera_cmd_type_t {
+> >+	PRESTERA_CMD_TYPE_SWITCH_INIT = 0x1,
+> >+	PRESTERA_CMD_TYPE_SWITCH_ATTR_SET = 0x2,
+> >+
+> >+	PRESTERA_CMD_TYPE_PORT_ATTR_SET = 0x100,
+> >+	PRESTERA_CMD_TYPE_PORT_ATTR_GET = 0x101,
+> >+	PRESTERA_CMD_TYPE_PORT_INFO_GET = 0x110,
+> >+
+> >+	PRESTERA_CMD_TYPE_RXTX_INIT = 0x800,
+> >+	PRESTERA_CMD_TYPE_RXTX_PORT_INIT = 0x801,
+> >+
+> >+	PRESTERA_CMD_TYPE_ACK = 0x10000,
+> >+	PRESTERA_CMD_TYPE_MAX
+> >+};
+> >+
+> >+enum {
+> >+	PRESTERA_CMD_PORT_ATTR_ADMIN_STATE = 1,
+> >+	PRESTERA_CMD_PORT_ATTR_MTU = 3,
+> >+	PRESTERA_CMD_PORT_ATTR_MAC = 4,
+> >+	PRESTERA_CMD_PORT_ATTR_CAPABILITY = 9,
+> >+	PRESTERA_CMD_PORT_ATTR_AUTONEG = 15,
+> >+	PRESTERA_CMD_PORT_ATTR_STATS = 17,
+> >+};
+> >+
+> >+enum {
+> >+	PRESTERA_CMD_SWITCH_ATTR_MAC = 1,
+> >+};
+> >+
+> >+enum {
+> >+	PRESTERA_CMD_ACK_OK,
+> >+	PRESTERA_CMD_ACK_FAILED,
+> >+
+> >+	PRESTERA_CMD_ACK_MAX
+> >+};
+> >+
+> >+enum {
+> >+	PRESTERA_PORT_GOOD_OCTETS_RCV_CNT,
+> >+	PRESTERA_PORT_BAD_OCTETS_RCV_CNT,
+> >+	PRESTERA_PORT_MAC_TRANSMIT_ERR_CNT,
+> >+	PRESTERA_PORT_BRDC_PKTS_RCV_CNT,
+> >+	PRESTERA_PORT_MC_PKTS_RCV_CNT,
+> >+	PRESTERA_PORT_PKTS_64L_CNT,
+> >+	PRESTERA_PORT_PKTS_65TO127L_CNT,
+> >+	PRESTERA_PORT_PKTS_128TO255L_CNT,
+> >+	PRESTERA_PORT_PKTS_256TO511L_CNT,
+> >+	PRESTERA_PORT_PKTS_512TO1023L_CNT,
+> >+	PRESTERA_PORT_PKTS_1024TOMAXL_CNT,
+> >+	PRESTERA_PORT_EXCESSIVE_COLLISIONS_CNT,
+> >+	PRESTERA_PORT_MC_PKTS_SENT_CNT,
+> >+	PRESTERA_PORT_BRDC_PKTS_SENT_CNT,
+> >+	PRESTERA_PORT_FC_SENT_CNT,
+> >+	PRESTERA_PORT_GOOD_FC_RCV_CNT,
+> >+	PRESTERA_PORT_DROP_EVENTS_CNT,
+> >+	PRESTERA_PORT_UNDERSIZE_PKTS_CNT,
+> >+	PRESTERA_PORT_FRAGMENTS_PKTS_CNT,
+> >+	PRESTERA_PORT_OVERSIZE_PKTS_CNT,
+> >+	PRESTERA_PORT_JABBER_PKTS_CNT,
+> >+	PRESTERA_PORT_MAC_RCV_ERROR_CNT,
+> >+	PRESTERA_PORT_BAD_CRC_CNT,
+> >+	PRESTERA_PORT_COLLISIONS_CNT,
+> >+	PRESTERA_PORT_LATE_COLLISIONS_CNT,
+> >+	PRESTERA_PORT_GOOD_UC_PKTS_RCV_CNT,
+> >+	PRESTERA_PORT_GOOD_UC_PKTS_SENT_CNT,
+> >+	PRESTERA_PORT_MULTIPLE_PKTS_SENT_CNT,
+> >+	PRESTERA_PORT_DEFERRED_PKTS_SENT_CNT,
+> >+	PRESTERA_PORT_PKTS_1024TO1518L_CNT,
+> >+	PRESTERA_PORT_PKTS_1519TOMAXL_CNT,
+> >+	PRESTERA_PORT_GOOD_OCTETS_SENT_CNT,
+> >+
+> >+	PRESTERA_PORT_CNT_MAX,
+> >+};
+> >+
+> >+struct prestera_fw_event_handler {
+> >+	struct list_head list;
+> >+	enum prestera_event_type type;
+> >+	prestera_event_cb_t func;
+> >+	void *arg;
+> >+};
+> >+
+> >+struct prestera_msg_cmd {
+> >+	u32 type;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_ret {
+> >+	struct prestera_msg_cmd cmd;
+> >+	u32 status;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_common_req {
+> >+	struct prestera_msg_cmd cmd;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_common_resp {
+> >+	struct prestera_msg_ret ret;
+> >+} __packed __aligned(4);
+> >+
+> >+union prestera_msg_switch_param {
+> >+	u8 mac[ETH_ALEN];
+> >+};
+> >+
+> >+struct prestera_msg_switch_attr_req {
+> >+	struct prestera_msg_cmd cmd;
+> >+	u32 attr;
+> >+	union prestera_msg_switch_param param;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_switch_init_resp {
+> >+	struct prestera_msg_ret ret;
+> >+	u32 port_count;
+> >+	u32 mtu_max;
+> >+	u8  switch_id;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_port_autoneg_param {
+> >+	u64 link_mode;
+> >+	u8  enable;
+> >+	u8  fec;
+> >+};
+> >+
+> >+struct prestera_msg_port_cap_param {
+> >+	u64 link_mode;
+> >+	u8  type;
+> >+	u8  fec;
+> >+	u8  transceiver;
+> >+};
+> >+
+> >+union prestera_msg_port_param {
+> >+	u8  admin_state;
+> >+	u8  oper_state;
+> >+	u32 mtu;
+> >+	u8  mac[ETH_ALEN];
+> >+	struct prestera_msg_port_autoneg_param autoneg;
+> >+	struct prestera_msg_port_cap_param cap;
+> >+};
+> >+
+> >+struct prestera_msg_port_attr_req {
+> >+	struct prestera_msg_cmd cmd;
+> >+	u32 attr;
+> >+	u32 port;
+> >+	u32 dev;
+> >+	union prestera_msg_port_param param;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_port_attr_resp {
+> >+	struct prestera_msg_ret ret;
+> >+	union prestera_msg_port_param param;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_port_stats_resp {
+> >+	struct prestera_msg_ret ret;
+> >+	u64 stats[PRESTERA_PORT_CNT_MAX];
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_port_info_req {
+> >+	struct prestera_msg_cmd cmd;
+> >+	u32 port;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_port_info_resp {
+> >+	struct prestera_msg_ret ret;
+> >+	u32 hw_id;
+> >+	u32 dev_id;
+> >+	u16 fp_id;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_rxtx_req {
+> >+	struct prestera_msg_cmd cmd;
+> >+	u8 use_sdma;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_rxtx_resp {
+> >+	struct prestera_msg_ret ret;
+> >+	u32 map_addr;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_rxtx_port_req {
+> >+	struct prestera_msg_cmd cmd;
+> >+	u32 port;
+> >+	u32 dev;
+> >+} __packed __aligned(4);
+> >+
+> >+struct prestera_msg_event {
+> >+	u16 type;
+> >+	u16 id;
+> >+} __packed __aligned(4);
+> >+
+> >+union prestera_msg_event_port_param {
+> >+	u32 oper_state;
+> >+};
+> >+
+> >+struct prestera_msg_event_port {
+> >+	struct prestera_msg_event id;
+> >+	u32 port_id;
+> >+	union prestera_msg_event_port_param param;
+> >+} __packed __aligned(4);
+> >+
+> >+static int __prestera_cmd_ret(struct prestera_switch *sw,
+> >+			      enum prestera_cmd_type_t type,
+> >+			      struct prestera_msg_cmd *cmd, size_t clen,
+> >+			      struct prestera_msg_ret *ret, size_t rlen,
+> >+			      int wait)
+> >+{
+> >+	struct prestera_device *dev = sw->dev;
+> >+	int err;
+> >+
+> >+	cmd->type = type;
+> >+
+> >+	err = dev->send_req(dev, (u8 *)cmd, clen, (u8 *)ret, rlen, wait);
+> >+	if (err)
+> >+		return err;
+> >+
+> >+	if (ret->cmd.type != PRESTERA_CMD_TYPE_ACK)
+> >+		return -EBADE;
+> >+	if (ret->status != PRESTERA_CMD_ACK_OK)
+> >+		return -EINVAL;
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+static int prestera_cmd_ret(struct prestera_switch *sw,
+> >+			    enum prestera_cmd_type_t type,
+> >+			    struct prestera_msg_cmd *cmd, size_t clen,
+> >+			    struct prestera_msg_ret *ret, size_t rlen)
+> >+{
+> >+	return __prestera_cmd_ret(sw, type, cmd, clen, ret, rlen, 0);
+> >+}
+> >+
+> >+static int prestera_cmd_ret_wait(struct prestera_switch *sw,
+> >+				 enum prestera_cmd_type_t type,
+> >+				 struct prestera_msg_cmd *cmd, size_t clen,
+> >+				 struct prestera_msg_ret *ret, size_t rlen,
+> >+				 int wait)
+> >+{
+> >+	return __prestera_cmd_ret(sw, type, cmd, clen, ret, rlen, wait);
+> >+}
+> >+
+> >+static int prestera_cmd(struct prestera_switch *sw,
+> >+			enum prestera_cmd_type_t type,
+> >+			struct prestera_msg_cmd *cmd, size_t clen)
+> >+{
+> >+	struct prestera_msg_common_resp resp;
+> >+
+> >+	return prestera_cmd_ret(sw, type, cmd, clen, &resp.ret, sizeof(resp));
+> >+}
+> >+
+> >+static int prestera_fw_parse_port_evt(u8 *msg, struct prestera_event *evt)
+> >+{
+> >+	struct prestera_msg_event_port *hw_evt;
+> >+
+> >+	hw_evt = (struct prestera_msg_event_port *)msg;
+> >+
+> >+	evt->port_evt.port_id = hw_evt->port_id;
+> >+
+> >+	if (evt->id == PRESTERA_PORT_EVENT_STATE_CHANGED)
+> >+		evt->port_evt.data.oper_state = hw_evt->param.oper_state;
+> >+	else
+> >+		return -EINVAL;
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+static struct prestera_fw_evt_parser {
+> >+	int (*func)(u8 *msg, struct prestera_event *evt);
+> >+} fw_event_parsers[PRESTERA_EVENT_TYPE_MAX] = {
+> >+	[PRESTERA_EVENT_TYPE_PORT] = {.func = prestera_fw_parse_port_evt},
+> >+};
+> >+
+> >+static struct prestera_fw_event_handler *
+> >+__find_event_handler(const struct prestera_switch *sw,
+> >+		     enum prestera_event_type type)
+> >+{
+> >+	struct prestera_fw_event_handler *eh;
+> >+
+> >+	list_for_each_entry_rcu(eh, &sw->event_handlers, list) {
+> >+		if (eh->type == type)
+> >+			return eh;
+> >+	}
+> >+
+> >+	return NULL;
+> >+}
+> >+
+> >+static int prestera_find_event_handler(const struct prestera_switch *sw,
+> >+				       enum prestera_event_type type,
+> >+				       struct prestera_fw_event_handler *eh)
+> >+{
+> >+	struct prestera_fw_event_handler *tmp;
+> >+	int err = 0;
+> >+
+> >+	rcu_read_lock();
+> >+	tmp = __find_event_handler(sw, type);
+> >+	if (tmp)
+> >+		*eh = *tmp;
+> >+	else
+> >+		err = -EEXIST;
+> >+	rcu_read_unlock();
+> >+
+> >+	return err;
+> >+}
+> >+
+> >+static int prestera_evt_recv(struct prestera_device *dev, u8 *buf, size_t size)
+> >+{
+> >+	struct prestera_msg_event *msg = (struct prestera_msg_event *)buf;
+> >+	struct prestera_switch *sw = dev->priv;
+> >+	struct prestera_fw_event_handler eh;
+> >+	struct prestera_event evt;
+> >+	int err;
+> >+
+> >+	if (msg->type >= PRESTERA_EVENT_TYPE_MAX)
+> >+		return -EINVAL;
+> >+
+> >+	err = prestera_find_event_handler(sw, msg->type, &eh);
+> >+
+> >+	if (err || !fw_event_parsers[msg->type].func)
+> >+		return 0;
+> >+
+> >+	evt.id = msg->id;
+> >+
+> >+	err = fw_event_parsers[msg->type].func(buf, &evt);
+> >+	if (!err)
+> >+		eh.func(sw, &evt, eh.arg);
+> >+
+> >+	return err;
+> >+}
+> >+
+> >+static void prestera_pkt_recv(struct prestera_device *dev)
+> >+{
+> >+	struct prestera_switch *sw = dev->priv;
+> >+	struct prestera_fw_event_handler eh;
+> >+	struct prestera_event ev;
+> >+	int err;
+> >+
+> >+	ev.id = PRESTERA_RXTX_EVENT_RCV_PKT;
+> >+
+> >+	err = prestera_find_event_handler(sw, PRESTERA_EVENT_TYPE_RXTX, &eh);
+> >+	if (err)
+> >+		return;
+> >+
+> >+	eh.func(sw, &ev, eh.arg);
+> >+}
+> >+
+> >+int prestera_hw_port_info_get(const struct prestera_port *port,
+> >+			      u16 *fp_id, u32 *hw_id, u32 *dev_id)
+> >+{
+> >+	struct prestera_msg_port_info_resp resp;
+> >+	struct prestera_msg_port_info_req req = {
+> >+		.port = port->id
+> >+	};
+> >+	int err;
+> >+
+> >+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_INFO_GET,
+> >+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
+> >+	if (err)
+> >+		return err;
+> >+
+> >+	*hw_id = resp.hw_id;
+> >+	*dev_id = resp.dev_id;
+> >+	*fp_id = resp.fp_id;
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+int prestera_hw_switch_mac_set(struct prestera_switch *sw, char *mac)
+> >+{
+> >+	struct prestera_msg_switch_attr_req req = {
+> >+		.attr = PRESTERA_CMD_SWITCH_ATTR_MAC,
+> >+	};
+> >+
+> >+	memcpy(req.param.mac, mac, sizeof(req.param.mac));
+> >+
+> >+	return prestera_cmd(sw, PRESTERA_CMD_TYPE_SWITCH_ATTR_SET,
+> >+			    &req.cmd, sizeof(req));
+> >+}
+> >+
+> >+int prestera_hw_switch_init(struct prestera_switch *sw)
+> >+{
+> >+	struct prestera_msg_switch_init_resp resp;
+> >+	struct prestera_msg_common_req req;
+> >+	int err;
+> >+
+> >+	INIT_LIST_HEAD(&sw->event_handlers);
+> >+
+> >+	err = prestera_cmd_ret_wait(sw, PRESTERA_CMD_TYPE_SWITCH_INIT,
+> >+				    &req.cmd, sizeof(req),
+> >+				    &resp.ret, sizeof(resp),
+> >+				    PRESTERA_SWITCH_INIT_TIMEOUT);
+> >+	if (err)
+> >+		return err;
+> >+
+> >+	sw->id = resp.switch_id;
+> >+	sw->port_count = resp.port_count;
+> >+	sw->mtu_min = PRESTERA_MIN_MTU;
+> >+	sw->mtu_max = resp.mtu_max;
+> >+	sw->dev->recv_msg = prestera_evt_recv;
+> >+	sw->dev->recv_pkt = prestera_pkt_recv;
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+int prestera_hw_port_state_set(const struct prestera_port *port,
+> >+			       bool admin_state)
+> >+{
+> >+	struct prestera_msg_port_attr_req req = {
+> >+		.attr = PRESTERA_CMD_PORT_ATTR_ADMIN_STATE,
+> >+		.port = port->hw_id,
+> >+		.dev = port->dev_id,
+> >+		.param = {.admin_state = admin_state}
+> >+	};
+> >+
+> >+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
+> >+			    &req.cmd, sizeof(req));
+> >+}
+> >+
+> >+int prestera_hw_port_mtu_set(const struct prestera_port *port, u32 mtu)
+> >+{
+> >+	struct prestera_msg_port_attr_req req = {
+> >+		.attr = PRESTERA_CMD_PORT_ATTR_MTU,
+> >+		.port = port->hw_id,
+> >+		.dev = port->dev_id,
+> >+		.param = {.mtu = mtu}
+> >+	};
+> >+
+> >+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
+> >+			    &req.cmd, sizeof(req));
+> >+}
+> >+
+> >+int prestera_hw_port_mac_set(const struct prestera_port *port, char *mac)
+> >+{
+> >+	struct prestera_msg_port_attr_req req = {
+> >+		.attr = PRESTERA_CMD_PORT_ATTR_MAC,
+> >+		.port = port->hw_id,
+> >+		.dev = port->dev_id
+> >+	};
+> >+	memcpy(&req.param.mac, mac, sizeof(req.param.mac));
+> >+
+> >+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
+> >+			    &req.cmd, sizeof(req));
+> >+}
+> >+
+> >+int prestera_hw_port_cap_get(const struct prestera_port *port,
+> >+			     struct prestera_port_caps *caps)
+> >+{
+> >+	struct prestera_msg_port_attr_resp resp;
+> >+	struct prestera_msg_port_attr_req req = {
+> >+		.attr = PRESTERA_CMD_PORT_ATTR_CAPABILITY,
+> >+		.port = port->hw_id,
+> >+		.dev = port->dev_id
+> >+	};
+> >+	int err;
+> >+
+> >+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
+> >+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
+> >+	if (err)
+> >+		return err;
+> >+
+> >+	caps->supp_link_modes = resp.param.cap.link_mode;
+> >+	caps->supp_fec = resp.param.cap.fec;
+> >+	caps->type = resp.param.cap.type;
+> >+	caps->transceiver = resp.param.cap.transceiver;
+> >+
+> >+	return err;
+> >+}
+> >+
+> >+int prestera_hw_port_autoneg_set(const struct prestera_port *port,
+> >+				 bool autoneg, u64 link_modes, u8 fec)
+> >+{
+> >+	struct prestera_msg_port_attr_req req = {
+> >+		.attr = PRESTERA_CMD_PORT_ATTR_AUTONEG,
+> >+		.port = port->hw_id,
+> >+		.dev = port->dev_id,
+> >+		.param = {.autoneg = {.link_mode = link_modes,
+> >+				      .enable = autoneg,
+> >+				      .fec = fec}
+> >+		}
+> >+	};
+> >+
+> >+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
+> >+			    &req.cmd, sizeof(req));
+> >+}
+> >+
+> >+int prestera_hw_port_stats_get(const struct prestera_port *port,
+> >+			       struct prestera_port_stats *st)
+> >+{
+> >+	struct prestera_msg_port_stats_resp resp;
+> >+	struct prestera_msg_port_attr_req req = {
+> >+		.attr = PRESTERA_CMD_PORT_ATTR_STATS,
+> >+		.port = port->hw_id,
+> >+		.dev = port->dev_id
+> >+	};
+> >+	u64 *hw = resp.stats;
+> >+	int err;
+> >+
+> >+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
+> >+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
+> >+	if (err)
+> >+		return err;
+> >+
+> >+	st->good_octets_received = hw[PRESTERA_PORT_GOOD_OCTETS_RCV_CNT];
+> >+	st->bad_octets_received = hw[PRESTERA_PORT_BAD_OCTETS_RCV_CNT];
+> >+	st->mac_trans_error = hw[PRESTERA_PORT_MAC_TRANSMIT_ERR_CNT];
+> >+	st->broadcast_frames_received = hw[PRESTERA_PORT_BRDC_PKTS_RCV_CNT];
+> >+	st->multicast_frames_received = hw[PRESTERA_PORT_MC_PKTS_RCV_CNT];
+> >+	st->frames_64_octets = hw[PRESTERA_PORT_PKTS_64L_CNT];
+> >+	st->frames_65_to_127_octets = hw[PRESTERA_PORT_PKTS_65TO127L_CNT];
+> >+	st->frames_128_to_255_octets = hw[PRESTERA_PORT_PKTS_128TO255L_CNT];
+> >+	st->frames_256_to_511_octets = hw[PRESTERA_PORT_PKTS_256TO511L_CNT];
+> >+	st->frames_512_to_1023_octets = hw[PRESTERA_PORT_PKTS_512TO1023L_CNT];
+> >+	st->frames_1024_to_max_octets = hw[PRESTERA_PORT_PKTS_1024TOMAXL_CNT];
+> >+	st->excessive_collision = hw[PRESTERA_PORT_EXCESSIVE_COLLISIONS_CNT];
+> >+	st->multicast_frames_sent = hw[PRESTERA_PORT_MC_PKTS_SENT_CNT];
+> >+	st->broadcast_frames_sent = hw[PRESTERA_PORT_BRDC_PKTS_SENT_CNT];
+> >+	st->fc_sent = hw[PRESTERA_PORT_FC_SENT_CNT];
+> >+	st->fc_received = hw[PRESTERA_PORT_GOOD_FC_RCV_CNT];
+> >+	st->buffer_overrun = hw[PRESTERA_PORT_DROP_EVENTS_CNT];
+> >+	st->undersize = hw[PRESTERA_PORT_UNDERSIZE_PKTS_CNT];
+> >+	st->fragments = hw[PRESTERA_PORT_FRAGMENTS_PKTS_CNT];
+> >+	st->oversize = hw[PRESTERA_PORT_OVERSIZE_PKTS_CNT];
+> >+	st->jabber = hw[PRESTERA_PORT_JABBER_PKTS_CNT];
+> >+	st->rx_error_frame_received = hw[PRESTERA_PORT_MAC_RCV_ERROR_CNT];
+> >+	st->bad_crc = hw[PRESTERA_PORT_BAD_CRC_CNT];
+> >+	st->collisions = hw[PRESTERA_PORT_COLLISIONS_CNT];
+> >+	st->late_collision = hw[PRESTERA_PORT_LATE_COLLISIONS_CNT];
+> >+	st->unicast_frames_received = hw[PRESTERA_PORT_GOOD_UC_PKTS_RCV_CNT];
+> >+	st->unicast_frames_sent = hw[PRESTERA_PORT_GOOD_UC_PKTS_SENT_CNT];
+> >+	st->sent_multiple = hw[PRESTERA_PORT_MULTIPLE_PKTS_SENT_CNT];
+> >+	st->sent_deferred = hw[PRESTERA_PORT_DEFERRED_PKTS_SENT_CNT];
+> >+	st->frames_1024_to_1518_octets = hw[PRESTERA_PORT_PKTS_1024TO1518L_CNT];
+> >+	st->frames_1519_to_max_octets = hw[PRESTERA_PORT_PKTS_1519TOMAXL_CNT];
+> >+	st->good_octets_sent = hw[PRESTERA_PORT_GOOD_OCTETS_SENT_CNT];
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+int prestera_hw_rxtx_init(struct prestera_switch *sw,
+> >+			  struct prestera_rxtx_params *params)
+> >+{
+> >+	struct prestera_msg_rxtx_resp resp;
+> >+	struct prestera_msg_rxtx_req req;
+> >+	int err;
+> >+
+> >+	req.use_sdma = params->use_sdma;
+> >+
+> >+	err = prestera_cmd_ret(sw, PRESTERA_CMD_TYPE_RXTX_INIT,
+> >+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
+> >+	if (err)
+> >+		return err;
+> >+
+> >+	params->map_addr = resp.map_addr;
+> >+	return 0;
+> >+}
+> >+
+> >+int prestera_hw_rxtx_port_init(struct prestera_port *port)
+> >+{
+> >+	struct prestera_msg_rxtx_port_req req = {
+> >+		.port = port->hw_id,
+> >+		.dev = port->dev_id,
+> >+	};
+> >+
+> >+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_RXTX_PORT_INIT,
+> >+			    &req.cmd, sizeof(req));
+> >+}
+> >+
+> >+int prestera_hw_event_handler_register(struct prestera_switch *sw,
+> >+				       enum prestera_event_type type,
+> >+				       prestera_event_cb_t fn,
+> >+				       void *arg)
+> >+{
+> >+	struct prestera_fw_event_handler *eh;
+> >+
+> >+	eh = __find_event_handler(sw, type);
+> >+	if (eh)
+> >+		return -EEXIST;
+> >+	eh = kmalloc(sizeof(*eh), GFP_KERNEL);
+> >+	if (!eh)
+> >+		return -ENOMEM;
+> >+
+> >+	eh->type = type;
+> >+	eh->func = fn;
+> >+	eh->arg = arg;
+> >+
+> >+	INIT_LIST_HEAD(&eh->list);
+> >+
+> >+	list_add_rcu(&eh->list, &sw->event_handlers);
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+void prestera_hw_event_handler_unregister(struct prestera_switch *sw,
+> >+					  enum prestera_event_type type,
+> >+					  prestera_event_cb_t fn)
+> >+{
+> >+	struct prestera_fw_event_handler *eh;
+> >+
+> >+	eh = __find_event_handler(sw, type);
+> >+	if (!eh)
+> >+		return;
+> >+
+> >+	list_del_rcu(&eh->list);
+> >+	synchronize_rcu();
+> >+	kfree(eh);
+> >+}
+> >diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+> >new file mode 100644
+> >index 000000000000..acb0e31d6684
+> >--- /dev/null
+> >+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+> >@@ -0,0 +1,71 @@
+> >+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+> >+ *
+> >+ * Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved.
+> >+ *
+> >+ */
+> >+
+> >+#ifndef _PRESTERA_HW_H_
+> >+#define _PRESTERA_HW_H_
+> >+
+> >+#include <linux/types.h>
+> >+
+> >+enum {
+> >+	PRESTERA_PORT_TYPE_NONE,
+> >+	PRESTERA_PORT_TYPE_TP,
+> >+
+> >+	PRESTERA_PORT_TYPE_MAX,
+> >+};
+> >+
+> >+enum {
+> >+	PRESTERA_PORT_FEC_OFF,
+> >+
+> >+	PRESTERA_PORT_FEC_MAX,
+> >+};
+> >+
+> >+struct prestera_switch;
+> >+struct prestera_port;
+> >+struct prestera_port_stats;
+> >+struct prestera_port_caps;
+> >+enum prestera_event_type;
+> >+struct prestera_event;
+> >+
+> >+typedef void (*prestera_event_cb_t)
+> >+	(struct prestera_switch *sw, struct prestera_event *evt, void *arg);
+> >+
+> >+struct prestera_rxtx_params;
+> >+
+> >+/* Switch API */
+> >+int prestera_hw_switch_init(struct prestera_switch *sw);
+> >+int prestera_hw_switch_mac_set(struct prestera_switch *sw, char *mac);
+> >+
+> >+/* Port API */
+> >+int prestera_hw_port_info_get(const struct prestera_port *port,
+> >+			      u16 *fp_id, u32 *hw_id, u32 *dev_id);
+> >+int prestera_hw_port_state_set(const struct prestera_port *port,
+> >+			       bool admin_state);
+> >+int prestera_hw_port_mtu_set(const struct prestera_port *port, u32 mtu);
+> >+int prestera_hw_port_mtu_get(const struct prestera_port *port, u32 *mtu);
+> >+int prestera_hw_port_mac_set(const struct prestera_port *port, char *mac);
+> >+int prestera_hw_port_mac_get(const struct prestera_port *port, char *mac);
+> >+int prestera_hw_port_cap_get(const struct prestera_port *port,
+> >+			     struct prestera_port_caps *caps);
+> >+int prestera_hw_port_autoneg_set(const struct prestera_port *port,
+> >+				 bool autoneg, u64 link_modes, u8 fec);
+> >+int prestera_hw_port_stats_get(const struct prestera_port *port,
+> >+			       struct prestera_port_stats *stats);
+> >+
+> >+/* Event handlers */
+> >+int prestera_hw_event_handler_register(struct prestera_switch *sw,
+> >+				       enum prestera_event_type type,
+> >+				       prestera_event_cb_t fn,
+> >+				       void *arg);
+> >+void prestera_hw_event_handler_unregister(struct prestera_switch *sw,
+> >+					  enum prestera_event_type type,
+> >+					  prestera_event_cb_t fn);
+> >+
+> >+/* RX/TX */
+> >+int prestera_hw_rxtx_init(struct prestera_switch *sw,
+> >+			  struct prestera_rxtx_params *params);
+> >+int prestera_hw_rxtx_port_init(struct prestera_port *port);
+> >+
+> >+#endif /* _PRESTERA_HW_H_ */
+> >diff --git a/drivers/net/ethernet/marvell/prestera/prestera_rxtx.c b/drivers/net/ethernet/marvell/prestera/prestera_rxtx.c
+> >new file mode 100644
+> >index 000000000000..556941d97d4d
+> >--- /dev/null
+> >+++ b/drivers/net/ethernet/marvell/prestera/prestera_rxtx.c
+> >@@ -0,0 +1,825 @@
+> >+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+> >+/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+> >+
+> >+#include <linux/platform_device.h>
+> >+#include <linux/of.h>
+> >+#include <linux/of_address.h>
+> >+#include <linux/of_device.h>
+> >+#include <linux/dmapool.h>
+> >+#include <linux/netdevice.h>
+> >+#include <linux/etherdevice.h>
+> >+#include <linux/if_vlan.h>
+> >+
+> >+#include "prestera.h"
+> >+#include "prestera_hw.h"
+> >+#include "prestera_dsa.h"
+> >+
+> >+struct prestera_sdma_desc {
+> >+	__le32 word1;
+> >+	__le32 word2;
+> >+	__le32 buff;
+> >+	__le32 next;
+> >+} __packed __aligned(16);
+> >+
+> >+#define SDMA_BUFF_SIZE_MAX	1544
+> >+
+> >+#define SDMA_RX_DESC_PKT_LEN(desc) \
+> >+	((le32_to_cpu((desc)->word2) >> 16) & 0x3FFF)
+> >+
+> >+#define SDMA_RX_DESC_OWNER(desc) \
+> >+	((le32_to_cpu((desc)->word1) & BIT(31)) >> 31)
+> >+
+> >+#define SDMA_RX_DESC_CPU_OWN	0
+> >+#define SDMA_RX_DESC_DMA_OWN	1
+> >+
+> >+#define SDMA_RX_QUEUE_NUM	8
+> >+
+> >+#define SDMA_RX_DESC_PER_Q	1000
+> >+
+> >+#define SDMA_TX_DESC_PER_Q	1000
+> >+#define SDMA_TX_MAX_BURST	64
+> >+
+> >+#define SDMA_TX_DESC_OWNER(desc) \
+> >+	((le32_to_cpu((desc)->word1) & BIT(31)) >> 31)
+> >+
+> >+#define SDMA_TX_DESC_CPU_OWN	0
+> >+#define SDMA_TX_DESC_DMA_OWN	1
+> >+
+> >+#define SDMA_TX_DESC_IS_SENT(desc) \
+> >+	(SDMA_TX_DESC_OWNER(desc) == SDMA_TX_DESC_CPU_OWN)
+> >+
+> >+#define SDMA_TX_DESC_LAST	BIT(20)
+> >+#define SDMA_TX_DESC_FIRST	BIT(21)
+> >+#define SDMA_TX_DESC_SINGLE	(SDMA_TX_DESC_FIRST | SDMA_TX_DESC_LAST)
+> >+#define SDMA_TX_DESC_CALC_CRC	BIT(12)
+> >+
+> >+#define SDMA_RX_INTR_MASK_REG		0x2814
+> >+#define SDMA_RX_QUEUE_STATUS_REG	0x2680
+> >+#define SDMA_RX_QUEUE_DESC_REG(n)	(0x260C + (n) * 16)
+> >+
+> >+#define SDMA_TX_QUEUE_DESC_REG		0x26C0
+> >+#define SDMA_TX_QUEUE_START_REG		0x2868
+> 
+> You forgot to prefix these.
+> 
+> 
+> >+
+> >+struct prestera_sdma_buf {
+> >+	struct prestera_sdma_desc *desc;
+> >+	dma_addr_t desc_dma;
+> >+	struct sk_buff *skb;
+> >+	dma_addr_t buf_dma;
+> >+	bool is_used;
+> >+};
+> >+
+> >+struct prestera_rx_ring {
+> >+	struct prestera_sdma_buf *bufs;
+> >+	int next_rx;
+> >+};
+> >+
+> >+struct prestera_tx_ring {
+> >+	struct prestera_sdma_buf *bufs;
+> >+	int next_tx;
+> >+	int max_burst;
+> >+	int burst;
+> >+};
+> >+
+> >+struct prestera_sdma {
+> >+	struct prestera_rx_ring rx_ring[SDMA_RX_QUEUE_NUM];
+> >+	struct prestera_tx_ring tx_ring;
+> >+	const struct prestera_switch *sw;
+> >+	struct dma_pool *desc_pool;
+> >+	struct work_struct tx_work;
+> >+	struct napi_struct rx_napi;
+> >+	struct net_device napi_dev;
+> >+	u32 map_addr;
+> >+	u64 dma_mask;
+> >+};
+> >+
+> >+struct prestera_rxtx {
+> >+	struct prestera_sdma sdma;
+> >+};
+> >+
+> >+static int prestera_sdma_buf_init(struct prestera_sdma *sdma,
+> >+				  struct prestera_sdma_buf *buf)
+> >+{
+> >+	struct device *dma_dev = sdma->sw->dev->dev;
+> >+	struct prestera_sdma_desc *desc;
+> >+	dma_addr_t dma;
+> >+
+> >+	desc = dma_pool_alloc(sdma->desc_pool, GFP_DMA | GFP_KERNEL, &dma);
+> >+	if (!desc)
+> >+		return -ENOMEM;
+> >+
+> >+	if (dma + sizeof(struct prestera_sdma_desc) > sdma->dma_mask) {
+> >+		dev_err(dma_dev, "failed to alloc desc\n");
+> >+		dma_pool_free(sdma->desc_pool, desc, dma);
+> >+		return -ENOMEM;
+> >+	}
+> >+
+> >+	buf->buf_dma = DMA_MAPPING_ERROR;
+> >+	buf->desc_dma = dma;
+> >+	buf->desc = desc;
+> >+	buf->skb = NULL;
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+static u32 prestera_sdma_map(struct prestera_sdma *sdma, dma_addr_t pa)
+> >+{
+> >+	return sdma->map_addr + pa;
+> >+}
+> >+
+> >+static void prestera_sdma_rx_desc_set_len(struct prestera_sdma_desc *desc,
+> >+					  size_t val)
+> >+{
+> >+	u32 word = le32_to_cpu(desc->word2);
+> >+
+> >+	word = (word & ~GENMASK(15, 0)) | val;
+> >+	desc->word2 = cpu_to_le32(word);
+> >+}
+> >+
+> >+static void prestera_sdma_rx_desc_init(struct prestera_sdma *sdma,
+> >+				       struct prestera_sdma_desc *desc,
+> >+				       dma_addr_t buf)
+> >+{
+> >+	prestera_sdma_rx_desc_set_len(desc, SDMA_BUFF_SIZE_MAX);
+> >+	desc->buff = cpu_to_le32(prestera_sdma_map(sdma, buf));
+> >+
+> >+	/* make sure buffer is set before reset the descriptor */
+> >+	wmb();
+> >+
+> >+	desc->word1 = cpu_to_le32(0xA0000000);
+> >+}
+> >+
+> >+static void prestera_sdma_rx_desc_set_next(struct prestera_sdma *sdma,
+> >+					   struct prestera_sdma_desc *desc,
+> >+					   dma_addr_t next)
+> >+{
+> >+	desc->next = cpu_to_le32(prestera_sdma_map(sdma, next));
+> >+}
+> >+
+> >+static int prestera_sdma_rx_skb_alloc(struct prestera_sdma *sdma,
+> >+				      struct prestera_sdma_buf *buf)
+> >+{
+> >+	struct device *dev = sdma->sw->dev->dev;
+> >+	struct sk_buff *skb;
+> >+	dma_addr_t dma;
+> >+
+> >+	skb = alloc_skb(SDMA_BUFF_SIZE_MAX, GFP_DMA | GFP_ATOMIC);
+> >+	if (!skb)
+> >+		return -ENOMEM;
+> >+
+> >+	dma = dma_map_single(dev, skb->data, skb->len, DMA_FROM_DEVICE);
+> >+
+> >+	if (dma_mapping_error(dev, dma))
+> >+		goto err_dma_map;
+> >+	if (dma + skb->len > sdma->dma_mask)
+> >+		goto err_dma_range;
+> >+
+> >+	if (buf->skb)
+> >+		dma_unmap_single(dev, buf->buf_dma, buf->skb->len,
+> >+				 DMA_FROM_DEVICE);
+> >+
+> >+	buf->buf_dma = dma;
+> >+	buf->skb = skb;
+> >+	return 0;
+> >+
+> >+err_dma_range:
+> >+	dma_unmap_single(dev, dma, skb->len, DMA_FROM_DEVICE);
+> >+err_dma_map:
+> >+	kfree_skb(skb);
+> >+
+> >+	return -ENOMEM;
+> >+}
+> >+
+> >+static struct sk_buff *prestera_sdma_rx_skb_get(struct prestera_sdma *sdma,
+> >+						struct prestera_sdma_buf *buf)
+> >+{
+> >+	dma_addr_t buf_dma = buf->buf_dma;
+> >+	struct sk_buff *skb = buf->skb;
+> >+	u32 len = skb->len;
+> >+	int err;
+> >+
+> >+	err = prestera_sdma_rx_skb_alloc(sdma, buf);
+> >+	if (err) {
+> >+		buf->buf_dma = buf_dma;
+> >+		buf->skb = skb;
+> >+
+> >+		skb = alloc_skb(skb->len, GFP_ATOMIC);
+> >+		if (skb) {
+> >+			skb_put(skb, len);
+> >+			skb_copy_from_linear_data(buf->skb, skb->data, len);
+> >+		}
+> >+	}
+> >+
+> >+	prestera_sdma_rx_desc_init(sdma, buf->desc, buf->buf_dma);
+> >+
+> >+	return skb;
+> >+}
+> >+
+> >+static int prestera_rxtx_process_skb(struct sk_buff *skb)
+> >+{
+> >+	const struct prestera_port *port;
+> >+	struct prestera_dsa dsa;
+> >+	u32 hw_port, hw_id;
+> >+	int err;
+> >+
+> >+	skb_pull(skb, ETH_HLEN);
+> >+
+> >+	/* ethertype field is part of the dsa header */
+> >+	err = prestera_dsa_parse(&dsa, skb->data - ETH_TLEN);
+> >+	if (err)
+> >+		return err;
+> >+
+> >+	hw_port = dsa.port_num;
+> >+	hw_id = dsa.hw_dev_num;
+> >+
+> >+	port = prestera_port_find_by_hwid(hw_id, hw_port);
+> >+	if (unlikely(!port)) {
+> >+		pr_warn_ratelimited("prestera: received pkt for non-existent port(%u, %u)\n",
+> >+				    hw_id, hw_port);
+> >+		return -EEXIST;
+> >+	}
+> >+
+> >+	if (unlikely(!pskb_may_pull(skb, PRESTERA_DSA_HLEN)))
+> >+		return -EINVAL;
+> >+
+> >+	/* remove DSA tag and update checksum */
+> >+	skb_pull_rcsum(skb, PRESTERA_DSA_HLEN);
+> >+
+> >+	memmove(skb->data - ETH_HLEN, skb->data - ETH_HLEN - PRESTERA_DSA_HLEN,
+> >+		ETH_ALEN * 2);
+> >+
+> >+	skb_push(skb, ETH_HLEN);
+> >+
+> >+	skb->protocol = eth_type_trans(skb, port->dev);
+> >+
+> >+	if (dsa.vlan.is_tagged) {
+> >+		u16 tci = dsa.vlan.vid & VLAN_VID_MASK;
+> >+
+> >+		tci |= dsa.vlan.vpt << VLAN_PRIO_SHIFT;
+> >+		if (dsa.vlan.cfi_bit)
+> >+			tci |= VLAN_CFI_MASK;
+> >+
+> >+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), tci);
+> >+	}
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+static int prestera_sdma_rx_poll(struct napi_struct *napi, int budget)
+> >+{
+> >+	unsigned int qmask = GENMASK(SDMA_RX_QUEUE_NUM - 1, 0);
+> >+	struct prestera_sdma *sdma;
+> >+	unsigned int rxq_done_map = 0;
+> >+	struct list_head rx_list;
+> >+	int pkts_done = 0;
+> >+	int q;
+> >+
+> >+	INIT_LIST_HEAD(&rx_list);
+> >+
+> >+	sdma = container_of(napi, struct prestera_sdma, rx_napi);
+> >+
+> >+	while (pkts_done < budget && rxq_done_map != qmask) {
+> >+		for (q = 0; q < SDMA_RX_QUEUE_NUM && pkts_done < budget; q++) {
+> >+			struct prestera_rx_ring *ring = &sdma->rx_ring[q];
+> >+			int buf_idx = ring->next_rx;
+> >+			struct prestera_sdma_desc *desc;
+> >+			struct prestera_sdma_buf *buf;
+> >+			struct sk_buff *skb;
+> >+
+> >+			buf = &ring->bufs[buf_idx];
+> >+			desc = buf->desc;
+> >+
+> >+			if (SDMA_RX_DESC_OWNER(desc) != SDMA_RX_DESC_CPU_OWN) {
+> >+				rxq_done_map |= BIT(q);
+> >+				continue;
+> >+			} else {
+> >+				rxq_done_map &= ~BIT(q);
+> >+			}
+> >+
+> >+			pkts_done++;
+> >+
+> >+			__skb_trim(buf->skb, SDMA_RX_DESC_PKT_LEN(desc));
+> >+
+> >+			skb = prestera_sdma_rx_skb_get(sdma, buf);
+> >+			if (!skb)
+> >+				goto rx_next_buf;
+> >+
+> >+			if (unlikely(prestera_rxtx_process_skb(skb)))
+> >+				goto rx_next_buf;
+> >+
+> >+			list_add_tail(&skb->list, &rx_list);
+> >+rx_next_buf:
+> >+			ring->next_rx = (buf_idx + 1) % SDMA_RX_DESC_PER_Q;
+> >+		}
+> >+	}
+> >+
+> >+	if (pkts_done < budget && napi_complete_done(napi, pkts_done))
+> >+		prestera_write(sdma->sw, SDMA_RX_INTR_MASK_REG, 0xff << 2);
+> >+
+> >+	netif_receive_skb_list(&rx_list);
+> >+
+> >+	return pkts_done;
+> >+}
+> >+
+> >+static void prestera_sdma_rx_fini(struct prestera_sdma *sdma)
+> >+{
+> >+	int q, b;
+> >+
+> >+	/* disable all rx queues */
+> >+	prestera_write(sdma->sw, SDMA_RX_QUEUE_STATUS_REG, 0xff00);
+> >+
+> >+	for (q = 0; q < SDMA_RX_QUEUE_NUM; q++) {
+> >+		struct prestera_rx_ring *ring = &sdma->rx_ring[q];
+> >+
+> >+		if (!ring->bufs)
+> >+			break;
+> >+
+> >+		for (b = 0; b < SDMA_RX_DESC_PER_Q; b++) {
+> >+			struct prestera_sdma_buf *buf = &ring->bufs[b];
+> >+
+> >+			if (buf->desc_dma)
+> >+				dma_pool_free(sdma->desc_pool, buf->desc,
+> >+					      buf->desc_dma);
+> >+
+> >+			if (!buf->skb)
+> >+				continue;
+> >+
+> >+			if (buf->buf_dma != DMA_MAPPING_ERROR)
+> >+				dma_unmap_single(sdma->sw->dev->dev,
+> >+						 buf->buf_dma, buf->skb->len,
+> >+						 DMA_FROM_DEVICE);
+> >+			kfree_skb(buf->skb);
+> >+		}
+> >+	}
+> >+}
+> >+
+> >+static int prestera_sdma_rx_init(struct prestera_sdma *sdma)
+> >+{
+> >+	int q, b;
+> >+	int err;
+> >+
+> >+	/* disable all rx queues */
+> >+	prestera_write(sdma->sw, SDMA_RX_QUEUE_STATUS_REG, 0xff00);
+> >+
+> >+	for (q = 0; q < SDMA_RX_QUEUE_NUM; q++) {
+> >+		struct prestera_rx_ring *ring = &sdma->rx_ring[q];
+> >+		struct prestera_sdma_buf *head;
+> >+
+> >+		ring->bufs = kmalloc_array(SDMA_RX_DESC_PER_Q, sizeof(*head),
+> >+					   GFP_KERNEL);
+> >+		if (!ring->bufs)
+> >+			return -ENOMEM;
+> >+
+> >+		head = &ring->bufs[0];
+> >+		ring->next_rx = 0;
+> >+
+> >+		for (b = 0; b < SDMA_RX_DESC_PER_Q; b++) {
+> >+			struct prestera_sdma_buf *buf = &ring->bufs[b];
+> >+
+> >+			err = prestera_sdma_buf_init(sdma, buf);
+> >+			if (err)
+> >+				return err;
+> >+
+> >+			err = prestera_sdma_rx_skb_alloc(sdma, buf);
+> >+			if (err)
+> >+				return err;
+> >+
+> >+			prestera_sdma_rx_desc_init(sdma, buf->desc,
+> >+						   buf->buf_dma);
+> >+
+> >+			if (b == 0)
+> >+				continue;
+> >+
+> >+			prestera_sdma_rx_desc_set_next(sdma,
+> >+						       ring->bufs[b - 1].desc,
+> >+						       buf->desc_dma);
+> >+
+> >+			if (b == SDMA_RX_DESC_PER_Q - 1)
+> >+				prestera_sdma_rx_desc_set_next(sdma, buf->desc,
+> >+							       head->desc_dma);
+> >+		}
+> >+
+> >+		prestera_write(sdma->sw, SDMA_RX_QUEUE_DESC_REG(q),
+> >+			       prestera_sdma_map(sdma, head->desc_dma));
+> >+	}
+> >+
+> >+	/* make sure all rx descs are filled before enabling all rx queues */
+> >+	wmb();
+> >+
+> >+	prestera_write(sdma->sw, SDMA_RX_QUEUE_STATUS_REG, 0xff);
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+static void prestera_sdma_tx_desc_init(struct prestera_sdma *sdma,
+> >+				       struct prestera_sdma_desc *desc)
+> >+{
+> >+	desc->word1 = cpu_to_le32(SDMA_TX_DESC_SINGLE | SDMA_TX_DESC_CALC_CRC);
+> >+	desc->word2 = 0;
+> >+}
+> >+
+> >+static void prestera_sdma_tx_desc_set_next(struct prestera_sdma *sdma,
+> >+					   struct prestera_sdma_desc *desc,
+> >+					   dma_addr_t next)
+> >+{
+> >+	desc->next = cpu_to_le32(prestera_sdma_map(sdma, next));
+> >+}
+> >+
+> >+static void prestera_sdma_tx_desc_set_buf(struct prestera_sdma *sdma,
+> >+					  struct prestera_sdma_desc *desc,
+> >+					  dma_addr_t buf, size_t len)
+> >+{
+> >+	u32 word = le32_to_cpu(desc->word2);
+> >+
+> >+	word = (word & ~GENMASK(30, 16)) | ((len + ETH_FCS_LEN) << 16);
+> >+
+> >+	desc->buff = cpu_to_le32(prestera_sdma_map(sdma, buf));
+> >+	desc->word2 = cpu_to_le32(word);
+> >+}
+> >+
+> >+static void prestera_sdma_tx_desc_xmit(struct prestera_sdma_desc *desc)
+> >+{
+> >+	u32 word = le32_to_cpu(desc->word1);
+> >+
+> >+	word |= (SDMA_TX_DESC_DMA_OWN << 31);
+> 
+> Drop the ()s here.
+> 
+> 
+> >+
+> >+	/* make sure everything is written before enable xmit */
+> >+	wmb();
+> >+
+> >+	desc->word1 = cpu_to_le32(word);
+> >+}
+> >+
+> >+static int prestera_sdma_tx_buf_map(struct prestera_sdma *sdma,
+> >+				    struct prestera_sdma_buf *buf,
+> >+				    struct sk_buff *skb)
+> >+{
+> >+	struct device *dma_dev = sdma->sw->dev->dev;
+> >+	struct sk_buff *new_skb;
+> >+	size_t len = skb->len;
+> >+	dma_addr_t dma;
+> >+
+> >+	dma = dma_map_single(dma_dev, skb->data, len, DMA_TO_DEVICE);
+> >+	if (!dma_mapping_error(dma_dev, dma) && dma + len <= sdma->dma_mask) {
+> >+		buf->buf_dma = dma;
+> >+		buf->skb = skb;
+> >+		return 0;
+> >+	}
+> >+
+> >+	if (!dma_mapping_error(dma_dev, dma))
+> >+		dma_unmap_single(dma_dev, dma, len, DMA_TO_DEVICE);
+> >+
+> >+	new_skb = alloc_skb(len, GFP_ATOMIC | GFP_DMA);
+> >+	if (!new_skb)
+> >+		goto err_alloc_skb;
+> >+
+> >+	dma = dma_map_single(dma_dev, new_skb->data, len, DMA_TO_DEVICE);
+> >+	if (dma_mapping_error(dma_dev, dma))
+> >+		goto err_dma_map;
+> >+	if (dma + len > sdma->dma_mask)
+> >+		goto err_dma_range;
+> >+
+> >+	skb_copy_from_linear_data(skb, skb_put(new_skb, len), len);
+> >+
+> >+	dev_consume_skb_any(skb);
+> >+
+> >+	buf->skb = new_skb;
+> >+	buf->buf_dma = dma;
+> >+
+> >+	return 0;
+> >+
+> >+err_dma_range:
+> >+	dma_unmap_single(dma_dev, dma, len, DMA_TO_DEVICE);
+> >+err_dma_map:
+> >+	dev_kfree_skb(new_skb);
+> >+err_alloc_skb:
+> >+	dev_kfree_skb(skb);
+> >+
+> >+	return -ENOMEM;
+> >+}
+> >+
+> >+static void prestera_sdma_tx_buf_unmap(struct prestera_sdma *sdma,
+> >+				       struct prestera_sdma_buf *buf)
+> >+{
+> >+	struct device *dma_dev = sdma->sw->dev->dev;
+> >+
+> >+	dma_unmap_single(dma_dev, buf->buf_dma, buf->skb->len, DMA_TO_DEVICE);
+> >+}
+> >+
+> >+static void prestera_sdma_tx_recycle_work_fn(struct work_struct *work)
+> >+{
+> >+	struct prestera_tx_ring *tx_ring;
+> >+	struct prestera_sdma *sdma;
+> >+	struct device *dma_dev;
+> >+	int b;
+> >+
+> >+	sdma = container_of(work, struct prestera_sdma, tx_work);
+> >+
+> >+	dma_dev = sdma->sw->dev->dev;
+> >+	tx_ring = &sdma->tx_ring;
+> >+
+> >+	for (b = 0; b < SDMA_TX_DESC_PER_Q; b++) {
+> >+		struct prestera_sdma_buf *buf = &tx_ring->bufs[b];
+> >+
+> >+		if (!buf->is_used)
+> >+			continue;
+> >+
+> >+		if (!SDMA_TX_DESC_IS_SENT(buf->desc))
+> >+			continue;
+> >+
+> >+		prestera_sdma_tx_buf_unmap(sdma, buf);
+> >+		dev_consume_skb_any(buf->skb);
+> >+		buf->skb = NULL;
+> >+
+> >+		/* make sure everything is cleaned up */
+> >+		wmb();
+> >+
+> >+		buf->is_used = false;
+> >+	}
+> >+}
+> >+
+> >+static int prestera_sdma_tx_init(struct prestera_sdma *sdma)
+> >+{
+> >+	struct prestera_tx_ring *tx_ring = &sdma->tx_ring;
+> >+	struct prestera_sdma_buf *head;
+> >+	int err;
+> >+	int b;
+> >+
+> >+	INIT_WORK(&sdma->tx_work, prestera_sdma_tx_recycle_work_fn);
+> >+
+> >+	tx_ring->bufs = kmalloc_array(SDMA_TX_DESC_PER_Q, sizeof(*head),
+> >+				      GFP_KERNEL);
+> >+	if (!tx_ring->bufs)
+> >+		return -ENOMEM;
+> >+
+> >+	head = &tx_ring->bufs[0];
+> >+
+> >+	tx_ring->max_burst = SDMA_TX_MAX_BURST;
+> >+	tx_ring->burst = tx_ring->max_burst;
+> >+	tx_ring->next_tx = 0;
+> >+
+> >+	for (b = 0; b < SDMA_TX_DESC_PER_Q; b++) {
+> >+		struct prestera_sdma_buf *buf = &tx_ring->bufs[b];
+> >+
+> >+		err = prestera_sdma_buf_init(sdma, buf);
+> >+		if (err)
+> >+			return err;
+> >+
+> >+		prestera_sdma_tx_desc_init(sdma, buf->desc);
+> >+
+> >+		buf->is_used = false;
+> >+
+> >+		if (b == 0)
+> >+			continue;
+> >+
+> >+		prestera_sdma_tx_desc_set_next(sdma, tx_ring->bufs[b - 1].desc,
+> >+					       buf->desc_dma);
+> >+
+> >+		if (b == SDMA_TX_DESC_PER_Q - 1)
+> >+			prestera_sdma_tx_desc_set_next(sdma, buf->desc,
+> >+						       head->desc_dma);
+> >+	}
+> >+
+> >+	/* make sure descriptors are written */
+> >+	wmb();
+> >+
+> >+	prestera_write(sdma->sw, SDMA_TX_QUEUE_DESC_REG,
+> >+		       prestera_sdma_map(sdma, head->desc_dma));
+> >+
+> >+	return 0;
+> >+}
+> >+
+> >+static void prestera_sdma_tx_fini(struct prestera_sdma *sdma)
+> >+{
+> >+	struct prestera_tx_ring *ring = &sdma->tx_ring;
+> >+	int b;
+> >+
+> >+	cancel_work_sync(&sdma->tx_work);
+> >+
+> >+	if (!ring->bufs)
+> >+		return;
+> >+
+> >+	for (b = 0; b < SDMA_TX_DESC_PER_Q; b++) {
+> >+		struct prestera_sdma_buf *buf = &ring->bufs[b];
+> >+
+> >+		if (buf->desc)
+> >+			dma_pool_free(sdma->desc_pool, buf->desc,
+> >+				      buf->desc_dma);
+> >+
+> >+		if (!buf->skb)
+> >+			continue;
+> >+
+> >+		dma_unmap_single(sdma->sw->dev->dev, buf->buf_dma,
+> >+				 buf->skb->len, DMA_TO_DEVICE);
+> >+
+> >+		dev_consume_skb_any(buf->skb);
+> >+	}
+> >+}
+> >+
+> >+static void prestera_rxtx_handle_event(struct prestera_switch *sw,
+> >+				       struct prestera_event *evt,
+> >+				       void *arg)
+> >+{
+> >+	struct prestera_sdma *sdma = arg;
+> >+
+> >+	if (evt->id != PRESTERA_RXTX_EVENT_RCV_PKT)
+> >+		return;
+> >+
+> >+	prestera_write(sdma->sw, SDMA_RX_INTR_MASK_REG, 0);
+> >+	napi_schedule(&sdma->rx_napi);
+> >+}
+> >+
+> >+int prestera_sdma_switch_init(struct prestera_switch *sw)
+> >+{
+> >+	struct prestera_sdma *sdma = &sw->rxtx->sdma;
+> >+	struct device *dev = sw->dev->dev;
+> >+	struct prestera_rxtx_params p;
+> >+	int err;
+> >+
+> >+	p.use_sdma = true;
+> >+
+> >+	err = prestera_hw_rxtx_init(sw, &p);
+> >+	if (err) {
+> >+		dev_err(dev, "failed to init rxtx by hw\n");
+> >+		return err;
+> >+	}
+> >+
+> >+	sdma->dma_mask = dma_get_mask(dev);
+> >+	sdma->map_addr = p.map_addr;
+> >+	sdma->sw = sw;
+> >+
+> >+	sdma->desc_pool = dma_pool_create("desc_pool", dev,
+> >+					  sizeof(struct prestera_sdma_desc),
+> >+					  16, 0);
+> >+	if (!sdma->desc_pool)
+> >+		return -ENOMEM;
+> >+
+> >+	err = prestera_sdma_rx_init(sdma);
+> >+	if (err) {
+> >+		dev_err(dev, "failed to init rx ring\n");
+> >+		goto err_rx_init;
+> >+	}
+> >+
+> >+	err = prestera_sdma_tx_init(sdma);
+> >+	if (err) {
+> >+		dev_err(dev, "failed to init tx ring\n");
+> >+		goto err_tx_init;
+> >+	}
+> >+
+> >+	err = prestera_hw_event_handler_register(sw, PRESTERA_EVENT_TYPE_RXTX,
+> >+						 prestera_rxtx_handle_event,
+> >+						 sdma);
+> >+	if (err)
+> >+		goto err_evt_register;
+> >+
+> >+	init_dummy_netdev(&sdma->napi_dev);
+> >+
+> >+	netif_napi_add(&sdma->napi_dev, &sdma->rx_napi, prestera_sdma_rx_poll, 64);
+> >+	napi_enable(&sdma->rx_napi);
+> >+
+> >+	return 0;
+> >+
+> >+err_evt_register:
+> >+err_tx_init:
+> >+	prestera_sdma_tx_fini(sdma);
+> >+err_rx_init:
+> >+	prestera_sdma_rx_fini(sdma);
+> >+
+> >+	dma_pool_destroy(sdma->desc_pool);
+> >+	return err;
+> >+}
+> >+
+> >+void prestera_sdma_switch_fini(struct prestera_switch *sw)
+> >+{
+> >+	struct prestera_sdma *sdma = &sw->rxtx->sdma;
+> >+
+> >+	prestera_hw_event_handler_unregister(sw, PRESTERA_EVENT_TYPE_RXTX,
+> >+					     prestera_rxtx_handle_event);
+> >+	napi_disable(&sdma->rx_napi);
+> >+	netif_napi_del(&sdma->rx_napi);
+> >+	prestera_sdma_rx_fini(sdma);
+> >+	prestera_sdma_tx_fini(sdma);
+> >+	dma_pool_destroy(sdma->desc_pool);
+> >+}
+> >+
+> >+static int prestera_sdma_tx_wait(struct prestera_sdma *sdma,
+> >+				 struct prestera_tx_ring *tx_ring)
+> >+{
+> >+	int tx_retry_num = 10 * tx_ring->max_burst;
+> >+
+> >+	while (--tx_retry_num) {
+> >+		if (!(prestera_read(sdma->sw, SDMA_TX_QUEUE_START_REG) & 1))
+> >+			return 0;
+> >+
+> >+		udelay(1);
+> >+	}
+> >+
+> >+	return -EBUSY;
+> >+}
+> >+
+> >+static void prestera_sdma_tx_start(struct prestera_sdma *sdma)
+> >+{
+> >+	prestera_write(sdma->sw, SDMA_TX_QUEUE_START_REG, 1);
+> >+	schedule_work(&sdma->tx_work);
+> >+}
+> >+
+> >+netdev_tx_t prestera_sdma_xmit(struct prestera_sdma *sdma, struct sk_buff *skb)
+> >+{
+> >+	struct device *dma_dev = sdma->sw->dev->dev;
+> >+	struct prestera_tx_ring *tx_ring;
+> >+	struct net_device *dev = skb->dev;
+> >+	struct prestera_sdma_buf *buf;
+> >+	int err;
+> >+
+> >+	tx_ring = &sdma->tx_ring;
+> >+
+> >+	buf = &tx_ring->bufs[tx_ring->next_tx];
+> >+	if (buf->is_used) {
+> >+		schedule_work(&sdma->tx_work);
+> >+		goto drop_skb;
+> >+	}
+> 
+> What is preventing 2 CPUs to get here and work with the same buf?
 
-[snip]
+I assume you mean serialization between the recycling work and xmit
+context ? Actually they are just updating 'is_used' field which
+allows to use or free, what I can see is that may be I need to use
+something like READ_ONCE/WRITE_ONCE, but the rest looks safe for me:
 
-> +static int mtk_mac_ring_pop_tail(struct mtk_mac_ring *ring,
-> +				 struct mtk_mac_ring_desc_data *desc_data)
-> +{
-> +	struct mtk_mac_ring_desc *desc = &ring->descs[ring->tail];
-> +	unsigned int status;
-> +
-> +	/* Let the device release the descriptor. */
-> +	dma_rmb();
-> +	status = desc->status;
-> +
-> +	if (!(status & MTK_MAC_DESC_BIT_COWN))
-> +		return -1;
-> +
-> +	desc_data->len = status & MTK_MAC_DESC_MSK_LEN;
-> +	desc_data->flags = status & ~MTK_MAC_DESC_MSK_LEN;
-> +	desc_data->dma_addr = desc->data_ptr;
-> +	desc_data->skb = ring->skbs[ring->tail];
-> +
-> +	desc->data_ptr = 0;
-> +	desc->status = MTK_MAC_DESC_BIT_COWN;
-> +	if (status & MTK_MAC_DESC_BIT_EOR)
-> +		desc->status |= MTK_MAC_DESC_BIT_EOR;
+1) recycler updates is_used=false only after fully freeing the buffer,
+and only if it was set to true.
 
-Don't you need a dma_wmb() for the device to observe the new descriptor
-here?
+2) xmit context gets next buffer to use only if it is freed
+(is_used=false), and sets it to true after buffer is ready to be sent.
 
-[snip]
+So, yes these contexts both update this field but in strict sequence.
 
-> +static void mtk_mac_dma_unmap_tx(struct mtk_mac_priv *priv,
-> +				 struct mtk_mac_ring_desc_data *desc_data)
-> +{
-> +	struct device *dev = mtk_mac_get_dev(priv);
-> +
-> +	return dma_unmap_single(dev, desc_data->dma_addr,
-> +				desc_data->len, DMA_TO_DEVICE);
+If you mean of protecting of xmit on several CPUS so, the xmit should be
+serialized on kernel, and the driver uses one queue which (as I
+underand) is bound to particular CPU.
 
-If you stored a pointer to the sk_buff you transmitted, then you would
-need an expensive read to the descriptor to determine the address and
-length, and you would also not be at the mercy of the HW putting
-incorrect values there.
-
-sp
-> +static void mtk_mac_dma_init(struct mtk_mac_priv *priv)
-> +{
-> +	struct mtk_mac_ring_desc *desc;
-> +	unsigned int val;
-> +	int i;
-> +
-> +	priv->descs_base = (struct mtk_mac_ring_desc *)priv->ring_base;
-> +
-> +	for (i = 0; i < MTK_MAC_NUM_DESCS_TOTAL; i++) {
-> +		desc = &priv->descs_base[i];
-> +
-> +		memset(desc, 0, sizeof(*desc));
-> +		desc->status = MTK_MAC_DESC_BIT_COWN;
-> +		if ((i == MTK_MAC_NUM_TX_DESCS - 1) ||
-> +		    (i == MTK_MAC_NUM_DESCS_TOTAL - 1))
-> +			desc->status |= MTK_MAC_DESC_BIT_EOR;
-> +	}
-> +
-> +	mtk_mac_ring_init(&priv->tx_ring, priv->descs_base, 0);
-> +	mtk_mac_ring_init(&priv->rx_ring,
-> +			  priv->descs_base + MTK_MAC_NUM_TX_DESCS,
-> +			  MTK_MAC_NUM_RX_DESCS);
-> +
-> +	/* Set DMA pointers. */
-> +	val = (unsigned int)priv->dma_addr;
-
-You would probably add a WARN_ON() or something that catches the upper
-32-bits of the dma_addr being set, see my comment about the DMA mask
-setting.
-
-[snip]
-
-> +static void mtk_mac_tx_complete_all(struct mtk_mac_priv *priv)
-> +{
-> +	struct net_device *ndev = priv_to_netdev(priv);
-> +	struct mtk_mac_ring *ring = &priv->tx_ring;
-> +	int ret;
-> +
-> +	for (;;) {
-> +		mtk_mac_lock(priv);
-> +
-> +		if (!mtk_mac_ring_descs_available(ring)) {
-> +			mtk_mac_unlock(priv);
-> +			break;
-> +		}
-> +
-> +		ret = mtk_mac_tx_complete_one(priv);
-> +		if (ret) {
-> +			mtk_mac_unlock(priv);
-> +			break;
-> +		}
-> +
-> +		if (netif_queue_stopped(ndev))
-> +			netif_wake_queue(ndev);
-> +
-> +		mtk_mac_unlock(priv);
-> +	}
-
-Where do you increment the net_device statistics to indicate the bytes
-and packets transmitted?
-
-[snip]
-
-> +	mtk_mac_set_mode_rmii(priv);
-> +
-> +	dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
-
-Your code assumes that DMA addresses are not going to be >= 4GB so you
-should be checking this function's return code and abort here otherwise
-your driver will fail in surprisingly difficult ways to debug.
--- 
-Florian
+> 
+> 
+> 
+> >+
+> >+	if (unlikely(eth_skb_pad(skb)))
+> >+		goto drop_skb_nofree;
+> >+
+> >+	err = prestera_sdma_tx_buf_map(sdma, buf, skb);
+> >+	if (err)
+> >+		goto drop_skb;
+> >+
+> >+	prestera_sdma_tx_desc_set_buf(sdma, buf->desc, buf->buf_dma, skb->len);
+> >+
+> >+	dma_sync_single_for_device(dma_dev, buf->buf_dma, skb->len,
+> >+				   DMA_TO_DEVICE);
+> >+
+> >+	if (!tx_ring->burst--) {
+> >+		tx_ring->burst = tx_ring->max_burst;
+> >+
+> >+		err = prestera_sdma_tx_wait(sdma, tx_ring);
+> >+		if (err)
+> >+			goto drop_skb_unmap;
+> >+	}
+> >+
+> >+	tx_ring->next_tx = (tx_ring->next_tx + 1) % SDMA_TX_DESC_PER_Q;
+> >+	prestera_sdma_tx_desc_xmit(buf->desc);
+> >+	buf->is_used = true;
+> >+
+> >+	prestera_sdma_tx_start(sdma);
+> >+
+> >+	return NETDEV_TX_OK;
+> >+
+> >+drop_skb_unmap:
+> >+	prestera_sdma_tx_buf_unmap(sdma, buf);
+> >+drop_skb:
+> >+	dev_consume_skb_any(skb);
+> >+drop_skb_nofree:
+> >+	dev->stats.tx_dropped++;
+> >+	return NETDEV_TX_OK;
+> >+}
+> >+
+> >+int prestera_rxtx_switch_init(struct prestera_switch *sw)
+> >+{
+> >+	struct prestera_rxtx *rxtx;
+> >+
+> >+	rxtx = kzalloc(sizeof(*rxtx), GFP_KERNEL);
+> >+	if (!rxtx)
+> >+		return -ENOMEM;
+> >+
+> >+	sw->rxtx = rxtx;
+> >+
+> >+	return prestera_sdma_switch_init(sw);
+> >+}
+> >+
+> >+void prestera_rxtx_switch_fini(struct prestera_switch *sw)
+> >+{
+> >+	prestera_sdma_switch_fini(sw);
+> >+	kfree(sw->rxtx);
+> >+}
+> >+
+> >+int prestera_rxtx_port_init(struct prestera_port *port)
+> >+{
+> >+	int err;
+> >+
+> >+	err = prestera_hw_rxtx_port_init(port);
+> >+	if (err)
+> >+		return err;
+> >+
+> >+	port->dev->needed_headroom = PRESTERA_DSA_HLEN + ETH_FCS_LEN;
+> >+	return 0;
+> >+}
+> >+
+> >+netdev_tx_t prestera_rxtx_xmit(struct prestera_port *port, struct sk_buff *skb)
+> 
+> Why this has "rx" in the name??
+> 
+> 
+> >+{
+> >+	struct prestera_dsa dsa;
+> >+
+> >+	dsa.hw_dev_num = port->dev_id;
+> >+	dsa.port_num = port->hw_id;
+> >+
+> >+	if (skb_cow_head(skb, PRESTERA_DSA_HLEN) < 0)
+> >+		return NET_XMIT_DROP;
+> >+
+> >+	skb_push(skb, PRESTERA_DSA_HLEN);
+> >+	memmove(skb->data, skb->data + PRESTERA_DSA_HLEN, 2 * ETH_ALEN);
+> >+
+> >+	if (prestera_dsa_build(&dsa, skb->data + 2 * ETH_ALEN) != 0)
+> >+		return NET_XMIT_DROP;
+> >+
+> >+	return prestera_sdma_xmit(&port->sw->rxtx->sdma, skb);
+> >+}
+> >diff --git a/drivers/net/ethernet/marvell/prestera/prestera_rxtx.h b/drivers/net/ethernet/marvell/prestera/prestera_rxtx.h
+> >new file mode 100644
+> >index 000000000000..bbbadfa5accf
+> >--- /dev/null
+> >+++ b/drivers/net/ethernet/marvell/prestera/prestera_rxtx.h
+> >@@ -0,0 +1,21 @@
+> >+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+> >+ *
+> >+ * Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved.
+> >+ *
+> >+ */
+> >+
+> >+#ifndef _PRESTERA_RXTX_H_
+> >+#define _PRESTERA_RXTX_H_
+> >+
+> >+#include <linux/netdevice.h>
+> >+
+> >+#include "prestera.h"
+> >+
+> >+int prestera_rxtx_switch_init(struct prestera_switch *sw);
+> >+void prestera_rxtx_switch_fini(struct prestera_switch *sw);
+> >+
+> >+int prestera_rxtx_port_init(struct prestera_port *port);
+> >+
+> >+netdev_tx_t prestera_rxtx_xmit(struct prestera_port *port, struct sk_buff *skb);
+> >+
+> >+#endif /* _PRESTERA_RXTX_H_ */
+> >-- 
+> >2.17.1
+> >
