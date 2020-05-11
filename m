@@ -2,172 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24FFB1CD6D5
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8F31CD732
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 13:06:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729388AbgEKKsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 06:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33094 "EHLO
+        id S1729287AbgEKLGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 07:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728209AbgEKKsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 06:48:50 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA594C061A0C;
-        Mon, 11 May 2020 03:48:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=mTITpNPfukEgYQY/aZeV8dmdxeGfrIXiQ1V83L9EXho=; b=e9OxMr3UR5uP2v5h6BEsy7HbZ
-        QjFVipY0199A/KDdzmtFfyUE7VxfZ9biF83dCHJCNDeOTNllJzWZIy9r7kwgj9uzbMvRtkT+jvsfd
-        uR4HTMXLN5O/8HqL8zpd1wKViFRU3YpPC5429IW0W7/df7fiRv6smRT6PkpsIEg+d+Wqq27RP+MlL
-        Fs5oCuTndab1kvfUQQYMhWRb0YBjuT4587zJHlgHed6n9PgppU5IUfBQWeq6Iaz71K/9gMtMosqhv
-        klHnHSmMAGj65JAkAN635Q+nKdiZKoNg8UYhlaDfhYlBLuCOMHDsvqpjnxU1eDcerqYI7YUqj+ulk
-        4i0eLXI6Q==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:38852)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jY5yx-0005tq-2M; Mon, 11 May 2020 11:48:23 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jY5yr-0005Zc-QZ; Mon, 11 May 2020 11:48:17 +0100
-Date:   Mon, 11 May 2020 11:48:17 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>, linux.cj@gmail.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next PATCH v3 4/5] net: phy: Introduce fwnode_get_phy_id()
-Message-ID: <20200511104817.GP1551@shell.armlinux.org.uk>
-References: <83ab4ca4-9c34-4cdd-4413-3b4cdf96727d@arm.com>
- <20200508160755.GB10296@lsv03152.swis.in-blr01.nxp.com>
- <20200508181301.GF298574@lunn.ch>
- <1e33605e-42fd-baf8-7584-e8fcd5ca6fd3@arm.com>
- <20200508202722.GI298574@lunn.ch>
- <97a9e145-bbaa-efb8-6215-dc3109ee7290@arm.com>
- <20200508234257.GA338317@lunn.ch>
- <20200511080040.GC12725@lsv03152.swis.in-blr01.nxp.com>
- <20200511093849.GO1551@shell.armlinux.org.uk>
- <20200511102930.GA24687@lsv03152.swis.in-blr01.nxp.com>
+        by vger.kernel.org with ESMTP id S1728638AbgEKLGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 07:06:53 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9F1C061A0C;
+        Mon, 11 May 2020 04:06:53 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id o10so7529137ejn.10;
+        Mon, 11 May 2020 04:06:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8ybDrynh43aGAdYaMM8qDIpCRRMRzFAjnTRZJLgw9IY=;
+        b=TJW7vpazNVh5QwWeVsEe41nsOTWXavYTd4yBPZcjrxCazHfaHcKNLTWpRUI7BUCnlA
+         7OkrJFB06o1OEkbbPiMdsO2aK0j6jbbwz2lsZYKeN+SSbhuMWErKqufUfck/9qmWmh+/
+         qWA0QX5GX+V8CY6AXwqijN30tGG3Wi9veQSkweDn3tleaAV1YCplG6VtfNKxttXQvUzW
+         3iiHhceWVjvgQSb0nx96QoBT/bIuoBDy8z6BaBycusTzuyU6Ud4VmEs3z2d9T8Jt1ZAm
+         uTiFgjX5JB3Bf8pmPEeeOC6hlsToK/FWzKaBlwUd8nwVTl6sEF0QKB5FOoIXe8ZQSRSh
+         i1Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8ybDrynh43aGAdYaMM8qDIpCRRMRzFAjnTRZJLgw9IY=;
+        b=CqxYyIhxvnrZrJ/lKjN1CaKr3XCOb4Bbx4ps4aI4ribpA+nb5MogS795h+bfEhuJZo
+         azrQ16o9FTsp1r/9kCrKeRUXhQGAwXpYdcLNwp+mGhCNYts1bl3gYAaPoYwIyeWUAgxL
+         /iELJOtE7deVk0cV9fxNz0xLjybWhpoPPU6iHkNfv5DTqyJQaUVdxPP63K04PbNKtTV7
+         SJ5JrqIlAxCfHPMOXVkNIDI5mhBucPkuFh/eBlv++tV1VjNCfYbhgD4zzEHNlkPJS2EB
+         dHVmDr35Hhv2uREi3fl3aHBZvsLgGHE1sn89h4G2NPOUf6Stkelig+ohtUi++TnXSTXP
+         m+1w==
+X-Gm-Message-State: AGi0PubWmu/4HYc0YpTo4zke6rmD/V1mfY1VmK+3nixoK9dLy4woZKjE
+        jYWSrfS8EZRYG0IvI5LuT5yLsqY/vEgmQP/PIdnUVQ==
+X-Google-Smtp-Source: APiQypJxWhyHKDGTL92E/fjOEYy/Ja6gvJpBErwpcnHxTXlOfBtRbigEM+ciaG03gTeZWAsaW7qMbcbx8iGs/+nF89A=
+X-Received: by 2002:a17:906:d8c1:: with SMTP id re1mr6314698ejb.184.1589195211787;
+ Mon, 11 May 2020 04:06:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200511102930.GA24687@lsv03152.swis.in-blr01.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200510164255.19322-1-olteanv@gmail.com>
+In-Reply-To: <20200510164255.19322-1-olteanv@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 11 May 2020 14:06:41 +0300
+Message-ID: <CA+h21hrK2_7F78momhR84tG4bqUFo2a1VVbpH=AxXGwejdgqPw@mail.gmail.com>
+Subject: Re: [PATCH net-next 00/15] Traffic support for dsa_8021q in
+ vlan_filtering=1 mode
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 03:59:30PM +0530, Calvin Johnson wrote:
-> On Mon, May 11, 2020 at 10:38:49AM +0100, Russell King - ARM Linux admin wrote:
-> > On Mon, May 11, 2020 at 01:30:40PM +0530, Calvin Johnson wrote:
-> > > On Sat, May 09, 2020 at 01:42:57AM +0200, Andrew Lunn wrote:
-> > > > On Fri, May 08, 2020 at 05:48:33PM -0500, Jeremy Linton wrote:
-> > > > > Hi,
-> > > > > 
-> > > > > On 5/8/20 3:27 PM, Andrew Lunn wrote:
-> > > > > > > > There is a very small number of devices where the vendor messed up,
-> > > > > > > > and did not put valid contents in the ID registers. In such cases, we
-> > > > > > > > can read the IDs from device tree. These are then used in exactly the
-> > > > > > > > same way as if they were read from the device.
-> > > > > > > > 
-> > > > > > > 
-> > > > > > > Is that the case here?
-> > > > > > 
-> > > > > > Sorry, I don't understand the question?
-> > > > > 
-> > > > > I was asking in general, does this machine report the ID's correctly.
-> > > > 
-> > > > Very likely, it does.
-> > > > 
-> > > > > The embedded single mac:mdio per nic case seems like the normal case, and
-> > > > > most of the existing ACPI described devices are setup that way.
-> > > > 
-> > > > Somebody in this thread pointed to ACPI patches for the
-> > > > MACCHIATOBin. If i remember the hardware correctly, it has 4 Ethernet
-> > > > interfaces, and two MDIO bus masters. One of the bus masters can only
-> > > > do C22 and the other can only do C45. It is expected that the busses
-> > > > are shared, not a nice one to one mapping.
-> > > > 
-> > > > > But at the same time, that shifts the c22/45 question to the nic
-> > > > > driver, where use of a DSD property before instantiating/probing
-> > > > > MDIO isn't really a problem if needed.
-> > > > 
-> > > > This in fact does not help you. The MAC driver has no idea what PHY is
-> > > > connected to it. The MAC does not know if it is C22 or C45. It uses
-> > > > the phylib abstraction which hides all this. Even if you assume 1:1,
-> > > > use phy_find_first(), it will not find a C45 PHY because without
-> > > > knowing there is a C45 PHY, we don't scan for it. And we should expect
-> > > > C45 PHYs to become more popular in the next few years.
-> > > 
-> > > Agree.
-> > > 
-> > > NXP's LX2160ARDB platform currently has the following MDIO-PHY connection.
-> > > 
-> > > MDIO-1 ==> one 40G PHY, two 1G PHYs(C45), two 10G PHYs(C22)
-> > 
-> > I'm not entirely sure you have that correct.  The Clause 45 register set
-> > as defined by IEEE 802.3 does not define registers for 1G negotiation,
-> > unless the PHY either supports Clause 22 accesses, or implements some
-> > kind of vendor extension.  For a 1G PHY, this would be wasteful, and
-> > likely incompatible with a lot of hardware/software.
-> > 
-> > Conversely, Clause 22 does not define registers for 10G speeds, except
-> > accessing Clause 45 registers indirectly through clause 22 registers,
-> > which would also be wasteful.
-> > 
-> Got your point.
-> Let me try to clarify.
-> 
-> MDIO-1 ==> one 40G PHY, two 1G PHYs(C45), two 10G PHYs(C22)
-> MDIO-2 ==> one 25G PHY
-> This is the physical connection of MDIO & PHYs on the platform.
-> 
-> For the c45 PHYs(two 10G), we use compatible "ethernet-phy-ieee802.3-c45"(not
-> yet upstreamed).
-> For c22 PHYs(two 1G), we don't mention the c45 compatible string and hence the
-> access also will be using c22, if I'm not wrong.
+On Sun, 10 May 2020 at 19:43, Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+> This series is an attempt to support as much as possible in terms of
+> traffic I/O from the network stack with the only dsa_8021q user thus
+> far, sja1105.
+>
+> The hardware doesn't support pushing a second VLAN tag to packets that
+> are already tagged, so our only option is to combine the dsa_8021q with
+> the user tag into a single tag and decode that on the CPU.
+>
+> The assumption is that there is a type of use cases for which 7 VLANs
+> per port are more than sufficient, and that there's another type of use
+> cases where the full 4096 entries are barely enough. Those use cases are
+> very different from one another, so I prefer trying to give both the
+> best experience by creating this best_effort_vlan_filtering knob to
+> select the mode in which they want to operate in.
+>
+> This series depends on "[v4,resend,net-next,0/4] Cross-chip bridging for
+> disjoint DSA trees", submitted here:
+> https://patchwork.ozlabs.org/project/netdev/cover/20200510163743.18032-1-olteanv@gmail.com/
+>
+> Russell King (1):
+>   net: dsa: provide an option for drivers to always receive bridge VLANs
+>
+> Vladimir Oltean (14):
+>   net: dsa: tag_8021q: introduce a vid_is_dsa_8021q helper
+>   net: dsa: sja1105: keep the VLAN awareness state in a driver variable
+>   net: dsa: sja1105: deny alterations of dsa_8021q VLANs from the bridge
+>   net: dsa: sja1105: save/restore VLANs using a delta commit method
+>   net: dsa: sja1105: allow VLAN configuration from the bridge in all
+>     states
+>   net: dsa: sja1105: exit sja1105_vlan_filtering when called multiple
+>     times
+>   net: dsa: sja1105: prepare tagger for handling DSA tags and VLAN
+>     simultaneously
+>   net: dsa: tag_8021q: support up to 8 VLANs per port using sub-VLANs
+>   net: dsa: tag_sja1105: implement sub-VLAN decoding
+>   net: dsa: sja1105: add a new best_effort_vlan_filtering devlink
+>     parameter
+>   net: dsa: sja1105: add packing ops for the Retagging Table
+>   net: dsa: sja1105: implement a common frame memory partitioning
+>     function
+>   net: dsa: sja1105: implement VLAN retagging for dsa_8021q sub-VLANs
+>   docs: net: dsa: sja1105: document the best_effort_vlan_filtering
+>     option
+>
+>  .../networking/devlink-params-sja1105.txt     |   27 +
+>  Documentation/networking/dsa/sja1105.rst      |  211 +++-
+>  drivers/net/dsa/sja1105/sja1105.h             |   29 +
+>  .../net/dsa/sja1105/sja1105_dynamic_config.c  |   33 +
+>  drivers/net/dsa/sja1105/sja1105_main.c        | 1072 +++++++++++++++--
+>  drivers/net/dsa/sja1105/sja1105_spi.c         |    6 +
+>  .../net/dsa/sja1105/sja1105_static_config.c   |   62 +-
+>  .../net/dsa/sja1105/sja1105_static_config.h   |   16 +
+>  drivers/net/dsa/sja1105/sja1105_vl.c          |   20 +-
+>  include/linux/dsa/8021q.h                     |   42 +-
+>  include/linux/dsa/sja1105.h                   |    5 +
+>  include/net/dsa.h                             |    1 +
+>  net/dsa/slave.c                               |   12 +-
+>  net/dsa/tag_8021q.c                           |  108 +-
+>  net/dsa/tag_sja1105.c                         |   38 +-
+>  15 files changed, 1443 insertions(+), 239 deletions(-)
+>  create mode 100644 Documentation/networking/devlink-params-sja1105.txt
+>
+> --
+> 2.17.1
+>
 
-You seem to have just repeated the same mistake (it seems to be a direct
-copy-n-paste of what you sent in the email I replied to) - and then gone
-on to say something different.  Either you're confused or you're not
-writing in your email what you intend to.
+Sorry to repost before receiving any feedback, but there are some
+small fixups I need to make.
 
-You first say "MDIO-1 ==> two 1G PHYs(C45)".  You then say lower down
-"For C22 PHYs (two 1G)".  Both these statements can't be true.
-
-Similarly, you first say "MDIO-1 ==> two 10G PHYs(C22)".  You then say
-lower down "For the c45 PHYs(two 10G)".  Again, both these statements
-can't be true.
-
-Given that this discussion in this thread has been about C22 vs C45, I
-would have thought accuracy in regard to this point would have been of
-the up-most importance.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Thanks,
+-Vladimir
