@@ -2,120 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A35C71CE390
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 21:06:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 528A61CE391
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 21:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731263AbgEKTG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 15:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        id S1731014AbgEKTGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 15:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729215AbgEKTG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 15:06:26 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BBAC05BD09
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 12:06:24 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id x17so12382157wrt.5
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 12:06:24 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729215AbgEKTGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 15:06:35 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8E3C061A0C
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 12:06:34 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id 18so5162686pfx.6
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 12:06:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=QZEthipVzVjMeKxHpjAKSEM3ksmG1aLvz13r/CgdtzI=;
-        b=F7M6GHvDBD0Dy9yb/TCTMOgThiMwv6EnAazuIF0KlP9eJwTau1TvINq+9FmwmyuTg1
-         oZO7srSSVj7j0BgfqtXitVJYQ/jPrE1/ekYAi4d8ZZrf2upsoM/YS1uKsy1LGLudQdx3
-         Ehwmv4wOEat5kIDbFshog0X4EQ9denYri3IRQ=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=N+EBo2PaSrOPJJuPgKNtebDh4kVRzus9O1QbzAkPgHk=;
+        b=pUq1QY1QMynAWp/PjrkIZbi6mw1z9WZUemlDvUnMmrNTakRFr+aeg8cJi+R1V1Z9yb
+         1NbuG/MKpLJjMa1rXHBsaF8RIRb4UfEW0KzjLLgUFk8OOGk5cmRdbkwEkqFX9J1xgIXY
+         MpwpLqJNh6lCabhL8iemXpV6dNTNRmpdNWrKQH/gVv29Yyg55wMf6SBvSBF8oGrMdWRU
+         lYVfQFZVTfWpBiu1JUCLYoa8QOLZBnXQcKyCwkvCWiQ3AAPVxF2E3OzTPtZ5rZrOLyQ5
+         pVOZCuVU3FnbK+8rWkhEftn/cXPftNXjj+oZnU1L8MMGC0WVeA39CeicpnlOPiNyJ2yB
+         qkhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=QZEthipVzVjMeKxHpjAKSEM3ksmG1aLvz13r/CgdtzI=;
-        b=FHoOaDMfr4x70oy+ftmQqFctexDYAiaMs6WbkybD3oOO0EUBWbpLOjM46KDAgXsCBl
-         cT+mUyqZCnhZgyjc3BzSEO+PKX0pClTT50yBfEa5SNE4EbzhKr80Sf0BRRZh86MyvHFj
-         DW5rxetD678KYAMkP8U0NIoY3FPud74vYzDA0obJvUMyS5Lfw/mhXoN7RbKBAohL8leA
-         MisIwWZJGRnxsOJQbktDrnlKWXuwGd9a5Lzr1ehPkG/c57hdhJlmfCcrKyk0ZVww33zi
-         KNrryMObW1EoyqEdb4O+zbeGdvUb6pNhy+v11jkGERAkhMR4HlvNH4phzuns/JkJqFR6
-         if1g==
-X-Gm-Message-State: AGi0PuZ9/UnFijJk0PUIpXrd2bZi4tUxPLZRysuOvZXi5U9ggJDJOEkl
-        gaHe98Io233h7Z8oQtsQawBr6m35aBQ=
-X-Google-Smtp-Source: APiQypKsnYNoRfI9lWAIqqCYoV5QKs3dC1DDBLJgfyMTQyzwdNKfzX/6hX3HHmJftuZl0sR5SM50aA==
-X-Received: by 2002:a5d:6283:: with SMTP id k3mr20192276wru.62.1589223982638;
-        Mon, 11 May 2020 12:06:22 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id i1sm18799199wrx.22.2020.05.11.12.06.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 12:06:22 -0700 (PDT)
-References: <20200511185218.1422406-1-jakub@cloudflare.com> <20200511185218.1422406-3-jakub@cloudflare.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     dccp@vger.kernel.org, kernel-team@cloudflare.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [PATCH bpf-next v2 02/17] bpf: Introduce SK_LOOKUP program type with a dedicated attach point
-In-reply-to: <20200511185218.1422406-3-jakub@cloudflare.com>
-Date:   Mon, 11 May 2020 21:06:21 +0200
-Message-ID: <875zd2uw9e.fsf@cloudflare.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N+EBo2PaSrOPJJuPgKNtebDh4kVRzus9O1QbzAkPgHk=;
+        b=lBeJQB0i8fcyJzN5ror5aDw81/40VoELHtHFrXgYVQfXtNNrtWA/GJ02QMGSmWC/w1
+         Guy9G7jIIv0uwoOVZJCsx2NSLSnTtI63y7COdksxRUCY40CjvngAkIJ6+eOquF5RMYs1
+         103TQ4jz+rKtvq9TbKjFSPAYVYUJX+awQmeEWuMwiHl9F3KaGY8Ybg2HiZbo54ESfcWJ
+         PaTx+cEDCQWIA/sWsQtWGW4GMn2EuWMXxLngPScWmdfnvvmFSIUwhSSCgFIX9f5p3+w7
+         AFay4HZ8dwhnH3drHmvrfs9IAWZiq6jDohN804BqfHtfWEhRzf5AJGf18+iLTzFOiWCk
+         KPFg==
+X-Gm-Message-State: AGi0PuZRxv7OePo3znNKW61AZBioJmYxIq9YsvWXcaq32nlM5cLyxZco
+        m9uFFNJGjZ6sX9RrpzxMD88=
+X-Google-Smtp-Source: APiQypKC56F/244wnGtGYCEtVj+SXYkfEHQqgKH/mSKiT4KJvXRP0fQPDnj65ijD+Ob+lst/wiZ0yw==
+X-Received: by 2002:a65:4486:: with SMTP id l6mr16755552pgq.365.1589223993553;
+        Mon, 11 May 2020 12:06:33 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d184sm9650591pfc.130.2020.05.11.12.06.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 May 2020 12:06:32 -0700 (PDT)
+Subject: Re: net: phylink: supported modes set to 0 with genphy sfp module
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Julien Beraud <julien.beraud@orolia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <0ee8416c-dfa2-21bc-2688-58337bfa1e2a@orolia.com>
+ <20200511182954.GV1551@shell.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <4894f014-88ed-227a-7563-e3bf3b16e00c@gmail.com>
+Date:   Mon, 11 May 2020 12:06:31 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200511182954.GV1551@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 08:52 PM CEST, Jakub Sitnicki wrote:
-> Add a new program type BPF_PROG_TYPE_SK_LOOKUP and a dedicated attach type
-> called BPF_SK_LOOKUP. The new program kind is to be invoked by the
-> transport layer when looking up a socket for a received packet.
->
-> When called, SK_LOOKUP program can select a socket that will receive the
-> packet. This serves as a mechanism to overcome the limits of what bind()
-> API allows to express. Two use-cases driving this work are:
->
->  (1) steer packets destined to an IP range, fixed port to a socket
->
->      192.0.2.0/24, port 80 -> NGINX socket
->
->  (2) steer packets destined to an IP address, any port to a socket
->
->      198.51.100.1, any port -> L7 proxy socket
->
-> In its run-time context, program receives information about the packet that
-> triggered the socket lookup. Namely IP version, L4 protocol identifier, and
-> address 4-tuple. Context can be further extended to include ingress
-> interface identifier.
->
-> To select a socket BPF program fetches it from a map holding socket
-> references, like SOCKMAP or SOCKHASH, and calls bpf_sk_assign(ctx, sk, ...)
-> helper to record the selection. Transport layer then uses the selected
-> socket as a result of socket lookup.
->
-> This patch only enables the user to attach an SK_LOOKUP program to a
-> network namespace. Subsequent patches hook it up to run on local delivery
-> path in ipv4 and ipv6 stacks.
->
-> Suggested-by: Marek Majkowski <marek@cloudflare.com>
-> Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
->
-> Notes:
->     v2:
->     - Make bpf_sk_assign reject sockets that don't use RCU freeing.
->       Update bpf_sk_assign docs accordingly. (Martin)
->     - Change bpf_sk_assign proto to take PTR_TO_SOCKET as argument. (Martin)
->     - Fix broken build when CONFIG_INET is not selected. (Martin)
->     - Rename bpf_sk_lookup{} src_/dst_* fields remote_/local_*. (Martin)
 
-I forgot to call out one more change in v2 to this patch:
 
-      - Enforce BPF_SK_LOOKUP attach point on load & attach. (Martin)
+On 5/11/2020 11:29 AM, Russell King - ARM Linux admin wrote:
+> On Mon, May 11, 2020 at 05:45:02PM +0200, Julien Beraud wrote:
+>> Following commit:
+>>
+>> commit 52c956003a9d5bcae1f445f9dfd42b624adb6e87
+>> Author: Russell King <rmk+kernel@armlinux.org.uk>
+>> Date:   Wed Dec 11 10:56:45 2019 +0000
+>>
+>>     net: phylink: delay MAC configuration for copper SFP modules
+>>
+>>
+>> In function phylink_sfp_connect_phy, phylink_sfp_config is called before
+>> phylink_attach_phy.
+>>
+>> In the case of a genphy, the "supported" field of the phy_device is filled
+>> by:
+>> phylink_attach_phy->phy_attach_direct->phy_probe->genphy_read_abilities.
+>>
+>> It means that:
+>>
+>> ret = phylink_sfp_config(pl, mode, phy->supported, phy->advertising);
+>> will have phy->supported with no bits set, and then the first call to
+>> phylink_validate in phylink_sfp_config will return an error:
+>>
+>> return phylink_is_empty_linkmode(supported) ? -EINVAL : 0;
+>>
+>> this results in putting the sfp driver in "failed" state.
+> 
+> Which PHY is this?
 
-[...]
+Using the generic PHY with a copper SFP module does not sound like a
+great idea because without a specialized PHY driver (that is, not the
+Generic PHY driver) there is not usually much that can happen.
+-- 
+Florian
