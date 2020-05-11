@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F111CE681
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 23:02:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A95C31CE6EE
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 23:05:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731973AbgEKVCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 17:02:20 -0400
-Received: from mga06.intel.com ([134.134.136.31]:60130 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728544AbgEKVCS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 17:02:18 -0400
-IronPort-SDR: nA6sReJIXxAj2lc8J6aHTgAEWEJztBhgUA9Jjqs9IoQYYodXNK1KXdieJ5wPrKdYc3KjbFrc7H
- JG176sOPjqwg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2020 14:02:17 -0700
-IronPort-SDR: 4beUGah8RDKCo4M/VHRMlkbuVjDbNw4/kbLgluP6x37Da6aJdyn3IGtBfV7RcOsmGWBNG75WOu
- CU/v/dk4lMSQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,381,1583222400"; 
-   d="scan'208";a="261890568"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.33])
-  by orsmga003.jf.intel.com with ESMTP; 11 May 2020 14:02:17 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH net] ptp: fix struct member comment for do_aux_work
-Date:   Mon, 11 May 2020 14:02:15 -0700
-Message-Id: <20200511210215.4178242-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.25.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1732540AbgEKVE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 17:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731862AbgEKVEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 17:04:53 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC6BC061A0C
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 14:04:53 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id y9so1849626plk.10
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 14:04:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=VYxf0PVqeV6uxJip1Y5m5pzkxtTdxaIqljWZxPBwFTg=;
+        b=0YPMD7TRof8xRGbpqwKaP0rMBzstLuS6CCVbM4X1f670fIZyxnuJuSeSXEMJYbpfzR
+         GZqZMTHot5mtK/uWYS49taJ+DlAC7YramnrCsSXCnguWFjVoRkC8hdJy0f6o4Ng7S2Bp
+         tJ4MfAAlO+NHfdz+jUzphWq2+B0esr3KW6jnbeY5Sos3BXL9hDyU01YhyR7vAnc2hpVU
+         6RoatL4wVgX8EIOtNL8jgL4Sz78izBUz8+/Ue1yn38F38JFtYPnfPstoN8a5SAFxhBJA
+         Gctm5I6sM+TMOQDnjhY32b1auVlxo8/MJohAPEDyZRrClKMZr9T31/wtrur9R5VR36jm
+         lGrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=VYxf0PVqeV6uxJip1Y5m5pzkxtTdxaIqljWZxPBwFTg=;
+        b=JOZojV1VLM9Y7O06t740zPVChrWzRPSuGvniC1rghbO7Swj5hqRenrg8P9HxjB963z
+         rCgXqJJqvU9MyiGi/j9voakMxl1RmAcbIcMz8Cw1YwfV8ft9YzxtDg4G/jxerMvUYbSc
+         SkJkZ7DMg4NtoBIbVrPYfBurdTlza+YBhJTjGtVDdegqRbhQXnqbZ5WPBBc75GUzOnBF
+         oEloOU8PeyUiXzXmKa3EDxDjdHU8FOCD0v4r8ikbYzMHHMsO3drzAd59TgTxdGn4sziU
+         Qt10+JyRMlcMKBBhoJALroBDmSaT/yBwkX5TgV17YmsPuDGrXhXnZhInZBhKUCATVc8d
+         5yPA==
+X-Gm-Message-State: AOAM533YUyYyBb5DEopmchgVYuauD9oe4i8n7zhQYvKK3Ys68LGBaMNq
+        4neqblkzN2x4SScgWBzGWRs2ILKJnhM=
+X-Google-Smtp-Source: ABdhPJxJYcy/XEvdTd8/0Ga2AfES+0SIwlGthJIx6qftzNFDsAFdCRgYZ0atdZnfyhArGOS1fh8yYA==
+X-Received: by 2002:a17:90a:bb95:: with SMTP id v21mr773673pjr.216.1589231092425;
+        Mon, 11 May 2020 14:04:52 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id c2sm6325048pgj.93.2020.05.11.14.04.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 11 May 2020 14:04:51 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net 0/2] ionic fixes
+Date:   Mon, 11 May 2020 14:04:43 -0700
+Message-Id: <20200511210445.2144-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The do_aux_work callback had documentation in the structure comment
-which referred to it as "do_work".
+These are a couple more fixes after more fw-upgrade testing.
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Richard Cochran <richardcochran@gmail.com>
----
- include/linux/ptp_clock_kernel.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Shannon Nelson (2):
+  ionic: leave netdev mac alone after fw-upgrade
+  ionic: call ionic_port_init after fw-upgrade
 
-diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
-index 31144d954d89..d3e8ba5c7125 100644
---- a/include/linux/ptp_clock_kernel.h
-+++ b/include/linux/ptp_clock_kernel.h
-@@ -108,10 +108,10 @@ struct ptp_system_timestamp {
-  *            parameter func: the desired function to use.
-  *            parameter chan: the function channel index to use.
-  *
-- * @do_work:  Request driver to perform auxiliary (periodic) operations
-- *	      Driver should return delay of the next auxiliary work scheduling
-- *	      time (>=0) or negative value in case further scheduling
-- *	      is not required.
-+ * @do_aux_work:  Request driver to perform auxiliary (periodic) operations
-+ *                Driver should return delay of the next auxiliary work
-+ *                scheduling time (>=0) or negative value in case further
-+ *                scheduling is not required.
-  *
-  * Drivers should embed their ptp_clock_info within a private
-  * structure, obtaining a reference to it using container_of().
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 19 ++++++++++++-------
+ .../net/ethernet/pensando/ionic/ionic_main.c  | 18 +++++++++---------
+ 2 files changed, 21 insertions(+), 16 deletions(-)
+
 -- 
-2.25.2
+2.17.1
 
