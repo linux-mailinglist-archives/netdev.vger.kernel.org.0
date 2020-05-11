@@ -2,128 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3071CD666
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4A51CD670
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:22:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729466AbgEKKUo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 11 May 2020 06:20:44 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:34435 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727093AbgEKKUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 06:20:43 -0400
-Received: from [192.168.1.91] (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 8258DCECE3;
-        Mon, 11 May 2020 12:30:23 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: pull request: bluetooth-next 2020-05-09
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200509152445.262a84f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Mon, 11 May 2020 12:20:10 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <BC8E9B93-8D4F-4983-9D97-8D19BF27736C@holtmann.org>
-References: <20200509184928.GA26120@jhedberg-mac01.local>
- <20200509152445.262a84f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1729135AbgEKKWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 06:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727093AbgEKKWg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 06:22:36 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC80C061A0C
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 03:22:35 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id s9so7045619lfp.1
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 03:22:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=QpwdVZP/mrhAPxpNDxnDTfFrLaxC+zgR7bK6GtNL1rE=;
+        b=xxgJokT4bG7TXPgRdooxx6dzFXNb/hLwsvnGFBv+bd3rDdYdzSczxAAfGXoyZJZDZI
+         OsFAny8HEV7cmSx/IPPvNke10B4EnJWuVZkh7WIwm87jH4lpMg0gZMGJ9c2PTCddvbzk
+         Ka7Fz29ntCejL5+1Hmf1KiZ4ZeNYv7dGh9msKxzHFPcfT2h52l5xTJnBucJ5qz4vzFUl
+         4TJWzm9CTOY0v9B+sV1eBVZ4Si0FTCGHD5RxbmIQs9ddA5xKwbS+yHRSAIzdVb8O3VMB
+         jJa9i8IALVI6i/HIN7P49IVnOEKi6/y6NGmL9JE03cKJet8Cl9EUaGRXlHERhzvWN3H3
+         8ltA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=QpwdVZP/mrhAPxpNDxnDTfFrLaxC+zgR7bK6GtNL1rE=;
+        b=til2a/lDkkNE4j5ls9kbcXwKVVuXi4xW8RdFBsQqKnkGrP21fVLlZmuZYNCMNuhwXN
+         fQEYiAswYRiw+KF2LhSxDXtyn5JiKkcx4GknVEzWmUaG0hTfVj5L7ZUyTtUm/CAN5ao9
+         +sRQgPzxh20fZzEop0G/UVG5QgjHyo1bAy7LKuHus3tVVtBf8qdmd+W6u+GoI/ZFbvTR
+         8TfE5mR2Ze1QRGfPelhp9HAbauD9blexbFRP8x4XX1wCHhducjw168jNEV/8dA4Okulv
+         lkOrRBrxyGn2LNR5gkP7RGBCKzYpXYZS0B4HiDSWvuXflcPzJD7yQZJJYRiY1QZbtAoN
+         AffA==
+X-Gm-Message-State: AOAM533uErtFRbX0YzCJjg0Eow1JxpYEvK4QtZMyNDtXigay8uIi0jB1
+        QBcmN/txPxVP1XalpgZD0/agGp3QYgWf9Q==
+X-Google-Smtp-Source: ABdhPJxIpQSKJWTDQVgkNMbZJFUrWq8XpRcag7a3CInvI3wD90ZcJjEu7pH4Rx7bODK4qGoCYzFr+A==
+X-Received: by 2002:a19:d55:: with SMTP id 82mr10698548lfn.89.1589192554122;
+        Mon, 11 May 2020 03:22:34 -0700 (PDT)
+Received: from centos7-pv-guest.localdomain ([5.35.46.227])
+        by smtp.gmail.com with ESMTPSA id j15sm10199453lji.18.2020.05.11.03.22.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 11 May 2020 03:22:33 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+To:     netdev@vger.kernel.org
+Cc:     brouer@redhat.com, jgross@suse.com, wei.liu@kernel.org,
+        paul@xen.org, ilias.apalodimas@linaro.org
+Subject: [PATCH net-next v9 0/2] xen networking: add XDP support to xen-netfront
+Date:   Mon, 11 May 2020 13:22:19 +0300
+Message-Id: <1589192541-11686-1-git-send-email-kda@linux-powerpc.org>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+This series adds XDP support to xen-nefront driver.
+The second patch enables extra space for XDP processing.
 
->> Here's another set of Bluetooth patches for the 5.8 kernel:
->> 
->> - Add support for Intel Typhoon Peak device (8087:0032)
->> - Add device tree bindings for Realtek RTL8723BS device
->> - Add device tree bindings for Qualcomm QCA9377 device
->> - Add support for experimental features configuration through mgmt
->> - Multiple fixes & cleanups to the btbcm driver
->> - Add support for LE scatternet topology for selected devices
->> - A few other smaller fixes & cleanups
->> 
->> Please let me know if there are any issues pulling. Thanks.
-> 
-> Is your tree immutable, is there a chance you could still get the missing sign-off?
-> 
-> Commit bf1f79470a62 ("Bluetooth: btusb: Add support for Intel Bluetooth Device Typhoon Peak (8087:0032)")
-> 	author Signed-off-by missing
-> 	author email:    raghuram.hegde@intel.com
-> 	committer email: marcel@holtmann.org
-> 	Signed-off-by: Amit K Bag <amit.k.bag@intel.com>
-> 	Signed-off-by: Tumkur Narayan, Chethan <chethan.tumkur.narayan@intel.com>
-> 	Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-> 
-> Also, in the same patch:
-> 
-> ---------------------------------------------------------------
-> 0015-Bluetooth-btusb-Add-support-for-Intel-Bluetooth-Devi.patch
-> ---------------------------------------------------------------
-> ERROR: code indent should use tabs where possible
-> #55: FILE: drivers/bluetooth/btusb.c:346:
-> +                                                     BTUSB_WIDEBAND_SPEECH},$
-> 
-> WARNING: please, no spaces at the start of a line
-> #55: FILE: drivers/bluetooth/btusb.c:346:
-> +                                                     BTUSB_WIDEBAND_SPEECH},$
-> 
-> WARNING: Missing Signed-off-by: line by nominal patch author '"Hegde, Raghuram" <raghuram.hegde@intel.com>'
-> 
-> total: 1 errors, 2 warnings, 0 checks, 8 lines checked
+v9:
+- assign an xdp program before switching to Reconfiguring
+- minor cleanups
+- address checkpatch issues
 
-I took this patch out. They should fix it up and re-submit it.
+v8:
+- add PAGE_POOL config dependency
+- keep the state of XDP processing in netfront_xdp_enabled
+- fixed allocator type in xdp_rxq_info_reg_mem_model()
+- minor cleanups in xen-netback
 
-> 
-> 
-> And:
-> 
-> ------------------------------------------------------------
-> 0016-dt-bindings-net-bluetooth-Add-rtl8723bs-bluetooth.patch
-> ------------------------------------------------------------
-> WARNING: DT binding documents should be licensed (GPL-2.0-only OR BSD-2-Clause)
-> #23: FILE: Documentation/devicetree/bindings/net/realtek-bluetooth.yaml:1:
-> +# SPDX-License-Identifier: GPL-2.0
-> 
-> total: 0 errors, 2 warnings, 0 checks, 54 lines checked
+v7:
+- use page_pool_dev_alloc_pages() on page allocation
+- remove the leftover break statement from netback_changed
 
-I try to get this fixed, but it might have to come in a subsequent pull request.
+v6:
+- added the missing SOB line
+- fixed subject
 
-> 
-> ---------------------------------------------------------------
-> 0026-Bluetooth-Introduce-debug-feature-when-dynamic-debug.patch
-> ---------------------------------------------------------------
-> WARNING: Prefer [subsystem eg: netdev]_dbg([subsystem]dev, ... then dev_dbg(dev, ... then pr_debug(...  to printk(KERN_DEBUG ...
-> #99: FILE: net/bluetooth/lib.c:212:
-> +	printk(KERN_DEBUG pr_fmt("%pV"), &vaf);
+v5:
+- split netfront/netback changes
+- added a sync point between backend/frontend on switching to XDP
+- added pagepool API
 
-This one is on purpose and has to be printk.
+v4:
+- added verbose patch descriprion
+- don't expose the XDP headroom offset to the domU guest
+- add a modparam to netback to toggle XDP offset
+- don't process jumbo frames for now
 
-> WARNING: Missing a blank line after declarations
-> #135: FILE: net/bluetooth/mgmt.c:3740:
-> +		u32 flags = bt_dbg_get() ? BIT(0) : 0;
-> +		memcpy(rp->features[idx].uuid, debug_uuid, 16);
-> 
-> WARNING: Missing a blank line after declarations
-> #173: FILE: net/bluetooth/mgmt.c:3788:
-> +			bool changed = bt_dbg_get();
-> +			bt_dbg_set(false);
+v3:
+- added XDP_TX support (tested with xdping echoserver)
+- added XDP_REDIRECT support (tested with modified xdp_redirect_kern)
+- moved xdp negotiation to xen-netback
 
-These two were on purpose, but while at it, I fixed them up.
+v2:
+- avoid data copying while passing to XDP
+- tell xen-netback that we need the headroom space
 
-> WARNING: 'Paramters' may be misspelled - perhaps 'Parameters'?
-> #197: FILE: net/bluetooth/mgmt.c:3812:
-> +		/* Paramters are limited to a single octet */
+Denis Kirjanov (2):
+  xen networking: add basic XDP support for xen-netfront
+  xen networking: add XDP offset adjustment to xen-netback
 
-This was a dumb spelling mistake and I fixed it up.
+ drivers/net/Kconfig               |   1 +
+ drivers/net/xen-netback/common.h  |   2 +
+ drivers/net/xen-netback/netback.c |   7 +
+ drivers/net/xen-netback/rx.c      |   7 +-
+ drivers/net/xen-netback/xenbus.c  |  28 ++++
+ drivers/net/xen-netfront.c        | 317 +++++++++++++++++++++++++++++++++++++-
+ 6 files changed, 355 insertions(+), 7 deletions(-)
 
-Thanks for checking everything. I think Johan will just send a new pull request.
-
-Regards
-
-Marcel
+-- 
+1.8.3.1
 
