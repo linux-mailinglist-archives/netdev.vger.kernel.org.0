@@ -2,87 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30E141CD605
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9E511CD60F
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:11:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729135AbgEKKJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 06:09:55 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:55818 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725983AbgEKKJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 06:09:55 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B87356004F;
-        Mon, 11 May 2020 10:09:54 +0000 (UTC)
-Received: from us4-mdac16-49.ut7.mdlocal (unknown [10.7.66.16])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B6D742009B;
-        Mon, 11 May 2020 10:09:54 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.174])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3CAC022004D;
-        Mon, 11 May 2020 10:09:54 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id AF4851C007E;
-        Mon, 11 May 2020 10:09:53 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 11 May
- 2020 11:09:47 +0100
-Subject: Re: [RFC PATCH net] net: flow_offload: simplify hw stats check
- handling
-To:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
-CC:     Pablo Neira Ayuso <pablo@netfilter.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <netfilter-devel@vger.kernel.org>
-References: <49176c41-3696-86d9-f0eb-c20207cd6d23@solarflare.com>
- <20200507153231.GA10250@salvia>
- <9000b990-9a25-936e-6063-0034429256f0@solarflare.com>
- <20200507164643.GA10994@salvia>
- <20200507164820.0f48c36b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200511053359.GC2245@nanopsycho>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <cc715ede-ce75-39ca-4887-4c1d208b4c1f@solarflare.com>
-Date:   Mon, 11 May 2020 11:09:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200511053359.GC2245@nanopsycho>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25412.003
-X-TM-AS-Result: No-5.616200-8.000000-10
-X-TMASE-MatchedRID: cgbqQT5W8he8rRvefcjeTfZvT2zYoYOwC/ExpXrHizzWtEi2QPdTa7SJ
-        tSo+0vIaEzA6FLfmziHJADt1ASJDUpa5OOPdqTS1A9lly13c/gE0AJe3B5qfBhEYLStbyrVdeHI
-        3R7yfiGd16l6K/mgYgLRKB9HFkk/Js08SNE87w/sYkAMBsEcZTCwJt7jDqzeemyiLZetSf8kir3
-        kOMJmHTBQabjOuIvShC24oEZ6SpSkj80Za3RRg8OtOy+Pm9+CG3XX0k0ote7O/1bnNDiuFNqxkR
-        3fS3wCki5f+zHkN9Oc=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.616200-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25412.003
-X-MDID: 1589191794-arpRoAS6J3vX
+        id S1729278AbgEKKLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 06:11:55 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:45411 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728341AbgEKKLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 06:11:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589191912;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=8dqwlRs0MIbbYYZ5cTiHH12yPXOUWNjjWHMIX42DRKA=;
+        b=cwlZ+Ifw6MBmt+FAw1LUQpacznpsSltr+VZONPUZhD0iYRUu9kOFG72N4rEeGDn22UvfaR
+        TRUeOLLNnMxef57BZVshptldOXbMubwlD7rnNXccpJJSHIOoVC3OwerGWBhkea3jmUderU
+        TEAAran2UvYxR3TYmmv3RTdueMtAENg=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-3-KlaGx_rWNrqlmmbUse4NNA-1; Mon, 11 May 2020 06:11:48 -0400
+X-MC-Unique: KlaGx_rWNrqlmmbUse4NNA-1
+Received: by mail-pj1-f71.google.com with SMTP id v71so17193979pjb.6
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 03:11:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8dqwlRs0MIbbYYZ5cTiHH12yPXOUWNjjWHMIX42DRKA=;
+        b=O1KzbVsYvoAD7I+MbNL9ekwScFcklrii8abRCaFBQvBcM/0/f4OagGT36P8VrqQYVA
+         EBy+vt4yLsLUXUKiWt0QF6xfdJxB8GdP7MxUoLUFon7isDoUwkcHm888cwYzJ4wYDcjX
+         2iMicY1DfczzOBzHGl9CuIWmn73H6BsRLDhC4VbO5Py9vR/T6Yn+9wG5aYhY5HVyMH58
+         TmcdtFlk3AM4lMAZMU2dlNMk3ZNe/f59lCRnNiDBwHKEfpGU4munaUwuDXo7s4vTA6SH
+         rDBSJ0pQjV7x5qABQDE1jMq6Y0MVAjlDTQDFayBjBaMWcU+CvbsvHSQXkUwE4MJsSiCa
+         Y7rQ==
+X-Gm-Message-State: AGi0PubH8GjewUeRUjtUC6fWC9RxR28z7u4Ng0I++vrG8hHk0tSicd7u
+        o8mcHjjfjtio8XvqkITP8zRdM0gQ+sKJuTRn0X57b2IY6iDnVoMOfbwjWHcsGZNYT9gx/gcDKsX
+        7Lv3HxKTunzgj2YFm
+X-Received: by 2002:a17:90a:2344:: with SMTP id f62mr19416888pje.152.1589191907145;
+        Mon, 11 May 2020 03:11:47 -0700 (PDT)
+X-Google-Smtp-Source: APiQypI6U2PBXvp5NefRkcNxi8d5R6lAoUyguWTMssi1lnpWsenTGf54ZPP0B9tvxz5rBp8n9A2vjg==
+X-Received: by 2002:a17:90a:2344:: with SMTP id f62mr19416853pje.152.1589191906709;
+        Mon, 11 May 2020 03:11:46 -0700 (PDT)
+Received: from localhost ([223.235.87.110])
+        by smtp.gmail.com with ESMTPSA id h13sm7567956pgm.69.2020.05.11.03.11.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 11 May 2020 03:11:46 -0700 (PDT)
+From:   Bhupesh Sharma <bhsharma@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     bhsharma@redhat.com, bhupesh.linux@gmail.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        aelior@marvell.com, GR-everest-linux-l2@marvell.com,
+        manishc@marvell.com, davem@davemloft.net, irusskikh@marvell.com
+Subject: [PATCH v2 0/2] net: Optimize the qed* allocations inside kdump kernel
+Date:   Mon, 11 May 2020 15:41:40 +0530
+Message-Id: <1589191902-958-1-git-send-email-bhsharma@redhat.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/05/2020 06:33, Jiri Pirko wrote:
-> Fri, May 08, 2020 at 01:48:20AM CEST, kuba@kernel.org wrote:
->> On Thu, 7 May 2020 18:46:43 +0200 Pablo Neira Ayuso wrote:
->>> Jiri said Disabled means: bail out if you cannot disable it.
->> That's in TC uAPI Jiri chose... doesn't mean we have to do the same
->> internally.
-> Yeah, but if TC user says "disabled", please don't assign counter or
-> fail.
-Right, that's what happens with my proposal: TC "disabled" gets
- mapped to internal "disabled (and no other bits)", which means
- "disable or fail".  In exactly the same way that TC "immediate"
- gets mapped to internal "immediate (and no other bits)" which
- means "immediate or fail".
-As Jakub says, "What could be simpler?"
+Changes since v1:
+----------------
+- v1 can be seen here: http://lists.infradead.org/pipermail/kexec/2020-May/024935.html
+- Addressed review comments received on v1:
+  * Removed unnecessary paranthesis.
+  * Used a different macro for minimum RX/TX ring count value in kdump
+    kernel.
 
--ed
+Since kdump kernel(s) run under severe memory constraint with the
+basic idea being to save the crashdump vmcore reliably when the primary
+kernel panics/hangs, large memory allocations done by a network driver
+can cause the crashkernel to panic with OOM.
+
+The qed* drivers take up approximately 214MB memory when run in the
+kdump kernel with the default configuration settings presently used in
+the driver. With an usual crashkernel size of 512M, this allocation
+is equal to almost half of the total crashkernel size allocated.
+
+See some logs obtained via memstrack tool (see [1]) below:
+ dracut-pre-pivot[676]: ======== Report format module_summary: ========
+ dracut-pre-pivot[676]: Module qed using 149.6MB (2394 pages), peak allocation 149.6MB (2394 pages)
+ dracut-pre-pivot[676]: Module qede using 65.3MB (1045 pages), peak allocation 65.3MB (1045 pages)
+
+This patchset tries to reduce the overall memory allocation profile of
+the qed* driver when they run in the kdump kernel. With these
+optimization we can see a saving of approx 85M in the kdump kernel:
+ dracut-pre-pivot[671]: ======== Report format module_summary: ========
+ dracut-pre-pivot[671]: Module qed using 124.6MB (1993 pages), peak allocation 124.7MB (1995 pages)
+ <..snip..>
+ dracut-pre-pivot[671]: Module qede using 4.6MB (73 pages), peak allocation 4.6MB (74 pages)
+
+And the kdump kernel can save vmcore successfully via both ssh and nfs
+interfaces.
+
+This patchset contains two patches:
+[PATCH 1/2] - Reduces the default TX and RX ring count in kdump kernel.
+[PATCH 2/2] - Disables qed SRIOV feature in kdump kernel (as it is
+              normally not a supported kdump target for saving
+	      vmcore).
+
+[1]. Memstrack tool: https://github.com/ryncsn/memstrack
+
+Bhupesh Sharma (2):
+  net: qed*: Reduce RX and TX default ring count when running inside
+    kdump kernel
+  net: qed: Disable SRIOV functionality inside kdump kernel
+
+ drivers/net/ethernet/qlogic/qed/qed_sriov.h  | 10 +++++++---
+ drivers/net/ethernet/qlogic/qede/qede.h      |  2 ++
+ drivers/net/ethernet/qlogic/qede/qede_main.c | 13 ++++++++++---
+ 3 files changed, 19 insertions(+), 6 deletions(-)
+
+-- 
+2.7.4
+
