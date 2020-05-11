@@ -2,107 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 702131CD482
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 11:08:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E124B1CD4DB
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 11:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728704AbgEKJIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 05:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726287AbgEKJIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 05:08:21 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3EF2C061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 02:08:19 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id w7so9914280wre.13
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 02:08:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=rNORn63xqMXkBEqaVD2YWfy0SAq9m0rRouvmymHM0XM=;
-        b=eDGPh8VyzS6siQjHoSre664uGN1zMMOyXQXBHZWeTx8ymioipQEeWpUSrNWs6VCtr7
-         z+LleB5T7uyikm/9o9q6Wd38c1UPyiH1d9Q4XWq6JOJPQbeh2mNx8wCjVUUQaEwSO+7G
-         FJZpGFFn4+3PjiBd3KMLXJHs4X23oWEXW6ciY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=rNORn63xqMXkBEqaVD2YWfy0SAq9m0rRouvmymHM0XM=;
-        b=mAw5ZjY0oTKtvzZWPk6R/s8qy5jVfHvg4vnoKx5haMjgN3sKttCNoRmXoSlTVyYlex
-         sGeOiqloGtHa8yaFewrbn8bz79fERaAN8zlUu2A3wT8Vjbx2z9sLqxLZjtDO8JYZ9FSD
-         blmgpDIr5ij1wNvisrOhZWSWn0xWlVvIU1LRdZc61qTHqAv2oKR0tOJzmYtkT6ySdMtv
-         e+3Ni5TY0i6NVDPCy3RFceYRenkk8oWrnmevmnncrXZhv6rjVGOlh2i0jZZN984Tk6k7
-         LPmbd6fceT/3D9ZXg4cBObPbdvzr6hwXQ51ll6WYNmb6min+eKGGcD7+GCxFQ2iwLj+A
-         c7xw==
-X-Gm-Message-State: AGi0PuZpe3LntYySiEmbrE/RbRaBjxEL/4Wu2xXYoEoql68131XAG9F2
-        Z/RvoockuEqNeiaehm4SPXqhvRN/Zm0=
-X-Google-Smtp-Source: APiQypKgLydNuiou6XiVQ+N9uLYeVHZFpWaev44LH0qc8jQLw5LCNKmpmUYvrOtM/kMk/On2bv4dlA==
-X-Received: by 2002:adf:f5cb:: with SMTP id k11mr17790975wrp.300.1589188097101;
-        Mon, 11 May 2020 02:08:17 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id t71sm27141441wmt.31.2020.05.11.02.08.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 02:08:16 -0700 (PDT)
-References: <20200506125514.1020829-1-jakub@cloudflare.com> <20200506125514.1020829-3-jakub@cloudflare.com> <20200508070638.pqe73q4v3paxpkq5@kafai-mbp.dhcp.thefacebook.com> <87a72ivh6t.fsf@cloudflare.com> <20200508183928.ofudkphlb3vgpute@kafai-mbp.dhcp.thefacebook.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, dccp@vger.kernel.org,
-        kernel-team@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [PATCH bpf-next 02/17] bpf: Introduce SK_LOOKUP program type with a dedicated attach point
-In-reply-to: <20200508183928.ofudkphlb3vgpute@kafai-mbp.dhcp.thefacebook.com>
-Date:   Mon, 11 May 2020 11:08:15 +0200
-Message-ID: <877dxivny8.fsf@cloudflare.com>
+        id S1729395AbgEKJ1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 05:27:07 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41497 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728574AbgEKJ1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 05:27:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589189224;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=13BAfE/1sRi/J98yTfEpMD1AFwnvSYNGHAmPHqQf/Xs=;
+        b=hn1m1S0DFf2AhB3Yu7qDumoUGh1ea+UU+pq4Xch89ti9q0iY4PwcSGFir8i93zffzBR6ot
+        0Ovm74Ciywrc3SYL+WHF2R6/GrJmMaMO4R1wz/+FGQgADHMu1Ozz00lW2VH96/K8H97t2R
+        iXHP89eUN5DUtsuLOMdB6WWi5Nvw/3g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-422-054MV0GAOBWYzkGne0pEFA-1; Mon, 11 May 2020 05:27:01 -0400
+X-MC-Unique: 054MV0GAOBWYzkGne0pEFA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C06AA18CA274;
+        Mon, 11 May 2020 09:26:59 +0000 (UTC)
+Received: from [10.72.12.137] (ovpn-12-137.pek2.redhat.com [10.72.12.137])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2670C165F6;
+        Mon, 11 May 2020 09:26:50 +0000 (UTC)
+Subject: Re: [PATCH] ifcvf: move IRQ request/free to status change handlers
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com
+References: <1589181563-38400-1-git-send-email-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <22d9dcdb-e790-0a68-ba41-b9530b2bf9fd@redhat.com>
+Date:   Mon, 11 May 2020 17:26:49 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1589181563-38400-1-git-send-email-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 08, 2020 at 08:39 PM CEST, Martin KaFai Lau wrote:
-> On Fri, May 08, 2020 at 12:45:14PM +0200, Jakub Sitnicki wrote:
->> On Fri, May 08, 2020 at 09:06 AM CEST, Martin KaFai Lau wrote:
->> > On Wed, May 06, 2020 at 02:54:58PM +0200, Jakub Sitnicki wrote:
 
-[...]
-
->> >> +		return -ESOCKTNOSUPPORT;
->> >> +
->> >> +	/* Check if socket is suitable for packet L3/L4 protocol */
->> >> +	if (sk->sk_protocol != ctx->protocol)
->> >> +		return -EPROTOTYPE;
->> >> +	if (sk->sk_family != ctx->family &&
->> >> +	    (sk->sk_family == AF_INET || ipv6_only_sock(sk)))
->> >> +		return -EAFNOSUPPORT;
->> >> +
->> >> +	/* Select socket as lookup result */
->> >> +	ctx->selected_sk = sk;
->> > Could sk be a TCP_ESTABLISHED sk?
->>
->> Yes, and what's worse, it could be ref-counted. This is a bug. I should
->> be rejecting ref counted sockets here.
-> Agree. ref-counted (i.e. checking rcu protected or not) is the right check
-> here.
+On 2020/5/11 下午3:19, Zhu Lingshan wrote:
+> This commit move IRQ request and free operations from probe()
+> to VIRTIO status change handler to comply with VIRTIO spec.
 >
-> An unrelated quick thought, it may still be fine for the
-> TCP_ESTABLISHED tcp_sk returned from sock_map because of the
-> "call_rcu(&psock->rcu, sk_psock_destroy);" in sk_psock_drop().
-> I was more thinking about in the future, what if this helper can take
-> other sk not coming from sock_map.
+> VIRTIO spec 1.1, section 2.1.2 Device Requirements: Device Status Field
+> The device MUST NOT consume buffers or send any used buffer
+> notifications to the driver before DRIVER_OK.
 
-I see, psock holds a sock reference and will not release it until a full
-grace period has elapsed.
 
-Even if holding a ref wasn't a problem, I'm not sure if returning a
-TCP_ESTABLISHED socket wouldn't trip up callers of inet_lookup_listener
-(tcp_v4_rcv and nf_tproxy_handle_time_wait4), that look for a listener
-when processing a SYN to TIME_WAIT socket.
+My previous explanation might be wrong here. It depends on how you 
+implement your hardware, if you hardware guarantee that no interrupt 
+will be triggered before DRIVER_OK, then it's fine.
+
+And the main goal for this patch is to allocate the interrupt on demand.
+
+
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>   drivers/vdpa/ifcvf/ifcvf_main.c | 119 ++++++++++++++++++++++++----------------
+>   1 file changed, 73 insertions(+), 46 deletions(-)
+>
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+> index abf6a061..4d58bf2 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> @@ -28,6 +28,60 @@ static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
+>   	return IRQ_HANDLED;
+>   }
+>   
+> +static void ifcvf_free_irq_vectors(void *data)
+> +{
+> +	pci_free_irq_vectors(data);
+> +}
+> +
+> +static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
+> +{
+> +	struct pci_dev *pdev = adapter->pdev;
+> +	struct ifcvf_hw *vf = &adapter->vf;
+> +	int i;
+> +
+> +
+> +	for (i = 0; i < queues; i++)
+> +		devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
+> +
+> +	ifcvf_free_irq_vectors(pdev);
+> +}
+> +
+> +static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
+> +{
+> +	struct pci_dev *pdev = adapter->pdev;
+> +	struct ifcvf_hw *vf = &adapter->vf;
+> +	int vector, i, ret, irq;
+> +
+> +	ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
+> +				    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
+> +	if (ret < 0) {
+> +		IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
+> +		return ret;
+> +	}
+> +
+> +	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
+> +		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
+> +			 pci_name(pdev), i);
+> +		vector = i + IFCVF_MSI_QUEUE_OFF;
+> +		irq = pci_irq_vector(pdev, vector);
+> +		ret = devm_request_irq(&pdev->dev, irq,
+> +				       ifcvf_intr_handler, 0,
+> +				       vf->vring[i].msix_name,
+> +				       &vf->vring[i]);
+> +		if (ret) {
+> +			IFCVF_ERR(pdev,
+> +				  "Failed to request irq for vq %d\n", i);
+> +			ifcvf_free_irq(adapter, i);
+
+
+I'm not sure this unwind is correct. It looks like we should loop and 
+call devm_free_irq() for virtqueue [0, i);
+
+
+
+> +
+> +			return ret;
+> +		}
+> +
+> +		vf->vring[i].irq = irq;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   static int ifcvf_start_datapath(void *private)
+>   {
+>   	struct ifcvf_hw *vf = ifcvf_private_to_vf(private);
+> @@ -118,9 +172,12 @@ static void ifcvf_vdpa_set_status(struct vdpa_device *vdpa_dev, u8 status)
+>   {
+>   	struct ifcvf_adapter *adapter;
+>   	struct ifcvf_hw *vf;
+> +	u8 status_old;
+> +	int ret;
+>   
+>   	vf  = vdpa_to_vf(vdpa_dev);
+>   	adapter = dev_get_drvdata(vdpa_dev->dev.parent);
+> +	status_old = ifcvf_get_status(vf);
+>   
+>   	if (status == 0) {
+>   		ifcvf_stop_datapath(adapter);
+> @@ -128,7 +185,22 @@ static void ifcvf_vdpa_set_status(struct vdpa_device *vdpa_dev, u8 status)
+>   		return;
+>   	}
+>   
+> -	if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
+> +	if ((status_old & VIRTIO_CONFIG_S_DRIVER_OK) &&
+> +	    !(status & VIRTIO_CONFIG_S_DRIVER_OK)) {
+> +		ifcvf_stop_datapath(adapter);
+> +		ifcvf_free_irq(adapter, IFCVF_MAX_QUEUE_PAIRS * 2);
+> +	}
+> +
+> +	if ((status & VIRTIO_CONFIG_S_DRIVER_OK) &&
+> +	    !(status_old & VIRTIO_CONFIG_S_DRIVER_OK)) {
+> +		ret = ifcvf_request_irq(adapter);
+> +		if (ret) {
+> +			status = ifcvf_get_status(vf);
+> +			status |= VIRTIO_CONFIG_S_FAILED;
+> +			ifcvf_set_status(vf, status);
+> +			return;
+> +		}
+> +
+
+
+Have a hard though on the logic here.
+
+This depends on the status setting from guest or userspace. Which means 
+it can not deal with e.g when qemu or userspace is crashed? Do we need 
+to care this or it's a over engineering?
+
+Thanks
+
+
+>   		if (ifcvf_start_datapath(adapter) < 0)
+>   			IFCVF_ERR(adapter->pdev,
+>   				  "Failed to set ifcvf vdpa  status %u\n",
+> @@ -284,38 +356,6 @@ static void ifcvf_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
+>   	.set_config_cb  = ifcvf_vdpa_set_config_cb,
+>   };
+>   
+> -static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
+> -{
+> -	struct pci_dev *pdev = adapter->pdev;
+> -	struct ifcvf_hw *vf = &adapter->vf;
+> -	int vector, i, ret, irq;
+> -
+> -
+> -	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
+> -		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
+> -			 pci_name(pdev), i);
+> -		vector = i + IFCVF_MSI_QUEUE_OFF;
+> -		irq = pci_irq_vector(pdev, vector);
+> -		ret = devm_request_irq(&pdev->dev, irq,
+> -				       ifcvf_intr_handler, 0,
+> -				       vf->vring[i].msix_name,
+> -				       &vf->vring[i]);
+> -		if (ret) {
+> -			IFCVF_ERR(pdev,
+> -				  "Failed to request irq for vq %d\n", i);
+> -			return ret;
+> -		}
+> -		vf->vring[i].irq = irq;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+> -static void ifcvf_free_irq_vectors(void *data)
+> -{
+> -	pci_free_irq_vectors(data);
+> -}
+> -
+>   static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>   {
+>   	struct device *dev = &pdev->dev;
+> @@ -349,13 +389,6 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>   		return ret;
+>   	}
+>   
+> -	ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
+> -				    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
+> -	if (ret < 0) {
+> -		IFCVF_ERR(pdev, "Failed to alloc irq vectors\n");
+> -		return ret;
+> -	}
+> -
+>   	ret = devm_add_action_or_reset(dev, ifcvf_free_irq_vectors, pdev);
+>   	if (ret) {
+>   		IFCVF_ERR(pdev,
+> @@ -379,12 +412,6 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>   	adapter->pdev = pdev;
+>   	adapter->vdpa.dma_dev = &pdev->dev;
+>   
+> -	ret = ifcvf_request_irq(adapter);
+> -	if (ret) {
+> -		IFCVF_ERR(pdev, "Failed to request MSI-X irq\n");
+> -		goto err;
+> -	}
+> -
+>   	ret = ifcvf_init_hw(vf, pdev);
+>   	if (ret) {
+>   		IFCVF_ERR(pdev, "Failed to init IFCVF hw\n");
+
