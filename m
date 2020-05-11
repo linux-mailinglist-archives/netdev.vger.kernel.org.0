@@ -2,132 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12CF91CD3AD
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 10:20:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F4571CD3FE
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 10:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729089AbgEKIUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 04:20:45 -0400
-Received: from mout.web.de ([212.227.15.4]:47581 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728556AbgEKIUo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 04:20:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1589185230;
-        bh=3y2G1yVpBuGXndYc8M5o8p9u3GOYWTFXQ4LaWMQUhsA=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=q3ORAHPGCU+CY6EErWtcqvFn6Hz8QaiZChqrH9YHZR61M76ZLcjpmpQlQbN8cQ2gC
-         yofPpIEe9Brum8uDa7jEsEExElY5KSt78p32gMnBJ9Qd+99o3XDLvEe1vVb1f4sARl
-         +IOGMxiBR+uZmrAWPr1GU8fg9v3ikHpS/zUX0MRI=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.243.185.130]) by smtp.web.de (mrweb005
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1MC0PR-1jNunj1s1V-00CTbF; Mon, 11
- May 2020 10:20:30 +0200
-Subject: Re: net/sonic: Fix some resource leaks in error handling paths
-To:     Finn Thain <fthain@telegraphics.com.au>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christophe Jaillet <christophe.jaillet@wanadoo.fr>
-References: <b7651b26-ac1e-6281-efb2-7eff0018b158@web.de>
- <alpine.LNX.2.22.394.2005100922240.11@nippy.intranet>
- <9d279f21-6172-5318-4e29-061277e82157@web.de>
- <alpine.LNX.2.22.394.2005101738510.11@nippy.intranet>
- <bc70e24c-dd31-75b7-6ece-2ad31982641e@web.de>
- <alpine.LNX.2.22.394.2005110845060.8@nippy.intranet>
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <00a5237c-13b4-07b5-99ee-8f63d4276fb4@web.de>
-Date:   Mon, 11 May 2020 10:20:24 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <alpine.LNX.2.22.394.2005110845060.8@nippy.intranet>
+        id S1728705AbgEKIcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 04:32:43 -0400
+Received: from mail-eopbgr30085.outbound.protection.outlook.com ([40.107.3.85]:15489
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728104AbgEKIcn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 04:32:43 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YbdxLDhJKa6pgTCBUzYnZFx+H22ad8q4CpkSvxvT5GKHsxl2//UJPTQtl6+IOI1rMwcZkYz/qvxi5QIsNf0cwvFG/eeQXO0OqTqE8T7zi3ULvcGrCk69+jJH8t7PviRGVP+iCzNDx61/ZZ/xBTeDnRoI6Vo3Sa+DhSP1Gm6X6GzfaVYYEDwUA3HKeeMPu69LDz78URzd3IQI5K8ug8QSf4IpqNUkphP3KE8/7IOqUgQBKoFe1de6D5omHaE6JGzuCqwAEnQxLvZkVS9wUO0V39bBAeWc5KvbhYieZnpHWW9N9oTJVCstJoMmSMUK7PZTylqMPQi0/8wwrcEzkd5z5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZUfAqUK230AQDJIMdjSMEGXpLR/HiG7WfMKRbJXeeoo=;
+ b=Hesme4hxFBUE5utQsoGZCi9idNI+QiivOZcDTfTrdtZra4nbuKuQpXQoahb2ECSfMWTwVvBFGk1LpQ6FHuOxHt0Qa3Hajn1pMzBWea3gh26Yx9kjNbCBeqKjuZg8uzb4YUpBnv7Wb+XHZ2HdDYc9d9PHn/F8vMRh+uj8INv4V/qNjNKB9oxvfYIamo1Vx/k6qpbdLXnVEjTZU/H9Eb9T2XmJ2NRDvvaqtV2ug24RpMEocpLSToSssCRQX4jZLH/ZBPXFXRZQ0GkTEHFC/IMBCEDmp8kFI5+Kpaa6QfFOx+yBT1kJuPeAjeLx1T4h+dwIhR/TU+rIt8elbctboK4Cxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZUfAqUK230AQDJIMdjSMEGXpLR/HiG7WfMKRbJXeeoo=;
+ b=F0ptgFXzz9Y+sgVF5HfriNDSKYHhoGt2s0onr/kphsnkGlTS1O/1eW28sQwvQY8mRIAKtOoUBu93jrE66ngpLNEvo6RcUj7ONBEXKiiAOH/USSnhJbJLbw18PiIL9BgXXiN5MVinfy7lqK2cDnWKP1Hsxr092SYOnSijxrpfjKM=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (2603:10a6:20b:11::14)
+ by AM6PR05MB5768.eurprd05.prod.outlook.com (2603:10a6:20b:97::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.33; Mon, 11 May
+ 2020 08:32:39 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::f5bd:86c3:6c50:6718]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::f5bd:86c3:6c50:6718%7]) with mapi id 15.20.2979.033; Mon, 11 May 2020
+ 08:32:39 +0000
+Subject: Re: [PATCH net] netfilter: flowtable: Add pending bit for offload
+ work
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Oz Shlomo <ozsh@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        netfilter-devel@vger.kernel.org
+References: <1588764279-12166-1-git-send-email-paulb@mellanox.com>
+ <20200510221434.GA11226@salvia>
+From:   Paul Blakey <paulb@mellanox.com>
+Message-ID: <9dff92fe-15cd-348d-ff1c-7a102ea9263c@mellanox.com>
+Date:   Mon, 11 May 2020 11:32:36 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+In-Reply-To: <20200510221434.GA11226@salvia>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:FcCYv6jfu0c0+k+4KEQ+qlVkkWGxC0hIDrjL1SvyRQhMaw3FHZo
- nVGi1rqsJuPlWoirMErPCn75VV1ZSdyGsCKJ6V9lm3s4xRpBMTiIdXfhr4FDR5laMt3eZeq
- 4gPeC6MXBhQgmA98jsgWXkTDC6asKiXEaqzLD6krs/1/9A9kT/7D6BMMcrD+vLjB6x74OxS
- ULSvBvfRYj4E0ww3tKtHw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dGLVDhFnwyw=:kEv6jVJS7ZcOONvXu2SzN4
- Thsgdpw3hyFvJIcCxhavm4cXKOZ21CCOSUdi4w9HrKeifB7aI4GsngZAwKU2oJcZ6unqhrBe2
- uLaIA+mymtiknM+ILy25dV8pqrs/eHjPdmZ/gEMRXGHkxn7KxcafesjEagj+lkDZCI9LftmUA
- xg1Gy/wyuOP0Xkduy2U1br0aTlePDlrqJczxyTQTsOLWMJ7aFP16Dc9zNYij0rewjV7CkPox9
- AxxOJjZUBX9Ad6nqzO4xJQl4GjlDq2bmUYbZtxiL3fNnOUDB6kXURQt4DR6cMLhrQZFGSqOPI
- 7gjfit/pyeYqXIptmJlCf9vYU2TVcworYC+WhfpDD1Go0iolSTnEsuC6HysGvdYmNtOa5cVKy
- M7fycQcewO1yDl8/l+G5FGxTt+OO09PZdvOBRFl5b4FjfP1qOcRkczSVAndGFCfCxLT+MrrBG
- 1Dci/QHBhgmNiBnhdrnNuuAAdH0tB8c1X1/Pf+Zmj7oHD3biYt/Do02EqHgUO4L1seQ6X21gg
- p8jE2PC7Gg1n9sao9di5RzSJXv29WoNlDASWNU+/Wx5ByFAP73iZzOmy/IuxW083Bxq5o5r4u
- 3aogwfYLgFwwtCVJpa2OeqhP0AKWkuhvGYFybu6ukMtV2DohR/+kATqR23iqUEzNs1MJfeAUD
- +RkfAU4RlCryG9L+Vzz3r6670t9jT2kpJ6br1/TBvGbduGKLVNJNtANwBUFeXl79rdeZHHNz0
- 2W/KhdC5VNwQAi5RXthG4huKUroFgRuNtQhU/5PFaVsgKVZ45U6YMR6txuj7tASMzbQOTH3vM
- v+C/Co4ZD0VrZs36Ni2BBXT86hHLQRBY89/uQRjsnQh50WQ/DL+YjmFrjabJvtRkUR4Vc47l7
- tXWlB9czvFz230O7/Qv08VxswhwAGp3VP0N2NU4bLFA/LEhWrXHhQ3/7p873X+DMY7fzIlwMk
- jXHbSVPAVMnPbi7BQojd1NkolIOON0Jw1j/lS/9mFzrCzwey8esal1jlG/IwTv+OavsGJB1lb
- G/KaQbqgTrmtCGcr7ZoblmvLgV9TNY6RFDS+B7+BUDRkFcKEFV4afZUmiU4Jr/KK2VA7bKqGg
- e7A/K9HQbE0pgw/+EFqHpyVivvt7q8kYoUhh6cLAZ1BX3ZqMcYTRMFKD3Dl97NIVuC8/AL9e8
- eKIcm2wYBz+BtN1RaT7GsKc1PZ9vzdYnq4x9oisGRMYbJmW3wD/On/EhvJMVgbhKXQv/CBNJs
- Wy2wNJGTLDFBeeXLY
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ClientProxiedBy: FRYP281CA0014.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::24)
+ To AM6PR05MB5096.eurprd05.prod.outlook.com (2603:10a6:20b:11::14)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.50.62] (5.29.240.93) by FRYP281CA0014.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.31 via Frontend Transport; Mon, 11 May 2020 08:32:38 +0000
+X-Originating-IP: [5.29.240.93]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: c5a4b455-aace-4e87-0748-08d7f585dd93
+X-MS-TrafficTypeDiagnostic: AM6PR05MB5768:|AM6PR05MB5768:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB57682FAC3B2979F23FA5A0C2CFA10@AM6PR05MB5768.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 04004D94E2
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3IEaDzTKHdzmvAFDJh1bc3uAG850VkAPETlXLxVfhif9sTyxX7Upp82u/bmUnFwN1LhaERhk0p++naugLjizVNGIvIttYQ/GEqeN5O1Y2tqwmkn84kXE6kSC168ZvG3/Kb+Taa1kQMF+nbSEbwdoLltAaqWBJFGiwEbpyYkvfrWsvTbg9cC/vWNGQmdj3u29ozZ5XuVrxzj8FT/T7RrpvxWIHNlzakuRoYFdcu4h8j12VwmP+iIANkGKS32IXBhR2cU9lGUtIQN06UoEilXAzRvZsr2nUzmcchvqvAAPB0BSQ4yvajzQNoGqBSyCSva3/zpcqokVGnsZ0CD3w0AlV+qimMlbafVGX8BhJyOcbMVrGLUed9jVfzQ0jhlydC2kqEgsAd4dbrIrGUV1xpDVxhSqqWAE2OB2Ovc0DrYw859So4MwPjitNW+/uXjT+8DXZgRP8wd4OWakER+9+E0jV2QSp1ctIRdo0/jzF6CVejpoeaLhXGdi69QW/Q8AmcA9ul6BNKd0/FQFo/JiukLZ4taIG/GHLI/b1+oWmBvXqRqGhfAHmsQ1ATBtZcx/FhQR
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB5096.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(376002)(396003)(136003)(346002)(33430700001)(26005)(53546011)(2616005)(956004)(4326008)(31696002)(16576012)(6916009)(54906003)(316002)(478600001)(66556008)(31686004)(66476007)(8676002)(186003)(33440700001)(52116002)(66946007)(86362001)(36756003)(6486002)(2906002)(5660300002)(16526019)(8936002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: QTIh/GD48k5G0SnzDrVlMCeLqtL9uSHyUDKlmYXIEBpBnhph/nbzu8UVOeRy9jjmWotcJN3zogeBzMi2grSJbTzQZAsRUSbuZqWkVudo3UtniRqvcnJb4qYakKrk9nZFuA/cFNwhm+5OK9N4VPZfv2D5ugTgUBeVxfC1Y/6U+AhT3VsVo/I3+kx50Jlg546m2hjyN0pLztSNSGSk3e+UepWqd1bXs0iJlZ9aoPgtA5vGNad4FJVu8/5jK6WsvzWRVzlovpvigWjDsRLt6CZ0Pg/0XOlH8zKbqHnogyFerFDgGnPuKFeQWEufSL3M8ud5Usx4VB2rzMAgmCV8FnhaobB2g/fQGT3NYBxWSqVqd/K79d2Dm7svaRaLqJqwv5ghIHb7JwctDWHRCZT80hFo4RAiryHmWyf21Xk2s0RFdId8n/ZonZQvDG8lVtX/Vjnh1meG1sHKrUTNfdZWrmPN7VYs1J7n7QufQnwCvrrbLws=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5a4b455-aace-4e87-0748-08d7f585dd93
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 08:32:39.4809
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fyb2WjBQrreAhj5otRYuxMZ+m2ARrvgJ6Sh7X4zD+OqxwWuzHyrN3E6DWGSH60ANqVC5/a6gv44X3bxm8VMJkw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5768
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> To which commit would you like to refer to for the proposed adjustment
->> of the function =E2=80=9Cmac_sonic_platform_probe=E2=80=9D?
+
+
+On 5/11/2020 1:14 AM, Pablo Neira Ayuso wrote:
+> Hi,
 >
-> That was my question to you. We seem to be talking past each other.
+> On Wed, May 06, 2020 at 02:24:39PM +0300, Paul Blakey wrote:
+>> Gc step can queue offloaded flow del work or stats work.
+>> Those work items can race each other and a flow could be freed
+>> before the stats work is executed and querying it.
+>> To avoid that, add a pending bit that if a work exists for a flow
+>> don't queue another work for it.
+>> This will also avoid adding multiple stats works in case stats work
+>> didn't complete but gc step started again.
+> This is happening since the mutex has been removed, right?
+>
+> Another question below.
+it's from the using a new workqueue and one work per item, allowing parallelization
+between a flow work items.
 
-I have needed a moment to notice your patch as another constructive respon=
-se
-for this code review.
 
-[PATCH v2] net/sonic: Fix some resource leaks in error handling paths
-https://lore.kernel.org/r/3eaa58c16dcf313ff7cb873dcff21659b0ea037d.1589158=
-098.git.fthain@telegraphics.com.au/
+>
+>> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+>> Reviewed-by: Roi Dayan <roid@mellanox.com>
+>> ---
+>>  include/net/netfilter/nf_flow_table.h | 1 +
+>>  net/netfilter/nf_flow_table_offload.c | 8 +++++++-
+>>  2 files changed, 8 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+>> index 6bf6965..c54a7f7 100644
+>> --- a/include/net/netfilter/nf_flow_table.h
+>> +++ b/include/net/netfilter/nf_flow_table.h
+>> @@ -127,6 +127,7 @@ enum nf_flow_flags {
+>>  	NF_FLOW_HW_DYING,
+>>  	NF_FLOW_HW_DEAD,
+>>  	NF_FLOW_HW_REFRESH,
+>> +	NF_FLOW_HW_PENDING,
+>>  };
+>>  
+>>  enum flow_offload_type {
+>> diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+>> index b9d5ecc..731d738 100644
+>> --- a/net/netfilter/nf_flow_table_offload.c
+>> +++ b/net/netfilter/nf_flow_table_offload.c
+>> @@ -817,6 +817,7 @@ static void flow_offload_work_handler(struct work_struct *work)
+>>  			WARN_ON_ONCE(1);
+>>  	}
+>>  
+>> +	clear_bit(NF_FLOW_HW_PENDING, &offload->flow->flags);
+>>  	kfree(offload);
+>>  }
+>>  
+>> @@ -831,9 +832,14 @@ static void flow_offload_queue_work(struct flow_offload_work *offload)
+>>  {
+>>  	struct flow_offload_work *offload;
+>>  
+>> +	if (test_and_set_bit(NF_FLOW_HW_PENDING, &flow->flags))
+>> +		return NULL;
+> In case of stats, it's fine to lose work.
+>
+> But how does this work for the deletion case? Does this falls back to
+> the timeout deletion?
 
-Regards,
-Markus
+We get to nf_flow_table_offload_del (delete) in these cases:
+
+>-------if (nf_flow_has_expired(flow) || nf_ct_is_dying(flow->ct) ||
+>-------    test_bit(NF_FLOW_TEARDOWN, &flow->flags) {
+>------->-------   ....
+>------->-------    nf_flow_offload_del(flow_table, flow);
+
+Which are all persistent once set but the nf_flow_has_expired(flow). So we will
+try the delete
+again and again till pending flag is unset or the flow is 'saved' by the already
+queued stats updating the timeout.
+A pending stats update can't save the flow once it's marked for teardown or
+(flow->ct is dying), only delay it.
+
+We didn't mention flush, like in table free. I guess we need to flush the
+hardware workqueue
+of any pending stats work, then queue the deletion, and flush again:
+
+Adding nf_flow_table_offload_flush(flow_table), after
+cancel_delayed_work_sync(&flow_table->gc_work);
+
+
+
+>
+> Thanks.
+
