@@ -2,143 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9239C1CDDFF
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA90B1CDE24
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:08:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729592AbgEKPAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 11:00:19 -0400
-Received: from mail-eopbgr70050.outbound.protection.outlook.com ([40.107.7.50]:14023
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726068AbgEKPAS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 11:00:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AeCImlC4chJMb3f5/Lfv7PlcFfdE/JY2gCx7Ruyztl1XbdKcl6vtjTbYn07fV8GewUneFqPV68aZzgDhxwqnEFeFl0JtJedTn7FOuCBhU44dGkflfVl/5loB021qzFUpMyq3BTolTkUz+Begiy5byXur5Gl1niPe4PfIr122WTtPqH9FLg/RifbYBwZ0w1Am0h+bdXJL+gKhKngkc9UEcTttzX0doeE3rdPNDbwxQPgjTWS+yrR2t2mZB6XgeR9ZHNEnAKsAzPd6mWN14Tx5odyn64rt++YQ7piPmgXQJb96ki1kZeG12/Lv4IfmMUXxm+a7+7WifXAi9y/+9uN1Kg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=70kWKPa/VI0yZxSWLk1C9yAVONUDQb8EL+l77CagnBA=;
- b=iKD0G0tL8Xu5PknNLNRgeZ9PYmN4w6V3oTJcDDNkQe6MRCFoAwXL/SUeGIlhLrzovkmQSTy4p+KxJWx75BG3f4dcd/Owg1+KEJVFq2j/7VuM7GSMgqk4zfLzo7KoN617cxtF75qztyQ8tu3RW0PPKGZbwH1FJsbsKodyvwro7jwRYAM7tqammhiXLp6T6KoOrIXV/MCp/tqf8RLdkv+HfDQxIz8d8/yzWu9Qe0RuydjHXBF0YHJrnobeVDja/1nth2vZuScFTN2pnPU/VdWsFU9U1rTkcYTKica+WzYYKh/ztkQRh+6U0fGWewml8Wez8tUbOGd3akuWNRw3v16H1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=70kWKPa/VI0yZxSWLk1C9yAVONUDQb8EL+l77CagnBA=;
- b=E9VmoY9dfWpdo2yy7Bu5JxSh99jwsFyR1i8liUvZ+/6IwPVesV0oEuKkjgCKLrXOnU3YpYZl3BKYBzFiYAJYL9s0HjbuYDqC8Zykl1smjzXfsQ9KlU1o3Y4ClmCGuwOroZiZSEt1y87d7ftzv2E7CnHzwUZ6vxP4VLrZOu22xaQ=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB6147.eurprd04.prod.outlook.com (2603:10a6:208:13f::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Mon, 11 May
- 2020 15:00:12 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2979.033; Mon, 11 May 2020
- 15:00:12 +0000
-Date:   Mon, 11 May 2020 20:29:59 +0530
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jeremy Linton <jeremy.linton@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        linux.cj@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next PATCH v3 4/5] net: phy: Introduce fwnode_get_phy_id()
-Message-ID: <20200511145959.GA20671@lsv03152.swis.in-blr01.nxp.com>
-References: <CAHp75Vew8Fh6HEoOACk+J9KCpw+AE2t2+oFnXteK1eShopfYAA@mail.gmail.com>
- <83ab4ca4-9c34-4cdd-4413-3b4cdf96727d@arm.com>
- <20200508160755.GB10296@lsv03152.swis.in-blr01.nxp.com>
- <20200508181301.GF298574@lunn.ch>
- <1e33605e-42fd-baf8-7584-e8fcd5ca6fd3@arm.com>
- <20200508202722.GI298574@lunn.ch>
- <97a9e145-bbaa-efb8-6215-dc3109ee7290@arm.com>
- <20200508234257.GA338317@lunn.ch>
- <20200511080040.GC12725@lsv03152.swis.in-blr01.nxp.com>
- <20200511130457.GC409897@lunn.ch>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200511130457.GC409897@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: SG2PR02CA0107.apcprd02.prod.outlook.com
- (2603:1096:4:92::23) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        id S1729789AbgEKPIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 11:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728090AbgEKPIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 11:08:21 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1C94C061A0E
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:08:20 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id u16so19695904wmc.5
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:08:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/J8miyILwwd4yeHypeApHEY6tVwb+3C32vv+icx83JU=;
+        b=OTdMO8s1WgboMNhaDTGwQRLL6oPTm6LLnYMKvpds/gLxCEYm/L/tz9ICUGzZLiU3ei
+         YvwiSmIcssbhOdrNVTjU1HfBqBCs40dnl89hXOHPRmjaAeJghS71NCJu97EEFzClXyBj
+         zTErYcE0rLjPIXk+WVMw1CWhUrB1AnSiADXS9GirXjYlf3y0SX2kJ2UxyLMjh70hVx8I
+         8EHLcu3Ps8hB00DG8HRf8pVDeNBL0fkVe//Q9BB7IlC/wjAB4W/ZNdfHvQ/nEkSNqcuW
+         58RZ2Gwh4Oygoe8bll6iXGBANCMQIPkT9lY0vDfjRphc+q+S6RvvW0gPn4yLXGy29b/Y
+         zW1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/J8miyILwwd4yeHypeApHEY6tVwb+3C32vv+icx83JU=;
+        b=dXX+GnNGyYEaBKV4lk6LbseeJcrVkEDoLRNoRq2Ll/EIAC5jaJMbSdqicLk0NYG9uz
+         M/xCYm3m23RWf6x91kllTOCmNY/+RMvHd8cXCAWR3wqggJBlhaL1GxukwkAgctXoHDhO
+         Nw1lIlHp4lGnIlWd7xrCvyl9KVlv+j0lFSnoWdbhZkImtT3gG78NRQ3XWupYdyaiMbJW
+         LA5BBRqkjhBQXte62AzVKOvkTb0p4nZoEsZ2bTVfDcqqyFK/eajspGLvnfdNwPwXO0bB
+         yN0NSjo077ge2WoHCFarcvG2T7jCmGwhcEWOcqpiG7v1RtrZXjEY9S+VEM/2qVlskNff
+         5+Dw==
+X-Gm-Message-State: AGi0PuYVtNpJSdujDW18vPh8gQaSV0cC731XR7D3A9pZAXtRDrAaKScD
+        W28aftEeg+hMfMtWXVlY1omCVA==
+X-Google-Smtp-Source: APiQypKvNSjq4TfJ0CivzedoluQIOXBiXcFnJi5slyojLcRrav800+2iZaWdjk73vkbbGixHhUBMBA==
+X-Received: by 2002:a1c:2457:: with SMTP id k84mr30052808wmk.96.1589209699367;
+        Mon, 11 May 2020 08:08:19 -0700 (PDT)
+Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
+        by smtp.gmail.com with ESMTPSA id 94sm3514792wrf.74.2020.05.11.08.08.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2020 08:08:18 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH v2 00/14] mediatek: add support for MediaTek Ethernet MAC
+Date:   Mon, 11 May 2020 17:07:45 +0200
+Message-Id: <20200511150759.18766-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR02CA0107.apcprd02.prod.outlook.com (2603:1096:4:92::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.29 via Frontend Transport; Mon, 11 May 2020 15:00:06 +0000
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f99488bf-b96b-4f1b-dfd5-08d7f5bc015e
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6147:|AM0PR04MB6147:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB614796BB9D9D6F18379BF94CD2A10@AM0PR04MB6147.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 04004D94E2
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WPnk+ZAFs1/pxg0oRAIA9ZfT5uPDX7Y2pCUn0X9NQi3kndtcpTgxOpJBzT9wEXCJg56ltSbePrPHvXR6kEbq63RCwH1mSYHSx4X4rULI1glAOj64Ma2M2jAOqmgk2YTwrzdZXdoMweDZFO+1bcvwZgVCbug9EE7CdTPxmqebiqdiDq+kbJABZYDHSoZlwKTgiv830WLCrM9QRXC5sbXAxRAtm8vNfQ7FihITiOTwULnJ2NAAPs5CPAAfXnViiikSnztyUBf4k5BPBeRpaPrX92KNP/kdAyYV+AFHruvLRVkOoQGmoMsbqcZN/d3gBOHMwdcIgoLIJA+cMnX/1YFuRGtozZ7svR57k0VyEEh8WGM8yAeq4P/thNiNPW+arqaTozde4Az6l5g5iVloRCQkRNqp9e1CRJ8MDxy6AMcR0gLsxWMXaCNp2uc4K5I5TPWPnBNMvh3EpT1lCKCuFSjCyL/2FdyPTMLgnf12R/gQKWoASJ9qWiU4NspszUfCFYVMP/VPlOJnsGm05pFjESAjBw3g4ubQ/t9nQDB/YDSBP5eqbK1MSjkGQ+QVo5j7JvZL
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(39860400002)(376002)(366004)(346002)(33430700001)(956004)(66556008)(55016002)(316002)(55236004)(478600001)(54906003)(5660300002)(9686003)(2906002)(8936002)(7416002)(66476007)(26005)(66946007)(7696005)(1076003)(44832011)(86362001)(52116002)(33440700001)(33656002)(6506007)(6916009)(8676002)(186003)(1006002)(16526019)(4326008)(6666004)(110426005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: AxnNMDqn4TewmZcF9GaVqx1FUUanpeHZxNLG1kn3WGijGKzjcAqpUi9oygieQEObnQEZa5XmrRYMG9hXq3VZHrM19hA5WFCuTp03lDuwZT45tAi2YBloTkUwaBFiy45jqwVG9/ByuamU4u3SLfjpZ16KXVIu0kRO5ip8vXNQfTqqi99NITYEGd/bWUdmfvd5W/YfcXKjdnofmp3jsyD99/onlj74rOx6MufolbOCKRHyyhJsnlMyGjrYeXpGFLvPdB088alsdxAtiKFzLJ5Sd5wqVGVmcTzSMZKozz8cLNotZskTi46lYhZhRX6PVH4MIScl8dWjo81tF1ZjdodNLR/GSI/l12zse6S5OCa3g058lbjUAKA3mrS/OxUOZIYdNMqUUpF6XLlxejaGEW+OyQcAQQQrrI5YquKOjEn+4RWQyr1kp2SVxlDsQVIm6VYgb2tBcvd3S9Zj0FyIgV5exYvljeVgaTRSf48Nxw2l020=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f99488bf-b96b-4f1b-dfd5-08d7f5bc015e
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 15:00:12.6483
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ojXa9cEsx+751jZY5Jg7MoiwH4uwqoQHjQSModpw1up5bSwcsCwYwQP4cLHUFe95jAiyTSRWUhiNoT7Kc02l5g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6147
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 03:04:57PM +0200, Andrew Lunn wrote:
-> > NXP's LX2160ARDB platform currently has the following MDIO-PHY connection.
-> > 
-> > MDIO-1 ==> one 40G PHY, two 1G PHYs(C45), two 10G PHYs(C22)
-> > MDIO-2 ==> one 25G PHY
-> 
-> It has been suggested that ACPI only support a one to one
-> mapping. Each MAC has one MDIO bus, with one PHY on it. KISS.
-> 
-> This clearly does not work for your hardware. So not only do we need
-> to solve how PHY properties are described, we also need an equivalent
-> of phy-handle, so a MAC can indicate which PHY it is connected to.
-> 
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Right. I had introduced fwnode_get_phy_node() to take care of phy-handle.
+This adds support for the Ethernet Controller present on MediaTeK SoCs
+from the MT8* family.
 
-> So in effect, you seem to be heading towards a pretty full
-> reproduction of the DT binding. Before you go too much further and
-> waste too much of your time, you might want confirmation from the ACPI
-> people this is not too advanced for what ACPI can do and they tell you
-> to forget ACPI for this hardware and stick with DT.
+The first two patches add binding documents for the PERICFG syscon and
+for the MAC itself.
 
-I've copied the patchset to Rafael and acpi ML.
-Waiting for their response.
+Patches 3/14 & 4/14 do some cleanup of the mediatek ethernet drivers
+directory.
 
-Thanks
-Calvin
+Patch 5/14 provides a new helper that allows to retrieve the address of
+the net_device associated with given private data address.
+
+Patches 6-8/14 introduce the managed variant of register_netdev().
+
+Patch 9/11 adds the new ethernet driver.
+
+The rest of the patches add DT fixups for the boards already supported
+upstream.
+
+v1 -> v2:
+- add a generic helper for retrieving the net_device associated with given
+  private data
+- fix several typos in commit messages
+- remove MTK_MAC_VERSION and don't set the driver version
+- use NET_IP_ALIGN instead of a magic number (2) but redefine it as it defaults
+  to 0 on arm64
+- don't manually turn the carrier off in mtk_mac_enable()
+- process TX cleanup in napi poll callback
+- configure pause in the adjust_link callback
+- use regmap_read_poll_timeout() instead of handcoding the polling
+- use devres_find() to verify that struct net_device is managed by devres in
+  devm_register_netdev()
+- add a patch moving all networking devres helpers into net/devres.c
+- tweak the dma barriers: remove where unnecessary and add comments to the
+  remaining barriers
+- don't reset internal counters when enabling the NIC
+- set the net_device's mtu size instead of checking the framesize in
+  ndo_start_xmit() callback
+- fix a race condition in waking up the netif queue
+- don't emit log messages on OOM errors
+- use dma_set_mask_and_coherent()
+- use eth_hw_addr_random()
+- rework the receive callback so that we reuse the previous skb if unmapping
+  fails, like we already do if skb allocation fails
+- rework hash table operations: add proper timeout handling and clear bits when
+  appropriate
+
+Bartosz Golaszewski (14):
+  dt-bindings: arm: add a binding document for MediaTek PERICFG
+    controller
+  dt-bindings: net: add a binding document for MediaTek Ethernet MAC
+  net: ethernet: mediatek: rename Kconfig prompt
+  net: ethernet: mediatek: remove unnecessary spaces from Makefile
+  net: core: provide priv_to_netdev()
+  net: move devres helpers into a separate source file
+  net: devres: define a separate devres structure for
+    devm_alloc_etherdev()
+  net: devres: provide devm_register_netdev()
+  net: ethernet: mtk-eth-mac: new driver
+  ARM64: dts: mediatek: add pericfg syscon to mt8516.dtsi
+  ARM64: dts: mediatek: add the ethernet node to mt8516.dtsi
+  ARM64: dts: mediatek: add an alias for ethernet0 for pumpkin boards
+  ARM64: dts: mediatek: add ethernet pins for pumpkin boards
+  ARM64: dts: mediatek: enable ethernet on pumpkin boards
+
+ .../arm/mediatek/mediatek,pericfg.yaml        |   34 +
+ .../bindings/net/mediatek,eth-mac.yaml        |   80 +
+ arch/arm64/boot/dts/mediatek/mt8516.dtsi      |   17 +
+ .../boot/dts/mediatek/pumpkin-common.dtsi     |   34 +
+ drivers/net/ethernet/mediatek/Kconfig         |    8 +-
+ drivers/net/ethernet/mediatek/Makefile        |    3 +-
+ drivers/net/ethernet/mediatek/mtk_eth_mac.c   | 1561 +++++++++++++++++
+ include/linux/netdevice.h                     |   14 +
+ net/Makefile                                  |    2 +-
+ net/devres.c                                  |   95 +
+ net/ethernet/eth.c                            |   28 -
+ 11 files changed, 1845 insertions(+), 31 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/mediatek,eth-mac.yaml
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_eth_mac.c
+ create mode 100644 net/devres.c
+
+-- 
+2.25.0
+
