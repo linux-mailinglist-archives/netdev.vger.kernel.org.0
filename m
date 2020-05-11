@@ -2,114 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A091CDFEB
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 18:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D90601CE034
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 18:15:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730610AbgEKQFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 12:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
+        id S1730370AbgEKQPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 12:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729556AbgEKQFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 12:05:49 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B562C061A0E
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:05:49 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id m12so13711605wmc.0
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:05:49 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729853AbgEKQPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 12:15:41 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F6DC061A0E
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:15:40 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id k1so11727046wrx.4
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 09:15:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XSBbYEPUjFSpzCt6ADMl+351ottRgxXUnYo0HFyHqs8=;
-        b=ZWQ/89RHr7imqniXVaiAI1SrBs7ZJyPBxOFfRyS9gzNS16Fs2zefbmpcIIOtBTW38F
-         g6AQx1E4SHw9Kx9tNOJsMPf8e2gBvAViW6qf1zoMdRkgHM+x7Bqw3H2NsVJMd5eofHMa
-         OUR4EuJ6GIJ1ecfdIuRvmiOo2Q3TX0STOiBWKKnyiyDElrenLdlAHRIvd15p/Zz9jCxa
-         JotUuycV5l+kMR6A/yzrMIXgQc3BOFHnmdx5hjPdVtswuoB88MrTr3uQ1JHEifMiNQxZ
-         L3uidtGJnn6R1iyHqK6wyf65Ube5sWPBbgJPy/9A7uGnhZGQQsIku/4lXo9mwuhicPNz
-         o9VA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+1je8cjMVakSqZUMNmTAHqiph43cjQQrFs4Ld4TAOnA=;
+        b=mD5wda8xpZFM0F1DkF3zV8uOQ5IbAoH4Ud8ykoLiutN86Q58DDWl3W0zedmiAimg1w
+         kmhO0MdV9CJbkLzOHdSWYwmjkuSfMn2eBSOwvJrOHOvqq92Gx/UT3hb81Z9sSXiwsQpn
+         OQvI9d07VfucEIDPx6DNNn6CaqZ695LSQICFBfa3CcKUEhzeyllgK35z7w6/fYbwqbQo
+         O0rawjHIKZIG2HNo/zd1QF/Sz30FaPo5N7x90wkotuAeJ8o+djA1ban+JPscSzMq1n6l
+         umsUVEXuT7iywhihtlWB67nkomLLLNpZ1M00nPxlId8g/9waWcaiSyuBx2g3RlkK89xZ
+         ix8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=XSBbYEPUjFSpzCt6ADMl+351ottRgxXUnYo0HFyHqs8=;
-        b=Zz/SOzYSWmchC/yN7B9U6TrFA0jhV6G69eVZiY2l3IQeWhA+0246D3/zaYHr+XeRfX
-         Jxs7az+HOR71Xv91u6R2VJA5iEJgCvPW9pqGO79KqaFNUM6aUQLBcealOQzIpyqo3tKr
-         fgTvNPd22+0SfXoC7TzgYtgexfJty7HTG7CYk1WGVRt9PWXkAwlSClT5pAeagP2CHs8y
-         ZH3UnI3vSmHkxxfiUU/QPG3SHp8L9DtUsM6iVOvqgGmvOaDgW/f7jXbse0xURMq81yaG
-         Py6s9H1kquWh3Pxqvin4AHZkUeIwQpe8y5zLZ5jjbpbGuCASdfvVQZAMZcyeoop5E7oO
-         m27A==
-X-Gm-Message-State: AGi0Pua6wmddN9USmBTST8b8DautC646xLfswmbCIju5Bi0o2J9LKI1h
-        tiQ/IwK1TwiTwRE/X9aQSzR1ys1Y6Tew3Q==
-X-Google-Smtp-Source: APiQypLF+9XK9xmOIjpKvJvyhyJdNgGLYDamRjMI8S5rn+mdACJIPXY1q9xNRlVTBzZlD32no3IvMw==
-X-Received: by 2002:a1c:6402:: with SMTP id y2mr32938638wmb.116.1589213147735;
-        Mon, 11 May 2020 09:05:47 -0700 (PDT)
-Received: from [192.168.1.10] ([194.53.185.84])
-        by smtp.gmail.com with ESMTPSA id b14sm15284020wmb.18.2020.05.11.09.05.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 May 2020 09:05:47 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 2/4] tools: bpftool: minor fixes for
- documentation
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-References: <20200511133807.26495-1-quentin@isovalent.com>
- <20200511133807.26495-3-quentin@isovalent.com>
- <673bcb25-1949-f0d8-c690-4f0a75819a80@iogearbox.net>
+        bh=+1je8cjMVakSqZUMNmTAHqiph43cjQQrFs4Ld4TAOnA=;
+        b=n06UGGXo4S53nopCG/e70avJR4EiTA+i/CYWoWpgo/x9uWbiDgFc7WvSZDWTCrV2O5
+         SZw9U07gnWEyo0xtctIPji4HhxWsUpx05J508lRS950Jk/Z0gReyUCqeck7YIyh5OG0U
+         zhlOwZPm2BjYAvXpj7my+NGeEJmeZjkKYllxZaVl6o/ih9uvSsnFSmOdh1N3TF14dr5K
+         +1zhX765IkI8Fi8Q/+tAiTykLTfeHvRlNosrivjveJH/dV0snba+ZI2Z+XwW5dcCEsxw
+         xPxDpSNEIYuXug7af3Rdr6kAwDOVBNSXueVgUtdHv+2iePKRtQ5sFlGPL9qPMfTK8g/f
+         xEnA==
+X-Gm-Message-State: AGi0PuaDpt+hlcHbmeyHs/N5+eI9ElketMka3b4l2cNIrtMVHCefguu0
+        7vPEQZ4qufjUwElfVUBIHA5Oaw==
+X-Google-Smtp-Source: APiQypLYj9CqVMj8z8FrtskLHc4FAIsFUSbR8GDIYFbr3K8NQeJ0ziy8i3G19mlhK9ow0s0r2zstYg==
+X-Received: by 2002:a05:6000:1106:: with SMTP id z6mr13121983wrw.336.1589213739642;
+        Mon, 11 May 2020 09:15:39 -0700 (PDT)
+Received: from localhost.localdomain ([194.53.185.84])
+        by smtp.gmail.com with ESMTPSA id v131sm54734wmb.27.2020.05.11.09.15.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2020 09:15:39 -0700 (PDT)
 From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <6671c199-713d-fb5f-b6d1-11187301e6e4@isovalent.com>
-Date:   Mon, 11 May 2020 17:05:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v2 0/4] bpf: clean up bpftool, bpftool doc, bpf-helpers doc
+Date:   Mon, 11 May 2020 17:15:32 +0100
+Message-Id: <20200511161536.29853-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <673bcb25-1949-f0d8-c690-4f0a75819a80@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-05-11 17:25 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
-> On 5/11/20 3:38 PM, Quentin Monnet wrote:
->> Bring minor improvements to bpftool documentation. Fix or harmonise
->> formatting, update map types (including in interactive help), improve
->> description for "map create", fix a build warning due to a missing line
->> after the double-colon for the "bpftool prog profile" example,
->> complete/harmonise/sort the list of related bpftool man pages in
->> footers.
->>
->> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> [...]
->> @@ -116,24 +123,24 @@ DESCRIPTION
->>             receiving events if it installed its rings earlier.
->>         **bpftool map peek**  *MAP*
->> -          Peek next **value** in the queue or stack.
->> +          Peek next value in the queue or stack.
-> 
-> Looks great overall. Was about to push, but noticed above inconsistency.
-> Should this
-> be `*VALUE*` as well?
+This set focuses on cleaning-up the documentation for bpftool and BPF
+helpers.
 
-Hm I don't think so, there is no "VALUE" passed on the command line in
-that case.
+The first patch is actually a clean-up for bpftool itself: it replaces
+kernel integer types by the ones that should be used in user space, and
+poisons kernel types to avoid reintroducing them by mistake in the future.
 
-But then I should probably have removed mark-up on "value" for "bpftool
-map pop|dequeue", instead of changing it, as those commands do not use
-any value on the command line either. Thanks for the review, I'll send a
-v2 with that change.
+Then come the documentation fixes: bpftool, and BPF helpers, with the usual
+sync up for the BPF header under tools/. Please refer to individual commit
+logs for details.
 
-> 
->>       **bpftool map push**  *MAP* **value** *VALUE*
->> -          Push **value** onto the stack.
->> +          Push *VALUE* onto the stack.
->>         **bpftool map pop**  *MAP*
->> -          Pop and print **value** from the stack.
->> +          Pop and print *VALUE* from the stack.
->>         **bpftool map enqueue**  *MAP* **value** *VALUE*
->> -          Enqueue **value** into the queue.
->> +          Enqueue *VALUE* into the queue.
->>         **bpftool map dequeue**  *MAP*
->> -          Dequeue and print **value** from the queue.
->> +          Dequeue and print *VALUE* from the queue.
+Quentin Monnet (4):
+  tools: bpftool: poison and replace kernel integer typedefs
+  tools: bpftool: minor fixes for documentation
+  bpf: minor fixes to BPF helpers documentation
+  tools: bpf: synchronise BPF UAPI header with tools
+
+ include/uapi/linux/bpf.h                      | 109 ++++++++++--------
+ scripts/bpf_helpers_doc.py                    |   6 +
+ .../bpf/bpftool/Documentation/bpftool-btf.rst |  11 +-
+ .../bpftool/Documentation/bpftool-cgroup.rst  |  12 +-
+ .../bpftool/Documentation/bpftool-feature.rst |  12 +-
+ .../bpf/bpftool/Documentation/bpftool-gen.rst |  21 ++--
+ .../bpftool/Documentation/bpftool-iter.rst    |  12 +-
+ .../bpftool/Documentation/bpftool-link.rst    |   9 +-
+ .../bpf/bpftool/Documentation/bpftool-map.rst |  37 +++---
+ .../bpf/bpftool/Documentation/bpftool-net.rst |  12 +-
+ .../bpftool/Documentation/bpftool-perf.rst    |  12 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |  23 ++--
+ .../Documentation/bpftool-struct_ops.rst      |  11 +-
+ tools/bpf/bpftool/Documentation/bpftool.rst   |  11 +-
+ tools/bpf/bpftool/btf_dumper.c                |   4 +-
+ tools/bpf/bpftool/cfg.c                       |   4 +-
+ tools/bpf/bpftool/main.h                      |   3 +
+ tools/bpf/bpftool/map.c                       |   3 +-
+ tools/bpf/bpftool/map_perf_ring.c             |   2 +-
+ tools/bpf/bpftool/prog.c                      |   2 +-
+ tools/include/uapi/linux/bpf.h                | 109 ++++++++++--------
+ 21 files changed, 249 insertions(+), 176 deletions(-)
+
+-- 
+2.20.1
+
