@@ -2,142 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4018C1CD2CE
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 09:39:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86EF61CD352
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 09:55:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729137AbgEKHj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 03:39:29 -0400
-Received: from mail-db8eur05on2043.outbound.protection.outlook.com ([40.107.20.43]:6144
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728564AbgEKHj3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 03:39:29 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YR4TlL2xGffxYgUtqKP9LsRSodprz3v/xWzmU9kWAwZ0o2sTmNQG3OE0irJJM4Rjr7CKRIwagZlw1M+g2Ow7zQAVadVubp9SHSQhZF0KgxD9riSuoskHW6ndq6bpQ+6pS0YnSynqfl9EtX2+BtqlLIrcXf7B05w4tvSSIACGglfGFEd4xS+k6uc+yqmuY/L+4znFbaYbKOZuqF9COpRQMoPCuvfeS9dzU4hSqVkeCMM2pa9bIPgGYdCOukGXXBqEyS6CR36Mfl17k6685dizhMQ1iQcq3zSCcKacxbAJ6HdajGrn+Sdvgl8j8vFF/jpjPbFYYot+KoMsEVElWJj7XA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6m5QxZ+QonAKIeBDhhCF+PHH4T0n5bZ/Y4NjCqvwh5Y=;
- b=DvfZdv6xoZgEqvsp+tRlU+DR/T8Vq7iMooednthp1bi2gMBgFROX6tUpAsC0znHW6yiMzo+Um0MASKEyDConIaOvTBccf3bPLMsZoIK4j6NEhiVKhgEXdvBzj3l1i5txNBKGEdga49683oXaZV58wi8GETAgZEwle8O/5Q6TpIHoqwXVLhSq3pk4pJXxURqYTcg5RRAxHhtZk573iqtqtEEI7jlfkpZEOb7B6A/zCoKHz+Aj+aYvru2Nrkp1eEblcoUfXFyzlZdkKmPkDrv3QohpiQxtyYw5y9r5wlRivOJBa0dXANhzWJG7RdVRQhXt9XIy6qLZOUWtf9/iR23YGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6m5QxZ+QonAKIeBDhhCF+PHH4T0n5bZ/Y4NjCqvwh5Y=;
- b=hm8VOOLHBtpBLJmQKMMLYLINEXTk4tNML/Bm8Ok6esVd+38YcAsznI0Qo/6AUMEx7yGvVhVJvy8oLmWWDIG2B1a05rmIWHVdJuKWtDXsHnUmAppJbI//1iGH0ZqXW53g27EU7QX2AIzVerpF8x/9vJrWO9h8MSRK4HMHD7sz9yA=
-Authentication-Results: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB4194.eurprd04.prod.outlook.com (2603:10a6:208:66::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.33; Mon, 11 May
- 2020 07:39:26 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2979.033; Mon, 11 May 2020
- 07:39:26 +0000
-Date:   Mon, 11 May 2020 13:09:12 +0530
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        linux.cj@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        id S1728353AbgEKHzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 03:55:15 -0400
+Received: from mout.web.de ([212.227.15.3]:42175 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726173AbgEKHzO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 03:55:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1589183699;
+        bh=SxeoKwHdTMYDV8yc9DyM1v9iJ5uFpRGYEyppCZGeAl4=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=syD/a49EMTKAxLjoWfwplmkIFY1zwg83Pw4XPlmLlrem40cGJu2Vh/R6Rnp5jM+M9
+         T5xXCmUt+M0HyQx7CeKK31S8GctjWC9sR3BkglqqMD5QMCsOkzfgZQf67YEyhkZkuX
+         Ew2/eYSkZ7E6Uu/rC/Jq1Yk18K9nCwhA/k85V83Q=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([2.243.185.130]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0M5fhI-1jA5Ix1oL2-00xYi1; Mon, 11
+ May 2020 09:54:59 +0200
+Subject: Re: [PATCH v2] net/sonic: Fix some resource leaks in error handling
+ paths
+To:     Finn Thain <fthain@telegraphics.com.au>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next PATCH v3 4/5] net: phy: Introduce fwnode_get_phy_id()
-Message-ID: <20200511073912.GB12725@lsv03152.swis.in-blr01.nxp.com>
-References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
- <20200505132905.10276-5-calvin.johnson@oss.nxp.com>
- <67e263cf-5cd7-98d1-56ff-ebd9ac2265b6@arm.com>
- <CAHp75Vew8Fh6HEoOACk+J9KCpw+AE2t2+oFnXteK1eShopfYAA@mail.gmail.com>
- <83ab4ca4-9c34-4cdd-4413-3b4cdf96727d@arm.com>
- <20200508160755.GB10296@lsv03152.swis.in-blr01.nxp.com>
- <20200508181301.GF298574@lunn.ch>
- <1e33605e-42fd-baf8-7584-e8fcd5ca6fd3@arm.com>
- <20200508202722.GI298574@lunn.ch>
- <97a9e145-bbaa-efb8-6215-dc3109ee7290@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <97a9e145-bbaa-efb8-6215-dc3109ee7290@arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: SG2PR06CA0247.apcprd06.prod.outlook.com
- (2603:1096:4:ac::31) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?Q?Thomas_Bogend=c3=b6rfer?= <tsbogend@alpha.franken.de>,
+        Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <3eaa58c16dcf313ff7cb873dcff21659b0ea037d.1589158098.git.fthain@telegraphics.com.au>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
+ +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
+ mpVJgXGKkNJ1ey+QOXouzlErVvE2fRh+KXXN1Q7fSmTJlAW9XJYHS3BDHb0uRpymRSX3O+E2
+ lA87C7R8qAigPDZi6Z7UmwIA83ZMKXQ5stA0lhPyYgQcM7fh7V4ZYhnR0I5/qkUoxKpqaYLp
+ YHBczVP+Zx/zHOM0KQphOMbU7X3c1pmMruoe6ti9uZzqZSLsF+NKXFEPBS665tQr66HJvZvY
+ GMDlntZFAZ6xQvCC1r3MGoxEC1tuEa24vPCC9RZ9wk2sY5Csbva0WwYv3WKRZZBv8eIhGMxs
+ rcpeGShRFyZ/0BYO53wZAPV1pEhGLLxd8eLN/nEWjJE0ejakPC1H/mt5F+yQBJAzz9JzbToU
+ 5jKLu0SugNI18MspJut8AiA1M44CIWrNHXvWsQ+nnBKHDHHYZu7MoXlOmB32ndsfPthR3GSv
+ jN7YD4Ad724H8fhRijmC1+RpuSce7w2JLj5cYj4MlccmNb8YUxsE8brY2WkXQYS8Ivse39MX
+ BE66MQN0r5DQ6oqgoJ4gHIVBUv/ZwgcmUNS5gQkNCFA0dWXznQARAQABtCZNYXJrdXMgRWxm
+ cmluZyA8TWFya3VzLkVsZnJpbmdAd2ViLmRlPokCVAQTAQgAPhYhBHDP0hzibeXjwQ/ITuU9
+ Figxg9azBQJYNvsQAhsjBQkJZgGABQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEOU9Figx
+ g9azcyMP/iVihZkZ4VyH3/wlV3nRiXvSreqg+pGPI3c8J6DjP9zvz7QHN35zWM++1yNek7Ar
+ OVXwuKBo18ASlYzZPTFJZwQQdkZSV+atwIzG3US50ZZ4p7VyUuDuQQVVqFlaf6qZOkwHSnk+
+ CeGxlDz1POSHY17VbJG2CzPuqMfgBtqIU1dODFLpFq4oIAwEOG6fxRa59qbsTLXxyw+PzRaR
+ LIjVOit28raM83Efk07JKow8URb4u1n7k9RGAcnsM5/WMLRbDYjWTx0lJ2WO9zYwPgRykhn2
+ sOyJVXk9xVESGTwEPbTtfHM+4x0n0gC6GzfTMvwvZ9G6xoM0S4/+lgbaaa9t5tT/PrsvJiob
+ kfqDrPbmSwr2G5mHnSM9M7B+w8odjmQFOwAjfcxoVIHxC4Cl/GAAKsX3KNKTspCHR0Yag78w
+ i8duH/eEd4tB8twcqCi3aCgWoIrhjNS0myusmuA89kAWFFW5z26qNCOefovCx8drdMXQfMYv
+ g5lRk821ZCNBosfRUvcMXoY6lTwHLIDrEfkJQtjxfdTlWQdwr0mM5ye7vd83AManSQwutgpI
+ q+wE8CNY2VN9xAlE7OhcmWXlnAw3MJLW863SXdGlnkA3N+U4BoKQSIToGuXARQ14IMNvfeKX
+ NphLPpUUnUNdfxAHu/S3tPTc/E/oePbHo794dnEm57LuuQINBFg2+xABEADZg/T+4o5qj4cw
+ nd0G5pFy7ACxk28mSrLuva9tyzqPgRZ2bdPiwNXJUvBg1es2u81urekeUvGvnERB/TKekp25
+ 4wU3I2lEhIXj5NVdLc6eU5czZQs4YEZbu1U5iqhhZmKhlLrhLlZv2whLOXRlLwi4jAzXIZAu
+ 76mT813jbczl2dwxFxcT8XRzk9+dwzNTdOg75683uinMgskiiul+dzd6sumdOhRZR7YBT+xC
+ wzfykOgBKnzfFscMwKR0iuHNB+VdEnZw80XGZi4N1ku81DHxmo2HG3icg7CwO1ih2jx8ik0r
+ riIyMhJrTXgR1hF6kQnX7p2mXe6K0s8tQFK0ZZmYpZuGYYsV05OvU8yqrRVL/GYvy4Xgplm3
+ DuMuC7/A9/BfmxZVEPAS1gW6QQ8vSO4zf60zREKoSNYeiv+tURM2KOEj8tCMZN3k3sNASfoG
+ fMvTvOjT0yzMbJsI1jwLwy5uA2JVdSLoWzBD8awZ2X/eCU9YDZeGuWmxzIHvkuMj8FfX8cK/
+ 2m437UA877eqmcgiEy/3B7XeHUipOL83gjfq4ETzVmxVswkVvZvR6j2blQVr+MhCZPq83Ota
+ xNB7QptPxJuNRZ49gtT6uQkyGI+2daXqkj/Mot5tKxNKtM1Vbr/3b+AEMA7qLz7QjhgGJcie
+ qp4b0gELjY1Oe9dBAXMiDwARAQABiQI8BBgBCAAmFiEEcM/SHOJt5ePBD8hO5T0WKDGD1rMF
+ Alg2+xACGwwFCQlmAYAACgkQ5T0WKDGD1rOYSw/+P6fYSZjTJDAl9XNfXRjRRyJSfaw6N1pA
+ Ahuu0MIa3djFRuFCrAHUaaFZf5V2iW5xhGnrhDwE1Ksf7tlstSne/G0a+Ef7vhUyeTn6U/0m
+ +/BrsCsBUXhqeNuraGUtaleatQijXfuemUwgB+mE3B0SobE601XLo6MYIhPh8MG32MKO5kOY
+ hB5jzyor7WoN3ETVNQoGgMzPVWIRElwpcXr+yGoTLAOpG7nkAUBBj9n9TPpSdt/npfok9ZfL
+ /Q+ranrxb2Cy4tvOPxeVfR58XveX85ICrW9VHPVq9sJf/a24bMm6+qEg1V/G7u/AM3fM8U2m
+ tdrTqOrfxklZ7beppGKzC1/WLrcr072vrdiN0icyOHQlfWmaPv0pUnW3AwtiMYngT96BevfA
+ qlwaymjPTvH+cTXScnbydfOQW8220JQwykUe+sHRZfAF5TS2YCkQvsyf7vIpSqo/ttDk4+xc
+ Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
+ x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
+ pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
+Message-ID: <f9a2c71b-e001-d546-64cd-8a904ae881ca@web.de>
+Date:   Mon, 11 May 2020 09:54:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR06CA0247.apcprd06.prod.outlook.com (2603:1096:4:ac::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28 via Frontend Transport; Mon, 11 May 2020 07:39:19 +0000
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: e7d926ff-e79f-4eb8-006d-08d7f57e6daf
-X-MS-TrafficTypeDiagnostic: AM0PR04MB4194:|AM0PR04MB4194:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB41946D5B226BB3FB1F3A788BD2A10@AM0PR04MB4194.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 04004D94E2
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3/CIjRd7XrEsty0U0aL9MLiOSAjBofgmAVsp2Kuok/kmDA0md0OVlNEDqJe52+lXO0viykniklQYf1oAjhaUn+XVO13TqThpW68ffWTx5329Unt4xO69OpBBp+HwhpNlhkqn2mPKaQjSKTiwZpElNRxq+Z+jEE78L0vXuwMveW/t7Uz7+5SC9+S1G1LRJo+qs1rpPFpOabpFzP8ySRY9S/JDSGyxr50uX7PoGoQWO4pLRglDUzR7qeFayPbrAVamacw+B7bqAPNh2Lel0zPQkZq3gS1wWixrHL7Q/d4vNiYYPDP8+izj4imwxz3hQIwYqXEMsC4LLm7tbz5meN/634WvrV5gqLt07tsQXQXRWn+NLranqw51lHKtqcr58Y73+r9+kADOL8bmHrR8FMmZIH/Pzp7O46yHVJolmm+FngJPWdMhaHeNxEMXFqvCegf3TjczJ0lb1ZZa8WFw9iIIgg2LGpcyqVOZLszzD4SAu4FxrpN4Coa/7b3s1sk0aiPSyvZlLeLihKhpia/OteeuBEfV+hWho/nsT9i7cmUb1fRvLS8WopNlYhno86ORpgvV
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(366004)(376002)(346002)(396003)(136003)(33430700001)(33656002)(55236004)(26005)(1006002)(6666004)(53546011)(6506007)(956004)(4326008)(44832011)(6916009)(478600001)(316002)(54906003)(7416002)(66556008)(9686003)(66476007)(4744005)(66946007)(7696005)(8676002)(186003)(33440700001)(55016002)(86362001)(52116002)(1076003)(2906002)(16526019)(8936002)(5660300002)(110426005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 9ckdkpFCil8z+UEF2QIVdvqkn7+V8nW7RuvBUxHiFm3YpNK2Y/2bVUykuCzGJGnn/4NAqZ+fAKXhrGJFO4FcwKm8+xKkKJiOZ5v8dm4MbFdCiq87iP6N9El0O1cuyr/h9Fl9LxtpdRvTHq8VfASets/8jwJlvEerDXoG/I4iZe601nBZw0m13e92h9BDjNauaoh62WmqJ+PLgtwjS/uiT86K3CGiPxDB1p5pTB2V9KR+SNeEM6FA5B6Qp+IWCGAbHE4MlgTwDET0cSWdggN7IKFwOzLwjlHcCMCH0UchT5giO+G5s15aWZh1Zl6Op8GIKD+Ok9ibdar4HQAh1Z8BjRXZNG8iGb3cFkxV0VKdC8dBc8msu4rNSEPlC9VbLzvYwIvQJe8Ql1rcr1G3rFMEbypvSIPGIiZ3/QF7AvEKFk98KojY8ZFs0vl8cjTyRsqbWdb0jwj4GfCpNGYFk7F9eP6CS4DEnaNOFZHqLgObIKg=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7d926ff-e79f-4eb8-006d-08d7f57e6daf
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 07:39:25.8899
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yYP7UTQj2kVsZ+YxDo5+llv6ER4IzxC6fW2HV3IMw4cnN9WQrpkuhQAjR1GAvtF+qZtPJLj/vcNzSyhiRTL2qg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4194
+In-Reply-To: <3eaa58c16dcf313ff7cb873dcff21659b0ea037d.1589158098.git.fthain@telegraphics.com.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:lMX6L/xPU+LnOvXWYWppgvBITGxbf53w7sXD13Jjbsx5KoiLCxp
+ TyLb+HiD8bjqTt/Ur/hTAPsYZp3xYJmsg7OJrHgppvPlLYsrfT4RaIKBIX1R47A3V3FvpiL
+ MK0SKbLdHTDsv5hmzjZ+71U6ZyvtdO7YkAl+duD9eo94sJpGpf8dCuc15I1zg/extljc8uU
+ lM7vkHkVIMJyt76NA9V5Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hk7Te1kuLBs=:HLdD4ujWZ/rIGYBtVDdHcD
+ 9+3/Z2o9cjUJh6q5wpDVKJnUIP36u5BdfuK/UQlWUbe5JapHlh8N4XTha/QLZowdMLbPZCET4
+ Dq2dTsZS4i2+nyMcda2ERHrKHc1kNM2tFbksYSEVtzqNz1hkxa5lfrJVI86/hxZ7T+76v7WEF
+ tgVDyAIM4YGmMk2KTN5cjTF9/GUM/WZ9Aj4ZTHzgw4wPmur0hsQtJJeme1+1xIDoSWhsQpIDh
+ Ho7d7lo2LVoYxmSA/TWcYyITpcWCVpkhqIaoOE6xUDvOy/a5QVsy+UzMn9soUC2ey2DzhT9cK
+ kiqf1Focdq67K4F46CFNmbfbpvcjDn6+HAXBWYyG/YMZoxylTXVj2hR0C9uUpuhd16G9Yp6x8
+ N7sftqvQR752Hm7sQqGE6gQ++X0Y2ns8nJz/FbF4QKH7CkSsjAB9GpN4zTv/ZRU5ExPPoLW+e
+ Yicw8xCxERaZiJgpD+xukqRPhmi2OefLUcsqpkBOKy1JcZXM/p5TOzcSTJ0zUYUNKxUxdI9/u
+ RrwfhU6sDqYlctNjYf67gRChwiuQYg22GN2oCSEGunvfluqo94Iy6PaxzWCcC9myQygHwVJUU
+ Ne0u/ZACd/QEBZ2z/tZVx186pnRNF/ZXA4l5OlwmKr5Z2CkIS+tjrIguXKLMQr3XSgN5Lq512
+ 8dAIGCqd0a2ScdRy/85dt2BKD6xNBsbPkDKZJHFjCdoskWHLnpiJbMhOABtFStR6esU1T35Qa
+ pfncNYxnW6AkNzaueou7MDP2DWkcKVm2kp///yeo6u/IbAh+nlDSkncG7oT8n+19qDIYAYoT8
+ Fio2uVEZHhYHC7s0UUe2laCulUrFI9CRjzR/+kBRIILiQ7KzAgucmiIOHojC+vA1XP35DSM3j
+ yJ8JyaxOfFBDMZddXBddaRzkfnfJlvywM9VmRZqwUWLDh4BH2qMrrI/Y17eBSPB5/gltRmMf0
+ LaG92417BnJlg0JTTlzKbxYK5+YiBoO8qMps8qnu0swHLBDpS3zk6g3mr2kEgg7vtXaun8nn5
+ v3nHDPEE+ADMW6AtoyNDdGB5yB70SLob5IRUU3tpM7g3HGt1n64ZVAwn7TSrCpbq+nds6Y4Cp
+ 7ZplnvtOkFjCAn/oR6CEcaKJ9Y4ht7itjIhwmA83RWHDfDpenYzf6/SvlmPq6RzWFM6b2W/uD
+ qr/BD3sfrw9eWMm1GMzPgIQPLTYmaJOLyTscGge8b4PmKx1MYAbjEUmimXfrKpkyK8xqAuwhe
+ jJdeBu/vNh3pBs/3E
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 08, 2020 at 05:48:33PM -0500, Jeremy Linton wrote:
-> Hi,
-> 
-> On 5/8/20 3:27 PM, Andrew Lunn wrote:
-> > > > There is a very small number of devices where the vendor messed up,
-> > > > and did not put valid contents in the ID registers. In such cases, we
-> > > > can read the IDs from device tree. These are then used in exactly the
-> > > > same way as if they were read from the device.
-> > > > 
-> > > 
-> > > Is that the case here?
-> > 
-> > Sorry, I don't understand the question?
-> 
-> I was asking in general, does this machine report the ID's correctly. More
-> directed at Calvin, but part of it is the board vendor too. So I suspect no
-> one can really answer "yes", despite that seeming to be the case.
+> Changed since v1:
+>  - Improved commit log slightly.
+>  - Changed 'undo_probe1' to 'undo_probe' where appropriate.
 
-I had tested RGMII PHYs(AR8035) with c22 using mdiobus_register. Vendor ID was
-read out correctly while autoprobing.
+I find this response interesting.
 
-AQR107(c45) PHYs that were connected gave back 0x00. This is expected
-because the MDIO bus is configured to talk c22.
 
-Regards
-Calvin
+> ---
+
+I suggest to replace these triple dashes by a blank line.
+
+
+>  drivers/net/ethernet/natsemi/macsonic.c | 17 +++++++++++++----
+>  drivers/net/ethernet/natsemi/xtsonic.c  |  7 +++++--
+
+I imagine that this change combination will need further clarification
+because David Miller provided the information =E2=80=9CApplied, thanks.=E2=
+=80=9D on 2020-04-27.
+
+net/sonic: Fix a resource leak in an error handling path in 'jazz_sonic_pr=
+obe()'
+https://lore.kernel.org/patchwork/comment/1426045/
+https://lkml.org/lkml/2020/4/27/1014
+
+
+=E2=80=A6
+> +++ b/drivers/net/ethernet/natsemi/xtsonic.c
+> @@ -229,11 +229,14 @@ int xtsonic_probe(struct platform_device *pdev)
+>  	sonic_msg_init(dev);
+>
+>  	if ((err =3D register_netdev(dev)))
+> -		goto out1;
+> +		goto undo_probe1;
+>
+>  	return 0;
+>
+> -out1:
+> +undo_probe1:
+> +	dma_free_coherent(lp->device,
+> +			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+> +			  lp->descriptors, lp->descriptors_laddr);
+>  	release_region(dev->base_addr, SONIC_MEM_SIZE);
+>  out:
+=E2=80=A6
+
+Can it be nicer to use the label =E2=80=9Cfree_dma=E2=80=9D?
+
+Regards,
+Markus
