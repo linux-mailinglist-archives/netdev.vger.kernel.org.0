@@ -2,126 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC88F1CE273
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 20:19:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30AF31CE278
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 20:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731012AbgEKSTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 14:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729673AbgEKSTp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 14:19:45 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133F2C061A0C;
-        Mon, 11 May 2020 11:19:44 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id v63so5099355pfb.10;
-        Mon, 11 May 2020 11:19:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2yn5GXC9T6aSzTW6H4dYcP7c5PsUvDbh9LGMtXFoYdo=;
-        b=Aq910p+Yyl0NUj51AIGFT5dqADLURjqwfNLwCviq2V2e6IyNRE0Woic2Vu/aZY+Wuw
-         OZBtaHtiA5V1YoWxNwDk9HqxI86LWCOfn5pSOE1ZCPLXL/URY4K3uFsV5l8N42B+MOeV
-         lEYiU0IYUlS7i0ge8nnR96ZL0rmsXPgwquW/ANj8qmPt03b0VJvkdlY4hK81N6qEy85W
-         BagEBgfsaESW+uJS4AQYFYMizc+41KQZcwU8z5TT0M8nV66Gt9nQp7TQDICSOpTAnb6S
-         AJBfioyebEQ85c33zPzvFHr8NJ+nM367a5uejlj58YxFOaJXENVK65Dxw2XlZhv5O0Fe
-         4NiQ==
+        id S1731104AbgEKSVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 14:21:22 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:57161 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729673AbgEKSVV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 14:21:21 -0400
+Received: by mail-il1-f199.google.com with SMTP id v87so7243796ill.23
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 11:21:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2yn5GXC9T6aSzTW6H4dYcP7c5PsUvDbh9LGMtXFoYdo=;
-        b=gFNOrHtIYpzHkyrs7XqMpTFgzDrYFnRR+WYiKtRJcpmz6x6K7niXr9lxA+31YoOxHT
-         aHg4mVd/yFqWUxat/W/Ssr6evFUCIRtjdl/3cEK9bBcwY9GhtlZWG8Gpd4G46anQlEhL
-         aKaW/1HekojX0IUshTeafhC70+KEFY0/JxnLzITBgWinP0E0V8dObP9f/qGexiWVwJPo
-         1Nj04ehkFTvTqeWyMOTV0+bzwOtq9AnJ3zV4yQAeLE9IM0CWc/6ZjXT114feSKwx3HvV
-         OB6HeHChhrfPYWxTUg6OVesm4Ju+khQ62+oN4n7YSblZ3654kF80CMGjHI1KJ6dYXOsG
-         XSsw==
-X-Gm-Message-State: AGi0PuZJwHOjOrpnjAFnNSRMk+2XGc2suyV5gZGB/s8VZB45vmrdIx1d
-        4U/GcC5/3J8/Lqf59bjDQR8QDtZY
-X-Google-Smtp-Source: APiQypJ4JovztU5Ka0iRgeBfoFCff5vzLGOGPv8Ai8O2UPhxnrJPg43yND7I/2OLBphSSYvOWmZQYA==
-X-Received: by 2002:a63:5345:: with SMTP id t5mr14380704pgl.401.1589221183268;
-        Mon, 11 May 2020 11:19:43 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id g16sm9860744pfq.203.2020.05.11.11.19.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 May 2020 11:19:42 -0700 (PDT)
-Subject: Re: [PATCH net] net: broadcom: Imply BROADCOM_PHY for BCMGENET
-To:     Marek Szyprowski <m.szyprowski@samsung.com>, netdev@vger.kernel.org
-Cc:     nsaenzjulienne@suse.de, wahrenst@gmx.net,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tal Gilboa <talgi@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Andy Gospodarek <gospo@broadcom.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <CGME20200508223228eucas1p252dd643b4bedf08126cf6af4788f9b01@eucas1p2.samsung.com>
- <20200508223216.6611-1-f.fainelli@gmail.com>
- <350c88a9-eeaf-7859-d425-0ee4ca355ed3@samsung.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <51710a87-5a99-35ee-5bea-92a5801cec09@gmail.com>
-Date:   Mon, 11 May 2020 11:19:41 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=cqO4hu+Y+GKqzJQLMGAZSu8zQRU1y+XGTEnwnmJrjIg=;
+        b=b6NyUx0Y+H1Es+fb9Ba1C434tHdKt9M5ugT4rTepWaJp95tCHUdhW3lYZOrNK9qRJF
+         kocRTFq9uTum3Bxlz6TNhKK7I6WWNrZQbgzcT79ESJm3sZSdRWciSC+B1ViS0gaKqfhw
+         NaSN6UVsZEMpMZLsYdQuEYHtQ/o3Qyvi7ZszO1B7/jHpMQrESj7JQo8VT6qmUKnGyLBR
+         hKYFWk0kzZHMtkO/FS1LT1/1GEHUB/iFZGObAMwvkzhfgapBmCyqud401tOmdgPNfVyz
+         z+2PDvshOimCqDia/6OKZHofM2x3HAShNJqArezAKDByDMa/yYfmJkIh32wIOgO8CiEc
+         /AUQ==
+X-Gm-Message-State: AGi0PubgfmrIoKq0p2YxIELgtEcR2jP5gac/jb01DLWVXrwrB9bfuBqa
+        DwvBXf9AEeT9ldG1y5CB4a4cG0QuS2GuzoK5qBUf9bJ1/wkx
+X-Google-Smtp-Source: APiQypK4CuKR2a7GGFDnY93LCwCy3QserCQbrKxGJuk2kSEZBUjubfo5Yu6mO7v9DOlWlIX85UuovWpJyoMXMk0xxaX8u+zj1XuC
 MIME-Version: 1.0
-In-Reply-To: <350c88a9-eeaf-7859-d425-0ee4ca355ed3@samsung.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:5b89:: with SMTP id g131mr16814855jab.75.1589221280022;
+ Mon, 11 May 2020 11:21:20 -0700 (PDT)
+Date:   Mon, 11 May 2020 11:21:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000dd891a05a56369b8@google.com>
+Subject: KASAN: slab-out-of-bounds Read in fl6_update_dst
+From:   syzbot <syzbot+e8c028b62439eac42073@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    2ef96a5b Linux 5.7-rc5
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=155f1714100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=efdde85c3af536b5
+dashboard link: https://syzkaller.appspot.com/bug?extid=e8c028b62439eac42073
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=102bfda2100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13f8510c100000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+e8c028b62439eac42073@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: slab-out-of-bounds in fl6_update_dst+0x2bb/0x2c0 net/ipv6/exthdrs.c:1356
+Read of size 16 at addr ffff88809dc23258 by task syz-executor528/7035
+
+CPU: 1 PID: 7035 Comm: syz-executor528 Not tainted 5.7.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:382
+ __kasan_report.cold+0x35/0x4d mm/kasan/report.c:511
+ kasan_report+0x33/0x50 mm/kasan/common.c:625
+ fl6_update_dst+0x2bb/0x2c0 net/ipv6/exthdrs.c:1356
+ sctp_v6_get_dst+0x5e7/0x1c30 net/sctp/ipv6.c:276
+ sctp_transport_route+0x125/0x350 net/sctp/transport.c:297
+ sctp_assoc_add_peer+0x5a0/0x1030 net/sctp/associola.c:659
+ sctp_connect_new_asoc+0x19b/0x580 net/sctp/socket.c:1092
+ sctp_sendmsg_new_asoc net/sctp/socket.c:1694 [inline]
+ sctp_sendmsg+0x1396/0x1f30 net/sctp/socket.c:2004
+ inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:807
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x308/0x7e0 net/socket.c:2362
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2416
+ __sys_sendmmsg+0x195/0x480 net/socket.c:2506
+ __do_sys_sendmmsg net/socket.c:2535 [inline]
+ __se_sys_sendmmsg net/socket.c:2532 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2532
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x440309
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff01fee1f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440309
+RDX: 0000000000000001 RSI: 0000000020000140 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401b90
+R13: 0000000000401c20 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 7035:
+ save_stack+0x1b/0x40 mm/kasan/common.c:49
+ set_track mm/kasan/common.c:57 [inline]
+ __kasan_kmalloc mm/kasan/common.c:495 [inline]
+ __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:468
+ __do_kmalloc mm/slab.c:3656 [inline]
+ __kmalloc+0x161/0x7a0 mm/slab.c:3665
+ kmalloc include/linux/slab.h:560 [inline]
+ sock_kmalloc net/core/sock.c:2166 [inline]
+ sock_kmalloc+0xb5/0x100 net/core/sock.c:2157
+ ipv6_renew_options+0x274/0x940 net/ipv6/exthdrs.c:1275
+ do_ipv6_setsockopt.isra.0+0x2eaf/0x42f0 net/ipv6/ipv6_sockglue.c:435
+ ipv6_setsockopt+0xfb/0x180 net/ipv6/ipv6_sockglue.c:949
+ sctp_setsockopt+0x13e/0x7090 net/sctp/socket.c:4685
+ __sys_setsockopt+0x248/0x480 net/socket.c:2132
+ __do_sys_setsockopt net/socket.c:2148 [inline]
+ __se_sys_setsockopt net/socket.c:2145 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2145
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+
+Freed by task 5138:
+ save_stack+0x1b/0x40 mm/kasan/common.c:49
+ set_track mm/kasan/common.c:57 [inline]
+ kasan_set_free_info mm/kasan/common.c:317 [inline]
+ __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:456
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x109/0x2b0 mm/slab.c:3757
+ tomoyo_path_perm+0x236/0x400 security/tomoyo/file.c:842
+ security_inode_getattr+0xeb/0x150 security/security.c:1273
+ vfs_getattr+0x22/0x60 fs/stat.c:117
+ vfs_statx_fd+0x6a/0xb0 fs/stat.c:147
+ vfs_fstat include/linux/fs.h:3295 [inline]
+ __do_sys_newfstat+0x8b/0x100 fs/stat.c:388
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+
+The buggy address belongs to the object at ffff88809dc23200
+ which belongs to the cache kmalloc-96 of size 96
+The buggy address is located 88 bytes inside of
+ 96-byte region [ffff88809dc23200, ffff88809dc23260)
+The buggy address belongs to the page:
+page:ffffea00027708c0 refcount:1 mapcount:0 mapping:0000000031b2e39e index:0xffff88809dc23080
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea00027c7888 ffffea00027fc588 ffff8880aa000540
+raw: ffff88809dc23080 ffff88809dc23000 000000010000001e 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88809dc23100: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
+ ffff88809dc23180: 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc
+>ffff88809dc23200: 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc
+                                                    ^
+ ffff88809dc23280: 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc
+ ffff88809dc23300: 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc
+==================================================================
 
 
-On 5/11/2020 12:21 AM, Marek Szyprowski wrote:
-> Hi Florian,
-> 
-> On 09.05.2020 00:32, Florian Fainelli wrote:
->> The GENET controller on the Raspberry Pi 4 (2711) is typically
->> interfaced with an external Broadcom PHY via a RGMII electrical
->> interface. To make sure that delays are properly configured at the PHY
->> side, ensure that we get a chance to have the dedicated Broadcom PHY
->> driver (CONFIG_BROADCOM_PHY) enabled for this to happen.
->>
->> Fixes: 402482a6a78e ("net: bcmgenet: Clear ID_MODE_DIS in EXT_RGMII_OOB_CTRL when not needed")
->> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->> David,
->>
->> I would like Marek to indicate whether he is okay or not with this
->> change. Thanks!
-> 
-> It is better. It fixes the default values for ARM 32bit 
-> bcm2835_defconfig and ARM 64bit defconfig, so you can add:
-> 
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> 
-> There is still an issue there. In case of ARM 64bit, when Genet driver 
-> is configured as a module, BROADCOM_PHY is also set to module. When I 
-> changed Genet to be built-in, BROADCOM_PHY stayed selected as module. 
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-OK.
-
-> This case doesn't work, as Genet driver is loaded much earlier than the 
-> rootfs/initrd/etc is available, thus broadcom phy driver is not loaded 
-> at all. It looks that some kind of deferred probe is missing there.
-
-In the absence of a specific PHY driver the Generic PHY driver gets used
-instead. This is a valid situation as I described in my other email
-because the boot loader/firmware could have left the PHY properly
-configured with the expected RGMII delays and configuration such that
-Linux does not need to be aware of anything. I suppose we could change
-the GENET driver when running on the 2711 platform to reject the PHY
-driver being "Generic PHY" on the premise that a specialized driver
-should be used instead, but that seems a bit too restrictive IMHO.
-
-Do you prefer a "select BROADCOM_PHY if ARCH_BCM2835" then?
--- 
-Florian
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
