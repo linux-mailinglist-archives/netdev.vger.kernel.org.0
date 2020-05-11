@@ -2,94 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A9FD1CDEEF
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:26:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD1451CDF1C
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729802AbgEKP0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 11:26:37 -0400
-Received: from www62.your-server.de ([213.133.104.62]:55710 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726410AbgEKP0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 11:26:37 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jYAK8-0004PL-AQ; Mon, 11 May 2020 17:26:32 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jYAK7-0008Vc-UJ; Mon, 11 May 2020 17:26:31 +0200
-Subject: Re: [PATCH] libbpf: Replace zero-length array with flexible-array
-To:     Yonghong Song <yhs@fb.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200507185057.GA13981@embeddedor>
- <0ba4c222-b1e6-c003-56f1-6f43405066f0@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <13960d59-3786-a58e-0be0-f9d91f8ee919@iogearbox.net>
-Date:   Mon, 11 May 2020 17:26:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730335AbgEKPct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 11:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728084AbgEKPcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 11:32:46 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8259BC061A0C
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:32:46 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id j5so11537757wrq.2
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TnQGqPM75OH1R/2ww4PC64r9FVhjhJ8ve+zfJoXtix0=;
+        b=x0DqyzarXC/oHh7MqdC/dJQWxBc/eMk75RVMO7yL8K5N2IvVvCYW45w2iJfp6gE3/b
+         +6OT8xysnugXW+7EnwcElNtihbu58gfWLiT4UMxTEzJq+PGz1RGuhku/9e3edVzXm1eV
+         vRBFQjEvAQnlizyIE8lIzuf83OquOY0Heyf+emSlmRxDOqNI6M4ccDdjzDEcpyxVzlZy
+         fYhd648RrvRD+TqOda5qCWAfpxAWs9GVik4WQnbA4sPe0ouWLWapBLsOFzqZ6oyylKDt
+         EOwn/nm4AOnBdaFQZAKJVZTWsC77t2tVn3Vc6ATZhQGjDKsK8cXe+gDOBGYSHJJqvHOs
+         4TeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TnQGqPM75OH1R/2ww4PC64r9FVhjhJ8ve+zfJoXtix0=;
+        b=M85yNQ4rizfiGlzj5yJdn1xTK5I4dvo1H8lgBF3g/vmXGkoiGihWlpKnmimwU9u04J
+         FgesWiw0otuOnggCtlhl9DyCLdvR5pbYDxX+d1bZ+bBwRHhQgeAntzVY3WPK9dTqK6CG
+         agod7joporxhDNL/8oEPGvunTHKaoXh88tQe3wvqHrRGduLykcVveyJ8xcrjXQgTtyZn
+         O8uensntvca9Gh3yuehXwQHAX40D8w0BZCnSO/1Hskd7NrPj232X0Z7x7FE4wLvOA7pK
+         Q5Vcipzb6itQJ+xFdZDKfwJ4rnSmRGsOop9FKjeeHVm2d1ZGXrZ2HLnA5hPfHxUgawbY
+         euJg==
+X-Gm-Message-State: AGi0PubIhdVY4BMue5bTwDfGPce5oaGEpv2B+9B1e5W2z9UNSeKjBOce
+        xcORe1oz9s2ZUICHX5eAm9wCjQ==
+X-Google-Smtp-Source: APiQypIZ8KWLR1I15vhXR7cC/leBP8vTtovpzl4Th/w0vdBTUcwAI2+Fy68Ja4DDf7yUfcdQ7ujDyA==
+X-Received: by 2002:a05:6000:11c3:: with SMTP id i3mr9002409wrx.219.1589211165326;
+        Mon, 11 May 2020 08:32:45 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id f5sm17926259wrp.70.2020.05.11.08.32.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2020 08:32:44 -0700 (PDT)
+Date:   Mon, 11 May 2020 17:32:43 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Subject: Re: [RFC next-next v2 1/5] net: marvell: prestera: Add driver for
+ Prestera family ASIC devices
+Message-ID: <20200511153243.GJ2245@nanopsycho>
+References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
+ <20200430232052.9016-2-vadym.kochan@plvision.eu>
+ <20200511103222.GF2245@nanopsycho>
+ <20200511111134.GD25096@plvision.eu>
+ <20200511112905.GH2245@nanopsycho>
+ <20200511124245.GA409897@lunn.ch>
+ <20200511130252.GE25096@plvision.eu>
+ <20200511135359.GB413878@lunn.ch>
+ <20200511141117.GF25096@plvision.eu>
 MIME-Version: 1.0
-In-Reply-To: <0ba4c222-b1e6-c003-56f1-6f43405066f0@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25809/Mon May 11 14:16:55 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200511141117.GF25096@plvision.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/20 9:16 PM, Yonghong Song wrote:
-> On 5/7/20 11:50 AM, Gustavo A. R. Silva wrote:
->> The current codebase makes use of the zero-length array language
->> extension to the C90 standard, but the preferred mechanism to declare
->> variable-length types such as these ones is a flexible array member[1][2],
->> introduced in C99:
->>
->> struct foo {
->>          int stuff;
->>          struct boo array[];
->> };
->>
->> By making use of the mechanism above, we will get a compiler warning
->> in case the flexible array does not occur last in the structure, which
->> will help us prevent some kind of undefined behavior bugs from being
->> inadvertently introduced[3] to the codebase from now on.
->>
->> Also, notice that, dynamic memory allocations won't be affected by
->> this change:
->>
->> "Flexible array members have incomplete type, and so the sizeof operator
->> may not be applied. As a quirk of the original implementation of
->> zero-length arrays, sizeof evaluates to zero."[1]
->>
->> sizeof(flexible-array-member) triggers a warning because flexible array
->> members have incomplete type[1]. There are some instances of code in
->> which the sizeof operator is being incorrectly/erroneously applied to
->> zero-length arrays and the result is zero. Such instances may be hiding
->> some bugs. So, this work (flexible-array member conversions) will also
->> help to get completely rid of those sorts of issues.
->>
->> This issue was found with the help of Coccinelle.
->>
->> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
->> [2] https://github.com/KSPP/linux/issues/21
->> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
->>
->> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> 
-> I think this is probably for bpf-next.
-> 
-> Acked-by: Yonghong Song <yhs@fb.com>
+Mon, May 11, 2020 at 04:11:17PM CEST, vadym.kochan@plvision.eu wrote:
+>On Mon, May 11, 2020 at 03:53:59PM +0200, Andrew Lunn wrote:
+>> > Looks like it might be hard for the board manufacturing? I mean each
+>> > board item need to have updated dtb file with base mac address, instead
+>> > to have common dtb for the board type.
+>> > 
+>> > And it sounds that platform data might be the way in case if the vendor
+>> > will implement platform device driver which will handle reading base mac
+>> > from eeprom (or other storage) depending on the board and put it to the
+>> > platform data which will be provided to prestera driver ?
+>> 
+>> Hi Vadym
+>> 
+>> This is not a new problem. Go look at the standard solutions to this.
+>> 
+>> of_get_mac_address(), eth_platform_get_mac_address(),
+>> nvmem_get_mac_address(), of_get_mac_addr_nvmem(), etc.
+>> 
+>>   Andrew
+>
+>Thank you! I will look on it!
 
-Applied, thanks!
+Though in this case, it is not really a MAC, it is a BASE_MAC...
+Maybe in DSA world this is usual?
