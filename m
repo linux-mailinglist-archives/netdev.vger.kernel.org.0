@@ -2,71 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 691B81CCF58
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 04:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B2331CCFD9
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 04:47:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729255AbgEKCJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 22:09:20 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2069 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729085AbgEKCJT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 22:09:19 -0400
-Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.53])
-        by Forcepoint Email with ESMTP id 981CAC1B783130818844;
-        Mon, 11 May 2020 10:09:15 +0800 (CST)
-Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Mon, 11 May 2020 10:09:15 +0800
-Received: from [10.173.219.71] (10.173.219.71) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Mon, 11 May 2020 10:09:14 +0800
-Subject: Re: [PATCH net v2] hinic: fix a bug of ndo_stop
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-References: <20200508201933.5054-1-luobin9@huawei.com>
- <20200509153758.06f6947f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <c94de313-5b54-8f39-b036-22e7aa026c23@huawei.com>
-Date:   Mon, 11 May 2020 10:09:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1728298AbgEKCrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 22:47:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49586 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725830AbgEKCrI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 May 2020 22:47:08 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6434B2137B;
+        Mon, 11 May 2020 02:47:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589165227;
+        bh=FDKtUnOQ3qIeGS0KtMK0l6lFpy1aHBPs2Ihinmou1Ak=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=wKP/0Hpi1SXbKWsvBIudbmbNfb2BoLIYPl0qlQICVmmlTalOfyCVLY0F/d2rqVMmr
+         PdFooKWT90ikdzAPx5dneEc3vRUc7WpQVxVFRHkUltO0Ki08HJ9AMXA5Y6upU4T7oT
+         /7g+gxPHvIi1unXv8TWmC67WvAaKovZ3kXdzbPOM=
+Date:   Sun, 10 May 2020 19:47:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     tanhuazhong <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
+Subject: Re: [PATCH net-next 3/5] net: hns3: provide .get_cmdq_stat
+ interface for the client
+Message-ID: <20200510194705.0082267b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1b76cac7-b1cc-cbab-cef4-cefeaa25ac62@huawei.com>
+References: <1589016461-10130-1-git-send-email-tanhuazhong@huawei.com>
+        <1589016461-10130-4-git-send-email-tanhuazhong@huawei.com>
+        <20200509134816.534860ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <1b76cac7-b1cc-cbab-cef4-cefeaa25ac62@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20200509153758.06f6947f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.173.219.71]
-X-ClientProxiedBy: dggeme719-chm.china.huawei.com (10.1.199.115) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Will fix. Thanks.
+On Mon, 11 May 2020 08:13:06 +0800 tanhuazhong wrote:
+> On 2020/5/10 4:48, Jakub Kicinski wrote:
+> > On Sat, 9 May 2020 17:27:39 +0800 Huazhong Tan wrote:  
+> >> diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+> >> index 5602bf2..7506cab 100644
+> >> --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+> >> +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+> >> @@ -552,6 +552,7 @@ struct hnae3_ae_ops {
+> >>   	int (*set_vf_mac)(struct hnae3_handle *handle, int vf, u8 *p);
+> >>   	int (*get_module_eeprom)(struct hnae3_handle *handle, u32 offset,
+> >>   				 u32 len, u8 *data);
+> >> +	bool (*get_cmdq_stat)(struct hnae3_handle *handle);
+> >>   };  
+> > 
+> > I don't see anything in this series using this new interface, why is it
+> > added now?
+> 
+> This interface is needed by the roce client, whose patch will be
+> upstreamed to the rdma tree, it is other branch. So we provide this 
+> interface previously, then the rdma guy will upstream their patch later,
+> maybe linux-5.8-rc*.
 
-On 2020/5/10 6:37, Jakub Kicinski wrote:
-> On Fri, 8 May 2020 20:19:33 +0000 Luo bin wrote:
->> if some function in ndo_stop interface returns failure because of
->> hardware fault, must go on excuting rest steps rather than return
->> failure directly, otherwise will cause memory leak.And bump the
->> timeout for SET_FUNC_STATE to ensure that cmd won't return failure
->> when hw is busy. Otherwise hw may stomp host memory if we free
->> memory regardless of the return value of SET_FUNC_STATE.
->>
->> Signed-off-by: Luo bin <luobin9@huawei.com>
-> Doesn't apply to the net tree:
->
-> error: patch failed: drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c:353
-> error: drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c: patch does not apply
-> error: patch failed: drivers/net/ethernet/huawei/hinic/hinic_main.c:504
-> error: drivers/net/ethernet/huawei/hinic/hinic_main.c: patch does not apply
-> hint: Use 'git am --show-current-patch' to see the failed patch
-> Applying: hinic: fix a bug of ndo_stop
->
-> Please also include a Fixes tag when you repost.
-> .
+Understood. Please make sure to include this kind of information in the
+cover letter in the future.
