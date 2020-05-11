@@ -2,103 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 400B91CD934
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2CF31CD942
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:03:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727873AbgEKL7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 07:59:47 -0400
-Received: from correo.us.es ([193.147.175.20]:36582 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729909AbgEKL7n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 07:59:43 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id AC9E818CDC5
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 13:59:41 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9BB081158E3
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 13:59:41 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 91272115416; Mon, 11 May 2020 13:59:41 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+        id S1729855AbgEKMDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 08:03:39 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:55562 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729782AbgEKMDg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:03:36 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1589198616; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=HLhZMaOCv1O1jz47tTVuggCyPQt8joEJFRzbgN2Z4oQ=; b=a1ddVnkixIKd0atXBdYrEEE3wZ4wSTXL2FzOy58Iqe5CIRfDxEN0iuq7J9UMUmfv8zW7Z+ra
+ 3C4dEDez8kepnFLZZhbxT25wlqob5eBP8yXM6Cl610W/TAjnesCRGbSmRyZa47A72Qqvunfe
+ 5zUMf6c8ITQrhf/VVcz8avkEDk8=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id C6E2EC433BA; Mon, 11 May 2020 12:02:44 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8D021520FB;
-        Mon, 11 May 2020 13:59:39 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 11 May 2020 13:59:39 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 6EBB342EF52A;
-        Mon, 11 May 2020 13:59:39 +0200 (CEST)
-Date:   Mon, 11 May 2020 13:59:39 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     Oz Shlomo <ozsh@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net] netfilter: flowtable: Add pending bit for offload
- work
-Message-ID: <20200511115939.GA19979@salvia>
-References: <1588764279-12166-1-git-send-email-paulb@mellanox.com>
- <20200510221434.GA11226@salvia>
- <9dff92fe-15cd-348d-ff1c-7a102ea9263c@mellanox.com>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 642A5C433F2;
+        Mon, 11 May 2020 12:02:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 642A5C433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Michal Kazior <michal.kazior@tieto.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Wen Gong <wgong@codeaurora.org>,
+        Erik Stromdahl <erik.stromdahl@gmail.com>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] ath10k: fix gcc-10 zero-length-bounds warnings
+References: <20200509120707.188595-1-arnd@arndb.de>
+        <20200509154818.GB27779@embeddedor>
+Date:   Mon, 11 May 2020 15:02:38 +0300
+In-Reply-To: <20200509154818.GB27779@embeddedor> (Gustavo A. R. Silva's
+        message of "Sat, 9 May 2020 10:48:18 -0500")
+Message-ID: <87zhae4r35.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9dff92fe-15cd-348d-ff1c-7a102ea9263c@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 11:32:36AM +0300, Paul Blakey wrote:
-> On 5/11/2020 1:14 AM, Pablo Neira Ayuso wrote:
-[...]
-> >> @@ -831,9 +832,14 @@ static void flow_offload_queue_work(struct flow_offload_work *offload)
-> >>  {
-> >>  	struct flow_offload_work *offload;
-> >>  
-> >> +	if (test_and_set_bit(NF_FLOW_HW_PENDING, &flow->flags))
-> >> +		return NULL;
-> > In case of stats, it's fine to lose work.
-> >
-> > But how does this work for the deletion case? Does this falls back to
-> > the timeout deletion?
-> 
-> We get to nf_flow_table_offload_del (delete) in these cases:
-> 
-> >-------if (nf_flow_has_expired(flow) || nf_ct_is_dying(flow->ct) ||
-> >-------    test_bit(NF_FLOW_TEARDOWN, &flow->flags) {
-> >------->-------   ....
-> >------->-------    nf_flow_offload_del(flow_table, flow);
-> 
-> Which are all persistent once set but the nf_flow_has_expired(flow). So we will
-> try the delete
-> again and again till pending flag is unset or the flow is 'saved' by the already
-> queued stats updating the timeout.
-> A pending stats update can't save the flow once it's marked for teardown or
-> (flow->ct is dying), only delay it.
+"Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
 
-Thanks for explaining.
+> Arnd,
+>
+> On Sat, May 09, 2020 at 02:06:32PM +0200, Arnd Bergmann wrote:
+>> gcc-10 started warning about out-of-bounds access for zero-length
+>> arrays:
+>> 
+>> In file included from drivers/net/wireless/ath/ath10k/core.h:18,
+>>                  from drivers/net/wireless/ath/ath10k/htt_rx.c:8:
+>> drivers/net/wireless/ath/ath10k/htt_rx.c: In function 'ath10k_htt_rx_tx_fetch_ind':
+>> drivers/net/wireless/ath/ath10k/htt.h:1683:17: warning: array subscript 65535 is outside the bounds of an interior zero-length array 'struct htt_tx_fetch_record[0]' [-Wzero-length-bounds]
+>>  1683 |  return (void *)&ind->records[le16_to_cpu(ind->num_records)];
+>>       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/wireless/ath/ath10k/htt.h:1676:29: note: while referencing 'records'
+>>  1676 |  struct htt_tx_fetch_record records[0];
+>>       |                             ^~~~~~~
+>> 
+>> Make records[] a flexible array member to allow this, moving it behind
+>> the other zero-length member that is not accessed in a way that gcc
+>> warns about.
+>> 
+>> Fixes: 3ba225b506a2 ("treewide: Replace zero-length array with
+>> flexible-array member")
+>
+> This treewide patch no longer contains changes for ath10k. I removed them
+> since Monday (05/04/2020). So, this "Fixes" tag does not apply.
 
-> We didn't mention flush, like in table free. I guess we need to flush the
-> hardware workqueue
-> of any pending stats work, then queue the deletion, and flush again:
-> Adding nf_flow_table_offload_flush(flow_table), after
-> cancel_delayed_work_sync(&flow_table->gc_work);
+Ok, I'll remove it. Also I'll take these to my ath.git tree, not to
+net-next.
 
-The "flush" makes sure that stats work runs before the deletion, to
-ensure no races happen for in-transit work objects, right?
-
-We might use alloc_ordered_workqueue() and let the workqueue handle
-this problem?
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
