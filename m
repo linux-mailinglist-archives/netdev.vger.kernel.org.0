@@ -2,72 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ABDC1CE0E5
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 18:48:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 082D01CE0FF
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 18:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730757AbgEKQsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 12:48:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55694 "EHLO mail.kernel.org"
+        id S1730729AbgEKQx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 12:53:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32940 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728711AbgEKQsW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 12:48:22 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        id S1727874AbgEKQx2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 12:53:28 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0F07320722;
-        Mon, 11 May 2020 16:48:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 880A8206D7;
+        Mon, 11 May 2020 16:53:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589215702;
-        bh=YjBc3GcTYhjNZB9dWGMJ7JWRWBG0gsn+sx7uezZ15Jo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VEtOD+Gcwt/5t8fzFDccXhPnuw1ERXnwA50+CixMFE88goAJEX3QUqybY/CwE6TUk
-         oOG/zNO2XbaryuwbQjF4uH/AyYpn7VP1nso+xEcP3iIDs8zhPNU2PpSwtunzAVTR+6
-         NkVstniSfELe0NDHh8tVvOFlj1Ck4sNeMEhUGn1c=
-Date:   Mon, 11 May 2020 09:48:19 -0700
+        s=default; t=1589216007;
+        bh=dam+wrisZkSDTYvLRv5tNOfLqS88LxqpLl5TR80UCVk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=d8jO5YdLOxZDIhJGblPnmWACNyek/+jRk4BMNiwiEL6q3TsQ2CqFaNc/Nm7ntTT4L
+         qM4+xSdjOHm3lx5p7N5wKSKj4jb/fBEeArcY2v2Yt1MrEhFDV5rGFktcqSPdr2CGfc
+         9R0KiAH4YbnDO25W/RPpKdqokJC3lX9ro6oge+nI=
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     davem@davemloft.net, Andrew Morton <akpm@linux-foundation.org>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next] checkpatch: warn about uses of ENOTSUPP
-Message-ID: <20200511094819.08f22e84@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <19cc4fe7238358988950970a6f8af68a31b2e4bd.camel@perches.com>
-References: <20200510185148.2230767-1-kuba@kernel.org>
-        <19cc4fe7238358988950970a6f8af68a31b2e4bd.camel@perches.com>
+To:     Joe Perches <joe@perches.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2] checkpatch: warn about uses of ENOTSUPP
+Date:   Mon, 11 May 2020 09:53:19 -0700
+Message-Id: <20200511165319.2251678-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 May 2020 12:56:53 -0700 Joe Perches wrote:
-> On Sun, 2020-05-10 at 11:51 -0700, Jakub Kicinski wrote:
-> > Hi Joe, I feel like I already talked to you about this, but I lost
-> > my email archive, so appologies if you already said no.  
-> 
-> Not so far as I can tell.
-> 
-> This seems OK to me, but using checkpatch -f should probably
-> not show this error.
-> 
-> You might include a link to where Andrew Lunn suggested it
-> in the commit message.  I didn't find it with a trivial search.
+ENOTSUPP often feels like the right error code to use, but it's
+in fact not a standard Unix error. E.g.:
 
-Will do.
+$ python
+>>> import errno
+>>> errno.errorcode[errno.ENOTSUPP]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: module 'errno' has no attribute 'ENOTSUPP'
 
-> > diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl  
-> []
-> > @@ -4199,6 +4199,14 @@ sub process {
-> >  			     "ENOSYS means 'invalid syscall nr' and nothing else\n" . $herecurr);
-> >  		}
-> >  
-> > +# ENOTSUPP is not a standard error code and should be avoided.
-> > +# Folks usually mean EOPNOTSUPP (also called ENOTSUP), when they type ENOTSUPP.
-> > +# Similarly to ENOSYS warning a small number of false positives is expected.
-> > +		if ($line =~ /\bENOTSUPP\b/) {  
-> 
-> So to avoid having newbies and others trying to convert
-> existing uses in files using checkpatch.pl -f, maybe:
+There were numerous commits converting the uses back to EOPNOTSUPP
+but in some cases we are stuck with the high error code for backward
+compatibility reasons.
 
-Sounds good, thanks!
+Let's try prevent more ENOTSUPPs from getting into the kernel.
+
+Recent example:
+https://lore.kernel.org/netdev/20200510182252.GA411829@lunn.ch/
+
+v2 (Joe):
+ - add a link to recent discussion,
+ - don't match when scanning files, not patches to avoid sudden
+   influx of conversion patches.
+
+v1:
+https://lore.kernel.org/netdev/20200510185148.2230767-1-kuba@kernel.org/
+
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ scripts/checkpatch.pl | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index eac40f0abd56..bfbdc869cd99 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -4199,6 +4199,17 @@ sub process {
+ 			     "ENOSYS means 'invalid syscall nr' and nothing else\n" . $herecurr);
+ 		}
+ 
++# ENOTSUPP is not a standard error code and should be avoided in new patches.
++# Folks usually mean EOPNOTSUPP (also called ENOTSUP), when they type ENOTSUPP.
++# Similarly to ENOSYS warning a small number of false positives is expected.
++		if (~$file && $line =~ /\bENOTSUPP\b/) {
++			if (WARN("ENOTSUPP",
++				 "ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP\n" . $herecurr) &&
++			    $fix) {
++				$fixed[$fixlinenr] =~ s/\bENOTSUPP\b/EOPNOTSUPP/;
++			}
++		}
++
+ # function brace can't be on same line, except for #defines of do while,
+ # or if closed on same line
+ 		if ($perl_version_ok &&
+-- 
+2.25.4
+
