@@ -2,107 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B38D1CD97C
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:17:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E71FE1CD990
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:24:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729666AbgEKMRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 08:17:25 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:29162 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729595AbgEKMRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:17:24 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589199444; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=LJkqkksPCoqKwanmP1G5QFQXBwL68pGeFkXkb/IEhLI=; b=DzkwJKvFDApos+urtqpWTX2M/OUiQLUWDoKbwL0BWTHjx1B0SFxMIYbRyvdcMugiF4jo5GuF
- EFcmMekaI4D/Vk0Y9TFVQs+0jmLZ0jAt6aBIJbVYcHdRcDiYx5L5Tt3/lHH/Kacdt50V3yXg
- /YwDBjKyIZSU5kNI37sS1It9490=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5eb9424f.7ff7e8760b58-smtp-out-n05;
- Mon, 11 May 2020 12:17:19 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EBA01C432C2; Mon, 11 May 2020 12:17:17 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1728084AbgEKMYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 08:24:07 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:39376 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725913AbgEKMYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:24:05 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4BFEC200AE;
+        Mon, 11 May 2020 12:24:04 +0000 (UTC)
+Received: from us4-mdac16-24.at1.mdlocal (unknown [10.110.49.206])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4D1CF8009B;
+        Mon, 11 May 2020 12:24:04 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.106])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D62144006C;
+        Mon, 11 May 2020 12:24:03 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id F2C65C433F2;
-        Mon, 11 May 2020 12:17:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org F2C65C433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Maharaja Kennadyrajan <mkenna@codeaurora.org>,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 2/2] ath10k: fix ath10k_pci struct layout
-References: <20200509120707.188595-1-arnd@arndb.de>
-        <20200509120707.188595-2-arnd@arndb.de>
-        <87v9l24qz6.fsf@kamboji.qca.qualcomm.com>
-Date:   Mon, 11 May 2020 15:17:12 +0300
-In-Reply-To: <87v9l24qz6.fsf@kamboji.qca.qualcomm.com> (Kalle Valo's message
-        of "Mon, 11 May 2020 15:05:01 +0300")
-Message-ID: <87r1vq4qev.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 969FCB40066;
+        Mon, 11 May 2020 12:24:03 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 11 May
+ 2020 13:23:58 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 0/8] sfc: remove nic_data usage in common code
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+Message-ID: <8154dba6-b312-7dcf-7d49-cd6c6801ffc2@solarflare.com>
+Date:   Mon, 11 May 2020 13:23:55 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25412.003
+X-TM-AS-Result: No-1.850600-8.000000-10
+X-TMASE-MatchedRID: BbQmvhT5U4dzkdIIrJMD7YS/TV9k6ppACZ33+gDEJw1TorRIuadptB5d
+        UAxwPy+5CujquDdjAza6cFiwF3UwlVtWXpLuutLTuoibJpHRrFlXjjsM2/DfxmAMM0WKD4asJBZ
+        iivO+i6NHjZbwyo4ECJohTboG2IV3Wfk+auVwzBsJaVZHbbd1rnFa/hQHt1A1u+tgTIyLDDiFR9
+        s3K3Ofub6uImWdqYmDU71X33iML0MFHH1v6HnZqp4CIKY/Hg3AtOt1ofVlaoJlgn288nW9IAuTL
+        po5HEc1joczmuoPCq2KD6GMKtcCFBxB6vSkHQyhKzOz6qrvZKeKNilj756Tgha6RcK318553ttQ
+        x6EeeB4ziGE5/pJP8vVNg70BPyPONq55WNwQHyYXxY6mau8LG3IJh4dBcU42f4hpTpoBF9JqxGC
+        SzFD9MrEvnlrhVRa7lExlQIQeRG0=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10-1.850600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25412.003
+X-MDID: 1589199844-cjdUJyZn-BNH
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@codeaurora.org> writes:
+efx->nic_data should only be used from NIC-specific code (i.e. nic_type
+ functions and things they call), in files like ef10[_sriov].c and
+ siena.c.  This series refactors several nic_data usages from common
+ code (mainly in mcdi_filters.c) into nic_type functions, in preparation
+ for the upcoming ef100 driver which will use those functions but have
+ its own struct layout for efx->nic_data distinct from ef10's.
+After this series, one nic_data usage (in ptp.c) remains; it wasn't
+ clear to me how to fix it, and ef100 devices don't yet have PTP support
+ (so the initial ef100 driver will not call that code).
 
-> Arnd Bergmann <arnd@arndb.de> writes:
->
->> gcc-10 correctly points out a bug with a zero-length array in
->> struct ath10k_pci:
->>
->> drivers/net/wireless/ath/ath10k/ahb.c: In function 'ath10k_ahb_remove':
->> drivers/net/wireless/ath/ath10k/ahb.c:30:9: error: array subscript 0
->> is outside the bounds of an interior zero-length array 'struct
->> ath10k_ahb[0]' [-Werror=zero-length-bounds]
->>    30 |  return &((struct ath10k_pci *)ar->drv_priv)->ahb[0];
->>       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> In file included from drivers/net/wireless/ath/ath10k/ahb.c:13:
->> drivers/net/wireless/ath/ath10k/pci.h:185:20: note: while referencing 'ahb'
->>   185 |  struct ath10k_ahb ahb[0];
->>       |                    ^~~
->>
->> The last addition to the struct ignored the comments and added
->> new members behind the array that must remain last.
->>
->> Change it to a flexible-array member and move it last again to
->> make it work correctly, prevent the same thing from happening
->> again (all compilers warn about flexible-array members in the
->> middle of a struct) and get it to build without warnings.
->
-> Very good find, thanks! This bug would cause all sort of strange memory
-> corruption issues.
+Edward Cree (7):
+  sfc: move vport_id to struct efx_nic
+  sfc: use efx_has_cap for capability checks outside of NIC-specific
+    code
+  sfc: move 'must restore' flags out of ef10-specific nic_data
+  sfc: rework handling of (firmware) multicast chaining state
+  sfc: move rx_rss_context_exclusive into struct efx_mcdi_filter_table
+  sfc: make filter table probe caller responsible for adding VLANs
+  sfc: make firmware-variant printing a nic_type function
 
-This motivated me to switch to using GCC 10.x and I noticed that you had
-already upgraded crosstool so it was a trivial thing to do, awesome :)
+Tom Zhao (1):
+  sfc: make capability checking a nic_type function
 
-https://mirrors.edge.kernel.org/pub/tools/crosstool/
+ drivers/net/ethernet/sfc/ef10.c           | 214 +++++++++++++---------
+ drivers/net/ethernet/sfc/ef10_sriov.c     |  27 ++-
+ drivers/net/ethernet/sfc/mcdi.c           |  25 +--
+ drivers/net/ethernet/sfc/mcdi.h           |  12 ++
+ drivers/net/ethernet/sfc/mcdi_filters.c   |  79 ++++----
+ drivers/net/ethernet/sfc/mcdi_filters.h   |  17 +-
+ drivers/net/ethernet/sfc/mcdi_functions.c |   8 +-
+ drivers/net/ethernet/sfc/mcdi_port.c      |   7 +-
+ drivers/net/ethernet/sfc/net_driver.h     |  10 +
+ drivers/net/ethernet/sfc/nic.h            |  11 --
+ drivers/net/ethernet/sfc/ptp.c            |   7 +-
+ drivers/net/ethernet/sfc/siena.c          |   7 +
+ 12 files changed, 238 insertions(+), 186 deletions(-)
 
-I use crosstool like this using GNUmakefile:
-
-CROSS_COMPILE=/opt/cross/gcc-10.1.0-nolibc/x86_64-linux/bin/x86_64-linux-
-include Makefile
-
-I think it's handy trick and would be good to mention that in the
-crosstool main page. That way I could just point people to the crosstool
-main page when they are using ancient compilers and would need to
-upgrade.
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
