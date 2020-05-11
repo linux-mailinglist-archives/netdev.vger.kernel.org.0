@@ -2,143 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 790FD1CD619
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 572671CD650
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 12:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729329AbgEKKL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 06:11:59 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:44564 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728574AbgEKKL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 06:11:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589191916;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
-        bh=ZN7xwg5CWZvOzQGTmaByrLX25ajcsG3GF52exfugwgc=;
-        b=bGnAz+EvMKihQjuT4lj344jlprwrC+m0nsEX6URRFQ/Gby19OHhj8jcz8gn/XwVxIHVUN4
-        dQ1rrVtP+YdHV1Y+87dPMTJPSMyKtIYFryv95DjFIz9/+HijpLOrifjf+N0YZU9Gh3soGp
-        dfBGhnb+/2Pjl1KJjYVeTPIxyYiAqNU=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-508-K1AYPcCxP6ij4VSJ1Zk1fw-1; Mon, 11 May 2020 06:11:54 -0400
-X-MC-Unique: K1AYPcCxP6ij4VSJ1Zk1fw-1
-Received: by mail-pf1-f198.google.com with SMTP id z2so8404311pfz.13
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 03:11:54 -0700 (PDT)
+        id S1729181AbgEKKSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 06:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725983AbgEKKSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 06:18:33 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E622C061A0C;
+        Mon, 11 May 2020 03:18:33 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id e16so10212315wra.7;
+        Mon, 11 May 2020 03:18:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=t71zh83koaUlMEdc7vfVoBfDMjb5NGvXpFftlY+VFEU=;
+        b=GzmoexfentuFiJhpxa0AY3I29IYA4NPCLrltTQHXNc773O58YyH10MAd7DpCgHRha/
+         m5OoZXIqKWYswiwlCKjxP3BMEnE09rnweSZZ3GHbQCuV1W48QfP7mmNinlnmBmFApsGF
+         J3a/jZ3n0ldXcD2CWNo/LI0YKVDH0qHDDuCnc19hE13R/bdyBNF5A8koDDZltnKAJWxy
+         uBq5yQtt58gn/XOHOzx9OXxB12cXxocyAmHVHynvHBjqv0RaATgLyMZOYEf4JgkSywHL
+         te/llctpmZBlgMten/xYkhH8KOBRsj5t172THUo4UiG+RiK+UPjTFZFIHmtBb8jYMyTj
+         czdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=ZN7xwg5CWZvOzQGTmaByrLX25ajcsG3GF52exfugwgc=;
-        b=D0a4WvzGK9sX5PrMPzrUTgje0oOhFyUub01bNdU0KzdG/sVnPxadxgbaOEMJecHbbb
-         jlps9r/XXNIps0u5GS+oqaVuiAFobEKrN2vne7Ywf2UWx4Y8AJWyH7LBIl4FLDtuVmS3
-         wTCldYfO/n6y/3fJ9OYn9KuZzRgjuJTOkC7fHhanrzwCXWpTqVO7bEaCNvFH7tHEVz/G
-         d/ntXHnvJUA+Fvu1ewdrupGzXFMIQutHEu7lE2tXV6DZM2oLWnsClCHbCuLzRTx+QzO2
-         z0exHqfo8T26T8Iksv8Huf8y7Xu19nlJVbDjqcVJnkgJ2q5uICAD6k5SS8tvz+z3T7wJ
-         dk+A==
-X-Gm-Message-State: AGi0Pub9AfngxJ80J0cjk8B2y68NTssomZyQ4HM80ice1m/tgeB94MVi
-        VMOycj8y0vECPcFqwMsiCQZqiRCX2zgmDgWWDTqa6Ju6a+g3KYuyrcVnXzU44t5f3k/cfCNaJQg
-        xZPPezJ67IRXvG7MK
-X-Received: by 2002:a17:902:32b:: with SMTP id 40mr14128020pld.73.1589191913262;
-        Mon, 11 May 2020 03:11:53 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJWyWXGdAoto/0EXXwdx9Dr2HzYt8dFPCj8KebFaRpzS/r4xZule3kpAQxzMDRxJPy9o+z/rg==
-X-Received: by 2002:a17:902:32b:: with SMTP id 40mr14127998pld.73.1589191912970;
-        Mon, 11 May 2020 03:11:52 -0700 (PDT)
-Received: from localhost ([223.235.87.110])
-        by smtp.gmail.com with ESMTPSA id s136sm9033998pfc.29.2020.05.11.03.11.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 May 2020 03:11:52 -0700 (PDT)
-From:   Bhupesh Sharma <bhsharma@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     bhsharma@redhat.com, bhupesh.linux@gmail.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        aelior@marvell.com, GR-everest-linux-l2@marvell.com,
-        manishc@marvell.com, davem@davemloft.net, irusskikh@marvell.com
-Subject: [PATCH v2 2/2] net: qed: Disable SRIOV functionality inside kdump kernel
-Date:   Mon, 11 May 2020 15:41:42 +0530
-Message-Id: <1589191902-958-3-git-send-email-bhsharma@redhat.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1589191902-958-1-git-send-email-bhsharma@redhat.com>
-References: <1589191902-958-1-git-send-email-bhsharma@redhat.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=t71zh83koaUlMEdc7vfVoBfDMjb5NGvXpFftlY+VFEU=;
+        b=aa9c4cu6Jr6z3fAJ9406mGX/v5eozdLiaJFG0lW9/Cwcol2HS6xyqJPinKA/4kebFm
+         mXLipP6XGJKrxRNx6Y9buBgTys0lCm4i8b+JrPLk5BTnzCyAsI9IG9gZaibM28XUdD2W
+         tsPVFto+MevkWrWyBNFB9FEDFNch0F92rfqX+bJYlNY8118ENu6eUxlerYGoeFFjGoGS
+         iY7mqWudN/W4PtQ7p1mJELYNFCWcrAu6J7wpHt+6bPeZ6zyRBhx3TXhYwzENxx+NB3S0
+         NJRZ71SDvl03N+TbR8RfPOKXsVKeHdJzpGPeZC6QH8GyoktlUNKQMRU1j3bUtUI38S8Q
+         VMYA==
+X-Gm-Message-State: AGi0PuaX1nNMTzMfYxkaaS4pxJ3IQL3q7R3sHiOnUR6bGMiVqJ1Jaj2W
+        cCtHTuGe+L8Zgny+ytrDd9FisCTtKfM=
+X-Google-Smtp-Source: APiQypIboAu9feHJkwkFIZ2bcGWSedLd1dnr/EpITbayJXobdaCRSvrm4FPmdCITJOCvVweGNUu/5Q==
+X-Received: by 2002:adf:fd46:: with SMTP id h6mr18866359wrs.90.1589192311855;
+        Mon, 11 May 2020 03:18:31 -0700 (PDT)
+Received: from [192.168.1.94] (93-41-244-45.ip84.fastwebnet.it. [93.41.244.45])
+        by smtp.gmail.com with ESMTPSA id d126sm6449472wmd.32.2020.05.11.03.18.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 May 2020 03:18:31 -0700 (PDT)
+Subject: Re: [PATCH] ifcvf: move IRQ request/free to status change handlers
+To:     Jason Wang <jasowang@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com
+References: <1589181563-38400-1-git-send-email-lingshan.zhu@intel.com>
+ <22d9dcdb-e790-0a68-ba41-b9530b2bf9fd@redhat.com>
+From:   Francesco Lavra <francescolavra.fl@gmail.com>
+Message-ID: <c1da2054-eb4c-d7dd-ca83-29e85e5cfe90@gmail.com>
+Date:   Mon, 11 May 2020 12:18:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <22d9dcdb-e790-0a68-ba41-b9530b2bf9fd@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since we have kdump kernel(s) running under severe memory constraint
-it makes sense to disable the qed SRIOV functionality when running the
-kdump kernel as kdump configurations on several distributions don't
-support SRIOV targets for saving the vmcore (see [1] for example).
+On 5/11/20 11:26 AM, Jason Wang wrote:
+> 
+> On 2020/5/11 下午3:19, Zhu Lingshan wrote:
+>> This commit move IRQ request and free operations from probe()
+>> to VIRTIO status change handler to comply with VIRTIO spec.
+>>
+>> VIRTIO spec 1.1, section 2.1.2 Device Requirements: Device Status Field
+>> The device MUST NOT consume buffers or send any used buffer
+>> notifications to the driver before DRIVER_OK.
+> 
+> 
+> My previous explanation might be wrong here. It depends on how you 
+> implement your hardware, if you hardware guarantee that no interrupt 
+> will be triggered before DRIVER_OK, then it's fine.
+> 
+> And the main goal for this patch is to allocate the interrupt on demand.
+> 
+> 
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   drivers/vdpa/ifcvf/ifcvf_main.c | 119 
+>> ++++++++++++++++++++++++----------------
+>>   1 file changed, 73 insertions(+), 46 deletions(-)
+>>
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> index abf6a061..4d58bf2 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> @@ -28,6 +28,60 @@ static irqreturn_t ifcvf_intr_handler(int irq, void 
+>> *arg)
+>>       return IRQ_HANDLED;
+>>   }
+>> +static void ifcvf_free_irq_vectors(void *data)
+>> +{
+>> +    pci_free_irq_vectors(data);
+>> +}
+>> +
+>> +static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
+>> +{
+>> +    struct pci_dev *pdev = adapter->pdev;
+>> +    struct ifcvf_hw *vf = &adapter->vf;
+>> +    int i;
+>> +
+>> +
+>> +    for (i = 0; i < queues; i++)
+>> +        devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
+>> +
+>> +    ifcvf_free_irq_vectors(pdev);
+>> +}
+>> +
+>> +static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
+>> +{
+>> +    struct pci_dev *pdev = adapter->pdev;
+>> +    struct ifcvf_hw *vf = &adapter->vf;
+>> +    int vector, i, ret, irq;
+>> +
+>> +    ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
+>> +                    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
+>> +    if (ret < 0) {
+>> +        IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
+>> +        return ret;
+>> +    }
+>> +
+>> +    for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
+>> +        snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
+>> +             pci_name(pdev), i);
+>> +        vector = i + IFCVF_MSI_QUEUE_OFF;
+>> +        irq = pci_irq_vector(pdev, vector);
+>> +        ret = devm_request_irq(&pdev->dev, irq,
+>> +                       ifcvf_intr_handler, 0,
+>> +                       vf->vring[i].msix_name,
+>> +                       &vf->vring[i]);
+>> +        if (ret) {
+>> +            IFCVF_ERR(pdev,
+>> +                  "Failed to request irq for vq %d\n", i);
+>> +            ifcvf_free_irq(adapter, i);
+> 
+> 
+> I'm not sure this unwind is correct. It looks like we should loop and 
+> call devm_free_irq() for virtqueue [0, i);
 
-Currently the qed SRIOV functionality ends up consuming memory in
-the kdump kernel, when we don't really use the same.
-
-An example log seen in the kdump kernel with the SRIOV functionality
-enabled can be seen below (obtained via memstrack tool, see [2]):
- dracut-pre-pivot[676]: ======== Report format module_summary: ========
- dracut-pre-pivot[676]: Module qed using 149.6MB (2394 pages), peak allocation 149.6MB (2394 pages)
-
-This patch disables the SRIOV functionality inside kdump kernel and with
-the same applied the memory consumption goes down:
- dracut-pre-pivot[671]: ======== Report format module_summary: ========
- dracut-pre-pivot[671]: Module qed using 124.6MB (1993 pages), peak allocation 124.7MB (1995 pages)
-
-[1]. https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/managing_monitoring_and_updating_the_kernel/installing-and-configuring-kdump_managing-monitoring-and-updating-the-kernel#supported-kdump-targets_supported-kdump-configurations-and-targets
-[2]. Memstrack tool: https://github.com/ryncsn/memstrack
-
-Cc: kexec@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Ariel Elior <aelior@marvell.com>
-Cc: GR-everest-linux-l2@marvell.com
-Cc: Manish Chopra <manishc@marvell.com>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Bhupesh Sharma <bhsharma@redhat.com>
----
- drivers/net/ethernet/qlogic/qed/qed_sriov.h  | 10 +++++++---
- drivers/net/ethernet/qlogic/qede/qede_main.c |  2 +-
- 2 files changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.h b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-index 368e88565783..aabeaf03135e 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
-@@ -32,6 +32,7 @@
- 
- #ifndef _QED_SRIOV_H
- #define _QED_SRIOV_H
-+#include <linux/crash_dump.h>
- #include <linux/types.h>
- #include "qed_vf.h"
- 
-@@ -40,9 +41,12 @@
- #define QED_VF_ARRAY_LENGTH (3)
- 
- #ifdef CONFIG_QED_SRIOV
--#define IS_VF(cdev)             ((cdev)->b_is_vf)
--#define IS_PF(cdev)             (!((cdev)->b_is_vf))
--#define IS_PF_SRIOV(p_hwfn)     (!!((p_hwfn)->cdev->p_iov_info))
-+#define IS_VF(cdev)             (is_kdump_kernel() ? \
-+				 (0) : ((cdev)->b_is_vf))
-+#define IS_PF(cdev)             (is_kdump_kernel() ? \
-+				 (1) : !((cdev)->b_is_vf))
-+#define IS_PF_SRIOV(p_hwfn)     (is_kdump_kernel() ? \
-+				 (0) : !!((p_hwfn)->cdev->p_iov_info))
- #else
- #define IS_VF(cdev)             (0)
- #define IS_PF(cdev)             (1)
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 1a83d1fd8ccd..28afa0c49fe8 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -1194,7 +1194,7 @@ static int qede_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	case QEDE_PRIVATE_VF:
- 		if (debug & QED_LOG_VERBOSE_MASK)
- 			dev_err(&pdev->dev, "Probing a VF\n");
--		is_vf = true;
-+		is_vf = is_kdump_kernel() ? false : true;
- 		break;
- 	default:
- 		if (debug & QED_LOG_VERBOSE_MASK)
--- 
-2.7.4
-
+That's exactly what the code does: ifcvf_free_irq() contains a (i = 0; i 
+< queues; i++) loop, and here the function is called with the `queues` 
+argument set to `i`.
