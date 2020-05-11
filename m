@@ -2,316 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8307D1CD142
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 07:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86ABD1CD147
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 07:32:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgEKF1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 01:27:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47440 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725817AbgEKF1X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 01:27:23 -0400
-Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4CA0D20708;
-        Mon, 11 May 2020 05:27:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589174842;
-        bh=naBkUaw9VrDl+DgPshY12bmlu/oIWsku411Vy2BSpyY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EWilgrdg8wTHncZwHfpEXq8GbOgJcNEbreHE9CP41Ck01bq33bW98rZY08mOd0fNS
-         TkHo7k0T7K5TZKJjhJjgL86PVsFnN1Cb/gTF34itRdAezhJzri0x5zqn9sO0RC8rFd
-         myUCNHrXLsXZLKyYqQEfdNL+tRt2r8tZhYrVn0sA=
-Date:   Mon, 11 May 2020 14:27:16 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Christoph Hellwig <hch@lst.de>, x86@kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 12/15] maccess: always use strict semantics for
- probe_kernel_read
-Message-Id: <20200511142716.f1ff6fc55220012982c47fec@kernel.org>
-In-Reply-To: <20200511140536.a15f3f15c71309fdf219c2e4@kernel.org>
-References: <20200506062223.30032-1-hch@lst.de>
-        <20200506062223.30032-13-hch@lst.de>
-        <20200511140536.a15f3f15c71309fdf219c2e4@kernel.org>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726173AbgEKFcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 01:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725840AbgEKFcl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 01:32:41 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F06C061A0C
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 22:32:39 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id h4so16611314wmb.4
+        for <netdev@vger.kernel.org>; Sun, 10 May 2020 22:32:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=lZgM889WwuZuegA4Ft35gJ9Jifo5b4YUr6ApuyZ9lJ0=;
+        b=j85XOe9H1l3lUJS30Vu1bQvgmKUkV7g8chtKN1dFaBhaX6bBalYHKfXZCcjKLAbOqn
+         g3fiDOUZTColIXiK1F3rYcvWwZkEUwdlAD64dfwNvSfLpuefwOTvKtoIC5HygqRyyhaj
+         V+oBFDygbvsF/AXVW2usrpM8b/612jJBvEgShlU1K23yYpDBI7NM8lKL6GZfh0gESpeQ
+         VAGktGdn2pelMnbAIaqFQIob5u9udovkcoiYwNpBuIsJd78iw4jH2xMfDVcYfsmkSJur
+         2p3CYeL/bZ8cwBk5IN0+xbvPheJUEhRweIPG1H1c/4NBgV7UthNwt78boCTXhWIvd4nT
+         /PSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=lZgM889WwuZuegA4Ft35gJ9Jifo5b4YUr6ApuyZ9lJ0=;
+        b=ekyxUdtwr9LShTpjaYA56bi3M7tojY76/0QaDBryFtcEwEdDBAbHQaaWSwNqSih8aA
+         iLZi7mSifyeqZx3OQGt0jbr3ARfzPoTbAPlz686eDeF5tfMyBT7GVfZJzsijR+XiEVrT
+         yepqwtdo5aBIqYXp1C+5fQwSGlSUQxQMuuXaZQ8cZDUOPKRRSPAMATuDfJ5eA+GLYxMp
+         3E+fg/h7Q4hlFfF0+j6eOkEbM0VrTZMUvLQf5CYEjAMXo35G2h+PbiGHZG3agK68HK/k
+         kUXLflHO7HXznIjywFZARUQxJQnbY99MCqG1z6dn5sPe3UOTT91MhMrp4auJIx/W3BGg
+         J9yg==
+X-Gm-Message-State: AGi0PuZ1b77O1B157xPHa9/0PALivc1pGT9AqMZrwTlKmZmuInvzLIId
+        uxR1BAQmwHv+NrSUr0RJvQ1bfQ==
+X-Google-Smtp-Source: APiQypIa2SCFNjwrD/891KbO3smmBIrMXyg/Sd9bF4BuJqIzFL0v9qo3LE9CWXIvPhRRVMwNQ2lwHw==
+X-Received: by 2002:a1c:dd8a:: with SMTP id u132mr28430380wmg.87.1589175158498;
+        Sun, 10 May 2020 22:32:38 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id p8sm15606415wre.11.2020.05.10.22.32.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 May 2020 22:32:38 -0700 (PDT)
+Date:   Mon, 11 May 2020 07:32:37 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Dave Taht <dave.taht@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, parav@mellanox.com,
+        yuvalav@mellanox.com, jgg@ziepe.ca,
+        Saeed Mahameed <saeedm@mellanox.com>, leon@kernel.org,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
+        moshe@mellanox.com, ayal@mellanox.com,
+        Eran Ben Elisha <eranbe@mellanox.com>, vladbu@mellanox.com,
+        kliteyn@mellanox.com, dchickles@marvell.com, sburla@marvell.com,
+        fmanlunas@marvell.com, Tariq Toukan <tariqt@mellanox.com>,
+        oss-drivers@netronome.com, Shannon Nelson <snelson@pensando.io>,
+        drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        markz@mellanox.com, jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
+Subject: Re: [RFC v2] current devlink extension plan for NICs
+Message-ID: <20200511053237.GB2245@nanopsycho>
+References: <20200501091449.GA25211@nanopsycho.orion>
+ <20200510144557.GA7568@nanopsycho>
+ <CAA93jw7ROwOhZNS+dREeFurjn=YxUVWStL+WKZxHgZFLRX+X0w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAA93jw7ROwOhZNS+dREeFurjn=YxUVWStL+WKZxHgZFLRX+X0w@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 May 2020 14:05:36 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
+Sun, May 10, 2020 at 06:30:59PM CEST, dave.taht@gmail.com wrote:
+>On Sun, May 10, 2020 at 7:46 AM Jiri Pirko <jiri@resnulli.us> wrote:
+>>
+>> Hello guys.
+>>
+>> Anyone has any opinion on the proposal? Or should I take it as a silent
+>> agreement? :)
+>>
+>> We would like to go ahead and start sending patchsets.
+>
+>I gotta say that the whole thing makes my head really hurt, and while
+>this conversation is about how to go about configuring things,
+>I've been unable to get a grip on how flows will actually behave with
+>these offloads present.
 
-> Hi Christoph,
-> 
-> At first, thank you for your work on cleaning up these functions!
-> 
-> On Wed,  6 May 2020 08:22:20 +0200
-> Christoph Hellwig <hch@lst.de> wrote:
-> 
-> > Except for historical confusion in the kprobes/uprobes and bpf tracers
-> > there is no good reason to ever allow user memory accesses from
-> > probe_kernel_read.
-> 
-> Yes, thus now trace_kprobe supports "ustring" type for accessing
-> user space memory. (If the address spaces are overwrapped, we have
-> no way to distinguish whether an address is kernel or user)
-> 
-> >  Make the tracers fall back to a probe_user_read
-> > if the probe_kernel_read falls to keep the core API clean.
-> 
-> For trace_kprobes doesn't need to fall back. User must specify
-> the probe should be read from user space or kernel space. This is
-> because it has  fetch_store_string_user() and probe_mem_read_user()
-> variants.
-
-Hmm, wait, I changed my mind. The "string" type currently supports
-kernel and user (on some archs, e.g. x86), there is no reason to
-restrict it. So let's keep the behavior.
-Only if users want to trace "user" data, they can use "ustring".
-
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-
-Thank you,
+As you said, this is about configuration. Not the actual packet
+processing.
 
 
-> 
-> Thank you,
-> 
-> 
-> > 
-> > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > ---
-> >  arch/parisc/lib/memcpy.c    |  3 +--
-> >  arch/um/kernel/maccess.c    |  3 +--
-> >  arch/x86/mm/maccess.c       |  5 +----
-> >  include/linux/uaccess.h     |  4 +---
-> >  kernel/trace/bpf_trace.c    | 20 +++++++++++++------
-> >  kernel/trace/trace_kprobe.c | 11 ++++++++++-
-> >  mm/maccess.c                | 39 ++++++-------------------------------
-> >  7 files changed, 34 insertions(+), 51 deletions(-)
-> > 
-> > diff --git a/arch/parisc/lib/memcpy.c b/arch/parisc/lib/memcpy.c
-> > index 5ef648bd33119..9fe662b3b5604 100644
-> > --- a/arch/parisc/lib/memcpy.c
-> > +++ b/arch/parisc/lib/memcpy.c
-> > @@ -57,8 +57,7 @@ void * memcpy(void * dst,const void *src, size_t count)
-> >  EXPORT_SYMBOL(raw_copy_in_user);
-> >  EXPORT_SYMBOL(memcpy);
-> >  
-> > -bool probe_kernel_read_allowed(void *dst, const void *unsafe_src, size_t size,
-> > -		bool strict)
-> > +bool probe_kernel_read_allowed(void *dst, const void *unsafe_src, size_t size)
-> >  {
-> >  	if ((unsigned long)unsafe_src < PAGE_SIZE)
-> >  		return false;
-> > diff --git a/arch/um/kernel/maccess.c b/arch/um/kernel/maccess.c
-> > index 90a1bec923158..734f3d7e57c0f 100644
-> > --- a/arch/um/kernel/maccess.c
-> > +++ b/arch/um/kernel/maccess.c
-> > @@ -7,8 +7,7 @@
-> >  #include <linux/kernel.h>
-> >  #include <os.h>
-> >  
-> > -bool probe_kernel_read_allowed(void *dst, const void *src, size_t size,
-> > -		bool strict)
-> > +bool probe_kernel_read_allowed(void *dst, const void *src, size_t size)
-> >  {
-> >  	void *psrc = (void *)rounddown((unsigned long)src, PAGE_SIZE);
-> >  
-> > diff --git a/arch/x86/mm/maccess.c b/arch/x86/mm/maccess.c
-> > index 5c323ab187b27..a1bd81677aa72 100644
-> > --- a/arch/x86/mm/maccess.c
-> > +++ b/arch/x86/mm/maccess.c
-> > @@ -26,10 +26,7 @@ static __always_inline bool invalid_probe_range(u64 vaddr)
-> >  }
-> >  #endif
-> >  
-> > -bool probe_kernel_read_allowed(void *dst, const void *unsafe_src, size_t size,
-> > -		bool strict)
-> > +bool probe_kernel_read_allowed(void *dst, const void *unsafe_src, size_t size)
-> >  {
-> > -	if (!strict)
-> > -		return true;
-> >  	return !invalid_probe_range((unsigned long)unsafe_src);
-> >  }
-> > diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
-> > index 09d6e358883cc..99e2c2a41164a 100644
-> > --- a/include/linux/uaccess.h
-> > +++ b/include/linux/uaccess.h
-> > @@ -301,11 +301,9 @@ copy_struct_from_user(void *dst, size_t ksize, const void __user *src,
-> >  	return 0;
-> >  }
-> >  
-> > -bool probe_kernel_read_allowed(void *dst, const void *unsafe_src,
-> > -		size_t size, bool strict);
-> > +bool probe_kernel_read_allowed(void *dst, const void *unsafe_src, size_t size);
-> >  
-> >  extern long probe_kernel_read(void *dst, const void *src, size_t size);
-> > -extern long probe_kernel_read_strict(void *dst, const void *src, size_t size);
-> >  extern long probe_user_read(void *dst, const void __user *src, size_t size);
-> >  
-> >  extern long notrace probe_kernel_write(void *dst, const void *src, size_t size);
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index ffe841433caa1..f694befe8ec9b 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -183,12 +183,20 @@ bpf_probe_read_kernel_common(void *dst, u32 size, const void *unsafe_ptr,
-> >  	int ret = security_locked_down(LOCKDOWN_BPF_READ);
-> >  
-> >  	if (unlikely(ret < 0))
-> > -		goto out;
-> > -	ret = compat ? probe_kernel_read(dst, unsafe_ptr, size) :
-> > -	      probe_kernel_read_strict(dst, unsafe_ptr, size);
-> > -	if (unlikely(ret < 0))
-> > -out:
-> > -		memset(dst, 0, size);
-> > +		goto fail;
-> > +
-> > +	ret = probe_kernel_read(dst, unsafe_ptr, size);
-> > +	if (unlikely(ret < 0)) {
-> > +		if (compat)
-> > +			ret = probe_user_read(dst,
-> > +				(__force const void __user *)unsafe_ptr, size);
-> > +		if (unlikely(ret < 0))
-> > +			goto fail;
-> > +	}
-> > +
-> > +	return 0;
-> > +fail:
-> > +	memset(dst, 0, size);
-> >  	return ret;
-> >  }
-> >  
-> > diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-> > index 525d12137325c..1300c9fd5c755 100644
-> > --- a/kernel/trace/trace_kprobe.c
-> > +++ b/kernel/trace/trace_kprobe.c
-> > @@ -1203,6 +1203,9 @@ fetch_store_strlen(unsigned long addr)
-> >  
-> >  	do {
-> >  		ret = probe_kernel_read(&c, (u8 *)addr + len, 1);
-> > +		if (ret)
-> > +			ret = probe_user_read(&c,
-> > +				(__force u8 __user *)addr + len, 1);
-> >  		len++;
-> >  	} while (c && ret == 0 && len < MAX_STRING_SIZE);
-> >  
-> > @@ -1275,7 +1278,13 @@ fetch_store_string_user(unsigned long addr, void *dest, void *base)
-> >  static nokprobe_inline int
-> >  probe_mem_read(void *dest, void *src, size_t size)
-> >  {
-> > -	return probe_kernel_read(dest, src, size);
-> > +	int ret;
-> > +
-> > +	ret = probe_kernel_read(dest, src, size);
-> > +	if (ret)
-> > +		ret = probe_user_read(dest, (__force const void __user *)src,
-> > +				size);
-> > +	return ret;
-> >  }
-> >  
-> >  static nokprobe_inline int
-> > diff --git a/mm/maccess.c b/mm/maccess.c
-> > index cbd9d668aa46e..811f49e8de113 100644
-> > --- a/mm/maccess.c
-> > +++ b/mm/maccess.c
-> > @@ -6,36 +6,14 @@
-> >  #include <linux/mm.h>
-> >  #include <linux/uaccess.h>
-> >  
-> > -static long __probe_kernel_read(void *dst, const void *src, size_t size,
-> > -		bool strict);
-> > -
-> >  bool __weak probe_kernel_read_allowed(void *dst, const void *unsafe_src,
-> > -		size_t size, bool strict)
-> > +		size_t size)
-> >  {
-> >  	return true;
-> >  }
-> >  
-> >  /**
-> > - * probe_kernel_read(): safely attempt to read from any location
-> > - * @dst: pointer to the buffer that shall take the data
-> > - * @src: address to read from
-> > - * @size: size of the data chunk
-> > - *
-> > - * Same as probe_kernel_read_strict() except that for architectures with
-> > - * not fully separated user and kernel address spaces this function also works
-> > - * for user address tanges.
-> > - *
-> > - * DO NOT USE THIS FUNCTION - it is broken on architectures with entirely
-> > - * separate kernel and user address spaces, and also a bad idea otherwise.
-> > - */
-> > -long probe_kernel_read(void *dst, const void *src, size_t size)
-> > -{
-> > -	return __probe_kernel_read(dst, src, size, false);
-> > -}
-> > -EXPORT_SYMBOL_GPL(probe_kernel_read);
-> > -
-> > -/**
-> > - * probe_kernel_read_strict(): safely attempt to read from kernel-space
-> > + * probe_kernel_read(): safely attempt to read from kernel-space
-> >   * @dst: pointer to the buffer that shall take the data
-> >   * @src: address to read from
-> >   * @size: size of the data chunk
-> > @@ -48,18 +26,12 @@ EXPORT_SYMBOL_GPL(probe_kernel_read);
-> >   * probe_kernel_read() suitable for use within regions where the caller
-> >   * already holds mmap_sem, or other locks which nest inside mmap_sem.
-> >   */
-> > -long probe_kernel_read_strict(void *dst, const void *src, size_t size)
-> > -{
-> > -	return __probe_kernel_read(dst, src, size, true);
-> > -}
-> > -
-> > -static long __probe_kernel_read(void *dst, const void *src, size_t size,
-> > -		bool strict)
-> > +long probe_kernel_read(void *dst, const void *src, size_t size)
-> >  {
-> >  	long ret;
-> >  	mm_segment_t old_fs = get_fs();
-> >  
-> > -	if (!probe_kernel_read_allowed(dst, src, size, strict))
-> > +	if (!probe_kernel_read_allowed(dst, src, size))
-> >  		return -EFAULT;
-> >  
-> >  	set_fs(KERNEL_DS);
-> > @@ -73,6 +45,7 @@ static long __probe_kernel_read(void *dst, const void *src, size_t size,
-> >  		return -EFAULT;
-> >  	return 0;
-> >  }
-> > +EXPORT_SYMBOL_GPL(probe_kernel_read);
-> >  
-> >  /**
-> >   * probe_user_read(): safely attempt to read from a user-space location
-> > @@ -180,7 +153,7 @@ long strncpy_from_kernel_unsafe(char *dst, const void *unsafe_addr, long count)
-> >  
-> >  	if (unlikely(count <= 0))
-> >  		return 0;
-> > -	if (!probe_kernel_read_allowed(dst, unsafe_addr, count, true))
-> > +	if (!probe_kernel_read_allowed(dst, unsafe_addr, count))
-> >  		return -EFAULT;
-> >  
-> >  	set_fs(KERNEL_DS);
-> > -- 
-> > 2.26.2
-> > 
-> 
-> 
-> -- 
-> Masami Hiramatsu <mhiramat@kernel.org>
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+>
+>My overall starting point for thinking about this stuff was described
+>in this preso to broadcom a few years back:
+>http://flent-fremont.bufferbloat.net/~d/broadcom_aug9.pdf
+>
+>More recently I did what I think is my funniest talk ever on these
+>subjects: https://blog.apnic.net/2020/01/22/bufferbloat-may-be-solved-but-its-not-over-yet/
+>
+>Make some popcorn, take a look. :) I should probably have covered
+>ecn's (mis)behaviors at the end, but I didn't.
+>
+>Steven hemminger's lca talk on these subjects was also a riot...
+>
+>so somehow going from my understanding of how stuff gets configured,
+>to the actual result, is needed, for me to have any opinion at all.
+>You
+>have this stuff basically running already? Can you run various
+>flent.org tests through it?
+>
+>>
+>> Thanks!
+>
+>
+>
+>-- 
+>"For a successful technology, reality must take precedence over public
+>relations, for Mother Nature cannot be fooled" - Richard Feynman
+>
+>dave@taht.net <Dave Täht> CTO, TekLibre, LLC Tel: 1-831-435-0729
