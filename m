@@ -2,137 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C111CDA77
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B721CDA7E
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 14:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbgEKMu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 08:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726934AbgEKMu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 08:50:28 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB01C061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 05:50:28 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id j5so10816853wrq.2
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 05:50:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7bkkiFTxdZm0ufAKtT0Rv71LTDcG2tlQdV4w5dBRlnc=;
-        b=VdTj9t3shF/XOlIHi8hFV2LIDGfLpBakSs9SqaLBSF4ztIuW8VVocuSqzcWGn4zhOr
-         MU0ysBD1cynPoWl/cKE6/Rxrr4V/JpZCQR8Pj4NhcSscvwdMdwZW85OkxftvzVme74MW
-         BDyJD4ejZ5XBbrc/rNkaRbnVQGghbAzr0jrjI/MD7E37h6LbW3CD44QsBOJBwjsagPhj
-         F2/1dmQ5kljpyj1gkNNlLnqT0j9Xs+RVolRMY/aN3RmnppzVvjxTYW2GoeRNz3DBcQEA
-         ccS0rgqlO8uJbLnkpH4c0rDbPxQD72FgM3lvjkcL1siLnSEx1DQOShM+6p+uqPdWPC3V
-         1b+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7bkkiFTxdZm0ufAKtT0Rv71LTDcG2tlQdV4w5dBRlnc=;
-        b=hi/xpue0qEoOFc/YL1TmtIsayDOvl9hCmG/WqqcvxgkXmZHaashsZ5zF2LLg4i5Gv3
-         MxgOa0tSi2K8FmBVfuTBX0tovdBRJ9sEFNHSnVDLw2gttSvQfL9UCr/DCM26DBiABFcc
-         +rx7f+87bHnHylynC9IH+ryAqzn7HAA4OczuISyo6poOV3Jd1fayZaxYe+o10l3QiJZL
-         r+9ZvYdunQMh0Ic+zxnQnKV/Oxu+sGY74dV1fNFgmbguj4tfgLWR/q9BwyacFvEB5lFL
-         iYa0cgwXTIQOVdIVgHsaaH+E05clHO43JMrAXJZ4mGty9DbUOWn1ok1ElaGOUB8wF/Lv
-         RIwA==
-X-Gm-Message-State: AGi0PuYdYFUsMjWbtTAT/YhhtYKb+NZSQ9Z6WWwqQs17dzQbrElIJDoV
-        uypkUETMTBthwWaGy9OROPKYxxrZ
-X-Google-Smtp-Source: APiQypJ97l2lxgYirdh4Bgi0Xa8gw98b2ERlhmP5C1myc+y3Dra/Eyaw7jIsh3QwtuqOUIQwAatmLQ==
-X-Received: by 2002:a5d:4b45:: with SMTP id w5mr19698132wrs.358.1589201426500;
-        Mon, 11 May 2020 05:50:26 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f28:5200:c84b:195f:9500:f238? (p200300EA8F285200C84B195F9500F238.dip0.t-ipconnect.de. [2003:ea:8f28:5200:c84b:195f:9500:f238])
-        by smtp.googlemail.com with ESMTPSA id s11sm17356407wrp.79.2020.05.11.05.50.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 May 2020 05:50:25 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/2] net: phy: check for aneg disabled and half
- duplex in phy_ethtool_set_eee
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <8e7df680-e3c2-24ae-81d3-e24776583966@gmail.com>
- <0c8429c2-7498-efe8-c223-da3d17b1e8e6@gmail.com>
- <20200510140521.GM1551@shell.armlinux.org.uk>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <01a6a1b2-39cc-531a-18be-44a59a5e7441@gmail.com>
-Date:   Mon, 11 May 2020 14:50:23 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1728046AbgEKMxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 08:53:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53402 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726891AbgEKMxY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 08:53:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=UCjERt+maORMJwlHX05z+ypjOJgAfE49qXX7mxNSNHc=; b=lYPYuNsqZF2PI5lTSomAC3i5Eq
+        GaTSHIVKs+8UyVTVrO+sgqPtlyglYPKA7Zc6xhtKlQfsFxEMbHHzt0kq/Sb542KSkL9GxetKcUR61
+        z+RdHrnObgpc3s2OYXcus3QY1TGfX/h7TvLPK+0c25p9Bq8ifqnnEgtUuJMGlzBXX4T0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jY7vn-001qt8-R0; Mon, 11 May 2020 14:53:15 +0200
+Date:   Mon, 11 May 2020 14:53:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        linux.cj@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev <netdev@vger.kernel.org>, Marcin Wojtas <mw@semihalf.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [net-next PATCH v3 4/5] net: phy: Introduce fwnode_get_phy_id()
+Message-ID: <20200511125315.GB409897@lunn.ch>
+References: <20200505132905.10276-1-calvin.johnson@oss.nxp.com>
+ <20200505132905.10276-5-calvin.johnson@oss.nxp.com>
+ <67e263cf-5cd7-98d1-56ff-ebd9ac2265b6@arm.com>
+ <CAHp75Vew8Fh6HEoOACk+J9KCpw+AE2t2+oFnXteK1eShopfYAA@mail.gmail.com>
+ <83ab4ca4-9c34-4cdd-4413-3b4cdf96727d@arm.com>
+ <20200508160755.GB10296@lsv03152.swis.in-blr01.nxp.com>
+ <20200508181301.GF298574@lunn.ch>
+ <20200511055231.GA12725@lsv03152.swis.in-blr01.nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <20200510140521.GM1551@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200511055231.GA12725@lsv03152.swis.in-blr01.nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.05.2020 16:05, Russell King - ARM Linux admin wrote:
-> On Sun, May 10, 2020 at 10:11:33AM +0200, Heiner Kallweit wrote:
->> EEE requires aneg and full duplex, therefore return EPROTONOSUPPORT
->> if aneg is disabled or aneg resulted in a half duplex mode.
+On Mon, May 11, 2020 at 11:22:31AM +0530, Calvin Johnson wrote:
+> Thanks Andrew and Jeremy for the detailed discussion!
 > 
-> I think this is completely wrong.  This is the ethtool configuration
-> interface for EEE that you're making fail.
+> On Fri, May 08, 2020 at 08:13:01PM +0200, Andrew Lunn wrote:
+> > > > It does have a numeric version defined for EISA types. OTOH I suspect that
+> > > > your right. If there were a "PHY\VEN_IDvvvv&ID_DDDD" definition, it may not
+> > > > be ideal to parse it. Instead the normal ACPI model of exactly matching the
+> > > > complete string in the phy driver might be more appropriate.
+> > > 
+> > > IMO, it should be fine to parse the string to extract the phy_id. Is there any
+> > > reason why we cannot do this?
+> > 
+> > Some background here, about what the PHY core does.
+> > 
+> > PHYs have two ID registers. This contains vendor, device, and often
+> > revision of the PHY. Only the vendor part is standardised, vendors can
+> > decide how to use the device part, but it is common for the lowest
+> > nibble to be revision. The core will read these ID registers, and then
+> > go through all the PHY drivers registered and ask them if they support
+> > this ID. The drivers provide a table of IDs and masks. The mask is
+> > applied, and then if the ID matches, the driver is used. The mask
+> > allows the revision to be ignored, etc.
+> > 
+> > There is a very small number of devices where the vendor messed up,
+> > and did not put valid contents in the ID registers. In such cases, we
+> > can read the IDs from device tree. These are then used in exactly the
+> > same way as if they were read from the device.
+> > 
+> > If you want the ACPI model to be used, an exact match on the string,
+> > you are going to have to modify the core and the drivers. They
+> > currently don't have any string, and have no idea about different
+> > revisions which are out in the wild.
 > 
-You mentioned in a parallel response that you are aware of at least
-userspace tool / use case that would be broken by this change.
-Can you please point me to this tool / use case?
+> I don't think ACPI mandates that OS driver use exact string match and not parse
+> the string.
+> 
+> First of all, I would suggest that we use "compatible" property instead of _CID.
+> Not sure of a reason why we cannot. This will simplify implementation of fwnode
+> APIs.
+> 
+> Already I've pointed out couple of ASL files in tianocore where they are already
+> used.
+> one eg:https://github.com/tianocore/edk2-platforms/blob/master/Silicon/Marvell/Armada7k8k/AcpiTables/Armada80x0McBin/Dsdt.asl#L280
+> 
+> Even if we use _CID, I'm not sure we are prohibited from extracting characters
+> (phy_id) from it.
+> If we decide to use _CID, then we need to define somewhere and standardize
+> exactly how we are going to use it. I'm not sure where we can do this.
 
-> Why should you not be able to configure EEE parameters if the link
-> happens to negotiated a half-duplex?  Why should you not be able to
-> adjust the EEE advertisment via ethtool if the link has negotiated
-> half-duplex?
-> 
-> Why should any of this configuration depend on the current state?
-> 
-If EEE settings change, then phy_ethtool_set_eee() eventually
-calls genphy_restart_aneg() which sets bits BMCR_ANENABLE in the
-chip. Means if we enter the function with phydev->autoneg being
-cleared, then we'll end up with an inconsistent state
-(phydev->autoneg not reflecting chip aneg setting).
-As alternative to throwing an error we could skip triggering an
-aneg, what would you prefer?
+Hi Calvin
 
-> Why should we force people to negotiate a FD link before they can
-> then configure EEE, and then have to perform a renegotiation?
-> 
-If being in a HD mode and setting EEE returns with a success return
-code, then users may expect EEE to be active (what it is not).
+Whatever is decided needs to be documented as it becomes a defacto
+standard. Once this is in the Linux PHY core, that is how it is done
+for all boards using ACPI.
 
-> Sorry, but to me this patch seems to be a completely wrong approach,
-> and I really don't get what problem it is trying to fix.
-> 
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/phy/phy.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
->> index 8c22d02b4..891bb6929 100644
->> --- a/drivers/net/phy/phy.c
->> +++ b/drivers/net/phy/phy.c
->> @@ -1110,6 +1110,9 @@ int phy_ethtool_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
->>  	if (!phydev->drv)
->>  		return -EIO;
->>  
->> +	if (phydev->autoneg == AUTONEG_DISABLE || phydev->duplex == DUPLEX_HALF)
->> +		return -EPROTONOSUPPORT;
->> +
->>  	/* Get Supported EEE */
->>  	cap = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
->>  	if (cap < 0)
->> -- 
->> 2.26.2
->>
->>
->>
-> 
+Maybe sometime in the future when the ACPI standards committee
+definitively defines how this should be done, we can add a second
+implementation which is standards conformant.
 
+       Andrew
