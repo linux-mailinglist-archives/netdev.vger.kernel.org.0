@@ -2,142 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5DFD1CE1BC
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 19:31:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E9B31CE1CE
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 19:35:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730864AbgEKRbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 13:31:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729698AbgEKRbV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 13:31:21 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22910C061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 10:31:21 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id w7so12017988wre.13
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 10:31:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=YsuFJhtSrJ1y5b4db9UFLFWpJ7Htm3EnF9uKj6yAR7o=;
-        b=pkU+/39s+NtqQOeXP4Z+MPMmXyqFmiELiAAHbmEz8KXnz0QIc1ipsT9Bo8bo84+cql
-         OizXFO+uRo5wPTik5GRGOxeWcoOie+iQsDOhEaJOoHYuhDpqa2AJ4gU8yLQL88F4jvm6
-         dmrzn5HtMAm7MoVnUgHlXhvLffzxzI2MtUpHIVGhAIrV2TqtFO0IhqyI3KslYJSR5CMh
-         YlXaEVik9zcipX0lqfvUfM9+Z7CZ0ltQu0RRMGkXCvmdIdPl20gDVYrsKko9WzWTV4H8
-         /0Ol6ijXsXwq/1jCoFJgauIFiXgOlYHsY+KUQ2HRN07siK6rbbOweZMkBbcdkaMO8LUg
-         yU0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YsuFJhtSrJ1y5b4db9UFLFWpJ7Htm3EnF9uKj6yAR7o=;
-        b=QUwuPwhBiz3Ojb5dzXDsyDI1QE48Yo/hyq1YXZGPZLihoWp3M8MAYRCO1KENyGQ5hb
-         BH3yVXOhRHXANWmAfpm0sQp/4DLZ0+ijOQ1F/aFVun4iqcttjw/wKT5Z5EM7C0c1PxW+
-         Q+FR7JIBI4hcX3MbtjCEZtD4CjLNK9nzz8wt8BsmlU9HZ5kyAUHMPjbJYlNqP9OAIQJ4
-         WK+THi3gN/HJ0C3pzRD6bvjf713jBMI87GYd9WqCCJ22aQU7dvnCDBxiFmu1/esPVckq
-         EjXRXGZ/ynrswP2jsK9WTKDSYj+KHT+2c4qQH7FV+Dtdkq2TV0kIWaVXikj5Ygf/WwzJ
-         Lenw==
-X-Gm-Message-State: AGi0Pub9VJ6XvcDhmttHWZiYDuOJd/Zd6j5S88Ce9gQl3PVvHzHWLOSU
-        ARL0RFgmuBeuYaD1Rkg21FjoqQ==
-X-Google-Smtp-Source: APiQypJtvLeGxAa87KTc9HUrH1Qk+4wFwzBmDKjUcQRW4CIcl5IE9xroZdjeqDG0dCoLfrscUV80Hw==
-X-Received: by 2002:a5d:4e81:: with SMTP id e1mr11886550wru.83.1589218279908;
-        Mon, 11 May 2020 10:31:19 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id 2sm18415523wre.25.2020.05.11.10.31.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 10:31:19 -0700 (PDT)
-Date:   Mon, 11 May 2020 19:31:18 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Subject: Re: [RFC next-next v2 3/5] net: marvell: prestera: Add ethtool
- interface support
-Message-ID: <20200511173118.GL2245@nanopsycho>
-References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
- <20200430232052.9016-4-vadym.kochan@plvision.eu>
+        id S1730829AbgEKRfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 13:35:30 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:56351 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729698AbgEKRfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 13:35:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589218529;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DkERDwbu60qawRTAg04gZYIhFHJzw+aEIsFm2MJGBKs=;
+        b=JtEcZS8aYLUgh7T52Qobo3nJ6l1Dayd+1bw28fAc0RhOIIWsHroMr7zMcOl04zRoDTScr/
+        eaqdObBfW5FeeDDBxsF8Gmc3weEyhgEB0l9SiZ1/XB7uiQwNzTKJwpP+FYuk3gHm+Tvxos
+        YE4/EMIBBG4ZCNVKUB41Q0Cc5qYwuMc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-89-YHV2K2eLP6ybwZwC3InEmw-1; Mon, 11 May 2020 13:35:25 -0400
+X-MC-Unique: YHV2K2eLP6ybwZwC3InEmw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB12C107ACF2;
+        Mon, 11 May 2020 17:35:23 +0000 (UTC)
+Received: from ovpn-114-155.ams2.redhat.com (ovpn-114-155.ams2.redhat.com [10.36.114.155])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4309B5C1D3;
+        Mon, 11 May 2020 17:35:22 +0000 (UTC)
+Message-ID: <6b0594845f7787b9bc82c845321e23b6bc3bca38.camel@redhat.com>
+Subject: Re: [MPTCP] [PATCH net] mptcp: Initialize map_seq upon subflow
+ establishment
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Christoph Paasch <cpaasch@apple.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org
+Date:   Mon, 11 May 2020 19:35:21 +0200
+In-Reply-To: <20200511162442.78382-1-cpaasch@apple.com>
+References: <20200511162442.78382-1-cpaasch@apple.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200430232052.9016-4-vadym.kochan@plvision.eu>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, May 01, 2020 at 01:20:50AM CEST, vadym.kochan@plvision.eu wrote:
->The ethtool API provides support for the configuration of the following
->features: speed and duplex, auto-negotiation, MDI-x, forward error
->correction, port media type. The API also provides information about the
->port status, hardware and software statistic.  The following limitation
-
-No double space.
-
-
->exists:
->
->    - port media type should be configured before speed setting
->    - ethtool –m option is not supported
->    - ethtool –p option is not supported
-
-Those are some odd dashes...
-
-
->    - ethtool -r option is supported for RJ45 port only
->    - the following combination of parameters is not supported:
->
->          ethtool -s sw1pX port XX autoneg on
->
->    - forward error correction feature is supported only on SFP ports, 10G
->      speed
->
->    - auto-negotiation and MDI-x features are not supported on
->      Copper-to-Fiber SFP module
->
-
-[...]
-
-
->+static const struct ethtool_ops ethtool_ops = {
->+	.get_drvinfo = prestera_port_get_drvinfo,
->+	.get_link_ksettings = prestera_port_get_link_ksettings,
->+	.set_link_ksettings = prestera_port_set_link_ksettings,
->+	.get_fecparam = prestera_port_get_fecparam,
->+	.set_fecparam = prestera_port_set_fecparam,
->+	.get_sset_count = prestera_port_get_sset_count,
->+	.get_strings = prestera_port_get_strings,
->+	.get_ethtool_stats = prestera_port_get_ethtool_stats,
->+	.get_link = ethtool_op_get_link,
->+	.nway_reset = prestera_port_nway_reset
->+};
-
-I wonder, wouldn't it be better to put the ethtool bits into a separate
-.c file. You have a separate .c file for less :)
-
-
->+
-> static int prestera_port_create(struct prestera_switch *sw, u32 id)
-> {
-> 	struct prestera_port *port;
->@@ -264,6 +1023,7 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+On Mon, 2020-05-11 at 09:24 -0700, Christoph Paasch wrote:
+> When the other MPTCP-peer uses 32-bit data-sequence numbers, we rely on
+> map_seq to indicate how to expand to a 64-bit data-sequence number in
+> expand_seq() when receiving data.
 > 
-> 	dev->features |= NETIF_F_NETNS_LOCAL;
-> 	dev->netdev_ops = &netdev_ops;
->+	dev->ethtool_ops = &ethtool_ops;
+> For new subflows, this field is not initialized, thus results in an
+> "invalid" mapping being discarded.
 > 
-> 	netif_carrier_off(dev);
+> Fix this by initializing map_seq upon subflow establishment time.
 > 
+> Fixes: f296234c98a8 ("mptcp: Add handling of incoming MP_JOIN requests")
+> Signed-off-by: Christoph Paasch <cpaasch@apple.com>
+> ---
+>  net/mptcp/protocol.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> index e1f23016ed3f..32ea8d35489a 100644
+> --- a/net/mptcp/protocol.c
+> +++ b/net/mptcp/protocol.c
+> @@ -1629,6 +1629,8 @@ bool mptcp_finish_join(struct sock *sk)
+>  
+>  	ret = mptcp_pm_allow_new_subflow(msk);
+>  	if (ret) {
+> +		subflow->map_seq = msk->ack_seq;
+> +
+>  		/* active connections are already on conn_list */
+>  		spin_lock_bh(&msk->join_list_lock);
+>  		if (!WARN_ON_ONCE(!list_empty(&subflow->node)))
 
-[...]
+Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+
