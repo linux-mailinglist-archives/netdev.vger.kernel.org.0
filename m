@@ -2,221 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C4B51CDF40
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D781CDF51
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 17:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730370AbgEKPkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 11:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730362AbgEKPks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 11:40:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1B6C061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 08:40:48 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mgr@pengutronix.de>)
-        id 1jYAXu-00065O-UW; Mon, 11 May 2020 17:40:46 +0200
-Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mgr@pengutronix.de>)
-        id 1jYAXu-0006pm-Kb; Mon, 11 May 2020 17:40:46 +0200
-Date:   Mon, 11 May 2020 17:40:46 +0200
-From:   Michael Grzeschik <mgr@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org, davem@davemloft.net,
-        kernel@pengutronix.de
-Subject: Re: [PATCH v3 1/5] net: phy: Add support for microchip SMI0 MDIO bus
-Message-ID: <20200511154046.GN20451@pengutronix.de>
-References: <20200508154343.6074-1-m.grzeschik@pengutronix.de>
- <20200508154343.6074-2-m.grzeschik@pengutronix.de>
- <08858b46-95f0-24d0-0e11-1eaec292187c@gmail.com>
+        id S1730365AbgEKPpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 11:45:09 -0400
+Received: from mail-eopbgr70078.outbound.protection.outlook.com ([40.107.7.78]:45294
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726687AbgEKPpI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 11:45:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aW//jh6o5A5Gy42UA/qhXHdDxHCEK0fEmyJIHcw49m8KSQxnxn0ghiqlPraYES+AAdyIM4VA3sn8vhqfaYAEoqE+OqK5glKa2VFDuEdAgPBpKGLCE7O+SYukiHByIy0DF+aSwrnluxld7CUUJe2x5rb0mgMBYYW1OOs3h0Oq81qRnyoOGg0Osm4Y3VQxA9RrZ7f6blI05xj+SDbwTEn/GlW7CEisRf6RWVGkgsaQ/QB3Rfda2XuqrZgAi2a6nbRB5ffGo2wBa/Swq2Ghy7TL1pRB0xU5gP7T1rpxXPfGf/6gZFIrEkA1WRu0vMSPbbaOcPjaT2Ac0B/ewQcpCGgz4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CSfRHP01lr9OGIc5afosFB+Tf3156xCfgHwGW4V2CZg=;
+ b=YC3MJNsx5LdKS3KESQ2U8m7v782baA5/d3U2bdiktoM08m+GOWKolOOLQPbCeLjpC74Nwhaosasajz4zYDQnZqe6apx17rsqMT9xccrua03Goks+quX1Q/ArnWEiZjLwZZML/jHPp0ISTprOLMLoAC3NjaTUWR+aRssDr2hDpBQcvaNgbV/Z/9QRdwBltDpcjO6uH1nBl4NV5vwLJmTVGog9s7gxYTQnXMXbPMEjMg6N2tVOrQNvT0ImNCA8v0rBsySUQiEOVIa5h+f8wlik2iWdZ9ekPIQesliYeXowOwuEY30lyN6t/UCg/qgK7fCMu/oT8rHkwoNYYnqSXq26MA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=orolia.com; dmarc=pass action=none header.from=orolia.com;
+ dkim=pass header.d=orolia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=orolia.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CSfRHP01lr9OGIc5afosFB+Tf3156xCfgHwGW4V2CZg=;
+ b=GSQK32dnSxrwXGExqc9A1WiYsfbbkbFLHPPZmaNkE6ZELmkWTuF2RR/LXMPTJs1th49RzqD8M56Z55KBMvJpuLZBnF4OjYZljaiXmxCR5LuPWMqAM6ngkCXWd5TcOMRF9xi1/OYwtpOxSFxhwfhHSP/J7Xz9RtwwQDinN/XZzKA=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=orolia.com;
+Received: from AM0PR0602MB3380.eurprd06.prod.outlook.com
+ (2603:10a6:208:24::13) by AM0PR0602MB3748.eurprd06.prod.outlook.com
+ (2603:10a6:208:6::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.29; Mon, 11 May
+ 2020 15:45:04 +0000
+Received: from AM0PR0602MB3380.eurprd06.prod.outlook.com
+ ([fe80::3d36:ab20:7d3b:8368]) by AM0PR0602MB3380.eurprd06.prod.outlook.com
+ ([fe80::3d36:ab20:7d3b:8368%7]) with mapi id 15.20.2979.033; Mon, 11 May 2020
+ 15:45:04 +0000
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+From:   Julien Beraud <julien.beraud@orolia.com>
+Subject: net: phylink: supported modes set to 0 with genphy sfp module
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <0ee8416c-dfa2-21bc-2688-58337bfa1e2a@orolia.com>
+Date:   Mon, 11 May 2020 17:45:02 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PR0P264CA0189.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1c::33) To AM0PR0602MB3380.eurprd06.prod.outlook.com
+ (2603:10a6:208:24::13)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="oIlomvtVtXAVxSKT"
-Content-Disposition: inline
-In-Reply-To: <08858b46-95f0-24d0-0e11-1eaec292187c@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 17:40:02 up 81 days, 23:10, 117 users,  load average: 0.09, 0.15,
- 0.16
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mgr@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2a01:cb00:862c:3100:f406:ebd3:1008:85ef] (2a01:cb00:862c:3100:f406:ebd3:1008:85ef) by PR0P264CA0189.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1c::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Mon, 11 May 2020 15:45:03 +0000
+X-Originating-IP: [2a01:cb00:862c:3100:f406:ebd3:1008:85ef]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ac460718-c68e-4eec-41b5-08d7f5c245d8
+X-MS-TrafficTypeDiagnostic: AM0PR0602MB3748:
+X-Microsoft-Antispam-PRVS: <AM0PR0602MB37488F6288BB1B7AC4A347FA99A10@AM0PR0602MB3748.eurprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1107;
+X-Forefront-PRVS: 04004D94E2
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FNYX14TyxEOISRvnHLSa7+wUkRr7ukwNmaSd2qOTgkMloExBbxabQBonv/aBbqCwpXnl8G1RJRqX7K0wAkAhmf+sB7jU8goXyZtnA9pvRJD6CIQEbp6Rpr3C1wVd0j6GuOeXuYx7qgbnqK6SkPLbZ3rlnEeZsN6JdccNt9pFKF3g+Ha9XjtjXeR0jHi8P7Fs2Elo/M2dTny7su9GPqLbKOe1HbrUNrQ7RMijYKNHsl7bmVudc6Ijf/NUcvLDGzRmNhh2MOIJqvPjbNyZmflwtRCuAeWUJ2YtyMpfLNk47E0a62TeggjMqT1JsO0uZiVWvbUuYjjFsKgTEPKsdACtKiz32H4USmh8voJdwoUTOuzLTG+8u+jexRIaG2Rc/pG9qHyKg5JmwXZdMl4aq+4UPmsTEFxo0VHbi9IvxRJLXkuSQ7Gpynwp62on4bcQmF9bUgAEYr09N2ALMe81AC3aJ66+FyZlC2DHrgZIm5pCs/wSw3NHEdoxJ8oDfOKIGtAhWMaKDUiGMjkkdwvj7+4u+NJCMf1U7l/oDX/uW04+DJjuy4ZIrTqfYu9Iui3H0Uix
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0602MB3380.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(39850400004)(346002)(376002)(136003)(33430700001)(36756003)(186003)(66556008)(66476007)(31696002)(16526019)(66946007)(2616005)(4326008)(478600001)(31686004)(8936002)(2906002)(8676002)(44832011)(4744005)(52116002)(110136005)(316002)(54906003)(5660300002)(86362001)(33440700001)(6486002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: C++Pe5zkaEv+zqJlCuZFRkpnYr4DwySo1aE+1VGjpxue9wGJEkSVLIeRTorZOZ7p+tznMq08NaPIFRuienSQdqpmJ1rBfMPpWjusw+XY7irMdHv2vePZm5mNxDnT+GqLsaLozj+gVF1N/RzI3nk4zBk1OXqxFn+9DFuK7BOKzkwVPqD0s3QlOxsERwPxv0wFP+9mERNcnjv6Y/fR2NUYa4KK3bCaMhNRqAlYYjI/6AWiCkg94Js2OfZ60xJw6GuKL+z1csSIVFJJHXmYkQWL76FwcYErltj2PwIp1fD5IO8WuQ44iQnte+lA8F4UnY86E+mnue9umh24pLU2EJNUevn+o2rMvCfbPg0jilsJC6DlNHXAtG/aKuLjKKe8BWh1k+F8byk+CqXs85CeZKGkRbC4iPiudt+GG4wlclvp7BjjYZ0BAIUtSKNyF0yKv49Yy0UXdSMwFLQ+eg8wmVXOqZoqPnbKBls017z6RvbCg248+xXS6zKeT4so3rTvREOuRWOiQEk8GQGA1lZXAj50dNrkx5OjzBq6aRJTmxnrdepSG21gd9RKNb8hGzePen6U
+X-OriginatorOrg: orolia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ac460718-c68e-4eec-41b5-08d7f5c245d8
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 15:45:04.3333
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a263030c-9c1b-421f-9471-1dec0b29c664
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7bnwRAeYRzBAl7SHrOL/4QUNtL7noEot8u4vAcUeZAw2RUWA5CMHPyKu4cfePH5hA5sA2ceEw0yAOm7kFTqU7Z+0a4ZdqSOnDGiSpRDcsW0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0602MB3748
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Following commit:
 
---oIlomvtVtXAVxSKT
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit 52c956003a9d5bcae1f445f9dfd42b624adb6e87
+Author: Russell King <rmk+kernel@armlinux.org.uk>
+Date:   Wed Dec 11 10:56:45 2019 +0000
 
-On Sat, May 09, 2020 at 10:28:05AM -0700, Florian Fainelli wrote:
->
->
->On 5/8/2020 8:43 AM, Michael Grzeschik wrote:
->>From: Andrew Lunn <andrew@lunn.ch>
->>
->>SMI0 is a mangled version of MDIO. The main low level difference is
->>the MDIO C22 OP code is always 0, not 0x2 or 0x1 for Read/Write. The
->>read/write information is instead encoded in the PHY address.
->>
->>Extend the bit-bang code to allow the op code to be overridden, but
->>default to normal C22 values. Add an extra compatible to the mdio-gpio
->>driver, and when this compatible is present, set the op codes to 0.
->>
->>A higher level driver, sitting on top of the basic MDIO bus driver can
->>then implement the rest of the microchip SMI0 odderties.
->>
->>Signed-off-by: Andrew Lunn <andrew@lunn.ch>
->>Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
->>---
->>  drivers/net/phy/mdio-bitbang.c |  7 ++-----
->>  drivers/net/phy/mdio-gpio.c    | 13 +++++++++++++
->>  include/linux/mdio-bitbang.h   |  2 ++
->>  3 files changed, 17 insertions(+), 5 deletions(-)
->>
->>diff --git a/drivers/net/phy/mdio-bitbang.c b/drivers/net/phy/mdio-bitban=
-g.c
->>index 5136275c8e7399..11255460ecb933 100644
->>--- a/drivers/net/phy/mdio-bitbang.c
->>+++ b/drivers/net/phy/mdio-bitbang.c
->>@@ -19,9 +19,6 @@
->>  #include <linux/types.h>
->>  #include <linux/delay.h>
->>-#define MDIO_READ 2
->>-#define MDIO_WRITE 1
->>-
->>  #define MDIO_C45 (1<<15)
->>  #define MDIO_C45_ADDR (MDIO_C45 | 0)
->>  #define MDIO_C45_READ (MDIO_C45 | 3)
->>@@ -158,7 +155,7 @@ static int mdiobb_read(struct mii_bus *bus, int phy, =
-int reg)
->>  		reg =3D mdiobb_cmd_addr(ctrl, phy, reg);
->>  		mdiobb_cmd(ctrl, MDIO_C45_READ, phy, reg);
->>  	} else
->>-		mdiobb_cmd(ctrl, MDIO_READ, phy, reg);
->>+		mdiobb_cmd(ctrl, ctrl->op_c22_read, phy, reg);
->>  	ctrl->ops->set_mdio_dir(ctrl, 0);
->>@@ -189,7 +186,7 @@ static int mdiobb_write(struct mii_bus *bus, int phy,=
- int reg, u16 val)
->>  		reg =3D mdiobb_cmd_addr(ctrl, phy, reg);
->>  		mdiobb_cmd(ctrl, MDIO_C45_WRITE, phy, reg);
->>  	} else
->>-		mdiobb_cmd(ctrl, MDIO_WRITE, phy, reg);
->>+		mdiobb_cmd(ctrl, ctrl->op_c22_write, phy, reg);
->
->There are other users of the mdio-bitbang.c file which I believe you=20
->are going to break here because they will not initialize op_c22_write=20
->or op_c22_read, and thus they will be using 0, instead of MDIO_READ=20
->and MDIO_WRITE. I believe you need something like the patch attached.
->--=20
->Florian
-
-I will add that change to v4.
-
-Michael
-
->diff --git a/drivers/net/phy/mdio-bitbang.c b/drivers/net/phy/mdio-bitbang=
-=2Ec
->index 11255460ecb9..528e255d1ffe 100644
->--- a/drivers/net/phy/mdio-bitbang.c
->+++ b/drivers/net/phy/mdio-bitbang.c
->@@ -19,6 +19,9 @@
-> #include <linux/types.h>
-> #include <linux/delay.h>
->
->+#define MDIO_READ 2
->+#define MDIO_WRITE 1
->+
-> #define MDIO_C45 (1<<15)
-> #define MDIO_C45_ADDR (MDIO_C45 | 0)
-> #define MDIO_C45_READ (MDIO_C45 | 3)
->@@ -212,6 +215,10 @@ struct mii_bus *alloc_mdio_bitbang(struct mdiobb_ctrl=
- *ctrl)
-> 	bus->read =3D mdiobb_read;
-> 	bus->write =3D mdiobb_write;
-> 	bus->priv =3D ctrl;
->+	if (!ctrl->override_op_c22) {
->+		ctrl->op_c22_read =3D MDIO_READ;
->+		ctrl->op_c22_write =3D MDIO_WRITE;
->+	}
->
-> 	return bus;
-> }
->diff --git a/drivers/net/phy/mdio-gpio.c b/drivers/net/phy/mdio-gpio.c
->index d85bc1a98647..13ec31e89e94 100644
->--- a/drivers/net/phy/mdio-gpio.c
->+++ b/drivers/net/phy/mdio-gpio.c
->@@ -27,9 +27,6 @@
-> #include <linux/gpio/consumer.h>
-> #include <linux/of_mdio.h>
->
->-#define MDIO_READ 2
->-#define MDIO_WRITE 1
->-
-> struct mdio_gpio_info {
-> 	struct mdiobb_ctrl ctrl;
-> 	struct gpio_desc *mdc, *mdio, *mdo;
->@@ -139,9 +136,7 @@ static struct mii_bus *mdio_gpio_bus_init(struct devic=
-e *dev,
-> 	    of_device_is_compatible(dev->of_node, "microchip,mdio-smi0")) {
-> 		bitbang->ctrl.op_c22_read =3D 0;
-> 		bitbang->ctrl.op_c22_write =3D 0;
->-	} else {
->-		bitbang->ctrl.op_c22_read =3D MDIO_READ;
->-		bitbang->ctrl.op_c22_write =3D MDIO_WRITE;
->+		bitbang->ctrl.override_op_c22 =3D 1;
-> 	}
->
-> 	dev_set_drvdata(dev, new_bus);
->diff --git a/include/linux/mdio-bitbang.h b/include/linux/mdio-bitbang.h
->index 8ae0b3835233..5016e6f60de3 100644
->--- a/include/linux/mdio-bitbang.h
->+++ b/include/linux/mdio-bitbang.h
->@@ -33,6 +33,7 @@ struct mdiobb_ops {
->
-> struct mdiobb_ctrl {
-> 	const struct mdiobb_ops *ops;
->+	unsigned int override_op_c22;
-> 	u8 op_c22_read;
-> 	u8 op_c22_write;
-> };
+     net: phylink: delay MAC configuration for copper SFP modules
 
 
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+In function phylink_sfp_connect_phy, phylink_sfp_config is called before 
+phylink_attach_phy.
 
---oIlomvtVtXAVxSKT
-Content-Type: application/pgp-signature; name="signature.asc"
+In the case of a genphy, the "supported" field of the phy_device is 
+filled by:
+phylink_attach_phy->phy_attach_direct->phy_probe->genphy_read_abilities.
 
------BEGIN PGP SIGNATURE-----
+It means that:
 
-iQIzBAABCgAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAl65cf4ACgkQC+njFXoe
-LGShEQ/9FgeR0z9BmA0YcvLgnxwtzZTiLD8HEE68xXOoAITgvlt669vihEK+lYdx
-IFfGUsR0FOZF858W7x516rN1hCGqad0gY2fjuPqi8aMH83q3ipgorfcIPWsl75zY
-DXdAXEqw6YkNvVU+TCkCjVgvN0fUsPalXe8TftHGlZkGoAo5s5HT3hg839H29mx+
-qyh0mlyeuNmg6CKBU04NgOw78hLKXRvSLxO79mBitaUna/2w3tagKIcj9Y8q5GKg
-FfMnfE6x20vlV21Tf2hYSWDXM0/OjE6JdMa/EV7hzpTfsxHl9r4upflYU7V+syEc
-ve23gR8ree+uJnJVbSAtxIHVThtKSm0WDHQZoOCzdGRno/V1/65XJEklQLZQCF/s
-7LeUP2oUvjci229D4PK0tA4nKlXt2WDE7A4GmH5h6OuXkPi5r/0sJcun4xV1r+B8
-uedgGTCeWbrhFXDRhQi///lQBxB2Qk9EnOeldjtKNI0GqwwCPqiyUlB6uP3M8aYI
-QQjEm/dUupD/+SH7qOZ8D28GkA1KeWRZ2JDA87q554kxK4zm5gAlEQtlXtB7X93g
-X9zuPsDr0j195alQDTOSJp7pgM2ULY3yFDAQTLnbXhkA7M1ATD7kI9R8HImuceR9
-GA0zMNkPudW2B0Guy0mSvjjR1oKFwdvRwRJa9VIwhKzI3FFZgyc=
-=FBRK
------END PGP SIGNATURE-----
+ret = phylink_sfp_config(pl, mode, phy->supported, phy->advertising);
+will have phy->supported with no bits set, and then the first call to 
+phylink_validate in phylink_sfp_config will return an error:
 
---oIlomvtVtXAVxSKT--
+return phylink_is_empty_linkmode(supported) ? -EINVAL : 0;
+
+this results in putting the sfp driver in "failed" state.
+
+Thanks,
+Julien Beraud
+
+
+
+
