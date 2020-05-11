@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B340A1CE89A
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 00:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2870C1CE8A8
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 00:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727098AbgEKW6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 18:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
+        id S1727998AbgEKW7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 18:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725836AbgEKW6L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 18:58:11 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2967C061A0C;
-        Mon, 11 May 2020 15:58:11 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id w7so13029600wre.13;
-        Mon, 11 May 2020 15:58:11 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725987AbgEKW7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 18:59:30 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19729C061A0C;
+        Mon, 11 May 2020 15:59:30 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id e16so13036272wra.7;
+        Mon, 11 May 2020 15:59:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=otPX3uLcjrv350EnvGLQbAsniTxU/sRWin7D1wiXypM=;
-        b=KSY998xfjrnqF75kM2EM44JlFodsj223bdmDtG/CSueVqRU6TgaJhW7AFElGtxgOY9
-         HmRQzt8UAR0JolBakiR17tGUrk1x4q0fEcank/yOFpHLqmxusTHzIf255E07+uogM2rs
-         iUQ6QHn7L6MOEFbh2caYZiIVewEXeHvZy7HMk+6hnNo+ntGiCaUHcrTxHzjptqTkjESR
-         XJdx2DIVZ4bKUW1fLrlQxyKhYgdS0WwOESWr4WoYOTcf9VXLUAYe3ukvWxbxrYO7aPz+
-         HDoo7g2SyAlSXUQYfqr0tArskZuMZ6r/gYIDuSP/qwOj0uYcyo0pabrZXFJMLA/tjLKR
-         d2TA==
+        bh=mjq0pbimoUm4QL423/eKvG2VO6IOscWEFedsVa9GPuM=;
+        b=lHuLE2gzI57QM3q0SUyxnn4C7+YQFvWH0xvYGk53+cEjB3vryfa0z3xzffZBhkYnOC
+         TV114/NZq+nJ4jbf2EaA+t6R1ro3DSUaOMWCGumX1XOozrjlIvONbhWKqcaImpDctpUI
+         cKedDefER9dnGp8xPHyRs0H1Q1nKTW+t3BE3jqI7AbloFfgn6mdOkNu/YKR0hia2liPg
+         xWQ2G4YDojBgyh1AzYFVGTxny4Wdy4oW2crKYzipxVncQE/3a5sNyzP2HJC09gfW92SJ
+         L5cnW/QfEny/4zPCgOyB9LOEfQ56bNO+ncoHrcbv/6IMenVcnwNG/UzMGk9YXtfo5PpY
+         so3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=otPX3uLcjrv350EnvGLQbAsniTxU/sRWin7D1wiXypM=;
-        b=Cj6bj3BndllxhbgWZOnugBkTlqesRf69fcY4ISuVPkvtjvReHBkGh4HjFGc8uM3dHx
-         HWhDDckYncD3jbhtowwFDmWVAa9w0ESafUN86pzoyZLa8GaL4gV0mIz7CMh4KQkB3Fkq
-         34zx7r12/qaFFBQL6IrV6BSxREYGmMBpaCVHikWMiFsETU60P+71NCWQvDtY1Gur6fho
-         pqai36qj6sQiSODjc4eftiEGu3e+y/2Eg0v+JUMR/EEVsKgV8oo+AwQWcjjhpxDFa2Me
-         1DKnIiccv+/j7YsVLIcA3PdUvbER69JyS8kB+kaPtNePikTrbbfrwXRQmdbYemgByyO+
-         IxJQ==
-X-Gm-Message-State: AGi0PuYTelPuWQD4dNhKMiN1Gzvwz53qP8qRS4a72/tg8HhUxMtE9Zo4
-        ElgwmCzLnfuT8Y/zaCJRwh6caw42
-X-Google-Smtp-Source: APiQypLRSIbYrzetBnn6HrBWdJgE/7XwfajElAa9sSHZMsURzQ6Qwc1spW1f+pLNo5htm+kD2KCDvQ==
-X-Received: by 2002:a5d:6803:: with SMTP id w3mr10930662wru.151.1589237890047;
-        Mon, 11 May 2020 15:58:10 -0700 (PDT)
+        bh=mjq0pbimoUm4QL423/eKvG2VO6IOscWEFedsVa9GPuM=;
+        b=ELofeJzGyIXNkgx0M6N0UW/bxhkYGdCP/W/n4rmzC2/15fr31mmMWNFOvH8qBrEnpF
+         t7j4AQ3yUG5JpLnqmLEWacf/FSkTGx6QTF7DfohIZJwD1qtr6PmH94eafGKm0tKcwejV
+         8eJvSMUSHYM+Jm8/zMYNyq/hqIcQAj/AkXhloFVBTHqOMRWGmYh1JIntli1wLHnsD3l7
+         1IqrNc4qstU31Yk+Ms0E3VbLXT5rRBWKQIFK3k+mcrZOHKBRJpYDmFBIyreVeIbNm5rT
+         RpIjj+BoM5rF+wCCN5MvifebMN0MwLSZhxYOTc07SKTy1YbqdCbtxb7HLpKLYAPTw9bs
+         WlGg==
+X-Gm-Message-State: AGi0PubYnBfSypVbBGw3kNORqpxpWvVQVVWFvnIRjjXxlk/l8kwU8cqJ
+        qhRai3Xl07lf+gtcLl4nZ9WJ2Djo
+X-Google-Smtp-Source: APiQypL8NbOEQz++69SSmmDvBtk7c0K7HZoDLCMwsz8/w5JFcTKMmdffQytoRTwo1a9y5e42ROO6sg==
+X-Received: by 2002:a5d:5686:: with SMTP id f6mr21882805wrv.168.1589237968634;
+        Mon, 11 May 2020 15:59:28 -0700 (PDT)
 Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id c19sm20743522wrb.89.2020.05.11.15.58.07
+        by smtp.gmail.com with ESMTPSA id b12sm8904375wrq.82.2020.05.11.15.59.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 May 2020 15:58:09 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 01/15] net: dsa: provide an option for drivers
- to always receive bridge VLANs
+        Mon, 11 May 2020 15:59:28 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 02/15] net: dsa: tag_8021q: introduce a
+ vid_is_dsa_8021q helper
 To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
         vivien.didelot@gmail.com
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         idosch@idosch.org, rmk+kernel@armlinux.org.uk,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20200511135338.20263-1-olteanv@gmail.com>
- <20200511135338.20263-2-olteanv@gmail.com>
+ <20200511135338.20263-3-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <0b7da199-847c-f178-a330-3234278b273f@gmail.com>
-Date:   Mon, 11 May 2020 15:58:05 -0700
+Message-ID: <4905cf9e-b4ef-64d3-e5d9-7fe42e3775c3@gmail.com>
+Date:   Mon, 11 May 2020 15:59:24 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200511135338.20263-2-olteanv@gmail.com>
+In-Reply-To: <20200511135338.20263-3-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,32 +75,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 5/11/2020 6:53 AM, Vladimir Oltean wrote:
-> From: Russell King <rmk+kernel@armlinux.org.uk>
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> DSA assumes that a bridge which has vlan filtering disabled is not
-> vlan aware, and ignores all vlan configuration. However, the kernel
-> software bridge code allows configuration in this state.
+> This function returns a boolean denoting whether the VLAN passed as
+> argument is part of the 1024-3071 range that the dsa_8021q tagging
+> scheme uses.
 > 
-> This causes the kernel's idea of the bridge vlan state and the
-> hardware state to disagree, so "bridge vlan show" indicates a correct
-> configuration but the hardware lacks all configuration. Even worse,
-> enabling vlan filtering on a DSA bridge immediately blocks all traffic
-> which, given the output of "bridge vlan show", is very confusing.
-> 
-> Provide an option that drivers can set to indicate they want to receive
-> vlan configuration even when vlan filtering is disabled. At the very
-> least, this is safe for Marvell DSA bridges, which do not look up
-> ingress traffic in the VTU if the port is in 8021Q disabled state. It is
-> also safe for the Ocelot switch family. Whether this change is suitable
-> for all DSA bridges is not known.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-We may want to consolidate these checks in a helper function at some
-point, and the name is still not super clear to me (not sure what
-disabled refers to unless you read the comments), but this is as good as
-it could be:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
