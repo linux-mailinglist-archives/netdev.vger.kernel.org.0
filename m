@@ -2,80 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02FF21CCED6
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 02:13:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 428211CCEDB
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 02:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729339AbgEKANT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 May 2020 20:13:19 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:4322 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729310AbgEKANT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 May 2020 20:13:19 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 4AFFEB1D39BFCAE86E6E;
-        Mon, 11 May 2020 08:13:16 +0800 (CST)
-Received: from [127.0.0.1] (10.74.149.191) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Mon, 11 May 2020
- 08:13:06 +0800
-Subject: Re: [PATCH net-next 3/5] net: hns3: provide .get_cmdq_stat interface
- for the client
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
-References: <1589016461-10130-1-git-send-email-tanhuazhong@huawei.com>
- <1589016461-10130-4-git-send-email-tanhuazhong@huawei.com>
- <20200509134816.534860ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   tanhuazhong <tanhuazhong@huawei.com>
-Message-ID: <1b76cac7-b1cc-cbab-cef4-cefeaa25ac62@huawei.com>
-Date:   Mon, 11 May 2020 08:13:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S1729310AbgEKA2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 May 2020 20:28:32 -0400
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:38942 "EHLO
+        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729168AbgEKA2c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 May 2020 20:28:32 -0400
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by kvm5.telegraphics.com.au (Postfix) with ESMTP id AAECC299CB;
+        Sun, 10 May 2020 20:28:27 -0400 (EDT)
+Date:   Mon, 11 May 2020 10:28:34 +1000 (AEST)
+From:   Finn Thain <fthain@telegraphics.com.au>
+To:     Markus Elfring <Markus.Elfring@web.de>
+cc:     Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: net/sonic: Fix some resource leaks in error handling paths
+In-Reply-To: <bc70e24c-dd31-75b7-6ece-2ad31982641e@web.de>
+Message-ID: <alpine.LNX.2.22.394.2005110845060.8@nippy.intranet>
+References: <b7651b26-ac1e-6281-efb2-7eff0018b158@web.de> <alpine.LNX.2.22.394.2005100922240.11@nippy.intranet> <9d279f21-6172-5318-4e29-061277e82157@web.de> <alpine.LNX.2.22.394.2005101738510.11@nippy.intranet>
+ <bc70e24c-dd31-75b7-6ece-2ad31982641e@web.de>
 MIME-Version: 1.0
-In-Reply-To: <20200509134816.534860ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.149.191]
-X-CFilter-Loop: Reflected
+Content-Type: multipart/mixed; BOUNDARY="-1463811774-1651048744-1589151508=:8"
+Content-ID: <alpine.LNX.2.22.394.2005110858570.8@nippy.intranet>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
+---1463811774-1651048744-1589151508=:8
+Content-Type: text/plain; CHARSET=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <alpine.LNX.2.22.394.2005110858571.8@nippy.intranet>
 
-On 2020/5/10 4:48, Jakub Kicinski wrote:
-> On Sat, 9 May 2020 17:27:39 +0800 Huazhong Tan wrote:
->> This patch provides a new interface for the client to query
->> whether CMDQ is ready to work.
->>
->> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-> 
->> diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
->> index 5602bf2..7506cab 100644
->> --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
->> +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
->> @@ -552,6 +552,7 @@ struct hnae3_ae_ops {
->>   	int (*set_vf_mac)(struct hnae3_handle *handle, int vf, u8 *p);
->>   	int (*get_module_eeprom)(struct hnae3_handle *handle, u32 offset,
->>   				 u32 len, u8 *data);
->> +	bool (*get_cmdq_stat)(struct hnae3_handle *handle);
->>   };
-> 
-> I don't see anything in this series using this new interface, why is it
-> added now?
-> 
+On Sun, 10 May 2020, Markus Elfring wrote:
 
-Hi, Jakub.
+> >
+> > Do you know when these bugs were introduced?
+>=20
+> I suggest to take another look at a provided tag =E2=80=9CFixes=E2=80=9D.
 
-This interface is needed by the roce client, whose patch will be
-upstreamed to the rdma tree, it is other branch. So we provide this 
-interface previously, then the rdma guy will upstream their patch later,
-maybe linux-5.8-rc*.
+If you can't determine when the bug was introduced, how can you criticise=
+=20
+a patch for the lack of a Fixes tag?
 
-Thanks.
+> To which commit would you like to refer to for the proposed adjustment=20
+> of the function =E2=80=9Cmac_sonic_platform_probe=E2=80=9D?
+>=20
 
-> .
-> 
+That was my question to you. We seem to be talking past each other.=20
+Unforunately I only speak English, so if this misunderstanding is to be=20
+resolved, you're going to have to try harder to make yourself understood.
 
+> > Naming goto labels is just painting another bikeshed. Yes, some=20
+> > alternatives are preferable but it takes too long to identify them and=
+=20
+> > finding consensus is unlikely anyway, as it's a matter of taste.
+>=20
+> Would you find numbered labels unwanted according to a possible=20
+> interpretation related to 'GW-BASIC' identifier selection?
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
+ocumentation/process/coding-style.rst?id=3De99332e7b4cda6e60f5b5916cf9943a7=
+9dbef902#n460
+>=20
+
+My preference is unimportant here. Therefore, your question must be=20
+rhetorical. I presume that you mean to assert that Christophe's patch=20
+breaches the style guide.
+
+However, 'sonic_probe1' is the name of a function. The name of the goto=20
+label 'undo_probe1' reflects the name of the function.
+
+This is not some sequence of GW-BASIC labels referred to in the style=20
+guide. And neither does the patch add new functions with numbered names.
+
+> Can programming preferences evolve into the direction of =E2=80=9Csay wha=
+t the=20
+> goto does=E2=80=9D?
+>=20
+
+I could agree that macsonic.c has no function resembling "probe1", and=20
+that portion of the patch could be improved.
+
+Was that the opinion you were trying to express by way of rhetorical=20
+questions? I can't tell.
+
+Is it possible for a reviewer to effectively criticise C by use of=20
+English, when his C ability surpasses his English ability?
+
+You needn't answer that question, but please do consider it.
+
+> Regards,
+> Markus
+>=20
+---1463811774-1651048744-1589151508=:8--
