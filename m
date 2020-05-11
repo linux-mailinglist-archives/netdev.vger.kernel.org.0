@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 254AE1CE324
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 20:52:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 146C41CE326
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 20:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731274AbgEKSwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 14:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
+        id S1731280AbgEKSws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 14:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731261AbgEKSwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 14:52:42 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADCFC05BD10
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 11:52:42 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id h17so3422827wrc.8
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 11:52:42 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1731262AbgEKSwo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 14:52:44 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7A6C05BD0D
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 11:52:43 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id l18so12289168wrn.6
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 11:52:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=iEWx9NWx+iVvT9c6guWm8v93q5pJBOFsw45aCQnsS2o=;
-        b=rn9QDejRxWjnube88IJ1I3sbEoNxPlyuucXwVnCkOZgg9RkXLuvr7TGmSgEHVKuANK
-         6Y7JHBUdhy0+RH/UGWesc5+Xrram+wNJ317SJpSKLoPWDyntoGw1QIwSMDaZis35Koyw
-         AO+/jt8kRwv4jYC/msXrrh7EZipfhyBnubOLQ=
+        bh=6tCYXE51QKC2s1xmH0RFoqrpk+5/XyGhBDt5mxX5Fgg=;
+        b=FO58hWDqPYzKNjvKdhrYLp6kpxITiMwRv0UKW4YArm23gg9B5DLYcOH28W5a+n6LaO
+         L/UAKhZCqrfUOtLkp0BkjvuKtqAOKMhcyqrFyIk0dMGOhj9Q7pSlI38QDV6A32eOXwPc
+         EYLNtf5JS1IiTgIR15ilE20GDNBbFR67Msmkk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=iEWx9NWx+iVvT9c6guWm8v93q5pJBOFsw45aCQnsS2o=;
-        b=mCx2lEwl4rJ/jwStW6ZWS+f6zspHe6AbWO3s0KPYxrhW+H+8JLkUxlriHuy01MQGgs
-         1lAv4CqAI49JBxPh269PfxYZoC2njIfvwshsxXnv4GUzYtDvGdDxanfda+Uh2hl3cHY8
-         yHZ+xvm1pkmw8zKfp0/UeQr1CrH/mTC+6kMIqR2fsrjBZ0aUGltp5hoD2D7SxtuFzayO
-         KpiwghsHfbNC4ndoUjs0FY4tssmQZ4VORgv1mfw0AQ06Go5yXqkXKgeHOtpBntT+roVA
-         siVCLjP1q1g9j+9YHhnhrRfttrlOc6V6X8Fnzgtv4TZdFLS1v7M+B6y4KEjr+CS2nHEe
-         mhXA==
-X-Gm-Message-State: AGi0PubT7qzd5DgdX6rhPW3slf+3dfm8MHbPZYOamps6xh8IEBZ20bbk
-        5c2tgxZICJYLbcQfgeHIIJZP4hPhisE=
-X-Google-Smtp-Source: APiQypJ73bJM6PxpUfbG6vXTcl6G+xrXXy2TvCHqmviDyjTl9bjH8b6e9lMIZDGJyzVjqqHwrXyYpg==
-X-Received: by 2002:a5d:42c9:: with SMTP id t9mr21231809wrr.246.1589223160772;
-        Mon, 11 May 2020 11:52:40 -0700 (PDT)
+        bh=6tCYXE51QKC2s1xmH0RFoqrpk+5/XyGhBDt5mxX5Fgg=;
+        b=qkmkuwD3qL9ZsBTeHC2zz/7hIJy2WYW/TOHvN5GdGGC3sSd71HHPeMQKQ0HJzxrpLV
+         s58nyWsMRDpwFzT++GFgaVZbIrWwtU0ANgVTnB26hlNY3ueYN+DaYMHNnfaUijyFvoAj
+         zN6LoV/k3eAyWLlhUo/fQS7VmKgkqsGeToyw0qzH9euuXJ7RlcApKdPS5+zxOJESX+M1
+         9EmjR+Bs/y4Gvad5HZ+sp4ewG+0mZvnfSMcgJ7tNbiX9sv/XWTs78NPJQYV41ONd5eac
+         HB7opwNIzbZgDBGSu4I3bzar/nKNwz2KeQeMqc0/xMiWXhS1zHn496qmQ+Orc74XPIuI
+         n9tA==
+X-Gm-Message-State: AGi0PubHqWdZ64xFpVJ892YNIh+lE0/3mPrSTL3pVa5SoQCU5BySS9Ld
+        WWRcxUnC1PnDLYFSQ6p8D65vsAUi5+0=
+X-Google-Smtp-Source: APiQypJdJjKeskJNOdvLgJIGLZkTRNunPkWLYdb/o/Zebmz/DQsWn4FJs/l4EiZPpZU7Wy+F2zTOkg==
+X-Received: by 2002:a5d:5228:: with SMTP id i8mr20905349wra.359.1589223162200;
+        Mon, 11 May 2020 11:52:42 -0700 (PDT)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id 88sm19716885wrq.77.2020.05.11.11.52.39
+        by smtp.gmail.com with ESMTPSA id t6sm3543234wma.4.2020.05.11.11.52.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 11:52:40 -0700 (PDT)
+        Mon, 11 May 2020 11:52:41 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     dccp@vger.kernel.org, kernel-team@cloudflare.com,
@@ -54,11 +54,10 @@ Cc:     dccp@vger.kernel.org, kernel-team@cloudflare.com,
         Gerrit Renker <gerrit@erg.abdn.ac.uk>,
         Jakub Kicinski <kuba@kernel.org>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH bpf-next v2 13/17] bpf: Sync linux/bpf.h to tools/
-Date:   Mon, 11 May 2020 20:52:14 +0200
-Message-Id: <20200511185218.1422406-14-jakub@cloudflare.com>
+        Martin KaFai Lau <kafai@fb.com>
+Subject: [PATCH bpf-next v2 14/17] libbpf: Add support for SK_LOOKUP program type
+Date:   Mon, 11 May 2020 20:52:15 +0200
+Message-Id: <20200511185218.1422406-15-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.25.3
 In-Reply-To: <20200511185218.1422406-1-jakub@cloudflare.com>
 References: <20200511185218.1422406-1-jakub@cloudflare.com>
@@ -69,109 +68,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Newly added program, context type and helper is used by tests in a
-subsequent patch. Synchronize the header file.
+Make libbpf aware of the newly added program type, and assign it a
+section name.
 
-Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
 
 Notes:
     v2:
-    - Update after changes to bpf.h in earlier patch.
+     - Add new libbpf symbols to version 0.0.9. (Andrii)
 
- tools/include/uapi/linux/bpf.h | 52 ++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ tools/lib/bpf/libbpf.c        | 3 +++
+ tools/lib/bpf/libbpf.h        | 2 ++
+ tools/lib/bpf/libbpf.map      | 2 ++
+ tools/lib/bpf/libbpf_probes.c | 1 +
+ 4 files changed, 8 insertions(+)
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 9d1932e23cec..03edf4ec7b7e 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -188,6 +188,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_STRUCT_OPS,
- 	BPF_PROG_TYPE_EXT,
- 	BPF_PROG_TYPE_LSM,
-+	BPF_PROG_TYPE_SK_LOOKUP,
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 6c2f46908f4d..ccded6cd310a 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -6524,6 +6524,7 @@ BPF_PROG_TYPE_FNS(perf_event, BPF_PROG_TYPE_PERF_EVENT);
+ BPF_PROG_TYPE_FNS(tracing, BPF_PROG_TYPE_TRACING);
+ BPF_PROG_TYPE_FNS(struct_ops, BPF_PROG_TYPE_STRUCT_OPS);
+ BPF_PROG_TYPE_FNS(extension, BPF_PROG_TYPE_EXT);
++BPF_PROG_TYPE_FNS(sk_lookup, BPF_PROG_TYPE_SK_LOOKUP);
+ 
+ enum bpf_attach_type
+ bpf_program__get_expected_attach_type(struct bpf_program *prog)
+@@ -6690,6 +6691,8 @@ static const struct bpf_sec_def section_defs[] = {
+ 	BPF_EAPROG_SEC("cgroup/setsockopt",	BPF_PROG_TYPE_CGROUP_SOCKOPT,
+ 						BPF_CGROUP_SETSOCKOPT),
+ 	BPF_PROG_SEC("struct_ops",		BPF_PROG_TYPE_STRUCT_OPS),
++	BPF_EAPROG_SEC("sk_lookup",		BPF_PROG_TYPE_SK_LOOKUP,
++						BPF_SK_LOOKUP),
  };
  
- enum bpf_attach_type {
-@@ -220,6 +221,7 @@ enum bpf_attach_type {
- 	BPF_MODIFY_RETURN,
- 	BPF_LSM_MAC,
- 	BPF_TRACE_ITER,
-+	BPF_SK_LOOKUP,
- 	__MAX_BPF_ATTACH_TYPE
- };
+ #undef BPF_PROG_SEC_IMPL
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 8ea69558f0a8..7bb5a4f22740 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -346,6 +346,7 @@ LIBBPF_API int bpf_program__set_perf_event(struct bpf_program *prog);
+ LIBBPF_API int bpf_program__set_tracing(struct bpf_program *prog);
+ LIBBPF_API int bpf_program__set_struct_ops(struct bpf_program *prog);
+ LIBBPF_API int bpf_program__set_extension(struct bpf_program *prog);
++LIBBPF_API int bpf_program__set_sk_lookup(struct bpf_program *prog);
  
-@@ -3050,6 +3052,10 @@ union bpf_attr {
-  *
-  * int bpf_sk_assign(struct sk_buff *skb, struct bpf_sock *sk, u64 flags)
-  *	Description
-+ *		Helper is overloaded depending on BPF program type. This
-+ *		description applies to **BPF_PROG_TYPE_SCHED_CLS** and
-+ *		**BPF_PROG_TYPE_SCHED_ACT** programs.
-+ *
-  *		Assign the *sk* to the *skb*. When combined with appropriate
-  *		routing configuration to receive the packet towards the socket,
-  *		will cause *skb* to be delivered to the specified socket.
-@@ -3070,6 +3076,38 @@ union bpf_attr {
-  *					call from outside of TC ingress.
-  *		* **-ESOCKTNOSUPPORT**	Socket type not supported (reuseport).
-  *
-+ * int bpf_sk_assign(struct bpf_sk_lookup *ctx, struct bpf_sock *sk, u64 flags)
-+ *	Description
-+ *		Helper is overloaded depending on BPF program type. This
-+ *		description applies to **BPF_PROG_TYPE_SK_LOOKUP** programs.
-+ *
-+ *		Select the *sk* as a result of a socket lookup.
-+ *
-+ *		For the operation to succeed passed socket must be compatible
-+ *		with the packet description provided by the *ctx* object.
-+ *
-+ *		L4 protocol (*IPPROTO_TCP* or *IPPROTO_UDP*) must be an exact
-+ *		match. While IP family (*AF_INET* or *AF_INET6*) must be
-+ *		compatible, that is IPv6 sockets that are not v6-only can be
-+ *		selected for IPv4 packets.
-+ *
-+ *		Only TCP listeners and UDP sockets, that is sockets which have
-+ *		*SOCK_RCU_FREE* flag set, can be selected.
-+ *
-+ *		The *flags* argument must be zero.
-+ *	Return
-+ *		0 on success, or a negative errno in case of failure.
-+ *
-+ *		**-EAFNOSUPPORT** is socket family (*sk->family*) is not
-+ *		compatible with packet family (*ctx->family*).
-+ *
-+ *		**-EINVAL** if unsupported flags were specified.
-+ *
-+ *		**-EPROTOTYPE** if socket L4 protocol (*sk->protocol*) doesn't
-+ *		match packet protocol (*ctx->protocol*).
-+ *
-+ *		**-ESOCKTNOSUPPORT** if socket does not use RCU freeing.
-+ *
-  * u64 bpf_ktime_get_boot_ns(void)
-  * 	Description
-  * 		Return the time elapsed since system boot, in nanoseconds.
-@@ -4058,4 +4096,18 @@ struct bpf_pidns_info {
- 	__u32 pid;
- 	__u32 tgid;
- };
-+
-+/* User accessible data for SK_LOOKUP programs. Add new fields at the end. */
-+struct bpf_sk_lookup {
-+	__u32 family;		/* Protocol family (AF_INET, AF_INET6) */
-+	__u32 protocol;		/* IP protocol (IPPROTO_TCP, IPPROTO_UDP) */
-+	/* IP addresses allow 1,2,4-byte read and are in network byte order. */
-+	__u32 remote_ip4;
-+	__u32 remote_ip6[4];
-+	__u32 remote_port;	/* network byte order */
-+	__u32 local_ip4;
-+	__u32 local_ip6[4];
-+	__u32 local_port;	/* host byte order */
-+};
-+
- #endif /* _UAPI__LINUX_BPF_H__ */
+ LIBBPF_API enum bpf_prog_type bpf_program__get_type(struct bpf_program *prog);
+ LIBBPF_API void bpf_program__set_type(struct bpf_program *prog,
+@@ -373,6 +374,7 @@ LIBBPF_API bool bpf_program__is_perf_event(const struct bpf_program *prog);
+ LIBBPF_API bool bpf_program__is_tracing(const struct bpf_program *prog);
+ LIBBPF_API bool bpf_program__is_struct_ops(const struct bpf_program *prog);
+ LIBBPF_API bool bpf_program__is_extension(const struct bpf_program *prog);
++LIBBPF_API bool bpf_program__is_sk_lookup(const struct bpf_program *prog);
+ 
+ /*
+  * No need for __attribute__((packed)), all members of 'bpf_map_def'
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 0133d469d30b..2490c5e34297 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -262,4 +262,6 @@ LIBBPF_0.0.9 {
+ 		bpf_link_get_fd_by_id;
+ 		bpf_link_get_next_id;
+ 		bpf_program__attach_iter;
++		bpf_program__is_sk_lookup;
++		bpf_program__set_sk_lookup;
+ } LIBBPF_0.0.8;
+diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+index 2c92059c0c90..5c6d3e49f254 100644
+--- a/tools/lib/bpf/libbpf_probes.c
++++ b/tools/lib/bpf/libbpf_probes.c
+@@ -109,6 +109,7 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
+ 	case BPF_PROG_TYPE_STRUCT_OPS:
+ 	case BPF_PROG_TYPE_EXT:
+ 	case BPF_PROG_TYPE_LSM:
++	case BPF_PROG_TYPE_SK_LOOKUP:
+ 	default:
+ 		break;
+ 	}
 -- 
 2.25.3
 
