@@ -2,98 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06E261CE90A
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 01:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E44211CE94F
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 01:48:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726173AbgEKX2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 19:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38906 "EHLO
+        id S1728050AbgEKXrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 19:47:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725836AbgEKX2D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 19:28:03 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941E6C061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 16:28:03 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id u5so2660644pgn.5
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 16:28:03 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725854AbgEKXrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 19:47:21 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4FBC061A0C;
+        Mon, 11 May 2020 16:47:21 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id 18so5474776pfx.6;
+        Mon, 11 May 2020 16:47:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ucol5IbLTP6u06Wtjgq3+uxk05B29oz3kzR4nXUwo+4=;
-        b=J7rSJdlt0cUSeyW8XEaTCN8D4FKhKpssZZA4pzv7swU3T5eA0vie0oApA5Rbg3JJlF
-         P8tDXtpZY46GJgTRrQSMmBBSLd0jufhi9unaHfDSSM324c3paEazdlHRU7o50bC2lbZC
-         ANc7ot8UeVM8oAbj9bFHzV0F5SlPxq0H01BOGM2R80I4y5YquoT/ayoq2m/ANU+DKqcK
-         TZiWCIzrFXeiIZ0TNkmKKBxmobVzVd04nN75AmCJOnjFurFr2140CGuRrDyp0vloL79t
-         nAYbilT9ozljVbsS3tszC4QKDwooR3C9gVhVSIxqvhgbTZ8u/PKgIDEtMhPsRtG2HyXN
-         OWkA==
+        h=from:to:cc:subject:date:message-id;
+        bh=L6AglJXCa+EJEHahDbV4YE95BEBUMI16CtBRayEme+o=;
+        b=r6fZnmIauZZ/IYawlQTWe2DEKcrw3IZUcO3CwzUbBIq+sGXUYNnlwegTj4sOMm/G/n
+         147ZVuIT/5JltcIDDJaG8HpFBDKxuP6OiF2s7YnyNgL55KyYUsL06iki5O7caDUHwXxa
+         UaVpVMT6wZTNhG3wW8XuSM+YhejfRzoZtRfvrog6kg8mcIpUAjL53w4MUAmn9zEjksla
+         Tg/Fy0ZugW8Gw8/HMYA3t+qXTDuj1LDjo9KrnoMxSIJSeSQuKv7zDTDb4OWCV7JrAJQ1
+         f4jzrpZyNw83pBonz0BWf24XhW8UYh2YzVJbq8Sh/6rGfFYJMrGRK0wyaAyHufTzJlAZ
+         272Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ucol5IbLTP6u06Wtjgq3+uxk05B29oz3kzR4nXUwo+4=;
-        b=nbIyETC3LNVXL+o7i0geKO6+l8EZ1h5W0VuB7K9xzjhK5J7mM5yCbtUjM1ygFT/krz
-         8Ya05WcSZVyLTx7XdVTCTsh5HjJoXX9PJIgxACnCI5ugKU1NMadRwWsg3RKEPQGkr4iC
-         SCkc8iVwJPOngBikW4OsE2/Wb3FBeB+5XbCsE50vHs3mUSjdVO9WTKjTIonf/8owSkiT
-         9y1CCTofnnPPQTwO2kfcx2Cj4PNdPJakwQyeXrHmx9AF4XTTM5g/CcZT2vPa4HMhHQfs
-         utStxW/W7er5oi6rwecaztxUVd5BiV6z2cdw+/EcCaPCUoNkEgKZj/Jih9RInyfnCqmN
-         pnuA==
-X-Gm-Message-State: AGi0PuZCm+dfDtbf7V+79mahuAlg0COG4MlCxHD9Si0fEr4w8PiGTT70
-        EaIW5yxprkAFJaevOklJLKA8CKaZ
-X-Google-Smtp-Source: APiQypJUx5U45np/lZdfMfoJviiCzF7ubOttwzb8zZ4PPtW2D2xF1cfrxMxp4wDCZ/TtgE3W5a0Qdw==
-X-Received: by 2002:a62:7981:: with SMTP id u123mr18704551pfc.200.1589239682716;
-        Mon, 11 May 2020 16:28:02 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id h13sm8813203pgm.69.2020.05.11.16.28.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 May 2020 16:28:02 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/4] DSA: promisc on master, generic flow
- dissector code
-To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
-        vivien.didelot@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-References: <20200511202046.20515-1-olteanv@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=L6AglJXCa+EJEHahDbV4YE95BEBUMI16CtBRayEme+o=;
+        b=mhW2NjN9y7LzVGktpU6dfUipfBlay2PEI+RSgak4q3ROPF4QWqvfsLyoYEUWS1idIm
+         MBZMnocRyo06ceWE+xdTHYRDeJYYMVuKVYUOnLGn2bM+4Z4ZJaVzrEFRrEmGEt/io+dw
+         Bk7EpMqGyZqYApnGJ9C0dM40mQ/obwtlPBIEdkCDaSgi6WTFTtP0yb0NNFQz6wWU3kDW
+         r9j6zq7YYnRZKCfUEeoZmqOXYYqoYFzimrqvUBTIJ61vKb31WaBZcMDK39ra0eZD0Gay
+         j6Y7GhePX2bgXTqG/sLMNjL4fNDAYXngOg1jjuaC6pPC0Di5Gf/ZmylgkqbZXBmsZXzL
+         n3vQ==
+X-Gm-Message-State: AGi0PuYvptZyFoPUa9kO8WRTihjD9AN/rQWiDAYshUoFnyiMkARB+vXu
+        nuZlo2FLgIjrINQRrMUk92DbAQq2
+X-Google-Smtp-Source: APiQypJxJqV1PMuLyo3VOEIat3+8TE7/PT6bqvnfvVEdvScRA13or5TkjU6aSxePYezQYJS510odMg==
+X-Received: by 2002:aa7:9689:: with SMTP id f9mr18232016pfk.24.1589240839912;
+        Mon, 11 May 2020 16:47:19 -0700 (PDT)
+Received: from localhost.localdomain ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id e21sm3455317pga.71.2020.05.11.16.47.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2020 16:47:19 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <525db137-0748-7ae1-ed7f-ee2c74820436@gmail.com>
-Date:   Mon, 11 May 2020 16:28:00 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200511202046.20515-1-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next 0/2] net: dsa: Constify two tagger ops
+Date:   Mon, 11 May 2020 16:47:13 -0700
+Message-Id: <20200511234715.23566-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch series constifies the dsa_device_ops for ocelot and sja1105
 
+Florian Fainelli (2):
+  net: dsa: ocelot: Constify dsa_device_ops
+  net: dsa: tag_sja1105: Constify dsa_device_ops
 
-On 5/11/2020 1:20 PM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> The initial purpose of this series was to implement the .flow_dissect
-> method for sja1105 and for ocelot/felix. But on Felix this posed a
-> problem, as the DSA headers were of different lengths on RX and on TX.
-> A better solution than to just increase the smaller one was to also try
-> to shrink the larger one, but in turn that required the DSA master to be
-> put in promiscuous mode (which sja1105 also needed, for other reasons).
-> 
-> Finally, we can add the missing .flow_dissect methods to ocelot and
-> sja1105 (as well as generalize the formula to other taggers as well).
+ net/dsa/tag_ocelot.c  | 2 +-
+ net/dsa/tag_sja1105.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-On a separate note, do you have any systems for which it would be
-desirable that the DSA standalone port implemented receive filtering? On
-BCM7278 devices, the Ethernet MAC connected to the switch is always in
-promiscuous mode, and so we rely on the switch not to flood the CPU port
-unnecessarily with MC traffic (if nothing else), this is currently
-implemented in our downstream kernel, but has not made it upstream yet,
-previous attempt was here:
-
-https://www.spinics.net/lists/netdev/msg544361.html
-
-I would like to revisit that at some point.
 -- 
-Florian
+2.17.1
+
