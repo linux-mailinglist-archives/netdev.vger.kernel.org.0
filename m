@@ -2,144 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0BDB1CD27D
-	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 09:21:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 549D21CD287
+	for <lists+netdev@lfdr.de>; Mon, 11 May 2020 09:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728344AbgEKHVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 03:21:55 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:57880 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725854AbgEKHVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 03:21:55 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200511072153euoutp01441b129c10730bcc985a3baf45d30e5d~N6FlPqiOI0516305163euoutp01z
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 07:21:53 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200511072153euoutp01441b129c10730bcc985a3baf45d30e5d~N6FlPqiOI0516305163euoutp01z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1589181713;
-        bh=jQRxiTgD4oOfOKqSBy9Ct17nVvYdxO/psoLyZ57ucyw=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=UhZPMmT/wO0VL9zPQTSK4UVRthzUQ9Kb6bQtBaUpKzOWtLseVTyq2k1sIxgZJsj27
-         Qy5WBSmiZiF0BlU6hi/t2yTMY7gfbaNwrk8GLOOim6U8e8B0juLnkF1k7mRL4zP3De
-         QFhmw/yREW55syDFBUQYZfu8E8wpGLyhu+8QQM10=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20200511072153eucas1p170a81c937518e91b4647fbe31fed997a~N6FkoEmeT1948519485eucas1p1A;
-        Mon, 11 May 2020 07:21:53 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 59.AB.60698.11DF8BE5; Mon, 11
-        May 2020 08:21:53 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20200511072152eucas1p1c4f79bc7f9c15ac02a53dea588dd81f2~N6FkLVRxB0395203952eucas1p1E;
-        Mon, 11 May 2020 07:21:52 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200511072152eusmtrp277847a9e6cb84e3fa579d878a385edcf~N6FkKhgDT0543805438eusmtrp2U;
-        Mon, 11 May 2020 07:21:52 +0000 (GMT)
-X-AuditID: cbfec7f5-a0fff7000001ed1a-2e-5eb8fd11a6f7
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id D9.2C.08375.01DF8BE5; Mon, 11
-        May 2020 08:21:52 +0100 (BST)
-Received: from [106.210.88.143] (unknown [106.210.88.143]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200511072151eusmtip2fa15b1726e2446d57ae835d8dcebd949~N6FjcpNOe0762807628eusmtip2W;
-        Mon, 11 May 2020 07:21:51 +0000 (GMT)
-Subject: Re: [PATCH net] net: broadcom: Imply BROADCOM_PHY for BCMGENET
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     nsaenzjulienne@suse.de, wahrenst@gmx.net,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tal Gilboa <talgi@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Andy Gospodarek <gospo@broadcom.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <350c88a9-eeaf-7859-d425-0ee4ca355ed3@samsung.com>
-Date:   Mon, 11 May 2020 09:21:51 +0200
+        id S1728483AbgEKHYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 03:24:51 -0400
+Received: from mail-eopbgr80050.outbound.protection.outlook.com ([40.107.8.50]:28132
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728017AbgEKHYv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 May 2020 03:24:51 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RRkJAnjgmhQMShz1DsBgaO91z2l6sleLH7ESJfdTwe9Ni8oDcYxmI3Kts4mkvcnxiuAK5kOLj12YSWc/Kq0QK4jVRauvYfG6U5HadxyDJMwMPTYhH07ea8Cnf73LiDNQc1M36dMkqeWE3T7X+4UNG2BdVB+4k5P8S6Lr26D+kTJZc758dvaPmUI2X0ZH+xrA6pXKGbCzASFxRp/1M6zROVXB1ayNbJ8ddZBcUf4yJZq6cyquu9IWK7743waVwa9wcziCkPm78Lup5eK6QHRzxmNLObNOzz0Q6bQNPtRQVzh5P8iAouLqfqaSaiDElhM/6vUqYe/Z2+gmZlaDOY8k2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TXH7HC8cgeE7LiUHT5zRSeVm+VVki1yCFW5LWNYzIR8=;
+ b=Fez8KYx6O1MnP4TO86lr7b6//AMScuddvKiehdfWZLTroc8cRF8pDmzFHTQPBTuYSB6R8Ey9xSSDHt/1kfqMCPLHYaq0cEIpN3u4Mdza2EWpICXLIdlSAJXGKyDeYRwV/E9g2568vmqesnhcPjUI8BC3GF1qGi4z1l/hR/iqQxRukice9/pnDI2EsqWiwtl4eolrS1HaMA/XMPQJ56r5Uns77bvXZo7l4Z1fX+qqHUkpxLUDVa8cuyYVNeBCSWgN/Sj6gvIuljJv5JTwwo7KGV5wOid4Yh4vB2tUXeaBHO2gbFQDIHM2oS6EUu3//JeVeMcjEGB7DrOeR+AIPDrCbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TXH7HC8cgeE7LiUHT5zRSeVm+VVki1yCFW5LWNYzIR8=;
+ b=qE7NWmfvAsiA9kd+e2YWcYSrvUHQtFNPJuc8krutUt/sviO7FOOJNSzPjmL9/9HUyq8o3U62eVcDYbkPWCrOvbhdm2CitByi2jbzeW/0SIsKA4V4JeYX+2gHaoafySr6w5GkFFnNVa86DtOWK25+v/7VqSMwl+pWRwwVaZkKBcI=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (2603:10a6:20b:11::14)
+ by AM6PR05MB4837.eurprd05.prod.outlook.com (2603:10a6:20b:6::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.33; Mon, 11 May
+ 2020 07:24:47 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::f5bd:86c3:6c50:6718]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::f5bd:86c3:6c50:6718%7]) with mapi id 15.20.2979.033; Mon, 11 May 2020
+ 07:24:46 +0000
+Subject: Re: [PATCH net] netfilter: flowtable: Fix expired flow not being
+ deleted from software
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Oz Shlomo <ozsh@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        netfilter-devel@vger.kernel.org
+References: <1588764449-12706-1-git-send-email-paulb@mellanox.com>
+ <20200510222640.GA11645@salvia>
+From:   Paul Blakey <paulb@mellanox.com>
+Message-ID: <a420c22a-9d52-c314-cf9b-ee19831e15a7@mellanox.com>
+Date:   Mon, 11 May 2020 10:24:44 +0300
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
-        Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200508223216.6611-1-f.fainelli@gmail.com>
+ Thunderbird/68.6.0
+In-Reply-To: <20200510222640.GA11645@salvia>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUhTYRiGe8852zlOZ8e58sGsYFCQ5BcGHjG0UPKEBPUrCDRXHvzIrzY1
-        LQj7QNxSTMNmU9MmoQ7McjqnYuIMVy2n6Y/UTBFNVFIJNZaU5nay/Hffz3vdPPcDL4VLPgu8
-        qeT0LE6RLk+VCUWEsf/noJ/Hb1NcYMVTkqkavE8wG8tvSKa6sgwxDS91Amaks0rIlOqbhEx/
-        7X7GqK0XMksTGoJ5XN1NMoaWcpyxvFXhp9xY7dSAkG1tHMPY0gE/tkP7hWTrWnqErKHBl122
-        2Uh2TtOHsQbrLXa15dB50SXRyQQuNTmHUwSEx4uS7NMrgkyVa+6kbpjMR5uUGrlQQJ+A8ZIP
-        mBqJKAndgMA8Xy3gzRqC9TsqxJtVBGNdfYKdyIPFyr+RegRtH8sI3qwg6F/twRyUJx0Nkx31
-        zoSUjgTNJz3pgHB6DYNVY4HzQUgHgXpJLXRoMR0OBUUqwqEJ+gg0lkw5mX10LFjrDIhnPODd
-        k1kn40KHgm7O5GRw+jC0L1XhvPaC8dkaZz2g10koHTdifO8oKJwoJHjtCYuWVpLXPrDVsRO4
-        h2Da1kTypgjByN0KxFNhMGHb2K5Kba84Bs2dAfz4NJhn5jHHGGh3GF3y4Eu4Q5lRg/NjMRQW
-        SHj6KGgtL/6t7R0axh8imXbXadpd52h3naP9v7cWEXrkxWUr0xI5ZXA6d8NfKU9TZqcn+l/N
-        SGtB21/OumlZN6HXv66YEU0hmZvYftAUJxHIc5R5aWYEFC6TitnJ7ZE4QZ53k1NkXFZkp3JK
-        MzpAETIvcbBuIVZCJ8qzuGscl8kpdl4xysU7H41EU++lgRcubsR8Tc3pcnOvbGseKg+QpIRl
-        XsdTtkJKnuUeLo9Qxz8a7dDYjluxSJ19it6jemW/XcOZrd+7i/XTPqXSH9WturDes3ULUeJk
-        S2jK4Le2jdxzRlf/mYrFRB0VHWz0LW58Ltc3cHtjfEKohXaf6ZmK7jPLfd0R2TJCmSQP8sUV
-        Svkf4DNxam4DAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrLIsWRmVeSWpSXmKPExsVy+t/xe7oCf3fEGby8oWgx53wLi8Wvd0fY
-        LebOnsRosWLDIlaLy7vmsFlMXLWWzeLYAjGLbbOWs1m8vTOdxWLa3L3sFps3TWW2OH6ik9mB
-        x2PW/bNsHltW3mTymHhW12PnrLvsHos37Wfz2LxCy+PduXPsHs+mH2by2Hy62uPzJrkArig9
-        m6L80pJUhYz84hJbpWhDCyM9Q0sLPSMTSz1DY/NYKyNTJX07m5TUnMyy1CJ9uwS9jB8P37MW
-        dHJX3Ft0ib2B8R9HFyMnh4SAiUT3q9lMXYxcHEICSxkl7myfyQ6RkJE4Oa2BFcIWlvhzrYsN
-        ougto8Th/4/AioQF3CXu7VwOViQi4Cwx/foqdpAiZoFvTBInZvcxQ3T0MErMfrmDGaSKTcBQ
-        oustyChODl4BO4m2nk4WEJtFQFViZf99sEmiArESq6+1MkLUCEqcnPkErIZTwFJi0bMdYDXM
-        AmYS8zY/ZIaw5SW2v50DZYtL3Hoyn2kCo9AsJO2zkLTMQtIyC0nLAkaWVYwiqaXFuem5xYZ6
-        xYm5xaV56XrJ+bmbGIFRve3Yz807GC9tDD7EKMDBqMTDG6CwI06INbGsuDL3EKMEB7OSCK/H
-        PaAQb0piZVVqUX58UWlOavEhRlOg5yYyS4km5wMTTl5JvKGpobmFpaG5sbmxmYWSOG+HwMEY
-        IYH0xJLU7NTUgtQimD4mDk6pBsbeN8q3fJ8sCe8yiN7Io2kSV9BZ8qhN8FWlp5jTyc+zdX6V
-        d15Jm7c+Rn+umltqffmOaJlmj/OT7D6cfXjL3j9Yyq5ZZ4636NQ+Vg+Vdf6viyL1WgunSuif
-        zpkrsvhv6eKPP3TvihU1FLgdVtOYGTDxzan7Aj26DyqqTm+aPyPA6Vr+uvy8OUosxRmJhlrM
-        RcWJAF3vnFAAAwAA
-X-CMS-MailID: 20200511072152eucas1p1c4f79bc7f9c15ac02a53dea588dd81f2
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200508223228eucas1p252dd643b4bedf08126cf6af4788f9b01
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200508223228eucas1p252dd643b4bedf08126cf6af4788f9b01
-References: <CGME20200508223228eucas1p252dd643b4bedf08126cf6af4788f9b01@eucas1p2.samsung.com>
-        <20200508223216.6611-1-f.fainelli@gmail.com>
+X-ClientProxiedBy: AM0PR10CA0059.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::39) To AM6PR05MB5096.eurprd05.prod.outlook.com
+ (2603:10a6:20b:11::14)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.50.62] (5.29.240.93) by AM0PR10CA0059.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28 via Frontend Transport; Mon, 11 May 2020 07:24:45 +0000
+X-Originating-IP: [5.29.240.93]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: d213115b-2a99-437c-d7a0-08d7f57c620a
+X-MS-TrafficTypeDiagnostic: AM6PR05MB4837:|AM6PR05MB4837:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB4837AB145531A06EC031F888CFA10@AM6PR05MB4837.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 04004D94E2
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QYungjOogOWvgdNp1+Cn6TiyslIUUUwHg33iUX9DjBobTGFdLHmtsHzhNornNZKUHmu1Wm3T5mbJ4CNDXOBRhkv78pit9xV1rSk+A431Yz6NxtXc8+dl0yEwPkoz6q1LT9s21NszofpKHIPEhgrm+f0zwyLGjFJJdQ/5tRurzIT3UEjiZk8Q0jzy+YxBknbxyLuPhBT3sXuzgdVRm5J2S+jJ8NU0l0RG7diHlVYFUCb2Do/Eff1983HXs9r+8EAZTui7yDCrW+THkoRGntwoNxNnXDy/8+DnoVE8RTL1AvZ6FDl2eITkc6SgHmZUcZYTw51EwqLnNFHuQD06MSv0oyZGY+93mTRvHtM4A2Opm2j1DMOH66v92MHXK4eKrnxtngIStLw2OS8Jo3HvXppnI9Cus4R5VoqR39waioAblyv4GVdAHkPuRmOI8j9keinP9wtXpu8CiGr9x845Zx99ytyn6WOBAqWiLcWleYPj4okoy3Jv1uq3OlLs08B11niIbDhjzyBM+FuBb1kBHK8ZyJkkLiArkrqi4HgdT7PnKFPfmIBTBGPn08OfKh+U/44P
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB5096.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(39860400002)(376002)(346002)(396003)(136003)(33430700001)(26005)(53546011)(2616005)(956004)(16576012)(4326008)(31696002)(6916009)(478600001)(316002)(54906003)(66556008)(31686004)(66476007)(8676002)(186003)(33440700001)(66946007)(86362001)(52116002)(36756003)(2906002)(6486002)(16526019)(8936002)(5660300002)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: fMHVGKmIg/yXXg48WvJUR189zzJxXp6IQtWbfQh0lzqJOGWiACM3dYcJpgRganvqBk7J6U48CtQioDihJT4dm3XShWL6KswB1FU+fBmHsumqURUOHivkn0Lf0TNeC2TIMYP4wVLznuZ28y78FrrP0w/j4RgvVk9jzB92K6Y8bs0jBIdDiFVk7CuVXcqilcam/eoUv+BYHnfOKsZlJacF+AQx/ZqPctIGkiQMM8tHaCAnqoYlCJGxI9IOMVAJ3ETd2CMrotzd2nr+f+6T+mzB4MMqiKc5/V4M+sFJC0z3QOQ5mqgIVTatQV1H4rKl9Jh0qeUCsNIFzVsUXcTEWoiXvarmBJku/3AJL2Mvcj7TiLfOHv6ZGzYJj23wXl9sSSBtqv0Q/9dNzoTKDH3augj2z9FBjtQgn2Kkj3eBY04t2Xe4/sdKz3LmaNsE8ky5rico25rfA/UrSLief+2J9UqR4rkRdVdMMjNm29SEBYKNZkg=
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d213115b-2a99-437c-d7a0-08d7f57c620a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2020 07:24:46.7751
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rx6Dk9Ajsb/XI9wTElGLB51O8hbM533w/DO2bejx33hkh3Urlp9nr/8nysVtLjRlcX0QIi9fK/OsaYJh96frcA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4837
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
 
-On 09.05.2020 00:32, Florian Fainelli wrote:
-> The GENET controller on the Raspberry Pi 4 (2711) is typically
-> interfaced with an external Broadcom PHY via a RGMII electrical
-> interface. To make sure that delays are properly configured at the PHY
-> side, ensure that we get a chance to have the dedicated Broadcom PHY
-> driver (CONFIG_BROADCOM_PHY) enabled for this to happen.
+
+On 5/11/2020 1:26 AM, Pablo Neira Ayuso wrote:
+> On Wed, May 06, 2020 at 02:27:29PM +0300, Paul Blakey wrote:
+>> Once a flow is considered expired, it is marked as DYING, and
+>> scheduled a delete from hardware. The flow will be deleted from
+>> software, in the next gc_step after hardware deletes the flow
+>> (and flow is marked DEAD). Till that happens, the flow's timeout
+>> might be updated from a previous scheduled stats, or software packets
+>> (refresh). This will cause the gc_step to no longer consider the flow
+>> expired, and it will not be deleted from software.
+>>
+>> Fix that by looking at the DYING flag as in deciding
+>> a flow should be deleted from software.
+> Would this work for you?
 >
-> Fixes: 402482a6a78e ("net: bcmgenet: Clear ID_MODE_DIS in EXT_RGMII_OOB_CTRL when not needed")
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-> David,
+> The idea is to skip the refresh if this has already expired.
 >
-> I would like Marek to indicate whether he is okay or not with this
-> change. Thanks!
+> Thanks.
 
-It is better. It fixes the default values for ARM 32bit 
-bcm2835_defconfig and ARM 64bit defconfig, so you can add:
-
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-There is still an issue there. In case of ARM 64bit, when Genet driver 
-is configured as a module, BROADCOM_PHY is also set to module. When I 
-changed Genet to be built-in, BROADCOM_PHY stayed selected as module. 
-This case doesn't work, as Genet driver is loaded much earlier than the 
-rootfs/initrd/etc is available, thus broadcom phy driver is not loaded 
-at all. It looks that some kind of deferred probe is missing there.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+The idea is ok, but timeout check + update isn't atomic (need atomic_inc_unlesss
+or something like that), and there is also
+the hardware stats which if comes too late (after gc finds it expired) might
+bring a flow back to life.
