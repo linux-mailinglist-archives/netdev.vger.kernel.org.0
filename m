@@ -2,236 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA8C11CF3E3
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 13:57:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 818221CF441
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 14:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729707AbgELL5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 07:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726187AbgELL5v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 07:57:51 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBF9C061A0C
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 04:57:49 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id l18so14993126wrn.6
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 04:57:49 -0700 (PDT)
+        id S1729593AbgELMUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 08:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728283AbgELMUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 08:20:33 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B227BC061A0E
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 05:20:32 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id s19so570417edt.12
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 05:20:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=3+1UCndI9AXECNjAszE65h8ymzBGEnwP0Tn3NvmhVbM=;
-        b=hMshJeAipdM0jP2BQh5thdVg0AnuDfmz7Wkybc9ckxXSzdyl62xm5aaWkdbR64zn7a
-         0XPJOVJ5kAmPHTtJnCqfejZgfzLZI5GpyBHADub/n5XvLC64DHT1Oo8rq+NKH/1x+EH7
-         q3fvF0rJ70gcWagx/EP+ISGrGzyLsHZFCGeJA=
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=dfndLEAFWMHiq8PNDhbKXZ6w0PxFKtDzhdO+tfGbV1I=;
+        b=jXk/FUwbyve9z2Vq16vIf5W+44E6SqIdp7NadEZ50vBU79j2LGR5nvSRDsiVJ98diI
+         TP5rCdB03nhhF6gm4afBRcWT3Gg4qGpS1DFpNvw8l7CQ1QRQDpX9NWx8lBfACqaKaRLx
+         q3xiP2WnUiSnDH68eAU1m9io/SICFFWGVxdMGHLOuffF2IFZg3CUvGM2Aa5Zn9ooTB9X
+         v+wj+tet/+NPMtMK5EzaEnJ0EfSFSKqMsiZFWteULacGY/Y7XjfWUlNB66WL/P5l4aCQ
+         9ZrMk9uv7IRn/Gf3pSIQHUcCHuqtJMmQwq7W6U/9qjsIqj1clYYiXi0g2USQqoo/PKFq
+         pA7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version:content-transfer-encoding;
-        bh=3+1UCndI9AXECNjAszE65h8ymzBGEnwP0Tn3NvmhVbM=;
-        b=WgfZc+FBZjihDwikSJl4rjq9+If5WOEVNQ+tpMkvafj+bmzmXBrBt2c8cai/NHlPyW
-         ebeBWxcUpQcDDLDwrg0MtfrYjMDRX+Pj5EQRcWZVXm2Q+K1V8D0i8FrGY2ZIpWEs1tVf
-         HxPN2B6maQj9L++wyuVrrHNA7Ve51zYkV+/n+e+gJEQZgtzWU8osKB/Ee1W4Y38s/YZk
-         ypw4dq4ehzLIZ/oE4efyFL6Cky8DBBftcygwvOWVpA/avBaqSIjP5/IzqC/Qxw7Ig2eu
-         1NxFGm/Uk5dG59fWo9/3OFZy+w5Ak+1UtVE47WS9FOTDETLrX2iXmuAFEL2mFyCnJ4v5
-         JOBA==
-X-Gm-Message-State: AGi0PuZ3H5f5FKy/Ci5dnNGqWQ6TEIrD4iesafCPPHB1woafaGS1UsUg
-        g8D8wZiSD6KVi2KPIWh4t1Fjzg==
-X-Google-Smtp-Source: APiQypIiieCVQbqmIPE4X2PTSsXEHDaKz6VBIRYLAVcW3jOS3STlVT4jJihvEo7MLcz3fU0TVxip2g==
-X-Received: by 2002:adf:e511:: with SMTP id j17mr26735518wrm.204.1589284667329;
-        Tue, 12 May 2020 04:57:47 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id g184sm16978351wmg.1.2020.05.12.04.57.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 04:57:46 -0700 (PDT)
-References: <20200511185218.1422406-1-jakub@cloudflare.com> <20200511194520.pr5d74ao34jigvof@kafai-mbp.dhcp.thefacebook.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, dccp@vger.kernel.org,
-        kernel-team@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: Re: [PATCH bpf-next v2 00/17] Run a BPF program on socket lookup
-In-reply-to: <20200511194520.pr5d74ao34jigvof@kafai-mbp.dhcp.thefacebook.com>
-Date:   Tue, 12 May 2020 13:57:45 +0200
-Message-ID: <873685v006.fsf@cloudflare.com>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=dfndLEAFWMHiq8PNDhbKXZ6w0PxFKtDzhdO+tfGbV1I=;
+        b=bSgx84e4/qE3eJTiU/WcW2TRl518YPdnGGEMr55ptUMWIfXvJb9/jeD8tdgSXttxmn
+         YNv8DQE2Zo52mtX2b8nbnwafAp4+50BxUchh13nWclzCHDp2bnC2mBA30CT8IDpopCrs
+         QPjVpw5EYPt44pJ87F84PIhT2iGIjnjA2aASW0SeG8MUAZGWumGD/Hpd/LYeZTbMIw4h
+         vw5g5ioJl6Ox8MacIQrSs95ciDrXb0opoxDtuJMyg8U3N5tIJkbACXU+vLuLPSJKjeTa
+         2C0yf/kmy2fDXOTK8RxO07b/BzB3oCxUSH/hL3UQBPfkTR4mPcxxOOyfi+O9uHWHcdEZ
+         518A==
+X-Gm-Message-State: AGi0Puaau8kNfgvKP2aLBiO4R5ycrNJ1D0jySJiRITABqqZiatS9zxZg
+        MCcy3OJ4JSRoRM0EFJ9S57dlcmE5hu2W3/3B06Be8g==
+X-Google-Smtp-Source: APiQypI5M3tIAgW1oeY88MuuQ1jQY7PsOWLzmWcKtrMp8mfWy8c3JUyRAWTXOqefzjLfW/pxecaQgCQ1AvoMt8nlI2M=
+X-Received: by 2002:aa7:d342:: with SMTP id m2mr17264432edr.130.1589286031413;
+ Tue, 12 May 2020 05:20:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Received: by 2002:a50:7497:0:0:0:0:0 with HTTP; Tue, 12 May 2020 05:20:30
+ -0700 (PDT)
+X-Originating-IP: [5.35.46.227]
+In-Reply-To: <002e01d6282e$b94ee390$2becaab0$@xen.org>
+References: <1589192541-11686-1-git-send-email-kda@linux-powerpc.org>
+ <1589192541-11686-3-git-send-email-kda@linux-powerpc.org> <000c01d62787$f2e59a10$d8b0ce30$@xen.org>
+ <CAOJe8K0UqZmc9nDYC2OZRnhvE-LgUjuta_-33Of6=wVVSCDnwg@mail.gmail.com>
+ <000e01d6278d$ab04aa50$010dfef0$@xen.org> <CAOJe8K2uoDvD5MJOuhB0wTNL7w4PROQyrifzhrCANkrJ2quY=A@mail.gmail.com>
+ <002e01d6282e$b94ee390$2becaab0$@xen.org>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Tue, 12 May 2020 15:20:30 +0300
+Message-ID: <CAOJe8K0sD8awo+A3YLycJ6P8fNt9Y3XtY9eb7eysu33jej_fBg@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 2/2] xen networking: add XDP offset adjustment
+ to xen-netback
+To:     paul@xen.org
+Cc:     netdev@vger.kernel.org, brouer@redhat.com, jgross@suse.com,
+        wei.liu@kernel.org, ilias.apalodimas@linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 09:45 PM CEST, Martin KaFai Lau wrote:
-> On Mon, May 11, 2020 at 08:52:01PM +0200, Jakub Sitnicki wrote:
+On 5/12/20, Paul Durrant <xadimgnik@gmail.com> wrote:
+>> -----Original Message-----
+>> From: Denis Kirjanov <kda@linux-powerpc.org>
+>> Sent: 11 May 2020 18:22
+>> To: paul@xen.org
+>> Cc: netdev@vger.kernel.org; brouer@redhat.com; jgross@suse.com;
+>> wei.liu@kernel.org;
+>> ilias.apalodimas@linaro.org
+>> Subject: Re: [PATCH net-next v9 2/2] xen networking: add XDP offset
+>> adjustment to xen-netback
+>>
+>> On 5/11/20, Paul Durrant <xadimgnik@gmail.com> wrote:
+>> >> -----Original Message-----
+>> >> From: Denis Kirjanov <kda@linux-powerpc.org>
+>> >> Sent: 11 May 2020 13:12
+>> >> To: paul@xen.org
+>> >> Cc: netdev@vger.kernel.org; brouer@redhat.com; jgross@suse.com;
+>> >> wei.liu@kernel.org;
+>> >> ilias.apalodimas@linaro.org
+>> >> Subject: Re: [PATCH net-next v9 2/2] xen networking: add XDP offset
+>> >> adjustment to xen-netback
+>> >>
+>> >> On 5/11/20, Paul Durrant <xadimgnik@gmail.com> wrote:
+>> >> >> -----Original Message-----
+>> >> >> From: Denis Kirjanov <kda@linux-powerpc.org>
+>> >> >> Sent: 11 May 2020 11:22
+>> >> >> To: netdev@vger.kernel.org
+>> >> >> Cc: brouer@redhat.com; jgross@suse.com; wei.liu@kernel.org;
+>> >> >> paul@xen.org;
+>> >> >> ilias.apalodimas@linaro.org
+>> >> >> Subject: [PATCH net-next v9 2/2] xen networking: add XDP offset
+>> >> >> adjustment
+>> >> >> to xen-netback
+>> >> >>
+>> >> >> the patch basically adds the offset adjustment and netfront
+>> >> >> state reading to make XDP work on netfront side.
+>> >> >>
+>> >> >> Signed-off-by: Denis Kirjanov <denis.kirjanov@suse.com>
+>> >> >> ---
+>> >> >>  drivers/net/xen-netback/common.h  |  2 ++
+>> >> >>  drivers/net/xen-netback/netback.c |  7 +++++++
+>> >> >>  drivers/net/xen-netback/rx.c      |  7 ++++++-
+>> >> >>  drivers/net/xen-netback/xenbus.c  | 28
+>> >> >> ++++++++++++++++++++++++++++
+>> >> >>  4 files changed, 43 insertions(+), 1 deletion(-)
+>> >> >>
+>> >> >> diff --git a/drivers/net/xen-netback/common.h
+>> >> >> b/drivers/net/xen-netback/common.h
+>> >> >> index 05847eb..4a148d6 100644
+>> >> >> --- a/drivers/net/xen-netback/common.h
+>> >> >> +++ b/drivers/net/xen-netback/common.h
+>> >> >> @@ -280,6 +280,7 @@ struct xenvif {
+>> >> >>  	u8 ip_csum:1;
+>> >> >>  	u8 ipv6_csum:1;
+>> >> >>  	u8 multicast_control:1;
+>> >> >> +	u8 xdp_enabled:1;
+>> >> >>
+>> >> >>  	/* Is this interface disabled? True when backend discovers
+>> >> >>  	 * frontend is rogue.
+>> >> >> @@ -395,6 +396,7 @@ static inline pending_ring_idx_t
+>> >> >> nr_pending_reqs(struct xenvif_queue *queue)
+>> >> >>  irqreturn_t xenvif_interrupt(int irq, void *dev_id);
+>> >> >>
+>> >> >>  extern bool separate_tx_rx_irq;
+>> >> >> +extern bool provides_xdp_headroom;
+>> >> >>
+>> >> >>  extern unsigned int rx_drain_timeout_msecs;
+>> >> >>  extern unsigned int rx_stall_timeout_msecs;
+>> >> >> diff --git a/drivers/net/xen-netback/netback.c
+>> >> >> b/drivers/net/xen-netback/netback.c
+>> >> >> index 315dfc6..6dfca72 100644
+>> >> >> --- a/drivers/net/xen-netback/netback.c
+>> >> >> +++ b/drivers/net/xen-netback/netback.c
+>> >> >> @@ -96,6 +96,13 @@
+>> >> >>  module_param_named(hash_cache_size, xenvif_hash_cache_size, uint,
+>> >> >> 0644);
+>> >> >>  MODULE_PARM_DESC(hash_cache_size, "Number of flows in the hash
+>> >> >> cache");
+>> >> >>
+>> >> >> +/* The module parameter tells that we have to put data
+>> >> >> + * for xen-netfront with the XDP_PACKET_HEADROOM offset
+>> >> >> + * needed for XDP processing
+>> >> >> + */
+>> >> >> +bool provides_xdp_headroom = true;
+>> >> >> +module_param(provides_xdp_headroom, bool, 0644);
+>> >> >> +
+>> >> >>  static void xenvif_idx_release(struct xenvif_queue *queue, u16
+>> >> >> pending_idx,
+>> >> >>  			       u8 status);
+>> >> >>
+>> >> >> diff --git a/drivers/net/xen-netback/rx.c
+>> >> >> b/drivers/net/xen-netback/rx.c
+>> >> >> index ef58870..c97c98e 100644
+>> >> >> --- a/drivers/net/xen-netback/rx.c
+>> >> >> +++ b/drivers/net/xen-netback/rx.c
+>> >> >> @@ -33,6 +33,11 @@
+>> >> >>  #include <xen/xen.h>
+>> >> >>  #include <xen/events.h>
+>> >> >>
+>> >> >> +static int xenvif_rx_xdp_offset(struct xenvif *vif)
+>> >> >> +{
+>> >> >> +	return vif->xdp_enabled ? XDP_PACKET_HEADROOM : 0;
+>> >> >> +}
+>> >> >> +
+>> >> >>  static bool xenvif_rx_ring_slots_available(struct xenvif_queue
+>> >> >> *queue)
+>> >> >>  {
+>> >> >>  	RING_IDX prod, cons;
+>> >> >> @@ -356,7 +361,7 @@ static void xenvif_rx_data_slot(struct
+>> >> >> xenvif_queue
+>> >> >> *queue,
+>> >> >>  				struct xen_netif_rx_request *req,
+>> >> >>  				struct xen_netif_rx_response *rsp)
+>> >> >>  {
+>> >> >> -	unsigned int offset = 0;
+>> >> >> +	unsigned int offset = xenvif_rx_xdp_offset(queue->vif);
+>> >> >>  	unsigned int flags;
+>> >> >>
+>> >> >>  	do {
+>> >> >> diff --git a/drivers/net/xen-netback/xenbus.c
+>> >> >> b/drivers/net/xen-netback/xenbus.c
+>> >> >> index 286054b..d447191 100644
+>> >> >> --- a/drivers/net/xen-netback/xenbus.c
+>> >> >> +++ b/drivers/net/xen-netback/xenbus.c
+>> >> >> @@ -393,6 +393,20 @@ static void set_backend_state(struct
+>> >> >> backend_info
+>> >> >> *be,
+>> >> >>  	}
+>> >> >>  }
+>> >> >>
+>> >> >> +static void read_xenbus_frontend_xdp(struct backend_info *be,
+>> >> >> +				     struct xenbus_device *dev)
+>> >> >> +{
+>> >> >> +	struct xenvif *vif = be->vif;
+>> >> >> +	unsigned int val;
+>> >> >> +	int err;
+>> >> >> +
+>> >> >> +	err = xenbus_scanf(XBT_NIL, dev->otherend,
+>> >> >> +			   "feature-xdp", "%u", &val);
+>> >> >> +	if (err != 1)
+>> >> >> +		return;
+>> >> >> +	vif->xdp_enabled = val;
+>> >> >> +}
+>> >> >> +
+>> >> >>  /**
+>> >> >>   * Callback received when the frontend's state changes.
+>> >> >>   */
+>> >> >> @@ -417,6 +431,11 @@ static void frontend_changed(struct
+>> >> >> xenbus_device
+>> >> >> *dev,
+>> >> >>  		set_backend_state(be, XenbusStateConnected);
+>> >> >>  		break;
+>> >> >>
+>> >> >> +	case XenbusStateReconfiguring:
+>> >> >> +		read_xenbus_frontend_xdp(be, dev);
+>> >> >
+>> >> > I think this being the only call to read_xenbus_frontend_xdp() is
+>> >> > still
+>> >> > a
+>> >> > problem. What happens if netback is reloaded against a
+>> >> > netfront that has already enabled 'feature-xdp'? AFAICT
+>> >> > vif->xdp_enabled
+>> >> > would remain false after the reload.
+>> >>
+>> >> in this case xennect_connect() should call talk_to_netback()
+>> >> and the function will restore the state from
+>> >> info->netfront_xdp_enabled
+>> >>
+>> >
+>> > No. You're assuming the frontend is aware the backend has been reloaded.
+>> > It
+>> > is not.
+>>
+>> Hi Paul,
+>>
+>> I've tried to unbind/bind the device and I can see that the variable
+>> is set properly:
+>>
+>> with enabled XDP:
+>> <7>[  622.177935] xen_netback:backend_switch_state: backend/vif/2/0 ->
+>> InitWait
+>> <7>[  622.179917] xen_netback:frontend_changed:
+>> /local/domain/2/device/vif/0 -> Connected
+>> <6>[  622.187393] vif vif-2-0 vif2.0: Guest Rx ready
+>> <7>[  622.188451] xen_netback:backend_switch_state: backend/vif/2/0 ->
+>> Connected
+>>
+>> localhost:/sys/bus/xen-backend/drivers/vif # xenstore-ls | grep xdp
+>>        feature-xdp-headroom = "1"
+>>       feature-xdp = "1"
+>>
 >
-> [ ... ]
->
->> Performance considerations
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
->>
->> Patch set adds new code on receive hot path. This comes with a cost,
->> especially in a scenario of a SYN flood or small UDP packet flood.
->>
->> Measuring the performance penalty turned out to be harder than expected
->> because socket lookup is fast. For CPUs to spend >=3D 1% of time in sock=
-et
->> lookup we had to modify our setup by unloading iptables and reducing the
->> number of routes.
->>
->> The receiver machine is a Cloudflare Gen 9 server covered in detail at [=
-0].
->> In short:
->>
->>  - 24 core Intel custom off-roadmap 1.9Ghz 150W (Skylake) CPU
->>  - dual-port 25G Mellanox ConnectX-4 NIC
->>  - 256G DDR4 2666Mhz RAM
->>
->> Flood traffic pattern:
->>
->>  - source: 1 IP, 10k ports
->>  - destination: 1 IP, 1 port
->>  - TCP - SYN packet
->>  - UDP - Len=3D0 packet
->>
->> Receiver setup:
->>
->>  - ingress traffic spread over 4 RX queues,
->>  - RX/TX pause and autoneg disabled,
->>  - Intel Turbo Boost disabled,
->>  - TCP SYN cookies always on.
->>
->> For TCP test there is a receiver process with single listening socket
->> open. Receiver is not accept()'ing connections.
->>
->> For UDP the receiver process has a single UDP socket with a filter
->> installed, dropping the packets.
->>
->> With such setup in place, we record RX pps and cpu-cycles events under
->> flood for 60 seconds in 3 configurations:
->>
->>  1. 5.6.3 kernel w/o this patch series (baseline),
->>  2. 5.6.3 kernel with patches applied, but no SK_LOOKUP program attached,
->>  3. 5.6.3 kernel with patches applied, and SK_LOOKUP program attached;
->>     BPF program [1] is doing a lookup LPM_TRIE map with 200 entries.
-> Is the link in [1] up-to-date?  I don't see it calling bpf_sk_assign().
+> So, that shows me the feature in xenstore. Has netback sampled it and set
+> vif->xdp_enabled?
 
-Yes, it is, or rather was.
+right, what has to be additionally done is:
 
-The reason why the inet-tool version you reviewed was not using
-bpf_sk_assign(), but the "old way" from RFCv2, is that the switch to
-map_lookup+sk_assign was done late in development, after changes to
-SOCKMAP landed in bpf-next.
+@@ -947,6 +967,8 @@ static int read_xenbus_vif_flags(struct backend_info *be)
+        vif->ipv6_csum = !!xenbus_read_unsigned(dev->otherend,
+                                                "feature-ipv6-csum-offload", 0);
 
-By that time performance tests were already in progress, and since they
-take a bit of time to set up, and the change affected just the scenario
-with program attached, I tested without this bit.
-
-Sorry, I should have explained that in the cover letter. The next round
-of benchmarks will be done against the now updated version of inet-tool
-that uses bpf_sk_assign:
-
-https://github.com/majek/inet-tool/commit/6a619c3743aaae6d4882cbbf11b616e1e=
-468b436
++       read_xenbus_frontend_xdp(be, dev);
++
+        return 0;
+ }
 
 >
+>> and with disabled:
 >>
->> RX pps measured with `ifpps -d <dev> -t 1000 --csv --loop` for 60 second=
-s.
->>
->> | tcp4 SYN flood               | rx pps (mean =C2=B1 sstdev) | =CE=94 rx=
- pps |
->> |------------------------------+------------------------+----------|
->> | 5.6.3 vanilla (baseline)     | 939,616 =C2=B1 0.5%         |        - |
->> | no SK_LOOKUP prog attached   | 929,275 =C2=B1 1.2%         |    -1.1% |
->> | with SK_LOOKUP prog attached | 918,582 =C2=B1 0.4%         |    -2.2% |
->>
->> | tcp6 SYN flood               | rx pps (mean =C2=B1 sstdev) | =CE=94 rx=
- pps |
->> |------------------------------+------------------------+----------|
->> | 5.6.3 vanilla (baseline)     | 875,838 =C2=B1 0.5%         |        - |
->> | no SK_LOOKUP prog attached   | 872,005 =C2=B1 0.3%         |    -0.4% |
->> | with SK_LOOKUP prog attached | 856,250 =C2=B1 0.5%         |    -2.2% |
->>
->> | udp4 0-len flood             | rx pps (mean =C2=B1 sstdev) | =CE=94 rx=
- pps |
->> |------------------------------+------------------------+----------|
->> | 5.6.3 vanilla (baseline)     | 2,738,662 =C2=B1 1.5%       |        - |
->> | no SK_LOOKUP prog attached   | 2,576,893 =C2=B1 1.0%       |    -5.9% |
->> | with SK_LOOKUP prog attached | 2,530,698 =C2=B1 1.0%       |    -7.6% |
->>
->> | udp6 0-len flood             | rx pps (mean =C2=B1 sstdev) | =CE=94 rx=
- pps |
->> |------------------------------+------------------------+----------|
->> | 5.6.3 vanilla (baseline)     | 2,867,885 =C2=B1 1.4%       |        - |
->> | no SK_LOOKUP prog attached   | 2,646,875 =C2=B1 1.0%       |    -7.7% |
-> What is causing this regression?
+>> 7>[  758.216792] xen_netback:frontend_changed:
+>> /local/domain/2/device/vif/0 -> Reconfiguring
 >
-
-I need to go back to archived perf.data and see if perf-annotate or
-perf-diff provide any clues that will help me tell where CPU cycles are
-going. Will get back to you on that.
-
-Wild guess is that for udp6 we're loading and coping more data to
-populate v6 addresses in program context. See inet6_lookup_run_bpf
-(patch 7).
-
-This makes me realize the copy is unnecessary, I could just store the
-pointer to in6_addr{}. Will make this change in v3.
-
-As to why udp6 is taking a bigger hit than udp4 - comparing top 10 in
-`perf report --no-children` shows that in our test setup, socket lookup
-contributes less to CPU cycles on receive for udp4 than for udp6.
-
-* udp4 baseline (no children)
-
-# Overhead       Samples  Symbol
-# ........  ............  ......................................
-#
-     8.11%         19429  [k] fib_table_lookup
-     4.31%         10333  [k] udp_queue_rcv_one_skb
-     3.75%          8991  [k] fib4_rule_action
-     3.66%          8763  [k] __netif_receive_skb_core
-     3.42%          8198  [k] fib_rules_lookup
-     3.05%          7314  [k] fib4_rule_match
-     2.71%          6507  [k] mlx5e_skb_from_cqe_linear
-     2.58%          6192  [k] inet_gro_receive
-     2.49%          5981  [k] __x86_indirect_thunk_rax
-     2.36%          5656  [k] udp4_lib_lookup2
-
-* udp6 baseline (no children)
-
-# Overhead       Samples  Symbol
-# ........  ............  ......................................
-#
-     4.63%         11100  [k] udpv6_queue_rcv_one_skb
-     3.88%          9308  [k] __netif_receive_skb_core
-     3.54%          8480  [k] udp6_lib_lookup2
-     2.69%          6442  [k] mlx5e_skb_from_cqe_linear
-     2.56%          6137  [k] ipv6_gro_receive
-     2.31%          5540  [k] dev_gro_receive
-     2.20%          5264  [k] do_csum
-     2.02%          4835  [k] ip6_pol_route
-     1.94%          4639  [k] __udp6_lib_lookup
-     1.89%          4540  [k] selinux_socket_sock_rcv_skb
-
-Notice that __udp4_lib_lookup didn't even make the cut. That could
-explain why adding instructions to __udp6_lib_lookup has more effect on
-RX PPS.
-
-Frankly, that is something that suprised us, but we didn't have time to
-investigate further, yet.
-
->> | with SK_LOOKUP prog attached | 2,520,474 =C2=B1 0.7%       |   -12.1% |
-> This also looks very different from udp4.
+> This I don't understand. What triggered a change of state in the
+> frontend...
 >
-
-Thanks for the questions,
-Jakub
+>> <7>[  758.218741] xen_netback:frontend_changed:
+>> /local/domain/2/device/vif/0 -> Connected
+>
+> ...or did these lines occur before you bound netback?
+>
+>   Paul
+>
+>> <7>[  784.177247] xen_netback:backend_switch_state: backend/vif/2/0 ->
+>> InitWait
+>> <7>[  784.180101] xen_netback:frontend_changed:
+>> /local/domain/2/device/vif/0 -> Connected
+>> <6>[  784.187927] vif vif-2-0 vif2.0: Guest Rx ready
+>> <7>[  784.188890] xen_netback:backend_switch_state: backend/vif/2/0 ->
+>> Connected
+>>
+>> localhost:/sys/bus/xen-backend/drivers/vif # xenstore-ls | grep xdp
+>>        feature-xdp-headroom = "1"
+>>       feature-xdp = "0"
+>>
+>>
+>>
+>>
+>> >
+>> >   Paul
+>> >
+>> >
+>> >
+>
+>
