@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F3F51CE9E8
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 03:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DF31CE9E7
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 03:00:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728489AbgELBAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 21:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
+        id S1728483AbgELBAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 21:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728469AbgELBAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 21:00:00 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CE7C061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 18:00:00 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id q24so8582680pjd.1
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 18:00:00 -0700 (PDT)
+        with ESMTP id S1728475AbgELBAB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 21:00:01 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A744C061A0C
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 18:00:01 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id s20so4656397plp.6
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 18:00:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=TeAy/odTSSVNV2s00Q7OVoroSESR2zSM9aJXbAlfp6o=;
-        b=cIk0SrMpuuPcFWJlGpbBzA15F48kw58imMVfzzxzwvlZvqBoMYQHwI2BAkDogw+VZI
-         bRYUiygM8Jlb7V69DIDJo7GxxuadDam4TWOXz0cSUJs76Z7E57Bn9kTMdU+C53SROIe0
-         h2WZuJfGSi85goKO8Z6mPWjrM41GKZgikwZkrWT0+x125OplTDHbCSiuLCT3DV1Vbsdo
-         vc3sd96RLXvgFZ7OhjBplOn1s5bQG8jh+MQFkvv5G16k/q9+3LZgg9eVHTuBERAlzRFV
-         yeODQjjDkw2+cIunw93iQmg804cLviD9GvjHj2SdJG3p3W+EVI4SSDAh6pDdQI+a7qwK
-         3cBw==
+        bh=yDRTS8CNziD7yGubZrP8C+95OoapI5cBR3rGQ3d7KZM=;
+        b=ha4PePR0cfGs+CE5eAieqeYCZfJ9OSC7GfmpF38idPb4xUiXqyCM27u/SCvVG1gz3y
+         YbvqyrIX84018g99eVKpMg2RqRSuDcVLig222UfF3Wk8Egjj/1L3chwNnY9GapT2fMsZ
+         6I/wKebTWl9ILSahxK8acWNWOcAxJNE8JSM2eNOGqkz0sKvmIGpjlhYiNZOPoge72m8W
+         of3gjORqcCKhWrG+4dUU75Auik64hUHLiaZ1/AkDxq/GzPKc4r2q2QhzinfionVVJ3hf
+         aQJuinXoIBz2SPIdvYyiyHakAJgqcJd7JZKQ3VCF2LPCWa1zrw5mN9Kbnl2ri18W1grF
+         U8Xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=TeAy/odTSSVNV2s00Q7OVoroSESR2zSM9aJXbAlfp6o=;
-        b=ccXA8NWNs+I+qBIPpHZtjk+xl/VN+hEU3m80GH7n32qvJhmZAmeTU161s5lfI/+K1X
-         x6s+DL0IDenjc66GNo07P6yUOvcp6UKp4YuRG35alUEp8U6WPKr5SQZEuywJC6xPDd6k
-         XzulOTXlRjSfNZ4yOpabWq37F/X6RmC5EUtHcvhszKUEY5uAZ3IXkMURNOv0UvpvSzI4
-         9EGLDxof8qBuuUGqTFb6VwdNk0du4D2P7z9J5JgOuMpEL9uZYES0WqaAsbCJQfuqwzIi
-         W4pp9EVh2FbFWR3vxeC9vJx5aNnfjf9OmfOTJXZzYknoMWw3WmIdcg7oEfYe2YmvNtSR
-         8ZOQ==
-X-Gm-Message-State: AGi0PuaquAUY9BkXkQrB3vXYHtoRTOuDLFGzsbrdw44vSM7pEe+Ii/I3
-        frK2CrL4w/sXpQdo8vloOglBoS4HKzA=
-X-Google-Smtp-Source: APiQypLs69oUVCIylY5t8czg3YdJuMmy5H8uQTbXaf90CLgcK+j7wokqKSrKnIThW7vyb51o8JF6lQ==
-X-Received: by 2002:a17:90a:c293:: with SMTP id f19mr23506516pjt.96.1589245199608;
-        Mon, 11 May 2020 17:59:59 -0700 (PDT)
+        bh=yDRTS8CNziD7yGubZrP8C+95OoapI5cBR3rGQ3d7KZM=;
+        b=S5dPP9Apa6xGF5gqJfLionoRZQnbztUdNlWduR9e8Pw97TT4160ZAKs7R4gK8/DLwe
+         mNosjptAt4++wDSu8rpPAXYTfDV0Eix/5pJU5tgoqThfmDeR2rLs13ZeTcZmKMBAV8ig
+         GsLw5mUqjufH99NVucX/GQWTusmdBwJdG1+i7ooH9F7ufhV2mb1vQlxMfvmnpL5tOMie
+         vzVYfHo0Q2BRajOWdZsES5iDSW06LRaQUYAjYWBy6672WuDZCZSg0/QP0FuiYAAqUNpx
+         ey8YPnHltL7I4LyDfOCkNR/ikJbzUF2tvHd2tzdoyoTgNuO3e/KIBRPIviBJBv7eFhwX
+         HZ1g==
+X-Gm-Message-State: AGi0PuaI9YiJxUVqAoo7qv9JpiS6f4euS2pBelhXQobmE+TaUqPmxaGM
+        43Oa2aWdEIuNGf7P4YD/qNcOgvM/pfU=
+X-Google-Smtp-Source: APiQypJ9012jadFLxTw6SA06iFWl/uRJ4o6XZmckN0btipH9XmR6G2pGgNTr+i3D8pFn1/mIJFeQSw==
+X-Received: by 2002:a17:90a:4e81:: with SMTP id o1mr25400817pjh.161.1589245200531;
+        Mon, 11 May 2020 18:00:00 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id h17sm10171477pfk.13.2020.05.11.17.59.58
+        by smtp.gmail.com with ESMTPSA id h17sm10171477pfk.13.2020.05.11.17.59.59
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 May 2020 17:59:58 -0700 (PDT)
+        Mon, 11 May 2020 17:59:59 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 09/10] ionic: add more ethtool stats
-Date:   Mon, 11 May 2020 17:59:35 -0700
-Message-Id: <20200512005936.14490-10-snelson@pensando.io>
+Subject: [PATCH net-next 10/10] ionic: update doc files
+Date:   Mon, 11 May 2020 17:59:36 -0700
+Message-Id: <20200512005936.14490-11-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200512005936.14490-1-snelson@pensando.io>
 References: <20200512005936.14490-1-snelson@pensando.io>
@@ -60,390 +60,268 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add hardware port stats and a few more driver collected
-statistics to the ethtool stats output.
+Update the basic doc file with some configuration hints and a
+little bit of stats information.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_lif.c   |   4 +-
- .../net/ethernet/pensando/ionic/ionic_lif.h   |  15 +-
- .../net/ethernet/pensando/ionic/ionic_stats.c | 136 +++++++++++++++++-
- .../net/ethernet/pensando/ionic/ionic_stats.h |   6 +
- .../net/ethernet/pensando/ionic/ionic_txrx.c  |  22 ++-
- 5 files changed, 170 insertions(+), 13 deletions(-)
+ .../device_drivers/pensando/ionic.rst         | 231 +++++++++++++++++-
+ 1 file changed, 230 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 4da94c07d1d3..80b4d8332109 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -792,8 +792,8 @@ static int ionic_adminq_napi(struct napi_struct *napi, int budget)
- 	return max(n_work, a_work);
- }
+diff --git a/Documentation/networking/device_drivers/pensando/ionic.rst b/Documentation/networking/device_drivers/pensando/ionic.rst
+index c17d680cf334..0eabbc347d6c 100644
+--- a/Documentation/networking/device_drivers/pensando/ionic.rst
++++ b/Documentation/networking/device_drivers/pensando/ionic.rst
+@@ -11,6 +11,9 @@ Contents
+ ========
  
--static void ionic_get_stats64(struct net_device *netdev,
--			      struct rtnl_link_stats64 *ns)
-+void ionic_get_stats64(struct net_device *netdev,
-+		       struct rtnl_link_stats64 *ns)
- {
- 	struct ionic_lif *lif = netdev_priv(netdev);
- 	struct ionic_lif_stats *ls;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 1a30f0fb20b9..c3428034a17b 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -20,11 +20,13 @@ struct ionic_tx_stats {
- 	u64 bytes;
- 	u64 clean;
- 	u64 linearize;
--	u64 no_csum;
-+	u64 csum_none;
- 	u64 csum;
- 	u64 crc32_csum;
- 	u64 tso;
-+	u64 tso_bytes;
- 	u64 frags;
-+	u64 vlan_inserted;
- 	u64 sg_cntr[IONIC_MAX_NUM_SG_CNTR];
- };
+ - Identifying the Adapter
++- Enabling the driver
++- Configuring the driver
++- Statistics
+ - Support
  
-@@ -38,6 +40,7 @@ struct ionic_rx_stats {
- 	u64 csum_error;
- 	u64 buffers_posted;
- 	u64 dropped;
-+	u64 vlan_stripped;
- };
+ Identifying the Adapter
+@@ -28,12 +31,238 @@ and configure them for use.  There should be log entries in the kernel
+ messages such as these::
  
- #define IONIC_QCQ_F_INITED		BIT(0)
-@@ -114,11 +117,17 @@ struct ionic_lif_sw_stats {
- 	u64 rx_packets;
- 	u64 rx_bytes;
- 	u64 tx_tso;
--	u64 tx_no_csum;
-+	u64 tx_tso_bytes;
-+	u64 tx_csum_none;
- 	u64 tx_csum;
- 	u64 rx_csum_none;
- 	u64 rx_csum_complete;
- 	u64 rx_csum_error;
-+	u64 hw_tx_dropped;
-+	u64 hw_rx_dropped;
-+	u64 hw_rx_over_errors;
-+	u64 hw_rx_missed_errors;
-+	u64 hw_tx_aborted_errors;
- };
- 
- enum ionic_lif_state_flags {
-@@ -240,6 +249,8 @@ static inline u32 ionic_coal_hw_to_usec(struct ionic *ionic, u32 units)
- }
- 
- void ionic_link_status_check_request(struct ionic_lif *lif);
-+void ionic_get_stats64(struct net_device *netdev,
-+		       struct rtnl_link_stats64 *ns);
- void ionic_lif_deferred_enqueue(struct ionic_deferred *def,
- 				struct ionic_deferred_work *work);
- int ionic_lifs_alloc(struct ionic *ionic);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.c b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-index 8f2a8fb029f1..2a1885da58a6 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-@@ -15,11 +15,109 @@ static const struct ionic_stat_desc ionic_lif_stats_desc[] = {
- 	IONIC_LIF_STAT_DESC(rx_packets),
- 	IONIC_LIF_STAT_DESC(rx_bytes),
- 	IONIC_LIF_STAT_DESC(tx_tso),
--	IONIC_LIF_STAT_DESC(tx_no_csum),
-+	IONIC_LIF_STAT_DESC(tx_tso_bytes),
-+	IONIC_LIF_STAT_DESC(tx_csum_none),
- 	IONIC_LIF_STAT_DESC(tx_csum),
- 	IONIC_LIF_STAT_DESC(rx_csum_none),
- 	IONIC_LIF_STAT_DESC(rx_csum_complete),
- 	IONIC_LIF_STAT_DESC(rx_csum_error),
-+	IONIC_LIF_STAT_DESC(hw_tx_dropped),
-+	IONIC_LIF_STAT_DESC(hw_rx_dropped),
-+	IONIC_LIF_STAT_DESC(hw_rx_over_errors),
-+	IONIC_LIF_STAT_DESC(hw_rx_missed_errors),
-+	IONIC_LIF_STAT_DESC(hw_tx_aborted_errors),
-+};
+   $ dmesg | grep ionic
+-  ionic Pensando Ethernet NIC Driver, ver 0.15.0-k
++  ionic 0000:b5:00.0: 126.016 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x16 link)
+   ionic 0000:b5:00.0 enp181s0: renamed from eth0
++  ionic 0000:b5:00.0 enp181s0: Link up - 100 Gbps
++  ionic 0000:b6:00.0: 126.016 Gb/s available PCIe bandwidth (8.0 GT/s PCIe x16 link)
+   ionic 0000:b6:00.0 enp182s0: renamed from eth0
++  ionic 0000:b6:00.0 enp182s0: Link up - 100 Gbps
 +
-+static const struct ionic_stat_desc ionic_port_stats_desc[] = {
-+	IONIC_PORT_STAT_DESC(frames_rx_ok),
-+	IONIC_PORT_STAT_DESC(frames_rx_all),
-+	IONIC_PORT_STAT_DESC(frames_rx_bad_fcs),
-+	IONIC_PORT_STAT_DESC(frames_rx_bad_all),
-+	IONIC_PORT_STAT_DESC(octets_rx_ok),
-+	IONIC_PORT_STAT_DESC(octets_rx_all),
-+	IONIC_PORT_STAT_DESC(frames_rx_unicast),
-+	IONIC_PORT_STAT_DESC(frames_rx_multicast),
-+	IONIC_PORT_STAT_DESC(frames_rx_broadcast),
-+	IONIC_PORT_STAT_DESC(frames_rx_pause),
-+	IONIC_PORT_STAT_DESC(frames_rx_bad_length),
-+	IONIC_PORT_STAT_DESC(frames_rx_undersized),
-+	IONIC_PORT_STAT_DESC(frames_rx_oversized),
-+	IONIC_PORT_STAT_DESC(frames_rx_fragments),
-+	IONIC_PORT_STAT_DESC(frames_rx_jabber),
-+	IONIC_PORT_STAT_DESC(frames_rx_pripause),
-+	IONIC_PORT_STAT_DESC(frames_rx_stomped_crc),
-+	IONIC_PORT_STAT_DESC(frames_rx_too_long),
-+	IONIC_PORT_STAT_DESC(frames_rx_vlan_good),
-+	IONIC_PORT_STAT_DESC(frames_rx_dropped),
-+	IONIC_PORT_STAT_DESC(frames_rx_less_than_64b),
-+	IONIC_PORT_STAT_DESC(frames_rx_64b),
-+	IONIC_PORT_STAT_DESC(frames_rx_65b_127b),
-+	IONIC_PORT_STAT_DESC(frames_rx_128b_255b),
-+	IONIC_PORT_STAT_DESC(frames_rx_256b_511b),
-+	IONIC_PORT_STAT_DESC(frames_rx_512b_1023b),
-+	IONIC_PORT_STAT_DESC(frames_rx_1024b_1518b),
-+	IONIC_PORT_STAT_DESC(frames_rx_1519b_2047b),
-+	IONIC_PORT_STAT_DESC(frames_rx_2048b_4095b),
-+	IONIC_PORT_STAT_DESC(frames_rx_4096b_8191b),
-+	IONIC_PORT_STAT_DESC(frames_rx_8192b_9215b),
-+	IONIC_PORT_STAT_DESC(frames_rx_other),
-+	IONIC_PORT_STAT_DESC(frames_tx_ok),
-+	IONIC_PORT_STAT_DESC(frames_tx_all),
-+	IONIC_PORT_STAT_DESC(frames_tx_bad),
-+	IONIC_PORT_STAT_DESC(octets_tx_ok),
-+	IONIC_PORT_STAT_DESC(octets_tx_total),
-+	IONIC_PORT_STAT_DESC(frames_tx_unicast),
-+	IONIC_PORT_STAT_DESC(frames_tx_multicast),
-+	IONIC_PORT_STAT_DESC(frames_tx_broadcast),
-+	IONIC_PORT_STAT_DESC(frames_tx_pause),
-+	IONIC_PORT_STAT_DESC(frames_tx_pripause),
-+	IONIC_PORT_STAT_DESC(frames_tx_vlan),
-+	IONIC_PORT_STAT_DESC(frames_tx_less_than_64b),
-+	IONIC_PORT_STAT_DESC(frames_tx_64b),
-+	IONIC_PORT_STAT_DESC(frames_tx_65b_127b),
-+	IONIC_PORT_STAT_DESC(frames_tx_128b_255b),
-+	IONIC_PORT_STAT_DESC(frames_tx_256b_511b),
-+	IONIC_PORT_STAT_DESC(frames_tx_512b_1023b),
-+	IONIC_PORT_STAT_DESC(frames_tx_1024b_1518b),
-+	IONIC_PORT_STAT_DESC(frames_tx_1519b_2047b),
-+	IONIC_PORT_STAT_DESC(frames_tx_2048b_4095b),
-+	IONIC_PORT_STAT_DESC(frames_tx_4096b_8191b),
-+	IONIC_PORT_STAT_DESC(frames_tx_8192b_9215b),
-+	IONIC_PORT_STAT_DESC(frames_tx_other),
-+	IONIC_PORT_STAT_DESC(frames_tx_pri_0),
-+	IONIC_PORT_STAT_DESC(frames_tx_pri_1),
-+	IONIC_PORT_STAT_DESC(frames_tx_pri_2),
-+	IONIC_PORT_STAT_DESC(frames_tx_pri_3),
-+	IONIC_PORT_STAT_DESC(frames_tx_pri_4),
-+	IONIC_PORT_STAT_DESC(frames_tx_pri_5),
-+	IONIC_PORT_STAT_DESC(frames_tx_pri_6),
-+	IONIC_PORT_STAT_DESC(frames_tx_pri_7),
-+	IONIC_PORT_STAT_DESC(frames_rx_pri_0),
-+	IONIC_PORT_STAT_DESC(frames_rx_pri_1),
-+	IONIC_PORT_STAT_DESC(frames_rx_pri_2),
-+	IONIC_PORT_STAT_DESC(frames_rx_pri_3),
-+	IONIC_PORT_STAT_DESC(frames_rx_pri_4),
-+	IONIC_PORT_STAT_DESC(frames_rx_pri_5),
-+	IONIC_PORT_STAT_DESC(frames_rx_pri_6),
-+	IONIC_PORT_STAT_DESC(frames_rx_pri_7),
-+	IONIC_PORT_STAT_DESC(tx_pripause_0_1us_count),
-+	IONIC_PORT_STAT_DESC(tx_pripause_1_1us_count),
-+	IONIC_PORT_STAT_DESC(tx_pripause_2_1us_count),
-+	IONIC_PORT_STAT_DESC(tx_pripause_3_1us_count),
-+	IONIC_PORT_STAT_DESC(tx_pripause_4_1us_count),
-+	IONIC_PORT_STAT_DESC(tx_pripause_5_1us_count),
-+	IONIC_PORT_STAT_DESC(tx_pripause_6_1us_count),
-+	IONIC_PORT_STAT_DESC(tx_pripause_7_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pripause_0_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pripause_1_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pripause_2_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pripause_3_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pripause_4_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pripause_5_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pripause_6_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pripause_7_1us_count),
-+	IONIC_PORT_STAT_DESC(rx_pause_1us_count),
-+	IONIC_PORT_STAT_DESC(frames_tx_truncated),
- };
- 
- static const struct ionic_stat_desc ionic_tx_stats_desc[] = {
-@@ -29,6 +127,11 @@ static const struct ionic_stat_desc ionic_tx_stats_desc[] = {
- 	IONIC_TX_STAT_DESC(dma_map_err),
- 	IONIC_TX_STAT_DESC(linearize),
- 	IONIC_TX_STAT_DESC(frags),
-+	IONIC_TX_STAT_DESC(tso),
-+	IONIC_TX_STAT_DESC(tso_bytes),
-+	IONIC_TX_STAT_DESC(csum_none),
-+	IONIC_TX_STAT_DESC(csum),
-+	IONIC_TX_STAT_DESC(vlan_inserted),
- };
- 
- static const struct ionic_stat_desc ionic_rx_stats_desc[] = {
-@@ -40,6 +143,7 @@ static const struct ionic_stat_desc ionic_rx_stats_desc[] = {
- 	IONIC_RX_STAT_DESC(csum_complete),
- 	IONIC_RX_STAT_DESC(csum_error),
- 	IONIC_RX_STAT_DESC(dropped),
-+	IONIC_RX_STAT_DESC(vlan_stripped),
- };
- 
- static const struct ionic_stat_desc ionic_txq_stats_desc[] = {
-@@ -62,6 +166,7 @@ static const struct ionic_stat_desc ionic_dbg_napi_stats_desc[] = {
- };
- 
- #define IONIC_NUM_LIF_STATS ARRAY_SIZE(ionic_lif_stats_desc)
-+#define IONIC_NUM_PORT_STATS ARRAY_SIZE(ionic_port_stats_desc)
- #define IONIC_NUM_TX_STATS ARRAY_SIZE(ionic_tx_stats_desc)
- #define IONIC_NUM_RX_STATS ARRAY_SIZE(ionic_rx_stats_desc)
- #define IONIC_NUM_TX_Q_STATS ARRAY_SIZE(ionic_txq_stats_desc)
-@@ -76,6 +181,7 @@ static void ionic_get_lif_stats(struct ionic_lif *lif,
- {
- 	struct ionic_tx_stats *tstats;
- 	struct ionic_rx_stats *rstats;
-+	struct rtnl_link_stats64 ns;
- 	struct ionic_qcq *txqcq;
- 	struct ionic_qcq *rxqcq;
- 	int q_num;
-@@ -89,7 +195,8 @@ static void ionic_get_lif_stats(struct ionic_lif *lif,
- 			stats->tx_packets += tstats->pkts;
- 			stats->tx_bytes += tstats->bytes;
- 			stats->tx_tso += tstats->tso;
--			stats->tx_no_csum += tstats->no_csum;
-+			stats->tx_tso_bytes += tstats->tso_bytes;
-+			stats->tx_csum_none += tstats->csum_none;
- 			stats->tx_csum += tstats->csum;
- 		}
- 
-@@ -103,6 +210,13 @@ static void ionic_get_lif_stats(struct ionic_lif *lif,
- 			stats->rx_csum_error += rstats->csum_error;
- 		}
- 	}
++Driver and firmware version information can be gathered with either of
++ethtool or devlink tools::
 +
-+	ionic_get_stats64(lif->netdev, &ns);
-+	stats->hw_tx_dropped = ns.tx_dropped;
-+	stats->hw_rx_dropped = ns.rx_dropped;
-+	stats->hw_rx_over_errors = ns.rx_over_errors;
-+	stats->hw_rx_missed_errors = ns.rx_missed_errors;
-+	stats->hw_tx_aborted_errors = ns.tx_aborted_errors;
- }
- 
- static u64 ionic_sw_stats_get_count(struct ionic_lif *lif)
-@@ -118,6 +232,9 @@ static u64 ionic_sw_stats_get_count(struct ionic_lif *lif)
- 	/* rx stats */
- 	total += MAX_Q(lif) * IONIC_NUM_RX_STATS;
- 
-+	/* port stats */
-+	total += IONIC_NUM_PORT_STATS;
++  $ ethtool -i enp181s0
++  driver: ionic
++  version: 5.7.0
++  firmware-version: 1.8.0-28
++  ...
 +
- 	if (test_bit(IONIC_LIF_F_UP, lif->state) &&
- 	    test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state)) {
- 		/* tx debug stats */
-@@ -144,6 +261,13 @@ static void ionic_sw_stats_get_strings(struct ionic_lif *lif, u8 **buf)
- 		snprintf(*buf, ETH_GSTRING_LEN, ionic_lif_stats_desc[i].name);
- 		*buf += ETH_GSTRING_LEN;
- 	}
++  $ devlink dev info pci/0000:b5:00.0
++  pci/0000:b5:00.0:
++    driver ionic
++    serial_number FLM18420073
++    versions:
++        fixed:
++          asic.id 0x0
++          asic.rev 0x0
++        running:
++          fw 1.8.0-28
 +
-+	for (i = 0; i < IONIC_NUM_PORT_STATS; i++) {
-+		snprintf(*buf, ETH_GSTRING_LEN,
-+			 ionic_port_stats_desc[i].name);
-+		*buf += ETH_GSTRING_LEN;
-+	}
++See Documentation/networking/devlink/ionic.rst for more information
++on the devlink dev info data.
 +
- 	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
- 		for (i = 0; i < IONIC_NUM_TX_STATS; i++) {
- 			snprintf(*buf, ETH_GSTRING_LEN, "tx_%d_%s",
-@@ -225,6 +349,7 @@ static void ionic_sw_stats_get_strings(struct ionic_lif *lif, u8 **buf)
- 
- static void ionic_sw_stats_get_values(struct ionic_lif *lif, u64 **buf)
- {
-+	struct ionic_port_stats *port_stats;
- 	struct ionic_lif_sw_stats lif_stats;
- 	struct ionic_qcq *txqcq, *rxqcq;
- 	struct ionic_tx_stats *txstats;
-@@ -238,6 +363,13 @@ static void ionic_sw_stats_get_values(struct ionic_lif *lif, u64 **buf)
- 		(*buf)++;
- 	}
- 
-+	port_stats = &lif->ionic->idev.port_info->stats;
-+	for (i = 0; i < IONIC_NUM_PORT_STATS; i++) {
-+		**buf = IONIC_READ_STAT_LE64(port_stats,
-+					     &ionic_port_stats_desc[i]);
-+		(*buf)++;
-+	}
++Enabling the driver
++===================
 +
- 	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
- 		txstats = &lif_to_txstats(lif, q_num);
- 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.h b/drivers/net/ethernet/pensando/ionic/ionic_stats.h
-index d2c1122a2c6e..3f543512616e 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_stats.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.h
-@@ -11,6 +11,9 @@
- 	.offset = IONIC_STAT_TO_OFFSET(type, stat_name) \
- }
- 
-+#define IONIC_PORT_STAT_DESC(stat_name) \
-+	IONIC_STAT_DESC(struct ionic_port_stats, stat_name)
++The driver is enabled via the standard kernel configuration system,
++using the make command::
 +
- #define IONIC_LIF_STAT_DESC(stat_name) \
- 	IONIC_STAT_DESC(struct ionic_lif_sw_stats, stat_name)
- 
-@@ -45,6 +48,9 @@ extern const int ionic_num_stats_grps;
- #define IONIC_READ_STAT64(base_ptr, desc_ptr) \
- 	(*((u64 *)(((u8 *)(base_ptr)) + (desc_ptr)->offset)))
- 
-+#define IONIC_READ_STAT_LE64(base_ptr, desc_ptr) \
-+	__le64_to_cpu(*((u64 *)(((u8 *)(base_ptr)) + (desc_ptr)->offset)))
++  make oldconfig/menuconfig/etc.
 +
- struct ionic_stat_desc {
- 	char name[ETH_GSTRING_LEN];
- 	u64 offset;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index 6b14e55a6780..b7f900c11834 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -214,10 +214,11 @@ static void ionic_rx_clean(struct ionic_queue *q,
- 		     (comp->csum_flags & IONIC_RXQ_COMP_CSUM_F_IP_BAD)))
- 		stats->csum_error++;
++The driver is located in the menu structure at:
++
++  -> Device Drivers
++    -> Network device support (NETDEVICES [=y])
++      -> Ethernet driver support
++        -> Pensando devices
++          -> Pensando Ethernet IONIC Support
++
++Configuring the Driver
++======================
++
++MTU
++---
++
++Jumbo frame support is available with a maximim size of 9194 bytes.
++
++Interrupt coalescing
++--------------------
++
++Interrupt coalescing can be configured by changing the rx-usecs value with
++the "ethtool -C" command.  The rx-usecs range is 0-190.  The tx-usecs value
++reflects the rx-usecs value as they are tied together on the same interrupt.
++
++SR-IOV
++------
++
++Minimal SR-IOV support is currently offered and can be enabled by setting
++the sysfs 'sriov_numvfs' value, if supported by your particular firmware
++configuration.
++
++Statistics
++==========
++
++Basic hardware stats
++--------------------
++
++The commands ``netstat -i``, ``ip -s link show``, and ``ifconfig`` show
++a limited set of statistics taken directly from firmware.  For example::
++
++  $ ip -s link show enp181s0
++  7: enp181s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
++      link/ether 00:ae:cd:00:07:68 brd ff:ff:ff:ff:ff:ff
++      RX: bytes  packets  errors  dropped overrun mcast
++      414        5        0       0       0       0
++      TX: bytes  packets  errors  dropped carrier collsns
++      1384       18       0       0       0       0
++
++ethtool -S
++----------
++
++The statistics shown from the ``ethtool -S`` command includes a combination of
++driver counters and firmware counters, including port and queue specific values.
++The driver values are counters computed by the driver, and the firmware values
++are gathered by the firmware from the port hardware and passed through the
++driver with no further interpretation.
++
++Driver port specific::
++
++     tx_packets: 12
++     tx_bytes: 964
++     rx_packets: 5
++     rx_bytes: 414
++     tx_tso: 0
++     tx_tso_bytes: 0
++     tx_csum_none: 12
++     tx_csum: 0
++     rx_csum_none: 0
++     rx_csum_complete: 3
++     rx_csum_error: 0
++
++Driver queue specific::
++
++     tx_0_pkts: 3
++     tx_0_bytes: 294
++     tx_0_clean: 3
++     tx_0_dma_map_err: 0
++     tx_0_linearize: 0
++     tx_0_frags: 0
++     tx_0_tso: 0
++     tx_0_tso_bytes: 0
++     tx_0_csum_none: 3
++     tx_0_csum: 0
++     tx_0_vlan_inserted: 0
++     rx_0_pkts: 2
++     rx_0_bytes: 120
++     rx_0_dma_map_err: 0
++     rx_0_alloc_err: 0
++     rx_0_csum_none: 0
++     rx_0_csum_complete: 0
++     rx_0_csum_error: 0
++     rx_0_dropped: 0
++     rx_0_vlan_stripped: 0
++
++Firmware port specific::
++
++     hw_tx_dropped: 0
++     hw_rx_dropped: 0
++     hw_rx_over_errors: 0
++     hw_rx_missed_errors: 0
++     hw_tx_aborted_errors: 0
++     frames_rx_ok: 15
++     frames_rx_all: 15
++     frames_rx_bad_fcs: 0
++     frames_rx_bad_all: 0
++     octets_rx_ok: 1290
++     octets_rx_all: 1290
++     frames_rx_unicast: 10
++     frames_rx_multicast: 5
++     frames_rx_broadcast: 0
++     frames_rx_pause: 0
++     frames_rx_bad_length: 0
++     frames_rx_undersized: 0
++     frames_rx_oversized: 0
++     frames_rx_fragments: 0
++     frames_rx_jabber: 0
++     frames_rx_pripause: 0
++     frames_rx_stomped_crc: 0
++     frames_rx_too_long: 0
++     frames_rx_vlan_good: 3
++     frames_rx_dropped: 0
++     frames_rx_less_than_64b: 0
++     frames_rx_64b: 4
++     frames_rx_65b_127b: 11
++     frames_rx_128b_255b: 0
++     frames_rx_256b_511b: 0
++     frames_rx_512b_1023b: 0
++     frames_rx_1024b_1518b: 0
++     frames_rx_1519b_2047b: 0
++     frames_rx_2048b_4095b: 0
++     frames_rx_4096b_8191b: 0
++     frames_rx_8192b_9215b: 0
++     frames_rx_other: 0
++     frames_tx_ok: 31
++     frames_tx_all: 31
++     frames_tx_bad: 0
++     octets_tx_ok: 2614
++     octets_tx_total: 2614
++     frames_tx_unicast: 8
++     frames_tx_multicast: 21
++     frames_tx_broadcast: 2
++     frames_tx_pause: 0
++     frames_tx_pripause: 0
++     frames_tx_vlan: 0
++     frames_tx_less_than_64b: 0
++     frames_tx_64b: 4
++     frames_tx_65b_127b: 27
++     frames_tx_128b_255b: 0
++     frames_tx_256b_511b: 0
++     frames_tx_512b_1023b: 0
++     frames_tx_1024b_1518b: 0
++     frames_tx_1519b_2047b: 0
++     frames_tx_2048b_4095b: 0
++     frames_tx_4096b_8191b: 0
++     frames_tx_8192b_9215b: 0
++     frames_tx_other: 0
++     frames_tx_pri_0: 0
++     frames_tx_pri_1: 0
++     frames_tx_pri_2: 0
++     frames_tx_pri_3: 0
++     frames_tx_pri_4: 0
++     frames_tx_pri_5: 0
++     frames_tx_pri_6: 0
++     frames_tx_pri_7: 0
++     frames_rx_pri_0: 0
++     frames_rx_pri_1: 0
++     frames_rx_pri_2: 0
++     frames_rx_pri_3: 0
++     frames_rx_pri_4: 0
++     frames_rx_pri_5: 0
++     frames_rx_pri_6: 0
++     frames_rx_pri_7: 0
++     tx_pripause_0_1us_count: 0
++     tx_pripause_1_1us_count: 0
++     tx_pripause_2_1us_count: 0
++     tx_pripause_3_1us_count: 0
++     tx_pripause_4_1us_count: 0
++     tx_pripause_5_1us_count: 0
++     tx_pripause_6_1us_count: 0
++     tx_pripause_7_1us_count: 0
++     rx_pripause_0_1us_count: 0
++     rx_pripause_1_1us_count: 0
++     rx_pripause_2_1us_count: 0
++     rx_pripause_3_1us_count: 0
++     rx_pripause_4_1us_count: 0
++     rx_pripause_5_1us_count: 0
++     rx_pripause_6_1us_count: 0
++     rx_pripause_7_1us_count: 0
++     rx_pause_1us_count: 0
++     frames_tx_truncated: 0
++
  
--	if (likely(netdev->features & NETIF_F_HW_VLAN_CTAG_RX)) {
--		if (comp->csum_flags & IONIC_RXQ_COMP_CSUM_F_VLAN)
--			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
--					       le16_to_cpu(comp->vlan_tci));
-+	if (likely(netdev->features & NETIF_F_HW_VLAN_CTAG_RX) &&
-+	    (comp->csum_flags & IONIC_RXQ_COMP_CSUM_F_VLAN)) {
-+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-+				       le16_to_cpu(comp->vlan_tci));
-+		stats->vlan_stripped++;
- 	}
+ Support
+ =======
++
+ For general Linux networking support, please use the netdev mailing
+ list, which is monitored by Pensando personnel::
  
- 	if (le16_to_cpu(comp->len) <= q->lif->rx_copybreak)
-@@ -860,6 +861,7 @@ static int ionic_tx_tso(struct ionic_queue *q, struct sk_buff *skb)
- 	stats->pkts += total_pkts;
- 	stats->bytes += total_bytes;
- 	stats->tso++;
-+	stats->tso_bytes += total_bytes;
- 
- 	return 0;
- 
-@@ -898,9 +900,12 @@ static int ionic_tx_calc_csum(struct ionic_queue *q, struct sk_buff *skb)
- 				  flags, skb_shinfo(skb)->nr_frags, dma_addr);
- 	desc->cmd = cpu_to_le64(cmd);
- 	desc->len = cpu_to_le16(skb_headlen(skb));
--	desc->vlan_tci = cpu_to_le16(skb_vlan_tag_get(skb));
- 	desc->csum_start = cpu_to_le16(skb_checksum_start_offset(skb));
- 	desc->csum_offset = cpu_to_le16(skb->csum_offset);
-+	if (has_vlan) {
-+		desc->vlan_tci = cpu_to_le16(skb_vlan_tag_get(skb));
-+		stats->vlan_inserted++;
-+	}
- 
- 	if (skb->csum_not_inet)
- 		stats->crc32_csum++;
-@@ -935,9 +940,12 @@ static int ionic_tx_calc_no_csum(struct ionic_queue *q, struct sk_buff *skb)
- 				  flags, skb_shinfo(skb)->nr_frags, dma_addr);
- 	desc->cmd = cpu_to_le64(cmd);
- 	desc->len = cpu_to_le16(skb_headlen(skb));
--	desc->vlan_tci = cpu_to_le16(skb_vlan_tag_get(skb));
-+	if (has_vlan) {
-+		desc->vlan_tci = cpu_to_le16(skb_vlan_tag_get(skb));
-+		stats->vlan_inserted++;
-+	}
- 
--	stats->no_csum++;
-+	stats->csum_none++;
- 
- 	return 0;
- }
 -- 
 2.17.1
 
