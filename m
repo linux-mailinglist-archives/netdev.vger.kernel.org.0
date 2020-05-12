@@ -2,202 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B9A1D0337
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 01:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EBD01D034C
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 01:58:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731683AbgELXvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 19:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
+        id S1731760AbgELX6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 19:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725938AbgELXvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 19:51:18 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3392C061A0C;
-        Tue, 12 May 2020 16:51:17 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id i15so18334477wrx.10;
-        Tue, 12 May 2020 16:51:17 -0700 (PDT)
+        with ESMTP id S1731656AbgELX6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 19:58:45 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08103C061A0C;
+        Tue, 12 May 2020 16:58:45 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id r14so7177457pfg.2;
+        Tue, 12 May 2020 16:58:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=yQwyquwrh1Ay02Bi+4bOgGNuAqeE8rJprnl/lt5dApU=;
-        b=f/+R4VuzqaR/sV5OZugw90bbQeQJ0fLijy+oFvMvTWe6yaziLrwi1uBpnAZaX4+wKU
-         RSAfYwpaBW4Yz8mb5A7GtxrMtG1cdV5UWsMkYNh2xBr0vwAzs/83oaVJzjAaf8eFMxEi
-         3Rtx6LpS6YRzSxl+fA3tmzwgn2HEyjvQ2h09JppYI4bP+6Y3gElUYZf9wg8gi9Cd7m44
-         GWGzd7rWWTawBGDhKFy5HSXWnhNxLyEHEEQIn9LWaazbuNMVFJrFGfmYC0QolHvksz2x
-         LGdqwEMr7pb8b3nH5xcxJKL4yoUY5IdPN8FtDW/ovezAF4ejBho1JLIY6HEwkMlN6C0X
-         skYQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ytaj7DiB30ZSlilj6bqXdkU3ACSN90Kod/LLqsnKkrc=;
+        b=GPxJUsQuHazQJIQ9W2uI9+pzkIlBsDcSuo0MwlzlSBrh7iEBR80W7ftUabj4wMqUbg
+         FG7FaivSZ6lisufHxBphbxkDUutwVwGNETjagJQuhHwcpM5Y3fSMiJANuDcexXtkG7dJ
+         CRWw58buCTUz2v8hLZJBe8si2o0zuAEN0MyaTL7kTKb2mnjnB88mqeLMl5YtY/+lW6JY
+         JVg3R8GqSLybgv+wg33TVQ3XrfrHh2/FEw8CNNHxFwuY0oPSWdxulImiKpCbU2fZsG83
+         HeKJ4uJiPtM/jEZHk8ZVInxlTLK8S7UK6y6F/hWFObFWsX4v4BKDrfz8SioZOyCGXzIa
+         jbYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=yQwyquwrh1Ay02Bi+4bOgGNuAqeE8rJprnl/lt5dApU=;
-        b=cHqngKkCZkMk2LCNk6F6nMlSWRU16SUuqm/jvL9nUcLsYLOmed9JREOrt6xEVw6uNL
-         wvShhDI3YhkXWBRZ0lhH17fvlnb7KqU6kvstsjHcrH9JCToLtIEJLBTM78ZlHM1QhPHn
-         EFcucZ0egfM5WFVOWs2DlLE50RR+hKlrQ6UPAXISAn7MZU5BDEMvAtbwyfbt9t5Z4D0h
-         pcMlvC644nHacYddFjRnvtYhh+873gOb4iCd4y4aHeTyDm0S9Wp+Xsb/gO6PjuwDlqL9
-         Z1utvI0ISu23hQBDhhgcKyUwp+Ig0f+fDDuVBMkn1cY4KHOOasMApNroZn+whNnq1yPq
-         hhOA==
-X-Gm-Message-State: AGi0PubqcO77/c6QS6QLXDXKI0cUIa2PbissAmyY+AOD90Qn6wUL9qkz
-        Vk+mhp7Mlwem8F/gqmf/haQ=
-X-Google-Smtp-Source: APiQypJE5qbRal0NG7Hdro55EnmS5tmwQr4jonfAGQUx0kE3lkJ2GvNrNVB+z8GVi67bbW+O2DZ5Fg==
-X-Received: by 2002:adf:81e4:: with SMTP id 91mr28912335wra.143.1589327476321;
-        Tue, 12 May 2020 16:51:16 -0700 (PDT)
-Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id q144sm1106156wme.0.2020.05.12.16.51.15
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ytaj7DiB30ZSlilj6bqXdkU3ACSN90Kod/LLqsnKkrc=;
+        b=NQuySrFeL0WzjOadVLXNRCZJO82S9UgnMIYzDHL/hnJK6Gv/8GAo8sbg9CpKy5TIV9
+         q3K5AZbeX3CKVu42G5NMSS+aBfhZ1yzq8cxcXJ7hfjhLx5y7g4Jhp/hB9dmf198hgHJU
+         gV4ny0i6muF7Qi8zhCVerpMsTiVwgp8RPdgwAIC01Jz4lYi5llR4rAK0cM+lD8IcQLTO
+         APSpB8XABNLygN0l5KwD6U/0I07iBCzOyRLPRGbiLYvLKaKmwJzzfit5Nzw2XqYNgrdn
+         vAeq2UDMonx0SD4QmD/hrx8cHJErbC4qJyGf5atye6JSi8SHRqOFfulDGVfSTwoXXoWo
+         Ah7g==
+X-Gm-Message-State: AGi0PuZpPP4t0GGz7p4tF218lQSwfxY2bbByPw4RaBxc2rpXUd7tiIk3
+        5D7YM+6tw0TrKZ1XMQ7QL2s=
+X-Google-Smtp-Source: APiQypKNrcLPlxCge2F4DuTnoJm/QI2K9m5RdQ54ubla2Dn7RBn6nG99rnC8jBfLfK22uKm9LY/d3Q==
+X-Received: by 2002:a63:e118:: with SMTP id z24mr20948624pgh.414.1589327924262;
+        Tue, 12 May 2020 16:58:44 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:68dc])
+        by smtp.gmail.com with ESMTPSA id j32sm11403981pgb.55.2020.05.12.16.58.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 16:51:15 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, eric.dumazet@gmail.com,
-        jiri@mellanox.com, idosch@idosch.org, rmk+kernel@armlinux.org.uk,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: sja1105: disable rxvlan offload for the DSA master
-Date:   Wed, 13 May 2020 02:49:21 +0300
-Message-Id: <20200512234921.25460-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 12 May 2020 16:58:43 -0700 (PDT)
+Date:   Tue, 12 May 2020 16:58:40 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, dccp@vger.kernel.org,
+        kernel-team@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next v2 05/17] inet: Run SK_LOOKUP BPF program on
+ socket lookup
+Message-ID: <20200512235840.znwcyu3gpxemucwh@ast-mbp>
+References: <20200511185218.1422406-1-jakub@cloudflare.com>
+ <20200511185218.1422406-6-jakub@cloudflare.com>
+ <20200511204445.i7sessmtszox36xd@ast-mbp>
+ <871rnpuuob.fsf@cloudflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <871rnpuuob.fsf@cloudflare.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, May 12, 2020 at 03:52:52PM +0200, Jakub Sitnicki wrote:
+> On Mon, May 11, 2020 at 10:44 PM CEST, Alexei Starovoitov wrote:
+> > On Mon, May 11, 2020 at 08:52:06PM +0200, Jakub Sitnicki wrote:
+> >> Run a BPF program before looking up a listening socket on the receive path.
+> >> Program selects a listening socket to yield as result of socket lookup by
+> >> calling bpf_sk_assign() helper and returning BPF_REDIRECT code.
+> >>
+> >> Alternatively, program can also fail the lookup by returning with BPF_DROP,
+> >> or let the lookup continue as usual with BPF_OK on return.
+> >>
+> >> This lets the user match packets with listening sockets freely at the last
+> >> possible point on the receive path, where we know that packets are destined
+> >> for local delivery after undergoing policing, filtering, and routing.
+> >>
+> >> With BPF code selecting the socket, directing packets destined to an IP
+> >> range or to a port range to a single socket becomes possible.
+> >>
+> >> Suggested-by: Marek Majkowski <marek@cloudflare.com>
+> >> Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
+> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> >> ---
+> >>  include/net/inet_hashtables.h | 36 +++++++++++++++++++++++++++++++++++
+> >>  net/ipv4/inet_hashtables.c    | 15 ++++++++++++++-
+> >>  2 files changed, 50 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> >> index 6072dfbd1078..3fcbc8f66f88 100644
+> >> --- a/include/net/inet_hashtables.h
+> >> +++ b/include/net/inet_hashtables.h
+> >> @@ -422,4 +422,40 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+> >>
+> >>  int inet_hash_connect(struct inet_timewait_death_row *death_row,
+> >>  		      struct sock *sk);
+> >> +
+> >> +static inline struct sock *bpf_sk_lookup_run(struct net *net,
+> >> +					     struct bpf_sk_lookup_kern *ctx)
+> >> +{
+> >> +	struct bpf_prog *prog;
+> >> +	int ret = BPF_OK;
+> >> +
+> >> +	rcu_read_lock();
+> >> +	prog = rcu_dereference(net->sk_lookup_prog);
+> >> +	if (prog)
+> >> +		ret = BPF_PROG_RUN(prog, ctx);
+> >> +	rcu_read_unlock();
+> >> +
+> >> +	if (ret == BPF_DROP)
+> >> +		return ERR_PTR(-ECONNREFUSED);
+> >> +	if (ret == BPF_REDIRECT)
+> >> +		return ctx->selected_sk;
+> >> +	return NULL;
+> >> +}
+> >> +
+> >> +static inline struct sock *inet_lookup_run_bpf(struct net *net, u8 protocol,
+> >> +					       __be32 saddr, __be16 sport,
+> >> +					       __be32 daddr, u16 dport)
+> >> +{
+> >> +	struct bpf_sk_lookup_kern ctx = {
+> >> +		.family		= AF_INET,
+> >> +		.protocol	= protocol,
+> >> +		.v4.saddr	= saddr,
+> >> +		.v4.daddr	= daddr,
+> >> +		.sport		= sport,
+> >> +		.dport		= dport,
+> >> +	};
+> >> +
+> >> +	return bpf_sk_lookup_run(net, &ctx);
+> >> +}
+> >> +
+> >>  #endif /* _INET_HASHTABLES_H */
+> >> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> >> index ab64834837c8..f4d07285591a 100644
+> >> --- a/net/ipv4/inet_hashtables.c
+> >> +++ b/net/ipv4/inet_hashtables.c
+> >> @@ -307,9 +307,22 @@ struct sock *__inet_lookup_listener(struct net *net,
+> >>  				    const int dif, const int sdif)
+> >>  {
+> >>  	struct inet_listen_hashbucket *ilb2;
+> >> -	struct sock *result = NULL;
+> >> +	struct sock *result, *reuse_sk;
+> >>  	unsigned int hash2;
+> >>
+> >> +	/* Lookup redirect from BPF */
+> >> +	result = inet_lookup_run_bpf(net, hashinfo->protocol,
+> >> +				     saddr, sport, daddr, hnum);
+> >> +	if (IS_ERR(result))
+> >> +		return NULL;
+> >> +	if (result) {
+> >> +		reuse_sk = lookup_reuseport(net, result, skb, doff,
+> >> +					    saddr, sport, daddr, hnum);
+> >> +		if (reuse_sk)
+> >> +			result = reuse_sk;
+> >> +		goto done;
+> >> +	}
+> >> +
+> >
+> > The overhead is too high to do this all the time.
+> > The feature has to be static_key-ed.
+> 
+> Static keys is something that Lorenz has also suggested internally, but
+> we wanted to keep it simple at first.
+> 
+> Introduction of static keys forces us to decide when non-init_net netns
+> are allowed to attach to SK_LOOKUP, as attaching enabling SK_LOOKUP in
+> isolated netns will affect the rx path in init_net.
+> 
+> I see two options, which seem sensible:
+> 
+> 1) limit SK_LOOKUP to init_net, which makes testing setup harder, or
+> 
+> 2) allow non-init_net netns to attach to SK_LOOKUP only if static key
+>    has been already enabled (via sysctl?).
 
-On sja1105 operating in best_effort_vlan_filtering mode (when the TPID
-of the DSA tags is 0x8100), it can be seen that __netif_receive_skb_core
-calls __vlan_hwaccel_clear_tag right before passing the skb to the DSA
-packet_type handler.
+I think both are overkill.
+Just enable that static_key if any netns has progs.
+Loading this prog type will be privileged operation even after cap_bpf.
 
-This means that the tagger does not see the VLAN tag in the skb, nor in
-the skb meta data.
+> >
+> > Also please add multi-prog support. Adding it later will cause
+> > all sorts of compatibility issues. The semantics of multi-prog
+> > needs to be thought through right now.
+> > For example BPF_DROP or BPF_REDIRECT could terminate the prog_run_array
+> > sequence of progs while BPF_OK could continue.
+> > It's not ideal, but better than nothing.
+> 
+> I must say this approach is quite appealing because it's simple to
+> explain. I would need a custom BPF_PROG_RUN_ARRAY, though.
 
-The patch that started zeroing the skb VLAN tag is:
+of course.
 
-  commit d4b812dea4a236f729526facf97df1a9d18e191c
-  Author: Eric Dumazet <edumazet@xxxxxxxxxx>
-  Date:   Thu Jul 18 07:19:26 2013 -0700
+> I'm curious what downside do you see here?
+> Is overriding an earlier DROP/REDIRECT verdict useful?
+> 
+> > Another option could be to execute all attached progs regardless
+> > of return code, but don't let second prog override selected_sk blindly.
+> > bpf_sk_assign() could get smarter.
+> 
+> So if IIUC the rough idea here would be like below?
+> 
+> - 1st program calls
+> 
+>   bpf_sk_assign(ctx, sk1, 0 /*flags*/) -> 0 (OK)
+> 
+> - 2nd program calls
+> 
+>   bpf_sk_assign(ctx, sk2, 0) -> -EBUSY (already selected)
+>   bpf_sk_assign(ctx, sk2, BPF_EXIST) -> 0 (OK, replace existing)
+> 
+> In this case the last program to run has the final say, as opposed to
+> the semantics where DROP/REDIRECT terminates.
+> 
+> Also, 2nd and subsequent programs would probably need to know if and
+> which socket has been already selected. I think the selection could be
+> exposed in context as bpf_sock pointer.
 
-      vlan: mask vlan prio bits
-
-      In commit 48cc32d38a52d0b68f91a171a8d00531edc6a46e
-      ("vlan: don't deliver frames for unknown vlans to protocols")
-      Florian made sure we set pkt_type to PACKET_OTHERHOST
-      if the vlan id is set and we could find a vlan device for this
-      particular id.
-
-      But we also have a problem if prio bits are set.
-
-      Steinar reported an issue on a router receiving IPv6 frames with a
-      vlan tag of 4000 (id 0, prio 2), and tunneled into a sit device,
-      because skb->vlan_tci is set.
-
-      Forwarded frame is completely corrupted : We can see (8100:4000)
-      being inserted in the middle of IPv6 source address :
-
-      16:48:00.780413 IP6 2001:16d8:8100:4000:ee1c:0:9d9:bc87 >
-      9f94:4d95:2001:67c:29f4::: ICMP6, unknown icmp6 type (0), length 64
-             0x0000:  0000 0029 8000 c7c3 7103 0001 a0ae e651
-             0x0010:  0000 0000 ccce 0b00 0000 0000 1011 1213
-             0x0020:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
-             0x0030:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
-
-      It seems we are not really ready to properly cope with this right now.
-
-      We can probably do better in future kernels :
-      vlan_get_ingress_priority() should be a netdev property instead of
-      a per vlan_dev one.
-
-      For stable kernels, lets clear vlan_tci to fix the bugs.
-
-      Reported-by: Steinar H. Gunderson <sesse@xxxxxxxxxx>
-      Signed-off-by: Eric Dumazet <edumazet@xxxxxxxxxx>
-      Signed-off-by: David S. Miller <davem@xxxxxxxxxxxxx>
-
-The patch doesn't say why "we are not really ready to properly cope with
-this right now", and hence why the best solution is to remove the VLAN
-tag from skb's that don't have a local VLAN sub-interface interested in
-them. And I have no idea either.
-
-But the above patch has a loophole: if the VLAN tag is not
-hw-accelerated, it isn't removed from the skb if there is no VLAN
-sub-interface interested in it (our case). So we are hooking into the
-.ndo_fix_features callback of the DSA master and clearing the rxvlan
-offload feature, so the DSA tagger will always see the VLAN as part of
-the skb data. This is symmetrical with the ETH_P_DSA_8021Q case and does
-not need special treatment in the tagger.
-
-If there was an API by which the dsa tag_8021q module would declare its
-interest in servicing VLANs 1024-3071, such that the packets wouldn't be
-classified as PACKET_OTHERHOST, and if that API wasn't as tightly
-integrated with the 8021q module as vlan_find_dev/vlan_group_set_device
-are, I would be interested in using it, but so far I couldn't find it.
-With this patch, even though the frames still are PACKET_OTHERHOST, at
-least the VLAN tag reaches far enough that the DSA packet_type handler
-sees and consumes it.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105_main.c |  2 ++
- include/net/dsa.h                      |  3 +++
- net/dsa/master.c                       | 13 +++++++++++++
- 3 files changed, 18 insertions(+)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 44ce7882dfb1..24757c8adfe7 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2912,6 +2912,8 @@ static int sja1105_setup(struct dsa_switch *ds)
- 
- 	ds->mtu_enforcement_ingress = true;
- 
-+	ds->disable_master_rxvlan = true;
-+
- 	ds->configure_vlan_while_not_filtering = true;
- 
- 	rc = sja1105_setup_devlink_params(ds);
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 50389772c597..3938b20461de 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -299,6 +299,9 @@ struct dsa_switch {
- 	 */
- 	bool			pcs_poll;
- 
-+	/* Necessary for tagging protocols such as tag_8021q. */
-+	bool			disable_master_rxvlan;
-+
- 	/* For switches that only have the MRU configurable. To ensure the
- 	 * configured MTU is not exceeded, normalization of MRU on all bridged
- 	 * interfaces is needed.
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index a621367c6e8c..12e8126bc29c 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -197,6 +197,18 @@ static int dsa_master_get_phys_port_name(struct net_device *dev,
- 	return 0;
- }
- 
-+static netdev_features_t dsa_master_fix_features(struct net_device *dev,
-+						 netdev_features_t features)
-+{
-+	struct dsa_port *cpu_dp = dev->dsa_ptr;
-+	struct dsa_switch *ds = cpu_dp->ds;
-+
-+	if (ds->disable_master_rxvlan)
-+		features &= ~NETIF_F_HW_VLAN_CTAG_RX;
-+
-+	return features;
-+}
-+
- static int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
- 	struct dsa_port *cpu_dp = dev->dsa_ptr;
-@@ -278,6 +290,7 @@ static int dsa_master_ndo_setup(struct net_device *dev)
- 		memcpy(ops, cpu_dp->orig_ndo_ops, sizeof(*ops));
- 
- 	ops->ndo_get_phys_port_name = dsa_master_get_phys_port_name;
-+	ops->ndo_fix_features = dsa_master_fix_features;
- 	ops->ndo_do_ioctl = dsa_master_ioctl;
- 
- 	dev->netdev_ops  = ops;
--- 
-2.17.1
-
+I think running all is better.
+The main down side of terminating early is predictability.
+Imagine first prog is doing the sock selection based on some map configuration.
+Then second prog gets loaded and doing its own selection.
+These two progs are managed by different user space processes.
+Now first map got changed and second prog stopped seeing the packets.
+No warning. Nothing. With "bpf_sk_assign(ctx, sk2, 0) -> -EBUSY"
+the second prog at least will see errors and will be able to log
+and alert humans to do something about it.
+The question of ordering come up, of course. But that ordering concerns
+we had for some time with cgroup-bpf run array and it wasn't horrible.
+We're still trying to solve it on cgroup-bpf side in a generic way,
+but simple first-to-attach -> first-to-run was good enough there
+and I think will be here as well. The whole dispatcher project
+and managing policy, priority, ordering in user space better to solve
+it generically for all cases. But the kernel should do simple basics.
