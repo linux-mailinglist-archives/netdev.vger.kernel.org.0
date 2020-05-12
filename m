@@ -2,415 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 588191CFEA4
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 21:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5BC11CFE4D
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 21:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731121AbgELTrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 15:47:13 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:30786 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730929AbgELTrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 15:47:12 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04CJguYZ031798
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 12:47:09 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=facebook;
- bh=jrGcGYevxkVpD8cFzVZazMFSjTBHwSqNFA25Sc2s7Fw=;
- b=m11x9ly0+S2jhv2jE646z9mFCujIhm1FDnAy9SWOH9Tdn6/7DwCVDj7cSH4hGZz1kKOK
- sUzWxsK3ArNgH0afcid7hj2yUJwV+Gng87hq+kb3BOTRxfl6uOVg90sBZtef0q5w/LOm
- BQsOBTXwMUgT7/qlb0flo237el1FwtGpnQ0= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3100x20fpu-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 12:47:09 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 12 May 2020 12:47:06 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id E9A072EC317E; Tue, 12 May 2020 12:47:04 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 4/4] selftest/bpf: add BPF triggering benchmark
-Date:   Tue, 12 May 2020 12:24:45 -0700
-Message-ID: <20200512192445.2351848-5-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200512192445.2351848-1-andriin@fb.com>
-References: <20200512192445.2351848-1-andriin@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-12_07:2020-05-11,2020-05-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
- clxscore=1015 priorityscore=1501 suspectscore=9 phishscore=0
- malwarescore=0 mlxscore=0 bulkscore=0 mlxlogscore=999 cotscore=-2147483648
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005120149
-X-FB-Internal: deliver
+        id S1730610AbgELTat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 15:30:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725554AbgELTat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 15:30:49 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C616C061A0C;
+        Tue, 12 May 2020 12:30:49 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477:9e51:a893:b0fe:602a])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8452F128325B0;
+        Tue, 12 May 2020 12:30:47 -0700 (PDT)
+Date:   Tue, 12 May 2020 12:30:46 -0700 (PDT)
+Message-Id: <20200512.123046.2245363690581586050.davem@davemloft.net>
+To:     brgl@bgdev.pl
+Cc:     robh+dt@kernel.org, matthias.bgg@gmail.com, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com, kuba@kernel.org,
+        arnd@arndb.de, fparent@baylibre.com, hkallweit1@gmail.com,
+        edwin.peer@broadcom.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        stephane.leprovost@mediatek.com, pedro.tsai@mediatek.com,
+        andrew.perepech@mediatek.com, bgolaszewski@baylibre.com
+Subject: Re: [PATCH v2 05/14] net: core: provide priv_to_netdev()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <CAMRc=MdUCkgCo8UndDbhQRZt_tXJJjtR4uM2g05N5ti7Hw1f2w@mail.gmail.com>
+References: <20200511150759.18766-6-brgl@bgdev.pl>
+        <20200511.134117.1336222619714836904.davem@davemloft.net>
+        <CAMRc=MdUCkgCo8UndDbhQRZt_tXJJjtR4uM2g05N5ti7Hw1f2w@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 12 May 2020 12:30:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is sometimes desirable to be able to trigger BPF program from user-spa=
-ce
-with minimal overhead. sys_enter would seem to be a good candidate, yet i=
-n
-a lot of cases there will be a lot of noise from syscalls triggered by ot=
-her
-processes on the system. So while searching for low-overhead alternative,=
- I've
-stumbled upon getpgid() syscall, which seems to be specific enough to not
-suffer from accidental syscall by other apps.
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Tue, 12 May 2020 08:04:39 +0200
 
-This set of benchmarks compares tp, raw_tp w/ filtering by syscall ID, kp=
-robe,
-fentry and fmod_ret with returning error (so that syscall would not be
-executed), to determine the lowest-overhead way. Here are results on my
-machine (using benchs/run_bench_trigger.sh script):
+> I will if you insist but would you mind sharing some details on why it
+> was removed? To me it still makes more sense than storing the pointer
+> to a structure in *that* structure.
 
-  base      :    9.200 =C2=B1 0.319M/s
-  tp        :    6.690 =C2=B1 0.125M/s
-  rawtp     :    8.571 =C2=B1 0.214M/s
-  kprobe    :    6.431 =C2=B1 0.048M/s
-  fentry    :    8.955 =C2=B1 0.241M/s
-  fmodret   :    8.903 =C2=B1 0.135M/s
+Flexibility in implementation of where the private data is located
+and how it is allocated.
 
-So it seems like fmodret doesn't give much benefit for such lightweight
-syscall. Raw tracepoint is pretty decent despite additional filtering log=
-ic,
-but it will be called for any other syscall in the system, which rules it=
- out.
-Fentry, though, seems to be adding the least amoung of overhead and achie=
-ves
-97.3% of performance of baseline no-BPF-attached syscall.
-
-Using getpgid() seems to be preferable to set_task_comm() approach from
-test_overhead, as it's about 2.35x faster in a baseline performance.
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/Makefile          |   4 +-
- tools/testing/selftests/bpf/bench.c           |  12 ++
- .../selftests/bpf/benchs/bench_trigger.c      | 167 ++++++++++++++++++
- .../selftests/bpf/benchs/run_bench_trigger.sh |   9 +
- .../selftests/bpf/progs/trigger_bench.c       |  47 +++++
- 5 files changed, 238 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/benchs/bench_trigger.c
- create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_trigger.=
-sh
- create mode 100644 tools/testing/selftests/bpf/progs/trigger_bench.c
-
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
-ts/bpf/Makefile
-index 3c43d4eceba8..352d17a16bae 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -411,11 +411,13 @@ $(OUTPUT)/bench_%.o: benchs/bench_%.c bench.h
- 	$(call msg,CC,,$@)
- 	$(CC) $(CFLAGS) -c $(filter %.c,$^) $(LDLIBS) -o $@
- $(OUTPUT)/bench_rename.o: $(OUTPUT)/test_overhead.skel.h
-+$(OUTPUT)/bench_trigger.o: $(OUTPUT)/trigger_bench.skel.h
- $(OUTPUT)/bench.o: bench.h testing_helpers.h
- $(OUTPUT)/bench: LDLIBS +=3D -lm
- $(OUTPUT)/bench: $(OUTPUT)/bench.o $(OUTPUT)/testing_helpers.o \
- 		 $(OUTPUT)/bench_count.o \
--		 $(OUTPUT)/bench_rename.o
-+		 $(OUTPUT)/bench_rename.o \
-+		 $(OUTPUT)/bench_trigger.o
- 	$(call msg,BINARY,,$@)
- 	$(CC) $(LDFLAGS) -o $@ $(filter %.a %.o,$^) $(LDLIBS)
-=20
-diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftest=
-s/bpf/bench.c
-index c9e8b7dbaf66..8c0dfbfe6088 100644
---- a/tools/testing/selftests/bpf/bench.c
-+++ b/tools/testing/selftests/bpf/bench.c
-@@ -304,6 +304,12 @@ extern const struct bench bench_rename_rawtp;
- extern const struct bench bench_rename_fentry;
- extern const struct bench bench_rename_fexit;
- extern const struct bench bench_rename_fmodret;
-+extern const struct bench bench_trig_base;
-+extern const struct bench bench_trig_tp;
-+extern const struct bench bench_trig_rawtp;
-+extern const struct bench bench_trig_kprobe;
-+extern const struct bench bench_trig_fentry;
-+extern const struct bench bench_trig_fmodret;
-=20
- static const struct bench *benchs[] =3D {
- 	&bench_count_global,
-@@ -315,6 +321,12 @@ static const struct bench *benchs[] =3D {
- 	&bench_rename_fentry,
- 	&bench_rename_fexit,
- 	&bench_rename_fmodret,
-+	&bench_trig_base,
-+	&bench_trig_tp,
-+	&bench_trig_rawtp,
-+	&bench_trig_kprobe,
-+	&bench_trig_fentry,
-+	&bench_trig_fmodret,
- };
-=20
- static void setup_benchmark()
-diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/t=
-esting/selftests/bpf/benchs/bench_trigger.c
-new file mode 100644
-index 000000000000..49c22832f216
---- /dev/null
-+++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-@@ -0,0 +1,167 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+#include "bench.h"
-+#include "trigger_bench.skel.h"
-+
-+/* BPF triggering benchmarks */
-+static struct trigger_ctx {
-+	struct trigger_bench *skel;
-+} ctx;
-+
-+static struct counter base_hits;
-+
-+static void trigger_validate()
-+{
-+	if (env.consumer_cnt !=3D 1) {
-+		fprintf(stderr, "benchmark doesn't support multi-consumer!\n");
-+		exit(1);
-+	}
-+}
-+
-+static void *trigger_base_producer(void *input)
-+{
-+	while (true) {
-+		(void)syscall(__NR_getpgid);
-+		atomic_inc(&base_hits.value);
-+	}
-+	return NULL;
-+}
-+
-+static void trigger_base_measure(struct bench_res *res)
-+{
-+	res->hits =3D atomic_swap(&base_hits.value, 0);
-+}
-+
-+static void *trigger_producer(void *input)
-+{
-+	while (true)
-+		(void)syscall(__NR_getpgid);
-+	return NULL;
-+}
-+
-+static void trigger_measure(struct bench_res *res)
-+{
-+	res->hits =3D atomic_swap(&ctx.skel->bss->hits, 0);
-+}
-+
-+static void setup_ctx()
-+{
-+	setup_libbpf();
-+
-+	ctx.skel =3D trigger_bench__open_and_load();
-+	if (!ctx.skel) {
-+		fprintf(stderr, "failed to open skeleton\n");
-+		exit(1);
-+	}
-+}
-+
-+static void attach_bpf(struct bpf_program *prog)
-+{
-+	struct bpf_link *link;
-+
-+	link =3D bpf_program__attach(prog);
-+	if (IS_ERR(link)) {
-+		fprintf(stderr, "failed to attach program!\n");
-+		exit(1);
-+	}
-+}
-+
-+static void trigger_tp_setup()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.bench_trigger_tp);
-+}
-+
-+static void trigger_rawtp_setup()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.bench_trigger_raw_tp);
-+}
-+
-+static void trigger_kprobe_setup()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.bench_trigger_kprobe);
-+}
-+
-+static void trigger_fentry_setup()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.bench_trigger_fentry);
-+}
-+
-+static void trigger_fmodret_setup()
-+{
-+	setup_ctx();
-+	attach_bpf(ctx.skel->progs.bench_trigger_fmodret);
-+}
-+
-+static void *trigger_consumer(void *input)
-+{
-+	return NULL;
-+}
-+
-+const struct bench bench_trig_base =3D {
-+	.name =3D "trig-base",
-+	.validate =3D trigger_validate,
-+	.producer_thread =3D trigger_base_producer,
-+	.consumer_thread =3D trigger_consumer,
-+	.measure =3D trigger_base_measure,
-+	.report_progress =3D hits_drops_report_progress,
-+	.report_final =3D hits_drops_report_final,
-+};
-+
-+const struct bench bench_trig_tp =3D {
-+	.name =3D "trig-tp",
-+	.validate =3D trigger_validate,
-+	.setup =3D trigger_tp_setup,
-+	.producer_thread =3D trigger_producer,
-+	.consumer_thread =3D trigger_consumer,
-+	.measure =3D trigger_measure,
-+	.report_progress =3D hits_drops_report_progress,
-+	.report_final =3D hits_drops_report_final,
-+};
-+
-+const struct bench bench_trig_rawtp =3D {
-+	.name =3D "trig-rawtp",
-+	.validate =3D trigger_validate,
-+	.setup =3D trigger_rawtp_setup,
-+	.producer_thread =3D trigger_producer,
-+	.consumer_thread =3D trigger_consumer,
-+	.measure =3D trigger_measure,
-+	.report_progress =3D hits_drops_report_progress,
-+	.report_final =3D hits_drops_report_final,
-+};
-+
-+const struct bench bench_trig_kprobe =3D {
-+	.name =3D "trig-kprobe",
-+	.validate =3D trigger_validate,
-+	.setup =3D trigger_kprobe_setup,
-+	.producer_thread =3D trigger_producer,
-+	.consumer_thread =3D trigger_consumer,
-+	.measure =3D trigger_measure,
-+	.report_progress =3D hits_drops_report_progress,
-+	.report_final =3D hits_drops_report_final,
-+};
-+
-+const struct bench bench_trig_fentry =3D {
-+	.name =3D "trig-fentry",
-+	.validate =3D trigger_validate,
-+	.setup =3D trigger_fentry_setup,
-+	.producer_thread =3D trigger_producer,
-+	.consumer_thread =3D trigger_consumer,
-+	.measure =3D trigger_measure,
-+	.report_progress =3D hits_drops_report_progress,
-+	.report_final =3D hits_drops_report_final,
-+};
-+
-+const struct bench bench_trig_fmodret =3D {
-+	.name =3D "trig-fmodret",
-+	.validate =3D trigger_validate,
-+	.setup =3D trigger_fmodret_setup,
-+	.producer_thread =3D trigger_producer,
-+	.consumer_thread =3D trigger_consumer,
-+	.measure =3D trigger_measure,
-+	.report_progress =3D hits_drops_report_progress,
-+	.report_final =3D hits_drops_report_final,
-+};
-diff --git a/tools/testing/selftests/bpf/benchs/run_bench_trigger.sh b/to=
-ols/testing/selftests/bpf/benchs/run_bench_trigger.sh
-new file mode 100755
-index 000000000000..78e83f243294
---- /dev/null
-+++ b/tools/testing/selftests/bpf/benchs/run_bench_trigger.sh
-@@ -0,0 +1,9 @@
-+#!/bin/bash
-+
-+set -eufo pipefail
-+
-+for i in base tp rawtp kprobe fentry fmodret
-+do
-+	summary=3D$(sudo ./bench -w2 -d5 -a trig-$i | tail -n1 | cut -d'(' -f1 =
-| cut -d' ' -f3-)
-+	printf "%-10s: %s\n" $i "$summary"
-+done
-diff --git a/tools/testing/selftests/bpf/progs/trigger_bench.c b/tools/te=
-sting/selftests/bpf/progs/trigger_bench.c
-new file mode 100644
-index 000000000000..8b36b6640e7e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/trigger_bench.c
-@@ -0,0 +1,47 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Facebook
-+
-+#include <linux/bpf.h>
-+#include <asm/unistd.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+long hits =3D 0;
-+
-+SEC("tp/syscalls/sys_enter_getpgid")
-+int bench_trigger_tp(void *ctx)
-+{
-+	__sync_add_and_fetch(&hits, 1);
-+	return 0;
-+}
-+
-+SEC("raw_tp/sys_enter")
-+int BPF_PROG(bench_trigger_raw_tp, struct pt_regs *regs, long id)
-+{
-+	if (id =3D=3D __NR_getpgid)
-+		__sync_add_and_fetch(&hits, 1);
-+	return 0;
-+}
-+
-+SEC("kprobe/__x64_sys_getpgid")
-+int bench_trigger_kprobe(void *ctx)
-+{
-+	__sync_add_and_fetch(&hits, 1);
-+	return 0;
-+}
-+
-+SEC("fentry/__x64_sys_getpgid")
-+int bench_trigger_fentry(void *ctx)
-+{
-+	__sync_add_and_fetch(&hits, 1);
-+	return 0;
-+}
-+
-+SEC("fmod_ret/__x64_sys_getpgid")
-+int bench_trigger_fmodret(void *ctx)
-+{
-+	__sync_add_and_fetch(&hits, 1);
-+	return -22;
-+}
---=20
-2.24.1
-
+And yes, I do insist.
