@@ -2,131 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83AAF1CF6F0
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 16:22:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 244731CF6F8
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 16:23:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729921AbgELOWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 10:22:36 -0400
-Received: from muru.com ([72.249.23.125]:53996 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728085AbgELOWf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 10:22:35 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id E8BE48047;
-        Tue, 12 May 2020 14:23:22 +0000 (UTC)
-Date:   Tue, 12 May 2020 07:22:30 -0700
-From:   Tony Lindgren <tony@atomide.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        Clay McClure <clay@daemons.net>, Dan Murphy <dmurphy@ti.com>
-Subject: Re: [PATCH net v4] net: ethernet: ti: Remove TI_CPTS_MOD workaround
-Message-ID: <20200512142230.GF37466@atomide.com>
-References: <20200512100230.17752-1-grygorii.strashko@ti.com>
+        id S1730210AbgELOXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 10:23:51 -0400
+Received: from mail-eopbgr80105.outbound.protection.outlook.com ([40.107.8.105]:48718
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727876AbgELOXu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 10:23:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a7vEQWvad7oX57rHBq91OKbZj+hNpDtimDjdiQ/ntQfMQIqnuPQ2IGdGJJhvnZM5vYHRjO9FKfp+g3yMdtoqkV0dmKvrL9LMbbrjnRwD3VghgTQBmoQN5bsYDth1NFltJBUUSn7MwZkuhgHhb2lvjepe4b62o/ZrsGMwW4BGVfk6681EixP4+zyNV6se5ysPRvy9xLEN7aRYxxVCYyMj/Ev2Zqx1P/TpkN9+LCN1ZAOrlu4W4+AVsgpQGnr63inHbouBciN6hZxaYTxTDObznTrRAg/dWcy0OsQCHWbIvUpmGByu37BWGc7x/c/wj5stqoRfpTZfgvmErD7yg3pTyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c2I4ykrsuKppGL2qWQxtWRHxE+l7srJYcuIyspvBLWo=;
+ b=lkud0SCF4eqVNdPiyCclDy7fZCMDOH9mHsYUFyCK+EQNUKh7Clazb5p8W3hhU4daHUUOdPmMWGcHPj5gjsGlwGVXdOZipSXY84evERwMcKUipFl9hQRqQ3fuc5K4O0HxaiRGRLFYgMNzRFRInOmgrBJNqFPBOV5ktKEmzH0Cg9NgwNU4/G2brcUU7YQwGH+6TGAfS2dXIKyxZmS7xmFE9uzyscoUnY4kJgGgIA1x8kLThanYJ/YMzk8+NQKez8tF0uZUersi3+t+/ObfTNybVCXsv7bMfb0+ZkyGJzR1ut70hcpoPHcTLe/PR0zHoUQNgqXmdLlYanLQl/JBr1TXug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
+ s=selector1-nokia-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c2I4ykrsuKppGL2qWQxtWRHxE+l7srJYcuIyspvBLWo=;
+ b=rVyoad3Qc/gaJU8vk0CFRJOJ/KanUJs8Pm+npeu42TZS7X3YHSq+TrpEo7Vj4qpPzra30FD3jOT9lVHWfO3gnpkQulbdC5CSnGs2Khs1LLs6ehG2xL6sRicYqFdI0OVg+Z9GOtpy9/PLwK6xn5ExM81pHGghDk4L6dswid+7orU=
+Authentication-Results: nokia.com; dkim=none (message not signed)
+ header.d=none;nokia.com; dmarc=none action=none header.from=nokia.com;
+Received: from AM0PR07MB3937.eurprd07.prod.outlook.com (2603:10a6:208:4c::20)
+ by AM0PR07MB5827.eurprd07.prod.outlook.com (2603:10a6:208:110::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.13; Tue, 12 May
+ 2020 14:23:43 +0000
+Received: from AM0PR07MB3937.eurprd07.prod.outlook.com
+ ([fe80::6958:35d6:fc84:49db]) by AM0PR07MB3937.eurprd07.prod.outlook.com
+ ([fe80::6958:35d6:fc84:49db%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
+ 14:23:43 +0000
+From:   Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Subject: Multicast from underlying MACVLAN interface towards MACVLAN
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Jiri Pirko <jpirko@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Matija Glavinic Pecotic <matija.glavinic-pecotic.ext@nokia.com>
+Message-ID: <8e6e5260-9359-eddd-c928-dba487f1319b@nokia.com>
+Date:   Tue, 12 May 2020 16:23:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0PR03CA0021.eurprd03.prod.outlook.com
+ (2603:10a6:208:14::34) To AM0PR07MB3937.eurprd07.prod.outlook.com
+ (2603:10a6:208:4c::20)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200512100230.17752-1-grygorii.strashko@ti.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from ulegcpsvhp1.emea.nsn-net.net (131.228.32.166) by AM0PR03CA0021.eurprd03.prod.outlook.com (2603:10a6:208:14::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Tue, 12 May 2020 14:23:42 +0000
+X-Originating-IP: [131.228.32.166]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: f5a3e575-a392-406a-dc95-08d7f6801315
+X-MS-TrafficTypeDiagnostic: AM0PR07MB5827:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR07MB5827D5F2A3AE0997F75F8A8388BE0@AM0PR07MB5827.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0401647B7F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cdepB9KbICMa3UFqu59WkeXakTzanROhVTXugUmJa4ShCw3boe41fcd6mxbshJq0mkniiHWGTbfNHZHoTL8A1GgnD/Kv5Sx7pa2tHBCyje6Yq9b3YBXgI3y0N8wkOA75wTsTbkVYSXJJDiCq7ryGtPBGM0auHGCkDaX08UXItDjSUmiUD0d2LmZPkHJJW2p5SvEROyMv9nOFIYJK0GzvY5QdhX9SmjSqyPH4vJmyTijd06ku0921v1D/jlYAYc1TyCCt3F9Ehb+mUCDfzJ44ibIDF+UbjD4xI/h6U6Zoqnp/UyS1POptKyFCVlMv9sq5pV/aVx4WcJpQtOnrdmZ3NO64Q7R9eK8za/SnYfVn31YpO/7BMO7HsxzA+wiCZTgKA3IudwNC2NFGldoGCPdtPQE7dSNv6/+rVPPr19zMLdL+ALnNoVAr19UJrsWtKvhl/c2o89TGtbYazZDpwPMAYEr2+nic0UFc6vkLb7mzpJP0dBRyblKZqG004LUogBOTsQXZTzlpcqi7M4xoyplhaakCQNCI7JZ+zy5MGy4NEUfZ3mz7VkNZcF1sMP3BUmC3kV26NaJoPhVIiDGFaVicMQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR07MB3937.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(366004)(39860400002)(346002)(376002)(33430700001)(36756003)(16526019)(107886003)(44832011)(316002)(5660300002)(52116002)(54906003)(8676002)(6506007)(66574014)(33440700001)(8936002)(26005)(186003)(31696002)(4326008)(956004)(6512007)(6916009)(6666004)(2616005)(2906002)(66476007)(86362001)(66946007)(31686004)(66556008)(478600001)(6486002)(43740500002)(505234006);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: qAZzVMIBhIwyHgUi2477nE6nbsbaZUn8WU+Ht76GzUykN8B7XMjKg3cBINQi+JiueQNiDySGip5S6AkiG/0CUeJiF502PqwaScB5RMaCPhhbhhmEteTxXr/c4dOds8ONeQibLfx6CD6ZxnHiT/LCkQeBCGIaOM5WUtK7s8yuqLAnssCdZhf2qS5plz1/DaXG2q2+eIuCylbLBnxWuq2wpDsx8mrg420QUqP/GnO0CxkDWHiAW9h98laodOuXVrLd8+zTLr2DV0gSA+z6IzB/EnauN/a1gqXKFBL75vTe+t0rvMMCpbuERH1qZMtrmvzVgFkcRQt/+Gb3pNduUPnto1P8v9w8D6x7fEoRklbEoepSh04f6sJvnGme6sFV3VO1s4QrAf6+RKSIqq+QsG3t4EoyDdd/qlyDDUyF4rX/w1j9769dFie1ymSDcKv75fbRPyGMEE68LT/A9Ym3pG534EARIY3DJeA4E2iXj3t4UYqKg/OmJeq9NfYCweIobNvw
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f5a3e575-a392-406a-dc95-08d7f6801315
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2020 14:23:43.4190
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: S64bD3KRPXXPTtNrEc5f4e6cAag11fCx8edls9klVk120+nwdeVJloYT2zsPk18A20e6epYOSVGpENNgDYavi+HZetXQCrzGC6zW8JZhD0c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR07MB5827
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Dear Network Core developers!
 
-* Grygorii Strashko <grygorii.strashko@ti.com> [200512 10:03]:
-> From: Clay McClure <clay@daemons.net>
-> 
-> My recent commit b6d49cab44b5 ("net: Make PTP-specific drivers depend on
-> PTP_1588_CLOCK") exposes a missing dependency in defconfigs that select
-> TI_CPTS without selecting PTP_1588_CLOCK, leading to linker errors of the
-> form:
-> 
-> drivers/net/ethernet/ti/cpsw.o: in function `cpsw_ndo_stop':
-> cpsw.c:(.text+0x680): undefined reference to `cpts_unregister'
->  ...
-> 
-> That's because TI_CPTS_MOD (which is the symbol gating the _compilation_ of
-> cpts.c) now depends on PTP_1588_CLOCK, and so is not enabled in these
-> configurations, but TI_CPTS (which is the symbol gating _calls_ to the cpts
-> functions) _is_ enabled. So we end up compiling calls to functions that
-> don't exist, resulting in the linker errors.
-> 
-> This patch fixes build errors and restores previous behavior by:
->  - ensure PTP_1588_CLOCK=y in TI specific configs and CPTS will be built
->  - remove TI_CPTS_MOD and, instead, add dependencies from CPTS in
->    TI_CPSW/TI_KEYSTONE_NETCP/TI_CPSW_SWITCHDEV as below:
-> 
->    config TI_CPSW_SWITCHDEV
->    ...
->     depends on TI_CPTS || !TI_CPTS
-> 
->    which will ensure proper dependencies PTP_1588_CLOCK -> TI_CPTS ->
-> TI_CPSW/TI_KEYSTONE_NETCP/TI_CPSW_SWITCHDEV and build type selection.
-> 
-> Note. For NFS boot + CPTS all of above configs have to be built-in.
+I've been debugging an issue with Multicast replies from underlying
+interface of MACVLAN towards MACVLAN. These SKBs never contain a MAC header
+and therefore cannot be properly processed by MACVLAN.
 
-This builds and boots on BBB and beagle x15 with NFSroot so:
+The usecase is following:
+eth1 <-- eth1.212 <-- macvlan@eth1.212 (in bridge mode)
 
-Tested-by: Tony Lindgren <tony@atomide.com>
+As I understand the problem, it actually plays no role, that there is an intermediate VLAN interface.
+The problem is, if macvlan@eth1.212 sends Router Solicitation these SKBs are received on eth1.212,
+but the corresponding multicast Router Advertisements are not received on macvlan@eth1.212.
 
-However, there's at least one more issue left that shows up at least
-on ti81xx dra62x-j5eco-evm on v5.7-rc5 that has commit b46b2b7ba6e1
-("ARM: dts: Fix dm814x Ethernet by changing to use rgmii-id mode").
+I've tracked the problem down to the following incompatibility between MACVLAN code and IP code...
 
-I think this is a different issue though, any ideas?
+One the one hand, MACVLAN always expects ethernet header:
 
-Regards,
+static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)                                                                                                          
+{                                                                                                                                                                               
+        struct macvlan_port *port;                                                                                                                                              
+        struct sk_buff *skb = *pskb;                                                                                                                                            
+        const struct ethhdr *eth = eth_hdr(skb);                                                                                                                                
+        ...
+                                                                                                                                                                                
+        port = macvlan_port_get_rcu(skb->dev);                                                                                                                                  
+        if (is_multicast_ether_addr(eth->h_dest)) {                                                                                                                             
 
-Tony
+One the other hand, IP doesn't populate ethernet header for multicast loopback transmission:
 
+int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)                                                                                                    
+{                                                                                                                                                                               
+        skb_reset_mac_header(skb);                                                                                                                                              
+        __skb_pull(skb, skb_network_offset(skb));                                                                                                                               
+        skb->pkt_type = PACKET_LOOPBACK;                                                                                                                                        
+        skb->ip_summed = CHECKSUM_UNNECESSARY;                                                                                                                                  
+        WARN_ON(!skb_dst(skb));                                                                                                                                                 
+        skb_dst_force(skb);                                                                                                                                                     
+        netif_rx_ni(skb);                                                                                                                                                       
 
-[    7.278339] 8<--- cut here ---
-[    7.281421] Unhandled fault: external abort on non-linefetch (0x1008) at 0xf0169004
-[    7.289116] pgd = (ptrval)
-[    7.291836] [f0169004] *pgd=ae83a811, *pte=4a101653, *ppte=4a101453
-[    7.298154] Internal error: : 1008 [#1] SMP ARM
-[    7.302707] Modules linked in:
-[    7.305789] CPU: 0 PID: 73 Comm: kworker/0:3 Not tainted 5.7.0-rc5-dirty #1969
-[    7.313042] Hardware name: Generic ti814x (Flattened Device Tree)
-[    7.319190] Workqueue: pm pm_runtime_work
-[    7.323241] PC is at davinci_mdio_runtime_suspend+0xc/0x8c
-[    7.328753] LR is at __rpm_callback+0x84/0x154
-[    7.333218] pc : [<c0703c98>]    lr : [<c063f2a4>]    psr: a0000013
-[    7.339513] sp : eed7be80  ip : fffffffa  fp : 00000008
-[    7.344761] r10: ffffe000  r9 : eed3ba40  r8 : 00000000
-[    7.350010] r7 : 00000000  r6 : c063c810  r5 : c063c810  r4 : eed1c010
-[    7.356568] r3 : f0169000  r2 : 000000d4  r1 : eed1c010  r0 : eed1c010
-[    7.363129] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-[    7.370297] Control: 10c5387d  Table: 80004019  DAC: 00000051
-[    7.376069] Process kworker/0:3 (pid: 73, stack limit = 0x(ptrval))
-[    7.382367] Stack: (0xeed7be80 to 0xeed7c000)
-[    7.386755] be80: eed1c010 c063c810 c063c810 00000000 00000000 c0e051c8 ffffe000 c063f2a4
-[    7.394978] bea0: eed1c010 c063c810 0000000a 00000000 00000000 c063f394 eed1c010 c063c810
-[    7.403202] bec0: 0000000a c063f4f0 c0e00018 ef4e2400 ee979880 c0e088c0 00000000 00000001
-[    7.411425] bee0: 00000000 ef4e2400 eed7bf44 c09293e8 00000000 ea441c81 0efa67ff eed1c0f4
-[    7.419648] bf00: eed5ca80 ef4e2000 ff7edc00 00000000 00000000 c0ebf890 ffffe000 c0640af0
-[    7.427871] bf20: eed1c0f4 c0155338 ee979880 ef4e2000 00000008 eed5ca80 eed5ca94 ef4e2000
-[    7.436094] bf40: 00000008 ef4e2018 c0e03d00 ef4e2000 ffffe000 c0155eb0 ffffe000 eed5ca80
-[    7.444318] bf60: c0155e84 00000000 eed5a880 eed5a840 eed7a000 eed5ca80 c0155e84 ee915eac
-[    7.452542] bf80: eed5a85c c015bf38 00000001 eed5a880 c015be04 00000000 00000000 00000000
-[    7.460763] bfa0: 00000000 00000000 00000000 c0100168 00000000 00000000 00000000 00000000
-[    7.468985] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[    7.477207] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
-[    7.485450] [<c0703c98>] (davinci_mdio_runtime_suspend) from [<c063f2a4>] (__rpm_callback+0x84/0x154)
-[    7.494720] [<c063f2a4>] (__rpm_callback) from [<c063f394>] (rpm_callback+0x20/0x80)
-[    7.502506] [<c063f394>] (rpm_callback) from [<c063f4f0>] (rpm_suspend+0xfc/0x6ac)
-[    7.510117] [<c063f4f0>] (rpm_suspend) from [<c0640af0>] (pm_runtime_work+0x88/0xa4)
-[    7.517916] [<c0640af0>] (pm_runtime_work) from [<c0155338>] (process_one_work+0x228/0x568)
-[    7.526317] [<c0155338>] (process_one_work) from [<c0155eb0>] (worker_thread+0x2c/0x5d4)
-[    7.534460] [<c0155eb0>] (worker_thread) from [<c015bf38>] (kthread+0x134/0x148)
-[    7.541900] [<c015bf38>] (kthread) from [<c0100168>] (ret_from_fork+0x14/0x2c)
-[    7.549155] Exception stack(0xeed7bfb0 to 0xeed7bff8)
-[    7.554233] bfa0:                                     00000000 00000000 00000000 00000000
-[    7.562455] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[    7.570676] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[    7.577331] Code: e8bd8070 e92d47f0 e5909040 e5993004 (e5935004)
-[    7.583459] ---[ end trace 42a064f19df2a2ea ]---
-[    7.588333] 8<--- cut here ---
+Unicast however works fine, because of:
+
+int neigh_connected_output(struct neighbour *neigh, struct sk_buff *skb)                                                                                                        
+{                                                                                                                                                                               
+        struct net_device *dev = neigh->dev;                                                                                                                                    
+        unsigned int seq;                                                                                                                                                       
+        int err;                                                                                                                                                                
+                                                                                                                                                                                
+        do {                                                                                                                                                                    
+                __skb_pull(skb, skb_network_offset(skb));                                                                                                                       
+                seq = read_seqbegin(&neigh->ha_lock);                                                                                                                           
+                err = dev_hard_header(skb, dev, ntohs(skb->protocol),                                                                                                           
+                                      neigh->ha, NULL, skb->len);                                                                                                               
+        } while (read_seqretry(&neigh->ha_lock, seq));                                                                                                                          
+                                                                                                                                                                                
+        if (err >= 0)                                                                                                                                                           
+                err = dev_queue_xmit(skb);                                                                                                                                      
+
+I've also collected some stack traces and SKB dumps to illustrate the problem
+(I've instrumented macvlan_handle_frame() and eth_header() to understand when
+the ethernet header has been generated):
+
+macvlan_handle_frame() receives Router Advertisement, but cannot forward
+without Ethernet header:
+
+skb len=96 headroom=40 headlen=96 tailroom=56
+mac=(40,0) net=(40,40) trans=80
+shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+csum(0xae2e9a2f ip_summed=1 complete_sw=0 valid=0 level=0)
+hash(0xc97ebd88 sw=1 l4=1) proto=0x86dd pkttype=5 iif=24
+dev name=etha01.212 feat=0x0x0000000040005000
+skb headroom: 00000000: 00 28 b3 4d 84 88 ff ff b2 72 b9 5e 00 00 00 00
+skb headroom: 00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+skb headroom: 00000020: 08 0f 00 00 00 00 00 00
+skb linear:   00000000: 60 09 88 bd 00 38 3a ff fe 80 00 00 00 00 00 00
+skb linear:   00000010: 00 40 43 ff fe 80 00 00 ff 02 00 00 00 00 00 00
+skb linear:   00000020: 00 00 00 00 00 00 00 01 86 00 61 00 40 00 00 2d
+skb linear:   00000030: 00 00 00 00 00 00 00 00 03 04 40 e0 00 00 01 2c
+skb linear:   00000040: 00 00 00 78 00 00 00 00 fd 5f 42 68 23 87 a8 81
+skb linear:   00000050: 00 00 00 00 00 00 00 00 01 01 02 40 43 80 00 00
+skb tailroom: 00000000: 00 f0 01 00 00 00 00 00 a4 73 00 00 00 00 00 00
+skb tailroom: 00000010: a4 73 00 00 00 00 00 00 00 10 00 00 00 00 00 00
+skb tailroom: 00000020: 01 00 00 00 06 00 00 00 40 66 02 00 00 00 00 00
+skb tailroom: 00000030: 40 76 02 00 00 00 00 00
+
+Call Trace:
+ <IRQ>
+ dump_stack+0x69/0x9b
+ macvlan_handle_frame+0x321/0x425 [macvlan]
+ ? macvlan_forward_source+0x110/0x110 [macvlan]
+ __netif_receive_skb_core+0x545/0xda0
+ ? ip6_mc_input+0x103/0x250 [ipv6]
+ ? ipv6_rcv+0xe1/0xf0 [ipv6]
+ ? __netif_receive_skb_one_core+0x36/0x70
+ __netif_receive_skb_one_core+0x36/0x70
+ process_backlog+0x97/0x140
+ net_rx_action+0x1eb/0x350
+ __do_softirq+0xe3/0x383
+ do_softirq_own_stack+0x2a/0x40
+ </IRQ>
+ do_softirq.part.4+0x4e/0x50
+ netif_rx_ni+0x60/0xd0
+ dev_loopback_xmit+0x83/0xf0
+ ip6_finish_output2+0x575/0x590 [ipv6]
+ ? ip6_cork_release.isra.1+0x64/0x90 [ipv6]
+ ? __ip6_make_skb+0x38d/0x680 [ipv6]
+ ? ip6_output+0x6c/0x140 [ipv6]
+ ip6_output+0x6c/0x140 [ipv6]
+ ip6_send_skb+0x1e/0x60 [ipv6]
+ rawv6_sendmsg+0xc4b/0xe10 [ipv6]
+ ? proc_put_long+0xd0/0xd0
+ ? rw_copy_check_uvector+0x4e/0x110
+ ? sock_sendmsg+0x36/0x40
+ sock_sendmsg+0x36/0x40
+ ___sys_sendmsg+0x2b6/0x2d0
+ ? proc_dointvec+0x23/0x30
+ ? addrconf_sysctl_forward+0x8d/0x250 [ipv6]
+ ? dev_forward_change+0x130/0x130 [ipv6]
+ ? _raw_spin_unlock+0x12/0x30
+ ? proc_sys_call_handler.isra.14+0x9f/0x110
+ ? __call_rcu+0x213/0x510
+ ? get_max_files+0x10/0x10
+ ? trace_hardirqs_on+0x2c/0xe0
+ ? __sys_sendmsg+0x63/0xa0
+ __sys_sendmsg+0x63/0xa0
+ do_syscall_64+0x6c/0x1e0
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Later when the same RA is being transmitted neigh_connected_output(), this is the first
+time Ethernet header is being generated for this packet, but this is towards "world", not
+the internal MACVLAN bridge:
+
+skb len=110 headroom=26 headlen=110 tailroom=56
+mac=(-1,-1) net=(40,40) trans=80
+shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+csum(0xae2e9a2f ip_summed=0 complete_sw=0 valid=0 level=0)
+hash(0xc97ebd88 sw=1 l4=1) proto=0x86dd pkttype=0 iif=0
+dev name=etha01.212 feat=0x0x0000000040005000
+sk family=10 type=3 proto=58
+skb headroom: 00000000: 00 28 b3 4d 84 88 ff ff b2 72 b9 5e 00 00 00 00
+skb headroom: 00000010: 00 00 00 00 00 00 00 00 00 00
+skb linear:   00000000: 33 33 00 00 00 01 02 40 43 80 00 00 86 dd 60 09
+skb linear:   00000010: 88 bd 00 38 3a ff fe 80 00 00 00 00 00 00 00 40
+skb linear:   00000020: 43 ff fe 80 00 00 ff 02 00 00 00 00 00 00 00 00
+skb linear:   00000030: 00 00 00 00 00 01 86 00 61 00 40 00 00 2d 00 00
+skb linear:   00000040: 00 00 00 00 00 00 03 04 40 e0 00 00 01 2c 00 00
+skb linear:   00000050: 00 78 00 00 00 00 fd 5f 42 68 23 87 a8 81 00 00
+skb linear:   00000060: 00 00 00 00 00 00 01 01 02 40 43 80 00 00
+skb tailroom: 00000000: 00 f0 01 00 00 00 00 00 a4 73 00 00 00 00 00 00
+skb tailroom: 00000010: a4 73 00 00 00 00 00 00 00 10 00 00 00 00 00 00
+skb tailroom: 00000020: 01 00 00 00 06 00 00 00 40 66 02 00 00 00 00 00
+skb tailroom: 00000030: 40 76 02 00 00 00 00 00
+
+Call Trace:
+ dump_stack+0x69/0x9b
+ debug_hdr+0x4c/0x60
+ eth_header+0x71/0xe0
+ vlan_dev_hard_header+0x58/0x140 [8021q]
+ neigh_connected_output+0xa9/0x100
+ ip6_finish_output2+0x24a/0x590 [ipv6]
+ ? ip6_cork_release.isra.1+0x64/0x90 [ipv6]
+ ? __ip6_make_skb+0x38d/0x680 [ipv6]
+ ? ip6_output+0x6c/0x140 [ipv6]
+ ip6_output+0x6c/0x140 [ipv6]
+ ip6_send_skb+0x1e/0x60 [ipv6]
+ rawv6_sendmsg+0xc4b/0xe10 [ipv6]
+ ? proc_put_long+0xd0/0xd0
+ ? rw_copy_check_uvector+0x4e/0x110
+ ? sock_sendmsg+0x36/0x40
+ sock_sendmsg+0x36/0x40
+ ___sys_sendmsg+0x2b6/0x2d0
+ ? proc_dointvec+0x23/0x30
+ ? addrconf_sysctl_forward+0x8d/0x250 [ipv6]
+ ? dev_forward_change+0x130/0x130 [ipv6]
+ ? _raw_spin_unlock+0x12/0x30
+ ? proc_sys_call_handler.isra.14+0x9f/0x110
+ ? __call_rcu+0x213/0x510
+ ? get_max_files+0x10/0x10
+ ? trace_hardirqs_on+0x2c/0xe0
+ ? __sys_sendmsg+0x63/0xa0
+ __sys_sendmsg+0x63/0xa0
+ do_syscall_64+0x6c/0x1e0
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+I would appreciate any hint, how to approach this problem! I can try to come up with a patch,
+but as this is so central thing in the IP protocol, I'd like to hear some opinions first...
+
+-- 
+Best regards,
+Alexander Sverdlin.
