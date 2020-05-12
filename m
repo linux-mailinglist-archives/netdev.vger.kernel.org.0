@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE491CFC0B
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:23:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73FFC1CFC07
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:23:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730947AbgELRVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 13:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
+        id S1730929AbgELRVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 13:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730482AbgELRUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:20:55 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1529C061A0C;
-        Tue, 12 May 2020 10:20:54 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id g12so24385856wmh.3;
-        Tue, 12 May 2020 10:20:54 -0700 (PDT)
+        with ESMTP id S1730645AbgELRU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:20:56 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EF2C061A0F;
+        Tue, 12 May 2020 10:20:55 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id m12so17857832wmc.0;
+        Tue, 12 May 2020 10:20:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=iiP/NdqlDNsJNXKAwVqaX/NC9+Am15VBEy6Yp+gGXjw=;
-        b=KxkyxvjvzSeXBYDIF9zNGtYab8KbOsGn1XCA/EbSRrbJDFvaiVRRa/W0EBEH27sqJN
-         VA9ab0sT9IB4cNqjgnbMzV45EIoumJ59Dx0VQtOubu4eZf4z2sSXj3l7zXGx5sNPTss5
-         PWioe9KEcScjTwM7H4ScTJbd41kopfYP4qJA1t1s+tjg7BG6oFO8DLP3ne1a2aO4xMD7
-         kFYvamMy2dGf1Tcrffz1zoRfBHAIZNjD9jBT8RgNFoyiwU9D8jlZ8bgagV2PGzIG2Rk5
-         Y6/4U33aNFFVeVVzpgHIBifiM/QaC2LMNQcZPPBjZtqfqg0+pYfEqjqRutRfk8m4xFy7
-         W1mA==
+        bh=Hu1jVgvcMgblKlkm2NcOqo/+JvlzJVPAmJphw7Npbp4=;
+        b=mfI7hRAUU6JcgRSNfuov+frHsHsC5R77uMXN7AvlrSDxXqtCVZz+2aiyvBqS8o+Mil
+         wj4FtajLVrwLv7S+vOO2ollOYiWKf9XhG4GBW/KcEsg80H90/fFvUfQjbRSpkmSDe5s9
+         Mk+8WpYCszn16aj5qcD5S6i13Yim9ZQTdFH5clED7I4M7c94+kuXSZsek6AsUptITPNa
+         6YpKM7Gf3086TP10+6HK4xQRAZuE2vI9Nd9nncjtvW2L7vLxPP4QHQy6A35E5+3Z2rNA
+         DVQ7TDFZ99dybJ+451MYnKKYsHDqO1+0wcCOeB4S5VMCOz1V2Q0D8YJX2Pg4343rdi+3
+         JSJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=iiP/NdqlDNsJNXKAwVqaX/NC9+Am15VBEy6Yp+gGXjw=;
-        b=qlQ/BYCCFEuPL89Nlrg3NcEjyX3eFhdMTkjL0E6fGL4odkC9djrqni3W17W+XJu0Pp
-         1rMVV4N3YbW1Iy0ljyBaorc0hiILauBpi6H/vanvZNQcPhBy+IXmt4EAlZnxrM/eu0e1
-         DLSBOkHLmV45z0yQUsa9j0LUORT4StgtWvJXGcss6QXX+fpHmDLkxFWNnv2Y4ytLN0JA
-         nHCdrP9WZbhUc7+//7qt0HVfmZxiq2iDo/pBKmH+y2WwFnuPbiF2GDi93ahJa5t71t7b
-         p2H+HvtSDd2fjUImsSQ8nOrzAnMV3qX9M7HE9kAOABcXtBifL9jLE55znIL7I9o5UEiK
-         PyIA==
-X-Gm-Message-State: AGi0PuabAK8NRwC8BCqWWI158HN/ZJ2NMDHi0njDPk1TC8BPt/6k85YH
-        OeRiLBlm8jRaw/UmHIqD48Q=
-X-Google-Smtp-Source: APiQypK9WdUwWQ+wZ03AxX/CJjJEeOwTKFq17ycO10c2OY+LXxmyNWkV+cflq98MNOxF1wo5rpGFbg==
-X-Received: by 2002:a1c:96c7:: with SMTP id y190mr7236722wmd.69.1589304053459;
-        Tue, 12 May 2020 10:20:53 -0700 (PDT)
+        bh=Hu1jVgvcMgblKlkm2NcOqo/+JvlzJVPAmJphw7Npbp4=;
+        b=rw717Rh/PfnPUd+ytVndOVIjMcPB5+Lgporf+pWJu03yh5plxr4DLqHWvnFIxRqig7
+         HPNMocRsoeX3LiUjwqaRt+UYUJliDPwXVDWSaOMS3IRzIRAKRRIb+/O4O4mq6mCpOIbe
+         ZikjaVdHFvFxNltxUbGljzXIfk5WRcbQCWKwOeC/4ylb5pckehr16N96+95QhjEWGPMY
+         B/a0Eb+qVSzyPhCBgPa3u48Pi3Rwww5/KGzPt3hKri0nZapZTYIO/VaV8l1+VUqHaQW7
+         O8UiQLjWn1WjZpHo4xlgGv4A7gV18mNIFQlY1oJAdDHn9ysrAchFtSpsy1BAv1ZGt7wz
+         fpxA==
+X-Gm-Message-State: AGi0PuYNVmCxBeOhJXAaUWFrMnb1fiEIR835LkspN47M7KfQkCjL8uKw
+        Sfb+usB/WhiMdt3enIIIsg4=
+X-Google-Smtp-Source: APiQypIlE1RDIJoI8Av/ke38zDbsEOFcsP9s0Lf+57w80KCatEKGiuwUBhyLuMrpPvHBRhRrsnZ4eA==
+X-Received: by 2002:a7b:cbc5:: with SMTP id n5mr22692601wmi.110.1589304054615;
+        Tue, 12 May 2020 10:20:54 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id a15sm23999743wrw.56.2020.05.12.10.20.52
+        by smtp.gmail.com with ESMTPSA id a15sm23999743wrw.56.2020.05.12.10.20.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 10:20:52 -0700 (PDT)
+        Tue, 12 May 2020 10:20:54 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         idosch@idosch.org, rmk+kernel@armlinux.org.uk,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 net-next 08/15] net: dsa: sja1105: prepare tagger for handling DSA tags and VLAN simultaneously
-Date:   Tue, 12 May 2020 20:20:32 +0300
-Message-Id: <20200512172039.14136-9-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 09/15] net: dsa: tag_8021q: support up to 8 VLANs per port using sub-VLANs
+Date:   Tue, 12 May 2020 20:20:33 +0300
+Message-Id: <20200512172039.14136-10-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200512172039.14136-1-olteanv@gmail.com>
 References: <20200512172039.14136-1-olteanv@gmail.com>
@@ -64,232 +64,202 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-In VLAN-unaware mode, sja1105 uses VLAN tags with a custom TPID of
-0xdadb. While in the yet-to-be introduced best_effort_vlan_filtering
-mode, it needs to work with normal VLAN TPID values.
+For switches that support VLAN retagging, such as sja1105, we extend
+dsa_8021q by encoding a "sub-VLAN" into the remaining 3 free bits in the
+dsa_8021q tag.
 
-A complication arises when we must transmit a VLAN-tagged packet to the
-switch when it's in VLAN-aware mode. We need to construct a packet with
-2 VLAN tags, and the switch will use the outer header for routing and
-pop it on egress. But sadly, here the 2 hardware generations don't
-behave the same:
+A sub-VLAN is nothing more than a number in the range 0-7, which serves
+as an index into a per-port driver lookup table. The sub-VLAN value of
+zero means that traffic is untagged (this is also backwards-compatible
+with dsa_8021q without retagging).
 
-- E/T switches won't pop an ETH_P_8021AD tag on egress, it seems
-  (packets will remain double-tagged).
-- P/Q/R/S switches will drop a packet with 2 ETH_P_8021Q tags (it looks
-  like it tries to prevent VLAN hopping).
+The switch should be configured to retag VLAN-tagged traffic that gets
+transmitted towards the CPU port (and towards the CPU only). Example:
 
-But looks like the reverse is also true:
+bridge vlan add dev sw1p0 vid 100
 
-- E/T switches have no problem popping the outer tag from packets with
-  2 ETH_P_8021Q tags.
-- P/Q/R/S will have no problem popping a single tag even if that is
-  ETH_P_8021AD.
+The switch retags frames received on port 0, going to the CPU, and
+having VID 100, to the VID of 1104 (0x0450). In dsa_8021q language:
 
-So it is clear that if we want the hardware to work with dsa_8021q
-tagging in VLAN-aware mode, we need to send different TPIDs depending on
-revision. Keep that information in priv->info->qinq_tpid.
+ | 11  | 10  |  9  |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
+ +-----------+-----+-----------------+-----------+-----------------------+
+ |    DIR    | SVL |    SWITCH_ID    |  SUBVLAN  |          PORT         |
+ +-----------+-----+-----------------+-----------+-----------------------+
 
-The per-port tagger structure will hold an xmit_tpid value that depends
-not only upon the qinq_tpid, but also upon the VLAN awareness state
-itself (in case we must transmit using 0xdadb).
+0x0450 means:
+ - DIR = 0b01: this is an RX VLAN
+ - SUBVLAN = 0b001: this is subvlan #1
+ - SWITCH_ID = 0b001: this is switch 1 (see the name "sw1p0")
+ - PORT = 0b0000: this is port 0 (see the name "sw1p0")
+
+The driver also remembers the "1 -> 100" mapping. In the hotpath, if the
+sub-VLAN from the tag encodes a non-untagged frame, this mapping is used
+to create a VLAN hwaccel tag, with the value of 100.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v3:
-Provide an implementation of sja1105_can_use_vlan_as_tags as part of the
-tagger and not as part of the switch driver. So we have to look at the
-skb only, and not at the VLAN awareness state.
+None.
 
 Changes in v2:
 None.
 
- drivers/net/dsa/sja1105/sja1105.h      |  6 +++++
- drivers/net/dsa/sja1105/sja1105_main.c | 10 ++++++++
- drivers/net/dsa/sja1105/sja1105_spi.c  |  6 +++++
- include/linux/dsa/sja1105.h            |  1 +
- net/dsa/tag_sja1105.c                  | 32 +++++++++++++++++---------
- 5 files changed, 44 insertions(+), 11 deletions(-)
+ include/linux/dsa/8021q.h | 16 +++++++++++
+ net/dsa/tag_8021q.c       | 56 +++++++++++++++++++++++++++++++++------
+ 2 files changed, 64 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index c80f1999c694..a019ffae38f1 100644
---- a/drivers/net/dsa/sja1105/sja1105.h
-+++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -87,6 +87,12 @@ struct sja1105_info {
- 	const struct sja1105_dynamic_table_ops *dyn_ops;
- 	const struct sja1105_table_ops *static_ops;
- 	const struct sja1105_regs *regs;
-+	/* Both E/T and P/Q/R/S have quirks when it comes to popping the S-Tag
-+	 * from double-tagged frames. E/T will pop it only when it's equal to
-+	 * TPID from the General Parameters Table, while P/Q/R/S will only
-+	 * pop it when it's equal to TPID2.
-+	 */
-+	u16 qinq_tpid;
- 	int (*reset_cmd)(struct dsa_switch *ds);
- 	int (*setup_rgmii_delay)(const void *ctx, int port);
- 	/* Prototypes from include/net/dsa.h */
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 7b9c3db98e1d..b7e4a85caade 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2153,6 +2153,15 @@ static int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled)
- 		tpid2 = ETH_P_SJA1105;
- 	}
- 
-+	for (port = 0; port < ds->num_ports; port++) {
-+		struct sja1105_port *sp = &priv->ports[port];
-+
-+		if (enabled)
-+			sp->xmit_tpid = priv->info->qinq_tpid;
-+		else
-+			sp->xmit_tpid = ETH_P_SJA1105;
-+	}
-+
- 	if (!enabled)
- 		state = SJA1105_VLAN_UNAWARE;
- 	else
-@@ -2866,6 +2875,7 @@ static int sja1105_probe(struct spi_device *spi)
- 			goto out;
- 		}
- 		skb_queue_head_init(&sp->xmit_queue);
-+		sp->xmit_tpid = ETH_P_SJA1105;
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index 0be75c49e6c3..a0dacae803cc 100644
---- a/drivers/net/dsa/sja1105/sja1105_spi.c
-+++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -512,6 +512,7 @@ struct sja1105_info sja1105e_info = {
- 	.part_no		= SJA1105ET_PART_NO,
- 	.static_ops		= sja1105e_table_ops,
- 	.dyn_ops		= sja1105et_dyn_ops,
-+	.qinq_tpid		= ETH_P_8021Q,
- 	.ptp_ts_bits		= 24,
- 	.ptpegr_ts_bytes	= 4,
- 	.reset_cmd		= sja1105et_reset_cmd,
-@@ -526,6 +527,7 @@ struct sja1105_info sja1105t_info = {
- 	.part_no		= SJA1105ET_PART_NO,
- 	.static_ops		= sja1105t_table_ops,
- 	.dyn_ops		= sja1105et_dyn_ops,
-+	.qinq_tpid		= ETH_P_8021Q,
- 	.ptp_ts_bits		= 24,
- 	.ptpegr_ts_bytes	= 4,
- 	.reset_cmd		= sja1105et_reset_cmd,
-@@ -540,6 +542,7 @@ struct sja1105_info sja1105p_info = {
- 	.part_no		= SJA1105P_PART_NO,
- 	.static_ops		= sja1105p_table_ops,
- 	.dyn_ops		= sja1105pqrs_dyn_ops,
-+	.qinq_tpid		= ETH_P_8021AD,
- 	.ptp_ts_bits		= 32,
- 	.ptpegr_ts_bytes	= 8,
- 	.setup_rgmii_delay	= sja1105pqrs_setup_rgmii_delay,
-@@ -555,6 +558,7 @@ struct sja1105_info sja1105q_info = {
- 	.part_no		= SJA1105Q_PART_NO,
- 	.static_ops		= sja1105q_table_ops,
- 	.dyn_ops		= sja1105pqrs_dyn_ops,
-+	.qinq_tpid		= ETH_P_8021AD,
- 	.ptp_ts_bits		= 32,
- 	.ptpegr_ts_bytes	= 8,
- 	.setup_rgmii_delay	= sja1105pqrs_setup_rgmii_delay,
-@@ -570,6 +574,7 @@ struct sja1105_info sja1105r_info = {
- 	.part_no		= SJA1105R_PART_NO,
- 	.static_ops		= sja1105r_table_ops,
- 	.dyn_ops		= sja1105pqrs_dyn_ops,
-+	.qinq_tpid		= ETH_P_8021AD,
- 	.ptp_ts_bits		= 32,
- 	.ptpegr_ts_bytes	= 8,
- 	.setup_rgmii_delay	= sja1105pqrs_setup_rgmii_delay,
-@@ -586,6 +591,7 @@ struct sja1105_info sja1105s_info = {
- 	.static_ops		= sja1105s_table_ops,
- 	.dyn_ops		= sja1105pqrs_dyn_ops,
- 	.regs			= &sja1105pqrs_regs,
-+	.qinq_tpid		= ETH_P_8021AD,
- 	.ptp_ts_bits		= 32,
- 	.ptpegr_ts_bytes	= 8,
- 	.setup_rgmii_delay	= sja1105pqrs_setup_rgmii_delay,
-diff --git a/include/linux/dsa/sja1105.h b/include/linux/dsa/sja1105.h
-index fa5735c353cd..f821d08b1b5f 100644
---- a/include/linux/dsa/sja1105.h
-+++ b/include/linux/dsa/sja1105.h
-@@ -59,6 +59,7 @@ struct sja1105_port {
- 	struct sja1105_tagger_data *data;
- 	struct dsa_port *dp;
- 	bool hwts_tx_en;
-+	u16 xmit_tpid;
+diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
+index 404bd2cce642..311aa04e7520 100644
+--- a/include/linux/dsa/8021q.h
++++ b/include/linux/dsa/8021q.h
+@@ -20,6 +20,8 @@ struct dsa_8021q_crosschip_link {
+ 	refcount_t refcount;
  };
  
- #endif /* _NET_DSA_SJA1105_H */
-diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
-index d553bf36bd41..adeffd3b515a 100644
---- a/net/dsa/tag_sja1105.c
-+++ b/net/dsa/tag_sja1105.c
-@@ -69,12 +69,25 @@ static inline bool sja1105_is_meta_frame(const struct sk_buff *skb)
- 	return true;
++#define DSA_8021Q_N_SUBVLAN			8
++
+ #if IS_ENABLED(CONFIG_NET_DSA_TAG_8021Q)
+ 
+ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int index,
+@@ -42,10 +44,14 @@ u16 dsa_8021q_tx_vid(struct dsa_switch *ds, int port);
+ 
+ u16 dsa_8021q_rx_vid(struct dsa_switch *ds, int port);
+ 
++u16 dsa_8021q_rx_vid_subvlan(struct dsa_switch *ds, int port, u16 subvlan);
++
+ int dsa_8021q_rx_switch_id(u16 vid);
+ 
+ int dsa_8021q_rx_source_port(u16 vid);
+ 
++u16 dsa_8021q_rx_subvlan(u16 vid);
++
+ bool vid_is_dsa_8021q(u16 vid);
+ 
+ #else
+@@ -88,6 +94,11 @@ u16 dsa_8021q_rx_vid(struct dsa_switch *ds, int port)
+ 	return 0;
  }
  
-+static bool sja1105_can_use_vlan_as_tags(const struct sk_buff *skb)
++u16 dsa_8021q_rx_vid_subvlan(struct dsa_switch *ds, int port, u16 subvlan)
 +{
-+	struct vlan_ethhdr *hdr = vlan_eth_hdr(skb);
-+
-+	if (hdr->h_vlan_proto == ntohs(ETH_P_SJA1105))
-+		return true;
-+
-+	if (hdr->h_vlan_proto != ntohs(ETH_P_8021Q))
-+		return false;
-+
-+	return vid_is_dsa_8021q(ntohs(hdr->h_vlan_TCI) & VLAN_VID_MASK);
++	return 0;
 +}
 +
- /* This is the first time the tagger sees the frame on RX.
-  * Figure out if we can decode it.
+ int dsa_8021q_rx_switch_id(u16 vid)
+ {
+ 	return 0;
+@@ -98,6 +109,11 @@ int dsa_8021q_rx_source_port(u16 vid)
+ 	return 0;
+ }
+ 
++u16 dsa_8021q_rx_subvlan(u16 vid)
++{
++	return 0;
++}
++
+ bool vid_is_dsa_8021q(u16 vid)
+ {
+ 	return false;
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index 3236fbbf85b9..3052da668156 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -17,7 +17,7 @@
+  *
+  * | 11  | 10  |  9  |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
+  * +-----------+-----+-----------------+-----------+-----------------------+
+- * |    DIR    | RSV |    SWITCH_ID    |    RSV    |          PORT         |
++ * |    DIR    | SVL |    SWITCH_ID    |  SUBVLAN  |          PORT         |
+  * +-----------+-----+-----------------+-----------+-----------------------+
+  *
+  * DIR - VID[11:10]:
+@@ -27,17 +27,24 @@
+  *	These values make the special VIDs of 0, 1 and 4095 to be left
+  *	unused by this coding scheme.
+  *
+- * RSV - VID[9]:
+- *	To be used for further expansion of SWITCH_ID or for other purposes.
+- *	Must be transmitted as zero and ignored on receive.
++ * SVL/SUBVLAN - { VID[9], VID[5:4] }:
++ *	Sub-VLAN encoding. Valid only when DIR indicates an RX VLAN.
++ *	* 0 (0b000): Field does not encode a sub-VLAN, either because
++ *	received traffic is untagged, PVID-tagged or because a second
++ *	VLAN tag is present after this tag and not inside of it.
++ *	* 1 (0b001): Received traffic is tagged with a VID value private
++ *	to the host. This field encodes the index in the host's lookup
++ *	table through which the value of the ingress VLAN ID can be
++ *	recovered.
++ *	* 2 (0b010): Field encodes a sub-VLAN.
++ *	...
++ *	* 7 (0b111): Field encodes a sub-VLAN.
++ *	When DIR indicates a TX VLAN, SUBVLAN must be transmitted as zero
++ *	(by the host) and ignored on receive (by the switch).
+  *
+  * SWITCH_ID - VID[8:6]:
+  *	Index of switch within DSA tree. Must be between 0 and 7.
+  *
+- * RSV - VID[5:4]:
+- *	To be used for further expansion of PORT or for other purposes.
+- *	Must be transmitted as zero and ignored on receive.
+- *
+  * PORT - VID[3:0]:
+  *	Index of switch port. Must be between 0 and 15.
   */
- static bool sja1105_filter(const struct sk_buff *skb, struct net_device *dev)
- {
--	if (!dsa_port_is_vlan_filtering(dev->dsa_ptr))
-+	if (sja1105_can_use_vlan_as_tags(skb))
- 		return true;
- 	if (sja1105_is_link_local(skb))
- 		return true;
-@@ -96,6 +109,11 @@ static struct sk_buff *sja1105_defer_xmit(struct sja1105_port *sp,
- 	return NULL;
- }
+@@ -54,6 +61,18 @@
+ #define DSA_8021Q_SWITCH_ID(x)		(((x) << DSA_8021Q_SWITCH_ID_SHIFT) & \
+ 						 DSA_8021Q_SWITCH_ID_MASK)
  
-+static u16 sja1105_xmit_tpid(struct sja1105_port *sp)
-+{
-+	return sp->xmit_tpid;
-+}
++#define DSA_8021Q_SUBVLAN_HI_SHIFT	9
++#define DSA_8021Q_SUBVLAN_HI_MASK	GENMASK(9, 9)
++#define DSA_8021Q_SUBVLAN_LO_SHIFT	4
++#define DSA_8021Q_SUBVLAN_LO_MASK	GENMASK(4, 3)
++#define DSA_8021Q_SUBVLAN_HI(x)		(((x) & GENMASK(2, 2)) >> 2)
++#define DSA_8021Q_SUBVLAN_LO(x)		((x) & GENMASK(1, 0))
++#define DSA_8021Q_SUBVLAN(x)		\
++		(((DSA_8021Q_SUBVLAN_LO(x) << DSA_8021Q_SUBVLAN_LO_SHIFT) & \
++		  DSA_8021Q_SUBVLAN_LO_MASK) | \
++		 ((DSA_8021Q_SUBVLAN_HI(x) << DSA_8021Q_SUBVLAN_HI_SHIFT) & \
++		  DSA_8021Q_SUBVLAN_HI_MASK))
 +
- static struct sk_buff *sja1105_xmit(struct sk_buff *skb,
- 				    struct net_device *netdev)
- {
-@@ -111,15 +129,7 @@ static struct sk_buff *sja1105_xmit(struct sk_buff *skb,
- 	if (unlikely(sja1105_is_link_local(skb)))
- 		return sja1105_defer_xmit(dp->priv, skb);
- 
--	/* If we are under a vlan_filtering bridge, IP termination on
--	 * switch ports based on 802.1Q tags is simply too brittle to
--	 * be passable. So just defer to the dsa_slave_notag_xmit
--	 * implementation.
--	 */
--	if (dsa_port_is_vlan_filtering(dp))
--		return skb;
--
--	return dsa_8021q_xmit(skb, netdev, ETH_P_SJA1105,
-+	return dsa_8021q_xmit(skb, netdev, sja1105_xmit_tpid(dp->priv),
- 			     ((pcp << VLAN_PRIO_SHIFT) | tx_vid));
+ #define DSA_8021Q_PORT_SHIFT		0
+ #define DSA_8021Q_PORT_MASK		GENMASK(3, 0)
+ #define DSA_8021Q_PORT(x)		(((x) << DSA_8021Q_PORT_SHIFT) & \
+@@ -79,6 +98,13 @@ u16 dsa_8021q_rx_vid(struct dsa_switch *ds, int port)
  }
+ EXPORT_SYMBOL_GPL(dsa_8021q_rx_vid);
  
-@@ -258,7 +268,7 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
++u16 dsa_8021q_rx_vid_subvlan(struct dsa_switch *ds, int port, u16 subvlan)
++{
++	return DSA_8021Q_DIR_RX | DSA_8021Q_SWITCH_ID(ds->index) |
++	       DSA_8021Q_PORT(port) | DSA_8021Q_SUBVLAN(subvlan);
++}
++EXPORT_SYMBOL_GPL(dsa_8021q_rx_vid_subvlan);
++
+ /* Returns the decoded switch ID from the RX VID. */
+ int dsa_8021q_rx_switch_id(u16 vid)
+ {
+@@ -93,6 +119,20 @@ int dsa_8021q_rx_source_port(u16 vid)
+ }
+ EXPORT_SYMBOL_GPL(dsa_8021q_rx_source_port);
  
- 	hdr = eth_hdr(skb);
- 	tpid = ntohs(hdr->h_proto);
--	is_tagged = (tpid == ETH_P_SJA1105);
-+	is_tagged = (tpid == ETH_P_SJA1105 || tpid == ETH_P_8021Q);
- 	is_link_local = sja1105_is_link_local(skb);
- 	is_meta = sja1105_is_meta_frame(skb);
- 
++/* Returns the decoded subvlan from the RX VID. */
++u16 dsa_8021q_rx_subvlan(u16 vid)
++{
++	u16 svl_hi, svl_lo;
++
++	svl_hi = (vid & DSA_8021Q_SUBVLAN_HI_MASK) >>
++		 DSA_8021Q_SUBVLAN_HI_SHIFT;
++	svl_lo = (vid & DSA_8021Q_SUBVLAN_LO_MASK) >>
++		 DSA_8021Q_SUBVLAN_LO_SHIFT;
++
++	return (svl_hi << 2) | svl_lo;
++}
++EXPORT_SYMBOL_GPL(dsa_8021q_rx_subvlan);
++
+ bool vid_is_dsa_8021q(u16 vid)
+ {
+ 	return ((vid & DSA_8021Q_DIR_MASK) == DSA_8021Q_DIR_RX ||
 -- 
 2.17.1
 
