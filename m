@@ -2,188 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58ED11CFAAD
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 18:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E51A61CFAB8
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 18:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726558AbgELQ3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 12:29:30 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28056 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725851AbgELQ3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 12:29:30 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04CGScNi013216;
-        Tue, 12 May 2020 09:29:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=BJt3+OyRLRRv3nFxSC9BFQxee39ACuZiymzlA5iPtz4=;
- b=aUqgY+2Yx98Iph0cfno4Uj9UL3njj0yWxlx5xqYC2402sgjFc/Frw3ePGbEy6pcMHPN9
- qPHTylZPNeNfEnHMiqWOJXthDByfrmYmMk+AIqqRSAgK/XZHL46H7rYnB3G7Ru2SbHrA
- 4ibmFBeLW6ehGrtvl/b/dZjVymhrb+dz5IM= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30xcgsdea3-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 12 May 2020 09:29:16 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 12 May 2020 09:29:10 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=euT/gkZQQVBNWLHD9Ror1MOtKi5SWJCTiJ03nUd+ajnxsF5val8xexksusRadt6A6cYw5r+haQOiByzECfosu7Urdb0uh72pfmShpy51x+y3z3pyCqUrBYTIgNINaL4PNKvMkGwEEj2eoL/NV7MAzZ7e4YsdQfg+VtjOvWu4+vSG1aC7XEwHIrmqWLQ+SWDuPv2JDsHHnowabNHL7KrGyATAN1vH3P7ZZYnLIK+wEzPVBGQup2K4Fid6Bxdo4N3Ll2Kn5vcqMnLLl108CcjoC+qMBIxtcdcsd+zP1ToVlQhk00cdzVdblUnxr1dcft9PKXI8NPyNZnJhWFEvYf79sA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BJt3+OyRLRRv3nFxSC9BFQxee39ACuZiymzlA5iPtz4=;
- b=gbe2cIMhjgwQAcHIspArc8vAx0bz0wGQS07aG1RAzLx1Cdn4BMAU5Ej2+AWSylyL7VMwq6lb1GJoqbqhiKliCWoueIaxEx+ZinlAmZyaZxyjdIIo8yLwxgUrrWnfymxozpKT9uTmz+vYvetQaRnNlHDpqYRhUilEHQ3Bukyig3R48gNuUcC833Pe0MVB3Ruxd5QZ+pRpqyLNhc6PhS2PKXVKkoPQlqOosQ1nmrQwpQt6qA10eYOLdCZ5QYzbJXqR3a2jBRv5PbiKorb2jZ78ADK+wLEDDwuXhN8A8uNQaHA9iZRxhqIZFHVNhEnFPRNfJzqsuNKd/A3BlWmKr/oA7A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BJt3+OyRLRRv3nFxSC9BFQxee39ACuZiymzlA5iPtz4=;
- b=c6SfY+6u5n1CWZ+EqWXLdoApH/6g8C3FyzT6ir7YNMnfosruYJr1RjjUMN92xxzngFK6OV6p0cgL7kCJN7I/1hgG3TLh3rAYfAHGDWCLyvcsiGrVT0YFfjbqkk1rHSjozEyGYeLIv7OwResvLeRqKjiVbgg2wt5iHfgwYewP1kE=
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2245.namprd15.prod.outlook.com (2603:10b6:a02:89::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.34; Tue, 12 May
- 2020 16:29:08 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
- 16:29:08 +0000
-Subject: Re: [PATCH bpf-next v4 02/21] bpf: allow loading of a bpf_iter
- program
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
-References: <20200509175859.2474608-1-yhs@fb.com>
- <20200509175900.2474947-1-yhs@fb.com>
- <20200510004139.tjlll6wqq7zevb73@ast-mbp>
- <c128a30f-af40-99c9-706e-4afe268ed38f@fb.com>
- <20200512162524.4yq4i3or4wtwl43x@ast-mbp>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <754bce5b-bb4f-69f0-f938-2de3fd4d56ef@fb.com>
-Date:   Tue, 12 May 2020 09:29:05 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
-In-Reply-To: <20200512162524.4yq4i3or4wtwl43x@ast-mbp>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR21CA0030.namprd21.prod.outlook.com
- (2603:10b6:a03:114::40) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1727954AbgELQaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 12:30:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60994 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726610AbgELQav (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 12:30:51 -0400
+Received: from localhost.localdomain.com (unknown [151.48.155.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B9D5206CC;
+        Tue, 12 May 2020 16:30:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589301051;
+        bh=igUyAiT8cXS+rK5fWPg9J0IyhJsLkULxkkK2Jm/IMjM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=oeXjWXiRv5hegkEz7lu4OVFEThXr/T0BcUVoPzvslD7HYJ2p/lWHERYfLjH5eC5Kt
+         vmZ/e7DdrnWFfwXJHv9C/mMqGgTsGX8XXf4dlvcVWf0VNntm4hdTZqiqWSDqVyMmjo
+         f+UWYjh43zImini5wUwm9iTq1J5LEinBNapt6nYc=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     ast@kernel.org, yhs@fb.com, davem@davemloft.net, brouer@redhat.com,
+        daniel@iogearbox.net, lorenzo.bianconi@redhat.com
+Subject: [PATCH bpf-next v2] samples/bpf: xdp_redirect_cpu: set MAX_CPUS according to NR_CPUS
+Date:   Tue, 12 May 2020 18:30:40 +0200
+Message-Id: <374472755001c260158c4e4b22f193bdd3c56fb7.1589300442.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:d0f0) by BYAPR21CA0030.namprd21.prod.outlook.com (2603:10b6:a03:114::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.2 via Frontend Transport; Tue, 12 May 2020 16:29:07 +0000
-X-Originating-IP: [2620:10d:c090:400::5:d0f0]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e689f652-1866-4380-78b4-08d7f6919809
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2245:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2245480D523A376490E77BC1D3BE0@BYAPR15MB2245.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:1303;
-X-Forefront-PRVS: 0401647B7F
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: v7p63II7Q3TXxTNQMOSAN9WTeqk1Wqyzku+yKoCRdwXVoCkt3txNgniM1SqUzhnB6U0CrEKYMIWJcjd7ut1vs/dFBFvdlDH0d4FhZSnHHIR+iV2KAJphZFzw9rHqLPdHDeH0dHk0olLtV9imWybCFHpxtwdEogvXSUyaDDupe+barHrCnYgbag1nblbHLt6b0UaaaGkG3tbqwTb7GmZ7EDXeSK1w/qqfLNlnvZe1G+uEU650bqysE4+8wvYjyQaF27MXo3ZarMdJzufx+pG4O7EoAVIbGFDWwM8izy9fGBWphOTt72tf6VHKJHj/ohM+9tSV2xRxzRPMzhXEZtpUJviJOYrR5c973fnVUPNeh4QZ+uJg4vwPlpYiUmBmmMKuBzvTxKO1MmIgSKjLOl9UgRPlKxe9yBdVArquj2rj5OJ/NMfDc1a4FhYUtybI2/STfGcZurPXDCgq5zVRc8jlwZRxIfRo6JMoKk1J7kC9Cn3f8+OCkS6wVFMA7lNBUCVC3GzwcTv/8FLjmG56BtEj3U21a34AwZKY8e+F9qW+o/Sz4lw2193zKx7MBJN7aDyK
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(346002)(366004)(39860400002)(396003)(136003)(33430700001)(31696002)(66556008)(8676002)(52116002)(66946007)(66476007)(16526019)(86362001)(6916009)(4326008)(36756003)(186003)(6486002)(53546011)(316002)(478600001)(6506007)(33440700001)(2616005)(2906002)(31686004)(54906003)(8936002)(6512007)(5660300002)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: Mcpag65w+Otkcp5WONxxoC4Mb0yPHgXtX8Wi8JOKJAVIUKPy4ld/X4VK1NnUpSUwtdiHmHpW7rKRKtgzlNZYX4tSqOj5yh9HmUHWD6ni8JrKP033A/x1UKTbFJnk03G3csMKPqwzYX0BV02POy41NJVc3+DR8va5nHTxuWm0vdP9J4Dz3otsQO+QnxGFgIZ3jzBopajjz7nV8+pyZwJYku2BusRofUr+AR2+BUfmpAgFpnnBc386D+R92VSgZSHcTOXOYOyYzs3JQ+LQkMfIHxdv/+hBAuAV2C9MkWwSgiD6HE60sl0ZQM9mHrqMnVaH556nj8AYWoRnpZae3RJqmJAx7TI/CJ9MS1R4EWY/oBVfx5hAwgxIBj6n8PtjPTpZtGXqdiH2zMqc0V9PLAvKOuFSYBB58r96RO1n4zJPWps+buFnDF7+Vwp96CpmAobM7Dd5Oh9HE9KcgH4xduJeZLIkJ8c+QtTyKUyJwIoErpTkz+rv1IjKp7eIxmiLx0LBXrh1LSTwonUYqeVUA9ooTQ==
-X-MS-Exchange-CrossTenant-Network-Message-Id: e689f652-1866-4380-78b4-08d7f6919809
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2020 16:29:07.9761
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: k8fHz+dniPI8sXI5RZ8kwwP+5S5RBun3zILRYiBlEmQjOaM/K5Y/0bDunYuIYel8
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2245
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-12_05:2020-05-11,2020-05-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- spamscore=0 impostorscore=0 suspectscore=0 adultscore=0 phishscore=0
- bulkscore=0 clxscore=1015 malwarescore=0 mlxlogscore=999
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2005120126
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+xdp_redirect_cpu is currently failing in bpf_prog_load_xattr()
+allocating cpu_map map if CONFIG_NR_CPUS is less than 64 since
+cpu_map_alloc() requires max_entries to be less than NR_CPUS.
+Set cpu_map max_entries according to NR_CPUS in xdp_redirect_cpu_kern.c
+and get currently running cpus in xdp_redirect_cpu_user.c
 
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+Changes since v1:
+- use get_nprocs_conf() instead of get_nprocs()
+---
+ samples/bpf/xdp_redirect_cpu_kern.c |  2 +-
+ samples/bpf/xdp_redirect_cpu_user.c | 29 ++++++++++++++++-------------
+ 2 files changed, 17 insertions(+), 14 deletions(-)
 
-On 5/12/20 9:25 AM, Alexei Starovoitov wrote:
-> On Tue, May 12, 2020 at 08:41:19AM -0700, Yonghong Song wrote:
->>
->>
->> On 5/9/20 5:41 PM, Alexei Starovoitov wrote:
->>> On Sat, May 09, 2020 at 10:59:00AM -0700, Yonghong Song wrote:
->>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->>>> index 70ad009577f8..d725ff7d11db 100644
->>>> --- a/kernel/bpf/verifier.c
->>>> +++ b/kernel/bpf/verifier.c
->>>> @@ -7101,6 +7101,10 @@ static int check_return_code(struct bpf_verifier_env *env)
->>>>    			return 0;
->>>>    		range = tnum_const(0);
->>>>    		break;
->>>> +	case BPF_PROG_TYPE_TRACING:
->>>> +		if (env->prog->expected_attach_type != BPF_TRACE_ITER)
->>>> +			return 0;
->>>> +		break;
->>>
->>> Not related to this set, but I just noticed that I managed to forget to
->>> add this check for fentry/fexit/freplace.
->>> While it's not too late let's enforce return 0 for them ?
->>> Could you follow up with a patch for bpf tree?
->>
->> Just want to double check. In selftests, we have
->>
->> SEC("fentry/__set_task_comm")
->> int BPF_PROG(prog4, struct task_struct *tsk, const char *buf, bool exec)
->> {
->>          return !tsk;
->> }
->>
->> SEC("fexit/__set_task_comm")
->> int BPF_PROG(prog5, struct task_struct *tsk, const char *buf, bool exec)
->> {
->>          return !tsk;
->> }
->>
->> fentry/fexit may returrn 1. What is the intention here? Does this mean
->> we should allow [0, 1] instead of [0, 0]?
-> 
-> Argh. I missed that bit when commit ac065870d9282 tweaked the return
-> value. For fentry/exit the return value is ignored by trampoline.
-> imo it's misleading to users and should be rejected by the verifier.
-> so [0,0] for fentry/fexit
+diff --git a/samples/bpf/xdp_redirect_cpu_kern.c b/samples/bpf/xdp_redirect_cpu_kern.c
+index 313a8fe6d125..2baf8db1f7e7 100644
+--- a/samples/bpf/xdp_redirect_cpu_kern.c
++++ b/samples/bpf/xdp_redirect_cpu_kern.c
+@@ -15,7 +15,7 @@
+ #include <bpf/bpf_helpers.h>
+ #include "hash_func01.h"
+ 
+-#define MAX_CPUS 64 /* WARNING - sync with _user.c */
++#define MAX_CPUS NR_CPUS
+ 
+ /* Special map type that can XDP_REDIRECT frames to another CPU */
+ struct {
+diff --git a/samples/bpf/xdp_redirect_cpu_user.c b/samples/bpf/xdp_redirect_cpu_user.c
+index 15bdf047a222..9b8f21abeac4 100644
+--- a/samples/bpf/xdp_redirect_cpu_user.c
++++ b/samples/bpf/xdp_redirect_cpu_user.c
+@@ -13,6 +13,7 @@ static const char *__doc__ =
+ #include <unistd.h>
+ #include <locale.h>
+ #include <sys/resource.h>
++#include <sys/sysinfo.h>
+ #include <getopt.h>
+ #include <net/if.h>
+ #include <time.h>
+@@ -24,8 +25,6 @@ static const char *__doc__ =
+ #include <arpa/inet.h>
+ #include <linux/if_link.h>
+ 
+-#define MAX_CPUS 64 /* WARNING - sync with _kern.c */
+-
+ /* How many xdp_progs are defined in _kern.c */
+ #define MAX_PROG 6
+ 
+@@ -40,6 +39,7 @@ static char *ifname;
+ static __u32 prog_id;
+ 
+ static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
++static int n_cpus;
+ static int cpu_map_fd;
+ static int rx_cnt_map_fd;
+ static int redirect_err_cnt_map_fd;
+@@ -170,7 +170,7 @@ struct stats_record {
+ 	struct record redir_err;
+ 	struct record kthread;
+ 	struct record exception;
+-	struct record enq[MAX_CPUS];
++	struct record enq[];
+ };
+ 
+ static bool map_collect_percpu(int fd, __u32 key, struct record *rec)
+@@ -225,10 +225,11 @@ static struct datarec *alloc_record_per_cpu(void)
+ static struct stats_record *alloc_stats_record(void)
+ {
+ 	struct stats_record *rec;
+-	int i;
++	int i, size;
+ 
+-	rec = malloc(sizeof(*rec));
+-	memset(rec, 0, sizeof(*rec));
++	size = sizeof(*rec) + n_cpus * sizeof(struct record);
++	rec = malloc(size);
++	memset(rec, 0, size);
+ 	if (!rec) {
+ 		fprintf(stderr, "Mem alloc error\n");
+ 		exit(EXIT_FAIL_MEM);
+@@ -237,7 +238,7 @@ static struct stats_record *alloc_stats_record(void)
+ 	rec->redir_err.cpu = alloc_record_per_cpu();
+ 	rec->kthread.cpu   = alloc_record_per_cpu();
+ 	rec->exception.cpu = alloc_record_per_cpu();
+-	for (i = 0; i < MAX_CPUS; i++)
++	for (i = 0; i < n_cpus; i++)
+ 		rec->enq[i].cpu = alloc_record_per_cpu();
+ 
+ 	return rec;
+@@ -247,7 +248,7 @@ static void free_stats_record(struct stats_record *r)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < MAX_CPUS; i++)
++	for (i = 0; i < n_cpus; i++)
+ 		free(r->enq[i].cpu);
+ 	free(r->exception.cpu);
+ 	free(r->kthread.cpu);
+@@ -350,7 +351,7 @@ static void stats_print(struct stats_record *stats_rec,
+ 	}
+ 
+ 	/* cpumap enqueue stats */
+-	for (to_cpu = 0; to_cpu < MAX_CPUS; to_cpu++) {
++	for (to_cpu = 0; to_cpu < n_cpus; to_cpu++) {
+ 		char *fmt = "%-15s %3d:%-3d %'-14.0f %'-11.0f %'-10.2f %s\n";
+ 		char *fm2 = "%-15s %3s:%-3d %'-14.0f %'-11.0f %'-10.2f %s\n";
+ 		char *errstr = "";
+@@ -475,7 +476,7 @@ static void stats_collect(struct stats_record *rec)
+ 	map_collect_percpu(fd, 1, &rec->redir_err);
+ 
+ 	fd = cpumap_enqueue_cnt_map_fd;
+-	for (i = 0; i < MAX_CPUS; i++)
++	for (i = 0; i < n_cpus; i++)
+ 		map_collect_percpu(fd, i, &rec->enq[i]);
+ 
+ 	fd = cpumap_kthread_cnt_map_fd;
+@@ -549,10 +550,10 @@ static int create_cpu_entry(__u32 cpu, __u32 queue_size,
+  */
+ static void mark_cpus_unavailable(void)
+ {
+-	__u32 invalid_cpu = MAX_CPUS;
++	__u32 invalid_cpu = n_cpus;
+ 	int ret, i;
+ 
+-	for (i = 0; i < MAX_CPUS; i++) {
++	for (i = 0; i < n_cpus; i++) {
+ 		ret = bpf_map_update_elem(cpus_available_map_fd, &i,
+ 					  &invalid_cpu, 0);
+ 		if (ret) {
+@@ -688,6 +689,8 @@ int main(int argc, char **argv)
+ 	int prog_fd;
+ 	__u32 qsize;
+ 
++	n_cpus = get_nprocs_conf();
++
+ 	/* Notice: choosing he queue size is very important with the
+ 	 * ixgbe driver, because it's driver page recycling trick is
+ 	 * dependend on pages being returned quickly.  The number of
+@@ -757,7 +760,7 @@ int main(int argc, char **argv)
+ 		case 'c':
+ 			/* Add multiple CPUs */
+ 			add_cpu = strtoul(optarg, NULL, 0);
+-			if (add_cpu >= MAX_CPUS) {
++			if (add_cpu >= n_cpus) {
+ 				fprintf(stderr,
+ 				"--cpu nr too large for cpumap err(%d):%s\n",
+ 					errno, strerror(errno));
+-- 
+2.26.2
 
-Sounds good. Will craft patch to enforce fentry/fexit with [0,0] then.
-Thanks!
-
-> 
->> For freplace, we have
->>
->> __u64 test_get_skb_len = 0;
->> SEC("freplace/get_skb_len")
->> int new_get_skb_len(struct __sk_buff *skb)
->> {
->>          int len = skb->len;
->>
->>          if (len != 74)
->>                  return 0;
->>          test_get_skb_len = 1;
->>          return 74; /* original get_skb_len() returns skb->len */
->> }
->>
->> That means freplace may return arbitrary values depending on what
->> to replace?
-> 
-> yes. freplace and fmod_ret can return anything.
-> 
