@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 375AA1CEB94
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43C601CEB9B
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:39:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728801AbgELDif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 23:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
+        id S1728848AbgELDjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 23:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727942AbgELDie (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:38:34 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74964C061A0C;
-        Mon, 11 May 2020 20:38:32 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id n5so6732159wmd.0;
-        Mon, 11 May 2020 20:38:32 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728751AbgELDjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:39:20 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06275C061A0C;
+        Mon, 11 May 2020 20:39:20 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id g12so21626356wmh.3;
+        Mon, 11 May 2020 20:39:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=65+ryeo+9kxscp6Vc376GV6Ht9lQEi5vtaHCqJ43I64=;
-        b=UdIdF/emqInJZJols9u43eppsebzW8O0XoB33BxkIrVUEXxQG9h3cQrwfbp5WNwuuk
-         YCdEGwPkY3ramB9LOa5QjMRrjePNukgPlyjRRfqg1iBWuUWWssjl5krb7ppoV3qcZJn+
-         /a1MXq6LxgdAnrHJ/WSRldnZrJpJR0MNZW+YOwH62yEZCE+OnapcSb2yfO0K9CQ94Aa0
-         6FOWK/iklHXqECQ8Vj8miGaHORuOMS51SvodqPe4+LTWQvrg54QuUCYyS2+E7nOZslA5
-         oCKMvba5uFO8WP88ImZDnHBvr6Yp0/LQrZNSX3/Ogdb7VJi2JNJdp6hSJYmIe7nWY6ra
-         hmfw==
+        bh=m46tD1xihj8K1wVKVnYefZB1w4yWGqnKPKV+IWqzhwM=;
+        b=F0nlPSr7hnumYvS8gAT2F8bDZJPkgucxaB8hyZh7eJWY0/86DX1l0NLs0r7DYQfH3E
+         nECE/Ie+o2ZyBJUFR8fIu9niPg+Yw+smfS00pRDnPMh/Miphj0nNm+M+QPCaPhTnP+Z1
+         hbtBuVvIa8B4u2ioUl1rzGMP6U973z27TKjASas508WkvDtwOEyIiYmYXjvAuB+jWDlW
+         fWSJg3kL4Fgp7kWMTTfRXZelPmagLM3Wq4h1yz/llukpDuSp3ARizkIE++SUJHusV3UF
+         C9aq62WvvomVFvCML95VxPOU7MaNDLhMVM90I579TB7Un+AK7PWv37h3IWI7ZME0qtr0
+         1S5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=65+ryeo+9kxscp6Vc376GV6Ht9lQEi5vtaHCqJ43I64=;
-        b=mSQ9F+2yP021EBe71A7b03g3r9dqmPw5AU3nMfZRafeG1/7QXWGfQS8gj+Qx2F6e3H
-         G5XPAwebWI7UvaL4gAFuIMqNocpNnJ7WOGJHDx2YRF9CjqgAqTNsyu0bfMeOjKsNgLDp
-         Rdf/zctz1hvGm8hnP7972VleyDI/BIH0QS5exZ0eJOOpJqvA/o2aZv/c+dR28x2v9w4m
-         UUW+BSJPO0aDl2TxKSmrWOrHMTYnQr1wLdb/8fCZeGYHJ4q2GgsAUaq2QeeQGsHmbQHu
-         0w3utYji8JqOY8odCCjxWk/HHQj0favLvZitxphvnWjWAFUNMdjLziT4mg3uQa0VY5P0
-         3Lxg==
-X-Gm-Message-State: AGi0PuaZaV2SzmE72FDgMYF9FR6FUdtvtlkObjOof4S4pwXjYvc/aYq/
-        86y6vCUAYLAiZtA1DAXlm5dr/e1q
-X-Google-Smtp-Source: APiQypLr9HjG6PutaE6ZxmFxCaFDwXPI9XFRV45rqsYqryELvUnBcl7boOcDIg94kGVsZduWzhEW3A==
-X-Received: by 2002:a1c:9e52:: with SMTP id h79mr34668243wme.84.1589254710859;
-        Mon, 11 May 2020 20:38:30 -0700 (PDT)
+        bh=m46tD1xihj8K1wVKVnYefZB1w4yWGqnKPKV+IWqzhwM=;
+        b=XYgYdkrkTUI4C5lKYYNVBLXcZqTZZkN+nzkS1jKJ10NTW2j2J6IQTjeMFhBUzMUtcu
+         adKrHQo2fo1UPSYAQJAu8K1S6UH5XF7TmloPPHay2iGzqafMnGQiFX//E6Z+YlnwJIR0
+         b+SMkIA3SCGDmAHKmSXRygVpbd0gFDNn0mDxTWesEbXnJM1mvcojYxfPDM5Wtv4l1XT1
+         dkEPcKgywTO32+quti6J9d/Lipdcbr8gy+nP5OMa6E5GsJyU7Cq1Ov7YVv/r3Y5u8vEF
+         SZ6paWSjR2CNLFS2m0ywMzH6dUH+01744RxEMT8bxDkxPzbTWFZqp1/JCd/5BOwsRSbd
+         VVfA==
+X-Gm-Message-State: AOAM5321jraKZpu0fS7EX0R393LhqkvWckg8e+hF1z8wstmD27qB4dR5
+        9zIW9k4EFfwbys6RS/PgBzg0286E
+X-Google-Smtp-Source: ABdhPJyMtTXvPDZB3VdpATuj5kCujd/P0/tSbmQYB16sm6CNRZDGIY7tTea3MgIvemMYrYb+1bwqjQ==
+X-Received: by 2002:a1c:7914:: with SMTP id l20mr1075873wme.120.1589254758562;
+        Mon, 11 May 2020 20:39:18 -0700 (PDT)
 Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 94sm5981482wrf.74.2020.05.11.20.38.28
+        by smtp.gmail.com with ESMTPSA id w18sm20994080wro.33.2020.05.11.20.39.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 May 2020 20:38:30 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 12/15] net: dsa: sja1105: add packing ops for
- the Retagging Table
+        Mon, 11 May 2020 20:39:17 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 13/15] net: dsa: sja1105: implement a common
+ frame memory partitioning function
 To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
         vivien.didelot@gmail.com
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         idosch@idosch.org, rmk+kernel@armlinux.org.uk,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20200511135338.20263-1-olteanv@gmail.com>
- <20200511135338.20263-13-olteanv@gmail.com>
+ <20200511135338.20263-14-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <433d1c22-80bc-7b1f-09e0-b4e2faa78dc1@gmail.com>
-Date:   Mon, 11 May 2020 20:38:27 -0700
+Message-ID: <a1277880-1778-5fef-9a9d-6cd9f08ef3f9@gmail.com>
+Date:   Mon, 11 May 2020 20:39:14 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200511135338.20263-13-olteanv@gmail.com>
+In-Reply-To: <20200511135338.20263-14-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,13 +77,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On 5/11/2020 6:53 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The Retagging Table is an optional feature that allows the switch to
-> match frames against a {ingress port, egress port, vid} rule and change
-> their VLAN ID. The retagged frames are by default clones of the original
-> ones (since the hardware-foreseen use case was to mirror traffic for
-> debugging purposes and to tag it with a special VLAN for this purpose),
-> but we can force the original frames to be dropped by removing the
-> pre-retagging VLAN from the port membership list of the egress port.
+> There are 2 different features that require some reserved frame memory
+> space: VLAN retagging and virtual links. Create a central function that
+> modifies the static config and ensures frame memory is never
+> overcommitted.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
