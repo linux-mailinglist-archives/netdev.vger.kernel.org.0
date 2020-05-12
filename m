@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6E41CEF37
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:35:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D0171CEF38
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:36:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729116AbgELIfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 04:35:05 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45269 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725987AbgELIfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 04:35:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589272503;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Jcu7UayeiRoB+oPtxu5ro8xy76Yt5bLrrV9cfwYT0u4=;
-        b=iJrsU4RpBOeI2JZmrs4gjEXDAw70a2sALlrFj6ODkZcIZf4xJsw1gbMamfgircUFcWQSPa
-        5gBQUVEJHltE4NeJzJLMxXjg8SWozTG3kY5BUHaOZ2Qqy7M8FKzmvqpUT0R9K/fLkcg2RC
-        wH8xk004Ln9Y4Wyqnz/dODXZfNMzOFg=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-368-U-TncXLOMIqPoJonkjvbEg-1; Tue, 12 May 2020 04:35:02 -0400
-X-MC-Unique: U-TncXLOMIqPoJonkjvbEg-1
-Received: by mail-lj1-f198.google.com with SMTP id l5so1223022lje.23
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 01:35:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Jcu7UayeiRoB+oPtxu5ro8xy76Yt5bLrrV9cfwYT0u4=;
-        b=UNwgV3sQVSwtnkKI2dhkCD40rskMyb5Ti5TL+bo60wvm65W5ixSiWKfSJqJJnoXOwz
-         JRprOWa8njUP3maLoKtJWETykE3a10vTn07wpzFFsePmp+HMXmsfabd17KkFs9laA+So
-         9t/14CbvFY8Or+CjMEcwKZZlRCMAFY138DkPy8oXSMdoP7V+uxTisu0usHHWT1BzsuhV
-         ay3ljssQ51YFXHI5fPdvsFVtrPtZbSNlfJjoLy10bkYTHOVMvgISwr9kLi6dsZftubUh
-         mLUy0vOC7OnwATWi2+2va+gdNrk+pft+tDWLDKZXFQMJT+6W13qsYkCoRBZ9WuhtziYS
-         7n7A==
-X-Gm-Message-State: AOAM531Nng6bn8O4DvmeyMqBOyjmwRro3gdF4Us2+STCqkYpbYPnJb95
-        McUrsyzLIqnpPe+a+gSiJoIpwurlCIIEWZxi3jsBhnMg/VEOEgEWmqVMuxoBoMXjPdphdvyqfLJ
-        jH3DoKCP+ijKaVQ6c
-X-Received: by 2002:a2e:986:: with SMTP id 128mr9515209ljj.202.1589272500503;
-        Tue, 12 May 2020 01:35:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwFmvdz9SAXFfdnegZZctpbgnZj5hHOIAXiFoVO8Ry9W+nleEprJxW5rdu/858LPlqtM/tnwQ==
-X-Received: by 2002:a2e:986:: with SMTP id 128mr9515196ljj.202.1589272500266;
-        Tue, 12 May 2020 01:35:00 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id y9sm12081878ljy.31.2020.05.12.01.34.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 01:34:59 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BF311181509; Tue, 12 May 2020 10:34:58 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
+        id S1729148AbgELIgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 04:36:04 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:45742 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbgELIgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 04:36:03 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04C8Ziu9024445;
+        Tue, 12 May 2020 03:35:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1589272544;
+        bh=w6SvlgwOineI01tS7SoCMkc0epnn0527dHvSR50zF18=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=c1xrQ8l4vT0z9iC94p7vdwa4vk2QOJPfW/urGqOOHCsTS1WrDxL+UjE3l2miLzVfX
+         fKyaqZVtIicorRPjJToWyxmLgDRpkvcJpvtv1Yz6onG9mRnKg3kCtI9tBgWvHxB7KA
+         wOEEBdNpBQn0U9tfmWJsDXll7bHKt39Z7UlywPME=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04C8ZiJf056062
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 May 2020 03:35:44 -0500
+Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 12
+ May 2020 03:35:43 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 12 May 2020 03:35:43 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04C8Zdpg056802;
+        Tue, 12 May 2020 03:35:41 -0500
+Subject: Re: [PATCH net v3] net: ethernet: ti: fix build and remove
+ TI_CPTS_MOD workaround
+To:     Arnd Bergmann <arnd@arndb.de>
+CC:     Networking <netdev@vger.kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: bpf: ability to attach freplace to multiple parents
-In-Reply-To: <20200402215452.dkkbbymnhzlcux7m@ast-mbp>
-References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com> <87tv2e10ly.fsf@toke.dk> <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com> <87369wrcyv.fsf@toke.dk> <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com> <CACAyw9-FrwgBGjGT1CYrKJuyRJtwn0XUsifF_uR6LpRbcucN+A@mail.gmail.com> <20200326195340.dznktutm6yq763af@ast-mbp> <87o8sim4rw.fsf@toke.dk> <20200402202156.hq7wpz5vdoajpqp5@ast-mbp> <87o8s9eg5b.fsf@toke.dk> <20200402215452.dkkbbymnhzlcux7m@ast-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 12 May 2020 10:34:58 +0200
-Message-ID: <87h7wlwnyl.fsf@toke.dk>
+        Russell King <linux@armlinux.org.uk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-omap <linux-omap@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Clay McClure <clay@daemons.net>, Dan Murphy <dmurphy@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>
+References: <20200508095914.20509-1-grygorii.strashko@ti.com>
+ <CAK8P3a0qfFzJGya-Ydst8dwC8d7wydfNG-4Ef9zkycEd8WLOCA@mail.gmail.com>
+ <7df7a64c-f564-b0cc-9100-93c9e417c2fc@ti.com>
+ <CAK8P3a0-6vRpHJugnUFhNNAALmqx4CUW9ffTOojxu5a80tAQTw@mail.gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <b0e2bd21-f670-f05a-6e23-4c6c75a94868@ti.com>
+Date:   Tue, 12 May 2020 11:35:40 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <CAK8P3a0-6vRpHJugnUFhNNAALmqx4CUW9ffTOojxu5a80tAQTw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+Hi Arnd,
 
->> > Currently fentry/fexit/freplace progs have single prog->aux->linked_prog pointer.
->> > It just needs to become a linked list.
->> > The api extension could be like this:
->> > bpf_raw_tp_open(prog_fd, attach_prog_fd, attach_btf_id);
->> > (currently it's just bpf_raw_tp_open(prog_fd))
->> > The same pair of (attach_prog_fd, attach_btf_id) is already passed into prog_load
->> > to hold the linked_prog and its corresponding btf_id.
->> > I'm proposing to extend raw_tp_open with this pair as well to
->> > attach existing fentry/fexit/freplace prog to another target.
->> > Internally the kernel verify that btf of current linked_prog
->> > exactly matches to btf of another requested linked_prog and
->> > if they match it will attach the same prog to two target programs (in case of freplace)
->> > or two kernel functions (in case of fentry/fexit).
->> 
->> API-wise this was exactly what I had in mind as well.
->
-> perfect!
+On 08/05/2020 14:25, Arnd Bergmann wrote:
+> On Fri, May 8, 2020 at 1:14 PM Grygorii Strashko
+> <grygorii.strashko@ti.com> wrote:
+>> On 08/05/2020 13:10, Arnd Bergmann wrote:
+>>> On Fri, May 8, 2020 at 11:59 AM Grygorii Strashko
+> 
+>>>> That's because TI_CPTS_MOD (which is the symbol gating the _compilation_ of
+>>>> cpts.c) now depends on PTP_1588_CLOCK, and so is not enabled in these
+>>>> configurations, but TI_CPTS (which is the symbol gating _calls_ to the cpts
+>>>> functions) _is_ enabled. So we end up compiling calls to functions that
+>>>> don't exist, resulting in the linker errors.
+>>>>
+>>>> This patch fixes build errors and restores previous behavior by:
+>>>>    - ensure PTP_1588_CLOCK=y in TI specific configs and CPTS will be built
+>>>>    - use IS_REACHABLE(CONFIG_TI_CPTS) in code instead of IS_ENABLED()
+>>>
+>>> I don't understand what IS_REACHABLE() is needed for once all the other
+>>> changes are in place. I'd hope we can avoid that. Do you still see
+>>> failures without
+>>> that or is it just a precaution. I can do some randconfig testing on your patch
+>>> to see what else might be needed to avoid IS_REACHABLE().
+>>
+>> I've not changed this part of original patch, but seems you're right.
+>>
+>> I can drop it and resend, but, unfortunately, i do not have time today for full build testing.
+> 
+> I have applied to patch locally to my randconfig tree, with the IS_REACHABLE()
+> changes taken out.
+> 
 
-Hi Alexei
+What will be the conclusion here?
 
-I don't suppose you've had a chance to whip up a patch for this, have
-you? :)
-
--Toke
-
+-- 
+Best regards,
+grygorii
