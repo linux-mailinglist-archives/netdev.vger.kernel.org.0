@@ -2,94 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E784C1D0032
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 23:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 479AC1D0052
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 23:13:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731269AbgELVKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 17:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44074 "EHLO
+        id S1731295AbgELVLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 17:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726324AbgELVKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 17:10:20 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EEBC061A0E
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 14:10:18 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id o10so12259252ejn.10
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 14:10:18 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728275AbgELVLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 17:11:18 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CA5C061A0C;
+        Tue, 12 May 2020 14:11:18 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id l11so11795956wru.0;
+        Tue, 12 May 2020 14:11:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CSpdh7Z7zMPtWlBdq88/5LdKyaeey1hMdM035dkEBxs=;
-        b=V6uqoOFX6u2CvdHUUrupnk8+21Ued+g4DNiWbLRHdYnw2mPYGFa0LlYwZnjQ5yfRgZ
-         UZNy0mo918STQefgWOKbLS0E4C74SKRT95qgXdfKBN/hYX2/Nzecm6BSbIcOGBW2Ru+y
-         mIM/uO6R7sr0pcImYebX8/FQQSEAkMLlMakFrsajHRBl8kvMquq5aAUgIXXLzwO17teM
-         2kooftAYyD89CGJIzuWl18J4j168p1dkHOV3oamVuCohv8X2upXNRxcFK9XpBJhPp/vq
-         +s+7O5nkvCh/vIsWV2DRt29mgqQRG3EncagOPcNGG+ps6EdZsJ+UW8SnUiF4ulHfHv2D
-         yiPg==
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HUo/x8U4+0mYzSmYS/9FaeLoX4GWLY2yc9psegkmkLk=;
+        b=UvQF7HB3rdUXi4f4A35IeSasJbDNhF+T3r4ovNcEYIzgzrTmkwgqlDcbxexvs4dk1t
+         jKLSUW2kj6LvcWoISqQxBCKqiiLGUBSC7aE66nCussXrdrU9Z8mO1/6XGk1D2P6R6pkG
+         s/l92Dc06Jqkn4t69RBMD71ZL+NZceikTD9cBB0gwq3P92DbBEOt2qXFOzYds77KqtU5
+         5LZMEOMdG6xXeLZYV3zXSI2Ur1I/eFNhdjN4l3PIkHC6RGhzI7CPgV4mu2xcOh6r29s1
+         OySJRT1q8swp6ez0Ofupv5R8jrqmtychKMWzi7B0eH8vcISvwAN+IiO2l0vXqU19Xpsk
+         5LAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CSpdh7Z7zMPtWlBdq88/5LdKyaeey1hMdM035dkEBxs=;
-        b=FYsz8yEabuJ6nIuv9GjhhZlTU9CmVqhr7AqvkBIuX2XNI992xi5E5r9eciPAlZxPse
-         3ylxlbH+xWlHHLn9xr2WhkCgYSlqPUgY0rxsA2Ioc9UQ9/vf5xji437YCaWkWsUvcqft
-         L/W+BB7DZryzuSsJiuqzgnFVLJqZzO1j8sjHXRNHKDkpwur5nmRyOoFoi+REwHC/2Ven
-         sZPF20DNd9FCCoe30ETj5Ps/arUjf/HoIyX9n3Hl+zI7ZJ/gY5NHSH1uwbJiR7rEO1Vm
-         4G9MMLS+s9adoQygcFb7pmpHyMQ1DyRc/0+VVbqUEbWuwEQ0GiNZXmEWIH5izXfr62b5
-         +j7A==
-X-Gm-Message-State: AOAM531Xn3Sq9gd5WUaIrd231J05VrrLW2tUkgOxcImsbWnMsCFVidHA
-        KKHMNMzcbPP6hspdyCfEYo/uh3rUQvGOgBEZKFsq
-X-Google-Smtp-Source: ABdhPJz+HF0Y3QZDTXTT1RKvc6wFDQInr2HtM/6l1XFoAqWd56N9wJf0k+oVX+KBsVBP4gA/meeU9qtSiL+UJYblbf0=
-X-Received: by 2002:a17:906:6841:: with SMTP id a1mr8378690ejs.271.1589317817246;
- Tue, 12 May 2020 14:10:17 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HUo/x8U4+0mYzSmYS/9FaeLoX4GWLY2yc9psegkmkLk=;
+        b=rojTGSUMP9ElsE6TmfD9BSnUwTSYNCT+U0wLIasOgxaK9aBkBrPxETVZ9ZXbYaL8xT
+         cpDmHGarVBA4Rp0xJx5S7bqW44R+LRLSj+xBQzXxbCqqggUw9e/s6g/uYg8UIZdioVHM
+         Rzk87AYAptCnGzyO5gqWA395mkDMp/dnJvL8j7Cl6zum1ZNKZFeCCOvYFApjFBnzw3E3
+         MqaFu39kB6w5L5M+EAERGCezKi4+FRcFh57GW1nTQ+NXSqAMVG8viAc4Y21HT8aVDeGc
+         XhDEVOCknVTDh203wZCFzh3aSnwus6YM455DIoWcHA/tA0ws7irNWURecQLFj/iT76l5
+         MFQg==
+X-Gm-Message-State: AGi0PuZLgyeUr9DZvvxXGTjWjUQIpqf+aerrLoIch+Qt2QbUJSr7mIeo
+        uoIsaZmKQw3AsElzGJCKMhY=
+X-Google-Smtp-Source: APiQypICeedar9LlrtciOb0WCCyUvBbEPvqZ7/kBdZ7nmKmgKGrJtVXh3i4qBkJ6K+EYzRC+5Sb6sQ==
+X-Received: by 2002:a5d:5710:: with SMTP id a16mr17949293wrv.209.1589317876680;
+        Tue, 12 May 2020 14:11:16 -0700 (PDT)
+Received: from localhost.localdomain (p200300F137132E00428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:3713:2e00:428d:5cff:feb9:9db8])
+        by smtp.googlemail.com with ESMTPSA id r3sm9724228wmh.48.2020.05.12.14.11.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2020 14:11:16 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org
+Cc:     jianxin.pan@amlogic.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 0/8] dwmac-meson8b Ethernet RX delay configuration
+Date:   Tue, 12 May 2020 23:10:55 +0200
+Message-Id: <20200512211103.530674-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <07d99ae197bfdb2964931201db67b6cd0b38db5b.1589276729.git.pabeni@redhat.com>
-In-Reply-To: <07d99ae197bfdb2964931201db67b6cd0b38db5b.1589276729.git.pabeni@redhat.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 12 May 2020 17:10:05 -0400
-Message-ID: <CAHC9VhRK+k8zwCLCMRBmjPFCYuK=BEn4Gq4vhEngedMqhuPsDA@mail.gmail.com>
-Subject: Re: [PATCH net] netlabel: cope with NULL catmap
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-security-module@vger.kernel.org, ppandit@redhat.com,
-        Matthew Sheets <matthew.sheets@gd-ms.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 8:44 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> The cipso and calipso code can set the MLS_CAT attribute on
-> successful parsing, even if the corresponding catmap has
-> not been allocated, as per current configuration and external
-> input.
->
-> Later, selinux code tries to access the catmap if the MLS_CAT flag
-> is present via netlbl_catmap_getlong(). That may cause null ptr
-> dereference while processing incoming network traffic.
->
-> Address the issue setting the MLS_CAT flag only if the catmap is
-> really allocated. Additionally let netlbl_catmap_getlong() cope
-> with NULL catmap.
->
-> Reported-by: Matthew Sheets <matthew.sheets@gd-ms.com>
-> Fixes: 4b8feff251da ("netlabel: fix the horribly broken catmap functions")
-> Fixes: ceba1832b1b2 ("calipso: Set the calipso socket label to match the secattr.")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
->  net/ipv4/cipso_ipv4.c        | 6 ++++--
->  net/ipv6/calipso.c           | 3 ++-
->  net/netlabel/netlabel_kapi.c | 6 ++++++
->  3 files changed, 12 insertions(+), 3 deletions(-)
+The Ethernet TX performance has been historically bad on Meson8b and
+Meson8m2 SoCs because high packet loss was seen. I found out that this
+was related (yet again) to the RGMII TX delay configuration.
+In the process of discussing the big picture (and not just a single
+patch) [0] with Andrew I discovered that the IP block behind the
+dwmac-meson8b driver actually seems to support the configuration of the
+RGMII RX delay (at least on the Meson8b SoC generation).
 
-Seems reasonable to me, thanks Paolo.
+Since I sent the first RFC I got additional documentation from Jianxin
+(many thanks!). Also I have discovered some more interesting details:
+- Meson8b Odroid-C1 requires an RX delay (by either the PHY or the MAC)
+  Based on the vendor u-boot code (not upstream) I assume that it will
+  be the same for all Meson8b and Meson8m2 boards
+- Khadas VIM2 seems to have the RX delay built into the PCB trace
+  length. When I enable the RX delay on the PHY or MAC I can't get any
+  data through. I expect that we will have the same situation on all
+  GXBB, GXM, AXG, G12A, G12B and SM1 boards. Further clarification is
+  needed here though (since I can't visually see these lengthened
+  traces on the PCB). This will be done before sending patches for
+  these boards.
 
-Acked-by: Paul Moore <paul@paul-moore.com>
+
+Dependencies for this series:
+There is a soft dependency for patch #2 on commit f22531438ff42c
+"dt-bindings: net: dwmac: increase 'maxItems' for 'clocks',
+'clock-names' properties" which is currently in Rob's -next tree.
+That commit is needed to make the dt-bindings schema validation
+pass for patch #2. That patch has been for ~4 weeks in Robs tree,
+so I assume that is not going to be dropped.
+
+
+Changes since RFC v2 at [2]:
+- dropped $ref: /schemas/types.yaml#definitions/uint32 from the
+  "amlogic,rx-delay-ns" in patch #1 ("Don't need to define the
+  type when in standard units." says Rob - thanks, I learned
+  something new). Also use "default: 0" for for this property
+  instead of explaining it in the description text.
+- added a note to the cover-letter about a hidden dependency for
+  dt-binding schema validation in patch #2
+- Added Andrew's Reviewed-by to patches 1-7. Thank you again for
+  the quick and detailed reviews, I appreciate this!
+- error out if the (optional) timing-adjustment clock is missing
+  but we're asked to enable the RGMII RX delay. The MAC won't
+  work in this specific case and either the RX delay has to be
+  provided by the PHY or the timing-adjustment clock has to be
+  added.
+- dropped the dts patches (#9-11) which were only added to give
+  an overview how this is going to be used. those will be sent
+  separately
+- dropped the RFC prefix
+
+Changes since RFC v1 at [1]:
+- add support for the timing adjustment clock input (dt-bindings and
+  in the driver) thanks to the input from the unnamed Ethernet engineer
+  at Amlogic. This is the missing link between the fclk_div2 clock and
+  the Ethernet controller on Meson8b (no traffic would flow if that
+  clock was disabled)
+- add support fot the amlogic,rx-delay-ns property. The only supported
+  values so far are 0ns and 2ns. The registers seem to allow more
+  precise timing adjustments, but I could not make that work so far.
+- add more register documentation (for the new RX delay bits) and
+  unified the placement of existing register documentation. Again,
+  thanks to Jianxin and the unnamed Ethernet engineer at Amlogic
+- DO NOT MERGE: .dts patches to show the conversion of the Meson8b
+  and Meson8m2 boards to "rgmii-id". I didn't have time for all arm64
+  patches yet, but these will switch to phy-mode = "rgmii-txid" with
+  amlogic,rx-delay-ns = <0> (because the delay seems to be provided by
+  the PCB trace length).
+
+
+[0] https://patchwork.kernel.org/patch/11309891/
+[1] https://patchwork.kernel.org/cover/11310719/
+[2] https://patchwork.kernel.org/cover/11518257/
+
+
+Martin Blumenstingl (8):
+  dt-bindings: net: meson-dwmac: Add the amlogic,rx-delay-ns property
+  dt-bindings: net: dwmac-meson: Document the "timing-adjustment" clock
+  net: stmmac: dwmac-meson8b: use FIELD_PREP instead of open-coding it
+  net: stmmac: dwmac-meson8b: Move the documentation for the TX delay
+  net: stmmac: dwmac-meson8b: Add the PRG_ETH0_ADJ_* bits
+  net: stmmac: dwmac-meson8b: Fetch the "timing-adjustment" clock
+  net: stmmac: dwmac-meson8b: Make the clock enabling code re-usable
+  net: stmmac: dwmac-meson8b: add support for the RX delay configuration
+
+ .../bindings/net/amlogic,meson-dwmac.yaml     |  23 ++-
+ .../ethernet/stmicro/stmmac/dwmac-meson8b.c   | 146 ++++++++++++++----
+ 2 files changed, 134 insertions(+), 35 deletions(-)
 
 -- 
-paul moore
-www.paul-moore.com
+2.26.2
+
