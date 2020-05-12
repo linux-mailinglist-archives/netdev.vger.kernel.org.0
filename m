@@ -2,148 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D3E1CEB76
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 342461CEB80
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728850AbgELDa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 23:30:57 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:33765 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728708AbgELDa5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 23:30:57 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 49Ljxn2RTMz9sSr;
-        Tue, 12 May 2020 13:30:52 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1589254254;
-        bh=FphsOl3KgUXiT3QcYA5xL+rsNqjxWWtwhaXiLT+4PTM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=M/8EZGHnX4NjCx2RZE+LjXi4DfcJ70425RYXyichnh+rApAkZ5gO8HLzfEKmkVW44
-         KAam3iTvT7TVIBSw7zG/CRQ3cVFzAIXsl2fuJhcATC7xhWIsL5LTCz+4IftGrmFC0k
-         BIUdgbrHQEaYv2uDuWWo0z+afBqnp0BpTTjOCQkcvFLfjfJvvj3adi/I07VqkdwjBB
-         /OHSv1w18mwY+3mEulLE07J2WJoxS5VlSa8++ckAi4oZWkpxzzaazqEfmjIeXt50RQ
-         hQXUw4hX3cijerTYcSpLocLWQLdIcYiG8g5+WHzutdCJbNMLSGzkyQSmeEolOxZpBh
-         ncYdPFRNYKFMg==
-Date:   Tue, 12 May 2020 13:30:51 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Luo bin <luobin9@huawei.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20200512133051.7d740613@canb.auug.org.au>
+        id S1728810AbgELDbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 23:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728110AbgELDbr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:31:47 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB21BC061A0C;
+        Mon, 11 May 2020 20:31:46 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id a7so8726909pju.2;
+        Mon, 11 May 2020 20:31:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JOBjSfGyga4J2bultUu8C36lMC4c3/xrTuU9mZgKClQ=;
+        b=bGr2ppOXgbUllfIAwrSc3/q4YVcPEH1G+JnkyINUX6ju6prSmQjhFCb+YKTq/C3kv2
+         kCRVAxDYepbwAoZifUrDir969DQBQVIhqf7+aHtl50VJWpCwq5TOlV/Vu8ekivQOfiyR
+         y6EQHDagxouZMuzmisdV/ds8NTAUVlUY0okxGE87yznrXQ0oTsccwV41/Wo9KYvsmSQX
+         yxrSEHWbK/Quv8Jwud9cgudwNP7lsjVhMzJ23cZrLP/aSQ4tGOFwfUIftvx+c5HdgtX5
+         /uVNvW7xfuzzxrbExUR0r3joW/RfM9KiDP9ZP9Y0mjS6uxF20diTbR5kWjDQWEddU7vS
+         aE/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JOBjSfGyga4J2bultUu8C36lMC4c3/xrTuU9mZgKClQ=;
+        b=BA7zzkD8aFbPNfAbEz0yXewed4CjPaUn4QkedumSg86Kd/HCvk0Ie6SKSy7qvivbMU
+         pyeh73JS43Ndr+fscbfe8QQJ8rBpnI2mLgd+xg68g11GrGtVAwFGJCa4tm56JktUr7dY
+         20p/sd9WT+E2nOklBLOVlvmmOIrEEKGsYA+salqUVRFrTGd2/5s6+O5s0ituyJrGBTDg
+         oJyBrjdQttNzg6GxKb8Vx1RR6i6Rm3sDaYAp5oYh7hsQxbp5RKluyaoZWXP9vbxkgmYT
+         fVJfqAfbPyXdZGAEU6bfKYuP66asqEIpbT9U+wLofjk0sxAAbBZXh8szM88SbNCu4iHz
+         YOVQ==
+X-Gm-Message-State: AGi0PubKtaB34u4EPGS3BjdVaWBDZz6YCCFqBrll9Gu1ybm3jEc9uR84
+        wQtdJjkKTtI1in+pog0xSYq51J+I
+X-Google-Smtp-Source: APiQypKQV6EK1pgnxQiqGRIdYt3auisBY+Pqo4DhrT1wXg3EcQ5cmc+qneRHF6Mx8VhCnGMisNDjSQ==
+X-Received: by 2002:a17:902:c40c:: with SMTP id k12mr19034039plk.238.1589254305758;
+        Mon, 11 May 2020 20:31:45 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id h6sm11650411pje.37.2020.05.11.20.31.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 May 2020 20:31:45 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 05/15] net: dsa: sja1105: save/restore VLANs
+ using a delta commit method
+To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        idosch@idosch.org, rmk+kernel@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200511135338.20263-1-olteanv@gmail.com>
+ <20200511135338.20263-6-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <fd4513d7-900d-fa33-8c3e-23bd2824b27b@gmail.com>
+Date:   Mon, 11 May 2020 20:31:43 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/T=S4n1j5VzSFQ5DwcovfOOZ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20200511135338.20263-6-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/T=S4n1j5VzSFQ5DwcovfOOZ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-Today's linux-next merge of the net-next tree got conflicts in:
+On 5/11/2020 6:53 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Managing the VLAN table that is present in hardware will become very
+> difficult once we add a third operating state
+> (best_effort_vlan_filtering). That is because correct cleanup (not too
+> little, not too much) becomes virtually impossible, when VLANs can be
+> added from the bridge layer, from dsa_8021q for basic tagging, for
+> cross-chip bridging, as well as retagging rules for sub-VLANs and
+> cross-chip sub-VLANs. So we need to rethink VLAN interaction with the
+> switch in a more scalable way.
+> 
+> In preparation for that, use the priv->expect_dsa_8021q boolean to
+> classify any VLAN request received through .port_vlan_add or
+> .port_vlan_del towards either one of 2 internal lists: bridge VLANs and
+> dsa_8021q VLANs.
+> 
+> Then, implement a central sja1105_build_vlan_table method that creates a
+> VLAN configuration from scratch based on the 2 lists of VLANs kept by
+> the driver, and based on the VLAN awareness state. Currently, if we are
+> VLAN-unaware, install the dsa_8021q VLANs, otherwise the bridge VLANs.
+> 
+> Then, implement a delta commit procedure that identifies which VLANs
+> from this new configuration are actually different from the config
+> previously committed to hardware. We apply the delta through the dynamic
+> configuration interface (we don't reset the switch). The result is that
+> the hardware should see the exact sequence of operations as before this
+> patch.
+> 
+> This also helps remove the "br" argument passed to
+> dsa_8021q_crosschip_bridge_join, which it was only using to figure out
+> whether it should commit the configuration back to us or not, based on
+> the VLAN awareness state of the bridge. We can simplify that, by always
+> allowing those VLANs inside of our dsa_8021q_vlans list, and committing
+> those to hardware when necessary.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-  drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-  drivers/net/ethernet/huawei/hinic/hinic_main.c
-
-between commit:
-
-  e8a1b0efd632 ("hinic: fix a bug of ndo_stop")
-
-from the net tree and commit:
-
-  7dd29ee12865 ("hinic: add sriov feature support")
-
-from the net-next tree.
-
-I fixed it up (I think, see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-index 992908e6eebf,eef855f11a01..000000000000
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-@@@ -358,12 -353,13 +358,16 @@@ int hinic_msg_to_mgmt(struct hinic_pf_t
-  		return -EINVAL;
-  	}
- =20
- +	if (cmd =3D=3D HINIC_PORT_CMD_SET_FUNC_STATE)
- +		timeout =3D SET_FUNC_PORT_MGMT_TIMEOUT;
- +
-- 	return msg_to_mgmt_sync(pf_to_mgmt, mod, cmd, buf_in, in_size,
-+ 	if (HINIC_IS_VF(hwif))
-+ 		return hinic_mbox_to_pf(pf_to_mgmt->hwdev, mod, cmd, buf_in,
-+ 					in_size, buf_out, out_size, 0);
-+ 	else
-+ 		return msg_to_mgmt_sync(pf_to_mgmt, mod, cmd, buf_in, in_size,
-  				buf_out, out_size, MGMT_DIRECT_SEND,
- -				MSG_NOT_RESP);
- +				MSG_NOT_RESP, timeout);
-  }
- =20
-  /**
-diff --cc drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 63b92f6cc856,3d6569d7bac8..000000000000
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@@ -496,9 -501,23 +500,12 @@@ static int hinic_close(struct net_devic
- =20
-  	up(&nic_dev->mgmt_lock);
- =20
-+ 	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
-+ 		hinic_notify_all_vfs_link_changed(nic_dev->hwdev, 0);
-+=20
- -	err =3D hinic_port_set_func_state(nic_dev, HINIC_FUNC_PORT_DISABLE);
- -	if (err) {
- -		netif_err(nic_dev, drv, netdev,
- -			  "Failed to set func port state\n");
- -		nic_dev->flags |=3D (flags & HINIC_INTF_UP);
- -		return err;
- -	}
- +	hinic_port_set_state(nic_dev, HINIC_PORT_DISABLE);
- =20
- -	err =3D hinic_port_set_state(nic_dev, HINIC_PORT_DISABLE);
- -	if (err) {
- -		netif_err(nic_dev, drv, netdev, "Failed to set port state\n");
- -		nic_dev->flags |=3D (flags & HINIC_INTF_UP);
- -		return err;
- -	}
- +	hinic_port_set_func_state(nic_dev, HINIC_FUNC_PORT_DISABLE);
- =20
-  	if (nic_dev->flags & HINIC_RSS_ENABLE) {
-  		hinic_rss_deinit(nic_dev);
-
---Sig_/T=S4n1j5VzSFQ5DwcovfOOZ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl66GGsACgkQAVBC80lX
-0GzUqgf9H210eMf2pTEcnhuuNCdOcz21Jmkbxx328d6TL4M1B2TKjy5hS5395pvd
-cZufyzhAsGUMproWW5Zl1rPwVZWBfZ17RXV5/jorpztwwLNBwOUwUduNr9EiKVKc
-/ubchtpGaPHrX1RfUEKL8qgpiZTVLMuwfLjEjUpWTdJoqCMD7/YrOKWFoeh0biAt
-M6NJ2FU2CfXCWbqTE7Kn/Rj0C/wqG5pOF/143ejziCT5poqIc6yhBgj1SGieFOxz
-3nRkw/whTlg1OPKJJt73r3oyU/8fSDvP2Rl6FadUjgRvSvFePVg+NbpViDXfBiOT
-orTC2vrS0VcIud3ihZFGa7gS/MBaQQ==
-=+OCm
------END PGP SIGNATURE-----
-
---Sig_/T=S4n1j5VzSFQ5DwcovfOOZ--
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
