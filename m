@@ -2,208 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F11B01CFC13
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:23:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD90A1CFC43
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727954AbgELRXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 13:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbgELRXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:23:38 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F73C061A0C;
-        Tue, 12 May 2020 10:23:38 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id y22so1808962qki.3;
-        Tue, 12 May 2020 10:23:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jYAwQqCKZY/JEO+42Y6cCIX9mgCJiPaIoAUPgyyKQK4=;
-        b=DgpMTRL6lkyuInt+9sKLoC1QipR7zMBQ68YOpWao9aSpzCwiRM75NpCZIL2Y8QyIVk
-         3/mKbYzbH+i+sD076N/GY5l++4YFzSoA5rYizCOD/HGg5AWQDDDhaE1/H+mpOfRg4mEO
-         7isIV0h/gkqfHquIvCuQ2iHoAJDc8DOmpAxSdb9kuFBiCTXc50JxyADLNX9hQXkcbNOq
-         ioLGkvyQjqlpkni0DUa/wNeZU9RVVyGImy5YnhhGlSIHIHeTJijtmV9vjZmfEZnhfE3F
-         4iBhmAFTrXOboVRp+HhXF37x82nq2UF+RyrfBkpLIv/tno1fJHU4BDJJTqBRNcgPche0
-         hANw==
+        id S1728324AbgELRef (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 13:34:35 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46221 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725554AbgELRee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:34:34 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 145so6661666pfw.13;
+        Tue, 12 May 2020 10:34:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jYAwQqCKZY/JEO+42Y6cCIX9mgCJiPaIoAUPgyyKQK4=;
-        b=kLqer/TBOcqVmK6ZQcbbASAVM/bB6T2U8g0FuetqzGnUczogjeR6XmFDG2tATmzXMs
-         yl8J0GGbFm7nCSTI0GhRfP1i3xBn/86EIJqFbx/YdK4vcEsdZ/4a/ycpfnzIHq43qzTv
-         q43ZFtDkRaHOJtoDokZaRbgwEUnzeCa5ziqNHaP+PjMMODlwqfM87M0npgxoW+Ri2Hlq
-         kUd6vr1fataTv9dP0TiPlHubyAiIaZpXSzc1diCvOQE6bmWgYPiMbMj9iEJxOWkRD3ZI
-         t64Hk7EU3e005XG5quYF1wGgKwSrYAML6GpEDuoU4AWiSTiiSMdttYUXxI1I86d1v3cJ
-         Zj0g==
-X-Gm-Message-State: AGi0PubG+yPeimsnqGi73ZilYy15ZavWfepE6zphXbMisY5z/N9V4wVQ
-        3wGvRLlnmGaNgqm/70jsCOQdtvCjqor8F/YMGNegAg==
-X-Google-Smtp-Source: APiQypInae0G69eii23/QdXHd4LmnARdMrh7GG9JqjRqm8m8pVe+f/YOFqF48RqHjH7/o3TDPWuQ8XEwkSwKuoACSqc=
-X-Received: by 2002:a05:620a:14a1:: with SMTP id x1mr21475420qkj.92.1589304217693;
- Tue, 12 May 2020 10:23:37 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=SoNFFWSLtismfgimMD9RRUqbG8Gc0vXuhqXQTxiHa3E=;
+        b=tPCxRaLzCXXnwbe2PuVBrQB3zNf7ImYJ1VJlCNUzngrEYaYCz7DwyqdkyVxqD2Gk/O
+         az1lxW1TZZluBsdWwAXY8cE5KIVStRiNRsuWrR/BQSqOJCTc/G0WlrFTRZvoZG88laKn
+         5f01IcaB6gVjkzgG+blBwPhOgbKK1cNF8j6kQNv4DCymRqtESydTx2nMVyliwdYTsl3a
+         5pRJd+jSXZjbJ0k+rW1peYw59pOWpmD24cKW0wYyGUcRt7WcDUUjrdfR5jYQqc2VySNJ
+         xXboEf54RjurHJfz6GPnhYuI8M9yyeTtmujfehksiJBrr+cbW+if7Kmae1M1hcWOGH2f
+         yEEg==
+X-Gm-Message-State: AGi0Pua76oDs2bd6GlAsrIdtfWfulLiPQG9YW0Y6ujYmZgBg/QTRlstp
+        WqemGWAmRjOxBILPZKFxkI8=
+X-Google-Smtp-Source: APiQypJ+68+ear8ufjEOL0oNkkJk/Xpf8XwPIZhgKbKWlExgmSUkOQPWVDSh5T/eKdJojR2ORpx1vg==
+X-Received: by 2002:a63:2347:: with SMTP id u7mr19974859pgm.183.1589304873617;
+        Tue, 12 May 2020 10:34:33 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id g27sm1841905pfr.51.2020.05.12.10.34.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2020 10:34:31 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id 41E0E4063E; Tue, 12 May 2020 17:34:31 +0000 (UTC)
+Date:   Tue, 12 May 2020 17:34:31 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
+        rostedt@goodmis.org, mingo@redhat.com, aquini@redhat.com,
+        cai@lca.pw, dyoung@redhat.com, bhe@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de, gpiccoli@canonical.com,
+        pmladek@suse.com, tiwai@suse.de, schlad@suse.de,
+        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
+        daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
+Subject: Re: [EXT] [PATCH 09/15] qed: use new module_firmware_crashed()
+Message-ID: <20200512173431.GD11244@42.do-not-panic.com>
+References: <20200509043552.8745-1-mcgrof@kernel.org>
+ <20200509043552.8745-10-mcgrof@kernel.org>
+ <2aaddb69-2292-ff3f-94c7-0ab9dbc8e53c@marvell.com>
+ <20200509164229.GJ11244@42.do-not-panic.com>
+ <e10b611e-f925-f12d-bcd2-ba60d86dd8d0@marvell.com>
 MIME-Version: 1.0
-References: <20200508232032.1974027-1-andriin@fb.com> <20200508232032.1974027-3-andriin@fb.com>
- <c2fbefd2-6137-712e-47d4-200ef4d74775@fb.com> <CAEf4BzaXUwgr70WteC=egTgii=si8OvVLCL9KCs-KwkPRPGQjQ@mail.gmail.com>
- <b06ff0a8-2f44-522f-f071-141072d6f62b@fb.com>
-In-Reply-To: <b06ff0a8-2f44-522f-f071-141072d6f62b@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 12 May 2020 10:23:26 -0700
-Message-ID: <CAEf4BzY71QEmq74B8y-AmW1LFhFZ35TwO5vLn4AOiJPOSVqtjw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/3] selftest/bpf: fmod_ret prog and implement
- test_overhead as part of bench
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e10b611e-f925-f12d-bcd2-ba60d86dd8d0@marvell.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 8:11 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 5/11/20 9:22 PM, Andrii Nakryiko wrote:
-> > On Sat, May 9, 2020 at 10:24 AM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >>
-> >>
-> >> On 5/8/20 4:20 PM, Andrii Nakryiko wrote:
-> >>> Add fmod_ret BPF program to existing test_overhead selftest. Also re-=
-implement
-> >>> user-space benchmarking part into benchmark runner to compare results=
-.  Results
-> >>> with ./bench are consistently somewhat lower than test_overhead's, bu=
-t relative
-> >>> performance of various types of BPF programs stay consisten (e.g., kr=
-etprobe is
-> >>> noticeably slower).
-> >>>
-> >>> run_bench_rename.sh script (in benchs/ directory) was used to produce=
- the
-> >>> following numbers:
-> >>>
-> >>>     base      :    3.975 =C2=B1 0.065M/s
-> >>>     kprobe    :    3.268 =C2=B1 0.095M/s
-> >>>     kretprobe :    2.496 =C2=B1 0.040M/s
-> >>>     rawtp     :    3.899 =C2=B1 0.078M/s
-> >>>     fentry    :    3.836 =C2=B1 0.049M/s
-> >>>     fexit     :    3.660 =C2=B1 0.082M/s
-> >>>     fmodret   :    3.776 =C2=B1 0.033M/s
-> >>>
-> >>> While running test_overhead gives:
-> >>>
-> >>>     task_rename base        4457K events per sec
-> >>>     task_rename kprobe      3849K events per sec
-> >>>     task_rename kretprobe   2729K events per sec
-> >>>     task_rename raw_tp      4506K events per sec
-> >>>     task_rename fentry      4381K events per sec
-> >>>     task_rename fexit       4349K events per sec
-> >>>     task_rename fmod_ret    4130K events per sec
-> >>
-> >> Do you where the overhead is and how we could provide options in
-> >> bench to reduce the overhead so we can achieve similar numbers?
-> >> For benchmarking, sometimes you really want to see "true"
-> >> potential of a particular implementation.
-> >
-> > Alright, let's make it an official bench-off... :) And the reason for
-> > this discrepancy, turns out to be... not atomics at all! But rather a
-> > single-threaded vs multi-threaded process (well, at least task_rename
-> > happening from non-main thread, I didn't narrow it down further).
->
-> It would be good to find out why and have a scheme (e.g. some kind
-> of affinity binding) to close the gap.
+On Tue, May 12, 2020 at 07:23:28PM +0300, Igor Russkikh wrote:
+> 
+> >> So I think its not a good place to insert this call.
+> >> Its hard to find exact good place to insert it in qed.
+> > 
+> > Is there a way to check if what happened was indeed a fw crash?
+> 
+> Our driver has two firmwares (slowpath and fastpath).
+> For slowpath firmware the way to understand it crashed is to observe command
+> response timeout. This is in qed_mcp.c, around "The MFW failed to respond to
+> command" traceout.
 
-I don't think affinity has anything to do with this. test_overhead
-sets affinity for entire process, and that doesn't change results at
-all. Same for bench, both with and without setting affinity, results
-are pretty much the same. Affinity helps a bit to get a bit more
-stable and consistent results, but doesn't hurt or help performance
-for this benchmark.
+Ok thanks.
 
-I don't think we need to spend that much time trying to understand
-behavior of task renaming for such a particular setup. Benchmarking
-has to be multi-threaded in most cases anyways, there is no way around
-that.
+> For fastpath this is tricky, think you may leave the above place as the only
+> place to invoke module_firmware_crashed()
 
->
-> > Atomics actually make very little difference, which gives me a good
-> > peace of mind :)
-> >
-> > So, I've built and ran test_overhead (selftest) and bench both as
-> > multi-threaded and single-threaded apps. Corresponding results match
-> > almost perfectly. And that's while test_overhead doesn't use atomics
-> > at all, while bench still does. Then I also ran test_overhead with
-> > added generics to match bench implementation. There are barely any
-> > differences, see two last sets of results.
-> >
-> > BTW, selftest results seems bit lower from the ones in original
-> > commit, probably because I made it run more iterations (like 40 times
-> > more) to have more stable results.
-> >
-> > So here are the results:
-> >
-> > Single-threaded implementations
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
-> >
-> > /* bench: single-threaded, atomics */
-> > base      :    4.622 =C2=B1 0.049M/s
-> > kprobe    :    3.673 =C2=B1 0.052M/s
-> > kretprobe :    2.625 =C2=B1 0.052M/s
-> > rawtp     :    4.369 =C2=B1 0.089M/s
-> > fentry    :    4.201 =C2=B1 0.558M/s
-> > fexit     :    4.309 =C2=B1 0.148M/s
-> > fmodret   :    4.314 =C2=B1 0.203M/s
-> >
-> > /* selftest: single-threaded, no atomics */
-> > task_rename base        4555K events per sec
-> > task_rename kprobe      3643K events per sec
-> > task_rename kretprobe   2506K events per sec
-> > task_rename raw_tp      4303K events per sec
-> > task_rename fentry      4307K events per sec
-> > task_rename fexit       4010K events per sec
-> > task_rename fmod_ret    3984K events per sec
-> >
-> >
-> > Multi-threaded implementations
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D
-> >
-> > /* bench: multi-threaded w/ atomics */
-> > base      :    3.910 =C2=B1 0.023M/s
-> > kprobe    :    3.048 =C2=B1 0.037M/s
-> > kretprobe :    2.300 =C2=B1 0.015M/s
-> > rawtp     :    3.687 =C2=B1 0.034M/s
-> > fentry    :    3.740 =C2=B1 0.087M/s
-> > fexit     :    3.510 =C2=B1 0.009M/s
-> > fmodret   :    3.485 =C2=B1 0.050M/s
-> >
-> > /* selftest: multi-threaded w/ atomics */
-> > task_rename base        3872K events per sec
-> > task_rename kprobe      3068K events per sec
-> > task_rename kretprobe   2350K events per sec
-> > task_rename raw_tp      3731K events per sec
-> > task_rename fentry      3639K events per sec
-> > task_rename fexit       3558K events per sec
-> > task_rename fmod_ret    3511K events per sec
-> >
-> > /* selftest: multi-threaded, no atomics */
-> > task_rename base        3945K events per sec
-> > task_rename kprobe      3298K events per sec
-> > task_rename kretprobe   2451K events per sec
-> > task_rename raw_tp      3718K events per sec
-> > task_rename fentry      3782K events per sec
-> > task_rename fexit       3543K events per sec
-> > task_rename fmod_ret    3526K events per sec
-> >
-> >
-> [...]
+So do you mean like the changes below?
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+index f4eebaabb6d0..95cb7da2542e 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+@@ -7906,6 +7906,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
+ 		rc = qed_dbg_grc(cdev, (u8 *)buffer + offset +
+ 				 REGDUMP_HEADER_SIZE, &feature_size);
+ 		if (!rc) {
++			module_firmware_crashed();
+ 			*(u32 *)((u8 *)buffer + offset) =
+ 			    qed_calc_regdump_header(cdev, GRC_DUMP,
+ 						    cur_engine,
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+index 280527cc0578..a818cf09dccf 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+@@ -566,6 +566,7 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 		DP_NOTICE(p_hwfn,
+ 			  "The MFW failed to respond to command 0x%08x [param 0x%08x].\n",
+ 			  p_mb_params->cmd, p_mb_params->param);
++		module_firmware_crashed();
+ 		qed_mcp_print_cpu_info(p_hwfn, p_ptt);
+ 
+ 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+
+> >> One more thing is that AFAIU taint flag gets permanent on kernel, but
+> > for
+> >> example our device can recover itself from some FW crashes, thus it'd be
+> >> transparent for user.
+> > 
+> > Similar things are *supposed* to recoverable with other device, however
+> > this can also sometimes lead to a situation where devices are not usable
+> > anymore, and require a full driver unload / load.
+> > 
+> >> Whats the logical purpose of module_firmware_crashed? Does it mean fatal
+> >> unrecoverable error on device?
+> > 
+> > Its just to annotate on the module and kernel that this has happened.
+> > 
+> > I take it you may agree that, firmware crashing *often* is not good
+> > design,
+> > and these issues should be reported to / fixed by vendors. In cases
+> > where driver bugs are reported it is good to see if a firmware crash has
+> > happened before, so that during analysis this is ruled out.
+> 
+> Probably, but still I see some misalignment here, in sense that taint is about
+> the kernel state, not about a hardware state indication.
+
+The kernel carries the driver though, and the driver / subsystem can
+often times act strange when this happens.
+
+> devlink health could really be a much better candidate for such things.
+
+That sounds fantastic, please Cc me on patches! However I still believe
+we should register this event in the kernel for support purposes.
+
+  Luis
