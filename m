@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E64E51CECA9
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 07:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 444891CECAC
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 07:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728531AbgELF5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 01:57:44 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:38402 "EHLO
+        id S1728690AbgELF5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 01:57:47 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:38430 "EHLO
         userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgELF5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 01:57:43 -0400
+        with ESMTP id S1728651AbgELF5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 01:57:46 -0400
 Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04C5v2Ti113118;
-        Tue, 12 May 2020 05:57:25 GMT
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04C5v2Al113134;
+        Tue, 12 May 2020 05:57:28 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=2ISzv+g8exC8vxvO8tEc1c0iu0qXodNhI+rQCSctVkg=;
- b=BxylhaXJvJIOO4FDQPKQn/qoRzQjAcuaVZHdROa4BhvY5oX+lR/X/KrOZu/rfttF5jkz
- JsCr4+AVsXpbcrNSdlDyKBfZVsc2UKY74Iuux1DrToqrMEcNk9QXLvWZiq3pLprxud5l
- +rysiDE/pI8ogu5m+h1UjoMsXBCYhWi8jU8xA8nE9McvgY72YLXMBi2MgbUqV0N2UWEq
- aQHG7+i1jqL0ANHXp+LirWfoI+sj8HPTFkUJNpcQzdi6EV9QfCzLqppiN6X+rIbvAJHv
- yr0q9Rlux4zWF4PO0CYZyQ5up0ws3NTWNeDUEmPcuzjTCglJS6kwKYcnj5BmiBVxOKXy Lw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 30x3mbrv2u-1
+ bh=0muaH3bxesQMPeYQ7Ss9Y7YPtsK4pwaftH70/kxoCCU=;
+ b=VIucPbF/5u7CL671xDKXQFAQSK53SAP+ZQvBPE0uAj75wHDD2ACX8PC870g6Kw5VHn8R
+ mcQXn16oFH/8brXg07LCLv1tJGPn7rwfBU+x/oR4zAdW5G3jhTHbfDEAhKJN1gRZIi6g
+ GhywIeHSTrhQewYJWYQHQBJjRSfJkbayxBPHzF+PprLPXkd++lRo3J4TWZ2ZvbYJytgF
+ J5du9mQir2fL2kY0xETtw/5L9iZjwV6Q/Mz5D/iSC8qjn+vd9DwcZLeGiE1N3ICK3p5x
+ WWc7FlthXJsbqxNWnUYiP75H9Jurppl8yJqxYNKfYIuNFBbTrNnEEeykNHFuptgZd5ur 8g== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 30x3mbrv33-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 12 May 2020 05:57:25 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04C5sJNh110748;
-        Tue, 12 May 2020 05:57:24 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 30x69sfw47-1
+        Tue, 12 May 2020 05:57:28 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04C5rkEL060671;
+        Tue, 12 May 2020 05:57:27 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 30x63p3pqn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 May 2020 05:57:24 +0000
+        Tue, 12 May 2020 05:57:27 +0000
 Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 04C5vNkY018045;
-        Tue, 12 May 2020 05:57:23 GMT
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04C5vQBJ013789;
+        Tue, 12 May 2020 05:57:26 GMT
 Received: from localhost.uk.oracle.com (/10.175.210.30)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 11 May 2020 22:57:23 -0700
+        with ESMTP ; Mon, 11 May 2020 22:57:26 -0700
 From:   Alan Maguire <alan.maguire@oracle.com>
 To:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org
 Cc:     joe@perches.com, linux@rasmusvillemoes.dk, arnaldo.melo@gmail.com,
@@ -46,20 +46,20 @@ Cc:     joe@perches.com, linux@rasmusvillemoes.dk, arnaldo.melo@gmail.com,
         john.fastabend@gmail.com, kpsingh@chromium.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH v2 bpf-next 6/7] bpf: add support for %pT format specifier for bpf_trace_printk() helper
-Date:   Tue, 12 May 2020 06:56:44 +0100
-Message-Id: <1589263005-7887-7-git-send-email-alan.maguire@oracle.com>
+Subject: [PATCH v2 bpf-next 7/7] bpf: add tests for %pT format specifier
+Date:   Tue, 12 May 2020 06:56:45 +0100
+Message-Id: <1589263005-7887-8-git-send-email-alan.maguire@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1589263005-7887-1-git-send-email-alan.maguire@oracle.com>
 References: <1589263005-7887-1-git-send-email-alan.maguire@oracle.com>
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9618 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 adultscore=0
- spamscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999 phishscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 suspectscore=2
+ malwarescore=0 phishscore=0 adultscore=0 mlxlogscore=999 bulkscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
  definitions=main-2005120052
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9618 signatures=668687
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 impostorscore=0
- mlxscore=0 suspectscore=0 bulkscore=0 mlxlogscore=999 phishscore=0
+ mlxscore=0 suspectscore=2 bulkscore=0 mlxlogscore=999 phishscore=0
  malwarescore=0 lowpriorityscore=0 spamscore=0 adultscore=0 clxscore=1015
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
  definitions=main-2005120052
@@ -68,157 +68,194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow %pT[cNx0] format specifier for BTF-based display of data associated
-with pointer.
+tests verify we get > 0 return value from bpf_trace_print()
+using %pT format specifier with various modifiers/pointer
+values.
 
 Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 ---
- include/uapi/linux/bpf.h       | 27 ++++++++++++++++++++++-----
- kernel/trace/bpf_trace.c       | 21 ++++++++++++++++++---
- tools/include/uapi/linux/bpf.h | 27 ++++++++++++++++++++++-----
- 3 files changed, 62 insertions(+), 13 deletions(-)
+ .../selftests/bpf/prog_tests/trace_printk_btf.c    | 83 ++++++++++++++++++++++
+ .../selftests/bpf/progs/netif_receive_skb.c        | 81 +++++++++++++++++++++
+ 2 files changed, 164 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_printk_btf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/netif_receive_skb.c
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 9d1932e..ab3c86c 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -695,7 +695,12 @@ struct bpf_stack_build_id {
-  * 		to file *\/sys/kernel/debug/tracing/trace* from DebugFS, if
-  * 		available. It can take up to three additional **u64**
-  * 		arguments (as an eBPF helpers, the total number of arguments is
-- * 		limited to five).
-+ *		limited to five), and also supports %pT (BTF-based type
-+ *		printing), as long as BPF_READ lockdown is not active.
-+ *		"%pT" takes a "struct __btf_ptr *" as an argument; it
-+ *		consists of a pointer value and specified BTF type string or id
-+ *		used to select the type for display.  For more details, see
-+ *		Documentation/core-api/printk-formats.rst.
-  *
-  * 		Each time the helper is called, it appends a line to the trace.
-  * 		Lines are discarded while *\/sys/kernel/debug/tracing/trace* is
-@@ -731,10 +736,10 @@ struct bpf_stack_build_id {
-  * 		The conversion specifiers supported by *fmt* are similar, but
-  * 		more limited than for printk(). They are **%d**, **%i**,
-  * 		**%u**, **%x**, **%ld**, **%li**, **%lu**, **%lx**, **%lld**,
-- * 		**%lli**, **%llu**, **%llx**, **%p**, **%s**. No modifier (size
-- * 		of field, padding with zeroes, etc.) is available, and the
-- * 		helper will return **-EINVAL** (but print nothing) if it
-- * 		encounters an unknown specifier.
-+ *		**%lli**, **%llu**, **%llx**, **%p**, **%pT[cNx0], **%s**.
-+ *		Only %pT supports modifiers, and the helper will return
-+ *		**-EINVAL** (but print nothing) if it encouters an unknown
-+ *		specifier.
-  *
-  * 		Also, note that **bpf_trace_printk**\ () is slow, and should
-  * 		only be used for debugging purposes. For this reason, a notice
-@@ -4058,4 +4063,16 @@ struct bpf_pidns_info {
- 	__u32 pid;
- 	__u32 tgid;
- };
+diff --git a/tools/testing/selftests/bpf/prog_tests/trace_printk_btf.c b/tools/testing/selftests/bpf/prog_tests/trace_printk_btf.c
+new file mode 100644
+index 0000000..d7ee158
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/trace_printk_btf.c
+@@ -0,0 +1,83 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
 +
-+/*
-+ * struct __btf_ptr is used for %pT (typed pointer) display; the
-+ * additional type string/BTF id are used to render the pointer
-+ * data as the appropriate type.
-+ */
-+struct __btf_ptr {
-+	void *ptr;
-+	const char *type;
-+	__u32 id;
++struct result {
++	int ret;
++	int subtest;
++	int num_subtest;
 +};
 +
- #endif /* _UAPI__LINUX_BPF_H__ */
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index d961428..c032c58 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -321,9 +321,12 @@ static const struct bpf_func_proto *bpf_get_probe_write_proto(void)
- 	return &bpf_probe_write_user_proto;
- }
- 
-+#define isbtffmt(c)	\
-+	(c == 'T' || c == 'c' || c == 'N' || c == 'x' || c == '0')
++/* return value of bpf_trace_printk()s is stored; if nonzero we failed. */
++static void on_sample(void *ctx, int cpu, void *data, __u32 size)
++{
++	struct result *resp = (struct result *)data;
 +
- /*
-  * Only limited trace_printk() conversion specifiers allowed:
-- * %d %i %u %x %ld %li %lu %lx %lld %lli %llu %llx %p %s
-+ * %d %i %u %x %ld %li %lu %lx %lld %lli %llu %llx %p %pT %s
-  */
- BPF_CALL_5(bpf_trace_printk, char *, fmt, u32, fmt_size, u64, arg1,
- 	   u64, arg2, u64, arg3)
-@@ -361,8 +364,20 @@ static const struct bpf_func_proto *bpf_get_probe_write_proto(void)
- 			i++;
- 		} else if (fmt[i] == 'p' || fmt[i] == 's') {
- 			mod[fmt_cnt]++;
--			/* disallow any further format extensions */
--			if (fmt[i + 1] != 0 &&
-+			/*
-+			 * allow BTF type-based printing, and disallow any
-+			 * further format extensions.
-+			 */
-+			if (fmt[i] == 'p' && fmt[i + 1] == 'T') {
-+				int ret;
++	*(struct result *)ctx = *resp;
++}
 +
-+				ret = security_locked_down(LOCKDOWN_BPF_READ);
-+				if (unlikely(ret < 0))
-+					return ret;
-+				i++;
-+				while (isbtffmt(fmt[i]))
-+					i++;
-+			} else if (fmt[i + 1] != 0 &&
- 			    !isspace(fmt[i + 1]) &&
- 			    !ispunct(fmt[i + 1]))
- 				return -EINVAL;
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 9d1932e..ab3c86c 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -695,7 +695,12 @@ struct bpf_stack_build_id {
-  * 		to file *\/sys/kernel/debug/tracing/trace* from DebugFS, if
-  * 		available. It can take up to three additional **u64**
-  * 		arguments (as an eBPF helpers, the total number of arguments is
-- * 		limited to five).
-+ *		limited to five), and also supports %pT (BTF-based type
-+ *		printing), as long as BPF_READ lockdown is not active.
-+ *		"%pT" takes a "struct __btf_ptr *" as an argument; it
-+ *		consists of a pointer value and specified BTF type string or id
-+ *		used to select the type for display.  For more details, see
-+ *		Documentation/core-api/printk-formats.rst.
-  *
-  * 		Each time the helper is called, it appends a line to the trace.
-  * 		Lines are discarded while *\/sys/kernel/debug/tracing/trace* is
-@@ -731,10 +736,10 @@ struct bpf_stack_build_id {
-  * 		The conversion specifiers supported by *fmt* are similar, but
-  * 		more limited than for printk(). They are **%d**, **%i**,
-  * 		**%u**, **%x**, **%ld**, **%li**, **%lu**, **%lx**, **%lld**,
-- * 		**%lli**, **%llu**, **%llx**, **%p**, **%s**. No modifier (size
-- * 		of field, padding with zeroes, etc.) is available, and the
-- * 		helper will return **-EINVAL** (but print nothing) if it
-- * 		encounters an unknown specifier.
-+ *		**%lli**, **%llu**, **%llx**, **%p**, **%pT[cNx0], **%s**.
-+ *		Only %pT supports modifiers, and the helper will return
-+ *		**-EINVAL** (but print nothing) if it encouters an unknown
-+ *		specifier.
-  *
-  * 		Also, note that **bpf_trace_printk**\ () is slow, and should
-  * 		only be used for debugging purposes. For this reason, a notice
-@@ -4058,4 +4063,16 @@ struct bpf_pidns_info {
- 	__u32 pid;
- 	__u32 tgid;
- };
++void test_trace_printk_btf(void)
++{
++	struct result res = { 0 };
++	struct bpf_prog_load_attr attr = {
++		.file = "./netif_receive_skb.o",
++	};
++	struct perf_buffer_opts pb_opts = {};
++	struct bpf_program *prog = NULL;
++	struct perf_buffer *pb = NULL;
++	struct bpf_object *obj = NULL;
++	struct bpf_link *link = NULL;
++	struct bpf_map *perf_buf_map;
++	__u32 duration = 0;
++	int err, prog_fd;
 +
-+/*
-+ * struct __btf_ptr is used for %pT (typed pointer) display; the
-+ * additional type string/BTF id are used to render the pointer
-+ * data as the appropriate type.
-+ */
-+struct __btf_ptr {
-+	void *ptr;
-+	const char *type;
-+	__u32 id;
++	err = bpf_prog_load_xattr(&attr, &obj, &prog_fd);
++	if (CHECK(err, "prog_load raw tp", "err %d errno %d\n", err, errno))
++		goto close_prog;
++
++	prog = bpf_object__find_program_by_title(obj,
++						 "tp_btf/netif_receive_skb");
++	if (CHECK(!prog, "find_prog", "prog netif_receive_skb not found\n"))
++		goto close_prog;
++
++	link = bpf_program__attach_raw_tracepoint(prog, NULL);
++	if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n", PTR_ERR(link)))
++		goto close_prog;
++
++	perf_buf_map = bpf_object__find_map_by_name(obj, "perf_buf_map");
++	if (CHECK(!perf_buf_map, "find_perf_buf_map", "not found\n"))
++		goto close_prog;
++
++	/* set up perf buffer */
++	pb_opts.sample_cb = on_sample;
++	pb_opts.ctx = &res;
++	pb = perf_buffer__new(bpf_map__fd(perf_buf_map), 1, &pb_opts);
++	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
++		goto close_prog;
++
++	/* generate receive event */
++	system("ping -c 1 127.0.0.1 >/dev/null");
++
++	/* read perf buffer */
++	err = perf_buffer__poll(pb, 100);
++	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
++		goto close_prog;
++
++	/*
++	 * Make sure netif_receive_skb program was triggered
++	 * and it sent expected return values from bpf_trace_printk()s
++	 * into ring buffer.
++	 */
++	if (CHECK(res.ret <= 0,
++		  "bpf_trace_printk: got return value",
++		  "ret <= 0 %d test %d\n", res.ret, res.subtest))
++		goto close_prog;
++
++	CHECK(res.subtest != res.num_subtest, "check all subtests ran",
++	      "only ran %d of %d tests\n", res.subtest, res.num_subtest);
++
++close_prog:
++	perf_buffer__free(pb);
++	if (!IS_ERR_OR_NULL(link))
++		bpf_link__destroy(link);
++	bpf_object__close(obj);
++}
+diff --git a/tools/testing/selftests/bpf/progs/netif_receive_skb.c b/tools/testing/selftests/bpf/progs/netif_receive_skb.c
+new file mode 100644
+index 0000000..b5148df
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/netif_receive_skb.c
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020, Oracle and/or its affiliates. */
++#include <linux/bpf.h>
++#include <stdbool.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") = "GPL";
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(int));
++} perf_buf_map SEC(".maps");
++
++struct result {
++	int ret;
++	int subtest;
++	int num_subtest;
 +};
 +
- #endif /* _UAPI__LINUX_BPF_H__ */
++typedef struct {
++	int counter;
++} atomic_t;
++typedef struct refcount_struct {
++	atomic_t refs;
++} refcount_t;
++
++struct sk_buff {
++	/* field names and sizes should match to those in the kernel */
++	unsigned int len, data_len;
++	__u16 mac_len, hdr_len, queue_mapping;
++	struct net_device *dev;
++	/* order of the fields doesn't matter */
++	refcount_t users;
++	unsigned char *data;
++	char __pkt_type_offset[0];
++	char cb[48];
++};
++
++#define CHECK_PRINTK(_fmt, _p, res)					\
++	do {								\
++		char fmt[] = _fmt;					\
++		++(res)->num_subtest;					\
++		if ((res)->ret >= 0) {					\
++			++(res)->subtest;				\
++			(res)->ret = bpf_trace_printk(fmt, sizeof(fmt),	\
++						      (_p));		\
++		}							\
++	} while (0)
++
++/* TRACE_EVENT(netif_receive_skb,
++ *	TP_PROTO(struct sk_buff *skb),
++ */
++SEC("tp_btf/netif_receive_skb")
++int BPF_PROG(trace_netif_receive_skb, struct sk_buff *skb)
++{
++	char skb_type[] = "struct sk_buff";
++	struct __btf_ptr nullp = { .ptr = 0, .type = skb_type };
++	struct __btf_ptr p = { .ptr = skb, .type = skb_type };
++	struct result res = { 0, 0 };
++
++	CHECK_PRINTK("%pT\n", &p, &res);
++	CHECK_PRINTK("%pTc\n", &p, &res);
++	CHECK_PRINTK("%pTN\n", &p, &res);
++	CHECK_PRINTK("%pTx\n", &p, &res);
++	CHECK_PRINTK("%pT0\n", &p, &res);
++	CHECK_PRINTK("%pTcNx0\n", &p, &res);
++	CHECK_PRINTK("%pT\n", &nullp, &res);
++	CHECK_PRINTK("%pTc\n", &nullp, &res);
++	CHECK_PRINTK("%pTN\n", &nullp, &res);
++	CHECK_PRINTK("%pTx\n", &nullp, &res);
++	CHECK_PRINTK("%pT0\n", &nullp, &res);
++	CHECK_PRINTK("%pTcNx0\n", &nullp, &res);
++
++	bpf_perf_event_output(ctx, &perf_buf_map, BPF_F_CURRENT_CPU,
++			      &res, sizeof(res));
++
++	return 0;
++}
 -- 
 1.8.3.1
 
