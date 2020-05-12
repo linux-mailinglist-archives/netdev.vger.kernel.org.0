@@ -2,83 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 822D01CEF21
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 557561CEF16
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729231AbgELI27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 04:28:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57428 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729174AbgELI26 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 04:28:58 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 901BB207FF;
-        Tue, 12 May 2020 08:28:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589272138;
-        bh=njpDdm0ei3wLE4fag30griz3nGE2HvH4gTYqWN2cPCE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Br6Ur28N7qvreO6eMeGli0A2o5+jsl0caJg+EtNBINXVHTrmoy9FM6OFGR2SPXEqw
-         +2OkbSMvg6KumldeCuPiMNL/GMh20WB/NvI17u+Kee9ynrKK+1l5bDnVsjRLW6z3+f
-         NDaPzva8aCCkYr7aVSYKkgD7/z/sel8BNylY7fHk=
-Date:   Tue, 12 May 2020 10:27:44 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Guillaume Tucker <guillaume.tucker@collabora.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: stable/linux-4.4.y bisection: baseline.login on
- at91-sama5d4_xplained
-Message-ID: <20200512082744.GB3526567@kroah.com>
-References: <5eb8399a.1c69fb81.c5a60.8316@mx.google.com>
- <2db7e52e-86ae-7c87-1782-8c0cafcbadd8@collabora.com>
+        id S1728941AbgELI2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 04:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726067AbgELI2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 04:28:18 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5314FC061A0C
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 01:28:16 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id u6so12585419ljl.6
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 01:28:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=95GbR0TC2RxBW+8LeWrRYGNf93ycRXGQPznoeVFPxjc=;
+        b=YfkdN1kciz/KYl7ns9JAwxFgNKOP0wPqdPc0ksttDUXqoTzfw1QKp22yiiZ9wos4sM
+         cD/T2xO2XyMpnqLje9FcDcKEbtfwPmaQNsZZ1XNzfiC7zSwqXRHe7okFEm9DQaXMw3Kn
+         rIlgEHeUZQh54spRfnUN602nZsqVlZSkNlSDWTOgvsuzcz3Vu49JwfGBSJqhPbykgjhU
+         w8LGUzhqT2fz7f5n6SjJGAhrdAos8uKkxaE/Ofqlt05zf5WFDQ/wIqWttnjZ2d+ZUD3E
+         +ZgJxOUuAxhvEUW2qhIf41VgrWnKpEAVMtsgJzu03g5qJrihJhoDY3Z1iZTkfuCbTPEF
+         qZLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=95GbR0TC2RxBW+8LeWrRYGNf93ycRXGQPznoeVFPxjc=;
+        b=grpcb7Xto7YbvkQ8I+hwgqACymBCi4GWGygN3NguM6SbKADgbN3bVpCB9qp8udUUUC
+         6XlQztbMvLrVYJ1JGAbwgKso0EsQEbvWz6+00WRvRJ0M7q4MDuC7eG4XkDqCZ4OiZWYh
+         w9+uNHiOg+ItGC9rFWjL9nxpZwAZ1V+WQ7zMMWzqe2qAuuMif93JeynoqwU/rJVkeDjg
+         OMN5IrSNYPPbbgD6XWRS8Ly99j5tEGgZwFAj8BLoBh6htP2/G+0/aSF6D35WvQAbQF5Y
+         VvyFCURf5skE0cdi0LhWQCdAExDl7aYJ6ifCnxgsAE5xukByG22I0jfeLNuyKefBd/ux
+         YNeQ==
+X-Gm-Message-State: AOAM530hs+At5q+P+XdtLiK+V7RXlcHfOSQ5aYYRSsxm+vMuPyeKMW+w
+        QwWPI5wKeqpvh2zeXxs9ifChKJSZPqk=
+X-Google-Smtp-Source: ABdhPJzP7yoMA2P0CSPKne8R1Adb7IieSl92dmH9QBd5oCS/wyRf/9ihDL58+wdT1kWj7l7HqUi5Hw==
+X-Received: by 2002:a2e:b891:: with SMTP id r17mr13079793ljp.34.1589272094748;
+        Tue, 12 May 2020 01:28:14 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:61b:c4fe:68d6:9937:777b:c884? ([2a00:1fa0:61b:c4fe:68d6:9937:777b:c884])
+        by smtp.gmail.com with ESMTPSA id t16sm14599694lff.72.2020.05.12.01.28.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2020 01:28:14 -0700 (PDT)
+Subject: Re: [PATCH 1/3] net: add a CMSG_USER_DATA macro
+To:     Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200511115913.1420836-1-hch@lst.de>
+ <20200511115913.1420836-2-hch@lst.de>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <f754c4ac-db7d-6688-5582-2a5f476b0f08@cogentembedded.com>
+Date:   Tue, 12 May 2020 11:28:08 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2db7e52e-86ae-7c87-1782-8c0cafcbadd8@collabora.com>
+In-Reply-To: <20200511115913.1420836-2-hch@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 06:54:29AM +0100, Guillaume Tucker wrote:
-> Please see the bisection report below about a boot failure.
-> 
-> Reports aren't automatically sent to the public while we're
-> trialing new bisection features on kernelci.org but this one
-> looks valid.
-> 
-> It appears to be due to the fact that the network interface is
-> failing to get brought up:
-> 
-> [  114.385000] Waiting up to 10 more seconds for network.
-> [  124.355000] Sending DHCP requests ...#
-> ..#
-> .#
->  timed out!
-> [  212.355000] IP-Config: Reopening network devices...
-> [  212.365000] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
-> #
-> 
-> 
-> I guess the board would boot fine without network if it didn't
-> have ip=dhcp in the command line, so it's not strictly a kernel
-> boot failure but still an ethernet issue.
-> 
-> There wasn't any failure reported by kernelci on linux-4.9.y so
-> maybe this patch was applied by mistake on linux-4.4.y but I
-> haven't investigated enough to prove this.
+Hello!
 
-It wasn't applied "by mistake", as the commit log for this says it
-resolves an issue that was created in 2c7b49212a86 ("phy: fix the use of
-PHY_IGNORE_INTERRUPT") which was in 3.11.
+On 11.05.2020 14:59, Christoph Hellwig wrote:
 
-I'll go revert this now, as regressions are not good, perhaps some other
-change that happened between 4.5 and 4.9 in this area keeps the error
-you are seeing from happening.
+> Add a variant of CMSG_DATA that operates on user pointer to avoid
+> sparse warnings about casting to/from user pointers.  Also fix up
+> CMSG_DATA to rely on the gcc extension that allows void pointer
+> arithmetics to cut down on the amount of casts.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+[...]
+> diff --git a/net/core/scm.c b/net/core/scm.c
+> index dc6fed1f221c4..abfdc85a64c1b 100644
+> --- a/net/core/scm.c
+> +++ b/net/core/scm.c
+[...]
+> @@ -300,7 +300,7 @@ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
+>   	if (fdnum < fdmax)
+>   		fdmax = fdnum;
+>   
+> -	for (i=0, cmfptr=(__force int __user *)CMSG_DATA(cm); i<fdmax;
+> +	for (i=0, cmfptr =(int __user *)CMSG_USER_DATA(cm); i<fdmax;
 
-thanks,
+    Perhaps it's time to add missing spaces consistently, not just one that 
+you added?
 
-greg k-h
+>   	     i++, cmfptr++)
+>   	{
+>   		struct socket *sock;
+
+MBR, Sergei
