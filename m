@@ -2,139 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7188D1CF2E0
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 12:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 207A21CF31A
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 13:11:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729427AbgELKvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 06:51:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36162 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729247AbgELKvP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 06:51:15 -0400
-Received: from localhost.localdomain (unknown [151.48.155.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3B120205ED;
-        Tue, 12 May 2020 10:51:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589280675;
-        bh=IpkhdYCbj6qfQehlR88vLxW2GWnp5Cb9Bc+yoK6NChY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CA2ddsycpgRQR4CTaG36VX0Xktc3CEu9+QDFOh3Y55nRX+W/QK//g19YI3B8x4Vav
-         jjElkrwa+HmxxXJru1DEK292HC1xxwrJWr+vuD00a12LwbW7mHIx8YZWqK1YhHl0Bq
-         WnNgurQI+/Rj4/llp0jPlECWvnYDfWUtx9zQgZ00=
-Date:   Tue, 12 May 2020 12:51:09 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        davem@davemloft.net, brouer@redhat.com, daniel@iogearbox.net,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH bpf-next] samples/bpf: xdp_redirect_cpu: set MAX_CPUS
- according to NR_CPUS
-Message-ID: <20200512105109.GA79080@localhost.localdomain>
-References: <79b8dd36280e5629a5e64b89528f9d523cb7262b.1589227441.git.lorenzo@kernel.org>
- <c3fa2001-ef77-46c4-c0de-3335e7934db9@fb.com>
+        id S1729365AbgELLLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 07:11:03 -0400
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:58865 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726891AbgELLLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 07:11:03 -0400
+X-Originating-IP: 90.65.91.255
+Received: from localhost (lfbn-lyo-1-1912-bdcst.w90-65.abo.wanadoo.fr [90.65.91.255])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id CF861C0008;
+        Tue, 12 May 2020 11:10:59 +0000 (UTC)
+Date:   Tue, 12 May 2020 13:10:59 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Guillaume Tucker <guillaume.tucker@collabora.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: stable/linux-4.4.y bisection: baseline.login on
+ at91-sama5d4_xplained
+Message-ID: <20200512111059.GA34497@piout.net>
+References: <5eb8399a.1c69fb81.c5a60.8316@mx.google.com>
+ <2db7e52e-86ae-7c87-1782-8c0cafcbadd8@collabora.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="3V7upXqbjpZ4EhLz"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c3fa2001-ef77-46c4-c0de-3335e7934db9@fb.com>
+In-Reply-To: <2db7e52e-86ae-7c87-1782-8c0cafcbadd8@collabora.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---3V7upXqbjpZ4EhLz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 12/05/2020 06:54:29+0100, Guillaume Tucker wrote:
+> Please see the bisection report below about a boot failure.
+> 
+> Reports aren't automatically sent to the public while we're
+> trialing new bisection features on kernelci.org but this one
+> looks valid.
+> 
+> It appears to be due to the fact that the network interface is
+> failing to get brought up:
+> 
+> [  114.385000] Waiting up to 10 more seconds for network.
+> [  124.355000] Sending DHCP requests ...#
+> ..#
+> .#
+>  timed out!
+> [  212.355000] IP-Config: Reopening network devices...
+> [  212.365000] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+> #
+> 
+> 
+> I guess the board would boot fine without network if it didn't
+> have ip=dhcp in the command line, so it's not strictly a kernel
+> boot failure but still an ethernet issue.
+> 
 
->=20
->=20
-> On 5/11/20 1:24 PM, Lorenzo Bianconi wrote:
-> > xdp_redirect_cpu is currently failing in bpf_prog_load_xattr()
-> > allocating cpu_map map if CONFIG_NR_CPUS is less than 64 since
-> > cpu_map_alloc() requires max_entries to be less than NR_CPUS.
-> > Set cpu_map max_entries according to NR_CPUS in xdp_redirect_cpu_kern.c
-> > and get currently running cpus in xdp_redirect_cpu_user.c
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >   samples/bpf/xdp_redirect_cpu_kern.c |  2 +-
-> >   samples/bpf/xdp_redirect_cpu_user.c | 29 ++++++++++++++++-------------
-> >   2 files changed, 17 insertions(+), 14 deletions(-)
-> >=20
+I think the resolution of this issue is
+99f81afc139c6edd14d77a91ee91685a414a1c66. If this is taken, then I think
+f5aba91d7f186cba84af966a741a0346de603cd4 should also be backported.
 
-[...]
 
-> >   static void mark_cpus_unavailable(void)
-> >   {
-> > -	__u32 invalid_cpu =3D MAX_CPUS;
-> > +	__u32 invalid_cpu =3D n_cpus;
-> >   	int ret, i;
-> > -	for (i =3D 0; i < MAX_CPUS; i++) {
-> > +	for (i =3D 0; i < n_cpus; i++) {
-> >   		ret =3D bpf_map_update_elem(cpus_available_map_fd, &i,
-> >   					  &invalid_cpu, 0);
-> >   		if (ret) {
-> > @@ -688,6 +689,8 @@ int main(int argc, char **argv)
-> >   	int prog_fd;
-> >   	__u32 qsize;
-> > +	n_cpus =3D get_nprocs();
->=20
-> get_nprocs() gets the number of available cpus, not including offline cpu=
-s.
-> But gaps may exist in cpus, e.g., get_nprocs() returns 4, and cpus are
-> 0-1,4-5. map updates will miss cpus 4-5. And in this situation,
-> map_update will fail on offline cpus.
->=20
-> This sample test does not need to deal with complication of
-> cpu offlining, I think. Maybe we can get
-> 	n_cpus =3D get_nprocs();
-> 	n_cpus_conf =3D get_nprocs_conf();
-> 	if (n_cpus !=3D n_cpus_conf) {
-> 		/* message that some cpus are offline and not supported. */
-> 		return error
-> 	}
->=20
+> There wasn't any failure reported by kernelci on linux-4.9.y so
+> maybe this patch was applied by mistake on linux-4.4.y but I
+> haven't investigated enough to prove this.
+> 
+> Thanks,
+> Guillaume
+> 
+> 
+> On 10/05/2020 18:27, kernelci.org bot wrote:
+> > * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+> > * This automated bisection report was sent to you on the basis  *
+> > * that you may be involved with the breaking commit it has      *
+> > * found.  No manual investigation has been done to verify it,   *
+> > * and the root cause of the problem may be somewhere else.      *
+> > *                                                               *
+> > * If you do send a fix, please include this trailer:            *
+> > *   Reported-by: "kernelci.org bot" <bot@kernelci.org>          *
+> > *                                                               *
+> > * Hope this helps!                                              *
+> > * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+> > 
+> > stable/linux-4.4.y bisection: baseline.login on at91-sama5d4_xplained
+> > 
+> > Summary:
+> >   Start:      e157447efd85b Linux 4.4.223
+> >   Plain log:  https://storage.kernelci.org/stable/linux-4.4.y/v4.4.223/arm/multi_v7_defconfig/gcc-8/lab-baylibre/baseline-at91-sama5d4_xplained.txt
+> >   HTML log:   https://storage.kernelci.org/stable/linux-4.4.y/v4.4.223/arm/multi_v7_defconfig/gcc-8/lab-baylibre/baseline-at91-sama5d4_xplained.html
+> >   Result:     0d1951fa23ba0 net: phy: Avoid polling PHY with PHY_IGNORE_INTERRUPTS
+> > 
+> > Checks:
+> >   revert:     PASS
+> >   verify:     PASS
+> > 
+> > Parameters:
+> >   Tree:       stable
+> >   URL:        https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+> >   Branch:     linux-4.4.y
+> >   Target:     at91-sama5d4_xplained
+> >   CPU arch:   arm
+> >   Lab:        lab-baylibre
+> >   Compiler:   gcc-8
+> >   Config:     multi_v7_defconfig
+> >   Test case:  baseline.login
+> > 
+> > Breaking commit found:
+> > 
+> > -------------------------------------------------------------------------------
+> > commit 0d1951fa23ba0d35a4c5498ff28d1c5206d6fcdd
+> > Author: Florian Fainelli <f.fainelli@gmail.com>
+> > Date:   Mon Jan 18 19:33:06 2016 -0800
+> > 
+> >     net: phy: Avoid polling PHY with PHY_IGNORE_INTERRUPTS
+> >     
+> >     commit d5c3d84657db57bd23ecd58b97f1c99dd42a7b80 upstream.
+> >     
+> >     Commit 2c7b49212a86 ("phy: fix the use of PHY_IGNORE_INTERRUPT") changed
+> >     a hunk in phy_state_machine() in the PHY_RUNNING case which was not
+> >     needed. The change essentially makes the PHY library treat PHY devices
+> >     with PHY_IGNORE_INTERRUPT to keep polling for the PHY device, even
+> >     though the intent is not to do it.
+> >     
+> >     Fix this by reverting that specific hunk, which makes the PHY state
+> >     machine wait for state changes, and stay in the PHY_RUNNING state for as
+> >     long as needed.
+> >     
+> >     Fixes: 2c7b49212a86 ("phy: fix the use of PHY_IGNORE_INTERRUPT")
+> >     Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> >     Signed-off-by: David S. Miller <davem@davemloft.net>
+> >     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > 
+> > diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> > index 7d2cf015c5e76..b242bec834f4b 100644
+> > --- a/drivers/net/phy/phy.c
+> > +++ b/drivers/net/phy/phy.c
+> > @@ -912,10 +912,10 @@ void phy_state_machine(struct work_struct *work)
+> >  		phydev->adjust_link(phydev->attached_dev);
+> >  		break;
+> >  	case PHY_RUNNING:
+> > -		/* Only register a CHANGE if we are polling or ignoring
+> > -		 * interrupts and link changed since latest checking.
+> > +		/* Only register a CHANGE if we are polling and link changed
+> > +		 * since latest checking.
+> >  		 */
+> > -		if (!phy_interrupt_is_valid(phydev)) {
+> > +		if (phydev->irq == PHY_POLL) {
+> >  			old_link = phydev->link;
+> >  			err = phy_read_status(phydev);
+> >  			if (err)
+> > @@ -1015,8 +1015,13 @@ void phy_state_machine(struct work_struct *work)
+> >  	dev_dbg(&phydev->dev, "PHY state change %s -> %s\n",
+> >  		phy_state_to_str(old_state), phy_state_to_str(phydev->state));
+> >  
+> > -	queue_delayed_work(system_power_efficient_wq, &phydev->state_queue,
+> > -			   PHY_STATE_TIME * HZ);
+> > +	/* Only re-schedule a PHY state machine change if we are polling the
+> > +	 * PHY, if PHY_IGNORE_INTERRUPT is set, then we will be moving
+> > +	 * between states from phy_mac_interrupt()
+> > +	 */
+> > +	if (phydev->irq == PHY_POLL)
+> > +		queue_delayed_work(system_power_efficient_wq, &phydev->state_queue,
+> > +				   PHY_STATE_TIME * HZ);
+> >  }
+> >  
+> >  void phy_mac_interrupt(struct phy_device *phydev, int new_link)
+> > -------------------------------------------------------------------------------
+> > 
+> > 
+> > Git bisection log:
+> > 
+> > -------------------------------------------------------------------------------
+> > git bisect start
+> > # good: [b63f449e18b130fdc372b9717e72c19b83fc4876] Linux 4.4.222
+> > git bisect good b63f449e18b130fdc372b9717e72c19b83fc4876
+> > # bad: [e157447efd85bb2e6f8deaabbb62663bccd9bad2] Linux 4.4.223
+> > git bisect bad e157447efd85bb2e6f8deaabbb62663bccd9bad2
+> > # bad: [5733a9f4a3df384097c92c532aed34bc698a9acd] net: dsa: slave: fix of-node leak and phy priority
+> > git bisect bad 5733a9f4a3df384097c92c532aed34bc698a9acd
+> > # good: [1ce6993b857318a4b8c674b1bbaaf79aced34136] net/mlx5e: Fix blue flame quota logic
+> > git bisect good 1ce6993b857318a4b8c674b1bbaaf79aced34136
+> > # good: [c32532162f8ea4beed50a20cf4f9b205c75fe1b1] serial: samsung: Fix possible out of bounds access on non-DT platform
+> > git bisect good c32532162f8ea4beed50a20cf4f9b205c75fe1b1
+> > # good: [25e8aad6f491da6ae330148da09585371a3790f2] Revert "ACPI / LPSS: allow to use specific PM domain during ->probe()"
+> > git bisect good 25e8aad6f491da6ae330148da09585371a3790f2
+> > # good: [2f3e56e4b6020812350190f1cada230d790ce0e8] powerpc/tm: Fix stack pointer corruption in __tm_recheckpoint()
+> > git bisect good 2f3e56e4b6020812350190f1cada230d790ce0e8
+> > # bad: [0d1951fa23ba0d35a4c5498ff28d1c5206d6fcdd] net: phy: Avoid polling PHY with PHY_IGNORE_INTERRUPTS
+> > git bisect bad 0d1951fa23ba0d35a4c5498ff28d1c5206d6fcdd
+> > # good: [4ebef63e925e37f5de2f9da8fc86a545e4e0b945] sctp: fix the transports round robin issue when init is retransmitted
+> > git bisect good 4ebef63e925e37f5de2f9da8fc86a545e4e0b945
+> > # good: [c175435fdf50c81ca2b6576f090cba31c3489209] NFC: nci: memory leak in nci_core_conn_create()
+> > git bisect good c175435fdf50c81ca2b6576f090cba31c3489209
+> > # first bad commit: [0d1951fa23ba0d35a4c5498ff28d1c5206d6fcdd] net: phy: Avoid polling PHY with PHY_IGNORE_INTERRUPTS
+> > -------------------------------------------------------------------------------
+> > 
+> 
 
-Hi Yonghong,
-
-thanks for pointing this out. Why not just use:
-
-n_cpus =3D get_nprocs_conf()
-
-and let the user pick the right cpu id with 'c' option (since it is mandato=
-ry)?
-
-Regards,
-Lorenzo
-
-> > +
-> >   	/* Notice: choosing he queue size is very important with the
-> >   	 * ixgbe driver, because it's driver page recycling trick is
-> >   	 * dependend on pages being returned quickly.  The number of
-> > @@ -757,7 +760,7 @@ int main(int argc, char **argv)
-> >   		case 'c':
-> >   			/* Add multiple CPUs */
-> >   			add_cpu =3D strtoul(optarg, NULL, 0);
-> > -			if (add_cpu >=3D MAX_CPUS) {
-> > +			if (add_cpu >=3D n_cpus) {
-> >   				fprintf(stderr,
-> >   				"--cpu nr too large for cpumap err(%d):%s\n",
-> >   					errno, strerror(errno));
-> >=20
-
---3V7upXqbjpZ4EhLz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXrp/mgAKCRA6cBh0uS2t
-rN/DAP90B2TeM9DB/K3hrdzFOerTyi43JdbjiNm6iIrySR5FMAEAhtDL+VIt4CNd
-3IfRt6ag2dRigA8SVae39IItMa9wsAo=
-=p+oK
------END PGP SIGNATURE-----
-
---3V7upXqbjpZ4EhLz--
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
