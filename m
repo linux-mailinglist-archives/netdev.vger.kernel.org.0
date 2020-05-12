@@ -2,119 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F1ED1CF89D
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 17:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE4641CF97E
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 17:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727124AbgELPJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 11:09:41 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26499 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726168AbgELPJl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 11:09:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589296179;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0o05ftdfGi3jgvgFz4aRikpwOB4tUo1/ABEAcO3TpF8=;
-        b=SqW08O8jbIjgg8LRJ2rvhDzd7X9RHljek217hhW5fqmSLMjr1J/W3F7mJsTMZ5ExAcESZF
-        jod0+Y9KEkeK5qvkp/HGPPlgcqZin6JB/0GfoXW0K3QDhg664SrYXL8SJ8UXK353a7nkDX
-        UTuAlqineXZObqLrKF7+xvIFAjlS7e4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-471-qSGcD_pjNKyYlwhv_ukplg-1; Tue, 12 May 2020 11:09:35 -0400
-X-MC-Unique: qSGcD_pjNKyYlwhv_ukplg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 949B61841920;
-        Tue, 12 May 2020 15:09:34 +0000 (UTC)
-Received: from ovpn-115-10.ams2.redhat.com (ovpn-115-10.ams2.redhat.com [10.36.115.10])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5738D60BF1;
-        Tue, 12 May 2020 15:09:33 +0000 (UTC)
-Message-ID: <abd13fe18a4c74f5d8fbdc1508dd42818ff3bd33.camel@redhat.com>
-Subject: Re: [RFC PATCH 1/3] mptcp: add new sock flag to deal with join
- subflows
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christoph Paasch <cpaasch@apple.com>
-Date:   Tue, 12 May 2020 17:09:32 +0200
-In-Reply-To: <CANn89iLyoaduBmtVWo4bSxebGwBOQFbfYbnRAmVzCTQ3Lx-PsQ@mail.gmail.com>
-References: <cover.1589280857.git.pabeni@redhat.com>
-         <81c3f2f857c2e68e22f8e8b077410ffd2960a29f.1589280857.git.pabeni@redhat.com>
-         <CANn89iLyoaduBmtVWo4bSxebGwBOQFbfYbnRAmVzCTQ3Lx-PsQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1727882AbgELPnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 11:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726889AbgELPnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 11:43:31 -0400
+X-Greylist: delayed 1695 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 May 2020 08:43:30 PDT
+Received: from smtp.tuxdriver.com (tunnel92311-pt.tunnel.tserv13.ash1.ipv6.he.net [IPv6:2001:470:7:9c9::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F290DC061A0C
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 08:43:30 -0700 (PDT)
+Received: from uucp by smtp.tuxdriver.com with local-rmail (Exim 4.63)
+        (envelope-from <linville@tuxdriver.com>)
+        id 1jYWci-0000MI-Jz
+        for netdev@vger.kernel.org; Tue, 12 May 2020 11:15:12 -0400
+Received: from linville-x1.hq.tuxdriver.com (localhost.localdomain [127.0.0.1])
+        by linville-x1.hq.tuxdriver.com (8.15.2/8.14.6) with ESMTP id 04CFApZT623920
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 11:10:51 -0400
+Received: (from linville@localhost)
+        by linville-x1.hq.tuxdriver.com (8.15.2/8.15.2/Submit) id 04CFApTT623919
+        for netdev@vger.kernel.org; Tue, 12 May 2020 11:10:51 -0400
+Date:   Tue, 12 May 2020 11:10:51 -0400
+From:   "John W. Linville" <linville@tuxdriver.com>
+To:     netdev@vger.kernel.org
+Subject: ethtool 5.6 released
+Message-ID: <20200512151051.GC615364@tuxdriver.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+ethtool version 5.6 has been released.
 
-On Tue, 2020-05-12 at 07:46 -0700, Eric Dumazet wrote:
-> On Tue, May 12, 2020 at 7:11 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > MP_JOIN subflows must not land into the accept queue.
-> > Currently tcp_check_req() calls an mptcp specific helper
-> > to detect such scenario.
-> > 
-> > Such helper leverages the subflow context to check for
-> > MP_JOIN subflows. We need to deal also with MP JOIN
-> > failures, even when the subflow context is not available
-> > due to allocation failure.
-> > 
-> > A possible solution would be changing the syn_recv_sock()
-> > signature to allow returning a more descriptive action/
-> > error code and deal with that in tcp_check_req().
-> > 
-> > Since the above need is MPTCP specific, this patch instead
-> > uses a TCP socket hole to add an MPTCP specific flag.
-> > Such flag is used by the MPTCP syn_recv_sock() to tell
-> > tcp_check_req() how to deal with the request socket.
-> > 
-> > This change is a no-op for !MPTCP build, and makes the
-> > MPTCP code simpler. It allows also the next patch to deal
-> > correctly with MP JOIN failure.
-> > 
-> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > ---
-> >  include/linux/tcp.h      |  1 +
-> >  include/net/mptcp.h      | 17 ++++++++++-------
-> >  net/ipv4/tcp_minisocks.c |  2 +-
-> >  net/mptcp/protocol.c     |  7 -------
-> >  net/mptcp/subflow.c      |  2 ++
-> >  5 files changed, 14 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-> > index e60db06ec28d..dc12c59db41e 100644
-> > --- a/include/linux/tcp.h
-> > +++ b/include/linux/tcp.h
-> > @@ -385,6 +385,7 @@ struct tcp_sock {
-> >                            */
-> >  #if IS_ENABLED(CONFIG_MPTCP)
-> >         bool    is_mptcp;
-> > +       bool    drop_req;
-> >  #endif
-> 
-> This looks like this should only be needed in struct tcp_request_sock ?
-> 
-> Does this information need to be kept in the TCP socket after accept() ?
+Home page: https://www.kernel.org/pub/software/network/ethtool/
+Download link:
+https://www.kernel.org/pub/software/network/ethtool/ethtool-5.6.tar.xz
 
-Thank you for the feedback, indeed you are right! this should be moved
-inside tcp_request_sock. We still have 2 bytes hole there. I will keep
-the flag under a CONFIG_MPTCP conditional.
+Release notes:
 
-Would you be ok with such approach, or do you think we should look for
-some other schema (like the alternative mentioned in the cover letter)?
+	* Feature: add --debug option to control debugging messages
+	* Feature: use named initializers in command line option list
+	* Feature: netlink: add netlink related UAPI header files
+	* Feature: netlink: introduce the netlink interface
+	* Feature: netlink: message buffer and composition helpers
+	* Feature: netlink: netlink socket wrapper and helpers
+	* Feature: netlink: initialize ethtool netlink socket
+	* Feature: netlink: add support for string sets
+	* Feature: netlink: add notification monitor
+	* Feature: netlink: add bitset helpers
+	* Feature: netlink: partial netlink handler for gset (no option)
+	* Feature: netlink: support getting wake-on-lan and debugging settings
+	* Feature: netlink: add basic command line parsing helpers
+	* Feature: netlink: add bitset command line parser handlers
+	* Feature: netlink: add netlink handler for sset (-s)
+	* Feature: netlink: support tests with netlink enabled
+	* Feature: netlink: add handler for permaddr (-P)
+	* Feature: netlink: support for pretty printing netlink messages
+	* Feature: netlink: message format description for ethtool netlink
+	* Feature: netlink: message format descriptions for genetlink control
+	* Feature: netlink: message format descriptions for rtnetlink
+	* Feature: netlink: use pretty printing for ethtool netlink messages
 
-Cheers,
+John
 
-Paolo
+P.S. If you are interested in maintaining ethtool, please let me know!
+-- 
+John W. Linville		Someday the world will need a hero, and you
+linville@tuxdriver.com			might be all we have.  Be ready.
 
 
