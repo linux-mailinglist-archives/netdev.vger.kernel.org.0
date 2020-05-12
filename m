@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58EAB1CFBFE
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:23:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81CC71CFC05
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730801AbgELRVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 13:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
+        id S1730908AbgELRV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 13:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730736AbgELRVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:21:00 -0400
+        with ESMTP id S1730753AbgELRVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:21:01 -0400
 Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972C2C061A0C;
-        Tue, 12 May 2020 10:20:59 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id l18so16501814wrn.6;
-        Tue, 12 May 2020 10:20:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74D1C061A0C;
+        Tue, 12 May 2020 10:21:00 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id v12so16481448wrp.12;
+        Tue, 12 May 2020 10:21:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=BX83Lu4qLnmVXbh88hKtVkAgCVPkI30a8Y4WCAWySFU=;
-        b=d4bWzWRCNgFsI5GlBc6//qlZ04tyE9eIRmutoWNWlSz0pFS8vf7L4OZ0CsQHoIzvdu
-         bBFuWeXI291CW/P/HS6ev/V8Vl6QRt42A3SpUGjoeZnBqBNrbdnIGUH4ydkg+VuQwiB/
-         DM9B7L2oAMYMK/YnTvopibvddxMZnbJcmRbaOlFkmIebiTPZ+xeB1L5RXUKoYcIU7ijl
-         r0FAoLN/uhMhbwazrlHITVO5+xbhr+V0h/EWVn193tTKsNzGKOm3UZCc9uYxa7LDYQXF
-         qJpTG589fBosAWCxCsvOTwMuuMEjNSt/spXbudUs7tQRzxzAnoY75KKyAlf7NUjMA/yF
-         ZW4Q==
+        bh=YK4mLsRmNRlypSrcHDhcm7PUepCdu3YtLjacASOlqyI=;
+        b=C7ax77BkOnLs3cpH3RSYFY+wD7gsoXjXuBPNIt5XgKrsLTZtyd0rVQIbxPZ3JC1Zyr
+         xP/2FsxEcr1s6JKpRrCq3WbO+Irripjitg3Njl0Cf8v8+j27CAZIjToeeT3e/1MjOXwv
+         A8GodDOirj6+uO4MxeD6JkajCcsLRxpHzOvVEKfP+lOtq64OO5GKemggwDlmdLnOt1dc
+         zQNu0maYM/u7d/OUqIPNCBnTjFN1efc8GegnyrACFarh9PFtHgvEka1tA5ccD2N73vNn
+         T/TZNdwLm9S6TiSgioAkWif90GAGJEBYdv8zhAHuLvpy4q2/XVJQDena+vSotXV5PG55
+         ZMGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=BX83Lu4qLnmVXbh88hKtVkAgCVPkI30a8Y4WCAWySFU=;
-        b=isLtNrefD/z/tknXfmZzakw8G+CJHHKoGTSemy88MFzelBZdW7Rhw0u4lTTxbq7R3y
-         iJgSetSk5kJ8BeYEGYMo0rUwwU5ZPBikfDc8v5xkSg5W8fF7Ak08OoYkIE4rM7/n9YyC
-         hmPrtcsBKLGz6cLVkoQrlX7zvngsXQ/oUmOe7FBKvmVEr0NBT+YGDDLdb8AdLHjWDeU9
-         37hneluoSW0IYTTbWtju8k85OMVp3ulm2IZ9Q9W4r4IKGVRiFJ81s7u6hOXQBxJgspqM
-         NbvCWdDJN9ZDAQot491zFfEBaAwc9tA+PMOg34dYpOAZE9mT0Vpi3L6ISYJiyXSsRav4
-         roXw==
-X-Gm-Message-State: AOAM530L2w5B5CUDFr1ZuaxQwnPo9q43t5+I2Ehaq/r0OmcE+hJwUvXa
-        Zq3Zdj+Q6ZbXf4826AgqUmilODny
-X-Google-Smtp-Source: ABdhPJzjoBrPQHp2g2SvAydXOQVu9KW8f1XATKHgu12RRa9HKXoAsb2b4Cu+5fDoH31Wbwr/Jz+79w==
-X-Received: by 2002:a5d:4491:: with SMTP id j17mr3371917wrq.41.1589304058264;
-        Tue, 12 May 2020 10:20:58 -0700 (PDT)
+        bh=YK4mLsRmNRlypSrcHDhcm7PUepCdu3YtLjacASOlqyI=;
+        b=QEjVGtUr+q8jRUKbR7PcqX8+Oq7OOo9oq4lIjSEm5etQ6wgJupP6ytWVtXAnyt1KOA
+         HlCow2cNeWSEfSPnNIk9ZM2a0e2MPPrYYFoXOmjSzXmLaBZXy7bQvKoeQKBDFFpzJ7Wc
+         47O/UbWmaagGJqyGGKfGpEzz6OJ5oyrnjKwWZHjk+l+E46DdG+tHdOKjrFgQT0ciJq7m
+         yUyVWqEW8Yq/Iov5DOJgKFVcIFp5GUQ6aAtnf55FfWD2LLo9SKwzPKtGL1qSwdXwE+eW
+         mtV1+oSlDVjs228yyNiU58I9vxEJbx0vvI7eVMK/WXMxwr97AoG9YLfOuTQlsBlJfvKU
+         is/w==
+X-Gm-Message-State: AGi0PuaHVGfeDgilzvB5D7+WWzSUoOWUGl/wnt0PErpm1QHelIzpRo3b
+        kOoHPpt2Fwmra/ob2qPksNx/v3x9
+X-Google-Smtp-Source: APiQypLkMQEXQ5jReVzaSb6XBbujtK2HTdQrgO4dXfzTVZU6D5FnFP9A6Fl4DrI6ng89Rh6AT2FYCA==
+X-Received: by 2002:adf:fe90:: with SMTP id l16mr25852164wrr.222.1589304059479;
+        Tue, 12 May 2020 10:20:59 -0700 (PDT)
 Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id a15sm23999743wrw.56.2020.05.12.10.20.57
+        by smtp.gmail.com with ESMTPSA id a15sm23999743wrw.56.2020.05.12.10.20.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 10:20:57 -0700 (PDT)
+        Tue, 12 May 2020 10:20:59 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         idosch@idosch.org, rmk+kernel@armlinux.org.uk,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 net-next 12/15] net: dsa: sja1105: add packing ops for the Retagging Table
-Date:   Tue, 12 May 2020 20:20:36 +0300
-Message-Id: <20200512172039.14136-13-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 13/15] net: dsa: sja1105: implement a common frame memory partitioning function
+Date:   Tue, 12 May 2020 20:20:37 +0300
+Message-Id: <20200512172039.14136-14-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200512172039.14136-1-olteanv@gmail.com>
 References: <20200512172039.14136-1-olteanv@gmail.com>
@@ -64,13 +64,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The Retagging Table is an optional feature that allows the switch to
-match frames against a {ingress port, egress port, vid} rule and change
-their VLAN ID. The retagged frames are by default clones of the original
-ones (since the hardware-foreseen use case was to mirror traffic for
-debugging purposes and to tag it with a special VLAN for this purpose),
-but we can force the original frames to be dropped by removing the
-pre-retagging VLAN from the port membership list of the egress port.
+There are 2 different features that require some reserved frame memory
+space: VLAN retagging and virtual links. Create a central function that
+modifies the static config and ensures frame memory is never
+overcommitted.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
@@ -82,283 +79,150 @@ Changes in v2:
 None.
 
  drivers/net/dsa/sja1105/sja1105.h             |  2 +
- .../net/dsa/sja1105/sja1105_dynamic_config.c  | 33 ++++++++++
- .../net/dsa/sja1105/sja1105_static_config.c   | 62 ++++++++++++++++++-
- .../net/dsa/sja1105/sja1105_static_config.h   | 15 +++++
- 4 files changed, 110 insertions(+), 2 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c        | 37 +++++++++++++++++++
+ .../net/dsa/sja1105/sja1105_static_config.h   |  1 +
+ drivers/net/dsa/sja1105/sja1105_vl.c          | 20 +---------
+ 4 files changed, 42 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index 1dcaecab0912..1ecdfd6be4c2 100644
+index 1ecdfd6be4c2..198d2a7d7f95 100644
 --- a/drivers/net/dsa/sja1105/sja1105.h
 +++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -328,6 +328,8 @@ size_t sja1105et_l2_lookup_entry_packing(void *buf, void *entry_ptr,
- 					 enum packing_op op);
- size_t sja1105_vlan_lookup_entry_packing(void *buf, void *entry_ptr,
- 					 enum packing_op op);
-+size_t sja1105_retagging_entry_packing(void *buf, void *entry_ptr,
-+				       enum packing_op op);
- size_t sja1105pqrs_mac_config_entry_packing(void *buf, void *entry_ptr,
- 					    enum packing_op op);
- size_t sja1105pqrs_avb_params_entry_packing(void *buf, void *entry_ptr,
-diff --git a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-index bdee01811960..2a8fbd7fdedc 100644
---- a/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_dynamic_config.c
-@@ -133,6 +133,9 @@
- #define SJA1105PQRS_SIZE_AVB_PARAMS_DYN_CMD			\
- 	(SJA1105_SIZE_DYN_CMD + SJA1105PQRS_SIZE_AVB_PARAMS_ENTRY)
+@@ -244,6 +244,8 @@ enum sja1105_reset_reason {
+ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 				 enum sja1105_reset_reason reason);
  
-+#define SJA1105_SIZE_RETAGGING_DYN_CMD				\
-+	(SJA1105_SIZE_DYN_CMD + SJA1105_SIZE_RETAGGING_ENTRY)
++void sja1105_frame_memory_partitioning(struct sja1105_private *priv);
 +
- #define SJA1105_MAX_DYN_CMD_SIZE				\
- 	SJA1105PQRS_SIZE_MAC_CONFIG_DYN_CMD
- 
-@@ -525,6 +528,20 @@ sja1105pqrs_avb_params_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
- 	sja1105_packing(p, &cmd->rdwrset, 29, 29, size, op);
+ /* From sja1105_spi.c */
+ int sja1105_xfer_buf(const struct sja1105_private *priv,
+ 		     sja1105_spi_rw_mode_t rw, u64 reg_addr,
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 775a6766288e..77462219261e 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -432,6 +432,41 @@ static int sja1105_init_l2_forwarding_params(struct sja1105_private *priv)
+ 	return 0;
  }
  
-+static void
-+sja1105_retagging_cmd_packing(void *buf, struct sja1105_dyn_cmd *cmd,
-+			      enum packing_op op)
++void sja1105_frame_memory_partitioning(struct sja1105_private *priv)
 +{
-+	u8 *p = buf + SJA1105_SIZE_RETAGGING_ENTRY;
-+	const int size = SJA1105_SIZE_DYN_CMD;
++	struct sja1105_l2_forwarding_params_entry *l2_fwd_params;
++	struct sja1105_vl_forwarding_params_entry *vl_fwd_params;
++	struct sja1105_table *table;
++	int max_mem;
 +
-+	sja1105_packing(p, &cmd->valid,    31, 31, size, op);
-+	sja1105_packing(p, &cmd->errors,   30, 30, size, op);
-+	sja1105_packing(p, &cmd->valident, 29, 29, size, op);
-+	sja1105_packing(p, &cmd->rdwrset,  28, 28, size, op);
-+	sja1105_packing(p, &cmd->index,     5,  0, size, op);
-+}
-+
- #define OP_READ		BIT(0)
- #define OP_WRITE	BIT(1)
- #define OP_DEL		BIT(2)
-@@ -606,6 +623,14 @@ struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN] = {
- 		.packed_size = SJA1105ET_SIZE_GENERAL_PARAMS_DYN_CMD,
- 		.addr = 0x34,
- 	},
-+	[BLK_IDX_RETAGGING] = {
-+		.entry_packing = sja1105_retagging_entry_packing,
-+		.cmd_packing = sja1105_retagging_cmd_packing,
-+		.max_entry_count = SJA1105_MAX_RETAGGING_COUNT,
-+		.access = (OP_WRITE | OP_DEL),
-+		.packed_size = SJA1105_SIZE_RETAGGING_DYN_CMD,
-+		.addr = 0x31,
-+	},
- 	[BLK_IDX_XMII_PARAMS] = {0},
- };
- 
-@@ -692,6 +717,14 @@ struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN] = {
- 		.packed_size = SJA1105ET_SIZE_GENERAL_PARAMS_DYN_CMD,
- 		.addr = 0x34,
- 	},
-+	[BLK_IDX_RETAGGING] = {
-+		.entry_packing = sja1105_retagging_entry_packing,
-+		.cmd_packing = sja1105_retagging_cmd_packing,
-+		.max_entry_count = SJA1105_MAX_RETAGGING_COUNT,
-+		.access = (OP_READ | OP_WRITE | OP_DEL),
-+		.packed_size = SJA1105_SIZE_RETAGGING_DYN_CMD,
-+		.addr = 0x38,
-+	},
- 	[BLK_IDX_XMII_PARAMS] = {0},
- };
- 
-diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.c b/drivers/net/dsa/sja1105/sja1105_static_config.c
-index b68c9c92c248..780aca034cdc 100644
---- a/drivers/net/dsa/sja1105/sja1105_static_config.c
-+++ b/drivers/net/dsa/sja1105/sja1105_static_config.c
-@@ -541,6 +541,22 @@ static size_t sja1105_xmii_params_entry_packing(void *buf, void *entry_ptr,
- 	return size;
- }
- 
-+size_t sja1105_retagging_entry_packing(void *buf, void *entry_ptr,
-+				       enum packing_op op)
-+{
-+	struct sja1105_retagging_entry *entry = entry_ptr;
-+	const size_t size = SJA1105_SIZE_RETAGGING_ENTRY;
-+
-+	sja1105_packing(buf, &entry->egr_port,       63, 59, size, op);
-+	sja1105_packing(buf, &entry->ing_port,       58, 54, size, op);
-+	sja1105_packing(buf, &entry->vlan_ing,       53, 42, size, op);
-+	sja1105_packing(buf, &entry->vlan_egr,       41, 30, size, op);
-+	sja1105_packing(buf, &entry->do_not_learn,   29, 29, size, op);
-+	sja1105_packing(buf, &entry->use_dest_ports, 28, 28, size, op);
-+	sja1105_packing(buf, &entry->destports,      27, 23, size, op);
-+	return size;
-+}
-+
- size_t sja1105_table_header_packing(void *buf, void *entry_ptr,
- 				    enum packing_op op)
- {
-@@ -603,6 +619,7 @@ static u64 blk_id_map[BLK_IDX_MAX] = {
- 	[BLK_IDX_L2_FORWARDING_PARAMS] = BLKID_L2_FORWARDING_PARAMS,
- 	[BLK_IDX_AVB_PARAMS] = BLKID_AVB_PARAMS,
- 	[BLK_IDX_GENERAL_PARAMS] = BLKID_GENERAL_PARAMS,
-+	[BLK_IDX_RETAGGING] = BLKID_RETAGGING,
- 	[BLK_IDX_XMII_PARAMS] = BLKID_XMII_PARAMS,
- };
- 
-@@ -646,7 +663,7 @@ static_config_check_memory_size(const struct sja1105_table *tables)
- {
- 	const struct sja1105_l2_forwarding_params_entry *l2_fwd_params;
- 	const struct sja1105_vl_forwarding_params_entry *vl_fwd_params;
--	int i, mem = 0;
-+	int i, max_mem, mem = 0;
- 
- 	l2_fwd_params = tables[BLK_IDX_L2_FORWARDING_PARAMS].entries;
- 
-@@ -659,7 +676,12 @@ static_config_check_memory_size(const struct sja1105_table *tables)
- 			mem += vl_fwd_params->partspc[i];
- 	}
- 
--	if (mem > SJA1105_MAX_FRAME_MEMORY)
-+	if (tables[BLK_IDX_RETAGGING].entry_count)
++	/* VLAN retagging is implemented using a loopback port that consumes
++	 * frame buffers. That leaves less for us.
++	 */
++	if (priv->vlan_state == SJA1105_VLAN_BEST_EFFORT)
 +		max_mem = SJA1105_MAX_FRAME_MEMORY_RETAGGING;
 +	else
 +		max_mem = SJA1105_MAX_FRAME_MEMORY;
 +
-+	if (mem > max_mem)
- 		return SJA1105_OVERCOMMITTED_FRAME_MEMORY;
++	table = &priv->static_config.tables[BLK_IDX_L2_FORWARDING_PARAMS];
++	l2_fwd_params = table->entries;
++	l2_fwd_params->part_spc[0] = max_mem;
++
++	/* If we have any critical-traffic virtual links, we need to reserve
++	 * some frame buffer memory for them. At the moment, hardcode the value
++	 * at 100 blocks of 128 bytes of memory each. This leaves 829 blocks
++	 * remaining for best-effort traffic. TODO: figure out a more flexible
++	 * way to perform the frame buffer partitioning.
++	 */
++	if (!priv->static_config.tables[BLK_IDX_VL_FORWARDING].entry_count)
++		return;
++
++	table = &priv->static_config.tables[BLK_IDX_VL_FORWARDING_PARAMS];
++	vl_fwd_params = table->entries;
++
++	l2_fwd_params->part_spc[0] -= SJA1105_VL_FRAME_MEMORY;
++	vl_fwd_params->partspc[0] = SJA1105_VL_FRAME_MEMORY;
++}
++
+ static int sja1105_init_general_params(struct sja1105_private *priv)
+ {
+ 	struct sja1105_general_params_entry default_general_params = {
+@@ -2213,6 +2248,8 @@ static int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled)
+ 	l2_lookup_params = table->entries;
+ 	l2_lookup_params->shared_learn = want_tagging;
  
- 	return SJA1105_CONFIG_OK;
-@@ -881,6 +903,12 @@ struct sja1105_table_ops sja1105e_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105ET_SIZE_GENERAL_PARAMS_ENTRY,
- 		.max_entry_count = SJA1105_MAX_GENERAL_PARAMS_COUNT,
- 	},
-+	[BLK_IDX_RETAGGING] = {
-+		.packing = sja1105_retagging_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_retagging_entry),
-+		.packed_entry_size = SJA1105_SIZE_RETAGGING_ENTRY,
-+		.max_entry_count = SJA1105_MAX_RETAGGING_COUNT,
-+	},
- 	[BLK_IDX_XMII_PARAMS] = {
- 		.packing = sja1105_xmii_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_xmii_params_entry),
-@@ -993,6 +1021,12 @@ struct sja1105_table_ops sja1105t_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105ET_SIZE_GENERAL_PARAMS_ENTRY,
- 		.max_entry_count = SJA1105_MAX_GENERAL_PARAMS_COUNT,
- 	},
-+	[BLK_IDX_RETAGGING] = {
-+		.packing = sja1105_retagging_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_retagging_entry),
-+		.packed_entry_size = SJA1105_SIZE_RETAGGING_ENTRY,
-+		.max_entry_count = SJA1105_MAX_RETAGGING_COUNT,
-+	},
- 	[BLK_IDX_XMII_PARAMS] = {
- 		.packing = sja1105_xmii_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_xmii_params_entry),
-@@ -1065,6 +1099,12 @@ struct sja1105_table_ops sja1105p_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105PQRS_SIZE_GENERAL_PARAMS_ENTRY,
- 		.max_entry_count = SJA1105_MAX_GENERAL_PARAMS_COUNT,
- 	},
-+	[BLK_IDX_RETAGGING] = {
-+		.packing = sja1105_retagging_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_retagging_entry),
-+		.packed_entry_size = SJA1105_SIZE_RETAGGING_ENTRY,
-+		.max_entry_count = SJA1105_MAX_RETAGGING_COUNT,
-+	},
- 	[BLK_IDX_XMII_PARAMS] = {
- 		.packing = sja1105_xmii_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_xmii_params_entry),
-@@ -1177,6 +1217,12 @@ struct sja1105_table_ops sja1105q_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105PQRS_SIZE_GENERAL_PARAMS_ENTRY,
- 		.max_entry_count = SJA1105_MAX_GENERAL_PARAMS_COUNT,
- 	},
-+	[BLK_IDX_RETAGGING] = {
-+		.packing = sja1105_retagging_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_retagging_entry),
-+		.packed_entry_size = SJA1105_SIZE_RETAGGING_ENTRY,
-+		.max_entry_count = SJA1105_MAX_RETAGGING_COUNT,
-+	},
- 	[BLK_IDX_XMII_PARAMS] = {
- 		.packing = sja1105_xmii_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_xmii_params_entry),
-@@ -1249,6 +1295,12 @@ struct sja1105_table_ops sja1105r_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105PQRS_SIZE_GENERAL_PARAMS_ENTRY,
- 		.max_entry_count = SJA1105_MAX_GENERAL_PARAMS_COUNT,
- 	},
-+	[BLK_IDX_RETAGGING] = {
-+		.packing = sja1105_retagging_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_retagging_entry),
-+		.packed_entry_size = SJA1105_SIZE_RETAGGING_ENTRY,
-+		.max_entry_count = SJA1105_MAX_RETAGGING_COUNT,
-+	},
- 	[BLK_IDX_XMII_PARAMS] = {
- 		.packing = sja1105_xmii_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_xmii_params_entry),
-@@ -1361,6 +1413,12 @@ struct sja1105_table_ops sja1105s_table_ops[BLK_IDX_MAX] = {
- 		.packed_entry_size = SJA1105PQRS_SIZE_GENERAL_PARAMS_ENTRY,
- 		.max_entry_count = SJA1105_MAX_GENERAL_PARAMS_COUNT,
- 	},
-+	[BLK_IDX_RETAGGING] = {
-+		.packing = sja1105_retagging_entry_packing,
-+		.unpacked_entry_size = sizeof(struct sja1105_retagging_entry),
-+		.packed_entry_size = SJA1105_SIZE_RETAGGING_ENTRY,
-+		.max_entry_count = SJA1105_MAX_RETAGGING_COUNT,
-+	},
- 	[BLK_IDX_XMII_PARAMS] = {
- 		.packing = sja1105_xmii_params_entry_packing,
- 		.unpacked_entry_size = sizeof(struct sja1105_xmii_params_entry),
++	sja1105_frame_memory_partitioning(priv);
++
+ 	rc = sja1105_static_config_reload(priv, SJA1105_VLAN_FILTERING);
+ 	if (rc)
+ 		dev_err(ds->dev, "Failed to change VLAN Ethertype\n");
 diff --git a/drivers/net/dsa/sja1105/sja1105_static_config.h b/drivers/net/dsa/sja1105/sja1105_static_config.h
-index b569e3de3590..d96044d86b11 100644
+index d96044d86b11..5946847bb5b9 100644
 --- a/drivers/net/dsa/sja1105/sja1105_static_config.h
 +++ b/drivers/net/dsa/sja1105/sja1105_static_config.h
-@@ -20,6 +20,7 @@
- #define SJA1105_SIZE_VLAN_LOOKUP_ENTRY			8
- #define SJA1105_SIZE_L2_FORWARDING_ENTRY		8
- #define SJA1105_SIZE_L2_FORWARDING_PARAMS_ENTRY		12
-+#define SJA1105_SIZE_RETAGGING_ENTRY			8
- #define SJA1105_SIZE_XMII_PARAMS_ENTRY			4
- #define SJA1105_SIZE_SCHEDULE_PARAMS_ENTRY		12
- #define SJA1105_SIZE_SCHEDULE_ENTRY_POINTS_PARAMS_ENTRY	4
-@@ -54,6 +55,7 @@ enum {
- 	BLKID_L2_FORWARDING_PARAMS			= 0x0E,
- 	BLKID_AVB_PARAMS				= 0x10,
- 	BLKID_GENERAL_PARAMS				= 0x11,
-+	BLKID_RETAGGING					= 0x12,
- 	BLKID_XMII_PARAMS				= 0x4E,
- };
- 
-@@ -75,6 +77,7 @@ enum sja1105_blk_idx {
- 	BLK_IDX_L2_FORWARDING_PARAMS,
- 	BLK_IDX_AVB_PARAMS,
- 	BLK_IDX_GENERAL_PARAMS,
-+	BLK_IDX_RETAGGING,
- 	BLK_IDX_XMII_PARAMS,
- 	BLK_IDX_MAX,
- 	/* Fake block indices that are only valid for dynamic access */
-@@ -99,10 +102,12 @@ enum sja1105_blk_idx {
- #define SJA1105_MAX_L2_LOOKUP_PARAMS_COUNT		1
- #define SJA1105_MAX_L2_FORWARDING_PARAMS_COUNT		1
- #define SJA1105_MAX_GENERAL_PARAMS_COUNT		1
-+#define SJA1105_MAX_RETAGGING_COUNT			32
- #define SJA1105_MAX_XMII_PARAMS_COUNT			1
- #define SJA1105_MAX_AVB_PARAMS_COUNT			1
+@@ -108,6 +108,7 @@ enum sja1105_blk_idx {
  
  #define SJA1105_MAX_FRAME_MEMORY			929
-+#define SJA1105_MAX_FRAME_MEMORY_RETAGGING		910
+ #define SJA1105_MAX_FRAME_MEMORY_RETAGGING		910
++#define SJA1105_VL_FRAME_MEMORY				100
  
  #define SJA1105E_DEVICE_ID				0x9C00000Cull
  #define SJA1105T_DEVICE_ID				0x9E00030Eull
-@@ -273,6 +278,16 @@ struct sja1105_mac_config_entry {
- 	u64 ingress;
- };
+diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
+index 312401995b54..f37611885376 100644
+--- a/drivers/net/dsa/sja1105/sja1105_vl.c
++++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+@@ -5,7 +5,6 @@
+ #include <linux/dsa/8021q.h>
+ #include "sja1105.h"
  
-+struct sja1105_retagging_entry {
-+	u64 egr_port;
-+	u64 ing_port;
-+	u64 vlan_ing;
-+	u64 vlan_egr;
-+	u64 do_not_learn;
-+	u64 use_dest_ports;
-+	u64 destports;
-+};
+-#define SJA1105_VL_FRAME_MEMORY			100
+ #define SJA1105_SIZE_VL_STATUS			8
+ 
+ /* The switch flow classification core implements TTEthernet, which 'thinks' in
+@@ -141,8 +140,6 @@ static bool sja1105_vl_key_lower(struct sja1105_vl_lookup_entry *a,
+ static int sja1105_init_virtual_links(struct sja1105_private *priv,
+ 				      struct netlink_ext_ack *extack)
+ {
+-	struct sja1105_l2_forwarding_params_entry *l2_fwd_params;
+-	struct sja1105_vl_forwarding_params_entry *vl_fwd_params;
+ 	struct sja1105_vl_policing_entry *vl_policing;
+ 	struct sja1105_vl_forwarding_entry *vl_fwd;
+ 	struct sja1105_vl_lookup_entry *vl_lookup;
+@@ -153,10 +150,6 @@ static int sja1105_init_virtual_links(struct sja1105_private *priv,
+ 	int max_sharindx = 0;
+ 	int i, j, k;
+ 
+-	table = &priv->static_config.tables[BLK_IDX_L2_FORWARDING_PARAMS];
+-	l2_fwd_params = table->entries;
+-	l2_fwd_params->part_spc[0] = SJA1105_MAX_FRAME_MEMORY;
+-
+ 	/* Figure out the dimensioning of the problem */
+ 	list_for_each_entry(rule, &priv->flow_block.rules, list) {
+ 		if (rule->type != SJA1105_RULE_VL)
+@@ -308,17 +301,6 @@ static int sja1105_init_virtual_links(struct sja1105_private *priv,
+ 	if (!table->entries)
+ 		return -ENOMEM;
+ 	table->entry_count = 1;
+-	vl_fwd_params = table->entries;
+-
+-	/* Reserve some frame buffer memory for the critical-traffic virtual
+-	 * links (this needs to be done). At the moment, hardcode the value
+-	 * at 100 blocks of 128 bytes of memory each. This leaves 829 blocks
+-	 * remaining for best-effort traffic. TODO: figure out a more flexible
+-	 * way to perform the frame buffer partitioning.
+-	 */
+-	l2_fwd_params->part_spc[0] = SJA1105_MAX_FRAME_MEMORY -
+-				     SJA1105_VL_FRAME_MEMORY;
+-	vl_fwd_params->partspc[0] = SJA1105_VL_FRAME_MEMORY;
+ 
+ 	for (i = 0; i < num_virtual_links; i++) {
+ 		unsigned long cookie = vl_lookup[i].flow_cookie;
+@@ -342,6 +324,8 @@ static int sja1105_init_virtual_links(struct sja1105_private *priv,
+ 		}
+ 	}
+ 
++	sja1105_frame_memory_partitioning(priv);
 +
- struct sja1105_xmii_params_entry {
- 	u64 phy_mac[5];
- 	u64 xmii_mode[5];
+ 	return 0;
+ }
+ 
 -- 
 2.17.1
 
