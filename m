@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A7B11CF78A
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 16:44:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B2001CF78C
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 16:44:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730063AbgELOny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 10:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
+        id S1730200AbgELOn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 10:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726055AbgELOnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 10:43:53 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053E1C061A0C;
-        Tue, 12 May 2020 07:43:53 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id f7so6461710pfa.9;
-        Tue, 12 May 2020 07:43:53 -0700 (PDT)
+        with ESMTP id S1726055AbgELOn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 10:43:56 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DEBDC061A0C;
+        Tue, 12 May 2020 07:43:55 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id u5so3647488pgn.5;
+        Tue, 12 May 2020 07:43:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3Mb2oUtMm7jYiLxYvnfY0ZCC2nCeycjy76EysbGcipA=;
-        b=rBxQK+u1vxlu7QV6lwxL6qLyrDrrPuDpHKv6KR773YNC1tsSs/I98w/EeeX+AvueAg
-         uhpwhAOq6TXjh1xrPVISrD7/c/d29MJy8psV4lNpOBSP4CFDA/q87hWyDRM8iMMOwBWM
-         f6J/Bcn4BOOkVZQoyj/hTVi18/dO1BWVawI4p6ayw4ObFsh1jwp//UBhtVhOhM0SZbKq
-         +BTuJmXyIriOr4Tpxkr8dOKMJIc8o4lvnOXL5E1vSfNeA3cxMkuPdzT1eBJ9RwLg8Duo
-         2hi+relPJsW/K8GMkQUp6Qh43GvKpXdyY3BI2rYo0JqaQGfvkmg3o3HRdvNGLm+EX48Q
-         iYVg==
+        bh=4NPRld2zrAWuDTtveSvIS/3QdGfA5LqnVYEILeI44kY=;
+        b=eOZcUlHRJG774BRllpqy/VU/TCQhs31jhO8ZgfKzw0Cv9OXi4ZkbQOy/3T8lTxn0zq
+         l3Sg8peMrIc+qXUV1dWgZpoRSdKb/JWhWmKRzUGsKZZfU608MoR+wyWQuUyzZ/l8xVd4
+         Z7i2FizCgHba0y5xYQD/c9D2445weTU24TR0k5wyAAGVUc3GK4Jh7vLga2Rl6pQgt31/
+         ZcnbOCvq9O9r8vg1UtDBLuUF8DrbIlrSB6lZayaRFrIEEEbm36MOE5f3moBzAXE8h/LW
+         ePZSeJQyEQGFEsQma7dT+ZoDtebK3ngX1fWAzn0ShmFvNc5kNxCKaQ9crI8BmYdVtNQ2
+         JSsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3Mb2oUtMm7jYiLxYvnfY0ZCC2nCeycjy76EysbGcipA=;
-        b=evuY7B3FkccSXpIpjEJe70H+dGqrzpJWyx2b8Ba7DS2Nh4zSusj2WV4Bf6t7Dh4T2L
-         3VfIwlDCyY18GJSy7Xy+r8nfL/m+T1sM+iXmLQ/rPQVIW9DPWXWX15LNW3pWhiyYUgQ+
-         hHyaq2+/s2UQLRm3yqvezOQk7FQvrjgMi2S98jCNfxWVlnfiT56inywAgNWf0xnTzRBq
-         9+bKstt3zdok/Y3302sN+khVPas4awE3Xh8crLCziaCbHFYRnsDSTf5fYAU10Fnwi1ty
-         NnQwHWBs8CJazIyA7/7FsHLiv4qavTsW5IEiiUc9WzR6I8yDtRxuCTtKyaK7W27nYfex
-         T/wA==
-X-Gm-Message-State: AGi0PuaI0W3dvBmRVbhRXnyUGwLUo7WpevyJymSb87BJWR8cjNAUF8Pb
-        msrbjpqq8U0lUPWTCCiL4w==
-X-Google-Smtp-Source: APiQypK0CFhA60/YhJqlHzv+5GykAEM7THy5FNPLOg2qD8XmdsaBPNIraCSc2eret8i7608x5CrIVw==
-X-Received: by 2002:a63:f90a:: with SMTP id h10mr19729866pgi.57.1589294632423;
-        Tue, 12 May 2020 07:43:52 -0700 (PDT)
+        bh=4NPRld2zrAWuDTtveSvIS/3QdGfA5LqnVYEILeI44kY=;
+        b=A34hDC5ELi6vZeQRihVMNSBnEQbCV02pRCK+wLfKEruJ8X0MiN5f8HNMmBFsa7Llbr
+         UKgyrYrd2tN+E5VEaPNax4IlT8XK8B1M/eUR1MZDkapWUhu57j/Hmq17cyTFB68VI01d
+         MgQ7ygHWVoQ7QcWnSek6pQLBmviyC8gv68sx+acpEg1dLjqXS9k++xajYXFqSWzHAygS
+         7ksgyPulxtY8U7CTN0CEHYdZMRe6fuSpCxPL1h2RCN6CSLwSzEQnCmqilSmpuSPJmKm/
+         vxBlACviro5hHmo9sIq9J0oy3f86PKivn5jzs2X/Z4BqkqMjfl8qKJLTHeaSkU+VVwX8
+         GE3A==
+X-Gm-Message-State: AGi0PuY5DUDEhpbMRX7JY0KehMPZ6HnnS5C2X8ZsYp6erIKtCjwCDxdP
+        5gmBncOHPpxc3w2Q0kr7+w==
+X-Google-Smtp-Source: APiQypLUrJdGiINsEobDyaO2anl+xYBv+k1ynmGzLTbgMPeW5Vu9/gCPNTaXTILIin+mMwrcLGBwng==
+X-Received: by 2002:a63:5b1f:: with SMTP id p31mr20453090pgb.335.1589294635021;
+        Tue, 12 May 2020 07:43:55 -0700 (PDT)
 Received: from localhost.localdomain ([219.255.158.173])
-        by smtp.gmail.com with ESMTPSA id w11sm10786581pgj.4.2020.05.12.07.43.50
+        by smtp.gmail.com with ESMTPSA id w11sm10786581pgj.4.2020.05.12.07.43.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 07:43:52 -0700 (PDT)
+        Tue, 12 May 2020 07:43:54 -0700 (PDT)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH bpf-next 2/3] samples: bpf: refactor tail call user progs with libbpf
-Date:   Tue, 12 May 2020 23:43:38 +0900
-Message-Id: <20200512144339.1617069-3-danieltimlee@gmail.com>
+Subject: [PATCH bpf-next 3/3] samples: bpf: refactor kprobe, tail call kern progs map definition
+Date:   Tue, 12 May 2020 23:43:39 +0900
+Message-Id: <20200512144339.1617069-4-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200512144339.1617069-1-danieltimlee@gmail.com>
 References: <20200512144339.1617069-1-danieltimlee@gmail.com>
@@ -66,268 +66,329 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF tail call uses the BPF_MAP_TYPE_PROG_ARRAY type map for calling
-into other BPF programs and this PROG_ARRAY should be filled prior to
-use. Currently, samples with the PROG_ARRAY type MAP fill this program
-array with bpf_load. For bpf_load to fill this map, kernel BPF program
-must specify the section with specific format of <prog_type>/<array_idx>
-(e.g. SEC("socket/0"))
+Because the previous two commit replaced the bpf_load implementation of
+the user program with libbpf, the corresponding kernel program's MAP
+definition can be replaced with new BTF-defined map syntax.
 
-But by using libbpf instead of bpf_load, user program can specify which
-programs should be added to PROG_ARRAY. The advantage of this approach
-is that you can selectively add only the programs you want, rather than
-adding all of them to PROG_ARRAY, and it's much more intuitive than the
-traditional approach.
-
-This commit refactors user programs with the PROG_ARRAY type MAP with
-libbpf instead of using bpf_load.
+This commit only updates the samples which uses libbpf API for loading
+bpf program not with bpf_load.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
- samples/bpf/Makefile       |  4 +--
- samples/bpf/sockex3_user.c | 66 ++++++++++++++++++++++++-----------
- samples/bpf/tracex5_user.c | 70 +++++++++++++++++++++++++++++++++-----
- 3 files changed, 110 insertions(+), 30 deletions(-)
+ samples/bpf/sampleip_kern.c    | 12 +++++------
+ samples/bpf/sockex3_kern.c     | 36 ++++++++++++++++----------------
+ samples/bpf/trace_event_kern.c | 24 ++++++++++-----------
+ samples/bpf/tracex2_kern.c     | 24 ++++++++++-----------
+ samples/bpf/tracex3_kern.c     | 24 ++++++++++-----------
+ samples/bpf/tracex4_kern.c     | 12 +++++------
+ samples/bpf/tracex5_kern.c     | 14 ++++++-------
+ samples/bpf/tracex6_kern.c     | 38 ++++++++++++++++++----------------
+ 8 files changed, 93 insertions(+), 91 deletions(-)
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 4c91e5914329..8403e4762306 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -63,12 +63,12 @@ TRACE_HELPERS := ../../tools/testing/selftests/bpf/trace_helpers.o
- fds_example-objs := fds_example.o
- sockex1-objs := sockex1_user.o
- sockex2-objs := sockex2_user.o
--sockex3-objs := bpf_load.o sockex3_user.o
-+sockex3-objs := sockex3_user.o
- tracex1-objs := tracex1_user.o $(TRACE_HELPERS)
- tracex2-objs := tracex2_user.o
- tracex3-objs := tracex3_user.o
- tracex4-objs := tracex4_user.o
--tracex5-objs := bpf_load.o tracex5_user.o $(TRACE_HELPERS)
-+tracex5-objs := tracex5_user.o $(TRACE_HELPERS)
- tracex6-objs := tracex6_user.o
- tracex7-objs := tracex7_user.o
- test_probe_write_user-objs := bpf_load.o test_probe_write_user_user.o
-diff --git a/samples/bpf/sockex3_user.c b/samples/bpf/sockex3_user.c
-index bbb1cd0666a9..961ae9c7deb9 100644
---- a/samples/bpf/sockex3_user.c
-+++ b/samples/bpf/sockex3_user.c
-@@ -1,17 +1,15 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
- #include <assert.h>
--#include <linux/bpf.h>
- #include <bpf/bpf.h>
--#include "bpf_load.h"
-+#include <bpf/libbpf.h>
- #include "sock_example.h"
- #include <unistd.h>
- #include <arpa/inet.h>
- #include <sys/resource.h>
+diff --git a/samples/bpf/sampleip_kern.c b/samples/bpf/sampleip_kern.c
+index e504dc308371..f24806ac24e7 100644
+--- a/samples/bpf/sampleip_kern.c
++++ b/samples/bpf/sampleip_kern.c
+@@ -13,12 +13,12 @@
  
--#define PARSE_IP 3
--#define PARSE_IP_PROG_FD (prog_fd[0])
--#define PROG_ARRAY_FD (map_fd[0])
-+#define __must_check
-+#include <linux/err.h>
+ #define MAX_IPS		8192
  
- struct flow_key_record {
- 	__be32 src;
-@@ -30,31 +28,56 @@ struct pair {
+-struct bpf_map_def SEC("maps") ip_map = {
+-	.type = BPF_MAP_TYPE_HASH,
+-	.key_size = sizeof(u64),
+-	.value_size = sizeof(u32),
+-	.max_entries = MAX_IPS,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, u64);
++	__type(value, u32);
++	__uint(max_entries, MAX_IPS);
++} ip_map SEC(".maps");
  
- int main(int argc, char **argv)
+ SEC("perf_event")
+ int do_sample(struct bpf_perf_event_data *ctx)
+diff --git a/samples/bpf/sockex3_kern.c b/samples/bpf/sockex3_kern.c
+index 36d4dac23549..3304fabd636d 100644
+--- a/samples/bpf/sockex3_kern.c
++++ b/samples/bpf/sockex3_kern.c
+@@ -19,12 +19,12 @@
+ 
+ #define PROG(F) SEC("socket/"__stringify(F)) int bpf_func_##F
+ 
+-struct bpf_map_def SEC("maps") jmp_table = {
+-	.type = BPF_MAP_TYPE_PROG_ARRAY,
+-	.key_size = sizeof(u32),
+-	.value_size = sizeof(u32),
+-	.max_entries = 8,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
++	__uint(key_size, sizeof(u32));
++	__uint(value_size, sizeof(u32));
++	__uint(max_entries, 8);
++} jmp_table SEC(".maps");
+ 
+ #define PARSE_VLAN 1
+ #define PARSE_MPLS 2
+@@ -92,12 +92,12 @@ struct globals {
+ 	struct flow_key_record flow;
+ };
+ 
+-struct bpf_map_def SEC("maps") percpu_map = {
+-	.type = BPF_MAP_TYPE_ARRAY,
+-	.key_size = sizeof(__u32),
+-	.value_size = sizeof(struct globals),
+-	.max_entries = 32,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__type(key, __u32);
++	__type(value, struct globals);
++	__uint(max_entries, 32);
++} percpu_map SEC(".maps");
+ 
+ /* user poor man's per_cpu until native support is ready */
+ static struct globals *this_cpu_globals(void)
+@@ -113,12 +113,12 @@ struct pair {
+ 	__u64 bytes;
+ };
+ 
+-struct bpf_map_def SEC("maps") hash_map = {
+-	.type = BPF_MAP_TYPE_HASH,
+-	.key_size = sizeof(struct flow_key_record),
+-	.value_size = sizeof(struct pair),
+-	.max_entries = 1024,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, struct flow_key_record);
++	__type(value, struct pair);
++	__uint(max_entries, 1024);
++} hash_map SEC(".maps");
+ 
+ static void update_stats(struct __sk_buff *skb, struct globals *g)
  {
-+	int i, sock, key, fd, main_prog_fd, jmp_table_fd, hash_map_fd;
- 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
- 	char filename[256];
-+	const char *title;
- 	FILE *f;
--	int i, sock, err, id, key = PARSE_IP;
--	struct bpf_prog_info info = {};
--	uint32_t info_len = sizeof(info);
+diff --git a/samples/bpf/trace_event_kern.c b/samples/bpf/trace_event_kern.c
+index da1d69e20645..7d3c66fb3f88 100644
+--- a/samples/bpf/trace_event_kern.c
++++ b/samples/bpf/trace_event_kern.c
+@@ -18,19 +18,19 @@ struct key_t {
+ 	u32 userstack;
+ };
  
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	setrlimit(RLIMIT_MEMLOCK, &r);
+-struct bpf_map_def SEC("maps") counts = {
+-	.type = BPF_MAP_TYPE_HASH,
+-	.key_size = sizeof(struct key_t),
+-	.value_size = sizeof(u64),
+-	.max_entries = 10000,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, struct key_t);
++	__type(value, u64);
++	__uint(max_entries, 10000);
++} counts SEC(".maps");
  
--	if (load_bpf_file(filename)) {
--		printf("%s", bpf_log_buf);
--		return 1;
-+	obj = bpf_object__open_file(filename, NULL);
-+	if (IS_ERR(obj)) {
-+		fprintf(stderr, "ERROR: opening BPF object file failed\n");
-+		obj = NULL;
-+		goto cleanup;
- 	}
+-struct bpf_map_def SEC("maps") stackmap = {
+-	.type = BPF_MAP_TYPE_STACK_TRACE,
+-	.key_size = sizeof(u32),
+-	.value_size = PERF_MAX_STACK_DEPTH * sizeof(u64),
+-	.max_entries = 10000,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_STACK_TRACE);
++	__uint(key_size, sizeof(u32));
++	__uint(value_size, PERF_MAX_STACK_DEPTH * sizeof(u64));
++	__uint(max_entries, 10000);
++} stackmap SEC(".maps");
  
--	/* Test fd array lookup which returns the id of the bpf_prog */
--	err = bpf_obj_get_info_by_fd(PARSE_IP_PROG_FD, &info, &info_len);
--	assert(!err);
--	err = bpf_map_lookup_elem(PROG_ARRAY_FD, &key, &id);
--	assert(!err);
--	assert(id == info.id);
-+	/* load BPF program */
-+	if (bpf_object__load(obj)) {
-+		fprintf(stderr, "ERROR: loading BPF object file failed\n");
-+		goto cleanup;
-+	}
+ #define KERN_STACKID_FLAGS (0 | BPF_F_FAST_STACK_CMP)
+ #define USER_STACKID_FLAGS (0 | BPF_F_FAST_STACK_CMP | BPF_F_USER_STACK)
+diff --git a/samples/bpf/tracex2_kern.c b/samples/bpf/tracex2_kern.c
+index ff5d00916733..a2409abd7b87 100644
+--- a/samples/bpf/tracex2_kern.c
++++ b/samples/bpf/tracex2_kern.c
+@@ -17,12 +17,12 @@
+ #define SYSCALL
+ #endif
+ 
+-struct bpf_map_def SEC("maps") my_map = {
+-	.type = BPF_MAP_TYPE_HASH,
+-	.key_size = sizeof(long),
+-	.value_size = sizeof(long),
+-	.max_entries = 1024,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, long);
++	__type(value, long);
++	__uint(max_entries, 1024);
++} my_map SEC(".maps");
+ 
+ /* kprobe is NOT a stable ABI. If kernel internals change this bpf+kprobe
+  * example will no longer be meaningful
+@@ -76,12 +76,12 @@ struct hist_key {
+ 	u64 index;
+ };
+ 
+-struct bpf_map_def SEC("maps") my_hist_map = {
+-	.type = BPF_MAP_TYPE_PERCPU_HASH,
+-	.key_size = sizeof(struct hist_key),
+-	.value_size = sizeof(long),
+-	.max_entries = 1024,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_PERCPU_HASH);
++	__uint(key_size, sizeof(struct hist_key));
++	__uint(value_size, sizeof(long));
++	__uint(max_entries, 1024);
++} my_hist_map SEC(".maps");
+ 
+ SEC("kprobe/" SYSCALL "sys_write")
+ int bpf_prog3(struct pt_regs *ctx)
+diff --git a/samples/bpf/tracex3_kern.c b/samples/bpf/tracex3_kern.c
+index fe21c14feb8d..659613c19a82 100644
+--- a/samples/bpf/tracex3_kern.c
++++ b/samples/bpf/tracex3_kern.c
+@@ -11,12 +11,12 @@
+ #include <bpf/bpf_helpers.h>
+ #include <bpf/bpf_tracing.h>
+ 
+-struct bpf_map_def SEC("maps") my_map = {
+-	.type = BPF_MAP_TYPE_HASH,
+-	.key_size = sizeof(long),
+-	.value_size = sizeof(u64),
+-	.max_entries = 4096,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, long);
++	__type(value, u64);
++	__uint(max_entries, 4096);
++} my_map SEC(".maps");
+ 
+ /* kprobe is NOT a stable ABI. If kernel internals change this bpf+kprobe
+  * example will no longer be meaningful
+@@ -42,12 +42,12 @@ static unsigned int log2l(unsigned long long n)
+ 
+ #define SLOTS 100
+ 
+-struct bpf_map_def SEC("maps") lat_map = {
+-	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
+-	.key_size = sizeof(u32),
+-	.value_size = sizeof(u64),
+-	.max_entries = SLOTS,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
++	__uint(key_size, sizeof(u32));
++	__uint(value_size, sizeof(u64));
++	__uint(max_entries, SLOTS);
++} lat_map SEC(".maps");
+ 
+ SEC("kprobe/blk_account_io_completion")
+ int bpf_prog2(struct pt_regs *ctx)
+diff --git a/samples/bpf/tracex4_kern.c b/samples/bpf/tracex4_kern.c
+index b1bb9df88f8e..eb0f8fdd14bf 100644
+--- a/samples/bpf/tracex4_kern.c
++++ b/samples/bpf/tracex4_kern.c
+@@ -15,12 +15,12 @@ struct pair {
+ 	u64 ip;
+ };
+ 
+-struct bpf_map_def SEC("maps") my_map = {
+-	.type = BPF_MAP_TYPE_HASH,
+-	.key_size = sizeof(long),
+-	.value_size = sizeof(struct pair),
+-	.max_entries = 1000000,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, long);
++	__type(value, struct pair);
++	__uint(max_entries, 1000000);
++} my_map SEC(".maps");
+ 
+ /* kprobe is NOT a stable ABI. If kernel internals change this bpf+kprobe
+  * example will no longer be meaningful
+diff --git a/samples/bpf/tracex5_kern.c b/samples/bpf/tracex5_kern.c
+index 481790fde864..32b49e8ab6bd 100644
+--- a/samples/bpf/tracex5_kern.c
++++ b/samples/bpf/tracex5_kern.c
+@@ -15,16 +15,16 @@
+ 
+ #define PROG(F) SEC("kprobe/"__stringify(F)) int bpf_func_##F
+ 
+-struct bpf_map_def SEC("maps") progs = {
+-	.type = BPF_MAP_TYPE_PROG_ARRAY,
+-	.key_size = sizeof(u32),
+-	.value_size = sizeof(u32),
++struct {
++	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
++	__uint(key_size, sizeof(u32));
++	__uint(value_size, sizeof(u32));
+ #ifdef __mips__
+-	.max_entries = 6000, /* MIPS n64 syscalls start at 5000 */
++	__uint(max_entries, 6000); /* MIPS n64 syscalls start at 5000 */
+ #else
+-	.max_entries = 1024,
++	__uint(max_entries, 1024);
+ #endif
+-};
++} progs SEC(".maps");
+ 
+ SEC("kprobe/__seccomp_filter")
+ int bpf_prog1(struct pt_regs *ctx)
+diff --git a/samples/bpf/tracex6_kern.c b/samples/bpf/tracex6_kern.c
+index 96c234efa852..acad5712d8b4 100644
+--- a/samples/bpf/tracex6_kern.c
++++ b/samples/bpf/tracex6_kern.c
+@@ -3,24 +3,26 @@
+ #include <uapi/linux/bpf.h>
+ #include <bpf/bpf_helpers.h>
+ 
+-struct bpf_map_def SEC("maps") counters = {
+-	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
+-	.key_size = sizeof(int),
+-	.value_size = sizeof(u32),
+-	.max_entries = 64,
+-};
+-struct bpf_map_def SEC("maps") values = {
+-	.type = BPF_MAP_TYPE_HASH,
+-	.key_size = sizeof(int),
+-	.value_size = sizeof(u64),
+-	.max_entries = 64,
+-};
+-struct bpf_map_def SEC("maps") values2 = {
+-	.type = BPF_MAP_TYPE_HASH,
+-	.key_size = sizeof(int),
+-	.value_size = sizeof(struct bpf_perf_event_value),
+-	.max_entries = 64,
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(u32));
++	__uint(max_entries, 64);
++} counters SEC(".maps");
 +
-+	jmp_table_fd = bpf_object__find_map_fd_by_name(obj, "jmp_table");
-+	hash_map_fd = bpf_object__find_map_fd_by_name(obj, "hash_map");
-+	if (jmp_table_fd < 0 || hash_map_fd < 0) {
-+		fprintf(stderr, "ERROR: finding a map in obj file failed\n");
-+		goto cleanup;
-+	}
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, int);
++	__type(value, u64);
++	__uint(max_entries, 64);
++} values SEC(".maps");
 +
-+	bpf_object__for_each_program(prog, obj) {
-+		fd = bpf_program__fd(prog);
-+
-+		title = bpf_program__title(prog, false);
-+		if (sscanf(title, "socket/%d", &key) != 1) {
-+			fprintf(stderr, "ERROR: finding prog failed\n");
-+			goto cleanup;
-+		}
-+
-+		if (key == 0)
-+			main_prog_fd = fd;
-+		else
-+			bpf_map_update_elem(jmp_table_fd, &key, &fd, BPF_ANY);
-+	}
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, int);
++	__type(value, struct bpf_perf_event_value);
++	__uint(max_entries, 64);
++} values2 SEC(".maps");
  
- 	sock = open_raw_sock("lo");
- 
--	assert(setsockopt(sock, SOL_SOCKET, SO_ATTACH_BPF, &prog_fd[4],
-+	/* attach BPF program to socket */
-+	assert(setsockopt(sock, SOL_SOCKET, SO_ATTACH_BPF, &main_prog_fd,
- 			  sizeof(__u32)) == 0);
- 
- 	if (argc > 1)
-@@ -69,8 +92,8 @@ int main(int argc, char **argv)
- 
- 		sleep(1);
- 		printf("IP     src.port -> dst.port               bytes      packets\n");
--		while (bpf_map_get_next_key(map_fd[2], &key, &next_key) == 0) {
--			bpf_map_lookup_elem(map_fd[2], &next_key, &value);
-+		while (bpf_map_get_next_key(hash_map_fd, &key, &next_key) == 0) {
-+			bpf_map_lookup_elem(hash_map_fd, &next_key, &value);
- 			printf("%s.%05d -> %s.%05d %12lld %12lld\n",
- 			       inet_ntoa((struct in_addr){htonl(next_key.src)}),
- 			       next_key.port16[0],
-@@ -80,5 +103,8 @@ int main(int argc, char **argv)
- 			key = next_key;
- 		}
- 	}
-+
-+cleanup:
-+	bpf_object__close(obj);
- 	return 0;
- }
-diff --git a/samples/bpf/tracex5_user.c b/samples/bpf/tracex5_user.c
-index c2317b39e0d2..a88b234fac32 100644
---- a/samples/bpf/tracex5_user.c
-+++ b/samples/bpf/tracex5_user.c
-@@ -1,15 +1,24 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <stdio.h>
--#include <linux/bpf.h>
-+#include <stdlib.h>
- #include <unistd.h>
- #include <linux/filter.h>
- #include <linux/seccomp.h>
- #include <sys/prctl.h>
- #include <bpf/bpf.h>
--#include "bpf_load.h"
-+#include <bpf/libbpf.h>
- #include <sys/resource.h>
- #include "trace_helpers.h"
- 
-+#define __must_check
-+#include <linux/err.h>
-+
-+#ifdef __mips__
-+#define	MAX_ENTRIES  6000 /* MIPS n64 syscalls start at 5000 */
-+#else
-+#define	MAX_ENTRIES  1024
-+#endif
-+
- /* install fake seccomp program to enable seccomp code path inside the kernel,
-  * so that our kprobe attached to seccomp_phase1() can be triggered
-  */
-@@ -28,16 +37,58 @@ static void install_accept_all_seccomp(void)
- 
- int main(int ac, char **argv)
- {
--	FILE *f;
--	char filename[256];
- 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
-+	struct bpf_link *link = NULL;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	int key, fd, progs_fd;
-+	char filename[256];
-+	const char *title;
-+	FILE *f;
- 
--	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	setrlimit(RLIMIT_MEMLOCK, &r);
- 
--	if (load_bpf_file(filename)) {
--		printf("%s", bpf_log_buf);
--		return 1;
-+	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-+	obj = bpf_object__open_file(filename, NULL);
-+	if (IS_ERR(obj)) {
-+		fprintf(stderr, "ERROR: opening BPF object file failed\n");
-+		obj = NULL;
-+		goto cleanup;
-+	}
-+
-+	prog = bpf_object__find_program_by_name(obj, "bpf_prog1");
-+	if (!prog) {
-+		printf("finding a prog in obj file failed\n");
-+		goto cleanup;
-+	}
-+
-+	/* load BPF program */
-+	if (bpf_object__load(obj)) {
-+		fprintf(stderr, "ERROR: loading BPF object file failed\n");
-+		goto cleanup;
-+	}
-+
-+	link = bpf_program__attach(prog);
-+	if (IS_ERR(link)) {
-+		fprintf(stderr, "ERROR: bpf_program__attach failed\n");
-+		link = NULL;
-+		goto cleanup;
-+	}
-+
-+	progs_fd = bpf_object__find_map_fd_by_name(obj, "progs");
-+	if (progs_fd < 0) {
-+		fprintf(stderr, "ERROR: finding a map in obj file failed\n");
-+		goto cleanup;
-+	}
-+
-+	bpf_object__for_each_program(prog, obj) {
-+		title = bpf_program__title(prog, false);
-+		/* register only syscalls to PROG_ARRAY */
-+		if (sscanf(title, "kprobe/%d", &key) != 1)
-+			continue;
-+
-+		fd = bpf_program__fd(prog);
-+		bpf_map_update_elem(progs_fd, &key, &fd, BPF_ANY);
- 	}
- 
- 	install_accept_all_seccomp();
-@@ -47,5 +98,8 @@ int main(int ac, char **argv)
- 
- 	read_trace_pipe();
- 
-+cleanup:
-+	bpf_link__destroy(link);
-+	bpf_object__close(obj);
- 	return 0;
- }
+ SEC("kprobe/htab_map_get_next_key")
+ int bpf_prog1(struct pt_regs *ctx)
 -- 
 2.25.1
 
