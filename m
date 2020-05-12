@@ -2,50 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C981CFDDC
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 20:55:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA8C81CFDFB
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 21:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730962AbgELSzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 14:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725554AbgELSzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 14:55:19 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A95C061A0C;
-        Tue, 12 May 2020 11:55:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=DuQnObfma1WkHbZTabF7H6jt3JFEZVYaxX/fV7nd448=; b=axN1tHeYZOvpIpOkUd9+uCAo6
-        qPudqbtLx7aB8HRwCO1SUYvxdvgSs13lLUn73AP/d4yPNbDnNxhAzT8Gxluo3LQwl4yEzEUeNJHjc
-        c4QPOo4TThM90ylJhfmyIEMullmaS2E2x9waVkDBwZzi21sh2msQQnMkdvk/aLEDS5pSXRXL4jgjR
-        5taA7oIzbvUBgWr/89+vLjOdC0Ho0PloE0E1Oxjx6ofqcwnb4Qz0NXUE6X9zXU7HH1WOQgNN1jIfZ
-        SHOjKDnp7byR+fp5rtU0Wb/+Fy8JMDOQhRJ0ZUGOJVsRAodVINVY6pF2Hx5Zgshgbx0TRaDJpJ4gP
-        JnoAUeCIg==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:57156)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jYa3Y-0002OC-Vh; Tue, 12 May 2020 19:55:09 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jYa3T-0006yT-FF; Tue, 12 May 2020 19:55:03 +0100
-Date:   Tue, 12 May 2020 19:55:03 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Doug Berger <opendmb@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        id S1730899AbgELTI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 15:08:59 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34620 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730610AbgELTI7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 15:08:59 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 6683FAF9F;
+        Tue, 12 May 2020 19:08:59 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id E7954604F3; Tue, 12 May 2020 21:08:55 +0200 (CEST)
+Date:   Tue, 12 May 2020 21:08:55 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Doug Berger <opendmb@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Russell King <linux@armlinux.org.uk>,
+        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH net-next 1/4] net: ethernet: validate pause autoneg
  setting
-Message-ID: <20200512185503.GD1551@shell.armlinux.org.uk>
+Message-ID: <20200512190855.GB9071@lion.mk-sys.cz>
 References: <1589243050-18217-1-git-send-email-opendmb@gmail.com>
  <1589243050-18217-2-git-send-email-opendmb@gmail.com>
  <20200512004714.GD409897@lunn.ch>
@@ -61,6 +44,23 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, May 12, 2020 at 11:31:39AM -0700, Doug Berger wrote:
+> On 5/11/2020 5:47 PM, Andrew Lunn wrote:
+> > On Mon, May 11, 2020 at 05:24:07PM -0700, Doug Berger wrote:
+> >> A comment in uapi/linux/ethtool.h states "Drivers should reject a
+> >> non-zero setting of @autoneg when autoneogotiation is disabled (or
+> >> not supported) for the link".
+> >>
+> >> That check should be added to phy_validate_pause() to consolidate
+> >> the code where possible.
+> >>
+> >> Fixes: 22b7d29926b5 ("net: ethernet: Add helper to determine if pause configuration is supported")
+> > 
+> > Hi Doug
+> > 
+> > If this is a real fix, please submit this to net, not net-next.
+> > 
+> >    Andrew
+> > 
 > This was intended as a fix, but I thought it would be better to keep it
 > as part of this set for context and since net-next is currently open.
 > 
@@ -85,47 +85,24 @@ On Tue, May 12, 2020 at 11:31:39AM -0700, Doug Berger wrote:
 > Because, the get read pause autoneg as enabled and only the tx_pause
 > member of the structure was updated.
 
-This looks like the same argument I've been having with Heiner over
-the EEE interface, except there's a difference here.
+This would be indeed unfortunate. We could use extack to make the error
+message easier to understand but the real problem IMHO is that
+ethtool_ops::get_pauseparam() returns value which is rejected by
+ethtool_ops::set_pauseparam(). This is something we should avoid.
 
-# ethtool -A eth0 autoneg on
-# ethtool -s eth0 autoneg off speed 100 duplex full
+If we really wanted to reject ethtool_pauseparam::autoneg on when
+general autonegotiation is off, we would have to disable pause
+autonegotiation whenever general autonegotiation is disabled. I don't
+like that idea, however, as that would mean that
 
-After those two commands, what is the state of pause mode?  The answer
-is, it's disabled.
+  ethtool -s dev autoneg off ...
+  ethtool -s dev autoneg on ...
 
-# ethtool -A eth0 autoneg off rx on tx on
+would reset the setting of pause autonegotiation.
 
-is perfectly acceptable, as we are forcing pause modes at the local
-end of the link.
+Therefore I believe the comment should be rather replaced by a warning
+that even if ethtool_pauseparam::autoneg is enabled, pause
+autonegotiation is only active if general autonegotiation is also
+enabled.
 
-# ethtool -A eth0 autoneg on
-
-Now, the question is whether that should be allowed or not - but this
-is merely restoring the "pause" settings that were in effect prior
-to the previous command.  It does not enable pause negotiation,
-because autoneg as a whole is disabled, but it _allows_ pause
-negotiation to occur when autoneg is enabled at some point in the
-future.
-
-Also, allowing "ethtool -A eth0 autoneg on" when "ethtool -s eth0
-autoneg off" means you can configure the negotiation parameters
-_before_ triggering a negotiation cycle on the link.  In other words,
-it would avoid:
-
-# ethtool -s eth0 autoneg on
-# # Link renegotiates
-# ethtool -A eth0 autoneg on
-# # Link renegotiates a second time
-
-and it also means that if stuff has already been scripted to avoid
-this, nothing breaks.
-
-If we start rejecting ethtool -A because autoneg is disabled, then
-things get difficult to configure - we would need ethtool documentation
-to state that autoneg must be enabled before configuration of pause
-and EEE can be done.  IMHO, that hurts usability, and adds confusion.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Michal
