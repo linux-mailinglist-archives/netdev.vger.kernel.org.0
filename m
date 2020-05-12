@@ -2,116 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 047521CEC30
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 06:52:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5F781CEC48
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 07:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725950AbgELEwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 00:52:03 -0400
-Received: from mo-csw-fb1514.securemx.jp ([210.130.202.170]:40796 "EHLO
-        mo-csw-fb.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbgELEwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 00:52:03 -0400
-X-Greylist: delayed 469 seconds by postgrey-1.27 at vger.kernel.org; Tue, 12 May 2020 00:52:02 EDT
-Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1514) id 04C4iF5O024609; Tue, 12 May 2020 13:44:15 +0900
-Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 04C4i5Jc015176; Tue, 12 May 2020 13:44:05 +0900
-X-Iguazu-Qid: 34trJzXMW4Zrve7CWg
-X-Iguazu-QSIG: v=2; s=0; t=1589258645; q=34trJzXMW4Zrve7CWg; m=Yw9vRq7HtTeBSs7yyuQQOX8SwRDmXNQJ75QIYgWJHeo=
-Received: from imx2.toshiba.co.jp (imx2.toshiba.co.jp [106.186.93.51])
-        by relay.securemx.jp (mx-mr1510) id 04C4i3A3033009;
-        Tue, 12 May 2020 13:44:04 +0900
-Received: from enc01.localdomain ([106.186.93.100])
-        by imx2.toshiba.co.jp  with ESMTP id 04C4i3I6023533;
-        Tue, 12 May 2020 13:44:03 +0900 (JST)
-Received: from hop001.toshiba.co.jp ([133.199.164.63])
-        by enc01.localdomain  with ESMTP id 04C4i39S023080;
-        Tue, 12 May 2020 13:44:03 +0900
-From:   Punit Agrawal <punit1.agrawal@toshiba.co.jp>
-To:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Cc:     daniel.sangorrin@toshiba.co.jp,
-        Punit Agrawal <punit1.agrawal@toshiba.co.jp>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: [RFC] e1000e: Relax condition to trigger reset for ME workaround
-Date:   Tue, 12 May 2020 13:43:47 +0900
-X-TSB-HOP: ON
-Message-Id: <20200512044347.3810257-1-punit1.agrawal@toshiba.co.jp>
-X-Mailer: git-send-email 2.26.2
+        id S1728606AbgELFG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 01:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725814AbgELFG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 01:06:27 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069F5C061A0C;
+        Mon, 11 May 2020 22:06:25 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id t16so4863903plo.7;
+        Mon, 11 May 2020 22:06:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TuFwHRptP2jx0mxGuLs4rYfZbAlEVBTR8uJy3i2eUzA=;
+        b=mv1RFNN1DSCilavRnZQAhady427j3CVcCenk3mBQgCkNz8VbqqhDgoWvYIBJSbDBea
+         EvHCIRnnzwAIlHX5gIOG3bK7sUb6hHeDgXRrUrpyIDS5Ko+M+vrk/mNRqb/dzuVymkHL
+         Jt50jXWIRqaSrv9EVQebLW1/YoF5tXmRlyXNkzZVniwnJDcQBMt2A1F1OdL8kmG4JbF1
+         88A4BkeW6V67xZND0vCYXBR8ajSF13j+4HwDdF4Y3U80D7IEW7CHt914MJ2IzOI6f3hi
+         VMybEpxTo+Hu/ZQ0dxUnUYFfJxLXiiBg8sw3QjQ0kEKRY/7OhjUefrsa7lWMVH4tPKnr
+         aYmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TuFwHRptP2jx0mxGuLs4rYfZbAlEVBTR8uJy3i2eUzA=;
+        b=kjTD+qh/wo0PIC0Lzt2VpGdoMAMl7TKpBZIxaxn2+yc47SIoaSSZ0O4Vq+rYy6Uy75
+         nwACog+0v6fXMk/v2btfU48K0NjqyZY2cUQkqMIIgTmjIPjwo0b0kisdpICZSKrWYumW
+         5s4Wq+7xI+KJCLhUv3lvZxt2avuSIK4pTZ96VEbn545mcjhJ1ZxAkiI+r9gjnth35+IT
+         l5DHnDsdunp3g4nIdfwBbrVduOwMfDKEcc5BVtxzHZkUz5G67MqxJao+sli6NssJB255
+         GwRdptG8lNEJLvGaZlwPSG/wDYTTVDs+IIMP0uVT6aEkNnaYr0J83FogxUN1cC1kfxxn
+         iF6g==
+X-Gm-Message-State: AGi0PuZKAmi+QC18x5pzZMuCn5SdzwWq7rGXzIT/PQ5oXAKsTBGOWwMQ
+        ae7RMc47oYxJqF+LEBIG3A==
+X-Google-Smtp-Source: APiQypLJnFoYCp0H0Yhv8vaiQI3bTHwL/VtNXvGeqW5PDvBFLLVcrwBds2wgvhy1P7W1CxfsYEGNCA==
+X-Received: by 2002:a17:90a:589:: with SMTP id i9mr25748522pji.156.1589259985314;
+        Mon, 11 May 2020 22:06:25 -0700 (PDT)
+Received: from madhuparna-HP-Notebook ([2402:3a80:cf2:a0bc:89fb:f860:f992:54ab])
+        by smtp.gmail.com with ESMTPSA id b9sm10616950pfp.12.2020.05.11.22.06.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 11 May 2020 22:06:24 -0700 (PDT)
+From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
+Date:   Tue, 12 May 2020 10:36:16 +0530
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        Qian Cai <cai@lca.pw>, Amol Grover <frextrite@gmail.com>,
+        syzbot <syzbot+761cff389b454aa387d2@syzkaller.appspotmail.com>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Dmitry Vyukov <dvyukov@google.com>
+Subject: Re: linux-next boot error: WARNING: suspicious RCU usage in
+ ip6mr_get_table
+Message-ID: <20200512050616.GA9585@madhuparna-HP-Notebook>
+References: <00000000000003dc8f05a50b798e@google.com>
+ <CACT4Y+bzRtZdLSzHTp-kJZo4Qg7QctXNVEY9=kbAzfMck9XxAA@mail.gmail.com>
+ <DB6FF2E0-4605-40D1-B368-7D813518F6F7@lca.pw>
+ <20200507232402.GB2103@madhuparna-HP-Notebook>
+ <20200512112847.3b15d182@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200512112847.3b15d182@canb.auug.org.au>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's an error if the value of the RX/TX tail descriptor does not match
-what was written. The error condition is true regardless the duration
-of the interference from ME. But the code only performs the reset if
-E1000_ICH_FWSM_PCIM2PCI_COUNT (2000) iterations of 50us delay have
-transpired. The extra condition can lead to inconsistency between the
-state of hardware as expected by the driver.
+On Tue, May 12, 2020 at 11:28:47AM +1000, Stephen Rothwell wrote:
+> Hi all,
+> 
+> On Fri, 8 May 2020 04:54:02 +0530 Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com> wrote:
+> >
+> > On Thu, May 07, 2020 at 08:50:55AM -0400, Qian Cai wrote:
+> > > 
+> > >   
+> > > > On May 7, 2020, at 5:32 AM, Dmitry Vyukov <dvyukov@google.com> wrote:
+> > > > 
+> > > > On Thu, May 7, 2020 at 11:26 AM syzbot
+> > > > <syzbot+761cff389b454aa387d2@syzkaller.appspotmail.com> wrote:  
+> > > >> 
+> > > >> Hello,
+> > > >> 
+> > > >> syzbot found the following crash on:
+> > > >> 
+> > > >> HEAD commit:    6b43f715 Add linux-next specific files for 20200507
+> > > >> git tree:       linux-next
+> > > >> console output: https://syzkaller.appspot.com/x/log.txt?x=16f64370100000
+> > > >> kernel config:  https://syzkaller.appspot.com/x/.config?x=ef9b7a80b923f328
+> > > >> dashboard link: https://syzkaller.appspot.com/bug?extid=761cff389b454aa387d2
+> > > >> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > >> 
+> > > >> Unfortunately, I don't have any reproducer for this crash yet.
+> > > >> 
+> > > >> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > >> Reported-by: syzbot+761cff389b454aa387d2@syzkaller.appspotmail.com  
+> > > > 
+> > > > 
+> > > > +linux-next for linux-next boot breakage  
+> > > 
+> > > Amol, Madhuparna, Is either of you still working on this?
+> > >   
+> > > >> =============================
+> > > >> WARNING: suspicious RCU usage
+> > > >> 5.7.0-rc4-next-20200507-syzkaller #0 Not tainted
+> > > >> -----------------------------
+> > > >> net/ipv6/ip6mr.c:124 RCU-list traversed in non-reader section!!
+> > > >>  
+> > I had some doubt in this one, I have already mailed the maintainers,
+> > waiting for their reply.
+> 
+> This is blocking syzbot testing of linux-next ... are we getting
+> anywhere?  Will a patch similar to the ipmr.c one help here?
+>
+Hi Stephen,
 
-Fix this by dropping the check for number of delay iterations.
+There are some discussions going on about the ipmr.c patch, I guess even
+ip6mr can be fixed in a similar way. Let me still confirm once.
 
-Signed-off-by: Punit Agrawal <punit1.agrawal@toshiba.co.jp>
-Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: intel-wired-lan@lists.osuosl.org
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
-Hi,
+Thank you,
+Mahuparna
 
-The issue was noticed through code inspection while backporting the
-workaround for TDT corruption. Sending it out as an RFC as I am not
-familiar with the hardware internals of the e1000e.
+> -- 
+> Cheers,
+> Stephen Rothwell
 
-Another unresolved question is the inherent racy nature of the
-workaround - the ME could block access again after releasing the
-device (i.e., BIT(E1000_ICH_FWSM_PCIM2PCI) clear) but before the
-driver performs the write. Has this not been a problem?
-
-Any feedback on the patch or the more information on the issues
-appreciated.
-
-Thanks,
-Punit
-
- drivers/net/ethernet/intel/e1000e/netdev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 177c6da80c57..5ed4d7ed35b3 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -607,11 +607,11 @@ static void e1000e_update_rdt_wa(struct e1000_ring *rx_ring, unsigned int i)
- {
- 	struct e1000_adapter *adapter = rx_ring->adapter;
- 	struct e1000_hw *hw = &adapter->hw;
--	s32 ret_val = __ew32_prepare(hw);
- 
-+	__ew32_prepare(hw);
- 	writel(i, rx_ring->tail);
- 
--	if (unlikely(!ret_val && (i != readl(rx_ring->tail)))) {
-+	if (unlikely(i != readl(rx_ring->tail))) {
- 		u32 rctl = er32(RCTL);
- 
- 		ew32(RCTL, rctl & ~E1000_RCTL_EN);
-@@ -624,11 +624,11 @@ static void e1000e_update_tdt_wa(struct e1000_ring *tx_ring, unsigned int i)
- {
- 	struct e1000_adapter *adapter = tx_ring->adapter;
- 	struct e1000_hw *hw = &adapter->hw;
--	s32 ret_val = __ew32_prepare(hw);
- 
-+	__ew32_prepare(hw);
- 	writel(i, tx_ring->tail);
- 
--	if (unlikely(!ret_val && (i != readl(tx_ring->tail)))) {
-+	if (unlikely(i != readl(tx_ring->tail))) {
- 		u32 tctl = er32(TCTL);
- 
- 		ew32(TCTL, tctl & ~E1000_TCTL_EN);
--- 
-2.26.2
 
