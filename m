@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 048951CFE9D
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 21:47:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED2D51CFEA1
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 21:47:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731064AbgELTrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 15:47:06 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:49536 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725938AbgELTrF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 15:47:05 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 04CJgFSs007940
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 12:47:04 -0700
+        id S1731115AbgELTrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 15:47:09 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58216 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730929AbgELTrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 15:47:08 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04CJjDqM028077
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 12:47:05 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=o2eOq6zTVUFAZHwnnUAVzjeidF+TGCxJlYR/wc1Q+y0=;
- b=GNew9T5IrMr5CHMfL27HYOzklq1RIrrGve33Hrgy1qk46dgF5IcPT8j5c9FSf5/z+XsP
- dYiYXOU2cGsadnm6Y3g1Raj1ZdYQG+wF3KCO7yfkzP5vFOsVhP5QrgD/bmLTLtrcfoVC
- VeIp6NoLaRW4GJ1yMF9132YD8XDeVYqzJmI= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 3100vygg4q-3
+ content-type : content-transfer-encoding; s=facebook;
+ bh=kQFvynCzBvbxpssMw8YEwM6sMBY6Pp0nKrZfGpvi5qk=;
+ b=bu8PnFEa5D8I2zQO6GUyb+UHt6YB1uxxlDJSh4mymDq3CnkbBjtmhbB/eRxIE9kHzI0U
+ dwtW+rSzvJXxDbckNTR1i6EoE903124Kx37ePwU4RQZtZqozsMAociZTbf42k0ehWpHH
+ f7vh/0rCHRmBHlNP+6VyEPtIl6ISE8gJEfI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3100x5rfec-8
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 12:47:04 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 12:47:05 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1847.3; Tue, 12 May 2020 12:47:03 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 4EE8A2EC317E; Tue, 12 May 2020 12:46:58 -0700 (PDT)
+        id 8C18A2EC317E; Tue, 12 May 2020 12:47:00 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -39,253 +39,800 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 1/4] selftests/bpf: extract parse_num_list into generic testing_helpers.c
-Date:   Tue, 12 May 2020 12:24:42 -0700
-Message-ID: <20200512192445.2351848-2-andriin@fb.com>
+Subject: [PATCH v3 bpf-next 2/4] selftests/bpf: add benchmark runner infrastructure
+Date:   Tue, 12 May 2020 12:24:43 -0700
+Message-ID: <20200512192445.2351848-3-andriin@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200512192445.2351848-1-andriin@fb.com>
 References: <20200512192445.2351848-1-andriin@fb.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
-Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
  definitions=2020-05-12_07:2020-05-11,2020-05-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- bulkscore=0 clxscore=1015 mlxscore=0 malwarescore=0 phishscore=0
- spamscore=0 cotscore=-2147483648 priorityscore=1501 suspectscore=25
- mlxlogscore=999 lowpriorityscore=0 adultscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005120149
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ mlxlogscore=999 spamscore=0 clxscore=1015 cotscore=-2147483648
+ malwarescore=0 impostorscore=0 bulkscore=0 adultscore=0 priorityscore=1501
+ phishscore=0 mlxscore=0 suspectscore=9 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005120149
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add testing_helpers.c, which will contain generic helpers for test runner=
-s and
-tests needing some common generic functionality, like parsing a set of
-numbers.
+While working on BPF ringbuf implementation, testing, and benchmarking, I=
+'ve
+developed a pretty generic and modular benchmark runner, which seems to b=
+e
+generically useful, as I've already used it for one more purpose (testing
+fastest way to trigger BPF program, to minimize overhead of in-kernel cod=
+e).
+
+This patch adds generic part of benchmark runner and sets up Makefile for
+extending it with more sets of benchmarks.
+
+Benchmarker itself operates by spinning up specified number of producer a=
+nd
+consumer threads, setting up interval timer sending SIGALARM signal to
+application once a second. Every second, current snapshot with hits/drops
+counters are collected and stored in an array. Drops are useful for
+producer/consumer benchmarks in which producer might overwhelm consumers.
+
+Once test finishes after given amount of warm-up and testing seconds, mea=
+n and
+stddev are calculated (ignoring warm-up results) and is printed out to st=
+dout.
+This setup seems to give consistent and accurate results.
+
+To validate behavior, I added two atomic counting tests: global and local=
+.
+For global one, all the producer threads are atomically incrementing same
+counter as fast as possible. This, of course, leads to huge drop of
+performance once there is more than one producer thread due to CPUs fight=
+ing
+for the same memory location.
+
+Local counting, on the other hand, maintains one counter per each produce=
+r
+thread, incremented independently. Once per second, all counters are read=
+ and
+added together to form final "counting throughput" measurement. As expect=
+ed,
+such setup demonstrates linear scalability with number of producers (as l=
+ong
+as there are enough physical CPU cores, of course). See example output be=
+low.
+Also, this setup can nicely demonstrate disastrous effects of false shari=
+ng,
+if care is not taken to take those per-producer counters apart into
+independent cache lines.
+
+Demo output shows global counter first with 1 producer, then with 4. Both
+total and per-producer performance significantly drop. The last run is lo=
+cal
+counter with 4 producers, demonstrating near-perfect scalability.
+
+$ ./bench -a -w1 -d2 -p1 count-global
+Setting up benchmark 'count-global'...
+Benchmark 'count-global' started.
+Iter   0 ( 24.822us): hits  148.179M/s (148.179M/prod), drops    0.000M/s
+Iter   1 ( 37.939us): hits  149.308M/s (149.308M/prod), drops    0.000M/s
+Iter   2 (-10.774us): hits  150.717M/s (150.717M/prod), drops    0.000M/s
+Iter   3 (  3.807us): hits  151.435M/s (151.435M/prod), drops    0.000M/s
+Summary: hits  150.488 =C2=B1 1.079M/s (150.488M/prod), drops    0.000 =C2=
+=B1 0.000M/s
+
+$ ./bench -a -w1 -d2 -p4 count-global
+Setting up benchmark 'count-global'...
+Benchmark 'count-global' started.
+Iter   0 ( 60.659us): hits   53.910M/s ( 13.477M/prod), drops    0.000M/s
+Iter   1 (-17.658us): hits   53.722M/s ( 13.431M/prod), drops    0.000M/s
+Iter   2 (  5.865us): hits   53.495M/s ( 13.374M/prod), drops    0.000M/s
+Iter   3 (  0.104us): hits   53.606M/s ( 13.402M/prod), drops    0.000M/s
+Summary: hits   53.608 =C2=B1 0.113M/s ( 13.402M/prod), drops    0.000 =C2=
+=B1 0.000M/s
+
+$ ./bench -a -w1 -d2 -p4 count-local
+Setting up benchmark 'count-local'...
+Benchmark 'count-local' started.
+Iter   0 ( 23.388us): hits  640.450M/s (160.113M/prod), drops    0.000M/s
+Iter   1 (  2.291us): hits  605.661M/s (151.415M/prod), drops    0.000M/s
+Iter   2 ( -6.415us): hits  607.092M/s (151.773M/prod), drops    0.000M/s
+Iter   3 ( -1.361us): hits  601.796M/s (150.449M/prod), drops    0.000M/s
+Summary: hits  604.849 =C2=B1 2.739M/s (151.212M/prod), drops    0.000 =C2=
+=B1 0.000M/s
+
+Benchmark runner supports setting thread affinity for producer and consum=
+er
+threads. You can use -a flag for default CPU selection scheme, where firs=
+t
+consumer gets CPU #0, next one gets CPU #1, and so on. Then producer thre=
+ads
+pick up next CPU and increment one-by-one as well. But user can also spec=
+ify
+a set of CPUs independently for producers and consumers with --prod-affin=
+ity
+1,2-10,15 and --cons-affinity <set-of-cpus>. The latter allows to force
+producers and consumers to share same set of CPUs, if necessary.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/testing/selftests/bpf/Makefile          |  3 +-
- tools/testing/selftests/bpf/test_progs.c      | 67 ++-----------------
- tools/testing/selftests/bpf/test_progs.h      |  1 +
- tools/testing/selftests/bpf/testing_helpers.c | 66 ++++++++++++++++++
- tools/testing/selftests/bpf/testing_helpers.h |  5 ++
- 5 files changed, 78 insertions(+), 64 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/testing_helpers.c
- create mode 100644 tools/testing/selftests/bpf/testing_helpers.h
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |  13 +-
+ tools/testing/selftests/bpf/bench.c           | 423 ++++++++++++++++++
+ tools/testing/selftests/bpf/bench.h           |  81 ++++
+ .../selftests/bpf/benchs/bench_count.c        |  91 ++++
+ 5 files changed, 608 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/bench.c
+ create mode 100644 tools/testing/selftests/bpf/bench.h
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_count.c
 
+diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selft=
+ests/bpf/.gitignore
+index 3ff031972975..1bb204cee853 100644
+--- a/tools/testing/selftests/bpf/.gitignore
++++ b/tools/testing/selftests/bpf/.gitignore
+@@ -38,3 +38,4 @@ test_cpp
+ /bpf_gcc
+ /tools
+ /runqslower
++/bench
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftes=
 ts/bpf/Makefile
-index 8f25966b500b..52556712aad4 100644
+index 52556712aad4..2ad0ef00f45c 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -354,7 +354,8 @@ endef
- TRUNNER_TESTS_DIR :=3D prog_tests
- TRUNNER_BPF_PROGS_DIR :=3D progs
- TRUNNER_EXTRA_SOURCES :=3D test_progs.c cgroup_helpers.c trace_helpers.c=
-	\
--			 network_helpers.c flow_dissector_load.h
-+			 network_helpers.c testing_helpers.c		\
-+			 flow_dissector_load.h
- TRUNNER_EXTRA_FILES :=3D $(OUTPUT)/urandom_read				\
- 		       $(wildcard progs/btf_dump_test_case_*.c)
- TRUNNER_BPF_BUILD_RULE :=3D CLANG_BPF_BUILD_RULE
-diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/sel=
-ftests/bpf/test_progs.c
-index 0f411fdc4f6d..54fa5fa688ce 100644
---- a/tools/testing/selftests/bpf/test_progs.c
-+++ b/tools/testing/selftests/bpf/test_progs.c
-@@ -438,67 +438,6 @@ static int parse_str_list(const char *s, struct str_=
-set *set)
- 	return -ENOMEM;
- }
+@@ -77,7 +77,7 @@ TEST_PROGS_EXTENDED :=3D with_addr.sh \
+ # Compile but not part of 'make run_tests'
+ TEST_GEN_PROGS_EXTENDED =3D test_sock_addr test_skb_cgroup_id_user \
+ 	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
+-	test_lirc_mode2_user xdping test_cpp runqslower
++	test_lirc_mode2_user xdping test_cpp runqslower bench
 =20
--int parse_num_list(const char *s, struct test_selector *sel)
--{
--	int i, set_len =3D 0, new_len, num, start =3D 0, end =3D -1;
--	bool *set =3D NULL, *tmp, parsing_end =3D false;
--	char *next;
--
--	while (s[0]) {
--		errno =3D 0;
--		num =3D strtol(s, &next, 10);
--		if (errno)
--			return -errno;
--
--		if (parsing_end)
--			end =3D num;
--		else
--			start =3D num;
--
--		if (!parsing_end && *next =3D=3D '-') {
--			s =3D next + 1;
--			parsing_end =3D true;
--			continue;
--		} else if (*next =3D=3D ',') {
--			parsing_end =3D false;
--			s =3D next + 1;
--			end =3D num;
--		} else if (*next =3D=3D '\0') {
--			parsing_end =3D false;
--			s =3D next;
--			end =3D num;
--		} else {
--			return -EINVAL;
--		}
--
--		if (start > end)
--			return -EINVAL;
--
--		if (end + 1 > set_len) {
--			new_len =3D end + 1;
--			tmp =3D realloc(set, new_len);
--			if (!tmp) {
--				free(set);
--				return -ENOMEM;
--			}
--			for (i =3D set_len; i < start; i++)
--				tmp[i] =3D false;
--			set =3D tmp;
--			set_len =3D new_len;
--		}
--		for (i =3D start; i <=3D end; i++)
--			set[i] =3D true;
--	}
--
--	if (!set)
--		return -EINVAL;
--
--	sel->num_set =3D set;
--	sel->num_set_len =3D set_len;
--
--	return 0;
--}
--
- extern int extra_prog_load_log_flags;
+ TEST_CUSTOM_PROGS =3D urandom_read
 =20
- static error_t parse_arg(int key, char *arg, struct argp_state *state)
-@@ -512,13 +451,15 @@ static error_t parse_arg(int key, char *arg, struct=
- argp_state *state)
- 		if (subtest_str) {
- 			*subtest_str =3D '\0';
- 			if (parse_num_list(subtest_str + 1,
--					   &env->subtest_selector)) {
-+					   &env->subtest_selector.num_set,
-+					   &env->subtest_selector.num_set_len)) {
- 				fprintf(stderr,
- 					"Failed to parse subtest numbers.\n");
- 				return -EINVAL;
- 			}
- 		}
--		if (parse_num_list(arg, &env->test_selector)) {
-+		if (parse_num_list(arg, &env->test_selector.num_set,
-+				   &env->test_selector.num_set_len)) {
- 			fprintf(stderr, "Failed to parse test numbers.\n");
- 			return -EINVAL;
- 		}
-diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/sel=
-ftests/bpf/test_progs.h
-index 83287c76332b..f4503c926aca 100644
---- a/tools/testing/selftests/bpf/test_progs.h
-+++ b/tools/testing/selftests/bpf/test_progs.h
-@@ -37,6 +37,7 @@ typedef __u16 __sum16;
- #include "bpf_util.h"
- #include <bpf/bpf_endian.h>
- #include "trace_helpers.h"
-+#include "testing_helpers.h"
- #include "flow_dissector_load.h"
+@@ -406,6 +406,17 @@ $(OUTPUT)/test_cpp: test_cpp.cpp $(OUTPUT)/test_core=
+_extern.skel.h $(BPFOBJ)
+ 	$(call msg,CXX,,$@)
+ 	$(CXX) $(CFLAGS) $^ $(LDLIBS) -o $@
 =20
- enum verbosity {
-diff --git a/tools/testing/selftests/bpf/testing_helpers.c b/tools/testin=
-g/selftests/bpf/testing_helpers.c
++# Benchmark runner
++$(OUTPUT)/bench_%.o: benchs/bench_%.c bench.h
++	$(call msg,CC,,$@)
++	$(CC) $(CFLAGS) -c $(filter %.c,$^) $(LDLIBS) -o $@
++$(OUTPUT)/bench.o: bench.h testing_helpers.h
++$(OUTPUT)/bench: LDLIBS +=3D -lm
++$(OUTPUT)/bench: $(OUTPUT)/bench.o $(OUTPUT)/testing_helpers.o \
++		 $(OUTPUT)/bench_count.o
++	$(call msg,BINARY,,$@)
++	$(CC) $(LDFLAGS) -o $@ $(filter %.a %.o,$^) $(LDLIBS)
++
+ EXTRA_CLEAN :=3D $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR)			\
+ 	prog_tests/tests.h map_tests/tests.h verifier/tests.h		\
+ 	feature								\
+diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftest=
+s/bpf/bench.c
 new file mode 100644
-index 000000000000..0af6337a8962
+index 000000000000..3972da8b19e8
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/testing_helpers.c
-@@ -0,0 +1,66 @@
-+// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-+/* Copyright (C) 2020 Facebook, Inc. */
-+#include <stdlib.h>
-+#include <errno.h>
++++ b/tools/testing/selftests/bpf/bench.c
+@@ -0,0 +1,423 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Facebook */
++#define _GNU_SOURCE
++#include <argp.h>
++#include <linux/compiler.h>
++#include <sys/time.h>
++#include <sched.h>
++#include <fcntl.h>
++#include <pthread.h>
++#include <sys/sysinfo.h>
++#include <sys/resource.h>
++#include <signal.h>
++#include "bench.h"
 +#include "testing_helpers.h"
 +
-+int parse_num_list(const char *s, bool **num_set, int *num_set_len)
++struct env env =3D {
++	.warmup_sec =3D 1,
++	.duration_sec =3D 5,
++	.affinity =3D false,
++	.consumer_cnt =3D 1,
++	.producer_cnt =3D 1,
++};
++
++static int libbpf_print_fn(enum libbpf_print_level level,
++		    const char *format, va_list args)
 +{
-+	int i, set_len =3D 0, new_len, num, start =3D 0, end =3D -1;
-+	bool *set =3D NULL, *tmp, parsing_end =3D false;
-+	char *next;
++	if (level =3D=3D LIBBPF_DEBUG && !env.verbose)
++		return 0;
++	return vfprintf(stderr, format, args);
++}
 +
-+	while (s[0]) {
-+		errno =3D 0;
-+		num =3D strtol(s, &next, 10);
-+		if (errno)
-+			return -errno;
++static int bump_memlock_rlimit(void)
++{
++	struct rlimit rlim_new =3D {
++		.rlim_cur	=3D RLIM_INFINITY,
++		.rlim_max	=3D RLIM_INFINITY,
++	};
 +
-+		if (parsing_end)
-+			end =3D num;
-+		else
-+			start =3D num;
++	return setrlimit(RLIMIT_MEMLOCK, &rlim_new);
++}
 +
-+		if (!parsing_end && *next =3D=3D '-') {
-+			s =3D next + 1;
-+			parsing_end =3D true;
-+			continue;
-+		} else if (*next =3D=3D ',') {
-+			parsing_end =3D false;
-+			s =3D next + 1;
-+			end =3D num;
-+		} else if (*next =3D=3D '\0') {
-+			parsing_end =3D false;
-+			s =3D next;
-+			end =3D num;
-+		} else {
-+			return -EINVAL;
-+		}
++void setup_libbpf()
++{
++	int err;
 +
-+		if (start > end)
-+			return -EINVAL;
++	libbpf_set_print(libbpf_print_fn);
 +
-+		if (end + 1 > set_len) {
-+			new_len =3D end + 1;
-+			tmp =3D realloc(set, new_len);
-+			if (!tmp) {
-+				free(set);
-+				return -ENOMEM;
-+			}
-+			for (i =3D set_len; i < start; i++)
-+				tmp[i] =3D false;
-+			set =3D tmp;
-+			set_len =3D new_len;
-+		}
-+		for (i =3D start; i <=3D end; i++)
-+			set[i] =3D true;
++	err =3D bump_memlock_rlimit();
++	if (err)
++		fprintf(stderr, "failed to increase RLIMIT_MEMLOCK: %d", err);
++}
++
++void hits_drops_report_progress(int iter, struct bench_res *res, long de=
+lta_ns)
++{
++	double hits_per_sec, drops_per_sec;
++	double hits_per_prod;
++
++	hits_per_sec =3D res->hits / 1000000.0 / (delta_ns / 1000000000.0);
++	hits_per_prod =3D hits_per_sec / env.producer_cnt;
++	drops_per_sec =3D res->drops / 1000000.0 / (delta_ns / 1000000000.0);
++
++	printf("Iter %3d (%7.3lfus): ",
++	       iter, (delta_ns - 1000000000) / 1000.0);
++
++	printf("hits %8.3lfM/s (%7.3lfM/prod), drops %8.3lfM/s\n",
++	       hits_per_sec, hits_per_prod, drops_per_sec);
++}
++
++void hits_drops_report_final(struct bench_res res[], int res_cnt)
++{
++	int i;
++	double hits_mean =3D 0.0, drops_mean =3D 0.0;
++	double hits_stddev =3D 0.0, drops_stddev =3D 0.0;
++
++	for (i =3D 0; i < res_cnt; i++) {
++		hits_mean +=3D res[i].hits / 1000000.0 / (0.0 + res_cnt);
++		drops_mean +=3D res[i].drops / 1000000.0 / (0.0 + res_cnt);
 +	}
 +
-+	if (!set)
-+		return -EINVAL;
++	if (res_cnt > 1)  {
++		for (i =3D 0; i < res_cnt; i++) {
++			hits_stddev +=3D (hits_mean - res[i].hits / 1000000.0) *
++				       (hits_mean - res[i].hits / 1000000.0) /
++				       (res_cnt - 1.0);
++			drops_stddev +=3D (drops_mean - res[i].drops / 1000000.0) *
++					(drops_mean - res[i].drops / 1000000.0) /
++					(res_cnt - 1.0);
++		}
++		hits_stddev =3D sqrt(hits_stddev);
++		drops_stddev =3D sqrt(drops_stddev);
++	}
++	printf("Summary: hits %8.3lf \u00B1 %5.3lfM/s (%7.3lfM/prod), ",
++	       hits_mean, hits_stddev, hits_mean / env.producer_cnt);
++	printf("drops %8.3lf \u00B1 %5.3lfM/s\n",
++	       drops_mean, drops_stddev);
++}
 +
-+	*num_set =3D set;
-+	*num_set_len =3D set_len;
++const char *argp_program_version =3D "benchmark";
++const char *argp_program_bug_address =3D "<bpf@vger.kernel.org>";
++const char argp_program_doc[] =3D
++"benchmark    Generic benchmarking framework.\n"
++"\n"
++"This tool runs benchmarks.\n"
++"\n"
++"USAGE: benchmark <bench-name>\n"
++"\n"
++"EXAMPLES:\n"
++"    # run 'count-local' benchmark with 1 producer and 1 consumer\n"
++"    benchmark count-local\n"
++"    # run 'count-local' with 16 producer and 8 consumer thread, pinned =
+to CPUs\n"
++"    benchmark -p16 -c8 -a count-local\n";
++
++enum {
++	ARG_PROD_AFFINITY_SET =3D 1000,
++	ARG_CONS_AFFINITY_SET =3D 1001,
++};
++
++static const struct argp_option opts[] =3D {
++	{ "list", 'l', NULL, 0, "List available benchmarks"},
++	{ "duration", 'd', "SEC", 0, "Duration of benchmark, seconds"},
++	{ "warmup", 'w', "SEC", 0, "Warm-up period, seconds"},
++	{ "producers", 'p', "NUM", 0, "Number of producer threads"},
++	{ "consumers", 'c', "NUM", 0, "Number of consumer threads"},
++	{ "verbose", 'v', NULL, 0, "Verbose debug output"},
++	{ "affinity", 'a', NULL, 0, "Set consumer/producer thread affinity"},
++	{ "prod-affinity", ARG_PROD_AFFINITY_SET, "CPUSET", 0,
++	  "Set of CPUs for producer threads; implies --affinity"},
++	{ "cons-affinity", ARG_CONS_AFFINITY_SET, "CPUSET", 0,
++	  "Set of CPUs for consumer threads; implies --affinity"},
++	{},
++};
++
++static error_t parse_arg(int key, char *arg, struct argp_state *state)
++{
++	static int pos_args;
++
++	switch (key) {
++	case 'v':
++		env.verbose =3D true;
++		break;
++	case 'l':
++		env.list =3D true;
++		break;
++	case 'd':
++		env.duration_sec =3D strtol(arg, NULL, 10);
++		if (env.duration_sec <=3D 0) {
++			fprintf(stderr, "Invalid duration: %s\n", arg);
++			argp_usage(state);
++		}
++		break;
++	case 'w':
++		env.warmup_sec =3D strtol(arg, NULL, 10);
++		if (env.warmup_sec <=3D 0) {
++			fprintf(stderr, "Invalid warm-up duration: %s\n", arg);
++			argp_usage(state);
++		}
++		break;
++	case 'p':
++		env.producer_cnt =3D strtol(arg, NULL, 10);
++		if (env.producer_cnt <=3D 0) {
++			fprintf(stderr, "Invalid producer count: %s\n", arg);
++			argp_usage(state);
++		}
++		break;
++	case 'c':
++		env.consumer_cnt =3D strtol(arg, NULL, 10);
++		if (env.consumer_cnt <=3D 0) {
++			fprintf(stderr, "Invalid consumer count: %s\n", arg);
++			argp_usage(state);
++		}
++		break;
++	case 'a':
++		env.affinity =3D true;
++		break;
++	case ARG_PROD_AFFINITY_SET:
++		env.affinity =3D true;
++		if (parse_num_list(arg, &env.prod_cpus.cpus,
++				   &env.prod_cpus.cpus_len)) {
++			fprintf(stderr, "Invalid format of CPU set for producers.");
++			argp_usage(state);
++		}
++		break;
++	case ARG_CONS_AFFINITY_SET:
++		env.affinity =3D true;
++		if (parse_num_list(arg, &env.cons_cpus.cpus,
++				   &env.cons_cpus.cpus_len)) {
++			fprintf(stderr, "Invalid format of CPU set for consumers.");
++			argp_usage(state);
++		}
++		break;
++	case ARGP_KEY_ARG:
++		if (pos_args++) {
++			fprintf(stderr,
++				"Unrecognized positional argument: %s\n", arg);
++			argp_usage(state);
++		}
++		env.bench_name =3D strdup(arg);
++		break;
++	default:
++		return ARGP_ERR_UNKNOWN;
++	}
++	return 0;
++}
++
++static void parse_cmdline_args(int argc, char **argv)
++{
++	static const struct argp argp =3D {
++		.options =3D opts,
++		.parser =3D parse_arg,
++		.doc =3D argp_program_doc,
++	};
++	if (argp_parse(&argp, argc, argv, 0, NULL, NULL))
++		exit(1);
++	if (!env.list && !env.bench_name) {
++		argp_help(&argp, stderr, ARGP_HELP_DOC, "bench");
++		exit(1);
++	}
++}
++
++static void collect_measurements(long delta_ns);
++
++static __u64 last_time_ns;
++static void sigalarm_handler(int signo)
++{
++	long new_time_ns =3D get_time_ns();
++	long delta_ns =3D new_time_ns - last_time_ns;
++
++	collect_measurements(delta_ns);
++
++	last_time_ns =3D new_time_ns;
++}
++
++/* set up periodic 1-second timer */
++static void setup_timer()
++{
++	static struct sigaction sigalarm_action =3D {
++		.sa_handler =3D sigalarm_handler,
++	};
++	struct itimerval timer_settings =3D {};
++	int err;
++
++	last_time_ns =3D get_time_ns();
++	err =3D sigaction(SIGALRM, &sigalarm_action, NULL);
++	if (err < 0) {
++		fprintf(stderr, "failed to install SIGALARM handler: %d\n", -errno);
++		exit(1);
++	}
++	timer_settings.it_interval.tv_sec =3D 1;
++	timer_settings.it_value.tv_sec =3D 1;
++	err =3D setitimer(ITIMER_REAL, &timer_settings, NULL);
++	if (err < 0) {
++		fprintf(stderr, "failed to arm interval timer: %d\n", -errno);
++		exit(1);
++	}
++}
++
++static void set_thread_affinity(pthread_t thread, int cpu)
++{
++	cpu_set_t cpuset;
++
++	CPU_ZERO(&cpuset);
++	CPU_SET(cpu, &cpuset);
++	if (pthread_setaffinity_np(thread, sizeof(cpuset), &cpuset)) {
++		fprintf(stderr, "setting affinity to CPU #%d failed: %d\n",
++			cpu, errno);
++		exit(1);
++	}
++}
++
++static int next_cpu(struct cpu_set *cpu_set)
++{
++	if (cpu_set->cpus) {
++		int i;
++
++		/* find next available CPU */
++		for (i =3D cpu_set->next_cpu; i < cpu_set->cpus_len; i++) {
++			if (cpu_set->cpus[i]) {
++				cpu_set->next_cpu =3D i + 1;
++				return i;
++			}
++		}
++		fprintf(stderr, "Not enough CPUs specified, need CPU #%d or higher.\n"=
+, i);
++		exit(1);
++	}
++
++	return cpu_set->next_cpu++;
++}
++
++static struct bench_state {
++	int res_cnt;
++	struct bench_res *results;
++	pthread_t *consumers;
++	pthread_t *producers;
++} state;
++
++const struct bench *bench =3D NULL;
++
++extern const struct bench bench_count_global;
++extern const struct bench bench_count_local;
++
++static const struct bench *benchs[] =3D {
++	&bench_count_global,
++	&bench_count_local,
++};
++
++static void setup_benchmark()
++{
++	int i, err;
++
++	if (!env.bench_name) {
++		fprintf(stderr, "benchmark name is not specified\n");
++		exit(1);
++	}
++
++	for (i =3D 0; i < ARRAY_SIZE(benchs); i++) {
++		if (strcmp(benchs[i]->name, env.bench_name) =3D=3D 0) {
++			bench =3D benchs[i];
++			break;
++		}
++	}
++	if (!bench) {
++		fprintf(stderr, "benchmark '%s' not found\n", env.bench_name);
++		exit(1);
++	}
++
++	printf("Setting up benchmark '%s'...\n", bench->name);
++
++	state.producers =3D calloc(env.producer_cnt, sizeof(*state.producers));
++	state.consumers =3D calloc(env.consumer_cnt, sizeof(*state.consumers));
++	state.results =3D calloc(env.duration_sec + env.warmup_sec + 2,
++			       sizeof(*state.results));
++	if (!state.producers || !state.consumers || !state.results)
++		exit(1);
++
++	if (bench->validate)
++		bench->validate();
++	if (bench->setup)
++		bench->setup();
++
++	for (i =3D 0; i < env.consumer_cnt; i++) {
++		err =3D pthread_create(&state.consumers[i], NULL,
++				     bench->consumer_thread, (void *)(long)i);
++		if (err) {
++			fprintf(stderr, "failed to create consumer thread #%d: %d\n",
++				i, -errno);
++			exit(1);
++		}
++		if (env.affinity)
++			set_thread_affinity(state.consumers[i],
++					    next_cpu(&env.cons_cpus));
++	}
++
++	/* unless explicit producer CPU list is specified, continue after
++	 * last consumer CPU
++	 */
++	if (!env.prod_cpus.cpus)
++		env.prod_cpus.next_cpu =3D env.cons_cpus.next_cpu;
++
++	for (i =3D 0; i < env.producer_cnt; i++) {
++		err =3D pthread_create(&state.producers[i], NULL,
++				     bench->producer_thread, (void *)(long)i);
++		if (err) {
++			fprintf(stderr, "failed to create producer thread #%d: %d\n",
++				i, -errno);
++			exit(1);
++		}
++		if (env.affinity)
++			set_thread_affinity(state.producers[i],
++					    next_cpu(&env.prod_cpus));
++	}
++
++	printf("Benchmark '%s' started.\n", bench->name);
++}
++
++static pthread_mutex_t bench_done_mtx =3D PTHREAD_MUTEX_INITIALIZER;
++static pthread_cond_t bench_done =3D PTHREAD_COND_INITIALIZER;
++
++static void collect_measurements(long delta_ns) {
++	int iter =3D state.res_cnt++;
++	struct bench_res *res =3D &state.results[iter];
++
++	bench->measure(res);
++
++	if (bench->report_progress)
++		bench->report_progress(iter, res, delta_ns);
++
++	if (iter =3D=3D env.duration_sec + env.warmup_sec) {
++		pthread_mutex_lock(&bench_done_mtx);
++		pthread_cond_signal(&bench_done);
++		pthread_mutex_unlock(&bench_done_mtx);
++	}
++}
++
++int main(int argc, char **argv)
++{
++	parse_cmdline_args(argc, argv);
++
++	if (env.list) {
++		int i;
++
++		printf("Available benchmarks:\n");
++		for (i =3D 0; i < ARRAY_SIZE(benchs); i++) {
++			printf("- %s\n", benchs[i]->name);
++		}
++		return 0;
++	}
++
++	setup_benchmark();
++
++	setup_timer();
++
++	pthread_mutex_lock(&bench_done_mtx);
++	pthread_cond_wait(&bench_done, &bench_done_mtx);
++	pthread_mutex_unlock(&bench_done_mtx);
++
++	if (bench->report_final)
++		/* skip first sample */
++		bench->report_final(state.results + env.warmup_sec,
++				    state.res_cnt - env.warmup_sec);
 +
 +	return 0;
 +}
-diff --git a/tools/testing/selftests/bpf/testing_helpers.h b/tools/testin=
-g/selftests/bpf/testing_helpers.h
-new file mode 100644
-index 000000000000..923b51762759
---- /dev/null
-+++ b/tools/testing/selftests/bpf/testing_helpers.h
-@@ -0,0 +1,5 @@
-+/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-+/* Copyright (C) 2020 Facebook, Inc. */
-+#include <stdbool.h>
 +
-+int parse_num_list(const char *s, bool **set, int *set_len);
+diff --git a/tools/testing/selftests/bpf/bench.h b/tools/testing/selftest=
+s/bpf/bench.h
+new file mode 100644
+index 000000000000..c1f48a473b02
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bench.h
+@@ -0,0 +1,81 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#pragma once
++#include <stdlib.h>
++#include <stdbool.h>
++#include <linux/err.h>
++#include <errno.h>
++#include <unistd.h>
++#include <bpf/bpf.h>
++#include <bpf/libbpf.h>
++#include <math.h>
++#include <time.h>
++#include <sys/syscall.h>
++
++struct cpu_set {
++	bool *cpus;
++	int cpus_len;
++	int next_cpu;
++};
++
++struct env {
++	char *bench_name;
++	int duration_sec;
++	int warmup_sec;
++	bool verbose;
++	bool list;
++	bool affinity;
++	int consumer_cnt;
++	int producer_cnt;
++	struct cpu_set prod_cpus;
++	struct cpu_set cons_cpus;
++};
++
++struct bench_res {
++	long hits;
++	long drops;
++};
++
++struct bench {
++	const char *name;
++	void (*validate)();
++	void (*setup)();
++	void *(*producer_thread)(void *ctx);
++	void *(*consumer_thread)(void *ctx);
++	void (*measure)(struct bench_res* res);
++	void (*report_progress)(int iter, struct bench_res* res, long delta_ns)=
+;
++	void (*report_final)(struct bench_res res[], int res_cnt);
++};
++
++struct counter {
++	long value;
++} __attribute__((aligned(128)));
++
++extern struct env env;
++extern const struct bench *bench;
++
++void setup_libbpf();
++void hits_drops_report_progress(int iter, struct bench_res *res, long de=
+lta_ns);
++void hits_drops_report_final(struct bench_res res[], int res_cnt);
++
++static inline __u64 get_time_ns() {
++	struct timespec t;
++
++	clock_gettime(CLOCK_MONOTONIC, &t);
++
++	return (u64)t.tv_sec * 1000000000 + t.tv_nsec;
++}
++
++static inline void atomic_inc(long *value)
++{
++	(void)__atomic_add_fetch(value, 1, __ATOMIC_RELAXED);
++}
++
++static inline void atomic_add(long *value, long n)
++{
++	(void)__atomic_add_fetch(value, n, __ATOMIC_RELAXED);
++}
++
++static inline long atomic_swap(long *value, long n)
++{
++	return __atomic_exchange_n(value, n, __ATOMIC_RELAXED);
++}
+diff --git a/tools/testing/selftests/bpf/benchs/bench_count.c b/tools/tes=
+ting/selftests/bpf/benchs/bench_count.c
+new file mode 100644
+index 000000000000..befba7a82643
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/bench_count.c
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Facebook */
++#include "bench.h"
++
++/* COUNT-GLOBAL benchmark */
++
++static struct count_global_ctx {
++	struct counter hits;
++} count_global_ctx;
++
++static void *count_global_producer(void *input)
++{
++	struct count_global_ctx *ctx =3D &count_global_ctx;
++
++	while (true) {
++		atomic_inc(&ctx->hits.value);
++	}
++	return NULL;
++}
++
++static void *count_global_consumer(void *input)
++{
++	return NULL;
++}
++
++static void count_global_measure(struct bench_res *res)
++{
++	struct count_global_ctx *ctx =3D &count_global_ctx;
++
++	res->hits =3D atomic_swap(&ctx->hits.value, 0);
++}
++
++/* COUNT-local benchmark */
++
++static struct count_local_ctx {
++	struct counter *hits;
++} count_local_ctx;
++
++static void count_local_setup()
++{
++	struct count_local_ctx *ctx =3D &count_local_ctx;
++
++	ctx->hits =3D calloc(env.consumer_cnt, sizeof(*ctx->hits));
++	if (!ctx->hits)
++		exit(1);
++}
++
++static void *count_local_producer(void *input)
++{
++	struct count_local_ctx *ctx =3D &count_local_ctx;
++	int idx =3D (long)input;
++
++	while (true) {
++		atomic_inc(&ctx->hits[idx].value);
++	}
++	return NULL;
++}
++
++static void *count_local_consumer(void *input)
++{
++	return NULL;
++}
++
++static void count_local_measure(struct bench_res *res)
++{
++	struct count_local_ctx *ctx =3D &count_local_ctx;
++	int i;
++
++	for (i =3D 0; i < env.producer_cnt; i++) {
++		res->hits +=3D atomic_swap(&ctx->hits[i].value, 0);
++	}
++}
++
++const struct bench bench_count_global =3D {
++	.name =3D "count-global",
++	.producer_thread =3D count_global_producer,
++	.consumer_thread =3D count_global_consumer,
++	.measure =3D count_global_measure,
++	.report_progress =3D hits_drops_report_progress,
++	.report_final =3D hits_drops_report_final,
++};
++
++const struct bench bench_count_local =3D {
++	.name =3D "count-local",
++	.setup =3D count_local_setup,
++	.producer_thread =3D count_local_producer,
++	.consumer_thread =3D count_local_consumer,
++	.measure =3D count_local_measure,
++	.report_progress =3D hits_drops_report_progress,
++	.report_final =3D hits_drops_report_final,
++};
 --=20
 2.24.1
 
