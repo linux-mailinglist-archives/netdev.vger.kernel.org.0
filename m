@@ -2,121 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 919041D01C8
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 00:20:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C95F1D01D9
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 00:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731307AbgELWUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 18:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55000 "EHLO
+        id S1731457AbgELWVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 18:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727971AbgELWUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 18:20:07 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA4BC061A0C;
-        Tue, 12 May 2020 15:20:06 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id di6so7185203qvb.10;
-        Tue, 12 May 2020 15:20:06 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1731434AbgELWVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 18:21:16 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B75EC061A0C;
+        Tue, 12 May 2020 15:21:15 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id 190so9844440qki.1;
+        Tue, 12 May 2020 15:21:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=eCNY+sYyp8cnHHAxm0+RTbQx/EjkeGToMjAfjaq5U/E=;
-        b=r7Pyw68MI3bSUo8gpXaW8NWDQenOwKxpAWXtg/hB2W4WIOz0SdclQLGo2ESgyFU5+8
-         UGeNLBPXXDBfdIYOoxoN+Ljjn2Nja5ZvSqIZSxHTEv0yeSTQW4D0u4IG5PLdEYMywjjC
-         1gNIUOBpogl8vZWceWgy/kHbQpCgcjjIGQG/lNaN68NO2A6dPTpCmgVUvKXCv/9AK39N
-         2/emvzS/0/vYD+JlaJwd1ahPx2zaAyk/2/uojKuNRwrZ4SwxOn5VCkQretlw76L03PDT
-         4gupiciuYOxgjT95eSjwfMG5jorzj9aoRWmu6IP3gqrvWdn4QDOqHhsme2r5Q6ZPUp34
-         nahg==
+        bh=rAny/KSMDJYb2X7Cf5i8wVgzdx3iFCLpbu1wjbgdsT8=;
+        b=kWT72RYxX6fzabwfvG7DkEj7tBNxBFU4hTRyvoaAo0mSAh9FmkkLRSI5O+VqiRoOxV
+         i/FBwFFSQ9ES66AQF37RXxdawn+HzC3tJNZC4vB3wcYIrekZ36QyvZf+TkrVEznRMCBj
+         8tSnaYtkfDl3AvHQh3JWMatk5rs5S8ZMJyApAzGkWNu0CDbhuqoy9I/qnT+2Myl5Rbsk
+         //DqbXLFHRgzsyMXKgSYSzEqpTK5GTn41RSb3FRD9w9AoxmLMd9DVIGOUpeL8oW0j6ck
+         Ks800cT4Hxw38LEQqNGXZg/ICDciJ9GZpBKXwbhPQAz5/FRhbtpV9SimLp1aeyBxRr1f
+         a8RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=eCNY+sYyp8cnHHAxm0+RTbQx/EjkeGToMjAfjaq5U/E=;
-        b=aLTw5ZGHSW2VzrIupYbptM5JU9QoFUA0+s5DGPrO3aQte3hIYKt7bS/Jy2inylbhg6
-         QoHgOrHsSebUwP7WIjG4eUB3HPBhGNQZBc1qpXBnkNOxoO0bQETD+BOiYWQMzW3k/clh
-         GTMlwxrDBuCiXVZFPYGKwXxgbPRKa2kUm/cTT0BlWyaaL7iRNMnlE8yOeKGJT6BKW1A1
-         RIvGQp73I5IHMb6uUuRVloEgn2YO7AH/Ctk3JZx0QKvKcIvlSl1QunfFoZdJ/DecX+O/
-         TOI3ZgQvRsonalzI/E4A+UPQhTuF7uwCanMAqT39X88LxG8Iu04cqsnjs1CGRlN4KyV6
-         a9Dw==
-X-Gm-Message-State: AGi0PubvRr7WLWng7yR3iGNEjlA8RkeREmYQGv4fdndGeuskXQ1dX2ZJ
-        BzPB71LOVrdcO26LzFIWqqq+8QlNJUtHj03Wn9g=
-X-Google-Smtp-Source: APiQypLeKyLIfVIn2yDJYhtyP8cUsNnyyOba6I3IVR1XRiT2Blml2LNgAcHFkvIf2pkAdz5MlekUNNZiWhvgAyMkXtk=
-X-Received: by 2002:a0c:a892:: with SMTP id x18mr22656432qva.247.1589322006110;
- Tue, 12 May 2020 15:20:06 -0700 (PDT)
+        bh=rAny/KSMDJYb2X7Cf5i8wVgzdx3iFCLpbu1wjbgdsT8=;
+        b=O69k1AdNCuRzQIkNTXUl4dyMF3LXXGspRNDDBMcjYHbTcC06xKWGP30M0SR6UxE8Fr
+         5OgWRYL5jyyVgnk4YH3mivmXnTH6B708A9qI+nkj4/+MvzWrUQwXZa7YJxnbqqgIYgnt
+         uoOA/uh+0JMLbVIRY1xn7nj+Hk2bl+JdHHAxSHNs33c821c7/lNHq9ojhB38dM9I3rXg
+         KMyOHDEM7i2z9aba8K2Wx176O5Y4xk5s2Pda6EkwVvv75SHATtClo0P3epwOC3q7r7Cp
+         iN9k0cIXknEOX4PujJPHRARyegMfsUJLHUJ18Fb7HEI8LwkHt2sulMOlquUkwbONkTv1
+         N70w==
+X-Gm-Message-State: AGi0PubsYf2QDOqE3YHgQ8Be96gs/DvyucUkMK8nTwzvgxMRGHOVxoDC
+        X7vZPkiOhAZsuyxdup0QLEze8Ry2LBdtKA0wzYIKAA==
+X-Google-Smtp-Source: APiQypLzPbOQWDTf8Bm6PMe5mMi3ukics4KTMMgnAXRzlJUi94TQt5W2KSJqkNSuFTJtUeORrpEbuLcWGV2ATfZD6/0=
+X-Received: by 2002:a05:620a:2049:: with SMTP id d9mr25179863qka.449.1589322074305;
+ Tue, 12 May 2020 15:21:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200512155232.1080167-1-yhs@fb.com> <20200512155237.1080552-1-yhs@fb.com>
-In-Reply-To: <20200512155237.1080552-1-yhs@fb.com>
+References: <20200512155232.1080167-1-yhs@fb.com> <20200512155233.1080305-1-yhs@fb.com>
+In-Reply-To: <20200512155233.1080305-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 12 May 2020 15:19:55 -0700
-Message-ID: <CAEf4BzYVcZkhthJAPW6QnLWGwznWpqAhOuTJtTVLMuNs6t0Zwg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/8] bpf: net: refactor bpf_iter target registration
+Date:   Tue, 12 May 2020 15:21:03 -0700
+Message-ID: <CAEf4BzaNzOez7rjYYKzuSeSNKt7LXSDA-LaGjJJFJucO6G0zTA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/8] bpf: change btf_iter func proto prefix to "bpf_iter_"
 To:     Yonghong Song <yhs@fb.com>
 Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        Kernel Team <kernel-team@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 8:56 AM Yonghong Song <yhs@fb.com> wrote:
+On Tue, May 12, 2020 at 8:54 AM Yonghong Song <yhs@fb.com> wrote:
 >
-> Currently bpf_iter_reg_target takes parameters from target
-> and allocates memory to save them. This is really not
-> necessary, esp. in the future we may grow information
-> passed from targets to bpf_iter manager.
+> This is to be consistent with tracing and lsm programs
+> which have prefix "bpf_trace_" and "bpf_lsm_" respectively.
 >
-> The patch refactors the code so target reg_info
-> becomes static and bpf_iter manager can just take
-> a reference to it.
->
+> Suggested-by: Alexei Starovoitov <ast@kernel.org>
 > Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
->  kernel/bpf/bpf_iter.c    | 29 +++++++++++------------------
->  kernel/bpf/map_iter.c    | 18 +++++++++---------
->  kernel/bpf/task_iter.c   | 30 ++++++++++++++++--------------
->  net/ipv6/route.c         | 18 +++++++++---------
->  net/netlink/af_netlink.c | 18 +++++++++---------
->  5 files changed, 54 insertions(+), 59 deletions(-)
->
-> diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
-> index b0c8b3bdf3b0..1d203dc7afe2 100644
-> --- a/kernel/bpf/bpf_iter.c
-> +++ b/kernel/bpf/bpf_iter.c
-> @@ -8,11 +8,7 @@
->
->  struct bpf_iter_target_info {
->         struct list_head list;
-> -       const char *target;
-> -       const struct seq_operations *seq_ops;
-> -       bpf_iter_init_seq_priv_t init_seq_private;
-> -       bpf_iter_fini_seq_priv_t fini_seq_private;
-> -       u32 seq_priv_size;
-> +       struct bpf_iter_reg *reg_info;
->         u32 btf_id;     /* cached value */
->  };
->
-> @@ -224,8 +220,8 @@ static int iter_release(struct inode *inode, struct file *file)
->         iter_priv = container_of(seq->private, struct bpf_iter_priv_data,
->                                  target_private);
->
-> -       if (iter_priv->tinfo->fini_seq_private)
-> -               iter_priv->tinfo->fini_seq_private(seq->private);
-> +       if (iter_priv->tinfo->reg_info->fini_seq_private)
-> +               iter_priv->tinfo->reg_info->fini_seq_private(seq->private);
->
->         bpf_prog_put(iter_priv->prog);
->         seq->private = iter_priv;
-> @@ -248,11 +244,7 @@ int bpf_iter_reg_target(struct bpf_iter_reg *reg_info)
 
-const struct bpf_iter_reg *? Can you please also add a comment that
-passed struct is supposed to be static variable and live forever (so
-not a dynamically allocated nor a stack variable)?
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Also all the static struct bpf_iter_reg below should be marked const?
 
 [...]
