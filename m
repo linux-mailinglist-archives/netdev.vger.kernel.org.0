@@ -2,166 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A74CF1CFD71
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 20:39:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8D181CFD7A
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 20:43:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730889AbgELSjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 14:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48846 "EHLO
+        id S1730286AbgELSnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 14:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725950AbgELSjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 14:39:16 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CBDC061A0C;
-        Tue, 12 May 2020 11:39:15 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id z1so6775321pfn.3;
-        Tue, 12 May 2020 11:39:15 -0700 (PDT)
+        with ESMTP id S1725938AbgELSns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 14:43:48 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC38C061A0C;
+        Tue, 12 May 2020 11:43:48 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id u16so24834085wmc.5;
+        Tue, 12 May 2020 11:43:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DjcujlJce+yGdTM56KR+siVfTTDonJGCqjFrtlrB12E=;
-        b=TKIZUpleOm+PkJ9tqBZBzNyIrq3m78JQFWKHIGSEqtcLQ6LODxtCb/m4luvQRtRCZB
-         YF8jVeEnDCHolzy3z4aaw6G+IAUWpl5/o8dIMthPyFEKYdI3YjcX4WtBiwD6nO6vNmVZ
-         DzohTK35FNyHiiwZq0QhghkvgzykP8E6nX6b5zl3s25ntYD2rf8n4PQYZUQb5cUFGq3P
-         CXxL1tW/RcklACqpdbU3eZeWt+QXV2I4/GLn6DBRTu3f17iQMICCpp7kXK19NZcxB7rG
-         LQ2b6Wk7ueK/vM9+kTiltDdga69+ZfqqYAnB7kybfnraNEgq6FRZJ6pf6Zt2ZFBOJI0Y
-         5BAA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=G6qmfcxPjUk1PAIF6WXdpSW8GsCiEbgK0TItUolFwFs=;
+        b=YyFWPT+W59qjFtGUWHs8+M5E8cUKWVlHvcMyvGBJLWwuO8J1SaRBZFPHK0hrffGwqW
+         n+ZH3L/qoTu+OKupXn7eiC4O/AaQ4GZY8kcn++DLzG9K4qylOcxHGZY4RPKUpgfNP7sS
+         01PZVr466ASNSWOd29VQZojxA6W+DXZeP0zI3LE5EsEIsKZxwRpEwe8oh97aHAbnngxK
+         UtNnThVMUeI0MxRuubCP3K3ly/mQgp1mMC6vkqFnAsQg0uvXudncbmI2h6MiD48V6GAU
+         uTi6MHa19jzTYioFLvPiU4iUr8oIwkakg4O1z8RiHoIgLvxipKS12zSEewgM6+weqd2A
+         rzlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DjcujlJce+yGdTM56KR+siVfTTDonJGCqjFrtlrB12E=;
-        b=sVkHTOWCLb5qrTR9/Fag85FkFc29wAJAmnWc3lBzWRjkipfwyfc3K7X6FdHtq81X/u
-         Q4O8lOjU/IqPCEuSYJ6vEt6xVwlScp53CR9iKWcqrmmDq276vl/4YqZnpGJ5SBFoZ7jM
-         S6yRHzBafzc1Js2fuDIUUSua3+5Aew/Pdy/kMI+Iu0n485sA9AXji0QMA0IjUJHI+fNN
-         8HzC/z4T9VRsViP48+OBDkievnnmXe0U9kA3qX70TloX/hMol5eVDqspGRKp4iyVm6Sy
-         7MD3sQ48xyE2FZ/XOym3ySw9VZSNuFK7pcJL7NPYwE5n8yKfzNqM5I6cAt4/yrs7xgOE
-         oFtw==
-X-Gm-Message-State: AGi0PuZ0aPqs/rlZh+jYavluj3ox6gxJs/Otny5xinUvrULhiPHG0ZYB
-        G0M3w23hXNJgWFmhGVPF19xCMKEr
-X-Google-Smtp-Source: APiQypINbdHjYVXKeWBxAYbOqHUnfaB4UJzqJskMbX8OGHkD/+fXFaDcOlnD+ANXQjOFUfCx3HRsUg==
-X-Received: by 2002:a63:e542:: with SMTP id z2mr19775152pgj.165.1589308754589;
-        Tue, 12 May 2020 11:39:14 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:c3f6])
-        by smtp.gmail.com with ESMTPSA id l15sm13732315pjk.56.2020.05.12.11.39.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 11:39:13 -0700 (PDT)
-Date:   Tue, 12 May 2020 11:39:11 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     sdf@google.com
-Cc:     davem@davemloft.net, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com,
-        linux-security-module@vger.kernel.org, acme@redhat.com,
-        jamorris@linux.microsoft.com, jannh@google.com, kpsingh@google.com
-Subject: Re: [PATCH v5 bpf-next 2/3] bpf: implement CAP_BPF
-Message-ID: <20200512183911.cr365b7etucyxgpz@ast-mbp>
-References: <20200508215340.41921-1-alexei.starovoitov@gmail.com>
- <20200508215340.41921-3-alexei.starovoitov@gmail.com>
- <20200512001210.GA235661@google.com>
- <20200512023641.jupgmhpliblkli4t@ast-mbp.dhcp.thefacebook.com>
- <20200512155411.GB235661@google.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=G6qmfcxPjUk1PAIF6WXdpSW8GsCiEbgK0TItUolFwFs=;
+        b=B71Q6TZ1YdPqIB3fbBD1u8RbnqpC36/0BU2i1kzYYTflzXMmZ7U183a7ssBLhq736m
+         LeJTS0oL43tlNYMjdpnWugTvMczXJPfK38bEuAZX4TP88KA4VOZb8FDDsXPmMXj65/r7
+         RMIaC0o2Ss6q4B0ZHNxTCwoPShuB5ThMeNJMxxZKkvqw7Au9z7XvHtL4JEBMRhAxOC6m
+         FC4R59LO6byYRpTKrQnzhRieJV81XurHjZrd74VE3ufb/1DvJadY24OzHCvUF8umLJlG
+         Idi4Ro1Tf8Na8OUQNCimHN9y/hDUjlvZsPkCZCYJjFpJBcgMqtjDcxlNZe7iU+PAt1R8
+         Tg1Q==
+X-Gm-Message-State: AGi0PuZg0OVmsJTkIH2nLwHwziAxN9mbgA9XNo9xrp9OhPAc9XAVloCP
+        7mNIp9GbZKhAG4uK7D2JU1JVzF7E
+X-Google-Smtp-Source: APiQypKLG+QPMpg9r4umkuQ/roOkNtuH2MZUIQ+y2wfaEtp9hgi29bWSg7F4vPXlGZMfP+tcvMvrBQ==
+X-Received: by 2002:a1c:8094:: with SMTP id b142mr26171974wmd.61.1589309027074;
+        Tue, 12 May 2020 11:43:47 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f28:5200:d932:d3d0:91da:45c2? (p200300EA8F285200D932D3D091DA45C2.dip0.t-ipconnect.de. [2003:ea:8f28:5200:d932:d3d0:91da:45c2])
+        by smtp.googlemail.com with ESMTPSA id n7sm14995650wro.94.2020.05.12.11.43.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2020 11:43:46 -0700 (PDT)
+Subject: Re: [PATCH] net: phy: realtek: clear interrupt during init for
+ rtl8211f
+To:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200512184601.40b1758a@xhacker.debian>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <7735a257-21ff-e6c0-acdc-f5ee187b1f57@gmail.com>
+Date:   Tue, 12 May 2020 20:43:40 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200512155411.GB235661@google.com>
+In-Reply-To: <20200512184601.40b1758a@xhacker.debian>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 08:54:11AM -0700, sdf@google.com wrote:
-> On 05/11, Alexei Starovoitov wrote:
-> > On Mon, May 11, 2020 at 05:12:10PM -0700, sdf@google.com wrote:
-> > > On 05/08, Alexei Starovoitov wrote:
-> > > > From: Alexei Starovoitov <ast@kernel.org>
-> > > [..]
-> > > > @@ -3932,7 +3977,7 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr
-> > > > __user *, uattr, unsigned int, siz
-> > > >   	union bpf_attr attr;
-> > > >   	int err;
-> > >
-> > > > -	if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
-> > > > +	if (sysctl_unprivileged_bpf_disabled && !bpf_capable())
-> > > >   		return -EPERM;
-> > > This is awesome, thanks for reviving the effort!
-> > >
-> > > One question I have about this particular snippet:
-> > > Does it make sense to drop bpf_capable checks for the operations
-> > > that work on a provided fd?
-> 
-> > Above snippet is for the case when sysctl switches unpriv off.
-> > It was a big hammer and stays big hammer.
-> > I certainly would like to improve the situation, but I suspect
-> > the folks who turn that sysctl knob on are simply paranoid about bpf
-> > and no amount of reasoning would turn them around.
-> Yeah, and we do use it unfortunately :-( I suppose we still would
-> like to keep it that way for a while, but maybe start relaxing
-> some operations a bit.
+On 12.05.2020 12:46, Jisheng Zhang wrote:
+> The PHY Register Accessible Interrupt is enabled by default, so
+> there's such an interrupt during init. In PHY POLL mode case, the
+> INTB/PMEB pin is alway active, it is not good. Clear the interrupt by
+> calling rtl8211f_ack_interrupt().
 
-I suspect that was done couple years ago when spectre was just discovered and
-the verifier wasn't doing speculative analysis.
-If your security folks still insist on that sysctl they either didn't
-follow bpf development or paranoid.
-If former is the case I would love to openly discuss all the advances in
-the verification logic to prevent side channels.
-The verifier is doing amazing job finding bad assembly code.
-There is no other tool that is similarly capable.
-All compilers and static analyzers are no where close to the level
-of sophistication that the verifier has in detection of bad speculation.
-
-> > > The use-case I have in mind is as follows:
-> > > * privileged (CAP_BPF) process loads the programs/maps and pins
-> > >   them at some known location
-> > > * unprivileged process opens up those pins and does the following:
-> > >   * prepares the maps (and will later on read them)
-> > >   * does SO_ATTACH_BPF/SO_ATTACH_REUSEPORT_EBPF which afaik don't
-> > >     require any capabilities
-> > >
-> > > This essentially pushes some of the permission checks into a fs layer.
-> > So
-> > > whoever has a file descriptor (via unix sock or open) can do BPF
-> > operations
-> > > on the object that represents it.
-> 
-> > cap_bpf doesn't change things in that regard.
-> > Two cases here:
-> > sysctl_unprivileged_bpf_disabled==0:
-> >    Unpriv can load socket_filter prog type and unpriv can attach it
-> >    via SO_ATTACH_BPF/SO_ATTACH_REUSEPORT_EBPF.
-> > sysctl_unprivileged_bpf_disabled==1:
-> >    cap_sys_admin can load socket_filter and unpriv can attach it.
-> Sorry, I wasn't clear enough, I was talking about unpriv_bpf_disabled=1
-> case.
-> 
-> > With addition of cap_bpf in the second case cap_bpf process can
-> > load socket_filter too.
-> > It doesn't mean that permissions are pushed into fs layer.
-> > I'm not sure that relaxing of sysctl_unprivileged_bpf_disabled
-> > will be well received.
-> > Are you proposing to selectively allow certain bpf syscall commands
-> > even when sysctl_unprivileged_bpf_disabled==1 ?
-> > Like allow unpriv to do BPF_OBJ_GET to get an fd from bpffs ?
-> > And allow unpriv to do map_update ?
-> Yes, that's the gist of what I'm proposing. Allow the operations that
-> work on fd even with unpriv_bpf_disabled=1. The assumption that
-> obtaining fd requires a privileged operation on its own and
-> should give enough protection.
-
-I agree.
+As you say "it's not good" w/o elaborating a little bit more on it:
+Do you face any actual issue? Or do you just think that it's not nice?
+I'm asking because you don't provide a Fixes tag and you don't
+annotate your patch as net or net-next.
+Once you provide more details we would also get an idea whether a
+change would have to be made to phylib, because what you describe
+doesn't seem to be specific to this one PHY model.
 
 > 
-> > It makes complete sense to me, but I'd like to argue about that
-> > independently from this cap_bpf set.
-> > We can relax that sysctl later.
-> Ack, thanks, let me bring it up again later, when we get to the cap_bpf
-> state.
+> Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+> ---
+>  drivers/net/phy/realtek.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> index 2d99e9de6ee1..398607268a3c 100644
+> --- a/drivers/net/phy/realtek.c
+> +++ b/drivers/net/phy/realtek.c
+> @@ -179,6 +179,10 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+>  	u16 val_txdly, val_rxdly;
+>  	int ret;
+>  
+> +	ret = rtl8211f_ack_interrupt(phydev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	switch (phydev->interface) {
+>  	case PHY_INTERFACE_MODE_RGMII:
+>  		val_txdly = 0;
+> 
 
-Thanks for the feedback.
-Just to make sure we're on the same page let me clarify one more thing.
-The state of cap_bpf in this patch set is not the final state of bpf
-security in general. We were stuck on cap_bpf proposal since september.
-bpf community lost many months of what could have been gradual
-improvements in bpf safety and security.
-This cap_bpf is a way to get us unstuck. There will be many more
-security related patches that improve safety, security and usability.
