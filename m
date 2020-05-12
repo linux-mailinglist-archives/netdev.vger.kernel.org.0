@@ -2,145 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A191CF105
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 11:06:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7421CF15A
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 11:18:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729328AbgELJG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 05:06:57 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:35885 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729274AbgELJG4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 05:06:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589274415;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BJliPFhZAL/akqMw0l+s3CPSC2GuB2Wpj8gA4x6beco=;
-        b=L5Cosmd6Y1uAKFDs3AU2gClWkB8B/LOOXinMk8fRzKnhXFGjQPTE710pZDHfrVEryvsn8q
-        /vDWa0pu0IR4iwIRKxY9xgUs+MGepjhga+JhXmakaNkS40u36646syhl8roT4Mbq7g8bM+
-        meV3tx0enxhuR0BlGtJ+5qa2Ai2LI2c=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-432-fYDG6fcXNeCy4iZ1h3XXvQ-1; Tue, 12 May 2020 05:06:53 -0400
-X-MC-Unique: fYDG6fcXNeCy4iZ1h3XXvQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2D565846379;
-        Tue, 12 May 2020 09:06:52 +0000 (UTC)
-Received: from [10.36.114.16] (ovpn-114-16.ams2.redhat.com [10.36.114.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2AE1D5C1D6;
-        Tue, 12 May 2020 09:06:45 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Yonghong Song" <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, andriin@fb.com, toke@redhat.com
-Subject: Re: [PATCH bpf-next v3] libbpf: fix probe code to return EPERM if
- encountered
-Date:   Tue, 12 May 2020 11:06:43 +0200
-Message-ID: <C6DEFAAB-C77F-435C-A5ED-56F16BC5AF4D@redhat.com>
-In-Reply-To: <7008d545-ac78-3e22-aeaa-1d6639611225@fb.com>
-References: <158920079637.7533.5703299045869368435.stgit@ebuild>
- <7008d545-ac78-3e22-aeaa-1d6639611225@fb.com>
+        id S1729214AbgELJSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 05:18:04 -0400
+Received: from mail-eopbgr40087.outbound.protection.outlook.com ([40.107.4.87]:34178
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726024AbgELJSD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 05:18:03 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Yd3ZqG9SIIsjxbsQiLNQWCS9s0HQiEkrzVDjo4+t18gwF/uFnrEG3rFMKBtsXvTOVZLIQS3VShvdnNzjoWKp5x8JT2QJLQ/CBiThTQJYAVJCwpg9I6x8ljLDiZ+cNJUoadHW+FfXZ65UaTB3en+7FnUjDwQZ6crq4TVAc27wly5zPqrECdFbc/c6LcMbkFxyct9xCaLuKmCZ94IQCiKdy/no62wZ/HU86p7F+OQDEUQ+7rrYoO608dpayCz0SMv8mS3I5VAkbMRcBpi/OvV2GTiNGnpA0UBsyMiMN394tgQI9mo8WnJb9JIAIHYtic7Phb3TMMdac5Li9tXTuZgtXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q+YnzC1wKwxqwILfdPws/UHRIB5flu6VMxJn/+JRJuU=;
+ b=HdWH5huYRxXkLyE+Y9eSJmSPv8j1LAKWKViEMQY4Ot1i1YX6iM49oDw2cxPOT5pE2F9HSQPMh9yyFYM95L0NGdqfZHWkMVXNu59LQMy+VVI3BsdneXfZQCFzOW+4tKTIAdceSmE4FH7a/WEfucS6bsbq8+USNb1Fickbx3go8PS0P91ke5J7wjMyu5wBe8qPB9luy5kCiB67JmB8V+Rv1QmBsDaUCRmJmygL3SEOw+IVhWtLSTaR/IfxuylSc9qLasMkY9dp34pilIxV9ySA8xdLqCa+N81srU+BO+rHpieJz2eS5jlYL7f+qO1PRtkwJ443vhKSEwfGBWrmwxNhQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q+YnzC1wKwxqwILfdPws/UHRIB5flu6VMxJn/+JRJuU=;
+ b=BpTRtOv3lySMh7WNJpuc1WkL5jBqYINwgXK/52rFJGSCiRgfQOppALAhc2FhsOBcvtYAZjGPyDptk9D/FvJh05jRmL5xX7FW3S54nF80mG5zbkB5yS7aK0l6L9OZ9VbSzVGizXraQb0KVBWN6qQ3wOpqXhj/Ch+u6515Nj5mNgM=
+Received: from DB8PR04MB5785.eurprd04.prod.outlook.com (2603:10a6:10:b0::22)
+ by DB8PR04MB6811.eurprd04.prod.outlook.com (2603:10a6:10:fa::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.30; Tue, 12 May
+ 2020 09:17:59 +0000
+Received: from DB8PR04MB5785.eurprd04.prod.outlook.com
+ ([fe80::c898:9dfc:ce78:a315]) by DB8PR04MB5785.eurprd04.prod.outlook.com
+ ([fe80::c898:9dfc:ce78:a315%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
+ 09:17:59 +0000
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "idosch@idosch.org" <idosch@idosch.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
+        "roopa@cumulusnetworks.com" <roopa@cumulusnetworks.com>,
+        "linux-devel@linux.nxdi.nxp.com" <linux-devel@linux.nxdi.nxp.com>
+Subject: RE: [EXT] Re: [PATCH v1 net-next 3/3] net: dsa: felix: add support
+ Credit Based Shaper(CBS) for hardware offload
+Thread-Topic: [EXT] Re: [PATCH v1 net-next 3/3] net: dsa: felix: add support
+ Credit Based Shaper(CBS) for hardware offload
+Thread-Index: AQHWJ1fQ0aW9GYkaGku6h57iU7QcdqijrlGAgAB9cIA=
+Date:   Tue, 12 May 2020 09:17:59 +0000
+Message-ID: <DB8PR04MB5785B9263290981AC1AB6A0EF0BE0@DB8PR04MB5785.eurprd04.prod.outlook.com>
+References: <20200511054332.37690-1-xiaoliang.yang_1@nxp.com>
+ <20200511054332.37690-4-xiaoliang.yang_1@nxp.com> <873686rkte.fsf@intel.com>
+In-Reply-To: <873686rkte.fsf@intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b025d2ed-8ebc-4bc6-ab8c-08d7f6555d82
+x-ms-traffictypediagnostic: DB8PR04MB6811:|DB8PR04MB6811:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB8PR04MB6811F5BB71FA9D69699E8ED6F0BE0@DB8PR04MB6811.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-forefront-prvs: 0401647B7F
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4L+SO1U9rvlqvRYSLMKJigaWwjyfQ1nOfY8un+USydkCmamCKmpVGr1nuxHnjvul77EaE9B3pWlAl7h3Os7PMgPjI0JkTVGYUwfjG+BDbnRtPS4q1GnSxlXkIhFIKekDZLV6b1XVcH3A0gU5qJ/iRzc/2hnP0Myq6jTaqYKL/xeZUNyTXoxK2V9c4VxYfWOGTXgwr0u5XvuYXPpb5QapjxxfKMU0rR5KKsCwpjl0Ryf7HxgA0Uj8GgxfohX8hJBDTwkURUHcY/iCtGGTchRT5cH0NZBJnWq1N6n5S+/0x4l/6rgdibekZNIS7oBhyjvl6tAsuRHjtqwn5i2SZzACA6j24qBcUWB8RCDUEXbKaVk6Q7g891TXyT2YOhl1qpWZcaXvDvYddEwOANb7s5LesZuIdBIhMDsjxfwya4gxPoSvmzjquMcawtWG+m2+Ec3kvgMqAC7j8Yuq/n1HPK9+KN6mUL+bQN1C1kv9hCquS1hg3MUNwejO54QaXgjCjB8I4U1ntAf12TCY9nZgGnlwUO0SE72u3t5cPW/IVIyhNjw=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB5785.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(39860400002)(366004)(376002)(346002)(396003)(33430700001)(110136005)(86362001)(7696005)(316002)(33440700001)(9686003)(55016002)(71200400001)(66446008)(66946007)(76116006)(8936002)(8676002)(66476007)(64756008)(66556008)(6506007)(26005)(4744005)(7416002)(33656002)(478600001)(5660300002)(186003)(52536014)(2906002)(921003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: BP9EnVCLO8BB/VaClUkCP6qX8Jo7O+8qHmNWk8JPUZmipgWcJyEh4aHvWR2M3BMWwhr/XbpYUVaGSD1y+z2lWmOfvbqqjt9LygNHiiQFR4ujzvipii5ecnu56chSeg9xKhuEePIGnO/C/g/koza1LMrkWCwwa5aPkVHo7WLqbrJxwgoIlYkihFD62HK5EB6OPlJ6876dCL6ELmgfd8NC/gL4ZLOLOWftrwdZt3zSNEjCbUb2RxMHMLcBN9MX2aGYRYPs6edqBj+fiSuwugthTYRiTzbMzEtNO0e4ArNXFWsmHMk96TRz1ZKNmbuhRfz6AXoXqN8Fm298JNr2tgyvav2gK1QtT46VRf9joI2uiIBRqXWbq4twrFpquK9Elx2BzxByyp7YajYHXiVFe3otb1jwxjGXsE0ObYaC6J/hwaMpmirMWMTfwqH4J1KGoweHX5cYc620JHKDmO7RclSTEVKhywtYJhyPGJOiTMB0Yxk=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b025d2ed-8ebc-4bc6-ab8c-08d7f6555d82
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2020 09:17:59.6143
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: f9ORB11xjEUgaJJFkBjtu8b8/rmKKT1FmyuxHHaO6kNeNn6Fvpl0gU1W42GyLi/+QN3dezaei5OQNhCzdDM/xMRysIzlaKzUniWhBAfN3W8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6811
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vinicius,
 
 
-On 11 May 2020, at 22:43, Yonghong Song wrote:
-
-> On 5/11/20 5:40 AM, Eelco Chaudron wrote:
->> When the probe code was failing for any reason ENOTSUP was returned, 
->> even
->> if this was due to no having enough lock space. This patch fixes this 
->> by
->> returning EPERM to the user application, so it can respond and 
->> increase
->> the RLIMIT_MEMLOCK size.
->>
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->> ---
->> v3: Updated error message to be more specific as suggested by Andrii
->> v2: Split bpf_object__probe_name() in two functions as suggested by 
->> Andrii
->>
->>   tools/lib/bpf/libbpf.c |   31 ++++++++++++++++++++++++++-----
->>   1 file changed, 26 insertions(+), 5 deletions(-)
->>
->> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->> index 8f480e29a6b0..ad3043c5db13 100644
->> --- a/tools/lib/bpf/libbpf.c
->> +++ b/tools/lib/bpf/libbpf.c
->> @@ -3149,7 +3149,7 @@ int bpf_map__resize(struct bpf_map *map, __u32 
->> max_entries)
->>   }
->>    static int
->> -bpf_object__probe_name(struct bpf_object *obj)
->> +bpf_object__probe_loading(struct bpf_object *obj)
->>   {
->>   	struct bpf_load_program_attr attr;
->>   	char *cp, errmsg[STRERR_BUFSIZE];
->> @@ -3170,14 +3170,34 @@ bpf_object__probe_name(struct bpf_object 
->> *obj)
->>   	ret = bpf_load_program_xattr(&attr, NULL, 0);
->>   	if (ret < 0) {
->>   		cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
->> -		pr_warn("Error in %s():%s(%d). Couldn't load basic 'r0 = 0' BPF 
->> program.\n",
->> -			__func__, cp, errno);
->> +		pr_warn("Error in %s():%s(%d). Couldn't load trivial BPF "
->> +			"program. Make sure your kernel supports BPF "
->> +			"(CONFIG_BPF_SYSCALL=y) and/or that RLIMIT_MEMLOCK is "
->> +			"set to big enough value.\n", __func__, cp, errno);
->>   		return -errno;
+On Tue, 12 May 2020 9:42:23 Vinicius Costa Gomes wrote:
+> > +
+> > +     /* Rate unit is 100 kbps */
+> > +     cir =3D DIV_ROUND_UP(cbs_qopt->idleslope, 100);
+> > +     cir =3D (cir ? cir : 1);
+> > +     cir =3D min_t(u32, GENMASK(14, 0), cir);
 >
-> Just curious. Did "errno" always survive pr_warn() here? pr_warn() may 
-> call user supplied print function which it outside libbpf control.
-> Maybe should cache errno before calling pr_warn()?
+> Please rename 'cir' to "rate" or "idleslope".
+>
+> Also consider using clamp_t here and below (I just found out about it).
+>
+> > +     /* Burst unit is 4kB */
+> > +     cbs =3D DIV_ROUND_UP(cbs_qopt->hicredit, 4096);
+> > +     /* Avoid using zero burst size */
+> > +     cbs =3D (cbs ? cbs : 1);
+> > +     cbs =3D min_t(u32, GENMASK(5, 0), cbs);
+>=20
+> And please(!) rename 'cbs' to "burst" or "hicredit". Re-using the name "c=
+bs" with a completely different meaning here is confusing.
+>=20
+I will update this, using clamp_t seems more concise in the codes.
 
-I guess this issue has always been there, however, I sent out a v4 
-fixing this case.
-
->>   	}
->>   	close(ret);
->>  -	/* now try the same program, but with the name */
->> +	return 0;
->> +}
->> +
->> +static int
->> +bpf_object__probe_name(struct bpf_object *obj)
->> +{
->> +	struct bpf_load_program_attr attr;
->> +	struct bpf_insn insns[] = {
->> +		BPF_MOV64_IMM(BPF_REG_0, 0),
->> +		BPF_EXIT_INSN(),
->> +	};
->> +	int ret;
->> +
->> +	/* make sure loading with name works */
->>  +	memset(&attr, 0, sizeof(attr));
->> +	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
->> +	attr.insns = insns;
->> +	attr.insns_cnt = ARRAY_SIZE(insns);
->> +	attr.license = "GPL";
->>   	attr.name = "test";
->>   	ret = bpf_load_program_xattr(&attr, NULL, 0);
->>   	if (ret >= 0) {
->> @@ -5386,7 +5406,8 @@ int bpf_object__load_xattr(struct 
->> bpf_object_load_attr *attr)
->>    	obj->loaded = true;
->>  -	err = bpf_object__probe_caps(obj);
->> +	err = bpf_object__probe_loading(obj);
->> +	err = err ? : bpf_object__probe_caps(obj);
->>   	err = err ? : bpf_object__resolve_externs(obj, obj->kconfig);
->>   	err = err ? : bpf_object__sanitize_and_load_btf(obj);
->>   	err = err ? : bpf_object__sanitize_maps(obj);
->>
-
+Regards,
+Xiaoliang
