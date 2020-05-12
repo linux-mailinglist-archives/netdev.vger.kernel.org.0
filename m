@@ -2,158 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 046CE1CEDE1
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 09:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B151CEE02
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 09:27:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728934AbgELHQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 03:16:06 -0400
-Received: from mail-eopbgr60115.outbound.protection.outlook.com ([40.107.6.115]:25651
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726067AbgELHQF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 03:16:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=beh3datbENnYNaL/6QMN3l8pcHruMxZRoOLd6/Qxqpaw1yynp4FRvK78vSWrOkN27W/9wZ+IUOxxgr93qktsgecu6D0j8b89uZq2f137SYPx4ZapmXDLSANhRsNq+b4LsycuQqDhWI7UvClXsLnQO+e0a2lj0SOXicHSIuEVzC3zs7X5JooRMh+MIn0lfSnYAqmm5Qz/EW/3oYiVo7eAWwH7aP2A+Rw9O6TEoWl95CjgRp0nn+YuiYxUvog2fftx7ywD3RZldKXyGjW+Xtomr9yHsy/VTDJ1ytzYMzLnmc7hc7YHHQ8TXVq4zvyryVOKFNtSCVJu3VQjQR2ZLH8cAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u+GbaDbn2h4W4XUW+9japFqKY/p0Ora/EcjHsbeO1QE=;
- b=HZK4Rqu1PWje+r1ODzL1DQ9o4TsNHK2LO4UHo1AQZsGgfnTBf+s8BQsf5NjJ6w0s/LObSAEKryntLr16Eshbwgc3zLsZn0I3eBI+SnHiKyKFtvkoHq5ZdSeDTZSWfoJJZkRU0/LJFccu+yWYujVFLnwaHTHIsKrr9yRYR/N1cWTfOlzumy+Zfi3x7Wyfmj7c5/oz5lYqjyntOYmZEY00XP/HnRPMF1qyQ+YZxoJfSMFu7kRwshw1z8nTVGlOf6JNYORvo+ORx+5NO6PsVEHNJS7Tf1vFNN5RsrW0zpXg9qMExabW6rQRv4tiKWVhN3EalJTqmlR24ADunwrn9K+6YQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u+GbaDbn2h4W4XUW+9japFqKY/p0Ora/EcjHsbeO1QE=;
- b=SecffhJQ2zpbeBEtiarsMb03rvkq2mwXR1M9c94QO9tRh10ZwKdQhIMvt1Yf6SNQmsXLbnhFSxPXbJZtXjHeIW53IWPuU6ig485+VFdzwYso9v3Pa4AwwzvO4BH9dSwR9+ThizgrUzhWFDesHJnM7t0XbcylyjU/sP1NE7USf0o=
-Authentication-Results: resnulli.us; dkim=none (message not signed)
- header.d=none;resnulli.us; dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:35::10)
- by VI1P190MB0352.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:32::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.30; Tue, 12 May
- 2020 07:15:59 +0000
-Received: from VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::f983:c9a8:573a:751c]) by VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- ([fe80::f983:c9a8:573a:751c%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
- 07:15:59 +0000
-Date:   Tue, 12 May 2020 10:15:52 +0300
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Subject: Re: [RFC next-next v2 1/5] net: marvell: prestera: Add driver for
- Prestera family ASIC devices
-Message-ID: <20200512071552.GA17235@plvision.eu>
-References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
- <20200430232052.9016-2-vadym.kochan@plvision.eu>
- <20200511125723.GI2245@nanopsycho>
- <20200511192422.GH25096@plvision.eu>
- <20200512055536.GM2245@nanopsycho>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200512055536.GM2245@nanopsycho>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: AM6PR0202CA0068.eurprd02.prod.outlook.com
- (2603:10a6:20b:3a::45) To VI1P190MB0399.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:35::10)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plvision.eu (217.20.186.93) by AM6PR0202CA0068.eurprd02.prod.outlook.com (2603:10a6:20b:3a::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Tue, 12 May 2020 07:15:58 +0000
-X-Originating-IP: [217.20.186.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 509d8dc0-0b44-4bf0-c4f2-08d7f6445234
-X-MS-TrafficTypeDiagnostic: VI1P190MB0352:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1P190MB03522F7E6C16F34EF56C547695BE0@VI1P190MB0352.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 0401647B7F
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bJE1cfSX90NfCZn/DCocMg2PP+3vQyK3t4EEmxfHtHjF0xL8z9+M2VcQvmRm4NkgGDY3bzuoLyIfnl4alImGDkaUwtrck/8bPs5VjKMr53o7Ro4ko3slYNhXbK0rlnfnAljEP5ebv3TEBTzsSzkUHSHlM3TKfFcGRrIx12fyD0X5oUuSiLu3SssRjY5snT76CPtZ0UesPhbFCv39GwPlhFCR6vWyNSgELvCfZA8oaCPtj/h7wQOYfbMNErYq4ESeP7ZUYGN8wznRaghhmlRfY7CmviaT8vv7/a/Gf2Yc9o8bP9TOQT6y6lwMAWZi5k1dyJZ92E7NRhfuOhrTd18OOmaKYwgUgSnuGqGjGHwCMmIBoaIFwvVDKRo5c2/o7z/Rr2jiMIQeDwv1Qg7SdBlZrE97Hc6vQLu59tIyd0cyq4IvfekA0METlFqEIuyLmxFvE4KszthhRB6PQ5yJuh7imA2Kl+X/1yQZk9OvHODDlVLxPI8HdiM6ECKkPnnolY5w1ssQm9SOT6g0q7vtTtVChg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0399.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(376002)(346002)(396003)(366004)(136003)(39830400003)(33430700001)(33656002)(6666004)(508600001)(36756003)(5660300002)(16526019)(186003)(956004)(2616005)(1076003)(26005)(44832011)(2906002)(54906003)(8676002)(8886007)(316002)(55016002)(33440700001)(6916009)(7696005)(4326008)(66476007)(52116002)(66556008)(8936002)(86362001)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: 37IqkhmyHnG5sbDiuuyktb2WNSYSk11buVQqygmXiSDzSpkf/hP8pEeyK0VEua/uPq4u4PBBs+uOsoaH+AksHE26LMRvolJrzqDb3eIErPVeCyK3fbaXA0gPdD02heHLEAk8M6PdOWwd7H+CqDV3r5f9m3agV8pv3ETJwUkA+olD7er8sc3WXCw6PzIZ9ZTBvcTQ3Y3cXDUgAtapdk2sv37t1thCYwoRakbv9Nx8nnAKm3F53wWOe+7PZqeYf+u3HWv5KChgQNG3/FOFuCWlnUGHBYRnzUjx4lGm0Py9fTIxzlQE3d/QoqgsH/0mLMrc7g5+ZJMSiuscQzQ71IL1ncGG6nBBbrgATaGbH1xf/nJ22MqgSPlE36uP4+e9/5JtgJdL6lDz/jCBpYDhoeHN0QgyqsbmOiydkRWKAqpek+wzB/difMCQIbQ407JT0EqV87wwjAKXFWLmkuvIZoULix8lbBWb5KmC7UGiz2gQPqM=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 509d8dc0-0b44-4bf0-c4f2-08d7f6445234
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2020 07:15:59.6152
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UJBT7sa3sKkHWyBOQFV0bj0EEfcaimaZJ7gv/XsrJocYMytJDzgeG4SW0bzEcShA5Y4OxZwbzENns1V7+VBNCxTSzckUSThAHIN57coC3EE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1P190MB0352
+        id S1728971AbgELH1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 03:27:03 -0400
+Received: from mx.socionext.com ([202.248.49.38]:47872 "EHLO mx.socionext.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725889AbgELH1B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 03:27:01 -0400
+Received: from unknown (HELO kinkan-ex.css.socionext.com) ([172.31.9.52])
+  by mx.socionext.com with ESMTP; 12 May 2020 16:27:00 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by kinkan-ex.css.socionext.com (Postfix) with ESMTP id 3B2B5180BB6;
+        Tue, 12 May 2020 16:27:00 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Tue, 12 May 2020 16:27:00 +0900
+Received: from plum.e01.socionext.com (unknown [10.213.132.32])
+        by kinkan.css.socionext.com (Postfix) with ESMTP id BC4481A0E67;
+        Tue, 12 May 2020 16:26:59 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH net-next v2] dt-bindings: net: Convert UniPhier AVE4 controller to json-schema
+Date:   Tue, 12 May 2020 16:26:50 +0900
+Message-Id: <1589268410-17066-1-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 07:55:36AM +0200, Jiri Pirko wrote:
-> Mon, May 11, 2020 at 09:24:22PM CEST, vadym.kochan@plvision.eu wrote:
-> >On Mon, May 11, 2020 at 02:57:23PM +0200, Jiri Pirko wrote:
-> >> [...]
-> >> 
-> >> >diff --git a/drivers/net/ethernet/marvell/prestera/prestera_dsa.c b/drivers/net/ethernet/marvell/prestera/prestera_dsa.c
-[...]
-> >> >+netdev_tx_t prestera_sdma_xmit(struct prestera_sdma *sdma, struct sk_buff *skb)
-> >> >+{
-> >> >+	struct device *dma_dev = sdma->sw->dev->dev;
-> >> >+	struct prestera_tx_ring *tx_ring;
-> >> >+	struct net_device *dev = skb->dev;
-> >> >+	struct prestera_sdma_buf *buf;
-> >> >+	int err;
-> >> >+
-> >> >+	tx_ring = &sdma->tx_ring;
-> >> >+
-> >> >+	buf = &tx_ring->bufs[tx_ring->next_tx];
-> >> >+	if (buf->is_used) {
-> >> >+		schedule_work(&sdma->tx_work);
-> >> >+		goto drop_skb;
-> >> >+	}
-> >> 
-> >> What is preventing 2 CPUs to get here and work with the same buf?
-> >
-> >I assume you mean serialization between the recycling work and xmit
-> >context ? Actually they are just updating 'is_used' field which
-> 
-> No.
-> 
-> >allows to use or free, what I can see is that may be I need to use
-> >something like READ_ONCE/WRITE_ONCE, but the rest looks safe for me:
-> >
-> >1) recycler updates is_used=false only after fully freeing the buffer,
-> >and only if it was set to true.
-> >
-> >2) xmit context gets next buffer to use only if it is freed
-> >(is_used=false), and sets it to true after buffer is ready to be sent.
-> >
-> >So, yes these contexts both update this field but in strict sequence.
-> >
-> >If you mean of protecting of xmit on several CPUS so, the xmit should be
-> >serialized on kernel, and the driver uses one queue which (as I
-> >underand) is bound to particular CPU.
-> 
-> How is it serialized? You get here (to prestera_sdma_xmit()) on 2 CPUs
-> with the same sdma pointer and 2 skbs.
-> 
+Convert the UniPhier AVE4 controller binding to DT schema format.
 
-My understanding is:
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+---
 
-dev_hard_start_xmit is the entry function which is called by the
-networking layer to send skb via device (qos scheduler, pktgen, xfrm,
-core - dev_direct_xmit(), etc).
+Changes since v1:
+- Set true to phy-mode and phy-handle instead of $ref
+- Add mac-address and local-mac-address for existing dts warning
 
-All they acquire the HARD_TX_LOCK which locks particular tx queue. And
-since the driver uses one tx queue there should be no concurrent access
-inside ndo_start_xmit, right ?
+ .../bindings/net/socionext,uniphier-ave4.txt       |  64 ------------
+ .../bindings/net/socionext,uniphier-ave4.yaml      | 111 +++++++++++++++++++++
+ MAINTAINERS                                        |   2 +-
+ 3 files changed, 112 insertions(+), 65 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
+ create mode 100644 Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
 
-[...]
+diff --git a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
+deleted file mode 100644
+index 4e85fc4..0000000
+--- a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
++++ /dev/null
+@@ -1,64 +0,0 @@
+-* Socionext AVE ethernet controller
+-
+-This describes the devicetree bindings for AVE ethernet controller
+-implemented on Socionext UniPhier SoCs.
+-
+-Required properties:
+- - compatible: Should be
+-	- "socionext,uniphier-pro4-ave4" : for Pro4 SoC
+-	- "socionext,uniphier-pxs2-ave4" : for PXs2 SoC
+-	- "socionext,uniphier-ld11-ave4" : for LD11 SoC
+-	- "socionext,uniphier-ld20-ave4" : for LD20 SoC
+-	- "socionext,uniphier-pxs3-ave4" : for PXs3 SoC
+- - reg: Address where registers are mapped and size of region.
+- - interrupts: Should contain the MAC interrupt.
+- - phy-mode: See ethernet.txt in the same directory. Allow to choose
+-	"rgmii", "rmii", "mii", or "internal" according to the PHY.
+-	The acceptable mode is SoC-dependent.
+- - phy-handle: Should point to the external phy device.
+-	See ethernet.txt file in the same directory.
+- - clocks: A phandle to the clock for the MAC.
+-	For Pro4 SoC, that is "socionext,uniphier-pro4-ave4",
+-	another MAC clock, GIO bus clock and PHY clock are also required.
+- - clock-names: Should contain
+-	- "ether", "ether-gb", "gio", "ether-phy" for Pro4 SoC
+-	- "ether" for others
+- - resets: A phandle to the reset control for the MAC. For Pro4 SoC,
+-	GIO bus reset is also required.
+- - reset-names: Should contain
+-	- "ether", "gio" for Pro4 SoC
+-	- "ether" for others
+- - socionext,syscon-phy-mode: A phandle to syscon with one argument
+-	that configures phy mode. The argument is the ID of MAC instance.
+-
+-The MAC address will be determined using the optional properties
+-defined in ethernet.txt.
+-
+-Required subnode:
+- - mdio: A container for child nodes representing phy nodes.
+-         See phy.txt in the same directory.
+-
+-Example:
+-
+-	ether: ethernet@65000000 {
+-		compatible = "socionext,uniphier-ld20-ave4";
+-		reg = <0x65000000 0x8500>;
+-		interrupts = <0 66 4>;
+-		phy-mode = "rgmii";
+-		phy-handle = <&ethphy>;
+-		clock-names = "ether";
+-		clocks = <&sys_clk 6>;
+-		reset-names = "ether";
+-		resets = <&sys_rst 6>;
+-		socionext,syscon-phy-mode = <&soc_glue 0>;
+-		local-mac-address = [00 00 00 00 00 00];
+-
+-		mdio {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-
+-			ethphy: ethphy@1 {
+-				reg = <1>;
+-			};
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+new file mode 100644
+index 0000000..7d84a86
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+@@ -0,0 +1,111 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/socionext,uniphier-ave4.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Socionext AVE ethernet controller
++
++maintainers:
++  - Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
++
++description: |
++  This describes the devicetree bindings for AVE ethernet controller
++  implemented on Socionext UniPhier SoCs.
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++
++properties:
++  compatible:
++    enum:
++      - socionext,uniphier-pro4-ave4
++      - socionext,uniphier-pxs2-ave4
++      - socionext,uniphier-ld11-ave4
++      - socionext,uniphier-ld20-ave4
++      - socionext,uniphier-pxs3-ave4
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  phy-mode: true
++
++  phy-handle: true
++
++  mac-address: true
++
++  local-mac-address: true
++
++  clocks:
++    minItems: 1
++    maxItems: 4
++
++  clock-names:
++    oneOf:
++      - items:          # for Pro4
++        - const: gio
++        - const: ether
++        - const: ether-gb
++        - const: ether-phy
++      - const: ether    # for others
++
++  resets:
++    minItems: 1
++    maxItems: 2
++
++  reset-names:
++    oneOf:
++      - items:          # for Pro4
++        - const: gio
++        - const: ether
++      - const: ether    # for others
++
++  socionext,syscon-phy-mode:
++    $ref: /schemas/types.yaml#definitions/phandle-array
++    description:
++      A phandle to syscon with one argument that configures phy mode.
++      The argument is the ID of MAC instance.
++
++  mdio:
++    $ref: mdio.yaml#
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - phy-mode
++  - phy-handle
++  - clocks
++  - clock-names
++  - resets
++  - reset-names
++  - mdio
++
++additionalProperties: false
++
++examples:
++  - |
++    ether: ethernet@65000000 {
++        compatible = "socionext,uniphier-ld20-ave4";
++                reg = <0x65000000 0x8500>;
++                interrupts = <0 66 4>;
++                phy-mode = "rgmii";
++                phy-handle = <&ethphy>;
++                clock-names = "ether";
++                clocks = <&sys_clk 6>;
++                reset-names = "ether";
++                resets = <&sys_rst 6>;
++                socionext,syscon-phy-mode = <&soc_glue 0>;
++
++                mdio {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++
++                        ethphy: ethernet-phy@1 {
++                                reg = <1>;
++                        };
++                };
++        };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0abba1a..5fd93d1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15614,7 +15614,7 @@ SOCIONEXT (SNI) AVE NETWORK DRIVER
+ M:	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
++F:	Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+ F:	drivers/net/ethernet/socionext/sni_ave.c
+ 
+ SOCIONEXT (SNI) NETSEC NETWORK DRIVER
+-- 
+2.7.4
+
