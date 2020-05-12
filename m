@@ -2,109 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72C041CEE3D
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 09:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CED101CEE64
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 09:44:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729166AbgELHgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 03:36:04 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:28284 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725813AbgELHgC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 03:36:02 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589268961; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=WYkjPn3kNYCXdEOxwxPSbshKe2uDidq2LAMu5m1i9/4=;
- b=bVE9vW4xQt9yVvGCHzkxE0iXJ2DpynKQEs9PkLN6s5+mVdQJ+YufNPD/fHCYnxwjmALAEyOi
- K3YbuOYbvBeyRob78pBnPiKa8zmNgPjJOLhTIi2czmjEpGDlWHb6Uos2u2KNOip6W5z1mp7S
- zQCYf522B13PDV3Nwopg+V/onbk=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5eba51dc.7fb1586fdb20-smtp-out-n04;
- Tue, 12 May 2020 07:35:56 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6B366C43637; Tue, 12 May 2020 07:35:55 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1A7E8C4478F;
-        Tue, 12 May 2020 07:35:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1A7E8C4478F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728957AbgELHns convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 12 May 2020 03:43:48 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:46193 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725823AbgELHnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 03:43:47 -0400
+Received: by mail-ot1-f66.google.com with SMTP id z25so9733775otq.13;
+        Tue, 12 May 2020 00:43:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WL99cZpSCjAY9uTUemuiOdybxhEn/p8SNKkMW2pnMgk=;
+        b=UWfiuJ1JfrhBaZAuKcvb251vQMZUZxP6ntM+CasVEGUuDByMshQ4AkU7RrnO4/SlLz
+         X4oYzFb6UliokNfhYEgnBC0nnyNQpZmc+O7fGZr5amyPhr1cIIe/4rSuCm8gqlgj/FQr
+         ++kyEpzk6RO3nmTIGO0Uge5OlEHbsOKrpeHDSmItzOri1HNVpqoGdEJofGG4IAmpumTj
+         UPTpxnUFJwSNCambQMmeRTyoozBAdUSt08yoJl9zYDbQj51ZR14f1cSCR9BNXhVy1irk
+         i4U5SA/GB+/uUEvfLp0GITSwUidSTuTtLBsJXY8MztmWIbRjXsQb/HUdmHpPKshIyDnE
+         HYXA==
+X-Gm-Message-State: AGi0PuanBb5RTaSTFotTjFYhnFbmUJ66ufhnGx5DFq9u/NqaDRTOs8Dk
+        7AafZ7YqJzOjnKxR3HJPE4g5NTLs9qfmqCKOUcQ=
+X-Google-Smtp-Source: APiQypIDWmbHTXLtnOKXo30M5B3vTkf3nDlAfbBCqheKh4YZxA4lrYnndNhzQpgu3wBVeeut/IwxOF4lTFymYCLt8jo=
+X-Received: by 2002:a9d:7990:: with SMTP id h16mr15276353otm.145.1589269426183;
+ Tue, 12 May 2020 00:43:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wil6210: Replace zero-length array with flexible-array
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200507151120.GA4469@embeddedor>
-References: <20200507151120.GA4469@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Maya Erez <merez@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200512073555.6B366C43637@smtp.codeaurora.org>
-Date:   Tue, 12 May 2020 07:35:55 +0000 (UTC)
+References: <20200511154930.190212-1-Jerome.Pouiller@silabs.com> <20200511154930.190212-14-Jerome.Pouiller@silabs.com>
+In-Reply-To: <20200511154930.190212-14-Jerome.Pouiller@silabs.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 12 May 2020 09:43:34 +0200
+Message-ID: <CAMuHMdVZxy+FZGPhDxotCBeEX3O4ZMkmGAwmVFXQE9ZoijDN5g@mail.gmail.com>
+Subject: Re: [PATCH 13/17] staging: wfx: fix endianness of the field 'len'
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     driverdevel <devel@driverdev.osuosl.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
+Hi Jerome,
 
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
-> 
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
-> 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertently introduced[3] to the codebase from now on.
-> 
-> Also, notice that, dynamic memory allocations won't be affected by
-> this change:
-> 
-> "Flexible array members have incomplete type, and so the sizeof operator
-> may not be applied. As a quirk of the original implementation of
-> zero-length arrays, sizeof evaluates to zero."[1]
-> 
-> sizeof(flexible-array-member) triggers a warning because flexible array
-> members have incomplete type[1]. There are some instances of code in
-> which the sizeof operator is being incorrectly/erroneously applied to
-> zero-length arrays and the result is zero. Such instances may be hiding
-> some bugs. So, this work (flexible-array member conversions) will also
-> help to get completely rid of those sorts of issues.
-> 
-> This issue was found with the help of Coccinelle.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+On Mon, May 11, 2020 at 5:53 PM Jerome Pouiller
+<Jerome.Pouiller@silabs.com> wrote:
+> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+>
+> The struct hif_msg is received from the hardware. So, it declared as
+> little endian. However, it is also accessed from many places in the
+> driver. Sparse complains about that:
+>
+>     drivers/staging/wfx/bh.c:88:32: warning: restricted __le16 degrades to integer
+>     drivers/staging/wfx/bh.c:88:32: warning: restricted __le16 degrades to integer
+>     drivers/staging/wfx/bh.c:93:32: warning: restricted __le16 degrades to integer
+>     drivers/staging/wfx/bh.c:93:32: warning: cast to restricted __le16
+>     drivers/staging/wfx/bh.c:93:32: warning: restricted __le16 degrades to integer
+>     drivers/staging/wfx/bh.c:121:25: warning: incorrect type in argument 2 (different base types)
+>     drivers/staging/wfx/bh.c:121:25:    expected unsigned int len
+>     drivers/staging/wfx/bh.c:121:25:    got restricted __le16 [usertype] len
+>     drivers/staging/wfx/hif_rx.c:27:22: warning: restricted __le16 degrades to integer
+>     drivers/staging/wfx/hif_rx.c:347:39: warning: incorrect type in argument 7 (different base types)
+>     drivers/staging/wfx/hif_rx.c:347:39:    expected unsigned int [usertype] len
+>     drivers/staging/wfx/hif_rx.c:347:39:    got restricted __le16 const [usertype] len
+>     drivers/staging/wfx/hif_rx.c:365:39: warning: incorrect type in argument 7 (different base types)
+>     drivers/staging/wfx/hif_rx.c:365:39:    expected unsigned int [usertype] len
+>     drivers/staging/wfx/hif_rx.c:365:39:    got restricted __le16 const [usertype] len
+>     drivers/staging/wfx/./traces.h:195:1: warning: incorrect type in assignment (different base types)
+>     drivers/staging/wfx/./traces.h:195:1:    expected int msg_len
+>     drivers/staging/wfx/./traces.h:195:1:    got restricted __le16 const [usertype] len
+>     drivers/staging/wfx/./traces.h:195:1: warning: incorrect type in assignment (different base types)
+>     drivers/staging/wfx/./traces.h:195:1:    expected int msg_len
+>     drivers/staging/wfx/./traces.h:195:1:    got restricted __le16 const [usertype] len
+>     drivers/staging/wfx/debug.c:319:20: warning: restricted __le16 degrades to integer
+>     drivers/staging/wfx/secure_link.c:85:27: warning: restricted __le16 degrades to integer
+>     drivers/staging/wfx/secure_link.c:85:27: warning: restricted __le16 degrades to integer
 
-Patch applied to ath-next branch of ath.git, thanks.
+Thanks for your patch!
 
-104f3d95d8d6 wil6210: Replace zero-length array with flexible-array
+> In order to make Sparse happy and to keep access from the driver easy,
+> this patch declare 'len' with native endianness.
+>
+> On reception of hardware data, this patch takes care to do byte-swap and
+> keep Sparse happy.
+
+Which means sparse can no longer do any checking on the field,
+and new bugs may/will creep in in the future, unnoticed.
+
+> --- a/drivers/staging/wfx/hif_api_general.h
+> +++ b/drivers/staging/wfx/hif_api_general.h
+> @@ -23,7 +23,10 @@
+>  #define HIF_COUNTER_MAX           7
+>
+>  struct hif_msg {
+> -       __le16 len;
+> +       // len is in fact little endian. However, it is widely used in the
+> +       // driver, so we declare it in native byte order and we reorder just
+> +       // before/after send/receive it (see bh.c).
+> +       u16    len;
+
+While there's a small penalty associated with always doing the conversion
+on big-endian platforms, it will probably be lost in the noise anyway.
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-https://patchwork.kernel.org/patch/11534175/
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
