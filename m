@@ -2,94 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A25661CEE8B
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 09:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D901CEEBD
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728911AbgELHuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 03:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725813AbgELHuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 03:50:16 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F56C061A0E
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 00:50:15 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id u4so9721207lfm.7
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 00:50:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0WcvL1fwWHBcoJrzzXl8Y9z1jSMK5TQ31/Tsh0Md1tM=;
-        b=lNCp3F2Ygx600BVUbC8Dg65qCe8TRx2s/0qFe+EqHdwdxv8YFEdJi6IcfbzWVt2HMY
-         MalNqPo0hm6pS+0/z3OeeB9uZfVhY09wz6Di5PMa/AW14vJUx72Kf52Zbt0ijbNPSCFW
-         jxBe1qKSLXTDwcfPqRa14svgGfsA4qQ4zAdmGPrrCVk42hnFa6qnDI+WmBD2TU3kx1CX
-         1yXMOF/tFh6ipOPxz/o0vqXDO0wD+mraXvv02dfmalJ78h04Lw+15lAQtS24wuJvb2gr
-         RkZ0SAcnyQgKHD+Rn2r8MZE0HzLSK3hhMf/tZuc2DoDnA+EDkvHt5TBXt94hi3IV5Oxt
-         0HiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0WcvL1fwWHBcoJrzzXl8Y9z1jSMK5TQ31/Tsh0Md1tM=;
-        b=Wl8M1kgf0Esu1YmdviLT1D35PkicRUAjNfs+miU60hepCLc3beOAmljDoRPxeL0I8Z
-         wnHrGMK8ob+Nghn+ET1vkcyMeikZimDeFyypKmSitik5bJaQEqv8MsavR/KJ3jvjWQr0
-         01Yt6/L1pq5mhoMrwN+Fg6W3J51U6XjVfFieSlY0Ql8ETE5zxja+Bg8MiRS9wXSSgxpQ
-         7E7v4RJJQ9auWc+AwDkFen9xu29VcON1oDvHS/wZEPPaWlzZHxtGeVJ/1kIdK0Mb6E7b
-         2lrMF1ULPToHnZVHG8nQN1b5CVMlSST55unjSO2lmbmob1nbzTs90NWu4szYSNCQKvqP
-         Lsmw==
-X-Gm-Message-State: AOAM531ofd8/mZq4Ey02u9JY5JhzVUYm0BRFTVeG6taEyljPD1vnW9Eb
-        RU9wCIBjUNd0cRjOiDwGWVrEgg==
-X-Google-Smtp-Source: ABdhPJz1U/AKQVEmTfopcIhAFk7bSfKlU8QA5XuMgd57DBQmKEFzrpOVHrwsLbl+e3E3ff+YR113KA==
-X-Received: by 2002:ac2:5199:: with SMTP id u25mr13532900lfi.80.1589269813516;
-        Tue, 12 May 2020 00:50:13 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:61b:c4fe:68d6:9937:777b:c884? ([2a00:1fa0:61b:c4fe:68d6:9937:777b:c884])
-        by smtp.gmail.com with ESMTPSA id y129sm13395002lfc.23.2020.05.12.00.50.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 May 2020 00:50:12 -0700 (PDT)
-Subject: Re: [PATCH] dt-bindings: sh_eth: Sort compatible string in increasing
- number of the SoC
-To:     Rob Herring <robh@kernel.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Lad Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Simon Horman <horms+renesas@verge.net.au>,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "David S. Miller" <davem@davemloft.net>, devicetree@vger.kernel.org
-References: <1587724695-27295-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20200511212204.GA1071@bogus>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <bba5ab6f-d077-544a-5085-4f7cdc9aa0ca@cogentembedded.com>
-Date:   Tue, 12 May 2020 10:50:06 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200511212204.GA1071@bogus>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1729177AbgELIE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 04:04:28 -0400
+Received: from mga09.intel.com ([134.134.136.24]:16642 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725889AbgELIE2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 04:04:28 -0400
+IronPort-SDR: R5SmQ3kmTPq6HPPgtP2oO9PIyWC4dIGuFOk5vjf2nlX7XbwizYxIMoY+5K0xXPqIa0tgMno0Pu
+ y+fAsEzkExug==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2020 01:04:27 -0700
+IronPort-SDR: j2VzWrkRB3i7RK2vI6S/dogEsgbXubtrfoZ0GW9bCf5uuIeUBkwMutmeeCOX9hckYFWHZd8zvI
+ tFt2Tv4mP3uA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,383,1583222400"; 
+   d="scan'208";a="371486433"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.105])
+  by fmsmga001.fm.intel.com with ESMTP; 12 May 2020 01:04:24 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     mst@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jasowang@redhat.com
+Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH V2] ifcvf: move IRQ request/free to status change handlers
+Date:   Tue, 12 May 2020 16:00:44 +0800
+Message-Id: <1589270444-3669-1-git-send-email-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+This commit move IRQ request and free operations from probe()
+to VIRTIO status change handler to comply with VIRTIO spec.
 
-On 12.05.2020 0:22, Rob Herring wrote:
+VIRTIO spec 1.1, section 2.1.2 Device Requirements: Device Status Field
+The device MUST NOT consume buffers or send any used buffer
+notifications to the driver before DRIVER_OK.
 
->> Sort the items in the compatible string list in increasing number of SoC.
->>
->> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->> ---
->>   Documentation/devicetree/bindings/net/renesas,ether.yaml | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
-> 
-> Applied, thanks!
+Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+---
+changes from V1:
+remove ifcvf_stop_datapath() in status == 0 handler, we don't need to do this
+twice; handle status == 0 after DRIVER_OK -> !DRIVER_OK handler (Jason Wang)
 
-    Mhm, there was v2 with a corrected subject?
+ drivers/vdpa/ifcvf/ifcvf_main.c | 120 ++++++++++++++++++++++++----------------
+ 1 file changed, 73 insertions(+), 47 deletions(-)
 
-MBR, Sergei
+diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+index abf6a061..d529ed6 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_main.c
++++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+@@ -28,6 +28,60 @@ static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
+ 	return IRQ_HANDLED;
+ }
+ 
++static void ifcvf_free_irq_vectors(void *data)
++{
++	pci_free_irq_vectors(data);
++}
++
++static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
++{
++	struct pci_dev *pdev = adapter->pdev;
++	struct ifcvf_hw *vf = &adapter->vf;
++	int i;
++
++
++	for (i = 0; i < queues; i++)
++		devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
++
++	ifcvf_free_irq_vectors(pdev);
++}
++
++static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
++{
++	struct pci_dev *pdev = adapter->pdev;
++	struct ifcvf_hw *vf = &adapter->vf;
++	int vector, i, ret, irq;
++
++	ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
++				    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
++	if (ret < 0) {
++		IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
++		return ret;
++	}
++
++	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
++		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
++			 pci_name(pdev), i);
++		vector = i + IFCVF_MSI_QUEUE_OFF;
++		irq = pci_irq_vector(pdev, vector);
++		ret = devm_request_irq(&pdev->dev, irq,
++				       ifcvf_intr_handler, 0,
++				       vf->vring[i].msix_name,
++				       &vf->vring[i]);
++		if (ret) {
++			IFCVF_ERR(pdev,
++				  "Failed to request irq for vq %d\n", i);
++			ifcvf_free_irq(adapter, i);
++
++			return ret;
++		}
++
++		vf->vring[i].irq = irq;
++	}
++
++	return 0;
++}
++
+ static int ifcvf_start_datapath(void *private)
+ {
+ 	struct ifcvf_hw *vf = ifcvf_private_to_vf(private);
+@@ -118,17 +172,34 @@ static void ifcvf_vdpa_set_status(struct vdpa_device *vdpa_dev, u8 status)
+ {
+ 	struct ifcvf_adapter *adapter;
+ 	struct ifcvf_hw *vf;
++	u8 status_old;
++	int ret;
+ 
+ 	vf  = vdpa_to_vf(vdpa_dev);
+ 	adapter = dev_get_drvdata(vdpa_dev->dev.parent);
++	status_old = ifcvf_get_status(vf);
+ 
+-	if (status == 0) {
++	if ((status_old & VIRTIO_CONFIG_S_DRIVER_OK) &&
++	    !(status & VIRTIO_CONFIG_S_DRIVER_OK)) {
+ 		ifcvf_stop_datapath(adapter);
++		ifcvf_free_irq(adapter, IFCVF_MAX_QUEUE_PAIRS * 2);
++	}
++
++	if (status == 0) {
+ 		ifcvf_reset_vring(adapter);
+ 		return;
+ 	}
+ 
+-	if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
++	if ((status & VIRTIO_CONFIG_S_DRIVER_OK) &&
++	    !(status_old & VIRTIO_CONFIG_S_DRIVER_OK)) {
++		ret = ifcvf_request_irq(adapter);
++		if (ret) {
++			status = ifcvf_get_status(vf);
++			status |= VIRTIO_CONFIG_S_FAILED;
++			ifcvf_set_status(vf, status);
++			return;
++		}
++
+ 		if (ifcvf_start_datapath(adapter) < 0)
+ 			IFCVF_ERR(adapter->pdev,
+ 				  "Failed to set ifcvf vdpa  status %u\n",
+@@ -284,38 +355,6 @@ static void ifcvf_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
+ 	.set_config_cb  = ifcvf_vdpa_set_config_cb,
+ };
+ 
+-static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
+-{
+-	struct pci_dev *pdev = adapter->pdev;
+-	struct ifcvf_hw *vf = &adapter->vf;
+-	int vector, i, ret, irq;
+-
+-
+-	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
+-		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
+-			 pci_name(pdev), i);
+-		vector = i + IFCVF_MSI_QUEUE_OFF;
+-		irq = pci_irq_vector(pdev, vector);
+-		ret = devm_request_irq(&pdev->dev, irq,
+-				       ifcvf_intr_handler, 0,
+-				       vf->vring[i].msix_name,
+-				       &vf->vring[i]);
+-		if (ret) {
+-			IFCVF_ERR(pdev,
+-				  "Failed to request irq for vq %d\n", i);
+-			return ret;
+-		}
+-		vf->vring[i].irq = irq;
+-	}
+-
+-	return 0;
+-}
+-
+-static void ifcvf_free_irq_vectors(void *data)
+-{
+-	pci_free_irq_vectors(data);
+-}
+-
+ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -349,13 +388,6 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		return ret;
+ 	}
+ 
+-	ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
+-				    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
+-	if (ret < 0) {
+-		IFCVF_ERR(pdev, "Failed to alloc irq vectors\n");
+-		return ret;
+-	}
+-
+ 	ret = devm_add_action_or_reset(dev, ifcvf_free_irq_vectors, pdev);
+ 	if (ret) {
+ 		IFCVF_ERR(pdev,
+@@ -379,12 +411,6 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	adapter->pdev = pdev;
+ 	adapter->vdpa.dma_dev = &pdev->dev;
+ 
+-	ret = ifcvf_request_irq(adapter);
+-	if (ret) {
+-		IFCVF_ERR(pdev, "Failed to request MSI-X irq\n");
+-		goto err;
+-	}
+-
+ 	ret = ifcvf_init_hw(vf, pdev);
+ 	if (ret) {
+ 		IFCVF_ERR(pdev, "Failed to init IFCVF hw\n");
+-- 
+1.8.3.1
+
