@@ -2,89 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A80091CF52A
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 15:01:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23E1A1CF52B
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 15:02:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729871AbgELNBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 09:01:46 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:49972 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727859AbgELNBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 09:01:45 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9DED920075;
-        Tue, 12 May 2020 13:01:44 +0000 (UTC)
-Received: from us4-mdac16-2.at1.mdlocal (unknown [10.110.49.148])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9B7348009B;
-        Tue, 12 May 2020 13:01:44 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.9])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3FC084008A;
-        Tue, 12 May 2020 13:01:43 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CF66C580094;
-        Tue, 12 May 2020 13:01:42 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 12 May
- 2020 14:01:27 +0100
-Subject: Re: [PATCH net-next 2/8] sfc: make capability checking a nic_type
- function
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-References: <8154dba6-b312-7dcf-7d49-cd6c6801ffc2@solarflare.com>
- <ad6213aa-b163-8708-47a4-553cb5aa0a8f@solarflare.com>
- <20200511153636.0f9cd385@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <05438101-2706-e791-abd3-e52694fdfe9c@solarflare.com>
-Date:   Tue, 12 May 2020 14:01:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1729896AbgELNCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 09:02:51 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:33084 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725923AbgELNCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 09:02:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589288569;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FHy5uGJufwajym7rdjrv9kV8JNPYEhlwWl3JM7PucCY=;
+        b=INjbV2fMDNIYtQnfaT6Mrqfjc46DhqlS8JZgQJvveq7QW8G97zCEiZ0e7Vezwdd84U9fkB
+        2kcILxS4Clu8vktQsSmWKavnRBadA34Q2b9txwkiXXLysj1eytubroxWNQp6C+hARnz/7H
+        gXL/O/HsQ7FQbcFfO6qKxOvdSnV8Hdc=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-22-dFLU8sZRPCK6G1SdYqF5lw-1; Tue, 12 May 2020 09:02:47 -0400
+X-MC-Unique: dFLU8sZRPCK6G1SdYqF5lw-1
+Received: by mail-lj1-f197.google.com with SMTP id q2so1870247ljq.16
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 06:02:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=FHy5uGJufwajym7rdjrv9kV8JNPYEhlwWl3JM7PucCY=;
+        b=hngq66h2X7RFYBfARk9vh0OHeBaQXJKajrDepPdbN2I8Oc4Sxd4jzGyAMbD6sRtKph
+         T3Cp3i/ayptK+ctROa8pXzGOogrJaAJBXCxpiolx1HILlI4v+2UyqUKlA7OkTAzcyitt
+         SDtQsm52eT+9kqSMp6uWSRA8psiwADmdWGi/yaeR5yt2mUjf7Sx4i7BPjXbkVreoVeZh
+         eoXb5msnHb+rX9S59MtzDVghalQ0+eGivChVBYS8tvydIQSywKxy773kuXEVtWSra9yj
+         axt8xdxvkyky/SXQjCjwbVF2vS/L0nePcPcOR3Pz1NY2FgabLwAru8yhB/lxiTyoWZd4
+         cYRg==
+X-Gm-Message-State: AOAM532UqVuLyfw+ErmeEW4vdNfv5FiwFkMm8nMEFD2lbzLbVnLVJnWb
+        PLHXay274lxaUHrUCufSSQb0dsjU8zB3bRfCfuLmWVd3jT6weA74O8uNtyLhBLhfsC04CjpivMu
+        gZYeCytzTyZp6+Lem
+X-Received: by 2002:a2e:7d12:: with SMTP id y18mr14072018ljc.211.1589288565980;
+        Tue, 12 May 2020 06:02:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw//hj7tAEVjb/rIsYU5rJTYqMEdazOE6/ECf5hTxekXy1ChR/FmjGiMg3QXRzt8dMPWQkstg==
+X-Received: by 2002:a2e:7d12:: with SMTP id y18mr14071998ljc.211.1589288565675;
+        Tue, 12 May 2020 06:02:45 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id y9sm12667048ljy.31.2020.05.12.06.02.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2020 06:02:43 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 0E1D9181509; Tue, 12 May 2020 15:02:43 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: bpf: ability to attach freplace to multiple parents
+In-Reply-To: <alpine.LRH.2.21.2005121009220.22093@localhost>
+References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com> <87tv2e10ly.fsf@toke.dk> <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com> <87369wrcyv.fsf@toke.dk> <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com> <CACAyw9-FrwgBGjGT1CYrKJuyRJtwn0XUsifF_uR6LpRbcucN+A@mail.gmail.com> <20200326195340.dznktutm6yq763af@ast-mbp> <87o8sim4rw.fsf@toke.dk> <20200402202156.hq7wpz5vdoajpqp5@ast-mbp> <87o8s9eg5b.fsf@toke.dk> <20200402215452.dkkbbymnhzlcux7m@ast-mbp> <87h7wlwnyl.fsf@toke.dk> <alpine.LRH.2.21.2005121009220.22093@localhost>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 12 May 2020 15:02:42 +0200
+Message-ID: <87r1vpuwzx.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200511153636.0f9cd385@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25414.003
-X-TM-AS-Result: No-4.315900-8.000000-10
-X-TMASE-MatchedRID: QfHZjzml1E/mLzc6AOD8DfHkpkyUphL9TJDl9FKHbrljLp8Cm8vwFwoe
-        RRhCZWIB3MJzkJ3+U/XsW5cPdFl0/pE4FU2ZdQO4GjzBgnFZvQ42peumOpNjtBAdD7sCRtOxuYT
-        mfPxyM3h7RiXLCorjz8LudCkv+zQyeIh1rW8bWHm84C/3iwAgxKbwyy5bAB/921KK0dlzZ7r+ez
-        fog1uF08cf83XSWDzmK8CAdxh72JKDdmeMibEYB6JVTu7sjgg1SuH+GfgmQGe9V4YavKxf483+w
-        mITvMn4585VzGMOFzAQVjqAOZ5cjQtuKBGekqUpm+MB6kaZ2g4eMNFq12xjtyydBWABzJXYjctz
-        99r8+0Hu0Gop94Mor46iUi3d0e1p9cf9j6Mwhr7G1pj5SA3d/3ISmDYA39NZpEePV+HP7SWHzGT
-        HoCwyHhlNKSp2rPkW5wiX7RWZGYs2CWDRVNNHuzflzkGcoK72
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.315900-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25414.003
-X-MDID: 1589288503-5VeFGF_yKU6k
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/05/2020 23:36, Jakub Kicinski wrote:
-> Also with W=1:
+Alan Maguire <alan.maguire@oracle.com> writes:
+
+> On Tue, 12 May 2020, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
 >
->  ../drivers/net/ethernet/sfc/siena.c:951:14: warning: symbol 'siena_check_caps' was not declared. Should it be static?
-> 1a3,5
->  ../drivers/net/ethernet/sfc/siena.c:951:14: warning: no previous prototype for â€˜siena_check_capsâ€™ [-Wmissing-prototypes]
->    951 | unsigned int siena_check_caps(const struct efx_nic *efx,
->        |              ^~~~~~~~~~~~~~~~
-Yup, it turns out not only is this missing 'static' but it's also not
- used — the assignment into siena_a0_nic_typeis missing, I must have
- screwed up a rebase at some point.  I'll send a follow-up, since Dave
- has already applied it.  Thanks for the review.
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>=20
+>> >> > Currently fentry/fexit/freplace progs have single prog->aux->linked=
+_prog pointer.
+>> >> > It just needs to become a linked list.
+>> >> > The api extension could be like this:
+>> >> > bpf_raw_tp_open(prog_fd, attach_prog_fd, attach_btf_id);
+>> >> > (currently it's just bpf_raw_tp_open(prog_fd))
+>> >> > The same pair of (attach_prog_fd, attach_btf_id) is already passed =
+into prog_load
+>> >> > to hold the linked_prog and its corresponding btf_id.
+>> >> > I'm proposing to extend raw_tp_open with this pair as well to
+>> >> > attach existing fentry/fexit/freplace prog to another target.
+>> >> > Internally the kernel verify that btf of current linked_prog
+>> >> > exactly matches to btf of another requested linked_prog and
+>> >> > if they match it will attach the same prog to two target programs (=
+in case of freplace)
+>> >> > or two kernel functions (in case of fentry/fexit).
+>> >>=20
+>> >> API-wise this was exactly what I had in mind as well.
+>> >
+>> > perfect!
+>>
+>
+> Apologies in advance if I've missed a way to do this, but
+> for fentry/fexit, if we could attach the same program to
+> multiple kernel functions, it would be great it we could
+> programmatically access the BTF func proto id for the
+> attached function (prog->aux->attach_btf_id I think?).
 
-(And I'll try to get in the habit of checking the SOBs better; sorry
- about that.  I'm still used to the old "first sign-off is the point
- of exit from the company" flow; plus I messed up my checkpatch
- invocation in a way that prevented it catching this.)
+Yes! I pushed for adding this to the GET_LINK_INFO operation, but it
+wasn't included the first time around; I still think it ought to be added.
 
--ed
+Actually in general, getting the btf_id of the currently running
+function for any type of BPF program would be good; e.g., for xdpdump we
+want to attach to a running XDP program, but we need the btf_id of the
+main function. And because the name can be truncated to BPF_OBJ_NAME_LEN
+when returned from the kernel, we have to walk the BTF info for the
+program, and basically guess...
+
+-Toke
+
