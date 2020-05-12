@@ -2,146 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B7671CEB41
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:15:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E9B11CEB43
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:16:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728524AbgELDP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 23:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        id S1728626AbgELDQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 23:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727942AbgELDP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:15:27 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B23CC061A0C;
-        Mon, 11 May 2020 20:15:27 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id n14so12235454qke.8;
-        Mon, 11 May 2020 20:15:27 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728564AbgELDQS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:16:18 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13C8C061A0E;
+        Mon, 11 May 2020 20:16:18 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id q24so8705477pjd.1;
+        Mon, 11 May 2020 20:16:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OCjk5lRyNnGdzoT7H/2cpQ+ftIGab0ek4X9QCagt82A=;
-        b=MiGIrO0OjLF30WDYQeiMxr2H4+e6I601oMrswaP/iAMJONiVaQWBQ6dSxIipPlL72o
-         BAL3d5QmMjDTVa/bho2IsL/FEy9gL0g7OvS68ANLgW+94MZssagebSrhLIDsA14ajswz
-         wC2q1asbZEmWP2VLGKONXNGSFYPuQLeaDlYMvgFPkiwaQK4ox837jcvtQJbLBWBmsiMa
-         vfcFc4+M49nPQ+5GnzlbkLifQ1CoTyTmL7yzMp96vORrRNSFBNl7b+zQY6vA925PdRa8
-         dX5tWkpWjdeYQK1mw7JqHp/oV+aKYSyfGGTmr0uAigxpIGVDkk18EEz4mlq6XbYMr3pl
-         fQgA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TMTWD2AEyTJvNKmDbcm7IQuSKi2QY0etChP/BpKXe0Q=;
+        b=F89vVYAiesAXDj1ZMHZrzG6bGF08aVe6u9c9mIiR2uqM6D41RNRi0BccSiG7dj/PVT
+         yhh8VhuzouUV7xbY2PPE9/BHwh1ehR7NBsx86mhbds96z9M4gjC4I20Z1vHAHX4LbfOn
+         2zkXxI1u/KaZKrOYqUZZGwX4Z5ZkAOtRxUzM5a65fi8KR5VUOMCqTYi1uHg5+D5obpRv
+         L/CIbeKOzuVrir/s6gRFePiAIkd/ohblJ2OJtQXTzay9RZ8/MlKElE1PVONJycnTFlWQ
+         Gu+Ph+KYm5VDHUl9ehIT1BXZ0BkOoG/OiZHfnEpBBh5vObyttX5d57Am4+AeJwkmMrzu
+         8LdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OCjk5lRyNnGdzoT7H/2cpQ+ftIGab0ek4X9QCagt82A=;
-        b=EqG0jJAdxufsAz3vqnv5NSORANPWsPYFcNdhR4eiWfzLhi4myxSnXRdzri9WqodVIF
-         AIAOeDBfG1aaMYMd6lktuFo26oiB2lc5xgYD4kjIMPK0lK20I8ClftvVI6T1QE1zYl5W
-         wrj/NWNa89F1/VdzmIPvalR9Iu+5FVb39KuvII3JnDkGoJXbS0IJLxzS8mg8mjQeE51Y
-         09h4DJYur9rC7A+luMVZeNgVqCWRs66YKeT8hNnYG7vQy2FgUAOpl5Twyqoh/yB+XM2y
-         b/2KP3fjWR5gfItNQuBZt3/Jet/5sVqgLFisZHRnEvIS9WyEKAhS+NVHEKlIlBiSrdMP
-         n3lA==
-X-Gm-Message-State: AGi0PubrXAlQQt2+3dmTA+A4ukjr/q7HLnHAyekXFiIGXbCZMt4Y1k4P
-        JXeq+4Z6vDkojMe22RZhgyp8FKSncs6zetipI4k=
-X-Google-Smtp-Source: APiQypJYdzzEcFFEKlqS/mxg7pT5lU0SC4lN7u+/MPQA1qSfE8vHPKnd95NrdTm5EbdVykEv14ysH7coZ99595VegFs=
-X-Received: by 2002:ae9:e713:: with SMTP id m19mr18877994qka.39.1589253326381;
- Mon, 11 May 2020 20:15:26 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TMTWD2AEyTJvNKmDbcm7IQuSKi2QY0etChP/BpKXe0Q=;
+        b=O4KTl6fKtzr3IThvj4CC5efihExg0flhjcLplUckfU/mjpR+T5d1kvrmtEFHRXs3B5
+         nf93s/u8UtaNDyyxZa9ui/Xxq8aPZeOFO5h6t/x5X9yLxjG/8QM6EshNTYmw/iZe6CMq
+         cNDmXlICffQJmwmgx1SrZUYvcFhHApq4EW7yutFqfPchT7UTJL7r/uYTwLA8Upy/Zp9F
+         wIHCwcCz+nKztmo+8RzIetO8YiDdnntU8DgmoF8ts+4xfnI0GLLQN+SZHCWSLjV+ritz
+         FhPOykaSCFQ//HGtpC3hh1oKllFoZqS3dkhFwviJPInb2fP4R5Bu5d+VfY+HmsZ/UXm5
+         iYhQ==
+X-Gm-Message-State: AGi0PubEwJyoPMWLWFoXPKmHwe18G8hhYRaxymoOrdsqpbS81IiTQgH7
+        82aW+DHWL749M7DuAX4SZTKMkQd3
+X-Google-Smtp-Source: APiQypIjkdBluToqMWAYZfwoXkyHBB3/YZZNVujMHtl3WhuyPDh6qm36TvXC2Cr3muURSDTXAD/VBw==
+X-Received: by 2002:a17:90b:4c88:: with SMTP id my8mr27001635pjb.199.1589253377745;
+        Mon, 11 May 2020 20:16:17 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id v9sm11206720pju.3.2020.05.11.20.16.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 May 2020 20:16:16 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/4] net: ethernet: validate pause autoneg
+ setting
+To:     Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1589243050-18217-1-git-send-email-opendmb@gmail.com>
+ <1589243050-18217-2-git-send-email-opendmb@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <7810cf09-0dac-638b-6ec0-e8a5002ae7bf@gmail.com>
+Date:   Mon, 11 May 2020 20:16:15 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200507053915.1542140-1-yhs@fb.com> <20200507053918.1542509-1-yhs@fb.com>
- <CAEf4BzaV6u1eTta4h4+mftQCQVOGPf0Q++B8tZxho+Uq3M1=mA@mail.gmail.com> <849a051d-5c42-a61c-91ef-15a2bdb2b509@fb.com>
-In-Reply-To: <849a051d-5c42-a61c-91ef-15a2bdb2b509@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 May 2020 20:15:15 -0700
-Message-ID: <CAEf4BzYzwnQuvjR-deQ1OaPMaNSQcnFQOCEaAWvTrdgqOQarJg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 03/21] bpf: support bpf tracing/iter programs
- for BPF_LINK_CREATE
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1589243050-18217-2-git-send-email-opendmb@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 8, 2020 at 6:36 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 5/8/20 11:24 AM, Andrii Nakryiko wrote:
-> > On Wed, May 6, 2020 at 10:41 PM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >> Given a bpf program, the step to create an anonymous bpf iterator is:
-> >>    - create a bpf_iter_link, which combines bpf program and the target.
-> >>      In the future, there could be more information recorded in the link.
-> >>      A link_fd will be returned to the user space.
-> >>    - create an anonymous bpf iterator with the given link_fd.
-> >>
-> >> The bpf_iter_link can be pinned to bpffs mount file system to
-> >> create a file based bpf iterator as well.
-> >>
-> >> The benefit to use of bpf_iter_link:
-> >>    - using bpf link simplifies design and implementation as bpf link
-> >>      is used for other tracing bpf programs.
-> >>    - for file based bpf iterator, bpf_iter_link provides a standard
-> >>      way to replace underlying bpf programs.
-> >>    - for both anonymous and free based iterators, bpf link query
-> >>      capability can be leveraged.
-> >>
-> >> The patch added support of tracing/iter programs for BPF_LINK_CREATE.
-> >> A new link type BPF_LINK_TYPE_ITER is added to facilitate link
-> >> querying. Currently, only prog_id is needed, so there is no
-> >> additional in-kernel show_fdinfo() and fill_link_info() hook
-> >> is needed for BPF_LINK_TYPE_ITER link.
-> >>
-> >> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> >> Signed-off-by: Yonghong Song <yhs@fb.com>
-> >> ---
-> >
-> > still looks good, but I realized show_fdinfo and fill_link_info is
-> > missing, see request for a follow-up below :)
-> >
-> >
-> >>   include/linux/bpf.h            |  1 +
-> >>   include/linux/bpf_types.h      |  1 +
-> >>   include/uapi/linux/bpf.h       |  1 +
-> >>   kernel/bpf/bpf_iter.c          | 62 ++++++++++++++++++++++++++++++++++
-> >>   kernel/bpf/syscall.c           | 14 ++++++++
-> >>   tools/include/uapi/linux/bpf.h |  1 +
-> >>   6 files changed, 80 insertions(+)
-> >>
-> >
-> > [...]
-> >
-> >> +static const struct bpf_link_ops bpf_iter_link_lops = {
-> >> +       .release = bpf_iter_link_release,
-> >> +       .dealloc = bpf_iter_link_dealloc,
-> >> +};
-> >
-> > Link infra supports .show_fdinfo and .fill_link_info methods, there is
-> > no need to block on this, but it would be great to implement them from
-> > BPF_LINK_TYPE_ITER as well in the same release as a follow-up. Thanks!
->
-> The reason I did not implement is due to we do not have additional
-> information beyond prog_id to present. The prog_id itself gives all
-> information about this link. I looked at tracing program
-
-Not all, e.g., bpf_iter target is invisible right now. It's good to
-have this added in a follow up, but certainly not a blocker.
 
 
-> show_fdinfo/fill_link_info, the additional attach_type is printed.
-> But attach_type is obvious for BPF_LINK_TYPE_ITER which does not
-> need print.
->
-> In the future when we add more stuff to parameterize the bpf_iter,
-> will need to implement these two callbacks as well as bpftool.
+On 5/11/2020 5:24 PM, Doug Berger wrote:
+> A comment in uapi/linux/ethtool.h states "Drivers should reject a
+> non-zero setting of @autoneg when autoneogotiation is disabled (or
+> not supported) for the link".
+> 
+> That check should be added to phy_validate_pause() to consolidate
+> the code where possible.
+> 
+> Fixes: 22b7d29926b5 ("net: ethernet: Add helper to determine if pause configuration is supported")
+> Signed-off-by: Doug Berger <opendmb@gmail.com>
 
-yep
-
->
-> >
-> >
-> > [...]
-> >
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+--
+Florian
