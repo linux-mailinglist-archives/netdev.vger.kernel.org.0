@@ -2,107 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E431CFF36
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 22:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E781CFF3D
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 22:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731048AbgELU1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 16:27:37 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57332 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728882AbgELU1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 16:27:37 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jYbV0-0001GB-3h; Tue, 12 May 2020 22:27:34 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jYbUz-000MI3-No; Tue, 12 May 2020 22:27:33 +0200
-Subject: Re: [PATCH v5 bpf-next 2/3] bpf: implement CAP_BPF
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
-        linux-security-module@vger.kernel.org, acme@redhat.com,
-        jamorris@linux.microsoft.com, jannh@google.com, kpsingh@google.com
-References: <20200508215340.41921-1-alexei.starovoitov@gmail.com>
- <20200508215340.41921-3-alexei.starovoitov@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <311508c5-b80f-498e-2d0a-b98fe751ead9@iogearbox.net>
-Date:   Tue, 12 May 2020 22:27:33 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1731109AbgELU3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 16:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37690 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725938AbgELU3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 16:29:13 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FA8C061A0C;
+        Tue, 12 May 2020 13:29:11 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id l18so17487248wrn.6;
+        Tue, 12 May 2020 13:29:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hj9oLR6epPx2P7OTgcVV89Q5gnN8De7ZEoi4iCaFpls=;
+        b=PbIhMlkiv+0EJ1IWuEDTuu6sTgYOiQH+dgGbu8dShMqnJC8TqE5spRyGL7iH5wvcuw
+         IOFjlLOa6tM5bg/tf+9DFsP/WI0p3PRNhpA3Ln73pRrYUkzMNyT9uJwb3yU++rybhq44
+         Tse34Rejr7Nn7CDT42ynduXF8nFPzUpqrpDqfCskWNvNjGZZ7YSp9fgcR87vAq/KgYOk
+         l1ZuT6qMtOmdCj35pIsNdGfARo+E4daiRmb9jFE0NZ7fqQ4Et0Pxb4V2Eu/d+LFczSGj
+         mp7w6xg/kHZabilVSJPk29isNQLy2McYScGlW325nLskpwezYfbuxOQjI9DBpTsNAbd8
+         RW8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hj9oLR6epPx2P7OTgcVV89Q5gnN8De7ZEoi4iCaFpls=;
+        b=Z1Yv8m8VeuXtYUv3fGM+AlsRljSp+vTwYxEob0vwKjUUs21rNDWmygd0S9WLynTlkB
+         0dCj8usznYH8Q3/MpaowBo8L2O08x9CPzBM/pJIMg1uC0BkW4b5SbqW8rRjQhVzISXul
+         B/JvfEyWyZV256GLR2THwRhrDbJmp+khqWGgJseQeZCsbRsbX3TxUuz9qVX4qZmWmyl9
+         K0JPtJhlWzb4B8SsP1NmEj8K+RSQsnX53S/oVOPpjbrgdyuTAstchlswLjvVdCz6kwAd
+         6G4a316dlBuKOURphrgxuzTQLzVf3isrV4qMPW6ZUBwqOBtrh+KxDNx6UTJdWrsg5TEW
+         mu4w==
+X-Gm-Message-State: AGi0PuZnxUpWdfu/xVxJQw2oA9Wz8xbez6t4XWYKkYuy9xFnoa+deHiu
+        ep+N+j+TwDlbT5y2dqF7wFs4CeTx
+X-Google-Smtp-Source: APiQypLp1SW7rRRIFz0yl7+YFwI3Hvq6ReSgeUhLPwHtCaEHDZ7E1AmVj9RCFvmy5n6Zte6GMLhMhA==
+X-Received: by 2002:a5d:408b:: with SMTP id o11mr25401159wrp.97.1589315349701;
+        Tue, 12 May 2020 13:29:09 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id z7sm24359351wrl.88.2020.05.12.13.29.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2020 13:29:08 -0700 (PDT)
+Subject: Re: stable/linux-4.4.y bisection: baseline.login on
+ at91-sama5d4_xplained
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Guillaume Tucker <guillaume.tucker@collabora.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <5eb8399a.1c69fb81.c5a60.8316@mx.google.com>
+ <2db7e52e-86ae-7c87-1782-8c0cafcbadd8@collabora.com>
+ <20200512111059.GA34497@piout.net>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <980597f7-5170-72f2-ec2f-efc64f5e27eb@gmail.com>
+Date:   Tue, 12 May 2020 13:29:06 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200508215340.41921-3-alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200512111059.GA34497@piout.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25810/Tue May 12 14:14:24 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/8/20 11:53 PM, Alexei Starovoitov wrote:
-[...]
-> @@ -2880,8 +2933,6 @@ static int bpf_prog_test_run(const union bpf_attr *attr,
->   	struct bpf_prog *prog;
->   	int ret = -ENOTSUPP;
->   
-> -	if (!capable(CAP_SYS_ADMIN))
-> -		return -EPERM;
 
-Should above be under bpf_capable() as well or is the intention to really let
-(fully) unpriv users run sk_filter test progs here? I would assume only progs
-that have prior been loaded under bpf_capable() should suffice, so no need to
-lower the bar for now, no?
 
->   	if (CHECK_ATTR(BPF_PROG_TEST_RUN))
->   		return -EINVAL;
->   
-> @@ -3163,7 +3214,7 @@ static int bpf_prog_get_info_by_fd(struct bpf_prog *prog,
->   	info.run_time_ns = stats.nsecs;
->   	info.run_cnt = stats.cnt;
->   
-> -	if (!capable(CAP_SYS_ADMIN)) {
-> +	if (!bpf_capable()) {
+On 5/12/2020 4:10 AM, Alexandre Belloni wrote:
+> Hi,
+> 
+> On 12/05/2020 06:54:29+0100, Guillaume Tucker wrote:
+>> Please see the bisection report below about a boot failure.
+>>
+>> Reports aren't automatically sent to the public while we're
+>> trialing new bisection features on kernelci.org but this one
+>> looks valid.
+>>
+>> It appears to be due to the fact that the network interface is
+>> failing to get brought up:
+>>
+>> [  114.385000] Waiting up to 10 more seconds for network.
+>> [  124.355000] Sending DHCP requests ...#
+>> ..#
+>> .#
+>>  timed out!
+>> [  212.355000] IP-Config: Reopening network devices...
+>> [  212.365000] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+>> #
+>>
+>>
+>> I guess the board would boot fine without network if it didn't
+>> have ip=dhcp in the command line, so it's not strictly a kernel
+>> boot failure but still an ethernet issue.
+>>
+> 
+> I think the resolution of this issue is
+> 99f81afc139c6edd14d77a91ee91685a414a1c66. If this is taken, then I think
+> f5aba91d7f186cba84af966a741a0346de603cd4 should also be backported.
 
-Given the JIT dump this also exposes addresses when bpf_dump_raw_ok() passes.
-I presume okay, but should probably be documented given CAP_SYS_ADMIN isn't
-required anymore?
-
->   		info.jited_prog_len = 0;
->   		info.xlated_prog_len = 0;
->   		info.nr_jited_ksyms = 0;
-> @@ -3522,7 +3573,7 @@ static int bpf_btf_load(const union bpf_attr *attr)
->   	if (CHECK_ATTR(BPF_BTF_LOAD))
->   		return -EINVAL;
->   
-> -	if (!capable(CAP_SYS_ADMIN))
-> +	if (!bpf_capable())
->   		return -EPERM;
->   
->   	return btf_new_fd(attr);
-> @@ -3736,9 +3787,6 @@ static int link_create(union bpf_attr *attr)
->   	struct bpf_prog *prog;
->   	int ret;
->   
-> -	if (!capable(CAP_NET_ADMIN))
-> -		return -EPERM;
-> -
->   	if (CHECK_ATTR(BPF_LINK_CREATE))
->   		return -EINVAL;
->   
-> @@ -3784,9 +3832,6 @@ static int link_update(union bpf_attr *attr)
->   	u32 flags;
->   	int ret;
->   
-> -	if (!capable(CAP_NET_ADMIN))
-> -		return -EPERM;
-> -
->   	if (CHECK_ATTR(BPF_LINK_UPDATE))
->   		return -EINVAL;
->   
+Agreed.
+-- 
+Florian
