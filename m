@@ -2,95 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68BB01D008A
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 23:15:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D651A1D00D8
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 23:25:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731409AbgELVPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 17:15:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58386 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731048AbgELVPV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 17:15:21 -0400
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9E292205C9;
-        Tue, 12 May 2020 21:15:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589318120;
-        bh=h/sNaaOBNEIhDG5F88sE/lVoo2pnusKIDpAt5Nj16bU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=15ccKmPYwu9UCPoRG67pADblyZ343olE5H31aaftayRfho+H9r4IYa/rTbJdBV7WC
-         OTQe9SpA57tTMSlJTWp4pP3rMrftlBuiYD7omQb7t+We2XOU+MxoZE8cNtjEbnGJvD
-         IRtmMWUCDGYkEQEEjd4r4AhFBhhQZIxAlEREc2ZY=
-Date:   Tue, 12 May 2020 17:15:19 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: stable/linux-4.4.y bisection: baseline.login on
- at91-sama5d4_xplained
-Message-ID: <20200512211519.GB29995@sasha-vm>
-References: <5eb8399a.1c69fb81.c5a60.8316@mx.google.com>
- <2db7e52e-86ae-7c87-1782-8c0cafcbadd8@collabora.com>
- <20200512111059.GA34497@piout.net>
- <980597f7-5170-72f2-ec2f-efc64f5e27eb@gmail.com>
+        id S1731065AbgELVZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 17:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726268AbgELVZr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 17:25:47 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07286C061A0C
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 14:25:47 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id x5so6694153ioh.6
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 14:25:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=xvU4oxQbNTcOIq498Yw+l1mtZyKUpLkWiMZJgcrZo0I=;
+        b=dG5yhBEFgwQPH66XklA9auezxk/1PD3pHxArPDs06tp2kMtqPHyMXKkRN+hLLSa50W
+         gZZmbP0owFhQlX1fWYREIIuawbrTqP3KfzJEQ/GLrKBCkLvTX75c9O10ug8QK1wJ3mGF
+         kH32omurEIbkqLaN/v248ryxJicxu978x0WQjBqjmufGpF20LfQihEHCSbhhkgpYXmjt
+         5zBf+yNyUq/fNo4q/wZ+/FDBcCXST+M+ULqVVA916y7i+y7CGpLa1X/jK1fz0xUy9m8Y
+         cLcUcokWf3PywHI0GaRt5oQJjTFG9dPdDFaIqtLQEW4eto/uOHI90rw+3/YAmyaqcAkW
+         wvyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=xvU4oxQbNTcOIq498Yw+l1mtZyKUpLkWiMZJgcrZo0I=;
+        b=oJfLWvTwFbRoZKeXNJHPo2Yu1XwpCzTS7AZ1zCe+Iy0n4DzPZNSvjzFPbR+Lxe+evE
+         g431shrjOAywt4vXToNMaFgVL/pyNunMq6lPTkbcLly47KaV8RuAjALiSWgaxIE3zb9g
+         kmpAPI8ifMJF2S0H849wkinmYHJSitQFXOIMphIEeTqp1wi3a4rReiOP32uAXPzwKhwV
+         7bVhb+/ZJ7G/ywSkwzpxn6mDDpxQk9AN11uJI45QynX1LImrLecksyGYX+6dCHXcjh5j
+         mF+2An3nhlOog7h3q/11AXrVLPYLA8WuSDj5NQlZGmDz75dmrSm1wwEYqO/POJ+5Njfn
+         OE1Q==
+X-Gm-Message-State: AGi0PubV9PutPTx/sxIG9Y2jzoABhWP4yfHy42hJqyc/WVqp42m8Byfb
+        oAZKVtOKlCXMxEZ0nJS7E0MefvkQl69tuwzI7fBcp7o8
+X-Google-Smtp-Source: APiQypKz2rQj1A3qFC17+5Idncjf3UaDYOes30Yhq41u5ixdQustG0JcWIRszOHaNPYTRM16FG5EOH1cdkU4ckTrJXk=
+X-Received: by 2002:a02:cd03:: with SMTP id g3mr21945404jaq.61.1589318746139;
+ Tue, 12 May 2020 14:25:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <980597f7-5170-72f2-ec2f-efc64f5e27eb@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <CANP3RGe3fnCwj5NUxKu4VDcw=_95yNkCiC2Y4L9otJS1Hnyd-g@mail.gmail.com>
+ <20200512210038.11447-1-jengelh@inai.de>
+In-Reply-To: <20200512210038.11447-1-jengelh@inai.de>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Tue, 12 May 2020 14:25:34 -0700
+Message-ID: <CANP3RGdgrYaisD2Ecc9Uqzpay6ADGu+3rmTP0PDohfDT7=7TfQ@mail.gmail.com>
+Subject: Re: [PATCH v2] doc: document danger of applying REJECT to INVALID CTs
+To:     Jan Engelhardt <jengelh@inai.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 01:29:06PM -0700, Florian Fainelli wrote:
->
->
->On 5/12/2020 4:10 AM, Alexandre Belloni wrote:
->> Hi,
->>
->> On 12/05/2020 06:54:29+0100, Guillaume Tucker wrote:
->>> Please see the bisection report below about a boot failure.
->>>
->>> Reports aren't automatically sent to the public while we're
->>> trialing new bisection features on kernelci.org but this one
->>> looks valid.
->>>
->>> It appears to be due to the fact that the network interface is
->>> failing to get brought up:
->>>
->>> [  114.385000] Waiting up to 10 more seconds for network.
->>> [  124.355000] Sending DHCP requests ...#
->>> ..#
->>> .#
->>>  timed out!
->>> [  212.355000] IP-Config: Reopening network devices...
->>> [  212.365000] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
->>> #
->>>
->>>
->>> I guess the board would boot fine without network if it didn't
->>> have ip=dhcp in the command line, so it's not strictly a kernel
->>> boot failure but still an ethernet issue.
->>>
->>
->> I think the resolution of this issue is
->> 99f81afc139c6edd14d77a91ee91685a414a1c66. If this is taken, then I think
->> f5aba91d7f186cba84af966a741a0346de603cd4 should also be backported.
->
->Agreed.
-
-Okay, I've queued both for 4.4, thanks!
-
-f5aba91d7f1 had a little conflict with missing 2b2427d06426 ("phy:
-micrel: Add ethtool statistics counters") but I've worked around that.
-
--- 
-Thanks,
-Sasha
+Reviewed-by: Maciej =C5=BBenczykowski <zenczykowski@gmail.com>
