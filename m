@@ -2,106 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A4681CF223
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 12:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 770801CF2CA
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 12:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729377AbgELKJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 06:09:14 -0400
-Received: from mout.kundenserver.de ([212.227.17.10]:50527 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726187AbgELKJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 06:09:13 -0400
-Received: from mail-qk1-f171.google.com ([209.85.222.171]) by
- mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1N2EHo-1j6RLc3bMU-013hDb; Tue, 12 May 2020 12:09:11 +0200
-Received: by mail-qk1-f171.google.com with SMTP id c64so12898336qkf.12;
-        Tue, 12 May 2020 03:09:10 -0700 (PDT)
-X-Gm-Message-State: AGi0PuZtGYkCzvW9ze2IebpkH+6reCMNOgelB0BrJK+xQSby4JXg6h3r
-        IZNad6i5enzSHfnpgxTYPOT9tDAX4cxl1SaIEVk=
-X-Google-Smtp-Source: APiQypKTcYyt4ixMf5aDlkcKt9IM/Lo13Ipwd2SLsjuT2wZJl/fy1N14jRioNhjHMVCLeyhQ3hFMj+jJEn4RCCuW56E=
-X-Received: by 2002:a37:434b:: with SMTP id q72mr19292048qka.352.1589278149549;
- Tue, 12 May 2020 03:09:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200512100230.17752-1-grygorii.strashko@ti.com>
-In-Reply-To: <20200512100230.17752-1-grygorii.strashko@ti.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 12 May 2020 12:08:53 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1atn3x6zntqPWpGwuLtujysTRFp+fvD-rbkddFBaA0ZA@mail.gmail.com>
-Message-ID: <CAK8P3a1atn3x6zntqPWpGwuLtujysTRFp+fvD-rbkddFBaA0ZA@mail.gmail.com>
-Subject: Re: [PATCH net v4] net: ethernet: ti: Remove TI_CPTS_MOD workaround
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1729391AbgELKqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 06:46:18 -0400
+Received: from mail-mw2nam10on2052.outbound.protection.outlook.com ([40.107.94.52]:6240
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726187AbgELKqR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 06:46:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nmM3tnvcO3FesllDvt4JdHxbiIKR6RZgfc9AdnKiEk2h6NQ219g3y0HCNotWOT1KSqypvyMRHv/W1jmKcdBotYrBZW9kUEwARdA1TDgGrL6XaVeOH73yhjgK8V3jK4URtHpWVs37rY+QhrP/ia4QmszBq5dw+oJPlE8xo7yCjM5ZpBhLvdkC2Q44vI4WXFqT1wd4o9PCsJx0Sy5Mqfl3GvSzrvZ+eol4xbSO7luNoPN2RQl9TRPePvPkl4A6BrNVHw4/YW0oJL8WZnAJBbWvbUsDKVwOht53Oc7Bfqb5ZIFaPw4wuj19u/PeJxNFHiB3eG500dG2/RsW5rhcIPQqog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/INPiDwLm7Y7o+u+nwaJB2Eas52FPS76u7R1hv6MwSc=;
+ b=HXZSmUGvIWMCIxVE9gQ0EdvXAVLraFnnBtoWGyrGrbdtrUIJw8dXaUJcU8sMInDrB9mNX848lybZndqXFhbXQFNzbhqbnxtYEQGCvm+IMnQoVB536CaHqwLelqEusrIQKlKKoFF46FTbxOat0UC2hyWWfrJyO9+JgZUpEvC/RJ3CLsaCqdDammGmJt+k64wyjrAdV8ndqo8uc/ReUCIUKcIR0+s1HDij7gW9B0qK/uGNzuh2JB81fxwMkKFNTSh6S5B2M1qtdELVBU6Mt0M84rRHuVXehNkVuhsdiGxarMmPhpBVpCE9CN4xTnitdmRrdFWGSrR/YV1uKAcazbj8fg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/INPiDwLm7Y7o+u+nwaJB2Eas52FPS76u7R1hv6MwSc=;
+ b=GnzuB0Ia4wqqAg2qF1RSbawSiiPmeweN8URbZETpAzdfG7wygDUpshHi+P6+5Ft9SI6udBwrz2GfAmAVHMMxifpoJ/6DndzpLtUNf4NCiNi6B6DvzyqVjX8ZBvOMpy5kxUDmj7iKbwKAZCen27rrI3EXhTwNqHvp1Pv0RHJeDvc=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=synaptics.com;
+Received: from BYAPR03MB3573.namprd03.prod.outlook.com (2603:10b6:a02:ae::15)
+ by BYAPR03MB3671.namprd03.prod.outlook.com (2603:10b6:a02:ab::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.33; Tue, 12 May
+ 2020 10:46:14 +0000
+Received: from BYAPR03MB3573.namprd03.prod.outlook.com
+ ([fe80::d8fb:de22:43b7:fcb7]) by BYAPR03MB3573.namprd03.prod.outlook.com
+ ([fe80::d8fb:de22:43b7:fcb7%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
+ 10:46:14 +0000
+Date:   Tue, 12 May 2020 18:46:01 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        Clay McClure <clay@daemons.net>, Dan Murphy <dmurphy@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:gheQcQvXwyjMMR/JGpoKJf1MrgvzSyuZDvU+J5olOEhdbHFmEVe
- CBrTLi4kJW6LdvUUl7+tFaVkENO9k6pMRpr8xETahrFAcZ38hLq/dvgilFn+NCD73wGC4LF
- Fz+yVz0gycBUlgZDR0Vc/urLoMaGd9NpF0NdRsuvwi5+l38mk3y8nT0GSUD6p7sqWDbz2te
- hAF5pzaiJY0hEXNhcudyA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:nmHlNLNXEqQ=:uT7tBxew1Odw+95rcho8n3
- jxmZIuuWTIFlqaQrTxLk3Vri1fwmYYhXjeeYoSGb4I0RzY2SKoU3/d1G5GVLsI+zu4gkBTrPP
- dtN4zNLQieZlhRR6F95xCMo5RFfSk5rpKbmZ6k5zJPga89XsE+2nbzdXHj6VDXB+w6BadQZMv
- mrJjW5PZaDXX1oZBh3qHJmHS08BgqU4iDHSunsskFu2p4njWv5N+1LeRr0hUOcwzQPEFtglSQ
- ZLPS5oh0ZJknIMgB0fy5IPxFuWr0P5vwzu2/OKDUKs1yje71nPE1ofyr834oteXkFDoDmKVpv
- kbdQikBDh+r+HOoHijsyzMdjyEtgoDnxawnqNetF+ePukdNRXpHMNS78bpOXgCQNYjckJCUvX
- 5MgnZOmhGWhVJwxIO+AUSOkT/iOtcUmDxbj74UurKapAQHUIt4EYavLsfySpOWsBiXIjAYylG
- 8sc0frlopCGT6m/jAtI8II0Z+Cd+Yj06yu1RGn6HZIh856loS+G4notd1F9xeeKqCOD/Lhbl4
- A7ci58XBaGLsA7oA7uZmFb7Z9eBf3nA9/mUr7FxslOe1EhpW9Sy3xnEuDq7Q/NM25DrWSp+l2
- Lt/9I1mQosC006IMGo9R6nLtSmNlPQvwgoSTyAXk3/d8Ubykbr6FYIovbViXLCoxmdbiNPyGz
- jRSGNmlinZ0add5lPS9b89p5cDfNlhRrjABH8yppsSuHvAOa79HXa0RH2nJbpbE5ZNOxieCAd
- SUJq9MAIwaW4GG3IBk+OC2g5xUGjL3MdWI5jUdm1AZJRp8N2FHxFhypR92O4ZIKxAxqvIYQy3
- 1OllSvTRGSDhejtGc7o9m59LhrpwA4ch/pdE84Y76L8chkOHQk=
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: phy: realtek: clear interrupt during init for rtl8211f
+Message-ID: <20200512184601.40b1758a@xhacker.debian>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TY2PR04CA0004.apcprd04.prod.outlook.com
+ (2603:1096:404:f6::16) To BYAPR03MB3573.namprd03.prod.outlook.com
+ (2603:10b6:a02:ae::15)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (124.74.246.114) by TY2PR04CA0004.apcprd04.prod.outlook.com (2603:1096:404:f6::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26 via Frontend Transport; Tue, 12 May 2020 10:46:12 +0000
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+X-Originating-IP: [124.74.246.114]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: afde11a5-79be-4b60-8234-08d7f661b146
+X-MS-TrafficTypeDiagnostic: BYAPR03MB3671:
+X-Microsoft-Antispam-PRVS: <BYAPR03MB3671B8F477D027E3055824BBEDBE0@BYAPR03MB3671.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1824;
+X-Forefront-PRVS: 0401647B7F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ILxHXgg2+LXI8su7+Vb3fRZhDVJN6bJbmqz33boEJADp7em9piFixK/TE9Xrc4lncCLVBhQFFoPqkMY2BWCNZmMhdYNoMGydCRt7mjkClsitP0hsRie0n0z3l6d6uUQkpNlwLcHuJRi9+PmqZDVYhe7xXdtg3pWFktYDgq+Yp4Fgxpxcit5VqUJcNDhoanwn4LsuAUJKhhoatQdDJApdMlUrijerLVPkAGVz7nr2BBgMQyKoyQS5wfLuuk44tLP76S65YFhPcJaEZzQtlYlS7fRUxSLTEhKKLNxy42jgmqwEKjznD3vNSGuTEp6O82MqsXhCYiAZlIBz67ZoizPVFdI7/erXYI43SjDxO+DKqfQIn3xhHoBbXX84oT90sHoqvtTvYxQRWrtpK/XSaFjbpVQPZxf5TGziVoE9MgULEP9bQwUBS2m+WhfGUUbvrdd1YaajMOd7UwWE2oACWpashIYI/mRuq0hji5cZBbtD7ju+9AIi83xkn91oytaPoH0FtetBlretkzauEK+jD3NvmQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR03MB3573.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(33430700001)(9686003)(956004)(6666004)(6506007)(26005)(498600001)(4326008)(186003)(16526019)(66476007)(110136005)(8676002)(7696005)(66556008)(52116002)(33440700001)(55016002)(66946007)(86362001)(8936002)(2906002)(1076003)(5660300002)(4744005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: iOYBRQIeITUv/oAxnoTsETHZ0qEefNfO7Z4Zk0HdkWbb1/3tbygHa3Ix9jrRWG+eenS31h1SDSCTvCuHkRIKa7iwuTmYSTWNALKL8C64D7lEeaMFktEfFoZjdUmVNIkfCNS9Za3z68fAJW4a1emOrIL4LJK7II+7oP8CF7/wcmjUjYQhPPrJm6Owe975kOuqcacyud/yLLCdOZ6ZNEFYmGkQcMbLNZ/yov7n9fzEFpiBcGu2KOTESpPVSFdrjS5Lz/rmK/N6QVSIIFhweUC4eNE9VEC8HdfD5QViHPE1farJHHP23NtYhssApHUs4MQVu0XWg5N//zxlyPRvvZ/vMzCSlb/BInP3xKgdcmAc+2XBgmp3z9dwkC9/f2gaXsjIu9hbb5cnHrl7GXYPPm3srst1f8wdmyndWwv1jLZWZvhMeOMAq3vxUvnQeMAym46WxVz9+jJt0KNFQjgVslgUDlVhyUiKIEocPVdTDR+9T4X8JtxdBxnu12cUe1zYcn/l
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: afde11a5-79be-4b60-8234-08d7f661b146
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2020 10:46:14.5571
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: by2KEl96S1e9FqGR81cPApUlzrPo21vcAjKwqrfSWFi1Qko/wK24635kvFa4pI+tT89c+F9lD/faJwWcgkN+6A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB3671
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 12:02 PM Grygorii Strashko
-<grygorii.strashko@ti.com> wrote:
->
-> From: Clay McClure <clay@daemons.net>
->
-> My recent commit b6d49cab44b5 ("net: Make PTP-specific drivers depend on
-> PTP_1588_CLOCK") exposes a missing dependency in defconfigs that select
-> TI_CPTS without selecting PTP_1588_CLOCK, leading to linker errors of the
-> form:
->
-> drivers/net/ethernet/ti/cpsw.o: in function `cpsw_ndo_stop':
-> cpsw.c:(.text+0x680): undefined reference to `cpts_unregister'
->  ...
->
-> That's because TI_CPTS_MOD (which is the symbol gating the _compilation_ of
-> cpts.c) now depends on PTP_1588_CLOCK, and so is not enabled in these
-> configurations, but TI_CPTS (which is the symbol gating _calls_ to the cpts
-> functions) _is_ enabled. So we end up compiling calls to functions that
-> don't exist, resulting in the linker errors.
->
-> This patch fixes build errors and restores previous behavior by:
->  - ensure PTP_1588_CLOCK=y in TI specific configs and CPTS will be built
->  - remove TI_CPTS_MOD and, instead, add dependencies from CPTS in
->    TI_CPSW/TI_KEYSTONE_NETCP/TI_CPSW_SWITCHDEV as below:
->
->    config TI_CPSW_SWITCHDEV
->    ...
->     depends on TI_CPTS || !TI_CPTS
->
->    which will ensure proper dependencies PTP_1588_CLOCK -> TI_CPTS ->
-> TI_CPSW/TI_KEYSTONE_NETCP/TI_CPSW_SWITCHDEV and build type selection.
->
-> Note. For NFS boot + CPTS all of above configs have to be built-in.
->
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Dan Murphy <dmurphy@ti.com>
-> Cc: Tony Lindgren <tony@atomide.com>
-> Fixes: b6d49cab44b5 ("net: Make PTP-specific drivers depend on PTP_1588_CLOCK")
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Signed-off-by: Clay McClure <clay@daemons.net>
-> [grygorii.strashko@ti.com: rewording, add deps cpsw/netcp from cpts, drop IS_REACHABLE]
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+The PHY Register Accessible Interrupt is enabled by default, so
+there's such an interrupt during init. In PHY POLL mode case, the
+INTB/PMEB pin is alway active, it is not good. Clear the interrupt by
+calling rtl8211f_ack_interrupt().
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+---
+ drivers/net/phy/realtek.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 2d99e9de6ee1..398607268a3c 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -179,6 +179,10 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ 	u16 val_txdly, val_rxdly;
+ 	int ret;
+ 
++	ret = rtl8211f_ack_interrupt(phydev);
++	if (ret < 0)
++		return ret;
++
+ 	switch (phydev->interface) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 		val_txdly = 0;
+-- 
+2.26.2
+
