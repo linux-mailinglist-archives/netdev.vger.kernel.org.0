@@ -2,278 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 244731CF6F8
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 16:23:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 820F61CF71D
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 16:27:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730210AbgELOXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 10:23:51 -0400
-Received: from mail-eopbgr80105.outbound.protection.outlook.com ([40.107.8.105]:48718
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727876AbgELOXu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 10:23:50 -0400
+        id S1730340AbgELO1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 10:27:09 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:52972 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725929AbgELO1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 10:27:08 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04CEPJZR021239;
+        Tue, 12 May 2020 07:26:52 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=GJAChrJpQyp0A0H29DBp8q5Z4pmfZBMMvfMG+qdvkK8=;
+ b=EwRbJoEaOgJrCuv4HhHew7UI/pkW5Dgay/ESqmMItOhnVSNOYEXg1TLPMq250UdOH3f5
+ 2QIKajRb2urnsyHFVUVqTj9zuR2KJwI7IZPwF7uollOT69GVtgQqOenDnDktebd/I1i4
+ wycokduzw2m30EhKwovG1Mi9OZUU1bX6yIg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 30xc7e4kwh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 12 May 2020 07:26:51 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 12 May 2020 07:26:51 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a7vEQWvad7oX57rHBq91OKbZj+hNpDtimDjdiQ/ntQfMQIqnuPQ2IGdGJJhvnZM5vYHRjO9FKfp+g3yMdtoqkV0dmKvrL9LMbbrjnRwD3VghgTQBmoQN5bsYDth1NFltJBUUSn7MwZkuhgHhb2lvjepe4b62o/ZrsGMwW4BGVfk6681EixP4+zyNV6se5ysPRvy9xLEN7aRYxxVCYyMj/Ev2Zqx1P/TpkN9+LCN1ZAOrlu4W4+AVsgpQGnr63inHbouBciN6hZxaYTxTDObznTrRAg/dWcy0OsQCHWbIvUpmGByu37BWGc7x/c/wj5stqoRfpTZfgvmErD7yg3pTyQ==
+ b=FEmsixtUoXad4V/W69VCq7Iolr+bCwzBGu8qMHSj0wAQxgsLZmIL37ZqfVakTOXISngIAiUcZP0I/c+KQgezDk5Tr+2zfSMHffPcBMWLkrDd3/LU2u0gpyrcNqNXAITuJIkbIvtD6wVASi3P6707YYdr6X9Xb3RjiuQeqSpQ1MiHy0OYJlJp2UMSJZN0H5TLD+SQp3SIgEoRRbD+MrGPhAtHvHER4FcU4L3loqu4xIabEnepaaffql3M487/oFbau7uuF+71gs8zQMetTtP2dcOQ9GQbXb+sT6/uM333Jo9ztuDcQnXSIs9z8rmZXfpFUfb//QT5SQCCq31zM7SPOA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c2I4ykrsuKppGL2qWQxtWRHxE+l7srJYcuIyspvBLWo=;
- b=lkud0SCF4eqVNdPiyCclDy7fZCMDOH9mHsYUFyCK+EQNUKh7Clazb5p8W3hhU4daHUUOdPmMWGcHPj5gjsGlwGVXdOZipSXY84evERwMcKUipFl9hQRqQ3fuc5K4O0HxaiRGRLFYgMNzRFRInOmgrBJNqFPBOV5ktKEmzH0Cg9NgwNU4/G2brcUU7YQwGH+6TGAfS2dXIKyxZmS7xmFE9uzyscoUnY4kJgGgIA1x8kLThanYJ/YMzk8+NQKez8tF0uZUersi3+t+/ObfTNybVCXsv7bMfb0+ZkyGJzR1ut70hcpoPHcTLe/PR0zHoUQNgqXmdLlYanLQl/JBr1TXug==
+ bh=GJAChrJpQyp0A0H29DBp8q5Z4pmfZBMMvfMG+qdvkK8=;
+ b=jy3iQzreLg2KuGwo1NwbwMlRuZhUoyBR3W0G1lwoJuBYk4vcZWOe3e3nqmTuYlS86Twb016NXk7Uoew+1uVdxjWiBkE6BGzsHOthGD3vs2+SAgaLTUwO6GHt1JLNhCpAF0khUy2vHSMbqVrAOPCXB1Vy4ArHBtDNYU6vovxh0QQZ7jhHovKtOvfM8Lc7GYvQ/Y37ei7bV0BQ0WujAMzn3gn6mXXPFamW4pWDxuNoUN4EckDc+JC1nXDuC+nvExuOFyW0EP3l+4sgNmEqFfGdtmouneBinhUUwrXucEHLIWuQxwoNzBkMSXnkHWjZe1AU06SYvJla6y7sTfJS5nds9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c2I4ykrsuKppGL2qWQxtWRHxE+l7srJYcuIyspvBLWo=;
- b=rVyoad3Qc/gaJU8vk0CFRJOJ/KanUJs8Pm+npeu42TZS7X3YHSq+TrpEo7Vj4qpPzra30FD3jOT9lVHWfO3gnpkQulbdC5CSnGs2Khs1LLs6ehG2xL6sRicYqFdI0OVg+Z9GOtpy9/PLwK6xn5ExM81pHGghDk4L6dswid+7orU=
-Authentication-Results: nokia.com; dkim=none (message not signed)
- header.d=none;nokia.com; dmarc=none action=none header.from=nokia.com;
-Received: from AM0PR07MB3937.eurprd07.prod.outlook.com (2603:10a6:208:4c::20)
- by AM0PR07MB5827.eurprd07.prod.outlook.com (2603:10a6:208:110::24) with
+ bh=GJAChrJpQyp0A0H29DBp8q5Z4pmfZBMMvfMG+qdvkK8=;
+ b=j5uRYYHqXsLOwaLUuIGrAu8b5OzNLi4phXW3KcVDytFNO5gBFWJT8tDU0H+d+tB/fDFUuk9u8jv4w+mTOuZrwLXNlHDuqid6wTI2n2yAawm2dW2CMq5J2bxw3sIYBIUJLyWOM4/pC7LJJdNSXz7CJvgp2OhMjjfO0z9Tu6ctJMg=
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2360.namprd15.prod.outlook.com (2603:10b6:a02:81::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.13; Tue, 12 May
- 2020 14:23:43 +0000
-Received: from AM0PR07MB3937.eurprd07.prod.outlook.com
- ([fe80::6958:35d6:fc84:49db]) by AM0PR07MB3937.eurprd07.prod.outlook.com
- ([fe80::6958:35d6:fc84:49db%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
- 14:23:43 +0000
-From:   Alexander Sverdlin <alexander.sverdlin@nokia.com>
-Subject: Multicast from underlying MACVLAN interface towards MACVLAN
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Jiri Pirko <jpirko@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
-        Matija Glavinic Pecotic <matija.glavinic-pecotic.ext@nokia.com>
-Message-ID: <8e6e5260-9359-eddd-c928-dba487f1319b@nokia.com>
-Date:   Tue, 12 May 2020 16:23:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
-Content-Type: text/plain; charset=utf-8
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20; Tue, 12 May
+ 2020 14:26:50 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
+ 14:26:50 +0000
+Subject: Re: [PATCH bpf-next v4] libbpf: fix probe code to return EPERM if
+ encountered
+To:     Eelco Chaudron <echaudro@redhat.com>, <bpf@vger.kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <andriin@fb.com>, <toke@redhat.com>
+References: <158927424896.2342.10402475603585742943.stgit@ebuild>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <7e23f4d2-7cc5-9976-dead-ad2e993015ab@fb.com>
+Date:   Tue, 12 May 2020 07:26:47 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
+In-Reply-To: <158927424896.2342.10402475603585742943.stgit@ebuild>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR03CA0021.eurprd03.prod.outlook.com
- (2603:10a6:208:14::34) To AM0PR07MB3937.eurprd07.prod.outlook.com
- (2603:10a6:208:4c::20)
+X-ClientProxiedBy: BYAPR02CA0064.namprd02.prod.outlook.com
+ (2603:10b6:a03:54::41) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from ulegcpsvhp1.emea.nsn-net.net (131.228.32.166) by AM0PR03CA0021.eurprd03.prod.outlook.com (2603:10a6:208:14::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Tue, 12 May 2020 14:23:42 +0000
-X-Originating-IP: [131.228.32.166]
+Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:d0f0) by BYAPR02CA0064.namprd02.prod.outlook.com (2603:10b6:a03:54::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Tue, 12 May 2020 14:26:49 +0000
+X-Originating-IP: [2620:10d:c090:400::5:d0f0]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f5a3e575-a392-406a-dc95-08d7f6801315
-X-MS-TrafficTypeDiagnostic: AM0PR07MB5827:
+X-MS-Office365-Filtering-Correlation-Id: 57df26ac-a8b4-4662-1c30-08d7f6808252
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2360:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR07MB5827D5F2A3AE0997F75F8A8388BE0@AM0PR07MB5827.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2360A9625AF845BCB0F4FA41D3BE0@BYAPR15MB2360.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
 X-Forefront-PRVS: 0401647B7F
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cdepB9KbICMa3UFqu59WkeXakTzanROhVTXugUmJa4ShCw3boe41fcd6mxbshJq0mkniiHWGTbfNHZHoTL8A1GgnD/Kv5Sx7pa2tHBCyje6Yq9b3YBXgI3y0N8wkOA75wTsTbkVYSXJJDiCq7ryGtPBGM0auHGCkDaX08UXItDjSUmiUD0d2LmZPkHJJW2p5SvEROyMv9nOFIYJK0GzvY5QdhX9SmjSqyPH4vJmyTijd06ku0921v1D/jlYAYc1TyCCt3F9Ehb+mUCDfzJ44ibIDF+UbjD4xI/h6U6Zoqnp/UyS1POptKyFCVlMv9sq5pV/aVx4WcJpQtOnrdmZ3NO64Q7R9eK8za/SnYfVn31YpO/7BMO7HsxzA+wiCZTgKA3IudwNC2NFGldoGCPdtPQE7dSNv6/+rVPPr19zMLdL+ALnNoVAr19UJrsWtKvhl/c2o89TGtbYazZDpwPMAYEr2+nic0UFc6vkLb7mzpJP0dBRyblKZqG004LUogBOTsQXZTzlpcqi7M4xoyplhaakCQNCI7JZ+zy5MGy4NEUfZ3mz7VkNZcF1sMP3BUmC3kV26NaJoPhVIiDGFaVicMQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR07MB3937.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(366004)(39860400002)(346002)(376002)(33430700001)(36756003)(16526019)(107886003)(44832011)(316002)(5660300002)(52116002)(54906003)(8676002)(6506007)(66574014)(33440700001)(8936002)(26005)(186003)(31696002)(4326008)(956004)(6512007)(6916009)(6666004)(2616005)(2906002)(66476007)(86362001)(66946007)(31686004)(66556008)(478600001)(6486002)(43740500002)(505234006);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: qAZzVMIBhIwyHgUi2477nE6nbsbaZUn8WU+Ht76GzUykN8B7XMjKg3cBINQi+JiueQNiDySGip5S6AkiG/0CUeJiF502PqwaScB5RMaCPhhbhhmEteTxXr/c4dOds8ONeQibLfx6CD6ZxnHiT/LCkQeBCGIaOM5WUtK7s8yuqLAnssCdZhf2qS5plz1/DaXG2q2+eIuCylbLBnxWuq2wpDsx8mrg420QUqP/GnO0CxkDWHiAW9h98laodOuXVrLd8+zTLr2DV0gSA+z6IzB/EnauN/a1gqXKFBL75vTe+t0rvMMCpbuERH1qZMtrmvzVgFkcRQt/+Gb3pNduUPnto1P8v9w8D6x7fEoRklbEoepSh04f6sJvnGme6sFV3VO1s4QrAf6+RKSIqq+QsG3t4EoyDdd/qlyDDUyF4rX/w1j9769dFie1ymSDcKv75fbRPyGMEE68LT/A9Ym3pG534EARIY3DJeA4E2iXj3t4UYqKg/OmJeq9NfYCweIobNvw
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f5a3e575-a392-406a-dc95-08d7f6801315
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2020 14:23:43.4190
+X-Microsoft-Antispam-Message-Info: /Tva67SFREySj61z3P+kxyGlKGxF0orozO6GLL26giFxHrqW+yxCE3cWjWFLRTd95UsVy8Z0tsrM/BW0J/YxvAuKn842PhgJ1qEHq7AqKGhlLB32aQVLWrJ8reBGQDFXkX+whRcJH2U9BLqz2cEg7fAdh1kY6m0HNSYvdb0T4MHB/PmXMBPEbDsk6zpqBAmg0kFPPEJfura0j/ZOG9xK8ENjn3/DClMj2ZNMqdyxL63fg0tyL0a4oUzY9vo8KROITG/6FddHlj8tNPae5/mcF+ZpYDbcZtBt1n/EZ290cCkBgWsMdwLE7Y7PSqUxlPTkiE4Hxj9feZyLZJvXrpDjgbRGUmsjqzihnzCnlLZfX1+y/Te//ywf6gRv2vXgcj674iRI8gRWrKWm8FR/Vp9DMoMYb0VQ8sPYYT+s4PujmM/KRkVG+xwtTrN0NZrCWaYTc818Y40hdC5rK88SSoeDgU/Mz4eTfm2u9aOosCUWiC0dwGzr6z1ojLzkn5iS2lL4eL3Ibfnsp+SlpOthJI72h1eBHc1E285aFOBbsKmfrD+o3qYdaOb/bsLAdNgwOPLM
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(366004)(136003)(39860400002)(396003)(33430700001)(33440700001)(53546011)(6506007)(6486002)(16526019)(186003)(4744005)(5660300002)(316002)(2616005)(52116002)(36756003)(31686004)(6512007)(478600001)(2906002)(4326008)(86362001)(8676002)(66556008)(8936002)(66476007)(31696002)(66946007)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: muscuObZ/2aNj93BwsLBsnstmV4P9AWkBbzP2Zp1/zsr4reNleLT+Q+U4TdmCU0cRo8U1t5rYwy43s4oJWhYDwwt+7L1XGlPz1LuO5pDLs6Rr1oxmb4uDzDEaBXTOa4+2Se10oP+iKkNn3iD66syJpBPli4c0sCACQN59wKRafa3LKNx1/FFPkQgDEFkny6c/eex7lXoMK+twohyQSomwACR/UQvzU+6HpYCXo14poKxa4fZ7QJNUtSDFDvskAOFc7G4IvTz3QHXw8t4n0IKyfoYzkLrUCj9MQoGAd6sqZssZQAO1/PvOHWQU+qwU+WgTWQtcbDHosksmtzEyoKUB12k4OkAPHQNXQjlMSdXGrowsnj/JqyNZld4uRsdlCOm2mfw19bmZoJjrBa0FhBDxlixfLVEaRAejC69TOUDpMbpU9j5AjGzAYX/qntWsr6eLvX3xYcPVrm7Vshgx7wKIiLaiAaUdY0mGxAa+UZjh74W6sodSgArLIrgVIkG6CSLar2fsscspdvC4u930SBC6w==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57df26ac-a8b4-4662-1c30-08d7f6808252
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2020 14:26:50.1329
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: S64bD3KRPXXPTtNrEc5f4e6cAag11fCx8edls9klVk120+nwdeVJloYT2zsPk18A20e6epYOSVGpENNgDYavi+HZetXQCrzGC6zW8JZhD0c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR07MB5827
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vff0NBR9GUTPfcLimzrlzp3zQaZSD01Agd75cMzX22wUsrebicSpDSt/WG+uHtNq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2360
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-12_04:2020-05-11,2020-05-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ mlxlogscore=999 priorityscore=1501 lowpriorityscore=0 suspectscore=0
+ adultscore=0 impostorscore=0 malwarescore=0 bulkscore=0 spamscore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005120109
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Network Core developers!
 
-I've been debugging an issue with Multicast replies from underlying
-interface of MACVLAN towards MACVLAN. These SKBs never contain a MAC header
-and therefore cannot be properly processed by MACVLAN.
 
-The usecase is following:
-eth1 <-- eth1.212 <-- macvlan@eth1.212 (in bridge mode)
+On 5/12/20 2:04 AM, Eelco Chaudron wrote:
+> When the probe code was failing for any reason ENOTSUP was returned, even
+> if this was due to no having enough lock space. This patch fixes this by
+> returning EPERM to the user application, so it can respond and increase
+> the RLIMIT_MEMLOCK size.
+> 
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 
-As I understand the problem, it actually plays no role, that there is an intermediate VLAN interface.
-The problem is, if macvlan@eth1.212 sends Router Solicitation these SKBs are received on eth1.212,
-but the corresponding multicast Router Advertisements are not received on macvlan@eth1.212.
-
-I've tracked the problem down to the following incompatibility between MACVLAN code and IP code...
-
-One the one hand, MACVLAN always expects ethernet header:
-
-static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)                                                                                                          
-{                                                                                                                                                                               
-        struct macvlan_port *port;                                                                                                                                              
-        struct sk_buff *skb = *pskb;                                                                                                                                            
-        const struct ethhdr *eth = eth_hdr(skb);                                                                                                                                
-        ...
-                                                                                                                                                                                
-        port = macvlan_port_get_rcu(skb->dev);                                                                                                                                  
-        if (is_multicast_ether_addr(eth->h_dest)) {                                                                                                                             
-
-One the other hand, IP doesn't populate ethernet header for multicast loopback transmission:
-
-int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)                                                                                                    
-{                                                                                                                                                                               
-        skb_reset_mac_header(skb);                                                                                                                                              
-        __skb_pull(skb, skb_network_offset(skb));                                                                                                                               
-        skb->pkt_type = PACKET_LOOPBACK;                                                                                                                                        
-        skb->ip_summed = CHECKSUM_UNNECESSARY;                                                                                                                                  
-        WARN_ON(!skb_dst(skb));                                                                                                                                                 
-        skb_dst_force(skb);                                                                                                                                                     
-        netif_rx_ni(skb);                                                                                                                                                       
-
-Unicast however works fine, because of:
-
-int neigh_connected_output(struct neighbour *neigh, struct sk_buff *skb)                                                                                                        
-{                                                                                                                                                                               
-        struct net_device *dev = neigh->dev;                                                                                                                                    
-        unsigned int seq;                                                                                                                                                       
-        int err;                                                                                                                                                                
-                                                                                                                                                                                
-        do {                                                                                                                                                                    
-                __skb_pull(skb, skb_network_offset(skb));                                                                                                                       
-                seq = read_seqbegin(&neigh->ha_lock);                                                                                                                           
-                err = dev_hard_header(skb, dev, ntohs(skb->protocol),                                                                                                           
-                                      neigh->ha, NULL, skb->len);                                                                                                               
-        } while (read_seqretry(&neigh->ha_lock, seq));                                                                                                                          
-                                                                                                                                                                                
-        if (err >= 0)                                                                                                                                                           
-                err = dev_queue_xmit(skb);                                                                                                                                      
-
-I've also collected some stack traces and SKB dumps to illustrate the problem
-(I've instrumented macvlan_handle_frame() and eth_header() to understand when
-the ethernet header has been generated):
-
-macvlan_handle_frame() receives Router Advertisement, but cannot forward
-without Ethernet header:
-
-skb len=96 headroom=40 headlen=96 tailroom=56
-mac=(40,0) net=(40,40) trans=80
-shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-csum(0xae2e9a2f ip_summed=1 complete_sw=0 valid=0 level=0)
-hash(0xc97ebd88 sw=1 l4=1) proto=0x86dd pkttype=5 iif=24
-dev name=etha01.212 feat=0x0x0000000040005000
-skb headroom: 00000000: 00 28 b3 4d 84 88 ff ff b2 72 b9 5e 00 00 00 00
-skb headroom: 00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-skb headroom: 00000020: 08 0f 00 00 00 00 00 00
-skb linear:   00000000: 60 09 88 bd 00 38 3a ff fe 80 00 00 00 00 00 00
-skb linear:   00000010: 00 40 43 ff fe 80 00 00 ff 02 00 00 00 00 00 00
-skb linear:   00000020: 00 00 00 00 00 00 00 01 86 00 61 00 40 00 00 2d
-skb linear:   00000030: 00 00 00 00 00 00 00 00 03 04 40 e0 00 00 01 2c
-skb linear:   00000040: 00 00 00 78 00 00 00 00 fd 5f 42 68 23 87 a8 81
-skb linear:   00000050: 00 00 00 00 00 00 00 00 01 01 02 40 43 80 00 00
-skb tailroom: 00000000: 00 f0 01 00 00 00 00 00 a4 73 00 00 00 00 00 00
-skb tailroom: 00000010: a4 73 00 00 00 00 00 00 00 10 00 00 00 00 00 00
-skb tailroom: 00000020: 01 00 00 00 06 00 00 00 40 66 02 00 00 00 00 00
-skb tailroom: 00000030: 40 76 02 00 00 00 00 00
-
-Call Trace:
- <IRQ>
- dump_stack+0x69/0x9b
- macvlan_handle_frame+0x321/0x425 [macvlan]
- ? macvlan_forward_source+0x110/0x110 [macvlan]
- __netif_receive_skb_core+0x545/0xda0
- ? ip6_mc_input+0x103/0x250 [ipv6]
- ? ipv6_rcv+0xe1/0xf0 [ipv6]
- ? __netif_receive_skb_one_core+0x36/0x70
- __netif_receive_skb_one_core+0x36/0x70
- process_backlog+0x97/0x140
- net_rx_action+0x1eb/0x350
- __do_softirq+0xe3/0x383
- do_softirq_own_stack+0x2a/0x40
- </IRQ>
- do_softirq.part.4+0x4e/0x50
- netif_rx_ni+0x60/0xd0
- dev_loopback_xmit+0x83/0xf0
- ip6_finish_output2+0x575/0x590 [ipv6]
- ? ip6_cork_release.isra.1+0x64/0x90 [ipv6]
- ? __ip6_make_skb+0x38d/0x680 [ipv6]
- ? ip6_output+0x6c/0x140 [ipv6]
- ip6_output+0x6c/0x140 [ipv6]
- ip6_send_skb+0x1e/0x60 [ipv6]
- rawv6_sendmsg+0xc4b/0xe10 [ipv6]
- ? proc_put_long+0xd0/0xd0
- ? rw_copy_check_uvector+0x4e/0x110
- ? sock_sendmsg+0x36/0x40
- sock_sendmsg+0x36/0x40
- ___sys_sendmsg+0x2b6/0x2d0
- ? proc_dointvec+0x23/0x30
- ? addrconf_sysctl_forward+0x8d/0x250 [ipv6]
- ? dev_forward_change+0x130/0x130 [ipv6]
- ? _raw_spin_unlock+0x12/0x30
- ? proc_sys_call_handler.isra.14+0x9f/0x110
- ? __call_rcu+0x213/0x510
- ? get_max_files+0x10/0x10
- ? trace_hardirqs_on+0x2c/0xe0
- ? __sys_sendmsg+0x63/0xa0
- __sys_sendmsg+0x63/0xa0
- do_syscall_64+0x6c/0x1e0
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Later when the same RA is being transmitted neigh_connected_output(), this is the first
-time Ethernet header is being generated for this packet, but this is towards "world", not
-the internal MACVLAN bridge:
-
-skb len=110 headroom=26 headlen=110 tailroom=56
-mac=(-1,-1) net=(40,40) trans=80
-shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-csum(0xae2e9a2f ip_summed=0 complete_sw=0 valid=0 level=0)
-hash(0xc97ebd88 sw=1 l4=1) proto=0x86dd pkttype=0 iif=0
-dev name=etha01.212 feat=0x0x0000000040005000
-sk family=10 type=3 proto=58
-skb headroom: 00000000: 00 28 b3 4d 84 88 ff ff b2 72 b9 5e 00 00 00 00
-skb headroom: 00000010: 00 00 00 00 00 00 00 00 00 00
-skb linear:   00000000: 33 33 00 00 00 01 02 40 43 80 00 00 86 dd 60 09
-skb linear:   00000010: 88 bd 00 38 3a ff fe 80 00 00 00 00 00 00 00 40
-skb linear:   00000020: 43 ff fe 80 00 00 ff 02 00 00 00 00 00 00 00 00
-skb linear:   00000030: 00 00 00 00 00 01 86 00 61 00 40 00 00 2d 00 00
-skb linear:   00000040: 00 00 00 00 00 00 03 04 40 e0 00 00 01 2c 00 00
-skb linear:   00000050: 00 78 00 00 00 00 fd 5f 42 68 23 87 a8 81 00 00
-skb linear:   00000060: 00 00 00 00 00 00 01 01 02 40 43 80 00 00
-skb tailroom: 00000000: 00 f0 01 00 00 00 00 00 a4 73 00 00 00 00 00 00
-skb tailroom: 00000010: a4 73 00 00 00 00 00 00 00 10 00 00 00 00 00 00
-skb tailroom: 00000020: 01 00 00 00 06 00 00 00 40 66 02 00 00 00 00 00
-skb tailroom: 00000030: 40 76 02 00 00 00 00 00
-
-Call Trace:
- dump_stack+0x69/0x9b
- debug_hdr+0x4c/0x60
- eth_header+0x71/0xe0
- vlan_dev_hard_header+0x58/0x140 [8021q]
- neigh_connected_output+0xa9/0x100
- ip6_finish_output2+0x24a/0x590 [ipv6]
- ? ip6_cork_release.isra.1+0x64/0x90 [ipv6]
- ? __ip6_make_skb+0x38d/0x680 [ipv6]
- ? ip6_output+0x6c/0x140 [ipv6]
- ip6_output+0x6c/0x140 [ipv6]
- ip6_send_skb+0x1e/0x60 [ipv6]
- rawv6_sendmsg+0xc4b/0xe10 [ipv6]
- ? proc_put_long+0xd0/0xd0
- ? rw_copy_check_uvector+0x4e/0x110
- ? sock_sendmsg+0x36/0x40
- sock_sendmsg+0x36/0x40
- ___sys_sendmsg+0x2b6/0x2d0
- ? proc_dointvec+0x23/0x30
- ? addrconf_sysctl_forward+0x8d/0x250 [ipv6]
- ? dev_forward_change+0x130/0x130 [ipv6]
- ? _raw_spin_unlock+0x12/0x30
- ? proc_sys_call_handler.isra.14+0x9f/0x110
- ? __call_rcu+0x213/0x510
- ? get_max_files+0x10/0x10
- ? trace_hardirqs_on+0x2c/0xe0
- ? __sys_sendmsg+0x63/0xa0
- __sys_sendmsg+0x63/0xa0
- do_syscall_64+0x6c/0x1e0
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-I would appreciate any hint, how to approach this problem! I can try to come up with a patch,
-but as this is so central thing in the IP protocol, I'd like to hear some opinions first...
-
--- 
-Best regards,
-Alexander Sverdlin.
+Acked-by: Yonghong Song <yhs@fb.com>
