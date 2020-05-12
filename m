@@ -2,119 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A98B1CED03
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 08:28:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 215EB1CED11
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 08:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728754AbgELG2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 02:28:05 -0400
-Received: from mail-eopbgr60071.outbound.protection.outlook.com ([40.107.6.71]:18307
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725536AbgELG2E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 02:28:04 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DNgYxPPWgqzvWAYzZHpMEKKRsrEk5O+vTbeGzOEKxdjl0iuTQudEFI96FKrgFAAJbv1ls6kTmlL9SykiHbe8wf6D6hWUomT0awtZlQY6b8KgLF7UujlVycWCDE33JnYR75RjptV7nUCWdyiHSuD9FoXREwMgnyXEv0zCcBZEfhUEIBtv5aVhr4Lc6iCCvoAE0ifA8uskKxMGZGtOTAHFAiYqzeAjQd7kIyFmWPpnQeH8Ec3ktqZ2KuQgRPB+ebjfhR1CbWlFD45aADeNZRteUZULO193oEer7ujKPvFdOl79rEhoCMEmuH5YdHMSL+LGAlxHyRCNEY38+ZTah+SOUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6f+s/cqybZ0PppcguEKBnlbF4KKYDYUaGZ/bagHuV/I=;
- b=VPM+veI8G+mtRZhFuoUARoWCrA6NcS0SwAgJOZ4v6BhQhvYKcNHRQHU1Lj4xTzNz3GenYXtqBAQotdpmQr38RwinQvtlAiDRkfo3hpoCtQXcgHQe5YFWR6HUvQX0CJAt65Jbxf+9sDFKK0omDcSpkxsHKpPMa672xfxCJZtBawEhBh9jqBA6PNYMzSSk40hdc0B7eWXiXCx0cjePM3knzVTXQJREgm+5GRx/SfpZvsvFQVvV+bM1YO02ckqR/DyPFSUnVUj1WpRM79KkiO06MR7L+GP2cECdfYkLrABRJ/BkDOxBGn1Ykv36QA9MWOU7BxDTejSGr8k6QLiOG0KDzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6f+s/cqybZ0PppcguEKBnlbF4KKYDYUaGZ/bagHuV/I=;
- b=LIZtb/C3xD8P8LjBHPrXT6gIKbOLQQ7yY4DlHCHS/Ge9WfdiLuyt/y2vMYLiNX4H/TCRQPDIqbr1BZU0tXjI36yg6zjEJd6lBoqSu0AKlxuXdaK1HekLBDrs8sfvp/uJadbeU8wzzRZJZ/5b5fNZWKdTFn9BvzIQjs+yYN/RFHM=
-Received: from DB8PR04MB5785.eurprd04.prod.outlook.com (2603:10a6:10:b0::22)
- by DB8PR04MB6748.eurprd04.prod.outlook.com (2603:10a6:10:10e::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27; Tue, 12 May
- 2020 06:27:59 +0000
-Received: from DB8PR04MB5785.eurprd04.prod.outlook.com
- ([fe80::c898:9dfc:ce78:a315]) by DB8PR04MB5785.eurprd04.prod.outlook.com
- ([fe80::c898:9dfc:ce78:a315%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
- 06:27:59 +0000
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Po Liu <po.liu@nxp.com>, Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "idosch@idosch.org" <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
-        "roopa@cumulusnetworks.com" <roopa@cumulusnetworks.com>,
-        "linux-devel@linux.nxdi.nxp.com" <linux-devel@linux.nxdi.nxp.com>
-Subject: RE: [EXT] Re: [PATCH v1 net-next 3/3] net: dsa: felix: add support
- Credit Based Shaper(CBS) for hardware offload
-Thread-Topic: [EXT] Re: [PATCH v1 net-next 3/3] net: dsa: felix: add support
- Credit Based Shaper(CBS) for hardware offload
-Thread-Index: AQHWJ1fQ0aW9GYkaGku6h57iU7QcdqijeduAgACDLCA=
-Date:   Tue, 12 May 2020 06:27:59 +0000
-Message-ID: <DB8PR04MB57850A61F400B3624CBE1A8FF0BE0@DB8PR04MB5785.eurprd04.prod.outlook.com>
-References: <20200511054332.37690-1-xiaoliang.yang_1@nxp.com>
-        <20200511054332.37690-4-xiaoliang.yang_1@nxp.com>
- <20200511153403.7b402433@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200511153403.7b402433@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 603cc6c9-152a-44e9-faa7-08d7f63d9d81
-x-ms-traffictypediagnostic: DB8PR04MB6748:|DB8PR04MB6748:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB6748CB96191E97EB5D36058DF0BE0@DB8PR04MB6748.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2512;
-x-forefront-prvs: 0401647B7F
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: t8CeT1Rc09zodKCVm8W9eLdlRfpmTlWYjCfabxYUwsuQ8q9VrUtdugWcXJwvSSH2GrzR134FintVeG7XJ4OPPIzYNNuBHNzNXuohxEAbBzWSUBceGJyQMy3Ig3m7wU4df/nq8rbcgDTdWLzd0C621gCNl5pPC0vZgAC6Hrnq21XvSGjJyz0R3dT9CDkrOlUwdb0E2cPuPV2ZteDWyo7B7Fb+fsVpygNvoQyqCaL/UVqCuGpbOCkuDc2aSOgq7zjRGIkztJ4tcemwUmvx/nzDJyR1d0RN/1SbkEJ+AWt/0v4cbH7C5JIIMxgyjxqx2fhyTF7kIxM++KIrP/37H24ZHrEbuaciTEPLgrphfxPPlSZnSCNr/s3rKhYgDk8TLyCgWGP3Q4KiWy+u0r74E/IxLO1MRAl6tIMbMwOSFRvyQmhVQQngqGVwYCdYYI7bgKws+5LFOvhMaWBU0G0m0p6AqkP2uRp1TM29lq1Wen40HE1RNE2MwntwCG2hx4UmvVs99ONgoi+ptsp6tmhcQei30w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB5785.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(396003)(346002)(136003)(376002)(39860400002)(33430700001)(6506007)(26005)(33440700001)(33656002)(64756008)(66476007)(7696005)(76116006)(52536014)(66556008)(4326008)(66946007)(66446008)(478600001)(5660300002)(8936002)(6916009)(9686003)(186003)(7416002)(55016002)(54906003)(2906002)(86362001)(71200400001)(558084003)(316002)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: EZbe8dK7W5l19twyll1gcubvXwJSjJn9Mg15aO0ShiNrXdaqS05uESo5F/w6ClsohLRCOcus6pxVnh7fKYipFNu+1zWoH2aGinME2G5tEamKc5g9zxqnJxBPgtd1gWiNUQofnDQ9eig0iOsiWqxbjk8/dtbMsvacZaWtjvpA52TK+ZwGDb3rHoUR0jt+pkO2uPz2yDpcBUFTjLuzSFdBniEma3wIDiYZEJW3/17CHbIHGdzm/fyjx6kgAQRpgxXcsm4kzBlvdG5YlwFJ+A17TyezGP1gGcyCCleWBb3XB/u45ZNxrbamLo2N7FEtc4GiKD9kJiAKLvWxy3EpFWg70X2/7ZqxpJrk+Dmiu+BxwIUHuGnoptztt5fePJdnS1dQ/mVudBpW5RIP2CmHEtOqM9CJ7nqx4Ax5gP+U6VK1xUZ3ao5D4zpvPyxXMi4+LvVLTy1gd9fe4oU06bZy5fTD1ZeX12hYPkefUB/HEMwr7eE=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728678AbgELGfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 02:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727107AbgELGfd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 02:35:33 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F981C061A0E
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 23:35:32 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id f3so12654247ioj.1
+        for <netdev@vger.kernel.org>; Mon, 11 May 2020 23:35:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hmqc9TQ9Quh7+US/Jmh4IXg0bVpfrPAKCJNshFYSv+Q=;
+        b=NvN3bHIDGwK+p0qEwYf7zjtLlsxm2ceG5S0GYtDcV8aLAqcsJfqOTGl1gkyIlhzl56
+         Z9+A/IMEvGy4ZRM0/h9CnkQShR6M/HA4DFloyhf88t+b64r/X4SaOrgaUi+rdf2GGmha
+         cvaSBe+ut2HCvfoRg2GMxsWf6PqOgRKYk0l6PWeo1znnU/k7z8yLPqV2DkosG+22KThS
+         +pXuvun5l0Uwje9BpaVzjG2kJpbk1JW2IVBJFyar1BKa7F61PvPqDdP1c4wfHS485XIc
+         MlKgocOGFtkGz3BKYGLQ6g5TKWxZpOJYjdJlC9flK8333jlQOL1oOx4rRvibwF2SEbz1
+         RWdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hmqc9TQ9Quh7+US/Jmh4IXg0bVpfrPAKCJNshFYSv+Q=;
+        b=D9q1wu6JxZ56f6ZqSxx0OkhykSajog6JAxSzPI80ZdtlV4wFHHOFoZ8AwEkzz7Rc9Z
+         TivCrqk5FPEUbialXDBJZf44VqhoqjmHa7E63/4JU1rU+DBmIhfvas2xPrb3+zlcDpBH
+         TZRWGhUCptZuDBMDPTZ5cf6FP3dmEFRk4SsjehbppjxOYhyuWLe3cQ+wSCQPTcxdwmuP
+         lidfbfYNlUQV+arGbv58eFEk6bpEXoEdaNG4m4IeyPANLds9i4wultwCmBX7NAOYSiWh
+         pt12epeM4e9Pv04KImXjm2j437GmkY7gniepGcJGwAuWE7gBObflmRywBoe5lqpgMKaS
+         jFXQ==
+X-Gm-Message-State: AGi0PubMq/gEVzwBFLu1inH1RHGt5JxBUDGIha4BTuuu6PQLiXVzSZa5
+        shLiR0uHyYFlNqOov9ZLYzYDdWK33QlP8+9teQsAbw==
+X-Google-Smtp-Source: APiQypLWnzw4EWWNr1vmFUqwTdjDAprfuZXfBBKAg6Df7mrHkghpjwc+KH+GGaVrIhljRYARBkWpEGcIU/MDkPlDt6c=
+X-Received: by 2002:a05:6638:68f:: with SMTP id i15mr19299578jab.136.1589265331761;
+ Mon, 11 May 2020 23:35:31 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 603cc6c9-152a-44e9-faa7-08d7f63d9d81
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2020 06:27:59.1364
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: U2V66Qkw0KTlqX8lq4q9x+ARtyZVBhAhidxYEaiUbdKFmFlsk0yUzSjdF+dhv6v7FFdQG8sQLheCPxH6ENTHCLzi5IHKNpL2Hz853inV0Mc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6748
+References: <20200511150759.18766-1-brgl@bgdev.pl> <20200511150759.18766-10-brgl@bgdev.pl>
+ <dab80587-a196-e0ab-ae97-f8e5cc4a71d4@gmail.com>
+In-Reply-To: <dab80587-a196-e0ab-ae97-f8e5cc4a71d4@gmail.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 12 May 2020 08:35:21 +0200
+Message-ID: <CAMRc=MeAMHs3jYh5KpbO5pAqO_cTmc71US_aVAFqRpNBnEYVMg@mail.gmail.com>
+Subject: Re: [PATCH v2 09/14] net: ethernet: mtk-eth-mac: new driver
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-On Mon, 11 May 2020 22:34:32 Jakub Kicinski <kuba@kernel.org> wrote:
-> > +int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
-> > +                          struct tc_cbs_qopt_offload *cbs_qopt)
+pon., 11 maj 2020 o 21:24 Florian Fainelli <f.fainelli@gmail.com> napisa=C5=
+=82(a):
 >
-> static
+>
+>
+> On 5/11/2020 8:07 AM, Bartosz Golaszewski wrote:
+> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> >
+> > This adds the driver for the MediaTek Ethernet MAC used on the MT8* SoC
+> > family. For now we only support full-duplex.
+> >
+> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > ---
+>
+> [snip]
+>
+> > +static int mtk_mac_ring_pop_tail(struct mtk_mac_ring *ring,
+> > +                              struct mtk_mac_ring_desc_data *desc_data=
+)
+> > +{
+> > +     struct mtk_mac_ring_desc *desc =3D &ring->descs[ring->tail];
+> > +     unsigned int status;
+> > +
+> > +     /* Let the device release the descriptor. */
+> > +     dma_rmb();
+> > +     status =3D desc->status;
+> > +
+> > +     if (!(status & MTK_MAC_DESC_BIT_COWN))
+> > +             return -1;
+> > +
+> > +     desc_data->len =3D status & MTK_MAC_DESC_MSK_LEN;
+> > +     desc_data->flags =3D status & ~MTK_MAC_DESC_MSK_LEN;
+> > +     desc_data->dma_addr =3D desc->data_ptr;
+> > +     desc_data->skb =3D ring->skbs[ring->tail];
+> > +
+> > +     desc->data_ptr =3D 0;
+> > +     desc->status =3D MTK_MAC_DESC_BIT_COWN;
+> > +     if (status & MTK_MAC_DESC_BIT_EOR)
+> > +             desc->status |=3D MTK_MAC_DESC_BIT_EOR;
+>
+> Don't you need a dma_wmb() for the device to observe the new descriptor
+> here?
+>
 
-I will update this in v2, thanks.
+HW has released the descriptor (set the COWN bit) and I just clear all
+other bits here really. Yeah, I guess it won't hurt to make sure.
 
-Regards,
-Xiaoliang Yang
+> [snip]
+>
+> > +static void mtk_mac_dma_unmap_tx(struct mtk_mac_priv *priv,
+> > +                              struct mtk_mac_ring_desc_data *desc_data=
+)
+> > +{
+> > +     struct device *dev =3D mtk_mac_get_dev(priv);
+> > +
+> > +     return dma_unmap_single(dev, desc_data->dma_addr,
+> > +                             desc_data->len, DMA_TO_DEVICE);
+>
+> If you stored a pointer to the sk_buff you transmitted, then you would
+> need an expensive read to the descriptor to determine the address and
+> length, and you would also not be at the mercy of the HW putting
+> incorrect values there.
+>
+
+You mean store the mapped addresses? Yeah I can do that but I'll still
+need to read the descriptor memory to verify it was released by HW.
+
+> sp
+> > +static void mtk_mac_dma_init(struct mtk_mac_priv *priv)
+> > +{
+> > +     struct mtk_mac_ring_desc *desc;
+> > +     unsigned int val;
+> > +     int i;
+> > +
+> > +     priv->descs_base =3D (struct mtk_mac_ring_desc *)priv->ring_base;
+> > +
+> > +     for (i =3D 0; i < MTK_MAC_NUM_DESCS_TOTAL; i++) {
+> > +             desc =3D &priv->descs_base[i];
+> > +
+> > +             memset(desc, 0, sizeof(*desc));
+> > +             desc->status =3D MTK_MAC_DESC_BIT_COWN;
+> > +             if ((i =3D=3D MTK_MAC_NUM_TX_DESCS - 1) ||
+> > +                 (i =3D=3D MTK_MAC_NUM_DESCS_TOTAL - 1))
+> > +                     desc->status |=3D MTK_MAC_DESC_BIT_EOR;
+> > +     }
+> > +
+> > +     mtk_mac_ring_init(&priv->tx_ring, priv->descs_base, 0);
+> > +     mtk_mac_ring_init(&priv->rx_ring,
+> > +                       priv->descs_base + MTK_MAC_NUM_TX_DESCS,
+> > +                       MTK_MAC_NUM_RX_DESCS);
+> > +
+> > +     /* Set DMA pointers. */
+> > +     val =3D (unsigned int)priv->dma_addr;
+>
+> You would probably add a WARN_ON() or something that catches the upper
+> 32-bits of the dma_addr being set, see my comment about the DMA mask
+> setting.
+>
+
+Can it still happen if I check the return value of dma_set_mask_and_coheren=
+t()?
+
+> [snip]
+>
+> > +static void mtk_mac_tx_complete_all(struct mtk_mac_priv *priv)
+> > +{
+> > +     struct net_device *ndev =3D priv_to_netdev(priv);
+> > +     struct mtk_mac_ring *ring =3D &priv->tx_ring;
+> > +     int ret;
+> > +
+> > +     for (;;) {
+> > +             mtk_mac_lock(priv);
+> > +
+> > +             if (!mtk_mac_ring_descs_available(ring)) {
+> > +                     mtk_mac_unlock(priv);
+> > +                     break;
+> > +             }
+> > +
+> > +             ret =3D mtk_mac_tx_complete_one(priv);
+> > +             if (ret) {
+> > +                     mtk_mac_unlock(priv);
+> > +                     break;
+> > +             }
+> > +
+> > +             if (netif_queue_stopped(ndev))
+> > +                     netif_wake_queue(ndev);
+> > +
+> > +             mtk_mac_unlock(priv);
+> > +     }
+>
+> Where do you increment the net_device statistics to indicate the bytes
+> and packets transmitted?
+>
+
+I don't. I use the counters provided by HW for that.
+
+> [snip]
+>
+> > +     mtk_mac_set_mode_rmii(priv);
+> > +
+> > +     dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
+>
+> Your code assumes that DMA addresses are not going to be >=3D 4GB so you
+> should be checking this function's return code and abort here otherwise
+> your driver will fail in surprisingly difficult ways to debug.
+
+Sure, thanks.
+
+Bart
