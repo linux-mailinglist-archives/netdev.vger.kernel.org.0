@@ -2,145 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7046B1CF4C1
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 14:48:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A83B1CF4D2
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 14:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729944AbgELMs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 08:48:27 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2133 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729461AbgELMs0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 08:48:26 -0400
-Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.54])
-        by Forcepoint Email with ESMTP id 94D2ED6F91ACD733E9D7;
-        Tue, 12 May 2020 20:48:22 +0800 (CST)
-Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
- DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Tue, 12 May 2020 20:48:21 +0800
-Received: from [127.0.0.1] (10.57.37.248) by dggeme760-chm.china.huawei.com
- (10.3.19.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1913.5; Tue, 12
- May 2020 20:48:22 +0800
-From:   Yonglong Liu <liuyonglong@huawei.com>
-Subject: [question] net: phy: rtl8211f: link speed shows 1000Mb/s but actual
- link speed in phy is 100Mb/s
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, Salil Mehta <salil.mehta@huawei.com>
-Message-ID: <478f871a-583d-01f1-9cc5-2eea56d8c2a7@huawei.com>
-Date:   Tue, 12 May 2020 20:48:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.2.1
+        id S1729595AbgELMuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 08:50:17 -0400
+Received: from mail-40132.protonmail.ch ([185.70.40.132]:64926 "EHLO
+        mail-40132.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729519AbgELMuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 08:50:16 -0400
+Date:   Tue, 12 May 2020 12:50:05 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.ch;
+        s=protonmail; t=1589287814;
+        bh=Ld4AfSh+DgbNYfTa4km0zAH2heXRaC9744zQhOSEfVA=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=g7X3HR6LjSKU408SSycP5+qZ7bsrExg9BB9V21BFxGsOsmiCHhQjL14by8nlA0Yxh
+         SRIrMUZ5yNPvyd5BEoAqszvBT4UeNdAo8fvPg3nZ425mf4uPriQuuVpFHEOSSg/XHR
+         oTMt5G4BvmC2I8GO4Zj9MpdlWoWQkSbcQJwUlNBQ=
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+From:   Jordan Glover <Golden_Miller83@protonmail.ch>
+Cc:     "sdf@google.com" <sdf@google.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "acme@redhat.com" <acme@redhat.com>,
+        "jamorris@linux.microsoft.com" <jamorris@linux.microsoft.com>,
+        "jannh@google.com" <jannh@google.com>,
+        "kpsingh@google.com" <kpsingh@google.com>
+Reply-To: Jordan Glover <Golden_Miller83@protonmail.ch>
+Subject: Re: [PATCH v5 bpf-next 2/3] bpf: implement CAP_BPF
+Message-ID: <ZHW2pvJicBV52gi3gjsDNXDF6t7BteEoHKvEGeVueRPPDrEKGR0OMJjTlulOoOrDNNwcK2c7HE1lNEQw8F2G6SEGCCIAekGoY0T_cnJ-oSc=@protonmail.ch>
+In-Reply-To: <20200512023641.jupgmhpliblkli4t@ast-mbp.dhcp.thefacebook.com>
+References: <20200508215340.41921-1-alexei.starovoitov@gmail.com>
+ <20200508215340.41921-3-alexei.starovoitov@gmail.com>
+ <20200512001210.GA235661@google.com>
+ <20200512023641.jupgmhpliblkli4t@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.57.37.248]
-X-ClientProxiedBy: dggeme712-chm.china.huawei.com (10.1.199.108) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.7 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on mail.protonmail.ch
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I use two devices, both support 1000M speed, they are directly connected
-with a network cable. Two devices enable autoneg, and then do the following
-test repeatedly:
-	ifconfig eth5 down
-	ifconfig eth5 up
-	sleep $((RANDOM%6))
-	ifconfig eth5 down
-	ifconfig eth5 up
-	sleep 10
+On Tuesday, May 12, 2020 2:36 AM, Alexei Starovoitov <alexei.starovoitov@gm=
+ail.com> wrote:
 
-With low probability, one device A link up with 100Mb/s, the other B link up with
-1000Mb/s(the actual link speed read from phy is 100Mb/s), and the network can
-not work.
+> On Mon, May 11, 2020 at 05:12:10PM -0700, sdf@google.com wrote:
+>
+> > On 05/08, Alexei Starovoitov wrote:
+> >
+> > > From: Alexei Starovoitov ast@kernel.org
+> > > [..]
+> > > @@ -3932,7 +3977,7 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr
+> > > __user *, uattr, unsigned int, siz
+> > > union bpf_attr attr;
+> > > int err;
+> >
+> > > -   if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
+> > >
+> > > -   if (sysctl_unprivileged_bpf_disabled && !bpf_capable())
+> > >     return -EPERM;
+> > >     This is awesome, thanks for reviving the effort!
+> > >
+> >
+> > One question I have about this particular snippet:
+> > Does it make sense to drop bpf_capable checks for the operations
+> > that work on a provided fd?
+>
+> Above snippet is for the case when sysctl switches unpriv off.
+> It was a big hammer and stays big hammer.
+> I certainly would like to improve the situation, but I suspect
+> the folks who turn that sysctl knob on are simply paranoid about bpf
+> and no amount of reasoning would turn them around.
+>
 
-device A:
-Settings for eth5:
-        Supported ports: [ TP ]
-        Supported link modes:   10baseT/Half 10baseT/Full
-                                100baseT/Half 100baseT/Full
-                                1000baseT/Full
-        Supported pause frame use: Symmetric Receive-only
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  10baseT/Half 10baseT/Full
-                                100baseT/Half 100baseT/Full
-                                1000baseT/Full
-        Advertised pause frame use: Symmetric
-        Advertised auto-negotiation: Yes
-        Advertised FEC modes: Not reported
-        Link partner advertised link modes:  10baseT/Half 10baseT/Full
-                                             100baseT/Half 100baseT/Full
-        Link partner advertised pause frame use: Symmetric
-        Link partner advertised auto-negotiation: Yes
-        Link partner advertised FEC modes: Not reported
-        Speed: 100Mb/s
-        Duplex: Full
-        Port: MII
-        PHYAD: 3
-        Transceiver: internal
-        Auto-negotiation: on
-        Current message level: 0x00000036 (54)
-                               probe link ifdown ifup
-        Link detected: yes
+Without CAP_BPF, sysctl was the only option to keep you safe from flow
+of bpf vulns. You didn't had to be paranoid about that.
 
-The regs value read from mdio are:
-reg 9 = 0x200
-reg a = 0
-
-device B:
-Settings for eth5:
-        Supported ports: [ TP ]
-        Supported link modes:   10baseT/Half 10baseT/Full
-                                100baseT/Half 100baseT/Full
-                                1000baseT/Full
-        Supported pause frame use: Symmetric Receive-only
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  10baseT/Half 10baseT/Full
-                                100baseT/Half 100baseT/Full
-                                1000baseT/Full
-        Advertised pause frame use: Symmetric
-        Advertised auto-negotiation: Yes
-        Advertised FEC modes: Not reported
-        Link partner advertised link modes:  10baseT/Half 10baseT/Full
-                                             100baseT/Half 100baseT/Full
-                                             1000baseT/Full
-        Link partner advertised pause frame use: Symmetric
-        Link partner advertised auto-negotiation: Yes
-        Link partner advertised FEC modes: Not reported
-        Speed: 1000Mb/s
-        Duplex: Full
-        Port: MII
-        PHYAD: 3
-        Transceiver: internal
-        Auto-negotiation: on
-        Current message level: 0x00000036 (54)
-                               probe link ifdown ifup
-        Link detected: yes
-
-The regs value read from mdio are:
-reg 9 = 0
-reg a = 0x800
-
-I had talk to the FAE of rtl8211f, they said if negotiation failed with 1000Mb/s,
-rtl8211f will change reg 9 to 0, than try to negotiation with 100Mb/s.
-
-The problem happened as:
-ifconfig eth5 up -> phy_start -> phy_start_aneg -> phy_modify_changed(MII_CTRL1000)
-(this time both A and B, reg 9 = 0x200) -> wait for link up -> (B: reg 9 changed to 0)
--> link up.
-
-I think this is the bug of the rtl8211f itself, any one have an idea to avoid this bug?
-
-When link up, update phydev->advertising before notify the eth driver, is this method
-suitable? (phydev->advertising is config from user, if user just set one speed 1000M,
-it's hard to )
-
+Jordan
