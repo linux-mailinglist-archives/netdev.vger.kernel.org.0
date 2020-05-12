@@ -2,132 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A26A1CE971
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 02:04:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 020171CE976
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 02:08:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728244AbgELADs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 20:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725836AbgELADr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 20:03:47 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6328CC061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 17:03:47 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id s8so13149297wrt.9
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 17:03:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=I2FrCAz922jG34V6yiFM4t/ZxUaY1QrvQktqINJp3Vg=;
-        b=VceTA3vtt/ca0YijCmKKWRyUjmRHJKhofYJricDRV7g2mnCKBSalfnVGo1ndmODfwA
-         dXwtL9YZk3pr753AhA5MRhUxdnpPzOCkFgVaatjjgTWdB6brulhcW0SvOHRv6+TtBg2v
-         62nHqrrhDKfIuQ7iH56Cb8B9YvhkfYMc4UhDOm+Qu2drrH+hSmHavnFYct6WVRQtp/VY
-         SXLaBopkIbqdVExFnrNdWJlI5XLZUoXHVi8wD1iid7C9izBcfOoUoiYlnbwxwnketD3Q
-         5+6gMsXwW2f22LW34afXlP1mVcG9FDWCLoCXVvIr9LRUcMkk0qO6AD+gUacomZeh42Am
-         AadA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=I2FrCAz922jG34V6yiFM4t/ZxUaY1QrvQktqINJp3Vg=;
-        b=V/foLNPzNuykSz1MnPJ9mUI2DZ3DcfP3k//anwvfYMOUBGBInhp4hZFPSaQjjt0TyI
-         PwanbWZ7Kbvz3Bg6AT+z6eRvic7+X+4qxEKrwtbh2UL8+VdcP0F+fZa4HQST2UX6VNUu
-         /LiukPGKxDU7/2G96amo1cPccKZc5EZzNtMUTVfyrqV4f7Elu6Duju3NVKwayEgcn0hj
-         vky8sFfOiLdghKosB5KJCm6eaKfIEs6vmOa0nuifs2PWjTUf2B479JfMFnj5unAvw5NF
-         fO+broo9pZxRxeiFKt7o6Kz0HS0BcHZf7IzH5XlJNtZPYVv4InnLKcCf0gs8gsLjBGlp
-         v+sg==
-X-Gm-Message-State: AGi0PuaibUHhSfhC31HJ8D1yRetQrWwVznM/ljrcQVs4Agewa7kxEoAY
-        ha1c9d+WF+/ToSGCyH8BM+mJlslm
-X-Google-Smtp-Source: APiQypLlcq+clWAo83NMoVvXt0hEkj8WeCPLTiTEdb4x4b+jDAqFECztY7hwCQ0wGYfSfH4RWfj0fw==
-X-Received: by 2002:adf:a4c5:: with SMTP id h5mr21387778wrb.408.1589241825833;
-        Mon, 11 May 2020 17:03:45 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u127sm29165842wme.8.2020.05.11.17.03.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 May 2020 17:03:45 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/4] DSA: promisc on master, generic flow
- dissector code
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        id S1728164AbgELAIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 20:08:20 -0400
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:42550 "EHLO
+        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbgELAIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 20:08:19 -0400
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by kvm5.telegraphics.com.au (Postfix) with ESMTP id 3995529BDB;
+        Mon, 11 May 2020 20:08:16 -0400 (EDT)
+Date:   Tue, 12 May 2020 10:08:23 +1000 (AEST)
+From:   Finn Thain <fthain@telegraphics.com.au>
+To:     Markus Elfring <Markus.Elfring@web.de>
+cc:     Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-References: <20200511202046.20515-1-olteanv@gmail.com>
- <525db137-0748-7ae1-ed7f-ee2c74820436@gmail.com>
- <CA+h21hqbiMfm+h994eV=7vRghapJm7HzybauQcggLhfs7At+fg@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <5d60fb20-f0df-7c02-e8d4-1963ffaf79d5@gmail.com>
-Date:   Mon, 11 May 2020 17:03:42 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.0
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: net/sonic: Fix some resource leaks in error handling paths
+In-Reply-To: <9994a7de-0399-fb34-237a-a3c71b3cf568@web.de>
+Message-ID: <alpine.LNX.2.22.394.2005120905410.8@nippy.intranet>
+References: <b7651b26-ac1e-6281-efb2-7eff0018b158@web.de> <alpine.LNX.2.22.394.2005100922240.11@nippy.intranet> <9d279f21-6172-5318-4e29-061277e82157@web.de> <alpine.LNX.2.22.394.2005101738510.11@nippy.intranet> <bc70e24c-dd31-75b7-6ece-2ad31982641e@web.de>
+ <alpine.LNX.2.22.394.2005110845060.8@nippy.intranet> <9994a7de-0399-fb34-237a-a3c71b3cf568@web.de>
 MIME-Version: 1.0
-In-Reply-To: <CA+h21hqbiMfm+h994eV=7vRghapJm7HzybauQcggLhfs7At+fg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; BOUNDARY="-1463811774-1457172623-1589239130=:8"
+Content-ID: <alpine.LNX.2.22.394.2005120920320.8@nippy.intranet>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+---1463811774-1457172623-1589239130=:8
+Content-Type: text/plain; CHARSET=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <alpine.LNX.2.22.394.2005120920321.8@nippy.intranet>
 
 
-On 5/11/2020 4:52 PM, Vladimir Oltean wrote:
-> On Tue, 12 May 2020 at 02:28, Florian Fainelli <f.fainelli@gmail.com> wrote:
->>
->>
->>
->> On 5/11/2020 1:20 PM, Vladimir Oltean wrote:
->>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->>>
->>> The initial purpose of this series was to implement the .flow_dissect
->>> method for sja1105 and for ocelot/felix. But on Felix this posed a
->>> problem, as the DSA headers were of different lengths on RX and on TX.
->>> A better solution than to just increase the smaller one was to also try
->>> to shrink the larger one, but in turn that required the DSA master to be
->>> put in promiscuous mode (which sja1105 also needed, for other reasons).
->>>
->>> Finally, we can add the missing .flow_dissect methods to ocelot and
->>> sja1105 (as well as generalize the formula to other taggers as well).
->>
->> On a separate note, do you have any systems for which it would be
->> desirable that the DSA standalone port implemented receive filtering? On
->> BCM7278 devices, the Ethernet MAC connected to the switch is always in
->> promiscuous mode, and so we rely on the switch not to flood the CPU port
->> unnecessarily with MC traffic (if nothing else), this is currently
->> implemented in our downstream kernel, but has not made it upstream yet,
->> previous attempt was here:
->>
->> https://www.spinics.net/lists/netdev/msg544361.html
->>
->> I would like to revisit that at some point.
->> --
->> Florian
-> 
-> Yes, CPU filtering of traffic (not just multicast) is one of the
-> problems we're facing. I'll take a look at your patches and maybe I'll
-> pick them up.
+On Mon, 11 May 2020, Markus Elfring wrote:
 
-The part that modifies DSA to program the known MC addresses should
-still be largely applicable, there were essentially two problems that I
-was facing, which could be tackled separately.
+> > If you can't determine when the bug was introduced,
+>=20
+> I might be able to determine also this information.
+>=20
 
-1) flooding of unknown MC traffic on DSA standalone ports is not very
-intuitive if you come from NICs that did filtering before. We should
-leverage a DSA switch driver's ability to support port_egress_floods and
-support port_mdb_add and combine them to avoid flooding the CPU port.
+This is tantamount to an admission of duplicity.
 
-2) Programming of known multicast addresses for VLAN devices on top of
-DSA standalone ports while the switch implements global VLAN filtering.
-In that case when we get to the DSA slave device's ndo_set_rx_mode() we
-have lost all information about which VID the MAC address is coming from
-so we cannot insert the MAC address with the correct VID to support
-proper filtering. TI's cpsw driver implements a super complicated scheme
-to solve that problem and this was worked on by Ivan in a more generic
-and usable form: https://lwn.net/Articles/780783/
--- 
-Florian
+>=20
+> > how can you criticise a patch for the lack of a Fixes tag?
+>=20
+> I dared to point two details out for the discussed patch.
+>=20
+
+You deliberately chose those two details. You appear to be oblivious to=20
+your own motives.
+
+>=20
+> >> To which commit would you like to refer to for the proposed=20
+> >> adjustment of the function =E2=80=9Cmac_sonic_platform_probe=E2=80=9D?
+> >
+> > That was my question to you. We seem to be talking past each other.
+>=20
+> We come along different views for this patch review. Who is going to add=
+=20
+> a possible reference for this issue?
+>=20
+
+Other opinions are not relevant: I was trying to communicate with you.
+
+>=20
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tre=
+e/Documentation/process/coding-style.rst?id=3De99332e7b4cda6e60f5b5916cf994=
+3a79dbef902#n460
+>=20
+> >
+> > My preference is unimportant here.
+>=20
+> It is also relevant here because you added the tag =E2=80=9CReviewed-by=
+=E2=80=9D.=20
+> https://lore.kernel.org/patchwork/comment/1433193/=20
+> https://lkml.org/lkml/2020/5/8/1827
+>=20
+
+You have quoted my words out-of-context and twisted their meaning to suit=
+=20
+your purposes.
+
+>=20
+> > I presume that you mean to assert that Christophe's patch breaches the=
+=20
+> > style guide.
+>=20
+> I propose to take such a possibility into account.
+>=20
+
+This "possibility" was among the reasons why the patch was posted to a=20
+mailing list by its author. That possibility is a given. If you claim this=
+=20
+possibility as your motivation, you are being foolish or dishonest.
+
+>=20
+> > However, 'sonic_probe1' is the name of a function.
+>=20
+> The discussed source file does not contain such an identifier.=20
+> https://elixir.bootlin.com/linux/v5.7-rc5/source/drivers/net/ethernet/nat=
+semi/macsonic.c#L486=20
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/d=
+rivers/net/ethernet/natsemi/macsonic.c?id=3D2ef96a5bb12be62ef75b5828c0aab83=
+8ebb29cb8#n486
+>=20
+
+That's what I told you in my previous email. You're welcome.
+
+>=20
+> > This is not some sequence of GW-BASIC labels referred to in the style=
+=20
+> > guide.
+>=20
+> I recommend to read the current section =E2=80=9C7) Centralized exiting o=
+f=20
+> functions=E2=80=9D once more.
+>=20
+
+Again, you are proposing a bike shed of a different color.
+
+>=20
+> >> Can programming preferences evolve into the direction of =E2=80=9Csay =
+what=20
+> >> the goto does=E2=80=9D?
+> >
+> > I could agree that macsonic.c has no function resembling "probe1", and=
+=20
+> > that portion of the patch could be improved.
+>=20
+> I find this feedback interesting.
+>=20
+>=20
+> > Was that the opinion you were trying to express by way of rhetorical=20
+> > questions? I can't tell.
+>=20
+> Some known factors triggered my suggestion to consider the use of the=20
+> label =E2=80=9Cfree_dma=E2=80=9D.
+>=20
+
+If you cannot express or convey your "known factors" then they aren't=20
+useful.
+
+>=20
+> > Is it possible for a reviewer to effectively criticise C by use of=20
+> > English, when his C ability surpasses his English ability?
+>=20
+> We come along possibly usual communication challenges.
+>=20
+
+That looks like a machine translation. I can't make sense of it, sorry.
+
+> Regards,
+> Markus
+>=20
+
+Markus, if you were to write a patch to improve upon coding-style.rst, who=
+=20
+should review it?
+
+If you are unable to write or review such a patch, how can you hope to=20
+adjudicate compliance?
+---1463811774-1457172623-1589239130=:8--
