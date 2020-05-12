@@ -2,230 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 546AB1CF847
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 17:03:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8381CF850
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 17:05:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730517AbgELPDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 11:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730366AbgELPDK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 11:03:10 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E919C061A0C
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 08:03:08 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id y24so23770658wma.4
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 08:03:08 -0700 (PDT)
+        id S1727918AbgELPEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 11:04:34 -0400
+Received: from mail-bn8nam12on2076.outbound.protection.outlook.com ([40.107.237.76]:45896
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726055AbgELPEe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 11:04:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NWjVHWxU37HMKo7LYsGJCNIIfPeT+AgPVvEhnbsCRI1wVyTRR2zWuin2bwkNeTRE/5zVz1N6Q5AijVzJ4+MsTbFqGqZQfDsx/djBxlqhVsMOU1rO8+qRHEErWrUUD9nDw3lv/SkA2McStJqClIsJGSOOtKncDyaL723DijFHukF5ZzFIBPRjXoBo0PICR9CwgmmF5bq3es5aOqOy6VK5knyECrSKoJ60dV/rUWydPiMS2q4LxZQmabbVPZZaXKF7bPKSjqBeby9PWdLPVgv2L8doigH6pLdsSNFSJCnYAO1dClDH18c4MDLN7xhNvnBvmFKtMvL9Ev1OLKzey5MwPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q0ScSG6O/SgnJ5N95Xp7pTa0lFCcqLWbqYqFSzPaeqk=;
+ b=k55pmHBIJRsPm2IvyNoF1i78AAayu/w7uBLS9euk7BjpLFY68sGSixmjLw9Uv0OO+6lYiLqddA/J4lwXl7HDbXp8LmmwXTi6esaWFyaWGhkknaG9Yi5E6CIJs8rUZUzwlFkrMZOgMhNAi4W/Isg/RRvb40cPtFd5x4a5C5+11ue93R6NnfI+n5e1z7auzo+qk1FS+2zjCgkx64UH4TobMbd+OLROhfP6smTnyNwFPqQLvKT8fGqs1zcC+iiHta8XzaeadhJM/e8mZcINesXJg3Yf2uODvlbwMLhjV/LO25mypRt6k5z7cLHmxDJq36KjoW+GI5MLWonWY+waE/Pdew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BrkV75yQEgZywxMlfrK+TQDKltWP5eI+ca2mgcmB20w=;
-        b=Lj8WwxFYtyUMIrz7yKJ8hI5YbOTLRFsKk5epHTAQTbNyKfYYoyRrptoBNRXWQun8ZM
-         pxGQZiu2LcNWqeIlL9yZpfNWaKgyhjC3vNc7wv2o8vOYKZJV5YtACIR8qLbEbd1THXU/
-         7vo+Ek0eBG5McapOWRqSvf84z5jo8OIbWwZE4J+2C9FD9qJ7wFdPwzV7QXhdlqgpqd2+
-         qG+jdgKpJPrHoHBwKZi1Aalc1h+v4jVgpqUWH/7B4bR9GMGQlqM4fjk3HAHNPRCEoOD1
-         5DrHQYXIWIW7LQsKll1BQH3lD0wUmuf5CmmVhGQyCJnOmbV6Ih+odNgSu2pyetbELbVN
-         9Vlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BrkV75yQEgZywxMlfrK+TQDKltWP5eI+ca2mgcmB20w=;
-        b=iXOMlI/timSM5zet7thWHTJZwPwZRcXIuYE9nl/yiG175+gPG1yDpSdNVdYgO4nBIl
-         3Kuru4UelONKUv6Oxk72+d96aRGz+GweLo8lZtr9GGqbgqp/5pYNSHgNuJaWLYV/UUGD
-         R6hmVXAZGAYcgz8LMfSi+DXxV20mlKivX2W9htB9fyie8Ty8j2JOphrxQavW1OZf9dvb
-         /RdZ9Ad7D0IrQY9Wy/lAMQNyPqHA2t9lIicqiVpcKWqFOvWIIUcXFiPX8j1+A/+lE9EX
-         YJCNPA5FEcqRfU/f73UiOmfeWmbW7PVtC4728qQcQb8ca6ooigZxYyoL1k2HrnL5ynRS
-         4tWQ==
-X-Gm-Message-State: AGi0PubDC7PNEAbH1iJ5cfljVhfQdS6fclYuZoLN7USkwzkGm7DC1Sct
-        SHDk9gQ7TAQ39F6kYQ2WxUvJx0e9i5E=
-X-Google-Smtp-Source: APiQypKkDCfUi7Osmvh0HpEwwnsfpCmAe610F8DfD86rAbHTaTjg4d2cwQwhRNL3tJVACzkotWzJtw==
-X-Received: by 2002:a05:600c:293:: with SMTP id 19mr18238404wmk.71.1589295787361;
-        Tue, 12 May 2020 08:03:07 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id m82sm21018777wmf.3.2020.05.12.08.03.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 08:03:06 -0700 (PDT)
-Date:   Tue, 12 May 2020 17:03:06 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Subject: Re: [RFC next-next v2 1/5] net: marvell: prestera: Add driver for
- Prestera family ASIC devices
-Message-ID: <20200512150306.GP2245@nanopsycho>
-References: <20200430232052.9016-1-vadym.kochan@plvision.eu>
- <20200430232052.9016-2-vadym.kochan@plvision.eu>
- <20200511103222.GF2245@nanopsycho>
- <20200512145352.GC31516@plvision.eu>
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q0ScSG6O/SgnJ5N95Xp7pTa0lFCcqLWbqYqFSzPaeqk=;
+ b=Ue88eahujOGwRz9Tn1PNsvbgDvTV53A96G5J6Fb9uJ3KfO56Q+JoxqH8hqMgV/wD6EI8re42bhu938gpfl/Cmt4M6+TvTFEUCP1Swg/ka8WfW7/GqD4Uv3tQrQXqcx6e0vmVRDuxScWyORZyi/7IQqGLr8I7wo+9DNm3Y0qZEd8=
+Authentication-Results: driverdev.osuosl.org; dkim=none (message not signed)
+ header.d=none;driverdev.osuosl.org; dmarc=none action=none
+ header.from=silabs.com;
+Received: from MWHPR11MB1775.namprd11.prod.outlook.com (2603:10b6:300:10e::14)
+ by MWHPR11MB1741.namprd11.prod.outlook.com (2603:10b6:300:10d::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.34; Tue, 12 May
+ 2020 15:04:30 +0000
+Received: from MWHPR11MB1775.namprd11.prod.outlook.com
+ ([fe80::e055:3e6d:ff4:56da]) by MWHPR11MB1775.namprd11.prod.outlook.com
+ ([fe80::e055:3e6d:ff4:56da%5]) with mapi id 15.20.2979.033; Tue, 12 May 2020
+ 15:04:30 +0000
+From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>
+Subject: [PATCH v2 00/17] staging: wfx: fix support for big-endian hosts
+Date:   Tue, 12 May 2020 17:03:57 +0200
+Message-Id: <20200512150414.267198-1-Jerome.Pouiller@silabs.com>
+X-Mailer: git-send-email 2.26.2
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-ClientProxiedBy: DM5PR1101CA0003.namprd11.prod.outlook.com
+ (2603:10b6:4:4c::13) To MWHPR11MB1775.namprd11.prod.outlook.com
+ (2603:10b6:300:10e::14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200512145352.GC31516@plvision.eu>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc-42.silabs.com (82.67.86.106) by DM5PR1101CA0003.namprd11.prod.outlook.com (2603:10b6:4:4c::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Tue, 12 May 2020 15:04:28 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [82.67.86.106]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4c093921-2ad5-492b-3064-08d7f685c545
+X-MS-TrafficTypeDiagnostic: MWHPR11MB1741:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MWHPR11MB1741B2C7E2514B352AE5566593BE0@MWHPR11MB1741.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Forefront-PRVS: 0401647B7F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FVnmTjoKhTUHfNAt/2NzRPYPS5qAawG/HCujWv3UC/TOpO3CSKeCUlx4R1k+MobapdNxDumroNMkbFbfk5YKlE7BdjqcvW3flnJDpo4/EA+UouPj6/sB44lrAY5mbDiPvxrYqCeARyIhgg2BPSPge6olEPDFVrV25WCPWw29fUX9ayLCIa3WCE7p8ds+QeVv3gssfopCFSwumYkKW5AFl2P05W5UTyHMFjgMCdIf5nyOQeyxjMkQWfY9Hos+YzfLQBpDX5k3n9Vyh71diYLCC1TUe39EN6JmAmEXnvn4osDSm3kd6LgnX9cd8vgLxolvKM50u2lFDQt1BgjOno4iOr0FAva8Cm8pcvBF6AKX3eVT54oJ5chdeM3cbDYAg0f8vRtpFa3CeNfnfKMAsvz4qMKtmyer8mbTIXqMdp58y4mU19Rdxn5nW8u35/GVMSXE7jF1hpIVo+C8FK93g9SIbKmoE+6/e3Bp1Uhv87J/HMW49P+shm937q3qyWNmFiVRaGC7PqqOzcKCqp8EOGh9d3LLq82qoz45HQvq+iNu1SvBWAgPpmwL6Kz31UhHoHsXqKmYMrFEOr9yDOtV2Zn+NcqUmkkCEDvvC6m2cscHITA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1775.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(366004)(376002)(39860400002)(346002)(136003)(33430700001)(54906003)(107886003)(478600001)(8676002)(5660300002)(966005)(316002)(1076003)(956004)(8936002)(2616005)(186003)(2906002)(7696005)(86362001)(4326008)(52116002)(6666004)(6486002)(66476007)(66574014)(26005)(66946007)(66556008)(33440700001)(16526019)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: FXcOdu6E7yAj3G1GVUpm2gjCjnulLCIbp0eaTM5QRBV28bEjis/8VgR0s9ZkhPzdNCElsyxPuh1qxPCzYB3XNRxm+yws2gNMe5JWW3dOZ8Ectnquqs8D6q3f+LpIj/fUSvW5aKtK/hyxvhH2cnCUo4ajwqUsOFhvbU/A1dci3KU+M0fO35p0vQTqOf/PheXlfF8wYUbQDBefay3gT2+QxL2PHszjZqfa9cVUlVusMH3XPC8hxiKjVixRSYoZGYjc3YTAuk2fYWExx1XV5GzwaWUrbGQLrPYq27K6w97W2wlQRxjg8w12bzjMH5YWKq8xJoDU8o7S5iE7pBMhr8nrfSbqs1fm/EBmGQeuPd/PCvORY3stw3Dc1J2539DJU/DqXPTJMh/WCZMa4DXb5AK1cHNyfYcq1NBf9cLRcn3sof4v8tR+Csl54UCHmHoUigkZjvsZpxlCUHYPBRpe6nfmUGTKhRUwSQphP67QenehxJU=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4c093921-2ad5-492b-3064-08d7f685c545
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2020 15:04:30.0252
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: r8HRO/63+0NAN0xV+jhUP4V3kMD9ToCXX9SkRvq6KrQyY3TqBhDiPdCUW/SpUji88L/GC1yy9dUv0WOkXDNW6g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1741
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, May 12, 2020 at 04:53:52PM CEST, vadym.kochan@plvision.eu wrote:
->On Mon, May 11, 2020 at 12:32:22PM +0200, Jiri Pirko wrote:
->
->[...]
->
->> 
->> This is RCU list. Treat it accordingly.
->> 
->> 
->> >+	spin_unlock(&sw->ports_lock);
->> 
->> I don't follow, why do you need to protect the list by spinlock here?
->> More to that, why do you need the port_list reader-writer
->> protected (by rcu)? Is is possible that you add/remove port in the same
->> time packets are flying in?
->> 
->> If yes, you need to ensure the structs are in the memory (free_rcu,
->> synchronize_rcu). But I believe that you should disable that from
->> happening in HW.
->> 
->> 
->> >+
->
->[...]
->
->> >+
->> >+static int prestera_switch_init(struct prestera_switch *sw)
->> >+{
->> >+	int err;
->> >+
->> >+	err = prestera_hw_switch_init(sw);
->> >+	if (err) {
->> >+		dev_err(prestera_dev(sw), "Failed to init Switch device\n");
->> >+		return err;
->> >+	}
->> >+
->> >+	memcpy(sw->base_mac, base_mac_addr, sizeof(sw->base_mac));
->> >+	spin_lock_init(&sw->ports_lock);
->> >+	INIT_LIST_HEAD(&sw->port_list);
->> >+
->> >+	err = prestera_hw_switch_mac_set(sw, sw->base_mac);
->> >+	if (err)
->> >+		return err;
->> >+
->> >+	err = prestera_rxtx_switch_init(sw);
->> >+	if (err)
->> >+		return err;
->> >+
->> >+	err = prestera_event_handlers_register(sw);
->> >+	if (err)
->> >+		goto err_evt_handlers;
->> >+
->> >+	err = prestera_create_ports(sw);
->> >+	if (err)
->> >+		goto err_ports_create;
->> >+
->> >+	return 0;
->> >+
->> >+err_ports_create:
->> 
->> You are missing prestera_event_handlers_unregister(sw); call here.
->> 
->it is handled below in prestera_switch_fini().
-
-Sure, but you should call it here in the error path as well. That is my
-point.
-
->
->> 
->> >+err_evt_handlers:
->> >+	prestera_rxtx_switch_fini(sw);
->> >+
->> >+	return err;
->> >+}
->> >+
->> >+static void prestera_switch_fini(struct prestera_switch *sw)
->> >+{
->> >+	prestera_destroy_ports(sw);
->> >+	prestera_event_handlers_unregister(sw);
->> >+	prestera_rxtx_switch_fini(sw);
->> >+}
->> >+
->> >+int prestera_device_register(struct prestera_device *dev)
->> >+{
->> >+	struct prestera_switch *sw;
->> >+	int err;
->> >+
->> >+	sw = kzalloc(sizeof(*sw), GFP_KERNEL);
->> >+	if (!sw)
->> >+		return -ENOMEM;
->> >+
->> >+	dev->priv = sw;
->> >+	sw->dev = dev;
->> >+
->> >+	err = prestera_switch_init(sw);
->> >+	if (err) {
->> >+		kfree(sw);
->> >+		return err;
->> >+	}
->> >+
->> >+	registered_switch = sw;
->> >+	return 0;
->> >+}
->> >+EXPORT_SYMBOL(prestera_device_register);
->> >+
->> >+void prestera_device_unregister(struct prestera_device *dev)
->> >+{
->> >+	struct prestera_switch *sw = dev->priv;
->> >+
->> >+	registered_switch = NULL;
->> >+	prestera_switch_fini(sw);
->> >+	kfree(sw);
->> >+}
->> >+EXPORT_SYMBOL(prestera_device_unregister);
->> >+
->> >+static int __init prestera_module_init(void)
->> >+{
->> >+	if (!base_mac) {
->> >+		pr_err("[base_mac] parameter must be specified\n");
->> >+		return -EINVAL;
->> >+	}
->> >+	if (!mac_pton(base_mac, base_mac_addr)) {
->> >+		pr_err("[base_mac] parameter has invalid format\n");
->> >+		return -EINVAL;
->> >+	}
->> >+
->> >+	prestera_wq = alloc_workqueue("prestera", 0, 0);
->> >+	if (!prestera_wq)
->> >+		return -ENOMEM;
->> >+
->> >+	return 0;
->> >+}
->> >+
->> >+static void __exit prestera_module_exit(void)
->> >+{
->> >+	destroy_workqueue(prestera_wq);
->> >+}
->> >+
->> >+module_init(prestera_module_init);
->> >+module_exit(prestera_module_exit);
->> >+
->> >+MODULE_AUTHOR("Marvell Semi.");
->> >+MODULE_LICENSE("Dual BSD/GPL");
->> >+MODULE_DESCRIPTION("Marvell Prestera switch driver");
->> >+
->> >+module_param(base_mac, charp, 0);
->> 
->> No please.
->> 
->> 
->> [..]
->> 
+RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKSGVs
+bG8sIAoKQXMgYWxyZWFkeSBkaXNjdXNzZWQgaGVyZVsxXSwgdGhpcyBzZXJpZXMgaW1wcm92ZXMg
+c3VwcG9ydCBmb3IgYmlnCmVuZGlhbiBob3N0cy4gQWxsIHdhcm5pbmdzIHJhaXNlZCBieSBzcGFy
+c2UgYXJlIG5vdyBmaXhlZC4KCk5vdGUsIHRoaXMgc2VyaWVzIGFpbXMgdG8gYmUgYXBwbGllZCBv
+biB0b3Agb2YgUFIgbmFtZWQgInN0YWdpbmc6IHdmeDoKZml4IE91dC1PZi1CYW5kIElSUSIKClsx
+XSBodHRwczovL2xvcmUua2VybmVsLm9yZy9sa21sLzIwMTkxMTExMjAyODUyLkdYMjY1MzBAWmVu
+SVYubGludXgub3JnLnVrCgp2MjoKICBSZXdyaXRlIHBhdGNoIDEzOiBrZWVwIHRoZSBlbmRpYW5u
+ZXNzIG9mIHRoZSBmaWVsZCAnbGVuJyBhcy1pcyBhbmQgZml4CiAgdGhlIGFjY2Vzc2VzLgoKSsOp
+csO0bWUgUG91aWxsZXIgKDE3KToKICBzdGFnaW5nOiB3Zng6IGZpeCB1c2Ugb2YgY3B1X3RvX2xl
+MzIgaW5zdGVhZCBvZiBsZTMyX3RvX2NwdQogIHN0YWdpbmc6IHdmeDogdGFrZSBhZHZhbnRhZ2Ug
+b2YgbGUzMl90b19jcHVwKCkKICBzdGFnaW5nOiB3Zng6IGZpeCBjYXN0IG9wZXJhdG9yCiAgc3Rh
+Z2luZzogd2Z4OiBmaXggd3JvbmcgYnl0ZXMgb3JkZXIKICBzdGFnaW5nOiB3Zng6IGZpeCBvdXRw
+dXQgb2Ygcnhfc3RhdHMgb24gYmlnIGVuZGlhbiBob3N0cwogIHN0YWdpbmc6IHdmeDogZml4IGVu
+ZGlhbm5lc3Mgb2YgZmllbGRzIG1lZGlhX2RlbGF5IGFuZCB0eF9xdWV1ZV9kZWxheQogIHN0YWdp
+bmc6IHdmeDogZml4IGVuZGlhbm5lc3Mgb2YgaGlmX3JlcV9yZWFkX21pYiBmaWVsZHMKICBzdGFn
+aW5nOiB3Zng6IGZpeCBhY2Nlc3MgdG8gbGUzMiBhdHRyaWJ1dGUgJ3BzX21vZGVfZXJyb3InCiAg
+c3RhZ2luZzogd2Z4OiBmaXggYWNjZXNzIHRvIGxlMzIgYXR0cmlidXRlICdldmVudF9pZCcKICBz
+dGFnaW5nOiB3Zng6IGZpeCBhY2Nlc3MgdG8gbGUzMiBhdHRyaWJ1dGUgJ2luZGljYXRpb25fdHlw
+ZScKICBzdGFnaW5nOiB3Zng6IGRlY2xhcmUgdGhlIGZpZWxkICdwYWNrZXRfaWQnIHdpdGggbmF0
+aXZlIGJ5dGUgb3JkZXIKICBzdGFnaW5nOiB3Zng6IGZpeCBlbmRpYW5uZXNzIG9mIHRoZSBzdHJ1
+Y3QgaGlmX2luZF9zdGFydHVwCiAgc3RhZ2luZzogd2Z4OiBmaXggYWNjZXNzIHRvIGxlMzIgYXR0
+cmlidXRlICdsZW4nCiAgc3RhZ2luZzogd2Z4OiBmaXggZW5kaWFubmVzcyBvZiB0aGUgZmllbGQg
+J3N0YXR1cycKICBzdGFnaW5nOiB3Zng6IGZpeCBlbmRpYW5uZXNzIG9mIHRoZSBmaWVsZCAnbnVt
+X3R4X2NvbmZzJwogIHN0YWdpbmc6IHdmeDogZml4IGVuZGlhbm5lc3Mgb2YgdGhlIGZpZWxkICdj
+aGFubmVsX251bWJlcicKICBzdGFnaW5nOiB3Zng6IHVwZGF0ZSBUT0RPCgogZHJpdmVycy9zdGFn
+aW5nL3dmeC9UT0RPICAgICAgICAgICAgICB8IDE5IC0tLS0tLS0tLS0tCiBkcml2ZXJzL3N0YWdp
+bmcvd2Z4L2JoLmMgICAgICAgICAgICAgIHwgMTcgKysrKystLS0tLQogZHJpdmVycy9zdGFnaW5n
+L3dmeC9kYXRhX3J4LmMgICAgICAgICB8ICA0ICstLQogZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRh
+X3R4LmMgICAgICAgICB8ICA3ICsrLS0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZGVidWcuYyAgICAg
+ICAgICAgfCAxMyArKysrKy0tLQogZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfYXBpX2NtZC5oICAg
+ICB8IDQyICsrKysrKysrKystLS0tLS0tLS0tLS0tLQogZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZf
+YXBpX2dlbmVyYWwuaCB8IDQ3ICsrKysrKysrKysrKysrKystLS0tLS0tLS0tLQogZHJpdmVycy9z
+dGFnaW5nL3dmeC9oaWZfcnguYyAgICAgICAgICB8IDM4ICsrKysrKysrKysrKy0tLS0tLS0tLS0K
+IGRyaXZlcnMvc3RhZ2luZy93ZngvaGlmX3R4LmMgICAgICAgICAgfCAxOCArKysrKy0tLS0tCiBk
+cml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl90eF9taWIuYyAgICAgIHwgIDIgKy0KIGRyaXZlcnMvc3Rh
+Z2luZy93ZngvaHdpby5jICAgICAgICAgICAgfCAgMiArLQogZHJpdmVycy9zdGFnaW5nL3dmeC9t
+YWluLmMgICAgICAgICAgICB8ICAyICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3RyYWNlcy5oICAg
+ICAgICAgIHwgMTAgKysrLS0tCiAxMyBmaWxlcyBjaGFuZ2VkLCAxMDQgaW5zZXJ0aW9ucygrKSwg
+MTE3IGRlbGV0aW9ucygtKQoKLS0gCjIuMjYuMgoK
