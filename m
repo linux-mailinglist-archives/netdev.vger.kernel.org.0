@@ -2,48 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F731CFBB7
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:13:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACC281CFBB9
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:14:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728081AbgELRNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 13:13:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55800 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726367AbgELRNX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 13:13:23 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2837B206B8;
-        Tue, 12 May 2020 17:13:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589303603;
-        bh=yavipBAgNxESlUH1+zObCk2h+M4Lu94gvJWKl7+hGw4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=xftJVv7g95twgvCBOgpW/IXM6So85z/HabnaWZz3hgvYsNbjG5u8Sp9uu1KGt5eJa
-         aJS3EL03sRtAjcgdGXSo3ShSOB+9lhQ0QUZIlZFp+NfMQnJJIWyQ1eV/RrQ1sXjD+1
-         fSGgllP5nWjizlOWqVeBaf7LjiqlBYqCQ1vE4Oh4=
-Date:   Tue, 12 May 2020 10:13:21 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH net-next 00/10] ionic updates
-Message-ID: <20200512101321.164ffa20@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200512005936.14490-1-snelson@pensando.io>
-References: <20200512005936.14490-1-snelson@pensando.io>
+        id S1728156AbgELROA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 13:14:00 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:43842 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725938AbgELRN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:13:59 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jYYTb-00026T-Sc; Tue, 12 May 2020 17:13:55 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] sfc: fix dereference of table before it is null checked
+Date:   Tue, 12 May 2020 18:13:55 +0100
+Message-Id: <20200512171355.221810-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 May 2020 17:59:26 -0700 Shannon Nelson wrote:
-> This set of patches is a bunch of code cleanup, a little
-> documentation, longer tx sg lists, more ethtool stats,
-> and a couple more transceiver types.
+From: Colin Ian King <colin.king@canonical.com>
 
-I wish patch 3 was handled by the core, but no great ideas on that so:
+Currently pointer table is being dereferenced on a null check of
+table->must_restore_filters before it is being null checked, leading
+to a potential null pointer dereference issue.  Fix this by null
+checking table before dereferencing it when checking for a null
+table->must_restore_filters.
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+Addresses-Coverity: ("Dereference before null check")
+Fixes: e4fe938cff04 ("sfc: move 'must restore' flags out of ef10-specific nic_data")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/sfc/mcdi_filters.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/mcdi_filters.c b/drivers/net/ethernet/sfc/mcdi_filters.c
+index 88de95a8c08c..455a62814fb9 100644
+--- a/drivers/net/ethernet/sfc/mcdi_filters.c
++++ b/drivers/net/ethernet/sfc/mcdi_filters.c
+@@ -1369,10 +1369,7 @@ void efx_mcdi_filter_table_restore(struct efx_nic *efx)
+ 
+ 	WARN_ON(!rwsem_is_locked(&efx->filter_sem));
+ 
+-	if (!table->must_restore_filters)
+-		return;
+-
+-	if (!table)
++	if (!table || !table->must_restore_filters)
+ 		return;
+ 
+ 	down_write(&table->lock);
+-- 
+2.25.1
+
