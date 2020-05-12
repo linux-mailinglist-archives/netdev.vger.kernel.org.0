@@ -2,152 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DC791CFC8D
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:46:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8821CFC9A
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730617AbgELRqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 13:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726055AbgELRqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:46:21 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B9FC061A0F
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 10:46:21 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id u20so4381555ljo.1
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 10:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eM3d9+X8qc+maq3xHLG+4/ZyWmIqPWOHJVw4bbgd4dI=;
-        b=mPOOtwFsulK5G0i5RhYFqAvNWhC/T6DJA759xEXJmp6KsVEltE0McGlfDhQI1R4YnY
-         Lo5T1uWodooEUROwHaLWm4O/Dtm+LpYRa6mEBrWolZf7mpH/Ad0jmANc73rBrXzqI0Ab
-         s6U6KZ/xMU5wFGlBgJHXOjdbaQs77y+qi/NAAcFhgStVAF8KFxcOdmP3mS0F+hoZKKXq
-         QwY1MD6aiDLWqnvnIRHObpmkIxS17sVypqOAVnc7rtcgX3JehYDY7ecmM8uDvezv3wum
-         YplRhA0GEtbN2+uM3or7sJBpIHH5fNyCcQd0GlIRlwUQhKRc4IrAM5OJ3/zV2Y54XzKP
-         VqCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eM3d9+X8qc+maq3xHLG+4/ZyWmIqPWOHJVw4bbgd4dI=;
-        b=sQxHB8DuikZmkb70RCLiPXTFBeP9e/7V68g5seeDQnhBl1qTYx4+JB58vQnfOhjkOR
-         3BRxDk7n8bnMsHTkX2I+rACFRn7xCRC6ZtpsYVhiCeQI0Z67b/mT+Ux3XHz6i9R6pfjE
-         fN0i9KKvvgBuCYJBlQF2tr6045RJeyZBOgQaSTgwADWu5zrr8e+NFxZm2JDD1ORadqK4
-         dBQmT/9GU/PS+yoobw64Wk+t7K0o3G6DnJMVek+TpeYGdncvWhRUO4ZLsVZQvZzWv9GB
-         TFaWxGo21oE7Z42XB0sXjs5j2f75CaJIqpwnEPLIe9IAu84jI+PCr3uvIbW6Wlmrg+D/
-         ykwg==
-X-Gm-Message-State: AOAM532eL5g3dm1Vrw4oI8Bs3QIO/h+GZZBkiH/wWXPFaN4h0muzWsfj
-        ggkANCUbUqnc4O8TYpAF+V/+Rw==
-X-Google-Smtp-Source: ABdhPJxe6zvUEPFFz0dqINaJgmeuMHAEr7mJ+7IgakKU3xZk6kThk3wqIJvV4ddNyR33OAYNHPPERQ==
-X-Received: by 2002:a2e:87d0:: with SMTP id v16mr13791192ljj.137.1589305579480;
-        Tue, 12 May 2020 10:46:19 -0700 (PDT)
-Received: from localhost (c-8c28e555.07-21-73746f28.bbcust.telenor.se. [85.229.40.140])
-        by smtp.gmail.com with ESMTPSA id 5sm17972lju.87.2020.05.12.10.46.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 10:46:18 -0700 (PDT)
-From:   Anders Roxell <anders.roxell@linaro.org>
-To:     ast@kernel.org, daniel@iogearbox.net
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] security: fix the default value of secid_to_secctx hook
-Date:   Tue, 12 May 2020 19:46:07 +0200
-Message-Id: <20200512174607.9630-1-anders.roxell@linaro.org>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
+        id S1728309AbgELRsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 13:48:38 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:51630 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725938AbgELRsi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:48:38 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 04CHmJEA005109;
+        Tue, 12 May 2020 10:48:23 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=ijpcBx7GXvV3BVLhl8Ib/KAUxIJt4kNXlMhwN6lJn0M=;
+ b=RNRjBAcQmvfMTN0M4zwgkdB9n/XT023ekWSAE15H/24oiYmFFdlsAutdykunUtBYprfv
+ GWCOYoz9Uw/bYheygO226e8w2ALAUA33jyzY3umTmV/AIghrVUjbSsQbfHb82RK9qLe9
+ CVRIAGvovAlfxrQ2T0DNy2oCydLE8k0obSQ= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 30ws21hety-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 12 May 2020 10:48:22 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 12 May 2020 10:47:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WmIqb9fNuJuMMqGu5W2CHShkaZkL8wbHApbwC9qDXsFmJEIXXQp4pJPZKYLwww+JZ8G47VhoSsg4c+pJiaCG78hIOFwghwcuH/qkeT+X4hYrMDDSUjC9Wlfyfeu8qtmlNPntlIatB8jz2QvNL6Nh4ph4ruDaWtlS8sOjjAF/oFeXD5ijMwnMMY59KCFVtJzYWIDWXxf/1fbA4SY1u3ghIA9MM9WtKrocZiaIvmkWGFPZUbV3aUd8A8RUOqC/1SFXN9z5866NB6ab3wgo8sX88UfB1GLz5+xpfyKRE08h2rmU9I2hbw72Vv1dPSv9HZ6YO3N7XiLXsZKPTxTkigFTdA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ijpcBx7GXvV3BVLhl8Ib/KAUxIJt4kNXlMhwN6lJn0M=;
+ b=abIVxQ+xRwVjj6ZxpQ1Tu/baYHwb7mJZyNXivAOArelkJwA384z/eOFjmvGngM5dTThwVmubQGZ3K4Ee6w53GlMN/JW6cjzjvNO64ejqZ1NqWLBxVzp9Ew9o+ovWJWqnGhLPNrMl8mcApBwk7VpqcrOb9Z+P4qsxHV6l/LstmrnnI2PS05VoTyzntm85Za0f6mlPEIBjMlLzg2XYPhn/ORIYPEzapeNSIjo6Tf5rfg7lwglhgqUswJC03PDhhen0Tp6pg+eS7HS9dHijp1MX0H669RQIBKV1ZaXrynP1cjo/6JOI2AAuULtlnFo0ZEkAplkqqgs+MZABrPWwyXQrzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ijpcBx7GXvV3BVLhl8Ib/KAUxIJt4kNXlMhwN6lJn0M=;
+ b=J8wV+Rfh8mwHNRVM1B5rGMCTX2Xax+Aw2pm6tOQHyFVxA/awwEYx7heclv/IxheinEHkmJsQpb2K6/9s2ue9aZ4oexkVoq0o6lTnHCwmL5llLizym1vLNW1pnRDPvdo6tQZizlTnFffTStrh7CIhG5TNIqayy4kDi41pmEFCHdU=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2597.namprd15.prod.outlook.com (2603:10b6:a03:158::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.29; Tue, 12 May
+ 2020 17:47:43 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
+ 17:47:42 +0000
+Subject: Re: [PATCH v2 bpf-next 2/3] selftest/bpf: fmod_ret prog and implement
+ test_overhead as part of bench
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+References: <20200508232032.1974027-1-andriin@fb.com>
+ <20200508232032.1974027-3-andriin@fb.com>
+ <c2fbefd2-6137-712e-47d4-200ef4d74775@fb.com>
+ <CAEf4BzaXUwgr70WteC=egTgii=si8OvVLCL9KCs-KwkPRPGQjQ@mail.gmail.com>
+ <b06ff0a8-2f44-522f-f071-141072d6f62b@fb.com>
+ <CAEf4BzY71QEmq74B8y-AmW1LFhFZ35TwO5vLn4AOiJPOSVqtjw@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <f06414a3-cd74-2223-8d15-bed62744b891@fb.com>
+Date:   Tue, 12 May 2020 10:47:40 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
+In-Reply-To: <CAEf4BzY71QEmq74B8y-AmW1LFhFZ35TwO5vLn4AOiJPOSVqtjw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BYAPR07CA0064.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::41) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:d0f0) by BYAPR07CA0064.namprd07.prod.outlook.com (2603:10b6:a03:60::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Tue, 12 May 2020 17:47:42 +0000
+X-Originating-IP: [2620:10d:c090:400::5:d0f0]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 17396c0e-de35-4aea-1eab-08d7f69c9256
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2597:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB259734F1D4B13DEC6FBE10B3D3BE0@BYAPR15MB2597.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-Forefront-PRVS: 0401647B7F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: f0Mu8f5yQJaQ11WJZsNtPTqkguU9Xst4UL1DX3bJk/yN/Gm0yQRQOkBOh/HE+xEJA/q4125/jW1/BF83UJZsUWj85oyyUeAn1cxDn3gWe3+rhU1j1WRHpzRu10HSauvYOcx/WMcPBe7wHabeJi3hq8UA2ZMD0U3MZxZ67zyjQTMT4lhYwwFmaEl0rFGepzNWnSPgNtcX3/rDVyzaAEj4IIokh1Ee6uGyG9sXSpB1txrfyBtJtnKydqm485MLL0pMKZcesYA0I3XuzfCChHflCRQKuojq0OxEuHGW0ZdmfXdWyH7BJFgqSlieV2Qz3Ng3CEVuM8dx6YtsS8+1MShLQBuyQfsWIFbuE3f87xtGV4BaZMruHwc0pfTwDouLrmPf4ZBSuX8KDCV7iWbIWAsgZrkN9p0fKWcIq/dgmwzTahKppJO0WUyvFdvIMZ5MYbfjaNM1JmNL/Sk2z9sJE2k1fzZWqrcIvIcRRf9lSSo6kW/CEtomlg3bJj2Vf7aWZQqANo6pxHDnwKvpjhUWTv/l0KViXumBnGXfPGLudwpOjReP9SumdGCUU2fkyaisuSYy
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(376002)(396003)(39860400002)(346002)(136003)(33430700001)(31686004)(186003)(16526019)(36756003)(66476007)(4326008)(86362001)(66556008)(66946007)(2906002)(54906003)(33440700001)(31696002)(478600001)(5660300002)(6512007)(2616005)(316002)(6506007)(6916009)(6486002)(53546011)(8676002)(52116002)(8936002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: XdxPj7FekPa3P6T/NsZGfETE0xrLR6PRV4RHknq9XxOjABfDfxsJVTzOAEhmIHelaCPr2OM+PsjYiGSYWp5YYWK3ly2TUMQYgkx5iOXau7BYV7GGDhUY0Ok3dvkbDAnpkqJKMb1CwepikmmS7tlOqkMi93hiVtqmXlsrDzrPDwfc7xWFVncBZJBNrVnXmOmk7c0K1PzXdBsqj1V09UUymwyKaLV4UIPvEZ3ngdOltKA5OqTZkOUl9U4S0yK6ePtNpURyAx4hDMr2cgEgKO7RJgDqm6jEfkmE35Rn1iz1xpH64yqJ798pxKgWu+rsX4P5ejqmWGpDJUqdSQl/EPAXu7AdjG5BgrGpZqR5xnKSEJY9gAvqW/8yW8RPMG3F8pBovfmNEapvzUeTC2gT/gl5nwPefWuRo9rc/nlV/bKUvnEpY8Q5ABL35YoPDsA3FQtpYJPJ1n0M5+dGRjM6qjMVq2BL1ndRhLzCoh+ALc/kL2FEzhSiy6z0hNUMWtDdbfvGDXkoqFn4TbCbpJAT4jbBXQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17396c0e-de35-4aea-1eab-08d7f69c9256
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2020 17:47:42.8202
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: or6Oq+eZt/ziXZ5sTDrE1ZtnFdR/EFT3vR8pX5Mf7us6qvMl3SqPgbh5LrUbo34+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2597
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-12_06:2020-05-11,2020-05-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ mlxlogscore=999 priorityscore=1501 bulkscore=0 clxscore=1015 phishscore=0
+ lowpriorityscore=0 spamscore=0 adultscore=0 malwarescore=0 impostorscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005120134
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-security_secid_to_secctx is called by the bpf_lsm hook and a successful
-return value (i.e 0) implies that the parameter will be consumed by the
-LSM framework. The current behaviour return success when the pointer
-isn't initialized when CONFIG_BPF_LSM is enabled, with the default
-return from kernel/bpf/bpf_lsm.c.
 
-This is the internal error:
 
-[ 1229.341488][ T2659] usercopy: Kernel memory exposure attempt detected from null address (offset 0, size 280)!
-[ 1229.374977][ T2659] ------------[ cut here ]------------
-[ 1229.376813][ T2659] kernel BUG at mm/usercopy.c:99!
-[ 1229.378398][ T2659] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-[ 1229.380348][ T2659] Modules linked in:
-[ 1229.381654][ T2659] CPU: 0 PID: 2659 Comm: systemd-journal Tainted: G    B   W         5.7.0-rc5-next-20200511-00019-g864e0c6319b8-dirty #13
-[ 1229.385429][ T2659] Hardware name: linux,dummy-virt (DT)
-[ 1229.387143][ T2659] pstate: 80400005 (Nzcv daif +PAN -UAO BTYPE=--)
-[ 1229.389165][ T2659] pc : usercopy_abort+0xc8/0xcc
-[ 1229.390705][ T2659] lr : usercopy_abort+0xc8/0xcc
-[ 1229.392225][ T2659] sp : ffff000064247450
-[ 1229.393533][ T2659] x29: ffff000064247460 x28: 0000000000000000
-[ 1229.395449][ T2659] x27: 0000000000000118 x26: 0000000000000000
-[ 1229.397384][ T2659] x25: ffffa000127049e0 x24: ffffa000127049e0
-[ 1229.399306][ T2659] x23: ffffa000127048e0 x22: ffffa000127048a0
-[ 1229.401241][ T2659] x21: ffffa00012704b80 x20: ffffa000127049e0
-[ 1229.403163][ T2659] x19: ffffa00012704820 x18: 0000000000000000
-[ 1229.405094][ T2659] x17: 0000000000000000 x16: 0000000000000000
-[ 1229.407008][ T2659] x15: 0000000000000000 x14: 003d090000000000
-[ 1229.408942][ T2659] x13: ffff80000d5b25b2 x12: 1fffe0000d5b25b1
-[ 1229.410859][ T2659] x11: 1fffe0000d5b25b1 x10: ffff80000d5b25b1
-[ 1229.412791][ T2659] x9 : ffffa0001034bee0 x8 : ffff00006ad92d8f
-[ 1229.414707][ T2659] x7 : 0000000000000000 x6 : ffffa00015eacb20
-[ 1229.416642][ T2659] x5 : ffff0000693c8040 x4 : 0000000000000000
-[ 1229.418558][ T2659] x3 : ffffa0001034befc x2 : d57a7483a01c6300
-[ 1229.420610][ T2659] x1 : 0000000000000000 x0 : 0000000000000059
-[ 1229.422526][ T2659] Call trace:
-[ 1229.423631][ T2659]  usercopy_abort+0xc8/0xcc
-[ 1229.425091][ T2659]  __check_object_size+0xdc/0x7d4
-[ 1229.426729][ T2659]  put_cmsg+0xa30/0xa90
-[ 1229.428132][ T2659]  unix_dgram_recvmsg+0x80c/0x930
-[ 1229.429731][ T2659]  sock_recvmsg+0x9c/0xc0
-[ 1229.431123][ T2659]  ____sys_recvmsg+0x1cc/0x5f8
-[ 1229.432663][ T2659]  ___sys_recvmsg+0x100/0x160
-[ 1229.434151][ T2659]  __sys_recvmsg+0x110/0x1a8
-[ 1229.435623][ T2659]  __arm64_sys_recvmsg+0x58/0x70
-[ 1229.437218][ T2659]  el0_svc_common.constprop.1+0x29c/0x340
-[ 1229.438994][ T2659]  do_el0_svc+0xe8/0x108
-[ 1229.440587][ T2659]  el0_svc+0x74/0x88
-[ 1229.441917][ T2659]  el0_sync_handler+0xe4/0x8b4
-[ 1229.443464][ T2659]  el0_sync+0x17c/0x180
-[ 1229.444920][ T2659] Code: aa1703e2 aa1603e1 910a8260 97ecc860 (d4210000)
-[ 1229.447070][ T2659] ---[ end trace 400497d91baeaf51 ]---
-[ 1229.448791][ T2659] Kernel panic - not syncing: Fatal exception
-[ 1229.450692][ T2659] Kernel Offset: disabled
-[ 1229.452061][ T2659] CPU features: 0x240002,20002004
-[ 1229.453647][ T2659] Memory Limit: none
-[ 1229.455015][ T2659] ---[ end Kernel panic - not syncing: Fatal exception ]---
+On 5/12/20 10:23 AM, Andrii Nakryiko wrote:
+> On Tue, May 12, 2020 at 8:11 AM Yonghong Song <yhs@fb.com> wrote:
+>>
+>>
+>>
+>> On 5/11/20 9:22 PM, Andrii Nakryiko wrote:
+>>> On Sat, May 9, 2020 at 10:24 AM Yonghong Song <yhs@fb.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 5/8/20 4:20 PM, Andrii Nakryiko wrote:
+>>>>> Add fmod_ret BPF program to existing test_overhead selftest. Also re-implement
+>>>>> user-space benchmarking part into benchmark runner to compare results.  Results
+>>>>> with ./bench are consistently somewhat lower than test_overhead's, but relative
+>>>>> performance of various types of BPF programs stay consisten (e.g., kretprobe is
+>>>>> noticeably slower).
+>>>>>
+>>>>> run_bench_rename.sh script (in benchs/ directory) was used to produce the
+>>>>> following numbers:
+>>>>>
+>>>>>      base      :    3.975 ± 0.065M/s
+>>>>>      kprobe    :    3.268 ± 0.095M/s
+>>>>>      kretprobe :    2.496 ± 0.040M/s
+>>>>>      rawtp     :    3.899 ± 0.078M/s
+>>>>>      fentry    :    3.836 ± 0.049M/s
+>>>>>      fexit     :    3.660 ± 0.082M/s
+>>>>>      fmodret   :    3.776 ± 0.033M/s
+>>>>>
+>>>>> While running test_overhead gives:
+>>>>>
+>>>>>      task_rename base        4457K events per sec
+>>>>>      task_rename kprobe      3849K events per sec
+>>>>>      task_rename kretprobe   2729K events per sec
+>>>>>      task_rename raw_tp      4506K events per sec
+>>>>>      task_rename fentry      4381K events per sec
+>>>>>      task_rename fexit       4349K events per sec
+>>>>>      task_rename fmod_ret    4130K events per sec
+>>>>
+>>>> Do you where the overhead is and how we could provide options in
+>>>> bench to reduce the overhead so we can achieve similar numbers?
+>>>> For benchmarking, sometimes you really want to see "true"
+>>>> potential of a particular implementation.
+>>>
+>>> Alright, let's make it an official bench-off... :) And the reason for
+>>> this discrepancy, turns out to be... not atomics at all! But rather a
+>>> single-threaded vs multi-threaded process (well, at least task_rename
+>>> happening from non-main thread, I didn't narrow it down further).
+>>
+>> It would be good to find out why and have a scheme (e.g. some kind
+>> of affinity binding) to close the gap.
+> 
+> I don't think affinity has anything to do with this. test_overhead
+> sets affinity for entire process, and that doesn't change results at
+> all. Same for bench, both with and without setting affinity, results
+> are pretty much the same. Affinity helps a bit to get a bit more
+> stable and consistent results, but doesn't hurt or help performance
+> for this benchmark.
+> 
+> I don't think we need to spend that much time trying to understand
+> behavior of task renaming for such a particular setup. Benchmarking
+> has to be multi-threaded in most cases anyways, there is no way around
+> that.
 
-Rework the so the default return value is -EOPNOTSUPP.
+Okay. This might be related to kernel scheduling of main thread vs. 
+secondary threads? This then indeed beyond this patch.
 
-There are likely other callbacks such as security_inode_getsecctx() that
-may have the same problem, and that someone that understand the code
-better needs to audit them.
+I am fine with the current mechanism as is. Maybe put the above
+experimental data in commit message? If later other people
+want to do further investigation, they have some data to
+start with.
 
-Thank you Arnd for helping me figure out what went wrong.
-
-CC: Arnd Bergmann <arnd@arndb.de>
-Fixes: 98e828a0650f ("security: Refactor declaration of LSM hooks")
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
----
- include/linux/lsm_hook_defs.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index b9e73d736e13..31eb3381e54b 100644
---- a/include/linux/lsm_hook_defs.h
-+++ b/include/linux/lsm_hook_defs.h
-@@ -243,7 +243,7 @@ LSM_HOOK(int, -EINVAL, getprocattr, struct task_struct *p, char *name,
- 	 char **value)
- LSM_HOOK(int, -EINVAL, setprocattr, const char *name, void *value, size_t size)
- LSM_HOOK(int, 0, ismaclabel, const char *name)
--LSM_HOOK(int, 0, secid_to_secctx, u32 secid, char **secdata,
-+LSM_HOOK(int, -EOPNOTSUPP, secid_to_secctx, u32 secid, char **secdata,
- 	 u32 *seclen)
- LSM_HOOK(int, 0, secctx_to_secid, const char *secdata, u32 seclen, u32 *secid)
- LSM_HOOK(void, LSM_RET_VOID, release_secctx, char *secdata, u32 seclen)
--- 
-2.20.1
-
+> 
+>>
+>>> Atomics actually make very little difference, which gives me a good
+>>> peace of mind :)
+>>>
+>>> So, I've built and ran test_overhead (selftest) and bench both as
+>>> multi-threaded and single-threaded apps. Corresponding results match
+>>> almost perfectly. And that's while test_overhead doesn't use atomics
+>>> at all, while bench still does. Then I also ran test_overhead with
+>>> added generics to match bench implementation. There are barely any
+>>> differences, see two last sets of results.
+>>>
+>>> BTW, selftest results seems bit lower from the ones in original
+>>> commit, probably because I made it run more iterations (like 40 times
+>>> more) to have more stable results.
+>>>
+>>> So here are the results:
+>>>
+>>> Single-threaded implementations
+>>> ===============================
+>>>
+>>> /* bench: single-threaded, atomics */
+>>> base      :    4.622 ± 0.049M/s
+>>> kprobe    :    3.673 ± 0.052M/s
+>>> kretprobe :    2.625 ± 0.052M/s
+>>> rawtp     :    4.369 ± 0.089M/s
+>>> fentry    :    4.201 ± 0.558M/s
+>>> fexit     :    4.309 ± 0.148M/s
+>>> fmodret   :    4.314 ± 0.203M/s
+>>>
+>>> /* selftest: single-threaded, no atomics */
+>>> task_rename base        4555K events per sec
+>>> task_rename kprobe      3643K events per sec
+>>> task_rename kretprobe   2506K events per sec
+>>> task_rename raw_tp      4303K events per sec
+>>> task_rename fentry      4307K events per sec
+>>> task_rename fexit       4010K events per sec
+>>> task_rename fmod_ret    3984K events per sec
+>>>
+>>>
+>>> Multi-threaded implementations
+>>> ==============================
+>>>
+>>> /* bench: multi-threaded w/ atomics */
+>>> base      :    3.910 ± 0.023M/s
+>>> kprobe    :    3.048 ± 0.037M/s
+>>> kretprobe :    2.300 ± 0.015M/s
+>>> rawtp     :    3.687 ± 0.034M/s
+>>> fentry    :    3.740 ± 0.087M/s
+>>> fexit     :    3.510 ± 0.009M/s
+>>> fmodret   :    3.485 ± 0.050M/s
+>>>
+>>> /* selftest: multi-threaded w/ atomics */
+>>> task_rename base        3872K events per sec
+>>> task_rename kprobe      3068K events per sec
+>>> task_rename kretprobe   2350K events per sec
+>>> task_rename raw_tp      3731K events per sec
+>>> task_rename fentry      3639K events per sec
+>>> task_rename fexit       3558K events per sec
+>>> task_rename fmod_ret    3511K events per sec
+>>>
+>>> /* selftest: multi-threaded, no atomics */
+>>> task_rename base        3945K events per sec
+>>> task_rename kprobe      3298K events per sec
+>>> task_rename kretprobe   2451K events per sec
+>>> task_rename raw_tp      3718K events per sec
+>>> task_rename fentry      3782K events per sec
+>>> task_rename fexit       3543K events per sec
+>>> task_rename fmod_ret    3526K events per sec
+>>>
+>>>
+>> [...]
