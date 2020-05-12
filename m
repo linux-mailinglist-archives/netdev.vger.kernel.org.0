@@ -2,229 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 215EB1CED11
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 08:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E40571CED20
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 08:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728678AbgELGfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 02:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727107AbgELGfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 02:35:33 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F981C061A0E
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 23:35:32 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id f3so12654247ioj.1
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 23:35:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=hmqc9TQ9Quh7+US/Jmh4IXg0bVpfrPAKCJNshFYSv+Q=;
-        b=NvN3bHIDGwK+p0qEwYf7zjtLlsxm2ceG5S0GYtDcV8aLAqcsJfqOTGl1gkyIlhzl56
-         Z9+A/IMEvGy4ZRM0/h9CnkQShR6M/HA4DFloyhf88t+b64r/X4SaOrgaUi+rdf2GGmha
-         cvaSBe+ut2HCvfoRg2GMxsWf6PqOgRKYk0l6PWeo1znnU/k7z8yLPqV2DkosG+22KThS
-         +pXuvun5l0Uwje9BpaVzjG2kJpbk1JW2IVBJFyar1BKa7F61PvPqDdP1c4wfHS485XIc
-         MlKgocOGFtkGz3BKYGLQ6g5TKWxZpOJYjdJlC9flK8333jlQOL1oOx4rRvibwF2SEbz1
-         RWdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hmqc9TQ9Quh7+US/Jmh4IXg0bVpfrPAKCJNshFYSv+Q=;
-        b=D9q1wu6JxZ56f6ZqSxx0OkhykSajog6JAxSzPI80ZdtlV4wFHHOFoZ8AwEkzz7Rc9Z
-         TivCrqk5FPEUbialXDBJZf44VqhoqjmHa7E63/4JU1rU+DBmIhfvas2xPrb3+zlcDpBH
-         TZRWGhUCptZuDBMDPTZ5cf6FP3dmEFRk4SsjehbppjxOYhyuWLe3cQ+wSCQPTcxdwmuP
-         lidfbfYNlUQV+arGbv58eFEk6bpEXoEdaNG4m4IeyPANLds9i4wultwCmBX7NAOYSiWh
-         pt12epeM4e9Pv04KImXjm2j437GmkY7gniepGcJGwAuWE7gBObflmRywBoe5lqpgMKaS
-         jFXQ==
-X-Gm-Message-State: AGi0PubMq/gEVzwBFLu1inH1RHGt5JxBUDGIha4BTuuu6PQLiXVzSZa5
-        shLiR0uHyYFlNqOov9ZLYzYDdWK33QlP8+9teQsAbw==
-X-Google-Smtp-Source: APiQypLWnzw4EWWNr1vmFUqwTdjDAprfuZXfBBKAg6Df7mrHkghpjwc+KH+GGaVrIhljRYARBkWpEGcIU/MDkPlDt6c=
-X-Received: by 2002:a05:6638:68f:: with SMTP id i15mr19299578jab.136.1589265331761;
- Mon, 11 May 2020 23:35:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200511150759.18766-1-brgl@bgdev.pl> <20200511150759.18766-10-brgl@bgdev.pl>
- <dab80587-a196-e0ab-ae97-f8e5cc4a71d4@gmail.com>
-In-Reply-To: <dab80587-a196-e0ab-ae97-f8e5cc4a71d4@gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 12 May 2020 08:35:21 +0200
-Message-ID: <CAMRc=MeAMHs3jYh5KpbO5pAqO_cTmc71US_aVAFqRpNBnEYVMg@mail.gmail.com>
-Subject: Re: [PATCH v2 09/14] net: ethernet: mtk-eth-mac: new driver
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        id S1728900AbgELGjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 02:39:06 -0400
+Received: from mout.web.de ([217.72.192.78]:45575 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727783AbgELGjF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 02:39:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1589265532;
+        bh=w1Yj9AltlGe368GUTzZ7ijrqNOUbDEF3Qjva24Q6WJI=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=nz+AJo7gANfqQ31J3jz/XWNo62z7Fu+oc/qanZwCX12oqeuBgYWNdWz3SqD2yo8Rg
+         1k7cmO65A8QUBkwsqVZdXOv2A0S8JnnRgwkfLbJLbh6t7Lx/sCA/hHygILEtNgYzpL
+         jCaPoWagxPIQU9YFmkeAq69TWPG8oOgMGs+1/DKA=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([2.244.36.232]) by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MmQcl-1iqqXF1ymP-00iUr7; Tue, 12
+ May 2020 08:38:52 +0200
+Subject: Re: net/sonic: Fix some resource leaks in error handling paths
+To:     Finn Thain <fthain@telegraphics.com.au>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+        Christophe Jaillet <christophe.jaillet@wanadoo.fr>
+References: <b7651b26-ac1e-6281-efb2-7eff0018b158@web.de>
+ <alpine.LNX.2.22.394.2005100922240.11@nippy.intranet>
+ <9d279f21-6172-5318-4e29-061277e82157@web.de>
+ <alpine.LNX.2.22.394.2005101738510.11@nippy.intranet>
+ <bc70e24c-dd31-75b7-6ece-2ad31982641e@web.de>
+ <alpine.LNX.2.22.394.2005110845060.8@nippy.intranet>
+ <9994a7de-0399-fb34-237a-a3c71b3cf568@web.de>
+ <alpine.LNX.2.22.394.2005120905410.8@nippy.intranet>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <3fabce05-7da9-7daa-d92c-411369f35b4a@web.de>
+Date:   Tue, 12 May 2020 08:38:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+MIME-Version: 1.0
+In-Reply-To: <alpine.LNX.2.22.394.2005120905410.8@nippy.intranet>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:pCeNe6/ZfsXNuMeFLgFd8XMcEZxSQcMx/mz2KypmT/daBYHf1hP
+ o7A+Bx1cIU4rOkWNctL8K9CsQvVtxwp1irXzPV5+/82p/Kif/ZZ4Ubpii1fmAlfc3g72cbr
+ MWH7WpQ8Zhp+TVwx2aoLCCI99RTZ8PTg80pSFfecn26EWqAekzxDmaktaogRMndR+qmAkw8
+ LDvUk2SP/VhdzLfaAC02Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:J6PMyRMGBcA=:WWk3NSSMfuC5VNaFQndOFG
+ NDkxHqV4ZDRvfS6e0ILqoSMqlGEDXod0UVyztw4ywHLOwrf5x1jiQDMMpylvtxgGuvgdC6CQb
+ MtJQGXnjKgiJHVeiO8VJIA6UPtEHVsJ9TOknfEASGjjVLnUNEUb8JHfFFPY1yxtxjNqFbOb25
+ 8qb4ZL6G11cprR954SEp44LBuzZosLBiMBk94PXWtIIH+7l53lvGILP6HpfQ8RVqdX59+Lron
+ +/euH9v2VAlhDY34SSUn7JA9q+YgFTyQQVP9rCVC/PH1cVL9HeJrwsZpuJIe/g+TnzlmnNoH/
+ dGGKqeuGXjXHkC93jMeQiXk+Hl6KDJPPvENt3JxydXVOs34ZYb1UoJB7Ex7sWTjVy4vyp0Ylz
+ OP+nA0dzFK2059Opuh+0BYomACc3TG7zrPG/mLuAlEHKjh3yXcus+Wpgvm2MMFQ+NKT1oqAbM
+ SKqB7JfvOsrRXFeGhYlmgtnNg8I7juDoliwQmdDXEzXjeaB6DlcvAyu763Omv4Jjiim8GlYA4
+ 1wjfPWf48HFdF93WZ85BAMyW1nVdq5eTMkvW0wgivuEben3YfRvrdl86z7ETQZfqKd/o5jXv+
+ k4vnxFnae7Cad+0onzTUF29X9vvFIJl7iIjzpSIQw/UNBli47+WAI7/cSk2WQIbt9KSeVuDbn
+ fyGjmD7utooUo7Pt1GIQ3z2Vkmm971o1r4/27Ak3Gzszo0dn704Z+QG8xLdf/18+LRtbraJQx
+ C6NE0fpxfdScNF1U9PHlyXnc/p9m4uRPcT37AWDR3zlxSTGogHTL91Y7HvuVtwsZd38dFfMI8
+ fJlH6rMIaVsg3lrR8xWSK9FDnlFf5z3eVX4Er6IGCqFcmeOt9VVdDFtJu3xfmkJkOKqof/hqh
+ NLfFKyP94Itfvasy0XGq5DbunMYLxKYru9XF/f5yVRv3u11DJhMqGMz0DX4Ld1HJcAMAGONUD
+ ApSsIOy06EKhs31/2gJu4qXPFy2ariXfYq+1DkAObdvmchR+pe5+PuZAZLOlEm/43clLD9Fuy
+ NzmdVx7l/4vzbHxeORCdCRrWOwyBIBYRReIzpG8pKdtP7STPs0Iy6e2CZbcI5hMM43zsz9YJU
+ oJbiCGbrrsBv8760MgqEb6BAMKRq4ojeR3LdmiSk/sXJE2bN/EZFGCQCZMBwvBJ6UAN3c1iKG
+ ilcq6LfjVgCzOR8+qEhIJ82qfAADwirTincqgHcQ4tBLZ3aoMaq+UHIiLeHleePG0UJ9T10eJ
+ HZrGqwlmQiOviqODh
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pon., 11 maj 2020 o 21:24 Florian Fainelli <f.fainelli@gmail.com> napisa=C5=
-=82(a):
->
->
->
-> On 5/11/2020 8:07 AM, Bartosz Golaszewski wrote:
-> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> >
-> > This adds the driver for the MediaTek Ethernet MAC used on the MT8* SoC
-> > family. For now we only support full-duplex.
-> >
-> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > ---
->
-> [snip]
->
-> > +static int mtk_mac_ring_pop_tail(struct mtk_mac_ring *ring,
-> > +                              struct mtk_mac_ring_desc_data *desc_data=
-)
-> > +{
-> > +     struct mtk_mac_ring_desc *desc =3D &ring->descs[ring->tail];
-> > +     unsigned int status;
-> > +
-> > +     /* Let the device release the descriptor. */
-> > +     dma_rmb();
-> > +     status =3D desc->status;
-> > +
-> > +     if (!(status & MTK_MAC_DESC_BIT_COWN))
-> > +             return -1;
-> > +
-> > +     desc_data->len =3D status & MTK_MAC_DESC_MSK_LEN;
-> > +     desc_data->flags =3D status & ~MTK_MAC_DESC_MSK_LEN;
-> > +     desc_data->dma_addr =3D desc->data_ptr;
-> > +     desc_data->skb =3D ring->skbs[ring->tail];
-> > +
-> > +     desc->data_ptr =3D 0;
-> > +     desc->status =3D MTK_MAC_DESC_BIT_COWN;
-> > +     if (status & MTK_MAC_DESC_BIT_EOR)
-> > +             desc->status |=3D MTK_MAC_DESC_BIT_EOR;
->
-> Don't you need a dma_wmb() for the device to observe the new descriptor
-> here?
->
+> Markus, if you were to write a patch to improve upon coding-style.rst,
+> who should review it?
 
-HW has released the descriptor (set the COWN bit) and I just clear all
-other bits here really. Yeah, I guess it won't hurt to make sure.
+All involved contributors have got chances to provide constructive comment=
+s.
+I would be curious who will actually dare to contribute further ideas for =
+this area.
 
-> [snip]
->
-> > +static void mtk_mac_dma_unmap_tx(struct mtk_mac_priv *priv,
-> > +                              struct mtk_mac_ring_desc_data *desc_data=
-)
-> > +{
-> > +     struct device *dev =3D mtk_mac_get_dev(priv);
-> > +
-> > +     return dma_unmap_single(dev, desc_data->dma_addr,
-> > +                             desc_data->len, DMA_TO_DEVICE);
->
-> If you stored a pointer to the sk_buff you transmitted, then you would
-> need an expensive read to the descriptor to determine the address and
-> length, and you would also not be at the mercy of the HW putting
-> incorrect values there.
->
 
-You mean store the mapped addresses? Yeah I can do that but I'll still
-need to read the descriptor memory to verify it was released by HW.
+> If you are unable to write or review such a patch, how can you hope to
+> adjudicate compliance?
 
-> sp
-> > +static void mtk_mac_dma_init(struct mtk_mac_priv *priv)
-> > +{
-> > +     struct mtk_mac_ring_desc *desc;
-> > +     unsigned int val;
-> > +     int i;
-> > +
-> > +     priv->descs_base =3D (struct mtk_mac_ring_desc *)priv->ring_base;
-> > +
-> > +     for (i =3D 0; i < MTK_MAC_NUM_DESCS_TOTAL; i++) {
-> > +             desc =3D &priv->descs_base[i];
-> > +
-> > +             memset(desc, 0, sizeof(*desc));
-> > +             desc->status =3D MTK_MAC_DESC_BIT_COWN;
-> > +             if ((i =3D=3D MTK_MAC_NUM_TX_DESCS - 1) ||
-> > +                 (i =3D=3D MTK_MAC_NUM_DESCS_TOTAL - 1))
-> > +                     desc->status |=3D MTK_MAC_DESC_BIT_EOR;
-> > +     }
-> > +
-> > +     mtk_mac_ring_init(&priv->tx_ring, priv->descs_base, 0);
-> > +     mtk_mac_ring_init(&priv->rx_ring,
-> > +                       priv->descs_base + MTK_MAC_NUM_TX_DESCS,
-> > +                       MTK_MAC_NUM_RX_DESCS);
-> > +
-> > +     /* Set DMA pointers. */
-> > +     val =3D (unsigned int)priv->dma_addr;
->
-> You would probably add a WARN_ON() or something that catches the upper
-> 32-bits of the dma_addr being set, see my comment about the DMA mask
-> setting.
->
+I can also try to achieve more improvements here to see how the available
+software documentation will evolve.
 
-Can it still happen if I check the return value of dma_set_mask_and_coheren=
-t()?
-
-> [snip]
->
-> > +static void mtk_mac_tx_complete_all(struct mtk_mac_priv *priv)
-> > +{
-> > +     struct net_device *ndev =3D priv_to_netdev(priv);
-> > +     struct mtk_mac_ring *ring =3D &priv->tx_ring;
-> > +     int ret;
-> > +
-> > +     for (;;) {
-> > +             mtk_mac_lock(priv);
-> > +
-> > +             if (!mtk_mac_ring_descs_available(ring)) {
-> > +                     mtk_mac_unlock(priv);
-> > +                     break;
-> > +             }
-> > +
-> > +             ret =3D mtk_mac_tx_complete_one(priv);
-> > +             if (ret) {
-> > +                     mtk_mac_unlock(priv);
-> > +                     break;
-> > +             }
-> > +
-> > +             if (netif_queue_stopped(ndev))
-> > +                     netif_wake_queue(ndev);
-> > +
-> > +             mtk_mac_unlock(priv);
-> > +     }
->
-> Where do you increment the net_device statistics to indicate the bytes
-> and packets transmitted?
->
-
-I don't. I use the counters provided by HW for that.
-
-> [snip]
->
-> > +     mtk_mac_set_mode_rmii(priv);
-> > +
-> > +     dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
->
-> Your code assumes that DMA addresses are not going to be >=3D 4GB so you
-> should be checking this function's return code and abort here otherwise
-> your driver will fail in surprisingly difficult ways to debug.
-
-Sure, thanks.
-
-Bart
+Regards,
+Markus
