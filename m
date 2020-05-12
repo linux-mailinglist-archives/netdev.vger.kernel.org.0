@@ -2,339 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C77511CFBFF
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:23:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F11B01CFC13
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 19:23:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730838AbgELRVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 13:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36708 "EHLO
+        id S1727954AbgELRXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 13:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730819AbgELRVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:21:03 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8845DC061A0C;
-        Tue, 12 May 2020 10:21:03 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id n5so9499553wmd.0;
-        Tue, 12 May 2020 10:21:03 -0700 (PDT)
+        with ESMTP id S1725554AbgELRXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:23:38 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F73C061A0C;
+        Tue, 12 May 2020 10:23:38 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id y22so1808962qki.3;
+        Tue, 12 May 2020 10:23:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3dJ3kw3lIwiObAdYMTIM/7GK3/zwAmfuzVqCDS8cJ9w=;
-        b=nGqAJ8cuJQbZQMEQQkpGBz0oLzlMgBruT89QlcoI2gEf2nra4gaZMVk+0XeeFTl7Zx
-         cxTscl3lUzK72WEh0bigFd7PdwEwevAQhCN61amb/ZVjiI04tnEjYL26uhcZZsumJHka
-         wOO+TnH+c2Xggu5ZvS6ji4lvhKbTB3PfO9yMJxzxOgA7hyerxrdfqy5nJceQlZ+vxdip
-         SEe1ZVbHTYWAJS35iYFl0SHtsIkKuxtG2LUiDah77pIQPgoG+NHKy75U69VmQgBZGjoZ
-         3VBg0+F5miNVU5GV60KO+P4R+45MjDcZROXLIx6BBOiVZugbErNWt/qJG94FonOq+tn7
-         29EA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=jYAwQqCKZY/JEO+42Y6cCIX9mgCJiPaIoAUPgyyKQK4=;
+        b=DgpMTRL6lkyuInt+9sKLoC1QipR7zMBQ68YOpWao9aSpzCwiRM75NpCZIL2Y8QyIVk
+         3/mKbYzbH+i+sD076N/GY5l++4YFzSoA5rYizCOD/HGg5AWQDDDhaE1/H+mpOfRg4mEO
+         7isIV0h/gkqfHquIvCuQ2iHoAJDc8DOmpAxSdb9kuFBiCTXc50JxyADLNX9hQXkcbNOq
+         ioLGkvyQjqlpkni0DUa/wNeZU9RVVyGImy5YnhhGlSIHIHeTJijtmV9vjZmfEZnhfE3F
+         4iBhmAFTrXOboVRp+HhXF37x82nq2UF+RyrfBkpLIv/tno1fJHU4BDJJTqBRNcgPche0
+         hANw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=3dJ3kw3lIwiObAdYMTIM/7GK3/zwAmfuzVqCDS8cJ9w=;
-        b=O0rqgR9afZMQ2OxWMYg6rfU//YUMQxZoF4Yfu7ZMPLdyO9hh9zHmZ0+4bmG/gfJHwv
-         Lw6woqvo7LOFIpHCQ7W6XmPquk+wTNjMA9Pdijcjpsp8XY8gPGbkk7nZDXIpwFPWBd4w
-         /4YjcpMlKfRP3B+a1c9rCJ86gCgydcDEqS0Qtqt4HozcC0kxN29hbBQMhFyXc5NCve6x
-         z0MHOvdwszQyDSjzfzltfjjF+Gak6d7aoeUhhAXLZzs+9THZLWQVWKcOzeE2bYQRpvdh
-         beh0p7GWXIBTWMH+q93Qiu7lW6zLny/4fd33YgpwY/pLldjJ9nWOcxwo5Y4aAq8MBHGN
-         f4kQ==
-X-Gm-Message-State: AGi0PuaCHWZXUxPFsT0X56jpEnvFSez+5Av3RROGH25DNFzrjuGNhdxM
-        5cKI6R+Voxkay8hiRH7y4+4=
-X-Google-Smtp-Source: APiQypLpxGJXOWpItUiR+7FGMYnNCnR8hQ+rqb5r8KwEJ0VI+MQ5thSrfEDXIp8jJ9NXqVz/0gkXsA==
-X-Received: by 2002:a1c:808c:: with SMTP id b134mr40228880wmd.131.1589304062092;
-        Tue, 12 May 2020 10:21:02 -0700 (PDT)
-Received: from localhost.localdomain ([86.121.118.29])
-        by smtp.gmail.com with ESMTPSA id a15sm23999743wrw.56.2020.05.12.10.21.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 10:21:01 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        idosch@idosch.org, rmk+kernel@armlinux.org.uk,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 net-next 15/15] docs: net: dsa: sja1105: document the best_effort_vlan_filtering option
-Date:   Tue, 12 May 2020 20:20:39 +0300
-Message-Id: <20200512172039.14136-16-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200512172039.14136-1-olteanv@gmail.com>
-References: <20200512172039.14136-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jYAwQqCKZY/JEO+42Y6cCIX9mgCJiPaIoAUPgyyKQK4=;
+        b=kLqer/TBOcqVmK6ZQcbbASAVM/bB6T2U8g0FuetqzGnUczogjeR6XmFDG2tATmzXMs
+         yl8J0GGbFm7nCSTI0GhRfP1i3xBn/86EIJqFbx/YdK4vcEsdZ/4a/ycpfnzIHq43qzTv
+         q43ZFtDkRaHOJtoDokZaRbgwEUnzeCa5ziqNHaP+PjMMODlwqfM87M0npgxoW+Ri2Hlq
+         kUd6vr1fataTv9dP0TiPlHubyAiIaZpXSzc1diCvOQE6bmWgYPiMbMj9iEJxOWkRD3ZI
+         t64Hk7EU3e005XG5quYF1wGgKwSrYAML6GpEDuoU4AWiSTiiSMdttYUXxI1I86d1v3cJ
+         Zj0g==
+X-Gm-Message-State: AGi0PubG+yPeimsnqGi73ZilYy15ZavWfepE6zphXbMisY5z/N9V4wVQ
+        3wGvRLlnmGaNgqm/70jsCOQdtvCjqor8F/YMGNegAg==
+X-Google-Smtp-Source: APiQypInae0G69eii23/QdXHd4LmnARdMrh7GG9JqjRqm8m8pVe+f/YOFqF48RqHjH7/o3TDPWuQ8XEwkSwKuoACSqc=
+X-Received: by 2002:a05:620a:14a1:: with SMTP id x1mr21475420qkj.92.1589304217693;
+ Tue, 12 May 2020 10:23:37 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200508232032.1974027-1-andriin@fb.com> <20200508232032.1974027-3-andriin@fb.com>
+ <c2fbefd2-6137-712e-47d4-200ef4d74775@fb.com> <CAEf4BzaXUwgr70WteC=egTgii=si8OvVLCL9KCs-KwkPRPGQjQ@mail.gmail.com>
+ <b06ff0a8-2f44-522f-f071-141072d6f62b@fb.com>
+In-Reply-To: <b06ff0a8-2f44-522f-f071-141072d6f62b@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 12 May 2020 10:23:26 -0700
+Message-ID: <CAEf4BzY71QEmq74B8y-AmW1LFhFZ35TwO5vLn4AOiJPOSVqtjw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/3] selftest/bpf: fmod_ret prog and implement
+ test_overhead as part of bench
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, May 12, 2020 at 8:11 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 5/11/20 9:22 PM, Andrii Nakryiko wrote:
+> > On Sat, May 9, 2020 at 10:24 AM Yonghong Song <yhs@fb.com> wrote:
+> >>
+> >>
+> >>
+> >> On 5/8/20 4:20 PM, Andrii Nakryiko wrote:
+> >>> Add fmod_ret BPF program to existing test_overhead selftest. Also re-=
+implement
+> >>> user-space benchmarking part into benchmark runner to compare results=
+.  Results
+> >>> with ./bench are consistently somewhat lower than test_overhead's, bu=
+t relative
+> >>> performance of various types of BPF programs stay consisten (e.g., kr=
+etprobe is
+> >>> noticeably slower).
+> >>>
+> >>> run_bench_rename.sh script (in benchs/ directory) was used to produce=
+ the
+> >>> following numbers:
+> >>>
+> >>>     base      :    3.975 =C2=B1 0.065M/s
+> >>>     kprobe    :    3.268 =C2=B1 0.095M/s
+> >>>     kretprobe :    2.496 =C2=B1 0.040M/s
+> >>>     rawtp     :    3.899 =C2=B1 0.078M/s
+> >>>     fentry    :    3.836 =C2=B1 0.049M/s
+> >>>     fexit     :    3.660 =C2=B1 0.082M/s
+> >>>     fmodret   :    3.776 =C2=B1 0.033M/s
+> >>>
+> >>> While running test_overhead gives:
+> >>>
+> >>>     task_rename base        4457K events per sec
+> >>>     task_rename kprobe      3849K events per sec
+> >>>     task_rename kretprobe   2729K events per sec
+> >>>     task_rename raw_tp      4506K events per sec
+> >>>     task_rename fentry      4381K events per sec
+> >>>     task_rename fexit       4349K events per sec
+> >>>     task_rename fmod_ret    4130K events per sec
+> >>
+> >> Do you where the overhead is and how we could provide options in
+> >> bench to reduce the overhead so we can achieve similar numbers?
+> >> For benchmarking, sometimes you really want to see "true"
+> >> potential of a particular implementation.
+> >
+> > Alright, let's make it an official bench-off... :) And the reason for
+> > this discrepancy, turns out to be... not atomics at all! But rather a
+> > single-threaded vs multi-threaded process (well, at least task_rename
+> > happening from non-main thread, I didn't narrow it down further).
+>
+> It would be good to find out why and have a scheme (e.g. some kind
+> of affinity binding) to close the gap.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v3:
-None.
+I don't think affinity has anything to do with this. test_overhead
+sets affinity for entire process, and that doesn't change results at
+all. Same for bench, both with and without setting affinity, results
+are pretty much the same. Affinity helps a bit to get a bit more
+stable and consistent results, but doesn't hurt or help performance
+for this benchmark.
 
-Changes in v2:
-None.
+I don't think we need to spend that much time trying to understand
+behavior of task renaming for such a particular setup. Benchmarking
+has to be multi-threaded in most cases anyways, there is no way around
+that.
 
- .../networking/devlink-params-sja1105.txt     |  27 +++
- Documentation/networking/dsa/sja1105.rst      | 211 +++++++++++++++---
- 2 files changed, 212 insertions(+), 26 deletions(-)
- create mode 100644 Documentation/networking/devlink-params-sja1105.txt
-
-diff --git a/Documentation/networking/devlink-params-sja1105.txt b/Documentation/networking/devlink-params-sja1105.txt
-new file mode 100644
-index 000000000000..1d71742e270a
---- /dev/null
-+++ b/Documentation/networking/devlink-params-sja1105.txt
-@@ -0,0 +1,27 @@
-+best_effort_vlan_filtering
-+			[DEVICE, DRIVER-SPECIFIC]
-+			Allow plain ETH_P_8021Q headers to be used as DSA tags.
-+			Benefits:
-+			- Can terminate untagged traffic over switch net
-+			  devices even when enslaved to a bridge with
-+			  vlan_filtering=1.
-+			- Can terminate VLAN-tagged traffic over switch net
-+			  devices even when enslaved to a bridge with
-+			  vlan_filtering=1, with some constraints (no more than
-+			  7 non-pvid VLANs per user port).
-+			- Can do QoS based on VLAN PCP and VLAN membership
-+			  admission control for autonomously forwarded frames
-+			  (regardless of whether they can be terminated on the
-+			  CPU or not).
-+			Drawbacks:
-+			- User cannot use VLANs in range 1024-3071. If the
-+			  switch receives frames with such VIDs, it will
-+			  misinterpret them as DSA tags.
-+			- Switch uses Shared VLAN Learning (FDB lookup uses
-+			  only DMAC as key).
-+			- When VLANs span cross-chip topologies, the total
-+			  number of permitted VLANs may be less than 7 per
-+			  port, due to a maximum number of 32 VLAN retagging
-+			  rules per switch.
-+			Configuration mode: runtime
-+			Type: bool.
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-index 34581629dd3f..b6bbc17814fb 100644
---- a/Documentation/networking/dsa/sja1105.rst
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -66,34 +66,193 @@ reprogrammed with the updated static configuration.
- Traffic support
- ===============
- 
--The switches do not support switch tagging in hardware. But they do support
--customizing the TPID by which VLAN traffic is identified as such. The switch
--driver is leveraging ``CONFIG_NET_DSA_TAG_8021Q`` by requesting that special
--VLANs (with a custom TPID of ``ETH_P_EDSA`` instead of ``ETH_P_8021Q``) are
--installed on its ports when not in ``vlan_filtering`` mode. This does not
--interfere with the reception and transmission of real 802.1Q-tagged traffic,
--because the switch does no longer parse those packets as VLAN after the TPID
--change.
--The TPID is restored when ``vlan_filtering`` is requested by the user through
--the bridge layer, and general IP termination becomes no longer possible through
--the switch netdevices in this mode.
--
--The switches have two programmable filters for link-local destination MACs.
-+The switches do not have hardware support for DSA tags, except for "slow
-+protocols" for switch control as STP and PTP. For these, the switches have two
-+programmable filters for link-local destination MACs.
- These are used to trap BPDUs and PTP traffic to the master netdevice, and are
- further used to support STP and 1588 ordinary clock/boundary clock
--functionality.
--
--The following traffic modes are supported over the switch netdevices:
--
--+--------------------+------------+------------------+------------------+
--|                    | Standalone | Bridged with     | Bridged with     |
--|                    | ports      | vlan_filtering 0 | vlan_filtering 1 |
--+====================+============+==================+==================+
--| Regular traffic    |     Yes    |       Yes        |  No (use master) |
--+--------------------+------------+------------------+------------------+
--| Management traffic |     Yes    |       Yes        |       Yes        |
--| (BPDU, PTP)        |            |                  |                  |
--+--------------------+------------+------------------+------------------+
-+functionality. For frames trapped to the CPU, source port and switch ID
-+information is encoded by the hardware into the frames.
-+
-+But by leveraging ``CONFIG_NET_DSA_TAG_8021Q`` (a software-defined DSA tagging
-+format based on VLANs), general-purpose traffic termination through the network
-+stack can be supported under certain circumstances.
-+
-+Depending on VLAN awareness state, the following operating modes are possible
-+with the switch:
-+
-+- Mode 1 (VLAN-unaware): a port is in this mode when it is used as a standalone
-+  net device, or when it is enslaved to a bridge with ``vlan_filtering=0``.
-+- Mode 2 (fully VLAN-aware): a port is in this mode when it is enslaved to a
-+  bridge with ``vlan_filtering=1``. Access to the entire VLAN range is given to
-+  the user through ``bridge vlan`` commands, but general-purpose (anything
-+  other than STP, PTP etc) traffic termination is not possible through the
-+  switch net devices. The other packets can be still by user space processed
-+  through the DSA master interface (similar to ``DSA_TAG_PROTO_NONE``).
-+- Mode 3 (best-effort VLAN-aware): a port is in this mode when enslaved to a
-+  bridge with ``vlan_filtering=1``, and the devlink property of its parent
-+  switch named ``best_effort_vlan_filtering`` is set to ``true``. When
-+  configured like this, the range of usable VIDs is reduced (0 to 1023 and 3072
-+  to 4094), so is the number of usable VIDs (maximum of 7 non-pvid VLANs per
-+  port*), and shared VLAN learning is performed (FDB lookup is done only by
-+  DMAC, not also by VID).
-+
-+To summarize, in each mode, the following types of traffic are supported over
-+the switch net devices:
-+
-++-------------+-----------+--------------+------------+
-+|             |   Mode 1  |    Mode 2    |   Mode 3   |
-++=============+===========+==============+============+
-+|   Regular   |    Yes    |      No      |     Yes    |
-+|   traffic   |           | (use master) |            |
-++-------------+-----------+--------------+------------+
-+| Management  |    Yes    |     Yes      |     Yes    |
-+|   traffic   |           |              |            |
-+| (BPDU, PTP) |           |              |            |
-++-------------+-----------+--------------+------------+
-+
-+To configure the switch to operate in Mode 3, the following steps can be
-+followed::
-+
-+  ip link add dev br0 type bridge
-+  # swp2 operates in Mode 1 now
-+  ip link set dev swp2 master br0
-+  # swp2 temporarily moves to Mode 2
-+  ip link set dev br0 type bridge vlan_filtering 1
-+  [   61.204770] sja1105 spi0.1: Reset switch and programmed static config. Reason: VLAN filtering
-+  [   61.239944] sja1105 spi0.1: Disabled switch tagging
-+  # swp3 now operates in Mode 3
-+  devlink dev param set spi/spi0.1 name best_effort_vlan_filtering value true cmode runtime
-+  [   64.682927] sja1105 spi0.1: Reset switch and programmed static config. Reason: VLAN filtering
-+  [   64.711925] sja1105 spi0.1: Enabled switch tagging
-+  # Cannot use VLANs in range 1024-3071 while in Mode 3.
-+  bridge vlan add dev swp2 vid 1025 untagged pvid
-+  RTNETLINK answers: Operation not permitted
-+  bridge vlan add dev swp2 vid 100
-+  bridge vlan add dev swp2 vid 101 untagged
-+  bridge vlan
-+  port    vlan ids
-+  swp5     1 PVID Egress Untagged
-+
-+  swp2     1 PVID Egress Untagged
-+           100
-+           101 Egress Untagged
-+
-+  swp3     1 PVID Egress Untagged
-+
-+  swp4     1 PVID Egress Untagged
-+
-+  br0      1 PVID Egress Untagged
-+  bridge vlan add dev swp2 vid 102
-+  bridge vlan add dev swp2 vid 103
-+  bridge vlan add dev swp2 vid 104
-+  bridge vlan add dev swp2 vid 105
-+  bridge vlan add dev swp2 vid 106
-+  bridge vlan add dev swp2 vid 107
-+  # Cannot use mode than 7 VLANs per port while in Mode 3.
-+  [ 3885.216832] sja1105 spi0.1: No more free subvlans
-+
-+\* "maximum of 7 non-pvid VLANs per port": Decoding VLAN-tagged packets on the
-+CPU in mode 3 is possible through VLAN retagging of packets that go from the
-+switch to the CPU. In cross-chip topologies, the port that goes to the CPU
-+might also go to other switches. In that case, those other switches will see
-+only a retagged packet (which only has meaning for the CPU). So if they are
-+interested in this VLAN, they need to apply retagging in the reverse direction,
-+to recover the original value from it. This consumes extra hardware resources
-+for this switch. There is a maximum of 32 entries in the Retagging Table of
-+each switch device.
-+
-+As an example, consider this cross-chip topology::
-+
-+  +-------------------------------------------------+
-+  | Host SoC                                        |
-+  |           +-------------------------+           |
-+  |           | DSA master for embedded |           |
-+  |           |   switch (non-sja1105)  |           |
-+  |  +--------+-------------------------+--------+  |
-+  |  |   embedded L2 switch                      |  |
-+  |  |                                           |  |
-+  |  |   +--------------+     +--------------+   |  |
-+  |  |   |DSA master for|     |DSA master for|   |  |
-+  |  |   |  SJA1105 1   |     |  SJA1105 2   |   |  |
-+  +--+---+--------------+-----+--------------+---+--+
-+
-+  +-----------------------+ +-----------------------+
-+  |   SJA1105 switch 1    | |   SJA1105 switch 2    |
-+  +-----+-----+-----+-----+ +-----+-----+-----+-----+
-+  |sw1p0|sw1p1|sw1p2|sw1p3| |sw2p0|sw2p1|sw2p2|sw2p3|
-+  +-----+-----+-----+-----+ +-----+-----+-----+-----+
-+
-+To reach the CPU, SJA1105 switch 1 (spi/spi2.1) uses the same port as is uses
-+to reach SJA1105 switch 2 (spi/spi2.2), which would be port 4 (not drawn).
-+Similarly for SJA1105 switch 2.
-+
-+Also consider the following commands, that add VLAN 100 to every sja1105 user
-+port::
-+
-+  devlink dev param set spi/spi2.1 name best_effort_vlan_filtering value true cmode runtime
-+  devlink dev param set spi/spi2.2 name best_effort_vlan_filtering value true cmode runtime
-+  ip link add dev br0 type bridge
-+  for port in sw1p0 sw1p1 sw1p2 sw1p3 \
-+              sw2p0 sw2p1 sw2p2 sw2p3; do
-+      ip link set dev $port master br0
-+  done
-+  ip link set dev br0 type bridge vlan_filtering 1
-+  for port in sw1p0 sw1p1 sw1p2 sw1p3 \
-+              sw2p0 sw2p1 sw2p2; do
-+      bridge vlan add dev $port vid 100
-+  done
-+  ip link add link br0 name br0.100 type vlan id 100 && ip link set dev br0.100 up
-+  ip addr add 192.168.100.3/24 dev br0.100
-+  bridge vlan add dev br0 vid 100 self
-+
-+  bridge vlan
-+  port    vlan ids
-+  sw1p0    1 PVID Egress Untagged
-+           100
-+
-+  sw1p1    1 PVID Egress Untagged
-+           100
-+
-+  sw1p2    1 PVID Egress Untagged
-+           100
-+
-+  sw1p3    1 PVID Egress Untagged
-+           100
-+
-+  sw2p0    1 PVID Egress Untagged
-+           100
-+
-+  sw2p1    1 PVID Egress Untagged
-+           100
-+
-+  sw2p2    1 PVID Egress Untagged
-+           100
-+
-+  sw2p3    1 PVID Egress Untagged
-+
-+  br0      1 PVID Egress Untagged
-+           100
-+
-+SJA1105 switch 1 consumes 1 retagging entry for each VLAN on each user port
-+towards the CPU. It also consumes 1 retagging entry for each non-pvid VLAN that
-+it is also interested in, which is configured on any port of any neighbor
-+switch.
-+
-+In this case, SJA1105 switch 1 consumes a total of 11 retagging entries, as
-+follows:
-+- 8 retagging entries for VLANs 1 and 100 installed on its user ports
-+  (``sw1p0`` - ``sw1p3``)
-+- 3 retagging entries for VLAN 100 installed on the user ports of SJA1105
-+  switch 2 (``sw2p0`` - ``sw2p2``), because it also has ports that are
-+  interested in it. The VLAN 1 is a pvid on SJA1105 switch 2 and does not need
-+  reverse retagging.
-+
-+SJA1105 switch 2 also consumes 11 retagging entries, but organized as follows:
-+- 7 retagging entries for the bridge VLANs on its user ports (``sw2p0`` -
-+  ``sw2p3``).
-+- 4 retagging entries for VLAN 100 installed on the user ports of SJA1105
-+  switch 1 (``sw1p0`` - ``sw1p3``).
- 
- Switching features
- ==================
--- 
-2.17.1
-
+>
+> > Atomics actually make very little difference, which gives me a good
+> > peace of mind :)
+> >
+> > So, I've built and ran test_overhead (selftest) and bench both as
+> > multi-threaded and single-threaded apps. Corresponding results match
+> > almost perfectly. And that's while test_overhead doesn't use atomics
+> > at all, while bench still does. Then I also ran test_overhead with
+> > added generics to match bench implementation. There are barely any
+> > differences, see two last sets of results.
+> >
+> > BTW, selftest results seems bit lower from the ones in original
+> > commit, probably because I made it run more iterations (like 40 times
+> > more) to have more stable results.
+> >
+> > So here are the results:
+> >
+> > Single-threaded implementations
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+> >
+> > /* bench: single-threaded, atomics */
+> > base      :    4.622 =C2=B1 0.049M/s
+> > kprobe    :    3.673 =C2=B1 0.052M/s
+> > kretprobe :    2.625 =C2=B1 0.052M/s
+> > rawtp     :    4.369 =C2=B1 0.089M/s
+> > fentry    :    4.201 =C2=B1 0.558M/s
+> > fexit     :    4.309 =C2=B1 0.148M/s
+> > fmodret   :    4.314 =C2=B1 0.203M/s
+> >
+> > /* selftest: single-threaded, no atomics */
+> > task_rename base        4555K events per sec
+> > task_rename kprobe      3643K events per sec
+> > task_rename kretprobe   2506K events per sec
+> > task_rename raw_tp      4303K events per sec
+> > task_rename fentry      4307K events per sec
+> > task_rename fexit       4010K events per sec
+> > task_rename fmod_ret    3984K events per sec
+> >
+> >
+> > Multi-threaded implementations
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D
+> >
+> > /* bench: multi-threaded w/ atomics */
+> > base      :    3.910 =C2=B1 0.023M/s
+> > kprobe    :    3.048 =C2=B1 0.037M/s
+> > kretprobe :    2.300 =C2=B1 0.015M/s
+> > rawtp     :    3.687 =C2=B1 0.034M/s
+> > fentry    :    3.740 =C2=B1 0.087M/s
+> > fexit     :    3.510 =C2=B1 0.009M/s
+> > fmodret   :    3.485 =C2=B1 0.050M/s
+> >
+> > /* selftest: multi-threaded w/ atomics */
+> > task_rename base        3872K events per sec
+> > task_rename kprobe      3068K events per sec
+> > task_rename kretprobe   2350K events per sec
+> > task_rename raw_tp      3731K events per sec
+> > task_rename fentry      3639K events per sec
+> > task_rename fexit       3558K events per sec
+> > task_rename fmod_ret    3511K events per sec
+> >
+> > /* selftest: multi-threaded, no atomics */
+> > task_rename base        3945K events per sec
+> > task_rename kprobe      3298K events per sec
+> > task_rename kretprobe   2451K events per sec
+> > task_rename raw_tp      3718K events per sec
+> > task_rename fentry      3782K events per sec
+> > task_rename fexit       3543K events per sec
+> > task_rename fmod_ret    3526K events per sec
+> >
+> >
+> [...]
