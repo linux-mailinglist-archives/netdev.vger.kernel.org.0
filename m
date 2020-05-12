@@ -2,74 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 470831CEF97
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92CBA1CEF9C
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729320AbgELIyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 04:54:21 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:62215 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729302AbgELIyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 04:54:20 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1589273660; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=4myBv0Eb7CjTFQWgbEm87difECtLoTIZZdLheI+zz60=;
- b=ONdj6k7RtxjLyLcyM3/G83Eo2KM9VByCCh/HECj9Iy0hh6dm/QFVmlZdXk1uIeh3IUceXVoQ
- XN2VFaxjZ1m2cpClzrI7GKukK9UthPU7wu7VA0ExKIVOhPoxqnYoTyQ5njm09rQYrFgrwDht
- vTet3QaF/sGSyzDEMwUF4RcSxbc=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5eba6429.7f5a33950fb8-smtp-out-n05;
- Tue, 12 May 2020 08:54:01 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id B5FC6C44788; Tue, 12 May 2020 08:54:00 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6B1F5C433CB;
-        Tue, 12 May 2020 08:53:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6B1F5C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1729342AbgELIyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 04:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729047AbgELIyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 04:54:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C32AC061A0C
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 01:54:43 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rsc@pengutronix.de>)
+        id 1jYQgN-0000M7-Ka; Tue, 12 May 2020 10:54:35 +0200
+Received: from rsc by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <rsc@pengutronix.de>)
+        id 1jYQgM-0001lA-4C; Tue, 12 May 2020 10:54:34 +0200
+Date:   Tue, 12 May 2020 10:54:34 +0200
+From:   Robert Schwebel <r.schwebel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>
+Subject: Re: signal quality and cable diagnostic
+Message-ID: <20200512085434.m22zj3i6ehyl34yy@pengutronix.de>
+References: <20200511141310.GA2543@pengutronix.de>
+ <20200511143337.GC413878@lunn.ch>
+ <20200512082201.GB16536@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] b43: remove dead function b43_rssinoise_postprocess()
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200507110741.37757-1-yanaijie@huawei.com>
-References: <20200507110741.37757-1-yanaijie@huawei.com>
-To:     Jason Yan <yanaijie@huawei.com>
-Cc:     <davem@davemloft.net>, <tglx@linutronix.de>,
-        <linux-wireless@vger.kernel.org>, <b43-dev@lists.infradead.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jason Yan <yanaijie@huawei.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200512085400.B5FC6C44788@smtp.codeaurora.org>
-Date:   Tue, 12 May 2020 08:54:00 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200512082201.GB16536@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:53:10 up 179 days, 11 min, 187 users,  load average: 0,02, 0,07,
+ 0,06
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: rsc@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Yan <yanaijie@huawei.com> wrote:
-
-> This function is dead for more than 10 years. Remove it.
+On Tue, May 12, 2020 at 10:22:01AM +0200, Oleksij Rempel wrote:
+> > Pair A: OK
+> > Pair A: Signal Quality Index class D
 > 
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+> At least for automotive, avionics, (rockets till it is deployed :D)
+> etc... the cable integrity will probably not change, except we have some
+> sudden water infiltration into the cable, etc :)
 
-Patch applied to wireless-drivers-next.git, thanks.
+As some of our applications are running on agricultural equipment, water
+in the cable is not completely implausible :-)
 
-f2cd32a443da rndis_wlan: Remove logically dead code
-
+rsc
 -- 
-https://patchwork.kernel.org/patch/11533111/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Pengutronix e.K.                           | Dipl.-Ing. Robert Schwebel  |
+Steuerwalder Str. 21                       | https://www.pengutronix.de/ |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-9    |
