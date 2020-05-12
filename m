@@ -2,123 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8532D1CF98F
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 17:46:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42CDB1CF9C6
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 17:53:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730561AbgELPqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 11:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726465AbgELPqu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 11:46:50 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3DFC061A0C;
-        Tue, 12 May 2020 08:46:50 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id y25so6544071pfn.5;
-        Tue, 12 May 2020 08:46:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tNSRPzmWFClYADxe1xlIlfleHzW5u7iF+WTFSYv3NX8=;
-        b=bbL8Ikt95mBCHHnYF3umxtLlaV3QpoKK1R3R8/mLHysdhED0kL+/q03uTCyF6YCFAe
-         9ibDh/kKIX9ONLWK4rBi5RXlJPxagQNZES7O6F5iuMpabJBXeK1ud76/yjQKrEMnTzFt
-         pZpdrlp2TNm80ZP8xAzjaValWJRsjsWF/1RDcKCkpXrjhiu+PSbO9rLRyGNtwOZ3hjwS
-         cnkucLziNWtzstvn5IwyXLOfd2XVB96F/mht/LreGA5Hl45zdBX5n0hTgVesNzaosuuT
-         Cm0msfXmP7EIHmiT7YRK2NTI0wc868blqtQMrydhGQqgrNJwBTbZkWLp+ydyYB9BysJg
-         aqlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tNSRPzmWFClYADxe1xlIlfleHzW5u7iF+WTFSYv3NX8=;
-        b=sp3b8/aB7WUcNS0MRqIugYFMu4q/VtJkJTWI4U8PqxYvz5WvqEwDmUpi6OFleFW7sA
-         /zdL5k+kUOYp1g+h+5IpqwtdikGcv9+SO2uAIuLB06EbBh+lBpeoG0RefJL59trAw9CZ
-         YPLdphyeGQcH1XZJuAFNRRdUjHRi4F/4lyv7kMGd0E/7KR/13qQE8Y5d2O93WwGC1y85
-         +1G50CW/vX58eS+jgn2bYIQm3XRXo7NfFDImn2Fi0ihhJIVpDjgTNgssESLBEJ1buzUs
-         Ssrz2vSDVSCIO7dIY09NE8GhHVEzV9FO+N6RMzz8c7dupO2+8sRcdCOpDXcGUHZsMmfD
-         r9QQ==
-X-Gm-Message-State: AOAM533PEPPd6BtRv84b1ofQcJJjDJG5+DNE6D7wPyfAAW0NGLtxn6l3
-        q3ZPNZ7RS6FasuTdu1qMqcA=
-X-Google-Smtp-Source: ABdhPJzQpiDEYvWK/wW423EPySwX4fbTeuiCmvv4YE1jKSbcdLdtaBQ3V7V0ODDlQbjrjQoEGG518w==
-X-Received: by 2002:a63:3114:: with SMTP id x20mr6644562pgx.52.1589298409771;
-        Tue, 12 May 2020 08:46:49 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:c3f6])
-        by smtp.gmail.com with ESMTPSA id m8sm12795650pjz.27.2020.05.12.08.46.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 08:46:48 -0700 (PDT)
-Date:   Tue, 12 May 2020 08:46:45 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jordan Glover <Golden_Miller83@protonmail.ch>
-Cc:     "sdf@google.com" <sdf@google.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "kernel-team@fb.com" <kernel-team@fb.com>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "acme@redhat.com" <acme@redhat.com>,
-        "jamorris@linux.microsoft.com" <jamorris@linux.microsoft.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "kpsingh@google.com" <kpsingh@google.com>
-Subject: Re: [PATCH v5 bpf-next 2/3] bpf: implement CAP_BPF
-Message-ID: <20200512154645.rypojoidxtvbvwp4@ast-mbp>
-References: <20200508215340.41921-1-alexei.starovoitov@gmail.com>
- <20200508215340.41921-3-alexei.starovoitov@gmail.com>
- <20200512001210.GA235661@google.com>
- <20200512023641.jupgmhpliblkli4t@ast-mbp.dhcp.thefacebook.com>
- <ZHW2pvJicBV52gi3gjsDNXDF6t7BteEoHKvEGeVueRPPDrEKGR0OMJjTlulOoOrDNNwcK2c7HE1lNEQw8F2G6SEGCCIAekGoY0T_cnJ-oSc=@protonmail.ch>
+        id S1730887AbgELPwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 11:52:39 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:15182 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730464AbgELPwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 11:52:38 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04CFnY2W012893
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 08:52:38 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=/F8zpBv/fJ9de2fFznTBqA+iFDvktIgJNxfcrO6FY58=;
+ b=BNortQafAFhe05Y/xXOLwAZSPQaGJy/sQAFuOcl/omEh1jEtx/73AkPcXxHrioG0lYJ6
+ LZTx9gu4b1N8qUI+cFQcInbzdKgmIZ4VBq2RXdT/u6OEigj3AvIpB7+w0yt+YKlF5Mjp
+ su1OAFhNDJzR3zBIybT8hLlVMGyz8QN9B8Y= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 30xcgbn75f-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 08:52:38 -0700
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 12 May 2020 08:52:36 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 28C4E3700839; Tue, 12 May 2020 08:52:32 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/8] misc fixes for bpf_iter
+Date:   Tue, 12 May 2020 08:52:32 -0700
+Message-ID: <20200512155232.1080167-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZHW2pvJicBV52gi3gjsDNXDF6t7BteEoHKvEGeVueRPPDrEKGR0OMJjTlulOoOrDNNwcK2c7HE1lNEQw8F2G6SEGCCIAekGoY0T_cnJ-oSc=@protonmail.ch>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-12_05:2020-05-11,2020-05-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ malwarescore=0 impostorscore=0 priorityscore=1501 mlxscore=0 bulkscore=0
+ clxscore=1015 spamscore=0 mlxlogscore=614 adultscore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2005120120
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 12:50:05PM +0000, Jordan Glover wrote:
-> On Tuesday, May 12, 2020 2:36 AM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> 
-> > On Mon, May 11, 2020 at 05:12:10PM -0700, sdf@google.com wrote:
-> >
-> > > On 05/08, Alexei Starovoitov wrote:
-> > >
-> > > > From: Alexei Starovoitov ast@kernel.org
-> > > > [..]
-> > > > @@ -3932,7 +3977,7 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr
-> > > > __user *, uattr, unsigned int, siz
-> > > > union bpf_attr attr;
-> > > > int err;
-> > >
-> > > > -   if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
-> > > >
-> > > > -   if (sysctl_unprivileged_bpf_disabled && !bpf_capable())
-> > > >     return -EPERM;
-> > > >     This is awesome, thanks for reviving the effort!
-> > > >
-> > >
-> > > One question I have about this particular snippet:
-> > > Does it make sense to drop bpf_capable checks for the operations
-> > > that work on a provided fd?
-> >
-> > Above snippet is for the case when sysctl switches unpriv off.
-> > It was a big hammer and stays big hammer.
-> > I certainly would like to improve the situation, but I suspect
-> > the folks who turn that sysctl knob on are simply paranoid about bpf
-> > and no amount of reasoning would turn them around.
-> >
-> 
-> Without CAP_BPF, sysctl was the only option to keep you safe from flow
-> of bpf vulns. You didn't had to be paranoid about that.
+Commit ae24345da54e ("bpf: Implement an interface to register
+bpf_iter targets") and its subsequent commits in the same patch set
+introduced bpf iterator, a way to run bpf program when iterating
+kernel data structures.
 
-In the year 2020 there were three verifier bugs that could have been exploited
-through unpriv. All three were found by new kBdysch fuzzer. In 2019 there was
-nothing. Not because people didn't try, but because syzbot fuzzer reached its
-limit. This cap_bpf will help fuzzers find a new set of bugs.
+This patch set addressed some followup issues. One big change
+is to allow target to pass ctx arg register types to verifier
+for verification purpose. Please see individual patch for details.
 
-The pace of bpf development is accelerating, so there will be more bugs found
-and introduced in the verifier. Folks that run the very latest kernel are
-taking that risk along with the risk associated with other new kernel features.
-Yet other features don't have sysctls to disable them.
+Yonghong Song (8):
+  tools/bpf: selftests : explain bpf_iter test failures with llvm 10.0.0
+  bpf: change btf_iter func proto prefix to "bpf_iter_"
+  bpf: add comments to interpret bpf_prog return values
+  bpf: add WARN_ONCE if bpf_seq_read show() return a positive number
+  bpf: net: refactor bpf_iter target registration
+  bpf: change func bpf_iter_unreg_target() signature
+  bpf: enable bpf_iter targets registering ctx argument types
+  samples/bpf: remove compiler warnings
+
+ include/linux/bpf.h                    | 20 +++++++++---
+ include/net/ip6_fib.h                  |  7 ++++
+ kernel/bpf/bpf_iter.c                  | 44 +++++++++++++++-----------
+ kernel/bpf/btf.c                       | 15 ++++++---
+ kernel/bpf/map_iter.c                  | 23 ++++++++------
+ kernel/bpf/task_iter.c                 | 42 ++++++++++++++++--------
+ kernel/bpf/verifier.c                  |  1 -
+ net/ipv6/ip6_fib.c                     |  5 ---
+ net/ipv6/route.c                       | 25 +++++++++------
+ net/netlink/af_netlink.c               | 23 ++++++++------
+ samples/bpf/offwaketime_kern.c         |  4 +--
+ samples/bpf/sockex2_kern.c             |  4 +--
+ samples/bpf/sockex3_kern.c             |  4 +--
+ tools/lib/bpf/libbpf.c                 |  2 +-
+ tools/testing/selftests/bpf/README.rst | 43 +++++++++++++++++++++++++
+ 15 files changed, 178 insertions(+), 84 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/README.rst
+
+--=20
+2.24.1
+
