@@ -2,185 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D29871CF1F5
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 11:54:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA81C1CF216
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 12:02:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729194AbgELJyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 05:54:13 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:52188 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728371AbgELJyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 05:54:13 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04C9bGV6107844;
-        Tue, 12 May 2020 09:53:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : mime-version :
- content-type; s=corp-2020-01-29;
- bh=GK1AIi5OPYKrc/RMd9iCeNtIrj+1KqTmS8w/wbAD5p4=;
- b=tFPAw2LegXrzJfb8kpsa75mkT21HdLumJv5Mu1E08w7NMu7mwfb0KKuTZwYqovWD2aEk
- P8KMOaKhfacxzL17WQxx4EQY3gvPspKKbq7D3xE6Pgg3U2WvefXg1MP+jDYfzf4WVgly
- gWwY8D+JGSfwCXNHPa3IOz3FGOr8c+S8heDHfHpV8UqFUigmNF/Tpw6rikLZwdxWtQM2
- ZEWob8jyQKvCGuFMdQlds03uQewqvHW9k/Y9gut+DY5Em852Btj+RZFW61UIZE10HORd
- Op6Eh0UyvpxDJTqRHjVFO6jwUp5xLcfPIEh7H2fo8+1YW2LTAdRnVTtqgZZtaVlPdG5c tQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 30x3mbt0q5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 12 May 2020 09:53:47 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04C9cbLC069232;
-        Tue, 12 May 2020 09:53:47 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 30x69svh56-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 May 2020 09:53:47 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04C9rj1A023057;
-        Tue, 12 May 2020 09:53:45 GMT
-Received: from dhcp-10-175-167-216.vpn.oracle.com (/10.175.167.216)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 12 May 2020 02:53:45 -0700
-Date:   Tue, 12 May 2020 10:53:38 +0100 (BST)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@localhost
-To:     =?ISO-8859-15?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>
-cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
+        id S1729358AbgELKCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 06:02:51 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:59336 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725889AbgELKCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 06:02:50 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04CA2bK8048126;
+        Tue, 12 May 2020 05:02:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1589277757;
+        bh=BGrIbY3cp+/L7d+Mq2hbW6lY+Zs3bK2D/B59HXAbyJQ=;
+        h=From:To:CC:Subject:Date;
+        b=lL6lcuIbtrbAGkkKLFH9xPCH56NnLBn6xzo0LnGxJmANkKZ5vT0BhSOU7FwVJityx
+         VTdaySDWyo3nfL+msZ4wU4TOc1/1anVBda10cHGnwQuR1nqzX8SlACAqAFkRl05ZKl
+         nNf0p+0+d33o2ekLkuy/OSB0zVEfjYv2X2wuSvL8=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04CA2bPv084175
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 May 2020 05:02:37 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 12
+ May 2020 05:02:37 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 12 May 2020 05:02:37 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04CA2aB0014537;
+        Tue, 12 May 2020 05:02:36 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     Arnd Bergmann <arnd@arndb.de>, <netdev@vger.kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: bpf: ability to attach freplace to multiple parents
-In-Reply-To: <87h7wlwnyl.fsf@toke.dk>
-Message-ID: <alpine.LRH.2.21.2005121009220.22093@localhost>
-References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com> <87tv2e10ly.fsf@toke.dk> <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com> <87369wrcyv.fsf@toke.dk> <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
- <CACAyw9-FrwgBGjGT1CYrKJuyRJtwn0XUsifF_uR6LpRbcucN+A@mail.gmail.com> <20200326195340.dznktutm6yq763af@ast-mbp> <87o8sim4rw.fsf@toke.dk> <20200402202156.hq7wpz5vdoajpqp5@ast-mbp> <87o8s9eg5b.fsf@toke.dk> <20200402215452.dkkbbymnhzlcux7m@ast-mbp>
- <87h7wlwnyl.fsf@toke.dk>
-User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+        Russell King <linux@armlinux.org.uk>
+CC:     <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        Clay McClure <clay@daemons.net>, Dan Murphy <dmurphy@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net v4] net: ethernet: ti: Remove TI_CPTS_MOD workaround
+Date:   Tue, 12 May 2020 13:02:30 +0300
+Message-ID: <20200512100230.17752-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-480967097-1589277224=:22093"
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9618 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 adultscore=0
- spamscore=0 suspectscore=3 mlxscore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2005120077
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9618 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 impostorscore=0
- mlxscore=0 suspectscore=3 bulkscore=0 mlxlogscore=999 phishscore=0
- malwarescore=0 lowpriorityscore=0 spamscore=0 adultscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2005120077
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Clay McClure <clay@daemons.net>
 
---8323328-480967097-1589277224=:22093
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+My recent commit b6d49cab44b5 ("net: Make PTP-specific drivers depend on
+PTP_1588_CLOCK") exposes a missing dependency in defconfigs that select
+TI_CPTS without selecting PTP_1588_CLOCK, leading to linker errors of the
+form:
 
-On Tue, 12 May 2020, Toke H=F8iland-J=F8rgensen wrote:
+drivers/net/ethernet/ti/cpsw.o: in function `cpsw_ndo_stop':
+cpsw.c:(.text+0x680): undefined reference to `cpts_unregister'
+ ...
 
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->=20
-> >> > Currently fentry/fexit/freplace progs have single prog->aux->linked_=
-prog pointer.
-> >> > It just needs to become a linked list.
-> >> > The api extension could be like this:
-> >> > bpf_raw_tp_open(prog_fd, attach_prog_fd, attach_btf_id);
-> >> > (currently it's just bpf_raw_tp_open(prog_fd))
-> >> > The same pair of (attach_prog_fd, attach_btf_id) is already passed i=
-nto prog_load
-> >> > to hold the linked_prog and its corresponding btf_id.
-> >> > I'm proposing to extend raw_tp_open with this pair as well to
-> >> > attach existing fentry/fexit/freplace prog to another target.
-> >> > Internally the kernel verify that btf of current linked_prog
-> >> > exactly matches to btf of another requested linked_prog and
-> >> > if they match it will attach the same prog to two target programs (i=
-n case of freplace)
-> >> > or two kernel functions (in case of fentry/fexit).
-> >>=20
-> >> API-wise this was exactly what I had in mind as well.
-> >
-> > perfect!
->
+That's because TI_CPTS_MOD (which is the symbol gating the _compilation_ of
+cpts.c) now depends on PTP_1588_CLOCK, and so is not enabled in these
+configurations, but TI_CPTS (which is the symbol gating _calls_ to the cpts
+functions) _is_ enabled. So we end up compiling calls to functions that
+don't exist, resulting in the linker errors.
 
-Apologies in advance if I've missed a way to do this, but
-for fentry/fexit, if we could attach the same program to
-multiple kernel functions, it would be great it we could
-programmatically access the BTF func proto id for the
-attached function (prog->aux->attach_btf_id I think?).
-Then perhaps we could support access to that and associated
-ids via a helper, roughly like:
+This patch fixes build errors and restores previous behavior by:
+ - ensure PTP_1588_CLOCK=y in TI specific configs and CPTS will be built
+ - remove TI_CPTS_MOD and, instead, add dependencies from CPTS in
+   TI_CPSW/TI_KEYSTONE_NETCP/TI_CPSW_SWITCHDEV as below:
 
-s32 btf_attach_info(enum btf_info_wanted wanted,
-=09=09    struct __btf_ptr *ptr,__u64 flags);
+   config TI_CPSW_SWITCHDEV
+   ...
+    depends on TI_CPTS || !TI_CPTS
 
-The info_wanted would be BTF_INFO_FUNC_PROTO, BTF_INFO_RET_TYPE,
-BTF_INFO_NARGS, BTF_INFO_ARG1, etc.
+   which will ensure proper dependencies PTP_1588_CLOCK -> TI_CPTS ->
+TI_CPSW/TI_KEYSTONE_NETCP/TI_CPSW_SWITCHDEV and build type selection.
 
-With that and the BTF-based printk support in hand, we could
-potentially use bpf_trace_printk() to print function arguments
-in an attach-point agnostic way.  The BTF printk v2 patchset has
-support for BTF id-based display (it's not currently used in that
-patchset though). We'd have to teach it to print BTF func protos
-but that's not too tricky I think. An ftrace-like program that
-would print out function prototypes for the attached function
-would look something like this:
+Note. For NFS boot + CPTS all of above configs have to be built-in.
 
-=09struct __btf_ptr func =3D { 0 };
-=09btf_attach_info(BTF_INFO_FUNC_PROTO, &func, 0);=20
-=09btf_printk("%pT", &func);
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Dan Murphy <dmurphy@ti.com>
+Cc: Tony Lindgren <tony@atomide.com>
+Fixes: b6d49cab44b5 ("net: Make PTP-specific drivers depend on PTP_1588_CLOCK")
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Clay McClure <clay@daemons.net>
+[grygorii.strashko@ti.com: rewording, add deps cpsw/netcp from cpts, drop IS_REACHABLE]
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
 
-Printing args would be slightly more complicated because we'd have
-to determine from the BTF func proto whether the function argument
-was a pointer or not. The BTF printk code assumes the _pointee_ BTF
-type ("struct sk_buff") is specified along with the pointer
-(a struct sk_buff *).
+v3: https://lkml.org/lkml/2020/5/8/356
+v2: https://lkml.org/lkml/2020/5/4/751
 
-So
+ arch/arm/configs/keystone_defconfig  |  1 +
+ arch/arm/configs/omap2plus_defconfig |  1 +
+ drivers/net/ethernet/ti/Kconfig      | 16 ++++++----------
+ drivers/net/ethernet/ti/Makefile     |  2 +-
+ 4 files changed, 9 insertions(+), 11 deletions(-)
 
-- if an arg is not a pointer, we'd need to set the pointer value
-  in struct __btf_ptr to &arg while using the BTF id from the
-  func proto
-- if an arg is a pointer we'd want to get the pointee BTF type
-  from the func proto while using the argument as the pointer arg.
+diff --git a/arch/arm/configs/keystone_defconfig b/arch/arm/configs/keystone_defconfig
+index 11e2211f9007..84a3b055f253 100644
+--- a/arch/arm/configs/keystone_defconfig
++++ b/arch/arm/configs/keystone_defconfig
+@@ -147,6 +147,7 @@ CONFIG_I2C_DAVINCI=y
+ CONFIG_SPI=y
+ CONFIG_SPI_DAVINCI=y
+ CONFIG_SPI_SPIDEV=y
++CONFIG_PTP_1588_CLOCK=y
+ CONFIG_PINCTRL_SINGLE=y
+ CONFIG_GPIOLIB=y
+ CONFIG_GPIO_SYSFS=y
+diff --git a/arch/arm/configs/omap2plus_defconfig b/arch/arm/configs/omap2plus_defconfig
+index 395588209b27..c3f749650d5d 100644
+--- a/arch/arm/configs/omap2plus_defconfig
++++ b/arch/arm/configs/omap2plus_defconfig
+@@ -274,6 +274,7 @@ CONFIG_SPI_TI_QSPI=m
+ CONFIG_HSI=m
+ CONFIG_OMAP_SSI=m
+ CONFIG_SSI_PROTOCOL=m
++CONFIG_PTP_1588_CLOCK=y
+ CONFIG_PINCTRL_SINGLE=y
+ CONFIG_DEBUG_GPIO=y
+ CONFIG_GPIO_SYSFS=y
+diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+index 8e348780efb6..62f809b67469 100644
+--- a/drivers/net/ethernet/ti/Kconfig
++++ b/drivers/net/ethernet/ti/Kconfig
+@@ -49,6 +49,7 @@ config TI_CPSW_PHY_SEL
+ config TI_CPSW
+ 	tristate "TI CPSW Switch Support"
+ 	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
++	depends on TI_CPTS || !TI_CPTS
+ 	select TI_DAVINCI_MDIO
+ 	select MFD_SYSCON
+ 	select PAGE_POOL
+@@ -64,6 +65,7 @@ config TI_CPSW_SWITCHDEV
+ 	tristate "TI CPSW Switch Support with switchdev"
+ 	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
+ 	depends on NET_SWITCHDEV
++	depends on TI_CPTS || !TI_CPTS
+ 	select PAGE_POOL
+ 	select TI_DAVINCI_MDIO
+ 	select MFD_SYSCON
+@@ -77,23 +79,16 @@ config TI_CPSW_SWITCHDEV
+ 	  will be called cpsw_new.
+ 
+ config TI_CPTS
+-	bool "TI Common Platform Time Sync (CPTS) Support"
+-	depends on TI_CPSW || TI_KEYSTONE_NETCP || TI_CPSW_SWITCHDEV || COMPILE_TEST
++	tristate "TI Common Platform Time Sync (CPTS) Support"
++	depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || COMPILE_TEST
+ 	depends on COMMON_CLK
+-	depends on POSIX_TIMERS
++	depends on PTP_1588_CLOCK
+ 	---help---
+ 	  This driver supports the Common Platform Time Sync unit of
+ 	  the CPSW Ethernet Switch and Keystone 2 1g/10g Switch Subsystem.
+ 	  The unit can time stamp PTP UDP/IPv4 and Layer 2 packets, and the
+ 	  driver offers a PTP Hardware Clock.
+ 
+-config TI_CPTS_MOD
+-	tristate
+-	depends on TI_CPTS
+-	depends on PTP_1588_CLOCK
+-	default y if TI_CPSW=y || TI_KEYSTONE_NETCP=y || TI_CPSW_SWITCHDEV=y
+-	default m
+-
+ config TI_K3_AM65_CPSW_NUSS
+ 	tristate "TI K3 AM654x/J721E CPSW Ethernet driver"
+ 	depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
+@@ -114,6 +109,7 @@ config TI_KEYSTONE_NETCP
+ 	select TI_DAVINCI_MDIO
+ 	depends on OF
+ 	depends on KEYSTONE_NAVIGATOR_DMA && KEYSTONE_NAVIGATOR_QMSS
++	depends on TI_CPTS || !TI_CPTS
+ 	---help---
+ 	  This driver supports TI's Keystone NETCP Core.
+ 
+diff --git a/drivers/net/ethernet/ti/Makefile b/drivers/net/ethernet/ti/Makefile
+index 53792190e9c2..cb26a9d21869 100644
+--- a/drivers/net/ethernet/ti/Makefile
++++ b/drivers/net/ethernet/ti/Makefile
+@@ -13,7 +13,7 @@ obj-$(CONFIG_TI_DAVINCI_EMAC) += ti_davinci_emac.o
+ ti_davinci_emac-y := davinci_emac.o davinci_cpdma.o
+ obj-$(CONFIG_TI_DAVINCI_MDIO) += davinci_mdio.o
+ obj-$(CONFIG_TI_CPSW_PHY_SEL) += cpsw-phy-sel.o
+-obj-$(CONFIG_TI_CPTS_MOD) += cpts.o
++obj-$(CONFIG_TI_CPTS) += cpts.o
+ obj-$(CONFIG_TI_CPSW) += ti_cpsw.o
+ ti_cpsw-y := cpsw.o davinci_cpdma.o cpsw_ale.o cpsw_priv.o cpsw_sl.o cpsw_ethtool.o
+ obj-$(CONFIG_TI_CPSW_SWITCHDEV) += ti_cpsw_new.o
+-- 
+2.17.1
 
-Perhaps the best way to achieve that would be to pass in
-a value/result struct __btf_ptr * as arg and have the
-helper do the right thing.  Alternately we could use flags to
-specify that for args which are pointers we want the pointee
-BTF type.
-
-With all that in place, we'd have all the pieces to write a
-generic ftrace-like BPF program that supported function argument
-display for any function attach point.=20
-
-I've had trouble keeping up with everything going on so
-perhaps there's a way to do some of this already, but my understanding
-of most of the referencing of attach BTF id is done at
-verifier time. Tweaking the BPF program itself isn't an option
-if it is to be shared with multiple attach points.
-
-All of which is to say that if the aux info contains a linked
-list, having the attach BTF id for each attached program accessible
-such that a helper could retrieve the BTF id of the function it
-is attached to would be great!
-
-Thanks!
-
-Alan
-
-
-> Hi Alexei
->=20
-> I don't suppose you've had a chance to whip up a patch for this, have
-> you? :)
->=20
-> -Toke
->=20
->=20
---8323328-480967097-1589277224=:22093--
