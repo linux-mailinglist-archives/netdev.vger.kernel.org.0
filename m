@@ -2,75 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B16051CEB06
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:02:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91D241CEB3E
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728606AbgELDCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 23:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43884 "EHLO
+        id S1728688AbgELDNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 23:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728115AbgELDCn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:02:43 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D804C061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 20:02:43 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id k7so3804896pjs.5
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 20:02:43 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727942AbgELDNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:13:50 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7478FC061A0C;
+        Mon, 11 May 2020 20:13:50 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id b6so11123029qkh.11;
+        Mon, 11 May 2020 20:13:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=D4jLZHxWsiN1sblA4mg3DvF2dAdqkhSqtvbRTDfkeIQ=;
-        b=anrp1iDDvsJunrNq64KJ0AcsKV4VGumPH2gjex7NjcMU5+hEgjmtKzaANl/C3sUZD+
-         YTv0KBsKoOlusipjsehJbedmAvz1WjM2g7xpIN4ZgTZ2FxBb7IQzQ3+DRPQ5HxI78Tji
-         x+5lWmX4GrYRuDJdIkCxcqsVqASLn6GNGKnPNKjdq7AFsyrqKAXogL57XtJRPfsclmdt
-         ieHXS4ManEqqh7AcKmW8GLX1H4+vyVISvtkBTXtnmo/UhUn+ASbGZQ2LLo64OvwBUhT1
-         Pc6PwXEsXHfjVQy+WtwPKkFEzgAegylpEGKI0md9dr+iObYJvYzqmPyg2D/wx9IBqSSv
-         pGVw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iDSNQu5NM+JSr0tP1LCdotPyYAi2OsIrNzI95rF2jLM=;
+        b=Wk9beM0ZuTM7Vvr1Luqi134+ji9BdS1x3V69EH9tnUFokkToxQDoViFDZI6I0SuQZ3
+         gDJIsHoociP/gdMpHtgtwqCQKaGflpWSbpx6okE1ZC3Bg0SeFgNrjLblV/LziALzLHcl
+         ptMQGr7+kxWRWaSG2B4n+QlU/cgdjx56fnI064zVGqcx9EQq9L8Gs6+fz3V5SgpushiI
+         7qc7LPm/5O8IqB+cbCN3HhTm/P/KSCFjg7gx08rZ9JraT7p6dOrVDO7eitJ9d3EwmnmJ
+         p1JgAoZE1f9uNSioWhSrH2or3FM108+bIhL2x5xHbqEh3shUQ8KvvFvChVTMitQyN9Du
+         XGDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=D4jLZHxWsiN1sblA4mg3DvF2dAdqkhSqtvbRTDfkeIQ=;
-        b=RNY9qSMiJM+Exh5/S/BK3OtYuYKW5IsAipIkW74sxew94JTCyN9FR2SYS7AOs6iWrB
-         DACIlaKigVhBaIfQS1evrySJCv67A4prLrpOV8Fp+Xnr1LRP2pxwGWUMWopSyiwFD/Tz
-         InaD5lO24LcVnUWXTSNfW9HFQ/UFgJsoPI4inczC3+IrqR9gQ12lJe/J/ljVKI8w77Hg
-         pXqsThJRKb5AkPDCVQA5QFVnu2RByqv5a7+Q/sq/fact4/NMkAWcnJD5iKnbkF73rmT7
-         DA5RTIfDCYy8awKWf4OG0k/0mvskaVt/Wo+oz/D7b0Y68J4WJHU6Fjkoa4DQ30D46LPX
-         +70Q==
-X-Gm-Message-State: AGi0Pub4Q4K+v37zBQBNdYjkMrlhOUWEhc8TRqhZ1/ApcfOqwWjFS9vl
-        KnjHY06+FgDbC4CM2RO0ldtXSwDuQXo=
-X-Google-Smtp-Source: APiQypJAvcrcWt+jJoqGoE7+F6m4HgZWZU1SatwGmR7FfVhOK3eIVtMr5x8f8vzaQRZgpuyC8D6R6g==
-X-Received: by 2002:a17:902:9a81:: with SMTP id w1mr17693834plp.289.1589252562808;
-        Mon, 11 May 2020 20:02:42 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id d74sm10622819pfd.70.2020.05.11.20.02.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 20:02:42 -0700 (PDT)
-Date:   Mon, 11 May 2020 20:02:40 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net] ptp: fix struct member comment for do_aux_work
-Message-ID: <20200512030240.GA3613@localhost>
-References: <20200511210215.4178242-1-jacob.e.keller@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iDSNQu5NM+JSr0tP1LCdotPyYAi2OsIrNzI95rF2jLM=;
+        b=K3ElJ+8tsePflMWLCXZcDKDr56g2UnzQmZc9YG0UsPxPr4/rMmEHwkuJbpO9jVXeYp
+         fH53DMslTY0XCTPFnUXCbTydOgeFvMo7/RZSu4fGa8ZNgoqOJcL1BGZOgJ4Su4xxtsUc
+         jHSfB7FL3ZAgONqKv9JltvJrvhkRkRLSSxbxSvYOUlz2bm3tfMp1TigRoxxOBZ3Erm94
+         MzInIklkpObRkHBysMPF/tFaKlyd6TCQZCP7QJwU+sCXv3Ngl/IfPCHPbAP45k+O4x0w
+         Ej569TLnc/JoJcP+Sgpq18XtVch04XRFq9LSUM6xrzdqS0ZesBX3ecnpbTx2PYShO/lr
+         b1/Q==
+X-Gm-Message-State: AGi0PubFKrNyMXMV0TI5jgYUkEZ8A0LwRPNeXe7t3RkJY3UXVOrf6NOa
+        i/c/xlBUG+PPIUrJsfg3AImOEqMP3WaymLwoTwg=
+X-Google-Smtp-Source: APiQypJR+NgNb8jXGD5moiJeP4WXbMZ1gSqDYU5of7kWANkHQCtZSsWX0L2Qu7hPWCAgemIdIdsXnpZ6SzXJPTt6t8c=
+X-Received: by 2002:ae9:efc1:: with SMTP id d184mr20214909qkg.437.1589253229629;
+ Mon, 11 May 2020 20:13:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200511210215.4178242-1-jacob.e.keller@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <158871160668.7537.2576154513696580062.stgit@john-Precision-5820-Tower>
+ <CAEf4BzahfsBO0Xy2+65MH7x8MY6vFkHSLSb27g9mHSj6kuDHDg@mail.gmail.com> <5eb6c45fa83a6_10632b06ebe825c0d0@john-XPS-13-9370.notmuch>
+In-Reply-To: <5eb6c45fa83a6_10632b06ebe825c0d0@john-XPS-13-9370.notmuch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 11 May 2020 20:13:38 -0700
+Message-ID: <CAEf4BzbT4ENMcCC5+ubxVjMggz3OGa1jBT741g8_MxbYzgN0=Q@mail.gmail.com>
+Subject: Re: [bpf-next PATCH 00/10] bpf: selftests, test_sockmap improvements
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 02:02:15PM -0700, Jacob Keller wrote:
-> The do_aux_work callback had documentation in the structure comment
-> which referred to it as "do_work".
-> 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> Cc: Richard Cochran <richardcochran@gmail.com>
+On Sat, May 9, 2020 at 7:55 AM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Andrii Nakryiko wrote:
+> > On Tue, May 5, 2020 at 1:50 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > >
+> > > Update test_sockmap to add ktls tests and in the process make output
+> > > easier to understand and reduce overall runtime significantly. Before
+> > > this series test_sockmap did a poor job of tracking sent bytes causing
+> > > the recv thread to wait for a timeout even though all expected bytes
+> > > had been received. Doing this many times causes significant delays.
+> > > Further, we did many redundant tests because the send/recv test we used
+> > > was not specific to the parameters we were testing. For example testing
+> > > a failure case that always fails many times with different send sizes
+> > > is mostly useless. If the test condition catches 10B in the kernel code
+> > > testing 100B, 1kB, 4kB, and so on is just noise.
+> > >
+> > > The main motivation for this is to add ktls tests, the last patch. Until
+> > > now I have been running these locally but we haven't had them checked in
+> > > to selftests. And finally I'm hoping to get these pushed into the libbpf
+> > > test infrastructure so we can get more testing. For that to work we need
+> > > ability to white and blacklist tests based on kernel features so we add
+> > > that here as well.
+> > >
+> > > The new output looks like this broken into test groups with subtest
+> > > counters,
+> > >
+> > >  $ time sudo ./test_sockmap
+> > >  # 1/ 6  sockmap:txmsg test passthrough:OK
+> > >  # 2/ 6  sockmap:txmsg test redirect:OK
+> > >  ...
+> > >  #22/ 1 sockhash:txmsg test push/pop data:OK
+> > >  Pass: 22 Fail: 0
+> > >
+> > >  real    0m9.790s
+> > >  user    0m0.093s
+> > >  sys     0m7.318s
+> > >
+> > > The old output printed individual subtest and was rather noisy
+> > >
+> > >  $ time sudo ./test_sockmap
+> > >  [TEST 0]: (1, 1, 1, sendmsg, pass,): PASS
+> > >  ...
+> > >  [TEST 823]: (16, 1, 100, sendpage, ... ,pop (1599,1609),): PASS
+> > >  Summary: 824 PASSED 0 FAILED
+> > >
+> > >  real    0m56.761s
+> > >  user    0m0.455s
+> > >  sys     0m31.757s
+> > >
+> > > So we are able to reduce time from ~56s to ~10s. To recover older more
+> > > verbose output simply run with --verbose option. To whitelist and
+> > > blacklist tests use the new --whitelist and --blacklist flags added. For
+> > > example to run cork sockhash tests but only ones that don't have a receive
+> > > hang (used to test negative cases) we could do,
+> > >
+> > >  $ ./test_sockmap --whitelist="cork" --blacklist="sockmap,hang"
+> > >
+> > > ---
+> >
+> > A lot of this seems to be re-implementing good chunks of what we
+> > already have in test_progs. Would it make more sense to either extract
+> > test runner pieces from test_progs into something that can be easily
+> > re-used for creating other test runners or just fold all these test
+> > into test_progs framework? None of this code is fun to write and
+> > maintain, so I'd rather have less copies of it :)
+>
+> I like having its own test runner for test_sockmap. At leat I like
+> having the CLI around to run arbitrary tests while doing devloping
+> of BPF programs and on the kernel side.
 
-Thanks, Jacob, for cleaning this up!
+Keeping them in separate binary is fine with me, but just wanted to
+make sure you are aware of -t and -n options to test_progs? -t
+test-substring[/subtest-substring] allows to select test(s), and,
+optionally, subtests(s) by substring of their names. -n allows to do
+selection by test/subtest numbers. This allows a very nice way to
+debug/develop singular test or a small subset of tests. Just FYI, in
+case you missed this feature.
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+>
+> We could fold all the test progs into progs framework but because
+> I want to keep test_sockmap CLI around it didn't make much sense.
+> I would still need most the code for the tool.
+>
+> So I think the best thing is to share as much code as possible.
+> I am working on a series behind this to share more code on the
+> socket attach, listend, send/recv side but seeing this series was
+> getting large and adds the ktls support which I want in selftests
+> asap I pushed it. Once test_sockmap starts using the shared socket
+> senders, receivers, etc. I hope lots of code will dissapper.
+>
+> The next easy candidate is the cgroup helpers. test_progs has
+> test__join_cgroup() test_sockmap has equivelent.
+>
+> Its possible we could have used the same prog_test_def{} struct
+> but it seemed a bit overkill to me for this the _test{} struct
+> and helpers is ~50 lines here. Getting the socket handling and
+> cgroup handling into helpers seems like a bigger win.
+
+Test_progs is doing a bit more than just that. It's about 600 lines of
+code just in test_progs.c, which does generic test
+running/reporting/logging interception, etc. Plus some more in
+test_progs.h. So I think sharing that "test runner base" could save
+more code and allow more flexible test runner experience.
+
+>
+> Maybe the blacklist/whitelist could be reused with some refactoring
+> and avoid one-off codei for that as well.
+>
+> Bottom line for me is this series improves things a lot on
+> the test_sockmap side with a reasonable patch series size. I
+> agree with your sentiment though and would propose doing those
+> things in follow up series likely in this order: socket handlers,
+> cgroup handlers, tester structure.
+
+Yep, makes sense. I just wanted to make sure that this is on the table. Thanks!
+
+>
+> Thanks!
+>
+>
+> >
+> > >
+> > > John Fastabend (10):
+> > >       bpf: selftests, move sockmap bpf prog header into progs
+> > >       bpf: selftests, remove prints from sockmap tests
+> > >       bpf: selftests, sockmap test prog run without setting cgroup
+> > >       bpf: selftests, print error in test_sockmap error cases
+> > >       bpf: selftests, improve test_sockmap total bytes counter
+> > >       bpf: selftests, break down test_sockmap into subtests
+> > >       bpf: selftests, provide verbose option for selftests execution
+> > >       bpf: selftests, add whitelist option to test_sockmap
+> > >       bpf: selftests, add blacklist to test_sockmap
+> > >       bpf: selftests, add ktls tests to test_sockmap
+> > >
+> > >
+> > >  .../selftests/bpf/progs/test_sockmap_kern.h        |  299 +++++++
+> > >  tools/testing/selftests/bpf/test_sockmap.c         |  911 ++++++++++----------
+> > >  tools/testing/selftests/bpf/test_sockmap_kern.h    |  451 ----------
+> > >  3 files changed, 769 insertions(+), 892 deletions(-)
+> > >  create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_kern.h
+> > >  delete mode 100644 tools/testing/selftests/bpf/test_sockmap_kern.h
+> > >
+> > > --
+> > > Signature
+>
+>
