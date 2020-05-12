@@ -2,210 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D241CEB3E
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B7671CEB41
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728688AbgELDNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 23:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
+        id S1728524AbgELDP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 23:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727942AbgELDNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:13:50 -0400
+        by vger.kernel.org with ESMTP id S1727942AbgELDP1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:15:27 -0400
 Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7478FC061A0C;
-        Mon, 11 May 2020 20:13:50 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id b6so11123029qkh.11;
-        Mon, 11 May 2020 20:13:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B23CC061A0C;
+        Mon, 11 May 2020 20:15:27 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id n14so12235454qke.8;
+        Mon, 11 May 2020 20:15:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=iDSNQu5NM+JSr0tP1LCdotPyYAi2OsIrNzI95rF2jLM=;
-        b=Wk9beM0ZuTM7Vvr1Luqi134+ji9BdS1x3V69EH9tnUFokkToxQDoViFDZI6I0SuQZ3
-         gDJIsHoociP/gdMpHtgtwqCQKaGflpWSbpx6okE1ZC3Bg0SeFgNrjLblV/LziALzLHcl
-         ptMQGr7+kxWRWaSG2B4n+QlU/cgdjx56fnI064zVGqcx9EQq9L8Gs6+fz3V5SgpushiI
-         7qc7LPm/5O8IqB+cbCN3HhTm/P/KSCFjg7gx08rZ9JraT7p6dOrVDO7eitJ9d3EwmnmJ
-         p1JgAoZE1f9uNSioWhSrH2or3FM108+bIhL2x5xHbqEh3shUQ8KvvFvChVTMitQyN9Du
-         XGDw==
+        bh=OCjk5lRyNnGdzoT7H/2cpQ+ftIGab0ek4X9QCagt82A=;
+        b=MiGIrO0OjLF30WDYQeiMxr2H4+e6I601oMrswaP/iAMJONiVaQWBQ6dSxIipPlL72o
+         BAL3d5QmMjDTVa/bho2IsL/FEy9gL0g7OvS68ANLgW+94MZssagebSrhLIDsA14ajswz
+         wC2q1asbZEmWP2VLGKONXNGSFYPuQLeaDlYMvgFPkiwaQK4ox837jcvtQJbLBWBmsiMa
+         vfcFc4+M49nPQ+5GnzlbkLifQ1CoTyTmL7yzMp96vORrRNSFBNl7b+zQY6vA925PdRa8
+         dX5tWkpWjdeYQK1mw7JqHp/oV+aKYSyfGGTmr0uAigxpIGVDkk18EEz4mlq6XbYMr3pl
+         fQgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iDSNQu5NM+JSr0tP1LCdotPyYAi2OsIrNzI95rF2jLM=;
-        b=K3ElJ+8tsePflMWLCXZcDKDr56g2UnzQmZc9YG0UsPxPr4/rMmEHwkuJbpO9jVXeYp
-         fH53DMslTY0XCTPFnUXCbTydOgeFvMo7/RZSu4fGa8ZNgoqOJcL1BGZOgJ4Su4xxtsUc
-         jHSfB7FL3ZAgONqKv9JltvJrvhkRkRLSSxbxSvYOUlz2bm3tfMp1TigRoxxOBZ3Erm94
-         MzInIklkpObRkHBysMPF/tFaKlyd6TCQZCP7QJwU+sCXv3Ngl/IfPCHPbAP45k+O4x0w
-         Ej569TLnc/JoJcP+Sgpq18XtVch04XRFq9LSUM6xrzdqS0ZesBX3ecnpbTx2PYShO/lr
-         b1/Q==
-X-Gm-Message-State: AGi0PubFKrNyMXMV0TI5jgYUkEZ8A0LwRPNeXe7t3RkJY3UXVOrf6NOa
-        i/c/xlBUG+PPIUrJsfg3AImOEqMP3WaymLwoTwg=
-X-Google-Smtp-Source: APiQypJR+NgNb8jXGD5moiJeP4WXbMZ1gSqDYU5of7kWANkHQCtZSsWX0L2Qu7hPWCAgemIdIdsXnpZ6SzXJPTt6t8c=
-X-Received: by 2002:ae9:efc1:: with SMTP id d184mr20214909qkg.437.1589253229629;
- Mon, 11 May 2020 20:13:49 -0700 (PDT)
+        bh=OCjk5lRyNnGdzoT7H/2cpQ+ftIGab0ek4X9QCagt82A=;
+        b=EqG0jJAdxufsAz3vqnv5NSORANPWsPYFcNdhR4eiWfzLhi4myxSnXRdzri9WqodVIF
+         AIAOeDBfG1aaMYMd6lktuFo26oiB2lc5xgYD4kjIMPK0lK20I8ClftvVI6T1QE1zYl5W
+         wrj/NWNa89F1/VdzmIPvalR9Iu+5FVb39KuvII3JnDkGoJXbS0IJLxzS8mg8mjQeE51Y
+         09h4DJYur9rC7A+luMVZeNgVqCWRs66YKeT8hNnYG7vQy2FgUAOpl5Twyqoh/yB+XM2y
+         b/2KP3fjWR5gfItNQuBZt3/Jet/5sVqgLFisZHRnEvIS9WyEKAhS+NVHEKlIlBiSrdMP
+         n3lA==
+X-Gm-Message-State: AGi0PubrXAlQQt2+3dmTA+A4ukjr/q7HLnHAyekXFiIGXbCZMt4Y1k4P
+        JXeq+4Z6vDkojMe22RZhgyp8FKSncs6zetipI4k=
+X-Google-Smtp-Source: APiQypJYdzzEcFFEKlqS/mxg7pT5lU0SC4lN7u+/MPQA1qSfE8vHPKnd95NrdTm5EbdVykEv14ysH7coZ99595VegFs=
+X-Received: by 2002:ae9:e713:: with SMTP id m19mr18877994qka.39.1589253326381;
+ Mon, 11 May 2020 20:15:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <158871160668.7537.2576154513696580062.stgit@john-Precision-5820-Tower>
- <CAEf4BzahfsBO0Xy2+65MH7x8MY6vFkHSLSb27g9mHSj6kuDHDg@mail.gmail.com> <5eb6c45fa83a6_10632b06ebe825c0d0@john-XPS-13-9370.notmuch>
-In-Reply-To: <5eb6c45fa83a6_10632b06ebe825c0d0@john-XPS-13-9370.notmuch>
+References: <20200507053915.1542140-1-yhs@fb.com> <20200507053918.1542509-1-yhs@fb.com>
+ <CAEf4BzaV6u1eTta4h4+mftQCQVOGPf0Q++B8tZxho+Uq3M1=mA@mail.gmail.com> <849a051d-5c42-a61c-91ef-15a2bdb2b509@fb.com>
+In-Reply-To: <849a051d-5c42-a61c-91ef-15a2bdb2b509@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 May 2020 20:13:38 -0700
-Message-ID: <CAEf4BzbT4ENMcCC5+ubxVjMggz3OGa1jBT741g8_MxbYzgN0=Q@mail.gmail.com>
-Subject: Re: [bpf-next PATCH 00/10] bpf: selftests, test_sockmap improvements
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
+Date:   Mon, 11 May 2020 20:15:15 -0700
+Message-ID: <CAEf4BzYzwnQuvjR-deQ1OaPMaNSQcnFQOCEaAWvTrdgqOQarJg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 03/21] bpf: support bpf tracing/iter programs
+ for BPF_LINK_CREATE
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 9, 2020 at 7:55 AM John Fastabend <john.fastabend@gmail.com> wrote:
+On Fri, May 8, 2020 at 6:36 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> Andrii Nakryiko wrote:
-> > On Tue, May 5, 2020 at 1:50 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > >
-> > > Update test_sockmap to add ktls tests and in the process make output
-> > > easier to understand and reduce overall runtime significantly. Before
-> > > this series test_sockmap did a poor job of tracking sent bytes causing
-> > > the recv thread to wait for a timeout even though all expected bytes
-> > > had been received. Doing this many times causes significant delays.
-> > > Further, we did many redundant tests because the send/recv test we used
-> > > was not specific to the parameters we were testing. For example testing
-> > > a failure case that always fails many times with different send sizes
-> > > is mostly useless. If the test condition catches 10B in the kernel code
-> > > testing 100B, 1kB, 4kB, and so on is just noise.
-> > >
-> > > The main motivation for this is to add ktls tests, the last patch. Until
-> > > now I have been running these locally but we haven't had them checked in
-> > > to selftests. And finally I'm hoping to get these pushed into the libbpf
-> > > test infrastructure so we can get more testing. For that to work we need
-> > > ability to white and blacklist tests based on kernel features so we add
-> > > that here as well.
-> > >
-> > > The new output looks like this broken into test groups with subtest
-> > > counters,
-> > >
-> > >  $ time sudo ./test_sockmap
-> > >  # 1/ 6  sockmap:txmsg test passthrough:OK
-> > >  # 2/ 6  sockmap:txmsg test redirect:OK
-> > >  ...
-> > >  #22/ 1 sockhash:txmsg test push/pop data:OK
-> > >  Pass: 22 Fail: 0
-> > >
-> > >  real    0m9.790s
-> > >  user    0m0.093s
-> > >  sys     0m7.318s
-> > >
-> > > The old output printed individual subtest and was rather noisy
-> > >
-> > >  $ time sudo ./test_sockmap
-> > >  [TEST 0]: (1, 1, 1, sendmsg, pass,): PASS
-> > >  ...
-> > >  [TEST 823]: (16, 1, 100, sendpage, ... ,pop (1599,1609),): PASS
-> > >  Summary: 824 PASSED 0 FAILED
-> > >
-> > >  real    0m56.761s
-> > >  user    0m0.455s
-> > >  sys     0m31.757s
-> > >
-> > > So we are able to reduce time from ~56s to ~10s. To recover older more
-> > > verbose output simply run with --verbose option. To whitelist and
-> > > blacklist tests use the new --whitelist and --blacklist flags added. For
-> > > example to run cork sockhash tests but only ones that don't have a receive
-> > > hang (used to test negative cases) we could do,
-> > >
-> > >  $ ./test_sockmap --whitelist="cork" --blacklist="sockmap,hang"
-> > >
-> > > ---
+>
+>
+> On 5/8/20 11:24 AM, Andrii Nakryiko wrote:
+> > On Wed, May 6, 2020 at 10:41 PM Yonghong Song <yhs@fb.com> wrote:
+> >>
+> >> Given a bpf program, the step to create an anonymous bpf iterator is:
+> >>    - create a bpf_iter_link, which combines bpf program and the target.
+> >>      In the future, there could be more information recorded in the link.
+> >>      A link_fd will be returned to the user space.
+> >>    - create an anonymous bpf iterator with the given link_fd.
+> >>
+> >> The bpf_iter_link can be pinned to bpffs mount file system to
+> >> create a file based bpf iterator as well.
+> >>
+> >> The benefit to use of bpf_iter_link:
+> >>    - using bpf link simplifies design and implementation as bpf link
+> >>      is used for other tracing bpf programs.
+> >>    - for file based bpf iterator, bpf_iter_link provides a standard
+> >>      way to replace underlying bpf programs.
+> >>    - for both anonymous and free based iterators, bpf link query
+> >>      capability can be leveraged.
+> >>
+> >> The patch added support of tracing/iter programs for BPF_LINK_CREATE.
+> >> A new link type BPF_LINK_TYPE_ITER is added to facilitate link
+> >> querying. Currently, only prog_id is needed, so there is no
+> >> additional in-kernel show_fdinfo() and fill_link_info() hook
+> >> is needed for BPF_LINK_TYPE_ITER link.
+> >>
+> >> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> >> Signed-off-by: Yonghong Song <yhs@fb.com>
+> >> ---
 > >
-> > A lot of this seems to be re-implementing good chunks of what we
-> > already have in test_progs. Would it make more sense to either extract
-> > test runner pieces from test_progs into something that can be easily
-> > re-used for creating other test runners or just fold all these test
-> > into test_progs framework? None of this code is fun to write and
-> > maintain, so I'd rather have less copies of it :)
+> > still looks good, but I realized show_fdinfo and fill_link_info is
+> > missing, see request for a follow-up below :)
+> >
+> >
+> >>   include/linux/bpf.h            |  1 +
+> >>   include/linux/bpf_types.h      |  1 +
+> >>   include/uapi/linux/bpf.h       |  1 +
+> >>   kernel/bpf/bpf_iter.c          | 62 ++++++++++++++++++++++++++++++++++
+> >>   kernel/bpf/syscall.c           | 14 ++++++++
+> >>   tools/include/uapi/linux/bpf.h |  1 +
+> >>   6 files changed, 80 insertions(+)
+> >>
+> >
+> > [...]
+> >
+> >> +static const struct bpf_link_ops bpf_iter_link_lops = {
+> >> +       .release = bpf_iter_link_release,
+> >> +       .dealloc = bpf_iter_link_dealloc,
+> >> +};
+> >
+> > Link infra supports .show_fdinfo and .fill_link_info methods, there is
+> > no need to block on this, but it would be great to implement them from
+> > BPF_LINK_TYPE_ITER as well in the same release as a follow-up. Thanks!
 >
-> I like having its own test runner for test_sockmap. At leat I like
-> having the CLI around to run arbitrary tests while doing devloping
-> of BPF programs and on the kernel side.
+> The reason I did not implement is due to we do not have additional
+> information beyond prog_id to present. The prog_id itself gives all
+> information about this link. I looked at tracing program
 
-Keeping them in separate binary is fine with me, but just wanted to
-make sure you are aware of -t and -n options to test_progs? -t
-test-substring[/subtest-substring] allows to select test(s), and,
-optionally, subtests(s) by substring of their names. -n allows to do
-selection by test/subtest numbers. This allows a very nice way to
-debug/develop singular test or a small subset of tests. Just FYI, in
-case you missed this feature.
+Not all, e.g., bpf_iter target is invisible right now. It's good to
+have this added in a follow up, but certainly not a blocker.
 
->
-> We could fold all the test progs into progs framework but because
-> I want to keep test_sockmap CLI around it didn't make much sense.
-> I would still need most the code for the tool.
->
-> So I think the best thing is to share as much code as possible.
-> I am working on a series behind this to share more code on the
-> socket attach, listend, send/recv side but seeing this series was
-> getting large and adds the ktls support which I want in selftests
-> asap I pushed it. Once test_sockmap starts using the shared socket
-> senders, receivers, etc. I hope lots of code will dissapper.
->
-> The next easy candidate is the cgroup helpers. test_progs has
-> test__join_cgroup() test_sockmap has equivelent.
->
-> Its possible we could have used the same prog_test_def{} struct
-> but it seemed a bit overkill to me for this the _test{} struct
-> and helpers is ~50 lines here. Getting the socket handling and
-> cgroup handling into helpers seems like a bigger win.
 
-Test_progs is doing a bit more than just that. It's about 600 lines of
-code just in test_progs.c, which does generic test
-running/reporting/logging interception, etc. Plus some more in
-test_progs.h. So I think sharing that "test runner base" could save
-more code and allow more flexible test runner experience.
+> show_fdinfo/fill_link_info, the additional attach_type is printed.
+> But attach_type is obvious for BPF_LINK_TYPE_ITER which does not
+> need print.
+>
+> In the future when we add more stuff to parameterize the bpf_iter,
+> will need to implement these two callbacks as well as bpftool.
 
->
-> Maybe the blacklist/whitelist could be reused with some refactoring
-> and avoid one-off codei for that as well.
->
-> Bottom line for me is this series improves things a lot on
-> the test_sockmap side with a reasonable patch series size. I
-> agree with your sentiment though and would propose doing those
-> things in follow up series likely in this order: socket handlers,
-> cgroup handlers, tester structure.
+yep
 
-Yep, makes sense. I just wanted to make sure that this is on the table. Thanks!
-
->
-> Thanks!
->
 >
 > >
-> > >
-> > > John Fastabend (10):
-> > >       bpf: selftests, move sockmap bpf prog header into progs
-> > >       bpf: selftests, remove prints from sockmap tests
-> > >       bpf: selftests, sockmap test prog run without setting cgroup
-> > >       bpf: selftests, print error in test_sockmap error cases
-> > >       bpf: selftests, improve test_sockmap total bytes counter
-> > >       bpf: selftests, break down test_sockmap into subtests
-> > >       bpf: selftests, provide verbose option for selftests execution
-> > >       bpf: selftests, add whitelist option to test_sockmap
-> > >       bpf: selftests, add blacklist to test_sockmap
-> > >       bpf: selftests, add ktls tests to test_sockmap
-> > >
-> > >
-> > >  .../selftests/bpf/progs/test_sockmap_kern.h        |  299 +++++++
-> > >  tools/testing/selftests/bpf/test_sockmap.c         |  911 ++++++++++----------
-> > >  tools/testing/selftests/bpf/test_sockmap_kern.h    |  451 ----------
-> > >  3 files changed, 769 insertions(+), 892 deletions(-)
-> > >  create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_kern.h
-> > >  delete mode 100644 tools/testing/selftests/bpf/test_sockmap_kern.h
-> > >
-> > > --
-> > > Signature
->
->
+> >
+> > [...]
+> >
