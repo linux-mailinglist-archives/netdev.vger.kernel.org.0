@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 557561CEF16
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E6E41CEF37
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 10:35:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728941AbgELI2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 04:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726067AbgELI2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 04:28:18 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5314FC061A0C
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 01:28:16 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id u6so12585419ljl.6
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 01:28:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=95GbR0TC2RxBW+8LeWrRYGNf93ycRXGQPznoeVFPxjc=;
-        b=YfkdN1kciz/KYl7ns9JAwxFgNKOP0wPqdPc0ksttDUXqoTzfw1QKp22yiiZ9wos4sM
-         cD/T2xO2XyMpnqLje9FcDcKEbtfwPmaQNsZZ1XNzfiC7zSwqXRHe7okFEm9DQaXMw3Kn
-         rIlgEHeUZQh54spRfnUN602nZsqVlZSkNlSDWTOgvsuzcz3Vu49JwfGBSJqhPbykgjhU
-         w8LGUzhqT2fz7f5n6SjJGAhrdAos8uKkxaE/Ofqlt05zf5WFDQ/wIqWttnjZ2d+ZUD3E
-         +ZgJxOUuAxhvEUW2qhIf41VgrWnKpEAVMtsgJzu03g5qJrihJhoDY3Z1iZTkfuCbTPEF
-         qZLQ==
+        id S1729116AbgELIfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 04:35:05 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45269 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725987AbgELIfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 04:35:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589272503;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Jcu7UayeiRoB+oPtxu5ro8xy76Yt5bLrrV9cfwYT0u4=;
+        b=iJrsU4RpBOeI2JZmrs4gjEXDAw70a2sALlrFj6ODkZcIZf4xJsw1gbMamfgircUFcWQSPa
+        5gBQUVEJHltE4NeJzJLMxXjg8SWozTG3kY5BUHaOZ2Qqy7M8FKzmvqpUT0R9K/fLkcg2RC
+        wH8xk004Ln9Y4Wyqnz/dODXZfNMzOFg=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-368-U-TncXLOMIqPoJonkjvbEg-1; Tue, 12 May 2020 04:35:02 -0400
+X-MC-Unique: U-TncXLOMIqPoJonkjvbEg-1
+Received: by mail-lj1-f198.google.com with SMTP id l5so1223022lje.23
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 01:35:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=95GbR0TC2RxBW+8LeWrRYGNf93ycRXGQPznoeVFPxjc=;
-        b=grpcb7Xto7YbvkQ8I+hwgqACymBCi4GWGygN3NguM6SbKADgbN3bVpCB9qp8udUUUC
-         6XlQztbMvLrVYJ1JGAbwgKso0EsQEbvWz6+00WRvRJ0M7q4MDuC7eG4XkDqCZ4OiZWYh
-         w9+uNHiOg+ItGC9rFWjL9nxpZwAZ1V+WQ7zMMWzqe2qAuuMif93JeynoqwU/rJVkeDjg
-         OMN5IrSNYPPbbgD6XWRS8Ly99j5tEGgZwFAj8BLoBh6htP2/G+0/aSF6D35WvQAbQF5Y
-         VvyFCURf5skE0cdi0LhWQCdAExDl7aYJ6ifCnxgsAE5xukByG22I0jfeLNuyKefBd/ux
-         YNeQ==
-X-Gm-Message-State: AOAM530hs+At5q+P+XdtLiK+V7RXlcHfOSQ5aYYRSsxm+vMuPyeKMW+w
-        QwWPI5wKeqpvh2zeXxs9ifChKJSZPqk=
-X-Google-Smtp-Source: ABdhPJzP7yoMA2P0CSPKne8R1Adb7IieSl92dmH9QBd5oCS/wyRf/9ihDL58+wdT1kWj7l7HqUi5Hw==
-X-Received: by 2002:a2e:b891:: with SMTP id r17mr13079793ljp.34.1589272094748;
-        Tue, 12 May 2020 01:28:14 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:61b:c4fe:68d6:9937:777b:c884? ([2a00:1fa0:61b:c4fe:68d6:9937:777b:c884])
-        by smtp.gmail.com with ESMTPSA id t16sm14599694lff.72.2020.05.12.01.28.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 May 2020 01:28:14 -0700 (PDT)
-Subject: Re: [PATCH 1/3] net: add a CMSG_USER_DATA macro
-To:     Christoph Hellwig <hch@lst.de>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Jcu7UayeiRoB+oPtxu5ro8xy76Yt5bLrrV9cfwYT0u4=;
+        b=UNwgV3sQVSwtnkKI2dhkCD40rskMyb5Ti5TL+bo60wvm65W5ixSiWKfSJqJJnoXOwz
+         JRprOWa8njUP3maLoKtJWETykE3a10vTn07wpzFFsePmp+HMXmsfabd17KkFs9laA+So
+         9t/14CbvFY8Or+CjMEcwKZZlRCMAFY138DkPy8oXSMdoP7V+uxTisu0usHHWT1BzsuhV
+         ay3ljssQ51YFXHI5fPdvsFVtrPtZbSNlfJjoLy10bkYTHOVMvgISwr9kLi6dsZftubUh
+         mLUy0vOC7OnwATWi2+2va+gdNrk+pft+tDWLDKZXFQMJT+6W13qsYkCoRBZ9WuhtziYS
+         7n7A==
+X-Gm-Message-State: AOAM531Nng6bn8O4DvmeyMqBOyjmwRro3gdF4Us2+STCqkYpbYPnJb95
+        McUrsyzLIqnpPe+a+gSiJoIpwurlCIIEWZxi3jsBhnMg/VEOEgEWmqVMuxoBoMXjPdphdvyqfLJ
+        jH3DoKCP+ijKaVQ6c
+X-Received: by 2002:a2e:986:: with SMTP id 128mr9515209ljj.202.1589272500503;
+        Tue, 12 May 2020 01:35:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwFmvdz9SAXFfdnegZZctpbgnZj5hHOIAXiFoVO8Ry9W+nleEprJxW5rdu/858LPlqtM/tnwQ==
+X-Received: by 2002:a2e:986:: with SMTP id 128mr9515196ljj.202.1589272500266;
+        Tue, 12 May 2020 01:35:00 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id y9sm12081878ljy.31.2020.05.12.01.34.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2020 01:34:59 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id BF311181509; Tue, 12 May 2020 10:34:58 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200511115913.1420836-1-hch@lst.de>
- <20200511115913.1420836-2-hch@lst.de>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <f754c4ac-db7d-6688-5582-2a5f476b0f08@cogentembedded.com>
-Date:   Tue, 12 May 2020 11:28:08 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: bpf: ability to attach freplace to multiple parents
+In-Reply-To: <20200402215452.dkkbbymnhzlcux7m@ast-mbp>
+References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com> <87tv2e10ly.fsf@toke.dk> <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com> <87369wrcyv.fsf@toke.dk> <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com> <CACAyw9-FrwgBGjGT1CYrKJuyRJtwn0XUsifF_uR6LpRbcucN+A@mail.gmail.com> <20200326195340.dznktutm6yq763af@ast-mbp> <87o8sim4rw.fsf@toke.dk> <20200402202156.hq7wpz5vdoajpqp5@ast-mbp> <87o8s9eg5b.fsf@toke.dk> <20200402215452.dkkbbymnhzlcux7m@ast-mbp>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 12 May 2020 10:34:58 +0200
+Message-ID: <87h7wlwnyl.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200511115913.1420836-2-hch@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-On 11.05.2020 14:59, Christoph Hellwig wrote:
+>> > Currently fentry/fexit/freplace progs have single prog->aux->linked_prog pointer.
+>> > It just needs to become a linked list.
+>> > The api extension could be like this:
+>> > bpf_raw_tp_open(prog_fd, attach_prog_fd, attach_btf_id);
+>> > (currently it's just bpf_raw_tp_open(prog_fd))
+>> > The same pair of (attach_prog_fd, attach_btf_id) is already passed into prog_load
+>> > to hold the linked_prog and its corresponding btf_id.
+>> > I'm proposing to extend raw_tp_open with this pair as well to
+>> > attach existing fentry/fexit/freplace prog to another target.
+>> > Internally the kernel verify that btf of current linked_prog
+>> > exactly matches to btf of another requested linked_prog and
+>> > if they match it will attach the same prog to two target programs (in case of freplace)
+>> > or two kernel functions (in case of fentry/fexit).
+>> 
+>> API-wise this was exactly what I had in mind as well.
+>
+> perfect!
 
-> Add a variant of CMSG_DATA that operates on user pointer to avoid
-> sparse warnings about casting to/from user pointers.  Also fix up
-> CMSG_DATA to rely on the gcc extension that allows void pointer
-> arithmetics to cut down on the amount of casts.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-[...]
-> diff --git a/net/core/scm.c b/net/core/scm.c
-> index dc6fed1f221c4..abfdc85a64c1b 100644
-> --- a/net/core/scm.c
-> +++ b/net/core/scm.c
-[...]
-> @@ -300,7 +300,7 @@ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
->   	if (fdnum < fdmax)
->   		fdmax = fdnum;
->   
-> -	for (i=0, cmfptr=(__force int __user *)CMSG_DATA(cm); i<fdmax;
-> +	for (i=0, cmfptr =(int __user *)CMSG_USER_DATA(cm); i<fdmax;
+Hi Alexei
 
-    Perhaps it's time to add missing spaces consistently, not just one that 
-you added?
+I don't suppose you've had a chance to whip up a patch for this, have
+you? :)
 
->   	     i++, cmfptr++)
->   	{
->   		struct socket *sock;
+-Toke
 
-MBR, Sergei
