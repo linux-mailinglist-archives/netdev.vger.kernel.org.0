@@ -2,152 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5CF61CEA30
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 03:42:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 010741CEA6B
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 04:01:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728497AbgELBlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 21:41:51 -0400
-Received: from mga12.intel.com ([192.55.52.136]:9229 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726415AbgELBlv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 May 2020 21:41:51 -0400
-IronPort-SDR: exlohjUI850FVKrEPwdfA9SVXRUXE/iIcjK6epf52DKSSyvsiQ3lSowllvIdR1m/2Ya/eDOkGL
- RlVpMKP49jdg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2020 18:41:51 -0700
-IronPort-SDR: wnh2eKpbeDdDj9ggrOoM0lv7opNBNP7149lSboourFsKOItRoVF61HxP51QwoBbiI+wsxPro+z
- tyl2wAZaleog==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,381,1583222400"; 
-   d="scan'208";a="463593457"
-Received: from schittir-mobl.amr.corp.intel.com (HELO ellie) ([10.212.37.169])
-  by fmsmga006.fm.intel.com with ESMTP; 11 May 2020 18:41:49 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        xiaoliang.yang_1@nxp.com, po.liu@nxp.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, mingkai.hu@nxp.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net, jiri@resnulli.us, idosch@idosch.org,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        linux-devel@linux.nxdi.nxp.com
-Subject: Re: [PATCH v1 net-next 3/3] net: dsa: felix: add support Credit Based Shaper(CBS) for hardware offload
-In-Reply-To: <20200511054332.37690-4-xiaoliang.yang_1@nxp.com>
-References: <20200511054332.37690-1-xiaoliang.yang_1@nxp.com> <20200511054332.37690-4-xiaoliang.yang_1@nxp.com>
-Date:   Mon, 11 May 2020 18:41:49 -0700
-Message-ID: <873686rkte.fsf@intel.com>
+        id S1728510AbgELCB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 22:01:29 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:45748 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727892AbgELCB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 22:01:29 -0400
+Received: by mail-oi1-f196.google.com with SMTP id k133so16736039oih.12;
+        Mon, 11 May 2020 19:01:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=czrIsdP31tdcxDtB1xe4T17Dg1vLDkIDYdtdygiUTRo=;
+        b=MNwXB6tjvtR2LoarcSdmXUtD8jQoeuwk5DvKSQ0idPhpti5RCW366AW+k8BgNsq9Cm
+         70BOa95/KJilI0O2lumqCEER5B/OE5ebWP0uW9y+5OZWPoByvjKIxacdzDjMjG4GmEo5
+         MZe3gDVms/2DKXffLNeRV4/BxAK2KtfdmA+BXafXvvhLbrLZbmpwbDVz+9LNDtGmUvo4
+         PYY0Uq9LFg6ikZn603R11bzh7FD8LDZnkU08PRvKIVOzVSoKhRs6QFO6vcv74i2tYfQN
+         o6zma0G+FgVKloTqFo/Y3sjykqkUIctCX9zNjTmhcJnA3+zs0QofVPphgLcHG9KiCcRT
+         uHtg==
+X-Gm-Message-State: AGi0PuZazfsqsgdNps31KiaGA9Kxt0oYZM0/FDKTSRMKVJ4xauJ0FCI0
+        pETsB2Z7Z9Te+r9TXH7dDw==
+X-Google-Smtp-Source: APiQypLgYcOz8qrWFrjJhzlHKPYHwX9/yN/oW9ISWgjWp+EMSVnfdHDAulPu0L/QF7egHog7BK6v9A==
+X-Received: by 2002:aca:4e10:: with SMTP id c16mr21922126oib.140.1589248887866;
+        Mon, 11 May 2020 19:01:27 -0700 (PDT)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id 60sm3120813oth.38.2020.05.11.19.01.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2020 19:01:27 -0700 (PDT)
+Received: (nullmailer pid 26411 invoked by uid 1000);
+        Tue, 12 May 2020 02:01:26 -0000
+Date:   Mon, 11 May 2020 21:01:26 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] dt-bindings: net: Convert UniPhier AVE4 controller
+ to json-schema
+Message-ID: <20200512020126.GA22178@bogus>
+References: <1588055482-13012-1-git-send-email-hayashi.kunihiko@socionext.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1588055482-13012-1-git-send-email-hayashi.kunihiko@socionext.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xiaoliang Yang <xiaoliang.yang_1@nxp.com> writes:
-
-> VSC9959 hardware support the Credit Based Shaper(CBS) which part
-> of the IEEE-802.1Qav. This patch support sch_cbs set for VSC9959.
->
-> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+On Tue, Apr 28, 2020 at 03:31:22PM +0900, Kunihiko Hayashi wrote:
+> Convert the UniPhier AVE4 controller binding to DT schema format.
+> This changes phy-handle property to required.
+> 
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 > ---
->  drivers/net/dsa/ocelot/felix_vsc9959.c | 52 +++++++++++++++++++++++++-
->  1 file changed, 51 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> index ccbd875c7a47..d8d1657ee8ba 100644
-> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> @@ -208,7 +208,7 @@ static const u32 vsc9959_qsys_regmap[] = {
->  	REG(QSYS_QMAXSDU_CFG_6,			0x00f62c),
->  	REG(QSYS_QMAXSDU_CFG_7,			0x00f648),
->  	REG(QSYS_PREEMPTION_CFG,		0x00f664),
-> -	REG_RESERVED(QSYS_CIR_CFG),
-> +	REG(QSYS_CIR_CFG,			0x000000),
->  	REG(QSYS_EIR_CFG,			0x000004),
->  	REG(QSYS_SE_CFG,			0x000008),
->  	REG(QSYS_SE_DWRR_CFG,			0x00000c),
-> @@ -1354,6 +1354,54 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
->  	return ret;
->  }
+>  .../bindings/net/socionext,uniphier-ave4.txt       |  64 ------------
+>  .../bindings/net/socionext,uniphier-ave4.yaml      | 109 +++++++++++++++++++++
+>  MAINTAINERS                                        |   2 +-
+>  3 files changed, 110 insertions(+), 65 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
+> deleted file mode 100644
+> index 4e85fc4..0000000
+> --- a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
+> +++ /dev/null
+> @@ -1,64 +0,0 @@
+> -* Socionext AVE ethernet controller
+> -
+> -This describes the devicetree bindings for AVE ethernet controller
+> -implemented on Socionext UniPhier SoCs.
+> -
+> -Required properties:
+> - - compatible: Should be
+> -	- "socionext,uniphier-pro4-ave4" : for Pro4 SoC
+> -	- "socionext,uniphier-pxs2-ave4" : for PXs2 SoC
+> -	- "socionext,uniphier-ld11-ave4" : for LD11 SoC
+> -	- "socionext,uniphier-ld20-ave4" : for LD20 SoC
+> -	- "socionext,uniphier-pxs3-ave4" : for PXs3 SoC
+> - - reg: Address where registers are mapped and size of region.
+> - - interrupts: Should contain the MAC interrupt.
+> - - phy-mode: See ethernet.txt in the same directory. Allow to choose
+> -	"rgmii", "rmii", "mii", or "internal" according to the PHY.
+> -	The acceptable mode is SoC-dependent.
+> - - phy-handle: Should point to the external phy device.
+> -	See ethernet.txt file in the same directory.
+> - - clocks: A phandle to the clock for the MAC.
+> -	For Pro4 SoC, that is "socionext,uniphier-pro4-ave4",
+> -	another MAC clock, GIO bus clock and PHY clock are also required.
+> - - clock-names: Should contain
+> -	- "ether", "ether-gb", "gio", "ether-phy" for Pro4 SoC
+> -	- "ether" for others
+> - - resets: A phandle to the reset control for the MAC. For Pro4 SoC,
+> -	GIO bus reset is also required.
+> - - reset-names: Should contain
+> -	- "ether", "gio" for Pro4 SoC
+> -	- "ether" for others
+> - - socionext,syscon-phy-mode: A phandle to syscon with one argument
+> -	that configures phy mode. The argument is the ID of MAC instance.
+> -
+> -The MAC address will be determined using the optional properties
+> -defined in ethernet.txt.
+> -
+> -Required subnode:
+> - - mdio: A container for child nodes representing phy nodes.
+> -         See phy.txt in the same directory.
+> -
+> -Example:
+> -
+> -	ether: ethernet@65000000 {
+> -		compatible = "socionext,uniphier-ld20-ave4";
+> -		reg = <0x65000000 0x8500>;
+> -		interrupts = <0 66 4>;
+> -		phy-mode = "rgmii";
+> -		phy-handle = <&ethphy>;
+> -		clock-names = "ether";
+> -		clocks = <&sys_clk 6>;
+> -		reset-names = "ether";
+> -		resets = <&sys_rst 6>;
+> -		socionext,syscon-phy-mode = <&soc_glue 0>;
+> -		local-mac-address = [00 00 00 00 00 00];
+> -
+> -		mdio {
+> -			#address-cells = <1>;
+> -			#size-cells = <0>;
+> -
+> -			ethphy: ethphy@1 {
+> -				reg = <1>;
+> -			};
+> -		};
+> -	};
+> diff --git a/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+> new file mode 100644
+> index 0000000..fd31e87
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+> @@ -0,0 +1,109 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/socionext,uniphier-ave4.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Socionext AVE ethernet controller
+> +
+> +maintainers:
+> +  - Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> +
+> +description: |
+> +  This describes the devicetree bindings for AVE ethernet controller
+> +  implemented on Socionext UniPhier SoCs.
+> +
+> +allOf:
+> +  - $ref: ethernet-controller.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - socionext,uniphier-pro4-ave4
+> +      - socionext,uniphier-pxs2-ave4
+> +      - socionext,uniphier-ld11-ave4
+> +      - socionext,uniphier-ld20-ave4
+> +      - socionext,uniphier-pxs3-ave4
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  phy-mode:
+> +    $ref: ethernet-controller.yaml#/properties/phy-mode
+> +
+> +  phy-handle:
+> +    $ref: ethernet-controller.yaml#/properties/phy-handle
+
+No need for these $ref, the 1st reference did this. Just:
+
+phy-mode: true
+
+> +
+> +  clocks:
+> +    minItems: 1
+> +    maxItems: 4
+> +
+> +  clock-names:
+> +    oneOf:
+> +      - items:          # for Pro4
+> +        - const: gio
+> +        - const: ether
+> +        - const: ether-gb
+> +        - const: ether-phy
+> +      - const: ether    # for others
+> +
+> +  resets:
+> +    minItems: 1
+> +    maxItems: 2
+> +
+> +  reset-names:
+> +    oneOf:
+> +      - items:          # for Pro4
+> +        - const: gio
+> +        - const: ether
+> +      - const: ether    # for others
+> +
+> +  socionext,syscon-phy-mode:
+> +    $ref: /schemas/types.yaml#definitions/phandle-array
+> +    description:
+> +      A phandle to syscon with one argument that configures phy mode.
+> +      The argument is the ID of MAC instance.
+> +
+> +  mdio:
+> +    $ref: mdio.yaml#
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - phy-mode
+> +  - phy-handle
+> +  - clocks
+> +  - clock-names
+> +  - resets
+> +  - reset-names
+> +  - mdio
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    ether: ethernet@65000000 {
+> +        compatible = "socionext,uniphier-ld20-ave4";
+> +                reg = <0x65000000 0x8500>;
+> +                interrupts = <0 66 4>;
+> +                phy-mode = "rgmii";
+> +                phy-handle = <&ethphy>;
+> +                clock-names = "ether";
+> +                clocks = <&sys_clk 6>;
+> +                reset-names = "ether";
+> +                resets = <&sys_rst 6>;
+> +                socionext,syscon-phy-mode = <&soc_glue 0>;
+> +
+> +                mdio {
+> +                        #address-cells = <1>;
+> +                        #size-cells = <0>;
+> +
+> +                        ethphy: ethernet-phy@1 {
+> +                                reg = <1>;
+> +                        };
+> +                };
+> +        };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a1558eb..0ee65e2 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15590,7 +15590,7 @@ SOCIONEXT (SNI) AVE NETWORK DRIVER
+>  M:	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+>  L:	netdev@vger.kernel.org
+>  S:	Maintained
+> -F:	Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
+> +F:	Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+>  F:	drivers/net/ethernet/socionext/sni_ave.c
 >  
-> +int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
-> +			     struct tc_cbs_qopt_offload *cbs_qopt)
-> +{
-> +	struct ocelot *ocelot = ds->priv;
-> +	int port_ix = port * 8 + cbs_qopt->queue;
-> +	u32 cbs = 0;
-> +	u32 cir = 0;
-> +
-> +	if (cbs_qopt->queue >= ds->num_tx_queues)
-> +		return -EINVAL;
-> +
-> +	if (!cbs_qopt->enable) {
-> +		ocelot_write_gix(ocelot, QSYS_CIR_CFG_CIR_RATE(0) |
-> +				 QSYS_CIR_CFG_CIR_BURST(0),
-> +				 QSYS_CIR_CFG, port_ix);
-> +
-> +		ocelot_rmw_gix(ocelot, 0, QSYS_SE_CFG_SE_AVB_ENA,
-> +			       QSYS_SE_CFG, port_ix);
-> +
-> +		return 0;
-> +	}
-> +
-> +	/* Rate unit is 100 kbps */
-> +	cir = DIV_ROUND_UP(cbs_qopt->idleslope, 100);
-> +	cir = (cir ? cir : 1);
-> +	cir = min_t(u32, GENMASK(14, 0), cir);
-
-Please rename 'cir' to "rate" or "idleslope".
-
-Also consider using clamp_t here and below (I just found out about it).
-
-> +	/* Burst unit is 4kB */
-> +	cbs = DIV_ROUND_UP(cbs_qopt->hicredit, 4096);
-> +	/* Avoid using zero burst size */
-> +	cbs = (cbs ? cbs : 1);
-> +	cbs = min_t(u32, GENMASK(5, 0), cbs);
-
-And please(!) rename 'cbs' to "burst" or "hicredit". Re-using the name
-"cbs" with a completely different meaning here is confusing.
-
-> +	ocelot_write_gix(ocelot,
-> +			 QSYS_CIR_CFG_CIR_RATE(cir) |
-> +			 QSYS_CIR_CFG_CIR_BURST(cbs),
-> +			 QSYS_CIR_CFG,
-> +			 port_ix);
-> +
-> +	ocelot_rmw_gix(ocelot,
-> +		       QSYS_SE_CFG_SE_FRM_MODE(0) |
-> +		       QSYS_SE_CFG_SE_AVB_ENA,
-> +		       QSYS_SE_CFG_SE_AVB_ENA |
-> +		       QSYS_SE_CFG_SE_FRM_MODE_M,
-> +		       QSYS_SE_CFG,
-> +		       port_ix);
-> +
-> +	return 0;
-> +}
-> +
->  static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
->  				 enum tc_setup_type type,
->  				 void *type_data)
-> @@ -1363,6 +1411,8 @@ static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
->  	switch (type) {
->  	case TC_SETUP_QDISC_TAPRIO:
->  		return vsc9959_qos_port_tas_set(ocelot, port, type_data);
-> +	case TC_SETUP_QDISC_CBS:
-> +		return vsc9959_qos_port_cbs_set(ds, port, type_data);
->  	default:
->  		return -EOPNOTSUPP;
->  	}
+>  SOCIONEXT (SNI) NETSEC NETWORK DRIVER
 > -- 
-> 2.17.1
->
-
--- 
-Vinicius
+> 2.7.4
+> 
