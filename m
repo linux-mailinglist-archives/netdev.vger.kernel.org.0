@@ -2,121 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A59C1CFCB7
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 20:00:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A43521CFCD8
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 20:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728324AbgELR76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 13:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
+        id S1730223AbgELSIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 14:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728039AbgELR75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 13:59:57 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C82BC061A0C
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 10:59:57 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id z72so15012599wmc.2
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 10:59:57 -0700 (PDT)
+        with ESMTP id S1725554AbgELSIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 14:08:35 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCCFC061A0C
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 11:08:34 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id b8so6495971pgi.11
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 11:08:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3NNNl+admW51ArOnz3DFZNJt6RTX+7wBAqLIs+fo8c4=;
-        b=drLwkK0F+ajGprHINWhMjtK4xo6Nfzsx0wasvnkm+CicTB9ITBtUrabCesyEeFe3+8
-         efZeMtk6geFrt61yhYQUgTQ0SQ+RnMBfsbsWjzIXE5/JqrvQCe6LqDpD/WIIZthqPtff
-         VsMwvmV3ZtCXk8t4QAyeEhNsuvYVsMyZibL5xeDorhPkrC0njyPCQZBkgaKq8REFo0g0
-         /BBIFROYyLBwUjI4S8D9AQ9T53MSoZUkbZ1L1BuSf+GOG3y+p006gecPBe2BWlFW8Tz+
-         xoqP5ziJG0+iriWnOJo/ntVUUACu1kXEumuvf585W3H2XqezUbCAUbYsQX5tcEXh+qWI
-         XScA==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=VNDI8PZ9jaHj5l65S7vRac++L+yiVV8ZDFdPgQEq14A=;
+        b=iu0c5jH0ku1CXuChRC6s3IdnhVJpud4O4UdsqvCtQ7HlPNVYoPqYd3X93/QYTSmzFP
+         EKOPEqESvZyPrwQT83gIyIXZYPWoRm4yGrImDVZnUxxsb8tOaEwFMeaGZKBy97Bp6wsZ
+         h1hGiXFYK+8sLFrM0CU+bOXrqs9PNXACDuaHMnjdDrWuVdQ8C2uup4bDX8Bng5489hHu
+         PBx37z74zcnz8RCjymzE2kVg40/cdG2NSdHUvQZ9Wv5XSNjZp4zmlaZ0tEyjzzZG89mP
+         /PmXWdQ2Yh6ig3mmBwGycUs8kKpUwiMLxJLJeN0PR7k42CYkPhbnrEjrRM0hW6kMOMXK
+         Gz3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3NNNl+admW51ArOnz3DFZNJt6RTX+7wBAqLIs+fo8c4=;
-        b=bZddq/92KuDj600JJfmPRqZnx56YVwKhqiD/SCEEKZNKDEcjNYevaC5ntDlxn2m2j1
-         Eu1gHKQ+DEyhraG1tsk9vddgafLQTNEoMBr/M62s9Hi/OTu2ukUa+Xi/eVdgbjdk6AYu
-         MREfExYPDWkkQ+do83luwGuBnyEqdGOwtoq6aQflu4WNoyULJAqJPTSAv98B3HfyPdM5
-         lVtA3J1GTL7C2eN9NlYVOS2m8UvRa+702mGQXJGZIG2A5EkjQk8lT7VgnBmT49UfYco9
-         +w1G0f5+/Rc1ooKltDDFDO06/3Yg5FRT4sMlNUoS//JMqqV5oGX8rgObC7glmySIeGtl
-         750Q==
-X-Gm-Message-State: AGi0PubP85KfDfR/Aoo7BwmZbYpVx0AdqrxvihwvYj9BMWRuRGeumtiO
-        ElZCoailOq5tC+2kV0Hm//O2qbJYfC4=
-X-Google-Smtp-Source: APiQypJmIMM8vx2ft/nc7sjJbUzuZKqvpPALk2HBksmzaekduSLM2t5LcfRiHJKBlfL+ImAz2UfeoQ==
-X-Received: by 2002:a1c:b104:: with SMTP id a4mr37350887wmf.24.1589306395764;
-        Tue, 12 May 2020 10:59:55 -0700 (PDT)
-Received: from tool.localnet ([213.177.197.81])
-        by smtp.googlemail.com with ESMTPSA id x5sm25077761wro.12.2020.05.12.10.59.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 10:59:55 -0700 (PDT)
-From:   Daniel =?ISO-8859-1?Q?Gonz=E1lez?= Cabanelas <dgcbueu@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, thomas.petazzoni@bootlin.com
-Subject: [PATCH] net: mvneta: speed down the PHY, if WoL used, to save energy
-Date:   Tue, 12 May 2020 19:59:48 +0200
-Message-ID: <32495177.Bv3dSJjO3Z@tool>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=VNDI8PZ9jaHj5l65S7vRac++L+yiVV8ZDFdPgQEq14A=;
+        b=C2kIuP4kyJdMmIqwXH7Ta63wll+0dVVUR+Kw7uBlWmThl1gpLEq7fE/Ckluq20puOz
+         FbYnE9dce/aDZjpiRgUkyhMRlwsAbQxKZ9g0PFfMHHPklhuzoXUIv9gyR7XrqOv3qDii
+         NMLdeo/mybjU6fKlZIXtoJZG+iHONPUewrBydT2b0Rf293y14eJDQl79yQsnQYIQOvDo
+         YCOfePFLTnoscpyHaVCpDbcAg25YeOkWtHisxNlBJL4HyULQ8hfF7rZNh6h8EkxK7YwB
+         i+7QJ28Sw6k2XkFOGGdura9Z2a0MCbOV6BEnW4eyHtQxcwW1ttJTj31zKRIV6uGLWEj1
+         u5RA==
+X-Gm-Message-State: AGi0PuaWeNy5vjn3Zthel6gLWxZeYIZUFv+F+Vt+XYYYAAyw+DBfNZhU
+        g2LR4SAsxNmOVJZLRVbp+2n+Aw==
+X-Google-Smtp-Source: APiQypJAxfUPb0uPphDAF+bKGOucKrApQO4clWguB2mDhx1el1fJC/8QocC0hked2jVaSafF/VwIEw==
+X-Received: by 2002:a62:1bd0:: with SMTP id b199mr21875008pfb.283.1589306913615;
+        Tue, 12 May 2020 11:08:33 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id c1sm12564733pfc.94.2020.05.12.11.08.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2020 11:08:32 -0700 (PDT)
+Subject: Re: [PATCH net-next 00/10] ionic updates
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20200512005936.14490-1-snelson@pensando.io>
+ <20200512101321.164ffa20@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <3de5322b-ff15-11fa-9181-7c8408522540@pensando.io>
+Date:   Tue, 12 May 2020 11:08:31 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20200512101321.164ffa20@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some PHYs connected to this ethernet hardware support the WoL feature.
-But when WoL is enabled and the machine is powered off, the PHY remains
-waiting for a magic packet at max speed (i.e. 1Gbps), which is a waste of
-energy.
+On 5/12/20 10:13 AM, Jakub Kicinski wrote:
+> On Mon, 11 May 2020 17:59:26 -0700 Shannon Nelson wrote:
+>> This set of patches is a bunch of code cleanup, a little
+>> documentation, longer tx sg lists, more ethtool stats,
+>> and a couple more transceiver types.
+> I wish patch 3 was handled by the core, but no great ideas on that so:
 
-Slow down the PHY speed before stopping the ethernet if WoL is enabled,
-and save some energy while the machine is powered off or sleeping.
+I thought about sticking that into the core calling spots, but I suspect 
+that there are other devices that allow some configuration activity 
+while the PF is unavailable and I'd rather not break them.
 
-Tested using an Armada 370 based board (LS421DE) equipped with a Marvell
-88E1518 PHY.
+>
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-Signed-off-by: Daniel Gonz=C3=A1lez Cabanelas <dgcbueu@gmail.com>
-=2D--
- drivers/net/ethernet/marvell/mvneta.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/m=
-arvell/mvneta.c
-index 5188977095..e0e9e56830 100644
-=2D-- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3561,6 +3561,10 @@ static void mvneta_start_dev(struct mvneta_port *pp)
- 		    MVNETA_CAUSE_LINK_CHANGE);
-=20
- 	phylink_start(pp->phylink);
-+
-+	/* We may have called phy_speed_down before */
-+	phy_speed_up(pp->dev->phydev);
-+
- 	netif_tx_start_all_queues(pp->dev);
- }
-=20
-@@ -3568,6 +3572,9 @@ static void mvneta_stop_dev(struct mvneta_port *pp)
- {
- 	unsigned int cpu;
-=20
-+	if (device_may_wakeup(&pp->dev->dev))
-+		phy_speed_down(pp->dev->phydev, false);
-+
- 	phylink_stop(pp->phylink);
-=20
- 	if (!pp->neta_armada3700) {
-@@ -4040,6 +4047,10 @@ static int mvneta_mdio_probe(struct mvneta_port *pp)
- 	phylink_ethtool_get_wol(pp->phylink, &wol);
- 	device_set_wakeup_capable(&pp->dev->dev, !!wol.supported);
-=20
-+	/* PHY WoL may be enabled but device wakeup disabled */
-+	if (wol.supported)
-+		device_set_wakeup_enable(&pp->dev->dev, !!wol.wolopts);
-+
- 	return err;
- }
-=20
-=2D-=20
-2.26.2
-
-
-
+Thanks.
+sln
 
