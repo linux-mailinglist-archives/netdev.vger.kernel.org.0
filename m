@@ -2,85 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 162041D0164
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 23:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1CFC1D019A
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 00:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731458AbgELV7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 17:59:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37040 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728313AbgELV7U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 17:59:20 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A2180206B7;
-        Tue, 12 May 2020 21:59:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589320760;
-        bh=umeyPfzMnWUsI5DYYCbU0pSKl5SS197xscOjTElhVOU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Orwq489TX5Fd2s66luzYbKVVgduIHMk5HY1Z5C2/g255CTs0S+aNNxq/hJsS/Y41o
-         W8r0qfRHsg71g6f6Rxqm6CQwuwh6IBrjpO2gNOLIXo4fj0upk24RpESOk6UItCHhiL
-         YVKL1XGaqCNX3GK3lmfbBhf5Q01Dnb+hT43e1oCQ=
-Date:   Tue, 12 May 2020 14:59:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Amol Grover <frextrite@gmail.com>
-Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        sfr@canb.auug.org.au, "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH net 2/2 RESEND] ipmr: Add lockdep expression to
- ipmr_for_each_table macro
-Message-ID: <20200512145917.729db7bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200512171710.GA3200@workstation-portable>
-References: <20200509072243.3141-1-frextrite@gmail.com>
-        <20200509072243.3141-2-frextrite@gmail.com>
-        <20200509141938.028fa959@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200512051705.GB9585@madhuparna-HP-Notebook>
-        <20200512171710.GA3200@workstation-portable>
+        id S1731463AbgELWKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 18:10:05 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:33143 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731171AbgELWKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 18:10:05 -0400
+Received: by mail-oi1-f193.google.com with SMTP id o24so19690421oic.0;
+        Tue, 12 May 2020 15:10:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=q6CAAU7vleDGueuJGVvolBhXIu/csSl1xRiaOGj3440=;
+        b=i6t6SNmcnJlmGQ70z/g6b37BQoEpZJ39Y0bTbQfGDUwzZvdxJ/Wgo5PmbE/ST8yzFP
+         JIonDj16L2ovdSTxrIoDJ4wyJqEFT4VdeOcSaK//nrpJjx9UEl6N4GI5rTjs3d8JNsXZ
+         5OvuMfL+GdVdfNaoZeiaBqqbxoVMIa0ycc2VK6S3YMTeU67lyfPj4gbQnYtcABJUC9lX
+         a0ZEz2d7VhwPmC4mNdHJZwu58l1MFry/1dTH7JbIZT1tP0UhJfVNflP0ZsrDPVSFilbJ
+         hLUEOTE3lk2yIYjFfXDeLhcZLvcKsR2Gq4W8EeVrRedUp8kgxpsRw0MWb0NeVNb5Uhvq
+         P2iw==
+X-Gm-Message-State: AGi0PuaN4cCOIBowU+A40YJSfRHzROs8r3PHG61mQd2t4qBKX1XAlz7v
+        274M2Gyttd/57HX0sY8aVtqRgV8=
+X-Google-Smtp-Source: APiQypLw7zczZZ/cmpR/UVgqIUbJ0LI2bRfUOe7N1KLLVlXaHRfbsnNpK4kUSO++hz7BmofQdUffjw==
+X-Received: by 2002:a54:4510:: with SMTP id l16mr23819423oil.151.1589321403979;
+        Tue, 12 May 2020 15:10:03 -0700 (PDT)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id r10sm3769706otn.70.2020.05.12.15.10.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2020 15:10:03 -0700 (PDT)
+Received: (nullmailer pid 23234 invoked by uid 1000);
+        Tue, 12 May 2020 22:10:02 -0000
+Date:   Tue, 12 May 2020 17:10:02 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        netdev@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        Lad Prabhakar <prabhakar.csengg@gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: net: renesas,ether: Sort compatible
+ string in increasing number of the SoC
+Message-ID: <20200512221002.GA22502@bogus>
+References: <1588519279-13364-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1588519279-13364-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 May 2020 22:47:10 +0530 Amol Grover wrote:
-> > > This is a strange condition, IMHO. How can we be fine with either
-> > > lock.. This is supposed to be the writer side lock, one can't have 
-> > > two writer side locks..
-> > > 
-> > > I think what is happening is this:
-> > > 
-> > > ipmr_net_init() -> ipmr_rules_init() -> ipmr_new_table()
-> > > 
-> > > ipmr_new_table() returns an existing table if there is one, but
-> > > obviously none can exist at init.  So a better fix would be:
-> > > 
-> > > #define ipmr_for_each_table(mrt, net)					\
-> > > 	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list,	\
-> > > 				lockdep_rtnl_is_held() ||		\
-> > > 				list_empty(&net->ipv4.mr_tables))
-> > >  
+On Sun,  3 May 2020 16:21:19 +0100, Lad Prabhakar wrote:
+> Sort the items in the compatible string list in increasing number of SoC.
 > 
-> Jakub, I agree, this condition looks better (and correct) than the one I
-> proposed. I'll do the changes as necessary. Also, do you want me to add
-> the full trace to the git commit body as well? I omitted it on purpose
-> to not make it messy.
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Changes for v2:
+>  * Included renesas,ether in subject instead of sh_eth.
+>  * Included Reviewed-by tags.
+> 
+>  Documentation/devicetree/bindings/net/renesas,ether.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-In this case we can leave it at the depth of IPMR code + the caller, so:
+I already applied v1. 
 
-[    1.534758]  ? ipmr_get_table+0x3c/0x70
-[    1.535430]  ? ipmr_new_table+0x1c/0x60
-[    1.536173]  ? ipmr_net_init+0x7b/0x170
-[    1.536923]  ? register_pernet_subsys+0xd/0x30
-
-This makes it clear that the problem happens at net namespace init.
-
-Thanks!
+Rob
