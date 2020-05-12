@@ -2,99 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71D031CF534
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 15:04:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66FDB1CF592
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 15:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729972AbgELNEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 09:04:24 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55666 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725923AbgELNEY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 09:04:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=jK4zL75kEjZz1WHIcEzDIz6MmRgpd2lB37qu5hoigyE=; b=tjtqKokOyIfsk0LplqjjgiF8GQ
-        XQJaeOnbZX3W0brBh+PAsB2gClQIUJOLSsgbUFCTMBNPDEqPK+ATDHT8xvJEfbaNtKyxGz4PdIErE
-        tmjm/JXTaID0uuSczX0FzK0Agi3iyaGawjwixtGjZrowAt17HUotA9IR+R/Jk0tsE+0c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jYUa2-001zBu-6i; Tue, 12 May 2020 15:04:18 +0200
-Date:   Tue, 12 May 2020 15:04:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, Marek Vasut <marex@denx.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        mkl@pengutronix.de, kernel@pengutronix.de,
-        David Jander <david@protonic.nl>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christian Herber <christian.herber@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: signal quality and cable diagnostic
-Message-ID: <20200512130418.GF409897@lunn.ch>
-References: <20200511141310.GA2543@pengutronix.de>
- <20200511145926.GC8503@lion.mk-sys.cz>
- <20200512064858.GA16536@pengutronix.de>
+        id S1729700AbgELNVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 09:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729336AbgELNVs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 09:21:48 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D1CC061A0C
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 06:21:48 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id d16so11057092edq.7
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 06:21:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Bls6QyucqKx9N25KNTJnUYOUsXzu0L4ZPVXbHH9hWeg=;
+        b=zraIEWMT+uEhqa+ML+ZV0gGcD0azPgYTymN2WONwa9VZDoETQOgFXnS55itILO/FMn
+         FHt+3WorY8I9GwTk7L7PU1xqH6N7iX9RpOmaxBPSkculxA6c1SEPt80A/RgSeb5WSGmC
+         NjC1M3ZAKNPckPpQp5BZLZ4HCwCPYdY1fGofXMdGArzGXxktOzMo/+l4k/swGFvQlvdF
+         Slwn3ZbUhmZIY/7ycnj2tDPXPsICnGD+iD8ViD8NaDOjEf65SSDt5RWI9PXmPcX9slM2
+         gkRbhCdypyt3df+5IEIMl7M9Iy3CVPiehPJeZdrG+PLyDjbO0Eo0Hcvrk4EtIV2zNr+W
+         RXFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Bls6QyucqKx9N25KNTJnUYOUsXzu0L4ZPVXbHH9hWeg=;
+        b=nXAgObUkJrhYjlsVNsey+XEhsVX1ySEjNSbhbFpNgut9//eBs4CmJhdd9qrT3mboCx
+         xpXEpeJECIxb3bgmJM8W4M1avzghLeUg+zkWZBYZzmzTLGDt8zjPFyNAhW8vkRmfQVnh
+         X0FvhYL9z0reg3KCR3qT8J5fhaHVdXCUvAiRBuaJKVE/vmU9fSpVweeIhA8R4L2Gld8z
+         1ky3DLYxYnFsGfdP4wtHNlFB5vEwRHzdu5zjngW5NqtBNzZwM+haa7CSMiVV2HQc9y7Q
+         cHiIzJ83KeSW1FbpGC+tTgEdNWmtduWDK4IClaHSwkz4f9Y23Z4Nwfbk2aMs3QwlOjmp
+         G48Q==
+X-Gm-Message-State: AGi0PuZF5dg9bJam5neWiXb5wCDAE8CA4QavQTCDZgoJNen+tgDqaHKS
+        2MCU8ldh/Jf5cq8l0ozY7EIHpHj/r0TdQzInePaCqg==
+X-Google-Smtp-Source: APiQypKPwVfHOl0sWCJH2vFW+axQ5kWP1JQjys6dXu3V5vruJilfN1WQa+DLoiV/Mlh8cCpIcpV+tEf2ujfVl19iovw=
+X-Received: by 2002:aa7:c492:: with SMTP id m18mr17643285edq.346.1589289706982;
+ Tue, 12 May 2020 06:21:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200512064858.GA16536@pengutronix.de>
+Received: by 2002:a50:7497:0:0:0:0:0 with HTTP; Tue, 12 May 2020 06:21:46
+ -0700 (PDT)
+X-Originating-IP: [5.35.46.227]
+In-Reply-To: <eb54bbfb-a97d-7cd8-e354-8828b74548fc@suse.com>
+References: <1589192541-11686-1-git-send-email-kda@linux-powerpc.org>
+ <1589192541-11686-2-git-send-email-kda@linux-powerpc.org> <649c940c-200b-f644-8932-7d54ac21a98b@suse.com>
+ <CAOJe8K29vn6TK8t7g7j387F41ig-9yY-jT-k=mVpDQW3xmDPSg@mail.gmail.com>
+ <62f29aba-93d5-9a7d-a4ac-7fae1ac46f22@suse.com> <CAOJe8K3mQuf_wj6rZ-hSHixosBsdvHZkgZRYHRGJjqaXHNoPxw@mail.gmail.com>
+ <eb54bbfb-a97d-7cd8-e354-8828b74548fc@suse.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Tue, 12 May 2020 16:21:46 +0300
+Message-ID: <CAOJe8K3EHevDJ+3P59=F6AU7dVBvubR4-yUbeLGQ1WbFK5icZg@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 1/2] xen networking: add basic XDP support for xen-netfront
+To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Cc:     paul@xen.org, netdev@vger.kernel.org, brouer@redhat.com,
+        wei.liu@kernel.org, ilias.apalodimas@linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > As for getting / setting the threshold, perhaps ETHTOOL_MSG_LINKINFO_GET
-> > and ETHTOOL_MSG_LINKINFO_SET. Unless you expect more configurable
-> > parameters like this in which case we may want to consider adding new
-> > request type (e.g. link params or link management).
-> 
-> Currently in my short term todo are:
-> - SQI
+On 5/12/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+> On 12.05.20 14:27, Denis Kirjanov wrote:
+>> On 5/12/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>> On 11.05.20 19:27, Denis Kirjanov wrote:
+>>>> On 5/11/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>>>> On 11.05.20 12:22, Denis Kirjanov wrote:
+>>>>>> The patch adds a basic XDP processing to xen-netfront driver.
+>>>>>>
+>>>>>> We ran an XDP program for an RX response received from netback
+>>>>>> driver. Also we request xen-netback to adjust data offset for
+>>>>>> bpf_xdp_adjust_head() header space for custom headers.
+>>>>>>
+>>>>>> synchronization between frontend and backend parts is done
+>>>>>> by using xenbus state switching:
+>>>>>> Reconfiguring -> Reconfigured- > Connected
+>>>>>>
+>>>>>> UDP packets drop rate using xdp program is around 310 kpps
+>>>>>> using ./pktgen_sample04_many_flows.sh and 160 kpps without the patch=
+.
+>>>>>
+>>>>> I'm still not seeing proper synchronization between frontend and
+>>>>> backend when an XDP program is activated.
+>>>>>
+>>>>> Consider the following:
+>>>>>
+>>>>> 1. XDP program is not active, so RX responses have no XDP headroom
+>>>>> 2. netback has pushed one (or more) RX responses to the ring page
+>>>>> 3. XDP program is being activated -> Reconfiguring
+>>>>> 4. netback acknowledges, will add XDP headroom for following RX
+>>>>>       responses
+>>>>> 5. netfront reads RX response (2.) without XDP headroom from ring pag=
+e
+>>>>> 6. boom!
+>>>>
+>>>> One thing that could be easily done is to set the offset on
+>>>> xen-netback
+>>>> side
+>>>> in  xenvif_rx_data_slot().  Are you okay with that?
+>>>
+>>> How does this help in above case?
+>>>
+>>> I think you haven't understood the problem I'm seeing.
+>>>
+>>> There can be many RX responses in the ring page which haven't been
+>>> consumed by the frontend yet. You are doing the switch to XDP via a
+>>> different communication channel (Xenstore), so you need some way to
+>>> synchronize both communication channels.
+>>>
+>>> Either you make sure you have read all RX responses before doing the
+>>> switch (this requires stopping netback to push out more RX responses),
+>>> or you need to have a flag in the RX responses indicating whether XDP
+>>> headroom is provided or not (requires an addition to the Xen netif
+>>> protocol).
+>> Hi J=C3=BCrgen,
+>>
+>> I see your point that we can have a shared ring with mixed RX responses
+>> offset.
+>> Since the offset field is set always  to 0 on netback side we can
+>> adjust it and thus mark that a response has the offset adjusted or
+>> it's not (if the offset filed is set to 0).
+>
+> For one I don't see your code in netfront to test this condition.
 
+Right, it's not in the current version.
 
-> - PHY undervoltage
-> - PHY overtemerature
+>
+> And I don't think this is a guaranteed interface. Have you checked all
+> netback versions in older kernels, in qemu, and in BSD?
+>
+> BTW, I'm pretty sure the old xen-linux netback sometimes used an offset
+> not being 0. And yes, those kernels are still active in some cases (e.g.
+> SLES11-SP4 is still supported for customers having a long time service
+> agreement and this version is based on xen-linux).
 
-Do you only have alarms? Or are current values available for voltage
-and temperature?
+I see, good to know.
+I think that I can add a new flag like XEN_NETRXF_xdp_headroom in this case
 
-Both of these would fit hwmon. It even has the option to set the alarm
-thresholds. The advantage of hwmon is that they are then just more
-sensors. You could even include the temperature sensor into a thermal
-zone to influence cooling. There are a couple of PHYs which already do
-hwmon, so there is code you can copy.
-
-> So far, I have no idea for PHY health diagnostic.
-> 
-> If we consider at least the  mandatory properties listed in the opensig, then
-> we would get following list:
-> 
-> - DCQ (dynamic channel group)
->   - SQI (Signal Quality Index)
-> - HDD (Harness defect detection group)
->   - OS (Open/Short detection) ----------------- implemented, cable test
->     request.
-> - LQ (Link Quality)
->   - LTT (Link-training time. The time of the last link training)
->   - LFL (Link Failures and Losses. Number of link losses since the last
->     power cycle)
->   - COM (communication ready) ----------------- implemented?
-> - POL (Polarity detection & correction)
->   - DET (Polarity detect)
-
-Voltage and temperature are about the package. These are about the
-link. So they better fit ETHTOOL_MSG_LINKINFO_SET or similar.
-
-It sounds like LFL are statistic counters? PHYs can have their own
-counters, which ethtool -S will return.
-
-Does POLL somehow map to MDI MDIX? I guess not, since this is a T1.
-
-     Andrew
+>>
+>> In this case we have to run an xdp program on netfront side only for a
+>> response with offset set to xdp headroom.
+>>
+>> I don't see a race in the scenario above.
+>
+> I do.
+>
+>
+> Juergen
+>
+>>
+>> Or I'm completely wrong and this can not happen due to the
+>>> way XDP programs work, but you didn't provide any clear statement this
+>>> being the case.
+>>>
+>>>
+>>> Juergen
+>>>
+>
+>
