@@ -2,128 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 217161CF497
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 14:41:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE0B1CF49F
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 14:44:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729505AbgELMlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 08:41:49 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58928 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726891AbgELMlt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 08:41:49 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 7C330AC51;
-        Tue, 12 May 2020 12:41:49 +0000 (UTC)
-Subject: Re: [PATCH net-next v9 1/2] xen networking: add basic XDP support for
- xen-netfront
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     paul@xen.org, netdev@vger.kernel.org, brouer@redhat.com,
-        wei.liu@kernel.org, ilias.apalodimas@linaro.org
-References: <1589192541-11686-1-git-send-email-kda@linux-powerpc.org>
- <1589192541-11686-2-git-send-email-kda@linux-powerpc.org>
- <649c940c-200b-f644-8932-7d54ac21a98b@suse.com>
- <CAOJe8K29vn6TK8t7g7j387F41ig-9yY-jT-k=mVpDQW3xmDPSg@mail.gmail.com>
- <62f29aba-93d5-9a7d-a4ac-7fae1ac46f22@suse.com>
- <CAOJe8K3mQuf_wj6rZ-hSHixosBsdvHZkgZRYHRGJjqaXHNoPxw@mail.gmail.com>
-From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <eb54bbfb-a97d-7cd8-e354-8828b74548fc@suse.com>
-Date:   Tue, 12 May 2020 14:41:45 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1729378AbgELMoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 08:44:23 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45745 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727783AbgELMoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 08:44:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589287461;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oQE7Luxj46ryOPRlV71322h7pmSI2E1I/c7PU9mBn1o=;
+        b=L+N37f2MwiXuZ98aXFKFGJMGs0aPuZaUtLlPdneKb7qiVgX5MNg4tuzuF/4aiT3bfAV4ad
+        nYW5YvMsFSuD+eOr2gumcSo9kUQBftTYVHTsfF7+d7BjdypdgOpa00NFLnnF0rsmdDyt9I
+        68EC3sBdqd3NlO3Q4p2KABedLA0yefA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-356-8Zl9Q_-QNcWpJxsegJoltw-1; Tue, 12 May 2020 08:44:17 -0400
+X-MC-Unique: 8Zl9Q_-QNcWpJxsegJoltw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6469B107B767;
+        Tue, 12 May 2020 12:44:15 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-115-10.ams2.redhat.com [10.36.115.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 59C5B196AE;
+        Tue, 12 May 2020 12:44:13 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-security-module@vger.kernel.org,
+        Paul Moore <paul@paul-moore.com>, ppandit@redhat.com,
+        Matthew Sheets <matthew.sheets@gd-ms.com>
+Subject: [PATCH net] netlabel: cope with NULL catmap
+Date:   Tue, 12 May 2020 14:43:14 +0200
+Message-Id: <07d99ae197bfdb2964931201db67b6cd0b38db5b.1589276729.git.pabeni@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CAOJe8K3mQuf_wj6rZ-hSHixosBsdvHZkgZRYHRGJjqaXHNoPxw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.05.20 14:27, Denis Kirjanov wrote:
-> On 5/12/20, Jürgen Groß <jgross@suse.com> wrote:
->> On 11.05.20 19:27, Denis Kirjanov wrote:
->>> On 5/11/20, Jürgen Groß <jgross@suse.com> wrote:
->>>> On 11.05.20 12:22, Denis Kirjanov wrote:
->>>>> The patch adds a basic XDP processing to xen-netfront driver.
->>>>>
->>>>> We ran an XDP program for an RX response received from netback
->>>>> driver. Also we request xen-netback to adjust data offset for
->>>>> bpf_xdp_adjust_head() header space for custom headers.
->>>>>
->>>>> synchronization between frontend and backend parts is done
->>>>> by using xenbus state switching:
->>>>> Reconfiguring -> Reconfigured- > Connected
->>>>>
->>>>> UDP packets drop rate using xdp program is around 310 kpps
->>>>> using ./pktgen_sample04_many_flows.sh and 160 kpps without the patch.
->>>>
->>>> I'm still not seeing proper synchronization between frontend and
->>>> backend when an XDP program is activated.
->>>>
->>>> Consider the following:
->>>>
->>>> 1. XDP program is not active, so RX responses have no XDP headroom
->>>> 2. netback has pushed one (or more) RX responses to the ring page
->>>> 3. XDP program is being activated -> Reconfiguring
->>>> 4. netback acknowledges, will add XDP headroom for following RX
->>>>       responses
->>>> 5. netfront reads RX response (2.) without XDP headroom from ring page
->>>> 6. boom!
->>>
->>> One thing that could be easily done is to set the offset on  xen-netback
->>> side
->>> in  xenvif_rx_data_slot().  Are you okay with that?
->>
->> How does this help in above case?
->>
->> I think you haven't understood the problem I'm seeing.
->>
->> There can be many RX responses in the ring page which haven't been
->> consumed by the frontend yet. You are doing the switch to XDP via a
->> different communication channel (Xenstore), so you need some way to
->> synchronize both communication channels.
->>
->> Either you make sure you have read all RX responses before doing the
->> switch (this requires stopping netback to push out more RX responses),
->> or you need to have a flag in the RX responses indicating whether XDP
->> headroom is provided or not (requires an addition to the Xen netif
->> protocol).
-> Hi Jürgen,
-> 
-> I see your point that we can have a shared ring with mixed RX responses offset.
-> Since the offset field is set always  to 0 on netback side we can
-> adjust it and thus mark that a response has the offset adjusted or
-> it's not (if the offset filed is set to 0).
+The cipso and calipso code can set the MLS_CAT attribute on
+successful parsing, even if the corresponding catmap has
+not been allocated, as per current configuration and external
+input.
 
-For one I don't see your code in netfront to test this condition.
+Later, selinux code tries to access the catmap if the MLS_CAT flag
+is present via netlbl_catmap_getlong(). That may cause null ptr
+dereference while processing incoming network traffic.
 
-And I don't think this is a guaranteed interface. Have you checked all
-netback versions in older kernels, in qemu, and in BSD?
+Address the issue setting the MLS_CAT flag only if the catmap is
+really allocated. Additionally let netlbl_catmap_getlong() cope
+with NULL catmap.
 
-BTW, I'm pretty sure the old xen-linux netback sometimes used an offset
-not being 0. And yes, those kernels are still active in some cases (e.g.
-SLES11-SP4 is still supported for customers having a long time service
-agreement and this version is based on xen-linux).
+Reported-by: Matthew Sheets <matthew.sheets@gd-ms.com>
+Fixes: 4b8feff251da ("netlabel: fix the horribly broken catmap functions")
+Fixes: ceba1832b1b2 ("calipso: Set the calipso socket label to match the secattr.")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/ipv4/cipso_ipv4.c        | 6 ++++--
+ net/ipv6/calipso.c           | 3 ++-
+ net/netlabel/netlabel_kapi.c | 6 ++++++
+ 3 files changed, 12 insertions(+), 3 deletions(-)
 
-> 
-> In this case we have to run an xdp program on netfront side only for a
-> response with offset set to xdp headroom.
-> 
-> I don't see a race in the scenario above.
-
-I do.
-
-
-Juergen
-
-> 
-> Or I'm completely wrong and this can not happen due to the
->> way XDP programs work, but you didn't provide any clear statement this
->> being the case.
->>
->>
->> Juergen
->>
+diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+index 0bd10a1f477f..a23094b050f8 100644
+--- a/net/ipv4/cipso_ipv4.c
++++ b/net/ipv4/cipso_ipv4.c
+@@ -1258,7 +1258,8 @@ static int cipso_v4_parsetag_rbm(const struct cipso_v4_doi *doi_def,
+ 			return ret_val;
+ 		}
+ 
+-		secattr->flags |= NETLBL_SECATTR_MLS_CAT;
++		if (secattr->attr.mls.cat)
++			secattr->flags |= NETLBL_SECATTR_MLS_CAT;
+ 	}
+ 
+ 	return 0;
+@@ -1439,7 +1440,8 @@ static int cipso_v4_parsetag_rng(const struct cipso_v4_doi *doi_def,
+ 			return ret_val;
+ 		}
+ 
+-		secattr->flags |= NETLBL_SECATTR_MLS_CAT;
++		if (secattr->attr.mls.cat)
++			secattr->flags |= NETLBL_SECATTR_MLS_CAT;
+ 	}
+ 
+ 	return 0;
+diff --git a/net/ipv6/calipso.c b/net/ipv6/calipso.c
+index 221c81f85cbf..8d3f66c310db 100644
+--- a/net/ipv6/calipso.c
++++ b/net/ipv6/calipso.c
+@@ -1047,7 +1047,8 @@ static int calipso_opt_getattr(const unsigned char *calipso,
+ 			goto getattr_return;
+ 		}
+ 
+-		secattr->flags |= NETLBL_SECATTR_MLS_CAT;
++		if (secattr->attr.mls.cat)
++			secattr->flags |= NETLBL_SECATTR_MLS_CAT;
+ 	}
+ 
+ 	secattr->type = NETLBL_NLTYPE_CALIPSO;
+diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
+index 409a3ae47ce2..5e1239cef000 100644
+--- a/net/netlabel/netlabel_kapi.c
++++ b/net/netlabel/netlabel_kapi.c
+@@ -734,6 +734,12 @@ int netlbl_catmap_getlong(struct netlbl_lsm_catmap *catmap,
+ 	if ((off & (BITS_PER_LONG - 1)) != 0)
+ 		return -EINVAL;
+ 
++	/* a null catmap is equivalent to an empty one */
++	if (!catmap) {
++		*offset = (u32)-1;
++		return 0;
++	}
++
+ 	if (off < catmap->startbit) {
+ 		off = catmap->startbit;
+ 		*offset = off;
+-- 
+2.21.3
 
