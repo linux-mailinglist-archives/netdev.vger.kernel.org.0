@@ -2,114 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 653741CECD2
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 08:05:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C98CE1CECF4
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 08:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgELGEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 02:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726032AbgELGEv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 02:04:51 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1882EC061A0C
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 23:04:51 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id j8so12561806iog.13
-        for <netdev@vger.kernel.org>; Mon, 11 May 2020 23:04:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GmXNnj8j0/DuRakjHfxnYDbYR3/p1C2Z1WRm/EsJUCQ=;
-        b=m7upY6SSbbF74mMD/6Ct02MUFC+lcQkE0M2ZSEfUwz8/zFr2LXYe+zyjsa7QHwNxLU
-         E1xtIq6cls/6Xl5PC2oNnB9MLcngcGNCboLNlcaeqdA/QhxuPYlg6fSrcTJ1yt3PhSm8
-         p4nRLQKIhwwNJhMXFsKo8spE1CkbB7rxxDxOXRA7BfDWjuXaNdcoB7xzLfrvlvITzqGj
-         GRDhl86kJpFQABV/jgrZEMNArbKiAHRlWiOkJuHnOqoDLPX8y/BKcsiIq/fZA9FWsRgS
-         M6x3a8yUDx3NluBpbUUiWoIc4eo6aHzDUy3W/pNCYGkvOGYvjt9nct4K+D71V8iCXDLZ
-         4eXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GmXNnj8j0/DuRakjHfxnYDbYR3/p1C2Z1WRm/EsJUCQ=;
-        b=Y6iwRkr0p+6IuNRG5bZt3X/rL2J/CaHOIl0CNVhQv6DLA2TUFyIHmwgfmDcMmB7Puf
-         umRbivHjQKu1uT8rwrBorvYxF433Q9geCbMriw9Tw/AWZsVGfT4efnuDxBDpMj+gfZ4D
-         9pBbv+KyEW+kbybGN2+PKq/fjc6Ma7Df0eDXStq68yAVCoDHogI5yMQveBN445kxLIkV
-         WFRZ9t4wokMRCNqbZoH61Dyr51Pi34/anoqRvIQOgl1tM6oejL749L9rt9f5+rR8DbYS
-         Z/RE3zo9TT+dbF8b8+IaXgY/be0DvOp61aGt3O+ep0BgBwZZFQPf6XQAvfw+jWQ+JEqB
-         51iA==
-X-Gm-Message-State: AGi0PuYEfGx5PSPs4/D6SOrScT7Hm3Wj0Ik3UEDkbi55bPJ/m5RDEP8O
-        NiqVxWkI2FpOuUvkEuTEZDuj9ZoFzQRkCvsb7OzlDw==
-X-Google-Smtp-Source: APiQypJHsy1ID5UWXbduZedwCawN698UUwnJAsyuBfNBmcx4c7aVWyTBXfSDemrrZVvNV8ztJq5Z7EWAvNiviNgU3nE=
-X-Received: by 2002:a5d:91c6:: with SMTP id k6mr18867980ior.13.1589263490440;
- Mon, 11 May 2020 23:04:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200511150759.18766-1-brgl@bgdev.pl> <20200511150759.18766-6-brgl@bgdev.pl>
- <20200511.134117.1336222619714836904.davem@davemloft.net>
-In-Reply-To: <20200511.134117.1336222619714836904.davem@davemloft.net>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 12 May 2020 08:04:39 +0200
-Message-ID: <CAMRc=MdUCkgCo8UndDbhQRZt_tXJJjtR4uM2g05N5ti7Hw1f2w@mail.gmail.com>
-Subject: Re: [PATCH v2 05/14] net: core: provide priv_to_netdev()
-To:     David Miller <davem@davemloft.net>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        id S1727063AbgELGVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 02:21:48 -0400
+Received: from mail-eopbgr30071.outbound.protection.outlook.com ([40.107.3.71]:17991
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725987AbgELGVs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 02:21:48 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QJZYXqPAuIMOmbn9PJztlBePiuL//AI+v4i7/RpyNWgdUvMWZZMHVksTdJZI23MJQhLek2R7CLBHEjeMM7RPfWwI4nBbYLjrx4T6AbmYOBXx/O3wr/ecfy7/QSHvkHkq0v//o7UfUyk/cB4HbOd+g1vj9dmm8QXeBxaiDw3UGKBEisRzy7zdbfQCXdR1iknO02KNQwQGOffFh7Td31ff52B+GSTy4Ve/Bfaaz3s4d12g96P0P0UX15BX/9K+VbHeG+LSrTfZtWjdcnRAERv/InFrbkdhPXjhaYceHDsjLKrAFZkEQxm+T2sLAuz6q/eu+CaRglENi7Afn2HE79W7eA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sY4CjL0ZoD2QW6Fj7smXlVexnWC/ZdoLnl4Tr04HNRg=;
+ b=lRnGH1ErHmYu1eu2OzAEjCWpE1GzZD87E2lB7lWPsb7/pg13u4Pl1oVemvvIVHaoLFLkeQMjY4KEueTPiZas3sRu/W+xQMDDAfLo0qAcNA2iJfWRr8wGs8tyHcMEVe3G0J+a8JAPG6e8uM17SrU4HuTVPNgKqHbjsZQa5NJ+ujlQzFm0hdVzkDza3Jam7BOGjACnZeauOggHt2W5CNUWDdygUWrJW4tjCpgIgdqINlC+XyryOjQtchJrBfbJCKNDBD6lmOZd152dXFwgIEJO+mUQST4RVaO1esFZALpCHdIbRYlmBgvcav5iM4sSdkUuXH+eijDuB/q2PxCuC47FsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sY4CjL0ZoD2QW6Fj7smXlVexnWC/ZdoLnl4Tr04HNRg=;
+ b=k7fFkikt+jr6CKOAFIFmuWKqt5BfHbax4JcVlyVS6QMZy90iMcbQhFFst/tdOeOt3iH9VpDlvhS0H6fOJFcg/9ivz/dwViDj5m+5L2Y6Ux0hKeGrkbMZcuqFUbvuDC8bsW1Pa5O9uoY9gG50f+3MY7Uj5Uaq2joG9B6bDShApDE=
+Received: from DB8PR04MB5785.eurprd04.prod.outlook.com (2603:10a6:10:b0::22)
+ by DB8PR04MB6748.eurprd04.prod.outlook.com (2603:10a6:10:10e::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27; Tue, 12 May
+ 2020 06:21:43 +0000
+Received: from DB8PR04MB5785.eurprd04.prod.outlook.com
+ ([fe80::c898:9dfc:ce78:a315]) by DB8PR04MB5785.eurprd04.prod.outlook.com
+ ([fe80::c898:9dfc:ce78:a315%7]) with mapi id 15.20.2979.033; Tue, 12 May 2020
+ 06:21:42 +0000
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Po Liu <po.liu@nxp.com>, Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Fabien Parent <fparent@baylibre.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        Stephane Le Provost <stephane.leprovost@mediatek.com>,
-        Pedro Tsai <pedro.tsai@mediatek.com>,
-        Andrew Perepech <andrew.perepech@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        lkml <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        "linux-devel@linux.nxdi.nxp.com" <linux-devel@linux.nxdi.nxp.com>
+Subject: RE: [EXT] Re: [PATCH v1 net-next 1/3] net: dsa: felix: qos classified
+ based on pcp
+Thread-Topic: [EXT] Re: [PATCH v1 net-next 1/3] net: dsa: felix: qos
+ classified based on pcp
+Thread-Index: AQHWJ1fNsDBnHSNejkCTlseQS+vRMaiiixcAgAFn+uA=
+Date:   Tue, 12 May 2020 06:21:42 +0000
+Message-ID: <DB8PR04MB5785440D5F8A8AA3EB941A15F0BE0@DB8PR04MB5785.eurprd04.prod.outlook.com>
+References: <20200511054332.37690-1-xiaoliang.yang_1@nxp.com>
+ <20200511054332.37690-2-xiaoliang.yang_1@nxp.com>
+ <CA+h21hpennftjgTr_CK85drFUErQUqZkcFA+zPe0L25VAbe=FA@mail.gmail.com>
+In-Reply-To: <CA+h21hpennftjgTr_CK85drFUErQUqZkcFA+zPe0L25VAbe=FA@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.73]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f94bc9ff-1aaf-4c43-0da5-08d7f63cbce6
+x-ms-traffictypediagnostic: DB8PR04MB6748:|DB8PR04MB6748:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB8PR04MB67488B7E608CA71E4E644083F0BE0@DB8PR04MB6748.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0401647B7F
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: a7nth+fgQ+BnNs/Uq3/FyQkxpp27HUlg/QPUtL58R6R7hPpWdSlCihEeBn6iiR7KHvBJMPAYL8fidG9a5D4I5i3reuA2TRcXAt+GdmZzdji8A6p8UIBc3dLEBJXsMeDaKePcQ1NJbwSvi+tB1SS5dNi2TnRUu1s7paXV8Oyu4asVVEVm69/oDrrWh/pvQkvKXTvVgTfZ+5ygWHRh6YsYkP2gZjV4ZbgdBuRLa55FFPZfoyv/oLAuDvxfVwV4+V+9SjDDEbTojZuSJ1BzqziVY+Hlq/EVeFb/D8fZKdnW4uGIqpNCstH0s2C3762h3Mx1i6k9tVtbCNfu7CMssm2ghdJ8XsemYUWzYNvAhGfWQvwFKIqFt+UXwZV2u25HmIj2cHwE+qzkPbx3yxV8FENXbsHcRIPuz9kpFj97MXO4rIlnujJV7SmqdlsHScgVxIbHvM29Oxedl0n+d1b0awrQP5mN1lEkNF2gNMijjUm7hVL7D2KUY/VtBvwBQKsGTFGaXQX4M9WEkEPpuVpV3TwH0Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB5785.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(39860400002)(136003)(366004)(346002)(396003)(33430700001)(55016002)(186003)(7416002)(54906003)(2906002)(8936002)(6916009)(9686003)(8676002)(86362001)(71200400001)(316002)(5660300002)(33440700001)(26005)(6506007)(4326008)(478600001)(66446008)(66946007)(52536014)(76116006)(7696005)(33656002)(64756008)(66476007)(66556008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 2H4ZLpKe8ErWBlV+AQQSBaGGXJuJXOLd3ufukRL8cq3PIL4V7PSFONv8hWMW93zBGl03i2zavd8dBIVA6lAWbaupyd7L5wNB5qBFGj3LSVOCQ+hhHbqQgDCY8zr5Xit9bueYdv3buk4JQiJaij6J2tpGKb9hsO/uuTmLs8HrtLF7dvGBeyH1Odj0nHPseQlrLrmixaD1igCMbpFG2Z8gZtuyFB44wvAmFqeeTy5BduAUpUkmcWunVQUeTxWvs2wK+pAkQB6A5ygHChMNj7QCm0O4HIpbfTdNVicSxWxJEZ9tTPLl94nhvj0PDVGq44xZPP80E/uC+0cfpJrqNKMBOo3rOjybnTADipOvAay9XETLhEETpKSt+JLOVaYf+45xvUWGxZiwCs/lE59q5GsKuP00a1sWyeetGuEbM726q9FXzi4qFhmwdBXiicDYbStK3+ybv1y4WZ7KkPStC+ihjSMxqIMNyl5A/OFUudi5ess=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f94bc9ff-1aaf-4c43-0da5-08d7f63cbce6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2020 06:21:42.3298
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mQDGzxJEAoWmGgkMLlDsPLn/Vnh0LxuT7UjAbVUTCWJB5CZaLKCXFkG5jqUsCP4tuNjy4NNjyokmWVoXyj4ApDunGKY14XxVIYA/N4eGr74=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6748
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pon., 11 maj 2020 o 22:41 David Miller <davem@davemloft.net> napisa=C5=82(a=
-):
->
-> From: Bartosz Golaszewski <brgl@bgdev.pl>
-> Date: Mon, 11 May 2020 17:07:50 +0200
->
-> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> >
-> > Appropriate amount of extra memory for private data is allocated at
-> > the end of struct net_device. We have a helper - netdev_priv() - that
-> > returns its address but we don't have the reverse: a function which
-> > given the address of the private data, returns the address of struct
-> > net_device.
-> >
-> > This has caused many drivers to store the pointer to net_device in
-> > the private data structure, which basically means storing the pointer
-> > to a structure in this very structure.
-> >
-> > This patch proposes to add priv_to_netdev() - a helper which converts
-> > the address of the private data to the address of the associated
-> > net_device.
-> >
-> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
->
-> Sorry, please don't do this.  We had this almost two decades ago and
-> explicitly removed it intentionally.
->
-> Store the back pointer in your software state just like everyone else
-> does.
-
-I will if you insist but would you mind sharing some details on why it
-was removed? To me it still makes more sense than storing the pointer
-to a structure in *that* structure.
-
-Bart
+SGkgVmxhZGltaXIsDQoNCk9uIE1vbiwgMTEgTWF5IDIwMjAgYXQgMDg6MTksIFZsYWRpbWlyIE9s
+dGVhbiA8dmxhZGltaXIub2x0ZWFuQG54cC5jb20+IHdyb3RlOg0KPiANCj4gVGhlIG5ldyBza2Jl
+ZGl0IHByaW9yaXR5IG9mZmxvYWQgYWN0aW9uIGxvb2tzIGludGVyZXN0aW5nIHRvIG1lLg0KPiBC
+dXQgaXQgYWxzbyByYWlzZXMgdGhlIHF1ZXN0aW9uIG9mIHdoYXQgdG8gZG8gaW4gdGhlIGRlZmF1
+bHQgY2FzZSB3aGVyZSBzdWNoIHJ1bGVzIGFyZSBub3QgaW5zdGFsbGVkLiBJIHRoaW5rIGl0IGlz
+IG9rIHRvIHN1cHBvcnQgYQ0KPiAxLXRvLTEgVkxBTiBQQ1AgdG8gVEMgbWFwcGluZyBieSBkZWZh
+dWx0PyBUaGlzIHNob3VsZCBhbHNvIGJlIG5lZWRlZCBmb3IgZmVhdHVyZXMgc3VjaCBhcyBQcmlv
+cml0eSBGbG93IENvbnRyb2wuDQoNCnNrYmVkaXQgcHJpb3JpdHkgb2ZmbG9hZCBzZWVtcyBvbmx5
+IHN1cHBvcnQgcG9ydCBiYXNlZCBwcm9yaXR5IHNldCBub3csIEkgaGF2ZW4ndCBmb3VuZCBob3cg
+dG8gc2V0IGEgcHJpb3JpdHkgZm9yIGVhY2ggcG9ydCBhbmQgUW9TLiBTbyBJIHNldCBhIDEtdG8t
+MSBWTEFOIFBDUCB0byBUQyBtYXBwaW5nIGJ5IGRlZmF1bHQuDQoNCj4gWGlhb2xpYW5nLCBqdXN0
+IGEgc21hbGwgY29tbWVudCBpbiBjYXNlIHlvdSBuZWVkIHRvIHJlc2VuZC4NCj4gVGhlIGZlbGl4
+LT5pbmZvIHN0cnVjdHVyZSBpcyBpbnRlbmRlZCB0byBob2xkIFNvQy1zcGVjaWZpYyBkYXRhIHRo
+YXQgDQo+IGlzIGxpa2VseSB0byBkaWZmZXIgYmV0d2VlbiBjaGlwcyAobGlrZSBmb3IgZXhhbXBs
+ZSBpZiB2c2M3NTExIHN1cHBvcnQgDQo+IGV2ZXIgYXBwZWFycyBpbiBmZWxpeCkuIEJ1dCBJIHNl
+ZSBBTkE6UE9SVDpRT1NfQ0ZHIGFuZCANCj4gQU5BOlBPUlQ6UU9TX1BDUF9ERUlfTUFQX0NGRyBh
+cmUgY29tbW9uIHJlZ2lzdGVycywgc28gYXJlIHRoZXJlIGFueSANCj4gc3BlY2lmaWMgcmVhc29u
+cyB3aHkgeW91IHB1dCB0aGlzIGluIGZlbGl4X3ZzYzk5NTkgYW5kIG5vdCBpbiB0aGUgDQo+IGNv
+bW1vbiBvY2Vsb3QgY29kZT8NCg0KQWxsIHJpZ2h0LCBJIGhhdmUgY2hlY2tlZCB0aGV5IGFyZSBj
+b21tb24gcmVnaXN0ZXJzLCBJIHdpbGwgbW92ZSBwb3J0X3Fvc19tYXBfaW5pdCgpIGZ1bmN0aW9u
+IHRvIGZlbGl4LmMuDQoNCj4gPiArICAgICAgIGZvciAoaSA9IDA7IGkgPCBGRUxJWF9OVU1fVEMg
+KiAyOyBpKyspIHsNCj4gPiArICAgICAgICAgICAgICAgb2NlbG90X3Jtd19peChvY2Vsb3QsDQo+
+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKEFOQV9QT1JUX1BDUF9ERUlfTUFQX0RQ
+X1BDUF9ERUlfVkFMICYgDQo+ID4gKyBpKSB8DQo+ID4gKwkJCQkJCQkJIEFOQV9QT1JUX1BDUF9E
+RUlfTUFQX1FPU19QQ1BfREVJX1ZBTChpKSwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBBTkFfUE9SVF9QQ1BfREVJX01BUF9EUF9QQ1BfREVJX1ZBTCB8DQo+ID4gKyAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgQU5BX1BPUlRfUENQX0RFSV9NQVBfUU9TX1BDUF9ERUlfVkFM
+X00sDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQU5BX1BPUlRfUENQX0RFSV9N
+QVAsDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcG9ydCwgaSk7DQo+IA0KPiBB
+TkFfUE9SVF9QQ1BfREVJX01BUF9EUF9QQ1BfREVJX1ZBTCBpcyAxIGJpdC4gQXJlIHlvdSBzdXJl
+IHRoaXMgc2hvdWxkIGJlICUgaSBhbmQgbm90ICUgMj8NCg0KQmVjYXVzZSBpbiBRT1NfUENQX0RF
+SV9NQVBfQ0ZHIHJlZ2lzdGVyLCBCSVQoMykgaXMgRFAgdmFsdWUsIEJJVCgyLCAwKSBpcyBRT1Mg
+dmFsdWUuIFFvUyBjbGFzcz1RT1NfUENQX0RFSV9NQVBfQ0ZHW2ldLlFPU19QQw0KUF9ERUlfVkFM
+LCBpPTgqREVJICsgUENQLCBzbyBEUCB2YWx1ZSBuZWVkIHRvIGJlIHNldCBCSVQoMykmaS4NCg0K
+UmVnYXJkcywNClhpYW9saWFuZyBZYW5nDQo=
