@@ -2,305 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C2D11CEB91
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:38:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 375AA1CEB94
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 05:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728670AbgELDid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 May 2020 23:38:33 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:31310 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727942AbgELDic (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:38:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589254709;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oKS4e0/UKgEpHwR5acgwYwec2t7Gt0Vv2ONPBDgIGyc=;
-        b=Y8k45uPI3a1ENbjFELHoCLY4iHsPvv0tzHmo2fInArzqp4kvPGwJAC/yQvES4xDxrnx84J
-        Npwtz9UMmIZca4Qk65yG1b6zojqxi30SUY482gwqYeerM1enwPLM9jVMdmu5cYdBFr8Xo2
-        EafVy2VywDndZZ9tWfFGHG1ADQ4yT34=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-147-8a7m90-wNsiscvQm9G2v1A-1; Mon, 11 May 2020 23:38:28 -0400
-X-MC-Unique: 8a7m90-wNsiscvQm9G2v1A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C42EA107ACCD;
-        Tue, 12 May 2020 03:38:26 +0000 (UTC)
-Received: from [10.72.13.96] (ovpn-13-96.pek2.redhat.com [10.72.13.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BD0E35C1B5;
-        Tue, 12 May 2020 03:38:20 +0000 (UTC)
-Subject: Re: [PATCH] ifcvf: move IRQ request/free to status change handlers
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>, mst@redhat.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com
-References: <1589181563-38400-1-git-send-email-lingshan.zhu@intel.com>
- <22d9dcdb-e790-0a68-ba41-b9530b2bf9fd@redhat.com>
- <0f822630-14ad-e0cd-4171-6213c30f0799@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <24d5875e-6f44-ce43-74f0-e641e02f8f42@redhat.com>
-Date:   Tue, 12 May 2020 11:38:18 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728801AbgELDif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 May 2020 23:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727942AbgELDie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 May 2020 23:38:34 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74964C061A0C;
+        Mon, 11 May 2020 20:38:32 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id n5so6732159wmd.0;
+        Mon, 11 May 2020 20:38:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=65+ryeo+9kxscp6Vc376GV6Ht9lQEi5vtaHCqJ43I64=;
+        b=UdIdF/emqInJZJols9u43eppsebzW8O0XoB33BxkIrVUEXxQG9h3cQrwfbp5WNwuuk
+         YCdEGwPkY3ramB9LOa5QjMRrjePNukgPlyjRRfqg1iBWuUWWssjl5krb7ppoV3qcZJn+
+         /a1MXq6LxgdAnrHJ/WSRldnZrJpJR0MNZW+YOwH62yEZCE+OnapcSb2yfO0K9CQ94Aa0
+         6FOWK/iklHXqECQ8Vj8miGaHORuOMS51SvodqPe4+LTWQvrg54QuUCYyS2+E7nOZslA5
+         oCKMvba5uFO8WP88ImZDnHBvr6Yp0/LQrZNSX3/Ogdb7VJi2JNJdp6hSJYmIe7nWY6ra
+         hmfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=65+ryeo+9kxscp6Vc376GV6Ht9lQEi5vtaHCqJ43I64=;
+        b=mSQ9F+2yP021EBe71A7b03g3r9dqmPw5AU3nMfZRafeG1/7QXWGfQS8gj+Qx2F6e3H
+         G5XPAwebWI7UvaL4gAFuIMqNocpNnJ7WOGJHDx2YRF9CjqgAqTNsyu0bfMeOjKsNgLDp
+         Rdf/zctz1hvGm8hnP7972VleyDI/BIH0QS5exZ0eJOOpJqvA/o2aZv/c+dR28x2v9w4m
+         UUW+BSJPO0aDl2TxKSmrWOrHMTYnQr1wLdb/8fCZeGYHJ4q2GgsAUaq2QeeQGsHmbQHu
+         0w3utYji8JqOY8odCCjxWk/HHQj0favLvZitxphvnWjWAFUNMdjLziT4mg3uQa0VY5P0
+         3Lxg==
+X-Gm-Message-State: AGi0PuaZaV2SzmE72FDgMYF9FR6FUdtvtlkObjOof4S4pwXjYvc/aYq/
+        86y6vCUAYLAiZtA1DAXlm5dr/e1q
+X-Google-Smtp-Source: APiQypLr9HjG6PutaE6ZxmFxCaFDwXPI9XFRV45rqsYqryELvUnBcl7boOcDIg94kGVsZduWzhEW3A==
+X-Received: by 2002:a1c:9e52:: with SMTP id h79mr34668243wme.84.1589254710859;
+        Mon, 11 May 2020 20:38:30 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 94sm5981482wrf.74.2020.05.11.20.38.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 May 2020 20:38:30 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 12/15] net: dsa: sja1105: add packing ops for
+ the Retagging Table
+To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        idosch@idosch.org, rmk+kernel@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200511135338.20263-1-olteanv@gmail.com>
+ <20200511135338.20263-13-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <433d1c22-80bc-7b1f-09e0-b4e2faa78dc1@gmail.com>
+Date:   Mon, 11 May 2020 20:38:27 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <0f822630-14ad-e0cd-4171-6213c30f0799@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200511135338.20263-13-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/5/11 下午6:11, Zhu, Lingshan wrote:
->
->
-> On 5/11/2020 5:26 PM, Jason Wang wrote:
->>
->> On 2020/5/11 下午3:19, Zhu Lingshan wrote:
->>> This commit move IRQ request and free operations from probe()
->>> to VIRTIO status change handler to comply with VIRTIO spec.
->>>
->>> VIRTIO spec 1.1, section 2.1.2 Device Requirements: Device Status Field
->>> The device MUST NOT consume buffers or send any used buffer
->>> notifications to the driver before DRIVER_OK.
->>
->>
->> My previous explanation might be wrong here. It depends on how you 
->> implement your hardware, if you hardware guarantee that no interrupt 
->> will be triggered before DRIVER_OK, then it's fine.
->>
->> And the main goal for this patch is to allocate the interrupt on demand.
-> Hi Jason,
->
-> So these code can a double assurance.
->>
->>
->>>
->>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>> ---
->>>   drivers/vdpa/ifcvf/ifcvf_main.c | 119 
->>> ++++++++++++++++++++++++----------------
->>>   1 file changed, 73 insertions(+), 46 deletions(-)
->>>
->>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
->>> b/drivers/vdpa/ifcvf/ifcvf_main.c
->>> index abf6a061..4d58bf2 100644
->>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
->>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->>> @@ -28,6 +28,60 @@ static irqreturn_t ifcvf_intr_handler(int irq, 
->>> void *arg)
->>>       return IRQ_HANDLED;
->>>   }
->>>   +static void ifcvf_free_irq_vectors(void *data)
->>> +{
->>> +    pci_free_irq_vectors(data);
->>> +}
->>> +
->>> +static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
->>> +{
->>> +    struct pci_dev *pdev = adapter->pdev;
->>> +    struct ifcvf_hw *vf = &adapter->vf;
->>> +    int i;
->>> +
->>> +
->>> +    for (i = 0; i < queues; i++)
->>> +        devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
->>> +
->>> +    ifcvf_free_irq_vectors(pdev);
->>> +}
->>> +
->>> +static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
->>> +{
->>> +    struct pci_dev *pdev = adapter->pdev;
->>> +    struct ifcvf_hw *vf = &adapter->vf;
->>> +    int vector, i, ret, irq;
->>> +
->>> +    ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
->>> +                    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
->>> +    if (ret < 0) {
->>> +        IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
->>> +        return ret;
->>> +    }
->>> +
->>> +    for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
->>> +        snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
->>> +             pci_name(pdev), i);
->>> +        vector = i + IFCVF_MSI_QUEUE_OFF;
->>> +        irq = pci_irq_vector(pdev, vector);
->>> +        ret = devm_request_irq(&pdev->dev, irq,
->>> +                       ifcvf_intr_handler, 0,
->>> +                       vf->vring[i].msix_name,
->>> +                       &vf->vring[i]);
->>> +        if (ret) {
->>> +            IFCVF_ERR(pdev,
->>> +                  "Failed to request irq for vq %d\n", i);
->>> +            ifcvf_free_irq(adapter, i);
->>
->>
->> I'm not sure this unwind is correct. It looks like we should loop and 
->> call devm_free_irq() for virtqueue [0, i);
-> we have the loop in ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues),
-> it takes a parameter queues, and a loop
->
-> +    for (i = 0; i < queues; i++)+        devm_free_irq(&pdev->dev, 
-> vf->vring[i].irq, &vf->vring[i]); will free irq for vq[0,queues)
 
+On 5/11/2020 6:53 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> The Retagging Table is an optional feature that allows the switch to
+> match frames against a {ingress port, egress port, vid} rule and change
+> their VLAN ID. The retagged frames are by default clones of the original
+> ones (since the hardware-foreseen use case was to mirror traffic for
+> debugging purposes and to tag it with a special VLAN for this purpose),
+> but we can force the original frames to be dropped by removing the
+> pre-retagging VLAN from the port membership list of the egress port.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Aha, I get this.
-
-
->>
->>
->>
->>> +
->>> +            return ret;
->>> +        }
->>> +
->>> +        vf->vring[i].irq = irq;
->>> +    }
->>> +
->>> +    return 0;
->>> +}
->>> +
->>>   static int ifcvf_start_datapath(void *private)
->>>   {
->>>       struct ifcvf_hw *vf = ifcvf_private_to_vf(private);
->>> @@ -118,9 +172,12 @@ static void ifcvf_vdpa_set_status(struct 
->>> vdpa_device *vdpa_dev, u8 status)
->>>   {
->>>       struct ifcvf_adapter *adapter;
->>>       struct ifcvf_hw *vf;
->>> +    u8 status_old;
->>> +    int ret;
->>>         vf  = vdpa_to_vf(vdpa_dev);
->>>       adapter = dev_get_drvdata(vdpa_dev->dev.parent);
->>> +    status_old = ifcvf_get_status(vf);
->>>         if (status == 0) {
->>>           ifcvf_stop_datapath(adapter);
->>> @@ -128,7 +185,22 @@ static void ifcvf_vdpa_set_status(struct 
->>> vdpa_device *vdpa_dev, u8 status)
->>>           return;
->>>       }
->>>   -    if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
->>> +    if ((status_old & VIRTIO_CONFIG_S_DRIVER_OK) &&
->>> +        !(status & VIRTIO_CONFIG_S_DRIVER_OK)) {
->>> +        ifcvf_stop_datapath(adapter);
->>> +        ifcvf_free_irq(adapter, IFCVF_MAX_QUEUE_PAIRS * 2);
->>> +    }
->>> +
->>> +    if ((status & VIRTIO_CONFIG_S_DRIVER_OK) &&
->>> +        !(status_old & VIRTIO_CONFIG_S_DRIVER_OK)) {
->>> +        ret = ifcvf_request_irq(adapter);
->>> +        if (ret) {
->>> +            status = ifcvf_get_status(vf);
->>> +            status |= VIRTIO_CONFIG_S_FAILED;
->>> +            ifcvf_set_status(vf, status);
->>> +            return;
->>> +        }
->>> +
->>
->>
->> Have a hard though on the logic here.
->>
->> This depends on the status setting from guest or userspace. Which 
->> means it can not deal with e.g when qemu or userspace is crashed? Do 
->> we need to care this or it's a over engineering?
->>
->> Thanks
-> If qemu crash, I guess users may re-run qmeu / re-initialize the device, according to the spec, there should be a reset routine.
-> This code piece handles status change on DRIVER_OK flipping. I am not sure I get your point, mind to give more hints?
-
-
-The problem is if we don't launch new qemu instance, the interrupt will 
-be still there?
-
-Thanks
-
-
->
-> Thanks,
-> BR
-> Zhu Lingshan
->   
->>
->>
->>>           if (ifcvf_start_datapath(adapter) < 0)
->>>               IFCVF_ERR(adapter->pdev,
->>>                     "Failed to set ifcvf vdpa  status %u\n",
->>> @@ -284,38 +356,6 @@ static void ifcvf_vdpa_set_config_cb(struct 
->>> vdpa_device *vdpa_dev,
->>>       .set_config_cb  = ifcvf_vdpa_set_config_cb,
->>>   };
->>>   -static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
->>> -{
->>> -    struct pci_dev *pdev = adapter->pdev;
->>> -    struct ifcvf_hw *vf = &adapter->vf;
->>> -    int vector, i, ret, irq;
->>> -
->>> -
->>> -    for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
->>> -        snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
->>> -             pci_name(pdev), i);
->>> -        vector = i + IFCVF_MSI_QUEUE_OFF;
->>> -        irq = pci_irq_vector(pdev, vector);
->>> -        ret = devm_request_irq(&pdev->dev, irq,
->>> -                       ifcvf_intr_handler, 0,
->>> -                       vf->vring[i].msix_name,
->>> -                       &vf->vring[i]);
->>> -        if (ret) {
->>> -            IFCVF_ERR(pdev,
->>> -                  "Failed to request irq for vq %d\n", i);
->>> -            return ret;
->>> -        }
->>> -        vf->vring[i].irq = irq;
->>> -    }
->>> -
->>> -    return 0;
->>> -}
->>> -
->>> -static void ifcvf_free_irq_vectors(void *data)
->>> -{
->>> -    pci_free_irq_vectors(data);
->>> -}
->>> -
->>>   static int ifcvf_probe(struct pci_dev *pdev, const struct 
->>> pci_device_id *id)
->>>   {
->>>       struct device *dev = &pdev->dev;
->>> @@ -349,13 +389,6 @@ static int ifcvf_probe(struct pci_dev *pdev, 
->>> const struct pci_device_id *id)
->>>           return ret;
->>>       }
->>>   -    ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
->>> -                    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
->>> -    if (ret < 0) {
->>> -        IFCVF_ERR(pdev, "Failed to alloc irq vectors\n");
->>> -        return ret;
->>> -    }
->>> -
->>>       ret = devm_add_action_or_reset(dev, ifcvf_free_irq_vectors, 
->>> pdev);
->>>       if (ret) {
->>>           IFCVF_ERR(pdev,
->>> @@ -379,12 +412,6 @@ static int ifcvf_probe(struct pci_dev *pdev, 
->>> const struct pci_device_id *id)
->>>       adapter->pdev = pdev;
->>>       adapter->vdpa.dma_dev = &pdev->dev;
->>>   -    ret = ifcvf_request_irq(adapter);
->>> -    if (ret) {
->>> -        IFCVF_ERR(pdev, "Failed to request MSI-X irq\n");
->>> -        goto err;
->>> -    }
->>> -
->>>       ret = ifcvf_init_hw(vf, pdev);
->>>       if (ret) {
->>>           IFCVF_ERR(pdev, "Failed to init IFCVF hw\n");
->>
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
