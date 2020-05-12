@@ -2,73 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C6B51CF4D6
-	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 14:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A80091CF52A
+	for <lists+netdev@lfdr.de>; Tue, 12 May 2020 15:01:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729786AbgELMvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 08:51:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59674 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727859AbgELMvP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 08:51:15 -0400
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1729871AbgELNBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 09:01:46 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:49972 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727859AbgELNBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 09:01:45 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9DED920075;
+        Tue, 12 May 2020 13:01:44 +0000 (UTC)
+Received: from us4-mdac16-2.at1.mdlocal (unknown [10.110.49.148])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9B7348009B;
+        Tue, 12 May 2020 13:01:44 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.9])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3FC084008A;
+        Tue, 12 May 2020 13:01:43 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 48D9920753;
-        Tue, 12 May 2020 12:51:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589287875;
-        bh=HXOMNAAV5i7uryc5jqMFnXGloB/kWRu8vcUFOMkisMU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MyTktIuf9gYyDHEdCKCEbjxi//J1qwvBN2D/FfKuWua0SBNVrk+U3zI4FyJU+tRSn
-         uf0DlYCvy8pOITWv3pNJO4unGPVWJYaQXdnz4C5Jpuuv2tI4J3YHN06au52gTHBgVA
-         OdRhiIBh25xilLIVcs5/OZnQeGS5/jiej1TnP61Q=
-Received: by mail-oi1-f177.google.com with SMTP id v128so1255645oia.7;
-        Tue, 12 May 2020 05:51:15 -0700 (PDT)
-X-Gm-Message-State: AGi0PubSqUqyxcT5lKo1OyoiF1yXanLTMcCp0Mu8U7MCxtgf57JkPeNE
-        kQqP0LXUEZnAKMMEh5KD9AcW+28wwzmcdKgHag==
-X-Google-Smtp-Source: APiQypIYDL2e2mHa7jZluV0BjNao3zn0dcuxxGE3/39KlraczebWuS2rF27T0TgdeZFNrIkXqJJqsGvz5JnqcKMT69M=
-X-Received: by 2002:aca:51c3:: with SMTP id f186mr10992380oib.147.1589287874633;
- Tue, 12 May 2020 05:51:14 -0700 (PDT)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CF66C580094;
+        Tue, 12 May 2020 13:01:42 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 12 May
+ 2020 14:01:27 +0100
+Subject: Re: [PATCH net-next 2/8] sfc: make capability checking a nic_type
+ function
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <8154dba6-b312-7dcf-7d49-cd6c6801ffc2@solarflare.com>
+ <ad6213aa-b163-8708-47a4-553cb5aa0a8f@solarflare.com>
+ <20200511153636.0f9cd385@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <05438101-2706-e791-abd3-e52694fdfe9c@solarflare.com>
+Date:   Tue, 12 May 2020 14:01:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <1589268410-17066-1-git-send-email-hayashi.kunihiko@socionext.com>
-In-Reply-To: <1589268410-17066-1-git-send-email-hayashi.kunihiko@socionext.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 12 May 2020 07:51:02 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJ_XKH0etPaX-qZq1t+2Z+2dhXeerCQhU5U5ypZXjr=7A@mail.gmail.com>
-Message-ID: <CAL_JsqJ_XKH0etPaX-qZq1t+2Z+2dhXeerCQhU5U5ypZXjr=7A@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] dt-bindings: net: Convert UniPhier AVE4
- controller to json-schema
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200511153636.0f9cd385@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25414.003
+X-TM-AS-Result: No-4.315900-8.000000-10
+X-TMASE-MatchedRID: QfHZjzml1E/mLzc6AOD8DfHkpkyUphL9TJDl9FKHbrljLp8Cm8vwFwoe
+        RRhCZWIB3MJzkJ3+U/XsW5cPdFl0/pE4FU2ZdQO4GjzBgnFZvQ42peumOpNjtBAdD7sCRtOxuYT
+        mfPxyM3h7RiXLCorjz8LudCkv+zQyeIh1rW8bWHm84C/3iwAgxKbwyy5bAB/921KK0dlzZ7r+ez
+        fog1uF08cf83XSWDzmK8CAdxh72JKDdmeMibEYB6JVTu7sjgg1SuH+GfgmQGe9V4YavKxf483+w
+        mITvMn4585VzGMOFzAQVjqAOZ5cjQtuKBGekqUpm+MB6kaZ2g4eMNFq12xjtyydBWABzJXYjctz
+        99r8+0Hu0Gop94Mor46iUi3d0e1p9cf9j6Mwhr7G1pj5SA3d/3ISmDYA39NZpEePV+HP7SWHzGT
+        HoCwyHhlNKSp2rPkW5wiX7RWZGYs2CWDRVNNHuzflzkGcoK72
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.315900-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25414.003
+X-MDID: 1589288503-5VeFGF_yKU6k
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 12, 2020 at 2:27 AM Kunihiko Hayashi
-<hayashi.kunihiko@socionext.com> wrote:
+On 11/05/2020 23:36, Jakub Kicinski wrote:
+> Also with W=1:
 >
-> Convert the UniPhier AVE4 controller binding to DT schema format.
->
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> ---
->
-> Changes since v1:
-> - Set true to phy-mode and phy-handle instead of $ref
-> - Add mac-address and local-mac-address for existing dts warning
->
->  .../bindings/net/socionext,uniphier-ave4.txt       |  64 ------------
->  .../bindings/net/socionext,uniphier-ave4.yaml      | 111 +++++++++++++++++++++
->  MAINTAINERS                                        |   2 +-
->  3 files changed, 112 insertions(+), 65 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/socionext,uniphier-ave4.txt
->  create mode 100644 Documentation/devicetree/bindings/net/socionext,uniphier-ave4.yaml
+>  ../drivers/net/ethernet/sfc/siena.c:951:14: warning: symbol 'siena_check_caps' was not declared. Should it be static?
+> 1a3,5
+>  ../drivers/net/ethernet/sfc/siena.c:951:14: warning: no previous prototype for â€˜siena_check_capsâ€™ [-Wmissing-prototypes]
+>    951 | unsigned int siena_check_caps(const struct efx_nic *efx,
+>        |              ^~~~~~~~~~~~~~~~
+Yup, it turns out not only is this missing 'static' but it's also not
+ used — the assignment into siena_a0_nic_typeis missing, I must have
+ screwed up a rebase at some point.  I'll send a follow-up, since Dave
+ has already applied it.  Thanks for the review.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+(And I'll try to get in the habit of checking the SOBs better; sorry
+ about that.  I'm still used to the old "first sign-off is the point
+ of exit from the company" flow; plus I messed up my checkpatch
+ invocation in a way that prevented it catching this.)
+
+-ed
