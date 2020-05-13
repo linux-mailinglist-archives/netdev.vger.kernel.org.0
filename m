@@ -2,171 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D4B91D1C42
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:28:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A39C1D1C66
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389831AbgEMR2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 13:28:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55210 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732731AbgEMR2c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 13:28:32 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D20A42053B;
-        Wed, 13 May 2020 17:28:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589390912;
-        bh=Oz5kH5PwdQUs/HV7bh4P+ytMhZEztLZiHJFxnsBFy6A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=acj5UEOEH81+CJ3YehxNHUfFw3s9MJnE4RNiwWwiwvXn/HmERvvGqI2WMrBJtByG7
-         E3uXQhpz/VL3d8gvXNXJubXyKVEcyNGbz3PDsi45IHvcwrQb30TfXhBRAxLKrDDyEd
-         Qv+87gWShJ+uTjn1DOsBFXB5b2kDX9BteysAC72U=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     jiri@resnulli.us, jacob.e.keller@intel.com, netdev@vger.kernel.org,
-        kernel-team@fb.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] devlink: refactor end checks in devlink_nl_cmd_region_read_dumpit
-Date:   Wed, 13 May 2020 10:28:22 -0700
-Message-Id: <20200513172822.2663102-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.25.4
+        id S2389811AbgEMRjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 13:39:07 -0400
+Received: from smtprelay0150.hostedemail.com ([216.40.44.150]:54324 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732694AbgEMRjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:39:06 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 213E41802912F;
+        Wed, 13 May 2020 17:39:05 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:968:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1801:2194:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3872:3874:4030:4321:4605:5007:6742:6743:7875:8603:8660:10004:10400:10848:11026:11232:11658:11914:12043:12296:12297:12679:12740:12760:12895:13019:13069:13146:13148:13156:13228:13230:13311:13357:13439:14040:14659:14721:21080:21627:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: watch82_4eccc56996d20
+X-Filterd-Recvd-Size: 2964
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf13.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 13 May 2020 17:39:01 +0000 (UTC)
+Message-ID: <ecc165c33962d964d518c80de605af632eee0474.camel@perches.com>
+Subject: Re: remove kernel_setsockopt and kernel_getsockopt
+From:   Joe Perches <joe@perches.com>
+To:     Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-nvme@lists.infradead.org,
+        target-devel@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-cifs@vger.kernel.org, cluster-devel@redhat.com,
+        ocfs2-devel@oss.oracle.com, netdev@vger.kernel.org,
+        linux-sctp@vger.kernel.org, ceph-devel@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-nfs@vger.kernel.org
+Date:   Wed, 13 May 2020 10:38:59 -0700
+In-Reply-To: <20200513062649.2100053-1-hch@lst.de>
+References: <20200513062649.2100053-1-hch@lst.de>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.1-2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clean up after recent fixes, move address calculations
-around and change the variable init, so that we can have
-just one start_offset == end_offset check.
+On Wed, 2020-05-13 at 08:26 +0200, Christoph Hellwig wrote:
+> this series removes the kernel_setsockopt and kernel_getsockopt
+> functions, and instead switches their users to small functions that
+> implement setting (or in one case getting) a sockopt directly using
+> a normal kernel function call with type safety and all the other
+> benefits of not having a function call.
+> 
+> In some cases these functions seem pretty heavy handed as they do
+> a lock_sock even for just setting a single variable, but this mirrors
+> the real setsockopt implementation - counter to that a few kernel
+> drivers just set the fields directly already.
+> 
+> Nevertheless the diffstat looks quite promising:
+> 
+>  42 files changed, 721 insertions(+), 799 deletions(-)
 
-Make the check a little stricter to preserve the -EINVAL
-error if requested start offset is larger than the region
-itself.
+trivia:
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/core/devlink.c                            | 41 ++++++++-----------
- .../drivers/net/netdevsim/devlink.sh          | 15 +++++++
- 2 files changed, 31 insertions(+), 25 deletions(-)
+It might be useful to show overall object size change.
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 20f935fa29f5..7b76e5fffc10 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -4215,7 +4215,6 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
- 						struct nlattr **attrs,
- 						u64 start_offset,
- 						u64 end_offset,
--						bool dump,
- 						u64 *new_offset)
- {
- 	struct devlink_snapshot *snapshot;
-@@ -4230,9 +4229,6 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
- 	if (!snapshot)
- 		return -EINVAL;
- 
--	if (end_offset > region->size || dump)
--		end_offset = region->size;
--
- 	while (curr_offset < end_offset) {
- 		u32 data_size;
- 		u8 *data;
-@@ -4260,13 +4256,12 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 					     struct netlink_callback *cb)
- {
- 	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
--	u64 ret_offset, start_offset, end_offset = 0;
-+	u64 ret_offset, start_offset, end_offset = U64_MAX;
- 	struct nlattr **attrs = info->attrs;
- 	struct devlink_region *region;
- 	struct nlattr *chunks_attr;
- 	const char *region_name;
- 	struct devlink *devlink;
--	bool dump = true;
- 	void *hdr;
- 	int err;
- 
-@@ -4294,8 +4289,21 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 		goto out_unlock;
- 	}
- 
-+	if (attrs[DEVLINK_ATTR_REGION_CHUNK_ADDR] &&
-+	    attrs[DEVLINK_ATTR_REGION_CHUNK_LEN]) {
-+		if (!start_offset)
-+			start_offset =
-+				nla_get_u64(attrs[DEVLINK_ATTR_REGION_CHUNK_ADDR]);
-+
-+		end_offset = nla_get_u64(attrs[DEVLINK_ATTR_REGION_CHUNK_ADDR]);
-+		end_offset += nla_get_u64(attrs[DEVLINK_ATTR_REGION_CHUNK_LEN]);
-+	}
-+
-+	if (end_offset > region->size)
-+		end_offset = region->size;
-+
- 	/* return 0 if there is no further data to read */
--	if (start_offset >= region->size) {
-+	if (start_offset == end_offset) {
- 		err = 0;
- 		goto out_unlock;
- 	}
-@@ -4322,27 +4330,10 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
- 		goto nla_put_failure;
- 	}
- 
--	if (attrs[DEVLINK_ATTR_REGION_CHUNK_ADDR] &&
--	    attrs[DEVLINK_ATTR_REGION_CHUNK_LEN]) {
--		if (!start_offset)
--			start_offset =
--				nla_get_u64(attrs[DEVLINK_ATTR_REGION_CHUNK_ADDR]);
--
--		end_offset = nla_get_u64(attrs[DEVLINK_ATTR_REGION_CHUNK_ADDR]);
--		end_offset += nla_get_u64(attrs[DEVLINK_ATTR_REGION_CHUNK_LEN]);
--		dump = false;
--
--		if (start_offset == end_offset) {
--			err = 0;
--			goto nla_put_failure;
--		}
--	}
--
- 	err = devlink_nl_region_read_snapshot_fill(skb, devlink,
- 						   region, attrs,
- 						   start_offset,
--						   end_offset, dump,
--						   &ret_offset);
-+						   end_offset, &ret_offset);
- 
- 	if (err && err != -EMSGSIZE)
- 		goto nla_put_failure;
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index ad539eccddcb..de4b32fc4223 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -146,6 +146,21 @@ regions_test()
- 
- 	check_region_snapshot_count dummy post-first-request 3
- 
-+	devlink region dump $DL_HANDLE/dummy snapshot 25 >> /dev/null
-+	check_err $? "Failed to dump snapshot with id 25"
-+
-+	devlink region read $DL_HANDLE/dummy snapshot 25 addr 0 len 1 >> /dev/null
-+	check_err $? "Failed to read snapshot with id 25 (1 byte)"
-+
-+	devlink region read $DL_HANDLE/dummy snapshot 25 addr 128 len 128 >> /dev/null
-+	check_err $? "Failed to read snapshot with id 25 (128 bytes)"
-+
-+	devlink region read $DL_HANDLE/dummy snapshot 25 addr 128 len $((1<<32)) >> /dev/null
-+	check_err $? "Failed to read snapshot with id 25 (oversized)"
-+
-+	devlink region read $DL_HANDLE/dummy snapshot 25 addr $((1<<32)) len 128 >> /dev/null 2>&1
-+	check_fail $? "Bad read of snapshot with id 25 did not fail"
-+
- 	devlink region del $DL_HANDLE/dummy snapshot 25
- 	check_err $? "Failed to delete snapshot with id 25"
- 
--- 
-2.25.4
+More EXPORT_SYMBOL uses increase object size a little.
+
+And not sure it matters much except it reduces overall object
+size, but these patches remove (unnecessary) logging on error
+and that could be mentioned in the cover letter too.
+
+e.g.:
+
+-       ret = kernel_setsockopt(queue->sock, SOL_SOCKET, SO_LINGER,
+-                       (char *)&sol, sizeof(sol));
+-       if (ret) {
+-               dev_err(nctrl->device,
+-                       "failed to set SO_LINGER sock opt %d\n", ret);
+-               goto err_sock;
+-       }
++       sock_set_linger(queue->sock->sk, true, 0);
+
+
 
