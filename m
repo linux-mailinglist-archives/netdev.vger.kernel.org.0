@@ -2,138 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 120D21D0FFD
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 12:39:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B0451D1011
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 12:42:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731117AbgEMKjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 06:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
+        id S1731168AbgEMKmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 06:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727812AbgEMKjE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 06:39:04 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B88C061A0C
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:39:04 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id f15so6659744plr.3
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:39:04 -0700 (PDT)
+        with ESMTP id S1728606AbgEMKme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 06:42:34 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707F1C061A0E
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:42:34 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id l11so14354182wru.0
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:42:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=LGYocYMvN/W/ocWLzH0hyLhcvNcumkqHUr8jtqkIExM=;
-        b=PX0KUIrG9VYR1nbGQsJ7bzi+9sM9EjCN01kuHEwLtC6Ofdxgk0MouKRPgWi4RBWwWt
-         aW2Mu5IE7NIYyu/KB3mXaDnPyTB2cJHzJ3otKy1tAYBQb/OpFyR6NnsNTqpKnHMLz8v7
-         DNqUZWzLQnbvEQfXxJ4M/BLQhrklVRgtQ+pzovJGAkRP3fedf+x4momD9B6DaLdfQ5aC
-         5nyfN2Lx9A+kPzgGimEhlAUeHYGwuR23Ydi58BVm61f9nQewiM5TyEbkgDmmBhXIp9+/
-         wOx0U5Z+kLQ0ZDtghUf40vroz5t1h0hCJV1dHrtlwBh3+PqWOjFGt722dgGt1yaFXBKJ
-         L3HQ==
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OpQh1ZV/M07VcOLtThlxG1BOKeVmdsO0NNyLBM2aU1k=;
+        b=rTZD+5qw8cEv+AUyMimpI5VwZihR3PvqGTcy3A+deRGRjxM4MNjnjMUDpkKjlLM68o
+         EDBFLVueTePAuE1dBX3iIJWs+lFp7Xn2+Ff6XNFHaGzyAcz/P4zMEes4yezjc1ZhGPw5
+         KW3u3ZqnwEiufO7KfAeD1TnWve+3DZKqz9MIZRqXjYylvZGkGmXbV0AGM+2vDoWZ3DuC
+         cma0D7AyE7hexLxe6jJopK4XGEmVfWNpy5j3rX5vDEEfeqd6MEDq3UK+J9gm2di1k+lC
+         tPanOu3bDURZhuOcV7FLklQM63CKQep1ap4AosYBBZEpWErGaXkuBOXBEBmBTcrO+vJc
+         92Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=LGYocYMvN/W/ocWLzH0hyLhcvNcumkqHUr8jtqkIExM=;
-        b=fRY7d8vz6e5yQjqo5JI9Nc51tWCcTWa8d+9uME+Xe7TDNRorX+0onoj88ZkwFPGr2r
-         PJn2CqjsBMdBV0gg+u5jwzUniJ1R2lVHqy+tQQF9kA2/CMhv8uq4bFJEJNFpQSmhlIad
-         ys9llAVTg1HSj4BhoEMQV69QnUQwGHXpaDumO7DjgxH3/WtjfGwwtU8OnhxaXZ7YgGGC
-         TQ2jzcH8reg9OZGefTA7AYN2aWaLuhxx7sZbjO8h1zDp/y8bwPjxoKS/63FrAzC/JHBW
-         I67icZFwYwlJX8IStbBQdUv8qL2vBLRP/AlDt5d29PtxU/6eNllPUEgxMHFGNbCBSNB4
-         Rd7A==
-X-Gm-Message-State: AOAM531czDEhVPAWC+JT5SzBFiVP2wKZfBER9OJImSVPKeH9PfYtiXmO
-        25Z9CqQAWfukqMQ09yJBOuuv7GxG
-X-Google-Smtp-Source: ABdhPJzbX7/H9DybCYzIchcqScSkxSBu9xzXH7QV0XgjwK4sedor60jmZxglVcroz4JJ7JYIq6laDA==
-X-Received: by 2002:a17:90a:3a82:: with SMTP id b2mr8933826pjc.228.1589366343319;
-        Wed, 13 May 2020 03:39:03 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y14sm14250800pff.205.2020.05.13.03.39.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 May 2020 03:39:02 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH ipsec] esp6: calculate transport_header correctly when sel.family != AF_INET6
-Date:   Wed, 13 May 2020 18:38:54 +0800
-Message-Id: <5224dd1a6287b41e9747385154a0dff4f115590a.1589366334.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OpQh1ZV/M07VcOLtThlxG1BOKeVmdsO0NNyLBM2aU1k=;
+        b=mRMt59brpgV14KuS0O5u9Jwrk4wzSYP6GwU7f7D4uVBg/SmIQwXoSiSycjORyC0Y0+
+         y68iQMgYzcmmM9GK38XM0J+O3KUW2n3OqVFD23MLgBjgJYdD+7OWBAd9ebpsFvpt1Dem
+         unF8iSK0MA68MfhKpA52COXTorpPUSC217xH2Qz+SevlRhzL74hoD7/7pawWhOEZnUge
+         eBLKj+vhmCzgs5qXQLWXNjw3rUe9+RGmOxJAbg+D7mFKe94+BbPHIVxxwLnyRoCpkmHS
+         wY3xCibdKbCcJ9Wx+Hm4wT7adaFM2dGo5n/KRhWo1mZr/0yXl3cKVm8jcZef4T4vp6xm
+         v+iw==
+X-Gm-Message-State: AOAM532TWA9NTJQgU9NqNSV/DE9NZSEFdoLE0A1Bse6uqBDZm72U5Y6e
+        yGiyp14OeaFVyImpqiaw+qBvzA19be0=
+X-Google-Smtp-Source: ABdhPJx2OXCTYsclOXYL5aMT0nEleZM2BFXBxse2ImWzDS5IQmo56UeJPXqUuG/0Nlgf/I8ETK1lbQ==
+X-Received: by 2002:a5d:490e:: with SMTP id x14mr6995049wrq.375.1589366553029;
+        Wed, 13 May 2020 03:42:33 -0700 (PDT)
+Received: from [192.168.1.10] ([194.35.118.90])
+        by smtp.gmail.com with ESMTPSA id k13sm1304602wmj.40.2020.05.13.03.42.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 03:42:32 -0700 (PDT)
+Subject: Re: [PATCH bpf-next] bpf, bpftool: Allow probing for CONFIG_HZ from
+ kernel config
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        alexei.starovoitov@gmail.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>
+References: <20200513075849.20868-1-daniel@iogearbox.net>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <4cc2a445-5d38-8b9c-71b1-bb5c69ac2553@isovalent.com>
+Date:   Wed, 13 May 2020 11:42:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+MIME-Version: 1.0
+In-Reply-To: <20200513075849.20868-1-daniel@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In esp6_init_state() for beet mode when x->sel.family != AF_INET6:
+2020-05-13 09:58 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
+> In Cilium we've recently switched to make use of bpf_jiffies64() for
+> parts of our tc and XDP datapath since bpf_ktime_get_ns() is more
+> expensive and high-precision is not needed for our timeouts we have
+> anyway. Our agent has a probe manager which picks up the json of
+> bpftool's feature probe and we also use the macro output in our C
+> programs e.g. to have workarounds when helpers are not available on
+> older kernels.
+> 
+> Extend the kernel config info dump to also include the kernel's
+> CONFIG_HZ, and rework the probe_kernel_image_config() for allowing a
+> macro dump such that CONFIG_HZ can be propagated to BPF C code as a
+> simple define if available via config. Latter allows to have _compile-
+> time_ resolution of jiffies <-> sec conversion in our code since all
+> are propagated as known constants.
+> 
+> Given we cannot generally assume availability of kconfig everywhere,
+> we also have a kernel hz probe [0] as a fallback. Potentially, bpftool
+> could have an integrated probe fallback as well, although to derive it,
+> we might need to place it under 'bpftool feature probe full' or similar
+> given it would slow down the probing process overall. Yet 'full' doesn't
+> fit either for us since we don't want to pollute the kernel log with
+> warning messages from bpf_probe_write_user() and bpf_trace_printk() on
+> agent startup; I've left it out for the time being.
+> 
+>   [0] https://github.com/cilium/cilium/blob/master/bpf/cilium-probe-kernel-hz.c
+> 
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Martin KaFai Lau <kafai@fb.com>
 
-  x->props.header_len = sizeof(struct ip_esp_hdr) +
-     crypto_aead_ivsize(aead) + IPV4_BEET_PHMAXLEN +
-     (sizeof(struct ipv6hdr) - sizeof(struct iphdr))
+Looks good to me, thanks!
 
-In xfrm6_beet_gso_segment() skb->transport_header is supposed to move
-to the end of the ph header for IPPROTO_BEETPH, so if x->sel.family !=
-AF_INET6 and it's IPPROTO_BEETPH, it should do:
+I think at the time the "bpftool feature probe" was added we didn't
+settle on a particular format for dumping the CONFIG_* as part as the C
+macro output, but other than that I can see no specific reason why not
+to have them, so we could even list them all and avoid the macro_dump
+bool. But I'm fine either way, other CONFIG_* can still be added to C
+macro output at a later time if someone needs them anyway.
 
-   skb->transport_header -=
-      (sizeof(struct ipv6hdr) - sizeof(struct iphdr));
-   skb->transport_header += ph->hdrlen * 8;
+Regarding a fallback for the jiffies, not sure what would be best. I
+agree with you for the "full" keyword, so we would need another word I
+suppose. But adding new keyword for fallbacks for probing features not
+directly related to BPF might be going a bit beyond bpftool's scope? I
+don't know. Anyway, for the current patch:
 
-And IPV4_BEET_PHMAXLEN is only reserved for PH header, so if
-x->sel.family != AF_INET6 and it's not IPPROTO_BEETPH, it should do:
-
-   skb->transport_header -=
-      (sizeof(struct ipv6hdr) - sizeof(struct iphdr));
-   skb->transport_header -= IPV4_BEET_PHMAXLEN;
-
-Thanks Sabrina for looking deep into this issue.
-
-Fixes: 7f9e40eb18a9 ("esp6: add gso_segment for esp6 beet mode")
-Reported-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/ipv6/esp6_offload.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
-
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index 9c03460..ab0eea3 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -175,24 +175,27 @@ static struct sk_buff *xfrm6_beet_gso_segment(struct xfrm_state *x,
- 
- 	skb->transport_header += x->props.header_len;
- 
--	if (proto == IPPROTO_BEETPH) {
--		struct ip_beet_phdr *ph = (struct ip_beet_phdr *)skb->data;
-+	if (x->sel.family != AF_INET6) {
-+		skb->transport_header -=
-+			(sizeof(struct ipv6hdr) - sizeof(struct iphdr));
- 
--		skb->transport_header += ph->hdrlen * 8;
--		proto = ph->nexthdr;
--	}
-+		if (proto == IPPROTO_BEETPH) {
-+			struct ip_beet_phdr *ph =
-+				(struct ip_beet_phdr *)skb->data;
-+
-+			skb->transport_header += ph->hdrlen * 8;
-+			proto = ph->nexthdr;
-+		} else {
-+			skb->transport_header -= IPV4_BEET_PHMAXLEN;
-+		}
- 
--	if (x->sel.family == AF_INET6) {
-+		if (proto == IPPROTO_TCP)
-+			skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV6;
-+	} else {
- 		__be16 frag;
- 
- 		skb->transport_header +=
- 			ipv6_skip_exthdr(skb, 0, &proto, &frag);
--	} else {
--		skb->transport_header -=
--			(sizeof(struct ipv6hdr) - sizeof(struct iphdr));
--
--		if (proto == IPPROTO_TCP)
--			skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV6;
- 	}
- 
- 	__skb_pull(skb, skb_transport_offset(skb));
--- 
-2.1.0
-
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
