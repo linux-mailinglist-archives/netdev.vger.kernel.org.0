@@ -2,86 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB0AF1D0EAB
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 12:02:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A4421D0D6E
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 11:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387548AbgEMJup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 05:50:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50852 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387541AbgEMJuo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 05:50:44 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EE46E20575;
-        Wed, 13 May 2020 09:50:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589363443;
-        bh=BbKj/hAo8dcJrmgK/HQEO3BCEI5Pim0NsUGOFehoCmA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hGFjasBVvRs6g8/RmpiJiAvRVv1pcAXczoWpLGc1X5CeLt+PcVN7QK4IMwAUQ4m9r
-         pL99vRR1p39KICjA+PYL0a2caRtePMwD/pTUM/XBILmvcV5kYNltiWgusmEGMgy5Tp
-         9Fd19NMuJNZE8pNsiGW9rLRAsRX34FsTV+nGoHgY=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Maor Gottlieb <maorg@mellanox.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-Subject: [PATCH mlx5-next 02/14] net/mlx5: Add support in query QP, CQ and MKEY segments
-Date:   Wed, 13 May 2020 12:50:22 +0300
-Message-Id: <20200513095034.208385-3-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200513095034.208385-1-leon@kernel.org>
-References: <20200513095034.208385-1-leon@kernel.org>
+        id S2387873AbgEMJw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 05:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387861AbgEMJwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 05:52:55 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DA9C061A0C;
+        Wed, 13 May 2020 02:52:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=ft535WPrBxMxFYAmdROL29Gd1hqYXPYu/0OGkw3PQ9g=; b=A6zin1hHZANRxscI7PjouY7Fe
+        R/b/ualhzllBnLuTEaV6fw8fz3Rr3xKP1K3veWH3haN0HXeVkSVrLPbGik2SEi1Tr1m3955OS0PvF
+        InTeKaHJNfU/1waUmxyIChWS13dXmXAQlSyBR2vR1HV9ecQFcoEsuZSStr+6fgo3xnQc5+JRCKEy3
+        xXiD9OOVPUyuPeh05a0TQmetdL/tTohXmxWq5c/Eta2tgqq5hIR/bpZaau9At0xvkxXIZZjbxZiSx
+        DdtLbMhjvQpQaE+Vw2Nq5RhK6O6qhc2aqKU9NBq963C1coP8FpmyOpAplXdSz55Avd88x6arkONEy
+        C5hn4P1Fw==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:57430)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jYo4F-00043y-DN; Wed, 13 May 2020 10:52:47 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jYo4E-0007fG-Fn; Wed, 13 May 2020 10:52:46 +0100
+Date:   Wed, 13 May 2020 10:52:46 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Doug Berger <opendmb@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 4/4] net: bcmgenet: add support for ethtool flow
+ control
+Message-ID: <20200513095246.GH1551@shell.armlinux.org.uk>
+References: <1589243050-18217-1-git-send-email-opendmb@gmail.com>
+ <1589243050-18217-5-git-send-email-opendmb@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1589243050-18217-5-git-send-email-opendmb@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Gottlieb <maorg@mellanox.com>
+On Mon, May 11, 2020 at 05:24:10PM -0700, Doug Berger wrote:
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> index 511d553a4d11..788da1ecea0c 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> @@ -25,6 +25,21 @@
+>  
+>  #include "bcmgenet.h"
+>  
+> +static u32 _flow_control_autoneg(struct phy_device *phydev)
+> +{
+> +	bool tx_pause, rx_pause;
+> +	u32 cmd_bits = 0;
+> +
+> +	phy_get_pause(phydev, &tx_pause, &rx_pause);
+> +
+> +	if (!tx_pause)
+> +		cmd_bits |= CMD_TX_PAUSE_IGNORE;
+> +	if (!rx_pause)
+> +		cmd_bits |= CMD_RX_PAUSE_IGNORE;
+> +
+> +	return cmd_bits;
+> +}
+> +
+>  /* setup netdev link state when PHY link status change and
+>   * update UMAC and RGMII block when link up
+>   */
+> @@ -71,12 +86,20 @@ void bcmgenet_mii_setup(struct net_device *dev)
+>  		cmd_bits <<= CMD_SPEED_SHIFT;
+>  
+>  		/* duplex */
+> -		if (phydev->duplex != DUPLEX_FULL)
+> -			cmd_bits |= CMD_HD_EN;
+> -
+> -		/* pause capability */
+> -		if (!phydev->pause)
+> -			cmd_bits |= CMD_RX_PAUSE_IGNORE | CMD_TX_PAUSE_IGNORE;
+> +		if (phydev->duplex != DUPLEX_FULL) {
+> +			cmd_bits |= CMD_HD_EN |
+> +				CMD_RX_PAUSE_IGNORE | CMD_TX_PAUSE_IGNORE;
 
-Introduce new resource dump segments - PRM_QUERY_QP,
-PRM_QUERY_CQ and PRM_QUERY_MKEY. These segments contains the resource
-dump in PRM query format.
+phy_get_pause() already takes account of whether the PHY is in half
+duplex mode.  So:
 
-Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c | 3 +++
- include/linux/mlx5/rsc_dump.h                           | 3 +++
- 2 files changed, 6 insertions(+)
+		bool tx_pause, rx_pause;
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
-index 10218c2324cc..4924a5658853 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
-@@ -23,6 +23,9 @@ static const char *const mlx5_rsc_sgmt_name[] = {
- 	MLX5_SGMT_STR_ASSING(SX_SLICE_ALL),
- 	MLX5_SGMT_STR_ASSING(RDB),
- 	MLX5_SGMT_STR_ASSING(RX_SLICE_ALL),
-+	MLX5_SGMT_STR_ASSING(PRM_QUERY_QP),
-+	MLX5_SGMT_STR_ASSING(PRM_QUERY_CQ),
-+	MLX5_SGMT_STR_ASSING(PRM_QUERY_MKEY),
- };
- 
- struct mlx5_rsc_dump {
-diff --git a/include/linux/mlx5/rsc_dump.h b/include/linux/mlx5/rsc_dump.h
-index 87415fa754fe..d11c0b228620 100644
---- a/include/linux/mlx5/rsc_dump.h
-+++ b/include/linux/mlx5/rsc_dump.h
-@@ -23,6 +23,9 @@ enum mlx5_sgmt_type {
- 	MLX5_SGMT_TYPE_SX_SLICE_ALL,
- 	MLX5_SGMT_TYPE_RDB,
- 	MLX5_SGMT_TYPE_RX_SLICE_ALL,
-+	MLX5_SGMT_TYPE_PRM_QUERY_QP,
-+	MLX5_SGMT_TYPE_PRM_QUERY_CQ,
-+	MLX5_SGMT_TYPE_PRM_QUERY_MKEY,
- 	MLX5_SGMT_TYPE_MENU,
- 	MLX5_SGMT_TYPE_TERMINATE,
- 
+		if (phydev->autoneg && priv->autoneg_pause) {
+			phy_get_pause(phydev, &tx_pause, &rx_pause);
+		} else if (phydev->duplex == DUPLEX_FULL) {
+			tx_pause = priv->tx_pause;
+			rx_pause = priv->rx_pause;
+		} else {
+			tx_pause = false;
+			rx_pause = false;
+		}
+
+		if (!tx_pause)
+			cmd_bits |= CMD_TX_PAUSE_IGNORE;
+		if (!rx_pause)
+			cmd_bits |= CMD_RX_PAUSE_IGNORE;
+
+would be entirely sufficient here.
+
+I wonder whether your implementation (which mine follows) is really
+correct though.  Consider this:
+
+# ethtool -A eth0 autoneg on tx on rx on
+# ethtool -s eth0 autoneg off speed 1000 duplex full
+
+At this point, what do you expect the resulting pause state to be?  It
+may not be what you actually think it should be - it will be tx and rx
+pause enabled (it's easier to see why that happens with my rewritten
+version of your implementation, which is functionally identical.)
+
+If we take the view that if link autoneg is disabled, and therefore the
+link partner's advertisement is zero, shouldn't it result in tx and rx
+pause being disabled?
+
 -- 
-2.26.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
