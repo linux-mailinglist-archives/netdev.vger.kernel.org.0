@@ -2,200 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B07F1D0A9C
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 10:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0195C1D0AAB
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 10:17:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730553AbgEMIPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 04:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729106AbgEMIPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 04:15:23 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A785C061A0C;
-        Wed, 13 May 2020 01:15:23 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id n18so184388pfa.2;
-        Wed, 13 May 2020 01:15:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:mime-version
-         :content-disposition;
-        bh=s7Xwu90CYQ1ik4OayvSic3fdFdzVQBA9fJ9MJPdEP60=;
-        b=PpdGaQgoaefRxJ8DzfZE4eLQ4w7FwY4dDChcW/F0REcnC0joHbZF3W9GBztiVj+udf
-         UdS7spfcUewzF7/eABDA0XiUxw57e+GQ3ovwPZ4m0Cv0pxHf3U1kzIfJnsmEUbukpcF3
-         xI307NkEPg0F2mIvj2aCWBhQ4Jvwn//h/42LTadaL6f2J1/PHOkFJXWQ8j0BfMGuF7Dc
-         C8ojTDTEKE9/XoDLV03fU4CHk6IZKQD9xcGO8ei0LICEC3zPyj1aAlMF/1kAHq26Z6d6
-         CaVQXBgb26l/CrobOUza6Yuugvd+E9hf+uGVbDV6kwPMf/SL0EDGI4cyLtNgTagBfBk9
-         zvPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:mime-version:content-disposition;
-        bh=s7Xwu90CYQ1ik4OayvSic3fdFdzVQBA9fJ9MJPdEP60=;
-        b=Vh5PJyBG9mPZYauv68AXe5pkm8Qmdc23OHKGqETMLogZEohzTG3GcutXOZYhKfngvp
-         ZNpMO83+Jso3JxYmtg4J0db2QBb/dcaI7pBJ+S80CfSu/JQWzllWQO2y1+esRaVhlptX
-         ZeKZA/rCNDWpb2ZpYDFfUyQROx3mIuQKGX527WDBXrnCCttj3dirbIDspP+FeAW2cfZY
-         BCT6sb1/45plQnfm0VpVcmwtnlOi7latn+QjeWTwFl2Df1jTlqoc7n5SpXqLFPnN27mr
-         BE0e2/+Vi2GoLA4AGMRBHy5AxFmTyRYLYU4FdqQpzw0gZXvPjUviz7W97ZHfIsZVkN4Z
-         mfcA==
-X-Gm-Message-State: AGi0PuaU68tAFOumcWDeuk8/85k88LT2gjY4oh+gLihRdM3F+ELe/FSz
-        lCTGl0VD17+PQ5f0b7IuJfwxjS9dk0Tbvw==
-X-Google-Smtp-Source: APiQypJhzfkY7NWahOJLcE3JfTBkrmHzS4/CxZ4NT8nyuhtCCVYnYcvqPKTi946HR6NPtUZCyvlPEw==
-X-Received: by 2002:aa7:8489:: with SMTP id u9mr25143169pfn.248.1589357722620;
-        Wed, 13 May 2020 01:15:22 -0700 (PDT)
-Received: from localhost ([192.55.54.42])
-        by smtp.gmail.com with ESMTPSA id ie17sm14912102pjb.19.2020.05.13.01.15.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2020 01:15:21 -0700 (PDT)
-Date:   Wed, 13 May 2020 11:15:17 +0300
-From:   Johan Hedberg <johan.hedberg@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull request: bluetooth-next 2020-05-13
-Message-ID: <20200513081517.GA35645@isister-mobl.amr.corp.intel.com>
-Mail-Followup-To: davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+        id S1732143AbgEMIRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 04:17:50 -0400
+Received: from kirsty.vergenet.net ([202.4.237.240]:56454 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730127AbgEMIRu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 04:17:50 -0400
+Received: from penelope.horms.nl (tulip.horms.nl [83.161.246.101])
+        by kirsty.vergenet.net (Postfix) with ESMTPA id 64A5025B78C;
+        Wed, 13 May 2020 18:17:48 +1000 (AEST)
+Received: by penelope.horms.nl (Postfix, from userid 7100)
+        id 1BD98737; Wed, 13 May 2020 10:17:46 +0200 (CEST)
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     oss-drivers@netronome.com, Louis Peens <louis.peens@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net-net] nfp: flower: inform firmware of flower features in the driver
+Date:   Wed, 13 May 2020 10:17:23 +0200
+Message-Id: <20200513081723.17624-1-simon.horman@netronome.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ZPt4rx8FFjLCG7dd"
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Louis Peens <louis.peens@netronome.com>
 
---ZPt4rx8FFjLCG7dd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+For backwards compatibility it may be required for the firmware to
+disable certain features depending on the features supported by
+the host. Combine the host feature bits and firmware feature bits
+and write this back to the firmware.
 
-Hi,
-
-Here's a second attempt at a bluetooth-next pull request which
-supercedes the one dated 2020-05-09. This should have the issues
-discovered by Jakub fixed.
-
- - Add support for Intel Typhoon Peak device (8087:0032)
- - Add device tree bindings for Realtek RTL8723BS device
- - Add device tree bindings for Qualcomm QCA9377 device
- - Add support for experimental features configuration through mgmt
- - Add driver hook to prevent wake from suspend
- - Add support for waiting for L2CAP disconnection response
- - Multiple fixes & cleanups to the btbcm driver
- - Add support for LE scatternet topology for selected devices
- - A few other smaller fixes & cleanups
-
-Please let me know if there are any issues pulling. Thanks.
-
-Johan
-
+Signed-off-by: Louis Peens <louis.peens@netronome.com>
+Signed-off-by: Simon Horman <simon.horman@netronome.com>
 ---
-The following changes since commit 44dd5efc97dae0dc09ea9316597826c8b0fd1578:
+ .../net/ethernet/netronome/nfp/flower/main.c  | 110 +++++++++++++-----
+ .../net/ethernet/netronome/nfp/flower/main.h  |  11 ++
+ 2 files changed, 91 insertions(+), 30 deletions(-)
 
-  Merge branch 'Support-programmable-pins-for-Ocelot-PTP-driver' (2020-04-21 15:38:34 -0700)
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
+index d8ad9346a26a..2830c1203c76 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
+@@ -665,6 +665,81 @@ static int nfp_flower_vnic_init(struct nfp_app *app, struct nfp_net *nn)
+ 	return err;
+ }
+ 
++static void nfp_flower_wait_host_bit(struct nfp_app *app)
++{
++	unsigned long err_at;
++	u64 feat;
++	int err;
++
++	/* Wait for HOST_ACK flag bit to propagate */
++	feat = nfp_rtsym_read_le(app->pf->rtbl,
++				 "_abi_flower_combined_feat_global",
++				 &err);
++	err_at = jiffies + HZ / 100;
++	while (!err && !(feat & NFP_FL_FEATS_HOST_ACK)) {
++		usleep_range(1000, 2000);
++		feat = nfp_rtsym_read_le(app->pf->rtbl,
++					 "_abi_flower_combined_feat_global",
++					 &err);
++		if (time_is_before_eq_jiffies(err_at)) {
++			nfp_warn(app->cpp,
++				 "HOST_ACK bit not propagated in FW.\n");
++			break;
++		}
++	}
++}
++
++static int nfp_flower_sync_feature_bits(struct nfp_app *app)
++{
++	struct nfp_flower_priv *app_priv = app->priv;
++	int err = 0;
++
++	/* Tell the firmware of the host supported features. */
++	err = nfp_rtsym_write_le(app->pf->rtbl, "_abi_flower_host_mask",
++				 app_priv->flower_ext_feats |
++				 NFP_FL_FEATS_HOST_ACK);
++	if (!err) {
++		nfp_flower_wait_host_bit(app);
++	} else if (err == -ENOENT) {
++		nfp_info(app->cpp,
++			 "Telling FW of host capabilities not supported.\n");
++		err = 0;
++	} else {
++		return err;
++	}
++
++	/* Tell the firmware that the driver supports lag. */
++	err = nfp_rtsym_write_le(app->pf->rtbl,
++				 "_abi_flower_balance_sync_enable", 1);
++	if (!err) {
++		app_priv->flower_ext_feats |= NFP_FL_FEATS_LAG;
++		nfp_flower_lag_init(&app_priv->nfp_lag);
++	} else if (err == -ENOENT) {
++		nfp_warn(app->cpp, "LAG not supported by FW.\n");
++		err = 0;
++	} else {
++		return err;
++	}
++
++	if (app_priv->flower_ext_feats & NFP_FL_FEATS_FLOW_MOD) {
++		/* Tell the firmware that the driver supports flow merging. */
++		err = nfp_rtsym_write_le(app->pf->rtbl,
++					 "_abi_flower_merge_hint_enable", 1);
++		if (!err) {
++			app_priv->flower_ext_feats |= NFP_FL_FEATS_FLOW_MERGE;
++			nfp_flower_internal_port_init(app_priv);
++		} else if (err == -ENOENT) {
++			nfp_warn(app->cpp,
++				 "Flow merge not supported by FW.\n");
++			err = 0;
++		}
++	} else {
++		nfp_warn(app->cpp, "Flow mod/merge not supported by FW.\n");
++	}
++
++	return err;
++}
++
+ static int nfp_flower_init(struct nfp_app *app)
+ {
+ 	u64 version, features, ctx_count, num_mems;
+@@ -753,35 +828,11 @@ static int nfp_flower_init(struct nfp_app *app)
+ 	if (err)
+ 		app_priv->flower_ext_feats = 0;
+ 	else
+-		app_priv->flower_ext_feats = features;
+-
+-	/* Tell the firmware that the driver supports lag. */
+-	err = nfp_rtsym_write_le(app->pf->rtbl,
+-				 "_abi_flower_balance_sync_enable", 1);
+-	if (!err) {
+-		app_priv->flower_ext_feats |= NFP_FL_FEATS_LAG;
+-		nfp_flower_lag_init(&app_priv->nfp_lag);
+-	} else if (err == -ENOENT) {
+-		nfp_warn(app->cpp, "LAG not supported by FW.\n");
+-	} else {
+-		goto err_cleanup_metadata;
+-	}
++		app_priv->flower_ext_feats = features & NFP_FL_FEATS_HOST;
+ 
+-	if (app_priv->flower_ext_feats & NFP_FL_FEATS_FLOW_MOD) {
+-		/* Tell the firmware that the driver supports flow merging. */
+-		err = nfp_rtsym_write_le(app->pf->rtbl,
+-					 "_abi_flower_merge_hint_enable", 1);
+-		if (!err) {
+-			app_priv->flower_ext_feats |= NFP_FL_FEATS_FLOW_MERGE;
+-			nfp_flower_internal_port_init(app_priv);
+-		} else if (err == -ENOENT) {
+-			nfp_warn(app->cpp, "Flow merge not supported by FW.\n");
+-		} else {
+-			goto err_lag_clean;
+-		}
+-	} else {
+-		nfp_warn(app->cpp, "Flow mod/merge not supported by FW.\n");
+-	}
++	err = nfp_flower_sync_feature_bits(app);
++	if (err)
++		goto err_cleanup;
+ 
+ 	if (app_priv->flower_ext_feats & NFP_FL_FEATS_VF_RLIM)
+ 		nfp_flower_qos_init(app);
+@@ -792,10 +843,9 @@ static int nfp_flower_init(struct nfp_app *app)
+ 
+ 	return 0;
+ 
+-err_lag_clean:
++err_cleanup:
+ 	if (app_priv->flower_ext_feats & NFP_FL_FEATS_LAG)
+ 		nfp_flower_lag_cleanup(&app_priv->nfp_lag);
+-err_cleanup_metadata:
+ 	nfp_flower_metadata_cleanup(app);
+ err_free_app_priv:
+ 	vfree(app->priv);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index d55d0d33bc45..dfc07611603e 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -44,9 +44,20 @@ struct nfp_app;
+ #define NFP_FL_FEATS_FLOW_MOD		BIT(5)
+ #define NFP_FL_FEATS_PRE_TUN_RULES	BIT(6)
+ #define NFP_FL_FEATS_IPV6_TUN		BIT(7)
++#define NFP_FL_FEATS_HOST_ACK		BIT(31)
+ #define NFP_FL_FEATS_FLOW_MERGE		BIT(30)
+ #define NFP_FL_FEATS_LAG		BIT(31)
+ 
++#define NFP_FL_FEATS_HOST \
++	(NFP_FL_FEATS_GENEVE | \
++	NFP_FL_NBI_MTU_SETTING | \
++	NFP_FL_FEATS_GENEVE_OPT | \
++	NFP_FL_FEATS_VLAN_PCP | \
++	NFP_FL_FEATS_VF_RLIM | \
++	NFP_FL_FEATS_FLOW_MOD | \
++	NFP_FL_FEATS_PRE_TUN_RULES | \
++	NFP_FL_FEATS_IPV6_TUN)
++
+ struct nfp_fl_mask_id {
+ 	struct circ_buf mask_id_free_list;
+ 	ktime_t *last_used;
+-- 
+2.20.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git for-upstream
-
-for you to fetch changes up to 5b440676c15bbe1a40f2546ec92db83ed66d9e22:
-
-  Bluetooth: L2CAP: add support for waiting disconnection resp (2020-05-13 10:03:51 +0200)
-
-----------------------------------------------------------------
-Abhishek Pandit-Subedi (5):
-      Bluetooth: Fix incorrect type for window and interval
-      Bluetooth: Modify LE window and interval for suspend
-      Bluetooth: Rename BT_SUSPEND_COMPLETE
-      Bluetooth: Add hook for driver to prevent wake from suspend
-      Bluetooth: btusb: Implement hdev->prevent_wake
-
-Alain Michaud (3):
-      Bluetooth: Adding driver and quirk defs for multi-role LE
-      Bluetooth: allow scatternet connections if supported.
-      Bluetooth: btusb: Adding support for LE scatternet to Jfp and ThP
-
-Archie Pusaka (1):
-      Bluetooth: L2CAP: add support for waiting disconnection resp
-
-Christian Hewitt (3):
-      dt-bindings: net: bluetooth: Add device tree bindings for QCA9377
-      Bluetooth: hci_qca: add compatible for QCA9377
-      Bluetooth: hci_qca: allow max-speed to be set for QCA9377 devices
-
-Hans de Goede (8):
-      Bluetooth: btbcm: Drop upper nibble version check from btbcm_initialize()
-      Bluetooth: btbcm: Move setting of USE_BDADDR_PROPERTY quirk to hci_bcm.c
-      Bluetooth: btbcm: Fold Patch loading + applying into btbcm_initialize()
-      Bluetooth: btbcm: Make btbcm_initialize() print local-name on re-init too
-      Bluetooth: btbcm: Make btbcm_setup_patchram use btbcm_finalize
-      Bluetooth: btbcm: Bail sooner from btbcm_initialize() when not loading fw
-      Bluetooth: btbcm: Try multiple Patch filenames when loading the Patch firmware
-      Bluetooth: btbcm: Add 2 missing models to subver tables
-
-Konstantin Forostyan (1):
-      Bluetooth: L2CAP: Fix errors during L2CAP_CREDIT_BASED_CONNECTION_REQ (0x17)
-
-Marcel Holtmann (7):
-      Bluetooth: Add MGMT_EV_PHY_CONFIGURATION_CHANGED to supported list
-      Bluetooth: Replace BT_DBG with bt_dev_dbg for management support
-      Bluetooth: replace zero-length array with flexible-array member
-      Bluetooth: Introduce HCI_MGMT_HDEV_OPTIONAL option
-      Bluetooth: Replace BT_DBG with bt_dev_dbg for security manager support
-      Bluetooth: Add support for experimental features configuration
-      Bluetooth: Introduce debug feature when dynamic debug is disabled
-
-Raghuram Hegde (1):
-      Bluetooth: btusb: Add support for Intel Bluetooth Device Typhoon Peak (8087:0032)
-
-Rikard Falkeborn (1):
-      Bluetooth: serdev: Constify serdev_device_ops
-
-Sonny Sasaka (1):
-      Bluetooth: Handle Inquiry Cancel error after Inquiry Complete
-
-Tedd Ho-Jeong An (1):
-      Bluetooth: Fix advertising handle is set to 0
-
-Vasily Khoruzhick (2):
-      dt-bindings: net: bluetooth: Add rtl8723bs-bluetooth
-      Bluetooth: hci_h5: Add support for binding RTL8723BS with device tree
-
- .../devicetree/bindings/net/qualcomm-bluetooth.txt |   5 +
- .../devicetree/bindings/net/realtek-bluetooth.yaml |  54 +++
- drivers/bluetooth/btbcm.c                          | 139 ++++----
- drivers/bluetooth/btbcm.h                          |  10 +-
- drivers/bluetooth/btusb.c                          |  20 +-
- drivers/bluetooth/hci_bcm.c                        |  27 +-
- drivers/bluetooth/hci_h5.c                         |   2 +
- drivers/bluetooth/hci_qca.c                        |  17 +-
- drivers/bluetooth/hci_serdev.c                     |   4 +-
- include/net/bluetooth/bluetooth.h                  |  11 +
- include/net/bluetooth/hci.h                        |  10 +
- include/net/bluetooth/hci_core.h                   |   4 +-
- include/net/bluetooth/mgmt.h                       |  69 ++--
- net/bluetooth/Kconfig                              |   7 +
- net/bluetooth/hci_core.c                           |   8 +-
- net/bluetooth/hci_event.c                          |  23 +-
- net/bluetooth/hci_request.c                        |  12 +-
- net/bluetooth/hci_sock.c                           |  12 +-
- net/bluetooth/l2cap_core.c                         |   4 +-
- net/bluetooth/l2cap_sock.c                         |  30 +-
- net/bluetooth/lib.c                                |  33 ++
- net/bluetooth/mgmt.c                               | 367 ++++++++++++++-------
- net/bluetooth/smp.c                                |   8 +-
- 23 files changed, 618 insertions(+), 258 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-
---ZPt4rx8FFjLCG7dd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQQ8m6QjaLXd1XJ73Dsfyv3T9pQ3KgUCXruskwAKCRAfyv3T9pQ3
-KkNrAP96TZQ00F7A1Yc81KX2sp2AtzKHExUtrjyPvXep7LDq4QEA3BIi0dJgt1Ex
-ZDMvT5bv77er2g/HOxevlDF2cLzLHgY=
-=jjun
------END PGP SIGNATURE-----
-
---ZPt4rx8FFjLCG7dd--
