@@ -2,241 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D1CB1D1E8B
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68C201D1E9D
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:11:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390362AbgEMTHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 15:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51712 "EHLO
+        id S2390368AbgEMTLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 15:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732218AbgEMTHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:07:38 -0400
-Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DAEC061A0C;
-        Wed, 13 May 2020 12:07:38 -0700 (PDT)
-Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=pengu.fritz.box); authenticated
-        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1jYwis-0004tW-H9; Wed, 13 May 2020 21:07:18 +0200
-From:   Roelof Berg <rberg@berg-solutions.de>
-To:     rberg@berg-solutions.de
-Cc:     andrew@lunn.ch, Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] lan743x: Added fixed link support
-Date:   Wed, 13 May 2020 21:06:33 +0200
-Message-Id: <20200513190633.7815-1-rberg@berg-solutions.de>
-X-Mailer: git-send-email 2.20.1
+        by vger.kernel.org with ESMTP id S2390303AbgEMTLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:11:48 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADB7C061A0E
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 12:11:47 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id 188so448065lfa.10
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 12:11:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DlDe1IobgVm68K0PtFybaGZyKFGHK1OfKry00qMtGtQ=;
+        b=V1UkNiRNfL733X9vr+6V4+xkxNISM7utjyshsT36quvy8jA5IVqpf+k3EDQxjXOIYU
+         JkvVkJQB05ajebE0nuwA1SP0j1/ZNVxXHdyZbBxtTdovrxuSXCzKJOTV20D7eG1vu7ZV
+         OomJViLlEUU/v3q1g+qPNyPfCuDydticNEJPw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DlDe1IobgVm68K0PtFybaGZyKFGHK1OfKry00qMtGtQ=;
+        b=EBgCpmJu/Uc59QuHP4To4DoNwswyzth2DyTY//n1/ZZLh61GSB6IhgIel6Lz/YjqjV
+         UyYbjpWpKAR2iyCQ34EcFEZnYYu33eKRc/JkeRfpOq4CsMadbOowJepSDe0OmEm/PNTh
+         ZCWGG7p4BRMoPYvXkvjNsC/GWpd+3+deZpIUWy/H1LyCbJ24w8UtsGkDnoGjxM6uJyKk
+         abGVFIBLrxz4Dkc1P6KRja4n5qM6AuXP3/la1gc1aosMJUGV1H11Ve0PK49Ytkn+VNWc
+         YisR0wfX2nktubwO96MGXCpLfw6OPB+15xc05xL7pbLKagnU6YwdaWpqek8oahsOJNSB
+         eHBw==
+X-Gm-Message-State: AOAM533VhcSj36d3LmOuUTOrsDli3KABHX4OxKrc+2r/YQTm9xBHizIn
+        CyFAFo8RdkoL0a2P8qTPS5hBD0SwtMs=
+X-Google-Smtp-Source: ABdhPJz+jXAB/uwQh2/2jC7WJ1PAp3tE6M9tnO00n8iqRwblpJuN/EVcvqRJwuB8zVcZZ2HO9WHbhg==
+X-Received: by 2002:a19:f70f:: with SMTP id z15mr619742lfe.53.1589397105048;
+        Wed, 13 May 2020 12:11:45 -0700 (PDT)
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
+        by smtp.gmail.com with ESMTPSA id d28sm280844lfe.76.2020.05.13.12.11.43
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 12:11:44 -0700 (PDT)
+Received: by mail-lf1-f46.google.com with SMTP id 8so482100lfp.4
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 12:11:43 -0700 (PDT)
+X-Received: by 2002:a19:ed07:: with SMTP id y7mr627896lfy.31.1589397103373;
+ Wed, 13 May 2020 12:11:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1589396858;56c0db42;
-X-HE-SMSGID: 1jYwis-0004tW-H9
+References: <20200513160038.2482415-1-hch@lst.de> <20200513160038.2482415-12-hch@lst.de>
+In-Reply-To: <20200513160038.2482415-12-hch@lst.de>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 13 May 2020 12:11:27 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
+Message-ID: <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
+Subject: Re: [PATCH 11/18] maccess: remove strncpy_from_unsafe
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Microchip lan7431 is frequently connected to a phy. However, it
-can also be directly connected to a MII remote peer without
-any phy in between. For supporting such a phyless hardware setup
-in Linux we added the capability to the driver to understand
-the fixed-link and the phy-connection-type entries in the device
-tree.
+On Wed, May 13, 2020 at 9:01 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> +static void bpf_strncpy(char *buf, long unsafe_addr)
+> +{
+> +       buf[0] = 0;
+> +       if (strncpy_from_kernel_nofault(buf, (void *)unsafe_addr,
+> +                       BPF_STRNCPY_LEN))
+> +               strncpy_from_user_nofault(buf, (void __user *)unsafe_addr,
+> +                               BPF_STRNCPY_LEN);
+> +}
 
-If a fixed-link node is configured in the device tree the lan7431
-device will deactivate auto negotiation and uses the speed and
-duplex settings configured in the fixed-link node.
+This seems buggy when I look at it.
 
-Also the phy-connection-type can be configured in the device tree
-and in case of a fixed-link connection the RGMII mode can be
-configured, all other modes fall back to the default: GMII.
+It seems to think that strncpy_from_kernel_nofault() returns an error code.
 
-Example:
+Not so, unless I missed where you changed the rules.
 
- &pcie {
-	status = "okay";
+It returns the length of the string for a successful copy. 0 is
+actually an error case (for count being <= 0).
 
-	host@0 {
-		reg = <0 0 0 0 0>;
+So the test for success seems entirely wrong.
 
-		#address-cells = <3>;
-		#size-cells = <2>;
+Also, I do wonder if we shouldn't gate this on TASK_SIZE, and do the
+user trial first. On architectures where this thing is valid in the
+first place (ie kernel and user addresses are separate), the test for
+address size would allow us to avoid a pointless fault due to an
+invalid kernel access to user space.
 
-		ethernet@0 {
-			compatible = "weyland-yutani,noscom1", "microchip,lan743x";
-			status = "okay";
-			reg = <0 0 0 0 0>;
-			phy-connection-type = "rgmii";
+So I think this function should look something like
 
-			fixed-link {
-				speed = <100>;
-				full-duplex;
-			};
-		};
-	};
-};
+  static void bpf_strncpy(char *buf, long unsafe_addr)
+  {
+          /* Try user address */
+          if (unsafe_addr < TASK_SIZE) {
+                  void __user *ptr = (void __user *)unsafe_addr;
+                  if (strncpy_from_user_nofault(buf, ptr, BPF_STRNCPY_LEN) >= 0)
+                          return;
+          }
 
-Signed-off-by: Roelof Berg <rberg@berg-solutions.de>
----
- drivers/net/ethernet/microchip/lan743x_main.c | 94 +++++++++++++++++--
- drivers/net/ethernet/microchip/lan743x_main.h |  4 +
- 2 files changed, 89 insertions(+), 9 deletions(-)
+          /* .. fall back on trying kernel access */
+          buf[0] = 0;
+          strncpy_from_kernel_nofault(buf, (void *)unsafe_addr,
+BPF_STRNCPY_LEN);
+  }
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index a43140f7b5eb..85f12881340b 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -9,9 +9,12 @@
- #include <linux/microchipphy.h>
- #include <linux/net_tstamp.h>
- #include <linux/phy.h>
-+#include <linux/phy_fixed.h>
- #include <linux/rtnetlink.h>
- #include <linux/iopoll.h>
- #include <linux/crc16.h>
-+#include <linux/of_mdio.h>
-+#include <linux/of_net.h>
- #include "lan743x_main.h"
- #include "lan743x_ethtool.h"
- 
-@@ -974,6 +977,8 @@ static void lan743x_phy_close(struct lan743x_adapter *adapter)
- 
- 	phy_stop(netdev->phydev);
- 	phy_disconnect(netdev->phydev);
-+	if (of_phy_is_fixed_link(adapter->pdev->dev.of_node))
-+		of_phy_deregister_fixed_link(adapter->pdev->dev.of_node);
- 	netdev->phydev = NULL;
- }
- 
-@@ -982,18 +987,86 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
- 	struct lan743x_phy *phy = &adapter->phy;
- 	struct phy_device *phydev;
- 	struct net_device *netdev;
-+	struct device_node *phynode;
-+	u32 data;
-+	phy_interface_t phyifc = PHY_INTERFACE_MODE_GMII;
-+	bool fixed_link = false;
- 	int ret = -EIO;
- 
- 	netdev = adapter->netdev;
--	phydev = phy_find_first(adapter->mdiobus);
--	if (!phydev)
--		goto return_error;
-+	phynode = of_node_get(adapter->pdev->dev.of_node);
-+	if (phynode)
-+		of_get_phy_mode(phynode, &phyifc);
-+
-+	/* check if a fixed-link is defined in device-tree */
-+	if (phynode && of_phy_is_fixed_link(phynode)) {
-+		fixed_link = true;
-+		netdev_dbg(netdev, "fixed-link detected\n");
-+
-+		ret = of_phy_register_fixed_link(phynode);
-+		if (ret) {
-+			netdev_err(netdev, "cannot register fixed PHY\n");
-+			goto return_error;
-+		}
- 
--	ret = phy_connect_direct(netdev, phydev,
--				 lan743x_phy_link_status_change,
--				 PHY_INTERFACE_MODE_GMII);
--	if (ret)
--		goto return_error;
-+		phydev = of_phy_connect(netdev, phynode,
-+					lan743x_phy_link_status_change,
-+					0, phyifc);
-+		if (!phydev)
-+			goto return_error;
-+
-+		/* Configure MAC to fixed link parameters */
-+		data = lan743x_csr_read(adapter, MAC_CR);
-+		/* Disable auto negotiation */
-+		data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
-+		/* Set duplex mode */
-+		if (phydev->duplex)
-+			data |= MAC_CR_DPX_;
-+		else
-+			data &= ~MAC_CR_DPX_;
-+		/* Set bus speed */
-+		switch (phydev->speed) {
-+		case 10:
-+			data &= ~MAC_CR_CFG_H_;
-+			data &= ~MAC_CR_CFG_L_;
-+			break;
-+		case 100:
-+			data &= ~MAC_CR_CFG_H_;
-+			data |= MAC_CR_CFG_L_;
-+			break;
-+		case 1000:
-+			data |= MAC_CR_CFG_H_;
-+			data |= MAC_CR_CFG_L_;
-+			break;
-+		}
-+		/* Set interface mode */
-+		if (phyifc == PHY_INTERFACE_MODE_RGMII ||
-+		    phyifc == PHY_INTERFACE_MODE_RGMII_ID ||
-+		    phyifc == PHY_INTERFACE_MODE_RGMII_RXID ||
-+		    phyifc == PHY_INTERFACE_MODE_RGMII_TXID)
-+			/* RGMII */
-+			data &= ~MAC_CR_MII_EN_;
-+		else
-+			/* GMII */
-+			data |= MAC_CR_MII_EN_;
-+		lan743x_csr_write(adapter, MAC_CR, data);
-+	} else {
-+		phydev = phy_find_first(adapter->mdiobus);
-+		if (!phydev)
-+			goto return_error;
-+
-+		ret = phy_connect_direct(netdev, phydev,
-+					 lan743x_phy_link_status_change,
-+					 PHY_INTERFACE_MODE_GMII);
-+		/* Note: We cannot use phyifc here because this would be SGMII
-+		 * on a standard PC.
-+		 */
-+		if (ret)
-+			goto return_error;
-+	}
-+
-+	if (phynode)
-+		of_node_put(phynode);
- 
- 	/* MAC doesn't support 1000T Half */
- 	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-@@ -1004,10 +1077,13 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
- 	phy->fc_autoneg = phydev->autoneg;
- 
- 	phy_start(phydev);
--	phy_start_aneg(phydev);
-+	if (!fixed_link)
-+		phy_start_aneg(phydev);
- 	return 0;
- 
- return_error:
-+	if (phynode)
-+		of_node_put(phynode);
- 	return ret;
- }
- 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 3b02eeae5f45..e49f6b6cd440 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -104,10 +104,14 @@
- 	((value << 0) & FCT_FLOW_CTL_ON_THRESHOLD_)
- 
- #define MAC_CR				(0x100)
-+#define MAC_CR_MII_EN_			BIT(19)
- #define MAC_CR_EEE_EN_			BIT(17)
- #define MAC_CR_ADD_			BIT(12)
- #define MAC_CR_ASD_			BIT(11)
- #define MAC_CR_CNTR_RST_		BIT(5)
-+#define MAC_CR_DPX_			BIT(3)
-+#define MAC_CR_CFG_H_			BIT(2)
-+#define MAC_CR_CFG_L_			BIT(1)
- #define MAC_CR_RST_			BIT(0)
- 
- #define MAC_RX				(0x104)
--- 
-2.20.1
+or similar. No?
 
+                   Linus
