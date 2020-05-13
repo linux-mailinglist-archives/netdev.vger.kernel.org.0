@@ -2,77 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF531D227A
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 00:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD371D225F
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 00:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732189AbgEMW4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 18:56:15 -0400
-Received: from smtp3.emailarray.com ([65.39.216.17]:40683 "EHLO
-        smtp3.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732181AbgEMW4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 18:56:13 -0400
-Received: (qmail 95400 invoked by uid 89); 13 May 2020 22:49:30 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuMw==) (POLARISLOCAL)  
-  by smtp3.emailarray.com with SMTP; 13 May 2020 22:49:30 -0000
-Date:   Wed, 13 May 2020 15:49:27 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com,
-        kernel-team@fb.com, "Paul E . McKenney" <paulmck@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH bpf-next 0/6] BPF ring buffer
-Message-ID: <20200513224927.643hszw3q3cgx7e6@bsd-mbp.dhcp.thefacebook.com>
-References: <20200513192532.4058934-1-andriin@fb.com>
+        id S1731871AbgEMWuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 18:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731523AbgEMWub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 18:50:31 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54896C061A0C;
+        Wed, 13 May 2020 15:50:31 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id u6so1386259ljl.6;
+        Wed, 13 May 2020 15:50:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q/Oigr+3uZfiLaPfc3epkA1fLtCLP5pj4EA6nPtKRSc=;
+        b=nguQYG41jvXLgEprtQDdE6GosUcmgMemKIqnlJFnYAKpswtpWrij3m9IxHQf2uybjk
+         YDCXvtRdVkyWV97328Fmx0UIzdICAfkJSCtgy2iJVvgEd7y6+goFlrxA3hF7tVbD293m
+         Qxd6YFQZOd+kaEVycgFI3ckc6myLE/UZoEBQVHoh5SIwqUjpK9tiG0mtM99sr2xscQJ7
+         GJ3QMagKYZcu/CYzlasjlUEbN/gw8sKobma0dlViXzzLCy/9WzdfnjSTJ4roo+pf8KQc
+         K2ri1f2rWt4nkcV+tqzPXw/rWiYtMXdS/k49iXL0fZQzUljf5lQAUL5EBPienMqLsmz6
+         3jPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q/Oigr+3uZfiLaPfc3epkA1fLtCLP5pj4EA6nPtKRSc=;
+        b=Qs/Vux6XASl5JOki3TI0QacvsxXJiH81pTcBfxdYZNr2fMaqekwtYcWxfER+dfCjQR
+         e927IanvpvedaGyKQ7duPKu53V8W6AleDg1lWm7Da4CDA5mvQa8UBhU0gPkPLE+ErxCN
+         gwzYD2fJ0cmRAmbCIfuI3iMj5JIkHfrcRbUUr3xL2at3rpwFd+PjrFq3DXdifwaByUYn
+         Vk6GpAE81tYsufdnKzRNOjPEHn9ZtLTz5L3YXxIP05bNvqcElf9WON8DL64aIdU0r2rj
+         QENhTw4o0Bmw8TpLhSVe/SozX44K1F3UlQepmyzFNU/7EaWQcgCEckqlFxb4fZjNm9hZ
+         rHAg==
+X-Gm-Message-State: AOAM530K85fiYEuyg4zxl/44nLrhwLzcgND4bRsx3UwQfVk2mH6b2l75
+        2ViW15b8jzFOwRCL/a+L08uBZp60pCGYi5B0pfY=
+X-Google-Smtp-Source: ABdhPJzN3ySN/Thfh2m+erEMY5/DkyOIunD3tj8A5LEQeQKv07OxjIuBwGCM5ErOhqJ4nTY4fjmjIJ6qsiCk5W+S6BQ=
+X-Received: by 2002:a2e:a169:: with SMTP id u9mr816187ljl.144.1589410229680;
+ Wed, 13 May 2020 15:50:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200513192532.4058934-1-andriin@fb.com>
+References: <1589263005-7887-1-git-send-email-alan.maguire@oracle.com>
+ <20200513222424.4nfxgkequhdzn3u3@ast-mbp.dhcp.thefacebook.com> <dc6a17197c3406d877efd98de351e57d7bbe06a5.camel@perches.com>
+In-Reply-To: <dc6a17197c3406d877efd98de351e57d7bbe06a5.camel@perches.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 13 May 2020 15:50:17 -0700
+Message-ID: <CAADnVQLPSvRCO-xxW+Rcz4bzLM-DXjSzm8AwhyogrNTufBdoNw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 0/7] bpf, printk: add BTF-based type printing
+To:     Joe Perches <joe@perches.com>
+Cc:     Alan Maguire <alan.maguire@oracle.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 12:25:26PM -0700, Andrii Nakryiko wrote:
-> Implement a new BPF ring buffer, as presented at BPF virtual conference ([0]).
-> It presents an alternative to perf buffer, following its semantics closely,
-> but allowing sharing same instance of ring buffer across multiple CPUs
-> efficiently.
-> 
-> Most patches have extensive commentary explaining various aspects, so I'll
-> keep cover letter short. Overall structure of the patch set:
-> - patch #1 adds BPF ring buffer implementation to kernel and necessary
->   verifier support;
-> - patch #2 adds litmus tests validating all the memory orderings and locking
->   is correct;
-> - patch #3 is an optional patch that generalizes verifier's reference tracking
->   machinery to capture type of reference;
-> - patch #4 adds libbpf consumer implementation for BPF ringbuf;
-> - path #5 adds selftest, both for single BPF ring buf use case, as well as
->   using it with array/hash of maps;
-> - patch #6 adds extensive benchmarks and provide some analysis in commit
->   message, it build upon selftests/bpf's bench runner.
-> 
->   [0] https://docs.google.com/presentation/d/18ITdg77Bj6YDOH2LghxrnFxiPWe0fAqcmJY95t_qr0w
-> 
-> Cc: Paul E. McKenney <paulmck@kernel.org>
-> Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
+On Wed, May 13, 2020 at 3:48 PM Joe Perches <joe@perches.com> wrote:
+>
+> On Wed, 2020-05-13 at 15:24 -0700, Alexei Starovoitov wrote:
+> > On Tue, May 12, 2020 at 06:56:38AM +0100, Alan Maguire wrote:
+> > > The printk family of functions support printing specific pointer types
+> > > using %p format specifiers (MAC addresses, IP addresses, etc).  For
+> > > full details see Documentation/core-api/printk-formats.rst.
+> > >
+> > > This patchset proposes introducing a "print typed pointer" format
+> > > specifier "%pT"; the argument associated with the specifier is of
+> > > form "struct btf_ptr *" which consists of a .ptr value and a .type
+> > > value specifying a stringified type (e.g. "struct sk_buff") or
+> > > an .id value specifying a BPF Type Format (BTF) id identifying
+> > > the appropriate type it points to.
+> > >
+> > >   pr_info("%pT", BTF_PTR_TYPE(skb, "struct sk_buff"));
+> > >
+> > > ...gives us:
+> > >
+> > > (struct sk_buff){
+> > >  .transport_header = (__u16)65535,
+> > >  .mac_header = (__u16)65535,
+> > >  .end = (sk_buff_data_t)192,
+> > >  .head = (unsigned char *)000000007524fd8b,
+> > >  .data = (unsigned char *)000000007524fd8b,
+> >
+> > could you add "0x" prefix here to make it even more C like
+> > and unambiguous ?
+>
+> linux pointers are not emitted with an 0x prefix
 
-Looks very nice!  A few random questions:
-
-1) Why not use a structure for the header, instead of 2 32bit ints?
-
-2) Would it make sense to reserve X bytes, but only commit Y?
-   the offset field could be used to write the record length.
-
-   E.g.:
-      reserve 512 bytes    [BUSYBIT | 512][PG OFFSET]
-      commit  400 bytes    [ 512 ] [ 400 ]
-
-3) Why have 2 separate pages for producer/consumer, instead of
-   just aligning to a smp cache line (or even 1/2 page?)
-
-4) The XOR of busybit makes me wonder if there is anything that
-   prevents the system from calling commit twice?
---
-Jonathan
+So? This is not at all comparable to %p
