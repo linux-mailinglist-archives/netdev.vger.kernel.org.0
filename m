@@ -2,85 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 929591D09E7
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 09:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D774C1D0A03
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 09:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729840AbgEMH1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 03:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728490AbgEMH1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 03:27:49 -0400
-Received: from forwardcorp1p.mail.yandex.net (forwardcorp1p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b6:217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B01C061A0C;
-        Wed, 13 May 2020 00:27:48 -0700 (PDT)
-Received: from mxbackcorp2j.mail.yandex.net (mxbackcorp2j.mail.yandex.net [IPv6:2a02:6b8:0:1619::119])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id E3AF62E1454;
-        Wed, 13 May 2020 10:27:43 +0300 (MSK)
-Received: from localhost (localhost [::1])
-        by mxbackcorp2j.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id KFpMUGJ3fY-RhXSFNkK;
-        Wed, 13 May 2020 10:27:43 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1589354863; bh=fqTiNo7qgWHswfMQuWMsYkNbunOtZFsc+gVHEJqehuM=;
-        h=Subject:In-Reply-To:Cc:Date:References:To:From:Message-Id;
-        b=JWdpHWOZZIaiOXsS0PqNcPWXouB+6R7VLJw+CpzqnlvlBpv1KCr0rctlRYuF4Gur9
-         0J5KL+MM0M5lDsGGVlQvj7ve3qxTh+bvHOrwiukVzOi+3uhOnbkIlQnNVpl3gjP2fV
-         o6JLQjeikub1PL99IcjMO4mpe/rkBLlvdv5gyCQM=
-Authentication-Results: mxbackcorp2j.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-X-Yandex-Sender-Uid: 1120000000093952
-X-Yandex-Avir: 1
-Received: from mxbackcorp1g.mail.yandex.net (localhost [::1])
-        by mxbackcorp1g.mail.yandex.net with LMTP id SxxvUWXl5z-KQyWRy6P
-        for <zeil@yandex-team.ru>; Wed, 13 May 2020 10:27:33 +0300
-Received: by iva4-6d0ca09d92db.qloud-c.yandex.net with HTTP;
-        Wed, 13 May 2020 10:27:32 +0300
-From:   =?utf-8?B?0JTQvNC40YLRgNC40Lkg0K/QutGD0L3QuNC9?= 
-        <zeil@yandex-team.ru>
-To:     David Ahern <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>
-In-Reply-To: <42814b4f-dc95-d246-47a4-2b8c46dd607e@gmail.com>
-References: <20200509165202.17959-1-zeil@yandex-team.ru> <42814b4f-dc95-d246-47a4-2b8c46dd607e@gmail.com>
-Subject: Re: [PATCH iproute2-next v2 1/3] ss: introduce cgroup2 cache and helper functions
-MIME-Version: 1.0
-X-Mailer: Yamail [ http://yandex.ru ] 5.0
-Date:   Wed, 13 May 2020 10:27:42 +0300
-Message-Id: <25511589354341@mail.yandex-team.ru>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset=utf-8
+        id S1729887AbgEMHmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 03:42:44 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:46286 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729681AbgEMHmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 03:42:44 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04D7VvL0155586;
+        Wed, 13 May 2020 03:42:38 -0400
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3101m499h6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 May 2020 03:42:37 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 04D7ekwO027966;
+        Wed, 13 May 2020 07:42:35 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3100ubge6m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 May 2020 07:42:35 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 04D7gWrb63439226
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 13 May 2020 07:42:33 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D6BED11C04A;
+        Wed, 13 May 2020 07:42:32 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7BFF911C052;
+        Wed, 13 May 2020 07:42:32 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 13 May 2020 07:42:32 +0000 (GMT)
+From:   Ursula Braun <ubraun@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, kgraul@linux.ibm.com,
+        weiyongjun1@huawei.com, ubraun@linux.ibm.com
+Subject: [PATCH net 0/2] s390/net: updates 2020-05-13
+Date:   Wed, 13 May 2020 09:42:28 +0200
+Message-Id: <20200513074230.967-1-ubraun@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-13_02:2020-05-11,2020-05-13 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 mlxlogscore=581 priorityscore=1501 phishscore=0 clxscore=1015
+ cotscore=-2147483648 impostorscore=0 spamscore=0 adultscore=0 mlxscore=0
+ malwarescore=0 suspectscore=1 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005130065
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dave,
 
+please apply the fix from Wei Yongjun to netdev's net tree and
+add Karsten Graul as co-maintainer for drivers/s390/net.
 
-13.05.2020, 05:03, "David Ahern" <dsahern@gmail.com>:
-> On 5/9/20 10:52 AM, Dmitry Yakunin wrote:
->>  This patch prepares infrastructure for matching sockets by cgroups.
->>  Two helper functions are added for transformation between cgroup v2 ID
->>  and pathname. Cgroup v2 cache is implemented as hash table indexed by ID.
->>  This cache is needed for faster lookups of socket cgroup.
->>
->>  v2:
->>    - style fixes (David Ahern)
->
-> you missed my other comment about this set. Running this new command on
-> a kernel without support should give the user a better error message
-> than a string of Invalid arguments:
->
-> $ uname -r
-> 5.3.0-51-generic
->
-> $ ss -a cgroup /sys/fs/cgroup/unified
-> RTNETLINK answers: Invalid argument
-> RTNETLINK answers: Invalid argument
-> RTNETLINK answers: Invalid argument
-> RTNETLINK answers: Invalid argument
-> RTNETLINK answers: Invalid argument
-> RTNETLINK answers: Invalid argument
-> RTNETLINK answers: Invalid argument
-> RTNETLINK answers: Invalid argument
-> RTNETLINK answers: Invalid argument
+Thanks, Ursula
 
-No, i didn't miss your comment. This patchset was extended with the third patch which includes bytecode filter checking.
+Ursula Braun (1):
+  MAINTAINERS: add Karsten Graul as S390 NETWORK DRIVERS maintainer
+
+Wei Yongjun (1):
+  s390/ism: fix error return code in ism_probe()
+
+ MAINTAINERS                | 1 +
+ drivers/s390/net/ism_drv.c | 4 +++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+-- 
+2.17.1
+
