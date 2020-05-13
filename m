@@ -2,194 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B631D168D
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:55:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB3871D16A5
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387791AbgEMNz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 09:55:56 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:34676 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727792AbgEMNz4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 09:55:56 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 67BEF1A1525;
-        Wed, 13 May 2020 15:55:54 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 5B0C81A1521;
-        Wed, 13 May 2020 15:55:54 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 0917A2059E;
-        Wed, 13 May 2020 15:55:53 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     brouer@redhat.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH RESEND net-next] dpaa2-eth: add bulking to XDP_TX
-Date:   Wed, 13 May 2020 16:55:46 +0300
-Message-Id: <20200513135546.12328-1-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2388462AbgEMN6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 09:58:49 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:40430 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387608AbgEMN6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 09:58:48 -0400
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id 528A53F1C16;
+        Wed, 13 May 2020 15:58:45 +0200 (CEST)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1jYruH-0002AG-7t; Wed, 13 May 2020 15:58:45 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net-next] netns: enable to inherit devconf from current netns
+Date:   Wed, 13 May 2020 15:58:43 +0200
+Message-Id: <20200513135843.8242-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add driver level bulking to the XDP_TX action.
+The goal is to be able to inherit the initial devconf parameters from the
+current netns, ie the netns where this new netns has been created.
 
-An array of frame descriptors is held for each Tx frame queue and
-populated accordingly when the action returned by the XDP program is
-XDP_TX. The frames will be actually enqueued only when the array is
-filled. At the end of the NAPI cycle a flush on the queued frames is
-performed in order to enqueue the remaining FDs.
+This is useful in a containers environment where /proc/sys is read only.
+For example, if a pod is created with specifics devconf parameters and has
+the capability to create netns, the user expects to get the same parameters
+than his 'init_net', which is not the real init_net in this case.
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 68 ++++++++++++-------
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  1 +
- 2 files changed, 46 insertions(+), 23 deletions(-)
+ Documentation/admin-guide/sysctl/net.rst |  4 +++-
+ net/core/sysctl_net_core.c               |  4 +++-
+ net/ipv4/devinet.c                       | 23 ++++++++++++++++++-----
+ net/ipv6/addrconf.c                      | 23 ++++++++++++++++++++---
+ 4 files changed, 44 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 0f3e842a4fd6..b1c64288a1fb 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -273,13 +273,43 @@ static int dpaa2_eth_xdp_flush(struct dpaa2_eth_priv *priv,
- 	return total_enqueued;
- }
+diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
+index 2ad1b77a7182..42cd04bca548 100644
+--- a/Documentation/admin-guide/sysctl/net.rst
++++ b/Documentation/admin-guide/sysctl/net.rst
+@@ -339,7 +339,9 @@ settings from init_net and for IPv6 we reset all settings to default.
  
--static int xdp_enqueue(struct dpaa2_eth_priv *priv, struct dpaa2_fd *fd,
--		       void *buf_start, u16 queue_id)
-+static void xdp_tx_flush(struct dpaa2_eth_priv *priv,
-+			 struct dpaa2_eth_channel *ch,
-+			 struct dpaa2_eth_fq *fq)
-+{
-+	struct rtnl_link_stats64 *percpu_stats;
-+	struct dpaa2_fd *fds;
-+	int enqueued, i;
-+
-+	percpu_stats = this_cpu_ptr(priv->percpu_stats);
-+
-+	// enqueue the array of XDP_TX frames
-+	enqueued = dpaa2_eth_xdp_flush(priv, fq, &fq->xdp_tx_fds);
-+
-+	/* update statistics */
-+	percpu_stats->tx_packets += enqueued;
-+	fds = fq->xdp_tx_fds.fds;
-+	for (i = 0; i < enqueued; i++) {
-+		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fds[i]);
-+		ch->stats.xdp_tx++;
-+	}
-+	for (i = enqueued; i < fq->xdp_tx_fds.num; i++) {
-+		xdp_release_buf(priv, ch, dpaa2_fd_get_addr(&fds[i]));
-+		percpu_stats->tx_errors++;
-+		ch->stats.xdp_tx_err++;
-+	}
-+	fq->xdp_tx_fds.num = 0;
-+}
-+
-+static void xdp_enqueue(struct dpaa2_eth_priv *priv,
-+			struct dpaa2_eth_channel *ch,
-+			struct dpaa2_fd *fd,
-+			void *buf_start, u16 queue_id)
- {
--	struct dpaa2_eth_fq *fq;
- 	struct dpaa2_faead *faead;
-+	struct dpaa2_fd *dest_fd;
-+	struct dpaa2_eth_fq *fq;
- 	u32 ctrl, frc;
--	int i, err;
+ If set to 1, both IPv4 and IPv6 settings are forced to inherit from
+ current ones in init_net. If set to 2, both IPv4 and IPv6 settings are
+-forced to reset to their default values.
++forced to reset to their default values. If set to 3, both IPv4 and IPv6
++settings are forced to inherit from current ones in the netns where this
++new netns has been created.
  
- 	/* Mark the egress frame hardware annotation area as valid */
- 	frc = dpaa2_fd_get_frc(fd);
-@@ -296,13 +326,13 @@ static int xdp_enqueue(struct dpaa2_eth_priv *priv, struct dpaa2_fd *fd,
- 	faead->conf_fqid = 0;
+ Default : 0  (for compatibility reasons)
  
- 	fq = &priv->fq[queue_id];
--	for (i = 0; i < DPAA2_ETH_ENQUEUE_RETRIES; i++) {
--		err = priv->enqueue(priv, fq, fd, 0, 1, NULL);
--		if (err != -EBUSY)
--			break;
--	}
-+	dest_fd = &fq->xdp_tx_fds.fds[fq->xdp_tx_fds.num++];
-+	memcpy(dest_fd, fd, sizeof(*dest_fd));
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 0ddb13a6282b..b109cc8a6dd8 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -23,6 +23,7 @@
+ #include <net/pkt_sched.h>
  
--	return err;
-+	if (fq->xdp_tx_fds.num < DEV_MAP_BULK_SIZE)
-+		return;
-+
-+	xdp_tx_flush(priv, ch, fq);
- }
+ static int two __maybe_unused = 2;
++static int three = 3;
+ static int min_sndbuf = SOCK_MIN_SNDBUF;
+ static int min_rcvbuf = SOCK_MIN_RCVBUF;
+ static int max_skb_frags = MAX_SKB_FRAGS;
+@@ -39,6 +40,7 @@ EXPORT_SYMBOL(sysctl_fb_tunnels_only_for_init_net);
+  *     IPv6: reset all settings to default
+  * 1 - Both inherit all current settings from init_net
+  * 2 - Both reset all settings to default
++ * 3 - Both inherit all settings from current netns
+  */
+ int sysctl_devconf_inherit_init_net __read_mostly;
+ EXPORT_SYMBOL(sysctl_devconf_inherit_init_net);
+@@ -553,7 +555,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= &three,
+ 	},
+ 	{
+ 		.procname	= "high_order_alloc_disable",
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index fc94f82f82c7..f048d0a188b7 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -2666,11 +2666,24 @@ static __net_init int devinet_init_net(struct net *net)
+ 	tbl[0].extra2 = net;
+ #endif
  
- static u32 run_xdp(struct dpaa2_eth_priv *priv,
-@@ -311,14 +341,11 @@ static u32 run_xdp(struct dpaa2_eth_priv *priv,
- 		   struct dpaa2_fd *fd, void *vaddr)
- {
- 	dma_addr_t addr = dpaa2_fd_get_addr(fd);
--	struct rtnl_link_stats64 *percpu_stats;
- 	struct bpf_prog *xdp_prog;
- 	struct xdp_buff xdp;
- 	u32 xdp_act = XDP_PASS;
- 	int err;
+-	if ((!IS_ENABLED(CONFIG_SYSCTL) ||
+-	     sysctl_devconf_inherit_init_net != 2) &&
+-	    !net_eq(net, &init_net)) {
+-		memcpy(all, init_net.ipv4.devconf_all, sizeof(ipv4_devconf));
+-		memcpy(dflt, init_net.ipv4.devconf_dflt, sizeof(ipv4_devconf_dflt));
++	if (!net_eq(net, &init_net)) {
++		if (IS_ENABLED(CONFIG_SYSCTL) &&
++		    sysctl_devconf_inherit_init_net == 3) {
++			/* copy from the current netns */
++			memcpy(all, current->nsproxy->net_ns->ipv4.devconf_all,
++			       sizeof(ipv4_devconf));
++			memcpy(dflt,
++			       current->nsproxy->net_ns->ipv4.devconf_dflt,
++			       sizeof(ipv4_devconf_dflt));
++		} else if (!IS_ENABLED(CONFIG_SYSCTL) ||
++			   sysctl_devconf_inherit_init_net != 2) {
++			/* inherit == 0 or 1: copy from init_net */
++			memcpy(all, init_net.ipv4.devconf_all,
++			       sizeof(ipv4_devconf));
++			memcpy(dflt, init_net.ipv4.devconf_dflt,
++			       sizeof(ipv4_devconf_dflt));
++		}
++		/* else inherit == 2: use compiled values */
+ 	}
  
--	percpu_stats = this_cpu_ptr(priv->percpu_stats);
--
- 	rcu_read_lock();
+ #ifdef CONFIG_SYSCTL
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index fd885f06c4ed..ab7e839753ae 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -6991,9 +6991,26 @@ static int __net_init addrconf_init_net(struct net *net)
+ 		goto err_alloc_dflt;
  
- 	xdp_prog = READ_ONCE(ch->xdp.prog);
-@@ -341,16 +368,7 @@ static u32 run_xdp(struct dpaa2_eth_priv *priv,
- 	case XDP_PASS:
- 		break;
- 	case XDP_TX:
--		err = xdp_enqueue(priv, fd, vaddr, rx_fq->flowid);
--		if (err) {
--			xdp_release_buf(priv, ch, addr);
--			percpu_stats->tx_errors++;
--			ch->stats.xdp_tx_err++;
--		} else {
--			percpu_stats->tx_packets++;
--			percpu_stats->tx_bytes += dpaa2_fd_get_len(fd);
--			ch->stats.xdp_tx++;
--		}
-+		xdp_enqueue(priv, ch, fd, vaddr, rx_fq->flowid);
- 		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(xdp_act);
-@@ -1168,6 +1186,7 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
- 	int store_cleaned, work_done;
- 	struct list_head rx_list;
- 	int retries = 0;
-+	u16 flowid;
- 	int err;
+ 	if (IS_ENABLED(CONFIG_SYSCTL) &&
+-	    sysctl_devconf_inherit_init_net == 1 && !net_eq(net, &init_net)) {
+-		memcpy(all, init_net.ipv6.devconf_all, sizeof(ipv6_devconf));
+-		memcpy(dflt, init_net.ipv6.devconf_dflt, sizeof(ipv6_devconf_dflt));
++	    !net_eq(net, &init_net)) {
++		switch (sysctl_devconf_inherit_init_net) {
++		case 1:  /* copy from init_net */
++			memcpy(all, init_net.ipv6.devconf_all,
++			       sizeof(ipv6_devconf));
++			memcpy(dflt, init_net.ipv6.devconf_dflt,
++			       sizeof(ipv6_devconf_dflt));
++			break;
++		case 3: /* copy from the current netns */
++			memcpy(all, current->nsproxy->net_ns->ipv6.devconf_all,
++			       sizeof(ipv6_devconf));
++			memcpy(dflt,
++			       current->nsproxy->net_ns->ipv6.devconf_dflt,
++			       sizeof(ipv6_devconf_dflt));
++			break;
++		case 0:
++		case 2:
++			/* use compiled values */
++			break;
++		}
+ 	}
  
- 	ch = container_of(napi, struct dpaa2_eth_channel, napi);
-@@ -1190,6 +1209,7 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
- 			break;
- 		if (fq->type == DPAA2_RX_FQ) {
- 			rx_cleaned += store_cleaned;
-+			flowid = fq->flowid;
- 		} else {
- 			txconf_cleaned += store_cleaned;
- 			/* We have a single Tx conf FQ on this channel */
-@@ -1232,6 +1252,8 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
- 
- 	if (ch->xdp.res & XDP_REDIRECT)
- 		xdp_do_flush_map();
-+	else if (rx_cleaned && ch->xdp.res & XDP_TX)
-+		xdp_tx_flush(priv, ch, &priv->fq[flowid]);
- 
- 	return work_done;
- }
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index b5f7dbbc2a02..9c37b6946cec 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -334,6 +334,7 @@ struct dpaa2_eth_fq {
- 	struct dpaa2_eth_fq_stats stats;
- 
- 	struct dpaa2_eth_xdp_fds xdp_redirect_fds;
-+	struct dpaa2_eth_xdp_fds xdp_tx_fds;
- };
- 
- struct dpaa2_eth_ch_xdp {
+ 	/* these will be inherited by all namespaces */
 -- 
-2.17.1
+2.26.2
 
