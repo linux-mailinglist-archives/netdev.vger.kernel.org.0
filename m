@@ -2,55 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60A671D180F
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 16:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50FE21D1819
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 16:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389108AbgEMO5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 10:57:19 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49148 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389058AbgEMO5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 10:57:19 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jYson-0002dc-Ir; Wed, 13 May 2020 16:57:09 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jYson-0002vB-7v; Wed, 13 May 2020 16:57:09 +0200
-Subject: Re: [PATCH bpf-next v4] libbpf: fix probe code to return EPERM if
- encountered
-To:     Eelco Chaudron <echaudro@redhat.com>, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        toke@redhat.com
-References: <158927424896.2342.10402475603585742943.stgit@ebuild>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <1c706733-47cb-0216-e8a6-214979af7494@iogearbox.net>
-Date:   Wed, 13 May 2020 16:57:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1733191AbgEMO6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 10:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728841AbgEMO6y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 10:58:54 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771BBC061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 07:58:54 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id fu13so11092677pjb.5
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 07:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8cTaO0HGQkZMLZJDnE84KqpjNIIcRtZLdLfWnFrVAnU=;
+        b=JU+XwxGQyGMgH+XRIP1ZgLAfyRclvd/IKwCOpJErhmEsYUCdf5vsy4bXDJDL/ozuEz
+         1Nz9w9ojyM7xEWxZAvJRq/oS9vun/iP2Zsu89xUiOf7h29SYhnXZKOrwL/ercjUFuFHF
+         eU58QD2C/HHhfnI2/krVXXyqrOOmCGZ+D8Samw/LyzkgCWQfGPzlp1nGrd8ORLp1JF8x
+         p+xKRfM5MAKREQwsAeWESsZosbah/pFMUffROw/1lZ7Vjb6hmxn27SMogg/B2m7EWLEq
+         Q6IXX5gig85ajpHyqkbx1rtd72899mfrWEqIUdxGa2B0KPSkDtYlLUrYsOZWhZ5DWv1p
+         KNfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8cTaO0HGQkZMLZJDnE84KqpjNIIcRtZLdLfWnFrVAnU=;
+        b=TEmFqZ+cBjtSYKYqGcM+f/W2OKMNEOfeyL6yFRxka45KUyqk0xJe5dtfstOvRt3cvb
+         6ifUtY2IQEpjadceVhLh4WjBjg6jZd02mgm7VseJdU9caa9X1GEOp/lOcLICbn1PB6h4
+         nRO3vCoLYO70ImJs768EM6KrSwBTrKlWEGdK8JvVftL5QPLkSKtOp4LlmqHEdJ05RkKH
+         W/UA6fKfhW3NDw9KVRWy0MKHkUgUnwpCgfPUf9bADC2Rbw/jMWxuopXkcPOYO6L8tNRv
+         uVjwz8/n3nOZQIBM9z9kJNa3zGOstkTawvWVR6h+Mtv9B1ShDd0yjM25hINP/c9F+PP3
+         RC8w==
+X-Gm-Message-State: AOAM532rFp5sQR0pjhcfnDJ5h5EcxVYmRL5S7angHiqf51ns1FtMBv8M
+        oJUS1mnhvMBLZbTlqIyA2hiOLdj0
+X-Google-Smtp-Source: ABdhPJxuxuVr7lZQ1y1riHqe5k6Zl/2ehBcJatEC3iilMc9GzylyBLw8R497o85OlOYQYkeV7dgYRg==
+X-Received: by 2002:a17:902:b183:: with SMTP id s3mr8393722plr.234.1589381933031;
+        Wed, 13 May 2020 07:58:53 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a2sm2187400pfi.208.2020.05.13.07.58.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 07:58:52 -0700 (PDT)
+Subject: Re: [PATCH] dt-bindings: net: dsa: b53: Add missing size and address
+ cells to example
+To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org
+References: <20200513140249.24900-1-kurt@linutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <6ce7e25b-ebc3-bf0e-8f35-66ee9b8b0a53@gmail.com>
+Date:   Wed, 13 May 2020 07:58:50 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <158927424896.2342.10402475603585742943.stgit@ebuild>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200513140249.24900-1-kurt@linutronix.de>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25811/Wed May 13 14:11:53 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/12/20 11:04 AM, Eelco Chaudron wrote:
-> When the probe code was failing for any reason ENOTSUP was returned, even
-> if this was due to no having enough lock space. This patch fixes this by
-> returning EPERM to the user application, so it can respond and increase
-> the RLIMIT_MEMLOCK size.
-> 
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 
-Applied, thanks!
+
+On 5/13/2020 7:02 AM, Kurt Kanzenbach wrote:
+> Add the missing size and address cells to the b53 example. Otherwise, it may not
+> compile or issue warnings if directly copied into a device tree.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
