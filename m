@@ -2,117 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 086621D1012
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 12:43:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAEA31D1043
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 12:50:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730611AbgEMKnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 06:43:46 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60802 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727794AbgEMKnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 06:43:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589366624;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=By1oHJ55HYnTp2+5ih4+YBVA/OqGbmChr/BDl7CqcIw=;
-        b=iblspMsOpLDEorNXFbjZbCgbi1WJNpp7BszNKKm4DeuCH2fDCxMYBHvZP5N/mpLduplE2m
-        ImiWspUJ8YD+L8G7s5AG4hsenzzROby4lAgP1gqpAM/yLPOiGSa7svl8q4xHV1wdjTWhW2
-        29g7L6B/qNnqK1iMAffun/IQJoQkW60=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-5-Ke8XHpp_O9eaYrXcg-DhjQ-1; Wed, 13 May 2020 06:43:42 -0400
-X-MC-Unique: Ke8XHpp_O9eaYrXcg-DhjQ-1
-Received: by mail-lf1-f70.google.com with SMTP id c7so5982667lfp.13
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:43:42 -0700 (PDT)
+        id S1729420AbgEMKu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 06:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726907AbgEMKuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 06:50:55 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430F6C061A0E
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:50:55 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id s1so142428qkf.9
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:50:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=o6RF/R6nRQ24p935e51htzLuDvkMpsHnIopBh1qLWjw=;
+        b=NFawZPSY96WEDGV0An6C8cEVv9LnWtImKiszvdFNYCXVeQsIMqj0zPogcRzsak+YA2
+         0l2tn3kPOa+7ZrmY02IwaRMihrn4W1zTvxSR95KNG+ZmaADaQ1DoT96Dd8P9rlHB2j5f
+         eBiG0FyTo7b6QhaBbNw6G163MBBr5aSp6/SQQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=By1oHJ55HYnTp2+5ih4+YBVA/OqGbmChr/BDl7CqcIw=;
-        b=oML6pTIYwgi5T85dt+cRKhrSeBdqpj2xAYUPDxEfw4b9mM20xLdVNTFtt7ta7nV8mK
-         NEMGyiL+WC6XfZe6V6ZHBDQkmPK4BNPOzmLDsQONofIzhXkFVOve1tc9q+zEwxToc4Wi
-         WuPT7PcpdAs/JxR5wlqfSEeiWEo/MMBVQYM1UhmyH66PgX0B+PTRIwrU33mtKvpl7LoY
-         pxE/dm8owjXQjfvL3gUi7gmjf3RiTnF137Hd09Y0RjkrbpOpQ0R9XzBChofrqTHZiPV+
-         mPv7Ay7jNFl44IuTK1yc2njkrk9JgxH1L/eLZWA8MjD1BTGYMUnqx7eBBD8FsM31UVWX
-         RXuQ==
-X-Gm-Message-State: AOAM530IVgR115XnfgpsB8TxoRMIlHsyWv0Y6PccYwBxQMFbJSrtM1kF
-        pY0aqalHMNc7Dej8/J8zGsZ/zsU9zxrA9bhRIw1qIqs2EaPOrRiJ/m81wARCWgoEqR12KbdoWLj
-        /TOVeI2nAur7nAyi0
-X-Received: by 2002:a2e:8047:: with SMTP id p7mr15959233ljg.206.1589366621126;
-        Wed, 13 May 2020 03:43:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyqz6l4idmYLxxyBCo7YDhy3gx6Get0+fR5Q+8aE+Wt9/2/vDg6/BLhI4laboyuOPLXXu1znQ==
-X-Received: by 2002:a2e:8047:: with SMTP id p7mr15959225ljg.206.1589366620919;
-        Wed, 13 May 2020 03:43:40 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id j2sm15509102lfm.68.2020.05.13.03.43.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2020 03:43:40 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7F76818150C; Wed, 13 May 2020 12:43:39 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, brouer@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress path
-In-Reply-To: <20200513014607.40418-1-dsahern@kernel.org>
-References: <20200513014607.40418-1-dsahern@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 13 May 2020 12:43:39 +0200
-Message-ID: <87sgg4t8ro.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=o6RF/R6nRQ24p935e51htzLuDvkMpsHnIopBh1qLWjw=;
+        b=kld6Xfe9e9xy0rZ9CIhlYH2/W3qYzTk3MuSnLR4JhW5YyA3Ta5wzqfzwjOAm3qME/j
+         oafTVUxKzjVC4+n4UXIV6GbAIZ+Ic3SZ3tXB1Ygv2ttJK3Eti3p/U2W6ptuqYI/GRzFS
+         1RP3l28J06EAYEoDXc0pmarI8EDJiVVBZ/x5yGUYiGscUpKQ4alUdE+JVuZfwjMXsQcz
+         Zy168uvaeIH+x5dMnHSC4bjMVKnjpgm73WTbyc0OPiApgu3ryM1R/1AIXhG9qJKXXH1D
+         dMf/pE3ALO3dRl77Wof1moUNbsB5AD2fkYT98mvHTYoxGXjgiMIgOby0DWI/WJ23FQWF
+         NmBQ==
+X-Gm-Message-State: AGi0PuYbENjYhBweVAm9JQSAq5TXw722tAK4JpaFJF0+gx3In8LiA0As
+        A/5hWhjRcy2kbS7hBkIw33dhGQ1GHnlYpcl4g5yDew==
+X-Google-Smtp-Source: APiQypLoXfq1+PMeeoxxa6kAuVOtGxB0PsKlzBMx4xsPyXCS3MOLmm8Q+KsbxzPd2hhJA2wOHbtUTs+v+GidleTZmcs=
+X-Received: by 2002:a37:9d4f:: with SMTP id g76mr16242977qke.235.1589367054213;
+ Wed, 13 May 2020 03:50:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20200513031930.86895-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20200513031930.86895-1-alexei.starovoitov@gmail.com>
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Wed, 13 May 2020 11:50:42 +0100
+Message-ID: <CAJPywT+c8uvi2zgUD_jObmi9T6j50THzjQHg-mudNrEC2HuJvg@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 0/3] Introduce CAP_BPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        network dev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        kernel-team@fb.com, linux-security-module@vger.kernel.org,
+        acme@redhat.com, jamorris@linux.microsoft.com,
+        Jann Horn <jannh@google.com>, kpsingh@google.com,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@kernel.org> writes:
+On Wed, May 13, 2020 at 4:19 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> CAP_BPF solves three main goals:
+> 1. provides isolation to user space processes that drop CAP_SYS_ADMIN and switch to CAP_BPF.
+>    More on this below. This is the major difference vs v4 set back from Sep 2019.
+> 2. makes networking BPF progs more secure, since CAP_BPF + CAP_NET_ADMIN
+>    prevents pointer leaks and arbitrary kernel memory access.
+> 3. enables fuzzers to exercise all of the verifier logic. Eventually finding bugs
+>    and making BPF infra more secure. Currently fuzzers run in unpriv.
+>    They will be able to run with CAP_BPF.
+>
 
-> From: David Ahern <dahern@digitalocean.com>
->
-> This series adds support for XDP in the egress path by introducing
-> a new XDP attachment type, BPF_XDP_EGRESS, and adding a UAPI to
-> if_link.h for attaching the program to a netdevice and reporting
-> the program. This allows bpf programs to be run on redirected xdp
-> frames with the context showing the Tx device.
->
-> This is a missing primitive for XDP allowing solutions to build small,
-> targeted programs properly distributed in the networking path allowing,
-> for example, an egress firewall/ACL/traffic verification or packet
-> manipulation based on data specific to the egress device.
->
-> Nothing about running a program in the Tx path requires driver specific
-> resources like the Rx path has. Thus, programs can be run in core
-> code and attached to the net_device struct similar to skb mode. The
-> egress attach is done using the new XDP_FLAGS_EGRESS_MODE flag, and
-> is reported by the kernel using the XDP_ATTACHED_EGRESS_CORE attach
-> flag with IFLA_XDP_EGRESS_PROG_ID making the api similar to existing
-> APIs for XDP.
->
-> The egress program is run in bq_xmit_all before invoking ndo_xdp_xmit.
-> This is similar to cls_bpf programs which run before the call to
-> ndo_dev_xmit. Together the 2 locations cover all packets about to be
-> sent to a device for Tx.
->
-> xdp egress programs are not run on skbs, so a cls-bpf counterpart
-> should also be attached to the device to cover all packets -
-> xdp_frames and skbs.
->
-> v5:
-> - rebased to top of bpf-next
-> - dropped skb path; cls-bpf provides an option for the same functionality
->   without having to take a performance hit (e.g., disabling GSO).
+Alexei, looking at this from a user point of view, this looks fine.
 
-I don't like this. I makes the egress hook asymmetrical with the ingress
-hook (ingress hook sees all traffic, egress only some of it). If the
-performance hit of disabling GSO is the concern, maybe it's better to
-wait until we figure out how to deal with that (presumably by
-multi-buffer XDP)?
+I'm slightly worried about REUSEPORT_EBPF. Currently without your
+patch, as far as I understand it:
 
--Toke
+- You can load SOCKET_FILTER and SO_ATTACH_REUSEPORT_EBPF without any
+permissions
 
+- For loading BPF_PROG_TYPE_SK_REUSEPORT program and for SOCKARRAY map
+creation CAP_SYS_ADMIN is needed. But again, no permissions check for
+SO_ATTACH_REUSEPORT_EBPF later.
+
+If I read the patchset correctly, the former SOCKET_FILTER case
+remains as it is and is not affected in any way by presence or absence
+of CAP_BPF.
+
+The latter case is different. Presence of CAP_BPF is sufficient for
+map creation, but not sufficient for loading SK_REUSEPORT program. It
+still requires CAP_SYS_ADMIN. I think it's a good opportunity to relax
+this CAP_SYS_ADMIN requirement. I think the presence of CAP_BPF should
+be sufficient for loading BPF_PROG_TYPE_SK_REUSEPORT.
+
+Our specific use case is simple - we want an application program -
+like nginx - to control REUSEPORT programs. We will grant it CAP_BPF,
+but we don't want to grant it CAP_SYS_ADMIN.
+
+Marek
