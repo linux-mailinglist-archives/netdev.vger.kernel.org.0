@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F3711D044A
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:20:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B6DB1D0435
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732035AbgEMBUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 21:20:52 -0400
-Received: from kvm5.telegraphics.com.au ([98.124.60.144]:48866 "EHLO
-        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731604AbgEMBUv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 21:20:51 -0400
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by kvm5.telegraphics.com.au (Postfix) with ESMTP id F311729CEA;
-        Tue, 12 May 2020 21:14:48 -0400 (EDT)
-Date:   Wed, 13 May 2020 11:14:56 +1000 (AEST)
-From:   Finn Thain <fthain@telegraphics.com.au>
-To:     Markus Elfring <Markus.Elfring@web.de>
-cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christophe Jaillet <christophe.jaillet@wanadoo.fr>
-Subject: Re: net/sonic: Fix some resource leaks in error handling paths
-In-Reply-To: <3fabce05-7da9-7daa-d92c-411369f35b4a@web.de>
-Message-ID: <alpine.LNX.2.22.394.2005131028450.20@nippy.intranet>
-References: <b7651b26-ac1e-6281-efb2-7eff0018b158@web.de> <alpine.LNX.2.22.394.2005100922240.11@nippy.intranet> <9d279f21-6172-5318-4e29-061277e82157@web.de> <alpine.LNX.2.22.394.2005101738510.11@nippy.intranet> <bc70e24c-dd31-75b7-6ece-2ad31982641e@web.de>
- <alpine.LNX.2.22.394.2005110845060.8@nippy.intranet> <9994a7de-0399-fb34-237a-a3c71b3cf568@web.de> <alpine.LNX.2.22.394.2005120905410.8@nippy.intranet> <3fabce05-7da9-7daa-d92c-411369f35b4a@web.de>
+        id S1731915AbgEMBQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 21:16:29 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:56812 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728131AbgEMBQ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 21:16:29 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 78BC3C26F9F57F05C158;
+        Wed, 13 May 2020 09:16:26 +0800 (CST)
+Received: from huawei.com (10.67.174.156) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Wed, 13 May 2020
+ 09:16:18 +0800
+From:   ChenTao <chentao107@huawei.com>
+To:     <mark@fasheh.com>, <herton@canonical.com>,
+        <htl10@users.sourceforge.net>, <Larry.Finger@lwfinger.net>,
+        <kvalo@codeaurora.org>
+CC:     <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chentao107@huawei.com>
+Subject: [PATCH -next v2] rtl8187: Remove unused variable rtl8225z2_tx_power_ofdm
+Date:   Wed, 13 May 2020 09:15:29 +0800
+Message-ID: <20200513011529.27966-1-chentao107@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.174.156]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 May 2020, Markus Elfring wrote:
+Fix the following warning:
 
-> > Markus, if you were to write a patch to improve upon coding-style.rst, 
-> > who should review it?
-> 
-> All involved contributors have got chances to provide constructive 
-> comments.
+drivers/net/wireless/realtek/rtl818x/rtl8187/rtl8225.c:609:17: warning:
+‘rtl8225z2_tx_power_ofdm’ defined but not used
+ static const u8 rtl8225z2_tx_power_ofdm[] = {
 
-But how could someone be elevated to "involved contributor" if their 
-patches were to be blocked by arbitrary application of the rules?
+Acked-by: Hin-Tak Leung <htl10@users.sourceforge.net>
+Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: ChenTao <chentao107@huawei.com>
+---
+ drivers/net/wireless/realtek/rtl818x/rtl8187/rtl8225.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-> I would be curious who will actually dare to contribute further ideas 
-> for this area.
-> 
+diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8187/rtl8225.c b/drivers/net/wireless/realtek/rtl818x/rtl8187/rtl8225.c
+index b2616d61b66d..585784258c66 100644
+--- a/drivers/net/wireless/realtek/rtl818x/rtl8187/rtl8225.c
++++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/rtl8225.c
+@@ -606,10 +606,6 @@ static const u8 rtl8225z2_tx_power_cck[] = {
+ 	0x26, 0x25, 0x21, 0x1b, 0x14, 0x0d, 0x06, 0x03
+ };
+ 
+-static const u8 rtl8225z2_tx_power_ofdm[] = {
+-	0x42, 0x00, 0x40, 0x00, 0x40
+-};
+-
+ static const u8 rtl8225z2_tx_gain_cck_ofdm[] = {
+ 	0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+ 	0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+-- 
+2.22.0
 
-You seem to be uniquely positioned to do that, if only because you cited 
-rules which don't appear to support your objection.
-
-> 
-> > If you are unable to write or review such a patch, how can you hope to 
-> > adjudicate compliance?
-> 
-> I can also try to achieve more improvements here to see how the 
-> available software documentation will evolve.
-> 
-
-When the people who write and review the coding standards are the same 
-people who write and review the code, the standards devolve (given the 
-prevailing incentives).
-
-> Regards, 
-> Markus
-> 
