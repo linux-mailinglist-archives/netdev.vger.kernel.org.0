@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3219D1D20D5
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 23:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C11551D20E1
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 23:23:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728642AbgEMVVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 17:21:09 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:24056 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728181AbgEMVVJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 17:21:09 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04DLJ5F6012373
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 14:21:08 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=JxmnDSPZr+avr3ys4usH/L8YTtNiV6aU82SKuONhcMY=;
- b=p8cu5cgQj3BU4pj+RpzU8anxpAjtbm2SfWyBlemDtI56hbiH7OdM+NdE3Xqnyx9qc+xQ
- c4Cyf7bif0X7L3wEtIQUiEHR3HlOPtKJ+WjkTd9MYKhCJDE/yTs14MxEd7HReDOYvCPR
- teV6fi7OPWkf680/zascC8Kb0UHDZ0qc0KY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3100x27ffc-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 14:21:08 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Wed, 13 May 2020 14:21:07 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id CFB562EC328C; Wed, 13 May 2020 14:20:59 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] bpf: fix bpf_iter's task iterator logic
-Date:   Wed, 13 May 2020 14:20:57 -0700
-Message-ID: <20200513212057.147133-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1728846AbgEMVXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 17:23:18 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:35838 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728786AbgEMVXQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 17:23:16 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1589404995; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=kO0IqobLOJP7uxcQjGF7XV6F4ee3pL/rl3JY9Zx3Zis=;
+ b=vuEIiszIh41BJR5H1GTP0l4hu25GwtX1wc7Y9O7plCrrWVfZtHdZxawXekAlFuyfUBvBFV8x
+ UIBsxcAbrGP/Q2o2QRVaXHBEsV04oMcIFBBPmNHaKJcRxippUK9T1shr2JkO1A20aKW1HwMw
+ pIH9v4R1Wx/xfsMy/n7WWWNpw8o=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ebc6532.7fecceed9e30-smtp-out-n03;
+ Wed, 13 May 2020 21:22:58 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 7BD67C432C2; Wed, 13 May 2020 21:22:58 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: rmanohar)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 102F0C433F2;
+        Wed, 13 May 2020 21:22:58 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-13_09:2020-05-13,2020-05-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
- clxscore=1015 priorityscore=1501 suspectscore=8 phishscore=0
- malwarescore=0 mlxscore=0 bulkscore=0 mlxlogscore=908 cotscore=-2147483648
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005130182
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 13 May 2020 14:22:58 -0700
+From:   Rajkumar Manoharan <rmanohar@codeaurora.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, pradeepc@codeaurora.org,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        linux-wireless-owner@vger.kernel.org
+Subject: Re: [PATCH] ath11k: Fix some resource leaks in error path in
+ 'ath11k_thermal_register()'
+In-Reply-To: <20200513201454.258111-1-christophe.jaillet@wanadoo.fr>
+References: <20200513201454.258111-1-christophe.jaillet@wanadoo.fr>
+Message-ID: <8ee716c797a547165132c179c1909404@codeaurora.org>
+X-Sender: rmanohar@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-task_seq_get_next might stop prematurely if get_pid_task() fails to get
-task_struct. Failure to do so doesn't mean that there are no more tasks w=
-ith
-higher pids. Procfs's iteration algorithm (see next_tgid in fs/proc/base.=
-c)
-does a retry in such case. After this fix, instead of stopping prematurel=
-y
-after about 300 tasks on my server, bpf_iter program now returns >4000, w=
-hich
-sounds much closer to reality.
+On 2020-05-13 13:14, Christophe JAILLET wrote:
+> If 'thermal_cooling_device_register()' fails, we must undo what has 
+> been
+> allocated so far. So we must go to 'err_thermal_destroy' instead of
+> returning directly
+> 
+> In case of error in 'ath11k_thermal_register()', the previous
+> 'thermal_cooling_device_register()' call must also be undone. Move the
+> 'ar->thermal.cdev = cdev' a few lines above in order for this to be 
+> done
+> in 'ath11k_thermal_unregister()' which is called in the error handling
+> path.
+> 
+> Fixes: 2a63bbca06b2 ("ath11k: add thermal cooling device support")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> I'm not 100% confident with this patch.
+> 
+> - When calling 'ath11k_thermal_unregister()', we try to release some
+>   resources that have not been allocated yet. I don't know if it can be 
+> an
+>   issue or not.
+> - I think that we should propagate the error code, instead of forcing
+>   -EINVAL.
+> 
+Good catch.
 
-Cc: Yonghong Song <yhs@fb.com>
-Fixes: eaaacd23910f ("bpf: Add task and task/file iterator targets")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- kernel/bpf/task_iter.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-index a9b7264dda08..e1836def6738 100644
---- a/kernel/bpf/task_iter.c
-+++ b/kernel/bpf/task_iter.c
-@@ -27,9 +27,15 @@ static struct task_struct *task_seq_get_next(struct pi=
-d_namespace *ns,
- 	struct pid *pid;
-=20
- 	rcu_read_lock();
-+retry:
- 	pid =3D idr_get_next(&ns->idr, tid);
--	if (pid)
-+	if (pid) {
- 		task =3D get_pid_task(pid, PIDTYPE_PID);
-+		if (!task) {
-+			*tid++;
-+			goto retry;
-+		}
-+	}
- 	rcu_read_unlock();
-=20
- 	return task;
---=20
-2.24.1
-
+-Rajkumar
