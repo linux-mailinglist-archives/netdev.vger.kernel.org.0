@@ -2,71 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A72351D11CD
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 13:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 724781D11D3
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 13:53:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731354AbgEMLwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 07:52:10 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:60179 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725982AbgEMLwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 07:52:10 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6686F5C00ED;
-        Wed, 13 May 2020 07:52:09 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 13 May 2020 07:52:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=0XLue2
-        QfJVQ/nueqNbe0kJXKe3qXzDhHzmczgkr+YNM=; b=vIcUolvzGcdag0UocMiV/l
-        hWNm0Y6LDrlGPLOvDFuUKNwQEbzfxLNVDtMzzhToAgd4oO52d+f2/6eHbdHIr1Qd
-        HmIYKM+Vh4e7dYqy7I+FHGk+ee2Tg1jULF+KHGlDtDhc4iqHWp9f7Tjbx10PMM7r
-        nlEI3qa/FEvdbrVGkIvW1qcTs+iNe0iw9aQIaw5YvOio06L+r10E+/jL+5ajXqNm
-        HxHz7rlpc6F+Z7i3vRno8J9DVQi9zDYSm/MIVZ2PJXszbHgKkcrNQh3/8LDduOPr
-        ob2TxHe3F2sr6Wady1zapgMZKgCkyuNbWBhyAjVDIPPusFpjq/35LM8+XqrtR2Wg
-        ==
-X-ME-Sender: <xms:ad-7XrEu6ZTKPiXkW7xpNOJG8qRdQMUhZy1MFpVFKy0rCpkG3w0k1A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrleeggdeghecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeejledrudejiedrvdegrddutdejnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:ad-7XoUDXrgJgqa6H8-PThP8PaoiexbDOzTDAq8S2E0g5Sgn9SFeOg>
-    <xmx:ad-7XtJVLYOtjkqUcj2w3F8Q-Ipz59R-h4QSqhh_OzYuQ1mfNFlnxQ>
-    <xmx:ad-7XpGi4xNo5T70nlREqhz8j1QMULGsQlPczyS3FuMv0d12SWZz7Q>
-    <xmx:ad-7Xphe9EATpM5BKEF1sLQwv5k3WB3MRwGOgh5vVvvNyghbpWj0ZA>
-Received: from localhost (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A75D83066310;
-        Wed, 13 May 2020 07:52:08 -0400 (EDT)
-Date:   Wed, 13 May 2020 14:52:06 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: ignore sock_from_file errors in __scm_install_fd
-Message-ID: <20200513115206.GA601862@splinter>
-References: <20200513110759.2362955-1-hch@lst.de>
+        id S1731558AbgEMLxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 07:53:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731493AbgEMLxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 07:53:01 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EAFC061A0C;
+        Wed, 13 May 2020 04:53:01 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 49MY2W4jQlz9sRK;
+        Wed, 13 May 2020 21:52:51 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1589370776;
+        bh=l+pd+mpalwVpPCiH+93FYHS/ISb+yEppBpyKCFyPq2s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WuI4fRF4JT2OuppMIkjyvoT/dpbfs+pMgfN/DBejenZuKFPxvOkg5582Pe7ekqpTe
+         WGeOM9iKgEoq1PiLYcvpwmQ78lUXPn4iZ7TmfebFAidmTiH8SFzqdD5ZUgZZLOntKs
+         V76qW0NsuW1VNRZudddZ2LykQYsp9sA8B4QnEvBnobUMVSFr0J5bEfutwrvWI/0SSy
+         I/WCJTex/fDHm6K/6aS7uEPMspPLFRfe0OeI17+i+msnOiva+pNLaNSpAp79sQOAHC
+         AfIuTEIEE3Qk57+3CrXoLB1jgGXaidoYqb4g+eIrZmg3Ez0nq+j+7tBH5Sj02XBKFV
+         7tFJUA90iY9ig==
+Date:   Wed, 13 May 2020 21:52:50 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     madhuparnabhowmik10@gmail.com
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, frextrite@gmail.com,
+        joel@joelfernandes.org, paulmck@kernel.org, cai@lca.pw
+Subject: Re: [PATCH] Fix suspicious RCU usage warning
+Message-ID: <20200513215250.43486e02@canb.auug.org.au>
+In-Reply-To: <20200513061610.22313-1-madhuparnabhowmik10@gmail.com>
+References: <20200513061610.22313-1-madhuparnabhowmik10@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200513110759.2362955-1-hch@lst.de>
+Content-Type: multipart/signed; boundary="Sig_/+ZZmrAi6vQ8lHEwg9rTck/B";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 01:07:59PM +0200, Christoph Hellwig wrote:
-> The code had historically been ignoring these errors, and my recent
-> refactoring changed that, which broke ssh in some setups.
-> 
-> Fixes: 2618d530dd8b ("net/scm: cleanup scm_detach_fds")
-> Reported-by: Ido Schimmel <idosch@idosch.org>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+--Sig_/+ZZmrAi6vQ8lHEwg9rTck/B
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Ido Schimmel <idosch@mellanox.com>
+Hi all,
 
-Thanks, Christoph.
+On Wed, 13 May 2020 11:46:10 +0530 madhuparnabhowmik10@gmail.com wrote:
+>
+> From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+>=20
+> This patch fixes the following warning:
+>=20
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+> WARNING: suspicious RCU usage
+> 5.7.0-rc4-next-20200507-syzkaller #0 Not tainted
+> -----------------------------
+> net/ipv6/ip6mr.c:124 RCU-list traversed in non-reader section!!
+>=20
+> ipmr_new_table() returns an existing table, but there is no table at
+> init. Therefore the condition: either holding rtnl or the list is empty
+> is used.
+>=20
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+
+Thanks.  Added to my fixes tree from tomorrow (until it turns up
+elsewhere).
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/+ZZmrAi6vQ8lHEwg9rTck/B
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6735IACgkQAVBC80lX
+0GxXzwf9GtcbY3iOGDoZjrQ1h3WOwWBgxDlxjXrp4sQMQjmZ09AgypNRBCLS2pQ3
+/aoFl7wz8hbgQ1RX/PvLddq4c1dIFnkj+WJFauEdqoJJHM6GXRngBjS0nENVVyL0
+yJc+bTqAfrG5C+UaxIOHbndNA88svGtDSOqN2zAPEPm/Wz0YwPY/kVyo3gNa3lrN
+7NbrjmjZHkuYEXcZ5FYlvasghIppBlm7LMDRzc9Uq4pev/i7nBA0ZfrmNP4m+Bwm
+AdK9nLcoHvE9VJhaBiF2IJcMdf0G7/EQ8puwJg/F4k0cxuXq70ITDYa5JJUlNZh1
++Q3h/+6awqJ7DkMrYKmAis+o0fHEqg==
+=0Y4j
+-----END PGP SIGNATURE-----
+
+--Sig_/+ZZmrAi6vQ8lHEwg9rTck/B--
