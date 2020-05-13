@@ -2,140 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4421D0D6E
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 11:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516AE1D0E28
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 11:58:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387873AbgEMJw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 05:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387861AbgEMJwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 05:52:55 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DA9C061A0C;
-        Wed, 13 May 2020 02:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ft535WPrBxMxFYAmdROL29Gd1hqYXPYu/0OGkw3PQ9g=; b=A6zin1hHZANRxscI7PjouY7Fe
-        R/b/ualhzllBnLuTEaV6fw8fz3Rr3xKP1K3veWH3haN0HXeVkSVrLPbGik2SEi1Tr1m3955OS0PvF
-        InTeKaHJNfU/1waUmxyIChWS13dXmXAQlSyBR2vR1HV9ecQFcoEsuZSStr+6fgo3xnQc5+JRCKEy3
-        xXiD9OOVPUyuPeh05a0TQmetdL/tTohXmxWq5c/Eta2tgqq5hIR/bpZaau9At0xvkxXIZZjbxZiSx
-        DdtLbMhjvQpQaE+Vw2Nq5RhK6O6qhc2aqKU9NBq963C1coP8FpmyOpAplXdSz55Avd88x6arkONEy
-        C5hn4P1Fw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:57430)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jYo4F-00043y-DN; Wed, 13 May 2020 10:52:47 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jYo4E-0007fG-Fn; Wed, 13 May 2020 10:52:46 +0100
-Date:   Wed, 13 May 2020 10:52:46 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Doug Berger <opendmb@gmail.com>
+        id S2388525AbgEMJ6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 05:58:19 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:36271 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387860AbgEMJ6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 05:58:17 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id B93B55C013B;
+        Wed, 13 May 2020 05:58:15 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Wed, 13 May 2020 05:58:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=OaeA8w
+        vL6EZuvopKe7Yu4eCZ8ipuCPQar2EUyF/PnCs=; b=Ue8hMjdpY6PxotlfsfJlDM
+        /mNvmgxiUFVwZP8yn5XK5GrsZNQDjCTIVxsx97SRsv35nK6f8+sv862CUf2Vwf4P
+        XHwdhpq3fqEGty1DCEaL78YyvUS0D7rNd4tfiqxcIy7aBAZq7JQftm9JR60OGoew
+        bwNdwU0m+0y+VPCQuOHO5aWcsuIYL3QvEPa413obOD5bxhzZQidlqf5R6SInMPby
+        3sMtlPpLtXb6L0uBB9o52mL2JxLqniEiZvR8sSBDjXvmwdYB1yNSRcMerRgdbjUz
+        0nvdBVoYJUdjJToFRK746idTqtVTiMqpCIu91mB4pDLIKtAyUBNpmLE93kjZeReQ
+        ==
+X-ME-Sender: <xms:tsS7XmLEOprM7S_ZEzAH1gCxHmRgIAVlxANDMORjNMNUaJoNm9IOqA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrleeggddvvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeejledrudejiedrvdegrddutdejnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:tsS7XuLFw8WvkbMoOhU8khdBbug055W_z3m5tlJLUY_mvk2hqy2Fvw>
+    <xmx:tsS7Xmul3Hck40Tw4z4ICSra1MAgB0z11Qtngf3KAA3nvQFfvgpI8A>
+    <xmx:tsS7Xrb8F9N2jKyGBnlThIF0Srcvx4U5HmdXo1lq8aDiPBJBeB0EzA>
+    <xmx:t8S7XuDk8gMOxoQ1hcf_aFCbuVs-nLd4MPY9WEbFVsIzUft7I8XgeQ>
+Received: from localhost (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8339E30662F8;
+        Wed, 13 May 2020 05:58:14 -0400 (EDT)
+Date:   Wed, 13 May 2020 12:58:11 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Christoph Hellwig <hch@lst.de>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 4/4] net: bcmgenet: add support for ethtool flow
- control
-Message-ID: <20200513095246.GH1551@shell.armlinux.org.uk>
-References: <1589243050-18217-1-git-send-email-opendmb@gmail.com>
- <1589243050-18217-5-git-send-email-opendmb@gmail.com>
+Subject: Re: [PATCH 2/3] net/scm: cleanup scm_detach_fds
+Message-ID: <20200513095811.GA598161@splinter>
+References: <20200511115913.1420836-1-hch@lst.de>
+ <20200511115913.1420836-3-hch@lst.de>
+ <20200513092918.GA596863@splinter>
+ <20200513094908.GA31756@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1589243050-18217-5-git-send-email-opendmb@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200513094908.GA31756@lst.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 05:24:10PM -0700, Doug Berger wrote:
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> index 511d553a4d11..788da1ecea0c 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> @@ -25,6 +25,21 @@
+On Wed, May 13, 2020 at 11:49:08AM +0200, Christoph Hellwig wrote:
+> On Wed, May 13, 2020 at 12:29:18PM +0300, Ido Schimmel wrote:
+> > On Mon, May 11, 2020 at 01:59:12PM +0200, Christoph Hellwig wrote:
+> > > Factor out two helpes to keep the code tidy.
+> > > 
+> > > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> > 
+> > Christoph,
+> > 
+> > After installing net-next (fb9f2e92864f) on a Fedora 32 machine I cannot
+> > ssh to it. Bisected it to this commit [1].
+> > 
+> > When trying to connect I see these error messages in journal:
+> > 
+> > sshd[1029]: error: mm_receive_fd: no message header
+> > sshd[1029]: fatal: mm_pty_allocate: receive fds failed
+> > sshd[1029]: fatal: mm_request_receive_expect: buffer error: incomplete message
+> > sshd[1018]: fatal: mm_request_receive: read: Connection reset by peer
+> > 
+> > Please let me know if more info is required. I can easily test a patch
+> > if you need me to try something.
+> 
+> To start we can try reverting just this commit, which requires a
+> little manual work.  Patch below:
+
+Thanks for the quick reply. With the below patch ssh is working again.
+
+> 
+> ---
+> From fe4f53219b42aeded3c1464dbe2bbc9365f6a853 Mon Sep 17 00:00:00 2001
+> From: Christoph Hellwig <hch@lst.de>
+> Date: Wed, 13 May 2020 11:48:33 +0200
+> Subject: Revert "net/scm: cleanup scm_detach_fds"
+> 
+> This reverts commit 2618d530dd8b7ac0fdcb83f4c95b88f7b0d37ce6.
+> ---
+>  net/core/scm.c | 94 +++++++++++++++++++++++---------------------------
+>  1 file changed, 43 insertions(+), 51 deletions(-)
+> 
+> diff --git a/net/core/scm.c b/net/core/scm.c
+> index a75cd637a71ff..2d9aa5682bed2 100644
+> --- a/net/core/scm.c
+> +++ b/net/core/scm.c
+> @@ -280,53 +280,18 @@ void put_cmsg_scm_timestamping(struct msghdr *msg, struct scm_timestamping_inter
+>  }
+>  EXPORT_SYMBOL(put_cmsg_scm_timestamping);
 >  
->  #include "bcmgenet.h"
->  
-> +static u32 _flow_control_autoneg(struct phy_device *phydev)
-> +{
-> +	bool tx_pause, rx_pause;
-> +	u32 cmd_bits = 0;
-> +
-> +	phy_get_pause(phydev, &tx_pause, &rx_pause);
-> +
-> +	if (!tx_pause)
-> +		cmd_bits |= CMD_TX_PAUSE_IGNORE;
-> +	if (!rx_pause)
-> +		cmd_bits |= CMD_RX_PAUSE_IGNORE;
-> +
-> +	return cmd_bits;
-> +}
-> +
->  /* setup netdev link state when PHY link status change and
->   * update UMAC and RGMII block when link up
->   */
-> @@ -71,12 +86,20 @@ void bcmgenet_mii_setup(struct net_device *dev)
->  		cmd_bits <<= CMD_SPEED_SHIFT;
->  
->  		/* duplex */
-> -		if (phydev->duplex != DUPLEX_FULL)
-> -			cmd_bits |= CMD_HD_EN;
+> -static int __scm_install_fd(struct file *file, int __user *ufd, int o_flags)
+> -{
+> -	struct socket *sock;
+> -	int new_fd;
+> -	int error;
 > -
-> -		/* pause capability */
-> -		if (!phydev->pause)
-> -			cmd_bits |= CMD_RX_PAUSE_IGNORE | CMD_TX_PAUSE_IGNORE;
-> +		if (phydev->duplex != DUPLEX_FULL) {
-> +			cmd_bits |= CMD_HD_EN |
-> +				CMD_RX_PAUSE_IGNORE | CMD_TX_PAUSE_IGNORE;
-
-phy_get_pause() already takes account of whether the PHY is in half
-duplex mode.  So:
-
-		bool tx_pause, rx_pause;
-
-		if (phydev->autoneg && priv->autoneg_pause) {
-			phy_get_pause(phydev, &tx_pause, &rx_pause);
-		} else if (phydev->duplex == DUPLEX_FULL) {
-			tx_pause = priv->tx_pause;
-			rx_pause = priv->rx_pause;
-		} else {
-			tx_pause = false;
-			rx_pause = false;
-		}
-
-		if (!tx_pause)
-			cmd_bits |= CMD_TX_PAUSE_IGNORE;
-		if (!rx_pause)
-			cmd_bits |= CMD_RX_PAUSE_IGNORE;
-
-would be entirely sufficient here.
-
-I wonder whether your implementation (which mine follows) is really
-correct though.  Consider this:
-
-# ethtool -A eth0 autoneg on tx on rx on
-# ethtool -s eth0 autoneg off speed 1000 duplex full
-
-At this point, what do you expect the resulting pause state to be?  It
-may not be what you actually think it should be - it will be tx and rx
-pause enabled (it's easier to see why that happens with my rewritten
-version of your implementation, which is functionally identical.)
-
-If we take the view that if link autoneg is disabled, and therefore the
-link partner's advertisement is zero, shouldn't it result in tx and rx
-pause being disabled?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+> -	error = security_file_receive(file);
+> -	if (error)
+> -		return error;
+> -
+> -	new_fd = get_unused_fd_flags(o_flags);
+> -	if (new_fd < 0)
+> -		return new_fd;
+> -
+> -	error = put_user(new_fd, ufd);
+> -	if (error) {
+> -		put_unused_fd(new_fd);
+> -		return error;
+> -	}
+> -
+> -	/* Bump the usage count and install the file. */
+> -	sock = sock_from_file(file, &error);
+> -	if (sock) {
+> -		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+> -		sock_update_classid(&sock->sk->sk_cgrp_data);
+> -	}
+> -	fd_install(new_fd, get_file(file));
+> -	return error;
+> -}
+> -
+> -static int scm_max_fds(struct msghdr *msg)
+> -{
+> -	if (msg->msg_controllen <= sizeof(struct cmsghdr))
+> -		return 0;
+> -	return (msg->msg_controllen - sizeof(struct cmsghdr)) / sizeof(int);
+> -}
+> -
+>  void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
+>  {
+>  	struct cmsghdr __user *cm
+>  		= (__force struct cmsghdr __user*)msg->msg_control;
+> -	int o_flags = (msg->msg_flags & MSG_CMSG_CLOEXEC) ? O_CLOEXEC : 0;
+> -	int fdmax = min_t(int, scm_max_fds(msg), scm->fp->count);
+> -	int __user *cmsg_data = CMSG_USER_DATA(cm);
+> +
+> +	int fdmax = 0;
+> +	int fdnum = scm->fp->count;
+> +	struct file **fp = scm->fp->fp;
+> +	int __user *cmfptr;
+>  	int err = 0, i;
+>  
+> -	if (msg->msg_flags & MSG_CMSG_COMPAT) {
+> +	if (MSG_CMSG_COMPAT & msg->msg_flags) {
+>  		scm_detach_fds_compat(msg, scm);
+>  		return;
+>  	}
+> @@ -335,35 +300,62 @@ void scm_detach_fds(struct msghdr *msg, struct scm_cookie *scm)
+>  	if (WARN_ON_ONCE(!msg->msg_control_is_user))
+>  		return;
+>  
+> -	for (i = 0; i < fdmax; i++) {
+> -		err = __scm_install_fd(scm->fp->fp[i], cmsg_data + i, o_flags);
+> +	if (msg->msg_controllen > sizeof(struct cmsghdr))
+> +		fdmax = ((msg->msg_controllen - sizeof(struct cmsghdr))
+> +			 / sizeof(int));
+> +
+> +	if (fdnum < fdmax)
+> +		fdmax = fdnum;
+> +
+> +	for (i=0, cmfptr =(int __user *)CMSG_USER_DATA(cm); i<fdmax;
+> +	     i++, cmfptr++)
+> +	{
+> +		struct socket *sock;
+> +		int new_fd;
+> +		err = security_file_receive(fp[i]);
+>  		if (err)
+>  			break;
+> +		err = get_unused_fd_flags(MSG_CMSG_CLOEXEC & msg->msg_flags
+> +					  ? O_CLOEXEC : 0);
+> +		if (err < 0)
+> +			break;
+> +		new_fd = err;
+> +		err = put_user(new_fd, cmfptr);
+> +		if (err) {
+> +			put_unused_fd(new_fd);
+> +			break;
+> +		}
+> +		/* Bump the usage count and install the file. */
+> +		sock = sock_from_file(fp[i], &err);
+> +		if (sock) {
+> +			sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+> +			sock_update_classid(&sock->sk->sk_cgrp_data);
+> +		}
+> +		fd_install(new_fd, get_file(fp[i]));
+>  	}
+>  
+> -	if (i > 0)  {
+> -		int cmlen = CMSG_LEN(i * sizeof(int));
+> -
+> +	if (i > 0)
+> +	{
+> +		int cmlen = CMSG_LEN(i*sizeof(int));
+>  		err = put_user(SOL_SOCKET, &cm->cmsg_level);
+>  		if (!err)
+>  			err = put_user(SCM_RIGHTS, &cm->cmsg_type);
+>  		if (!err)
+>  			err = put_user(cmlen, &cm->cmsg_len);
+>  		if (!err) {
+> -			cmlen = CMSG_SPACE(i * sizeof(int));
+> +			cmlen = CMSG_SPACE(i*sizeof(int));
+>  			if (msg->msg_controllen < cmlen)
+>  				cmlen = msg->msg_controllen;
+>  			msg->msg_control += cmlen;
+>  			msg->msg_controllen -= cmlen;
+>  		}
+>  	}
+> -
+> -	if (i < scm->fp->count || (scm->fp->count && fdmax <= 0))
+> +	if (i < fdnum || (fdnum && fdmax <= 0))
+>  		msg->msg_flags |= MSG_CTRUNC;
+>  
+>  	/*
+> -	 * All of the files that fit in the message have had their usage counts
+> -	 * incremented, so we just free the list.
+> +	 * All of the files that fit in the message have had their
+> +	 * usage counts incremented, so we just free the list.
+>  	 */
+>  	__scm_destroy(scm);
+>  }
+> -- 
+> 2.26.2
+> 
