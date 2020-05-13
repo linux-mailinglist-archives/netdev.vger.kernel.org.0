@@ -2,154 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF82A1D0674
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 07:41:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C341D06C5
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 07:57:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728812AbgEMFls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 01:41:48 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45004 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728097AbgEMFls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 01:41:48 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04D5cxqC010618;
-        Tue, 12 May 2020 22:41:25 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=a6pwy2EQzzDQ8kvkNCZfM5xS+LovCArF21TiDbsqC2c=;
- b=OKbKIG4YWLzs0DG4kphYcSRoPY4uYvE56bLgg6FzKOU/sLeNgEVKUtINp/Pn5XWtejfk
- r65+6k2diKk8AqAqMfEey3JQysKnwFIclnB8RzRh2zlvCLoh1j9pQf4L93GNq1JEhjOC
- c16OwfnM397KljbrNpAmBwACdePNIbcyrro= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3100x22wkv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 12 May 2020 22:41:25 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 12 May 2020 22:41:24 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a3aYqgdMwIutBdiS6UK1xsIPyzDOPB+I/1OJ4Fvn4QwzJZdBDEpYoWZv22zEmk5sOem33jrs1RbGwoQWbdc+4cW7yU/5l6JQCgRlrR0RhtJE2IywcXDj/79K8QT8qWd6AwlAaGL46/8W8hS4wRDVGIJE5JBYqU37PbKq5gmoqX4mdEIn2TDA3v77TurkgYEEIbxpIB8CwXITbMyusGk+FstTFehyOfWxQoFCB81OYIOmSteYJiIevI6mSbQYQ7aaQIoiXStHR8eXgTAbRVjEtWRVlGO3dqPVJfpYSAFVGu5JqdWDhFKmkZN1HsaMH7uaFKY3gGd5Y/sWNAa806h5eA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a6pwy2EQzzDQ8kvkNCZfM5xS+LovCArF21TiDbsqC2c=;
- b=RSavTdXm24VxHZhnHXVSD/L/hhe6apJCIMFDrClPekDBQwyR2ngdGopBzQxnEerLWLF355BjXLmqwOQ98eExU2qlEzQ+dZTzykiTrboHRliLMLCYxner5K0S1ziRTbsSYJCMp3bRY7rye8lI+G/p60nbc0rEYZ4WgPBchoUEBO2ZAuYY2fhaRnMPObtv4QpNzOqoSRGaZJkiAEFHkY5dbQlHZXVMWtrbl2oD/bukWt3zMXwOKdcWWYUxp0w5kJkmcJYojukaGomJ1U9eFj2lk+Wk+MGwqVQSzV1cuHcZKannAoxnWy14/wFUTkJ9GmwtlNlTCxbIIKHkK9WcE+LQ1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a6pwy2EQzzDQ8kvkNCZfM5xS+LovCArF21TiDbsqC2c=;
- b=K5zorTjyt2ss3/yOz/8Qm0/RUU3w++ZAg8lgTTcuGItOkKURmCckDHRwi+fmoxgKii1uPQG1LcoR46Xg+3OwaMdp2GBeOAeXr2l+GOdkNBDGttGsyOVeWLl3gDW38/pzH6zhcGJTdaFwNiOppzcTPywB5cNut2dIk0rfV8k5OjA=
-Authentication-Results: cloudflare.com; dkim=none (message not signed)
- header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BY5PR15MB3522.namprd15.prod.outlook.com (2603:10b6:a03:1b5::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.33; Wed, 13 May
- 2020 05:41:23 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::71cb:7c2e:b016:77b6]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::71cb:7c2e:b016:77b6%7]) with mapi id 15.20.2979.033; Wed, 13 May 2020
- 05:41:23 +0000
-Date:   Tue, 12 May 2020 22:41:21 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <dccp@vger.kernel.org>, <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [PATCH bpf-next v2 02/17] bpf: Introduce SK_LOOKUP program type
- with a dedicated attach point
-Message-ID: <20200513054121.qztevjyfkc2ltcvp@kafai-mbp.dhcp.thefacebook.com>
-References: <20200511185218.1422406-1-jakub@cloudflare.com>
- <20200511185218.1422406-3-jakub@cloudflare.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200511185218.1422406-3-jakub@cloudflare.com>
-User-Agent: NeoMutt/20180716
-X-ClientProxiedBy: BY3PR05CA0001.namprd05.prod.outlook.com
- (2603:10b6:a03:254::6) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        id S1729339AbgEMF5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 01:57:44 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:44446 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729171AbgEMF5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 01:57:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589349453;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oS9s06FImqWmW3Ha3Sx3lNv173yHCer4HwNEWY7z8Lw=;
+        b=A65PPSpXo6wkymPTMbSzVCOjkTAScE3Kn/2REO4bEmbMLEGQrDgTJve5g8wavyIAveswuH
+        1W04B/NDyavO76cPeGkzmnJf/AWb3HyEDK78eW/z/N34fmx5W0SIcSLyXp3CFaRjtY25F/
+        bQgmj3tybBafmhCypbMAxxJrzjxhQYc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-304-pMwZ543xOua3WL8Aq33VRw-1; Wed, 13 May 2020 01:57:29 -0400
+X-MC-Unique: pMwZ543xOua3WL8Aq33VRw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 90DC21841931;
+        Wed, 13 May 2020 05:57:28 +0000 (UTC)
+Received: from [10.72.13.188] (ovpn-13-188.pek2.redhat.com [10.72.13.188])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E36F05D9E8;
+        Wed, 13 May 2020 05:57:20 +0000 (UTC)
+Subject: Re: [PATCH V2] ifcvf: move IRQ request/free to status change handlers
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>, mst@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com
+References: <1589270444-3669-1-git-send-email-lingshan.zhu@intel.com>
+ <8aca85c3-3bf6-a1ec-7009-cd9a635647d7@redhat.com>
+ <5bbe0c21-8638-45e4-04e8-02ad0df44b38@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <f7485579-834f-1770-1622-e6df1b2f3e81@redhat.com>
+Date:   Wed, 13 May 2020 13:57:19 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:f3b6) by BY3PR05CA0001.namprd05.prod.outlook.com (2603:10b6:a03:254::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.11 via Frontend Transport; Wed, 13 May 2020 05:41:22 +0000
-X-Originating-IP: [2620:10d:c090:400::5:f3b6]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 955f1934-1ed9-4017-c90e-08d7f700453e
-X-MS-TrafficTypeDiagnostic: BY5PR15MB3522:
-X-Microsoft-Antispam-PRVS: <BY5PR15MB3522DED05F3270739CA77FE9D5BF0@BY5PR15MB3522.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 0402872DA1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Sn9xv2I2LnvbUi6FwHIRKffqqoMhV3szjCplwxACPIYJQ+z7BR+dmccoIqBZnDm2UIMwIysDm/aB0TleQdMLKn7Dxbck/pltox/7RL8e4vKyRFbS18dHj2dRHnAxoLod/koOZJywPuTVnB0urGu0g/37nH6ElnyLWJBplV4iPvdZ/hYd47hQ4mccH/pdGVarO9LY+gOiKL01H0mN5s7vb1vlSF8JMXi/t/dCm6Dj4S6g35IGm22W7auaxXV5ZiIlZC7gPia1HJa1jyQgbzEEwybru7xiJ2WIz6uPx/NQj0GHXdiBHZdT9xuNdIMIjwyGQh9k0qENt2P+lZvg3mzQ8Lff7fdaKTlT/KG9V6JoIQAJurcP7dT36Sc3PdMT5LUfoQgcYvXh9LHF/tQS2Rt9l4KKGVxCvb78dXQF0qp0s4Rh3EiBe+Dr4Wseu6hh6YQ4IfxRSrW139REhxqUqXe5A3UkpywG4EPW0nxd2sZJsYaGVboEwJR7d3wQN6R41ylUbXCC+1C686BiuT6LctxyMg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(366004)(136003)(346002)(376002)(396003)(33430700001)(2906002)(55016002)(33440700001)(54906003)(7416002)(316002)(66946007)(4326008)(66476007)(478600001)(8676002)(1076003)(66556008)(6916009)(86362001)(8936002)(6506007)(5660300002)(52116002)(7696005)(16526019)(9686003)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: lOERxOtIIqGh/fZcUfOrzEGI0YabomeAQmvxpZEJqCZgtzSNN9Lr3VFcLO1/a8LAwtz6Luz6GgY/n2VxNBOdWa343z5CS40XaCu6+405RpYiBiaVTG6HmDZ39iDOaWe8gZBlHAe0KP6IP3AQraVf/L62Cf94REXcd2Y5l18TmZH6RFygLKoQbcjNvtpZjZHRYobZf+mIK+YzovyMepzypIvkCArF9ypowXpAMpV/n1zI+6hXgJ5lHtebKoB+Lt9cbn58vwyea0JllwNINP1UnqpuipsR0GzbMuuyBk/rbwRDpL58YA/64Luv5obbbcSXlmkJpCGbKpRcfFNOZZRPD17fd354dOsEXBh5rwgnRGXy4+aFIrTL4f0KYV5wP3eRnnWWxrEACd8MFGaDFhsNFZqtcrgPKqkSeAh08xwnimfC5/z99h1WeC8m0CX0oCmBoxjLULFtzbhipQQXZ9Y2m4rvLcuDFt0fKkpzg3zE2VVptj56ZEbYZFxA+SVTWoYQKPyJEByt/47ygphYsKCQkA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 955f1934-1ed9-4017-c90e-08d7f700453e
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2020 05:41:23.7573
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 72NAuXwGYEOapRsT+j3Zt6PFRlMCWBvxfvdTcpokDvWUYk3BvXalhW3WyVzPg7tC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3522
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-13_01:2020-05-11,2020-05-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
- clxscore=1015 priorityscore=1501 suspectscore=0 phishscore=0
- malwarescore=0 mlxscore=0 bulkscore=0 mlxlogscore=787 cotscore=-2147483648
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005130051
-X-FB-Internal: deliver
+In-Reply-To: <5bbe0c21-8638-45e4-04e8-02ad0df44b38@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 08:52:03PM +0200, Jakub Sitnicki wrote:
 
-[ ... ]
+On 2020/5/13 下午12:42, Zhu, Lingshan wrote:
+>
+>
+> On 5/13/2020 12:12 PM, Jason Wang wrote:
+>>
+>> On 2020/5/12 下午4:00, Zhu Lingshan wrote:
+>>> This commit move IRQ request and free operations from probe()
+>>> to VIRTIO status change handler to comply with VIRTIO spec.
+>>>
+>>> VIRTIO spec 1.1, section 2.1.2 Device Requirements: Device Status Field
+>>> The device MUST NOT consume buffers or send any used buffer
+>>> notifications to the driver before DRIVER_OK.
+>>
+>>
+>> This comment needs to be checked as I said previously. It's only 
+>> needed if we're sure ifcvf can generate interrupt before DRIVER_OK.
+>>
+>>
+>>>
+>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>> ---
+>>> changes from V1:
+>>> remove ifcvf_stop_datapath() in status == 0 handler, we don't need 
+>>> to do this
+>>> twice; handle status == 0 after DRIVER_OK -> !DRIVER_OK handler 
+>>> (Jason Wang)
+>>
+>>
+>> Patch looks good to me, but with this patch ping cannot work on my 
+>> machine. (It works without this patch).
+>>
+>> Thanks
+> This is strange, it works on my machines, let's have a check offline.
+>
+> Thanks,
+> BR
+> Zhu Lingshan
 
-> +BPF_CALL_3(bpf_sk_lookup_assign, struct bpf_sk_lookup_kern *, ctx,
-> +	   struct sock *, sk, u64, flags)
-The SK_LOOKUP bpf_prog may have already selected the proper reuseport sk.
-It is possible by looking up sk from sock_map.
 
-Thus, it is not always desired to do lookup_reuseport() after sk_assign()
-in patch 5.  e.g. reuseport_select_sock() just uses a normal hash if
-there is no reuse->prog.
+Note that I tested the patch with vhost-vpda.
 
-A flag (e.g. "BPF_F_REUSEPORT_SELECT") can be added here to
-specifically do the reuseport_select_sock() after sk_assign().
-If not set, reuseport_select_sock() should not be called.
+Thanks.
 
-> +{
-> +	if (unlikely(flags != 0))
-> +		return -EINVAL;
-> +	if (unlikely(sk_is_refcounted(sk)))
-> +		return -ESOCKTNOSUPPORT;
-> +
-> +	/* Check if socket is suitable for packet L3/L4 protocol */
-> +	if (sk->sk_protocol != ctx->protocol)
-> +		return -EPROTOTYPE;
-> +	if (sk->sk_family != ctx->family &&
-> +	    (sk->sk_family == AF_INET || ipv6_only_sock(sk)))
-> +		return -EAFNOSUPPORT;
-> +
-> +	/* Select socket as lookup result */
-> +	ctx->selected_sk = sk;
-> +	return 0;
-> +}
-> +
