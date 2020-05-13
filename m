@@ -2,68 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 213581D1EF7
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:23:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEA341D1F02
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:24:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390526AbgEMTXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 15:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
+        id S2390615AbgEMTYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 15:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732218AbgEMTXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:23:40 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0BCC061A0C;
-        Wed, 13 May 2020 12:23:40 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 124F2127E5AC1;
-        Wed, 13 May 2020 12:23:39 -0700 (PDT)
-Date:   Wed, 13 May 2020 12:23:38 -0700 (PDT)
-Message-Id: <20200513.122338.1849377923675371554.davem@davemloft.net>
-To:     martin.blumenstingl@googlemail.com
-Cc:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        jianxin.pan@amlogic.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 0/8] dwmac-meson8b Ethernet RX delay configuration
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200512211103.530674-1-martin.blumenstingl@googlemail.com>
-References: <20200512211103.530674-1-martin.blumenstingl@googlemail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        by vger.kernel.org with ESMTP id S1732218AbgEMTYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:24:31 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EABBC061A0C;
+        Wed, 13 May 2020 12:24:31 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id j2so864838ilr.5;
+        Wed, 13 May 2020 12:24:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=oyHM7TvRRRTe25Gl/u3VxiStdwZw33rB19WS0P/3OiA=;
+        b=Yin8pd76CWbWIEseez/cjeYX3rdWlXrNanzFRMF7Y26rxHTlorfdxz9WqMNo4Z7leb
+         Lz/rlmDjkJk/UBGqYfu1EZtZ3u0VoMGeWQGBkzw3dCgtW7j/3zrl4ra+lmgDHLo/V6/g
+         SwyKU+po3dTV+uDLtFPp7sMB1sRQmcQ6jds98M7XwbFnhjjUQaCJUXHNbHrjcyjCNfAw
+         yPbbKPXoAAPMKfU43MzNojPUrt/Z4uFB+he0D/5JKQoCl6kPJkh5z+7x/uIrvolz5ElC
+         o5GvRYn3KhjjFFVe9Ft+HkOjlROMp4jahuvZ5NoP/J+MNv4F1dA+41zL1byq6ANTVHK4
+         c03A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=oyHM7TvRRRTe25Gl/u3VxiStdwZw33rB19WS0P/3OiA=;
+        b=XjAS6sEYGSKvYtmt7R4pwcn3LGtUb/HY5p7hSUAvF/CoRaY7M6kwCfWlXn4hbaZNED
+         kRmIXO+f/18BTUtsdL6LHZsWic36HmkDEL1c6r8ffuVFYg21mt6HV5oUqw4ZFtEvn5uN
+         i2SqHFqIMDyEpuXjP9i8nAkFd0aeIxmkVZP5MlOZpiLBnzum8cr10zB5ev9hkYJsV/OT
+         eQde67GN4EAc06Vokpj+yqHEBZWXLINMW5c6W8yXMrlreZjmqYNfFqkzfhZ5T4bHfCEZ
+         hPKYlcbhGNkedXqlvhhZ5fGcgcHk8Z0MRG0O8t9r8ArPS9dQPjychcf8nxYiu4M+jSMq
+         KfEQ==
+X-Gm-Message-State: AOAM531y1AfBlMqkEyVbyg5xkKYfbMve8f11YXiwz3XdYodFB6SutJec
+        9sAirC7q+eSnnhfgbiRrNbc=
+X-Google-Smtp-Source: ABdhPJzr2m/XSg2/puojGKGu85g9+YglT6hCmanxh9yGf7xNeTM6y1hpp8rlxY6dO80XF9GbxSOHeg==
+X-Received: by 2002:a92:9ed0:: with SMTP id s77mr948204ilk.283.1589397870966;
+        Wed, 13 May 2020 12:24:30 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id r1sm163749ilg.61.2020.05.13.12.23.58
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 13 May 2020 12:24:30 -0700 (PDT)
+Subject: [bpf-next PATCH 1/3] bpf: sk_msg add some generic helpers that may
+ be useful from sk_msg
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net
+Cc:     lmb@cloudflare.com, bpf@vger.kernel.org, john.fastabend@gmail.com,
+        jakub@cloudflare.com, netdev@vger.kernel.org
+Date:   Wed, 13 May 2020 12:23:50 -0700
+Message-ID: <158939783014.17281.11169741455617229373.stgit@john-Precision-5820-Tower>
+In-Reply-To: <158939776371.17281.8506900883049313932.stgit@john-Precision-5820-Tower>
+References: <158939776371.17281.8506900883049313932.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 13 May 2020 12:23:39 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date: Tue, 12 May 2020 23:10:55 +0200
+Add these generic helpers that may be useful to use from sk_msg programs.
+The helpers do not depend on ctx so we can simply add them here,
 
-> The Ethernet TX performance has been historically bad on Meson8b and
-> Meson8m2 SoCs because high packet loss was seen. I found out that this
-> was related (yet again) to the RGMII TX delay configuration.
-> In the process of discussing the big picture (and not just a single
-> patch) [0] with Andrew I discovered that the IP block behind the
-> dwmac-meson8b driver actually seems to support the configuration of the
-> RGMII RX delay (at least on the Meson8b SoC generation).
-> 
-> Since I sent the first RFC I got additional documentation from Jianxin
-> (many thanks!). Also I have discovered some more interesting details:
-> - Meson8b Odroid-C1 requires an RX delay (by either the PHY or the MAC)
->   Based on the vendor u-boot code (not upstream) I assume that it will
->   be the same for all Meson8b and Meson8m2 boards
-> - Khadas VIM2 seems to have the RX delay built into the PCB trace
->   length. When I enable the RX delay on the PHY or MAC I can't get any
->   data through. I expect that we will have the same situation on all
->   GXBB, GXM, AXG, G12A, G12B and SM1 boards. Further clarification is
->   needed here though (since I can't visually see these lengthened
->   traces on the PCB). This will be done before sending patches for
->   these boards.
- ...
+ BPF_FUNC_perf_event_output
+ BPF_FUNC_get_current_uid_gid
+ BPF_FUNC_get_current_pid_tgid
+ BPF_FUNC_get_current_comm
+ BPF_FUNC_get_current_cgroup_id
+ BPF_FUNC_get_current_ancestor_cgroup_id
+ BPF_FUNC_get_cgroup_classid
 
-Series applied to net-next, thanks Martin.
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+---
+ net/core/filter.c |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/net/core/filter.c b/net/core/filter.c
+index da06349..45b4a16 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6380,6 +6380,22 @@ sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_msg_push_data_proto;
+ 	case BPF_FUNC_msg_pop_data:
+ 		return &bpf_msg_pop_data_proto;
++	case BPF_FUNC_perf_event_output:
++		return &bpf_event_output_data_proto;
++	case BPF_FUNC_get_current_uid_gid:
++		return &bpf_get_current_uid_gid_proto;
++	case BPF_FUNC_get_current_pid_tgid:
++		return &bpf_get_current_pid_tgid_proto;
++#ifdef CONFIG_CGROUPS
++	case BPF_FUNC_get_current_cgroup_id:
++		return &bpf_get_current_cgroup_id_proto;
++	case BPF_FUNC_get_current_ancestor_cgroup_id:
++		return &bpf_get_current_ancestor_cgroup_id_proto;
++#endif
++#ifdef CONFIG_CGROUP_NET_CLASSID
++	case BPF_FUNC_get_cgroup_classid:
++		return &bpf_get_cgroup_classid_curr_proto;
++#endif
+ 	default:
+ 		return bpf_base_func_proto(func_id);
+ 	}
+
