@@ -2,114 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E871D208A
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 23:00:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C969D1D20BF
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 23:15:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727812AbgEMVAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 17:00:51 -0400
-Received: from smtprelay0154.hostedemail.com ([216.40.44.154]:51208 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725977AbgEMVAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 17:00:50 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id CA6F0182CED34;
-        Wed, 13 May 2020 21:00:48 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:966:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2194:2196:2199:2200:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3871:3874:4250:4321:4385:5007:6742:6743:10004:10400:10848:11026:11232:11473:11658:11914:12043:12296:12297:12438:12555:12740:12760:12895:12986:13069:13311:13357:13439:14096:14097:14659:14721:21080:21627:21987:30012:30054:30059:30062:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: mist41_5dde648048f06
-X-Filterd-Recvd-Size: 3554
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 13 May 2020 21:00:44 +0000 (UTC)
-Message-ID: <0ee5acfaca4cf32d4efad162046b858981a4dae3.camel@perches.com>
-Subject: Re: [PATCH 20/33] ipv4: add ip_sock_set_recverr
-From:   Joe Perches <joe@perches.com>
-To:     Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-nvme@lists.infradead.org,
-        target-devel@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-cifs@vger.kernel.org, cluster-devel@redhat.com,
-        ocfs2-devel@oss.oracle.com, netdev@vger.kernel.org,
-        linux-sctp@vger.kernel.org, ceph-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-nfs@vger.kernel.org
-Date:   Wed, 13 May 2020 14:00:43 -0700
-In-Reply-To: <20200513062649.2100053-21-hch@lst.de>
-References: <20200513062649.2100053-1-hch@lst.de>
-         <20200513062649.2100053-21-hch@lst.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
+        id S1728408AbgEMVOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 17:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728336AbgEMVOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 17:14:49 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F870C061A0E
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 14:14:49 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id z80so948072qka.0
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 14:14:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=26k2U+qWGSWeHztuUp6d2PF6l57b502E7BsHG3bV7Kw=;
+        b=hmqTagrkwBq4YN3N6zPB2PA1vADY8DMubtCBZvL2pdiG4o8oImNTTe6qQ4UTazM0n8
+         BDiY6g6i8Hn3IngXLtJ79u5GM7yNpKZ8a5Hb3O3AK62WMzJQqkhTiqMdZw0H4PZilt7E
+         xxTAW1wa3Vx6aDbTTLzCgs1an6/7i7QUwodgI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=26k2U+qWGSWeHztuUp6d2PF6l57b502E7BsHG3bV7Kw=;
+        b=rABFqqdQkB9vISsxRvJGuQSlcwIM1kUnOk3ixcjw5AnfbyKbErWKHL8zxLyEDRp/BM
+         S8hbePJD/WMi3ARUApNGRxlBvCFt71pHe+pHXm8+Seicq1fUYqXkmxJXRf58cc/lDI8S
+         ybA9EXWEJqLNhHuthDLecucsrpU4K6nNYMcj5+IbG6/Eys1c83gpMD7LVS6MX91Z1LBd
+         qKuLyp6VzZlsqoH16/SDJX2xIZmCVIshugMUN1uCEPfByfzDE+19oBIQQlJnaLezs+wn
+         hLku9Fm/ZVUq1YdJ3HAa0kwt5yQYys4gQZ1Sa04GS/V70Fvkkzixd6cVfQgEJeFfsYHC
+         bqKA==
+X-Gm-Message-State: AOAM532c1v68xp7bPtpdNhJZj33eOnTPYxuHPv5owaLdTLAKr83YN8WH
+        C3cAVBLF/LhF4ly0wiMCvbclh8UY1Y368kYgLwPnyQ==
+X-Google-Smtp-Source: ABdhPJwyLwkh+Z+nGiq30nDEqDSwapL8UBhyZ6SWCCEMD/iJR5qN086AjCeolLUJpALni6A7zZ9PJjnrj93RkArI654=
+X-Received: by 2002:a37:9d4f:: with SMTP id g76mr1709510qke.235.1589404488363;
+ Wed, 13 May 2020 14:14:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20200513031930.86895-1-alexei.starovoitov@gmail.com>
+ <CAJPywT+c8uvi2zgUD_jObmi9T6j50THzjQHg-mudNrEC2HuJvg@mail.gmail.com>
+ <20200513175301.43lxbckootoefrow@ast-mbp.dhcp.thefacebook.com>
+ <CAJPywTKUmzDObSurppiH4GCJquDTnVWKLH48JNB=8RNcb5TiCQ@mail.gmail.com> <20200513185452.6dvzhpz5sgs7hcti@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200513185452.6dvzhpz5sgs7hcti@ast-mbp.dhcp.thefacebook.com>
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Wed, 13 May 2020 22:14:37 +0100
+Message-ID: <CAJPywTLneBjG6Lx7mS6GG-D93XHa1s1_aSGMoMjnfmMNrzvEnQ@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 0/3] Introduce CAP_BPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        network dev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        kernel-team@fb.com, linux-security-module@vger.kernel.org,
+        acme@redhat.com, jamorris@linux.microsoft.com,
+        Jann Horn <jannh@google.com>, KP Singh <kpsingh@google.com>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-05-13 at 08:26 +0200, Christoph Hellwig wrote:
-> Add a helper to directly set the IP_RECVERR sockopt from kernel space
-> without going through a fake uaccess.
+On Wed, May 13, 2020 at 7:54 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, May 13, 2020 at 07:30:05PM +0100, Marek Majkowski wrote:
+> > On Wed, May 13, 2020 at 6:53 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > > On Wed, May 13, 2020 at 11:50:42AM +0100, Marek Majkowski wrote:
+> > > > On Wed, May 13, 2020 at 4:19 AM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > CAP_BPF solves three main goals:
+> > > > > 1. provides isolation to user space processes that drop CAP_SYS_ADMIN and switch to CAP_BPF.
+> > > > >    More on this below. This is the major difference vs v4 set back from Sep 2019.
+> > > > > 2. makes networking BPF progs more secure, since CAP_BPF + CAP_NET_ADMIN
+> > > > >    prevents pointer leaks and arbitrary kernel memory access.
+> > > > > 3. enables fuzzers to exercise all of the verifier logic. Eventually finding bugs
+> > > > >    and making BPF infra more secure. Currently fuzzers run in unpriv.
+> > > > >    They will be able to run with CAP_BPF.
+> > > > >
+> > > >
+> > > > Alexei, looking at this from a user point of view, this looks fine.
+> > > >
+> > > > I'm slightly worried about REUSEPORT_EBPF. Currently without your
+> > > > patch, as far as I understand it:
+> > > >
+> > > > - You can load SOCKET_FILTER and SO_ATTACH_REUSEPORT_EBPF without any
+> > > > permissions
+> > >
+> > > correct.
+> > >
+> > > > - For loading BPF_PROG_TYPE_SK_REUSEPORT program and for SOCKARRAY map
+> > > > creation CAP_SYS_ADMIN is needed. But again, no permissions check for
+> > > > SO_ATTACH_REUSEPORT_EBPF later.
+> > >
+> > > correct. With clarification that attaching process needs to own
+> > > FD of prog and FD of socket.
+> > >
+> > > > If I read the patchset correctly, the former SOCKET_FILTER case
+> > > > remains as it is and is not affected in any way by presence or absence
+> > > > of CAP_BPF.
+> > >
+> > > correct. As commit log says:
+> > > "Existing unprivileged BPF operations are not affected."
+> > >
+> > > > The latter case is different. Presence of CAP_BPF is sufficient for
+> > > > map creation, but not sufficient for loading SK_REUSEPORT program. It
+> > > > still requires CAP_SYS_ADMIN.
+> > >
+> > > Not quite.
+> > > The patch will allow BPF_PROG_TYPE_SK_REUSEPORT progs to be loaded
+> > > with CAP_BPF + CAP_NET_ADMIN.
+> > > Since this type of progs is clearly networking type I figured it's
+> > > better to be consistent with the rest of networking types.
+> > > Two unpriv types SOCKET_FILTER and CGROUP_SKB is the only exception.
+> >
+> > Ok, this is the controversy. It made sense to restrict SK_REUSEPORT
+> > programs in the past, because programs needed CAP_NET_ADMIN to create
+> > SOCKARRAY anyway.
+>
+> Not quite. Currently sockarray needs CAP_SYS_ADMIN to create
+> which makes little sense from security pov.
+> CAP_BPF relaxes it CAP_BPF or CAP_SYS_ADMIN.
+>
+> > Now we change this and CAP_BPF is sufficient for
+> > maps - I don't see why CAP_BPF is not sufficient for SK_REUSEPORT
+> > programs. From a user point of view I don't get why this additional
+> > CAP_NET_ADMIN is needed.
+>
+> That actually bring another point. I'm not changing sock_map,
+> sock_hash, dev_map requirements yet. All three still require CAP_NET_ADMIN.
+> We can relax them to CAP_BPF _or_ CAP_NET_ADMIN in the future,
+> but I'd like to do that in the follow up.
 
-This seems used only with true as the second arg.
-Is there reason to have that argument at all?
+Agreed, we can discuss relaxation of SOCKMAP in the future.
 
-> diff --git a/include/net/ip.h b/include/net/ip.h
-[]
-> @@ -767,5 +767,6 @@ static inline bool inetdev_valid_mtu(unsigned int mtu)
->  
->  void ip_sock_set_tos(struct sock *sk, int val);
->  void ip_sock_set_freebind(struct sock *sk, bool val);
-> +void ip_sock_set_recverr(struct sock *sk, bool val);
->  
->  #endif	/* _IP_H */
-> diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-> index 0c40887a817f8..9abecc3195520 100644
-> --- a/net/ipv4/ip_sockglue.c
-> +++ b/net/ipv4/ip_sockglue.c
-> @@ -589,6 +589,16 @@ void ip_sock_set_freebind(struct sock *sk, bool val)
->  }
->  EXPORT_SYMBOL(ip_sock_set_freebind);
->  
-> +void ip_sock_set_recverr(struct sock *sk, bool val)
-> +{
-> +	lock_sock(sk);
-> +	inet_sk(sk)->recverr = val;
-> +	if (!val)
-> +		skb_queue_purge(&sk->sk_error_queue);
-> +	release_sock(sk);
-> +}
-> +EXPORT_SYMBOL(ip_sock_set_recverr);
-> +
->  /*
->   *	Socket option code for IP. This is the end of the line after any
->   *	TCP,UDP etc options on an IP socket.
-> diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-> index 562ea36c96b0f..1b87b8a9ff725 100644
-> --- a/net/rxrpc/local_object.c
-> +++ b/net/rxrpc/local_object.c
-> @@ -171,13 +171,7 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
->  		/* Fall through */
->  	case AF_INET:
->  		/* we want to receive ICMP errors */
-> -		opt = 1;
-> -		ret = kernel_setsockopt(local->socket, SOL_IP, IP_RECVERR,
-> -					(char *) &opt, sizeof(opt));
-> -		if (ret < 0) {
-> -			_debug("setsockopt failed");
-> -			goto error;
-> -		}
-> +		ip_sock_set_recverr(local->socket->sk, true);
->  
->  		/* we want to set the don't fragment bit */
->  		opt = IP_PMTUDISC_DO;
+> > > > I think it's a good opportunity to relax
+> > > > this CAP_SYS_ADMIN requirement. I think the presence of CAP_BPF should
+> > > > be sufficient for loading BPF_PROG_TYPE_SK_REUSEPORT.
+> > > >
+> > > > Our specific use case is simple - we want an application program -
+> > > > like nginx - to control REUSEPORT programs. We will grant it CAP_BPF,
+> > > > but we don't want to grant it CAP_SYS_ADMIN.
+> > >
+> > > You'll be able to grant nginx CAP_BPF + CAP_NET_ADMIN to load SK_REUSEPORT
+> > > and unpriv child process will be able to attach just like before if
+> > > it has right FDs.
+> > > I suspect your load balancer needs CAP_NET_ADMIN already anyway due to
+> > > use of XDP and TC progs.
+> > > So granting CAP_BPF + CAP_NET_ADMIN should cover all bpf prog needs.
+> > > Does it address your concern?
+> >
+> > Load balancer (XDP+TC) is another layer and permissions there are not
+> > a problem. The specific issue is nginx (port 443) and QUIC. QUIC is
+> > UDP and due to the nginx design we must use REUSEPORT groups to
+> > balance the load across workers. This is fine and could be done with a
+> > simple SOCK_FILTER - we don't need to grant nginx any permissions,
+> > apart from CAP_NET_BIND_SERVICE.
+> >
+> > We would like to make the REUSEPORT program more complex to take
+> > advantage of REUSEPORT_EBPF for stickyness (restarting server without
+> > interfering with existing flows), we are happy to grant nginx CAP_BPF,
+> > but we are not happy to grant it CAP_NET_ADMIN. Requiring this CAP for
+> > REUSEPORT severely restricts the API usability for us.
+> >
+> > In my head REUSEPORT_EBPF is much closer to SOCKET_FILTER. I
+> > understand why it needed capabilities before (map creation) and I
+> > argue these reasons go away in CAP_BPF world. I assume that any
+> > service (with CAP_BPF) should be able to use reuseport to distribute
+> > packets within its own sockets.  Let me know if I'm missing something.
+>
+> Fair enough. We can include SK_REUSEPORT prog type as part of CAP_BPF alone.
+> But will it truly achieve what you want?
 
+It will make the security model much more useful and sane for me and
+other users of stuff that depends on SK_REUSEPORT (like nginx + UDP).
+So yes, long-term it will help. Thanks.
+
+> You still need CAP_NET_ADMIN for sock_hash which you're using.
+> Are you saying it's part of the different process that has that cap_net_admin
+> and nginx will be fine with cap_bpf + cap_net_bind_service ?
+
+At this moment good old SOCKARRAY is sufficient. Having both SOCKARRAY
+and SK_REUSEPORT_EBPF depend only on CAP_BPF is a good start. Thanks
+for considering that. We can discuss relaxation of SOCKMAP in the
+future.
+
+Marek
