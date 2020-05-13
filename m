@@ -2,82 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EE9C1D0C76
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 11:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB7E1D0C73
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 11:39:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732385AbgEMJjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 05:39:55 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:39352 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728224AbgEMJjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 05:39:55 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B6E226006B;
-        Wed, 13 May 2020 09:39:54 +0000 (UTC)
-Received: from us4-mdac16-14.ut7.mdlocal (unknown [10.7.65.238])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B4A712009A;
-        Wed, 13 May 2020 09:39:54 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.35])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 487931C004F;
-        Wed, 13 May 2020 09:39:54 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CB35D48005F;
-        Wed, 13 May 2020 09:39:53 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 13 May
- 2020 10:39:47 +0100
-Subject: Re: [PATCH][next] sfc: fix dereference of table before it is null
- checked
-To:     Colin King <colin.king@canonical.com>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200512171355.221810-1-colin.king@canonical.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <680245f9-e26d-87e1-6e52-138302950e06@solarflare.com>
-Date:   Wed, 13 May 2020 10:39:43 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1730270AbgEMJjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 05:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727030AbgEMJjs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 05:39:48 -0400
+Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58F6C061A0C;
+        Wed, 13 May 2020 02:39:47 -0700 (PDT)
+Received: by a3.inai.de (Postfix, from userid 65534)
+        id 9CC9F58725882; Wed, 13 May 2020 11:39:45 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on a3.inai.de
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.2
+Received: from a4.inai.de (a4.inai.de [IPv6:2a01:4f8:10b:45d8::f8])
+        by a3.inai.de (Postfix) with ESMTP id 532D958725880;
+        Wed, 13 May 2020 11:39:44 +0200 (CEST)
+From:   Jan Engelhardt <jengelh@inai.de>
+To:     zenczykowski@gmail.com
+Cc:     maze@google.com, pablo@netfilter.org, fw@strlen.de,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: [PATCH v4] doc: document danger of applying REJECT to INVALID CTs
+Date:   Wed, 13 May 2020 11:39:44 +0200
+Message-Id: <20200513093944.9752-1-jengelh@inai.de>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <CANP3RGfNH1m=-rFdkAmGUt3vxFqaGmJnW+RKP-faU6WwOKWoZg@mail.gmail.com>
+References: <CANP3RGfNH1m=-rFdkAmGUt3vxFqaGmJnW+RKP-faU6WwOKWoZg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200512171355.221810-1-colin.king@canonical.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25416.003
-X-TM-AS-Result: No-3.998300-8.000000-10
-X-TMASE-MatchedRID: +c13yJDs902Q0e+Zbzl6QvZvT2zYoYOwC/ExpXrHizzalJpeFb3A2AzC
-        4kGpAim5MfxNln1FsCZEM+a80Fik2m0EKIw8Yc1pmvnKSb020hxXjjsM2/DfxsbJavo8UnfR9WX
-        m+yhJKyhrLBQyc0DNWpGTpe1iiCJq71zr0FZRMbCWlioo2ZbGwdmzcdRxL+xwKrauXd3MZDVu4X
-        ahMwgGvMSZYRZ6lSrPRIFUqxkBLlV8Z3pE9vTn43HN0Hf8/0hAYa6zuRJ7MeptVPWBZvQASn3zG
-        QdUBqY5Ut3qL8UMiT/ktbyhRJHSSQbEQIfFpkwHBtlgFh29qnpKzBwu5JpklnOUuoTXM7r4Qwym
-        txuJ6y0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.998300-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25416.003
-X-MDID: 1589362794-1a_JcRE-r6Ol
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/05/2020 18:13, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
->
-> Currently pointer table is being dereferenced on a null check of
-> table->must_restore_filters before it is being null checked, leading
-> to a potential null pointer dereference issue.  Fix this by null
-> checking table before dereferencing it when checking for a null
-> table->must_restore_filters.
->
-> Addresses-Coverity: ("Dereference before null check")
-> Fixes: e4fe938cff04 ("sfc: move 'must restore' flags out of ef10-specific nic_data")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Acked-by: Edward Cree <ecree@solarflare.com>
+Signed-off-by: Jan Engelhardt <jengelh@inai.de>
+---
+
+4th time is the charm?!
+
+ extensions/libip6t_REJECT.man | 20 ++++++++++++++++++++
+ extensions/libipt_REJECT.man  | 20 ++++++++++++++++++++
+ 2 files changed, 40 insertions(+)
+
+diff --git a/extensions/libip6t_REJECT.man b/extensions/libip6t_REJECT.man
+index 0030a51f..7387436c 100644
+--- a/extensions/libip6t_REJECT.man
++++ b/extensions/libip6t_REJECT.man
+@@ -30,3 +30,23 @@ TCP RST packet to be sent back.  This is mainly useful for blocking
+ hosts (which won't accept your mail otherwise).
+ \fBtcp\-reset\fP
+ can only be used with kernel versions 2.6.14 or later.
++.PP
++\fIWarning:\fP You should not indiscriminately apply the REJECT target to
++packets whose connection state is classified as INVALID; instead, you should
++only DROP these.
++.PP
++Consider a source host transmitting a packet P, with P experiencing so much
++delay along its path that the source host issues a retransmission, P_2, with
++P_2 being succesful in reaching its destination and advancing the connection
++state normally. It is conceivable that the late-arriving P may be considered to
++be not associated with any connection tracking entry. Generating a reject
++packet for this packet would then terminate the healthy connection.
++.PP
++So, instead of:
++.PP
++-A INPUT ... -j REJECT
++.PP
++do consider using:
++.PP
++-A INPUT ... -m conntrack --ctstate INVALID -j DROP
++-A INPUT ... -j REJECT
+diff --git a/extensions/libipt_REJECT.man b/extensions/libipt_REJECT.man
+index 8a360ce7..618a766c 100644
+--- a/extensions/libipt_REJECT.man
++++ b/extensions/libipt_REJECT.man
+@@ -30,3 +30,23 @@ TCP RST packet to be sent back.  This is mainly useful for blocking
+ hosts (which won't accept your mail otherwise).
+ .IP
+ (*) Using icmp\-admin\-prohibited with kernels that do not support it will result in a plain DROP instead of REJECT
++.PP
++\fIWarning:\fP You should not indiscriminately apply the REJECT target to
++packets whose connection state is classified as INVALID; instead, you should
++only DROP these.
++.PP
++Consider a source host transmitting a packet P, with P experiencing so much
++delay along its path that the source host issues a retransmission, P_2, with
++P_2 being succesful in reaching its destination and advancing the connection
++state normally. It is conceivable that the late-arriving P may be considered to
++be not associated with any connection tracking entry. Generating a reject
++packet for this packet would then terminate the healthy connection.
++.PP
++So, instead of:
++.PP
++-A INPUT ... -j REJECT
++.PP
++do consider using:
++.PP
++-A INPUT ... -m conntrack --ctstate INVALID -j DROP
++-A INPUT ... -j REJECT
+-- 
+2.26.2
+
