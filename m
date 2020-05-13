@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3FF81D1FA6
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B37DE1D1F9E
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:49:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403805AbgEMTuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 15:50:39 -0400
-Received: from mga06.intel.com ([134.134.136.31]:59369 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403801AbgEMTuj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 15:50:39 -0400
-IronPort-SDR: 4z9yPNB5201x4gxAxNTq/U2Yp79u2zn8WPTmy1+A1tqYA00SbcC8qE7gyi43Tr6Ta0wwVp7zvg
- jljAS0PjocuQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2020 12:50:37 -0700
-IronPort-SDR: NYKz+sjD2jfN6VNoiiPY4uYScT9xEHKCpGKokPe/w56hcpZ7XyorCBI2Gg45UcSxKrckk5h1Ds
- t+gW1FbHt/zQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,388,1583222400"; 
-   d="scan'208";a="341363960"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga001.jf.intel.com with ESMTP; 13 May 2020 12:50:36 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     dsahern@gmail.com, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, kiran.patil@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH iproute2-next] tc: mqprio: reject queues count/offset pair count higher than num_tc
-Date:   Wed, 13 May 2020 21:47:17 +0200
-Message-Id: <20200513194717.15363-1-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.20.1
+        id S2403777AbgEMTtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 15:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2390696AbgEMTtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:49:16 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CF6C061A0E
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 12:49:16 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id l19so904115lje.10
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 12:49:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YO5CZycJoj3SG3fGwN+WTopK/LhbyP0lsfj2E+DRkX4=;
+        b=PhubPRzpkCdl9mVPHrG9Oo8C+WwrKBHaeYw/BPL1ZhM7m32uY9vOkxzag4IPR45vmN
+         nCyuee+AoItBB8/CS6j7/cO2lxt0a4Fuet7ze1acDgZYlgBMc3l9Izqr8rAmG81U3hf8
+         E+jYDPSfclqu+31+e+LKbjbSmiBTvos3Qrvk0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YO5CZycJoj3SG3fGwN+WTopK/LhbyP0lsfj2E+DRkX4=;
+        b=fqddDHQ3izvJgzSiSZaU3mtrhSvlIpHZ+K2avxAKuO7rZQgu4SRu5heQMH9M3zrGwR
+         oc2pfejkUTWt9gAp6i8h4Ypkhr0PWnQ9vHZZMMrYxUAsftlX865S4jd524yJaJv2Bm2U
+         15tcRzQ6iV1RL/aXQgLdqt/IesCggX0pmUwNKxRKeGhXifNckZz4bR7t6K8a5YH0diDN
+         2x4B33c+AThccPOcykjGhv33V5D1zIrMN4AecKolfDdnKnaxoREmlF3AAs1NDOUUWurw
+         pfBaqNHw+O159KsR8UayFyhKVnGd63sXqK5onbV72SsG1qNXOJ03jq7rddQBqxm87rXb
+         CBGQ==
+X-Gm-Message-State: AOAM532rPR+mfHJCLDzgZ9cgsykmX2is1oi5TiSfLuwTmxOCA7MnKfhf
+        A/nMxANMnGLr5+5GbaqM8UoKWHoXoSg=
+X-Google-Smtp-Source: ABdhPJyjYkTATdiPS3YAb2fyyfGqA7dnbAV+TGfFkwHMDUGTx5o+JuHQFm4HfZrPLuIg1ZTkXj0EJQ==
+X-Received: by 2002:a2e:8083:: with SMTP id i3mr413150ljg.175.1589399352255;
+        Wed, 13 May 2020 12:49:12 -0700 (PDT)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
+        by smtp.gmail.com with ESMTPSA id b8sm321576lfq.70.2020.05.13.12.49.10
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 12:49:11 -0700 (PDT)
+Received: by mail-lf1-f54.google.com with SMTP id d22so534786lfm.11
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 12:49:10 -0700 (PDT)
+X-Received: by 2002:ac2:58c8:: with SMTP id u8mr739476lfo.142.1589399350490;
+ Wed, 13 May 2020 12:49:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200513160038.2482415-1-hch@lst.de> <20200513160038.2482415-15-hch@lst.de>
+ <CAHk-=wgzXqgYQQt2NCdZTtxLmV1FV1nbZ_gKw0O_mRkXZj57zg@mail.gmail.com> <20200513194003.GA31028@lst.de>
+In-Reply-To: <20200513194003.GA31028@lst.de>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 13 May 2020 12:48:54 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whtGLxezkdMP6+859LFDgb++6dgYa6Vrc=zJ9+GB7UMFQ@mail.gmail.com>
+Message-ID: <CAHk-=whtGLxezkdMP6+859LFDgb++6dgYa6Vrc=zJ9+GB7UMFQ@mail.gmail.com>
+Subject: Re: [PATCH 14/18] maccess: allow architectures to provide kernel
+ probing directly
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide a sanity check that will make sure whether queues count/offset
-pair count will not exceed the actual number of TCs being created.
+On Wed, May 13, 2020 at 12:40 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> We do export something like it, currently it is called
+> probe_kernel_address, and the last patch renames it to
+> get_kernel_nofault.  However it is implemented as a wrapper
+> around probe_kernel_address / copy_from_kernel_nofault and thus
+> not quite as efficient and without the magic goto semantics.
 
-Example command that is invalid because there are 4 count/offset pairs
-whereas num_tc is only 2.
+Looking at the current users of "probe_kernel_read()", it looks like
+it's almost mostly things that just want a single byte or word.
 
- # tc qdisc add dev enp96s0f0 root mqprio num_tc 2 map 0 0 0 0 1 1 1 1
-queues 4@0 4@4 4@8 4@12 hw 1 mode channel
+It's not 100% that: we definitely do several things that want the
+"copy" semantics vs the "get" semantics: on the x86 side we have
+CALL_INSN_SIZE and MAX_INSN_SIZE, and the ldttss_desc.
 
-Store the parsed count/offset pair count onto a dedicated variable that
-will be compared against opt.num_tc after all of the command line
-arguments were parsed. Bail out if this count is higher than opt.num_tc
-and let user know about it.
+But the bulk of them do seem to be a single value.
 
-Drivers were swallowing such commands as they were iterating over
-count/offset pairs where num_tc was used as a delimiter, so this is not
-a big deal, but better catch such misconfiguration at the command line
-argument parsing level.
+I don't know if performance really matters here, but to me the whole
+"most users seem to want to read a single value" is what makes me
+think that maybe that should be the primary model, rather than have
+the copy model be the primary one and then we implement the single
+value case (badly) with a copy.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- tc/q_mqprio.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+It probably doesn't matter that much. I certainly wouldn't hold this
+series up over it - it can be a future thing.
 
-diff --git a/tc/q_mqprio.c b/tc/q_mqprio.c
-index 0eb41308..f26ba8d7 100644
---- a/tc/q_mqprio.c
-+++ b/tc/q_mqprio.c
-@@ -48,6 +48,7 @@ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
- 	__u64 max_rate64[TC_QOPT_MAX_QUEUE] = {0};
- 	__u16 shaper = TC_MQPRIO_SHAPER_DCB;
- 	__u16 mode = TC_MQPRIO_MODE_DCB;
-+	int cnt_off_pairs = 0;
- 	struct rtattr *tail;
- 	__u32 flags = 0;
- 
-@@ -94,6 +95,7 @@ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
- 				}
- 				free(tmp);
- 				idx++;
-+				cnt_off_pairs++;
- 			}
- 		} else if (strcmp(*argv, "hw") == 0) {
- 			NEXT_ARG();
-@@ -173,6 +175,12 @@ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
- 		argc--; argv++;
- 	}
- 
-+	if (cnt_off_pairs > opt.num_tc) {
-+		fprintf(stderr, "queues count/offset pair count %d can not be higher than given num_tc %d\n",
-+			cnt_off_pairs, opt.num_tc);
-+		return -1;
-+	}
-+
- 	tail = NLMSG_TAIL(n);
- 	addattr_l(n, 1024, TCA_OPTIONS, &opt, sizeof(opt));
- 
--- 
-2.20.1
-
+         Linus
