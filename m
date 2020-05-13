@@ -2,95 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F9A1D1DBA
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:43:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B65EA1D1DC2
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:45:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390218AbgEMSnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 14:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
+        id S2390122AbgEMSpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 14:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732218AbgEMSnS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:43:18 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CE3C061A0E
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 11:43:18 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id f13so344324qkh.2
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 11:43:18 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1732817AbgEMSpX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:45:23 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54519C061A0C;
+        Wed, 13 May 2020 11:45:23 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id n5so14818674wmd.0;
+        Wed, 13 May 2020 11:45:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=NXrvQNeC1Xj02nUw5miKT8fMXE+WzxSqq6EctGKkuNI=;
-        b=nWD1ls946alpVxKN77zxbZUZ+HrnneaGobCxCRt9Tk0xSC4PPClNiqgypoIR+KfoIU
-         E5qbMtYATFCLpqLg6AJjVKw9p1ikx2kluRuRlUGk7YSSRedH6so1htbOO0ZdrXD0mpDX
-         5n+Xa1Gtncgceoo3FslAH6if/VZwBcZP86caVTGnJbVc3n3Ccj8Bpcyj3KSuvgbgpGz5
-         +WOcNCKg/sw14OrUMr2UfEJ4j4iTa3ycYdGXrQRpUwus6Z8o0sYQXJ8cSoQ2L7akZPqG
-         2C98jEGaAlMvyFiVjM+s6XBo3JAsLh0oBbUq5RA46aD7LxRjuP1yW8Fhf+EOtjDI6hN6
-         YKJQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PT0h38OrQXBZNljpCzZiDCJfv+srQ4T4K6VCcISjh+o=;
+        b=NHowZjspfC1uKoskgjqurh5XM01XVemx028k1uB5QSSJGeckopvvuRfoP7Ph7C1Bae
+         p6NNvDqJn3yPU7tYzSjUkLinU7xd4nIAluUncZ1HtOoyQfmDjfOpDb4y7rv6fWpGclVS
+         HrEDNiMnSpu42yqpr7IWBM/Ol8YKYKl3rNbn4RzTOBnyDKL98MjdhSPckmZt2Vjsfrnu
+         990+9LIyR9pJ/jhc3hexg9Ep0NfAB4dmIiAmqvyecmdeTWeFnseoMAJbHJvIX5IFxsMS
+         Kztf6GncPinBZz5vvZanuk0XSst5splnVFrOUgHAZIpioL/RpVdGpyKHa4ebSZa5ErZP
+         3SpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=NXrvQNeC1Xj02nUw5miKT8fMXE+WzxSqq6EctGKkuNI=;
-        b=jLGkZdx1oi8pZJO1/Uh2NwiWzQo2PeYCctE4Jupx0cOLem5jbmFU/qm5cPlZRrc/xV
-         3siF6HZ6JsazqiP/RFT5NPaSgLRrjYEwWA/x6LqtwCuIb0jfvpHGeyKo1x2pMZVyEOGL
-         LUYALB/X/xhxH3Bs/AKyyeJFuiaummF31OsWtu6nqRmfQZDJ3M3OEUfIFMB/jCVkFtap
-         oV3qiB4IACfxhYce2HEodtY0fF67D50rynfw5OK9A105RKay9iP6Bc08y4QJ5Adds+qN
-         PTm/lkLjr+GqyVR0zYaJC8h8OMhm/mFOfMGADWIyJRMBlS9TnA/zvgqRplMfNeijPgKQ
-         I+Fw==
-X-Gm-Message-State: AOAM531+TNd/lHz4DEm7FlE5xo63taJsc/wDUsha2GZaQtieDC9D0/uW
-        hKno818N3FA+IgUlOo6gBsvPuw==
-X-Google-Smtp-Source: ABdhPJzgpvkBE4/Qkgv1I7UVhNmN6oXYlL2M9jIHRzZyiQC7ufYITkarA0NxI/DhgMaJZC05+rk3qA==
-X-Received: by 2002:a37:6656:: with SMTP id a83mr1062345qkc.395.1589395397522;
-        Wed, 13 May 2020 11:43:17 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id p137sm536595qke.60.2020.05.13.11.43.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 13 May 2020 11:43:17 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jYwLc-0000c2-He; Wed, 13 May 2020 15:43:16 -0300
-Date:   Wed, 13 May 2020 15:43:16 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] IB/mlx4: Replace zero-length array with flexible-array
-Message-ID: <20200513184316.GA2217@ziepe.ca>
-References: <20200507185921.GA15146@embeddedor>
- <20200509205151.209bdc9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PT0h38OrQXBZNljpCzZiDCJfv+srQ4T4K6VCcISjh+o=;
+        b=K6qUd6TB27RGkZu+oV4RW+JCX2tE3CrN/uqoJfuUHwSICPtqPZH0hfK33zO1ezPfT6
+         mia7u3jKIcvKTLfwCV3mHh6LixddwG5M+XRCjhUBHRYp5ORdcM1IO86qraeQKwYUQZnc
+         5q7xSWszWgTrMDHnS4EikhXt6pEqfH3xBF0oERNlHrmCEkHi7Eqvhlh60p4Tza+GVUmm
+         Tj1Obp4BNCeFRDcMtruEc7hsPvmmsA0yzBmuB8YRi/w6+oe1LwsHL7eB3Mxf81JbkZNI
+         1kPGGWUEQ71z1btDPcVwyca+uLVWs7Lq2yBEuJe1k4Fmflq7yIdk8HcDldWCK3kgE2cM
+         Hliw==
+X-Gm-Message-State: AGi0PuacsiakkL573npox4/OI124zlXH3/TQDDGxEifRKN7Dat6W+RF7
+        P0dO+tVyRYKJ+e2am4hgVQjcnbsw
+X-Google-Smtp-Source: APiQypIK8q7L1drcKLYh9sEaASQ4rq35pqJ+J+If2G/yEeThC9w9wm9XnhpfjzopaeqgVblnzpPmLg==
+X-Received: by 2002:a1c:5419:: with SMTP id i25mr40509019wmb.156.1589395521755;
+        Wed, 13 May 2020 11:45:21 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f28:5200:f910:f6a0:7ae2:caf7? (p200300EA8F285200F910F6A07AE2CAF7.dip0.t-ipconnect.de. [2003:ea:8f28:5200:f910:f6a0:7ae2:caf7])
+        by smtp.googlemail.com with ESMTPSA id v124sm37638214wme.45.2020.05.13.11.45.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 11:45:21 -0700 (PDT)
+Subject: Re: [PATCH] net: phy: realtek: clear interrupt during init for
+ rtl8211f
+To:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200512184601.40b1758a@xhacker.debian>
+ <7735a257-21ff-e6c0-acdc-f5ee187b1f57@gmail.com>
+ <20200513145151.04a6ee46@xhacker.debian>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <a0aac85d-064f-2672-370b-404fd83e83f3@gmail.com>
+Date:   Wed, 13 May 2020 20:45:13 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200509205151.209bdc9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200513145151.04a6ee46@xhacker.debian>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 09, 2020 at 08:51:50PM -0700, Jakub Kicinski wrote:
-> On Thu, 7 May 2020 13:59:21 -0500 Gustavo A. R. Silva wrote:
-> > The current codebase makes use of the zero-length array language
-> > extension to the C90 standard, but the preferred mechanism to declare
-> > variable-length types such as these ones is a flexible array member[1][2],
-> > introduced in C99:
-> > 
-> > struct foo {
-> >         int stuff;
-> >         struct boo array[];
-> > };
-> >
-> > ...
+On 13.05.2020 08:51, Jisheng Zhang wrote:
+> Hi,
 > 
-> Applied, thank you!
+> On Tue, 12 May 2020 20:43:40 +0200 Heiner Kallweit wrote:
+> 
+>>
+>>
+>> On 12.05.2020 12:46, Jisheng Zhang wrote:
+>>> The PHY Register Accessible Interrupt is enabled by default, so
+>>> there's such an interrupt during init. In PHY POLL mode case, the
+>>> INTB/PMEB pin is alway active, it is not good. Clear the interrupt by
+>>> calling rtl8211f_ack_interrupt().  
+>>
+>> As you say "it's not good" w/o elaborating a little bit more on it:
+>> Do you face any actual issue? Or do you just think that it's not nice?
+> 
+> 
+> The INTB/PMEB pin can be used in two different modes:
+> INTB: used for interrupt
+> PMEB: special mode for Wake-on-LAN
+> 
+> The PHY Register Accessible Interrupt is enabled by
+> default, there's always such an interrupt during the init. In PHY POLL mode
+> case, the pin is always active. If platforms plans to use the INTB/PMEB pin
+> as WOL, then the platform will see WOL active. It's not good.
+> 
+The platform should listen to this pin only once WOL has been configured and
+the pin has been switched to PMEB function. For the latter you first would
+have to implement the set_wol callback in the PHY driver.
+Or where in which code do you plan to switch the pin function to PMEB?
+One more thing to consider when implementing set_wol would be that the PHY
+supports two WOL options:
+1. INT/PMEB configured as PMEB
+2. INT/PMEB configured as INT and WOL interrupt source active
 
-Jakub,
-
-Please don't take RDMA patches in netdev unless it is a special
-case. There is alot of cross posting and they often get into both
-patchworks.
-
-Thanks,
-Jason
+> 
+>> I'm asking because you don't provide a Fixes tag and you don't
+>> annotate your patch as net or net-next.
+> 
+> should be Fixes: 3447cf2e9a11 ("net/phy: Add support for Realtek RTL8211F")
+> 
+>> Once you provide more details we would also get an idea whether a
+>> change would have to be made to phylib, because what you describe
+>> doesn't seem to be specific to this one PHY model.
+> 
+> Nope, we don't need this change in phylib, this is specific to rtl8211f
+> 
+> Thanks,
+> Jisheng
+> 
+Heiner
