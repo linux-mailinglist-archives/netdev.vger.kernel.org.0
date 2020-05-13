@@ -2,114 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 305C01D097E
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 09:06:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1241D0990
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 09:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730152AbgEMHGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 03:06:07 -0400
-Received: from mail-eopbgr60055.outbound.protection.outlook.com ([40.107.6.55]:30359
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729199AbgEMHGG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 03:06:06 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R9hbu/Qf0lj91l43jtiFeokYFOCrrZg/jGmel71HbSAXXwcVBrY5iZxC8t3mREvpvTYh3C9rRQiYbT2yffvvu3lLk5g78YF+sg0D4kD1zYrA+pkwf8u2rl5toaLpidDh9h0DFNsUc8nyGSjWyoBa4C9iNX4+hLfe2TYHOOHRF8UANqq8kRBTELRvCKNQ54QTndydZbtICpN+b/rYG+7Y/Z7nKE3mP3WumrwkKyfOwDb1LZIm9QxW+fz9qxnOrs8VQdWTZ8lycGuV7mnCZJkapIGmWoWT1o3wN4r3b/9sasZjhjBNPUjNAQ+l7ANP30KK/5GefXJdRQhbKI9+eRpPFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IG4hp87PDk/HTjQkIv8yKTmY7xBitvvjsj6pi0G/7BQ=;
- b=FKMAdEdGDkkjOtsJiJu4N78auZ+u0HsOkImfw4w/vf3j2Ul54TpFA4hAxnkV6dqtyd2RIS+XijhaDRbDUTPSKeJ/ta+0lGuC1rX6HqkMOcnMwoad/I9+9RXwsUSDdqJ3vJ3j60IxBXGZ73spM0PLEKs1SaU0lzVhmo8suvf1OzZV/bjqgHzqcl10aEzR6FPTeqBRw/pGtacc4nJJocubbt4iUwLfIcMi1QvvcVpQp4oGGINNdu1ECy0gcOven6IExMwMFQSWamw9ofdZd5Pyk4rWGsKFX8EKnBrb/OFEgxy9CReH8BmEO7T2tlCW3VOR3aRlMIqqaOzX4Fz/tHszpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IG4hp87PDk/HTjQkIv8yKTmY7xBitvvjsj6pi0G/7BQ=;
- b=ipEeSA00uu0T3FwxiMMeKLgggg4zCApWouAwVDIevGMV4QQsKhTeC6BentxCyyBUycTj5LXLeMYwBSqAgEgFoqynHFP6D3VeFRzWxKLrl9cc8aBg8TSD6OMPZ5PSdalbPxjunt//ZePniGJBpNqVrA4GDZo+xKGUGP6h8MLEDrU=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=mellanox.com;
-Received: from AM6PR05MB6408.eurprd05.prod.outlook.com (2603:10a6:20b:b8::23)
- by AM6PR05MB5540.eurprd05.prod.outlook.com (2603:10a6:20b:5f::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.34; Wed, 13 May
- 2020 07:06:03 +0000
-Received: from AM6PR05MB6408.eurprd05.prod.outlook.com
- ([fe80::1466:c39b:c016:3301]) by AM6PR05MB6408.eurprd05.prod.outlook.com
- ([fe80::1466:c39b:c016:3301%4]) with mapi id 15.20.2979.033; Wed, 13 May 2020
- 07:06:03 +0000
-Date:   Wed, 13 May 2020 10:05:59 +0300
-From:   Leon Romanovsky <leonro@mellanox.com>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@mellanox.com>,
-        Mark Bloch <markb@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH rdma-next v1 0/4] Add steering support for default miss
-Message-ID: <20200513070559.GP4814@unreal>
-References: <20200504053012.270689-1-leon@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200504053012.270689-1-leon@kernel.org>
-X-ClientProxiedBy: AM4PR0101CA0047.eurprd01.prod.exchangelabs.com
- (2603:10a6:200:41::15) To AM6PR05MB6408.eurprd05.prod.outlook.com
- (2603:10a6:20b:b8::23)
+        id S1730509AbgEMHIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 03:08:15 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:51362 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728988AbgEMHIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 03:08:14 -0400
+Received: by mail-il1-f200.google.com with SMTP id h19so13292371ilo.18
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 00:08:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=4QBNP2HR3gpc8LrPnQK6peZDQZdUtluaIGBLQtNra78=;
+        b=s9rhA6boQI23oqghBN/bB0oOIvwqzecHWoolpbqqhQG/xQRLC6GY0Hldw/G805rmPu
+         1j370gIrV7HNvbNB/GVACNB9ufeUGdNjTm/bn4rWFuxeBLHoPfE/Tk+yFtSuLOzhe/ZP
+         F4NBIYRpwi/WAGgD7wQBN+XbACqwhbgoN6iFxrAsFD7vXaUON/Fq/CtQGKxuczOgcc89
+         isqbiLvzl5HoiAaGXEfclPBxgZWuG5KyOOpujmEq1yEkIhcg/JZnYfPGBIHpbspA1Zgj
+         c4pGR1e2v94NAINuFi/smsmkCVdUHwRq+OtsIzXQkdPCdfUsY4qS1BHzLUgiTqaqQ60D
+         RV1Q==
+X-Gm-Message-State: AGi0Pua6vUZl9ZD2sB1hvEQbUCyn6Lx+jS9Woin7hh7YG+IH8ChH+u1L
+        6MXMe2ka3msZKpQFTa5BX5NT06UhO2dLanD/z4xSBF82eenC
+X-Google-Smtp-Source: APiQypLP0LNvw//Am9YDhcfBkp/su2qZOVPUWsaX+yXrrHireJ83TAFbcTVPzbJ28ZGsP7fsJVILtpmiMGJgNjNbDqe9EvEYhVeK
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (2a00:a040:183:2d::a43) by AM4PR0101CA0047.eurprd01.prod.exchangelabs.com (2603:10a6:200:41::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Wed, 13 May 2020 07:06:02 +0000
-X-Originating-IP: [2a00:a040:183:2d::a43]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a0fa8612-4869-4410-2c9e-08d7f70c1949
-X-MS-TrafficTypeDiagnostic: AM6PR05MB5540:|AM6PR05MB5540:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6PR05MB5540D69EB8114AA13FBA2097B0BF0@AM6PR05MB5540.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 0402872DA1
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s9IfP/Wyw4O5vKeMEEtCWd09N1IiVfr+8CmYyKNpaBoJDLzdhfb7YIiUSTgoNOK/oL4QEYjnnrsmh7MONKx+Lq+6ka/cWCcs8sVBBk2v4FVGuQLpfwpPDgkFBGo2LetgtdWUYZDEfPHxj1L7iP6S+QARqaJ7G5bi8D4IVkMGouN3YK0yTMSyY47zKrTMv2KdRAGlr+/dtXo+7G1e9acjHsZHGX0ilKTITjrrmSfOHjpQAlezR9NMZ2NLubFJmcIJWZYEZ8A9eeckPbJ7fC/TGAwuCc4SoKv+kDO7gqAvhnGWvTaqtcZudVz6e91t9dgQU3vezhYV/k3iy5aPwhLAPgDw2QQObWBTPgQWkt0z1mRZGkfheHocNvSEgNX/1gaYc0pod/4St1uUOkXnqG3seH8gAgUMUhHZxaSnAxpidWTAliYeAWBoW8OAGrdU+YGQNaL4FPmEjcvEQqy9COHPbPJz0KJLarfGyloya+G6aMWKBJchtwg96VmhKJBkPTxnNLZ1A5+tKc2gC0+PDbHdE0jWiLtm+5L1uzDcMOqUKRwHdZ1PyOm3F9z+IAi2SGnTBGexhutH12yy95Hc4CD6JONfGa09qcgJobPZWRLlhQ8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB6408.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(7916004)(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(33430700001)(16526019)(52116002)(8676002)(186003)(5660300002)(54906003)(8936002)(110136005)(1076003)(66476007)(4326008)(6636002)(66946007)(4744005)(966005)(86362001)(6666004)(107886003)(33440700001)(9686003)(316002)(6486002)(2906002)(33656002)(478600001)(66556008)(33716001)(6496006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: bdEQ+NQ+sGoKZEU5Tkhkqp5e+rhzer5ZFjO3rVaqBgnVG5xJzJVahyTcuMlBf7XFva8dyaBALYreF1oQR2efLDS0CsehQuQIJCFHcNBdL+2GAhOlWeo+4t1Ta8w9QnXAcyCZUvSRcj7ELGldHUzmd26lrARveENFpYAariaZFwR+UdWboWq8VOrtO0xOMI+k7LkuddPLpxlEHZXcXoZWXqzB3wJhBe7EllrQfCfj8TC/BlPqtBrDyhETRxmJyI4zuMj7irXWPuIDJjg2x473L4z2t3o10TTX9Ni/1abXLDajoqeBWZgnAmuCe3rZr9A+5RMjIrbA8CN9dTemUResFsxVuiZjtJW2LGIPoB0CAYOWMzkRUZxZwyadKGeptRtDo3OhpY1zidvfUrC6LmG91WanVHj1ijpm2SkOA7lSaAtBvBPAv+2ootrOZVtGEGsG2pwEyrckVhb4lTeceS0nnQffM3P0qiBV4e8d6Efsxh/gzNUdlvALGJEqPXKJtED2
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0fa8612-4869-4410-2c9e-08d7f70c1949
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2020 07:06:03.4317
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AJojLLXCGXYckqVBXLGTCcpkAfMEcQqHbonn0B7VGkyN/7KITD0cGE5Sf18QOBqVi+AoHfx+0ewoM6OTfAvHsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5540
+X-Received: by 2002:a6b:c706:: with SMTP id x6mr23750484iof.112.1589353693496;
+ Wed, 13 May 2020 00:08:13 -0700 (PDT)
+Date:   Wed, 13 May 2020 00:08:13 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000052cae405a5823e68@google.com>
+Subject: general protection fault in cfg80211_dev_rename
+From:   syzbot <syzbot+fd5332e429401bf42d18@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 04, 2020 at 08:30:08AM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
->
-> Changelog
-> v1:
->  * Rebased on latest rdma-next
->  * Removed attr_is_valid() check from flags
-> v0: https://lore.kernel.org/linux-rdma/20200413135220.934007-1-leon@kernel.org
->
-> -------------------------------------------------------------------------
-> Hi,
->
-> This code from Naor refactors the fs_core and adds steering support
-> for default miss functionality.
->
-> Thanks
->
-> Maor Gottlieb (4):
->   {IB/net}/mlx5: Simplify don't trap code
->   net/mlx5: Add support in forward to namespace
+Hello,
 
-Applied to mlx5-next with change of IS_ERR_OR_NULL().
+syzbot found the following crash on:
 
-19386660212d net/mlx5: Add support in forward to namespace
-8e14c75c999a {IB/net}/mlx5: Simplify don't trap code
+HEAD commit:    2b6c6f07 bpf, i386: Remove unneeded conversion to bool
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=142a6eec100000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=da7097535df759be
+dashboard link: https://syzkaller.appspot.com/bug?extid=fd5332e429401bf42d18
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-Thanks
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+fd5332e429401bf42d18@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
+CPU: 1 PID: 17548 Comm: syz-executor.2 Not tainted 5.7.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:cfg80211_dev_rename+0x12b/0x210 net/wireless/core.c:146
+Code: ef 00 00 00 4c 8b b5 10 0c 00 00 4d 85 f6 74 36 e8 0a 6f 20 fa 49 8d 7e 48 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 c9 00 00 00 49 8b 7e 48 4c 89 e9 4c 89 f6 48 89
+RSP: 0018:ffffc900055774e0 EFLAGS: 00010207
+RAX: dffffc0000000000 RBX: ffffc90005577748 RCX: ffffc90010d1f000
+RDX: 0000000000000006 RSI: ffffffff8752bd86 RDI: 0000000000000037
+RBP: ffff888088b40000 R08: ffff8880624a85c0 R09: fffffbfff185d748
+R10: ffffffff8c2eba3f R11: fffffbfff185d747 R12: 0000000000000000
+R13: ffffc90005e19018 R14: ffffffffffffffef R15: ffff888088b40000
+FS:  00007fce5b9b5700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000048a140 CR3: 0000000097525000 CR4: 00000000001406e0
+DR0: 0000000020000900 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
+Call Trace:
+ nl80211_set_wiphy+0x29d/0x2b70 net/wireless/nl80211.c:3009
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
+ genl_rcv_msg+0x627/0xdf0 net/netlink/genetlink.c:735
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:746
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2416
+ __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x45c829
+Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fce5b9b4c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000500b20 RCX: 000000000045c829
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 00000000000009fd R14: 00000000004ccb59 R15: 00007fce5b9b56d4
+Modules linked in:
+---[ end trace 90c3adb6c5fb6794 ]---
+RIP: 0010:cfg80211_dev_rename+0x12b/0x210 net/wireless/core.c:146
+Code: ef 00 00 00 4c 8b b5 10 0c 00 00 4d 85 f6 74 36 e8 0a 6f 20 fa 49 8d 7e 48 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 c9 00 00 00 49 8b 7e 48 4c 89 e9 4c 89 f6 48 89
+RSP: 0018:ffffc900055774e0 EFLAGS: 00010207
+RAX: dffffc0000000000 RBX: ffffc90005577748 RCX: ffffc90010d1f000
+RDX: 0000000000000006 RSI: ffffffff8752bd86 RDI: 0000000000000037
+RBP: ffff888088b40000 R08: ffff8880624a85c0 R09: fffffbfff185d748
+R10: ffffffff8c2eba3f R11: fffffbfff185d747 R12: 0000000000000000
+R13: ffffc90005e19018 R14: ffffffffffffffef R15: ffff888088b40000
+FS:  00007fce5b9b5700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b3103e000 CR3: 0000000097525000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
