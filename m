@@ -2,174 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE2EC1D1D7B
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0018E1D1D7E
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390175AbgEMS3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 14:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
+        id S2390177AbgEMSaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 14:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1733310AbgEMS3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:29:44 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D31CC061A0C;
-        Wed, 13 May 2020 11:29:44 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id x10so166636plr.4;
-        Wed, 13 May 2020 11:29:44 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1733310AbgEMSaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:30:18 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87168C061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 11:30:17 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id x12so639031qts.9
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 11:30:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IllZ9mGMgJpQp5GMigNHhpCQxEKCzjnd2cJjWKYQDwY=;
-        b=ij5nlNUkhu9MK9IJF6dVC50Z6cGEL2uSgaFoHS3aDpp/QeF3qBd9wHAduhctvK/22B
-         bnwPkCUKjBzgk1L3G6762qEqrCbshZBXyoDAG4KyTiKHoGtX46vpEcbN21Q1TQMzdX2k
-         59jrvx9t90nFylm5jlBxSbGbn+blZlLLZBFxKwebWBKDy3q43NTXDPY8IsgXY/r1pAbz
-         n5XmBqhZz5FcUwAe+zry1VPkXPD1USKdV7yHoTAvB4ppHLWhREz44dZbLTLuqeB3LJiP
-         ZdQ5TyHu88x8EMFAR2BIZ+8dz7GDiGf2mJoGfEzPXVkK72najYRJL/Hu9k8z529Ts3jy
-         UNfw==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZHRshdycZcrgsKSC7G/+rPgPxIFT4T/W2PZGPaf8g7Y=;
+        b=e+M7d/cKDZE39K+/aMgWXcMSGZmt1uxAOYNT6hf+iiI3ljnUpkERkiR1JrjmaPk1BI
+         DBnGiZNMu4j5e0MLs3cB1cil6P7AwbhyLS2N/jRgQo43eh7Whk3MGeecwIKNLWEWSxbQ
+         QqYT1FK+T2aYLJuk/5v8k1hyaFrRMPuZ9XgSU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IllZ9mGMgJpQp5GMigNHhpCQxEKCzjnd2cJjWKYQDwY=;
-        b=ZE4C/xJe59ra+TqPnli88cxS9mDQnoL3xFySEKtfeewKNj6QuehmrDsao00d40fIXa
-         4iS7nfkkFLKW3p/MVhZ1R6JwI6poSRer3KSHzJivkv96SreS2kCfrzDtoN30pnwRxOVt
-         xkUMcttRvB0tpBFapklMAWJ0V23HhHt4iFbZJGUeiztXCvYxUuDCn7VH66osNFEtIINS
-         QNg5BRFM0L5GmXWps7AbboezWFMCv8gKNx49LIDuo1tWV6IXor1so+wMCCuEntlG7EhK
-         qc+nU7ZFkEt8gLlbJ5Gim/FOfvyMezIpu1tM91pcitW5n0WehAY45kEnBns7Xm1+B41F
-         FScg==
-X-Gm-Message-State: AGi0PuY8t2am/rKCOyx/GBQyyeMjtOt6glZOshjCDKfCexYE/X7ksr83
-        8/Ll8Mx7zmbrZlye8U0ZNKo=
-X-Google-Smtp-Source: APiQypLTDEl6WIfDjqWWEoU07QvS4nfQiFcxGa+OtuEs6nY232pGEFA0s/GbXp8qDQkNfvR3YpbBfw==
-X-Received: by 2002:a17:90a:d711:: with SMTP id y17mr36225092pju.11.1589394584016;
-        Wed, 13 May 2020 11:29:44 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:ba8f])
-        by smtp.gmail.com with ESMTPSA id m18sm16240207pjl.14.2020.05.13.11.29.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2020 11:29:43 -0700 (PDT)
-Date:   Wed, 13 May 2020 11:29:40 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH 7/9] bpf: Compile the BTF id whitelist data in vmlinux
-Message-ID: <20200513182940.gil7v5vkthhwck3t@ast-mbp.dhcp.thefacebook.com>
-References: <20200506132946.2164578-1-jolsa@kernel.org>
- <20200506132946.2164578-8-jolsa@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZHRshdycZcrgsKSC7G/+rPgPxIFT4T/W2PZGPaf8g7Y=;
+        b=G/RoyJ9HsT7txYRgn6jR+IoT0LeHfYrlolLqhSieLSFm5IoddSGd1Ps0UBHjpwkPWj
+         Sj92WpZwi6bWDDOpZHYk4/r2zeeMWB9motTtoqgO0xkkx10F86uLKTALvR0kCGcol7/I
+         Fowkc8/2h8DHqh6IYVheL6jk8t16e+6LB5vYE44bFuBUvAP4YRCaSWQVyAeq7X/ywrhE
+         pB82pnFbWU9Gr0uOxGllzmJWKldBm2RC8oo66DKycWcwsPQxhcQROIlEjUZO4SWP9YJx
+         HkpbZACux58opV548KjkQQiTWByNOJxGeKlVvpQoPbkeEoFWHk9Hx7oh5vO3B0O4bW7P
+         M0hA==
+X-Gm-Message-State: AOAM532BhrjZMsTnUxg5zMo6ulcFk/T5C5VTpEEfe/EkkIxE7ddibuCR
+        dKsqrFYbTWSHXvEjewPa8y7KN34Ulxh95XZOMC0udQ==
+X-Google-Smtp-Source: ABdhPJx0vBpemsU3aq8SJB4eiYo93tub4OTvs4jnwtPJ46YCN4afYycte2hbfyf/wqrxxmtQat2ZoQ4ja3jWYTCRTPM=
+X-Received: by 2002:ac8:24e7:: with SMTP id t36mr464196qtt.98.1589394616579;
+ Wed, 13 May 2020 11:30:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200506132946.2164578-8-jolsa@kernel.org>
+References: <20200513031930.86895-1-alexei.starovoitov@gmail.com>
+ <CAJPywT+c8uvi2zgUD_jObmi9T6j50THzjQHg-mudNrEC2HuJvg@mail.gmail.com> <20200513175301.43lxbckootoefrow@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200513175301.43lxbckootoefrow@ast-mbp.dhcp.thefacebook.com>
+From:   Marek Majkowski <marek@cloudflare.com>
+Date:   Wed, 13 May 2020 19:30:05 +0100
+Message-ID: <CAJPywTKUmzDObSurppiH4GCJquDTnVWKLH48JNB=8RNcb5TiCQ@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 0/3] Introduce CAP_BPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        network dev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        kernel-team@fb.com, linux-security-module@vger.kernel.org,
+        acme@redhat.com, jamorris@linux.microsoft.com,
+        Jann Horn <jannh@google.com>, kpsingh@google.com,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 06, 2020 at 03:29:44PM +0200, Jiri Olsa wrote:
-> Squeezing in the BTF id whitelist data into vmlinux object
-> with BTF section compiled in, with following steps:
-> 
->   - generate whitelist data with bpfwl
->     $ bpfwl .tmp_vmlinux.btf kernel/bpf/helpers-whitelist > ${whitelist}.c
-> 
->   - compile whitelist.c
->     $ gcc -c -o ${whitelist}.o ${whitelist}.c
-> 
->   - keep only the whitelist data in ${whitelist}.o using objcopy
-> 
->   - link .tmp_vmlinux.btf and ${whitelist}.o into $btf_vmlinux_bin_o}
->     $ ld -r -o ${btf_vmlinux_bin_o} .tmp_vmlinux.btf ${whitelist}.o
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  Makefile                |  3 ++-
->  scripts/link-vmlinux.sh | 20 +++++++++++++++-----
->  2 files changed, 17 insertions(+), 6 deletions(-)
-> 
-> diff --git a/Makefile b/Makefile
-> index b0537af523dc..3bb995245592 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -437,6 +437,7 @@ OBJSIZE		= $(CROSS_COMPILE)size
->  STRIP		= $(CROSS_COMPILE)strip
->  endif
->  PAHOLE		= pahole
-> +BPFWL		= $(srctree)/tools/bpf/bpfwl/bpfwl
->  LEX		= flex
->  YACC		= bison
->  AWK		= awk
-> @@ -493,7 +494,7 @@ GCC_PLUGINS_CFLAGS :=
->  CLANG_FLAGS :=
->  
->  export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC
-> -export CPP AR NM STRIP OBJCOPY OBJDUMP OBJSIZE READELF PAHOLE LEX YACC AWK INSTALLKERNEL
-> +export CPP AR NM STRIP OBJCOPY OBJDUMP OBJSIZE READELF PAHOLE BPFWL LEX YACC AWK INSTALLKERNEL
->  export PERL PYTHON PYTHON3 CHECK CHECKFLAGS MAKE UTS_MACHINE HOSTCXX
->  export KBUILD_HOSTCXXFLAGS KBUILD_HOSTLDFLAGS KBUILD_HOSTLDLIBS LDFLAGS_MODULE
->  
-> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> index d09ab4afbda4..dee91c6bf450 100755
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@ -130,16 +130,26 @@ gen_btf()
->  	info "BTF" ${2}
->  	LLVM_OBJCOPY=${OBJCOPY} ${PAHOLE} -J ${1}
->  
-> -	# Create ${2} which contains just .BTF section but no symbols. Add
-> +	# Create object which contains just .BTF section but no symbols. Add
->  	# SHF_ALLOC because .BTF will be part of the vmlinux image. --strip-all
->  	# deletes all symbols including __start_BTF and __stop_BTF, which will
->  	# be redefined in the linker script. Add 2>/dev/null to suppress GNU
->  	# objcopy warnings: "empty loadable segment detected at ..."
->  	${OBJCOPY} --only-section=.BTF --set-section-flags .BTF=alloc,readonly \
-> -		--strip-all ${1} ${2} 2>/dev/null
-> -	# Change e_type to ET_REL so that it can be used to link final vmlinux.
-> -	# Unlike GNU ld, lld does not allow an ET_EXEC input.
-> -	printf '\1' | dd of=${2} conv=notrunc bs=1 seek=16 status=none
-> +		--strip-all ${1} 2>/dev/null
-> +
-> +	# Create object that contains just .BTF_whitelist_* sections generated
-> +	# by bpfwl. Same as BTF section, BTF_whitelist_* data will be part of
-> +	# the vmlinux image, hence SHF_ALLOC.
-> +	whitelist=.btf.vmlinux.whitelist
-> +
-> +	${BPFWL} ${1} kernel/bpf/helpers-whitelist > ${whitelist}.c
-> +	${CC} -c -o ${whitelist}.o ${whitelist}.c
-> +	${OBJCOPY} --only-section=.BTF_whitelist* --set-section-flags .BTF=alloc,readonly \
-> +                --strip-all ${whitelist}.o 2>/dev/null
-> +
-> +	# Link BTF and BTF_whitelist objects together
-> +	${LD} -r -o ${2} ${1} ${whitelist}.o
+On Wed, May 13, 2020 at 6:53 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> On Wed, May 13, 2020 at 11:50:42AM +0100, Marek Majkowski wrote:
+> > On Wed, May 13, 2020 at 4:19 AM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > CAP_BPF solves three main goals:
+> > > 1. provides isolation to user space processes that drop CAP_SYS_ADMIN and switch to CAP_BPF.
+> > >    More on this below. This is the major difference vs v4 set back from Sep 2019.
+> > > 2. makes networking BPF progs more secure, since CAP_BPF + CAP_NET_ADMIN
+> > >    prevents pointer leaks and arbitrary kernel memory access.
+> > > 3. enables fuzzers to exercise all of the verifier logic. Eventually finding bugs
+> > >    and making BPF infra more secure. Currently fuzzers run in unpriv.
+> > >    They will be able to run with CAP_BPF.
+> > >
+> >
+> > Alexei, looking at this from a user point of view, this looks fine.
+> >
+> > I'm slightly worried about REUSEPORT_EBPF. Currently without your
+> > patch, as far as I understand it:
+> >
+> > - You can load SOCKET_FILTER and SO_ATTACH_REUSEPORT_EBPF without any
+> > permissions
+>
+> correct.
+>
+> > - For loading BPF_PROG_TYPE_SK_REUSEPORT program and for SOCKARRAY map
+> > creation CAP_SYS_ADMIN is needed. But again, no permissions check for
+> > SO_ATTACH_REUSEPORT_EBPF later.
+>
+> correct. With clarification that attaching process needs to own
+> FD of prog and FD of socket.
+>
+> > If I read the patchset correctly, the former SOCKET_FILTER case
+> > remains as it is and is not affected in any way by presence or absence
+> > of CAP_BPF.
+>
+> correct. As commit log says:
+> "Existing unprivileged BPF operations are not affected."
+>
+> > The latter case is different. Presence of CAP_BPF is sufficient for
+> > map creation, but not sufficient for loading SK_REUSEPORT program. It
+> > still requires CAP_SYS_ADMIN.
+>
+> Not quite.
+> The patch will allow BPF_PROG_TYPE_SK_REUSEPORT progs to be loaded
+> with CAP_BPF + CAP_NET_ADMIN.
+> Since this type of progs is clearly networking type I figured it's
+> better to be consistent with the rest of networking types.
+> Two unpriv types SOCKET_FILTER and CGROUP_SKB is the only exception.
 
-Thank you for working on it!
-Looks great to me overall. In the next rev please drop RFC tag.
+Ok, this is the controversy. It made sense to restrict SK_REUSEPORT
+programs in the past, because programs needed CAP_NET_ADMIN to create
+SOCKARRAY anyway. Now we change this and CAP_BPF is sufficient for
+maps - I don't see why CAP_BPF is not sufficient for SK_REUSEPORT
+programs. From a user point of view I don't get why this additional
+CAP_NET_ADMIN is needed.
 
-My only concern is this extra linking step. How many extra seconds does it add?
+> > I think it's a good opportunity to relax
+> > this CAP_SYS_ADMIN requirement. I think the presence of CAP_BPF should
+> > be sufficient for loading BPF_PROG_TYPE_SK_REUSEPORT.
+> >
+> > Our specific use case is simple - we want an application program -
+> > like nginx - to control REUSEPORT programs. We will grant it CAP_BPF,
+> > but we don't want to grant it CAP_SYS_ADMIN.
+>
+> You'll be able to grant nginx CAP_BPF + CAP_NET_ADMIN to load SK_REUSEPORT
+> and unpriv child process will be able to attach just like before if
+> it has right FDs.
+> I suspect your load balancer needs CAP_NET_ADMIN already anyway due to
+> use of XDP and TC progs.
+> So granting CAP_BPF + CAP_NET_ADMIN should cover all bpf prog needs.
+> Does it address your concern?
 
-Also in patch 3:
-+               func = func__find(str);
-+               if (func)
-+                       func->id = id;
-which means that if somebody mistyped the name or that kernel function
-got renamed there will be no warnings or errors.
-I think it needs to fail the build instead.
+Load balancer (XDP+TC) is another layer and permissions there are not
+a problem. The specific issue is nginx (port 443) and QUIC. QUIC is
+UDP and due to the nginx design we must use REUSEPORT groups to
+balance the load across workers. This is fine and could be done with a
+simple SOCK_FILTER - we don't need to grant nginx any permissions,
+apart from CAP_NET_BIND_SERVICE.
 
-If additional linking step takes another 20 seconds it could be a reason
-to move the search to run-time.
-We already have that with struct bpf_func_proto->btf_id[].
-Whitelist could be something similar.
-I think this mechanism will be reused for unstable helpers and other
-func->btf_id mappings, so 'bpfwl' name would change eventually.
-It's not white list specific. It generates a mapping of names to btf_ids.
-Doing it at build time vs run-time is a trade off and it doesn't have
-an obvious answer.
+We would like to make the REUSEPORT program more complex to take
+advantage of REUSEPORT_EBPF for stickyness (restarting server without
+interfering with existing flows), we are happy to grant nginx CAP_BPF,
+but we are not happy to grant it CAP_NET_ADMIN. Requiring this CAP for
+REUSEPORT severely restricts the API usability for us.
+
+In my head REUSEPORT_EBPF is much closer to SOCKET_FILTER. I
+understand why it needed capabilities before (map creation) and I
+argue these reasons go away in CAP_BPF world. I assume that any
+service (with CAP_BPF) should be able to use reuseport to distribute
+packets within its own sockets.  Let me know if I'm missing something.
+
+Marek
