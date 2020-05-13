@@ -2,105 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15E171D19B8
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 17:44:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E003F1D19C0
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 17:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730046AbgEMPow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 11:44:52 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:41736 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726138AbgEMPow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 11:44:52 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04DFavBB021114;
-        Wed, 13 May 2020 11:44:39 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 310hbhnccg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 May 2020 11:44:38 -0400
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 04DFgUmj038465;
-        Wed, 13 May 2020 11:44:38 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 310hbhnc8u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 May 2020 11:44:38 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 04DFUDhd000372;
-        Wed, 13 May 2020 15:44:33 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3100ub1v4f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 May 2020 15:44:32 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 04DFiU8C36110462
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 May 2020 15:44:30 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3DED8AE057;
-        Wed, 13 May 2020 15:44:30 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 972C0AE045;
-        Wed, 13 May 2020 15:44:29 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 13 May 2020 15:44:29 +0000 (GMT)
-From:   Sumanth Korikkar <sumanthk@linux.ibm.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     iii@linux.ibm.com, jwi@linux.ibm.com,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>
-Subject: [PATCH bpf-next] libbpf: Fix register naming in PT_REGS s390 macros
-Date:   Wed, 13 May 2020 17:44:14 +0200
-Message-Id: <20200513154414.29972-1-sumanthk@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-13_06:2020-05-13,2020-05-13 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 spamscore=0 mlxscore=0 phishscore=0 suspectscore=0
- mlxlogscore=860 malwarescore=0 priorityscore=1501 impostorscore=0
- adultscore=0 clxscore=1011 cotscore=-2147483648 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005130135
+        id S1732015AbgEMPpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 11:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728490AbgEMPpx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 11:45:53 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9CCC061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 08:45:53 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jYtZs-0004Pr-MC; Wed, 13 May 2020 17:45:48 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jYtZo-0002Hv-5S; Wed, 13 May 2020 17:45:44 +0200
+Date:   Wed, 13 May 2020 17:45:44 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] net: phy: at803x: add cable test support
+Message-ID: <20200513154544.gwcccvbicpvrj6vm@pengutronix.de>
+References: <20200513120648.14415-1-o.rempel@pengutronix.de>
+ <0c80397b-58b8-0807-0b98-695db8068e25@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="l4mc43ul3f7nhocp"
+Content-Disposition: inline
+In-Reply-To: <0c80397b-58b8-0807-0b98-695db8068e25@gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 17:35:33 up 180 days,  6:54, 192 users,  load average: 0.06, 0.06,
+ 0.02
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix register naming in PT_REGS s390 macros
 
-Fixes: b8ebce86ffe6 ("libbpf: Provide CO-RE variants of PT_REGS macros")
-Reviewed-by: Julian Wiedmann <jwi@linux.ibm.com>
-Signed-off-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
----
- tools/lib/bpf/bpf_tracing.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+--l4mc43ul3f7nhocp
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
-index f3f3c3fb98cb..48a9c7c69ef1 100644
---- a/tools/lib/bpf/bpf_tracing.h
-+++ b/tools/lib/bpf/bpf_tracing.h
-@@ -148,11 +148,11 @@ struct pt_regs;
- #define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[4])
- #define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[5])
- #define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[6])
--#define PT_REGS_RET_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), grps[14])
-+#define PT_REGS_RET_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[14])
- #define PT_REGS_FP_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[11])
- #define PT_REGS_RC_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[2])
- #define PT_REGS_SP_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[15])
--#define PT_REGS_IP_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), pdw.addr)
-+#define PT_REGS_IP_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), psw.addr)
- 
- #elif defined(bpf_target_arm)
- 
--- 
-2.17.1
+On Wed, May 13, 2020 at 08:23:42AM -0700, Florian Fainelli wrote:
+>=20
+>=20
+> On 5/13/2020 5:06 AM, Oleksij Rempel wrote:
+> > The cable test seems to be support by all of currently support Atherso
+> > PHYs, so add support for all of them. This patch was tested only on
+> > AR9331 PHY with following results:
+> > - No cable is detected as short
+> > - A 15m long cable connected only on one side is detected as 9m open.
+> > - A cable test with active link partner will provide no usable results.
+>=20
+> How does this relate to Michael's recent work here:
+>=20
+> https://www.spinics.net/lists/kernel/msg3509304.html
 
+Uff.. i missed this. Then I'll need only to add some changes on top of
+his patch.
+
+Regards,
+Oleksij
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--l4mc43ul3f7nhocp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl68FiQACgkQ4omh9DUa
+UbMiXxAAiOrCPbzXrEYAuGypWvsoxkF++QGU8vdMlA8GnrJqzvwiDc/IG4KoyILF
+Yu40ODr7ySGS3m1BLfg+xwz/SZiZCS9j13s1e/pmGKeMVEBanVZ9V3KVRdZnCv86
++PYenNjsIIY4TojKGpdTqXVpYnLypWVyFQeJVraf7TEYpN/7iFXW8cAnqla0z3xO
+D+OjhxiyEG0ULZU4BhxQi/vYvyZuXqp7io9U6IxPNV7KayW8f56TAvq1Ev0RSClT
+ctknHooaYvvqQpMYR+5RGfICd1GNIxLxCzJzr6EdxJBndOYil7kokkuZxMoOzAOq
+N15sY8D2AAXGEjiKABXw43cU2bQUGUfqbKSFteIbgxO3hFebSq9kqGGdguIgNuZS
+0YLh6T4W3xpUgSPTM+emGHNoEDweIH5nUvEGlE4EjTmNBo87wNzT9ZI7kfkrL13X
+DTDcU4ebPhh7JA/7WcdgX7hriUwxKOdt+4vb+nwu8ir7v6U77DJDNeheh8HfOHzh
+OHkR2fKKt6lUr69eaI6Ki0Jk5CsSbxuh8wu8gDmiBMeV+X0JPr9k1WbEjHgm5Zmw
+ul0SRCa5yE5DudHFGniT7Fv2AKr/eqVuGabuZNXFr2FVcz3Usl8uT3rDCtgJLJff
+YX6rqvDW2kVcZ+hWKk5QSovbLV0jh1RHwBOgDnkus5gMITcKfMc=
+=dJ9z
+-----END PGP SIGNATURE-----
+
+--l4mc43ul3f7nhocp--
