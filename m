@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D731D22F3
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 01:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 050381D22F7
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 01:24:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732582AbgEMXXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 19:23:47 -0400
-Received: from smtprelay0224.hostedemail.com ([216.40.44.224]:44492 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732374AbgEMXXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 19:23:47 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 0DD0E182CF668;
-        Wed, 13 May 2020 23:23:46 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3871:3872:3873:4321:5007:6119:6742:7903:7904:10004:10400:11026:11232:11473:11658:11914:12043:12109:12219:12296:12297:12555:12740:12760:12895:12986:13069:13161:13229:13311:13357:13439:14096:14097:14181:14659:14721:21080:21627:21990:30054:30070:30074:30080:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: wool25_209212bf08451
-X-Filterd-Recvd-Size: 3051
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 13 May 2020 23:23:43 +0000 (UTC)
-Message-ID: <e09c45fac7bb688e5e248449594625eda97a2791.camel@perches.com>
-Subject: Re: [PATCH v2 bpf-next 0/7] bpf, printk: add BTF-based type printing
-From:   Joe Perches <joe@perches.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alan Maguire <alan.maguire@oracle.com>,
+        id S1732639AbgEMXYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 19:24:23 -0400
+Received: from www62.your-server.de ([213.133.104.62]:39596 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732374AbgEMXYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 19:24:22 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jZ0jb-0000nW-H0; Thu, 14 May 2020 01:24:19 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jZ0jb-0007qv-2t; Thu, 14 May 2020 01:24:19 +0200
+Subject: Re: [PATCH 11/18] maccess: remove strncpy_from_unsafe
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Date:   Wed, 13 May 2020 16:23:42 -0700
-In-Reply-To: <CAADnVQLPSvRCO-xxW+Rcz4bzLM-DXjSzm8AwhyogrNTufBdoNw@mail.gmail.com>
-References: <1589263005-7887-1-git-send-email-alan.maguire@oracle.com>
-         <20200513222424.4nfxgkequhdzn3u3@ast-mbp.dhcp.thefacebook.com>
-         <dc6a17197c3406d877efd98de351e57d7bbe06a5.camel@perches.com>
-         <CAADnVQLPSvRCO-xxW+Rcz4bzLM-DXjSzm8AwhyogrNTufBdoNw@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bgregg@netflix.com
+References: <20200513160038.2482415-1-hch@lst.de>
+ <20200513160038.2482415-12-hch@lst.de>
+ <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
+ <20200513192804.GA30751@lst.de>
+ <0c1a7066-b269-9695-b94a-bb5f4f20ebd8@iogearbox.net>
+ <CAHk-=wiivWJ70PotzCK-j7K4Y612NJBA2d+iN6Rz-bfMxCpwjQ@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <2a03633b-419d-643f-b787-ca1520e2229b@iogearbox.net>
+Date:   Thu, 14 May 2020 01:24:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <CAHk-=wiivWJ70PotzCK-j7K4Y612NJBA2d+iN6Rz-bfMxCpwjQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25811/Wed May 13 14:11:53 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-05-13 at 15:50 -0700, Alexei Starovoitov wrote:
-> On Wed, May 13, 2020 at 3:48 PM Joe Perches <joe@perches.com> wrote:
-> > On Wed, 2020-05-13 at 15:24 -0700, Alexei Starovoitov wrote:
-> > > On Tue, May 12, 2020 at 06:56:38AM +0100, Alan Maguire wrote:
-> > > > The printk family of functions support printing specific pointer types
-> > > > using %p format specifiers (MAC addresses, IP addresses, etc).  For
-> > > > full details see Documentation/core-api/printk-formats.rst.
-> > > > 
-> > > > This patchset proposes introducing a "print typed pointer" format
-> > > > specifier "%pT"; the argument associated with the specifier is of
-> > > > form "struct btf_ptr *" which consists of a .ptr value and a .type
-> > > > value specifying a stringified type (e.g. "struct sk_buff") or
-> > > > an .id value specifying a BPF Type Format (BTF) id identifying
-> > > > the appropriate type it points to.
-> > > > 
-> > > >   pr_info("%pT", BTF_PTR_TYPE(skb, "struct sk_buff"));
-> > > > 
-> > > > ...gives us:
-> > > > 
-> > > > (struct sk_buff){
-> > > >  .transport_header = (__u16)65535,
-> > > >  .mac_header = (__u16)65535,
-> > > >  .end = (sk_buff_data_t)192,
-> > > >  .head = (unsigned char *)000000007524fd8b,
-> > > >  .data = (unsigned char *)000000007524fd8b,
-> > > 
-> > > could you add "0x" prefix here to make it even more C like
-> > > and unambiguous ?
-> > 
-> > linux pointers are not emitted with an 0x prefix
+On 5/14/20 1:03 AM, Linus Torvalds wrote:
+> On Wed, May 13, 2020 at 3:36 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> It's used for both.
 > 
-> So? This is not at all comparable to %p
+> Daniel, BPF real;ly needs to make up its mind about that.
+> 
+> You *cannot* use ti for both.
+> 
+> Yes, it happens to work on x86 and some other architectures.
+> 
+> But on other architectures, the exact same pointer value can be a
+> kernel pointer or a user pointer.
 
-Then why is x used to obfuscate?
+Right, it has the same issue as with the old probe helper. I was merely stating that
+there are existing users (on x86) out there that use it this way, even though broken
+generally.
 
+>> Given this is enabled on pretty much all program types, my
+>> assumption would be that usage is still more often on kernel memory than user one.
+> 
+> You need to pick one.
+> 
+> If you know it is a user pointer, use strncpy_from_user() (possibly
+> with disable_pagefault() aka strncpy_from_user_nofault()).
+> 
+> And if you know it is a kernel pointer, use strncpy_from_unsafe() (aka
+> strncpy_from_kernel_nofault()).
+> 
+> You really can't pick the "randomly one or the other guess what I mean " option.
 
+My preference would be to have %s, %sK, %sU for bpf_trace_printk() where the latter two
+result in an explicit strncpy_from_kernel_nofault() or strncpy_from_user_nofault()
+choice while the %s is converted as per your suggestion and it would still allow for a
+grace period to convert existing users to the new variants, similar with what we did on
+the bpf_probe_read_kernel() and bpf_probe_read_user() helpers to get this sorted out.
+
+Thanks,
+Daniel
