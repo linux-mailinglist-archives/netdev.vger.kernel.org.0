@@ -2,288 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 895D71D056B
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 05:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9971D0570
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 05:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728718AbgEMDTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 23:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45088 "EHLO
+        id S1728792AbgEMDT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 23:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725898AbgEMDTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 23:19:41 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45A29C061A0C;
-        Tue, 12 May 2020 20:19:40 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id ms17so10358711pjb.0;
-        Tue, 12 May 2020 20:19:40 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725898AbgEMDT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 23:19:56 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB790C061A0C;
+        Tue, 12 May 2020 20:19:56 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id w65so7366898pfc.12;
+        Tue, 12 May 2020 20:19:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=R0TzPmISdcMqHvmE7QsPNNAq61zop0SzUXYI+ioXbng=;
-        b=m1XO5mxslURrro2xDkImVCnVlRplMfM+enLWR67RSp3PIZUaX2YT8liGKmoDH4vBMw
-         Ixg/1kNOsSL66mMmln86ePv6CtT137OQIvyJU42ldiPLUHk/fuVoujWiDkhH8lCaPw14
-         7F9FNPQip6I0tgLmT30KhUDrkyt9p0wuXy4T9EPXvBavvjziq6S3/rIHFSInTTc7wQ8D
-         ud6uywGFhkxzLcBci9wY2OfaED8LW0my1zWbz/q9fsE/nzp6Azu5fDqMOxzJa3iHecuk
-         a1sXbIpCzECUW5fpAxXvQxhStFmmkECecgjIBlbY2riDg5ps3W1uLTmDz3QQHQoEmPbm
-         3ZQQ==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Hsf3W8qDVfHj/YPXqI8QBcRpq1vh1I4Cw/366Ae27cs=;
+        b=V2JdvWnL2rpZtglNA+NuCQ09DV2bWmPqP1iD4Qlg3tvwIBMweMUf3JSrIyswaqg/fX
+         JH4GiJJdtIk00665T+oTY/0gTIWcUHK/GScC79x7PzOh1xA2+f82fQoenZl1AyIPdbby
+         t49x3hv3qV11lyEyTkaiFPAJLOkPYZmahVd4KOB1jLvt9qKT/my5GYDWdy6Ij0lOxb8u
+         PfifLJ3AyQIrHML0hKdPzfJFEz8fjjTP+UJ0K4ZYFslWc7mVcymOQfif65/WMVqlSzNq
+         Xc/ViyoT/E8ZDT4sZ70PdOgWtLAqRwkV0HscStj7DfeeIFJwYcQCQ32fg75PAo8MMcjd
+         LLIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=R0TzPmISdcMqHvmE7QsPNNAq61zop0SzUXYI+ioXbng=;
-        b=GpYThIjKlyI6CCPxVeQKOAdrH1WLo2xXmMtgaJ/XUwzXG/jquVeA/hOovh+GA1zkLd
-         DWEaHnAq1H2KVgugVHJSrLHbbJj4yaVZMqSOgacqKBHBA7H0g6KGAqckzwYNH8UvBZt1
-         npM6HpEv8lSfhz9sGdZZev3qnLYQkJmpIFeCEsb15ogprRmXG++FNWD9x2Ppun16i0IV
-         QFxCGAGjQ9/1KFLeKTwnX03mamz2XEEe5jFu/UJzZleWLtc8SvZkcW3WU/egAZXtXG0k
-         qumKlY4nFbTXOTwmlZLzu/h9jTiCUsv7xndMxkxFcwdnSuP1rjdK5OhWL7OstYQD/EhX
-         8oJQ==
-X-Gm-Message-State: AOAM532HirD+w8lnEXkc6DWzna+AFJ2MidI0P6M9BDGMyH4pn7qZNmgg
-        /Gt43s8zi+mLhgGyeqgXX9w=
-X-Google-Smtp-Source: ABdhPJzQUN9JMObiYqz/LAY1VVfOLFifvtStU+SlsmqmHblRaaQ1XCaEW46YHmx8u6X9S88LlUJvPQ==
-X-Received: by 2002:a17:90a:bb81:: with SMTP id v1mr1060930pjr.168.1589339979775;
-        Tue, 12 May 2020 20:19:39 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.1])
-        by smtp.gmail.com with ESMTPSA id f70sm13206415pfa.17.2020.05.12.20.19.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 May 2020 20:19:39 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com, linux-security-module@vger.kernel.org,
-        acme@redhat.com, jamorris@linux.microsoft.com, jannh@google.com,
-        kpsingh@google.com
-Subject: [PATCH v6 bpf-next 3/3] selftests/bpf: use CAP_BPF and CAP_PERFMON in tests
-Date:   Tue, 12 May 2020 20:19:30 -0700
-Message-Id: <20200513031930.86895-4-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
-In-Reply-To: <20200513031930.86895-1-alexei.starovoitov@gmail.com>
-References: <20200513031930.86895-1-alexei.starovoitov@gmail.com>
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Hsf3W8qDVfHj/YPXqI8QBcRpq1vh1I4Cw/366Ae27cs=;
+        b=ZYApCKGOFnH6HFgj9Hxutlx/sy0b0hNPf3Ppls9SNe41dLsZ19qEZtfowS/7IQnneD
+         fWEGxF3Qpmbiy5K/lZEqk064gWESZDaf6aJW1Zj/MfNx3yCT4G9/muqn281dZtp96/b3
+         DNWnpFRRrVIuJhAIlGaoLrV56rs0D2pcpdKkABM7PgR1He4QC6K+KW0DGeoHjZZ1Mr3c
+         qVlrQIoVGkMFaUAGhZSuseZsyDRk/cB2r5WDuOF1kh23ce3RZNQwhvOlsxL/ddWj74wH
+         z8A/jChdNi5NhqY9oKWoRLWGKrE4H2C2gUUX2ozfC13Yw1RL426h/OpA48kuvuontUfR
+         0Rgg==
+X-Gm-Message-State: AGi0PuYIuHW9bZNgQa3DyqB82liseNu438gmG7R7wJe2Jb5VPJK+ertW
+        xCGlp2DlXHW0amzsqg4mt60=
+X-Google-Smtp-Source: APiQypLDiJn5GolQEYVt24cvuyFIDhMqg1r4pOp1Uf/gdbxJdgFP3doN5IWUJINSO3BwzDdpO8uKQw==
+X-Received: by 2002:a63:ea4f:: with SMTP id l15mr21896544pgk.58.1589339996339;
+        Tue, 12 May 2020 20:19:56 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id k3sm2536437pjb.39.2020.05.12.20.19.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2020 20:19:55 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 1/3] net: dsa: felix: qos classified based on
+ pcp
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>, po.liu@nxp.com,
+        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
+        vladimir.oltean@nxp.com, leoyang.li@nxp.com, mingkai.hu@nxp.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
+        jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
+        UNGLinuxDriver@microchip.com, vinicius.gomes@intel.com,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        linux-devel@linux.nxdi.nxp.com
+References: <20200513022510.18457-1-xiaoliang.yang_1@nxp.com>
+ <20200513022510.18457-2-xiaoliang.yang_1@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <94652605-329c-0f82-5fe0-b700cc40e575@gmail.com>
+Date:   Tue, 12 May 2020 20:19:52 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
+MIME-Version: 1.0
+In-Reply-To: <20200513022510.18457-2-xiaoliang.yang_1@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
 
-Make all test_verifier test exercise CAP_BPF and CAP_PERFMON
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- tools/testing/selftests/bpf/test_verifier.c   | 44 +++++++++++++++----
- tools/testing/selftests/bpf/verifier/calls.c  | 16 +++----
- .../selftests/bpf/verifier/dead_code.c        | 10 ++---
- 3 files changed, 49 insertions(+), 21 deletions(-)
+On 5/12/2020 7:25 PM, Xiaoliang Yang wrote:
+> Set the default QoS Classification based on PCP and DEI of vlan tag,
+> after that, frames can be Classified to different Qos based on PCP tag.
+> If there is no vlan tag or vlan ignored, use port default Qos.
+> 
+> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-index 21a1ce219c1c..78a6bae56ea6 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -818,10 +818,18 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 	}
- }
- 
-+struct libcap {
-+	struct __user_cap_header_struct hdr;
-+	struct __user_cap_data_struct data[2];
-+};
-+
- static int set_admin(bool admin)
- {
- 	cap_t caps;
--	const cap_value_t cap_val = CAP_SYS_ADMIN;
-+	/* need CAP_BPF, CAP_NET_ADMIN, CAP_PERFMON to load progs */
-+	const cap_value_t cap_net_admin = CAP_NET_ADMIN;
-+	const cap_value_t cap_sys_admin = CAP_SYS_ADMIN;
-+	struct libcap *cap;
- 	int ret = -1;
- 
- 	caps = cap_get_proc();
-@@ -829,11 +837,26 @@ static int set_admin(bool admin)
- 		perror("cap_get_proc");
- 		return -1;
- 	}
--	if (cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_val,
-+	cap = (struct libcap *)caps;
-+	if (cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_sys_admin, CAP_CLEAR)) {
-+		perror("cap_set_flag clear admin");
-+		goto out;
-+	}
-+	if (cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_admin,
- 				admin ? CAP_SET : CAP_CLEAR)) {
--		perror("cap_set_flag");
-+		perror("cap_set_flag set_or_clear net");
- 		goto out;
- 	}
-+	/* libcap is likely old and simply ignores CAP_BPF and CAP_PERFMON,
-+	 * so update effective bits manually
-+	 */
-+	if (admin) {
-+		cap->data[1].effective |= 1 << (38 /* CAP_PERFMON */ - 32);
-+		cap->data[1].effective |= 1 << (39 /* CAP_BPF */ - 32);
-+	} else {
-+		cap->data[1].effective &= ~(1 << (38 - 32));
-+		cap->data[1].effective &= ~(1 << (39 - 32));
-+	}
- 	if (cap_set_proc(caps)) {
- 		perror("cap_set_proc");
- 		goto out;
-@@ -1067,9 +1090,11 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
- 
- static bool is_admin(void)
- {
-+	cap_flag_value_t net_priv = CAP_CLEAR;
-+	bool perfmon_priv = false;
-+	bool bpf_priv = false;
-+	struct libcap *cap;
- 	cap_t caps;
--	cap_flag_value_t sysadmin = CAP_CLEAR;
--	const cap_value_t cap_val = CAP_SYS_ADMIN;
- 
- #ifdef CAP_IS_SUPPORTED
- 	if (!CAP_IS_SUPPORTED(CAP_SETFCAP)) {
-@@ -1082,11 +1107,14 @@ static bool is_admin(void)
- 		perror("cap_get_proc");
- 		return false;
- 	}
--	if (cap_get_flag(caps, cap_val, CAP_EFFECTIVE, &sysadmin))
--		perror("cap_get_flag");
-+	cap = (struct libcap *)caps;
-+	bpf_priv = cap->data[1].effective & (1 << (39/* CAP_BPF */ - 32));
-+	perfmon_priv = cap->data[1].effective & (1 << (38/* CAP_PERFMON */ - 32));
-+	if (cap_get_flag(caps, CAP_NET_ADMIN, CAP_EFFECTIVE, &net_priv))
-+		perror("cap_get_flag NET");
- 	if (cap_free(caps))
- 		perror("cap_free");
--	return (sysadmin == CAP_SET);
-+	return bpf_priv && perfmon_priv && net_priv == CAP_SET;
- }
- 
- static void get_unpriv_disabled()
-diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
-index 2d752c4f8d9d..7629a0cebb9b 100644
---- a/tools/testing/selftests/bpf/verifier/calls.c
-+++ b/tools/testing/selftests/bpf/verifier/calls.c
-@@ -19,7 +19,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 2),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 1,
-@@ -315,7 +315,7 @@
- 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_1),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "allowed for root only",
-+	.errstr_unpriv = "allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = POINTER_VALUE,
-@@ -346,7 +346,7 @@
- 	BPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_2),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "allowed for root only",
-+	.errstr_unpriv = "allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = TEST_DATA_LEN + TEST_DATA_LEN - ETH_HLEN - ETH_HLEN,
-@@ -397,7 +397,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 1),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.fixup_map_hash_48b = { 3 },
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
-@@ -1064,7 +1064,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 0),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "allowed for root only",
-+	.errstr_unpriv = "allowed for",
- 	.result_unpriv = REJECT,
- 	.errstr = "R0 !read_ok",
- 	.result = REJECT,
-@@ -1977,7 +1977,7 @@
- 	BPF_EXIT_INSN(),
- 	},
- 	.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- },
-@@ -2003,7 +2003,7 @@
- 	BPF_EXIT_INSN(),
- 	},
- 	.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.errstr = "!read_ok",
- 	.result = REJECT,
- },
-@@ -2028,7 +2028,7 @@
- 	BPF_EXIT_INSN(),
- 	},
- 	.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.errstr = "!read_ok",
- 	.result = REJECT,
- },
-diff --git a/tools/testing/selftests/bpf/verifier/dead_code.c b/tools/testing/selftests/bpf/verifier/dead_code.c
-index 50a8a63be4ac..5cf361d8eb1c 100644
---- a/tools/testing/selftests/bpf/verifier/dead_code.c
-+++ b/tools/testing/selftests/bpf/verifier/dead_code.c
-@@ -85,7 +85,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 12),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 7,
-@@ -103,7 +103,7 @@
- 	BPF_MOV64_IMM(BPF_REG_0, 12),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 7,
-@@ -121,7 +121,7 @@
- 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, -5),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 7,
-@@ -137,7 +137,7 @@
- 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_1),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 2,
-@@ -152,7 +152,7 @@
- 	BPF_MOV64_REG(BPF_REG_0, BPF_REG_1),
- 	BPF_EXIT_INSN(),
- 	},
--	.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
-+	.errstr_unpriv = "function calls to other bpf functions are allowed for",
- 	.result_unpriv = REJECT,
- 	.result = ACCEPT,
- 	.retval = 2,
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.23.0
-
+Florian
