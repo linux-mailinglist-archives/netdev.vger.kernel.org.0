@@ -2,57 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5D401D1FC4
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 22:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DD091D1FC5
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 22:00:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390613AbgEMUAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2390185AbgEMUAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 13 May 2020 16:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1733135AbgEMUAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 16:00:14 -0400
+        by vger.kernel.org with ESMTP id S1732650AbgEMUAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 16:00:13 -0400
 Received: from smtp.tuxdriver.com (tunnel92311-pt.tunnel.tserv13.ash1.ipv6.he.net [IPv6:2001:470:7:9c9::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA873C061A0E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3CE1C061A0C
         for <netdev@vger.kernel.org>; Wed, 13 May 2020 13:00:13 -0700 (PDT)
 Received: from uucp by smtp.tuxdriver.com with local-rmail (Exim 4.63)
         (envelope-from <linville@tuxdriver.com>)
-        id 1jYxY3-00022U-2W; Wed, 13 May 2020 16:00:11 -0400
+        id 1jYxY2-00022P-Nv; Wed, 13 May 2020 16:00:10 -0400
 Received: from linville-x1.hq.tuxdriver.com (localhost.localdomain [127.0.0.1])
-        by linville-x1.hq.tuxdriver.com (8.15.2/8.14.6) with ESMTP id 04DJvwjI668286;
-        Wed, 13 May 2020 15:57:59 -0400
+        by linville-x1.hq.tuxdriver.com (8.15.2/8.14.6) with ESMTP id 04DJwEND668294;
+        Wed, 13 May 2020 15:58:14 -0400
 Received: (from linville@localhost)
-        by linville-x1.hq.tuxdriver.com (8.15.2/8.15.2/Submit) id 04DJvwCQ668285;
-        Wed, 13 May 2020 15:57:58 -0400
-Date:   Wed, 13 May 2020 15:57:58 -0400
+        by linville-x1.hq.tuxdriver.com (8.15.2/8.15.2/Submit) id 04DJwEVF668293;
+        Wed, 13 May 2020 15:58:14 -0400
+Date:   Wed, 13 May 2020 15:58:14 -0400
 From:   "John W. Linville" <linville@tuxdriver.com>
 To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, Konstantin Kharlamov <hi-angel@yandex.ru>
-Subject: Re: [PATCH ethtool] features: accept long legacy flag names when
- setting features
-Message-ID: <20200513195758.GG650568@tuxdriver.com>
-References: <20200413212120.7D775E0FAD@unicorn.suse.cz>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH ethtool 0/2] improve the logic of fallback from netlink
+ to ioctl
+Message-ID: <20200513195814.GH650568@tuxdriver.com>
+References: <cover.1588112572.git.mkubecek@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200413212120.7D775E0FAD@unicorn.suse.cz>
+In-Reply-To: <cover.1588112572.git.mkubecek@suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 11:21:20PM +0200, Michal Kubecek wrote:
-> The legacy feature flags have long names (e.g. "generic-receive-offload")
-> and short names (e.g. "gro"). While "ethtool -k" shows only long names,
-> "ethtool -K" accepts only short names. This is a bit confusing as users
-> have to resort to documentation to see what flag name to use; in
-> particular, if a legacy flag corresponds to only one actual kernel feature,
-> "ethtool -k" shows the output in the same form as if long flag name were
-> a kernel feature name but this name cannot be used to set the flag/feature.
+On Wed, Apr 29, 2020 at 12:30:00AM +0200, Michal Kubecek wrote:
+> At the moment, ethtool falls back to ioctl implementation whenever either
+> in response to request type not implemented in kernel or netlink interface
+> is unavailable or netlink request fails with EOPNOTSUPP error code. This is
+> not perfect as EOPNOTSUPP can have different meanings and we only want to
+> fall back if it is caused by kernel lacking netlink implementation of the
+> request. In other cases, we would needlessly repeat the same failure trying
+> both netlink and ioctl.
 > 
-> Accept both short and long legacy flag names in "ethool -K".
+> These two patches improve the logic to avoid such duplicate failures and
+> improve handling of cases where fallback to ioctl is impossible for other
+> reasons (e.g. wildcard device name or no ioctl handler).
 > 
-> Reported-by: Konstantin Kharlamov <hi-angel@yandex.ru>
-> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+> Michal Kubecek (2):
+>   refactor interface between ioctl and netlink code
+>   netlink: use genetlink ops information to decide about fallback
+> 
+>  ethtool.c          |  51 +++---------
+>  netlink/extapi.h   |  14 ++--
+>  netlink/monitor.c  |  15 +++-
+>  netlink/netlink.c  | 193 ++++++++++++++++++++++++++++++++++++++-------
+>  netlink/netlink.h  |   6 ++
+>  netlink/parser.c   |   7 ++
+>  netlink/settings.c |   7 ++
+>  7 files changed, 220 insertions(+), 73 deletions(-)
 
 Thanks (belatedly) -- queued for next release!
 
