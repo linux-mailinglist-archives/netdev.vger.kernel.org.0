@@ -2,101 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A60971D1905
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 17:20:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F1DF1D1941
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 17:24:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389141AbgEMPUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 11:20:50 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:31398 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728692AbgEMPUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 11:20:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589383248;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=jBoXYA5jC+1FdSc82MyGNu1Sk0AIstPxsVbxIsZVhsA=;
-        b=bPQXgMTMqsKvo740A8vO1fTHQEDf11vAVFNExnWwgxT+M/WhPv1PBT9FOr1Vr6w6765lQt
-        uLBrvi1mC53l1saCxEAhK0n6kTo17DMqFvVK3jj+LTdmHV5azbM7Mi/FJBGcW5JoZ0Dso5
-        0MpWUarCptvF7AQRVXRojjra+A8ikec=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-397-VuQquIe_OPSVs8fjvjQzFA-1; Wed, 13 May 2020 11:20:44 -0400
-X-MC-Unique: VuQquIe_OPSVs8fjvjQzFA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A84583DA41;
-        Wed, 13 May 2020 15:20:43 +0000 (UTC)
-Received: from [10.72.12.111] (ovpn-12-111.pek2.redhat.com [10.72.12.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 264A260F8D;
-        Wed, 13 May 2020 15:20:39 +0000 (UTC)
-To:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-Cc:     kernel list <linux-kernel@vger.kernel.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        Patrick Donnelly <pdonnell@redhat.com>
-From:   Xiubo Li <xiubli@redhat.com>
-Subject: netfilter: does the API break or something else ?
-Message-ID: <cf0d02b2-b1db-7ef6-41b8-7c345b7d53d5@redhat.com>
-Date:   Wed, 13 May 2020 23:20:35 +0800
+        id S2388395AbgEMPXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 11:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731638AbgEMPXs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 11:23:48 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F4BC061A0C;
+        Wed, 13 May 2020 08:23:47 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id d207so9188839wmd.0;
+        Wed, 13 May 2020 08:23:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aP5RqJaHjw0SSvS8jFa4SufpVRHV3wMOfmjoi5Yc1f4=;
+        b=ktSXpuEIWmOyZetJtmtSOLnT96UirVaLdRpcXWTE/gYQC1WX1lHtfWkkUtx3Kfvp0S
+         RL0FBNdf5vCW2FR41NIuumOgKvTuRUjtFFS/fA2Yphvfhpc4c6vHIuyy054G1B67Clz/
+         Zqf0aNveo38QkOin7+9hk1I9AxhhNxfybUbb8CtvSQSXOxu/0KmHavMD3kiZlx04xwB8
+         F3DhQX60hJ4YWPRdI5cmLK+U/WrFzCsOPHO1z4jKgROLch25aU4EiGazMvSmRKXEcrff
+         TSWqovL29eEUyHBp8T5smBLlqePqhRdgFfW/1yoXCgvZI5PAkLcK6wQRY6EqqsLt7LOe
+         3MPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aP5RqJaHjw0SSvS8jFa4SufpVRHV3wMOfmjoi5Yc1f4=;
+        b=WDif4wpAROpbSq77A1ZLhqUhT3xtOjOn09zmqcCjwHih8x9KuHaq/UcteyYDzBGdXA
+         30lIjjsFHkLuiDghK//IUC2G5daMstFwLiMwz2BBsvjEXyheuHOkG9D+0P6Ryriwg28/
+         67KtAC918es6ppqA6Q+wZPBCqBYL09AZzT0r0hsXU1Mj+1iNDEWv8EeLjavI9aHuSBcp
+         2dXu/371LkdFnskzzTFlDTlQDLPpPpVhYkR1MyK4a45SwtxgVfVOOV0Y2Ul6qJu6g4cW
+         ja1usf8DxVsAFTrjCQtKYGfhoDZjVsLRs3J6EO08jYS97A31o7UoOD9NoDW8VB+mtTad
+         Vb5Q==
+X-Gm-Message-State: AGi0PubjhkEl1AOJ2yPMc4oYcPGdR02lxHmzLd5MyHbCgwBR6v7hqIfN
+        GQuc+ad94muwzq7oNu2Ezq4=
+X-Google-Smtp-Source: APiQypIa+86lv9x3CvtVmHtTwH5kxANcv58nv4VNDEBhX9EOGhGzbMBwX6Z3SwoBXqiXgPA8mEKURA==
+X-Received: by 2002:a7b:c5d4:: with SMTP id n20mr45268150wmk.92.1589383426466;
+        Wed, 13 May 2020 08:23:46 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b2sm25421028wrm.30.2020.05.13.08.23.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 08:23:45 -0700 (PDT)
+Subject: Re: [PATCH v1] net: phy: at803x: add cable test support
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Michael Walle <michael@walle.cc>
+Cc:     "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>
+References: <20200513120648.14415-1-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <0c80397b-58b8-0807-0b98-695db8068e25@gmail.com>
+Date:   Wed, 13 May 2020 08:23:42 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200513120648.14415-1-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Experts，
-
-Recently I hit one netfilter issue, it seems the API breaks or something 
-else.
-
-On CentOS8.1 with the recent upstream kernel built from source, such as 
-5.6.0-rc6/5.7.0-rc4. When running the following command:
-$ sudo bash -c 'iptables -A FORWARD -o enp3s0f1 -i ceph-brx -j ACCEPT'
-iptables v1.8.2 (nf_tables): CHAIN_ADD failed (Operation not supported): 
-chain INPUT
-
-With the nftables command:
-
-$ sudo nft add chain ip filter INPUT { type filter hook input priority 0\; }
-Error: Could not process rule: Operation not supported
-add chain ip filter INPUT { type filter hook input priority 0; }
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-$  sudo nft add chain ip filter FORWARD { type filter hook forward 
-priority 0\; }
-Error: Could not process rule: Operation not supported
-add chain ip filter FORWARD { type filter hook forward priority 0; }
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-$  sudo nft add chain ip filter OUTPUT { type filter hook output 
-priority 0\; }
-Error: Could not process rule: Operation not supported
-add chain ip filter OUTPUT { type filter hook output priority 0; }
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-While tried them with downstream kernel 4.18.0-147.8.1.el8_1.x86_64, 
-they all could work well.
+On 5/13/2020 5:06 AM, Oleksij Rempel wrote:
+> The cable test seems to be support by all of currently support Atherso
+> PHYs, so add support for all of them. This patch was tested only on
+> AR9331 PHY with following results:
+> - No cable is detected as short
+> - A 15m long cable connected only on one side is detected as 9m open.
+> - A cable test with active link partner will provide no usable results.
 
-The nftables/libnftnl packages are:
+How does this relate to Michael's recent work here:
 
-$ rpm -qa|grep nft
-nftables-0.9.0-14.el8.x86_64
-libnftnl-1.1.1-4.el8.x86_64
-
-And we have tried v5.7.0-rc4+ with f31 userspace, they all could work 
-well too.
-
- From above I just suspect the API should break. Could someone kindly 
-point out which and where ?
-Thanks
-BRs
-Xiubo
-
+https://www.spinics.net/lists/kernel/msg3509304.html
+-- 
+Florian
