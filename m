@@ -2,59 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63E1D1D1FAE
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 452351D1FB9
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:55:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403812AbgEMTw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 15:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390158AbgEMTw5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:52:57 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C64C061A0C;
-        Wed, 13 May 2020 12:52:57 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E89C7127F6DAE;
-        Wed, 13 May 2020 12:52:55 -0700 (PDT)
-Date:   Wed, 13 May 2020 12:52:55 -0700 (PDT)
-Message-Id: <20200513.125255.2269307540440959207.davem@davemloft.net>
-To:     michael@walle.cc
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk
-Subject: Re: [PATCH net-next 0/4] net: phy: broadcom: cable tester support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200513163524.31256-1-michael@walle.cc>
-References: <20200513163524.31256-1-michael@walle.cc>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 13 May 2020 12:52:56 -0700 (PDT)
+        id S2390750AbgEMTzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 15:55:00 -0400
+Received: from verein.lst.de ([213.95.11.211]:48422 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732218AbgEMTzA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 May 2020 15:55:00 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 2D25668B05; Wed, 13 May 2020 21:54:57 +0200 (CEST)
+Date:   Wed, 13 May 2020 21:54:56 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 14/18] maccess: allow architectures to provide kernel
+ probing directly
+Message-ID: <20200513195456.GA31096@lst.de>
+References: <20200513160038.2482415-1-hch@lst.de> <20200513160038.2482415-15-hch@lst.de> <CAHk-=wgzXqgYQQt2NCdZTtxLmV1FV1nbZ_gKw0O_mRkXZj57zg@mail.gmail.com> <20200513194003.GA31028@lst.de> <CAHk-=whtGLxezkdMP6+859LFDgb++6dgYa6Vrc=zJ9+GB7UMFQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whtGLxezkdMP6+859LFDgb++6dgYa6Vrc=zJ9+GB7UMFQ@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
-Date: Wed, 13 May 2020 18:35:20 +0200
-
-> Add cable tester support for the Broadcom PHYs. Support for it was
-> developed on a BCM54140 Quad PHY which RDB register access.
+On Wed, May 13, 2020 at 12:48:54PM -0700, Linus Torvalds wrote:
+> Looking at the current users of "probe_kernel_read()", it looks like
+> it's almost mostly things that just want a single byte or word.
 > 
-> If there is a link partner the results are not as good as with an open
-> cable. I guess we could retry if the measurement until all pairs had at
-> least one valid result.
+> It's not 100% that: we definitely do several things that want the
+> "copy" semantics vs the "get" semantics: on the x86 side we have
+> CALL_INSN_SIZE and MAX_INSN_SIZE, and the ldttss_desc.
 > 
-> changes since v1:
->  - added Reviewed-by: tags
->  - removed "div by 2" for cross shorts, just mention it in the commit
->    message. The results are inconclusive if the tests are repeated. So
->    just report the length as is for now.
->  - fixed typo in commit message
+> But the bulk of them do seem to be a single value.
+> 
+> I don't know if performance really matters here, but to me the whole
+> "most users seem to want to read a single value" is what makes me
+> think that maybe that should be the primary model, rather than have
+> the copy model be the primary one and then we implement the single
+> value case (badly) with a copy.
+> 
+> It probably doesn't matter that much. I certainly wouldn't hold this
+> series up over it - it can be a future thing.
 
-Series applied, thanks.
+I can make the get_kernel_nofault implementation suck a little less :)
+
+Note that the arch helper (we could call it unsafe_get_kernel_nofault)
+we still need to have a pagefault_disable / pagefault_enable pair
+around the calls.  So maybe keep the get_kernel_nofault interface
+as-is (without the goto label), and prepare the arch helpers for
+being used similar to unsafe_get_user once all architectures are
+converted.  And I can throw in a few patches to convert callers
+from the copy semantics to the get semantics.
