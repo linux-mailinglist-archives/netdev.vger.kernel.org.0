@@ -2,240 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 871301D1688
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:55:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93B631D168D
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:55:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387906AbgEMNzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 09:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727792AbgEMNzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 09:55:24 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698FFC061A0C
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 06:55:24 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id d207so8998725wmd.0
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 06:55:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=pEF6eTbjMF/Zp5kqlMON2d9WgYdaB5cU0Wyi39YjYtI=;
-        b=hbmlsggGZTqdI3GRYlpSMceoK9GVRcT9K+DNYXSUoijaHEsKRPYTNM0JH4XPFZHf72
-         dzBSKPtoihA8/gdApZ1PuvyRCQLV/tZwMG/AJ0Rn/Mf6YAiBYUr6pRA+Z+aVTsW9OMMj
-         iqXicabjI3ljIYgKeTcO8BBNpeIUq7rhje2h0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=pEF6eTbjMF/Zp5kqlMON2d9WgYdaB5cU0Wyi39YjYtI=;
-        b=EhJ2t6kL28d7LzRN32jp3dDRkNrkLM0mzHvBSyXeGmh/uDED92PeShF4+wNZaSYJtU
-         Q27MB95sLrk+p35y/uaShedj4WL6wy3Xo8q+XYd92463w2ZcFbfKCjYWvxVyAxsl7QRW
-         6iKurAVyQVvhwf1Dj6iJJ/VZfDrmUtEdGW/ZlzB7u1yELVO3yJHXpMBW4Vn3dG4F1Agl
-         yo0UnpW2DC51dEKzgoPC0wPJZIBrmWvsKXl4Z1uHK/lHD2qTPZnosLTgat4r3xzMPDLw
-         2nWQNev3PIQKGjEoKN97XQpTv8oozP1fZS2KKgFFMA31/DTISeU4waKdhbPXb8eg6cK/
-         Lt3w==
-X-Gm-Message-State: AGi0PubnMX3I+MshidGdMp8BECwWOQuJCUNf11FYft9ufqK4aDSUrTYf
-        FS+cak1sCl5iSXVCLKrVPmOO7kfc7XA=
-X-Google-Smtp-Source: APiQypJWEBPUYLL7acho2GSRta1Ab9Yd9/st+SXO645SSDx4wE9FmjPNmqUesATEF4X4Otq52IKn6Q==
-X-Received: by 2002:a1c:dc05:: with SMTP id t5mr15429291wmg.112.1589378122987;
-        Wed, 13 May 2020 06:55:22 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id i17sm36371968wml.23.2020.05.13.06.55.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2020 06:55:22 -0700 (PDT)
-References: <20200511185218.1422406-1-jakub@cloudflare.com> <20200511185218.1422406-6-jakub@cloudflare.com> <20200511204445.i7sessmtszox36xd@ast-mbp> <871rnpuuob.fsf@cloudflare.com> <20200512235840.znwcyu3gpxemucwh@ast-mbp>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, dccp@vger.kernel.org,
-        kernel-team@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [PATCH bpf-next v2 05/17] inet: Run SK_LOOKUP BPF program on socket lookup
-In-reply-to: <20200512235840.znwcyu3gpxemucwh@ast-mbp>
-Date:   Wed, 13 May 2020 15:55:20 +0200
-Message-ID: <87y2pwszw7.fsf@cloudflare.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S2387791AbgEMNz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 09:55:56 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:34676 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727792AbgEMNz4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 May 2020 09:55:56 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 67BEF1A1525;
+        Wed, 13 May 2020 15:55:54 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 5B0C81A1521;
+        Wed, 13 May 2020 15:55:54 +0200 (CEST)
+Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 0917A2059E;
+        Wed, 13 May 2020 15:55:53 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     brouer@redhat.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH RESEND net-next] dpaa2-eth: add bulking to XDP_TX
+Date:   Wed, 13 May 2020 16:55:46 +0300
+Message-Id: <20200513135546.12328-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 01:58 AM CEST, Alexei Starovoitov wrote:
-> On Tue, May 12, 2020 at 03:52:52PM +0200, Jakub Sitnicki wrote:
->> On Mon, May 11, 2020 at 10:44 PM CEST, Alexei Starovoitov wrote:
->> > On Mon, May 11, 2020 at 08:52:06PM +0200, Jakub Sitnicki wrote:
->> >> Run a BPF program before looking up a listening socket on the receive path.
->> >> Program selects a listening socket to yield as result of socket lookup by
->> >> calling bpf_sk_assign() helper and returning BPF_REDIRECT code.
->> >>
->> >> Alternatively, program can also fail the lookup by returning with BPF_DROP,
->> >> or let the lookup continue as usual with BPF_OK on return.
->> >>
->> >> This lets the user match packets with listening sockets freely at the last
->> >> possible point on the receive path, where we know that packets are destined
->> >> for local delivery after undergoing policing, filtering, and routing.
->> >>
->> >> With BPF code selecting the socket, directing packets destined to an IP
->> >> range or to a port range to a single socket becomes possible.
->> >>
->> >> Suggested-by: Marek Majkowski <marek@cloudflare.com>
->> >> Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
->> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> >> ---
->> >>  include/net/inet_hashtables.h | 36 +++++++++++++++++++++++++++++++++++
->> >>  net/ipv4/inet_hashtables.c    | 15 ++++++++++++++-
->> >>  2 files changed, 50 insertions(+), 1 deletion(-)
->> >>
->> >> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
->> >> index 6072dfbd1078..3fcbc8f66f88 100644
->> >> --- a/include/net/inet_hashtables.h
->> >> +++ b/include/net/inet_hashtables.h
->> >> @@ -422,4 +422,40 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
->> >>
->> >>  int inet_hash_connect(struct inet_timewait_death_row *death_row,
->> >>  		      struct sock *sk);
->> >> +
->> >> +static inline struct sock *bpf_sk_lookup_run(struct net *net,
->> >> +					     struct bpf_sk_lookup_kern *ctx)
->> >> +{
->> >> +	struct bpf_prog *prog;
->> >> +	int ret = BPF_OK;
->> >> +
->> >> +	rcu_read_lock();
->> >> +	prog = rcu_dereference(net->sk_lookup_prog);
->> >> +	if (prog)
->> >> +		ret = BPF_PROG_RUN(prog, ctx);
->> >> +	rcu_read_unlock();
->> >> +
->> >> +	if (ret == BPF_DROP)
->> >> +		return ERR_PTR(-ECONNREFUSED);
->> >> +	if (ret == BPF_REDIRECT)
->> >> +		return ctx->selected_sk;
->> >> +	return NULL;
->> >> +}
->> >> +
->> >> +static inline struct sock *inet_lookup_run_bpf(struct net *net, u8 protocol,
->> >> +					       __be32 saddr, __be16 sport,
->> >> +					       __be32 daddr, u16 dport)
->> >> +{
->> >> +	struct bpf_sk_lookup_kern ctx = {
->> >> +		.family		= AF_INET,
->> >> +		.protocol	= protocol,
->> >> +		.v4.saddr	= saddr,
->> >> +		.v4.daddr	= daddr,
->> >> +		.sport		= sport,
->> >> +		.dport		= dport,
->> >> +	};
->> >> +
->> >> +	return bpf_sk_lookup_run(net, &ctx);
->> >> +}
->> >> +
->> >>  #endif /* _INET_HASHTABLES_H */
->> >> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
->> >> index ab64834837c8..f4d07285591a 100644
->> >> --- a/net/ipv4/inet_hashtables.c
->> >> +++ b/net/ipv4/inet_hashtables.c
->> >> @@ -307,9 +307,22 @@ struct sock *__inet_lookup_listener(struct net *net,
->> >>  				    const int dif, const int sdif)
->> >>  {
->> >>  	struct inet_listen_hashbucket *ilb2;
->> >> -	struct sock *result = NULL;
->> >> +	struct sock *result, *reuse_sk;
->> >>  	unsigned int hash2;
->> >>
->> >> +	/* Lookup redirect from BPF */
->> >> +	result = inet_lookup_run_bpf(net, hashinfo->protocol,
->> >> +				     saddr, sport, daddr, hnum);
->> >> +	if (IS_ERR(result))
->> >> +		return NULL;
->> >> +	if (result) {
->> >> +		reuse_sk = lookup_reuseport(net, result, skb, doff,
->> >> +					    saddr, sport, daddr, hnum);
->> >> +		if (reuse_sk)
->> >> +			result = reuse_sk;
->> >> +		goto done;
->> >> +	}
->> >> +
->> >
->> > The overhead is too high to do this all the time.
->> > The feature has to be static_key-ed.
->>
->> Static keys is something that Lorenz has also suggested internally, but
->> we wanted to keep it simple at first.
->>
->> Introduction of static keys forces us to decide when non-init_net netns
->> are allowed to attach to SK_LOOKUP, as attaching enabling SK_LOOKUP in
->> isolated netns will affect the rx path in init_net.
->>
->> I see two options, which seem sensible:
->>
->> 1) limit SK_LOOKUP to init_net, which makes testing setup harder, or
->>
->> 2) allow non-init_net netns to attach to SK_LOOKUP only if static key
->>    has been already enabled (via sysctl?).
->
-> I think both are overkill.
-> Just enable that static_key if any netns has progs.
-> Loading this prog type will be privileged operation even after cap_bpf.
->
+Add driver level bulking to the XDP_TX action.
 
-OK, right. In the new model caps are checked at load time. And
-CAP_BPF+CAP_NET_ADMIN check on load is done against init_user_ns.
+An array of frame descriptors is held for each Tx frame queue and
+populated accordingly when the action returned by the XDP program is
+XDP_TX. The frames will be actually enqueued only when the array is
+filled. At the end of the NAPI cycle a flush on the queued frames is
+performed in order to enqueue the remaining FDs.
 
-[...]
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 68 ++++++++++++-------
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  1 +
+ 2 files changed, 46 insertions(+), 23 deletions(-)
 
->> I'm curious what downside do you see here?
->> Is overriding an earlier DROP/REDIRECT verdict useful?
->>
->> > Another option could be to execute all attached progs regardless
->> > of return code, but don't let second prog override selected_sk blindly.
->> > bpf_sk_assign() could get smarter.
->>
->> So if IIUC the rough idea here would be like below?
->>
->> - 1st program calls
->>
->>   bpf_sk_assign(ctx, sk1, 0 /*flags*/) -> 0 (OK)
->>
->> - 2nd program calls
->>
->>   bpf_sk_assign(ctx, sk2, 0) -> -EBUSY (already selected)
->>   bpf_sk_assign(ctx, sk2, BPF_EXIST) -> 0 (OK, replace existing)
->>
->> In this case the last program to run has the final say, as opposed to
->> the semantics where DROP/REDIRECT terminates.
->>
->> Also, 2nd and subsequent programs would probably need to know if and
->> which socket has been already selected. I think the selection could be
->> exposed in context as bpf_sock pointer.
->
-> I think running all is better.
-> The main down side of terminating early is predictability.
-> Imagine first prog is doing the sock selection based on some map configuration.
-> Then second prog gets loaded and doing its own selection.
-> These two progs are managed by different user space processes.
-> Now first map got changed and second prog stopped seeing the packets.
-> No warning. Nothing. With "bpf_sk_assign(ctx, sk2, 0) -> -EBUSY"
-> the second prog at least will see errors and will be able to log
-> and alert humans to do something about it.
-> The question of ordering come up, of course. But that ordering concerns
-> we had for some time with cgroup-bpf run array and it wasn't horrible.
-> We're still trying to solve it on cgroup-bpf side in a generic way,
-> but simple first-to-attach -> first-to-run was good enough there
-> and I think will be here as well. The whole dispatcher project
-> and managing policy, priority, ordering in user space better to solve
-> it generically for all cases. But the kernel should do simple basics.
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 0f3e842a4fd6..b1c64288a1fb 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -273,13 +273,43 @@ static int dpaa2_eth_xdp_flush(struct dpaa2_eth_priv *priv,
+ 	return total_enqueued;
+ }
+ 
+-static int xdp_enqueue(struct dpaa2_eth_priv *priv, struct dpaa2_fd *fd,
+-		       void *buf_start, u16 queue_id)
++static void xdp_tx_flush(struct dpaa2_eth_priv *priv,
++			 struct dpaa2_eth_channel *ch,
++			 struct dpaa2_eth_fq *fq)
++{
++	struct rtnl_link_stats64 *percpu_stats;
++	struct dpaa2_fd *fds;
++	int enqueued, i;
++
++	percpu_stats = this_cpu_ptr(priv->percpu_stats);
++
++	// enqueue the array of XDP_TX frames
++	enqueued = dpaa2_eth_xdp_flush(priv, fq, &fq->xdp_tx_fds);
++
++	/* update statistics */
++	percpu_stats->tx_packets += enqueued;
++	fds = fq->xdp_tx_fds.fds;
++	for (i = 0; i < enqueued; i++) {
++		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fds[i]);
++		ch->stats.xdp_tx++;
++	}
++	for (i = enqueued; i < fq->xdp_tx_fds.num; i++) {
++		xdp_release_buf(priv, ch, dpaa2_fd_get_addr(&fds[i]));
++		percpu_stats->tx_errors++;
++		ch->stats.xdp_tx_err++;
++	}
++	fq->xdp_tx_fds.num = 0;
++}
++
++static void xdp_enqueue(struct dpaa2_eth_priv *priv,
++			struct dpaa2_eth_channel *ch,
++			struct dpaa2_fd *fd,
++			void *buf_start, u16 queue_id)
+ {
+-	struct dpaa2_eth_fq *fq;
+ 	struct dpaa2_faead *faead;
++	struct dpaa2_fd *dest_fd;
++	struct dpaa2_eth_fq *fq;
+ 	u32 ctrl, frc;
+-	int i, err;
+ 
+ 	/* Mark the egress frame hardware annotation area as valid */
+ 	frc = dpaa2_fd_get_frc(fd);
+@@ -296,13 +326,13 @@ static int xdp_enqueue(struct dpaa2_eth_priv *priv, struct dpaa2_fd *fd,
+ 	faead->conf_fqid = 0;
+ 
+ 	fq = &priv->fq[queue_id];
+-	for (i = 0; i < DPAA2_ETH_ENQUEUE_RETRIES; i++) {
+-		err = priv->enqueue(priv, fq, fd, 0, 1, NULL);
+-		if (err != -EBUSY)
+-			break;
+-	}
++	dest_fd = &fq->xdp_tx_fds.fds[fq->xdp_tx_fds.num++];
++	memcpy(dest_fd, fd, sizeof(*dest_fd));
+ 
+-	return err;
++	if (fq->xdp_tx_fds.num < DEV_MAP_BULK_SIZE)
++		return;
++
++	xdp_tx_flush(priv, ch, fq);
+ }
+ 
+ static u32 run_xdp(struct dpaa2_eth_priv *priv,
+@@ -311,14 +341,11 @@ static u32 run_xdp(struct dpaa2_eth_priv *priv,
+ 		   struct dpaa2_fd *fd, void *vaddr)
+ {
+ 	dma_addr_t addr = dpaa2_fd_get_addr(fd);
+-	struct rtnl_link_stats64 *percpu_stats;
+ 	struct bpf_prog *xdp_prog;
+ 	struct xdp_buff xdp;
+ 	u32 xdp_act = XDP_PASS;
+ 	int err;
+ 
+-	percpu_stats = this_cpu_ptr(priv->percpu_stats);
+-
+ 	rcu_read_lock();
+ 
+ 	xdp_prog = READ_ONCE(ch->xdp.prog);
+@@ -341,16 +368,7 @@ static u32 run_xdp(struct dpaa2_eth_priv *priv,
+ 	case XDP_PASS:
+ 		break;
+ 	case XDP_TX:
+-		err = xdp_enqueue(priv, fd, vaddr, rx_fq->flowid);
+-		if (err) {
+-			xdp_release_buf(priv, ch, addr);
+-			percpu_stats->tx_errors++;
+-			ch->stats.xdp_tx_err++;
+-		} else {
+-			percpu_stats->tx_packets++;
+-			percpu_stats->tx_bytes += dpaa2_fd_get_len(fd);
+-			ch->stats.xdp_tx++;
+-		}
++		xdp_enqueue(priv, ch, fd, vaddr, rx_fq->flowid);
+ 		break;
+ 	default:
+ 		bpf_warn_invalid_xdp_action(xdp_act);
+@@ -1168,6 +1186,7 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
+ 	int store_cleaned, work_done;
+ 	struct list_head rx_list;
+ 	int retries = 0;
++	u16 flowid;
+ 	int err;
+ 
+ 	ch = container_of(napi, struct dpaa2_eth_channel, napi);
+@@ -1190,6 +1209,7 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
+ 			break;
+ 		if (fq->type == DPAA2_RX_FQ) {
+ 			rx_cleaned += store_cleaned;
++			flowid = fq->flowid;
+ 		} else {
+ 			txconf_cleaned += store_cleaned;
+ 			/* We have a single Tx conf FQ on this channel */
+@@ -1232,6 +1252,8 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
+ 
+ 	if (ch->xdp.res & XDP_REDIRECT)
+ 		xdp_do_flush_map();
++	else if (rx_cleaned && ch->xdp.res & XDP_TX)
++		xdp_tx_flush(priv, ch, &priv->fq[flowid]);
+ 
+ 	return work_done;
+ }
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index b5f7dbbc2a02..9c37b6946cec 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -334,6 +334,7 @@ struct dpaa2_eth_fq {
+ 	struct dpaa2_eth_fq_stats stats;
+ 
+ 	struct dpaa2_eth_xdp_fds xdp_redirect_fds;
++	struct dpaa2_eth_xdp_fds xdp_tx_fds;
+ };
+ 
+ struct dpaa2_eth_ch_xdp {
+-- 
+2.17.1
 
-That makes sense. Thanks for guidance.
-
--Jakub
