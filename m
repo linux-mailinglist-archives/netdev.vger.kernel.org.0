@@ -2,80 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86AB11D1433
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:12:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BE671D1440
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728617AbgEMNMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 09:12:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57772 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725925AbgEMNMh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 09:12:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=eB5FjLH7T6LhaFmYc7bOJ9LyuU3m4PmCrJlFeQNyDeA=; b=vaW0tWNYAWeERIsAFaRBT+vCbp
-        OYPNdm8F5mu8ZorEnYvHUlsajv4DP/hvwjHpJinMAKOx4yTeNdFjALpgHM1zTc+lfQ8U6f5xIXy7Z
-        pGbgboEFdxEV0PZcsWVUZY7T9v+upqrr0holqtzXHlM6L21fKbcZSAl7Fj/5+OrHf81s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jYrBS-002A4R-3u; Wed, 13 May 2020 15:12:26 +0200
-Date:   Wed, 13 May 2020 15:12:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@huawei.com, kuba@kernel.org,
-        Yufeng Mo <moyufeng@huawei.com>,
-        Jian Shen <shenjian15@huawei.com>
-Subject: Re: [PATCH net-next] net: phy: realtek: add loopback support for
- RTL8211F
-Message-ID: <20200513131226.GA499265@lunn.ch>
-References: <1589358344-14009-1-git-send-email-tanhuazhong@huawei.com>
+        id S2387511AbgEMNN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 09:13:27 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:33512 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387494AbgEMNN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 09:13:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589375605;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kC/Pwa8f1gD3R5LYjYmzPSPuGCXjungEBXbTdD/3zMQ=;
+        b=FVn3KiDBR/Z87zcMojaI5R/KMMowZscceiaybmH1VDDh8rDDZimCXbLjmZlbp6yC7/R29H
+        wg2QMvITvtzKooXg3JV1Ng4JbH0utrkFpB5SKE9IM7hNsn/yOtJb6wWpus1UwUZ/prJIgo
+        iZUfxBGDCveooTjX5mpkt47QOmGfMio=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-339-j5Rv_ovSOqaPeCLkWE73pQ-1; Wed, 13 May 2020 09:13:21 -0400
+X-MC-Unique: j5Rv_ovSOqaPeCLkWE73pQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AED3780183C;
+        Wed, 13 May 2020 13:13:17 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-59.rdu2.redhat.com [10.10.112.59])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 800786A960;
+        Wed, 13 May 2020 13:13:08 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20200513062649.2100053-30-hch@lst.de>
+References: <20200513062649.2100053-30-hch@lst.de> <20200513062649.2100053-1-hch@lst.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     dhowells@redhat.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-nvme@lists.infradead.org, linux-sctp@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-afs@lists.infradead.org,
+        drbd-dev@lists.linbit.com, linux-cifs@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-rdma@vger.kernel.org,
+        cluster-devel@redhat.com, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        linux-block@vger.kernel.org, ceph-devel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
+        linux-kernel@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>, ocfs2-devel@oss.oracle.com
+Subject: Re: [PATCH 29/33] rxrpc_sock_set_min_security_level
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1589358344-14009-1-git-send-email-tanhuazhong@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3123533.1589375587.1@warthog.procyon.org.uk>
+Date:   Wed, 13 May 2020 14:13:07 +0100
+Message-ID: <3123534.1589375587@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 04:25:44PM +0800, Huazhong Tan wrote:
-> From: Yufeng Mo <moyufeng@huawei.com>
-> 
-> PHY loopback is already supported by genphy driver. This patch
-> adds the set_loopback interface to RTL8211F PHY driver, so the PHY
-> selftest can run properly on it.
-> 
-> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-> Signed-off-by: Jian Shen <shenjian15@huawei.com>
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Christoph Hellwig <hch@lst.de> wrote:
 
-It took three people to write a 1 line patch?
+> +int rxrpc_sock_set_min_security_level(struct sock *sk, unsigned int val);
+> +
 
-> ---
->  drivers/net/phy/realtek.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-> index c7229d0..6c5918c 100644
-> --- a/drivers/net/phy/realtek.c
-> +++ b/drivers/net/phy/realtek.c
-> @@ -615,6 +615,7 @@ static struct phy_driver realtek_drvs[] = {
->  		.resume		= genphy_resume,
->  		.read_page	= rtl821x_read_page,
->  		.write_page	= rtl821x_write_page,
-> +		.set_loopback   = genphy_loopback,
->  	}, {
->  		.name		= "Generic FE-GE Realtek PHY",
->  		.match_phy_device = rtlgen_match_phy_device,
+Looks good - but you do need to add this to Documentation/networking/rxrpc.txt
+also, thanks.
 
-Do you have access to the data sheets? Can you check if the other PHYs
-supported by this driver also support loopback in the standard way?
-They probably do.
+David
 
-	  Andrew
