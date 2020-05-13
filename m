@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59FCB1D14C0
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:26:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FD831D14BA
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387766AbgEMN0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 09:26:20 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:40716 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733066AbgEMN0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 09:26:20 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04DDQGoJ119000;
-        Wed, 13 May 2020 08:26:16 -0500
+        id S2387798AbgEMN0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 09:26:22 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:56222 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387477AbgEMN0V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 09:26:21 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04DDQHVn049148;
+        Wed, 13 May 2020 08:26:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589376376;
-        bh=cxBD+KD45vnwqoUs82K7LDvkiIqJtdNT8WfOvbrNqbA=;
+        s=ti-com-17Q1; t=1589376377;
+        bh=UWrGuTdu79COPC69Gxx6gFl3KbXEtpoxo4QZJOpmrD4=;
         h=From:To:Subject:Date:In-Reply-To:References;
-        b=GS0/mZoD5xa3SEOo7Kxb1QnkvmZxXJEHTKo/6bdRZIeXYL5tU/cpX7Gp4vuci1FO+
-         kdgcBxSklz/NWV0XzdkiSpRr6R33QeMhRt0eiHls9wRjSKXvblzqUeLwRylDXYt1+N
-         +xea2B3tHYiVS1ANROpEzCjp7LmDzdRgn49KB6SE=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04DDQGL5021946
+        b=yyNdrg3ku/spmp/ExM6eqx51QZabsv1fkS3AcRiO9zKcptAwDZc22Z3BjH1ZinGeV
+         U42zm2DNRN5jiCH1EvgmTxiHCMFrNcatJkaWDjTVu0/iN76lE/CJ5/TdsleUkxyoBF
+         mMN7JKtSwEKHZP/vQi5ywgEAAQMN7bRjy3kdZ82s=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04DDQHL4115758
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 13 May 2020 08:26:16 -0500
-Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 13 May 2020 08:26:17 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 13
- May 2020 08:26:16 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ May 2020 08:26:17 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 13 May 2020 08:26:16 -0500
+ Frontend Transport; Wed, 13 May 2020 08:26:17 -0500
 Received: from uda0868495.fios-router.home (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04DDQF4I074601;
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04DDQF4J074601;
         Wed, 13 May 2020 08:26:16 -0500
 From:   Murali Karicheri <m-karicheri2@ti.com>
 To:     <davem@davemloft.net>, <grygorii.strashko@ti.com>,
         <ilias.apalodimas@linaro.org>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>, <nsekhar@ti.com>
-Subject: [PATCH net-next 1/2] ethernet: ti: am65-cpts: add routines to support taprio offload
-Date:   Wed, 13 May 2020 09:26:14 -0400
-Message-ID: <20200513132615.16299-2-m-karicheri2@ti.com>
+Subject: [PATCH net-next 2/2] ethernet: ti: am65-cpsw-qos: add TAPRIO offload support
+Date:   Wed, 13 May 2020 09:26:15 -0400
+Message-ID: <20200513132615.16299-3-m-karicheri2@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200513132615.16299-1-m-karicheri2@ti.com>
 References: <20200513132615.16299-1-m-karicheri2@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -56,135 +57,888 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 
-TAPRIO/EST offload support in CPSW2G requires EST scheduler
-function enabled in CPTS. So this patch add a function to
-set cycle time for EST scheduler.  It also add a function for
-getting time in ns of PHC clock for taprio qdisc configuration.
-Mostly to verify if timer update is needed or to get actual
-state of oper/admin schedule.
+AM65 CPSW h/w supports Enhanced Scheduled Traffic (EST – defined
+in P802.1Qbv/D2.2 that later got included in IEEE 802.1Q-2018)
+configuration. EST allows express queue traffic to be scheduled
+(placed) on the wire at specific repeatable time intervals. In
+Linux kernel, EST configuration is done through tc command and
+the taprio scheduler in the net core implements a software only
+scheduler (SCH_TAPRIO). If the NIC is capable of EST configuration,
+user indicate "flag 2" in the command which is then parsed by
+taprio scheduler in net core and indicate that the command is to
+be offloaded to h/w. taprio then offloads the command to the
+driver by calling ndo_setup_tc() ndo ops. This patch implements
+ndo_setup_tc() to offload EST configuration to CPSW h/w.
+
+Currently driver supports only SetGateStates operation. EST
+operates on a repeating time interval generated by the CPTS EST
+function generator. Each Ethernet port has a global EST fetch
+RAM that can be configured as 2 buffers, each of 64 locations
+or one large buffer of 128 locations. In 2 buffer configuration,
+a ping pong mechanism is used to hold the active schedule (oper)
+in one buffer and new (admin) command in the other. Each 22-bit
+fetch command consists of a 14-bit fetch count (14 MSB’s) and an
+8-bit priority fetch allow (8 LSB’s) that will be applied for the
+fetch count time in wireside clocks. Driver process each of the
+sched-entry in the offload command and update the fetch RAM.
+Driver configures duration in sched-entry into the fetch count
+and Gate mask into the priority fetch bits of the RAM. Then
+configures the CPTS EST function generator to activate the
+schedule. Currently driver supports only 2 buffer configuration
+which means driver supports a max cycle time of ~8 msec.
+
+CPSW supports a configurable number of priority queues (up to 8)
+and needs to be switched to this mode from the default round
+robin mode before EST can be offloaded. User configures
+these through ethtool commands (-L for changing number of
+queues and --set-priv-flags to disable round robin mode).
+Driver doesn't enable EST if pf_p0_rx_ptype_rrobin privat flag
+is set. The flag is common for all ports, and so can't be just
+overridden by taprio configuration w/o user involvement.
+Command fails if pf_p0_rx_ptype_rrobin is already set in the
+driver.
+
+Scheds (commands) configuration depends on interface speed so
+driver translates the duration to the fetch count based on
+link speed. Each schedule can be constructed with several
+command entries in fetch RAM  depending on interval. For example
+if each sched has timer interval < ~130us on 1000 Mb link then
+each sched consumes one command and have 1:1 mapping. When
+Ethernet link goes down, driver purge the configuration if link
+is down for more than 1 second.
+
+The patch allows to update the timer and scheds memory only if it's
+really needed, and skip cases required the user to stop timer by
+configuring only shceds memory.
 
 Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
 ---
- drivers/net/ethernet/ti/am65-cpts.c | 48 +++++++++++++++++++++++++++++
- drivers/net/ethernet/ti/am65-cpts.h | 24 +++++++++++++++
- 2 files changed, 72 insertions(+)
+ drivers/net/ethernet/ti/Kconfig             |   9 +
+ drivers/net/ethernet/ti/Makefile            |   2 +-
+ drivers/net/ethernet/ti/am65-cpsw-ethtool.c |  12 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c    |   9 +
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h    |   5 +
+ drivers/net/ethernet/ti/am65-cpsw-qos.c     | 626 ++++++++++++++++++++
+ drivers/net/ethernet/ti/am65-cpsw-qos.h     |  29 +
+ 7 files changed, 689 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/ti/am65-cpsw-qos.c
+ create mode 100644 drivers/net/ethernet/ti/am65-cpsw-qos.h
 
-diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index 51c94b2a77b1..c59a289e428c 100644
---- a/drivers/net/ethernet/ti/am65-cpts.c
-+++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -450,6 +450,19 @@ static int am65_cpts_ptp_gettimex(struct ptp_clock_info *ptp,
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+index 988e907e3322..4d4852f00ff7 100644
+--- a/drivers/net/ethernet/ti/Kconfig
++++ b/drivers/net/ethernet/ti/Kconfig
+@@ -123,6 +123,15 @@ config TI_K3_AM65_CPTS
+ 	  protocol, Ethernet Enhanced Scheduled Traffic Operations (CPTS_ESTFn)
+ 	  and PCIe Subsystem Precision Time Measurement (PTM).
  
-+u64 am65_cpts_ns_gettime(struct am65_cpts *cpts)
-+{
-+	u64 ns;
++config TI_AM65_CPSW_TAS
++	bool "Enable TAS offload in AM65 CPSW"
++	depends on TI_K3_AM65_CPSW_NUSS && NET_SCH_TAPRIO && TI_K3_AM65_CPTS
++	help
++	  Say y here to support Time Aware Shaper(TAS) offload in AM65 CPSW.
++	  AM65 CPSW hardware supports Enhanced Scheduled Traffic (EST)
++	  defined in IEEE 802.1Q 2018. The EST scheduler runs on CPTS and the
++	  TAS/EST schedule is updated in the Fetch RAM memory of the CPSW.
 +
-+	/* reuse ptp_clk_lock as it serialize ts push */
-+	mutex_lock(&cpts->ptp_clk_lock);
-+	ns = am65_cpts_gettime(cpts, NULL);
-+	mutex_unlock(&cpts->ptp_clk_lock);
-+
-+	return ns;
-+}
-+EXPORT_SYMBOL_GPL(am65_cpts_ns_gettime);
-+
- static int am65_cpts_ptp_settime(struct ptp_clock_info *ptp,
- 				 const struct timespec64 *ts)
+ config TI_KEYSTONE_NETCP
+ 	tristate "TI Keystone NETCP Core Support"
+ 	select TI_DAVINCI_MDIO
+diff --git a/drivers/net/ethernet/ti/Makefile b/drivers/net/ethernet/ti/Makefile
+index bf86067f9b4c..be95512d80b5 100644
+--- a/drivers/net/ethernet/ti/Makefile
++++ b/drivers/net/ethernet/ti/Makefile
+@@ -25,5 +25,5 @@ obj-$(CONFIG_TI_KEYSTONE_NETCP_ETHSS) += keystone_netcp_ethss.o
+ keystone_netcp_ethss-y := netcp_ethss.o netcp_sgmii.o netcp_xgbepcsr.o cpsw_ale.o
+ 
+ obj-$(CONFIG_TI_K3_AM65_CPSW_NUSS) += ti-am65-cpsw-nuss.o
+-ti-am65-cpsw-nuss-y := am65-cpsw-nuss.o cpsw_sl.o am65-cpsw-ethtool.o cpsw_ale.o k3-cppi-desc-pool.o
++ti-am65-cpsw-nuss-y := am65-cpsw-nuss.o cpsw_sl.o am65-cpsw-ethtool.o cpsw_ale.o k3-cppi-desc-pool.o am65-cpsw-qos.o
+ obj-$(CONFIG_TI_K3_AM65_CPTS) += am65-cpts.o
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-ethtool.c b/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
+index 23661a6ed426..8c4690f3ebcb 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
+@@ -730,9 +730,17 @@ static u32 am65_cpsw_get_ethtool_priv_flags(struct net_device *ndev)
+ static int am65_cpsw_set_ethtool_priv_flags(struct net_device *ndev, u32 flags)
  {
-@@ -494,6 +507,41 @@ static int am65_cpts_extts_enable(struct am65_cpts *cpts, u32 index, int on)
- 	return 0;
- }
+ 	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
++	int rrobin;
  
-+int am65_cpts_estf_enable(struct am65_cpts *cpts, int idx,
-+			  struct am65_cpts_estf_cfg *cfg)
-+{
-+	u64 cycles;
-+	u32 val;
+-	common->pf_p0_rx_ptype_rrobin =
+-			!!(flags & AM65_CPSW_PRIV_P0_RX_PTYPE_RROBIN);
++	rrobin = !!(flags & AM65_CPSW_PRIV_P0_RX_PTYPE_RROBIN);
 +
-+	cycles = cfg->ns_period * cpts->refclk_freq;
-+	cycles = DIV_ROUND_UP(cycles, NSEC_PER_SEC);
-+	if (cycles > U32_MAX)
++	if (common->est_enabled && rrobin) {
++		netdev_err(ndev,
++			   "p0-rx-ptype-rrobin flag conflicts with QOS\n");
 +		return -EINVAL;
++	}
 +
-+	/* according to TRM should be zeroed */
-+	am65_cpts_write32(cpts, 0, estf[idx].length);
++	common->pf_p0_rx_ptype_rrobin = rrobin;
+ 	am65_cpsw_nuss_set_p0_ptype(common);
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 8cdbb2b9b13a..4a8229864ae4 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -37,12 +37,14 @@
+ #define AM65_CPSW_XGMII_BASE	0x2100
+ #define AM65_CPSW_CPSW_NU_BASE	0x20000
+ #define AM65_CPSW_NU_PORTS_BASE	0x1000
++#define AM65_CPSW_NU_FRAM_BASE	0x12000
+ #define AM65_CPSW_NU_STATS_BASE	0x1a000
+ #define AM65_CPSW_NU_ALE_BASE	0x1e000
+ #define AM65_CPSW_NU_CPTS_BASE	0x1d000
+ 
+ #define AM65_CPSW_NU_PORTS_OFFSET	0x1000
+ #define AM65_CPSW_NU_STATS_PORT_OFFSET	0x200
++#define AM65_CPSW_NU_FRAM_PORT_OFFSET	0x200
+ 
+ #define AM65_CPSW_MAX_PORTS	8
+ 
+@@ -188,9 +190,11 @@ void am65_cpsw_nuss_adjust_link(struct net_device *ndev)
+ 		cpsw_ale_control_set(common->ale, port->port_id,
+ 				     ALE_PORT_STATE, ALE_PORT_STATE_FORWARD);
+ 
++		am65_cpsw_qos_link_up(ndev, phy->speed);
+ 		netif_tx_wake_all_queues(ndev);
+ 	} else {
+ 		int tmo;
 +
-+	val = upper_32_bits(cfg->ns_start);
-+	am65_cpts_write32(cpts, val, estf[idx].comp_hi);
-+	val = lower_32_bits(cfg->ns_start);
-+	am65_cpts_write32(cpts, val, estf[idx].comp_lo);
-+	val = lower_32_bits(cycles);
-+	am65_cpts_write32(cpts, val, estf[idx].length);
-+
-+	dev_dbg(cpts->dev, "%s: ESTF:%u enabled\n", __func__, idx);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(am65_cpts_estf_enable);
-+
-+void am65_cpts_estf_disable(struct am65_cpts *cpts, int idx)
-+{
-+	am65_cpts_write32(cpts, 0, estf[idx].length);
-+
-+	dev_dbg(cpts->dev, "%s: ESTF:%u disabled\n", __func__, idx);
-+}
-+EXPORT_SYMBOL_GPL(am65_cpts_estf_disable);
-+
- static void am65_cpts_perout_enable_hw(struct am65_cpts *cpts,
- 				       struct ptp_perout_request *req, int on)
- {
-diff --git a/drivers/net/ethernet/ti/am65-cpts.h b/drivers/net/ethernet/ti/am65-cpts.h
-index 0b55dc12ba48..98c1960b20b9 100644
---- a/drivers/net/ethernet/ti/am65-cpts.h
-+++ b/drivers/net/ethernet/ti/am65-cpts.h
-@@ -12,6 +12,11 @@
+ 		/* disable forwarding */
+ 		cpsw_ale_control_set(common->ale, port->port_id,
+ 				     ALE_PORT_STATE, ALE_PORT_STATE_DISABLE);
+@@ -204,6 +208,7 @@ void am65_cpsw_nuss_adjust_link(struct net_device *ndev)
+ 
+ 		cpsw_sl_ctl_reset(port->slave.mac_sl);
+ 
++		am65_cpsw_qos_link_down(ndev);
+ 		netif_tx_stop_all_queues(ndev);
+ 	}
+ 
+@@ -1378,6 +1383,7 @@ static const struct net_device_ops am65_cpsw_nuss_netdev_ops_2g = {
+ 	.ndo_vlan_rx_kill_vid	= am65_cpsw_nuss_ndo_slave_kill_vid,
+ 	.ndo_do_ioctl		= am65_cpsw_nuss_ndo_slave_ioctl,
+ 	.ndo_set_features	= am65_cpsw_nuss_ndo_slave_set_features,
++	.ndo_setup_tc           = am65_cpsw_qos_ndo_setup_tc,
+ };
+ 
+ static void am65_cpsw_nuss_slave_disable_unused(struct am65_cpsw_port *port)
+@@ -1739,6 +1745,9 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 		port->stat_base = common->cpsw_base + AM65_CPSW_NU_STATS_BASE +
+ 				  (AM65_CPSW_NU_STATS_PORT_OFFSET * port_id);
+ 		port->name = of_get_property(port_np, "label", NULL);
++		port->fetch_ram_base =
++				common->cpsw_base + AM65_CPSW_NU_FRAM_BASE +
++				(AM65_CPSW_NU_FRAM_PORT_OFFSET * (port_id - 1));
+ 
+ 		port->disabled = !of_device_is_available(port_np);
+ 		if (port->disabled)
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+index 8a6382188cb5..9faf4fb1409b 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
+@@ -9,7 +9,9 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/netdevice.h>
++#include <linux/phy.h>
+ #include <linux/platform_device.h>
++#include "am65-cpsw-qos.h"
  
  struct am65_cpts;
  
-+struct am65_cpts_estf_cfg {
-+	u64 ns_period;
-+	u64 ns_start;
+@@ -38,10 +40,12 @@ struct am65_cpsw_port {
+ 	u32				port_id;
+ 	void __iomem			*port_base;
+ 	void __iomem			*stat_base;
++	void __iomem			*fetch_ram_base;
+ 	bool				disabled;
+ 	struct am65_cpsw_slave_data	slave;
+ 	bool				tx_ts_enabled;
+ 	bool				rx_ts_enabled;
++	struct am65_cpsw_qos		qos;
+ };
+ 
+ struct am65_cpsw_host {
+@@ -104,6 +108,7 @@ struct am65_cpsw_common {
+ 	u32			cpsw_ver;
+ 	bool			pf_p0_rx_ptype_rrobin;
+ 	struct am65_cpts	*cpts;
++	int			est_enabled;
+ };
+ 
+ struct am65_cpsw_ndev_stats {
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-qos.c b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+new file mode 100644
+index 000000000000..32eac04468bb
+--- /dev/null
++++ b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+@@ -0,0 +1,626 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Texas Instruments K3 AM65 Ethernet QoS submodule
++ * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
++ *
++ * quality of service module includes:
++ * Enhanced Scheduler Traffic (EST - P802.1Qbv/D2.2)
++ */
++
++#include <linux/pm_runtime.h>
++#include <linux/time.h>
++
++#include "am65-cpsw-nuss.h"
++#include "am65-cpsw-qos.h"
++#include "am65-cpts.h"
++
++#define AM65_CPSW_REG_CTL			0x004
++#define AM65_CPSW_PN_REG_CTL			0x004
++#define AM65_CPSW_PN_REG_FIFO_STATUS		0x050
++#define AM65_CPSW_PN_REG_EST_CTL		0x060
++
++/* AM65_CPSW_REG_CTL register fields */
++#define AM65_CPSW_CTL_EST_EN			BIT(18)
++
++/* AM65_CPSW_PN_REG_CTL register fields */
++#define AM65_CPSW_PN_CTL_EST_PORT_EN		BIT(17)
++
++/* AM65_CPSW_PN_REG_EST_CTL register fields */
++#define AM65_CPSW_PN_EST_ONEBUF			BIT(0)
++#define AM65_CPSW_PN_EST_BUFSEL			BIT(1)
++#define AM65_CPSW_PN_EST_TS_EN			BIT(2)
++#define AM65_CPSW_PN_EST_TS_FIRST		BIT(3)
++#define AM65_CPSW_PN_EST_ONEPRI			BIT(4)
++#define AM65_CPSW_PN_EST_TS_PRI_MSK		GENMASK(7, 5)
++
++/* AM65_CPSW_PN_REG_FIFO_STATUS register fields */
++#define AM65_CPSW_PN_FST_TX_PRI_ACTIVE_MSK	GENMASK(7, 0)
++#define AM65_CPSW_PN_FST_TX_E_MAC_ALLOW_MSK	GENMASK(15, 8)
++#define AM65_CPSW_PN_FST_EST_CNT_ERR		BIT(16)
++#define AM65_CPSW_PN_FST_EST_ADD_ERR		BIT(17)
++#define AM65_CPSW_PN_FST_EST_BUFACT		BIT(18)
++
++/* EST FETCH COMMAND RAM */
++#define AM65_CPSW_FETCH_RAM_CMD_NUM		0x80
++#define AM65_CPSW_FETCH_CNT_MSK			GENMASK(21, 8)
++#define AM65_CPSW_FETCH_CNT_MAX			(AM65_CPSW_FETCH_CNT_MSK >> 8)
++#define AM65_CPSW_FETCH_CNT_OFFSET		8
++#define AM65_CPSW_FETCH_ALLOW_MSK		GENMASK(7, 0)
++#define AM65_CPSW_FETCH_ALLOW_MAX		AM65_CPSW_FETCH_ALLOW_MSK
++
++enum timer_act {
++	TACT_PROG,		/* need program timer */
++	TACT_NEED_STOP,		/* need stop first */
++	TACT_SKIP_PROG,		/* just buffer can be updated */
 +};
 +
- #if IS_ENABLED(CONFIG_TI_K3_AM65_CPTS)
- struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
- 				   struct device_node *node);
-@@ -19,6 +24,10 @@ int am65_cpts_phc_index(struct am65_cpts *cpts);
- void am65_cpts_tx_timestamp(struct am65_cpts *cpts, struct sk_buff *skb);
- void am65_cpts_prep_tx_timestamp(struct am65_cpts *cpts, struct sk_buff *skb);
- void am65_cpts_rx_enable(struct am65_cpts *cpts, bool en);
-+u64 am65_cpts_ns_gettime(struct am65_cpts *cpts);
-+int am65_cpts_estf_enable(struct am65_cpts *cpts, int idx,
-+			  struct am65_cpts_estf_cfg *cfg);
-+void am65_cpts_estf_disable(struct am65_cpts *cpts, int idx);
- #else
- static inline struct am65_cpts *am65_cpts_create(struct device *dev,
- 						 void __iomem *regs,
-@@ -45,6 +54,21 @@ static inline void am65_cpts_prep_tx_timestamp(struct am65_cpts *cpts,
- static inline void am65_cpts_rx_enable(struct am65_cpts *cpts, bool en)
- {
- }
-+
-+static s64 am65_cpts_ns_gettime(struct am65_cpts *cpts)
++static int am65_cpsw_port_est_enabled(struct am65_cpsw_port *port)
 +{
++	return port->qos.est_oper || port->qos.est_admin;
++}
++
++static void am65_cpsw_est_enable(struct am65_cpsw_common *common, int enable)
++{
++	u32 val;
++
++	val = readl(common->cpsw_base + AM65_CPSW_REG_CTL);
++
++	if (enable)
++		val |= AM65_CPSW_CTL_EST_EN;
++	else
++		val &= ~AM65_CPSW_CTL_EST_EN;
++
++	writel(val, common->cpsw_base + AM65_CPSW_REG_CTL);
++	common->est_enabled = enable;
++}
++
++static void am65_cpsw_port_est_enable(struct am65_cpsw_port *port, int enable)
++{
++	u32 val;
++
++	val = readl(port->port_base + AM65_CPSW_PN_REG_CTL);
++	if (enable)
++		val |= AM65_CPSW_PN_CTL_EST_PORT_EN;
++	else
++		val &= ~AM65_CPSW_PN_CTL_EST_PORT_EN;
++
++	writel(val, port->port_base + AM65_CPSW_PN_REG_CTL);
++}
++
++/* target new EST RAM buffer, actual toggle happens after cycle completion */
++static void am65_cpsw_port_est_assign_buf_num(struct net_device *ndev,
++					      int buf_num)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	u32 val;
++
++	val = readl(port->port_base + AM65_CPSW_PN_REG_EST_CTL);
++	if (buf_num)
++		val |= AM65_CPSW_PN_EST_BUFSEL;
++	else
++		val &= ~AM65_CPSW_PN_EST_BUFSEL;
++
++	writel(val, port->port_base + AM65_CPSW_PN_REG_EST_CTL);
++}
++
++/* am65_cpsw_port_est_is_swapped() - Indicate if h/w is transitioned
++ * admin -> oper or not
++ *
++ * Return true if already transitioned. i.e oper is equal to admin and buf
++ * numbers match (est_oper->buf match with est_admin->buf).
++ * false if before transition. i.e oper is not equal to admin, (i.e a
++ * previous admin command is waiting to be transitioned to oper state
++ * and est_oper->buf not match with est_oper->buf).
++ */
++static int am65_cpsw_port_est_is_swapped(struct net_device *ndev, int *oper,
++					 int *admin)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	u32 val;
++
++	val = readl(port->port_base + AM65_CPSW_PN_REG_FIFO_STATUS);
++	*oper = !!(val & AM65_CPSW_PN_FST_EST_BUFACT);
++
++	val = readl(port->port_base + AM65_CPSW_PN_REG_EST_CTL);
++	*admin = !!(val & AM65_CPSW_PN_EST_BUFSEL);
++
++	return *admin == *oper;
++}
++
++/* am65_cpsw_port_est_get_free_buf_num() - Get free buffer number for
++ * Admin to program the new schedule.
++ *
++ * Logic as follows:-
++ * If oper is same as admin, return the other buffer (!oper) as the admin
++ * buffer.  If oper is not the same, driver let the current oper to continue
++ * as it is in the process of transitioning from admin -> oper. So keep the
++ * oper by selecting the same oper buffer by writing to EST_BUFSEL bit in
++ * EST CTL register. In the second iteration they will match and code returns.
++ * The actual buffer to write command is selected later before it is ready
++ * to update the schedule.
++ */
++static int am65_cpsw_port_est_get_free_buf_num(struct net_device *ndev)
++{
++	int oper, admin;
++	int roll = 2;
++
++	while (roll--) {
++		if (am65_cpsw_port_est_is_swapped(ndev, &oper, &admin))
++			return !oper;
++
++		/* admin is not set, so hinder transition as it's not allowed
++		 * to touch memory in-flight, by targeting same oper buf.
++		 */
++		am65_cpsw_port_est_assign_buf_num(ndev, oper);
++
++		dev_info(&ndev->dev,
++			 "Prev. EST admin cycle is in transit %d -> %d\n",
++			 oper, admin);
++	}
++
++	return admin;
++}
++
++static void am65_cpsw_admin_to_oper(struct net_device *ndev)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++
++	if (port->qos.est_oper)
++		devm_kfree(&ndev->dev, port->qos.est_oper);
++
++	port->qos.est_oper = port->qos.est_admin;
++	port->qos.est_admin = NULL;
++}
++
++static void am65_cpsw_port_est_get_buf_num(struct net_device *ndev,
++					   struct am65_cpsw_est *est_new)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	u32 val;
++
++	val = readl(port->port_base + AM65_CPSW_PN_REG_EST_CTL);
++	val &= ~AM65_CPSW_PN_EST_ONEBUF;
++	writel(val, port->port_base + AM65_CPSW_PN_REG_EST_CTL);
++
++	est_new->buf = am65_cpsw_port_est_get_free_buf_num(ndev);
++
++	/* rolled buf num means changed buf while configuring */
++	if (port->qos.est_oper && port->qos.est_admin &&
++	    est_new->buf == port->qos.est_oper->buf)
++		am65_cpsw_admin_to_oper(ndev);
++}
++
++static void am65_cpsw_est_set(struct net_device *ndev, int enable)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	struct am65_cpsw_common *common = port->common;
++	int common_enable = 0;
++	int i;
++
++	am65_cpsw_port_est_enable(port, enable);
++
++	for (i = 0; i < common->port_num; i++)
++		common_enable |= am65_cpsw_port_est_enabled(&common->ports[i]);
++
++	common_enable |= enable;
++	am65_cpsw_est_enable(common, common_enable);
++}
++
++/* This update is supposed to be used in any routine before getting real state
++ * of admin -> oper transition, particularly it's supposed to be used in some
++ * generic routine for providing real state to Taprio Qdisc.
++ */
++static void am65_cpsw_est_update_state(struct net_device *ndev)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	int oper, admin;
++
++	if (!port->qos.est_admin)
++		return;
++
++	if (!am65_cpsw_port_est_is_swapped(ndev, &oper, &admin))
++		return;
++
++	am65_cpsw_admin_to_oper(ndev);
++}
++
++/* Fetch command count it's number of bytes in Gigabit mode or nibbles in
++ * 10/100Mb mode. So, having speed and time in ns, recalculate ns to number of
++ * bytes/nibbles that can be sent while transmission on given speed.
++ */
++static int am65_est_cmd_ns_to_cnt(u64 ns, int link_speed)
++{
++	u64 temp;
++
++	temp = ns * link_speed;
++	if (link_speed < SPEED_1000)
++		temp <<= 1;
++
++	return DIV_ROUND_UP(temp, 8 * 1000);
++}
++
++static void __iomem *am65_cpsw_est_set_sched_cmds(void __iomem *addr,
++						  int fetch_cnt,
++						  int fetch_allow)
++{
++	u32 prio_mask, cmd_fetch_cnt, cmd;
++
++	do {
++		if (fetch_cnt > AM65_CPSW_FETCH_CNT_MAX) {
++			fetch_cnt -= AM65_CPSW_FETCH_CNT_MAX;
++			cmd_fetch_cnt = AM65_CPSW_FETCH_CNT_MAX;
++		} else {
++			cmd_fetch_cnt = fetch_cnt;
++			/* fetch count can't be less than 16? */
++			if (cmd_fetch_cnt && cmd_fetch_cnt < 16)
++				cmd_fetch_cnt = 16;
++
++			fetch_cnt = 0;
++		}
++
++		prio_mask = fetch_allow & AM65_CPSW_FETCH_ALLOW_MSK;
++		cmd = (cmd_fetch_cnt << AM65_CPSW_FETCH_CNT_OFFSET) | prio_mask;
++
++		writel(cmd, addr);
++		addr += 4;
++	} while (fetch_cnt);
++
++	return addr;
++}
++
++static int am65_cpsw_est_calc_cmd_num(struct net_device *ndev,
++				      struct tc_taprio_qopt_offload *taprio,
++				      int link_speed)
++{
++	int i, cmd_cnt, cmd_sum = 0;
++	u32 fetch_cnt;
++
++	for (i = 0; i < taprio->num_entries; i++) {
++		if (taprio->entries[i].command != TC_TAPRIO_CMD_SET_GATES) {
++			dev_err(&ndev->dev, "Only SET command is supported");
++			return -EINVAL;
++		}
++
++		fetch_cnt = am65_est_cmd_ns_to_cnt(taprio->entries[i].interval,
++						   link_speed);
++
++		cmd_cnt = DIV_ROUND_UP(fetch_cnt, AM65_CPSW_FETCH_CNT_MAX);
++		if (!cmd_cnt)
++			cmd_cnt++;
++
++		cmd_sum += cmd_cnt;
++
++		if (!fetch_cnt)
++			break;
++	}
++
++	return cmd_sum;
++}
++
++static int am65_cpsw_est_check_scheds(struct net_device *ndev,
++				      struct am65_cpsw_est *est_new)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	int cmd_num;
++
++	cmd_num = am65_cpsw_est_calc_cmd_num(ndev, &est_new->taprio,
++					     port->qos.link_speed);
++	if (cmd_num < 0)
++		return cmd_num;
++
++	if (cmd_num > AM65_CPSW_FETCH_RAM_CMD_NUM / 2) {
++		dev_err(&ndev->dev, "No fetch RAM");
++		return -ENOMEM;
++	}
++
 +	return 0;
 +}
 +
-+static int am65_cpts_estf_enable(struct am65_cpts *cpts,
-+				 int idx, struct am65_cpts_estf_cfg *cfg)
++static void am65_cpsw_est_set_sched_list(struct net_device *ndev,
++					 struct am65_cpsw_est *est_new)
 +{
-+	return 0;
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	u32 fetch_cnt, fetch_allow, all_fetch_allow = 0;
++	void __iomem *ram_addr, *max_ram_addr;
++	struct tc_taprio_sched_entry *entry;
++	int i, ram_size;
++
++	ram_addr = port->fetch_ram_base;
++	ram_size = AM65_CPSW_FETCH_RAM_CMD_NUM * 2;
++	ram_addr += est_new->buf * ram_size;
++
++	max_ram_addr = ram_size + ram_addr;
++	for (i = 0; i < est_new->taprio.num_entries; i++) {
++		entry = &est_new->taprio.entries[i];
++
++		fetch_cnt = am65_est_cmd_ns_to_cnt(entry->interval,
++						   port->qos.link_speed);
++		fetch_allow = entry->gate_mask;
++		if (fetch_allow > AM65_CPSW_FETCH_ALLOW_MAX)
++			dev_dbg(&ndev->dev, "fetch_allow > 8 bits: %d\n",
++				fetch_allow);
++
++		ram_addr = am65_cpsw_est_set_sched_cmds(ram_addr, fetch_cnt,
++							fetch_allow);
++
++		if (!fetch_cnt && i < est_new->taprio.num_entries - 1) {
++			dev_info(&ndev->dev,
++				 "next scheds after %d have no impact", i + 1);
++			break;
++		}
++
++		all_fetch_allow |= fetch_allow;
++	}
++
++	/* end cmd, enabling non-timed queues for potential over cycle time */
++	if (ram_addr < max_ram_addr)
++		writel(~all_fetch_allow & AM65_CPSW_FETCH_ALLOW_MSK, ram_addr);
 +}
 +
-+static void am65_cpts_estf_disable(struct am65_cpts *cpts, int idx)
++/**
++ * Enable ESTf periodic output, set cycle start time and interval.
++ */
++static int am65_cpsw_timer_set(struct net_device *ndev,
++			       struct am65_cpsw_est *est_new)
 +{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	struct am65_cpsw_common *common = port->common;
++	struct am65_cpts *cpts = common->cpts;
++	struct am65_cpts_estf_cfg cfg;
++
++	cfg.ns_period = est_new->taprio.cycle_time;
++	cfg.ns_start = est_new->taprio.base_time;
++
++	return am65_cpts_estf_enable(cpts, port->port_id - 1, &cfg);
 +}
- #endif
- 
- #endif /* K3_CPTS_H_ */
++
++static void am65_cpsw_timer_stop(struct net_device *ndev)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	struct am65_cpts *cpts = port->common->cpts;
++
++	am65_cpts_estf_disable(cpts, port->port_id - 1);
++}
++
++static enum timer_act am65_cpsw_timer_act(struct net_device *ndev,
++					  struct am65_cpsw_est *est_new)
++{
++	struct tc_taprio_qopt_offload *taprio_oper, *taprio_new;
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	struct am65_cpts *cpts = port->common->cpts;
++	u64 cur_time;
++	s64 diff;
++
++	if (!port->qos.est_oper)
++		return TACT_PROG;
++
++	taprio_new = &est_new->taprio;
++	taprio_oper = &port->qos.est_oper->taprio;
++
++	if (taprio_new->cycle_time != taprio_oper->cycle_time)
++		return TACT_NEED_STOP;
++
++	/* in order to avoid timer reset get base_time form oper taprio */
++	if (!taprio_new->base_time && taprio_oper)
++		taprio_new->base_time = taprio_oper->base_time;
++
++	if (taprio_new->base_time == taprio_oper->base_time)
++		return TACT_SKIP_PROG;
++
++	/* base times are cycle synchronized */
++	diff = taprio_new->base_time - taprio_oper->base_time;
++	diff = diff < 0 ? -diff : diff;
++	if (diff % taprio_new->cycle_time)
++		return TACT_NEED_STOP;
++
++	cur_time = am65_cpts_ns_gettime(cpts);
++	if (taprio_new->base_time <= cur_time + taprio_new->cycle_time)
++		return TACT_SKIP_PROG;
++
++	/* TODO: Admin schedule at future time is not currently supported */
++	return TACT_NEED_STOP;
++}
++
++static void am65_cpsw_stop_est(struct net_device *ndev)
++{
++	am65_cpsw_est_set(ndev, 0);
++	am65_cpsw_timer_stop(ndev);
++}
++
++static void am65_cpsw_purge_est(struct net_device *ndev)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++
++	am65_cpsw_stop_est(ndev);
++
++	if (port->qos.est_admin)
++		devm_kfree(&ndev->dev, port->qos.est_admin);
++
++	if (port->qos.est_oper)
++		devm_kfree(&ndev->dev, port->qos.est_oper);
++
++	port->qos.est_oper = NULL;
++	port->qos.est_admin = NULL;
++}
++
++static int am65_cpsw_configure_taprio(struct net_device *ndev,
++				      struct am65_cpsw_est *est_new)
++{
++	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
++	struct am65_cpts *cpts = common->cpts;
++	int ret = 0, tact = TACT_PROG;
++
++	am65_cpsw_est_update_state(ndev);
++
++	if (!est_new->taprio.enable) {
++		am65_cpsw_stop_est(ndev);
++		return ret;
++	}
++
++	ret = am65_cpsw_est_check_scheds(ndev, est_new);
++	if (ret < 0)
++		return ret;
++
++	tact = am65_cpsw_timer_act(ndev, est_new);
++	if (tact == TACT_NEED_STOP) {
++		dev_err(&ndev->dev,
++			"Can't toggle estf timer, stop taprio first");
++		return -EINVAL;
++	}
++
++	if (tact == TACT_PROG)
++		am65_cpsw_timer_stop(ndev);
++
++	if (!est_new->taprio.base_time)
++		est_new->taprio.base_time = am65_cpts_ns_gettime(cpts);
++
++	am65_cpsw_port_est_get_buf_num(ndev, est_new);
++	am65_cpsw_est_set_sched_list(ndev, est_new);
++	am65_cpsw_port_est_assign_buf_num(ndev, est_new->buf);
++
++	am65_cpsw_est_set(ndev, est_new->taprio.enable);
++
++	if (tact == TACT_PROG) {
++		ret = am65_cpsw_timer_set(ndev, est_new);
++		if (ret) {
++			dev_err(&ndev->dev, "Failed to set cycle time");
++			return ret;
++		}
++	}
++
++	return ret;
++}
++
++static void am65_cpsw_cp_taprio(struct tc_taprio_qopt_offload *from,
++				struct tc_taprio_qopt_offload *to)
++{
++	int i;
++
++	*to = *from;
++	for (i = 0; i < from->num_entries; i++)
++		to->entries[i] = from->entries[i];
++}
++
++static int am65_cpsw_set_taprio(struct net_device *ndev, void *type_data)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	struct tc_taprio_qopt_offload *taprio = type_data;
++	struct am65_cpsw_est *est_new;
++	size_t size;
++	int ret = 0;
++
++	if (taprio->cycle_time_extension) {
++		dev_err(&ndev->dev, "Failed to set cycle time extension");
++		return -EOPNOTSUPP;
++	}
++
++	size = sizeof(struct tc_taprio_sched_entry) * taprio->num_entries +
++	       sizeof(struct am65_cpsw_est);
++
++	est_new = devm_kzalloc(&ndev->dev, size, GFP_KERNEL);
++	if (!est_new)
++		return -ENOMEM;
++
++	am65_cpsw_cp_taprio(taprio, &est_new->taprio);
++	ret = am65_cpsw_configure_taprio(ndev, est_new);
++	if (!ret) {
++		if (taprio->enable) {
++			if (port->qos.est_admin)
++				devm_kfree(&ndev->dev, port->qos.est_admin);
++
++			port->qos.est_admin = est_new;
++		} else {
++			devm_kfree(&ndev->dev, est_new);
++			am65_cpsw_purge_est(ndev);
++		}
++	} else {
++		devm_kfree(&ndev->dev, est_new);
++	}
++
++	return ret;
++}
++
++static void am65_cpsw_est_link_up(struct net_device *ndev, int link_speed)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	ktime_t cur_time;
++	s64 delta;
++
++	port->qos.link_speed = link_speed;
++	if (!am65_cpsw_port_est_enabled(port))
++		return;
++
++	if (port->qos.link_down_time) {
++		cur_time = ktime_get();
++		delta = ktime_us_delta(cur_time, port->qos.link_down_time);
++		if (delta > USEC_PER_SEC) {
++			dev_err(&ndev->dev,
++				"Link has been lost too long, stopping TAS");
++			goto purge_est;
++		}
++	}
++
++	return;
++
++purge_est:
++	am65_cpsw_purge_est(ndev);
++}
++
++static int am65_cpsw_setup_taprio(struct net_device *ndev, void *type_data)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++	struct am65_cpsw_common *common = port->common;
++
++	if (!IS_ENABLED(CONFIG_TI_AM65_CPSW_TAS))
++		return -ENODEV;
++
++	if (!netif_running(ndev)) {
++		dev_err(&ndev->dev, "interface is down, link speed unknown\n");
++		return -ENETDOWN;
++	}
++
++	if (common->pf_p0_rx_ptype_rrobin) {
++		dev_err(&ndev->dev,
++			"p0-rx-ptype-rrobin flag conflicts with taprio qdisc\n");
++		return -EINVAL;
++	}
++
++	if (port->qos.link_speed == SPEED_UNKNOWN)
++		return -ENOLINK;
++
++	return am65_cpsw_set_taprio(ndev, type_data);
++}
++
++int am65_cpsw_qos_ndo_setup_tc(struct net_device *ndev, enum tc_setup_type type,
++			       void *type_data)
++{
++	switch (type) {
++	case TC_SETUP_QDISC_TAPRIO:
++		return am65_cpsw_setup_taprio(ndev, type_data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++void am65_cpsw_qos_link_up(struct net_device *ndev, int link_speed)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++
++	if (!IS_ENABLED(CONFIG_TI_AM65_CPSW_TAS))
++		return;
++
++	am65_cpsw_est_link_up(ndev, link_speed);
++	port->qos.link_down_time = 0;
++}
++
++void am65_cpsw_qos_link_down(struct net_device *ndev)
++{
++	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
++
++	if (!IS_ENABLED(CONFIG_TI_AM65_CPSW_TAS))
++		return;
++
++	if (!port->qos.link_down_time)
++		port->qos.link_down_time = ktime_get();
++
++	port->qos.link_speed = SPEED_UNKNOWN;
++}
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-qos.h b/drivers/net/ethernet/ti/am65-cpsw-qos.h
+new file mode 100644
+index 000000000000..e8f1b6b59e93
+--- /dev/null
++++ b/drivers/net/ethernet/ti/am65-cpsw-qos.h
+@@ -0,0 +1,29 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
++ */
++
++#ifndef AM65_CPSW_QOS_H_
++#define AM65_CPSW_QOS_H_
++
++#include <linux/netdevice.h>
++#include <net/pkt_sched.h>
++
++struct am65_cpsw_est {
++	int buf;
++	/* has to be the last one */
++	struct tc_taprio_qopt_offload taprio;
++};
++
++struct am65_cpsw_qos {
++	struct am65_cpsw_est *est_admin;
++	struct am65_cpsw_est *est_oper;
++	ktime_t link_down_time;
++	int link_speed;
++};
++
++int am65_cpsw_qos_ndo_setup_tc(struct net_device *ndev, enum tc_setup_type type,
++			       void *type_data);
++void am65_cpsw_qos_link_up(struct net_device *ndev, int link_speed);
++void am65_cpsw_qos_link_down(struct net_device *ndev);
++
++#endif /* AM65_CPSW_QOS_H_ */
 -- 
 2.17.1
 
