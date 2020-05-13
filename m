@@ -2,99 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83FA51D0491
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 221C21D0493
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728131AbgEMB6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 21:58:46 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26666 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726885AbgEMB6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 21:58:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589335125;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=77+XXBt2gs34d+8MeL5SJyFeuKzL200Dyavb3OVXe7M=;
-        b=CgbVF+QzM3f1O1gz1/bVmn7aXQZW7cjy3t9Fz3kLAlybG+C0G9Zzu0M8Ekx9MsvXfLRrUX
-        sO2jvVza4RdqcPmY98oLgip2PI0Ckx5uV4yRo4firWHHi5pZPZcchB/VmbnoFMQDjfNTR3
-        jrUTsRGYDU37WQe+13VSWz9LVpxm7t8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-354-I8rWLPs1Mo2r6DjiTgi2VA-1; Tue, 12 May 2020 21:58:40 -0400
-X-MC-Unique: I8rWLPs1Mo2r6DjiTgi2VA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 19DD11899528;
-        Wed, 13 May 2020 01:58:39 +0000 (UTC)
-Received: from astarta.redhat.com (ovpn-112-2.ams2.redhat.com [10.36.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D757A99D6;
-        Wed, 13 May 2020 01:58:36 +0000 (UTC)
-From:   Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v4 bpf-next 5/7] selftests/bpf: replace test_progs and test_maps w/ general rule
-References: <20191016060051.2024182-1-andriin@fb.com>
-        <20191016060051.2024182-6-andriin@fb.com>
-        <xunymu6chpt2.fsf@redhat.com>
-        <CAEf4BzbE3UYw_rKAGNW9HQ5AVeebt=PDuRnEiijrwaKxNsdiYg@mail.gmail.com>
-Date:   Wed, 13 May 2020 04:58:34 +0300
-In-Reply-To: <CAEf4BzbE3UYw_rKAGNW9HQ5AVeebt=PDuRnEiijrwaKxNsdiYg@mail.gmail.com>
-        (Andrii Nakryiko's message of "Tue, 12 May 2020 15:13:18 -0700")
-Message-ID: <xunyimh0ppdh.fsf@redhat.com>
+        id S1728351AbgEMB7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 21:59:51 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56972 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726885AbgEMB7u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 21:59:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=b7RrNiCav3BfKDCsCqG8wApdlCITQbgBHil/CGwVYAg=; b=MpB0XIHMrWz/zvuNFYXzCW7MDy
+        sMF4pPrI/ZsxszE0NkWmGn3WpEf6JOQK3Lfri383ika76/qcGqdaNbc4frx1gQiGI4Puqm5AeZ3IR
+        0Rwxxxo5fnzWphG95HH9K6RoYCLUVXOh8B8I8oNFT0VuU++gK6SHyATGqagAzFtPFcuM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jYggS-0027Tw-91; Wed, 13 May 2020 03:59:44 +0200
+Date:   Wed, 13 May 2020 03:59:44 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Yonglong Liu <liuyonglong@huawei.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linuxarm@huawei.com, Salil Mehta <salil.mehta@huawei.com>
+Subject: Re: [question] net: phy: rtl8211f: link speed shows 1000Mb/s but
+ actual link speed in phy is 100Mb/s
+Message-ID: <20200513015944.GA501603@lunn.ch>
+References: <478f871a-583d-01f1-9cc5-2eea56d8c2a7@huawei.com>
+ <20200512140017.GK409897@lunn.ch>
+ <ef25a0a2-e13f-def1-5e91-ceae1bfaf333@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ef25a0a2-e13f-def1-5e91-ceae1bfaf333@huawei.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Andrii!
+On Wed, May 13, 2020 at 09:34:13AM +0800, Yonglong Liu wrote:
+> Hi, Andrew:
+> 	Thanks for your reply!
+> 
+> On 2020/5/12 22:00, Andrew Lunn wrote:
+> > On Tue, May 12, 2020 at 08:48:21PM +0800, Yonglong Liu wrote:
+> >> I use two devices, both support 1000M speed, they are directly connected
+> >> with a network cable. Two devices enable autoneg, and then do the following
+> >> test repeatedly:
+> >> 	ifconfig eth5 down
+> >> 	ifconfig eth5 up
+> >> 	sleep $((RANDOM%6))
+> >> 	ifconfig eth5 down
+> >> 	ifconfig eth5 up
+> >> 	sleep 10
+> >>
+> >> With low probability, one device A link up with 100Mb/s, the other B link up with
+> >> 1000Mb/s(the actual link speed read from phy is 100Mb/s), and the network can
+> >> not work.
+> >>
+> >> device A:
+> >> Settings for eth5:
+> >>         Supported ports: [ TP ]
+> >>         Supported link modes:   10baseT/Half 10baseT/Full
+> >>                                 100baseT/Half 100baseT/Full
+> >>                                 1000baseT/Full
+> >>         Supported pause frame use: Symmetric Receive-only
+> >>         Supports auto-negotiation: Yes
+> >>         Supported FEC modes: Not reported
+> >>         Advertised link modes:  10baseT/Half 10baseT/Full
+> >>                                 100baseT/Half 100baseT/Full
+> >>                                 1000baseT/Full
+> >>         Advertised pause frame use: Symmetric
+> >>         Advertised auto-negotiation: Yes
+> >>         Advertised FEC modes: Not reported
+> >>         Link partner advertised link modes:  10baseT/Half 10baseT/Full
+> >>                                              100baseT/Half 100baseT/Full
+> >>         Link partner advertised pause frame use: Symmetric
+> >>         Link partner advertised auto-negotiation: Yes
+> >>         Link partner advertised FEC modes: Not reported
+> >>         Speed: 100Mb/s
+> >>         Duplex: Full
+> >>         Port: MII
+> >>         PHYAD: 3
+> >>         Transceiver: internal
+> >>         Auto-negotiation: on
+> >>         Current message level: 0x00000036 (54)
+> >>                                probe link ifdown ifup
+> >>         Link detected: yes
+> >>
+> >> The regs value read from mdio are:
+> >> reg 9 = 0x200
+> >> reg a = 0
+> >>
+> >> device B:
+> >> Settings for eth5:
+> >>         Supported ports: [ TP ]
+> >>         Supported link modes:   10baseT/Half 10baseT/Full
+> >>                                 100baseT/Half 100baseT/Full
+> >>                                 1000baseT/Full
+> >>         Supported pause frame use: Symmetric Receive-only
+> >>         Supports auto-negotiation: Yes
+> >>         Supported FEC modes: Not reported
+> >>         Advertised link modes:  10baseT/Half 10baseT/Full
+> >>                                 100baseT/Half 100baseT/Full
+> >>                                 1000baseT/Full
+> >>         Advertised pause frame use: Symmetric
+> >>         Advertised auto-negotiation: Yes
+> >>         Advertised FEC modes: Not reported
+> >>         Link partner advertised link modes:  10baseT/Half 10baseT/Full
+> >>                                              100baseT/Half 100baseT/Full
+> >>                                              1000baseT/Full
+> >>         Link partner advertised pause frame use: Symmetric
+> >>         Link partner advertised auto-negotiation: Yes
+> >>         Link partner advertised FEC modes: Not reported
+> >>         Speed: 1000Mb/s
+> >>         Duplex: Full
+> >>         Port: MII
+> >>         PHYAD: 3
+> >>         Transceiver: internal
+> >>         Auto-negotiation: on
+> >>         Current message level: 0x00000036 (54)
+> >>                                probe link ifdown ifup
+> >>         Link detected: yes
+> >>
+> >> The regs value read from mdio are:
+> >> reg 9 = 0
+> >> reg a = 0x800
+> >>
+> >> I had talk to the FAE of rtl8211f, they said if negotiation failed with 1000Mb/s,
+> >> rtl8211f will change reg 9 to 0, than try to negotiation with 100Mb/s.
+> >>
+> >> The problem happened as:
+> >> ifconfig eth5 up -> phy_start -> phy_start_aneg -> phy_modify_changed(MII_CTRL1000)
+> >> (this time both A and B, reg 9 = 0x200) -> wait for link up -> (B: reg 9 changed to 0)
+> >> -> link up.
+> > 
+> > This sounds like downshift, but not correctly working. 1Gbps requires
+> > that 4 pairs in the cable work. If a 1Gbps link is negotiated, but
+> > then does not establish because one of the pairs is broken, some PHYs
+> > will try to 'downshift'. They drop down to 100Mbps, which only
+> > requires two pairs of the cable to work. To do this, the PHY should
+> > change what it is advertising, to no longer advertise 1G, just 100M
+> > and 10M. The link partner should then try to use 100Mbps and
+> > hopefully, a link is established.
+> > 
+> > Looking at the ethtool, you can see device A is reporting device B is
+> > only advertising upto 100Mbps. Yet it is locally using 1G. That is
+> > broken. So i would say device A has the problem. Are both PHYs
+> > rtl8211f?
+> 
+> Both PHY is rtl8211f. I think Device B is broken. Device B advertising
+> it supported 1G, but actually, in phy, downshift to 100M, so Device B
+> link up with 1G in driver side, but actually 100M in phy.
 
->>>>> On Tue, 12 May 2020 15:13:18 -0700, Andrii Nakryiko  wrote:
+You have to be careful with the output of ethtool. Downshift is not
+part of 802.3. There i no standard register to indicate it has
+happened. Sometimes there is a vendor register. You should check the
+datasheet, and look at what other PHY drivers do for this, and
+phy_check_downshift().
 
- > On Tue, May 12, 2020 at 1:16 PM Yauheni Kaliuta
- > <yauheni.kaliuta@redhat.com> wrote:
- >> 
- >> Hi, Andrii!
- >> 
- >> The patch blanks TEST_GEN_FILES which was used by install target
- >> (lib.mk) to install test progs. How is it supposed to work?
- >> 
+> > Are you 100% sure your cable and board layout is good? Is it
+> > trying downshift because something is broken? Fix the
+> > cable/connector and the
 
- > I actually never used install for selftests, just make and
- > then run individual test binaries, which explains why this
- > doesn't work :)
+> Will check the layout with hardware engineer. This happened with a low
+> probability. When this happened, another down/up operation or restart
+> autoneg will solved.
+ 
+> > reason to downshift goes away. But it does not solve the problem if a
+> > customer has a broken cable. So you might want to deliberately cut a
+> > pair in the cable so it becomes 100% reproducable and try to debug it
+> > further. See if you can find out why auto-neg is not working
+> > correctly.
+> 
+> So, your opinion is, maybe we should checkout whether the hardware layout
+> or cable have problem?
 
-Ok :)  Thanks for the clarification.
+Well, there are a couple of issues here.
 
- >> That fixes it for me btw:
- >> 
- >> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
- >> index 8f25966b500b..1f878dcd2bf6 100644
- >> --- a/tools/testing/selftests/bpf/Makefile
- >> +++ b/tools/testing/selftests/bpf/Makefile
- >> @@ -265,6 +265,7 @@ TRUNNER_BPF_OBJS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.o, $$(TRUNNER_BPF_SRCS)
- >> TRUNNER_BPF_SKELS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.skel.h,      \
- >> $$(filter-out $(SKEL_BLACKLIST),       \
- >> $$(TRUNNER_BPF_SRCS)))
- >> +TEST_GEN_FILES += $$(TRUNNER_BPF_OBJS)
+It could be a hardware problem. Best case, it is the cable. But if you
+can reproduce it with other boards, it is a board design issue, which
+you might want to get fixed. If it happens for you in the lab, it will
+probably happen out in the field.
 
- > Yeah, this makes sense, these files will be copied over along
- > the compiled test_xxx binaries. Do you mind submitting a
- > patch?
+You should also consider what you want to happen with a cable that
+really is broken. It would be nice if downshift worked. Slower
+networking is better than no networking. Unless you have a requirement
+that 100Mbps is too slow for your use case. So you might want to debug
+what is going wrong when downshift happens.
 
-No, sure, I'll do.
+> By the way, do we have some mechanism to solve this downshift in software
+> side? If the PHY advertising downshift to 100M, but software still have
+> advertising with 1G(just like Device B), it will always have a broken network.
 
+You might get some ideas from phy_check_downshift(). A lot will
+depended on what information you can get from the PHY.
 
--- 
-WBR,
-Yauheni Kaliuta
-
+	 Andrew
