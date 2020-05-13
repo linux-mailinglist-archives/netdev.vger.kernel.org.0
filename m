@@ -2,128 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6411D1A3E
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:02:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB951D1A7D
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:03:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389551AbgEMQB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 12:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389537AbgEMQBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 12:01:24 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EE8C061A0C;
-        Wed, 13 May 2020 09:01:23 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id j2so187312qtr.12;
-        Wed, 13 May 2020 09:01:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gDEGyQnYOplCe+b2bduCD1NxRiNW5Fcu+RuIWNa1OVw=;
-        b=IXyjPELcQyD5gdttArcdwU7+1LQqG6/ZBgarATcp7ASUXUIw60bmvRmFlawI8eROc1
-         ID95lZbsfppvCnFJ/whBX/fUV21HjSdb1ffl38pin+rX6Aov45DhRq8DOBOdsEF425p2
-         ms5vUVofiC4bJtuWMTsRQC08fCTxEqTbBUbRR+W84QKvtxP2FMy1Fl0Rqmvf0Pc2YKlC
-         eK5y8Jcj4r969++jesYOjSfDN85ruV/9pFPQZvJs9ipGmpMwyy9jHdIC61Krod6zu/jK
-         pTmZMSYV8hvUfD44+cCKIpIWpV7aMeF3wtNjbGfPHqbV5fgT5AX+TnSSsa/81Si0JulZ
-         lmuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gDEGyQnYOplCe+b2bduCD1NxRiNW5Fcu+RuIWNa1OVw=;
-        b=uLag9w6XijBequS5JTfk3gf/cIxZQhqr9qLXPJE4PvuwZE/aY/LUieE6K9KgGh6Q/F
-         rbs57APFvqIG5kRwY8Ht9rws3NlXQ6+NRSoGGV+FweLhE++pV4J2+Ezeb4VkQF3qKa+Y
-         Dv68x9KtJU3T/XHxeSJf0TYMdzjMXu8w75BjAo2tKoFZNmxW/D/XGbTe7uQpC62oz8BY
-         gTqT22THvEI2PbwvwtK0Rg1c/Sp//IYz/xZbZ4BWZlCkRO7P2bf8D2MU2ibas/iFBCZR
-         D+NQCD/V6GXevEpCIiFMXdQdfTrE45W/BQM+RYddfHVjIIeWZ/pxlDy73pxkW/gw+Mzb
-         wTkQ==
-X-Gm-Message-State: AGi0PubG4hYv8qz6p/7aqXYmQ3MDX41PP3e5MxmH7hXrzb9k5MhQCoDQ
-        lZx0JzlyA142RxiNE+A5rGQ=
-X-Google-Smtp-Source: APiQypLEa5DbO43gtfzf8xyX7id6nt1AixGK016BmPhbJ+nK7lrYw/rkTIrTyRfLg1cXu5uVimMK0w==
-X-Received: by 2002:ac8:5311:: with SMTP id t17mr16856713qtn.42.1589385682534;
-        Wed, 13 May 2020 09:01:22 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:f4e9:6bc3:5a0:7baf:1a14])
-        by smtp.gmail.com with ESMTPSA id y140sm156177qkb.127.2020.05.13.09.01.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2020 09:01:21 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 6E656C08DA; Wed, 13 May 2020 13:01:16 -0300 (-03)
-Date:   Wed, 13 May 2020 13:01:16 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Jonas Falkevik <jonas.falkevik@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xin Long <lucien.xin@gmail.com>
-Subject: Re: [PATCH] sctp: check assoc before SCTP_ADDR_{MADE_PRIM,ADDED}
- event
-Message-ID: <20200513160116.GA2491@localhost.localdomain>
-References: <CABUN9aCXZBTdYHSK5oSVX-HAA1wTWmyBW_ked_ydsCjsV-Ckaw@mail.gmail.com>
+        id S2387632AbgEMQDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 12:03:36 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:38598 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728354AbgEMQDg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 12:03:36 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1589385815; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=kEBIs/oaNin2Z9K6D7y/7Hpeud0pz7SvZSJBK6qoAtA=;
+ b=R3sWvyo8RmUpUIPislRLS/aTRIjfGmtEOygk+V5qSIrFmN1dqDWVgyM4KJLgyQy28vbjeSGh
+ NhyQSvbP5AjPukqqCpXG3p39tc4zh2mf/Sa3aC4IldxShE90v9o43aWr+s7k4tee65q6hKFF
+ EsMLmKz9AvhkvxwoSeL1tC4rqVE=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ebc1a4a.7f67db884bc8-smtp-out-n04;
+ Wed, 13 May 2020 16:03:22 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 99D04C44788; Wed, 13 May 2020 16:03:22 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 64BE4C433BA;
+        Wed, 13 May 2020 16:03:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 64BE4C433BA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABUN9aCXZBTdYHSK5oSVX-HAA1wTWmyBW_ked_ydsCjsV-Ckaw@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] wcn36xx: Replace zero-length array with flexible-array
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200507151758.GA4962@embeddedor>
+References: <20200507151758.GA4962@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200513160322.99D04C44788@smtp.codeaurora.org>
+Date:   Wed, 13 May 2020 16:03:22 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 04:52:16PM +0200, Jonas Falkevik wrote:
-> Do not generate SCTP_ADDR_{MADE_PRIM,ADDED} events for SCTP_FUTURE_ASSOC assocs.
+"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
-How did you get them?
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
+> 
+> struct foo {
+>         int stuff;
+>         struct boo array[];
+> };
+> 
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertently introduced[3] to the codebase from now on.
+> 
+> Also, notice that, dynamic memory allocations won't be affected by
+> this change:
+> 
+> "Flexible array members have incomplete type, and so the sizeof operator
+> may not be applied. As a quirk of the original implementation of
+> zero-length arrays, sizeof evaluates to zero."[1]
+> 
+> sizeof(flexible-array-member) triggers a warning because flexible array
+> members have incomplete type[1]. There are some instances of code in
+> which the sizeof operator is being incorrectly/erroneously applied to
+> zero-length arrays and the result is zero. Such instances may be hiding
+> some bugs. So, this work (flexible-array member conversions) will also
+> help to get completely rid of those sorts of issues.
+> 
+> This issue was found with the help of Coccinelle.
+> 
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-I'm thinking you're fixing a side-effect of another issue here. For
-example, in sctp_assoc_update(), it first calls sctp_assoc_add_peer()
-to only then call sctp_assoc_set_id(), which would generate the event
-you might have seen. In this case, it should be allocating IDR before,
-so that the event can be sent with the right assoc_id already.
+Patch applied to ath-next branch of ath.git, thanks.
 
-> 
-> These events are described in rfc6458#section-6.1
-> SCTP_PEER_ADDR_CHANGE:
-> This tag indicates that an address that is
-> part of an existing association has experienced a change of
-> state (e.g., a failure or return to service of the reachability
-> of an endpoint via a specific transport address).
-> 
-> Signed-off-by: Jonas Falkevik <jonas.falkevik@gmail.com>
-> ---
->  net/sctp/associola.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-> index 437079a4883d..0c5dd295f9b8 100644
-> --- a/net/sctp/associola.c
-> +++ b/net/sctp/associola.c
-> @@ -432,8 +432,10 @@ void sctp_assoc_set_primary(struct sctp_association *asoc,
->          changeover = 1 ;
-> 
->      asoc->peer.primary_path = transport;
-> -    sctp_ulpevent_nofity_peer_addr_change(transport,
-> -                          SCTP_ADDR_MADE_PRIM, 0);
-> +    if (sctp_assoc2id(asoc) != SCTP_FUTURE_ASSOC)
-> +        sctp_ulpevent_nofity_peer_addr_change(transport,
-> +                              SCTP_ADDR_MADE_PRIM,
-> +                              0);
-> 
->      /* Set a default msg_name for events. */
->      memcpy(&asoc->peer.primary_addr, &transport->ipaddr,
-> @@ -714,7 +716,10 @@ struct sctp_transport *sctp_assoc_add_peer(struct
-> sctp_association *asoc,
->      list_add_tail_rcu(&peer->transports, &asoc->peer.transport_addr_list);
->      asoc->peer.transport_count++;
-> 
-> -    sctp_ulpevent_nofity_peer_addr_change(peer, SCTP_ADDR_ADDED, 0);
-> +    if (sctp_assoc2id(asoc) != SCTP_FUTURE_ASSOC)
-> +        sctp_ulpevent_nofity_peer_addr_change(peer,
-> +                              SCTP_ADDR_ADDED,
-> +                              0);
-> 
->      /* If we do not yet have a primary path, set one.  */
->      if (!asoc->peer.primary_path) {
-> --
-> 2.25.3
+ec431188b419 wcn36xx: Replace zero-length array with flexible-array
+
+-- 
+https://patchwork.kernel.org/patch/11534309/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
