@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B6DB1D0435
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:16:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 467481D043D
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731915AbgEMBQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 21:16:29 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:56812 "EHLO huawei.com"
+        id S1731975AbgEMBSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 21:18:53 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:49072 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728131AbgEMBQ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 21:16:29 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 78BC3C26F9F57F05C158;
-        Wed, 13 May 2020 09:16:26 +0800 (CST)
-Received: from huawei.com (10.67.174.156) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Wed, 13 May 2020
- 09:16:18 +0800
+        id S1728131AbgEMBSx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 21:18:53 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id CEC732CC98540DDD5EB9;
+        Wed, 13 May 2020 09:18:50 +0800 (CST)
+Received: from huawei.com (10.67.174.156) by DGGEMS405-HUB.china.huawei.com
+ (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Wed, 13 May 2020
+ 09:18:41 +0800
 From:   ChenTao <chentao107@huawei.com>
 To:     <mark@fasheh.com>, <herton@canonical.com>,
         <htl10@users.sourceforge.net>, <Larry.Finger@lwfinger.net>,
@@ -25,8 +25,8 @@ CC:     <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <chentao107@huawei.com>
 Subject: [PATCH -next v2] rtl8187: Remove unused variable rtl8225z2_tx_power_ofdm
-Date:   Wed, 13 May 2020 09:15:29 +0800
-Message-ID: <20200513011529.27966-1-chentao107@huawei.com>
+Date:   Wed, 13 May 2020 09:17:54 +0800
+Message-ID: <20200513011754.28432-1-chentao107@huawei.com>
 X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
@@ -49,6 +49,9 @@ Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: ChenTao <chentao107@huawei.com>
 ---
+v1->v2:
+- change the subject
+
  drivers/net/wireless/realtek/rtl818x/rtl8187/rtl8225.c | 4 ----
  1 file changed, 4 deletions(-)
 
