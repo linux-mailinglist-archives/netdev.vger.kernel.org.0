@@ -2,119 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A24951D04BD
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 04:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D113B1D04D2
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 04:21:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728575AbgEMCTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 22:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
+        id S1728533AbgEMCVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 22:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728351AbgEMCTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 22:19:35 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311B9C061A0F
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 19:19:35 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id r10so6591606pgv.8
-        for <netdev@vger.kernel.org>; Tue, 12 May 2020 19:19:35 -0700 (PDT)
+        with ESMTP id S1726885AbgEMCVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 22:21:49 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65AFAC061A0C;
+        Tue, 12 May 2020 19:21:49 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id c64so15877109qkf.12;
+        Tue, 12 May 2020 19:21:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JyYHudIiC7MnJBODonJVqQ91dxHR5J0pzH8SU9f0bj8=;
-        b=J94rDlgf2ETWeHBGBa6Mzk/RjSmWqelmJGWWTOOLyacPauLkYP16nyLlRaTiog1bnq
-         SVDHh5riQdQBhsvMFtJvhhQi7/3kAT/0Gac5K++SCQ3ecyoiJ53KwvMMiqcyAq9sDbH6
-         m2pN/ioRUueIVVP8/hoeuL4whI76fKZ5ihu8Q=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GGhhasXuuhbZjHtgDHKIzfraEsH+O3PDW7OXcZoDnTg=;
+        b=ljrH8A9jIhOz1bLzUXsd4W/0wzUcVOq7F66qXSqMsIz7LCMRUnWeIkJLbQ6FwolPtN
+         d0HDeiJ1aITAaRZG2HoExZkhsZ7ivor5BuZlleh8DY7Z7R+T2kzdY+bZ+ZaOciEk7HRt
+         HOGV3IIK3BfG2dwXq4htDjuiHhPcNV4HPI7VxM2DIWelLCBnkJInihhUMXWXZlpL1Ekk
+         3IJXp4HW7dTqIJNuYNkEyjEKklU98PsaQHEn8cw7Hev00thiSSRCaknX/qseY1+/hEqi
+         Tgxl03vLRjxgRtQ1xwaKae3amlcgo6dJcNNcTGX+jRUIqlL0mb9aipcU3FVTvFjVK0li
+         P0iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JyYHudIiC7MnJBODonJVqQ91dxHR5J0pzH8SU9f0bj8=;
-        b=ME2o9Hf8Yk+nZG5vfyyCPx22dSFT3VzrqssJCVpoLPEv+eciKamIshQHYSRz3fKSPa
-         t6E8eQh8/8DqZXY5jAl8rzk+YVWmSDxiNuAKADrJTM6tlHspZSMoLLmmP5nbfU8LunZg
-         gyp19Lbp7kJsLLX7S2Olhh7EG5HkLDItaiUaUlj/GscQh/rQwObEklvWTZH9fA/VBy4P
-         rdLvaY+Fe/Ml4MtFxYkvG/vCaR8GLcSuinDjLHyN7qvOUcC0fB2FY/3umWaoaixv1IDX
-         zlDRTe3NpNmMyoRaixZOkAV+63PImiRCaC92jxEb7tVeNBry6TYX408JfNGQ/ipiNglU
-         nwZQ==
-X-Gm-Message-State: AGi0PuYINaqBxgG1DHtJnBKOGQKu/PzLigumvCZtCsMX8ePDk3Zfzlzc
-        gbTM+sMpX7z5V7+AhW9KUMDLUg==
-X-Google-Smtp-Source: APiQypJBjsPJieEQPi1eVDayvEQaLzZJy5jHtU+4a/YMAjymTrhR0x3e3m7eU/ylj51tZWl4SyEXQQ==
-X-Received: by 2002:aa7:810a:: with SMTP id b10mr22621635pfi.22.1589336374733;
-        Tue, 12 May 2020 19:19:34 -0700 (PDT)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id w2sm14170600pja.53.2020.05.12.19.19.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 19:19:34 -0700 (PDT)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 2/3] Bluetooth: Add hook for driver to prevent wake from suspend
-Date:   Tue, 12 May 2020 19:19:26 -0700
-Message-Id: <20200512191838.2.I797e2588abe0319e571fd440ba1a75d786e69c1b@changeid>
-X-Mailer: git-send-email 2.26.2.645.ge9eca65c58-goog
-In-Reply-To: <20200513021927.115700-1-abhishekpandit@chromium.org>
-References: <20200513021927.115700-1-abhishekpandit@chromium.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GGhhasXuuhbZjHtgDHKIzfraEsH+O3PDW7OXcZoDnTg=;
+        b=jfZYpuSX86/ycpjmSBhHoB2T/EpJpNl2e7ooLOsr5EkhKj3yilcZXznMb5ZbhXNq+H
+         LZ5rcZRyyQK5vQx2h+M3CT3cQFxfFh6SstVAU2/4n/XX4I0KqC7Lyvxw0u+ZAVal1iTM
+         eUfgrnz/xoS8HLOlvo8uFrmaDpifvGA2YJyEzVX/hWzffGYs6iEPFr3qTe/UTrhfYWTY
+         DrypL+wf5KsXi9TtzSR7vHX4Hz8sCjgDGMl4MIDFZXsG3gBqJpIbPrR9IKfiLajdG9Ky
+         pfh2i6hkoQpBMWgNorhNWeq1mGO/GpuFrAhj5PLFNgffMSH/82Z2kyLo4ppnu0DKFNLJ
+         9tsA==
+X-Gm-Message-State: AGi0PubgZAfEwhTti4ID5Oqrc+z4UTuXIurumgnUyJqrGcqJKkasxUnX
+        h/GsA9ICaMs+g07jJiEG5VzA2KAF
+X-Google-Smtp-Source: APiQypKu8v/2I7/OWB4sgxAbXpPmJJqNhaNw8iT27Qit56iaxZo5BPkP/W1EOP1fqwvwAbIEAWr7eg==
+X-Received: by 2002:a37:8302:: with SMTP id f2mr23347571qkd.220.1589336507479;
+        Tue, 12 May 2020 19:21:47 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:4082:2138:4ed8:3e6? ([2601:282:803:7700:4082:2138:4ed8:3e6])
+        by smtp.googlemail.com with ESMTPSA id y23sm14321189qta.37.2020.05.12.19.21.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 May 2020 19:21:46 -0700 (PDT)
+Subject: Re: [v5,iproute2-next 1/2] iproute2-next:tc:action: add a gate
+ control action
+To:     Po Liu <Po.Liu@nxp.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     vinicius.gomes@intel.com, stephen@networkplumber.org,
+        dcaratti@redhat.com, davem@davemloft.net, vlad@buslov.dev,
+        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
+        alexandru.marginean@nxp.com
+References: <20200506084020.18106-2-Po.Liu@nxp.com>
+ <20200508070247.6084-1-Po.Liu@nxp.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5b3606fc-6903-da8b-94c6-b93eac1308f7@gmail.com>
+Date:   Tue, 12 May 2020 20:21:44 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200508070247.6084-1-Po.Liu@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let drivers have a hook to disable configuring scanning during suspend.
-Drivers should use the device_may_wakeup function call to determine
-whether hci should be configured for wakeup.
+On 5/8/20 1:02 AM, Po Liu wrote:
+> Introduce a ingress frame gate control flow action.
+> Tc gate action does the work like this:
+> Assume there is a gate allow specified ingress frames can pass at
+> specific time slot, and also drop at specific time slot. Tc filter
+> chooses the ingress frames, and tc gate action would specify what slot
+> does these frames can be passed to device and what time slot would be
+> dropped.
+> Tc gate action would provide an entry list to tell how much time gate
+> keep open and how much time gate keep state close. Gate action also
+> assign a start time to tell when the entry list start. Then driver would
+> repeat the gate entry list cyclically.
+> For the software simulation, gate action require the user assign a time
+> clock type.
+> 
+> Below is the setting example in user space. Tc filter a stream source ip
+> address is 192.168.0.20 and gate action own two time slots. One is last
+> 200ms gate open let frame pass another is last 100ms gate close let
+> frames dropped.
+> 
+>  # tc qdisc add dev eth0 ingress
+>  # tc filter add dev eth0 parent ffff: protocol ip \
+> 
+>             flower src_ip 192.168.0.20 \
+>             action gate index 2 clockid CLOCK_TAI \
+>             sched-entry open 200000000ns -1 8000000b \
+>             sched-entry close 100000000ns
+> 
+>  # tc chain del dev eth0 ingress chain 0
+> 
+> "sched-entry" follow the name taprio style. Gate state is
+> "open"/"close". Follow the period nanosecond. Then next -1 is internal
+> priority value means which ingress queue should put to. "-1" means
+> wildcard. The last value optional specifies the maximum number of
+> MSDU octets that are permitted to pass the gate during the specified
+> time interval, the overlimit frames would be dropped.
+> 
+> Below example shows filtering a stream with destination mac address is
+> 10:00:80:00:00:00 and ip type is ICMP, follow the action gate. The gate
+> action would run with one close time slot which means always keep close.
+> The time cycle is total 200000000ns. The base-time would calculate by:
+> 
+>      1357000000000 + (N + 1) * cycletime
+> 
+> When the total value is the future time, it will be the start time.
+> The cycletime here would be 200000000ns for this case.
+> 
+>  #tc filter add dev eth0 parent ffff:  protocol ip \
+>            flower skip_hw ip_proto icmp dst_mac 10:00:80:00:00:00 \
+>            action gate index 12 base-time 1357000000000ns \
+>            sched-entry CLOSE 200000000ns \
+>            clockid CLOCK_TAI
+> 
+> Signed-off-by: Po Liu <Po.Liu@nxp.com>
+> ---
+>
 
-For example, an implementation for btusb may look like the following:
-
-  bool btusb_prevent_wake(struct hci_dev *hdev)
-  {
-        struct btusb_data *data = hci_get_drvdata(hdev);
-        return !device_may_wakeup(&data->udev->dev);
-  }
-
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
----
-
- include/net/bluetooth/hci_core.h | 1 +
- net/bluetooth/hci_core.c         | 6 ++++--
- 2 files changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 869ee2b30a4c1..5dcf85f186c6c 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -503,6 +503,7 @@ struct hci_dev {
- 	int (*set_diag)(struct hci_dev *hdev, bool enable);
- 	int (*set_bdaddr)(struct hci_dev *hdev, const bdaddr_t *bdaddr);
- 	void (*cmd_timeout)(struct hci_dev *hdev);
-+	bool (*prevent_wake)(struct hci_dev *hdev);
- };
- 
- #define HCI_PHY_HANDLE(handle)	(handle & 0xff)
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index de1f4e72ec065..dbe2d79f233fb 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3350,8 +3350,10 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
- 		 */
- 		ret = hci_change_suspend_state(hdev, BT_SUSPEND_DISCONNECT);
- 
--		/* Only configure whitelist if disconnect succeeded */
--		if (!ret)
-+		/* Only configure whitelist if disconnect succeeded and wake
-+		 * isn't being prevented.
-+		 */
-+		if (!ret && !(hdev->prevent_wake && hdev->prevent_wake(hdev)))
- 			ret = hci_change_suspend_state(hdev,
- 						BT_SUSPEND_CONFIGURE_WAKE);
- 	} else if (action == PM_POST_SUSPEND) {
--- 
-2.26.2.645.ge9eca65c58-goog
+applied to iproute2-next. Thanks,
 
