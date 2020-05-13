@@ -2,221 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58AF31D2118
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 23:32:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F181D2131
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 23:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729263AbgEMVcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 17:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        id S1729469AbgEMVgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 17:36:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728711AbgEMVce (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 17:32:34 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32F5C061A0C;
-        Wed, 13 May 2020 14:32:34 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id h26so1146733qtu.8;
-        Wed, 13 May 2020 14:32:34 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729411AbgEMVgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 17:36:33 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA02C061A0C;
+        Wed, 13 May 2020 14:36:33 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id t11so328782pgg.2;
+        Wed, 13 May 2020 14:36:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=A26fGJ89Px9TKT5FfDQDlph21JGLwE66ksaS/Q/F8qc=;
-        b=OJhAG9BWcRTQOcesGOTjFYU1A4jllSMmBriAP4GeYXPeOgdqt0FSXLpHgZ1FWZLT9h
-         ZrWqSF93q7aakC1EeMrchHZ5861vZgM002IlfxbHhkKlVtnxDoctsG0Gferf6NlXqGSj
-         DYOLFbi3jlTYkWXAVSwpel0B+9fPkTYO1cgdmFgBZAFzzg9hXYbBPV5BhCWT/eBSWF1t
-         AkpeLLUS2Tp486soxduAQhlfSrjYe0pxgO1ctU5ItmhBfkI6Ja3+UDgQL2od/1vW0Z9o
-         B39JH/rr1zfg4umpOs+7ZEzn1szScpdJDc25SbeIBocFpIL4qfdCtr01AbGhLe4LsYML
-         jpBA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VpoOJn6i4aDVNgvde4W3X1iXzGR+JdKQ0KKW5fvKRLM=;
+        b=NbjpkCzzP0ogAOfWyMX34L9+J9RSyWacyH0Bru23JzuNUIbJNWckgPEZb8vjM2easr
+         AyNN/1V4LJLm2rdw3Qdd4skiAG/dBF5dZaaG7c6W0zulNcnm5uRd4b+/aDc+hsaRPo6F
+         c/nVTvuGyeq1IbtkDv10e17DA9sTnJKC3rv050qzxO7xvpH1XlIlsbMZ4PNPZHM0IryU
+         NRuZDzcfsigT2VPoIis8KHg5Khi+woQN3fSqXwMUzEofEHiXW+QsKmvxq3UpDzWi0qwB
+         zvH8fzAL4PB3KLh/UOAAksU268sXIEt3JlsiRDOft4kpJoE3C28Xr9fTT9hAW2cngA/n
+         jpsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=A26fGJ89Px9TKT5FfDQDlph21JGLwE66ksaS/Q/F8qc=;
-        b=ul3gEAoPowPeemflbqfeFqQDMrJVk2RdUHvhQHdSd4HHUg4xhmchJVgmls8qQEVeI3
-         O6tMlgEeyIUXNRwQCF7nvU3SIo1UfJ0s/EX9tQUcGFdVM6j95kV3HtmqdmlH8i/WV9/s
-         v4B4GKGLEhoS4Iw7dHD+H/+tBLmDMaa9taZ6s5BarsphBuvLpTtVMJR4vQcPuw8R/mxn
-         lHpAEiwtmi2FbtTLxbYCzz6YxtSbNhNVB3VP4b51KKUH3gUMnUaSI509T+uh7+BbwFh8
-         7bjQzuAPbfhHXN7lmUAkls3ftFIpSehYBK6pJuBN9Ah2+GS/NYAX4pOe/K5RIzrwn7Kj
-         uwjw==
-X-Gm-Message-State: AOAM530zTjUmkcIbCe3SsQ2l/z+Kl6n1E9BsaNmtXSAS7SF1UN9rm0yc
-        d5342SOd4XT0WzQczgfkBMk=
-X-Google-Smtp-Source: ABdhPJz0LvTgZRILNLUUTLRj+osPwoofipFZkbm70QG25R3TUD61efFy8LIYbojG2TvIliuJ4Iyc+Q==
-X-Received: by 2002:ac8:4890:: with SMTP id i16mr1203657qtq.299.1589405553665;
-        Wed, 13 May 2020 14:32:33 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:f4e9:6bc3:5a0:7baf:1a14])
-        by smtp.gmail.com with ESMTPSA id d196sm922814qkg.16.2020.05.13.14.32.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2020 14:32:32 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 383EBC08DA; Wed, 13 May 2020 18:32:30 -0300 (-03)
-Date:   Wed, 13 May 2020 18:32:30 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Jonas Falkevik <jonas.falkevik@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xin Long <lucien.xin@gmail.com>
-Subject: Re: [PATCH] sctp: check assoc before SCTP_ADDR_{MADE_PRIM,ADDED}
- event
-Message-ID: <20200513213230.GE2491@localhost.localdomain>
-References: <CABUN9aCXZBTdYHSK5oSVX-HAA1wTWmyBW_ked_ydsCjsV-Ckaw@mail.gmail.com>
- <20200513160116.GA2491@localhost.localdomain>
- <CABUN9aCuoA+CXLujUxXyiKWQPkwq9_eOXNqOR=MK7dPY++Fxng@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VpoOJn6i4aDVNgvde4W3X1iXzGR+JdKQ0KKW5fvKRLM=;
+        b=AH8R3NYOiXVf9KodpceSWMvYBhfgLWDxzvlmVjVZbWncORjRL0g+LQOZpAux/83ZNM
+         B8mQBJKLglFE+Gcy8Bbd1MOPRSnR1iiM3JmalB5qamq3ieFM0snNryQW68d0BSD5RpvO
+         iNsjMH7mkH3V6wMGesqNbe1EJnZgKlVA5FkperVY0jBI+TJHcNg2BZParSZLa1g6slbC
+         jRKKGebQbdt3XDTIFuQ8SxX4qJ40V+RkfmtLHyqCHRj0Rtp8n0josxpvTv/lWX8YxXXF
+         HrIW5AVHbXi/k98zIiMtwPWZV8Z6YYp7sMQ00KTKoPksPhz7Mrg/0deZ5N0rSQw+mbPE
+         aFxA==
+X-Gm-Message-State: AOAM532Ctk2RrJbpe8nwsfBQO2iSQ3pmkQBbixtiV+ByygRWAoX1jadd
+        j1O2/u87YeQiXGurGyPf1K+WIoyj
+X-Google-Smtp-Source: ABdhPJywhvQAU47EyT10Pm5UNvQu0HhjDddVgU8TUwiNxfEQ9l6J2cgIB01RpFPiWGUQ3gGmRdOKiA==
+X-Received: by 2002:a63:c34a:: with SMTP id e10mr1231638pgd.132.1589405792528;
+        Wed, 13 May 2020 14:36:32 -0700 (PDT)
+Received: from [10.230.191.242] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 62sm420679pfu.181.2020.05.13.14.36.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 14:36:32 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/4] net: ethernet: introduce phy_set_pause
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1589243050-18217-1-git-send-email-opendmb@gmail.com>
+ <1589243050-18217-4-git-send-email-opendmb@gmail.com>
+ <20200513094239.GG1551@shell.armlinux.org.uk>
+From:   Doug Berger <opendmb@gmail.com>
+Message-ID: <7cd0e092-0896-4dc5-66a9-7213e92b3060@gmail.com>
+Date:   Wed, 13 May 2020 14:39:21 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABUN9aCuoA+CXLujUxXyiKWQPkwq9_eOXNqOR=MK7dPY++Fxng@mail.gmail.com>
+In-Reply-To: <20200513094239.GG1551@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 10:11:05PM +0200, Jonas Falkevik wrote:
-> On Wed, May 13, 2020 at 6:01 PM Marcelo Ricardo Leitner
-> <marcelo.leitner@gmail.com> wrote:
-> >
-> > On Wed, May 13, 2020 at 04:52:16PM +0200, Jonas Falkevik wrote:
-> > > Do not generate SCTP_ADDR_{MADE_PRIM,ADDED} events for SCTP_FUTURE_ASSOC assocs.
-> >
-> > How did you get them?
-> >
+On 5/13/2020 2:42 AM, Russell King - ARM Linux admin wrote:
+> On Mon, May 11, 2020 at 05:24:09PM -0700, Doug Berger wrote:
+>> This commit introduces the phy_set_pause function to the phylib as
+>> a helper to support the set_pauseparam ethtool method.
+>>
+>> It is hoped that the new behavior introduced by this function will
+>> be widely embraced and the phy_set_sym_pause and phy_set_asym_pause
+>> functions can be deprecated. Those functions are retained for all
+>> existing users and for any desenting opinions on my interpretation
+>> of the functionality.
+>>
+>> Signed-off-by: Doug Berger <opendmb@gmail.com>
+>> ---
+>>  drivers/net/phy/phy_device.c | 31 +++++++++++++++++++++++++++++++
+>>  include/linux/phy.h          |  1 +
+>>  2 files changed, 32 insertions(+)
+>>
+>> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+>> index 48ab9efa0166..e6dafb3c3e5f 100644
+>> --- a/drivers/net/phy/phy_device.c
+>> +++ b/drivers/net/phy/phy_device.c
+>> @@ -2614,6 +2614,37 @@ void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx)
+>>  EXPORT_SYMBOL(phy_set_asym_pause);
+>>  
+>>  /**
+>> + * phy_set_pause - Configure Pause and Asym Pause with autoneg
+>> + * @phydev: target phy_device struct
+>> + * @rx: Receiver Pause is supported
+>> + * @tx: Transmit Pause is supported
+>> + * @autoneg: Auto neg should be used
+>> + *
+>> + * Description: Configure advertised Pause support depending on if
+>> + * receiver pause and pause auto neg is supported. Generally called
+>> + * from the set_pauseparam ethtool_ops.
+>> + *
+>> + * Note: Since pause is really a MAC level function it should be
+>> + * notified via adjust_link to update its pause functions.
+>> + */
+>> +void phy_set_pause(struct phy_device *phydev, bool rx, bool tx, bool autoneg)
+>> +{
+>> +	linkmode_set_pause(phydev->advertising, tx, rx, autoneg);
+>> +
+>> +	/* Reset the state of an already running link to force a new
+>> +	 * link up event when advertising doesn't change or when PHY
+>> +	 * autoneg is disabled.
+>> +	 */
+>> +	mutex_lock(&phydev->lock);
+>> +	if (phydev->state == PHY_RUNNING)
+>> +		phydev->state = PHY_UP;
+>> +	mutex_unlock(&phydev->lock);
 > 
-> I think one case is when receiving INIT chunk in sctp_sf_do_5_1B_init().
-> Here a closed association is created, sctp_make_temp_assoc().
-> Which is later used when calling sctp_process_init().
-> In sctp_process_init() one of the first things are to call
-> sctp_assoc_add_peer()
-> on the closed / temp assoc.
-> 
-> sctp_assoc_add_peer() are generating the SCTP_ADDR_ADDED event on the socket
-> for the potentially new association.
+> I wonder about this - will drivers cope with having two link-up events
+> via adjust_link without a corresponding link-down event?  What if they
+> touch registers that are only supposed to be touched while the link is
+> down?  Obviously, drivers have to opt-in to this interface, so it may
+> be okay provided we don't get wholesale changes.
+I too wonder about this. That's why I brought it up in the cover letter
+to this set. I would prefer a cleaner service interface for this kind of
+behavior for the reasons described in the cover letter, but thought this
+might be acceptable.
 
-I see, thanks. The SCTP_FUTURE_ASSOC means something different. It is
-for setting/getting socket options that will be used for new asocs. In
-this case, it is just a coincidence that asoc_id is not set (but
-initialized to 0) and SCTP_FUTURE_ASSOC is also 0. Moreso, if I didn't
-miss anything, it would block valid events, such as those from
- sctp_sf_do_5_1D_ce
-   sctp_process_init
-because sctp_process_init will only call sctp_assoc_set_id() by its
-end.
+>> +
+>> +	phy_start_aneg(phydev);
+> 
+> Should we be making that conditional on something changing and autoneg
+> being enabled, like phy_set_asym_pause() does?  There is no point
+> interrupting an established link if the advertisement didn't change.
+Again this is described in the cover letter but repeated here:
+"The third introduces the phy_set_pause() function based on the existing
+phy_set_asym_pause() implementation. One aberration here is the direct
+manipulation of the phy state machine to allow a new link up event to
+notify the MAC that the pause parameters may have changed. This is a
+convenience to simplify the MAC driver by allowing one implementation
+of the pause configuration logic to be located in its adjust_link
+callback. Otherwise, the MAC driver would need to handle configuring
+the pause parameters for an already active PHY link which would likely
+require additional synchronization logic to protect the logic from
+asynchronous changes in the PHY state.
 
-I can't see a good reason for generating any event on temp assocs. So
-I'm thinking the checks on this patch should be on whether the asoc is
-a temporary one instead. WDYT?
+The logic in phy_set_asym_pause() that looks for a change in
+advertising is not particularly helpful here since now a change from
+tx=1 rx=1 to tx=0 rx=1 no longer changes the advertising if autoneg is
+enabled so phy_start_aneg() would not be called. I took the alternate
+approach of unconditionally calling phy_start_aneg() since it
+accommodates both manual and autoneg configured links. The "aberrant"
+logic allows manually configured and autonegotiated links that don't
+change their advertised parameters to receive an adjust_link call to
+act on pause parameters that have no effect on the PHY layer.
 
-Then, considering the socket is locked, both code points should be
-allocating the IDR earlier. It's expensive, yes (point being, it could
-be avoided in case of other failures), but it should be generating
-events with the right assoc id. Are you interested in pursuing this
-fix as well?
+It seemed excessive to bring the PHY down and back up when nogotiation
+is not necessary, but that could be an alternative approach. I am
+certainly open to any suggestions on how to improve that portion of
+the code if it is controversial and a consensus can be reached."
 
+>> +}
+>> +EXPORT_SYMBOL(phy_set_pause);
+>> +
+>> +/**
+>>   * phy_validate_pause - Test if the PHY/MAC support the pause configuration
+>>   * @phydev: phy_device struct
+>>   * @pp: requested pause configuration
+>> diff --git a/include/linux/phy.h b/include/linux/phy.h
+>> index 5d8ff5428010..71e484424e68 100644
+>> --- a/include/linux/phy.h
+>> +++ b/include/linux/phy.h
+>> @@ -1403,6 +1403,7 @@ void phy_support_asym_pause(struct phy_device *phydev);
+>>  void phy_set_sym_pause(struct phy_device *phydev, bool rx, bool tx,
+>>  		       bool autoneg);
+>>  void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx);
+>> +void phy_set_pause(struct phy_device *phydev, bool rx, bool tx, bool autoneg);
+>>  bool phy_validate_pause(struct phy_device *phydev,
+>>  			struct ethtool_pauseparam *pp);
+>>  void phy_get_pause(struct phy_device *phydev, bool *tx_pause, bool *rx_pause);
+>> -- 
+>> 2.7.4
+>>
+>>
 > 
-> $ cat sctp.bpftrace
-> #!/usr/local/bin/bpftrace
-> 
-> BEGIN
-> {
->    printf("Tracing sctp_assoc_add_peer\n");
->    printf("Hit Ctrl-C to end.\n");
-> }
-> 
-> kprobe:sctp_assoc_add_peer
-> {
->    @[kstack]=count();
-> }
-> 
-> $ sudo bpftrace sctp.bpftrace
-> Attaching 2 probes...
-> Tracing sctp_assoc_add_peer
-> Hit Ctrl-C to end.
-> ^C
-> 
-> @[
->    sctp_assoc_add_peer+1
->    sctp_process_init+77
->    sctp_sf_do_5_1B_init+615
->    sctp_do_sm+132
->    sctp_endpoint_bh_rcv+256
->    sctp_rcv+2379
->    ip_protocol_deliver_rcu+393
->    ip_local_deliver_finish+68
->    ip_local_deliver+203
->    ip_rcv+156
->    __netif_receive_skb_one_core+96
->    process_backlog+164
->    net_rx_action+312
->    __softirqentry_text_start+238
->    do_softirq_own_stack+42
->    do_softirq.part.0+65
->    __local_bh_enable_ip+75
->    ip_finish_output2+415
->    ip_output+102
->    __ip_queue_xmit+364
->    sctp_packet_transmit+1814
->    sctp_outq_flush_ctrl.constprop.0+394
->    sctp_outq_flush+86
->    sctp_do_sm+3914
->    sctp_primitive_ASSOCIATE+44
->    __sctp_connect+707
->    sctp_inet_connect+98
->    __sys_connect+156
->    __x64_sys_connect+22
->    do_syscall_64+91
->    entry_SYSCALL_64_after_hwframe+68
-> ]: 1
-> ...
-> 
-> > I'm thinking you're fixing a side-effect of another issue here. For
-> > example, in sctp_assoc_update(), it first calls sctp_assoc_add_peer()
-> > to only then call sctp_assoc_set_id(), which would generate the event
-> > you might have seen. In this case, it should be allocating IDR before,
-> > so that the event can be sent with the right assoc_id already.
-> >
-> > >
-> > > These events are described in rfc6458#section-6.1
-> > > SCTP_PEER_ADDR_CHANGE:
-> > > This tag indicates that an address that is
-> > > part of an existing association has experienced a change of
-> > > state (e.g., a failure or return to service of the reachability
-> > > of an endpoint via a specific transport address).
-> > >
-> > > Signed-off-by: Jonas Falkevik <jonas.falkevik@gmail.com>
-> > > ---
-> > >  net/sctp/associola.c | 11 ++++++++---
-> > >  1 file changed, 8 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-> > > index 437079a4883d..0c5dd295f9b8 100644
-> > > --- a/net/sctp/associola.c
-> > > +++ b/net/sctp/associola.c
-> > > @@ -432,8 +432,10 @@ void sctp_assoc_set_primary(struct sctp_association *asoc,
-> > >          changeover = 1 ;
-> > >
-> > >      asoc->peer.primary_path = transport;
-> > > -    sctp_ulpevent_nofity_peer_addr_change(transport,
-> > > -                          SCTP_ADDR_MADE_PRIM, 0);
-> > > +    if (sctp_assoc2id(asoc) != SCTP_FUTURE_ASSOC)
-> > > +        sctp_ulpevent_nofity_peer_addr_change(transport,
-> > > +                              SCTP_ADDR_MADE_PRIM,
-> > > +                              0);
-> > >
-> > >      /* Set a default msg_name for events. */
-> > >      memcpy(&asoc->peer.primary_addr, &transport->ipaddr,
-> > > @@ -714,7 +716,10 @@ struct sctp_transport *sctp_assoc_add_peer(struct
-> > > sctp_association *asoc,
-> > >      list_add_tail_rcu(&peer->transports, &asoc->peer.transport_addr_list);
-> > >      asoc->peer.transport_count++;
-> > >
-> > > -    sctp_ulpevent_nofity_peer_addr_change(peer, SCTP_ADDR_ADDED, 0);
-> > > +    if (sctp_assoc2id(asoc) != SCTP_FUTURE_ASSOC)
-> > > +        sctp_ulpevent_nofity_peer_addr_change(peer,
-> > > +                              SCTP_ADDR_ADDED,
-> > > +                              0);
-> > >
-> > >      /* If we do not yet have a primary path, set one.  */
-> > >      if (!asoc->peer.primary_path) {
-> > > --
-> > > 2.25.3
+
