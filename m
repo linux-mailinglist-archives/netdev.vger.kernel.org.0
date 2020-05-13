@@ -2,101 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5505D1D042D
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FDEA1D0431
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:10:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731873AbgEMBJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 21:09:30 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:35070 "EHLO
+        id S1731954AbgEMBKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 21:10:51 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6100 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728131AbgEMBJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 21:09:29 -0400
+        by vger.kernel.org with ESMTP id S1728131AbgEMBKu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 21:10:50 -0400
 Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04D18xT1023992;
-        Tue, 12 May 2020 18:09:17 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04D18w8I023980;
+        Tue, 12 May 2020 18:10:38 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
  references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=facebook;
- bh=F+MDGLqR50spxlMpXDdmDMIiS58yh2WhKGf3PxxpvJo=;
- b=iF6SJaW2lYH5cAzHoHTES7f2RJl7lleVf87mGkIjU5bmLAbPi3V5iLObJSFez4MQjt/c
- 4FILusXhV75aGRtrFPO3vPqP6I1xGJ0zpDKS7S1UPHg5gOrrrRelZy7K/pRIlFppXZQZ
- sPEUKuvZxMaMmFqMjlWYEEQN4XXH49Dsb10= 
+ bh=8chVUxHR22Km1te/pKecLZbj2K0dFyqtXbD64ob93Gg=;
+ b=hk5QyeHaLcG/JpX971fkfrWGVnaqTBJxBuNmW/TB7DJB/m5xmdy13mGXNbgrciosD3MX
+ F8nu5eMHY0sET+oorPcOnUs9e7GBwGXlvvOJ/ft0vGKabnwoET9st9c1/FOMYjY1Liq/
+ Um7TP5nLBoiD/INjU3jrvnxVS4vThz2+Lu8= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3100x21xkb-1
+        by mx0a-00082601.pphosted.com with ESMTP id 3100x21xr9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 12 May 2020 18:09:17 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+        Tue, 12 May 2020 18:10:38 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 12 May 2020 18:09:16 -0700
+ 15.1.1847.3; Tue, 12 May 2020 18:10:37 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PhSuJMPxYOgM3/l3fiPwrXpRw60oJJUxwjfUP1MEnF9wc3w0Yd9lzOR/qBeBJLS+g6QMpkWkgB7msee731ZjDM3Jkb7aGxiYloknu/A7wb9dI75+wG1DvZm2o+Wieq7blILNC8Jj7XEnct40lqGVQJVeCtvgSGJTj95PPrfAzGEfn/CawtL67nQ88hc86C8A+bRK23lMkypCaJsSbm6Airp4svhhJlydfckCjLN4/FbjvQ0qXomNBSmAR2lQSieBk84zx/NUg+bYzOdugHtTZ9ymJAmlxcOGSLzAwfC6+ohV1ekloux0oqeaz8F4lOVeAQfIF4u2it53OHIjqz8Hsg==
+ b=ASy9/Xoe5GSvDRNFfnMMIgpMiNOUCB3fXeaQSeYw6mx9qX/zvNe8C6HwNlCbSPq7geLgHLEQyClAKUgvfaFGRc7xkCi3EV2xqCp6N4csX4Rilh2xIbIIAgWCrRI2FoSPERhb/UVHNcf9AYTWrLLz5/cYxhWtgkD6ibDOslVipGzTXULlfKgOW3kHVAUpbeqwu0sYWp4bSiCvXOpk9ika+MbtL7IFRccNHbXwS2cOnxYN9Uk9R1Cszta/Os5KA1XEK49IiA9u2Q6Rqf/kYieZgRy9yoNokIoKZwIJiTJsZBBvghK8qGRWLUO1chc6Zo2TXJs8qvpLEXcLHIBdnl9qZQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F+MDGLqR50spxlMpXDdmDMIiS58yh2WhKGf3PxxpvJo=;
- b=LZTcOAKKOPdG9eN8S8j4V1QnPip4xT7TgxobNhJNZ94GUg7KdFlVkUlTsxgybnvKcollCVRtFSKXTDNn+VpR+qX3it3l7T7EwJanGwCF1aeRwNJ3PYKPP23dTkJBRYE1tjITmtaWhMF+pAt95SloH0DjjrZTz0mDx82pxrjIXrMqXRfTuc0/sA393HuQ9MaXIY1rkzlYmA4vXMSXvSVs3U1fufSWoEcUsFh1w15RffJFIzg/22VPh0fU4F6W/fOjYnM0HbJirQfUBnoMw56TAGBJjSVPdhzQhuW/bDvbtz6jM4k5JO7MAs50km1Bv2v9QWU179NM5Alv0b/vncljGQ==
+ bh=8chVUxHR22Km1te/pKecLZbj2K0dFyqtXbD64ob93Gg=;
+ b=Ji/7Bu0iJQEraqqNc88/caMMQB+zO8lmYwo+rcqmU0kmEQpoi/0FwduIbsfIMzSKCRxAzr1G6qAKgVs79rHNYWjUtxVieVt+fvvvJoTfdr1lVfhzi+tMJnPxg8eXwAUI7X0sb0+x8Bbjt9pfM3mVsG03G3yWveONv7VniW1vOOn8UPhGFtaQAUI/EpNiSEQtuxY1dzSq/e3NfTZfvNhZHJBNhYPeRTcBuP/YFthy6CgZcidO2cqopMpZ+nY+/PxaMoJcb+hMlmV6DEut1YnTIy4MDURjZPShjZzsZh7qjnbT3mys92j7r3ul5Mlb1tbOTR58XSO6sZKVeSNnm/UqRg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F+MDGLqR50spxlMpXDdmDMIiS58yh2WhKGf3PxxpvJo=;
- b=OwBgc/zK4zYnfFlFFCCdhMHZTztS9HGUUaNsnstIaWEHw++rlGiy0qwt3nWoLodR7QpimiF0DMKbodyMNUrI2z+JytTvuVuBwHTrEJP+fQkHC9i448rBzUjivcdOgSLSBcRqrFtDdTEo4q+jksUjHYECL8FLOSmDSud5f+5eqd8=
+ bh=8chVUxHR22Km1te/pKecLZbj2K0dFyqtXbD64ob93Gg=;
+ b=E3MVjDz5fiWk147Gh5W1JHoDAFe3QZpHVfTXmN+ABvW0Er40rUDTqh5DX1BDj6MtV2XwZcDmjjIe+JCXII7S7tXh3m5WvBljXJ/S4BRAHK1iCBf92P94EnEkbs5CQZKazW9jV30wkCccysiEQFTKcoq0oUCRLEGpiCYMUF4nOiI=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2757.namprd15.prod.outlook.com (2603:10b6:a03:156::18) with
+ by BYAPR15MB2903.namprd15.prod.outlook.com (2603:10b6:a03:f5::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Wed, 13 May
- 2020 01:09:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.29; Wed, 13 May
+ 2020 01:10:34 +0000
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.2979.033; Wed, 13 May 2020
- 01:09:13 +0000
-Subject: Re: [PATCH v3 bpf-next 2/4] selftests/bpf: add benchmark runner
- infrastructure
+ 01:10:34 +0000
+Subject: Re: [PATCH v3 bpf-next 3/4] selftest/bpf: fmod_ret prog and implement
+ test_overhead as part of bench
 To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
 References: <20200512192445.2351848-1-andriin@fb.com>
- <20200512192445.2351848-3-andriin@fb.com>
+ <20200512192445.2351848-4-andriin@fb.com>
 From:   Yonghong Song <yhs@fb.com>
-Message-ID: <65f234b5-0c97-2925-f440-d43a9a9afef2@fb.com>
-Date:   Tue, 12 May 2020 18:09:11 -0700
+Message-ID: <33778f26-8381-8607-4e14-d59c6e5f320c@fb.com>
+Date:   Tue, 12 May 2020 18:10:32 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
  Gecko/20100101 Thunderbird/68.8.0
-In-Reply-To: <20200512192445.2351848-3-andriin@fb.com>
+In-Reply-To: <20200512192445.2351848-4-andriin@fb.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BY5PR16CA0001.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::14) To BYAPR15MB4088.namprd15.prod.outlook.com
+X-ClientProxiedBy: BY5PR16CA0029.namprd16.prod.outlook.com
+ (2603:10b6:a03:1a0::42) To BYAPR15MB4088.namprd15.prod.outlook.com
  (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:dfef) by BY5PR16CA0001.namprd16.prod.outlook.com (2603:10b6:a03:1a0::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Wed, 13 May 2020 01:09:12 +0000
+Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:dfef) by BY5PR16CA0029.namprd16.prod.outlook.com (2603:10b6:a03:1a0::42) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Wed, 13 May 2020 01:10:33 +0000
 X-Originating-IP: [2620:10d:c090:400::5:dfef]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5d24781d-eafa-44b2-59a6-08d7f6da3fbb
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2757:
+X-MS-Office365-Filtering-Correlation-Id: 4496d601-80c3-4025-cce5-08d7f6da705a
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2903:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB275779E6663D0055FF9C2969D3BF0@BYAPR15MB2757.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <BYAPR15MB29031EA36B53C187B5CE9E4DD3BF0@BYAPR15MB2903.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-MS-Oob-TLC-OOBClassifiers: OLM:2331;
 X-Forefront-PRVS: 0402872DA1
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rjQb54wfWkCkBDQQdef0NiyUYZMw8vtAIOU4EyV19srsF+eIpslHAJVeT6kptNMpzvAfHRMFO01HLNxj542uD0vdV1hYoFFJ36+XB7YTXWVgXk4vJVfkgVzkKK2uBmEwE2i84vzvuxMYnECjSa92jK2EBK6jPW2XFFllokkDlV0lXTGH9mkwWBcLQbu6Nk5y410cJ8+9wVZn6jDDdFd5++x5TzPYxfjPAWhXrqUpfbQp/pYxkznqpf7ThGtHcKBrwITjE6l6nlcEQjWE8Vt/4LB22jQw1o8lOtRlW9y/Na7WLxyqdtxA2EYEwViydcMsIuO7mjBLvwQruXqKWb7mGgh1+uJ5r7MOIzy64Bfx89MBk3oOXAxK1/zaqzm+0P32P5IArDVSTZAIrsU6jEA6NS3qRdLylDr0BPyE1YqinQ5HRCg0mNb03zq+wHFnGBrmPHO1+TiGpjVWjN5A3lfOYuUCgFTxm+3V7Nfty3HtR4B92qwelA8cVc83CiwXIHHCpRrBgCEubnRhIXTXSeLPzihKGo7ZuhLKGzaacvEfgU8FyVALWN2vmAmioUXJ+iTt
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(366004)(39860400002)(136003)(346002)(376002)(33430700001)(66946007)(31696002)(2906002)(33440700001)(31686004)(86362001)(2616005)(6486002)(66476007)(66556008)(5660300002)(6512007)(316002)(16526019)(8936002)(8676002)(186003)(53546011)(6506007)(478600001)(36756003)(4326008)(52116002)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: 0FGLRkS8J+wsdRrHiuq472K5wtbrLG+03c+oPh6apAeykfaVTwS2vblah41LGAmtBZGruRUoogumgpPWHGEQy5Q+BvjGMQN6urDgSrmExTuvjEDhICocZmKwj2IIM6nHLZUFTNbCsHY6Df4p3u2azhlsehqTBcRisRgUnwcKCIby37RPjbjzjOig5WHLxafl5RMkUmHBUsUFWkk6YfzlVOIHBRMX7o44/eb7E7UoRaHi4Bnqka5qVnJFPWy60YJdwUBdtDr/eR1DCkkqwh1OlDwjJuTP/sA2n9tZaU4QFVigqU77UBKlWqWn7+xPukrjCVUL0XGoQmduHex7VG57nDDtZRyhstEFjbz9fUbrXjF2Trr8aKy8pwRNTOzpBUK2zQDO+MTY/52WxO4DPta3R4Ein3j/8+bV6WKmfJaiK9qLGtK4u6CwPyRszaz/8b2xDfl/veTmC0J8Ejql42GMlFw4kC02d2PRT6TqFo1c8zO90sDJvUbZ8dWT1MFYV/0wNqL2CqnFe/TO+uZJMe4OoQ==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d24781d-eafa-44b2-59a6-08d7f6da3fbb
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2020 01:09:13.0279
+X-Microsoft-Antispam-Message-Info: UAP5QuqCxgmwT+4M6s6FD+DGWIW30Fh5Q2JoCX0yt1rlWCcYp4Yo7f38ymPoKOEbgCObU92JmabHptQeDiCAmV8plX/77MfmJSUi/qx9VjAu5EsVpH6eS+ldspxKWn7I/Q5ReWKYxh9ZIvB1O7/ab4cGdBqoLns9YffJ4duLYwZJyzU28Wli2BKz8MFsmhkgrTT8X9z8+yIK6a3Cvn7D5GyiyyiR3N+reWv4aa6CtgsUY0P+jOjWZdNMOgL6+tHSShqPh8ryAJ4WfBuf76RE6nIta74dGJxYuNqKIbIhVSIerm4g6LsKe74vf4d+sju5wfmHbAS+GpS4kNxTbn03hzokx0NxcLTpOFtcMUPSbD8FQoUwm8kSa06Lb2d7/Bvj9Z72a8ATdfud6jEyN597YgPpdWa1YwNfx0gzIf1Yw9yTKsh1jmu+5NJkKV7GgcU39eom8SvAtVumvEj6uwma4FSwVg+C4N7Lrnqv+/Lqzw5zr6ZGmyQiBG4AVlhILvLoOszs8s4xYAJI80y0e0Q99udlRj0hEcP1T+60BQJK5oDqn2+P82COjAgzq5EdDzAH
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(376002)(346002)(136003)(396003)(39860400002)(33430700001)(86362001)(66946007)(6486002)(6512007)(31686004)(8676002)(36756003)(66556008)(66476007)(33440700001)(5660300002)(8936002)(478600001)(316002)(2906002)(53546011)(186003)(52116002)(16526019)(6506007)(31696002)(4326008)(2616005)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: go3u0fMRjiQxGpGb+7X6DhNZ/x26PNL4TPEDs7BG0pLui3zrZED0s277CsYQHnZOFxRpxtcOQ3wqfhBn9dUthV7oyElzk2BXQH7flo0KYY1GB7iWrV9UNbaqWX07BDoU1A2v/mDlpeEc3I04V3UDz5n+szCtBoUmfIaf1CgyO4t7Gt0VXUv9ktplL6V+Tl4yK8Mtw6cPkEXUQCaLyH/iBEkwVP85C91KYPZoipY6GXpJT7sriKdyBtTv8L49bbfJcBGzoPYB7Y2VAMHNImNXzEinXjwJA+sHAqhMKxQJSGCblL3/YjhCV7ZQ9QFS3YSfxuq1jGrA628ik9OnRxnDw48+sTMF0W3sf1nCcCubI9D58Gj4YCM1nxFLtfzIqUdbtqJG3wYm1M6k1mGPhmX9uLzlf3N7VQwAQKwtcIo6wNwKYdJbSK8zEVYlXQtj3am+CGop0Q1uxVaMcuUz95I4a2X2GBZJ1qyEF9BkeJamAw/FoPIr5pbEidRK5ym3n1nDmsbXLiqH4F8FOvghuZ4FSQ==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4496d601-80c3-4025-cce5-08d7f6da705a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2020 01:10:34.5796
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lybvWRhLo1doTEjvncWrYuLvGkAUO9Zl4HeXgRoP4HM0+WeEKBpCcPe/5A8fmmWE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2757
+X-MS-Exchange-CrossTenant-UserPrincipalName: a8lDVI0GGSldTGZvlggkmXbUuUIDncds58gPQtqywGRI/0McG7CeZi/sKkKq6eKe
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2903
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
  definitions=2020-05-12_08:2020-05-11,2020-05-12 signatures=0
@@ -114,77 +117,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 5/12/20 12:24 PM, Andrii Nakryiko wrote:
-> While working on BPF ringbuf implementation, testing, and benchmarking, I've
-> developed a pretty generic and modular benchmark runner, which seems to be
-> generically useful, as I've already used it for one more purpose (testing
-> fastest way to trigger BPF program, to minimize overhead of in-kernel code).
+> Add fmod_ret BPF program to existing test_overhead selftest. Also re-implement
+> user-space benchmarking part into benchmark runner to compare results. Results
+> with ./bench are consistently somewhat lower than test_overhead's, but relative
+> performance of various types of BPF programs stay consisten (e.g., kretprobe is
+> noticeably slower). This slowdown seems to be coming from the fact that
+> test_overhead is single-threaded, while benchmark always spins off at least
+> one thread for producer. This has been confirmed by hacking multi-threaded
+> test_overhead variant and also single-threaded bench variant. Resutls are
+> below. run_bench_rename.sh script from benchs/ subdirectory was used to
+> produce results for ./bench.
 > 
-> This patch adds generic part of benchmark runner and sets up Makefile for
-> extending it with more sets of benchmarks.
+> Single-threaded implementations
+> ===============================
 > 
-> Benchmarker itself operates by spinning up specified number of producer and
-> consumer threads, setting up interval timer sending SIGALARM signal to
-> application once a second. Every second, current snapshot with hits/drops
-> counters are collected and stored in an array. Drops are useful for
-> producer/consumer benchmarks in which producer might overwhelm consumers.
+> /* bench: single-threaded, atomics */
+> base      :    4.622 ± 0.049M/s
+> kprobe    :    3.673 ± 0.052M/s
+> kretprobe :    2.625 ± 0.052M/s
+> rawtp     :    4.369 ± 0.089M/s
+> fentry    :    4.201 ± 0.558M/s
+> fexit     :    4.309 ± 0.148M/s
+> fmodret   :    4.314 ± 0.203M/s
 > 
-> Once test finishes after given amount of warm-up and testing seconds, mean and
-> stddev are calculated (ignoring warm-up results) and is printed out to stdout.
-> This setup seems to give consistent and accurate results.
+> /* selftest: single-threaded, no atomics */
+> task_rename base        4555K events per sec
+> task_rename kprobe      3643K events per sec
+> task_rename kretprobe   2506K events per sec
+> task_rename raw_tp      4303K events per sec
+> task_rename fentry      4307K events per sec
+> task_rename fexit       4010K events per sec
+> task_rename fmod_ret    3984K events per sec
 > 
-> To validate behavior, I added two atomic counting tests: global and local.
-> For global one, all the producer threads are atomically incrementing same
-> counter as fast as possible. This, of course, leads to huge drop of
-> performance once there is more than one producer thread due to CPUs fighting
-> for the same memory location.
+> Multi-threaded implementations
+> ==============================
 > 
-> Local counting, on the other hand, maintains one counter per each producer
-> thread, incremented independently. Once per second, all counters are read and
-> added together to form final "counting throughput" measurement. As expected,
-> such setup demonstrates linear scalability with number of producers (as long
-> as there are enough physical CPU cores, of course). See example output below.
-> Also, this setup can nicely demonstrate disastrous effects of false sharing,
-> if care is not taken to take those per-producer counters apart into
-> independent cache lines.
+> /* bench: multi-threaded w/ atomics */
+> base      :    3.910 ± 0.023M/s
+> kprobe    :    3.048 ± 0.037M/s
+> kretprobe :    2.300 ± 0.015M/s
+> rawtp     :    3.687 ± 0.034M/s
+> fentry    :    3.740 ± 0.087M/s
+> fexit     :    3.510 ± 0.009M/s
+> fmodret   :    3.485 ± 0.050M/s
 > 
-> Demo output shows global counter first with 1 producer, then with 4. Both
-> total and per-producer performance significantly drop. The last run is local
-> counter with 4 producers, demonstrating near-perfect scalability.
+> /* selftest: multi-threaded w/ atomics */
+> task_rename base        3872K events per sec
+> task_rename kprobe      3068K events per sec
+> task_rename kretprobe   2350K events per sec
+> task_rename raw_tp      3731K events per sec
+> task_rename fentry      3639K events per sec
+> task_rename fexit       3558K events per sec
+> task_rename fmod_ret    3511K events per sec
 > 
-> $ ./bench -a -w1 -d2 -p1 count-global
-> Setting up benchmark 'count-global'...
-> Benchmark 'count-global' started.
-> Iter   0 ( 24.822us): hits  148.179M/s (148.179M/prod), drops    0.000M/s
-> Iter   1 ( 37.939us): hits  149.308M/s (149.308M/prod), drops    0.000M/s
-> Iter   2 (-10.774us): hits  150.717M/s (150.717M/prod), drops    0.000M/s
-> Iter   3 (  3.807us): hits  151.435M/s (151.435M/prod), drops    0.000M/s
-> Summary: hits  150.488 ± 1.079M/s (150.488M/prod), drops    0.000 ± 0.000M/s
+> /* selftest: multi-threaded, no atomics */
+> task_rename base        3945K events per sec
+> task_rename kprobe      3298K events per sec
+> task_rename kretprobe   2451K events per sec
+> task_rename raw_tp      3718K events per sec
+> task_rename fentry      3782K events per sec
+> task_rename fexit       3543K events per sec
+> task_rename fmod_ret    3526K events per sec
 > 
-> $ ./bench -a -w1 -d2 -p4 count-global
-> Setting up benchmark 'count-global'...
-> Benchmark 'count-global' started.
-> Iter   0 ( 60.659us): hits   53.910M/s ( 13.477M/prod), drops    0.000M/s
-> Iter   1 (-17.658us): hits   53.722M/s ( 13.431M/prod), drops    0.000M/s
-> Iter   2 (  5.865us): hits   53.495M/s ( 13.374M/prod), drops    0.000M/s
-> Iter   3 (  0.104us): hits   53.606M/s ( 13.402M/prod), drops    0.000M/s
-> Summary: hits   53.608 ± 0.113M/s ( 13.402M/prod), drops    0.000 ± 0.000M/s
+> Note that the fact that ./bench benchmark always uses atomic increments for
+> counting, while test_overhead doesn't, doesn't influence test results all that
+> much.
 > 
-> $ ./bench -a -w1 -d2 -p4 count-local
-> Setting up benchmark 'count-local'...
-> Benchmark 'count-local' started.
-> Iter   0 ( 23.388us): hits  640.450M/s (160.113M/prod), drops    0.000M/s
-> Iter   1 (  2.291us): hits  605.661M/s (151.415M/prod), drops    0.000M/s
-> Iter   2 ( -6.415us): hits  607.092M/s (151.773M/prod), drops    0.000M/s
-> Iter   3 ( -1.361us): hits  601.796M/s (150.449M/prod), drops    0.000M/s
-> Summary: hits  604.849 ± 2.739M/s (151.212M/prod), drops    0.000 ± 0.000M/s
-> 
-> Benchmark runner supports setting thread affinity for producer and consumer
-> threads. You can use -a flag for default CPU selection scheme, where first
-> consumer gets CPU #0, next one gets CPU #1, and so on. Then producer threads
-> pick up next CPU and increment one-by-one as well. But user can also specify
-> a set of CPUs independently for producers and consumers with --prod-affinity
-> 1,2-10,15 and --cons-affinity <set-of-cpus>. The latter allows to force
-> producers and consumers to share same set of CPUs, if necessary.
-> 
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
 > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 Acked-by: Yonghong Song <yhs@fb.com>
