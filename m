@@ -2,234 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B15B31D1ED6
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:16:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4E51D1EE3
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390603AbgEMTQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 15:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53134 "EHLO
+        id S2390518AbgEMTRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 15:17:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390252AbgEMTQS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:16:18 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDD0C061A0C;
-        Wed, 13 May 2020 12:16:18 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id w18so783630ilm.13;
-        Wed, 13 May 2020 12:16:18 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1732218AbgEMTRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:17:14 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D90C061A0C;
+        Wed, 13 May 2020 12:17:14 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id f4so165423pgi.10;
+        Wed, 13 May 2020 12:17:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=ZGiAeQKCqi9bVp8cca2McaZEzzsGwxAU0BJeWRDdpOw=;
-        b=RwVYEzUHBkSTBuflfQvoVbEs89ZNLp38AXU+brchbTELDg3iaaHIio9wYTQVamtlIG
-         EDyY1ND2s263S1/S6o9nFiszSbrh36ZBVLQzwoWQr7Y7zVpSHByZ5z4TfkO2pSbsQNDj
-         PXNj5nrVzPiyEJ4O/8lQMFxTQmGZjfFUN8B2n+GWof6FMchSjr1j3cbJvyD3hRiivy0u
-         XdNV5u2fvt4xXypYze0d5MZZdCQmatRaNJU9hMnKV7cdUxU/dbwzpc5fKBTPfreh68F/
-         jL0O8t4vE9vg5zzMDAIzFQ8SIMDGNVVYdVhT70GNO0PRMWZoaD3GFYrbeUbp112clClF
-         yiiA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GqpOTC77iftRlmeCJv2qZPQF7gymosnRKGcq5umLM6E=;
+        b=iqlCGMhcrgy8UmEdmX2CoIak3ZfLfdmlriWXAYDX66rC+fwGlOW98aqlcJqAZO9wKU
+         cyFzW8CtCTA2vtvJ6Yky0qeaE0iMkAHnwIc2++aRVWChVvTXGCqaQxnNqXo6oJukWDLt
+         gwrd/RUEgg6D5nO8y2EBzva5JVLNFTu0fPoMze+LozW63ttxOi5pDVkf8gj79YhHE7pL
+         x7tlEjBtuoQV4h/DGXVqjz2FLY0v0E6dAP92r9x4gXfycvy0a4hBH3CSi1KZkpGuUJ3I
+         m0QUy/b7T9Rv8z84O9bNNbNC5siI5DUBJK3wIPeMsZhI7kkYbdMsl4Us18jg76alg59w
+         M2fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=ZGiAeQKCqi9bVp8cca2McaZEzzsGwxAU0BJeWRDdpOw=;
-        b=NE+yKcIJgZ0mTX7a+KcBmH2DjHKJUSm4RW9VgKm2JHyhSlDE5jz7oOCYmTtaz8GKaf
-         iu0gh8xxcVR/OVXqkvi2fJ+c9C9wpFkxKgGI+LpNHy3S7XZUZWDIoH5phb3cpbKBQ/fd
-         vv6ueFM1KWq21ZqtqW55oF8oz8PMdxwjALaHMUwGdJkcVO89ubLq43aURUDGZGN7WEcq
-         dTurZ1LyqyZSyW21vf/nm1t2AhbZeI8QpQC8IQjABkb6gF1ffdHeoSlS8fg+XgUOF770
-         omQvOsWutDwlarnnu2H1Fg/VEA78yKvsda0FjepkOns8N1FR3t8tNjjDJ+VwQER07laK
-         9lTg==
-X-Gm-Message-State: AOAM530JxO80r6dwT8NP0VJeZu+yFv+ddmpoF53ASdNb26slNhswrZiw
-        R73/z4bJ3g5y30CzhrI96LE=
-X-Google-Smtp-Source: ABdhPJyWJMK3X/U4gjyGnQvP+hRtwBKqsAxjH241Mhs8kS99oS9EGt676KgVQdIzQ05z+oQRvImE7Q==
-X-Received: by 2002:a92:d18f:: with SMTP id z15mr1004236ilz.226.1589397378186;
-        Wed, 13 May 2020 12:16:18 -0700 (PDT)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id z16sm217089ioz.13.2020.05.13.12.16.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 May 2020 12:16:17 -0700 (PDT)
-Subject: [bpf-next PATCH v2 12/12] bpf: selftests,
- add ktls tests to test_sockmap
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     lmb@cloudflare.com, jakub@cloudflare.com, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        john.fastabend@gmail.com, ast@kernel.org
-Date:   Wed, 13 May 2020 12:16:02 -0700
-Message-ID: <158939736278.15176.5435314315563203761.stgit@john-Precision-5820-Tower>
-In-Reply-To: <158939706939.15176.10993188758954570904.stgit@john-Precision-5820-Tower>
-References: <158939706939.15176.10993188758954570904.stgit@john-Precision-5820-Tower>
-User-Agent: StGit/0.17.1-dirty
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GqpOTC77iftRlmeCJv2qZPQF7gymosnRKGcq5umLM6E=;
+        b=msk/ymkGlVxizGEAtLamTBWc54xQOJOqqn7r8FSBTut6AxnHLUM/kYu+1VFcMuFFYm
+         nnigXGFQvAi+gghLtUXljvP3JqgcgWiJN0ZcRaXuNQwcBJ0c/joX8VqOfOvp8lk8eMgE
+         xxPVdVpPrIp1jXMuegSd7D0RtCl5K84RxzhCujxmJBmLeGhajWBsZOXsPg/YVOx8S9jT
+         HmpPoZlz85vstFj8w9jIssPXF05zMZ9sG4z+ESHwJ4yVUKUVSobwgT5vAU9pR6mqhUoc
+         KPSxm4uIuXgR5riY52T+nuC2yzLdxMPqqMlc+k5eXDlKghAzvT0OAcIJ3L5MciZanA3E
+         CrdQ==
+X-Gm-Message-State: AOAM533ck9J5S+zZKgASj/g5noZB9sDAF6mnwAn8SovZb5W5SZ1yjZUn
+        VEXucJQLKljoqfrr/Op5pQeLHc50
+X-Google-Smtp-Source: ABdhPJy5v2ZC7OJLzdwmuSXeKZfTfjEMxOTCmyVYUnRzVZxsIqhMgXszhPMKbMFlVPqodnUfDj4iHw==
+X-Received: by 2002:a63:145c:: with SMTP id 28mr723687pgu.77.1589397433198;
+        Wed, 13 May 2020 12:17:13 -0700 (PDT)
+Received: from [10.230.188.43] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q62sm259612pfc.132.2020.05.13.12.17.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 12:17:12 -0700 (PDT)
+Subject: Re: [PATCH] lan743x: Added fixed link support
+To:     Roelof Berg <rberg@berg-solutions.de>
+Cc:     andrew@lunn.ch, Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200513190633.7815-1-rberg@berg-solutions.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <d6107622-b0c2-5b07-e7b2-01a417596c8e@gmail.com>
+Date:   Wed, 13 May 2020 12:17:08 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20200513190633.7815-1-rberg@berg-solutions.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Until now we have only had minimal ktls+sockmap testing when being
-used with helpers and different sendmsg/sendpage patterns. Add a
-pass with ktls here.
 
-To run just ktls tests,
 
- $ ./test_sockmap --whitelist="ktls"
+On 5/13/2020 12:06 PM, Roelof Berg wrote:
+> Microchip lan7431 is frequently connected to a phy. However, it
+> can also be directly connected to a MII remote peer without
+> any phy in between. For supporting such a phyless hardware setup
+> in Linux we added the capability to the driver to understand
+> the fixed-link and the phy-connection-type entries in the device
+> tree.
+> 
+> If a fixed-link node is configured in the device tree the lan7431
+> device will deactivate auto negotiation and uses the speed and
+> duplex settings configured in the fixed-link node.
+> 
+> Also the phy-connection-type can be configured in the device tree
+> and in case of a fixed-link connection the RGMII mode can be
+> configured, all other modes fall back to the default: GMII.
+> 
+> Example:
+> 
+>  &pcie {
+> 	status = "okay";
+> 
+> 	host@0 {
+> 		reg = <0 0 0 0 0>;
+> 
+> 		#address-cells = <3>;
+> 		#size-cells = <2>;
+> 
+> 		ethernet@0 {
+> 			compatible = "weyland-yutani,noscom1", "microchip,lan743x";
+> 			status = "okay";
+> 			reg = <0 0 0 0 0>;
+> 			phy-connection-type = "rgmii";
+> 
+> 			fixed-link {
+> 				speed = <100>;
+> 				full-duplex;
+> 			};
+> 		};
+> 	};
+> };
+> 
+> Signed-off-by: Roelof Berg <rberg@berg-solutions.de>
+> ---
+>  drivers/net/ethernet/microchip/lan743x_main.c | 94 +++++++++++++++++--
+>  drivers/net/ethernet/microchip/lan743x_main.h |  4 +
+>  2 files changed, 89 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+> index a43140f7b5eb..85f12881340b 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
+> @@ -9,9 +9,12 @@
+>  #include <linux/microchipphy.h>
+>  #include <linux/net_tstamp.h>
+>  #include <linux/phy.h>
+> +#include <linux/phy_fixed.h>
+>  #include <linux/rtnetlink.h>
+>  #include <linux/iopoll.h>
+>  #include <linux/crc16.h>
+> +#include <linux/of_mdio.h>
+> +#include <linux/of_net.h>
+>  #include "lan743x_main.h"
+>  #include "lan743x_ethtool.h"
+>  
+> @@ -974,6 +977,8 @@ static void lan743x_phy_close(struct lan743x_adapter *adapter)
+>  
+>  	phy_stop(netdev->phydev);
+>  	phy_disconnect(netdev->phydev);
+> +	if (of_phy_is_fixed_link(adapter->pdev->dev.of_node))
+> +		of_phy_deregister_fixed_link(adapter->pdev->dev.of_node);
+>  	netdev->phydev = NULL;
+>  }
+>  
+> @@ -982,18 +987,86 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+>  	struct lan743x_phy *phy = &adapter->phy;
+>  	struct phy_device *phydev;
+>  	struct net_device *netdev;
+> +	struct device_node *phynode;
+> +	u32 data;
+> +	phy_interface_t phyifc = PHY_INTERFACE_MODE_GMII;
+> +	bool fixed_link = false;
+>  	int ret = -EIO;
+>  
+>  	netdev = adapter->netdev;
+> -	phydev = phy_find_first(adapter->mdiobus);
+> -	if (!phydev)
+> -		goto return_error;
+> +	phynode = of_node_get(adapter->pdev->dev.of_node);
+> +	if (phynode)
+> +		of_get_phy_mode(phynode, &phyifc);
+> +
+> +	/* check if a fixed-link is defined in device-tree */
+> +	if (phynode && of_phy_is_fixed_link(phynode)) {
+> +		fixed_link = true;
+> +		netdev_dbg(netdev, "fixed-link detected\n");
+> +
+> +		ret = of_phy_register_fixed_link(phynode);
+> +		if (ret) {
+> +			netdev_err(netdev, "cannot register fixed PHY\n");
+> +			goto return_error;
+> +		}
+>  
+> -	ret = phy_connect_direct(netdev, phydev,
+> -				 lan743x_phy_link_status_change,
+> -				 PHY_INTERFACE_MODE_GMII);
+> -	if (ret)
+> -		goto return_error;
+> +		phydev = of_phy_connect(netdev, phynode,
+> +					lan743x_phy_link_status_change,
+> +					0, phyifc);
+> +		if (!phydev)
+> +			goto return_error;
+> +
+> +		/* Configure MAC to fixed link parameters */
+> +		data = lan743x_csr_read(adapter, MAC_CR);
+> +		/* Disable auto negotiation */
+> +		data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
+> +		/* Set duplex mode */
+> +		if (phydev->duplex)
+> +			data |= MAC_CR_DPX_;
+> +		else
+> +			data &= ~MAC_CR_DPX_;
+> +		/* Set bus speed */
+> +		switch (phydev->speed) {
+> +		case 10:
+> +			data &= ~MAC_CR_CFG_H_;
+> +			data &= ~MAC_CR_CFG_L_;
+> +			break;
+> +		case 100:
+> +			data &= ~MAC_CR_CFG_H_;
+> +			data |= MAC_CR_CFG_L_;
+> +			break;
+> +		case 1000:
+> +			data |= MAC_CR_CFG_H_;
+> +			data |= MAC_CR_CFG_L_;
+> +			break;
+> +		}
+> +		/* Set interface mode */
+> +		if (phyifc == PHY_INTERFACE_MODE_RGMII ||
+> +		    phyifc == PHY_INTERFACE_MODE_RGMII_ID ||
+> +		    phyifc == PHY_INTERFACE_MODE_RGMII_RXID ||
+> +		    phyifc == PHY_INTERFACE_MODE_RGMII_TXID)
+> +			/* RGMII */
+> +			data &= ~MAC_CR_MII_EN_;
+> +		else
+> +			/* GMII */
+> +			data |= MAC_CR_MII_EN_;
+> +		lan743x_csr_write(adapter, MAC_CR, data);
 
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- tools/testing/selftests/bpf/test_sockmap.c |   70 ++++++++++++++++++----------
- 1 file changed, 44 insertions(+), 26 deletions(-)
+All of this should be done in your adjust_link callback, I believe you
+did it here because you made phy_start_aneg() conditional on not finding
+a fixed PHY, but the point of a fixed PHY is to provide a full
+emulation, including that of the state machine transitions.
 
-diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-index 2ed2db6..c806438 100644
---- a/tools/testing/selftests/bpf/test_sockmap.c
-+++ b/tools/testing/selftests/bpf/test_sockmap.c
-@@ -115,6 +115,7 @@ static const struct option long_options[] = {
- struct test_env {
- 	const char *type;
- 	const char *subtest;
-+	const char *prepend;
- 
- 	int test_num;
- 	int subtest_num;
-@@ -126,6 +127,26 @@ struct test_env {
- 
- struct test_env env;
- 
-+struct sockmap_options {
-+	int verbose;
-+	bool base;
-+	bool sendpage;
-+	bool data_test;
-+	bool drop_expected;
-+	int iov_count;
-+	int iov_length;
-+	int rate;
-+	char *map;
-+	char *whitelist;
-+	char *blacklist;
-+	char *prepend;
-+};
-+
-+struct _test {
-+	char *title;
-+	void (*tester)(int cg_fd, struct sockmap_options *opt);
-+};
-+
- static void test_start(void)
- {
- 	env.subtest_num++;
-@@ -151,10 +172,11 @@ static void test_reset(void)
- 	txmsg_ingress = txmsg_skb = 0;
- }
- 
--static int test_start_subtest(const char *name, const char *type)
-+static int test_start_subtest(const struct _test *t, struct sockmap_options *o)
- {
--	env.type = type;
--	env.subtest = name;
-+	env.type = o->map;
-+	env.subtest = t->title;
-+	env.prepend = o->prepend;
- 	env.test_num++;
- 	env.subtest_num = 0;
- 	env.fail_last = env.fail_cnt;
-@@ -170,9 +192,10 @@ static void test_end_subtest(void)
- 	if (!error)
- 		test_pass();
- 
--	fprintf(stdout, "#%2d/%2d %8s:%s:%s\n",
-+	fprintf(stdout, "#%2d/%2d %8s:%s:%s:%s\n",
- 		env.test_num, env.subtest_num,
- 		!type ? "sockmap" : "sockhash",
-+		env.prepend ? : "",
- 		env.subtest, error ? "FAIL" : "OK");
- }
- 
-@@ -379,20 +402,6 @@ struct msg_stats {
- 	struct timespec end;
- };
- 
--struct sockmap_options {
--	int verbose;
--	bool base;
--	bool sendpage;
--	bool data_test;
--	bool drop_expected;
--	int iov_count;
--	int iov_length;
--	int rate;
--	char *map;
--	char *whitelist;
--	char *blacklist;
--};
--
- static int msg_loop_sendpage(int fd, int iov_length, int cnt,
- 			     struct msg_stats *s,
- 			     struct sockmap_options *opt)
-@@ -1606,11 +1615,6 @@ static int populate_progs(char *bpf_file)
- 	return 0;
- }
- 
--struct _test {
--	char *title;
--	void (*tester)(int cg_fd, struct sockmap_options *opt);
--};
--
- struct _test test[] = {
- 	{"txmsg test passthrough", test_txmsg_pass},
- 	{"txmsg test redirect", test_txmsg_redir},
-@@ -1636,7 +1640,9 @@ static int check_whitelist(struct _test *t, struct sockmap_options *opt)
- 		return -ENOMEM;
- 	entry = strtok(ptr, ",");
- 	while (entry) {
--		if (strstr(opt->map, entry) != 0 || strstr(t->title, entry) != 0)
-+		if ((opt->prepend && strstr(opt->prepend, entry) != 0) ||
-+		    strstr(opt->map, entry) != 0 ||
-+		    strstr(t->title, entry) != 0)
- 			return 0;
- 		entry = strtok(NULL, ",");
- 	}
-@@ -1654,7 +1660,9 @@ static int check_blacklist(struct _test *t, struct sockmap_options *opt)
- 		return -ENOMEM;
- 	entry = strtok(ptr, ",");
- 	while (entry) {
--		if (strstr(opt->map, entry) != 0 || strstr(t->title, entry) != 0)
-+		if ((opt->prepend && strstr(opt->prepend, entry) != 0) ||
-+		    strstr(opt->map, entry) != 0 ||
-+		    strstr(t->title, entry) != 0)
- 			return 0;
- 		entry = strtok(NULL, ",");
- 	}
-@@ -1680,7 +1688,7 @@ static int __test_selftests(int cg_fd, struct sockmap_options *opt)
- 		if (check_blacklist(&t, opt) == 0)
- 			continue;
- 
--		test_start_subtest(t.title, opt->map);
-+		test_start_subtest(&t, opt);
- 		t.tester(cg_fd, opt);
- 		test_end_subtest();
- 	}
-@@ -1700,11 +1708,21 @@ static void test_selftests_sockhash(int cg_fd, struct sockmap_options *opt)
- 	__test_selftests(cg_fd, opt);
- }
- 
-+static void test_selftests_ktls(int cg_fd, struct sockmap_options *opt)
-+{
-+	opt->map = BPF_SOCKHASH_FILENAME;
-+	opt->prepend = "ktls";
-+	ktls = 1;
-+	__test_selftests(cg_fd, opt);
-+	ktls = 0;
-+}
-+
- static int test_selftest(int cg_fd, struct sockmap_options *opt)
- {
- 
- 	test_selftests_sockmap(cg_fd, opt);
- 	test_selftests_sockhash(cg_fd, opt);
-+	test_selftests_ktls(cg_fd, opt);
- 	test_print_results();
- 	return 0;
- }
+> +	} else {
+> +		phydev = phy_find_first(adapter->mdiobus);
+> +		if (!phydev)
+> +			goto return_error;
+> +
+> +		ret = phy_connect_direct(netdev, phydev,
+> +					 lan743x_phy_link_status_change,
+> +					 PHY_INTERFACE_MODE_GMII);
+> +		/* Note: We cannot use phyifc here because this would be SGMII
+> +		 * on a standard PC.
+> +		 */
+> +		if (ret)
+> +			goto return_error;
+> +	}
+> +
+> +	if (phynode)
+> +		of_node_put(phynode);
+>  
+>  	/* MAC doesn't support 1000T Half */
+>  	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
+> @@ -1004,10 +1077,13 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+>  	phy->fc_autoneg = phydev->autoneg;
+>  
+>  	phy_start(phydev);
+> -	phy_start_aneg(phydev);
+> +	if (!fixed_link)
+> +		phy_start_aneg(phydev);
 
+phy_start() should already trigger an auto-negotiation restart if
+necessary, so this calls seems to be redundant if nothing else. If
+someone it must be kept, it should not be made conditional on the fixed
+link.
+-- 
+Florian
