@@ -2,73 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F9CB1D1A70
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E811D1A0E
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389404AbgEMQA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 12:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50768 "EHLO
+        id S2387393AbgEMQA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 12:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389381AbgEMQAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 12:00:55 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8A2C061A0C;
-        Wed, 13 May 2020 09:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=8xYqhlaf56AodBMEMHzZf5wu40Wrvnh8K80Ep72Z4QE=; b=nRbb9ZaSqk76EZQCSrXCjKKyi0
-        GJgHRuj+u8CLMsmD8S/jMJWUDJc1FafDS7rGbviJ91agO2UXeMmgmZ17lHLrlOZvJ7Kz2cgw4DQnE
-        x8ZwpShjfcEdJ2PDZtqoUfhRBI28R2oM+vqAV5DFQHQc6M0ngu4lTh3ZXD4FnwWrlLOkepDbAxEA2
-        zb2i5J+6ZKsp7eesWFAgbP7Z5ifqYk52cj9M05f2G7JV66BRFFnO+IT/wdC5Ug2FsOCNO2PCSV/3K
-        np/iArRzduzUJo1a3JPAz4UU6DrAJlFUcZQJkfjAFN6px8lJsSTAVaQbYorop4VmKXHN30Gc17Boo
-        XWO6zFhg==;
-Received: from [2001:4bb8:180:9d3f:c70:4a89:bc61:2] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jYtoT-0004kp-Mc; Wed, 13 May 2020 16:00:54 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 05/18] maccess: update the top of file comment
-Date:   Wed, 13 May 2020 18:00:25 +0200
-Message-Id: <20200513160038.2482415-6-hch@lst.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200513160038.2482415-1-hch@lst.de>
-References: <20200513160038.2482415-1-hch@lst.de>
+        with ESMTP id S1728692AbgEMQA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 12:00:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A11AC061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 09:00:29 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jYto3-0005yx-Kv; Wed, 13 May 2020 18:00:27 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jYto2-0002qd-Pi; Wed, 13 May 2020 18:00:26 +0200
+Date:   Wed, 13 May 2020 18:00:26 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        kernel@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v1] net: phy: at803x: add cable test support
+Message-ID: <20200513160026.fdls7kpxb6luuwed@pengutronix.de>
+References: <20200513120648.14415-1-o.rempel@pengutronix.de>
+ <0c80397b-58b8-0807-0b98-695db8068e25@gmail.com>
+ <20200513154544.gwcccvbicpvrj6vm@pengutronix.de>
+ <20200513154953.GI499265@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="6a7oqghoxjesv4z7"
+Content-Disposition: inline
+In-Reply-To: <20200513154953.GI499265@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 17:54:56 up 180 days,  7:13, 182 users,  load average: 0.04, 0.08,
+ 0.05
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This file now also contains several helpers for accessing user memory.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- mm/maccess.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--6a7oqghoxjesv4z7
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/mm/maccess.c b/mm/maccess.c
-index 747581ac50dc9..65880ba2ca376 100644
---- a/mm/maccess.c
-+++ b/mm/maccess.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Access kernel memory without faulting.
-+ * Access kernel or user memory without faulting.
-  */
- #include <linux/export.h>
- #include <linux/mm.h>
--- 
-2.26.2
+On Wed, May 13, 2020 at 05:49:53PM +0200, Andrew Lunn wrote:
+> > Uff.. i missed this. Then I'll need only to add some changes on top of
+> > his patch.
+>=20
+> I've been chatting with mwalle on IRC today. There should be a repost
+> of the patches soon.
 
+Cool!
+@Michael, please CC me.
+
+you can include support for AR9331 and AR8032 in your patch (if you
+like)
+http://www.jhongtech.com/DOWN/ATHEROS--AR8032.pdf
+
+They have same register, but only 2 pairs.
+
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--6a7oqghoxjesv4z7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl68GZYACgkQ4omh9DUa
+UbMdlA/+O0iIZLBwArtGcqcdiVYupsTy1uBMg/9ZFt/f1XGNIgLXvf7Jy9ySSNeT
+ZNUOPpjJ+LnH5GpjhE6xVjq3hZ0IxI973b7Q5gWds10isDkljl9p+E6QPjJvhCnV
+btINYfg8BClFgDTvB0lBanAFs2Geny3AL4AR2EHND8mjtT2hRE3caXxd7kOxkbI2
+gXd322ndSZP+1HYedeGZLkI/RJTi37tDkM9dENGy706zjWzi+4FsFR0PVJdb0Bx6
+XLQ21B8C+/YYb1gj6cD1mi76GIaH0XaSoF5OO2oiW4ijOZZKgqX6/ZMTRl4iakgd
+cqYlgJ52Z//iCRyTQhyWyeEem9Chb33dBZicIjmaSZHqwIc0q6FkNdrYWjLFZg1b
+crFaeyfxopCnoZD7of5Gryx+PjHa9RFJKSiU8GVhdaW2VDB69XhuicxfQgMMefAo
+8xowyZgPbXrcxE9d1aZWbpmIzrK8EYMhuREk3S4JAKJEdz+3emLVExw8Wty5WhXS
+/AejFyTKqbOw/42iBXLCzeYEdHg1SaIoxdyhAosoB7LtiivGqI0MkbTP0+2UiSHO
+ohQAe0idYWEbByt057QwC2bK5gElRDZJUOL4Q8ncty2B5Wtb9SQESszC1Kaf0bGs
+2dYILv1mmM2ShJ0eiE4C0eAsn575hvlq4sIipq+84OJbfV3TFb8=
+=uxFm
+-----END PGP SIGNATURE-----
+
+--6a7oqghoxjesv4z7--
