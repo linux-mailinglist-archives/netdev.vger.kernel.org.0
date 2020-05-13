@@ -2,79 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F47D1D1B0C
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:29:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B40151D1B2C
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:35:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389579AbgEMQ3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 12:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730731AbgEMQ3S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 12:29:18 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0418EC061A0C
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 09:29:18 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id q10so303103ile.0
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 09:29:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u51Ie3hxAKPu1qbArRB4HGjjejkk5lYjufdOHA0vJws=;
-        b=sl4294rl0ziF7iRGRKbjVmcmV1+TL81FMJU0HJhYAceWuVWN/1Hu8BAgasC1Pzlyze
-         iDauye8ghZYuPf+/EWuUqpKS9FPtqsf+SZ3cGvRZJdb/zMt88x2k+HNWrWLCZsj/IZeE
-         NVPPZwa/hBCizPDkAI5yBqWjhkwz7U9wN6pRZ8znJ94wsPrNdb5NMBM5h9jy+XoqaKcu
-         KV7Ar7k6dvQws5rPgmELah4pLWggy4d6PO9U4v0I9dZzx3CoXuJs2D/Z+RCX7kJrw0Dp
-         Z76FbuZYx0wvNOI5CnkMRvjuupbm1En1F8e9FnIGW0AWcSeUI/tYo16rT8sf1ESxMOq9
-         j0og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u51Ie3hxAKPu1qbArRB4HGjjejkk5lYjufdOHA0vJws=;
-        b=VSPDM88eGRen8gBV4eWLBfU98UfsKdKg9ONT5x+rGhsy92l1uJSu51xnQVC0YnpnxQ
-         mrN0pUF0FGNzbWm/PDNsJtRVsTUovc2oPN6WpSlZ9Q13qoAJcZVhfufy/+6Dk1ag5tEK
-         IoltY90yVssKOtYK6z1quZSHy3HYN7KzwNHM5+mA1YtK8sWr+nJqpQzbBa012XC33LPq
-         MpLoNNdQPGufvgV4f+71ubVWhluguqwDpsNtDSIv3GNtK3LHviNWPpf61E+SPRdIk/Qn
-         zfzxE3emxkVLXt8aQbbP3+/eZ7o7nySG+rZiovu6qw4se30VN9MnJ64E927oYefnOEMh
-         JLMw==
-X-Gm-Message-State: AOAM531ZyUJWsDIjw/zxZ5y8mbO9i4Ba3ERBTXw9jrGHmY6tZQJPdeg3
-        RZgdtcJ8Q9XO0HxvGJfQ7aPIuXzmAogNf4YXfy6HSNXI
-X-Google-Smtp-Source: ABdhPJzYLxVVXf+n6CL/Szt7SA0ZEqYbJBye1HUm+xogk/LS1J1ffGLd9GGxHIyu2SuVzCEPELcUXLRTpqyKWxTecls=
-X-Received: by 2002:a05:6e02:544:: with SMTP id i4mr259501ils.145.1589387356960;
- Wed, 13 May 2020 09:29:16 -0700 (PDT)
+        id S2389685AbgEMQfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 12:35:33 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:45481 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728068AbgEMQfd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 12:35:33 -0400
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 34C0422FB6;
+        Wed, 13 May 2020 18:35:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1589387731;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oEq5wlRLOUG99yUlxbIpKcDi8/8HUwfYR3JjS9c9Gcw=;
+        b=lJrZ0aJ5G69zcouyvZGme/yaEXv2Bt4Og429RV+PHnzzxuH2Dm9XX3wOZ8k6SMEDwmkPGN
+        dypvjDE8rijpy0Ic+sjXRMn1WfrVwvIFkfAPRnholc/GCMEBeZG6uUHSxMRRvmARaa+OdN
+        McivRfhJYWycF35+Fm0II5vclyZj6Wg=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next 0/4] net: phy: broadcom: cable tester support
+Date:   Wed, 13 May 2020 18:35:20 +0200
+Message-Id: <20200513163524.31256-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <CANP3RGfNH1m=-rFdkAmGUt3vxFqaGmJnW+RKP-faU6WwOKWoZg@mail.gmail.com>
- <20200513093944.9752-1-jengelh@inai.de>
-In-Reply-To: <20200513093944.9752-1-jengelh@inai.de>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Wed, 13 May 2020 09:29:05 -0700
-Message-ID: <CANP3RGdUALH97LB2jHryrFsGYq=h2xwDTVRWuaG_-H-9squsXg@mail.gmail.com>
-Subject: Re: [PATCH v4] doc: document danger of applying REJECT to INVALID CTs
-To:     Jan Engelhardt <jengelh@inai.de>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apparently no, did you send the wrong patch?
-But since you'll have to resend again, 2 more minor stylistic comments.
+Add cable tester support for the Broadcom PHYs. Support for it was
+developed on a BCM54140 Quad PHY which RDB register access.
 
-> +P_2 being succesful in reaching its destination and advancing the connection
-successful
+If there is a link partner the results are not as good as with an open
+cable. I guess we could retry if the measurement until all pairs had at
+least one valid result.
 
-> +state normally. It is conceivable that the late-arriving P may be considered to
-> +be not associated with any connection tracking entry. Generating a reject
-s/be not/not be/ is probably better
+changes since v1:
+ - added Reviewed-by: tags
+ - removed "div by 2" for cross shorts, just mention it in the commit
+   message. The results are inconclusive if the tests are repeated. So
+   just report the length as is for now.
+ - fixed typo in commit message
 
-> +only DROP these.
-would 'those' be better?
+Michael Walle (4):
+  net: phy: broadcom: add exp register access methods without buslock
+  net: phy: broadcom: add bcm_phy_modify_exp()
+  net: phy: broadcom: add cable test support
+  net: phy: bcm54140: add cable diagnostics support
 
-> +P_2 being succesful in reaching its destination and advancing the connection
-ditto
+ drivers/net/phy/bcm-phy-lib.c | 259 +++++++++++++++++++++++++++++++++-
+ drivers/net/phy/bcm-phy-lib.h |  10 ++
+ drivers/net/phy/bcm54140.c    |   3 +
+ include/linux/brcmphy.h       |  52 +++++++
+ 4 files changed, 317 insertions(+), 7 deletions(-)
+
+-- 
+2.20.1
+
