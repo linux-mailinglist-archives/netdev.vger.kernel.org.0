@@ -2,96 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 770401D0619
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 06:39:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFFF1D061D
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 06:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726078AbgEMEjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 00:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725898AbgEMEjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 00:39:15 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C298FC061A0C;
-        Tue, 12 May 2020 21:39:15 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id b12so4419448plz.13;
-        Tue, 12 May 2020 21:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nPz4T7IaudILeXQNatPbOTERFKwRTe6GpmSyU3VsITU=;
-        b=Qw7DCGV/EQa8OqlKZgpNyTLDwQa4cgMhICPeixm3o8oAQflAexa1nJfvYhpuBFVlXb
-         8TNxzEzCXc713hBfn7f3LJgpa8MewCOWMqScKsygwfIBf2aRilueGNIU2sFR5vuYM09w
-         lQ5Pj4c10Wbem57ca70RObkb8D2IRFGqUp8vPt8chlCa5SKwFaBaFm5NpUOjqu2mp9rd
-         0il3LBCqyuwkKsm/N+R0hHQjoKYgpYTbScUqfatFJVgGvLSifdmI3/eiZLavadE8J0Gj
-         ntWxP2E+qARJA67fR5W3dq7lrI6m2TnGfiubxOdvQrGxApNX1TMSTiriQa8g6x80nOI7
-         /eKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nPz4T7IaudILeXQNatPbOTERFKwRTe6GpmSyU3VsITU=;
-        b=eFFW0pnhQesHsBpnwMRz8zTdr8TPcQNlT8XxPaOMY0eyKjK9rvH7GEbUswK7YspvWB
-         9WbUTUk9HuEbQCa+xLP7zxkh89g4zDZ5b9RrnQ4yHmsVQ9MhNTzxO8PlzKJCkYdUNAcw
-         +REQCWp/z3bbDkDa7xlKyfl9RYlltOvy3hybo/p+65cVgcYeo3kptuLaV6Ecal82pVbu
-         V32ea6UpMZ8TJeZkRV93H0kYubgUOmInn/eo9G29FS+stbHfEAdGt68RdZiaVb3TSmOJ
-         uy4gdR5riqmegCENI707Vh5XPiKvrsFqDycOGfEzQ8F52cQAXhR2vUT2LLkfCLaNBE62
-         sm1g==
-X-Gm-Message-State: AGi0PuZsaJoB4qsiFZ0vUYtP9vd4k1QY3c7Wx/GpIsDwd7TI5WYf37Pv
-        giIavLWNS36emGMwqt9nShw=
-X-Google-Smtp-Source: APiQypKfhB6VsMblXsptA2c7dr6XLMJSvwYlkcivITW/bUquYwHEbbE06PT28xCkh9Abv4QIQetQcA==
-X-Received: by 2002:a17:902:7b92:: with SMTP id w18mr22115190pll.273.1589344755182;
-        Tue, 12 May 2020 21:39:15 -0700 (PDT)
-Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id h193sm13425194pfe.30.2020.05.12.21.39.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 May 2020 21:39:13 -0700 (PDT)
-Date:   Wed, 13 May 2020 13:39:08 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Jan Engelhardt <jengelh@inai.de>
-Cc:     zenczykowski@gmail.com, maze@google.com, pablo@netfilter.org,
-        fw@strlen.de, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH v2] doc: document danger of applying REJECT to INVALID CTs
-Message-ID: <20200513043908.GA25216@f3>
-References: <CANP3RGe3fnCwj5NUxKu4VDcw=_95yNkCiC2Y4L9otJS1Hnyd-g@mail.gmail.com>
- <20200512210038.11447-1-jengelh@inai.de>
+        id S1726078AbgEMEml (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 00:42:41 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:33746 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725898AbgEMEml (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 May 2020 00:42:41 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 5418E2052E;
+        Wed, 13 May 2020 06:42:39 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 8v8mXHfs3mbN; Wed, 13 May 2020 06:42:37 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (202.40.53.10.in-addr.arpa [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 2E27020189;
+        Wed, 13 May 2020 06:42:37 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 13 May 2020 06:42:37 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 13 May
+ 2020 06:42:36 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 649983180285; Wed, 13 May 2020 06:42:36 +0200 (CEST)
+Date:   Wed, 13 May 2020 06:42:36 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     <netdev@vger.kernel.org>, Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: [PATCH ipsec-next] xfrm: fix unused variable warning if
+ CONFIG_NETFILTER=n
+Message-ID: <20200513044236.GE19286@gauss3.secunet.de>
+References: <20200511130325.44e65463@canb.auug.org.au>
+ <20200511083346.24627-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200512210038.11447-1-jengelh@inai.de>
+In-Reply-To: <20200511083346.24627-1-fw@strlen.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-12 23:00 +0200, Jan Engelhardt wrote:
-> Signed-off-by: Jan Engelhardt <jengelh@inai.de>
-> ---
+On Mon, May 11, 2020 at 10:33:42AM +0200, Florian Westphal wrote:
+> After recent change 'x' is only used when CONFIG_NETFILTER is set:
 > 
-> Simplify the trigger case by dropping mentions of P_3.
-> New -A commands as proposed.
+> net/ipv4/xfrm4_output.c: In function '__xfrm4_output':
+> net/ipv4/xfrm4_output.c:19:21: warning: unused variable 'x' [-Wunused-variable]
+>    19 |  struct xfrm_state *x = skb_dst(skb)->xfrm;
 > 
->  extensions/libip6t_REJECT.man | 20 ++++++++++++++++++++
->  extensions/libipt_REJECT.man  | 20 ++++++++++++++++++++
->  2 files changed, 40 insertions(+)
+> Expand the CONFIG_NETFILTER scope to avoid this.
 > 
-> diff --git a/extensions/libip6t_REJECT.man b/extensions/libip6t_REJECT.man
-> index 0030a51f..cc845e6f 100644
-> --- a/extensions/libip6t_REJECT.man
-> +++ b/extensions/libip6t_REJECT.man
-> @@ -30,3 +30,23 @@ TCP RST packet to be sent back.  This is mainly useful for blocking
->  hosts (which won't accept your mail otherwise).
->  \fBtcp\-reset\fP
->  can only be used with kernel versions 2.6.14 or later.
-> +.PP
-> +\fIWarning:\fP You should not indiscrimnately apply the REJECT target to
-                                          ^ typo
-> +packets whose connection state is classified as INVALID; instead, you should
-> +only DROP these.
-> +.PP
-> +Consider a source host transmitting a packet P, with P experiencing so much
-> +delay along its path that the source host issues a retransmission, P_2, with
-> +P_2 being succesful in reaching its destination and advancing the connection
-                   ^ typo
+> Fixes: 2ab6096db2f1 ("xfrm: remove output_finish indirection from xfrm_state_afinfo")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+
+Applied, thanks Florian!
