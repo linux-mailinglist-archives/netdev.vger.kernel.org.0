@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 581D71D1CE2
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:03:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41D2F1D1CD9
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:02:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390087AbgEMSDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 14:03:00 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13000 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390060AbgEMSDA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:03:00 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 04DI04O3017187
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 11:02:58 -0700
+        id S2390053AbgEMSCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 14:02:31 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:14068 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390049AbgEMSCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:02:30 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04DHwiVn022274
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 11:02:30 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=zcRlDxY9k4DtmX7Fk3bj7W4/DAFDy/IMKoUTQb6GIsY=;
- b=I5BmxvlVxFNL2AW9Lds3PZUvWSaECUwxvmgSTEvR7wabg+w3c66Rz+KGMf+w9Ykpr5Xt
- FCyAbs7kSWtS5PiO+21EJlIemJY0ZO9F4d+Bu9KbuVGeyLtzmkFwPeBGpXHX2X/F9tSX
- ZUzQqKoQsGGNEaihZQa2eRnPENf9IVinxMI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 3100xh6e4s-8
+ bh=jn0omH7tklANVRUrQQDM320JVtxDeklHPVfCY0ZA7DM=;
+ b=KJ3bUjlrME2EAhE6eiJJymq8DCYrsGl3E14DtalBLhDn5wSAUderfDGv8/4LnKLKzPuM
+ nkalN0+PTpnMIxI6h4E9iOdj7ioxPc/LiQ/mVwsFiKfqvh+wIqVH/lhciHnNG9A62oAk
+ Tgz9XWhrtQlqpqukwjvjOtTtYkmaS47BTD8= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3100wy6dr3-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 11:02:58 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 11:02:30 -0700
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Wed, 13 May 2020 11:02:24 -0700
+ 15.1.1847.3; Wed, 13 May 2020 11:02:29 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id DE9DE37009B0; Wed, 13 May 2020 11:02:21 -0700 (PDT)
+        id 222DF37009B0; Wed, 13 May 2020 11:02:23 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
 CC:     Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v2 6/7] bpf: enable bpf_iter targets registering ctx argument types
-Date:   Wed, 13 May 2020 11:02:21 -0700
-Message-ID: <20200513180221.2949882-1-yhs@fb.com>
+Subject: [PATCH bpf-next v2 7/7] samples/bpf: remove compiler warnings
+Date:   Wed, 13 May 2020 11:02:23 -0700
+Message-ID: <20200513180223.2949987-1-yhs@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200513180215.2949164-1-yhs@fb.com>
 References: <20200513180215.2949164-1-yhs@fb.com>
@@ -51,282 +51,115 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
  definitions=2020-05-13_08:2020-05-13,2020-05-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 cotscore=-2147483648
- mlxscore=0 priorityscore=1501 adultscore=0 impostorscore=0 malwarescore=0
- spamscore=0 clxscore=1015 suspectscore=0 mlxlogscore=999 phishscore=0
- bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005130153
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ priorityscore=1501 mlxscore=0 adultscore=0 mlxlogscore=999
+ cotscore=-2147483648 impostorscore=0 spamscore=0 lowpriorityscore=0
+ clxscore=1015 bulkscore=0 phishscore=0 malwarescore=0 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005130153
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit b121b341e598 ("bpf: Add PTR_TO_BTF_ID_OR_NULL
-support") adds a field btf_id_or_null_non0_off to
-bpf_prog->aux structure to indicate that the
-first ctx argument is PTR_TO_BTF_ID reg_type and
-all others are PTR_TO_BTF_ID_OR_NULL.
-This approach does not really scale if we have
-other different reg types in the future, e.g.,
-a pointer to a buffer.
+Commit 5fbc220862fc ("tools/libpf: Add offsetof/container_of macro
+in bpf_helpers.h") added macros offsetof/container_of to
+bpf_helpers.h. Unfortunately, it caused compilation warnings
+below for a few samples/bpf programs:
+  In file included from /data/users/yhs/work/net-next/samples/bpf/sockex2=
+_kern.c:4:
+  In file included from /data/users/yhs/work/net-next/include/uapi/linux/=
+in.h:24:
+  In file included from /data/users/yhs/work/net-next/include/linux/socke=
+t.h:8:
+  In file included from /data/users/yhs/work/net-next/include/linux/uio.h=
+:8:
+  /data/users/yhs/work/net-next/include/linux/kernel.h:992:9: warning: 'c=
+ontainer_of' macro redefined [-Wmacro-redefined]
+          ^
+  /data/users/yhs/work/net-next/tools/lib/bpf/bpf_helpers.h:46:9: note: p=
+revious definition is here
+          ^
+  1 warning generated.
+    CLANG-bpf  samples/bpf/sockex3_kern.o
 
-This patch enables bpf_iter targets registering ctx argument
-reg types which may be different from the default one.
-For example, for pointers to structures, the default reg_type
-is PTR_TO_BTF_ID for tracing program. The target can register
-a particular pointer type as PTR_TO_BTF_ID_OR_NULL which can
-be used by the verifier to enforce accesses.
+In all these cases, bpf_helpers.h is included first, followed by other
+standard headers. The macro container_of is defined unconditionally
+in kernel.h, causing the compiler warning.
+
+The fix is to move bpf_helpers.h after standard headers.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- include/linux/bpf.h      | 12 +++++++++++-
- include/net/ip6_fib.h    |  7 +++++++
- kernel/bpf/bpf_iter.c    |  5 +++++
- kernel/bpf/btf.c         | 15 ++++++++++-----
- kernel/bpf/map_iter.c    |  5 +++++
- kernel/bpf/task_iter.c   | 12 ++++++++++++
- kernel/bpf/verifier.c    |  1 -
- net/ipv6/ip6_fib.c       |  5 -----
- net/ipv6/route.c         |  5 +++++
- net/netlink/af_netlink.c |  5 +++++
- 10 files changed, 60 insertions(+), 12 deletions(-)
+ samples/bpf/offwaketime_kern.c | 4 ++--
+ samples/bpf/sockex2_kern.c     | 4 ++--
+ samples/bpf/sockex3_kern.c     | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 534174eca86b..c45d198ac38c 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -643,6 +643,12 @@ struct bpf_jit_poke_descriptor {
- 	u16 reason;
- };
+diff --git a/samples/bpf/offwaketime_kern.c b/samples/bpf/offwaketime_ker=
+n.c
+index c4ec10dbfc3b..d459f73412a4 100644
+--- a/samples/bpf/offwaketime_kern.c
++++ b/samples/bpf/offwaketime_kern.c
+@@ -5,12 +5,12 @@
+  * License as published by the Free Software Foundation.
+  */
+ #include <uapi/linux/bpf.h>
+-#include <bpf/bpf_helpers.h>
+-#include <bpf/bpf_tracing.h>
+ #include <uapi/linux/ptrace.h>
+ #include <uapi/linux/perf_event.h>
+ #include <linux/version.h>
+ #include <linux/sched.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
 =20
-+/* reg_type info for ctx arguments */
-+struct bpf_ctx_arg_aux {
-+	u32 offset;
-+	enum bpf_reg_type reg_type;
-+};
-+
- struct bpf_prog_aux {
- 	atomic64_t refcnt;
- 	u32 used_map_cnt;
-@@ -654,12 +660,13 @@ struct bpf_prog_aux {
- 	u32 func_cnt; /* used by non-func prog as the number of func progs */
- 	u32 func_idx; /* 0 for non-func prog, the index in func array for func =
-prog */
- 	u32 attach_btf_id; /* in-kernel BTF type id to attach to */
-+	u32 ctx_arg_info_size;
-+	const struct bpf_ctx_arg_aux *ctx_arg_info;
- 	struct bpf_prog *linked_prog;
- 	bool verifier_zext; /* Zero extensions has been inserted by verifier. *=
-/
- 	bool offload_requested;
- 	bool attach_btf_trace; /* true if attaching to BTF-enabled raw tp */
- 	bool func_proto_unreliable;
--	bool btf_id_or_null_non0_off;
- 	enum bpf_tramp_prog_type trampoline_prog_type;
- 	struct bpf_trampoline *trampoline;
- 	struct hlist_node tramp_hlist;
-@@ -1139,12 +1146,15 @@ int bpf_obj_get_user(const char __user *pathname,=
- int flags);
- typedef int (*bpf_iter_init_seq_priv_t)(void *private_data);
- typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
+ #define _(P) ({typeof(P) val; bpf_probe_read(&val, sizeof(val), &P); val=
+;})
 =20
-+#define BPF_ITER_CTX_ARG_MAX 2
- struct bpf_iter_reg {
- 	const char *target;
- 	const struct seq_operations *seq_ops;
- 	bpf_iter_init_seq_priv_t init_seq_private;
- 	bpf_iter_fini_seq_priv_t fini_seq_private;
- 	u32 seq_priv_size;
-+	u32 ctx_arg_info_size;
-+	struct bpf_ctx_arg_aux ctx_arg_info[BPF_ITER_CTX_ARG_MAX];
- };
+diff --git a/samples/bpf/sockex2_kern.c b/samples/bpf/sockex2_kern.c
+index a41dd520bc53..b7997541f7ee 100644
+--- a/samples/bpf/sockex2_kern.c
++++ b/samples/bpf/sockex2_kern.c
+@@ -1,12 +1,12 @@
+ #include <uapi/linux/bpf.h>
+-#include <bpf/bpf_helpers.h>
+-#include "bpf_legacy.h"
+ #include <uapi/linux/in.h>
+ #include <uapi/linux/if.h>
+ #include <uapi/linux/if_ether.h>
+ #include <uapi/linux/ip.h>
+ #include <uapi/linux/ipv6.h>
+ #include <uapi/linux/if_tunnel.h>
++#include <bpf/bpf_helpers.h>
++#include "bpf_legacy.h"
+ #define IP_MF		0x2000
+ #define IP_OFFSET	0x1FFF
 =20
- struct bpf_iter_meta {
-diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
-index 80262d2980f5..870b646c5797 100644
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -540,6 +540,13 @@ static inline bool fib6_metric_locked(struct fib6_in=
-fo *f6i, int metric)
- 	return !!(f6i->fib6_metrics->metrics[RTAX_LOCK - 1] & (1 << metric));
- }
+diff --git a/samples/bpf/sockex3_kern.c b/samples/bpf/sockex3_kern.c
+index 36d4dac23549..779a5249c418 100644
+--- a/samples/bpf/sockex3_kern.c
++++ b/samples/bpf/sockex3_kern.c
+@@ -5,8 +5,6 @@
+  * License as published by the Free Software Foundation.
+  */
+ #include <uapi/linux/bpf.h>
+-#include <bpf/bpf_helpers.h>
+-#include "bpf_legacy.h"
+ #include <uapi/linux/in.h>
+ #include <uapi/linux/if.h>
+ #include <uapi/linux/if_ether.h>
+@@ -14,6 +12,8 @@
+ #include <uapi/linux/ipv6.h>
+ #include <uapi/linux/if_tunnel.h>
+ #include <uapi/linux/mpls.h>
++#include <bpf/bpf_helpers.h>
++#include "bpf_legacy.h"
+ #define IP_MF		0x2000
+ #define IP_OFFSET	0x1FFF
 =20
-+#if IS_BUILTIN(CONFIG_IPV6) && defined(CONFIG_BPF_SYSCALL)
-+struct bpf_iter__ipv6_route {
-+	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-+	__bpf_md_ptr(struct fib6_info *, rt);
-+};
-+#endif
-+
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
- static inline bool fib6_has_custom_rules(const struct net *net)
- {
-diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
-index 644f8626b2c0..dd612b80b9fe 100644
---- a/kernel/bpf/bpf_iter.c
-+++ b/kernel/bpf/bpf_iter.c
-@@ -308,6 +308,11 @@ bool bpf_iter_prog_supported(struct bpf_prog *prog)
- 	}
- 	mutex_unlock(&targets_mutex);
-=20
-+	if (supported) {
-+		prog->aux->ctx_arg_info_size =3D tinfo->reg_info->ctx_arg_info_size;
-+		prog->aux->ctx_arg_info =3D tinfo->reg_info->ctx_arg_info;
-+	}
-+
- 	return supported;
- }
-=20
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index dcd233139294..58c9af1d4808 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -3694,7 +3694,7 @@ bool btf_ctx_access(int off, int size, enum bpf_acc=
-ess_type type,
- 	struct bpf_verifier_log *log =3D info->log;
- 	const struct btf_param *args;
- 	u32 nr_args, arg;
--	int ret;
-+	int i, ret;
-=20
- 	if (off % 8) {
- 		bpf_log(log, "func '%s' offset %d is not multiple of 8\n",
-@@ -3790,10 +3790,15 @@ bool btf_ctx_access(int off, int size, enum bpf_a=
-ccess_type type,
- 		return true;
-=20
- 	/* this is a pointer to another type */
--	if (off !=3D 0 && prog->aux->btf_id_or_null_non0_off)
--		info->reg_type =3D PTR_TO_BTF_ID_OR_NULL;
--	else
--		info->reg_type =3D PTR_TO_BTF_ID;
-+	info->reg_type =3D PTR_TO_BTF_ID;
-+	for (i =3D 0; i < prog->aux->ctx_arg_info_size; i++) {
-+		const struct bpf_ctx_arg_aux *ctx_arg_info =3D &prog->aux->ctx_arg_inf=
-o[i];
-+
-+		if (ctx_arg_info->offset =3D=3D off) {
-+			info->reg_type =3D ctx_arg_info->reg_type;
-+			break;
-+		}
-+	}
-=20
- 	if (tgt_prog) {
- 		ret =3D btf_translate_to_vmlinux(log, btf, t, tgt_prog->type, arg);
-diff --git a/kernel/bpf/map_iter.c b/kernel/bpf/map_iter.c
-index c6216a5fe56e..c69071e334bf 100644
---- a/kernel/bpf/map_iter.c
-+++ b/kernel/bpf/map_iter.c
-@@ -87,6 +87,11 @@ static const struct bpf_iter_reg bpf_map_reg_info =3D =
-{
- 	.init_seq_private	=3D NULL,
- 	.fini_seq_private	=3D NULL,
- 	.seq_priv_size		=3D sizeof(struct bpf_iter_seq_map_info),
-+	.ctx_arg_info_size	=3D 1,
-+	.ctx_arg_info		=3D {
-+		{ offsetof(struct bpf_iter__bpf_map, map),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+	},
- };
-=20
- static int __init bpf_map_iter_init(void)
-diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-index bd7bfd83d9e0..a9b7264dda08 100644
---- a/kernel/bpf/task_iter.c
-+++ b/kernel/bpf/task_iter.c
-@@ -312,6 +312,11 @@ static const struct bpf_iter_reg task_reg_info =3D {
- 	.init_seq_private	=3D init_seq_pidns,
- 	.fini_seq_private	=3D fini_seq_pidns,
- 	.seq_priv_size		=3D sizeof(struct bpf_iter_seq_task_info),
-+	.ctx_arg_info_size	=3D 1,
-+	.ctx_arg_info		=3D {
-+		{ offsetof(struct bpf_iter__task, task),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+	},
- };
-=20
- static const struct bpf_iter_reg task_file_reg_info =3D {
-@@ -320,6 +325,13 @@ static const struct bpf_iter_reg task_file_reg_info =
-=3D {
- 	.init_seq_private	=3D init_seq_pidns,
- 	.fini_seq_private	=3D fini_seq_pidns,
- 	.seq_priv_size		=3D sizeof(struct bpf_iter_seq_task_file_info),
-+	.ctx_arg_info_size	=3D 2,
-+	.ctx_arg_info		=3D {
-+		{ offsetof(struct bpf_iter__task_file, task),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+		{ offsetof(struct bpf_iter__task_file, file),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+	},
- };
-=20
- static int __init task_iter_init(void)
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 2a1826c76bb6..a3f2af756fd6 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -10652,7 +10652,6 @@ static int check_attach_btf_id(struct bpf_verifie=
-r_env *env)
- 		prog->aux->attach_func_proto =3D t;
- 		if (!bpf_iter_prog_supported(prog))
- 			return -EINVAL;
--		prog->aux->btf_id_or_null_non0_off =3D true;
- 		ret =3D btf_distill_func_proto(&env->log, btf, t,
- 					     tname, &fmodel);
- 		return ret;
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index a1fcc0ca21af..250ff52c674e 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -2638,11 +2638,6 @@ static void ipv6_route_native_seq_stop(struct seq_=
-file *seq, void *v)
- }
-=20
- #if IS_BUILTIN(CONFIG_IPV6) && defined(CONFIG_BPF_SYSCALL)
--struct bpf_iter__ipv6_route {
--	__bpf_md_ptr(struct bpf_iter_meta *, meta);
--	__bpf_md_ptr(struct fib6_info *, rt);
--};
--
- static int ipv6_route_prog_seq_show(struct bpf_prog *prog,
- 				    struct bpf_iter_meta *meta,
- 				    void *v)
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 22bf4e36c093..22e56465f14d 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -6403,6 +6403,11 @@ static const struct bpf_iter_reg ipv6_route_reg_in=
-fo =3D {
- 	.init_seq_private	=3D bpf_iter_init_seq_net,
- 	.fini_seq_private	=3D bpf_iter_fini_seq_net,
- 	.seq_priv_size		=3D sizeof(struct ipv6_route_iter),
-+	.ctx_arg_info_size	=3D 1,
-+	.ctx_arg_info		=3D {
-+		{ offsetof(struct bpf_iter__ipv6_route, rt),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+	},
- };
-=20
- static int __init bpf_iter_register(void)
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 839827227e98..4f2c3b14ddbf 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2809,6 +2809,11 @@ static const struct bpf_iter_reg netlink_reg_info =
-=3D {
- 	.init_seq_private	=3D bpf_iter_init_seq_net,
- 	.fini_seq_private	=3D bpf_iter_fini_seq_net,
- 	.seq_priv_size		=3D sizeof(struct nl_seq_iter),
-+	.ctx_arg_info_size	=3D 1,
-+	.ctx_arg_info		=3D {
-+		{ offsetof(struct bpf_iter__netlink, sk),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+	},
- };
-=20
- static int __init bpf_iter_register(void)
 --=20
 2.24.1
 
