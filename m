@@ -2,95 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A39C1D1C66
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 375951D1C74
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389811AbgEMRjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 13:39:07 -0400
-Received: from smtprelay0150.hostedemail.com ([216.40.44.150]:54324 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732694AbgEMRjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:39:06 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 213E41802912F;
-        Wed, 13 May 2020 17:39:05 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:968:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1801:2194:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3872:3874:4030:4321:4605:5007:6742:6743:7875:8603:8660:10004:10400:10848:11026:11232:11658:11914:12043:12296:12297:12679:12740:12760:12895:13019:13069:13146:13148:13156:13228:13230:13311:13357:13439:14040:14659:14721:21080:21627:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: watch82_4eccc56996d20
-X-Filterd-Recvd-Size: 2964
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf13.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 13 May 2020 17:39:01 +0000 (UTC)
-Message-ID: <ecc165c33962d964d518c80de605af632eee0474.camel@perches.com>
-Subject: Re: remove kernel_setsockopt and kernel_getsockopt
-From:   Joe Perches <joe@perches.com>
-To:     Christoph Hellwig <hch@lst.de>,
+        id S2389947AbgEMRkU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 13 May 2020 13:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1733008AbgEMRkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:40:20 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDFFC061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 10:40:20 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jYvMc-0007rx-D4; Wed, 13 May 2020 19:40:14 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jYvMZ-0006Jw-Mq; Wed, 13 May 2020 19:40:11 +0200
+Date:   Wed, 13 May 2020 19:40:11 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Mark Rutland <mark.rutland@arm.com>, Marek Vasut <marex@denx.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-nvme@lists.infradead.org,
-        target-devel@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-cifs@vger.kernel.org, cluster-devel@redhat.com,
-        ocfs2-devel@oss.oracle.com, netdev@vger.kernel.org,
-        linux-sctp@vger.kernel.org, ceph-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-nfs@vger.kernel.org
-Date:   Wed, 13 May 2020 10:38:59 -0700
-In-Reply-To: <20200513062649.2100053-1-hch@lst.de>
-References: <20200513062649.2100053-1-hch@lst.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v1] net: phy: tja11xx: add cable-test support
+Message-ID: <20200513174011.kl6l767cimeo6dpy@pengutronix.de>
+References: <20200513123440.19580-1-o.rempel@pengutronix.de>
+ <20200513133925.GD499265@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200513133925.GD499265@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 19:26:43 up 180 days,  8:45, 182 users,  load average: 0.02, 0.02,
+ 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-05-13 at 08:26 +0200, Christoph Hellwig wrote:
-> this series removes the kernel_setsockopt and kernel_getsockopt
-> functions, and instead switches their users to small functions that
-> implement setting (or in one case getting) a sockopt directly using
-> a normal kernel function call with type safety and all the other
-> benefits of not having a function call.
+On Wed, May 13, 2020 at 03:39:25PM +0200, Andrew Lunn wrote:
+> On Wed, May 13, 2020 at 02:34:40PM +0200, Oleksij Rempel wrote:
+> > Add initial cable testing support.
+> > This PHY needs only 100usec for this test and it is recommended to run it
+> > before the link is up. For now, provide at least ethtool support, so it
+> > can be tested by more developers.
+> > 
+> > This patch was tested with TJA1102 PHY with following results:
+> > - No cable, is detected as open
+> > - 1m cable, with no connected other end and detected as open
+> > - a 40m cable (out of spec, max lenght should be 15m) is detected as OK.
+> > 
+> > Current patch do not provide polarity test support. This test would
+> > indicate not proper wire connection, where "+" wire of main phy is
+> > connected to the "-" wire of the link partner.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > ---
+> >  drivers/net/phy/nxp-tja11xx.c | 106 +++++++++++++++++++++++++++++++++-
+> >  1 file changed, 105 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+> > index ca5f9d4dc57ed..8b743d25002b9 100644
+> > --- a/drivers/net/phy/nxp-tja11xx.c
+> > +++ b/drivers/net/phy/nxp-tja11xx.c
+> > @@ -5,6 +5,7 @@
+> >   */
+> >  #include <linux/delay.h>
+> >  #include <linux/ethtool.h>
+> > +#include <linux/ethtool_netlink.h>
+> >  #include <linux/kernel.h>
+> >  #include <linux/mdio.h>
+> >  #include <linux/mii.h>
+> > @@ -26,6 +27,7 @@
+> >  #define MII_ECTRL_POWER_MODE_NO_CHANGE	(0x0 << 11)
+> >  #define MII_ECTRL_POWER_MODE_NORMAL	(0x3 << 11)
+> >  #define MII_ECTRL_POWER_MODE_STANDBY	(0xc << 11)
+> > +#define MII_ECTRL_CABLE_TEST		BIT(5)
+> >  #define MII_ECTRL_CONFIG_EN		BIT(2)
+> >  #define MII_ECTRL_WAKE_REQUEST		BIT(0)
+> >  
+> > @@ -55,6 +57,11 @@
+> >  #define MII_GENSTAT			24
+> >  #define MII_GENSTAT_PLL_LOCKED		BIT(14)
+> >  
+> > +#define MII_EXTSTAT			25
+> > +#define MII_EXTSTAT_SHORT_DETECT	BIT(8)
+> > +#define MII_EXTSTAT_OPEN_DETECT		BIT(7)
+> > +#define MII_EXTSTAT_POLARITY_DETECT	BIT(6)
+> > +
 > 
-> In some cases these functions seem pretty heavy handed as they do
-> a lock_sock even for just setting a single variable, but this mirrors
-> the real setsockopt implementation - counter to that a few kernel
-> drivers just set the fields directly already.
-> 
-> Nevertheless the diffstat looks quite promising:
-> 
->  42 files changed, 721 insertions(+), 799 deletions(-)
+> Do these registers all conform to the standard? Can we pull this code
+> out into a library which all standards conformant PHY drivers can use?
 
-trivia:
+According to opensig, this functionality should be present on all new T1 PHYs.
+But the register/bit layout is no specified as standard. At least I was not able
+to find it. I assume, current layout is TJA11xx specific.
 
-It might be useful to show overall object size change.
+> The code itself looks O.K.
 
-More EXPORT_SYMBOL uses increase object size a little.
+What would be the best place to do a test before the link is getting up?
+Can it be done in the phy core, or it should be done in the PHY driver?
 
-And not sure it matters much except it reduces overall object
-size, but these patches remove (unnecessary) logging on error
-and that could be mentioned in the cover letter too.
+So far, no action except of logging these errors is needed. 
 
-e.g.:
-
--       ret = kernel_setsockopt(queue->sock, SOL_SOCKET, SO_LINGER,
--                       (char *)&sol, sizeof(sol));
--       if (ret) {
--               dev_err(nctrl->device,
--                       "failed to set SO_LINGER sock opt %d\n", ret);
--               goto err_sock;
--       }
-+       sock_set_linger(queue->sock->sk, true, 0);
-
-
-
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
