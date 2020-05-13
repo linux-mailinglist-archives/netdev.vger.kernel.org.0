@@ -2,59 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37FF61D229E
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 01:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5431D22A1
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 01:04:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732278AbgEMXD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 19:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
+        id S1732291AbgEMXED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 19:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731815AbgEMXD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 19:03:58 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FA9C061A0C;
-        Wed, 13 May 2020 16:03:58 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id t16so407864plo.7;
-        Wed, 13 May 2020 16:03:58 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1731815AbgEMXEB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 19:04:01 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B32C061A0C;
+        Wed, 13 May 2020 16:04:01 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id w65so393900pfc.12;
+        Wed, 13 May 2020 16:04:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=er1ssAfIglw+q0hDY8np74FfThJJmd84hpOCUTP7dkY=;
-        b=osmhLP3cuWZJtXCWtXsCvPrNdLB5y+ADdX1C0BGXcK57LgqSbCl6t+rsu+AdpxI42u
-         eYNtTTTDwu8a9iP4BHdUNljcd4g5bNLnXYdJPZZ8YzofNYOMjoYtfuL9yoeNnfIzMa/G
-         4qYIGFD0mpqkazY25R8SYW7SWENiWlvjRMMH18ylErq1nbiQeXHluW12NK9yYjCZNW0K
-         E98/fLFksS1VGuoWp5kOwa1LlT8VTBGd18LEhfgmtveTGGl/eY77eW3YQu4hlH4fmkIE
-         FvbPQzoEoKPJ+F2zvckGNJrXZIjJ01EZ/72MGs0SAmBpizY9E24kiH8P34WGRHKhvyxD
-         N86g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=u9vJ8Ibe2TUJ1QVhKFzt9KOOKr6zN91oMhdosARx+EI=;
+        b=DQDp+w3/8aibWwLJ6Svq6hDxLK9olHvGrqxayWYbjMrdh9Tf9OzK88pcGaWUjeuiO8
+         L5EtIMwL8T6bN2HLPILOpM9fqOntUwy0iwkemLLq2LZv+Hv4afR9mYy6Aqv2PmH5S02+
+         y96+iwHfY0f4nL52MwD8sTRClYDzCtpnsjvUvgyRCbqFb5UWwlxfmhcNI6JNqrC0m5wu
+         LfKnfVyxgRUqTm0BD347HyALemzNC4sz1VIKe8A3m1xkng2P6jPNMjkIsFS+Ds8yZPiA
+         +apFhkubOfGwdAuHdEkrRZ0r4wSVaxBuLI2R00zRqpAA8u8OLSfYCtPTmSUfBY5aNTZB
+         S6iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=er1ssAfIglw+q0hDY8np74FfThJJmd84hpOCUTP7dkY=;
-        b=Naz+k2ZY8bMCsJKkEUZYaEilIEnO6c8AXkKD6pUWSMqAFiv7gwVFxeleXBhzhQ0eyM
-         ZOvqevqgxa0R08H9gOEh3M3zYvWUspBDmgtYpqqhaye/eNKWDPE/dpFX3OvHrots/N45
-         6iY2O8uJ6HhHAS5l0Uf3m+fIXlhjWsrmQosdBrUdAwf9DsHIXjNz5eInhcSdUUsml4/q
-         6fI1nQJw0lXlt4AYbMR9/KJ+Ys/j0p3qU+ii6bIRNfBTsyc0G/QtTkIdsTGfnK4ZbFJM
-         FaLEIupzk/JqYXu4HsDFxfodfSAak0MJYAkfGQnC4plyUN0/QyhjZw7RDOqjvlSdrEe+
-         o6mQ==
-X-Gm-Message-State: AOAM533GKFc2epjv8QdVoWKuchVra5JMRv7IKxY5zeDD6C0/yLIWTP0t
-        0nXHmSVmQGXd1HRm55qomMRqrRsq
-X-Google-Smtp-Source: ABdhPJxhJZqAjGCUiZ1BCBg6z5R7UnF23i0uL4yUqhJbrN/OorhOTeqDT5eXqmJvb0KYZCewEU8FDA==
-X-Received: by 2002:a17:902:6b01:: with SMTP id o1mr1473753plk.64.1589411038068;
-        Wed, 13 May 2020 16:03:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=u9vJ8Ibe2TUJ1QVhKFzt9KOOKr6zN91oMhdosARx+EI=;
+        b=Rdn7WbvXU27wDSukQ64TO8S5gwhTy4AOpLd2MsSxOiDBh28oPc6uGn1yVpfjK1ek2j
+         +16yfnnBhzoBq1qyZ8S21WePR0QxclCNdextTuZOYgY5HU4gvyaDvfKpf7l5Z+zgGkQE
+         tCAuYZwKrjWpiqVA8g615iQh4r4ALIWRyAeu/g9UMfgGDaYubT+zzcDKF/PnF5NYuF9q
+         ts/siAz5Bm0k6cODQi2+oaQR6XQPs9L8C+vesfAj4VK8LCk/NF9l/pTO65DRxpezI83L
+         ZIDXLxTX+kKODYBaOJF3o96P0ZnFmoyk1oZgABKGosi8N6hRApHn5AVjUOE0Kw1MbKgH
+         3GBw==
+X-Gm-Message-State: AOAM533GrMmM6JLQfojhK26t3YMUg3JDAFQBDt56oWW6P+q6vR/0bpza
+        NP1iBQPtB9Mdri8T71Ag/rPKFQ86
+X-Google-Smtp-Source: ABdhPJyHW0xQ/sI670poFg2vDmilweFE3a+EGJHF0WxHwJatlzDlhUXLt0VeYw8ckinAzUttg8EXLA==
+X-Received: by 2002:a63:3114:: with SMTP id x20mr1581052pgx.52.1589411040968;
+        Wed, 13 May 2020 16:04:00 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id t23sm16558706pji.32.2020.05.13.16.03.56
+        by smtp.gmail.com with ESMTPSA id t23sm16558706pji.32.2020.05.13.16.03.58
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 May 2020 16:03:57 -0700 (PDT)
+        Wed, 13 May 2020 16:03:59 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
         kernel-team@fb.com, linux-security-module@vger.kernel.org,
         acme@redhat.com, jamorris@linux.microsoft.com, jannh@google.com,
         kpsingh@google.com
-Subject: [PATCH v7 bpf-next 0/3] Introduce CAP_BPF
-Date:   Wed, 13 May 2020 16:03:52 -0700
-Message-Id: <20200513230355.7858-1-alexei.starovoitov@gmail.com>
+Subject: [PATCH v7 bpf-next 1/3] bpf, capability: Introduce CAP_BPF
+Date:   Wed, 13 May 2020 16:03:53 -0700
+Message-Id: <20200513230355.7858-2-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
+In-Reply-To: <20200513230355.7858-1-alexei.starovoitov@gmail.com>
+References: <20200513230355.7858-1-alexei.starovoitov@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -62,110 +65,157 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-v6->v7:
-- permit SK_REUSEPORT program type under CAP_BPF as suggested by Marek Majkowski.
-  It's equivalent to SOCKET_FILTER which is unpriv.
+Split BPF operations that are allowed under CAP_SYS_ADMIN into
+combination of CAP_BPF, CAP_PERFMON, CAP_NET_ADMIN.
+For backward compatibility include them in CAP_SYS_ADMIN as well.
 
-v5->v6:
-- split allow_ptr_leaks into four flags.
-- retain bpf_jit_limit under cap_sys_admin.
-- fixed few other issues spotted by Daniel.
+The end result provides simple safety model for applications that use BPF:
+- to load tracing program types
+  BPF_PROG_TYPE_{KPROBE, TRACEPOINT, PERF_EVENT, RAW_TRACEPOINT, etc}
+  use CAP_BPF and CAP_PERFMON
+- to load networking program types
+  BPF_PROG_TYPE_{SCHED_CLS, XDP, SK_SKB, etc}
+  use CAP_BPF and CAP_NET_ADMIN
 
-v4->v5:
+There are few exceptions from this rule:
+- bpf_trace_printk() is allowed in networking programs, but it's using
+  tracing mechanism, hence this helper needs additional CAP_PERFMON
+  if networking program is using this helper.
+- BPF_F_ZERO_SEED flag for hash/lru map is allowed under CAP_SYS_ADMIN only
+  to discourage production use.
+- BPF HW offload is allowed under CAP_SYS_ADMIN.
+- bpf_probe_write_user() is allowed under CAP_SYS_ADMIN only.
 
-Split BPF operations that are allowed under CAP_SYS_ADMIN into combination of
-CAP_BPF, CAP_PERFMON, CAP_NET_ADMIN and keep some of them under CAP_SYS_ADMIN.
+CAPs are not checked at attach/detach time with two exceptions:
+- loading BPF_PROG_TYPE_CGROUP_SKB is allowed for unprivileged users,
+  hence CAP_NET_ADMIN is required at attach time.
+- flow_dissector detach doesn't check prog FD at detach,
+  hence CAP_NET_ADMIN is required at detach time.
 
-The user process has to have
-- CAP_BPF to create maps, do other sys_bpf() commands and load SK_REUSEPORT progs.
-  Note: dev_map, sock_hash, sock_map map types still require CAP_NET_ADMIN.
-  That could be relaxed in the future.
-- CAP_BPF and CAP_PERFMON to load tracing programs.
-- CAP_BPF and CAP_NET_ADMIN to load networking programs.
-(or CAP_SYS_ADMIN for backward compatibility).
+CAP_SYS_ADMIN is required to iterate BPF objects (progs, maps, links) via get_next_id
+command and convert them to file descriptor via GET_FD_BY_ID command.
+This restriction guarantees that mutliple tasks with CAP_BPF are not able to
+affect each other. That leads to clean isolation of tasks. For example:
+task A with CAP_BPF and CAP_NET_ADMIN loads and attaches a firewall via bpf_link.
+task B with the same capabilities cannot detach that firewall unless
+task A explicitly passed link FD to task B via scm_rights or bpffs.
+CAP_SYS_ADMIN can still detach/unload everything.
 
-CAP_BPF solves three main goals:
-1. provides isolation to user space processes that drop CAP_SYS_ADMIN and switch to CAP_BPF.
-   More on this below. This is the major difference vs v4 set back from Sep 2019.
-2. makes networking BPF progs more secure, since CAP_BPF + CAP_NET_ADMIN
-   prevents pointer leaks and arbitrary kernel memory access.
-3. enables fuzzers to exercise all of the verifier logic. Eventually finding bugs
-   and making BPF infra more secure. Currently fuzzers run in unpriv.
-   They will be able to run with CAP_BPF.
+Two networking user apps with CAP_SYS_ADMIN and CAP_NET_ADMIN can
+accidentely mess with each other programs and maps.
+Two networking user apps with CAP_NET_ADMIN and CAP_BPF cannot affect each other.
 
-The patchset is long overdue follow-up from the last plumbers conference.
-Comparing to what was discussed at LPC the CAP* checks at attach time are gone.
-For tracing progs the CAP_SYS_ADMIN check was done at load time only. There was
-no check at attach time. For networking and cgroup progs CAP_SYS_ADMIN was
-required at load time and CAP_NET_ADMIN at attach time, but there are several
-ways to bypass CAP_NET_ADMIN:
-- if networking prog is using tail_call writing FD into prog_array will
-  effectively attach it, but bpf_map_update_elem is an unprivileged operation.
-- freplace prog with CAP_SYS_ADMIN can replace networking prog
+CAP_NET_ADMIN + CAP_BPF allows networking programs access only packet data.
+Such networking progs cannot access arbitrary kernel memory or leak pointers.
 
-Consolidating all CAP checks at load time makes security model similar to
-open() syscall. Once the user got an FD it can do everything with it.
-read/write/poll don't check permissions. The same way when bpf_prog_load
-command returns an FD the user can do everything (including attaching,
-detaching, and bpf_test_run).
+bpftool, bpftrace, bcc tools binaries should NOT be installed with
+CAP_BPF and CAP_PERFMON, since unpriv users will be able to read kernel secrets.
+But users with these two permissions will be able to use these tracing tools.
 
-The important design decision is to allow ID->FD transition for
-CAP_SYS_ADMIN only. What it means that user processes can run
-with CAP_BPF and CAP_NET_ADMIN and they will not be able to affect each
-other unless they pass FDs via scm_rights or via pinning in bpffs.
-ID->FD is a mechanism for human override and introspection.
-An admin can do 'sudo bpftool prog ...'. It's possible to enforce via LSM that
-only bpftool binary does bpf syscall with CAP_SYS_ADMIN and the rest of user
-space processes do bpf syscall with CAP_BPF isolating bpf objects (progs, maps,
-links) that are owned by such processes from each other.
+CAP_PERFMON is least secure, since it allows kprobes and kernel memory access.
+CAP_NET_ADMIN can stop network traffic via iproute2.
+CAP_BPF is the safest from security point of view and harmless on its own.
 
-Another significant change from LPC is that the verifier checks are split into
-four flags. The allow_ptr_leaks flag allows pointer manipulations. The
-bpf_capable flag enables all modern verifier features like bpf-to-bpf calls,
-BTF, bounded loops, dead code elimination, etc. All the goodness. The
-bypass_spec_v1 flag enables indirect stack access from bpf programs and
-disables speculative analysis and bpf array mitigations. The bypass_spec_v4
-flag disables store sanitation. That allows networking progs with CAP_BPF +
-CAP_NET_ADMIN enjoy modern verifier features while being more secure.
+Having CAP_BPF and/or CAP_NET_ADMIN is not enough to write into arbitrary map
+and if that map is used by firewall-like bpf prog.
+CAP_BPF allows many bpf prog_load commands in parallel. The verifier
+may consume large amount of memory and significantly slow down the system.
 
-Some networking progs may need CAP_BPF + CAP_NET_ADMIN + CAP_PERFMON,
-since subtracting pointers (like skb->data_end - skb->data) is a pointer leak,
-but the verifier may get smarter in the future.
+Existing unprivileged BPF operations are not affected.
+In particular unprivileged users are allowed to load socket_filter and cg_skb
+program types and to create array, hash, prog_array, map-in-map map types.
 
-Please see patches for more details.
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ include/linux/capability.h          |  5 +++++
+ include/uapi/linux/capability.h     | 34 ++++++++++++++++++++++++++++-
+ security/selinux/include/classmap.h |  4 ++--
+ 3 files changed, 40 insertions(+), 3 deletions(-)
 
-Alexei Starovoitov (3):
-  bpf, capability: Introduce CAP_BPF
-  bpf: implement CAP_BPF
-  selftests/bpf: use CAP_BPF and CAP_PERFMON in tests
-
- drivers/media/rc/bpf-lirc.c                   |  2 +-
- include/linux/bpf.h                           | 18 +++-
- include/linux/bpf_verifier.h                  |  3 +
- include/linux/capability.h                    |  5 ++
- include/uapi/linux/capability.h               | 34 ++++++-
- kernel/bpf/arraymap.c                         | 10 +--
- kernel/bpf/bpf_struct_ops.c                   |  2 +-
- kernel/bpf/core.c                             |  2 +-
- kernel/bpf/cpumap.c                           |  2 +-
- kernel/bpf/hashtab.c                          |  4 +-
- kernel/bpf/helpers.c                          |  4 +-
- kernel/bpf/lpm_trie.c                         |  2 +-
- kernel/bpf/map_in_map.c                       |  2 +-
- kernel/bpf/queue_stack_maps.c                 |  2 +-
- kernel/bpf/reuseport_array.c                  |  2 +-
- kernel/bpf/stackmap.c                         |  2 +-
- kernel/bpf/syscall.c                          | 89 ++++++++++++++-----
- kernel/bpf/verifier.c                         | 37 ++++----
- kernel/trace/bpf_trace.c                      |  3 +
- net/core/bpf_sk_storage.c                     |  4 +-
- net/core/filter.c                             |  4 +-
- security/selinux/include/classmap.h           |  4 +-
- tools/testing/selftests/bpf/test_verifier.c   | 44 +++++++--
- tools/testing/selftests/bpf/verifier/calls.c  | 16 ++--
- .../selftests/bpf/verifier/dead_code.c        | 10 +--
- 25 files changed, 223 insertions(+), 84 deletions(-)
-
+diff --git a/include/linux/capability.h b/include/linux/capability.h
+index 027d7e4a853b..b4345b38a6be 100644
+--- a/include/linux/capability.h
++++ b/include/linux/capability.h
+@@ -256,6 +256,11 @@ static inline bool perfmon_capable(void)
+ 	return capable(CAP_PERFMON) || capable(CAP_SYS_ADMIN);
+ }
+ 
++static inline bool bpf_capable(void)
++{
++	return capable(CAP_BPF) || capable(CAP_SYS_ADMIN);
++}
++
+ /* audit system wants to get cap info from files as well */
+ extern int get_vfs_caps_from_disk(const struct dentry *dentry, struct cpu_vfs_cap_data *cpu_caps);
+ 
+diff --git a/include/uapi/linux/capability.h b/include/uapi/linux/capability.h
+index e58c9636741b..c7372180a0a9 100644
+--- a/include/uapi/linux/capability.h
++++ b/include/uapi/linux/capability.h
+@@ -274,6 +274,7 @@ struct vfs_ns_cap_data {
+    arbitrary SCSI commands */
+ /* Allow setting encryption key on loopback filesystem */
+ /* Allow setting zone reclaim policy */
++/* Allow everything under CAP_BPF and CAP_PERFMON for backward compatibility */
+ 
+ #define CAP_SYS_ADMIN        21
+ 
+@@ -374,7 +375,38 @@ struct vfs_ns_cap_data {
+ 
+ #define CAP_PERFMON		38
+ 
+-#define CAP_LAST_CAP         CAP_PERFMON
++/*
++ * CAP_BPF allows the following BPF operations:
++ * - Creating all types of BPF maps
++ * - Advanced verifier features
++ *   - Indirect variable access
++ *   - Bounded loops
++ *   - BPF to BPF function calls
++ *   - Scalar precision tracking
++ *   - Larger complexity limits
++ *   - Dead code elimination
++ *   - And potentially other features
++ * - Loading BPF Type Format (BTF) data
++ * - Retrieve xlated and JITed code of BPF programs
++ * - Use bpf_spin_lock() helper
++ *
++ * CAP_PERFMON relaxes the verifier checks further:
++ * - BPF progs can use of pointer-to-integer conversions
++ * - speculation attack hardening measures are bypassed
++ * - bpf_probe_read to read arbitrary kernel memory is allowed
++ * - bpf_trace_printk to print kernel memory is allowed
++ *
++ * CAP_SYS_ADMIN is required to use bpf_probe_write_user.
++ *
++ * CAP_SYS_ADMIN is required to iterate system wide loaded
++ * programs, maps, links, BTFs and convert their IDs to file descriptors.
++ *
++ * CAP_PERFMON and CAP_BPF are required to load tracing programs.
++ * CAP_NET_ADMIN and CAP_BPF are required to load networking programs.
++ */
++#define CAP_BPF			39
++
++#define CAP_LAST_CAP         CAP_BPF
+ 
+ #define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
+ 
+diff --git a/security/selinux/include/classmap.h b/security/selinux/include/classmap.h
+index d233ab3f1533..98e1513b608a 100644
+--- a/security/selinux/include/classmap.h
++++ b/security/selinux/include/classmap.h
+@@ -27,9 +27,9 @@
+ 	    "audit_control", "setfcap"
+ 
+ #define COMMON_CAP2_PERMS  "mac_override", "mac_admin", "syslog", \
+-		"wake_alarm", "block_suspend", "audit_read", "perfmon"
++		"wake_alarm", "block_suspend", "audit_read", "perfmon", "bpf"
+ 
+-#if CAP_LAST_CAP > CAP_PERFMON
++#if CAP_LAST_CAP > CAP_BPF
+ #error New capability defined, please update COMMON_CAP2_PERMS.
+ #endif
+ 
 -- 
 2.23.0
 
