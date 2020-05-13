@@ -2,222 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C865D1D1CE8
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:03:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9D161D1D17
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390105AbgEMSDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 14:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390004AbgEMSDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:03:07 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF22EC061A0C;
-        Wed, 13 May 2020 11:03:06 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id l1so577082qtp.6;
-        Wed, 13 May 2020 11:03:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3rJSQfC8qhqPgAdT7p7uqG4zYxw0cOP69JvDMu+AmoU=;
-        b=rgheQSt1YItEgWJaK+D0bGz+/qHfNOAGsXjdVRWwUQiGqsFIGS1wvoYG+aGTafU+PV
-         /Wam8diPaOgVXFRqoqZXtgZpq5ZoS7P+w+jAXFzuJRlWX6AXxlicjH1KtuahsCm7X1oB
-         1KM/eHxvJqcmXNEYPF4b+olwDLqfGRmRJKuO8mBihqp1FZjIXqkKRuN4K2fkmkt1KR4y
-         BY4TuAPJr9Fm34DqlaEou7vS5F0NmzH1lmiODzJGQ+/eBluPCt8Nwyn9o9iFlcChI8ne
-         mr8KP8dnkN8R85f07cGwIMBpujRbjafuA86KSdBGJqLxAx2+yPjgt33/gw2dY8MXvXik
-         E3ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3rJSQfC8qhqPgAdT7p7uqG4zYxw0cOP69JvDMu+AmoU=;
-        b=AL41WpjTzKYqMQaaAILJH7BYfajSEzOyfHxaPEF4CnDEXy/kxPXuWEjq/D9mQThxsY
-         TIgLjPtWoSqCWOknNR7VDtW1t7On35WjZiA25mC8yKRoezaf4y2ClhMjE3PnMtQSbyKa
-         LB757WRGI056kpd2w1hUMj9aziV6fO78R+87CmB3fgSUVI00ejadFvuPQjkqDkP50pZK
-         hr18nETEOZBWwjx5BzZtycI2w/dbnFob37KY3Sra07zsFZCnCcDRWKDM7xWWTz4yPSDt
-         uB8E+ZhDlsKuq9jR0ZH6LQBAxOjtNm2BUub3qj5DMjt+hi0J4XcZjji66ndHsLIE0PZ3
-         y3bA==
-X-Gm-Message-State: AOAM533Tcj/2BCeZkt8pfpcaHALVTC+JgZ8/tdCWDim+uta9d542dxad
-        pBKRtoWJLqwLH74/pSgiy9g=
-X-Google-Smtp-Source: ABdhPJxDn2Ym2XNFWojVR75lfnXVzFyakSG9ONLgdWGtZA79aHqlLy1IZQIR41clkG4iLZ4VQYg8Bg==
-X-Received: by 2002:ac8:67cf:: with SMTP id r15mr355571qtp.258.1589392985891;
-        Wed, 13 May 2020 11:03:05 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.48.228])
-        by smtp.gmail.com with ESMTPSA id f68sm476350qke.74.2020.05.13.11.03.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2020 11:03:05 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 8AE9BC08DA; Wed, 13 May 2020 15:03:02 -0300 (-03)
-Date:   Wed, 13 May 2020 15:03:02 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S2390049AbgEMSLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 14:11:48 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:32958 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732488AbgEMSLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:11:48 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04DI5HIH003765;
+        Wed, 13 May 2020 11:11:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=GFL72UA5MNoXjrI2alkZ7ejlAKYjbQkL2vVt4FhysM4=;
+ b=fEgv/hRd9XcUU0X/l/1IQFSkMWLez4i7OnX0OJaBfx8jn0dyV1vCOXP9dl3n3jS6XdDf
+ 99y3DBJiQ2n7NgFY3XgN/QD+AkLKx+WumIUvdnMrlnZpyEkGb4ZTNKbf4zNtgZWzhtrj
+ d4UVvb6/eTWf2NjhZiAm6fIN293pKRe8Nj0= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3100x6xdj8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 13 May 2020 11:11:24 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Wed, 13 May 2020 11:11:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vl+ve8IuNO//2Wd5mZc6F1Vavq/GM+Y2QshXVgrOfgRO54WoElXsHynYKQI+8dX0QcNukIB4BiCqcxoIwgVF4Fpu0C1jfCL/nLt6WBRM2r0iWf2iF8rY6kp6DM4Sr6F08k0sPo6IRFRwairbDhk8yygD64YpuhvdZKnYFDONCCXUB22l8kuh4cwendyRz4qk4EUbDEzyGIRWz73JyHzClTJ6+36sSlPOCB4Q6ndRnWMMzzHfIZ3XqR/oH2+FM4LyW3McC2aawAnSypsFDMoZlwookSObQQnpCgIir+yDzhZ/WsjzcHYlf+MUNsSoS/pnJLsadDVfvghEkm64xipl3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GFL72UA5MNoXjrI2alkZ7ejlAKYjbQkL2vVt4FhysM4=;
+ b=RfdMDIBuHR6amDp7WDH7yNDerQgK5zJxlWfOFNveNsv4jZZBmy//fj+w6BLHGlwWJWULrvtkQFg6KnmZDhbKHZi7x8sGxqoe1dDQPJQ7jmGTnrK2j9d+hvZ3cJWEXBWU75/I3erCEq3aTSxHgbLY2GfItxoo/2j7r1ex/jHGnRyvxv57M0pDIBnu4/gwbj6lQ22fYGGYcsmVauFpMcWL1oiAHwdOCo1lWxcBDVwfZ1RttCEHlUClB0J9nieHRTiSUbMeDnLGJmUDPnTAD6k93sR3oRPWooTBsQpbuTo2aFLkDD185qkHRhA1F78WDdbD2SVZWmgS8MyyUIj5TKPchg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GFL72UA5MNoXjrI2alkZ7ejlAKYjbQkL2vVt4FhysM4=;
+ b=H9lo52nBXXlIEiSKnBFAgQH2wj6mLp3fUZd7qKrw85Qx5bTR4UYNX1do0TBia3dHfrqjRCme8Z9J7AgsEp+8M8S9YSxNztRLrxViLrul2kLsyx5FV3SNwM+lXfpzpeBGoJJsgybaoKGy5rzgghuBFTUMxXTh3WiKl0/ajGIlq/I=
+Authentication-Results: cloudflare.com; dkim=none (message not signed)
+ header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BY5PR15MB3668.namprd15.prod.outlook.com (2603:10b6:a03:1fb::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.35; Wed, 13 May
+ 2020 18:10:22 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::71cb:7c2e:b016:77b6]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::71cb:7c2e:b016:77b6%7]) with mapi id 15.20.2979.033; Wed, 13 May 2020
+ 18:10:22 +0000
+Date:   Wed, 13 May 2020 11:10:20 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <dccp@vger.kernel.org>, <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-nvme@lists.infradead.org,
-        target-devel@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-cifs@vger.kernel.org, cluster-devel@redhat.com,
-        ocfs2-devel@oss.oracle.com, netdev@vger.kernel.org,
-        linux-sctp@vger.kernel.org, ceph-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-nfs@vger.kernel.org
-Subject: Re: [PATCH 32/33] sctp: add sctp_sock_get_primary_addr
-Message-ID: <20200513180302.GC2491@localhost.localdomain>
-References: <20200513062649.2100053-1-hch@lst.de>
- <20200513062649.2100053-33-hch@lst.de>
-MIME-Version: 1.0
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next v2 02/17] bpf: Introduce SK_LOOKUP program type
+ with a dedicated attach point
+Message-ID: <20200513181020.dmj3fg3dbvuzl626@kafai-mbp.dhcp.thefacebook.com>
+References: <20200511185218.1422406-1-jakub@cloudflare.com>
+ <20200511185218.1422406-3-jakub@cloudflare.com>
+ <20200513054121.qztevjyfkc2ltcvp@kafai-mbp.dhcp.thefacebook.com>
+ <87wo5fucnu.fsf@cloudflare.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200513062649.2100053-33-hch@lst.de>
+In-Reply-To: <87wo5fucnu.fsf@cloudflare.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: BYAPR11CA0037.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::14) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:64df) by BYAPR11CA0037.namprd11.prod.outlook.com (2603:10b6:a03:80::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Wed, 13 May 2020 18:10:21 +0000
+X-Originating-IP: [2620:10d:c090:400::5:64df]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1e347cef-9301-442b-2520-08d7f768e714
+X-MS-TrafficTypeDiagnostic: BY5PR15MB3668:
+X-Microsoft-Antispam-PRVS: <BY5PR15MB36680A491146CBD11F88BB76D5BF0@BY5PR15MB3668.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0402872DA1
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GvPe4vmHXTRRtsOgqAeYCLm5Kz8nWCSJXm+8Uupb6ixMYaqIwb09oHeyyyUU8hJjnlet4iXXv3FVLFKfPmEqkyXCbl0kj3PDTj1Vl/2Q0L1J4SU2vDgUzqbRgeeb2wQtV+tuIC8nuT5nwW9O/0xiHPe/Tzeq1VDJGDdSejaoVitJxXhmKD2DtGCwlNajl1JNbkDxq5u7lVs6cYkmEPuQwADfv4jXJ0Rsa+JBFt46LEqpYApfhuY3cVdEfAbAdelDBvOLuMt530pTwUu68JrqHXA6uiug66cZOEe2N5Fnh0UuV0HfS/QY3Y9SDNEXWC3hSdUJ1bgDiuVxs8tcxSgRkC3VNPPxXbIE9pxZzIJPqI1Z/qWogPZz2L32edz7ePe1h725z1yqw6ZrXzsWjzTv9zhtd+EmBK+GtRLsy7LJZJFyE6vnK580YnDGdnfDyyPzeaEJw2Cp5pAvdx8WHFLadgNNXA5TuwE37YCDw9XxJ9BwuPvmkdvl/FoEpbeHlJ60MpDJe5Gez8qTT4XA2DgF5g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(346002)(39860400002)(366004)(376002)(396003)(33430700001)(7416002)(54906003)(16526019)(2906002)(53546011)(4326008)(5660300002)(6506007)(316002)(7696005)(52116002)(8936002)(8676002)(9686003)(86362001)(1076003)(55016002)(66476007)(66556008)(66946007)(186003)(6916009)(33440700001)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: iYQkyGS+IqoQED4CeFHQcl469VTCmK+zi55yL6mfJ5CR8+zPmMsrBj8kOTnnsN7iZCrZkEWu4pPIKWgdnal4hJmJPpyrxX8LbEv3Fcc/AqlDMGw1/Th8p/hVPLg+1aJTY7bGcbKIkDWeD8A4axM6MqTgLCvyK8s5Fvz/rjfMtzQ7Mv+L61fcUfVnrlcid/JCeSYyBDyX6NRIsxpBI0ZWpwziuSrKqgiYBD5MbPEJrJB0S20xWx5jSTEX75Ae/sErxVfVk3IjkI5LGSfwhNPkbtr+QDpx3NYLk1j8JoFpX1jMSS/ykx9MacHulQo4y2rodApwmiEj/PTOwkAOPgCW5QgYMpQEZcddJetebXOjVMxfbGTgkuf/jwUHSYczSeYq5jHJ5BweQBBhnUucQMqlRJ2J2uYO/7BwXSyMM/qHJs/pAlREPv0rtisVh3vIDkpicqXaO09OhLXedhlzIk83JyAV+vh6LLXBTy+1ZFRIhS+hAgey43vMy61rDsQAc9EaUfK+CLWquOVe6/Wzsw6W6A==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e347cef-9301-442b-2520-08d7f768e714
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2020 18:10:22.5229
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZIOa3NsIC7qyfzNiThyAtBN7U/JnsRPzthNRhLZnuDUJDE2Mk2C6HpnW+El1Q7F8
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3668
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-13_08:2020-05-13,2020-05-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ cotscore=-2147483648 lowpriorityscore=0 spamscore=0 adultscore=0
+ impostorscore=0 mlxlogscore=981 priorityscore=1501 bulkscore=0
+ clxscore=1015 malwarescore=0 mlxscore=0 suspectscore=0 classifier=spam
+ adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005130154
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 08:26:47AM +0200, Christoph Hellwig wrote:
-> Add a helper to directly get the SCTP_PRIMARY_ADDR sockopt from kernel
-> space without going through a fake uaccess.
+On Wed, May 13, 2020 at 04:34:13PM +0200, Jakub Sitnicki wrote:
+> On Wed, May 13, 2020 at 07:41 AM CEST, Martin KaFai Lau wrote:
+> > On Mon, May 11, 2020 at 08:52:03PM +0200, Jakub Sitnicki wrote:
+> >
+> > [ ... ]
+> >
+> >> +BPF_CALL_3(bpf_sk_lookup_assign, struct bpf_sk_lookup_kern *, ctx,
+> >> +	   struct sock *, sk, u64, flags)
+> > The SK_LOOKUP bpf_prog may have already selected the proper reuseport sk.
+> > It is possible by looking up sk from sock_map.
+> >
+> > Thus, it is not always desired to do lookup_reuseport() after sk_assign()
+> > in patch 5.  e.g. reuseport_select_sock() just uses a normal hash if
+> > there is no reuse->prog.
+> >
+> > A flag (e.g. "BPF_F_REUSEPORT_SELECT") can be added here to
+> > specifically do the reuseport_select_sock() after sk_assign().
+> > If not set, reuseport_select_sock() should not be called.
+> 
+> That's true that in addition to steering connections to different
+> services with SK_LOOKUP, you could also, in the same program,
+> load-balance among sockets belonging to one service.
+> 
+> So skipping the reuseport socket selection, if sk_lookup already did
+> load-balancing sounds useful.
+> 
+> Thinking about our use-case, I think we would always pass
+> BPF_F_REUSEPORT_SELECT to sk_assign() because we either (i) know that
+> application is using reuseport and want it manage the load-balancing
+> socket group by itself, or (ii) don't know if application is using
+> reuseport and don't want to break expected behavior.
+Thanks for the explanation.
 
-Same comment as on the other dlm/sctp patch.
-
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  fs/dlm/lowcomms.c       | 11 +++-----
->  include/net/sctp/sctp.h |  1 +
->  net/sctp/socket.c       | 57 +++++++++++++++++++++++++----------------
->  3 files changed, 39 insertions(+), 30 deletions(-)
+> IOW, we'd like reuseport selection to run by default because application
+> expects it to happen if it was set up. OTOH, the application doesn't
+> have to be aware that there is sk_lookup attached (we can put one of its
+> sockets in sk_lookup SOCKMAP when systemd activates it).
 > 
-> diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
-> index 6fa45365666a8..46d2d71b62c57 100644
-> --- a/fs/dlm/lowcomms.c
-> +++ b/fs/dlm/lowcomms.c
-> @@ -855,10 +855,9 @@ static int tcp_accept_from_sock(struct connection *con)
->  static int sctp_accept_from_sock(struct connection *con)
->  {
->  	/* Check that the new node is in the lockspace */
-> -	struct sctp_prim prim;
-> +	struct sctp_prim prim = { };
->  	int nodeid;
-> -	int prim_len, ret;
-> -	int addr_len;
-> +	int addr_len, ret;
->  	struct connection *newcon;
->  	struct connection *addcon;
->  	struct socket *newsock;
-> @@ -876,11 +875,7 @@ static int sctp_accept_from_sock(struct connection *con)
->  	if (ret < 0)
->  		goto accept_err;
->  
-> -	memset(&prim, 0, sizeof(struct sctp_prim));
-> -	prim_len = sizeof(struct sctp_prim);
-> -
-> -	ret = kernel_getsockopt(newsock, IPPROTO_SCTP, SCTP_PRIMARY_ADDR,
-> -				(char *)&prim, &prim_len);
-> +	ret = sctp_sock_get_primary_addr(con->sock->sk, &prim);
->  	if (ret < 0) {
->  		log_print("getsockopt/sctp_primary_addr failed: %d", ret);
->  		goto accept_err;
-> diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
-> index b505fa082f254..c98b1d14db853 100644
-> --- a/include/net/sctp/sctp.h
-> +++ b/include/net/sctp/sctp.h
-> @@ -618,5 +618,6 @@ static inline bool sctp_newsk_ready(const struct sock *sk)
->  int sctp_setsockopt_bindx(struct sock *sk, struct sockaddr *kaddrs,
->  		int addrs_size, int op);
->  void sctp_sock_set_nodelay(struct sock *sk, bool val);
-> +int sctp_sock_get_primary_addr(struct sock *sk, struct sctp_prim *prim);
->  
->  #endif /* __net_sctp_h__ */
-> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> index 64c395f7a86d5..39bf8090dbe1e 100644
-> --- a/net/sctp/socket.c
-> +++ b/net/sctp/socket.c
-> @@ -6411,6 +6411,35 @@ static int sctp_getsockopt_local_addrs(struct sock *sk, int len,
->  	return err;
->  }
->  
-> +static int __sctp_sock_get_primary_addr(struct sock *sk, struct sctp_prim *prim)
-> +{
-> +	struct sctp_association *asoc;
-> +
-> +	asoc = sctp_id2assoc(sk, prim->ssp_assoc_id);
-> +	if (!asoc)
-> +		return -EINVAL;
-> +	if (!asoc->peer.primary_path)
-> +		return -ENOTCONN;
-> +
-> +	memcpy(&prim->ssp_addr, &asoc->peer.primary_path->ipaddr,
-> +		asoc->peer.primary_path->af_specific->sockaddr_len);
-> +
-> +	sctp_get_pf_specific(sk->sk_family)->addr_to_user(sctp_sk(sk),
-> +			(union sctp_addr *)&prim->ssp_addr);
-> +	return 0;
-> +}
-> +
-> +int sctp_sock_get_primary_addr(struct sock *sk, struct sctp_prim *prim)
-> +{
-> +	int ret;
-> +
-> +	lock_sock(sk);
-> +	ret = __sctp_sock_get_primary_addr(sk, prim);
-> +	release_sock(sk);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(sctp_sock_get_primary_addr);
-> +
->  /* 7.1.10 Set Primary Address (SCTP_PRIMARY_ADDR)
->   *
->   * Requests that the local SCTP stack use the enclosed peer address as
-> @@ -6421,35 +6450,19 @@ static int sctp_getsockopt_primary_addr(struct sock *sk, int len,
->  					char __user *optval, int __user *optlen)
->  {
->  	struct sctp_prim prim;
-> -	struct sctp_association *asoc;
-> -	struct sctp_sock *sp = sctp_sk(sk);
-> +	int ret;
->  
->  	if (len < sizeof(struct sctp_prim))
->  		return -EINVAL;
-> -
-> -	len = sizeof(struct sctp_prim);
-> -
-> -	if (copy_from_user(&prim, optval, len))
-> +	if (copy_from_user(&prim, optval, sizeof(struct sctp_prim)))
->  		return -EFAULT;
->  
-> -	asoc = sctp_id2assoc(sk, prim.ssp_assoc_id);
-> -	if (!asoc)
-> -		return -EINVAL;
-> -
-> -	if (!asoc->peer.primary_path)
-> -		return -ENOTCONN;
-> -
-> -	memcpy(&prim.ssp_addr, &asoc->peer.primary_path->ipaddr,
-> -		asoc->peer.primary_path->af_specific->sockaddr_len);
-> -
-> -	sctp_get_pf_specific(sk->sk_family)->addr_to_user(sp,
-> -			(union sctp_addr *)&prim.ssp_addr);
-> +	ret = __sctp_sock_get_primary_addr(sk, &prim);
-> +	if (ret)
-> +		return ret;
->  
-> -	if (put_user(len, optlen))
-> +	if (put_user(len, optlen) || copy_to_user(optval, &prim, len))
->  		return -EFAULT;
-> -	if (copy_to_user(optval, &prim, len))
-> -		return -EFAULT;
-> -
->  	return 0;
->  }
->  
-> -- 
-> 2.26.2
+> Beacuse of that I'd be in favor of having a flag for sk_assign() that
+> disables reuseport selection on demand.
 > 
+> WDYT?
+Sure, it is hard to comment which use case is more common than
+another to take the default ;)
+I think there are use caes for both, so no strong opinion on this ;)
