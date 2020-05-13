@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD3B1D1A6A
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 491321D1A6E
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389322AbgEMQAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 12:00:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50750 "EHLO
+        id S2389378AbgEMQAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 12:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730291AbgEMQAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 12:00:50 -0400
+        with ESMTP id S2389348AbgEMQAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 12:00:53 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B4AC061A0C;
-        Wed, 13 May 2020 09:00:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB682C061A0C;
+        Wed, 13 May 2020 09:00:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=LNedO/lL6g8P+QsVFWLVScVEptUSGiGTZWf8H0Q1tZA=; b=ts6e9NT3V8yWz+LtzMv4rkdZ9o
-        XbzoWSyGT3XedYSLPIj2l6bU4/dtfPsyiiWLH7hDxVoGc5UARJtUkqtzIeGq49lKa+AH0Y5npVY+C
-        GVBD8kLvOcKLvEv9Cs4LZ9gdVRDBPbJ2xsSV6iwElSwImuy3J/L600ewA46WTY+x6LUru76Dld5Z4
-        RdH5Amf2Zyhi+L13cBm+CM2uPPF/6wtVYe3dcqbZJGJZnPKhOsMNYAFD5VOJeLWv72DTVTzbyEc+g
-        o1JJZVtP60V/kezBLynuXYzyh58pSRH1z5B4gCAc0iAV811dyi8ZT2p1mJhHS9+p0s/rjnGeRe5gO
-        4bAHy9Kw==;
+        bh=mSMXwSYIg6w8Djb8jfs2EjgdqI2tqBJvsH4pyf4a+s4=; b=K7vXcJeQdZ4RxFlFwWFM087V2s
+        ELGL5A58AHOSBzKj7tSKyX1/5d/XvhoN/lFQJNE8Ml8PL7igR4gDP0nge0LibB2gH9sYX5OPVbtRV
+        XsCsiBJYRNog7EKtYR2j8v3RYS7UaXLJPMfeuVRw3DkSpo4rga4+m4uPkRWfT1yDlkmSNOKnpNw7/
+        DXby0rgCEtH1QjbS7puSqf7dUsnzCY0wQEzDivuEktT3SVj643l7vgfi7h8f+lE226/hsFFsRa8ri
+        LtYKe2R97TArhfTeE8v4HwzdzypRNsAiSvWdvbhYUyq5tW10XFMdVgovAN/qZzCyyLB+F4CeycFLP
+        zl+XNRDg==;
 Received: from [2001:4bb8:180:9d3f:c70:4a89:bc61:2] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jYtoO-0004hf-FL; Wed, 13 May 2020 16:00:49 +0000
+        id 1jYtoR-0004j2-24; Wed, 13 May 2020 16:00:51 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -36,9 +36,9 @@ To:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
 Cc:     linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 03/18] maccess: remove duplicate kerneldoc comments
-Date:   Wed, 13 May 2020 18:00:23 +0200
-Message-Id: <20200513160038.2482415-4-hch@lst.de>
+Subject: [PATCH 04/18] maccess: clarify kerneldoc comments
+Date:   Wed, 13 May 2020 18:00:24 +0200
+Message-Id: <20200513160038.2482415-5-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200513160038.2482415-1-hch@lst.de>
 References: <20200513160038.2482415-1-hch@lst.de>
@@ -50,70 +50,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Many of the maccess routines have a copy of the kerneldoc comment
-in the header.  Remove it as it is not useful and will get out of
-sync sooner or later.
+Add proper kerneldoc comments for probe_kernel_read_strict and
+probe_kernel_read strncpy_from_unsafe_strict and explain the different
+versus the non-strict version.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/uaccess.h | 38 --------------------------------------
- 1 file changed, 38 deletions(-)
+ mm/maccess.c | 61 ++++++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 43 insertions(+), 18 deletions(-)
 
-diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
-index a2c606a403745..5a36a298a85f8 100644
---- a/include/linux/uaccess.h
-+++ b/include/linux/uaccess.h
-@@ -301,50 +301,12 @@ copy_struct_from_user(void *dst, size_t ksize, const void __user *src,
- 	return 0;
+diff --git a/mm/maccess.c b/mm/maccess.c
+index 4e7f3b6eb05ae..747581ac50dc9 100644
+--- a/mm/maccess.c
++++ b/mm/maccess.c
+@@ -31,29 +31,35 @@ probe_write_common(void __user *dst, const void *src, size_t size)
  }
  
--/*
-- * probe_kernel_read(): safely attempt to read from a location
-- * @dst: pointer to the buffer that shall take the data
-- * @src: address to read from
-- * @size: size of the data chunk
-- *
+ /**
+- * probe_kernel_read(): safely attempt to read from a kernel-space location
++ * probe_kernel_read(): safely attempt to read from any location
+  * @dst: pointer to the buffer that shall take the data
+  * @src: address to read from
+  * @size: size of the data chunk
+  *
 - * Safely read from address @src to the buffer at @dst.  If a kernel fault
 - * happens, handle that and return -EFAULT.
-- */
- extern long probe_kernel_read(void *dst, const void *src, size_t size);
- extern long probe_kernel_read_strict(void *dst, const void *src, size_t size);
- extern long __probe_kernel_read(void *dst, const void *src, size_t size);
++ * Same as probe_kernel_read_strict() except that for architectures with
++ * not fully separated user and kernel address spaces this function also works
++ * for user address tanges.
++ *
++ * DO NOT USE THIS FUNCTION - it is broken on architectures with entirely
++ * separate kernel and user address spaces, and also a bad idea otherwise.
++ */
++long __weak probe_kernel_read(void *dst, const void *src, size_t size)
++    __attribute__((alias("__probe_kernel_read")));
++
++/**
++ * probe_kernel_read_strict(): safely attempt to read from kernel-space
++ * @dst: pointer to the buffer that shall take the data
++ * @src: address to read from
++ * @size: size of the data chunk
++ *
++ * Safely read from kernel address @src to the buffer at @dst.  If a kernel
++ * fault happens, handle that and return -EFAULT.
+  *
+  * We ensure that the copy_from_user is executed in atomic context so that
+  * do_page_fault() doesn't attempt to take mmap_sem.  This makes
+  * probe_kernel_read() suitable for use within regions where the caller
+  * already holds mmap_sem, or other locks which nest inside mmap_sem.
+- *
+- * probe_kernel_read_strict() is the same as probe_kernel_read() except for
+- * the case where architectures have non-overlapping user and kernel address
+- * ranges: probe_kernel_read_strict() will additionally return -EFAULT for
+- * probing memory on a user address range where probe_user_read() is supposed
+- * to be used instead.
+  */
 -
--/*
-- * probe_user_read(): safely attempt to read from a location in user space
-- * @dst: pointer to the buffer that shall take the data
-- * @src: address to read from
-- * @size: size of the data chunk
-- *
-- * Safely read from address @src to the buffer at @dst.  If a kernel fault
-- * happens, handle that and return -EFAULT.
-- */
- extern long probe_user_read(void *dst, const void __user *src, size_t size);
- 
--/*
-- * probe_kernel_write(): safely attempt to write to a location
-- * @dst: address to write to
-- * @src: pointer to the data that shall be written
-- * @size: size of the data chunk
-- *
-- * Safely write to address @dst from the buffer at @src.  If a kernel fault
-- * happens, handle that and return -EFAULT.
-- */
- extern long notrace probe_kernel_write(void *dst, const void *src, size_t size);
+-long __weak probe_kernel_read(void *dst, const void *src, size_t size)
+-    __attribute__((alias("__probe_kernel_read")));
 -
--/*
-- * probe_user_write(): safely attempt to write to a location in user space
-- * @dst: address to write to
-- * @src: pointer to the data that shall be written
-- * @size: size of the data chunk
-- *
-- * Safely write to address @dst from the buffer at @src.  If a kernel fault
-- * happens, handle that and return -EFAULT.
-- */
- extern long notrace probe_user_write(void __user *dst, const void *src, size_t size);
+ long __weak probe_kernel_read_strict(void *dst, const void *src, size_t size)
+     __attribute__((alias("__probe_kernel_read")));
  
- extern long strncpy_from_unsafe(char *dst, const void *unsafe_addr, long count);
+@@ -153,15 +159,34 @@ long probe_user_write(void __user *dst, const void *src, size_t size)
+  * If @count is smaller than the length of the string, copies @count-1 bytes,
+  * sets the last byte of @dst buffer to NUL and returns @count.
+  *
+- * strncpy_from_unsafe_strict() is the same as strncpy_from_unsafe() except
+- * for the case where architectures have non-overlapping user and kernel address
+- * ranges: strncpy_from_unsafe_strict() will additionally return -EFAULT for
+- * probing memory on a user address range where strncpy_from_unsafe_user() is
+- * supposed to be used instead.
++ * Same as strncpy_from_unsafe_strict() except that for architectures with
++ * not fully separated user and kernel address spaces this function also works
++ * for user address tanges.
++ *
++ * DO NOT USE THIS FUNCTION - it is broken on architectures with entirely
++ * separate kernel and user address spaces, and also a bad idea otherwise.
+  */
+ long __weak strncpy_from_unsafe(char *dst, const void *unsafe_addr, long count)
+     __attribute__((alias("__strncpy_from_unsafe")));
+ 
++/**
++ * strncpy_from_unsafe_strict: - Copy a NUL terminated string from unsafe
++ *				 address.
++ * @dst:   Destination address, in kernel space.  This buffer must be at
++ *         least @count bytes long.
++ * @unsafe_addr: Unsafe address.
++ * @count: Maximum number of bytes to copy, including the trailing NUL.
++ *
++ * Copies a NUL-terminated string from unsafe address to kernel buffer.
++ *
++ * On success, returns the length of the string INCLUDING the trailing NUL.
++ *
++ * If access fails, returns -EFAULT (some data may have been copied
++ * and the trailing NUL added).
++ *
++ * If @count is smaller than the length of the string, copies @count-1 bytes,
++ * sets the last byte of @dst buffer to NUL and returns @count.
++ */
+ long __weak strncpy_from_unsafe_strict(char *dst, const void *unsafe_addr,
+ 				       long count)
+     __attribute__((alias("__strncpy_from_unsafe")));
 -- 
 2.26.2
 
