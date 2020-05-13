@@ -2,124 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F6F1D1973
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 17:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7DBE1D1995
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 17:37:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389054AbgEMPb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 11:31:26 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56007 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2388806AbgEMPbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 11:31:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589383883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+eBIua5pV0paztPNi6MQqCRsPWtvr6oTOn5jrmpDYYE=;
-        b=MD8KMwj0NOCkSFirzqj0EXN7WzFRDVO2/Rp9TpBV5SMKs0wmEl0yENhc6ne0Kd3YQfkTqB
-        FWXjtK2913UZUlJcE4y3kpujpuOEPmrmJ/z/g6Z8mMF5E+j6Hroqe0FBYCjvzAPXonxWy/
-        StuHDEYoLNrSth02Ux82hEVa8Ajs42s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-30-7sTMy3hIOCC8B9PN0vGAKA-1; Wed, 13 May 2020 11:31:21 -0400
-X-MC-Unique: 7sTMy3hIOCC8B9PN0vGAKA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 40FE2107BEF7;
-        Wed, 13 May 2020 15:31:20 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-113-27.ams2.redhat.com [10.36.113.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EDB4C10013BD;
-        Wed, 13 May 2020 15:31:18 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
+        id S1731154AbgEMPhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 11:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729483AbgEMPhZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 11:37:25 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193AFC061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 08:37:25 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id q24so11149895pjd.1
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 08:37:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=teVaLV/rr2slg0+EE8xbo9pK+8YB5TTaKHnzrY09DfE=;
+        b=QBgky68X2CAvUfLAoG58SWnKsRC6xFLSBnKtqe1hQLrtMoYLr4TR8Dj7nfwQEO4UAB
+         h4vnfEjCbPq5cNiKe58Y5Vj4DVYTYobOf4YerhAuiXRV8OHS0SeYIO38I7KNjoD2spoR
+         CZLYX1sLHl56OZCZ9xwedg74wjnZBLrAFip3kR2s01LXCChHTy3RY+tkgPniFxYxb9Me
+         e4aXpOwAdb3M+5llZ6eO94xQqR5pcNM5ATxeS44b9DlyW3pQUhdUv6F3HRakiCgX/zi2
+         XOrDTj04XaWqC/UWsqGSwceT3NIa9XozmZgXenLPiaviRh5tNiQ2YaosBPkhoPyXAwri
+         r4Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=teVaLV/rr2slg0+EE8xbo9pK+8YB5TTaKHnzrY09DfE=;
+        b=UQv+xt2xT6JAssL+YjFLuklqok6d7pvsusMpRTPEnq7sAjd+XXf9A/ttT9BQ9RMaLR
+         YJHa/eRMD8i0vLL1JVr02CCal/jg0gvLDD+6j4JPRCIcKbgwnsKy8pZQzLdoweQcHl4s
+         D2Zv7tSvTAxB8F5uJ4H9/V5D2ymD8UsjV1uBImgzo6kWWrQDdlGgVGTnTMiuGjAZ2zkL
+         o5qBrk35yU82UWCohpGSB1pQ6IpqcREFeaVxJxpKts+c+ZVZ6MjgyHvQBaz9S7wC4O+6
+         D5EIZOr00fTXHQMi2qOhAT1a/4vXiz8D8YGx0k15ig8lqdIeED2MO87I63ob90ggmYAC
+         R8qQ==
+X-Gm-Message-State: AGi0PubV3GzlkH23R1FqfxmgHFeYe1E2Z81NR3+3xSPRuVeOSLf0rHk2
+        aUZz6ssNS38ZW223D2lHDJuwnkRKXFRvNDPY
+X-Google-Smtp-Source: APiQypJ3HbUlQmpqmlmjUyLbRSwbSw0eGc0fMQFI2WHl7yRl0sxIRbSlR+4TVJ01O9zuQXKYZCgzBQ==
+X-Received: by 2002:a17:90a:cb8c:: with SMTP id a12mr35397540pju.153.1589384244328;
+        Wed, 13 May 2020 08:37:24 -0700 (PDT)
+Received: from P65xSA.lan ([2402:f000:1:1501::3b2a:1e89])
+        by smtp.gmail.com with ESMTPSA id bj6sm11254816pjb.47.2020.05.13.08.37.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2020 08:37:23 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Christoph Paasch <cpaasch@apple.com>
-Subject: [PATCH net-next 3/3] mptcp: cope better with MP_JOIN failure
-Date:   Wed, 13 May 2020 17:31:04 +0200
-Message-Id: <4b31935e2268e5a2e6915e7e7317af4a844b278a.1589383730.git.pabeni@redhat.com>
-In-Reply-To: <cover.1589383730.git.pabeni@redhat.com>
-References: <cover.1589383730.git.pabeni@redhat.com>
+        linux-mediatek@lists.infradead.org,
+        Russell King <linux@armlinux.org.uk>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Tom James <tj17@me.com>,
+        Stijn Segers <foss@volatilesystems.org>,
+        riddlariddla@hotmail.com, Szabolcs Hubai <szab.hu@gmail.com>,
+        Paul Fertser <fercerpav@gmail.com>
+Subject: [PATCH net-next] net: dsa: mt7530: set CPU port to fallback mode
+Date:   Wed, 13 May 2020 23:37:17 +0800
+Message-Id: <20200513153717.15599-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, on MP_JOIN failure we reset the child
-socket, but leave the request socket untouched.
+Currently, setting a bridge's self PVID to other value and deleting
+the default VID 1 renders untagged ports of that VLAN unable to talk to
+the CPU port:
 
-tcp_check_req will deal with it according to the
-'tcp_abort_on_overflow' sysctl value - by default the
-req socket will stay alive.
+	bridge vlan add dev br0 vid 2 pvid untagged self
+	bridge vlan del dev br0 vid 1 self
+	bridge vlan add dev sw0p0 vid 2 pvid untagged
+	bridge vlan del dev sw0p0 vid 1
+	# br0 cannot send untagged frames out of sw0p0 anymore
 
-The above leads to inconsistent behavior on MP JOIN
-failure, and bad listener overflow accounting.
+That is because the CPU port is set to security mode and its PVID is
+still 1, and untagged frames are dropped due to VLAN member violation.
 
-This patch addresses the issue leveraging the infrastructure
-just introduced to ask the TCP stack to drop the req on
-failure.
+Set the CPU port to fallback mode so untagged frames can pass through.
 
-The child socket is not freed anymore by subflow_syn_recv_sock(),
-instead it's moved to a dead state and will be disposed by the
-next sock_put done by the TCP stack, so that listener overflow
-accounting is not affected by MP JOIN failure.
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
- net/mptcp/subflow.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mt7530.c | 11 ++++++++---
+ drivers/net/dsa/mt7530.h |  6 ++++++
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 42a8a650ff20..b57c07168468 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -476,7 +476,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- 		 */
- 		if (!ctx || fallback) {
- 			if (fallback_is_fatal)
--				goto close_child;
-+				goto dispose_child;
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 5c444cd722bd..a063d914c23f 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -810,10 +810,15 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
+ 		   PCR_MATRIX_MASK, PCR_MATRIX(MT7530_ALL_MEMBERS));
  
- 			if (ctx) {
- 				subflow_ulp_fallback(child, ctx);
-@@ -506,11 +506,11 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+ 	/* Trapped into security mode allows packet forwarding through VLAN
+-	 * table lookup.
++	 * table lookup. CPU port is set to fallback mode to let untagged
++	 * frames pass through.
+ 	 */
+-	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+-		   MT7530_PORT_SECURITY_MODE);
++	if (dsa_is_cpu_port(ds, port))
++		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
++			   MT7530_PORT_FALLBACK_MODE);
++	else
++		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
++			   MT7530_PORT_SECURITY_MODE);
  
- 			owner = mptcp_token_get_sock(ctx->token);
- 			if (!owner)
--				goto close_child;
-+				goto dispose_child;
+ 	/* Set the port as a user port which is to be able to recognize VID
+ 	 * from incoming packets before fetching entry within the VLAN table.
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 979bb6374678..d45eb7540703 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -152,6 +152,12 @@ enum mt7530_port_mode {
+ 	/* Port Matrix Mode: Frames are forwarded by the PCR_MATRIX members. */
+ 	MT7530_PORT_MATRIX_MODE = PORT_VLAN(0),
  
- 			ctx->conn = (struct sock *)owner;
- 			if (!mptcp_finish_join(child))
--				goto close_child;
-+				goto dispose_child;
- 
- 			SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINACKRX);
- 			tcp_rsk(req)->drop_req = true;
-@@ -530,11 +530,14 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- 		      !mptcp_subflow_ctx(child)->conn));
- 	return child;
- 
--close_child:
-+dispose_child:
-+	tcp_rsk(req)->drop_req = true;
- 	tcp_send_active_reset(child, GFP_ATOMIC);
--	inet_csk_prepare_forced_close(child);
-+	inet_csk_prepare_for_destroy_sock(child);
- 	tcp_done(child);
--	return NULL;
++	/* Fallback Mode: Forward received frames with ingress ports that do
++	 * not belong to the VLAN member. Frames whose VID is not listed on
++	 * the VLAN table are forwarded by the PCR_MATRIX members.
++	 */
++	MT7530_PORT_FALLBACK_MODE = PORT_VLAN(1),
 +
-+	/* The last child reference will be released by the caller */
-+	return child;
- }
- 
- static struct inet_connection_sock_af_ops subflow_specific;
+ 	/* Security Mode: Discard any frame due to ingress membership
+ 	 * violation or VID missed on the VLAN table.
+ 	 */
 -- 
-2.21.3
+2.26.2
 
