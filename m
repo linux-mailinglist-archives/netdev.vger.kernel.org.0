@@ -2,100 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B9321D047F
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF241D048D
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 03:51:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732140AbgEMBqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 21:46:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40606 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732066AbgEMBqV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 21:46:21 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 058B724931;
-        Wed, 13 May 2020 01:46:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589334380;
-        bh=y6cYodOnqiQ7E1VdSwSuqVLLoLlzcN3HGsrUIcZG4y0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pEhJYhEAC+TjiUaipMkOecJH5QhcwVWY669QBCHevKOi5I/xVSp27z2kbh/sX3faz
-         Zr0tGCQRreVW5BBp4F2X06HbmDWxNbUj28JhhKMdY0/xEai9B6Qsp/i5b4F4hwTUjk
-         kLRQqPZeFS46gE9aCT3VrTK1fpxXK91cFGOnhMtM=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, brouer@redhat.com, toke@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH v5 bpf-next 11/11] samples/bpf: add XDP egress support to xdp1
-Date:   Tue, 12 May 2020 19:46:07 -0600
-Message-Id: <20200513014607.40418-12-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
-In-Reply-To: <20200513014607.40418-1-dsahern@kernel.org>
-References: <20200513014607.40418-1-dsahern@kernel.org>
+        id S1732056AbgEMBvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 21:51:42 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:36068 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726028AbgEMBvl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 May 2020 21:51:41 -0400
+Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id D2758F3EE58754A4C876;
+        Wed, 13 May 2020 09:51:39 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Wed, 13 May 2020 09:51:39 +0800
+Received: from [10.173.219.71] (10.173.219.71) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Wed, 13 May 2020 09:51:39 +0800
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+CC:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
+References: <20200512133051.7d740613@canb.auug.org.au>
+ <20200512094731.346c0d8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "luobin (L)" <luobin9@huawei.com>
+Message-ID: <c49a4d39-9f83-a68a-fa0d-ef5fd3bc4acc@huawei.com>
+Date:   Wed, 13 May 2020 09:51:38 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200512094731.346c0d8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.173.219.71]
+X-ClientProxiedBy: dggeme719-chm.china.huawei.com (10.1.199.115) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dahern@digitalocean.com>
+On 2020/5/13 0:47, Jakub Kicinski wrote:
 
-xdp1 and xdp2 now accept -E flag to set XDP program in the egress
-path.
+> On Tue, 12 May 2020 13:30:51 +1000 Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> Today's linux-next merge of the net-next tree got conflicts in:
+>>
+>>    drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+>>    drivers/net/ethernet/huawei/hinic/hinic_main.c
+>>
+>> between commit:
+>>
+>>    e8a1b0efd632 ("hinic: fix a bug of ndo_stop")
+>>
+>> from the net tree and commit:
+>>
+>>    7dd29ee12865 ("hinic: add sriov feature support")
+>>
+>> from the net-next tree.
+>>
+>> I fixed it up (I think, see below) and can carry the fix as necessary. This
+>> is now fixed as far as linux-next is concerned, but any non trivial
+>> conflicts should be mentioned to your upstream maintainer when your tree
+>> is submitted for merging.  You may also want to consider cooperating
+>> with the maintainer of the conflicting tree to minimise any particularly
+>> complex conflicts.
+> I had a feeling this was gonna happen :(
+>
+> Resolution looks correct, thank you!
+>
+> Luo bin, if you want to adjust the timeouts (you had slightly different
+> ones depending on the command in the first version of the fix) - you can
+> follow up with a patch to net-next once Dave merges net into net-next
+> (usually happens every two weeks).
 
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
-Signed-off-by: David Ahern <dahern@digitalocean.com>
----
- samples/bpf/xdp1_user.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
-index c447ad9e3a1d..bb104f4d8c5e 100644
---- a/samples/bpf/xdp1_user.c
-+++ b/samples/bpf/xdp1_user.c
-@@ -73,7 +73,8 @@ static void usage(const char *prog)
- 		"OPTS:\n"
- 		"    -S    use skb-mode\n"
- 		"    -N    enforce native mode\n"
--		"    -F    force loading prog\n",
-+		"    -F    force loading prog\n"
-+		"    -E	   egress path program\n",
- 		prog);
- }
- 
-@@ -85,7 +86,7 @@ int main(int argc, char **argv)
- 	};
- 	struct bpf_prog_info info = {};
- 	__u32 info_len = sizeof(info);
--	const char *optstr = "FSN";
-+	const char *optstr = "FSNE";
- 	int prog_fd, map_fd, opt;
- 	struct bpf_object *obj;
- 	struct bpf_map *map;
-@@ -103,13 +104,17 @@ int main(int argc, char **argv)
- 		case 'F':
- 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
- 			break;
-+		case 'E':
-+			xdp_flags |= XDP_FLAGS_EGRESS_MODE;
-+			prog_load_attr.expected_attach_type = BPF_XDP_EGRESS;
-+			break;
- 		default:
- 			usage(basename(argv[0]));
- 			return 1;
- 		}
- 	}
- 
--	if (!(xdp_flags & XDP_FLAGS_SKB_MODE))
-+	if (!(xdp_flags & (XDP_FLAGS_SKB_MODE | XDP_FLAGS_EGRESS_MODE)))
- 		xdp_flags |= XDP_FLAGS_DRV_MODE;
- 
- 	if (optind == argc) {
--- 
-2.21.1 (Apple Git-122.3)
-
+> OK. Thanks.
+> .
