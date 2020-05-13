@@ -2,67 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B3C1D21FF
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 00:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D457C1D221C
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 00:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731532AbgEMWZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 18:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730064AbgEMWZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 18:25:03 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382B4C061A0C
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 15:25:03 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0403C12118550;
-        Wed, 13 May 2020 15:25:01 -0700 (PDT)
-Date:   Wed, 13 May 2020 15:25:01 -0700 (PDT)
-Message-Id: <20200513.152501.2023097002346051384.davem@davemloft.net>
-To:     dqfext@gmail.com
-Cc:     netdev@vger.kernel.org, sean.wang@mediatek.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        linux-mediatek@lists.infradead.org, linux@armlinux.org.uk,
-        matthias.bgg@gmail.com, opensource@vdorst.com, tj17@me.com,
-        foss@volatilesystems.org, riddlariddla@hotmail.com,
-        szab.hu@gmail.com, fercerpav@gmail.com
-Subject: Re: [PATCH net-next] net: dsa: mt7530: set CPU port to fallback
- mode
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200513153717.15599-1-dqfext@gmail.com>
-References: <20200513153717.15599-1-dqfext@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1729681AbgEMWge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 18:36:34 -0400
+Received: from www62.your-server.de ([213.133.104.62]:60982 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726034AbgEMWgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 18:36:33 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jYzzJ-0003yk-NJ; Thu, 14 May 2020 00:36:29 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jYzzJ-000Svu-Af; Thu, 14 May 2020 00:36:29 +0200
+Subject: Re: [PATCH 11/18] maccess: remove strncpy_from_unsafe
+To:     Christoph Hellwig <hch@lst.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     the arch/x86 maintainers <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20200513160038.2482415-1-hch@lst.de>
+ <20200513160038.2482415-12-hch@lst.de>
+ <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
+ <20200513192804.GA30751@lst.de>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <0c1a7066-b269-9695-b94a-bb5f4f20ebd8@iogearbox.net>
+Date:   Thu, 14 May 2020 00:36:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20200513192804.GA30751@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 13 May 2020 15:25:02 -0700 (PDT)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25811/Wed May 13 14:11:53 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: DENG Qingfang <dqfext@gmail.com>
-Date: Wed, 13 May 2020 23:37:17 +0800
+On 5/13/20 9:28 PM, Christoph Hellwig wrote:
+> On Wed, May 13, 2020 at 12:11:27PM -0700, Linus Torvalds wrote:
+>> On Wed, May 13, 2020 at 9:01 AM Christoph Hellwig <hch@lst.de> wrote:
+>>>
+>>> +static void bpf_strncpy(char *buf, long unsafe_addr)
+>>> +{
+>>> +       buf[0] = 0;
+>>> +       if (strncpy_from_kernel_nofault(buf, (void *)unsafe_addr,
+>>> +                       BPF_STRNCPY_LEN))
+>>> +               strncpy_from_user_nofault(buf, (void __user *)unsafe_addr,
+>>> +                               BPF_STRNCPY_LEN);
+>>> +}
+>>
+>> This seems buggy when I look at it.
+>>
+>> It seems to think that strncpy_from_kernel_nofault() returns an error code.
+>>
+>> Not so, unless I missed where you changed the rules.
+> 
+> I didn't change the rules, so yes, this is wrong.
+> 
+>> Also, I do wonder if we shouldn't gate this on TASK_SIZE, and do the
+>> user trial first. On architectures where this thing is valid in the
+>> first place (ie kernel and user addresses are separate), the test for
+>> address size would allow us to avoid a pointless fault due to an
+>> invalid kernel access to user space.
+>>
+>> So I think this function should look something like
+>>
+>>    static void bpf_strncpy(char *buf, long unsafe_addr)
+>>    {
+>>            /* Try user address */
+>>            if (unsafe_addr < TASK_SIZE) {
+>>                    void __user *ptr = (void __user *)unsafe_addr;
+>>                    if (strncpy_from_user_nofault(buf, ptr, BPF_STRNCPY_LEN) >= 0)
+>>                            return;
+>>            }
+>>
+>>            /* .. fall back on trying kernel access */
+>>            buf[0] = 0;
+>>            strncpy_from_kernel_nofault(buf, (void *)unsafe_addr,
+>> BPF_STRNCPY_LEN);
+>>    }
+>>
+>> or similar. No?
+> 
+> So on say s390 TASK_SIZE_USUALLy is (-PAGE_SIZE), which means we'd alway
+> try the user copy first, which seems odd.
+> 
+> I'd really like to here from the bpf folks what the expected use case
+> is here, and if the typical argument is kernel or user memory.
 
-> Currently, setting a bridge's self PVID to other value and deleting
-> the default VID 1 renders untagged ports of that VLAN unable to talk to
-> the CPU port:
-> 
-> 	bridge vlan add dev br0 vid 2 pvid untagged self
-> 	bridge vlan del dev br0 vid 1 self
-> 	bridge vlan add dev sw0p0 vid 2 pvid untagged
-> 	bridge vlan del dev sw0p0 vid 1
-> 	# br0 cannot send untagged frames out of sw0p0 anymore
-> 
-> That is because the CPU port is set to security mode and its PVID is
-> still 1, and untagged frames are dropped due to VLAN member violation.
-> 
-> Set the CPU port to fallback mode so untagged frames can pass through.
-> 
-> Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-
-Applied to net-next, thanks.
+It's used for both. Given this is enabled on pretty much all program types, my
+assumption would be that usage is still more often on kernel memory than user one.
