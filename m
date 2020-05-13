@@ -2,78 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C94E81D22AB
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 01:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43D851D22B5
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 01:06:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732342AbgEMXEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 19:04:43 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36932 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731815AbgEMXEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 19:04:43 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZ0QZ-0006AE-Sk; Thu, 14 May 2020 01:04:39 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZ0QZ-000IG3-GK; Thu, 14 May 2020 01:04:39 +0200
-Subject: Re: clean up and streamline probe_kernel_* and friends v2
-To:     Christoph Hellwig <hch@lst.de>, x86@kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20200513160038.2482415-1-hch@lst.de>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <10c58b09-5ece-e49f-a7c8-2aa6dfd22fb4@iogearbox.net>
-Date:   Thu, 14 May 2020 01:04:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1732416AbgEMXFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 19:05:46 -0400
+Received: from smtprelay0224.hostedemail.com ([216.40.44.224]:57856 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731815AbgEMXFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 19:05:46 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 2442C181D3026;
+        Wed, 13 May 2020 23:05:45 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:2892:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:4250:4321:5007:6119:7903:9036:10004:10400:10848:11026:11232:11473:11658:11914:12048:12109:12296:12297:12555:12740:12760:12895:12986:13255:13439:14096:14097:14659:14721:21063:21080:21451:21627:21972:21990:30030:30054:30075:30080:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: seed96_14d1be0aeb62e
+X-Filterd-Recvd-Size: 3196
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf14.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 13 May 2020 23:05:42 +0000 (UTC)
+Message-ID: <1b63a6b193073674b6e0f9f95c62ce2af1b977cc.camel@perches.com>
+Subject: Re: [PATCH v2 bpf-next 4/7] printk: add type-printing %pT format
+ specifier which uses BTF
+From:   Joe Perches <joe@perches.com>
+To:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
+        daniel@iogearbox.net, bpf@vger.kernel.org
+Cc:     linux@rasmusvillemoes.dk, arnaldo.melo@gmail.com, yhs@fb.com,
+        kafai@fb.com, songliubraving@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Date:   Wed, 13 May 2020 16:05:41 -0700
+In-Reply-To: <1589263005-7887-5-git-send-email-alan.maguire@oracle.com>
+References: <1589263005-7887-1-git-send-email-alan.maguire@oracle.com>
+         <1589263005-7887-5-git-send-email-alan.maguire@oracle.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.1-2 
 MIME-Version: 1.0
-In-Reply-To: <20200513160038.2482415-1-hch@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25811/Wed May 13 14:11:53 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/13/20 6:00 PM, Christoph Hellwig wrote:
-> Hi all,
+On Tue, 2020-05-12 at 06:56 +0100, Alan Maguire wrote:
+> printk supports multiple pointer object type specifiers (printing
+> netdev features etc).  Extend this support using BTF to cover
+> arbitrary types.  "%pT" specifies the typed format, and the pointer
+> argument is a "struct btf_ptr *" where struct btf_ptr is as follows:
 > 
-> this series start cleaning up the safe kernel and user memory probing
-> helpers in mm/maccess.c, and then allows architectures to implement
-> the kernel probing without overriding the address space limit and
-> temporarily allowing access to user memory.  It then switches x86
-> over to this new mechanism by reusing the unsafe_* uaccess logic.
+> struct btf_ptr {
+> 	void *ptr;
+> 	const char *type;
+> 	u32 id;
+> };
 > 
-> This version also switches to the saner copy_{from,to}_kernel_nofault
-> naming suggested by Linus.
+> Either the "type" string ("struct sk_buff") or the BTF "id" can be
+> used to identify the type to use in displaying the associated "ptr"
+> value.  A convenience function to create and point at the struct
+> is provided:
 > 
-> I kept the x86 helprs as-is without calling unsage_{get,put}_user as
-> that avoids a number of hard to trace casts, and it will still work
-> with the asm-goto based version easily.
+> 	printk(KERN_INFO "%pT", BTF_PTR_TYPE(skb, struct sk_buff));
+> 
+> When invoked, BTF information is used to traverse the sk_buff *
+> and display it.  Support is present for structs, unions, enums,
+> typedefs and core types (though in the latter case there's not
+> much value in using this feature of course).
+> 
+> Default output is indented, but compact output can be specified
+> via the 'c' option.  Type names/member values can be suppressed
+> using the 'N' option.  Zero values are not displayed by default
+> but can be using the '0' option.  Pointer values are obfuscated
+> unless the 'x' option is specified.  As an example:
+> 
+>   struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
+>   pr_info("%pT", BTF_PTR_TYPE(skb, struct sk_buff));
+> 
+> ...gives us:
+> 
+> (struct sk_buff){
+>  .transport_header = (__u16)65535,
+> 	 .mac_header = (__u16)65535,
+>  .end = (sk_buff_data_t)192,
+>  .head = (unsigned char *)000000006b71155a,
+>  .data = (unsigned char *)000000006b71155a,
+>  .truesize = (unsigned int)768,
+>  .users = (refcount_t){
+>   .refs = (atomic_t){
+>    .counter = (int)1,
 
-Aside from comments on list, the series looks reasonable to me. For BPF
-the bpf_probe_read() helper would be slightly penalized for probing user
-memory given we now test on copy_from_kernel_nofault() first and if that
-fails only then fall back to copy_from_user_nofault(), but it seems
-small enough that it shouldn't matter too much and aside from that we have
-the newer bpf_probe_read_kernel() and bpf_probe_read_user() anyway that
-BPF progs should use instead, so I think it's okay.
+Given
 
-For patch 14 and patch 15, do you roughly know the performance gain with
-the new probe_kernel_read_loop() + arch_kernel_read() approach?
+  #define BTF_INT_ENCODING(VAL)   (((VAL) & 0x0f000000) >> 24)
 
-Thanks,
-Daniel
+Maybe
+
+  #define BTF_INT_SIGNED  (1 << 0)
+  #define BTF_INT_CHAR    (1 << 1)
+  #define BTF_INT_BOOL    (1 << 2)
+
+could be extended to include
+
+  #define BTF_INT_HEX     (1 << 3)
+
+So hex values can be appropriately pretty-printed.
+
+
