@@ -2,115 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D7121D1331
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 14:51:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6842E1D13B4
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 15:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732020AbgEMMvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 08:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
+        id S1725909AbgEMNAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 09:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731779AbgEMMvt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 08:51:49 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E7EC05BD0C
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 05:51:46 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id a136so8167536qkg.6
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 05:51:46 -0700 (PDT)
+        with ESMTP id S1727033AbgEMNAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 09:00:13 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0851DC061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 06:00:13 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id s8so20790884wrt.9
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 06:00:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=I21hL7AkwUgdNPUI4l7KTQwvXQoa/NOyWUo4IiS5Zaw=;
-        b=m6ad7mNkFXWQP2LAar13cizth8P3iKliOem15ctBmD+RRB5NWWGZ4hVFaLb43OUHF4
-         dEfbKyHnbdTPvph0NO3q6QQG3feEsDR1NN/aDJiylAVOx6elqA7EySRBy4zgPJs7Fz0/
-         Wh3NuXdccvtT3AKlZIUnJi/oe7DjFVTOpq20lvPm5ktnPdoP012Lk/9j/pUDGJCnQSsG
-         TmFagaUtz3vbm20kiJmFo0AhIIm3asYdCe/QXnsQdcQLCh91UXycsxj5M4FwgjK5Th4v
-         OuuA5GD8cz9mUhRoZ9e54BvWpbbFTnY1KxAJWQ9Fh7pEfNmqL/JrbXuEeLjTtGaJiHKf
-         PtmA==
+        bh=yY+0/XxgHTojFmhtTmbAFJ7vz86fh0v480A49unmA5Q=;
+        b=poIth7Kr0nyoz2lUGp6kfihCbyCHYAYk6bw7ZHL5WQyQ8EBumk6ln9rEd29T7vo8pA
+         6RlweTrsxexyamyu+f5KCNy5K4+Mo5BiKwTx+k5dzp7nV9t1Prdz3dqGF6ccFNN9lZCV
+         qiXA325ZikqfbbJGqSbA1gSNnoeE5qawgkxlhDfwQ4BOlDPo6sWZ3hzHQSRjgMzFbBil
+         FWm4jcTefODjL8chqqHNDxNs3vReauEGy1vpq4TPMXcFLhQc2r9sREeyT5NjYbdNuzmI
+         X+D7THmVo+aaiUNxeK/iL0fDCiXnItPgu2af48EOE1opG+TTLy8/SBn2ZL1dzzHXyi35
+         MLNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=I21hL7AkwUgdNPUI4l7KTQwvXQoa/NOyWUo4IiS5Zaw=;
-        b=mMXHgILfQjcLHh+z52HfMzA80PFoMPvW2citbzC4barBktzQSoxD0/4wrM8M5eoeOI
-         Fxr0hWrkEzLU2Xe7bx7urCfiM5qhDgLLM4U0X5aFiiv4oA8H/zbm30dZ5RT9V0Lj5H64
-         1XfLcGS1mC2stVDrpVMJbLghd2K4MiygxlYWbePgUW0AJ1YRnORn89nNR/POcavj89B6
-         52SQmmfy8LFI0HLY2TgADcrL+mnSTpBhbVbvERqtR2vCcrayTSSsGcQn/xDJF2S1w5YN
-         MOBifQv3QJQuZeXySXS56MN2942JpjF+wIUJSQ5TBuvhGYumBmo/TZ5nExJme0P8KijX
-         uoBQ==
-X-Gm-Message-State: AGi0PuYYLlPT2R5V8hhcFkGcPlpJOc9xkno9ZQfskwKqHYsw2pMpVvJr
-        +olKIHSU1jACC2oxRdCKIvJMyA==
-X-Google-Smtp-Source: APiQypKy6izjhUbivG+/I6PWV8eR0peu4dabx2HIoItXGvYLmzKEIJJmSlJIMmuJWfJIdDxUx9gC8w==
-X-Received: by 2002:a37:61d8:: with SMTP id v207mr26564281qkb.146.1589374305465;
-        Wed, 13 May 2020 05:51:45 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id t67sm13779002qka.17.2020.05.13.05.51.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 13 May 2020 05:51:44 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jYqrQ-0008K6-D9; Wed, 13 May 2020 09:51:44 -0300
-Date:   Wed, 13 May 2020 09:51:44 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-nvme@lists.infradead.org,
-        target-devel@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-cifs@vger.kernel.org, cluster-devel@redhat.com,
-        ocfs2-devel@oss.oracle.com, netdev@vger.kernel.org,
-        linux-sctp@vger.kernel.org, ceph-devel@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-nfs@vger.kernel.org
-Subject: Re: [PATCH 11/33] tcp: tcp_sock_set_nodelay
-Message-ID: <20200513125144.GC29989@ziepe.ca>
-References: <20200513062649.2100053-1-hch@lst.de>
- <20200513062649.2100053-12-hch@lst.de>
+        bh=yY+0/XxgHTojFmhtTmbAFJ7vz86fh0v480A49unmA5Q=;
+        b=K9jnYv/ZSv3ok9QWYVM3Xa5zuKlazK+uzXM4kjqrskCy/lpJl7IQo5BD4zskNoman/
+         OAbu4bt6I2beEHHvF6ZlMzLujnkAYM5VBIHGNmSM7n5oTvpD2ivhIhFaa9EYWC9303IG
+         5PDiZkSQIef4xtH19M4ZoBW2R3Clnjas463UEfw7o59KuiNoOKzSDyAGJRLUWZu0DQQI
+         8IBPpJEPHnNY1+LtY4hXjb4UR/2QG/k2WhVjMwYAvIa7EDIWgcCbSKIfnIBrJ/nKZvEq
+         13zuruj1AhX3gDJvwFumk5m0zNgAeNYMjldFCiue6wRQogJkp1DO8e5f7Qnthxa7C2z+
+         hWQQ==
+X-Gm-Message-State: AGi0PuZQS7YQHl60o6luE/Rh1lT0hhQxSdcg6P6k8932CWiBwxwqbGZ7
+        ijYDf+GWwIyjZgtQvj1ahIr3Jg==
+X-Google-Smtp-Source: APiQypKmmZE/G5U/lC2+ZghvmYDfihfujhLobljlz9aMHawh6CN2QmQJf2lwR7mAr3fxcxPKEtkyVA==
+X-Received: by 2002:a5d:5388:: with SMTP id d8mr23235673wrv.242.1589374811293;
+        Wed, 13 May 2020 06:00:11 -0700 (PDT)
+Received: from netronome.com ([2001:982:7ed1:404:a2a4:c5ff:fe4c:9ce9])
+        by smtp.gmail.com with ESMTPSA id f123sm22912660wmf.44.2020.05.13.06.00.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2020 06:00:10 -0700 (PDT)
+Date:   Wed, 13 May 2020 15:00:09 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        parav@mellanox.com, yuvalav@mellanox.com, jgg@ziepe.ca,
+        saeedm@mellanox.com, leon@kernel.org,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
+        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
+        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
+        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
+        oss-drivers@netronome.com, snelson@pensando.io,
+        drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
+Subject: Re: [oss-drivers] [RFC v2] current devlink extension plan for NICs
+Message-ID: <20200513130008.GA24409@netronome.com>
+References: <20200501091449.GA25211@nanopsycho.orion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200513062649.2100053-12-hch@lst.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200501091449.GA25211@nanopsycho.orion>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 08:26:26AM +0200, Christoph Hellwig wrote:
-> Add a helper to directly set the TCP_NODELAY sockopt from kernel space
-> without going through a fake uaccess.  Cleanup the callers to avoid
-> pointless wrappers now that this is a simple function call.
+On Fri, May 01, 2020 at 11:14:49AM +0200, Jiri Pirko wrote:
+> Hi all.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/block/drbd/drbd_int.h             |  7 ----
->  drivers/block/drbd/drbd_main.c            |  2 +-
->  drivers/block/drbd/drbd_receiver.c        |  4 +--
->  drivers/infiniband/sw/siw/siw_cm.c        | 24 +++-----------
->  drivers/nvme/host/tcp.c                   |  9 +-----
->  drivers/nvme/target/tcp.c                 | 12 ++-----
->  drivers/target/iscsi/iscsi_target_login.c | 15 ++-------
->  fs/cifs/connect.c                         | 10 ++----
->  fs/dlm/lowcomms.c                         |  8 ++---
->  fs/ocfs2/cluster/tcp.c                    | 20 ++----------
->  include/linux/tcp.h                       |  1 +
->  net/ceph/messenger.c                      | 11 ++-----
->  net/ipv4/tcp.c                            | 39 +++++++++++++++--------
->  net/rds/tcp.c                             | 11 +------
->  net/rds/tcp.h                             |  1 -
->  net/rds/tcp_listen.c                      |  2 +-
->  16 files changed, 49 insertions(+), 127 deletions(-)
+> First, I would like to apologize for very long email. But I think it
+> would be beneficial to the see the whole picture, where we are going.
+> 
+> Currently we are working internally on several features with
+> need of extension of the current devlink infrastructure. I took a stab
+> at putting it all together in a single txt file, inlined below.
+> 
+> Most of the stuff is based on a new port sub-object called "func"
+> (called "slice" previously" and "subdev" originally in Yuval's patchsets
+> sent some while ago).
+> 
+> The text describes how things should behave and provides a draft
+> of user facing console input/outputs. I think it is important to clear
+> that up before we go in and implement the devlink core and
+> driver pieces.
+> 
+> I would like to ask you to read this and comment. Especially, I would
+> like to ask vendors if what is described fits the needs of your
+> NIC/e-switch.
+> 
+> Please note that something is already implemented, but most of this
+> isn't (see "what needs to be implemented" section).
+> 
+> v1->v2
+> - mainly move from separate slice object into port/func subobject
+> - couple of small fixes here and there
+> 
+> 
+> 
+> 
+> ==================================================================
+> ||                                                              ||
+> ||            Overall illustration of example setup             ||
+> ||                                                              ||
+> ==================================================================
+> 
+> Note that there are 2 hosts in the picture. Host A may be the smartnic host,
+> Host B may be one of the hosts which gets PF. Also, you might omit
+> the Host B and just see Host A like an ordinary nic in a host.
+> 
+> Note that the PF is merged with physical port representor.
+> That is due to simpler and flawless transition from legacy mode and back.
+> The devlink_ports and netdevs for physical ports are staying during
+> the transition.
 
-No problem with the siw change
+Hi Jiri,
 
-Acked-by: Jason Gunthorpe <jgg@mellanox.com>
+I'm probably missing something obvious but this merge seems at odds with
+the Netronome hardware.
 
-Jason
+We model a PF as, in a nutshell, a PCIE link to a host. A chip may have
+one or more, and these may go to the same or different hosts. A chip may
+also have one or more physical ports. And there is no strict relationship
+between a PF and a physical port.
+
+Of course in SR-IOV legacy mode, there is such a relationship, but its not
+inherent to the hardware nor the NFP driver implementation of SR-IOV
+switchdev mode.
+
+...
