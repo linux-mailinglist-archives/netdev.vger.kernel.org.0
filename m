@@ -2,130 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 375951D1C74
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 097E51D1C79
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389947AbgEMRkU convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 13 May 2020 13:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
+        id S2389793AbgEMRlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 13:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1733008AbgEMRkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:40:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDFFC061A0C
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 10:40:20 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jYvMc-0007rx-D4; Wed, 13 May 2020 19:40:14 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jYvMZ-0006Jw-Mq; Wed, 13 May 2020 19:40:11 +0200
-Date:   Wed, 13 May 2020 19:40:11 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Mark Rutland <mark.rutland@arm.com>, Marek Vasut <marex@denx.de>,
+        by vger.kernel.org with ESMTP id S1732670AbgEMRlx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:41:53 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE2CC061A0C;
+        Wed, 13 May 2020 10:41:53 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x10so119163plr.4;
+        Wed, 13 May 2020 10:41:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=BcoMiaIrgROxQQJ2oZxeMA292wuTYKidHK+IlTOejF4=;
+        b=rSmPoANZeSRk4ooAxIlJSkoOs+hph40jeKlh9rpgQKLYs8/qPS8nUAq0NhiBKNYsGD
+         qt9lPAbUyv2fadWiVwFsw+E17H6rZIT3/Ym5LUD1mE1ZrA/IbI+ki76tx356qLcwgUn+
+         MusExHMXe4N5aGFJOm8elAMNFPnRGTlLtt47lKjT8edQIFDuHa9uPjwiieQq8vm/jlRw
+         s1e4obtuCdwCiesL6AA0EnL+ai9ClYLkKa2n9Gfur3l+ZH5T6P+uSsR21VRAjYpQ1fLC
+         NQ0I5rMura9MZrlFMIszmBT3Ylbt5X8aq8mYJzuHreqEeYfr9EPJfptw6/i9Q7YM/VXA
+         Qf0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=BcoMiaIrgROxQQJ2oZxeMA292wuTYKidHK+IlTOejF4=;
+        b=bGNPdO5cfEKo7+gsZ9TfAZJDe0bsaFRvK4P4/2U3mQwVhu1zK0bkBhJ1B2svJlBQ9s
+         +P5xzH3SXlFPaCNXxwi2Ts4Ez3/cx2n7R7ChHa1hYkMN6WNBkuGYpBGb3xrniuSBjQQV
+         q89WIcXL8RRUoJ7BQXXF0EWhBQbE/2anjgghhLDZw8Wa9ORGZ05g6jRYDHyRXfYyHOwZ
+         44a8hezF0/q2eTF42NK3C0Ph9B9dtJGsWqjGSN97U+0PtgaNAayJbMUDQla2lyWBoJAA
+         QLt4Ti1HVqJ7TMlhzvhHdgxxoXmFsFGJd2xxVJSR9mtLMDliAeV0+//ju3l6pBhF2Sga
+         rEbA==
+X-Gm-Message-State: AOAM531u/AEEJpvjgsqKty8bvBX8U3gshO3GUL72Lae/mcFYAnW9eAXz
+        vvoo9iA/SffNb6PoACZ3S6IkuipI
+X-Google-Smtp-Source: ABdhPJw4rMDbcL8hQLD3Uxi9x5rGqyKGm6H1G6lfVGvmG/wQJAxVdgsTkxV0cuSImM39UTnxByiLQQ==
+X-Received: by 2002:a17:902:c281:: with SMTP id i1mr250246pld.327.1589391712366;
+        Wed, 13 May 2020 10:41:52 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d4sm274835pgk.2.2020.05.13.10.41.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 May 2020 10:41:51 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     stable@vger.kernel.org, gregkh@linuxfoundation.org,
         Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v1] net: phy: tja11xx: add cable-test support
-Message-ID: <20200513174011.kl6l767cimeo6dpy@pengutronix.de>
-References: <20200513123440.19580-1-o.rempel@pengutronix.de>
- <20200513133925.GD499265@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20200513133925.GD499265@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 19:26:43 up 180 days,  8:45, 182 users,  load average: 0.02, 0.02,
- 0.00
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH stable-5.4.y] net: dsa: Do not make user port errors fatal
+Date:   Wed, 13 May 2020 10:41:45 -0700
+Message-Id: <20200513174145.10048-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 03:39:25PM +0200, Andrew Lunn wrote:
-> On Wed, May 13, 2020 at 02:34:40PM +0200, Oleksij Rempel wrote:
-> > Add initial cable testing support.
-> > This PHY needs only 100usec for this test and it is recommended to run it
-> > before the link is up. For now, provide at least ethtool support, so it
-> > can be tested by more developers.
-> > 
-> > This patch was tested with TJA1102 PHY with following results:
-> > - No cable, is detected as open
-> > - 1m cable, with no connected other end and detected as open
-> > - a 40m cable (out of spec, max lenght should be 15m) is detected as OK.
-> > 
-> > Current patch do not provide polarity test support. This test would
-> > indicate not proper wire connection, where "+" wire of main phy is
-> > connected to the "-" wire of the link partner.
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  drivers/net/phy/nxp-tja11xx.c | 106 +++++++++++++++++++++++++++++++++-
-> >  1 file changed, 105 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-> > index ca5f9d4dc57ed..8b743d25002b9 100644
-> > --- a/drivers/net/phy/nxp-tja11xx.c
-> > +++ b/drivers/net/phy/nxp-tja11xx.c
-> > @@ -5,6 +5,7 @@
-> >   */
-> >  #include <linux/delay.h>
-> >  #include <linux/ethtool.h>
-> > +#include <linux/ethtool_netlink.h>
-> >  #include <linux/kernel.h>
-> >  #include <linux/mdio.h>
-> >  #include <linux/mii.h>
-> > @@ -26,6 +27,7 @@
-> >  #define MII_ECTRL_POWER_MODE_NO_CHANGE	(0x0 << 11)
-> >  #define MII_ECTRL_POWER_MODE_NORMAL	(0x3 << 11)
-> >  #define MII_ECTRL_POWER_MODE_STANDBY	(0xc << 11)
-> > +#define MII_ECTRL_CABLE_TEST		BIT(5)
-> >  #define MII_ECTRL_CONFIG_EN		BIT(2)
-> >  #define MII_ECTRL_WAKE_REQUEST		BIT(0)
-> >  
-> > @@ -55,6 +57,11 @@
-> >  #define MII_GENSTAT			24
-> >  #define MII_GENSTAT_PLL_LOCKED		BIT(14)
-> >  
-> > +#define MII_EXTSTAT			25
-> > +#define MII_EXTSTAT_SHORT_DETECT	BIT(8)
-> > +#define MII_EXTSTAT_OPEN_DETECT		BIT(7)
-> > +#define MII_EXTSTAT_POLARITY_DETECT	BIT(6)
-> > +
-> 
-> Do these registers all conform to the standard? Can we pull this code
-> out into a library which all standards conformant PHY drivers can use?
+commit 86f8b1c01a0a537a73d2996615133be63cdf75db upstream
 
-According to opensig, this functionality should be present on all new T1 PHYs.
-But the register/bit layout is no specified as standard. At least I was not able
-to find it. I assume, current layout is TJA11xx specific.
+Prior to 1d27732f411d ("net: dsa: setup and teardown ports"), we would
+not treat failures to set-up an user port as fatal, but after this
+commit we would, which is a regression for some systems where interfaces
+may be declared in the Device Tree, but the underlying hardware may not
+be present (pluggable daughter cards for instance).
 
-> The code itself looks O.K.
+Fixes: 1d27732f411d ("net: dsa: setup and teardown ports")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/dsa/dsa2.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-What would be the best place to do a test before the link is getting up?
-Can it be done in the phy core, or it should be done in the PHY driver?
-
-So far, no action except of logging these errors is needed. 
-
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 716d265ba8ca..0f7f38c29579 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -461,18 +461,12 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
+ 
+ 			err = dsa_port_setup(dp);
+ 			if (err)
+-				goto ports_teardown;
++				continue;
+ 		}
+ 	}
+ 
+ 	return 0;
+ 
+-ports_teardown:
+-	for (i = 0; i < port; i++)
+-		dsa_port_teardown(&ds->ports[i]);
+-
+-	dsa_switch_teardown(ds);
+-
+ switch_teardown:
+ 	for (i = 0; i < device; i++) {
+ 		ds = dst->ds[i];
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.17.1
+
