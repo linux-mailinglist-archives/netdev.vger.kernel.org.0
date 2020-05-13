@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 306921D1ECD
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E65D81D1ED5
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 21:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390502AbgEMTPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 15:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53020 "EHLO
+        id S2390614AbgEMTQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 15:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732218AbgEMTPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:15:39 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D3FC061A0C;
-        Wed, 13 May 2020 12:15:39 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id k6so327275iob.3;
-        Wed, 13 May 2020 12:15:39 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S2390552AbgEMTP5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 15:15:57 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657EDC061A0C;
+        Wed, 13 May 2020 12:15:57 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id f4so183157iov.11;
+        Wed, 13 May 2020 12:15:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=tP0mMmtZV9OZQ8Wp+2UGBDurZ54ypVqPRDlluFyL1Kw=;
-        b=m5ZsloYHtNFxeRGFZdrPCgSWUBOzx2HVVzpI5z5HzwzaTAV+tvkZAV7benr2wCOOSY
-         7ACwl3/Zf7B/2OFKPj3PVJ/tmOgeYgYH84NcMMo2S7swNFAtgitjxMuKfp9RFkVoDSuY
-         Bq56SPZcHEx+y5Ij3hoEgiikc5XL2BNzTJ6VsC5+6TxgVHVsLfhtE/KtvZSVF4qLF7Z4
-         Wv3eZ6vDmNS4pMjVT0+m6++K+4VsiyLP1liVxGJq5VIdpNkVSGLKJ8MSrtJ67/AJrVsY
-         0FH5IJR6JQaK7P9Pf4EXapNJG8nr2pn8W+Qsz4B4eid9F/H7Iod4Xk6cDW3/dYSERR6u
-         hsXA==
+        bh=m6ZTIteI+oUC2tBq4SKg6uG6Ssn9HienpBTovGPLIfo=;
+        b=AaSSBpj2WcT1+ifNz4QUEsvrYKG91k4lpMOSdRhReWsvbn6hk2mdzNOPlNCUKRWCjU
+         v7luLs0hGQo62+n6I0gBjTLcMIgjy0C42Vlh+qWawldeixnfdhnn/TrOXEMu73BNANtx
+         NwMTAsIxGKnlXiuAOt4DdlRCmdztBNFJS3y0hLO9E89vKHCs8jx/FFcMrFO1wV4UI023
+         IFc0UMEc/KuuXmnC1H6susbich4a5XSNxMYDp2o5U7iqD7pSNTt6eOTcDY9N+0+NG9j2
+         Wwr1eF0MqaGQTMiKuSsk5DFP9f7Vk61BDEBtm3PjuITCNWaQIKB9K1looweM0FQwuuO+
+         X2ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=tP0mMmtZV9OZQ8Wp+2UGBDurZ54ypVqPRDlluFyL1Kw=;
-        b=TD4wEzI1UV9gCBLR0Pqh6/tIJTJCZ07CXKFkl73wWuIfa+M2U+6A9n6hWf5fYcUOoQ
-         6vXCGbdY5vrNPioYGcN0DbAKk4sXVLZ+as9lC0v7aYoRkpxbxOeym0tQt6jm44t+AAWf
-         JKrQa7PeBfIGNbg5+pT1aM7MUc7fGGQYpeha+BCowcsrycTu678lGUBF0MVb9N1ILmI6
-         4o1eLZ4P8VH10zNeis0dJDQXCtDoa3mDWGJKBfzBtpOxS56n8BYLRt79ykwXVlAyBd2J
-         34L/bSwvbMQG98EEnaAW8BYMITcbzCTXzBWpcHbbtoV42ysujIyflEUQlduSukD6hF+T
-         q7FQ==
-X-Gm-Message-State: AGi0PuZ0LQplIj70dhZTBha4EMK5rCMevcLFy4R16nxzp7cvGP6UTrP6
-        LrObcnkbI7lQrGn4mFd8JlQAB5an
-X-Google-Smtp-Source: APiQypLO4qD0KL3jddd39rfXuuGiC+fBT8SSlhsCw1mABPTu96i6p2cm2dvEejlnJusaDUQQy7r7ww==
-X-Received: by 2002:a02:7113:: with SMTP id n19mr949128jac.113.1589397337673;
-        Wed, 13 May 2020 12:15:37 -0700 (PDT)
+        bh=m6ZTIteI+oUC2tBq4SKg6uG6Ssn9HienpBTovGPLIfo=;
+        b=kxYa0k6NRExnTBOEe2BE3ktL0m5oiT/48k8fsALDFiBJaY6MsQhbIMnJL+0X1NcfMH
+         hZrUd/aZaIRgYzIjRQsfUTZGhWhqVbRv3RMJhWBjg4OS30DgScg6/TAbvmcF+NiRheUQ
+         NvezSe/HWIstsSDImensuk0eK1SGmiGEa8JP6DHsdGzT1tUq525/DkJ55w2p+UD6lnc6
+         o22/ApJrfsPhhTkNe6x4yvdfmlN30gYuykC8YOnomzLkcTS8kKQKOBXXnuyhE0CZPw+h
+         9jXnJFwnide2TEZejtTgFUVKWB4/4rdOgE15lwO2pur32XmypZmvCViBTcVUJGSHaP23
+         NKwQ==
+X-Gm-Message-State: AOAM53088QtbyNjbvNvB7qUpxChvubl3pCDsV1A9QlOawpd6pjVSXIzc
+        WaZJVh+ytSqvXX/SnMiSfSc=
+X-Google-Smtp-Source: ABdhPJx0NWQpbQid72iKBWP49suwP2zN2JC1bvHayBc/VNMwW22zD87mtzpGFsMrRiECszbwSDTdrA==
+X-Received: by 2002:a6b:7009:: with SMTP id l9mr700329ioc.158.1589397356863;
+        Wed, 13 May 2020 12:15:56 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id 23sm155144ilv.58.2020.05.13.12.15.30
+        by smtp.gmail.com with ESMTPSA id c84sm167159ila.18.2020.05.13.12.15.49
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 May 2020 12:15:37 -0700 (PDT)
-Subject: [bpf-next PATCH v2 10/12] bpf: selftests,
- add whitelist option to test_sockmap
+        Wed, 13 May 2020 12:15:56 -0700 (PDT)
+Subject: [bpf-next PATCH v2 11/12] bpf: selftests,
+ add blacklist to test_sockmap
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     lmb@cloudflare.com, jakub@cloudflare.com, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com, ast@kernel.org
-Date:   Wed, 13 May 2020 12:15:24 -0700
-Message-ID: <158939732464.15176.1959113294944564542.stgit@john-Precision-5820-Tower>
+Date:   Wed, 13 May 2020 12:15:43 -0700
+Message-ID: <158939734350.15176.6643981099665208826.stgit@john-Precision-5820-Tower>
 In-Reply-To: <158939706939.15176.10993188758954570904.stgit@john-Precision-5820-Tower>
 References: <158939706939.15176.10993188758954570904.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
@@ -66,48 +66,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow running specific tests with a comma deliminated whitelist. For example
-to run all apply and cork tests.
+This adds a blacklist to test_sockmap. For example, now we can run
+all apply and cork tests except those with timeouts by doing,
 
- $ ./test_sockmap --whitelist="cork,apply"
+ $ ./test_sockmap --whitelist "apply,cork" --blacklist "hang"
 
 Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- tools/testing/selftests/bpf/test_sockmap.c |   31 +++++++++++++++++++++++++++-
- 1 file changed, 30 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/test_sockmap.c |   33 ++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-index 2be8d9d..1b98e92 100644
+index 1b98e92..2ed2db6 100644
 --- a/tools/testing/selftests/bpf/test_sockmap.c
 +++ b/tools/testing/selftests/bpf/test_sockmap.c
-@@ -107,6 +107,7 @@ static const struct option long_options[] = {
- 	{"txmsg_skb", no_argument,		&txmsg_skb, 1 },
+@@ -108,6 +108,7 @@ static const struct option long_options[] = {
  	{"ktls", no_argument,			&ktls, 1 },
  	{"peek", no_argument,			&peek_flag, 1 },
-+	{"whitelist", required_argument,	NULL, 'n' },
+ 	{"whitelist", required_argument,	NULL, 'n' },
++	{"blacklist", required_argument,	NULL, 'b' },
  	{0, 0, NULL, 0 }
  };
  
-@@ -387,6 +388,7 @@ struct sockmap_options {
- 	int iov_length;
+@@ -389,6 +390,7 @@ struct sockmap_options {
  	int rate;
  	char *map;
-+	char *whitelist;
+ 	char *whitelist;
++	char *blacklist;
  };
  
  static int msg_loop_sendpage(int fd, int iov_length, int cnt,
-@@ -1621,6 +1623,24 @@ struct _test test[] = {
- 	{"txmsg test push/pop data", test_txmsg_push_pop},
- };
+@@ -1641,6 +1643,24 @@ static int check_whitelist(struct _test *t, struct sockmap_options *opt)
+ 	return -EINVAL;
+ }
  
-+static int check_whitelist(struct _test *t, struct sockmap_options *opt)
++static int check_blacklist(struct _test *t, struct sockmap_options *opt)
 +{
 +	char *entry, *ptr;
 +
-+	if (!opt->whitelist)
-+		return 0;
-+	ptr = strdup(opt->whitelist);
++	if (!opt->blacklist)
++		return -EINVAL;
++	ptr = strdup(opt->blacklist);
 +	if (!ptr)
 +		return -ENOMEM;
 +	entry = strtok(ptr, ",");
@@ -122,42 +122,44 @@ index 2be8d9d..1b98e92 100644
  static int __test_selftests(int cg_fd, struct sockmap_options *opt)
  {
  	int i, err;
-@@ -1635,6 +1655,9 @@ static int __test_selftests(int cg_fd, struct sockmap_options *opt)
+@@ -1655,7 +1675,9 @@ static int __test_selftests(int cg_fd, struct sockmap_options *opt)
  	for (i = 0; i < sizeof(test)/sizeof(struct _test); i++) {
  		struct _test t = test[i];
  
-+		if (check_whitelist(&t, opt) < 0)
+-		if (check_whitelist(&t, opt) < 0)
++		if (check_whitelist(&t, opt) != 0)
 +			continue;
-+
++		if (check_blacklist(&t, opt) == 0)
+ 			continue;
+ 
  		test_start_subtest(t.title, opt->map);
- 		t.tester(cg_fd, opt);
- 		test_end_subtest();
-@@ -1673,7 +1696,7 @@ int main(int argc, char **argv)
+@@ -1696,7 +1718,7 @@ int main(int argc, char **argv)
  	int test = SELFTESTS;
  	bool cg_created = 0;
  
--	while ((opt = getopt_long(argc, argv, ":dhv:c:r:i:l:t:p:q:",
-+	while ((opt = getopt_long(argc, argv, ":dhv:c:r:i:l:t:p:q:n:",
+-	while ((opt = getopt_long(argc, argv, ":dhv:c:r:i:l:t:p:q:n:",
++	while ((opt = getopt_long(argc, argv, ":dhv:c:r:i:l:t:p:q:n:b:",
  				  long_options, &longindex)) != -1) {
  		switch (opt) {
  		case 's':
-@@ -1742,6 +1765,10 @@ int main(int argc, char **argv)
- 				return -1;
- 			}
- 			break;
-+		case 'n':
-+			options.whitelist = strdup(optarg);
-+			if (!options.whitelist)
+@@ -1769,6 +1791,11 @@ int main(int argc, char **argv)
+ 			options.whitelist = strdup(optarg);
+ 			if (!options.whitelist)
+ 				return -ENOMEM;
++			break;
++		case 'b':
++			options.blacklist = strdup(optarg);
++			if (!options.blacklist)
 +				return -ENOMEM;
  		case 0:
  			break;
  		case 'h':
-@@ -1794,6 +1821,8 @@ int main(int argc, char **argv)
- 
- 	err = run_options(&options, cg_fd, test);
+@@ -1823,6 +1850,8 @@ int main(int argc, char **argv)
  out:
-+	if (options.whitelist)
-+		free(options.whitelist);
+ 	if (options.whitelist)
+ 		free(options.whitelist);
++	if (options.blacklist)
++		free(options.blacklist);
  	if (cg_created)
  		cleanup_cgroup_environment();
  	close(cg_fd);
