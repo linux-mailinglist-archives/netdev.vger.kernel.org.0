@@ -2,89 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8F91D1DD3
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:46:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BD921D1DFA
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 20:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390269AbgEMSpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 14:45:46 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:38905 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390103AbgEMSpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 14:45:43 -0400
-Received: by mail-pg1-f193.google.com with SMTP id u5so141840pgn.5;
-        Wed, 13 May 2020 11:45:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oGExS5qpyhaJE9sRdyvo65rhkDZrEjTLCCqtKDwIC/k=;
-        b=TS/6HqhyaUBitGN4hJlVvmHSFhkuo70+216kyjBQDE1WZjef3NGT/YuohVXnCKZr7z
-         K4PJgBtP1wkjYZNeHCOUTKvZeggbMRYrUPv0kGtbOUxxXjB0868SRXo5nj2JebjktftL
-         IvFmHQJqsyhNa8c5iPBpd2+wzW660tNQcojBVoZiRfU5OQi/BBL8H9pan2p7VymaHAko
-         wN1u32p6TWkDOYso15HTxqJL2328FnrUWVcyLCaXGnAsP+fN/vTBcapBq/2ZVUH2B6AY
-         +NlLPGmghXU30Cq1kmHJcpUU1RbuVGxR1r3omjcrYaogMV8KW2lJad5a5hzsFuqNzKKL
-         X/SQ==
-X-Gm-Message-State: AOAM5338Ixu2NVbtVMVyhA5hkSRag2/BM++OtuHK2zdZiRvOSVvkWnr8
-        Mmya9dyMxMYZK56jbGtBOn4=
-X-Google-Smtp-Source: ABdhPJxuCtZ6LqG/D7UsLLlMEE3Gj8Q00WqSwzmkuBnzsqf4vGt4xYIyJ/k3v57Ipr7A3TPHVfXEFQ==
-X-Received: by 2002:a62:7d91:: with SMTP id y139mr631244pfc.172.1589395542971;
-        Wed, 13 May 2020 11:45:42 -0700 (PDT)
-Received: from ?IPv6:2601:647:4802:9070:59e0:deac:a73c:5d11? ([2601:647:4802:9070:59e0:deac:a73c:5d11])
-        by smtp.gmail.com with ESMTPSA id g10sm238580pfk.103.2020.05.13.11.45.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 May 2020 11:45:41 -0700 (PDT)
-Subject: Re: remove kernel_setsockopt and kernel_getsockopt
-To:     Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-nvme@lists.infradead.org, linux-sctp@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-afs@lists.infradead.org,
-        drbd-dev@lists.linbit.com, linux-cifs@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-rdma@vger.kernel.org,
-        cluster-devel@redhat.com, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        linux-block@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
-        linux-kernel@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>, ocfs2-devel@oss.oracle.com
-References: <20200513062649.2100053-1-hch@lst.de>
-From:   Sagi Grimberg <sagi@grimberg.me>
-Message-ID: <2c9a28f7-4268-2295-0d64-ada9178a5553@grimberg.me>
-Date:   Wed, 13 May 2020 11:45:39 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        id S2390260AbgEMSth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 14:49:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58546 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732218AbgEMStg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 May 2020 14:49:36 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 10918205CB;
+        Wed, 13 May 2020 18:49:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589395777;
+        bh=Ys5KDcuIhzg94At9DkC++VLgyO7vAIMO1cgfj9AUkrc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jxrLapFqWOwqbY4eyTu6jHwQsLBUZ61GrHzYKzf5dEjHUCWOQSVowJu0z6AT2PynV
+         /5FEACyVMxcpySDcOmLgVSIVZXcJjs4Ox2YVr0VyueyaTovmYUcUBp3kT4J92WeIhz
+         aRLB+qLgA22BWkQOxfuvKStDnibz7/8yIXSfgKQE=
+Date:   Wed, 13 May 2020 11:49:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] IB/mlx4: Replace zero-length array with flexible-array
+Message-ID: <20200513114934.22415a35@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200513184316.GA2217@ziepe.ca>
+References: <20200507185921.GA15146@embeddedor>
+        <20200509205151.209bdc9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200513184316.GA2217@ziepe.ca>
 MIME-Version: 1.0
-In-Reply-To: <20200513062649.2100053-1-hch@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 13 May 2020 15:43:16 -0300 Jason Gunthorpe wrote:
+> On Sat, May 09, 2020 at 08:51:50PM -0700, Jakub Kicinski wrote:
+> > On Thu, 7 May 2020 13:59:21 -0500 Gustavo A. R. Silva wrote:  
+> > > The current codebase makes use of the zero-length array language
+> > > extension to the C90 standard, but the preferred mechanism to declare
+> > > variable-length types such as these ones is a flexible array member[1][2],
+> > > introduced in C99:
+> > > 
+> > > struct foo {
+> > >         int stuff;
+> > >         struct boo array[];
+> > > };
+> > >
+> > > ...  
+> > 
+> > Applied, thank you!  
+> 
+> Jakub,
+> 
+> Please don't take RDMA patches in netdev unless it is a special
+> case. There is alot of cross posting and they often get into both
+> patchworks.
 
-> Hi Dave,
-> 
-> this series removes the kernel_setsockopt and kernel_getsockopt
-> functions, and instead switches their users to small functions that
-> implement setting (or in one case getting) a sockopt directly using
-> a normal kernel function call with type safety and all the other
-> benefits of not having a function call.
-> 
-> In some cases these functions seem pretty heavy handed as they do
-> a lock_sock even for just setting a single variable, but this mirrors
-> the real setsockopt implementation - counter to that a few kernel
-> drivers just set the fields directly already.
-> 
-> Nevertheless the diffstat looks quite promising:
-> 
->   42 files changed, 721 insertions(+), 799 deletions(-)
-
-For the nvme-tcp bits,
-
-Acked-by: Sagi Grimberg <sagi@grimberg.me>
+Sorry about that, I only looked at the subject after applying. 
