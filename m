@@ -2,119 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1BA41D1BE3
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:07:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 504401D1C00
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:14:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389788AbgEMRH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 13:07:26 -0400
-Received: from ma1-aaemail-dr-lapp02.apple.com ([17.171.2.68]:55092 "EHLO
-        ma1-aaemail-dr-lapp02.apple.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728068AbgEMRH0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:07:26 -0400
-Received: from pps.filterd (ma1-aaemail-dr-lapp02.apple.com [127.0.0.1])
-        by ma1-aaemail-dr-lapp02.apple.com (8.16.0.42/8.16.0.42) with SMTP id 04DGxVto051502;
-        Wed, 13 May 2020 10:07:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=20180706; bh=42VhPZa4O3yw3qMUKHX2/5Sg4e5t6eapEjpyLDItKTY=;
- b=IY/BRNNLaRlMcBMceSYc3YA8MW+ef2OhFzJSISF2rujvp/DqgWVBroKiX2xxR6/7pGm4
- Ra5ltwYXuUXzdevOk2thafNmw+DdRThqbL2Z5sKfhAsJ0G9R9kZzYBtVWyBf3gJI7/rq
- lPcZ3+nN5TlkBIBiAzx4Dj/r7rPqYqZn9QfZLEfQDUOUy5QbYEwSEueJ2vL7B+rZPgys
- TpuTUhUopRHwuoQzVmqmxgZ/VmOUyLJCHZXLtzrglRq3JYCYHhkNLDK1bn6Ry10pdeuI
- 3EnHg0hDdfS8Gzdxx16FN40+Op22ZJf+RVgFwYYNh2yHob7NCSgzuPnTHdyg+fMCL1Ib FQ== 
-Received: from rn-mailsvcp-mta-lapp01.rno.apple.com (rn-mailsvcp-mta-lapp01.rno.apple.com [10.225.203.149])
-        by ma1-aaemail-dr-lapp02.apple.com with ESMTP id 3100xcber1-15
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Wed, 13 May 2020 10:07:21 -0700
-Received: from rn-mailsvcp-mmp-lapp04.rno.apple.com
- (rn-mailsvcp-mmp-lapp04.rno.apple.com [17.179.253.17])
- by rn-mailsvcp-mta-lapp01.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020)) with ESMTPS id <0QAA00P564W845I0@rn-mailsvcp-mta-lapp01.rno.apple.com>;
- Wed, 13 May 2020 10:07:20 -0700 (PDT)
-Received: from process_milters-daemon.rn-mailsvcp-mmp-lapp04.rno.apple.com by
- rn-mailsvcp-mmp-lapp04.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020)) id <0QAA010004KB7G00@rn-mailsvcp-mmp-lapp04.rno.apple.com>; Wed,
- 13 May 2020 10:07:20 -0700 (PDT)
-X-Va-A: 
-X-Va-T-CD: f57a8199e6b1abd084bca0291b03c14e
-X-Va-E-CD: 4f2abbce232c5488497f887bd4f0e086
-X-Va-R-CD: 25812e5303df4d9ccf0ca119e2d2cbd3
-X-Va-CD: 0
-X-Va-ID: 882e9cbb-b310-4ba0-8b3e-8c26b9561132
-X-V-A:  
-X-V-T-CD: f57a8199e6b1abd084bca0291b03c14e
-X-V-E-CD: 4f2abbce232c5488497f887bd4f0e086
-X-V-R-CD: 25812e5303df4d9ccf0ca119e2d2cbd3
-X-V-CD: 0
-X-V-ID: 87cb1214-4aa3-456f-8a50-04eb3487e5cd
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-13_08:2020-05-13,2020-05-13 signatures=0
-Received: from localhost ([17.234.56.181])
- by rn-mailsvcp-mmp-lapp04.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020))
- with ESMTPSA id <0QAA00JGU4W76B00@rn-mailsvcp-mmp-lapp04.rno.apple.com>; Wed,
- 13 May 2020 10:07:19 -0700 (PDT)
-Date:   Wed, 13 May 2020 10:07:18 -0700
-From:   Christoph Paasch <cpaasch@apple.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 0/3] mptcp: fix MP_JOIN failure handling
-Message-id: <20200513170718.GB10555@MacBook-Pro-64.local>
-References: <cover.1589383730.git.pabeni@redhat.com>
-MIME-version: 1.0
-Content-type: text/plain; charset=us-ascii
-Content-disposition: inline
-In-reply-to: <cover.1589383730.git.pabeni@redhat.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-13_07:2020-05-13,2020-05-13 signatures=0
+        id S2389431AbgEMROl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 13:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34040 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732731AbgEMROk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:14:40 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513FFC061A0C;
+        Wed, 13 May 2020 10:14:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=HStHYMCHMAld2jAQY6gz1O8fAw0LWyJlNm7iC5JM3JA=; b=w3mvih03C8N35b+4Bo9Ot7tr2
+        jgtW5Sh5X8sNAYy+j5tqw4QcbGeYxbFikVgq8C+oIlEF5CjnIMqJO1PWLeN7cBnMjSyiV3x+FcIAf
+        US/X62EecXyz/0yIwlFJMTbYLsLBo89lYTmYwkBOQs9mSvd6WpfW9toFpDcXegZcAnjyT0TyrCNsz
+        WuYZRUoazDCr7Of5oCHqIJ0mCfcP4jmBLBcT3DsE0L9yqVM4K+VY0vrT9Y022pjMxYVkkOzXcarUr
+        Y7jc3k7yCWBKIsDshlPTRoynB/MT993/+xWLOX+Y8l2oDGgTLuRwTnoAHxtwI3n/d4/YDrnTgy49T
+        nHSAJfAkw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:39836)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jYuxe-0005Lq-1O; Wed, 13 May 2020 18:14:29 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jYuxY-0007xA-TL; Wed, 13 May 2020 18:14:20 +0100
+Date:   Wed, 13 May 2020 18:14:20 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/4] net: ethernet: validate pause autoneg
+ setting
+Message-ID: <20200513171420.GL1551@shell.armlinux.org.uk>
+References: <1589243050-18217-1-git-send-email-opendmb@gmail.com>
+ <1589243050-18217-2-git-send-email-opendmb@gmail.com>
+ <20200512004714.GD409897@lunn.ch>
+ <ae63b295-b6e3-6c34-c69d-9e3e33bf7119@gmail.com>
+ <20200512185503.GD1551@shell.armlinux.org.uk>
+ <0cf740ed-bd13-89d5-0f36-1e5305210e97@gmail.com>
+ <20200513053405.GE1551@shell.armlinux.org.uk>
+ <20200513092050.GB1605@shell.armlinux.org.uk>
+ <20200513134925.GE499265@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200513134925.GE499265@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/05/20 - 17:31:01, Paolo Abeni wrote:
-> Currently if we hit an MP_JOIN failure on the third ack, the child socket is
-> closed with reset, but the request socket is not deleted, causing weird
-> behaviors.
+On Wed, May 13, 2020 at 03:49:25PM +0200, Andrew Lunn wrote:
+> Hi Russell, Doug
 > 
-> The main problem is that MPTCP's MP_JOIN code needs to plug it's own
-> 'valid 3rd ack' checks and the current TCP callbacks do not allow that.
+> With netlink ethtool we have the possibility of adding a new API to
+> control this. And we can leave the IOCTL API alone, and the current
+> ethtool commands. We can add a new command to ethtool which uses the new API.
 > 
-> This series tries to address the above shortcoming introducing a new MPTCP
-> specific bit in a 'struct tcp_request_sock' hole, and leveraging that to allow
-> tcp_check_req releasing the request socket when needed.
-> 
-> The above allows cleaning-up a bit current MPTCP hooking in tcp_check_req().
-> 
-> An alternative solution, possibly cleaner but more invasive, would be
-> changing the 'bool *own_req' syn_recv_sock() argument into 'int *req_status'
-> and let MPTCP set it to 'REQ_DROP'.
-> 
-> RFC -> v1:
->  - move the drop_req bit inside tcp_request_sock (Eric)
-> 
-> Paolo Abeni (3):
->   mptcp: add new sock flag to deal with join subflows
->   inet_connection_sock: factor out destroy helper.
->   mptcp: cope better with MP_JOIN failure
-> 
->  include/linux/tcp.h                |  3 +++
->  include/net/inet_connection_sock.h |  8 ++++++++
->  include/net/mptcp.h                | 17 ++++++++++-------
->  net/ipv4/inet_connection_sock.c    |  6 +-----
->  net/ipv4/tcp_minisocks.c           |  2 +-
->  net/mptcp/protocol.c               |  7 -------
->  net/mptcp/subflow.c                | 17 +++++++++++------
->  7 files changed, 34 insertions(+), 26 deletions(-)
+> Question is, do we want to do this? Would we be introducing yet more
+> confusion, rather than making the situation better?
 
-Reviewed-by: Christoph Paasch <cpaasch@apple.com>
+The conclusion I came to was that I would document the deficiencies
+and do no more; I think people are used to its current quirky
+behaviour.
 
-
-
-Christoph
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
