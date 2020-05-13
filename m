@@ -2,96 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 810141D0497
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 04:03:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0E11D04A6
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 04:10:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbgEMCD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 22:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
+        id S1729792AbgEMCJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 22:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727902AbgEMCD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 22:03:28 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E743C061A0C;
-        Tue, 12 May 2020 19:03:28 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id t8so7032600qvw.5;
-        Tue, 12 May 2020 19:03:28 -0700 (PDT)
+        with ESMTP id S1728419AbgEMCJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 22:09:42 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D18C061A0E
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 19:09:41 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a5so10424004pjh.2
+        for <netdev@vger.kernel.org>; Tue, 12 May 2020 19:09:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mnascyUsz5V0FDEjsIfa2buK7teLIaGjv2zdFsy2N+M=;
-        b=jbH6+xgjghxL7+AaDRjacF4fwhwmz4I9AocgvDMBNPLb/k6T2p2LIk7q6EA1a29kOX
-         DF5zI/zYa1GaOeIzUa1Ppxb+RjMle8BzJYls5Bh+w4xvPs2ZrA2vT8f6pvbaHICCg8VH
-         p5bHmD7MvdnljHAtr0eVuMGG9JvvAcs4yHQwI5kKzczxqLB20qtZQ6ldHfUJiLghTFma
-         NXWF6JBgo/u90RdjqNDMurp3f6uKPcWNKs5WYivrPDuNYpaSJ8w+ltktyc2M+KMymxaQ
-         nXxmU9ufx/31W6/oNtLOAADl2+GmsiuNEfIsB1SEBEAUI0TqDrgxU3ep92OVUwc/c2AR
-         SRIQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=30k3g7kfn7bIzbjqMwYYoV+lbQ2qdyHsMEbPQh3FmRs=;
+        b=VEnpDexEnncojA2+uni+RuhZttreiRApv7RLWNpsKCikVkF04Yah550tFknZwIINV1
+         6GvJgAjKm6vBp29dmG9cgiQ04WVeBL8YAROTIDsBvkWFoYubQ17yHCXSjqLJIiRgrget
+         MkNmUz/X/UoBbR2e85L/34rpRNnmcIukW9New=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mnascyUsz5V0FDEjsIfa2buK7teLIaGjv2zdFsy2N+M=;
-        b=YWPeqcYyL07tIwg+2s1V9vF5j6gnbbTLpwCnjQKWvY3kYbP9bEqvIcriAVNxOO5mcu
-         +S5wFSHDBH9MjzukOPxgkCpYmiFDSCez8b//PDN3mQytlCPdVFKF30mDBjNEgHWT54H7
-         Kp/YV8Pkvfb9cQ0c0Hi+lkoAflM3IWGeWIJmdL5acjmZqsUPuBpQ2lt9oKChEbWU66KJ
-         g5yBlpzzlYWcGm6uAULdPvNybf3eBVSaN/1T3veFHsRIb+mLc6KQjZfyErAgPKV3SlwG
-         DZJ8KEj2j86tiH976LTSd66yFAXnch1pH34MuvsUeVPrgawnGCVIj3qjySucGvsIuceC
-         mVSg==
-X-Gm-Message-State: AOAM531hZm2c8ET1MnakMGOX3UyR//ldcN0ZK2UWcJ+M1wnzWXFoYdNy
-        DG716UfyLFSFdXVX0hcq4DV5UoYo
-X-Google-Smtp-Source: ABdhPJyPfuG8JfeY7HsCjQWPG400npgxLXBlTmPVrWjc5W/+vJOoI3FBBSrKmTAxkNugakBCURQdXg==
-X-Received: by 2002:a05:6214:42a:: with SMTP id a10mr4071727qvy.78.1589335407492;
-        Tue, 12 May 2020 19:03:27 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:4082:2138:4ed8:3e6? ([2601:282:803:7700:4082:2138:4ed8:3e6])
-        by smtp.googlemail.com with ESMTPSA id p125sm11300584qkf.130.2020.05.12.19.03.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 May 2020 19:03:26 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2 1/3] ss: introduce cgroup2 cache and
- helper functions
-To:     Dmitry Yakunin <zeil@yandex-team.ru>, netdev@vger.kernel.org
-Cc:     cgroups@vger.kernel.org
-References: <20200509165202.17959-1-zeil@yandex-team.ru>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <42814b4f-dc95-d246-47a4-2b8c46dd607e@gmail.com>
-Date:   Tue, 12 May 2020 20:03:25 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        bh=30k3g7kfn7bIzbjqMwYYoV+lbQ2qdyHsMEbPQh3FmRs=;
+        b=lyUBAetxMqr0mqCVhVGH+4IFvTExY2wwcCc+Qk2nBa6tJVF3blw/RgOEWPWIY6qJr9
+         5MQKqXpszHySo/1y1BCAVr1Iydxs+fRe3iUg7ssDBHsLHk4UjCZkg6MkrRq3RvDGNjvt
+         Dd8Cnpy1I7NLhQiOV1PAfyAYKHOZiM9vGAAliDblwoe0jca4mjdAuPJThWLnOUjRqXha
+         NTPeDXyFJJMRDWhuzp1ofV9czssPHAxZbdO1slR9f58W72n1/IU2FZQshf/bSa8o/RjE
+         Bq0iC600v7scHCBu5xzn0bMiI639g2gIRl8hbX2biFux8EwSxM40R9plPiKPSvK5/lyI
+         46zA==
+X-Gm-Message-State: AOAM532XNlwqp8tdRsGhElN7EX7/N7kVfwuI4EX+wq9RczkM48fzAiIf
+        ETCbdBdFrQDqpPzsGZDvDBDufA==
+X-Google-Smtp-Source: ABdhPJwzjFKyOAvQxlaI87Fj2o2dIZsts/LJ9t7/iT1YUdO5bz9fWYeXCjxBWM39gJxQgizwI/xFAQ==
+X-Received: by 2002:a17:902:b08d:: with SMTP id p13mr4543034plr.241.1589335780671;
+        Tue, 12 May 2020 19:09:40 -0700 (PDT)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
+        by smtp.gmail.com with ESMTPSA id x7sm13456749pfj.122.2020.05.12.19.09.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 May 2020 19:09:39 -0700 (PDT)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 0/2] Bluetooth: Update LE scanning parameters for suspend
+Date:   Tue, 12 May 2020 19:09:31 -0700
+Message-Id: <20200513020933.102443-1-abhishekpandit@chromium.org>
+X-Mailer: git-send-email 2.26.2.645.ge9eca65c58-goog
 MIME-Version: 1.0
-In-Reply-To: <20200509165202.17959-1-zeil@yandex-team.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/20 10:52 AM, Dmitry Yakunin wrote:
-> This patch prepares infrastructure for matching sockets by cgroups.
-> Two helper functions are added for transformation between cgroup v2 ID
-> and pathname. Cgroup v2 cache is implemented as hash table indexed by ID.
-> This cache is needed for faster lookups of socket cgroup.
-> 
-> v2:
->   - style fixes (David Ahern)
-> 
 
-you missed my other comment about this set. Running this new command on
-a kernel without support should give the user a better error message
-than a string of Invalid arguments:
+Hi linux-bluetooth,
 
-$ uname -r
-5.3.0-51-generic
+This series updates the values used for window and interval when the
+system suspends. It also fixes a u8 vs u16 bug when setting up passive
+scanning.
 
-$ ss -a cgroup /sys/fs/cgroup/unified
-RTNETLINK answers: Invalid argument
-RTNETLINK answers: Invalid argument
-RTNETLINK answers: Invalid argument
-RTNETLINK answers: Invalid argument
-RTNETLINK answers: Invalid argument
-RTNETLINK answers: Invalid argument
-RTNETLINK answers: Invalid argument
-RTNETLINK answers: Invalid argument
-RTNETLINK answers: Invalid argument
+The values chosen for window and interval are 11.25ms and 640ms. I have
+tested these on several Chromebooks with different LE peers (mouse,
+keyboard, Raspberry Pi running bluez) and all of them are able to wake
+the system with those parameters.
+
+Thanks
+Abhishek
+
+
+
+Abhishek Pandit-Subedi (2):
+  Bluetooth: Fix incorrect type for window and interval
+  Bluetooth: Modify LE window and interval for suspend
+
+ net/bluetooth/hci_request.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+-- 
+2.26.2.645.ge9eca65c58-goog
+
