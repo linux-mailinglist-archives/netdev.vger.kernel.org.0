@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 834CA1D1C2F
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E352A1D1C33
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 19:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389888AbgEMRYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 13:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
+        id S2389832AbgEMR0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 13:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732731AbgEMRYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:24:00 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200A5C061A0C
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 10:24:00 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id l18so420442wrn.6
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 10:24:00 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1732731AbgEMR0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 13:26:20 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3172C061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 10:26:20 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id s8so409552wrt.9
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 10:26:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:sender:from:date:message-id:subject:to
          :content-transfer-encoding;
         bh=zJ07vGBhIiUjYDTu9eANu67lBn+h1VZ9axiEelJOx0U=;
-        b=YC+i0oZmZf/rOcZsOgTHnxvgr1NHPe+V7AonLwsHluFZfDZ0CEtDELfwn4C/bp7PRp
-         zWMUiOSI1Jvsq73MpPg6gBZA4BSG6FTgOHFlZ5CZROhVHoQ+8esWgbUyNkD7jlZEnfKY
-         oYXzZ3hvH9x3kry3Def60WtG0JgFtv7Sue6uwEiaCZ5VHE0ayM0ydbg3kamL/djy9azM
-         somNAv5wbVqFH9UICm9TVtHTh/B35nsVt97f4jeZTloCW2vn+QUo4NhxfS0EC4ZWqk+l
-         rynDT5meoI+FTvSeX+JAcnnVQcKs3f6fRAGcslaXB9pbPgW4r6t/V8kB7Fols9rVA520
-         fSCw==
+        b=psw5NAxX/Vau17T59luv2Te1CFcrDs1LDgmS9lwG26CnB4LZvCgbMWdRq0KUNIDV2/
+         J1VUyocvx4rLvaIu1tK2KhPkk7a5AAARjvS21r2QCLSNLTN81Qr5QiNVt5AcQTNetgdj
+         vkkK4DWTBZXfl234b3sa9As4S42rf4kaCMQoucCpMw3IXBtt2zmk19MQCcnsctGle7nk
+         rhbFd6VJPUSBHoqQmuyzsC3GsBOHXEXBH8S4HxmTNc4ILljIXJtJJfwUKYR12KrwTOBl
+         i3u4SF/s93/p9srWzyFAne9T6oWfmwbq9aqVc5wK+WQiSyO9FYmqlZx3+3EomUxvnI73
+         BsAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
          :to:content-transfer-encoding;
         bh=zJ07vGBhIiUjYDTu9eANu67lBn+h1VZ9axiEelJOx0U=;
-        b=oZkQZAkUdkqZh7rtNS8enG4l3XeVE61IUVTDgrJiecTLZXRFcR3sXGvO+Q0Gz6rQhG
-         up0r8S8djEB8fhEyM82LzNtiQn/yvYjWs32MHGZqR4rm9oafU0xXXxhL/M71bqqZC0SZ
-         hoIBEDcBRZ7prS5cVqvcIcS6ow0r/0aOIOmZxvdTNPDHT+sWOesMJy2dpNznyzkpF3T2
-         L1g61vhMhXD27/1RJt/DjY+qrjt6cq9CqGjI7UCIdShU3bvfssBLwYtXysQMa1Qi7HXP
-         nez5zcjHTSkeD96Hmzh3HkQypagSYuPz1Fce5wjBzGcb8+5PfiynLoArspeBCXTIeItH
-         xszA==
-X-Gm-Message-State: AOAM532XGsviYhsNPW6YeXL98GKM5X7qon1sV+V5qTrkZFqxVOE4PqMb
-        Wy/GFJWigzC2w+8NZvsLB+LFpwLGziwcIB1jufU=
-X-Google-Smtp-Source: ABdhPJxYHrAkdbIGg3QHhJEDSYgIOMrexi9NolpclwQzJ6xawsA+DCw8IQzAsdPwJEkxwIjtJTKPrmqrvmR6MA39pfE=
-X-Received: by 2002:a5d:4b09:: with SMTP id v9mr372211wrq.297.1589390638459;
- Wed, 13 May 2020 10:23:58 -0700 (PDT)
+        b=Q/wyydQUql1iOK8/vFzKQMRou/QTiDijKkEWu0ejiTkus36vamZO28hQUHGUggMv7V
+         fT9WVnGacGCOTSZ21O2Sm4mqf4ZX5h+vvhFMKvxZY9UYFXxBDNPJyLeqpjt6WP9lNTfi
+         hvTy9jiCFE0b77rU3oXbfmaZctaxnXEvQXgH4GLcG8F/eWN2okDZT3X5eB72oidObscj
+         FuDc1sxDGmkcnJMCMv2CLUq9d4Nd9QtNjbeE8KHrhUbBCDqSLe491tET/F2jt5sYU8t5
+         ptb9C5ylrzTh5wDQ7vStuT7kREL3ZUE5NJL5V9h+91qAngoRl5u+R4ZxXgLEnHVMoQsN
+         sVng==
+X-Gm-Message-State: AOAM530MwBi6thuJrAYuUCV6Ky+f3v72afFy/AkFvZlidulSUFo8Ctn9
+        TZnkeqO6GT5AxWJBTCGYKpULPt6S8H1S+FprmOs=
+X-Google-Smtp-Source: ABdhPJw+EfUolj1QN/5+xaUvLJuW1nJFjj0s7Fe2wOIbG0IfrgjkvhSRY/nY2a48QdoeDmPDJTX4pKVJqvB50aMdvVo=
+X-Received: by 2002:adf:e543:: with SMTP id z3mr355243wrm.385.1589390779253;
+ Wed, 13 May 2020 10:26:19 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:adf:c3c9:0:0:0:0:0 with HTTP; Wed, 13 May 2020 10:23:57
+Received: by 2002:adf:c3c9:0:0:0:0:0 with HTTP; Wed, 13 May 2020 10:26:18
  -0700 (PDT)
 From:   Donna Louise <dlouisemclnnes@gmail.com>
-Date:   Wed, 13 May 2020 10:23:57 -0700
-X-Google-Sender-Auth: RJ8xxA75Zx9eKENgU1nvHcpLWO8
-Message-ID: <CAEtDg5CjKVQ0cc+pGJLs7RmOY_oAzBVN2RK3D0xZx6nDJcHm8A@mail.gmail.com>
+Date:   Wed, 13 May 2020 10:26:18 -0700
+X-Google-Sender-Auth: HQvIUCjIF2UFsJyX-msK7EoWMOM
+Message-ID: <CAEtDg5A1m1b_9Uhf4swP2di8Bwn6JtA12TidoR+w3Qw35TWLZw@mail.gmail.com>
 Subject: May the peace of God be with you,
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
