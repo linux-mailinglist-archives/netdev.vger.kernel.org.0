@@ -2,220 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BF2F1D0536
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 05:04:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A8B1D0563
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 05:19:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728461AbgEMDE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 May 2020 23:04:28 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2503 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725898AbgEMDE2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 May 2020 23:04:28 -0400
-Received: from DGGEMM402-HUB.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id 3805D5D8613628C86A89;
-        Wed, 13 May 2020 11:04:22 +0800 (CST)
-Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
- DGGEMM402-HUB.china.huawei.com (10.3.20.210) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Wed, 13 May 2020 11:04:21 +0800
-Received: from [127.0.0.1] (10.57.37.248) by dggeme760-chm.china.huawei.com
- (10.3.19.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1913.5; Wed, 13
- May 2020 11:04:21 +0800
-Subject: Re: [question] net: phy: rtl8211f: link speed shows 1000Mb/s but
- actual link speed in phy is 100Mb/s
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, Salil Mehta <salil.mehta@huawei.com>
-References: <478f871a-583d-01f1-9cc5-2eea56d8c2a7@huawei.com>
- <20200512140017.GK409897@lunn.ch>
- <ef25a0a2-e13f-def1-5e91-ceae1bfaf333@huawei.com>
- <20200513015944.GA501603@lunn.ch>
-From:   Yonglong Liu <liuyonglong@huawei.com>
-Message-ID: <3f996ac2-7920-008e-3b83-b8b82cc89b31@huawei.com>
-Date:   Wed, 13 May 2020 11:04:20 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.2.1
-MIME-Version: 1.0
-In-Reply-To: <20200513015944.GA501603@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.57.37.248]
-X-ClientProxiedBy: dggeme716-chm.china.huawei.com (10.1.199.112) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+        id S1728614AbgEMDTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 May 2020 23:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725898AbgEMDTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 May 2020 23:19:34 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C9FC061A0C;
+        Tue, 12 May 2020 20:19:34 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id r22so5555570pga.12;
+        Tue, 12 May 2020 20:19:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Cgnn7BGEcuG0spKsjYgMQ/THavfuvltSX7ieTOwC2yo=;
+        b=GV7cK/usrddCUvcVGqLj9GNIIzdZnGxXOiRDUPgASBMawqSnNcsaT2QXszxHx4dgJ+
+         ijyoEi2VnrlgeXQmbogQDzZhiFBMohhPHwfOYASwaBgPOzva7Og7WIRCbqF2k3LQ9mMc
+         sVUhlcV3kc6mokt4vH/rKlRrNQO1OBH9gAGqyxmWPLf4wuGGjD14fFjAf1/ROEhSQ7Fw
+         JSJkmr3g+ZOJvKhiapDjs6bkWUUD1swiG4ZbQ6zfIC/0f9aH9bh4yg0905xZr+GzlAUf
+         5XgNMSAmzLFH/hJHG6cHgLZdnBR48GlgpRCDq6IqMF/5jUJlS7MY1cr0/W9tR44xs2fv
+         ASAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Cgnn7BGEcuG0spKsjYgMQ/THavfuvltSX7ieTOwC2yo=;
+        b=D/Kj1Hs51iu9VSULafvJJexrOxj7iQ3bSTq1TwJMy1Xx2IwmIBSgc9sDjd7JzEM25g
+         CppGW3P0e6WMiz5uM0042E9bf8zS45DK09gbEn3Db5KfWx5v3M2A70ulsdqYoG6IX9dt
+         abE6YkHIeDWyWy374K5phBWPmOzpUrFk3EaJJE30jKIclAlZxqu9wXNLd7vuYz4Q3Mar
+         l8I/2OgjUh7bkIcNy/cM4/A65IdPdoms58mkQqweELm+ziHchVzWkNnBbH4oLaYj9WxT
+         xx5SIzRxf1z4vWwXGTJzk/GkCSlTxYfxgbwZlrxwSF3scmdd0PsQtJk9g6VJ0vr4iuZn
+         HA+Q==
+X-Gm-Message-State: AOAM532Sa2S58MF/qDQPXCzDFwdaSPz6ER//OElLtB7YOKPnNMYPljaY
+        NXenyEueiDyE4g+AvFFnWr4=
+X-Google-Smtp-Source: ABdhPJwvEjKC6Qwup/1awvUhKHaFARTRhQ7CYWgQ3fAzzMyWsW3HEmmFHM9ywQuI19r7o42nkZkaRA==
+X-Received: by 2002:a63:3546:: with SMTP id c67mr4493734pga.379.1589339973974;
+        Tue, 12 May 2020 20:19:33 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.1])
+        by smtp.gmail.com with ESMTPSA id f70sm13206415pfa.17.2020.05.12.20.19.31
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 May 2020 20:19:32 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com, linux-security-module@vger.kernel.org,
+        acme@redhat.com, jamorris@linux.microsoft.com, jannh@google.com,
+        kpsingh@google.com
+Subject: [PATCH v6 bpf-next 0/3] Introduce CAP_BPF
+Date:   Tue, 12 May 2020 20:19:27 -0700
+Message-Id: <20200513031930.86895-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/5/13 9:59, Andrew Lunn wrote:
-> On Wed, May 13, 2020 at 09:34:13AM +0800, Yonglong Liu wrote:
->> Hi, Andrew:
->> 	Thanks for your reply!
->>
->> On 2020/5/12 22:00, Andrew Lunn wrote:
->>> On Tue, May 12, 2020 at 08:48:21PM +0800, Yonglong Liu wrote:
->>>> I use two devices, both support 1000M speed, they are directly connected
->>>> with a network cable. Two devices enable autoneg, and then do the following
->>>> test repeatedly:
->>>> 	ifconfig eth5 down
->>>> 	ifconfig eth5 up
->>>> 	sleep $((RANDOM%6))
->>>> 	ifconfig eth5 down
->>>> 	ifconfig eth5 up
->>>> 	sleep 10
->>>>
->>>> With low probability, one device A link up with 100Mb/s, the other B link up with
->>>> 1000Mb/s(the actual link speed read from phy is 100Mb/s), and the network can
->>>> not work.
->>>>
->>>> device A:
->>>> Settings for eth5:
->>>>         Supported ports: [ TP ]
->>>>         Supported link modes:   10baseT/Half 10baseT/Full
->>>>                                 100baseT/Half 100baseT/Full
->>>>                                 1000baseT/Full
->>>>         Supported pause frame use: Symmetric Receive-only
->>>>         Supports auto-negotiation: Yes
->>>>         Supported FEC modes: Not reported
->>>>         Advertised link modes:  10baseT/Half 10baseT/Full
->>>>                                 100baseT/Half 100baseT/Full
->>>>                                 1000baseT/Full
->>>>         Advertised pause frame use: Symmetric
->>>>         Advertised auto-negotiation: Yes
->>>>         Advertised FEC modes: Not reported
->>>>         Link partner advertised link modes:  10baseT/Half 10baseT/Full
->>>>                                              100baseT/Half 100baseT/Full
->>>>         Link partner advertised pause frame use: Symmetric
->>>>         Link partner advertised auto-negotiation: Yes
->>>>         Link partner advertised FEC modes: Not reported
->>>>         Speed: 100Mb/s
->>>>         Duplex: Full
->>>>         Port: MII
->>>>         PHYAD: 3
->>>>         Transceiver: internal
->>>>         Auto-negotiation: on
->>>>         Current message level: 0x00000036 (54)
->>>>                                probe link ifdown ifup
->>>>         Link detected: yes
->>>>
->>>> The regs value read from mdio are:
->>>> reg 9 = 0x200
->>>> reg a = 0
->>>>
->>>> device B:
->>>> Settings for eth5:
->>>>         Supported ports: [ TP ]
->>>>         Supported link modes:   10baseT/Half 10baseT/Full
->>>>                                 100baseT/Half 100baseT/Full
->>>>                                 1000baseT/Full
->>>>         Supported pause frame use: Symmetric Receive-only
->>>>         Supports auto-negotiation: Yes
->>>>         Supported FEC modes: Not reported
->>>>         Advertised link modes:  10baseT/Half 10baseT/Full
->>>>                                 100baseT/Half 100baseT/Full
->>>>                                 1000baseT/Full
->>>>         Advertised pause frame use: Symmetric
->>>>         Advertised auto-negotiation: Yes
->>>>         Advertised FEC modes: Not reported
->>>>         Link partner advertised link modes:  10baseT/Half 10baseT/Full
->>>>                                              100baseT/Half 100baseT/Full
->>>>                                              1000baseT/Full
->>>>         Link partner advertised pause frame use: Symmetric
->>>>         Link partner advertised auto-negotiation: Yes
->>>>         Link partner advertised FEC modes: Not reported
->>>>         Speed: 1000Mb/s
->>>>         Duplex: Full
->>>>         Port: MII
->>>>         PHYAD: 3
->>>>         Transceiver: internal
->>>>         Auto-negotiation: on
->>>>         Current message level: 0x00000036 (54)
->>>>                                probe link ifdown ifup
->>>>         Link detected: yes
->>>>
->>>> The regs value read from mdio are:
->>>> reg 9 = 0
->>>> reg a = 0x800
->>>>
->>>> I had talk to the FAE of rtl8211f, they said if negotiation failed with 1000Mb/s,
->>>> rtl8211f will change reg 9 to 0, than try to negotiation with 100Mb/s.
->>>>
->>>> The problem happened as:
->>>> ifconfig eth5 up -> phy_start -> phy_start_aneg -> phy_modify_changed(MII_CTRL1000)
->>>> (this time both A and B, reg 9 = 0x200) -> wait for link up -> (B: reg 9 changed to 0)
->>>> -> link up.
->>>
->>> This sounds like downshift, but not correctly working. 1Gbps requires
->>> that 4 pairs in the cable work. If a 1Gbps link is negotiated, but
->>> then does not establish because one of the pairs is broken, some PHYs
->>> will try to 'downshift'. They drop down to 100Mbps, which only
->>> requires two pairs of the cable to work. To do this, the PHY should
->>> change what it is advertising, to no longer advertise 1G, just 100M
->>> and 10M. The link partner should then try to use 100Mbps and
->>> hopefully, a link is established.
->>>
->>> Looking at the ethtool, you can see device A is reporting device B is
->>> only advertising upto 100Mbps. Yet it is locally using 1G. That is
->>> broken. So i would say device A has the problem. Are both PHYs
->>> rtl8211f?
->>
->> Both PHY is rtl8211f. I think Device B is broken. Device B advertising
->> it supported 1G, but actually, in phy, downshift to 100M, so Device B
->> link up with 1G in driver side, but actually 100M in phy.
-> 
-> You have to be careful with the output of ethtool. Downshift is not
-> part of 802.3. There i no standard register to indicate it has
-> happened. Sometimes there is a vendor register. You should check the
-> datasheet, and look at what other PHY drivers do for this, and
-> phy_check_downshift().
-> 
->>> Are you 100% sure your cable and board layout is good? Is it
->>> trying downshift because something is broken? Fix the
->>> cable/connector and the
-> 
->> Will check the layout with hardware engineer. This happened with a low
->> probability. When this happened, another down/up operation or restart
->> autoneg will solved.
->  
->>> reason to downshift goes away. But it does not solve the problem if a
->>> customer has a broken cable. So you might want to deliberately cut a
->>> pair in the cable so it becomes 100% reproducable and try to debug it
->>> further. See if you can find out why auto-neg is not working
->>> correctly.
->>
->> So, your opinion is, maybe we should checkout whether the hardware layout
->> or cable have problem?
-> 
-> Well, there are a couple of issues here.
-> 
-> It could be a hardware problem. Best case, it is the cable. But if you
-> can reproduce it with other boards, it is a board design issue, which
-> you might want to get fixed. If it happens for you in the lab, it will
-> probably happen out in the field.
-> 
-> You should also consider what you want to happen with a cable that
-> really is broken. It would be nice if downshift worked. Slower
-> networking is better than no networking. Unless you have a requirement
-> that 100Mbps is too slow for your use case. So you might want to debug
-> what is going wrong when downshift happens.
-> 
->> By the way, do we have some mechanism to solve this downshift in software
->> side? If the PHY advertising downshift to 100M, but software still have
->> advertising with 1G(just like Device B), it will always have a broken network.
-> 
-> You might get some ideas from phy_check_downshift(). A lot will
-> depended on what information you can get from the PHY.
-> 
-> 	 Andrew
-> 
+From: Alexei Starovoitov <ast@kernel.org>
 
-Hi, Andrew:
-	Thanks very much! That's so helpfull!
+v5->v6:
+- split allow_ptr_leaks into four flags.
+- retain bpf_jit_limit under cap_sys_admin.
+- fixed few other issues spotted by Daniel.
 
-> .
-> 
+v4->v5:
+
+Split BPF operations that are allowed under CAP_SYS_ADMIN into combination of
+CAP_BPF, CAP_PERFMON, CAP_NET_ADMIN and keep some of them under CAP_SYS_ADMIN.
+
+The user process has to have
+- CAP_BPF to create maps and do other sys_bpf() commands
+- CAP_BPF and CAP_PERFMON to load tracing programs.
+- CAP_BPF and CAP_NET_ADMIN to load networking programs.
+(or CAP_SYS_ADMIN for backward compatibility).
+
+CAP_BPF solves three main goals:
+1. provides isolation to user space processes that drop CAP_SYS_ADMIN and switch to CAP_BPF.
+   More on this below. This is the major difference vs v4 set back from Sep 2019.
+2. makes networking BPF progs more secure, since CAP_BPF + CAP_NET_ADMIN
+   prevents pointer leaks and arbitrary kernel memory access.
+3. enables fuzzers to exercise all of the verifier logic. Eventually finding bugs
+   and making BPF infra more secure. Currently fuzzers run in unpriv.
+   They will be able to run with CAP_BPF.
+
+The patchset is long overdue follow-up from the last plumbers conference.
+Comparing to what was discussed at LPC the CAP* checks at attach time are gone.
+For tracing progs the CAP_SYS_ADMIN check was done at load time only. There was
+no check at attach time. For networking and cgroup progs CAP_SYS_ADMIN was
+required at load time and CAP_NET_ADMIN at attach time, but there are several
+ways to bypass CAP_NET_ADMIN:
+- if networking prog is using tail_call writing FD into prog_array will
+  effectively attach it, but bpf_map_update_elem is an unprivileged operation.
+- freplace prog with CAP_SYS_ADMIN can replace networking prog
+
+Consolidating all CAP checks at load time makes security model similar to
+open() syscall. Once the user got an FD it can do everything with it.
+read/write/poll don't check permissions. The same way when bpf_prog_load
+command returns an FD the user can do everything (including attaching,
+detaching, and bpf_test_run).
+
+The important design decision is to allow ID->FD transition for
+CAP_SYS_ADMIN only. What it means that user processes can run
+with CAP_BPF and CAP_NET_ADMIN and they will not be able to affect each
+other unless they pass FDs via scm_rights or via pinning in bpffs.
+ID->FD is a mechanism for human override and introspection.
+An admin can do 'sudo bpftool prog ...'. It's possible to enforce via LSM that
+only bpftool binary does bpf syscall with CAP_SYS_ADMIN and the rest of user
+space processes do bpf syscall with CAP_BPF isolating bpf objects (progs, maps,
+links) that are owned by such processes from each other.
+
+Another significant change from LPC is that the verifier checks are split into
+four flags. The allow_ptr_leaks flag allows pointer manipulations. The
+bpf_capable flag enables all modern verifier features like bpf-to-bpf calls,
+BTF, bounded loops, dead code elimination, etc. All the goodness. The
+bypass_spec_v1 flag enables indirect stack access from bpf programs and
+disables speculative analysis and bpf array mitigations. The bypass_spec_v4
+flag disables store sanitation. That allows networking progs with CAP_BPF +
+CAP_NET_ADMIN enjoy modern verifier features while being more secure.
+
+Some networking progs may need CAP_BPF + CAP_NET_ADMIN + CAP_PERFMON,
+since subtracting pointers (like skb->data_end - skb->data) is a pointer leak,
+but the verifier may get smarter in the future.
+
+Please see patches for more details.
+
+Alexei Starovoitov (3):
+  bpf, capability: Introduce CAP_BPF
+  bpf: implement CAP_BPF
+  selftests/bpf: use CAP_BPF and CAP_PERFMON in tests
+
+ drivers/media/rc/bpf-lirc.c                   |  2 +-
+ include/linux/bpf.h                           | 18 +++-
+ include/linux/bpf_verifier.h                  |  3 +
+ include/linux/capability.h                    |  5 ++
+ include/uapi/linux/capability.h               | 34 +++++++-
+ kernel/bpf/arraymap.c                         | 10 +--
+ kernel/bpf/bpf_struct_ops.c                   |  2 +-
+ kernel/bpf/core.c                             |  2 +-
+ kernel/bpf/cpumap.c                           |  2 +-
+ kernel/bpf/hashtab.c                          |  4 +-
+ kernel/bpf/helpers.c                          |  4 +-
+ kernel/bpf/lpm_trie.c                         |  2 +-
+ kernel/bpf/map_in_map.c                       |  2 +-
+ kernel/bpf/queue_stack_maps.c                 |  2 +-
+ kernel/bpf/reuseport_array.c                  |  2 +-
+ kernel/bpf/stackmap.c                         |  2 +-
+ kernel/bpf/syscall.c                          | 87 ++++++++++++++-----
+ kernel/bpf/verifier.c                         | 37 ++++----
+ kernel/trace/bpf_trace.c                      |  3 +
+ net/core/bpf_sk_storage.c                     |  4 +-
+ net/core/filter.c                             |  4 +-
+ security/selinux/include/classmap.h           |  4 +-
+ tools/testing/selftests/bpf/test_verifier.c   | 44 ++++++++--
+ tools/testing/selftests/bpf/verifier/calls.c  | 16 ++--
+ .../selftests/bpf/verifier/dead_code.c        | 10 +--
+ 25 files changed, 221 insertions(+), 84 deletions(-)
+
+-- 
+2.23.0
 
