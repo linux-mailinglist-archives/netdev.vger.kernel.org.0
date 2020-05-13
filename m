@@ -2,618 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8898F1D1B63
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:42:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD6501D1B9E
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 18:55:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389720AbgEMQmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 12:42:03 -0400
-Received: from correo.us.es ([193.147.175.20]:54102 "EHLO mail.us.es"
+        id S2389689AbgEMQzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 12:55:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56778 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389694AbgEMQmA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 12:42:00 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 71CAA27F8B8
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 18:41:58 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5F1B8115416
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 18:41:58 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 5C974115412; Wed, 13 May 2020 18:41:58 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BE4631158E7;
-        Wed, 13 May 2020 18:41:55 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 13 May 2020 18:41:55 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 680A842EF4E0;
-        Wed, 13 May 2020 18:41:55 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, paulb@mellanox.com,
-        ozsh@mellanox.com, vladbu@mellanox.com, jiri@resnulli.us,
-        kuba@kernel.org, saeedm@mellanox.com, michael.chan@broadcom.com
-Subject: [PATCH 8/8 net] net: remove indirect block netdev event registration
-Date:   Wed, 13 May 2020 18:41:40 +0200
-Message-Id: <20200513164140.7956-9-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200513164140.7956-1-pablo@netfilter.org>
-References: <20200513164140.7956-1-pablo@netfilter.org>
+        id S1727120AbgEMQzT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 May 2020 12:55:19 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9297520671;
+        Wed, 13 May 2020 16:55:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589388918;
+        bh=hPqtkikMV38zyz/7NxymVobbIfrw+h5td3YMP8oEhQg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=wU4jeU49CYu1yhHfOsY5xToaFYuDZzjpF3Ay9L608Sch0YpMq4K9YAPXV8Wl9WKwP
+         1Ifnrdjm8/iFc4jszQRawoVLiCowSF0Jybx1swhwSgwJhtBDNnQKzo0ZQd4KUdss2o
+         ElaiG432O2dakTN/9eCTx8+7xVNdr3VgndPayyZY=
+Date:   Wed, 13 May 2020 09:55:16 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, Louis Peens <louis.peens@netronome.com>
+Subject: Re: [PATCH net-net] nfp: flower: inform firmware of flower features
+ in the driver
+Message-ID: <20200513095516.2535c778@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200513081723.17624-1-simon.horman@netronome.com>
+References: <20200513081723.17624-1-simon.horman@netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers do not register to netdev events to set up indirect blocks
-anymore. Remove __flow_indr_block_cb_register() and
-__flow_indr_block_cb_unregister().
+On Wed, 13 May 2020 10:17:23 +0200 Simon Horman wrote:
+> From: Louis Peens <louis.peens@netronome.com>
+> 
+> For backwards compatibility it may be required for the firmware to
+> disable certain features depending on the features supported by
+> the host. Combine the host feature bits and firmware feature bits
+> and write this back to the firmware.
+> 
+> Signed-off-by: Louis Peens <louis.peens@netronome.com>
+> Signed-off-by: Simon Horman <simon.horman@netronome.com>
 
-The frontends set up the callbacks through flow_indr_dev_setup_block()
+> diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
+> index d8ad9346a26a..2830c1203c76 100644
+> --- a/drivers/net/ethernet/netronome/nfp/flower/main.c
+> +++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
+> @@ -665,6 +665,81 @@ static int nfp_flower_vnic_init(struct nfp_app *app, struct nfp_net *nn)
+>  	return err;
+>  }
+>  
+> +static void nfp_flower_wait_host_bit(struct nfp_app *app)
+> +{
+> +	unsigned long err_at;
+> +	u64 feat;
+> +	int err;
+> +
+> +	/* Wait for HOST_ACK flag bit to propagate */
+> +	feat = nfp_rtsym_read_le(app->pf->rtbl,
+> +				 "_abi_flower_combined_feat_global",
+> +				 &err);
+> +	err_at = jiffies + HZ / 100;
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/net/flow_offload.h            |   9 -
- net/core/flow_offload.c               | 238 --------------------------
- net/netfilter/nf_flow_table_offload.c |  66 -------
- net/netfilter/nf_tables_offload.c     |  53 +-----
- net/sched/cls_api.c                   |  79 ---------
- 5 files changed, 1 insertion(+), 444 deletions(-)
+msecs_to_jiffies() ?
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 77e5a1bc30f0..3b5860cb8948 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -533,15 +533,6 @@ typedef void flow_indr_block_cmd_t(struct net_device *dev,
- 				   flow_indr_block_bind_cb_t *cb, void *cb_priv,
- 				   enum flow_block_command command);
- 
--struct flow_indr_block_entry {
--	flow_indr_block_cmd_t *cb;
--	struct list_head	list;
--};
--
--void flow_indr_add_block_cb(struct flow_indr_block_entry *entry);
--
--void flow_indr_del_block_cb(struct flow_indr_block_entry *entry);
--
- int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
- 				  flow_indr_block_bind_cb_t *cb,
- 				  void *cb_ident);
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 073dd0f74dc0..9f778362595d 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -467,241 +467,3 @@ int flow_indr_dev_setup_offload(struct net_device *dev,
- 	return list_empty(&bo->cb_list) ? -EOPNOTSUPP : 0;
- }
- EXPORT_SYMBOL(flow_indr_dev_setup_offload);
--
--static LIST_HEAD(block_cb_list);
--
--static struct rhashtable indr_setup_block_ht;
--
--struct flow_indr_block_cb {
--	struct list_head list;
--	void *cb_priv;
--	flow_indr_block_bind_cb_t *cb;
--	void *cb_ident;
--};
--
--struct flow_indr_block_dev {
--	struct rhash_head ht_node;
--	struct net_device *dev;
--	unsigned int refcnt;
--	struct list_head cb_list;
--};
--
--static const struct rhashtable_params flow_indr_setup_block_ht_params = {
--	.key_offset	= offsetof(struct flow_indr_block_dev, dev),
--	.head_offset	= offsetof(struct flow_indr_block_dev, ht_node),
--	.key_len	= sizeof(struct net_device *),
--};
--
--static struct flow_indr_block_dev *
--flow_indr_block_dev_lookup(struct net_device *dev)
--{
--	return rhashtable_lookup_fast(&indr_setup_block_ht, &dev,
--				      flow_indr_setup_block_ht_params);
--}
--
--static struct flow_indr_block_dev *
--flow_indr_block_dev_get(struct net_device *dev)
--{
--	struct flow_indr_block_dev *indr_dev;
--
--	indr_dev = flow_indr_block_dev_lookup(dev);
--	if (indr_dev)
--		goto inc_ref;
--
--	indr_dev = kzalloc(sizeof(*indr_dev), GFP_KERNEL);
--	if (!indr_dev)
--		return NULL;
--
--	INIT_LIST_HEAD(&indr_dev->cb_list);
--	indr_dev->dev = dev;
--	if (rhashtable_insert_fast(&indr_setup_block_ht, &indr_dev->ht_node,
--				   flow_indr_setup_block_ht_params)) {
--		kfree(indr_dev);
--		return NULL;
--	}
--
--inc_ref:
--	indr_dev->refcnt++;
--	return indr_dev;
--}
--
--static void flow_indr_block_dev_put(struct flow_indr_block_dev *indr_dev)
--{
--	if (--indr_dev->refcnt)
--		return;
--
--	rhashtable_remove_fast(&indr_setup_block_ht, &indr_dev->ht_node,
--			       flow_indr_setup_block_ht_params);
--	kfree(indr_dev);
--}
--
--static struct flow_indr_block_cb *
--flow_indr_block_cb_lookup(struct flow_indr_block_dev *indr_dev,
--			  flow_indr_block_bind_cb_t *cb, void *cb_ident)
--{
--	struct flow_indr_block_cb *indr_block_cb;
--
--	list_for_each_entry(indr_block_cb, &indr_dev->cb_list, list)
--		if (indr_block_cb->cb == cb &&
--		    indr_block_cb->cb_ident == cb_ident)
--			return indr_block_cb;
--	return NULL;
--}
--
--static struct flow_indr_block_cb *
--flow_indr_block_cb_add(struct flow_indr_block_dev *indr_dev, void *cb_priv,
--		       flow_indr_block_bind_cb_t *cb, void *cb_ident)
--{
--	struct flow_indr_block_cb *indr_block_cb;
--
--	indr_block_cb = flow_indr_block_cb_lookup(indr_dev, cb, cb_ident);
--	if (indr_block_cb)
--		return ERR_PTR(-EEXIST);
--
--	indr_block_cb = kzalloc(sizeof(*indr_block_cb), GFP_KERNEL);
--	if (!indr_block_cb)
--		return ERR_PTR(-ENOMEM);
--
--	indr_block_cb->cb_priv = cb_priv;
--	indr_block_cb->cb = cb;
--	indr_block_cb->cb_ident = cb_ident;
--	list_add(&indr_block_cb->list, &indr_dev->cb_list);
--
--	return indr_block_cb;
--}
--
--static void flow_indr_block_cb_del(struct flow_indr_block_cb *indr_block_cb)
--{
--	list_del(&indr_block_cb->list);
--	kfree(indr_block_cb);
--}
--
--static DEFINE_MUTEX(flow_indr_block_cb_lock);
--
--static void flow_block_cmd(struct net_device *dev,
--			   flow_indr_block_bind_cb_t *cb, void *cb_priv,
--			   enum flow_block_command command)
--{
--	struct flow_indr_block_entry *entry;
--
--	mutex_lock(&flow_indr_block_cb_lock);
--	list_for_each_entry(entry, &block_cb_list, list) {
--		entry->cb(dev, cb, cb_priv, command);
--	}
--	mutex_unlock(&flow_indr_block_cb_lock);
--}
--
--int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
--				  flow_indr_block_bind_cb_t *cb,
--				  void *cb_ident)
--{
--	struct flow_indr_block_cb *indr_block_cb;
--	struct flow_indr_block_dev *indr_dev;
--	int err;
--
--	indr_dev = flow_indr_block_dev_get(dev);
--	if (!indr_dev)
--		return -ENOMEM;
--
--	indr_block_cb = flow_indr_block_cb_add(indr_dev, cb_priv, cb, cb_ident);
--	err = PTR_ERR_OR_ZERO(indr_block_cb);
--	if (err)
--		goto err_dev_put;
--
--	flow_block_cmd(dev, indr_block_cb->cb, indr_block_cb->cb_priv,
--		       FLOW_BLOCK_BIND);
--
--	return 0;
--
--err_dev_put:
--	flow_indr_block_dev_put(indr_dev);
--	return err;
--}
--EXPORT_SYMBOL_GPL(__flow_indr_block_cb_register);
--
--int flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
--				flow_indr_block_bind_cb_t *cb,
--				void *cb_ident)
--{
--	int err;
--
--	rtnl_lock();
--	err = __flow_indr_block_cb_register(dev, cb_priv, cb, cb_ident);
--	rtnl_unlock();
--
--	return err;
--}
--EXPORT_SYMBOL_GPL(flow_indr_block_cb_register);
--
--void __flow_indr_block_cb_unregister(struct net_device *dev,
--				     flow_indr_block_bind_cb_t *cb,
--				     void *cb_ident)
--{
--	struct flow_indr_block_cb *indr_block_cb;
--	struct flow_indr_block_dev *indr_dev;
--
--	indr_dev = flow_indr_block_dev_lookup(dev);
--	if (!indr_dev)
--		return;
--
--	indr_block_cb = flow_indr_block_cb_lookup(indr_dev, cb, cb_ident);
--	if (!indr_block_cb)
--		return;
--
--	flow_block_cmd(dev, indr_block_cb->cb, indr_block_cb->cb_priv,
--		       FLOW_BLOCK_UNBIND);
--
--	flow_indr_block_cb_del(indr_block_cb);
--	flow_indr_block_dev_put(indr_dev);
--}
--EXPORT_SYMBOL_GPL(__flow_indr_block_cb_unregister);
--
--void flow_indr_block_cb_unregister(struct net_device *dev,
--				   flow_indr_block_bind_cb_t *cb,
--				   void *cb_ident)
--{
--	rtnl_lock();
--	__flow_indr_block_cb_unregister(dev, cb, cb_ident);
--	rtnl_unlock();
--}
--EXPORT_SYMBOL_GPL(flow_indr_block_cb_unregister);
--
--void flow_indr_block_call(struct net_device *dev,
--			  struct flow_block_offload *bo,
--			  enum flow_block_command command,
--			  enum tc_setup_type type)
--{
--	struct flow_indr_block_cb *indr_block_cb;
--	struct flow_indr_block_dev *indr_dev;
--
--	indr_dev = flow_indr_block_dev_lookup(dev);
--	if (!indr_dev)
--		return;
--
--	list_for_each_entry(indr_block_cb, &indr_dev->cb_list, list)
--		indr_block_cb->cb(dev, indr_block_cb->cb_priv, type, bo);
--}
--EXPORT_SYMBOL_GPL(flow_indr_block_call);
--
--void flow_indr_add_block_cb(struct flow_indr_block_entry *entry)
--{
--	mutex_lock(&flow_indr_block_cb_lock);
--	list_add_tail(&entry->list, &block_cb_list);
--	mutex_unlock(&flow_indr_block_cb_lock);
--}
--EXPORT_SYMBOL_GPL(flow_indr_add_block_cb);
--
--void flow_indr_del_block_cb(struct flow_indr_block_entry *entry)
--{
--	mutex_lock(&flow_indr_block_cb_lock);
--	list_del(&entry->list);
--	mutex_unlock(&flow_indr_block_cb_lock);
--}
--EXPORT_SYMBOL_GPL(flow_indr_del_block_cb);
--
--static int __init init_flow_indr_rhashtable(void)
--{
--	return rhashtable_init(&indr_setup_block_ht,
--			       &flow_indr_setup_block_ht_params);
--}
--subsys_initcall(init_flow_indr_rhashtable);
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index 82562e47d99b..969ee9461d82 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -999,69 +999,6 @@ int nf_flow_table_offload_setup(struct nf_flowtable *flowtable,
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_offload_setup);
- 
--static void nf_flow_table_indr_block_ing_cmd(struct net_device *dev,
--					     struct nf_flowtable *flowtable,
--					     flow_indr_block_bind_cb_t *cb,
--					     void *cb_priv,
--					     enum flow_block_command cmd)
--{
--	struct netlink_ext_ack extack = {};
--	struct flow_block_offload bo;
--
--	if (!flowtable)
--		return;
--
--	nf_flow_table_block_offload_init(&bo, dev_net(dev), cmd, flowtable,
--					 &extack);
--
--	cb(dev, cb_priv, TC_SETUP_FT, &bo);
--
--	nf_flow_table_block_setup(flowtable, &bo, cmd);
--}
--
--static void nf_flow_table_indr_block_cb_cmd(struct nf_flowtable *flowtable,
--					    struct net_device *dev,
--					    flow_indr_block_bind_cb_t *cb,
--					    void *cb_priv,
--					    enum flow_block_command cmd)
--{
--	if (!(flowtable->flags & NF_FLOWTABLE_HW_OFFLOAD))
--		return;
--
--	nf_flow_table_indr_block_ing_cmd(dev, flowtable, cb, cb_priv, cmd);
--}
--
--static void nf_flow_table_indr_block_cb(struct net_device *dev,
--					flow_indr_block_bind_cb_t *cb,
--					void *cb_priv,
--					enum flow_block_command cmd)
--{
--	struct net *net = dev_net(dev);
--	struct nft_flowtable *nft_ft;
--	struct nft_table *table;
--	struct nft_hook *hook;
--
--	mutex_lock(&net->nft.commit_mutex);
--	list_for_each_entry(table, &net->nft.tables, list) {
--		list_for_each_entry(nft_ft, &table->flowtables, list) {
--			list_for_each_entry(hook, &nft_ft->hook_list, list) {
--				if (hook->ops.dev != dev)
--					continue;
--
--				nf_flow_table_indr_block_cb_cmd(&nft_ft->data,
--								dev, cb,
--								cb_priv, cmd);
--			}
--		}
--	}
--	mutex_unlock(&net->nft.commit_mutex);
--}
--
--static struct flow_indr_block_entry block_ing_entry = {
--	.cb	= nf_flow_table_indr_block_cb,
--	.list	= LIST_HEAD_INIT(block_ing_entry.list),
--};
--
- int nf_flow_table_offload_init(void)
- {
- 	nf_flow_offload_wq  = alloc_workqueue("nf_flow_table_offload",
-@@ -1069,13 +1006,10 @@ int nf_flow_table_offload_init(void)
- 	if (!nf_flow_offload_wq)
- 		return -ENOMEM;
- 
--	flow_indr_add_block_cb(&block_ing_entry);
--
- 	return 0;
- }
- 
- void nf_flow_table_offload_exit(void)
- {
--	flow_indr_del_block_cb(&block_ing_entry);
- 	destroy_workqueue(nf_flow_offload_wq);
- }
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 1960f11477e8..185fc82c99aa 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -285,25 +285,6 @@ static int nft_block_offload_cmd(struct nft_base_chain *chain,
- 	return nft_block_setup(chain, &bo, cmd);
- }
- 
--static void nft_indr_block_ing_cmd(struct net_device *dev,
--				   struct nft_base_chain *chain,
--				   flow_indr_block_bind_cb_t *cb,
--				   void *cb_priv,
--				   enum flow_block_command cmd)
--{
--	struct netlink_ext_ack extack = {};
--	struct flow_block_offload bo;
--
--	if (!chain)
--		return;
--
--	nft_flow_block_offload_init(&bo, dev_net(dev), cmd, chain, &extack);
--
--	cb(dev, cb_priv, TC_SETUP_BLOCK, &bo);
--
--	nft_block_setup(chain, &bo, cmd);
--}
--
- static void nft_indr_block_cleanup(struct flow_block_cb *block_cb)
- {
- 	struct nft_base_chain *basechain = block_cb->indr.data;
-@@ -575,24 +556,6 @@ static struct nft_chain *__nft_offload_get_chain(struct net_device *dev)
- 	return NULL;
- }
- 
--static void nft_indr_block_cb(struct net_device *dev,
--			      flow_indr_block_bind_cb_t *cb, void *cb_priv,
--			      enum flow_block_command cmd)
--{
--	struct net *net = dev_net(dev);
--	struct nft_chain *chain;
--
--	mutex_lock(&net->nft.commit_mutex);
--	chain = __nft_offload_get_chain(dev);
--	if (chain && chain->flags & NFT_CHAIN_HW_OFFLOAD) {
--		struct nft_base_chain *basechain;
--
--		basechain = nft_base_chain(chain);
--		nft_indr_block_ing_cmd(dev, basechain, cb, cb_priv, cmd);
--	}
--	mutex_unlock(&net->nft.commit_mutex);
--}
--
- static int nft_offload_netdev_event(struct notifier_block *this,
- 				    unsigned long event, void *ptr)
- {
-@@ -614,30 +577,16 @@ static int nft_offload_netdev_event(struct notifier_block *this,
- 	return NOTIFY_DONE;
- }
- 
--static struct flow_indr_block_entry block_ing_entry = {
--	.cb	= nft_indr_block_cb,
--	.list	= LIST_HEAD_INIT(block_ing_entry.list),
--};
--
- static struct notifier_block nft_offload_netdev_notifier = {
- 	.notifier_call	= nft_offload_netdev_event,
- };
- 
- int nft_offload_init(void)
- {
--	int err;
--
--	err = register_netdevice_notifier(&nft_offload_netdev_notifier);
--	if (err < 0)
--		return err;
--
--	flow_indr_add_block_cb(&block_ing_entry);
--
--	return 0;
-+	return register_netdevice_notifier(&nft_offload_netdev_notifier);
- }
- 
- void nft_offload_exit(void)
- {
--	flow_indr_del_block_cb(&block_ing_entry);
- 	unregister_netdevice_notifier(&nft_offload_netdev_notifier);
- }
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index a16cfea7b136..c95d72cac3ad 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -620,78 +620,6 @@ static void tcf_chain_flush(struct tcf_chain *chain, bool rtnl_held)
- static int tcf_block_setup(struct tcf_block *block,
- 			   struct flow_block_offload *bo);
- 
--static void tc_indr_block_cmd(struct net_device *dev, struct tcf_block *block,
--			      flow_indr_block_bind_cb_t *cb, void *cb_priv,
--			      enum flow_block_command command, bool ingress)
--{
--	struct flow_block_offload bo = {
--		.command	= command,
--		.binder_type	= ingress ?
--				  FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS :
--				  FLOW_BLOCK_BINDER_TYPE_CLSACT_EGRESS,
--		.net		= dev_net(dev),
--		.block_shared	= tcf_block_non_null_shared(block),
--	};
--	INIT_LIST_HEAD(&bo.cb_list);
--
--	if (!block)
--		return;
--
--	bo.block = &block->flow_block;
--
--	down_write(&block->cb_lock);
--	cb(dev, cb_priv, TC_SETUP_BLOCK, &bo);
--
--	tcf_block_setup(block, &bo);
--	up_write(&block->cb_lock);
--}
--
--static struct tcf_block *tc_dev_block(struct net_device *dev, bool ingress)
--{
--	const struct Qdisc_class_ops *cops;
--	const struct Qdisc_ops *ops;
--	struct Qdisc *qdisc;
--
--	if (!dev_ingress_queue(dev))
--		return NULL;
--
--	qdisc = dev_ingress_queue(dev)->qdisc_sleeping;
--	if (!qdisc)
--		return NULL;
--
--	ops = qdisc->ops;
--	if (!ops)
--		return NULL;
--
--	if (!ingress && !strcmp("ingress", ops->id))
--		return NULL;
--
--	cops = ops->cl_ops;
--	if (!cops)
--		return NULL;
--
--	if (!cops->tcf_block)
--		return NULL;
--
--	return cops->tcf_block(qdisc,
--			       ingress ? TC_H_MIN_INGRESS : TC_H_MIN_EGRESS,
--			       NULL);
--}
--
--static void tc_indr_block_get_and_cmd(struct net_device *dev,
--				      flow_indr_block_bind_cb_t *cb,
--				      void *cb_priv,
--				      enum flow_block_command command)
--{
--	struct tcf_block *block;
--
--	block = tc_dev_block(dev, true);
--	tc_indr_block_cmd(dev, block, cb, cb_priv, command, true);
--
--	block = tc_dev_block(dev, false);
--	tc_indr_block_cmd(dev, block, cb, cb_priv, command, false);
--}
--
- static void tcf_block_offload_init(struct flow_block_offload *bo,
- 				   struct net_device *dev,
- 				   enum flow_block_command command,
-@@ -3751,11 +3679,6 @@ static struct pernet_operations tcf_net_ops = {
- 	.size = sizeof(struct tcf_net),
- };
- 
--static struct flow_indr_block_entry block_entry = {
--	.cb = tc_indr_block_get_and_cmd,
--	.list = LIST_HEAD_INIT(block_entry.list),
--};
--
- static int __init tc_filter_init(void)
- {
- 	int err;
-@@ -3768,8 +3691,6 @@ static int __init tc_filter_init(void)
- 	if (err)
- 		goto err_register_pernet_subsys;
- 
--	flow_indr_add_block_cb(&block_entry);
--
- 	rtnl_register(PF_UNSPEC, RTM_NEWTFILTER, tc_new_tfilter, NULL,
- 		      RTNL_FLAG_DOIT_UNLOCKED);
- 	rtnl_register(PF_UNSPEC, RTM_DELTFILTER, tc_del_tfilter, NULL,
--- 
-2.20.1
+
+> +	while (!err && !(feat & NFP_FL_FEATS_HOST_ACK)) {
+> +		usleep_range(1000, 2000);
+> +		feat = nfp_rtsym_read_le(app->pf->rtbl,
+> +					 "_abi_flower_combined_feat_global",
+> +					 &err);
+> +		if (time_is_before_eq_jiffies(err_at)) {
+> +			nfp_warn(app->cpp,
+> +				 "HOST_ACK bit not propagated in FW.\n");
+> +			break;
+> +		}
+
+Probably could be better off with a do {} while (), but okay :)
+
+> +	}
+
+No warning here if reading fails (err is set) ?
+
+> +}
+> +
+> +static int nfp_flower_sync_feature_bits(struct nfp_app *app)
+> +{
+> +	struct nfp_flower_priv *app_priv = app->priv;
+> +	int err = 0;
+
+No need to init err.
+
+> +	/* Tell the firmware of the host supported features. */
+> +	err = nfp_rtsym_write_le(app->pf->rtbl, "_abi_flower_host_mask",
+> +				 app_priv->flower_ext_feats |
+> +				 NFP_FL_FEATS_HOST_ACK);
+> +	if (!err) {
+> +		nfp_flower_wait_host_bit(app);
+> +	} else if (err == -ENOENT) {
+> +		nfp_info(app->cpp,
+> +			 "Telling FW of host capabilities not supported.\n");
+
+Is this really important enough for users to know?
+
+> +		err = 0;
+
+No need.
+
+> +	} else {
+> +		return err;
+> +	}
+> +
+> +	/* Tell the firmware that the driver supports lag. */
+> +	err = nfp_rtsym_write_le(app->pf->rtbl,
+> +				 "_abi_flower_balance_sync_enable", 1);
+> +	if (!err) {
+> +		app_priv->flower_ext_feats |= NFP_FL_FEATS_LAG;
+> +		nfp_flower_lag_init(&app_priv->nfp_lag);
+> +	} else if (err == -ENOENT) {
+> +		nfp_warn(app->cpp, "LAG not supported by FW.\n");
+> +		err = 0;
+> +	} else {
+> +		return err;
+> +	}
+> +
+> +	if (app_priv->flower_ext_feats & NFP_FL_FEATS_FLOW_MOD) {
+> +		/* Tell the firmware that the driver supports flow merging. */
+> +		err = nfp_rtsym_write_le(app->pf->rtbl,
+> +					 "_abi_flower_merge_hint_enable", 1);
+> +		if (!err) {
+> +			app_priv->flower_ext_feats |= NFP_FL_FEATS_FLOW_MERGE;
+> +			nfp_flower_internal_port_init(app_priv);
+> +		} else if (err == -ENOENT) {
+> +			nfp_warn(app->cpp,
+> +				 "Flow merge not supported by FW.\n");
+> +			err = 0;
+> +		}
+
+Could you just add an  else { return err; } here and..
+
+> +	} else {
+> +		nfp_warn(app->cpp, "Flow mod/merge not supported by FW.\n");
+> +	}
+> +
+> +	return err;
+
+.. make this return 0? Then you won't have to clear err in all the
+-ENOENT branches. Someone may forget to do that one day, and we'd have
+a bug.
+
+> +}
+> +
+>  static int nfp_flower_init(struct nfp_app *app)
+>  {
+>  	u64 version, features, ctx_count, num_mems;
+
+> diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+> index d55d0d33bc45..dfc07611603e 100644
+> --- a/drivers/net/ethernet/netronome/nfp/flower/main.h
+> +++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+> @@ -44,9 +44,20 @@ struct nfp_app;
+>  #define NFP_FL_FEATS_FLOW_MOD		BIT(5)
+>  #define NFP_FL_FEATS_PRE_TUN_RULES	BIT(6)
+>  #define NFP_FL_FEATS_IPV6_TUN		BIT(7)
+> +#define NFP_FL_FEATS_HOST_ACK		BIT(31)
+>  #define NFP_FL_FEATS_FLOW_MERGE		BIT(30)
+>  #define NFP_FL_FEATS_LAG		BIT(31)
+
+Could we perhaps rename those two bits and use a different variable to
+store them (separate patch)? Looks a little suspicious that we reuse
+BIT(31) now..
+
+> +#define NFP_FL_FEATS_HOST \
+> +	(NFP_FL_FEATS_GENEVE | \
+> +	NFP_FL_NBI_MTU_SETTING | \
+> +	NFP_FL_FEATS_GENEVE_OPT | \
+> +	NFP_FL_FEATS_VLAN_PCP | \
+> +	NFP_FL_FEATS_VF_RLIM | \
+> +	NFP_FL_FEATS_FLOW_MOD | \
+> +	NFP_FL_FEATS_PRE_TUN_RULES | \
+> +	NFP_FL_FEATS_IPV6_TUN)
+> +
+>  struct nfp_fl_mask_id {
+>  	struct circ_buf mask_id_free_list;
+>  	ktime_t *last_used;
 
