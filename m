@@ -2,148 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44DA91D0C8A
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 11:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABA6A1D0F18
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 12:04:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732493AbgEMJmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 05:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726532AbgEMJmy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 05:42:54 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81A7C061A0C;
-        Wed, 13 May 2020 02:42:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=0TMMWMUrzS1FlukKgXCbkVesqNUS1JqKvgC56uuLBQs=; b=uUuqXjOUXbQYCT40fYfHMeKVp
-        ri3MiqzeJWAY/jIK4/YpZa/oWdqYZssoObY14Hc0Yj6jPiARuTZKWL59evrC/TP+VMMP0CEIxKOrc
-        FA2AWjSXfQNOhAZtOfsgRP3H3j3BIW1ZUztAVG+teCalymQ/Wp92iyHRI4lMO88zCKujCnqhHYs+a
-        IDzAQmm4UfyUGHG7khAIT9TD+eMho+TTs+2RlJVDpUGRBFQK3OgGc96fU+J7U/REhOgCCP3B4DcUh
-        oIYOEydCTFDGI+f7/Za2K1NV5GNmKp7mWabJnVC2UPN7NEFN3g9AARkWHiSDRaoJLkSRRloYM4dv6
-        eFNBjv/CQ==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:57428)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jYnuS-00043G-Qa; Wed, 13 May 2020 10:42:40 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jYnuR-0007f7-7k; Wed, 13 May 2020 10:42:39 +0100
-Date:   Wed, 13 May 2020 10:42:39 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Doug Berger <opendmb@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/4] net: ethernet: introduce phy_set_pause
-Message-ID: <20200513094239.GG1551@shell.armlinux.org.uk>
-References: <1589243050-18217-1-git-send-email-opendmb@gmail.com>
- <1589243050-18217-4-git-send-email-opendmb@gmail.com>
+        id S2388691AbgEMKEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 06:04:40 -0400
+Received: from cmccmta3.chinamobile.com ([221.176.66.81]:10925 "EHLO
+        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732876AbgEMJrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 05:47:37 -0400
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.15]) by rmmx-syy-dmz-app09-12009 (RichMail) with SMTP id 2ee95ebbc226b8f-ccef9; Wed, 13 May 2020 17:47:19 +0800 (CST)
+X-RM-TRANSID: 2ee95ebbc226b8f-ccef9
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from [172.20.144.88] (unknown[112.25.154.146])
+        by rmsmtp-syy-appsvr08-12008 (RichMail) with SMTP id 2ee85ebbc22539f-3d20b;
+        Wed, 13 May 2020 17:47:18 +0800 (CST)
+X-RM-TRANSID: 2ee85ebbc22539f-3d20b
+Subject: Re: [PATCH] net/mlx5e: Use IS_ERR() to check and simplify code
+To:     David Miller <davem@davemloft.net>
+Cc:     saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200507115010.10380-1-tangbin@cmss.chinamobile.com>
+ <20200507.131834.1517984934609648952.davem@davemloft.net>
+From:   Tang Bin <tangbin@cmss.chinamobile.com>
+Message-ID: <febc1254-ad7f-f564-6607-9ac89f1fcf40@cmss.chinamobile.com>
+Date:   Wed, 13 May 2020 17:48:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1589243050-18217-4-git-send-email-opendmb@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200507.131834.1517984934609648952.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 05:24:09PM -0700, Doug Berger wrote:
-> This commit introduces the phy_set_pause function to the phylib as
-> a helper to support the set_pauseparam ethtool method.
-> 
-> It is hoped that the new behavior introduced by this function will
-> be widely embraced and the phy_set_sym_pause and phy_set_asym_pause
-> functions can be deprecated. Those functions are retained for all
-> existing users and for any desenting opinions on my interpretation
-> of the functionality.
-> 
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
-> ---
->  drivers/net/phy/phy_device.c | 31 +++++++++++++++++++++++++++++++
->  include/linux/phy.h          |  1 +
->  2 files changed, 32 insertions(+)
-> 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 48ab9efa0166..e6dafb3c3e5f 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -2614,6 +2614,37 @@ void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx)
->  EXPORT_SYMBOL(phy_set_asym_pause);
->  
->  /**
-> + * phy_set_pause - Configure Pause and Asym Pause with autoneg
-> + * @phydev: target phy_device struct
-> + * @rx: Receiver Pause is supported
-> + * @tx: Transmit Pause is supported
-> + * @autoneg: Auto neg should be used
-> + *
-> + * Description: Configure advertised Pause support depending on if
-> + * receiver pause and pause auto neg is supported. Generally called
-> + * from the set_pauseparam ethtool_ops.
-> + *
-> + * Note: Since pause is really a MAC level function it should be
-> + * notified via adjust_link to update its pause functions.
-> + */
-> +void phy_set_pause(struct phy_device *phydev, bool rx, bool tx, bool autoneg)
-> +{
-> +	linkmode_set_pause(phydev->advertising, tx, rx, autoneg);
-> +
-> +	/* Reset the state of an already running link to force a new
-> +	 * link up event when advertising doesn't change or when PHY
-> +	 * autoneg is disabled.
-> +	 */
-> +	mutex_lock(&phydev->lock);
-> +	if (phydev->state == PHY_RUNNING)
-> +		phydev->state = PHY_UP;
-> +	mutex_unlock(&phydev->lock);
+Hi David:
 
-I wonder about this - will drivers cope with having two link-up events
-via adjust_link without a corresponding link-down event?  What if they
-touch registers that are only supposed to be touched while the link is
-down?  Obviously, drivers have to opt-in to this interface, so it may
-be okay provided we don't get wholesale changes.
+On 2020/5/8 4:18, David Miller wrote:
+> From: Tang Bin <tangbin@cmss.chinamobile.com>
+> Date: Thu,  7 May 2020 19:50:10 +0800
+>
+>> Use IS_ERR() and PTR_ERR() instead of PTR_ZRR_OR_ZERO()
+>> to simplify code, avoid redundant judgements.
+>>
+>> Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+>> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+> Saeed, please pick this up.
 
-> +
-> +	phy_start_aneg(phydev);
+Does this mean the patch has been received and I just have to wait?
 
-Should we be making that conditional on something changing and autoneg
-being enabled, like phy_set_asym_pause() does?  There is no point
-interrupting an established link if the advertisement didn't change.
+Thanks,
 
-> +}
-> +EXPORT_SYMBOL(phy_set_pause);
-> +
-> +/**
->   * phy_validate_pause - Test if the PHY/MAC support the pause configuration
->   * @phydev: phy_device struct
->   * @pp: requested pause configuration
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 5d8ff5428010..71e484424e68 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -1403,6 +1403,7 @@ void phy_support_asym_pause(struct phy_device *phydev);
->  void phy_set_sym_pause(struct phy_device *phydev, bool rx, bool tx,
->  		       bool autoneg);
->  void phy_set_asym_pause(struct phy_device *phydev, bool rx, bool tx);
-> +void phy_set_pause(struct phy_device *phydev, bool rx, bool tx, bool autoneg);
->  bool phy_validate_pause(struct phy_device *phydev,
->  			struct ethtool_pauseparam *pp);
->  void phy_get_pause(struct phy_device *phydev, bool *tx_pause, bool *rx_pause);
-> -- 
-> 2.7.4
-> 
-> 
+Tang Bin
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+
+
