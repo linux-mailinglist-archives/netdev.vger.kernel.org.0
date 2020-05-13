@@ -2,91 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5961D0FDB
-	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 12:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 120D21D0FFD
+	for <lists+netdev@lfdr.de>; Wed, 13 May 2020 12:39:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732854AbgEMKbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 06:31:48 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:50511 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727794AbgEMKbr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 06:31:47 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 448A65C00BC;
-        Wed, 13 May 2020 06:31:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 13 May 2020 06:31:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=j0g83N
-        IEHiipiQgYyDDRZc71uODT2YrU4dc1Zjf2a/8=; b=bjrvZ3+hSsatu1j9KkuhVD
-        yXwKpC3TUhj4dmS2DTTGYl7oQHnfTVGJLaxwVak8ZXO2UpItAFmlTrCHuXrMO48l
-        7Bxs/SHAFu+YruV+HJl2/8erODBnGYM6AcE8N+zEEfQs72cwifl042+dTCEFICHA
-        KpEKEfLVNyb6CLGunW5s7H8fvhcmzjifkGbzdd82jRePgUC+t4iLeRQlkHXwsdwa
-        uG6PUmBqi6Dq8yxe0Y9q7Ig+sLAZvHv1etenM7AZ3bNYTpW4s7RSgU4VCei5RX28
-        Sb4H9Idm6UdKaQRDLTzVyK2z4zoOkKrMjp2pgqrM0QlvGYaAMnep6sjRl/JSh+pw
-        ==
-X-ME-Sender: <xms:kcy7XkiqyH6e1h_3b7NEZDe3bNB6_dbNquzLYjzQoEmB11R1jyPRmA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrleeggddvlecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeejledrudejiedrvdegrddutdejnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:kcy7XtBMw_bpZEB6ljIQdoLke-sx_p-AfiAVidUveOp1qXIHNSrbGQ>
-    <xmx:kcy7XsHsSq_GxxkSkJeuiK55Qb9iiny_S6rm-Wo8iWvkdrbutrGFcg>
-    <xmx:kcy7XlSga9gJF4e7rP4pqzz5HmJXrAun-1Zf-D-ps4nO34yq3R96bg>
-    <xmx:ksy7XvaA5mBcNWRytLaND3aAMU1qKhbD9_DI8RHD2nKQh1Zl5oNDgw>
-Received: from localhost (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 5DD433066314;
-        Wed, 13 May 2020 06:31:45 -0400 (EDT)
-Date:   Wed, 13 May 2020 13:31:43 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] net/scm: cleanup scm_detach_fds
-Message-ID: <20200513103143.GA599365@splinter>
-References: <20200511115913.1420836-1-hch@lst.de>
- <20200511115913.1420836-3-hch@lst.de>
- <20200513092918.GA596863@splinter>
- <20200513094908.GA31756@lst.de>
- <20200513095811.GA598161@splinter>
- <20200513101037.GA1143@lst.de>
- <20200513101751.GA1454@lst.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200513101751.GA1454@lst.de>
+        id S1731117AbgEMKjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 06:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727812AbgEMKjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 06:39:04 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B88C061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:39:04 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id f15so6659744plr.3
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 03:39:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=LGYocYMvN/W/ocWLzH0hyLhcvNcumkqHUr8jtqkIExM=;
+        b=PX0KUIrG9VYR1nbGQsJ7bzi+9sM9EjCN01kuHEwLtC6Ofdxgk0MouKRPgWi4RBWwWt
+         aW2Mu5IE7NIYyu/KB3mXaDnPyTB2cJHzJ3otKy1tAYBQb/OpFyR6NnsNTqpKnHMLz8v7
+         DNqUZWzLQnbvEQfXxJ4M/BLQhrklVRgtQ+pzovJGAkRP3fedf+x4momD9B6DaLdfQ5aC
+         5nyfN2Lx9A+kPzgGimEhlAUeHYGwuR23Ydi58BVm61f9nQewiM5TyEbkgDmmBhXIp9+/
+         wOx0U5Z+kLQ0ZDtghUf40vroz5t1h0hCJV1dHrtlwBh3+PqWOjFGt722dgGt1yaFXBKJ
+         L3HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LGYocYMvN/W/ocWLzH0hyLhcvNcumkqHUr8jtqkIExM=;
+        b=fRY7d8vz6e5yQjqo5JI9Nc51tWCcTWa8d+9uME+Xe7TDNRorX+0onoj88ZkwFPGr2r
+         PJn2CqjsBMdBV0gg+u5jwzUniJ1R2lVHqy+tQQF9kA2/CMhv8uq4bFJEJNFpQSmhlIad
+         ys9llAVTg1HSj4BhoEMQV69QnUQwGHXpaDumO7DjgxH3/WtjfGwwtU8OnhxaXZ7YgGGC
+         TQ2jzcH8reg9OZGefTA7AYN2aWaLuhxx7sZbjO8h1zDp/y8bwPjxoKS/63FrAzC/JHBW
+         I67icZFwYwlJX8IStbBQdUv8qL2vBLRP/AlDt5d29PtxU/6eNllPUEgxMHFGNbCBSNB4
+         Rd7A==
+X-Gm-Message-State: AOAM531czDEhVPAWC+JT5SzBFiVP2wKZfBER9OJImSVPKeH9PfYtiXmO
+        25Z9CqQAWfukqMQ09yJBOuuv7GxG
+X-Google-Smtp-Source: ABdhPJzbX7/H9DybCYzIchcqScSkxSBu9xzXH7QV0XgjwK4sedor60jmZxglVcroz4JJ7JYIq6laDA==
+X-Received: by 2002:a17:90a:3a82:: with SMTP id b2mr8933826pjc.228.1589366343319;
+        Wed, 13 May 2020 03:39:03 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y14sm14250800pff.205.2020.05.13.03.39.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 13 May 2020 03:39:02 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec] esp6: calculate transport_header correctly when sel.family != AF_INET6
+Date:   Wed, 13 May 2020 18:38:54 +0800
+Message-Id: <5224dd1a6287b41e9747385154a0dff4f115590a.1589366334.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 12:17:51PM +0200, Christoph Hellwig wrote:
-> On Wed, May 13, 2020 at 12:10:37PM +0200, Christoph Hellwig wrote:
-> > Ok.  I'll see what went wrong for real and will hopefully have a
-> > different patch for you in a bit.
-> 
-> Can you try this patch instead of the previous one?
+In esp6_init_state() for beet mode when x->sel.family != AF_INET6:
 
-Works. Thanks a lot!
+  x->props.header_len = sizeof(struct ip_esp_hdr) +
+     crypto_aead_ivsize(aead) + IPV4_BEET_PHMAXLEN +
+     (sizeof(struct ipv6hdr) - sizeof(struct iphdr))
 
-> 
-> diff --git a/net/core/scm.c b/net/core/scm.c
-> index a75cd637a71ff..875df1c2989db 100644
-> --- a/net/core/scm.c
-> +++ b/net/core/scm.c
-> @@ -307,7 +307,7 @@ static int __scm_install_fd(struct file *file, int __user *ufd, int o_flags)
->  		sock_update_classid(&sock->sk->sk_cgrp_data);
->  	}
->  	fd_install(new_fd, get_file(file));
-> -	return error;
-> +	return 0;
->  }
->  
->  static int scm_max_fds(struct msghdr *msg)
+In xfrm6_beet_gso_segment() skb->transport_header is supposed to move
+to the end of the ph header for IPPROTO_BEETPH, so if x->sel.family !=
+AF_INET6 and it's IPPROTO_BEETPH, it should do:
+
+   skb->transport_header -=
+      (sizeof(struct ipv6hdr) - sizeof(struct iphdr));
+   skb->transport_header += ph->hdrlen * 8;
+
+And IPV4_BEET_PHMAXLEN is only reserved for PH header, so if
+x->sel.family != AF_INET6 and it's not IPPROTO_BEETPH, it should do:
+
+   skb->transport_header -=
+      (sizeof(struct ipv6hdr) - sizeof(struct iphdr));
+   skb->transport_header -= IPV4_BEET_PHMAXLEN;
+
+Thanks Sabrina for looking deep into this issue.
+
+Fixes: 7f9e40eb18a9 ("esp6: add gso_segment for esp6 beet mode")
+Reported-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/ipv6/esp6_offload.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
+
+diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
+index 9c03460..ab0eea3 100644
+--- a/net/ipv6/esp6_offload.c
++++ b/net/ipv6/esp6_offload.c
+@@ -175,24 +175,27 @@ static struct sk_buff *xfrm6_beet_gso_segment(struct xfrm_state *x,
+ 
+ 	skb->transport_header += x->props.header_len;
+ 
+-	if (proto == IPPROTO_BEETPH) {
+-		struct ip_beet_phdr *ph = (struct ip_beet_phdr *)skb->data;
++	if (x->sel.family != AF_INET6) {
++		skb->transport_header -=
++			(sizeof(struct ipv6hdr) - sizeof(struct iphdr));
+ 
+-		skb->transport_header += ph->hdrlen * 8;
+-		proto = ph->nexthdr;
+-	}
++		if (proto == IPPROTO_BEETPH) {
++			struct ip_beet_phdr *ph =
++				(struct ip_beet_phdr *)skb->data;
++
++			skb->transport_header += ph->hdrlen * 8;
++			proto = ph->nexthdr;
++		} else {
++			skb->transport_header -= IPV4_BEET_PHMAXLEN;
++		}
+ 
+-	if (x->sel.family == AF_INET6) {
++		if (proto == IPPROTO_TCP)
++			skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV6;
++	} else {
+ 		__be16 frag;
+ 
+ 		skb->transport_header +=
+ 			ipv6_skip_exthdr(skb, 0, &proto, &frag);
+-	} else {
+-		skb->transport_header -=
+-			(sizeof(struct ipv6hdr) - sizeof(struct iphdr));
+-
+-		if (proto == IPPROTO_TCP)
+-			skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV6;
+ 	}
+ 
+ 	__skb_pull(skb, skb_transport_offset(skb));
+-- 
+2.1.0
+
