@@ -2,81 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F941D3DB5
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:40:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCCF81D3DB7
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728301AbgENTjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 15:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55854 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727991AbgENTjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 15:39:54 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D04C061A0C;
-        Thu, 14 May 2020 12:39:53 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id 8so3682285lfp.4;
-        Thu, 14 May 2020 12:39:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6KkrSjsGOVrQqPOlguAfrNoTE7xuQImXbfVmVffSvZc=;
-        b=HRX+JUKoo0S14di2S6+t+MRWDg5yg0FQYE16r6I/+VXy1vwNDGOZzb+y+J4euHoSKQ
-         +WGW7DL8flnFcnI6Pp2x7SwuC/sR1K/9EfCypsrXuEmXnLLfKcEvMCpUKZLby05SOKhv
-         cOUd3rl2Ro9dPYQq05egEst/mZPij1nBa68WFzZg09of5jJtkxNzMKm7OtzhzKdW4vqo
-         mGhWW2rDNaZEWc6YxG4Y0/kqQa++VkvuAwsebMkOtCsrTLkYCaVYtTfKZtyuthGAl+YZ
-         aq4vYOdxkyNtU80uiEH/teAV24yS6Uu97dBfg7loIwHs3kRM5uB10r1zD+ExlSeyZtMA
-         xPMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6KkrSjsGOVrQqPOlguAfrNoTE7xuQImXbfVmVffSvZc=;
-        b=TyJ2WdJi2aB/i0z9Gw1zaLlpXuAeL16RHPDtBinj0aL/7U3VtvaIsIFqoV/fpcqGKh
-         89vwjR5FKbFugHWy0wdgUPcjzqbmpe6SPzlEu8jD8JIFLqaGlQ9tyHNFopYFhn5J7uzB
-         HDXVQP3bgYGyEmsNwO6P4yyY4V9lsq7/n3nbLith87gNIJ9S7rF5VuKYEdkYJPmERQMz
-         eSgwIFxYsxoPDbqMyQE/qNwGSUfBkNnXAmi6cuLBXcMHExjP4dSZeOYy6s1Jtz6/kL89
-         zA9D1TynIZnkMJ1LO4IKC/oLRrwp/9xyP3Yxc8nlAwvPqKuxMLwl6Nvd6LrA/CpKcUOd
-         TWNg==
-X-Gm-Message-State: AOAM532Vx6l4ZLS7yxWdBWgNAd+lsOV0IiAZM0mpeOlqO5813HWjxOgf
-        qYyz6jgQAjtJvoAtFDgOg5Advk0D5S7w/GBEYjU=
-X-Google-Smtp-Source: ABdhPJyYJURPDmXeUqMb+y4SJms2zyjBrcPnrpmatbs47rDJL89qAYT/VgDywx6lpCYwbuDn3/U51WRGY+vvycMmthM=
-X-Received: by 2002:a19:505c:: with SMTP id z28mr4376744lfj.174.1589485192109;
- Thu, 14 May 2020 12:39:52 -0700 (PDT)
+        id S1728331AbgENTkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 15:40:23 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:48492 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727991AbgENTkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 15:40:22 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04EJZvFK006218;
+        Thu, 14 May 2020 12:40:17 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0818;
+ bh=ioz9s9Db0hD+UoeJk0y10uQzFERgzgWZ1ySFpGLY+cI=;
+ b=PvW1/NDs6erhkCCbc2nGigy4oAi1Oq2F0o2GXJH82WmhjcxZFhkd4/oUsSPjVPGgShsF
+ ma6zV9fZ79wSCjElJ+ZSV3pQGN8j7Iln+0umaUP3yg601Kkss2hSWE3bs++/eTp8hUJf
+ +SLAxWmjUlfJgg3GhbHB9bKQoUrIH2PmDpzKd7jq2FusLRhLlXkhYd9WesKMLOZ6Tb6a
+ xi2t7Z1/ieSDivQSPN6i2Yz4JgVKbZOJPN6OOn4z8tgVA6MbRD/atuJUyzxWXv4Bghjb
+ wgPJDF0HozYfb3TXqKwxrMnjxBqtviphltygKJLl80Bc2V0zWKwISP9xF0oCHT7mMdYW sg== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3100xk44rr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 14 May 2020 12:40:17 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 14 May
+ 2020 12:40:15 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 14 May 2020 12:40:15 -0700
+Received: from [10.193.39.5] (unknown [10.193.39.5])
+        by maili.marvell.com (Postfix) with ESMTP id A6B6D3F7040;
+        Thu, 14 May 2020 12:40:13 -0700 (PDT)
+Subject: Re: [EXT] Re: [PATCH v2 net-next 00/11] net: qed/qede: critical hw
+ error handling
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        "Ariel Elior" <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        "Denis Bolotin" <dbolotin@marvell.com>
+References: <20200514095727.1361-1-irusskikh@marvell.com>
+ <20200514120659.6f64f6e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Igor Russkikh <irusskikh@marvell.com>
+Message-ID: <2a29996c-21a6-7566-c27e-7b8fb280e18c@marvell.com>
+Date:   Thu, 14 May 2020 22:40:12 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101
+ Thunderbird/77.0
 MIME-Version: 1.0
-References: <20200511113234.80722-1-mcroce@redhat.com> <0dd7c40b-c80b-9149-f022-d8113b77558a@fb.com>
-In-Reply-To: <0dd7c40b-c80b-9149-f022-d8113b77558a@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 14 May 2020 12:39:38 -0700
-Message-ID: <CAADnVQKtMZoULOtHzxvb=r7K4C8R4vc-zDqZD6eFDCfxgh2xYw@mail.gmail.com>
-Subject: Re: [PATCH bpf] samples: bpf: fix build error
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Matteo Croce <mcroce@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Joe Stringer <joe@ovn.org>, Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200514120659.6f64f6e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-14_07:2020-05-14,2020-05-14 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 1:32 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 5/11/20 4:32 AM, Matteo Croce wrote:
-> > GCC 10 is very strict about symbol clash, and lwt_len_hist_user contains
-> > a symbol which clashes with libbpf:
-> >
-> > /usr/bin/ld: samples/bpf/lwt_len_hist_user.o:(.bss+0x0): multiple definition of `bpf_log_buf'; samples/bpf/bpf_load.o:(.bss+0x8c0): first defined here
-> > collect2: error: ld returned 1 exit status
-> >
-> > bpf_log_buf here seems to be a leftover, so removing it.
-> >
-> > Signed-off-by: Matteo Croce <mcroce@redhat.com>
->
-> Acked-by: Yonghong Song <yhs@fb.com>
 
-Applied to bpf tree. Thanks
+> I'm not 100% happy that the debug data gets reported to the management
+> FW before the devlink health code is in place. For the Linux community,
+> I think, having standard Linux interfaces implemented first is the
+> priority.
+
+Hi Jakub,
+
+Thanks for the comment. I feel these two are a bit separate. We try to push
+important messages to MFW, not debug data. And all these messages are as well
+perfectly being reported on device level error printouts, they are not kind of
+lost.
+
+And for devlink, we anyway will need all the above infrastructure, to
+eventually implement devlink dumps and other features.
+
+Or, may be I didn't get your point?
+
+Thanks,
+  Igor
