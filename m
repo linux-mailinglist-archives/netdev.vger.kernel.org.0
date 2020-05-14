@@ -2,108 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D84FD1D27F0
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 08:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F38F1D282F
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 08:53:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725926AbgENGgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 02:36:11 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55764 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725818AbgENGgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 02:36:11 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 14 May 2020 09:36:09 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04E6a9wg000568;
-        Thu, 14 May 2020 09:36:09 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     linux-kselftest@vger.kernel.org
-Cc:     netdev@vger.kernel.org, shuah@kernel.org, davem@davemloft.net,
-        xiyou.wangcong@gmail.com, jhs@mojatatu.com, dcaratti@redhat.com,
-        marcelo.leitner@gmail.com, Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH RESEND net-next] selftests: fix flower parent qdisc
-Date:   Thu, 14 May 2020 09:35:52 +0300
-Message-Id: <20200514063552.26678-1-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
+        id S1725973AbgENGxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 02:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725831AbgENGxP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 02:53:15 -0400
+Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF64C061A0E
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 23:53:13 -0700 (PDT)
+Received: by mail-vk1-xa43.google.com with SMTP id w68so502770vke.5
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 23:53:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=verdurent-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AD73/gyPw537Xp1vDJOYvLHr7JMtBDUrFsijP0WuRks=;
+        b=RdSLSskx2Wvw3alRl86UnDw5dnN1+ZHo+jEuOiDqNYvb3EfRrfuQ1fjHd8pEofVcmx
+         OSOsg5Ki+jgXdahzTq8BYmydYLkEp/D/1CWEiD9WIoLB/oyMT0/XdOe73UgI9Xo/PX8Z
+         vAsKTrb1XOhLWFCweUDfv5clUyY9/Ct0OqoS4jylDHfwnX2dZaBf96hPr9UjJyc9qJ54
+         LfhUMigof8LCnYdiDSe3krEkaZ0cdi5WNh7X76KkQjTeQbosgpRBGY0UM/FYTbyUC8gZ
+         fAmJrAfp1zGCiCU5/M/YWEfBTBFrgSdaXqABtBbjTfwTGLLBBjxmcCGYThD0EubKLklL
+         Y/WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AD73/gyPw537Xp1vDJOYvLHr7JMtBDUrFsijP0WuRks=;
+        b=LTOIxi2YXcd5743/GNk2nrNyBbqk5oU8w4+ptYf2C8VQGvXjiNAvyFONeqocyX/0Sb
+         GFb1lxxohrXfEmCK7EQ0+pZvk42WX7Q1YPY/s6n6gLqh10u0s1sMl7gyR5g35DlhGLB4
+         GNjonl6dz6tR5cOFoHAOxHMey77+Kq+W2Huf9+UAieba/AloKcpujHB45nFHWOeTKac+
+         2FmxNauCkySqODVx5XEEfQPlYkhy5EKYxiJM1deW6nU84VdCG+kSQVHkmDDfJwMMzIHP
+         mHQEikHIx38m3FsAnor5R9Tcxpp8PWBG3eJkwG2Q80UL2616Bk0Sem5/W7rj5f649XUV
+         eUJA==
+X-Gm-Message-State: AOAM530h+5L4iQmUKJK1igTl6ZtDEwDY+R2zah0W/1UQaHwLXrqzdB9B
+        gvbo7/ezNCsEitnb7/Jl5hXpRHHHdHkIynkF87pnOTvd
+X-Google-Smtp-Source: ABdhPJwqOdHWX9G/Vc1PEWvZMXQ69dsTzV+tAJwC+UvjMCX5pJg7UnTD2qxWptjx7wEK5anGtRzdU/mrdZoXOnfLCtw=
+X-Received: by 2002:a1f:a786:: with SMTP id q128mr2448341vke.86.1589439192297;
+ Wed, 13 May 2020 23:53:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200514062836.190194-1-vkoul@kernel.org>
+In-Reply-To: <20200514062836.190194-1-vkoul@kernel.org>
+From:   Amit Kucheria <amit.kucheria@verdurent.com>
+Date:   Thu, 14 May 2020 12:22:33 +0530
+Message-ID: <CAHLCerN_pxkqJojJLL5ztbYCeFZ9Mco6oM-=0mdmh5iSydxrUg@mail.gmail.com>
+Subject: Re: [PATCH] net: stmmac: fix num_por initialization
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        lakml <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Rahul Ankushrao Kawadgave <rahulak@qti.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Flower tests used to create ingress filter with specified parent qdisc
-"parent ffff:" but dump them on "ingress". With recent commit that fixed
-tcm_parent handling in dump those are not considered same parent anymore,
-which causes iproute2 tc to emit additional "parent ffff:" in first line of
-filter dump output. The change in output causes filter match in tests to
-fail.
+On Thu, May 14, 2020 at 11:59 AM Vinod Koul <vkoul@kernel.org> wrote:
+>
+> Driver missed initializing num_por which is por values that driver
 
-Prevent parent qdisc output when dumping filters in flower tests by always
-correctly specifying "ingress" parent both when creating and dumping
-filters.
+Nit: s/is/is one of the/ ?
 
-Fixes: a7df4870d79b ("net_sched: fix tcm_parent in tc filter dump")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- .../selftests/tc-testing/tc-tests/filters/tests.json        | 6 +++---
- tools/testing/selftests/tc-testing/tdc_batch.py             | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+> configures to hardware. In order to get this values, add a new structure
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-index 8877f7b2b809..12aa4bc1f6a0 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-@@ -32,7 +32,7 @@
-         "setup": [
-             "$TC qdisc add dev $DEV2 ingress"
-         ],
--        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip pref 1 parent ffff: handle 0xffffffff flower action ok",
-+        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip pref 1 ingress handle 0xffffffff flower action ok",
-         "expExitCode": "0",
-         "verifyCmd": "$TC filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower.*handle 0xffffffff",
-@@ -77,9 +77,9 @@
-         },
-         "setup": [
-             "$TC qdisc add dev $DEV2 ingress",
--            "$TC filter add dev $DEV2 protocol ip prio 1 parent ffff: flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop"
-+            "$TC filter add dev $DEV2 protocol ip prio 1 ingress flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop"
-         ],
--        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip prio 1 parent ffff: flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop",
-+        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip prio 1 ingress flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop",
-         "expExitCode": "2",
-         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
-diff --git a/tools/testing/selftests/tc-testing/tdc_batch.py b/tools/testing/selftests/tc-testing/tdc_batch.py
-index 6a2bd2cf528e..995f66ce43eb 100755
---- a/tools/testing/selftests/tc-testing/tdc_batch.py
-+++ b/tools/testing/selftests/tc-testing/tdc_batch.py
-@@ -72,21 +72,21 @@ mac_prefix = args.mac_prefix
- 
- def format_add_filter(device, prio, handle, skip, src_mac, dst_mac,
-                       share_action):
--    return ("filter add dev {} {} protocol ip parent ffff: handle {} "
-+    return ("filter add dev {} {} protocol ip ingress handle {} "
-             " flower {} src_mac {} dst_mac {} action drop {}".format(
-                 device, prio, handle, skip, src_mac, dst_mac, share_action))
- 
- 
- def format_rep_filter(device, prio, handle, skip, src_mac, dst_mac,
-                       share_action):
--    return ("filter replace dev {} {} protocol ip parent ffff: handle {} "
-+    return ("filter replace dev {} {} protocol ip ingress handle {} "
-             " flower {} src_mac {} dst_mac {} action drop {}".format(
-                 device, prio, handle, skip, src_mac, dst_mac, share_action))
- 
- 
- def format_del_filter(device, prio, handle, skip, src_mac, dst_mac,
-                       share_action):
--    return ("filter del dev {} {} protocol ip parent ffff: handle {} "
-+    return ("filter del dev {} {} protocol ip ingress handle {} "
-             "flower".format(device, prio, handle))
- 
- 
--- 
-2.21.0
+Nit: s/this/these
 
+> ethqos_emac_driver_data which holds por and num_por values and populate
+> that in driver probe.
+>
+> Fixes: a7c30e62d4b8 ("net: stmmac: Add driver for Qualcomm ethqos")
+> Reported-by: Rahul Ankushrao Kawadgave <rahulak@qti.qualcomm.com>
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+
+Otherwise,
+
+Reviewed-by: Amit Kucheria <amit.kucheria@linaro.org>
+
+> ---
+>  .../ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 17 +++++++++++++++--
+>  1 file changed, 15 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+> index e0a5fe83d8e0..bfc4a92f1d92 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
+> @@ -75,6 +75,11 @@ struct ethqos_emac_por {
+>         unsigned int value;
+>  };
+>
+> +struct ethqos_emac_driver_data {
+> +       const struct ethqos_emac_por *por;
+> +       unsigned int num_por;
+> +};
+> +
+>  struct qcom_ethqos {
+>         struct platform_device *pdev;
+>         void __iomem *rgmii_base;
+> @@ -171,6 +176,11 @@ static const struct ethqos_emac_por emac_v2_3_0_por[] = {
+>         { .offset = RGMII_IO_MACRO_CONFIG2,     .value = 0x00002060 },
+>  };
+>
+> +static const struct ethqos_emac_driver_data emac_v2_3_0_data = {
+> +       .por = emac_v2_3_0_por,
+> +       .num_por = ARRAY_SIZE(emac_v2_3_0_por),
+> +};
+> +
+>  static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
+>  {
+>         unsigned int val;
+> @@ -442,6 +452,7 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
+>         struct device_node *np = pdev->dev.of_node;
+>         struct plat_stmmacenet_data *plat_dat;
+>         struct stmmac_resources stmmac_res;
+> +       const struct ethqos_emac_driver_data *data;
+>         struct qcom_ethqos *ethqos;
+>         struct resource *res;
+>         int ret;
+> @@ -471,7 +482,9 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
+>                 goto err_mem;
+>         }
+>
+> -       ethqos->por = of_device_get_match_data(&pdev->dev);
+> +       data = of_device_get_match_data(&pdev->dev);
+> +       ethqos->por = data->por;
+> +       ethqos->num_por = data->num_por;
+>
+>         ethqos->rgmii_clk = devm_clk_get(&pdev->dev, "rgmii");
+>         if (IS_ERR(ethqos->rgmii_clk)) {
+> @@ -526,7 +539,7 @@ static int qcom_ethqos_remove(struct platform_device *pdev)
+>  }
+>
+>  static const struct of_device_id qcom_ethqos_match[] = {
+> -       { .compatible = "qcom,qcs404-ethqos", .data = &emac_v2_3_0_por},
+> +       { .compatible = "qcom,qcs404-ethqos", .data = &emac_v2_3_0_data},
+>         { }
+>  };
+>  MODULE_DEVICE_TABLE(of, qcom_ethqos_match);
+> --
+> 2.25.4
+>
