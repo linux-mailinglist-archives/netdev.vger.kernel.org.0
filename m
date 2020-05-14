@@ -2,102 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05D751D30D6
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 15:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC9D1D312C
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 15:23:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726160AbgENNPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 09:15:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60190 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726050AbgENNPb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 09:15:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=C4XSn2ABMWjBZ9aqxDsYGwYODrXuuIHG89AOkv3xl4Y=; b=KOdAMOc58/q+MbDJUgq/sZ4irw
-        oEVJEgY+yla7stTfq+//jkrJnfz4iSQUJyKkhA0KCAq4710SdbaldV3IfAvRz1Fu7e3R8WiEQQyyv
-        NXp/pDx6z1L9iTAjfr8I8+QqiQ+WnqSvDNdEoAUl5MgTO96J4ValFHkMUqLxZUKrCTvQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jZDhv-002Hua-7i; Thu, 14 May 2020 15:15:27 +0200
-Date:   Thu, 14 May 2020 15:15:27 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH V5 18/19] net: ks8851: Implement Parallel bus operations
-Message-ID: <20200514131527.GN527401@lunn.ch>
-References: <20200514000747.159320-1-marex@denx.de>
- <20200514000747.159320-19-marex@denx.de>
- <20200514015753.GL527401@lunn.ch>
- <5dbab44d-de45-f8e2-b4e4-4be15408657e@denx.de>
+        id S1726848AbgENNXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 09:23:17 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:51124 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726087AbgENNXQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 09:23:16 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 14 May 2020 16:23:12 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04EDNCBi013405;
+        Thu, 14 May 2020 16:23:12 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     dsahern@gmail.com, stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        marcelo.leitner@gmail.com, dcaratti@redhat.com,
+        Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH iproute2-next 0/2] Implement filter terse dump mode support
+Date:   Thu, 14 May 2020 16:23:04 +0300
+Message-Id: <20200514132306.29961-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20200514114026.27047-1-vladbu@mellanox.com>
+References: <20200514114026.27047-1-vladbu@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5dbab44d-de45-f8e2-b4e4-4be15408657e@denx.de>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 14, 2020 at 04:26:30AM +0200, Marek Vasut wrote:
-> On 5/14/20 3:57 AM, Andrew Lunn wrote:
-> >> diff --git a/drivers/net/ethernet/micrel/ks8851_par.c b/drivers/net/ethernet/micrel/ks8851_par.c
-> >> new file mode 100644
-> >> index 000000000000..90fffacb1695
-> >> --- /dev/null
-> >> +++ b/drivers/net/ethernet/micrel/ks8851_par.c
-> >> @@ -0,0 +1,348 @@
-> >> +// SPDX-License-Identifier: GPL-2.0-only
-> >> +/* drivers/net/ethernet/micrel/ks8851.c
-> >> + *
-> >> + * Copyright 2009 Simtec Electronics
-> >> + *	http://www.simtec.co.uk/
-> >> + *	Ben Dooks <ben@simtec.co.uk>
-> >> + */
-> >> +
-> >> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> >> +
-> >> +#define DEBUG
-> > 
-> > I don't think you wanted that left in.
-> 
-> This actually was in the original ks8851.c since forever, so I wonder.
-> Maybe a separate patch would be better ?
+Implement support for terse dump mode which provides only essential
+classifier/action info (handle, stats, cookie, etc.). Use new
+TCA_DUMP_FLAGS_TERSE flag to prevent copying of unnecessary data from
+kernel.
 
-Yes, please add another patch.
+Vlad Buslov (2):
+  tc: skip actions that don't have options attribute when printing
+  tc: implement support for terse dump
 
-> >> +		ks8851_done_tx(ks, skb);
-> >> +	} else {
-> >> +		ret = NETDEV_TX_BUSY;
-> >> +	}
-> >> +
-> >> +	ks8851_unlock_par(ks, &flags);
-> >> +
-> >> +	return ret;
-> >> +}
-> > 
-> >> +module_param_named(message, msg_enable, int, 0);
-> >> +MODULE_PARM_DESC(message, "Message verbosity level (0=none, 31=all)");
-> > 
-> > Module parameters are bad. A new driver should not have one, if
-> > possible. Please implement the ethtool .get_msglevel and .set_msglevel
-> > instead.
-> 
-> This was in the original ks8851.c , so I need to retain it , no ?
+ include/uapi/linux/rtnetlink.h |  6 ++++++
+ tc/m_bpf.c                     |  2 +-
+ tc/m_connmark.c                |  2 +-
+ tc/m_csum.c                    |  2 +-
+ tc/m_ct.c                      |  2 +-
+ tc/m_ctinfo.c                  |  2 +-
+ tc/m_gact.c                    |  2 +-
+ tc/m_ife.c                     |  2 +-
+ tc/m_ipt.c                     |  2 +-
+ tc/m_mirred.c                  |  2 +-
+ tc/m_mpls.c                    |  2 +-
+ tc/m_nat.c                     |  2 +-
+ tc/m_pedit.c                   |  2 +-
+ tc/m_sample.c                  |  2 +-
+ tc/m_simple.c                  |  2 +-
+ tc/m_skbedit.c                 |  2 +-
+ tc/m_skbmod.c                  |  2 +-
+ tc/m_tunnel_key.c              |  2 +-
+ tc/m_vlan.c                    |  2 +-
+ tc/m_xt.c                      |  2 +-
+ tc/m_xt_old.c                  |  2 +-
+ tc/tc_filter.c                 | 12 ++++++++++++
+ 22 files changed, 38 insertions(+), 20 deletions(-)
 
-Ah. Err.
+-- 
+2.21.0
 
-This patch looks like a new driver. It has probe, remove
-module_platform_driver(), etc. So as a new driver, it should not have
-module parameters.
-
-But then your next patch removes the mll driver. Your intention is
-that this driver replaces the mll driver. So for backwards
-compatibility, yes you do need the module parameter.
-
-	Andrew
