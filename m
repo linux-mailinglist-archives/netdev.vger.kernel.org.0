@@ -2,168 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D93081D350F
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 17:27:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B801D3511
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 17:28:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726872AbgENP11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 11:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726056AbgENP10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 11:27:26 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11417C061A0C
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 08:27:26 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id s19so2680917edt.12
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 08:27:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IHmn/ZQsIouNuG+LNQHSRWeVN2u0gvkSDyEt1hPpsW8=;
-        b=rBVmgsRFwoYiaIn9AIWuM5oXY+buQaCmOMbUmC6MxIrGacBrDHX3qSZNRZ2Kk48sTb
-         jRoDUF2ADJnWZh00Dnosgc90HY8S9eJcgQi45h7SplbRpkbkboUPpR/6rI1NARqfTFIS
-         Uu4xHhbB4sG22tckm/J4heA6A8stpWgga2J3iWYBBJ00jTkYGV7yfysHz6XyWcmEreQ5
-         BjQUxKv+KsdDn/klwI3NRsLwBtg54KYiRIeVbY1Pdjl88THgksZbxJ5KbOEaTzGt7rk3
-         HQ7YMqoCFD92OgvVRlILFQZzB4DL3W1kkxctZeLcVo/b05VdM+rH/DMroOya1FE89S0Z
-         oMrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IHmn/ZQsIouNuG+LNQHSRWeVN2u0gvkSDyEt1hPpsW8=;
-        b=WintJ4HPIQFnv42ZTCEhspua+NU0PmYE2oin5IF96mco3oz+O707S3CWKujUTY3HHy
-         efh+ACmZqPGcVv6VABV9w/7zh+uN7D6pffW6wBFz02RYsV5OAWhOR4SO33005TgUBZD6
-         RaWpOGAUxqeOBii37ZX2+UZg8ZIbm2rlT4HnIT73fEGNxYYRAr1hInB5l8zkDQS1JtBc
-         q46KQWOI6tgb+vHvcy4ERac1LcOZal3SDhaaqkZqRJbtLSZ02GvkIo50aVzqJYDa72WP
-         lFEk+LZGJu6s1Crrw+oaxrOKJLK6QrEA7IWpANbRo6j8Hgy6sEnE6UlbSyfhiBQO1FN2
-         kAUA==
-X-Gm-Message-State: AOAM533+Nq1Cv+eTMvM5MBL0wHNMvN/dzN1i1NDyHfIYLymaYpIzxfhr
-        dlzW8ycHX/Br8llaUPmY6FDy8I3NVgN+XRTuPgk=
-X-Google-Smtp-Source: ABdhPJy0jiGzktGdZEUQFbYn7szdX8acd/jStdEqRxnP4VdxoGAKyU8AKGQ6gYFiPBfOqbjNN5LCV5SSnkKBVSuTuIg=
-X-Received: by 2002:a05:6402:2d4:: with SMTP id b20mr4680973edx.118.1589470044626;
- Thu, 14 May 2020 08:27:24 -0700 (PDT)
+        id S1726197AbgENP22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 11:28:28 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45512 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726056AbgENP21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 11:28:27 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 290C96004F;
+        Thu, 14 May 2020 15:28:27 +0000 (UTC)
+Received: from us4-mdac16-5.ut7.mdlocal (unknown [10.7.65.73])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 272318009B;
+        Thu, 14 May 2020 15:28:27 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.198])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9B9E2280077;
+        Thu, 14 May 2020 15:28:26 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ED40C80067;
+        Thu, 14 May 2020 15:28:25 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 14 May
+ 2020 16:28:18 +0100
+Subject: Re: [PATCH net-next 0/3] net/sched: act_ct: Add support for
+ specifying tuple offload policy
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        "David Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1589464110-7571-1-git-send-email-paulb@mellanox.com>
+ <3d780eae-3d53-77bb-c3b9-775bf50477bf@solarflare.com>
+ <20200514144938.GD2676@nanopsycho>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <9f68872f-fe3f-e86a-4c74-8b33cd9ee433@solarflare.com>
+Date:   Thu, 14 May 2020 16:28:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200511202046.20515-1-olteanv@gmail.com> <525db137-0748-7ae1-ed7f-ee2c74820436@gmail.com>
- <CA+h21hqbiMfm+h994eV=7vRghapJm7HzybauQcggLhfs7At+fg@mail.gmail.com> <5d60fb20-f0df-7c02-e8d4-1963ffaf79d5@gmail.com>
-In-Reply-To: <5d60fb20-f0df-7c02-e8d4-1963ffaf79d5@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 14 May 2020 18:27:13 +0300
-Message-ID: <CA+h21hrGMZTiig_u+5opg05hitR9VXjmYfzfO4W8K9e5NNY3Fw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/4] DSA: promisc on master, generic flow
- dissector code
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200514144938.GD2676@nanopsycho>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25418.003
+X-TM-AS-Result: No-7.636200-8.000000-10
+X-TMASE-MatchedRID: WMT2WRIkHPPmLzc6AOD8DfHkpkyUphL9tb3wUEoASahjQ6o1zjtGHmly
+        s1PDhWLozIy4Q+OIZUdSRjDchGmLVbgbDPVqku26elGHXZKLL2vnaaW2UTafyDa3GWz2bI6y8L/
+        ILA9mjjEYo7RMqStNcbDwMtEIPtS51/wsMGlHprqTCCj1265aFzQAl7cHmp8GvPwQoyIZS6ec/2
+        wcFt9opK1u9NkuhgWrLE9oBaZFmG8PYhHfxrN+Web3p4cnIXGNSWg+u4ir2NOQ4Ed55cYAep0lh
+        LiscuITjv6fRVEmNSozEHCDmE/LW/V/oQGRS0ppSVHYMTQ1F1qATgUFUNHeQ0l/J9Ro+MABMbzd
+        fw2kMg0rqZTTVWKH2K2dpW2xaCxL/VKd+1TPKc6/W88A/PbYWczzMs2dyeyVUCgEErrUGFwaVcz
+        YFcSVKMIXpS6Zk3foQIHljAlJOfGfImtD24d/xJ4CIKY/Hg3AcmfM3DjaQLHEQdG7H66TyMdRT5
+        TQAJnAG0IV3ngEbr3RqRsfyHxKmn5sRqrftACXPkGoS9kJm8+eqD9WtJkSIw==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--7.636200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25418.003
+X-MDID: 1589470107-M8g8fmyk0Lhy
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+On 14/05/2020 15:49, Jiri Pirko wrote:
+> Thu, May 14, 2020 at 04:04:02PM CEST, ecree@solarflare.com wrote:
+>> Either way, the need to repeat the policy on every tc command suggests
+>>  that there really ought to instead be a separate API for configuring
+>>  conntrack offload policy, either per zone or per (zone, device) pair,
+>>  as appropriate.
+> You don't have to repeat. You specify it in the first one, in the rest
+> you omit it.
+Ok, well (a) the commit message needs changing to make that clear, and
+ (b) that kind of implicit action-at-a-distance slightly bothers me.
+If you don't repeat, then the order of tc commands matters, and any
+ program (e.g. OvS) generating these commands will need to either keep
+ track of which zones it's configured policy for already, or just
+ repeat on every command just in case.
+It really doesn't feel like an orthogonal, Unixy API to me.
 
-On Tue, 12 May 2020 at 03:03, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 5/11/2020 4:52 PM, Vladimir Oltean wrote:
-> > On Tue, 12 May 2020 at 02:28, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>
-> >>
-> >>
-> >> On 5/11/2020 1:20 PM, Vladimir Oltean wrote:
-> >>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >>>
-> >>> The initial purpose of this series was to implement the .flow_dissect
-> >>> method for sja1105 and for ocelot/felix. But on Felix this posed a
-> >>> problem, as the DSA headers were of different lengths on RX and on TX.
-> >>> A better solution than to just increase the smaller one was to also try
-> >>> to shrink the larger one, but in turn that required the DSA master to be
-> >>> put in promiscuous mode (which sja1105 also needed, for other reasons).
-> >>>
-> >>> Finally, we can add the missing .flow_dissect methods to ocelot and
-> >>> sja1105 (as well as generalize the formula to other taggers as well).
-> >>
-> >> On a separate note, do you have any systems for which it would be
-> >> desirable that the DSA standalone port implemented receive filtering? On
-> >> BCM7278 devices, the Ethernet MAC connected to the switch is always in
-> >> promiscuous mode, and so we rely on the switch not to flood the CPU port
-> >> unnecessarily with MC traffic (if nothing else), this is currently
-> >> implemented in our downstream kernel, but has not made it upstream yet,
-> >> previous attempt was here:
-> >>
-> >> https://www.spinics.net/lists/netdev/msg544361.html
-> >>
-> >> I would like to revisit that at some point.
-> >> --
-> >> Florian
-> >
-> > Yes, CPU filtering of traffic (not just multicast) is one of the
-> > problems we're facing. I'll take a look at your patches and maybe I'll
-> > pick them up.
->
-> The part that modifies DSA to program the known MC addresses should
-> still be largely applicable, there were essentially two problems that I
-> was facing, which could be tackled separately.
->
-> 1) flooding of unknown MC traffic on DSA standalone ports is not very
-> intuitive if you come from NICs that did filtering before. We should
-> leverage a DSA switch driver's ability to support port_egress_floods and
-> support port_mdb_add and combine them to avoid flooding the CPU port.
->
+<offtopic rambliness="very">
+TBH I think that when a tc rule with a ct action is offloaded, drivers
+ should get three callbacks in order:
+1) a CT zone callback (if the CT zone is 'new')
+2) an action callback, including a pointer to the CT zone info (in case
+  the driver chose to ignore the CT zone callback because it had no
+   offloading work to do at that point) (if the action is 'new')
+3) a rule callback, including a pointer to the action info (in case the
+   driver ignored the action creation).
+And each of these should be drivable directly from userspace as well as
+ being called automatically by the level below it.
+Currently we have (2) as a distinct entity in TC, but no-one offloads
+ it (and as I've ranted before, that makes a mess of stats) and AIUI
+ it's not called when user creates a rule, only when using 'tc action'
+ command directly).  And (1) doesn't exist at all; drivers just have
+ to notice the first time a tc ct action they're offloading mentions a
+ given zone, and call into nf_flow_table_offload to register for
+ tracked conns in that zone.  I feel that this hierarchical 'offload
+ dependencies first' model would make drivers simpler and more robust,
+ as well as helping to ensure different drivers share a consistent
+ interpretation of the API.
+RFC on the above?  Obviously I'm not likely to start implementing it
+ until after we have a TC-supporting sfc driver upstream (it's coming
+ Real Soon Now™, I swear!) but I thought it worthwhile to throw the
+ design up for discussion earlier rather than later.
+</offtopic>
 
-Could you clarify one thing for me:
-- SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED is supposed to sync/unsync all
-known multicast {mac, vid} addresses to the hardware filtering table
-- SWITCHDEV_ATTR_ID_BRIDGE_MROUTER is supposed to toggle flooding of
-unknown multicast addresses to the CPU
-- What is BR_MCAST_FLOOD from SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS
-supposed to do? The same thing?
-
-> 2) Programming of known multicast addresses for VLAN devices on top of
-> DSA standalone ports while the switch implements global VLAN filtering.
-> In that case when we get to the DSA slave device's ndo_set_rx_mode() we
-> have lost all information about which VID the MAC address is coming from
-> so we cannot insert the MAC address with the correct VID to support
-> proper filtering. TI's cpsw driver implements a super complicated scheme
-> to solve that problem and this was worked on by Ivan in a more generic
-> and usable form: https://lwn.net/Articles/780783/
-
-So you're thinking of pulling his vlan_dev_get_addr_vid API and
-syncing {DMAC, VID} addresses to the DSA slave ports by installing mdb
-rules (or fdb in case of unicast filtering) on the CPU port?
-
-But I think the only thing that would make global VLAN filtering more
-complicated than the general case is that we would have to:
-- deny switch ports from being enslaved to a VLAN-unaware bridge if
-there is at least one other DSA slave in this switch that has
-addresses with a non-pvid VLAN in its RX filter
-- deny changes to the VLAN filtering state of any bridge that spans a
-switch which has at least a port with a non-pvid VLAN in its RX filter
-Am I missing something?
-
-Also, for unicast filtering, I believe you would agree to leverage
-port_egress_floods(unicast=false), and have the DSA core install one
-fdb entry on the CPU port per each slave netdevice MAC address. Sadly,
-for that to work, we'd have to keep our own parallel reference
-counting in dsa_slave_sync_unsync_fdb_addr (because the refcount in
-__hw_addr_sync_dev is per slave device and not per cpu port).
-
-Last but not least, how do you see the CPU membership of VLANs problem
-being approached? Using Ivan's vlan_dev_get_addr_vid API, only let the
-CPU see traffic from a particular VLAN if there is any upper 8021q net
-device installed on any DSA slave? What should happen when we bridge a
-DSA slave port? Let the flood gates open? If the DSA slave is bridged
-only with other DSA slaves from the same switch, hopefully the answer
-is no. Hopefully we can open the flood gates only when bridging with a
-foreign interface.
-
-> --
-> Florian
-
-Thanks,
--Vladimir
+-ed
