@@ -2,56 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3D21D3EEF
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB821D3F0D
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:39:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728005AbgENUWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 16:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
+        id S1727794AbgENUjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 16:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727785AbgENUWh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 16:22:37 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3879C061A0C
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:22:37 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 58C71128D7312;
-        Thu, 14 May 2020 13:22:37 -0700 (PDT)
-Date:   Thu, 14 May 2020 13:22:36 -0700 (PDT)
-Message-Id: <20200514.132236.1465846961453548902.davem@davemloft.net>
-To:     irusskikh@marvell.com
-Cc:     netdev@vger.kernel.org, aelior@marvell.com, mkalderon@marvell.com,
-        dbolotin@marvell.com, kuba@kernel.org
-Subject: Re: [PATCH v2 net-next 00/11] net: qed/qede: critical hw error
- handling
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200514.130952.794606246311304590.davem@davemloft.net>
-References: <20200514095727.1361-1-irusskikh@marvell.com>
-        <20200514.130159.1188703412067742485.davem@davemloft.net>
-        <20200514.130952.794606246311304590.davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 13:22:37 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726035AbgENUjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 16:39:24 -0400
+Received: from Galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71EFC061A0C;
+        Thu, 14 May 2020 13:39:23 -0700 (PDT)
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jZKdG-0000K8-KW; Thu, 14 May 2020 22:39:06 +0200
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id DA9531004CE; Thu, 14 May 2020 22:39:05 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>, Andrii Nakryiko <andriin@fb.com>,
+        linux-arch@vger.kernel.org
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com,
+        kernel-team@fb.com, "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH bpf-next 1/6] bpf: implement BPF ring buffer and verifier support for it
+In-Reply-To: <20200514121848.052966b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200513192532.4058934-1-andriin@fb.com> <20200513192532.4058934-2-andriin@fb.com> <20200514121848.052966b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Thu, 14 May 2020 22:39:05 +0200
+Message-ID: <87h7wixndi.fsf@nanos.tec.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KRGF0ZTogVGh1LCAxNCBN
-YXkgMjAyMCAxMzowOTo1MiAtMDcwMCAoUERUKQ0KDQo+IEFjdHVhbGx5LCBJIGhhZCB0byByZXZl
-cnQsIHBsZWFzZSBmaXggdGhlc2Ugd2FybmluZ3MgKHdpdGggZ2NjLTEwLjEuMSBvbiBGZWRvcmEp
-XzoNCj4gDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3Fsb2dpYy9xZWQvcWVkX2Rldi5jOiBJbiBm
-dW5jdGlvbiChcWVkX2xsaF9hZGRfbWFjX2ZpbHRlcqI6DQo+IC4vaW5jbHVkZS9saW51eC9wcmlu
-dGsuaDozMDM6Mjogd2FybmluZzogoWFic19wcGZpZKIgbWF5IGJlIHVzZWQgdW5pbml0aWFsaXpl
-ZCBpbiB0aGlzIGZ1bmN0aW9uIFstV21heWJlLXVuaW5pdGlhbGl6ZWRdDQo+ICAgMzAzIHwgIHBy
-aW50ayhLRVJOX05PVElDRSBwcl9mbXQoZm10KSwgIyNfX1ZBX0FSR1NfXykNCj4gICAgICAgfCAg
-Xn5+fn5+DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3Fsb2dpYy9xZWQvcWVkX2Rldi5jOjk4Mzox
-Nzogbm90ZTogoWFic19wcGZpZKIgd2FzIGRlY2xhcmVkIGhlcmUNCj4gICA5ODMgfCAgdTggZmls
-dGVyX2lkeCwgYWJzX3BwZmlkOw0KPiAgICAgICB8ICAgICAgICAgICAgICAgICBefn5+fn5+fn4N
-Cg0KSG1tLCB0aGlzIHNlZW1zIHRvIGFjdHVhbGx5IGJlIGFuIGV4aXN0aW5nIHdhcm5pbmcsIHNv
-cnJ5Lg0KDQpJJ2xsIHJlYXBwbHkgdGhpcy4NCg==
+Jakub Kicinski <kuba@kernel.org> writes:
+
+> On Wed, 13 May 2020 12:25:27 -0700 Andrii Nakryiko wrote:
+>> One interesting implementation bit, that significantly simplifies (and thus
+>> speeds up as well) implementation of both producers and consumers is how data
+>> area is mapped twice contiguously back-to-back in the virtual memory. This
+>> allows to not take any special measures for samples that have to wrap around
+>> at the end of the circular buffer data area, because the next page after the
+>> last data page would be first data page again, and thus the sample will still
+>> appear completely contiguous in virtual memory. See comment and a simple ASCII
+>> diagram showing this visually in bpf_ringbuf_area_alloc().
+>
+> Out of curiosity - is this 100% okay to do in the kernel and user space
+> these days? Is this bit part of the uAPI in case we need to back out of
+> it? 
+>
+> In the olden days virtually mapped/tagged caches could get confused
+> seeing the same physical memory have two active virtual mappings, or 
+> at least that's what I've been told in school :)
+
+Yes, caching the same thing twice causes coherency problems.
+
+VIVT can be found in ARMv5, MIPS, NDS32 and Unicore32.
+
+> Checking with Paul - he says that could have been the case for Itanium
+> and PA-RISC CPUs.
+
+Itanium: PIPT L1/L2.
+PA-RISC: VIPT L1 and PIPT L2
+
+Thanks,
+
+        tglx
