@@ -2,63 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB5B91D3E33
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E6751D3E3B
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:58:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728948AbgENT54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 15:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727117AbgENT5y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 15:57:54 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B77C061A0C;
-        Thu, 14 May 2020 12:57:54 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7E265128D325E;
-        Thu, 14 May 2020 12:57:52 -0700 (PDT)
-Date:   Thu, 14 May 2020 12:57:51 -0700 (PDT)
-Message-Id: <20200514.125751.2175402701800030395.davem@davemloft.net>
-To:     David.Laight@ACULAB.COM
-Cc:     joe@perches.com, hch@lst.de, kuba@kernel.org, edumazet@google.com,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
-        jmaloy@redhat.com, ying.xue@windriver.com,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-nvme@lists.infradead.org, target-devel@vger.kernel.org,
-        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
-        cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
-        netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
-        ceph-devel@vger.kernel.org, rds-devel@oss.oracle.com,
-        linux-nfs@vger.kernel.org
-Subject: Re: remove kernel_setsockopt and kernel_getsockopt
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <756758e8f0e34e2e97db470609f5fbba@AcuMS.aculab.com>
-References: <20200513062649.2100053-1-hch@lst.de>
-        <ecc165c33962d964d518c80de605af632eee0474.camel@perches.com>
-        <756758e8f0e34e2e97db470609f5fbba@AcuMS.aculab.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 12:57:53 -0700 (PDT)
+        id S1728971AbgENT6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 15:58:16 -0400
+Received: from verein.lst.de ([213.95.11.211]:53604 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728292AbgENT6Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 15:58:16 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 5710E68BEB; Thu, 14 May 2020 21:58:13 +0200 (CEST)
+Date:   Thu, 14 May 2020 21:58:13 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Christoph Hellwig <hch@lst.de>, ast@kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        torvalds@linux-foundation.org, mhiramat@kernel.org,
+        brendan.d.gregg@gmail.com, john.fastabend@gmail.com, yhs@fb.com
+Subject: Re: [PATCH bpf 0/3] Restrict bpf_probe_read{,str}() and
+ bpf_trace_printk()'s %s
+Message-ID: <20200514195813.GA14720@lst.de>
+References: <20200514161607.9212-1-daniel@iogearbox.net> <20200514165802.GA3059@lst.de> <cb0749ab-e37b-6fe4-5830-a40fb4fca995@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cb0749ab-e37b-6fe4-5830-a40fb4fca995@iogearbox.net>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Laight <David.Laight@ACULAB.COM>
-Date: Thu, 14 May 2020 08:29:30 +0000
+On Thu, May 14, 2020 at 09:54:06PM +0200, Daniel Borkmann wrote:
+> On 5/14/20 6:58 PM, Christoph Hellwig wrote:
+>> On Thu, May 14, 2020 at 06:16:04PM +0200, Daniel Borkmann wrote:
+>>> Small set of fixes in order to restrict BPF helpers for tracing which are
+>>> broken on archs with overlapping address ranges as per discussion in [0].
+>>> I've targetted this for -bpf tree so they can be routed as fixes. Thanks!
+>>
+>> Does that mean you are targeting them for 5.7?
+>
+> Yes, it would make most sense to me based on the discussion we had in the
+> other thread. If there is concern wrt latency we could route these to DaveM's
+> net tree in a timely manner (e.g. still tonight or so).
 
-> You need to export functions that do most of the socket options
-> for all protocols.
-
-If all in-tree users of this stuff are converted, there is no argument
-for keeping these routines.
-
-You seemed to be concerned about out of tree stuff.  If so, that's not
-of our concern.
+I don't think we should rush this too much.  I just want to make sure
+it either goes into 5.7 or that we have a coordinated tree that I can
+base the maccess series on.
