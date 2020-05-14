@@ -2,69 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315851D2F9C
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 14:25:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 503D91D2FC4
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 14:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgENMZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 08:25:19 -0400
-Received: from correo.us.es ([193.147.175.20]:58358 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726345AbgENMZT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 08:25:19 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id BDA6215C111
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 14:25:17 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id ADC89DA722
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 14:25:17 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id A2F93DA70E; Thu, 14 May 2020 14:25:17 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BF298DA713;
-        Thu, 14 May 2020 14:25:15 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 14 May 2020 14:25:15 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id A055042EF42A;
-        Thu, 14 May 2020 14:25:15 +0200 (CEST)
-Date:   Thu, 14 May 2020 14:25:15 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Subject: Re: [PATCH] libip6t_srh.t: switch to lowercase, add /128 suffix,
- require success
-Message-ID: <20200514122515.GA24850@salvia>
-References: <20200511213349.248618-1-zenczykowski@gmail.com>
+        id S1726661AbgENMa1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 14 May 2020 08:30:27 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:29434 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726056AbgENMaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 08:30:22 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-254-IsdhEyj2MaapF7FHDwegSA-1; Thu, 14 May 2020 13:30:18 +0100
+X-MC-Unique: IsdhEyj2MaapF7FHDwegSA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 14 May 2020 13:30:17 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 14 May 2020 13:30:17 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>,
+        'Christoph Hellwig' <hch@lst.de>
+CC:     "'David S. Miller'" <davem@davemloft.net>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        'Eric Dumazet' <edumazet@google.com>,
+        'Alexey Kuznetsov' <kuznet@ms2.inr.ac.ru>,
+        'Hideaki YOSHIFUJI' <yoshfuji@linux-ipv6.org>,
+        "'Vlad Yasevich'" <vyasevich@gmail.com>,
+        'Neil Horman' <nhorman@tuxdriver.com>,
+        "'Jon Maloy'" <jmaloy@redhat.com>,
+        'Ying Xue' <ying.xue@windriver.com>,
+        "'drbd-dev@lists.linbit.com'" <drbd-dev@lists.linbit.com>,
+        "'linux-block@vger.kernel.org'" <linux-block@vger.kernel.org>,
+        "'linux-kernel@vger.kernel.org'" <linux-kernel@vger.kernel.org>,
+        "'linux-rdma@vger.kernel.org'" <linux-rdma@vger.kernel.org>,
+        "'linux-nvme@lists.infradead.org'" <linux-nvme@lists.infradead.org>,
+        "'target-devel@vger.kernel.org'" <target-devel@vger.kernel.org>,
+        "'linux-afs@lists.infradead.org'" <linux-afs@lists.infradead.org>,
+        "'linux-cifs@vger.kernel.org'" <linux-cifs@vger.kernel.org>,
+        "'cluster-devel@redhat.com'" <cluster-devel@redhat.com>,
+        "'ocfs2-devel@oss.oracle.com'" <ocfs2-devel@oss.oracle.com>,
+        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
+        "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>,
+        "'ceph-devel@vger.kernel.org'" <ceph-devel@vger.kernel.org>,
+        "'rds-devel@oss.oracle.com'" <rds-devel@oss.oracle.com>,
+        "'linux-nfs@vger.kernel.org'" <linux-nfs@vger.kernel.org>
+Subject: RE: [PATCH 32/33] sctp: add sctp_sock_get_primary_addr
+Thread-Topic: [PATCH 32/33] sctp: add sctp_sock_get_primary_addr
+Thread-Index: AQHWKVDpRRlTTX4YZEat3HB6AYvqqainVRxwgAAtMyA=
+Date:   Thu, 14 May 2020 12:30:17 +0000
+Message-ID: <c66e0309572345f5b0f32d078701f2d7@AcuMS.aculab.com>
+References: <20200513062649.2100053-1-hch@lst.de>
+ <20200513062649.2100053-33-hch@lst.de>
+ <20200513180302.GC2491@localhost.localdomain>
+ <d112e18bfbdd40dfb219ed2c1f2082d4@AcuMS.aculab.com>
+In-Reply-To: <d112e18bfbdd40dfb219ed2c1f2082d4@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200511213349.248618-1-zenczykowski@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 02:33:49PM -0700, Maciej Żenczykowski wrote:
-> From: Maciej Żenczykowski <maze@google.com>
+From: David Laight
+> Sent: 14 May 2020 10:51
+> From: Marcelo Ricardo Leitner
+> > Sent: 13 May 2020 19:03
+> >
+> > On Wed, May 13, 2020 at 08:26:47AM +0200, Christoph Hellwig wrote:
+> > > Add a helper to directly get the SCTP_PRIMARY_ADDR sockopt from kernel
+> > > space without going through a fake uaccess.
+> >
+> > Same comment as on the other dlm/sctp patch.
 > 
-> This looks like an oversight which is easy to fix.
+> Wouldn't it be best to write sctp_[gs]etsockotp() that
+> use a kernel buffer and then implement the user-space
+> calls using a wrapper that does the copies to an on-stack
+> (or malloced if big) buffer.
 
-Applied.
+Actually looking at __sys_setsockopt() it calls
+BPF_CGROUP_RUN_PROG_SETSOCKOPT() which (by the look of it)
+can copy the user buffer into malloc()ed memory and
+cause set_fs(KERNEL_DS) be called.
+
+The only way to get rid of that set_fs() is to always
+have the buffer in kernel memory when the underlying
+setsockopt() code is called.
+
+The comment above __sys_[sg]etsockopt() about not knowing
+the length is just wrong.
+It probably applied to getsockopt() in the dim and distant
+past before it was made read-update.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
