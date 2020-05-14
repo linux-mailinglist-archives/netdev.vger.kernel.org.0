@@ -2,77 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DA161D3738
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 19:00:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC5E01D3782
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 19:06:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726163AbgENRAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 13:00:44 -0400
-Received: from foss.arm.com ([217.140.110.172]:40676 "EHLO foss.arm.com"
+        id S1726528AbgENRGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 13:06:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60656 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725975AbgENRAn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 13:00:43 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 663061042;
-        Thu, 14 May 2020 10:00:43 -0700 (PDT)
-Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5E4513F71E;
-        Thu, 14 May 2020 10:00:43 -0700 (PDT)
-From:   Jeremy Linton <jeremy.linton@arm.com>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>
-Subject: [PATCH] net: phy: Fix c45 no phy detected logic
-Date:   Thu, 14 May 2020 12:00:25 -0500
-Message-Id: <20200514170025.1379981-1-jeremy.linton@arm.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726038AbgENRGR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 13:06:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=I2i8OSobiwsG3jLNtOop/2XBg2yXj5Met80Vd6NpExk=; b=YO9bKux4ywjUTzlbzIa0sVM6Qq
+        HMHmHMGOWCUNIosE5WOPCryq68cs1NnjIydwTJfKwD5SZzOnwcTH5JK8KcqyPLxEpteAv8HB+p2fD
+        I8ngCPS1dcRKNzvGhtgZVpmXD4g0fDMtq41ExbeCoa40MSuoDjvug5/veF47F2RBmulg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jZHJA-002J0N-Bq; Thu, 14 May 2020 19:06:08 +0200
+Date:   Thu, 14 May 2020 19:06:08 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH] net: phy: mdio-moxart: remove unneeded include
+Message-ID: <20200514170608.GV499265@lunn.ch>
+References: <20200514165938.21725-1-brgl@bgdev.pl>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200514165938.21725-1-brgl@bgdev.pl>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit "disregard Clause 22 registers present bit..." clears
-the low bit of the devices_in_package data which is being used
-in get_phy_c45_ids() to determine if a phy/register is responding
-correctly. That check is against 0x1FFFFFFF, but since the low
-bit is always cleared, the check can never be true. This leads to
-detecting c45 phy devices where none exist.
+On Thu, May 14, 2020 at 06:59:38PM +0200, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> 
+> mdio-moxart doesn't use regulators in the driver code. We can remove
+> the regulator include.
+> 
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Lets fix this by also clearing the low bit in the mask to 0x1FFFFFFE.
-This allows us to continue to autoprobe standards compliant devices
-without also gaining a large number of bogus ones.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Fixes: 3b5e74e0afe3 ("net: phy: disregard "Clause 22 registers present" bit in get_phy_c45_devs_in_pkg")
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
----
- drivers/net/phy/phy_device.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index ac2784192472..b93d984d35cc 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -723,7 +723,7 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
- 		if (phy_reg < 0)
- 			return -EIO;
- 
--		if ((*devs & 0x1fffffff) == 0x1fffffff) {
-+		if ((*devs & 0x1ffffffe) == 0x1ffffffe) {
- 			/*  If mostly Fs, there is no device there,
- 			 *  then let's continue to probe more, as some
- 			 *  10G PHYs have zero Devices In package,
-@@ -733,7 +733,7 @@ static int get_phy_c45_ids(struct mii_bus *bus, int addr, u32 *phy_id,
- 			if (phy_reg < 0)
- 				return -EIO;
- 			/* no device there, let's get out of here */
--			if ((*devs & 0x1fffffff) == 0x1fffffff) {
-+			if ((*devs & 0x1ffffffe) == 0x1ffffffe) {
- 				*phy_id = 0xffffffff;
- 				return 0;
- 			} else {
--- 
-2.24.1
-
+    Andrew
