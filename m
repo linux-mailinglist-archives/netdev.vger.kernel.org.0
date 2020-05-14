@@ -2,96 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BAAA1D2C4E
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 12:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B6551D2C63
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 12:18:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726072AbgENKPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 06:15:46 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:20454 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725974AbgENKPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 06:15:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589451344;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+KIaE7ARBsCzF+D+Y+4GJpIzb5KDD/6yGLZ7ng/uwes=;
-        b=iwzhMx4SYNWYx2JEVaN3PpbKNWq4EhhhYOiqUEjJHbt/yOXcbGpCornYp8oAHZZgroQwLf
-        PFkyj1teycfNQO5/6SGaDL8mc2Eb/En1M1Wsfn6lfUP+62sUvzJCLqZKmqTfIYFrYYIgTv
-        ggMWm3iYOGS3MpgWM4q+Gd88JahC498=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-96-o7Ax251cNlq2RA2no_dT1Q-1; Thu, 14 May 2020 06:15:42 -0400
-X-MC-Unique: o7Ax251cNlq2RA2no_dT1Q-1
-Received: by mail-wm1-f71.google.com with SMTP id k17so3924063wmi.4
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 03:15:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:content-transfer-encoding;
-        bh=+KIaE7ARBsCzF+D+Y+4GJpIzb5KDD/6yGLZ7ng/uwes=;
-        b=Nt9ma5XtFBzrFpFz3Log63cUE6ru15faOpbSu8AV8s6YpazR+7iPqPBcrRxcfWBAhh
-         cl8FT9Yi+DbAVBYH8j3QPgB7t4oCjy/vHwluY2UgKvXeQ9Yxnhj/Ooxy1/TGLwS+NBEv
-         4Pq3DJzQ6/SqPqywCz2a3EIkUh8Jl23IUDlnuTZlV8YQRbz7JGe0TlPniP51KAhHcPVX
-         xroaTyhDBTSRynYxFv8tCvRVw/j0nLxSCoQfun1ZLWwyQX/vgMMIPMq+Yao/EI4h5+5R
-         FCoiFludrOmtVjjXRDobG7wg1BgJxVZfaQafbCg29gtNWPsDM1wbeUAgvUN7vbPr31TK
-         lUBw==
-X-Gm-Message-State: AOAM530PS9CTsXfvrBg/GmIl72QUZhtvVvJVcsM5mhpltrcRjR4KEq5X
-        47BiNxJTkgTzy5NPM3yK6NeYLcUtwsmiqUMccjxWsjAef7oCLO1OnHFaSeEarwQDIvfQSWmn89A
-        tLmMuJy+jfsD6BiIW
-X-Received: by 2002:a5d:4102:: with SMTP id l2mr4486585wrp.51.1589451341496;
-        Thu, 14 May 2020 03:15:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx8DRYFKPhMC7pOj2fNsvPjhYO/tsIxJqxtwRCnmmrdKtGKfo4uvUGZJyi/ARo9q267NGwFpg==
-X-Received: by 2002:a5d:4102:: with SMTP id l2mr4486569wrp.51.1589451341318;
-        Thu, 14 May 2020 03:15:41 -0700 (PDT)
-Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
-        by smtp.gmail.com with ESMTPSA id c17sm3301020wrn.59.2020.05.14.03.15.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2020 03:15:40 -0700 (PDT)
-Date:   Thu, 14 May 2020 12:15:39 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        David =?utf-8?Q?Bala=C5=BEic?= <xerces9@gmail.com>
-Subject: [PATCH net] pppoe: only process PADT targeted at local interfaces
-Message-ID: <87314848e98d74e88b3c3b2504566a7691f5a8e9.1589451271.git.gnault@redhat.com>
+        id S1726247AbgENKSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 06:18:43 -0400
+Received: from verein.lst.de ([213.95.11.211]:51105 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725925AbgENKSn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 06:18:43 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 3F02D68BEB; Thu, 14 May 2020 12:18:38 +0200 (CEST)
+Date:   Thu, 14 May 2020 12:18:38 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     'Joe Perches' <joe@perches.com>, Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
+        "cluster-devel@redhat.com" <cluster-devel@redhat.com>,
+        "ocfs2-devel@oss.oracle.com" <ocfs2-devel@oss.oracle.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "ceph-devel@vger.kernel.org" <ceph-devel@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>
+Subject: Re: remove kernel_setsockopt and kernel_getsockopt
+Message-ID: <20200514101838.GA12548@lst.de>
+References: <20200513062649.2100053-1-hch@lst.de> <ecc165c33962d964d518c80de605af632eee0474.camel@perches.com> <756758e8f0e34e2e97db470609f5fbba@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <756758e8f0e34e2e97db470609f5fbba@AcuMS.aculab.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't want to disconnect a session because of a stray PADT arriving
-while the interface is in promiscuous mode.
-Furthermore, multicast and broadcast packets make no sense here, so
-only PACKET_HOST is accepted.
+On Thu, May 14, 2020 at 08:29:30AM +0000, David Laight wrote:
+> You need to export functions that do most of the socket options
+> for all protocols.
 
-Reported-by: David Balažic <xerces9@gmail.com>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- drivers/net/ppp/pppoe.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
-index d760a36db28c..beedaad08255 100644
---- a/drivers/net/ppp/pppoe.c
-+++ b/drivers/net/ppp/pppoe.c
-@@ -490,6 +490,9 @@ static int pppoe_disc_rcv(struct sk_buff *skb, struct net_device *dev,
- 	if (!skb)
- 		goto out;
- 
-+	if (skb->pkt_type != PACKET_HOST)
-+		goto abort;
-+
- 	if (!pskb_may_pull(skb, sizeof(struct pppoe_hdr)))
- 		goto abort;
- 
--- 
-2.21.1
-
+Only for those were we have users, and all those are covered.
