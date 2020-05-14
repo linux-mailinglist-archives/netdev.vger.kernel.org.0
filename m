@@ -2,104 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E611D38B5
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 19:59:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 832921D38BF
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 20:02:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726168AbgENR64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 13:58:56 -0400
-Received: from correo.us.es ([193.147.175.20]:40014 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725965AbgENR64 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 13:58:56 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 4B1DC11EB35
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 19:58:54 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3D7B0DA70F
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 19:58:54 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 32FFCDA717; Thu, 14 May 2020 19:58:54 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3CE67DA721;
-        Thu, 14 May 2020 19:58:52 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 14 May 2020 19:58:52 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 1FB2A42EF42A;
-        Thu, 14 May 2020 19:58:52 +0200 (CEST)
-Date:   Thu, 14 May 2020 19:58:51 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Subject: Re: [PATCH] libiptc.c: pragma disable a gcc compiler warning
-Message-ID: <20200514175851.GA886@salvia>
-References: <20200511213404.248715-1-zenczykowski@gmail.com>
+        id S1726278AbgENSCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 14:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726035AbgENSCd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 14:02:33 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E21C061A0C;
+        Thu, 14 May 2020 11:02:33 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id k22so182887pls.10;
+        Thu, 14 May 2020 11:02:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7zabWZX7zia6FGAl/2g9/rRePkB0T8QEsMQp4+a+KVc=;
+        b=aQCQr6U9CCACb3xi4GcbeO3Ij3GnygrgW/rLvBZHveDxvGGhUA0azKpsjc+ckY1KQi
+         GaLXLNDMjd+UDWLTU1dQF/DmbRGXvwrdiIvTzI6h/svgOwYBrtyEBUf545NxdH0qBPpz
+         3nUbFXs5s40ooengpKQr9D1fAvVV19Sq6MYkaVUeB0nmhWjBQV2FvhAbk70wGQbf06NX
+         ti1JlvBXnmNHMdlWejLYix+UCoPoVvPYeTh95avlwTeZotQM8uaDgqxxSrRw77LyFhtI
+         6lyb2vYhWzRT4DxZpojO01GlfcLBW0B/FnFE2QP5F45wmHb6RFCt6NGRfyGGYTWlU4XR
+         S6sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7zabWZX7zia6FGAl/2g9/rRePkB0T8QEsMQp4+a+KVc=;
+        b=O+BHhnRPhJ7ZxgU7v7vkmRNsPXhI1z/XYsx3gQjMyiXGRk0BU6Rdzkyck4cAVlzt9p
+         BOEFBNGDhd14d6YF/ZDtLibZfka4hPeN7nCJmtv9Z1Lkn1eWxMiWREy1KnYJt8ye8NSf
+         whi1b+ExIBFZaVMbgZMk/LA8pmLqZp00DzLy9RTBOScYqgRQHlBT04qWjxPmbT3qI8z5
+         D6CQSDI5eTVcKDQX2RzpsMYqzPe6xjuatTS2YjBPCy4J8Q9qAXalZvvazaJzpCsS3fIO
+         6GKQFCqFx/fbCjIRLARbJ7T+Cwh/F4fG/VTF0u+EyOoFnBu2kNSGsDhXVHZFCmAa2Es2
+         YGQA==
+X-Gm-Message-State: AOAM5304iAz9HvHDOp5mDXZ9iUVhsy8BeWOLeNakDervO8LgWzTbblEM
+        5eBBjclUuWwXE7m5fdgZ0hYvTyB3F/k=
+X-Google-Smtp-Source: ABdhPJy/icmI40gwG9O80DXWUuHBQDVQog7Y7jXBEQ88FWbaHdlqDynL7D2LdQWr2EQGscCkrTM3hQ==
+X-Received: by 2002:a17:90a:de07:: with SMTP id m7mr3795254pjv.100.1589479352409;
+        Thu, 14 May 2020 11:02:32 -0700 (PDT)
+Received: from localhost.localdomain ([103.87.56.31])
+        by smtp.googlemail.com with ESMTPSA id s102sm4594079pjb.57.2020.05.14.11.02.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 May 2020 11:02:31 -0700 (PDT)
+From:   Amol Grover <frextrite@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Patrick McHardy <kaber@trash.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>, Qian Cai <cai@lca.pw>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Amol Grover <frextrite@gmail.com>
+Subject: [PATCH net v2 1/2] ipmr: Fix RCU list debugging warning
+Date:   Thu, 14 May 2020 23:31:02 +0530
+Message-Id: <20200514180102.26425-1-frextrite@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200511213404.248715-1-zenczykowski@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 02:34:04PM -0700, Maciej Żenczykowski wrote:
-> From: Maciej Żenczykowski <maze@google.com>
-> 
-> Fixes:
->   In file included from libip4tc.c:113:
->   In function ‘iptcc_compile_chain’,
->       inlined from ‘iptcc_compile_table’ at libiptc.c:1246:13,
->       inlined from ‘iptc_commit’ at libiptc.c:2575:8,
->       inlined from ‘iptc_commit’ at libiptc.c:2513:1:
->   libiptc.c:1172:2: warning: writing 16 bytes into a region of size 0 [-Wstringop-overflow=]
->    1172 |  memcpy(&foot->e.counters, &c->counters, sizeof(STRUCT_COUNTERS));
->         |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->   In file included from ../include/libiptc/libiptc.h:12,
->                    from libip4tc.c:29:
->   libiptc.c: In function ‘iptc_commit’:
->   ../include/linux/netfilter_ipv4/ip_tables.h:202:19: note: at offset 0 to object ‘entries’ with size 0 declared here
->     202 |  struct ipt_entry entries[0];
->         |                   ^~~~~~~
-> 
-> Which was found via compilation on Fedora 32.
-> 
-> Test: builds without warnings
-> Signed-off-by: Maciej Żenczykowski <maze@google.com>
-> ---
->  libiptc/libiptc.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/libiptc/libiptc.c b/libiptc/libiptc.c
-> index 58882015..1a92b267 100644
-> --- a/libiptc/libiptc.c
-> +++ b/libiptc/libiptc.c
-> @@ -1169,7 +1169,10 @@ static int iptcc_compile_chain(struct xtc_handle *h, STRUCT_REPLACE *repl, struc
->  	else
->  		foot->target.verdict = RETURN;
->  	/* set policy-counters */
-> +#pragma GCC diagnostic push
-> +#pragma GCC diagnostic ignored "-Wstringop-overflow"
->  	memcpy(&foot->e.counters, &c->counters, sizeof(STRUCT_COUNTERS));
-> +#pragma GCC diagnostic pop
+ipmr_for_each_table() macro uses list_for_each_entry_rcu()
+for traversing outside of an RCU read side critical section
+but under the protection of rtnl_mutex. Hence, add the
+corresponding lockdep expression to silence the following
+false-positive warning at boot:
 
-Probably make a casting from foot->e.counters to the counters object
-to make gcc happy?
+[    4.319347] =============================
+[    4.319349] WARNING: suspicious RCU usage
+[    4.319351] 5.5.4-stable #17 Tainted: G            E
+[    4.319352] -----------------------------
+[    4.319354] net/ipv4/ipmr.c:1757 RCU-list traversed in non-reader section!!
+
+Fixes: f0ad0860d01e ("ipv4: ipmr: support multiple tables")
+Signed-off-by: Amol Grover <frextrite@gmail.com>
+---
+v2:
+- Add appropriate Fixes tag
+
+ net/ipv4/ipmr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+index 9cf83cc85e4a..4897f7420c8f 100644
+--- a/net/ipv4/ipmr.c
++++ b/net/ipv4/ipmr.c
+@@ -110,7 +110,8 @@ static void ipmr_expire_process(struct timer_list *t);
+ 
+ #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
+ #define ipmr_for_each_table(mrt, net) \
+-	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list)
++	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
++				lockdep_rtnl_is_held())
+ 
+ static struct mr_table *ipmr_mr_table_iter(struct net *net,
+ 					   struct mr_table *mrt)
+-- 
+2.24.1
+
