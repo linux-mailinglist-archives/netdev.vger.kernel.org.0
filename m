@@ -2,248 +2,388 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C578F1D2CC1
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 12:29:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1756B1D2CD1
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 12:30:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726113AbgENK3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 06:29:25 -0400
-Received: from mail-eopbgr20075.outbound.protection.outlook.com ([40.107.2.75]:43589
+        id S1726171AbgENK3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 06:29:48 -0400
+Received: from mail-eopbgr20065.outbound.protection.outlook.com ([40.107.2.65]:35075
         "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725974AbgENK3Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 06:29:24 -0400
+        id S1726105AbgENK3s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 06:29:48 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NcgXAApe5eIE8Co3b0NIDcUsp+/RbB34OaecIkfCSnbe5NS2tipULpEOQokkncd40kNrHWlQ6Vzal470OAUsh0TjXPH9vaKBfIgZ5f2a6GxJlg78+GJnViqRYilgkCJoujVEv9OkyK4OblDHRobGRqXlfSzQlG+xV1cCOgzRkOtR1mqQKIsE6/o9QW0sWvwLP4b0Ld2jKgoPsLKUZeW+po/An3O90Eabg6CiqEhlQm7YyxYao6oigbwziQpMhmIiIdBSOR+Fd7M2Nytx5buIlP6SGdPk53d/a3Y183VUmjuE6z1wuXM3i4IjA8DUNsTHyXZsEK4hbHmV3sSBYHxEjw==
+ b=MFaNVlWJwXUuD7uVuv4BQckNMQ2R0okIhgXKLB+49ulWy9cj3LxCMt3BXyTZPlL3GixnwlN2WesDNO/gHso93LUttQVXa2bIHl24RItMDkrbRCO1fGcIynf7G8B5pQNs0d9/iG+e+NI6DHzWlY/ijZtdz2/w8NocsE+Jg1MBG2qONEPbDdTTnA5b+zO0/JlnHm9XDaXIAUM1Ce58y3xGJqgaTUyJn3jTwvlyROVBe3RkCWjtjztWrThcTPt0ZPXPJFbdof9+u5l6h6od/8LJT8FXUaAxlk2k3+7Kmmn9GW+9t0d0dOwr6z/aRSwnxdmxO0vlTlXhUyjiS8Q5aONM2w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qblLRZ6lu8F4Ng90jSF1BeWlrvXHLzCxEwu50MWzhRE=;
- b=ofSAyLSLjfyREqadPOU8UxVGjezeSPFt8tinWA342tuc5EmUQ+uQsjPhkkB3/BFRZen9XhGcFEV1XBkkRNQ2hb2Mn0nRsd8dqCUeffDYfeGg38zuDvFvRhEYIq8TyfIJazKZEICcjKqKtt0+mLUIrkcIx6Dqs37rw22nA5sifakwF5evaTzKhdfLaGhuo+vvdH2jMM5u5y3Ii34qab3qnYIBdTF19h4mjzr9QxFudHrRJyxEu9sP2vtpD/mV2kiMCOTFb/XBZiNOQBVsMsbRSClAf+fCiktWsAdB159UmDIM+5cF/OKFzNVNKOaEsFG5XS8ykv972MvTIIjQ6HMyow==
+ bh=+VaO7dRRNy6dDz1lAvp2G1CY41WtIzcDE8smzttzB+Y=;
+ b=YgFWI+sZzeMRNNYmuFCqEjwvB/IOoXnVCXVNOobAzs+cFeyAITekytiXGfPZEEORch8eCE6s+cpXUxnw/jI9DgUeobmQdCWRXg0cmudp6GZawXtV9idAfXGU7NnWue5xJ3xyp25F57l+Ak+oSEVjvs65hTCgQNa6AVd3CplR+wqRySZ2e5BwdcWb78KnNATYBlKuX+6V3S/tYoaaqLCZ4GnhRdxbsFC8+6u0zYR7RAID3DynpIFZdg4BnH1y88Ox6CPAa7noFmojpolCjyUb5jD44phVwaAy918mFI+ZC6nrsCbRu6vUAfHquKhRiGtNEUiz9Ky9xDXo7INAkQK0Lg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=orolia.com; dmarc=pass action=none header.from=orolia.com;
  dkim=pass header.d=orolia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=orolia.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qblLRZ6lu8F4Ng90jSF1BeWlrvXHLzCxEwu50MWzhRE=;
- b=OBBomCXBO60Y2zSX/LOo2suQZO3fxQEJNl9CB+/8P83fLTYLOy0p53KQ/VskT4pAvThURrcIkWu7SK/IV5/lOfS+wHeCe1H6fVKrs62NCxt7j/h70TBEiuGo0bxsXxm8uw6z4TNODAQr8NI6hqc66+Qge/dw3DN/naMFVxPnfBc=
+ bh=+VaO7dRRNy6dDz1lAvp2G1CY41WtIzcDE8smzttzB+Y=;
+ b=hGdbBrVe4eyah9/4dJvWQb8lYqBStR7S/ZenU3vm+mxqqFW7FDGamCt4fU7KsBBsFdLy17UqTXc3K/5YQn7GLqEM6b7ZRlW34WgPlcjwAFSf+sY5lRCT0VdamI3bWbvuXkEIRmx6KMZkCd7A4j7s5rvTaqLLtXIaddLG7sIh1Ww=
 Authentication-Results: st.com; dkim=none (message not signed)
  header.d=none;st.com; dmarc=none action=none header.from=orolia.com;
 Received: from VI1PR06MB3919.eurprd06.prod.outlook.com (2603:10a6:802:69::28)
  by VI1PR06MB6752.eurprd06.prod.outlook.com (2603:10a6:800:181::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.26; Thu, 14 May
- 2020 10:29:19 +0000
+ 2020 10:29:43 +0000
 Received: from VI1PR06MB3919.eurprd06.prod.outlook.com
  ([fe80::d0db:5378:505c:873c]) by VI1PR06MB3919.eurprd06.prod.outlook.com
  ([fe80::d0db:5378:505c:873c%4]) with mapi id 15.20.3000.022; Thu, 14 May 2020
- 10:29:18 +0000
+ 10:29:43 +0000
 From:   Olivier Dautricourt <olivier.dautricourt@orolia.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         Jose Abreu <joabreu@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>
 Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        Artem Panfilov <panfilov.artyom@gmail.com>,
         Olivier Dautricourt <olivier.dautricourt@orolia.com>
-Subject: [PATCH 0/3] Patch series for a PTP Grandmaster use case using stmmac/gmac3 ptp clock
-Date:   Thu, 14 May 2020 12:28:05 +0200
-Message-Id: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
+Subject: [PATCH 1/3] net: stmmac: gmac3: add auxiliary snapshot support
+Date:   Thu, 14 May 2020 12:28:06 +0200
+Message-Id: <20200514102808.31163-2-olivier.dautricourt@orolia.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
+References: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
 Content-Type: text/plain
 X-ClientProxiedBy: PR2PR09CA0022.eurprd09.prod.outlook.com
  (2603:10a6:101:16::34) To VI1PR06MB3919.eurprd06.prod.outlook.com
  (2603:10a6:802:69::28)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (2a01:e35:1390:8ba0:9b:4371:f8a6:4d92) by PR2PR09CA0022.eurprd09.prod.outlook.com (2603:10a6:101:16::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.24 via Frontend Transport; Thu, 14 May 2020 10:29:17 +0000
+Received: from localhost.localdomain (2a01:e35:1390:8ba0:9b:4371:f8a6:4d92) by PR2PR09CA0022.eurprd09.prod.outlook.com (2603:10a6:101:16::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.24 via Frontend Transport; Thu, 14 May 2020 10:29:42 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [2a01:e35:1390:8ba0:9b:4371:f8a6:4d92]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 33c4d5ff-6d6a-4cb8-ca71-08d7f7f1a89c
+X-MS-Office365-Filtering-Correlation-Id: a68d5074-2654-4bd8-c5f5-08d7f7f1b6ff
 X-MS-TrafficTypeDiagnostic: VI1PR06MB6752:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR06MB6752A403A4269A0787BD8E8A8FBC0@VI1PR06MB6752.eurprd06.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR06MB675242121AF890380391BB088FBC0@VI1PR06MB6752.eurprd06.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-Forefront-PRVS: 040359335D
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: G50lxTTQ0qFQvRiQOuZEfcDPTAGKhfpHCLmP1LJUsl+7RnQQchB6UplOQlPFWwrHPMG59/hFcb7eL2s7MCJ99R2vhmTt63YFXMFF1S+JhcLlUxF+w0rO82BTsH9GZv3TpPApeCW4a8MhP1OYFzRur7dnIKktuYsqb85HwY3nmOj4brP4CuF/Vv7Ajgcy+fgcbqh4IA/poHMi8jngAw3LjkWdLDM1Pv9ZQ41lKPRFw8qCifASu++whMfE4s9p+Yv9r8JwGcjenb1IYu9dObMoJxFv+KzQNPQQJw2CmRiVbys3DGRa9gTamQIkVOj+Wy0Op3Xx89+txa1TFXHpduZAfamn4qNDHXkp66YiNUoaEIGRCrdPEQLIDoans2/lEQk8GCPeSzV0baS8b7Y6PGQq+xuDYHOJOHBYCJBN3rw7I7Som94EKEBFEk+wfcfw17D1PeDUkh4AnnTerRoPt0/Z5Z/j3Kl4ET4LTV6sjfZQAF822Au/NsAVVUq7P8xBO+FC
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR06MB3919.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(396003)(366004)(39850400004)(136003)(8676002)(44832011)(6486002)(66476007)(66556008)(2616005)(66946007)(110136005)(316002)(107886003)(2906002)(54906003)(4326008)(6666004)(6512007)(69590400007)(478600001)(8936002)(52116002)(16526019)(5660300002)(1076003)(186003)(36756003)(6506007)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 79+Ofua1oGA7mTYF3YRkSpmEH/jAw31g+6qPDgzuVese6DM11QxitdHnYxAsz0Ylno4MylpdBYs3WavvIW4sbvOhws9SsA6oKmGxe3vcssEY+V98HB3dXa6fWCMcKuy3fRGF/HshVqXxwMzSXWhOIFgoq6//zRf2VvtzSMEqAReoMMnAsDcrbEF5ARH+qzlanHP8OBjN7k2P+jJVp4RxB3C3CQNFnomk1t9cYWaFPvbag18MgtbEU0tcKPppO96CT7zjZzb15xHmZQfLlj672tpro3igHbF8TOq39XPUDryR3xfcS8QGHGoxRtWI6vrj5aJ5H7JeOdhprGTgoqXbLsoQ50tojhLAfQOdLMHmPMNFlHMU2bTVT1l5X5SHjfEdmQe6PDa4wzSQkl1ZCjJ3j2UUDwbKtycA+TKOEgYyJmfOpZXtuVa6N/wyYsAZ0HdJJspypYQdPjZ01fqAm75Yivk7APvTVEmbxdgzW98kuUYMtzt1qGkEQA9AaMrhP6CdxCuXh4OCV6zEfEec8W2B8uKfDt2FJ/wmJiyykDCWbFw=
+X-Microsoft-Antispam-Message-Info: 8zSWO2m+PbQaD85YRaUJ5KQDAMehB5PnkD8BY5wAY9N5VOREA3Oc4SB8G6VlcsM1Ou1CWv7CwnkrIg/hh7duYbT7lRslNeIzU05Ivv8QLAnkan9xxHmg3FAJw3UISl82kGbwtnG84JLhRz4u53EjUU8BCOqu45TFdbL0d10Q+vQs9i+eQb9PlAy1zFi5196nESr/M6OSFyodGWGEwE4NIpqSbLtmhYuM06NBXni7erWopsP0aiuv/kStwyrN0bRYdYfurij2DpwTroVp69B2n1lkx4V9u/k5xZpvUwip0BPQhCFruWBuZt6mUcPaq2vaG/3pBduuMCdvokIwuoXj0VZ3Au76sy73O3dVVq30TdHrNHtjW3UPqtZeskG9bzZ+xdebjXM9gdr9hz72iLJo/NI/fL9rFSiEuPO8lI0a5iiT/YLysTAr80Q/FQDbUVOO4sK2FHzbTsGDOaUV48RtuvSGNs6R104XXpvWqmV/b+/WyQG4xPzZ9BtqR55MBde2
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR06MB3919.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(396003)(366004)(39850400004)(136003)(8676002)(44832011)(6486002)(66476007)(66556008)(2616005)(66946007)(110136005)(316002)(107886003)(2906002)(54906003)(4326008)(6666004)(30864003)(6512007)(69590400007)(478600001)(8936002)(52116002)(16526019)(5660300002)(1076003)(186003)(36756003)(6506007)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: VEonB8bT8prj41Hyv2W1kd/9cadpEbXdPR8lxLdjos8An2zbi5TX48K3bcSHTaZiZCgsOCwlbzVWRYBEkhHif75hD4POpHnxsykpSddOi25iFnVEgyQ/M/SrgVr2IcMpQstD5tsFaoOLdm/Nj+OX+dBlVPzi7wa9yEQQnOV169SIQ4mlCikwcrJggLClzT60O4LO9qvSnlBetApAMsk/a/taaeTq24lZ/PqFChrDWkOilBetPSvkMsdFCT7t8NUgIG7fuZKTxl0rABUmb8YF46i8W15S/j0J4y8msmigasX35UpDbqKrvl1diqBklRClNWcMFa/epsdEPGhDa+FT/JY1iP2Y8fM3+K8mK+9aba1N+ey/qSSN3ip0KeXsadO1kkUTUkjaSNXD9M+9TNOfoGAw96vzJRfjWtkWK1FyZtK++s701TTYUActQHQcVf/bzGBb/8az+4tFoMusz7j+MiYxiFWNqYAU/n7p7xrqBJ7es/LJKPW7lfgpmA6MWjwFmHtsLYC7L85Y3g5ULE39lgilySLSAUP17Bp3NP4JJAA=
 X-OriginatorOrg: orolia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33c4d5ff-6d6a-4cb8-ca71-08d7f7f1a89c
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2020 10:29:18.6979
+X-MS-Exchange-CrossTenant-Network-Message-Id: a68d5074-2654-4bd8-c5f5-08d7f7f1b6ff
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2020 10:29:42.8707
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a263030c-9c1b-421f-9471-1dec0b29c664
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s+eD58fZDvBfEnQKvOOctQ28M6Xb3rSKSl1eqJzvF1HTqKmKvJ1qDdrfAnrCbzB9Zh5OJMAN1XjnhBbPX1tJ3P5CAuumJmt3PCOEuZXcbQk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: I2a+4srBbiGHGY8o4tsMejTZyThPYwMyCFoH36hS525wVgwrWnBnhNAxCsofEVL9bJAoynBVM1A6p585cIftd8/rlvCCoBS2yCf2r+DjsyE=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR06MB6752
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series covers a use case where an embedded system is
-disciplining an internal clock to a GNSS signal, which provides a
-stable frequency, and wants to act as a PTP Grandmaster by disciplining
-a ptp clock to this internal clock.
+From: Artem Panfilov <panfilov.artyom@gmail.com>
 
-In our setup a 10Mhz oscillator is frequency adjusted so that a derived
-pps from that oscillator is in phase with the pps generated by 
-a gnss receiver.
+This patch adds support for time stamping external inputs for GMAC3.
 
-An other derived clock from the same disciplined oscillator is used as
-ptp_clock for the ethernet mac.
+The documentation defines 4 auxiliary snapshots ATSEN0 to ATSEN3 which
+can be toggled by writing the Timestamp Control Register.
 
-The internal pps of the system is forwarded to one of the auxiliary inputs
-of the MAC.
+When the gmac detects a pps rising edge on one of it's auxiliary inputs,
+an isr of type GMAC_INT_STATUS_TSTAMP will be triggered.
+We use this isr to generate a ptp clock event of type PTP_CLOCK_EXTTS
+with the following content:
 
-Initially the mac time registers are considered random.
-We want the mac nanosecond field to be 0 on the auxiliary pps input edge.
+  - Time of which the event occurred in ns.
+  - All the extts for which the event was generated (0000 - 1111)
 
+Note from the documentation:
+"When more than one bit is set at the same time, it means
+that corresponding auxiliary triggers were sampled at the same clock"
 
-PATCH 1/3: 
-	The stmmac gmac3 version used in the setup is patched to retrieve a
-	timestamp at the rising edge of the aux input and to forward
-	it to userspace.
+When the GMAC writes it's auxiliary snapshots on it's fifo
+and that fifo is full, it will discard any new auxiliary snapshot until
+we read the fifo. By reading on each isr, it is unlikely that
+we will loose the 1pps external timestamps.
 
-* What matters here is that we get the subsecond offset between the aux 
-edge and the edge of the PHC's pps. *
+Events for one auxiliary input can be requested through the
+PTP_EXTTS_REQUEST ioctl and read as already implemented in the uapi.
 
+This patch introduces 2 functions:
 
-PATCH 2,3/3:
+    stmmac_set_hw_tstamping and stmmac_get_hw_tstamping
 
-	We want the ptp clock to be in time with our aux pps input.
-	Since the ptp clock is derived from the system oscillator, we
-	don't want to do frequency adjustements.
+Each time we initialize the timestamping, we read the current
+value of PTP_TCR and patch with new configuration without setting
+the ATSENX flags again, which are set independently by the user
+through the ioctl.
+This allows to not loose the activated external events between each
+initialization of the timestamping, and not force the user to redo
+ioctl.
 
-	The stmmac driver is patched to allow to set the coarse correction
-	mode which avoid to adjust the frequency of the mac continuously
-	(the default behavior), but instead, have just one
-	time adjustment.
-
-
-We calculate the time difference between the mac and the internal
-clock, and adust the ptp clock time with clock_adjtime syscall.
-
-
-To summarize this in a user-space program:
-
-****
-#include <time.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
-
-#include <arpa/inet.h>
-#include <net/if.h>
-
-#include <sys/ioctl.h>
-#include <sys/syscall.h>
-#include <sys/timex.h>
-
-#include <linux/ptp_clock.h>
-#include <linux/net_tstamp.h>
-#include <linux/sockios.h>
-
-#define NS_PER_SEC 1000000000LL
-
-#define CLOCKFD 3
-
-#define FD_TO_CLOCKID(fd) \
-	((clockid_t) ((((unsigned int) ~fd) << 3) | CLOCKFD))
-
-
-static inline int clock_adjtime(clockid_t id, struct timex *tx)
-{
-	return syscall(__NR_clock_adjtime, id, tx);
-}
-
-int main(void)
-{
-	int fd;
-	struct timex tx = {0};
-	struct ifreq ifreq = {0};
-	struct hwtstamp_config cfg = {0};
-	struct ptp_extts_event event = {0};
-	struct ptp_extts_request extts_request = {
-		.index = 0,
-		.flags = PTP_RISING_EDGE | PTP_ENABLE_FEATURE
-	};
-
-	const char *iface = "eth0";
-	const char *ptp_dev = "/dev/ptp2";
-
-	strncpy(ifreq.ifr_name, iface, sizeof(ifreq.ifr_name) - 1);
-	ifreq.ifr_data = (void *) &cfg;
-	fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-	if (fd < 0)
-		return 1;
-
-	if (ioctl(fd, SIOCGHWTSTAMP, &ifreq) < 0)
-		return 1;
-
-	// Activate coarse mode for stmmac
-	cfg.flags |= HWTSTAMP_FLAGS_ADJ_COARSE;
-	cfg.flags &= ~HWTSTAMP_FLAGS_ADJ_FINE;
-
-	if (ioctl(fd, SIOCSHWTSTAMP, &ifreq) < 0)
-		return 1;
-
-	fd = open(ptp_dev, O_RDWR);
-
-	if (fd < 0)
-		return 1;
-
-	// Enable extts input index 0
-	if (ioctl(fd, PTP_EXTTS_REQUEST, &extts_request) < 0)
-		return 1;
-
-	// Read extts
-	if (read(fd, &event, sizeof(event)) != sizeof(event))
-		return 1;
-
-	// Correct phc time subsecond: note that this does not correct the phc
-	// second count for concision. The delta is (event.t.nsec - NS_PER_SEC).
-	tx.modes = ADJ_SETOFFSET | ADJ_NANO;
-	tx.time.tv_sec = -1;
-	tx.time.tv_usec = event.t.nsec;
-
-	if (clock_adjtime(FD_TO_CLOCKID(fd), &tx))
-		return 1;
-
-	// Disable extts index 0
-	extts_request.index = 0;
-	extts_request.flags = 0;
-
-	if (ioctl(fd, PTP_EXTTS_REQUEST, &extts_request) < 0)
-		return 1;
-
-	return 0;
-}
-****
-
-Artem Panfilov (1):
-  net: stmmac: GMAC3: add auxiliary snapshot support
-
-Olivier Dautricourt (2):
-  net: uapi: Add HWTSTAMP_FLAGS_ADJ_FINE/ADJ_COARSE
-  net: stmmac: Support coarse mode through ioctl
-
+Signed-off-by: Olivier Dautricourt <olivier.dautricourt@orolia.com>
+Signed-off-by: Artem Panfilov <panfilov.artyom@gmail.com>
+---
  .../net/ethernet/stmicro/stmmac/dwmac1000.h   |  3 +-
  .../ethernet/stmicro/stmmac/dwmac1000_core.c  | 24 ++++++++++
  drivers/net/ethernet/stmicro/stmmac/hwif.h    |  9 ++--
- .../ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 10 +++-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 21 ++++++---
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 47 +++++++++++++++++++
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.h  | 20 ++++++++
- include/uapi/linux/net_tstamp.h               | 12 +++++
- net/core/dev_ioctl.c                          |  3 --
- 9 files changed, 133 insertions(+), 16 deletions(-)
+ .../ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 10 ++++-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  7 +--
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 44 +++++++++++++++++++
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.h  | 20 +++++++++
+ 7 files changed, 107 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
+index b70d44ac0990..5cff6c100258 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
+@@ -41,8 +41,7 @@
+ #define	GMAC_INT_DISABLE_PCS	(GMAC_INT_DISABLE_RGMII | \
+ 				 GMAC_INT_DISABLE_PCSLINK | \
+ 				 GMAC_INT_DISABLE_PCSAN)
+-#define	GMAC_INT_DEFAULT_MASK	(GMAC_INT_DISABLE_TIMESTAMP | \
+-				 GMAC_INT_DISABLE_PCS)
++#define	GMAC_INT_DEFAULT_MASK	GMAC_INT_DISABLE_PCS
+ 
+ /* PMT Control and Status */
+ #define GMAC_PMT		0x0000002c
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+index efc6ec1b8027..3895fe9396e5 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+@@ -20,6 +20,7 @@
+ #include "stmmac.h"
+ #include "stmmac_pcs.h"
+ #include "dwmac1000.h"
++#include "stmmac_ptp.h"
+ 
+ static void dwmac1000_core_init(struct mac_device_info *hw,
+ 				struct net_device *dev)
+@@ -300,9 +301,29 @@ static void dwmac1000_rgsmii(void __iomem *ioaddr, struct stmmac_extra_stats *x)
+ 	}
+ }
+ 
++static void dwmac1000_ptp_isr(struct stmmac_priv *priv)
++{
++	struct ptp_clock_event event;
++	u32 reg_value;
++	u64 ns;
++
++	reg_value = readl(priv->ioaddr + PTP_GMAC3_TSR);
++
++	ns = readl(priv->ioaddr + PTP_GMAC3_AUXTSLO);
++	ns += readl(priv->ioaddr + PTP_GMAC3_AUXTSHI) * 1000000000ULL;
++
++	event.timestamp = ns;
++	event.type = PTP_CLOCK_EXTTS;
++	event.index = (reg_value & PTP_GMAC3_ATSSTN_MASK) >>
++			PTP_GMAC3_ATSSTN_SHIFT;
++	ptp_clock_event(priv->ptp_clock, &event);
++}
++
+ static int dwmac1000_irq_status(struct mac_device_info *hw,
+ 				struct stmmac_extra_stats *x)
+ {
++	struct stmmac_priv *priv =
++		container_of(x, struct stmmac_priv, xstats);
+ 	void __iomem *ioaddr = hw->pcsr;
+ 	u32 intr_status = readl(ioaddr + GMAC_INT_STATUS);
+ 	u32 intr_mask = readl(ioaddr + GMAC_INT_MASK);
+@@ -324,6 +345,9 @@ static int dwmac1000_irq_status(struct mac_device_info *hw,
+ 		x->irq_receive_pmt_irq_n++;
+ 	}
+ 
++	if (intr_status & GMAC_INT_STATUS_TSTAMP)
++		dwmac1000_ptp_isr(priv);
++
+ 	/* MAC tx/rx EEE LPI entry/exit interrupts */
+ 	if (intr_status & GMAC_INT_STATUS_LPIIS) {
+ 		/* Clean LPI interrupt by reading the Reg 12 */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+index ffe2d63389b8..8fa63d059231 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -492,7 +492,8 @@ struct stmmac_ops {
+ 
+ /* PTP and HW Timer helpers */
+ struct stmmac_hwtimestamp {
+-	void (*config_hw_tstamping) (void __iomem *ioaddr, u32 data);
++	void (*get_hw_tstamping)(void __iomem *ioaddr, u32 *data);
++	void (*set_hw_tstamping)(void __iomem *ioaddr, u32 data);
+ 	void (*config_sub_second_increment)(void __iomem *ioaddr, u32 ptp_clock,
+ 					   int gmac4, u32 *ssinc);
+ 	int (*init_systime) (void __iomem *ioaddr, u32 sec, u32 nsec);
+@@ -502,8 +503,10 @@ struct stmmac_hwtimestamp {
+ 	void (*get_systime) (void __iomem *ioaddr, u64 *systime);
+ };
+ 
+-#define stmmac_config_hw_tstamping(__priv, __args...) \
+-	stmmac_do_void_callback(__priv, ptp, config_hw_tstamping, __args)
++#define stmmac_get_hw_tstamping(__priv, __args...) \
++	stmmac_do_void_callback(__priv, ptp, get_hw_tstamping, __args)
++#define stmmac_set_hw_tstamping(__priv, __args...) \
++	stmmac_do_void_callback(__priv, ptp, set_hw_tstamping, __args)
+ #define stmmac_config_sub_second_increment(__priv, __args...) \
+ 	stmmac_do_void_callback(__priv, ptp, config_sub_second_increment, __args)
+ #define stmmac_init_systime(__priv, __args...) \
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+index d291612eeafb..b974d83afe67 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+@@ -15,7 +15,12 @@
+ #include "common.h"
+ #include "stmmac_ptp.h"
+ 
+-static void config_hw_tstamping(void __iomem *ioaddr, u32 data)
++static void get_hw_tstamping(void __iomem *ioaddr, u32 *data)
++{
++	*data = readl(ioaddr + PTP_TCR);
++}
++
++static void set_hw_tstamping(void __iomem *ioaddr, u32 data)
+ {
+ 	writel(data, ioaddr + PTP_TCR);
+ }
+@@ -154,7 +159,8 @@ static void get_systime(void __iomem *ioaddr, u64 *systime)
+ }
+ 
+ const struct stmmac_hwtimestamp stmmac_ptp = {
+-	.config_hw_tstamping = config_hw_tstamping,
++	.get_hw_tstamping = get_hw_tstamping,
++	.set_hw_tstamping = set_hw_tstamping,
+ 	.init_systime = init_systime,
+ 	.config_sub_second_increment = config_sub_second_increment,
+ 	.config_addend = config_addend,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index a999d6b33a64..c39fafe69b12 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -686,13 +686,14 @@ static int stmmac_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
+ 	priv->hwts_tx_en = config.tx_type == HWTSTAMP_TX_ON;
+ 
+ 	if (!priv->hwts_tx_en && !priv->hwts_rx_en)
+-		stmmac_config_hw_tstamping(priv, priv->ptpaddr, 0);
++		stmmac_set_hw_tstamping(priv, priv->ptpaddr, 0);
+ 	else {
+-		value = (PTP_TCR_TSENA | PTP_TCR_TSCFUPDT | PTP_TCR_TSCTRLSSR |
++		stmmac_get_hw_tstamping(priv, priv->ptpaddr, &value);
++		value |= (PTP_TCR_TSENA | PTP_TCR_TSCFUPDT | PTP_TCR_TSCTRLSSR |
+ 			 tstamp_all | ptp_v2 | ptp_over_ethernet |
+ 			 ptp_over_ipv6_udp | ptp_over_ipv4_udp | ts_event_en |
+ 			 ts_master_en | snap_type_sel);
+-		stmmac_config_hw_tstamping(priv, priv->ptpaddr, value);
++		stmmac_set_hw_tstamping(priv, priv->ptpaddr, value);
+ 
+ 		/* program Sub Second Increment reg */
+ 		stmmac_config_sub_second_increment(priv,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+index 0989e2bb6ee3..920f0f3ebbca 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+@@ -45,6 +45,43 @@ static int stmmac_adjust_freq(struct ptp_clock_info *ptp, s32 ppb)
+ 	return 0;
+ }
+ 
++static int stmmac_extts_configure(struct stmmac_priv *priv,
++				  struct ptp_clock_request *rq,
++				  int on)
++{
++	u32 tsauxc, tsauxc_mask;
++
++	if (priv->ptp_clock_ops.n_ext_ts <= rq->extts.index)
++		return -ERANGE;
++
++	switch (rq->extts.index) {
++	case 0:
++		tsauxc_mask = PTP_TCR_ATSEN0;
++		break;
++	case 1:
++		tsauxc_mask = PTP_TCR_ATSEN1;
++		break;
++	case 2:
++		tsauxc_mask = PTP_TCR_ATSEN2;
++		break;
++	case 3:
++		tsauxc_mask = PTP_TCR_ATSEN3;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	tsauxc = readl(priv->ptpaddr);
++
++	if (on)
++		tsauxc |= tsauxc_mask;
++	else
++		tsauxc &= ~tsauxc_mask;
++
++	writel(tsauxc, priv->ptpaddr);
++	return 0;
++}
++
+ /**
+  * stmmac_adjust_time
+  *
+@@ -158,6 +195,11 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
+ 					     priv->systime_flags);
+ 		spin_unlock_irqrestore(&priv->ptp_lock, flags);
+ 		break;
++	case PTP_CLK_REQ_EXTTS:
++		spin_lock_irqsave(&priv->ptp_lock, flags);
++		ret = stmmac_extts_configure(priv, rq, on);
++		spin_unlock_irqrestore(&priv->ptp_lock, flags);
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -202,6 +244,8 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
+ 		stmmac_ptp_clock_ops.max_adj = priv->plat->ptp_max_adj;
+ 
+ 	stmmac_ptp_clock_ops.n_per_out = priv->dma_cap.pps_out_num;
++	if (priv->plat->has_gmac)
++		stmmac_ptp_clock_ops.n_ext_ts = 4;
+ 
+ 	spin_lock_init(&priv->ptp_lock);
+ 	priv->ptp_clock_ops = stmmac_ptp_clock_ops;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
+index 7abb1d47e7da..26bea23f04ac 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
+@@ -59,9 +59,29 @@
+ #define	PTP_TCR_SNAPTYPSEL_1	BIT(16)
+ /* Enable MAC address for PTP Frame Filtering */
+ #define	PTP_TCR_TSENMACADDR	BIT(18)
++/* Clear Auxiliary Snapshot FIFO */
++#define PTP_TCR_ATSFC		BIT(24)
++/* Enable Auxiliary Snapshot 0 */
++#define PTP_TCR_ATSEN0		BIT(25)
++/* Enable Auxiliary Snapshot 1 */
++#define PTP_TCR_ATSEN1		BIT(26)
++/* Enable Auxiliary Snapshot 2 */
++#define PTP_TCR_ATSEN2		BIT(27)
++/* Enable Auxiliary Snapshot 3 */
++#define PTP_TCR_ATSEN3		BIT(28)
+ 
+ /* SSIR defines */
+ #define	PTP_SSIR_SSINC_MASK		0xff
+ #define	GMAC4_PTP_SSIR_SSINC_SHIFT	16
+ 
++/* Auxiliary Timestamp Snapshot defines */
++
++#define PTP_GMAC3_TSR		0x0728	/* Timestamp Status */
++#define PTP_GMAC3_AUXTSLO	0x0730	/* Aux Timestamp - Nanoseconds Reg */
++#define PTP_GMAC3_AUXTSHI	0x0734	/* Aux Timestamp - Seconds Reg */
++
++#define PTP_GMAC3_TSR		0x0728	/* Timestamp Status */
++#define PTP_GMAC3_ATSSTN_MASK	GENMASK(19, 16)
++#define PTP_GMAC3_ATSSTN_SHIFT	16
++
+ #endif	/* __STMMAC_PTP_H__ */
 -- 
 2.17.1
 
