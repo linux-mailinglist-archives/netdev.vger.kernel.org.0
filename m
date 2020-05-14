@@ -2,85 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6946B1D3DD4
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF3C1D3DDE
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:47:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728490AbgENTpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 15:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
+        id S1728534AbgENTrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 15:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727124AbgENTpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 15:45:24 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE1CC061A0C;
-        Thu, 14 May 2020 12:45:24 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id e25so4872021ljg.5;
-        Thu, 14 May 2020 12:45:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f+ynEXTEXIA/UBzTx0/2/1kODhDccZ63ruLWjclaitM=;
-        b=jdu9SkxM+QwQhE4HfNAhOc9pqBrmIrbxwY0Zj3378mEgtyoHy+RsYapNXmXMCcTnPz
-         7Skb5FkbUwQMyOyenlrHQUUuUUGeqEbkUO1QKDVMwe0XkLOMd/faguQCV6xbAF36DpNo
-         SmYnRvSJ0sCgCJVbx+COB4KNlFoCFuizXrGO3vYwMDQbUmg2oYSKowTIob2+hqUDYd1l
-         AEQHDVWRamhbJGst1/AF3h5RqNLUjZVNmMe0BTIXo1ymnpmctvu1SeddvwlXt7YZhvGS
-         QwbN8PhaTc34u6HOm9DUpLtxrgvEPSaKncqvcAYIfAGIUUTRD3g7AiwA0GAPymjF7E8O
-         U4ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f+ynEXTEXIA/UBzTx0/2/1kODhDccZ63ruLWjclaitM=;
-        b=mhbf5Jkf5pK4P1JpSS5faL/VFIc1mN99uyrHZXxUj7xejh3pDPGwn30ktXlZNvqs+n
-         1WUkd/Odr7qT/xY6RTihr9BfKAvEj17ZyOw6IPdGTp0bcUr9eFfI+3Pbg/QCyYJHDmyR
-         Q3xcTW8+jxTa8NmTzvb42+7piBFKG+wbN1MTsGLWW27fpWdjs8iV4klxhPXoXWjUjfNF
-         NkiLd6QdlZ00p9veJFb0HuZ34C2pYLXOpD1Vmm13skrRmsigvgfzMO54qn6dNiAir86M
-         rO4RvGemXmI4jsPRa6LRP6+QJ89c+eHsHwQi3JY330Qr7GAsOpWNjCPc6rUiGh3zkASw
-         wwhg==
-X-Gm-Message-State: AOAM5329WMkVJ3QqpmxCzKYaA25s0YFRWAsxukuszYsL+U+hEM+31lzZ
-        e2sKbXNt1BU/4eEHmE70v6Abwmh0LcfX3mGzss24rg==
-X-Google-Smtp-Source: ABdhPJygk0pBhxFpXMKyyUb5nW8GY5jbwbJJSlVxvF+IETfTnIkzD1CG6sKXmT4/8atgz2BflNE2QTUdI3+q10T/4eE=
-X-Received: by 2002:a2e:b4c2:: with SMTP id r2mr3841131ljm.143.1589485523007;
- Thu, 14 May 2020 12:45:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200513154414.29972-1-sumanthk@linux.ibm.com> <CAEf4BzZdAc6D0DRc+63_a=8PP6SbGn6GrHMQ8D9VmopyCT+-6A@mail.gmail.com>
-In-Reply-To: <CAEf4BzZdAc6D0DRc+63_a=8PP6SbGn6GrHMQ8D9VmopyCT+-6A@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 14 May 2020 12:45:11 -0700
-Message-ID: <CAADnVQL4v6OK5sJZrybspQZKHMTA1EN-Q9r+O34rPkEeHg+3ug@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Fix register naming in PT_REGS s390 macros
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ilya Leoshkevich <iii@linux.ibm.com>, jwi@linux.ibm.com,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        by vger.kernel.org with ESMTP id S1728079AbgENTrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 15:47:06 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC58C061A0C;
+        Thu, 14 May 2020 12:47:05 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3AF94128CF126;
+        Thu, 14 May 2020 12:47:03 -0700 (PDT)
+Date:   Thu, 14 May 2020 12:47:00 -0700 (PDT)
+Message-Id: <20200514.124700.630104670938763588.davem@davemloft.net>
+To:     kuba@kernel.org
+Cc:     wenhu.wang@vivo.com, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@vivo.com
+Subject: Re: [PATCH] drivers: ipa: use devm_kzalloc for simplicity
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200514101516.0b2ccda2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200514035520.2162-1-wenhu.wang@vivo.com>
+        <20200514101516.0b2ccda2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 12:47:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 11:14 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, May 13, 2020 at 8:45 AM Sumanth Korikkar <sumanthk@linux.ibm.com> wrote:
-> >
-> > Fix register naming in PT_REGS s390 macros
-> >
-> > Fixes: b8ebce86ffe6 ("libbpf: Provide CO-RE variants of PT_REGS macros")
-> > Reviewed-by: Julian Wiedmann <jwi@linux.ibm.com>
-> > Signed-off-by: Sumanth Korikkar <sumanthk@linux.ibm.com>
-> > ---
->
-> Great, thanks for catching this!
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Thu, 14 May 2020 10:15:16 -0700
 
-Applied to bpf tree. Thanks
+> On Wed, 13 May 2020 20:55:20 -0700 Wang Wenhu wrote:
+>> Make a substitution of kzalloc with devm_kzalloc to simplify the
+>> ipa_probe() process.
+>> 
+>> Signed-off-by: Wang Wenhu <wenhu.wang@vivo.com>
+> 
+> The code is perfectly fine as is. What problem are you trying to solve?
+
+I agree, these kinds of transformations are kind of excessive.
