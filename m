@@ -2,109 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C6631D33A5
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 16:55:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75811D33BC
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 16:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727839AbgENOyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 10:54:54 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:35134 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727099AbgENOyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 10:54:54 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04EEpneU022552;
-        Thu, 14 May 2020 07:53:52 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0818;
- bh=x8IBUREuUDXo4FtIk04O7Hcn5Vr/q9rC9/eF3dAW9nk=;
- b=xTZ9ZgYOa+dXgk6XERZ3kqEuKm0pnGxc0SzbyedYihgXLYtLsf9HbU/2MTKDD95ow/up
- lUrd38xeGDDXOpEBRunttACRYKhuw8X5tDiSwMm3kFr9S0qtLH3hBU5ZJu1wVWxQ6CKf
- BLi6wfcaHR71sywLaBpu79Ix+bbWXFsmO5Ht0LxRKEwsdMNxqo5Hia41cPB0G8IDPpBp
- hUFPx8qsMLEGJeEVzBwkKw50QUTT/iDDwZBFI4QOnG9z4CNeh4Y2gXYBWBKzQytO+wzd
- F/bEQ16VG/6XtNuAnGXEinM+m7YWv1aE11aQNIEaL9JNcZ+Li9bpRjaEkiRjuQJGW2zH yg== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3100xajx64-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 14 May 2020 07:53:52 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 14 May
- 2020 07:53:51 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 14 May
- 2020 07:53:50 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 14 May 2020 07:53:50 -0700
-Received: from [10.193.39.5] (unknown [10.193.39.5])
-        by maili.marvell.com (Postfix) with ESMTP id D79AA3F703F;
-        Thu, 14 May 2020 07:53:42 -0700 (PDT)
-Subject: Re: [EXT] [PATCH 09/15] qed: use new module_firmware_crashed()
-To:     Luis Chamberlain <mcgrof@kernel.org>
-CC:     <jeyu@kernel.org>, <akpm@linux-foundation.org>, <arnd@arndb.de>,
-        <rostedt@goodmis.org>, <mingo@redhat.com>, <aquini@redhat.com>,
-        <cai@lca.pw>, <dyoung@redhat.com>, <bhe@redhat.com>,
-        <peterz@infradead.org>, <tglx@linutronix.de>,
-        <gpiccoli@canonical.com>, <pmladek@suse.com>, <tiwai@suse.de>,
-        <schlad@suse.de>, <andriy.shevchenko@linux.intel.com>,
-        <keescook@chromium.org>, <daniel.vetter@ffwll.ch>,
-        <will@kernel.org>, <mchehab+samsung@kernel.org>,
-        <kvalo@codeaurora.org>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
-References: <20200509043552.8745-1-mcgrof@kernel.org>
- <20200509043552.8745-10-mcgrof@kernel.org>
- <2aaddb69-2292-ff3f-94c7-0ab9dbc8e53c@marvell.com>
- <20200509164229.GJ11244@42.do-not-panic.com>
- <e10b611e-f925-f12d-bcd2-ba60d86dd8d0@marvell.com>
- <20200512173431.GD11244@42.do-not-panic.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-Message-ID: <9badaaa7-ca79-9b6d-aa83-b1c28310ec4d@marvell.com>
-Date:   Thu, 14 May 2020 17:53:41 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101
- Thunderbird/77.0
+        id S1727095AbgENO5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 10:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbgENO5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 10:57:44 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1019AC061A0C;
+        Thu, 14 May 2020 07:57:43 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id y10so1558410iov.4;
+        Thu, 14 May 2020 07:57:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sSOzS9/AwTJ/dUTM+b9jQevKw/QMNrwD3wxfgOBQCVk=;
+        b=d+PTljg/UHKuu0OaaGc6wDa0hdswTZVUjo8NTAq2GNPSb0jWT2ZesIJZY6B/wQuy9l
+         lB5YQtnLySMHKSZihqN8mHpdDsiEKGf6VfV+XqYGH0PcktlN1Jz5xVRP8LdoQ0RhI/XG
+         Ljptu5mIAecQ7r1zEeurGgKENieMm7S2Ul+HeReNESjkYtzTsWGvR2ZwaoD61icXqIkR
+         YJ+vAFD8+230wwcTbUZpNgS/8Ipc/2Y4gpiTO94/+qolg2p67lqqifWkbeDNUELbmWaK
+         UfawE1pK+e4/MWuYZfh1BiJke/eOmv652x7VsFi7LKGNqZ7aimL4NgcltRZlfIf2jUig
+         I3TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sSOzS9/AwTJ/dUTM+b9jQevKw/QMNrwD3wxfgOBQCVk=;
+        b=LMyN+2DK5kwEC8MwutRsgu6RapjpwWtKYipDqxzSR9cQ3niRzlE6vJXIMsu4u89UD+
+         5YCvhcnkO2Vl1zdCDqghrgTUrFPzQzSGk14pH3i3f5TMf1vN1RsWryfzmItU2JgphCdE
+         /WTix2pqrPBI0d7MDnFHORpayKCzaYqRkJImGSH0ylb83WcQptXDacz/fUR30IRlxZHh
+         067XmKVmIAXQ6o0DifWG/m1P2RaqEAWW5R7RsqjUlhXfXKvNi0HkfLItI05rWgNRaDbp
+         7rBW7Q0PEaR794baOEEinr/1aSInOw96AMqtGVVVELaZtybTsZmyte8736x+thR4AyT/
+         Freg==
+X-Gm-Message-State: AGi0PubIw6rLHn52PJknueNOSmuFGTyBw92qpURGMTs/7F9C51Fsmndt
+        Vu215qgMPuZpnOopF/K2jrX4KNX3PsyxUjLf5SPOicgP
+X-Google-Smtp-Source: APiQypJZXnVIye3UpmOXWT60F5NfoSWVF+2sMzyyXKujoTDAt0Cd5tD07ZzXAygotdJdnqelz4KNMkw1rN4ZHYsRy7c=
+X-Received: by 2002:a02:9103:: with SMTP id a3mr4719820jag.87.1589468262207;
+ Thu, 14 May 2020 07:57:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200512173431.GD11244@42.do-not-panic.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-14_05:2020-05-14,2020-05-14 signatures=0
+References: <20200512044347.3810257-1-punit1.agrawal@toshiba.co.jp>
+In-Reply-To: <20200512044347.3810257-1-punit1.agrawal@toshiba.co.jp>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 14 May 2020 07:57:31 -0700
+Message-ID: <CAKgT0Uf86d8wnAMSLO4hn4+mfCH5fP4e8OsAYknE0m3Y7in9gw@mail.gmail.com>
+Subject: Re: [RFC] e1000e: Relax condition to trigger reset for ME workaround
+To:     Punit Agrawal <punit1.agrawal@toshiba.co.jp>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        daniel.sangorrin@toshiba.co.jp,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> So do you mean like the changes below?
-> 
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c
-> b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-> index f4eebaabb6d0..95cb7da2542e 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-> @@ -7906,6 +7906,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void
-> *buffer)
->  		rc = qed_dbg_grc(cdev, (u8 *)buffer + offset +
->  				 REGDUMP_HEADER_SIZE, &feature_size);
->  		if (!rc) {
-> +			module_firmware_crashed();
->  			*(u32 *)((u8 *)buffer + offset) =
->  			    qed_calc_regdump_header(cdev, GRC_DUMP,
->  						    cur_engine,
+On Mon, May 11, 2020 at 9:45 PM Punit Agrawal
+<punit1.agrawal@toshiba.co.jp> wrote:
+>
+> It's an error if the value of the RX/TX tail descriptor does not match
+> what was written. The error condition is true regardless the duration
+> of the interference from ME. But the code only performs the reset if
+> E1000_ICH_FWSM_PCIM2PCI_COUNT (2000) iterations of 50us delay have
+> transpired. The extra condition can lead to inconsistency between the
+> state of hardware as expected by the driver.
+>
+> Fix this by dropping the check for number of delay iterations.
+>
+> Signed-off-by: Punit Agrawal <punit1.agrawal@toshiba.co.jp>
+> Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: intel-wired-lan@lists.osuosl.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+> Hi,
+>
+> The issue was noticed through code inspection while backporting the
+> workaround for TDT corruption. Sending it out as an RFC as I am not
+> familiar with the hardware internals of the e1000e.
+>
+> Another unresolved question is the inherent racy nature of the
+> workaround - the ME could block access again after releasing the
+> device (i.e., BIT(E1000_ICH_FWSM_PCIM2PCI) clear) but before the
+> driver performs the write. Has this not been a problem?
+>
+> Any feedback on the patch or the more information on the issues
+> appreciated.
+>
+> Thanks,
+> Punit
+>
+>  drivers/net/ethernet/intel/e1000e/netdev.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+> index 177c6da80c57..5ed4d7ed35b3 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -607,11 +607,11 @@ static void e1000e_update_rdt_wa(struct e1000_ring *rx_ring, unsigned int i)
+>  {
+>         struct e1000_adapter *adapter = rx_ring->adapter;
+>         struct e1000_hw *hw = &adapter->hw;
+> -       s32 ret_val = __ew32_prepare(hw);
+>
+> +       __ew32_prepare(hw);
+>         writel(i, rx_ring->tail);
+>
+> -       if (unlikely(!ret_val && (i != readl(rx_ring->tail)))) {
+> +       if (unlikely(i != readl(rx_ring->tail))) {
+>                 u32 rctl = er32(RCTL);
+>
+>                 ew32(RCTL, rctl & ~E1000_RCTL_EN);
+> @@ -624,11 +624,11 @@ static void e1000e_update_tdt_wa(struct e1000_ring *tx_ring, unsigned int i)
+>  {
+>         struct e1000_adapter *adapter = tx_ring->adapter;
+>         struct e1000_hw *hw = &adapter->hw;
+> -       s32 ret_val = __ew32_prepare(hw);
+>
+> +       __ew32_prepare(hw);
+>         writel(i, tx_ring->tail);
+>
+> -       if (unlikely(!ret_val && (i != readl(tx_ring->tail)))) {
+> +       if (unlikely(i != readl(tx_ring->tail))) {
+>                 u32 tctl = er32(TCTL);
+>
+>                 ew32(TCTL, tctl & ~E1000_TCTL_EN);
 
-Please remove this invocation. Its not a place where FW crash is happening.
+You are eliminating the timeout check in favor of just verifying if
+the write succeeded or not. Seems pretty straight forward to me.
 
+One other change you may consider making would be to drop the return
+value from __ew32_prepare since it doesn't appear to be used anywhere,
+make the function static, and maybe get rid of the prototype in
+e1000.h.
 
->  		DP_NOTICE(p_hwfn,
->  			  "The MFW failed to respond to command 0x%08x
-> [param 0x%08x].\n",
->  			  p_mb_params->cmd, p_mb_params->param);
-> +		module_firmware_crashed();
->  		qed_mcp_print_cpu_info(p_hwfn, p_ptt);
-
-This one is perfect, thanks!
-
-Regards
-  Igor
+Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
