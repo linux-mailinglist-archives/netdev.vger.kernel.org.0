@@ -2,130 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D62381D3F6B
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:58:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C131D3F6F
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 23:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbgENU6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 16:58:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
+        id S1727885AbgENVAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 17:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725975AbgENU6S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 16:58:18 -0400
-Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9156C061A0C
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:58:17 -0700 (PDT)
-Received: by mail-qv1-xf49.google.com with SMTP id n36so276957qvg.22
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:58:17 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726201AbgENVAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 17:00:04 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354E8C061A0C;
+        Thu, 14 May 2020 14:00:03 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id l21so139812eji.4;
+        Thu, 14 May 2020 14:00:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=20afMhBDKVvwwL3LKxodru9vccVEmKQ+TauQuID/1hM=;
-        b=BPaO8o3GC8cFBDZ4oXMP7phCDpy0QofTXWG+7zluLkKyVGqFKvNonca5nTxhrUV6Qd
-         uW0en1w9BJkGqJ4uQ6xMb/WHvUtzVRAaxpFdkXfAfttn0bo2O3t56fiPGBBnLwfB1udt
-         S2xfYaEQ4yYthuGAu820hL8Uer0sccpgj7L6kSlJfNoqxN8YZN9qUGQAuc1KWUJPsoGn
-         o+lg8KPeJeqNiNMBXWYEpoJ4yDBWg057X0PLbJTluVHX89WuN3Aoyp2IbAZP1GuT9ZgN
-         eaTEE1cerdwJAoiu/EBAIT25oqNOzWrUmRjuDKiKjinajSqHpYZKVDVveNxEJtNruCWu
-         C5ww==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oLhuR8HS5ejq1vXdwrdSp2iS9vK3c80XB67HZI/sIAk=;
+        b=JMzyOVelIl+D9VNYc15hQhibmAOQzixQf4tza209c9xFcrofC0aFYUgCqQyVqaWR6y
+         TjIu6J6lcvsg0lSB4aPOWfIcu/1nWI4S881QE5RpIwGZyD1WwAUgq/JLOfa3Y370tYVb
+         ix2giNJIK+fNr9sn7qxiCL3N+7yDSg4TMGHDRxRPAgjHh25J9mCVLgmLftlBonarlQBC
+         ljSonxdNOe1oHwhBPqRIetmmdLO9mzXhEO05PlOFI9RdsXfc9mKQYN8T9pcC+oX/vjgT
+         o5sMS4OZs9sFH4f5qNUH6Dgho8UcEv0jfushG8dzbsIqyU0M3dx7uLJjMYxHDrYXJ0c4
+         lPqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=20afMhBDKVvwwL3LKxodru9vccVEmKQ+TauQuID/1hM=;
-        b=TQee3QYtaQuBex4biLvvV/0fURc+djk2Df/YFJxsdPQ2PfGiDDCwgpnjUXsxaBlKBS
-         eg69udbNcELL/FZUEFwqbiNbZTWpLoKbBy1IMWVZJytcK2PTU5Y3ZyRX/9r0Usgxqa83
-         aoxu8438ilU3w9P5vFBTsdVMbv2rQNXZfQUKuFK/KmxpWrwZJXD0WOxKx6YtIxoSVVVJ
-         fhcDOR8oGbDrvv/bH8nAzibuPxgmfGCIpPfZjN0SwZuQbjnNTl8U8YYseSQ1tcJbrrkU
-         s10RbqJZgR4VmZsnSoUY4L5aLmCvv5EOKcelKkQ1KAm8te+lzfN/59WrA1UpZMmJTZGw
-         Tscg==
-X-Gm-Message-State: AOAM532RQKS32qEr/+NBHjborgIlriWPsIbG3pNrAGym28KjeNa9pH3U
-        ypL+/vffYRVgNFoICMDp8dBmnGavxH+FgQ==
-X-Google-Smtp-Source: ABdhPJxBH3rY9MDHVBhnEu8LVRtvH1xiqiXMNBqFpZLfO6TireYnoARxRu6SqXtIKHD/5qIFtvBzVQfDk0+PNg==
-X-Received: by 2002:a0c:f883:: with SMTP id u3mr406918qvn.86.1589489896698;
- Thu, 14 May 2020 13:58:16 -0700 (PDT)
-Date:   Thu, 14 May 2020 13:58:13 -0700
-Message-Id: <20200514205813.164401-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.2.761.g0e0b3e54be-goog
-Subject: [PATCH net] tcp: fix error recovery in tcp_zerocopy_receive()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Arjun Roy <arjunroy@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        syzbot <syzkaller@googlegroups.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oLhuR8HS5ejq1vXdwrdSp2iS9vK3c80XB67HZI/sIAk=;
+        b=r2L00ODy9SatTvnYhrtDblevwRJLXjN4uNnhkGEqpQrS4CmKf5xn9vKQBKqtshPEjN
+         zYkirOje6zoYUsu7LFRl3KYR1jyxTWPGC9v8HJXTzjFYQtuVKKeljFy3JZWF6seN/B7E
+         1eo7ka1Xdz9JqC4JoEDulcJc4yh+OIt8LGBsxenYIjN+XgxUq7aQOTGS8fRp8X6Hs2Uf
+         +UHWCcXvwiNeKbywfy7PEE6pHsqUog4iySCzmCeEiZlHas7/s8kAzhXAFvUxjxunthol
+         AoVaQPf5zJbojRHJGrlLyZM74Rz59BDK3KAq/x8I9GkvOlJF7e6u300sETRb8j75eE2v
+         9Sgg==
+X-Gm-Message-State: AOAM530Ln88wZjptlg2A+noDEBr8olnfcjNJWMd/utZxfzVwKFhHVY7D
+        WiLkZfRmPiHy9QvUF3D+lMrsk4k3uAt7REIZqCoVNSq8
+X-Google-Smtp-Source: ABdhPJxxoY1f6fVa6YQPSyhvR2jwvZmnKgI9b2jjpnJ9nf4hE4za+JJteHbAUqFch4+Lo2HWdonQM8Ko1nVkTp1pcZA=
+X-Received: by 2002:a17:906:27c2:: with SMTP id k2mr5592477ejc.239.1589490001827;
+ Thu, 14 May 2020 14:00:01 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200514183302.16925-1-colin.king@canonical.com>
+In-Reply-To: <20200514183302.16925-1-colin.king@canonical.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 14 May 2020 23:59:50 +0300
+Message-ID: <CA+h21hpdw5aXLnS0VRnf1XWkseKY83pAoqvUuM09xAFLHyrqWw@mail.gmail.com>
+Subject: Re: [PATCH][next] net: dsa: felix: fix incorrect clamp calculation
+ for burst
+To:     Colin King <colin.king@canonical.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        netdev <netdev@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If user provides wrong virtual address in TCP_ZEROCOPY_RECEIVE
-operation we want to return -EINVAL error.
+Hi Colin,
 
-But depending on zc->recv_skip_hint content, we might return
--EIO error if the socket has SOCK_DONE set.
+On Thu, 14 May 2020 at 21:34, Colin King <colin.king@canonical.com> wrote:
+>
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> Currently burst is clamping on rate and not burst, the assignment
+> of burst from the clamping discards the previous assignment of burst.
+> This looks like a cut-n-paste error from the previous clamping
+> calculation on ramp.  Fix this by replacing ramp with burst.
+>
+> Addresses-Coverity: ("Unused value")
+> Fixes: 0fbabf875d18 ("net: dsa: felix: add support Credit Based Shaper(CBS) for hardware offload")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
 
-Make sure to return -EINVAL in this case.
+Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-BUG: KMSAN: uninit-value in tcp_zerocopy_receive net/ipv4/tcp.c:1833 [inline]
-BUG: KMSAN: uninit-value in do_tcp_getsockopt+0x4494/0x6320 net/ipv4/tcp.c:3685
-CPU: 1 PID: 625 Comm: syz-executor.0 Not tainted 5.7.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- tcp_zerocopy_receive net/ipv4/tcp.c:1833 [inline]
- do_tcp_getsockopt+0x4494/0x6320 net/ipv4/tcp.c:3685
- tcp_getsockopt+0xf8/0x1f0 net/ipv4/tcp.c:3728
- sock_common_getsockopt+0x13f/0x180 net/core/sock.c:3131
- __sys_getsockopt+0x533/0x7b0 net/socket.c:2177
- __do_sys_getsockopt net/socket.c:2192 [inline]
- __se_sys_getsockopt+0xe1/0x100 net/socket.c:2189
- __x64_sys_getsockopt+0x62/0x80 net/socket.c:2189
- do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45c829
-Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f1deeb72c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
-RAX: ffffffffffffffda RBX: 00000000004e01e0 RCX: 000000000045c829
-RDX: 0000000000000023 RSI: 0000000000000006 RDI: 0000000000000009
-RBP: 000000000078bf00 R08: 0000000020000200 R09: 0000000000000000
-R10: 00000000200001c0 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 00000000000001d8 R14: 00000000004d3038 R15: 00007f1deeb736d4
+>  drivers/net/dsa/ocelot/felix_vsc9959.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> index df4498c0e864..85e34d85cc51 100644
+> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
+> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> @@ -1360,7 +1360,7 @@ static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
+>         /* Burst unit is 4kB */
+>         burst = DIV_ROUND_UP(cbs_qopt->hicredit, 4096);
+>         /* Avoid using zero burst size */
+> -       burst = clamp_t(u32, rate, 1, GENMASK(5, 0));
+> +       burst = clamp_t(u32, burst, 1, GENMASK(5, 0));
+>         ocelot_write_gix(ocelot,
+>                          QSYS_CIR_CFG_CIR_RATE(rate) |
+>                          QSYS_CIR_CFG_CIR_BURST(burst),
+> --
+> 2.25.1
+>
 
-Local variable ----zc@do_tcp_getsockopt created at:
- do_tcp_getsockopt+0x1a74/0x6320 net/ipv4/tcp.c:3670
- do_tcp_getsockopt+0x1a74/0x6320 net/ipv4/tcp.c:3670
-
-Fixes: 05255b823a61 ("tcp: add TCP_ZEROCOPY_RECEIVE support for zerocopy receive")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/ipv4/tcp.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index a385fcaaa03beed9bfeabdebc12371e34e0649de..dd401757eea1f0187b0e547828f794e62eb895b8 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1764,10 +1764,11 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 
- 	down_read(&current->mm->mmap_sem);
- 
--	ret = -EINVAL;
- 	vma = find_vma(current->mm, address);
--	if (!vma || vma->vm_start > address || vma->vm_ops != &tcp_vm_ops)
--		goto out;
-+	if (!vma || vma->vm_start > address || vma->vm_ops != &tcp_vm_ops) {
-+		up_read(&current->mm->mmap_sem);
-+		return -EINVAL;
-+	}
- 	zc->length = min_t(unsigned long, zc->length, vma->vm_end - address);
- 
- 	tp = tcp_sk(sk);
--- 
-2.26.2.761.g0e0b3e54be-goog
-
+Thanks!
+-Vladimir
