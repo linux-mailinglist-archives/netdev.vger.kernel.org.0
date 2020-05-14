@@ -2,123 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CF4A1D288F
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 09:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C01921D28A9
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 09:22:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725967AbgENHNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 03:13:35 -0400
-Received: from mail-db8eur05on2047.outbound.protection.outlook.com ([40.107.20.47]:6083
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725866AbgENHNe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 03:13:34 -0400
+        id S1725938AbgENHWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 03:22:36 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:14850 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725909AbgENHWf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 03:22:35 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04E7LUho027019;
+        Thu, 14 May 2020 00:22:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=w4yzOQ3QVerG1iNnUBlIG0Qm1mvGqNwwKw1AeeKEtQU=;
+ b=QQCdgksUkyL4dezzia5ZA2r0p11V1Jv8LjGfCa9+FvxxuL6V+0w8mXg6D/+0evCEr+a5
+ /N+pobJh9I2TfvhBq5LaF1wRWJ5TPb96nqFXzJG604Dah9nS/J5KHmxwxt/RQcD6VQcl
+ SIs1vqq5Ah13OXKvzJBcw93+Iog8DcW0qZc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3110kjr7e8-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 14 May 2020 00:22:19 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Thu, 14 May 2020 00:21:43 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XPv5fDv/w83Gy3o15NANiY16NenRlC00twFzJhRZzE6ujGi2e5Pito5X41tIVaMzOnuNpJcdmVbFxzKxNW+ejCJ1VJLU4v6o80O9XKIyiLKlrQiXsBGWwk4HyGZd9m8CKEFQMIXblvrh1E/90WFGQYcoCJKF2hZ8+vdkse7kMZ6LXqD9DhwzozHBnhW7rcQP5QGtBZLexfAkA9V4hx1SL28uarIzBL1JgwbE0mlfBFIbLnWeXR9fBkoJLE3djCqSkCyPeisuneJBVdkY/Iq1x6wDyLDu2gfmx4zSMigaLAyTmtYaBxu4Njs6ysl5/RisBZyxYrLNcpF9OTgv9r0iZQ==
+ b=nglpdl+slfG5QG73Y3EH6oI3uVby8K2beFCLrw84FUyh238qqbkkAqkUAhMWikTkuZNExRdLyvw57GGY3WabkZ53YoapgIiCSaYG2bPRqEZ6Ag7DH0ktGnDS2j/hHe8rB50qOGuZWOVd1yARgP8Ph8sbwpPnvS8uzoXnXEVafFKqwOWT+ImfE18+scbc1+ClL7BlRiN85XGW7qy8KK0ElAdXLaojWI0QVppQStUXcfe6cmoBwTGsLtKO+sbs8MSOWQ+3sFH7texACPUp2YLWM/1aQhc6Ie8IO49oYWW27YaytZvKG57vQjw23sxZZa7XxEduQaKT7RNjiJIY5P1q/w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=maY+MjDq7rpXVjrdP94zzFJKMiY0khqwZM/KYj0KhIM=;
- b=hwtSaD2m5+qwVQ9a73MlVoLW7Yf7JyG7GWSAY8e2wITe5Wp8NiXGnMG8ArkQz0eqbwkSTwNaFXQcT2Tg17zvdTul5bDxAlNX/Bg5HDcR2gdl40UgP2Nv/IMtrWg6nZVKooukbFYCiGWj6zriV8vO6WOHFMSDJwYY7wQYNRFWYbOGE6lZ0AUrv34BR4QVxZcxJFO7kmTca33AX3JcTcIW8O3Z1HDkArWbby1HiOoqR6DpOPTIL+nA1HXoRh5kqS6Ev1m4xK742wu7kRgS5YM7FRuugR7B0iNyYmtF2QuLXJtEewefuasJkhAqtEUlncKSfRRClmYo8ioTdmN9OpcD2g==
+ bh=w4yzOQ3QVerG1iNnUBlIG0Qm1mvGqNwwKw1AeeKEtQU=;
+ b=LskF0pLhpW5ylDnDbmajyY/JiyZLPMExWsMJ5djyPUkapT7CK+oJObZmd5O5g1TLiHHRgJ9sljR3vRF3wIli711vZ0cFygWNhv5iBaU536rDl/PTf3k5Cx1PVfnbytMILn+hm6qhJH6UA+HvTh6WPW8fwUMeoufzHHvfUZRuizMqzFw02dmVUFrasD78tYrglmFSFzkTiYNIDQ1R/N7t8FG6lCTtACg7ovHNL+Ov6sfKXwXu2wZh5o4Fr0JhyV9Rav8LK5o97ie/2imFCSt6ZVJ8H2JBMW1pwmrNnaWpP9P/+q+AWVtNseA+d78Gqv5fGgx50is1AG/OtUq12p5K0A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=maY+MjDq7rpXVjrdP94zzFJKMiY0khqwZM/KYj0KhIM=;
- b=DZ8dOkD2CAvrn+ZMXv2JMcc4FEZcpNi5I4gU3Csh1hle7yK08wqEmGlVWpD3AluA007pa21poRxS63mtaj/Fz+NzK6S9ZhmJtu8D3NG652UH5YJYZvu69gHmKuYR6pdMJSuJJHGHUBt404r7alOt832XUYKMiFc94Phd6K9+7WE=
-Received: from AM0PR04MB7041.eurprd04.prod.outlook.com (2603:10a6:208:19a::13)
- by AM0PR04MB5876.eurprd04.prod.outlook.com (2603:10a6:208:130::12) with
+ bh=w4yzOQ3QVerG1iNnUBlIG0Qm1mvGqNwwKw1AeeKEtQU=;
+ b=KhQlroRzgLw0Nby3tUA3nHGxBw6NOE04JHeEjbYasE0YWpshQrPt6kz2GP63nVr8qTzLwSA0nJFhnv5BuqW8g0VaTYu23Q45CmZ7zgw96AvFGhpgPcrQ2nhJKfLAIRLZ4+/39wahE9/IvrewKH2qsM6Kfz4FP//QNIwSb+po+Nc=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2360.namprd15.prod.outlook.com (2603:10b6:a02:81::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Thu, 14 May
- 2020 07:13:30 +0000
-Received: from AM0PR04MB7041.eurprd04.prod.outlook.com
- ([fe80::1cab:2a78:51cb:2a00]) by AM0PR04MB7041.eurprd04.prod.outlook.com
- ([fe80::1cab:2a78:51cb:2a00%9]) with mapi id 15.20.2979.033; Thu, 14 May 2020
- 07:13:30 +0000
-From:   Christian Herber <christian.herber@nxp.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        David Jander <david@protonic.nl>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        Marek Vasut <marex@denx.de>
-Subject: RE: [EXT] Re: signal quality and cable diagnostic
-Thread-Topic: [EXT] Re: signal quality and cable diagnostic
-Thread-Index: AQHWJ6ExNilqBbwzZ0ehkAYa7smAYaikHY+AgAMNSsA=
-Date:   Thu, 14 May 2020 07:13:30 +0000
-Message-ID: <AM0PR04MB7041DE18F2966573DB6E078586BC0@AM0PR04MB7041.eurprd04.prod.outlook.com>
-References: <20200511141310.GA2543@pengutronix.de>
- <20200511143337.GC413878@lunn.ch> <20200512082201.GB16536@pengutronix.de>
-In-Reply-To: <20200512082201.GB16536@pengutronix.de>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20; Thu, 14 May
+ 2020 07:21:42 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.3000.022; Thu, 14 May 2020
+ 07:21:42 +0000
+Subject: Re: [bpf-next PATCH 2/3] bpf: sk_msg helpers for probe_* and
+ *current_task*
+To:     John Fastabend <john.fastabend@gmail.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>
+CC:     <lmb@cloudflare.com>, <bpf@vger.kernel.org>,
+        <jakub@cloudflare.com>, <netdev@vger.kernel.org>
+References: <158939776371.17281.8506900883049313932.stgit@john-Precision-5820-Tower>
+ <158939787911.17281.887645911866087465.stgit@john-Precision-5820-Tower>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <35846427-3770-f6ab-b1a6-c974a835f746@fb.com>
+Date:   Thu, 14 May 2020 00:21:40 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
+In-Reply-To: <158939787911.17281.887645911866087465.stgit@john-Precision-5820-Tower>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: pengutronix.de; dkim=none (message not signed)
- header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [88.130.52.52]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: c8a47c7f-f02f-44b9-7eba-08d7f7d64e6d
-x-ms-traffictypediagnostic: AM0PR04MB5876:
-x-microsoft-antispam-prvs: <AM0PR04MB5876160120A46E3C784DB94C86BC0@AM0PR04MB5876.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 040359335D
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wnIPQOEhJoI7IcWInAc4/jLbMXpiMZWdkzsv5bm60u6wfx0iRQeklTaohA1uGmkUU24xqI5ftfpSDKrErXPGwIq4JwA9ROYl63+BCqQMG5GeV99JhN5rt99M2l1UXNLkLNOiF7ZeV9TOqgMhlCsyIMBweN//AK2NMsfaUb8WEhnkRjVldtPkriqW1jeyGpK4MvP7vRBwFw9jq2Y8D4sMVU3v1AmQnn+OwMfu59VMYEDphx1CL3hHQ9Ujr5pCKcAXAgE1CDyXV+MRP8Yoc3znbm0UIKzftTFIGRv8KTN5J4wlt8yjD5/N4o14ANyPVxgGZXFDqWE5S3kS9RcWOj47yrqb51OVSmVA+Vx1lI7sGB7ZNEV0ABbXnLbv4PPZ8YQ2dxvJ+2ejZgiYfOeeMMOx7FEYYNkflCFC5lIXBmAFRgFFrzrDJ0flnkoguQ3LqHXx
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB7041.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(136003)(39860400002)(376002)(346002)(316002)(86362001)(8936002)(71200400001)(2906002)(9686003)(4326008)(26005)(110136005)(52536014)(54906003)(7696005)(55016002)(5660300002)(66476007)(44832011)(66556008)(66946007)(8676002)(33656002)(66446008)(76116006)(7416002)(64756008)(478600001)(186003)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: kqSDKHQoCTRcsrSrgEI0Q3wBA9TH5/pa5fxuoMsVBLOCyYQLnxSo46mlSSu0EdSC7/f1yMJGWgW4Q1PO5K8C8Eq83qQzam56tUKPfDp0Gto5JuDUgo1fgDJD41ueEz68+Lu2w1uIfJ9NhqWPfXWytujNJS2GCoRKoPLaoWUqc3Hhp7mC4jHgqIYaMMHiD9laS2fOesdoBedfJKAnh8DSZo+yrNbAFqNBjGFkPs5Oh2im4tHM5Nx7DgPhyMtXbDybrozCvJP4jyQA3cht4iXf3n4hRghFIrvMKtGocq4dmTcV34A8ckQSMI1er+ZGHvLrLHqQeZRojGWNE9wHbyeLBxpfYDkUF4S31r/1rytw8y3l6TWPfScOWF18vFjNNePlVLluO4jJgEFAbjQda2uYJnXrK9lFjjHOMaYgYJ3zrxshpFhH28wWIoTNWm0Bclar/3pp437jWFWhTz2G3saaNR1et6wnWG0HMeFIbx1ld3c=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY5PR04CA0006.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::16) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c8a47c7f-f02f-44b9-7eba-08d7f7d64e6d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2020 07:13:30.5571
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:7dec) by BY5PR04CA0006.namprd04.prod.outlook.com (2603:10b6:a03:1d0::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Thu, 14 May 2020 07:21:41 +0000
+X-Originating-IP: [2620:10d:c090:400::5:7dec]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3bb94616-5cd4-444b-fcde-08d7f7d77362
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2360:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB23608210EEB850DE812AB6BDD3BC0@BYAPR15MB2360.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Forefront-PRVS: 040359335D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wkNKo/LdZSlLUFJ0nJUtUAFgU3q+Yins1OoxDO/0WYcTvz0qAdiOPYzsbR1tLzA1T/0Q1urnyUewpG9jPfdKoG/ZJ37eFRNplAxFE4H+7nmK2n1D95Hrs1W+mLrlgzTTcSr1RfjzXUo6kxZJhf8MMEFMej83XVGcDn2PPUNjarYFCROvC9d61qh4osm00tjPXWmxk2bCrZjz6xVf4b7Yal8qQ+4rdaY+EguLNskYtg879oe2tjrVKQA7CRSBKtyDxi1C7WdP/zk/Modwv49DgmhxT8sdjLHwrydSaLSo3IVOmioAMKcVERdIG/Iz/7jNW+9wBgdOxR6FfojQ6yvTLZYkBAfLKfX3Ym/gAI74ZoNcghQWjl8V5KT2eGGLRUAeJY1mhil3tNoHUU35+yz6z4Jp+nX5PJoRQ6PcNeF+MoYmiTDS/sruvr0lUEjysO4sUPLUhjQ220WAbrLW0lQCZ3Ry0PUtfYwqp0YkMQofRD6DHDhk7Iwk8TqKbS42tCyf
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(39860400002)(346002)(376002)(366004)(396003)(8676002)(4326008)(16526019)(6506007)(52116002)(186003)(6486002)(5660300002)(316002)(53546011)(2616005)(2906002)(66476007)(6512007)(478600001)(86362001)(66946007)(66556008)(36756003)(31686004)(31696002)(8936002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: XGbg6Oz6Gcv+aWX1qvIqzYVswOIRs7rdV6D4UsGj1cAsQutDyMagsND0oHQh1iPZCZy+tY8fKgCNMnSB6X2qUHfnSXYxHmLq5nKU/fv/NYZTX4if92UTIP+Xwn8kFbJr+MB8mWidAjx4SBO/Mzz1/SILGXc7o4asYPBXr+SFUcLfzGq/pN+5xFZwiizy84/snaDaiT3WlOTFCz9qyDd7/cix4h+bgVuJAV6wyQujjShF9EXEEQu9rOnMBd11160qgNLlo7fIAZYLwTClRfg7apijQRfFp1K8/M4dhNir9z3YIstpxo9U7dFft8yCiInWQOOCmtihC8dSkXNe54fXxET20lTBW9q/ZbENAZGMs1UkZx83ir+7QL92zPOrYmEQlllgkS/YreMZZrvtEvB7zV0W5zjwh939UO7lEMSMO6BWpJw9cVK3V+bI6+eFpDmb0V8DzS3Jce5IBBH2/3SwsooY9zbXzEOaEQn7xb54jDOfUJfhKLM7nfuIB7QMluckqPE7VAIpXJJu5zgaRKwWZA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3bb94616-5cd4-444b-fcde-08d7f7d77362
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2020 07:21:42.4259
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XSnbpQnw1Nojp8OxCHdzlvEUNgbn2v4LJiZc2qjnk/HJmunejyM6XnJEaQwCE2n3hbRAe5Wvgy01UXebK4hIMXxdjc2eNcAwm2X4rB02mTw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5876
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nJ3UwsV19SZ4+P4iYqUXoKOkQJh9v0ZfNzIi7Zs6CTXsHIQDLoG9oXz5/keyg89V
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2360
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-14_01:2020-05-13,2020-05-14 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
+ spamscore=0 mlxscore=0 clxscore=1015 phishscore=0 malwarescore=0
+ lowpriorityscore=0 suspectscore=0 priorityscore=1501 cotscore=-2147483648
+ mlxlogscore=999 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005140065
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCBNYXkgMTIsIDIwMjAgYXQgMTA6MjI6MDFBTSArMDIwMCwgT2xla3NpaiBSZW1wZWwg
-d3JvdGU6DQoNCj4gU28gSSB0aGluayB3ZSBzaG91bGQgcGFzcyByYXcgU1FJIHZhbHVlIHRvIHVz
-ZXIgc3BhY2UsIGF0IGxlYXN0IGluIHRoZQ0KPiBmaXJzdCBpbXBsZW1lbnRhdGlvbi4NCg0KPiBX
-aGF0IGRvIHlvdSB0aGluayBhYm91dCB0aGlzPw0KDQpIaSBPbGVrc2lqLA0KDQpJIGhhZCBhIGNo
-ZWNrIGFib3V0IHRoZSBiYWNrZ3JvdW5kIG9mIHRoaXMgU1FJIHRoaW5nLiBUaGUgdGFibGUgeW91
-IHJlZmVyZW5jZSB3aXRoIGNvbmNyZXRlIFNOUiB2YWx1ZXMgaXMgaW5mb3JtYXRpdmUgb25seSBh
-bmQgbm90IGEgcmVxdWlyZW1lbnQuIFRoZSByZXF1aXJlbWVudHMgYXJlIHJhdGhlciBsb29zZS4N
-Cg0KVGhpcyBpcyBmcm9tIE9BOg0KLSBPbmx5IGZvciBTUUk9MCBhIGxpbmsgbG9zcyBzaGFsbCBv
-Y2N1ci4NCi0gVGhlIGluZGljYXRlZCBzaWduYWwgcXVhbGl0eSBzaGFsbCBtb25vdG9uaWMgaW5j
-cmVhc2luZyAvZGVjcmVhc2luZyB3aXRoIG5vaXNlIGxldmVsLg0KLSBJdCBzaGFsbCBiZSBpbmRp
-Y2F0ZWQgaW4gdGhlIGRhdGFzaGVldCBhdCB3aGljaCBsZXZlbCBhIEJFUjwxMF4tMTAgKGJldHRl
-ciB0aGFuIDEwXi0xMCkgaXMgYWNoaWV2ZWQgKGUuZy4gImZyb20gU1FJPTMgdG8gU1FJPTcgdGhl
-IGxpbmsgaGFzIGEgQkVSPDEwXi0xMCAoYmV0dGVyIHRoYW4gMTBeLTEwKSIpDQoNCkkuZS4gU1FJ
-IGRvZXMgbm90IG5lZWQgdG8gaGF2ZSBhIGRpcmVjdCBjb3JyZWxhdGlvbiB3aXRoIFNOUi4gVGhl
-IGZ1bmRhbWVudGFsIHVuZGVybHlpbmcgbWV0cmljIGlzIHRoZSBCRVIuDQpZb3UgY2FuIHJlcG9y
-dCB0aGUgcmF3IFNRSSBsZXZlbCBhbmQgdXNlcnMgd291bGQgaGF2ZSB0byBsb29rIHVwIHdoYXQg
-aXQgbWVhbnMgaW4gdGhlIHJlc3BlY3RpdmUgZGF0YSBzaGVldC4gVGhlcmUgaXMgbm8gZ3VhcmFu
-dGVlZCByZWxhdGlvbiBiZXR3ZWVuIFNRSSBsZXZlbHMgb2YgZGlmZmVyZW50IGRldmljZXMsIGku
-ZS4gU1FJIDUgY2FuIGhhdmUgbG93ZXIgQkVSIHRoYW4gU1FJIDYgb24gYW5vdGhlciBkZXZpY2Uu
-DQpBbHRlcm5hdGl2ZWx5LCB5b3UgY291bGQgcmVwb3J0IEJFUiA8IHggZm9yIHRoZSBkaWZmZXJl
-bnQgU1FJIGxldmVscy4gSG93ZXZlciwgdGhpcyByZXF1aXJlcyB0aGUgaW5mb3JtYXRpb24gdG8g
-YmUgYXZhaWxhYmxlLiBXaGlsZSBJIGNvdWxkIHByb3ZpZGUgdGhlc2UgZm9yIE5YUCwgaXQgbWln
-aHQgbm90IGJlIGVhc2lseSBhdmFpbGFibGUgZm9yIG90aGVyIHZlbmRvcnMuDQpJZiByZXBvcnRp
-bmcgcmF3IFNRSSwgYXQgbGVhc3QgdGhlIFNRSSBsZXZlbCBmb3IgQkVSPDEwXi0xMCBzaG91bGQg
-YmUgcHJlc2VudGVkIHRvIGdpdmUgYW55IG1lYW5pbmcgdG8gdGhlIHZhbHVlLg0KDQpSZWdhcmRz
-LA0KDQpDaHJpc3RpYW4NCg==
+
+
+On 5/13/20 12:24 PM, John Fastabend wrote:
+> Often it is useful when applying policy to know something about the
+> task. If the administrator has CAP_SYS_ADMIN rights then they can
+> use kprobe + sk_msg and link the two programs together to accomplish
+> this. However, this is a bit clunky and also means we have to call
+> sk_msg program and kprobe program when we could just use a single
+> program and avoid passing metadata through sk_msg/skb, socket, etc.
+> 
+> To accomplish this add probe_* helpers to sk_msg programs guarded
+> by a CAP_SYS_ADMIN check. New supported helpers are the following,
+> 
+>   BPF_FUNC_get_current_task
+>   BPF_FUNC_current_task_under_cgroup
+>   BPF_FUNC_probe_read_user
+>   BPF_FUNC_probe_read_kernel
+>   BPF_FUNC_probe_read
+>   BPF_FUNC_probe_read_user_str
+>   BPF_FUNC_probe_read_kernel_str
+>   BPF_FUNC_probe_read_str
+
+I think this is a good idea. But this will require bpf program
+to be GPLed, probably it will be okay. Currently, for capabilities,
+it is CAP_SYS_ADMIN now, in the future, it may be CAP_PERFMON.
+
+Also, do we want to remove BPF_FUNC_probe_read and
+BPF_FUNC_probe_read_str from the list? Since we
+introduce helpers to new program types, we can deprecate
+these two helpers right away.
+
+The new helpers will be subject to new security lockdown
+rules which may have impact on networking bpf programs
+on particular setup.
+
+> 
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>   kernel/trace/bpf_trace.c |   16 ++++++++--------
+>   net/core/filter.c        |   34 ++++++++++++++++++++++++++++++++++
+>   2 files changed, 42 insertions(+), 8 deletions(-)
+> 
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index d961428..abe6721 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -147,7 +147,7 @@ BPF_CALL_3(bpf_probe_read_user, void *, dst, u32, size,
+>   	return ret;
+>   }
+>   
+> -static const struct bpf_func_proto bpf_probe_read_user_proto = {
+> +const struct bpf_func_proto bpf_probe_read_user_proto = {
+>   	.func		= bpf_probe_read_user,
+>   	.gpl_only	= true,
+>   	.ret_type	= RET_INTEGER,
+> @@ -167,7 +167,7 @@ BPF_CALL_3(bpf_probe_read_user_str, void *, dst, u32, size,
+>   	return ret;
+>   }
+>   
+> -static const struct bpf_func_proto bpf_probe_read_user_str_proto = {
+> +const struct bpf_func_proto bpf_probe_read_user_str_proto = {
+>   	.func		= bpf_probe_read_user_str,
+>   	.gpl_only	= true,
+>   	.ret_type	= RET_INTEGER,
+> @@ -198,7 +198,7 @@ BPF_CALL_3(bpf_probe_read_kernel, void *, dst, u32, size,
+>   	return bpf_probe_read_kernel_common(dst, size, unsafe_ptr, false);
+>   }
+>   
+> -static const struct bpf_func_proto bpf_probe_read_kernel_proto = {
+> +const struct bpf_func_proto bpf_probe_read_kernel_proto = {
+>   	.func		= bpf_probe_read_kernel,
+>   	.gpl_only	= true,
+>   	.ret_type	= RET_INTEGER,
+> @@ -213,7 +213,7 @@ BPF_CALL_3(bpf_probe_read_compat, void *, dst, u32, size,
+>   	return bpf_probe_read_kernel_common(dst, size, unsafe_ptr, true);
+>   }
+>   
+> -static const struct bpf_func_proto bpf_probe_read_compat_proto = {
+> +const struct bpf_func_proto bpf_probe_read_compat_proto = {
+>   	.func		= bpf_probe_read_compat,
+>   	.gpl_only	= true,
+>   	.ret_type	= RET_INTEGER,
+> @@ -253,7 +253,7 @@ BPF_CALL_3(bpf_probe_read_kernel_str, void *, dst, u32, size,
+>   	return bpf_probe_read_kernel_str_common(dst, size, unsafe_ptr, false);
+>   }
+>   
+> -static const struct bpf_func_proto bpf_probe_read_kernel_str_proto = {
+> +const struct bpf_func_proto bpf_probe_read_kernel_str_proto = {
+>   	.func		= bpf_probe_read_kernel_str,
+>   	.gpl_only	= true,
+>   	.ret_type	= RET_INTEGER,
+> @@ -268,7 +268,7 @@ BPF_CALL_3(bpf_probe_read_compat_str, void *, dst, u32, size,
+>   	return bpf_probe_read_kernel_str_common(dst, size, unsafe_ptr, true);
+>   }
+>   
+> -static const struct bpf_func_proto bpf_probe_read_compat_str_proto = {
+> +const struct bpf_func_proto bpf_probe_read_compat_str_proto = {
+>   	.func		= bpf_probe_read_compat_str,
+>   	.gpl_only	= true,
+>   	.ret_type	= RET_INTEGER,
+> @@ -874,7 +874,7 @@ BPF_CALL_0(bpf_get_current_task)
+>   	return (long) current;
+>   }
+>   
+> -static const struct bpf_func_proto bpf_get_current_task_proto = {
+> +const struct bpf_func_proto bpf_get_current_task_proto = {
+>   	.func		= bpf_get_current_task,
+>   	.gpl_only	= true,
+>   	.ret_type	= RET_INTEGER,
+> @@ -895,7 +895,7 @@ BPF_CALL_2(bpf_current_task_under_cgroup, struct bpf_map *, map, u32, idx)
+>   	return task_under_cgroup_hierarchy(current, cgrp);
+>   }
+>   
+> -static const struct bpf_func_proto bpf_current_task_under_cgroup_proto = {
+> +const struct bpf_func_proto bpf_current_task_under_cgroup_proto = {
+>   	.func           = bpf_current_task_under_cgroup,
+>   	.gpl_only       = false,
+>   	.ret_type       = RET_INTEGER,
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 45b4a16..d1c4739 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -6362,6 +6362,15 @@ sock_ops_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   const struct bpf_func_proto bpf_msg_redirect_map_proto __weak;
+>   const struct bpf_func_proto bpf_msg_redirect_hash_proto __weak;
+>   
+> +const struct bpf_func_proto bpf_current_task_under_cgroup_proto __weak;
+> +const struct bpf_func_proto bpf_get_current_task_proto __weak;
+> +const struct bpf_func_proto bpf_probe_read_user_proto __weak;
+> +const struct bpf_func_proto bpf_probe_read_user_str_proto __weak;
+> +const struct bpf_func_proto bpf_probe_read_kernel_proto __weak;
+> +const struct bpf_func_proto bpf_probe_read_kernel_str_proto __weak;
+> +const struct bpf_func_proto bpf_probe_read_compat_proto __weak;
+> +const struct bpf_func_proto bpf_probe_read_compat_str_proto __weak;
+> +
+>   static const struct bpf_func_proto *
+>   sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   {
+> @@ -6397,6 +6406,31 @@ sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   		return &bpf_get_cgroup_classid_curr_proto;
+>   #endif
+>   	default:
+> +		break;
+> +	}
+> +
+> +	if (!capable(CAP_SYS_ADMIN))
+> +		return bpf_base_func_proto(func_id);
+> +
+> +	/* All helpers below are for CAP_SYS_ADMIN only */
+> +	switch (func_id) {
+> +	case BPF_FUNC_get_current_task:
+> +		return &bpf_get_current_task_proto;
+> +	case BPF_FUNC_current_task_under_cgroup:
+> +		return &bpf_current_task_under_cgroup_proto;
+> +	case BPF_FUNC_probe_read_user:
+> +		return &bpf_probe_read_user_proto;
+> +	case BPF_FUNC_probe_read_kernel:
+> +		return &bpf_probe_read_kernel_proto;
+> +	case BPF_FUNC_probe_read:
+> +		return &bpf_probe_read_compat_proto;
+> +	case BPF_FUNC_probe_read_user_str:
+> +		return &bpf_probe_read_user_str_proto;
+> +	case BPF_FUNC_probe_read_kernel_str:
+> +		return &bpf_probe_read_kernel_str_proto;
+> +	case BPF_FUNC_probe_read_str:
+> +		return &bpf_probe_read_compat_str_proto;
+> +	default:
+>   		return bpf_base_func_proto(func_id);
+
+If we can get a consensus here, I think we can even folding all
+these bpf helpers (get_current_task, ..., probe_read_kernel_str)
+to bpf_base_func_proto, so any bpf program types including
+other networking types can use them.
+Any concerns?
+
+>   	}
+>   }
+> 
