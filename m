@@ -2,114 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 645741D3F5D
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D62381D3F6B
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727933AbgENUxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 16:53:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
+        id S1727117AbgENU6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 16:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727123AbgENUxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 16:53:50 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0E7C061A0C
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:53:50 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id u38so5029237qtc.0
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:53:50 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725975AbgENU6S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 16:58:18 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9156C061A0C
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:58:17 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id n36so276957qvg.22
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:58:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=xU4aCpS3GZnR2z32uJVCrxDvy71x8cy2ajCrm8qcvx8=;
-        b=vebsu+095LbyvY60U9pg9ZVQnlSruP+qNyGvsCu5UqWyFsTA8VQAFHA2yY5NnmQJ4u
-         FoVYDuurYCRgbtq6tIwko2xsCUGNFuMqXEaJJgyw4od2VVE/b+R9+irclai1MIa/gQJu
-         AYuUXVeuW6cICNe1OA1zQwtnuDxe+R6ZMFENAiU9vy6AJH50dw+f4Dw6Fo2wqhxnf6Jc
-         ppBwA7der5WO5yFyNWgFpTZWIissHXZejZ/Hotl/+42ngRL1bMC95qp4k4c8BOpCGv5v
-         L0+RvQQm41eiwLE6ceXEM2eYDQSZV876dnrF//pb3Aw4/gIRuvcayFIhm6mR4Z3p+zPH
-         PfuQ==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=20afMhBDKVvwwL3LKxodru9vccVEmKQ+TauQuID/1hM=;
+        b=BPaO8o3GC8cFBDZ4oXMP7phCDpy0QofTXWG+7zluLkKyVGqFKvNonca5nTxhrUV6Qd
+         uW0en1w9BJkGqJ4uQ6xMb/WHvUtzVRAaxpFdkXfAfttn0bo2O3t56fiPGBBnLwfB1udt
+         S2xfYaEQ4yYthuGAu820hL8Uer0sccpgj7L6kSlJfNoqxN8YZN9qUGQAuc1KWUJPsoGn
+         o+lg8KPeJeqNiNMBXWYEpoJ4yDBWg057X0PLbJTluVHX89WuN3Aoyp2IbAZP1GuT9ZgN
+         eaTEE1cerdwJAoiu/EBAIT25oqNOzWrUmRjuDKiKjinajSqHpYZKVDVveNxEJtNruCWu
+         C5ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=xU4aCpS3GZnR2z32uJVCrxDvy71x8cy2ajCrm8qcvx8=;
-        b=S0Rlz1ECZp9c2ZeHHa3Gcg6y/Ak3gwxuXQty9ULp/PtpogE4GIIpDSCo89SrP5vEWl
-         I85Y6N17YiXTwE8P0RulfEkPkZnf5AX3X3f+xwxao8FBCgvZoPvT4P7s7DPsdcOTNXzQ
-         v8LeNsbWRAHd6cPU8TuIK1BmkB6+xqCnKEHVkgKP/ubRaT9JsvtEjYcn+Cfz0Y4czEIT
-         6pSQl8DYiAK0N36W6iFgwyPoR8aWP/+W9KIbu6NXv4xAMROzRakLv/9RFszgPOoYRatr
-         qrbMAB+JAHk/dpntEWMVRzYGpXQoYrKC8n9nDHiKtFdhIBbGmhbY1q+O2oFVKln6pMBl
-         ApYw==
-X-Gm-Message-State: AOAM5313iIUl9Wv9Bj5Gi9d8yaYiCjMPmBsVXWvtCI6L3zXjKNMLrcam
-        E3yXyzlipryxvXG6znz8G1guI4I=
-X-Google-Smtp-Source: ABdhPJz9vi5wHx1MoRpII+EDoameBfyfYlz0HSVgLElCj1s7QUHHG91coLC/zUe5lNTuUExzTa3YC5M=
-X-Received: by 2002:ad4:5843:: with SMTP id de3mr325600qvb.195.1589489629811;
- Thu, 14 May 2020 13:53:49 -0700 (PDT)
-Date:   Thu, 14 May 2020 13:53:48 -0700
-In-Reply-To: <CAEf4BzbhqQB61JTmmp5999bbEFeHEMdvnE9vpV3tHCHm12cf-Q@mail.gmail.com>
-Message-Id: <20200514205348.GB161830@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=20afMhBDKVvwwL3LKxodru9vccVEmKQ+TauQuID/1hM=;
+        b=TQee3QYtaQuBex4biLvvV/0fURc+djk2Df/YFJxsdPQ2PfGiDDCwgpnjUXsxaBlKBS
+         eg69udbNcELL/FZUEFwqbiNbZTWpLoKbBy1IMWVZJytcK2PTU5Y3ZyRX/9r0Usgxqa83
+         aoxu8438ilU3w9P5vFBTsdVMbv2rQNXZfQUKuFK/KmxpWrwZJXD0WOxKx6YtIxoSVVVJ
+         fhcDOR8oGbDrvv/bH8nAzibuPxgmfGCIpPfZjN0SwZuQbjnNTl8U8YYseSQ1tcJbrrkU
+         s10RbqJZgR4VmZsnSoUY4L5aLmCvv5EOKcelKkQ1KAm8te+lzfN/59WrA1UpZMmJTZGw
+         Tscg==
+X-Gm-Message-State: AOAM532RQKS32qEr/+NBHjborgIlriWPsIbG3pNrAGym28KjeNa9pH3U
+        ypL+/vffYRVgNFoICMDp8dBmnGavxH+FgQ==
+X-Google-Smtp-Source: ABdhPJxBH3rY9MDHVBhnEu8LVRtvH1xiqiXMNBqFpZLfO6TireYnoARxRu6SqXtIKHD/5qIFtvBzVQfDk0+PNg==
+X-Received: by 2002:a0c:f883:: with SMTP id u3mr406918qvn.86.1589489896698;
+ Thu, 14 May 2020 13:58:16 -0700 (PDT)
+Date:   Thu, 14 May 2020 13:58:13 -0700
+Message-Id: <20200514205813.164401-1-edumazet@google.com>
 Mime-Version: 1.0
-References: <20200513192532.4058934-1-andriin@fb.com> <20200513192532.4058934-2-andriin@fb.com>
- <20200514173338.GA161830@google.com> <CAEf4BzbhqQB61JTmmp5999bbEFeHEMdvnE9vpV3tHCHm12cf-Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/6] bpf: implement BPF ring buffer and verifier
- support for it
-From:   sdf@google.com
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Mailer: git-send-email 2.26.2.761.g0e0b3e54be-goog
+Subject: [PATCH net] tcp: fix error recovery in tcp_zerocopy_receive()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Arjun Roy <arjunroy@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/14, Andrii Nakryiko wrote:
-> On Thu, May 14, 2020 at 10:33 AM <sdf@google.com> wrote:
-> >
-> > On 05/13, Andrii Nakryiko wrote:
+If user provides wrong virtual address in TCP_ZEROCOPY_RECEIVE
+operation we want to return -EINVAL error.
 
-[...]
+But depending on zc->recv_skip_hint content, we might return
+-EIO error if the socket has SOCK_DONE set.
 
-> > > + * void bpf_ringbuf_submit(void *data)
-> > > + *   Description
-> > > + *           Submit reserved ring buffer sample, pointed to by  
-> *data*.
-> > > + *   Return
-> > > + *           Nothing.
-> > Even though you mention self-pacing properties, would it still
-> > make sense to add some argument to bpf_ringbuf_submit/bpf_ringbuf_output
-> > to indicate whether to wake up userspace or not? Maybe something like
-> > a threshold of number of outstanding events in the ringbuf after which
-> > we do the wakeup? The default 0/1 preserve the existing behavior.
-> >
-> > The example I can give is a control plane userspace thread that
-> > once a second aggregates the events, it doesn't care about millisecond
-> > resolution. With the current scheme, I suppose, if BPF generates events
-> > every 1ms, the userspace will be woken up 1000 times (if it can keep
-> > up). Most of the time, we don't really care and some buffering
-> > properties are desired.
+Make sure to return -EINVAL in this case.
 
-> perf buffer has setting like this, and believe me, it's so confusing
-> and dangerous, that I wouldn't want this to be exposed. Even though I
-> was aware of this behavior, I still had to debug and work-around this
-> lack on wakeup few times, it's really-really confusing feature.
+BUG: KMSAN: uninit-value in tcp_zerocopy_receive net/ipv4/tcp.c:1833 [inline]
+BUG: KMSAN: uninit-value in do_tcp_getsockopt+0x4494/0x6320 net/ipv4/tcp.c:3685
+CPU: 1 PID: 625 Comm: syz-executor.0 Not tainted 5.7.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ tcp_zerocopy_receive net/ipv4/tcp.c:1833 [inline]
+ do_tcp_getsockopt+0x4494/0x6320 net/ipv4/tcp.c:3685
+ tcp_getsockopt+0xf8/0x1f0 net/ipv4/tcp.c:3728
+ sock_common_getsockopt+0x13f/0x180 net/core/sock.c:3131
+ __sys_getsockopt+0x533/0x7b0 net/socket.c:2177
+ __do_sys_getsockopt net/socket.c:2192 [inline]
+ __se_sys_getsockopt+0xe1/0x100 net/socket.c:2189
+ __x64_sys_getsockopt+0x62/0x80 net/socket.c:2189
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45c829
+Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f1deeb72c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
+RAX: ffffffffffffffda RBX: 00000000004e01e0 RCX: 000000000045c829
+RDX: 0000000000000023 RSI: 0000000000000006 RDI: 0000000000000009
+RBP: 000000000078bf00 R08: 0000000020000200 R09: 0000000000000000
+R10: 00000000200001c0 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 00000000000001d8 R14: 00000000004d3038 R15: 00007f1deeb736d4
 
-> In your case, though, why wouldn't user-space poll data just once a
-> second, if it's not interested in getting data as fast as possible?
-If I poll once per second I might lose the events if, for some reason,
-there is a spike. I really want to have something like: "wakeup
-userspace if the ringbuffer fill is over some threshold or
-the last wakeup was too long ago". We currently do this via a percpu
-cache map. IIRC, you've shared on lsfmmbpf that you do something like
-that as well.
+Local variable ----zc@do_tcp_getsockopt created at:
+ do_tcp_getsockopt+0x1a74/0x6320 net/ipv4/tcp.c:3670
+ do_tcp_getsockopt+0x1a74/0x6320 net/ipv4/tcp.c:3670
 
-So I was thinking how I can use new ringbuff to remove the unneeded
-copies and help with the reordering, but I'm a bit concerned about
-regressing on the number of wakeups.
+Fixes: 05255b823a61 ("tcp: add TCP_ZEROCOPY_RECEIVE support for zerocopy receive")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/ipv4/tcp.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Maybe having a flag like RINGBUF_NO_WAKEUP in bpf_ringbuf_submit()
-will suffice? And if there is a helper or some way to obtain a
-number of unconsumed items, I can implement my own flushing policy.
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index a385fcaaa03beed9bfeabdebc12371e34e0649de..dd401757eea1f0187b0e547828f794e62eb895b8 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1764,10 +1764,11 @@ static int tcp_zerocopy_receive(struct sock *sk,
+ 
+ 	down_read(&current->mm->mmap_sem);
+ 
+-	ret = -EINVAL;
+ 	vma = find_vma(current->mm, address);
+-	if (!vma || vma->vm_start > address || vma->vm_ops != &tcp_vm_ops)
+-		goto out;
++	if (!vma || vma->vm_start > address || vma->vm_ops != &tcp_vm_ops) {
++		up_read(&current->mm->mmap_sem);
++		return -EINVAL;
++	}
+ 	zc->length = min_t(unsigned long, zc->length, vma->vm_end - address);
+ 
+ 	tp = tcp_sk(sk);
+-- 
+2.26.2.761.g0e0b3e54be-goog
+
