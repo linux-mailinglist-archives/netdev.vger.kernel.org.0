@@ -2,109 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D6DB1D3F76
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 23:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 645741D3F5D
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727982AbgENVAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 17:00:40 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:54236 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726201AbgENVAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 17:00:40 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04EL0XZZ084868;
-        Thu, 14 May 2020 16:00:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589490033;
-        bh=c3ng3n5AaYJdWpIwj65f56Oxw0Dl7RViG5iPPiEH66Q=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=BUmWCscolmuRhy/3BjEc92xI23rDjEZKho6zBds1DsTqeHXIMtIhrcwUMmo/X3BMz
-         bRkpWM+1SrnrxDCC6jlJA9vlOjxwBDRpmebIAIypW3v4GXaxK4ofRF3A5+6eAqoneY
-         3h8K2T1w8ZX2IdiYdwfktwjWgvjuUUt6E6NjdnyU=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04EL0XHL093253
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 14 May 2020 16:00:33 -0500
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 14
- May 2020 16:00:33 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 14 May 2020 16:00:33 -0500
-Received: from [10.250.52.63] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04EL0WZw082129;
-        Thu, 14 May 2020 16:00:32 -0500
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dp83822: Add TI dp83822
- phy
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <robh@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-References: <20200514173055.15013-1-dmurphy@ti.com>
- <20200514173055.15013-2-dmurphy@ti.com> <20200514183912.GW499265@lunn.ch>
- <2f03f066-38d0-a7c7-956d-e14356ca53b3@ti.com>
- <20200514205028.GA499265@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <b79f8df0-add8-4ebb-1784-36cc6c50b285@ti.com>
-Date:   Thu, 14 May 2020 15:51:06 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20200514205028.GA499265@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1727933AbgENUxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 16:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727123AbgENUxu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 16:53:50 -0400
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0E7C061A0C
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:53:50 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id u38so5029237qtc.0
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:53:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=xU4aCpS3GZnR2z32uJVCrxDvy71x8cy2ajCrm8qcvx8=;
+        b=vebsu+095LbyvY60U9pg9ZVQnlSruP+qNyGvsCu5UqWyFsTA8VQAFHA2yY5NnmQJ4u
+         FoVYDuurYCRgbtq6tIwko2xsCUGNFuMqXEaJJgyw4od2VVE/b+R9+irclai1MIa/gQJu
+         AYuUXVeuW6cICNe1OA1zQwtnuDxe+R6ZMFENAiU9vy6AJH50dw+f4Dw6Fo2wqhxnf6Jc
+         ppBwA7der5WO5yFyNWgFpTZWIissHXZejZ/Hotl/+42ngRL1bMC95qp4k4c8BOpCGv5v
+         L0+RvQQm41eiwLE6ceXEM2eYDQSZV876dnrF//pb3Aw4/gIRuvcayFIhm6mR4Z3p+zPH
+         PfuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=xU4aCpS3GZnR2z32uJVCrxDvy71x8cy2ajCrm8qcvx8=;
+        b=S0Rlz1ECZp9c2ZeHHa3Gcg6y/Ak3gwxuXQty9ULp/PtpogE4GIIpDSCo89SrP5vEWl
+         I85Y6N17YiXTwE8P0RulfEkPkZnf5AX3X3f+xwxao8FBCgvZoPvT4P7s7DPsdcOTNXzQ
+         v8LeNsbWRAHd6cPU8TuIK1BmkB6+xqCnKEHVkgKP/ubRaT9JsvtEjYcn+Cfz0Y4czEIT
+         6pSQl8DYiAK0N36W6iFgwyPoR8aWP/+W9KIbu6NXv4xAMROzRakLv/9RFszgPOoYRatr
+         qrbMAB+JAHk/dpntEWMVRzYGpXQoYrKC8n9nDHiKtFdhIBbGmhbY1q+O2oFVKln6pMBl
+         ApYw==
+X-Gm-Message-State: AOAM5313iIUl9Wv9Bj5Gi9d8yaYiCjMPmBsVXWvtCI6L3zXjKNMLrcam
+        E3yXyzlipryxvXG6znz8G1guI4I=
+X-Google-Smtp-Source: ABdhPJz9vi5wHx1MoRpII+EDoameBfyfYlz0HSVgLElCj1s7QUHHG91coLC/zUe5lNTuUExzTa3YC5M=
+X-Received: by 2002:ad4:5843:: with SMTP id de3mr325600qvb.195.1589489629811;
+ Thu, 14 May 2020 13:53:49 -0700 (PDT)
+Date:   Thu, 14 May 2020 13:53:48 -0700
+In-Reply-To: <CAEf4BzbhqQB61JTmmp5999bbEFeHEMdvnE9vpV3tHCHm12cf-Q@mail.gmail.com>
+Message-Id: <20200514205348.GB161830@google.com>
+Mime-Version: 1.0
+References: <20200513192532.4058934-1-andriin@fb.com> <20200513192532.4058934-2-andriin@fb.com>
+ <20200514173338.GA161830@google.com> <CAEf4BzbhqQB61JTmmp5999bbEFeHEMdvnE9vpV3tHCHm12cf-Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/6] bpf: implement BPF ring buffer and verifier
+ support for it
+From:   sdf@google.com
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+On 05/14, Andrii Nakryiko wrote:
+> On Thu, May 14, 2020 at 10:33 AM <sdf@google.com> wrote:
+> >
+> > On 05/13, Andrii Nakryiko wrote:
 
-On 5/14/20 3:50 PM, Andrew Lunn wrote:
->>> Hi Dan
->>>
->>> You say 10/100 Mbps Ethernet PHY, but then list RGMII?
->> Copied from the data sheet.
-> O.K. So maybe it can connect over RGMII, but then only run 100Mbps
-> over it, rather than 1G.
-Yes.  This is not a 1Gbps PHY.  Max is 100Mbps.
->
->> The LED_1 pin can be strapped to be an input to the chip for signal loss
->> detection.  This is an optional feature of the PHY.
->>
->> This property defines the polarity for the 822 LED_1/GPIO input pin.
->>
->> The LOS is not required to be connected to the PHY.  If the preferred method
->> is to use the SFP framework and Processor GPIOs then I can remove this from
->> the patch set.
->>
->> And if a user would like to use the feature then they can add it.
-> Well, both options are supported by the hardware. So i'm wondering if
-> we need to support both. So one property indicating the LOS is
-> actually connected to the PHY and a second indicating the polarity?
+[...]
 
-Why would we need 2?  The SFP core would need to know that the LOS is 
-connected to the PHY.
+> > > + * void bpf_ringbuf_submit(void *data)
+> > > + *   Description
+> > > + *           Submit reserved ring buffer sample, pointed to by  
+> *data*.
+> > > + *   Return
+> > > + *           Nothing.
+> > Even though you mention self-pacing properties, would it still
+> > make sense to add some argument to bpf_ringbuf_submit/bpf_ringbuf_output
+> > to indicate whether to wake up userspace or not? Maybe something like
+> > a threshold of number of outstanding events in the ringbuf after which
+> > we do the wakeup? The default 0/1 preserve the existing behavior.
+> >
+> > The example I can give is a control plane userspace thread that
+> > once a second aggregates the events, it doesn't care about millisecond
+> > resolution. With the current scheme, I suppose, if BPF generates events
+> > every 1ms, the userspace will be woken up 1000 times (if it can keep
+> > up). Most of the time, we don't really care and some buffering
+> > properties are desired.
 
-The PHY is strapped to configure the LED_1 as a GPIO input.  I am not 
-seeing a register that we can force this configuration.
+> perf buffer has setting like this, and believe me, it's so confusing
+> and dangerous, that I wouldn't want this to be exposed. Even though I
+> was aware of this behavior, I still had to debug and work-around this
+> lack on wakeup few times, it's really-really confusing feature.
 
-Data sheet says
+> In your case, though, why wouldn't user-space poll data just once a
+> second, if it's not interested in getting data as fast as possible?
+If I poll once per second I might lose the events if, for some reason,
+there is a spike. I really want to have something like: "wakeup
+userspace if the ringbuffer fill is over some threshold or
+the last wakeup was too long ago". We currently do this via a percpu
+cache map. IIRC, you've shared on lsfmmbpf that you do something like
+that as well.
 
-Note: To enable 100Base-FX Signal Detection on LED_1 (pin #24), strap 
-SD_EN = '1'
+So I was thinking how I can use new ringbuff to remove the unneeded
+copies and help with the reordering, but I'm a bit concerned about
+regressing on the number of wakeups.
 
-So we can read the straps to see if the PHY is connected as the LOS 
-input and set the polarity.  But if we are in fiber mode and that pin is 
-not strapped for LOS then this setting takes no affect on the PHY.  So 
-even reading the straps just allows us to bypass the polarity write.
-
-Dan
-
->
-> 	 Andrew
+Maybe having a flag like RINGBUF_NO_WAKEUP in bpf_ringbuf_submit()
+will suffice? And if there is a helper or some way to obtain a
+number of unconsumed items, I can implement my own flushing policy.
