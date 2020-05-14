@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D1D1D3B52
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:05:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D90B1D3B17
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:05:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729435AbgENTBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 15:01:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56182 "EHLO mail.kernel.org"
+        id S1729417AbgENSzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 14:55:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56200 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729403AbgENSze (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 14:55:34 -0400
+        id S1729409AbgENSzf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 14:55:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 20F2F206DC;
-        Thu, 14 May 2020 18:55:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 35ABD20767;
+        Thu, 14 May 2020 18:55:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589482533;
-        bh=sKKycsNvZwdMi/ig82103IsNNPEMODqd4qw0y2HS1+M=;
+        s=default; t=1589482534;
+        bh=9GzWxBO8/iHAr1o73uXtof/2xhJKnVVU1Oqw6f6kE+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s9GcdBnYSNzElu/7Zdyf9AT7Shu4U6Cio8+64k7ZF/OUHgkd96zQhLO3mZfv6Y11G
-         xZF+kzx2/3AS9NC76QFr84rqZ9CZ4JsYj90tHLJ6Ya1PKwbCkn7vgB9oC7HxBM34O1
-         t3HuZ2jItExr6j2T/jA+Pxq0ttxv4HNH5katmetM=
+        b=MAJu2COTBi/Qpopkm8njqSYEKC63ZNAbypN+OksIjIQX+QO5uweyHeswQGsstQ1j9
+         UvFI/LppOx83OyTrfry9/hvRVphqysgASnHwFH5j4P7u3JP7y9801aSSaXW0V9/FQh
+         HH3EIWbXyaplbYrGH6gtlGpH7P9rVaUr9uGnG5ls=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Scott Dial <scott@scottdial.com>,
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 27/39] net: macsec: preserve ingress frame ordering
-Date:   Thu, 14 May 2020 14:54:44 -0400
-Message-Id: <20200514185456.21060-27-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 28/39] net: moxa: Fix a potential double 'free_irq()'
+Date:   Thu, 14 May 2020 14:54:45 -0400
+Message-Id: <20200514185456.21060-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200514185456.21060-1-sashal@kernel.org>
 References: <20200514185456.21060-1-sashal@kernel.org>
@@ -43,78 +43,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Scott Dial <scott@scottdial.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit ab046a5d4be4c90a3952a0eae75617b49c0cb01b ]
+[ Upstream commit ee8d2267f0e39a1bfd95532da3a6405004114b27 ]
 
-MACsec decryption always occurs in a softirq context. Since
-the FPU may not be usable in the softirq context, the call to
-decrypt may be scheduled on the cryptd work queue. The cryptd
-work queue does not provide ordering guarantees. Therefore,
-preserving order requires masking out ASYNC implementations
-of gcm(aes).
+Should an irq requested with 'devm_request_irq' be released explicitly,
+it should be done by 'devm_free_irq()', not 'free_irq()'.
 
-For instance, an Intel CPU with AES-NI makes available the
-generic-gcm-aesni driver from the aesni_intel module to
-implement gcm(aes). However, this implementation requires
-the FPU, so it is not always available to use from a softirq
-context, and will fallback to the cryptd work queue, which
-does not preserve frame ordering. With this change, such a
-system would select gcm_base(ctr(aes-aesni),ghash-generic).
-While the aes-aesni implementation prefers to use the FPU, it
-will fallback to the aes-asm implementation if unavailable.
-
-By using a synchronous version of gcm(aes), the decryption
-will complete before returning from crypto_aead_decrypt().
-Therefore, the macsec_decrypt_done() callback will be called
-before returning from macsec_decrypt(). Thus, the order of
-calls to macsec_post_decrypt() for the frames is preserved.
-
-While it's presumable that the pure AES-NI version of gcm(aes)
-is more performant, the hybrid solution is capable of gigabit
-speeds on modest hardware. Regardless, preserving the order
-of frames is paramount for many network protocols (e.g.,
-triggering TCP retries). Within the MACsec driver itself, the
-replay protection is tripped by the out-of-order frames, and
-can cause frames to be dropped.
-
-This bug has been present in this code since it was added in
-v4.6, however it may not have been noticed since not all CPUs
-have FPU offload available. Additionally, the bug manifests
-as occasional out-of-order packets that are easily
-misattributed to other network phenomena.
-
-When this code was added in v4.6, the crypto/gcm.c code did
-not restrict selection of the ghash function based on the
-ASYNC flag. For instance, x86 CPUs with PCLMULQDQ would
-select the ghash-clmulni driver instead of ghash-generic,
-which submits to the cryptd work queue if the FPU is busy.
-However, this bug was was corrected in v4.8 by commit
-b30bdfa86431afbafe15284a3ad5ac19b49b88e3, and was backported
-all the way back to the v3.14 stable branch, so this patch
-should be applicable back to the v4.6 stable branch.
-
-Signed-off-by: Scott Dial <scott@scottdial.com>
+Fixes: 6c821bd9edc9 ("net: Add MOXA ART SoCs ethernet driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/moxa/moxart_ether.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 926e2eb528fd4..4a92160394c07 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1309,7 +1309,8 @@ static struct crypto_aead *macsec_alloc_tfm(char *key, int key_len, int icv_len)
- 	struct crypto_aead *tfm;
- 	int ret;
+diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
+index 2e4effa9fe456..beb730ff5d421 100644
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -561,7 +561,7 @@ static int moxart_remove(struct platform_device *pdev)
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
  
--	tfm = crypto_alloc_aead("gcm(aes)", 0, 0);
-+	/* Pick a sync gcm(aes) cipher to ensure order is preserved. */
-+	tfm = crypto_alloc_aead("gcm(aes)", 0, CRYPTO_ALG_ASYNC);
+ 	unregister_netdev(ndev);
+-	free_irq(ndev->irq, ndev);
++	devm_free_irq(&pdev->dev, ndev->irq, ndev);
+ 	moxart_mac_free_memory(ndev);
+ 	free_netdev(ndev);
  
- 	if (IS_ERR(tfm))
- 		return tfm;
 -- 
 2.20.1
 
