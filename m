@@ -2,101 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 228431D2DE7
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 13:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 942661D2DFD
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 13:16:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725999AbgENLLk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 14 May 2020 07:11:40 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:49492 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726190AbgENLLj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 07:11:39 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-265-AUtpnFh1OOqNFr-2xQZocg-1; Thu, 14 May 2020 12:11:35 +0100
-X-MC-Unique: AUtpnFh1OOqNFr-2xQZocg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 14 May 2020 12:11:34 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 14 May 2020 12:11:34 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Christoph Hellwig' <hch@lst.de>
-CC:     'Joe Perches' <joe@perches.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Alexey Kuznetsov" <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>,
-        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
-        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
-        "cluster-devel@redhat.com" <cluster-devel@redhat.com>,
-        "ocfs2-devel@oss.oracle.com" <ocfs2-devel@oss.oracle.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "ceph-devel@vger.kernel.org" <ceph-devel@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>
-Subject: RE: remove kernel_setsockopt and kernel_getsockopt
-Thread-Topic: remove kernel_setsockopt and kernel_getsockopt
-Thread-Index: AQHWKU15LJmP4mOGDE2/GHhLszFt9KinP7aQgAAO/ACAABIowP//8l8AgAAaF3A=
-Date:   Thu, 14 May 2020 11:11:34 +0000
-Message-ID: <c2034daa0a23454abb5e5c5714807735@AcuMS.aculab.com>
-References: <20200513062649.2100053-1-hch@lst.de>
- <ecc165c33962d964d518c80de605af632eee0474.camel@perches.com>
- <756758e8f0e34e2e97db470609f5fbba@AcuMS.aculab.com>
- <20200514101838.GA12548@lst.de>
- <a76440f7305c4653877ff2abff499f4e@AcuMS.aculab.com>
- <20200514103450.GA12901@lst.de>
-In-Reply-To: <20200514103450.GA12901@lst.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726341AbgENLQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 07:16:01 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29415 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726010AbgENLQB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 07:16:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589454960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=y8RbUxHYnrrR8+JblLME7HF9A4PH2pMKn/uDVIUW1T4=;
+        b=QsuGcfZ7VKSaplEay58odTvNrNZ59RQtBZAPKh9v0DaEzE8pzXkwGXn9NXN6hTabg1xqcD
+        CjUs13u2yX3k+C8xZ8dazY0YNQNMZGaxyH3+hnfxBp2bqiKNJaVNoohYp59Mg1v4RHKF3h
+        0fk5vTNfIDwtUUJJ2vAD+PQ+QGgH4/E=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-283-h-yimdJeMiexqtghCnu3GA-1; Thu, 14 May 2020 07:15:58 -0400
+X-MC-Unique: h-yimdJeMiexqtghCnu3GA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F11E21005512;
+        Thu, 14 May 2020 11:15:56 +0000 (UTC)
+Received: from [10.72.12.111] (ovpn-12-111.pek2.redhat.com [10.72.12.111])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 692D810013D9;
+        Thu, 14 May 2020 11:15:54 +0000 (UTC)
+Subject: Re: netfilter: does the API break or something else ?
+To:     Phil Sutter <phil@nwl.cc>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Patrick Donnelly <pdonnell@redhat.com>
+References: <cf0d02b2-b1db-7ef6-41b8-7c345b7d53d5@redhat.com>
+ <20200514105422.GO17795@orbyte.nwl.cc>
+From:   Xiubo Li <xiubli@redhat.com>
+Message-ID: <13fdc06c-42b2-7239-7c40-dc4814c5e5c4@redhat.com>
+Date:   Thu, 14 May 2020 19:15:49 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200514105422.GO17795@orbyte.nwl.cc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: 'Christoph Hellwig'
-> Sent: 14 May 2020 11:35
-> On Thu, May 14, 2020 at 10:26:41AM +0000, David Laight wrote:
-> > From: Christoph Hellwig
-> > > Only for those were we have users, and all those are covered.
-> >
-> > What do we tell all our users when our kernel SCTP code
-> > no longer works?
-> 
-> We only care about in-tree modules, just like for every other interface
-> in the kernel.
+On 2020/5/14 18:54, Phil Sutter wrote:
+> Hi,
+>
+> On Wed, May 13, 2020 at 11:20:35PM +0800, Xiubo Li wrote:
+>> Recently I hit one netfilter issue, it seems the API breaks or something
+>> else.
+> Just for the record, this was caused by a misconfigured kernel.
 
-Even if our management agreed to release the code and the code
-layout matched the kernel guidelines you still wouldn't want
-two large drivers that implement telephony functionality
-for hardware that very few people actually have.
+Yeah, thanks Phil for your help.
 
-	David
+BRs
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Xiubo
+
+
+> Cheers, Phil
+>
 
