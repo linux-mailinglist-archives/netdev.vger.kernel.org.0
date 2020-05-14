@@ -2,96 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C7F1D2357
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 02:00:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9375C1D2364
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 02:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732865AbgENAAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 20:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732861AbgENAAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 20:00:00 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB717C061A0E
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 16:59:59 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id a21so1478430ljj.11
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 16:59:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fasYih196bvKUHb0YCxHna3fp2u2qNy7HWnYHVsQ+sQ=;
-        b=fD3hyHvKHx/67q1VTFKCR74zDcE6394aAhGXhl0a0C48TMMb4AnhPQvs7IdErH6CX2
-         um+ec95QL1F0EfXLmER3SmoJ0T+gygc4SnxysABRELnzBjVWudgYOLaUmLBf8bjna0/G
-         B5XXX5vTTIkGXj8ZYK86YltWbiai+htzLW22s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fasYih196bvKUHb0YCxHna3fp2u2qNy7HWnYHVsQ+sQ=;
-        b=mLl09OXdmQ++fKeLhT5/HugiBlw/FUi97xNlHvvAeNHkXuC+4gb9jJesEyI+NBclb/
-         bYDEdUqnE/FZ8pKxkPZr+bLHbpa2vP07l7JIhtuLXTtAN5XXNSheQHJ/HSQQxCXO0OuR
-         lYZd3U59S1JSfAl+N/jnICqAxNnMs/sSXvShyMa414ROCW4soOCX7vg/Q+W1D/hPan4q
-         Z3MZ0jocF550YoLm+N5aMI+R53MDFScLCD45odWmwNsC2VVPErhmtdjRHV9Phf4I3dMP
-         A6aG2FObYBkpVwXnX1z5xl+9dyiY476RmljbilkANohV1VFbAbJOqmG//b3olmSrEf4Y
-         hfpQ==
-X-Gm-Message-State: AOAM533T8d/wR7/NT9Vxk9AHu4roBSo8wMFljvrXrPRDQVkXcCpaUU0w
-        lxnRlWQ4FPv23hVfqabCyG9jQAq9tHg=
-X-Google-Smtp-Source: ABdhPJx2KCUMnSSfOJoatx0HifMQrkoL/mEVWAA3XVgyqBpnBP144G6XLSw+gilM3VU6H5Md8pXyVg==
-X-Received: by 2002:a05:651c:1104:: with SMTP id d4mr919677ljo.128.1589414397738;
-        Wed, 13 May 2020 16:59:57 -0700 (PDT)
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com. [209.85.208.179])
-        by smtp.gmail.com with ESMTPSA id a8sm444100ljp.102.2020.05.13.16.59.56
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 May 2020 16:59:56 -0700 (PDT)
-Received: by mail-lj1-f179.google.com with SMTP id g1so1499424ljk.7
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 16:59:56 -0700 (PDT)
-X-Received: by 2002:a05:651c:319:: with SMTP id a25mr857486ljp.209.1589414396039;
- Wed, 13 May 2020 16:59:56 -0700 (PDT)
+        id S1732904AbgENAIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 20:08:11 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:46289 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732871AbgENAIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 20:08:10 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 49MsLw3X4Zz1qs4G;
+        Thu, 14 May 2020 02:08:03 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 49MsLq0YsBz1qql9;
+        Thu, 14 May 2020 02:08:03 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id FGV454qE_zRi; Thu, 14 May 2020 02:08:01 +0200 (CEST)
+X-Auth-Info: nFUiQv7MENDWOjl0V7Nwi/uQQTTbmN9or++k8YbI2UI=
+Received: from desktop.lan (ip-86-49-35-8.net.upcbroadband.cz [86.49.35.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu, 14 May 2020 02:08:01 +0200 (CEST)
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH V5 00/19] net: ks8851: Unify KS8851 SPI and MLL drivers
+Date:   Thu, 14 May 2020 02:07:28 +0200
+Message-Id: <20200514000747.159320-1-marex@denx.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200513160038.2482415-1-hch@lst.de> <20200513160038.2482415-12-hch@lst.de>
- <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
- <20200513192804.GA30751@lst.de> <0c1a7066-b269-9695-b94a-bb5f4f20ebd8@iogearbox.net>
- <20200514082054.f817721ce196f134e6820644@kernel.org>
-In-Reply-To: <20200514082054.f817721ce196f134e6820644@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 13 May 2020 16:59:40 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjBKGLyf1d53GwfUTZiK_XPdujwh+u2XSpD2HWRV01Afw@mail.gmail.com>
-Message-ID: <CAHk-=wjBKGLyf1d53GwfUTZiK_XPdujwh+u2XSpD2HWRV01Afw@mail.gmail.com>
-Subject: Re: [PATCH 11/18] maccess: remove strncpy_from_unsafe
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Christoph Hellwig <hch@lst.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org,
-        linux-um <linux-um@lists.infradead.org>,
-        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 4:21 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
->
-> For trace_kprobe.c current order (kernel -> user fallback) is preferred
-> because it has another function dedicated for user memory.
+The KS8851SNL/SNLI and KS8851-16MLL/MLLI/MLLU are very much the same pieces
+of silicon, except the former has an SPI interface, while the later has a
+parallel bus interface. Thus far, Linux has two separate drivers for each
+and they are diverging considerably.
 
-Well, then it should just use the "strict" kernel-only one for the
-non-user memory.
+This series unifies them into a single driver with small SPI and parallel
+bus specific parts. The approach here is to first separate out the SPI
+specific parts into a separate file, then add parallel bus accessors in
+another separate file and then finally remove the old parallel bus driver.
+The reason for replacing the old parallel bus driver is because the SPI
+bus driver is much higher quality.
 
-But yes, if there are legacy interfaces, then we might want to say
-"these continue to work for the legacy case on platforms where we can
-tell which kind of pointer it is from the bit pattern".
+Marek Vasut (19):
+  net: ks8851: Factor out spi->dev in probe()/remove()
+  net: ks8851: Rename ndev to netdev in probe
+  net: ks8851: Replace dev_err() with netdev_err() in IRQ handler
+  net: ks8851: Pass device node into ks8851_init_mac()
+  net: ks8851: Use devm_alloc_etherdev()
+  net: ks8851: Use dev_{get,set}_drvdata()
+  net: ks8851: Remove ks8851_rdreg32()
+  net: ks8851: Use 16-bit writes to program MAC address
+  net: ks8851: Use 16-bit read of RXFC register
+  net: ks8851: Factor out bus lock handling
+  net: ks8851: Factor out SKB receive function
+  net: ks8851: Split out SPI specific entries in struct ks8851_net
+  net: ks8851: Split out SPI specific code from probe() and remove()
+  net: ks8851: Factor out TX work flush function
+  net: ks8851: Permit overridding interrupt enable register
+  net: ks8851: Implement register, FIFO, lock accessor callbacks
+  net: ks8851: Separate SPI operations into separate file
+  net: ks8851: Implement Parallel bus operations
+  net: ks8851: Remove ks8851_mll.c
 
-But we should likely at least disallow it entirely on platforms where
-we really can't - or pick one hardcoded choice. On sparc, you really
-_have_ to specify one or the other.
+ drivers/net/ethernet/micrel/Kconfig           |    2 +
+ drivers/net/ethernet/micrel/Makefile          |    2 +
+ drivers/net/ethernet/micrel/ks8851.h          |  141 +-
+ .../micrel/{ks8851.c => ks8851_common.c}      |  697 ++-------
+ drivers/net/ethernet/micrel/ks8851_mll.c      | 1393 -----------------
+ drivers/net/ethernet/micrel/ks8851_par.c      |  348 ++++
+ drivers/net/ethernet/micrel/ks8851_spi.c      |  482 ++++++
+ 7 files changed, 1112 insertions(+), 1953 deletions(-)
+ rename drivers/net/ethernet/micrel/{ks8851.c => ks8851_common.c} (62%)
+ delete mode 100644 drivers/net/ethernet/micrel/ks8851_mll.c
+ create mode 100644 drivers/net/ethernet/micrel/ks8851_par.c
+ create mode 100644 drivers/net/ethernet/micrel/ks8851_spi.c
 
-                  Linus
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Petr Stetiar <ynezz@true.cz>
+Cc: YueHaibing <yuehaibing@huawei.com>
+
+-- 
+2.25.1
+
