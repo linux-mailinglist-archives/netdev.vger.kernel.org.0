@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8314C1D3BB1
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE3931D3BAB
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730123AbgENTEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 15:04:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54510 "EHLO mail.kernel.org"
+        id S1729723AbgENTEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 15:04:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54560 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728208AbgENSy2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 14:54:28 -0400
+        id S1729081AbgENSy3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 14:54:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 500D620727;
-        Thu, 14 May 2020 18:54:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 785302065F;
+        Thu, 14 May 2020 18:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589482468;
-        bh=p7LrcIN2u8PtDR0t/fQdNbSX8zdeab9pBvYyOINyCbY=;
+        s=default; t=1589482469;
+        bh=zLUCqSvC236bu0DFeMlfYuTWti5TF2S5odgN6soGDug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hV4hgJLq6Ha/h2j8vqdxO4mcTLZL8sn5B8lBhEZU034tMI9c07/E9aaDnmmH2cri5
-         9onVjs3IdQZpPGn+9rHls2ULacc0nLEzPsnv6l5d055+IrL1PUPQJY3Du5do6eLNKO
-         JmE2b4exwssEUR5WRXKUphmNmSAMkMnzuA0nGBpE=
+        b=HkIbOZ45IR32CTCmrzXz//gbyBYPcUXKq4vy7Gp0bVSHp3ooLncsVfI7Ov06yQLlk
+         O0R0gMOqZUklJHBHGAjJn4yBi/snAGamboYhnQ0nuGJEbtTBHLqmP2r1q69JRw9Hn8
+         iFZw6UkeiHqGseKJ63Lfpk4dVALwY8FfP9jWa30E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Clark <richard.xnu.clark@gmail.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/31] aquantia: Fix the media type of AQC100 ethernet controller in the driver
-Date:   Thu, 14 May 2020 14:53:53 -0400
-Message-Id: <20200514185413.20755-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 12/31] net/sonic: Fix a resource leak in an error handling path in 'jazz_sonic_probe()'
+Date:   Thu, 14 May 2020 14:53:54 -0400
+Message-Id: <20200514185413.20755-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200514185413.20755-1-sashal@kernel.org>
 References: <20200514185413.20755-1-sashal@kernel.org>
@@ -44,36 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Richard Clark <richard.xnu.clark@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 6de556c31061e3b9c36546ffaaac5fdb679a2f14 ]
+[ Upstream commit 10e3cc180e64385edc9890c6855acf5ed9ca1339 ]
 
-The Aquantia AQC100 controller enables a SFP+ port, so the driver should
-configure the media type as '_TYPE_FIBRE' instead of '_TYPE_TP'.
+A call to 'dma_alloc_coherent()' is hidden in 'sonic_alloc_descriptors()',
+called from 'sonic_probe1()'.
 
-Signed-off-by: Richard Clark <richard.xnu.clark@gmail.com>
-Cc: Igor Russkikh <irusskikh@marvell.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Acked-by: Igor Russkikh <irusskikh@marvell.com>
+This is correctly freed in the remove function, but not in the error
+handling path of the probe function.
+Fix it and add the missing 'dma_free_coherent()' call.
+
+While at it, rename a label in order to be slightly more informative.
+
+Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/natsemi/jazzsonic.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index 750007513f9dc..43dbfb228b0e5 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -60,7 +60,7 @@ static const struct aq_board_revision_s hw_atl_boards[] = {
- 	{ AQ_DEVICE_ID_D108,	AQ_HWREV_2,	&hw_atl_ops_b0, &hw_atl_b0_caps_aqc108, },
- 	{ AQ_DEVICE_ID_D109,	AQ_HWREV_2,	&hw_atl_ops_b0, &hw_atl_b0_caps_aqc109, },
+diff --git a/drivers/net/ethernet/natsemi/jazzsonic.c b/drivers/net/ethernet/natsemi/jazzsonic.c
+index 51fa82b429a3c..40970352d2082 100644
+--- a/drivers/net/ethernet/natsemi/jazzsonic.c
++++ b/drivers/net/ethernet/natsemi/jazzsonic.c
+@@ -235,11 +235,13 @@ static int jazz_sonic_probe(struct platform_device *pdev)
  
--	{ AQ_DEVICE_ID_AQC100,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc107, },
-+	{ AQ_DEVICE_ID_AQC100,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc100, },
- 	{ AQ_DEVICE_ID_AQC107,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc107, },
- 	{ AQ_DEVICE_ID_AQC108,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc108, },
- 	{ AQ_DEVICE_ID_AQC109,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc109, },
+ 	err = register_netdev(dev);
+ 	if (err)
+-		goto out1;
++		goto undo_probe1;
+ 
+ 	return 0;
+ 
+-out1:
++undo_probe1:
++	dma_free_coherent(lp->device, SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
++			  lp->descriptors, lp->descriptors_laddr);
+ 	release_mem_region(dev->base_addr, SONIC_MEM_SIZE);
+ out:
+ 	free_netdev(dev);
 -- 
 2.20.1
 
