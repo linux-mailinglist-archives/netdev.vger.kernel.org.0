@@ -2,120 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B801D3511
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 17:28:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 126141D3561
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 17:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726197AbgENP22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 11:28:28 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:45512 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726056AbgENP21 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 11:28:27 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 290C96004F;
-        Thu, 14 May 2020 15:28:27 +0000 (UTC)
-Received: from us4-mdac16-5.ut7.mdlocal (unknown [10.7.65.73])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 272318009B;
-        Thu, 14 May 2020 15:28:27 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.198])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9B9E2280077;
-        Thu, 14 May 2020 15:28:26 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ED40C80067;
-        Thu, 14 May 2020 15:28:25 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 14 May
- 2020 16:28:18 +0100
-Subject: Re: [PATCH net-next 0/3] net/sched: act_ct: Add support for
- specifying tuple offload policy
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        "David Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-References: <1589464110-7571-1-git-send-email-paulb@mellanox.com>
- <3d780eae-3d53-77bb-c3b9-775bf50477bf@solarflare.com>
- <20200514144938.GD2676@nanopsycho>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <9f68872f-fe3f-e86a-4c74-8b33cd9ee433@solarflare.com>
-Date:   Thu, 14 May 2020 16:28:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726492AbgENPlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 11:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726937AbgENPlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 11:41:20 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81FE9C061A0C
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 08:41:18 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id o7so24926868oif.2
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 08:41:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=awnbTGIXklZW5yvjH8VDoOTQPbPwhwX3A7OQXsPfVhg=;
+        b=v1RSwKpggRq/fTuogA9mjrs3n10qTzDDgLPZFV/1/YoT/VPlWividnhNPI+b7RwQvY
+         rOZ9fgs51tj9CdSbPIFtc3oTrDmFvLYzvcZTEzjjEh4DhO/WHjmh6xCDi5a34AwGyX2A
+         IqdDRZmjqk+lSR2cp41Sn8k0JM923C2PwN3vk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=awnbTGIXklZW5yvjH8VDoOTQPbPwhwX3A7OQXsPfVhg=;
+        b=hRcsxhXjHMtjM/l7W4WBk7i8N3fC41/N72M5LcwWqcayTiIq8QlTML8Hon89yeBVTF
+         dshvsihEc6kk0uf+ZrD7UoNllY+eT9YOCIIsso0KnjBbbme7BjHzaLjBgkkmNZ6z3eoQ
+         IjSFOKnNf9jlsXuXW+BvpwO5VmAuP/rSaOOXkBSyBhRrBBaGD1S398/m0I0rDMkKk+qF
+         A7/TDb8joejjgWXRNIrF03gTnr0yhyOrV/Y4TcQlZVHvzKk+vaWh8OvfZ31R9B/y12fG
+         K4IhcVwYO9L5O3+3PFav3rQble1w0/UoEmJJzwrtLKtSqgRLSQ0T485MqqEwkTgT+JT+
+         pixQ==
+X-Gm-Message-State: AGi0PubAF10zpYBPodgGIZwTVnbmT7hK3F+r70QOUUeL8UejSS9JWZfe
+        0dK+Kc95bM0wP8CpOzKoGgCNim4mf9X/4N5H7Zgtwg==
+X-Google-Smtp-Source: APiQypJ9C/9yTZ7jmSDKZFJKGmkA7cJwCOpUNjz2n2qFFWqYcaXk6ZO9YLZSPDlM4S1Dam4aFoIbch5Z+41LO3FSoFY=
+X-Received: by 2002:aca:c441:: with SMTP id u62mr32257615oif.110.1589470877832;
+ Thu, 14 May 2020 08:41:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200514144938.GD2676@nanopsycho>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25418.003
-X-TM-AS-Result: No-7.636200-8.000000-10
-X-TMASE-MatchedRID: WMT2WRIkHPPmLzc6AOD8DfHkpkyUphL9tb3wUEoASahjQ6o1zjtGHmly
-        s1PDhWLozIy4Q+OIZUdSRjDchGmLVbgbDPVqku26elGHXZKLL2vnaaW2UTafyDa3GWz2bI6y8L/
-        ILA9mjjEYo7RMqStNcbDwMtEIPtS51/wsMGlHprqTCCj1265aFzQAl7cHmp8GvPwQoyIZS6ec/2
-        wcFt9opK1u9NkuhgWrLE9oBaZFmG8PYhHfxrN+Web3p4cnIXGNSWg+u4ir2NOQ4Ed55cYAep0lh
-        LiscuITjv6fRVEmNSozEHCDmE/LW/V/oQGRS0ppSVHYMTQ1F1qATgUFUNHeQ0l/J9Ro+MABMbzd
-        fw2kMg0rqZTTVWKH2K2dpW2xaCxL/VKd+1TPKc6/W88A/PbYWczzMs2dyeyVUCgEErrUGFwaVcz
-        YFcSVKMIXpS6Zk3foQIHljAlJOfGfImtD24d/xJ4CIKY/Hg3AcmfM3DjaQLHEQdG7H66TyMdRT5
-        TQAJnAG0IV3ngEbr3RqRsfyHxKmn5sRqrftACXPkGoS9kJm8+eqD9WtJkSIw==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.636200-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25418.003
-X-MDID: 1589470107-M8g8fmyk0Lhy
+References: <CACAyw9_4Uzh0GqAR16BfEHQ0ZWHKGUKacOQwwhwsfhdCTMtsNQ@mail.gmail.com>
+ <b93b4ad2-0cf0-81e0-b2b0-664248b3630f@gmail.com>
+In-Reply-To: <b93b4ad2-0cf0-81e0-b2b0-664248b3630f@gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 14 May 2020 16:41:06 +0100
+Message-ID: <CACAyw9-95He2yq0qoxuWFy3wqQt1kAtAQcRw2UTrqse2hUq1tA@mail.gmail.com>
+Subject: Re: "Forwarding" from TC classifier
+To:     David Ahern <dsahern@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Martynas Pumputis <m@lambda.lt>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/05/2020 15:49, Jiri Pirko wrote:
-> Thu, May 14, 2020 at 04:04:02PM CEST, ecree@solarflare.com wrote:
->> Either way, the need to repeat the policy on every tc command suggests
->>  that there really ought to instead be a separate API for configuring
->>  conntrack offload policy, either per zone or per (zone, device) pair,
->>  as appropriate.
-> You don't have to repeat. You specify it in the first one, in the rest
-> you omit it.
-Ok, well (a) the commit message needs changing to make that clear, and
- (b) that kind of implicit action-at-a-distance slightly bothers me.
-If you don't repeat, then the order of tc commands matters, and any
- program (e.g. OvS) generating these commands will need to either keep
- track of which zones it's configured policy for already, or just
- repeat on every command just in case.
-It really doesn't feel like an orthogonal, Unixy API to me.
+On Wed, 13 May 2020 at 18:48, David Ahern <dsahern@gmail.com> wrote:
+>
+> On 5/13/20 10:40 AM, Lorenz Bauer wrote:
+> > We've recently open sourced a key component of our L4 load balancer:
+> > cls_redirect [1].
+> > In the commit description, I call out the following caveat:
+> >
+> >     cls_redirect relies on receiving encapsulated packets directly
+> > from a router. This is
+> >     because we don't have access to the neighbour tables from BPF, yet.
+>
+> Can you explain more about this limitation? Why does access to neighbor
+> tables solve the problem?
 
-<offtopic rambliness="very">
-TBH I think that when a tc rule with a ct action is offloaded, drivers
- should get three callbacks in order:
-1) a CT zone callback (if the CT zone is 'new')
-2) an action callback, including a pointer to the CT zone info (in case
-  the driver chose to ignore the CT zone callback because it had no
-   offloading work to do at that point) (if the action is 'new')
-3) a rule callback, including a pointer to the action info (in case the
-   driver ignored the action creation).
-And each of these should be drivable directly from userspace as well as
- being called automatically by the level below it.
-Currently we have (2) as a distinct entity in TC, but no-one offloads
- it (and as I've ranted before, that makes a mess of stats) and AIUI
- it's not called when user creates a rule, only when using 'tc action'
- command directly).  And (1) doesn't exist at all; drivers just have
- to notice the first time a tc ct action they're offloading mentions a
- given zone, and call into nf_flow_table_offload to register for
- tracked conns in that zone.  I feel that this hierarchical 'offload
- dependencies first' model would make drivers simpler and more robust,
- as well as helping to ensure different drivers share a consistent
- interpretation of the API.
-RFC on the above?  Obviously I'm not likely to start implementing it
- until after we have a TC-supporting sfc driver upstream (it's coming
- Real Soon Now™, I swear!) but I thought it worthwhile to throw the
- design up for discussion earlier rather than later.
-</offtopic>
+We want to forward the packet to another machine, based on an IP address
+stored in our custom encapsulation header.
+If we always receive packets from a router we can plug in the new IP, swap
+the MAC and send the packet back to the router. Inefficient, but it means we
+don't have to deal with MAC addresses ourselves.
 
--ed
+I think I use the wrong terminology, sorry. By "access to the neighbour table"
+I mean being able to go from IP to MAC address.
+
+>
+> >
+> > The code in question lives in forward_to_next_hop() [2], and does the following:
+> > 1. Swap source and destination MAC of the packet
+> > 2. Update source and destination IP address
+> > 3. Transmit the packet via bpf_redirect(skb->ifindex, 0)
+> >
+> > Really, I'd like to get rid of step 1, and instead rely on the network
+> > stack to switch or route
+> > the packet for me. The bpf_fib_lookup helper is very close to what I need. I've
+> > hacked around a bit, and come up with the following replacement for step 1:
+> >
+> >     switch (bpf_fib_lookup(skb, &fib, sizeof(fib), 0)) {
+> >     case BPF_FIB_LKUP_RET_SUCCESS:
+> >         /* There is a cached neighbour, bpf_redirect without going
+> > through the stack. */
+> >         return bpf_redirect(...);
+> >
+> >     case BPF_FIB_LKUP_RET_NO_NEIGH:
+> >         /* We have no information about this target. Let the stack handle it. */
+> >         return TC_ACT_OK;
+> >
+> >     case BPF_FIB_LKUP_RET_FWD_DISABLED:
+> >         return TC_ACT_SHOT;
+> >
+> >     default:
+> >         return TC_ACT_SHOT;
+> >     }
+> >
+> > I have a couple of questions:
+> >
+> > First, I think I can get BPF_FIB_LKUP_RET_NO_NEIGH if the packet needs
+> > to be routed,
+> > but there is no neighbour entry for the default gateway. Is that correct?
+>
+> Correct.
+>
+> >
+> > Second, is it possible to originate the packet from the local machine,
+> > instead of keeping
+> > the original source address when passing the packet to the stack on NO_NEIGH?
+>
+> Network address or MAC address? Swapping the network address is not a
+> usual part of routing a packet so I presume you mean mac but just making
+> sure. Swapping mac addresses should be done for all routed packets.
+
+No, I'd like to do network address swapping. The code already swaps MAC.
+Basically, I'd like to pretend that I'm outputting a new packet.
+
+Just setting the source network address and then doing TC_ACT_OK doesn't
+work due to sysctl accept_local=0.
+
+>
+> > This is what I get with my current approach:
+> >
+> >   IP (tos 0x0, ttl 64, id 25769, offset 0, flags [DF], proto UDP (17),
+> > length 124)
+> >       10.42.0.2.37074 > 10.42.0.4.2483: [bad udp cksum 0x14d3 ->
+> > 0x3c0d!] UDP, length 96
+> >   IP (tos 0x0, ttl 63, id 25769, offset 0, flags [DF], proto UDP (17),
+> > length 124)
+> >       10.42.0.2.37074 > 10.42.0.3.2483: [no cksum] UDP, length 96
+> >   IP (tos 0x0, ttl 64, id 51342, offset 0, flags [none], proto ICMP
+> > (1), length 84)
+> >       10.42.0.3 > 10.42.0.2: ICMP echo reply, id 33779, seq 0, length 64
+> >
+> > The first and second packet are using our custom GUE header, they
+> > contain an ICMP echo request. Packet three contains the answer to the
+> > request. As you can see, the second packet keeps the 10.42.0.2 source
+> > address instead of using 10.42.0.4.
+> >
+> > Third, what effect does BPF_FIB_LOOKUP_OUTPUT have? Seems like I should set it,
+> > but I get somewhat sensible results without it as well. Same for LOOKUP_DIRECT.
+>
+> BPF_FIB_LOOKUP_OUTPUT affects the flow parameters passed to the FIB lookup:
+>         if (flags & BPF_FIB_LOOKUP_OUTPUT) {
+>                 fl4.flowi4_iif = 1;
+>                 fl4.flowi4_oif = params->ifindex;
+>         } else {
+>                 fl4.flowi4_iif = params->ifindex;
+>                 fl4.flowi4_oif = 0;
+>         }
+>
+> iif / oif set can have an influence on the FIB lookup result - e.g., FIB
+> rules directing the lookup to a table or requiring the lookup result to
+> use the specified device.
+>
+> Usually, 'output' is for locally generated traffic headed out. XDP
+> programs run on ingress are from an Rx perspective and do the lookup
+> from the perspective of 'is this forwarded or locally delivered'.
+
+What if the XDP encapsulates the packet? At this point I know that I
+want to forward it elsewhere. Would that use LOOKUP_OUTPUT?
+
+Thanks!
+
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
