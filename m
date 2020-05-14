@@ -2,75 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC25C1D2474
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 03:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD4241D2464
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 03:00:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbgENBJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 21:09:02 -0400
-Received: from 220-134-220-36.HINET-IP.hinet.net ([220.134.220.36]:52993 "EHLO
-        ns.kevlo.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725943AbgENBJB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 21:09:01 -0400
-Received: from ns.kevlo.org (localhost [127.0.0.1])
-        by ns.kevlo.org (8.15.2/8.15.2) with ESMTPS id 04E0vaXM094977
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 14 May 2020 08:57:37 +0800 (CST)
-        (envelope-from kevlo@ns.kevlo.org)
-Received: (from kevlo@localhost)
-        by ns.kevlo.org (8.15.2/8.15.2/Submit) id 04E0vYvb094976;
-        Thu, 14 May 2020 08:57:34 +0800 (CST)
-        (envelope-from kevlo)
-Date:   Thu, 14 May 2020 08:57:33 +0800
-From:   Kevin Lo <kevlo@kevlo.org>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next] net: phy: broadcom: fix BCM54XX_SHD_SCR3_TRDDAPD
- value for BCM54810
-Message-ID: <20200514005733.GA94953@ns.kevlo.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.8.0 (2017-02-23)
+        id S1726089AbgENBAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 21:00:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59754 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725942AbgENBAP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 May 2020 21:00:15 -0400
+Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E5F482054F;
+        Thu, 14 May 2020 01:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589418014;
+        bh=iL3qRo6PKMlX7MXjMuhMdIo6UsuawSg8IZnaTVQPWcw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eMXyaK/bX8VY/yTLe5XB8JtMJrtcjjev1fGQABBIMNzXe1l1nVaonllA6Js7jUFE/
+         roA4DNirFqPNV8zYvxpE5SZpnZrPScPhYauQnT6eTn3ErV59izLzTc8zoDjhqVpUBV
+         xIAKU4KFe9w7hOY+jhok+DYEHeqUtAEj9JByg/IQ=
+Date:   Thu, 14 May 2020 10:00:09 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Christoph Hellwig <hch@lst.de>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 11/18] maccess: remove strncpy_from_unsafe
+Message-Id: <20200514100009.a8e6aa001f0ace5553c7904f@kernel.org>
+In-Reply-To: <CAHk-=wjBKGLyf1d53GwfUTZiK_XPdujwh+u2XSpD2HWRV01Afw@mail.gmail.com>
+References: <20200513160038.2482415-1-hch@lst.de>
+        <20200513160038.2482415-12-hch@lst.de>
+        <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
+        <20200513192804.GA30751@lst.de>
+        <0c1a7066-b269-9695-b94a-bb5f4f20ebd8@iogearbox.net>
+        <20200514082054.f817721ce196f134e6820644@kernel.org>
+        <CAHk-=wjBKGLyf1d53GwfUTZiK_XPdujwh+u2XSpD2HWRV01Afw@mail.gmail.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the correct bit when checking for PHY_BRCM_DIS_TXCRXC_NOENRGY on the 
-BCM54810 PHY.
+On Wed, 13 May 2020 16:59:40 -0700
+Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-Signed-off-by: Kevin Lo <kevlo@kevlo.org>
----
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 97201d5cf007..45d0aefb964c 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -225,8 +225,12 @@ static void bcm54xx_adjust_rxrefclk(struct phy_device *phydev)
- 	else
- 		val |= BCM54XX_SHD_SCR3_DLLAPD_DIS;
- 
--	if (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY)
--		val |= BCM54XX_SHD_SCR3_TRDDAPD;
-+	if (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY) {
-+		if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54810)
-+			val |= BCM54810_SHD_SCR3_TRDDAPD;
-+		else
-+			val |= BCM54XX_SHD_SCR3_TRDDAPD;
-+	}
- 
- 	if (orig != val)
- 		bcm_phy_write_shadow(phydev, BCM54XX_SHD_SCR3, val);
-diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
-index d41624db6de2..1d339a862f7b 100644
---- a/include/linux/brcmphy.h
-+++ b/include/linux/brcmphy.h
-@@ -255,6 +255,7 @@
- #define BCM54810_EXP_BROADREACH_LRE_MISC_CTL_EN	(1 << 0)
- #define BCM54810_SHD_CLK_CTL			0x3
- #define BCM54810_SHD_CLK_CTL_GTXCLK_EN		(1 << 9)
-+#define BCM54810_SHD_SCR3_TRDDAPD		0x0100
- 
- /* BCM54612E Registers */
- #define BCM54612E_EXP_SPARE0		(MII_BCM54XX_EXP_SEL_ETC + 0x34)
+> On Wed, May 13, 2020 at 4:21 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> >
+> >
+> > For trace_kprobe.c current order (kernel -> user fallback) is preferred
+> > because it has another function dedicated for user memory.
+> 
+> Well, then it should just use the "strict" kernel-only one for the
+> non-user memory.
+> 
+> But yes, if there are legacy interfaces, then we might want to say
+> "these continue to work for the legacy case on platforms where we can
+> tell which kind of pointer it is from the bit pattern".
+
+Yes, that was why I changed my mind and send reviewed-by last time.
+
+https://lore.kernel.org/bpf/20200511142716.f1ff6fc55220012982c47fec@kernel.org/
+
+> But we should likely at least disallow it entirely on platforms where
+> we really can't - or pick one hardcoded choice. On sparc, you really
+> _have_ to specify one or the other.
+
+OK. BTW, is there any way to detect the kernel/user space overlap on
+memory layout statically? If there, I can do it. (I don't like
+"if (CONFIG_X86)" thing....)
+Or, maybe we need CONFIG_ARCH_OVERLAP_ADDRESS_SPACE?
+
+Thank you,
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
