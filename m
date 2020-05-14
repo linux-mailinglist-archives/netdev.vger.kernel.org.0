@@ -2,100 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3BB1D24B1
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 03:31:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6F3C1D24B2
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 03:31:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726015AbgENBbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 21:31:05 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59362 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725925AbgENBbF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 21:31:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=BjLQ49QKum4+vSDHMFusHjxHjeRJ8/csaPYATyH0Yv4=; b=6AH71IZbv54jY0S2UI6aTDlnm6
-        jwVqEKqt+JdmJ55cM/53y4zmD7G5wcBJ+014SLmu3sXkZJZwOeGPfIrmDLWgrc7K5joN67LpRp3rm
-        nHalb2J7CU2QdZ0ToLJyRv0xHVycMEk1sd8G0LnuXJ3hM30xIy5/8vgmT2NxTat4nIFQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jZ2iF-002EpV-Kv; Thu, 14 May 2020 03:31:03 +0200
-Date:   Thu, 14 May 2020 03:31:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH V5 13/19] net: ks8851: Split out SPI specific code from
- probe() and remove()
-Message-ID: <20200514013103.GH527401@lunn.ch>
-References: <20200514000747.159320-1-marex@denx.de>
- <20200514000747.159320-14-marex@denx.de>
+        id S1726076AbgENBbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 21:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725925AbgENBbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 21:31:35 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35D4C061A0C
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 18:31:34 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id y9so530132plk.10
+        for <netdev@vger.kernel.org>; Wed, 13 May 2020 18:31:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qpQAsV7qVbh1eMfRUUpHXK0Vk6SL8k5prJG8El6faKc=;
+        b=N0tfZTUvAP8RRe8npm+6+W2Cs+zK3DlkD9qIFbjgBbkYeycglJuUF5b6ePl4rMGKs/
+         Ioupj3UbJqmNxD7CFkVBpsh+ndZvT9bd5ayiHZ4sd95OuPi+6Y/v24URqWbc5xk145es
+         RKPU6YsRU6/89iRQ6GaKa4fxQrPYLRcRBEfq5gcnQ4uJNaSlscgG2hE7K7Bvqo4lzSYm
+         ITJciAeNJpAaEI148r3JT/nux6+LNE5OnTlj4OIgwXpn4qYnrA/CwNQ2Q1apvL4diUWi
+         CZiJqcojyO8lOOPEeOrXMNjUqO/+8WCr9IszQhNLqmJtI2ehlPoJHWbqJtYBf60xmz7l
+         /Wqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qpQAsV7qVbh1eMfRUUpHXK0Vk6SL8k5prJG8El6faKc=;
+        b=Df/nRaAoZfiTlsggAE1XertR9rkerzHrZg4p+Sk423+BWeEDKTRMxm5HGBhrYaSGjJ
+         5TEVDV+wl9IkG91/IANVtiOQRq4FA/un7LhuO94OAOMe+obTwvlX1wJWfUnMjpMWlWRI
+         Zk28Kq8AK5y+dZFePqKHWvto0UJ+4xPtq8psznlVzW/UYlw13l9XZE4StQ2MyK5vMbXN
+         86ngDV/d9pb4SyjPaNnGemrF4+VLgnZONAdv6meOgInyWgDWwtWekJVspnN9ZbwUmiMM
+         6dbC0l5sZyQDSb5MsAYauoFclW1IEA1UgHBLwquuQAQXjJHc2I5ks7lNhGXB0Bf0T68Q
+         Kovw==
+X-Gm-Message-State: AOAM531S3sj/Mb1WorC91Q/x0nqBjUfPQooYFoDRxIbrWVF/WB44emcu
+        ET8OLrEfwfSyDL715FGh+8qfgYr9
+X-Google-Smtp-Source: ABdhPJz16qztDShl71bogsW3cYc3ngKWCMnymfnPBURgIRV+h5H2/UJQ3Gk5Pn1739n9Tw4tawTRCw==
+X-Received: by 2002:a17:902:8bc5:: with SMTP id r5mr1883800plo.218.1589419894111;
+        Wed, 13 May 2020 18:31:34 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id ay15sm169231pjb.18.2020.05.13.18.31.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 May 2020 18:31:32 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next] net: phy: broadcom: fix BCM54XX_SHD_SCR3_TRDDAPD
+ value for BCM54810
+To:     Kevin Lo <kevlo@kevlo.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20200514005733.GA94953@ns.kevlo.org>
+Message-ID: <63c86b00-171b-cdda-317f-1b14622a50d1@gmail.com>
+Date:   Wed, 13 May 2020 18:31:29 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200514000747.159320-14-marex@denx.de>
+In-Reply-To: <20200514005733.GA94953@ns.kevlo.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 14, 2020 at 02:07:41AM +0200, Marek Vasut wrote:
-> Factor out common code into ks8851_probe_common() and
-> ks8851_remove_common() to permit both SPI and parallel
-> bus driver variants to use the common code path for
-> both probing and removal.
+
+
+On 5/13/2020 5:57 PM, Kevin Lo wrote:
+> Set the correct bit when checking for PHY_BRCM_DIS_TXCRXC_NOENRGY on the 
+> BCM54810 PHY.
+
+Indeed, good catch!
 > 
-> There should be no functional change.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Lukas Wunner <lukas@wunner.de>
-> Cc: Petr Stetiar <ynezz@true.cz>
-> Cc: YueHaibing <yuehaibing@huawei.com>
+> Signed-off-by: Kevin Lo <kevlo@kevlo.org>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Is the following commit when it started to break?
+
+Fixes: 0ececcfc9267 ("net: phy: broadcom: Allow BCM54810 to use
+bcm54xx_adjust_rxrefclk()")
+
 > ---
-> V2: - Add RB from Andrew
->     - Rework on top of locking patches, drop RB
-> V3: No change
-> V4: No change
-> V5: Pass message enable as parameter to common probe function,
->     so the MODULE_* bits can be per-driver
-> ---
->  drivers/net/ethernet/micrel/ks8851.c | 86 ++++++++++++++++------------
->  1 file changed, 48 insertions(+), 38 deletions(-)
+> diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+> index 97201d5cf007..45d0aefb964c 100644
+> --- a/drivers/net/phy/broadcom.c
+> +++ b/drivers/net/phy/broadcom.c
+> @@ -225,8 +225,12 @@ static void bcm54xx_adjust_rxrefclk(struct phy_device *phydev)
+>  	else
+>  		val |= BCM54XX_SHD_SCR3_DLLAPD_DIS;
+>  
+> -	if (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY)
+> -		val |= BCM54XX_SHD_SCR3_TRDDAPD;
+> +	if (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY) {
+> +		if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54810)
+> +			val |= BCM54810_SHD_SCR3_TRDDAPD;
+> +		else
+> +			val |= BCM54XX_SHD_SCR3_TRDDAPD;
+> +	}
+>  
+>  	if (orig != val)
+>  		bcm_phy_write_shadow(phydev, BCM54XX_SHD_SCR3, val);
+> diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+> index d41624db6de2..1d339a862f7b 100644
+> --- a/include/linux/brcmphy.h
+> +++ b/include/linux/brcmphy.h
+> @@ -255,6 +255,7 @@
+>  #define BCM54810_EXP_BROADREACH_LRE_MISC_CTL_EN	(1 << 0)
+>  #define BCM54810_SHD_CLK_CTL			0x3
+>  #define BCM54810_SHD_CLK_CTL_GTXCLK_EN		(1 << 9)
+> +#define BCM54810_SHD_SCR3_TRDDAPD		0x0100
+>  
+>  /* BCM54612E Registers */
+>  #define BCM54612E_EXP_SPARE0		(MII_BCM54XX_EXP_SEL_ETC + 0x34)
 > 
-> diff --git a/drivers/net/ethernet/micrel/ks8851.c b/drivers/net/ethernet/micrel/ks8851.c
-> index 440ddd5cafbd..791b2f14dd9d 100644
-> --- a/drivers/net/ethernet/micrel/ks8851.c
-> +++ b/drivers/net/ethernet/micrel/ks8851.c
-> @@ -1431,27 +1431,15 @@ static int ks8851_resume(struct device *dev)
->  
->  static SIMPLE_DEV_PM_OPS(ks8851_pm_ops, ks8851_suspend, ks8851_resume);
->  
-> -static int ks8851_probe(struct spi_device *spi)
-> +static int ks8851_probe_common(struct net_device *netdev, struct device *dev,
-> +			       int msg_en)
->  {
 
->  
-> -	dev_info(dev, "message enable is %d\n", msg_enable);
-> +	dev_info(dev, "message enable is %d\n", msg_en);
->  
->  	/* set the default message enable */
-> -	ks->msg_enable = netif_msg_init(msg_enable, (NETIF_MSG_DRV |
-> -						     NETIF_MSG_PROBE |
-> -						     NETIF_MSG_LINK));
-> +	ks->msg_enable = netif_msg_init(msg_en, NETIF_MSG_DRV |
-> +						NETIF_MSG_PROBE |
-> +						NETIF_MSG_LINK);
-
-It would of been nice to keep the name msg_en, then these changes
-would not be needed. Or is there something not visible in this patch
-which means the variable name it not usable?
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+-- 
+Florian
