@@ -2,127 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 817751D38C1
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 20:02:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F31321D38E6
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 20:08:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726367AbgENSCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 14:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40610 "EHLO
+        id S1726661AbgENSIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 14:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726035AbgENSCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 14:02:39 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8CAC061A0C;
-        Thu, 14 May 2020 11:02:39 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id w65so1638611pfc.12;
-        Thu, 14 May 2020 11:02:39 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726073AbgENSIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 14:08:41 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65782C061A0C;
+        Thu, 14 May 2020 11:08:41 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id z1so1670209pfn.3;
+        Thu, 14 May 2020 11:08:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ca0BK/SGguPh7YFdWi84as3Zz0WDKCZt+ZX9om6cp8s=;
-        b=vB3ezNNGYx/OX/GE+/020ICoVVXSEKWSQIMqDnGH24sr8nyR4gmbHc8Q+FFPfc3LYf
-         ECWCy/KpLzrvqMmiTzD0WlfXlaTuydT3awaHd4wpxew4Xk6yew68jZtoOu/ggOXtUF9b
-         /eUVOHFN164nYxKeS7MpD7W7Hk+AcCN53/lHsaj+FnlZyO/Rl+I8uUcRQ5/nZOqjxfNG
-         /5mu0vLfwy6Cxy0zFIQYB3pKk1UNOjBGyDWCp9C5tJ1OoAWeHRFMvZ6zBqK6a+nCd1xr
-         w5Y97aJG7DTWJAcr2ZHP3cxPimP0h5/qgMU2i5IdYvWNLsXjYXPBbdU6vsFNSgjY5vDB
-         trkA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=2d5fVy+d6deYSpZC8S3wee5KklHYM0y0bBICCB6+zyc=;
+        b=pWirkS2gDFyVdTR/01nN/VqD5RYntOM0VMhu4r1TSebXHPpqIVg2YH5CDgejdac+46
+         BNcjMBWXGvOgbmJaOJEeJ9I5u1NDXn05Jf5X1DrY9dsUaDhuQySLjq7dZD2caNky+Axy
+         R6VZVzq3+5w+n9OwDsL2apNYy/46mUq7RJDZyW/3V1FFRLhWcts8A+QitmC0De63mrc6
+         YqNkxu9SNB/VBih5yQfuojAQH37wh835YtO+fISuyGEACkQ8fYJtKD0kssYvuNNk2LAS
+         wmB+cPSjMMJU87KWK04tNMEXy+CT82hYkCMrvO2Nt1HSVzat/CsD3PtoRCF8ao8ilIqy
+         D23A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ca0BK/SGguPh7YFdWi84as3Zz0WDKCZt+ZX9om6cp8s=;
-        b=BTvk5agM2/UwnFXlHpwUsVIP1bDJCJpNFSAZhBX3+Emgk+SIHdyR3XYqYqgPNDCH8R
-         RK7CdLFT6K2GzAc/9N9EcdLa7CoikCM3thh2mwNvS5HrCP7nUt4tnxc9K/ReSXSQUu3r
-         Rf00+dlJxqZ4wcRO6Xu9wvsONik8EiI5bkH57dFLIqD04M78feYfhtbyK1AAMdLQa9t7
-         oj1SFmoeRvFkevamugR5yWPoY9Ts3AwBi7JNH+Jx4kZhjOhdhWEOX85XnsIOPMl0vTTZ
-         f+w3TW1Yz0XprZg7a0MTMDeUp1ZXHKBcr8TGlF9cK1YP/Ja6O26HeWGI6h8NV17N3oSu
-         Z+CQ==
-X-Gm-Message-State: AOAM532QvzoKudxCJkpc5ixQG1APOtSUUAuz4dTaWpsqYcZ0HhE9AROd
-        Xc2LYbW6g4RxEMurJsLG6JE=
-X-Google-Smtp-Source: ABdhPJx1d23IkIDeVzl+s/M8y4Qu5Th2SszbNzKYQrEBab8KIaYwzFQ+J3GcXEmDo6GeH3LOsiySdQ==
-X-Received: by 2002:a63:b1a:: with SMTP id 26mr4946012pgl.443.1589479357535;
-        Thu, 14 May 2020 11:02:37 -0700 (PDT)
-Received: from localhost.localdomain ([103.87.56.31])
-        by smtp.googlemail.com with ESMTPSA id s102sm4594079pjb.57.2020.05.14.11.02.32
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2d5fVy+d6deYSpZC8S3wee5KklHYM0y0bBICCB6+zyc=;
+        b=LX3Bq2Gpi+DhKMcjCtxE3LagBSY5uCeoqkU00tqOLEwqY2l4BbFTS7YT4/ywK84vKy
+         tEldQ2V9D0eLMJmSkG4hlyUFPBbF48O8eoKnuJZGJve+XRNn4ljDTt+7TzVJTKRsRxUU
+         6hn/l4sjXAsUqXB2K2eDxBVVQtrRfjSCQ8IDj0/yt8w90y60ozBkA3MKm7ZLSM3xIKh7
+         DywCpksltCpzOz+Wjesvb8T3MiCPhtusX1IIPyMvXCkFFtxYQ+lliX7mOdm355WjEjaH
+         Dv21gZC5aGA1cfIyuFgqjkJe7WQuWqqSN1YCFdstde6hcmQiq3L1X2F8JjH874wBpY35
+         u6Pw==
+X-Gm-Message-State: AOAM531b0LYedC7d1GyHyAyghT6NjpJhK0Y85iODH2X7XRV9xrjaamaG
+        OteFU1/zzumNIV0Nvk0lFJE=
+X-Google-Smtp-Source: ABdhPJySHGz9/Kj++2O4bWlbSQCkK8iKcI7+dZOkwL52bQgFlf3FpsIqmaflG+w6PkxkVYObPktJNg==
+X-Received: by 2002:a63:24a:: with SMTP id 71mr5372276pgc.184.1589479720804;
+        Thu, 14 May 2020 11:08:40 -0700 (PDT)
+Received: from workstation-kernel-dev ([103.87.56.31])
+        by smtp.gmail.com with ESMTPSA id m9sm2493264pgd.1.2020.05.14.11.08.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2020 11:02:36 -0700 (PDT)
+        Thu, 14 May 2020 11:08:40 -0700 (PDT)
+Date:   Thu, 14 May 2020 23:38:31 +0530
 From:   Amol Grover <frextrite@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Patrick McHardy <kaber@trash.net>,
-        Stephen Rothwell <sfr@canb.auug.org.au>, Qian Cai <cai@lca.pw>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Amol Grover <frextrite@gmail.com>,
-        syzbot+1519f497f2f9f08183c6@syzkaller.appspotmail.com
-Subject: [PATCH net v2 2/2] ipmr: Add lockdep expression to ipmr_for_each_table macro
-Date:   Thu, 14 May 2020 23:31:03 +0530
-Message-Id: <20200514180102.26425-2-frextrite@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200514180102.26425-1-frextrite@gmail.com>
-References: <20200514180102.26425-1-frextrite@gmail.com>
+To:     Qian Cai <cai@lca.pw>
+Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>, allison@lohutok.net,
+        ap420073@gmail.com, David Miller <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot <syzbot+bb82cafc737c002d11ca@syzkaller.appspotmail.com>
+Subject: Re: linux-next boot error: WARNING: suspicious RCU usage in
+ bpq_device_event
+Message-ID: <20200514180831.GA6087@workstation-kernel-dev>
+References: <000000000000785a6905a59a1e4a@google.com>
+ <A19DAE77-5DCD-460A-88E5-437450CBD50B@lca.pw>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <A19DAE77-5DCD-460A-88E5-437450CBD50B@lca.pw>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During the initialization process, ipmr_new_table() is called
-to create new tables which in turn calls ipmr_get_table() which
-traverses net->ipv4.mr_tables without holding the writer lock.
-However, this is safe to do so as no tables exist at this time.
-Hence add a suitable lockdep expression to silence the following
-false-positive warning:
+On Thu, May 14, 2020 at 08:24:54AM -0400, Qian Cai wrote:
+> 
+> 
+> > On May 14, 2020, at 7:37 AM, syzbot <syzbot+bb82cafc737c002d11ca@syzkaller.appspotmail.com> wrote:
+> > 
+> > Hello,
+> > 
+> > syzbot found the following crash on:
+> > 
+> > HEAD commit:    c9529331 Add linux-next specific files for 20200514
+> > git tree:       linux-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=17119f48100000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=404a80e135048067
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=bb82cafc737c002d11ca
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > 
+> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > Reported-by: syzbot+bb82cafc737c002d11ca@syzkaller.appspotmail.com
+> > 
+> > =============================
+> > WARNING: suspicious RCU usage
+> > 5.7.0-rc5-next-20200514-syzkaller #0 Not tainted
+> > -----------------------------
+> > drivers/net/hamradio/bpqether.c:149 RCU-list traversed in non-reader section!!
+> 
+> How about teaching the bot to always CC Madhuparna and Amol for those RCU-list bug reports?
+> 
 
-=============================
-WARNING: suspicious RCU usage
-5.7.0-rc3-next-20200428-syzkaller #0 Not tainted
------------------------------
-net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!!
+Sounds good to me if this indeed is possible.
 
-ipmr_get_table+0x130/0x160 net/ipv4/ipmr.c:136
-ipmr_new_table net/ipv4/ipmr.c:403 [inline]
-ipmr_rules_init net/ipv4/ipmr.c:248 [inline]
-ipmr_net_init+0x133/0x430 net/ipv4/ipmr.c:3089
-
-Fixes: f0ad0860d01e ("ipv4: ipmr: support multiple tables")
-Reported-by: syzbot+1519f497f2f9f08183c6@syzkaller.appspotmail.com
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Amol Grover <frextrite@gmail.com>
----
-v2:
-- Change the lockdep expression to check for list emptiness at init
-- Add Fixes tag
-- Add Reported-by tag for syzbot report
-
- net/ipv4/ipmr.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 4897f7420c8f..5c218db2dede 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -109,9 +109,10 @@ static void mroute_clean_tables(struct mr_table *mrt, int flags);
- static void ipmr_expire_process(struct timer_list *t);
- 
- #ifdef CONFIG_IP_MROUTE_MULTIPLE_TABLES
--#define ipmr_for_each_table(mrt, net) \
--	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
--				lockdep_rtnl_is_held())
-+#define ipmr_for_each_table(mrt, net)					\
-+	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list,	\
-+				lockdep_rtnl_is_held() ||		\
-+				list_empty(&net->ipv4.mr_tables))
- 
- static struct mr_table *ipmr_mr_table_iter(struct net *net,
- 					   struct mr_table *mrt)
--- 
-2.24.1
-
+> > 
+> > other info that might help us debug this:
+> > 
+> > 
+> > rcu_scheduler_active = 2, debug_locks = 1
+> > 1 lock held by ip/3967:
+> > #0: ffffffff8a7bad88 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
+> > #0: ffffffff8a7bad88 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3f9/0xad0 net/core/rtnetlink.c:5458
+> > 
+> > stack backtrace:
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Call Trace:
+> > __dump_stack lib/dump_stack.c:77 [inline]
+> > dump_stack+0x18f/0x20d lib/dump_stack.c:118
+> > bpq_get_ax25_dev drivers/net/hamradio/bpqether.c:149 [inline]
+> > bpq_device_event+0x796/0x8ee drivers/net/hamradio/bpqether.c:538
+> > notifier_call_chain+0xc0/0x230 kernel/notifier.c:83
+> > call_netdevice_notifiers_info net/core/dev.c:2016 [inline]
+> > call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2001
+> > call_netdevice_notifiers_extack net/core/dev.c:2028 [inline]
+> > call_netdevice_notifiers net/core/dev.c:2042 [inline]
+> > __dev_notify_flags+0x121/0x2c0 net/core/dev.c:8279
+> > dev_change_flags+0x100/0x160 net/core/dev.c:8317
+> > do_setlink+0xa1c/0x35d0 net/core/rtnetlink.c:2605
+> > __rtnl_newlink+0xad0/0x1590 net/core/rtnetlink.c:3273
+> > rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3398
+> > rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5461
+> > netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2469
+> > netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+> > netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+> > netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+> > sock_sendmsg_nosec net/socket.c:652 [inline]
+> > sock_sendmsg+0xcf/0x120 net/socket.c:672
+> > ____sys_sendmsg+0x6e6/0x810 net/socket.c:2352
+> > ___sys_sendmsg+0x100/0x170 net/socket.c:2406
+> > __sys_sendmsg+0xe5/0x1b0 net/socket.c:2439
+> > do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+> > entry_SYSCALL_64_after_hwframe+0x49/0xb3
+> > RIP: 0033:0x7f76dcdfcdc7
+> > Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb cd 66 0f 1f 44 00 00 8b 05 4a 49 2b 00 85 c0 75 2e 48 63 ff 48 63 d2 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 8b 15 a1 f0 2a 00 f7 d8 64 89 02 48
+> > RSP: 002b:00007ffd45eccf28 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> > RAX: ffffffffffffffda RBX: 000000005ebd27cd RCX: 00007f76dcdfcdc7
+> > RDX: 0000000000000000 RSI: 00007ffd45eccf70 RDI: 0000000000000003
+> > RBP: 00007ffd45eccf70 R08: 0000000000001000 R09: fefefeff77686d74
+> > R10: 00000000000005e9 R11: 0000000000000246 R12: 00007ffd45eccfb0
+> > R13: 0000561a2ddea3c0 R14: 00007ffd45ed5030 R15: 0000000000000000
+> > ip (3967) used greatest stack depth: 23144 bytes left
+> > 
+> > 
+> > ---
+> > This bug is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > 
+> > syzbot will keep track of this bug report. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> 
