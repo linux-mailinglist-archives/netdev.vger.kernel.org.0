@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECFD71D3BEB
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C36831D3BB6
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:06:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729993AbgENTGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 15:06:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53472 "EHLO mail.kernel.org"
+        id S1730131AbgENTEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 15:04:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54474 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728863AbgENSxw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 14:53:52 -0400
+        id S1729059AbgENSy1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 14:54:27 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 875B12076A;
-        Thu, 14 May 2020 18:53:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 140CD207BB;
+        Thu, 14 May 2020 18:54:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589482432;
-        bh=8gRYW0rLglVlDQwkjPXAtEHK9dKZHTsxDbFgyBskrlY=;
+        s=default; t=1589482466;
+        bh=NsPSAbL2NEHBGWRcisY+QXXL4SZ8ZjaKEls/vGosqCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Odb5ZEf9tdAw6ejGAN/vw6sd99Ljslsh0glBKFFmk35iISWjGwcIpgKEnhWyF1DmW
-         /tAMWZ0E6NVJbXaAql2afNABgHoZcKODePXxKmjNK/KmEprTTB10R1R/ycqOSeLlDx
-         hP8wBFrF2SdOMe9HuyJRjfZYIvJR4YSVCwHGajyE=
+        b=sEjy6XTjwC3mdGXXzhjh+D/Cs1vse8q2TDV0GTxyA5hQryG613FPtTwEBmwyH/oDn
+         y2GuTqY6p2fhy0iAZTEUIS+KK/Cj9JK3r0CVA2kIeuXsv3En0Rukfe9zEAX0Ygptvc
+         Wk4jN8IS9DXzNJdA83uGvJTCcwTT3KaJWac7tCbU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Petrov <mmrmaximuzz@gmail.com>,
+Cc:     Stefano Garzarella <sgarzare@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 33/49] stmmac: fix pointer check after utilization in stmmac_interrupt
-Date:   Thu, 14 May 2020 14:52:54 -0400
-Message-Id: <20200514185311.20294-33-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 10/31] vhost/vsock: fix packet delivery order to monitoring devices
+Date:   Thu, 14 May 2020 14:53:52 -0400
+Message-Id: <20200514185413.20755-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200514185311.20294-1-sashal@kernel.org>
-References: <20200514185311.20294-1-sashal@kernel.org>
+In-Reply-To: <20200514185413.20755-1-sashal@kernel.org>
+References: <20200514185413.20755-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,49 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Petrov <mmrmaximuzz@gmail.com>
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-[ Upstream commit f42234ffd531ca6b13d9da02faa60b72eccf8334 ]
+[ Upstream commit 107bc0766b9feb5113074c753735a3f115c2141f ]
 
-The paranoidal pointer check in IRQ handler looks very strange - it
-really protects us only against bogus drivers which request IRQ line
-with null pointer dev_id. However, the code fragment is incorrect
-because the dev pointer is used before the actual check which leads
-to undefined behavior. Remove the check to avoid confusing people
-with incorrect code.
+We want to deliver packets to monitoring devices before it is
+put in the virtqueue, to avoid that replies can appear in the
+packet capture before the transmitted packet.
 
-Signed-off-by: Maxim Petrov <mmrmaximuzz@gmail.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/vhost/vsock.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 89a6ae2b17e35..1623516efb171 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3832,7 +3832,7 @@ static int stmmac_set_features(struct net_device *netdev,
- /**
-  *  stmmac_interrupt - main ISR
-  *  @irq: interrupt number.
-- *  @dev_id: to pass the net device pointer.
-+ *  @dev_id: to pass the net device pointer (must be valid).
-  *  Description: this is the main driver interrupt service routine.
-  *  It can call:
-  *  o DMA service routine (to manage incoming frame reception and transmission
-@@ -3856,11 +3856,6 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
- 	if (priv->irq_wake)
- 		pm_wakeup_event(priv->device, 0);
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index bac1365cc81b5..7891bd40ebd82 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -182,14 +182,14 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 			break;
+ 		}
  
--	if (unlikely(!dev)) {
--		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
--		return IRQ_NONE;
--	}
+-		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
+-		added = true;
 -
- 	/* Check if adapter is up */
- 	if (test_bit(STMMAC_DOWN, &priv->state))
- 		return IRQ_HANDLED;
+-		/* Deliver to monitoring devices all correctly transmitted
+-		 * packets.
++		/* Deliver to monitoring devices all packets that we
++		 * will transmit.
+ 		 */
+ 		virtio_transport_deliver_tap_pkt(pkt);
+ 
++		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
++		added = true;
++
+ 		pkt->off += payload_len;
+ 		total_len += payload_len;
+ 
 -- 
 2.20.1
 
