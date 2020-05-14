@@ -2,100 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3B331D2E9C
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 13:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89C5E1D2E9E
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 13:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726202AbgENLpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 07:45:01 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:51658 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726067AbgENLpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 07:45:00 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9AFC82007C;
-        Thu, 14 May 2020 11:44:59 +0000 (UTC)
-Received: from us4-mdac16-45.at1.mdlocal (unknown [10.110.48.16])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9A8726009B;
-        Thu, 14 May 2020 11:44:59 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.12])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 30D43220054;
-        Thu, 14 May 2020 11:44:59 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id BF9CF40067;
-        Thu, 14 May 2020 11:44:58 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 14 May
- 2020 12:44:52 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: Re: [PATCH 0/8 net] the indirect flow_block offload, revisited
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        <netfilter-devel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <paulb@mellanox.com>, <ozsh@mellanox.com>, <vladbu@mellanox.com>,
-        <jiri@resnulli.us>, <kuba@kernel.org>, <saeedm@mellanox.com>,
-        <michael.chan@broadcom.com>
-References: <20200513164140.7956-1-pablo@netfilter.org>
-Message-ID: <8f1a3b9a-6a60-f1b3-0fc1-f2361864c822@solarflare.com>
-Date:   Thu, 14 May 2020 12:44:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200513164140.7956-1-pablo@netfilter.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25418.003
-X-TM-AS-Result: No-7.609100-8.000000-10
-X-TMASE-MatchedRID: UuaOI1zLN1gbF9xF7zzuNfZvT2zYoYOwt3aeg7g/usBvNs77F4nIWlui
-        xS8mDjZOIwuO97ZnkxkPkyd+0GAin/xcXzlUQt0oN+75FOVyJeBXjjsM2/Dfxn9nRLJB1yYQHFJ
-        yCMrdNkmNMJ4daKiP9N+aqtQHbaUIUgG7ejycorBOGH/Yn5DKxYZyPbBh/hxWSStniYWNNsPOG5
-        8MBtvONrQszBevfBjDsPcjKUYPuwiy9Uh/U28aLy16nmC2/zSqcQTGOtT45qZjLp8Cm8vwF0fny
-        52zS9mSU0oMo6UOt+TdL2i2eEkxZWhV4uU8NZ6Bfid4LSHtIANF/jSlPtma/kvEK4FMJdoqMzCe
-        U/KrLcqMe8PZFqu1Ziio+Vn+4AqmSSOWVJeuO1CDGx/OQ1GV8rHlqZYrZqdI+gtHj7OwNO0X9rp
-        BZuBDbVL+b36eWMniaC2KxQ5GtTZacZsJhA5v1ftj8WFIn+jiKgUstyLLYywEHXewwQRM2UpJq2
-        lBkSmVSJLHdRakaCcRp7GxVS4iH3zm6hivSaZZop2lf3StGhISt1bcvKF7ZKbNmFZyaXzY
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.609100-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25418.003
-X-MDID: 1589456699-CglBGJiTdArH
+        id S1726296AbgENLpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 07:45:24 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:13514 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726067AbgENLpY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 07:45:24 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04EBWtQ9030739;
+        Thu, 14 May 2020 07:45:23 -0400
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 310ub011c5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 May 2020 07:45:22 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 04EBerSI005485;
+        Thu, 14 May 2020 11:45:20 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 3100ub3hrk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 May 2020 11:45:20 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 04EBjFYB13042080
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 May 2020 11:45:15 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8D6BA52052;
+        Thu, 14 May 2020 11:45:15 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 3E0C05204F;
+        Thu, 14 May 2020 11:45:15 +0000 (GMT)
+From:   Ursula Braun <ubraun@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, kgraul@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net 1/1] MAINTAINERS: another add of Karsten Graul for S390 networking
+Date:   Thu, 14 May 2020 13:45:12 +0200
+Message-Id: <20200514114512.101771-1-ubraun@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-14_02:2020-05-14,2020-05-14 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ impostorscore=0 mlxscore=0 phishscore=0 adultscore=0 suspectscore=1
+ lowpriorityscore=0 spamscore=0 clxscore=1015 cotscore=-2147483648
+ mlxlogscore=678 bulkscore=0 priorityscore=1501 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005140104
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/05/2020 17:41, Pablo Neira Ayuso wrote:
-> Hi,
->
-> This patchset fixes the indirect flow_block support for the tc CT action
-> offload. Please, note that this batch is probably slightly large for the
-> net tree, however, I could not find a simple incremental fix.
->
-> = The problem
->
-> The nf_flow_table_indr_block_cb() function provides the tunnel netdevice
-> and the indirect flow_block driver callback. From this tunnel netdevice,
-> it is not possible to obtain the tc CT flow_block. Note that tc qdisc
-> and netfilter backtrack from the tunnel netdevice to the tc block /
-> netfilter chain to reach the flow_block object. This allows them to
-> clean up the hardware offload rules if the tunnel device is removed.
->
-> <snip>
->
-> = About this patchset
->
-> This patchset aims to address the existing TC CT problem while
-> simplifying the indirect flow_block infrastructure. Saving 300 LoC in
-> the flow_offload core and the drivers.
-This might be a dumb question, but: what is the actual bug being fixed,
- that makes this patch series needed on net rather than net-next?
-From your description it sounds like a good and useful cleanup/refactor,
- but nonetheless still a clean-up, appropriate for net-next.
+Complete adding of Karsten as maintainer for all S390 networking
+parts in the kernel.
 
--ed
+Cc: Julian Wiedmann <jwi@linux.ibm.com>
+Acked-by: Julian Wiedmann <jwi@linux.ibm.com>
+Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 85894787825e..391e7eea6a3e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14655,6 +14655,7 @@ F:	net/iucv/
+ 
+ S390 NETWORK DRIVERS
+ M:	Julian Wiedmann <jwi@linux.ibm.com>
++M:	Karsten Graul <kgraul@linux.ibm.com>
+ M:	Ursula Braun <ubraun@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
+ S:	Supported
+-- 
+2.17.1
+
