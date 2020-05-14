@@ -2,149 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EE721D2729
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 08:08:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0880E1D273C
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 08:09:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726046AbgENGIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 02:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41670 "EHLO
+        id S1725951AbgENGI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 02:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725976AbgENGID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 02:08:03 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80139C061A0C
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 23:08:03 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id h17so2251130wrc.8
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 23:08:03 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725794AbgENGI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 02:08:58 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CA5C061A0C;
+        Wed, 13 May 2020 23:08:58 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id i14so1916563qka.10;
+        Wed, 13 May 2020 23:08:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5iBeXBEKmXyiyA0yKSf8Nub1BZtkHYNtG5+Nqzo6+Z0=;
-        b=ltYwjcasr3wzOJh0EQmtemHP0+7PLwUcaNGzrDGuIJn5gHmPj6jn/68Ntr9GrNS9ES
-         sF2XAOZxjX8P4Udv5e+MkhY+W//0OZtmPZ77Mffh0pZhWBWevtyQXlyJ2O2TBhEb8w+d
-         +BbhLd/NEfwuLcJMioRnaytFgeOrR1I5NJo9/px5n7M/ynv0BKd0oXPyav0dQlIpP6mF
-         FTvE3lM2Mc0E9f6uMp3yCeD8FlDUePJIuM6I1kB9LgKrbw5bdFms2SGFIPm0ETmYqfex
-         JO3kcHgcxRFKf3DYZkoKfFsPywdgge8rm7ijyzDz42s0iJzoKpjqoxw/REUUI9X0LRLY
-         qwNg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yZL+icgwJLrqBjGUBA9ZTMZd1LnDKb/MfQqU0xbNkyU=;
+        b=REJGo4XgcCxRuqlolU2sCdvE7JrLbslmQxuWs0H5zz5kXVxZZBi7hQoOwvqY+IFq5x
+         vEdp1WiVmLANBgdkMkxU7jFMCuA/x12VOGGrhgx2vzpIcR8y1T8MS0eieg60O6YsOBHW
+         dv30eMF7gjQ+ftc/POHeKfzimgGdFKwrkgFsGO/gA/vSzbRIcIopm5uscP0jSNxzJeeZ
+         nijoZosCF/QyXj6n35Dn7KXFL1p/EObldFxBPQYRczdJHb9oDTPhkc2+9P2cn/qlNdcq
+         DOMh6tk8Wfze/p/v+YyCs2ZQytRg2Zxv47OwvSnrMUnqMKvPJSJYbIRQASIxxuAQ+TpF
+         ZTfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5iBeXBEKmXyiyA0yKSf8Nub1BZtkHYNtG5+Nqzo6+Z0=;
-        b=Fv1STqvSIkAcXU2FM7SM0Ib8NmYbl9TwQATli+P9JbjO2T4hMT/nVPhyXb8W3G5jw6
-         IxM/xLh36Mf0DrEYZ0HACRM4fciJ8rtOl+3CYB4hgfbyyB9PtVuY5Dd3Lq2mG0s1rqIX
-         kh0yAb2voUzTBr4wlREX7tJS2sRX63re1Ssv2M5ofK6BLczDdg6tXzFeUVcMvwFjKDAj
-         2xehI8iK2FEZBlgGlAWtpvZ7R960tCQlDcVX0YafEB+0XS+tJO4dcaKwqAKJUPDCH9Ip
-         U6AfFTataghkvR2SkZ9sLehrnatdFp6rqSTHBRQAdoaBpznMmo21AzafQgD8ll53KQkB
-         Ucbw==
-X-Gm-Message-State: AOAM533h5J7i+eilmlxxvdMfcLWCiJpgB4E3+pInqdmi1DBljGV1AEbI
-        dw6WjOoaQLndCT9OS3uBHakePQ==
-X-Google-Smtp-Source: ABdhPJyXPUAgMTJBgMq8MxzCPEkwwZfF+j8x3Q5CyNrqpAkO2db7S1lExeSkPEX1en8VMRuMg6J0GQ==
-X-Received: by 2002:a5d:5710:: with SMTP id a16mr3279047wrv.209.1589436482219;
-        Wed, 13 May 2020 23:08:02 -0700 (PDT)
-Received: from localhost (ip-94-113-116-82.net.upcbroadband.cz. [94.113.116.82])
-        by smtp.gmail.com with ESMTPSA id q14sm2475164wrc.66.2020.05.13.23.08.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 May 2020 23:08:00 -0700 (PDT)
-Date:   Thu, 14 May 2020 08:07:59 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        parav@mellanox.com, yuvalav@mellanox.com, jgg@ziepe.ca,
-        saeedm@mellanox.com, leon@kernel.org,
-        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
-        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
-        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
-        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
-        oss-drivers@netronome.com, snelson@pensando.io,
-        drivers@pensando.io, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
-        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
-        jacob.e.keller@intel.com, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com,
-        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
-Subject: Re: [oss-drivers] [RFC v2] current devlink extension plan for NICs
-Message-ID: <20200514060759.GA2676@nanopsycho>
-References: <20200501091449.GA25211@nanopsycho.orion>
- <20200513130008.GA24409@netronome.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yZL+icgwJLrqBjGUBA9ZTMZd1LnDKb/MfQqU0xbNkyU=;
+        b=pp1lo5KbLIugN7SEQxafX7B1CPyNv+uuhu9ut2OisRXtUfFY+QJ5rGrn5rxqxfTLDb
+         AANBkSu7A6lRXHQulg7Y2PmSjvLBgvLqQgCx2fT/oc7WLa5e52PjiEhSD0dDZ6JC54lO
+         XARTKL0k2aRJTUEOpgfnkxGowjn+BoBqswqD2qZU3SXpfvdmtbUmc7HRWyHc7HoO7in7
+         qJ7P4EA1TedCkfAT7XQt1oKK0RHspRsI1EyQhEUrC1K0MB1/Y1KcnrjrXaemmT8u/uFz
+         1DKO5EhEW9cib0ZQlsO2kB5D4o1nDNNI+EsLmhqephxMR/QoiwLnNNgXBN3UM2+KM72W
+         hGpQ==
+X-Gm-Message-State: AOAM533gPYWXgfoUGtk6tekboEvsgvNUTZAue5bBNtEVR4I+Yjbz8Hji
+        4T00zvib6bsLSoJefwn3PLPr4kzj5k7wJQQmt58b+w==
+X-Google-Smtp-Source: ABdhPJypEgPC3InV3fz0mBjFeldGxPacnHYtckGqFCj68I8f85qry6eINmdHQ9DeGdaIgdwCp8uR7PaS/ewe1G42v/A=
+X-Received: by 2002:a05:620a:14a1:: with SMTP id x1mr3213185qkj.92.1589436537797;
+ Wed, 13 May 2020 23:08:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200513130008.GA24409@netronome.com>
+References: <20200513192532.4058934-1-andriin@fb.com> <20200513224927.643hszw3q3cgx7e6@bsd-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200513224927.643hszw3q3cgx7e6@bsd-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 13 May 2020 23:08:46 -0700
+Message-ID: <CAEf4BzaSEPNyBvXBduH2Bkr64=MbzFiR9hJ9DYwXwk4D2AtcDw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/6] BPF ring buffer
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, May 13, 2020 at 03:00:09PM CEST, simon.horman@netronome.com wrote:
->On Fri, May 01, 2020 at 11:14:49AM +0200, Jiri Pirko wrote:
->> Hi all.
->> 
->> First, I would like to apologize for very long email. But I think it
->> would be beneficial to the see the whole picture, where we are going.
->> 
->> Currently we are working internally on several features with
->> need of extension of the current devlink infrastructure. I took a stab
->> at putting it all together in a single txt file, inlined below.
->> 
->> Most of the stuff is based on a new port sub-object called "func"
->> (called "slice" previously" and "subdev" originally in Yuval's patchsets
->> sent some while ago).
->> 
->> The text describes how things should behave and provides a draft
->> of user facing console input/outputs. I think it is important to clear
->> that up before we go in and implement the devlink core and
->> driver pieces.
->> 
->> I would like to ask you to read this and comment. Especially, I would
->> like to ask vendors if what is described fits the needs of your
->> NIC/e-switch.
->> 
->> Please note that something is already implemented, but most of this
->> isn't (see "what needs to be implemented" section).
->> 
->> v1->v2
->> - mainly move from separate slice object into port/func subobject
->> - couple of small fixes here and there
->> 
->> 
->> 
->> 
->> ==================================================================
->> ||                                                              ||
->> ||            Overall illustration of example setup             ||
->> ||                                                              ||
->> ==================================================================
->> 
->> Note that there are 2 hosts in the picture. Host A may be the smartnic host,
->> Host B may be one of the hosts which gets PF. Also, you might omit
->> the Host B and just see Host A like an ordinary nic in a host.
->> 
->> Note that the PF is merged with physical port representor.
->> That is due to simpler and flawless transition from legacy mode and back.
->> The devlink_ports and netdevs for physical ports are staying during
->> the transition.
+On Wed, May 13, 2020 at 3:49 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
 >
->Hi Jiri,
+> On Wed, May 13, 2020 at 12:25:26PM -0700, Andrii Nakryiko wrote:
+> > Implement a new BPF ring buffer, as presented at BPF virtual conference ([0]).
+> > It presents an alternative to perf buffer, following its semantics closely,
+> > but allowing sharing same instance of ring buffer across multiple CPUs
+> > efficiently.
+> >
+> > Most patches have extensive commentary explaining various aspects, so I'll
+> > keep cover letter short. Overall structure of the patch set:
+> > - patch #1 adds BPF ring buffer implementation to kernel and necessary
+> >   verifier support;
+> > - patch #2 adds litmus tests validating all the memory orderings and locking
+> >   is correct;
+> > - patch #3 is an optional patch that generalizes verifier's reference tracking
+> >   machinery to capture type of reference;
+> > - patch #4 adds libbpf consumer implementation for BPF ringbuf;
+> > - path #5 adds selftest, both for single BPF ring buf use case, as well as
+> >   using it with array/hash of maps;
+> > - patch #6 adds extensive benchmarks and provide some analysis in commit
+> >   message, it build upon selftests/bpf's bench runner.
+> >
+> >   [0] https://docs.google.com/presentation/d/18ITdg77Bj6YDOH2LghxrnFxiPWe0fAqcmJY95t_qr0w
+> >
+> > Cc: Paul E. McKenney <paulmck@kernel.org>
+> > Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
 >
->I'm probably missing something obvious but this merge seems at odds with
->the Netronome hardware.
+> Looks very nice!  A few random questions:
 >
->We model a PF as, in a nutshell, a PCIE link to a host. A chip may have
->one or more, and these may go to the same or different hosts. A chip may
->also have one or more physical ports. And there is no strict relationship
->between a PF and a physical port.
+> 1) Why not use a structure for the header, instead of 2 32bit ints?
 
-Yeah, no problem. You can have multiple physical ports under the same
-devlink instance. In that case, from devlink perspective it is not
-important if the physical port is backed by PF or not. I will rephrase a
-bit so this is clear.
-
+hm... no reason, just never occurred to me it's necessary :)
 
 >
->Of course in SR-IOV legacy mode, there is such a relationship, but its not
->inherent to the hardware nor the NFP driver implementation of SR-IOV
->switchdev mode.
+> 2) Would it make sense to reserve X bytes, but only commit Y?
+>    the offset field could be used to write the record length.
 >
->...
+>    E.g.:
+>       reserve 512 bytes    [BUSYBIT | 512][PG OFFSET]
+>       commit  400 bytes    [ 512 ] [ 400 ]
+
+It could be done, though I had tentative plans to use those second 4
+bytes for something useful eventually.
+
+But what's the use case? From ring buffer's perspective, X bytes were
+reserved and are gone already and subsequent writers might have
+already advanced producer counter with the assumption that all X bytes
+are going to be used. So there are no space savings, even if record is
+discarded or only portion of it is submitted. I can only see a bit of
+added convenience for an application, because it doesn't have to track
+amount of actual data in its record. But this doesn't seem to be a
+common case either, so not sure how it's worth supporting... Is there
+a particular case where this is extremely useful and extra 4 bytes in
+record payload is too much?
+
+>
+> 3) Why have 2 separate pages for producer/consumer, instead of
+>    just aligning to a smp cache line (or even 1/2 page?)
+
+Access rights restrictions. Consumer page is readable/writable,
+producer page is read-only for user-space. If user-space had ability
+to write producer position, it could wreck a huge havoc for the
+ringbuf algorithm.
+
+>
+> 4) The XOR of busybit makes me wonder if there is anything that
+>    prevents the system from calling commit twice?
+
+Yes, verifier checks this and will reject such BPF program.
+
+> --
+> Jonathan
