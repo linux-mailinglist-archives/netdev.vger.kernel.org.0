@@ -2,116 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC1791D312D
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 15:23:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 056381D313D
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 15:27:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbgENNXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 09:23:16 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:51125 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726098AbgENNXQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 09:23:16 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 14 May 2020 16:23:13 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04EDNCBk013405;
-        Thu, 14 May 2020 16:23:12 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     dsahern@gmail.com, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        marcelo.leitner@gmail.com, dcaratti@redhat.com,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH iproute2-next 2/2] tc: implement support for terse dump
-Date:   Thu, 14 May 2020 16:23:06 +0300
-Message-Id: <20200514132306.29961-3-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20200514132306.29961-1-vladbu@mellanox.com>
-References: <20200514114026.27047-1-vladbu@mellanox.com>
- <20200514132306.29961-1-vladbu@mellanox.com>
+        id S1727810AbgENN1x convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 14 May 2020 09:27:53 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:41343 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726117AbgENN1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 09:27:51 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-113-XOFJDQnwOvSfGd4XKFaC9g-1; Thu, 14 May 2020 14:27:47 +0100
+X-MC-Unique: XOFJDQnwOvSfGd4XKFaC9g-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 14 May 2020 14:27:46 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 14 May 2020 14:27:46 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>,
+        'Christoph Hellwig' <hch@lst.de>
+CC:     "'David S. Miller'" <davem@davemloft.net>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        'Eric Dumazet' <edumazet@google.com>,
+        'Alexey Kuznetsov' <kuznet@ms2.inr.ac.ru>,
+        'Hideaki YOSHIFUJI' <yoshfuji@linux-ipv6.org>,
+        "'Vlad Yasevich'" <vyasevich@gmail.com>,
+        'Neil Horman' <nhorman@tuxdriver.com>,
+        "'Jon Maloy'" <jmaloy@redhat.com>,
+        'Ying Xue' <ying.xue@windriver.com>,
+        "'drbd-dev@lists.linbit.com'" <drbd-dev@lists.linbit.com>,
+        "'linux-block@vger.kernel.org'" <linux-block@vger.kernel.org>,
+        "'linux-kernel@vger.kernel.org'" <linux-kernel@vger.kernel.org>,
+        "'linux-rdma@vger.kernel.org'" <linux-rdma@vger.kernel.org>,
+        "'linux-nvme@lists.infradead.org'" <linux-nvme@lists.infradead.org>,
+        "'target-devel@vger.kernel.org'" <target-devel@vger.kernel.org>,
+        "'linux-afs@lists.infradead.org'" <linux-afs@lists.infradead.org>,
+        "'linux-cifs@vger.kernel.org'" <linux-cifs@vger.kernel.org>,
+        "'cluster-devel@redhat.com'" <cluster-devel@redhat.com>,
+        "'ocfs2-devel@oss.oracle.com'" <ocfs2-devel@oss.oracle.com>,
+        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
+        "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>,
+        "'ceph-devel@vger.kernel.org'" <ceph-devel@vger.kernel.org>,
+        "'rds-devel@oss.oracle.com'" <rds-devel@oss.oracle.com>,
+        "'linux-nfs@vger.kernel.org'" <linux-nfs@vger.kernel.org>
+Subject: RE: [PATCH 32/33] sctp: add sctp_sock_get_primary_addr
+Thread-Topic: [PATCH 32/33] sctp: add sctp_sock_get_primary_addr
+Thread-Index: AQHWKVDpRRlTTX4YZEat3HB6AYvqqainVRxwgAAtMyCAABBE4A==
+Date:   Thu, 14 May 2020 13:27:46 +0000
+Message-ID: <aff8f5ec8d6d44dbace63825af197086@AcuMS.aculab.com>
+References: <20200513062649.2100053-1-hch@lst.de>
+ <20200513062649.2100053-33-hch@lst.de>
+ <20200513180302.GC2491@localhost.localdomain>
+ <d112e18bfbdd40dfb219ed2c1f2082d4@AcuMS.aculab.com>
+ <c66e0309572345f5b0f32d078701f2d7@AcuMS.aculab.com>
+In-Reply-To: <c66e0309572345f5b0f32d078701f2d7@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement support for classifier/action terse dump using new TCA_DUMP_FLAGS
-tlv with only available flag value TCA_DUMP_FLAGS_TERSE. Set the flag when
-user requested it with following example CLI:
+From: David Laight
+> Sent: 14 May 2020 13:30
+> Subject: RE: [PATCH 32/33] sctp: add sctp_sock_get_primary_addr
+> 
+> From: David Laight
+> > Sent: 14 May 2020 10:51
+> > From: Marcelo Ricardo Leitner
+> > > Sent: 13 May 2020 19:03
+> > >
+> > > On Wed, May 13, 2020 at 08:26:47AM +0200, Christoph Hellwig wrote:
+> > > > Add a helper to directly get the SCTP_PRIMARY_ADDR sockopt from kernel
+> > > > space without going through a fake uaccess.
+> > >
+> > > Same comment as on the other dlm/sctp patch.
+> >
+> > Wouldn't it be best to write sctp_[gs]etsockotp() that
+> > use a kernel buffer and then implement the user-space
+> > calls using a wrapper that does the copies to an on-stack
+> > (or malloced if big) buffer.
+> 
+> Actually looking at __sys_setsockopt() it calls
+> BPF_CGROUP_RUN_PROG_SETSOCKOPT() which (by the look of it)
+> can copy the user buffer into malloc()ed memory and
+> cause set_fs(KERNEL_DS) be called.
+> 
+> The only way to get rid of that set_fs() is to always
+> have the buffer in kernel memory when the underlying
+> setsockopt() code is called.
 
-> tc -s filter show terse dev ens1f0 ingress
+And having started to try coding __sys_setsockopt()
+and then found the compat code I suspect that would
+be a whole lot more sane if the buffer was in kernel
+and it knew that at least (say) 64 bytes were allocated.
 
-In terse mode dump only outputs essential data needed to identify the
-filter and action (handle, cookie, etc.) and stats, if requested by the
-user. The intention is to significantly improve rule dump rate by omitting
-all static data that do not change after rule is created.
+The whole compat_alloc_user_space() 'crap' could probably go.
 
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- include/uapi/linux/rtnetlink.h |  6 ++++++
- tc/tc_filter.c                 | 12 ++++++++++++
- 2 files changed, 18 insertions(+)
+Actually it looks like an application can avoid whatever
+checks BPF_CGROUP_RUN_PROG_SETSOCKOPT() is trying to do
+by using the 32bit compat ioctls.
 
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 9d802cd7f695..bcb1ba4d0146 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -609,11 +609,17 @@ enum {
- 	TCA_HW_OFFLOAD,
- 	TCA_INGRESS_BLOCK,
- 	TCA_EGRESS_BLOCK,
-+	TCA_DUMP_FLAGS,
- 	__TCA_MAX
- };
- 
- #define TCA_MAX (__TCA_MAX - 1)
- 
-+#define TCA_DUMP_FLAGS_TERSE (1 << 0) /* Means that in dump user gets only basic
-+				       * data necessary to identify the objects
-+				       * (handle, cookie, etc.) and stats.
-+				       */
-+
- #define TCA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct tcmsg))))
- #define TCA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct tcmsg))
- 
-diff --git a/tc/tc_filter.c b/tc/tc_filter.c
-index c591a19f3123..6a82f9bb42fb 100644
---- a/tc/tc_filter.c
-+++ b/tc/tc_filter.c
-@@ -595,6 +595,7 @@ static int tc_filter_list(int cmd, int argc, char **argv)
- 		.t.tcm_parent = TC_H_UNSPEC,
- 		.t.tcm_family = AF_UNSPEC,
- 	};
-+	bool terse_dump = false;
- 	char d[IFNAMSIZ] = {};
- 	__u32 prio = 0;
- 	__u32 protocol = 0;
-@@ -687,6 +688,8 @@ static int tc_filter_list(int cmd, int argc, char **argv)
- 				invarg("invalid chain index value", *argv);
- 			filter_chain_index_set = 1;
- 			filter_chain_index = chain_index;
-+		} else if (matches(*argv, "terse") == 0) {
-+			terse_dump = true;
- 		} else if (matches(*argv, "help") == 0) {
- 			usage();
- 		} else {
-@@ -721,6 +724,15 @@ static int tc_filter_list(int cmd, int argc, char **argv)
- 	if (filter_chain_index_set)
- 		addattr32(&req.n, sizeof(req), TCA_CHAIN, chain_index);
- 
-+	if (terse_dump) {
-+		struct nla_bitfield32 flags = {
-+			.value = TCA_DUMP_FLAGS_TERSE,
-+			.selector = TCA_DUMP_FLAGS_TERSE
-+		};
-+
-+		addattr_l(&req.n, MAX_MSG, TCA_DUMP_FLAGS, &flags, sizeof(flags));
-+	}
-+
- 	if (rtnl_dump_request_n(&rth, &req.n) < 0) {
- 		perror("Cannot send dump request");
- 		return 1;
--- 
-2.21.0
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
