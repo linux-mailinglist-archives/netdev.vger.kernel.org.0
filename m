@@ -2,118 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF7211D357E
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 17:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07CFA1D41D8
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 01:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727911AbgENPrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 11:47:20 -0400
-Received: from mail-eopbgr60061.outbound.protection.outlook.com ([40.107.6.61]:18497
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726056AbgENPrU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 11:47:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eiZFUDzSlP03cr9jDhoN+eonsTX5LsQk4q8nQveIeN+Rj7JPnnO2NvVZgTIvnT+CeWoXhvV4oE70AjKS913hNAZALLiFg3CSF5xYC4scCGlkuMBA3g1iDA5vgnLmPhDYcCKnDFs0a7KDSoiGXqADnkoFPc8GqN9T1EpOmcR6lPipND1SakgiPd7/q4YsJiry6ZjQONur0HJzE+wqT4+TVyEBxPtUO4sl9k3eNBbhX7mrQfaqdK6MWKJlCDEYeRgtyyF7250pfk01DbljqlwjxOA7OFSDgbSRtPIdcYetIOBIj8C5zPhE1lZZYFtQTh30ExuaZh7tjNo7eEJd15zPNQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=blj7HusYKjnxJ+nHwmQ1Hu1li3cGXcsQvgPaRYcohoI=;
- b=Jij88atslg8G57iYNv6sOkoPO1KZb2El0zT9mp0sqKldJgZ/J1rDopkxxhcc8bFInguS08GhKmA8/umagjxqmQx1kMLDVtj5P74y+IR66cZngkXoXUidBLu/4PbcV5ig61VDnltPPsvARbTsa5LPdYmvbLTmJBrAxoZnFNBbciGAhRHJY1cjG2CZdpcOX1eWjdeJzFexcwv6tv/EQxn5OtvsWHpSTlwoypQ9AdBYGRfR1pLvZWiqD2Nl3f/iQ6Ff8WugBj0DyuwxNF0cZ/pzPIVX9KAP9gOqWdpRnJRZOxXDCSNix8w8XmOALpTaLcfLWdSjm38Gc9gKfNuU/3/mAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=blj7HusYKjnxJ+nHwmQ1Hu1li3cGXcsQvgPaRYcohoI=;
- b=IEKo0HbMKOayJzLkxsoiQMHykjbJACDMUS6c4nJGXOTWUQHMqaElazVXmEIowi4TV+Jp8q04QdG3V2p8fZythfW4rSZK07GLFdQHf65pIf3XVBzWuoZoD2c6Y8rWabcSYoTWTSY/816GUYwnjvdFpD8Z3HF10/5MKFhIivpzPcM=
-Received: from AM0PR04MB7041.eurprd04.prod.outlook.com (2603:10a6:208:19a::13)
- by AM0PR04MB6036.eurprd04.prod.outlook.com (2603:10a6:208:146::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.25; Thu, 14 May
- 2020 15:47:17 +0000
-Received: from AM0PR04MB7041.eurprd04.prod.outlook.com
- ([fe80::1cab:2a78:51cb:2a00]) by AM0PR04MB7041.eurprd04.prod.outlook.com
- ([fe80::1cab:2a78:51cb:2a00%9]) with mapi id 15.20.2979.033; Thu, 14 May 2020
- 15:47:17 +0000
-From:   Christian Herber <christian.herber@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-CC:     Mark Rutland <mark.rutland@arm.com>, Marek Vasut <marex@denx.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: RE: [EXT] Re: [PATCH net-next v1] net: phy: tja11xx: add cable-test
- support
-Thread-Topic: [EXT] Re: [PATCH net-next v1] net: phy: tja11xx: add cable-test
- support
-Thread-Index: AQHWKSv6TM4lhcjgTkGu0RMmbRa8+qimSMKAgAAGAACAATATgIAAGLOAgAAiuCA=
-Date:   Thu, 14 May 2020 15:47:16 +0000
-Message-ID: <AM0PR04MB704193C938ECC28DE9A1B28E86BC0@AM0PR04MB7041.eurprd04.prod.outlook.com>
-References: <20200513123440.19580-1-o.rempel@pengutronix.de>
- <20200513133925.GD499265@lunn.ch>
- <20200513174011.kl6l767cimeo6dpy@pengutronix.de>
- <20200513180140.GK499265@lunn.ch>
- <20200514120959.b24cszsmkjvfzss6@pengutronix.de>
- <20200514133823.GO527401@lunn.ch>
-In-Reply-To: <20200514133823.GO527401@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [88.130.52.52]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 48379456-cf7a-41ce-d83c-08d7f81e1467
-x-ms-traffictypediagnostic: AM0PR04MB6036:
-x-microsoft-antispam-prvs: <AM0PR04MB6036329F597B9F4549ED0E8486BC0@AM0PR04MB6036.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 040359335D
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: g3e/UiDrmEPGy03CIL1pnArMr32LNuqK2BMJfBbKmgFL01vhhiNKsXmi7AGOi0oO0ddp8NHFrWBHu1x3sqzsuv7ICKU/lQ3AL63E6qWYNkIN73yO1mF4lA0hY38J1VhBRvbpNIpZyiRHtr1H1Hl4f0/lED9RGHc5qixR/ZXn+Dw/owgnQeRLipUzgarK5/VlQ6n5nsQW7tTKWnSY4Iu6jrNp2KnVl1sBMQQitQBOrZ6yMiE9wwmvOm1gWjbE1P62pG9UlVKxpOeyLHzrXh9u1o2xadURyxEdVoGmX3ZOs+L8Cp/E9pPSoTY7xod2h2EmcMKEGdLQCd4DIZ5U4HoJRXi0sC78gDW00bgrcVcZXa5i00jtDcAHPGSI/pldrs5cGlRjt7HkK8FC5jroYP9xJipwA/1KBer9nfK8psRZ/1AJ51cIzGyZyowniPkUubaP
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB7041.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(366004)(346002)(39860400002)(376002)(52536014)(66446008)(64756008)(86362001)(5660300002)(66556008)(66946007)(66476007)(76116006)(2906002)(4326008)(71200400001)(8676002)(8936002)(55016002)(6506007)(4744005)(478600001)(26005)(44832011)(9686003)(316002)(7416002)(110136005)(7696005)(54906003)(186003)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 56Ow/SNMS2QW2YUXj7IjJxCvZGRiWH2HWr6ecYL/FC1dvK1noXk1V8EY8bji5/xRE7pDvNmhnz3qpTg8PihLo6899/zC43tTPZr5OW84V5VvVpqoPNIr6yKplAQrvKTPSDO6rCxaHs4dtQQ/iWzR3YPJj5tVrkhe9qxdOX1vfMHXlS8drB59MXCr1PHpOj28PmGQuk58f0LnKYGfJxllmZGKxClJ6Qmkatmpbi5iqBED6eKotZ9GjjEpg7xpJPZAIGlsJ1TF42J+bo0PJK8FEJT/oqZRuz85oV9CPrMtShRCff1XuIDUoXO5zbrjFkUwF5vidEUAh+pxvLHNtCv7NMIiik/l4bvU3u01f5laHfRh7hrDFNpqDqRG/GHLkehIEPvm668SHeqXELu+PMh6UVVGUzFPt/nj7wq3XtqqDVD/9Wd9NOBeHZMw5yZ1fKQxDB1V9ikImnYUWN+xr8XM76oAKk1tI1uO8+HbQO7e6Go=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48379456-cf7a-41ce-d83c-08d7f81e1467
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2020 15:47:16.8454
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TGoYxAOCz4mdmL8svaUeb5ToM/6WfUMjOnRQBnI36b5yCkaAAMjAR+7P16fLIA9Yen2AQCy5nqF7EpAJ1zUB12ta7ao/Iabwo79Y41JVByA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6036
+        id S1726550AbgENXrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 19:47:39 -0400
+Received: from nwk-aaemail-lapp02.apple.com ([17.151.62.67]:42874 "EHLO
+        nwk-aaemail-lapp02.apple.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726067AbgENXrj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 19:47:39 -0400
+X-Greylist: delayed 28454 seconds by postgrey-1.27 at vger.kernel.org; Thu, 14 May 2020 19:47:38 EDT
+Received: from pps.filterd (nwk-aaemail-lapp02.apple.com [127.0.0.1])
+        by nwk-aaemail-lapp02.apple.com (8.16.0.42/8.16.0.42) with SMTP id 04EFr7Bx026770;
+        Thu, 14 May 2020 08:53:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=20180706; bh=ByxiTWojcP8nO60TJThHSdKvQvLtCDC8OM6llgTD9BU=;
+ b=oNYlbAPT2w5utI0aMCv03ihCKSHiRKXICa+ELl1uLHLBRiFL+aACNIlTUQbHtB81GMDw
+ 6kSReKucLYXDmLbWnyZwe0jiwvvcTvjlangyuluh4aTSnj3xCYTHbh909OIdtjSCfVoE
+ BzSvb5owLivsS0QWCvlXUOxHEImail5Tc7X6rmx+xiny7NoebT3gUUwAWksR8Umss8nR
+ G4bUt38JhCWc0kxzugh13xjLHmnnADxB6T+d9/6v+OYkGtkG9MOXyKfNZppVcgeJMuoZ
+ 6d5YtCQKMtRadmFF2Yb54zbOACAS8vl4MFo70dkuk/iZk2zpU9Z2jFfn69MXFHxC3Doi Mg== 
+Received: from rn-mailsvcp-mta-lapp04.rno.apple.com (rn-mailsvcp-mta-lapp04.rno.apple.com [10.225.203.152])
+        by nwk-aaemail-lapp02.apple.com with ESMTP id 3100y2vkym-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Thu, 14 May 2020 08:53:19 -0700
+Received: from rn-mailsvcp-mmp-lapp02.rno.apple.com
+ (rn-mailsvcp-mmp-lapp02.rno.apple.com [17.179.253.15])
+ by rn-mailsvcp-mta-lapp04.rno.apple.com
+ (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
+ 2020)) with ESMTPS id <0QAB004UNW4Q0I40@rn-mailsvcp-mta-lapp04.rno.apple.com>;
+ Thu, 14 May 2020 08:53:15 -0700 (PDT)
+Received: from process_milters-daemon.rn-mailsvcp-mmp-lapp02.rno.apple.com by
+ rn-mailsvcp-mmp-lapp02.rno.apple.com
+ (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
+ 2020)) id <0QAB00900W39LB00@rn-mailsvcp-mmp-lapp02.rno.apple.com>; Thu,
+ 14 May 2020 08:53:14 -0700 (PDT)
+X-Va-A: 
+X-Va-T-CD: 8c2cfa5ef70d2018b184af5f7ee0603d
+X-Va-E-CD: 1cff3c864f1a206c49923c84ea8132f2
+X-Va-R-CD: 196ed5cdc7db62fe5ce70f7e1b5084b8
+X-Va-CD: 0
+X-Va-ID: ed64e9fd-96ee-4a94-8255-3c08d79f880d
+X-V-A:  
+X-V-T-CD: 8c2cfa5ef70d2018b184af5f7ee0603d
+X-V-E-CD: 1cff3c864f1a206c49923c84ea8132f2
+X-V-R-CD: 196ed5cdc7db62fe5ce70f7e1b5084b8
+X-V-CD: 0
+X-V-ID: b3091b68-8be5-45b6-803e-700050c9ae0f
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-14_05:2020-05-14,2020-05-14 signatures=0
+Received: from localhost ([17.234.94.63])
+ by rn-mailsvcp-mmp-lapp02.rno.apple.com
+ (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
+ 2020))
+ with ESMTPSA id <0QAB007AIW4Q8U30@rn-mailsvcp-mmp-lapp02.rno.apple.com>; Thu,
+ 14 May 2020 08:53:14 -0700 (PDT)
+From:   Christoph Paasch <cpaasch@apple.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     mptcp@lists.01.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: [PATCH net-next] mptcp: Use 32-bit DATA_ACK when possible
+Date:   Thu, 14 May 2020 08:53:03 -0700
+Message-id: <20200514155303.14360-1-cpaasch@apple.com>
+X-Mailer: git-send-email 2.23.0
+MIME-version: 1.0
+Content-transfer-encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-14_05:2020-05-14,2020-05-14 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+RFC8684 allows to send 32-bit DATA_ACKs as long as the peer is not
+sending 64-bit data-sequence numbers. The 64-bit DSN is only there for
+extreme scenarios when a very high throughput subflow is combined with a
+long-RTT subflow such that the high-throughput subflow wraps around the
+32-bit sequence number space within an RTT of the high-RTT subflow.
 
-> On Wed, May 13, 2020 at 03:39:00PM +0200, Andrew Lunn wrote:
->> On Thu, May 14, 2020 at 02:09:59PM +0200, Oleksij Rempel wrote:
->>  ETHTOOL_A_CABLE_RESULT_CODE_ACTIVE_PARTNER - the link partner is active=
-.
->>
->>      The TJA1102 is able to detect it if partner link is master.
->>
-> master is not a cable diagnostics issue. This is a configuration
-> issue.
+It is thus a rare scenario and we should try to use the 32-bit DATA_ACK
+instead as long as possible. It allows to reduce the TCP-option overhead
+by 4 bytes, thus makes space for an additional SACK-block. It also makes
+tcpdumps much easier to read when the DSN and DATA_ACK are both either
+32 or 64-bit.
 
-Master is very relevant for cable diagnostics, as a cable measurement shoul=
-d not be done with an active link partner on the other end (i.e. a PHY in m=
-aster mode trying to train the link).
+Signed-off-by: Christoph Paasch <cpaasch@apple.com>
+---
+ include/net/mptcp.h  |  5 ++++-
+ net/mptcp/options.c  | 33 ++++++++++++++++++++++++---------
+ net/mptcp/protocol.h |  1 +
+ net/mptcp/subflow.c  |  2 ++
+ 4 files changed, 31 insertions(+), 10 deletions(-)
 
-So if the measurement detects an active link partner disturbing the measure=
-ment, it is important to report this to the user.
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+index e60275659de6..339eb36cf508 100644
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -16,7 +16,10 @@ struct seq_file;
+ 
+ /* MPTCP sk_buff extension data */
+ struct mptcp_ext {
+-	u64		data_ack;
++	union {
++		u64	data_ack;
++		u32	data_ack32;
++	};
+ 	u64		data_seq;
+ 	u32		subflow_seq;
+ 	u16		data_len;
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index 45497af23906..ece6f92cf7d1 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -516,7 +516,16 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+ 		return ret;
+ 	}
+ 
+-	ack_size = TCPOLEN_MPTCP_DSS_ACK64;
++	if (subflow->use_64bit_ack) {
++		ack_size = TCPOLEN_MPTCP_DSS_ACK64;
++		opts->ext_copy.data_ack = msk->ack_seq;
++		opts->ext_copy.ack64 = 1;
++	} else {
++		ack_size = TCPOLEN_MPTCP_DSS_ACK32;
++		opts->ext_copy.data_ack32 = (uint32_t)(msk->ack_seq);
++		opts->ext_copy.ack64 = 0;
++	}
++	opts->ext_copy.use_ack = 1;
+ 
+ 	/* Add kind/length/subtype/flag overhead if mapping is not populated */
+ 	if (dss_size == 0)
+@@ -524,10 +533,6 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+ 
+ 	dss_size += ack_size;
+ 
+-	opts->ext_copy.data_ack = msk->ack_seq;
+-	opts->ext_copy.ack64 = 1;
+-	opts->ext_copy.use_ack = 1;
+-
+ 	*size = ALIGN(dss_size, 4);
+ 	return true;
+ }
+@@ -986,8 +991,13 @@ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
+ 		u8 flags = 0;
+ 
+ 		if (mpext->use_ack) {
+-			len += TCPOLEN_MPTCP_DSS_ACK64;
+-			flags = MPTCP_DSS_HAS_ACK | MPTCP_DSS_ACK64;
++			flags = MPTCP_DSS_HAS_ACK;
++			if (mpext->ack64) {
++				len += TCPOLEN_MPTCP_DSS_ACK64;
++				flags |= MPTCP_DSS_ACK64;
++			} else {
++				len += TCPOLEN_MPTCP_DSS_ACK32;
++			}
+ 		}
+ 
+ 		if (mpext->use_map) {
+@@ -1004,8 +1014,13 @@ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
+ 		*ptr++ = mptcp_option(MPTCPOPT_DSS, len, 0, flags);
+ 
+ 		if (mpext->use_ack) {
+-			put_unaligned_be64(mpext->data_ack, ptr);
+-			ptr += 2;
++			if (mpext->ack64) {
++				put_unaligned_be64(mpext->data_ack, ptr);
++				ptr += 2;
++			} else {
++				put_unaligned_be32(mpext->data_ack32, ptr);
++				ptr += 1;
++			}
+ 		}
+ 
+ 		if (mpext->use_map) {
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index e4ca6320ce76..f5adca93e8fb 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -290,6 +290,7 @@ struct mptcp_subflow_context {
+ 		data_avail : 1,
+ 		rx_eof : 1,
+ 		data_fin_tx_enable : 1,
++		use_64bit_ack : 1, /* Set when we received a 64-bit DSN */
+ 		can_ack : 1;	    /* only after processing the remote a key */
+ 	u64	data_fin_tx_seq;
+ 	u32	remote_nonce;
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 009d5c478062..f22dad482cd4 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -661,9 +661,11 @@ static enum mapping_status get_mapping_status(struct sock *ssk)
+ 	if (!mpext->dsn64) {
+ 		map_seq = expand_seq(subflow->map_seq, subflow->map_data_len,
+ 				     mpext->data_seq);
++		subflow->use_64bit_ack = 0;
+ 		pr_debug("expanded seq=%llu", subflow->map_seq);
+ 	} else {
+ 		map_seq = mpext->data_seq;
++		subflow->use_64bit_ack = 1;
+ 	}
+ 
+ 	if (subflow->map_valid) {
+-- 
+2.23.0
 
-Christian
