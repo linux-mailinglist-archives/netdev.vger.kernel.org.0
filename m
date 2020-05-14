@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E101D3C0B
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E2F61D3D4D
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730177AbgENTHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 15:07:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40002 "EHLO mail.kernel.org"
+        id S1728209AbgENTSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 15:18:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51306 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730172AbgENTHC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 15:07:02 -0400
+        id S1727896AbgENTSw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 15:18:52 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B30DE20675;
-        Thu, 14 May 2020 19:07:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5CC13206F1;
+        Thu, 14 May 2020 19:18:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589483222;
-        bh=irWnRS322CZRu2W1HUFNbUrlKs55jy0E9s1AXY8lweQ=;
+        s=default; t=1589483931;
+        bh=oVPC6nEvLFlTp15302HS05FQs6BjfouRTDsTW35v6tc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IGohLao3b2vEs2hafuvKCCkeiVY8fhkU0Ao52lE1vxyC61AIRPP7O1hqJtMTlosuq
-         RDwJGQ+lnh82G329CWzhDIPvQGBB+/NM5m8Ee2CenNYj6gwQtrFwJGG0UXfn7b9lPA
-         mgBTO8WsW83gPTZcY5OCTIRHyFM/FI1NC+OZltBQ=
-Date:   Thu, 14 May 2020 12:06:59 -0700
+        b=1gSf6AzBCuDsIoWrUi5ahr5F/7KfMrcjw8bxllxhe/7Ov/WITB4ZMNuBbdRXS79U/
+         BFVlClNq+xaaU9xRkiVoQhoMY9LS3tdDhcCOEtS1okKncX6d1IAhzdLAT7CpqyBfHA
+         ZLjET0AL0AA6JeE32jzTiKLZ4kxTAK9AA1wqOvIo=
+Date:   Thu, 14 May 2020 12:18:48 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Denis Bolotin <dbolotin@marvell.com>
-Subject: Re: [PATCH v2 net-next 00/11] net: qed/qede: critical hw error
- handling
-Message-ID: <20200514120659.6f64f6e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200514095727.1361-1-irusskikh@marvell.com>
-References: <20200514095727.1361-1-irusskikh@marvell.com>
+To:     Andrii Nakryiko <andriin@fb.com>, linux-arch@vger.kernel.org
+Cc:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <andrii.nakryiko@gmail.com>,
+        <kernel-team@fb.com>, "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH bpf-next 1/6] bpf: implement BPF ring buffer and
+ verifier support for it
+Message-ID: <20200514121848.052966b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200513192532.4058934-2-andriin@fb.com>
+References: <20200513192532.4058934-1-andriin@fb.com>
+        <20200513192532.4058934-2-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,30 +44,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 May 2020 12:57:16 +0300 Igor Russkikh wrote:
-> FastLinQ devices as a complex systems may observe various hardware
-> level error conditions, both severe and recoverable.
-> 
-> Driver is able to detect and report this, but so far it only did
-> trace/dmesg based reporting.
-> 
-> Here we implement an extended hw error detection, service task
-> handler captures a dump for the later analysis.
-> 
-> I also resubmit a patch from Denis Bolotin on tx timeout handler,
-> addressing David's comment regarding recovery procedure as an extra
-> reaction on this event.
-> 
-> v2:
-> 
-> Removing the patch with ethtool dump and udev magic. Its quite isolated,
-> I'm working on devlink based logic for this separately.
-> 
-> v1:
-> 
-> https://patchwork.ozlabs.org/project/netdev/cover/cover.1588758463.git.irusskikh@marvell.com/
+On Wed, 13 May 2020 12:25:27 -0700 Andrii Nakryiko wrote:
+> One interesting implementation bit, that significantly simplifies (and thus
+> speeds up as well) implementation of both producers and consumers is how data
+> area is mapped twice contiguously back-to-back in the virtual memory. This
+> allows to not take any special measures for samples that have to wrap around
+> at the end of the circular buffer data area, because the next page after the
+> last data page would be first data page again, and thus the sample will still
+> appear completely contiguous in virtual memory. See comment and a simple ASCII
+> diagram showing this visually in bpf_ringbuf_area_alloc().
 
-I'm not 100% happy that the debug data gets reported to the management
-FW before the devlink health code is in place. For the Linux community,
-I think, having standard Linux interfaces implemented first is the
-priority.
+Out of curiosity - is this 100% okay to do in the kernel and user space
+these days? Is this bit part of the uAPI in case we need to back out of
+it? 
+
+In the olden days virtually mapped/tagged caches could get confused
+seeing the same physical memory have two active virtual mappings, or 
+at least that's what I've been told in school :)
+
+Checking with Paul - he says that could have been the case for Itanium
+and PA-RISC CPUs.
