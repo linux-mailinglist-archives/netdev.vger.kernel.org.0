@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 180481D3ACB
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 20:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 029FD1D3ABF
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 20:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728989AbgENS7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 14:59:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57142 "EHLO mail.kernel.org"
+        id S1729673AbgENS4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 14:56:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57160 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729634AbgENS4P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 14:56:15 -0400
+        id S1729650AbgENS4R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 14:56:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 736EB207D0;
-        Thu, 14 May 2020 18:56:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A13632074A;
+        Thu, 14 May 2020 18:56:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589482575;
-        bh=zKRzD4Hrg5ZZOVbHK5Q00CFwPYicPUzhXy7nFyEU3Ag=;
+        s=default; t=1589482576;
+        bh=GQkvxY6a60MfmC9Z3Ps15B2m5edknHHKmRYox64jmQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PD8QsgifIJ4Vf71nYv+u1CRgB5UYPqZ+13iWmEGHxyewhMUOxAuDtndLX9GLfE/HQ
-         rS4mf4anPufRLGgyDUXTaOW5VNSq04XS43B0w3DPmfVYLZIrBcXUn7pxa7CPziOG5n
-         NrMaHapQJ5ZYQNwXJwy9oz9BQbP4LYOL7WUGBTag=
+        b=O23BWtX+kbHwy42eKO8Z925R45e/8pn06X7GE3WEAGgGJfS2VWWbh+f8CAtR0s1G5
+         IYZ8SwV37Iz53Gn9B/ZTRIIDJhrCLbcNIx3xfsGHwrtH6dYTXiE72mwAKiWbqLk2By
+         1b/EIZDhpBaRyWfFc0ohiF3u15iBwXgdsDIPvUSI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yoshiyuki Kurauchi <ahochauwaaaaa@gmail.com>,
+Cc:     Matt Jolly <Kangie@footclan.ninja>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 20/27] gtp: set NLM_F_MULTI flag in gtp_genl_dump_pdp()
-Date:   Thu, 14 May 2020 14:55:43 -0400
-Message-Id: <20200514185550.21462-20-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 21/27] net: usb: qmi_wwan: add support for DW5816e
+Date:   Thu, 14 May 2020 14:55:44 -0400
+Message-Id: <20200514185550.21462-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200514185550.21462-1-sashal@kernel.org>
 References: <20200514185550.21462-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,59 +46,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yoshiyuki Kurauchi <ahochauwaaaaa@gmail.com>
+From: Matt Jolly <Kangie@footclan.ninja>
 
-[ Upstream commit 846c68f7f1ac82c797a2f1db3344a2966c0fe2e1 ]
+[ Upstream commit 57c7f2bd758eed867295c81d3527fff4fab1ed74 ]
 
-In drivers/net/gtp.c, gtp_genl_dump_pdp() should set NLM_F_MULTI
-flag since it returns multipart message.
-This patch adds a new arg "flags" in gtp_genl_fill_info() so that
-flags can be set by the callers.
+Add support for Dell Wireless 5816e to drivers/net/usb/qmi_wwan.c
 
-Signed-off-by: Yoshiyuki Kurauchi <ahochauwaaaaa@gmail.com>
+Signed-off-by: Matt Jolly <Kangie@footclan.ninja>
+Acked-by: Bjørn Mork <bjorn@mork.no>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/gtp.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/usb/qmi_wwan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index a9e8a7356c41d..fe844888e0ed8 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -1108,11 +1108,11 @@ static struct genl_family gtp_genl_family = {
- };
- 
- static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
--			      u32 type, struct pdp_ctx *pctx)
-+			      int flags, u32 type, struct pdp_ctx *pctx)
- {
- 	void *genlh;
- 
--	genlh = genlmsg_put(skb, snd_portid, snd_seq, &gtp_genl_family, 0,
-+	genlh = genlmsg_put(skb, snd_portid, snd_seq, &gtp_genl_family, flags,
- 			    type);
- 	if (genlh == NULL)
- 		goto nlmsg_failure;
-@@ -1208,8 +1208,8 @@ static int gtp_genl_get_pdp(struct sk_buff *skb, struct genl_info *info)
- 		goto err_unlock;
- 	}
- 
--	err = gtp_genl_fill_info(skb2, NETLINK_CB(skb).portid,
--				 info->snd_seq, info->nlhdr->nlmsg_type, pctx);
-+	err = gtp_genl_fill_info(skb2, NETLINK_CB(skb).portid, info->snd_seq,
-+				 0, info->nlhdr->nlmsg_type, pctx);
- 	if (err < 0)
- 		goto err_unlock_free;
- 
-@@ -1252,6 +1252,7 @@ static int gtp_genl_dump_pdp(struct sk_buff *skb,
- 				    gtp_genl_fill_info(skb,
- 					    NETLINK_CB(cb->skb).portid,
- 					    cb->nlh->nlmsg_seq,
-+					    NLM_F_MULTI,
- 					    cb->nlh->nlmsg_type, pctx)) {
- 					cb->args[0] = i;
- 					cb->args[1] = j;
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 97f6b8130db33..5755eec00d7f8 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -950,6 +950,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81b3, 8)},	/* Dell Wireless 5809e Gobi(TM) 4G LTE Mobile Broadband Card (rev3) */
+ 	{QMI_FIXED_INTF(0x413c, 0x81b6, 8)},	/* Dell Wireless 5811e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81b6, 10)},	/* Dell Wireless 5811e */
++	{QMI_FIXED_INTF(0x413c, 0x81cc, 8)},	/* Dell Wireless 5816e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
 -- 
 2.20.1
 
