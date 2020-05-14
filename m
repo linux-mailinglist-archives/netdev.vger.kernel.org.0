@@ -2,95 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2837F1D2C01
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 11:58:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5030A1D2C0E
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 12:01:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726186AbgENJ6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 05:58:33 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:29736 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726098AbgENJ6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 05:58:32 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04E9tuhW028120;
-        Thu, 14 May 2020 02:58:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=mo1Z6ri5i2lROKGg5hLptPAJYhp8mR4dpcuhPIGeu0U=;
- b=oXkLlx4CIPmioWjqtjO3BNgEcFPlfm0exJc9fiaqIwjfu51wp40FQ2JjzuSOe+Vzs3tg
- zVL9+taHhRRfe3tv/CksvXxI7ALjCRpVYG6aKG1VZ6ghz3W6tUB7OXF6B6z+dOWRLTmd
- DKMvSw/a1Ip0yhTJ2tMhUWXfuam8b+vt7JpaDvJ79qn40xaZKMVtvuTcZp6FD4j9euHo
- /d6hcj66u4iWcs2IDmEFEuVKrVocG1cMJoBFfp5A8JHUEgu8D5b+tgltFmP0nBu8AVmK
- rcDssn62KVm1ZuMxkX3Wmcm2z5LQjb+Kn7oWqn5hMUaZWiuySETay7rOKYQrGM7sZFjl CA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3100xk1qxn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 14 May 2020 02:58:29 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 14 May
- 2020 02:58:27 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 14 May
- 2020 02:58:26 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 14 May 2020 02:58:26 -0700
-Received: from NN-LT0019.marvell.com (unknown [10.193.39.5])
-        by maili.marvell.com (Postfix) with ESMTP id 0A89D3F703F;
-        Thu, 14 May 2020 02:58:23 -0700 (PDT)
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Denis Bolotin <dbolotin@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Ariel Elior <ariel.elior@marvell.com>,
-        "Michal Kalderon" <michal.kalderon@marvell.com>
-Subject: [PATCH v2 net-next 11/11] net: qed: fix bad formatting
-Date:   Thu, 14 May 2020 12:57:27 +0300
-Message-ID: <20200514095727.1361-12-irusskikh@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200514095727.1361-1-irusskikh@marvell.com>
-References: <20200514095727.1361-1-irusskikh@marvell.com>
+        id S1726084AbgENKBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 06:01:51 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:57595 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726066AbgENKBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 06:01:51 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-179-I2TpioJnO02MgCgI8UoE-Q-1; Thu, 14 May 2020 11:01:46 +0100
+X-MC-Unique: I2TpioJnO02MgCgI8UoE-Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 14 May 2020 11:01:45 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 14 May 2020 11:01:45 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Daniel Borkmann' <daniel@iogearbox.net>,
+        Al Viro <viro@zeniv.linux.org.uk>
+CC:     Christoph Hellwig <hch@lst.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "bgregg@netflix.com" <bgregg@netflix.com>
+Subject: RE: [PATCH 11/18] maccess: remove strncpy_from_unsafe
+Thread-Topic: [PATCH 11/18] maccess: remove strncpy_from_unsafe
+Thread-Index: AQHWKYLaQq1MCiy4bEiOMK61mlvZyainWQNA
+Date:   Thu, 14 May 2020 10:01:45 +0000
+Message-ID: <6ca8d8499bf644aba0b242d194df5a60@AcuMS.aculab.com>
+References: <20200513160038.2482415-1-hch@lst.de>
+ <20200513160038.2482415-12-hch@lst.de>
+ <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
+ <20200513192804.GA30751@lst.de>
+ <0c1a7066-b269-9695-b94a-bb5f4f20ebd8@iogearbox.net>
+ <20200513232816.GZ23230@ZenIV.linux.org.uk>
+ <866cbe54-a027-04eb-65db-c6423d16b924@iogearbox.net>
+In-Reply-To: <866cbe54-a027-04eb-65db-c6423d16b924@iogearbox.net>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-14_02:2020-05-13,2020-05-14 signatures=0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On some adjacent code, fix bad code formatting
-
-Signed-off-by: Ariel Elior <ariel.elior@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- include/linux/qed/qed_if.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
-index 978e91e9ab65..48325d7790f8 100644
---- a/include/linux/qed/qed_if.h
-+++ b/include/linux/qed/qed_if.h
-@@ -821,12 +821,11 @@ enum qed_nvm_flash_cmd {
- 
- struct qed_common_cb_ops {
- 	void (*arfs_filter_op)(void *dev, void *fltr, u8 fw_rc);
--	void	(*link_update)(void			*dev,
--			       struct qed_link_output	*link);
-+	void (*link_update)(void *dev, struct qed_link_output *link);
- 	void (*schedule_recovery_handler)(void *dev);
- 	void (*schedule_hw_err_handler)(void *dev,
- 					enum qed_hw_err_type err_type);
--	void	(*dcbx_aen)(void *dev, struct qed_dcbx_get *get, u32 mib_type);
-+	void (*dcbx_aen)(void *dev, struct qed_dcbx_get *get, u32 mib_type);
- 	void (*get_generic_tlv_data)(void *dev, struct qed_generic_tlvs *data);
- 	void (*get_protocol_tlv_data)(void *dev, void *data);
- };
--- 
-2.17.1
+RnJvbTogRGFuaWVsIEJvcmttYW5uDQo+IFNlbnQ6IDE0IE1heSAyMDIwIDAwOjU5DQo+IE9uIDUv
+MTQvMjAgMToyOCBBTSwgQWwgVmlybyB3cm90ZToNCj4gPiBPbiBUaHUsIE1heSAxNCwgMjAyMCBh
+dCAxMjozNjoyOEFNICswMjAwLCBEYW5pZWwgQm9ya21hbm4gd3JvdGU6DQo+ID4NCj4gPj4+IFNv
+IG9uIHNheSBzMzkwIFRBU0tfU0laRV9VU1VBTEx5IGlzICgtUEFHRV9TSVpFKSwgd2hpY2ggbWVh
+bnMgd2UnZCBhbHdheQ0KPiA+Pj4gdHJ5IHRoZSB1c2VyIGNvcHkgZmlyc3QsIHdoaWNoIHNlZW1z
+IG9kZC4NCj4gPj4+DQo+ID4+PiBJJ2QgcmVhbGx5IGxpa2UgdG8gaGVyZSBmcm9tIHRoZSBicGYg
+Zm9sa3Mgd2hhdCB0aGUgZXhwZWN0ZWQgdXNlIGNhc2UNCj4gPj4+IGlzIGhlcmUsIGFuZCBpZiB0
+aGUgdHlwaWNhbCBhcmd1bWVudCBpcyBrZXJuZWwgb3IgdXNlciBtZW1vcnkuDQo+ID4+DQo+ID4+
+IEl0J3MgdXNlZCBmb3IgYm90aC4gR2l2ZW4gdGhpcyBpcyBlbmFibGVkIG9uIHByZXR0eSBtdWNo
+IGFsbCBwcm9ncmFtIHR5cGVzLCBteQ0KPiA+PiBhc3N1bXB0aW9uIHdvdWxkIGJlIHRoYXQgdXNh
+Z2UgaXMgc3RpbGwgbW9yZSBvZnRlbiBvbiBrZXJuZWwgbWVtb3J5IHRoYW4gdXNlciBvbmUuDQo+
+ID4NCj4gPiBUaGVuIGl0IG5lZWRzIGFuIGFyZ3VtZW50IHRlbGxpbmcgaXQgd2hpY2ggb25lIHRv
+IHVzZS4gIExvb2sgYXQgc3BhcmM2NC4NCj4gPiBPciBzMzkwLiAgT3IgcGFyaXNjLiAgRXQgc29k
+ZGluZyBjZXRlcmEuDQo+ID4NCj4gPiBUaGUgdW5kZXJseWluZyBtb2RlbCBpcyB0aGF0IHRoZSBr
+ZXJuZWwgbGl2ZXMgaW4gYSBzZXBhcmF0ZSBhZGRyZXNzIHNwYWNlLg0KPiA+IFllcywgb24geDg2
+IGl0J3MgYWN0dWFsbHkgc2hhcmluZyB0aGUgcGFnZSB0YWJsZXMgd2l0aCB1c2VybGFuZCwgYnV0
+IHRoYXQncw0KPiA+IG5vdCB1bml2ZXJzYWwuICBUaGUgc2FtZSBhZGRyZXNzIGNhbiBiZSBib3Ro
+IGEgdmFsaWQgdXNlcmxhbmQgb25lIF9hbmRfDQo+ID4gYSB2YWxpZCBrZXJuZWwgb25lLiAgWW91
+IG5lZWQgdG8gdGVsbCB3aGljaCBvbmUgZG8geW91IHdhbnQuDQo+IA0KPiBZZXMsIHNlZSBhbHNv
+IDZhZTA4YWUzZGVhMiAoImJwZjogQWRkIHByb2JlX3JlYWRfe3VzZXIsIGtlcm5lbH0gYW5kIHBy
+b2JlX3JlYWRfe3VzZXIsDQo+IGtlcm5lbH1fc3RyIGhlbHBlcnMiKSwgYW5kIG15IG90aGVyIHJl
+cGx5IHdydCBicGZfdHJhY2VfcHJpbnRrKCkgb24gaG93IHRvIGFkZHJlc3MNCj4gdGhpcy4gQWxs
+IEknbSB0cnlpbmcgdG8gc2F5IGlzIHRoYXQgYm90aCBicGZfcHJvYmVfcmVhZCgpIGFuZCBicGZf
+dHJhY2VfcHJpbnRrKCkgZG8NCj4gZXhpc3QgaW4gdGhpcyBmb3JtIHNpbmNlIGVhcmx5IFtlXWJw
+ZiBkYXlzIGZvciB+NXlycyBub3cgYW5kIHdoaWxlIGJyb2tlbiBvbiBub24teDg2DQo+IHRoZXJl
+IGFyZSBhIGxvdCBvZiB1c2VycyBvbiB4ODYgZm9yIHRoaXMgaW4gdGhlIHdpbGQsIHNvIHRoZXkg
+bmVlZCB0byBoYXZlIGEgY2hhbmNlDQo+IHRvIG1pZ3JhdGUgb3ZlciB0byB0aGUgbmV3IGZhY2ls
+aXRpZXMgYmVmb3JlIHRoZXkgYXJlIGZ1bGx5IHJlbW92ZWQuDQoNCklmIGl0J3Mgbm90IGEgc3R1
+cGlkIHF1ZXN0aW9uIHdoeSBpcyBhIEJQRiBwcm9ncmFtIGFsbG93ZWQgdG8gZ2V0DQppbnRvIGEg
+c2l0dWF0aW9uIHdoZXJlIGl0IG1pZ2h0IGhhdmUgYW4gaW52YWxpZCBrZXJuZWwgYWRkcmVzcy4N
+Cg0KSXQgYWxsIHN0aW5rcyBvZiBhIGhvbGUgdGhhdCBhbGxvd3MgYWxsIG9mIGtlcm5lbCBtZW1v
+cnkgdG8gYmUgcmVhZA0KYW5kIGNvcGllZCB0byB1c2Vyc3BhY2UuDQoNCk5vdyB5b3UgbWlnaHQg
+d2FudCB0byBzb21ldGhpbmcgc3BlY2lhbCBzbyB0aGF0IEJQRiBwcm9ncmFtcyBqdXN0DQphYm9y
+dCBvbiBPT1BTIGluc3RlYWQgb2YgcG9zc2libHkgcGFuaWtpbmcgdGhlIGtlcm5lbC4NCkJ1dCB0
+aGF0IGlzIGRpZmZlcmVudCBmcm9tIGEgY29weSB0aGF0IGV4cGVjdHMgdG8gYmUgcGFzc2VkIGdh
+cmJhZ2UuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1s
+ZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJh
+dGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
