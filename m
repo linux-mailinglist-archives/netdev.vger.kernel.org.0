@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 999BD1D3F93
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 23:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7CB11D3FB4
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 23:10:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727882AbgENVF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 17:05:58 -0400
-Received: from www62.your-server.de ([213.133.104.62]:53756 "EHLO
+        id S1728244AbgENVKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 17:10:41 -0400
+Received: from www62.your-server.de ([213.133.104.62]:54352 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727122AbgENVF6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 17:05:58 -0400
+        with ESMTP id S1727811AbgENVKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 17:10:41 -0400
 Received: from sslproxy05.your-server.de ([78.46.172.2])
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1jZL3B-0002Gf-U6; Thu, 14 May 2020 23:05:53 +0200
+        id 1jZL7m-0002wo-Pa; Thu, 14 May 2020 23:10:38 +0200
 Received: from [178.196.57.75] (helo=pc-9.home)
         by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1jZL3B-0008J0-Ja; Thu, 14 May 2020 23:05:53 +0200
-Subject: Re: [PATCH bpf 3/3] bpf: restrict bpf_trace_printk()'s %s usage and
- add %psK, %psU specifier
-To:     Yonghong Song <yhs@fb.com>, ast@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        id 1jZL7m-000SGY-El; Thu, 14 May 2020 23:10:38 +0200
+Subject: Re: [PATCH bpf 0/3] Restrict bpf_probe_read{,str}() and
+ bpf_trace_printk()'s %s
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
         torvalds@linux-foundation.org, mhiramat@kernel.org,
-        brendan.d.gregg@gmail.com, hch@lst.de, john.fastabend@gmail.com
+        brendan.d.gregg@gmail.com, john.fastabend@gmail.com, yhs@fb.com
 References: <20200514161607.9212-1-daniel@iogearbox.net>
- <20200514161607.9212-4-daniel@iogearbox.net>
- <34e9da6e-1f1e-30c2-5863-55f7d8506eb8@fb.com>
+ <20200514165802.GA3059@lst.de>
+ <cb0749ab-e37b-6fe4-5830-a40fb4fca995@iogearbox.net>
+ <20200514195813.GA14720@lst.de>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2c8efc5a-cab4-67ff-13f2-aa98f13e9f4b@iogearbox.net>
-Date:   Thu, 14 May 2020 23:05:52 +0200
+Message-ID: <0b64dbdc-25f3-cfff-36f8-9b20a9d84707@iogearbox.net>
+Date:   Thu, 14 May 2020 23:10:37 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <34e9da6e-1f1e-30c2-5863-55f7d8506eb8@fb.com>
+In-Reply-To: <20200514195813.GA14720@lst.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -47,50 +48,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/14/20 8:10 PM, Yonghong Song wrote:
-> On 5/14/20 9:16 AM, Daniel Borkmann wrote:
->> Usage of plain %s conversion specifier in bpf_trace_printk() suffers from the
->> very same issue as bpf_probe_read{,str}() helpers, that is, it is broken on
->> archs with overlapping address ranges.
+On 5/14/20 9:58 PM, Christoph Hellwig wrote:
+> On Thu, May 14, 2020 at 09:54:06PM +0200, Daniel Borkmann wrote:
+>> On 5/14/20 6:58 PM, Christoph Hellwig wrote:
+>>> On Thu, May 14, 2020 at 06:16:04PM +0200, Daniel Borkmann wrote:
+>>>> Small set of fixes in order to restrict BPF helpers for tracing which are
+>>>> broken on archs with overlapping address ranges as per discussion in [0].
+>>>> I've targetted this for -bpf tree so they can be routed as fixes. Thanks!
+>>>
+>>> Does that mean you are targeting them for 5.7?
 >>
->> While the helpers have been addressed through work in 6ae08ae3dea2 ("bpf: Add
->> probe_read_{user, kernel} and probe_read_{user, kernel}_str helpers"), we need
->> an option for bpf_trace_printk() as well to fix it.
->>
->> Similarly as with the helpers, force users to make an explicit choice by adding
->> %psK and %psU specifier to bpf_trace_printk() which will then pick the corresponding
->> strncpy_from_unsafe*() variant to perform the access under KERNEL_DS or USER_DS.
+>> Yes, it would make most sense to me based on the discussion we had in the
+>> other thread. If there is concern wrt latency we could route these to DaveM's
+>> net tree in a timely manner (e.g. still tonight or so).
 > 
-> In bpf_trace_printk(), we only print strings.
+> I don't think we should rush this too much.  I just want to make sure
+> it either goes into 5.7 or that we have a coordinated tree that I can
+> base the maccess series on.
 
-Right ...
-
-> In bpf-next bpf_iter bpf_seq_printf() helper, introduced by
-> commit 492e639f0c22 ("bpf: Add bpf_seq_printf and bpf_seq_write helpers"), print strings and ip addresses %p{i,I}{4,6}.
-
-... and here only kernel buffers.
-
-> Alan in
-> https://lore.kernel.org/bpf/alpine.LRH.2.21.2005141738050.23867@localhost/T
-> proposed BTF based type printing with a new format specifier
-> %pT, which potentially will be used in bpf_trace_printk() and bpf_seq_printf().
-> 
-> In the future, we may want to support more %p<...> format in these helpers. I am wondering whether we can have generic way so we only need to change lib/vsprintf.c once.
-> 
-> Maybe using %pk<...> to specify the kernel address and %pu<...> to
-> specify user address space. In the above example, we will have
-> %pks, %pus, %pki4 or %pui4, etc. Does this make sense?
-
-Ah, right, once bpf merges back into bpf-next, we should consolidate these. I didn't want
-to add the strncpy_from_unsafe*() right into lib/vsprintf.c since then we'd open it up to
-all possible call-sites whereas it's really just needed out of bpf_trace_printk() for the
-fix. I think it probably might make sense to add a generic lightweight layer to consolidate
-all the bpf-related printk handling where we can statically specify a config e.g. as flags
-of allowed specifiers which then internally takes care of checking the fmt specifiers for
-sanity and does the probe read handling before passing down into lower layers. Thinking of
-the case of adding %p{i,I}{4,6} to bpf_trace_printk(), for example, and assuming we'd had
-a case where it needs to be probed out of both, then %pk<...> and %pu<...> modifier feels
-reasonable indeed. I'll do a v2 to implement %pks and %pus instead.
+Yep, makes sense, we'll target 5.7 for it.
 
 Thanks,
 Daniel
