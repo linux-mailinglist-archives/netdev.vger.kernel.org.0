@@ -2,158 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C61991D32A2
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 16:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 432871D32AA
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 16:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbgENOWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 10:22:15 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:35914 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726073AbgENOWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 10:22:15 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7A3382011E;
-        Thu, 14 May 2020 14:22:14 +0000 (UTC)
-Received: from us4-mdac16-35.at1.mdlocal (unknown [10.110.49.219])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 78F67800AD;
-        Thu, 14 May 2020 14:22:14 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.74])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E4DAB100078;
-        Thu, 14 May 2020 14:22:13 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A501280069;
-        Thu, 14 May 2020 14:22:13 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 14 May
- 2020 15:22:07 +0100
-Subject: Re: [PATCH iproute2/net-next] man: tc-ct.8: Add manual page for ct tc
- action
-To:     Paul Blakey <paulb@mellanox.com>, <netdev@vger.kernel.org>,
-        <dsahern@gmail.com>, <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>
-CC:     <ozsh@mellanox.com>, <roid@mellanox.com>
-References: <1589465420-12119-1-git-send-email-paulb@mellanox.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <b7e57c78-3bf5-bf48-0a15-d862e2697df0@solarflare.com>
-Date:   Thu, 14 May 2020 15:22:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727811AbgENOWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 10:22:53 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60342 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726492AbgENOWx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 10:22:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=iw7xPk5mHjedIW+MdeZHEhO6QWaPHxp9nZEO29+rOl0=; b=tLcLf7syCfJU0V+88jYPQ65lQ9
+        bxfnLVhL3a9oL89tZzFlHcc06sc4cByFjoPlq+0a5WYgzGcxGh7CPmcdx/h49YPPUX/N2QNumJksn
+        EhoeiOUsKp11e8u9aUl98cJpm6oyAOLYAAEgRQNsWRBr69NflByorECzFbCWx2TMyrWs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jZEl5-002IDV-Fa; Thu, 14 May 2020 16:22:47 +0200
+Date:   Thu, 14 May 2020 16:22:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH V5 18/19] net: ks8851: Implement Parallel bus operations
+Message-ID: <20200514142247.GR499265@lunn.ch>
+References: <20200514000747.159320-1-marex@denx.de>
+ <20200514000747.159320-19-marex@denx.de>
+ <20200514015753.GL527401@lunn.ch>
+ <5dbab44d-de45-f8e2-b4e4-4be15408657e@denx.de>
+ <20200514131527.GN527401@lunn.ch>
+ <16f60604-f3e9-1391-ff47-37c40ab9c6f7@denx.de>
+ <20200514140722.GQ499265@lunn.ch>
+ <b810e344-8a6c-a3dc-cfd3-1eba116bfcd7@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <1589465420-12119-1-git-send-email-paulb@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25418.003
-X-TM-AS-Result: No-8.855800-8.000000-10
-X-TMASE-MatchedRID: y/2oPz6gbvjmLzc6AOD8DfHkpkyUphL9sKzLQnnS/xwGmHr1eMxt2YB5
-        w6KBECW1mIBItNUDT+32l8Yqntp5eVuDsARvj1N5/NOUkr6ADzdbD9LQcHt6gwdkFovAReUoilv
-        Ab18i4hMtp61/ZdkjWAfSny2qD3NvGyUVzbYEuf8Sq+XFWzaAyrfHCp+e+coeRjNrjV0arFI+s3
-        kix3GatSIsgbNx3Khf3g+O46VEzGVmVB9VY/IHEwm6mWzI013HV0QSZ/pNFUG/VzeWm7Nd2NjUX
-        NGf8VVtBX3les/5H/rgfUR1p/fGQZH0YXYnbGozOX/V8P8ail1ZDL1gLmoa/PoA9r2LThYYKrau
-        Xd3MZDWZlG1M4jOggCXGLacbUNaFtVUQPB9QiwoWlTnXl3OFhBZGBMzOyk3iFluMpgcbjJQYp1D
-        CSlQ7LSqrgOYsDdlj09c1tAYnD4srzxvBh2nlswbEQIfFpkwHBtlgFh29qnpKzBwu5JpklnOUuo
-        TXM7r4QwymtxuJ6y0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--8.855800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25418.003
-X-MDID: 1589466134-h9HjEMnpED6M
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b810e344-8a6c-a3dc-cfd3-1eba116bfcd7@denx.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/05/2020 15:10, Paul Blakey wrote:
-> Signed-off-by: Paul Blakey <paulb@mellanox.com>
-> ---
->  man/man8/tc-ct.8     | 107 +++++++++++++++++++++++++++++++++++++++++++++++++++
->  man/man8/tc-flower.8 |   6 +++
->  2 files changed, 113 insertions(+)
->  create mode 100644 man/man8/tc-ct.8
-Glad to see this, better tc documentation generally is sorely needed.
-See comments inline below.
+On Thu, May 14, 2020 at 04:14:13PM +0200, Marek Vasut wrote:
+> On 5/14/20 4:07 PM, Andrew Lunn wrote:
+> >> All right
+> >>
+> >> btw is jiffies-based timeout OK? Like this:
+> > 
+> > If you can, make use of include/linux/iopoll.h
+> 
+> I can't, because I need those weird custom accessors, see
+> ks8851_wrreg16_par(), unless I'm missing something there?
 
-> diff --git a/man/man8/tc-ct.8 b/man/man8/tc-ct.8
-> new file mode 100644
-> index 0000000..45d2932
-> --- /dev/null
-> +++ b/man/man8/tc-ct.8
-> @@ -0,0 +1,107 @@
-> +.TH "ct action in tc" 8 "14 May 2020" "iproute2" "Linux"
-> +.SH NAME
-> +ct \- tc connection tracking action
-> +.SH SYNOPSIS
-> +.in +8
-> +.ti -8
-> +.BR "tc ... action ct commit [ force ] [ zone "
-> +.IR ZONE
-> +.BR "] [ mark "
-> +.IR MASKED_MARK
-> +.BR "] [ label "
-> +.IR MASKED_LABEL
-> +.BR "] [ nat "
-> +.IR NAT_SPEC
-> +.BR "]"
-> +
-> +.ti -8
-> +.BR "tc ... action ct [ nat ] [ zone "
-> +.IR ZONE
-> +.BR "]"
-> +
-> +.ti -8
-> +.BR "tc ... action ct clear"
-> +
-> +.SH DESCRIPTION
-> +The ct action is a tc action for sending packets and interacting with the netfilter conntrack module.
-> +
-> +It can (as shown in the synopsis, in order):
-> +
-> +Send the packet to conntrack, and commit the connection, while configuring
-> +a 32bit mark, 128bit label, and src/dst nat.
-> +
-> +Send the packet to conntrack, which will mark the packet with the connection's state and
-> +configured metadata (mark/label), and execute previous configured nat.
-"... and optionally execute..." perhaps?
-Since it'll only do this if the 'nat' option was passed.
+static int ks8851_rdreg16_par_txqcr(struct foo ks) {
+       return ks8851_rdreg16_par(ks, KS_TXQCR)
+}
 
-> +
-> +Clear the packet's of previous connection tracking state.
-> +
-> +.SH OPTIONS
-> +.TP
-> +.BI zone " ZONE"
-> +Specify a conntrack zone number on which to send the packet to conntrack.
-> +.TP
-> +.BI mark " MASKED_MARK"
-> +Specify a masked 32bit mark to set for the connection (only valid with commit).
-> +.TP
-> +.BI label " MASKED_LABEL"
-> +Specify a masked 128bit label to set for the connection (only valid with commit).
-> +.TP
-> +.BI nat " NAT_SPEC"
-> +.BI Where " NAT_SPEC " ":= {src|dst} addr" " addr1" "[-" "addr2" "] [port " "port1" "[-" "port2" "]]"
-> +
-> +Specify src/dst and range of nat to configure for the connection (only valid with commit).
-> +.RS
-> +.TP
-> +src/dst - configure src or dst nat
-> +.TP
-> +.BI  "" "addr1" "/" "addr2" " - IPv4/IPv6 addresses"
-> +.TP
-> +.BI  "" "port1" "/" "port2" " - Port numbers"
-> +.RE
-> +.TP
-> +.BI nat
-> +Restore any previous configured nat.
-> +.TP
-> +.BI clear
-> +Remove any conntrack state and metadata (mark/label) from the packet (must only option 
-"... must be only option...".
+int txqcr;
 
-- Ed
+err = readx_poll_timeout(ks8851_rdreg16_par_txqcr, txqcr,
+                         txqcr & TXQCR_METFE, 10, 10, ks)
+
+	 Andrew
