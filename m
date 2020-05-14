@@ -2,160 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4857B1D31C3
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 15:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 524321D31D6
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 15:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbgENNtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 09:49:09 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:49160 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726124AbgENNtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 09:49:03 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 14 May 2020 16:49:00 +0300
-Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04EDmxbA025987;
-        Thu, 14 May 2020 16:49:00 +0300
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Paul Blakey <paulb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next 3/3] net/sched: act_ct: Add policy_timeout tuple offload control policy
-Date:   Thu, 14 May 2020 16:48:30 +0300
-Message-Id: <1589464110-7571-4-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1589464110-7571-1-git-send-email-paulb@mellanox.com>
-References: <1589464110-7571-1-git-send-email-paulb@mellanox.com>
+        id S1726161AbgENNx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 09:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726011AbgENNx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 09:53:28 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE79C061A0C
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 06:53:28 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id r22so1262440pga.12
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 06:53:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=MZSp0YwiO2rsC2nKIM503+bxDjAtfKmJYZ3o95i/lPs=;
+        b=cJFAY7WCXYnEbrXhasmao6UCv9i1mZAJfRA+rdc+NKz0UOYBVOA7j+X8iPhSdYtF38
+         zep0c9iJjRkXjihZocX/qzBLTBqR4b08mLq4ZTDUMPAQCbq5hSNpAp8F+3crPDvlvNsM
+         OprcNpwI1OLQse3gDglQCKgO2pUpx62jKqihrYzrkhU6TNndeb/mw3D9e6qGpWln7FkE
+         tED4zfD7J4lfnsmqMGIGqFiRQwZ4X18GB8ieeUspQm22OGKL5ohnWLrdeXuaWGkK3q7D
+         6Zj3Pf2qa4SAkUDyBhSa0SikwAcsN7HRtxmxUFtA141m0d6HUOI/EEprVeNfhX05gnMO
+         UYGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=MZSp0YwiO2rsC2nKIM503+bxDjAtfKmJYZ3o95i/lPs=;
+        b=tPp++wJ64omiwmL9OjcdYu+mUCxDt8K16+/UYzl5cg3STy2NQ1mEB+n9eMSz5hnkL6
+         s2HCkBQqVQvDgtU49hr+mU7zVMWmmVKbwesBhA9gY20qSdwfvC/J8rX7YGQejB+p9Hd4
+         LuBIs3D1xRkznj0cNw3vQ1gmGxfnQcwhOnnwCOjbs2rI0l6n0u3NKosCj5aTmgZRykBD
+         zuSK68T8uiMlrYKpqxYpSsCZmwOG8U74TsgYT59z+JCYKnGWbgh1nlp+5h5T/yVZCnJO
+         gi93nPrkNmfCSkg1uoghSMku8fXWdYVBM6pD7E1paGQfsmFk/vOQ2+urEPEbn+30qpL5
+         f7Jw==
+X-Gm-Message-State: AOAM532oa+uwJL8HfPftzT923ILNap5lbjavwh0Pbi9kcYdw8YQueW7d
+        mh9OJKWcn5EbfTXSkvsCcYQ=
+X-Google-Smtp-Source: ABdhPJz/TwfWFlDHi5SIZ70MrTL+5bc2ATQEjG9ATTB3erLte/u4QIiTGbehCM4Bnh36A60bzLDBFw==
+X-Received: by 2002:a62:5289:: with SMTP id g131mr4757956pfb.318.1589464407997;
+        Thu, 14 May 2020 06:53:27 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id y8sm2419184pfg.216.2020.05.14.06.53.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 May 2020 06:53:27 -0700 (PDT)
+Date:   Thu, 14 May 2020 06:53:25 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Olivier Dautricourt <olivier.dautricourt@orolia.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/3] Patch series for a PTP Grandmaster use case using
+ stmmac/gmac3 ptp clock
+Message-ID: <20200514135325.GB18838@localhost>
+References: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use nf flow table flow timeout param, to add support for tc user
-specifying per zone policy_timeout, which determines the time, in
-seconds, a tuple will remain offloaded in the flow table after
-last seen packet.
+On Thu, May 14, 2020 at 12:28:05PM +0200, Olivier Dautricourt wrote:
+> This patch series covers a use case where an embedded system is
+> disciplining an internal clock to a GNSS signal, which provides a
+> stable frequency, and wants to act as a PTP Grandmaster by disciplining
+> a ptp clock to this internal clock.
 
-To avoid conflicting policies, the same policy must be given for all
-act ct instances of the same zone.
+Have you seen the new GM patch series on the linuxptp-devel mailing
+list?  You may find it interesting...
+ 
+> In our setup a 10Mhz oscillator is frequency adjusted so that a derived
+> pps from that oscillator is in phase with the pps generated by 
+> a gnss receiver.
+> 
+> An other derived clock from the same disciplined oscillator is used as
+> ptp_clock for the ethernet mac.
+> 
+> The internal pps of the system is forwarded to one of the auxiliary inputs
+> of the MAC.
+> 
+> Initially the mac time registers are considered random.
+> We want the mac nanosecond field to be 0 on the auxiliary pps input edge.
+> 
+> 
+> PATCH 1/3: 
+> 	The stmmac gmac3 version used in the setup is patched to retrieve a
+> 	timestamp at the rising edge of the aux input and to forward
+> 	it to userspace.
+> 
+> * What matters here is that we get the subsecond offset between the aux 
+> edge and the edge of the PHC's pps. *
+> 
+> 
+> PATCH 2,3/3:
+> 
+> 	We want the ptp clock to be in time with our aux pps input.
+> 	Since the ptp clock is derived from the system oscillator, we
+> 	don't want to do frequency adjustements.
+> 
+> 	The stmmac driver is patched to allow to set the coarse correction
+> 	mode which avoid to adjust the frequency of the mac continuously
+> 	(the default behavior), but instead, have just one
+> 	time adjustment.
 
-Usage example:
-$ tc filter add dev ens1f0_0 ingress chain 0 flower ct_state -trk \
-action ct policy_timeout 120 pipe action goto chain 1
+You can use the new ts2phc program (in the linuxptp-devel patch
+series, soon to be merged) by configuring it to use the nullf servo.
 
-$ tc filter add dev ens1f0_0 ingress chain 1 flower ct_state \
-action ct commit policy_timeout 120 pipe \
-action mirred egress redirect dev ens1f0_1
-
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- include/net/tc_act/tc_ct.h        |  1 +
- include/uapi/linux/tc_act/tc_ct.h |  1 +
- net/sched/act_ct.c                | 19 +++++++++++++++++++
- 3 files changed, 21 insertions(+)
-
-diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
-index 9d9fdcc..1de3769 100644
---- a/include/net/tc_act/tc_ct.h
-+++ b/include/net/tc_act/tc_ct.h
-@@ -21,6 +21,7 @@ struct tcf_ct_params {
- 
- 	struct {
- 		u32 pkts;
-+		u32 timeout;
- 	} offload_policy;
- 
- 	struct nf_nat_range2 range;
-diff --git a/include/uapi/linux/tc_act/tc_ct.h b/include/uapi/linux/tc_act/tc_ct.h
-index a97e740..501709e 100644
---- a/include/uapi/linux/tc_act/tc_ct.h
-+++ b/include/uapi/linux/tc_act/tc_ct.h
-@@ -22,6 +22,7 @@ enum {
- 	TCA_CT_NAT_PORT_MIN,	/* be16 */
- 	TCA_CT_NAT_PORT_MAX,	/* be16 */
- 	TCA_CT_OFFLOAD_POLICY_PKTS,	/* u32 */
-+	TCA_CT_OFFLOAD_POLICY_TIMEOUT,	/* u32 */
- 	TCA_CT_PAD,
- 	__TCA_CT_MAX
- };
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 5b18d62..de95d9d 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -49,6 +49,7 @@ struct tcf_ct_flow_table {
- 
- 	struct {
- 		u32 pkts;
-+		u32 timeout;
- 	} offload_policy;
- 
- 	bool dying;
-@@ -284,6 +285,12 @@ static int tcf_ct_flow_table_policy_set(struct net *net,
- 			NL_SET_ERR_MSG_MOD(extack, "Policy pkts must match previous action ct instance");
- 			return -EOPNOTSUPP;
- 		}
-+
-+		if (params->offload_policy.timeout !=
-+		    ct_ft->offload_policy.timeout) {
-+			NL_SET_ERR_MSG_MOD(extack, "Policy timeout must match previous action ct instance");
-+			return -EOPNOTSUPP;
-+		}
- 		return 0;
- 	}
- 
-@@ -292,6 +299,8 @@ static int tcf_ct_flow_table_policy_set(struct net *net,
- 		if (!nf_ct_acct_enabled(net))
- 			nf_ct_set_acct(net, true);
- 	}
-+
-+	ct_ft->offload_policy.timeout = params->offload_policy.timeout;
- 	return 0;
- }
- 
-@@ -344,6 +353,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params,
- 
- 	ct_ft->nf_ft.type = &flowtable_ct;
- 	ct_ft->nf_ft.flags |= NF_FLOWTABLE_HW_OFFLOAD;
-+	ct_ft->nf_ft.flow_timeout = params->offload_policy.timeout;
- 	err = nf_flow_table_init(&ct_ft->nf_ft);
- 	if (err)
- 		goto err_init;
-@@ -1089,6 +1099,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 	[TCA_CT_NAT_PORT_MIN] = { .type = NLA_U16 },
- 	[TCA_CT_NAT_PORT_MAX] = { .type = NLA_U16 },
- 	[TCA_CT_OFFLOAD_POLICY_PKTS] = { .type = NLA_U32 },
-+	[TCA_CT_OFFLOAD_POLICY_TIMEOUT] = { .type = NLA_U32 },
- };
- 
- static int tcf_ct_fill_params_nat(struct tcf_ct_params *p,
-@@ -1238,6 +1249,10 @@ static int tcf_ct_fill_params(struct net *net,
- 		p->offload_policy.pkts =
- 			nla_get_u32(tb[TCA_CT_OFFLOAD_POLICY_PKTS]);
- 
-+	if (tb[TCA_CT_OFFLOAD_POLICY_TIMEOUT])
-+		p->offload_policy.timeout =
-+			nla_get_u32(tb[TCA_CT_OFFLOAD_POLICY_TIMEOUT]);
-+
- 	if (p->zone == NF_CT_DEFAULT_ZONE_ID)
- 		return 0;
- 
-@@ -1484,6 +1499,10 @@ static inline int tcf_ct_dump(struct sk_buff *skb, struct tc_action *a,
- 			p->offload_policy.pkts))
- 		goto nla_put_failure;
- 
-+	if (nla_put_u32(skb, TCA_CT_OFFLOAD_POLICY_TIMEOUT,
-+			p->offload_policy.timeout))
-+		goto nla_put_failure;
-+
- skip_dump:
- 	if (nla_put(skb, TCA_CT_PARMS, sizeof(opt), &opt))
- 		goto nla_put_failure;
--- 
-1.8.3.1
+Thanks,
+Richard
 
