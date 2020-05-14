@@ -2,171 +2,440 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC73C1D407C
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 00:06:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 438F61D4080
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 00:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728060AbgENWGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 18:06:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50522 "EHLO
+        id S1728248AbgENWHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 18:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbgENWGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 18:06:13 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEDAC061A0C;
-        Thu, 14 May 2020 15:06:13 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id t25so302428qtc.0;
-        Thu, 14 May 2020 15:06:13 -0700 (PDT)
+        with ESMTP id S1726046AbgENWHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 18:07:48 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6DCC061A0C
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 15:07:48 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id h17so811726wrc.8
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 15:07:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ckfBHrfjRkNbazznJgQdJg25aWGLlrD5iE8Qkmuzz8U=;
-        b=n6JzfrSjAz8AOXj5gc+KHxO3/967eEszvUmfVgJsNqVcPzxCNdel8CxWVgyZ/23SXM
-         od8i/pKG2Lf99/icAcqo6gKNaKTnAk9a5EXa+uYHKkQqfJI9N00m9G3iSEKiu1jQGF0P
-         HL0Puer8J36uaR1tvutjJmBImaUBo78RwcAm7M6gGMCuqZyjXYfNhA7E3//lJoDOu28Q
-         MGFTIqDj9mS5xPdfLtKPmcYnbxQxRs7Gjo2y8ht+1V1wHvTl38JPMzIAiAdaAgEBlH6k
-         7lu8u5yaTwTIP/PQKVrabrCijW5cwRSkWq7rqTjOQIRFRoRqlb4aazUurXWWuLMoh1mV
-         ZTIA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zUSpr1Lak+lmcMcqPwDRdfct/h2nU3gxQY44e6YhbgU=;
+        b=bkL1QdEkhD10CbjsyTUCjcbgYXPwPVJnnMWo8hrfNvq4xngaLnVjSKtif1zD5lpgaY
+         7jBbSOXGAtb928oGa6wKP+NqAgWyikJvKd0yB7oMdZUeOM7ECetnukSyMkMbIWyJiM4C
+         8GXkPrP4axbllUwTiekBvEClh/wEeEmuJHnbGMF+Q06RRfB3+sU2CTc5VfGUVx75rC78
+         HTSAt/I/zZGySRq21WnrfK5sAYQ1QIXRuvWcFdd8V2nNZqzw+QNRDljY3djx1Kj6q5mi
+         YNMgPvxsDwXBQy0L62lznxjnhbTOD0lS635Albf0QC+oelApUhwuYmnoTzTJ4GiGQVQ8
+         pzKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ckfBHrfjRkNbazznJgQdJg25aWGLlrD5iE8Qkmuzz8U=;
-        b=T91LUP0t2nRWmyrqcua9z3sZw7lJHhQQUKLRZKkswmxayjeg/LJqMJ/tSb901CI8Yi
-         NCDu8Hup7UpW0oxf/fcvGnpPusHe2X8cgkQyvxr7K05PVFeD2uLw+1LBLKtd4wbxO62M
-         dzF+wsDWRvTOwXE65sohO0WZudtFJhUeWN6usS7E2sd1961UkqjL4XjHrA34YkP98YQC
-         iehVos0pAeKYw4VYxCyL2vUCaIW4jXw6oM8C2QnlgKuOVjEKwHtbSqYRkp4nL5GF1tZx
-         gWKENtoIjhdyzAH48nZ4ailkzMxm78MgbaM/EkPvvl90u/oiN0FF+kU/2+HAriR5YTmK
-         H0yA==
-X-Gm-Message-State: AOAM5305jLFbvnFjP4D1joocCAOEw3By+Z+saHFxevE3IEvM9cXjdfLC
-        Dqaxvc3Fc/1xapJom2NvnApTtnHCSZcvCJV9brk=
-X-Google-Smtp-Source: ABdhPJxpLxW5ruHrhFc9yxVFWxLImiUxhcKJLBDq0piYrLBJliV93f1WRTVgKq7cyo91eX+1rW6OvXqjX/3aHxhc75U=
-X-Received: by 2002:aed:24a1:: with SMTP id t30mr344999qtc.93.1589493972293;
- Thu, 14 May 2020 15:06:12 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zUSpr1Lak+lmcMcqPwDRdfct/h2nU3gxQY44e6YhbgU=;
+        b=Xnaei7pk8kzM+DHtV0Rzs56mlqj2W/jgRMkQsMMAradHXP39lVb3TOUyAe0y2JfSGg
+         PehQGOP8UJ/m7p47ogGXj9IebK+PjSdb1GauSNb12RWTR4zDgJDu9Kt/jUq5mMkoisyV
+         yGNIiPj2+QRqb0GQey0r4m/0t/FBlw6ghQvQigeRRIhosRAd/E1FD2CiiwtcCNMLX+ED
+         8Dstq3+Iv6cKc9sQvNrxjH12gHQJWrjKTWiIapeAkwL60IfatjVt1+bq1tKD0GGr6GZx
+         bspGUBPyNNBFl6d5QyHSdjMBzNNZlaQdWolQpyE6m/yjM8jZABmLrOr3d/sg5E/imN/S
+         2vhw==
+X-Gm-Message-State: AOAM5334owpSpT20NL3ijRCtFuiVHPjmW28SgqyUJ0oOB2l1/+6LBtpg
+        jKc0ft7to0UIbdXDifoFyEg=
+X-Google-Smtp-Source: ABdhPJyy4WN1VKaCBj9ehXan2mpzaKmZk6VyXGPGX6LXrsCBcKEC/zlNYOeC8314o5KcPfHUbi5Yrg==
+X-Received: by 2002:adf:f5c4:: with SMTP id k4mr567212wrp.23.1589494067159;
+        Thu, 14 May 2020 15:07:47 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f28:5200:44a3:4c94:7927:e2e6? (p200300EA8F28520044A34C947927E2E6.dip0.t-ipconnect.de. [2003:ea:8f28:5200:44a3:4c94:7927:e2e6])
+        by smtp.googlemail.com with ESMTPSA id h188sm708794wme.8.2020.05.14.15.07.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 May 2020 15:07:46 -0700 (PDT)
+Subject: Re: [net-next v2 2/9] igc: Use netdev log helpers in igc_main.c
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
+Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        Aaron Brown <aaron.f.brown@intel.com>
+References: <20200514213117.4099065-1-jeffrey.t.kirsher@intel.com>
+ <20200514213117.4099065-3-jeffrey.t.kirsher@intel.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <0b37c2ee-2bdb-7137-de80-8178d856dbad@gmail.com>
+Date:   Fri, 15 May 2020 00:07:42 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200506132946.2164578-1-jolsa@kernel.org> <20200506132946.2164578-2-jolsa@kernel.org>
-In-Reply-To: <20200506132946.2164578-2-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 14 May 2020 15:06:01 -0700
-Message-ID: <CAEf4BzaiTFasYEnj-N100=mxQN5R70xKbF4Z2xJcWHaaYN4_ag@mail.gmail.com>
-Subject: Re: [PATCH 1/9] bpf: Add d_path helper
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200514213117.4099065-3-jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 6, 2020 at 6:30 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding d_path helper function that returns full path
-> for give 'struct path' object, which needs to be the
-> kernel BTF 'path' object.
->
-> The helper calls directly d_path function.
->
-> Updating also bpf.h tools uapi header and adding
-> 'path' to bpf_helpers_doc.py script.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+On 14.05.2020 23:31, Jeff Kirsher wrote:
+> From: Andre Guedes <andre.guedes@intel.com>
+> 
+> In igc_main.c we print log messages using both dev_* and netdev_*
+> helpers, generating inconsistent output. Since this is a network device
+> driver, we should preferably use netdev_* helpers because they append
+> the interface name to the message, helping making sense out of the logs.
+> 
+> This patch converts all dev_* calls to netdev_*. There is only two
+> exceptions: one in igc_probe (net_device has not been allocated yet),
+> and another one in igc_init_module (module initialization). It also
+> takes this opportunity to improve some messages and remove the '\n'
+> character at the end of messages since it is automatically added to by
+> netdev_* log helpers.
+> 
+> Signed-off-by: Andre Guedes <andre.guedes@intel.com>
+> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 > ---
->  include/uapi/linux/bpf.h       | 14 +++++++++++++-
->  kernel/trace/bpf_trace.c       | 31 +++++++++++++++++++++++++++++++
->  scripts/bpf_helpers_doc.py     |  2 ++
->  tools/include/uapi/linux/bpf.h | 14 +++++++++++++-
->  4 files changed, 59 insertions(+), 2 deletions(-)
->
-
-[...]
-
->
-> +BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
-> +{
-> +       char *p = d_path(path, buf, sz - 1);
-> +       int len;
-> +
-> +       if (IS_ERR(p)) {
-> +               len = PTR_ERR(p);
-> +       } else {
-> +               len = strlen(p);
-> +               if (len && p != buf) {
-> +                       memmove(buf, p, len);
-> +                       buf[len] = 0;
-> +               }
-> +       }
-> +
-> +       return len;
-> +}
-> +
-> +static u32 bpf_d_path_btf_ids[3];
-
-Using shorter than 5 element array is "unconventional", but seems like
-btf_distill_func_proto will never access elements that are not
-ARG_PTR_TO_BTF_ID, so it's fine. But than again, if we are saving
-space, why not just 1-element array? :)
-
-
-> +static const struct bpf_func_proto bpf_d_path_proto = {
-> +       .func           = bpf_d_path,
-> +       .gpl_only       = true,
-> +       .ret_type       = RET_INTEGER,
-> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
-> +       .arg2_type      = ARG_PTR_TO_MEM,
-> +       .arg3_type      = ARG_CONST_SIZE,
-> +       .btf_id         = bpf_d_path_btf_ids,
-> +};
-> +
-
-[...]
-
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index b3643e27e264..bc13cad27872 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -3068,6 +3068,17 @@ union bpf_attr {
->   *             See: clock_gettime(CLOCK_BOOTTIME)
->   *     Return
->   *             Current *ktime*.
-> + *
-> + * int bpf_d_path(struct path *path, char *buf, u32 sz)
-> + *     Description
-> + *             Return full path for given 'struct path' object, which
-> + *             needs to be the kernel BTF 'path' object. The path is
-> + *             returned in buffer provided 'buf' of size 'sz'.
-> + *
-
-Please specify if it's always zero-terminated string (especially on truncation).
-
-> + *     Return
-> + *             length of returned string on success, or a negative
-> + *             error in case of failure
-> + *
+>  drivers/net/ethernet/intel/igc/igc_main.c | 115 ++++++++++------------
+>  1 file changed, 52 insertions(+), 63 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index 7556fcdf1fd7..c829e78c1a9a 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -76,7 +76,7 @@ static void igc_power_down_link(struct igc_adapter *adapter)
+>  
+>  void igc_reset(struct igc_adapter *adapter)
+>  {
+> -	struct pci_dev *pdev = adapter->pdev;
+> +	struct net_device *dev = adapter->netdev;
+>  	struct igc_hw *hw = &adapter->hw;
+>  	struct igc_fc_info *fc = &hw->fc;
+>  	u32 pba, hwm;
+> @@ -103,7 +103,7 @@ void igc_reset(struct igc_adapter *adapter)
+>  	hw->mac.ops.reset_hw(hw);
+>  
+>  	if (hw->mac.ops.init_hw(hw))
+> -		dev_err(&pdev->dev, "Hardware Error\n");
+> +		netdev_err(dev, "Error on hardware initialization\n");
+>  
+>  	if (!netif_running(adapter->netdev))
+>  		igc_power_down_link(adapter);
+> @@ -288,6 +288,7 @@ static void igc_clean_all_tx_rings(struct igc_adapter *adapter)
 >   */
->  #define __BPF_FUNC_MAPPER(FN)          \
->         FN(unspec),                     \
-> @@ -3195,7 +3206,8 @@ union bpf_attr {
->         FN(get_netns_cookie),           \
->         FN(get_current_ancestor_cgroup_id),     \
->         FN(sk_assign),                  \
-> -       FN(ktime_get_boot_ns),
-> +       FN(ktime_get_boot_ns),          \
-> +       FN(d_path),
->
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> --
-> 2.25.4
->
+>  int igc_setup_tx_resources(struct igc_ring *tx_ring)
+>  {
+> +	struct net_device *ndev = tx_ring->netdev;
+>  	struct device *dev = tx_ring->dev;
+>  	int size = 0;
+>  
+> @@ -313,8 +314,7 @@ int igc_setup_tx_resources(struct igc_ring *tx_ring)
+>  
+>  err:
+>  	vfree(tx_ring->tx_buffer_info);
+> -	dev_err(dev,
+> -		"Unable to allocate memory for the transmit descriptor ring\n");
+> +	netdev_err(ndev, "Unable to allocate memory for Tx descriptor ring\n");
+>  	return -ENOMEM;
+>  }
+>  
+> @@ -326,14 +326,13 @@ int igc_setup_tx_resources(struct igc_ring *tx_ring)
+>   */
+>  static int igc_setup_all_tx_resources(struct igc_adapter *adapter)
+>  {
+> -	struct pci_dev *pdev = adapter->pdev;
+> +	struct net_device *dev = adapter->netdev;
+>  	int i, err = 0;
+>  
+>  	for (i = 0; i < adapter->num_tx_queues; i++) {
+>  		err = igc_setup_tx_resources(adapter->tx_ring[i]);
+>  		if (err) {
+> -			dev_err(&pdev->dev,
+> -				"Allocation for Tx Queue %u failed\n", i);
+> +			netdev_err(dev, "Error on Tx queue %u setup\n", i);
+>  			for (i--; i >= 0; i--)
+>  				igc_free_tx_resources(adapter->tx_ring[i]);
+>  			break;
+> @@ -444,6 +443,7 @@ static void igc_free_all_rx_resources(struct igc_adapter *adapter)
+>   */
+>  int igc_setup_rx_resources(struct igc_ring *rx_ring)
+>  {
+> +	struct net_device *ndev = rx_ring->netdev;
+>  	struct device *dev = rx_ring->dev;
+>  	int size, desc_len;
+>  
+> @@ -473,8 +473,7 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
+>  err:
+>  	vfree(rx_ring->rx_buffer_info);
+>  	rx_ring->rx_buffer_info = NULL;
+> -	dev_err(dev,
+> -		"Unable to allocate memory for the receive descriptor ring\n");
+> +	netdev_err(ndev, "Unable to allocate memory for Rx descriptor ring\n");
+>  	return -ENOMEM;
+>  }
+>  
+> @@ -487,14 +486,13 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
+>   */
+>  static int igc_setup_all_rx_resources(struct igc_adapter *adapter)
+>  {
+> -	struct pci_dev *pdev = adapter->pdev;
+> +	struct net_device *dev = adapter->netdev;
+>  	int i, err = 0;
+>  
+>  	for (i = 0; i < adapter->num_rx_queues; i++) {
+>  		err = igc_setup_rx_resources(adapter->rx_ring[i]);
+>  		if (err) {
+> -			dev_err(&pdev->dev,
+> -				"Allocation for Rx Queue %u failed\n", i);
+> +			netdev_err(dev, "Error on Rx queue %u setup\n", i);
+>  			for (i--; i >= 0; i--)
+>  				igc_free_rx_resources(adapter->rx_ring[i]);
+>  			break;
+> @@ -1196,7 +1194,7 @@ static int igc_tx_map(struct igc_ring *tx_ring,
+>  
+>  	return 0;
+>  dma_error:
+> -	dev_err(tx_ring->dev, "TX DMA map failed\n");
+> +	netdev_err(tx_ring->netdev, "TX DMA map failed\n");
+>  	tx_buffer = &tx_ring->tx_buffer_info[i];
+>  
+>  	/* clear dma mappings for failed tx_buffer_info map */
+> @@ -1459,8 +1457,8 @@ static void igc_rx_checksum(struct igc_ring *ring,
+>  				      IGC_RXD_STAT_UDPCS))
+>  		skb->ip_summed = CHECKSUM_UNNECESSARY;
+>  
+> -	dev_dbg(ring->dev, "cksum success: bits %08X\n",
+> -		le32_to_cpu(rx_desc->wb.upper.status_error));
+> +	netdev_dbg(ring->netdev, "cksum success: bits %08X\n",
+> +		   le32_to_cpu(rx_desc->wb.upper.status_error));
+>  }
+>  
+>  static inline void igc_rx_hash(struct igc_ring *ring,
+> @@ -2122,27 +2120,27 @@ static bool igc_clean_tx_irq(struct igc_q_vector *q_vector, int napi_budget)
+>  		    (adapter->tx_timeout_factor * HZ)) &&
+>  		    !(rd32(IGC_STATUS) & IGC_STATUS_TXOFF)) {
+>  			/* detected Tx unit hang */
+> -			dev_err(tx_ring->dev,
+> -				"Detected Tx Unit Hang\n"
+> -				"  Tx Queue             <%d>\n"
+> -				"  TDH                  <%x>\n"
+> -				"  TDT                  <%x>\n"
+> -				"  next_to_use          <%x>\n"
+> -				"  next_to_clean        <%x>\n"
+> -				"buffer_info[next_to_clean]\n"
+> -				"  time_stamp           <%lx>\n"
+> -				"  next_to_watch        <%p>\n"
+> -				"  jiffies              <%lx>\n"
+> -				"  desc.status          <%x>\n",
+> -				tx_ring->queue_index,
+> -				rd32(IGC_TDH(tx_ring->reg_idx)),
+> -				readl(tx_ring->tail),
+> -				tx_ring->next_to_use,
+> -				tx_ring->next_to_clean,
+> -				tx_buffer->time_stamp,
+> -				tx_buffer->next_to_watch,
+> -				jiffies,
+> -				tx_buffer->next_to_watch->wb.status);
+> +			netdev_err(tx_ring->netdev,
+> +				   "Detected Tx Unit Hang\n"
+> +				   "  Tx Queue             <%d>\n"
+> +				   "  TDH                  <%x>\n"
+> +				   "  TDT                  <%x>\n"
+> +				   "  next_to_use          <%x>\n"
+> +				   "  next_to_clean        <%x>\n"
+> +				   "buffer_info[next_to_clean]\n"
+> +				   "  time_stamp           <%lx>\n"
+> +				   "  next_to_watch        <%p>\n"
+> +				   "  jiffies              <%lx>\n"
+> +				   "  desc.status          <%x>\n",
+> +				   tx_ring->queue_index,
+> +				   rd32(IGC_TDH(tx_ring->reg_idx)),
+> +				   readl(tx_ring->tail),
+> +				   tx_ring->next_to_use,
+> +				   tx_ring->next_to_clean,
+> +				   tx_buffer->time_stamp,
+> +				   tx_buffer->next_to_watch,
+> +				   jiffies,
+> +				   tx_buffer->next_to_watch->wb.status);
+>  			netif_stop_subqueue(tx_ring->netdev,
+>  					    tx_ring->queue_index);
+>  
+> @@ -3238,14 +3236,14 @@ static int igc_alloc_q_vectors(struct igc_adapter *adapter)
+>   */
+>  static int igc_init_interrupt_scheme(struct igc_adapter *adapter, bool msix)
+>  {
+> -	struct pci_dev *pdev = adapter->pdev;
+> +	struct net_device *dev = adapter->netdev;
+>  	int err = 0;
+>  
+>  	igc_set_interrupt_capability(adapter, msix);
+>  
+>  	err = igc_alloc_q_vectors(adapter);
+>  	if (err) {
+> -		dev_err(&pdev->dev, "Unable to allocate memory for vectors\n");
+> +		netdev_err(dev, "Unable to allocate memory for vectors\n");
+>  		goto err_alloc_q_vectors;
+>  	}
+>  
+> @@ -3305,7 +3303,7 @@ static int igc_sw_init(struct igc_adapter *adapter)
+>  
+>  	/* This call may decrease the number of queues */
+>  	if (igc_init_interrupt_scheme(adapter, true)) {
+> -		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
+> +		netdev_err(netdev, "Unable to allocate memory for queues\n");
+>  		return -ENOMEM;
+>  	}
+>  
+> @@ -3648,8 +3646,7 @@ static int igc_change_mtu(struct net_device *netdev, int new_mtu)
+>  	if (netif_running(netdev))
+>  		igc_down(adapter);
+>  
+> -	netdev_dbg(netdev, "changing MTU from %d to %d\n",
+> -		   netdev->mtu, new_mtu);
+> +	netdev_dbg(netdev, "changing MTU from %d to %d\n", netdev->mtu, new_mtu);
+>  	netdev->mtu = new_mtu;
+>  
+>  	if (netif_running(netdev))
+> @@ -4006,8 +4003,7 @@ static void igc_watchdog_task(struct work_struct *work)
+>  			ctrl = rd32(IGC_CTRL);
+>  			/* Link status message must follow this format */
+>  			netdev_info(netdev,
+> -				    "igc: %s NIC Link is Up %d Mbps %s Duplex, Flow Control: %s\n",
+> -				    netdev->name,
+> +				    "NIC Link is Up %d Mbps %s Duplex, Flow Control: %s\n",
+>  				    adapter->link_speed,
+>  				    adapter->link_duplex == FULL_DUPLEX ?
+>  				    "Full" : "Half",
+> @@ -4045,10 +4041,10 @@ static void igc_watchdog_task(struct work_struct *work)
+>  					retry_count--;
+>  					goto retry_read_status;
+>  				} else if (!retry_count) {
+> -					dev_err(&adapter->pdev->dev, "exceed max 2 second\n");
+> +					netdev_err(netdev, "exceed max 2 second\n");
+>  				}
+>  			} else {
+> -				dev_err(&adapter->pdev->dev, "read 1000Base-T Status Reg\n");
+> +				netdev_err(netdev, "read 1000Base-T Status Reg\n");
+>  			}
+>  no_wait:
+>  			netif_carrier_on(netdev);
+> @@ -4064,8 +4060,7 @@ static void igc_watchdog_task(struct work_struct *work)
+>  			adapter->link_duplex = 0;
+>  
+>  			/* Links status message must follow this format */
+> -			netdev_info(netdev, "igc: %s NIC Link is Down\n",
+> -				    netdev->name);
+> +			netdev_info(netdev, "NIC Link is Down\n");
+>  			netif_carrier_off(netdev);
+>  
+>  			/* link state has changed, schedule phy info update */
+> @@ -4283,8 +4278,7 @@ static int igc_request_irq(struct igc_adapter *adapter)
+>  			  netdev->name, adapter);
+>  
+>  	if (err)
+> -		dev_err(&pdev->dev, "Error %d getting interrupt\n",
+> -			err);
+> +		netdev_err(netdev, "Error %d getting interrupt\n", err);
+>  
+>  request_done:
+>  	return err;
+> @@ -4686,7 +4680,6 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
+>  
+>  int igc_set_spd_dplx(struct igc_adapter *adapter, u32 spd, u8 dplx)
+>  {
+> -	struct pci_dev *pdev = adapter->pdev;
+>  	struct igc_mac_info *mac = &adapter->hw.mac;
+>  
+>  	mac->autoneg = 0;
+> @@ -4731,7 +4724,7 @@ int igc_set_spd_dplx(struct igc_adapter *adapter, u32 spd, u8 dplx)
+>  	return 0;
+>  
+>  err_inval:
+> -	dev_err(&pdev->dev, "Unsupported Speed/Duplex configuration\n");
+> +	netdev_err(adapter->netdev, "Unsupported Speed/Duplex configuration\n");
+>  	return -EINVAL;
+>  }
+>  
+> @@ -4877,8 +4870,7 @@ static int igc_probe(struct pci_dev *pdev,
+>  
+>  	if (igc_get_flash_presence_i225(hw)) {
+>  		if (hw->nvm.ops.validate(hw) < 0) {
+> -			dev_err(&pdev->dev,
+> -				"The NVM Checksum Is Not Valid\n");
+> +			netdev_err(netdev, "The NVM Checksum Is Not Valid\n");
+
+Using the netdev_xxx message functions before register_netdev() doesn't
+provide a benefit. You get "(unnamed net_device) (uninitialized)" in
+the message instead of a netdev name. Therefore I went the opposite way
+for messages in probe() in 22148df0d0bd ("r8169: don't use netif_info
+et al before net_device has been registered")
+
+>  			err = -EIO;
+>  			goto err_eeprom;
+>  		}
+> @@ -4887,13 +4879,13 @@ static int igc_probe(struct pci_dev *pdev,
+>  	if (eth_platform_get_mac_address(&pdev->dev, hw->mac.addr)) {
+>  		/* copy the MAC address out of the NVM */
+>  		if (hw->mac.ops.read_mac_addr(hw))
+> -			dev_err(&pdev->dev, "NVM Read Error\n");
+> +			netdev_err(netdev, "NVM Read Error\n");
+>  	}
+>  
+>  	memcpy(netdev->dev_addr, hw->mac.addr, netdev->addr_len);
+>  
+>  	if (!is_valid_ether_addr(netdev->dev_addr)) {
+> -		dev_err(&pdev->dev, "Invalid MAC Address\n");
+> +		netdev_err(netdev, "Invalid MAC Address\n");
+>  		err = -EIO;
+>  		goto err_eeprom;
+>  	}
+> @@ -5141,8 +5133,7 @@ static int __maybe_unused igc_resume(struct device *dev)
+>  		return -ENODEV;
+>  	err = pci_enable_device_mem(pdev);
+>  	if (err) {
+> -		dev_err(&pdev->dev,
+> -			"igc: Cannot enable PCI device from suspend\n");
+> +		netdev_err(netdev, "Cannot enable PCI device from suspend\n");
+>  		return err;
+>  	}
+>  	pci_set_master(pdev);
+> @@ -5151,7 +5142,7 @@ static int __maybe_unused igc_resume(struct device *dev)
+>  	pci_enable_wake(pdev, PCI_D3cold, 0);
+>  
+>  	if (igc_init_interrupt_scheme(adapter, true)) {
+> -		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
+> +		netdev_err(netdev, "Unable to allocate memory for queues\n");
+>  		return -ENOMEM;
+>  	}
+>  
+> @@ -5255,8 +5246,7 @@ static pci_ers_result_t igc_io_slot_reset(struct pci_dev *pdev)
+>  	pci_ers_result_t result;
+>  
+>  	if (pci_enable_device_mem(pdev)) {
+> -		dev_err(&pdev->dev,
+> -			"Could not re-enable PCI device after reset.\n");
+> +		netdev_err(netdev, "Could not re-enable PCI device after reset\n");
+>  		result = PCI_ERS_RESULT_DISCONNECT;
+>  	} else {
+>  		pci_set_master(pdev);
+> @@ -5295,7 +5285,7 @@ static void igc_io_resume(struct pci_dev *pdev)
+>  	rtnl_lock();
+>  	if (netif_running(netdev)) {
+>  		if (igc_open(netdev)) {
+> -			dev_err(&pdev->dev, "igc_open failed after reset\n");
+> +			netdev_err(netdev, "igc_open failed after reset\n");
+>  			return;
+>  		}
+>  	}
+> @@ -5342,7 +5332,6 @@ static struct pci_driver igc_driver = {
+>  int igc_reinit_queues(struct igc_adapter *adapter)
+>  {
+>  	struct net_device *netdev = adapter->netdev;
+> -	struct pci_dev *pdev = adapter->pdev;
+>  	int err = 0;
+>  
+>  	if (netif_running(netdev))
+> @@ -5351,7 +5340,7 @@ int igc_reinit_queues(struct igc_adapter *adapter)
+>  	igc_reset_interrupt_capability(adapter);
+>  
+>  	if (igc_init_interrupt_scheme(adapter, true)) {
+> -		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
+> +		netdev_err(netdev, "Unable to allocate memory for queues\n");
+>  		return -ENOMEM;
+>  	}
+>  
+> 
+
