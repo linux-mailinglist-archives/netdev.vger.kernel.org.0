@@ -2,98 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90D761D2E8B
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 13:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3B331D2E9C
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 13:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgENLkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 07:40:42 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39813 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726232AbgENLkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 07:40:42 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 14 May 2020 14:40:36 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04EBeZKe031451;
-        Thu, 14 May 2020 14:40:36 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, dcaratti@redhat.com, marcelo.leitner@gmail.com,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net-next 4/4] selftests: implement flower classifier terse dump tests
-Date:   Thu, 14 May 2020 14:40:26 +0300
-Message-Id: <20200514114026.27047-5-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20200514114026.27047-1-vladbu@mellanox.com>
-References: <20200514114026.27047-1-vladbu@mellanox.com>
+        id S1726202AbgENLpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 07:45:01 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:51658 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726067AbgENLpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 07:45:00 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9AFC82007C;
+        Thu, 14 May 2020 11:44:59 +0000 (UTC)
+Received: from us4-mdac16-45.at1.mdlocal (unknown [10.110.48.16])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9A8726009B;
+        Thu, 14 May 2020 11:44:59 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.12])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 30D43220054;
+        Thu, 14 May 2020 11:44:59 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id BF9CF40067;
+        Thu, 14 May 2020 11:44:58 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 14 May
+ 2020 12:44:52 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: Re: [PATCH 0/8 net] the indirect flow_block offload, revisited
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        <netfilter-devel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <paulb@mellanox.com>, <ozsh@mellanox.com>, <vladbu@mellanox.com>,
+        <jiri@resnulli.us>, <kuba@kernel.org>, <saeedm@mellanox.com>,
+        <michael.chan@broadcom.com>
+References: <20200513164140.7956-1-pablo@netfilter.org>
+Message-ID: <8f1a3b9a-6a60-f1b3-0fc1-f2361864c822@solarflare.com>
+Date:   Thu, 14 May 2020 12:44:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
+In-Reply-To: <20200513164140.7956-1-pablo@netfilter.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25418.003
+X-TM-AS-Result: No-7.609100-8.000000-10
+X-TMASE-MatchedRID: UuaOI1zLN1gbF9xF7zzuNfZvT2zYoYOwt3aeg7g/usBvNs77F4nIWlui
+        xS8mDjZOIwuO97ZnkxkPkyd+0GAin/xcXzlUQt0oN+75FOVyJeBXjjsM2/Dfxn9nRLJB1yYQHFJ
+        yCMrdNkmNMJ4daKiP9N+aqtQHbaUIUgG7ejycorBOGH/Yn5DKxYZyPbBh/hxWSStniYWNNsPOG5
+        8MBtvONrQszBevfBjDsPcjKUYPuwiy9Uh/U28aLy16nmC2/zSqcQTGOtT45qZjLp8Cm8vwF0fny
+        52zS9mSU0oMo6UOt+TdL2i2eEkxZWhV4uU8NZ6Bfid4LSHtIANF/jSlPtma/kvEK4FMJdoqMzCe
+        U/KrLcqMe8PZFqu1Ziio+Vn+4AqmSSOWVJeuO1CDGx/OQ1GV8rHlqZYrZqdI+gtHj7OwNO0X9rp
+        BZuBDbVL+b36eWMniaC2KxQ5GtTZacZsJhA5v1ftj8WFIn+jiKgUstyLLYywEHXewwQRM2UpJq2
+        lBkSmVSJLHdRakaCcRp7GxVS4iH3zm6hivSaZZop2lf3StGhISt1bcvKF7ZKbNmFZyaXzY
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--7.609100-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25418.003
+X-MDID: 1589456699-CglBGJiTdArH
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement two basic tests to verify terse dump functionality of flower
-classifier:
+On 13/05/2020 17:41, Pablo Neira Ayuso wrote:
+> Hi,
+>
+> This patchset fixes the indirect flow_block support for the tc CT action
+> offload. Please, note that this batch is probably slightly large for the
+> net tree, however, I could not find a simple incremental fix.
+>
+> = The problem
+>
+> The nf_flow_table_indr_block_cb() function provides the tunnel netdevice
+> and the indirect flow_block driver callback. From this tunnel netdevice,
+> it is not possible to obtain the tc CT flow_block. Note that tc qdisc
+> and netfilter backtrack from the tunnel netdevice to the tc block /
+> netfilter chain to reach the flow_block object. This allows them to
+> clean up the hardware offload rules if the tunnel device is removed.
+>
+> <snip>
+>
+> = About this patchset
+>
+> This patchset aims to address the existing TC CT problem while
+> simplifying the indirect flow_block infrastructure. Saving 300 LoC in
+> the flow_offload core and the drivers.
+This might be a dumb question, but: what is the actual bug being fixed,
+ that makes this patch series needed on net rather than net-next?
+From your description it sounds like a good and useful cleanup/refactor,
+ but nonetheless still a clean-up, appropriate for net-next.
 
-- Test that verifies that terse dump works.
-
-- Test that verifies that terse dump doesn't print filter key.
-
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- .../tc-testing/tc-tests/filters/tests.json    | 38 +++++++++++++++++++
- 1 file changed, 38 insertions(+)
-
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-index 8877f7b2b809..2d180865c857 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-@@ -87,5 +87,43 @@
-         "teardown": [
-             "$TC qdisc del dev $DEV2 ingress"
-         ]
-+    },
-+    {
-+        "id": "7c65",
-+        "name": "Add flower filter and then terse dump it",
-+        "category": [
-+            "filter",
-+            "flower"
-+        ],
-+        "setup": [
-+            "$TC qdisc add dev $DEV2 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip pref 1 ingress flower dst_mac e4:11:22:11:4a:51 action drop",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter show terse dev $DEV2 ingress",
-+        "matchPattern": "filter protocol ip pref 1 flower.*handle",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV2 ingress"
-+        ]
-+    },
-+    {
-+        "id": "d45e",
-+        "name": "Add flower filter and verify that terse dump doesn't output filter key",
-+        "category": [
-+            "filter",
-+            "flower"
-+        ],
-+        "setup": [
-+            "$TC qdisc add dev $DEV2 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip pref 1 ingress flower dst_mac e4:11:22:11:4a:51 action drop",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter show terse dev $DEV2 ingress",
-+        "matchPattern": "  dst_mac e4:11:22:11:4a:51",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV2 ingress"
-+        ]
-     }
- ]
--- 
-2.21.0
-
+-ed
