@@ -2,74 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F0B1D301B
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 14:43:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05D751D30D6
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 15:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726345AbgENMnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 08:43:01 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:59340 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726117AbgENMnA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 08:43:00 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 108BAD8A4B1C2E6F9133;
-        Thu, 14 May 2020 20:42:58 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 14 May 2020 20:42:50 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <kuba@kernel.org>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 5/5] net: hns3: remove unnecessary frag list checking in hns3_nic_net_xmit()
-Date:   Thu, 14 May 2020 20:41:26 +0800
-Message-ID: <1589460086-61130-6-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1589460086-61130-1-git-send-email-tanhuazhong@huawei.com>
-References: <1589460086-61130-1-git-send-email-tanhuazhong@huawei.com>
+        id S1726160AbgENNPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 09:15:32 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60190 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726050AbgENNPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 09:15:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=C4XSn2ABMWjBZ9aqxDsYGwYODrXuuIHG89AOkv3xl4Y=; b=KOdAMOc58/q+MbDJUgq/sZ4irw
+        oEVJEgY+yla7stTfq+//jkrJnfz4iSQUJyKkhA0KCAq4710SdbaldV3IfAvRz1Fu7e3R8WiEQQyyv
+        NXp/pDx6z1L9iTAjfr8I8+QqiQ+WnqSvDNdEoAUl5MgTO96J4ValFHkMUqLxZUKrCTvQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jZDhv-002Hua-7i; Thu, 14 May 2020 15:15:27 +0200
+Date:   Thu, 14 May 2020 15:15:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH V5 18/19] net: ks8851: Implement Parallel bus operations
+Message-ID: <20200514131527.GN527401@lunn.ch>
+References: <20200514000747.159320-1-marex@denx.de>
+ <20200514000747.159320-19-marex@denx.de>
+ <20200514015753.GL527401@lunn.ch>
+ <5dbab44d-de45-f8e2-b4e4-4be15408657e@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5dbab44d-de45-f8e2-b4e4-4be15408657e@denx.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The skb_has_frag_list() in hns3_nic_net_xmit() is redundant, since
-skb_walk_frags() includes this checking implicitly.
+On Thu, May 14, 2020 at 04:26:30AM +0200, Marek Vasut wrote:
+> On 5/14/20 3:57 AM, Andrew Lunn wrote:
+> >> diff --git a/drivers/net/ethernet/micrel/ks8851_par.c b/drivers/net/ethernet/micrel/ks8851_par.c
+> >> new file mode 100644
+> >> index 000000000000..90fffacb1695
+> >> --- /dev/null
+> >> +++ b/drivers/net/ethernet/micrel/ks8851_par.c
+> >> @@ -0,0 +1,348 @@
+> >> +// SPDX-License-Identifier: GPL-2.0-only
+> >> +/* drivers/net/ethernet/micrel/ks8851.c
+> >> + *
+> >> + * Copyright 2009 Simtec Electronics
+> >> + *	http://www.simtec.co.uk/
+> >> + *	Ben Dooks <ben@simtec.co.uk>
+> >> + */
+> >> +
+> >> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> >> +
+> >> +#define DEBUG
+> > 
+> > I don't think you wanted that left in.
+> 
+> This actually was in the original ks8851.c since forever, so I wonder.
+> Maybe a separate patch would be better ?
 
-Reported-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Yes, please add another patch.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index c79d6a3..9fe40c7 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1445,9 +1445,6 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
- 
- 	bd_num += ret;
- 
--	if (!skb_has_frag_list(skb))
--		goto out;
--
- 	skb_walk_frags(skb, frag_skb) {
- 		ret = hns3_fill_skb_to_desc(ring, frag_skb,
- 					    DESC_TYPE_FRAGLIST_SKB);
-@@ -1456,7 +1453,7 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
- 
- 		bd_num += ret;
- 	}
--out:
-+
- 	pre_ntu = ring->next_to_use ? (ring->next_to_use - 1) :
- 					(ring->desc_num - 1);
- 	ring->desc[pre_ntu].tx.bdtp_fe_sc_vld_ra_ri |=
--- 
-2.7.4
+> >> +		ks8851_done_tx(ks, skb);
+> >> +	} else {
+> >> +		ret = NETDEV_TX_BUSY;
+> >> +	}
+> >> +
+> >> +	ks8851_unlock_par(ks, &flags);
+> >> +
+> >> +	return ret;
+> >> +}
+> > 
+> >> +module_param_named(message, msg_enable, int, 0);
+> >> +MODULE_PARM_DESC(message, "Message verbosity level (0=none, 31=all)");
+> > 
+> > Module parameters are bad. A new driver should not have one, if
+> > possible. Please implement the ethtool .get_msglevel and .set_msglevel
+> > instead.
+> 
+> This was in the original ks8851.c , so I need to retain it , no ?
 
+Ah. Err.
+
+This patch looks like a new driver. It has probe, remove
+module_platform_driver(), etc. So as a new driver, it should not have
+module parameters.
+
+But then your next patch removes the mll driver. Your intention is
+that this driver replaces the mll driver. So for backwards
+compatibility, yes you do need the module parameter.
+
+	Andrew
