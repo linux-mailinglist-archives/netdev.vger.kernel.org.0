@@ -2,210 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFC1B1D4116
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 00:32:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 029EF1D4130
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 00:36:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728659AbgENWcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 18:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728525AbgENWcl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 18:32:41 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45197C061A0C;
-        Thu, 14 May 2020 15:32:41 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id m11so627001qka.4;
-        Thu, 14 May 2020 15:32:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TnsN39S9nBKKo+TkxtLGn4BfNS0a8Er3VZTnddGXoMk=;
-        b=qlK/i0A5Sw1AoI/gLAFuoRLkqAqsN71HkWsEyMowOcgMQiB35hUS2JkKF0BHggsfEK
-         eVOesLMbBV3C9o/7twYoEBq+qDkKYDuqGRNL0sIcggUsK6Z/S4jgg16zkmG+pni8J4Iz
-         MDasgrBTB7yGZAViIFLc6fP1tr9JmzrL/y50wALQ7s7Z09T4hFBKG9xAjAfbQWXl2FkH
-         6wcU9ppczL2fCobXgeU/bO/F7jgCTb+s/Er4NaaEYiX4T2+NH8QEBTP+84OFjN2e+UQv
-         QkWPRr/9qZ8LspcqfbjkL26d/WqXkNwBHlrmhaOsySl588OLYLYzWKSecH9YyGrAC/Fw
-         y+IQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TnsN39S9nBKKo+TkxtLGn4BfNS0a8Er3VZTnddGXoMk=;
-        b=WUo1IwdqQaKWoCxp4dYtC2nPcEQuvjNyvLDm0RV4ZLkirC/wwlfN1s4I/W1KEV+FHG
-         yE8f7EVmqh6yQClH1Wbz6nliM2OBs7zWongqypW3DbrPkgNTID6lg6Y5faVUhK+/hW/Y
-         ZV88120ioqlZMJW11cuj4v+rcqwXDvGUXi6qAOHQXz4LDpXYCbYPV+QzlWUQ9ulrEYxa
-         zOz5RDZG4/96HdRUYfT8szMNLeEM2/xpI5moEyYrMB3TA78t/MRPtspaaSD4+wegGmWO
-         oLLdWuUTGA8foj3GvBXI8/Yx66ZiaNZtzlmQJevk1oEraqsd1Zgg9TnXuCY2mmVjLDn5
-         kKdw==
-X-Gm-Message-State: AOAM530kTp2mlrzO1WxmFuUzShpcamyoWZ1lwbTOYSvGfaE4LTeHtHT5
-        DR9c7eeAZFwqKEEBS4b/JITCK9ytW9zZGhQvafk=
-X-Google-Smtp-Source: ABdhPJyGchlbdOiFTzH44nrWBosZbe0MBJchGDNjknpRH/WrJkohWjcxt195BK2oHyrbVJJFEt6cxNLSeCU+12W8Aro=
-X-Received: by 2002:a05:620a:14a1:: with SMTP id x1mr656739qkj.92.1589495560390;
- Thu, 14 May 2020 15:32:40 -0700 (PDT)
+        id S1728698AbgENWgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 18:36:32 -0400
+Received: from correo.us.es ([193.147.175.20]:38418 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728682AbgENWgc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 18:36:32 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 4C76C127C85
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 00:36:30 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3FABFDA710
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 00:36:30 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 34782DA707; Fri, 15 May 2020 00:36:30 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id DDBE9DA701;
+        Fri, 15 May 2020 00:36:27 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 15 May 2020 00:36:27 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id B89E241E4800;
+        Fri, 15 May 2020 00:36:27 +0200 (CEST)
+Date:   Fri, 15 May 2020 00:36:27 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, paulb@mellanox.com, ozsh@mellanox.com,
+        vladbu@mellanox.com, jiri@resnulli.us, kuba@kernel.org,
+        saeedm@mellanox.com, michael.chan@broadcom.com
+Subject: Re: [PATCH 0/8 net] the indirect flow_block offload, revisited
+Message-ID: <20200514223627.GA3170@salvia>
+References: <20200513164140.7956-1-pablo@netfilter.org>
+ <8f1a3b9a-6a60-f1b3-0fc1-f2361864c822@solarflare.com>
 MIME-Version: 1.0
-References: <20200506132946.2164578-1-jolsa@kernel.org> <20200506132946.2164578-5-jolsa@kernel.org>
-In-Reply-To: <20200506132946.2164578-5-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 14 May 2020 15:32:29 -0700
-Message-ID: <CAEf4BzZXyCjjaofaOROTKCRr5fqHkdZkBHZmfiqqQiKTyOYv1Q@mail.gmail.com>
-Subject: Re: [PATCH 4/9] bpf: Allow nested BTF object to be refferenced by BTF
- object + offset
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Florent Revest <revest@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8f1a3b9a-6a60-f1b3-0fc1-f2361864c822@solarflare.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 6, 2020 at 6:31 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Thu, May 14, 2020 at 12:44:48PM +0100, Edward Cree wrote:
+> On 13/05/2020 17:41, Pablo Neira Ayuso wrote:
+> > Hi,
+> >
+> > This patchset fixes the indirect flow_block support for the tc CT action
+> > offload. Please, note that this batch is probably slightly large for the
+> > net tree, however, I could not find a simple incremental fix.
+> >
+> > = The problem
+> >
+> > The nf_flow_table_indr_block_cb() function provides the tunnel netdevice
+> > and the indirect flow_block driver callback. From this tunnel netdevice,
+> > it is not possible to obtain the tc CT flow_block. Note that tc qdisc
+> > and netfilter backtrack from the tunnel netdevice to the tc block /
+> > netfilter chain to reach the flow_block object. This allows them to
+> > clean up the hardware offload rules if the tunnel device is removed.
+> >
+> > <snip>
+> >
+> > = About this patchset
+> >
+> > This patchset aims to address the existing TC CT problem while
+> > simplifying the indirect flow_block infrastructure. Saving 300 LoC in
+> > the flow_offload core and the drivers.
 >
-> Adding btf_struct_address function that takes 2 BTF objects
-> and offset as arguments and checks wether object A is nested
-> in object B on given offset.
->
-> This function is be used when checking the helper function
-> PTR_TO_BTF_ID arguments. If the argument has an offset value,
-> the btf_struct_address will check if the final address is
-> the expected BTF ID.
->
-> This way we can access nested BTF objects under PTR_TO_BTF_ID
-> pointer type and pass them to helpers, while they still point
-> to valid kernel BTF objects.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  include/linux/bpf.h   |  3 ++
->  kernel/bpf/btf.c      | 69 +++++++++++++++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c | 32 +++++++++++++-------
->  3 files changed, 94 insertions(+), 10 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 1262ec460ab3..bc589cdd8c34 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1213,6 +1213,9 @@ int btf_struct_access(struct bpf_verifier_log *log,
->                       const struct btf_type *t, int off, int size,
->                       enum bpf_access_type atype,
->                       u32 *next_btf_id);
-> +int btf_struct_address(struct bpf_verifier_log *log,
-> +                    const struct btf_type *t,
-> +                    u32 off, u32 exp_id);
->  int btf_resolve_helper_id(struct bpf_verifier_log *log,
->                           const struct bpf_func_proto *fn, int);
->
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index a2cfba89a8e1..07f22469acab 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -4004,6 +4004,75 @@ int btf_struct_access(struct bpf_verifier_log *log,
->         return -EINVAL;
->  }
->
-> +int btf_struct_address(struct bpf_verifier_log *log,
-> +                      const struct btf_type *t,
-> +                      u32 off, u32 exp_id)
+> This might be a dumb question, but: what is the actual bug being fixed,
+>  that makes this patch series needed on net rather than net-next?
 
-The logic in this function is quite tricky and overlaps heavily with
-btf_struct_access. You are already missing flexible array support that
-Yonghong added recently. Let's see if it's possible to extract all
-this "find field in a struct by offset" logic into reusable function?
+The TC CT action crashes the kernel with an indirect flow_block in place:
 
-> +{
-> +       u32 i, moff, mtrue_end, msize = 0;
-> +       const struct btf_member *member;
-> +       const struct btf_type *mtype;
-> +       const char *tname, *mname;
-> +
-> +again:
-> +       tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
-> +       if (!btf_type_is_struct(t)) {
-> +               bpf_log(log, "Type '%s' is not a struct\n", tname);
-> +               return -EINVAL;
-> +       }
-> +
-> +       if (off > t->size) {
-
->=, actually?
-
-> +               bpf_log(log, "address beyond struct %s at off %u size %u\n",
-> +                       tname, off, t->size);
-> +               return -EACCES;
-> +       }
-> +
-
-[...]
-
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 70ad009577f8..b988df5ada20 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -3665,6 +3665,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
->  {
->         struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
->         enum bpf_reg_type expected_type, type = reg->type;
-> +       const struct btf_type *btf_type;
->         int err = 0;
->
->         if (arg_type == ARG_DONTCARE)
-> @@ -3743,17 +3744,28 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
->                 expected_type = PTR_TO_BTF_ID;
->                 if (type != expected_type)
->                         goto err_type;
-> -               if (reg->btf_id != meta->btf_id) {
-> -                       verbose(env, "Helper has type %s got %s in R%d\n",
-> -                               kernel_type_name(meta->btf_id),
-> -                               kernel_type_name(reg->btf_id), regno);
-> +               if (reg->off) {
-
-well, off==0 can still point to (arbitrarily) nested structs that are
-first member of outer struct... So I guess it would be better to
-search for inner struct if btf_id is unexpected regardless of off
-value?
-
-> +                       btf_type = btf_type_by_id(btf_vmlinux, reg->btf_id);
-> +                       if (btf_struct_address(&env->log, btf_type, reg->off, meta->btf_id)) {
-> +                               verbose(env, "Helper has type %s got %s in R%d, off %d\n",
-> +                                       kernel_type_name(meta->btf_id),
-> +                                       kernel_type_name(reg->btf_id), regno, reg->off);
->
-> -                       return -EACCES;
-> -               }
-> -               if (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off) {
-> -                       verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
-> -                               regno);
-> -                       return -EACCES;
-> +                               return -EACCES;
-> +                       }
-> +               } else {
-> +                       if (reg->btf_id != meta->btf_id) {
-> +                               verbose(env, "Helper has type %s got %s in R%d\n",
-> +                                       kernel_type_name(meta->btf_id),
-> +                                       kernel_type_name(reg->btf_id), regno);
-> +
-> +                               return -EACCES;
-> +                       }
-> +                       if (!tnum_is_const(reg->var_off) || reg->var_off.value) {
-> +                               verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
-> +                                       regno);
-> +                               return -EACCES;
-> +                       }
->                 }
->         } else if (arg_type == ARG_PTR_TO_SPIN_LOCK) {
->                 if (meta->func_id == BPF_FUNC_spin_lock) {
-> --
-> 2.25.4
->
+https://lore.kernel.org/netfilter-devel/db9dfe4f-62e7-241b-46a0-d878c89696a8@ucloud.cn/
