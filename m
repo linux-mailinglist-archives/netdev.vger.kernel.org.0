@@ -2,43 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B9B1D27D4
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 08:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D84FD1D27F0
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 08:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726123AbgENG25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 02:28:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51770 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726011AbgENG25 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 02:28:57 -0400
-Received: from localhost.localdomain (unknown [122.182.193.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5DDC2206B6;
-        Thu, 14 May 2020 06:28:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589437736;
-        bh=lUAkt5vJrfMpmMe8Jkqe96oDcybwBYVt4NwetVO5JMg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=LVOE+Q9kRqSXL+zg+mFOQWp0z1vhkEjTU3aiJJRAlJNkxvWsxcaOLvltVzJf+GN1M
-         7quwf51+Y+6tUMPit972YNYW7NVoTnlQEL6sMdyszSJe6wBDLDLvlF7TJ6sHnHTlyq
-         y+ZS+BEosD8Ow5FNXjZenaPm150g5T/sMoGHUT+4=
-From:   Vinod Koul <vkoul@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rahul Ankushrao Kawadgave <rahulak@qti.qualcomm.com>
-Subject: [PATCH] net: stmmac: fix num_por initialization
-Date:   Thu, 14 May 2020 11:58:36 +0530
-Message-Id: <20200514062836.190194-1-vkoul@kernel.org>
-X-Mailer: git-send-email 2.25.4
+        id S1725926AbgENGgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 02:36:11 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55764 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725818AbgENGgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 02:36:11 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 14 May 2020 09:36:09 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04E6a9wg000568;
+        Thu, 14 May 2020 09:36:09 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     linux-kselftest@vger.kernel.org
+Cc:     netdev@vger.kernel.org, shuah@kernel.org, davem@davemloft.net,
+        xiyou.wangcong@gmail.com, jhs@mojatatu.com, dcaratti@redhat.com,
+        marcelo.leitner@gmail.com, Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH RESEND net-next] selftests: fix flower parent qdisc
+Date:   Thu, 14 May 2020 09:35:52 +0300
+Message-Id: <20200514063552.26678-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -46,74 +32,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver missed initializing num_por which is por values that driver
-configures to hardware. In order to get this values, add a new structure
-ethqos_emac_driver_data which holds por and num_por values and populate
-that in driver probe.
+Flower tests used to create ingress filter with specified parent qdisc
+"parent ffff:" but dump them on "ingress". With recent commit that fixed
+tcm_parent handling in dump those are not considered same parent anymore,
+which causes iproute2 tc to emit additional "parent ffff:" in first line of
+filter dump output. The change in output causes filter match in tests to
+fail.
 
-Fixes: a7c30e62d4b8 ("net: stmmac: Add driver for Qualcomm ethqos")
-Reported-by: Rahul Ankushrao Kawadgave <rahulak@qti.qualcomm.com>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Prevent parent qdisc output when dumping filters in flower tests by always
+correctly specifying "ingress" parent both when creating and dumping
+filters.
+
+Fixes: a7df4870d79b ("net_sched: fix tcm_parent in tc filter dump")
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
 ---
- .../ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ .../selftests/tc-testing/tc-tests/filters/tests.json        | 6 +++---
+ tools/testing/selftests/tc-testing/tdc_batch.py             | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-index e0a5fe83d8e0..bfc4a92f1d92 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-@@ -75,6 +75,11 @@ struct ethqos_emac_por {
- 	unsigned int value;
- };
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
+index 8877f7b2b809..12aa4bc1f6a0 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
+@@ -32,7 +32,7 @@
+         "setup": [
+             "$TC qdisc add dev $DEV2 ingress"
+         ],
+-        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip pref 1 parent ffff: handle 0xffffffff flower action ok",
++        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip pref 1 ingress handle 0xffffffff flower action ok",
+         "expExitCode": "0",
+         "verifyCmd": "$TC filter show dev $DEV2 ingress",
+         "matchPattern": "filter protocol ip pref 1 flower.*handle 0xffffffff",
+@@ -77,9 +77,9 @@
+         },
+         "setup": [
+             "$TC qdisc add dev $DEV2 ingress",
+-            "$TC filter add dev $DEV2 protocol ip prio 1 parent ffff: flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop"
++            "$TC filter add dev $DEV2 protocol ip prio 1 ingress flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop"
+         ],
+-        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip prio 1 parent ffff: flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop",
++        "cmdUnderTest": "$TC filter add dev $DEV2 protocol ip prio 1 ingress flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop",
+         "expExitCode": "2",
+         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
+         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
+diff --git a/tools/testing/selftests/tc-testing/tdc_batch.py b/tools/testing/selftests/tc-testing/tdc_batch.py
+index 6a2bd2cf528e..995f66ce43eb 100755
+--- a/tools/testing/selftests/tc-testing/tdc_batch.py
++++ b/tools/testing/selftests/tc-testing/tdc_batch.py
+@@ -72,21 +72,21 @@ mac_prefix = args.mac_prefix
  
-+struct ethqos_emac_driver_data {
-+	const struct ethqos_emac_por *por;
-+	unsigned int num_por;
-+};
-+
- struct qcom_ethqos {
- 	struct platform_device *pdev;
- 	void __iomem *rgmii_base;
-@@ -171,6 +176,11 @@ static const struct ethqos_emac_por emac_v2_3_0_por[] = {
- 	{ .offset = RGMII_IO_MACRO_CONFIG2,	.value = 0x00002060 },
- };
+ def format_add_filter(device, prio, handle, skip, src_mac, dst_mac,
+                       share_action):
+-    return ("filter add dev {} {} protocol ip parent ffff: handle {} "
++    return ("filter add dev {} {} protocol ip ingress handle {} "
+             " flower {} src_mac {} dst_mac {} action drop {}".format(
+                 device, prio, handle, skip, src_mac, dst_mac, share_action))
  
-+static const struct ethqos_emac_driver_data emac_v2_3_0_data = {
-+	.por = emac_v2_3_0_por,
-+	.num_por = ARRAY_SIZE(emac_v2_3_0_por),
-+};
-+
- static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
- {
- 	unsigned int val;
-@@ -442,6 +452,7 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
- 	struct device_node *np = pdev->dev.of_node;
- 	struct plat_stmmacenet_data *plat_dat;
- 	struct stmmac_resources stmmac_res;
-+	const struct ethqos_emac_driver_data *data;
- 	struct qcom_ethqos *ethqos;
- 	struct resource *res;
- 	int ret;
-@@ -471,7 +482,9 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
- 		goto err_mem;
- 	}
  
--	ethqos->por = of_device_get_match_data(&pdev->dev);
-+	data = of_device_get_match_data(&pdev->dev);
-+	ethqos->por = data->por;
-+	ethqos->num_por = data->num_por;
+ def format_rep_filter(device, prio, handle, skip, src_mac, dst_mac,
+                       share_action):
+-    return ("filter replace dev {} {} protocol ip parent ffff: handle {} "
++    return ("filter replace dev {} {} protocol ip ingress handle {} "
+             " flower {} src_mac {} dst_mac {} action drop {}".format(
+                 device, prio, handle, skip, src_mac, dst_mac, share_action))
  
- 	ethqos->rgmii_clk = devm_clk_get(&pdev->dev, "rgmii");
- 	if (IS_ERR(ethqos->rgmii_clk)) {
-@@ -526,7 +539,7 @@ static int qcom_ethqos_remove(struct platform_device *pdev)
- }
  
- static const struct of_device_id qcom_ethqos_match[] = {
--	{ .compatible = "qcom,qcs404-ethqos", .data = &emac_v2_3_0_por},
-+	{ .compatible = "qcom,qcs404-ethqos", .data = &emac_v2_3_0_data},
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, qcom_ethqos_match);
+ def format_del_filter(device, prio, handle, skip, src_mac, dst_mac,
+                       share_action):
+-    return ("filter del dev {} {} protocol ip parent ffff: handle {} "
++    return ("filter del dev {} {} protocol ip ingress handle {} "
+             "flower".format(device, prio, handle))
+ 
+ 
 -- 
-2.25.4
+2.21.0
 
