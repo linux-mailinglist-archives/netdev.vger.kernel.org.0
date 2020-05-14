@@ -2,111 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C01921D28A9
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 09:22:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 428F81D28B8
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 09:26:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725938AbgENHWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 03:22:36 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:14850 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725909AbgENHWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 03:22:35 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04E7LUho027019;
-        Thu, 14 May 2020 00:22:19 -0700
+        id S1726062AbgENH0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 03:26:47 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47898 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725909AbgENH0q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 03:26:46 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 04E7OOAp024971;
+        Thu, 14 May 2020 00:26:33 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
  references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=facebook;
- bh=w4yzOQ3QVerG1iNnUBlIG0Qm1mvGqNwwKw1AeeKEtQU=;
- b=QQCdgksUkyL4dezzia5ZA2r0p11V1Jv8LjGfCa9+FvxxuL6V+0w8mXg6D/+0evCEr+a5
- /N+pobJh9I2TfvhBq5LaF1wRWJ5TPb96nqFXzJG604Dah9nS/J5KHmxwxt/RQcD6VQcl
- SIs1vqq5Ah13OXKvzJBcw93+Iog8DcW0qZc= 
+ bh=XQtT+pykVdwQ6KCWf6+oz7KCx9nWZG3jdyAklRFaJ0g=;
+ b=Aj7Ze4l/hHeUsYzYkcPk5ttboyS6/7xpmumtWJnYNWv92xq2kTCN9YK4zeb8HI3Jsj+b
+ w+wjyWz6erh67tUflKlOn1zvjbka0s1kFtz96m7M3VBJMqIJOVQ3UjAL8CVQllCHEjMx
+ lqdJnmA7XtVuYivFTQCH8wQROn92OFtT1hg= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3110kjr7e8-2
+        by m0089730.ppops.net with ESMTP id 3100xh9v6n-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 14 May 2020 00:22:19 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+        Thu, 14 May 2020 00:26:33 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Thu, 14 May 2020 00:21:43 -0700
+ 15.1.1847.3; Thu, 14 May 2020 00:26:32 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nglpdl+slfG5QG73Y3EH6oI3uVby8K2beFCLrw84FUyh238qqbkkAqkUAhMWikTkuZNExRdLyvw57GGY3WabkZ53YoapgIiCSaYG2bPRqEZ6Ag7DH0ktGnDS2j/hHe8rB50qOGuZWOVd1yARgP8Ph8sbwpPnvS8uzoXnXEVafFKqwOWT+ImfE18+scbc1+ClL7BlRiN85XGW7qy8KK0ElAdXLaojWI0QVppQStUXcfe6cmoBwTGsLtKO+sbs8MSOWQ+3sFH7texACPUp2YLWM/1aQhc6Ie8IO49oYWW27YaytZvKG57vQjw23sxZZa7XxEduQaKT7RNjiJIY5P1q/w==
+ b=VNkqH1/uHPYQ5pIC0n6WUVHzcnYCEYjAFkcgj9YF6UPOJ+xRql49vztqVVbqBrirgymrVkxObRFrPWXu8gPu5+v7MLz8SdwsKWomZGJjze+Boa1bJITbTB7X+vZNTKE0owYCi6+pdeZefgM2shQlOUqLCdoIooev4bHaGtq/YuitVGLV3o+RcdkGkLS0LCVfEW9eDA9t2z0b8nbWBly+gnAI70DW09E5C1dNCdFE2JEDGjpnsuvjavMy3F3ocJJ/5re+49q67ioG+SzT3cQiT6/9n8SS3H66D9DwdKZlRpu97cssN0vX3XFE0CO8s/Du/ZhxS9OyyvJRcVAyO2nTog==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w4yzOQ3QVerG1iNnUBlIG0Qm1mvGqNwwKw1AeeKEtQU=;
- b=LskF0pLhpW5ylDnDbmajyY/JiyZLPMExWsMJ5djyPUkapT7CK+oJObZmd5O5g1TLiHHRgJ9sljR3vRF3wIli711vZ0cFygWNhv5iBaU536rDl/PTf3k5Cx1PVfnbytMILn+hm6qhJH6UA+HvTh6WPW8fwUMeoufzHHvfUZRuizMqzFw02dmVUFrasD78tYrglmFSFzkTiYNIDQ1R/N7t8FG6lCTtACg7ovHNL+Ov6sfKXwXu2wZh5o4Fr0JhyV9Rav8LK5o97ie/2imFCSt6ZVJ8H2JBMW1pwmrNnaWpP9P/+q+AWVtNseA+d78Gqv5fGgx50is1AG/OtUq12p5K0A==
+ bh=XQtT+pykVdwQ6KCWf6+oz7KCx9nWZG3jdyAklRFaJ0g=;
+ b=SwslXgWfM0E7q6fMXVjJCPSSWdt+n1DnvCroe1FkZ4D+VOfIqWOT7ETCaB+MUZeypBnppghIwVaUa2qSKucVcE2NFC5Rm4yNat2j6lHK1AefL2o9pWFFTj+B7tCdYRbpujMLhNdgGUPhmpqoR6o0tSO8Vo5EpWMdjickprqaFpiytgAuup+vHVnHR3832WlUX3kjCsVIyQZ9XImf0+1P0wcFf8wcOIWJnA8+8zqFCyiVpcrO5aUHofRJDRBdPXN4BTh1Xtjmm09fZbcUnG7PgINwJ7VQplY6fVoJ4Sd6pjWXOXIQpwezGmSHkke5haEr0l0DYL3OQZ+lUcO2d6M7jg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w4yzOQ3QVerG1iNnUBlIG0Qm1mvGqNwwKw1AeeKEtQU=;
- b=KhQlroRzgLw0Nby3tUA3nHGxBw6NOE04JHeEjbYasE0YWpshQrPt6kz2GP63nVr8qTzLwSA0nJFhnv5BuqW8g0VaTYu23Q45CmZ7zgw96AvFGhpgPcrQ2nhJKfLAIRLZ4+/39wahE9/IvrewKH2qsM6Kfz4FP//QNIwSb+po+Nc=
+ bh=XQtT+pykVdwQ6KCWf6+oz7KCx9nWZG3jdyAklRFaJ0g=;
+ b=aN0pxRxvxaja3JmpExc2D7ye77oGuy9bMnyCFqbzXiYx21S9HUDCBBwMjZipIK6tz2xGVKzVDme5acsQuQewNykgEpeWFU5Hwa5E5i+RU2UALIQU301UVJRZOny7PYxc5Dr9EBEuGuzUnp0VCBCv2rs7wOZGNOqQAKG10z3F5hY=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
  by BYAPR15MB2360.namprd15.prod.outlook.com (2603:10b6:a02:81::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20; Thu, 14 May
- 2020 07:21:42 +0000
+ 2020 07:26:25 +0000
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.3000.022; Thu, 14 May 2020
- 07:21:42 +0000
-Subject: Re: [bpf-next PATCH 2/3] bpf: sk_msg helpers for probe_* and
- *current_task*
+ 07:26:25 +0000
+Subject: Re: [bpf-next PATCH 3/3] bpf: sk_msg add get socket storage helpers
 To:     John Fastabend <john.fastabend@gmail.com>, <ast@kernel.org>,
         <daniel@iogearbox.net>
 CC:     <lmb@cloudflare.com>, <bpf@vger.kernel.org>,
         <jakub@cloudflare.com>, <netdev@vger.kernel.org>
 References: <158939776371.17281.8506900883049313932.stgit@john-Precision-5820-Tower>
- <158939787911.17281.887645911866087465.stgit@john-Precision-5820-Tower>
+ <158939789875.17281.10136938760299538348.stgit@john-Precision-5820-Tower>
 From:   Yonghong Song <yhs@fb.com>
-Message-ID: <35846427-3770-f6ab-b1a6-c974a835f746@fb.com>
-Date:   Thu, 14 May 2020 00:21:40 -0700
+Message-ID: <fd2063e0-30d6-ef65-ee7f-73cbd10094b1@fb.com>
+Date:   Thu, 14 May 2020 00:26:22 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
  Gecko/20100101 Thunderbird/68.8.0
-In-Reply-To: <158939787911.17281.887645911866087465.stgit@john-Precision-5820-Tower>
+In-Reply-To: <158939789875.17281.10136938760299538348.stgit@john-Precision-5820-Tower>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR04CA0006.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::16) To BYAPR15MB4088.namprd15.prod.outlook.com
+X-ClientProxiedBy: BY5PR03CA0026.namprd03.prod.outlook.com
+ (2603:10b6:a03:1e0::36) To BYAPR15MB4088.namprd15.prod.outlook.com
  (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:7dec) by BY5PR04CA0006.namprd04.prod.outlook.com (2603:10b6:a03:1d0::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Thu, 14 May 2020 07:21:41 +0000
+Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:7dec) by BY5PR03CA0026.namprd03.prod.outlook.com (2603:10b6:a03:1e0::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.25 via Frontend Transport; Thu, 14 May 2020 07:26:24 +0000
 X-Originating-IP: [2620:10d:c090:400::5:7dec]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3bb94616-5cd4-444b-fcde-08d7f7d77362
+X-MS-Office365-Filtering-Correlation-Id: 0a886137-652a-4c2e-e310-08d7f7d81c16
 X-MS-TrafficTypeDiagnostic: BYAPR15MB2360:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB23608210EEB850DE812AB6BDD3BC0@BYAPR15MB2360.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <BYAPR15MB236051FCB2353AE17CF81C0AD3BC0@BYAPR15MB2360.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
 X-Forefront-PRVS: 040359335D
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wkNKo/LdZSlLUFJ0nJUtUAFgU3q+Yins1OoxDO/0WYcTvz0qAdiOPYzsbR1tLzA1T/0Q1urnyUewpG9jPfdKoG/ZJ37eFRNplAxFE4H+7nmK2n1D95Hrs1W+mLrlgzTTcSr1RfjzXUo6kxZJhf8MMEFMej83XVGcDn2PPUNjarYFCROvC9d61qh4osm00tjPXWmxk2bCrZjz6xVf4b7Yal8qQ+4rdaY+EguLNskYtg879oe2tjrVKQA7CRSBKtyDxi1C7WdP/zk/Modwv49DgmhxT8sdjLHwrydSaLSo3IVOmioAMKcVERdIG/Iz/7jNW+9wBgdOxR6FfojQ6yvTLZYkBAfLKfX3Ym/gAI74ZoNcghQWjl8V5KT2eGGLRUAeJY1mhil3tNoHUU35+yz6z4Jp+nX5PJoRQ6PcNeF+MoYmiTDS/sruvr0lUEjysO4sUPLUhjQ220WAbrLW0lQCZ3Ry0PUtfYwqp0YkMQofRD6DHDhk7Iwk8TqKbS42tCyf
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(39860400002)(346002)(376002)(366004)(396003)(8676002)(4326008)(16526019)(6506007)(52116002)(186003)(6486002)(5660300002)(316002)(53546011)(2616005)(2906002)(66476007)(6512007)(478600001)(86362001)(66946007)(66556008)(36756003)(31686004)(31696002)(8936002)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: XGbg6Oz6Gcv+aWX1qvIqzYVswOIRs7rdV6D4UsGj1cAsQutDyMagsND0oHQh1iPZCZy+tY8fKgCNMnSB6X2qUHfnSXYxHmLq5nKU/fv/NYZTX4if92UTIP+Xwn8kFbJr+MB8mWidAjx4SBO/Mzz1/SILGXc7o4asYPBXr+SFUcLfzGq/pN+5xFZwiizy84/snaDaiT3WlOTFCz9qyDd7/cix4h+bgVuJAV6wyQujjShF9EXEEQu9rOnMBd11160qgNLlo7fIAZYLwTClRfg7apijQRfFp1K8/M4dhNir9z3YIstpxo9U7dFft8yCiInWQOOCmtihC8dSkXNe54fXxET20lTBW9q/ZbENAZGMs1UkZx83ir+7QL92zPOrYmEQlllgkS/YreMZZrvtEvB7zV0W5zjwh939UO7lEMSMO6BWpJw9cVK3V+bI6+eFpDmb0V8DzS3Jce5IBBH2/3SwsooY9zbXzEOaEQn7xb54jDOfUJfhKLM7nfuIB7QMluckqPE7VAIpXJJu5zgaRKwWZA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bb94616-5cd4-444b-fcde-08d7f7d77362
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2020 07:21:42.4259
+X-Microsoft-Antispam-Message-Info: 9FKmX3kMH/jT4rg5gv2bnW3Uli9dVigAabjwSJD+oubmDlWr3kNW0vqytdSNEUgEJfzNCU4piSqKzGT0TKpuYgQrlL26b5FqcZnezi9qbWvwrYPsU48YmpzHM2qSuluaVbbjf0O6D8zbbNsnI41xKm/IboBHCp7EAKNhWnMGyggnDV/d/KcXcen32TjeveTMmLO7CpRbB7+WBNS1+qgGzSoudA1WAYfWmUJzrtBTYvSafft476WpXnet885KwUnsIffDO/snfN4rHkHU+h+JxL40CVSQglRc9LH5wOD8k2cI6QM34ndn+duKtZa1Xrm/pQgO+K3HrKGWqm7KUC90jLp2IROljcokqCOu3JHJ5biHSqkZkGSjNLjhpj7cnGhjpdZKDNF7wvofuGPd1Ups3VSF6BxxqWbNEgidY4yFLIFV7SZdLOjuxCd2a/qC7g+QNQyV17X9aTR4Yjy079+j0TSq6Nt96wzGyeXxHrBux1zV7qDC4nCuF5bZ4gLFwvx8
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(366004)(376002)(346002)(39860400002)(136003)(86362001)(66946007)(2906002)(66476007)(478600001)(6512007)(31696002)(8936002)(36756003)(31686004)(66556008)(52116002)(186003)(6486002)(8676002)(4326008)(6506007)(16526019)(2616005)(316002)(53546011)(5660300002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: +Xdfxm5vZJURZ9oVZHHvila7wW7ikR9fw6je7o/Y+Oq9sVGUbW0KnjhG+8A/Iq0mDrXGxJyGyEi5PoXWi2xgrvi9QEvdogsDUtfxYPfmfUFQVsEmXVYvQYNi2TBl9I/ww6vavntX7/I73xDaoxuKgcER4V2G9Q3og2HJ0AauqGF8zAt36hHsRzPnMc5fapLLzA2BkQWgvDoHwiTK3dslqUv8XeHTvyIFvj0QRUQizuzxmYWzgddckTv+YjUuyKEhqbyUGqy6sEXk18l1V2doodg2W6Nrg+qPN/P2Zmit/52o8EaPmR8xaejQ5Womt4YI8WLmF4j99hnhCr+7i/kpMo215h6IIgksY+b5j+ef5wQUoVdlADcfvDgz7giVEBcnbbubaY1xteMP+x4v9gU1+Y09l407M+XSiUnFUFlRwyBlk5kD4NAntJVeu00pCRe+rTJVwN4zOZ2tuxZkOFjoLdeZTbbazmA3wZmGqYrdN/kMLJpbyFIUqTbqWTa+AhMvLlZMpQ7bEotvSqPJxR1YIg==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a886137-652a-4c2e-e310-08d7f7d81c16
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2020 07:26:25.4691
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nJ3UwsV19SZ4+P4iYqUXoKOkQJh9v0ZfNzIi7Zs6CTXsHIQDLoG9oXz5/keyg89V
+X-MS-Exchange-CrossTenant-UserPrincipalName: Tj1BfngQ/x1k/Inkuc62tmjsIHejxVfCtrvguQt4genTtsvVLCUkX9ccZriX52bL
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2360
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
  definitions=2020-05-14_01:2020-05-13,2020-05-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
- spamscore=0 mlxscore=0 clxscore=1015 phishscore=0 malwarescore=0
- lowpriorityscore=0 suspectscore=0 priorityscore=1501 cotscore=-2147483648
- mlxlogscore=999 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005140065
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 cotscore=-2147483648
+ mlxscore=0 priorityscore=1501 adultscore=0 impostorscore=0 malwarescore=0
+ spamscore=0 clxscore=1015 suspectscore=0 mlxlogscore=999 phishscore=0
+ bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005140066
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -116,178 +115,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 5/13/20 12:24 PM, John Fastabend wrote:
-> Often it is useful when applying policy to know something about the
-> task. If the administrator has CAP_SYS_ADMIN rights then they can
-> use kprobe + sk_msg and link the two programs together to accomplish
-> this. However, this is a bit clunky and also means we have to call
-> sk_msg program and kprobe program when we could just use a single
-> program and avoid passing metadata through sk_msg/skb, socket, etc.
-> 
-> To accomplish this add probe_* helpers to sk_msg programs guarded
-> by a CAP_SYS_ADMIN check. New supported helpers are the following,
-> 
->   BPF_FUNC_get_current_task
->   BPF_FUNC_current_task_under_cgroup
->   BPF_FUNC_probe_read_user
->   BPF_FUNC_probe_read_kernel
->   BPF_FUNC_probe_read
->   BPF_FUNC_probe_read_user_str
->   BPF_FUNC_probe_read_kernel_str
->   BPF_FUNC_probe_read_str
-
-I think this is a good idea. But this will require bpf program
-to be GPLed, probably it will be okay. Currently, for capabilities,
-it is CAP_SYS_ADMIN now, in the future, it may be CAP_PERFMON.
-
-Also, do we want to remove BPF_FUNC_probe_read and
-BPF_FUNC_probe_read_str from the list? Since we
-introduce helpers to new program types, we can deprecate
-these two helpers right away.
-
-The new helpers will be subject to new security lockdown
-rules which may have impact on networking bpf programs
-on particular setup.
-
+> Add helpers to use local socket storage.
 > 
 > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 > ---
->   kernel/trace/bpf_trace.c |   16 ++++++++--------
->   net/core/filter.c        |   34 ++++++++++++++++++++++++++++++++++
->   2 files changed, 42 insertions(+), 8 deletions(-)
+>   include/uapi/linux/bpf.h |    2 ++
+>   net/core/filter.c        |   15 +++++++++++++++
+>   2 files changed, 17 insertions(+)
 > 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index d961428..abe6721 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -147,7 +147,7 @@ BPF_CALL_3(bpf_probe_read_user, void *, dst, u32, size,
->   	return ret;
->   }
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index bfb31c1..3ca7cfd 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3607,6 +3607,8 @@ struct sk_msg_md {
+>   	__u32 remote_port;	/* Stored in network byte order */
+>   	__u32 local_port;	/* stored in host byte order */
+>   	__u32 size;		/* Total size of sk_msg */
+> +
+> +	__bpf_md_ptr(struct bpf_sock *, sk); /* current socket */
+>   };
+
+Sync changes to tools/include/uapi/linux/bpf.h?
+
+For this patch and previous patches, it would be good we got some
+selftests to exercise some newly-added helpers.
+
 >   
-> -static const struct bpf_func_proto bpf_probe_read_user_proto = {
-> +const struct bpf_func_proto bpf_probe_read_user_proto = {
->   	.func		= bpf_probe_read_user,
->   	.gpl_only	= true,
->   	.ret_type	= RET_INTEGER,
-> @@ -167,7 +167,7 @@ BPF_CALL_3(bpf_probe_read_user_str, void *, dst, u32, size,
->   	return ret;
->   }
->   
-> -static const struct bpf_func_proto bpf_probe_read_user_str_proto = {
-> +const struct bpf_func_proto bpf_probe_read_user_str_proto = {
->   	.func		= bpf_probe_read_user_str,
->   	.gpl_only	= true,
->   	.ret_type	= RET_INTEGER,
-> @@ -198,7 +198,7 @@ BPF_CALL_3(bpf_probe_read_kernel, void *, dst, u32, size,
->   	return bpf_probe_read_kernel_common(dst, size, unsafe_ptr, false);
->   }
->   
-> -static const struct bpf_func_proto bpf_probe_read_kernel_proto = {
-> +const struct bpf_func_proto bpf_probe_read_kernel_proto = {
->   	.func		= bpf_probe_read_kernel,
->   	.gpl_only	= true,
->   	.ret_type	= RET_INTEGER,
-> @@ -213,7 +213,7 @@ BPF_CALL_3(bpf_probe_read_compat, void *, dst, u32, size,
->   	return bpf_probe_read_kernel_common(dst, size, unsafe_ptr, true);
->   }
->   
-> -static const struct bpf_func_proto bpf_probe_read_compat_proto = {
-> +const struct bpf_func_proto bpf_probe_read_compat_proto = {
->   	.func		= bpf_probe_read_compat,
->   	.gpl_only	= true,
->   	.ret_type	= RET_INTEGER,
-> @@ -253,7 +253,7 @@ BPF_CALL_3(bpf_probe_read_kernel_str, void *, dst, u32, size,
->   	return bpf_probe_read_kernel_str_common(dst, size, unsafe_ptr, false);
->   }
->   
-> -static const struct bpf_func_proto bpf_probe_read_kernel_str_proto = {
-> +const struct bpf_func_proto bpf_probe_read_kernel_str_proto = {
->   	.func		= bpf_probe_read_kernel_str,
->   	.gpl_only	= true,
->   	.ret_type	= RET_INTEGER,
-> @@ -268,7 +268,7 @@ BPF_CALL_3(bpf_probe_read_compat_str, void *, dst, u32, size,
->   	return bpf_probe_read_kernel_str_common(dst, size, unsafe_ptr, true);
->   }
->   
-> -static const struct bpf_func_proto bpf_probe_read_compat_str_proto = {
-> +const struct bpf_func_proto bpf_probe_read_compat_str_proto = {
->   	.func		= bpf_probe_read_compat_str,
->   	.gpl_only	= true,
->   	.ret_type	= RET_INTEGER,
-> @@ -874,7 +874,7 @@ BPF_CALL_0(bpf_get_current_task)
->   	return (long) current;
->   }
->   
-> -static const struct bpf_func_proto bpf_get_current_task_proto = {
-> +const struct bpf_func_proto bpf_get_current_task_proto = {
->   	.func		= bpf_get_current_task,
->   	.gpl_only	= true,
->   	.ret_type	= RET_INTEGER,
-> @@ -895,7 +895,7 @@ BPF_CALL_2(bpf_current_task_under_cgroup, struct bpf_map *, map, u32, idx)
->   	return task_under_cgroup_hierarchy(current, cgrp);
->   }
->   
-> -static const struct bpf_func_proto bpf_current_task_under_cgroup_proto = {
-> +const struct bpf_func_proto bpf_current_task_under_cgroup_proto = {
->   	.func           = bpf_current_task_under_cgroup,
->   	.gpl_only       = false,
->   	.ret_type       = RET_INTEGER,
+>   struct sk_reuseport_md {
 > diff --git a/net/core/filter.c b/net/core/filter.c
-> index 45b4a16..d1c4739 100644
+> index d1c4739..c42adc8 100644
 > --- a/net/core/filter.c
 > +++ b/net/core/filter.c
-> @@ -6362,6 +6362,15 @@ sock_ops_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   const struct bpf_func_proto bpf_msg_redirect_map_proto __weak;
->   const struct bpf_func_proto bpf_msg_redirect_hash_proto __weak;
->   
-> +const struct bpf_func_proto bpf_current_task_under_cgroup_proto __weak;
-> +const struct bpf_func_proto bpf_get_current_task_proto __weak;
-> +const struct bpf_func_proto bpf_probe_read_user_proto __weak;
-> +const struct bpf_func_proto bpf_probe_read_user_str_proto __weak;
-> +const struct bpf_func_proto bpf_probe_read_kernel_proto __weak;
-> +const struct bpf_func_proto bpf_probe_read_kernel_str_proto __weak;
-> +const struct bpf_func_proto bpf_probe_read_compat_proto __weak;
-> +const struct bpf_func_proto bpf_probe_read_compat_str_proto __weak;
-> +
->   static const struct bpf_func_proto *
->   sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   {
-> @@ -6397,6 +6406,31 @@ sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   		return &bpf_get_cgroup_classid_curr_proto;
->   #endif
->   	default:
+> @@ -6395,6 +6395,10 @@ sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   		return &bpf_get_current_uid_gid_proto;
+>   	case BPF_FUNC_get_current_pid_tgid:
+>   		return &bpf_get_current_pid_tgid_proto;
+> +	case BPF_FUNC_sk_storage_get:
+> +		return &bpf_sk_storage_get_proto;
+> +	case BPF_FUNC_sk_storage_delete:
+> +		return &bpf_sk_storage_delete_proto;
+>   #ifdef CONFIG_CGROUPS
+>   	case BPF_FUNC_get_current_cgroup_id:
+>   		return &bpf_get_current_cgroup_id_proto;
+> @@ -7243,6 +7247,11 @@ static bool sk_msg_is_valid_access(int off, int size,
+>   		if (size != sizeof(__u64))
+>   			return false;
+>   		break;
+> +	case offsetof(struct sk_msg_md, sk):
+> +		if (size != sizeof(__u64))
+> +			return false;
+> +		info->reg_type = PTR_TO_SOCKET;
 > +		break;
-> +	}
+>   	case bpf_ctx_range(struct sk_msg_md, family):
+>   	case bpf_ctx_range(struct sk_msg_md, remote_ip4):
+>   	case bpf_ctx_range(struct sk_msg_md, local_ip4):
+> @@ -8577,6 +8586,12 @@ static u32 sk_msg_convert_ctx_access(enum bpf_access_type type,
+>   				      si->dst_reg, si->src_reg,
+>   				      offsetof(struct sk_msg_sg, size));
+>   		break;
 > +
-> +	if (!capable(CAP_SYS_ADMIN))
-> +		return bpf_base_func_proto(func_id);
-> +
-> +	/* All helpers below are for CAP_SYS_ADMIN only */
-> +	switch (func_id) {
-> +	case BPF_FUNC_get_current_task:
-> +		return &bpf_get_current_task_proto;
-> +	case BPF_FUNC_current_task_under_cgroup:
-> +		return &bpf_current_task_under_cgroup_proto;
-> +	case BPF_FUNC_probe_read_user:
-> +		return &bpf_probe_read_user_proto;
-> +	case BPF_FUNC_probe_read_kernel:
-> +		return &bpf_probe_read_kernel_proto;
-> +	case BPF_FUNC_probe_read:
-> +		return &bpf_probe_read_compat_proto;
-> +	case BPF_FUNC_probe_read_user_str:
-> +		return &bpf_probe_read_user_str_proto;
-> +	case BPF_FUNC_probe_read_kernel_str:
-> +		return &bpf_probe_read_kernel_str_proto;
-> +	case BPF_FUNC_probe_read_str:
-> +		return &bpf_probe_read_compat_str_proto;
-> +	default:
->   		return bpf_base_func_proto(func_id);
-
-If we can get a consensus here, I think we can even folding all
-these bpf helpers (get_current_task, ..., probe_read_kernel_str)
-to bpf_base_func_proto, so any bpf program types including
-other networking types can use them.
-Any concerns?
-
+> +	case offsetof(struct sk_msg_md, sk):
+> +		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_msg, sk),
+> +				      si->dst_reg, si->src_reg,
+> +				      offsetof(struct sk_msg, sk));
+> +		break;
 >   	}
->   }
+>   
+>   	return insn - insn_buf;
 > 
