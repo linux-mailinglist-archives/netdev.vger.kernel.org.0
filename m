@@ -2,135 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C2D1D4067
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 23:56:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC73C1D407C
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 00:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726345AbgENV4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 17:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
+        id S1728060AbgENWGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 18:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbgENV4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 17:56:13 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76447C05BD43
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 14:56:13 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id v15so93081qvr.8
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 14:56:13 -0700 (PDT)
+        with ESMTP id S1726046AbgENWGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 18:06:13 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEDAC061A0C;
+        Thu, 14 May 2020 15:06:13 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id t25so302428qtc.0;
+        Thu, 14 May 2020 15:06:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zEKdvxuRmynEGy16bF3LGoDg2yM0IjC5jEtajMBXRXU=;
-        b=KB7yctVWS5p1sSRjtheM/VI3+4vOa63NKZshvviq8GMTWRpxw3rMiC0PS7nMyrnra2
-         tcZfKyY7vdsxeoepVOs2VvRIgQYLMc4tvmweb6+/D2fNIgmPmfA67ETzjz397o5AX/4x
-         PQsoFlLQa4pDsPlw3tVZYj6yTwqhrXyBhWyp63WSa3rrFvJeEfeLSwOUIUK9RrRZCiuL
-         QA2oggyK4128T43XR+fb7wP8WGgTBWmUXtsHuRMh1vlnmIz63iquIw9TDgwEFLifFRU3
-         QvRh/SCxrRoTzJcTcVbMP4BMKHsmOcHrkql6styuM8IuLXRDsUqnH9wQaW9m1rkfxweK
-         92FA==
+        bh=ckfBHrfjRkNbazznJgQdJg25aWGLlrD5iE8Qkmuzz8U=;
+        b=n6JzfrSjAz8AOXj5gc+KHxO3/967eEszvUmfVgJsNqVcPzxCNdel8CxWVgyZ/23SXM
+         od8i/pKG2Lf99/icAcqo6gKNaKTnAk9a5EXa+uYHKkQqfJI9N00m9G3iSEKiu1jQGF0P
+         HL0Puer8J36uaR1tvutjJmBImaUBo78RwcAm7M6gGMCuqZyjXYfNhA7E3//lJoDOu28Q
+         MGFTIqDj9mS5xPdfLtKPmcYnbxQxRs7Gjo2y8ht+1V1wHvTl38JPMzIAiAdaAgEBlH6k
+         7lu8u5yaTwTIP/PQKVrabrCijW5cwRSkWq7rqTjOQIRFRoRqlb4aazUurXWWuLMoh1mV
+         ZTIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zEKdvxuRmynEGy16bF3LGoDg2yM0IjC5jEtajMBXRXU=;
-        b=sj0SnUYG8nOcXo+zcUtuNweK3mUomoGBqrB7W1bZEfVRdq8QzJyQDZkAHwOUcjnOdg
-         AnadjZCTceqbo56v0PtfiR3R9n81+CNyFi6Enxvnt1nFYDCWm8H8vaZGD857dVpON1Ft
-         LqnculYfe0WrT4YXsl/o1IXK5AyIP4gy9UvJGMZPks+8wUevRvOkOJsW1h8wsalRm3Cn
-         5zDhUDcG7mw+9zFbUwTf/iLIc+WtLl3Ubn6JUEuBY5WoY/W+K9M8GP4I+0z6qmt2fABm
-         V3bX9Rtttunm2eaGnep3GyXpz1n2F8Keox2QzrurPnyrWprYF/qlzGIKCdYebZR6dbiF
-         nImw==
-X-Gm-Message-State: AOAM533sw9d43Obk6H53jGx/0Ss7zAxu3LCIIUN6LeBbKCF+Z3+AJOm8
-        20WZRIKXNJrNo/CopodsmidOxjyepQt9lw47IsxKIg==
-X-Google-Smtp-Source: ABdhPJyD6MVawv3z3jyeAQBD8Ff8rxbsGSC3aCoUwzaMG8c1THeirI1WuwIqIC5L23u6eIfiphEVGAryqJA2gUxaUSc=
-X-Received: by 2002:a0c:b58a:: with SMTP id g10mr540616qve.225.1589493372191;
- Thu, 14 May 2020 14:56:12 -0700 (PDT)
+        bh=ckfBHrfjRkNbazznJgQdJg25aWGLlrD5iE8Qkmuzz8U=;
+        b=T91LUP0t2nRWmyrqcua9z3sZw7lJHhQQUKLRZKkswmxayjeg/LJqMJ/tSb901CI8Yi
+         NCDu8Hup7UpW0oxf/fcvGnpPusHe2X8cgkQyvxr7K05PVFeD2uLw+1LBLKtd4wbxO62M
+         dzF+wsDWRvTOwXE65sohO0WZudtFJhUeWN6usS7E2sd1961UkqjL4XjHrA34YkP98YQC
+         iehVos0pAeKYw4VYxCyL2vUCaIW4jXw6oM8C2QnlgKuOVjEKwHtbSqYRkp4nL5GF1tZx
+         gWKENtoIjhdyzAH48nZ4ailkzMxm78MgbaM/EkPvvl90u/oiN0FF+kU/2+HAriR5YTmK
+         H0yA==
+X-Gm-Message-State: AOAM5305jLFbvnFjP4D1joocCAOEw3By+Z+saHFxevE3IEvM9cXjdfLC
+        Dqaxvc3Fc/1xapJom2NvnApTtnHCSZcvCJV9brk=
+X-Google-Smtp-Source: ABdhPJxpLxW5ruHrhFc9yxVFWxLImiUxhcKJLBDq0piYrLBJliV93f1WRTVgKq7cyo91eX+1rW6OvXqjX/3aHxhc75U=
+X-Received: by 2002:aed:24a1:: with SMTP id t30mr344999qtc.93.1589493972293;
+ Thu, 14 May 2020 15:06:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200513192532.4058934-1-andriin@fb.com> <20200513192532.4058934-2-andriin@fb.com>
- <20200514173338.GA161830@google.com> <CAEf4BzbhqQB61JTmmp5999bbEFeHEMdvnE9vpV3tHCHm12cf-Q@mail.gmail.com>
- <20200514205348.GB161830@google.com> <CAEf4BzbvjQy+8T43e91OXDaLgWsy5_1RSr278=uAVUGOT0LgZw@mail.gmail.com>
-In-Reply-To: <CAEf4BzbvjQy+8T43e91OXDaLgWsy5_1RSr278=uAVUGOT0LgZw@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 14 May 2020 14:56:01 -0700
-Message-ID: <CAKH8qBsy_DLhwie+g6o7yHEv_tBT5K2YCdjsn1j4KkhVvRSr5A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/6] bpf: implement BPF ring buffer and verifier
- support for it
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
+References: <20200506132946.2164578-1-jolsa@kernel.org> <20200506132946.2164578-2-jolsa@kernel.org>
+In-Reply-To: <20200506132946.2164578-2-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 14 May 2020 15:06:01 -0700
+Message-ID: <CAEf4BzaiTFasYEnj-N100=mxQN5R70xKbF4Z2xJcWHaaYN4_ag@mail.gmail.com>
+Subject: Re: [PATCH 1/9] bpf: Add d_path helper
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Florent Revest <revest@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 14, 2020 at 2:13 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Wed, May 6, 2020 at 6:30 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> On Thu, May 14, 2020 at 1:53 PM <sdf@google.com> wrote:
-> >
-> > On 05/14, Andrii Nakryiko wrote:
-> > > On Thu, May 14, 2020 at 10:33 AM <sdf@google.com> wrote:
-> > > >
-> > > > On 05/13, Andrii Nakryiko wrote:
-> >
-> > [...]
-> >
-> > > > > + * void bpf_ringbuf_submit(void *data)
-> > > > > + *   Description
-> > > > > + *           Submit reserved ring buffer sample, pointed to by
-> > > *data*.
-> > > > > + *   Return
-> > > > > + *           Nothing.
-> > > > Even though you mention self-pacing properties, would it still
-> > > > make sense to add some argument to bpf_ringbuf_submit/bpf_ringbuf_output
-> > > > to indicate whether to wake up userspace or not? Maybe something like
-> > > > a threshold of number of outstanding events in the ringbuf after which
-> > > > we do the wakeup? The default 0/1 preserve the existing behavior.
-> > > >
-> > > > The example I can give is a control plane userspace thread that
-> > > > once a second aggregates the events, it doesn't care about millisecond
-> > > > resolution. With the current scheme, I suppose, if BPF generates events
-> > > > every 1ms, the userspace will be woken up 1000 times (if it can keep
-> > > > up). Most of the time, we don't really care and some buffering
-> > > > properties are desired.
-> >
-> > > perf buffer has setting like this, and believe me, it's so confusing
-> > > and dangerous, that I wouldn't want this to be exposed. Even though I
-> > > was aware of this behavior, I still had to debug and work-around this
-> > > lack on wakeup few times, it's really-really confusing feature.
-> >
-> > > In your case, though, why wouldn't user-space poll data just once a
-> > > second, if it's not interested in getting data as fast as possible?
-> > If I poll once per second I might lose the events if, for some reason,
-> > there is a spike. I really want to have something like: "wakeup
-> > userspace if the ringbuffer fill is over some threshold or
-> > the last wakeup was too long ago". We currently do this via a percpu
-> > cache map. IIRC, you've shared on lsfmmbpf that you do something like
-> > that as well.
+> Adding d_path helper function that returns full path
+> for give 'struct path' object, which needs to be the
+> kernel BTF 'path' object.
 >
-> Hm... don't remember such use case on our side. All applications I
-> know of use default perf_buffer settings with no sampling.
-Nevermind, I might have misunderstood :-)
+> The helper calls directly d_path function.
+>
+> Updating also bpf.h tools uapi header and adding
+> 'path' to bpf_helpers_doc.py script.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/uapi/linux/bpf.h       | 14 +++++++++++++-
+>  kernel/trace/bpf_trace.c       | 31 +++++++++++++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |  2 ++
+>  tools/include/uapi/linux/bpf.h | 14 +++++++++++++-
+>  4 files changed, 59 insertions(+), 2 deletions(-)
+>
 
-> > So I was thinking how I can use new ringbuff to remove the unneeded
-> > copies and help with the reordering, but I'm a bit concerned about
-> > regressing on the number of wakeups.
-> >
-> > Maybe having a flag like RINGBUF_NO_WAKEUP in bpf_ringbuf_submit()
-> > will suffice? And if there is a helper or some way to obtain a
-> > number of unconsumed items, I can implement my own flushing policy.
+[...]
+
 >
-> Ok, I guess giving application control at each discard/commit makes
-> for ultimate flexibility. Let me add flags argument to commit/discard
-> and allow to specify NO_WAKEUP flag. As for count of unconsumed events
-> -- that would be a bit expensive to maintain. How about amount of data
-> that's not consumed? It's obviously going to be racy, but returning
-> (producer_pos - consumer_pos) should be sufficient enough for such
-> smart and best-effort heuristics? WDYT?
-Awesome, SGTM! Racy is fine (I don't see how we can make it non-racy
-as well). The amount of data instead of the number of items is also fine
-since I know the size of the buffer.
+> +BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
+> +{
+> +       char *p = d_path(path, buf, sz - 1);
+> +       int len;
+> +
+> +       if (IS_ERR(p)) {
+> +               len = PTR_ERR(p);
+> +       } else {
+> +               len = strlen(p);
+> +               if (len && p != buf) {
+> +                       memmove(buf, p, len);
+> +                       buf[len] = 0;
+> +               }
+> +       }
+> +
+> +       return len;
+> +}
+> +
+> +static u32 bpf_d_path_btf_ids[3];
+
+Using shorter than 5 element array is "unconventional", but seems like
+btf_distill_func_proto will never access elements that are not
+ARG_PTR_TO_BTF_ID, so it's fine. But than again, if we are saving
+space, why not just 1-element array? :)
+
+
+> +static const struct bpf_func_proto bpf_d_path_proto = {
+> +       .func           = bpf_d_path,
+> +       .gpl_only       = true,
+> +       .ret_type       = RET_INTEGER,
+> +       .arg1_type      = ARG_PTR_TO_BTF_ID,
+> +       .arg2_type      = ARG_PTR_TO_MEM,
+> +       .arg3_type      = ARG_CONST_SIZE,
+> +       .btf_id         = bpf_d_path_btf_ids,
+> +};
+> +
+
+[...]
+
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index b3643e27e264..bc13cad27872 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -3068,6 +3068,17 @@ union bpf_attr {
+>   *             See: clock_gettime(CLOCK_BOOTTIME)
+>   *     Return
+>   *             Current *ktime*.
+> + *
+> + * int bpf_d_path(struct path *path, char *buf, u32 sz)
+> + *     Description
+> + *             Return full path for given 'struct path' object, which
+> + *             needs to be the kernel BTF 'path' object. The path is
+> + *             returned in buffer provided 'buf' of size 'sz'.
+> + *
+
+Please specify if it's always zero-terminated string (especially on truncation).
+
+> + *     Return
+> + *             length of returned string on success, or a negative
+> + *             error in case of failure
+> + *
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3195,7 +3206,8 @@ union bpf_attr {
+>         FN(get_netns_cookie),           \
+>         FN(get_current_ancestor_cgroup_id),     \
+>         FN(sk_assign),                  \
+> -       FN(ktime_get_boot_ns),
+> +       FN(ktime_get_boot_ns),          \
+> +       FN(d_path),
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> --
+> 2.25.4
+>
