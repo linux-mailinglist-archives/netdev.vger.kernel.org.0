@@ -2,116 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E731D2876
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 09:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CF4A1D288F
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 09:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbgENHEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 03:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725999AbgENHET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 03:04:19 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7748FC061A0C;
-        Thu, 14 May 2020 00:04:19 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id r10so875133pgv.8;
-        Thu, 14 May 2020 00:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Hl1HPzb7dFtDLSR9rDmWF+8gIgfdqQC3u8YiNpHMJl0=;
-        b=CtP+bBcSjhGDsnkt8n84+x3WSL1FNSfcdsZ6vPxLKDK3zn9+rUCTxkJr7wUQ4YK2JJ
-         SMS08S3Koj2QBf6eGyWenIyBzBwv4mtMMEmS5oqXGXC1M4GfJG0kpjKXfvKBEHvhT7p+
-         xqp1REo/VOz2c3KwjiA1kXfzPTkSF9SrpU+C29/k/Oj3hfc14Pyhmegc5eQXuGxVXyAI
-         hD+O51R6MAH4PxgrP0RaSJniy/S96KWNN0Y3XKijTRuqewgLAcldvsiLleyS3iYyz1II
-         +QXw9VRwFsBtE88ryWZwx1/S1KJJ7IAT5Up8zq3VcOsWlsC+2+P90fnIk3nK+9uHCINO
-         G3lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Hl1HPzb7dFtDLSR9rDmWF+8gIgfdqQC3u8YiNpHMJl0=;
-        b=GNJ6vbHtCYc0/W0n1tnuyV8EIwCPtFgqLTtG21NmJutLoOF6+VpRwnYDUpsd3pnfRF
-         YuD4IKkAegEQTjFk+X6Y7UEGW9K+luAVovC6j9Mq3M8H+5nSRuXa1HQ2fMamq2aUNPFr
-         9A+cqqOFVcGJ8Su1yMLsgsBFQOvPaKI2tZlKdUvWxV4wRuY1upFdyus1zFylvvmoKw1c
-         4+oulfQxKxceuV7CO4WwPXdAetais93tNBOrx8cge/EGF/+c4GALPNNlZtVAFhn3LaU3
-         tm4CHgLSRLV6M8YDT1JAC+EbZr3gD0s+dc0+jB2dH3oVRp+jIR11NuhcBn8dy21DjY4c
-         RDZw==
-X-Gm-Message-State: AOAM530nWMmBhm+K2qaUjEjTeqrXY+taXtzn6U/FyL2POsjYlrpl55ze
-        IZHCSJIr7T7QiPEZVKsLYg==
-X-Google-Smtp-Source: ABdhPJxAp+3G8cqLmj/q9C3zR40xnwzfs4zf1FH/qUYzUa4+nIL+ilNSJL92YBiNLvm5S8C5JALS1A==
-X-Received: by 2002:a63:e90e:: with SMTP id i14mr2789778pgh.173.1589439859068;
-        Thu, 14 May 2020 00:04:19 -0700 (PDT)
-Received: from madhuparna-HP-Notebook ([2409:4071:5b5:d53:89fb:f860:f992:54ab])
-        by smtp.gmail.com with ESMTPSA id 28sm17439149pjh.43.2020.05.14.00.04.13
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 14 May 2020 00:04:18 -0700 (PDT)
-From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
-Date:   Thu, 14 May 2020 12:34:09 +0530
-To:     David Miller <davem@davemloft.net>
-Cc:     madhuparnabhowmik10@gmail.com, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sfr@canb.auug.org.au,
-        frextrite@gmail.com, joel@joelfernandes.org, paulmck@kernel.org,
-        cai@lca.pw
-Subject: Re: [PATCH] Fix suspicious RCU usage warning
-Message-ID: <20200514070409.GA3174@madhuparna-HP-Notebook>
-References: <20200513061610.22313-1-madhuparnabhowmik10@gmail.com>
- <20200513.120010.124458176293400943.davem@davemloft.net>
+        id S1725967AbgENHNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 03:13:35 -0400
+Received: from mail-db8eur05on2047.outbound.protection.outlook.com ([40.107.20.47]:6083
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725866AbgENHNe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 03:13:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XPv5fDv/w83Gy3o15NANiY16NenRlC00twFzJhRZzE6ujGi2e5Pito5X41tIVaMzOnuNpJcdmVbFxzKxNW+ejCJ1VJLU4v6o80O9XKIyiLKlrQiXsBGWwk4HyGZd9m8CKEFQMIXblvrh1E/90WFGQYcoCJKF2hZ8+vdkse7kMZ6LXqD9DhwzozHBnhW7rcQP5QGtBZLexfAkA9V4hx1SL28uarIzBL1JgwbE0mlfBFIbLnWeXR9fBkoJLE3djCqSkCyPeisuneJBVdkY/Iq1x6wDyLDu2gfmx4zSMigaLAyTmtYaBxu4Njs6ysl5/RisBZyxYrLNcpF9OTgv9r0iZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=maY+MjDq7rpXVjrdP94zzFJKMiY0khqwZM/KYj0KhIM=;
+ b=hwtSaD2m5+qwVQ9a73MlVoLW7Yf7JyG7GWSAY8e2wITe5Wp8NiXGnMG8ArkQz0eqbwkSTwNaFXQcT2Tg17zvdTul5bDxAlNX/Bg5HDcR2gdl40UgP2Nv/IMtrWg6nZVKooukbFYCiGWj6zriV8vO6WOHFMSDJwYY7wQYNRFWYbOGE6lZ0AUrv34BR4QVxZcxJFO7kmTca33AX3JcTcIW8O3Z1HDkArWbby1HiOoqR6DpOPTIL+nA1HXoRh5kqS6Ev1m4xK742wu7kRgS5YM7FRuugR7B0iNyYmtF2QuLXJtEewefuasJkhAqtEUlncKSfRRClmYo8ioTdmN9OpcD2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=maY+MjDq7rpXVjrdP94zzFJKMiY0khqwZM/KYj0KhIM=;
+ b=DZ8dOkD2CAvrn+ZMXv2JMcc4FEZcpNi5I4gU3Csh1hle7yK08wqEmGlVWpD3AluA007pa21poRxS63mtaj/Fz+NzK6S9ZhmJtu8D3NG652UH5YJYZvu69gHmKuYR6pdMJSuJJHGHUBt404r7alOt832XUYKMiFc94Phd6K9+7WE=
+Received: from AM0PR04MB7041.eurprd04.prod.outlook.com (2603:10a6:208:19a::13)
+ by AM0PR04MB5876.eurprd04.prod.outlook.com (2603:10a6:208:130::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26; Thu, 14 May
+ 2020 07:13:30 +0000
+Received: from AM0PR04MB7041.eurprd04.prod.outlook.com
+ ([fe80::1cab:2a78:51cb:2a00]) by AM0PR04MB7041.eurprd04.prod.outlook.com
+ ([fe80::1cab:2a78:51cb:2a00%9]) with mapi id 15.20.2979.033; Thu, 14 May 2020
+ 07:13:30 +0000
+From:   Christian Herber <christian.herber@nxp.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        David Jander <david@protonic.nl>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        Marek Vasut <marex@denx.de>
+Subject: RE: [EXT] Re: signal quality and cable diagnostic
+Thread-Topic: [EXT] Re: signal quality and cable diagnostic
+Thread-Index: AQHWJ6ExNilqBbwzZ0ehkAYa7smAYaikHY+AgAMNSsA=
+Date:   Thu, 14 May 2020 07:13:30 +0000
+Message-ID: <AM0PR04MB7041DE18F2966573DB6E078586BC0@AM0PR04MB7041.eurprd04.prod.outlook.com>
+References: <20200511141310.GA2543@pengutronix.de>
+ <20200511143337.GC413878@lunn.ch> <20200512082201.GB16536@pengutronix.de>
+In-Reply-To: <20200512082201.GB16536@pengutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [88.130.52.52]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: c8a47c7f-f02f-44b9-7eba-08d7f7d64e6d
+x-ms-traffictypediagnostic: AM0PR04MB5876:
+x-microsoft-antispam-prvs: <AM0PR04MB5876160120A46E3C784DB94C86BC0@AM0PR04MB5876.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 040359335D
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wnIPQOEhJoI7IcWInAc4/jLbMXpiMZWdkzsv5bm60u6wfx0iRQeklTaohA1uGmkUU24xqI5ftfpSDKrErXPGwIq4JwA9ROYl63+BCqQMG5GeV99JhN5rt99M2l1UXNLkLNOiF7ZeV9TOqgMhlCsyIMBweN//AK2NMsfaUb8WEhnkRjVldtPkriqW1jeyGpK4MvP7vRBwFw9jq2Y8D4sMVU3v1AmQnn+OwMfu59VMYEDphx1CL3hHQ9Ujr5pCKcAXAgE1CDyXV+MRP8Yoc3znbm0UIKzftTFIGRv8KTN5J4wlt8yjD5/N4o14ANyPVxgGZXFDqWE5S3kS9RcWOj47yrqb51OVSmVA+Vx1lI7sGB7ZNEV0ABbXnLbv4PPZ8YQ2dxvJ+2ejZgiYfOeeMMOx7FEYYNkflCFC5lIXBmAFRgFFrzrDJ0flnkoguQ3LqHXx
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB7041.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(366004)(136003)(39860400002)(376002)(346002)(316002)(86362001)(8936002)(71200400001)(2906002)(9686003)(4326008)(26005)(110136005)(52536014)(54906003)(7696005)(55016002)(5660300002)(66476007)(44832011)(66556008)(66946007)(8676002)(33656002)(66446008)(76116006)(7416002)(64756008)(478600001)(186003)(6506007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: kqSDKHQoCTRcsrSrgEI0Q3wBA9TH5/pa5fxuoMsVBLOCyYQLnxSo46mlSSu0EdSC7/f1yMJGWgW4Q1PO5K8C8Eq83qQzam56tUKPfDp0Gto5JuDUgo1fgDJD41ueEz68+Lu2w1uIfJ9NhqWPfXWytujNJS2GCoRKoPLaoWUqc3Hhp7mC4jHgqIYaMMHiD9laS2fOesdoBedfJKAnh8DSZo+yrNbAFqNBjGFkPs5Oh2im4tHM5Nx7DgPhyMtXbDybrozCvJP4jyQA3cht4iXf3n4hRghFIrvMKtGocq4dmTcV34A8ckQSMI1er+ZGHvLrLHqQeZRojGWNE9wHbyeLBxpfYDkUF4S31r/1rytw8y3l6TWPfScOWF18vFjNNePlVLluO4jJgEFAbjQda2uYJnXrK9lFjjHOMaYgYJ3zrxshpFhH28wWIoTNWm0Bclar/3pp437jWFWhTz2G3saaNR1et6wnWG0HMeFIbx1ld3c=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200513.120010.124458176293400943.davem@davemloft.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8a47c7f-f02f-44b9-7eba-08d7f7d64e6d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 May 2020 07:13:30.5571
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: XSnbpQnw1Nojp8OxCHdzlvEUNgbn2v4LJiZc2qjnk/HJmunejyM6XnJEaQwCE2n3hbRAe5Wvgy01UXebK4hIMXxdjc2eNcAwm2X4rB02mTw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5876
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 12:00:10PM -0700, David Miller wrote:
-> From: madhuparnabhowmik10@gmail.com
-> Date: Wed, 13 May 2020 11:46:10 +0530
-> 
-> > From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-> > 
-> > This patch fixes the following warning:
-> > 
-> > =============================
-> > WARNING: suspicious RCU usage
-> > 5.7.0-rc4-next-20200507-syzkaller #0 Not tainted
-> > -----------------------------
-> > net/ipv6/ip6mr.c:124 RCU-list traversed in non-reader section!!
-> > 
-> > ipmr_new_table() returns an existing table, but there is no table at
-> > init. Therefore the condition: either holding rtnl or the list is empty
-> > is used.
-> > 
-> > Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> > Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-> > 
-> > Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-> 
-> Please only provide one signoff line.
-> 
-> Please provide a proper Fixes: tag for this bug fix.
-> 
-> And finally, please make your Subject line more appropriate.  It must
-> first state the target tree inside of the "[PATCH]" area, the two choices
-> are "[PATCH net]" and "[PATCH net-next]" and it depends upon which tree
-> this patch is targetting.
-> 
-> Then your Subject line should also be more descriptive about exactly the
-> subsystem and area the change is being made to, for this change for
-> example you could use something like:
-> 
-> 	ipv6: Fix suspicious RCU usage warning in ip6mr.
-> 
-> Also, obviously, there are also syzkaller tags you can add to the
-> commit message as well.
-Sorry for this malformed patch, I have sent a patch with all these
-corrections.
-
-Thank you,
-Madhuparna
+T24gVHVlLCBNYXkgMTIsIDIwMjAgYXQgMTA6MjI6MDFBTSArMDIwMCwgT2xla3NpaiBSZW1wZWwg
+d3JvdGU6DQoNCj4gU28gSSB0aGluayB3ZSBzaG91bGQgcGFzcyByYXcgU1FJIHZhbHVlIHRvIHVz
+ZXIgc3BhY2UsIGF0IGxlYXN0IGluIHRoZQ0KPiBmaXJzdCBpbXBsZW1lbnRhdGlvbi4NCg0KPiBX
+aGF0IGRvIHlvdSB0aGluayBhYm91dCB0aGlzPw0KDQpIaSBPbGVrc2lqLA0KDQpJIGhhZCBhIGNo
+ZWNrIGFib3V0IHRoZSBiYWNrZ3JvdW5kIG9mIHRoaXMgU1FJIHRoaW5nLiBUaGUgdGFibGUgeW91
+IHJlZmVyZW5jZSB3aXRoIGNvbmNyZXRlIFNOUiB2YWx1ZXMgaXMgaW5mb3JtYXRpdmUgb25seSBh
+bmQgbm90IGEgcmVxdWlyZW1lbnQuIFRoZSByZXF1aXJlbWVudHMgYXJlIHJhdGhlciBsb29zZS4N
+Cg0KVGhpcyBpcyBmcm9tIE9BOg0KLSBPbmx5IGZvciBTUUk9MCBhIGxpbmsgbG9zcyBzaGFsbCBv
+Y2N1ci4NCi0gVGhlIGluZGljYXRlZCBzaWduYWwgcXVhbGl0eSBzaGFsbCBtb25vdG9uaWMgaW5j
+cmVhc2luZyAvZGVjcmVhc2luZyB3aXRoIG5vaXNlIGxldmVsLg0KLSBJdCBzaGFsbCBiZSBpbmRp
+Y2F0ZWQgaW4gdGhlIGRhdGFzaGVldCBhdCB3aGljaCBsZXZlbCBhIEJFUjwxMF4tMTAgKGJldHRl
+ciB0aGFuIDEwXi0xMCkgaXMgYWNoaWV2ZWQgKGUuZy4gImZyb20gU1FJPTMgdG8gU1FJPTcgdGhl
+IGxpbmsgaGFzIGEgQkVSPDEwXi0xMCAoYmV0dGVyIHRoYW4gMTBeLTEwKSIpDQoNCkkuZS4gU1FJ
+IGRvZXMgbm90IG5lZWQgdG8gaGF2ZSBhIGRpcmVjdCBjb3JyZWxhdGlvbiB3aXRoIFNOUi4gVGhl
+IGZ1bmRhbWVudGFsIHVuZGVybHlpbmcgbWV0cmljIGlzIHRoZSBCRVIuDQpZb3UgY2FuIHJlcG9y
+dCB0aGUgcmF3IFNRSSBsZXZlbCBhbmQgdXNlcnMgd291bGQgaGF2ZSB0byBsb29rIHVwIHdoYXQg
+aXQgbWVhbnMgaW4gdGhlIHJlc3BlY3RpdmUgZGF0YSBzaGVldC4gVGhlcmUgaXMgbm8gZ3VhcmFu
+dGVlZCByZWxhdGlvbiBiZXR3ZWVuIFNRSSBsZXZlbHMgb2YgZGlmZmVyZW50IGRldmljZXMsIGku
+ZS4gU1FJIDUgY2FuIGhhdmUgbG93ZXIgQkVSIHRoYW4gU1FJIDYgb24gYW5vdGhlciBkZXZpY2Uu
+DQpBbHRlcm5hdGl2ZWx5LCB5b3UgY291bGQgcmVwb3J0IEJFUiA8IHggZm9yIHRoZSBkaWZmZXJl
+bnQgU1FJIGxldmVscy4gSG93ZXZlciwgdGhpcyByZXF1aXJlcyB0aGUgaW5mb3JtYXRpb24gdG8g
+YmUgYXZhaWxhYmxlLiBXaGlsZSBJIGNvdWxkIHByb3ZpZGUgdGhlc2UgZm9yIE5YUCwgaXQgbWln
+aHQgbm90IGJlIGVhc2lseSBhdmFpbGFibGUgZm9yIG90aGVyIHZlbmRvcnMuDQpJZiByZXBvcnRp
+bmcgcmF3IFNRSSwgYXQgbGVhc3QgdGhlIFNRSSBsZXZlbCBmb3IgQkVSPDEwXi0xMCBzaG91bGQg
+YmUgcHJlc2VudGVkIHRvIGdpdmUgYW55IG1lYW5pbmcgdG8gdGhlIHZhbHVlLg0KDQpSZWdhcmRz
+LA0KDQpDaHJpc3RpYW4NCg==
