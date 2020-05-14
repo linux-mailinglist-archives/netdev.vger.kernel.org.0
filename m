@@ -2,66 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E01D1D3E59
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1F821D3E5A
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:03:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729038AbgENUCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 16:02:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50482 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727850AbgENUCo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 16:02:44 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9D8262065C;
-        Thu, 14 May 2020 20:02:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589486563;
-        bh=WHcambScRN7gZL/Z1NiKiNi+PhC7lpNI9WGQ2mHNL8c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eUVHXHE+B0+1VmPGvMH5ZRMO1zvjTwnpOl0hCAmCAGPZYzed/ONdveiTxdWTKZjQV
-         vG4DuLiZA6dq4y32Dhq/7xVHLEcW/o0dHAASwo6mgZ0KM8F6bXNy1MqzQMRP9TweZx
-         ULfZvKud4wINCZcW0kpz4WNDiRQgSu8DGvIYI27A=
-Date:   Thu, 14 May 2020 13:02:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        "Ariel Elior" <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "Denis Bolotin" <dbolotin@marvell.com>
-Subject: Re: [EXT] Re: [PATCH v2 net-next 00/11] net: qed/qede: critical hw
- error handling
-Message-ID: <20200514130241.177c3e2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <2a29996c-21a6-7566-c27e-7b8fb280e18c@marvell.com>
-References: <20200514095727.1361-1-irusskikh@marvell.com>
-        <20200514120659.6f64f6e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <2a29996c-21a6-7566-c27e-7b8fb280e18c@marvell.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1729100AbgENUD2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 14 May 2020 16:03:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729094AbgENUD1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 16:03:27 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9ECC061A0C
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 13:03:27 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9C6CA128D494B;
+        Thu, 14 May 2020 13:03:26 -0700 (PDT)
+Date:   Thu, 14 May 2020 13:03:26 -0700 (PDT)
+Message-Id: <20200514.130326.2050471806242029227.davem@davemloft.net>
+To:     gnault@redhat.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, xerces9@gmail.com
+Subject: Re: [PATCH net] pppoe: only process PADT targeted at local
+ interfaces
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <87314848e98d74e88b3c3b2504566a7691f5a8e9.1589451271.git.gnault@redhat.com>
+References: <87314848e98d74e88b3c3b2504566a7691f5a8e9.1589451271.git.gnault@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-15
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 13:03:26 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 May 2020 22:40:12 +0300 Igor Russkikh wrote:
-> > I'm not 100% happy that the debug data gets reported to the management
-> > FW before the devlink health code is in place. For the Linux community,
-> > I think, having standard Linux interfaces implemented first is the
-> > priority.  
-> 
-> Hi Jakub,
-> 
-> Thanks for the comment. I feel these two are a bit separate. We try to push
-> important messages to MFW, not debug data. And all these messages are as well
-> perfectly being reported on device level error printouts, they are not kind of
-> lost.
-> 
-> And for devlink, we anyway will need all the above infrastructure, to
-> eventually implement devlink dumps and other features.
-> 
-> Or, may be I didn't get your point?
+From: Guillaume Nault <gnault@redhat.com>
+Date: Thu, 14 May 2020 12:15:39 +0200
 
-That's fine, I'm just saying - I hope the devlink part doesn't take too
-long to implement :)
+> We don't want to disconnect a session because of a stray PADT arriving
+> while the interface is in promiscuous mode.
+> Furthermore, multicast and broadcast packets make no sense here, so
+> only PACKET_HOST is accepted.
+> 
+> Reported-by: David Bala¸ic <xerces9@gmail.com>
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+
+Applied and queued up for -stable, thanks.
