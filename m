@@ -2,76 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC301D33D3
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 17:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 271671D3393
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 16:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726216AbgENO7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 10:59:54 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:50314 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726146AbgENO7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 10:59:53 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04EExiru032389;
-        Thu, 14 May 2020 09:59:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1589468384;
-        bh=tUFSc5e3vWYmXAkLT7Sd4YjZeEIhHflHraicrk/VvBA=;
-        h=From:To:CC:Subject:Date;
-        b=vD+Rw7zFOH+srUr+y4GAohWyTVkn1BZEgS7Xw85BMOzUQ1t7lGqh9Zwc1mhZNCEWA
-         gpI8uMuTAjHT2R8T93YzS4UNFyWeQ421ccwriPD/WC4covLaXPtlcfzS1ELz6r0L+A
-         UsPXFoSd51QqcTaftvN9LMJu/WPUwdMcRUjWdQwQ=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04EExiOG126993;
-        Thu, 14 May 2020 09:59:44 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 14
- May 2020 09:59:44 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 14 May 2020 09:59:43 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04EExhkF126732;
-        Thu, 14 May 2020 09:59:44 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next] dt-bindings: net: dp83869: Update licensing info
-Date:   Thu, 14 May 2020 09:50:12 -0500
-Message-ID: <20200514145012.16145-1-dmurphy@ti.com>
+        id S1727876AbgENOvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 10:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726216AbgENOvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 10:51:06 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3AEC061A0C;
+        Thu, 14 May 2020 07:51:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=nFWXSeRD77aVNe1kpUid392p2TPdCScnaKMPBaah9y0=; b=JujPhAbncpPq7/TrdcNHjvZ6fT
+        TE5O5Z+NgFJgr1ECjPo6pKap+iRU6jNZDciXJEtH/enfRqr6eJ0leStNP2iOKsOH2UFeTN6mbut9C
+        WQ9LJ/5nBfCjQTGqeFrJvhCvCRkV6kMSK8+/IXPoLFb4JSIDVN/ci1cDptV6vG+K2apeRNnBz5AoA
+        p/rvszKWyclRfxtRh8qpk4Q4Oj+9upBhZmHjazlYj8B1V4dQZ3Aj/CoK5NjPkue3mldexM85vrV72
+        EzH653MBnQIHCH/UHnClxekJlNE0PrKpfuHkUaEL/FeD0vmg1aJgaOycPzOxS8Lmw9bHKj3YOW5Je
+        gsCbEywA==;
+Received: from [2001:4bb8:188:1506:c70:4a89:bc61:2] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jZFCR-0007so-Ph; Thu, 14 May 2020 14:51:04 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: use symbol_get to create the magic ipv4/ipv6 tunnels
+Date:   Thu, 14 May 2020 16:50:57 +0200
+Message-Id: <20200514145101.3000612-1-hch@lst.de>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add BSD 2 Clause to the licensing.
+Hi Dave,
 
-CC: Rob Herring <robh@kernel.org>
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- Documentation/devicetree/bindings/net/ti,dp83869.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+both the ipv4 and ipv6 code have an ioctl each that can be used to create
+a tunnel using code that doesn't live in the core kernel or ipv6 module.
+Currently they call ioctls on the tunnel devices to create these, for
+which the code needs to override the address limit, which is a "feature"
+I plan to get rid of.
 
-diff --git a/Documentation/devicetree/bindings/net/ti,dp83869.yaml b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-index 6fe3e451da8a..5b69ef03bbf7 100644
---- a/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-@@ -1,4 +1,4 @@
--# SPDX-License-Identifier: GPL-2.0
-+# SPDX-License-Identifier: (GPL-2.0+ OR BSD-2-Clause)
- # Copyright (C) 2019 Texas Instruments Incorporated
- %YAML 1.2
- ---
--- 
-2.26.2
-
+Instead this patchset makes the ipip and sit modules export a function
+that can be used to create the tunnels, and then uses symbol_get in the
+core ipv4/ipv6 code to reference that function at runtime.
