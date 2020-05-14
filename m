@@ -2,52 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 507D11D3EC1
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C291D3EC3
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 22:13:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727900AbgENUMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 16:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727827AbgENUMa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 16:12:30 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D477EC061A0C;
-        Thu, 14 May 2020 13:12:30 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 745A5128D5B94;
-        Thu, 14 May 2020 13:12:30 -0700 (PDT)
-Date:   Thu, 14 May 2020 13:12:29 -0700 (PDT)
-Message-Id: <20200514.131229.1854195473777943633.davem@davemloft.net>
-To:     ubraun@linux.ibm.com
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, kgraul@linux.ibm.com
-Subject: Re: [PATCH net 1/1] MAINTAINERS: another add of Karsten Graul for
- S390 networking
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200514114512.101771-1-ubraun@linux.ibm.com>
-References: <20200514114512.101771-1-ubraun@linux.ibm.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 13:12:30 -0700 (PDT)
+        id S1727845AbgENUNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 16:13:32 -0400
+Received: from mga11.intel.com ([192.55.52.93]:64909 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726035AbgENUNc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 16:13:32 -0400
+IronPort-SDR: h9Mud6Lo+qaRmhktHMpCDU9VkS3Qb/Ro7Cbj/L4cQ3s5OWKGPXRMojwxp0j3p3uf+3ihJLj6po
+ ybyRSzvlffQg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2020 13:13:31 -0700
+IronPort-SDR: 6RB0XLfsC54rr7zSoOoyzqu6WBnCpB3NzCzZDNnNxUEkk2xQop5QdlkySWfj8ZZ27QF+XJPfgM
+ ZoZ6+88QWCKQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,392,1583222400"; 
+   d="scan'208";a="464656161"
+Received: from aabousam-mobl1.amr.corp.intel.com ([10.255.229.246])
+  by fmsmga006.fm.intel.com with ESMTP; 14 May 2020 13:13:31 -0700
+Date:   Thu, 14 May 2020 13:13:31 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@aabousam-mobl1.amr.corp.intel.com
+To:     Paolo Abeni <pabeni@redhat.com>
+cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Christoph Paasch <cpaasch@apple.com>
+Subject: Re: [PATCH net-next 1/3] mptcp: add new sock flag to deal with join
+ subflows
+In-Reply-To: <968fb022a824140c6761c755e916f4526fee0a29.1589383730.git.pabeni@redhat.com>
+Message-ID: <alpine.OSX.2.22.394.2005141258520.26234@aabousam-mobl1.amr.corp.intel.com>
+References: <cover.1589383730.git.pabeni@redhat.com> <968fb022a824140c6761c755e916f4526fee0a29.1589383730.git.pabeni@redhat.com>
+User-Agent: Alpine 2.22 (OSX 394 2020-01-19)
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ursula Braun <ubraun@linux.ibm.com>
-Date: Thu, 14 May 2020 13:45:12 +0200
 
-> Complete adding of Karsten as maintainer for all S390 networking
-> parts in the kernel.
-> 
-> Cc: Julian Wiedmann <jwi@linux.ibm.com>
-> Acked-by: Julian Wiedmann <jwi@linux.ibm.com>
-> Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
+Paolo -
 
-Applied, thanks.
+On Wed, 13 May 2020, Paolo Abeni wrote:
+
+> MP_JOIN subflows must not land into the accept queue.
+> Currently tcp_check_req() calls an mptcp specific helper
+> to detect such scenario.
+>
+> Such helper leverages the subflow context to check for
+> MP_JOIN subflows. We need to deal also with MP JOIN
+> failures, even when the subflow context is not available
+> due allocation failure.
+>
+> A possible solution would be changing the syn_recv_sock()
+> signature to allow returning a more descriptive action/
+> error code and deal with that in tcp_check_req().
+>
+> Since the above need is MPTCP specific, this patch instead
+> uses a TCP request socket hole to add a MPTCP specific flag.
+> Such flag is used by the MPTCP syn_recv_sock() to tell
+> tcp_check_req() how to deal with the request socket.
+>
+> This change is a no-op for !MPTCP build, and makes the
+> MPTCP code simpler. It allows also the next patch to deal
+> correctly with MP JOIN failure.
+>
+> RFC -> v1:
+> - move the drop_req bit inside tcp_request_sock (Eric)
+>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+> include/linux/tcp.h      |  3 +++
+> include/net/mptcp.h      | 17 ++++++++++-------
+> net/ipv4/tcp_minisocks.c |  2 +-
+> net/mptcp/protocol.c     |  7 -------
+> net/mptcp/subflow.c      |  2 ++
+> 5 files changed, 16 insertions(+), 15 deletions(-)
+>
+> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+> index e60db06ec28d..bf44e85d709d 100644
+> --- a/include/linux/tcp.h
+> +++ b/include/linux/tcp.h
+> @@ -120,6 +120,9 @@ struct tcp_request_sock {
+> 	u64				snt_synack; /* first SYNACK sent time */
+> 	bool				tfo_listener;
+> 	bool				is_mptcp;
+> +#if IS_ENABLED(CONFIG_MPTCP)
+> +	bool				drop_req;
+> +#endif
+> 	u32				txhash;
+> 	u32				rcv_isn;
+> 	u32				snt_isn;
+> diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+> index e60275659de6..c4a6ef4ba35b 100644
+> --- a/include/net/mptcp.h
+> +++ b/include/net/mptcp.h
+> @@ -68,6 +68,11 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
+> 	return tcp_rsk(req)->is_mptcp;
+> }
+>
+> +static inline bool rsk_drop_req(const struct request_sock *req)
+> +{
+> +	return tcp_rsk(req)->is_mptcp && tcp_rsk(req)->drop_req;
+> +}
+> +
+> void mptcp_space(const struct sock *ssk, int *space, int *full_space);
+> bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
+> 		       unsigned int *size, struct mptcp_out_options *opts);
+> @@ -121,8 +126,6 @@ static inline bool mptcp_skb_can_collapse(const struct sk_buff *to,
+> 				 skb_ext_find(from, SKB_EXT_MPTCP));
+> }
+>
+> -bool mptcp_sk_is_subflow(const struct sock *sk);
+> -
+> void mptcp_seq_show(struct seq_file *seq);
+> #else
+>
+> @@ -140,6 +143,11 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
+> 	return false;
+> }
+>
+> +static inline bool rsk_drop_req(const struct request_sock *req)
+> +{
+> +	return false;
+> +}
+> +
+> static inline void mptcp_parse_option(const struct sk_buff *skb,
+> 				      const unsigned char *ptr, int opsize,
+> 				      struct tcp_options_received *opt_rx)
+> @@ -190,11 +198,6 @@ static inline bool mptcp_skb_can_collapse(const struct sk_buff *to,
+> 	return true;
+> }
+>
+> -static inline bool mptcp_sk_is_subflow(const struct sock *sk)
+> -{
+> -	return false;
+> -}
+> -
+> static inline void mptcp_space(const struct sock *ssk, int *s, int *fs) { }
+> static inline void mptcp_seq_show(struct seq_file *seq) { }
+> #endif /* CONFIG_MPTCP */
+> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+> index 7e40322cc5ec..495dda2449fe 100644
+> --- a/net/ipv4/tcp_minisocks.c
+> +++ b/net/ipv4/tcp_minisocks.c
+> @@ -774,7 +774,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+> 	if (!child)
+> 		goto listen_overflow;
+>
+> -	if (own_req && sk_is_mptcp(child) && mptcp_sk_is_subflow(child)) {
+> +	if (own_req && rsk_drop_req(req)) {
+> 		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
+> 		inet_csk_reqsk_queue_drop_and_put(sk, req);
+> 		return child;
+> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> index 6a812dd8b6b6..b974898eb6b5 100644
+> --- a/net/mptcp/protocol.c
+> +++ b/net/mptcp/protocol.c
+> @@ -1687,13 +1687,6 @@ bool mptcp_finish_join(struct sock *sk)
+> 	return ret;
+> }
+>
+> -bool mptcp_sk_is_subflow(const struct sock *sk)
+> -{
+> -	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+> -
+> -	return subflow->mp_join == 1;
+> -}
+> -
+> static bool mptcp_memory_free(const struct sock *sk, int wake)
+> {
+> 	struct mptcp_sock *msk = mptcp_sk(sk);
+> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+> index 009d5c478062..42a8a650ff20 100644
+> --- a/net/mptcp/subflow.c
+> +++ b/net/mptcp/subflow.c
+> @@ -500,6 +500,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+> 			ctx->remote_key = mp_opt.sndr_key;
+> 			ctx->fully_established = mp_opt.mp_capable;
+> 			ctx->can_ack = mp_opt.mp_capable;
+> +			tcp_rsk(req)->drop_req = false;
+> 		} else if (ctx->mp_join) {
+> 			struct mptcp_sock *owner;
+>
+> @@ -512,6 +513,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+> 				goto close_child;
+>
+> 			SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINACKRX);
+> +			tcp_rsk(req)->drop_req = true;
+> 		}
+
+It looks like tcp_rsk(req)->drop_req gets initialized when the 
+ctx->mp_capable and ctx->mp_join values are set as expected, but it's hard 
+to tell if it's guaranteed to be initialized in every corner case (any 
+allocation or token failures, unexpected input, etc.).
+
+Patch 3 will set drop_req for some cases, but does it makes sense to 
+set tcp_rsk(req)->drop_req in subflow_v{4,6}_init_req() here as an 
+additional 'else' clause?
+
+> 	}
+>
+> -- 
+> 2.21.3
+>
+>
+
+--
+Mat Martineau
+Intel
