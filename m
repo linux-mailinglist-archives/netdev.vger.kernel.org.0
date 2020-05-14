@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F68D1D2E8D
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 13:41:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A28F41D2E89
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 13:40:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgENLkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 07:40:47 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39807 "EHLO
+        id S1726192AbgENLkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 07:40:40 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:34146 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726225AbgENLkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 07:40:46 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
+        with ESMTP id S1726073AbgENLkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 07:40:39 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 14 May 2020 14:40:36 +0300
 Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04EBeZKc031451;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 04EBeZKd031451;
         Thu, 14 May 2020 14:40:36 +0300
 From:   Vlad Buslov <vladbu@mellanox.com>
 To:     netdev@vger.kernel.org
@@ -22,9 +22,9 @@ Cc:     davem@davemloft.net, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
         jiri@resnulli.us, dcaratti@redhat.com, marcelo.leitner@gmail.com,
         Vlad Buslov <vladbu@mellanox.com>,
         Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next 2/4] net: sched: implement terse dump support in act
-Date:   Thu, 14 May 2020 14:40:24 +0300
-Message-Id: <20200514114026.27047-3-vladbu@mellanox.com>
+Subject: [PATCH net-next 3/4] net: sched: cls_flower: implement terse dump support
+Date:   Thu, 14 May 2020 14:40:25 +0300
+Message-Id: <20200514114026.27047-4-vladbu@mellanox.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20200514114026.27047-1-vladbu@mellanox.com>
 References: <20200514114026.27047-1-vladbu@mellanox.com>
@@ -35,165 +35,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend tcf_action_dump() with boolean argument 'terse' that is used to
-request terse-mode action dump. In terse mode only essential data needed to
-identify particular action (action kind, cookie, etc.) and its stats is put
-to resulting skb and everything else is omitted. Implement
-tcf_exts_terse_dump() helper in cls API that is intended to be used to
-request terse dump of all exts (actions) attached to the filter.
+Implement tcf_proto_ops->terse_dump() callback for flower classifier. Only
+dump handle, flags and action data in terse mode.
 
 Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/net/act_api.h |  2 +-
- include/net/pkt_cls.h |  1 +
- net/sched/act_api.c   | 30 +++++++++++++++++++++++-------
- net/sched/cls_api.c   | 29 ++++++++++++++++++++++++++++-
- 4 files changed, 53 insertions(+), 9 deletions(-)
+ net/sched/cls_flower.c | 43 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index c24d7643548e..1b4bfc4437be 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -193,7 +193,7 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
- 				    bool rtnl_held,
- 				    struct netlink_ext_ack *extack);
- int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[], int bind,
--		    int ref);
-+		    int ref, bool terse);
- int tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int, int);
- int tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int, int);
- 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 04aa0649f3b0..ed65619cbc47 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -325,6 +325,7 @@ int tcf_exts_validate(struct net *net, struct tcf_proto *tp,
- void tcf_exts_destroy(struct tcf_exts *exts);
- void tcf_exts_change(struct tcf_exts *dst, struct tcf_exts *src);
- int tcf_exts_dump(struct sk_buff *skb, struct tcf_exts *exts);
-+int tcf_exts_terse_dump(struct sk_buff *skb, struct tcf_exts *exts);
- int tcf_exts_dump_stats(struct sk_buff *skb, struct tcf_exts *exts);
- 
- /**
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index fbbec2e562f5..8ac7eb0a8309 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -766,12 +766,10 @@ tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
- 	return a->ops->dump(skb, a, bind, ref);
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 74a0febcafb8..0c574700da75 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -2768,6 +2768,48 @@ static int fl_dump(struct net *net, struct tcf_proto *tp, void *fh,
+ 	return -1;
  }
  
--int
--tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
-+static int
-+tcf_action_dump_terse(struct sk_buff *skb, struct tc_action *a)
- {
--	int err = -EINVAL;
- 	unsigned char *b = skb_tail_pointer(skb);
--	struct nlattr *nest;
- 	struct tc_cookie *cookie;
- 
- 	if (nla_put_string(skb, TCA_KIND, a->ops->kind))
-@@ -789,6 +787,23 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
- 	}
- 	rcu_read_unlock();
- 
-+	return 0;
-+
-+nla_put_failure:
-+	nlmsg_trim(skb, b);
-+	return -1;
-+}
-+
-+int
-+tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
++static int fl_terse_dump(struct net *net, struct tcf_proto *tp, void *fh,
++			 struct sk_buff *skb, struct tcmsg *t, bool rtnl_held)
 +{
-+	int err = -EINVAL;
-+	unsigned char *b = skb_tail_pointer(skb);
++	struct cls_fl_filter *f = fh;
 +	struct nlattr *nest;
++	bool skip_hw;
 +
-+	if (tcf_action_dump_terse(skb, a))
-+		goto nla_put_failure;
++	if (!f)
++		return skb->len;
 +
- 	if (a->hw_stats != TCA_ACT_HW_STATS_ANY &&
- 	    nla_put_bitfield32(skb, TCA_ACT_HW_STATS,
- 			       a->hw_stats, TCA_ACT_HW_STATS_ANY))
-@@ -820,7 +835,7 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
- EXPORT_SYMBOL(tcf_action_dump_1);
- 
- int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[],
--		    int bind, int ref)
-+		    int bind, int ref, bool terse)
- {
- 	struct tc_action *a;
- 	int err = -EINVAL, i;
-@@ -831,7 +846,8 @@ int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[],
- 		nest = nla_nest_start_noflag(skb, i + 1);
- 		if (nest == NULL)
- 			goto nla_put_failure;
--		err = tcf_action_dump_1(skb, a, bind, ref);
-+		err = terse ? tcf_action_dump_terse(skb, a) :
-+			tcf_action_dump_1(skb, a, bind, ref);
- 		if (err < 0)
- 			goto errout;
- 		nla_nest_end(skb, nest);
-@@ -1133,7 +1149,7 @@ static int tca_get_fill(struct sk_buff *skb, struct tc_action *actions[],
- 	if (!nest)
- 		goto out_nlmsg_trim;
- 
--	if (tcf_action_dump(skb, actions, bind, ref) < 0)
-+	if (tcf_action_dump(skb, actions, bind, ref, false) < 0)
- 		goto out_nlmsg_trim;
- 
- 	nla_nest_end(skb, nest);
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index d754f2718914..4d83d503f680 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3181,7 +3181,8 @@ int tcf_exts_dump(struct sk_buff *skb, struct tcf_exts *exts)
- 			if (nest == NULL)
- 				goto nla_put_failure;
- 
--			if (tcf_action_dump(skb, exts->actions, 0, 0) < 0)
-+			if (tcf_action_dump(skb, exts->actions, 0, 0, false)
-+			    < 0)
- 				goto nla_put_failure;
- 			nla_nest_end(skb, nest);
- 		} else if (exts->police) {
-@@ -3205,6 +3206,32 @@ int tcf_exts_dump(struct sk_buff *skb, struct tcf_exts *exts)
- }
- EXPORT_SYMBOL(tcf_exts_dump);
- 
-+int tcf_exts_terse_dump(struct sk_buff *skb, struct tcf_exts *exts)
-+{
-+#ifdef CONFIG_NET_CLS_ACT
-+	struct nlattr *nest;
++	t->tcm_handle = f->handle;
 +
-+	if (!exts->action || !tcf_exts_has_actions(exts))
-+		return 0;
-+
-+	nest = nla_nest_start_noflag(skb, exts->action);
++	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
 +	if (!nest)
 +		goto nla_put_failure;
 +
-+	if (tcf_action_dump(skb, exts->actions, 0, 0, true) < 0)
-+		goto nla_put_failure;
-+	nla_nest_end(skb, nest);
-+	return 0;
++	spin_lock(&tp->lock);
 +
++	skip_hw = tc_skip_hw(f->flags);
++
++	if (f->flags && nla_put_u32(skb, TCA_FLOWER_FLAGS, f->flags))
++		goto nla_put_failure_locked;
++
++	spin_unlock(&tp->lock);
++
++	if (!skip_hw)
++		fl_hw_update_stats(tp, f, rtnl_held);
++
++	if (tcf_exts_terse_dump(skb, &f->exts))
++		goto nla_put_failure;
++
++	nla_nest_end(skb, nest);
++
++	return skb->len;
++
++nla_put_failure_locked:
++	spin_unlock(&tp->lock);
 +nla_put_failure:
 +	nla_nest_cancel(skb, nest);
 +	return -1;
-+#else
-+	return 0;
-+#endif
 +}
-+EXPORT_SYMBOL(tcf_exts_terse_dump);
 +
- 
- int tcf_exts_dump_stats(struct sk_buff *skb, struct tcf_exts *exts)
+ static int fl_tmplt_dump(struct sk_buff *skb, struct net *net, void *tmplt_priv)
  {
+ 	struct fl_flow_tmplt *tmplt = tmplt_priv;
+@@ -2832,6 +2874,7 @@ static struct tcf_proto_ops cls_fl_ops __read_mostly = {
+ 	.hw_add		= fl_hw_add,
+ 	.hw_del		= fl_hw_del,
+ 	.dump		= fl_dump,
++	.terse_dump	= fl_terse_dump,
+ 	.bind_class	= fl_bind_class,
+ 	.tmplt_create	= fl_tmplt_create,
+ 	.tmplt_destroy	= fl_tmplt_destroy,
 -- 
 2.21.0
 
