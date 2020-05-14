@@ -2,104 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EBE51D252E
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 04:43:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BFCF1D2567
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 05:28:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726066AbgENCnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 22:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
+        id S1725952AbgEND2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 23:28:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725932AbgENCnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 22:43:45 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB6EC061A0F
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 19:43:45 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id d21so1777682ljg.9
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 19:43:45 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725932AbgEND2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 May 2020 23:28:31 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE8EC061A0C;
+        Wed, 13 May 2020 20:28:31 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id z80so1750655qka.0;
+        Wed, 13 May 2020 20:28:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=L3In83ZNtvhCqrpK0vVjzsKNvprMyvL+zJ9ohua4z10=;
-        b=RJxI7nc5/+qicT+av7MVnCPyCWQNYqEmo+1I8aEDjYrcgsKm1JO+ximEumc2BGCHG6
-         IRKjgEiRjwQuoza3oL4WOrhIpbRc8zh7pT5r3iUQzrEjc7+dcHsaKetaMFqukCgIbr+Y
-         1swtCFlefWtGVUfsLBR/jTXuJr1SgZ0x45QhE=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=U6W+r5c8ovMrF0z73K8Er6Wd4+8Nosbg+auclRIfIos=;
+        b=o0iNI2Olf2IOyuGxWubB+iFpYCVvBJbk4a6mDyVyQmhznbHtTH653YfWBbT65GTw18
+         YvSBTpDqauQMUKykr2/Z0WNtDU2P7Ivt6bFbGWUOkEYG8GZwfWQxPpJ457IAqETG/3eI
+         D6P/Vx9vXApI7gVLteSZope7ihAYv3ybdp+pmWck7xkTT7vpmh78Wve2pTw3FOltsSiX
+         N2cuJNZe9+mihoUr3Vgkn1sImHCjmKHbcpAnh5MJn4D203HHx93kDVPqvth6MjccU8vI
+         wdYi0eOr2Vv13eEwB3kHyYWeTWXwQ8hDSSOrUSmG8b9pfE+fR8p2sN0pXsazK0QVjOuG
+         Du3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=L3In83ZNtvhCqrpK0vVjzsKNvprMyvL+zJ9ohua4z10=;
-        b=FMDlHN/QWMJ1dvGKcrkiCiJQWQZ5zyLnqN07K0ni6aqSy0pxE1WAT5f1y/7faMAROT
-         hjHTSfzG0xKuNwmxOrY8wsQXlUvbkFUri+W3r986I6gQMnpi3tn+q9/121FOJEeKPrP9
-         VPQKlZY+PnI7meG6SvRqg8rd2Um39NtnTBQSFX7d5+fun6Hm0KmO1js5jMSFma2vrBE+
-         bFw6iBjkHOzXWfW5AAMlVJAMdIZsRiDKlMlJE/NakDx+iYfWruHFHoW6cJCnF9nzuoLD
-         GLgTE60orqeoqI4p/8dXJffMlCryUg+hfKC955DFwSgbtsnhsMWvBQn2GpmjGFMAJ8qf
-         w/eQ==
-X-Gm-Message-State: AOAM531wxYnJ1avZAGTypL3Ayn4n/D31dOP2cvklDA0Yu59FTgfGFLoX
-        yp47aU0aqvIYSUJ1pwsTDOb8zTUYJ3Q=
-X-Google-Smtp-Source: ABdhPJxf8KFTUjQDQWMNQGDYH9GmZl5o34yvstfTY/UVlM2aVh09Tqwo+igKJRv7Ua3l7O5X3oX9iw==
-X-Received: by 2002:a2e:740f:: with SMTP id p15mr1208812ljc.151.1589424222791;
-        Wed, 13 May 2020 19:43:42 -0700 (PDT)
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
-        by smtp.gmail.com with ESMTPSA id c19sm787300lfh.42.2020.05.13.19.43.40
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=U6W+r5c8ovMrF0z73K8Er6Wd4+8Nosbg+auclRIfIos=;
+        b=aD2OyReAYamm5nQj+xO9hU9J3RV96ixeGlJC/JLgv3FKB6tXZdu/ipqG9nFcVo2LMz
+         rNk09cYUCRiEo+AOyomcCnGWyxxenVenVRs2xVbjmfvixnXV37xFhbi5eCupJ0naP/Fb
+         d53SCJzF+LysLKbBSNPsvMzeaaZMvTYeAOvIFyr4emQoxnfVRcpt8xFqsVHYQKmNgb8d
+         YXhmRHqvwUOYnRdYBcY2CGviDnUqRsDxiCeVz80nBFe6Bmok92qu13/Q7XdGJciPAM1N
+         3OdcIWmPTvIdgKpU3eNk7D8EIaMuuoWZlKoMN6FRYbmLcWPOvP99lsSpsr92+ikmlLJ4
+         5QAA==
+X-Gm-Message-State: AOAM531ovmO/MzY8mUvhK2Ysi9l7UaEIfctH0NoDLqflAVKd4KDEse8p
+        cp1gSgUxJ/Cds5WS3d6DUaJQpu4B
+X-Google-Smtp-Source: ABdhPJwbsyNyv9m94bu21XovkCUMko7nms7maiJte9nQ8zdbo0mUm+bJ016dPv+VLv/OLS+UjHNNVw==
+X-Received: by 2002:ae9:efc1:: with SMTP id d184mr3056753qkg.437.1589426910015;
+        Wed, 13 May 2020 20:28:30 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:3140:7ba:69e7:d3b1? ([2601:282:803:7700:3140:7ba:69e7:d3b1])
+        by smtp.googlemail.com with ESMTPSA id m7sm1597579qti.6.2020.05.13.20.28.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 May 2020 19:43:40 -0700 (PDT)
-Received: by mail-lf1-f42.google.com with SMTP id z22so1315692lfd.0
-        for <netdev@vger.kernel.org>; Wed, 13 May 2020 19:43:40 -0700 (PDT)
-X-Received: by 2002:a19:6e4e:: with SMTP id q14mr1567307lfk.192.1589424220085;
- Wed, 13 May 2020 19:43:40 -0700 (PDT)
+        Wed, 13 May 2020 20:28:29 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 1/3] ss: introduce cgroup2 cache and
+ helper functions
+To:     =?UTF-8?B?0JTQvNC40YLRgNC40Lkg0K/QutGD0L3QuNC9?= 
+        <zeil@yandex-team.ru>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>
+References: <20200509165202.17959-1-zeil@yandex-team.ru>
+ <42814b4f-dc95-d246-47a4-2b8c46dd607e@gmail.com>
+ <25511589354341@mail.yandex-team.ru>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c3221491-18e9-4de5-961c-38b9ac184601@gmail.com>
+Date:   Wed, 13 May 2020 21:28:28 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200513160038.2482415-1-hch@lst.de> <20200513160038.2482415-12-hch@lst.de>
- <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
- <20200513192804.GA30751@lst.de> <0c1a7066-b269-9695-b94a-bb5f4f20ebd8@iogearbox.net>
- <20200514082054.f817721ce196f134e6820644@kernel.org> <CAHk-=wjBKGLyf1d53GwfUTZiK_XPdujwh+u2XSpD2HWRV01Afw@mail.gmail.com>
- <20200514100009.a8e6aa001f0ace5553c7904f@kernel.org>
-In-Reply-To: <20200514100009.a8e6aa001f0ace5553c7904f@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 13 May 2020 19:43:24 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjP8ysEZnNFi_+E1ZEFGpcbAN8kbYHrCnC93TX6XX+jEQ@mail.gmail.com>
-Message-ID: <CAHk-=wjP8ysEZnNFi_+E1ZEFGpcbAN8kbYHrCnC93TX6XX+jEQ@mail.gmail.com>
-Subject: Re: [PATCH 11/18] maccess: remove strncpy_from_unsafe
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Christoph Hellwig <hch@lst.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org,
-        linux-um <linux-um@lists.infradead.org>,
-        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <25511589354341@mail.yandex-team.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 6:00 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> > But we should likely at least disallow it entirely on platforms where
-> > we really can't - or pick one hardcoded choice. On sparc, you really
-> > _have_ to specify one or the other.
->
-> OK. BTW, is there any way to detect the kernel/user space overlap on
-> memory layout statically? If there, I can do it. (I don't like
-> "if (CONFIG_X86)" thing....)
-> Or, maybe we need CONFIG_ARCH_OVERLAP_ADDRESS_SPACE?
+On 5/13/20 1:27 AM, Дмитрий Якунин wrote:
+> 
+> 
+> 13.05.2020, 05:03, "David Ahern" <dsahern@gmail.com>:
+>> On 5/9/20 10:52 AM, Dmitry Yakunin wrote:
+>>>  This patch prepares infrastructure for matching sockets by cgroups.
+>>>  Two helper functions are added for transformation between cgroup v2 ID
+>>>  and pathname. Cgroup v2 cache is implemented as hash table indexed by ID.
+>>>  This cache is needed for faster lookups of socket cgroup.
+>>>
+>>>  v2:
+>>>    - style fixes (David Ahern)
+>>
+>> you missed my other comment about this set. Running this new command on
+>> a kernel without support should give the user a better error message
+>> than a string of Invalid arguments:
+>>
+>> $ uname -r
+>> 5.3.0-51-generic
+>>
+>> $ ss -a cgroup /sys/fs/cgroup/unified
+>> RTNETLINK answers: Invalid argument
+>> RTNETLINK answers: Invalid argument
+>> RTNETLINK answers: Invalid argument
+>> RTNETLINK answers: Invalid argument
+>> RTNETLINK answers: Invalid argument
+>> RTNETLINK answers: Invalid argument
+>> RTNETLINK answers: Invalid argument
+>> RTNETLINK answers: Invalid argument
+>> RTNETLINK answers: Invalid argument
+> 
+> No, i didn't miss your comment. This patchset was extended with the third patch which includes bytecode filter checking.
+> 
 
-I think it would be better to have a CONFIG variable that
-architectures can just 'select' to show that they are ok with separate
-kernel and user addresses.
+ok. missed that. applied to iproute2-next.
 
-Because I don't think we have any way to say that right now as-is. You
-can probably come up with hacky ways to approximate it, ie something
-like
-
-    if (TASK_SIZE_MAX > PAGE_OFFSET)
-        .... they overlap ..
-
-which would almost work, but..
-
-                 Linus
+in the future, please provide a cover letter
