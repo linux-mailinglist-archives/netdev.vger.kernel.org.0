@@ -2,118 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 524321D31D6
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 15:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 122351D3209
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 16:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726161AbgENNx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 09:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726011AbgENNx2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 09:53:28 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE79C061A0C
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 06:53:28 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id r22so1262440pga.12
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 06:53:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=MZSp0YwiO2rsC2nKIM503+bxDjAtfKmJYZ3o95i/lPs=;
-        b=cJFAY7WCXYnEbrXhasmao6UCv9i1mZAJfRA+rdc+NKz0UOYBVOA7j+X8iPhSdYtF38
-         zep0c9iJjRkXjihZocX/qzBLTBqR4b08mLq4ZTDUMPAQCbq5hSNpAp8F+3crPDvlvNsM
-         OprcNpwI1OLQse3gDglQCKgO2pUpx62jKqihrYzrkhU6TNndeb/mw3D9e6qGpWln7FkE
-         tED4zfD7J4lfnsmqMGIGqFiRQwZ4X18GB8ieeUspQm22OGKL5ohnWLrdeXuaWGkK3q7D
-         6Zj3Pf2qa4SAkUDyBhSa0SikwAcsN7HRtxmxUFtA141m0d6HUOI/EEprVeNfhX05gnMO
-         UYGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=MZSp0YwiO2rsC2nKIM503+bxDjAtfKmJYZ3o95i/lPs=;
-        b=tPp++wJ64omiwmL9OjcdYu+mUCxDt8K16+/UYzl5cg3STy2NQ1mEB+n9eMSz5hnkL6
-         s2HCkBQqVQvDgtU49hr+mU7zVMWmmVKbwesBhA9gY20qSdwfvC/J8rX7YGQejB+p9Hd4
-         LuBIs3D1xRkznj0cNw3vQ1gmGxfnQcwhOnnwCOjbs2rI0l6n0u3NKosCj5aTmgZRykBD
-         zuSK68T8uiMlrYKpqxYpSsCZmwOG8U74TsgYT59z+JCYKnGWbgh1nlp+5h5T/yVZCnJO
-         gi93nPrkNmfCSkg1uoghSMku8fXWdYVBM6pD7E1paGQfsmFk/vOQ2+urEPEbn+30qpL5
-         f7Jw==
-X-Gm-Message-State: AOAM532oa+uwJL8HfPftzT923ILNap5lbjavwh0Pbi9kcYdw8YQueW7d
-        mh9OJKWcn5EbfTXSkvsCcYQ=
-X-Google-Smtp-Source: ABdhPJz/TwfWFlDHi5SIZ70MrTL+5bc2ATQEjG9ATTB3erLte/u4QIiTGbehCM4Bnh36A60bzLDBFw==
-X-Received: by 2002:a62:5289:: with SMTP id g131mr4757956pfb.318.1589464407997;
-        Thu, 14 May 2020 06:53:27 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id y8sm2419184pfg.216.2020.05.14.06.53.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2020 06:53:27 -0700 (PDT)
-Date:   Thu, 14 May 2020 06:53:25 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Olivier Dautricourt <olivier.dautricourt@orolia.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/3] Patch series for a PTP Grandmaster use case using
- stmmac/gmac3 ptp clock
-Message-ID: <20200514135325.GB18838@localhost>
-References: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
+        id S1726166AbgENOC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 10:02:28 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:52364 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbgENOC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 10:02:27 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 49NCsY75jVz1qs4B;
+        Thu, 14 May 2020 16:02:14 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 49NCsL0KQmz1qspS;
+        Thu, 14 May 2020 16:02:14 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id rSFQDmODC4Kp; Thu, 14 May 2020 16:02:12 +0200 (CEST)
+X-Auth-Info: SyB8dx9dZL2+07cn8sMw41PxtEnVb2A5FB4CPg0qRnc=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu, 14 May 2020 16:02:12 +0200 (CEST)
+Subject: Re: [PATCH V5 18/19] net: ks8851: Implement Parallel bus operations
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+References: <20200514000747.159320-1-marex@denx.de>
+ <20200514000747.159320-19-marex@denx.de> <20200514015753.GL527401@lunn.ch>
+ <5dbab44d-de45-f8e2-b4e4-4be15408657e@denx.de>
+ <20200514131527.GN527401@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <16f60604-f3e9-1391-ff47-37c40ab9c6f7@denx.de>
+Date:   Thu, 14 May 2020 16:00:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200514131527.GN527401@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 14, 2020 at 12:28:05PM +0200, Olivier Dautricourt wrote:
-> This patch series covers a use case where an embedded system is
-> disciplining an internal clock to a GNSS signal, which provides a
-> stable frequency, and wants to act as a PTP Grandmaster by disciplining
-> a ptp clock to this internal clock.
+On 5/14/20 3:15 PM, Andrew Lunn wrote:
+> On Thu, May 14, 2020 at 04:26:30AM +0200, Marek Vasut wrote:
+>> On 5/14/20 3:57 AM, Andrew Lunn wrote:
+>>>> diff --git a/drivers/net/ethernet/micrel/ks8851_par.c b/drivers/net/ethernet/micrel/ks8851_par.c
+>>>> new file mode 100644
+>>>> index 000000000000..90fffacb1695
+>>>> --- /dev/null
+>>>> +++ b/drivers/net/ethernet/micrel/ks8851_par.c
+>>>> @@ -0,0 +1,348 @@
+>>>> +// SPDX-License-Identifier: GPL-2.0-only
+>>>> +/* drivers/net/ethernet/micrel/ks8851.c
+>>>> + *
+>>>> + * Copyright 2009 Simtec Electronics
+>>>> + *	http://www.simtec.co.uk/
+>>>> + *	Ben Dooks <ben@simtec.co.uk>
+>>>> + */
+>>>> +
+>>>> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>>>> +
+>>>> +#define DEBUG
+>>>
+>>> I don't think you wanted that left in.
+>>
+>> This actually was in the original ks8851.c since forever, so I wonder.
+>> Maybe a separate patch would be better ?
+> 
+> Yes, please add another patch.
 
-Have you seen the new GM patch series on the linuxptp-devel mailing
-list?  You may find it interesting...
- 
-> In our setup a 10Mhz oscillator is frequency adjusted so that a derived
-> pps from that oscillator is in phase with the pps generated by 
-> a gnss receiver.
-> 
-> An other derived clock from the same disciplined oscillator is used as
-> ptp_clock for the ethernet mac.
-> 
-> The internal pps of the system is forwarded to one of the auxiliary inputs
-> of the MAC.
-> 
-> Initially the mac time registers are considered random.
-> We want the mac nanosecond field to be 0 on the auxiliary pps input edge.
-> 
-> 
-> PATCH 1/3: 
-> 	The stmmac gmac3 version used in the setup is patched to retrieve a
-> 	timestamp at the rising edge of the aux input and to forward
-> 	it to userspace.
-> 
-> * What matters here is that we get the subsecond offset between the aux 
-> edge and the edge of the PHC's pps. *
-> 
-> 
-> PATCH 2,3/3:
-> 
-> 	We want the ptp clock to be in time with our aux pps input.
-> 	Since the ptp clock is derived from the system oscillator, we
-> 	don't want to do frequency adjustements.
-> 
-> 	The stmmac driver is patched to allow to set the coarse correction
-> 	mode which avoid to adjust the frequency of the mac continuously
-> 	(the default behavior), but instead, have just one
-> 	time adjustment.
+OK
 
-You can use the new ts2phc program (in the linuxptp-devel patch
-series, soon to be merged) by configuring it to use the nullf servo.
+>>>> +		ks8851_done_tx(ks, skb);
+>>>> +	} else {
+>>>> +		ret = NETDEV_TX_BUSY;
+>>>> +	}
+>>>> +
+>>>> +	ks8851_unlock_par(ks, &flags);
+>>>> +
+>>>> +	return ret;
+>>>> +}
+>>>
+>>>> +module_param_named(message, msg_enable, int, 0);
+>>>> +MODULE_PARM_DESC(message, "Message verbosity level (0=none, 31=all)");
+>>>
+>>> Module parameters are bad. A new driver should not have one, if
+>>> possible. Please implement the ethtool .get_msglevel and .set_msglevel
+>>> instead.
+>>
+>> This was in the original ks8851.c , so I need to retain it , no ?
+> 
+> Ah. Err.
+> 
+> This patch looks like a new driver. It has probe, remove
+> module_platform_driver(), etc. So as a new driver, it should not have
+> module parameters.
+> 
+> But then your next patch removes the mll driver. Your intention is
+> that this driver replaces the mll driver. So for backwards
+> compatibility, yes you do need the module parameter.
 
-Thanks,
-Richard
+All right
 
+btw is jiffies-based timeout OK? Like this:
+
+diff --git a/drivers/net/ethernet/micrel/ks8851_par.c
+b/drivers/net/ethernet/micrel/ks8851_par.c
+index 5163d10971f4..1d9e7a33ffcf 100644
+--- a/drivers/net/ethernet/micrel/ks8851_par.c
++++ b/drivers/net/ethernet/micrel/ks8851_par.c
+@@ -238,6 +238,7 @@ static netdev_tx_t ks8851_start_xmit_par(struct
+sk_buff *skb,
+                                         struct net_device *dev)
+ {
+        struct ks8851_net *ks = netdev_priv(dev);
++       unsigned long txpoll_start_time;
+        netdev_tx_t ret = NETDEV_TX_OK;
+        unsigned long flags;
+        u16 txmir;
+@@ -254,8 +255,20 @@ static netdev_tx_t ks8851_start_xmit_par(struct
+sk_buff *skb,
+                ks8851_wrfifo_par(ks, skb, false);
+                ks8851_wrreg16_par(ks, KS_RXQCR, ks->rc_rxqcr);
+                ks8851_wrreg16_par(ks, KS_TXQCR, TXQCR_METFE);
+-               while (ks8851_rdreg16_par(ks, KS_TXQCR) & TXQCR_METFE)
+-                       ;
++
++               txpoll_start_time = jiffies;
++               while (true) {
++                       if (!(ks8851_rdreg16_par(ks, KS_TXQCR) &
+TXQCR_METFE))
++                               break;
++
++                       if (time_after(jiffies, txpoll_start_time + HZ)) {
++                               netdev_warn(dev, "%s: did not complete.\n",
++                                           __func__);
++                               ret = NETDEV_TX_BUSY;
++                               break;
++                       }
++               }
++
+                ks8851_done_tx(ks, skb);
+        } else {
+                ret = NETDEV_TX_BUSY;
