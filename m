@@ -2,63 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 997861D2456
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 02:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC25C1D2474
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 03:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726032AbgENAzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 May 2020 20:55:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59276 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725942AbgENAzb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 May 2020 20:55:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=d+prNKplLXd2K9h6jzjwwwsYEMWulaw2jkRS28BAZlg=; b=N9neC9QrZURYUQnJBGGMdzVmMU
-        wq3wW4mXPiTBYbdmLaZi1X0jizCYfXL+gzqcddxmvdv4dfGfoDkvcQD2hPaUmyOKmmNISb1eNTWDF
-        K4VsGmu4NGxBsyvc/nEJP+uhm+TuaEcm93jKglfb/eG4CgcQfWk4sxIJvn4QahtBGVJ4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jZ29p-002EH6-BH; Thu, 14 May 2020 02:55:29 +0200
-Date:   Thu, 14 May 2020 02:55:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH V5 08/19] net: ks8851: Use 16-bit writes to program MAC
- address
-Message-ID: <20200514005529.GE527401@lunn.ch>
-References: <20200514000747.159320-1-marex@denx.de>
- <20200514000747.159320-9-marex@denx.de>
+        id S1726098AbgENBJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 May 2020 21:09:02 -0400
+Received: from 220-134-220-36.HINET-IP.hinet.net ([220.134.220.36]:52993 "EHLO
+        ns.kevlo.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725943AbgENBJB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 May 2020 21:09:01 -0400
+Received: from ns.kevlo.org (localhost [127.0.0.1])
+        by ns.kevlo.org (8.15.2/8.15.2) with ESMTPS id 04E0vaXM094977
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 14 May 2020 08:57:37 +0800 (CST)
+        (envelope-from kevlo@ns.kevlo.org)
+Received: (from kevlo@localhost)
+        by ns.kevlo.org (8.15.2/8.15.2/Submit) id 04E0vYvb094976;
+        Thu, 14 May 2020 08:57:34 +0800 (CST)
+        (envelope-from kevlo)
+Date:   Thu, 14 May 2020 08:57:33 +0800
+From:   Kevin Lo <kevlo@kevlo.org>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net-next] net: phy: broadcom: fix BCM54XX_SHD_SCR3_TRDDAPD
+ value for BCM54810
+Message-ID: <20200514005733.GA94953@ns.kevlo.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200514000747.159320-9-marex@denx.de>
+User-Agent: Mutt/1.8.0 (2017-02-23)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 14, 2020 at 02:07:36AM +0200, Marek Vasut wrote:
-> On the SPI variant of KS8851, the MAC address can be programmed with
-> either 8/16/32-bit writes. To make it easier to support the 16-bit
-> parallel option of KS8851 too, switch both the MAC address programming
-> and readout to 16-bit operations.
-> 
-> Remove ks8851_wrreg8() as it is not used anywhere anymore.
-> 
-> There should be no functional change.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Lukas Wunner <lukas@wunner.de>
-> Cc: Petr Stetiar <ynezz@true.cz>
-> Cc: YueHaibing <yuehaibing@huawei.com>
+Set the correct bit when checking for PHY_BRCM_DIS_TXCRXC_NOENRGY on the 
+BCM54810 PHY.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Signed-off-by: Kevin Lo <kevlo@kevlo.org>
+---
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index 97201d5cf007..45d0aefb964c 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -225,8 +225,12 @@ static void bcm54xx_adjust_rxrefclk(struct phy_device *phydev)
+ 	else
+ 		val |= BCM54XX_SHD_SCR3_DLLAPD_DIS;
+ 
+-	if (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY)
+-		val |= BCM54XX_SHD_SCR3_TRDDAPD;
++	if (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY) {
++		if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54810)
++			val |= BCM54810_SHD_SCR3_TRDDAPD;
++		else
++			val |= BCM54XX_SHD_SCR3_TRDDAPD;
++	}
+ 
+ 	if (orig != val)
+ 		bcm_phy_write_shadow(phydev, BCM54XX_SHD_SCR3, val);
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index d41624db6de2..1d339a862f7b 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -255,6 +255,7 @@
+ #define BCM54810_EXP_BROADREACH_LRE_MISC_CTL_EN	(1 << 0)
+ #define BCM54810_SHD_CLK_CTL			0x3
+ #define BCM54810_SHD_CLK_CTL_GTXCLK_EN		(1 << 9)
++#define BCM54810_SHD_SCR3_TRDDAPD		0x0100
+ 
+ /* BCM54612E Registers */
+ #define BCM54612E_EXP_SPARE0		(MII_BCM54XX_EXP_SEL_ETC + 0x34)
