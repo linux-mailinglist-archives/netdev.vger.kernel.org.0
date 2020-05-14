@@ -2,77 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 723321D2C86
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 12:23:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48DB81D2C9D
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 12:26:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726444AbgENKWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 06:22:36 -0400
-Received: from www62.your-server.de ([213.133.104.62]:32966 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726202AbgENKWI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 06:22:08 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZAzy-0007F0-Dx; Thu, 14 May 2020 12:21:54 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZAzx-000RXX-Tr; Thu, 14 May 2020 12:21:53 +0200
-Subject: Re: [PATCH 11/18] maccess: remove strncpy_from_unsafe
-To:     David Laight <David.Laight@ACULAB.COM>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "bgregg@netflix.com" <bgregg@netflix.com>
-References: <20200513160038.2482415-1-hch@lst.de>
- <20200513160038.2482415-12-hch@lst.de>
- <CAHk-=wj=u+nttmd1huNES2U=9nePtmk7WgR8cMLCYS8wc=rhdA@mail.gmail.com>
- <20200513192804.GA30751@lst.de>
- <0c1a7066-b269-9695-b94a-bb5f4f20ebd8@iogearbox.net>
- <20200513232816.GZ23230@ZenIV.linux.org.uk>
- <866cbe54-a027-04eb-65db-c6423d16b924@iogearbox.net>
- <6ca8d8499bf644aba0b242d194df5a60@AcuMS.aculab.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2cc83197-3ecc-b8c2-742d-e953c1f7bf8c@iogearbox.net>
-Date:   Thu, 14 May 2020 12:21:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <6ca8d8499bf644aba0b242d194df5a60@AcuMS.aculab.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1726133AbgENK0s convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 14 May 2020 06:26:48 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:56730 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726024AbgENK0q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 06:26:46 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-129-mzoWMat6PF2wNz8vgiMclw-1; Thu, 14 May 2020 11:26:43 +0100
+X-MC-Unique: mzoWMat6PF2wNz8vgiMclw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 14 May 2020 11:26:41 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 14 May 2020 11:26:41 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@lst.de>
+CC:     'Joe Perches' <joe@perches.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "Alexey Kuznetsov" <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        "drbd-dev@lists.linbit.com" <drbd-dev@lists.linbit.com>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
+        "cluster-devel@redhat.com" <cluster-devel@redhat.com>,
+        "ocfs2-devel@oss.oracle.com" <ocfs2-devel@oss.oracle.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "ceph-devel@vger.kernel.org" <ceph-devel@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>
+Subject: RE: remove kernel_setsockopt and kernel_getsockopt
+Thread-Topic: remove kernel_setsockopt and kernel_getsockopt
+Thread-Index: AQHWKU15LJmP4mOGDE2/GHhLszFt9KinP7aQgAAO/ACAABIowA==
+Date:   Thu, 14 May 2020 10:26:41 +0000
+Message-ID: <a76440f7305c4653877ff2abff499f4e@AcuMS.aculab.com>
+References: <20200513062649.2100053-1-hch@lst.de>
+ <ecc165c33962d964d518c80de605af632eee0474.camel@perches.com>
+ <756758e8f0e34e2e97db470609f5fbba@AcuMS.aculab.com>
+ <20200514101838.GA12548@lst.de>
+In-Reply-To: <20200514101838.GA12548@lst.de>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25811/Wed May 13 14:11:53 2020)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/14/20 12:01 PM, David Laight wrote:
-[...]
-> If it's not a stupid question why is a BPF program allowed to get
-> into a situation where it might have an invalid kernel address.
-> 
-> It all stinks of a hole that allows all of kernel memory to be read
-> and copied to userspace.
-> 
-> Now you might want to something special so that BPF programs just
-> abort on OOPS instead of possibly paniking the kernel.
-> But that is different from a copy that expects to be passed garbage.
+From: Christoph Hellwig
+> Only for those were we have users, and all those are covered.
 
-I suggest you read up on probe_kernel_read() and its uses in tracing in
-general, looks like you haven't done that.
+What do we tell all our users when our kernel SCTP code
+no longer works?
+
+It uses SO_REUSADDR, SCTP_EVENTS, SCTP_NODELAY,
+SCTP_STATUS, SCTP_INITMSG, IPV6_ONLY, SCTP_SOCKOPT_BINDX_ADD
+and SO_LINGER.
+We should probably use the CONNECTX function as well.
+
+I doubt we are the one company with out-of-tree drivers
+that use the kernel_socket interface.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
