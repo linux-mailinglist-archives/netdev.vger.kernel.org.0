@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9367E1D2F74
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 14:19:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD7C41D2F72
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 14:19:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727845AbgENMTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 08:19:36 -0400
-Received: from correo.us.es ([193.147.175.20]:54272 "EHLO mail.us.es"
+        id S1727837AbgENMTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 08:19:32 -0400
+Received: from correo.us.es ([193.147.175.20]:54278 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727033AbgENMTW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 08:19:22 -0400
+        id S1727067AbgENMTX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 08:19:23 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id BF1AA15AEB7
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 14:19:20 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 474BA15AEBA
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 14:19:21 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AD7A7DA712
-        for <netdev@vger.kernel.org>; Thu, 14 May 2020 14:19:20 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3794ADA722
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 14:19:21 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id ACCECDA711; Thu, 14 May 2020 14:19:20 +0200 (CEST)
+        id 34FDDDA720; Thu, 14 May 2020 14:19:21 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A9E18DA718;
-        Thu, 14 May 2020 14:19:18 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 224CFDA701;
+        Thu, 14 May 2020 14:19:19 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 14 May 2020 14:19:18 +0200 (CEST)
+ Thu, 14 May 2020 14:19:19 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from localhost.localdomain (unknown [90.77.255.23])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 7FC0E42EF42B;
+        by entrada.int (Postfix) with ESMTPA id F1D5642EF42A;
         Thu, 14 May 2020 14:19:18 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 3/6] netfilter: flowtable: Remove WQ_MEM_RECLAIM from workqueue
-Date:   Thu, 14 May 2020 14:19:10 +0200
-Message-Id: <20200514121913.24519-4-pablo@netfilter.org>
+Subject: [PATCH 4/6] netfilter: conntrack: fix infinite loop on rmmod
+Date:   Thu, 14 May 2020 14:19:11 +0200
+Message-Id: <20200514121913.24519-5-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200514121913.24519-1-pablo@netfilter.org>
 References: <20200514121913.24519-1-pablo@netfilter.org>
@@ -52,55 +52,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@mellanox.com>
+From: Florian Westphal <fw@strlen.de>
 
-This workqueue is in charge of handling offloaded flow tasks like
-add/del/stats we should not use WQ_MEM_RECLAIM flag.
-The flag can result in the following warning.
+'rmmod nf_conntrack' can hang forever, because the netns exit
+gets stuck in nf_conntrack_cleanup_net_list():
 
-[  485.557189] ------------[ cut here ]------------
-[  485.562976] workqueue: WQ_MEM_RECLAIM nf_flow_table_offload:flow_offload_worr
-[  485.562985] WARNING: CPU: 7 PID: 3731 at kernel/workqueue.c:2610 check_flush0
-[  485.590191] Kernel panic - not syncing: panic_on_warn set ...
-[  485.597100] CPU: 7 PID: 3731 Comm: kworker/u112:8 Not tainted 5.7.0-rc1.21802
-[  485.606629] Hardware name: Dell Inc. PowerEdge R730/072T6D, BIOS 2.4.3 01/177
-[  485.615487] Workqueue: nf_flow_table_offload flow_offload_work_handler [nf_f]
-[  485.624834] Call Trace:
-[  485.628077]  dump_stack+0x50/0x70
-[  485.632280]  panic+0xfb/0x2d7
-[  485.636083]  ? check_flush_dependency+0x110/0x130
-[  485.641830]  __warn.cold.12+0x20/0x2a
-[  485.646405]  ? check_flush_dependency+0x110/0x130
-[  485.652154]  ? check_flush_dependency+0x110/0x130
-[  485.657900]  report_bug+0xb8/0x100
-[  485.662187]  ? sched_clock_cpu+0xc/0xb0
-[  485.666974]  do_error_trap+0x9f/0xc0
-[  485.671464]  do_invalid_op+0x36/0x40
-[  485.675950]  ? check_flush_dependency+0x110/0x130
-[  485.681699]  invalid_op+0x28/0x30
+i_see_dead_people:
+ busy = 0;
+ list_for_each_entry(net, net_exit_list, exit_list) {
+  nf_ct_iterate_cleanup(kill_all, net, 0, 0);
+  if (atomic_read(&net->ct.count) != 0)
+   busy = 1;
+ }
+ if (busy) {
+  schedule();
+  goto i_see_dead_people;
+ }
 
-Fixes: 7da182a998d6 ("netfilter: flowtable: Use work entry per offload command")
-Reported-by: Marcelo Ricardo Leitner <mleitner@redhat.com>
-Signed-off-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Paul Blakey <paulb@mellanox.com>
+When nf_ct_iterate_cleanup iterates the conntrack table, all nf_conn
+structures can be found twice:
+once for the original tuple and once for the conntracks reply tuple.
+
+get_next_corpse() only calls the iterator when the entry is
+in original direction -- the idea was to avoid unneeded invocations
+of the iterator callback.
+
+When support for clashing entries was added, the assumption that
+all nf_conn objects are added twice, once in original, once for reply
+tuple no longer holds -- NF_CLASH_BIT entries are only added in
+the non-clashing reply direction.
+
+Thus, if at least one NF_CLASH entry is in the list then
+nf_conntrack_cleanup_net_list() always skips it completely.
+
+During normal netns destruction, this causes a hang of several
+seconds, until the gc worker removes the entry (NF_CLASH entries
+always have a 1 second timeout).
+
+But in the rmmod case, the gc worker has already been stopped, so
+ct.count never becomes 0.
+
+We can fix this in two ways:
+
+1. Add a second test for CLASH_BIT and call iterator for those
+   entries as well, or:
+2. Skip the original tuple direction and use the reply tuple.
+
+2) is simpler, so do that.
+
+Fixes: 6a757c07e51f80ac ("netfilter: conntrack: allow insertion of clashing entries")
+Reported-by: Chen Yi <yiche@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_flow_table_offload.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_conntrack_core.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index 3d4ca62c81f9..2276a73ccba2 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -1062,7 +1062,7 @@ static struct flow_indr_block_entry block_ing_entry = {
- int nf_flow_table_offload_init(void)
- {
- 	nf_flow_offload_wq  = alloc_workqueue("nf_flow_table_offload",
--					      WQ_UNBOUND | WQ_MEM_RECLAIM, 0);
-+					      WQ_UNBOUND, 0);
- 	if (!nf_flow_offload_wq)
- 		return -ENOMEM;
- 
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 0173398f4ced..1d57b95d3481 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -2139,8 +2139,19 @@ get_next_corpse(int (*iter)(struct nf_conn *i, void *data),
+ 		nf_conntrack_lock(lockp);
+ 		if (*bucket < nf_conntrack_htable_size) {
+ 			hlist_nulls_for_each_entry(h, n, &nf_conntrack_hash[*bucket], hnnode) {
+-				if (NF_CT_DIRECTION(h) != IP_CT_DIR_ORIGINAL)
++				if (NF_CT_DIRECTION(h) != IP_CT_DIR_REPLY)
+ 					continue;
++				/* All nf_conn objects are added to hash table twice, one
++				 * for original direction tuple, once for the reply tuple.
++				 *
++				 * Exception: In the IPS_NAT_CLASH case, only the reply
++				 * tuple is added (the original tuple already existed for
++				 * a different object).
++				 *
++				 * We only need to call the iterator once for each
++				 * conntrack, so we just use the 'reply' direction
++				 * tuple while iterating.
++				 */
+ 				ct = nf_ct_tuplehash_to_ctrack(h);
+ 				if (iter(ct, data))
+ 					goto found;
 -- 
 2.20.1
 
