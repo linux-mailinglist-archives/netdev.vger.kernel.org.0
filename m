@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5142B1D3D1F
-	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:17:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D251D3D18
+	for <lists+netdev@lfdr.de>; Thu, 14 May 2020 21:17:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728088AbgENTML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 15:12:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50094 "EHLO mail.kernel.org"
+        id S1730362AbgENTL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 15:11:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50112 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728133AbgENSwG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 14:52:06 -0400
+        id S1728149AbgENSwH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 14:52:07 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 147AB206F1;
-        Thu, 14 May 2020 18:52:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5108320727;
+        Thu, 14 May 2020 18:52:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589482325;
-        bh=u7X1YqDlHfR7hlPLsI0ybSlmWnF0NaWVHpXGEyblPww=;
+        s=default; t=1589482327;
+        bh=nkDPHy95yzo1/gfV8EpO6saVkkaXsNq4bM8J4dTa9F0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vL5PY9yTPO/P66e+SOTlAB8f14I991ai2qPCQmZIOmAhJM+f5rmjz24FNKaVNUFMs
-         aXnEk1TLP6rD+yGcbTQvVRjurZuiFNLAtKUWbV1Zcl0/mNF4T6AAPt4i0g517XTkTy
-         xxsjArHaov9NOgdsaFgjoV7xjcfhQriv06qXXX/c=
+        b=VAHsFQo3ACGJrf3CJGUvdHurzaBoDTrqi3u6TxKAV3/tGSGc7MY4bGoWCHMxSfACB
+         e5Kyjdj0Hkw2AFF0FYBgQWO0z7sbvQEMTFEow3SPq7Ux3/B0AhT6lBw4QZOKe03lNc
+         mlXmzIQFS0SE87TcFsVHltifvkB1pF7v6JBxihVA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 13/62] vhost/vsock: fix packet delivery order to monitoring devices
-Date:   Thu, 14 May 2020 14:50:58 -0400
-Message-Id: <20200514185147.19716-13-sashal@kernel.org>
+Cc:     Richard Clark <richard.xnu.clark@gmail.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 14/62] aquantia: Fix the media type of AQC100 ethernet controller in the driver
+Date:   Thu, 14 May 2020 14:50:59 -0400
+Message-Id: <20200514185147.19716-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200514185147.19716-1-sashal@kernel.org>
 References: <20200514185147.19716-1-sashal@kernel.org>
@@ -44,45 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+From: Richard Clark <richard.xnu.clark@gmail.com>
 
-[ Upstream commit 107bc0766b9feb5113074c753735a3f115c2141f ]
+[ Upstream commit 6de556c31061e3b9c36546ffaaac5fdb679a2f14 ]
 
-We want to deliver packets to monitoring devices before it is
-put in the virtqueue, to avoid that replies can appear in the
-packet capture before the transmitted packet.
+The Aquantia AQC100 controller enables a SFP+ port, so the driver should
+configure the media type as '_TYPE_FIBRE' instead of '_TYPE_TP'.
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Signed-off-by: Richard Clark <richard.xnu.clark@gmail.com>
+Cc: Igor Russkikh <irusskikh@marvell.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Acked-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vsock.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index bb3f63386b475..53294c2f8cff4 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -181,14 +181,14 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
- 			break;
- 		}
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index 78b6f32487565..e0625c67eed33 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -56,7 +56,7 @@ static const struct aq_board_revision_s hw_atl_boards[] = {
+ 	{ AQ_DEVICE_ID_D108,	AQ_HWREV_2,	&hw_atl_ops_b0, &hw_atl_b0_caps_aqc108, },
+ 	{ AQ_DEVICE_ID_D109,	AQ_HWREV_2,	&hw_atl_ops_b0, &hw_atl_b0_caps_aqc109, },
  
--		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
--		added = true;
--
--		/* Deliver to monitoring devices all correctly transmitted
--		 * packets.
-+		/* Deliver to monitoring devices all packets that we
-+		 * will transmit.
- 		 */
- 		virtio_transport_deliver_tap_pkt(pkt);
- 
-+		vhost_add_used(vq, head, sizeof(pkt->hdr) + payload_len);
-+		added = true;
-+
- 		pkt->off += payload_len;
- 		total_len += payload_len;
- 
+-	{ AQ_DEVICE_ID_AQC100,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc107, },
++	{ AQ_DEVICE_ID_AQC100,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc100, },
+ 	{ AQ_DEVICE_ID_AQC107,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc107, },
+ 	{ AQ_DEVICE_ID_AQC108,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc108, },
+ 	{ AQ_DEVICE_ID_AQC109,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc109, },
 -- 
 2.20.1
 
