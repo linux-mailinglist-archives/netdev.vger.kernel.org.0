@@ -2,162 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61F2D1D4106
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 00:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D642B1D4090
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 00:13:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728637AbgENWac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 18:30:32 -0400
-Received: from sonic316-27.consmr.mail.ne1.yahoo.com ([66.163.187.153]:39247
-        "EHLO sonic316-27.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728629AbgENWac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 18:30:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1589495431; bh=uWNP/f0MZF916y2Cwsdhr7gT91hrx+SqsNnUvBkdwps=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject; b=k0NnDkvjq9v3Yx1MBRS0CCuxreQkHcRYdnqdhwHcU9zydMzNk5T7BJvwNUTnz2Lj/P9oVy+Ds9Oeb3ii9lS4uNdgBGJaM6NNlQPCGJOaAO6iXFRC5DkHO/raAHFNBDlfU64MwuDq8d/7ckUQV8aaArjNKvxcg/YFDV17Jq5qnJbn7Kf0lWZ+6EzdSvaYAeUJCgDKTpzeNg5OFbkR8W6kRc/B4ClW6wF4JVY1U/hrUJjAwk+2DV8IfDxfHOMYTaXmtleYOSxEeqvvsMCoG02y/V355sXlMmEsP/NYwrw/J/KO4Bv8YbuYxjrQnEjy9UwqpQbnDhijldd9jJkequv6sw==
-X-YMail-OSG: P0ArnsYVM1l6P3YuvGQ46Izp12WumIkJRv_Q.qb8si1MbAPiZEz.fIeQBmC1.7Z
- Vt1_McvMr6oCFbztMJc4q3cqRhp2fNxpBrTlF5zhoRo.spNxh8pftiUFrOqaLi0WW5qAW.jULdxD
- ZZdmGgEb_JHWZ1emW7JTSRXbUbmHOdY_bua4lx4.cm8RpK5NT6QOziOVN06zbgZFEcBAln_ym4qg
- ZLBHLvM8MXg2HYf48YTlb72uM5BIWkWplCAS4jwBEcR6d.N2C8VTFEfLypPU9tteZ9cKvX4WZy4B
- 7dEJpSaPADXN643qcALcn4FUQLoHjGC1EVRneyqX66lmx5OCv19pflQ0dN.nYtdqPwD_KVFV8wik
- BXHxQM8B7Mwq99bdnthzVBWazj67XXoDw3jH5tQAlDrExxjxrWKlzrW29ZM9kO9VBY0nlI0N11FK
- eshg8VXew9I2pkXDEUJTuihzwLRQUp_mJhu6l6Ch2RmQS4s.INMkqYgUaBdHNV7Nz8tVcT5j_pOd
- y8JdEdbYSKl_Qz_oXclif6qREtU5ClLhXwKcFgrhydBcM5Dan6h_51slVzwWEpgJ7h14tUt5ThnX
- RLEtxHssR.StLFsMB99cFYgbtlc8sc7cKiDOmAT2.ZnVjqnRE3379pIwRuQu_1UdB9UcPir9OOKW
- dKa4tmsat2kSgax5OagsfpGn8G3o0aE24asIPDwOQJ2y1UObgO1W5RqQM9MqZBWhDxiDYaYwROco
- x7h9pNflaKwwjuPGdW4s0cKQyWbri19FZUVoPwjA8Pr3h7tHfrHpPJeh7VJvb3l8zXFjA8TgEbnG
- O2G.jQZd039a5Ry5EsWFZXdOsWHrU2TIzJTyEyeD5zucc81FTRSOSI0QZc0IeG_vFIvFBVFOicS8
- IAle20mAsTzACkS0y2OBHReGNdsGZU2SoPrCwNIOf7xCF0ihXX0A3m3bRQsD.lH_2Mw52mpq6Zvn
- 4ZRgJeS_lSMJJtr.i0S1OYaG457wNZxauqavEJavBAdo1meXfbqciL.PoEGOOBI6o8YZsfcLwBbj
- FfLm4qe.uVS7vdBzJ6iR_hnyuKHPdjYbmwZh0cOny1UFZqkf9WElQFrkhhiflwR1WFaG_1sZBFqX
- RwOwcuEtjrNMEzZrLYGFc7B3PqQ_r2_RfqzJDTp5gf_AkvT64vzclxIR3eF7Lcyqmgm6XRU9k5Dq
- bOS394rTrW24PZEeyDHeaifh_wEwEV8qRccEceME8mUvY2pQrfpTfmuzEhAaQzRZ1TBmrD33wihO
- 5Kz6W4CTlfnOUsfnLCrb0z9Cnr_ICIWBMSbVInAwQXiI.UjEzwHWn1atYwmRp1osuM7IPYWwcGdZ
- YXNSDu.Exz04MM7tu2mEZXAjtID7SrpkjhjObDRwunEUp0ympwSrj7Yjusl5LCvzo5.8WhKziKpc
- v28v22AOpgJ.C6umJClqxNzuajwc2QaC5cFtK3kbOCthtzWoO0s5c5q64sTC_4I0bNe2p
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Thu, 14 May 2020 22:30:31 +0000
-Received: by smtp414.mail.ne1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID d4602fb5d17e767b22601702ddf62cb3;
-          Thu, 14 May 2020 22:30:26 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        paul@paul-moore.com, sds@tycho.nsa.gov, linux-audit@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH v17 17/23] LSM: security_secid_to_secctx in netlink netfilter
-Date:   Thu, 14 May 2020 15:11:36 -0700
-Message-Id: <20200514221142.11857-18-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200514221142.11857-1-casey@schaufler-ca.com>
-References: <20200514221142.11857-1-casey@schaufler-ca.com>
+        id S1728329AbgENWNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 18:13:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34302 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726046AbgENWNM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 May 2020 18:13:12 -0400
+Received: from paulmck-ThinkPad-P72.home (unknown [50.39.105.78])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C23B82065D;
+        Thu, 14 May 2020 22:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589494390;
+        bh=f2WUV5cJBIm5s6ANLfJcEURYQZoNvbj81pbeEiNUwYc=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=LcCe/rRSVYWeP6M5BaLxYIau2lrpuL/ara3qptNlh35p9pbiYFiFDNA7/5gmQ/RDn
+         IciPXImeOC1RrO9mUx3WviYr/GjVszrK5/6OwFonyKBQLXjlNuw/7WTenZQ4WAoYtm
+         /78utC1nS3TcMvhxlOPpLGqW+4A8ZnBVpsv1v2bA=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 4EC7C35229C8; Thu, 14 May 2020 15:13:09 -0700 (PDT)
+Date:   Thu, 14 May 2020 15:13:09 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, linux-arch@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH bpf-next 1/6] bpf: implement BPF ring buffer and verifier
+ support for it
+Message-ID: <20200514221309.GV2869@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20200513192532.4058934-1-andriin@fb.com>
+ <20200513192532.4058934-2-andriin@fb.com>
+ <20200514121848.052966b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87h7wixndi.fsf@nanos.tec.linutronix.de>
+ <CAEf4Bzbj-WvRkoGxkSFtK5_1JfQxthoFid398C97RM0ppBb0dA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzbj-WvRkoGxkSFtK5_1JfQxthoFid398C97RM0ppBb0dA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change netlink netfilter interfaces to use lsmcontext
-pointers, and remove scaffolding.
+On Thu, May 14, 2020 at 02:30:11PM -0700, Andrii Nakryiko wrote:
+> On Thu, May 14, 2020 at 1:39 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> >
+> > Jakub Kicinski <kuba@kernel.org> writes:
+> >
+> > > On Wed, 13 May 2020 12:25:27 -0700 Andrii Nakryiko wrote:
+> > >> One interesting implementation bit, that significantly simplifies (and thus
+> > >> speeds up as well) implementation of both producers and consumers is how data
+> > >> area is mapped twice contiguously back-to-back in the virtual memory. This
+> > >> allows to not take any special measures for samples that have to wrap around
+> > >> at the end of the circular buffer data area, because the next page after the
+> > >> last data page would be first data page again, and thus the sample will still
+> > >> appear completely contiguous in virtual memory. See comment and a simple ASCII
+> > >> diagram showing this visually in bpf_ringbuf_area_alloc().
+> > >
+> > > Out of curiosity - is this 100% okay to do in the kernel and user space
+> > > these days? Is this bit part of the uAPI in case we need to back out of
+> > > it?
+> > >
+> > > In the olden days virtually mapped/tagged caches could get confused
+> > > seeing the same physical memory have two active virtual mappings, or
+> > > at least that's what I've been told in school :)
+> >
+> > Yes, caching the same thing twice causes coherency problems.
+> >
+> > VIVT can be found in ARMv5, MIPS, NDS32 and Unicore32.
+> >
+> > > Checking with Paul - he says that could have been the case for Itanium
+> > > and PA-RISC CPUs.
+> >
+> > Itanium: PIPT L1/L2.
+> > PA-RISC: VIPT L1 and PIPT L2
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: John Johansen <john.johansen@canonical.com>
-Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-cc: netdev@vger.kernel.org
----
- net/netfilter/nfnetlink_queue.c | 31 ++++++++++++-------------------
- 1 file changed, 12 insertions(+), 19 deletions(-)
+Thank you, Thomas!
 
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index fe19ae7216db..a4d4602ab9b7 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -301,12 +301,10 @@ static int nfqnl_put_sk_uidgid(struct sk_buff *skb, struct sock *sk)
- 	return -1;
- }
- 
--static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
-+static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, struct lsmcontext *context)
- {
--	u32 seclen = 0;
- #if IS_ENABLED(CONFIG_NETWORK_SECMARK)
- 	struct lsmblob blob;
--	struct lsmcontext context = { };
- 
- 	if (!skb || !sk_fullsock(skb->sk))
- 		return 0;
-@@ -318,14 +316,14 @@ static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
- 		 * blob. security_secid_to_secctx() will know which security
- 		 * module to use to create the secctx.  */
- 		lsmblob_init(&blob, skb->secmark);
--		security_secid_to_secctx(&blob, &context);
--		*secdata = context.context;
-+		security_secid_to_secctx(&blob, context);
- 	}
- 
- 	read_unlock_bh(&skb->sk->sk_callback_lock);
--	seclen = context.len;
-+	return context->len;
-+#else
-+	return 0;
- #endif
--	return seclen;
- }
- 
- static u32 nfqnl_get_bridge_size(struct nf_queue_entry *entry)
-@@ -401,8 +399,7 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	enum ip_conntrack_info uninitialized_var(ctinfo);
- 	struct nfnl_ct_hook *nfnl_ct;
- 	bool csum_verify;
--	struct lsmcontext scaff; /* scaffolding */
--	char *secdata = NULL;
-+	struct lsmcontext context = { };
- 	u32 seclen = 0;
- 
- 	size = nlmsg_total_size(sizeof(struct nfgenmsg))
-@@ -469,7 +466,7 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	}
- 
- 	if ((queue->flags & NFQA_CFG_F_SECCTX) && entskb->sk) {
--		seclen = nfqnl_get_sk_secctx(entskb, &secdata);
-+		seclen = nfqnl_get_sk_secctx(entskb, &context);
- 		if (seclen)
- 			size += nla_total_size(seclen);
- 	}
-@@ -604,7 +601,7 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	    nfqnl_put_sk_uidgid(skb, entskb->sk) < 0)
- 		goto nla_put_failure;
- 
--	if (seclen && nla_put(skb, NFQA_SECCTX, seclen, secdata))
-+	if (seclen && nla_put(skb, NFQA_SECCTX, context.len, context.context))
- 		goto nla_put_failure;
- 
- 	if (ct && nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
-@@ -632,10 +629,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	}
- 
- 	nlh->nlmsg_len = skb->len;
--	if (seclen) {
--		lsmcontext_init(&scaff, secdata, seclen, 0);
--		security_release_secctx(&scaff);
--	}
-+	if (seclen)
-+		security_release_secctx(&context);
- 	return skb;
- 
- nla_put_failure:
-@@ -643,10 +638,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	kfree_skb(skb);
- 	net_err_ratelimited("nf_queue: error creating packet message\n");
- nlmsg_failure:
--	if (seclen) {
--		lsmcontext_init(&scaff, secdata, seclen, 0);
--		security_release_secctx(&scaff);
--	}
-+	if (seclen)
-+		security_release_secctx(&context);
- 	return NULL;
- }
- 
--- 
-2.24.1
+> > Thanks,
+> 
+> Jakub, thanks for bringing this up.
 
+Indeed!  I had completely forgotten about it.
+
+> Thomas, Paul, what kind of problems are we talking about here? What
+> are the possible problems in practice?
+
+One CPU stores into one of the mappings, and then it (or some other CPU)
+subsequently sees the old value via the other mapping, maybe for a short
+time, or maybe indefinitely, depending.  This sort of thing can happen
+when the same location in the two mappings map to different location in
+the cache.  The store via one virtual address then is placed into one
+location in the cache, but the reads from the other virtual address are
+referring to some other location in the cache.
+
+In the past, some systems have documented virtual address offsets that
+are guaranteed to work, presumably because those offsets force the two
+views of the same physical memory to share the same location in the cache.
+
+> So just for the context, all the metadata (record header) that is
+> written/read under lock and with smp_store_release/smp_load_acquire is
+> written through the one set of page mappings (the first one). Only
+> some of sample payload might go into the second set of mapped pages.
+> Does this mean that user-space might read some old payloads in such
+> case?
+
+That could happen, depending on which CPU accessed what physical
+memory using which virtual address.
+
+> I could work-around that in user-space, by mmaping twice the same
+> range, one after the other (second mmap would use MAP_FIXED flag, of
+> course). So that's not a big deal.
+
+That would work, assuming you mean to map double the size of memory
+and then handle the wraparound case very very carefully.  ;-)
+
+But you need only do that on VI*T systems, if that helps.
+
+> But on the kernel side it's crucial property, because it allows BPF
+> programs to work with data with the assumption that all data is
+> linearly mapped. If we can't do that, reserve() API is impossible to
+> implement. So in that case, I'd rather enable BPF ring buffer only on
+> platforms that won't have these problems, instead of removing
+> reserve/commit API altogether.
+
+You could flush the local CPU's cache before reading past the end,
+but only if it is guaranteed that no other CPU is accessing that same
+memory using the other mapping.  (No convinced that this is feasible,
+but who knows?)
+
+I see that linux-arch is copied, so do any of the affected architectures
+object to being left out?
+
+> Well, another way is to just "discard" remaining space at the end, if
+> it's not sufficient for entire record. That's doable, there will
+> always be at least 8 bytes available for record header, so not a
+> problem in that regard. But I would appreciate if you can help me
+> understand full implications of caching physical memory twice.
+> 
+> Also just for my education, with VIVT caches, if user-space
+> application mmap()'s same region of memory twice (without MAP_FIXED),
+> wouldn't that cause similar problems? Can't this happen today with
+> mmap() API? Why is that not a problem?
+
+It does indeed affect userspace applications as well.  And I haven't
+heard about this being a problem for a very long time, which might be
+why I had forgotten about it.
+
+But the underlying problem is that on VIVT and VIPT platforms, mapping
+the same physical memory to two different virtual addresses can cause
+that same memory to appear twice in the cache, and the resulting pair
+of cachelines will not be guaranteed to be in sync with each other.
+So CPUs accessing this memory through the two virtual addresses might
+see different values.  Which can come as a bit of a surprise to many
+algorithms.
+
+							Thanx, Paul
