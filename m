@@ -2,68 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A6DD1D45CD
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 08:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 698201D45F2
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 08:33:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726224AbgEOGXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 02:23:15 -0400
-Received: from mga17.intel.com ([192.55.52.151]:33638 "EHLO mga17.intel.com"
+        id S1726302AbgEOGd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 02:33:27 -0400
+Received: from verein.lst.de ([213.95.11.211]:55034 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726182AbgEOGXP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 02:23:15 -0400
-IronPort-SDR: FCDWVGuGOWk+Y8tn0QdhJOySxFBo2VYzZB5n59a2QJ2yBsVHHnNdNnW0aHcLvlmW+/z54ZvNIm
- ZbgzgrrSPKBg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2020 23:23:14 -0700
-IronPort-SDR: OgyP/bfos+4e4WPUn848uWnpfzZvJcHZ+d7/PMjIH4KHVWQvIJoOqJcdKXuciFBjd4+OuGr3ta
- 43+quwsSdmnw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,394,1583222400"; 
-   d="scan'208";a="281119242"
-Received: from bdallmer-mobl3.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.38.223])
-  by orsmga002.jf.intel.com with ESMTP; 14 May 2020 23:23:11 -0700
-Subject: Re: [PATCH bpf-next v2 00/14] Introduce AF_XDP buffer allocation API
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        jeffrey.t.kirsher@intel.com
-Cc:     maximmi@mellanox.com, maciej.fijalkowski@intel.com
-References: <20200514083710.143394-1-bjorn.topel@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <8273458d-c4ef-bf53-bdf5-b5de53c012d3@intel.com>
-Date:   Fri, 15 May 2020 08:23:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726205AbgEOGd1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 May 2020 02:33:27 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 499BB68BFE; Fri, 15 May 2020 08:33:24 +0200 (CEST)
+Date:   Fri, 15 May 2020 08:33:24 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     David Miller <davem@davemloft.net>
+Cc:     hch@lst.de, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] ipv6: symbol_get to access a sit symbol
+Message-ID: <20200515063324.GA31377@lst.de>
+References: <20200514145101.3000612-1-hch@lst.de> <20200514145101.3000612-5-hch@lst.de> <20200514.175355.167885308958584692.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <20200514083710.143394-1-bjorn.topel@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200514.175355.167885308958584692.davem@davemloft.net>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-05-14 10:36, Björn Töpel wrote:
-> Overview
-> ========
+On Thu, May 14, 2020 at 05:53:55PM -0700, David Miller wrote:
+> You're not undoing one, but two levels of abstraction here.
 > 
-> Driver adoption for AF_XDP has been slow. The amount of code required
-> to proper support AF_XDP is substantial and the driver/core APIs are
-> vague or even non-existing. Drivers have to manually adjust data
-> offsets, updating AF_XDP handles differently for different modes
-> (aligned/unaligned).
-> 
-> This series attempts to improve the situation by introducing an AF_XDP
-> buffer allocation API. The implementation is based on a single core
-> (single producer/consumer) buffer pool for the AF_XDP UMEM.
+> Is this "ipip6_tunnel_locate()" call part of the SIT ioctl implementation?
 
-I'll need to respin, adapting to Jesper's 'xdp-grow-tail' merge.
+Yes.  Take a look at the convoluted case handling the
+SIOCADDTUNNEL and SIOCCHGTUNNEL commands in ipip6_tunnel_ioctl.
 
+> Where did it come from?   Why are ->ndo_do_ioctl() implementations no longer
+> allowed from here?
 
-Cheers,
-Björn
+The problem is that we feed kernel pointers to it, which requires
+set_fs address space overrides that I plan to kill off entirely.
+
+> Honestly, this feels like a bit much.
+
+My initial plan was to add a ->tunnel_ctl method to the net_device_ops,
+and lift the copy_{to,from}_user for SIOCADDTUNNEL, SIOCCHGTUNNEL,
+SIOCDELTUNNEL and maybe SIOCGETTUNNEL to net/socket.c.  But that turned
+out to have two problems:
+
+ - first these ioctls names use SIOCDEVPRIVATE range, that can also
+   be implemented by other drivers
+ - the ip_tunnel_parm struture is only used by the ipv4 tunneling
+   drivers (including sit), the "real" ipv6 tunnels use a
+   ip6_tnl_parm or ip6_tnl_parm structure instead
+
+But if you don't like the symbol_get approach, I could do the
+tunnel_ctl operation, just for the іpv4-ish tunnels, and only for
+the kernel callers.
+
+---end quoted text---
