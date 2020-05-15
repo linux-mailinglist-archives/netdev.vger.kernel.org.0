@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10D0E1D596C
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 20:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95BA71D596B
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 20:48:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbgEOSsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 14:48:09 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:46432 "EHLO inva021.nxp.com"
+        id S1726206AbgEOSsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 14:48:07 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:51778 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726465AbgEOSsC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726695AbgEOSsC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 15 May 2020 14:48:02 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 74264200789;
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id EF3211A074D;
         Fri, 15 May 2020 20:48:00 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 67A9B200103;
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D8CC81A073C;
         Fri, 15 May 2020 20:48:00 +0200 (CEST)
 Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 0ED1820328;
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 8132220328;
         Fri, 15 May 2020 20:48:00 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Ioana Radulescu <ruxandra.radulescu@nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH v2 net-next 6/7] dpaa2-eth: Add congestion group taildrop
-Date:   Fri, 15 May 2020 21:47:52 +0300
-Message-Id: <20200515184753.15080-7-ioana.ciornei@nxp.com>
+Subject: [PATCH v2 net-next 7/7] dpaa2-eth: Update FQ taildrop threshold and buffer pool count
+Date:   Fri, 15 May 2020 21:47:53 +0300
+Message-Id: <20200515184753.15080-8-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200515184753.15080-1-ioana.ciornei@nxp.com>
 References: <20200515184753.15080-1-ioana.ciornei@nxp.com>
@@ -39,15 +39,25 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 
-The increase in number of ingress frame queues means we now risk
-depleting the buffer pool before the FQ taildrop kicks in.
+Now that we have congestion group taildrop configured at all
+times, we can afford to increase the frame queue taildrop
+threshold; this will ensure a better response when receiving
+bursts of large-sized frames.
 
-Congestion group taildrop allows us to control the number of frames
-that can accumulate on a group of Rx frame queues belonging to the
-same traffic class.
+Also decouple the buffer pool count from the Rx FQ taildrop
+threshold, as above change would increase it too much. Instead,
+keep the old count as a hardcoded value.
 
-This setting coexists with the frame queue based taildrop: whichever
-limit gets hit first triggers the frame drop.
+With the new limits, we try to ensure that:
+* we allow enough leeway for large frame bursts (by buffering
+enough of them in queues to avoid heavy dropping in case of
+bursty traffic, but when overall ingress bandwidth is manageable)
+* allow pending frames to be evenly spread between ingress FQs,
+regardless of frame size
+* avoid dropping frames due to the buffer pool being empty; this
+is not a bad behaviour per se, but system overall response is
+more linear and predictable when frames are dropped at frame
+queue/group level.
 
 Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
@@ -55,57 +65,58 @@ Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Changes in v2:
  - none
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 16 ++++++++++++++++
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h |  9 +++++++++
- 2 files changed, 25 insertions(+)
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  | 23 +++++++++----------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index d8b1d6ab6656..318b4332df87 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1309,6 +1309,22 @@ static void dpaa2_eth_set_rx_taildrop(struct dpaa2_eth_priv *priv,
- 		}
- 	}
- 
-+	/* Congestion group taildrop: threshold is in frames, per group
-+	 * of FQs belonging to the same traffic class
-+	 */
-+	td.threshold = DPAA2_ETH_CG_TAILDROP_THRESH(priv);
-+	td.units = DPNI_CONGESTION_UNIT_FRAMES;
-+	for (i = 0; i < dpaa2_eth_tc_count(priv); i++) {
-+		err = dpni_set_taildrop(priv->mc_io, 0, priv->mc_token,
-+					DPNI_CP_GROUP, DPNI_QUEUE_RX,
-+					i, 0, &td);
-+		if (err) {
-+			netdev_err(priv->net_dev,
-+				   "dpni_set_taildrop(CG) failed\n");
-+			return;
-+		}
-+	}
-+
- 	priv->rx_td_enabled = td.enable;
- }
- 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 1b9f6689e9ec..184d5d83e497 100644
+index 184d5d83e497..02c0eea69a23 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -57,6 +57,15 @@
+@@ -36,24 +36,24 @@
+ /* Convert L3 MTU to L2 MFL */
+ #define DPAA2_ETH_L2_MAX_FRM(mtu)	((mtu) + VLAN_ETH_HLEN)
+ 
+-/* Set the taildrop threshold (in bytes) to allow the enqueue of several jumbo
+- * frames in the Rx queues (length of the current frame is not
+- * taken into account when making the taildrop decision)
++/* Set the taildrop threshold (in bytes) to allow the enqueue of a large
++ * enough number of jumbo frames in the Rx queues (length of the current
++ * frame is not taken into account when making the taildrop decision)
+  */
+-#define DPAA2_ETH_FQ_TAILDROP_THRESH	(64 * 1024)
++#define DPAA2_ETH_FQ_TAILDROP_THRESH	(1024 * 1024)
+ 
+ /* Maximum number of Tx confirmation frames to be processed
+  * in a single NAPI call
+  */
+ #define DPAA2_ETH_TXCONF_PER_NAPI	256
+ 
+-/* Buffer quota per queue. Must be large enough such that for minimum sized
+- * frames taildrop kicks in before the bpool gets depleted, so we compute
+- * how many 64B frames fit inside the taildrop threshold and add a margin
+- * to accommodate the buffer refill delay.
++/* Buffer qouta per channel. We want to keep in check number of ingress frames
++ * in flight: for small sized frames, congestion group taildrop may kick in
++ * first; for large sizes, Rx FQ taildrop threshold will ensure only a
++ * reasonable number of frames will be pending at any given time.
++ * Ingress frame drop due to buffer pool depletion should be a corner case only
+  */
+-#define DPAA2_ETH_MAX_FRAMES_PER_QUEUE	(DPAA2_ETH_FQ_TAILDROP_THRESH / 64)
+-#define DPAA2_ETH_NUM_BUFS		(DPAA2_ETH_MAX_FRAMES_PER_QUEUE + 256)
++#define DPAA2_ETH_NUM_BUFS		1280
  #define DPAA2_ETH_REFILL_THRESH \
  	(DPAA2_ETH_NUM_BUFS - DPAA2_ETH_BUFS_PER_CMD)
  
-+/* Congestion group taildrop threshold: number of frames allowed to accumulate
-+ * at any moment in a group of Rx queues belonging to the same traffic class.
-+ * Choose value such that we don't risk depleting the buffer pool before the
-+ * taildrop kicks in
-+ */
-+#define DPAA2_ETH_CG_TAILDROP_THRESH(priv)				\
-+	(DPAA2_ETH_MAX_FRAMES_PER_QUEUE * dpaa2_eth_queue_count(priv) /	\
-+	 dpaa2_eth_tc_count(priv))
-+
+@@ -63,8 +63,7 @@
+  * taildrop kicks in
+  */
+ #define DPAA2_ETH_CG_TAILDROP_THRESH(priv)				\
+-	(DPAA2_ETH_MAX_FRAMES_PER_QUEUE * dpaa2_eth_queue_count(priv) /	\
+-	 dpaa2_eth_tc_count(priv))
++	(1024 * dpaa2_eth_queue_count(priv) / dpaa2_eth_tc_count(priv))
+ 
  /* Maximum number of buffers that can be acquired/released through a single
   * QBMan command
-  */
 -- 
 2.17.1
 
