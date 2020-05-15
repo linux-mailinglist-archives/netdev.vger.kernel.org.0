@@ -2,118 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 038441D56BD
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:53:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2751F1D56C7
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:54:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbgEOQx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 12:53:27 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:42748 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726656AbgEOQxV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 12:53:21 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 00122200769;
-        Fri, 15 May 2020 18:53:19 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E7F232002A4;
-        Fri, 15 May 2020 18:53:19 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 915E420328;
-        Fri, 15 May 2020 18:53:19 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 7/7] dpaa2-eth: Update FQ taildrop threshold and buffer pool count
-Date:   Fri, 15 May 2020 19:53:00 +0300
-Message-Id: <20200515165300.16125-8-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200515165300.16125-1-ioana.ciornei@nxp.com>
-References: <20200515165300.16125-1-ioana.ciornei@nxp.com>
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726722AbgEOQxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 12:53:35 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:53489 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726724AbgEOQxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:53:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589561612;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gN8Ffkm75Z04j5uijHXbjpI4CgfRAT5o0xWHEAmKzV4=;
+        b=buZT7S28zAzvUBt/5sQ0wjEobXfsvzZ7f+WPvLMN0Zv/kBdOF21CmPv+CNLJvKjTtgwPwr
+        5HR1SG2JsWMfeUKC3AfCSTfvpcQtCU+I/4QMSpgfhQkskEWriBRn7q/ujMXmGDKsvp2Hjj
+        gvvW3GgVavcpTqdsujZQ0J9VAjrWzDA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-388-cSjPPTozMs-pT9w2NnPfzw-1; Fri, 15 May 2020 12:53:28 -0400
+X-MC-Unique: cSjPPTozMs-pT9w2NnPfzw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5DF4819200C0;
+        Fri, 15 May 2020 16:53:25 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-95.rdu2.redhat.com [10.10.112.95])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8977F5D9C9;
+        Fri, 15 May 2020 16:53:21 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <954ef5ce2e47472f8b41300bf59209c5@garmin.com>
+References: <954ef5ce2e47472f8b41300bf59209c5@garmin.com> <20200515152321.9280-1-nate.karstens@garmin.com> <20200515160342.GE23230@ZenIV.linux.org.uk>
+To:     "Karstens, Nate" <Nate.Karstens@garmin.com>
+Cc:     dhowells@redhat.com, Al Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Eric Dumazet" <edumazet@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Changli Gao <xiaosuo@gmail.com>
+Subject: Re: [PATCH v2] Implement close-on-fork
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <197933.1589561600.1@warthog.procyon.org.uk>
+Date:   Fri, 15 May 2020 17:53:20 +0100
+Message-ID: <197934.1589561600@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Karstens, Nate <Nate.Karstens@garmin.com> wrote:
 
-Now that we have congestion group taildrop configured at all
-times, we can afford to increase the frame queue taildrop
-threshold; this will ensure a better response when receiving
-bursts of large-sized frames.
+> > already has a portable solution
+> 
+> What is the solution?
 
-Also decouple the buffer pool count from the Rx FQ taildrop
-threshold, as above change would increase it too much. Instead,
-keep the old count as a hardcoded value.
+sys_spawn(const char *path, const char **argv, const char **envv,
+	  unsigned long clone_flags, unsigned int nfds, int *fds);
 
-With the new limits, we try to ensure that:
-* we allow enough leeway for large frame bursts (by buffering
-enough of them in queues to avoid heavy dropping in case of
-bursty traffic, but when overall ingress bandwidth is manageable)
-* allow pending frames to be evenly spread between ingress FQs,
-regardless of frame size
-* avoid dropping frames due to the buffer pool being empty; this
-is not a bad behaviour per se, but system overall response is
-more linear and predictable when frames are dropped at frame
-queue/group level.
+maybe?
 
-Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  | 23 +++++++++----------
- 1 file changed, 11 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 184d5d83e497..02c0eea69a23 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -36,24 +36,24 @@
- /* Convert L3 MTU to L2 MFL */
- #define DPAA2_ETH_L2_MAX_FRM(mtu)	((mtu) + VLAN_ETH_HLEN)
- 
--/* Set the taildrop threshold (in bytes) to allow the enqueue of several jumbo
-- * frames in the Rx queues (length of the current frame is not
-- * taken into account when making the taildrop decision)
-+/* Set the taildrop threshold (in bytes) to allow the enqueue of a large
-+ * enough number of jumbo frames in the Rx queues (length of the current
-+ * frame is not taken into account when making the taildrop decision)
-  */
--#define DPAA2_ETH_FQ_TAILDROP_THRESH	(64 * 1024)
-+#define DPAA2_ETH_FQ_TAILDROP_THRESH	(1024 * 1024)
- 
- /* Maximum number of Tx confirmation frames to be processed
-  * in a single NAPI call
-  */
- #define DPAA2_ETH_TXCONF_PER_NAPI	256
- 
--/* Buffer quota per queue. Must be large enough such that for minimum sized
-- * frames taildrop kicks in before the bpool gets depleted, so we compute
-- * how many 64B frames fit inside the taildrop threshold and add a margin
-- * to accommodate the buffer refill delay.
-+/* Buffer qouta per channel. We want to keep in check number of ingress frames
-+ * in flight: for small sized frames, congestion group taildrop may kick in
-+ * first; for large sizes, Rx FQ taildrop threshold will ensure only a
-+ * reasonable number of frames will be pending at any given time.
-+ * Ingress frame drop due to buffer pool depletion should be a corner case only
-  */
--#define DPAA2_ETH_MAX_FRAMES_PER_QUEUE	(DPAA2_ETH_FQ_TAILDROP_THRESH / 64)
--#define DPAA2_ETH_NUM_BUFS		(DPAA2_ETH_MAX_FRAMES_PER_QUEUE + 256)
-+#define DPAA2_ETH_NUM_BUFS		1280
- #define DPAA2_ETH_REFILL_THRESH \
- 	(DPAA2_ETH_NUM_BUFS - DPAA2_ETH_BUFS_PER_CMD)
- 
-@@ -63,8 +63,7 @@
-  * taildrop kicks in
-  */
- #define DPAA2_ETH_CG_TAILDROP_THRESH(priv)				\
--	(DPAA2_ETH_MAX_FRAMES_PER_QUEUE * dpaa2_eth_queue_count(priv) /	\
--	 dpaa2_eth_tc_count(priv))
-+	(1024 * dpaa2_eth_queue_count(priv) / dpaa2_eth_tc_count(priv))
- 
- /* Maximum number of buffers that can be acquired/released through a single
-  * QBMan command
--- 
-2.17.1
+David
 
