@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B551D5A1B
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 21:40:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 185DE1D5A1F
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 21:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726372AbgEOTjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 15:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
+        id S1726525AbgEOTkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 15:40:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726168AbgEOTjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 15:39:46 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED38C061A0C;
-        Fri, 15 May 2020 12:39:45 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id d7so2972737qtn.11;
-        Fri, 15 May 2020 12:39:45 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726168AbgEOTkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 15:40:08 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B36C061A0C;
+        Fri, 15 May 2020 12:40:07 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id l1so3001929qtp.6;
+        Fri, 15 May 2020 12:40:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4BQMLiV7/BzZ4YarNv+2ABNpKJB9d3AIj9UHyBIXc0M=;
-        b=CO76H2fPe/gmTLc9vA/Uw8T86Xg+X8HMd1/oZ+N6jGgzKfFJnhkyEa0nCAgaB1mhOO
-         DS7bHDWmBfMxfgn08jVH+Ir45lUztMhcQsKK6BIas2HN5uB2bXHFSvRCAPJTiQGOQpff
-         8o1iiDoziuQ4jhCJOf+TFMrADges9ONOoEZt9BciOzw2MEqpOjL0ZykeC8mK0ncvI02r
-         zR/bHvcZVqlGOJhphjK5Uc2jl/D0QC2yq+8aa5hP2L3mXrivKoyb6Tvg2UrM3Iziugk7
-         bpB2fbKaW4SnaN/5w3V0tEBkwP4xVvkY8lPghTePTtbTZE4OcvYtJbpUmSRUjdbJ9Imy
-         EU3A==
+        bh=ikkxwEu71CdGarHt15Nyy9hGFKLIof3KJehQxLwDlN4=;
+        b=SOjVLl+izKiP0sVLg7P8GXLqVdqvr2sIh0zNiC4zm/TRSTUTeoLvIedrUGHHmpJbIK
+         iiXZoT61t2ggO4RmXlkg7QnDVbYg8Xj6eZtWUMM/nDmHxuDass0Bb7ulopy3VX8ANnPA
+         63aW4KXADE67+RBm1LgdoJhR1wKN9dXX2B/Wb3Eu7waPDK/MrMYGVC/NIV5QB9XOD8J+
+         dpcV4Rvpvx4yg+3l94anP+1JptOK1LWJK/x7hFji5oj0SEJzEdlGGCXLVj4ETCd53Wrp
+         ZWGNJ8BnodLJafkjoP2/T7Kagogf4OjJ76Zk9sqqipF+5B0b2bxhhiJJOc8r17l3S4ef
+         T1bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4BQMLiV7/BzZ4YarNv+2ABNpKJB9d3AIj9UHyBIXc0M=;
-        b=WlLEPQTydNCDS+kVwktSixGKBH0WGSzJgAF43p9bvAkP2Az5JS8y7R+cfaYG7YcBwa
-         JL4YubRiovq2rLk/XLcCQqbeqeGtmqngGOVVVKHcYgA+Sow6JCyvMHxUx72Mf1fO60IP
-         fR9I562UxOkmAr+3aim8lHR5DC5YoT+KnO01ISGZZw4PrPjE4Bxd0fwNT4TvOKc89cx7
-         ebrjB1czNV7F/1FUaptWPymWmive8JAqj//N2DpEu//OO6wuP7g08DVt75KuePICNuxe
-         Pu7l0F8lfotKCZZybYvWHLCM19s3GX3ZDs/4MCSOOQ5Z1n+Qv3aX3IYawzEK1X6r+kWs
-         MKwg==
-X-Gm-Message-State: AOAM533HP9nFS/6GlmSFtRwPXixp7potRstIPGk5wMRmor9P3uYL0HKs
-        GRvz1yBYGTm2WxYxu7UekslB9m51Nq5n1ueZR8s=
-X-Google-Smtp-Source: ABdhPJxnwuBdyHD8GKWt0YJqtP3FaI6rV2VYuQhkw3oH7yyy8yh2SxOwnA6qKrcqBG6vPu4l1/yUJH2LM/bK/bqPcB8=
-X-Received: by 2002:aed:2f02:: with SMTP id l2mr5209605qtd.117.1589571585047;
- Fri, 15 May 2020 12:39:45 -0700 (PDT)
+        bh=ikkxwEu71CdGarHt15Nyy9hGFKLIof3KJehQxLwDlN4=;
+        b=Yp25y5ZVMStWAaZJS2AJT6WAht/0qgCza5aUaV/K67XWTzIU2jye6yso8hcspQpDKG
+         2xTonPL79TZJxh/hMJliYq1puEJOBUQzF1/StIdY8+7azjxPCp0X+qFTG6fosFrCgxNn
+         ikDA4MfG62hR9EcvS+Cl33silLvnkSmcYuGLue4gtnWbYdfE+uKi6knixPKUI3KB+UPv
+         9DrkIwD/be2OG6n3DMFvBUCFOM6y2oICH+My+23wmAgnSdRSSWvX23UpZVOvP3/yeK2G
+         zGpsRM0aT8CeXoCHfvwpwXSX+Z/IkYqHERlVOEEa0VuL2OHXwSo0ToELWP1Bg01kgSvC
+         Ed0g==
+X-Gm-Message-State: AOAM5303mkJ12mCrsIEbbFzPDld0PfEb3a+1ShSTM2/xFXS2DhB+4gYU
+        ZXQVILGNPfjWtQnOxcVOl0++7DekszC+YG7w0nQ=
+X-Google-Smtp-Source: ABdhPJzhUUf5V3Iz1+1Q3uB06vQXgx6/YDbfnatZLhkOKnw8GTgr+stIAdKFX+C6nJbg8Z8xrocwGtaI0BQZFNAxomQ=
+X-Received: by 2002:ac8:424b:: with SMTP id r11mr5236862qtm.171.1589571607138;
+ Fri, 15 May 2020 12:40:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200515165007.217120-1-irogers@google.com> <20200515165007.217120-8-irogers@google.com>
-In-Reply-To: <20200515165007.217120-8-irogers@google.com>
+References: <20200515165007.217120-1-irogers@google.com> <20200515165007.217120-3-irogers@google.com>
+In-Reply-To: <20200515165007.217120-3-irogers@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 15 May 2020 12:39:34 -0700
-Message-ID: <CAEf4BzZOB0L0iie0CAduNOnE4TXbfKeo-g97kwfMPZ5Mg7uRwg@mail.gmail.com>
-Subject: Re: [PATCH v2 7/7] perf expr: Migrate expr ids table to a hashmap
+Date:   Fri, 15 May 2020 12:39:56 -0700
+Message-ID: <CAEf4BzYMXp6KgG-ZDyqyPe9NOx3P2P7eObXNMsAnqKYsA4M_vQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/7] libbpf hashmap: Remove unused #include
 To:     Ian Rogers <irogers@google.com>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -85,58 +85,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, May 15, 2020 at 9:51 AM Ian Rogers <irogers@google.com> wrote:
 >
-> Use a hashmap between a char* string and a double* value. While bpf's
-> hashmap entries are size_t in size, we can't guarantee sizeof(size_t) >=
-> sizeof(double). Avoid a memory allocation when gathering ids by making 0.0
-> a special value encoded as NULL.
->
-> Original map suggestion by Andi Kleen:
-> https://lore.kernel.org/lkml/20200224210308.GQ160988@tassilo.jf.intel.com/
-> and seconded by Jiri Olsa:
-> https://lore.kernel.org/lkml/20200423112915.GH1136647@krava/
+> Remove #include of libbpf_internal.h that is unused.
+> Discussed in this thread:
+> https://lore.kernel.org/lkml/CAEf4BzZRmiEds_8R8g4vaAeWvJzPb4xYLnpF0X2VNY8oTzkphQ@mail.gmail.com/
 >
 > Signed-off-by: Ian Rogers <irogers@google.com>
 > ---
->  tools/perf/tests/expr.c       |  40 ++++++-----
->  tools/perf/tests/pmu-events.c |  25 +++----
->  tools/perf/util/expr.c        | 129 +++++++++++++++++++---------------
->  tools/perf/util/expr.h        |  26 +++----
->  tools/perf/util/expr.y        |  22 +-----
->  tools/perf/util/metricgroup.c |  87 +++++++++++------------
->  tools/perf/util/stat-shadow.c |  49 ++++++++-----
->  7 files changed, 197 insertions(+), 181 deletions(-)
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  tools/lib/bpf/hashmap.h | 1 -
+>  1 file changed, 1 deletion(-)
 >
-> diff --git a/tools/perf/tests/expr.c b/tools/perf/tests/expr.c
-> index 3f742612776a..5e606fd5a2c6 100644
-> --- a/tools/perf/tests/expr.c
-> +++ b/tools/perf/tests/expr.c
-> @@ -19,11 +19,9 @@ static int test(struct expr_parse_ctx *ctx, const char *e, double val2)
->  int test__expr(struct test *t __maybe_unused, int subtest __maybe_unused)
+> diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+> index bae8879cdf58..e823b35e7371 100644
+> --- a/tools/lib/bpf/hashmap.h
+> +++ b/tools/lib/bpf/hashmap.h
+> @@ -15,7 +15,6 @@
+>  #else
+>  #include <bits/reg.h>
+>  #endif
+> -#include "libbpf_internal.h"
+>
+>  static inline size_t hash_bits(size_t h, int bits)
 >  {
->         const char *p;
-> -       const char **other;
-> -       double val;
-> -       int i, ret;
-> +       double val, *val_ptr;
-> +       int ret;
->         struct expr_parse_ctx ctx;
-> -       int num_other;
+> --
+> 2.26.2.761.g0e0b3e54be-goog
 >
->         expr__ctx_init(&ctx);
->         expr__add_id(&ctx, "FOO", 1);
-> @@ -52,25 +50,29 @@ int test__expr(struct test *t __maybe_unused, int subtest __maybe_unused)
->         ret = expr__parse(&val, &ctx, p, 1);
->         TEST_ASSERT_VAL("missing operand", ret == -1);
->
-> +       hashmap__clear(&ctx.ids);
-
-hashmap__clear() will free up memory allocated for hashmap itself and
-hash entries, but not keys/values. Unless it's happening somewhere
-else, you'll need to do something similar to expr__ctx_clear() below?
-
-Same below for another "lone" hashmap_clear() call.
-
->         TEST_ASSERT_VAL("find other",
-> -                       expr__find_other("FOO + BAR + BAZ + BOZO", "FOO", &other, &num_other, 1) == 0);
-
-[...]
