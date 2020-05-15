@@ -2,183 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 395291D4F37
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 15:26:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF73E1D4F4C
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 15:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726197AbgEON0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 09:26:54 -0400
-Received: from mail-eopbgr70057.outbound.protection.outlook.com ([40.107.7.57]:58015
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726170AbgEON0x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 09:26:53 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QbmSjrhOSPM7VF/hFQpyK0HDZ6tNAgZjEyzL+W6TDuMu5sGHCR4chhqYMAU41FLbBrerfBA5OCipHwWiJydeXBYG5Vi67GDMrTPSlkvHWPCzHRg+6Psrdq2xkGct02lSeBY7ZveuqHgT/Xj+su/oN96roICbeLyf/TdMj0J1rAE0scKNqz8q7EJgBioZ6rmxj1V/UaKDe8rr0mK4e+Ejd7MEbAurCREk7C7PPDifqImuBtoS7IdalZMwZ5KP5e8tZdcNCmX17GDaLABN4OD7nH5+++gRaP9j10eW6NgcYlKdD++OVB26Qhwq9CYRL98zfTkcYKJB/L5tD+0B7It8YA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4P2chuIAghvzEqLP+BHXbV//ega1vy0cMot3Q01HapU=;
- b=HlKK4Xp/GSvjIvaXz0OXorii4K3C/DxRnTXYkyLjsekvu7zC8Q+sA1YpuODGd88NHWG2gTTZKuhKTyPpcygvmypFDU6anFKnzbrHKto6C+Z0U5jAfJtGv/4KxK6shd3MwiDMvtiINrsqo1C8M/jAWrtBYWRExmZrPEPl5l7+HJ/axPsudMpqm2TbVPd++9KuBs9hKcWsdxR2hRx25ajT2aP6Us8KGmjju0xYqqvsAd16ml+MEircwgqfM1em5yKl2GiDnmpWQ3iBFiJ+dCcACRNDSiysJKs2903rs52HUI1bVA3G2RbtUnQifmuZcV12nE2kHIJI9vbTn4DbfCH6Bw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=orolia.com; dmarc=pass action=none header.from=orolia.com;
- dkim=pass header.d=orolia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=orolia.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4P2chuIAghvzEqLP+BHXbV//ega1vy0cMot3Q01HapU=;
- b=WMri2M2BWMza6yjy9/oJNGyLs6rcL4T/3qm4CXZlFWq2SZQ9rijt3QJm2GsY2C7sc3YTCMlXoyPaQhV87fVtjDaumd2JjEXBOPzcDlbC1q9KyDP+jsibPl0A+z900O5ZUMZG7AFhrH37ERIKZ3x1+f5VDM8uy1ECOyChp/mtmlo=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=orolia.com;
-Received: from AM0PR0602MB3380.eurprd06.prod.outlook.com
- (2603:10a6:208:24::13) by AM0PR0602MB3444.eurprd06.prod.outlook.com
- (2603:10a6:208:22::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.33; Fri, 15 May
- 2020 13:26:48 +0000
-Received: from AM0PR0602MB3380.eurprd06.prod.outlook.com
- ([fe80::3d36:ab20:7d3b:8368]) by AM0PR0602MB3380.eurprd06.prod.outlook.com
- ([fe80::3d36:ab20:7d3b:8368%7]) with mapi id 15.20.3000.022; Fri, 15 May 2020
- 13:26:48 +0000
-Subject: Re: [PATCH 0/3] Patch series for a PTP Grandmaster use case using
- stmmac/gmac3 ptp clock
-To:     Richard Cochran <richardcochran@gmail.com>,
-        Olivier Dautricourt <olivier.dautricourt@orolia.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
- <20200514135325.GB18838@localhost> <20200514150900.GA12924@orolia.com>
- <20200515003706.GB18192@localhost>
-From:   Julien Beraud <julien.beraud@orolia.com>
-Message-ID: <3a14f417-1ae1-9434-5532-4b3387f25d18@orolia.com>
-Date:   Fri, 15 May 2020 15:26:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-In-Reply-To: <20200515003706.GB18192@localhost>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LNXP123CA0004.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:d2::16) To AM0PR0602MB3380.eurprd06.prod.outlook.com
- (2603:10a6:208:24::13)
+        id S1726228AbgEONcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 09:32:51 -0400
+Received: from mout.kundenserver.de ([212.227.126.187]:39195 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726162AbgEONcu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 09:32:50 -0400
+Received: from mail-qv1-f54.google.com ([209.85.219.54]) by
+ mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1N8GIa-1j4jqL03iy-0148bL; Fri, 15 May 2020 15:32:49 +0200
+Received: by mail-qv1-f54.google.com with SMTP id p4so1036078qvr.10;
+        Fri, 15 May 2020 06:32:48 -0700 (PDT)
+X-Gm-Message-State: AOAM533LC1JhRL8lBvEYosRM/J8mL0QJapJt9PSOWop9bWdP0bC6/eRk
+        yd+VsM6iU/j2hJQvBX0zTgy6w+UKWY+IFV6U63I=
+X-Google-Smtp-Source: ABdhPJxRaY7zY8QTvNzuxerWSaqGbHKOK4FIyf/5qJLFxDuhmkrh8pWdFCVTHGQsHaBEpA8LvsOh8UJboFLS9sON+fo=
+X-Received: by 2002:a0c:eb11:: with SMTP id j17mr3448680qvp.197.1589549567720;
+ Fri, 15 May 2020 06:32:47 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2a01:cb00:862c:3100:f406:ebd3:1008:85ef] (2a01:cb00:862c:3100:f406:ebd3:1008:85ef) by LNXP123CA0004.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:d2::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend Transport; Fri, 15 May 2020 13:26:48 +0000
-X-Originating-IP: [2a01:cb00:862c:3100:f406:ebd3:1008:85ef]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ddcdee38-3a88-4be0-50d6-08d7f8d39f10
-X-MS-TrafficTypeDiagnostic: AM0PR0602MB3444:|AM0PR0602MB3444:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR0602MB34442CA94BF1B8AA9826748599BD0@AM0PR0602MB3444.eurprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 04041A2886
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GO8ZuXdEyTtJ89SCofpCsEKzveo8JhsC0GSGdvkK7MxZGOKn81eygDA3rJo7VG5Qu0SdMbQrnX+2je5ix3ikwnkN4iHzy3L+FgMg1LEzlkMfSxd9RrHGDZvUB05F6/0+GGYbA92b0R5cTRQ99U9z3knQGLiO/ytb9VonCA58cqHVPe7UnITQ8NHcwUrVyNjfOr7MARP6EwX0KpiMyjkuZ3gNuy/r786EhGF4j2aYGvCTCBaAo3xhaQJEfnB8XkPdwgyDkElh5pbFCj5NOsKXhzHnN0/dblyNeCLV9G7jIXl99tMVPWTq3KLZsFTyLPCIXU4nQHeNSHGNSiOa470TGw4B8eMz/O+fKrOpWIbHejZFgp3CQMiRLykajMcq3U4AvE4noruCbpsfWacHS04lWbfT69aqAwNRXBInMaNLAoBMtN2tbYeIcDH/KbYuEg8Y0kterShjHb0iAWebZvxfN+P0xTabEq3XczH6+AiRzW6klhdK+5DDBUuB8MTgKBie
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0602MB3380.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(376002)(366004)(346002)(39850400004)(6636002)(36756003)(316002)(66476007)(31686004)(4326008)(186003)(16526019)(54906003)(66556008)(8676002)(66946007)(8936002)(110136005)(2906002)(31696002)(6486002)(52116002)(2616005)(5660300002)(44832011)(86362001)(478600001)(53546011)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 8NIlKKZvGhiqoUE1aK8Q/ew/hGFSSbirWWCTBvVbiDwnBIe162/pCCs4QOdAEkutVdeHqzadiWMgBC/iNuE/zgTWxFsV6bmCzfpqYxRv29LoLH5tVFWa0CDYmBSZeGvXXXurDztNwoXU/cmqmGbU954RXYWo165t/cij1Ihbr/zh2YuS7uZFaYCau+T0foyGKobFscdqeDTMsJ148+A+MGLVI9cUV7MTkR3NCF5feO9vpfAn8VvfuwhqKHrSgGx/BNz2YaUI6st7o+YMqGFTxiDWF/eqcY6GWSe00mxjIP6hvLTfPq1CKx4AlIqcFCea7akzXPbBL79zf6BK7jn4pA3hf3AZ2oaL+WAapzCfn//TIIs5OkIq1mPOUEgScIgjo+kG3KbMM7IkSl8lI/fpEYQEqmHwOfHEr8deeuArUkw772p8Ni5+ILqRHHOCMQBfEe4hyG//Qbhmvy+rTydwCYBQA7ERdjy22EOH4q7N7I3mPHYBVwnikVzObmo342MJ3yKPCl4NjCkby3I34DFF5Nlc4F74YCqe+sgtlmJq+YauBVWmfTi9OXgcRZH5RvSG
-X-OriginatorOrg: orolia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ddcdee38-3a88-4be0-50d6-08d7f8d39f10
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2020 13:26:48.8058
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a263030c-9c1b-421f-9471-1dec0b29c664
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: P158dDINg+WNHjLZvjITwk29sSr+ne9VC403PACDNA97V8GIC++iKwocmC+cU2mh7lRB4XqjJVdj9QQAsvo/8KOLXBsbJohML+ICMNLGimw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0602MB3444
+References: <20200514075942.10136-1-brgl@bgdev.pl> <20200514075942.10136-11-brgl@bgdev.pl>
+In-Reply-To: <20200514075942.10136-11-brgl@bgdev.pl>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 15 May 2020 15:32:31 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0XgJtZNKePZUUpzADO25-JZKyDiVHFS_yuHRXTjvjDwg@mail.gmail.com>
+Message-ID: <CAK8P3a0XgJtZNKePZUUpzADO25-JZKyDiVHFS_yuHRXTjvjDwg@mail.gmail.com>
+Subject: Re: [PATCH v3 10/15] net: ethernet: mtk-eth-mac: new driver
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        DTML <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:/5ofnXw9mU5dIgLefv/eRsDvP8+vTrIU+kLDXUGITnkQuWac4Lv
+ lCUzHqRE2GvIKbgKOqokob5YjwHyKX97w0rAAWhXtQOfANy41OWqbOBppqecviSzLFkmNz+
+ 2baHX4ARSd0lXB90Re+J/7eya76FB9t4m55bGplGQ+RfBZSx9IL4TuVFvxJp5ov/6iHHmpn
+ 4slNhioblUkWT2Ewt3K6Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PSBO+4J/98g=:gGROTXY0ptE/pYUSwwvuox
+ LQJix53g2u4f43J6wPGIlXEN9Sfdb91HjNyChil2D95CJzrRnaWlVruZOo55mgKhe92Ohy/yg
+ 87OxKYoBj1Mb2P4J3L/V3fwqP/gav9cVeaxsCo20ZFaZKoDvkYvfSlIPYU3uurK/xeEFAMAbt
+ qTjRN9SdEVq/n4qttKKMYTG9tw1Shau5JApHNfoB7BxtG3qf9SbAGxOsqaARuc47qUYax1dZ6
+ 1578a9XMcwHoKjC8rsWVu3m9WcdNS0qVH9VIH+rzArN+G81B1CaboTmEgNF2cPqd9xRvMp/Oz
+ 7EA5phTtB26zA7YNb5q6Zv55A0kKSfzPK571gneJm4rDtsS8/J3JbjXme+g8hKNmUH4xQN2yS
+ iDZLbWuwlWzjeKIeMxXkK8QMGCaN0sHeY0/LtUgY8BVQ+unPpjmLQC3ry/CyVIKmEZkrWEkGR
+ Xce+CMpI83rqIg857MjSgpzciN7wok2nNy0BPk8DJZb9HOjlpUxE0szWAxIn5VjzOsVZhTSLi
+ 3m/Z6AUId97YB+eqRUNSHlLaam1G55PHrKKd80C8B0vLof15lLICwSnOQi33wDKI8vO4/WT/t
+ BGRcMNIu1vThyBFAC2NRdPVihx7d37eDljyoIJRK4o1OpPhV/daih5x8HZQkE4ftEFRFBNcwe
+ vtAgLAJdJcS/SsDR+JCwKabWvHHbCJItJfZT0uRLp71Imow6FV5+a3LR7CMEKbFSVfv3U8p7F
+ rhiCgx08UIIgJbUEGAZm4+lL+yaVY+NZPwhReHOUocFaLcjNfELZBJkcAbWJ+Qiicg08kgcv/
+ xV8uJmISTCGfylAtb0x0tUGlBv+WL8b/dblBJFamBW0aVbHB00=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry to jump in, just wanted to add a few details,
+On Thu, May 14, 2020 at 10:00 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> +static int mtk_mac_ring_pop_tail(struct mtk_mac_ring *ring,
+> +                                struct mtk_mac_ring_desc_data *desc_data)
 
-On 15/05/2020 02:37, Richard Cochran wrote:
-> On Thu, May 14, 2020 at 05:09:01PM +0200, Olivier Dautricourt wrote:
->>    My issue is that the default behavior of the stmmac driver is to
->>    set the mac into fine mode which implies to continuously do frequency
->>    adjustment, So if i'm not mistaken using the nullf servo will not address
->>    that issue even if we are not doing explicit clock_adjtime syscalls.
-> 
-> Why not use the external time stamps from your GPS to do one of the
-> following?
-> 
-> A) Feed them into a user space PI controller and do frequency
->     correction, or
-> 
-> B) Feed the offsets into the hardware PLL (if that is present) using
->     the new PHC ADJ_OFFSET support (found in net-next).
-> 
-> I don't see a need for changing any kernel interfaces at all.  If you
-> think there is such a need, then you will have to make some kind of
-> argument or justification for it.
+I took another look at this function because of your comment on the locking
+the descriptor updates, which seemed suspicious as the device side does not
+actually use the locks to access them
 
-I think that B could work, but it doesn't solve the issue with the adjustment
-mode of the mac's clock.
-I understand this may be very specific to stmmac but the problem is still
-there.
+> +{
+> +       struct mtk_mac_ring_desc *desc = &ring->descs[ring->tail];
+> +       unsigned int status;
+> +
+> +       /* Let the device release the descriptor. */
+> +       dma_rmb();
+> +       status = desc->status;
+> +       if (!(status & MTK_MAC_DESC_BIT_COWN))
+> +               return -1;
 
-This MAC's Timestamping Clock has 2 adjustment modes :
-- Fine
-- Coarse
+The dma_rmb() seems odd here, as I don't see which prior read
+is being protected by this.
 
-It has the following registers :
-- sub-second-increment (32bits)
-- addend (32bits)
-- timestamp-control (to set the mode to fine or coarse)
+> +       desc_data->len = status & MTK_MAC_DESC_MSK_LEN;
+> +       desc_data->flags = status & ~MTK_MAC_DESC_MSK_LEN;
+> +       desc_data->dma_addr = ring->dma_addrs[ring->tail];
+> +       desc_data->skb = ring->skbs[ring->tail];
+> +
+> +       desc->data_ptr = 0;
+> +       desc->status = MTK_MAC_DESC_BIT_COWN;
+> +       if (status & MTK_MAC_DESC_BIT_EOR)
+> +               desc->status |= MTK_MAC_DESC_BIT_EOR;
+> +
+> +       /* Flush writes to descriptor memory. */
+> +       dma_wmb();
 
-It also has an accumulator (32bits)
+The comment and the barrier here seem odd as well. I would have expected
+a barrier after the update to the data pointer, and only a single store
+but no read of the status flag instead of the read-modify-write,
+something like
 
--> When in fine mode, which is the current default,
-- The sub-second-increment (in ns) is added to the clock's time when the
-accumulator overflows
-- At each clock cycle of ptp_ref_clock, the value of addend is added to the
-the accumulator
+      desc->data_ptr = 0;
+      dma_wmb(); /* make pointer update visible before status update */
+      desc->status = MTK_MAC_DESC_BIT_COWN | (status & MTK_MAC_DESC_BIT_EOR);
 
-The frequency adjustments of the mac's clock are done by changing the value of
-addend, so that the number of clock cycles that make the accumulator overflow
-slightly change.
+> +       ring->tail = (ring->tail + 1) % MTK_MAC_RING_NUM_DESCS;
+> +       ring->count--;
 
-The value of sub-second-increment is set to 2 / ptp_clk_freq, because using an
-accumulator with the same number of bits as the addend register makes it
-impossible to overflow at every addition.
+I would get rid of the 'count' here, as it duplicates the information
+that is already known from the difference between head and tail, and you
+can't update it atomically without holding a lock around the access to
+the ring. The way I'd do this is to have the head and tail pointers
+in separate cache lines, and then use READ_ONCE/WRITE_ONCE
+and smp barriers to access them, with each one updated on one
+thread but read by the other.
 
-This mode allows to implement a PTP Slave, constantly adjusting the clock's freq
-to match the master.
-
--> In coarse mode, the accumulator and the addend register are not used and the
-value of sub-second-increment is added to the clock at every ptp_ref_clock
-cycle.
-So the value of sub-second-increment can be set to 1 / ptp_clk_freq but fine
-adjustments of the clocks frequency are not possible.
-
-This mode allows to implement a Grand Master where we can feed the stmmac's ptp
-ref clock input with a frequency that's controlled externally, making it
-useless to do frequency adjustments with the MAC.
-
-We want our devices to be able to switch from Master to Slave at runtime.
-
-To make things short it implies that :
-
-1- In coarse mode, the accuracy of the timestamps is twice what it is in fine
-mode (loosing precision on the capability to adjust the mac clock's frequency)
-
-2- I don't think modes can be switched gracefully while the timestamping clk is
-active. (2 registers need to be modified : sub-second-increment and control)
-
-1 makes it quite valuable to be able to switch mode. 2 means that this
-cannot be done when doing the clock adjustment (offset vs. freq adj. for
-instance).
-
-So the question is what interface could we use to configure a timestamping
-clock that has more than one functioning mode and which mode can be changed at
-runtime, but not while timestamping is running ?
-
-Another thing to note is that based on your comments, I understand that the way
-the stmmac's clock is handled now, i.e configuring and enabling the clock when
-enabling hardware timestamping may not be right, and we may want to split
-enabling the clock and enabling hardware timestamping, but we'd still
-need to be able to switch the mode of adjustement of the clock.
-
-I hope this helps a bit,
-Julien
+     Arnd
