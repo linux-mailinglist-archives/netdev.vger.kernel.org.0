@@ -2,242 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F42281D5BB4
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2CD11D5BCD
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727801AbgEOVgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 17:36:31 -0400
-Received: from mga06.intel.com ([134.134.136.31]:57746 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726228AbgEOVga (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 17:36:30 -0400
-IronPort-SDR: 7gMMpYesjOreOOtFaoxTdQdGwP/K2Guk9sJDs0IcRZXBiSRmDyu7h8b7EV6s+84FPO73K+mFjD
- PaG1DivKUL4A==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2020 14:36:22 -0700
-IronPort-SDR: RY/mCS7XCwgG9Te6p3O2JPUu2ZjTPeIdYW6V1lpqZPwwqyHyHYJSBGvX8Yeq5ZY8W151mL/7IN
- kHKVHmlR5+hA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,396,1583222400"; 
-   d="scan'208";a="438460347"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.91.12]) ([10.212.91.12])
-  by orsmga005.jf.intel.com with ESMTP; 15 May 2020 14:36:20 -0700
-Subject: Re: [RFC v2] current devlink extension plan for NICs
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        parav@mellanox.com, yuvalav@mellanox.com, jgg@ziepe.ca,
-        saeedm@mellanox.com, leon@kernel.org,
-        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
-        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
-        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
-        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
-        oss-drivers@netronome.com, snelson@pensando.io,
-        drivers@pensando.io, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
-        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
-        valex@mellanox.com, linyunsheng@huawei.com, lihong.yang@intel.com,
-        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
-References: <20200501091449.GA25211@nanopsycho.orion>
- <b0f75e76-e6cb-a069-b863-d09f77bc67f6@intel.com>
- <20200515093016.GE2676@nanopsycho>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <e3aa20ec-a47e-0b91-d6d5-1ad2020eca28@intel.com>
-Date:   Fri, 15 May 2020 14:36:19 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1727893AbgEOVrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 17:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727867AbgEOVrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:47:42 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5911C05BD09
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 14:47:41 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id s37so1848971ybe.13
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 14:47:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tS+3CNMGEUW08GWKVNnTCx8encgyi37BKeJukWELzNc=;
+        b=et/afkD6oOQ8yPirs/ovFayPyCKLRWPBJUWQfo6mBaGP/VgeItYGcmmiMuFdkQ6diZ
+         lp2UAYZh47m0f2FWyEAfMlk4lqL+Wr0b0qd5sPjrOwqaSqmM0AbXME4ySzcO9tEgap7Y
+         xiRN17Nh1zlxP4xm6W9+lMzqt5ruP2vFDCIT8O1B969Sf+eEAjWKn+0e8BMhjNvVimnP
+         61i1EQ4/Wp6WC4QfNVm8DxLjYZghfSRzNiY4gQtihWRYH10r0WFXg69IQPatUG9UKUaR
+         cagIPuLbrusA2+bourPD0q/2aJK8T8FtidKLadBqUvR6y/kPO08+8NvBAN+sPJnI7KRi
+         3fDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tS+3CNMGEUW08GWKVNnTCx8encgyi37BKeJukWELzNc=;
+        b=sKMaVT8TZE2TsN7HiuYVxn/qvKm6K0PX+gbjsOdOEX0B03V+q8SKwyQ+9jxoiddFnZ
+         irkiP3TS1Bbmb/Y0bCviRbgQ/gY/gTBPrTWoMP5Bh2domCPkcA71DoRsaq3UvRKNEKOa
+         NIEaS1SZFKBBL+6JjedVNha3TAcBCiKbxQ1rvREeSul4cXeRIdg3ip8cPLZHgrJIGzEK
+         2Q1QlNJEhkzDPQmb2RcctBJy5mEd9IJU0gh9/DV7mP6kk7oHhpy2wn72cYgJEBJVrVLh
+         dr4c14jumW0/NsfXD+UlQxRQAajLQXl5Zy7YG82gdlHYaZUDYW142Ye1qaQL/ugP1oqg
+         p5Mw==
+X-Gm-Message-State: AOAM531qZLsgA8jd/cUKAWML658iQa8GQPro5xeOiF9mJua7GuGThXJY
+        e2GI+MpUsobi6gHmni+34z/P3wHqWKJnqwXdTMNPnw==
+X-Google-Smtp-Source: ABdhPJyM9orvNlQicAfnrlZkcpeDb6FoYRrmyCqPxtKl7R3aimfxalhbrMVLLt0N1/ukrAhCjRtDKdjh/3N4+YwP+TM=
+X-Received: by 2002:a25:c08b:: with SMTP id c133mr8940904ybf.286.1589579260905;
+ Fri, 15 May 2020 14:47:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200515093016.GE2676@nanopsycho>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200515165007.217120-1-irogers@google.com> <20200515170036.GA10230@kernel.org>
+ <CAEf4BzZ5=_yu1kL77n+Oc0K9oaDi4J=c+7CV8D0AXs2hBxhNbw@mail.gmail.com> <5ebf0748.1c69fb81.f8310.eef3@mx.google.com>
+In-Reply-To: <5ebf0748.1c69fb81.f8310.eef3@mx.google.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Fri, 15 May 2020 14:47:29 -0700
+Message-ID: <CAP-5=fWX6nD72Fn7dBS3Mrd_wy9iqkGKnfhHPxcqC_oNfKPZQA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/7] Copy hashmap to tools/perf/util, use in perf expr
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, May 15, 2020 at 2:19 PM <arnaldo.melo@gmail.com> wrote:
+>
+> <bpf@vger.kernel.org>,Stephane Eranian <eranian@google.com>
+> From: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+> Message-ID: <79BCBAF7-BF5F-4556-A923-56E9D82FB570@gmail.com>
+>
+>
+>
+> On May 15, 2020 4:42:46 PM GMT-03:00, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >On Fri, May 15, 2020 at 10:01 AM Arnaldo Carvalho de Melo
+> ><arnaldo.melo@gmail.com> wrote:
+> >>
+> >> Em Fri, May 15, 2020 at 09:50:00AM -0700, Ian Rogers escreveu:
+> >> > Perf's expr code currently builds an array of strings then removes
+> >> > duplicates. The array is larger than necessary and has recently
+> >been
+> >> > increased in size. When this was done it was commented that a
+> >hashmap
+> >> > would be preferable.
+> >> >
+> >> > libbpf has a hashmap but libbpf isn't currently required to build
+> >> > perf. To satisfy various concerns this change copies libbpf's
+> >hashmap
+> >> > into tools/perf/util, it then adds a check in perf that the two are
+> >in
+> >> > sync.
+> >> >
+> >> > Andrii's patch to hashmap from bpf-next is brought into this set to
+> >> > fix issues with hashmap__clear.
+> >> >
+> >> > Two minor changes to libbpf's hashmap are made that remove an
+> >unused
+> >> > dependency and fix a compiler warning.
+> >>
+> >> Andrii/Alexei/Daniel, what do you think about me merging these fixes
+> >in my
+> >> perf-tools-next branch?
+> >
+> >I'm ok with the idea, but it's up to maintainers to coordinate this :)
+>
+> Good to know, do I'll take all patches except the ones touching libppf, will just make sure the copy is done with the patches applied.
+>
+> At some point they'll land in libbpf and the warning from check_headers.sh will be resolved.
 
+So tools/perf/util's hashmap will be ahead of libbpf's, as without the
+fixes the perf build is broken by Werror. This will cause
+check_headers to warn in perf builds, which would usually mean our
+header was older than the source one, but in this case it means the
+opposite, we're waiting for the libbpf patches to merge. Aside from
+some interim warnings everything will resolve itself and Arnaldo
+avoids landing patches in libbpf that can interfere with bpf-next.
 
-On 5/15/2020 2:30 AM, Jiri Pirko wrote:
-> Fri, May 15, 2020 at 01:52:54AM CEST, jacob.e.keller@intel.com wrote:
->>> $ devlink port add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10
->>>
->>
->> Can you clarify what sfnum means here? and why is it different from the
->> index? I get that the index is a unique number that identifies the port
->> regardless of type, so sfnum must be some sort of hardware internal
->> identifier?
-> 
-> Basically pfnum, sfnum and vfnum could overlap. Index is unique within
-> all groups together.
-> 
+It takes some getting your head around but sounds good to me :-) I
+think the only workable alternatives would be to explore having a
+single version of the code in some kind of shared libhashmap or to
+implement another hashmap in libapi. I'd like to get the rest of this
+work unblocked and so it'd be nice to land this and we can always
+refactor later - I like Arnaldo's plan. Can a bpf maintainer make sure
+the hashmap changes get pulled into bpf-next?
 
-Right. Index is just an identifier for which port this is.
+Thanks!
+Ian
 
-> 
->>
->> When looking at this with colleagues, there was a lot of confusion about
->> the difference between the index and the sfnum.
-> 
-> No confusion about index and pfnum/vfnum? They behave the same.
-> Index is just a port handle.
-> 
-
-I'm less confused about the difference between index and these "nums",
-and more so questioning what pfnum/vfnum/sfnum represent? Are they
-similar to the vf ID that we have in the legacy SRIOV functions? I.e. a
-hardware index?
-
-I don't think in general users necessarily care which "index" they get
-upfront. They obviously very much care about the index once it's
-selected. I do believe the interfaces should start with the capability
-for the index to be selected automatically at creation (with the
-optional capability to select a specific index if desired, as shown here).
-
-I do not think most users want to care about what to pick for this
-number. (Just as they would not want to pick a number for the port index
-either).
-
-> 
->>
->>> The devlink kernel code calls down to device driver (devlink op) and asks
->>> it to create a SF port with particular attributes. Driver then instantiates
->>> the SF port in the same way it is done for VF.
->>>
->>
->> What do you mean by attributes here? what sort of attributes can be
->> requested?
-> 
-> In the original slice proposal, it was possible to pass the mac address
-> too. However with new approach (port func subobject) that is not
-> possible. I'll remove this rudiment.
-> 
-
-Ok.
-
-> 
->>
->>>
->>> Note that it may be possible to avoid passing port index and let the
->>> kernel assign index for you:
->>> $ devlink port add pci/0000.06.00.0 flavour pcisf pfnum 1 sfnum 10
->>>
->>> This would work in a similar way as devlink region id assignment that
->>> is being pushed now.
->>>
->>
->> Sure, this makes sense to me after seeing Jakub's recent patch for
->> regions. I like this approach. Letting the user not have to pick an ID
->> ahead of time is useful.
->>
->> Is it possible to skip providing an sfnum, and let the kernel or driver
->> pick one? Or does that not make sense?
-> 
-> Does not. The sfnum is something that should be deterministic. The sfnum
-> is then visible on the other side on the virtbus device:
-> /sys/bus/virtbus/devices/mlx5_sf.1/sfnum
-> and it's name is generated accordingly: enp6s0f0s10
-> 
-
-Why not have the option to say "create me an sfnum and then report it to
-me" in the same way we do with region numbers now and plan to with port
-indexes?
-
-Basically: why do I as a user of the front end care what this number
-actually is? What does it represent?
-
-> 
-> 
->>
->>> ==================================================================
->>> ||                                                              ||
->>> ||   VF manual creation and activation user cmdline API draft   ||
->>> ||                                                              ||
->>> ==================================================================
->>>
->>> To enter manual mode, the user has to turn off VF dummies creation:
->>> $ devlink dev set pci/0000:06:00.0 vf_dummies disabled
->>> $ devlink dev show
->>> pci/0000:06:00.0: vf_dummies disabled
->>>
->>> It is "enabled" by default in order not to break existing users.
->>>
->>> By setting the "vf_dummies" attribute to "disabled", the driver
->>> removes all dummy VFs. Only physical ports are present:
->>>
->>> $ devlink port show
->>> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
->>> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
->>>
->>> Then the user is able to create them in a similar way as SFs:
->>>
->>> $ devlink port add pci/0000:06:00.0/99 flavour pcivf pfnum 1 vfnum 8
->>>
->>
->> So in this case, you have to specify the VF index to create? So this
->> vfum is very similar to the sfnum (and pfnum?) above?
-> 
-> Yes.
-> 
-> 
->>
->> What about the ability to just say "please give me a VF, but I don't
->> care which one"?
-> 
-> Well, that could be eventually done too, with Jakub's extension.
-> 
-
-Sure. I think that's what I was asking above as well. Ok.
-
->>>
->>>    $ devlink port show
->>>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
->>>
->>>    If there is another parent PF, say "0000:06:00.1", that share the
->>>    same embedded switch, the aliasing is established for devlink handles.
->>>
->>>    The user can use devlink handles:
->>>    pci/0000:06:00.0
->>>    pci/0000:06:00.1
->>>    as equivalents, pointing to the same devlink instance.
->>>
->>>    Parent PFs are the ones that may be in control of managing
->>>    embedded switch, on any hierarchy leve>
->>> 2) Child PF. This is a leg of a PF put to the parent PF. It is
->>>    represented by a port a port with a netdevice and func:
->>>
->>>    $ devlink port show
->>>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
->>>    pci/0000:06:00.0/1: flavour pcipf pfnum 2 type eth netdev enp6s0f0pf2
->>>        func: hw_addr aa:bb:cc:aa:bb:87 state active
->>>
->>>    This is a typical smartnic scenario. You would see this list on
->>>    the smartnic CPU. The port pci/0000:06:00.0/1 is a leg to
->>>    one of the hosts. If you send packets to enp6s0f0pf2, they will
->>>    go to the child PF.
->>>
->>>    Note that inside the host, the PF is represented again as "Parent PF"
->>>    and may be used to configure nested embedded switch.
->>>
->>>
->>
->> I'm not sure I understand this section. Child PF? Is this like a PF in
->> another host? Or representing the other side of the virtual link?
-> 
-> It's both actually, at the same time.
-> 
-> 
-
-Ok. I still don't think I fully grasp this yet.
-
-
->> Obviously this is a TODO, but how does this differ from the current
->> port_split and port_unsplit?
-> 
-> Does not have anything to do with port splitting. This is about creating
-> a "child PF" from the section above.
-> 
-
-Hmm. Ok so this is about internal connections in the switch, then?
+> Thanks,
+>
+> - Arnaldo
+>
+> --
+> Sent from my Android device with K-9 Mail. Please excuse my brevity.
