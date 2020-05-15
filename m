@@ -2,145 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47B111D48AB
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 10:40:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ED6E1D492D
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 11:15:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727812AbgEOIkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 04:40:03 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:42720 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726722AbgEOIkD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 04:40:03 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 2110EF20EA4F74314E39;
-        Fri, 15 May 2020 16:40:00 +0800 (CST)
-Received: from [127.0.0.1] (10.166.215.154) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Fri, 15 May 2020
- 16:39:58 +0800
-Subject: Re: [PATCH v2] xfrm: policy: Fix xfrm policy match
-To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-References: <20200421143149.45108-1-yuehaibing@huawei.com>
- <20200422125346.27756-1-yuehaibing@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lucien.xin@gmail.com>
-From:   Yuehaibing <yuehaibing@huawei.com>
-Message-ID: <0015ec4c-0e9c-a9d2-eb03-4d51c5fbbe86@huawei.com>
-Date:   Fri, 15 May 2020 16:39:57 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.8.0
+        id S1727829AbgEOJPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 05:15:17 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47978 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727785AbgEOJPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 05:15:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589534115;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=US7SpBr54i9iz8hrODjYv8BFrm77h/XotZ/PhujGRpE=;
+        b=iC4aLpX6ELEWq78IadEU7+r8+oayn1bkTS6H/QcY/kJMkTcZe/mxY/pIUkeZ+dKj46XW4K
+        Bqn1YUaV1f1+gm+AHUvTgaFZlNVbQM+vkK6JxeD1Uck3LA5PWzLfAP3iPEFQUxGDSMSWxX
+        HU6fEs9ycmVvCY23AEACshTIcmgZWSs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-142-aFQHNqHPM-GN2xFjFXZUSQ-1; Fri, 15 May 2020 05:15:12 -0400
+X-MC-Unique: aFQHNqHPM-GN2xFjFXZUSQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 54690474;
+        Fri, 15 May 2020 09:15:11 +0000 (UTC)
+Received: from ovpn-115-8.ams2.redhat.com (ovpn-115-8.ams2.redhat.com [10.36.115.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C170F1001B2C;
+        Fri, 15 May 2020 09:15:09 +0000 (UTC)
+Message-ID: <8e34817da4948af5febb2ba2fd573bb4c6278b3e.camel@redhat.com>
+Subject: Re: [PATCH net-next 1/3] mptcp: add new sock flag to deal with join
+ subflows
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Christoph Paasch <cpaasch@apple.com>
+Date:   Fri, 15 May 2020 11:15:08 +0200
+In-Reply-To: <alpine.OSX.2.22.394.2005141258520.26234@aabousam-mobl1.amr.corp.intel.com>
+References: <cover.1589383730.git.pabeni@redhat.com>
+         <968fb022a824140c6761c755e916f4526fee0a29.1589383730.git.pabeni@redhat.com>
+         <alpine.OSX.2.22.394.2005141258520.26234@aabousam-mobl1.amr.corp.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-In-Reply-To: <20200422125346.27756-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.166.215.154]
-X-CFilter-Loop: Reflected
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 2020-05-14 at 13:13 -0700, Mat Martineau wrote:
+> On Wed, 13 May 2020, Paolo Abeni wrote:
+> 
+> > MP_JOIN subflows must not land into the accept queue.
+> > Currently tcp_check_req() calls an mptcp specific helper
+> > to detect such scenario.
+> > 
+> > Such helper leverages the subflow context to check for
+> > MP_JOIN subflows. We need to deal also with MP JOIN
+> > failures, even when the subflow context is not available
+> > due allocation failure.
+> > 
+> > A possible solution would be changing the syn_recv_sock()
+> > signature to allow returning a more descriptive action/
+> > error code and deal with that in tcp_check_req().
+> > 
+> > Since the above need is MPTCP specific, this patch instead
+> > uses a TCP request socket hole to add a MPTCP specific flag.
+> > Such flag is used by the MPTCP syn_recv_sock() to tell
+> > tcp_check_req() how to deal with the request socket.
+> > 
+> > This change is a no-op for !MPTCP build, and makes the
+> > MPTCP code simpler. It allows also the next patch to deal
+> > correctly with MP JOIN failure.
+> > 
+> > RFC -> v1:
+> > - move the drop_req bit inside tcp_request_sock (Eric)
+> > 
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> > include/linux/tcp.h      |  3 +++
+> > include/net/mptcp.h      | 17 ++++++++++-------
+> > net/ipv4/tcp_minisocks.c |  2 +-
+> > net/mptcp/protocol.c     |  7 -------
+> > net/mptcp/subflow.c      |  2 ++
+> > 5 files changed, 16 insertions(+), 15 deletions(-)
+> > 
+> > diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+> > index e60db06ec28d..bf44e85d709d 100644
+> > --- a/include/linux/tcp.h
+> > +++ b/include/linux/tcp.h
+> > @@ -120,6 +120,9 @@ struct tcp_request_sock {
+> > 	u64				snt_synack; /* first SYNACK sent time */
+> > 	bool				tfo_listener;
+> > 	bool				is_mptcp;
+> > +#if IS_ENABLED(CONFIG_MPTCP)
+> > +	bool				drop_req;
+> > +#endif
+> > 	u32				txhash;
+> > 	u32				rcv_isn;
+> > 	u32				snt_isn;
+> > diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+> > index e60275659de6..c4a6ef4ba35b 100644
+> > --- a/include/net/mptcp.h
+> > +++ b/include/net/mptcp.h
+> > @@ -68,6 +68,11 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
+> > 	return tcp_rsk(req)->is_mptcp;
+> > }
+> > 
+> > +static inline bool rsk_drop_req(const struct request_sock *req)
+> > +{
+> > +	return tcp_rsk(req)->is_mptcp && tcp_rsk(req)->drop_req;
+> > +}
+> > +
+> > void mptcp_space(const struct sock *ssk, int *space, int *full_space);
+> > bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
+> > 		       unsigned int *size, struct mptcp_out_options *opts);
+> > @@ -121,8 +126,6 @@ static inline bool mptcp_skb_can_collapse(const struct sk_buff *to,
+> > 				 skb_ext_find(from, SKB_EXT_MPTCP));
+> > }
+> > 
+> > -bool mptcp_sk_is_subflow(const struct sock *sk);
+> > -
+> > void mptcp_seq_show(struct seq_file *seq);
+> > #else
+> > 
+> > @@ -140,6 +143,11 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
+> > 	return false;
+> > }
+> > 
+> > +static inline bool rsk_drop_req(const struct request_sock *req)
+> > +{
+> > +	return false;
+> > +}
+> > +
+> > static inline void mptcp_parse_option(const struct sk_buff *skb,
+> > 				      const unsigned char *ptr, int opsize,
+> > 				      struct tcp_options_received *opt_rx)
+> > @@ -190,11 +198,6 @@ static inline bool mptcp_skb_can_collapse(const struct sk_buff *to,
+> > 	return true;
+> > }
+> > 
+> > -static inline bool mptcp_sk_is_subflow(const struct sock *sk)
+> > -{
+> > -	return false;
+> > -}
+> > -
+> > static inline void mptcp_space(const struct sock *ssk, int *s, int *fs) { }
+> > static inline void mptcp_seq_show(struct seq_file *seq) { }
+> > #endif /* CONFIG_MPTCP */
+> > diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+> > index 7e40322cc5ec..495dda2449fe 100644
+> > --- a/net/ipv4/tcp_minisocks.c
+> > +++ b/net/ipv4/tcp_minisocks.c
+> > @@ -774,7 +774,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+> > 	if (!child)
+> > 		goto listen_overflow;
+> > 
+> > -	if (own_req && sk_is_mptcp(child) && mptcp_sk_is_subflow(child)) {
+> > +	if (own_req && rsk_drop_req(req)) {
+> > 		reqsk_queue_removed(&inet_csk(sk)->icsk_accept_queue, req);
+> > 		inet_csk_reqsk_queue_drop_and_put(sk, req);
+> > 		return child;
+> > diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> > index 6a812dd8b6b6..b974898eb6b5 100644
+> > --- a/net/mptcp/protocol.c
+> > +++ b/net/mptcp/protocol.c
+> > @@ -1687,13 +1687,6 @@ bool mptcp_finish_join(struct sock *sk)
+> > 	return ret;
+> > }
+> > 
+> > -bool mptcp_sk_is_subflow(const struct sock *sk)
+> > -{
+> > -	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+> > -
+> > -	return subflow->mp_join == 1;
+> > -}
+> > -
+> > static bool mptcp_memory_free(const struct sock *sk, int wake)
+> > {
+> > 	struct mptcp_sock *msk = mptcp_sk(sk);
+> > diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+> > index 009d5c478062..42a8a650ff20 100644
+> > --- a/net/mptcp/subflow.c
+> > +++ b/net/mptcp/subflow.c
+> > @@ -500,6 +500,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+> > 			ctx->remote_key = mp_opt.sndr_key;
+> > 			ctx->fully_established = mp_opt.mp_capable;
+> > 			ctx->can_ack = mp_opt.mp_capable;
+> > +			tcp_rsk(req)->drop_req = false;
+> > 		} else if (ctx->mp_join) {
+> > 			struct mptcp_sock *owner;
+> > 
+> > @@ -512,6 +513,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+> > 				goto close_child;
+> > 
+> > 			SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINACKRX);
+> > +			tcp_rsk(req)->drop_req = true;
+> > 		}
+> 
+> It looks like tcp_rsk(req)->drop_req gets initialized when the 
+> ctx->mp_capable and ctx->mp_join values are set as expected, but it's hard 
+> to tell if it's guaranteed to be initialized in every corner case (any 
+> allocation or token failures, unexpected input, etc.).
+> 
+> Patch 3 will set drop_req for some cases, but does it makes sense to 
+> set tcp_rsk(req)->drop_req in subflow_v{4,6}_init_req() here as an 
+> additional 'else' clause?
 
-Friendly ping...
+We already have such check in place in subflow_ulp_clone(): if both
+subflow_req->mp_join and subflow_req->mp_capable are cleared we
+fallback, elsewhere we set either subflow->mp_capable or subflow-
+>mp_join.
 
-Any plan for this issue?
+Later in subflow_ulp_clone() we have similar scenario, where do:
 
-On 2020/4/22 20:53, YueHaibing wrote:
-> While update xfrm policy as follow:
-> 
-> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
->  priority 1 mark 0 mask 0x10
-> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
->  priority 2 mark 0 mask 0x00
-> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
->  priority 2 mark 0 mask 0x10
-> 
-> We get this warning:
-> 
-> WARNING: CPU: 0 PID: 4808 at net/xfrm/xfrm_policy.c:1548
-> Kernel panic - not syncing: panic_on_warn set ...
-> CPU: 0 PID: 4808 Comm: ip Not tainted 5.7.0-rc1+ #151
-> Call Trace:
-> RIP: 0010:xfrm_policy_insert_list+0x153/0x1e0
->  xfrm_policy_inexact_insert+0x70/0x330
->  xfrm_policy_insert+0x1df/0x250
->  xfrm_add_policy+0xcc/0x190 [xfrm_user]
->  xfrm_user_rcv_msg+0x1d1/0x1f0 [xfrm_user]
->  netlink_rcv_skb+0x4c/0x120
->  xfrm_netlink_rcv+0x32/0x40 [xfrm_user]
->  netlink_unicast+0x1b3/0x270
->  netlink_sendmsg+0x350/0x470
->  sock_sendmsg+0x4f/0x60
-> 
-> Policy C and policy A has the same mark.v and mark.m, so policy A is
-> matched in first round lookup while updating C. However policy C and
-> policy B has same mark and priority, which also leads to matched. So
-> the WARN_ON is triggered.
-> 
-> xfrm policy lookup should only be matched if the found policy has the
-> same lookup keys (mark.v & mark.m) and priority.
-> 
-> Fixes: 7cb8a93968e3 ("xfrm: Allow inserting policies with matching mark and different priorities")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
-> v2: policy matched while have same mark and priority
-> ---
->  net/xfrm/xfrm_policy.c | 15 +++++----------
->  1 file changed, 5 insertions(+), 10 deletions(-)
-> 
-> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-> index 297b2fdb3c29..2a0d7f5e6545 100644
-> --- a/net/xfrm/xfrm_policy.c
-> +++ b/net/xfrm/xfrm_policy.c
-> @@ -1436,12 +1436,7 @@ static void xfrm_policy_requeue(struct xfrm_policy *old,
->  static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
->  				   struct xfrm_policy *pol)
->  {
-> -	u32 mark = policy->mark.v & policy->mark.m;
-> -
-> -	if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
-> -		return true;
-> -
-> -	if ((mark & pol->mark.m) == pol->mark.v &&
-> +	if ((policy->mark.v & policy->mark.m) == (pol->mark.v & pol->mark.m) &&
->  	    policy->priority == pol->priority)
->  		return true;
->  
-> @@ -1628,7 +1623,7 @@ __xfrm_policy_bysel_ctx(struct hlist_head *chain, u32 mark, u32 if_id,
->  	hlist_for_each_entry(pol, chain, bydst) {
->  		if (pol->type == type &&
->  		    pol->if_id == if_id &&
-> -		    (mark & pol->mark.m) == pol->mark.v &&
-> +		    mark == (pol->mark.m & pol->mark.v) &&
->  		    !selector_cmp(sel, &pol->selector) &&
->  		    xfrm_sec_ctx_match(ctx, pol->security))
->  			return pol;
-> @@ -1726,7 +1721,7 @@ struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u32 if_id,
->  	hlist_for_each_entry(pol, chain, byidx) {
->  		if (pol->type == type && pol->index == id &&
->  		    pol->if_id == if_id &&
-> -		    (mark & pol->mark.m) == pol->mark.v) {
-> +		    mark == (pol->mark.m & pol->mark.v)) {
->  			xfrm_pol_hold(pol);
->  			if (delete) {
->  				*err = security_xfrm_policy_delete(
-> @@ -1898,7 +1893,7 @@ static int xfrm_policy_match(const struct xfrm_policy *pol,
->  
->  	if (pol->family != family ||
->  	    pol->if_id != if_id ||
-> -	    (fl->flowi_mark & pol->mark.m) != pol->mark.v ||
-> +	    fl->flowi_mark != (pol->mark.m & pol->mark.v) ||
->  	    pol->type != type)
->  		return ret;
->  
-> @@ -2177,7 +2172,7 @@ static struct xfrm_policy *xfrm_sk_policy_lookup(const struct sock *sk, int dir,
->  
->  		match = xfrm_selector_match(&pol->selector, fl, family);
->  		if (match) {
-> -			if ((sk->sk_mark & pol->mark.m) != pol->mark.v ||
-> +			if (sk->sk_mark != (pol->mark.m & pol->mark.v) ||
->  			    pol->if_id != if_id) {
->  				pol = NULL;
->  				goto out;
-> 
+	} else if (subflow_req->mp_join) {
+
+while we could simply use a plain 'else'.
+
+To make things clearer, I can replace both 'else if'... with plain else
+(possibly in a separate patch), WDYT?
+
+Thanks,
+
+Paolo
 
