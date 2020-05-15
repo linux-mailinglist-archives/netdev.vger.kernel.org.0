@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5D21D5C0D
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 00:06:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157341D5C0F
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 00:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgEOWGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 18:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        id S1726407AbgEOWGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 18:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726179AbgEOWGL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 18:06:11 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0C7C061A0C;
-        Fri, 15 May 2020 15:06:11 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id q10so4128367ile.0;
-        Fri, 15 May 2020 15:06:11 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726179AbgEOWGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 18:06:33 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1132DC061A0C;
+        Fri, 15 May 2020 15:06:33 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id c20so1925608ilk.6;
+        Fri, 15 May 2020 15:06:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=c0BG3kaZ50Dcd+OGVnp2ZcPP0p+RiidJl2L8uBk24fI=;
-        b=rFuERQ4rSSIe5IVcO1biP7F/LEcOX76pk/lgNPgSV8FuO9EbHDqFGCCKPhbrIkngVj
-         owlkdupaDkO84Bb9Y3o0KBdh1TYjyR09YFDBNSUXQVIORmv/upmWw7vBS+yhQqEHsl9v
-         cB7F6y5Quq6HrFQLUnRd+F4XHi9PGmAMjyf0ByfjDLlDTLD9aSqrAFM7TpR6BuDIdqAm
-         t3hb2QUT1YVvGhXbV3uEK9QHLOzYZYr79P7rgm1RGJH1mRmFFvGIoeziyUMMwzStlQM8
-         N+tmKbhhcGjtkSUaH6I8q8hTYwB3eIkWjaUeZ0kmxxbIK//UUn65xMshI0KLPKugLDBo
-         92Ig==
+        bh=tERCCKiIKjEOnssno9mpcVZCO2wmElRDazrTiC4NWhc=;
+        b=SxzT6nzH53RfnGEZPsqknVJuHoICyb9rZPzQ7437b1+CiLKdVFzjPL8ecKFhHW/7Y0
+         hHeki8WSCL9l3GnzlwVYDCLkDKD4M8OTwBAlGt89JFRykzRSn5OFt9VXRO3PfBma+Qje
+         Yexk2vdHU/qBxStUMigyYUKQyDbim7QJ0fyaf7MopdrDN4ZL5w+NuRfyzTB/skcq2KuP
+         nmRz3zDU68HZVsgUCSnq79741d3t+1aE2zkuIo+tLXPjz171+nwNH6k6hMdyCQQwWOKo
+         w3bzGx8xW3YY+b6CmzoN2Du8rQpmn3JxZTzJoVya8uy0qgiKWMJEmhmtYlqD9YANXQci
+         CZuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=c0BG3kaZ50Dcd+OGVnp2ZcPP0p+RiidJl2L8uBk24fI=;
-        b=rz76RBgdCgv2M/9cuWEYqRdtsKAF3CKyCqiVfa7BhCL1JkA6zYMplUq15b7MuSwePB
-         Pz/qgX7mV4icXaixNPYXa60muCSOXS5d77/MmScivxlaE5M1d3ADi4nqJL6sHrHb87qn
-         zKrDERoDdxIqKEKHzDRto/wgL/41A+HYb7m1oCLP6lstAvwQey0Lepu/A71MhgWd6LCR
-         9KssP37+XPbt9Su8JI7157dEWDoU4VHqeQImISPYq95Ah/sForNqmFDyseb3nuz7RMZQ
-         u1r8Pe+lEHoIq3mTuOv+cujbFLTUolGVDT5lrH72s4OFkR0gg5o00UVpgCVU751aOyj1
-         2ZnQ==
-X-Gm-Message-State: AOAM531VSkB9e/foJEq8sFtm7zgPx0cM2DrVepkcGT8R/uiPFYKMWaXN
-        sVhvXPiOo3r/ncKOSGCXM90=
-X-Google-Smtp-Source: ABdhPJwXBqFJlCMCIWH5MM45uzHva0n0oF5xuuz75wO+Y2DO+QyLry53sNupAjqPWhYiyubuM/AdPA==
-X-Received: by 2002:a92:40ca:: with SMTP id d71mr5615680ill.200.1589580371196;
-        Fri, 15 May 2020 15:06:11 -0700 (PDT)
+        bh=tERCCKiIKjEOnssno9mpcVZCO2wmElRDazrTiC4NWhc=;
+        b=V1wlLaEkzM7AuSz7Lhp85AOXH7xlMNgNt1nkXspcu22flP85F3004Cs17QljYRmd1O
+         KX9wmmp+JbKkwf3qnjSccupw728BoqGjkzRIOHW0qXsxmbW/0supG6HtdcvJQQn/tza/
+         Z5ALhjCdghAjYOx4u+QVajJM9u/ZrystLuPAQm5w+B4KlnwOYUGmstDo7I77xU8RtoXT
+         +RbksAk6mHURAbvvDVDvwaEBwJpUOA/IR1hbwSguFNCxojA68bQBZ0pfua1nJBT/Dh4l
+         rKBL1t06VniKjkwc2+FuVI5gQimQbYikiYWyldzMeaFg8tYX8r0vnET0JB+BKztxgAan
+         FHHw==
+X-Gm-Message-State: AOAM531MUO4d7WYgvFWqo/yGO8+O6H+f+/3VNljM2vNzBbFSiuennwUb
+        v3HqRMjbuUB/oCr0ttQQ+fw=
+X-Google-Smtp-Source: ABdhPJx1zhZSh7bwpqkECWQRvF3kqTYnQ7hkWZA+FrFoOXcDOz5FAIoBQlEOaFNkeWztXGHYV8BhoA==
+X-Received: by 2002:a92:bb55:: with SMTP id w82mr5558479ili.211.1589580392500;
+        Fri, 15 May 2020 15:06:32 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id u17sm1372861ilb.86.2020.05.15.15.06.03
+        by smtp.gmail.com with ESMTPSA id l7sm1402407ilh.54.2020.05.15.15.06.23
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 May 2020 15:06:10 -0700 (PDT)
-Subject: [bpf-next PATCH v2 1/5] bpf: sk_msg add some generic helpers that
- may be useful from sk_msg
+        Fri, 15 May 2020 15:06:31 -0700 (PDT)
+Subject: [bpf-next PATCH v2 2/5] bpf: extend bpf_base_func_proto helpers
+ with probe_* and *current_task*
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     yhs@fb.com, ast@kernel.org, daniel@iogearbox.net
 Cc:     lmb@cloudflare.com, bpf@vger.kernel.org, john.fastabend@gmail.com,
         jakub@cloudflare.com, netdev@vger.kernel.org
-Date:   Fri, 15 May 2020 15:05:57 -0700
-Message-ID: <158958035716.12532.11872908481088096292.stgit@john-Precision-5820-Tower>
+Date:   Fri, 15 May 2020 15:06:17 -0700
+Message-ID: <158958037715.12532.12473092995203096801.stgit@john-Precision-5820-Tower>
 In-Reply-To: <158958022865.12532.5430684453474460041.stgit@john-Precision-5820-Tower>
 References: <158958022865.12532.5430684453474460041.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
@@ -66,48 +66,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add these generic helpers that may be useful to use from sk_msg programs.
-The helpers do not depend on ctx so we can simply add them here,
+Often it is useful when applying policy to know something about the
+task. If the administrator has CAP_SYS_ADMIN rights then they can
+use kprobe + networking hook and link the two programs together to
+accomplish this. However, this is a bit clunky and also means we have
+to call both the network program and kprobe program when we could just
+use a single program and avoid passing metadata through sk_msg/skb->cb,
+socket, maps, etc.
 
- BPF_FUNC_perf_event_output
- BPF_FUNC_get_current_uid_gid
- BPF_FUNC_get_current_pid_tgid
- BPF_FUNC_get_current_comm
- BPF_FUNC_get_current_cgroup_id
- BPF_FUNC_get_current_ancestor_cgroup_id
- BPF_FUNC_get_cgroup_classid
+To accomplish this add probe_* helpers to bpf_base_func_proto programs
+guarded by a perfmon_capable() check. New supported helpers are the
+following,
 
-Acked-by: Yonghong Song <yhs@fb.com>
+ BPF_FUNC_get_current_task
+ BPF_FUNC_current_task_under_cgroup
+ BPF_FUNC_probe_read_user
+ BPF_FUNC_probe_read_kernel
+ BPF_FUNC_probe_read_user_str
+ BPF_FUNC_probe_read_kernel_str
+
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/filter.c |   16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ kernel/bpf/helpers.c     |   27 +++++++++++++++++++++++++++
+ kernel/trace/bpf_trace.c |   16 ++++++++--------
+ 2 files changed, 35 insertions(+), 8 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index f8a3c7e..7dac2b6 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6443,6 +6443,22 @@ sk_msg_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_msg_push_data_proto;
- 	case BPF_FUNC_msg_pop_data:
- 		return &bpf_msg_pop_data_proto;
-+	case BPF_FUNC_perf_event_output:
-+		return &bpf_event_output_data_proto;
-+	case BPF_FUNC_get_current_uid_gid:
-+		return &bpf_get_current_uid_gid_proto;
-+	case BPF_FUNC_get_current_pid_tgid:
-+		return &bpf_get_current_pid_tgid_proto;
-+#ifdef CONFIG_CGROUPS
-+	case BPF_FUNC_get_current_cgroup_id:
-+		return &bpf_get_current_cgroup_id_proto;
-+	case BPF_FUNC_get_current_ancestor_cgroup_id:
-+		return &bpf_get_current_ancestor_cgroup_id_proto;
-+#endif
-+#ifdef CONFIG_CGROUP_NET_CLASSID
-+	case BPF_FUNC_get_cgroup_classid:
-+		return &bpf_get_cgroup_classid_curr_proto;
-+#endif
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 886949f..ee992dd 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -601,6 +601,13 @@ const struct bpf_func_proto bpf_event_output_data_proto =  {
+ 	.arg5_type      = ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
++const struct bpf_func_proto bpf_current_task_under_cgroup_proto __weak;
++const struct bpf_func_proto bpf_get_current_task_proto __weak;
++const struct bpf_func_proto bpf_probe_read_user_proto __weak;
++const struct bpf_func_proto bpf_probe_read_user_str_proto __weak;
++const struct bpf_func_proto bpf_probe_read_kernel_proto __weak;
++const struct bpf_func_proto bpf_probe_read_kernel_str_proto __weak;
++
+ const struct bpf_func_proto *
+ bpf_base_func_proto(enum bpf_func_id func_id)
+ {
+@@ -648,6 +655,26 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 	case BPF_FUNC_jiffies64:
+ 		return &bpf_jiffies64_proto;
  	default:
- 		return bpf_base_func_proto(func_id);
++		break;
++	}
++
++	if (!perfmon_capable())
++		return NULL;
++
++	switch (func_id) {
++	case BPF_FUNC_get_current_task:
++		return &bpf_get_current_task_proto;
++	case BPF_FUNC_current_task_under_cgroup:
++		return &bpf_current_task_under_cgroup_proto;
++	case BPF_FUNC_probe_read_user:
++		return &bpf_probe_read_user_proto;
++	case BPF_FUNC_probe_read_kernel:
++		return &bpf_probe_read_kernel_proto;
++	case BPF_FUNC_probe_read_user_str:
++		return &bpf_probe_read_user_str_proto;
++	case BPF_FUNC_probe_read_kernel_str:
++		return &bpf_probe_read_kernel_str_proto;
++	default:
+ 		return NULL;
  	}
+ }
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 9a84d7f..60e54be 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -147,7 +147,7 @@ BPF_CALL_3(bpf_probe_read_user, void *, dst, u32, size,
+ 	return ret;
+ }
+ 
+-static const struct bpf_func_proto bpf_probe_read_user_proto = {
++const struct bpf_func_proto bpf_probe_read_user_proto = {
+ 	.func		= bpf_probe_read_user,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+@@ -167,7 +167,7 @@ BPF_CALL_3(bpf_probe_read_user_str, void *, dst, u32, size,
+ 	return ret;
+ }
+ 
+-static const struct bpf_func_proto bpf_probe_read_user_str_proto = {
++const struct bpf_func_proto bpf_probe_read_user_str_proto = {
+ 	.func		= bpf_probe_read_user_str,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+@@ -198,7 +198,7 @@ BPF_CALL_3(bpf_probe_read_kernel, void *, dst, u32, size,
+ 	return bpf_probe_read_kernel_common(dst, size, unsafe_ptr, false);
+ }
+ 
+-static const struct bpf_func_proto bpf_probe_read_kernel_proto = {
++const struct bpf_func_proto bpf_probe_read_kernel_proto = {
+ 	.func		= bpf_probe_read_kernel,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+@@ -213,7 +213,7 @@ BPF_CALL_3(bpf_probe_read_compat, void *, dst, u32, size,
+ 	return bpf_probe_read_kernel_common(dst, size, unsafe_ptr, true);
+ }
+ 
+-static const struct bpf_func_proto bpf_probe_read_compat_proto = {
++const struct bpf_func_proto bpf_probe_read_compat_proto = {
+ 	.func		= bpf_probe_read_compat,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+@@ -253,7 +253,7 @@ BPF_CALL_3(bpf_probe_read_kernel_str, void *, dst, u32, size,
+ 	return bpf_probe_read_kernel_str_common(dst, size, unsafe_ptr, false);
+ }
+ 
+-static const struct bpf_func_proto bpf_probe_read_kernel_str_proto = {
++const struct bpf_func_proto bpf_probe_read_kernel_str_proto = {
+ 	.func		= bpf_probe_read_kernel_str,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+@@ -268,7 +268,7 @@ BPF_CALL_3(bpf_probe_read_compat_str, void *, dst, u32, size,
+ 	return bpf_probe_read_kernel_str_common(dst, size, unsafe_ptr, true);
+ }
+ 
+-static const struct bpf_func_proto bpf_probe_read_compat_str_proto = {
++const struct bpf_func_proto bpf_probe_read_compat_str_proto = {
+ 	.func		= bpf_probe_read_compat_str,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+@@ -877,7 +877,7 @@ BPF_CALL_0(bpf_get_current_task)
+ 	return (long) current;
+ }
+ 
+-static const struct bpf_func_proto bpf_get_current_task_proto = {
++const struct bpf_func_proto bpf_get_current_task_proto = {
+ 	.func		= bpf_get_current_task,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+@@ -898,7 +898,7 @@ BPF_CALL_2(bpf_current_task_under_cgroup, struct bpf_map *, map, u32, idx)
+ 	return task_under_cgroup_hierarchy(current, cgrp);
+ }
+ 
+-static const struct bpf_func_proto bpf_current_task_under_cgroup_proto = {
++const struct bpf_func_proto bpf_current_task_under_cgroup_proto = {
+ 	.func           = bpf_current_task_under_cgroup,
+ 	.gpl_only       = false,
+ 	.ret_type       = RET_INTEGER,
 
