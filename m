@@ -2,132 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E42981D48A7
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 10:38:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B111D48AB
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 10:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728013AbgEOIio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 04:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726894AbgEOIin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 04:38:43 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D1FC05BD09
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 01:38:42 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id e125so347491lfd.1
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 01:38:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=unikie-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sXRSs/9NMJKgVBS5peisoJGVjTMEyPBHrie3FIkiVVo=;
-        b=ESGDxtEwDZMyvCjTLjTXkHtxqcj/ILNJpSRAuD9+GoJtCNy5ZOZGmWpSeRq2Ok+SXR
-         464LnTE7p1J1qLbQ7tf/DGPzM0MzCMR6SOujzfUptAPyh3/noO6XhdALEhxjf1oLXN3D
-         /3tXiYrqaPVbZL02DueqmzidRr/v+Hq1xXtUgyPzW2W4nhFdmZhWtX4sS0mVgmYScDQu
-         xTwitk00AMMKQgs+VAhUcGe62oTZyog4I/E6v9NL0oJzN1EcV6c7MXkVBC9BCe+W8+tt
-         AOJuNalHurQpRs034FRbfpmAha6AtWXpb4V/Il2qNNMYHLcW5HkSXAMoXR0fO8eF+ZLV
-         RjBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sXRSs/9NMJKgVBS5peisoJGVjTMEyPBHrie3FIkiVVo=;
-        b=fmSdbl/SdIOKRfVu/UC0toJr4HJDQaDLyhd9WicxmvJAy6Y6gpgIpXpyAExmf0Mg6R
-         3UOuP/S0kUdkpxGG9Unc5QKaqa7E5sKWw0VW9sVYUZPwtAXjZec3p0yp7pRuRsX0ZO5r
-         RgPMhmlbGTaUaNSxtpC/M93AzHyP70PV9U6AhLx87g/mfhYbJIf3eLNlmHX/0tHliixQ
-         hAgv++cBqT857p+rHNUxg8iZWUfAOySSfXGJH9tFSZJYNyCNryj0gIMinAqFs+uv0Atk
-         5iVdzK30owxCrEIcY4j8fpg9N8JELUMI5c7DOUfwJk9u2DdmnzIZnVzYXJpHGjxb0/TU
-         cHkQ==
-X-Gm-Message-State: AOAM5315NLCE8PCjVDbWVNuHuFDmCOQzIsfivNdCZPIVPgLMxpOioasC
-        k012b3X3cF9s0RHnAmYg4S3T/Q==
-X-Google-Smtp-Source: ABdhPJxIwCfPo7LL1CDPr/t6yU3XEg1Qyl7PhP16CcGW8J2V1WPxl0r6u9lzfrC6c5/h2dtxoGZvJQ==
-X-Received: by 2002:a19:84:: with SMTP id 126mr890626lfa.174.1589531920961;
-        Fri, 15 May 2020 01:38:40 -0700 (PDT)
-Received: from buimax ([109.204.208.150])
-        by smtp.gmail.com with ESMTPSA id q16sm1067188lfp.9.2020.05.15.01.38.40
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 15 May 2020 01:38:40 -0700 (PDT)
-Date:   Fri, 15 May 2020 11:38:38 +0300
-From:   Henri Rosten <henri.rosten@unikie.com>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: stable/linux-4.4.y bisection: baseline.login on
- at91-sama5d4_xplained
-Message-ID: <20200515083836.GA5005@buimax>
-References: <5eb8399a.1c69fb81.c5a60.8316@mx.google.com>
- <2db7e52e-86ae-7c87-1782-8c0cafcbadd8@collabora.com>
- <20200512111059.GA34497@piout.net>
- <980597f7-5170-72f2-ec2f-efc64f5e27eb@gmail.com>
- <20200512211519.GB29995@sasha-vm>
- <20200515081357.GA3257@buimax>
+        id S1727812AbgEOIkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 04:40:03 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:42720 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726722AbgEOIkD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 May 2020 04:40:03 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 2110EF20EA4F74314E39;
+        Fri, 15 May 2020 16:40:00 +0800 (CST)
+Received: from [127.0.0.1] (10.166.215.154) by DGGEMS405-HUB.china.huawei.com
+ (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Fri, 15 May 2020
+ 16:39:58 +0800
+Subject: Re: [PATCH v2] xfrm: policy: Fix xfrm policy match
+To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+References: <20200421143149.45108-1-yuehaibing@huawei.com>
+ <20200422125346.27756-1-yuehaibing@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lucien.xin@gmail.com>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <0015ec4c-0e9c-a9d2-eb03-4d51c5fbbe86@huawei.com>
+Date:   Fri, 15 May 2020 16:39:57 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200515081357.GA3257@buimax>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200422125346.27756-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.166.215.154]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 11:14:00AM +0300, Henri Rosten wrote:
-> On Tue, May 12, 2020 at 05:15:19PM -0400, Sasha Levin wrote:
-> > On Tue, May 12, 2020 at 01:29:06PM -0700, Florian Fainelli wrote:
-> > > 
-> > > 
-> > > On 5/12/2020 4:10 AM, Alexandre Belloni wrote:
-> > > > Hi,
-> > > > 
-> > > > On 12/05/2020 06:54:29+0100, Guillaume Tucker wrote:
-> > > > > Please see the bisection report below about a boot failure.
-> > > > > 
-> > > > > Reports aren't automatically sent to the public while we're
-> > > > > trialing new bisection features on kernelci.org but this one
-> > > > > looks valid.
-> > > > > 
-> > > > > It appears to be due to the fact that the network interface is
-> > > > > failing to get brought up:
-> > > > > 
-> > > > > [  114.385000] Waiting up to 10 more seconds for network.
-> > > > > [  124.355000] Sending DHCP requests ...#
-> > > > > ..#
-> > > > > .#
-> > > > >  timed out!
-> > > > > [  212.355000] IP-Config: Reopening network devices...
-> > > > > [  212.365000] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
-> > > > > #
-> > > > > 
-> > > > > 
-> > > > > I guess the board would boot fine without network if it didn't
-> > > > > have ip=dhcp in the command line, so it's not strictly a kernel
-> > > > > boot failure but still an ethernet issue.
-> > > > > 
-> > > > 
-> > > > I think the resolution of this issue is
-> > > > 99f81afc139c6edd14d77a91ee91685a414a1c66. If this is taken, then I think
-> > > > f5aba91d7f186cba84af966a741a0346de603cd4 should also be backported.
-> > > 
-> > > Agreed.
-> > 
-> > Okay, I've queued both for 4.4, thanks!
-> 
-> I notice 99f81afc139c was reverted in mainline with commit b43bd72835a5.  
-> The revert commit points out that:
-> 
-> "It was papering over the real problem, which is fixed by commit
-> f555f34fdc58 ("net: phy: fix auto-negotiation stall due to unavailable
-> interrupt")"
-> 
-> Maybe f555f34fdc58 should be backported to 4.4 instead of 
-> 99f81afc139c?
 
-Notice if f555f34fdc58 is taken, then I believe 215d08a85b9a should also 
-be backported.
+Friendly ping...
 
--- Henri
+Any plan for this issue?
+
+On 2020/4/22 20:53, YueHaibing wrote:
+> While update xfrm policy as follow:
+> 
+> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+>  priority 1 mark 0 mask 0x10
+> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+>  priority 2 mark 0 mask 0x00
+> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+>  priority 2 mark 0 mask 0x10
+> 
+> We get this warning:
+> 
+> WARNING: CPU: 0 PID: 4808 at net/xfrm/xfrm_policy.c:1548
+> Kernel panic - not syncing: panic_on_warn set ...
+> CPU: 0 PID: 4808 Comm: ip Not tainted 5.7.0-rc1+ #151
+> Call Trace:
+> RIP: 0010:xfrm_policy_insert_list+0x153/0x1e0
+>  xfrm_policy_inexact_insert+0x70/0x330
+>  xfrm_policy_insert+0x1df/0x250
+>  xfrm_add_policy+0xcc/0x190 [xfrm_user]
+>  xfrm_user_rcv_msg+0x1d1/0x1f0 [xfrm_user]
+>  netlink_rcv_skb+0x4c/0x120
+>  xfrm_netlink_rcv+0x32/0x40 [xfrm_user]
+>  netlink_unicast+0x1b3/0x270
+>  netlink_sendmsg+0x350/0x470
+>  sock_sendmsg+0x4f/0x60
+> 
+> Policy C and policy A has the same mark.v and mark.m, so policy A is
+> matched in first round lookup while updating C. However policy C and
+> policy B has same mark and priority, which also leads to matched. So
+> the WARN_ON is triggered.
+> 
+> xfrm policy lookup should only be matched if the found policy has the
+> same lookup keys (mark.v & mark.m) and priority.
+> 
+> Fixes: 7cb8a93968e3 ("xfrm: Allow inserting policies with matching mark and different priorities")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+> v2: policy matched while have same mark and priority
+> ---
+>  net/xfrm/xfrm_policy.c | 15 +++++----------
+>  1 file changed, 5 insertions(+), 10 deletions(-)
+> 
+> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> index 297b2fdb3c29..2a0d7f5e6545 100644
+> --- a/net/xfrm/xfrm_policy.c
+> +++ b/net/xfrm/xfrm_policy.c
+> @@ -1436,12 +1436,7 @@ static void xfrm_policy_requeue(struct xfrm_policy *old,
+>  static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+>  				   struct xfrm_policy *pol)
+>  {
+> -	u32 mark = policy->mark.v & policy->mark.m;
+> -
+> -	if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+> -		return true;
+> -
+> -	if ((mark & pol->mark.m) == pol->mark.v &&
+> +	if ((policy->mark.v & policy->mark.m) == (pol->mark.v & pol->mark.m) &&
+>  	    policy->priority == pol->priority)
+>  		return true;
+>  
+> @@ -1628,7 +1623,7 @@ __xfrm_policy_bysel_ctx(struct hlist_head *chain, u32 mark, u32 if_id,
+>  	hlist_for_each_entry(pol, chain, bydst) {
+>  		if (pol->type == type &&
+>  		    pol->if_id == if_id &&
+> -		    (mark & pol->mark.m) == pol->mark.v &&
+> +		    mark == (pol->mark.m & pol->mark.v) &&
+>  		    !selector_cmp(sel, &pol->selector) &&
+>  		    xfrm_sec_ctx_match(ctx, pol->security))
+>  			return pol;
+> @@ -1726,7 +1721,7 @@ struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u32 if_id,
+>  	hlist_for_each_entry(pol, chain, byidx) {
+>  		if (pol->type == type && pol->index == id &&
+>  		    pol->if_id == if_id &&
+> -		    (mark & pol->mark.m) == pol->mark.v) {
+> +		    mark == (pol->mark.m & pol->mark.v)) {
+>  			xfrm_pol_hold(pol);
+>  			if (delete) {
+>  				*err = security_xfrm_policy_delete(
+> @@ -1898,7 +1893,7 @@ static int xfrm_policy_match(const struct xfrm_policy *pol,
+>  
+>  	if (pol->family != family ||
+>  	    pol->if_id != if_id ||
+> -	    (fl->flowi_mark & pol->mark.m) != pol->mark.v ||
+> +	    fl->flowi_mark != (pol->mark.m & pol->mark.v) ||
+>  	    pol->type != type)
+>  		return ret;
+>  
+> @@ -2177,7 +2172,7 @@ static struct xfrm_policy *xfrm_sk_policy_lookup(const struct sock *sk, int dir,
+>  
+>  		match = xfrm_selector_match(&pol->selector, fl, family);
+>  		if (match) {
+> -			if ((sk->sk_mark & pol->mark.m) != pol->mark.v ||
+> +			if (sk->sk_mark != (pol->mark.m & pol->mark.v) ||
+>  			    pol->if_id != if_id) {
+>  				pol = NULL;
+>  				goto out;
+> 
+
