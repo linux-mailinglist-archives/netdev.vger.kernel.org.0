@@ -2,323 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C401D5A18
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 21:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B551D5A1B
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 21:40:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726236AbgEOTjC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 15 May 2020 15:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
+        id S1726372AbgEOTjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 15:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726168AbgEOTjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 15:39:01 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CF8C061A0C;
-        Fri, 15 May 2020 12:39:01 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2C5D41539B80A;
-        Fri, 15 May 2020 12:39:01 -0700 (PDT)
-Date:   Fri, 15 May 2020 12:39:00 -0700 (PDT)
-Message-Id: <20200515.123900.727024514724458944.davem@davemloft.net>
-To:     torvalds@linux-foundation.org
-CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-2
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 15 May 2020 12:39:01 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726168AbgEOTjq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 15:39:46 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED38C061A0C;
+        Fri, 15 May 2020 12:39:45 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id d7so2972737qtn.11;
+        Fri, 15 May 2020 12:39:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4BQMLiV7/BzZ4YarNv+2ABNpKJB9d3AIj9UHyBIXc0M=;
+        b=CO76H2fPe/gmTLc9vA/Uw8T86Xg+X8HMd1/oZ+N6jGgzKfFJnhkyEa0nCAgaB1mhOO
+         DS7bHDWmBfMxfgn08jVH+Ir45lUztMhcQsKK6BIas2HN5uB2bXHFSvRCAPJTiQGOQpff
+         8o1iiDoziuQ4jhCJOf+TFMrADges9ONOoEZt9BciOzw2MEqpOjL0ZykeC8mK0ncvI02r
+         zR/bHvcZVqlGOJhphjK5Uc2jl/D0QC2yq+8aa5hP2L3mXrivKoyb6Tvg2UrM3Iziugk7
+         bpB2fbKaW4SnaN/5w3V0tEBkwP4xVvkY8lPghTePTtbTZE4OcvYtJbpUmSRUjdbJ9Imy
+         EU3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4BQMLiV7/BzZ4YarNv+2ABNpKJB9d3AIj9UHyBIXc0M=;
+        b=WlLEPQTydNCDS+kVwktSixGKBH0WGSzJgAF43p9bvAkP2Az5JS8y7R+cfaYG7YcBwa
+         JL4YubRiovq2rLk/XLcCQqbeqeGtmqngGOVVVKHcYgA+Sow6JCyvMHxUx72Mf1fO60IP
+         fR9I562UxOkmAr+3aim8lHR5DC5YoT+KnO01ISGZZw4PrPjE4Bxd0fwNT4TvOKc89cx7
+         ebrjB1czNV7F/1FUaptWPymWmive8JAqj//N2DpEu//OO6wuP7g08DVt75KuePICNuxe
+         Pu7l0F8lfotKCZZybYvWHLCM19s3GX3ZDs/4MCSOOQ5Z1n+Qv3aX3IYawzEK1X6r+kWs
+         MKwg==
+X-Gm-Message-State: AOAM533HP9nFS/6GlmSFtRwPXixp7potRstIPGk5wMRmor9P3uYL0HKs
+        GRvz1yBYGTm2WxYxu7UekslB9m51Nq5n1ueZR8s=
+X-Google-Smtp-Source: ABdhPJxnwuBdyHD8GKWt0YJqtP3FaI6rV2VYuQhkw3oH7yyy8yh2SxOwnA6qKrcqBG6vPu4l1/yUJH2LM/bK/bqPcB8=
+X-Received: by 2002:aed:2f02:: with SMTP id l2mr5209605qtd.117.1589571585047;
+ Fri, 15 May 2020 12:39:45 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200515165007.217120-1-irogers@google.com> <20200515165007.217120-8-irogers@google.com>
+In-Reply-To: <20200515165007.217120-8-irogers@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 15 May 2020 12:39:34 -0700
+Message-ID: <CAEf4BzZOB0L0iie0CAduNOnE4TXbfKeo-g97kwfMPZ5Mg7uRwg@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] perf expr: Migrate expr ids table to a hashmap
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-1) Fix sk_psock reference count leak on receive, from Xiyu Yang.
-
-2) CONFIG_HNS should be invisible, from Geert Uytterhoeven.
-
-3) Don't allow locking route MTUs in ipv6, RFCs actually forbid
-   this, from Maciej ¯enczykowski.
-
-4) ipv4 route redirect backoff wasn't actually enforced, from
-   Paolo Abeni.
-
-5) Fix netprio cgroup v2 leak, from Zefan Li.
-
-6) Fix infinite loop on rmmod in conntrack, from Florian Westphal.
-
-7) Fix tcp SO_RCVLOWAT hangs, from Eric Dumazet.
-
-8) Various bpf probe handling fixes, from Daniel Borkmann.
-
-Please pull, thanks a lot!
-
-The following changes since commit a811c1fa0a02c062555b54651065899437bacdbe:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-05-06 20:53:22 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net 
-
-for you to fetch changes up to 8e1381049ed5d213e7a1a7f95bbff83af8c59234:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2020-05-15 10:57:21 -0700)
-
-----------------------------------------------------------------
-Alex Elder (2):
-      net: ipa: set DMA length in gsi_trans_cmd_add()
-      net: ipa: use tag process on modem crash
-
-Alexei Starovoitov (1):
-      Merge branch 'restrict-bpf_probe_read'
-
-Amol Grover (2):
-      ipmr: Fix RCU list debugging warning
-      ipmr: Add lockdep expression to ipmr_for_each_table macro
-
-Anders Roxell (1):
-      security: Fix the default value of secid_to_secctx hook
-
-Andrii Nakryiko (1):
-      bpf: Fix bug in mmap() implementation for BPF array map
-
-Arnd Bergmann (3):
-      net: bareudp: avoid uninitialized variable warning
-      net: freescale: select CONFIG_FIXED_PHY where needed
-      netfilter: conntrack: avoid gcc-10 zero-length-bounds warning
-
-Christoph Paasch (1):
-      mptcp: Initialize map_seq upon subflow establishment
-
-Chuhong Yuan (1):
-      net: microchip: encx24j600: add missed kthread_stop
-
-Clay McClure (1):
-      net: ethernet: ti: Remove TI_CPTS_MOD workaround
-
-Cong Wang (1):
-      net: fix a potential recursive NETDEV_FEAT_CHANGE
-
-Dan Carpenter (1):
-      dpaa2-eth: prevent array underflow in update_cls_rule()
-
-Daniel Borkmann (3):
-      bpf: Restrict bpf_probe_read{, str}() only to archs where they work
-      bpf: Add bpf_probe_read_{user, kernel}_str() to do_refine_retval_range
-      bpf: Restrict bpf_trace_printk()'s %s usage and add %pks, %pus specifier
-
-David S. Miller (8):
-      Merge branch 'net-ipa-fix-cleanup-after-modem-crash'
-      Merge branch 'ionic-fixes'
-      Merge branch 's390-fixes'
-      Merge branch 'tipc-fixes'
-      MAINTAINERS: Add Jakub to networking drivers.
-      Merge git://git.kernel.org/.../pablo/nf
-      MAINTAINERS: Mark networking drivers as Maintained.
-      Merge git://git.kernel.org/.../bpf/bpf
-
-Eric Dumazet (2):
-      tcp: fix SO_RCVLOWAT hangs with fat skbs
-      tcp: fix error recovery in tcp_zerocopy_receive()
-
-Florian Fainelli (2):
-      net: dsa: loop: Add module soft dependency
-      net: broadcom: Select BROADCOM_PHY for BCMGENET
-
-Florian Westphal (1):
-      netfilter: conntrack: fix infinite loop on rmmod
-
-Geert Uytterhoeven (1):
-      net: hisilicon: Make CONFIG_HNS invisible
-
-Guillaume Nault (1):
-      pppoe: only process PADT targeted at local interfaces
-
-Heiner Kallweit (2):
-      r8169: re-establish support for RTL8401 chip version
-      net: phy: fix aneg restart in phy_ethtool_set_eee
-
-Ioana Ciornei (1):
-      dpaa2-eth: properly handle buffer size restrictions
-
-Jacob Keller (1):
-      ptp: fix struct member comment for do_aux_work
-
-Jakub Kicinski (1):
-      Merge git://git.kernel.org/.../bpf/bpf
-
-John Fastabend (2):
-      bpf, sockmap: msg_pop_data can incorrecty set an sge length
-      bpf, sockmap: bpf_tcp_ingress needs to subtract bytes from sg.size
-
-Kelly Littlepage (1):
-      net: tcp: fix rx timestamp behavior for tcp_recvmsg
-
-Kevin Lo (1):
-      net: phy: broadcom: fix BCM54XX_SHD_SCR3_TRDDAPD value for BCM54810
-
-Luo bin (1):
-      hinic: fix a bug of ndo_stop
-
-Maciej ¯enczykowski (2):
-      net: remove spurious declaration of tcp_default_init_rwnd()
-      Revert "ipv6: add mtu lock check in __ip6_rt_update_pmtu"
-
-Madhuparna Bhowmik (1):
-      drivers: net: hamradio: Fix suspicious RCU usage warning in bpqether.c
-
-Matteo Croce (1):
-      samples: bpf: Fix build error
-
-Matthieu Baerts (1):
-      selftests: mptcp: pm: rm the right tmp file
-
-Michael S. Tsirkin (1):
-      virtio_net: fix lockdep warning on 32 bit
-
-Oliver Neukum (1):
-      usb: hso: correct debug message
-
-Pablo Neira Ayuso (1):
-      netfilter: flowtable: set NF_FLOW_TEARDOWN flag on entry expiration
-
-Paolo Abeni (3):
-      mptcp: set correct vfs info for subflows
-      net: ipv4: really enforce backoff for redirects
-      netlabel: cope with NULL catmap
-
-Paul Blakey (1):
-      netfilter: flowtable: Add pending bit for offload work
-
-Phil Sutter (1):
-      netfilter: nft_set_rbtree: Add missing expired checks
-
-Roi Dayan (1):
-      netfilter: flowtable: Remove WQ_MEM_RECLAIM from workqueue
-
-Shannon Nelson (2):
-      ionic: leave netdev mac alone after fw-upgrade
-      ionic: call ionic_port_init after fw-upgrade
-
-Sumanth Korikkar (1):
-      libbpf: Fix register naming in PT_REGS s390 macros
-
-Tuong Lien (3):
-      tipc: fix large latency in smart Nagle streaming
-      tipc: fix memory leak in service subscripting
-      tipc: fix failed service subscription deletion
-
-Ursula Braun (2):
-      MAINTAINERS: add Karsten Graul as S390 NETWORK DRIVERS maintainer
-      MAINTAINERS: another add of Karsten Graul for S390 networking
-
-Vincent Minet (1):
-      umh: fix memory leak on execve failure
-
-Vinod Koul (1):
-      net: stmmac: fix num_por initialization
-
-Wang Wenhu (1):
-      drivers: ipa: fix typos for ipa_smp2p structure doc
-
-Wei Yongjun (4):
-      bpf: Fix error return code in map_lookup_and_delete_elem()
-      nfp: abm: fix error return code in nfp_abm_vnic_alloc()
-      octeontx2-vf: Fix error return code in otx2vf_probe()
-      s390/ism: fix error return code in ism_probe()
-
-Xiyu Yang (1):
-      bpf: Fix sk_psock refcnt leak when receiving message
-
-Yonghong Song (2):
-      bpf: Enforce returning 0 for fentry/fexit progs
-      selftests/bpf: Enforce returning 0 for fentry/fexit programs
-
-Zefan Li (1):
-      netprio_cgroup: Fix unlimited memory leak of v2 cgroups
-
- Documentation/core-api/printk-formats.rst               |  14 +++++++++
- MAINTAINERS                                             |   5 +++-
- arch/arm/Kconfig                                        |   1 +
- arch/arm/configs/keystone_defconfig                     |   1 +
- arch/arm/configs/omap2plus_defconfig                    |   1 +
- arch/arm64/Kconfig                                      |   1 +
- arch/x86/Kconfig                                        |   1 +
- drivers/net/bareudp.c                                   |  18 +++--------
- drivers/net/dsa/dsa_loop.c                              |   1 +
- drivers/net/ethernet/broadcom/Kconfig                   |   1 +
- drivers/net/ethernet/freescale/Kconfig                  |   2 ++
- drivers/net/ethernet/freescale/dpaa/Kconfig             |   1 +
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c        |  29 ++++++++++--------
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h        |   1 +
- drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c    |   2 +-
- drivers/net/ethernet/hisilicon/Kconfig                  |   2 +-
- drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c       |  16 +++++++---
- drivers/net/ethernet/huawei/hinic/hinic_main.c          |  16 ++--------
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c    |   8 +++--
- drivers/net/ethernet/microchip/encx24j600.c             |   5 +++-
- drivers/net/ethernet/netronome/nfp/abm/main.c           |   4 ++-
- drivers/net/ethernet/pensando/ionic/ionic_lif.c         |  19 +++++++-----
- drivers/net/ethernet/pensando/ionic/ionic_main.c        |  18 +++++------
- drivers/net/ethernet/realtek/r8169_main.c               |   2 ++
- drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c |  17 +++++++++--
- drivers/net/ethernet/ti/Kconfig                         |  16 ++++------
- drivers/net/ethernet/ti/Makefile                        |   2 +-
- drivers/net/hamradio/bpqether.c                         |   3 +-
- drivers/net/ipa/gsi_trans.c                             |   5 ++--
- drivers/net/ipa/ipa_cmd.c                               |  14 ++-------
- drivers/net/ipa/ipa_smp2p.c                             |   2 +-
- drivers/net/phy/broadcom.c                              |   8 +++--
- drivers/net/phy/phy.c                                   |   8 +++--
- drivers/net/ppp/pppoe.c                                 |   3 ++
- drivers/net/usb/hso.c                                   |   2 +-
- drivers/net/virtio_net.c                                |   6 ++--
- drivers/s390/net/ism_drv.c                              |   4 ++-
- include/linux/brcmphy.h                                 |   1 +
- include/linux/lsm_hook_defs.h                           |   2 +-
- include/linux/ptp_clock_kernel.h                        |   8 ++---
- include/linux/skmsg.h                                   |   1 +
- include/net/netfilter/nf_conntrack.h                    |   2 +-
- include/net/netfilter/nf_flow_table.h                   |   1 +
- include/net/tcp.h                                       |  14 ++++++++-
- include/net/udp_tunnel.h                                |   2 --
- init/Kconfig                                            |   3 ++
- kernel/bpf/arraymap.c                                   |   7 ++++-
- kernel/bpf/syscall.c                                    |   4 ++-
- kernel/bpf/verifier.c                                   |  21 ++++++++++++-
- kernel/trace/bpf_trace.c                                | 100 +++++++++++++++++++++++++++++++++++++++++---------------------
- kernel/umh.c                                            |   6 ++++
- lib/vsprintf.c                                          |  12 ++++++++
- net/core/dev.c                                          |   4 ++-
- net/core/filter.c                                       |   2 +-
- net/core/netprio_cgroup.c                               |   2 ++
- net/ipv4/cipso_ipv4.c                                   |   6 ++--
- net/ipv4/ipmr.c                                         |   6 ++--
- net/ipv4/route.c                                        |   2 +-
- net/ipv4/tcp.c                                          |  27 ++++++++++++-----
- net/ipv4/tcp_bpf.c                                      |  10 ++++---
- net/ipv4/tcp_input.c                                    |   3 +-
- net/ipv6/calipso.c                                      |   3 +-
- net/ipv6/route.c                                        |   6 ++--
- net/mptcp/protocol.c                                    |   2 ++
- net/mptcp/subflow.c                                     |  10 +++++++
- net/netfilter/nf_conntrack_core.c                       |  17 +++++++++--
- net/netfilter/nf_flow_table_core.c                      |   8 +++--
- net/netfilter/nf_flow_table_offload.c                   |  10 +++++--
- net/netfilter/nft_set_rbtree.c                          |  11 +++++++
- net/netlabel/netlabel_kapi.c                            |   6 ++++
- net/tipc/socket.c                                       |  42 +++++++++++++++++++-------
- net/tipc/subscr.h                                       |  10 +++++++
- net/tipc/topsrv.c                                       |  13 ++++----
- samples/bpf/lwt_len_hist_user.c                         |   2 --
- tools/lib/bpf/bpf_tracing.h                             |   4 +--
- tools/testing/selftests/bpf/prog_tests/mmap.c           |   8 +++++
- tools/testing/selftests/bpf/progs/test_overhead.c       |   4 +--
- tools/testing/selftests/net/mptcp/pm_netlink.sh         |   2 +-
- 78 files changed, 459 insertions(+), 204 deletions(-)
+On Fri, May 15, 2020 at 9:51 AM Ian Rogers <irogers@google.com> wrote:
+>
+> Use a hashmap between a char* string and a double* value. While bpf's
+> hashmap entries are size_t in size, we can't guarantee sizeof(size_t) >=
+> sizeof(double). Avoid a memory allocation when gathering ids by making 0.0
+> a special value encoded as NULL.
+>
+> Original map suggestion by Andi Kleen:
+> https://lore.kernel.org/lkml/20200224210308.GQ160988@tassilo.jf.intel.com/
+> and seconded by Jiri Olsa:
+> https://lore.kernel.org/lkml/20200423112915.GH1136647@krava/
+>
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/tests/expr.c       |  40 ++++++-----
+>  tools/perf/tests/pmu-events.c |  25 +++----
+>  tools/perf/util/expr.c        | 129 +++++++++++++++++++---------------
+>  tools/perf/util/expr.h        |  26 +++----
+>  tools/perf/util/expr.y        |  22 +-----
+>  tools/perf/util/metricgroup.c |  87 +++++++++++------------
+>  tools/perf/util/stat-shadow.c |  49 ++++++++-----
+>  7 files changed, 197 insertions(+), 181 deletions(-)
+>
+> diff --git a/tools/perf/tests/expr.c b/tools/perf/tests/expr.c
+> index 3f742612776a..5e606fd5a2c6 100644
+> --- a/tools/perf/tests/expr.c
+> +++ b/tools/perf/tests/expr.c
+> @@ -19,11 +19,9 @@ static int test(struct expr_parse_ctx *ctx, const char *e, double val2)
+>  int test__expr(struct test *t __maybe_unused, int subtest __maybe_unused)
+>  {
+>         const char *p;
+> -       const char **other;
+> -       double val;
+> -       int i, ret;
+> +       double val, *val_ptr;
+> +       int ret;
+>         struct expr_parse_ctx ctx;
+> -       int num_other;
+>
+>         expr__ctx_init(&ctx);
+>         expr__add_id(&ctx, "FOO", 1);
+> @@ -52,25 +50,29 @@ int test__expr(struct test *t __maybe_unused, int subtest __maybe_unused)
+>         ret = expr__parse(&val, &ctx, p, 1);
+>         TEST_ASSERT_VAL("missing operand", ret == -1);
+>
+> +       hashmap__clear(&ctx.ids);
+
+hashmap__clear() will free up memory allocated for hashmap itself and
+hash entries, but not keys/values. Unless it's happening somewhere
+else, you'll need to do something similar to expr__ctx_clear() below?
+
+Same below for another "lone" hashmap_clear() call.
+
+>         TEST_ASSERT_VAL("find other",
+> -                       expr__find_other("FOO + BAR + BAZ + BOZO", "FOO", &other, &num_other, 1) == 0);
+
+[...]
