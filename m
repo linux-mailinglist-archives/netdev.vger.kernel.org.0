@@ -2,91 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A541D5568
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F8131D557C
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:04:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727796AbgEOQAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 12:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
+        id S1726948AbgEOQEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 12:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726379AbgEOQAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:00:08 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88DCC061A0C
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 09:00:08 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id f15so1044334plr.3
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 09:00:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=D1QUEkD3fhiHhXYxvGrmYPkHL3GA+r0J9n0oDb20bH0=;
-        b=atyVrudm4RnFirz6YG8rlY2QUHAJVHLbRD+peqU0r48HJuOOd9jSkdSMmiO8HcHin9
-         bXJ7mWOeQ1E+l9zeleX6ZgbNfhyxWQ+Tb69GQIWn2xzr4z7ZsCwZENUrocLkakW4Rm44
-         tRRT80SfnZDR/b4gpO0Blo20I4VDgp/QK9MLz+QNJv0KkgDlna0pIrX7nOxmZprXexYv
-         qfpDZv1XWMcxMKEsGH6SWSKEVv0QWY8JQC52Tuk37qQau7sq6MCtM+BHc7XEIHwhnK9i
-         1ZTH08Q/52Z6e06m6wnk5Q0mfnSMECV6BECApFkuqjqr62wn5nYmLbjUDTy3BaGsC2C8
-         04jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=D1QUEkD3fhiHhXYxvGrmYPkHL3GA+r0J9n0oDb20bH0=;
-        b=bKrueBVQBypKKeg6PLUNxQ5b0Ru1Eykug/k3g64E/5PlyVFHg29uxwVKysqsdcGGdu
-         SWolv6W7zSUCwI8AxdhwrkLyh5OUKExUWH3Uw4LFU6oXZDyy7Nbo5XQ8rguGDiRGggjU
-         dxFta6jK8Sk3ZXDQpL64fYyjWkzUYzFUVfGd49LYm0H3cpAN6vfdwJkhgePq+RwbpSbZ
-         etjHWiT5RGVP3JTQUphHCuWQ5NahCDAp17cJBhDi0+3Koi05TOrzj3u4asse9xZnvka5
-         IijI85A0HIepieYd3EwPCKVEKkRzBVANXSQXhrwFWjTb8imhJZo5vW6t9AD3vNsR1uc/
-         wOcA==
-X-Gm-Message-State: AOAM531ycxVjHwQAAys0CNg/RKycbCHvd9/jWhH9eN5qhtnPsp1pVQVv
-        wIqupU7BJwPQBrCzGaB0lb4jSwB+
-X-Google-Smtp-Source: ABdhPJxTbKPg74atYU0rDE3FunlayKk8riPEqflODvkp0fHr3Az4H4R20AFAraKVDjWPF+wi6LB1aw==
-X-Received: by 2002:a17:90a:21cf:: with SMTP id q73mr4241768pjc.230.1589558408233;
-        Fri, 15 May 2020 09:00:08 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id e11sm1967680pgs.41.2020.05.15.09.00.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 May 2020 09:00:07 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: core: recursively find netdev by device
- node
-To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch
-References: <20200515095252.8501-1-tobias@waldekranz.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8489eb0e-136e-bd91-a4a0-a551d4126339@gmail.com>
-Date:   Fri, 15 May 2020 09:00:02 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.8.0
+        by vger.kernel.org with ESMTP id S1726239AbgEOQEf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:04:35 -0400
+Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4127C061A0C;
+        Fri, 15 May 2020 09:04:34 -0700 (PDT)
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jZcoI-009AnZ-2z; Fri, 15 May 2020 16:03:42 +0000
+Date:   Fri, 15 May 2020 17:03:42 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Nate Karstens <nate.karstens@garmin.com>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>
+Subject: Re: [PATCH v2] Implement close-on-fork
+Message-ID: <20200515160342.GE23230@ZenIV.linux.org.uk>
+References: <20200515152321.9280-1-nate.karstens@garmin.com>
 MIME-Version: 1.0
-In-Reply-To: <20200515095252.8501-1-tobias@waldekranz.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200515152321.9280-1-nate.karstens@garmin.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, May 15, 2020 at 10:23:17AM -0500, Nate Karstens wrote:
 
+> This functionality was approved by the Austin Common Standards
+> Revision Group for inclusion in the next revision of the POSIX
+> standard (see issue 1318 in the Austin Group Defect Tracker).
 
-On 5/15/2020 2:52 AM, Tobias Waldekranz wrote:
-> The assumption that a device node is associated either with the
-> netdev's device, or the parent of that device, does not hold for all
-> drivers. E.g. Freescale's DPAA has two layers of platform devices
-> above the netdev. Instead, recursively walk up the tree from the
-> netdev, allowing any parent to match against the sought after node.
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+It penalizes every call of fork() in the system (as well as adds
+an extra dirtied cacheline on each socket()/open()/etc.), adds
+memory footprint and complicates the API.  All of that - to deal
+with rather uncommon problem that already has a portable solution.
 
-Humm, yes I tried to solve this differently before within the Freescale
-FMAN driver before and it failed miserably, so I suppose this is as good
-as it can be:
+As for the Austin Group, the only authority it has ever had derives
+from consensus between existing Unices.  "Solaris does it, Linux and
+*BSD do not" translates into "Austin Group is welcome to take a hike".
+BTW, contrary to the lovely bit of misrepresentation in that
+thread of theirs ("<LWN URL> suggests that" != "someone's comment
+under LWN article says it _appears_ that"), none of *BSD do it.
 
-a1a50c8e4c241a505b7270e1a3c6e50d94e794b1 ("fsl/man: Inherit parent
-device and of_node") later reverted with
-48167c9ce0b91c068430345bf039c7be23fa2f3f ("fsl/fman: remove of_node")
+IMO it's a bad idea.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+NAKed-by: Al Viro <viro@zeniv.linux.org.uk>
