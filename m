@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42CD81D5457
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:24:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C2EE1D547A
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:26:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727829AbgEOPYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 11:24:00 -0400
-Received: from mail-bn7nam10on2108.outbound.protection.outlook.com ([40.107.92.108]:60595
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S1727939AbgEOPYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 11:24:11 -0400
+Received: from mail-eopbgr700119.outbound.protection.outlook.com ([40.107.70.119]:43540
+        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726362AbgEOPX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 11:23:59 -0400
+        id S1726362AbgEOPYG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 May 2020 11:24:06 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TnfNi5yKilKMleoDfh27zMhVRE6DLyV+iw5RDp9CuNS7T34M0neMomjIos3y/fBeIAcEVgoQyMv2hURmr0oSVdHOVEoJCRUvDoPuQr+sCkE6fKydh0bQlDWxV5EwIxJ/7JPnuokMUrRQAK6BzC7crm2q0iGW+gKpWViGWjvMvpPMCXo+Dtd7Bsz69lGJSF40+jNnylnCKhm/TAmHUhfiU8466KOpEO/WWPo6XeBj0s6IE3P3hyXvovo957XDiEGFU0cnW84Xxy8Kkyfe4ZDC/v+YEzdawc6XoVDTbSmspo8gEdVUTko55IO1CSsSdMZNijk8svECBjsPUHQlTPmM6g==
+ b=UuZT9xaQszvCMxzm1kOCMxt39RjxZxfaXz1Pz2XkmWxkYJ+U+1jfgAA4FSI5OFMgtPSEvDwOhgdY2LJv4e5SvmSZdwHfMC+n8uuc4PAE3DZFM4IzDyWC+faun0TqnS1QakiRGZiCEs1LRB3chT5bHZin++TtAC7W08PdB93GjCoZDxd3IhuK3+oi9ytZK+w73poA59gwlHQO2Z4hqCDmNcIUgAXazVTksfkwcwyqnuDqC540JHTE4CFiuXgm1Wl92C+hENVRNVln2Nq92FwdoGaBpMnIt5Vjoev/WZs97OprO4HyFrHc8TdAWaoWidIrMfCUgc3mQJ7pZFLTkvFjCg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ilk8yXGSyYiOz0awkgNVn6KxziVdemqlAeyIHcDCoqc=;
- b=DQ7cl7M0nYyFFwzSv3uYMNVZdfVuBIWen2FA7JE6AZaL1Caq1m6Q5wNYJb2SWXbd6xz3xX0sSoUmkUUu6yuAThe0CCe9k//jOpyJI7asRPM+/4YvAWDK43J/YMLHSdABh7Dn4s5rtJZIdhpLhdpg1W5kmN5iXKSOMhGugOgOfWdupnyWOVlOfg/PUG7EjFSYrBl6H1ENCaU5JQQ6kdnQhNDBWbgeZoOYWe7Vo2P87WuDPU7D3AGPX53pe4FCLeg/yuOpBQgIHHEcw/wyzY/T6aM7cLj2qi2fEUR15EDacOaVGg2V5Fyad1Xo0jzxrIGWzxwPA9y30aj0O3+m9s4jhg==
+ bh=QsGNsjYsI8F4KJql4yZYX+Vqvvff2TzQBu9X3M2j3GQ=;
+ b=KrDIn/IRlMTZjRVkQ4+q4+mw+d+K0vZ3DF5Z7kV7NrIAZ0HWr9+r3YHK6STB+hBmegr01Mj/mFLMTq1S0eWEbv+QBl2OhsMa+0L7TKCqCJdp1FCCzqaAwzElCRolYLzqf+N4AzvpjnEVnVLlnk1jPj9jN82RRKB6rq+iHLKzfiROGnTSZNXwNBbQdhQDgMMOMg5QUGd6Ob6Xqlh+Jpkeu0uOofJjNRXI6QldPoDOs+YmLlysvrbOyRtq2hhrd/xJPyhv+mFk4Gtrfi+Vt1SNgvbeBiDxu2C4q1acVHP5a6JhyD+pCVWLL2z4M80Xivj1YaWUGX7A87jZrrnWuU09Tw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  204.77.163.244) smtp.rcpttodomain=zeniv.linux.org.uk
  smtp.mailfrom=garmin.com; dmarc=pass (p=quarantine sp=quarantine pct=100)
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ilk8yXGSyYiOz0awkgNVn6KxziVdemqlAeyIHcDCoqc=;
- b=lqNHJDrwIGl2wEs7E1f2nqvZucWEYwWGbJpANNjOipQwsd4GPUjx2kENPzdl5+jSyA9dJgvTw+BfjWS6Jm0SDgDfEyEB05gVNTrxW4/L5YU3bBjBRGTZJWIobKF9kp8KDwEy71PwGmu2vlAa+B4zcE7ZpqAGDZYMZeeV3YKWziOZTxB5MT0a8kzvwzG/b0q1qAjzSJ/3681y7uMsDx/dq68/SWnfVPgqFLSO6O035wqxAe7qFuZQxqBSpXovKsssaM3JZEJRk4DJ6xwBMI4K1aPJm4xZ5m5U7yRtx+We+aoivDKlO2GNOTCIB6O78j4Ztpi0qFKd+oi23v9Myb6FhQ==
-Received: from DM6PR14CA0061.namprd14.prod.outlook.com (2603:10b6:5:18f::38)
- by BN8PR04MB5633.namprd04.prod.outlook.com (2603:10b6:408:76::25) with
+ bh=QsGNsjYsI8F4KJql4yZYX+Vqvvff2TzQBu9X3M2j3GQ=;
+ b=iaqAUjEVMMV9INxTJ3Xj15oXJ2Tr5dFVM5el7qG7ey1YtMiGvxnTkc7ctZat0LK/7MJK/GY1Mhgl6fWBRkwdM1/mX/sbvessuM36KeWxxCTGlTLJJX2HwuYKolqe4EI7t4al97FeQu25kP0WvqDaf08zkXw7NrXWAu9w1ovbvE1VASNIJkiuqJDsFlJ3iaJex4036VIbQbElJD13XACMvEd7GUVWye7K30jR5jHHRfEX51RPOrB6KkETvb73euazNOHrBbfdAsUfbXe2dkC3cq8/1hoEhK3LtPiFlgcNeSfDh/1msuI/vGK5U3goKd0ngqFkR+LoE7BY19pg73ugiA==
+Received: from BN6PR11CA0046.namprd11.prod.outlook.com (2603:10b6:404:4b::32)
+ by DM6PR04MB4154.namprd04.prod.outlook.com (2603:10b6:5:9a::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.35; Fri, 15 May
- 2020 15:23:53 +0000
-Received: from DM6NAM10FT011.eop-nam10.prod.protection.outlook.com
- (2603:10b6:5:18f:cafe::a4) by DM6PR14CA0061.outlook.office365.com
- (2603:10b6:5:18f::38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.24 via Frontend
- Transport; Fri, 15 May 2020 15:23:53 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.24; Fri, 15 May
+ 2020 15:24:01 +0000
+Received: from BN7NAM10FT028.eop-nam10.prod.protection.outlook.com
+ (2603:10b6:404:4b:cafe::1b) by BN6PR11CA0046.outlook.office365.com
+ (2603:10b6:404:4b::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20 via Frontend
+ Transport; Fri, 15 May 2020 15:24:01 +0000
 Authentication-Results: spf=pass (sender IP is 204.77.163.244)
  smtp.mailfrom=garmin.com; zeniv.linux.org.uk; dkim=none (message not signed)
  header.d=none;zeniv.linux.org.uk; dmarc=pass action=none
@@ -46,17 +46,17 @@ Received-SPF: Pass (protection.outlook.com: domain of garmin.com designates
  204.77.163.244 as permitted sender) receiver=protection.outlook.com;
  client-ip=204.77.163.244; helo=edgetransport.garmin.com;
 Received: from edgetransport.garmin.com (204.77.163.244) by
- DM6NAM10FT011.mail.protection.outlook.com (10.13.152.178) with Microsoft SMTP
+ BN7NAM10FT028.mail.protection.outlook.com (10.13.156.237) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3000.19 via Frontend Transport; Fri, 15 May 2020 15:23:53 +0000
+ 15.20.3000.19 via Frontend Transport; Fri, 15 May 2020 15:24:00 +0000
 Received: from OLAWPA-EXMB7.ad.garmin.com (10.5.144.21) by
- olawpa-edge3.garmin.com (10.60.4.226) with Microsoft SMTP Server
+ olawpa-edge2.garmin.com (10.60.4.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.1466.3; Fri, 15 May 2020 10:23:51 -0500
+ 15.1.1466.3; Fri, 15 May 2020 10:23:58 -0500
 Received: from ola-d01c000-vm.ad.garmin.com (10.5.84.15) by
  OLAWPA-EXMB7.ad.garmin.com (10.5.144.21) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Fri, 15 May 2020 10:23:50 -0500
+ 15.1.1913.5; Fri, 15 May 2020 10:23:59 -0500
 From:   Nate Karstens <nate.karstens@garmin.com>
 To:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Jeff Layton <jlayton@kernel.org>,
@@ -75,149 +75,344 @@ To:     Alexander Viro <viro@zeniv.linux.org.uk>,
         <linux-alpha@vger.kernel.org>, <linux-parisc@vger.kernel.org>,
         <sparclinux@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-CC:     Changli Gao <xiaosuo@gmail.com>
-Subject: [PATCH v2] Implement close-on-fork
-Date:   Fri, 15 May 2020 10:23:17 -0500
-Message-ID: <20200515152321.9280-1-nate.karstens@garmin.com>
+CC:     Changli Gao <xiaosuo@gmail.com>,
+        Nate Karstens <nate.karstens@garmin.com>
+Subject: [PATCH v2 1/4] fs: Implement close-on-fork
+Date:   Fri, 15 May 2020 10:23:18 -0500
+Message-ID: <20200515152321.9280-2-nate.karstens@garmin.com>
 X-Mailer: git-send-email 2.26.1
+In-Reply-To: <20200515152321.9280-1-nate.karstens@garmin.com>
+References: <20200515152321.9280-1-nate.karstens@garmin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: OLAWPA-EXMB3.ad.garmin.com (10.5.144.15) To
  OLAWPA-EXMB7.ad.garmin.com (10.5.144.21)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25422.000
-X-TM-AS-Result: No-13.985100-8.000000-10
-X-TMASE-MatchedRID: IXhV89UCBiY6Vyyhf+5DyNnDq+aDZjGZopGQY5bbP3IS39b8+3nDx2yH
-        arFSgTJkrAcfB2a374DHQzCkIEC0MCXWu5LW+2slttAWxuM5sl4MoIRV9JcRcMAkyHiYDAQbe/7
-        cxerWwk9dE4VPub+akrZRvD7ck6n3Qvmpg0wnSLNIkDvKxvWt/sPHY2htBa2bt2rjS6M+VNmden
-        40SZnzP+nmptgQI8s0Ybr1wIpI4EVWSqhPlGB831D5LQ3Tl9H7ekMgTOQbVFsurUcwuzZNE6ajP
-        ZFMk1nHs8gqOsWgajKJfU10X8ghjdhG27sGev85xVtvemNbkyejDWAh29R3WgGfIv/fwf55uCiL
-        r1XhSf1O2zwC9+COqXuPZJ1vRHBhMDvZPMbvTD6cxB01DrjF9zsgUw68UQrY4PdcWsl+C/PKmnu
-        HRSucyphkL8KXkZk1p5/Il/dAvJmHbsX/GOLqdoZAUzvhoe1TSuH+GfgmQGfHg+01BR0lp4R/LZ
-        ztAiL/3sCrH2zrbRbih8z9AblAgxt445IfplOKolVO7uyOCDUEa8g1x8eqF7Ee96bzLpOvblTlt
-        k7oaowCP4PWwXxfsfh941Sx72KBqicT/Ai+cAlhXXywTJLpfOdppbZRNp/IMTkWY9HYyZF7IzUF
-        yCuNEEMfE3d94vHd42WC8ffme7UfE8yM4pjsDwtuKBGekqUpI/NGWt0UYPBO91OWsR4zA1MFbch
-        rTlu21gtmLk8Eyf6K9JFdhRVepfO9MJDeh2W+
+X-TM-AS-Result: No-8.366000-8.000000-10
+X-TMASE-MatchedRID: zU8/ga22QnsY5XJhZJs6SDCMW7zNwFaIGiQ8GIEGP38y2ckJNvUX+HzK
+        3Q9zSFL7ATYOMR69+dqRXQsE2URVLPpC5SMG+P7XB8FxO/BQHsIacZilk37ECL95OdmJ178BjL9
+        k66lsprSFCmd9YpPXsWn9q4aEyPwAwsZtKo32enS7qoPZRcH3U8tDHw9RrCNbx5B+7qLBJ+xAHO
+        g8qEtqyI+pAn19BHXOF/tIpAzU+Bdk5pVuCWjzQc36paW7ZnFor4ukWaaTegCfuM4lD6uC8TECc
+        rZ55BeGF9v+Dr8BUC0xFzy2mxela8ctxF7vDKgQiVJZi91I9JjgXnxE81iysQcB7juZygIJyVBW
+        8fUk7pM1wU4Zygz0SnW00rbMu3zpYwDOL7t3RyEPe5gzF3TVt1OMvMY8acYWSg8ufp5n3T4n4FP
+        RjzsKxkuD8yJMtBEu7I0yDuih8283KXWd30Ii3RRFJJyf5BJe3QfwsVk0UbtuRXh7bFKB7k/MEt
+        SMvTDCLLLAiOOemOylwObsQibNC/NFVcbL+CYQsBTJSD2iAW0=
 X-TM-AS-User-Approved-Sender: No
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--13.985100-8.000000
+X-TMASE-Result: 10--8.366000-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25422.000
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFTY:;SFS:(396003)(136003)(376002)(39860400002)(346002)(46966005)(36756003)(316002)(7416002)(2616005)(7696005)(110136005)(426003)(82310400002)(478600001)(356005)(966005)(7636003)(82740400003)(70586007)(186003)(6666004)(44832011)(70206006)(1076003)(4326008)(86362001)(5660300002)(47076004)(2906002)(8676002)(26005)(336012)(8936002)(921003);DIR:OUT;SFP:1102;
+X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFTY:;SFS:(376002)(396003)(346002)(39860400002)(136003)(46966005)(8936002)(54906003)(107886003)(8676002)(316002)(7416002)(5660300002)(110136005)(44832011)(2616005)(186003)(26005)(4326008)(70586007)(2906002)(336012)(356005)(70206006)(6666004)(86362001)(36756003)(478600001)(47076004)(82310400002)(7696005)(426003)(7636003)(82740400003)(1076003)(921003);DIR:OUT;SFP:1102;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0128c414-a6b4-4edb-b0bd-08d7f8e3f9fa
-X-MS-TrafficTypeDiagnostic: BN8PR04MB5633:
-X-Microsoft-Antispam-PRVS: <BN8PR04MB563313ADCF486E724E40E63B9CBD0@BN8PR04MB5633.namprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Office365-Filtering-Correlation-Id: 067c2890-a865-47dc-8f3b-08d7f8e3fe64
+X-MS-TrafficTypeDiagnostic: DM6PR04MB4154:
+X-Microsoft-Antispam-PRVS: <DM6PR04MB41546728BDD013066DC28B0A9CBD0@DM6PR04MB4154.namprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-Forefront-PRVS: 04041A2886
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qfgXT7kaDU1eLZzOlrNoWE7dCvP/70MqO9H41T/ZoxwH6WcFAIDI7/T08I+fmWk/Lxasp5vpfVpDoLA38onehzHyawaTGFtoVY/WF8CKuX7bifsI5tYMarDLqlYiLC8/DvxByGlSS880yV+kpwPn+gURczQ2o8VpFwSpzSVUFsuUcU2xe+xWoMQRiHYMEa9smL/PcWxn9XIAyKXZIgNEArkOS8+EqHu+pNzphD2kbOXnWL81yPeTc29DTWlQZRmP3g9vBg/0tO8zuHrZ82mjRp/1ZRixLBZvRdwrGtDMor/w9AFp0gsUhmxbDBoypLtpBPPDCSzsYSeTD8BmhIqqp1lXpxpDnU9usPH6EQvfX9orLxaO8gjiK27lle/BztJ+SoOZQtkViT98BLsicYBzBQdUtm419OlJHue4Z84uRP/NB/FozO2wgj4svVd0WXD+Fv6OiPTwJwms6/vrXAqiy21nBYqraKmLWEPigpTVbMtufdLfwp6Sy/DcXxXpY+UStloyxN8CsGqzEM4WaerShttNqI/Qkq5FQHemnlFgnji4YbjjegiO6e2PAJTqcdwSRU+fYnflTo+wEkqQJqam/UrZgLJpXRLVTKYxiumki2o=
+X-Microsoft-Antispam-Message-Info: iAS3Sor/+udiXNczVDCj21/aQvEvRwLXCCH+me6ncNHBIFwrfxz2RnIVbkKs9Q2LIHgQdxwbTMlmyP252bqhGZ+vrD6DjnbxwaEVx9WuQQRxfFVx+CdkxAVT3Oe9u0Z2cDKgqVQlYVmzjbSGMYbTt8lKiKzxbFjWR7lOhc6MQQU2BgbQB0RG7GdA9gHU6HhRZCaaeQ41Lodzx4QfUCEBMCoITQK60g2eS2ASZ1kbj5TgSJhXlSXzuviL+pCl23NRNXjCGcN1+kb2rlTfhAYcRvaeiUGb7tG7VRiMAFI6AqKV96iBB2dswyosrI3k/CgIEhlgITy2qa098gS1HBoRw18IwJg6hJlCDTuAwwGnqDPJNxa7JCdRdFY/lqc8xMunKlqpFMHyiXh56Rckm0UJlUg5Kkid7NW7r+wFlYSqRD4cIZakVQj8/raxSEWIvxYVeU+oMFks7YFJ6lPFb6EgUtP8HWupkLDlU1ui1lNWSEanr3e3vgKsSeYEPNLGGuX02kmEopRfG9VQthJdxWnzmjko2i1E+/CWarOcP9je/c4=
 X-OriginatorOrg: garmin.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2020 15:23:53.0395
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2020 15:24:00.4392
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0128c414-a6b4-4edb-b0bd-08d7f8e3f9fa
+X-MS-Exchange-CrossTenant-Network-Message-Id: 067c2890-a865-47dc-8f3b-08d7f8e3fe64
 X-MS-Exchange-CrossTenant-Id: 38d0d425-ba52-4c0a-a03e-2a65c8e82e2d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38d0d425-ba52-4c0a-a03e-2a65c8e82e2d;Ip=[204.77.163.244];Helo=[edgetransport.garmin.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR04MB5633
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR04MB4154
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Series of 4 patches to implement close-on-fork. Tests have been
-published to https://github.com/nkarstens/ltp/tree/close-on-fork
-and cover close-on-fork functionality in the following syscalls:
-
- * accept(4)
- * dup3(2)
- * fcntl(2)
- * open(2)
- * socket(2)
- * socketpair(2)
- * unshare(2)
-
-Addresses underlying issue in that there is no way to prevent
-a fork() from duplicating a file descriptor. The existing
-close-on-exec flag partially-addresses this by allowing the
-parent process to mark a file descriptor as exclusive to itself,
-but there is still a period of time the failure can occur
-because the auto-close only occurs during the exec().
-
-One manifestation of this is a race conditions in system(), which
-(depending on the implementation) is non-atomic in that it first
-calls a fork() and then an exec().
+The close-on-fork flag causes the file descriptor to be closed
+atomically in the child process before the child process returns
+from fork(). Implement this feature and provide a method to
+get/set the close-on-fork flag using fcntl(2).
 
 This functionality was approved by the Austin Common Standards
 Revision Group for inclusion in the next revision of the POSIX
 standard (see issue 1318 in the Austin Group Defect Tracker).
 
+If clone(2) is used to create a child process and the CLONE_FILES
+flag is set, then both processes will share the table of file
+descriptors and the state of the close-on-fork flag for any
+individual file descriptor. If unshare(2) is later used to stop
+sharing the file descriptor table, then any file descriptor with
+the close-on-fork flag set will be closed in the process that
+calls unshare(2).
+
+execve(2) also causes the file descriptor table to be unshared,
+so any file descriptor with the close-on-fork flag set will be
+closed in the process that calls execve(2).
+
+Co-developed-by: Changli Gao <xiaosuo@gmail.com>
+Signed-off-by: Changli Gao <xiaosuo@gmail.com>
+Signed-off-by: Nate Karstens <nate.karstens@garmin.com>
 ---
+ fs/fcntl.c                             |  4 +-
+ fs/file.c                              | 64 ++++++++++++++++++++++++--
+ include/linux/fdtable.h                |  7 +++
+ include/linux/file.h                   |  2 +
+ include/uapi/asm-generic/fcntl.h       |  5 +-
+ tools/include/uapi/asm-generic/fcntl.h |  5 +-
+ 6 files changed, 77 insertions(+), 10 deletions(-)
 
-This is v2 of the change. See https://lkml.org/lkml/2020/4/20/113
-for the original work.
-
-Thanks to everyone who provided comments on the first series of
-patches. Here are replies to specific comments:
-
-> I suggest we group the two bits of a file (close_on_exec, close_on_fork)
-> together, so that we do not have to dirty two separate cache lines.
-
-I could be mistaken, but I don't think this would improve efficiency.
-The close-on-fork and close-on-exec flags are read at different
-times. If you assume separate syscalls for fork and exec then
-there are several switches between when the two flags are read.
-In addition, the close-on-fork flags in the new process must be
-cleared, which will be much harder if the flags are interleaved.
-
-> Also the F_GETFD/F_SETFD implementation must use a single function call,
-> to not acquire the spinlock twice.
-
-Good point, done.
-
-> How about only allocating the 'close on fork' bitmap the first time
-> a process sets a bit in it?
-
-I looked into it and there are side effects I dont't think we want.
-For example, if fcntl is used to set the close-on-fork flag, then
-there is a chance that it cannot allocate memory, and so we'd have
-to return ENOMEM. Seems cleaner to allocate memory up front so that
-we know the file has all of the memory it needs.
-
-> You should be able to use the same 'close the fds in this bitmap'
-> function for both cases.
-
-I looked into this and I think it is more efficient to prevent the
-new process from having a reference to the open file than it is to
-temporarily give the new process a reference and then close it later.
-
-> I'm not sure dup_fd() is the best place to check the close-on-fork flag.
-> For example, the ksys_unshare() > unshare_fd() > dup_fd() execution path
-> seems suspect.
-
-I have a better understanding of clone(2)/unshare(2) now and believe
-that dup_fd() is the appropriate place to handle this. clone(2) with
-CLONE_FILES set intentionally shares the file descriptor table, so
-close-on-fork should not impact that. However, if unshare(2) is later
-used to unshare the file descriptor table then the process calling
-unshare(2) should automatically close its copy of any file descriptor
-with close-on-fork set.
-
-> If the close-on-fork flag is set, then __clear_open_fd() should be
-> called instead of just __clear_bit(). This will ensure that
-> fdt->full_fds_bits() is updated.
-
-Done. It falls through to the case where the file had not finished
-opening yet and leverages its call to __clear_open_fd().
-
-> Need to investigate if the close-on-fork (or close-on-exec) flags
-> need to be cleared when the file is closed as part of the
-> close-on-fork execution path.
-
-Done. The new file descriptor table starts with all close-on-fork
-flags being cleared and dup_fd() gets the close-on-fork flag from
-the old file descriptor table.
+diff --git a/fs/fcntl.c b/fs/fcntl.c
+index 2e4c0fa2074b..913b0cb70804 100644
+--- a/fs/fcntl.c
++++ b/fs/fcntl.c
+@@ -334,11 +334,11 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
+ 		err = f_dupfd(arg, filp, O_CLOEXEC);
+ 		break;
+ 	case F_GETFD:
+-		err = get_close_on_exec(fd) ? FD_CLOEXEC : 0;
++		err = f_getfd(fd);
+ 		break;
+ 	case F_SETFD:
+ 		err = 0;
+-		set_close_on_exec(fd, arg & FD_CLOEXEC);
++		f_setfd(fd, arg);
+ 		break;
+ 	case F_GETFL:
+ 		err = filp->f_flags;
+diff --git a/fs/file.c b/fs/file.c
+index c8a4e4c86e55..81194349e980 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -47,7 +47,7 @@ static void free_fdtable_rcu(struct rcu_head *rcu)
+  * spinlock held for write.
+  */
+ static void copy_fd_bitmaps(struct fdtable *nfdt, struct fdtable *ofdt,
+-			    unsigned int count)
++			    unsigned int count, bool copy_cof)
+ {
+ 	unsigned int cpy, set;
+ 
+@@ -58,6 +58,13 @@ static void copy_fd_bitmaps(struct fdtable *nfdt, struct fdtable *ofdt,
+ 	memcpy(nfdt->close_on_exec, ofdt->close_on_exec, cpy);
+ 	memset((char *)nfdt->close_on_exec + cpy, 0, set);
+ 
++	if (copy_cof) {
++		memcpy(nfdt->close_on_fork, ofdt->close_on_fork, cpy);
++		memset((char *)nfdt->close_on_fork + cpy, 0, set);
++	} else {
++		memset((char *)nfdt->close_on_fork, 0, cpy + set);
++	}
++
+ 	cpy = BITBIT_SIZE(count);
+ 	set = BITBIT_SIZE(nfdt->max_fds) - cpy;
+ 	memcpy(nfdt->full_fds_bits, ofdt->full_fds_bits, cpy);
+@@ -79,7 +86,7 @@ static void copy_fdtable(struct fdtable *nfdt, struct fdtable *ofdt)
+ 	memcpy(nfdt->fd, ofdt->fd, cpy);
+ 	memset((char *)nfdt->fd + cpy, 0, set);
+ 
+-	copy_fd_bitmaps(nfdt, ofdt, ofdt->max_fds);
++	copy_fd_bitmaps(nfdt, ofdt, ofdt->max_fds, true);
+ }
+ 
+ static struct fdtable * alloc_fdtable(unsigned int nr)
+@@ -118,7 +125,7 @@ static struct fdtable * alloc_fdtable(unsigned int nr)
+ 	fdt->fd = data;
+ 
+ 	data = kvmalloc(max_t(size_t,
+-				 2 * nr / BITS_PER_BYTE + BITBIT_SIZE(nr), L1_CACHE_BYTES),
++				 3 * nr / BITS_PER_BYTE + BITBIT_SIZE(nr), L1_CACHE_BYTES),
+ 				 GFP_KERNEL_ACCOUNT);
+ 	if (!data)
+ 		goto out_arr;
+@@ -126,6 +133,8 @@ static struct fdtable * alloc_fdtable(unsigned int nr)
+ 	data += nr / BITS_PER_BYTE;
+ 	fdt->close_on_exec = data;
+ 	data += nr / BITS_PER_BYTE;
++	fdt->close_on_fork = data;
++	data += nr / BITS_PER_BYTE;
+ 	fdt->full_fds_bits = data;
+ 
+ 	return fdt;
+@@ -236,6 +245,17 @@ static inline void __clear_close_on_exec(unsigned int fd, struct fdtable *fdt)
+ 		__clear_bit(fd, fdt->close_on_exec);
+ }
+ 
++static inline void __set_close_on_fork(unsigned int fd, struct fdtable *fdt)
++{
++	__set_bit(fd, fdt->close_on_fork);
++}
++
++static inline void __clear_close_on_fork(unsigned int fd, struct fdtable *fdt)
++{
++	if (test_bit(fd, fdt->close_on_fork))
++		__clear_bit(fd, fdt->close_on_fork);
++}
++
+ static inline void __set_open_fd(unsigned int fd, struct fdtable *fdt)
+ {
+ 	__set_bit(fd, fdt->open_fds);
+@@ -290,6 +310,7 @@ struct files_struct *dup_fd(struct files_struct *oldf, int *errorp)
+ 	new_fdt = &newf->fdtab;
+ 	new_fdt->max_fds = NR_OPEN_DEFAULT;
+ 	new_fdt->close_on_exec = newf->close_on_exec_init;
++	new_fdt->close_on_fork = newf->close_on_fork_init;
+ 	new_fdt->open_fds = newf->open_fds_init;
+ 	new_fdt->full_fds_bits = newf->full_fds_bits_init;
+ 	new_fdt->fd = &newf->fd_array[0];
+@@ -330,13 +351,17 @@ struct files_struct *dup_fd(struct files_struct *oldf, int *errorp)
+ 		open_files = count_open_files(old_fdt);
+ 	}
+ 
+-	copy_fd_bitmaps(new_fdt, old_fdt, open_files);
++	copy_fd_bitmaps(new_fdt, old_fdt, open_files, false);
+ 
+ 	old_fds = old_fdt->fd;
+ 	new_fds = new_fdt->fd;
+ 
+ 	for (i = open_files; i != 0; i--) {
+ 		struct file *f = *old_fds++;
++
++		if (close_on_fork(open_files - i, old_fdt))
++			f = NULL;
++
+ 		if (f) {
+ 			get_file(f);
+ 		} else {
+@@ -453,6 +478,7 @@ struct files_struct init_files = {
+ 		.max_fds	= NR_OPEN_DEFAULT,
+ 		.fd		= &init_files.fd_array[0],
+ 		.close_on_exec	= init_files.close_on_exec_init,
++		.close_on_fork	= init_files.close_on_fork_init,
+ 		.open_fds	= init_files.open_fds_init,
+ 		.full_fds_bits	= init_files.full_fds_bits_init,
+ 	},
+@@ -840,6 +866,36 @@ void __f_unlock_pos(struct file *f)
+  * file count (done either by fdget() or by fork()).
+  */
+ 
++void f_setfd(unsigned int fd, int flags)
++{
++	struct files_struct *files = current->files;
++	struct fdtable *fdt;
++	spin_lock(&files->file_lock);
++	fdt = files_fdtable(files);
++	if (flags & FD_CLOEXEC)
++		__set_close_on_exec(fd, fdt);
++	else
++		__clear_close_on_exec(fd, fdt);
++	if (flags & FD_CLOFORK)
++		__set_close_on_fork(fd, fdt);
++	else
++		__clear_close_on_fork(fd, fdt);
++	spin_unlock(&files->file_lock);
++}
++
++int f_getfd(unsigned int fd)
++{
++	struct files_struct *files = current->files;
++	struct fdtable *fdt;
++	int flags;
++	rcu_read_lock();
++	fdt = files_fdtable(files);
++	flags = (close_on_exec(fd, fdt) ? FD_CLOEXEC : 0) |
++	        (close_on_fork(fd, fdt) ? FD_CLOFORK : 0);
++	rcu_read_unlock();
++	return flags;
++}
++
+ void set_close_on_exec(unsigned int fd, int flag)
+ {
+ 	struct files_struct *files = current->files;
+diff --git a/include/linux/fdtable.h b/include/linux/fdtable.h
+index f07c55ea0c22..61c551947fa3 100644
+--- a/include/linux/fdtable.h
++++ b/include/linux/fdtable.h
+@@ -27,6 +27,7 @@ struct fdtable {
+ 	unsigned int max_fds;
+ 	struct file __rcu **fd;      /* current fd array */
+ 	unsigned long *close_on_exec;
++	unsigned long *close_on_fork;
+ 	unsigned long *open_fds;
+ 	unsigned long *full_fds_bits;
+ 	struct rcu_head rcu;
+@@ -37,6 +38,11 @@ static inline bool close_on_exec(unsigned int fd, const struct fdtable *fdt)
+ 	return test_bit(fd, fdt->close_on_exec);
+ }
+ 
++static inline bool close_on_fork(unsigned int fd, const struct fdtable *fdt)
++{
++	return test_bit(fd, fdt->close_on_fork);
++}
++
+ static inline bool fd_is_open(unsigned int fd, const struct fdtable *fdt)
+ {
+ 	return test_bit(fd, fdt->open_fds);
+@@ -61,6 +67,7 @@ struct files_struct {
+ 	spinlock_t file_lock ____cacheline_aligned_in_smp;
+ 	unsigned int next_fd;
+ 	unsigned long close_on_exec_init[1];
++	unsigned long close_on_fork_init[1];
+ 	unsigned long open_fds_init[1];
+ 	unsigned long full_fds_bits_init[1];
+ 	struct file __rcu * fd_array[NR_OPEN_DEFAULT];
+diff --git a/include/linux/file.h b/include/linux/file.h
+index 142d102f285e..0ee15ee24010 100644
+--- a/include/linux/file.h
++++ b/include/linux/file.h
+@@ -83,6 +83,8 @@ static inline void fdput_pos(struct fd f)
+ 
+ extern int f_dupfd(unsigned int from, struct file *file, unsigned flags);
+ extern int replace_fd(unsigned fd, struct file *file, unsigned flags);
++extern int f_getfd(unsigned int fd);
++extern void f_setfd(unsigned int fd, int flags);
+ extern void set_close_on_exec(unsigned int fd, int flag);
+ extern bool get_close_on_exec(unsigned int fd);
+ extern int __get_unused_fd_flags(unsigned flags, unsigned long nofile);
+diff --git a/include/uapi/asm-generic/fcntl.h b/include/uapi/asm-generic/fcntl.h
+index 9dc0bf0c5a6e..0cb7199a7743 100644
+--- a/include/uapi/asm-generic/fcntl.h
++++ b/include/uapi/asm-generic/fcntl.h
+@@ -98,8 +98,8 @@
+ #endif
+ 
+ #define F_DUPFD		0	/* dup */
+-#define F_GETFD		1	/* get close_on_exec */
+-#define F_SETFD		2	/* set/clear close_on_exec */
++#define F_GETFD		1	/* get close_on_exec & close_on_fork */
++#define F_SETFD		2	/* set/clear close_on_exec & close_on_fork */
+ #define F_GETFL		3	/* get file->f_flags */
+ #define F_SETFL		4	/* set file->f_flags */
+ #ifndef F_GETLK
+@@ -160,6 +160,7 @@ struct f_owner_ex {
+ 
+ /* for F_[GET|SET]FL */
+ #define FD_CLOEXEC	1	/* actually anything with low bit set goes */
++#define FD_CLOFORK	2
+ 
+ /* for posix fcntl() and lockf() */
+ #ifndef F_RDLCK
+diff --git a/tools/include/uapi/asm-generic/fcntl.h b/tools/include/uapi/asm-generic/fcntl.h
+index ac190958c981..e04a00fecb4a 100644
+--- a/tools/include/uapi/asm-generic/fcntl.h
++++ b/tools/include/uapi/asm-generic/fcntl.h
+@@ -97,8 +97,8 @@
+ #endif
+ 
+ #define F_DUPFD		0	/* dup */
+-#define F_GETFD		1	/* get close_on_exec */
+-#define F_SETFD		2	/* set/clear close_on_exec */
++#define F_GETFD		1	/* get close_on_exec & close_on_fork */
++#define F_SETFD		2	/* set/clear close_on_exec & close_on_fork */
+ #define F_GETFL		3	/* get file->f_flags */
+ #define F_SETFL		4	/* set file->f_flags */
+ #ifndef F_GETLK
+@@ -159,6 +159,7 @@ struct f_owner_ex {
+ 
+ /* for F_[GET|SET]FL */
+ #define FD_CLOEXEC	1	/* actually anything with low bit set goes */
++#define FD_CLOFORK	2
+ 
+ /* for posix fcntl() and lockf() */
+ #ifndef F_RDLCK
+-- 
+2.26.1
 
