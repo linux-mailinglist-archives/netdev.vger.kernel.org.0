@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C8241D4BC0
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 12:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 549C31D4C65
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 13:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726197AbgEOK43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 06:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
+        id S1726122AbgEOLSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 07:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725986AbgEOK42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 06:56:28 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A50C061A0C
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 03:56:28 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id c3so1521181otr.12
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 03:56:28 -0700 (PDT)
+        with ESMTP id S1725986AbgEOLSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 07:18:41 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25198C061A0C
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 04:18:41 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id s19so1863312edt.12
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 04:18:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:from:date:message-id:subject:to;
-        bh=lmw38A+OcRGTBZKY2HvyJvau9ylzO4migglHBtTPb2M=;
-        b=YU77nPOupV5Se47NhhT/gqiqtmCBWF+XbbCEVuU3kG/v2sUkXupWaoYDK8Y9fsVKXt
-         FvC/Lv5vKXB4dPosdual0BvdX/+YHeknky3Rg83rwvCnwarVQUu18U8Vg+SohvEnZrpY
-         iyjvwmmhPiArezI1Uk0rEBM6YvNPSJpbZD21Ex6C9CsOayItufIRFZLoSJhax07MhiI5
-         DCzKM9lC74vFPtN1Lcv8WlJIVDKvO/e+KSKcKayxuayG3ctyWTCEekYgpu1CRATGIeR9
-         MVBGH9DGXV8uZZ5p6qr6SIPoCqoRXj2NoLfuENe+LeBffUoZLJBf6FfszUBVp+JopBP6
-         GtdQ==
+        bh=RYw5MOL4ai8EbQW4c5Bui/8iTzxoYzhUAgBACTX4CYY=;
+        b=eZTvRgzYFXFYKYu34Zl0D5jDm104zhoY6L/mj4rFzFKwYP+xAGQSvWw/Bf8qdt+W8v
+         pYDBMQf5+c3dBtdag/wkzfDJUeYrshl2wcD4pryHp39CwfjALJkVP4ypJE9Rplbj2xaC
+         Ctn9MgCD7MF3P7RVECj16d1tQvJeMZXCEZbk7wmr5TmAG8/E9MCNC4lRGgJJ9fwe54RO
+         ksKpeTMzL+a/ETdPvk8PbzUxuqNKNIfOlr/6PhQFc8gKIy9li99zjBLWf0w29cvu5vl1
+         6xeoxTrIQhEpvY2uXCq4tlknAj7qLKtHTkkGU7343XVhnzm2ypXN7YMj99SMm/HmL/9Q
+         D1jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=lmw38A+OcRGTBZKY2HvyJvau9ylzO4migglHBtTPb2M=;
-        b=F+abNdWswRX3XKikviZjUSmOAzSpaFREv8HdO8w8UdcobVE1kGke1dz4oAi5XWUb5e
-         orvH4/+facXSQdXdD4IT0qrk++WjuMEVY2VMVKKOmJj3rAtlJJuG9CnbWzAQONuDqoO4
-         BTatW8uiNdivXYp23ZFvK8DcqHj/yarkZu+usMQ27ndt8hB/NkEeSBU0K2jnpeYacHFJ
-         vz+faVV0LyRCPmSg2yPAZFs9DM6B6cO/EB98pODXl/6xZ8yO5C9FWbNIemShvjtvoPT7
-         1rDRUkbjJ9LsVm0KxwcR07vm0gED28Vjycls+i7RxyBvfY0QZ0Af4Orj8qiwfJnlzy36
-         o+yw==
-X-Gm-Message-State: AOAM533IH3sOyEWYqgQLaqwJAm9zAGdkCDH/sWkET642ZgtSwL/jX2JO
-        iZ+1mB9d/Hyy2V00pk09M/8zjlhoZoZpbzG2oD0=
-X-Google-Smtp-Source: ABdhPJzAbG0ca4wAtqe0wi6pstVhCX6EaWwtxijjZauCW3y9GsFqhUP8cLHNErSlFcYxbZJXIne2vtjCXRb9kH+gMao=
-X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr1778235otq.44.1589540187952;
- Fri, 15 May 2020 03:56:27 -0700 (PDT)
+        bh=RYw5MOL4ai8EbQW4c5Bui/8iTzxoYzhUAgBACTX4CYY=;
+        b=OnZMs9gn7pJJCo0KqIS01JJpZH/Yc1786N9qD6PHXxq51NdQtqPbDxVg0X235BHWXV
+         GZ0jUcYkBBfyKpLP1m3C4DY2q6jIFF9NdbcW0w3zJHehPG7Vx4k/rWfLrR8Mp54wVedd
+         sNCgZgkzVqFEuE87+r3CYFm8jQ+a4CvECw9lWKIzjeQxRN61sKtHxpLuiDNTehlzknFw
+         qiBu4ejKKJpGNbOIYRMyYebH8fYygTipgJ4fNbv7i4TwzNoQjIE1P3hTfwhydB54Yhc7
+         vbuCurX23QRKzx05ctkzAza7eXkkUxbVS+Rbs80Y+uXYfnUzGRuJrU0beFIcHSsaJnp3
+         gRjw==
+X-Gm-Message-State: AOAM530EJRNuQO7/6Gkzw0R2Ho3dRAF5H3q0WXFjfTSmfb9nrawkU4Dw
+        cnsurs0LbP9xOiXpcXPPuvjFYcYn6BIclASG/BIJoaaQ
+X-Google-Smtp-Source: ABdhPJxH5xwvxsdEfv5nwl9lmmjCA7FbENAK7tGmdaPZoRZ5uwXzpk2hhMot6u3y8xMV7DIfUTcziMRPT5PYIgBZmio=
+X-Received: by 2002:a05:6402:417:: with SMTP id q23mr2310549edv.139.1589541519696;
+ Fri, 15 May 2020 04:18:39 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a9d:7e92:0:0:0:0:0 with HTTP; Fri, 15 May 2020 03:56:27
- -0700 (PDT)
-From:   Alex <alj936477@gmail.com>
-Date:   Fri, 15 May 2020 10:56:27 +0000
-Message-ID: <CAMk+KkUEgsCcJRtXANEBPzBFpSLVv_hJZ9BD+W4C==wz0J13kw@mail.gmail.com>
-Subject: See it
-To:     undisclosed-recipients:;
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 15 May 2020 14:18:28 +0300
+Message-ID: <CA+h21hqjwn=+FwQyu8ZzscJcfmmucaKx9oaHsjF6BNaDg+ea7Q@mail.gmail.com>
+Subject: skbedit priority action vs tc-flower hw_tc
+To:     netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+Hi,
 
-I am seeking your consent to guard me invest as partners in any profit
-investment.
+I noticed that there seem to be 2 ways of doing the same thing, which
+is performing QoS classification. The skbedit priority offload action
+goes through FLOW_ACTION_PRIORITY, and hw_tc goes through
+tc_classid_to_hwtc.
+It appears that drivers are using one or the other method mostly at random.
+Also, there appears to be no way of doing the other thing: matching on
+a certain traffic class with flower (e.g. installing a traffic class
+policer). How would that be done?
 
-If you are interested, get back to me for more details to see if you
-can handle it.
-
-Sincerely,
-Alex
+Thanks,
+-Vladimir
