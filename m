@@ -2,125 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25AEF1D478E
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 10:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F181D47DE
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 10:14:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727833AbgEOIAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 04:00:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42428 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726671AbgEOIAT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 04:00:19 -0400
-Received: from pali.im (pali.im [31.31.79.79])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B7429205CB;
-        Fri, 15 May 2020 08:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589529618;
-        bh=Lrg29hVRGlCPrHHmbYcVcsFCxxxwqFtQRLOD6b5xnYo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NVL1ClV+Sf8z/LLTyPfAPgLsrbfvrui0OPb0oiN0r2sFmT2HTGCY9ZL41659B+T+Z
-         g1Mkjy4xPFqndZ2U7GrGhq1Y9IlERJv+KJC8Eq+sMIWnW5nMTdKiLGgIoke92hUkJJ
-         MA7S8k5YVMBd7HLwxBJz/0zxW6YevjCAcu4te5Wk=
-Received: by pali.im (Postfix)
-        id A01805F0; Fri, 15 May 2020 10:00:16 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S1727823AbgEOIOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 04:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727033AbgEOIOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 04:14:04 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFC1C05BD0A
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 01:14:04 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id h188so1057086lfd.7
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 01:14:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lq5DIesF+RbxQOK8sQT3VRTvChBQJEKKHevS1i912BY=;
+        b=cLQIrNYIqNnFQZxSDv3Nao/EiRz4C4v3D5BsBSJVZsrGzek1Zb7axRteBeyR0qa7GO
+         yI83eqGb7l8aeRIoZ41ZzQJnP8p+wDG3/134icS+IYgUd8aBV6O/angx23NyzRP3aBAY
+         n0bavOIby4D3JUeSr7fsE/+suHe4jfZ/MgBwZJeSzD5CFAwzNuFgsLsA9Qmw55Sn5kzn
+         NeOiIQLvd6/ZjDd3ER6ipv11n8qjnN7tOYcYK3KYUxRwUHNkVS/Tv+BjO5nQoOCCX6UK
+         ay1dyBIwzzehakQ5ovJc8SZsV4puGQLX3H9rZtegPRjGx35oz11ZFWdZfW6Anex29nBm
+         FKEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lq5DIesF+RbxQOK8sQT3VRTvChBQJEKKHevS1i912BY=;
+        b=MAL3jaaW2xp1Nyqf3pgzMleDAdHNURlKVF5ABMAKfIoDUjVVVT5JNmrfx4qUMLI5Jk
+         y/xEsG7XaxcGF49k/o6aCGKXulOkXbDMqrFiRhPyptb8lVFlVEl/jTgIdE9U6FDlwBvk
+         FWJG8gqEEocVHDQzgklo5u1+eJbl+VhRw3i2K6pVSAqmRo/s/yAFXAde3gefph4/St0r
+         /f7OalLFqDzt5d6XZ10l62Ze2MY/QPUvKupxIpYnvlkZTBVpe7prXB1qnhnT2+Cpw2uJ
+         ihkFmUfaEtmzfl5C3uDDamaJR8duQrarjmHNfjgUJuDHcaKTzoYF2WLkicxP8VpkDysU
+         XnfA==
+X-Gm-Message-State: AOAM5327B6yH/StW22ZdYSel22OXdML3YBa5nCYLXyGMdroWZc/7S6Id
+        e9y/YIY9ngDzLUjRkXIIsuAgiA==
+X-Google-Smtp-Source: ABdhPJxHpquJ2A/U+NfvfBKSNQ9J9hevvQWZxQllmv4qLIHrrF1Bxp11wqKzmG9P7N3gTkhnycKxrg==
+X-Received: by 2002:a05:6512:310d:: with SMTP id n13mr1575556lfb.205.1589530442388;
+        Fri, 15 May 2020 01:14:02 -0700 (PDT)
+Received: from buimax ([109.204.208.150])
+        by smtp.gmail.com with ESMTPSA id y76sm1049432lff.45.2020.05.15.01.14.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 15 May 2020 01:14:01 -0700 (PDT)
+Date:   Fri, 15 May 2020 11:14:00 +0300
+From:   Henri Rosten <henri.rosten@unikie.com>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Guillaume Tucker <guillaume.tucker@collabora.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Cathy Luo <cluo@marvell.com>,
-        Avinash Patil <patila@marvell.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] mwifiex: Fix memory corruption in dump_station
-Date:   Fri, 15 May 2020 09:59:24 +0200
-Message-Id: <20200515075924.13841-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: stable/linux-4.4.y bisection: baseline.login on
+ at91-sama5d4_xplained
+Message-ID: <20200515081357.GA3257@buimax>
+References: <5eb8399a.1c69fb81.c5a60.8316@mx.google.com>
+ <2db7e52e-86ae-7c87-1782-8c0cafcbadd8@collabora.com>
+ <20200512111059.GA34497@piout.net>
+ <980597f7-5170-72f2-ec2f-efc64f5e27eb@gmail.com>
+ <20200512211519.GB29995@sasha-vm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200512211519.GB29995@sasha-vm>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mwifiex_cfg80211_dump_station() uses static variable for iterating
-over a linked list of all associated stations (when the driver is in UAP
-role). This has a race condition if .dump_station is called in parallel
-for multiple interfaces. This corruption can be triggered by registering
-multiple SSIDs and calling, in parallel for multiple interfaces
-    iw dev <iface> station dump
+On Tue, May 12, 2020 at 05:15:19PM -0400, Sasha Levin wrote:
+> On Tue, May 12, 2020 at 01:29:06PM -0700, Florian Fainelli wrote:
+> > 
+> > 
+> > On 5/12/2020 4:10 AM, Alexandre Belloni wrote:
+> > > Hi,
+> > > 
+> > > On 12/05/2020 06:54:29+0100, Guillaume Tucker wrote:
+> > > > Please see the bisection report below about a boot failure.
+> > > > 
+> > > > Reports aren't automatically sent to the public while we're
+> > > > trialing new bisection features on kernelci.org but this one
+> > > > looks valid.
+> > > > 
+> > > > It appears to be due to the fact that the network interface is
+> > > > failing to get brought up:
+> > > > 
+> > > > [  114.385000] Waiting up to 10 more seconds for network.
+> > > > [  124.355000] Sending DHCP requests ...#
+> > > > ..#
+> > > > .#
+> > > >  timed out!
+> > > > [  212.355000] IP-Config: Reopening network devices...
+> > > > [  212.365000] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+> > > > #
+> > > > 
+> > > > 
+> > > > I guess the board would boot fine without network if it didn't
+> > > > have ip=dhcp in the command line, so it's not strictly a kernel
+> > > > boot failure but still an ethernet issue.
+> > > > 
+> > > 
+> > > I think the resolution of this issue is
+> > > 99f81afc139c6edd14d77a91ee91685a414a1c66. If this is taken, then I think
+> > > f5aba91d7f186cba84af966a741a0346de603cd4 should also be backported.
+> > 
+> > Agreed.
+> 
+> Okay, I've queued both for 4.4, thanks!
 
-[16750.719775] Unable to handle kernel paging request at virtual address dead000000000110
-...
-[16750.899173] Call trace:
-[16750.901696]  mwifiex_cfg80211_dump_station+0x94/0x100 [mwifiex]
-[16750.907824]  nl80211_dump_station+0xbc/0x278 [cfg80211]
-[16750.913160]  netlink_dump+0xe8/0x320
-[16750.916827]  netlink_recvmsg+0x1b4/0x338
-[16750.920861]  ____sys_recvmsg+0x7c/0x2b0
-[16750.924801]  ___sys_recvmsg+0x70/0x98
-[16750.928564]  __sys_recvmsg+0x58/0xa0
-[16750.932238]  __arm64_sys_recvmsg+0x28/0x30
-[16750.936453]  el0_svc_common.constprop.3+0x90/0x158
-[16750.941378]  do_el0_svc+0x74/0x90
-[16750.944784]  el0_sync_handler+0x12c/0x1a8
-[16750.948903]  el0_sync+0x114/0x140
-[16750.952312] Code: f9400003 f907f423 eb02007f 54fffd60 (b9401060)
-[16750.958583] ---[ end trace c8ad181c2f4b8576 ]---
+I notice 99f81afc139c was reverted in mainline with commit b43bd72835a5.  
+The revert commit points out that:
 
-This patch drops the use of the static iterator, and instead every time
-the function is called iterates to the idx-th position of the
-linked-list.
+"It was papering over the real problem, which is fixed by commit
+f555f34fdc58 ("net: phy: fix auto-negotiation stall due to unavailable
+interrupt")"
 
-It would be better to convert the code not to use linked list for
-associated stations storage (since the chip has a limited number of
-associated stations anyway - it could just be an array). Such a change
-may be proposed in the future. In the meantime this patch can backported
-into stable kernels in this simple form.
+Maybe f555f34fdc58 should be backported to 4.4 instead of 99f81afc139c?
 
-Fixes: 8baca1a34d4c ("mwifiex: dump station support in uap mode")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/net/wireless/marvell/mwifiex/cfg80211.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index 1566d2197906..12bfd653a405 100644
---- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-+++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -1496,7 +1496,8 @@ mwifiex_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *dev,
- 			      int idx, u8 *mac, struct station_info *sinfo)
- {
- 	struct mwifiex_private *priv = mwifiex_netdev_get_priv(dev);
--	static struct mwifiex_sta_node *node;
-+	struct mwifiex_sta_node *node;
-+	int i;
- 
- 	if ((GET_BSS_ROLE(priv) == MWIFIEX_BSS_ROLE_STA) &&
- 	    priv->media_connected && idx == 0) {
-@@ -1506,13 +1507,10 @@ mwifiex_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *dev,
- 		mwifiex_send_cmd(priv, HOST_CMD_APCMD_STA_LIST,
- 				 HostCmd_ACT_GEN_GET, 0, NULL, true);
- 
--		if (node && (&node->list == &priv->sta_list)) {
--			node = NULL;
--			return -ENOENT;
--		}
--
--		node = list_prepare_entry(node, &priv->sta_list, list);
--		list_for_each_entry_continue(node, &priv->sta_list, list) {
-+		i = 0;
-+		list_for_each_entry(node, &priv->sta_list, list) {
-+			if (i++ != idx)
-+				continue;
- 			ether_addr_copy(mac, node->mac_addr);
- 			return mwifiex_dump_station_info(priv, node, sinfo);
- 		}
--- 
-2.20.1
-
+Thanks,
+-- Henri
