@@ -2,86 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CC8D1D420E
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 02:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 214501D4212
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 02:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728456AbgEOA0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 20:26:36 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:57865 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728131AbgEOA0g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 20:26:36 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 04F0QFPu8011756, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb06.realtek.com.tw[172.21.6.99])
-        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 04F0QFPu8011756
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 15 May 2020 08:26:15 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 15 May 2020 08:26:15 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 15 May 2020 08:26:15 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::8001:f5f5:a41e:f8d4]) by
- RTEXMB04.realtek.com.tw ([fe80::8001:f5f5:a41e:f8d4%3]) with mapi id
- 15.01.1779.005; Fri, 15 May 2020 08:26:15 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Tony Chuang <yhchuang@realtek.com>,
-        "colin.king@canonical.com" <colin.king@canonical.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH][next] rtw88: 8723d: fix incorrect setting of ldo_pwr
-Thread-Topic: [PATCH][next] rtw88: 8723d: fix incorrect setting of ldo_pwr
-Thread-Index: AQHWKhti7lhzaSVBmUG5wyOyhYF1sqinxIaA
-Date:   Fri, 15 May 2020 00:26:14 +0000
-Message-ID: <1589502367.2500.2.camel@realtek.com>
-References: <20200514181329.16292-1-colin.king@canonical.com>
-In-Reply-To: <20200514181329.16292-1-colin.king@canonical.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.213]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7BA5728ACA45E54F983A55A77EB2DFA0@realtek.com>
-Content-Transfer-Encoding: base64
+        id S1728131AbgEOA3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 20:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727805AbgEOA3H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 20:29:07 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F13C061A0C
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 17:29:07 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id n11so152539pgl.9
+        for <netdev@vger.kernel.org>; Thu, 14 May 2020 17:29:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9xz3JlEUYuYK9yBRHaMo5e7YTxCpaTGsNRLa7Dd3D9Y=;
+        b=angKGpVIPbuAUqOFXNFPulb5qc0NQWGywMPHQksIXu4rbVVrwSopUvsbHG8oZy2Deh
+         gRlWMjqJkj/G9zSmLbWlunMYA76S533N6LW42jlwZRlZTbQBAgHqaBddlNRpsd7f5VbZ
+         8o/wEjTzDoGkbftDS8tjZstszzR2FB3WE+R1NPM0nX9N+t2gtN+5ubWXlV1szoJtsk2u
+         tcZvmr/O8hk+iaWxcdTdT6ZqT61Yz1oUIUst3vjHIF8SVhuBrqLy2rc/jtODfaq1uqqI
+         hYRWdeyZxPX4yjzV5ZDSv9tJIMZVl+a1MzwIM2fVFofWe8PHIZWmaVv26MIOCYsk2Q5x
+         PxQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9xz3JlEUYuYK9yBRHaMo5e7YTxCpaTGsNRLa7Dd3D9Y=;
+        b=cV1vygDjTagUgbfaintn1x5kEY2yLySaIUR/CLAKfPjyZeu2iP6WtbyQfAmTEWEXqp
+         CNWBKNq+Awua3Nyv735oNRYVHCASeNY8HIXNsBirKUXlymR76lv4lHlL0L4v1iZ/qbUY
+         yKzokfIg1F1CkrekYtGN5Gjk3s5rOtjt5F2lNXCAQPkxamd7bdN2+kgN6ms1g0+M2BZ7
+         iwKHf+wQA5DIwpyDDdVU+sxjaQaZqIhdSUTDdR2ZNivEJIkKL/U/x5EVDbwHQVl84Dhz
+         q0i+JQ6ScYlNxGu04XtohUY6VMtaQEWkHOlUBDCWuzqLVLfvliSZ+0zp+ShjtuXRlodO
+         VCHw==
+X-Gm-Message-State: AOAM530L9ASmuJ8Kpctdz2ORjdgbh4EVm46QWrLGKWB1lE7T7bx2phFX
+        2EuU5FlvWuYW1HvY2dtNE3A=
+X-Google-Smtp-Source: ABdhPJzxh8oTc+eMQuQdwy5V8iYceM+OZ+SAEYkKLtbNfAH9JGMpTXqhtivQ+oe7hdH9VZO3QxBk/w==
+X-Received: by 2002:a62:8888:: with SMTP id l130mr1176308pfd.140.1589502547143;
+        Thu, 14 May 2020 17:29:07 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id w19sm317345pfq.43.2020.05.14.17.29.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 May 2020 17:29:06 -0700 (PDT)
+Date:   Thu, 14 May 2020 17:29:04 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Olivier Dautricourt <olivier.dautricourt@orolia.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH 2/3] net: uapi: Add HWTSTAMP_FLAGS_ADJ_FINE/ADJ_COARSE
+Message-ID: <20200515002904.GA18192@localhost>
+References: <20200514102808.31163-1-olivier.dautricourt@orolia.com>
+ <20200514102808.31163-3-olivier.dautricourt@orolia.com>
+ <20200514133809.GA18838@localhost>
+ <20200514152041.GB12924@orolia.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200514152041.GB12924@orolia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTA1LTE0IGF0IDE4OjEzICswMDAwLCBDb2xpbiBLaW5nIHdyb3RlOg0KPiBG
-cm9tOiBDb2xpbiBJYW4gS2luZyA8Y29saW4ua2luZ0BjYW5vbmljYWwuY29tPg0KPiANCj4gQ3Vy
-cmVudGx5IGxkb19wd3IgaGFzIHRoZSBMRE8yNSB2b2x0YWdlIGJpdHMgc2V0IHRvIHplcm8gYW5k
-IHRoZW4NCj4gaXQgaXMgb3ZlcndyaXR0ZW4gd2l0aCB0aGUgbmV3IHZvbHRhZ2Ugc2V0dGluZy4g
-VGhlIGFzc2lnbm1lbnQNCj4gbG9va3MgaW5jb3JyZWN0LCBpdCBzaG91bGQgYmUgYml0LXdpc2Ug
-b3InaW5nIGluIHRoZSBuZXcgdm9sdGFnZQ0KPiBzZXR0aW5nIHJhdGhlciB0aGFuIGEgZGlyZWN0
-IGFzc2lnbm1lbnQuDQo+IA0KPiBBZGRyZXNzZXMtQ292ZXJpdHk6ICgiVW51c2VkIHZhbHVlIikN
-Cj4gRml4ZXM6IDFhZmI1ZWI3YTAwZCAoInJ0dzg4OiA4NzIzZDogQWRkIGNmZ19sZG8yNSB0byBj
-b250cm9sIExETzI1IikNCj4gU2lnbmVkLW9mZi1ieTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmtp
-bmdAY2Fub25pY2FsLmNvbT4NCg0KVGhhbmsgeW91IGZvciB5b3VyIGZpeC4NCg0KQWNrZWQtYnk6
-IFBpbmctS2UgU2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPg0KDQo+IC0tLQ0KPiDCoGRyaXZlcnMv
-bmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODcyM2QuYyB8IDIgKy0NCj4gwqAxIGZpbGUg
-Y2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg3MjNkLmMNCj4gYi9kcml2
-ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg3MjNkLmMNCj4gaW5kZXggYjUxN2Fm
-NDE3ZTBlLi4yYzZlNDE3YzViY2EgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNz
-L3JlYWx0ZWsvcnR3ODgvcnR3ODcyM2QuYw0KPiArKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9y
-ZWFsdGVrL3J0dzg4L3J0dzg3MjNkLmMNCj4gQEAgLTU2MSw3ICs1NjEsNyBAQCBzdGF0aWMgdm9p
-ZCBydHc4NzIzZF9jZmdfbGRvMjUoc3RydWN0IHJ0d19kZXYgKnJ0d2RldiwNCj4gYm9vbCBlbmFi
-bGUpDQo+IMKgCWxkb19wd3IgPSBydHdfcmVhZDgocnR3ZGV2LCBSRUdfTERPX0VGVVNFX0NUUkwg
-KyAzKTsNCj4gwqAJaWYgKGVuYWJsZSkgew0KPiDCoAkJbGRvX3B3ciAmPSB+QklUX01BU0tfTERP
-MjVfVk9MVEFHRTsNCj4gLQkJbGRvX3B3ciA9IChCSVRfTERPMjVfVk9MVEFHRV9WMjUgPDwgNCkg
-fCBCSVRfTERPMjVfRU47DQo+ICsJCWxkb19wd3IgfD0gKEJJVF9MRE8yNV9WT0xUQUdFX1YyNSA8
-PCA0KSB8IEJJVF9MRE8yNV9FTjsNCj4gwqAJfSBlbHNlIHsNCj4gwqAJCWxkb19wd3IgJj0gfkJJ
-VF9MRE8yNV9FTjsNCj4gwqAJfQ0KPiAtLcKgDQo+IDIuMjUuMQ0KPiANCj4gDQo+IC0tLS0tLVBs
-ZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWls
-Lg0KDQoNCg==
+On Thu, May 14, 2020 at 05:20:41PM +0200, Olivier Dautricourt wrote:
+> Can't we consider this as a time stamp settings ?
+
+No.  It really is not a time stamp setting at all.
+
+> I don't see where we could put those driver-specific flags.
+> That flag field was reserved for futher improvements so i found
+> it acceptable to specify that here.
+
+This field is for possible future changes in time stamps, not clock
+inputs or servo modes.
+
+Thanks,
+Richard
