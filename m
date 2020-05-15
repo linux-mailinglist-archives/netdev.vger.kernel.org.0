@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49ED31D5B8E
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65F2C1D5B8C
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728055AbgEOV3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 17:29:31 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:44667 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727942AbgEOV3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:29:07 -0400
-Received: by mail-pg1-f193.google.com with SMTP id b8so1587153pgi.11;
-        Fri, 15 May 2020 14:29:07 -0700 (PDT)
+        id S1728034AbgEOV3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 17:29:20 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38031 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727972AbgEOV3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:29:09 -0400
+Received: by mail-pf1-f193.google.com with SMTP id y25so1601914pfn.5;
+        Fri, 15 May 2020 14:29:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7iSHfXW9+fvDe3OMezoTpoZ6yc3BiswtzUTGtFdEoqM=;
-        b=CWT3RSEsOAt3vxph1Drkp6lLCexue3b3KvLCldOnH8ALvAN+vG7ea8ubR3spND7fNJ
-         jrosDF++LVePslD+xaXTT04Dr31BRgvteWo/uCtQqi4oif794PROe+fklD8OUKEqX4pA
-         QG4wWoSauN0emeuSxha6yT8ugiYfMnV346cti0anyZR8Z/mDDmIpCO2Thvyp22N+lQeZ
-         kTbgXNu6dlOitrhfpKl5z4QKE5wWxYyiNBtWDp59hDGh2rzVZMNfsCSsQxtPbismgFxD
-         zuok7sbso5ktvEQvVHjRzuSbyvpON5p/VgfmCj5Zs6lbISK6e1gFECdajf/sQCQVnJek
-         6KhQ==
-X-Gm-Message-State: AOAM5320EiO4ESDUt3yjDQX383A+SPvM1GZR0amfD/fawwVeiraWdgom
-        8naqhOEHuEOtYF2c0FbXQuk=
-X-Google-Smtp-Source: ABdhPJy8UUPC9xXHxB4FjCVxUaLsmMMiDQI0BvVJYF+PqZUF0tKyMG2HswF59FK0uEUmrA4F0O6+Ng==
-X-Received: by 2002:a62:7d91:: with SMTP id y139mr5770731pfc.172.1589578147283;
-        Fri, 15 May 2020 14:29:07 -0700 (PDT)
+        bh=wyaNKYj+csWx0v5/RRrrvPiG/GlOrf9rCpyGTc2gDv0=;
+        b=PNU2WB7xGk4aeo9LqsRnFBNqh2ufNpsh3E2UmToKGNuzHfu5s+ztk+s6S6VUKmq0C/
+         iwuKhe46HL2A2VjsuMCiBG1UUq668ruWKtTYFkzSo6RRrX/zBJOPXhRKnsWG3B0dZ2hW
+         bWS2BRDcZKdi0ogAgjbkHYrTzBOU4NRKRmSTPmsBmzjqEpdkwG3CiEBpgHGmHoGOpB6R
+         79oBGxLCemAvW7+V9HRYSkPx8A6zubaw+QyShr460zkG2LBJNAtE7VyZ2ppalO/b0PTK
+         iMKzu8k478e+nghLjgvLqcZuQkCqBKzZEUEUe5QfMFc988OM7X2xv4dSblScsJRps6Fl
+         5B1A==
+X-Gm-Message-State: AOAM531hGbKW+WC3F5TKCbWmueDzmsXgOmOREtXk4XgjwqnH/lMZEyw5
+        Y6Oh5B+/fqtxcGWbDJ81iE4=
+X-Google-Smtp-Source: ABdhPJzT8OuJIcMz4maB705Q5rp4ih5zCp5ALUBnEyTPR7+PH8X96oQqmCWUmGTpOQxsyRkd6WhDeA==
+X-Received: by 2002:aa7:8a92:: with SMTP id a18mr5990105pfc.0.1589578148396;
+        Fri, 15 May 2020 14:29:08 -0700 (PDT)
 Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id 25sm2281115pjk.50.2020.05.15.14.28.56
+        by smtp.gmail.com with ESMTPSA id 19sm2216513pjl.52.2020.05.15.14.28.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 15 May 2020 14:29:04 -0700 (PDT)
 Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id 6016742380; Fri, 15 May 2020 21:28:50 +0000 (UTC)
+        id 7975D4238B; Fri, 15 May 2020 21:28:50 +0000 (UTC)
 From:   Luis Chamberlain <mcgrof@kernel.org>
 To:     jeyu@kernel.org
 Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
@@ -47,23 +47,17 @@ Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
         davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
         linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>
-Subject: [PATCH v2 14/15] brcm80211: use new module_firmware_crashed()
-Date:   Fri, 15 May 2020 21:28:45 +0000
-Message-Id: <20200515212846.1347-15-mcgrof@kernel.org>
+        Lennert Buytenhek <buytenh@wantstofly.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>
+Subject: [PATCH v2 15/15] mwl8k: use new module_firmware_crashed()
+Date:   Fri, 15 May 2020 21:28:46 +0000
+Message-Id: <20200515212846.1347-16-mcgrof@kernel.org>
 X-Mailer: git-send-email 2.23.0.rc1
 In-Reply-To: <20200515212846.1347-1-mcgrof@kernel.org>
 References: <20200515212846.1347-1-mcgrof@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -79,33 +73,28 @@ a reboot.
 Using a taint flag allows us to annotate when this happens clearly.
 
 Cc: linux-wireless@vger.kernel.org
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: brcm80211-dev-list@cypress.com
-Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
-Cc: Wright Feng <wright.feng@cypress.com>
+Cc: Lennert Buytenhek <buytenh@wantstofly.org>
 Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "Rafał Miłecki" <rafal@milecki.pl>
-Cc: Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>
+Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Ganapathi Bhat <ganapathi.bhat@nxp.com>
 Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c | 1 +
+ drivers/net/wireless/marvell/mwl8k.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-index c88655acc78c..d623f83568b3 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-@@ -1393,6 +1393,7 @@ void brcmf_fw_crashed(struct device *dev)
- 	struct brcmf_pub *drvr = bus_if->drvr;
- 
- 	bphy_err(drvr, "Firmware has halted or crashed\n");
-+	module_firmware_crashed();
- 
- 	brcmf_dev_coredump(dev);
- 
+diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
+index 97f23f93f6e7..d609ef1bb879 100644
+--- a/drivers/net/wireless/marvell/mwl8k.c
++++ b/drivers/net/wireless/marvell/mwl8k.c
+@@ -1551,6 +1551,7 @@ static int mwl8k_tx_wait_empty(struct ieee80211_hw *hw)
+ 	 * the firmware has crashed
+ 	 */
+ 	if (priv->hw_restart_in_progress) {
++		module_firmware_crashed();
+ 		if (priv->hw_restart_owner == current)
+ 			return 0;
+ 		else
 -- 
 2.26.2
 
