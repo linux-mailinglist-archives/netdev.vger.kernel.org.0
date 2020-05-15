@@ -2,147 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1A01D4D81
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 14:12:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 917171D4DAA
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 14:28:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726197AbgEOMMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 08:12:38 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40100 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726122AbgEOMMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 08:12:38 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZZCd-0003lK-QM; Fri, 15 May 2020 14:12:35 +0200
-Date:   Fri, 15 May 2020 14:12:35 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next] bpf, bpftool: Allow probing for CONFIG_HZ from
- kernel config
-Message-ID: <20200515121235.GA7407@pc-9.home>
-References: <20200513075849.20868-1-daniel@iogearbox.net>
- <CAEf4BzYfgXSOPmi6B23=rKgUge77g+tg=jJ9jwgZ48Co1nSViA@mail.gmail.com>
+        id S1726162AbgEOM2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 08:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726097AbgEOM2e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 08:28:34 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5746C05BD0A
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 05:28:33 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id v12so3279020wrp.12
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 05:28:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=8CBmhx9ui3qJxYivj5qzMWxfms8vf7DMdx7vVNSjA8c=;
+        b=vGGnjcDhIBopZLFVLn2T3uR4fy/h1Jea54IFYPCJ4/m/2BQ7vKoRoVRyf+9bTtKuS8
+         /OKsdJoy2rFrug9YW2g/pXktJUu3g+HWFPnf5mdLSm+eGo0y6qB7jQI+oDya51Umb5Qo
+         SN3ZEFgFbvACJhXyWd0CHVSEdQ17bb87p+q2k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=8CBmhx9ui3qJxYivj5qzMWxfms8vf7DMdx7vVNSjA8c=;
+        b=C1FTF2J8X3uCQA79FRNSqcP9bOdE7dQlSsXYdulpUn6pb6U9qB0sKKFq7Rh+/NZ7OP
+         13NdEvsXjn/FcPl9EohSXGh9tnRWDtsCcIURLrZ1i9Hs8/onjlulOWHt25Bgb1ZOdTla
+         6Y+ArbOsC9gDi7cx+l7sdBE2dvQ10ncm6w47h/y4p5/Ud86Z2QPIlYxmO3KvH50gTUZ3
+         zCCMl2bc6xW+3McrWl2iKk0yWAXBVn5PX6/+Uqedcfkr2xbHONIDghymD53uuIOf5bCc
+         NHD3/NgowPLPQrS9FneNHfuRCj+iDTIvk5ZTyeQKUm2yiYdFhPlmMeaiRpvWM3UhC9VX
+         hVNQ==
+X-Gm-Message-State: AOAM5326UEQ1pSlDnP94i3/VUcjCs9ZtSVUK+XqIxRRt8r3Ctb5Xgs/1
+        Uyox+Z4E2NvDc+KdOhmrSfw66Q==
+X-Google-Smtp-Source: ABdhPJzuJO3h9wm9P+HDKn4bQyUeRVRQ2oDHXcFbX7IhBImY1lx/94mnSy7aM8awmKA1Hpau8zRqXA==
+X-Received: by 2002:adf:decb:: with SMTP id i11mr4341029wrn.172.1589545712448;
+        Fri, 15 May 2020 05:28:32 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id b12sm3663696wmj.0.2020.05.15.05.28.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 May 2020 05:28:31 -0700 (PDT)
+References: <20200511185218.1422406-1-jakub@cloudflare.com> <20200511185218.1422406-6-jakub@cloudflare.com> <20200511204445.i7sessmtszox36xd@ast-mbp>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, dccp@vger.kernel.org,
+        kernel-team@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next v2 05/17] inet: Run SK_LOOKUP BPF program on socket lookup
+In-reply-to: <20200511204445.i7sessmtszox36xd@ast-mbp>
+Date:   Fri, 15 May 2020 14:28:30 +0200
+Message-ID: <87wo5d2xht.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYfgXSOPmi6B23=rKgUge77g+tg=jJ9jwgZ48Co1nSViA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25812/Thu May 14 14:13:00 2020)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 14, 2020 at 04:19:41PM -0700, Andrii Nakryiko wrote:
-> On Wed, May 13, 2020 at 1:00 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >
-> > In Cilium we've recently switched to make use of bpf_jiffies64() for
-> > parts of our tc and XDP datapath since bpf_ktime_get_ns() is more
-> > expensive and high-precision is not needed for our timeouts we have
-> > anyway. Our agent has a probe manager which picks up the json of
-> > bpftool's feature probe and we also use the macro output in our C
-> > programs e.g. to have workarounds when helpers are not available on
-> > older kernels.
-> >
-> > Extend the kernel config info dump to also include the kernel's
-> > CONFIG_HZ, and rework the probe_kernel_image_config() for allowing a
-> > macro dump such that CONFIG_HZ can be propagated to BPF C code as a
-> > simple define if available via config. Latter allows to have _compile-
-> > time_ resolution of jiffies <-> sec conversion in our code since all
-> > are propagated as known constants.
-> >
-> > Given we cannot generally assume availability of kconfig everywhere,
-> > we also have a kernel hz probe [0] as a fallback. Potentially, bpftool
-> > could have an integrated probe fallback as well, although to derive it,
-> > we might need to place it under 'bpftool feature probe full' or similar
-> > given it would slow down the probing process overall. Yet 'full' doesn't
-> > fit either for us since we don't want to pollute the kernel log with
-> > warning messages from bpf_probe_write_user() and bpf_trace_printk() on
-> > agent startup; I've left it out for the time being.
-> >
-> >   [0] https://github.com/cilium/cilium/blob/master/bpf/cilium-probe-kernel-hz.c
-> >
-> > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > ---
-> 
-> libbpf supports kconfig values, so don't have to even probe for that,
-> it will just appear as a constant global variable:
-> 
-> extern unsigned long CONFIG_HZ __kconfig;
-> 
-> But I assume you want this for iproute2 case, which doesn't support
-> this, right? We really should try to make iproute2 just use libbpf as
+On Mon, May 11, 2020 at 10:44 PM CEST, Alexei Starovoitov wrote:
+> On Mon, May 11, 2020 at 08:52:06PM +0200, Jakub Sitnicki wrote:
+>> Run a BPF program before looking up a listening socket on the receive path.
+>> Program selects a listening socket to yield as result of socket lookup by
+>> calling bpf_sk_assign() helper and returning BPF_REDIRECT code.
+>>
+>> Alternatively, program can also fail the lookup by returning with BPF_DROP,
+>> or let the lookup continue as usual with BPF_OK on return.
+>>
+>> This lets the user match packets with listening sockets freely at the last
+>> possible point on the receive path, where we know that packets are destined
+>> for local delivery after undergoing policing, filtering, and routing.
+>>
+>> With BPF code selecting the socket, directing packets destined to an IP
+>> range or to a port range to a single socket becomes possible.
+>>
+>> Suggested-by: Marek Majkowski <marek@cloudflare.com>
+>> Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
 
-It's one but not the only reason. Our golang daemon picks up the json config
-from `bpftool feature -j` and based on that we decide which features our BPF
-datapath will have where the daemons needs to also adapt accordingly. So for
-users running older kernels we need fallback behavior in our daemon, for
-example, in case of missing LPM delete or get_next_key from syscall side the
-LPM map management and/or program regeneration will differ in the agent. In
-case of jiffies, it's also not as trivial from control plane side, e.g.
-existing deployments cannot simply switch from ktime to jiffies during upgrade
-while traffic is live in the datapath given this has upgrade and downgrade
-implications on timeouts. However, we can switch to using it for new deployments
-via helm. In that case, the agent today probes for availability, so it needs
-to know i) whether the underlying kernel supports jiffies64 helper, ii) it needs
-to know the kernel hz value in order to convert timeouts for our CT's GC. This
-is done based on bpftool feature -j from the agent's probe manager. Next, we
-also cannot assume general availability of an existing .config from distro side,
-so in that case we run the probe to determine kernel hz and emit the CONFIG_HZ
-define instead, and if all breaks down we fall back to using ktime in our data
-path. From the macro side, the timeouts all resolve nicely during compilation
-time since everything is passed as a constant here. We have a small helper for
-bpf_jiffies_to_sec() and bpf_sec_to_jiffies() that resolves it whereas `extern
-unsigned long CONFIG_HZ __kconfig` hapens at load time plus relies on the fact
-that config must be available, although the latter could probably be fixed via
-user-callback.
+[...]
 
-> a loader with all the libbpf features available. I think all (at least
-> all major ones) features needed are already there in libbpf, iproute2
-> would just need to implement custom support for old-style map
-> definitions and maybe something else, not sure. I wonder if any of
-> iproute2/BPF users willing to spend some effort on this?
+> Also please switch to bpf_link way of attaching. All system wide attachments
+> should be visible and easily debuggable via 'bpftool link show'.
+> Currently we're converting tc and xdp hooks to bpf_link. This new hook
+> should have it from the beginning.
 
-Right, my main concern are all the behavioral subtleties where things could
-break on our side e.g. debugging something like [0] is not fun, but I might
-eventually do it, at least it's on my list. I recently converted our LB to
-be compileable and loadable from both tc as well as XDP side and I'm in the
-process of optimizing the BPF side further. So I found myself annoyed enough
-that `bpftool prog profile` doesn't work. ;) Lack of BTF - the iproute2 lib
-does load BTF [1], but it broke with newer LLVM versions (we ship clang-10
-these days). So yeah, either fixing the BTF handling for getting `bpftool
-prog profile` working or investing the cycles to move iproute2 finally to
-libbpf along with our entire datapath. It's still an intermediate step as
-long-term we would love to handle everything native from golang via cilium/ebpf
-library to avoid shelling out, but it would allow for opening usage of other
-features in the meantime and latter might still be further out. One of the
-things that is still not clear yet to me is the global data handling and how
-to have a clean solution for both old kernels that don't have BPF global data
-support and new ones that have it. Our iproute2 version uses the bpf_apply_relo_glob()
-variant [2] which we discussed longer time ago at plumbers and while a hack,
-it solved the use-case of avoiding to invoke the compiler for every regeneration
-even on old kernels down to 4.9 [3] where BPF global data is not available of
-course. Tricky, but maybe there is some low-overhead solution we could add to
-libbpf that would resolve it under the hood, or worst case just inline asm ...
+Just to clarify, I understood that bpf(BPF_PROG_ATTACH/DETACH) doesn't
+have to be supported for new hooks.
 
-  [0] https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=e4c4685fd6e4afd3e9b6818c96fded371f350a3f
-  [1] https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=f823f36012fb5ab4ddfca6ed4ff56188730f281e
-  [2] https://github.com/cilium/iproute2/blob/static-data/lib/bpf.c#L2525
-  [3] https://cilium.io/blog/2019/04/24/cilium-15#BpfTemplating
-
-> >  tools/bpf/bpftool/feature.c | 120 ++++++++++++++++++++----------------
-> >  1 file changed, 67 insertions(+), 53 deletions(-)
-> >
-> 
-> [...]
-
-Thanks,
-Daniel
+Please correct me if I misunderstood.
