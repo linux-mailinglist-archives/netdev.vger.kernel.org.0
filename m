@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F02DC1D52B5
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 16:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E3E1D52B7
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 16:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726213AbgEOO6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 10:58:08 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:21584 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726174AbgEOO6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 10:58:08 -0400
+        id S1726296AbgEOO6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 10:58:50 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:50744 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726144AbgEOO6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 10:58:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589554686;
+        s=mimecast20190719; t=1589554729;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=XyAjxCJarjx6PEcgWq1TcjhIzDwVBN4tXt9727zeXbM=;
-        b=Y4+kHwWLzSBwHFmJbgc3C6WWY0KuBIu3Lo9DZ1IG68Jtr1K0FO3LfgcSecKe0CqnAGryLP
-        DllTlvpVwFif0LS0bjcidsE5JoHO7gHIuOo8khkk8km4ClMCF6RHrc6o6PhK8a6ZI/BUbM
-        r6qi9rvq/+e/z+7NhaZ8agxE4hdzZKE=
+        bh=p+H7G6hzBr30+LKXx0+swEd83bo5aBgRovoEz/J8OyM=;
+        b=Dx24HSJW0UUfD8grgUq5VJ6YU4i4TcEgyWZ5UCEnJzZuwfmhdkmdQGGjw6lrxz11I+ynaG
+        DwO+/d5f2N6Srhdgx4upiCZAnMsjUpEnbJAyCFe0wQq2z9YbsJNVVhEgg5dMoKpXBG7in6
+        E1JPIcZoc3mhWhGhdOP1LBGc+P0tOYA=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-392-8evijlnxPpKrtrQY1fDEpg-1; Fri, 15 May 2020 10:57:59 -0400
-X-MC-Unique: 8evijlnxPpKrtrQY1fDEpg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-512-yHP43npAOQ2idbyzQ3HAaQ-1; Fri, 15 May 2020 10:58:46 -0400
+X-MC-Unique: yHP43npAOQ2idbyzQ3HAaQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3BFA280B71E;
-        Fri, 15 May 2020 14:57:57 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1E14A80183C;
+        Fri, 15 May 2020 14:58:44 +0000 (UTC)
 Received: from krava (unknown [10.40.194.127])
-        by smtp.corp.redhat.com (Postfix) with SMTP id CF7531C8;
-        Fri, 15 May 2020 14:57:53 +0000 (UTC)
-Date:   Fri, 15 May 2020 16:57:52 +0200
+        by smtp.corp.redhat.com (Postfix) with SMTP id AD1CC1001B07;
+        Fri, 15 May 2020 14:58:40 +0000 (UTC)
+Date:   Fri, 15 May 2020 16:58:39 +0200
 From:   Jiri Olsa <jolsa@redhat.com>
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
@@ -48,94 +48,132 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Brendan Gregg <bgregg@netflix.com>,
         Florent Revest <revest@chromium.org>,
         Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH 6/9] bpf: Compile bpfwl tool at kernel compilation start
-Message-ID: <20200515145752.GC3565839@krava>
+Subject: Re: [PATCH 3/9] bpf: Add bpfwl tool to construct bpf whitelists
+Message-ID: <20200515145839.GD3565839@krava>
 References: <20200506132946.2164578-1-jolsa@kernel.org>
- <20200506132946.2164578-7-jolsa@kernel.org>
- <CAEf4BzYQyWAGtJtv=fvS3PRXjL66L0OJdjGf1t92a65S9pJQvg@mail.gmail.com>
+ <20200506132946.2164578-4-jolsa@kernel.org>
+ <CAEf4BzY=GgQ0jaTg2BLfguZ+sPjT==qgoMFeB85utGWFj5qtPA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzYQyWAGtJtv=fvS3PRXjL66L0OJdjGf1t92a65S9pJQvg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <CAEf4BzY=GgQ0jaTg2BLfguZ+sPjT==qgoMFeB85utGWFj5qtPA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 14, 2020 at 03:38:57PM -0700, Andrii Nakryiko wrote:
-> On Wed, May 6, 2020 at 6:31 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Thu, May 14, 2020 at 03:20:19PM -0700, Andrii Nakryiko wrote:
+> On Wed, May 6, 2020 at 6:30 AM Jiri Olsa <jolsa@kernel.org> wrote:
 > >
-> > The bpfwl tool will be used during the vmlinux linking,
-> > so it's necessary it's ready.
+> > This tool takes vmlinux object and whitelist directory on input
+> > and produces C source object with BPF whitelist data.
+> >
+> > The vmlinux object needs to have a BTF information compiled in.
+> >
+> > The whitelist directory is expected to contain files with helper
+> > names, where each file contains list of functions/probes that
+> > helper is allowed to be called from - whitelist.
+> >
+> > The bpfwl tool has following output:
+> >
+> >   $ bpfwl vmlinux dir
+> >   unsigned long d_path[] __attribute__((section(".BTF_whitelist_d_path"))) = \
+> >   { 24507, 24511, 24537, 24539, 24545, 24588, 24602, 24920 };
+> 
+> why long instead of int? btf_id is 4-byte one.
+
+ok, int it is
+
+> 
+> >
+> > Each array are sorted BTF ids of the functions provided in the
+> > helper file.
+> >
+> > Each array will be compiled into kernel and used during the helper
+> > check in verifier.
 > >
 > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > > ---
-> >  Makefile           | 21 +++++++++++++++++----
-> >  tools/Makefile     |  3 +++
-> >  tools/bpf/Makefile |  5 ++++-
-> >  3 files changed, 24 insertions(+), 5 deletions(-)
+> >  tools/bpf/bpfwl/Build    |  11 ++
+> >  tools/bpf/bpfwl/Makefile |  60 +++++++++
+> >  tools/bpf/bpfwl/bpfwl.c  | 285 +++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 356 insertions(+)
+> >  create mode 100644 tools/bpf/bpfwl/Build
+> >  create mode 100644 tools/bpf/bpfwl/Makefile
+> >  create mode 100644 tools/bpf/bpfwl/bpfwl.c
+> 
+> Sorry, I didn't want to nitpick on naming, honestly, but I think this
+> is actually harmful in the long run. bpfwl is incomprehensible name,
+> anyone reading link script would be like "what the hell is bpfwl?" Why
+> not bpf_build_whitelist or something with "whitelist" spelled out in
+> full?
+
+hum, will pick some more generic name
+
+> 
 > >
+> > diff --git a/tools/bpf/bpfwl/Build b/tools/bpf/bpfwl/Build
+> > new file mode 100644
+> > index 000000000000..667e30d6ce79
+> > --- /dev/null
+> > +++ b/tools/bpf/bpfwl/Build
+> > @@ -0,0 +1,11 @@
+> > +bpfwl-y += bpfwl.o
+> > +bpfwl-y += rbtree.o
+> > +bpfwl-y += zalloc.o
+> > +
 > 
 > [...]
 > 
-> >
-> > +prepare-bpfwl: $(bpfwl_target)
-> > +ifeq ($(SKIP_BTF_WHITELIST_GENERATION),1)
-> > +       @echo "warning: Cannot use BTF whitelist checks, please install libelf-dev, libelf-devel or elfutils-libelf-devel" >&2
-> > +endif
-> 
-> When we added BTF dedup and generation first time, we also made pahole
-> unavailability or any error during deduplication process an error. It
-> actually was very confusing to users and they often missed that BTF
-> generation didn't happen, but they would notice it only at runtime
-> (after a confusing debugging session).
-> 
-> So I wonder if it's better to make this an error instead? Just guard
-> whitelist generation on whether CONFIG_DEBUG_INFO_BTF is enabled or
-> not?
-
-ok, makes sense.. I'll let it fail if there's CONFIG_DEBUG_INFO_BTF
-enabled and we'are missing libelf
-
-> 
-> >  # Generate some files
-> >  # ---------------------------------------------------------------------------
-> >
-> > diff --git a/tools/Makefile b/tools/Makefile
-> > index bd778812e915..85af6ebbce91 100644
-> > --- a/tools/Makefile
-> > +++ b/tools/Makefile
-> > @@ -67,6 +67,9 @@ cpupower: FORCE
-> >  cgroup firewire hv guest bootconfig spi usb virtio vm bpf iio gpio objtool leds wmi pci firmware debugging: FORCE
-> >         $(call descend,$@)
-> >
-> > +bpf/%: FORCE
-> > +       $(call descend,$@)
 > > +
-> >  liblockdep: FORCE
-> >         $(call descend,lib/lockdep)
-> >
-> > diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
-> > index f897eeeb0b4f..d4ea2b5a2e58 100644
-> > --- a/tools/bpf/Makefile
-> > +++ b/tools/bpf/Makefile
-> > @@ -124,5 +124,8 @@ runqslower_install:
-> >  runqslower_clean:
-> >         $(call descend,runqslower,clean)
-> >
-> > +bpfwl:
-> > +       $(call descend,bpfwl)
-> > +
-> >  .PHONY: all install clean bpftool bpftool_install bpftool_clean \
-> > -       runqslower runqslower_install runqslower_clean
-> > +       runqslower runqslower_install runqslower_clean bpfwl
+> > +struct func {
+> > +       char                    *name;
+> > +       unsigned long            id;
 > 
-> what about install/clean subcommands? At least clean seems like a good idea?
+> as mentioned above, btf_id is 4 byte
 
-not sure about install, does not seem necessary for this tool,
-but I'll add propagation of clean (it's defined in bpfwl already)
+ok, changing to int
+
+> 
+> > +       struct rb_node           rb_node;
+> > +       struct list_head         list[];
+> > +};
+> > +
+> 
+> [...]
+> 
+> > +       btf = btf__parse_elf(vmlinux, NULL);
+> > +       err = libbpf_get_error(btf);
+> > +       if (err) {
+> > +               fprintf(stderr, "FAILED: load BTF from %s: %s",
+> > +                       vmlinux, strerror(err));
+> > +               return -1;
+> > +       }
+> > +
+> > +       nr = btf__get_nr_types(btf);
+> > +
+> > +       /* Iterate all the BTF types and resolve all the function IDs. */
+> > +       for (id = 0; id < nr; id++) {
+> 
+> It has to be `for (id = 1; id <= nr; id++)`. 0 is VOID type and not
+> included into nr_types. I know it's confusing, but.. life :)
+
+right, will change
 
 thanks,
 jirka
+
+> 
+> > +               const struct btf_type *type;
+> > +               struct func *func;
+> > +               const char *str;
+> > +
+> > +               type = btf__type_by_id(btf, id);
+> > +               if (!type)
+> > +                       continue;
+> > +
+> 
+> [...]
+> 
 
