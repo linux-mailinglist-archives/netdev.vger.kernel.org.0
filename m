@@ -2,61 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF6F1D423F
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 02:44:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C5A11D4267
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 02:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728639AbgEOAoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 20:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
+        id S1728188AbgEOAvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 20:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726046AbgEOAoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 20:44:06 -0400
+        by vger.kernel.org with ESMTP id S1726046AbgEOAvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 20:51:23 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851E5C061A0C;
-        Thu, 14 May 2020 17:44:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4DFC061A0C;
+        Thu, 14 May 2020 17:51:23 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9ECBF14D69E20;
-        Thu, 14 May 2020 17:44:05 -0700 (PDT)
-Date:   Thu, 14 May 2020 17:44:04 -0700 (PDT)
-Message-Id: <20200514.174404.371938387358739530.davem@davemloft.net>
-To:     madhuparnabhowmik10@gmail.com
-Cc:     allison@lohutok.net, tglx@linutronix.de, ap420073@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org, paulmck@kernel.org,
-        cai@lca.pw, joel@joelfernandes.org, frextrite@gmail.com
-Subject: Re: [PATCH net] drivers: net: hamradio: Fix suspicious RCU usage
- warning in bpqether.c
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F3D9714DAB337;
+        Thu, 14 May 2020 17:51:22 -0700 (PDT)
+Date:   Thu, 14 May 2020 17:51:22 -0700 (PDT)
+Message-Id: <20200514.175122.554438066085502734.davem@davemloft.net>
+To:     hch@lst.de
+Cc:     kuba@kernel.org, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] ipv6: lift copy_from_user out of ipv6_route_ioctl
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200514141115.16074-1-madhuparnabhowmik10@gmail.com>
-References: <20200514141115.16074-1-madhuparnabhowmik10@gmail.com>
+In-Reply-To: <20200514144535.3000410-2-hch@lst.de>
+References: <20200514144535.3000410-1-hch@lst.de>
+        <20200514144535.3000410-2-hch@lst.de>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 17:44:06 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 17:51:23 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: madhuparnabhowmik10@gmail.com
-Date: Thu, 14 May 2020 19:41:15 +0530
+From: Christoph Hellwig <hch@lst.de>
+Date: Thu, 14 May 2020 16:45:32 +0200
 
-> From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-> 
-> This patch fixes the following warning:
-> =============================
-> WARNING: suspicious RCU usage
-> 5.7.0-rc5-next-20200514-syzkaller #0 Not tainted
-> -----------------------------
-> drivers/net/hamradio/bpqether.c:149 RCU-list traversed in non-reader section!!
-> 
-> Since rtnl lock is held, pass this cond in list_for_each_entry_rcu().
-> 
-> Reported-by: syzbot+bb82cafc737c002d11ca@syzkaller.appspotmail.com
-> Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+> --- a/net/ipv6/af_inet6.c
+> +++ b/net/ipv6/af_inet6.c
+> @@ -542,19 +542,23 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+>  {
+>  	struct sock *sk = sock->sk;
+>  	struct net *net = sock_net(sk);
+> +	void __user *argp = (void __user *)arg;
 
-Applied, thanks.
+Please retain the reverse christmas tree ordering here.
