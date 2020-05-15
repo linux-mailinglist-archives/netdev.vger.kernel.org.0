@@ -2,59 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7DB51D59DC
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 21:20:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C55B51D5A06
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 21:31:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726221AbgEOTUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 15:20:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40556 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726144AbgEOTUl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 15:20:41 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 403182070A;
-        Fri, 15 May 2020 19:20:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589570441;
-        bh=LTWIDpA3gp7Nmtl3BK2ma4Tw+j9V/FnQv5//ie/P54o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=v5NkmdFTPrIDcp+6Rsey3E8l/NgXLSZKWcoIDjtdmRCmELtjByGm0nIjAY9pYvFgK
-         pUPcwNZNHfnwbKt79gXDkJ6baO0EE9HPdomOr+QGXPfdITlt9P9GduJCRrcU7ukQof
-         Er9j1PXHkoEtLWYUkTmKBFH0aBAaiDrNQQiASezk=
-Date:   Fri, 15 May 2020 12:20:39 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
- classes
-Message-ID: <20200515122035.0b95eff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200515184753.15080-1-ioana.ciornei@nxp.com>
-References: <20200515184753.15080-1-ioana.ciornei@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1726234AbgEOTbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 15:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726204AbgEOTbF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 15:31:05 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BE8C05BD0B
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 12:31:05 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 35E1E15305FA3;
+        Fri, 15 May 2020 12:31:03 -0700 (PDT)
+Date:   Fri, 15 May 2020 12:30:59 -0700 (PDT)
+Message-Id: <20200515.123059.151278519835306555.davem@davemloft.net>
+To:     pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, edumazet@google.com, cpaasch@apple.com,
+        mptcp@lists.01.org, mathew.j.martineau@linux.intel.com
+Subject: Re: [PATCH net-next v2 0/3] mptcp: fix MP_JOIN failure handling
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <cover.1589558049.git.pabeni@redhat.com>
+References: <cover.1589558049.git.pabeni@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 15 May 2020 12:31:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 May 2020 21:47:46 +0300 Ioana Ciornei wrote:
-> This patch set adds support for Rx traffic classes on DPAA2 Ethernet
-> devices.
-> 
-> The first two patches make the necessary changes so that multiple
-> traffic classes are configured and their statistics are displayed in the
-> debugfs. The third patch adds a static distribution to said traffic
-> classes based on the VLAN PCP field.
-> 
-> The last patches add support for the congestion group taildrop mechanism
-> that allows us to control the number of frames that can accumulate on a
-> group of Rx frame queues belonging to the same traffic class.
+From: Paolo Abeni <pabeni@redhat.com>
+Date: Fri, 15 May 2020 19:22:14 +0200
 
-Ah, I miseed you already sent a v2. Same question applies:
+> Currently if we hit an MP_JOIN failure on the third ack, the child socket is
+> closed with reset, but the request socket is not deleted, causing weird
+> behaviors.
+> 
+> The main problem is that MPTCP's MP_JOIN code needs to plug it's own
+> 'valid 3rd ack' checks and the current TCP callbacks do not allow that.
+> 
+> This series tries to address the above shortcoming introducing a new MPTCP
+> specific bit in a 'struct tcp_request_sock' hole, and leveraging that to allow
+> tcp_check_req releasing the request socket when needed.
+> 
+> The above allows cleaning-up a bit current MPTCP hooking in tcp_check_req().
+> 
+> An alternative solution, possibly cleaner but more invasive, would be
+> changing the 'bool *own_req' syn_recv_sock() argument into 'int *req_status'
+> and let MPTCP set it to 'REQ_DROP'.
+> 
+> v1 -> v2:
+>  - be more conservative about drop_req initialization
+> 
+> RFC -> v1:
+>  - move the drop_req bit inside tcp_request_sock (Eric)
 
-> How is this configured from the user perspective? I looked through the
-> patches and I see no information on how the input is taken from the
-> user.
+Series applied, thanks Paolo.
