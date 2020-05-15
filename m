@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0BAE1D5685
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E9DF1D568B
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726504AbgEOQuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 12:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
+        id S1726610AbgEOQuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 12:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726374AbgEOQuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:50:15 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483CEC05BD0A
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 09:50:15 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id c20so3087029qtw.11
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 09:50:15 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726023AbgEOQuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:50:18 -0400
+Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C45C061A0C
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 09:50:17 -0700 (PDT)
+Received: by mail-qv1-xf4a.google.com with SMTP id z1so3149369qvd.23
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 09:50:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=tvl7gLFsS/dAedcEqfrKtncclZsMityBUyr8g2OugcQ=;
-        b=OGopoj+ElQmzcTdGxoabqS9eF87VZHL+YKcn8EL4MNkN1sf7PKD0S2cQHJu4CCOCWV
-         /5Sq2Mu8iguP210lceBZY1OO7RJ7CkYhrHtqn0BnSF1j3XS36C+L2n4P+PjRx7R31Nch
-         3h/5QgSoVrdR+N2Xw2zQ87s8q5TAMqdL9PQ3bsgB8plIwGFcvz7ILoCxnI8yG2BJOoJC
-         ueRDeyh/REt1PRHNocvBh9oMcPpFMAOXMuWkysXsgYYA29hR0F6TOtUhwG56cx1qxdwp
-         nietz7S0Q8Bo1TU6F0n5gdf4Md+m2AuEMuP0aaUaIqLEXvF9Fv3EsaeMFxNZCP/YTICg
-         q1+w==
+        bh=6zJdeczCxXIR05ROPjfL5M3I5d1ozekeF2WaxmhUPXo=;
+        b=lWDuCPSEHnSqfmNmK7U6zSigGtw2pUvPEmqBm3E79EfmUdhRFZKr9rmmlG8SLtiTLY
+         8HCqoaQuGDPxignnWBj97QPYO0GwwkgCH1z0wTKLYpS7vxYkxdK21eAfNqBq1eACYnKW
+         X/07rqk/NxKbF66ALRKpmYyVR/Wyx+OYTCq24+o2G2V49wg3xHyYb7VUXnnmYcp+gEQF
+         nL2XDaWLaYS/Je45LXoeJJMo6D2hMR2jOfXa7nomoK6/lPSR11Brli1vClEnVFZqT/pv
+         2sIB00W6zEXOfVYKy1WDxw2k2tj56W5+R3oq9j7OmEXIeXAyCBwW0+ZP4ExwI5AK0m5d
+         F/Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=tvl7gLFsS/dAedcEqfrKtncclZsMityBUyr8g2OugcQ=;
-        b=QVqjR/z+3Dn4Umqki9LXkPbbrT7Eq5uRlvz70KfmGDcSpKijfVM/P6jMWcZd1LamPw
-         KWpCIwySrbVbXXOtyOi/bHhHxDQPa8NvDwxI9mW0wmuWLm/ekxO1IrK3eNnZdR+9hGrb
-         bBYi/yazFRwoYtb01rJVlnRm2Vbgi0qY2qASDhEjYItV1+f2NgpQkWACSxv+NcNM+Ikf
-         MdZFlUM31VgatChkTWxTV/PXZZLLayqq8feEUlVCWXID6ZTQE5mLecXk7HbOs6KgJ8+v
-         oX+3oO2snY15TpNoadjZxqL80I5inb7H/LF/HeOJiSyNVvLvd+d5KMqkhKJDhbAHlZI+
-         D4XA==
-X-Gm-Message-State: AOAM531sCogSmYv5brMcqJjKYKcXTau0VQsmjDLjCYsJZ0P2Ev12WrdK
-        GUt1AuuCUqa7k9JUaFtVUd+9PZuHZwSV
-X-Google-Smtp-Source: ABdhPJxUGHNwST/oAVqzulPWSrIN3rsRJlT5Lod9ZxyqGr+y0Xlu97Cd7HZ7tWpnI1/fWybDyl8ugub3NP1L
-X-Received: by 2002:a05:6214:164:: with SMTP id y4mr4179863qvs.249.1589561414334;
- Fri, 15 May 2020 09:50:14 -0700 (PDT)
-Date:   Fri, 15 May 2020 09:50:01 -0700
+        bh=6zJdeczCxXIR05ROPjfL5M3I5d1ozekeF2WaxmhUPXo=;
+        b=f+NTesUU075Y5Yi0AstUDqC10C4xNdUc3Dl+5pWHVOiFt2dDf4qLROyHlyuX/XCkaS
+         VROnewk1bSqDMcjctBUq9iMS6RiZUJW5etEc7wDs3yDSFuxDWxVv5Tu4GkiTt2DepxES
+         UYtVb89FF4IdMzG0U4GIA375o5dVk9aj5He43nH+dC4WACUxeSaInhx289zwMRPlqNaP
+         bGTOTteQgyji6BYmiNpdYAI6BrSRY/qVh7HW3ad0v1LRfx+mFT5qCfoOVeHvCXifUGAZ
+         FkO1UzEL+OGKMhb7MzspuSKJCZJrF+KdaQoK7WNff4F2iXXYscDO9yR55+wuCZkyWCnR
+         0KQQ==
+X-Gm-Message-State: AOAM533GQSFIxlrvBca9QbrDa2LnKH+/20yExui23lmKF32ozsgzpe6D
+        rc8p41Vi8/cusbM+Nm8JQbnOBqlzX5g1
+X-Google-Smtp-Source: ABdhPJzJeU3KJoEKMsk2E7nrlFXgcd2WBQbWwlr2cF809BRrmVmF2HWm35q7vDzY8rUFv8F6tFzwUDUNfz/I
+X-Received: by 2002:a0c:b58a:: with SMTP id g10mr4291860qve.225.1589561416205;
+ Fri, 15 May 2020 09:50:16 -0700 (PDT)
+Date:   Fri, 15 May 2020 09:50:02 -0700
 In-Reply-To: <20200515165007.217120-1-irogers@google.com>
-Message-Id: <20200515165007.217120-2-irogers@google.com>
+Message-Id: <20200515165007.217120-3-irogers@google.com>
 Mime-Version: 1.0
 References: <20200515165007.217120-1-irogers@google.com>
 X-Mailer: git-send-email 2.26.2.761.g0e0b3e54be-goog
-Subject: [PATCH v2 1/7] libbpf: Fix memory leak and possible double-free in hashmap__clear
+Subject: [PATCH v2 2/7] libbpf hashmap: Remove unused #include
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -76,49 +76,34 @@ To:     Peter Zijlstra <peterz@infradead.org>,
         Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Stephane Eranian <eranian@google.com>,
-        Alston Tang <alston64@fb.com>, Ian Rogers <irogers@google.com>
+        Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+Remove #include of libbpf_internal.h that is unused.
+Discussed in this thread:
+https://lore.kernel.org/lkml/CAEf4BzZRmiEds_8R8g4vaAeWvJzPb4xYLnpF0X2VNY8oTzkphQ@mail.gmail.com/
 
-Fix memory leak in hashmap_clear() not freeing hashmap_entry structs for each
-of the remaining entries. Also NULL-out bucket list to prevent possible
-double-free between hashmap__clear() and hashmap__free().
-
-Running test_progs-asan flavor clearly showed this problem.
-
-Reported-by: Alston Tang <alston64@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20200429012111.277390-5-andriin@fb.com
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/lib/bpf/hashmap.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ tools/lib/bpf/hashmap.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/tools/lib/bpf/hashmap.c b/tools/lib/bpf/hashmap.c
-index 54c30c802070..cffb96202e0d 100644
---- a/tools/lib/bpf/hashmap.c
-+++ b/tools/lib/bpf/hashmap.c
-@@ -59,7 +59,14 @@ struct hashmap *hashmap__new(hashmap_hash_fn hash_fn,
+diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+index bae8879cdf58..e823b35e7371 100644
+--- a/tools/lib/bpf/hashmap.h
++++ b/tools/lib/bpf/hashmap.h
+@@ -15,7 +15,6 @@
+ #else
+ #include <bits/reg.h>
+ #endif
+-#include "libbpf_internal.h"
  
- void hashmap__clear(struct hashmap *map)
+ static inline size_t hash_bits(size_t h, int bits)
  {
-+	struct hashmap_entry *cur, *tmp;
-+	int bkt;
-+
-+	hashmap__for_each_entry_safe(map, cur, tmp, bkt) {
-+		free(cur);
-+	}
- 	free(map->buckets);
-+	map->buckets = NULL;
- 	map->cap = map->cap_bits = map->sz = 0;
- }
- 
 -- 
 2.26.2.761.g0e0b3e54be-goog
 
