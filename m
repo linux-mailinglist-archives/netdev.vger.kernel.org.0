@@ -2,134 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B0A61D54B6
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:31:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4818E1D54CD
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:34:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727084AbgEOPbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 11:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726668AbgEOPbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 11:31:00 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDEB9C05BD0B
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 08:30:59 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id a10so1331866ybc.3
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 08:30:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8M59T4cDEOJLPfWM3NacG+hlwu0HRvMBD7PQYBjxWz0=;
-        b=cVfP1EZHgz8zdenOeWvamnc44GBqLYOdr2WmAyykkyFcAcIDQ0SV5/TAmshikDIQvo
-         yulpVfC68Xv6ngiE6t/ar4WCoTC7n8dOzgdF0s4AwSjprKEmd6/x8y0xNTO1ts6dbKRu
-         HygxDJEWJDMfefS2YpJfD9lUwOJQzZwpxGZrCeOX2xIR2XmDWnRHejKeeLEPSsIfEycx
-         NcMYydsGE/GFGoRpzpQnm92PyE7h0lsWZp/wQ6nxOlUzgqAo5JPE9937EGZ3EQvzvUO2
-         5sebEPqx/YzaSzx7L8Z3nGUFkvkov/gwZzpiOLfHeDqul8vNOpDG74jjK2mZQjtJoQhR
-         iVoA==
+        id S1726948AbgEOPd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 11:33:58 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41600 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726239AbgEOPd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 11:33:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589556835;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=0q1Y8ePvKhM4R3+rVYPWm7Pu+FP0VGkrqM/os2Y0oAI=;
+        b=a1eDNabfdJ/mv/Wkdl9a8WVvXIvQ2iR9P+ZHXEFFxw/gD7Utw4ma+5HHtBD8kyF7JYxg4y
+        urdKdsMBpLavQHdav0U/M3GmwBIr5XibOEGmDsW0WhTG2ZXy5r8bA9uGw7bMDPHzSh02ro
+        6CkkwG4R++jABGnc/opUj0oxRdvFVjU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-232-2KQappl0O76mDF-6bmS2tw-1; Fri, 15 May 2020 11:33:54 -0400
+X-MC-Unique: 2KQappl0O76mDF-6bmS2tw-1
+Received: by mail-wm1-f69.google.com with SMTP id q5so1340353wmc.9
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 08:33:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8M59T4cDEOJLPfWM3NacG+hlwu0HRvMBD7PQYBjxWz0=;
-        b=Mji0AEXOpxTgmuZPvDqYp+whrjjREFgujOxjE+UVePkLZDL6yrigKdBiTFdCtWuDC4
-         Dsd54Sxx5E6+Pu4OlKEtNdfJMxjXjHDUPErQQgtQxA9bDkA+rrbD7RP5DoOA20lEObiN
-         f3QWG0oPghfXmUWPBzXhgcZkv2/Mc4wF29qjFLgOJiyoKIVzyDBGQ/KgClECL9LK2+F7
-         2nM6DeweS9xzP78EI3wD86NdmZpNsMAa3MOqPwD9yMnNxeSeV5TweKt7XTR2ojXFLCLp
-         RO6mx3tgTpbyPu1bufcfMpZl9gS4rTFnpgK79LV5PGlC9O0tJO3woNdcFW6ivPWANUSZ
-         6hJA==
-X-Gm-Message-State: AOAM530svUriBenBTNuqVinglFeg/SRxoLUzqcCpVWgZ9eSgwB71IuVj
-        N+1oYwKNmimL06yVj355AUyBnClsLZjuPMO5YTYigQ==
-X-Google-Smtp-Source: ABdhPJyg03gRNMcKKRrxVXRbR4cVi3Fqy+ZyhRAq39W/it2u5muxghok2hQKiZQw0d7oCO0JyzBdjBNN7sHeSqgFZ/E=
-X-Received: by 2002:a25:8182:: with SMTP id p2mr6384609ybk.408.1589556658495;
- Fri, 15 May 2020 08:30:58 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=0q1Y8ePvKhM4R3+rVYPWm7Pu+FP0VGkrqM/os2Y0oAI=;
+        b=eoHeYRPuSMZZtupZjiQbH1jLXKKaxq2wdGmm0Y6/iQ8KbtjmjZ3EShStZyLYMgozXZ
+         oyrsnnlRe03mSoKsE2o6Hrllw/rM7K43ofOCR/UhzbMMpmoTSd/mP+MOJ12VG8vDZm+l
+         sCa+2vOHuoWXa3WjjoYTOPLkiVLAUsNZYJRdLXOH8dbBjwMI8KKyPPLhvNGCy+DABHlz
+         nZ//dkPnFS1EEw+SuxGXSy7erHCu9IxcPbQDXzZYBrT69io8bTrxUrajlf9NHBPSXCSW
+         AkbCOfo1II6kgR95M4FQWajhjXnw+sNe+rhBKQ0tnAy4EI/Rnn8zPKXi5DzMYuOmLBzV
+         L03g==
+X-Gm-Message-State: AOAM531wxj86aTrlM7Et1ktUXA/GecyUpIEqO/XeLcBV8m+vauxUl2NV
+        K1Tqt/tcSFxbgB/0RpoXinQSlhq60CMDpcZ9W2QgEEbsbskRNh2mmprPdepk2ReD3ZVzn0t772u
+        0VI5D89Ut7CREozJB
+X-Received: by 2002:a1c:2087:: with SMTP id g129mr4503997wmg.126.1589556832766;
+        Fri, 15 May 2020 08:33:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwz/KlciQFx1rHU1J+UL9igbunQtTe0UZESWhBj7gKnvBR65GITM/RzOMxXTQwccrKqsnawtA==
+X-Received: by 2002:a1c:2087:: with SMTP id g129mr4503978wmg.126.1589556832581;
+        Fri, 15 May 2020 08:33:52 -0700 (PDT)
+Received: from redhat.com (bzq-79-179-68-225.red.bezeqint.net. [79.179.68.225])
+        by smtp.gmail.com with ESMTPSA id c16sm4048373wrv.62.2020.05.15.08.33.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 May 2020 08:33:51 -0700 (PDT)
+Date:   Fri, 15 May 2020 11:33:50 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     kbuild test robot <lkp@intel.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH] vhost: missing __user tags
+Message-ID: <20200515153347.1092235-1-mst@redhat.com>
 MIME-Version: 1.0
-References: <20200515152321.9280-1-nate.karstens@garmin.com>
-In-Reply-To: <20200515152321.9280-1-nate.karstens@garmin.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 15 May 2020 08:30:47 -0700
-Message-ID: <CANn89iKr_9MyRpdB4pcHm08ccH_M42etDnrOzpVKUYfhSKvxQw@mail.gmail.com>
-Subject: Re: [PATCH v2] Implement close-on-fork
-To:     Nate Karstens <nate.karstens@garmin.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
-        sparclinux@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Changli Gao <xiaosuo@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 8:23 AM Nate Karstens <nate.karstens@garmin.com> wrote:
->
->
-> Series of 4 patches to implement close-on-fork. Tests have been
-> published to https://github.com/nkarstens/ltp/tree/close-on-fork
-> and cover close-on-fork functionality in the following syscalls:
->
->  * accept(4)
->  * dup3(2)
->  * fcntl(2)
->  * open(2)
->  * socket(2)
->  * socketpair(2)
->  * unshare(2)
->
-> Addresses underlying issue in that there is no way to prevent
-> a fork() from duplicating a file descriptor. The existing
-> close-on-exec flag partially-addresses this by allowing the
-> parent process to mark a file descriptor as exclusive to itself,
-> but there is still a period of time the failure can occur
-> because the auto-close only occurs during the exec().
->
-> One manifestation of this is a race conditions in system(), which
-> (depending on the implementation) is non-atomic in that it first
-> calls a fork() and then an exec().
->
-> This functionality was approved by the Austin Common Standards
-> Revision Group for inclusion in the next revision of the POSIX
-> standard (see issue 1318 in the Austin Group Defect Tracker).
->
-> ---
->
-> This is v2 of the change. See https://lkml.org/lkml/2020/4/20/113
-> for the original work.
->
-> Thanks to everyone who provided comments on the first series of
-> patches. Here are replies to specific comments:
->
-> > I suggest we group the two bits of a file (close_on_exec, close_on_fork)
-> > together, so that we do not have to dirty two separate cache lines.
->
-> I could be mistaken, but I don't think this would improve efficiency.
-> The close-on-fork and close-on-exec flags are read at different
-> times. If you assume separate syscalls for fork and exec then
-> there are several switches between when the two flags are read.
-> In addition, the close-on-fork flags in the new process must be
-> cleared, which will be much harder if the flags are interleaved.
+sparse warns about converting void * to void __user *. This is not new
+but only got noticed now that vhost is built on more systems.
+This is just a question of __user tags missing in a couple of places,
+so fix it up.
 
-:/
+Fixes: f88949138058 ("vhost: introduce O(1) vq metadata cache")
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ drivers/vhost/vhost.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Fast path in big and performance sensitive applications is not fork()
-and/or exec().
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index d450e16c5c25..21a59b598ed8 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -730,7 +730,7 @@ static inline void __user *vhost_vq_meta_fetch(struct vhost_virtqueue *vq,
+ 	if (!map)
+ 		return NULL;
+ 
+-	return (void *)(uintptr_t)(map->addr + addr - map->start);
++	return (void __user *)(uintptr_t)(map->addr + addr - map->start);
+ }
+ 
+ /* Can we switch to this memory table? */
+@@ -869,7 +869,7 @@ static void __user *__vhost_get_user_slow(struct vhost_virtqueue *vq,
+  * not happen in this case.
+  */
+ static inline void __user *__vhost_get_user(struct vhost_virtqueue *vq,
+-					    void *addr, unsigned int size,
++					    void __user *addr, unsigned int size,
+ 					    int type)
+ {
+ 	void __user *uaddr = vhost_vq_meta_fetch(vq,
+-- 
+MST
 
-This is open()/close() and others (socket(), accept(), ...)
-
-We do not want them to access extra cache lines for this new feature.
-
-Sorry, I will say no to these patches in their current form.
