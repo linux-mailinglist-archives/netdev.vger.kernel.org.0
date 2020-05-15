@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A0BE1D4285
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 02:58:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 222A31D428E
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 02:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728397AbgEOA6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 20:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49010 "EHLO
+        id S1728537AbgEOA7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 20:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727991AbgEOA6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 20:58:14 -0400
+        by vger.kernel.org with ESMTP id S1728063AbgEOA7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 20:59:05 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F83C061A0C;
-        Thu, 14 May 2020 17:58:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D25C061A0C;
+        Thu, 14 May 2020 17:59:05 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D508A14DD3D94;
-        Thu, 14 May 2020 17:58:13 -0700 (PDT)
-Date:   Thu, 14 May 2020 17:58:13 -0700 (PDT)
-Message-Id: <20200514.175813.1889260919070432221.davem@davemloft.net>
-To:     dmurphy@ti.com
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E7AB614DD3DAB;
+        Thu, 14 May 2020 17:59:04 -0700 (PDT)
+Date:   Thu, 14 May 2020 17:59:04 -0700 (PDT)
+Message-Id: <20200514.175904.679977118713201529.davem@davemloft.net>
+To:     brgl@bgdev.pl
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        robh@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next] dt-bindings: dp83867: Convert DP83867 to yaml
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bgolaszewski@baylibre.com
+Subject: Re: [PATCH] net: phy: mdio-moxart: remove unneeded include
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200514155905.26845-1-dmurphy@ti.com>
-References: <20200514155905.26845-1-dmurphy@ti.com>
+In-Reply-To: <20200514165938.21725-1-brgl@bgdev.pl>
+References: <20200514165938.21725-1-brgl@bgdev.pl>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 17:58:14 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 14 May 2020 17:59:05 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Murphy <dmurphy@ti.com>
-Date: Thu, 14 May 2020 10:59:05 -0500
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Thu, 14 May 2020 18:59:38 +0200
 
-> Convert the dp83867 binding to yaml.
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> mdio-moxart doesn't use regulators in the driver code. We can remove
+> the regulator include.
+> 
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Applied.
+Applied to net-next.
