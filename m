@@ -2,87 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2751F1D56C7
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:54:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 314641D56F0
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 19:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726722AbgEOQxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 12:53:35 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:53489 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726724AbgEOQxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:53:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589561612;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gN8Ffkm75Z04j5uijHXbjpI4CgfRAT5o0xWHEAmKzV4=;
-        b=buZT7S28zAzvUBt/5sQ0wjEobXfsvzZ7f+WPvLMN0Zv/kBdOF21CmPv+CNLJvKjTtgwPwr
-        5HR1SG2JsWMfeUKC3AfCSTfvpcQtCU+I/4QMSpgfhQkskEWriBRn7q/ujMXmGDKsvp2Hjj
-        gvvW3GgVavcpTqdsujZQ0J9VAjrWzDA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-388-cSjPPTozMs-pT9w2NnPfzw-1; Fri, 15 May 2020 12:53:28 -0400
-X-MC-Unique: cSjPPTozMs-pT9w2NnPfzw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5DF4819200C0;
-        Fri, 15 May 2020 16:53:25 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-112-95.rdu2.redhat.com [10.10.112.95])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8977F5D9C9;
-        Fri, 15 May 2020 16:53:21 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <954ef5ce2e47472f8b41300bf59209c5@garmin.com>
-References: <954ef5ce2e47472f8b41300bf59209c5@garmin.com> <20200515152321.9280-1-nate.karstens@garmin.com> <20200515160342.GE23230@ZenIV.linux.org.uk>
-To:     "Karstens, Nate" <Nate.Karstens@garmin.com>
-Cc:     dhowells@redhat.com, Al Viro <viro@zeniv.linux.org.uk>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Eric Dumazet" <edumazet@google.com>,
-        David Laight <David.Laight@aculab.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Changli Gao <xiaosuo@gmail.com>
-Subject: Re: [PATCH v2] Implement close-on-fork
+        id S1726257AbgEORAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 13:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726144AbgEORAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 13:00:11 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C893AC05BD0A
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 10:00:09 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id m10so1473927ybf.5
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 10:00:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7FCtnhxXRkcL3anwH9mEdDuKXNzEgQcRUlM4mCBSwPs=;
+        b=ccbWLnUtUwiKAn842+6hU4C8edxHHnDZVhGAcXJ4MHD2aPM6Y9mOFtesaLH/exfbRt
+         V8+JUSsPRZGS6hqOjAIdFZfjzoqsQd2EFR1KpOCWVsK8DeNYUfpVPeuX+Bc1ljak+GmK
+         IXRcsBaTgrtooRn0FHSrLzePzaHbEIPHqyT7MivD7o8WNzJZAywU2+W4FDZ/61x78tN+
+         ijTVdyvNlGULn23pBqyFlg5XtYzRLEJRj2EC4Bv5rvQILYRVWMtK3yB6og4PdN3nWygU
+         YUR1czuWUDExyXOofEPeqN2USbyL9tKoOXk+6h7oEeUKlWH/11Da1+aoBE84Br767RNx
+         08XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7FCtnhxXRkcL3anwH9mEdDuKXNzEgQcRUlM4mCBSwPs=;
+        b=QVQnZaw50Ql9wQx3y0TsaTHyOrSCH3BD2TFfVQu+YQbu4zQC3/yt5pVVfroJd9ZGkC
+         bKUmza6PdbkKvnYJyNdIB02i6Ijas2jCuTPy5WpUsOec77WW+g8CoTIQpCXtdouIcSv2
+         HPa5AD/NTO1/1rbtaaLbxzfqd9sXaXRbZ45qc6j8D87VA3DTMxjSgxawiEqbszUbe7WL
+         i1SrdHKIDvUTzJubm75Cju+/UW2Ioedaf9VPe+QdOKznef66Necjjcvi5VE77NBeFxPh
+         s8PsH0P8fdwPTuIlZ8h8uMQCEPhH0mdjVu9i5qNbmwY7yaqDPm/Gh1eDbyI6UHcB6J+X
+         uMeA==
+X-Gm-Message-State: AOAM531coPaanEC9VUk+DtUrCQvBkN6/tbJOuUJwGPWeOj2lKcs8Sac1
+        zeqrkSjtxJ6Vqvpq3xhjwKbfdbxVtEpGRB9A9BpGdg==
+X-Google-Smtp-Source: ABdhPJyH3+hVuoWG26jUdXOuiqO06AU3SHQ71fqWw7wtANcrcWD7kOBFVq4nqnjQ0Txo9ZKUonn51mDqXlP2DLGicIk=
+X-Received: by 2002:a25:c08b:: with SMTP id c133mr7057333ybf.286.1589562008534;
+ Fri, 15 May 2020 10:00:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <197933.1589561600.1@warthog.procyon.org.uk>
-Date:   Fri, 15 May 2020 17:53:20 +0100
-Message-ID: <197934.1589561600@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20200515065624.21658-1-irogers@google.com> <20200515065624.21658-5-irogers@google.com>
+ <20200515091707.GC3511648@krava> <20200515142917.GT5583@kernel.org>
+ <CAP-5=fXtXgnb4nrVtsoxQ6vj8YtzPicFsad6+jB5UUFqMzg4mw@mail.gmail.com> <20200515163146.GA9335@kernel.org>
+In-Reply-To: <20200515163146.GA9335@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Fri, 15 May 2020 09:59:57 -0700
+Message-ID: <CAP-5=fWiaVXVHVu7iFw+7V21Ztf6VU7BtwhUa5gsq3f+ZryQ+w@mail.gmail.com>
+Subject: Re: [PATCH 4/8] libbpf hashmap: Localize static hashmap__* symbols
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Karstens, Nate <Nate.Karstens@garmin.com> wrote:
+On Fri, May 15, 2020 at 9:31 AM Arnaldo Carvalho de Melo
+<arnaldo.melo@gmail.com> wrote:
+>
+> Em Fri, May 15, 2020 at 07:53:33AM -0700, Ian Rogers escreveu:
+> > On Fri, May 15, 2020 at 7:29 AM Arnaldo Carvalho de Melo
+> > <arnaldo.melo@gmail.com> wrote:
+> > >
+> > > Em Fri, May 15, 2020 at 11:17:07AM +0200, Jiri Olsa escreveu:
+> > > > On Thu, May 14, 2020 at 11:56:20PM -0700, Ian Rogers wrote:
+> > > > > Localize the hashmap__* symbols in libbpf.a. To allow for a version in
+> > > > > libapi.
+> > > > >
+> > > > > Before:
+> > > > > $ nm libbpf.a
+> > > > > ...
+> > > > > 000000000002088a t hashmap_add_entry
+> > > > > 000000000001712a t hashmap__append
+> > > > > 0000000000020aa3 T hashmap__capacity
+> > > > > 000000000002099c T hashmap__clear
+> > > > > 00000000000208b3 t hashmap_del_entry
+> > > > > 0000000000020fc1 T hashmap__delete
+> > > > > 0000000000020f29 T hashmap__find
+> > > > > 0000000000020c6c t hashmap_find_entry
+> > > > > 0000000000020a61 T hashmap__free
+> > > > > 0000000000020b08 t hashmap_grow
+> > > > > 00000000000208dd T hashmap__init
+> > > > > 0000000000020d35 T hashmap__insert
+> > > > > 0000000000020ab5 t hashmap_needs_to_grow
+> > > > > 0000000000020947 T hashmap__new
+> > > > > 0000000000000775 t hashmap__set
+> > > > > 00000000000212f8 t hashmap__set
+> > > > > 0000000000020a91 T hashmap__size
+> > > > > ...
+> > > > >
+> > > > > After:
+> > > > > $ nm libbpf.a
+> > > > > ...
+> > > > > 000000000002088a t hashmap_add_entry
+> > > > > 000000000001712a t hashmap__append
+> > > > > 0000000000020aa3 t hashmap__capacity
+> > > > > 000000000002099c t hashmap__clear
+> > > > > 00000000000208b3 t hashmap_del_entry
+> > > > > 0000000000020fc1 t hashmap__delete
+> > > > > 0000000000020f29 t hashmap__find
+> > > > > 0000000000020c6c t hashmap_find_entry
+> > > > > 0000000000020a61 t hashmap__free
+> > > > > 0000000000020b08 t hashmap_grow
+> > > > > 00000000000208dd t hashmap__init
+> > > > > 0000000000020d35 t hashmap__insert
+> > > > > 0000000000020ab5 t hashmap_needs_to_grow
+> > > > > 0000000000020947 t hashmap__new
+> > > > > 0000000000000775 t hashmap__set
+> > > > > 00000000000212f8 t hashmap__set
+> > > > > 0000000000020a91 t hashmap__size
+> > > > > ...
+> > > >
+> > > > I think this will break bpf selftests which use hashmap,
+> > > > we need to find some other way to include this
+> > > >
+> > > > either to use it from libbpf directly, or use the api version
+> > > > only if the libbpf is not compiled in perf, we could use
+> > > > following to detect that:
+> > > >
+> > > >       CFLAGS += -DHAVE_LIBBPF_SUPPORT
+> > > >       $(call detected,CONFIG_LIBBPF)
+> > >
+> > > And have it in tools/perf/util/ instead?
+>
+> > *sigh*
+>
+> > $ make -C tools/testing/selftests/bpf test_hashmap
+> > make: Entering directory
+> > '/usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/testing/s
+> > elftests/bpf'
+> >  BINARY   test_hashmap
+> > /usr/bin/ld: /tmp/ccEGGNw5.o: in function `test_hashmap_generic':
+> > /usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/testing/selftests/bpf/test_hashmap.
+> > c:61: undefined reference to `hashmap__new'
+> > ...
+>
+> > My preference was to make hashmap a sharable API in tools, to benefit
+>
+> That is my preference as well, I'm not defending having it in
+> tools/perf/util/, just saying that that is a possible way to make
+> progress with the current situation...
 
-> > already has a portable solution
-> 
-> What is the solution?
+Thanks, it'd be nice to be expedient as both Jiri and myself are
+changing code in this area. v2 is up for review here:
+https://lore.kernel.org/lkml/20200515165007.217120-8-irogers@google.com/
+An ifdef when the hashmap.h is used, and one in the build. It could be worse.
 
-sys_spawn(const char *path, const char **argv, const char **envv,
-	  unsigned long clone_flags, unsigned int nfds, int *fds);
+Thanks,
+Ian
 
-maybe?
-
-David
-
+> > not just perf but say things like libsymbol, libperf, etc. Moving it
+> > into perf and using conditional compilation is kinda gross but having
+> > libbpf tests depend on libapi also isn't ideal I guess. It is tempting
+> > to just cut a hashmap from fresh cloth to avoid this and to share
+> > among tools/. I don't know if the bpf folks have opinions?
+> >
+> > I'll do a v2 using conditional compilation to see how bad it looks.
+>
+> Cool, lets see how it looks.
+>
+> - Arnaldo
