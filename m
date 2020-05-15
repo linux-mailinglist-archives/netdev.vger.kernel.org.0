@@ -2,189 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10EA11D5BB2
+	by mail.lfdr.de (Postfix) with ESMTP id F42281D5BB4
 	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:37:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727785AbgEOVgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 17:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726228AbgEOVf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:35:57 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0B9C05BD09
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 14:35:55 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id i16so1845656ybq.9
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 14:35:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sVQVIr84sLsAtEf+Ll1fioJb9v8WVaNtHmGOv4kP0R8=;
-        b=NfimAyTC/aIkfOHS2ufqPSllOkeKqp1ZK6kze94gN6kn1ADBKZD3dHs2eXsMiGzBR1
-         15TmsMiq4KlpeHxxUJ5YdLeKyW23BftJ/gMJmVwlsAn9wcJ8hNxPhlPYwpt5prr5Plzx
-         X43QaZjtrMfGtVTJ/ubc6mkEj6Ge5py3FKjasFZ+0KDaHQnCgsGN1GjqHijFAE+tqSUr
-         I0o2HfrLoen8lac1vJSzfPD+hjfINdbvGmnNZ+aYkTJtddLFqxcCrbqe6UPzgZVuVVHV
-         xDLercuanoXp8rDUc6rnzIa3P8yb045tTQv7jF96E3NAAxmFtOEQvwlMc35NBfkuYpr+
-         Seqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sVQVIr84sLsAtEf+Ll1fioJb9v8WVaNtHmGOv4kP0R8=;
-        b=PpZjJF3LkZbW1d7d0nC9vswNfOEfcJBxi+24GHnH6X//AqeO85u/iukZh10DKyaAs1
-         5mHX3Gg/sIxh9lbKyYPn/Cs96b4/YNxheheQhWFxnqFgmqsnQzf2yqD5S4jRQWsQvt9S
-         0CvMZCiKB8nBk4ry2KoYxUOhc8i3Yr/XrVXo+fSKpj7PCfRsKMvWdeAiXpH0AFqaVd+I
-         TI+cS22IpBset4NAs2y8R6s8OfhVdMhZ4KMwPGW8BRL8UA5T/12tmDUJEiQnQvbB86mC
-         ubwsV5gZTsZmyyUfsC2Vg2v5DRRu2NcGzPsz8xdck1CAgHcWuC3aDVRwNET42RuceqsK
-         eRTA==
-X-Gm-Message-State: AOAM533ZIPqnkGnU+a8thIK+H1xXI2Ge4rXwqMoFR4utOHTyHsl4QCnB
-        kQO8lzr2sqMvof6OwZmdFFq9VoeihtUUkOvYMYVlPg==
-X-Google-Smtp-Source: ABdhPJzO8Z79WAQPa+P8cIWRu5FYqccxVpUsubtP/BCBp9spOPnwntRjPW/UivBlIqcTjuFF/pHj3glO1AKf2bwUZSU=
-X-Received: by 2002:a25:d450:: with SMTP id m77mr9073716ybf.177.1589578554699;
- Fri, 15 May 2020 14:35:54 -0700 (PDT)
+        id S1727801AbgEOVgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 17:36:31 -0400
+Received: from mga06.intel.com ([134.134.136.31]:57746 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726228AbgEOVga (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 May 2020 17:36:30 -0400
+IronPort-SDR: 7gMMpYesjOreOOtFaoxTdQdGwP/K2Guk9sJDs0IcRZXBiSRmDyu7h8b7EV6s+84FPO73K+mFjD
+ PaG1DivKUL4A==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2020 14:36:22 -0700
+IronPort-SDR: RY/mCS7XCwgG9Te6p3O2JPUu2ZjTPeIdYW6V1lpqZPwwqyHyHYJSBGvX8Yeq5ZY8W151mL/7IN
+ kHKVHmlR5+hA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,396,1583222400"; 
+   d="scan'208";a="438460347"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.91.12]) ([10.212.91.12])
+  by orsmga005.jf.intel.com with ESMTP; 15 May 2020 14:36:20 -0700
+Subject: Re: [RFC v2] current devlink extension plan for NICs
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        parav@mellanox.com, yuvalav@mellanox.com, jgg@ziepe.ca,
+        saeedm@mellanox.com, leon@kernel.org,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
+        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
+        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
+        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
+        oss-drivers@netronome.com, snelson@pensando.io,
+        drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        valex@mellanox.com, linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, sridhar.samudrala@intel.com
+References: <20200501091449.GA25211@nanopsycho.orion>
+ <b0f75e76-e6cb-a069-b863-d09f77bc67f6@intel.com>
+ <20200515093016.GE2676@nanopsycho>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <e3aa20ec-a47e-0b91-d6d5-1ad2020eca28@intel.com>
+Date:   Fri, 15 May 2020 14:36:19 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200515165007.217120-1-irogers@google.com> <20200515165007.217120-8-irogers@google.com>
- <20200515194115.GA3577540@krava>
-In-Reply-To: <20200515194115.GA3577540@krava>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 15 May 2020 14:35:43 -0700
-Message-ID: <CAP-5=fUp4ECBntUamWK53LhTbT9W5w5A0frFyOMxoWK0Q2o60A@mail.gmail.com>
-Subject: Re: [PATCH v2 7/7] perf expr: Migrate expr ids table to a hashmap
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200515093016.GE2676@nanopsycho>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 12:41 PM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Fri, May 15, 2020 at 09:50:07AM -0700, Ian Rogers wrote:
->
-> SNIP
->
-> > diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
-> > index b071df373f8b..37be5a368d6e 100644
-> > --- a/tools/perf/util/metricgroup.c
-> > +++ b/tools/perf/util/metricgroup.c
-> > @@ -85,8 +85,7 @@ static void metricgroup__rblist_init(struct rblist *metric_events)
-> >
-> >  struct egroup {
-> >       struct list_head nd;
-> > -     int idnum;
-> > -     const char **ids;
-> > +     struct expr_parse_ctx pctx;
-> >       const char *metric_name;
-> >       const char *metric_expr;
-> >       const char *metric_unit;
-> > @@ -94,19 +93,21 @@ struct egroup {
-> >  };
-> >
-> >  static struct evsel *find_evsel_group(struct evlist *perf_evlist,
-> > -                                   const char **ids,
-> > -                                   int idnum,
-> > +                                   struct expr_parse_ctx *pctx,
-> >                                     struct evsel **metric_events,
-> >                                     bool *evlist_used)
-> >  {
-> >       struct evsel *ev;
-> > -     int i = 0, j = 0;
-> >       bool leader_found;
-> > +     const size_t idnum = hashmap__size(&pctx->ids);
-> > +     size_t i = 0;
-> > +     int j = 0;
-> > +     double *val_ptr;
-> >
-> >       evlist__for_each_entry (perf_evlist, ev) {
-> >               if (evlist_used[j++])
-> >                       continue;
-> > -             if (!strcmp(ev->name, ids[i])) {
-> > +             if (hashmap__find(&pctx->ids, ev->name, (void **)&val_ptr)) {
->
-> hum, you sure it's doing the same thing as before?
->
-> hashmap__find will succede all the time in here, while the
-> previous code was looking for the start of the group ...
-> the logic in here is little convoluted, so maybe I'm
-> missing some point in here ;-)
 
-If we have a metric like "A + B" and another like "C / D" then by
-we'll generate a string (the extra_events strbuf in the code) like
-"{A,B}:W,{C,D}:W" from __metricgroup__add_metric. This will turn into
-an evlist in metricgroup__parse_groups of A,B,C,D. The code is trying
-to associate the events A,B with the first metric and C,D with the
-second. The code doesn't support sharing of events and events are
-marked as used and can't be part of other metrics. The evlist order is
-also reflective of the order of metrics, so if there were metrics "A +
-B + C" and "A + B", as the first metric is first in the evlist we
-don't run the risk of C being placed with A and B in a different
-group.
 
-The old code used the order of events to match within a metric and say
-for metric "A+B+C" we want to match A then B, and so on. The new code
-acts more like a set, so "A + B + C" becomes a set containing A, B and
-C, we check A is in the set then B and then C. For both pieces of code
-they are only working because of the evlist_used "bitmap" and that the
-order in the evlists and metrics matches.
+On 5/15/2020 2:30 AM, Jiri Pirko wrote:
+> Fri, May 15, 2020 at 01:52:54AM CEST, jacob.e.keller@intel.com wrote:
+>>> $ devlink port add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10
+>>>
+>>
+>> Can you clarify what sfnum means here? and why is it different from the
+>> index? I get that the index is a unique number that identifies the port
+>> regardless of type, so sfnum must be some sort of hardware internal
+>> identifier?
+> 
+> Basically pfnum, sfnum and vfnum could overlap. Index is unique within
+> all groups together.
+> 
 
-The current code could just use ordering to match first n1 events with
-the first metric, the next n2 events with the second and so on. So
-both the find now, and the strcmp before always return true in this
-branch.
+Right. Index is just an identifier for which port this is.
 
-In the RFC patch set I want to share events and so I do checks related
-to the group leader so that I know when moving from one group to
-another in the evlist. The find/strcmp becomes load bearing as I will
-re-use events as long as they match.
-https://lore.kernel.org/lkml/20200508053629.210324-14-irogers@google.com/
+> 
+>>
+>> When looking at this with colleagues, there was a lot of confusion about
+>> the difference between the index and the sfnum.
+> 
+> No confusion about index and pfnum/vfnum? They behave the same.
+> Index is just a port handle.
+> 
 
-> jirka
->
-> >                       if (!metric_events[i])
-> >                               metric_events[i] = ev;
-> >                       i++;
-> > @@ -118,7 +119,8 @@ static struct evsel *find_evsel_group(struct evlist *perf_evlist,
-> >                       memset(metric_events, 0,
-> >                               sizeof(struct evsel *) * idnum);
+I'm less confused about the difference between index and these "nums",
+and more so questioning what pfnum/vfnum/sfnum represent? Are they
+similar to the vf ID that we have in the legacy SRIOV functions? I.e. a
+hardware index?
 
-This re-check was unnecessary in the old code and unnecessary even
-more so now as the hashmap_find is given exactly the same arguments.
-I'll remove it in v3 while addressing Andrii's memory leak fixes.
+I don't think in general users necessarily care which "index" they get
+upfront. They obviously very much care about the index once it's
+selected. I do believe the interfaces should start with the capability
+for the index to be selected automatically at creation (with the
+optional capability to select a specific index if desired, as shown here).
 
-Thanks,
-Ian
+I do not think most users want to care about what to pick for this
+number. (Just as they would not want to pick a number for the port index
+either).
 
-> > -                     if (!strcmp(ev->name, ids[i])) {
-> > +                     if (hashmap__find(&pctx->ids, ev->name,
-> > +                                       (void **)&val_ptr)) {
-> >                               if (!metric_events[i])
-> >                                       metric_events[i] = ev;
->
-> SNIP
->
+> 
+>>
+>>> The devlink kernel code calls down to device driver (devlink op) and asks
+>>> it to create a SF port with particular attributes. Driver then instantiates
+>>> the SF port in the same way it is done for VF.
+>>>
+>>
+>> What do you mean by attributes here? what sort of attributes can be
+>> requested?
+> 
+> In the original slice proposal, it was possible to pass the mac address
+> too. However with new approach (port func subobject) that is not
+> possible. I'll remove this rudiment.
+> 
+
+Ok.
+
+> 
+>>
+>>>
+>>> Note that it may be possible to avoid passing port index and let the
+>>> kernel assign index for you:
+>>> $ devlink port add pci/0000.06.00.0 flavour pcisf pfnum 1 sfnum 10
+>>>
+>>> This would work in a similar way as devlink region id assignment that
+>>> is being pushed now.
+>>>
+>>
+>> Sure, this makes sense to me after seeing Jakub's recent patch for
+>> regions. I like this approach. Letting the user not have to pick an ID
+>> ahead of time is useful.
+>>
+>> Is it possible to skip providing an sfnum, and let the kernel or driver
+>> pick one? Or does that not make sense?
+> 
+> Does not. The sfnum is something that should be deterministic. The sfnum
+> is then visible on the other side on the virtbus device:
+> /sys/bus/virtbus/devices/mlx5_sf.1/sfnum
+> and it's name is generated accordingly: enp6s0f0s10
+> 
+
+Why not have the option to say "create me an sfnum and then report it to
+me" in the same way we do with region numbers now and plan to with port
+indexes?
+
+Basically: why do I as a user of the front end care what this number
+actually is? What does it represent?
+
+> 
+> 
+>>
+>>> ==================================================================
+>>> ||                                                              ||
+>>> ||   VF manual creation and activation user cmdline API draft   ||
+>>> ||                                                              ||
+>>> ==================================================================
+>>>
+>>> To enter manual mode, the user has to turn off VF dummies creation:
+>>> $ devlink dev set pci/0000:06:00.0 vf_dummies disabled
+>>> $ devlink dev show
+>>> pci/0000:06:00.0: vf_dummies disabled
+>>>
+>>> It is "enabled" by default in order not to break existing users.
+>>>
+>>> By setting the "vf_dummies" attribute to "disabled", the driver
+>>> removes all dummy VFs. Only physical ports are present:
+>>>
+>>> $ devlink port show
+>>> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>>> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>>>
+>>> Then the user is able to create them in a similar way as SFs:
+>>>
+>>> $ devlink port add pci/0000:06:00.0/99 flavour pcivf pfnum 1 vfnum 8
+>>>
+>>
+>> So in this case, you have to specify the VF index to create? So this
+>> vfum is very similar to the sfnum (and pfnum?) above?
+> 
+> Yes.
+> 
+> 
+>>
+>> What about the ability to just say "please give me a VF, but I don't
+>> care which one"?
+> 
+> Well, that could be eventually done too, with Jakub's extension.
+> 
+
+Sure. I think that's what I was asking above as well. Ok.
+
+>>>
+>>>    $ devlink port show
+>>>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>>>
+>>>    If there is another parent PF, say "0000:06:00.1", that share the
+>>>    same embedded switch, the aliasing is established for devlink handles.
+>>>
+>>>    The user can use devlink handles:
+>>>    pci/0000:06:00.0
+>>>    pci/0000:06:00.1
+>>>    as equivalents, pointing to the same devlink instance.
+>>>
+>>>    Parent PFs are the ones that may be in control of managing
+>>>    embedded switch, on any hierarchy leve>
+>>> 2) Child PF. This is a leg of a PF put to the parent PF. It is
+>>>    represented by a port a port with a netdevice and func:
+>>>
+>>>    $ devlink port show
+>>>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>>>    pci/0000:06:00.0/1: flavour pcipf pfnum 2 type eth netdev enp6s0f0pf2
+>>>        func: hw_addr aa:bb:cc:aa:bb:87 state active
+>>>
+>>>    This is a typical smartnic scenario. You would see this list on
+>>>    the smartnic CPU. The port pci/0000:06:00.0/1 is a leg to
+>>>    one of the hosts. If you send packets to enp6s0f0pf2, they will
+>>>    go to the child PF.
+>>>
+>>>    Note that inside the host, the PF is represented again as "Parent PF"
+>>>    and may be used to configure nested embedded switch.
+>>>
+>>>
+>>
+>> I'm not sure I understand this section. Child PF? Is this like a PF in
+>> another host? Or representing the other side of the virtual link?
+> 
+> It's both actually, at the same time.
+> 
+> 
+
+Ok. I still don't think I fully grasp this yet.
+
+
+>> Obviously this is a TODO, but how does this differ from the current
+>> port_split and port_unsplit?
+> 
+> Does not have anything to do with port splitting. This is about creating
+> a "child PF" from the section above.
+> 
+
+Hmm. Ok so this is about internal connections in the switch, then?
