@@ -2,142 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 098FA1D5B59
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9EBE1D5B76
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:30:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgEOVTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 17:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726183AbgEOVTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:19:07 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A617C061A0C;
-        Fri, 15 May 2020 14:19:06 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id x12so3240292qts.9;
-        Fri, 15 May 2020 14:19:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:from:date:user-agent:in-reply-to:references:mime-version
-         :content-transfer-encoding:subject:to:cc;
-        bh=srt7QXlq4v2mVg2Pcb9Nrsj43p0okN5hPOgneLc3kDU=;
-        b=IC9yJMxMC2Bc6jWNDzMmlDB3+fmkmwHp/GWWHThRou0USteQZjoXvCa34feLiTCRPN
-         dNOQYkuPLcaKLQ2We2ulkNlRwkMMmhx806CbAZ9kqYqCxubYJcM2Sv0AgQ2WuhvN1vry
-         bj/pQzLlWwep0QtWwhaLgCxiu1pg+1P3BXOMJ7s5hNFL4H7WSgkS8heVf55vmEXwNLLR
-         9D7vXoMh2Vl7M4/dAE97wulo0+0v6qrh6Xck/V53alDcLm77Tf3Tc9KkK4VgLQxSPMQb
-         +6fLLcND3PXxIwflu/ffcUfn5qBNK1WA8oHUpGIfjbs1ZHbMHnivwVKvFE1cxJYo0uQC
-         /lfQ==
+        id S1727084AbgEOV2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 17:28:53 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:44849 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726261AbgEOV2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:28:52 -0400
+Received: by mail-pf1-f195.google.com with SMTP id x13so1585790pfn.11;
+        Fri, 15 May 2020 14:28:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:from:date:user-agent:in-reply-to
-         :references:mime-version:content-transfer-encoding:subject:to:cc;
-        bh=srt7QXlq4v2mVg2Pcb9Nrsj43p0okN5hPOgneLc3kDU=;
-        b=ZIsMR9Ifqi3KOg+DhznC6GbHNGQjNtf7DHU0zfiFm3u1KKp4kJFsZvdOKqIH+MYYyu
-         B4adPQT5y2+f3+dkHYq4qoYprI2exzH5CrLw+LjJH38TE2YPbU6i+UOSVa8ppmyjtelD
-         t2348rMZbhMVmTLjkJvAX9x6q9weJTQ3A8yzTqsUZlxu4OmLPvxyRvl/T1nkDChzDxhS
-         zbrgjB0+ABEoBkx1bOEqo8e+tU/NSUPkIplvCzhYdI2MK3egVGCDWCdyQKRtfXUXU0Mv
-         Uo7joT2BZMD49WQ65w3LqmAa7U+hbnIXELkCXOFLNGaxqyxX3OSjaPSubUmfr9EsiuuN
-         K/rg==
-X-Gm-Message-State: AOAM531WHtYjfVA4b2eEa67DsivK3UaQ/rb2F12SnEIwAck7XnCqqm1+
-        ZPIaR6AnwtinjqGSaUONSlU=
-X-Google-Smtp-Source: ABdhPJyzrzazSLyxQqTYcTXRILBssVzRq+eZQpILUE2lrhccijlaN/BQkScN0/xmxqKfyyqk5ZtR3A==
-X-Received: by 2002:ac8:6b8a:: with SMTP id z10mr5471891qts.373.1589577545145;
-        Fri, 15 May 2020 14:19:05 -0700 (PDT)
-Received: from [192.168.86.185] ([179.97.37.151])
-        by smtp.gmail.com with ESMTPSA id d7sm2420093qkk.26.2020.05.15.14.19.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 May 2020 14:19:04 -0700 (PDT)
-Message-ID: <5ebf0748.1c69fb81.f8310.eef3@mx.google.com>
-From:   arnaldo.melo@gmail.com
-Date:   Fri, 15 May 2020 18:18:45 -0300
-User-Agent: K-9 Mail for Android
-In-Reply-To: <CAEf4BzZ5=_yu1kL77n+Oc0K9oaDi4J=c+7CV8D0AXs2hBxhNbw@mail.gmail.com>
-References: <20200515165007.217120-1-irogers@google.com> <20200515170036.GA10230@kernel.org> <CAEf4BzZ5=_yu1kL77n+Oc0K9oaDi4J=c+7CV8D0AXs2hBxhNbw@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XTmSl9YKaCNsjNOb3IxfYRfZ8mYTIU9PqjhjQ3pwCHQ=;
+        b=pvi61G0tenHADSVeAhRJTUB3h3TQgw4sMzyBeyDHS5zn/LCK9kPMaFOpUdXHVh7lra
+         6azvZ5jqspA/P53SNZmeX7kbbEiOa+Q4ZtKlysOZZZuGAQ6y34W9HiWql3H0tWtlH5XM
+         68jnA85GJTVNPhhrZvifvTPn0M0UswW9O4KO9rn/XJAc8ZiV/SQiXPC+vhp7cAwE5vBd
+         Mc+VRTQZbY4mzGUdoFBtmC03e/nrVzByz30d37/10OzuGbVEGkChp7bLqtHd7WWSxDiU
+         JJXOwMoQ9OHHQ9vqBb46KVV5zIwy/PYHfIhe3WC62lTWvj35nYlxs37TaQEnUVQp9EnS
+         ig7g==
+X-Gm-Message-State: AOAM532VeATTR5MuOgkw0m8kZKaxvMTbAZfQwvXMpedjhIDXnxGdOi4t
+        PuFagbrWaXK7fVgiaENEkiU=
+X-Google-Smtp-Source: ABdhPJxoObrFR9/hE3BjUnP3mrM4U7brESyb9fpeRUL8eqYMVEEJRCS47aT3uJzomgc7mmmQoQYn0g==
+X-Received: by 2002:a62:7c16:: with SMTP id x22mr5785765pfc.267.1589578131633;
+        Fri, 15 May 2020 14:28:51 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id m14sm2375614pgk.56.2020.05.15.14.28.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 May 2020 14:28:50 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id 79EA440246; Fri, 15 May 2020 21:28:49 +0000 (UTC)
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     jeyu@kernel.org
+Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
+        schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>
+Subject: [PATCH v2 00/15] net: taint when the device driver firmware crashes
+Date:   Fri, 15 May 2020 21:28:31 +0000
+Message-Id: <20200515212846.1347-1-mcgrof@kernel.org>
+X-Mailer: git-send-email 2.23.0.rc1
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 0/7] Copy hashmap to tools/perf/util, use in perf expr
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-<bpf@vger.kernel.org>,Stephane Eranian <eranian@google.com>
-From: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Message-ID: <79BCBAF7-BF5F-4556-A923-56E9D82FB570@gmail.com>
+On this v2 I've added documenation over the taint flag, and updated our
+script which parses existing taint flags to describe what has happened
+when this taint flag is found. I've also updated the location of the
+taint flag on the qed driver and updated the reviews.
 
+The changes are based on linux-next tag next-20200515. You can find
+these changes on my tree:
 
+https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git/log/?h=20200515-taint-firmware-net
 
-On May 15, 2020 4:42:46 PM GMT-03:00, Andrii Nakryiko <andrii=2Enakryiko@g=
-mail=2Ecom> wrote:
->On Fri, May 15, 2020 at 10:01 AM Arnaldo Carvalho de Melo
-><arnaldo=2Emelo@gmail=2Ecom> wrote:
->>
->> Em Fri, May 15, 2020 at 09:50:00AM -0700, Ian Rogers escreveu:
->> > Perf's expr code currently builds an array of strings then removes
->> > duplicates=2E The array is larger than necessary and has recently
->been
->> > increased in size=2E When this was done it was commented that a
->hashmap
->> > would be preferable=2E
->> >
->> > libbpf has a hashmap but libbpf isn't currently required to build
->> > perf=2E To satisfy various concerns this change copies libbpf's
->hashmap
->> > into tools/perf/util, it then adds a check in perf that the two are
->in
->> > sync=2E
->> >
->> > Andrii's patch to hashmap from bpf-next is brought into this set to
->> > fix issues with hashmap__clear=2E
->> >
->> > Two minor changes to libbpf's hashmap are made that remove an
->unused
->> > dependency and fix a compiler warning=2E
->>
->> Andrii/Alexei/Daniel, what do you think about me merging these fixes
->in my
->> perf-tools-next branch?
->
->I'm ok with the idea, but it's up to maintainers to coordinate this :)
+Luis Chamberlain (15):
+  taint: add module firmware crash taint support
+  ethernet/839: use new module_firmware_crashed()
+  bnx2x: use new module_firmware_crashed()
+  bnxt: use new module_firmware_crashed()
+  bna: use new module_firmware_crashed()
+  liquidio: use new module_firmware_crashed()
+  cxgb4: use new module_firmware_crashed()
+  ehea: use new module_firmware_crashed()
+  qed: use new module_firmware_crashed()
+  soc: qcom: ipa: use new module_firmware_crashed()
+  wimax/i2400m: use new module_firmware_crashed()
+  ath10k: use new module_firmware_crashed()
+  ath6kl: use new module_firmware_crashed()
+  brcm80211: use new module_firmware_crashed()
+  mwl8k: use new module_firmware_crashed()
 
-Good to know, do I'll take all patches except the ones touching libppf, wi=
-ll just make sure the copy is done with the patches applied=2E
+ Documentation/admin-guide/tainted-kernels.rst       |  6 ++++++
+ drivers/net/ethernet/8390/axnet_cs.c                |  4 +++-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c    |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c   |  1 +
+ drivers/net/ethernet/brocade/bna/bfa_ioc.c          |  1 +
+ drivers/net/ethernet/cavium/liquidio/lio_main.c     |  1 +
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c     |  1 +
+ drivers/net/ethernet/ibm/ehea/ehea_main.c           |  2 ++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c           |  1 +
+ drivers/net/ipa/ipa_modem.c                         |  1 +
+ drivers/net/wimax/i2400m/rx.c                       |  1 +
+ drivers/net/wireless/ath/ath10k/pci.c               |  2 ++
+ drivers/net/wireless/ath/ath10k/sdio.c              |  2 ++
+ drivers/net/wireless/ath/ath10k/snoc.c              |  1 +
+ drivers/net/wireless/ath/ath6kl/hif.c               |  1 +
+ .../net/wireless/broadcom/brcm80211/brcmfmac/core.c |  1 +
+ drivers/net/wireless/marvell/mwl8k.c                |  1 +
+ include/linux/kernel.h                              |  3 ++-
+ include/linux/module.h                              | 13 +++++++++++++
+ include/trace/events/module.h                       |  3 ++-
+ kernel/module.c                                     |  5 +++--
+ kernel/panic.c                                      |  1 +
+ tools/debugging/kernel-chktaint                     |  7 +++++++
+ 23 files changed, 55 insertions(+), 5 deletions(-)
 
-At some point they'll land in libbpf and the warning from check_headers=2E=
-sh will be resolved=2E
+-- 
+2.26.2
 
-Thanks,
-
-- Arnaldo
-
---=20
-Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
