@@ -2,167 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15ED71D41F4
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 02:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0EBD1D41F8
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 02:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728026AbgEOAGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 20:06:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53926 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726088AbgEOAGX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 May 2020 20:06:23 -0400
-Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B82E02065C;
-        Fri, 15 May 2020 00:06:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589501182;
-        bh=OFUwzVmeTce6GliEaaxC8HUeP3Sv/DxdGtW7lEfLSws=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s7WsRedD1hB3+4gYhWgZ9fjSKW6ec7AYkJgTRDWbDDiYt7nTwY5FtX6W8LHdY0ruE
-         EMJ1iLzIU7jr/u9cZHmvmClR77G2bIoX9VvYvfl5jltUmx2ob6zBdJz2xmKKlmqEaf
-         XR7H+xKUfFFamR7Z1ay16yWX8C7kYTanObJeOvyU=
-Date:   Fri, 15 May 2020 09:06:17 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        torvalds@linux-foundation.org, mhiramat@kernel.org,
-        brendan.d.gregg@gmail.com, hch@lst.de, john.fastabend@gmail.com,
-        yhs@fb.com
-Subject: Re: [PATCH bpf 1/3] bpf: restrict bpf_probe_read{,str}() only to
- archs where they work
-Message-Id: <20200515090617.613f62271899c92612ad4817@kernel.org>
-In-Reply-To: <20200514161607.9212-2-daniel@iogearbox.net>
-References: <20200514161607.9212-1-daniel@iogearbox.net>
-        <20200514161607.9212-2-daniel@iogearbox.net>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728056AbgEOAJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 20:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726126AbgEOAJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 20:09:26 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4304CC061A0C;
+        Thu, 14 May 2020 17:09:25 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id 23so115799pfy.8;
+        Thu, 14 May 2020 17:09:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ah0+2uSyJ1tzkppjBImuG7UEaIqlnYN0RR1RbLnlBGY=;
+        b=NczCZ3UGdi1OaVj2w53MUQTPs1fmLRzdv0SwUbupu6J8bdYITMhm+VNz1ld5OrdU/Q
+         GEwZB/00I5bYWvfqzl1AopN2rHHz52xDbXU9zMb36xuCM8KQSHKb/Ti+nxZb/5/ylX6Z
+         bnCFqUnNCSYlgjdxuF+sVWVm61hdgYYxjO4TRDqD0DhOIYz459K/rSuMoOR4kbw6Kss3
+         ojChb4Bf91wZ7mMCDQw9zBZ4gc6Idd2AjRXopqCFoF0hX2wNLxAK98xi1LfLPsKVtMbY
+         z0Ys6rAKegzXN1MvvwbHeQOqMo86dD601BR/2Qbk1PUjmq5OQnrZILkQ4P18+o65zM9K
+         oQRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ah0+2uSyJ1tzkppjBImuG7UEaIqlnYN0RR1RbLnlBGY=;
+        b=CjkYazk+iC4C1WlHf7WPCpXXO0c5JY8fuNwHiy2iWPhO32rkOf5gCpgdI7TEKFO+LO
+         QwovoOBRUnvtJDjztvVboy0980FxKp0P6Gt7SnKhpzZMoVlkkMBj/LxVw7ZJ0ujjQCVb
+         2wJT8XBEaCrQMBMuWHjkDTsYvCuKW27oIZq/b2NyOj+qQhLjhoM9GWVLU7+Euci1nstF
+         QWrCyoGl9PdDuPz+Wiz8O4+Q4Z4kNfle7HpT8vEo0W+T6KcWlgG5a2uayGm5MljXxoys
+         pViKwALoKm8tgDAqj3q4pxyEsLLvZvJ7JaIlap25+BhL6NJEsZT/YyO6feaNZIDwwToV
+         vv9A==
+X-Gm-Message-State: AOAM530AThrJ/6dSlYUdXdQ8RNF2I2/SKyme4nTCnWkoiN0NMA9QRyO2
+        Vkl1Baf1s890+wkUM2q5cNZt51Z4
+X-Google-Smtp-Source: ABdhPJx99L0ylPt+Bg7Btel5BxtMlGxF6reoE1F7WRl4oCm9enpKkLtCR88stej65RVFvBhdBqoILg==
+X-Received: by 2002:a63:3d7:: with SMTP id 206mr600878pgd.45.1589501364772;
+        Thu, 14 May 2020 17:09:24 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9720])
+        by smtp.gmail.com with ESMTPSA id b11sm278737pgq.50.2020.05.14.17.09.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 May 2020 17:09:23 -0700 (PDT)
+Date:   Thu, 14 May 2020 17:09:20 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Alan Maguire <alan.maguire@oracle.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 4/7] printk: add type-printing %pT format
+ specifier which uses BTF
+Message-ID: <20200515000920.2el4jyrwqqbd6jw3@ast-mbp.dhcp.thefacebook.com>
+References: <1589263005-7887-1-git-send-email-alan.maguire@oracle.com>
+ <1589263005-7887-5-git-send-email-alan.maguire@oracle.com>
+ <1b63a6b193073674b6e0f9f95c62ce2af1b977cc.camel@perches.com>
+ <CAADnVQK8osy9W8-u-K=ucqe5q-+Uik41fBw6d-SfG-m6rgVwDQ@mail.gmail.com>
+ <397fb29abb20d11003a18919ee0c44918fc1a165.camel@perches.com>
+ <28145b05ee792b89ab9cb560f4f9989fd3d5d93b.camel@perches.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <28145b05ee792b89ab9cb560f4f9989fd3d5d93b.camel@perches.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 May 2020 18:16:05 +0200
-Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Thu, May 14, 2020 at 04:43:24PM -0700, Joe Perches wrote:
+>  The ``BTF_INT_BITS()`` specifies the number of actual bits held by this int
+>  type. For example, a 4-bit bitfield encodes ``BTF_INT_BITS()`` equals to 4.
+> diff --git a/include/uapi/linux/btf.h b/include/uapi/linux/btf.h
+> index 5a667107ad2c..36f309209786 100644
+> --- a/include/uapi/linux/btf.h
+> +++ b/include/uapi/linux/btf.h
+> @@ -90,6 +90,7 @@ struct btf_type {
+>  #define BTF_INT_SIGNED	(1 << 0)
+>  #define BTF_INT_CHAR	(1 << 1)
+>  #define BTF_INT_BOOL	(1 << 2)
+> +#define BTF_INT_HEX	(1 << 3)
 
-> Given the legacy bpf_probe_read{,str}() BPF helpers are broken on archs
-> with overlapping address ranges, we should really take the next step to
-> disable them from BPF use there.
-> 
-> To generally fix the situation, we've recently added new helper variants
-> bpf_probe_read_{user,kernel}() and bpf_probe_read_{user,kernel}_str().
-> For details on them, see 6ae08ae3dea2 ("bpf: Add probe_read_{user, kernel}
-> and probe_read_{user,kernel}_str helpers").
-> 
-> Given bpf_probe_read{,str}() have been around for ~5 years by now, there
-> are plenty of users at least on x86 still relying on them today, so we
-> cannot remove them entirely w/o breaking the BPF tracing ecosystem.
-> 
-> However, their use should be restricted to archs with non-overlapping
-> address ranges where they are working in their current form. Therefore,
-> move this behind a CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE and
-> have x86, arm64, arm select it (other archs supporting it can follow-up
-> on it as well).
-> 
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Masami Hiramatsu <mhiramat@kernel.org>
-> Cc: Brendan Gregg <brendan.d.gregg@gmail.com>
-> Cc: Christoph Hellwig <hch@lst.de>
-
-Thanks for the config! Looks good to me.
-
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-
-
-> ---
->  arch/arm/Kconfig         | 1 +
->  arch/arm64/Kconfig       | 1 +
->  arch/x86/Kconfig         | 1 +
->  init/Kconfig             | 3 +++
->  kernel/trace/bpf_trace.c | 6 ++++--
->  5 files changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-> index 66a04f6f4775..c77c93c485a0 100644
-> --- a/arch/arm/Kconfig
-> +++ b/arch/arm/Kconfig
-> @@ -12,6 +12,7 @@ config ARM
->  	select ARCH_HAS_KEEPINITRD
->  	select ARCH_HAS_KCOV
->  	select ARCH_HAS_MEMBARRIER_SYNC_CORE
-> +	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
->  	select ARCH_HAS_PTE_SPECIAL if ARM_LPAE
->  	select ARCH_HAS_PHYS_TO_DMA
->  	select ARCH_HAS_SETUP_DMA_OPS
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 40fb05d96c60..5d513f461957 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -20,6 +20,7 @@ config ARM64
->  	select ARCH_HAS_KCOV
->  	select ARCH_HAS_KEEPINITRD
->  	select ARCH_HAS_MEMBARRIER_SYNC_CORE
-> +	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
->  	select ARCH_HAS_PTE_DEVMAP
->  	select ARCH_HAS_PTE_SPECIAL
->  	select ARCH_HAS_SETUP_DMA_OPS
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 1197b5596d5a..2d3f963fd6f1 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -68,6 +68,7 @@ config X86
->  	select ARCH_HAS_KCOV			if X86_64
->  	select ARCH_HAS_MEM_ENCRYPT
->  	select ARCH_HAS_MEMBARRIER_SYNC_CORE
-> +	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
->  	select ARCH_HAS_PMEM_API		if X86_64
->  	select ARCH_HAS_PTE_DEVMAP		if X86_64
->  	select ARCH_HAS_PTE_SPECIAL
-> diff --git a/init/Kconfig b/init/Kconfig
-> index 9e22ee8fbd75..6fd13a051342 100644
-> --- a/init/Kconfig
-> +++ b/init/Kconfig
-> @@ -2279,6 +2279,9 @@ config ASN1
->  
->  source "kernel/Kconfig.locks"
->  
-> +config ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
-> +	bool
-> +
->  config ARCH_HAS_SYNC_CORE_BEFORE_USERMODE
->  	bool
->  
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index ca1796747a77..b83bdaa31c7b 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -825,14 +825,16 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  		return &bpf_probe_read_user_proto;
->  	case BPF_FUNC_probe_read_kernel:
->  		return &bpf_probe_read_kernel_proto;
-> -	case BPF_FUNC_probe_read:
-> -		return &bpf_probe_read_compat_proto;
->  	case BPF_FUNC_probe_read_user_str:
->  		return &bpf_probe_read_user_str_proto;
->  	case BPF_FUNC_probe_read_kernel_str:
->  		return &bpf_probe_read_kernel_str_proto;
-> +#ifdef CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
-> +	case BPF_FUNC_probe_read:
-> +		return &bpf_probe_read_compat_proto;
->  	case BPF_FUNC_probe_read_str:
->  		return &bpf_probe_read_compat_str_proto;
-> +#endif
->  #ifdef CONFIG_CGROUPS
->  	case BPF_FUNC_get_current_cgroup_id:
->  		return &bpf_get_current_cgroup_id_proto;
-> -- 
-> 2.21.0
-> 
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+Nack.
+Hex is not a type.
