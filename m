@@ -2,116 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A901D5A08
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 21:31:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7C401D5A18
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 21:39:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbgEOTbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 15:31:22 -0400
-Received: from mail-eopbgr130047.outbound.protection.outlook.com ([40.107.13.47]:64833
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726179AbgEOTbV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 15:31:21 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Suhs4MSSHG+yULELwhsHUWFcSTZBgZVTOT5zPmkc/pWi3nNLR80SPbKA4mlLLakJnNkzHgH0ch0tWjtxWjcCfFISadHuWYQdEiAYR08yw1nZzYIJJCWbeF5AL/YHjyeEKwoiIz/JeEl5mSAcpKzrYcXfpGtfAQ0LPnxxLOA3wijUSt3anrVUKDjDw+jiwEvJijL+usg16FoIOn1h8w8EjtAYrjEkXMwdrylGajTjyWGOBJVILVb3FGCNF+Sgtx06YiIwZ7Z4v9b2sRYJybJD3gAVxu9f0bTp/CK/Oki3LG2GRW8ZrN1VVG1LuyxdLelxfMuYf/ADbO601gToZSw3zA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nYBfs34HUPz0PonL9oE5FEzoj4AS0tgbSZy6AbXrads=;
- b=mWGf6OxPQ6Tk8Yj2+JRfhJ33l41CcxXqmiVq0SAdvffgrK1yzbJ/JQii9S1RdsKK42XZMv1d+htMTgTHvccw3Yn2oky/lgGKf55VS08wrmaP//Aoy7uh0YRTrGx87sS++DmNDx4Ywb3dNOcu2dKfR5b5yVJTI3eQMJAsGoKkc3b+IWWVUcZ/97v5YOcRSVqungD+cLHja8Nj5XnrJlMqSKaj9uf30MGp7hHeQftMzk4+0g66eNBxnOT0G1l6HbRai9W2uBT6BcyRgUqdcUdtVFuuM629RzonFXfgCdvd+S+tuEPCqau24OT15Qyklyw743CeoywlhIPiLQh0ndI7Bw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nYBfs34HUPz0PonL9oE5FEzoj4AS0tgbSZy6AbXrads=;
- b=lugHkAXTjr8BWw5eGvKP/sxZoIK1kl1EVtSk45ECR79sUoqts1K8KOu96+P3rhY7hlUklZ6RmCcnLE5ejL0CKckaTPD9aim5Swl2kM9iDe/r93qSrWsUaUsf/MBFxucqp+vHUkYtD7+nMG8V7NjlFWUxchjD2E1WF9tlA+HC5CE=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VI1PR0402MB2894.eurprd04.prod.outlook.com
- (2603:10a6:800:b5::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.26; Fri, 15 May
- 2020 19:31:18 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::e5d7:ec32:1cfe:71f0]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::e5d7:ec32:1cfe:71f0%7]) with mapi id 15.20.3000.022; Fri, 15 May 2020
- 19:31:18 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
- classes
-Thread-Topic: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
- classes
-Thread-Index: AQHWKulbmiq87o7Yx0yuJ8Tm2Q7xY6iphgOAgAACOEA=
-Date:   Fri, 15 May 2020 19:31:18 +0000
-Message-ID: <VI1PR0402MB387165B351F0DF0FA1E78BF4E0BD0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
-References: <20200515184753.15080-1-ioana.ciornei@nxp.com>
- <20200515122035.0b95eff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200515122035.0b95eff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [86.121.118.29]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 16189941-9015-4d1d-bc66-08d7f9068a6a
-x-ms-traffictypediagnostic: VI1PR0402MB2894:
-x-microsoft-antispam-prvs: <VI1PR0402MB2894733763E676132D86EC84E0BD0@VI1PR0402MB2894.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 04041A2886
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HP0GwVW2dYL15FcSH4A5QOPLVjYUS/rq/9Mvl7p3vN0KcLOeC3l/I4u45zDklUkuw83rx7s/qlAJpaXNoyQYG73/z/shQ06ezOecObGg/J0TiooTgo2YianbEB0/IknZsTpxB/dlj6FvR5leAJaJ2JmzyeHys0l6+L3V5oogjt20H5fso1AcoofIL1/+OpH0Y9lCfYvuTl0g5jv+d25hXlO/JLu9IlAlmNoc4lSx2rzJ4EtkaZ5SCEKGzL8TGsRkp5/H0yrFKvqoSRAzKpUtMZTyN7+vh1I/w7HA0ldK5AUH6JFVsMVl2aDmWDEVKaVd7KJ7PZxZFVxZ9EbT2lZv7Lrbp2W1T3zhFsurq6VljbggpOd+fpp7ta8JkZ0tWF+pSZSBMYn79XuUS8ySPfkUEZtTNUGJGtTLGMQ+HQszxnV8nbeC01Y4BuFowgP3mv8I
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(6916009)(6506007)(316002)(66946007)(52536014)(478600001)(66476007)(66556008)(76116006)(186003)(2906002)(66446008)(26005)(44832011)(64756008)(54906003)(71200400001)(7696005)(4326008)(5660300002)(9686003)(55016002)(86362001)(8676002)(8936002)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: sdVZmubAuL7uPBnFoClfxoBDinYclIymGhCo9ZBixFwMzyoi5FqPDho7FS2PMB2+P7L8ESPNsnYZzS3lAHmBkoV5LmxWkc+luqpk4vz8c8Pww7h5BWBDRy9nRo4NTFpuyeQ/UkpLj3txrkjUaAzziFkhoNJzI448jtOldj7VSUQqnPzeMWAQhNeYudWrzxpJDOh85gPoafzPCj6/+4aOjz+E3SiRKWWYyrXNB8sSLX66blustin0rdZ7KaUFEGxq9Epm2HSmRL6BZl7gSxa1Sunduewx2XN6+B9uvwlz0L7L+1yBwv73vXsyTp4uLFX7wIP29xiSkfGSJ5Jz5cPGhBaRnt2yAvqYJ/dq6P9b0KMYhEk1bDe84KDpIPa2lFeWE4OcRVE5bFt9BXSH7QMXUqZQR+C7p1spjwMwejl6zeAE1mF3b4icymvzpVd0UcQCcdBvYmgVU4PpJuxnBGL18gjd6rcxz1sNY050V+eIOcg=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16189941-9015-4d1d-bc66-08d7f9068a6a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 May 2020 19:31:18.2366
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2TF3SEN5AWRHWL5LR70+pWpchbJWHQuFsk7dacdEFsAMEPGNXcSPCGZg1U5VlM06QaQhNQXMNtZpe9XHAKTqqQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2894
+        id S1726236AbgEOTjC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 15 May 2020 15:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726168AbgEOTjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 15:39:01 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CF8C061A0C;
+        Fri, 15 May 2020 12:39:01 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2C5D41539B80A;
+        Fri, 15 May 2020 12:39:01 -0700 (PDT)
+Date:   Fri, 15 May 2020 12:39:00 -0700 (PDT)
+Message-Id: <20200515.123900.727024514724458944.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-2
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 15 May 2020 12:39:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffi=
-c
-> classes
->=20
-> On Fri, 15 May 2020 21:47:46 +0300 Ioana Ciornei wrote:
-> > This patch set adds support for Rx traffic classes on DPAA2 Ethernet
-> > devices.
-> >
-> > The first two patches make the necessary changes so that multiple
-> > traffic classes are configured and their statistics are displayed in
-> > the debugfs. The third patch adds a static distribution to said
-> > traffic classes based on the VLAN PCP field.
-> >
-> > The last patches add support for the congestion group taildrop
-> > mechanism that allows us to control the number of frames that can
-> > accumulate on a group of Rx frame queues belonging to the same traffic =
-class.
->=20
-> Ah, I miseed you already sent a v2. Same question applies:
->=20
-> > How is this configured from the user perspective? I looked through the
-> > patches and I see no information on how the input is taken from the
-> > user.
 
-There is no input taken from the user at the moment. The traffic class id i=
-s statically selected based on the VLAN PCP field. The configuration for th=
-is is added in patch 3/7.
+1) Fix sk_psock reference count leak on receive, from Xiyu Yang.
 
-Ioana
+2) CONFIG_HNS should be invisible, from Geert Uytterhoeven.
+
+3) Don't allow locking route MTUs in ipv6, RFCs actually forbid
+   this, from Maciej ¯enczykowski.
+
+4) ipv4 route redirect backoff wasn't actually enforced, from
+   Paolo Abeni.
+
+5) Fix netprio cgroup v2 leak, from Zefan Li.
+
+6) Fix infinite loop on rmmod in conntrack, from Florian Westphal.
+
+7) Fix tcp SO_RCVLOWAT hangs, from Eric Dumazet.
+
+8) Various bpf probe handling fixes, from Daniel Borkmann.
+
+Please pull, thanks a lot!
+
+The following changes since commit a811c1fa0a02c062555b54651065899437bacdbe:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-05-06 20:53:22 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net 
+
+for you to fetch changes up to 8e1381049ed5d213e7a1a7f95bbff83af8c59234:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2020-05-15 10:57:21 -0700)
+
+----------------------------------------------------------------
+Alex Elder (2):
+      net: ipa: set DMA length in gsi_trans_cmd_add()
+      net: ipa: use tag process on modem crash
+
+Alexei Starovoitov (1):
+      Merge branch 'restrict-bpf_probe_read'
+
+Amol Grover (2):
+      ipmr: Fix RCU list debugging warning
+      ipmr: Add lockdep expression to ipmr_for_each_table macro
+
+Anders Roxell (1):
+      security: Fix the default value of secid_to_secctx hook
+
+Andrii Nakryiko (1):
+      bpf: Fix bug in mmap() implementation for BPF array map
+
+Arnd Bergmann (3):
+      net: bareudp: avoid uninitialized variable warning
+      net: freescale: select CONFIG_FIXED_PHY where needed
+      netfilter: conntrack: avoid gcc-10 zero-length-bounds warning
+
+Christoph Paasch (1):
+      mptcp: Initialize map_seq upon subflow establishment
+
+Chuhong Yuan (1):
+      net: microchip: encx24j600: add missed kthread_stop
+
+Clay McClure (1):
+      net: ethernet: ti: Remove TI_CPTS_MOD workaround
+
+Cong Wang (1):
+      net: fix a potential recursive NETDEV_FEAT_CHANGE
+
+Dan Carpenter (1):
+      dpaa2-eth: prevent array underflow in update_cls_rule()
+
+Daniel Borkmann (3):
+      bpf: Restrict bpf_probe_read{, str}() only to archs where they work
+      bpf: Add bpf_probe_read_{user, kernel}_str() to do_refine_retval_range
+      bpf: Restrict bpf_trace_printk()'s %s usage and add %pks, %pus specifier
+
+David S. Miller (8):
+      Merge branch 'net-ipa-fix-cleanup-after-modem-crash'
+      Merge branch 'ionic-fixes'
+      Merge branch 's390-fixes'
+      Merge branch 'tipc-fixes'
+      MAINTAINERS: Add Jakub to networking drivers.
+      Merge git://git.kernel.org/.../pablo/nf
+      MAINTAINERS: Mark networking drivers as Maintained.
+      Merge git://git.kernel.org/.../bpf/bpf
+
+Eric Dumazet (2):
+      tcp: fix SO_RCVLOWAT hangs with fat skbs
+      tcp: fix error recovery in tcp_zerocopy_receive()
+
+Florian Fainelli (2):
+      net: dsa: loop: Add module soft dependency
+      net: broadcom: Select BROADCOM_PHY for BCMGENET
+
+Florian Westphal (1):
+      netfilter: conntrack: fix infinite loop on rmmod
+
+Geert Uytterhoeven (1):
+      net: hisilicon: Make CONFIG_HNS invisible
+
+Guillaume Nault (1):
+      pppoe: only process PADT targeted at local interfaces
+
+Heiner Kallweit (2):
+      r8169: re-establish support for RTL8401 chip version
+      net: phy: fix aneg restart in phy_ethtool_set_eee
+
+Ioana Ciornei (1):
+      dpaa2-eth: properly handle buffer size restrictions
+
+Jacob Keller (1):
+      ptp: fix struct member comment for do_aux_work
+
+Jakub Kicinski (1):
+      Merge git://git.kernel.org/.../bpf/bpf
+
+John Fastabend (2):
+      bpf, sockmap: msg_pop_data can incorrecty set an sge length
+      bpf, sockmap: bpf_tcp_ingress needs to subtract bytes from sg.size
+
+Kelly Littlepage (1):
+      net: tcp: fix rx timestamp behavior for tcp_recvmsg
+
+Kevin Lo (1):
+      net: phy: broadcom: fix BCM54XX_SHD_SCR3_TRDDAPD value for BCM54810
+
+Luo bin (1):
+      hinic: fix a bug of ndo_stop
+
+Maciej ¯enczykowski (2):
+      net: remove spurious declaration of tcp_default_init_rwnd()
+      Revert "ipv6: add mtu lock check in __ip6_rt_update_pmtu"
+
+Madhuparna Bhowmik (1):
+      drivers: net: hamradio: Fix suspicious RCU usage warning in bpqether.c
+
+Matteo Croce (1):
+      samples: bpf: Fix build error
+
+Matthieu Baerts (1):
+      selftests: mptcp: pm: rm the right tmp file
+
+Michael S. Tsirkin (1):
+      virtio_net: fix lockdep warning on 32 bit
+
+Oliver Neukum (1):
+      usb: hso: correct debug message
+
+Pablo Neira Ayuso (1):
+      netfilter: flowtable: set NF_FLOW_TEARDOWN flag on entry expiration
+
+Paolo Abeni (3):
+      mptcp: set correct vfs info for subflows
+      net: ipv4: really enforce backoff for redirects
+      netlabel: cope with NULL catmap
+
+Paul Blakey (1):
+      netfilter: flowtable: Add pending bit for offload work
+
+Phil Sutter (1):
+      netfilter: nft_set_rbtree: Add missing expired checks
+
+Roi Dayan (1):
+      netfilter: flowtable: Remove WQ_MEM_RECLAIM from workqueue
+
+Shannon Nelson (2):
+      ionic: leave netdev mac alone after fw-upgrade
+      ionic: call ionic_port_init after fw-upgrade
+
+Sumanth Korikkar (1):
+      libbpf: Fix register naming in PT_REGS s390 macros
+
+Tuong Lien (3):
+      tipc: fix large latency in smart Nagle streaming
+      tipc: fix memory leak in service subscripting
+      tipc: fix failed service subscription deletion
+
+Ursula Braun (2):
+      MAINTAINERS: add Karsten Graul as S390 NETWORK DRIVERS maintainer
+      MAINTAINERS: another add of Karsten Graul for S390 networking
+
+Vincent Minet (1):
+      umh: fix memory leak on execve failure
+
+Vinod Koul (1):
+      net: stmmac: fix num_por initialization
+
+Wang Wenhu (1):
+      drivers: ipa: fix typos for ipa_smp2p structure doc
+
+Wei Yongjun (4):
+      bpf: Fix error return code in map_lookup_and_delete_elem()
+      nfp: abm: fix error return code in nfp_abm_vnic_alloc()
+      octeontx2-vf: Fix error return code in otx2vf_probe()
+      s390/ism: fix error return code in ism_probe()
+
+Xiyu Yang (1):
+      bpf: Fix sk_psock refcnt leak when receiving message
+
+Yonghong Song (2):
+      bpf: Enforce returning 0 for fentry/fexit progs
+      selftests/bpf: Enforce returning 0 for fentry/fexit programs
+
+Zefan Li (1):
+      netprio_cgroup: Fix unlimited memory leak of v2 cgroups
+
+ Documentation/core-api/printk-formats.rst               |  14 +++++++++
+ MAINTAINERS                                             |   5 +++-
+ arch/arm/Kconfig                                        |   1 +
+ arch/arm/configs/keystone_defconfig                     |   1 +
+ arch/arm/configs/omap2plus_defconfig                    |   1 +
+ arch/arm64/Kconfig                                      |   1 +
+ arch/x86/Kconfig                                        |   1 +
+ drivers/net/bareudp.c                                   |  18 +++--------
+ drivers/net/dsa/dsa_loop.c                              |   1 +
+ drivers/net/ethernet/broadcom/Kconfig                   |   1 +
+ drivers/net/ethernet/freescale/Kconfig                  |   2 ++
+ drivers/net/ethernet/freescale/dpaa/Kconfig             |   1 +
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c        |  29 ++++++++++--------
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h        |   1 +
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c    |   2 +-
+ drivers/net/ethernet/hisilicon/Kconfig                  |   2 +-
+ drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c       |  16 +++++++---
+ drivers/net/ethernet/huawei/hinic/hinic_main.c          |  16 ++--------
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c    |   8 +++--
+ drivers/net/ethernet/microchip/encx24j600.c             |   5 +++-
+ drivers/net/ethernet/netronome/nfp/abm/main.c           |   4 ++-
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c         |  19 +++++++-----
+ drivers/net/ethernet/pensando/ionic/ionic_main.c        |  18 +++++------
+ drivers/net/ethernet/realtek/r8169_main.c               |   2 ++
+ drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c |  17 +++++++++--
+ drivers/net/ethernet/ti/Kconfig                         |  16 ++++------
+ drivers/net/ethernet/ti/Makefile                        |   2 +-
+ drivers/net/hamradio/bpqether.c                         |   3 +-
+ drivers/net/ipa/gsi_trans.c                             |   5 ++--
+ drivers/net/ipa/ipa_cmd.c                               |  14 ++-------
+ drivers/net/ipa/ipa_smp2p.c                             |   2 +-
+ drivers/net/phy/broadcom.c                              |   8 +++--
+ drivers/net/phy/phy.c                                   |   8 +++--
+ drivers/net/ppp/pppoe.c                                 |   3 ++
+ drivers/net/usb/hso.c                                   |   2 +-
+ drivers/net/virtio_net.c                                |   6 ++--
+ drivers/s390/net/ism_drv.c                              |   4 ++-
+ include/linux/brcmphy.h                                 |   1 +
+ include/linux/lsm_hook_defs.h                           |   2 +-
+ include/linux/ptp_clock_kernel.h                        |   8 ++---
+ include/linux/skmsg.h                                   |   1 +
+ include/net/netfilter/nf_conntrack.h                    |   2 +-
+ include/net/netfilter/nf_flow_table.h                   |   1 +
+ include/net/tcp.h                                       |  14 ++++++++-
+ include/net/udp_tunnel.h                                |   2 --
+ init/Kconfig                                            |   3 ++
+ kernel/bpf/arraymap.c                                   |   7 ++++-
+ kernel/bpf/syscall.c                                    |   4 ++-
+ kernel/bpf/verifier.c                                   |  21 ++++++++++++-
+ kernel/trace/bpf_trace.c                                | 100 +++++++++++++++++++++++++++++++++++++++++---------------------
+ kernel/umh.c                                            |   6 ++++
+ lib/vsprintf.c                                          |  12 ++++++++
+ net/core/dev.c                                          |   4 ++-
+ net/core/filter.c                                       |   2 +-
+ net/core/netprio_cgroup.c                               |   2 ++
+ net/ipv4/cipso_ipv4.c                                   |   6 ++--
+ net/ipv4/ipmr.c                                         |   6 ++--
+ net/ipv4/route.c                                        |   2 +-
+ net/ipv4/tcp.c                                          |  27 ++++++++++++-----
+ net/ipv4/tcp_bpf.c                                      |  10 ++++---
+ net/ipv4/tcp_input.c                                    |   3 +-
+ net/ipv6/calipso.c                                      |   3 +-
+ net/ipv6/route.c                                        |   6 ++--
+ net/mptcp/protocol.c                                    |   2 ++
+ net/mptcp/subflow.c                                     |  10 +++++++
+ net/netfilter/nf_conntrack_core.c                       |  17 +++++++++--
+ net/netfilter/nf_flow_table_core.c                      |   8 +++--
+ net/netfilter/nf_flow_table_offload.c                   |  10 +++++--
+ net/netfilter/nft_set_rbtree.c                          |  11 +++++++
+ net/netlabel/netlabel_kapi.c                            |   6 ++++
+ net/tipc/socket.c                                       |  42 +++++++++++++++++++-------
+ net/tipc/subscr.h                                       |  10 +++++++
+ net/tipc/topsrv.c                                       |  13 ++++----
+ samples/bpf/lwt_len_hist_user.c                         |   2 --
+ tools/lib/bpf/bpf_tracing.h                             |   4 +--
+ tools/testing/selftests/bpf/prog_tests/mmap.c           |   8 +++++
+ tools/testing/selftests/bpf/progs/test_overhead.c       |   4 +--
+ tools/testing/selftests/net/mptcp/pm_netlink.sh         |   2 +-
+ 78 files changed, 459 insertions(+), 204 deletions(-)
