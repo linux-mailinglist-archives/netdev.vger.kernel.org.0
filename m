@@ -2,34 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 899AF1D5548
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B4B81D5566
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726727AbgEOP5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 11:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48336 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726283AbgEOP5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 11:57:48 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC002C061A0C;
-        Fri, 15 May 2020 08:57:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=vg97Zc+yBbH72pdkZwDBNGODCPrdrEdYXXBAaIV2Oiw=; b=bzUzwrUjBws0tIpnnw6gyN9V0/
-        DEHrV9rVluyQUK+FkkQ1eobbrpCgDX5J1ZpBZlnmP/MjvMAlP952p1uy/0WAvi0Md/Hfiw3Ls4zih
-        WXY29L9IuNuFXLm1+of43Qf/L+4asIjGHEWNGUXw9ez8PnkiC7FOy9huhUcn0GCg/yrl0gOON5YFU
-        QqMg4LZ1RUNsWnTsSrkQgsKr5vKbLOqDS8YkkJ0O1BTSqd8RB5uK8jM7DtbTSsrmlMVLr8EGdpbRc
-        Z6H+F7nNTNM/Ng9QVTpmfc+4lxFZxc4lLU2pDnH5voOjqtDjqjozbkFFhHNjAJ2s0ocUy7a2ljjOj
-        g+gi0BIw==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jZciI-0006zr-4p; Fri, 15 May 2020 15:57:30 +0000
-Date:   Fri, 15 May 2020 08:57:30 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Nate Karstens <nate.karstens@garmin.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        id S1726731AbgEOQAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 12:00:08 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:56919 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726786AbgEOQAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:00:04 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-191-y5Fl4E8aPDKcjCqIKAcCLg-1; Fri, 15 May 2020 16:59:59 +0100
+X-MC-Unique: y5Fl4E8aPDKcjCqIKAcCLg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 15 May 2020 16:59:59 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 15 May 2020 16:59:59 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <edumazet@google.com>,
+        Nate Karstens <nate.karstens@garmin.com>
+CC:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Jeff Layton <jlayton@kernel.org>,
         "J. Bruce Fields" <bfields@fieldses.org>,
         Arnd Bergmann <arnd@arndb.de>,
@@ -40,37 +35,54 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Helge Deller <deller@gmx.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Laight <David.Laight@aculab.com>,
-        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
-        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>,
-        a.josey@opengroup.org
-Subject: Re: [PATCH v2] Implement close-on-fork
-Message-ID: <20200515155730.GF16070@bombadil.infradead.org>
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Changli Gao <xiaosuo@gmail.com>
+Subject: RE: [PATCH v2] Implement close-on-fork
+Thread-Topic: [PATCH v2] Implement close-on-fork
+Thread-Index: AQHWKs3XtzboIRikkEGFUIZCiGNyAqipTHmg
+Date:   Fri, 15 May 2020 15:59:58 +0000
+Message-ID: <480b831115724107ab5a0cab9d7caafc@AcuMS.aculab.com>
 References: <20200515152321.9280-1-nate.karstens@garmin.com>
+ <CANn89iKr_9MyRpdB4pcHm08ccH_M42etDnrOzpVKUYfhSKvxQw@mail.gmail.com>
+In-Reply-To: <CANn89iKr_9MyRpdB4pcHm08ccH_M42etDnrOzpVKUYfhSKvxQw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200515152321.9280-1-nate.karstens@garmin.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 10:23:17AM -0500, Nate Karstens wrote:
-> Series of 4 patches to implement close-on-fork. Tests have been
-> published to https://github.com/nkarstens/ltp/tree/close-on-fork
-> and cover close-on-fork functionality in the following syscalls:
+RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDE1IE1heSAyMDIwIDE2OjMxDQouLi4NCj4gRmFz
+dCBwYXRoIGluIGJpZyBhbmQgcGVyZm9ybWFuY2Ugc2Vuc2l0aXZlIGFwcGxpY2F0aW9ucyBpcyBu
+b3QgZm9yaygpDQo+IGFuZC9vciBleGVjKCkuDQo+IA0KPiBUaGlzIGlzIG9wZW4oKS9jbG9zZSgp
+IGFuZCBvdGhlcnMgKHNvY2tldCgpLCBhY2NlcHQoKSwgLi4uKQ0KPiANCj4gV2UgZG8gbm90IHdh
+bnQgdGhlbSB0byBhY2Nlc3MgZXh0cmEgY2FjaGUgbGluZXMgZm9yIHRoaXMgbmV3IGZlYXR1cmUu
+DQo+IA0KPiBTb3JyeSwgSSB3aWxsIHNheSBubyB0byB0aGVzZSBwYXRjaGVzIGluIHRoZWlyIGN1
+cnJlbnQgZm9ybS4NCg0KSXMgaXQgd29ydGggY29tcGxldGVseSByZW1vdmluZyB0aGUgYml0bWFw
+cyBhbmQganVzdCByZW1lbWJlcmluZw0KdGhlIGxvd2VzdCBmZCB0aGF0IGhhcyBoYWQgZWFjaCBi
+aXQgc2V0IChkb24ndCB3b3JyeSBhYm91dCBjbGVhcnMpLg0KDQpUaGVuIGxldmVyYWdlIHRoZSBj
+bG9zZV9hbGwoKSBjb2RlIHRoYXQgY2xvc2VzIGFsbCBmZCBhYm92ZQ0KYSBzcGVjaWZpZWQgbnVt
+YmVyIHRvIGNsb3NlIG9ubHkgdGhvc2Ugd2l0aCB0aGUgJ2Nsb3NlIG9uIGV4ZWMnDQpvciAnY2xv
+c2Ugb24gZm9yaycgZmxhZyBzZXQuDQoNCkFmdGVyIGFsbCBhbiBhcHBsaWNhdGlvbiBpcyBjdXJy
+ZW50bHkgdmVyeSBsaWtlbHkgdG8gaGF2ZSBzZXQNCidjbG9zZSBvbiBleGVjJyBvbiBhbGwgb3Bl
+biBmZCBhYm92ZSAyLg0KDQpTbyB0aGUgbnVtYmVyIG9mIGZkIHRoYXQgZG9uJ3QgbmVlZCBjbG9z
+aW5nIGlzIHNtYWxsLg0KDQpUaGlzIHB1dHMgYWxsIHRoZSBleHBlbnNpdmUgY29kZSBpbiB0aGUg
+YWxyZWFkeSBzbG93IGZvcmsvZXhlYw0KcGF0aHMuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVk
+IEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5l
+cywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-[...]
-
-> This functionality was approved by the Austin Common Standards
-> Revision Group for inclusion in the next revision of the POSIX
-> standard (see issue 1318 in the Austin Group Defect Tracker).
-
-NAK to this patch series, and the entire concept.
-
-Is there a way to persuade POSIX that they made a bad decision by
-standardising this mess?
