@@ -2,104 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2A141D42FF
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 03:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0CC41D4306
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 03:38:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728037AbgEOBgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 May 2020 21:36:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54816 "EHLO
+        id S1728179AbgEOBiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 May 2020 21:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbgEOBgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 21:36:12 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC30CC061A0C;
-        Thu, 14 May 2020 18:36:11 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id p21so213490pgm.13;
-        Thu, 14 May 2020 18:36:11 -0700 (PDT)
+        with ESMTP id S1727912AbgEOBiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 May 2020 21:38:51 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8E8C061A0C;
+        Thu, 14 May 2020 18:38:50 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id d21so452322ljg.9;
+        Thu, 14 May 2020 18:38:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0VjQ+Ma3qI88glsLS8F0bIG67DtfNMG5fSLchrZlPkw=;
-        b=BZH27tzHemzdhmeAt5qyR6/wV3Rep0NuG5yApKqgOQnaClXU3DcmTpxeToHmrIa15l
-         e/VU6aF7VhSU4G6nrw4DsMvQvfQn5gePKL/mL5Ip1KjkVJequxf52sqv4NWsvQrlyzIl
-         VQ8GsWnQ2KmNG4nUelqamCKaGM4nwe7OEROb4Mv33JGjGkhx/Ed70ZHgjJ2UAt3HbgWe
-         gLdBaa0JYh2H8FCFSy8Q3WEBJ7mcUCNK81II+EB30V2TJ8KFGzjS98HFmUz0+cNkAmBM
-         cuxIoNM2qoSTz/bTGviWjKAFqNQXMd2af7Xrp6THTo6nXJN9TexjHiE7l9BAYNLlpGpL
-         0dkQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DcRLMC8AdRE/ebA3Y4wmeQqBQqJWEwlknp2rFOrxp4k=;
+        b=CRURWcO8pELH4346b432h94eh4EaF6LXZkDyD1jEB7qfy2ARxL1z1CiNCxV1VMQEy3
+         yFk2giKhuX2/Q+KWvhHo8nDLg6H8r7OrkL71Fis7bNSlTh/uuSdSmM91SHtm+ViDeiEA
+         TpLcJmdzPKiNlHgsVfNQs2Lf3SSPXOewgTqog6kQ2hwsPZA9PvRlE63NHIYz/8bAedZJ
+         eG/AvgZyG/uTYtOA/30utfFcSz4d6qEkiIVshWOrBQ4arKAZqvtp3S0xUyBR0hqMZBLF
+         hSZkAdvduhhZUnMk1LoXjRRuVoWfqov97O/SgEaLHLB5IC3RvSclvCu8uf9rCq7XCgIR
+         IGJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0VjQ+Ma3qI88glsLS8F0bIG67DtfNMG5fSLchrZlPkw=;
-        b=cJQx1RAZoznZUE6ejbNl7fo1/0PsBR730EKUdkZNhAqhl81rwqaXhO0yT2uZrdruz6
-         zqL93cxbEYpuwyAZgb2Xo7JuqetynVLHk4GE1bHPN+t8hHPH8rLq6xl8Va51DNP5IqhQ
-         9/vqXeltauQ1iMjBbF5jmQKRvFBb9Pq/UnMhmhuf8jurpppqosluFbV3e0cq00mU3jFC
-         mrKDm2u9W3XPKFpaujCT1NprReQz7jEi+lPbXPja+n+BObTim5z9IJeflkEKM3iR5Qtx
-         tQs5iGLZehvqkGZ9yDJ4VJhg9rVgTzJxUyTpHxMKfIvhyhMHO8G9KKNc6THE2uUNAkkb
-         RXJQ==
-X-Gm-Message-State: AOAM531oQopCifUVCbdgJeXsj/oS1mkG9bF0YLr3zdXrEe7PV3JCHpx+
-        AhaqKLAI14yCP1boDLYl10vF/ZHnAwF4NQ==
-X-Google-Smtp-Source: ABdhPJwCVmlezSMh86iw6O5zaChvYnG2ARTIL31CVxt25Oq99Z82FRfutcz2tDRog+5lMGN4YEQxKQ==
-X-Received: by 2002:a63:482:: with SMTP id 124mr880335pge.169.1589506571419;
-        Thu, 14 May 2020 18:36:11 -0700 (PDT)
-Received: from T480s.vmware.com (toroon0411w-lp130-03-174-95-146-183.dsl.bell.ca. [174.95.146.183])
-        by smtp.googlemail.com with ESMTPSA id e12sm364701pgi.40.2020.05.14.18.36.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2020 18:36:10 -0700 (PDT)
-From:   Andrew Sy Kim <kim.andrewsy@gmail.com>
-Cc:     kim.andrewsy@gmail.com, Wensong Zhang <wensong@linux-vs.org>,
-        Simon Horman <horms@verge.net.au>,
-        Julian Anastasov <ja@ssi.bg>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:IPVS),
-        lvs-devel@vger.kernel.org (open list:IPVS),
-        netfilter-devel@vger.kernel.org (open list:NETFILTER),
-        coreteam@netfilter.org (open list:NETFILTER),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] netfilter/ipvs: expire no destination UDP connections when expire_nodest_conn=1
-Date:   Thu, 14 May 2020 21:35:56 -0400
-Message-Id: <20200515013556.5582-1-kim.andrewsy@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DcRLMC8AdRE/ebA3Y4wmeQqBQqJWEwlknp2rFOrxp4k=;
+        b=TT/pNj5PY3LWXEKGJnmJU2Xy6YB7x5/4rUf4+MKkxTkIg4pX5N0rJD+dQKKSZhZkKK
+         U63NaGQMrUQL7G43C/XJFBH6ZajeiF4vVBHsVoYx4U71CFqbeOgtbfDJTgDjZBs7/gLC
+         +0YmOs4qqGm68nw7IS0ejh6HfUfxyP3xBEMirDn0hhRFOUVZVCG0pbLeWTTrpk1rqWqT
+         dFATsaJlMUIkk8qesUNMHy+E3+BJEOuWPAQ+awTMF15SRL5Oq7dmmIU63ffIYQRF9RW5
+         VoQKCh3i/Qu5DpuwhYJikYSyHmNe7g6G+aKfgTf+pFv2SgD2pB3ex365ZVSzaOthpk1E
+         6N+w==
+X-Gm-Message-State: AOAM530Ce2TpmzALgkx9bqJQteuICiwU3KfDCsrJtJ7XdMfrvd+kJTLl
+        4yyyAKfzlVbAu+DaDW8zsqwGuBDHNK3XJY4eWRc=
+X-Google-Smtp-Source: ABdhPJwuDPoLqMDwVYkuer7bPNDX4SB7xPmbLzNbASXYYAjw80+OMdipEy48L/v0diSIxQRoMsaBXJysnxJzyDSkJBU=
+X-Received: by 2002:a05:651c:48a:: with SMTP id s10mr230789ljc.7.1589506729332;
+ Thu, 14 May 2020 18:38:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20200514055137.1564581-1-andriin@fb.com>
+In-Reply-To: <20200514055137.1564581-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 14 May 2020 18:38:38 -0700
+Message-ID: <CAADnVQLYt--n_Yp1_A8BVp-p17ymVkkqtzgisKm1a0JGwkhpCw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] bpf: fix bpf_iter's task iterator logic
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When expire_nodest_conn=1 and an IPVS destination is deleted, IPVS
-doesn't expire connections with the IP_VS_CONN_F_ONE_PACKET flag set (any
-UDP connection). If there are many UDP packets to a virtual server from a
-single client and a destination is deleted, many packets are silently
-dropped whenever an existing connection entry with the same source port
-exists. This patch ensures IPVS also expires UDP connections when a
-packet matches an existing connection with no destinations.
+On Wed, May 13, 2020 at 10:54 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> task_seq_get_next might stop prematurely if get_pid_task() fails to get
+> task_struct. Failure to do so doesn't mean that there are no more tasks with
+> higher pids. Procfs's iteration algorithm (see next_tgid in fs/proc/base.c)
+> does a retry in such case. After this fix, instead of stopping prematurely
+> after about 300 tasks on my server, bpf_iter program now returns >4000, which
+> sounds much closer to reality.
+>
+> Cc: Yonghong Song <yhs@fb.com>
+> Fixes: eaaacd23910f ("bpf: Add task and task/file iterator targets")
+> Acked-by: Yonghong Song <yhs@fb.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Signed-off-by: Andrew Sy Kim <kim.andrewsy@gmail.com>
----
- net/netfilter/ipvs/ip_vs_core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-index aa6a603a2425..f0535586fe75 100644
---- a/net/netfilter/ipvs/ip_vs_core.c
-+++ b/net/netfilter/ipvs/ip_vs_core.c
-@@ -2116,8 +2116,7 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
- 		else
- 			ip_vs_conn_put(cp);
- 
--		if (sysctl_expire_nodest_conn(ipvs) &&
--		    !(flags & IP_VS_CONN_F_ONE_PACKET)) {
-+		if (sysctl_expire_nodest_conn(ipvs)) {
- 			/* try to expire the connection immediately */
- 			ip_vs_conn_expire_now(cp);
- 		}
--- 
-2.20.1
-
+Applied. Thanks
