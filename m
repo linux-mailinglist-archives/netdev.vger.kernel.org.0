@@ -2,103 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 917171D4DAA
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 14:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2CC21D4DAF
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 14:30:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726162AbgEOM2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 08:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbgEOM2e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 08:28:34 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5746C05BD0A
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 05:28:33 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id v12so3279020wrp.12
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 05:28:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=8CBmhx9ui3qJxYivj5qzMWxfms8vf7DMdx7vVNSjA8c=;
-        b=vGGnjcDhIBopZLFVLn2T3uR4fy/h1Jea54IFYPCJ4/m/2BQ7vKoRoVRyf+9bTtKuS8
-         /OKsdJoy2rFrug9YW2g/pXktJUu3g+HWFPnf5mdLSm+eGo0y6qB7jQI+oDya51Umb5Qo
-         SN3ZEFgFbvACJhXyWd0CHVSEdQ17bb87p+q2k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=8CBmhx9ui3qJxYivj5qzMWxfms8vf7DMdx7vVNSjA8c=;
-        b=C1FTF2J8X3uCQA79FRNSqcP9bOdE7dQlSsXYdulpUn6pb6U9qB0sKKFq7Rh+/NZ7OP
-         13NdEvsXjn/FcPl9EohSXGh9tnRWDtsCcIURLrZ1i9Hs8/onjlulOWHt25Bgb1ZOdTla
-         6Y+ArbOsC9gDi7cx+l7sdBE2dvQ10ncm6w47h/y4p5/Ud86Z2QPIlYxmO3KvH50gTUZ3
-         zCCMl2bc6xW+3McrWl2iKk0yWAXBVn5PX6/+Uqedcfkr2xbHONIDghymD53uuIOf5bCc
-         NHD3/NgowPLPQrS9FneNHfuRCj+iDTIvk5ZTyeQKUm2yiYdFhPlmMeaiRpvWM3UhC9VX
-         hVNQ==
-X-Gm-Message-State: AOAM5326UEQ1pSlDnP94i3/VUcjCs9ZtSVUK+XqIxRRt8r3Ctb5Xgs/1
-        Uyox+Z4E2NvDc+KdOhmrSfw66Q==
-X-Google-Smtp-Source: ABdhPJzuJO3h9wm9P+HDKn4bQyUeRVRQ2oDHXcFbX7IhBImY1lx/94mnSy7aM8awmKA1Hpau8zRqXA==
-X-Received: by 2002:adf:decb:: with SMTP id i11mr4341029wrn.172.1589545712448;
-        Fri, 15 May 2020 05:28:32 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id b12sm3663696wmj.0.2020.05.15.05.28.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2020 05:28:31 -0700 (PDT)
-References: <20200511185218.1422406-1-jakub@cloudflare.com> <20200511185218.1422406-6-jakub@cloudflare.com> <20200511204445.i7sessmtszox36xd@ast-mbp>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, dccp@vger.kernel.org,
-        kernel-team@cloudflare.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [PATCH bpf-next v2 05/17] inet: Run SK_LOOKUP BPF program on socket lookup
-In-reply-to: <20200511204445.i7sessmtszox36xd@ast-mbp>
-Date:   Fri, 15 May 2020 14:28:30 +0200
-Message-ID: <87wo5d2xht.fsf@cloudflare.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1726199AbgEOMal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 08:30:41 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:35724 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726097AbgEOMal (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 May 2020 08:30:41 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 18AD41A06EF;
+        Fri, 15 May 2020 14:30:39 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 07E6C1A06E6;
+        Fri, 15 May 2020 14:30:39 +0200 (CEST)
+Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id B2EC020328;
+        Fri, 15 May 2020 14:30:38 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH] dpaa2-eth: properly handle buffer size restrictions
+Date:   Fri, 15 May 2020 15:30:22 +0300
+Message-Id: <20200515123022.31227-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 11, 2020 at 10:44 PM CEST, Alexei Starovoitov wrote:
-> On Mon, May 11, 2020 at 08:52:06PM +0200, Jakub Sitnicki wrote:
->> Run a BPF program before looking up a listening socket on the receive path.
->> Program selects a listening socket to yield as result of socket lookup by
->> calling bpf_sk_assign() helper and returning BPF_REDIRECT code.
->>
->> Alternatively, program can also fail the lookup by returning with BPF_DROP,
->> or let the lookup continue as usual with BPF_OK on return.
->>
->> This lets the user match packets with listening sockets freely at the last
->> possible point on the receive path, where we know that packets are destined
->> for local delivery after undergoing policing, filtering, and routing.
->>
->> With BPF code selecting the socket, directing packets destined to an IP
->> range or to a port range to a single socket becomes possible.
->>
->> Suggested-by: Marek Majkowski <marek@cloudflare.com>
->> Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
+Depending on the WRIOP version, the buffer size on the RX path must by a
+multiple of 64 or 256. Handle this restriction properly by aligning down
+the buffer size to the necessary value. Also, use the new buffer size
+dynamically computed instead of the compile time one.
 
-[...]
+Fixes: 27c874867c4e ("dpaa2-eth: Use a single page per Rx buffer")
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 29 +++++++++++--------
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  1 +
+ 2 files changed, 18 insertions(+), 12 deletions(-)
 
-> Also please switch to bpf_link way of attaching. All system wide attachments
-> should be visible and easily debuggable via 'bpftool link show'.
-> Currently we're converting tc and xdp hooks to bpf_link. This new hook
-> should have it from the beginning.
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index b1c64288a1fb..4388d1039822 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -86,7 +86,7 @@ static void free_rx_fd(struct dpaa2_eth_priv *priv,
+ 	for (i = 1; i < DPAA2_ETH_MAX_SG_ENTRIES; i++) {
+ 		addr = dpaa2_sg_get_addr(&sgt[i]);
+ 		sg_vaddr = dpaa2_iova_to_virt(priv->iommu_domain, addr);
+-		dma_unmap_page(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
++		dma_unmap_page(dev, addr, priv->rx_buf_size,
+ 			       DMA_BIDIRECTIONAL);
+ 
+ 		free_pages((unsigned long)sg_vaddr, 0);
+@@ -144,7 +144,7 @@ static struct sk_buff *build_frag_skb(struct dpaa2_eth_priv *priv,
+ 		/* Get the address and length from the S/G entry */
+ 		sg_addr = dpaa2_sg_get_addr(sge);
+ 		sg_vaddr = dpaa2_iova_to_virt(priv->iommu_domain, sg_addr);
+-		dma_unmap_page(dev, sg_addr, DPAA2_ETH_RX_BUF_SIZE,
++		dma_unmap_page(dev, sg_addr, priv->rx_buf_size,
+ 			       DMA_BIDIRECTIONAL);
+ 
+ 		sg_length = dpaa2_sg_get_len(sge);
+@@ -185,7 +185,7 @@ static struct sk_buff *build_frag_skb(struct dpaa2_eth_priv *priv,
+ 				(page_address(page) - page_address(head_page));
+ 
+ 			skb_add_rx_frag(skb, i - 1, head_page, page_offset,
+-					sg_length, DPAA2_ETH_RX_BUF_SIZE);
++					sg_length, priv->rx_buf_size);
+ 		}
+ 
+ 		if (dpaa2_sg_is_final(sge))
+@@ -211,7 +211,7 @@ static void free_bufs(struct dpaa2_eth_priv *priv, u64 *buf_array, int count)
+ 
+ 	for (i = 0; i < count; i++) {
+ 		vaddr = dpaa2_iova_to_virt(priv->iommu_domain, buf_array[i]);
+-		dma_unmap_page(dev, buf_array[i], DPAA2_ETH_RX_BUF_SIZE,
++		dma_unmap_page(dev, buf_array[i], priv->rx_buf_size,
+ 			       DMA_BIDIRECTIONAL);
+ 		free_pages((unsigned long)vaddr, 0);
+ 	}
+@@ -382,7 +382,7 @@ static u32 run_xdp(struct dpaa2_eth_priv *priv,
+ 		break;
+ 	case XDP_REDIRECT:
+ 		dma_unmap_page(priv->net_dev->dev.parent, addr,
+-			       DPAA2_ETH_RX_BUF_SIZE, DMA_BIDIRECTIONAL);
++			       priv->rx_buf_size, DMA_BIDIRECTIONAL);
+ 		ch->buf_count--;
+ 		xdp.data_hard_start = vaddr;
+ 		err = xdp_do_redirect(priv->net_dev, &xdp, xdp_prog);
+@@ -421,7 +421,7 @@ static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
+ 	trace_dpaa2_rx_fd(priv->net_dev, fd);
+ 
+ 	vaddr = dpaa2_iova_to_virt(priv->iommu_domain, addr);
+-	dma_sync_single_for_cpu(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
++	dma_sync_single_for_cpu(dev, addr, priv->rx_buf_size,
+ 				DMA_BIDIRECTIONAL);
+ 
+ 	fas = dpaa2_get_fas(vaddr, false);
+@@ -440,13 +440,13 @@ static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
+ 			return;
+ 		}
+ 
+-		dma_unmap_page(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
++		dma_unmap_page(dev, addr, priv->rx_buf_size,
+ 			       DMA_BIDIRECTIONAL);
+ 		skb = build_linear_skb(ch, fd, vaddr);
+ 	} else if (fd_format == dpaa2_fd_sg) {
+ 		WARN_ON(priv->xdp_prog);
+ 
+-		dma_unmap_page(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
++		dma_unmap_page(dev, addr, priv->rx_buf_size,
+ 			       DMA_BIDIRECTIONAL);
+ 		skb = build_frag_skb(priv, ch, buf_data);
+ 		free_pages((unsigned long)vaddr, 0);
+@@ -1022,7 +1022,7 @@ static int add_bufs(struct dpaa2_eth_priv *priv,
+ 		if (!page)
+ 			goto err_alloc;
+ 
+-		addr = dma_map_page(dev, page, 0, DPAA2_ETH_RX_BUF_SIZE,
++		addr = dma_map_page(dev, page, 0, priv->rx_buf_size,
+ 				    DMA_BIDIRECTIONAL);
+ 		if (unlikely(dma_mapping_error(dev, addr)))
+ 			goto err_map;
+@@ -1032,7 +1032,7 @@ static int add_bufs(struct dpaa2_eth_priv *priv,
+ 		/* tracing point */
+ 		trace_dpaa2_eth_buf_seed(priv->net_dev,
+ 					 page, DPAA2_ETH_RX_BUF_RAW_SIZE,
+-					 addr, DPAA2_ETH_RX_BUF_SIZE,
++					 addr, priv->rx_buf_size,
+ 					 bpid);
+ 	}
+ 
+@@ -1772,7 +1772,7 @@ static bool xdp_mtu_valid(struct dpaa2_eth_priv *priv, int mtu)
+ 	int mfl, linear_mfl;
+ 
+ 	mfl = DPAA2_ETH_L2_MAX_FRM(mtu);
+-	linear_mfl = DPAA2_ETH_RX_BUF_SIZE - DPAA2_ETH_RX_HWA_SIZE -
++	linear_mfl = priv->rx_buf_size - DPAA2_ETH_RX_HWA_SIZE -
+ 		     dpaa2_eth_rx_head_room(priv) - XDP_PACKET_HEADROOM;
+ 
+ 	if (mfl > linear_mfl) {
+@@ -2507,6 +2507,11 @@ static int set_buffer_layout(struct dpaa2_eth_priv *priv)
+ 	else
+ 		rx_buf_align = DPAA2_ETH_RX_BUF_ALIGN;
+ 
++	/* We need to ensure that the buffer size seen by WRIOP is a multiple
++	 * of 64 or 256 bytes depending on the WRIOP version.
++	 */
++	priv->rx_buf_size = ALIGN_DOWN(DPAA2_ETH_RX_BUF_SIZE, rx_buf_align);
++
+ 	/* tx buffer */
+ 	buf_layout.private_data_size = DPAA2_ETH_SWA_SIZE;
+ 	buf_layout.pass_timestamp = true;
+@@ -3192,7 +3197,7 @@ static int bind_dpni(struct dpaa2_eth_priv *priv)
+ 	pools_params.num_dpbp = 1;
+ 	pools_params.pools[0].dpbp_id = priv->dpbp_dev->obj_desc.id;
+ 	pools_params.pools[0].backup_pool = 0;
+-	pools_params.pools[0].buffer_size = DPAA2_ETH_RX_BUF_SIZE;
++	pools_params.pools[0].buffer_size = priv->rx_buf_size;
+ 	err = dpni_set_pools(priv->mc_io, 0, priv->mc_token, &pools_params);
+ 	if (err) {
+ 		dev_err(dev, "dpni_set_pools() failed\n");
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 9c37b6946cec..0581fbf1f98c 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -394,6 +394,7 @@ struct dpaa2_eth_priv {
+ 	u16 tx_data_offset;
+ 
+ 	struct fsl_mc_device *dpbp_dev;
++	u16 rx_buf_size;
+ 	u16 bpid;
+ 	struct iommu_domain *iommu_domain;
+ 
+-- 
+2.17.1
 
-Just to clarify, I understood that bpf(BPF_PROG_ATTACH/DETACH) doesn't
-have to be supported for new hooks.
-
-Please correct me if I misunderstood.
