@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85C6E1D5390
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39FEA1D53D5
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728138AbgEOPKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 11:10:18 -0400
+        id S1728368AbgEOPLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 11:11:25 -0400
 Received: from relmlor1.renesas.com ([210.160.252.171]:14629 "EHLO
         relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728083AbgEOPKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 11:10:13 -0400
+        by vger.kernel.org with ESMTP id S1728054AbgEOPKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 11:10:17 -0400
 X-IronPort-AV: E=Sophos;i="5.73,395,1583161200"; 
-   d="scan'208";a="47188396"
+   d="scan'208";a="47188404"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 16 May 2020 00:10:11 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 16 May 2020 00:10:15 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 8B94F400E8F3;
-        Sat, 16 May 2020 00:10:07 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 051D6400E8F9;
+        Sat, 16 May 2020 00:10:11 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
@@ -33,9 +33,9 @@ Cc:     linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, linux-watchdog@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 09/17] ARM: dts: r8a7742: Add sata nodes
-Date:   Fri, 15 May 2020 16:08:49 +0100
-Message-Id: <1589555337-5498-10-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 10/17] dt-bindings: net: renesas,ravb: Add support for r8a7742 SoC
+Date:   Fri, 15 May 2020 16:08:50 +0100
+Message-Id: <1589555337-5498-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -44,47 +44,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the sata devices nodes to the R8A7742 device tree.
+Document RZ/G1H (R8A7742) SoC bindings.
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 ---
- arch/arm/boot/dts/r8a7742.dtsi | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ Documentation/devicetree/bindings/net/renesas,ravb.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/r8a7742.dtsi b/arch/arm/boot/dts/r8a7742.dtsi
-index ca1a016..553b92f 100644
---- a/arch/arm/boot/dts/r8a7742.dtsi
-+++ b/arch/arm/boot/dts/r8a7742.dtsi
-@@ -809,6 +809,28 @@
- 			max-frequency = <97500000>;
- 		};
+diff --git a/Documentation/devicetree/bindings/net/renesas,ravb.txt b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+index 87dad2d..032b76f 100644
+--- a/Documentation/devicetree/bindings/net/renesas,ravb.txt
++++ b/Documentation/devicetree/bindings/net/renesas,ravb.txt
+@@ -5,6 +5,7 @@ interface contains.
  
-+		sata0: sata@ee300000 {
-+			compatible = "renesas,sata-r8a7742",
-+				     "renesas,rcar-gen2-sata";
-+			reg = <0 0xee300000 0 0x200000>;
-+			interrupts = <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 815>;
-+			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
-+			resets = <&cpg 815>;
-+			status = "disabled";
-+		};
-+
-+		sata1: sata@ee500000 {
-+			compatible = "renesas,sata-r8a7742",
-+				     "renesas,rcar-gen2-sata";
-+			reg = <0 0xee500000 0 0x200000>;
-+			interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 814>;
-+			power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
-+			resets = <&cpg 814>;
-+			status = "disabled";
-+		};
-+
- 		gic: interrupt-controller@f1001000 {
- 			compatible = "arm,gic-400";
- 			#interrupt-cells = <3>;
+ Required properties:
+ - compatible: Must contain one or more of the following:
++      - "renesas,etheravb-r8a7742" for the R8A7742 SoC.
+       - "renesas,etheravb-r8a7743" for the R8A7743 SoC.
+       - "renesas,etheravb-r8a7744" for the R8A7744 SoC.
+       - "renesas,etheravb-r8a7745" for the R8A7745 SoC.
 -- 
 2.7.4
 
