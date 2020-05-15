@@ -2,122 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 963311D5916
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 20:29:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F34501D5948
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 20:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbgEOS3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 14:29:48 -0400
-Received: from ma1-aaemail-dr-lapp01.apple.com ([17.171.2.60]:56700 "EHLO
-        ma1-aaemail-dr-lapp01.apple.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726197AbgEOS3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 14:29:48 -0400
-Received: from pps.filterd (ma1-aaemail-dr-lapp01.apple.com [127.0.0.1])
-        by ma1-aaemail-dr-lapp01.apple.com (8.16.0.42/8.16.0.42) with SMTP id 04FIOs6o019024;
-        Fri, 15 May 2020 11:29:39 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=20180706; bh=/se8Rr3A0QMHGozpwD1QXFYY+EnkRjnbA/sKUpTPtWI=;
- b=d4KzZE68WD+tfliQ2H4ZDW0K5Ho+nWC6IurkPsB8uiC0GrPntjWPjEljrpo/xDdqUvbK
- cFPERX86ECkAudvkzmDv24stDWMxf1PIjrZwbGoaLKZGWypWfyRmwN2wqnhpAWiJhqjP
- XFzy/S7jn2cFyae5g22caCRoeQ+0xt+kdpIfaN4zof8jGl9Bg0WOzuC/fTej3o3KXSDP
- EMCr/ttAaZ1TGQH1h63ivYGK4kmJuOBeL7Y4uiEft27dFykwO39buVY9lkafckHld6hd
- ApHGgtbklWsRsF9PkQ5S9TD4olYQsdqmH+ezzuIvZgTb/hWHQR8AnrTiYGUjih5x16rz nw== 
-Received: from rn-mailsvcp-mta-lapp04.rno.apple.com (rn-mailsvcp-mta-lapp04.rno.apple.com [10.225.203.152])
-        by ma1-aaemail-dr-lapp01.apple.com with ESMTP id 3100x1fv1a-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Fri, 15 May 2020 11:29:39 -0700
-Received: from rn-mailsvcp-mmp-lapp04.rno.apple.com
- (rn-mailsvcp-mmp-lapp04.rno.apple.com [17.179.253.17])
- by rn-mailsvcp-mta-lapp04.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020)) with ESMTPS id <0QAD00PAHY19P4F0@rn-mailsvcp-mta-lapp04.rno.apple.com>;
- Fri, 15 May 2020 11:29:33 -0700 (PDT)
-Received: from process_milters-daemon.rn-mailsvcp-mmp-lapp04.rno.apple.com by
- rn-mailsvcp-mmp-lapp04.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020)) id <0QAD00500XUDZO00@rn-mailsvcp-mmp-lapp04.rno.apple.com>; Fri,
- 15 May 2020 11:29:33 -0700 (PDT)
-X-Va-A: 
-X-Va-T-CD: f57a8199e6b1abd084bca0291b03c14e
-X-Va-E-CD: 1cbcebcfde8a41282eb0f5c4e7847f42
-X-Va-R-CD: e64278141933bf3ea6f37ad9e66ed532
-X-Va-CD: 0
-X-Va-ID: fa941644-27e3-4847-b570-aeae098bfb10
-X-V-A:  
-X-V-T-CD: f57a8199e6b1abd084bca0291b03c14e
-X-V-E-CD: 1cbcebcfde8a41282eb0f5c4e7847f42
-X-V-R-CD: e64278141933bf3ea6f37ad9e66ed532
-X-V-CD: 0
-X-V-ID: 2172c1b7-56f0-4ffb-be04-3e490b129f26
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-15_07:2020-05-15,2020-05-15 signatures=0
-Received: from localhost ([17.232.192.63])
- by rn-mailsvcp-mmp-lapp04.rno.apple.com
- (Oracle Communications Messaging Server 8.1.0.5.20200312 64bit (built Mar 12
- 2020))
- with ESMTPSA id <0QAD00758Y189V00@rn-mailsvcp-mmp-lapp04.rno.apple.com>; Fri,
- 15 May 2020 11:29:32 -0700 (PDT)
-Date:   Fri, 15 May 2020 11:29:32 -0700
-From:   Christoph Paasch <cpaasch@apple.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>, mptcp@lists.01.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: Re: [PATCH net-next v2 1/3] mptcp: add new sock flag to deal with join
- subflows
-Message-id: <20200515182932.GA45434@MacBook-Pro-64.local>
-References: <cover.1589558049.git.pabeni@redhat.com>
- <a5acf97e4f39de13ba178a3a007eedd83b418702.1589558049.git.pabeni@redhat.com>
-MIME-version: 1.0
-Content-type: text/plain; charset=us-ascii
-Content-disposition: inline
-In-reply-to: <a5acf97e4f39de13ba178a3a007eedd83b418702.1589558049.git.pabeni@redhat.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-15_07:2020-05-15,2020-05-15 signatures=0
+        id S1726653AbgEOSoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 14:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46576 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726206AbgEOSoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 14:44:20 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4481C061A0C;
+        Fri, 15 May 2020 11:44:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=eFWvwLKFGzyiQJFsBdanngzoQxBkkdEj+F7mphDLxWo=; b=lTfU4JiLO4rvJaOgBk2NqxYW3T
+        r7Kubiu5kiBwMf7d1hoMbm0czYSTR9RH9Kms3OSitDKBTX1a53oSE57RFovvFwN0YaEPjoFuUc/9n
+        lAnw4XnNRIRCeGwfzN9s/qYZSF8kdXKQQ3Fr9M9Ij+J1A4QmBI16m/czKM4ARCjvpY0oP/ezuFSPk
+        TOfDeFiEMIqTrtZ30ED6vqh8O2YQjW8dp+BOTi8k7xslvQjBNJ24tjD/MDRPsufRY4EWb012d0DK4
+        8ATYyVr/WmqUmT1ZQPQrSi0Huu4+3s4d06hGb+JVg0OaMwWNhxPvVIdAYeGOekKbML0my53lEPx0C
+        azFjaYAQ==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jZfJO-0001Ee-Vd; Fri, 15 May 2020 18:43:58 +0000
+Date:   Fri, 15 May 2020 11:43:58 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     "Karstens, Nate" <Nate.Karstens@garmin.com>
+Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>, Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Changli Gao <xiaosuo@gmail.com>,
+        "a.josey@opengroup.org" <a.josey@opengroup.org>
+Subject: Re: [PATCH v2] Implement close-on-fork
+Message-ID: <20200515184358.GH16070@bombadil.infradead.org>
+References: <20200515152321.9280-1-nate.karstens@garmin.com>
+ <20200515155730.GF16070@bombadil.infradead.org>
+ <5b1929aa9f424e689c7f430663891827@garmin.com>
+ <1589559950.3653.11.camel@HansenPartnership.com>
+ <4964fe0ccdf7495daf4045c195b14ed6@garmin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4964fe0ccdf7495daf4045c195b14ed6@garmin.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/05/20 - 19:22:15, Paolo Abeni wrote:
-> MP_JOIN subflows must not land into the accept queue.
-> Currently tcp_check_req() calls an mptcp specific helper
-> to detect such scenario.
+On Fri, May 15, 2020 at 06:28:20PM +0000, Karstens, Nate wrote:
+> Our first attempt, which was to use the pthread_atfork() handlers, failed because system() is not required to call the handlers.
 > 
-> Such helper leverages the subflow context to check for
-> MP_JOIN subflows. We need to deal also with MP JOIN
-> failures, even when the subflow context is not available
-> due allocation failure.
-> 
-> A possible solution would be changing the syn_recv_sock()
-> signature to allow returning a more descriptive action/
-> error code and deal with that in tcp_check_req().
-> 
-> Since the above need is MPTCP specific, this patch instead
-> uses a TCP request socket hole to add a MPTCP specific flag.
-> Such flag is used by the MPTCP syn_recv_sock() to tell
-> tcp_check_req() how to deal with the request socket.
-> 
-> This change is a no-op for !MPTCP build, and makes the
-> MPTCP code simpler. It allows also the next patch to deal
-> correctly with MP JOIN failure.
-> 
-> v1 -> v2:
->  - be more conservative on drop_req initialization (Mat)
-> 
-> RFC -> v1:
->  - move the drop_req bit inside tcp_request_sock (Eric)
-> 
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
->  include/linux/tcp.h      |  3 +++
->  include/net/mptcp.h      | 17 ++++++++++-------
->  net/ipv4/tcp_minisocks.c |  2 +-
->  net/mptcp/protocol.c     |  7 -------
->  net/mptcp/subflow.c      |  3 +++
->  5 files changed, 17 insertions(+), 15 deletions(-)
+> Most of the feedback we're getting on this seems to say "don't use system(), it is unsafe for threaded applications". Is that documented anywhere? The man page says it is "MT-Safe".
 
+https://pubs.opengroup.org/onlinepubs/9699919799/functions/system.html
 
-Reviewed-by: Christoph Paasch <cpaasch@apple.com>
+> Aside from that, even if we remove all uses of system() from our application (which we already have), then our application, like many other applications, needs to use third-party shared libraries. There is nothing that prevents those libraries from using system(). We can audit those libraries and go back with the vendor with a request to replace system() with a standard fork/exec, but they will also want documentation supporting that.
 
+They might also be using any number of other interfaces which aren't
+thread-safe.
+
+> If the feedback from the community is truly and finally that system() should not be used in these applications, then is there support for updating the man page to better communicate that?
+
+Yes, absolutely.
+
+I think you're mischaracterising our feedback.  It's not "We don't want
+to fix this interface".  It's "We don't want to slow down everything else
+to fix this interface (and by the way there are lots of other problems
+with this interface that you aren't even trying to address)".
