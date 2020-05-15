@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 263051D5B79
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8D3D1D5B9D
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727811AbgEOV25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 17:28:57 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:43365 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727119AbgEOV2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:28:55 -0400
-Received: by mail-pg1-f193.google.com with SMTP id f4so1588986pgi.10;
-        Fri, 15 May 2020 14:28:55 -0700 (PDT)
+        id S1728187AbgEOVaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 17:30:13 -0400
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:53439 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727801AbgEOV25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:28:57 -0400
+Received: by mail-pj1-f67.google.com with SMTP id hi11so1478795pjb.3;
+        Fri, 15 May 2020 14:28:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Os/9pOAyuFP5rE18cPqNjIzCr5UNKNMa70RxbYuAtoQ=;
-        b=BLUUinTZb4bn1XwI4Sbw0k1YwFvObAbJ76yDFFi2D6kYhxyYjBqrdkYZd8TsFJC6cT
-         lzAv4/3uN3LPyYBmvdQQJr35Qo64pUr7t41qhno8B6KDGghGw+HbOkX/htvDZGIDyExK
-         aXB3D3HoB/FlBXdGJCsmN8u3CHkh389CALRHiOdtfrjvs47La+90o8Gjl5A0/1vW6uFb
-         zFiPflefNNWFEIOSVjYjXz9D9NmRQxu3hpcFcVza1x67tX924W9jCfNRB7JJZsBQi6NH
-         PagsDNan9mF0XBTCIFQtho+IKrxYIqrvFZ8ED7omzWRnKmEmqkZBT9paOgz12U4SzW0f
-         KpvQ==
-X-Gm-Message-State: AOAM532H8RWgWRcEKHphaz0lWbp+McCWDaH1bd+4gexLAL8HT71Pxwmu
-        MqFS3Xm7E2si7XSH0bXRLlc=
-X-Google-Smtp-Source: ABdhPJxA6chVMk3VbtmoOXv21M2cB33WLyUbJtzdTmRjvXxRRJ0EACaWlp73Wt9JQyukkevMHDPzbg==
-X-Received: by 2002:a62:68c1:: with SMTP id d184mr5878271pfc.138.1589578134871;
-        Fri, 15 May 2020 14:28:54 -0700 (PDT)
+        bh=sfS8RWQILq5pTxsiwJfRKnCbiFfxKVOF+i1nmZH/cEc=;
+        b=cHahCf7CLkL4kfpfmih1x5N6/feF48MZgbx5eEkuYk65j8O4PaHb6eGXgGVz6LR7Ax
+         IP/gmHiRc4/myy7Jf7XuiqKBvz16JY5DjMaecLMP7ArLVctpv2MbxXavfj5GbqysxNaU
+         rpuUwy2gzGV0e3Cc02KA4DVsy3yq0Q3RcR7n/3UFfJL02omregaz9H3u09/vcD967rVY
+         s+BNyAt6zdHovGQAp6XFEY7Xp2FdmxBruWnSxoCJpzT55RvME9UGGQjgTaLWYGzyjw/k
+         ayVmozkwT2YB1EWWmQKiVT8ggkf5W52W+jXASD2Hq2tmgs0xlCtX4NDK2wokgbg1n9jd
+         yTVw==
+X-Gm-Message-State: AOAM531QRFWiKi0nXQ+eITvPE/PjeQcfDW5KUSeM5BWaVezO5WuRu8wT
+        TaibqIPa4uRPiCbEFLInBYw=
+X-Google-Smtp-Source: ABdhPJyDXHKz7boZGvqXqSLG3GjzTod1lFNdJn6sXhTEjxoVmBj7l/4U3APnTK6uCHCt/7oLvtItAA==
+X-Received: by 2002:a17:902:dc84:: with SMTP id n4mr5635258pld.281.1589578135789;
+        Fri, 15 May 2020 14:28:55 -0700 (PDT)
 Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
-        by smtp.gmail.com with ESMTPSA id o9sm2171534pjp.4.2020.05.15.14.28.50
+        by smtp.gmail.com with ESMTPSA id v7sm2644511pfm.146.2020.05.15.14.28.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 May 2020 14:28:50 -0700 (PDT)
+        Fri, 15 May 2020 14:28:51 -0700 (PDT)
 Received: by 42.do-not-panic.com (Postfix, from userid 1000)
-        id A958C41D95; Fri, 15 May 2020 21:28:49 +0000 (UTC)
+        id B9C4A41DAB; Fri, 15 May 2020 21:28:49 +0000 (UTC)
 From:   Luis Chamberlain <mcgrof@kernel.org>
 To:     jeyu@kernel.org
 Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
@@ -46,12 +46,10 @@ Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
         mchehab+samsung@kernel.org, kvalo@codeaurora.org,
         davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-everest-linux-l2@marvell.com
-Subject: [PATCH v2 03/15] bnx2x: use new module_firmware_crashed()
-Date:   Fri, 15 May 2020 21:28:34 +0000
-Message-Id: <20200515212846.1347-4-mcgrof@kernel.org>
+        Michael Chan <michael.chan@broadcom.com>
+Subject: [PATCH v2 04/15] bnxt: use new module_firmware_crashed()
+Date:   Fri, 15 May 2020 21:28:35 +0000
+Message-Id: <20200515212846.1347-5-mcgrof@kernel.org>
 X-Mailer: git-send-email 2.23.0.rc1
 In-Reply-To: <20200515212846.1347-1-mcgrof@kernel.org>
 References: <20200515212846.1347-1-mcgrof@kernel.org>
@@ -70,26 +68,24 @@ a reboot.
 
 Using a taint flag allows us to annotate when this happens clearly.
 
-Cc: Ariel Elior <aelior@marvell.com>
-Cc: Sudarsana Kalluru <skalluru@marvell.com>
-CC: GR-everest-linux-l2@marvell.com
+Cc: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index db5107e7937c..c38b8c9c8af0 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -909,6 +909,7 @@ void bnx2x_panic_dump(struct bnx2x *bp, bool disable_int)
- 	bp->eth_stats.unrecoverable_error++;
- 	DP(BNX2X_MSG_STATS, "stats_state - DISABLED\n");
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index dd0c3f227009..5ba1bd0734e9 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3503,6 +3503,7 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
  
-+	module_firmware_crashed();
- 	BNX2X_ERR("begin crash dump -----------------\n");
- 
- 	/* Indices */
+ 	dump->flag = bp->dump_flag;
+ 	if (dump->flag == BNXT_DUMP_CRASH) {
++		module_firmware_crashed();
+ #ifdef CONFIG_TEE_BNXT_FW
+ 		return tee_bnxt_copy_coredump(buf, 0, dump->len);
+ #endif
 -- 
 2.26.2
 
