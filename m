@@ -2,56 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0493F1D553B
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 899AF1D5548
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 17:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbgEOPzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 11:55:35 -0400
-Received: from www62.your-server.de ([213.133.104.62]:45572 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbgEOPzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 11:55:35 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZcgE-0007zK-5r; Fri, 15 May 2020 17:55:22 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZcgD-000Fod-R0; Fri, 15 May 2020 17:55:21 +0200
-Subject: Re: [PATCH v7 bpf-next 0/3] Introduce CAP_BPF
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
-        linux-security-module@vger.kernel.org, acme@redhat.com,
-        jamorris@linux.microsoft.com, jannh@google.com, kpsingh@google.com
-References: <20200513230355.7858-1-alexei.starovoitov@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <6f56ba3e-144f-29be-c35d-0506fe16830f@iogearbox.net>
-Date:   Fri, 15 May 2020 17:55:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726727AbgEOP5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 11:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48336 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726283AbgEOP5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 11:57:48 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC002C061A0C;
+        Fri, 15 May 2020 08:57:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=vg97Zc+yBbH72pdkZwDBNGODCPrdrEdYXXBAaIV2Oiw=; b=bzUzwrUjBws0tIpnnw6gyN9V0/
+        DEHrV9rVluyQUK+FkkQ1eobbrpCgDX5J1ZpBZlnmP/MjvMAlP952p1uy/0WAvi0Md/Hfiw3Ls4zih
+        WXY29L9IuNuFXLm1+of43Qf/L+4asIjGHEWNGUXw9ez8PnkiC7FOy9huhUcn0GCg/yrl0gOON5YFU
+        QqMg4LZ1RUNsWnTsSrkQgsKr5vKbLOqDS8YkkJ0O1BTSqd8RB5uK8jM7DtbTSsrmlMVLr8EGdpbRc
+        Z6H+F7nNTNM/Ng9QVTpmfc+4lxFZxc4lLU2pDnH5voOjqtDjqjozbkFFhHNjAJ2s0ocUy7a2ljjOj
+        g+gi0BIw==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jZciI-0006zr-4p; Fri, 15 May 2020 15:57:30 +0000
+Date:   Fri, 15 May 2020 08:57:30 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Nate Karstens <nate.karstens@garmin.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>,
+        a.josey@opengroup.org
+Subject: Re: [PATCH v2] Implement close-on-fork
+Message-ID: <20200515155730.GF16070@bombadil.infradead.org>
+References: <20200515152321.9280-1-nate.karstens@garmin.com>
 MIME-Version: 1.0
-In-Reply-To: <20200513230355.7858-1-alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25813/Fri May 15 14:16:29 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200515152321.9280-1-nate.karstens@garmin.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/14/20 1:03 AM, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> v6->v7:
-> - permit SK_REUSEPORT program type under CAP_BPF as suggested by Marek Majkowski.
->    It's equivalent to SOCKET_FILTER which is unpriv.
+On Fri, May 15, 2020 at 10:23:17AM -0500, Nate Karstens wrote:
+> Series of 4 patches to implement close-on-fork. Tests have been
+> published to https://github.com/nkarstens/ltp/tree/close-on-fork
+> and cover close-on-fork functionality in the following syscalls:
 
-Applied, thanks! I do like the env->{allow_ptr_leaks,bypass_spec_v1,bypass_spec_v4,
-bpf_capable} split much better, so there's more clarity which belongs to which.
-Potentially this can be even made more fine-grained at some point.
+[...]
+
+> This functionality was approved by the Austin Common Standards
+> Revision Group for inclusion in the next revision of the POSIX
+> standard (see issue 1318 in the Austin Group Defect Tracker).
+
+NAK to this patch series, and the entire concept.
+
+Is there a way to persuade POSIX that they made a bad decision by
+standardising this mess?
