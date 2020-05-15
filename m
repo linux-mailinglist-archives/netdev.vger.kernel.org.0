@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2CD11D5BCD
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 23:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FB6F1D5C07
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 00:03:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727893AbgEOVrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 17:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
+        id S1727817AbgEOWD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 18:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727867AbgEOVrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 17:47:42 -0400
+        by vger.kernel.org with ESMTP id S1726228AbgEOWD2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 18:03:28 -0400
 Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5911C05BD09
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 14:47:41 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id s37so1848971ybe.13
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 14:47:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9FFC05BD09
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 15:03:28 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id f5so1892421ybo.4
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 15:03:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tS+3CNMGEUW08GWKVNnTCx8encgyi37BKeJukWELzNc=;
-        b=et/afkD6oOQ8yPirs/ovFayPyCKLRWPBJUWQfo6mBaGP/VgeItYGcmmiMuFdkQ6diZ
-         lp2UAYZh47m0f2FWyEAfMlk4lqL+Wr0b0qd5sPjrOwqaSqmM0AbXME4ySzcO9tEgap7Y
-         xiRN17Nh1zlxP4xm6W9+lMzqt5ruP2vFDCIT8O1B969Sf+eEAjWKn+0e8BMhjNvVimnP
-         61i1EQ4/Wp6WC4QfNVm8DxLjYZghfSRzNiY4gQtihWRYH10r0WFXg69IQPatUG9UKUaR
-         cagIPuLbrusA2+bourPD0q/2aJK8T8FtidKLadBqUvR6y/kPO08+8NvBAN+sPJnI7KRi
-         3fDg==
+        bh=hAuns5l+V0vwIv3z0kLgsyRcBseJuPIzou+9SjbnNYk=;
+        b=Q41c+n8yK3nkE3KDJdYhiZiAf04uT8mHpZRDb8LE9n2aTAq1FORypaxmgE+gDKOUQw
+         XgmE1rrLddyYi6BvRhTpUZGcbSG9WZ4laYZ/IsOQ5McL2z5nhvUo8LoOPaVLULfkSJxV
+         fHfq0IjeQjp9CpDRbkwM790U4XVnPDGPrI4p21eO5Ib59s5h8FpNgx4YwRUOJ4N2qnUk
+         vTTYOJLfNG5qTjOyAP+P5zN0ehyw6s3ofnQpoyTPIHB8LfKqimn3eokLjj4qQ/sdZ4Ib
+         /uU60ACLgOtg2gvO4J5Gke8xnpFW5a9XAfQK2Q65DgzFRHtelZU1+bGJjM9/dUnDoOws
+         Ldvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tS+3CNMGEUW08GWKVNnTCx8encgyi37BKeJukWELzNc=;
-        b=sKMaVT8TZE2TsN7HiuYVxn/qvKm6K0PX+gbjsOdOEX0B03V+q8SKwyQ+9jxoiddFnZ
-         irkiP3TS1Bbmb/Y0bCviRbgQ/gY/gTBPrTWoMP5Bh2domCPkcA71DoRsaq3UvRKNEKOa
-         NIEaS1SZFKBBL+6JjedVNha3TAcBCiKbxQ1rvREeSul4cXeRIdg3ip8cPLZHgrJIGzEK
-         2Q1QlNJEhkzDPQmb2RcctBJy5mEd9IJU0gh9/DV7mP6kk7oHhpy2wn72cYgJEBJVrVLh
-         dr4c14jumW0/NsfXD+UlQxRQAajLQXl5Zy7YG82gdlHYaZUDYW142Ye1qaQL/ugP1oqg
-         p5Mw==
-X-Gm-Message-State: AOAM531qZLsgA8jd/cUKAWML658iQa8GQPro5xeOiF9mJua7GuGThXJY
-        e2GI+MpUsobi6gHmni+34z/P3wHqWKJnqwXdTMNPnw==
-X-Google-Smtp-Source: ABdhPJyM9orvNlQicAfnrlZkcpeDb6FoYRrmyCqPxtKl7R3aimfxalhbrMVLLt0N1/ukrAhCjRtDKdjh/3N4+YwP+TM=
-X-Received: by 2002:a25:c08b:: with SMTP id c133mr8940904ybf.286.1589579260905;
- Fri, 15 May 2020 14:47:40 -0700 (PDT)
+        bh=hAuns5l+V0vwIv3z0kLgsyRcBseJuPIzou+9SjbnNYk=;
+        b=opgMWUY9BUyhAQjcu4Spj1YxT5NXDNF+KyFTP7eL04iRYBAHj7RRsD+fsNkwyZC9uQ
+         kEf9/MQb93sSoKB5BJkntW29zbXaELUw+p8LRQ1z8kR5J65k5ro+vdmiUJKOmI7SfV2n
+         SbPDqvW9r32xiR/75m/YY8dwMqSTaRqwygMSMlKjOaN2zFl14rCXbDVDo2SO4A0+iXJm
+         ZxILrAXVfB3OMXl4hxxKaRUYvQUMq/3ff52ccp6nhKKdwssA4Um6ABFZjiPT85USXp3C
+         bvLRYify0LMLOw2NdFg2MywKqG+pKW1UJvk8G3/sOp4VD5FIKFbJ9Fz+s+E0Ofrn4DBp
+         NZuQ==
+X-Gm-Message-State: AOAM532DiKBqUM3sGrMg8dP4O9ixx6QQKAmkSkQ/XnCQm3kIKl3mIwCS
+        98KeMkV933JNpHb5aJTDaH7XAeM5FjDusk6ZKpVzVQ==
+X-Google-Smtp-Source: ABdhPJzfqW9TpPIr4WyY6xHhbnwlZYh3KZfmffOwbln4Qe2yqXWQ03KcYpFkzfLBZh3oqp6m7nE1uizCVUgjHaSw5cE=
+X-Received: by 2002:a25:5387:: with SMTP id h129mr8404945ybb.47.1589580207492;
+ Fri, 15 May 2020 15:03:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200515165007.217120-1-irogers@google.com> <20200515170036.GA10230@kernel.org>
- <CAEf4BzZ5=_yu1kL77n+Oc0K9oaDi4J=c+7CV8D0AXs2hBxhNbw@mail.gmail.com> <5ebf0748.1c69fb81.f8310.eef3@mx.google.com>
-In-Reply-To: <5ebf0748.1c69fb81.f8310.eef3@mx.google.com>
+References: <20200515165007.217120-1-irogers@google.com> <20200515165007.217120-8-irogers@google.com>
+ <CAEf4BzZOB0L0iie0CAduNOnE4TXbfKeo-g97kwfMPZ5Mg7uRwg@mail.gmail.com>
+In-Reply-To: <CAEf4BzZOB0L0iie0CAduNOnE4TXbfKeo-g97kwfMPZ5Mg7uRwg@mail.gmail.com>
 From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 15 May 2020 14:47:29 -0700
-Message-ID: <CAP-5=fWX6nD72Fn7dBS3Mrd_wy9iqkGKnfhHPxcqC_oNfKPZQA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/7] Copy hashmap to tools/perf/util, use in perf expr
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
+Date:   Fri, 15 May 2020 15:03:16 -0700
+Message-ID: <CAP-5=fV83V_DxaR8M4LXgS-s-+gW18Q3UmfjrpAkz4u2K4B7MA@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] perf expr: Migrate expr ids table to a hashmap
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Jiri Olsa <jolsa@redhat.com>,
         Namhyung Kim <namhyung@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
@@ -77,79 +76,80 @@ Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Adrian Hunter <adrian.hunter@intel.com>,
         Leo Yan <leo.yan@linaro.org>,
         open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 2:19 PM <arnaldo.melo@gmail.com> wrote:
+On Fri, May 15, 2020 at 12:39 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> <bpf@vger.kernel.org>,Stephane Eranian <eranian@google.com>
-> From: Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-> Message-ID: <79BCBAF7-BF5F-4556-A923-56E9D82FB570@gmail.com>
->
->
->
-> On May 15, 2020 4:42:46 PM GMT-03:00, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >On Fri, May 15, 2020 at 10:01 AM Arnaldo Carvalho de Melo
-> ><arnaldo.melo@gmail.com> wrote:
-> >>
-> >> Em Fri, May 15, 2020 at 09:50:00AM -0700, Ian Rogers escreveu:
-> >> > Perf's expr code currently builds an array of strings then removes
-> >> > duplicates. The array is larger than necessary and has recently
-> >been
-> >> > increased in size. When this was done it was commented that a
-> >hashmap
-> >> > would be preferable.
-> >> >
-> >> > libbpf has a hashmap but libbpf isn't currently required to build
-> >> > perf. To satisfy various concerns this change copies libbpf's
-> >hashmap
-> >> > into tools/perf/util, it then adds a check in perf that the two are
-> >in
-> >> > sync.
-> >> >
-> >> > Andrii's patch to hashmap from bpf-next is brought into this set to
-> >> > fix issues with hashmap__clear.
-> >> >
-> >> > Two minor changes to libbpf's hashmap are made that remove an
-> >unused
-> >> > dependency and fix a compiler warning.
-> >>
-> >> Andrii/Alexei/Daniel, what do you think about me merging these fixes
-> >in my
-> >> perf-tools-next branch?
+> On Fri, May 15, 2020 at 9:51 AM Ian Rogers <irogers@google.com> wrote:
 > >
-> >I'm ok with the idea, but it's up to maintainers to coordinate this :)
+> > Use a hashmap between a char* string and a double* value. While bpf's
+> > hashmap entries are size_t in size, we can't guarantee sizeof(size_t) >=
+> > sizeof(double). Avoid a memory allocation when gathering ids by making 0.0
+> > a special value encoded as NULL.
+> >
+> > Original map suggestion by Andi Kleen:
+> > https://lore.kernel.org/lkml/20200224210308.GQ160988@tassilo.jf.intel.com/
+> > and seconded by Jiri Olsa:
+> > https://lore.kernel.org/lkml/20200423112915.GH1136647@krava/
+> >
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >  tools/perf/tests/expr.c       |  40 ++++++-----
+> >  tools/perf/tests/pmu-events.c |  25 +++----
+> >  tools/perf/util/expr.c        | 129 +++++++++++++++++++---------------
+> >  tools/perf/util/expr.h        |  26 +++----
+> >  tools/perf/util/expr.y        |  22 +-----
+> >  tools/perf/util/metricgroup.c |  87 +++++++++++------------
+> >  tools/perf/util/stat-shadow.c |  49 ++++++++-----
+> >  7 files changed, 197 insertions(+), 181 deletions(-)
+> >
+> > diff --git a/tools/perf/tests/expr.c b/tools/perf/tests/expr.c
+> > index 3f742612776a..5e606fd5a2c6 100644
+> > --- a/tools/perf/tests/expr.c
+> > +++ b/tools/perf/tests/expr.c
+> > @@ -19,11 +19,9 @@ static int test(struct expr_parse_ctx *ctx, const char *e, double val2)
+> >  int test__expr(struct test *t __maybe_unused, int subtest __maybe_unused)
+> >  {
+> >         const char *p;
+> > -       const char **other;
+> > -       double val;
+> > -       int i, ret;
+> > +       double val, *val_ptr;
+> > +       int ret;
+> >         struct expr_parse_ctx ctx;
+> > -       int num_other;
+> >
+> >         expr__ctx_init(&ctx);
+> >         expr__add_id(&ctx, "FOO", 1);
+> > @@ -52,25 +50,29 @@ int test__expr(struct test *t __maybe_unused, int subtest __maybe_unused)
+> >         ret = expr__parse(&val, &ctx, p, 1);
+> >         TEST_ASSERT_VAL("missing operand", ret == -1);
+> >
+> > +       hashmap__clear(&ctx.ids);
 >
-> Good to know, do I'll take all patches except the ones touching libppf, will just make sure the copy is done with the patches applied.
->
-> At some point they'll land in libbpf and the warning from check_headers.sh will be resolved.
+> hashmap__clear() will free up memory allocated for hashmap itself and
+> hash entries, but not keys/values. Unless it's happening somewhere
+> else, you'll need to do something similar to expr__ctx_clear() below?
 
-So tools/perf/util's hashmap will be ahead of libbpf's, as without the
-fixes the perf build is broken by Werror. This will cause
-check_headers to warn in perf builds, which would usually mean our
-header was older than the source one, but in this case it means the
-opposite, we're waiting for the libbpf patches to merge. Aside from
-some interim warnings everything will resolve itself and Arnaldo
-avoids landing patches in libbpf that can interfere with bpf-next.
+In this case the const char* keys come from the literals added on
+lines 27 and 28 and so didn't need free-ing - which is what
+expr__ctx_clear() does. I've made these literals strdups and switched
+to expr__ctx_clear() as you suggest, as this is more reflective of the
+real use.
 
-It takes some getting your head around but sounds good to me :-) I
-think the only workable alternatives would be to explore having a
-single version of the code in some kind of shared libhashmap or to
-implement another hashmap in libapi. I'd like to get the rest of this
-work unblocked and so it'd be nice to land this and we can always
-refactor later - I like Arnaldo's plan. Can a bpf maintainer make sure
-the hashmap changes get pulled into bpf-next?
+> Same below for another "lone" hashmap_clear() call.
 
-Thanks!
+This was a memory leak, thanks!
 Ian
 
-> Thanks,
+> >         TEST_ASSERT_VAL("find other",
+> > -                       expr__find_other("FOO + BAR + BAZ + BOZO", "FOO", &other, &num_other, 1) == 0);
 >
-> - Arnaldo
->
-> --
-> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+> [...]
