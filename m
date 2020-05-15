@@ -2,129 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D32131D560D
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 619C71D5613
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 18:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbgEOQaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 12:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
+        id S1726226AbgEOQbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 12:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726162AbgEOQaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:30:16 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7447AC061A0C;
-        Fri, 15 May 2020 09:30:16 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id x20so2688749ejb.11;
-        Fri, 15 May 2020 09:30:16 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726168AbgEOQbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 12:31:52 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39571C061A0C;
+        Fri, 15 May 2020 09:31:52 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id z18so2472970qto.2;
+        Fri, 15 May 2020 09:31:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hbfeRIKdWre9WvsAQKF446bIFocBJT9zt7xvIEJNE8U=;
-        b=Aw48zZmWUp8zyE2RVrFrRfE6jdinw/kwE65P1fNNbNUot+CswwkN0SxtZv46YVC49O
-         TYfMIfDAWeYur9yj/1Qji+smQ9EV71thycX/Rs3KSQkRzueejFvzXfd0S1BOZnggvE8j
-         kwAdSqJUJnQl8Pv+bGr4ZbhMLZ68ylyAFrCTJKggunxY8wwZDI2XYs4TlnSinXAqWcsc
-         5ObekLJNZ3poxKkPruq2VXAAk6tps1mkGwWg0Id5GpRgJ1zchGxTq2krRkXgcw+7QRXQ
-         yWJMmXmiCAQ7RY8a0p8pqtVieHOBKfSTZYAXMhn+nNN43W5FXnu9sghD43XGgy+COl4I
-         Hu0g==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qWJplWQlnWRC9afl46qOWJcxiXlm4NEUM51q0ljY+vQ=;
+        b=Qr7qtHrVlXDmY1zII6GIwRjsAZeo97nUvw9Pl6LHydipbHKZKOsREcDCWb/Nehay4q
+         HPkyqmI3IOEbsYBhDpaXJrq16Vws8qxRXrJ7rzjlK+TvVhG2vNj/H5DHsLtQV0Kwk8vT
+         L/0YqzgiFJoF5h4P3F8wa0c2Xt8FgX9EE0E+WMwb4AtPRxSzuWRK4rNlZ1eZXo+yjnRI
+         UvG/FV0zTQwPi6Z0zcoCkDbZP6wa8zFXAQ4VnisEKYCHJIjuMHxKZamuv0112f1jymoA
+         URx7xPYWkI7UqEkCP3ketlR0BEfAmPKepvS3QrMDHW5/elG9jrzQSimb/0HKyCfQqAp1
+         d7RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hbfeRIKdWre9WvsAQKF446bIFocBJT9zt7xvIEJNE8U=;
-        b=CriWyVjBftDdTu6sRjqqbzO+0NesgyjpH/20fYXP1h2g3hH6muAVIzpGxAIDkj+sr6
-         uc26ObF+eCgDVnoLC8h0D7kmO4juxM/O4SyeN61kmmehtVXl8uhDOoPHM0axtcMnQNPM
-         wTr530Li0YpOSxO0b4PHhThMOUrabmufZ29WltP4WHp0AdrgBID9ToanFpdgFnkwupC6
-         Qpyk1qmIbrSBgkdCqr+6x/2IbA1X0o68BYiN0yP/VFQAxAVK0/TQ7l1pEPvaImbFqyjN
-         y8UuZzOOL68bF4I/gREF2vWb48CJ6P7epTozJS0tvLXpNPiFF5u1kjIz4XcfAo4PYI2J
-         NC6w==
-X-Gm-Message-State: AOAM531xJYpxxoQ13JQGhRHlTUfvdL3NoxNGYIXtpUANzy+ju7D3FM0L
-        pYWLaOcQw+TgujDBfUFMiKRTWRScw6ZYPbgFjTs=
-X-Google-Smtp-Source: ABdhPJw/hoHIGtZ88S8c8KUEHlOImAzFp7L0wnH7gS4sCyYz4HLzzXQD78TY6vWYmDSpC9K6SumOL39cKjrsSZejF+w=
-X-Received: by 2002:a17:906:add7:: with SMTP id lb23mr3731728ejb.6.1589560215122;
- Fri, 15 May 2020 09:30:15 -0700 (PDT)
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qWJplWQlnWRC9afl46qOWJcxiXlm4NEUM51q0ljY+vQ=;
+        b=XFm5KdwulzFJ24owl2tJmAr2u9z+3jB5LbLiPDcZw+jwFbpoVqAryWom5MJJltwdTk
+         yCSSUHYuFWzsHCJgwP2NQ6HNAxhXDqXHKmGu6sGaDJZkMqgfmXwdNgZmsc/CIwXXWYoI
+         lkh3Fk8szMaJCh9iYdMoqS0H2folV6S4kQRzDWYV131SKnamDFc+TniAL38FJ3jF1nGq
+         2v8S1FjRM1NXa9jWDal+8DKkmt5+nSIcTWI16+aRActE/DR3P/lADmZ6qxw0w3nk/V0b
+         xc99kLgTQ1CPflt9O7w77OaHbnHx4p9zabEyI4GyxotlnFY+o7gboGaLxJbbZRaQ+LUq
+         FiiA==
+X-Gm-Message-State: AOAM532ewzMJkAPSMtXuO/m595ku9SuIo7UoHoZKeiR75AGdCJRgkCse
+        /UZSi4sjRYYVsh7nLKdba+8=
+X-Google-Smtp-Source: ABdhPJxTfV2SqcByVx6TzfUx3zWMgaeTTZ2afzCvX+IBk+67/nhyHvYXCNEKrESdgwDQxNoPU0z89A==
+X-Received: by 2002:ac8:2f50:: with SMTP id k16mr4474062qta.392.1589560311093;
+        Fri, 15 May 2020 09:31:51 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([179.97.37.151])
+        by smtp.gmail.com with ESMTPSA id e23sm1896496qkm.63.2020.05.15.09.31.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 May 2020 09:31:49 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id E013840AFD; Fri, 15 May 2020 13:31:46 -0300 (-03)
+Date:   Fri, 15 May 2020 13:31:46 -0300
+To:     Ian Rogers <irogers@google.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH 4/8] libbpf hashmap: Localize static hashmap__* symbols
+Message-ID: <20200515163146.GA9335@kernel.org>
+References: <20200515065624.21658-1-irogers@google.com>
+ <20200515065624.21658-5-irogers@google.com>
+ <20200515091707.GC3511648@krava>
+ <20200515142917.GT5583@kernel.org>
+ <CAP-5=fXtXgnb4nrVtsoxQ6vj8YtzPicFsad6+jB5UUFqMzg4mw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200515031813.30283-1-xulin.sun@windriver.com>
-In-Reply-To: <20200515031813.30283-1-xulin.sun@windriver.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 15 May 2020 19:30:04 +0300
-Message-ID: <CA+h21hqOOdaogK2SqWioLz9+=9LPqPsZ1xgvrwDA0G_kotN8ew@mail.gmail.com>
-Subject: Re: [PATCH] net: mscc: ocelot: replace readx_poll_timeout with readx_poll_timeout_atomic
-To:     Xulin Sun <xulin.sun@windriver.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, xulinsun@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP-5=fXtXgnb4nrVtsoxQ6vj8YtzPicFsad6+jB5UUFqMzg4mw@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xulin,
+Em Fri, May 15, 2020 at 07:53:33AM -0700, Ian Rogers escreveu:
+> On Fri, May 15, 2020 at 7:29 AM Arnaldo Carvalho de Melo
+> <arnaldo.melo@gmail.com> wrote:
+> >
+> > Em Fri, May 15, 2020 at 11:17:07AM +0200, Jiri Olsa escreveu:
+> > > On Thu, May 14, 2020 at 11:56:20PM -0700, Ian Rogers wrote:
+> > > > Localize the hashmap__* symbols in libbpf.a. To allow for a version in
+> > > > libapi.
+> > > >
+> > > > Before:
+> > > > $ nm libbpf.a
+> > > > ...
+> > > > 000000000002088a t hashmap_add_entry
+> > > > 000000000001712a t hashmap__append
+> > > > 0000000000020aa3 T hashmap__capacity
+> > > > 000000000002099c T hashmap__clear
+> > > > 00000000000208b3 t hashmap_del_entry
+> > > > 0000000000020fc1 T hashmap__delete
+> > > > 0000000000020f29 T hashmap__find
+> > > > 0000000000020c6c t hashmap_find_entry
+> > > > 0000000000020a61 T hashmap__free
+> > > > 0000000000020b08 t hashmap_grow
+> > > > 00000000000208dd T hashmap__init
+> > > > 0000000000020d35 T hashmap__insert
+> > > > 0000000000020ab5 t hashmap_needs_to_grow
+> > > > 0000000000020947 T hashmap__new
+> > > > 0000000000000775 t hashmap__set
+> > > > 00000000000212f8 t hashmap__set
+> > > > 0000000000020a91 T hashmap__size
+> > > > ...
+> > > >
+> > > > After:
+> > > > $ nm libbpf.a
+> > > > ...
+> > > > 000000000002088a t hashmap_add_entry
+> > > > 000000000001712a t hashmap__append
+> > > > 0000000000020aa3 t hashmap__capacity
+> > > > 000000000002099c t hashmap__clear
+> > > > 00000000000208b3 t hashmap_del_entry
+> > > > 0000000000020fc1 t hashmap__delete
+> > > > 0000000000020f29 t hashmap__find
+> > > > 0000000000020c6c t hashmap_find_entry
+> > > > 0000000000020a61 t hashmap__free
+> > > > 0000000000020b08 t hashmap_grow
+> > > > 00000000000208dd t hashmap__init
+> > > > 0000000000020d35 t hashmap__insert
+> > > > 0000000000020ab5 t hashmap_needs_to_grow
+> > > > 0000000000020947 t hashmap__new
+> > > > 0000000000000775 t hashmap__set
+> > > > 00000000000212f8 t hashmap__set
+> > > > 0000000000020a91 t hashmap__size
+> > > > ...
+> > >
+> > > I think this will break bpf selftests which use hashmap,
+> > > we need to find some other way to include this
+> > >
+> > > either to use it from libbpf directly, or use the api version
+> > > only if the libbpf is not compiled in perf, we could use
+> > > following to detect that:
+> > >
+> > >       CFLAGS += -DHAVE_LIBBPF_SUPPORT
+> > >       $(call detected,CONFIG_LIBBPF)
+> >
+> > And have it in tools/perf/util/ instead?
+ 
+> *sigh*
+ 
+> $ make -C tools/testing/selftests/bpf test_hashmap
+> make: Entering directory
+> '/usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/testing/s
+> elftests/bpf'
+>  BINARY   test_hashmap
+> /usr/bin/ld: /tmp/ccEGGNw5.o: in function `test_hashmap_generic':
+> /usr/local/google/home/irogers/kernel-trees/kernel.org/tip/tools/testing/selftests/bpf/test_hashmap.
+> c:61: undefined reference to `hashmap__new'
+> ...
+ 
+> My preference was to make hashmap a sharable API in tools, to benefit
 
-On Fri, 15 May 2020 at 06:23, Xulin Sun <xulin.sun@windriver.com> wrote:
->
-> This fixes call trace like below to use atomic safe API:
->
-> BUG: sleeping function called from invalid context at drivers/net/ethernet/mscc/ocelot.c:59
-> in_atomic(): 1, irqs_disabled(): 0, pid: 3778, name: ifconfig
-> INFO: lockdep is turned off.
-> Preemption disabled at:
-> [<ffff2b163c83b78c>] dev_set_rx_mode+0x24/0x40
-> Hardware name: LS1028A RDB Board (DT)
-> Call trace:
-> dump_backtrace+0x0/0x140
-> show_stack+0x24/0x30
-> dump_stack+0xc4/0x10c
-> ___might_sleep+0x194/0x230
-> __might_sleep+0x58/0x90
-> ocelot_mact_forget+0x74/0xf8
-> ocelot_mc_unsync+0x2c/0x38
-> __hw_addr_sync_dev+0x6c/0x130
-> ocelot_set_rx_mode+0x8c/0xa0
-> __dev_set_rx_mode+0x58/0xa0
-> dev_set_rx_mode+0x2c/0x40
-> __dev_open+0x120/0x190
-> __dev_change_flags+0x168/0x1c0
-> dev_change_flags+0x3c/0x78
-> devinet_ioctl+0x6c4/0x7c8
-> inet_ioctl+0x2b8/0x2f8
-> sock_do_ioctl+0x54/0x260
-> sock_ioctl+0x21c/0x4d0
-> do_vfs_ioctl+0x6d4/0x968
-> ksys_ioctl+0x84/0xb8
-> __arm64_sys_ioctl+0x28/0x38
-> el0_svc_common.constprop.0+0x78/0x190
-> el0_svc_handler+0x70/0x90
-> el0_svc+0x8/0xc
->
-> Signed-off-by: Xulin Sun <xulin.sun@windriver.com>
-> ---
+That is my preference as well, I'm not defending having it in
+tools/perf/util/, just saying that that is a possible way to make
+progress with the current situation...
 
-The code path which you presented in your stack trace is impossible
-using code available currently in mainline.
+> not just perf but say things like libsymbol, libperf, etc. Moving it
+> into perf and using conditional compilation is kinda gross but having
+> libbpf tests depend on libapi also isn't ideal I guess. It is tempting
+> to just cut a hashmap from fresh cloth to avoid this and to share
+> among tools/. I don't know if the bpf folks have opinions?
+> 
+> I'll do a v2 using conditional compilation to see how bad it looks.
 
->  drivers/net/ethernet/mscc/ocelot.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> index b4731df186f4..6c82ab1b3fa6 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.c
-> +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -56,7 +56,7 @@ static inline int ocelot_mact_wait_for_completion(struct ocelot *ocelot)
->  {
->         u32 val;
->
-> -       return readx_poll_timeout(ocelot_mact_read_macaccess,
-> +       return readx_poll_timeout_atomic(ocelot_mact_read_macaccess,
->                 ocelot, val,
->                 (val & ANA_TABLES_MACACCESS_MAC_TABLE_CMD_M) ==
->                 MACACCESS_CMD_IDLE,
-> --
-> 2.17.1
->
+Cool, lets see how it looks.
 
-Regards,
--Vladimir
+- Arnaldo
