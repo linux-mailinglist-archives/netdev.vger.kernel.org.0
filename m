@@ -2,184 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2CC21D4DAF
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 14:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 983671D4DD7
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 14:38:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726199AbgEOMal (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 08:30:41 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:35724 "EHLO inva020.nxp.com"
+        id S1726345AbgEOMiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 08:38:11 -0400
+Received: from mx01-sz.bfs.de ([194.94.69.67]:57319 "EHLO mx01-sz.bfs.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726097AbgEOMal (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 08:30:41 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 18AD41A06EF;
-        Fri, 15 May 2020 14:30:39 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 07E6C1A06E6;
-        Fri, 15 May 2020 14:30:39 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id B2EC020328;
-        Fri, 15 May 2020 14:30:38 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH] dpaa2-eth: properly handle buffer size restrictions
-Date:   Fri, 15 May 2020 15:30:22 +0300
-Message-Id: <20200515123022.31227-1-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726162AbgEOMiK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 May 2020 08:38:10 -0400
+Received: from SRVEX01-SZ.bfs.intern (exchange-sz.bfs.de [10.129.90.31])
+        by mx01-sz.bfs.de (Postfix) with ESMTPS id CA71220320;
+        Fri, 15 May 2020 14:38:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bfs.de; s=dkim201901;
+        t=1589546287;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ppKbetCczRPxYojNsxLooBtfmJ0vphP053kEHBki1gc=;
+        b=yJV5DF337dYDB94SlXzGeeSFtM+t+kyXBFEewX47UBZfxzEcN/7vzS8ERu/uF+ARN0mir8
+        1Gpd3fCY1Ju0o7q+MYxFvdiw4Mw6oUHflbXBRmo7FYG6VNIEM1JPMBxe74BaatGPQw4TCC
+        UJ85rW2eVH6LNRANJs/AIsBH6Sp0rJdgZpysHOFnLg71RENfRKBb+OfJr3FLksAtbbNWH5
+        isvPevS/Ruk53abXa7SPrNny9cnmxS/HBsWO+7xcOmKMWwWUMvC+qktzD0wYX7lfiy0b/o
+        0DxzpYDHcWZCnvKigElYLN3kyFCWxQukGSFPu3wDmrmhdmf0EBlUVdW/HRiCyA==
+Received: from SRVEX01-SZ.bfs.intern (10.129.90.31) by SRVEX01-SZ.bfs.intern
+ (10.129.90.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.1913.5; Fri, 15 May
+ 2020 14:38:07 +0200
+Received: from SRVEX01-SZ.bfs.intern ([fe80::7d2d:f9cb:2761:d24a]) by
+ SRVEX01-SZ.bfs.intern ([fe80::7d2d:f9cb:2761:d24a%6]) with mapi id
+ 15.01.1913.005; Fri, 15 May 2020 14:38:07 +0200
+From:   Walter Harms <wharms@bfs.de>
+To:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: AW: [PATCH] rtlwifi: rtl8192ee: remove redundant for-loop
+Thread-Topic: [PATCH] rtlwifi: rtl8192ee: remove redundant for-loop
+Thread-Index: AQHWKqLOi1fXAItzAU2fpWUNjofas6ipEGuf
+Date:   Fri, 15 May 2020 12:38:07 +0000
+Message-ID: <73b8d798ffa048418be8443f90a79377@bfs.de>
+References: <20200515102226.29819-1-colin.king@canonical.com>
+In-Reply-To: <20200515102226.29819-1-colin.king@canonical.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.137.16.40]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.89
+Authentication-Results: mx01-sz.bfs.de;
+        none
+X-Spamd-Result: default: False [-2.89 / 7.00];
+         ARC_NA(0.00)[];
+         HAS_XOIP(0.00)[];
+         FROM_HAS_DN(0.00)[];
+         RCPT_COUNT_THREE(0.00)[4];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         DKIM_SIGNED(0.00)[];
+         NEURAL_HAM(-0.00)[-0.884];
+         TO_DN_EQ_ADDR_ALL(0.00)[];
+         RCVD_NO_TLS_LAST(0.10)[];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         RCVD_COUNT_TWO(0.00)[2];
+         MID_RHS_MATCH_FROM(0.00)[];
+         BAYES_HAM(-2.89)[99.53%]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Depending on the WRIOP version, the buffer size on the RX path must by a
-multiple of 64 or 256. Handle this restriction properly by aligning down
-the buffer size to the necessary value. Also, use the new buffer size
-dynamically computed instead of the compile time one.
+if someone has same spare time,
+this driver need a bit more love ...
 
-Fixes: 27c874867c4e ("dpaa2-eth: Use a single page per Rx buffer")
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+SO far i can see in rtl92ee_phy_iq_calibrate:
+* IQK_MATRIX_REG_NUM should be used instead 8 hardcoded.
+* the for-loop in the beginning is obfuscating that it sets  simply final_c=
+andidate
+
+this can be cleaned:
+      reg_e94 =3D result[final_candidate][0];
+      rtlphy->reg_e94 =3D reg_e94;
+      reg_e9c =3D result[final_candidate][1];
+      rtlphy->reg_e9c =3D reg_e9c;
+
+only reg_e94, reg_ea4 is used later ?
+
+jm2c,
+wh=20
+
+________________________________________
+Von: kernel-janitors-owner@vger.kernel.org <kernel-janitors-owner@vger.kern=
+el.org> im Auftrag von Colin King <colin.king@canonical.com>
+Gesendet: Freitag, 15. Mai 2020 12:22
+An: Kalle Valo; David S . Miller; linux-wireless@vger.kernel.org; netdev@vg=
+er.kernel.org
+Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
+Betreff: [PATCH] rtlwifi: rtl8192ee: remove redundant for-loop
+
+From: Colin Ian King <colin.king@canonical.com>
+
+The for-loop seems to be redundant, the assignments for indexes
+0..2 are being over-written by the last index 3 in the loop. Remove
+the loop and use index 3 instead.
+
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 29 +++++++++++--------
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  1 +
- 2 files changed, 18 insertions(+), 12 deletions(-)
+ .../net/wireless/realtek/rtlwifi/rtl8192ee/phy.c   | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index b1c64288a1fb..4388d1039822 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -86,7 +86,7 @@ static void free_rx_fd(struct dpaa2_eth_priv *priv,
- 	for (i = 1; i < DPAA2_ETH_MAX_SG_ENTRIES; i++) {
- 		addr = dpaa2_sg_get_addr(&sgt[i]);
- 		sg_vaddr = dpaa2_iova_to_virt(priv->iommu_domain, addr);
--		dma_unmap_page(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
-+		dma_unmap_page(dev, addr, priv->rx_buf_size,
- 			       DMA_BIDIRECTIONAL);
- 
- 		free_pages((unsigned long)sg_vaddr, 0);
-@@ -144,7 +144,7 @@ static struct sk_buff *build_frag_skb(struct dpaa2_eth_priv *priv,
- 		/* Get the address and length from the S/G entry */
- 		sg_addr = dpaa2_sg_get_addr(sge);
- 		sg_vaddr = dpaa2_iova_to_virt(priv->iommu_domain, sg_addr);
--		dma_unmap_page(dev, sg_addr, DPAA2_ETH_RX_BUF_SIZE,
-+		dma_unmap_page(dev, sg_addr, priv->rx_buf_size,
- 			       DMA_BIDIRECTIONAL);
- 
- 		sg_length = dpaa2_sg_get_len(sge);
-@@ -185,7 +185,7 @@ static struct sk_buff *build_frag_skb(struct dpaa2_eth_priv *priv,
- 				(page_address(page) - page_address(head_page));
- 
- 			skb_add_rx_frag(skb, i - 1, head_page, page_offset,
--					sg_length, DPAA2_ETH_RX_BUF_SIZE);
-+					sg_length, priv->rx_buf_size);
- 		}
- 
- 		if (dpaa2_sg_is_final(sge))
-@@ -211,7 +211,7 @@ static void free_bufs(struct dpaa2_eth_priv *priv, u64 *buf_array, int count)
- 
- 	for (i = 0; i < count; i++) {
- 		vaddr = dpaa2_iova_to_virt(priv->iommu_domain, buf_array[i]);
--		dma_unmap_page(dev, buf_array[i], DPAA2_ETH_RX_BUF_SIZE,
-+		dma_unmap_page(dev, buf_array[i], priv->rx_buf_size,
- 			       DMA_BIDIRECTIONAL);
- 		free_pages((unsigned long)vaddr, 0);
- 	}
-@@ -382,7 +382,7 @@ static u32 run_xdp(struct dpaa2_eth_priv *priv,
- 		break;
- 	case XDP_REDIRECT:
- 		dma_unmap_page(priv->net_dev->dev.parent, addr,
--			       DPAA2_ETH_RX_BUF_SIZE, DMA_BIDIRECTIONAL);
-+			       priv->rx_buf_size, DMA_BIDIRECTIONAL);
- 		ch->buf_count--;
- 		xdp.data_hard_start = vaddr;
- 		err = xdp_do_redirect(priv->net_dev, &xdp, xdp_prog);
-@@ -421,7 +421,7 @@ static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
- 	trace_dpaa2_rx_fd(priv->net_dev, fd);
- 
- 	vaddr = dpaa2_iova_to_virt(priv->iommu_domain, addr);
--	dma_sync_single_for_cpu(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
-+	dma_sync_single_for_cpu(dev, addr, priv->rx_buf_size,
- 				DMA_BIDIRECTIONAL);
- 
- 	fas = dpaa2_get_fas(vaddr, false);
-@@ -440,13 +440,13 @@ static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
- 			return;
- 		}
- 
--		dma_unmap_page(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
-+		dma_unmap_page(dev, addr, priv->rx_buf_size,
- 			       DMA_BIDIRECTIONAL);
- 		skb = build_linear_skb(ch, fd, vaddr);
- 	} else if (fd_format == dpaa2_fd_sg) {
- 		WARN_ON(priv->xdp_prog);
- 
--		dma_unmap_page(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
-+		dma_unmap_page(dev, addr, priv->rx_buf_size,
- 			       DMA_BIDIRECTIONAL);
- 		skb = build_frag_skb(priv, ch, buf_data);
- 		free_pages((unsigned long)vaddr, 0);
-@@ -1022,7 +1022,7 @@ static int add_bufs(struct dpaa2_eth_priv *priv,
- 		if (!page)
- 			goto err_alloc;
- 
--		addr = dma_map_page(dev, page, 0, DPAA2_ETH_RX_BUF_SIZE,
-+		addr = dma_map_page(dev, page, 0, priv->rx_buf_size,
- 				    DMA_BIDIRECTIONAL);
- 		if (unlikely(dma_mapping_error(dev, addr)))
- 			goto err_map;
-@@ -1032,7 +1032,7 @@ static int add_bufs(struct dpaa2_eth_priv *priv,
- 		/* tracing point */
- 		trace_dpaa2_eth_buf_seed(priv->net_dev,
- 					 page, DPAA2_ETH_RX_BUF_RAW_SIZE,
--					 addr, DPAA2_ETH_RX_BUF_SIZE,
-+					 addr, priv->rx_buf_size,
- 					 bpid);
- 	}
- 
-@@ -1772,7 +1772,7 @@ static bool xdp_mtu_valid(struct dpaa2_eth_priv *priv, int mtu)
- 	int mfl, linear_mfl;
- 
- 	mfl = DPAA2_ETH_L2_MAX_FRM(mtu);
--	linear_mfl = DPAA2_ETH_RX_BUF_SIZE - DPAA2_ETH_RX_HWA_SIZE -
-+	linear_mfl = priv->rx_buf_size - DPAA2_ETH_RX_HWA_SIZE -
- 		     dpaa2_eth_rx_head_room(priv) - XDP_PACKET_HEADROOM;
- 
- 	if (mfl > linear_mfl) {
-@@ -2507,6 +2507,11 @@ static int set_buffer_layout(struct dpaa2_eth_priv *priv)
- 	else
- 		rx_buf_align = DPAA2_ETH_RX_BUF_ALIGN;
- 
-+	/* We need to ensure that the buffer size seen by WRIOP is a multiple
-+	 * of 64 or 256 bytes depending on the WRIOP version.
-+	 */
-+	priv->rx_buf_size = ALIGN_DOWN(DPAA2_ETH_RX_BUF_SIZE, rx_buf_align);
-+
- 	/* tx buffer */
- 	buf_layout.private_data_size = DPAA2_ETH_SWA_SIZE;
- 	buf_layout.pass_timestamp = true;
-@@ -3192,7 +3197,7 @@ static int bind_dpni(struct dpaa2_eth_priv *priv)
- 	pools_params.num_dpbp = 1;
- 	pools_params.pools[0].dpbp_id = priv->dpbp_dev->obj_desc.id;
- 	pools_params.pools[0].backup_pool = 0;
--	pools_params.pools[0].buffer_size = DPAA2_ETH_RX_BUF_SIZE;
-+	pools_params.pools[0].buffer_size = priv->rx_buf_size;
- 	err = dpni_set_pools(priv->mc_io, 0, priv->mc_token, &pools_params);
- 	if (err) {
- 		dev_err(dev, "dpni_set_pools() failed\n");
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 9c37b6946cec..0581fbf1f98c 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -394,6 +394,7 @@ struct dpaa2_eth_priv {
- 	u16 tx_data_offset;
- 
- 	struct fsl_mc_device *dpbp_dev;
-+	u16 rx_buf_size;
- 	u16 bpid;
- 	struct iommu_domain *iommu_domain;
- 
--- 
-2.17.1
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/phy.c b/drivers=
+/net/wireless/realtek/rtlwifi/rtl8192ee/phy.c
+index 6dba576aa81e..bb291b951f4d 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/phy.c
+@@ -2866,14 +2866,12 @@ void rtl92ee_phy_iq_calibrate(struct ieee80211_hw *=
+hw, bool b_recovery)
+                }
+        }
+
+-       for (i =3D 0; i < 4; i++) {
+-               reg_e94 =3D result[i][0];
+-               reg_e9c =3D result[i][1];
+-               reg_ea4 =3D result[i][2];
+-               reg_eb4 =3D result[i][4];
+-               reg_ebc =3D result[i][5];
+-               reg_ec4 =3D result[i][6];
+-       }
++       reg_e94 =3D result[3][0];
++       reg_e9c =3D result[3][1];
++       reg_ea4 =3D result[3][2];
++       reg_eb4 =3D result[3][4];
++       reg_ebc =3D result[3][5];
++       reg_ec4 =3D result[3][6];
+
+        if (final_candidate !=3D 0xff) {
+                reg_e94 =3D result[final_candidate][0];
+--
+2.25.1
 
