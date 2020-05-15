@@ -2,57 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4791D4E38
-	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 14:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A105D1D4E8E
+	for <lists+netdev@lfdr.de>; Fri, 15 May 2020 15:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726244AbgEOM40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 08:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726140AbgEOM4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 08:56:22 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A032C061A0C
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 05:56:20 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id e8so2405020ilm.7
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 05:56:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=UKroOh2PouJyW9aIDGfDz6KjqY9gVQj12EPFSDublmA=;
-        b=vQpa/V/2d27tMcZAv7Abd34xjhVsIEeZzrDrtJyVTfhsRI5XbTGjwCIO/aERLAuHrZ
-         /IDDIp2Nyi2dbSZdL6+Ei9b5G3ZMuxLX9s5g4bydz+1ckRRkhVPa7wy6pmUCguarxPbh
-         epoFYuHCZKmDhp6ZKwj5KTTRyS1Q0tbs+LrdiSIOPYHBYzINIkvLAHCEr5lqIFc76ZZb
-         5e0do7Y2NA3anxjjEQ+kcNYGtmyW38wVsVqiIBJnGEzJucPGI8FbisgPd1XdjqPAcXQE
-         VqOmfZPXnTlhqnPmebHsDCU0B2A3gx3qh3moPnlcGFqdaG/G3Psf36RCkMHMJmKYMYoU
-         xLCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=UKroOh2PouJyW9aIDGfDz6KjqY9gVQj12EPFSDublmA=;
-        b=hNBJ8SSNCBEYzb21CEeX1NdnBs7tJxJqGxx1ih57NyR5fv+WZ/sQ2WVnpqnT0XP1Lp
-         GlDLPBi479fBrQWJdz2OchhC5czTYrYQEyq8PA7i8gqVsf2h5kFZpS2czq/AqVqoo8AJ
-         K/xjWs12A4ki6a7+wNOhR+xBJSbGSqKWcVxq4Xhe5ExXe39g5gOWK5JeTzvnQMnax5lC
-         p2uUCqMxehzF7+jdxaB6c2JHWIKG3DjAsW8KXoc6sZZLjEuMt6QnuJqO4L3bl/LO2lRf
-         7Hpm+4YFio39c61vZYBcsGYuFsnmgwdSY9Kz+y5wak3baL7T1k8IJMKGa+impUxxEftN
-         e5fQ==
-X-Gm-Message-State: AOAM532TyM0mWv0jY2l7bDy6T4q5CMdpY5b0BEvrXw8umW6CtNG11D3a
-        rAnfNkEaCs+Tw8DXrstuS+fTa0QGIw5bB/NhDuedsQ==
-X-Google-Smtp-Source: ABdhPJwxlPUfGtzfy33AVJzkSkvw1FkcvOCUrRT614H0OzqvY7RE2DoHu5yieo8v50b5ATxQYMVDFbWOcCKbmYEaOxE=
-X-Received: by 2002:a92:aa07:: with SMTP id j7mr3394310ili.40.1589547379907;
- Fri, 15 May 2020 05:56:19 -0700 (PDT)
+        id S1726234AbgEONMT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 15 May 2020 09:12:19 -0400
+Received: from mout.kundenserver.de ([212.227.126.135]:46405 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726140AbgEONMT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 09:12:19 -0400
+Received: from mail-qv1-f52.google.com ([209.85.219.52]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MlsWZ-1irCxX2oex-00j3ld; Fri, 15 May 2020 15:12:16 +0200
+Received: by mail-qv1-f52.google.com with SMTP id l3so1010890qvo.7;
+        Fri, 15 May 2020 06:12:16 -0700 (PDT)
+X-Gm-Message-State: AOAM530LkO6Ejh7NLH/YllxbvXRsA0epdjGiwFt5cehSdCFbS8SzU0dp
+        V7p7FUM8Wu4CihVnDBaASbRXTCCbey/Gu5qEqU4=
+X-Google-Smtp-Source: ABdhPJzL0kbPaWt/UYw2Uz2rNIXYk/KnlaMI5B0hSICGSdegHY/AByOI15lsImUtudCP8+CPlNhdx49cfpzs91/rvyQ=
+X-Received: by 2002:a05:6214:1392:: with SMTP id g18mr3170818qvz.210.1589548335328;
+ Fri, 15 May 2020 06:12:15 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200514075942.10136-1-brgl@bgdev.pl> <20200514075942.10136-11-brgl@bgdev.pl>
  <CAK8P3a3=xgbvqrSpCK5h96eRH32AA7xnoK2ossvT0-cLFLzmXA@mail.gmail.com>
- <CAMRc=MeypzZBHo6dJGKm4JujYyejqHxtdo7Ts95DXuL0VuMYCw@mail.gmail.com> <CAK8P3a0u53rHSW=72CnnbhrY28Z+9f=Yv2K-bbj5OD+2Ds4unA@mail.gmail.com>
-In-Reply-To: <CAK8P3a0u53rHSW=72CnnbhrY28Z+9f=Yv2K-bbj5OD+2Ds4unA@mail.gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Fri, 15 May 2020 14:56:09 +0200
-Message-ID: <CAMRc=Mf_vYt1J-cc6aZ2-Qv_YDEymVoC7ZiwuG9BrXoGMsXepw@mail.gmail.com>
+ <CAMRc=MeypzZBHo6dJGKm4JujYyejqHxtdo7Ts95DXuL0VuMYCw@mail.gmail.com>
+ <CAK8P3a0u53rHSW=72CnnbhrY28Z+9f=Yv2K-bbj5OD+2Ds4unA@mail.gmail.com> <CAMRc=Mf_vYt1J-cc6aZ2-Qv_YDEymVoC7ZiwuG9BrXoGMsXepw@mail.gmail.com>
+In-Reply-To: <CAMRc=Mf_vYt1J-cc6aZ2-Qv_YDEymVoC7ZiwuG9BrXoGMsXepw@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 15 May 2020 15:11:59 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a13k+X0XkkX=12x+22qVt_xxTBZr52ONQGdAY2T6XbpyA@mail.gmail.com>
+Message-ID: <CAK8P3a13k+X0XkkX=12x+22qVt_xxTBZr52ONQGdAY2T6XbpyA@mail.gmail.com>
 Subject: Re: [PATCH v3 10/15] net: ethernet: mtk-eth-mac: new driver
-To:     Arnd Bergmann <arnd@arndb.de>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
 Cc:     Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Matthias Brugger <matthias.bgg@gmail.com>,
@@ -74,121 +54,69 @@ Cc:     Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
         Andrew Perepech <andrew.perepech@mediatek.com>,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:Fbbb/Tu1JEHdbirs7W2eZ4b5soDWkcqrpUNCd5AaHYPNk6HxGy2
+ OSilgEREmRLlSUYRmbxeJZ85CkgnfW4dK1joqZ3jpfDTq4NRC0izCAffyT40kiZzV1i9FLq
+ A1yhR0K89YColUJjT0UhQ4vNN3yQPnVsQWWCcE6V8NNBW00qi1BgU9sK72ZD8AynvMdl1zz
+ ZMyZoFoeBfDDXmQBmG6hQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/aU9I5jDUPI=:U4e6GhX/+tv+OxvqBwcDO/
+ b0pfnGyT5+zIonA26dv83VamYMMs3WmnG/ofxiOzpfRB6WRvdJQDM+vbQr4ZeamjIb6kOOXoR
+ PWkqIe5XJL8jJBv0cyZ9gfFVqUSVokQel8BQA5G2OA5Lv4M7WDo8UMdAekijVV+xqIMtft+4k
+ Coo2Rtdm4vGG3ApnDOa7MsPIXUnHuZI0sPOFn/xgaB1rtHzIcl2sN8xtQPjvtZ33t7Atpk9ht
+ djwz+V6SnN1KbXT5HEPYiKXJQ2GPX825lmd/gvjW3V/afKjhqCmhCj7ZRNDvsJ58wLPQqJgev
+ Ez0u6D5IsNRXaugy6jHJe5sP0dIGs/cSeNeQJcSZgx2RLIda96pMxCM5E1Jf7Sc7GIBGD9iLP
+ fP+hpCBfqjUxbdtp2tpSTtHuHRR0wiV8wUNjqr66UullH+sjzH5EdK6ZVJPNRNKIVuT5za3UU
+ sBedh6JGQ325SVv05i/3v5IsjR6YUidCGjVKmUl9AFXMNuXJtfr+bMHBsc4MvdfaQn725yvTt
+ CFYobvYhrDZAa/gW4txI9C2/4yppbom8TPCwslmd+kHIRmzqoiQOVtXQBE+Uzw4t4iIKuTdmH
+ aLp+0K9DK3L4n+cMiAzH/uKBaFSC8r4+twq62UpOxRlHDcQqloDgwxEzPVn6aMMH/6i5ofFug
+ qtEtxxXQB2L39Pi+gevNMvv6iAgtl+S2ZwMjlNDYxc6mnkCLLDOWGLMXtvdzLtKAnqYIEyV9Q
+ FyYkH2LOrLxakAQGI9lIER04XlKrtLuC1jXYLJvh6Oav62Jcj51NbJht/gvLaJrn0qjLX8WAp
+ UuVCzeHLdEK/xMBQs5hosTYMq/9z7yVIqRZ+qSVl+A5uhx0ZjI=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pt., 15 maj 2020 o 14:04 Arnd Bergmann <arnd@arndb.de> napisa=C5=82(a):
->
-> On Fri, May 15, 2020 at 9:11 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote=
-:
+On Fri, May 15, 2020 at 2:56 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> pt., 15 maj 2020 o 14:04 Arnd Bergmann <arnd@arndb.de> napisał(a):
+> > On Fri, May 15, 2020 at 9:11 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+
+> > > >
+> > > > It looks like most of the stuff inside of the loop can be pulled out
+> > > > and only done once here.
+> > > >
+> > >
+> > > I did that in one of the previous submissions but it was pointed out
+> > > to me that a parallel TX path may fill up the queue before I wake it.
 > >
-> > czw., 14 maj 2020 o 18:19 Arnd Bergmann <arnd@arndb.de> napisa=C5=82(a)=
-:
-> > >
-> > > On Thu, May 14, 2020 at 10:00 AM Bartosz Golaszewski <brgl@bgdev.pl> =
-wrote:
-> > > > +static unsigned int mtk_mac_intr_read_and_clear(struct mtk_mac_pri=
-v *priv)
-> > > > +{
-> > > > +       unsigned int val;
-> > > > +
-> > > > +       regmap_read(priv->regs, MTK_MAC_REG_INT_STS, &val);
-> > > > +       regmap_write(priv->regs, MTK_MAC_REG_INT_STS, val);
-> > > > +
-> > > > +       return val;
-> > > > +}
-> > >
-> > > Do you actually need to read the register? That is usually a relative=
-ly
-> > > expensive operation, so if possible try to use clear the bits when
-> > > you don't care which bits were set.
-> > >
+> > Right, I see you plugged that hole, however the way you hold the
+> > spinlock across the expensive DMA management but then give it
+> > up in each loop iteration feels like this is not the most efficient
+> > way.
 > >
-> > I do care, I'm afraid. The returned value is being used in the napi
-> > poll callback to see which ring to process.
 >
-> I suppose the other callers are not performance critical.
->
-> For the rx and tx processing, it should be better to just always look at
-> the queue directly and ignore the irq status, in particular when you
-> are already in polling mode: suppose you receive ten frames at once
-> and only process five but clear the irq flag.
->
-> When the poll function is called again, you still need to process the
-> others, but I would assume that the status tells you that nothing
-> new has arrived so you don't process them until the next interrupt.
->
-> For the statistics, I assume you do need to look at the irq status,
-> but this doesn't have to be done in the poll function. How about
-> something like:
->
-> - in hardirq context, read the irq status word
-> - irq rx or tx irq pending, call napi_schedule
-> - if stats irq pending, schedule a work function
-> - in napi poll, process both queues until empty or
->   budget exhausted
-> - if packet processing completed in poll function
->   ack the irq and check again, call napi_complete
-> - in work function, handle stats irq, then ack it
->
+> Maybe my thinking is wrong here, but I assumed that with a spinlock
+> it's better to give other threads the chance to run in between each
+> iteration. I didn't benchmark it though.
 
-I see your point. I'll try to come up with something and send a new
-version on Monday.
+It depends. You want to avoid lock contention (two threads trying to
+get the lock at the same time) but you also want to avoid bouncing
+around the spinlock between the caches.
 
-> > > > +static void mtk_mac_tx_complete_all(struct mtk_mac_priv *priv)
-> > > > +{
-> > > > +       struct mtk_mac_ring *ring =3D &priv->tx_ring;
-> > > > +       struct net_device *ndev =3D priv->ndev;
-> > > > +       int ret;
-> > > > +
-> > > > +       for (;;) {
-> > > > +               mtk_mac_lock(priv);
-> > > > +
-> > > > +               if (!mtk_mac_ring_descs_available(ring)) {
-> > > > +                       mtk_mac_unlock(priv);
-> > > > +                       break;
-> > > > +               }
-> > > > +
-> > > > +               ret =3D mtk_mac_tx_complete_one(priv);
-> > > > +               if (ret) {
-> > > > +                       mtk_mac_unlock(priv);
-> > > > +                       break;
-> > > > +               }
-> > > > +
-> > > > +               if (netif_queue_stopped(ndev))
-> > > > +                       netif_wake_queue(ndev);
-> > > > +
-> > > > +               mtk_mac_unlock(priv);
-> > > > +       }
-> > > > +}
-> > >
-> > > It looks like most of the stuff inside of the loop can be pulled out
-> > > and only done once here.
-> > >
-> >
-> > I did that in one of the previous submissions but it was pointed out
-> > to me that a parallel TX path may fill up the queue before I wake it.
->
-> Right, I see you plugged that hole, however the way you hold the
-> spinlock across the expensive DMA management but then give it
-> up in each loop iteration feels like this is not the most efficient
-> way.
->
+In the contention case, what I think would happen here is that the
+cleanup thread gives up the lock and the xmit function gets it, but
+then the cleanup thread is spinning again, so you are still blocked
+on one of the two CPUs but also pay the overhead of synchronizing
+between the two.
 
-Maybe my thinking is wrong here, but I assumed that with a spinlock
-it's better to give other threads the chance to run in between each
-iteration. I didn't benchmark it though.
+Holding the lock the whole time would speed up both the good case
+(no contention) and the bad case (bouncing the lock) a little bit
+because it saves some overhead. Holding the lock for shorter
+times (i.e. not during the cache operations) would reduce the
+amount of lock-contention but not help in the good case.
 
-> The easy way would be to just hold the lock across the entire
-> loop and then be sure you do it right. Alternatively you could
-> minimize the locking and only do the wakeup after up do the final
-> update to the tail pointer, at which point you know the queue is not
-> full because you have just freed up at least one entry.
->
+Not needing a lock at all is generally best, but getting it right
+is tricky ;-)
 
-Makes sense, I'll see what I can do.
-
-Bartosz
+      Arnd
