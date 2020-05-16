@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40AA81D5FBF
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:47:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3923F1D5FC1
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:47:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgEPIrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 04:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38164 "EHLO
+        id S1726978AbgEPIrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 04:47:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbgEPIrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 04:47:09 -0400
+        with ESMTP id S1725997AbgEPIrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 04:47:18 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93872C061A0C
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 01:47:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77940C061A0C
+        for <netdev@vger.kernel.org>; Sat, 16 May 2020 01:47:18 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1jZsTM-0005sd-82; Sat, 16 May 2020 10:47:08 +0200
+        id 1jZsTV-0005t0-5L; Sat, 16 May 2020 10:47:17 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     pabeni@redhat.com, mathew.j.martineau@linux.intel.com,
         matthieu.baerts@tessares.net, Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 2/7] mptcp: break and restart in case mptcp sndbuf is full
-Date:   Sat, 16 May 2020 10:46:18 +0200
-Message-Id: <20200516084623.28453-3-fw@strlen.de>
+Subject: [PATCH net-next 3/7] mptcp: avoid blocking in tcp_sendpages
+Date:   Sat, 16 May 2020 10:46:19 +0200
+Message-Id: <20200516084623.28453-4-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200516084623.28453-1-fw@strlen.de>
 References: <20200516084623.28453-1-fw@strlen.de>
@@ -34,96 +34,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Its not enough to check for available tcp send space.
+The transmit loop continues to xmit new data until an error is returned
+or all data was transmitted.
 
-We also hold on to transmitted data for mptcp-level retransmits.
-Right now we will send more and more data if the peer can ack data
-at the tcp level fast enough, since that frees up tcp send buffer space.
+For the blocking i/o case, this means that tcp_sendpages() may block on
+the subflow until more space becomes available, i.e. we end up sleeping
+with the mptcp socket lock held.
 
-But we also need to check that data was acked and reclaimed at the mptcp
-level.
+Instead we should check if a different subflow is ready to be used.
 
-Therefore add needed check in mptcp_sendmsg, flush tcp data and
-wait until more mptcp snd space becomes available if we are over the
-limit.  Before we wait for more data, also make sure we start the
-retransmit timer if we ran out of sndbuf space.
+This restarts the subflow sk lookup when the tx operation succeeded
+and the tcp subflow can't accept more data or if tcp_sendpages
+indicates -EAGAIN on a blocking mptcp socket.
 
-Otherwise there is a very small chance that we wait forever:
+In that case we also need to set the NOSPACE bit to make sure we get
+notified once memory becomes available.
 
- * receiver is waiting for data
- * sender is blocked because mptcp socket buffer is full
- * at tcp level, all data was acked
- * mptcp-level snd_una was not updated, because last ack
-   that acknowledged the last data packet carried an older
-   MPTCP-ack.
+In case all subflows are busy, the existing logic will wait until a
+subflow is ready, releasing the mptcp socket lock while doing so.
 
-Restarting the retransmit timer avoids this problem: if TCP
-subflow is idle, data is retransmitted from the RTX queue.
+The mptcp worker already sets DONTWAIT, so no need to make changes there.
 
-New data will make the peer send a new, updated MPTCP-Ack.
+v2:
+ * set NOSPACE bit
+ * add a comment to clarify that mptcp-sk sndbuf limits need to
+   be checked as well.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/mptcp/protocol.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ net/mptcp/protocol.c | 35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 0413454fcdaf..75be8d662ac5 100644
+index 75be8d662ac5..e97357066b21 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -739,9 +739,23 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+@@ -590,7 +590,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 	 * access the skb after the sendpages call
+ 	 */
+ 	ret = do_tcp_sendpages(ssk, page, offset, psize,
+-			       msg->msg_flags | MSG_SENDPAGE_NOTLAST);
++			       msg->msg_flags | MSG_SENDPAGE_NOTLAST | MSG_DONTWAIT);
+ 	if (ret <= 0)
+ 		return ret;
  
- 	mptcp_clean_una(sk);
+@@ -713,6 +713,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct socket *ssock;
+ 	size_t copied = 0;
+ 	struct sock *ssk;
++	bool tx_ok;
+ 	long timeo;
  
-+wait_for_sndbuf:
- 	__mptcp_flush_join_list(msk);
- 	ssk = mptcp_subflow_get_send(msk);
- 	while (!sk_stream_memory_free(sk) || !ssk) {
-+		if (ssk) {
-+			/* make sure retransmit timer is
-+			 * running before we wait for memory.
-+			 *
-+			 * The retransmit timer might be needed
-+			 * to make the peer send an up-to-date
-+			 * MPTCP Ack.
-+			 */
-+			mptcp_set_timeout(sk, ssk);
-+			if (!mptcp_timer_pending(sk))
-+				mptcp_reset_timer(sk);
-+		}
-+
- 		ret = sk_stream_wait_memory(sk, &timeo);
- 		if (ret)
- 			goto out;
-@@ -776,6 +790,28 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		}
- 
- 		copied += ret;
-+
-+		/* memory is charged to mptcp level socket as well, i.e.
-+		 * if msg is very large, mptcp socket may run out of buffer
-+		 * space.  mptcp_clean_una() will release data that has
-+		 * been acked at mptcp level in the mean time, so there is
-+		 * a good chance we can continue sending data right away.
-+		 */
-+		if (unlikely(!sk_stream_memory_free(sk))) {
-+			tcp_push(ssk, msg->msg_flags, mss_now,
-+				 tcp_sk(ssk)->nonagle, size_goal);
-+			mptcp_clean_una(sk);
-+			if (!sk_stream_memory_free(sk)) {
-+				/* can't send more for now, need to wait for
-+				 * MPTCP-level ACKs from peer.
-+				 *
-+				 * Wakeup will happen via mptcp_clean_una().
-+				 */
-+				mptcp_set_timeout(sk, ssk);
-+				release_sock(ssk);
-+				goto wait_for_sndbuf;
-+			}
-+		}
+ 	if (msg->msg_flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL))
+@@ -737,6 +738,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		return ret >= 0 ? ret + copied : (copied ? copied : ret);
  	}
  
- 	mptcp_set_timeout(sk, ssk);
++restart:
+ 	mptcp_clean_una(sk);
+ 
+ wait_for_sndbuf:
+@@ -772,11 +774,18 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	pr_debug("conn_list->subflow=%p", ssk);
+ 
+ 	lock_sock(ssk);
+-	while (msg_data_left(msg)) {
++	tx_ok = msg_data_left(msg);
++	while (tx_ok) {
+ 		ret = mptcp_sendmsg_frag(sk, ssk, msg, NULL, &timeo, &mss_now,
+ 					 &size_goal);
+-		if (ret < 0)
++		if (ret < 0) {
++			if (ret == -EAGAIN && timeo > 0) {
++				mptcp_set_timeout(sk, ssk);
++				release_sock(ssk);
++				goto restart;
++			}
+ 			break;
++		}
+ 		if (ret == 0 && unlikely(__mptcp_needs_tcp_fallback(msk))) {
+ 			/* Can happen for passive sockets:
+ 			 * 3WHS negotiated MPTCP, but first packet after is
+@@ -791,11 +800,31 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ 		copied += ret;
+ 
++		tx_ok = msg_data_left(msg);
++		if (!tx_ok)
++			break;
++
++		if (!sk_stream_memory_free(ssk)) {
++			set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
++			tcp_push(ssk, msg->msg_flags, mss_now,
++				 tcp_sk(ssk)->nonagle, size_goal);
++			mptcp_set_timeout(sk, ssk);
++			release_sock(ssk);
++			goto restart;
++		}
++
+ 		/* memory is charged to mptcp level socket as well, i.e.
+ 		 * if msg is very large, mptcp socket may run out of buffer
+ 		 * space.  mptcp_clean_una() will release data that has
+ 		 * been acked at mptcp level in the mean time, so there is
+ 		 * a good chance we can continue sending data right away.
++		 *
++		 * Normally, when the tcp subflow can accept more data, then
++		 * so can the MPTCP socket.  However, we need to cope with
++		 * peers that might lag behind in their MPTCP-level
++		 * acknowledgements, i.e.  data might have been acked at
++		 * tcp level only.  So, we must also check the MPTCP socket
++		 * limits before we send more data.
+ 		 */
+ 		if (unlikely(!sk_stream_memory_free(sk))) {
+ 			tcp_push(ssk, msg->msg_flags, mss_now,
 -- 
 2.26.2
 
