@@ -2,176 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE091D5E41
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 05:43:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2475C1D5E47
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 05:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbgEPDnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 23:43:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45792 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726247AbgEPDnF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 23:43:05 -0400
-Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 773F320728;
-        Sat, 16 May 2020 03:43:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589600585;
-        bh=9Yr3NqlaT8J3yD/oIp4iOMhtlWnif5o5ocW4LHaILdM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gyBQnTy1kkqh/qqbQgXTvgoLZUb4vpkCq+qjNMxNfH2LO1uD/nFf2CQ93t2pqZ2HH
-         Nvv3z8XinGroioseW6l362KaQNKI1k7UrzuUhEywWLMpAOhwLDsF/32qhs84qDVP/z
-         cpTKthgjLlt17JXXUVZs8KirdFerSU19m7odBjKc=
-Date:   Sat, 16 May 2020 12:42:59 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-parisc@vger.kernel.org, linux-um@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 14/18] maccess: allow architectures to provide kernel
- probing directly
-Message-Id: <20200516124259.5b68a4e1d4670efa1397a1e0@kernel.org>
-In-Reply-To: <20200513160038.2482415-15-hch@lst.de>
-References: <20200513160038.2482415-1-hch@lst.de>
-        <20200513160038.2482415-15-hch@lst.de>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1727885AbgEPDsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 23:48:20 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:42620 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726247AbgEPDsU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 May 2020 23:48:20 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id E748392A9D799AE0A1EB;
+        Sat, 16 May 2020 11:48:16 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Sat, 16 May 2020 11:48:10 +0800
+From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Yuqi Jin <jinyuqi@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jiong Wang <jiongwang@huawei.com>,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>
+Subject: [PATCH v2] net: revert "net: get rid of an signed integer overflow in ip_idents_reserve()"
+Date:   Sat, 16 May 2020 11:46:49 +0800
+Message-ID: <1589600809-18001-1-git-send-email-zhangshaokun@hisilicon.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christoph,
+From: Yuqi Jin <jinyuqi@huawei.com>
 
-On Wed, 13 May 2020 18:00:34 +0200
-Christoph Hellwig <hch@lst.de> wrote:
+Commit adb03115f459 ("net: get rid of an signed integer overflow in ip_idents_reserve()")
+used atomic_cmpxchg to replace "atomic_add_return" inside the function
+"ip_idents_reserve". The reason was to avoid UBSAN warning.
+However, this change has caused performance degrade and in GCC-8,
+fno-strict-overflow is now mapped to -fwrapv -fwrapv-pointer
+and signed integer overflow is now undefined by default at all
+optimization levels[1]. Moreover, it was a bug in UBSAN vs -fwrapv
+/-fno-strict-overflow, so Let's revert it safely.
 
-> Provide alternative versions of probe_kernel_read, probe_kernel_write
-> and strncpy_from_kernel_unsafe that don't need set_fs magic, but instead
-> use arch hooks that are modelled after unsafe_{get,put}_user to access
-> kernel memory in an exception safe way.
+[1] https://gcc.gnu.org/gcc-8/changes.html
 
-This patch seems to introduce new implementation of probe_kernel_read/write()
-and strncpy_from_kernel_unsafe(), but also drops copy_from/to_kernel_nofault()
-and strncpy_from_kernel_nofault() if HAVE_ARCH_PROBE_KERNEL is defined.
-In the result, this cause a link error with BPF and kprobe events.
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Suggested-by: Eric Dumazet <edumazet@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: Arvind Sankar <nivedita@alum.mit.edu>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jiong Wang <jiongwang@huawei.com>
+Signed-off-by: Yuqi Jin <jinyuqi@huawei.com>
+Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+---
+ChangLog:
+    * Revise the commit log
+    * Add some comments. If it's wholly unnecessary, we
+can remove it.
 
-BTW, what is the difference of *_unsafe() and *_nofault()?
-(maybe we make those to *_nofault() finally?)
+Patch v1: https://patchwork.ozlabs.org/project/netdev/patch/1579058620-26684-1-git-send-email-zhangshaokun@hisilicon.com/
 
-Thank you,
+ net/ipv4/route.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  mm/maccess.c | 76 ++++++++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 76 insertions(+)
-> 
-> diff --git a/mm/maccess.c b/mm/maccess.c
-> index 9773e2253b495..e9efe2f98e34a 100644
-> --- a/mm/maccess.c
-> +++ b/mm/maccess.c
-> @@ -12,6 +12,81 @@ bool __weak probe_kernel_read_allowed(void *dst, const void *unsafe_src,
->  	return true;
->  }
->  
-> +#ifdef HAVE_ARCH_PROBE_KERNEL
-> +
-> +#define probe_kernel_read_loop(dst, src, len, type, err_label)		\
-> +	while (len >= sizeof(type)) {					\
-> +		arch_kernel_read(dst, src, type, err_label);		\
-> +		dst += sizeof(type);					\
-> +		src += sizeof(type);					\
-> +		len -= sizeof(type);					\
-> +	}
-> +
-> +long probe_kernel_read(void *dst, const void *src, size_t size)
-> +{
-> +	if (!probe_kernel_read_allowed(dst, src, size))
-> +		return -EFAULT;
-> +
-> +	pagefault_disable();
-> +	probe_kernel_read_loop(dst, src, size, u64, Efault);
-> +	probe_kernel_read_loop(dst, src, size, u32, Efault);
-> +	probe_kernel_read_loop(dst, src, size, u16, Efault);
-> +	probe_kernel_read_loop(dst, src, size, u8, Efault);
-> +	pagefault_enable();
-> +	return 0;
-> +Efault:
-> +	pagefault_enable();
-> +	return -EFAULT;
-> +}
-> +EXPORT_SYMBOL_GPL(probe_kernel_read);
-> +
-> +#define probe_kernel_write_loop(dst, src, len, type, err_label)		\
-> +	while (len >= sizeof(type)) {					\
-> +		arch_kernel_write(dst, src, type, err_label);		\
-> +		dst += sizeof(type);					\
-> +		src += sizeof(type);					\
-> +		len -= sizeof(type);					\
-> +	}
-> +
-> +long probe_kernel_write(void *dst, const void *src, size_t size)
-> +{
-> +	pagefault_disable();
-> +	probe_kernel_write_loop(dst, src, size, u64, Efault);
-> +	probe_kernel_write_loop(dst, src, size, u32, Efault);
-> +	probe_kernel_write_loop(dst, src, size, u16, Efault);
-> +	probe_kernel_write_loop(dst, src, size, u8, Efault);
-> +	pagefault_enable();
-> +	return 0;
-> +Efault:
-> +	pagefault_enable();
-> +	return -EFAULT;
-> +}
-> +
-> +long strncpy_from_kernel_unsafe(char *dst, const void *unsafe_addr, long count)
-> +{
-> +	const void *src = unsafe_addr;
-> +
-> +	if (unlikely(count <= 0))
-> +		return 0;
-> +	if (!probe_kernel_read_allowed(dst, unsafe_addr, count))
-> +		return -EFAULT;
-> +
-> +	pagefault_disable();
-> +	do {
-> +		arch_kernel_read(dst, src, u8, Efault);
-> +		dst++;
-> +		src++;
-> +	} while (dst[-1] && src - unsafe_addr < count);
-> +	pagefault_enable();
-> +
-> +	dst[-1] = '\0';
-> +	return src - unsafe_addr;
-> +Efault:
-> +	pagefault_enable();
-> +	dst[-1] = '\0';
-> +	return -EFAULT;
-> +}
-> +#else /* HAVE_ARCH_PROBE_KERNEL */
->  /**
->   * probe_kernel_read(): safely attempt to read from kernel-space
->   * @dst: pointer to the buffer that shall take the data
-> @@ -114,6 +189,7 @@ long strncpy_from_kernel_nofault(char *dst, const void *unsafe_addr, long count)
->  
->  	return ret ? -EFAULT : src - unsafe_addr;
->  }
-> +#endif /* HAVE_ARCH_PROBE_KERNEL */
->  
->  /**
->   * probe_user_read(): safely attempt to read from a user-space location
-> -- 
-> 2.26.2
-> 
-
-
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 788c69d9bfe0..455871d6b3a0 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -491,18 +491,16 @@ u32 ip_idents_reserve(u32 hash, int segs)
+ 	atomic_t *p_id = ip_idents + hash % IP_IDENTS_SZ;
+ 	u32 old = READ_ONCE(*p_tstamp);
+ 	u32 now = (u32)jiffies;
+-	u32 new, delta = 0;
++	u32 delta = 0;
+ 
+ 	if (old != now && cmpxchg(p_tstamp, old, now) == old)
+ 		delta = prandom_u32_max(now - old);
+ 
+-	/* Do not use atomic_add_return() as it makes UBSAN unhappy */
+-	do {
+-		old = (u32)atomic_read(p_id);
+-		new = old + delta + segs;
+-	} while (atomic_cmpxchg(p_id, old, new) != old);
+-
+-	return new - segs;
++	/* If UBSAN reports an error there, please make sure your compiler
++	 * supports -fno-strict-overflow before reporting it that was a bug
++	 * in UBSAN, and it has been fixed in GCC-8.
++	 */
++	return atomic_add_return(segs + delta, p_id) - segs;
+ }
+ EXPORT_SYMBOL(ip_idents_reserve);
+ 
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.7.4
+
