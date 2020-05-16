@@ -2,95 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 098FD1D5E60
+	by mail.lfdr.de (Postfix) with ESMTP id E51D31D5E62
 	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 06:06:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbgEPEFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 00:05:55 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:30385 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725797AbgEPEFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 00:05:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589601954;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3GThcFJi6mjPq3yR/OkVZogFkUGUPuA1kG+DkwzxNmo=;
-        b=gWYDT0nShZKyCnp6UeC3PacpmrHz5AFYwRW0yqr08BUpFtz6QmB8ODzShYVUQXL5NXWOO1
-        CMEtnKlGxVEU0xlWsgHoevNbU0DWmythWSZNP+bsh/RE2yzNHaV8iJi1X4SYWHoByfpuMg
-        ZRAkmy97lKaHh0zWI6TTOPXlCX3ofHc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-393-tFkabqqYO_OyUY77sZkaIg-1; Sat, 16 May 2020 00:05:46 -0400
-X-MC-Unique: tFkabqqYO_OyUY77sZkaIg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 670018005AD;
-        Sat, 16 May 2020 04:05:43 +0000 (UTC)
-Received: from x1-fbsd (unknown [10.3.128.10])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2E58812A4D;
-        Sat, 16 May 2020 04:05:29 +0000 (UTC)
-Date:   Sat, 16 May 2020 00:05:26 -0400
-From:   Rafael Aquini <aquini@redhat.com>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
-        rostedt@goodmis.org, mingo@redhat.com, cai@lca.pw,
-        dyoung@redhat.com, bhe@redhat.com, peterz@infradead.org,
-        tglx@linutronix.de, gpiccoli@canonical.com, pmladek@suse.com,
-        tiwai@suse.de, schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-everest-linux-l2@marvell.com
-Subject: Re: [PATCH v2 03/15] bnx2x: use new module_firmware_crashed()
-Message-ID: <20200516040526.GC3182@x1-fbsd>
-References: <20200515212846.1347-1-mcgrof@kernel.org>
- <20200515212846.1347-4-mcgrof@kernel.org>
+        id S1726462AbgEPEGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 00:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725275AbgEPEGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 00:06:18 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE37DC061A0C;
+        Fri, 15 May 2020 21:06:17 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id k19so1736388pll.9;
+        Fri, 15 May 2020 21:06:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tcMo9k9IWtMOjQaxDVoLESBBbq+oDKX1tIAb1rdocqY=;
+        b=Fp4HMknEq0jWdME2pS6G66k2yzuYZlT4ZS7jIEYv5OQcTWJkQbVFzZYW/Bgir+ewW+
+         43G7K88IbCMg82b76WohLyvm/JUydmcLdUOtvA/JX4KB5L+QQ427F+8t7Fs7lyfbf4JQ
+         gj42Te1dOhHLltrjTt/wuAMyzCCCE3sLHId5eP7Bmbmpm3JszmK7USEybt/0RDg7wDXF
+         EQwWoIqCRUILUQy8jg3cw6dy2hKZcOkoY+aK305CIw16RHSW1aaso+O7rjJe1nIVVsob
+         xUE+HLmhvsjrMahlXjdctK+A1OUbzAQoMqBUdSz9W5qn+2GwDosptVxkdpnWejGVdAJV
+         qUNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tcMo9k9IWtMOjQaxDVoLESBBbq+oDKX1tIAb1rdocqY=;
+        b=uVNPbVhRW5uic+K2FKg1Z+hSAcX/ksjS3HkH50ZiMf1L/Dn3O7VLSIslEWLZ+BxdOL
+         gxqJdR6gFEZEiGa+/q+eo0Yz5pgucAPK5RrwYwQ1wcE60aOQex0cv7gj7BO7CF2dtWQZ
+         z+6Gf6miQ2rNws9zqNYrV0Pfa4unmyeC4wZDRayfucJ2rR3zjNY6QEgaZDWo4BATF6d7
+         Hw3RcAFMjhbQgbFDtm2rciNPCsnfzLWlweS+9g2mwPEpNa+UC+sPFJ3Tk85r6LggZEP6
+         ce6vzbGhHL5A0lirQo1xpJT2YV8qWJF7zRbxs2Lw9HZG5yKQGZCCS4XMfaWFHi309tS/
+         28bg==
+X-Gm-Message-State: AOAM531bVAeCS3/XXxLMrj6edZkuop3ej94fWZOi5GK0oXShU6zqDeWp
+        J6bKGGXTcS6TBORfuLXCig==
+X-Google-Smtp-Source: ABdhPJz2cb5cOU9I/Ay/zw3g6UavT5t4mThTvUtCs2Kx/y3X1vy7KXjAckJ/HDXdEqyWW0aJRsen5w==
+X-Received: by 2002:a17:902:bc48:: with SMTP id t8mr6657257plz.121.1589601976452;
+        Fri, 15 May 2020 21:06:16 -0700 (PDT)
+Received: from localhost.localdomain ([219.255.158.173])
+        by smtp.gmail.com with ESMTPSA id b11sm98663pjz.54.2020.05.15.21.06.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 May 2020 21:06:15 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>
+Subject: [PATCH bpf-next v2 0/5] samples: bpf: refactor kprobe tracing progs with libbpf
+Date:   Sat, 16 May 2020 13:06:03 +0900
+Message-Id: <20200516040608.1377876-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200515212846.1347-4-mcgrof@kernel.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 09:28:34PM +0000, Luis Chamberlain wrote:
-> This makes use of the new module_firmware_crashed() to help
-> annotate when firmware for device drivers crash. When firmware
-> crashes devices can sometimes become unresponsive, and recovery
-> sometimes requires a driver unload / reload and in the worst cases
-> a reboot.
-> 
-> Using a taint flag allows us to annotate when this happens clearly.
-> 
-> Cc: Ariel Elior <aelior@marvell.com>
-> Cc: Sudarsana Kalluru <skalluru@marvell.com>
-> CC: GR-everest-linux-l2@marvell.com
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> ---
->  drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-> index db5107e7937c..c38b8c9c8af0 100644
-> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-> @@ -909,6 +909,7 @@ void bnx2x_panic_dump(struct bnx2x *bp, bool disable_int)
->  	bp->eth_stats.unrecoverable_error++;
->  	DP(BNX2X_MSG_STATS, "stats_state - DISABLED\n");
->  
-> +	module_firmware_crashed();
->  	BNX2X_ERR("begin crash dump -----------------\n");
->  
->  	/* Indices */
-> -- 
-> 2.26.2
-> 
-Acked-by: Rafael Aquini <aquini@redhat.com>
+Currently, the kprobe BPF program attachment method for bpf_load is
+pretty outdated. The implementation of bpf_load "directly" controls and
+manages(create, delete) the kprobe events of DEBUGFS. On the other hand,
+using using the libbpf automatically manages the kprobe event.
+(under bpf_link interface)
+
+This patchset refactors kprobe tracing programs with using libbpf API
+for loading bpf program instead of previous bpf_load implementation.
+
+---
+Changes in V2:
+ - refactor pointer error check with libbpf_get_error
+ - on bpf object open failure, return instead jump to cleanup
+ - add macro for adding architecture prefix to system calls (sys_*)
+
+Daniel T. Lee (5):
+  samples: bpf: refactor pointer error check with libbpf
+  samples: bpf: refactor kprobe tracing user progs with libbpf
+  samples: bpf: refactor tail call user progs with libbpf
+  samples: bpf: add tracex7 test file to .gitignore
+  samples: bpf: refactor kprobe, tail call kern progs map definition
+
+ samples/bpf/.gitignore              |  1 +
+ samples/bpf/Makefile                | 16 +++----
+ samples/bpf/sampleip_kern.c         | 12 +++---
+ samples/bpf/sampleip_user.c         |  7 +--
+ samples/bpf/sockex3_kern.c          | 36 ++++++++--------
+ samples/bpf/sockex3_user.c          | 64 +++++++++++++++++++---------
+ samples/bpf/trace_common.h          | 13 ++++++
+ samples/bpf/trace_event_kern.c      | 24 +++++------
+ samples/bpf/trace_event_user.c      |  9 ++--
+ samples/bpf/tracex1_user.c          | 37 +++++++++++++---
+ samples/bpf/tracex2_kern.c          | 27 ++++++------
+ samples/bpf/tracex2_user.c          | 51 ++++++++++++++++++----
+ samples/bpf/tracex3_kern.c          | 24 +++++------
+ samples/bpf/tracex3_user.c          | 61 +++++++++++++++++++-------
+ samples/bpf/tracex4_kern.c          | 12 +++---
+ samples/bpf/tracex4_user.c          | 51 +++++++++++++++++-----
+ samples/bpf/tracex5_kern.c          | 14 +++---
+ samples/bpf/tracex5_user.c          | 66 +++++++++++++++++++++++++----
+ samples/bpf/tracex6_kern.c          | 38 +++++++++--------
+ samples/bpf/tracex6_user.c          | 49 ++++++++++++++++++---
+ samples/bpf/tracex7_user.c          | 39 +++++++++++++----
+ samples/bpf/xdp_redirect_cpu_user.c |  5 +--
+ 22 files changed, 455 insertions(+), 201 deletions(-)
+ create mode 100644 samples/bpf/trace_common.h
+
+-- 
+2.25.1
 
