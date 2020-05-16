@@ -2,99 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A71B31D5EF2
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 07:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7148D1D5F74
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 09:45:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726290AbgEPFvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 01:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
+        id S1726425AbgEPHp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 03:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725807AbgEPFvq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 01:51:46 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2013BC061A0C
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 22:51:46 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id z72so4727562wmc.2
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 22:51:46 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725934AbgEPHp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 03:45:26 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D65FC061A0C;
+        Sat, 16 May 2020 00:45:26 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id n11so2126222pgl.9;
+        Sat, 16 May 2020 00:45:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=dszDuDnhyemW2RGGnijtxG1Knodo/9IdDZ7z98Rmivw=;
-        b=B+g3WPIaWROimrVfn8DD2FSGvGZFTHJ7VlDSSCMPovgN7IRS1yv9aqR92VBMiUskNc
-         Jty3RUK2t/HkHCzWg+q6rGoGjDXxQGo0KOzaijleUZWNbCDYRVACey04n+p2Vi4fE6EX
-         jgPWVoWvo51I+QYjU+epfCmCIiuIdroNZb0N4=
+        bh=QVZpMvi6NwiXQViyAfKl/G+QbYOlYNWFmXEZ+j2oOkw=;
+        b=mP01c83aDSBG6fX2Tqtxc3xSgcasY22lcRN9/wM3nG4n0vYnFF9sGtt8ViCAzY+TTi
+         RmyV0YsOVeDXxPa0jqBl1C5OdWO6UzdT1RTcfx7r4V68UD8k+UfUXOFtR7kwmvfh1Qmh
+         IH8aCJzjQU+/oJdp5MMo4kbRLOzmAUs/UjlIFPo1OD4ewCuIjv8Ze2pzKOgLAIEOOTWh
+         dqEreBtyNkjGBHx4yIqdKgwKyGR3CjjhOpmrudkLUZYLuRIIDGB63fMyOQp2sqfIdmQG
+         Gr+UGhDvSNU2pMhKFvbpfN5ThKxeNJXVC388UeSXC0HPummmGmVZeuHpF9jBzMNx85TO
+         ppTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=dszDuDnhyemW2RGGnijtxG1Knodo/9IdDZ7z98Rmivw=;
-        b=ihtK3mi7/rtg311i/64rvaX5yWlKqWerkS/V+3qm7fvi+AGdxBgLmYkbb3lMlMI3e9
-         CQYx4hnxJPn0k6Zjx9jjIp3luAH07l0qlF0l0lfuWoiozQWjhtY44ihF5gWee31o99a1
-         fy0Z36vE0aVIWRW3tLR27qKaissN9n6f46Xo2H+7XvITWdD99ZzkWx5TwD4HSuy/5BhS
-         e6h4e2d3XiiEHAsFTIscPPYkOpkjjirj856r2eMNIa8oAjvPLH961GRECvFh0goEc44y
-         SvHhk+7pNYzj+ml45xclezpvr59dZ+KHHNyOFQLJ8CJLn6XU1fOgZvpRj/DvGRplk0AP
-         8UsQ==
-X-Gm-Message-State: AOAM532rv3U0sRhwYXqBXOkKXo7qdEzdyrxxxcBzzh5NQgXYcrJ16yxV
-        WELPADPUr+ai3C9Wp/i1Y3X0Nw==
-X-Google-Smtp-Source: ABdhPJwk0EYVlI+c+PisFGuhJkRr/aPARk5J4sIImv9/K2iDhcvHE4liTnvbLX+m8KSxVpgblSEa6A==
-X-Received: by 2002:a7b:c8d4:: with SMTP id f20mr7878919wml.72.1589608302666;
-        Fri, 15 May 2020 22:51:42 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id a12sm6481438wro.68.2020.05.15.22.51.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 May 2020 22:51:42 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     jeyu@kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH] bnxt_en: use new module_firmware_crashed()
-Date:   Sat, 16 May 2020 11:19:17 +0530
-Message-Id: <1589608157-22070-1-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        bh=QVZpMvi6NwiXQViyAfKl/G+QbYOlYNWFmXEZ+j2oOkw=;
+        b=Qu+TjgBqXqMdLNs0igjo0c29d6QuDF1cIkgbTqYGqdfSfNi7YbRHW9b41ydJYV/y/i
+         bQty/YaX4TQvi8lAHsginrUV6n64jxQLZolZWjWtCq1oBIbYa3vQZWgXizsW86Q2FUdc
+         J3zgyWNHhfJguGNR65oeh0SLyUj5Zpxmvc6jX5Giii5mWoMcUZtruXDX1POmrjJOTHKn
+         X/8pU3mkKdLDw2PlwC83Pvh/9bfOD6nMuseWRVQ97clkigFWar2Z5nnxEY9b9nOp6UG2
+         0aP4thHXhTpj0AfUgFIwXQEsMNs5HsMKWGIwek+5/uJsODkZsTvqPvw2hc5PBwXrTBp1
+         dGkA==
+X-Gm-Message-State: AOAM532FkVdDzoYvaEVvGxnUqKozP5EYEnEqZ2Na/G6EHGV1Weo2wE7d
+        hEH8DhrYEAhTMP6fFJwmuw==
+X-Google-Smtp-Source: ABdhPJzGf98P2GYAj4or19dQafaRzvKhEyaYKg7bVelbBsUaJ8BI7Vzom8AM2cUFiYSRdPA7rijXhw==
+X-Received: by 2002:a65:518c:: with SMTP id h12mr4298392pgq.17.1589615125937;
+        Sat, 16 May 2020 00:45:25 -0700 (PDT)
+Received: from localhost.localdomain ([2402:3a80:13a5:a61b:b5d4:b438:1bc1:57f3])
+        by smtp.gmail.com with ESMTPSA id l4sm3335677pgo.92.2020.05.16.00.45.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 May 2020 00:45:24 -0700 (PDT)
+From:   madhuparnabhowmik10@gmail.com
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, kaber@trash.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        frextrite@gmail.com, joel@joelfernandes.org, paulmck@kernel.org,
+        cai@lca.pw, linux-kernel-mentees@lists.linuxfoundation.org,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Subject: [PATCH net v2] ipv6: Fix suspicious RCU usage warning in ip6mr
+Date:   Sat, 16 May 2020 13:15:15 +0530
+Message-Id: <20200516074515.13745-1-madhuparnabhowmik10@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This makes use of the new module_firmware_crashed() to help
-annotate when firmware for device drivers crash. When firmware
-crashes devices can sometimes become unresponsive, and recovery
-sometimes requires a driver unload / reload and in the worst cases
-a reboot.
+From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-Using a taint flag allows us to annotate when this happens clearly.
+This patch fixes the following warning:
 
-Cc: Michael Chan <michael.chan@broadcom.com>
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+=============================
+WARNING: suspicious RCU usage
+5.7.0-rc4-next-20200507-syzkaller #0 Not tainted
+-----------------------------
+net/ipv6/ip6mr.c:124 RCU-list traversed in non-reader section!!
+
+ipmr_new_table() returns an existing table, but there is no table at
+init. Therefore the condition: either holding rtnl or the list is empty
+is used.
+
+Fixes: d1db275dd3f6e ("ipv6: ip6mr: support multiple tables")
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 ---
-Please append to the patchset:
-("[PATCH v2 00/15] net: taint when the device driver firmware crashes")
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 ++
- 1 file changed, 2 insertions(+)
+v2:
+- Add correct fixes tag
+- Fix line over 80 chars
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f86b621..b208404 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2009,6 +2009,7 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 		if (!bp->fw_reset_max_dsecs)
- 			bp->fw_reset_max_dsecs = BNXT_DFLT_FW_RST_MAX_DSECS;
- 		if (EVENT_DATA1_RESET_NOTIFY_FATAL(data1)) {
-+			module_firmware_crashed();
- 			netdev_warn(bp->dev, "Firmware fatal reset event received\n");
- 			set_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
- 		} else {
-@@ -10183,6 +10184,7 @@ static void bnxt_force_fw_reset(struct bnxt *bp)
+ net/ipv6/ip6mr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index 65a54d74acc1..1e223e26f079 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -98,7 +98,8 @@ static void ipmr_expire_process(struct timer_list *t);
+ #ifdef CONFIG_IPV6_MROUTE_MULTIPLE_TABLES
+ #define ip6mr_for_each_table(mrt, net) \
+ 	list_for_each_entry_rcu(mrt, &net->ipv6.mr6_tables, list, \
+-				lockdep_rtnl_is_held())
++				lockdep_rtnl_is_held() || \
++				list_empty(&net->ipv6.mr6_tables))
  
- void bnxt_fw_exception(struct bnxt *bp)
- {
-+	module_firmware_crashed();
- 	netdev_warn(bp->dev, "Detected firmware fatal condition, initiating reset\n");
- 	set_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
- 	bnxt_rtnl_lock_sp(bp);
+ static struct mr_table *ip6mr_mr_table_iter(struct net *net,
+ 					    struct mr_table *mrt)
 -- 
-1.8.3.1
+2.17.1
 
