@@ -2,95 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A8FB1D6518
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 03:53:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0761D64C7
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 01:53:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726972AbgEQBxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 21:53:23 -0400
-Received: from novek.ru ([213.148.174.62]:51484 "EHLO novek.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726855AbgEQBxW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 May 2020 21:53:22 -0400
-X-Greylist: delayed 439 seconds by postgrey-1.27 at vger.kernel.org; Sat, 16 May 2020 21:53:21 EDT
-Received: by novek.ru (Postfix, from userid 0)
-        id 954F05026DE; Sun, 17 May 2020 04:44:51 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 954F05026DE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1589679891; bh=uvEV2jLB3i1iF8rifO8qkPfYBU8NFMrh6z/eHaW/KGA=;
-        h=From:Date:Subject:To:Cc:From;
-        b=l6DdMZIolCMpvkgIxMUqskmlXgN2acnKrSmsAC/Oy+z45n4B2+WH37YjeZxKAtnXq
-         gZ7IKc83YQeh7/qAtfFbaOePUJsPb69h6EC1OdLkFEUOjXr8wwrTlxjNtUF4Zo7Q4+
-         hD1wokzPn18tBQ+6Al4kb1NrG1YiSYgfR1ORK0UM=
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Date:   Sun, 17 May 2020 02:48:39 +0300
-Subject: [PATCH] net/tls: fix encryption error checking
-To:     Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vfedorenko@novek.ru>
-Message-Id: <20200517014451.954F05026DE@novek.ru>
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+        id S1726821AbgEPXxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 19:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726719AbgEPXxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 19:53:04 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692A6C05BD09
+        for <netdev@vger.kernel.org>; Sat, 16 May 2020 16:53:04 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id d22so4867804lfm.11
+        for <netdev@vger.kernel.org>; Sat, 16 May 2020 16:53:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aTOjg3LRKrOjZRaH+MBDwrWQ5QHycpS6ns5xrDhIPQU=;
+        b=U1Hw8S8Ez1s26H+C7pGO1kjxeK+sPTVI/z5nX39rct4L2PiislzUljGXwNawxrIVc1
+         CAerMm7TVyp+RbCU7OUnur9kefVzVsdlo0TouI8ATDIG0vk+6K+t1N1cZ7IUoVlOUALN
+         sUKapGdU8n+9LV7zek6BnrmwjdtQGTHfbcpdt33B14UNMGDo8pwPim+6coFHxhNmJ6UK
+         azckhOkGBYnfTGNpVTASqLiqCf23MUkWeNI8Hn6WBFnH7p305/ZNH1wlkZuGejL8fEBi
+         U7yFY9xUoIgP/ywCN1FIfVvYe/MICTHZh1sJKEjF4GC/QZvbBdeG9gGgnBpOp0dbuB+n
+         RchA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aTOjg3LRKrOjZRaH+MBDwrWQ5QHycpS6ns5xrDhIPQU=;
+        b=fTXr2gIYHkwN5+tZM4MUXYX25/9oTrhF7aS4U+zMrN/ExtgKts7O/lqfvgx2zhSaqv
+         7XBELof7SGCSWg8rBbsaU8m8NCp7I/pieSxw0onXcCkknDmW/48MHQfL72CFdmGHD2wD
+         yvbf1USjSCf7Q3/tyxhMgWM13c9IqbOk04mcH2eqiQ7IpsHSECq6MqPrAi5na9eoh2w6
+         9WNlQJQmEgEHRbSLxyYOXxZSccq5nnkGPq+cKTPo1igJSJLpUqa8TRVZSuUGE0H/qUDz
+         YJUeDg1Hvga+G+EUqomgjozjrd0bcUDJpjz6EU0A4TzXHiMawVd2O+jlXnreF+rpRhEf
+         SxQg==
+X-Gm-Message-State: AOAM5334eaZuuz6JJIiUQzcs/ypTImjRtK2kmDQTRimUbh16uEWIT0TO
+        JlbyPETYySakSz9tmEj8Q6ztIWk1nR9v61LFnhtjyg==
+X-Google-Smtp-Source: ABdhPJxFg6Br+F3mfeEIVbPQPPWU4BQ1MiaAuBlHfXbkGVPTd6FVFzu+L7aXuGKZs0dkcczJTNgLtD1Ii7hmk99pxHw=
+X-Received: by 2002:a19:d52:: with SMTP id 79mr5914680lfn.125.1589673182415;
+ Sat, 16 May 2020 16:53:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200516021736.226222-1-shakeelb@google.com> <20200516.134018.1760282800329273820.davem@davemloft.net>
+ <CALvZod7euq10j6k9Z_dej4BvGXDjqbND05oM-u6tQrLjosX31A@mail.gmail.com> <CANn89iJ9BYNi__DhLp_QE5JU7=RxkzknOSxD+P+qiHg2=Ho6Ow@mail.gmail.com>
+In-Reply-To: <CANn89iJ9BYNi__DhLp_QE5JU7=RxkzknOSxD+P+qiHg2=Ho6Ow@mail.gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Sat, 16 May 2020 16:52:51 -0700
+Message-ID: <CALvZod6b2tHDGGzkspxT1r7c4So95BpUagPcwgUVf+++5eX5Hw@mail.gmail.com>
+Subject: Re: [PATCH] net/packet: simply allocations in alloc_one_pg_vec_page
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tls_push_record can return -EAGAIN because of tcp layer. In that
-case open_rec is already in the tx_record list and should not be
-freed.
-Also the record size can be more than the size requested to write
-in tls_sw_do_sendpage(). That leads to overflow of copied variable
-and wrong return code.
+On Sat, May 16, 2020 at 3:45 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Sat, May 16, 2020 at 3:35 PM Shakeel Butt <shakeelb@google.com> wrote:
+> >
+> > On Sat, May 16, 2020 at 1:40 PM David Miller <davem@davemloft.net> wrote:
+> > >
+> > > From: Shakeel Butt <shakeelb@google.com>
+> > > Date: Fri, 15 May 2020 19:17:36 -0700
+> > >
+> > > > and thus there is no need to have any fallback after vzalloc.
+> > >
+> > > This statement is false.
+> > >
+> > > The virtual mapping allocation or the page table allocations can fail.
+> > >
+> > > A fallback is therefore indeed necessary.
+> >
+> > I am assuming that you at least agree that vzalloc should only be
+> > called for non-zero order allocations. So, my argument is if non-zero
+> > order vzalloc has failed (allocations internal to vzalloc, including
+> > virtual mapping allocation and page table allocations, are order 0 and
+> > use GFP_KERNEL i.e. triggering reclaim and oom-killer) then the next
+> > non-zero order page allocation has very low chance of succeeding.
+>
+>
+> 32bit kernels might have exhausted their vmalloc space, yet they can
+> still allocate order-0 pages.
 
-Fixes: d10523d0b3d7 ("net/tls: free the record on encryption error")
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
----
- net/tls/tls_sw.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index e23f94a..d4acbd1 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -796,7 +796,7 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
- 	psock = sk_psock_get(sk);
- 	if (!psock || !policy) {
- 		err = tls_push_record(sk, flags, record_type);
--		if (err && err != -EINPROGRESS) {
-+		if (err && err != -EINPROGRESS && err != -EAGAIN) {
- 			*copied -= sk_msg_free(sk, msg);
- 			tls_free_open_rec(sk);
- 		}
-@@ -824,7 +824,7 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
- 	switch (psock->eval) {
- 	case __SK_PASS:
- 		err = tls_push_record(sk, flags, record_type);
--		if (err && err != -EINPROGRESS) {
-+		if (err && err != -EINPROGRESS && err != -EAGAIN) {
- 			*copied -= sk_msg_free(sk, msg);
- 			tls_free_open_rec(sk);
- 			goto out_err;
-@@ -1132,7 +1132,7 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
- 	struct sk_msg *msg_pl;
- 	struct tls_rec *rec;
- 	int num_async = 0;
--	size_t copied = 0;
-+	ssize_t copied = 0;
- 	bool full_record;
- 	int record_room;
- 	int ret = 0;
-@@ -1234,7 +1234,7 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
- 	}
- sendpage_end:
- 	ret = sk_stream_error(sk, flags, ret);
--	return copied ? copied : ret;
-+	return (copied > 0) ? copied : ret;
- }
- 
- int tls_sw_sendpage_locked(struct sock *sk, struct page *page,
--- 
-1.8.3.1
-
+Oh ok it makes sense.
