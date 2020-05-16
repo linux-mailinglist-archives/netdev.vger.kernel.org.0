@@ -2,82 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C52B1D6485
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 00:36:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 036A31D648D
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 00:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbgEPWgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 18:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726290AbgEPWgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 18:36:01 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E334CC05BD09
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 15:35:59 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id e25so5963548ljg.5
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 15:35:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ojEx/IuaCeSKl9dRzHTqbsmjCdnPX9Gd1n5eUMrsf6M=;
-        b=JAjVbcADzxZkX/Q9hYkJyomMRdTOJf00a9W3t+vXoqLmEMBqDEC7mhW36NzNVaCP1b
-         fOClknEqOrOMON9fxP6KqFVN6LaC0xmFLhaA/jkcXyZtggHuF3gQDyHCuOzZrkP5OHw/
-         Zf07d/YRPfmnlMdTYBcFLj1AreaT2nGSG90e942XyELtlrm57Wy1geeB+JYwT+LSi4AF
-         ktCg9U466UEeAGkcu++Yo+YcrlViEBVBRSZkoa4pplU8dag4LG3Br2IeZjDVz7Y/3Pr+
-         RauQC0Sq1+9MypuJ0ayG38Gt0/+xjXawcGnpc1PYS2tklbxy1NWEQvCE92pCofiWJDgR
-         SF/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ojEx/IuaCeSKl9dRzHTqbsmjCdnPX9Gd1n5eUMrsf6M=;
-        b=c4euLikl2ju1gSYzTKfzo5PRKZSTgLhtrmuOuZF/LQcQgwDnjD3YNkHH1YnKcwW6F/
-         EvSvT+xv+k4qQfnU9/UoB9PxbR9eT31RP5q9+j2Ot8kd0gSJFnsr7WzW7esw6XbXWYLc
-         pgzshgo6wqTxxIavZCqAE2bMZQaSzmfCm24iKLkPmhQwp+o5MK6y4/jN3fhYq+0X6wzW
-         djd0D+hrUojm0AzjtRZKUY0US5ekqQbUPwpk19gs5WOHQds8GHKM68o0aGJ2crGbuplX
-         kCWjpO6+zPF31iMtseXf9T1jno14Sp/jRD8mKj1P8zJSfVnOMrMc2T6OULn3zFAPu4w8
-         KQVg==
-X-Gm-Message-State: AOAM5326VIS9kvmVKqDELcdkeTN8aOdbbb90tl72fqWMNA263Cm+qOoX
-        6GkOCWaRafGMBL4I8N3io2+F/3/PgsJsPLLARKKEPg==
-X-Google-Smtp-Source: ABdhPJyww2Ss10TFjQnw3rjcwTRh+N7rxxkevxyjMZ55BpomUMXpG4iVUjePGN7YpviRN2j8Ji6HIOVBA8z0RrSBLvE=
-X-Received: by 2002:a2e:9795:: with SMTP id y21mr6097660lji.115.1589668557959;
- Sat, 16 May 2020 15:35:57 -0700 (PDT)
+        id S1726717AbgEPWng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 18:43:36 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:33007 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726660AbgEPWng (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 18:43:36 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id E5F875C006A;
+        Sat, 16 May 2020 18:43:34 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Sat, 16 May 2020 18:43:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=vbyX4uBlcuZmjkH89
+        pqAPRpwDxhKf3jZToin3GOfe00=; b=hTAYrkwQxpNdJZW1h4pPNmkcjxJzhZ0Ke
+        qRzV1pWisiqI7+nsFRmaYSQSQBM4KsU8qfjF3UbOL36H5A/Woo3Tm8YzZMPcmzBy
+        T/F8zM8LKq5zsYfEhSqxAURNDsVdTystAXc6OH8aeyBBrqE00VdOSRZQLa0TBjtV
+        ruUpxNjW+B5ixjimEwiRNgVhOSQjBHtSiRAQwpTsija0GNNjgcR9h5XlKviY/tV7
+        nBduQ9MwWTmt7QiPrXHLzzYhgtmqaZbbQaP0ai9sbQSmLKFBEZ/5f5FbIxt6vUWJ
+        1LI0qTdujABPwJXLCMcRRFnYGnwDXXqcgv/A8ba8geD/DKj163oNA==
+X-ME-Sender: <xms:lmzAXi8vP_2d1i1AV8mXwzwWfJ5fsnFd20Gtt-mELAfeq8qWsSV6Hg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddtuddguddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeejledrudejiedrvdegrddutdejnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:lmzAXittlSG85qIFuJv9q941DoHhPi3v1883zWqfg-7VG0SkcVgh3A>
+    <xmx:lmzAXoB1uHGHW0VUXfTxqMR2NTPyoDEbD4bNMko8c0c10ZLaJeLvqw>
+    <xmx:lmzAXqdz_rvCz2VUNTY8sUI8-6aZY-SrpbCe8eQMfg4IRe7VYh2nPg>
+    <xmx:lmzAXt2sG9EFuC1mmYt2dUnhY_-LuU1XGpBi-msVvG2MgdNsZqfupQ>
+Received: from splinter.mtl.com (bzq-79-176-24-107.red.bezeqint.net [79.176.24.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 6EA8830663A0;
+        Sat, 16 May 2020 18:43:33 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/6] mlxsw: Reorganize trap data
+Date:   Sun, 17 May 2020 01:43:04 +0300
+Message-Id: <20200516224310.877237-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200516021736.226222-1-shakeelb@google.com> <20200516.134018.1760282800329273820.davem@davemloft.net>
-In-Reply-To: <20200516.134018.1760282800329273820.davem@davemloft.net>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Sat, 16 May 2020 15:35:46 -0700
-Message-ID: <CALvZod7euq10j6k9Z_dej4BvGXDjqbND05oM-u6tQrLjosX31A@mail.gmail.com>
-Subject: Re: [PATCH] net/packet: simply allocations in alloc_one_pg_vec_page
-To:     David Miller <davem@davemloft.net>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 16, 2020 at 1:40 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Shakeel Butt <shakeelb@google.com>
-> Date: Fri, 15 May 2020 19:17:36 -0700
->
-> > and thus there is no need to have any fallback after vzalloc.
->
-> This statement is false.
->
-> The virtual mapping allocation or the page table allocations can fail.
->
-> A fallback is therefore indeed necessary.
+From: Ido Schimmel <idosch@mellanox.com>
 
-I am assuming that you at least agree that vzalloc should only be
-called for non-zero order allocations. So, my argument is if non-zero
-order vzalloc has failed (allocations internal to vzalloc, including
-virtual mapping allocation and page table allocations, are order 0 and
-use GFP_KERNEL i.e. triggering reclaim and oom-killer) then the next
-non-zero order page allocation has very low chance of succeeding.
+This patch set does not include any functional changes. It merely
+reworks the internal storage of traps, trap groups and trap policers in
+mlxsw to each use a single array.
+
+These changes allow us to get rid of the multiple arrays we currently
+have for traps, which make the trap data easier to validate and extend
+with more per-trap information in the future. It will also allow us to
+more easily add per-ASIC traps in future submissions.
+
+Last two patches include minor changes to devlink-trap selftests.
+
+Tested with existing devlink-trap selftests.
+
+Ido Schimmel (6):
+  mlxsw: spectrum_trap: Move struct definition out of header file
+  mlxsw: spectrum_trap: Store all trap policer data in one array
+  mlxsw: spectrum_trap: Store all trap group data in one array
+  mlxsw: spectrum_trap: Store all trap data in one array
+  selftests: devlink_lib: Remove double blank line
+  selftests: mlxsw: Do not hard code trap group name
+
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 763 ++++++++++++------
+ .../ethernet/mellanox/mlxsw/spectrum_trap.h   |  16 +-
+ .../net/mlxsw/devlink_trap_acl_drops.sh       |   4 +-
+ .../net/mlxsw/devlink_trap_l2_drops.sh        |  33 +-
+ .../net/mlxsw/devlink_trap_l3_drops.sh        |  35 +-
+ .../net/mlxsw/devlink_trap_l3_exceptions.sh   |  20 +-
+ .../net/mlxsw/devlink_trap_tunnel_ipip.sh     |   6 +-
+ .../net/mlxsw/devlink_trap_tunnel_vxlan.sh    |   9 +-
+ .../selftests/net/forwarding/devlink_lib.sh   |   9 +-
+ 9 files changed, 572 insertions(+), 323 deletions(-)
+
+-- 
+2.26.2
+
