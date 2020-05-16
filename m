@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF361D5E88
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 06:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85CA01D5E8D
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 06:15:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbgEPENF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 00:13:05 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:33574 "EHLO
+        id S1727003AbgEPENk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 00:13:40 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:31768 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725885AbgEPENF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 00:13:05 -0400
+        by vger.kernel.org with ESMTP id S1726920AbgEPENj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 00:13:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589602384;
+        s=mimecast20190719; t=1589602417;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0bdKPgDfEqRHaFGgl0l5EeNjW2TBnfhGDrlpUieGoaY=;
-        b=ZgvgHP2x0ESak87U9hXzdM3vfjhacFwEeDrFC8pmbRWlqjIZdA/ww+G+s/vB9ROPxaloIa
-        YlSrOkLLwKWG1cvZapZ0wKJD1y5q6r3wFC9vXFz74CZuOOv5uycakRHKbU4KheSjOzV4PV
-        fUW6gRr4uRvM24SExFB4yT5zgVNim7w=
+        bh=2C8j4i4cIMoVQxBLJB+gQw/ICcPRRsENYdtc77zibQ0=;
+        b=BKH6YJkSZMv+7AaTxyHu0FDu3UYVM6BpXQtYUezF54rn56QL3Wg7+IuRtMR7mahdZU0Y3a
+        YCzHcxLUnnm+XDQKEsFkdV3wTgUmzd/1vwqkb5fNSmkeODko044kJeaM1KY9YjRnlhVRI4
+        UN7Uw/XxlnE7xKUI0c3XM6Ek7IBaJ00=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-356-rxgNGu-MNmaHc0lwQ6C4lw-1; Sat, 16 May 2020 00:13:00 -0400
-X-MC-Unique: rxgNGu-MNmaHc0lwQ6C4lw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+ us-mta-27-dMCqwxtMMaGRgPYZ5eLJ5w-1; Sat, 16 May 2020 00:13:33 -0400
+X-MC-Unique: dMCqwxtMMaGRgPYZ5eLJ5w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4CE45BFC2;
-        Sat, 16 May 2020 04:12:57 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C361B100961C;
+        Sat, 16 May 2020 04:13:29 +0000 (UTC)
 Received: from x1-fbsd (unknown [10.3.128.10])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AFC4F5C1B0;
-        Sat, 16 May 2020 04:12:46 +0000 (UTC)
-Date:   Sat, 16 May 2020 00:12:43 -0400
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1E03A100239A;
+        Sat, 16 May 2020 04:13:16 +0000 (UTC)
+Date:   Sat, 16 May 2020 00:13:13 -0400
 From:   Rafael Aquini <aquini@redhat.com>
 To:     Luis Chamberlain <mcgrof@kernel.org>
 Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
@@ -44,22 +45,31 @@ Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
         mchehab+samsung@kernel.org, kvalo@codeaurora.org,
         davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        ath10k@lists.infradead.org
-Subject: Re: [PATCH v2 13/15] ath6kl: use new module_firmware_crashed()
-Message-ID: <20200516041243.GM3182@x1-fbsd>
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>
+Subject: Re: [PATCH v2 14/15] brcm80211: use new module_firmware_crashed()
+Message-ID: <20200516041313.GN3182@x1-fbsd>
 References: <20200515212846.1347-1-mcgrof@kernel.org>
- <20200515212846.1347-14-mcgrof@kernel.org>
+ <20200515212846.1347-15-mcgrof@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200515212846.1347-14-mcgrof@kernel.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200515212846.1347-15-mcgrof@kernel.org>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 09:28:44PM +0000, Luis Chamberlain wrote:
+On Fri, May 15, 2020 at 09:28:45PM +0000, Luis Chamberlain wrote:
 > This makes use of the new module_firmware_crashed() to help
 > annotate when firmware for device drivers crash. When firmware
 > crashes devices can sometimes become unresponsive, and recovery
@@ -69,25 +79,33 @@ On Fri, May 15, 2020 at 09:28:44PM +0000, Luis Chamberlain wrote:
 > Using a taint flag allows us to annotate when this happens clearly.
 > 
 > Cc: linux-wireless@vger.kernel.org
-> Cc: ath10k@lists.infradead.org
+> Cc: brcm80211-dev-list.pdl@broadcom.com
+> Cc: brcm80211-dev-list@cypress.com
+> Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Cc: Franky Lin <franky.lin@broadcom.com>
+> Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+> Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
+> Cc: Wright Feng <wright.feng@cypress.com>
 > Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "Rafał Miłecki" <rafal@milecki.pl>
+> Cc: Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>
 > Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 > ---
->  drivers/net/wireless/ath/ath6kl/hif.c | 1 +
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c | 1 +
 >  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/net/wireless/ath/ath6kl/hif.c b/drivers/net/wireless/ath/ath6kl/hif.c
-> index d1942537ea10..cfd838607544 100644
-> --- a/drivers/net/wireless/ath/ath6kl/hif.c
-> +++ b/drivers/net/wireless/ath/ath6kl/hif.c
-> @@ -120,6 +120,7 @@ static int ath6kl_hif_proc_dbg_intr(struct ath6kl_device *dev)
->  	int ret;
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+> index c88655acc78c..d623f83568b3 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+> @@ -1393,6 +1393,7 @@ void brcmf_fw_crashed(struct device *dev)
+>  	struct brcmf_pub *drvr = bus_if->drvr;
 >  
->  	ath6kl_warn("firmware crashed\n");
+>  	bphy_err(drvr, "Firmware has halted or crashed\n");
 > +	module_firmware_crashed();
 >  
->  	/*
->  	 * read counter to clear the interrupt, the debug error interrupt is
+>  	brcmf_dev_coredump(dev);
+>  
 > -- 
 > 2.26.2
 > 
