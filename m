@@ -2,109 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43EBF1D5FC6
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 202AD1D6006
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 11:33:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbgEPIsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 04:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbgEPIsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 04:48:04 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5F3C061A0C
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 01:48:04 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1jZsUF-0005ue-AL; Sat, 16 May 2020 10:48:03 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     pabeni@redhat.com, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 7/7] net: allow __skb_ext_alloc to sleep
-Date:   Sat, 16 May 2020 10:46:23 +0200
-Message-Id: <20200516084623.28453-8-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200516084623.28453-1-fw@strlen.de>
-References: <20200516084623.28453-1-fw@strlen.de>
+        id S1726462AbgEPJdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 05:33:21 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45870 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726202AbgEPJdV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 May 2020 05:33:21 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 93D5EB0F2;
+        Sat, 16 May 2020 09:33:21 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 6A32660347; Sat, 16 May 2020 11:33:17 +0200 (CEST)
+Date:   Sat, 16 May 2020 11:33:17 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com,
+        vladimir.oltean@nxp.com, po.liu@nxp.com, m-karicheri2@ti.com,
+        Jose.Abreu@synopsys.com
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+Message-ID: <20200516093317.GJ21714@lion.mk-sys.cz>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mptcp calls this from the transmit side, from process context.
-Allow a sleeping allocation instead of unconditional GFP_ATOMIC.
+On Fri, May 15, 2020 at 06:29:44PM -0700, Vinicius Costa Gomes wrote:
+> Hi,
+> 
+> This series adds support for configuring frame preemption, as defined
+> by IEEE 802.1Q-2018 (previously IEEE 802.1Qbu) and IEEE 802.3br.
+> 
+> Frame preemption allows a packet from a higher priority queue marked
+> as "express" to preempt a packet from lower priority queue marked as
+> "preemptible". The idea is that this can help reduce the latency for
+> higher priority traffic.
+> 
+> Previously, the proposed interface for configuring these features was
+> using the qdisc layer. But as this is very hardware dependent and all
+> that qdisc did was pass the information to the driver, it makes sense
+> to have this in ethtool.
+> 
+> One example, for retrieving and setting the configuration:
+> 
+> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
+> Frame preemption settings for enp3s0:
+> 	support: supported
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/linux/skbuff.h | 2 +-
- net/core/skbuff.c      | 8 +++++---
- net/mptcp/protocol.c   | 4 +++-
- 3 files changed, 9 insertions(+), 5 deletions(-)
+IMHO we don't need a special bool for this. IIUC this is not a state
+flag that would change value for a particular device; either the device
+supports the feature or it does not. If it does not, the ethtool_ops
+callbacks would return -EOPNOTSUPP (or would not even exist if the
+driver has no support) and ethtool would say so.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 3000c526f552..531843952809 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4165,7 +4165,7 @@ struct skb_ext {
- 	char data[] __aligned(8);
- };
- 
--struct skb_ext *__skb_ext_alloc(void);
-+struct skb_ext *__skb_ext_alloc(gfp_t flags);
- void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
- 		    struct skb_ext *ext);
- void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 1bf0c3d278e7..35a133c6d13b 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -6087,13 +6087,15 @@ static void *skb_ext_get_ptr(struct skb_ext *ext, enum skb_ext_id id)
- /**
-  * __skb_ext_alloc - allocate a new skb extensions storage
-  *
-+ * @flags: See kmalloc().
-+ *
-  * Returns the newly allocated pointer. The pointer can later attached to a
-  * skb via __skb_ext_set().
-  * Note: caller must handle the skb_ext as an opaque data.
-  */
--struct skb_ext *__skb_ext_alloc(void)
-+struct skb_ext *__skb_ext_alloc(gfp_t flags)
- {
--	struct skb_ext *new = kmem_cache_alloc(skbuff_ext_cache, GFP_ATOMIC);
-+	struct skb_ext *new = kmem_cache_alloc(skbuff_ext_cache, flags);
- 
- 	if (new) {
- 		memset(new->offset, 0, sizeof(new->offset));
-@@ -6188,7 +6190,7 @@ void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
- 	} else {
- 		newoff = SKB_EXT_CHUNKSIZEOF(*new);
- 
--		new = __skb_ext_alloc();
-+		new = __skb_ext_alloc(GFP_ATOMIC);
- 		if (!new)
- 			return NULL;
- 	}
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index bc950cf818f7..e3a628bea2b8 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -367,8 +367,10 @@ static void mptcp_stop_timer(struct sock *sk)
- 
- static bool mptcp_ext_cache_refill(struct mptcp_sock *msk)
- {
-+	const struct sock *sk = (const struct sock *)msk;
-+
- 	if (!msk->cached_ext)
--		msk->cached_ext = __skb_ext_alloc();
-+		msk->cached_ext = __skb_ext_alloc(sk->sk_allocation);
- 
- 	return !!msk->cached_ext;
- }
--- 
-2.26.2
+> 	active: active
+> 	supported queues: 0xf
+> 	supported queues: 0xe
+> 	minimum fragment size: 68
+> 
+> 
+> $ ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68 preemptible-queues-mask 0xe
+> 
+> This is a RFC because I wanted to have feedback on some points:
+> 
+>   - The parameters added are enough for the hardware I have, is it
+>     enough in general?
+> 
+>   - even with the ethtool via netlink effort, I chose to keep the
+>     ioctl() way, in case someone wants to backport this to an older
+>     kernel, is there a problem with this?
 
+I would prefer not extending ioctl interface with new features, with
+obvious exceptions like adding new link modes or so. Not only because
+having new features only available through netlink will motivate authors
+of userspace tools to support netlink but mostly because the lack of
+flexibility and extensibility of ioctl interface inevitably leads to
+compromises you wouldn't have to do if you only implement netlink
+requests.
+
+One example I can see is the use of u32 for queue bitmaps. Perhaps you
+don't expect this feature to be supported on devices with more than 32
+queues (and I don't have enough expertise to tell if it's justified at
+the moment) but can you be sure it will be the case in 10 or 20 years?
+As long as these hardcoded u32 bitmaps are only part of internal kernel
+API (ethtool_ops), extending the support for bigger devices will mean
+some code churn (possibly large if many drivers implement the feature)
+but it's something that can be done. But if you have this limit in
+userspace API, you are in a much bigger trouble. The same can be said
+for adding new attributes - easy with netlink but with ioctl you never
+know if those reserved fields will suffice.
+
+> 
+>   - Some space for bikeshedding the names and location (for example,
+>     does it make sense for these settings to be per-queue?), as I am
+>     not quite happy with them, one example, is the use of preemptible
+>     vs. preemptable;
+> 
+> 
+> About the patches, should be quite straightforward:
+> 
+> Patch 1, adds the ETHTOOL_GFP and ETHOOL_SFP commands and the
+> associated data structures;
+> 
+> Patch 2, adds the ETHTOOL_MSG_PREEMPT_GET and ETHTOOL_MSG_PREEMPT_SET
+> netlink messages and the associated attributes;
+
+I didn't look too deeply but one thing I noticed is that setting the
+parameters using ioctl() does not trigger netlink notification. If we
+decide to implement ioctl support (and I'm not a fan of that), the
+notifications should be sent even when ioctl is used.
+
+Michal
