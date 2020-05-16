@@ -2,102 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CCD91D5F87
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:07:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A5811D5F94
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:16:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726916AbgEPIHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 04:07:22 -0400
-Received: from mail-db8eur05on2040.outbound.protection.outlook.com ([40.107.20.40]:14657
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        id S1726296AbgEPIQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 04:16:53 -0400
+Received: from mail-eopbgr30076.outbound.protection.outlook.com ([40.107.3.76]:13839
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725934AbgEPIHV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 May 2020 04:07:21 -0400
+        id S1725934AbgEPIQx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 May 2020 04:16:53 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T68JLgLU2SNnZYhdcNNMwttdN8r43D3k7y3QzJgvbXbSFoVGnyqLSs2w/l6NP8M0Bd+XAEbsQ8T8K0JxCbmotRZGzSP+6pjcx3+uZWP4KSuThiMdkpZqWrumg/xZaUwG/l4w/psoImLg8DHCDbX6K2fFtK3JVuA6FuSKrBi6OrvbQemAYd9PVNHo/7er9TqtC6T3jqKpprIWIrRpO9FCGxTX/xRvitksjb/sObDvqqM9U5ol9s1SqLZjKK6yyRWkKFShJBk0g7UmP3aCliWghI01rur3g0wJGPM8ozCqZoZjHFJnHwx3RoubQgW7qIllnazllDMb9FNl+ggLaDFAjA==
+ b=TR6Em71W9m9n4sf6Nt1SN0pFL5xNyascAlC2ldogisLMxSC6ChQw/8hGrxQ7mxty5yX1eZrillHNRvAwx/5bTXsGSiVpQ1dJyiCgiLpyTCLe2Pn/dAQu8lgbyHHDYGvbKeQ9D76hjuCa6bXVOb+xwCrWfvVgkzuq588GY2XlrauIoM51VRx+CQnrzznaQHLtESbk2CQ46amxIFf2aEEhMDZpNQ+DwCRyCVMUTOC6nJU1VPxm2Je02J/SlCtFcRnqIC9Z5ZKlVpNuALRalHB1o6djgBHbIqUrM07HNOO/cFUuyEHIbIrcN7JXxJJGcn+ZgHPIiN+BuEYu482H8S1W6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w2Zfiq9y1ZmgTDRkLxGRCY2qmeZ6TZCm8oyFMmNeFps=;
- b=HrNBV22Ay9hOP/HNs2oFPrYlDfBHSrK02Oqol2HybtmQ4oKJVn8L/sdYD2zZjNzQmzI/wCfyQ2FpkbHBWu2fbJW/yOZWGXEa1nxt5sxBQXbVgjvaSV+M5aa/9KVlXoFrwYEy8fU4zhsEt7+StHhx4H4X9qspBOfXYZlQBhiGThaynU9N0GJVTsjiwObIGfpxiN9BLYy/2dp21cfsDwflDAPJegpBEPSLXJAG/RwQmUwHdjdc+GlXFWtY0SSgNdwl770b2MGKEkOnobIVrrLd8HTDL5PSgLfQRbptNJpEckLuRu8rFzWDnoj78VmHk3Lb6SYAg9YgNEnhXzrYH3/NvA==
+ bh=M502HtpMPM5TexPEvvP7tuPbOc19caTbiOjCKGaDwwc=;
+ b=QHCQpi6IhidOMPdOx+l+gbQxJ7cwctJWKRkXinFd+2Bpvz9LvRYQGEw3ZGA1sX2NJHq3ymwEH6YAgcNktpy3tz9W5TjNZH4qyd+bDGSDjI4bS1IL0bvZJO+PuEJNgWVgQMngHyvOO1RXk+UWlXbFTsUpGS+SN8G1/UjvdiBvOhR03jbhMjMBcn7+B0OaEE9wu72u/kHtdyIy9IHhjFp/n/QKGzjTPg9BkrqyaYMdt8hJjD/ySid9w9dCr/JU1ltSFjyjWmbgWcN1roq4A1Aso52TM1e2JN1oncQFtzV4vBAcjVqSArNkDDV9h+bsVR2M0vhY13AKfSDyc7TznKmb3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w2Zfiq9y1ZmgTDRkLxGRCY2qmeZ6TZCm8oyFMmNeFps=;
- b=F2CbDLgvTzIfarxoUB7lVTFZUxvl7dnDsLplqYyOsE4Y8Rlx5W/PBQk1bbKzm1XiMltUgUeBtwSebT/74dm8lywDdYigWiZc9d/kDGJMb8CkDWGNi13eMMvjLRSfPii59JJCP80VYdCBVXg+8SELGPnH9kvztvcK6tgFyyV+8lU=
-Received: from VI1PR04MB4366.eurprd04.prod.outlook.com (2603:10a6:803:3d::27)
- by VI1PR04MB3038.eurprd04.prod.outlook.com (2603:10a6:802:d::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20; Sat, 16 May
- 2020 08:07:17 +0000
-Received: from VI1PR04MB4366.eurprd04.prod.outlook.com
- ([fe80::8102:b59d:36b:4d09]) by VI1PR04MB4366.eurprd04.prod.outlook.com
- ([fe80::8102:b59d:36b:4d09%7]) with mapi id 15.20.3000.022; Sat, 16 May 2020
- 08:07:16 +0000
-From:   Ganapathi Bhat <ganapathi.bhat@nxp.com>
-To:     =?utf-8?B?UGFsaSBSb2jDoXI=?= <pali@kernel.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Cathy Luo <cluo@marvell.com>,
-        Avinash Patil <patila@marvell.com>,
-        =?utf-8?B?TWFyZWsgQmVow7pu?= <marek.behun@nic.cz>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [EXT] [PATCH] mwifiex: Fix memory corruption in dump_station
-Thread-Topic: [EXT] [PATCH] mwifiex: Fix memory corruption in dump_station
-Thread-Index: AQHWKo7iqpnB4bBvFkC5wQNPqqS7mqiqXI/A
-Date:   Sat, 16 May 2020 08:07:16 +0000
-Message-ID: <VI1PR04MB43668507151CCB7810F5EEEF8FBA0@VI1PR04MB4366.eurprd04.prod.outlook.com>
-References: <20200515075924.13841-1-pali@kernel.org>
-In-Reply-To: <20200515075924.13841-1-pali@kernel.org>
+ bh=M502HtpMPM5TexPEvvP7tuPbOc19caTbiOjCKGaDwwc=;
+ b=NM9qlgkr8DWzK+86aCsJWQQ70VZOWAWIMPiT1xplV7mLhQQSQAjDdAAtCHtOnmn6B/j3DhHmuOoZ3V3VE6G/Xo6cWFjJN/6GhxoMBGniNJ9UR6eRGrnqSlC/M2Qcz6WfuonFNJMFkWLG8m5munmDbDXB2M2cjHr4VKq5Et3dRo0=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR0402MB3631.eurprd04.prod.outlook.com
+ (2603:10a6:803:e::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.27; Sat, 16 May
+ 2020 08:16:47 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::e5d7:ec32:1cfe:71f0%7]) with mapi id 15.20.3000.022; Sat, 16 May 2020
+ 08:16:47 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
+ classes
+Thread-Topic: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffic
+ classes
+Thread-Index: AQHWKulbmiq87o7Yx0yuJ8Tm2Q7xY6iphgOAgAACOECAAAN2gIAAEXFggAAcYgCAAKFaYA==
+Date:   Sat, 16 May 2020 08:16:47 +0000
+Message-ID: <VI1PR0402MB38719FE975320D9E0E47A6F9E0BA0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+References: <20200515184753.15080-1-ioana.ciornei@nxp.com>
+        <20200515122035.0b95eff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB387165B351F0DF0FA1E78BF4E0BD0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+        <20200515124059.33c43d03@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <VI1PR0402MB3871F0358FE1369A2F00621DE0BD0@VI1PR0402MB3871.eurprd04.prod.outlook.com>
+ <20200515152500.158ca070@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200515152500.158ca070@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 authentication-results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [103.54.18.180]
+x-originating-ip: [86.121.118.29]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 1f77ae66-0994-4dd7-561e-08d7f9702648
-x-ms-traffictypediagnostic: VI1PR04MB3038:
-x-microsoft-antispam-prvs: <VI1PR04MB3038FD8D40635710AE17F06F8FBA0@VI1PR04MB3038.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-office365-filtering-correlation-id: 77ba777f-48ca-4049-bea4-08d7f9717a3e
+x-ms-traffictypediagnostic: VI1PR0402MB3631:
+x-microsoft-antispam-prvs: <VI1PR0402MB3631394513EA9D84D982B08EE0BA0@VI1PR0402MB3631.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 040513D301
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NlWIJJBJQgB5APd8d1vyR3qZTpLj61ld21nEEP/UGhq5YtqPFpWilxgCL/h5TBGMT/p0JKDEMpXiZz0FocvvKd160S23bFnhW/lSfBI7kXGuxb0yPU7WGo2rjNRa884iHxTrKe0AzVQgpkyaIU/TlcI4ZIw0wsKE0BOz/Yb0ObeXGkPCyFZpqjDY2EuR0Isp1msGy5xrkjfM2mSuVbDRHf1VlfIIs7X2lZAtfiXCLyvb1Yop522El7EHV2gIS0c12GNOz8YThL3Mo2izjJPQPXfMAe/xW1WGpG+z7P+D2aZTLUZOSXHyi1t40p/jZMI12CM1Olcjt3bx8iNBX+twNvoBMGvhNnumLJ+cDS3iIe3ICW5vDGdkE+iRVJaQzQXJiEk9aCKwFy1k8P5zKtQoJasnEKtJ6m+C/QHTgU2L6a8GD8fyHZ8yMkNvP+EiBdqE
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4366.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(366004)(376002)(346002)(136003)(71200400001)(55016002)(8936002)(86362001)(44832011)(52536014)(4326008)(8676002)(76116006)(66476007)(66556008)(64756008)(66446008)(66946007)(9686003)(478600001)(2906002)(7416002)(5660300002)(186003)(4744005)(316002)(6506007)(26005)(110136005)(54906003)(7696005)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: FDyaayofI9reXEjIIoMQoXpD198mzVt/1zRXledkFfNZBWKBJMN+ZGiRZn+6/SzGPbrsSyn9LxICRfI9w7CjOgUf4sAkACIneXU5iEq4EgUx5C+/TFTiKV3RHbWzo+0SXwvQ7zPtYVM5cD9sU3jJA4ctsVMkvjmb7qWf1fnNWgg8wKlTusTGRcNUYl5A5lG8iaTj9FLGygXmynLY+zB4u8ZboHWmi3bVTG2TuEk7yLPYXxFKFfAC55D5QGNedVR2qqacEJU4BULPi45kUc9h91h5ihWpJVJIGnPPdzK/Tee1jznuCvoNWlfs0iCVdw195ETFvjROi8UoqDsZjGDKjiEEYZkpXVXRxCzz+47aXPv8EiKuwZDDTfZTZGxzjRNpSt/uiq7TYRqO3Gz9R9cSP1Ucj1Q0niF3oBc0lLOPs2HUpks6j+oibBt4dxzLoVr26q+3PL4Nhz31phxWRWCdU6ggu+BGLbH2tPAZaV+icPk=
+x-microsoft-antispam-message-info: OwvI69JaSvgHkZIrMf/MDn5LRysvAujSW0IIIPvbnQ4kp4NKjv+sySECI7Tn81OqRQB/a6H/amNbH+AaA9uSOGLWp4qxx042ugNxc1BCgZTDBDuV3Ow3UmMySaGsXWOonsn+heiXZkk39VczQ8Ew2pKLWapY1GzIT5Ont4HOeMkqqizubQEtZo4bWIqmIohshT91h37DZ4uSiFeni+0tgEhHXcXbQoYTWJLSFd0Ckbjpsp2GnA2SM7Rj1m3qrEy988Lo9lTckaF8VpFXfXrOtZAjGL05NdQTIdrMJb6EmTmyLJkGKiyUlB+j1xAJIDBTiWuvTKIGBVmqKLq7iAfgSVagecWKK72IsNlj5sfx9cLc7K0jQGiiGcbspyRTVua9A5crjc+HgxtZ1vM+6YRFxQX3qQaIHMFc3Q5oKFy0ErU/RH0e6IB/S14g5CJDoPHT
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(366004)(376002)(39860400002)(346002)(316002)(186003)(7696005)(64756008)(66476007)(6916009)(55016002)(66446008)(9686003)(66556008)(26005)(86362001)(478600001)(71200400001)(6506007)(33656002)(52536014)(44832011)(4326008)(54906003)(8936002)(66946007)(8676002)(2906002)(76116006)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: BRvMKHekc4ycvRmk6UCYcAayeSCfsjvLC+DqxpzMktjGopx1C7pfTYX2d5q5JKAW9yEw0Ys0/zCkhtUsex7kQRKYzp1gVLCZyoTe4wkMpVvkmxvMCB00fny83UK6wkJDzD9ue7hK+osCt8hnxS9Dbpksju8wWQmlqnsPgDH+QUtAKwM2yzB/3cZdPLnJKISgP6lFUl7tA/IfWU18DEoYUZuF8p2TMYLsws2Yzr2n0cUvQV8E9f4UYLbSFWOStvYA8sB85Xwfzv0DNpkn+JV/s8Nx3qvVCwtoV8OEt/gy9B1kZm3PFbA/jJuIiaykXCrEi3YOl0xvWHynyiTASeCF/XjZkXmvXUhb9/HxlMl7fGBBTrG20xgBMbE0spoyfrMdXpU6Kfz8JtRTBrm4UD8ihoDE6TUe9MMEshwZRwEJnGMSyNz2VjgW+ZHUAXciZRV6LoXgqYCPoe3YYd2c+UJk2BfA0VQkyNmWxpny5fWqHRM=
 x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f77ae66-0994-4dd7-561e-08d7f9702648
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2020 08:07:16.7664
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77ba777f-48ca-4049-bea4-08d7f9717a3e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 May 2020 08:16:47.2968
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TLeO4rjCceYKe/OM+FGWX5xtTF4/GRTjX6KYnq8j57ypgMUEF/XVjX85z3uLPShSzkjqxTTcoj3Q12LQU+mOag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3038
+X-MS-Exchange-CrossTenant-userprincipalname: 8dfMwZzHB3NxwDWrHPN1XpWKj5PFD3YlB/yM7rFHewJZXGPIlco6OX0yGzsPyo6YUf29YdhFVnrVNEIoz1YprA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3631
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgUGFsaSwNCg0KPiBUaGUgbXdpZmlleF9jZmc4MDIxMV9kdW1wX3N0YXRpb24oKSB1c2VzIHN0
-YXRpYyB2YXJpYWJsZSBmb3IgaXRlcmF0aW5nIG92ZXINCj4gYSBsaW5rZWQgbGlzdCBvZiBhbGwg
-YXNzb2NpYXRlZCBzdGF0aW9ucyAod2hlbiB0aGUgZHJpdmVyIGlzIGluIFVBUCByb2xlKS4gVGhp
-cyBoYXMNCj4gYSByYWNlIGNvbmRpdGlvbiBpZiAuZHVtcF9zdGF0aW9uIGlzIGNhbGxlZCBpbiBw
-YXJhbGxlbCBmb3IgbXVsdGlwbGUgaW50ZXJmYWNlcy4NCj4gVGhpcyBjb3JydXB0aW9uIGNhbiBi
-ZSB0cmlnZ2VyZWQgYnkgcmVnaXN0ZXJpbmcgbXVsdGlwbGUgU1NJRHMgYW5kIGNhbGxpbmcsIGlu
-DQo+IHBhcmFsbGVsIGZvciBtdWx0aXBsZSBpbnRlcmZhY2VzDQo+ICAgICBpdyBkZXYgPGlmYWNl
-PiBzdGF0aW9uIGR1bXANCg0KVGhhbmtzIGZvciB0aGlzIGNoYW5nZS4NCiANCkFja2VkLWJ5OiBH
-YW5hcGF0aGkgQmhhdCA8Z2FuYXBhdGhpLmJoYXRAbnhwLmNvbT4NCg0KUmVnYXJkcywNCkdhbmFw
-YXRoaQ0K
+
+> Subject: Re: [PATCH v2 net-next 0/7] dpaa2-eth: add support for Rx traffi=
+c
+> classes
+>=20
+> On Fri, 15 May 2020 20:48:27 +0000 Ioana Ciornei wrote:
+> > > > There is no input taken from the user at the moment. The traffic
+> > > > class id is statically selected based on the VLAN PCP field. The
+> > > > configuration for this is added in patch 3/7.
+> > >
+> > > Having some defaults for RX queue per TC is understandable. But
+> > > patch 1 changes how many RX queues are used in the first place. Why
+> > > if user does not need RX queues per TC?
+> >
+> > In DPAA2 we have a boot time configurable system in which the user can
+> > select for each interface how many queues and how many traffic classes =
+it
+> needs.
+>=20
+> Looking at the UG online DPNI_CREATE has a NUM_RX_TCS param. You're not
+> using that for the kernel driver?
+
+I have to give a bit of context here. If we look at what the hardware suppo=
+rts,
+DPAA2 is reconfigurable and what I mean by that is that we can create new
+interfaces (DPNIs) or destroy them at runtime using the DPNI_CREATE command
+that you found in the UG.
+This runtime reconfiguration is not supported in upstream. What we rely on =
+in
+upstream is on a static configuration of all the resources (how many interf=
+aces
+are needed and how should these interfaces be provisioned) which is applied
+and configured at boot time even before Linux boots and gets to probe those
+interfaces.
+
+In the kernel driver we just get the num_tcs and num_queues parameters
+(which are set in stone by now) and configure everything based on them.
+This is why the kernel driver is not using at all the DPNI_CREATE command.
+=20
+>=20
+> > The driver picks these up from firmware and configures the traffic
+> > class distribution only if there is more than one requested.
+> > With one TC the behavior of the driver is exactly as before.
+>=20
+> This configuring things statically via some direct FW interface when syst=
+em
+> boots really sounds like a typical "using Linux to boot a proprietary net=
+working
+> stack" scenario.
+
+I may have explained it poorly before, but the kernel is not in control of =
+how
+many TCs or queues are there it merely just configures the distribution
+depending on what the hardware was setup for.
+
+>=20
+> With the Rx QoS features users won't even be able to tell via standard Li=
+nux
+> interfaces what the config was.
+
+Ok, that is true. So how should this information be exported to the user?
+
+Ioana
+
