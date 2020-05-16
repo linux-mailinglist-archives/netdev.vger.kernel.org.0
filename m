@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7148D1D5F74
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 09:45:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD751D5F78
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 09:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726425AbgEPHp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 03:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56864 "EHLO
+        id S1726868AbgEPHre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 03:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725934AbgEPHp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 03:45:26 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D65FC061A0C;
-        Sat, 16 May 2020 00:45:26 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id n11so2126222pgl.9;
-        Sat, 16 May 2020 00:45:26 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725934AbgEPHrd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 03:47:33 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBAEC061A0C;
+        Sat, 16 May 2020 00:47:33 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id a5so1991328pjh.2;
+        Sat, 16 May 2020 00:47:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=QVZpMvi6NwiXQViyAfKl/G+QbYOlYNWFmXEZ+j2oOkw=;
-        b=mP01c83aDSBG6fX2Tqtxc3xSgcasY22lcRN9/wM3nG4n0vYnFF9sGtt8ViCAzY+TTi
-         RmyV0YsOVeDXxPa0jqBl1C5OdWO6UzdT1RTcfx7r4V68UD8k+UfUXOFtR7kwmvfh1Qmh
-         IH8aCJzjQU+/oJdp5MMo4kbRLOzmAUs/UjlIFPo1OD4ewCuIjv8Ze2pzKOgLAIEOOTWh
-         dqEreBtyNkjGBHx4yIqdKgwKyGR3CjjhOpmrudkLUZYLuRIIDGB63fMyOQp2sqfIdmQG
-         Gr+UGhDvSNU2pMhKFvbpfN5ThKxeNJXVC388UeSXC0HPummmGmVZeuHpF9jBzMNx85TO
-         ppTg==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=QEmYgazlmGE+HVz5b0KPrHTAIyObPJ2uGnNP555qmvg=;
+        b=fadS0LiNyTjvPnIgjA2gokqqwwfzBqwVEa5+3y5/WxoFcfATlTi6zgn4PJ3sQ+XxG5
+         BU24UKftzshOk1bT7YZeRXwWZ1MfAXWNai33Gb7zg/eKy8yFem7CGzuHcUakKppbH2w6
+         HsGt/EWILBUTh68uHEMxUMcgcHJxJJ2K7qFQknS5La+vf+14a2zFo6HdwZaAVQmPFNJ1
+         ZF9TCjfP6KldE/BfX+ByPkm3jQR3MP1lXm1cTPpXgQldx5CFr0Z5UOkSr0h4DT2i38j0
+         Jfz+UbB8PxjozBCuAP8BGUeWNLA9Ot8MSQOmDkxTORv38nXFOfVa1Ir9fc9742SmUrEY
+         Hc7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=QVZpMvi6NwiXQViyAfKl/G+QbYOlYNWFmXEZ+j2oOkw=;
-        b=Qu+TjgBqXqMdLNs0igjo0c29d6QuDF1cIkgbTqYGqdfSfNi7YbRHW9b41ydJYV/y/i
-         bQty/YaX4TQvi8lAHsginrUV6n64jxQLZolZWjWtCq1oBIbYa3vQZWgXizsW86Q2FUdc
-         J3zgyWNHhfJguGNR65oeh0SLyUj5Zpxmvc6jX5Giii5mWoMcUZtruXDX1POmrjJOTHKn
-         X/8pU3mkKdLDw2PlwC83Pvh/9bfOD6nMuseWRVQ97clkigFWar2Z5nnxEY9b9nOp6UG2
-         0aP4thHXhTpj0AfUgFIwXQEsMNs5HsMKWGIwek+5/uJsODkZsTvqPvw2hc5PBwXrTBp1
-         dGkA==
-X-Gm-Message-State: AOAM532FkVdDzoYvaEVvGxnUqKozP5EYEnEqZ2Na/G6EHGV1Weo2wE7d
-        hEH8DhrYEAhTMP6fFJwmuw==
-X-Google-Smtp-Source: ABdhPJzGf98P2GYAj4or19dQafaRzvKhEyaYKg7bVelbBsUaJ8BI7Vzom8AM2cUFiYSRdPA7rijXhw==
-X-Received: by 2002:a65:518c:: with SMTP id h12mr4298392pgq.17.1589615125937;
-        Sat, 16 May 2020 00:45:25 -0700 (PDT)
-Received: from localhost.localdomain ([2402:3a80:13a5:a61b:b5d4:b438:1bc1:57f3])
-        by smtp.gmail.com with ESMTPSA id l4sm3335677pgo.92.2020.05.16.00.45.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 May 2020 00:45:24 -0700 (PDT)
-From:   madhuparnabhowmik10@gmail.com
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org, kaber@trash.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=QEmYgazlmGE+HVz5b0KPrHTAIyObPJ2uGnNP555qmvg=;
+        b=E8gq3DWcUQK6XLpdUAPJoNWYQY6BvVbybzai+mYTtctk3AjEf+8ybUGXOfiZO//RmI
+         HzgVcgldqcq1MebUBjv7DPdytnAkdJK9z7XKw1ZPMZSBPWNwSz5agjzq+ehtPopW3svm
+         oR9ReN8E+nEYZ7iNCVQcovUQ5s9HC9VrOgc1R0BolfNoRgwcm8q3neDCBUAt56Vqws9Q
+         mPu29f6aSSP+Hsbh3HUQLm0GSJrj3jJtZ87RZEFuEMiMwvvg/1lFCCOb3E/VjYRbuhtD
+         c8qmTonDrnv79iPeObKVkj9NQQVemjpDI2Kf4ma9LTPdsQmuWEGHAET0u/21hEIjivOT
+         b2TA==
+X-Gm-Message-State: AOAM531a8EFcOTeDc21eLJfweZcErQwuyBQizW0Lmc8E+zWwczDY3VQ/
+        YBGIcKpo2fIFm4aoKuvB1g==
+X-Google-Smtp-Source: ABdhPJxKwvgM4CAxg4IySwm43iKqjxFfg1ZE/dIQ/ZT9bCgRaAn0NtphOJEoQyjVxkURCcB2Ja0chw==
+X-Received: by 2002:a17:90a:246d:: with SMTP id h100mr7154695pje.21.1589615253057;
+        Sat, 16 May 2020 00:47:33 -0700 (PDT)
+Received: from madhuparna-HP-Notebook ([2402:3a80:13a5:a61b:b5d4:b438:1bc1:57f3])
+        by smtp.gmail.com with ESMTPSA id n69sm3257645pjc.8.2020.05.16.00.47.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 16 May 2020 00:47:31 -0700 (PDT)
+From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
+Date:   Sat, 16 May 2020 13:17:24 +0530
+To:     David Miller <davem@davemloft.net>
+Cc:     madhuparnabhowmik10@gmail.com, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sfr@canb.auug.org.au,
         frextrite@gmail.com, joel@joelfernandes.org, paulmck@kernel.org,
-        cai@lca.pw, linux-kernel-mentees@lists.linuxfoundation.org,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: [PATCH net v2] ipv6: Fix suspicious RCU usage warning in ip6mr
-Date:   Sat, 16 May 2020 13:15:15 +0530
-Message-Id: <20200516074515.13745-1-madhuparnabhowmik10@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        cai@lca.pw
+Subject: Re: [PATCH] Fix suspicious RCU usage warning
+Message-ID: <20200516074724.GA13822@madhuparna-HP-Notebook>
+References: <20200513061610.22313-1-madhuparnabhowmik10@gmail.com>
+ <20200513.120010.124458176293400943.davem@davemloft.net>
+ <20200514070409.GA3174@madhuparna-HP-Notebook>
+ <20200514.125011.743722610194113216.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200514.125011.743722610194113216.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+On Thu, May 14, 2020 at 12:50:11PM -0700, David Miller wrote:
+> From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+> Date: Thu, 14 May 2020 12:34:09 +0530
+> 
+> > Sorry for this malformed patch, I have sent a patch with all these
+> > corrections.
+> 
+> It still needs more work, see Jakub's feedback.
+>
+Yes, I have sent the v2 of this patch.
 
-This patch fixes the following warning:
+Thank you,
+Madhuparna
 
-=============================
-WARNING: suspicious RCU usage
-5.7.0-rc4-next-20200507-syzkaller #0 Not tainted
------------------------------
-net/ipv6/ip6mr.c:124 RCU-list traversed in non-reader section!!
-
-ipmr_new_table() returns an existing table, but there is no table at
-init. Therefore the condition: either holding rtnl or the list is empty
-is used.
-
-Fixes: d1db275dd3f6e ("ipv6: ip6mr: support multiple tables")
-Reported-by: kernel test robot <lkp@intel.com>
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
----
-v2:
-- Add correct fixes tag
-- Fix line over 80 chars
-
- net/ipv6/ip6mr.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 65a54d74acc1..1e223e26f079 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -98,7 +98,8 @@ static void ipmr_expire_process(struct timer_list *t);
- #ifdef CONFIG_IPV6_MROUTE_MULTIPLE_TABLES
- #define ip6mr_for_each_table(mrt, net) \
- 	list_for_each_entry_rcu(mrt, &net->ipv6.mr6_tables, list, \
--				lockdep_rtnl_is_held())
-+				lockdep_rtnl_is_held() || \
-+				list_empty(&net->ipv6.mr6_tables))
- 
- static struct mr_table *ip6mr_mr_table_iter(struct net *net,
- 					    struct mr_table *mrt)
--- 
-2.17.1
-
+> Thank you.
