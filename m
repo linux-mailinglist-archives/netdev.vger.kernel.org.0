@@ -2,94 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D3591D5FA1
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:27:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8111D5FBC
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726271AbgEPI1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 04:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
+        id S1726271AbgEPIqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 04:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725934AbgEPI1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 04:27:38 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CF5C061A0C
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 01:27:38 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id g11so1921884plp.1
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 01:27:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=nJVp21Cy9jUL0NoDLZPalfQBYTt3+XPtVFzS+s6PvFE=;
-        b=MEe5nPobbxUiolZc+2N9Rhr6laDY7PCRvnjV/a3naM0vQ7HANfqlXBNOvlI/Z/21M4
-         F/hKYOnPkJaKeBDSndSiMkedzs0t0lFK26q76VaWQlsXPF3GVyFY4fY2z9Up+Ms+9BUp
-         pdaMgYb8vjQhwJwLTKZI83Pyl6tGQr+sfTe/s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=nJVp21Cy9jUL0NoDLZPalfQBYTt3+XPtVFzS+s6PvFE=;
-        b=jkknbk+3zQ2zzQtJLnb7YvD5QwKUYTyilFv8KqFL4kLe+PJBPGvDA/CIOvxbdR3ILu
-         tPSZCaAmVmmtGcwPellYQ6P8KnEui4cQavBpjwiAts1unkZ11aqT1rxq5h0XyuYGjwys
-         RxJyWQ6ONj4MsVbr4pMOuQ+Hp+GrNqYAwI3Bb+btr6qEAH66a0S7cmxvi5zPvUlPNOSv
-         6IWHeeHkwKqGDxeZAHSHlfp99NehDFXWQOE+7JaR/h3ObQoAfg2o55EQ+UvJ8UGqBZRX
-         NILNoPfkWXcSxf8BVGeCCR9aN5rm/qEhaOEfnbMkeEoT/C6awbYiD5VROX9SUAgcvUmP
-         GlQA==
-X-Gm-Message-State: AOAM533oONyNdpvjKVUfyZs7bKIsd2Wh4I5kxvh7q93Lmk5h17AMq+G/
-        dO5JDR9STaCtUUbIvTTtPSSzaFZNAlM=
-X-Google-Smtp-Source: ABdhPJwmGqtjhKKJT63inl/05ckFgq3f11qhjjDKvhbeZiekt+KE4JO9a2HL0eeMPFtaeh6wG/1XSA==
-X-Received: by 2002:a17:902:c403:: with SMTP id k3mr7306382plk.12.1589617657911;
-        Sat, 16 May 2020 01:27:37 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id d20sm3176131pjs.12.2020.05.16.01.27.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 16 May 2020 01:27:36 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     jeyu@kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        michael.chan@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH v2] bnxt_en: use new module_firmware_crashed()
-Date:   Sat, 16 May 2020 13:55:29 +0530
-Message-Id: <1589617529-24009-1-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S1725997AbgEPIqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 04:46:46 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051E4C061A0C
+        for <netdev@vger.kernel.org>; Sat, 16 May 2020 01:46:45 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1jZsSx-0005rz-DX; Sat, 16 May 2020 10:46:43 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     pabeni@redhat.com, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net
+Subject: [PATCH net-next 0/7] mptcp: do not block on subflow socket
+Date:   Sat, 16 May 2020 10:46:16 +0200
+Message-Id: <20200516084623.28453-1-fw@strlen.de>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This makes use of the new module_firmware_crashed() to help
-annotate when firmware for device drivers crash. When firmware
-crashes devices can sometimes become unresponsive, and recovery
-sometimes requires a driver unload / reload and in the worst cases
-a reboot.
+This series reworks mptcp_sendmsg logic to avoid blocking on the subflow
+socket.
 
-Using a taint flag allows us to annotate when this happens clearly.
+It does so by removing the wait loop from mptcp_sendmsg_frag helper.
 
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
----
-v2: Move call module_firmware_crashed() to bnxt_fw_fatal_recover().
-This will optimize to make the call at one central place.
+In order to do that, it moves prerequisites that are currently
+handled in mptcp_sendmsg_frag (and cause it to wait until they are
+met, e.g. frag cache refill) into the callers.
 
-Please append to the patchset:
-("[PATCH v2 00/15] net: taint when the device driver firmware crashes")
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 1 +
- 1 file changed, 1 insertion(+)
+The worker can just reschedule in case no subflow socket is ready,
+since it can't wait -- doing so would block other work items and
+doesn't make sense anyway because we should not (re)send data
+in case resources are already low.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index a812beb..1e37938 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -121,6 +121,7 @@ static int bnxt_fw_fatal_recover(struct devlink_health_reporter *reporter,
- 	if (!priv_ctx)
- 		return -EOPNOTSUPP;
- 
-+	module_firmware_crashed();
- 	bp->fw_health->fatal = true;
- 	event = fw_reporter_ctx->sp_event;
- 	if (event == BNXT_FW_RESET_NOTIFY_SP_EVENT)
--- 
-1.8.3.1
+The sendmsg path can use the existing wait logic until memory
+becomes available.
+
+Because large send requests can result in multiple mptcp_sendmsg_frag
+calls from mptcp_sendmsg, we may need to restart the socket lookup in
+case subflow can't accept more data or memory is low.
+
+Doing so blocks on the mptcp socket, and existing wait handling
+releases the msk lock while blocking.
+
+Lastly, no need to use GFP_ATOMIC for extension allocation:
+extend __skb_ext_alloc with gfp_t arg instead of hard-coded ATOMIC and
+then relax the allocation constraints for mptcp case: those requests
+occur in process context.
+
+Florian Westphal (7):
+      mptcp: move common nospace-pattern to a helper
+      mptcp: break and restart in case mptcp sndbuf is full
+      mptcp: avoid blocking in tcp_sendpages
+      mptcp: fill skb extension cache outside of mptcp_sendmsg_frag
+      mptcp: fill skb page frag cache outside of mptcp_sendmsg_frag
+      mptcp: remove inner wait loop from mptcp_sendmsg_frag
+      net: allow __skb_ext_alloc to sleep
+
+ include/linux/skbuff.h |   2 +-
+ net/core/skbuff.c      |   8 +--
+ net/mptcp/protocol.c   | 139 ++++++++++++++++++++++++++++++++++++-------------
+ 3 files changed, 109 insertions(+), 40 deletions(-)
 
