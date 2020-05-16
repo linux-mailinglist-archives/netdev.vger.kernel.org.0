@@ -2,152 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 543C31D5E55
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 05:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1935E1D5E5C
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 06:05:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbgEPDzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 23:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48666 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726615AbgEPDzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 23:55:19 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08AAC061A0C;
-        Fri, 15 May 2020 20:55:18 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id u15so4331348ljd.3;
-        Fri, 15 May 2020 20:55:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r3DXHhYEfZ5XzGr6H4vE2RcXrCw+ttKCWZ1sjv6FRCQ=;
-        b=gNVh2skFKX/3K5VcJAPK6a1yLtTIAVJfXJuo3OCHJA7vdofoB0idsjK8Aqat9ufZg9
-         8Ww4NWrP00mhdhkfIKK9UJRhCRtZ5UgfUAKOe3AVA4N23o9hw0PrPLlxXQWpzMqqaksJ
-         DiCRZ+YthHQSfwEcXq4h0/ujfBPAFoj1CGiU5LEoiD/Xs5FY/GW3j2ZlTla6MFARUD67
-         mqzANd5idIUC7UPHy6TCSXQJB7ouixBercj0ofPiNWNDsNKMi3qQZlhxoqa6suITs1aM
-         DxFjc1mATIaVzDf5pc2GVp7Hfwp/seBYs6tP9mraKLmrhWVFxKLwzX1wdmjFwEKmX6rd
-         CaEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r3DXHhYEfZ5XzGr6H4vE2RcXrCw+ttKCWZ1sjv6FRCQ=;
-        b=Tew8uH7OSqpLTopxQniPnmGmJ+4NE6lCu3Dx7dNiUhRUBSl0l3q3bMVUbuhA+Z42Oo
-         pSLK2uctw1hESHK2lxLxn8TIERl7hmNvobZ3NXuHWt4AXH8ff7ioEZSmdJnyuwQueCBp
-         kMD/9oBTFwRyYAl6U5JiiLstF7T60FPL4Jnt8Uy5Gfqh2AjzSaOGDYCUwGHUA4wmhY3k
-         UTwD0m+yz3vsNUMAVI+sdaQuUoOb4xtLKlT9358rC8SKaAixr+/ubBva/zAO+NsewcJ8
-         +UCEXlECNoEf22bC2Ewb4lTlzfDNHsW6jS68KuT23WycDLx9Red0Zl3r1JXulpqUKqB8
-         piCQ==
-X-Gm-Message-State: AOAM5305ycZw3IQGY0rQtjwRlmGWYbJu8zZ2ki5nKX/q7Xy67cj/ajB4
-        ag1vjSq8Q+0aFEKeP1Bqg0Pi9paRAHunLOMY8F4=
-X-Google-Smtp-Source: ABdhPJypqCJcVcTHipqdL5mEtN8qKKvl0ixtR0T5MyKJXkK503co63su15SwPCqlwpNfYSAkPMiFBHf0cKxDDUqT6OE=
-X-Received: by 2002:a05:651c:c8:: with SMTP id 8mr3852678ljr.182.1589601316830;
- Fri, 15 May 2020 20:55:16 -0700 (PDT)
+        id S1725934AbgEPEEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 00:04:12 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:34358 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725792AbgEPEEM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 00:04:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589601851;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bPuMwbOjUImOtjQj+iLZNHFF2rUtvqlmQymq+yZrOyo=;
+        b=idTY6zd1fVWMm1xtpNQ535joVsaFj1ahxn4nq26b6BU0Aix9147mTAec6n5fXXGMgo6S/7
+        X5HEU9CfoIskiUPiAEzxKOlaBodcIxwsxHgPycR9Nx0NrIW7SjDdmIXKKBBtV4Aue6BbQZ
+        lbKfMG9KvB/rb9BgzhJ/p/8Wy6Sadvo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-75-mGNI0z85MFWhHnb1rh4xKw-1; Sat, 16 May 2020 00:04:06 -0400
+X-MC-Unique: mGNI0z85MFWhHnb1rh4xKw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4E1FB1800D42;
+        Sat, 16 May 2020 04:04:03 +0000 (UTC)
+Received: from x1-fbsd (unknown [10.3.128.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 67D615D9C9;
+        Sat, 16 May 2020 04:03:52 +0000 (UTC)
+Date:   Sat, 16 May 2020 00:03:48 -0400
+From:   Rafael Aquini <aquini@redhat.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
+        rostedt@goodmis.org, mingo@redhat.com, cai@lca.pw,
+        dyoung@redhat.com, bhe@redhat.com, peterz@infradead.org,
+        tglx@linutronix.de, gpiccoli@canonical.com, pmladek@suse.com,
+        tiwai@suse.de, schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 01/15] taint: add module firmware crash taint support
+Message-ID: <20200516040348.GA3182@x1-fbsd>
+References: <20200515212846.1347-1-mcgrof@kernel.org>
+ <20200515212846.1347-2-mcgrof@kernel.org>
 MIME-Version: 1.0
-References: <1587408228-10861-1-git-send-email-orson.unisoc@gmail.com>
- <20200420191014.GE121146@unreal> <CA+H2tpGgGtW_8Z8fV9to39JwA_KrcfAeBC+KN87v0xKnZHt2_w@mail.gmail.com>
- <20200422142552.GA492196@unreal> <CA+H2tpGR7tywhkexa31AD_FkhyxQgVq_L+b0DbvXzwr6yT8j9Q@mail.gmail.com>
- <20200515095501.GU17734@linux-b0ei>
-In-Reply-To: <20200515095501.GU17734@linux-b0ei>
-From:   Orson Zhai <orsonzhai@gmail.com>
-Date:   Sat, 16 May 2020 11:55:04 +0800
-Message-ID: <CA+H2tpFyAx9d-mvp=ZoS0NXm6YYC6DDV1Fu-RHLY=v82MP52Bg@mail.gmail.com>
-Subject: Re: [PATCH V2] dynamic_debug: Add an option to enable dynamic debug
- for modules only
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Orson Zhai <orson.unisoc@gmail.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Orson Zhai <orson.zhai@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200515212846.1347-2-mcgrof@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 5:55 PM Petr Mladek <pmladek@suse.com> wrote:
->
-> On Thu 2020-04-23 00:02:48, Orson Zhai wrote:
-> > On Wed, Apr 22, 2020 at 10:25 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > >
-> > > On Wed, Apr 22, 2020 at 09:06:08PM +0800, Orson Zhai wrote:
-> > > > On Tue, Apr 21, 2020 at 3:10 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > My motivation came from the concept of GKI (Generic Kernel Image) in Android.
-> > > > Google will release a common kernel image (binary) to all of the Android system
-> > > > vendors in the world instead of letting them to build their owns as before.
-> > > > Every SoC vendor's device drivers will be provided in kernel modules only.
-> > > > By my patch, the driver owners could debug their modules in field (say
-> > > > production releases)
-> > > > without having to enable dynamic debug for the whole GKI.
-> > >
-> > > Will Google release that binary with CONFIG_DYNAMIC_DEBUG_CORE disabled?
-> > >
-> > In Google's plan, there will be only one GKI (no debug version) for
-> > one Android version per kernel version per year.
->
-> Are there plans to use modules with debug messages enabled on production
-> systems?
+On Fri, May 15, 2020 at 09:28:32PM +0000, Luis Chamberlain wrote:
+> Device driver firmware can crash, and sometimes, this can leave your
+> system in a state which makes the device or subsystem completely
+> useless. Detecting this by inspecting /proc/sys/kernel/tainted instead
+> of scraping some magical words from the kernel log, which is driver
+> specific, is much easier. So instead provide a helper which lets drivers
+> annotate this.
+> 
+> Once this happens, scrapers can easily look for modules taint flags
+> for a firmware crash. This will taint both the kernel and respective
+> calling module.
+> 
+> The new helper module_firmware_crashed() uses LOCKDEP_STILL_OK as this
+> fact should in no way shape or form affect lockdep. This taint is device
+> driver specific.
+> 
+> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+> ---
+>  Documentation/admin-guide/tainted-kernels.rst |  6 ++++++
+>  include/linux/kernel.h                        |  3 ++-
+>  include/linux/module.h                        | 13 +++++++++++++
+>  include/trace/events/module.h                 |  3 ++-
+>  kernel/module.c                               |  5 +++--
+>  kernel/panic.c                                |  1 +
+>  tools/debugging/kernel-chktaint               |  7 +++++++
+>  7 files changed, 34 insertions(+), 4 deletions(-)
+> 
 
-Yes, but in a managed way. They are not being enabled directly to log buffer.
-Users / FAEs (Field Application Engineer) might control to open or
-close every single one on-the-fly.
+Reviewed-by: Rafael Aquini <aquini@redhat.com>
 
->
-> IMHO, the debug messages are primary needed during development and
-> when fixing bugs. I am sure that developers will want to enable many
-> more features that will help with debugging and which will be disabled
-> on production systems.
-
-I agree with you in general speaking.
-For real production build we usually keep a few critical debugging
-methods in case of some
-potential bugs which are extremely hard to be found in production test.
-Dynamic debug is one of these methods.
-I assume it is widely used for maintenance to PC or server because I
-can find it is enabled in some
-popular Linux distribution configs.
-
-Here is the search result from my PC with Ubuntu default installation.
-zhai@ThinkPad:/boot$ cat config-4.15.0-99-generic | grep DYNAMIC_DEBUG
-CONFIG_DYNAMIC_DEBUG=y
-
->
-> I expect that Google will not release only the single binary. They
-> should release also the sources and build configuration. Then
-
-Yes, they have released the source and configuration which could be freely
-downloaded from Google's website.
-
-> developers might build their own versions with the needed debugging
-> features enabled.
-
-Yes, we do have the debug build for this.
-But as I mentioned above, it is a little bit different for my requirement.
-Actually my patch is to address the problem for embedded system where
-image size is needed to be
-considered when CONFIG_DYNAMIC_DEBUG is being enable globally.
-
-For a "make allyesconfig" build, 2,335,704 bytes will be increased by
-enabling CONFIG_DYNAMIC_DEBUG.
-It is trivial for PC or server but might matter for embedded product.
-So my patch is to give user an option to
-only enable dynamic debug for modules especially in this GKI case.
-
-Thanks
-Orson
->
-> Best Regards,
-> Petr
