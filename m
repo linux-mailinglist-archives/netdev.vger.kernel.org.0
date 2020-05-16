@@ -2,134 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DFE71D5D83
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 03:02:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EA381D5D9D
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 03:30:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727098AbgEPBCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 21:02:42 -0400
-Received: from www62.your-server.de ([213.133.104.62]:55712 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726198AbgEPBCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 May 2020 21:02:41 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZlDr-0004n3-DS; Sat, 16 May 2020 03:02:39 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jZlDr-00078q-5W; Sat, 16 May 2020 03:02:39 +0200
-Subject: Re: [bpf-next PATCH v2 00/12] bpf: selftests, test_sockmap
- improvements
-To:     John Fastabend <john.fastabend@gmail.com>, lmb@cloudflare.com,
-        jakub@cloudflare.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org
-References: <158939706939.15176.10993188758954570904.stgit@john-Precision-5820-Tower>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <b2233fba-09b0-a530-780e-c8ed238c6dee@iogearbox.net>
-Date:   Sat, 16 May 2020 03:02:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726653AbgEPBaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 May 2020 21:30:02 -0400
+Received: from mga18.intel.com ([134.134.136.126]:60902 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726261AbgEPBaC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 May 2020 21:30:02 -0400
+IronPort-SDR: 0+JP+BgS2rIl5zS2caon6INxJ6G1/NXFKHk6YdDmINmMwpUMEM73RlcQBJvFfa1QIKMpaZIm4D
+ Z3ijd3u3Y+dQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2020 18:30:01 -0700
+IronPort-SDR: c/1wXf/KexM6fjgEE6TwkFvVC4jFoJ/IJtxuNnt9d9ZaAAZKjpTyHuTRMebdkaI2OxJ3j101kr
+ JEF3iufYlTnQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,397,1583222400"; 
+   d="scan'208";a="307569128"
+Received: from wkbertra-mobl1.amr.corp.intel.com (HELO localhost.localdomain) ([10.251.131.129])
+  by FMSMGA003.fm.intel.com with ESMTP; 15 May 2020 18:30:01 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        jeffrey.t.kirsher@intel.com, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, po.liu@nxp.com, m-karicheri2@ti.com,
+        Jose.Abreu@synopsys.com
+Subject: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+Date:   Fri, 15 May 2020 18:29:44 -0700
+Message-Id: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <158939706939.15176.10993188758954570904.stgit@john-Precision-5820-Tower>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25813/Fri May 15 14:16:29 2020)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/13/20 9:12 PM, John Fastabend wrote:
-> Note: requires fixes listed below to be merged into bpf-next before
->        applied.
-> 
-> Update test_sockmap to add ktls tests and in the process make output
-> easier to understand and reduce overall runtime significantly. Before
-> this series test_sockmap did a poor job of tracking sent bytes causing
-> the recv thread to wait for a timeout even though all expected bytes
-> had been received. Doing this many times causes significant delays.
-> Further, we did many redundant tests because the send/recv test we used
-> was not specific to the parameters we were testing. For example testing
-> a failure case that always fails many times with different send sizes
-> is mostly useless. If the test condition catches 10B in the kernel code
-> testing 100B, 1kB, 4kB, and so on is just noise.
-> 
-> The main motivation for this is to add ktls tests, the last patch. Until
-> now I have been running these locally but we haven't had them checked in
-> to selftests. And finally I'm hoping to get these pushed into the libbpf
-> test infrastructure so we can get more testing. For that to work we need
-> ability to white and blacklist tests based on kernel features so we add
-> that here as well.
-> 
-> The new output looks like this broken into test groups with subtest
-> counters,
-> 
->   $ time sudo ./test_sockmap
->   # 1/ 6  sockmap:txmsg test passthrough:OK
->   # 2/ 6  sockmap:txmsg test redirect:OK
->   ...
->   #22/ 1 sockhash:txmsg test push/pop data:OK
->   Pass: 22 Fail: 0
-> 
->   real    0m9.790s
->   user    0m0.093s
->   sys     0m7.318s
-> 
-> The old output printed individual subtest and was rather noisy
-> 
->   $ time sudo ./test_sockmap
->   [TEST 0]: (1, 1, 1, sendmsg, pass,): PASS
->   ...
->   [TEST 823]: (16, 1, 100, sendpage, ... ,pop (1599,1609),): PASS
->   Summary: 824 PASSED 0 FAILED
-> 
->   real    0m56.761s
->   user    0m0.455s
->   sys     0m31.757s
-> 
-> So we are able to reduce time from ~56s to ~10s. To recover older more
-> verbose output simply run with --verbose option. To whitelist and
-> blacklist tests use the new --whitelist and --blacklist flags added. For
-> example to run cork sockhash tests but only ones that don't have a receive
-> hang (used to test negative cases) we could do,
-> 
->   $ ./test_sockmap --whitelist="cork" --blacklist="sockmap,hang"
-> 
-> Requires these two fixes from net tree,
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=3e104c23816220919ea1b3fd93fabe363c67c484
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=81aabbb9fb7b4b1efd073b62f0505d3adad442f3
-> 
-> v1->v2: Addressed Jakub's comments, exit to _exit and strerror typo.
->          Added Jakubs Reviewed-by tag, Thanks!
-> 
-> ---
-> 
-> John Fastabend (12):
->        bpf: sockmap, msg_pop_data can incorrecty set an sge length
->        bpf: sockmap, bpf_tcp_ingress needs to subtract bytes from sg.size
->        bpf: selftests, move sockmap bpf prog header into progs
->        bpf: selftests, remove prints from sockmap tests
->        bpf: selftests, sockmap test prog run without setting cgroup
->        bpf: selftests, print error in test_sockmap error cases
->        bpf: selftests, improve test_sockmap total bytes counter
->        bpf: selftests, break down test_sockmap into subtests
->        bpf: selftests, provide verbose option for selftests execution
->        bpf: selftests, add whitelist option to test_sockmap
->        bpf: selftests, add blacklist to test_sockmap
->        bpf: selftests, add ktls tests to test_sockmap
-> 
-> 
->   .../selftests/bpf/progs/test_sockmap_kern.h        |  299 +++++++
->   tools/testing/selftests/bpf/test_sockmap.c         |  913 ++++++++++----------
->   tools/testing/selftests/bpf/test_sockmap_kern.h    |  451 ----------
->   3 files changed, 770 insertions(+), 893 deletions(-)
->   create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_kern.h
->   delete mode 100644 tools/testing/selftests/bpf/test_sockmap_kern.h
+Hi,
 
-Applied 3-12, thanks!
+This series adds support for configuring frame preemption, as defined
+by IEEE 802.1Q-2018 (previously IEEE 802.1Qbu) and IEEE 802.3br.
+
+Frame preemption allows a packet from a higher priority queue marked
+as "express" to preempt a packet from lower priority queue marked as
+"preemptible". The idea is that this can help reduce the latency for
+higher priority traffic.
+
+Previously, the proposed interface for configuring these features was
+using the qdisc layer. But as this is very hardware dependent and all
+that qdisc did was pass the information to the driver, it makes sense
+to have this in ethtool.
+
+One example, for retrieving and setting the configuration:
+
+$ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
+Frame preemption settings for enp3s0:
+	support: supported
+	active: active
+	supported queues: 0xf
+	supported queues: 0xe
+	minimum fragment size: 68
+
+
+$ ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68 preemptible-queues-mask 0xe
+
+This is a RFC because I wanted to have feedback on some points:
+
+  - The parameters added are enough for the hardware I have, is it
+    enough in general?
+
+  - even with the ethtool via netlink effort, I chose to keep the
+    ioctl() way, in case someone wants to backport this to an older
+    kernel, is there a problem with this?
+
+  - Some space for bikeshedding the names and location (for example,
+    does it make sense for these settings to be per-queue?), as I am
+    not quite happy with them, one example, is the use of preemptible
+    vs. preemptable;
+
+
+About the patches, should be quite straightforward:
+
+Patch 1, adds the ETHTOOL_GFP and ETHOOL_SFP commands and the
+associated data structures;
+
+Patch 2, adds the ETHTOOL_MSG_PREEMPT_GET and ETHTOOL_MSG_PREEMPT_SET
+netlink messages and the associated attributes;
+
+Patch 3, is the example implementation for the igc driver, the catch
+here is that frame preemption in igc is dependent on the TSN "mode"
+being enabled;
+
+Patch 4, adds some registers that helped during implementation.
+
+Another thing is that because igc is still under development, to avoid
+conflicts, I think it might be easier for the PATCH version of this
+series to go through Jeff Kirsher's tree.
+
+Vinicius Costa Gomes (4):
+  ethtool: Add support for configuring frame preemption
+  ethtool: Add support for configuring frame preemption via netlink
+  igc: Add support for configuring frame preemption
+  igc: Add support for exposing frame preemption stats registers
+
+ drivers/net/ethernet/intel/igc/igc.h         |   3 +
+ drivers/net/ethernet/intel/igc/igc_defines.h |   6 +
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  77 ++++++++
+ drivers/net/ethernet/intel/igc/igc_regs.h    |  10 +
+ drivers/net/ethernet/intel/igc/igc_tsn.c     |  46 ++++-
+ include/linux/ethtool.h                      |   6 +
+ include/uapi/linux/ethtool.h                 |  25 +++
+ include/uapi/linux/ethtool_netlink.h         |  19 ++
+ net/ethtool/Makefile                         |   3 +-
+ net/ethtool/ioctl.c                          |  36 ++++
+ net/ethtool/netlink.c                        |  15 ++
+ net/ethtool/netlink.h                        |   2 +
+ net/ethtool/preempt.c                        | 181 +++++++++++++++++++
+ 13 files changed, 423 insertions(+), 6 deletions(-)
+ create mode 100644 net/ethtool/preempt.c
+
+-- 
+2.26.2
+
