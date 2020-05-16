@@ -2,72 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B2D1D643C
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 23:27:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B95041D646F
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 00:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbgEPV1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 17:27:06 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:53124 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbgEPV1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 17:27:05 -0400
-Received: by mail-il1-f197.google.com with SMTP id m7so4457043ill.19
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 14:27:03 -0700 (PDT)
+        id S1726695AbgEPWFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 18:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726290AbgEPWFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 18:05:19 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121A0C061A0C
+        for <netdev@vger.kernel.org>; Sat, 16 May 2020 15:05:19 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id l11so7546922wru.0
+        for <netdev@vger.kernel.org>; Sat, 16 May 2020 15:05:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=h05treqi9CpMXR6T8goYqKzmgFaaLKWRPPev7Isc9rs=;
+        b=Mq0MFwcWF3HeeXr+N+UY3ZHQFZLEP8ItLRlg4CFUCGhQasefo+Dgp6tH6CIcGKM0xu
+         H4GkBff0A8eCLwRQOr8crz2XpqIYAcFIlg/WYn0BX9f3QoUj9ofyj8h+P7hL7/3uuOvJ
+         Wgjcial33ekxIMVh/+3SPYRgO1YK/Q9QURB89x6nc6veoAy9aqveb/vv7ba4/pzCSrpL
+         RQJY4iqH64ziqWv9wKEwOSjRd73xdDMixUay4x69CVhg+YhAD+hfClpOMCEYOjsNzaiL
+         BvPXG4XRE/QjWuRReBz2pPQrxOpCayxRfhAdDuUv+qDnAE3+ZzyCvHPtdHH22y/d5mPz
+         W3dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=f3hko+0TXM3ZTxTzVXQjaXqhvt2WnzZbWWNxH4vk64g=;
-        b=PNwz0Xr8Ojt6NvcKzci1zQDxUwN6Hx39SPMi8+/vMu1iUtMEfZ+zpWvSz+f2vuAC47
-         5kmHFDhEvrLpC/E0bt5406Eb7i6ubIePybOnUrRgCGPzeb6fnAMJ7CJParN/owre897L
-         sZcf41sa7lDedBfzqjcr9oy7bfsA0d4NMAM2AqSzdH7R7Lo6PpuSmUPqY2iDF2S7VH7h
-         1SM+JEse6B2BVhp8QdD2E9mN7DFaPk9iIVbucBM67xuyAOOYFtU7yTpK/ba0ghypcY1B
-         1XfVf0taI2qvOOukLGMO6dHcEV1DkaWjdmTrFuyPLFnSDfsJuiourWmb2Xr5ltdg8c2m
-         CiJQ==
-X-Gm-Message-State: AOAM532h95Po1NRVSEGp9fdbGqerTuh9RINgVy9YyJ6CWyxHG3paY6p+
-        mvshEWqeWCCVIQ8jjWPo6+297mebpYaCjelmZxdHCOiintZL
-X-Google-Smtp-Source: ABdhPJz0cH5oPpV8Crm3N4eRME8yr4YUcg2zWCEKfV1oaXJx6vivQpTeE+zffP6GmIpSFnRS9D7COeZSShOVJTZOtPesbiPzsDog
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=h05treqi9CpMXR6T8goYqKzmgFaaLKWRPPev7Isc9rs=;
+        b=oNXfOaKlRRhqEcxFq8LGJpoJXC8nm3An2E35xsMFf2uM2ifuQrOT6xF4cGGuphZp9N
+         Vz7IggnsPRXUY2xvNBI7CIroZCW+5dimr2B/b33vI1VlYgGZwypPQj2EowpDxgfbQpaA
+         TS5KwgM9Cwdqqsd6sXu/x+ldLQHWgrL1Wh9jV6xGS2zAYhwmWG+8m8fFb5BxRt1DXx4a
+         isOHQ1IKDSk9BYy9q++e63jDDcZNi6Yrg+XrQQio1tPbQo3ayPOdrrEZmKT85rrOX+Ta
+         di+mMWtr2XP4ZDwz+j3D+aldSPF0FkiAmVrreDdKOxUR2Dbi6htEvwu3tjxgYTO9cIHI
+         KtiA==
+X-Gm-Message-State: AOAM531S+TeGBOdCT2/MuqXKRJiEb7J7cYS3UU3KE1DnzTAxBxFPZAqL
+        B7ch/UXTKdTZ4gAQrax2bqAryk2M
+X-Google-Smtp-Source: ABdhPJygS2vbgdntENOQEv4ZPSq02JTOcG8JVRsoxC6ZLNnRNGiCH+dlrdhm2p2c0WkqSVNusAFEYQ==
+X-Received: by 2002:adf:f38b:: with SMTP id m11mr11190660wro.65.1589666715250;
+        Sat, 16 May 2020 15:05:15 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f28:5200:2154:c7c1:b82f:4f98? (p200300ea8f2852002154c7c1b82f4f98.dip0.t-ipconnect.de. [2003:ea:8f28:5200:2154:c7c1:b82f:4f98])
+        by smtp.googlemail.com with ESMTPSA id s17sm9303320wmc.48.2020.05.16.15.05.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 May 2020 15:05:14 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: remove remaining call to mdiobus_unregister
+Message-ID: <4cf54a6a-cc51-58cf-3ad8-dd488ba44e60@gmail.com>
+Date:   Sun, 17 May 2020 00:05:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a02:860e:: with SMTP id e14mr1019310jai.109.1589664423356;
- Sat, 16 May 2020 14:27:03 -0700 (PDT)
-Date:   Sat, 16 May 2020 14:27:03 -0700
-In-Reply-To: <0000000000003692760578e651dd@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000044329005a5ca97eb@google.com>
-Subject: Re: KASAN: use-after-free Write in hci_sock_release
-From:   syzbot <syzbot+b364ed862aa07c74bc62@syzkaller.appspotmail.com>
-To:     bigeasy@linutronix.de, davem@davemloft.net, dvyukov@google.com,
-        jack@suse.cz, johan.hedberg@gmail.com,
-        linux-bluetooth@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org, mmarek@suse.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, torvalds@linux-foundation.org,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+After having switched to devm_mdiobus_register() also this remaining
+call to mdiobus_unregister() can be removed.
 
-commit f1e67e355c2aafeddf1eac31335709236996d2fe
-Author: Thomas Gleixner <tglx@linutronix.de>
-Date:   Mon Nov 18 13:28:24 2019 +0000
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-    fs/buffer: Make BH_Uptodate_Lock bit_spin_lock a regular spinlock_t
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 97a7e27ff..e35820c72 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4990,7 +4990,6 @@ static void rtl_remove_one(struct pci_dev *pdev)
+ 	netif_napi_del(&tp->napi);
+ 
+ 	unregister_netdev(dev);
+-	mdiobus_unregister(tp->phydev->mdio.bus);
+ 
+ 	rtl_release_firmware(tp);
+ 
+-- 
+2.26.2
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1761ce06100000
-start commit:   645ff1e8 Merge branch 'for-linus' of git://git.kernel.org/..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7308e68273924137
-dashboard link: https://syzkaller.appspot.com/bug?extid=b364ed862aa07c74bc62
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=152532bb400000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13f73320c00000
-
-If the result looks correct, please mark the bug fixed by replying with:
-
-#syz fix: fs/buffer: Make BH_Uptodate_Lock bit_spin_lock a regular spinlock_t
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
