@@ -2,298 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46D9C1D5DAA
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 03:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F8E31D6018
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 11:46:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727929AbgEPBan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 May 2020 21:30:43 -0400
-Received: from mga06.intel.com ([134.134.136.31]:39711 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726204AbgEPBal (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 May 2020 21:30:41 -0400
-IronPort-SDR: NOxA6U8/mcDf+VkL2mkZxFc07Rg/plyUhGgNdZGNkjh1ttJdm08wfE7za0488+5zfgBRbpShwy
- AUl/6jq/fRpQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2020 18:30:38 -0700
-IronPort-SDR: pYRlnV7gYaqcCADMRRd1wvqPRV+JwcXW4tvkCe2o0mzC73SogrHkxbf9i1N0i7YlILAEkseNWk
- hJ9RUQEDEMLQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,397,1583222400"; 
-   d="scan'208";a="307569388"
-Received: from wkbertra-mobl1.amr.corp.intel.com (HELO localhost.localdomain) ([10.251.131.129])
-  by FMSMGA003.fm.intel.com with ESMTP; 15 May 2020 18:30:38 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        jeffrey.t.kirsher@intel.com, linville@tuxdriver.com,
-        vladimir.oltean@nxp.com, po.liu@nxp.com, m-karicheri2@ti.com,
-        Jose.Abreu@synopsys.com
-Subject: [ethtool RFC 3/3] ethtool: Add support for configuring frame preemption via netlink
-Date:   Fri, 15 May 2020 18:30:26 -0700
-Message-Id: <20200516013026.3174098-4-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200516013026.3174098-1-vinicius.gomes@intel.com>
-References: <20200516013026.3174098-1-vinicius.gomes@intel.com>
+        id S1726399AbgEPJnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 05:43:04 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:34708 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725997AbgEPJnE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 May 2020 05:43:04 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id DD50BD1E35E2BA3F453C;
+        Sat, 16 May 2020 17:43:00 +0800 (CST)
+Received: from localhost.localdomain (10.175.118.36) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.487.0; Sat, 16 May 2020 17:42:54 +0800
+From:   Luo bin <luobin9@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoxianjun@huawei.com>, <luobin9@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
+Subject: [PATCH net-next] hinic: add support to set and get pause param
+Date:   Sat, 16 May 2020 02:00:30 +0000
+Message-ID: <20200516020030.23017-1-luobin9@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.118.36]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds the same functionality of the ETHTOOL_{G,S}FP commands, now via
-the ETHTOOL_MSG_PREEMPT_{GET,SET} netlink messages.
+add support to set pause param with ethtool -A and get pause
+param with ethtool -a. Also remove set_link_ksettings ops for VF.
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: Luo bin <luobin9@huawei.com>
 ---
- Makefile.am            |   2 +-
- ethtool.c              |   2 +
- netlink/desc-ethtool.c |  13 ++++
- netlink/extapi.h       |   4 ++
- netlink/preempt.c      | 148 +++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 168 insertions(+), 1 deletion(-)
- create mode 100644 netlink/preempt.c
+ .../net/ethernet/huawei/hinic/hinic_ethtool.c | 100 +++++++++++++++++-
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.c  |   2 +
+ .../net/ethernet/huawei/hinic/hinic_hw_io.h   |   9 ++
+ .../net/ethernet/huawei/hinic/hinic_main.c    |  27 ++++-
+ .../net/ethernet/huawei/hinic/hinic_port.c    |   5 +
+ 5 files changed, 140 insertions(+), 3 deletions(-)
 
-diff --git a/Makefile.am b/Makefile.am
-index 0f8465f..3b88533 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -32,7 +32,7 @@ ethtool_SOURCES += \
- 		  netlink/settings.c netlink/parser.c netlink/parser.h \
- 		  netlink/permaddr.c netlink/prettymsg.c netlink/prettymsg.h \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
--		  netlink/desc-rtnl.c \
-+		  netlink/desc-rtnl.c netlink/preempt.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
- 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-diff --git a/ethtool.c b/ethtool.c
-index 4c69d1c..3acdd54 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5587,11 +5587,13 @@ static const struct option args[] = {
- 	{
- 		.opts	= "--show-frame-preemption",
- 		.func	= do_get_preempt,
-+		.nlfunc	= nl_get_preempt,
- 		.help	= "Show Frame Preemption settings",
- 	},
- 	{
- 		.opts	= "--set-frame-preemption",
- 		.func	= do_set_preempt,
-+		.nlfunc	= nl_set_preempt,
- 		.help	= "Set Frame Preemption settings",
- 		.xhelp	= "		[ fp on|off ]\n"
- 			  "		[ preemptible-queues-mask %x ]\n"
-diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-index 76c6f13..f82afd2 100644
---- a/netlink/desc-ethtool.c
-+++ b/netlink/desc-ethtool.c
-@@ -106,6 +106,17 @@ static const struct pretty_nla_desc __wol_desc[] = {
- 	NLATTR_DESC_BINARY(ETHTOOL_A_WOL_SOPASS),
- };
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+index 9796c1fbe132..3a5b846c190b 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+@@ -613,6 +613,78 @@ static int hinic_set_ringparam(struct net_device *netdev,
  
-+static const struct pretty_nla_desc __preempt_desc[] = {
-+	NLATTR_DESC_INVALID(ETHTOOL_A_PREEMPT_UNSPEC),
-+	NLATTR_DESC_NESTED(ETHTOOL_A_PREEMPT_HEADER, header),
-+	NLATTR_DESC_U8(ETHTOOL_A_PREEMPT_SUPPORTED),
-+	NLATTR_DESC_U8(ETHTOOL_A_PREEMPT_ACTIVE),
-+	NLATTR_DESC_U32(ETHTOOL_A_PREEMPT_QUEUES_SUPPORTED),
-+	NLATTR_DESC_U32(ETHTOOL_A_PREEMPT_QUEUES_PREEMPTIBLE),
-+	NLATTR_DESC_U32(ETHTOOL_A_PREEMPT_MIN_FRAG_SIZE),
-+	NLATTR_DESC_BINARY(ETHTOOL_A_WOL_SOPASS),
-+};
+ 	return 0;
+ }
 +
- const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC_INVALID(ETHTOOL_MSG_USER_NONE),
- 	NLMSG_DESC(ETHTOOL_MSG_STRSET_GET, strset),
-@@ -118,6 +129,8 @@ const struct pretty_nlmsg_desc ethnl_umsg_desc[] = {
- 	NLMSG_DESC(ETHTOOL_MSG_DEBUG_SET, debug),
- 	NLMSG_DESC(ETHTOOL_MSG_WOL_GET, wol),
- 	NLMSG_DESC(ETHTOOL_MSG_WOL_SET, wol),
-+	NLMSG_DESC(ETHTOOL_MSG_PREEMPT_GET, preempt),
-+	NLMSG_DESC(ETHTOOL_MSG_PREEMPT_SET, preempt),
- };
- 
- const unsigned int ethnl_umsg_n_desc = ARRAY_SIZE(ethnl_umsg_desc);
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index 9484b4c..2436f70 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -21,6 +21,8 @@ int nl_gset(struct cmd_context *ctx);
- int nl_sset(struct cmd_context *ctx);
- int nl_permaddr(struct cmd_context *ctx);
- int nl_monitor(struct cmd_context *ctx);
-+int nl_get_preempt(struct cmd_context *ctx);
-+int nl_set_preempt(struct cmd_context *ctx);
- 
- void nl_monitor_usage(void);
- 
-@@ -44,6 +46,8 @@ static inline void nl_monitor_usage(void)
- #define nl_gset			NULL
- #define nl_sset			NULL
- #define nl_permaddr		NULL
-+#define nl_get_preempt		NULL
-+#define nl_set_preempt		NULL
- 
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
-diff --git a/netlink/preempt.c b/netlink/preempt.c
-new file mode 100644
-index 0000000..976ae39
---- /dev/null
-+++ b/netlink/preempt.c
-@@ -0,0 +1,148 @@
-+/*
-+ * preempt.c - netlink implementation of frame preemption settings
-+ *
-+ * Implementation of "ethtool --{show,set}-frame-preemption <dev>"
-+ */
-+
-+#include <errno.h>
-+#include <string.h>
-+#include <stdio.h>
-+#include <linux/rtnetlink.h>
-+#include <linux/if_link.h>
-+
-+#include "../internal.h"
-+#include "../common.h"
-+#include "netlink.h"
-+#include "parser.h"
-+
-+/* PREEMPT_GET */
-+
-+static int preempt_get_prep_request(struct nl_socket *nlsk)
++static void hinic_get_pauseparam(struct net_device *netdev,
++				 struct ethtool_pauseparam *pause)
 +{
-+	int ret;
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++	struct hinic_pause_config pause_info = {0};
++	struct hinic_nic_cfg *nic_cfg;
++	int err;
 +
-+	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_PREEMPT_GET,
-+				      ETHTOOL_A_PREEMPT_HEADER, 0);
-+	if (ret < 0)
-+		return ret;
++	nic_cfg = &nic_dev->hwdev->func_to_io.nic_cfg;
++
++	err = hinic_get_hw_pause_info(nic_dev->hwdev, &pause_info);
++	if (err) {
++		netif_err(nic_dev, drv, netdev,
++			  "Failed to get pauseparam from hw\n");
++	} else {
++		pause->autoneg = pause_info.auto_neg;
++		if (nic_cfg->pause_set) {
++			pause->rx_pause = nic_cfg->rx_pause;
++			pause->tx_pause = nic_cfg->tx_pause;
++		} else {
++			pause->rx_pause = pause_info.rx_pause;
++			pause->tx_pause = pause_info.tx_pause;
++		}
++	}
++}
++
++static int hinic_set_pauseparam(struct net_device *netdev,
++				struct ethtool_pauseparam *pause)
++{
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++	struct hinic_pause_config pause_info = {0};
++	struct hinic_port_cap port_cap = {0};
++	int err;
++
++	err = hinic_port_get_cap(nic_dev, &port_cap);
++	if (err) {
++		netif_err(nic_dev, drv, netdev,
++			  "Failed to get port capability\n");
++		return -EIO;
++	}
++
++	if (pause->autoneg != port_cap.autoneg_state) {
++		netif_err(nic_dev, drv, netdev,
++			  "To change autoneg please use: ethtool -s <dev> autoneg <on|off>\n");
++		return -EOPNOTSUPP;
++	}
++
++	pause_info.auto_neg = pause->autoneg;
++	pause_info.rx_pause = pause->rx_pause;
++	pause_info.tx_pause = pause->tx_pause;
++
++	down(&nic_dev->hwdev->func_to_io.nic_cfg.cfg_lock);
++	err = hinic_set_hw_pause_info(nic_dev->hwdev, &pause_info);
++	if (err) {
++		netif_err(nic_dev, drv, netdev, "Failed to set pauseparam\n");
++		up(&nic_dev->hwdev->func_to_io.nic_cfg.cfg_lock);
++		return err;
++	}
++	nic_dev->hwdev->func_to_io.nic_cfg.pause_set = true;
++	nic_dev->hwdev->func_to_io.nic_cfg.auto_neg = pause->autoneg;
++	nic_dev->hwdev->func_to_io.nic_cfg.rx_pause = pause->rx_pause;
++	nic_dev->hwdev->func_to_io.nic_cfg.tx_pause = pause->tx_pause;
++	up(&nic_dev->hwdev->func_to_io.nic_cfg.cfg_lock);
++
++	netif_info(nic_dev, drv, netdev, "Set pause options, tx: %s, rx: %s\n",
++		   pause->tx_pause ? "on" : "off",
++		   pause->rx_pause ? "on" : "off");
 +
 +	return 0;
 +}
 +
-+int preempt_get_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_PREEMPT_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	struct nl_context *nlctx = data;
-+	int ret;
-+
-+	if (nlctx->is_dump || nlctx->is_monitor)
-+		nlctx->no_banner = false;
-+
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_PREEMPT_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return MNL_CB_OK;
-+
-+	printf("Frame preemption settings for %s:\n", nlctx->devname);
-+
-+	if (tb[ETHTOOL_A_PREEMPT_SUPPORTED]) {
-+		int supported = mnl_attr_get_u8(
-+			tb[ETHTOOL_A_PREEMPT_SUPPORTED]);
-+
-+		printf("\tsupport: %s\n",
-+		       supported ? "supported" : "not supported");
-+	}
-+	if (tb[ETHTOOL_A_PREEMPT_ACTIVE]) {
-+		int active = mnl_attr_get_u8(tb[ETHTOOL_A_PREEMPT_ACTIVE]);
-+
-+		printf("\tactive: %s\n", active ? "active" : "not active");
-+	}
-+	if (tb[ETHTOOL_A_PREEMPT_QUEUES_SUPPORTED]) {
-+		uint32_t queues = mnl_attr_get_u32(
-+			tb[ETHTOOL_A_PREEMPT_QUEUES_SUPPORTED]);
-+
-+		printf("\tsupported queues: %#x\n", queues);
-+
-+	}
-+	if (tb[ETHTOOL_A_PREEMPT_QUEUES_PREEMPTIBLE]) {
-+		uint32_t queues = mnl_attr_get_u32(
-+			tb[ETHTOOL_A_PREEMPT_QUEUES_PREEMPTIBLE]);
-+
-+		printf("\tsupported queues: %#x\n", queues);
-+
-+	}
-+	if (tb[ETHTOOL_A_PREEMPT_MIN_FRAG_SIZE]) {
-+		uint32_t min_frag_size = mnl_attr_get_u32(
-+			tb[ETHTOOL_A_PREEMPT_MIN_FRAG_SIZE]);
-+
-+		printf("\tminimum fragment size: %d\n", min_frag_size);
-+	}
-+	return MNL_CB_OK;
-+}
-+
-+int nl_get_preempt(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	int ret;
-+
-+	ret = preempt_get_prep_request(nlsk);
-+	if (ret < 0)
-+		return ret;
-+	return nlsock_send_get_request(nlsk, preempt_get_reply_cb);
-+}
-+
-+static const struct lookup_entry_u8 fp_values[] = {
-+	{ .arg = "off",		.val = 0 },
-+	{ .arg = "on",		.val = 1 },
-+	{}
+ static void hinic_get_channels(struct net_device *netdev,
+ 			       struct ethtool_channels *channels)
+ {
+@@ -1247,6 +1319,27 @@ static const struct ethtool_ops hinic_ethtool_ops = {
+ 	.get_link = ethtool_op_get_link,
+ 	.get_ringparam = hinic_get_ringparam,
+ 	.set_ringparam = hinic_set_ringparam,
++	.get_pauseparam = hinic_get_pauseparam,
++	.set_pauseparam = hinic_set_pauseparam,
++	.get_channels = hinic_get_channels,
++	.set_channels = hinic_set_channels,
++	.get_rxnfc = hinic_get_rxnfc,
++	.set_rxnfc = hinic_set_rxnfc,
++	.get_rxfh_key_size = hinic_get_rxfh_key_size,
++	.get_rxfh_indir_size = hinic_get_rxfh_indir_size,
++	.get_rxfh = hinic_get_rxfh,
++	.set_rxfh = hinic_set_rxfh,
++	.get_sset_count = hinic_get_sset_count,
++	.get_ethtool_stats = hinic_get_ethtool_stats,
++	.get_strings = hinic_get_strings,
 +};
 +
-+static const struct param_parser set_preempt_params[] = {
-+	{
-+		.arg		= "fp",
-+		.group		= ETHTOOL_MSG_PREEMPT_SET,
-+		.type		= ETHTOOL_A_PREEMPT_ACTIVE,
-+		.handler	= nl_parse_lookup_u8,
-+		.handler_data	= fp_values,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "preemptible-queues-mask",
-+		.group		= ETHTOOL_MSG_PREEMPT_SET,
-+		.type		= ETHTOOL_A_PREEMPT_QUEUES_PREEMPTIBLE,
-+		.handler	= nl_parse_direct_u32,
-+		.min_argc	= 1,
-+	},
-+	{
-+		.arg		= "min-frag-size",
-+		.group		= ETHTOOL_MSG_PREEMPT_SET,
-+		.type		= ETHTOOL_A_PREEMPT_MIN_FRAG_SIZE,
-+		.handler	= nl_parse_direct_u32,
-+		.min_argc	= 1,
-+	},
-+	{}
++static const struct ethtool_ops hinicvf_ethtool_ops = {
++	.get_link_ksettings = hinic_get_link_ksettings,
++	.get_drvinfo = hinic_get_drvinfo,
++	.get_link = ethtool_op_get_link,
++	.get_ringparam = hinic_get_ringparam,
++	.set_ringparam = hinic_set_ringparam,
+ 	.get_channels = hinic_get_channels,
+ 	.set_channels = hinic_set_channels,
+ 	.get_rxnfc = hinic_get_rxnfc,
+@@ -1262,5 +1355,10 @@ static const struct ethtool_ops hinic_ethtool_ops = {
+ 
+ void hinic_set_ethtool_ops(struct net_device *netdev)
+ {
+-	netdev->ethtool_ops = &hinic_ethtool_ops;
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++
++	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
++		netdev->ethtool_ops = &hinic_ethtool_ops;
++	else
++		netdev->ethtool_ops = &hinicvf_ethtool_ops;
+ }
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+index 0245da02efbb..c5b296ed0556 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+@@ -777,6 +777,8 @@ struct hinic_hwdev *hinic_init_hwdev(struct pci_dev *pdev)
+ 		goto err_dev_cap;
+ 	}
+ 
++	sema_init(&hwdev->func_to_io.nic_cfg.cfg_lock, 1);
++
+ 	err = hinic_vf_func_init(hwdev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "Failed to init nic mbox\n");
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_io.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_io.h
+index 214f162f7579..8cd0613b3e57 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_io.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_io.h
+@@ -47,6 +47,14 @@ struct hinic_free_db_area {
+ 	struct semaphore        idx_lock;
+ };
+ 
++struct hinic_nic_cfg {
++	struct semaphore	cfg_lock;
++	bool			pause_set;
++	u32			auto_neg;
++	u32			rx_pause;
++	u32			tx_pause;
 +};
 +
-+int nl_set_preempt(struct cmd_context *ctx)
+ struct hinic_func_to_io {
+ 	struct hinic_hwif       *hwif;
+ 	struct hinic_hwdev      *hwdev;
+@@ -78,6 +86,7 @@ struct hinic_func_to_io {
+ 	u16			max_vfs;
+ 	struct vf_data_storage	*vf_infos;
+ 	u8			link_status;
++	struct hinic_nic_cfg	nic_cfg;
+ };
+ 
+ struct hinic_wq_page_size {
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index 2c07b03bf6e5..d24c5af89bad 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -899,6 +899,26 @@ static void netdev_features_init(struct net_device *netdev)
+ 	netdev->features = netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
+ }
+ 
++static void hinic_refresh_nic_cfg(struct hinic_dev *nic_dev)
 +{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	int ret;
++	struct hinic_nic_cfg *nic_cfg = &nic_dev->hwdev->func_to_io.nic_cfg;
++	struct hinic_pause_config pause_info = {0};
++	struct hinic_port_cap port_cap = {0};
 +
-+	nlctx->cmd = "--set-frame-preemption";
-+	nlctx->argp = ctx->argp;
-+	nlctx->argc = ctx->argc;
-+	nlctx->devname = ctx->devname;
++	if (hinic_port_get_cap(nic_dev, &port_cap))
++		return;
 +
-+	ret = nl_parser(nlctx, set_preempt_params, NULL, PARSER_GROUP_MSG);
-+	if (ret < 0)
-+		return 1;
-+
-+	if (ret == 0)
-+		return 0;
-+	return nlctx->exit_code ?: 75;
++	down(&nic_cfg->cfg_lock);
++	if (nic_cfg->pause_set) {
++		nic_cfg->auto_neg = port_cap.autoneg_state;
++		pause_info.auto_neg = nic_cfg->auto_neg;
++		pause_info.rx_pause = nic_cfg->rx_pause;
++		pause_info.tx_pause = nic_cfg->tx_pause;
++		hinic_set_hw_pause_info(nic_dev->hwdev, &pause_info);
++	}
++	up(&nic_cfg->cfg_lock);
 +}
++
+ /**
+  * link_status_event_handler - link event handler
+  * @handle: nic device for the handler
+@@ -930,6 +950,9 @@ static void link_status_event_handler(void *handle, void *buf_in, u16 in_size,
+ 
+ 		up(&nic_dev->mgmt_lock);
+ 
++		if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
++			hinic_refresh_nic_cfg(nic_dev);
++
+ 		netif_info(nic_dev, drv, nic_dev->netdev, "HINIC_Link is UP\n");
+ 	} else {
+ 		down(&nic_dev->mgmt_lock);
+@@ -1020,8 +1043,6 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 		goto err_alloc_etherdev;
+ 	}
+ 
+-	hinic_set_ethtool_ops(netdev);
+-
+ 	if (!HINIC_IS_VF(hwdev->hwif))
+ 		netdev->netdev_ops = &hinic_netdev_ops;
+ 	else
+@@ -1044,6 +1065,8 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	nic_dev->sriov_info.pdev = pdev;
+ 	nic_dev->max_qps = num_qps;
+ 
++	hinic_set_ethtool_ops(netdev);
++
+ 	sema_init(&nic_dev->mgmt_lock, 1);
+ 
+ 	tx_stats = &nic_dev->tx_stats;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+index 175c0ee00038..4b51121b3021 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+@@ -1082,6 +1082,7 @@ int hinic_get_link_mode(struct hinic_hwdev *hwdev,
+ 	if (!hwdev || !link_mode)
+ 		return -EINVAL;
+ 
++	link_mode->func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
+ 	out_size = sizeof(*link_mode);
+ 
+ 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_GET_LINK_MODE,
+@@ -1172,6 +1173,8 @@ int hinic_get_hw_pause_info(struct hinic_hwdev *hwdev,
+ 	u16 out_size = sizeof(*pause_info);
+ 	int err;
+ 
++	pause_info->func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
++
+ 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_GET_PAUSE_INFO,
+ 				 pause_info, sizeof(*pause_info),
+ 				 pause_info, &out_size);
+@@ -1190,6 +1193,8 @@ int hinic_set_hw_pause_info(struct hinic_hwdev *hwdev,
+ 	u16 out_size = sizeof(*pause_info);
+ 	int err;
+ 
++	pause_info->func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
++
+ 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_PAUSE_INFO,
+ 				 pause_info, sizeof(*pause_info),
+ 				 pause_info, &out_size);
 -- 
-2.26.2
+2.17.1
 
