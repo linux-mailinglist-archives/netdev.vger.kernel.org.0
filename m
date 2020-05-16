@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B731D5E8F
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 06:15:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A62AF1D5ED9
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 07:15:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbgEPEOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 00:14:10 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:28412 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725803AbgEPEOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 00:14:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589602448;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EuAgvOaqRInTUNhLQNW9x4ROuhA10g3Sfi1G9i+YTz0=;
-        b=bLmqVZ2DH/V4fDaZqwsjzk94dKpQ1qQ7VJyrzTzaq5kxYT9AqqX+07ci7cfN5xdIQkEW90
-        XnoZvE5ob8cHoY5NvQGJwormy885IkcaXHo1jOtNGJnHVNicKIKLOgMNrinKYAmXoTaYAh
-        hH2DPQhR/LMI5jJaq7qBI4oArIZ58tE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-248-iKzLjf_JMVikURnUgz8A6w-1; Sat, 16 May 2020 00:14:02 -0400
-X-MC-Unique: iKzLjf_JMVikURnUgz8A6w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97882835B43;
-        Sat, 16 May 2020 04:13:59 +0000 (UTC)
-Received: from x1-fbsd (unknown [10.3.128.10])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1199C3A2;
-        Sat, 16 May 2020 04:13:47 +0000 (UTC)
-Date:   Sat, 16 May 2020 00:13:44 -0400
-From:   Rafael Aquini <aquini@redhat.com>
+        id S1726042AbgEPFO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 01:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725803AbgEPFO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 01:14:59 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A42C061A0C
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 22:14:58 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id a4so3537851lfh.12
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 22:14:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6yyioxex56ifLrIATV/+tinyrRUIOpOG6/3b8f+yQzI=;
+        b=MBV0Sp00vxFqoTFfdMoeBeQBUbIWRxaofSRVlVC7INt4Cymx5p3ugLfLYZEoqysjtK
+         7Wk3VCC2jsM/9bMy2BKUi9ACtjEmNdCE1HZosAPIK6jLliGHrY1Nw/YvpIP+4GU2jANw
+         CNLlDSVgcF9LvRDYWbqszyvzKwNFYwwmKzJmw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6yyioxex56ifLrIATV/+tinyrRUIOpOG6/3b8f+yQzI=;
+        b=GulywEPzRKrU4iJrvIu7GL8KxV2uhLZlmnDuwcqjoJWfjtmEwmTWnz8QtWZV7pb2L8
+         9xq45kmUbuVX89z712Begwh4bRjyf/8AfvcDAA2OJJWQeLmAyYFfAv18M45Lj46oz+Z+
+         EOvBR8jDBhvmQZkDeKs+Pnc3aZYcW1EtbGO/WbmH5dHa/sG4cGG+qLLXUjQu46mUcyrR
+         4CPvxW5RsH9ndsbutNDKkTXZ62s/eDg1euaCzZ4rb+nABS9cU14EOSju0ktoLC2nZXCW
+         smYFWeGN2jQV9byLTz3sYneIj87k0bkmIhrTOPs0hteqnZKzWyZ50v79rneokUd9JM/C
+         uBmw==
+X-Gm-Message-State: AOAM533vRJlB2gsLT5gBUYzR52/rhNgwtS+aBSqBQ/n4SxjyxOh2RIWk
+        kNTpW/vIV249gG+ng6wceYrNrb+bpk+PBPRws3CjcQ==
+X-Google-Smtp-Source: ABdhPJwp5Z5xg3pc41LQaQPFFnH9hrWzxZe6QMOCu6k4UFVsSXHSGVE2NTnaqkx31KATxz2kcGXDvVP6KvqFHclQXTs=
+X-Received: by 2002:a19:5f04:: with SMTP id t4mr4663539lfb.208.1589606096583;
+ Fri, 15 May 2020 22:14:56 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200515212846.1347-1-mcgrof@kernel.org> <20200515212846.1347-5-mcgrof@kernel.org>
+In-Reply-To: <20200515212846.1347-5-mcgrof@kernel.org>
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Date:   Sat, 16 May 2020 10:44:45 +0530
+Message-ID: <CAACQVJpqSnTfcb7yvH8vb+L5QzigieQoV=a=1QmH3X8ZEKxBQA@mail.gmail.com>
+Subject: Re: [PATCH v2 04/15] bnxt: use new module_firmware_crashed()
 To:     Luis Chamberlain <mcgrof@kernel.org>
 Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
-        rostedt@goodmis.org, mingo@redhat.com, cai@lca.pw,
-        dyoung@redhat.com, bhe@redhat.com, peterz@infradead.org,
-        tglx@linutronix.de, gpiccoli@canonical.com, pmladek@suse.com,
-        tiwai@suse.de, schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        rostedt@goodmis.org, mingo@redhat.com, aquini@redhat.com,
+        cai@lca.pw, dyoung@redhat.com, bhe@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de, gpiccoli@canonical.com,
+        pmladek@suse.com, tiwai@suse.de, schlad@suse.de,
+        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
+        daniel.vetter@ffwll.ch, will@kernel.org,
         mchehab+samsung@kernel.org, kvalo@codeaurora.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Lennert Buytenhek <buytenh@wantstofly.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>
-Subject: Re: [PATCH v2 15/15] mwl8k: use new module_firmware_crashed()
-Message-ID: <20200516041344.GO3182@x1-fbsd>
-References: <20200515212846.1347-1-mcgrof@kernel.org>
- <20200515212846.1347-16-mcgrof@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200515212846.1347-16-mcgrof@kernel.org>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 09:28:46PM +0000, Luis Chamberlain wrote:
+On Sat, May 16, 2020 at 3:00 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
+>
 > This makes use of the new module_firmware_crashed() to help
 > annotate when firmware for device drivers crash. When firmware
 > crashes devices can sometimes become unresponsive, and recovery
 > sometimes requires a driver unload / reload and in the worst cases
 > a reboot.
-> 
+>
 > Using a taint flag allows us to annotate when this happens clearly.
-> 
-> Cc: linux-wireless@vger.kernel.org
-> Cc: Lennert Buytenhek <buytenh@wantstofly.org>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-> Cc: Johannes Berg <johannes.berg@intel.com>
-> Cc: Ganapathi Bhat <ganapathi.bhat@nxp.com>
+>
+> Cc: Michael Chan <michael.chan@broadcom.com>
 > Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 > ---
->  drivers/net/wireless/marvell/mwl8k.c | 1 +
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 1 +
 >  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
-> index 97f23f93f6e7..d609ef1bb879 100644
-> --- a/drivers/net/wireless/marvell/mwl8k.c
-> +++ b/drivers/net/wireless/marvell/mwl8k.c
-> @@ -1551,6 +1551,7 @@ static int mwl8k_tx_wait_empty(struct ieee80211_hw *hw)
->  	 * the firmware has crashed
->  	 */
->  	if (priv->hw_restart_in_progress) {
-> +		module_firmware_crashed();
->  		if (priv->hw_restart_owner == current)
->  			return 0;
->  		else
-> -- 
-> 2.26.2
-> 
-Acked-by: Rafael Aquini <aquini@redhat.com>
+>
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> index dd0c3f227009..5ba1bd0734e9 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+> @@ -3503,6 +3503,7 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
+>
+>         dump->flag = bp->dump_flag;
+>         if (dump->flag == BNXT_DUMP_CRASH) {
+> +               module_firmware_crashed();
+This is not the right place to annotate the taint flag.
 
+Here the driver is just copying the dump after error recovery which is collected
+by firmware to DDR, when firmware detects fatal conditions. Driver and firmware
+will be healthy when the user calls this command.
+
+Also, users can call this command a thousand times when there is no crash.
+
+I will propose a patch to use this wrapper in the error recovery path,
+where the driver
+may not be able to recover.
+
+>  #ifdef CONFIG_TEE_BNXT_FW
+>                 return tee_bnxt_copy_coredump(buf, 0, dump->len);
+>  #endif
+> --
+> 2.26.2
+>
+Nacked-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
