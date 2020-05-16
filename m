@@ -2,75 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E16961D6142
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 15:25:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BBF51D6153
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 15:29:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgEPNZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 09:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726302AbgEPNZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 09:25:03 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C71C061A0C;
-        Sat, 16 May 2020 06:25:03 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jZwnO-00EBvX-6E; Sat, 16 May 2020 15:24:06 +0200
-Message-ID: <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
-Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Luis Chamberlain <mcgrof@kernel.org>, jeyu@kernel.org
-Cc:     akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
-        schlad@suse.de, andriy.shevchenko@linux.intel.com,
-        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        ath10k@lists.infradead.org
-Date:   Sat, 16 May 2020 15:24:01 +0200
-In-Reply-To: <20200515212846.1347-13-mcgrof@kernel.org> (sfid-20200515_233205_994687_1F26BDAB)
-References: <20200515212846.1347-1-mcgrof@kernel.org>
-         <20200515212846.1347-13-mcgrof@kernel.org>
-         (sfid-20200515_233205_994687_1F26BDAB)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.2 (3.36.2-1.fc32) 
+        id S1726710AbgEPN3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 09:29:52 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:34046 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbgEPN3v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 09:29:51 -0400
+Received: from ip5f5af183.dynamic.kabel-deutschland.de ([95.90.241.131] helo=wittgenstein)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1jZwsS-0004mh-36; Sat, 16 May 2020 13:29:20 +0000
+Date:   Sat, 16 May 2020 15:29:18 +0200
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Nate Karstens <nate.karstens@garmin.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Laight <David.Laight@aculab.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>,
+        a.josey@opengroup.org
+Subject: Re: [PATCH v2] Implement close-on-fork
+Message-ID: <20200516132918.edq7p2tyh6elorjm@wittgenstein>
+References: <20200515152321.9280-1-nate.karstens@garmin.com>
+ <20200515155730.GF16070@bombadil.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200515155730.GF16070@bombadil.infradead.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-05-15 at 21:28 +0000, Luis Chamberlain wrote:> module_firmware_crashed
+On Fri, May 15, 2020 at 08:57:30AM -0700, Matthew Wilcox wrote:
+> On Fri, May 15, 2020 at 10:23:17AM -0500, Nate Karstens wrote:
+> > Series of 4 patches to implement close-on-fork. Tests have been
+> > published to https://github.com/nkarstens/ltp/tree/close-on-fork
+> > and cover close-on-fork functionality in the following syscalls:
+> 
+> [...]
+> 
+> > This functionality was approved by the Austin Common Standards
+> > Revision Group for inclusion in the next revision of the POSIX
+> > standard (see issue 1318 in the Austin Group Defect Tracker).
+> 
+> NAK to this patch series, and the entire concept.
 
-You didn't CC me or the wireless list on the rest of the patches, so I'm
-replying to a random one, but ...
+Yeah.
+But also, stuff like this should really be on linux-api.
 
-What is the point here?
-
-This should in no way affect the integrity of the system/kernel, for
-most devices anyway.
-
-So what if ath10k's firmware crashes? If there's a driver bug it will
-not handle it right (and probably crash, WARN_ON, or something else),
-but if the driver is working right then that will not affect the kernel
-at all.
-
-So maybe I can understand that maybe you want an easy way to discover -
-per device - that the firmware crashed, but that still doesn't warrant a
-complete kernel taint.
-
-Instead of the kernel taint, IMHO you should provide an annotation in
-sysfs (or somewhere else) for the *struct device* that had its firmware
-crash. Or maybe, if it's too complex to walk the entire hierarchy
-checking for that, have a uevent, or add the ability for the kernel to
-print out elsewhere in debugfs the list of devices that crashed at some
-point... All of that is fine, but a kernel taint?
-
-johannes
-
+Christian
