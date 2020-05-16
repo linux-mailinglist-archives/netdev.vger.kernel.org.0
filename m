@@ -2,111 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A62AF1D5ED9
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 07:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A71B31D5EF2
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 07:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726042AbgEPFO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 01:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
+        id S1726290AbgEPFvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 01:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725803AbgEPFO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 01:14:59 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A42C061A0C
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 22:14:58 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id a4so3537851lfh.12
-        for <netdev@vger.kernel.org>; Fri, 15 May 2020 22:14:58 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725807AbgEPFvq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 01:51:46 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2013BC061A0C
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 22:51:46 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id z72so4727562wmc.2
+        for <netdev@vger.kernel.org>; Fri, 15 May 2020 22:51:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6yyioxex56ifLrIATV/+tinyrRUIOpOG6/3b8f+yQzI=;
-        b=MBV0Sp00vxFqoTFfdMoeBeQBUbIWRxaofSRVlVC7INt4Cymx5p3ugLfLYZEoqysjtK
-         7Wk3VCC2jsM/9bMy2BKUi9ACtjEmNdCE1HZosAPIK6jLliGHrY1Nw/YvpIP+4GU2jANw
-         CNLlDSVgcF9LvRDYWbqszyvzKwNFYwwmKzJmw=
+        h=from:to:cc:subject:date:message-id;
+        bh=dszDuDnhyemW2RGGnijtxG1Knodo/9IdDZ7z98Rmivw=;
+        b=B+g3WPIaWROimrVfn8DD2FSGvGZFTHJ7VlDSSCMPovgN7IRS1yv9aqR92VBMiUskNc
+         Jty3RUK2t/HkHCzWg+q6rGoGjDXxQGo0KOzaijleUZWNbCDYRVACey04n+p2Vi4fE6EX
+         jgPWVoWvo51I+QYjU+epfCmCIiuIdroNZb0N4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6yyioxex56ifLrIATV/+tinyrRUIOpOG6/3b8f+yQzI=;
-        b=GulywEPzRKrU4iJrvIu7GL8KxV2uhLZlmnDuwcqjoJWfjtmEwmTWnz8QtWZV7pb2L8
-         9xq45kmUbuVX89z712Begwh4bRjyf/8AfvcDAA2OJJWQeLmAyYFfAv18M45Lj46oz+Z+
-         EOvBR8jDBhvmQZkDeKs+Pnc3aZYcW1EtbGO/WbmH5dHa/sG4cGG+qLLXUjQu46mUcyrR
-         4CPvxW5RsH9ndsbutNDKkTXZ62s/eDg1euaCzZ4rb+nABS9cU14EOSju0ktoLC2nZXCW
-         smYFWeGN2jQV9byLTz3sYneIj87k0bkmIhrTOPs0hteqnZKzWyZ50v79rneokUd9JM/C
-         uBmw==
-X-Gm-Message-State: AOAM533vRJlB2gsLT5gBUYzR52/rhNgwtS+aBSqBQ/n4SxjyxOh2RIWk
-        kNTpW/vIV249gG+ng6wceYrNrb+bpk+PBPRws3CjcQ==
-X-Google-Smtp-Source: ABdhPJwp5Z5xg3pc41LQaQPFFnH9hrWzxZe6QMOCu6k4UFVsSXHSGVE2NTnaqkx31KATxz2kcGXDvVP6KvqFHclQXTs=
-X-Received: by 2002:a19:5f04:: with SMTP id t4mr4663539lfb.208.1589606096583;
- Fri, 15 May 2020 22:14:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200515212846.1347-1-mcgrof@kernel.org> <20200515212846.1347-5-mcgrof@kernel.org>
-In-Reply-To: <20200515212846.1347-5-mcgrof@kernel.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dszDuDnhyemW2RGGnijtxG1Knodo/9IdDZ7z98Rmivw=;
+        b=ihtK3mi7/rtg311i/64rvaX5yWlKqWerkS/V+3qm7fvi+AGdxBgLmYkbb3lMlMI3e9
+         CQYx4hnxJPn0k6Zjx9jjIp3luAH07l0qlF0l0lfuWoiozQWjhtY44ihF5gWee31o99a1
+         fy0Z36vE0aVIWRW3tLR27qKaissN9n6f46Xo2H+7XvITWdD99ZzkWx5TwD4HSuy/5BhS
+         e6h4e2d3XiiEHAsFTIscPPYkOpkjjirj856r2eMNIa8oAjvPLH961GRECvFh0goEc44y
+         SvHhk+7pNYzj+ml45xclezpvr59dZ+KHHNyOFQLJ8CJLn6XU1fOgZvpRj/DvGRplk0AP
+         8UsQ==
+X-Gm-Message-State: AOAM532rv3U0sRhwYXqBXOkKXo7qdEzdyrxxxcBzzh5NQgXYcrJ16yxV
+        WELPADPUr+ai3C9Wp/i1Y3X0Nw==
+X-Google-Smtp-Source: ABdhPJwk0EYVlI+c+PisFGuhJkRr/aPARk5J4sIImv9/K2iDhcvHE4liTnvbLX+m8KSxVpgblSEa6A==
+X-Received: by 2002:a7b:c8d4:: with SMTP id f20mr7878919wml.72.1589608302666;
+        Fri, 15 May 2020 22:51:42 -0700 (PDT)
+Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
+        by smtp.gmail.com with ESMTPSA id a12sm6481438wro.68.2020.05.15.22.51.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 15 May 2020 22:51:42 -0700 (PDT)
 From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Date:   Sat, 16 May 2020 10:44:45 +0530
-Message-ID: <CAACQVJpqSnTfcb7yvH8vb+L5QzigieQoV=a=1QmH3X8ZEKxBQA@mail.gmail.com>
-Subject: Re: [PATCH v2 04/15] bnxt: use new module_firmware_crashed()
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     jeyu@kernel.org, akpm@linux-foundation.org, arnd@arndb.de,
-        rostedt@goodmis.org, mingo@redhat.com, aquini@redhat.com,
-        cai@lca.pw, dyoung@redhat.com, bhe@redhat.com,
-        peterz@infradead.org, tglx@linutronix.de, gpiccoli@canonical.com,
-        pmladek@suse.com, tiwai@suse.de, schlad@suse.de,
-        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
-        daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+To:     jeyu@kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Luis Chamberlain <mcgrof@kernel.org>
+Subject: [PATCH] bnxt_en: use new module_firmware_crashed()
+Date:   Sat, 16 May 2020 11:19:17 +0530
+Message-Id: <1589608157-22070-1-git-send-email-vasundhara-v.volam@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 16, 2020 at 3:00 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> This makes use of the new module_firmware_crashed() to help
-> annotate when firmware for device drivers crash. When firmware
-> crashes devices can sometimes become unresponsive, and recovery
-> sometimes requires a driver unload / reload and in the worst cases
-> a reboot.
->
-> Using a taint flag allows us to annotate when this happens clearly.
->
-> Cc: Michael Chan <michael.chan@broadcom.com>
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> index dd0c3f227009..5ba1bd0734e9 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> @@ -3503,6 +3503,7 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
->
->         dump->flag = bp->dump_flag;
->         if (dump->flag == BNXT_DUMP_CRASH) {
-> +               module_firmware_crashed();
-This is not the right place to annotate the taint flag.
+This makes use of the new module_firmware_crashed() to help
+annotate when firmware for device drivers crash. When firmware
+crashes devices can sometimes become unresponsive, and recovery
+sometimes requires a driver unload / reload and in the worst cases
+a reboot.
 
-Here the driver is just copying the dump after error recovery which is collected
-by firmware to DDR, when firmware detects fatal conditions. Driver and firmware
-will be healthy when the user calls this command.
+Using a taint flag allows us to annotate when this happens clearly.
 
-Also, users can call this command a thousand times when there is no crash.
+Cc: Michael Chan <michael.chan@broadcom.com>
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+---
+Please append to the patchset:
+("[PATCH v2 00/15] net: taint when the device driver firmware crashes")
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-I will propose a patch to use this wrapper in the error recovery path,
-where the driver
-may not be able to recover.
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index f86b621..b208404 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -2009,6 +2009,7 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 		if (!bp->fw_reset_max_dsecs)
+ 			bp->fw_reset_max_dsecs = BNXT_DFLT_FW_RST_MAX_DSECS;
+ 		if (EVENT_DATA1_RESET_NOTIFY_FATAL(data1)) {
++			module_firmware_crashed();
+ 			netdev_warn(bp->dev, "Firmware fatal reset event received\n");
+ 			set_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
+ 		} else {
+@@ -10183,6 +10184,7 @@ static void bnxt_force_fw_reset(struct bnxt *bp)
+ 
+ void bnxt_fw_exception(struct bnxt *bp)
+ {
++	module_firmware_crashed();
+ 	netdev_warn(bp->dev, "Detected firmware fatal condition, initiating reset\n");
+ 	set_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
+ 	bnxt_rtnl_lock_sp(bp);
+-- 
+1.8.3.1
 
->  #ifdef CONFIG_TEE_BNXT_FW
->                 return tee_bnxt_copy_coredump(buf, 0, dump->len);
->  #endif
-> --
-> 2.26.2
->
-Nacked-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
