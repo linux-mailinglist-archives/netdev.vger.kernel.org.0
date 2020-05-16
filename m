@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C40921D5FC4
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:47:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C2D41D5FC5
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 10:48:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726999AbgEPIrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 04:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38234 "EHLO
+        id S1727005AbgEPIsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 04:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbgEPIrg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 04:47:36 -0400
+        with ESMTP id S1725997AbgEPIsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 04:48:00 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EE9C061A0C
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 01:47:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3429CC061A0C
+        for <netdev@vger.kernel.org>; Sat, 16 May 2020 01:48:00 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1jZsTm-0005tz-P2; Sat, 16 May 2020 10:47:34 +0200
+        id 1jZsUA-0005uN-Tp; Sat, 16 May 2020 10:47:58 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     pabeni@redhat.com, mathew.j.martineau@linux.intel.com,
         matthieu.baerts@tessares.net, Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 5/7] mptcp: fill skb page frag cache outside of mptcp_sendmsg_frag
-Date:   Sat, 16 May 2020 10:46:21 +0200
-Message-Id: <20200516084623.28453-6-fw@strlen.de>
+Subject: [PATCH net-next 6/7] mptcp: remove inner wait loop from mptcp_sendmsg_frag
+Date:   Sat, 16 May 2020 10:46:22 +0200
+Message-Id: <20200516084623.28453-7-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200516084623.28453-1-fw@strlen.de>
 References: <20200516084623.28453-1-fw@strlen.de>
@@ -34,65 +34,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mptcp_sendmsg_frag helper contains a loop that will wait on the
-subflow sk.
+previous patches made sure we only call into this function
+when these prerequisites are met, so no need to wait on the
+subflow socket anymore.
 
-It seems preferrable to only wait in mptcp_sendmsg() when blocking io is
-requested.  mptcp_sendmsg already has such a wait loop that is used when
-no subflow socket is available for transmission.
-
-This is another preparation patch that makes sure we call
-mptcp_sendmsg_frag only if the page frag cache has been refilled.
-
-Followup patch will remove the wait loop from mptcp_sendmsg_frag().
-
-The retransmit worker doesn't need to do this refill as it won't
-transmit new mptcp-level data.
-
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/7
 Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/mptcp/protocol.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/mptcp/protocol.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 1bdfbca1c23a..a11e51222e59 100644
+index a11e51222e59..bc950cf818f7 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -713,6 +713,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- {
- 	int mss_now = 0, size_goal = 0, ret = 0;
- 	struct mptcp_sock *msk = mptcp_sk(sk);
-+	struct page_frag *pfrag;
- 	struct socket *ssock;
- 	size_t copied = 0;
- 	struct sock *ssk;
-@@ -741,13 +742,16 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		return ret >= 0 ? ret + copied : (copied ? copied : ret);
- 	}
- 
-+	pfrag = sk_page_frag(sk);
- restart:
- 	mptcp_clean_una(sk);
- 
- wait_for_sndbuf:
- 	__mptcp_flush_join_list(msk);
- 	ssk = mptcp_subflow_get_send(msk);
--	while (!sk_stream_memory_free(sk) || !ssk) {
-+	while (!sk_stream_memory_free(sk) ||
-+	       !ssk ||
-+	       !mptcp_page_frag_refill(ssk, pfrag)) {
- 		if (ssk) {
- 			/* make sure retransmit timer is
- 			 * running before we wait for memory.
-@@ -808,6 +812,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			break;
- 
- 		if (!sk_stream_memory_free(ssk) ||
-+		    !mptcp_page_frag_refill(ssk, pfrag) ||
- 		    !mptcp_ext_cache_refill(msk)) {
- 			set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
- 			tcp_push(ssk, msg->msg_flags, mss_now,
+@@ -510,20 +510,6 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 	 * fooled into a warning if we don't init here
+ 	 */
+ 	pfrag = sk_page_frag(sk);
+-	while ((!retransmission && !mptcp_page_frag_refill(ssk, pfrag)) ||
+-	       !mptcp_ext_cache_refill(msk)) {
+-		ret = sk_stream_wait_memory(ssk, timeo);
+-		if (ret)
+-			return ret;
+-
+-		/* if sk_stream_wait_memory() sleeps snd_una can change
+-		 * significantly, refresh the rtx queue
+-		 */
+-		mptcp_clean_una(sk);
+-
+-		if (unlikely(__mptcp_needs_tcp_fallback(msk)))
+-			return 0;
+-	}
+ 	if (!retransmission) {
+ 		write_seq = &msk->write_seq;
+ 		page = pfrag->page;
 -- 
 2.26.2
 
