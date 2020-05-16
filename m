@@ -2,243 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8DA61D62C5
-	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 18:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED4081D63D8
+	for <lists+netdev@lfdr.de>; Sat, 16 May 2020 21:24:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbgEPQxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 12:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726237AbgEPQxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 12:53:22 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E49AC061A0C
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 09:53:22 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id j21so351101ejy.1
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 09:53:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l2rDydG/uDgjIp/ZBqOZKRhoA/pum5STqsk6S+17Who=;
-        b=OxHLti8okarFD6LQRGIya865DYWijFniDeTzLLdagskg+CnFWm9XKMAFV2x/OJVQub
-         uX7JZw5uiECdp39i1orl8ymvOS266lItjTXoBYjNBwausbxTFh5wpp2acn+r6KeMXoj6
-         RLZ7v8yedKGqoNTUoyH2VXhLbQ4DxBZ8n7lCINIlL1x17aPl3/DwxzVzh308pOZdFZFl
-         kD5tAEH3wjhxwRJpELeQmB3HuMQzZI8XehFz/RWWQDcVEYqUl5Jtg8MqpGf//hBAPXXg
-         z0E01UxFnAs9kSCzxY2X2IXEXD+MaXqJnctVSTHufK+7f1JtJAejUa6BHJcYT+TtM+HX
-         eVag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l2rDydG/uDgjIp/ZBqOZKRhoA/pum5STqsk6S+17Who=;
-        b=C4DBzAQW1GAQlEiRrQ97lRxtAUP9f8HUtm+Cgd4ySYIFGIdeKGmduIi8Ghk0OiBQ0G
-         S1Ff9LLJffVJy9ydBADLEZ+ssxd6mugOdw4F7p85VTHg2QsyDNjGbcttqpg4dfM7TkPB
-         vavI79lHVZqau9SEY3zLeYfUF/K3XETMYxQDIvHQQvG6mX6biAXS9/NZZK5NsBAzfcpQ
-         sQ+i98wNh3VKtj7qvvLitemha+paTtRRTRo8h+tOs7TZSeU53g+M25joN8O2ysOH5pzE
-         Mad2iwrTWt48xMeKlBHbKL8dRhBhKc9X8kST2AAvxEaA1cr3R+8g+CdoXXPN2/wlCkFa
-         tPvg==
-X-Gm-Message-State: AOAM533gt05EieXy9jWBdxiUsVW/V+y4SURco/FXrHOAuJkMOyEtF69m
-        5+y+HfeJjqQJOJV1WCGnoRh5YEqv2xl/0k8RgkbPVZbg
-X-Google-Smtp-Source: ABdhPJzRSsv34EYIeQWAm83FNgSPmOdokwtT7JhsNpnWT13OIOI9o2oBGiju1I+FkmBK6m9MQpF/g/3DGn9L11skYUc=
-X-Received: by 2002:a17:906:dbcf:: with SMTP id yc15mr8124633ejb.176.1589648000810;
- Sat, 16 May 2020 09:53:20 -0700 (PDT)
+        id S1726632AbgEPTYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 15:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726360AbgEPTYu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 15:24:50 -0400
+Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C5AC061A0C;
+        Sat, 16 May 2020 12:24:49 -0700 (PDT)
+Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=pengu.fritz.box); authenticated
+        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1ja2QE-000668-8m; Sat, 16 May 2020 21:24:34 +0200
+From:   Roelof Berg <rberg@berg-solutions.de>
+To:     rberg@berg-solutions.de
+Cc:     andrew@lunn.ch, Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] lan743x: Added fixed link support
+Date:   Sat, 16 May 2020 21:24:01 +0200
+Message-Id: <20200516192402.4201-1-rberg@berg-solutions.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200503052220.4536-1-xiyou.wangcong@gmail.com>
- <20200503052220.4536-2-xiyou.wangcong@gmail.com> <CAMArcTVQO8U_kU1EHxCDsjdfGn-y_keAQ3ScjJmPAeya+B8hHQ@mail.gmail.com>
- <CA+h21hqu=J5RH3UkYBt7=uxWNYvXWegFsbMnf3PoWyVHTpRPrQ@mail.gmail.com> <CAMArcTWW+HNqvkh+YwR-HCLMDTq7ckXxWtTyMWRyDLvgYXc7wg@mail.gmail.com>
-In-Reply-To: <CAMArcTWW+HNqvkh+YwR-HCLMDTq7ckXxWtTyMWRyDLvgYXc7wg@mail.gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sat, 16 May 2020 19:53:09 +0300
-Message-ID: <CA+h21hoWpXN-apJXyDgOLM7eByXdcuzczdmX5jxoPk9wxJzaNA@mail.gmail.com>
-Subject: Re: [Patch net-next v2 1/2] net: partially revert dynamic lockdep key changes
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        syzbot <syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1589657090;71ce8ce2;
+X-HE-SMSGID: 1ja2QE-000668-8m
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Taehee,
+Microchip lan7431 is frequently connected to a phy. However, it
+can also be directly connected to a MII remote peer without
+any phy in between. For supporting such a phyless hardware setup
+in Linux we added the capability to the driver to understand
+the fixed-link and the phy-connection-type entries in the device
+tree.
 
-On Sat, 16 May 2020 at 18:22, Taehee Yoo <ap420073@gmail.com> wrote:
->
-> On Thu, 14 May 2020 at 00:56, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > Hi Cong, Taehee,
-> >
->
-> Hi Vladimir!
-> Sorry for the late reply.
->
-> ...
->
-> > I have a platform with the following layout:
-> >
-> >       Regular NIC
-> >        |
-> >        +----> DSA master for switch port
-> >                |
-> >                +----> DSA master for another switch port
-> >
-> > After changing DSA back to static lockdep class keys, I get this splat:
-> >
-> > [   13.361198] ============================================
-> > [   13.366524] WARNING: possible recursive locking detected
-> > [   13.371851] 5.7.0-rc4-02121-gc32a05ecd7af-dirty #988 Not tainted
-> > [   13.377874] --------------------------------------------
-> > [   13.383201] swapper/0/0 is trying to acquire lock:
-> > [   13.388004] ffff0000668ff298
-> > (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at:
-> > __dev_queue_xmit+0x84c/0xbe0
-> > [   13.397879]
-> > [   13.397879] but task is already holding lock:
-> > [   13.403727] ffff0000661a1698
-> > (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at:
-> > __dev_queue_xmit+0x84c/0xbe0
-> > [   13.413593]
-> > [   13.413593] other info that might help us debug this:
-> > [   13.420140]  Possible unsafe locking scenario:
-> > [   13.420140]
-> > [   13.426075]        CPU0
-> > [   13.428523]        ----
-> > [   13.430969]   lock(&dsa_slave_netdev_xmit_lock_key);
-> > [   13.435946]   lock(&dsa_slave_netdev_xmit_lock_key);
-> > [   13.440924]
-> > [   13.440924]  *** DEADLOCK ***
-> > [   13.440924]
-> > [   13.446860]  May be due to missing lock nesting notation
-> > [   13.446860]
-> > [   13.453668] 6 locks held by swapper/0/0:
-> > [   13.457598]  #0: ffff800010003de0
-> > ((&idev->mc_ifc_timer)){+.-.}-{0:0}, at: call_timer_fn+0x0/0x400
-> > [   13.466593]  #1: ffffd4d3fb478700 (rcu_read_lock){....}-{1:2}, at:
-> > mld_sendpack+0x0/0x560
-> > [   13.474803]  #2: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2},
-> > at: ip6_finish_output2+0x64/0xb10
-> > [   13.483886]  #3: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2},
-> > at: __dev_queue_xmit+0x6c/0xbe0
-> > [   13.492793]  #4: ffff0000661a1698
-> > (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at:
-> > __dev_queue_xmit+0x84c/0xbe0
-> > [   13.503094]  #5: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2},
-> > at: __dev_queue_xmit+0x6c/0xbe0
-> > [   13.512000]
-> > [   13.512000] stack backtrace:
-> > [   13.516369] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
-> > 5.7.0-rc4-02121-gc32a05ecd7af-dirty #988
-> > [   13.530421] Call trace:
-> > [   13.532871]  dump_backtrace+0x0/0x1d8
-> > [   13.536539]  show_stack+0x24/0x30
-> > [   13.539862]  dump_stack+0xe8/0x150
-> > [   13.543271]  __lock_acquire+0x1030/0x1678
-> > [   13.547290]  lock_acquire+0xf8/0x458
-> > [   13.550873]  _raw_spin_lock+0x44/0x58
-> > [   13.554543]  __dev_queue_xmit+0x84c/0xbe0
-> > [   13.558562]  dev_queue_xmit+0x24/0x30
-> > [   13.562232]  dsa_slave_xmit+0xe0/0x128
-> > [   13.565988]  dev_hard_start_xmit+0xf4/0x448
-> > [   13.570182]  __dev_queue_xmit+0x808/0xbe0
-> > [   13.574200]  dev_queue_xmit+0x24/0x30
-> > [   13.577869]  neigh_resolve_output+0x15c/0x220
-> > [   13.582237]  ip6_finish_output2+0x244/0xb10
-> > [   13.586430]  __ip6_finish_output+0x1dc/0x298
-> > [   13.590709]  ip6_output+0x84/0x358
-> > [   13.594116]  mld_sendpack+0x2bc/0x560
-> > [   13.597786]  mld_ifc_timer_expire+0x210/0x390
-> > [   13.602153]  call_timer_fn+0xcc/0x400
-> > [   13.605822]  run_timer_softirq+0x588/0x6e0
-> > [   13.609927]  __do_softirq+0x118/0x590
-> > [   13.613597]  irq_exit+0x13c/0x148
-> > [   13.616918]  __handle_domain_irq+0x6c/0xc0
-> > [   13.621023]  gic_handle_irq+0x6c/0x160
-> > [   13.624779]  el1_irq+0xbc/0x180
-> > [   13.627927]  cpuidle_enter_state+0xb4/0x4d0
-> > [   13.632120]  cpuidle_enter+0x3c/0x50
-> > [   13.635703]  call_cpuidle+0x44/0x78
-> > [   13.639199]  do_idle+0x228/0x2c8
-> > [   13.642433]  cpu_startup_entry+0x2c/0x48
-> > [   13.646363]  rest_init+0x1ac/0x280
-> > [   13.649773]  arch_call_rest_init+0x14/0x1c
-> > [   13.653878]  start_kernel+0x490/0x4bc
-> >
-> > Unfortunately I can't really test DSA behavior prior to patch
-> > ab92d68fc22f ("net: core: add generic lockdep keys"), because in
-> > October, some of these DSA drivers were not in mainline.
-> > Also I don't really have a clear idea of how nesting should be
-> > signalled to lockdep.
-> > Do you have any suggestion what might be wrong?
-> >
->
-> This patch was considered that all stackable devices have LLTX flag.
-> But the dsa doesn't have LLTX, so this splat happened.
-> After this patch, dsa shares the same lockdep class key.
-> On the nested dsa interface architecture, which you illustrated,
-> the same lockdep class key will be used in __dev_queue_xmit() because
-> dsa doesn't have LLTX.
-> So that lockdep detects deadlock because the same lockdep class key is
-> used recursively although actually the different locks are used.
-> There are some ways to fix this problem.
->
-> 1. using NETIF_F_LLTX flag.
-> If possible, using the LLTX flag is a very clear way for it.
-> But I'm so sorry I don't know whether the dsa could have LLTX or not.
->
-> 2. using dynamic lockdep again.
-> It means that each interface uses a separate lockdep class key.
-> So, lockdep will not detect recursive locking.
-> But this way has a problem that it could consume lockdep class key
-> too many.
-> Currently, lockdep can have 8192 lockdep class keys.
->  - you can see this number with the following command.
->    cat /proc/lockdep_stats
->    lock-classes:                         1251 [max: 8192]
->    ...
->    The [max: 8192] means that the maximum number of lockdep class keys.
-> If too many lockdep class keys are registered, lockdep stops to work.
-> So, using a dynamic(separated) lockdep class key should be considered
-> carefully.
-> In addition, updating lockdep class key routine might have to be existing.
-> (lockdep_register_key(), lockdep_set_class(), lockdep_unregister_key())
->
-> 3. Using lockdep subclass.
-> A lockdep class key could have 8 subclasses.
-> The different subclass is considered different locks by lockdep
-> infrastructure.
-> But "lock-classes" is not counted by subclasses.
-> So, it could avoid stopping lockdep infrastructure by an overflow of
-> lockdep class keys.
-> This approach should also have an updating lockdep class key routine.
-> (lockdep_set_subclass())
->
-> 4. Using nonvalidate lockdep class key.
-> The lockdep infrastructure supports nonvalidate lockdep class key type.
-> It means this lockdep is not validated by lockdep infrastructure.
-> So, the splat will not happend but lockdep couldn't detect real deadlock
-> case because lockdep really doesn't validate it.
-> I think this should be used for really special cases.
-> (lockdep_set_novalidate_class())
->
-> Thanks!
-> Taehee Yoo
->
-> > Thanks,
-> > -Vladimir
+If a fixed-link node is configured in the device tree the lan7431
+device will deactivate auto negotiation and uses the speed and
+duplex settings configured in the fixed-link node.
 
-Thanks a lot for presenting the options. In general, xmit in DSA is
-relatively simple and most of the time stateless. My stacked DSA setup
-appears to work just fine with NETIF_F_LLTX, including the updating of
-percpu counters. I'm not really sure if there's something in
-particular to test?
-Anyway, will you send a patch with NETIF_F_LLTX or should I do it? I
-can do further testing if necessary.
+Also the phy-connection-type can be configured in the device tree
+and in case of a fixed-link connection the RGMII mode can be
+configured, all other modes fall back to the default: GMII.
 
-Regards,
--Vladimir
+Example:
+
+ &pcie {
+	status = "okay";
+
+	host@0 {
+		reg = <0 0 0 0 0>;
+
+		#address-cells = <3>;
+		#size-cells = <2>;
+
+		ethernet@0 {
+			compatible = "weyland-yutani,noscom1", "microchip,lan743x";
+			status = "okay";
+			reg = <0 0 0 0 0>;
+			phy-connection-type = "rgmii";
+
+			fixed-link {
+				speed = <100>;
+				full-duplex;
+			};
+		};
+	};
+};
+
+Signed-off-by: Roelof Berg <rberg@berg-solutions.de>
+---
+ drivers/net/ethernet/microchip/lan743x_main.c | 93 +++++++++++++++++--
+ drivers/net/ethernet/microchip/lan743x_main.h |  4 +
+ 2 files changed, 89 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index a43140f7b5eb..278765dfc3b3 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -9,9 +9,12 @@
+ #include <linux/microchipphy.h>
+ #include <linux/net_tstamp.h>
+ #include <linux/phy.h>
++#include <linux/phy_fixed.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/iopoll.h>
+ #include <linux/crc16.h>
++#include <linux/of_mdio.h>
++#include <linux/of_net.h>
+ #include "lan743x_main.h"
+ #include "lan743x_ethtool.h"
+ 
+@@ -946,6 +949,9 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
+ {
+ 	struct lan743x_adapter *adapter = netdev_priv(netdev);
+ 	struct phy_device *phydev = netdev->phydev;
++	struct device_node *phynode;
++	phy_interface_t phyifc = PHY_INTERFACE_MODE_GMII;
++	u32 data;
+ 
+ 	phy_print_status(phydev);
+ 	if (phydev->state == PHY_RUNNING) {
+@@ -953,6 +959,48 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
+ 		int remote_advertisement = 0;
+ 		int local_advertisement = 0;
+ 
++		/* check if a fixed-link is defined in device-tree */
++		phynode = of_node_get(adapter->pdev->dev.of_node);
++		if (phynode && of_phy_is_fixed_link(phynode)) {
++			/* Configure MAC to fixed link parameters */
++			data = lan743x_csr_read(adapter, MAC_CR);
++			/* Disable auto negotiation */
++			data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
++			/* Set duplex mode */
++			if (phydev->duplex)
++				data |= MAC_CR_DPX_;
++			else
++				data &= ~MAC_CR_DPX_;
++			/* Set bus speed */
++			switch (phydev->speed) {
++			case 10:
++				data &= ~MAC_CR_CFG_H_;
++				data &= ~MAC_CR_CFG_L_;
++				break;
++			case 100:
++				data &= ~MAC_CR_CFG_H_;
++				data |= MAC_CR_CFG_L_;
++				break;
++			case 1000:
++				data |= MAC_CR_CFG_H_;
++				data |= MAC_CR_CFG_L_;
++				break;
++			}
++			/* Set interface mode */
++			of_get_phy_mode(phynode, &phyifc);
++			if (phyifc == PHY_INTERFACE_MODE_RGMII ||
++			    phyifc == PHY_INTERFACE_MODE_RGMII_ID ||
++			    phyifc == PHY_INTERFACE_MODE_RGMII_RXID ||
++			    phyifc == PHY_INTERFACE_MODE_RGMII_TXID)
++				/* RGMII */
++				data &= ~MAC_CR_MII_EN_;
++			else
++				/* GMII */
++				data |= MAC_CR_MII_EN_;
++			lan743x_csr_write(adapter, MAC_CR, data);
++		}
++		of_node_put(phynode);
++
+ 		memset(&ksettings, 0, sizeof(ksettings));
+ 		phy_ethtool_get_link_ksettings(netdev, &ksettings);
+ 		local_advertisement =
+@@ -974,6 +1022,8 @@ static void lan743x_phy_close(struct lan743x_adapter *adapter)
+ 
+ 	phy_stop(netdev->phydev);
+ 	phy_disconnect(netdev->phydev);
++	if (of_phy_is_fixed_link(adapter->pdev->dev.of_node))
++		of_phy_deregister_fixed_link(adapter->pdev->dev.of_node);
+ 	netdev->phydev = NULL;
+ }
+ 
+@@ -982,18 +1032,44 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+ 	struct lan743x_phy *phy = &adapter->phy;
+ 	struct phy_device *phydev;
+ 	struct net_device *netdev;
++	struct device_node *phynode = NULL;
++	phy_interface_t phyifc = PHY_INTERFACE_MODE_GMII;
+ 	int ret = -EIO;
+ 
+ 	netdev = adapter->netdev;
+-	phydev = phy_find_first(adapter->mdiobus);
+-	if (!phydev)
+-		goto return_error;
+ 
+-	ret = phy_connect_direct(netdev, phydev,
+-				 lan743x_phy_link_status_change,
+-				 PHY_INTERFACE_MODE_GMII);
+-	if (ret)
+-		goto return_error;
++	/* check if a fixed-link is defined in device-tree */
++	phynode = of_node_get(adapter->pdev->dev.of_node);
++	if (phynode && of_phy_is_fixed_link(phynode)) {
++		netdev_dbg(netdev, "fixed-link detected\n");
++
++		ret = of_phy_register_fixed_link(phynode);
++		if (ret) {
++			netdev_err(netdev, "cannot register fixed PHY\n");
++			goto return_error;
++		}
++
++		of_get_phy_mode(phynode, &phyifc);
++		phydev = of_phy_connect(netdev, phynode,
++					lan743x_phy_link_status_change,
++					0, phyifc);
++		if (!phydev)
++			goto return_error;
++	} else {
++		phydev = phy_find_first(adapter->mdiobus);
++		if (!phydev)
++			goto return_error;
++
++		ret = phy_connect_direct(netdev, phydev,
++					 lan743x_phy_link_status_change,
++					 PHY_INTERFACE_MODE_GMII);
++		/* Note: We cannot use phyifc here because this would be SGMII
++		 * on a standard PC.
++		 */
++		if (ret)
++			goto return_error;
++	}
++	of_node_put(phynode);
+ 
+ 	/* MAC doesn't support 1000T Half */
+ 	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
+@@ -1008,6 +1084,7 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+ 	return 0;
+ 
+ return_error:
++	of_node_put(phynode);
+ 	return ret;
+ }
+ 
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
+index 3b02eeae5f45..e49f6b6cd440 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.h
++++ b/drivers/net/ethernet/microchip/lan743x_main.h
+@@ -104,10 +104,14 @@
+ 	((value << 0) & FCT_FLOW_CTL_ON_THRESHOLD_)
+ 
+ #define MAC_CR				(0x100)
++#define MAC_CR_MII_EN_			BIT(19)
+ #define MAC_CR_EEE_EN_			BIT(17)
+ #define MAC_CR_ADD_			BIT(12)
+ #define MAC_CR_ASD_			BIT(11)
+ #define MAC_CR_CNTR_RST_		BIT(5)
++#define MAC_CR_DPX_			BIT(3)
++#define MAC_CR_CFG_H_			BIT(2)
++#define MAC_CR_CFG_L_			BIT(1)
+ #define MAC_CR_RST_			BIT(0)
+ 
+ #define MAC_RX				(0x104)
+-- 
+2.20.1
+
