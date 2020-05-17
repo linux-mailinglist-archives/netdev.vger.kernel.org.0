@@ -2,134 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC03F1D657E
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 06:02:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E861D65E4
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 06:32:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726175AbgEQECP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 00:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47618 "EHLO
+        id S1726956AbgEQEcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 00:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725497AbgEQECP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 00:02:15 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC2FC061A0C;
-        Sat, 16 May 2020 21:02:15 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id w10so6292739ljo.0;
-        Sat, 16 May 2020 21:02:14 -0700 (PDT)
+        with ESMTP id S1726158AbgEQEcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 00:32:32 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39078C061A0C;
+        Sat, 16 May 2020 21:32:32 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id u35so3051499pgk.6;
+        Sat, 16 May 2020 21:32:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jjboTDhguDD2ijn2C2vB2yalYOojB2737UbMVNJBmiA=;
-        b=mawK+hAGONx2CxYZVz+/HHLwZQE8b2Ilzgi0BD+nzUB6/AXrUO5FJuOrJyvy31vLlK
-         jK1NYPZzmysvtAgwTkhNst2AiYmEk1hNxySqVRFx2oNCFyZqyapf6hF5l503rJpcaqmx
-         /DHo8bMjbdd08aSvr3UEa6gSTUiXku1PPFfIkx/dFsN7IUNhpYwHCgbSjWHy1g6Q6zV0
-         kpNN2IbDlruUa4ADjahSbpFLpzTK6mbBSCXWn0m6zeZIpjB+Hu+T0LKGxb93VwV8ky42
-         5YnPN2ia+32EkEiUGjuJDeOshNTltrrQ6On29XGgvjvjpFm4lYQtGJ3c4OIs4JNqnPrF
-         ZrGQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HQHhVDubWhCu4+WobVqLFlUAQRD3gUWnmZ+RVTOl9+w=;
+        b=byGDH694zauxl3F9SXY4S8/fFzjfOhzAd5i0owuTETElMpwvSBUb0fCp9P7ag5SwL+
+         90/MpCCOvybhqI6zHPtwrNDyofVaxCcyGsLPcHcmV2gUC8omUp+N9SU22IO7KDPuGN72
+         ltU+l1yRfuWk6mBDg7cF8rpKGAquDXb43hQ12aIoysLooZUybPvGAjJz1EdcfdWO8Uqz
+         yA361/L/0ywI9+Nk6Nw5Ol/Qd/njNEviCZd9TAPKAtrIvU3taiJXXGJ2yDAi7Rayrt1e
+         cj2ijBXOD2GaOSIie9BEsY5R3nEvSwGmoHEeZqmL48Sv12UxmHHjRX/s0yJGwX1aHs5w
+         IUvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jjboTDhguDD2ijn2C2vB2yalYOojB2737UbMVNJBmiA=;
-        b=DKFNBfoPCR8DmB050K+qFWtbO0OhzQIrb0ziibB3tbZG3kXRn/prUXivnQwxBSqoQn
-         WgWcWHVWqDvHTxEwDQRID1H/AhDgn28MGDCQci9pQJwQOMFeYGlytvNgvDN4R5nAdXik
-         EVAYP3t+V/glNB4CqPJx16iVp4C+YjD8aN8AkmLbvfKx4Gg1ez+ykfM0+MLyjZFVU+r/
-         skkLkREKZIoRzbcvCfVfChX8/ITPGjbZHJkrcnV3+eosWh6puQLhANYjqG3fs5bRZwmP
-         V63L3hGN4w8ou6D/ActGP/opjq54TDtpu6m617Xu5P0EDETIAauKtTIqLHYcgEYPTaiQ
-         TECg==
-X-Gm-Message-State: AOAM531D8pKtB8akyZogXwVuRNsoRUNEQDUQck5/fToLvwFss3oCcS95
-        peEapDxf2RMgjQmm5ZRIQjegtVHPkYtRDYLSlOM=
-X-Google-Smtp-Source: ABdhPJzDMvh+Gk821b8lzARA/hzR0Rbd5aacsMZHoKrEGA+Xb4hzv2qZmw5Xg3YMyimnwlTNdClc5FIqQ4RyUaEqNiU=
-X-Received: by 2002:a2e:b5cf:: with SMTP id g15mr3179376ljn.212.1589688133267;
- Sat, 16 May 2020 21:02:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <158945314698.97035.5286827951225578467.stgit@firesoul> <158945349549.97035.15316291762482444006.stgit@firesoul>
-In-Reply-To: <158945349549.97035.15316291762482444006.stgit@firesoul>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HQHhVDubWhCu4+WobVqLFlUAQRD3gUWnmZ+RVTOl9+w=;
+        b=t3SU1Tl56V5xzY+4Gr/pVtOf4S+6Fh2Pm7Y0k+Hqd9Tz0t9Sg20RSUOvugokShtU1K
+         H5qFgD/QGrYqF+LjIB/VYjKAXTdzkWuEK9j3WtgUzDBU0QfqoARPRePIslbbApecpqoc
+         DzfBUHLRqJ7VbFaBYaK7vSxLfr3oD8j/+p+A4xBZ1PI3AqG+qod8Te0t9DAL/FjmGL8f
+         jDTOvi+u0FtXLCDVQTw9EP5dEy/SHVWUBP9r+57szMXhEDEbL91rqN1p5X+GkB49O3mg
+         9jUT0f7coccuHEyA/mGH0V+7psfLWCcfb5tRYSLHUwUCPPVaE5EV/SzcrnB9x5cssZUa
+         DWsA==
+X-Gm-Message-State: AOAM531rbPuA5P2p9/E6rQO1iVjhMfM9lQJ97y0ad1WuNvLEWaJjFCu3
+        3ZCP5iFnvsiyDegkuoMvIpA=
+X-Google-Smtp-Source: ABdhPJwLjSG7MJQLUnZPThrqs/Op/BWA5ROnyYH5Ipz35lufMVA/wMTHhtJacPbxUeUtpZVC6SsIyA==
+X-Received: by 2002:a62:1b8f:: with SMTP id b137mr10822074pfb.119.1589689951555;
+        Sat, 16 May 2020 21:32:31 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:280b])
+        by smtp.gmail.com with ESMTPSA id j5sm5341392pfa.37.2020.05.16.21.32.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 May 2020 21:32:30 -0700 (PDT)
+Date:   Sat, 16 May 2020 21:32:27 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 16 May 2020 21:02:01 -0700
-Message-ID: <CAADnVQLtJotzY==OfOHmA-KdTb6bF7uqKVYGhnPj-oyzSZ8C_g@mail.gmail.com>
-Subject: unstable xdp tests. Was: [PATCH net-next v4 31/33] bpf: add
- xdp.frame_sz in bpf_prog_test_run_xdp().
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     sameehj@amazon.com, Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, lmb@cloudflare.com,
+        john.fastabend@gmail.com
+Subject: getting bpf_tail_call to work with bpf function calls. Was: [RFC
+ PATCH bpf-next 0/1] bpf, x64: optimize JIT prologue/epilogue generation
+Message-ID: <20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com>
+References: <20200511143912.34086-1-maciej.fijalkowski@intel.com>
+ <2e3c6be0-e482-d856-7cc1-b1d03a26428e@iogearbox.net>
+ <20200512000153.hfdeh653v533qbe6@ast-mbp.dhcp.thefacebook.com>
+ <20200513115855.GA3574@ranger.igk.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200513115855.GA3574@ranger.igk.intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 14, 2020 at 3:51 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> Update the memory requirements, when adding xdp.frame_sz in BPF test_run
-> function bpf_prog_test_run_xdp() which e.g. is used by XDP selftests.
->
-> Specifically add the expected reserved tailroom, but also allocated a
-> larger memory area to reflect that XDP frames usually comes in this
-> format. Limit the provided packet data size to 4096 minus headroom +
-> tailroom, as this also reflect a common 3520 bytes MTU limit with XDP.
->
-> Note that bpf_test_init already use a memory allocation method that clears
-> memory.  Thus, this already guards against leaking uninit kernel memory.
->
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
->  net/bpf/test_run.c |   16 ++++++++++++----
->  1 file changed, 12 insertions(+), 4 deletions(-)
->
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index 29dbdd4c29f6..30ba7d38941d 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -470,25 +470,34 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
->  int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
->                           union bpf_attr __user *uattr)
->  {
-> +       u32 tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> +       u32 headroom = XDP_PACKET_HEADROOM;
->         u32 size = kattr->test.data_size_in;
->         u32 repeat = kattr->test.repeat;
->         struct netdev_rx_queue *rxqueue;
->         struct xdp_buff xdp = {};
->         u32 retval, duration;
-> +       u32 max_data_sz;
->         void *data;
->         int ret;
->
->         if (kattr->test.ctx_in || kattr->test.ctx_out)
->                 return -EINVAL;
->
-> -       data = bpf_test_init(kattr, size, XDP_PACKET_HEADROOM + NET_IP_ALIGN, 0);
-> +       /* XDP have extra tailroom as (most) drivers use full page */
-> +       max_data_sz = 4096 - headroom - tailroom;
-> +       if (size > max_data_sz)
-> +               return -EINVAL;
-> +
-> +       data = bpf_test_init(kattr, max_data_sz, headroom, tailroom);
+On Wed, May 13, 2020 at 01:58:55PM +0200, Maciej Fijalkowski wrote:
+> 
+> So to me, if we would like to get rid of maxing out stack space, then we
+> would have to do some dancing for preserving the tail call counter - keep
+> it in some unused register? Or epilogue would pop it from stack to some
+> register and target program's prologue would push it to stack from that
+> register (I am making this up probably). And rbp/rsp would need to be
+> created/destroyed during the program-to-program transition that happens
+> via tailcall. That would mean also more instructions.
 
-Hi Jesper,
+How about the following:
+The prologue will look like:
+nop5
+xor eax,eax  // two new bytes if bpf_tail_call() is used in this function
+push rbp
+mov rbp, rsp
+sub rsp, rounded_stack_depth
+push rax // zero init tail_call counter
+variable number of push rbx,r13,r14,r15
 
-above is buggy.
-max_data_sz is way more than what user space has.
-That causes xdp unit tests to fail sporadically with EFAULT.
-Like:
-./test_progs -t xdp_perf
-test_xdp_perf:FAIL:xdp-perf err -1 errno 14 retval 0 size 0
-#89 xdp_perf:FAIL
+Then bpf_tail_call will pop variable number rbx,..
+and final 'pop rax'
+Then 'add rsp, size_of_current_stack_frame'
+jmp to next function and skip over 'nop5; xor eax,eax; push rpb; mov rbp, rsp'
 
-For that test max_data_sz will be 3520 while user space prepared only 128 bytes
-and copy_from_user will fault.
+This way new function will set its own stack size and will init tail call
+counter with whatever value the parent had.
+
+If next function doesn't use bpf_tail_call it won't have 'xor eax,eax'.
+Instead it would need to have 'nop2' in there.
+That's the only downside I see.
+Any other ideas?
