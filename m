@@ -2,100 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC911D6C26
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 21:13:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C531D6C2A
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 21:16:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbgEQTN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 15:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726269AbgEQTN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 15:13:26 -0400
-Received: from mail-oo1-xc41.google.com (mail-oo1-xc41.google.com [IPv6:2607:f8b0:4864:20::c41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5973AC061A0C
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 12:13:26 -0700 (PDT)
-Received: by mail-oo1-xc41.google.com with SMTP id q6so1596302oot.0
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 12:13:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iJlwxTep1GzUnZyRQGZ2FCEqht1K7smuquQzoyw/yYw=;
-        b=uZJDHV0ZCCUhMJ0nuiY+WOaVx3ygnT1YEEeRw5XXkvgx3CiNIqAzxL3LwKeaOrNvph
-         x0PzXbJiYOkSjbc6nkjG6BRer6A6tg88QqGY+YYoEOucKiKoA6tCJ0EytKqocWhjMJL7
-         WoviHmmaCbZ6nQGOA1rW1cjVb3d4YX3zwrYhyEq+Snyeskf9gqRX9Q9ag8tggLHemGb+
-         x5brZsNz/nc1dzbEna8N9ObtGHLH4HDOivO22IrFcCLAxXtwdWcPoLoEaAKRMvZ9bPUO
-         IZ4zI9d/kAbVYL8bjRgoqK2P9T3KK0RF10rSwtzgPAPiTF11xvocj+YxhXc3HZWLvGoP
-         b0SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iJlwxTep1GzUnZyRQGZ2FCEqht1K7smuquQzoyw/yYw=;
-        b=fNxzOQ1HaJxVLyeUBhxLfSN6HBuAe9jFtAPnZbjy+2avCVC2WZoiImyOwJNdz+OzKL
-         mHrvON+LClKC+eJbZ0YVvZNTRMwwES0S3ll1cL061qcpnz3WRaUCEkVgBP0Z7tWY03Eu
-         b+98qUHizq2sTx0ka4Bqz3UAcOO3BMGhIIrP+jA6ldbzSzZBc+0jSX6ewavRNJMhl19+
-         M+DBInynBWchX/rKymxVs9mmN1Y10pG5qjAfwjbh/Qv5IbwQeyVZsDYHkgB6a6pmfbOY
-         /qvUa6FvmP7mJITa1BjgdQlJUPnaW6jIZIW6PSNa2pv3LJPR0xLKVDDNCon0/dMnagLh
-         4JEg==
-X-Gm-Message-State: AOAM532GErmG6ksyUJfskEaNwzJDnjHiH3CtXLAhKE79m2d+ldJcQYyo
-        W5sf+eQTfKoO6Vk4SCzr00leeIJwVpTw+3cQug0=
-X-Google-Smtp-Source: ABdhPJzJv5uqsv6gVg69lXrUyT21wgiThelCs23I4O+W4cycDPJ+uCBh5t4VHGZWVh6Gx2qK/eDhbfj3qanZR33/FLw=
-X-Received: by 2002:a4a:5147:: with SMTP id s68mr10350690ooa.86.1589742805589;
- Sun, 17 May 2020 12:13:25 -0700 (PDT)
+        id S1726372AbgEQTQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 15:16:41 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36148 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726278AbgEQTQk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 May 2020 15:16:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=nmHCf8WelMUILSz0ftKqp4dywgPe56nqgwOHUvyczNU=; b=hnb8+4je1aHrBVK9uwesMul9JY
+        9CAZSrPpSmPQB6jvnhPIrJX9R9U+fEl8VL2kK+4GY1BHfskKtF0tyGOPMd8xL9lvh+Kk1O0Yz6kTt
+        9F0b5XFTum1ByGPYl7Vwh+eBzfp2Oh+3JivDQbBcsLz8UXWtwA3AgjdzqMm6e/f+mKUo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jaOm3-002YVi-BD; Sun, 17 May 2020 21:16:35 +0200
+Date:   Sun, 17 May 2020 21:16:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     David Miller <davem@davemloft.net>, marex@denx.de,
+        netdev@vger.kernel.org, ynezz@true.cz, yuehaibing@huawei.com
+Subject: Re: [PATCH V6 00/20] net: ks8851: Unify KS8851 SPI and MLL drivers
+Message-ID: <20200517191635.GE606317@lunn.ch>
+References: <20200517003354.233373-1-marex@denx.de>
+ <20200516.190225.342589110126932388.davem@davemloft.net>
+ <20200517071355.ww5xh7fgq7ymztac@wunner.de>
 MIME-Version: 1.0
-References: <20200515114014.3135-1-vladbu@mellanox.com>
-In-Reply-To: <20200515114014.3135-1-vladbu@mellanox.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 17 May 2020 12:13:14 -0700
-Message-ID: <CAM_iQpXtqZ-Uy=x_UzTh0N0_LRYGp-bFKyOwTUMNLaiVs=7XKQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump mode
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200517071355.ww5xh7fgq7ymztac@wunner.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 4:40 AM Vlad Buslov <vladbu@mellanox.com> wrote:
->
-> Output rate of current upstream kernel TC filter dump implementation if
-> relatively low (~100k rules/sec depending on configuration). This
-> constraint impacts performance of software switch implementation that
-> rely on TC for their datapath implementation and periodically call TC
-> filter dump to update rules stats. Moreover, TC filter dump output a lot
-> of static data that don't change during the filter lifecycle (filter
-> key, specific action details, etc.) which constitutes significant
-> portion of payload on resulting netlink packets and increases amount of
-> syscalls necessary to dump all filters on particular Qdisc. In order to
-> significantly improve filter dump rate this patch sets implement new
-> mode of TC filter dump operation named "terse dump" mode. In this mode
-> only parameters necessary to identify the filter (handle, action cookie,
-> etc.) and data that can change during filter lifecycle (filter flags,
-> action stats, etc.) are preserved in dump output while everything else
-> is omitted.
->
-> Userspace API is implemented using new TCA_DUMP_FLAGS tlv with only
-> available flag value TCA_DUMP_FLAGS_TERSE. Internally, new API requires
-> individual classifier support (new tcf_proto_ops->terse_dump()
-> callback). Support for action terse dump is implemented in act API and
-> don't require changing individual action implementations.
+> However in terms of performance there's a bigger problem:
+> 
+> Previously ks8851.c (SPI driver) had 8-bit and 32-bit register accessors.
+> The present series drops them and performs a 32-bit access as two 16-bit
+> accesses and an 8-bit access as one 16-bit access because that's what
+> ks8851_mll.c (16-bit parallel bus driver) does.  That has a real,
+> measurable performance impact because in the case of 8-bit accesses,
+> another 8 bits need to be transferred over the SPI bus, and in the case
+> of 32-bit accesses, *two* SPI transfers need to be performed.
 
-Sorry for being late.
+How often does this happen on a per packet basis? Packets are
+generally a mixture of 50bytes, 576bytes and 1500bytes in size, with
+the majority being 576 bytes. Does an extra 8 or 16 bits per packet
+really make that much difference? Or is the real problem the overheads
+of doing the transaction, not the number of bytes transferred? If so,
+maybe the abstractions needs to be slightly higher, not register
+access, but basic functionality.
 
-Why terse dump needs a new ops if it only dumps a subset of the
-regular dump? That is, why not just pass a boolean flag to regular
-->dump() implementation?
+> Nevertheless I was going to repeat the performance measurements on a
+> recent kernel but haven't gotten around to that yet because the
+> measurements need to be performed with CONFIG_PREEMPT_RT_FULL to
+> be reliable (a vanilla kernel is too jittery), so I have to create
+> a new branch with RT patches on the test machine, which is fairly
+> involved and time consuming.
 
-I guess that might break user-space ABI? At least some netlink
-attributes are not always dumped anyway, so it does not look like
-a problem?
+I assume you will then mainline the changes, so you don't need to do
+it again? That is the problem with doing development work on a dead
+kernel.
 
-Thanks.
+	Andrew
