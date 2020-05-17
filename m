@@ -2,56 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC1B1D651E
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 04:02:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DCE71D651F
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 04:02:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726937AbgEQCCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 22:02:03 -0400
-Received: from smtprelay0034.hostedemail.com ([216.40.44.34]:46198 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726880AbgEQCCC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 22:02:02 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id D684618224504;
-        Sun, 17 May 2020 02:02:01 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1567:1593:1594:1711:1714:1730:1747:1777:1792:2198:2199:2393:2559:2562:2693:2828:3138:3139:3140:3141:3142:3622:3865:3868:3874:4250:4321:5007:7903:8784:10004:10400:10848:11232:11657:11658:11914:12043:12297:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21433:21451:21611:21627:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: smile27_85fe491442e21
-X-Filterd-Recvd-Size: 1382
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf06.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 17 May 2020 02:02:00 +0000 (UTC)
-Message-ID: <bd3a3e31d17146965c5a0ff7228cb00ec46f4edb.camel@perches.com>
-Subject: Re: [PATCH V6 20/20] net: ks8851: Drop define debug and pr_fmt()
-From:   Joe Perches <joe@perches.com>
-To:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-Date:   Sat, 16 May 2020 19:01:59 -0700
-In-Reply-To: <20200517003354.233373-21-marex@denx.de>
+        id S1726954AbgEQCCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 22:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726880AbgEQCC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 22:02:29 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB791C061A0C
+        for <netdev@vger.kernel.org>; Sat, 16 May 2020 19:02:29 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3EFF012782505;
+        Sat, 16 May 2020 19:02:28 -0700 (PDT)
+Date:   Sat, 16 May 2020 19:02:25 -0700 (PDT)
+Message-Id: <20200516.190225.342589110126932388.davem@davemloft.net>
+To:     marex@denx.de
+Cc:     netdev@vger.kernel.org, lukas@wunner.de, ynezz@true.cz,
+        yuehaibing@huawei.com
+Subject: Re: [PATCH V6 00/20] net: ks8851: Unify KS8851 SPI and MLL drivers
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200517003354.233373-1-marex@denx.de>
 References: <20200517003354.233373-1-marex@denx.de>
-         <20200517003354.233373-21-marex@denx.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
-MIME-Version: 1.0
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 16 May 2020 19:02:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2020-05-17 at 02:33 +0200, Marek Vasut wrote:
-> Drop those debug statements from both drivers. They were there since
-> at least 2011 and enabled by default, but that's likely wrong.
-[]
-> diff --git a/drivers/net/ethernet/micrel/ks8851_par.c b/drivers/net/ethernet/micrel/ks8851_par.c
-[]
-> -#define DEBUG
+From: Marek Vasut <marex@denx.de>
+Date: Sun, 17 May 2020 02:33:34 +0200
 
-Dropping the #define DEBUG lines will cause a behavior
-change for the netdev/netif_dbg uses as these messages
-will no longer be output by default.
+> The KS8851SNL/SNLI and KS8851-16MLL/MLLI/MLLU are very much the same pieces
+> of silicon, except the former has an SPI interface, while the later has a
+> parallel bus interface. Thus far, Linux has two separate drivers for each
+> and they are diverging considerably.
+> 
+> This series unifies them into a single driver with small SPI and parallel
+> bus specific parts. The approach here is to first separate out the SPI
+> specific parts into a separate file, then add parallel bus accessors in
+> another separate file and then finally remove the old parallel bus driver.
+> The reason for replacing the old parallel bus driver is because the SPI
+> bus driver is much higher quality.
 
+What strikes me in these changes is all of the new indirect jumps in
+the fast paths of TX and RX packet processing.  It's just too much for
+my eyes. :-)
 
+Especially in the presence of Spectre mitigations, these costs are
+quite non-trivial.
+
+Seriously, I would recommend that instead of having these small
+indirect helpers, just inline the differences into two instances of
+the RX interrupt and the TX handler.
