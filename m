@@ -2,125 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7478C1D676E
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 12:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C4251D6787
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 12:51:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727850AbgEQKgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 06:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52014 "EHLO
+        id S1727850AbgEQKve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 06:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727081AbgEQKgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 06:36:18 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1B3C061A0C
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 03:36:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=j5ZQXcz1r5cus5J4w59CqRGQmTlzFc/9sKCJMyIb4RM=; b=CkRuKSvoFmKzJBCXrJs2Kgl1/
-        HUkksJYPrMO45ItZgOmPIB0eEuTj4jAHjvAhj2ujHefj84L3NOKQr3oCLW/CL101aSCTNmoZ9FlLs
-        s2VBgZK8jcPnSzGEPTOi1ydabO58DtXw5UP/ElyyoMxk+CjyMmXWuSUN5lfr1L8ggGmKJKRjLwHhM
-        1TJA1KBF+j5qgwXBAO1tBO81HAo/TsR/i67MDvzM0mpax7G/gHPtT4q33oJBhNuymK2V8BmwqAHYf
-        FAtGlgAJ2iUUjYvOAMQ9cxjzWFXbswdbkFNA4NxZsedrJhrvX9lYdvYC8yJXw6xxKFZ/Q4f1u+u1X
-        05UybqbnA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:41384)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jaGeG-0002wR-Nk; Sun, 17 May 2020 11:36:00 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jaGeE-0003c3-TB; Sun, 17 May 2020 11:35:58 +0100
-Date:   Sun, 17 May 2020 11:35:58 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH] drivers: net: mdio_bus: try indirect clause 45 regs
- access
-Message-ID: <20200517103558.GT1551@shell.armlinux.org.uk>
-References: <3e2c01449dc29bc3d138d3a19e0c2220495dd7ed.1589710856.git.baruch@tkos.co.il>
+        with ESMTP id S1727829AbgEQKvd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 06:51:33 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C58C061A0C
+        for <netdev@vger.kernel.org>; Sun, 17 May 2020 03:51:33 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id h21so6340143ejq.5
+        for <netdev@vger.kernel.org>; Sun, 17 May 2020 03:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c6QtPg2o/RHjcYUveiYsELNNbSChIH+Ej9lMJs/Ed+g=;
+        b=PSAT6c3+0cvNMHRbcVnekTMp7uJe/SLojwkidlvvMuXz9VGVXD9XTQPgEd0SxNCxam
+         ZhOARMsgrugbuyN4+I8tCCz3jIADk3/90QhUMlbg5yazJFegblbszikblFhkoZqRITrf
+         C8CtoP7BTzuCGwlzUrh7iUUz2lSL/lKEAwR7D0crcFpHPj0qOlNCofCMqcCb7BneZIUD
+         X7e9W9MDxcCu1gWTPeGgQgS1xteLsau3HAgHkZJh2qpMcxvrMPs+JPDlgHo5U+LxpfXG
+         YlrRr6Vvi9SozrTqEdbfo9up5w3VrtHd6Vsq6bPYOVD0prqMrQ9N8AxzF7SreH8daBZI
+         ix3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c6QtPg2o/RHjcYUveiYsELNNbSChIH+Ej9lMJs/Ed+g=;
+        b=o4K0dEDPvFnrdXbAT+gyuuh6ESemaq9KEF9CWbfaGI4JfBs77eKsehJK4vgbbgf1ND
+         MOEK0NBKWypnI+90/PqtNTVgrY3oZdORVyj1bY6PDzjy9OWmCI7bWwqsrHWZ/o7rQf4z
+         gL8GG17XJxVCyATxMf7T5NCb2rzqAlNp2XfZlAbrbL8fA3OzReiBHd3mpNspMO/ksC8y
+         CytcXtpcK0tkvh1iMzfpwMSnq78FTx/4w1EElQrECQW9T0907Mr685RXJ1q3Q/jxH5SR
+         uo2qghsb139nmq+dOjvflikgh7CwYiaJxzSoU+2UTNxiAhkxUAFR2kZx6r5mXhYb3ca9
+         drQw==
+X-Gm-Message-State: AOAM530c5jvOZbpFZmHADRWnVw+sYlxG53okpauCHh32anQXXSbClj3T
+        SeyhgUQCTMEdtecmCHJXjgYYxuZ7ygzliy2/faD4sg==
+X-Google-Smtp-Source: ABdhPJymibuT4oftjhAP7TyFU53ASlulh2i8ppuyvd8+9wHFKTHQFCaP5PXygatv5htGJEAW+CSoA3ybJUdmeA0F/BI=
+X-Received: by 2002:a17:906:dbcf:: with SMTP id yc15mr10748540ejb.176.1589712690293;
+ Sun, 17 May 2020 03:51:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3e2c01449dc29bc3d138d3a19e0c2220495dd7ed.1589710856.git.baruch@tkos.co.il>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+ <20200516.133739.285740119627243211.davem@davemloft.net> <CA+h21hoNW_++QHRob+NbWC2k7y7sFec3kotSjTL6s8eZGGT+2Q@mail.gmail.com>
+ <20200516.151932.575795129235955389.davem@davemloft.net>
+In-Reply-To: <20200516.151932.575795129235955389.davem@davemloft.net>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 17 May 2020 13:51:19 +0300
+Message-ID: <CA+h21hrg_CeD2-zT+7v3b3hPRFaeggmZC9NqPp+soedCYwG63A@mail.gmail.com>
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+To:     David Miller <davem@davemloft.net>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Po Liu <po.liu@nxp.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 17, 2020 at 01:20:56PM +0300, Baruch Siach wrote:
-> When the MDIO bus does not support directly clause 45 access, fallback
-> to indirect registers access method to read/write clause 45 registers
-> using clause 22 registers.
-> 
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
-> 
-> Is that the right course?
-> 
-> Currently, this does not really work on the my target machine, which is
-> using the Armada 385 native MDIO bus (mvmdio) connected to clause 45
-> Marvell 88E2110 PHY. Registers MDIO_DEVS1 and MDIO_DEVS1 read bogus
-> values which breaks PHY identification. However, the phytool utility
-> reads the same registers correctly:
-> 
-> phytool eth1/2:1/5
-> ieee-phy: reg:0x05 val:0x008a
-> 
-> eth1 is connected to another PHY (clause 22) on the same MDIO bus.
-> 
-> The same hardware works nicely with the mdio-gpio bus implementation,
-> when mdio pins are muxed as GPIOs.
+On Sun, 17 May 2020 at 01:19, David Miller <davem@davemloft.net> wrote:
+>
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Sun, 17 May 2020 00:03:39 +0300
+>
+> > As to why this doesn't go to tc but to ethtool: why would it go to tc?
+>
+> Maybe you can't %100 duplicate the on-the-wire special format and
+> whatever, but the queueing behavior ABSOLUTELY you can emulate in
+> software.
+>
+> And then you have the proper hooks added for HW offload which can
+> do the on-the-wire stuff.
+>
+> That's how we do these things, not with bolted on ethtool stuff.
 
-Not all C45 PHYs are required to provide C22.  I'm pretty sure that
-accessing a C45 PHY through the indirect method is likely something
-that isn't well tested with PHYs, so getting wrong device IDs doesn't
-surprise me.  Is there a reason to try switching back to mvmdio on
-this device?
+When talking about frame preemption in the way that it is defined in
+802.1Qbu and 802.3br, it says or assumes nothing about queuing. It
+describes the fact that there are 2 MACs per interface, 1 MAC dealing
+with some traffic classes and the other dealing with the rest. Queuing
+sits completely above the layer where frame preemption happens:
+- The queuing layer does not care if packets go to a traffic class
+that is serviced by a preemptible MAC or an express MAC
+- The MAC does not care by what means have packets been classified to
+one traffic class or another.
+I have no idea what emulation of queuing behavior you are talking
+about. Frame preemption is a MAC hardware feature. Your NIC supports
+it or it doesn't. Which means it can talk to a link partner that
+supports frame preemption, or it can't.
 
-Some comments on the patch:
-
-> ---
->  drivers/net/phy/mdio_bus.c | 12 ++++++++++++
->  drivers/net/phy/phy-core.c |  2 +-
->  include/linux/phy.h        |  2 ++
->  3 files changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index 7a4eb3f2cb74..12e39f794b29 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -790,6 +790,12 @@ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
->  	WARN_ON_ONCE(!mutex_is_locked(&bus->mdio_lock));
->  
->  	retval = bus->read(bus, addr, regnum);
-> +	if (retval == -EOPNOTSUPP && regnum & MII_ADDR_C45) {
-> +		int c45_devad = (regnum >> 16) & 0x1f;
-> +
-> +		mmd_phy_indirect(bus, addr, c45_devad, regnum & 0xfff);
-> +		retval = bus->read(bus, addr, MII_MMD_DATA);
-> +	}
-
-I don't think this should be done at mdiobus level; I think this is a
-layering violation.  It needs to happen at the PHY level because the
-indirect C45 access via C22 registers is specific to PHYs.
-
-It also needs to check in the general case that the PHY does indeed
-support the C22 register set - not all C45 PHYs do.
-
-So, I think we want this fallback to be conditional on:
-
-- are we probing for the PHY, trying to read its IDs and
-  devices-in-package registers - if yes, allow fallback.
-- does the C45 PHY support the C22 register set - if yes, allow
-  fallback.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Thanks,
+-Vladimir
