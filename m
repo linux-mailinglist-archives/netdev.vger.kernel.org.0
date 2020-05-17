@@ -2,103 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14E861D65E4
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 06:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3769C1D6635
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 07:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726956AbgEQEcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 00:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
+        id S1726740AbgEQFrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 01:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726158AbgEQEcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 00:32:32 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39078C061A0C;
-        Sat, 16 May 2020 21:32:32 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id u35so3051499pgk.6;
-        Sat, 16 May 2020 21:32:32 -0700 (PDT)
+        with ESMTP id S1725861AbgEQFrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 01:47:23 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E47C061A0C;
+        Sat, 16 May 2020 22:47:23 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id m7so2755916plt.5;
+        Sat, 16 May 2020 22:47:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HQHhVDubWhCu4+WobVqLFlUAQRD3gUWnmZ+RVTOl9+w=;
-        b=byGDH694zauxl3F9SXY4S8/fFzjfOhzAd5i0owuTETElMpwvSBUb0fCp9P7ag5SwL+
-         90/MpCCOvybhqI6zHPtwrNDyofVaxCcyGsLPcHcmV2gUC8omUp+N9SU22IO7KDPuGN72
-         ltU+l1yRfuWk6mBDg7cF8rpKGAquDXb43hQ12aIoysLooZUybPvGAjJz1EdcfdWO8Uqz
-         yA361/L/0ywI9+Nk6Nw5Ol/Qd/njNEviCZd9TAPKAtrIvU3taiJXXGJ2yDAi7Rayrt1e
-         cj2ijBXOD2GaOSIie9BEsY5R3nEvSwGmoHEeZqmL48Sv12UxmHHjRX/s0yJGwX1aHs5w
-         IUvQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=drmII/PwGs2+j+RC/yUKrWEgxCX9gLQZgVT9e2wht+c=;
+        b=WzUYx0wYfkC13YkdNT/husM8BOe7dmAbzZac3CVLTwuF/tG87AgQBU2iZsVagBcAFK
+         NrGpTa4TXzk3oqL3VHxHFn3yuwq+SHOmlaY5JM5ZoeUW+I6O6YNvd6d8kOFQVp1WT1YY
+         zWfUcNpZIPCP/DlNDgqTa7/pMbr2rPH02TQqkQf26OWuU/ZVfIdFKoctbRVsDy76Ok3k
+         Ht7O+zm50YbFrylSy5v5J5GS5g/Pncn+rFgilkxUw4yBAOoRprBMQtSf5MOUrc8C3tMR
+         kFvRLdr7cPhYjA2y3/qlQupLk26IwvqcENTK0XnoxZPhdDma0awdiYKjRj7XARUoyCyC
+         3Cyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HQHhVDubWhCu4+WobVqLFlUAQRD3gUWnmZ+RVTOl9+w=;
-        b=t3SU1Tl56V5xzY+4Gr/pVtOf4S+6Fh2Pm7Y0k+Hqd9Tz0t9Sg20RSUOvugokShtU1K
-         H5qFgD/QGrYqF+LjIB/VYjKAXTdzkWuEK9j3WtgUzDBU0QfqoARPRePIslbbApecpqoc
-         DzfBUHLRqJ7VbFaBYaK7vSxLfr3oD8j/+p+A4xBZ1PI3AqG+qod8Te0t9DAL/FjmGL8f
-         jDTOvi+u0FtXLCDVQTw9EP5dEy/SHVWUBP9r+57szMXhEDEbL91rqN1p5X+GkB49O3mg
-         9jUT0f7coccuHEyA/mGH0V+7psfLWCcfb5tRYSLHUwUCPPVaE5EV/SzcrnB9x5cssZUa
-         DWsA==
-X-Gm-Message-State: AOAM531rbPuA5P2p9/E6rQO1iVjhMfM9lQJ97y0ad1WuNvLEWaJjFCu3
-        3ZCP5iFnvsiyDegkuoMvIpA=
-X-Google-Smtp-Source: ABdhPJwLjSG7MJQLUnZPThrqs/Op/BWA5ROnyYH5Ipz35lufMVA/wMTHhtJacPbxUeUtpZVC6SsIyA==
-X-Received: by 2002:a62:1b8f:: with SMTP id b137mr10822074pfb.119.1589689951555;
-        Sat, 16 May 2020 21:32:31 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:280b])
-        by smtp.gmail.com with ESMTPSA id j5sm5341392pfa.37.2020.05.16.21.32.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 May 2020 21:32:30 -0700 (PDT)
-Date:   Sat, 16 May 2020 21:32:27 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, lmb@cloudflare.com,
-        john.fastabend@gmail.com
-Subject: getting bpf_tail_call to work with bpf function calls. Was: [RFC
- PATCH bpf-next 0/1] bpf, x64: optimize JIT prologue/epilogue generation
-Message-ID: <20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com>
-References: <20200511143912.34086-1-maciej.fijalkowski@intel.com>
- <2e3c6be0-e482-d856-7cc1-b1d03a26428e@iogearbox.net>
- <20200512000153.hfdeh653v533qbe6@ast-mbp.dhcp.thefacebook.com>
- <20200513115855.GA3574@ranger.igk.intel.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=drmII/PwGs2+j+RC/yUKrWEgxCX9gLQZgVT9e2wht+c=;
+        b=lGvOQnoK4q9/sJAQmg6YjdU8Gllftuo8PFQ2w5g6c/UK2shnyqV+eD3H9DFvr98v2c
+         PENOVJGyl5sBoQEKJlzDfhXcleRtlpI+LrDHtdqlOAJFbpYwD1Z0SykhvFXO8hTBHT9j
+         LCRuT7IIVVDALtGKLuPzx6WL8e2Xa4tdFjMNGn39zTVuznWw9UJ7eo+IlWiO4sLIvJ57
+         tdSTdw4eXzBlwYDna7eu0WDuxhDveN9LBj2apeD0yrQla0iGEld7z9IEDLGJd+Rq/BV8
+         byAILqIRb5ganr5/6auuuV/gqsHoSlGcXDOl55M5m7grEvkynfk+Old7qSNG9fagsq9i
+         M+ag==
+X-Gm-Message-State: AOAM531DhD1KbZvZNdp2Qcl1bnTjczcJaHpU8m1QbvycHM5PHfB8ETJ8
+        jBq9meXZIYNbrTqw2GEMNyM=
+X-Google-Smtp-Source: ABdhPJye4WrT8yxOZNSKYH+VbCBliyGbSYG3H3GtqNgBv6eSe+mFst0mHVKXrqp9MpENO6SjSLpu+A==
+X-Received: by 2002:a17:90a:e30e:: with SMTP id x14mr10799845pjy.141.1589694442867;
+        Sat, 16 May 2020 22:47:22 -0700 (PDT)
+Received: from localhost ([203.205.141.39])
+        by smtp.gmail.com with ESMTPSA id v5sm875450pjy.4.2020.05.16.22.47.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 16 May 2020 22:47:22 -0700 (PDT)
+From:   Xiangyang Zhang <xyz.sun.ok@gmail.com>
+To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com
+Cc:     gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Xiangyang Zhang <xyz.sun.ok@gmail.com>
+Subject: [PATCH] staging: qlge: unmap dma when lock failed
+Date:   Sun, 17 May 2020 13:46:38 +0800
+Message-Id: <20200517054638.10764-1-xyz.sun.ok@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200513115855.GA3574@ranger.igk.intel.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 13, 2020 at 01:58:55PM +0200, Maciej Fijalkowski wrote:
-> 
-> So to me, if we would like to get rid of maxing out stack space, then we
-> would have to do some dancing for preserving the tail call counter - keep
-> it in some unused register? Or epilogue would pop it from stack to some
-> register and target program's prologue would push it to stack from that
-> register (I am making this up probably). And rbp/rsp would need to be
-> created/destroyed during the program-to-program transition that happens
-> via tailcall. That would mean also more instructions.
+DMA not unmapped when lock failed, this patch fixed it.
 
-How about the following:
-The prologue will look like:
-nop5
-xor eax,eax  // two new bytes if bpf_tail_call() is used in this function
-push rbp
-mov rbp, rsp
-sub rsp, rounded_stack_depth
-push rax // zero init tail_call counter
-variable number of push rbx,r13,r14,r15
+Signed-off-by: Xiangyang Zhang <xyz.sun.ok@gmail.com>
+---
+ drivers/staging/qlge/qlge_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Then bpf_tail_call will pop variable number rbx,..
-and final 'pop rax'
-Then 'add rsp, size_of_current_stack_frame'
-jmp to next function and skip over 'nop5; xor eax,eax; push rpb; mov rbp, rsp'
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index a9163fb659d9..402edaeffe12 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -227,7 +227,7 @@ int ql_write_cfg(struct ql_adapter *qdev, void *ptr, int size, u32 bit,
+ 
+ 	status = ql_sem_spinlock(qdev, SEM_ICB_MASK);
+ 	if (status)
+-		return status;
++		goto lock_failed;
+ 
+ 	status = ql_wait_cfg(qdev, bit);
+ 	if (status) {
+@@ -249,6 +249,7 @@ int ql_write_cfg(struct ql_adapter *qdev, void *ptr, int size, u32 bit,
+ 	status = ql_wait_cfg(qdev, bit);
+ exit:
+ 	ql_sem_unlock(qdev, SEM_ICB_MASK);	/* does flush too */
++lock_failed:
+ 	dma_unmap_single(&qdev->pdev->dev, map, size, direction);
+ 	return status;
+ }
+-- 
+2.19.1
 
-This way new function will set its own stack size and will init tail call
-counter with whatever value the parent had.
-
-If next function doesn't use bpf_tail_call it won't have 'xor eax,eax'.
-Instead it would need to have 'nop2' in there.
-That's the only downside I see.
-Any other ideas?
