@@ -2,124 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C6371D686B
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 16:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 327C11D6886
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 17:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727999AbgEQOZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 10:25:42 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:52847 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727893AbgEQOZm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 May 2020 10:25:42 -0400
-Received: from tarshish (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728000AbgEQPGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 11:06:24 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:36051 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727929AbgEQPGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 11:06:24 -0400
+Received: from apollo (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id DE99B440428;
-        Sun, 17 May 2020 17:25:38 +0300 (IDT)
-References: <3e2c01449dc29bc3d138d3a19e0c2220495dd7ed.1589710856.git.baruch@tkos.co.il> <20200517103558.GT1551@shell.armlinux.org.uk>
-User-agent: mu4e 1.4.4; emacs 26.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH] drivers: net: mdio_bus: try indirect clause 45 regs access
-In-reply-to: <20200517103558.GT1551@shell.armlinux.org.uk>
-Date:   Sun, 17 May 2020 17:25:38 +0300
-Message-ID: <87lflq3afx.fsf@tarshish>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 1EC3F22FB3;
+        Sun, 17 May 2020 17:06:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1589727978;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PlxDmGUL7vSgFkSocNJTuV7KHAzhpf8zLReQ6bR+urI=;
+        b=sMw601jcZ94qHD7RKcu8XHGuWI6FEdPoPt3Nvu10lOSTIwFLXPuzMTusYMgnIm4czKtSzc
+        inT5Uocr9JuwqBXS9Pt2d/OFB6jmlAB5ZmY/77/k0OCNtY7EuRktGur5UPJgu6BXvMjDg3
+        XwR+XmJ35FIsBSpXJewyRmZlSMEsNNo=
+Date:   Sun, 17 May 2020 17:06:01 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     jeffrey.t.kirsher@intel.com, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, po.liu@nxp.com, m-karicheri2@ti.com,
+        Jose.Abreu@synopsys.com
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+Message-ID: <20200517170601.31832446@apollo>
+In-Reply-To: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+Am Fri, 15 May 2020 18:29:44 -0700
+schrieb Vinicius Costa Gomes <vinicius.gomes@intel.com>:
 
-On Sun, May 17 2020, Russell King - ARM Linux admin wrote:
-> On Sun, May 17, 2020 at 01:20:56PM +0300, Baruch Siach wrote:
->> When the MDIO bus does not support directly clause 45 access, fallback
->> to indirect registers access method to read/write clause 45 registers
->> using clause 22 registers.
->> 
->> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
->> ---
->> 
->> Is that the right course?
->> 
->> Currently, this does not really work on the my target machine, which is
->> using the Armada 385 native MDIO bus (mvmdio) connected to clause 45
->> Marvell 88E2110 PHY. Registers MDIO_DEVS1 and MDIO_DEVS1 read bogus
->> values which breaks PHY identification. However, the phytool utility
->> reads the same registers correctly:
->> 
->> phytool eth1/2:1/5
->> ieee-phy: reg:0x05 val:0x008a
->> 
->> eth1 is connected to another PHY (clause 22) on the same MDIO bus.
->> 
->> The same hardware works nicely with the mdio-gpio bus implementation,
->> when mdio pins are muxed as GPIOs.
->
-> Not all C45 PHYs are required to provide C22.  I'm pretty sure that
-> accessing a C45 PHY through the indirect method is likely something
-> that isn't well tested with PHYs, so getting wrong device IDs doesn't
-> surprise me.
+> Hi,
+> 
+> This series adds support for configuring frame preemption, as defined
+> by IEEE 802.1Q-2018 (previously IEEE 802.1Qbu) and IEEE 802.3br.
+> 
+> Frame preemption allows a packet from a higher priority queue marked
+> as "express" to preempt a packet from lower priority queue marked as
+> "preemptible". The idea is that this can help reduce the latency for
+> higher priority traffic.
+> 
+> Previously, the proposed interface for configuring these features was
+> using the qdisc layer. But as this is very hardware dependent and all
+> that qdisc did was pass the information to the driver, it makes sense
+> to have this in ethtool.
+> 
+> One example, for retrieving and setting the configuration:
+> 
+> $ ethtool $ sudo ./ethtool --show-frame-preemption enp3s0
+> Frame preemption settings for enp3s0:
+> 	support: supported
+> 	active: active
+> 	supported queues: 0xf
+> 	supported queues: 0xe
+> 	minimum fragment size: 68
+> 
+> 
+> $ ethtool --set-frame-preemption enp3s0 fp on min-frag-size 68
+> preemptible-queues-mask 0xe
+> 
+> This is a RFC because I wanted to have feedback on some points:
+> 
+>   - The parameters added are enough for the hardware I have, is it
+>     enough in general?
 
-The 88E2110 PHY datasheets mentions support for indirect C45 access
-(FWIW: Rev B, section 3.9.3).
+What about the Qbu handshake state? And some NICs support overriding
+this. I.e. enable frame preemption even if the handshake wasn't
+successful.
 
-> Is there a reason to try switching back to mvmdio on this device?
+-michael
 
-No technical reason. U-Boot does not currently provide bit-band MDIO,
-and hardware manufacturing testers would like to do their thing in
-U-Boot, for some reason.
+> 
+>   - even with the ethtool via netlink effort, I chose to keep the
+>     ioctl() way, in case someone wants to backport this to an older
+>     kernel, is there a problem with this?
+> 
+>   - Some space for bikeshedding the names and location (for example,
+>     does it make sense for these settings to be per-queue?), as I am
+>     not quite happy with them, one example, is the use of preemptible
+>     vs. preemptable;
+> 
+> 
+> About the patches, should be quite straightforward:
+> 
+> Patch 1, adds the ETHTOOL_GFP and ETHOOL_SFP commands and the
+> associated data structures;
+> 
+> Patch 2, adds the ETHTOOL_MSG_PREEMPT_GET and ETHTOOL_MSG_PREEMPT_SET
+> netlink messages and the associated attributes;
+> 
+> Patch 3, is the example implementation for the igc driver, the catch
+> here is that frame preemption in igc is dependent on the TSN "mode"
+> being enabled;
+> 
+> Patch 4, adds some registers that helped during implementation.
+> 
+> Another thing is that because igc is still under development, to avoid
+> conflicts, I think it might be easier for the PATCH version of this
+> series to go through Jeff Kirsher's tree.
+> 
+> Vinicius Costa Gomes (4):
+>   ethtool: Add support for configuring frame preemption
+>   ethtool: Add support for configuring frame preemption via netlink
+>   igc: Add support for configuring frame preemption
+>   igc: Add support for exposing frame preemption stats registers
+> 
+>  drivers/net/ethernet/intel/igc/igc.h         |   3 +
+>  drivers/net/ethernet/intel/igc/igc_defines.h |   6 +
+>  drivers/net/ethernet/intel/igc/igc_ethtool.c |  77 ++++++++
+>  drivers/net/ethernet/intel/igc/igc_regs.h    |  10 +
+>  drivers/net/ethernet/intel/igc/igc_tsn.c     |  46 ++++-
+>  include/linux/ethtool.h                      |   6 +
+>  include/uapi/linux/ethtool.h                 |  25 +++
+>  include/uapi/linux/ethtool_netlink.h         |  19 ++
+>  net/ethtool/Makefile                         |   3 +-
+>  net/ethtool/ioctl.c                          |  36 ++++
+>  net/ethtool/netlink.c                        |  15 ++
+>  net/ethtool/netlink.h                        |   2 +
+>  net/ethtool/preempt.c                        | 181
+> +++++++++++++++++++ 13 files changed, 423 insertions(+), 6
+> deletions(-) create mode 100644 net/ethtool/preempt.c
+> 
 
-I just thought it would be nice to support C45 over C22 mdio if the
-hardware allows that.
-
-> Some comments on the patch:
->
->> ---
->>  drivers/net/phy/mdio_bus.c | 12 ++++++++++++
->>  drivers/net/phy/phy-core.c |  2 +-
->>  include/linux/phy.h        |  2 ++
->>  3 files changed, 15 insertions(+), 1 deletion(-)
->> 
->> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
->> index 7a4eb3f2cb74..12e39f794b29 100644
->> --- a/drivers/net/phy/mdio_bus.c
->> +++ b/drivers/net/phy/mdio_bus.c
->> @@ -790,6 +790,12 @@ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
->>  	WARN_ON_ONCE(!mutex_is_locked(&bus->mdio_lock));
->>  
->>  	retval = bus->read(bus, addr, regnum);
->> +	if (retval == -EOPNOTSUPP && regnum & MII_ADDR_C45) {
->> +		int c45_devad = (regnum >> 16) & 0x1f;
->> +
->> +		mmd_phy_indirect(bus, addr, c45_devad, regnum & 0xfff);
->> +		retval = bus->read(bus, addr, MII_MMD_DATA);
->> +	}
->
-> I don't think this should be done at mdiobus level; I think this is a
-> layering violation.  It needs to happen at the PHY level because the
-> indirect C45 access via C22 registers is specific to PHYs.
->
-> It also needs to check in the general case that the PHY does indeed
-> support the C22 register set - not all C45 PHYs do.
->
-> So, I think we want this fallback to be conditional on:
->
-> - are we probing for the PHY, trying to read its IDs and
->   devices-in-package registers - if yes, allow fallback.
-> - does the C45 PHY support the C22 register set - if yes, allow
->   fallback.
-
-I'll take a look. Thanks.
-
-baruch
-
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
