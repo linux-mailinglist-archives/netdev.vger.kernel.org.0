@@ -2,80 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 258BD1D6BB5
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 20:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7961D6BC6
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 20:37:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbgEQSWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 14:22:45 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:52876 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726259AbgEQSWp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 May 2020 14:22:45 -0400
-Received: from tarshish (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id B0063440049;
-        Sun, 17 May 2020 21:22:24 +0300 (IDT)
-References: <3e2c01449dc29bc3d138d3a19e0c2220495dd7ed.1589710856.git.baruch@tkos.co.il> <20200517103558.GT1551@shell.armlinux.org.uk> <87lflq3afx.fsf@tarshish> <20200517175820.GB606317@lunn.ch>
-User-agent: mu4e 1.4.4; emacs 26.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH] drivers: net: mdio_bus: try indirect clause 45 regs access
-In-reply-to: <20200517175820.GB606317@lunn.ch>
-Date:   Sun, 17 May 2020 21:22:41 +0300
-Message-ID: <87v9ku1kwe.fsf@tarshish>
+        id S1726552AbgEQShT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 14:37:19 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36094 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726259AbgEQShT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 May 2020 14:37:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=4Yd8ZhZiIqCXIzRFu64EbLTYC+uGshJdZ1LlSPDs33M=; b=lX0OesirDzW10jj0DGLSvQ2UFp
+        SHUXQQrWM/82alGNX3HSlYwMN0zO7Qr2JGFTBB1dQG4n7xrVfs9VyHMTal6jqz7WgXQU/6fNI3vnB
+        iIvi8EpH9YSZcEQZ/p/z2ZTspuLtmoZet7lQHad4U9xJ8DRNkGerK0vAwCcmRmVfc7yA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jaO9u-002YLU-Gg; Sun, 17 May 2020 20:37:10 +0200
+Date:   Sun, 17 May 2020 20:37:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Roelof Berg <rberg@berg-solutions.de>
+Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] lan743x: Added fixed link support
+Message-ID: <20200517183710.GC606317@lunn.ch>
+References: <20200516192402.4201-1-rberg@berg-solutions.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200516192402.4201-1-rberg@berg-solutions.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Sun, May 17 2020, Andrew Lunn wrote:
->> > I don't think this should be done at mdiobus level; I think this is a
->> > layering violation.  It needs to happen at the PHY level because the
->> > indirect C45 access via C22 registers is specific to PHYs.
->> >
->> > It also needs to check in the general case that the PHY does indeed
->> > support the C22 register set - not all C45 PHYs do.
->> >
->> > So, I think we want this fallback to be conditional on:
->> >
->> > - are we probing for the PHY, trying to read its IDs and
->> >   devices-in-package registers - if yes, allow fallback.
->> > - does the C45 PHY support the C22 register set - if yes, allow
->> >   fallback.
->> 
->> I'll take a look. Thanks.
+> @@ -946,6 +949,9 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
+>  {
+>  	struct lan743x_adapter *adapter = netdev_priv(netdev);
+>  	struct phy_device *phydev = netdev->phydev;
+> +	struct device_node *phynode;
+> +	phy_interface_t phyifc = PHY_INTERFACE_MODE_GMII;
+> +	u32 data;
 >  
-> Another option to consider is a third compatible string. We have
-> compatibles for C22, C45. Add another one for C45 over C22, and have
-> the core support it as the third access method next to C22 and C45.
->
-> We already rely on the DT author getting C22 vs C45 correct for the
-> hardware. Is it too much to ask they get it write when there are three
-> options?
+>  	phy_print_status(phydev);
+>  	if (phydev->state == PHY_RUNNING) {
+> @@ -953,6 +959,48 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
+>  		int remote_advertisement = 0;
+>  		int local_advertisement = 0;
+>  
+> +		/* check if a fixed-link is defined in device-tree */
+> +		phynode = of_node_get(adapter->pdev->dev.of_node);
+> +		if (phynode && of_phy_is_fixed_link(phynode)) {
 
-Networking hardware DT configuration is confusing enough already. Since
-we can determine indirect C45 access automatically, I think we should do
-that.
+Hi Roelof
 
-> As to your particular hardware, if i remember correctly, some of the
-> Marvell SoCs have mdio and xmdio bus masters. The mdio bus can only do
-> C22, and the xmdio can only do C45. Have the hardware engineers put
-> the PHY on the wrong bus?
+The whole point for fixed link is that it looks like a PHY. You should
+not need to care if it is a real PHY or a fixed link.
 
-The Armada 385 has only C22 MDIO. Other Armada SoCs have both MDIO and
-XMDIO.
 
-baruch
+> +			/* Configure MAC to fixed link parameters */
+> +			data = lan743x_csr_read(adapter, MAC_CR);
+> +			/* Disable auto negotiation */
+> +			data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
 
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+Why does the MAC care about autoneg? In general, all the MAC needs to
+know is the speed and duplex.
+
+> +			/* Set duplex mode */
+> +			if (phydev->duplex)
+> +				data |= MAC_CR_DPX_;
+> +			else
+> +				data &= ~MAC_CR_DPX_;
+> +			/* Set bus speed */
+> +			switch (phydev->speed) {
+> +			case 10:
+> +				data &= ~MAC_CR_CFG_H_;
+> +				data &= ~MAC_CR_CFG_L_;
+> +				break;
+> +			case 100:
+> +				data &= ~MAC_CR_CFG_H_;
+> +				data |= MAC_CR_CFG_L_;
+> +				break;
+> +			case 1000:
+> +				data |= MAC_CR_CFG_H_;
+> +				data |= MAC_CR_CFG_L_;
+> +				break;
+> +			}
+
+The current code is unusual, in that it uses
+phy_ethtool_get_link_ksettings(). That should do the right thing with
+a fixed-link PHY, although i don't know if anybody uses it like
+this. So in theory, the current code should take care of duplex, flow
+control, and speed for you. Just watch out for bug/missing features in
+fixed link.
+
+
+> +			/* Set interface mode */
+> +			of_get_phy_mode(phynode, &phyifc);
+> +			if (phyifc == PHY_INTERFACE_MODE_RGMII ||
+> +			    phyifc == PHY_INTERFACE_MODE_RGMII_ID ||
+> +			    phyifc == PHY_INTERFACE_MODE_RGMII_RXID ||
+> +			    phyifc == PHY_INTERFACE_MODE_RGMII_TXID)
+> +				/* RGMII */
+> +				data &= ~MAC_CR_MII_EN_;
+> +			else
+> +				/* GMII */
+> +				data |= MAC_CR_MII_EN_;
+> +			lan743x_csr_write(adapter, MAC_CR, data);
+> +		}
+> +		of_node_put(phynode);
+
+It is normal to do of_get_phy_mode when connecting to the PHY, and
+store the value in the private structure. This is also not specific to
+fixed link.
+
+There is also a helper you can use phy_interface_mode_is_rgmii().
+
+> +
+>  		memset(&ksettings, 0, sizeof(ksettings));
+>  		phy_ethtool_get_link_ksettings(netdev, &ksettings);
+>  		local_advertisement =
+> @@ -974,6 +1022,8 @@ static void lan743x_phy_close(struct lan743x_adapter *adapter)
+>  
+>  	phy_stop(netdev->phydev);
+>  	phy_disconnect(netdev->phydev);
+> +	if (of_phy_is_fixed_link(adapter->pdev->dev.of_node))
+> +		of_phy_deregister_fixed_link(adapter->pdev->dev.of_node);
+>  	netdev->phydev = NULL;
+>  }
+>  
+> @@ -982,18 +1032,44 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+>  	struct lan743x_phy *phy = &adapter->phy;
+>  	struct phy_device *phydev;
+>  	struct net_device *netdev;
+> +	struct device_node *phynode = NULL;
+> +	phy_interface_t phyifc = PHY_INTERFACE_MODE_GMII;
+>  	int ret = -EIO;
+
+netdev uses reverse christmas tree, meaning the lines should be
+sorted, longest first, getting shorter.
+
+>  
+>  	netdev = adapter->netdev;
+> -	phydev = phy_find_first(adapter->mdiobus);
+> -	if (!phydev)
+> -		goto return_error;
+>  
+> -	ret = phy_connect_direct(netdev, phydev,
+> -				 lan743x_phy_link_status_change,
+> -				 PHY_INTERFACE_MODE_GMII);
+> -	if (ret)
+> -		goto return_error;
+> +	/* check if a fixed-link is defined in device-tree */
+> +	phynode = of_node_get(adapter->pdev->dev.of_node);
+> +	if (phynode && of_phy_is_fixed_link(phynode)) {
+> +		netdev_dbg(netdev, "fixed-link detected\n");
+
+This is something which is useful during debug. But once it works can
+be removed.
+
+> +		ret = of_phy_register_fixed_link(phynode);
+> +		if (ret) {
+> +			netdev_err(netdev, "cannot register fixed PHY\n");
+> +			goto return_error;
+> +		}
+> +
+> +		of_get_phy_mode(phynode, &phyifc);
+> +		phydev = of_phy_connect(netdev, phynode,
+> +					lan743x_phy_link_status_change,
+> +					0, phyifc);
+> +		if (!phydev)
+> +			goto return_error;
+> +	} else {
+> +		phydev = phy_find_first(adapter->mdiobus);
+> +		if (!phydev)
+> +			goto return_error;
+> +
+> +		ret = phy_connect_direct(netdev, phydev,
+> +					 lan743x_phy_link_status_change,
+> +					 PHY_INTERFACE_MODE_GMII);
+> +		/* Note: We cannot use phyifc here because this would be SGMII
+> +		 * on a standard PC.
+> +		 */
+
+I don't understand this comment.
+
