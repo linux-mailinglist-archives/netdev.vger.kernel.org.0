@@ -2,128 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1EB1D67FB
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 14:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3031D67FC
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 14:47:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727936AbgEQMjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 08:39:24 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:34895 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727893AbgEQMjY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 08:39:24 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 49Q1tK4S8Dz1qrfB;
-        Sun, 17 May 2020 14:39:20 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 49Q1tJ133lz1qr4Z;
-        Sun, 17 May 2020 14:39:20 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id TznATJdw1tkZ; Sun, 17 May 2020 14:39:17 +0200 (CEST)
-X-Auth-Info: Tv0Gq7lH3pFwydGsH+xnmgIwQHKHd/DjKSPluHbtOsE=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Sun, 17 May 2020 14:39:17 +0200 (CEST)
-Subject: Re: [PATCH V6 00/20] net: ks8851: Unify KS8851 SPI and MLL drivers
-To:     Lukas Wunner <lukas@wunner.de>, David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, ynezz@true.cz, yuehaibing@huawei.com
-References: <20200517003354.233373-1-marex@denx.de>
- <20200516.190225.342589110126932388.davem@davemloft.net>
- <20200517071355.ww5xh7fgq7ymztac@wunner.de>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <b9763cd7-e206-df0b-a4dc-cedcccb29de5@denx.de>
-Date:   Sun, 17 May 2020 14:36:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200517071355.ww5xh7fgq7ymztac@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727929AbgEQMrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 08:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727893AbgEQMrM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 08:47:12 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDA8C061A0C
+        for <netdev@vger.kernel.org>; Sun, 17 May 2020 05:47:12 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id i68so5914087qtb.5
+        for <netdev@vger.kernel.org>; Sun, 17 May 2020 05:47:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=Es4PmaqKKw+YBEoaBuJgLMXxZnpVGaR4UYiE0LTbTr4=;
+        b=C7gLQjpKGXl8qRIj0bpMNVU0o6DjIf0NZmBWFPzCGMIak6Uc8+unIc4rR7FLi3ju3E
+         eW5HRFfBJ8Z1swe9QsaXC0VueJkyfBD4xUBEmRxAXbUws7p3Nz9Mc0Zi5I2/8jB1g6ic
+         4S0d8QRA9Mjxw7RQmYZGvjfbSBObdskHowxHn7TE07zw9Awn1AgfnkfUp6RLCqbjoByp
+         uAhXYnvo/RJyct0Pek9fGlNawu4ksQ0KdsqcAJR+lW6JMoCLuBhEk6cMY+lX2wmoCKJs
+         mxVb/j0CyvOD6oPdBl/hsrDFXX82ikWtniJkyPx3x1C+Me2xK//ao3XWIIQ4agIT1yof
+         Urog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Es4PmaqKKw+YBEoaBuJgLMXxZnpVGaR4UYiE0LTbTr4=;
+        b=M4tgqjploWjJcZe66AX47IhaUwVh5DTSITiSToDTYamS80H+RR5zdsH9WgVRYdhKn1
+         HRodYewwxBW3FOqzGu7rBnS/bFm/D2rEYUz6wuZ0jVgga3I9UdajEFQrWITT7fh3Dfya
+         RGa3SDQv6bm0Q73Q7ydMREFokYJMtbwRuAWC/Ik8cfC2lZiscg3R4gNQg74oV4uToy5W
+         Nnt6DJzoeYWezOCG52m+ZL92fjUhvspVRYyX5aDq81cRfNhTRrxjbpN8lHyk3TNUF0Py
+         BumHgc6ZQ08dPn6wDEScri6ufZg7KuGHjyY5AOuVAf/EsWGfngV1zkUlwRUPtNb9OO7J
+         v7Sg==
+X-Gm-Message-State: AOAM532oCRj9IrEj2wDdQnVerMi8ika14oXgr2heGLHWNpvleBxEqMF/
+        wbZfSNMKuXVm2fskYYicngJorg==
+X-Google-Smtp-Source: ABdhPJwoOqvCLEF+42UXwQf4Ly4UYaGRZ5I47EKk1onNzhjYwP8GPssB0nJr76N5mEP9AS1+A+VyZw==
+X-Received: by 2002:ac8:518e:: with SMTP id c14mr11890510qtn.183.1589719630952;
+        Sun, 17 May 2020 05:47:10 -0700 (PDT)
+Received: from mojatatu.com ([74.127.203.199])
+        by smtp.gmail.com with ESMTPSA id o31sm6836641qto.64.2020.05.17.05.46.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 17 May 2020 05:47:10 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net 1/1] net sched: fix reporting the first-time use timestamp
+Date:   Sun, 17 May 2020 08:46:31 -0400
+Message-Id: <1589719591-32491-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/17/20 9:13 AM, Lukas Wunner wrote:
-> On Sat, May 16, 2020 at 07:02:25PM -0700, David Miller wrote:
->>> The KS8851SNL/SNLI and KS8851-16MLL/MLLI/MLLU are very much the same pieces
->>> of silicon, except the former has an SPI interface, while the later has a
->>> parallel bus interface. Thus far, Linux has two separate drivers for each
->>> and they are diverging considerably.
->>>
->>> This series unifies them into a single driver with small SPI and parallel
->>> bus specific parts. The approach here is to first separate out the SPI
->>> specific parts into a separate file, then add parallel bus accessors in
->>> another separate file and then finally remove the old parallel bus driver.
->>> The reason for replacing the old parallel bus driver is because the SPI
->>> bus driver is much higher quality.
->>
->> What strikes me in these changes is all of the new indirect jumps in
->> the fast paths of TX and RX packet processing.  It's just too much for
->> my eyes. :-)
->>
->> Especially in the presence of Spectre mitigations, these costs are
->> quite non-trivial.
->>
->> Seriously, I would recommend that instead of having these small
->> indirect helpers, just inline the differences into two instances of
->> the RX interrupt and the TX handler.
-> 
-> I agree.
+When a new action is installed, firstuse field of 'tcf_t' is explicitly set
+to 0. Value of zero means "new action, not yet used"; as a packet hits the
+action, 'firstuse' is stamped with the current jiffies value.
 
-I do not.
+tcf_tm_dump() should return 0 for firstuse if action has not yet been hit.
 
-> However in terms of performance there's a bigger problem:
-> 
-> Previously ks8851.c (SPI driver) had 8-bit and 32-bit register accessors.
-> The present series drops them and performs a 32-bit access as two 16-bit
-> accesses and an 8-bit access as one 16-bit access because that's what
-> ks8851_mll.c (16-bit parallel bus driver) does.  That has a real,
-> measurable performance impact because in the case of 8-bit accesses,
-> another 8 bits need to be transferred over the SPI bus, and in the case
-> of 32-bit accesses, *two* SPI transfers need to be performed.
-> 
-> The 8-bit and 32-bit accesses happen in ks8851_rx_pkts(), i.e. in the
-> RX hotpath.  I've provided numbers for the performance impact and even
-> a patch to solve them but it was dismissed and not included in the
-> present series:
-> 
-> https://lore.kernel.org/netdev/20200420140700.6632hztejwcgjwsf@wunner.de/
-> 
-> The reason given for the dismissal was that I had performed the measurements
-> on 4.19 which is allegedly "long dead" (in Andrew Lunn's words).
-> However I can assure you that performing two SPI transfers has not
-> magically become as fast as performing one SPI transfer since 4.19.
-> So the argument is nonsense.
+Fixes: 48d8ee1694dd ("net sched actions: aggregate dumping of actions timeinfo")
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+---
+ include/net/act_api.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I invested time and even obtained the SPI variant of the card to perform
-actual comparative measurements on linux-next both on the SPI and
-parallel variant with iperf, both for latency and throughput, and I do
-not observe this problem.
-
-A month ago, I even provided you a branch with all the patches and the
-DT patch for RPi3 (the platform you claim to use for these tests, so I
-used the same) so you can perform the same test as I did, with the same
-hardware and the same software. So it should have been trivial to
-reproduce the tests I did and their results.
-
-> Nevertheless I was going to repeat the performance measurements on a
-> recent kernel but haven't gotten around to that yet because the
-> measurements need to be performed with CONFIG_PREEMPT_RT_FULL to
-> be reliable (a vanilla kernel is too jittery), so I have to create
-> a new branch with RT patches on the test machine, which is fairly
-> involved and time consuming.
-> 
-> I think it's fair that the two drivers are unified, but the performance
-> for the SPI variant shouldn't be unnecessarily diminished in the process.
-
-Could it be that your problem is related to this huge out-of-tree patch
-you use then ?
-
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index c24d7643548e..124bd139886c 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -75,7 +75,8 @@ static inline void tcf_tm_dump(struct tcf_t *dtm, const struct tcf_t *stm)
+ {
+ 	dtm->install = jiffies_to_clock_t(jiffies - stm->install);
+ 	dtm->lastuse = jiffies_to_clock_t(jiffies - stm->lastuse);
+-	dtm->firstuse = jiffies_to_clock_t(jiffies - stm->firstuse);
++	dtm->firstuse = stm->firstuse ?
++		jiffies_to_clock_t(jiffies - stm->firstuse) : 0;
+ 	dtm->expires = jiffies_to_clock_t(stm->expires);
+ }
+ 
 -- 
-Best regards,
-Marek Vasut
+2.7.4
+
