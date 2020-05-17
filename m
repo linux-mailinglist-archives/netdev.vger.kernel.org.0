@@ -2,91 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3031D67FC
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 14:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F65E1D67FF
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 14:53:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727929AbgEQMrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 08:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43992 "EHLO
+        id S1727937AbgEQMxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 08:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727893AbgEQMrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 08:47:12 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDA8C061A0C
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 05:47:12 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id i68so5914087qtb.5
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 05:47:12 -0700 (PDT)
+        with ESMTP id S1727912AbgEQMxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 08:53:48 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7524BC061A0C
+        for <netdev@vger.kernel.org>; Sun, 17 May 2020 05:53:46 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id e125so4831350lfd.1
+        for <netdev@vger.kernel.org>; Sun, 17 May 2020 05:53:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=Es4PmaqKKw+YBEoaBuJgLMXxZnpVGaR4UYiE0LTbTr4=;
-        b=C7gLQjpKGXl8qRIj0bpMNVU0o6DjIf0NZmBWFPzCGMIak6Uc8+unIc4rR7FLi3ju3E
-         eW5HRFfBJ8Z1swe9QsaXC0VueJkyfBD4xUBEmRxAXbUws7p3Nz9Mc0Zi5I2/8jB1g6ic
-         4S0d8QRA9Mjxw7RQmYZGvjfbSBObdskHowxHn7TE07zw9Awn1AgfnkfUp6RLCqbjoByp
-         uAhXYnvo/RJyct0Pek9fGlNawu4ksQ0KdsqcAJR+lW6JMoCLuBhEk6cMY+lX2wmoCKJs
-         mxVb/j0CyvOD6oPdBl/hsrDFXX82ikWtniJkyPx3x1C+Me2xK//ao3XWIIQ4agIT1yof
-         Urog==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LIvi7gsSMkKej/7UfeWjKxmDinlWyiAmIwZPyDTS79w=;
+        b=N7/BFMq3SmmQ3/DqjsoPslbCRzeOZNAGijDSRc8LyiR/IoMzfQhfii47mSsm8PTiGK
+         E/jxj1YNDlJv+hXTahrXyjVKj+urQ18uSZYpfG/paGgo5ZFeUETKIAjyWU5SU6e90Eum
+         VaGoe/gy1DZs1PyI1n0jiHiv3B2r+/Jw7jXYM+Y509eVPAzJqZFy7eIyOS0tO0v+T5zD
+         zTZqUXv13OqdMt8IZ6fkNFBxuSULNGsWUgPSQEacrF3gLnvKupMmBhDayzTTrZAps2FQ
+         McfwsBCMfIzQZuLfsG1JVC6iTFCTwUe/dDQegVWR81qYfZEUSDp3MAkLtC8FyowrXa2G
+         VJVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Es4PmaqKKw+YBEoaBuJgLMXxZnpVGaR4UYiE0LTbTr4=;
-        b=M4tgqjploWjJcZe66AX47IhaUwVh5DTSITiSToDTYamS80H+RR5zdsH9WgVRYdhKn1
-         HRodYewwxBW3FOqzGu7rBnS/bFm/D2rEYUz6wuZ0jVgga3I9UdajEFQrWITT7fh3Dfya
-         RGa3SDQv6bm0Q73Q7ydMREFokYJMtbwRuAWC/Ik8cfC2lZiscg3R4gNQg74oV4uToy5W
-         Nnt6DJzoeYWezOCG52m+ZL92fjUhvspVRYyX5aDq81cRfNhTRrxjbpN8lHyk3TNUF0Py
-         BumHgc6ZQ08dPn6wDEScri6ufZg7KuGHjyY5AOuVAf/EsWGfngV1zkUlwRUPtNb9OO7J
-         v7Sg==
-X-Gm-Message-State: AOAM532oCRj9IrEj2wDdQnVerMi8ika14oXgr2heGLHWNpvleBxEqMF/
-        wbZfSNMKuXVm2fskYYicngJorg==
-X-Google-Smtp-Source: ABdhPJwoOqvCLEF+42UXwQf4Ly4UYaGRZ5I47EKk1onNzhjYwP8GPssB0nJr76N5mEP9AS1+A+VyZw==
-X-Received: by 2002:ac8:518e:: with SMTP id c14mr11890510qtn.183.1589719630952;
-        Sun, 17 May 2020 05:47:10 -0700 (PDT)
-Received: from mojatatu.com ([74.127.203.199])
-        by smtp.gmail.com with ESMTPSA id o31sm6836641qto.64.2020.05.17.05.46.57
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 17 May 2020 05:47:10 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net 1/1] net sched: fix reporting the first-time use timestamp
-Date:   Sun, 17 May 2020 08:46:31 -0400
-Message-Id: <1589719591-32491-1-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LIvi7gsSMkKej/7UfeWjKxmDinlWyiAmIwZPyDTS79w=;
+        b=sh4woTSYI2itD6JrrhFRcLUAxOqtYkbD0ElQBgy0cg/4e7XpuuCV9kSxdYbaqAXbYq
+         rhTLdVmIyc8fTVXuVbpcGBJ8LT5UXGxyN1AaXcXxdbM9/KUqL6sPSR9ZjPZ80+zSzWAd
+         z8gCRMP94ehsVwRJGm2XVDdNOKrT0nO09zpcQmrR7LYOjYI1Q4/hzT2izW85KivHP7kB
+         xD/zlEzGKs8llgnAtajFohVexefuQ+CZwoK5odxp5fYJft2Q1czgcCXihzAvjqHnw7v7
+         IIbh34VqWbOPjVm7gBeDaPYdLsEimXX0oxVUnamc9acCMB3i/lyvJfxCGq9+O0/2pTI3
+         afXg==
+X-Gm-Message-State: AOAM531Je7KhXWpG8LPpi+8JSgidLOyLpEpi0YniMJ4Xujx5J1Tzp1wi
+        wRrjpYAdepGxkz4OmFE5j74b9vt80S3HxJ6t8RE=
+X-Google-Smtp-Source: ABdhPJzvaal8/nhNYQaiuxS8tOlO4FIEFU0iYgh2xH1KuPSxHAAmtTgVDnYjnNYNQdtH6U8mPnzN0w7JnTVENDDbNx4=
+X-Received: by 2002:a19:bc4:: with SMTP id 187mr8470476lfl.211.1589720024815;
+ Sun, 17 May 2020 05:53:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200503052220.4536-1-xiyou.wangcong@gmail.com>
+ <20200503052220.4536-2-xiyou.wangcong@gmail.com> <CAMArcTVQO8U_kU1EHxCDsjdfGn-y_keAQ3ScjJmPAeya+B8hHQ@mail.gmail.com>
+ <CA+h21hqu=J5RH3UkYBt7=uxWNYvXWegFsbMnf3PoWyVHTpRPrQ@mail.gmail.com>
+ <CAMArcTWW+HNqvkh+YwR-HCLMDTq7ckXxWtTyMWRyDLvgYXc7wg@mail.gmail.com> <CA+h21hoWpXN-apJXyDgOLM7eByXdcuzczdmX5jxoPk9wxJzaNA@mail.gmail.com>
+In-Reply-To: <CA+h21hoWpXN-apJXyDgOLM7eByXdcuzczdmX5jxoPk9wxJzaNA@mail.gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Sun, 17 May 2020 21:53:33 +0900
+Message-ID: <CAMArcTU-KYEF0ivaiBfkRQMt323fbNqfRCvHW7D8b7M3qVukhw@mail.gmail.com>
+Subject: Re: [Patch net-next v2 1/2] net: partially revert dynamic lockdep key changes
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        syzbot <syzbot+aaa6fa4949cc5d9b7b25@syzkaller.appspotmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a new action is installed, firstuse field of 'tcf_t' is explicitly set
-to 0. Value of zero means "new action, not yet used"; as a packet hits the
-action, 'firstuse' is stamped with the current jiffies value.
+On Sun, 17 May 2020 at 01:53, Vladimir Oltean <olteanv@gmail.com> wrote:
+>
 
-tcf_tm_dump() should return 0 for firstuse if action has not yet been hit.
+Hi Vladimir,
 
-Fixes: 48d8ee1694dd ("net sched actions: aggregate dumping of actions timeinfo")
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
----
- include/net/act_api.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index c24d7643548e..124bd139886c 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -75,7 +75,8 @@ static inline void tcf_tm_dump(struct tcf_t *dtm, const struct tcf_t *stm)
- {
- 	dtm->install = jiffies_to_clock_t(jiffies - stm->install);
- 	dtm->lastuse = jiffies_to_clock_t(jiffies - stm->lastuse);
--	dtm->firstuse = jiffies_to_clock_t(jiffies - stm->firstuse);
-+	dtm->firstuse = stm->firstuse ?
-+		jiffies_to_clock_t(jiffies - stm->firstuse) : 0;
- 	dtm->expires = jiffies_to_clock_t(stm->expires);
- }
- 
--- 
-2.7.4
+> Hi Taehee,
+>
+> On Sat, 16 May 2020 at 18:22, Taehee Yoo <ap420073@gmail.com> wrote:
+> >
+> > On Thu, 14 May 2020 at 00:56, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > Hi Cong, Taehee,
+> > >
+> >
+> > Hi Vladimir!
+> > Sorry for the late reply.
+> >
+> > ...
+> >
+> > > I have a platform with the following layout:
+> > >
+> > >       Regular NIC
+> > >        |
+> > >        +----> DSA master for switch port
+> > >                |
+> > >                +----> DSA master for another switch port
+> > >
+> > > After changing DSA back to static lockdep class keys, I get this splat:
+> > >
+> > > [   13.361198] ============================================
+> > > [   13.366524] WARNING: possible recursive locking detected
+> > > [   13.371851] 5.7.0-rc4-02121-gc32a05ecd7af-dirty #988 Not tainted
+> > > [   13.377874] --------------------------------------------
+> > > [   13.383201] swapper/0/0 is trying to acquire lock:
+> > > [   13.388004] ffff0000668ff298
+> > > (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at:
+> > > __dev_queue_xmit+0x84c/0xbe0
+> > > [   13.397879]
+> > > [   13.397879] but task is already holding lock:
+> > > [   13.403727] ffff0000661a1698
+> > > (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at:
+> > > __dev_queue_xmit+0x84c/0xbe0
+> > > [   13.413593]
+> > > [   13.413593] other info that might help us debug this:
+> > > [   13.420140]  Possible unsafe locking scenario:
+> > > [   13.420140]
+> > > [   13.426075]        CPU0
+> > > [   13.428523]        ----
+> > > [   13.430969]   lock(&dsa_slave_netdev_xmit_lock_key);
+> > > [   13.435946]   lock(&dsa_slave_netdev_xmit_lock_key);
+> > > [   13.440924]
+> > > [   13.440924]  *** DEADLOCK ***
+> > > [   13.440924]
+> > > [   13.446860]  May be due to missing lock nesting notation
+> > > [   13.446860]
+> > > [   13.453668] 6 locks held by swapper/0/0:
+> > > [   13.457598]  #0: ffff800010003de0
+> > > ((&idev->mc_ifc_timer)){+.-.}-{0:0}, at: call_timer_fn+0x0/0x400
+> > > [   13.466593]  #1: ffffd4d3fb478700 (rcu_read_lock){....}-{1:2}, at:
+> > > mld_sendpack+0x0/0x560
+> > > [   13.474803]  #2: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2},
+> > > at: ip6_finish_output2+0x64/0xb10
+> > > [   13.483886]  #3: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2},
+> > > at: __dev_queue_xmit+0x6c/0xbe0
+> > > [   13.492793]  #4: ffff0000661a1698
+> > > (&dsa_slave_netdev_xmit_lock_key){+.-.}-{2:2}, at:
+> > > __dev_queue_xmit+0x84c/0xbe0
+> > > [   13.503094]  #5: ffffd4d3fb478728 (rcu_read_lock_bh){....}-{1:2},
+> > > at: __dev_queue_xmit+0x6c/0xbe0
+> > > [   13.512000]
+> > > [   13.512000] stack backtrace:
+> > > [   13.516369] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
+> > > 5.7.0-rc4-02121-gc32a05ecd7af-dirty #988
+> > > [   13.530421] Call trace:
+> > > [   13.532871]  dump_backtrace+0x0/0x1d8
+> > > [   13.536539]  show_stack+0x24/0x30
+> > > [   13.539862]  dump_stack+0xe8/0x150
+> > > [   13.543271]  __lock_acquire+0x1030/0x1678
+> > > [   13.547290]  lock_acquire+0xf8/0x458
+> > > [   13.550873]  _raw_spin_lock+0x44/0x58
+> > > [   13.554543]  __dev_queue_xmit+0x84c/0xbe0
+> > > [   13.558562]  dev_queue_xmit+0x24/0x30
+> > > [   13.562232]  dsa_slave_xmit+0xe0/0x128
+> > > [   13.565988]  dev_hard_start_xmit+0xf4/0x448
+> > > [   13.570182]  __dev_queue_xmit+0x808/0xbe0
+> > > [   13.574200]  dev_queue_xmit+0x24/0x30
+> > > [   13.577869]  neigh_resolve_output+0x15c/0x220
+> > > [   13.582237]  ip6_finish_output2+0x244/0xb10
+> > > [   13.586430]  __ip6_finish_output+0x1dc/0x298
+> > > [   13.590709]  ip6_output+0x84/0x358
+> > > [   13.594116]  mld_sendpack+0x2bc/0x560
+> > > [   13.597786]  mld_ifc_timer_expire+0x210/0x390
+> > > [   13.602153]  call_timer_fn+0xcc/0x400
+> > > [   13.605822]  run_timer_softirq+0x588/0x6e0
+> > > [   13.609927]  __do_softirq+0x118/0x590
+> > > [   13.613597]  irq_exit+0x13c/0x148
+> > > [   13.616918]  __handle_domain_irq+0x6c/0xc0
+> > > [   13.621023]  gic_handle_irq+0x6c/0x160
+> > > [   13.624779]  el1_irq+0xbc/0x180
+> > > [   13.627927]  cpuidle_enter_state+0xb4/0x4d0
+> > > [   13.632120]  cpuidle_enter+0x3c/0x50
+> > > [   13.635703]  call_cpuidle+0x44/0x78
+> > > [   13.639199]  do_idle+0x228/0x2c8
+> > > [   13.642433]  cpu_startup_entry+0x2c/0x48
+> > > [   13.646363]  rest_init+0x1ac/0x280
+> > > [   13.649773]  arch_call_rest_init+0x14/0x1c
+> > > [   13.653878]  start_kernel+0x490/0x4bc
+> > >
+> > > Unfortunately I can't really test DSA behavior prior to patch
+> > > ab92d68fc22f ("net: core: add generic lockdep keys"), because in
+> > > October, some of these DSA drivers were not in mainline.
+> > > Also I don't really have a clear idea of how nesting should be
+> > > signalled to lockdep.
+> > > Do you have any suggestion what might be wrong?
+> > >
+> >
+> > This patch was considered that all stackable devices have LLTX flag.
+> > But the dsa doesn't have LLTX, so this splat happened.
+> > After this patch, dsa shares the same lockdep class key.
+> > On the nested dsa interface architecture, which you illustrated,
+> > the same lockdep class key will be used in __dev_queue_xmit() because
+> > dsa doesn't have LLTX.
+> > So that lockdep detects deadlock because the same lockdep class key is
+> > used recursively although actually the different locks are used.
+> > There are some ways to fix this problem.
+> >
+> > 1. using NETIF_F_LLTX flag.
+> > If possible, using the LLTX flag is a very clear way for it.
+> > But I'm so sorry I don't know whether the dsa could have LLTX or not.
+> >
+> > 2. using dynamic lockdep again.
+> > It means that each interface uses a separate lockdep class key.
+> > So, lockdep will not detect recursive locking.
+> > But this way has a problem that it could consume lockdep class key
+> > too many.
+> > Currently, lockdep can have 8192 lockdep class keys.
+> >  - you can see this number with the following command.
+> >    cat /proc/lockdep_stats
+> >    lock-classes:                         1251 [max: 8192]
+> >    ...
+> >    The [max: 8192] means that the maximum number of lockdep class keys.
+> > If too many lockdep class keys are registered, lockdep stops to work.
+> > So, using a dynamic(separated) lockdep class key should be considered
+> > carefully.
+> > In addition, updating lockdep class key routine might have to be existing.
+> > (lockdep_register_key(), lockdep_set_class(), lockdep_unregister_key())
+> >
+> > 3. Using lockdep subclass.
+> > A lockdep class key could have 8 subclasses.
+> > The different subclass is considered different locks by lockdep
+> > infrastructure.
+> > But "lock-classes" is not counted by subclasses.
+> > So, it could avoid stopping lockdep infrastructure by an overflow of
+> > lockdep class keys.
+> > This approach should also have an updating lockdep class key routine.
+> > (lockdep_set_subclass())
+> >
+> > 4. Using nonvalidate lockdep class key.
+> > The lockdep infrastructure supports nonvalidate lockdep class key type.
+> > It means this lockdep is not validated by lockdep infrastructure.
+> > So, the splat will not happend but lockdep couldn't detect real deadlock
+> > case because lockdep really doesn't validate it.
+> > I think this should be used for really special cases.
+> > (lockdep_set_novalidate_class())
+> >
+> > Thanks!
+> > Taehee Yoo
+> >
+> > > Thanks,
+> > > -Vladimir
+>
+> Thanks a lot for presenting the options. In general, xmit in DSA is
+> relatively simple and most of the time stateless. My stacked DSA setup
+> appears to work just fine with NETIF_F_LLTX, including the updating of
+> percpu counters. I'm not really sure if there's something in
+> particular to test?
+> Anyway, will you send a patch with NETIF_F_LLTX or should I do it? I
+> can do further testing if necessary.
+>
 
+Please send a patch for it.
+I think a simple ping test on a nested interface graph is enough.
+
+Thanks a lot!
+Taehee Yoo
+
+> Regards,
+> -Vladimir
