@@ -2,398 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EE841D6CE0
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 22:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3939B1D6CEF
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 22:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726779AbgEQUZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 16:25:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        id S1726668AbgEQUpN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 17 May 2020 16:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726269AbgEQUZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 16:25:38 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F634C061A0C
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 13:25:38 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id e18so8433333iog.9
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 13:25:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ghQ9S1pot/ETxKnVf8aKdR+3bLiJHwqBt3VES+27luo=;
-        b=GxomQTnXnKUweaOK6BrkkhYxcM8cbHEX/7mQ9ADU7JKOKSR3LIbjzWKUtdnUCbHCmB
-         yyHsta8SDO48jdmFF29BtW21Kv/kHzjh5SZiOu75vViX2y5bNCpiY38Yrml5Vnf3WJft
-         RT2ygF6ED7yFv4wTdGiVla6fev9XhsYNeVNaF0uB4KXjBYysvz4OJxyOOxNhamN1xdIl
-         i9aPc41ifkR6UqfIwnvdUvqjZo7W9I9fPUOpHRHEoQHDwp4KFAToo9yE94ZKmibIB2Ur
-         cV5kPL3WOlN9SATJ61UBeycUgf4n9c7aFwLrUeKEmOkTAcWStA0nKF4hR+tfFvvuM3Tm
-         0Ehw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ghQ9S1pot/ETxKnVf8aKdR+3bLiJHwqBt3VES+27luo=;
-        b=RlzhoC4SlfdqHvuMZrg19stXXQPHQKKsCFYqQm9lJo2RH+h8sUv4EFJuRXMIZOwp+z
-         muFle9QZW1ueH3J+mjDw4W4Mj1eW98XMfS/QXSsRAPR8muTAPqcn2BDKD2UpHaa/LTmJ
-         /RS+0uj/IbB2LVZkDHw4pfGuZAeUsIDdHwbiaiVG3BKRLpUOTJQMnEhdD4I/RrhOWyvM
-         p2CPduiGjCH2/02uzmPnW0D+0YOcA9Rlf/GNNhBi9a3w67MWf6oNZDeBZJPgnCbVLvSF
-         RhLIZ07fqC1ZMVBG6G4T41hgL+7Owdv5YnvrI30A0k7RMQwiym01Mk/lS/3YVtizXray
-         IhJA==
-X-Gm-Message-State: AOAM533qcCPDciknlGvmPkwMneTzvvtOunqXzqZHlpPeBlj/b+8qOXlH
-        UVgQHg2bRwyrNWldZogCDioOCqJ205QbGJsyPXA=
-X-Google-Smtp-Source: ABdhPJzJN+ttDxXtnrr32xy98xMbV+UjUov6IMA7hEXBiD5G5/q06zJ3dCBj43CoKRMtsVMT8D8qEDf7JmJpCxyl10A=
-X-Received: by 2002:a6b:e509:: with SMTP id y9mr11723301ioc.67.1589747137522;
- Sun, 17 May 2020 13:25:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200517195851.610435-1-andrew@lunn.ch> <20200517195851.610435-5-andrew@lunn.ch>
-In-Reply-To: <20200517195851.610435-5-andrew@lunn.ch>
-From:   Chris Healy <cphealy@gmail.com>
-Date:   Sun, 17 May 2020 13:25:23 -0700
-Message-ID: <CAFXsbZohCG5OScjAszD5vpMacfUEUYK_74FU1tjz4Sm8nbegsg@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/7] net: phy: marvell: Add support for amplitude graph
+        with ESMTP id S1726368AbgEQUpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 16:45:12 -0400
+Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A897C061A0C;
+        Sun, 17 May 2020 13:45:12 -0700 (PDT)
+Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=roelofs-mbp.fritz.box); authenticated
+        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1jaQ9Y-0004sd-UM; Sun, 17 May 2020 22:44:57 +0200
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH] lan743x: Added fixed link support
+From:   Roelof Berg <rberg@berg-solutions.de>
+In-Reply-To: <20200517183710.GC606317@lunn.ch>
+Date:   Sun, 17 May 2020 22:44:56 +0200
+Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <6E144634-8E2F-48F7-A0A4-6073164F2B70@berg-solutions.de>
+References: <20200516192402.4201-1-rberg@berg-solutions.de>
+ <20200517183710.GC606317@lunn.ch>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1589748312;3d2e5435;
+X-HE-SMSGID: 1jaQ9Y-0004sd-UM
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 17, 2020 at 12:59 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> The Marvell PHYs can measure the amplitude of the returned signal for
-> a given distance. Implement this option of the cable test
-> infrastructure.
->
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/phy/marvell.c | 227 +++++++++++++++++++++++++++++++++++++-
->  1 file changed, 226 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-> index 4bc7febf9248..e7994f5b506e 100644
-> --- a/drivers/net/phy/marvell.c
-> +++ b/drivers/net/phy/marvell.c
-> @@ -42,6 +42,7 @@
->  #define MII_MARVELL_FIBER_PAGE         0x01
->  #define MII_MARVELL_MSCR_PAGE          0x02
->  #define MII_MARVELL_LED_PAGE           0x03
-> +#define MII_MARVELL_VCT5_PAGE          0x05
->  #define MII_MARVELL_MISC_TEST_PAGE     0x06
->  #define MII_MARVELL_VCT7_PAGE          0x07
->  #define MII_MARVELL_WOL_PAGE           0x11
-> @@ -164,6 +165,54 @@
->  #define MII_88E1510_GEN_CTRL_REG_1_MODE_SGMII  0x1     /* SGMII to copper */
->  #define MII_88E1510_GEN_CTRL_REG_1_RESET       0x8000  /* Soft reset */
->
-> +#define MII_VCT5_TX_RX_MDI0_COUPLING   0x10
-> +#define MII_VCT5_TX_RX_MDI1_COUPLING   0x11
-> +#define MII_VCT5_TX_RX_MDI2_COUPLING   0x12
-> +#define MII_VCT5_TX_RX_MDI3_COUPLING   0x13
-> +#define MII_VCT5_TX_RX_AMPLITUDE_MASK  0x7f00
-> +#define MII_VCT5_TX_RX_AMPLITUDE_SHIFT 8
-> +#define MII_VCT5_TX_RX_COUPLING_POSITIVE_REFLECTION    BIT(15)
-> +
-> +#define MII_VCT5_CTRL                          0x17
-> +#define MII_VCT5_CTRL_ENABLE                           BIT(15)
-> +#define MII_VCT5_CTRL_COMPLETE                         BIT(14)
-> +#define MII_VCT5_CTRL_TX_SAME_CHANNEL                  (0x0 << 11)
-> +#define MII_VCT5_CTRL_TX0_CHANNEL                      (0x4 << 11)
-> +#define MII_VCT5_CTRL_TX1_CHANNEL                      (0x5 << 11)
-> +#define MII_VCT5_CTRL_TX2_CHANNEL                      (0x6 << 11)
-> +#define MII_VCT5_CTRL_TX3_CHANNEL                      (0x7 << 11)
-> +#define MII_VCT5_CTRL_SAMPLES_2                                (0x0 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_4                                (0x1 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_8                                (0x2 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_16                       (0x3 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_32                       (0x4 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_64                       (0x5 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_128                      (0x6 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_DEFAULT                  (0x6 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_256                      (0x7 << 8)
-> +#define MII_VCT5_CTRL_SAMPLES_SHIFT                    8
-> +#define MII_VCT5_CTRL_MODE_MAXIMUM_PEEK                        (0x0 << 6)
-> +#define MII_VCT5_CTRL_MODE_FIRST_LAST_PEEK             (0x1 << 6)
-> +#define MII_VCT5_CTRL_MODE_OFFSET                      (0x2 << 6)
-> +#define MII_VCT5_CTRL_SAMPLE_POINT                     (0x3 << 6)
-> +#define MII_VCT5_CTRL_PEEK_HYST_DEFAULT                        3
-> +
-> +#define MII_VCT5_SAMPLE_POINT_DISTANCE         0x18
-> +#define MII_VCT5_TX_PULSE_CTRL                 0x1c
-> +#define MII_VCT5_TX_PULSE_CTRL_DONT_WAIT_LINK_DOWN     BIT(12)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_WIDTH_128nS       (0x0 << 10)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_WIDTH_96nS                (0x1 << 10)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_WIDTH_64nS                (0x2 << 10)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_WIDTH_32nS                (0x3 << 10)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_WIDTH_SHIFT       10
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_AMPLITUDE_1000mV  (0x0 << 8)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_AMPLITUDE_750mV   (0x1 << 8)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_AMPLITUDE_500mV   (0x2 << 8)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_AMPLITUDE_250mV   (0x3 << 8)
-> +#define MII_VCT5_TX_PULSE_CTRL_PULSE_AMPLITUDE_SHIFT   8
-> +#define MII_VCT5_TX_PULSE_CTRL_MAX_AMP                 BIT(7)
-> +#define MII_VCT5_TX_PULSE_CTRL_GT_140m_46_86mV         (0x6 << 0)
-> +
->  #define MII_VCT7_PAIR_0_DISTANCE       0x10
->  #define MII_VCT7_PAIR_1_DISTANCE       0x11
->  #define MII_VCT7_PAIR_2_DISTANCE       0x12
-> @@ -220,6 +269,7 @@ struct marvell_priv {
->         u64 stats[ARRAY_SIZE(marvell_hw_stats)];
->         char *hwmon_name;
->         struct device *hwmon_dev;
-> +       bool cable_test_tdr;
->  };
->
->  static int marvell_read_page(struct phy_device *phydev)
-> @@ -1690,7 +1740,117 @@ static void marvell_get_stats(struct phy_device *phydev,
->                 data[i] = marvell_get_stat(phydev, i);
->  }
->
-> -static int marvell_vct7_cable_test_start(struct phy_device *phydev)
-> +static int marvell_vct5_wait_complete(struct phy_device *phydev)
-> +{
-> +       int i;
-> +       int val;
-> +
-> +       for (i = 0; i < 32; i++) {
-> +               val = phy_read_paged(phydev, MII_MARVELL_VCT5_PAGE,
-> +                                    MII_VCT5_CTRL);
-> +               if (val < 0)
-> +                       return val;
-> +
-> +               if (val & MII_VCT5_CTRL_COMPLETE)
-> +                       return 0;
-> +
-> +               usleep_range(1000, 2000);
-> +       }
-> +
-> +       phydev_err(phydev, "Timeout while waiting for cable test to finish\n");
-> +       return -ETIMEDOUT;
-> +}
-> +
-> +static int marvell_vct5_amplitude(struct phy_device *phydev, int pair)
-> +{
-> +       int amplitude;
-> +       int val;
-> +       int reg;
-> +
-> +       reg = MII_VCT5_TX_RX_MDI0_COUPLING + pair;
-> +       val = phy_read_paged(phydev, MII_MARVELL_VCT5_PAGE, reg);
-> +
-> +       if (val < 0)
-> +               return 0;
-> +
-> +       amplitude = (val & MII_VCT5_TX_RX_AMPLITUDE_MASK) >>
-> +               MII_VCT5_TX_RX_AMPLITUDE_SHIFT;
-> +
-> +       if (!(val & MII_VCT5_TX_RX_COUPLING_POSITIVE_REFLECTION))
-> +               amplitude = -amplitude;
-> +
-> +       return 1000 * amplitude / 128;
-> +}
-> +
-> +static int marvell_vct5_amplitude_distance(struct phy_device *phydev,
-> +                                          int meters)
-> +{
-> +       int mV_pair0, mV_pair1, mV_pair2, mV_pair3;
-> +       int distance;
-> +       u16 reg;
-> +       int err;
-> +
-> +       distance = meters * 1000 / 805;
+To Everyone: I need a test hardware recommendation for a lan7431/0 NIC in normal mode (not fixed-link mode). In prior patches this was not necessary, because I was able to ensure 100% backwards compatibility by careful coding alone. But I might soon come to a point where I need to test phy-connected devices as well.
 
-With this integer based meters representation, it seems to me that we
-are artificially reducing the resolution of the distance sampling.
-For a 100 meter cable, the Marvell implementation looks to support 124
-sample points.  This could result in incorrect data reporting as two
-adjacent meter numbers would resolve to the same disatance value
-entered into the register.  (eg - 2 meters = 2 distance  3 meters = 2
-distance)
+Hi Andrew,
 
-Is there a better way of doing this which would allow for userspace to
-use the full resolution of the hardware?
+thanks for commenting on my patch.
 
-> +
-> +       err = phy_write_paged(phydev, MII_MARVELL_VCT5_PAGE,
-> +                             MII_VCT5_SAMPLE_POINT_DISTANCE,
-> +                             distance);
-> +       if (err)
-> +               return err;
-> +
-> +       reg = MII_VCT5_CTRL_ENABLE |
-> +               MII_VCT5_CTRL_TX_SAME_CHANNEL |
-> +               MII_VCT5_CTRL_SAMPLES_DEFAULT |
-> +               MII_VCT5_CTRL_SAMPLE_POINT |
-> +               MII_VCT5_CTRL_PEEK_HYST_DEFAULT;
-> +       err = phy_write_paged(phydev, MII_MARVELL_VCT5_PAGE,
-> +                             MII_VCT5_CTRL, reg);
-> +       if (err)
-> +               return err;
-> +
-> +       err = marvell_vct5_wait_complete(phydev);
-> +       if (err)
-> +               return err;
-> +
-> +       mV_pair0 = marvell_vct5_amplitude(phydev, 0);
-> +       mV_pair1 = marvell_vct5_amplitude(phydev, 1);
-> +       mV_pair2 = marvell_vct5_amplitude(phydev, 2);
-> +       mV_pair3 = marvell_vct5_amplitude(phydev, 3);
-> +
-> +       ethnl_cable_test_amplitude(phydev, ETHTOOL_A_CABLE_PAIR_A, mV_pair0);
-> +       ethnl_cable_test_amplitude(phydev, ETHTOOL_A_CABLE_PAIR_B, mV_pair1);
-> +       ethnl_cable_test_amplitude(phydev, ETHTOOL_A_CABLE_PAIR_C, mV_pair2);
-> +       ethnl_cable_test_amplitude(phydev, ETHTOOL_A_CABLE_PAIR_D, mV_pair3);
-> +
-> +       return 0;
-> +}
-> +
-> +static int marvell_vct5_amplitude_graph(struct phy_device *phydev)
-> +{
-> +       int meters;
-> +       int err;
-> +       u16 reg;
-> +
-> +       reg = MII_VCT5_TX_PULSE_CTRL_GT_140m_46_86mV |
-> +               MII_VCT5_TX_PULSE_CTRL_DONT_WAIT_LINK_DOWN |
-> +               MII_VCT5_TX_PULSE_CTRL_MAX_AMP |
-> +               MII_VCT5_TX_PULSE_CTRL_PULSE_WIDTH_32nS;
-> +
-> +       err = phy_write_paged(phydev, MII_MARVELL_VCT5_PAGE,
-> +                             MII_VCT5_TX_PULSE_CTRL, reg);
-> +       if (err)
-> +               return err;
-> +
-> +       for (meters = 0; meters <= 100; meters++) {
-> +               err = marvell_vct5_amplitude_distance(phydev, meters);
-> +               if (err)
-> +                       return err;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int marvell_cable_test_start_common(struct phy_device *phydev)
->  {
->         int bmcr, bmsr, ret;
->
-> @@ -1719,12 +1879,66 @@ static int marvell_vct7_cable_test_start(struct phy_device *phydev)
->         if (bmsr & BMSR_LSTATUS)
->                 msleep(1500);
->
-> +       return 0;
-> +}
-> +
-> +static int marvell_vct7_cable_test_start(struct phy_device *phydev)
-> +{
-> +       struct marvell_priv *priv = phydev->priv;
-> +       int ret;
-> +
-> +       ret = marvell_cable_test_start_common(phydev);
-> +       if (ret)
-> +               return ret;
-> +
-> +       priv->cable_test_tdr = false;
-> +
-> +       /* Reset the VCT5 API control to defaults, otherwise
-> +        * VCT7 does not work correctly.
-> +        */
-> +       ret = phy_write_paged(phydev, MII_MARVELL_VCT5_PAGE,
-> +                             MII_VCT5_CTRL,
-> +                             MII_VCT5_CTRL_TX_SAME_CHANNEL |
-> +                             MII_VCT5_CTRL_SAMPLES_DEFAULT |
-> +                             MII_VCT5_CTRL_MODE_MAXIMUM_PEEK |
-> +                             MII_VCT5_CTRL_PEEK_HYST_DEFAULT);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = phy_write_paged(phydev, MII_MARVELL_VCT5_PAGE,
-> +                             MII_VCT5_SAMPLE_POINT_DISTANCE, 0);
-> +       if (ret)
-> +               return ret;
-> +
->         return phy_write_paged(phydev, MII_MARVELL_VCT7_PAGE,
->                                MII_VCT7_CTRL,
->                                MII_VCT7_CTRL_RUN_NOW |
->                                MII_VCT7_CTRL_CENTIMETERS);
->  }
->
-> +static int marvell_vct5_cable_test_tdr_start(struct phy_device *phydev)
-> +{
-> +       struct marvell_priv *priv = phydev->priv;
-> +       int ret;
-> +
-> +       /* Disable  VCT7 */
-> +       ret = phy_write_paged(phydev, MII_MARVELL_VCT7_PAGE,
-> +                             MII_VCT7_CTRL, 0);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = marvell_cable_test_start_common(phydev);
-> +       if (ret)
-> +               return ret;
-> +
-> +       priv->cable_test_tdr = true;
-> +       ret = ethnl_cable_test_pulse(phydev, 1000);
-> +       if (ret)
-> +               return ret;
-> +
-> +       return ethnl_cable_test_step(phydev, 0, 100, 1);
-> +}
-> +
->  static int marvell_vct7_distance_to_length(int distance, bool meter)
->  {
->         if (meter)
-> @@ -1828,8 +2042,15 @@ static int marvell_vct7_cable_test_report(struct phy_device *phydev)
->  static int marvell_vct7_cable_test_get_status(struct phy_device *phydev,
->                                               bool *finished)
->  {
-> +       struct marvell_priv *priv = phydev->priv;
->         int ret;
->
-> +       if (priv->cable_test_tdr) {
-> +               ret = marvell_vct5_amplitude_graph(phydev);
-> +               *finished = true;
-> +               return ret;
-> +       }
-> +
->         *finished = false;
->
->         ret = phy_read_paged(phydev, MII_MARVELL_VCT7_PAGE,
-> @@ -2563,6 +2784,7 @@ static struct phy_driver marvell_drivers[] = {
->                 .get_tunable = m88e1011_get_tunable,
->                 .set_tunable = m88e1011_set_tunable,
->                 .cable_test_start = marvell_vct7_cable_test_start,
-> +               .cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
->                 .cable_test_get_status = marvell_vct7_cable_test_get_status,
->         },
->         {
-> @@ -2588,6 +2810,7 @@ static struct phy_driver marvell_drivers[] = {
->                 .get_tunable = m88e1540_get_tunable,
->                 .set_tunable = m88e1540_set_tunable,
->                 .cable_test_start = marvell_vct7_cable_test_start,
-> +               .cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
->                 .cable_test_get_status = marvell_vct7_cable_test_get_status,
->         },
->         {
-> @@ -2613,6 +2836,7 @@ static struct phy_driver marvell_drivers[] = {
->                 .get_tunable = m88e1540_get_tunable,
->                 .set_tunable = m88e1540_set_tunable,
->                 .cable_test_start = marvell_vct7_cable_test_start,
-> +               .cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
->                 .cable_test_get_status = marvell_vct7_cable_test_get_status,
->         },
->         {
-> @@ -2658,6 +2882,7 @@ static struct phy_driver marvell_drivers[] = {
->                 .get_tunable = m88e1540_get_tunable,
->                 .set_tunable = m88e1540_set_tunable,
->                 .cable_test_start = marvell_vct7_cable_test_start,
-> +               .cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
->                 .cable_test_get_status = marvell_vct7_cable_test_get_status,
->         },
->  };
-> --
-> 2.26.2
->
+
+> Am 17.05.2020 um 20:37 schrieb Andrew Lunn <andrew@lunn.ch>:
+> 
+>> @@ -946,6 +949,9 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
+>> {
+>> 	struct lan743x_adapter *adapter = netdev_priv(netdev);
+>> 	struct phy_device *phydev = netdev->phydev;
+>> +	struct device_node *phynode;
+>> +	phy_interface_t phyifc = PHY_INTERFACE_MODE_GMII;
+>> +	u32 data;
+>> 
+>> 	phy_print_status(phydev);
+>> 	if (phydev->state == PHY_RUNNING) {
+>> @@ -953,6 +959,48 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
+>> 		int remote_advertisement = 0;
+>> 		int local_advertisement = 0;
+>> 
+>> +		/* check if a fixed-link is defined in device-tree */
+>> +		phynode = of_node_get(adapter->pdev->dev.of_node);
+>> +		if (phynode && of_phy_is_fixed_link(phynode)) {
+> 
+> Hi Roelof
+> 
+> The whole point for fixed link is that it looks like a PHY. You should
+> not need to care if it is a real PHY or a fixed link.
+> 
+
+Ok, I can try to remove the additional speed and baud configuration, when the PHY simulation should lead to the same result. Understood, thanks, I’ll test this and remove the overhead.
+
+> 
+>> +			/* Configure MAC to fixed link parameters */
+>> +			data = lan743x_csr_read(adapter, MAC_CR);
+>> +			/* Disable auto negotiation */
+>> +			data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
+> 
+> Why does the MAC care about autoneg? In general, all the MAC needs to
+> know is the speed and duplex.
+> 
+
+My assumption is, that in fixed-link mode we should switch off the autonegotiation between MAC and remote peer (e.g. a switch). I didn’t test, if it would also wun with the hardware doing auto-negotiation, however it feels cleaner to me to prevent the hardware from initiating any auto-negotiation in fixed-link mode.
+
+>> +			/* Set duplex mode */
+>> +			if (phydev->duplex)
+>> +				data |= MAC_CR_DPX_;
+>> +			else
+>> +				data &= ~MAC_CR_DPX_;
+>> +			/* Set bus speed */
+>> +			switch (phydev->speed) {
+>> +			case 10:
+>> +				data &= ~MAC_CR_CFG_H_;
+>> +				data &= ~MAC_CR_CFG_L_;
+>> +				break;
+>> +			case 100:
+>> +				data &= ~MAC_CR_CFG_H_;
+>> +				data |= MAC_CR_CFG_L_;
+>> +				break;
+>> +			case 1000:
+>> +				data |= MAC_CR_CFG_H_;
+>> +				data |= MAC_CR_CFG_L_;
+>> +				break;
+>> +			}
+> 
+> The current code is unusual, in that it uses
+> phy_ethtool_get_link_ksettings(). That should do the right thing with
+> a fixed-link PHY, although i don't know if anybody uses it like
+> this. So in theory, the current code should take care of duplex, flow
+> control, and speed for you. Just watch out for bug/missing features in
+> fixed link.
+
+Ok, I test and report if it works. Now I understand the concept.
+
+> 
+> 
+>> +			/* Set interface mode */
+>> +			of_get_phy_mode(phynode, &phyifc);
+>> +			if (phyifc == PHY_INTERFACE_MODE_RGMII ||
+>> +			    phyifc == PHY_INTERFACE_MODE_RGMII_ID ||
+>> +			    phyifc == PHY_INTERFACE_MODE_RGMII_RXID ||
+>> +			    phyifc == PHY_INTERFACE_MODE_RGMII_TXID)
+>> +				/* RGMII */
+>> +				data &= ~MAC_CR_MII_EN_;
+>> +			else
+>> +				/* GMII */
+>> +				data |= MAC_CR_MII_EN_;
+>> +			lan743x_csr_write(adapter, MAC_CR, data);
+>> +		}
+>> +		of_node_put(phynode);
+> 
+> It is normal to do of_get_phy_mode when connecting to the PHY, and
+> store the value in the private structure. This is also not specific to
+> fixed link.
+> 
+> There is also a helper you can use phy_interface_mode_is_rgmii().
+
+Thanks for pointing to the method is_rgmii, very handy.
+
+Using get_phy_mode() in all cases is not possible on a PC as it returns SGMII on a standard PC, but using GMII is today’s driver behavior. So what I basically did (on two places) is:
+
+if(fixed-link)
+   Use get_phy_mode()’s result in of_phy_connect() and in the lan7431 register configuration.
+else
+   Keep the prior behavior for backwards compatibility (i.e. ignoring the wrong interface mode config on a PC and use GMII constant)
+
+The method is_rgmii you mention can lessen the pain here, thanks, and lead to:
+
+if(is_rgmii()
+	use RGMII
+else
+	use GMII
+
+I need to think about this, because NOT passing get_phy_mode’s result directly into of_phy_connect or phy_connect_direct (and instead use above's (is_rgmii() ? RGMII : GMII) code) could have side effects.
+
+However I don’t dare to pass get_phy_mode’s result directly into of_phy_connect or phy_connect_direct on a PC because then I might change the behavior of all standard PC NIC drivers. I haven’t researched yet why on a PC SGMII is returned by get_phy_mode(), does someone know ?. 
+
+> 
+>> +
+>> 		memset(&ksettings, 0, sizeof(ksettings));
+>> 		phy_ethtool_get_link_ksettings(netdev, &ksettings);
+>> 		local_advertisement =
+>> @@ -974,6 +1022,8 @@ static void lan743x_phy_close(struct lan743x_adapter *adapter)
+>> 
+>> 	phy_stop(netdev->phydev);
+>> 	phy_disconnect(netdev->phydev);
+>> +	if (of_phy_is_fixed_link(adapter->pdev->dev.of_node))
+>> +		of_phy_deregister_fixed_link(adapter->pdev->dev.of_node);
+>> 	netdev->phydev = NULL;
+>> }
+>> 
+>> @@ -982,18 +1032,44 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+>> 	struct lan743x_phy *phy = &adapter->phy;
+>> 	struct phy_device *phydev;
+>> 	struct net_device *netdev;
+>> +	struct device_node *phynode = NULL;
+>> +	phy_interface_t phyifc = PHY_INTERFACE_MODE_GMII;
+>> 	int ret = -EIO;
+> 
+> netdev uses reverse christmas tree, meaning the lines should be
+> sorted, longest first, getting shorter.
+Ok
+> 
+>> 
+>> 	netdev = adapter->netdev;
+>> -	phydev = phy_find_first(adapter->mdiobus);
+>> -	if (!phydev)
+>> -		goto return_error;
+>> 
+>> -	ret = phy_connect_direct(netdev, phydev,
+>> -				 lan743x_phy_link_status_change,
+>> -				 PHY_INTERFACE_MODE_GMII);
+>> -	if (ret)
+>> -		goto return_error;
+>> +	/* check if a fixed-link is defined in device-tree */
+>> +	phynode = of_node_get(adapter->pdev->dev.of_node);
+>> +	if (phynode && of_phy_is_fixed_link(phynode)) {
+>> +		netdev_dbg(netdev, "fixed-link detected\n");
+> 
+> This is something which is useful during debug. But once it works can
+> be removed.
+Ok
+> 
+>> +		ret = of_phy_register_fixed_link(phynode);
+>> +		if (ret) {
+>> +			netdev_err(netdev, "cannot register fixed PHY\n");
+>> +			goto return_error;
+>> +		}
+>> +
+>> +		of_get_phy_mode(phynode, &phyifc);
+>> +		phydev = of_phy_connect(netdev, phynode,
+>> +					lan743x_phy_link_status_change,
+>> +					0, phyifc);
+>> +		if (!phydev)
+>> +			goto return_error;
+>> +	} else {
+>> +		phydev = phy_find_first(adapter->mdiobus);
+>> +		if (!phydev)
+>> +			goto return_error;
+>> +
+>> +		ret = phy_connect_direct(netdev, phydev,
+>> +					 lan743x_phy_link_status_change,
+>> +					 PHY_INTERFACE_MODE_GMII);
+>> +		/* Note: We cannot use phyifc here because this would be SGMII
+>> +		 * on a standard PC.
+>> +		 */
+> 
+> I don't understand this comment.
+> 
+
+See above the lengthy section. On a PC SGMII is returned when I call of_get_phy_mode(phynode, &phyifc); but the original driver is using PHY_INTERFACE_MODE_GMII; and I don’t dare to change this behavior. Which I would do when I would pass on the result of of_get_phy_mode(). That’s what I meant by the comment.
+
+Thanks a lot directing me to the proper way,
+Roelof
+
+
