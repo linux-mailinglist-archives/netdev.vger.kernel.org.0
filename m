@@ -2,73 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3C531D6C2A
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 21:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84C6B1D6C47
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 21:26:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726372AbgEQTQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 15:16:41 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36148 "EHLO vps0.lunn.ch"
+        id S1726559AbgEQT0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 15:26:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36164 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726278AbgEQTQk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 May 2020 15:16:40 -0400
+        id S1726269AbgEQT0b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 May 2020 15:26:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=nmHCf8WelMUILSz0ftKqp4dywgPe56nqgwOHUvyczNU=; b=hnb8+4je1aHrBVK9uwesMul9JY
-        9CAZSrPpSmPQB6jvnhPIrJX9R9U+fEl8VL2kK+4GY1BHfskKtF0tyGOPMd8xL9lvh+Kk1O0Yz6kTt
-        9F0b5XFTum1ByGPYl7Vwh+eBzfp2Oh+3JivDQbBcsLz8UXWtwA3AgjdzqMm6e/f+mKUo=;
+        bh=nOykvvL9rF7kGCcAgVB4XTRQeBFNz9yBOx0MAIbGe2s=; b=HP4eMrwzO4l45QN/5bKJpbpnsn
+        vhqzkXwjiKGBJ/873dAJ/Q4ynzmbXbqMfCGg7B2TCoI+1jx+bg4i51SLCGRYbF5QBWexBC3j6488f
+        e08o7qAmTcu0a0mrvC5sVEKIv9xnBHlJWDYXJvgFul6ORrsgkLuoSN+QJIKTATIL+DMk=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jaOm3-002YVi-BD; Sun, 17 May 2020 21:16:35 +0200
-Date:   Sun, 17 May 2020 21:16:35 +0200
+        id 1jaOvc-002YY4-Ue; Sun, 17 May 2020 21:26:28 +0200
+Date:   Sun, 17 May 2020 21:26:28 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     David Miller <davem@davemloft.net>, marex@denx.de,
-        netdev@vger.kernel.org, ynezz@true.cz, yuehaibing@huawei.com
+To:     Marek Vasut <marex@denx.de>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        lukas@wunner.de, ynezz@true.cz, yuehaibing@huawei.com
 Subject: Re: [PATCH V6 00/20] net: ks8851: Unify KS8851 SPI and MLL drivers
-Message-ID: <20200517191635.GE606317@lunn.ch>
+Message-ID: <20200517192628.GF606317@lunn.ch>
 References: <20200517003354.233373-1-marex@denx.de>
  <20200516.190225.342589110126932388.davem@davemloft.net>
- <20200517071355.ww5xh7fgq7ymztac@wunner.de>
+ <a68af5dd-d12c-f645-f89f-3967cc64e8df@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200517071355.ww5xh7fgq7ymztac@wunner.de>
+In-Reply-To: <a68af5dd-d12c-f645-f89f-3967cc64e8df@denx.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> However in terms of performance there's a bigger problem:
-> 
-> Previously ks8851.c (SPI driver) had 8-bit and 32-bit register accessors.
-> The present series drops them and performs a 32-bit access as two 16-bit
-> accesses and an 8-bit access as one 16-bit access because that's what
-> ks8851_mll.c (16-bit parallel bus driver) does.  That has a real,
-> measurable performance impact because in the case of 8-bit accesses,
-> another 8 bits need to be transferred over the SPI bus, and in the case
-> of 32-bit accesses, *two* SPI transfers need to be performed.
+> So I was already led into reworking the entire series to do this
+> inlining once, after V1. It then turned out it's a horrible mess to get
+> everything to compile as modules and built-in and then also only the
+> parallel/SPI as a module and then the other way around.
 
-How often does this happen on a per packet basis? Packets are
-generally a mixture of 50bytes, 576bytes and 1500bytes in size, with
-the majority being 576 bytes. Does an extra 8 or 16 bits per packet
-really make that much difference? Or is the real problem the overheads
-of doing the transaction, not the number of bytes transferred? If so,
-maybe the abstractions needs to be slightly higher, not register
-access, but basic functionality.
+Maybe consider some trade offs. Have both sets of accessors in the
+core, and then thin wrappers around it to probe on each bus type. You
+bloat the core, but avoid the indirection. You can also have the core
+as a standalone module, which exports symbols for the wrappers to
+use. It does take some Kconfig work to get built in vs modules
+correct, but there are people who can help. It is also not considered
+a regression if you reduce the options in terms of module vs built in.
 
-> Nevertheless I was going to repeat the performance measurements on a
-> recent kernel but haven't gotten around to that yet because the
-> measurements need to be performed with CONFIG_PREEMPT_RT_FULL to
-> be reliable (a vanilla kernel is too jittery), so I have to create
-> a new branch with RT patches on the test machine, which is fairly
-> involved and time consuming.
-
-I assume you will then mainline the changes, so you don't need to do
-it again? That is the problem with doing development work on a dead
-kernel.
-
-	Andrew
+   Andrew
