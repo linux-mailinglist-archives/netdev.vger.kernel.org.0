@@ -2,83 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 753E31D64C9
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 01:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A185F1D64E8
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 02:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726876AbgEPX7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 19:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726730AbgEPX7f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 19:59:35 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BF1C05BD09
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 16:59:35 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id l19so6042355lje.10
-        for <netdev@vger.kernel.org>; Sat, 16 May 2020 16:59:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nDEHZY/PsMR8qXioVOkwgQjNCpyRlOPlYpF92vL83Bo=;
-        b=P54OzxSpbB00QNa1Vl9WFApqmqJ/4B0rUpbBMDMmPsI/C8A9uvrD4Ks0sH03/n/Ea8
-         TthdS9fKbtNSBKevVXQXJ0hQwN1Cr21r0DS9ympS50RYBG6qN73K0ac9Z2luaU+W0UJb
-         Ib5zltG1UqMylh0kpknA01DYSc+lcNyz7Vo8L7ukwpSfgXHUT/ABT/xtEvzvHa6ZPO7f
-         hVftgDHyQS+Qwumq/NzRXEypHe6LQAniqULJKgLzOb5VrJTE7ftIzqSwCXiVzZWL99Zg
-         ckBhnhbDgCDabIapMZtrwe2jd11elo2NxMB1KnXMCzE2KXPlETdMkQs44AO7W4+LaHzv
-         y5nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nDEHZY/PsMR8qXioVOkwgQjNCpyRlOPlYpF92vL83Bo=;
-        b=BLvB8Cm3OFNMkTUn+MkdFv4EXV58ocKwQvipHuzYYZwv2tNdUigBXLTHd0c6WxLpdm
-         OZeiE6tBxdDl8nEnbgn5ALJ5u176h0n3lSikqCVq9qHyIeXR6cTDcxkk7ZfvAgyFGvW8
-         zV0pDwzNvg1q0YzOjyceycZV/5VMjraTFvoBxOCpa1YgcaHXbXHBdW0/iDFNwkgh038I
-         FRKPZ9gxcpYJNRv7CNF2/ohzCCGnSkkrJMFmm9IE/1jtg3qB38XTtNHf7Tfjog8wJ3IR
-         gKaGgYA21blo76DRxITUih9fyThILES65reZ0454ziultdXUAwrJEESwq4Qt2N4YJ/Kj
-         TCAw==
-X-Gm-Message-State: AOAM531HwrW/oDTP+Nbm696hSWMEdj57U6oyaCLUxQmRu+NKnB0YsA+V
-        kqMOdhyPAek7NvZrVbPH50VRrX9l7/lH/s6zy6tm2A==
-X-Google-Smtp-Source: ABdhPJw0ZfYrSkQBOU7HtlJ+qMtghoYxNb4Yi76ISuBNl6ETii85WUeEH5eTH7QX7VYFW8gzbaKKijv4ok8EvnEZF+c=
-X-Received: by 2002:a2e:9d5:: with SMTP id 204mr5185058ljj.168.1589673572976;
- Sat, 16 May 2020 16:59:32 -0700 (PDT)
+        id S1726834AbgEQAea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 20:34:30 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:54858 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726763AbgEQAea (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 20:34:30 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 49Pjnv1KX1z1qrLN;
+        Sun, 17 May 2020 02:34:22 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 49Pjnp1W1dz1shfq;
+        Sun, 17 May 2020 02:34:22 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id eDGXNAMlNLJu; Sun, 17 May 2020 02:34:21 +0200 (CEST)
+X-Auth-Info: cUgqsxB3Upftsm7+usZ847YNb16Ht4Bt6lAu3nd0vhw=
+Received: from desktop.lan (ip-86-49-35-8.net.upcbroadband.cz [86.49.35.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Sun, 17 May 2020 02:34:20 +0200 (CEST)
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH V6 00/20] net: ks8851: Unify KS8851 SPI and MLL drivers
+Date:   Sun, 17 May 2020 02:33:34 +0200
+Message-Id: <20200517003354.233373-1-marex@denx.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200516021736.226222-1-shakeelb@google.com> <20200516.134018.1760282800329273820.davem@davemloft.net>
- <CALvZod7euq10j6k9Z_dej4BvGXDjqbND05oM-u6tQrLjosX31A@mail.gmail.com> <20200516.163927.1112911965183377217.davem@davemloft.net>
-In-Reply-To: <20200516.163927.1112911965183377217.davem@davemloft.net>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Sat, 16 May 2020 16:59:21 -0700
-Message-ID: <CALvZod4cqCNHVLVMsoHKtQxWdY3YUqJBuqwFwE8MLeVh-jbdUw@mail.gmail.com>
-Subject: Re: [PATCH] net/packet: simply allocations in alloc_one_pg_vec_page
-To:     David Miller <davem@davemloft.net>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 16, 2020 at 4:39 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Shakeel Butt <shakeelb@google.com>
-> Date: Sat, 16 May 2020 15:35:46 -0700
->
-> > So, my argument is if non-zero order vzalloc has failed (allocations
-> > internal to vzalloc, including virtual mapping allocation and page
-> > table allocations, are order 0 and use GFP_KERNEL i.e. triggering
-> > reclaim and oom-killer) then the next non-zero order page allocation
-> > has very low chance of succeeding.
->
-> Also not true.
->
-> Page table allocation strategies and limits vary by architecture, they
-> may even need virtual mappings themselves.  So they can fail in situations
-> where a non-zero GFP_KERNEL page allocator allocation would succeed.
+The KS8851SNL/SNLI and KS8851-16MLL/MLLI/MLLU are very much the same pieces
+of silicon, except the former has an SPI interface, while the later has a
+parallel bus interface. Thus far, Linux has two separate drivers for each
+and they are diverging considerably.
 
-Thanks for the explanation. Do you think calling vzalloc only for
-non-zero order here has any value?
+This series unifies them into a single driver with small SPI and parallel
+bus specific parts. The approach here is to first separate out the SPI
+specific parts into a separate file, then add parallel bus accessors in
+another separate file and then finally remove the old parallel bus driver.
+The reason for replacing the old parallel bus driver is because the SPI
+bus driver is much higher quality.
+
+Marek Vasut (20):
+  net: ks8851: Factor out spi->dev in probe()/remove()
+  net: ks8851: Rename ndev to netdev in probe
+  net: ks8851: Replace dev_err() with netdev_err() in IRQ handler
+  net: ks8851: Pass device node into ks8851_init_mac()
+  net: ks8851: Use devm_alloc_etherdev()
+  net: ks8851: Use dev_{get,set}_drvdata()
+  net: ks8851: Remove ks8851_rdreg32()
+  net: ks8851: Use 16-bit writes to program MAC address
+  net: ks8851: Use 16-bit read of RXFC register
+  net: ks8851: Factor out bus lock handling
+  net: ks8851: Factor out SKB receive function
+  net: ks8851: Split out SPI specific entries in struct ks8851_net
+  net: ks8851: Split out SPI specific code from probe() and remove()
+  net: ks8851: Factor out TX work flush function
+  net: ks8851: Permit overridding interrupt enable register
+  net: ks8851: Implement register, FIFO, lock accessor callbacks
+  net: ks8851: Separate SPI operations into separate file
+  net: ks8851: Implement Parallel bus operations
+  net: ks8851: Remove ks8851_mll.c
+  net: ks8851: Drop define debug and pr_fmt()
+
+ drivers/net/ethernet/micrel/Kconfig           |    2 +
+ drivers/net/ethernet/micrel/Makefile          |    2 +
+ drivers/net/ethernet/micrel/ks8851.h          |  142 +-
+ .../micrel/{ks8851.c => ks8851_common.c}      |  698 ++-------
+ drivers/net/ethernet/micrel/ks8851_mll.c      | 1393 -----------------
+ drivers/net/ethernet/micrel/ks8851_par.c      |  351 +++++
+ drivers/net/ethernet/micrel/ks8851_spi.c      |  481 ++++++
+ 7 files changed, 1116 insertions(+), 1953 deletions(-)
+ rename drivers/net/ethernet/micrel/{ks8851.c => ks8851_common.c} (62%)
+ delete mode 100644 drivers/net/ethernet/micrel/ks8851_mll.c
+ create mode 100644 drivers/net/ethernet/micrel/ks8851_par.c
+ create mode 100644 drivers/net/ethernet/micrel/ks8851_spi.c
+
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Petr Stetiar <ynezz@true.cz>
+Cc: YueHaibing <yuehaibing@huawei.com>
+
+-- 
+2.25.1
+
