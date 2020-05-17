@@ -2,120 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00DBA1D6511
-	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 03:23:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BC1B1D651E
+	for <lists+netdev@lfdr.de>; Sun, 17 May 2020 04:02:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbgEQBXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 May 2020 21:23:39 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:11725 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726797AbgEQBXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 21:23:39 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5ec091cd0000>; Sat, 16 May 2020 18:22:22 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Sat, 16 May 2020 18:23:38 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Sat, 16 May 2020 18:23:38 -0700
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 17 May
- 2020 01:23:38 +0000
-Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Sun, 17 May 2020 01:23:38 +0000
-Received: from sandstorm.nvidia.com (Not Verified[10.2.48.175]) by rnnvemgw01.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5ec092190001>; Sat, 16 May 2020 18:23:37 -0700
-From:   John Hubbard <jhubbard@nvidia.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-CC:     John Hubbard <jhubbard@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <rds-devel@oss.oracle.com>
-Subject: [PATCH] rds: convert get_user_pages() --> pin_user_pages()
-Date:   Sat, 16 May 2020 18:23:36 -0700
-Message-ID: <20200517012336.382624-1-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S1726937AbgEQCCD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 May 2020 22:02:03 -0400
+Received: from smtprelay0034.hostedemail.com ([216.40.44.34]:46198 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726880AbgEQCCC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 May 2020 22:02:02 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id D684618224504;
+        Sun, 17 May 2020 02:02:01 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1567:1593:1594:1711:1714:1730:1747:1777:1792:2198:2199:2393:2559:2562:2693:2828:3138:3139:3140:3141:3142:3622:3865:3868:3874:4250:4321:5007:7903:8784:10004:10400:10848:11232:11657:11658:11914:12043:12297:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21433:21451:21611:21627:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: smile27_85fe491442e21
+X-Filterd-Recvd-Size: 1382
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf06.hostedemail.com (Postfix) with ESMTPA;
+        Sun, 17 May 2020 02:02:00 +0000 (UTC)
+Message-ID: <bd3a3e31d17146965c5a0ff7228cb00ec46f4edb.camel@perches.com>
+Subject: Re: [PATCH V6 20/20] net: ks8851: Drop define debug and pr_fmt()
+From:   Joe Perches <joe@perches.com>
+To:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Date:   Sat, 16 May 2020 19:01:59 -0700
+In-Reply-To: <20200517003354.233373-21-marex@denx.de>
+References: <20200517003354.233373-1-marex@denx.de>
+         <20200517003354.233373-21-marex@denx.de>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.1-2 
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1589678542; bh=7TXMCvjqbZxuHVM5y97rS09KLJM6SOiZujb09twA/Dk=;
-        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         MIME-Version:X-NVConfidentiality:Content-Transfer-Encoding:
-         Content-Type;
-        b=p0pBPkQo7mb5Cwoe2du0glhdJwKo1677mvVSBz22sE9cCQM3wGXIlE5laIOCpyHYr
-         3qa8VtddbcJJhPx9D+WMM0oxMHvZR38SI08df83Ab9p7pnBmsuhWAIpgl4xV3PBtFa
-         KmsStxBTAZzOOuN/qKmICrQuaqSOPsDArBzf7+rLWbiu9xXJ7/Wvc15sev8rRw/Nba
-         ogtop5i930W9FQEhrNP73FVSCcYjNYgM7sU1FXzygboz+d+uKyT0Z50TedeVRoiInM
-         xkgR8Yv5tGyF5UfbyoXwQE4no8zx1mhMLQRR9lUIB9qGCdxfwU6Yr11M/3oO8C1CXk
-         L0IYKYw6T1CYw==
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code was using get_user_pages_fast(), in a "Case 2" scenario
-(DMA/RDMA), using the categorization from [1]. That means that it's
-time to convert the get_user_pages_fast() + put_page() calls to
-pin_user_pages_fast() + unpin_user_pages() calls.
+On Sun, 2020-05-17 at 02:33 +0200, Marek Vasut wrote:
+> Drop those debug statements from both drivers. They were there since
+> at least 2011 and enabled by default, but that's likely wrong.
+[]
+> diff --git a/drivers/net/ethernet/micrel/ks8851_par.c b/drivers/net/ethernet/micrel/ks8851_par.c
+[]
+> -#define DEBUG
 
-There is some helpful background in [2]: basically, this is a small
-part of fixing a long-standing disconnect between pinning pages, and
-file systems' use of those pages.
+Dropping the #define DEBUG lines will cause a behavior
+change for the netdev/netif_dbg uses as these messages
+will no longer be output by default.
 
-[1] Documentation/core-api/pin_user_pages.rst
-
-[2] "Explicit pinning of user-space pages":
-    https://lwn.net/Articles/807108/
-
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-rdma@vger.kernel.org
-Cc: rds-devel@oss.oracle.com
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
----
- net/rds/info.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/net/rds/info.c b/net/rds/info.c
-index 03f6fd56d237..e1d63563e81c 100644
---- a/net/rds/info.c
-+++ b/net/rds/info.c
-@@ -162,7 +162,6 @@ int rds_info_getsockopt(struct socket *sock, int optnam=
-e, char __user *optval,
- 	struct rds_info_lengths lens;
- 	unsigned long nr_pages =3D 0;
- 	unsigned long start;
--	unsigned long i;
- 	rds_info_func func;
- 	struct page **pages =3D NULL;
- 	int ret;
-@@ -193,7 +192,7 @@ int rds_info_getsockopt(struct socket *sock, int optnam=
-e, char __user *optval,
- 		ret =3D -ENOMEM;
- 		goto out;
- 	}
--	ret =3D get_user_pages_fast(start, nr_pages, FOLL_WRITE, pages);
-+	ret =3D pin_user_pages_fast(start, nr_pages, FOLL_WRITE, pages);
- 	if (ret !=3D nr_pages) {
- 		if (ret > 0)
- 			nr_pages =3D ret;
-@@ -235,8 +234,7 @@ int rds_info_getsockopt(struct socket *sock, int optnam=
-e, char __user *optval,
- 		ret =3D -EFAULT;
-=20
- out:
--	for (i =3D 0; pages && i < nr_pages; i++)
--		put_page(pages[i]);
-+	unpin_user_pages(pages, nr_pages);
- 	kfree(pages);
-=20
- 	return ret;
-
-base-commit: 3d1c1e5931ce45b3a3f309385bbc00c78e9951c6
---=20
-2.26.2
 
