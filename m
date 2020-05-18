@@ -2,77 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B63FF1D8A92
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 00:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 500CB1D8A9A
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 00:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728313AbgERWQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 18:16:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33480 "EHLO mail.kernel.org"
+        id S1728359AbgERWRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 18:17:07 -0400
+Received: from mga02.intel.com ([134.134.136.20]:58882 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726386AbgERWQt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 18:16:49 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7DE7920657;
-        Mon, 18 May 2020 22:16:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589840209;
-        bh=llfoXoDbUl/zjbezMoNa+XpAXA1AlgWEQ8r/kkE3h8I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fT61f7mzfm0m3Lue047kumZqLTm7/F4faZnDWN1uTHo4KF1ylu3cNS6l37Ux2pkVs
-         WqISsIThqmyDfpUyAxKl1tPns4HyZ/yJj9XOGNkSN4K/ORRL3UYlicHtM6m16R5Bdr
-         IYOw1z50Xlbq/Ho9/HGc4JqDO87NlzZd7zynX3SQ=
-Date:   Mon, 18 May 2020 15:16:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Steve deRosier <derosier@gmail.com>,
-        Ben Greear <greearb@candelatech.com>, jeyu@kernel.org,
-        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com,
-        Takashi Iwai <tiwai@suse.de>, schlad@suse.de,
-        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
-        daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        ath10k@lists.infradead.org
-Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
-Message-ID: <20200518151645.4693cf30@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200518212202.GR11244@42.do-not-panic.com>
-References: <abf22ef3-93cb-61a4-0af2-43feac6d7930@candelatech.com>
-        <20200518171801.GL11244@42.do-not-panic.com>
-        <CALLGbR+ht2V3m5f-aUbdwEMOvbsX8ebmzdWgX4jyWTbpHrXZ0Q@mail.gmail.com>
-        <20200518190930.GO11244@42.do-not-panic.com>
-        <e3d978c8fa6a4075f12e843548d41e2c8ab537d1.camel@sipsolutions.net>
-        <20200518132828.553159d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <8d7a3bed242ac9d3ec55a4c97e008081230f1f6d.camel@sipsolutions.net>
-        <20200518133521.6052042e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <d81601b17065d7dc3b78bf8d68faf0fbfdb8c936.camel@sipsolutions.net>
-        <20200518134643.685fcb0e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200518212202.GR11244@42.do-not-panic.com>
+        id S1727819AbgERWRF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 May 2020 18:17:05 -0400
+IronPort-SDR: s6U1pBJy5VxM7JIuf5R/trQAecJkeHwzxRe33HCtWKmmqErfN0JMnJ1W9zku+kPJWKdZyNQURD
+ IOYXAVlQHHxQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2020 15:16:59 -0700
+IronPort-SDR: NTtwKpSwaO0ppzrBtI8fOx3iSKZoxExeE9yAfrrHbUNO86e4uDIqMDRCqDvmrwMkQ6Wbrce0sd
+ RVU08UqhhiLw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,407,1583222400"; 
+   d="scan'208";a="439387793"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga005.jf.intel.com with ESMTP; 18 May 2020 15:16:59 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next v4 0/9][pull request] 1GbE Intel Wired LAN Driver Updates 2020-05-18
+Date:   Mon, 18 May 2020 15:16:48 -0700
+Message-Id: <20200518221657.1420070-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 May 2020 21:22:02 +0000 Luis Chamberlain wrote:
-> Indeed my issue with devlink is that it did not seem generic enough for
-> all devices which use firmware and for which firmware can crash. Support
-> should not have to be "add devlink support" + "now use this new hook",
-> but rather a very lighweight devlink_crash(device) call we can sprinkly
-> with only the device as a functional requirement.
+This series contains updates to igc driver only.
 
-We can provide a lightweight devlink_crash(device) which only generates
-the notification, without the need to register the health reporter or a
-devlink instance upfront. But then we loose the ability to control the
-recovery, count errors, etc. So I'd think that's not the direction we
-want to go in.
+Sasha adds ECN support for TSO by adding the NETIF_F_TSO_ECN flag, which
+aligns with other Intel drivers.  Also cleaned up defines that are not
+supported or used in the igc driver.
+
+Andre does most of the changes with updating the log messages for igc
+driver.
+
+Vitaly adds support for EEPROM, register and link ethtool
+self-tests.
+
+v2: Fixed up the added ethtool self-tests based on feedback from the
+    community.  Dropped the four patches that removed '\n' from log
+    messages.
+v3: Reverted the debug message changes in patch 2 for messages in
+    igc_probe, also made reg_test[] static in patch 3 based on community
+    feedback
+v4: Updated the patch description for patch 2, which referred to changes
+    that no longer existed in the patch
+
+The following are changes since commit dbfe7d74376e187f3c6eaff822e85176bc2cd06e:
+  rds: convert get_user_pages() --> pin_user_pages()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
+
+Andre Guedes (5):
+  igc: Use netdev log helpers in igc_main.c
+  igc: Use netdev log helpers in igc_ethtool.c
+  igc: Use netdev log helpers in igc_ptp.c
+  igc: Use netdev log helpers in igc_dump.c
+  igc: Use netdev log helpers in igc_base.c
+
+Sasha Neftin (3):
+  igc: Add ECN support for TSO
+  igc: Remove unneeded definition
+  igc: Remove unneeded register
+
+Vitaly Lifshits (1):
+  igc: add support to eeprom, registers and link self-tests
+
+ drivers/net/ethernet/intel/igc/Makefile      |   2 +-
+ drivers/net/ethernet/intel/igc/igc.h         |   4 +
+ drivers/net/ethernet/intel/igc/igc_base.c    |   6 +-
+ drivers/net/ethernet/intel/igc/igc_defines.h |   1 -
+ drivers/net/ethernet/intel/igc/igc_diag.c    | 186 +++++++++++++++++++
+ drivers/net/ethernet/intel/igc/igc_diag.h    |  30 +++
+ drivers/net/ethernet/intel/igc/igc_dump.c    | 109 ++++++-----
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  93 ++++++++--
+ drivers/net/ethernet/intel/igc/igc_main.c    | 116 ++++++------
+ drivers/net/ethernet/intel/igc/igc_ptp.c     |  12 +-
+ drivers/net/ethernet/intel/igc/igc_regs.h    |   3 +-
+ 11 files changed, 415 insertions(+), 147 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/igc/igc_diag.c
+ create mode 100644 drivers/net/ethernet/intel/igc/igc_diag.h
+
+-- 
+2.26.2
+
