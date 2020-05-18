@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A20EE1D7C13
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 16:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D80451D7E29
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 18:18:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727063AbgERO7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 10:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726958AbgERO7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 10:59:45 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531C0C061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 07:59:45 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id z80so10392585qka.0
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 07:59:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zsu10hDoLE9FRHXF2sBwwgeh8A3XOKa2vQ0+Jpk3aZs=;
-        b=hBeLCKujzj3Wqj07xwT6+hLZwL138MGJLOHWaUmopBvnH1UwLXOcJ/J4GH1SlgVDtF
-         WVoSJdoy4kBTA5CVqEjilFtlQJU8b72CVbt7drQ+0HWrCAscDqWzFzcNWeWSrsgvuz5c
-         bZD7gnD8bk01Zi7YPmWO/NoigINjvNB33RiW5aSr4citqZ0aIQLwNXEaR+TqDIOGk0zj
-         o1+cBl9vYLOHjbpTyutlGr1ODVQGTA+49BWmxbZva/gzUtQxLbRxuzf7kp/zR/BeJ1qj
-         1cq5N6O1+5y3+ZGgoPFQgr5fCGoBQoLyFdYoF7eygOdHldCzvsbrSmVQbylZdcPyf1t0
-         VtSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zsu10hDoLE9FRHXF2sBwwgeh8A3XOKa2vQ0+Jpk3aZs=;
-        b=Q9BLv043P7D/2SfYHiSWWAuXcAGuw+DkGrjIEiqpEAch32juRB/IyrdfZ/k94vCnua
-         wJesTSesL8eW66bDl2NGut6UrpOB6aOUvHZDM810skppcaUFIYj+TRBXZbf767tuDYvq
-         Xy9ANrJ9DdT9FBbJ0b0dWvzWV1v/KhduT/bX7KFio0G1IAj/AGt9omINlHkio69q7hnR
-         a+XfcT0wSWxqtSFQV21laVp1n4NU8JHok69tDltIvAj/PgusUqFnpaTFehpRyrOd1550
-         PpabbrtnfRD7hdZ1bMgslSYoM00VTC5HXGDDjywOvk6wCSlcejhLnP5RdHtrQ8cVvVf2
-         Fwug==
-X-Gm-Message-State: AOAM533G/rJ54WuREXDRY7c/qci79qhAFoI81QIenELlD1UqjXwZGEVB
-        D3XKrAMgsxJUH2Se269X1+TM3hJT
-X-Google-Smtp-Source: ABdhPJwy1SGbVVwDZ66n4mFOEAyaDNv59JngTy9aYppQcKNa6gFepHmvCIfmcVQtKL3WdXs0qHwhUA==
-X-Received: by 2002:a37:8782:: with SMTP id j124mr16732767qkd.349.1589813984126;
-        Mon, 18 May 2020 07:59:44 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:f866:b23:9405:7c31? ([2601:282:803:7700:f866:b23:9405:7c31])
-        by smtp.googlemail.com with ESMTPSA id q17sm8460607qkq.111.2020.05.18.07.59.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2020 07:59:43 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] tc: mqprio: reject queues count/offset pair
- count higher than num_tc
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, kiran.patil@intel.com
-References: <20200513194717.15363-1-maciej.fijalkowski@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <231c5b50-3709-5a2e-ce20-5a90a3c035be@gmail.com>
-Date:   Mon, 18 May 2020 08:59:42 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1728228AbgERQSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 12:18:42 -0400
+Received: from 4.mo179.mail-out.ovh.net ([46.105.36.149]:60663 "EHLO
+        4.mo179.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727987AbgERQSm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 12:18:42 -0400
+X-Greylist: delayed 4200 seconds by postgrey-1.27 at vger.kernel.org; Mon, 18 May 2020 12:18:41 EDT
+Received: from player787.ha.ovh.net (unknown [10.110.103.132])
+        by mo179.mail-out.ovh.net (Postfix) with ESMTP id 4470B16588C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 17:00:13 +0200 (CEST)
+Received: from RCM-web9.webmail.mail.ovh.net (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player787.ha.ovh.net (Postfix) with ESMTPSA id 7EA9612A9ADCD;
+        Mon, 18 May 2020 15:00:04 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <20200513194717.15363-1-maciej.fijalkowski@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Date:   Mon, 18 May 2020 17:00:04 +0200
+From:   Stephen Kitt <steve@sk2.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: linux-next: manual merge of the jc_docs tree with the vfs and
+ net-next trees
+In-Reply-To: <20200518062253.24709cec@lwn.net>
+References: <20200518123013.6e4cb3cc@canb.auug.org.au>
+ <20200518062253.24709cec@lwn.net>
+User-Agent: Roundcube Webmail/1.4.3
+Message-ID: <6db686525ee6e1eeda0201efc61d361f@sk2.org>
+X-Sender: steve@sk2.org
+X-Originating-IP: 82.65.25.201
+X-Webmail-UserID: steve@sk2.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11744543403692084613
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduhedruddthedgkedvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvufgjfhgfkfigihgtgfesthekjhdttderjeenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepheeftedvhfevuedthedthfektdelleegtdevfeetveefhfekgedttdefgfetgfeunecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphdqohhuthdphhgvlhhopehplhgrhigvrhejkeejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/13/20 1:47 PM, Maciej Fijalkowski wrote:
-> Provide a sanity check that will make sure whether queues count/offset
-> pair count will not exceed the actual number of TCs being created.
+Le 18/05/2020 14:22, Jonathan Corbet a écrit :
+> On Mon, 18 May 2020 12:30:13 +1000
+> Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 > 
-> Example command that is invalid because there are 4 count/offset pairs
-> whereas num_tc is only 2.
+>> Today's linux-next merge of the jc_docs tree got a conflict in:
+>> 
+>>   kernel/sysctl.c
+>> 
+>> between commit:
+>> 
+>>   f461d2dcd511 ("sysctl: avoid forward declarations")
+>> 
+>> from the vfs tree and commit:
+>> 
+>>   2f4c33063ad7 ("docs: sysctl/kernel: document ngroups_max")
+>> 
+>> from the jc_docs tree.
 > 
->  # tc qdisc add dev enp96s0f0 root mqprio num_tc 2 map 0 0 0 0 1 1 1 1
-> queues 4@0 4@4 4@8 4@12 hw 1 mode channel
-> 
-> Store the parsed count/offset pair count onto a dedicated variable that
-> will be compared against opt.num_tc after all of the command line
-> arguments were parsed. Bail out if this count is higher than opt.num_tc
-> and let user know about it.
-> 
-> Drivers were swallowing such commands as they were iterating over
-> count/offset pairs where num_tc was used as a delimiter, so this is not
-> a big deal, but better catch such misconfiguration at the command line
-> argument parsing level.
-> 
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->  tc/q_mqprio.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-\
+> Hmm...that's somewhat messy.  I somehow managed to miss the change to
+> kernel/sysctl.c that doesn't have much to do with documentation.  
+> Stephen
+> (Kitt): I've reverted that change for now.  Could I ask you to resubmit 
+> it
+> as two different patches?  I'll happily take the actual docs change; 
+> the
+> sysctl change can be sent to the VFS tree on top of the changes there.
 
-applied to iproute2-next. Thanks,
+Done, thanks.
 
+> In general we really don't want to mix unrelated changes like this.
+
+Noted, I’ll avoid mixing changes in future.
+
+Regards,
+
+Stephen
