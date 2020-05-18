@@ -2,90 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD10B1D77A9
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:47:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D6B1D77AC
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728084AbgERLre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 07:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728041AbgERLr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:47:26 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88ACEC061A0C;
-        Mon, 18 May 2020 04:47:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=CzptVQvO43jJs3G5GLMVm9lezuT7/sLUYMXfvlaV0Hw=; b=P2OvAtabr7SyTvptko1aSa0b4b
-        6Zan9x1Nmss8UPA8EfIfVjcOg2X9f3eFNgG5D3617X5ymRZPuEwG0Sz9qlJi+LVkUCg4WZPpY+apr
-        q0ILw+0t9DsbF2jxe0XYGFU6ESM/gtqLcG1z4SAYJiH8cKVhib1Zz7DFBBHA+FDFod4/GclRGjoLx
-        DfX/m6QONBpsd+KcA8Ehn7TekFTllKPztJ6p6uamFMtU7CRjpCptYJkvRyYG2hPsejFviblkXdxIu
-        WWuOBG/5bE2NGzn/tqyAnMD7HiFoiPVrfxdkCU0GnQOVY88uk40nDFa6bpNRvuo40fYH+fzC5T4/S
-        eNs2xZUw==;
-Received: from [2001:4bb8:188:1506:c70:4a89:bc61:2] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jaeEr-0004Q4-5l; Mon, 18 May 2020 11:47:21 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 9/9] ipv6: use ->ndo_tunnel_ctl in addrconf_set_dstaddr
-Date:   Mon, 18 May 2020 13:46:55 +0200
-Message-Id: <20200518114655.987760-10-hch@lst.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200518114655.987760-1-hch@lst.de>
-References: <20200518114655.987760-1-hch@lst.de>
+        id S1728119AbgERLrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 07:47:40 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:45592 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728073AbgERLre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:47:34 -0400
+Received: by mail-ot1-f66.google.com with SMTP id c3so7715825otr.12;
+        Mon, 18 May 2020 04:47:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Qir9cbaQHXVGA1/iOYKuzF6odjOmx8lAyNZpRQv2tdQ=;
+        b=pac8S5O9hfO9GzSPea8N30VEeh5U4p2whwuRjCjRtsIPxO5HjxrQlQ/6QA8cdAOCDs
+         wv7rhviq+OGfOVGtvKz1HXHBjvbnAvbadjKPw6Sz6/tI7zg4nmpSfZ34szbo7yqAQnnj
+         BNmQgVfgje4RdWhoSOvIuBDa1nc/VowFE+T470OIz9NXaoVB8ZQQu5wy/OSMkPN9zqFE
+         +eQy7vC/r4Tqr1ixxgkunmfdZ/zs2gyD919/2MeX3hFmHNSs5bUQk02eDcFswC1Zwart
+         vPYR3Ks9AAhpi99XL/LGkck8WAvr2NZocYcvnhxNW+5QFEyq2eIRdJlZWPH+Xq3/yAyg
+         w/8w==
+X-Gm-Message-State: AOAM5321tk2W51TXs1rnixEh84mRQdX7kUzO4waTfD9IrrOIi4u6CEil
+        vXsj5z9paRgePJq+6GrAfUQN8O8A7e/lc8+Momc=
+X-Google-Smtp-Source: ABdhPJz2O4DBISUCLAR/kMEi9tuaM6RkZ5fY65PyWK3fsl2Xw8Rol1/2G9QYKQWCwWde1YPgoARYOiu95keFbjPun1E=
+X-Received: by 2002:a9d:564:: with SMTP id 91mr11986786otw.250.1589802453218;
+ Mon, 18 May 2020 04:47:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1589555337-5498-18-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1589555337-5498-18-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 18 May 2020 13:47:19 +0200
+Message-ID: <CAMuHMdVV+2HsgmBytCOFg4pri4XinT_SPWT_Ac6n7FMZN3dR3w@mail.gmail.com>
+Subject: Re: [PATCH 17/17] ARM: dts: r8a7742: Add RWDT node
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>, linux-ide@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new ->ndo_tunnel_ctl instead of overriding the address limit
-and using ->ndo_do_ioctl just to do a pointless user copy.
+Hi Prabhakar,
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- net/ipv6/addrconf.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+On Fri, May 15, 2020 at 5:10 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Add a device node for the Watchdog Timer (RWDT) controller on the Renesas
+> RZ/G1H (r8a7742) SoC.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index c827edf877414..09cfbf5dd7ce0 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -2787,8 +2787,6 @@ static int addrconf_set_sit_dstaddr(struct net *net, struct net_device *dev,
- 		struct in6_ifreq *ireq)
- {
- 	struct ip_tunnel_parm p = { };
--	mm_segment_t oldfs = get_fs();
--	struct ifreq ifr;
- 	int err;
- 
- 	if (!(ipv6_addr_type(&ireq->ifr6_addr) & IPV6_ADDR_COMPATv4))
-@@ -2799,13 +2797,10 @@ static int addrconf_set_sit_dstaddr(struct net *net, struct net_device *dev,
- 	p.iph.ihl = 5;
- 	p.iph.protocol = IPPROTO_IPV6;
- 	p.iph.ttl = 64;
--	ifr.ifr_ifru.ifru_data = (__force void __user *)&p;
- 
--	if (!dev->netdev_ops->ndo_do_ioctl)
-+	if (!dev->netdev_ops->ndo_tunnel_ctl)
- 		return -EOPNOTSUPP;
--	set_fs(KERNEL_DS);
--	err = dev->netdev_ops->ndo_do_ioctl(dev, &ifr, SIOCADDTUNNEL);
--	set_fs(oldfs);
-+	err = dev->netdev_ops->ndo_tunnel_ctl(dev, &p, SIOCADDTUNNEL);
- 	if (err)
- 		return err;
- 
+Thanks for your patch!
+
+> --- a/arch/arm/boot/dts/r8a7742.dtsi
+> +++ b/arch/arm/boot/dts/r8a7742.dtsi
+> @@ -201,6 +201,16 @@
+>                 #size-cells = <2>;
+>                 ranges;
+>
+> +               rwdt: watchdog@e6020000 {
+> +                       compatible = "renesas,r8a7742-wdt",
+> +                                    "renesas,rcar-gen2-wdt";
+> +                       reg = <0 0xe6020000 0 0x0c>;
+> +                       clocks = <&cpg CPG_MOD 402>;
+> +                       power-domains = <&sysc R8A7742_PD_ALWAYS_ON>;
+> +                       resets = <&cpg 402>;
+> +                       status = "disabled";
+
+Missing "interrupts" property.
+
+> +               };
+> +
+>                 gpio0: gpio@e6050000 {
+>                         compatible = "renesas,gpio-r8a7742",
+>                                      "renesas,rcar-gen2-gpio";
+
+The rest looks fine, so with the above fixed:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.26.2
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
