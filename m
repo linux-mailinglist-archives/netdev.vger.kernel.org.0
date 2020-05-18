@@ -2,154 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D3A1D862B
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41D391D8780
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387833AbgERSXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 14:23:23 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:43922 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729053AbgERSXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:23:19 -0400
-Received: by mail-il1-f199.google.com with SMTP id v14so10637559ilm.10
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:23:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=VE/q/zOb79YRe/blnUpKKcdAGP9yqe5NK3iFhMeczSs=;
-        b=FWtS0w1Q3jPS89aCkGt1MWmInE3EfdV77JwB1BRxT23Fz8jQ9h1JEYPw/FC3KIySMM
-         X6cTwOUazNl+GE0MQw2hTk6jBpHKsGXmW0vUtFik106+Oq08dGj7GoRDqtg8Nnw2ESpj
-         XMr6mL9h+JoXAInt6NX24ujjZLyQyTCG0ynSI7kKNFHPYLDqTPXkUF6j5Gz1eqQpGvsz
-         /V8ulDRaYVEP49qmKmY4jKcsARijWG3eUGXIKhXBlAORKlzQQkoLgPWCg8CH0WYPGB58
-         62ts1kR+ue8gYRaZnIVIvoKRYm/Us7HyUxne0dFJ7zE+kUxDXfr7X65u69JsIL5X7fUs
-         lu4g==
-X-Gm-Message-State: AOAM532GTAgA55QuJN7FRFFv3KpRjZjXdWYGbdJ0QnJyNnFr2R1VIbol
-        6+CwF2FLcOoOM2RYenT37eg081OTjRq+n+s081k0XBlAqElg
-X-Google-Smtp-Source: ABdhPJw3jqhA6oQMlWENcCbGd9dolHlf9BcFjk3ZNFE2XwmwQrkl8msmNDOzjdw9MqkoQ/H3IviKwoL91yGWNjAvStX/srV6lUvx
+        id S1729333AbgERSsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 14:48:10 -0400
+Received: from mga17.intel.com ([192.55.52.151]:25110 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728954AbgERSsJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 May 2020 14:48:09 -0400
+IronPort-SDR: 9w171sGsPnXirNoSx2AUB3WNFcAG++UvT/G8tNU0+0tavcta3Q3Wz1OP5TbCqUCqQHg8PmNM2w
+ nGMqcGKqYVNA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2020 11:48:09 -0700
+IronPort-SDR: mgWApbAGJRj9w0REMKEw6KCfhSIfuskQOQLzs/P57nbv/sxZwkmU+NY36C2Ft9lPuIDn8zANQd
+ 4mihNWmNYG6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,407,1583222400"; 
+   d="scan'208";a="264053954"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga003.jf.intel.com with ESMTP; 18 May 2020 11:48:06 -0700
+Date:   Mon, 18 May 2020 20:44:58 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, lmb@cloudflare.com,
+        john.fastabend@gmail.com
+Subject: Re: getting bpf_tail_call to work with bpf function calls. Was: [RFC
+ PATCH bpf-next 0/1] bpf, x64: optimize JIT prologue/epilogue generation
+Message-ID: <20200518184458.GC6472@ranger.igk.intel.com>
+References: <20200511143912.34086-1-maciej.fijalkowski@intel.com>
+ <2e3c6be0-e482-d856-7cc1-b1d03a26428e@iogearbox.net>
+ <20200512000153.hfdeh653v533qbe6@ast-mbp.dhcp.thefacebook.com>
+ <20200513115855.GA3574@ranger.igk.intel.com>
+ <20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:b001:: with SMTP id x1mr7087287ilh.18.1589826197968;
- Mon, 18 May 2020 11:23:17 -0700 (PDT)
-Date:   Mon, 18 May 2020 11:23:17 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c8dd5305a5f041be@google.com>
-Subject: KMSAN: uninit-value in pfifo_fast_dequeue
-From:   syzbot <syzbot+ae62f326a5154c4b908f@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, May 16, 2020 at 09:32:27PM -0700, Alexei Starovoitov wrote:
+> On Wed, May 13, 2020 at 01:58:55PM +0200, Maciej Fijalkowski wrote:
+> > 
+> > So to me, if we would like to get rid of maxing out stack space, then we
+> > would have to do some dancing for preserving the tail call counter - keep
+> > it in some unused register? Or epilogue would pop it from stack to some
+> > register and target program's prologue would push it to stack from that
+> > register (I am making this up probably). And rbp/rsp would need to be
+> > created/destroyed during the program-to-program transition that happens
+> > via tailcall. That would mean also more instructions.
+> 
+> How about the following:
+> The prologue will look like:
+> nop5
+> xor eax,eax  // two new bytes if bpf_tail_call() is used in this function
+> push rbp
+> mov rbp, rsp
+> sub rsp, rounded_stack_depth
+> push rax // zero init tail_call counter
+> variable number of push rbx,r13,r14,r15
+> 
+> Then bpf_tail_call will pop variable number rbx,..
+> and final 'pop rax'
+> Then 'add rsp, size_of_current_stack_frame'
+> jmp to next function and skip over 'nop5; xor eax,eax; push rpb; mov rbp, rsp'
+> 
+> This way new function will set its own stack size and will init tail call
+> counter with whatever value the parent had.
+> 
+> If next function doesn't use bpf_tail_call it won't have 'xor eax,eax'.
+> Instead it would need to have 'nop2' in there.
+> That's the only downside I see.
+> Any other ideas?
 
-syzbot found the following crash on:
+Not really - had a thought with Bjorn about using one callee-saved
+register that is yet unused by x64 JIT (%r12) and i was also thinking
+about some freaky usage of SSE register as a general purpose one. However,
+your idea is pretty neat - I gave it already a shot and with a single
+tweak I managed to got it working, e.g. selftests are fine as well as two
+samples that utilize tail calls. Note also that I got rid of the stack
+clamp being done in fixup_bpf_calls.
 
-HEAD commit:    a58741ac kmsan: don't compile memmove
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=12def203e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=abbc202e1724cf37
-dashboard link: https://syzkaller.appspot.com/bug?extid=ae62f326a5154c4b908f
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1694ae75e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15b970ade00000
+About a tweak:
+- RETPOLINE_RAX_BPF_JIT used for indirect tail calls needed to become a
+  RETPOLINE_RCX_BPF_JIT, so that we preserve the content of %rax across
+  jumping between programs via tail calls. I looked up GCC commit that
+  Daniel quoted on a patch that implements RETPOLINE_RAX_BPF_JIT and it
+  said that for register that is holding the address of function that we
+  will be jumping onto, we are free to use most of GP registers. I picked
+  %rcx.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+ae62f326a5154c4b908f@syzkaller.appspotmail.com
+I was also thinking about a minor optimization where we would replace the
+add/sub %rsp, $off32 with a nop7 if stack depth is 0.
 
-=====================================================
-BUG: KMSAN: uninit-value in kmsan_check_skb+0x3c/0x210 mm/kmsan/kmsan_hooks.c:299
-CPU: 1 PID: 804 Comm: kworker/u4:27 Not tainted 5.6.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: bat_events batadv_iv_send_outstanding_bat_ogm_packet
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
- kmsan_internal_check_memory+0x238/0x3d0 mm/kmsan/kmsan.c:423
- kmsan_check_skb+0x3c/0x210 mm/kmsan/kmsan_hooks.c:299
- pfifo_fast_dequeue+0xdb4/0xfd0 net/sched/sch_generic.c:658
- dequeue_skb net/sched/sch_generic.c:264 [inline]
- qdisc_restart net/sched/sch_generic.c:367 [inline]
- __qdisc_run+0x3f1/0x3350 net/sched/sch_generic.c:385
- qdisc_run include/net/pkt_sched.h:126 [inline]
- __dev_xmit_skb net/core/dev.c:3668 [inline]
- __dev_queue_xmit+0x23b7/0x3b20 net/core/dev.c:4021
- dev_queue_xmit_accel+0x67/0x80 net/core/dev.c:4091
- macvlan_queue_xmit drivers/net/macvlan.c:537 [inline]
- macvlan_start_xmit+0x587/0xb50 drivers/net/macvlan.c:562
- __netdev_start_xmit include/linux/netdevice.h:4523 [inline]
- netdev_start_xmit include/linux/netdevice.h:4537 [inline]
- xmit_one net/core/dev.c:3477 [inline]
- dev_hard_start_xmit+0x531/0xab0 net/core/dev.c:3493
- __dev_queue_xmit+0x2f8d/0x3b20 net/core/dev.c:4052
- dev_queue_xmit+0x4b/0x60 net/core/dev.c:4085
- batadv_send_skb_packet+0x59b/0x8c0 net/batman-adv/send.c:108
- batadv_send_broadcast_skb+0x76/0x90 net/batman-adv/send.c:127
- batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:393 [inline]
- batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:419 [inline]
- batadv_iv_send_outstanding_bat_ogm_packet+0x97e/0xd50 net/batman-adv/bat_iv_ogm.c:1710
- process_one_work+0x1555/0x1f40 kernel/workqueue.c:2266
- worker_thread+0xef6/0x2450 kernel/workqueue.c:2412
- kthread+0x4b5/0x4f0 kernel/kthread.c:256
- ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:353
+About a way forward - I reached out to Bjorn to co-operate on providing
+the benchmark for measuring the impact of new tail call handling as well
+as providing a proof in a form of selftests that bpf2bpf is working
+together with tail calls.
 
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:310
- kmsan_memcpy_memmove_metadata+0x272/0x2e0 mm/kmsan/kmsan.c:247
- kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:267
- __msan_memcpy+0x43/0x50 mm/kmsan/kmsan_instr.c:116
- pskb_expand_head+0x38b/0x1b00 net/core/skbuff.c:1636
- __skb_cow include/linux/skbuff.h:3169 [inline]
- skb_cow_head include/linux/skbuff.h:3203 [inline]
- batadv_skb_head_push+0x234/0x350 net/batman-adv/soft-interface.c:74
- batadv_send_skb_packet+0x1a7/0x8c0 net/batman-adv/send.c:86
- batadv_send_broadcast_skb+0x76/0x90 net/batman-adv/send.c:127
- batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:393 [inline]
- batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:419 [inline]
- batadv_iv_send_outstanding_bat_ogm_packet+0x97e/0xd50 net/batman-adv/bat_iv_ogm.c:1710
- process_one_work+0x1555/0x1f40 kernel/workqueue.c:2266
- worker_thread+0xef6/0x2450 kernel/workqueue.c:2412
- kthread+0x4b5/0x4f0 kernel/kthread.c:256
- ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:353
+About a benchmark, we think that having tests for best and worst cases
+would tell us what is going on. So:
+- have a main program that is not using any of callee registers that will
+  be tailcalling onto another program that is also not using any of R6-R9.
+- have the same flow but both programs will be using R6, R7, R8, R9; main
+  program needs to use them because we will be popping these registers
+  before the tail call and target program will be doing pushes.
 
-Uninit was created at:
- kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:144
- kmsan_internal_alloc_meta_for_pages mm/kmsan/kmsan_shadow.c:307 [inline]
- kmsan_alloc_page+0x12a/0x310 mm/kmsan/kmsan_shadow.c:336
- __alloc_pages_nodemask+0x5712/0x5e80 mm/page_alloc.c:4775
- __alloc_pages include/linux/gfp.h:498 [inline]
- __alloc_pages_node include/linux/gfp.h:511 [inline]
- alloc_pages_node include/linux/gfp.h:525 [inline]
- __page_frag_cache_refill mm/page_alloc.c:4850 [inline]
- page_frag_alloc+0x3ae/0x910 mm/page_alloc.c:4880
- __napi_alloc_skb+0x193/0xa60 net/core/skbuff.c:519
- napi_alloc_skb include/linux/skbuff.h:2874 [inline]
- page_to_skb+0x19f/0x1100 drivers/net/virtio_net.c:384
- receive_mergeable drivers/net/virtio_net.c:924 [inline]
- receive_buf+0xe79/0x8b30 drivers/net/virtio_net.c:1033
- virtnet_receive drivers/net/virtio_net.c:1323 [inline]
- virtnet_poll+0x64b/0x19f0 drivers/net/virtio_net.c:1428
- napi_poll net/core/dev.c:6571 [inline]
- net_rx_action+0x786/0x1aa0 net/core/dev.c:6639
- __do_softirq+0x311/0x83d kernel/softirq.c:293
+Daniel, John, is there some Cilium benchmark that we could incorporate? I
+don't think we be able to come up with a program that would mimic what you
+have previously described, e.g. 6 static jumps where every program would
+be utilizing every callee-saved register. Any help/pointers on how should
+we approach it would be very appreciated.
 
-Bytes 52-53 of 146 are uninitialized
-Memory access of size 146 starts at ffff8ed3c0806c40
-=====================================================
+Does that sound like a plan, overall?
 
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thank you,
+Maciej
