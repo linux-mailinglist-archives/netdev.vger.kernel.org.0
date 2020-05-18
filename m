@@ -2,118 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30D081D7C7B
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 17:12:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB6161D7CF3
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 17:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728231AbgERPMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 11:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727006AbgERPMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 11:12:47 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C0CC061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 08:12:47 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id f189so10407692qkd.5
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 08:12:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JIj6I8r3/cBS+MKQ77dbW/xynFdQvZB1TXULhPz18Lo=;
-        b=F9ef2wdVsr/m2C6LZVx9N2OKwkKnXmT+lMrYFf4MXa+Q9FJxgJ+VHouMr1RrpORh2q
-         m5tzsvZ7OnFcOo8cieaPImN1CtI6rGdGy97dF0vaGncEw5vfF57ZSnBGJNKB0Y9X6Cox
-         sVYQpW7q/ygKxgtM7Dyz6xjWgziW3/YeHE+PXSe1DbX8/wlwEsiD33j+xolurIfr50Ha
-         paGaJOgTrii9hcwvsYsS3gYkigaIZi+bBOd6BQ+vbvSp33s3xrBoXH7cd+8GkiAgaNNc
-         CA0t9xnqntnQR1mT6Ie/y0yaX/ZMiY8LqiZm+IxO8eE52dxMnDW2aSn79EtUfwooCziA
-         r2KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JIj6I8r3/cBS+MKQ77dbW/xynFdQvZB1TXULhPz18Lo=;
-        b=PJ+piVWSzXLWwT9SIEyplUCqmUS9+hYLAmniO97iwWbNHQpcAq0UmMhzPSENZkym9k
-         p2L3PGXfsffkk10EnAiycltAdd3PwNvp9AIRO8BLN4TnJKZsSHW1dXvStZ4e6LJUGXta
-         TCvmhvwSm2lB1fWVm1ICmXXRpxk4tUsf1NSPbVg5tbFsF95qMvwcxU4P26dF6VN9Rzb1
-         EBoVbMMeoWDWb6qekMhOViXSLnarIAeVgpV+0MWSKG98HA6yZjkk7VbbDuvfgLNTiDh7
-         Yr3ZMU3rLU+iIfmfOPhvowdGOnqzwSJyMDiSKV4qiFIplKZ7jUIzoIgng9HY6eDWy323
-         +X+Q==
-X-Gm-Message-State: AOAM530YgROUcb3NS+jayX1xA2SL3f4cj5wa7HvB1KvGFf50YIUE6DC9
-        Ca7W8AH7DT3kRsf5qxJIVMV22rZ8
-X-Google-Smtp-Source: ABdhPJzLhI0WlaZGldL40rOPiRojkZuWrzcl9sMa64f97D4XclXkTyey70x1LSza4Fg2kuqbKxb0nw==
-X-Received: by 2002:a05:620a:2049:: with SMTP id d9mr17601473qka.449.1589814766002;
-        Mon, 18 May 2020 08:12:46 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:f866:b23:9405:7c31? ([2601:282:803:7700:f866:b23:9405:7c31])
-        by smtp.googlemail.com with ESMTPSA id 67sm1565211qkg.51.2020.05.18.08.12.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2020 08:12:45 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] tc: mqprio: reject queues count/offset pair
- count higher than num_tc
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     netdev@vger.kernel.org, kiran.patil@intel.com
-References: <20200513194717.15363-1-maciej.fijalkowski@intel.com>
- <20200518080810.568a6d28@hermes.lan>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <08dff834-05e7-6079-4895-907a35a2a1a6@gmail.com>
-Date:   Mon, 18 May 2020 09:12:44 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1728199AbgERPfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 11:35:37 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34738 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727005AbgERPfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 11:35:36 -0400
+Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jahnh-00028o-H7; Mon, 18 May 2020 17:35:33 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     ast@kernel.org
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, rdna@fb.com,
+        sdf@google.com, Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH bpf-next 0/4] Add get{peer,sock}name cgroup attach types
+Date:   Mon, 18 May 2020 17:35:11 +0200
+Message-Id: <cover.1589813738.git.daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20200518080810.568a6d28@hermes.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25816/Mon May 18 14:17:08 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/20 9:08 AM, Stephen Hemminger wrote:
-> On Wed, 13 May 2020 21:47:17 +0200
-> Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
-> 
->> Provide a sanity check that will make sure whether queues count/offset
->> pair count will not exceed the actual number of TCs being created.
->>
->> Example command that is invalid because there are 4 count/offset pairs
->> whereas num_tc is only 2.
->>
->>  # tc qdisc add dev enp96s0f0 root mqprio num_tc 2 map 0 0 0 0 1 1 1 1
->> queues 4@0 4@4 4@8 4@12 hw 1 mode channel
->>
->> Store the parsed count/offset pair count onto a dedicated variable that
->> will be compared against opt.num_tc after all of the command line
->> arguments were parsed. Bail out if this count is higher than opt.num_tc
->> and let user know about it.
->>
->> Drivers were swallowing such commands as they were iterating over
->> count/offset pairs where num_tc was used as a delimiter, so this is not
->> a big deal, but better catch such misconfiguration at the command line
->> argument parsing level.
->>
->> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
->> ---
->>  tc/q_mqprio.c | 8 ++++++++
->>  1 file changed, 8 insertions(+)
->>
->> diff --git a/tc/q_mqprio.c b/tc/q_mqprio.c
->> index 0eb41308..f26ba8d7 100644
->> --- a/tc/q_mqprio.c
->> +++ b/tc/q_mqprio.c
->> @@ -48,6 +48,7 @@ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
->>  	__u64 max_rate64[TC_QOPT_MAX_QUEUE] = {0};
->>  	__u16 shaper = TC_MQPRIO_SHAPER_DCB;
->>  	__u16 mode = TC_MQPRIO_MODE_DCB;
->> +	int cnt_off_pairs = 0;
-> 
-> Since opt.num_tc is u8, shouldn't this be u8 as well?
-> Note: maximum number of queue is TC_QOPT_MAX_QUEUE (16).
-> 
+Trivial patch to add get{peer,sock}name cgroup attach types to the BPF
+sock_addr programs in order to enable rewriting sockaddr structs from
+both calls along with libbpf and bpftool support as well as selftests.
 
-I was looking that as having cnt_off_pairs as an int makes for simpler
-code - not having to detect rollover. But if there is a limit, I guess
-that takes precedence.
+Thanks!
 
-And if there is a limit, perhaps that should be checked on num_tc parsing.
+Daniel Borkmann (4):
+  bpf: add get{peer,sock}name attach types for sock_addr
+  bpf, libbpf: enable get{peer,sock}name attach types
+  bpf, bpftool: enable get{peer,sock}name attach types
+  bpf, testing: add get{peer,sock}name selftests to test_progs
+
+ include/linux/bpf-cgroup.h                    |   1 +
+ include/uapi/linux/bpf.h                      |   4 +
+ kernel/bpf/syscall.c                          |  12 ++
+ kernel/bpf/verifier.c                         |   6 +-
+ net/core/filter.c                             |   4 +
+ net/ipv4/af_inet.c                            |   8 +-
+ net/ipv6/af_inet6.c                           |   9 +-
+ .../bpftool/Documentation/bpftool-cgroup.rst  |  10 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |   3 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |  15 ++-
+ tools/bpf/bpftool/cgroup.c                    |   7 +-
+ tools/bpf/bpftool/main.h                      |   4 +
+ tools/bpf/bpftool/prog.c                      |   6 +-
+ tools/include/uapi/linux/bpf.h                |   4 +
+ tools/lib/bpf/libbpf.c                        |   8 ++
+ tools/testing/selftests/bpf/network_helpers.c |  11 +-
+ tools/testing/selftests/bpf/network_helpers.h |   1 +
+ .../bpf/prog_tests/connect_force_port.c       | 107 +++++++++++++-----
+ .../selftests/bpf/progs/connect_force_port4.c |  59 +++++++++-
+ .../selftests/bpf/progs/connect_force_port6.c |  70 +++++++++++-
+ 20 files changed, 295 insertions(+), 54 deletions(-)
+
+-- 
+2.21.0
+
