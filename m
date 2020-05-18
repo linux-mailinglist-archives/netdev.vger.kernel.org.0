@@ -2,90 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9D61D6FF6
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 06:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA8391D6FFE
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 06:54:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbgEREtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 00:49:23 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57592 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726040AbgEREtX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 00:49:23 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 1B1D2AC68;
-        Mon, 18 May 2020 04:49:24 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id A03D460347; Mon, 18 May 2020 06:49:20 +0200 (CEST)
-Date:   Mon, 18 May 2020 06:49:20 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Healy <cphealy@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 4/7] net: phy: marvell: Add support for
- amplitude graph
-Message-ID: <20200518044920.GK21714@lion.mk-sys.cz>
-References: <20200517195851.610435-1-andrew@lunn.ch>
- <20200517195851.610435-5-andrew@lunn.ch>
- <CAFXsbZohCG5OScjAszD5vpMacfUEUYK_74FU1tjz4Sm8nbegsg@mail.gmail.com>
- <20200517205150.GB610998@lunn.ch>
+        id S1726413AbgEREyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 00:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726040AbgEREyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 00:54:13 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C8DC061A0C;
+        Sun, 17 May 2020 21:54:13 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id t7so3738638plr.0;
+        Sun, 17 May 2020 21:54:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CNyAh3C19OfyBhM8UYQrB5bR+7wKmGoyo3pyav8YnVo=;
+        b=BsCVTvxE0mGB5xc/3+LSNQW99Lq6bU0DvZnZ7VAbz3ttY2BP2Qjxecfp/BUfMEsCFV
+         jZoOi2MgCyZConAzujtJZwKveV8yckPzTq7SCpQuKdCk58EAaLhE3rWvuu4VJt5PlpiH
+         NkdeL6e6F8UpgW0FdQrDQja+1QMUl78qTTyhIUCJaLO6hlW6qU6MAl/r7jUCiBM1RYzT
+         c7TRlKmCbZlO8x4vPJ/P1O5M9nGZPljHjKZ8h9JvjF/LZPnTxNUu/Tn6QbN/cGtlIIGx
+         xqo1TzA+VmnV50mgLBTcvy2JljOeGq1D6CXH3W6DjOgNviBKCjIYEugK62csu1ZOJYIr
+         pc9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CNyAh3C19OfyBhM8UYQrB5bR+7wKmGoyo3pyav8YnVo=;
+        b=aV7NCSvHs3dKTNKjE26WhUH9z3S1C3BbhMoTmW8MPrmlrGBB7Zo+Y01vupKzLTrgyT
+         vmC2sxfWUX3xPHeS2PhuePYd3m2FebqbrtvtkZ3Zd3l3ppVJbPB7iNxd6SyQmO+R4/OU
+         ic8Kc/KkSKgV243Uj4paIUym7K/hCe2Jkc4SI2BFuAxM6kGAA86zWkw3zL4SojO99Vih
+         DDsvOyj5JkLHcL4oInqg6xm8e7wdavb6aruLfR3sAkMtaf4o61gXjS6+46b2tkECy96T
+         MW8Xnm+9QHOaw0dzWR6AWmYgW1mzcwb7QFt94TvlLXyBnWWlmvUYkO8z2grP6548BTL5
+         wuWw==
+X-Gm-Message-State: AOAM532DMxyID1219SO8n5Ni78XSy6ZtF8PxWuGixB93a4vz9MpQN4X9
+        Fb/ePin5ptcSc+6JGKARHBfnkZbeOiGYag==
+X-Google-Smtp-Source: ABdhPJzqwUM4FYI2rhy+2ZBNtNxAHPmwoAipKaMxVpRm7Z/NIRE2PgJIIrTSk05knuGDBQfGA/9Www==
+X-Received: by 2002:a17:90a:ce18:: with SMTP id f24mr3604918pju.198.1589777652680;
+        Sun, 17 May 2020 21:54:12 -0700 (PDT)
+Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
+        by smtp.gmail.com with ESMTPSA id q3sm1549124pgp.69.2020.05.17.21.54.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 May 2020 21:54:11 -0700 (PDT)
+Date:   Mon, 18 May 2020 13:54:07 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Xiangyang Zhang <xyz.sun.ok@gmail.com>
+Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: qlge: unmap dma when lock failed
+Message-ID: <20200518045407.GA73179@f3>
+References: <20200517054638.10764-1-xyz.sun.ok@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200517205150.GB610998@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200517054638.10764-1-xyz.sun.ok@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 17, 2020 at 10:51:50PM +0200, Andrew Lunn wrote:
-> > > +static int marvell_vct5_amplitude_distance(struct phy_device *phydev,
-> > > +                                          int meters)
-> > > +{
-> > > +       int mV_pair0, mV_pair1, mV_pair2, mV_pair3;
-> > > +       int distance;
-> > > +       u16 reg;
-> > > +       int err;
-> > > +
-> > > +       distance = meters * 1000 / 805;
-> > 
-> > With this integer based meters representation, it seems to me that we
-> > are artificially reducing the resolution of the distance sampling.
-> > For a 100 meter cable, the Marvell implementation looks to support 124
-> > sample points.  This could result in incorrect data reporting as two
-> > adjacent meter numbers would resolve to the same disatance value
-> > entered into the register.  (eg - 2 meters = 2 distance  3 meters = 2
-> > distance)
-> > 
-> > Is there a better way of doing this which would allow for userspace to
-> > use the full resolution of the hardware?
+On 2020-05-17 13:46 +0800, Xiangyang Zhang wrote:
+> DMA not unmapped when lock failed, this patch fixed it.
 > 
-> Hi Chris
+
+Fixes: 4322c5bee85e ("qlge: Expand coverage of hw lock for config register.")
+
+> Signed-off-by: Xiangyang Zhang <xyz.sun.ok@gmail.com>
+> ---
+>  drivers/staging/qlge/qlge_main.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> I don't see a simple solution to this.
-> 
-> PHYs/vendors seem to disagree about the ratio. Atheros use
-> 824. Marvell use 805. I've no idea what Broadcom, aQuantia uses. We
-> would need to limit the choice of step to multiples of whatever the
-> vendor picks as its ratio. If the user picks a step of 2m, the driver
-> needs to return an error and say sorry, please try 2.488 meter steps
-> for Marvell, 2.427 meter steps on Atheros, and who knows what for
-> Broadcom. And when the user requests data just for 1-25 meters, the
-> driver needs to say sorry, try again with 0.824-24.62, or maybe
-> 0.805-24.955. That is not a nice user experience.
-
-How about this?
-
-- user would use meters as unit on ethtool command line but non-integer
-  values like "2.4" would be allowed
-- request message would use e.g. cm (for consistency with existing cable
-  test results)
-- driver would round requested values to closest supported (you actually
-  already round them)
-- optionally, actual values used could be returned in request reply or
-  start notification
-
-Michal
