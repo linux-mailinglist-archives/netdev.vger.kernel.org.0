@@ -2,197 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F211D87FB
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 21:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B3DB1D8807
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 21:15:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbgERTLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 15:11:40 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:39614 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726703AbgERTLj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 15:11:39 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 04IJAWNB007033;
-        Mon, 18 May 2020 22:10:33 +0300
-Date:   Mon, 18 May 2020 22:10:32 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Andrew Sy Kim <kim.andrewsy@gmail.com>
-cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Wensong Zhang <wensong@linux-vs.org>,
-        Simon Horman <horms@verge.net.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: Re: [PATCH] netfilter/ipvs: immediately expire UDP connections
- matching unavailable destination if expire_nodest_conn=1
-In-Reply-To: <20200517171654.8194-1-kim.andrewsy@gmail.com>
-Message-ID: <alpine.LFD.2.21.2005182027460.4524@ja.home.ssi.bg>
-References: <20200515013556.5582-1-kim.andrewsy@gmail.com> <20200517171654.8194-1-kim.andrewsy@gmail.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1727066AbgERTOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 15:14:36 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:15528 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726640AbgERTOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 15:14:35 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04IJ1m61077558;
+        Mon, 18 May 2020 15:13:56 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 312cayku13-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 May 2020 15:13:56 -0400
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 04IJ1u8g078009;
+        Mon, 18 May 2020 15:13:55 -0400
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 312cayku0f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 May 2020 15:13:55 -0400
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 04IJ9JjX006711;
+        Mon, 18 May 2020 19:13:54 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma02dal.us.ibm.com with ESMTP id 313wha9uep-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 May 2020 19:13:54 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 04IJCrYY49676774
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 18 May 2020 19:12:53 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0A19BC6055;
+        Mon, 18 May 2020 19:12:53 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E92FDC6057;
+        Mon, 18 May 2020 19:12:48 +0000 (GMT)
+Received: from oc3272150783.ibm.com (unknown [9.160.104.35])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTPS;
+        Mon, 18 May 2020 19:12:48 +0000 (GMT)
+Date:   Mon, 18 May 2020 14:12:42 -0500
+From:   "Paul A. Clarke" <pc@us.ibm.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: metric expressions including metrics?
+Message-ID: <20200518191242.GA27634@oc3272150783.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-18_06:2020-05-15,2020-05-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ lowpriorityscore=0 mlxscore=0 suspectscore=0 spamscore=0 impostorscore=0
+ malwarescore=0 adultscore=0 bulkscore=0 clxscore=1011 mlxlogscore=999
+ priorityscore=1501 cotscore=-2147483648 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005180157
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+I'm curious how hard it would be to define metrics using other metrics,
+in the metrics definition files.
 
-	Hello,
+Currently, to my understanding, every metric definition must be an
+expresssion based solely on arithmetic combinations of hardware events.
 
-On Sun, 17 May 2020, Andrew Sy Kim wrote:
+Some metrics are hierarchical in nature such that a higher-level metric
+can be defined as an arithmetic expression of two other metrics, e.g.
 
-> If expire_nodest_conn=1 and a UDP destination is deleted, IPVS should
-> also expire all matching connections immiediately instead of waiting for
-> the next matching packet. This is particulary useful when there are a
-> lot of packets coming from a few number of clients. Those clients are
-> likely to match against existing entries if a source port in the
-> connection hash is reused. When the number of entries in the connection
-> tracker is large, we can significantly reduce the number of dropped
-> packets by expiring all connections upon deletion.
-> 
-> Signed-off-by: Andrew Sy Kim <kim.andrewsy@gmail.com>
-> ---
->  include/net/ip_vs.h             |  7 ++++++
->  net/netfilter/ipvs/ip_vs_conn.c | 38 +++++++++++++++++++++++++++++++++
->  net/netfilter/ipvs/ip_vs_core.c |  5 -----
->  net/netfilter/ipvs/ip_vs_ctl.c  |  9 ++++++++
->  4 files changed, 54 insertions(+), 5 deletions(-)
-> 
+cache_miss_cycles_per_instruction =
+  data_cache_miss_cycles_per_instruction +
+  instruction_cache_miss_cycles_per_instruction
 
-> diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
-> index 02f2f636798d..c69dfbbc3416 100644
-> --- a/net/netfilter/ipvs/ip_vs_conn.c
-> +++ b/net/netfilter/ipvs/ip_vs_conn.c
-> @@ -1366,6 +1366,44 @@ static void ip_vs_conn_flush(struct netns_ipvs *ipvs)
->  		goto flush_again;
->  	}
->  }
-> +
-> +/*	Flush all the connection entries in the ip_vs_conn_tab with a
-> + *	matching destination.
-> + */
-> +void ip_vs_conn_flush_dest(struct netns_ipvs *ipvs, struct ip_vs_dest *dest)
-> +{
-> +	int idx;
-> +	struct ip_vs_conn *cp, *cp_c;
-> +
-> +	rcu_read_lock();
-> +	for (idx = 0; idx < ip_vs_conn_tab_size; idx++) {
-> +		hlist_for_each_entry_rcu(cp, &ip_vs_conn_tab[idx], c_list) {
-> +			if (cp->ipvs != ipvs)
-> +				continue;
-> +
-> +			if (cp->dest != dest)
-> +				continue;
-> +
-> +			/* As timers are expired in LIFO order, restart
-> +			 * the timer of controlling connection first, so
-> +			 * that it is expired after us.
-> +			 */
-> +			cp_c = cp->control;
-> +			/* cp->control is valid only with reference to cp */
-> +			if (cp_c && __ip_vs_conn_get(cp)) {
-> +				IP_VS_DBG(4, "del controlling connection\n");
-> +				ip_vs_conn_expire_now(cp_c);
-> +				__ip_vs_conn_put(cp);
-> +			}
-> +			IP_VS_DBG(4, "del connection\n");
-> +			ip_vs_conn_expire_now(cp);
-> +		}
-> +		cond_resched_rcu();
+This would need to be defined something like:
+dcache_miss_cpi = "dcache_miss_cycles / instructions"
+icache_miss_cpi = "icache_miss_cycles / instructions"
+cache_miss_cpi = "(dcache_miss_cycles + icache_miss_cycles) / instructions"
 
-	Such kind of loop is correct if done in another context:
+Could the latter definition be simplified to:
+cache_miss_cpi = "dcache_miss_cpi + icache_miss_cpi"
 
-1. kthread
-or
-2. delayed work: mod_delayed_work(system_long_wq, ...)
+With multi-level caches and NUMA hierarchies, some of these higher-level
+metrics can involve a lot of hardware events.
 
-	Otherwise cond_resched_rcu() can schedule() while holding
-__ip_vs_mutex. Also, it will add long delay if many dests are
-removed.
+Given the recent activity in this area, I'm curious if this has been
+considered and already on a wish/to-do list, or found onerous.
 
-	If such loop analyzes instead all cp->dest for 
-IP_VS_DEST_F_AVAILABLE, it should be done after calling
-__ip_vs_conn_get().
-
->  static int sysctl_snat_reroute(struct netns_ipvs *ipvs) { return 0; }
-> diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-> index 8d14a1acbc37..f87c03622874 100644
-> --- a/net/netfilter/ipvs/ip_vs_ctl.c
-> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
-> @@ -1225,6 +1225,15 @@ ip_vs_del_dest(struct ip_vs_service *svc, struct ip_vs_dest_user_kern *udest)
->  	 */
->  	__ip_vs_del_dest(svc->ipvs, dest, false);
->  
-> +	/*	If expire_nodest_conn is enabled and protocol is UDP,
-> +	 *	attempt best effort flush of all connections with this
-> +	 *	destination.
-> +	 */
-> +	if (sysctl_expire_nodest_conn(svc->ipvs) &&
-> +	    dest->protocol == IPPROTO_UDP) {
-> +		ip_vs_conn_flush_dest(svc->ipvs, dest);
-
-	Above work should be scheduled from __ip_vs_del_dest().
-Check for UDP is not needed, sysctl_expire_nodest_conn() is for
-all protocols.
-
-	If the flushing is complex to implement, we can still allow
-rescheduling for unavailable dests:
-
-- first we should move this block above the ip_vs_try_to_schedule() 
-block because:
-
-	1. the scheduling does not return unavailabel dests, even
-	for persistence, so no need to check new connections for
-	the flag
-
-	2. it will allow to create new connection if dest for
-	existing connection is unavailable
-
-	if (cp && cp->dest && !(cp->dest->flags & IP_VS_DEST_F_AVAILABLE)) {
-		/* the destination server is not available */
-
-		if (sysctl_expire_nodest_conn(ipvs)) {
-			bool uses_ct = ip_vs_conn_uses_conntrack(cp, skb);
-
-			ip_vs_conn_expire_now(cp);
-			__ip_vs_conn_put(cp);
-			if (uses_ct)
-				return NF_DROP;
-			cp = NULL;
-		} else {
-			__ip_vs_conn_put(cp);
-			return NF_DROP;
-		}
-	}
-
-	if (unlikely(!cp)) {
-		int v;
-
-		if (!ip_vs_try_to_schedule(ipvs, af, skb, pd, &v, &cp, &iph))
-			return v;
-	}
-
-	Before now, we always waited one jiffie connection to expire,
-now one packet will:
-
-- schedule expiration for existing connection with unavailable dest,
-as before
-
-- create new connection to available destination that will be found
-first in lists. But it can work only when sysctl var "conntrack" is 0,
-we do not want to create two netfilter conntracks to different
-real servers.
-
-	Note that we intentionally removed the timer_pending() check
-because we can not see existing ONE_PACKET connections in table.
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+Regards,
+Paul Clarke
