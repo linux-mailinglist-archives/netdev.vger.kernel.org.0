@@ -2,222 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B254E1D8442
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:11:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3182C1D851D
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:17:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733047AbgERSK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 14:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732979AbgERSKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:10:55 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E71DC05BD09
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:10:55 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id f4so11618308iov.11
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=w3PcIuoE+UYdqtbKWOyNWqo5WYCCkMtjBoB3uATICjA=;
-        b=UdKlxDEljHFk2reIZ/PtTXpjvTWiS42HlYkH2paVgxTR3HVwOSMUseIaT2V3s8CFFw
-         ziEX8aUeYTnF4p+TX8KUqEYZ/XJvr44PcFzAmDWsR1jzK0PcF23Cf9PVfwkVTE3sPO/k
-         zF8csa5FbYAX655izKwjaL8KBMIQIKhXrUeYpxSklf5/tC4i00g9rqI0Y1W8s4h+FlOB
-         f/1i8vPFrSz2OeRJkP6QMpWqZ8FJGG8yFe0YiPx/nCMRxky3KN6f72lhFjocYFQa5zMM
-         CgUUKZPA+ZDKlDN22B3Sq3Qo1D1OQOuUE+O6U2GMU+ETWY+gdiMWDSs51wYdU1hRP4mJ
-         QUqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=w3PcIuoE+UYdqtbKWOyNWqo5WYCCkMtjBoB3uATICjA=;
-        b=eSNOKWuyNqUX7FHO35UuAGUeae8vlcnqjPGt/R5oy7SqpUjTJywKGKKzNgPrKDc3cp
-         Q+bDtY4A73gVHDeHGHmlsUS8s8UW+WMM0VMMvbnXKlRrvyozO2fQd4keHe7Dl+e0OEVz
-         TitH/C3Mfbr60M3Xu5I17l2nYU5AA1T75/LG0nLFQXa2HkAUKiCJTRR2xIw0fGUFH84l
-         lfHLKTvtNkztWzNDvBmkaSKxq17HuYi3NrIt3JrmPDzE8S5MLLVhriuwA65T1HNmj9g5
-         e9j/6paxnhH7i9nNbp+P8HGV2sQVNMVKRjJC1Nx9ovDWpG+Rm0PsBAMj1fm+WV2jRFjg
-         RGvg==
-X-Gm-Message-State: AOAM531OqOwK/sgKTgJDXyZr9I6IV/9jcP/nJ7ezLFbxNGnfV++Q48aW
-        sWJqYpfzlqirH+KGpIfPr2M=
-X-Google-Smtp-Source: ABdhPJwUg8d+BY6rrFxK62tC3+ITkwUiqP9+KKMYA4sP4+UnccYRyw7jPiaka0LNf8YelJZJzswHfg==
-X-Received: by 2002:a02:58c3:: with SMTP id f186mr17363954jab.120.1589825454381;
-        Mon, 18 May 2020 11:10:54 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id b18sm628203ilh.77.2020.05.18.11.10.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2020 11:10:53 -0700 (PDT)
-Date:   Mon, 18 May 2020 11:10:44 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     David Ahern <dsahern@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, brouer@redhat.com,
-        daniel@iogearbox.net, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Message-ID: <5ec2cfa49a8d7_1c562afa67bea5b47c@john-XPS-13-9370.notmuch>
-In-Reply-To: <2148cc16-4988-5866-cb64-0a4f3d290a23@gmail.com>
-References: <20200513014607.40418-1-dsahern@kernel.org>
- <87sgg4t8ro.fsf@toke.dk>
- <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com>
- <5ebf1d9cdc146_141a2acf80de25b892@john-XPS-13-9370.notmuch>
- <2148cc16-4988-5866-cb64-0a4f3d290a23@gmail.com>
-Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress path
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S2387562AbgERSQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 14:16:33 -0400
+Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:49932 "EHLO
+        shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731888AbgERSQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:16:31 -0400
+Received: from [192.168.4.242] (helo=deadeye)
+        by shadbolt.decadent.org.uk with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1jakJP-000528-N7; Mon, 18 May 2020 19:16:27 +0100
+Received: from ben by deadeye with local (Exim 4.93)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1jakJP-003feU-BU; Mon, 18 May 2020 19:16:27 +0100
+Message-ID: <9364a11c93d09de54aea70ab6098f2a654447bd2.camel@decadent.org.uk>
+Subject: Re: [PATCH net] mlx4: Fix information leak on failure to read
+ module EEPROM
+From:   Ben Hutchings <ben@decadent.org.uk>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>
+Cc:     "960702@bugs.debian.org" <960702@bugs.debian.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Date:   Mon, 18 May 2020 19:16:22 +0100
+In-Reply-To: <40aaf07aa7463c0fc6ca89aab36c622bfb789ba4.camel@mellanox.com>
+References: <20200517172053.GA734488@decadent.org.uk>
+         <40aaf07aa7463c0fc6ca89aab36c622bfb789ba4.camel@mellanox.com>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-43UfY+HhXmvvNo9Nz2cj"
+User-Agent: Evolution 3.36.2-1 
+MIME-Version: 1.0
+X-SA-Exim-Connect-IP: 192.168.4.242
+X-SA-Exim-Mail-From: ben@decadent.org.uk
+X-SA-Exim-Scanned: No (on shadbolt.decadent.org.uk); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern wrote:
-> On 5/15/20 4:54 PM, John Fastabend wrote:
-> > Hi David,
-> > 
-> > Another way to set up egress programs that I had been thinking about is to
-> > build a prog_array map with a slot per interface then after doing the
-> > redirect (or I guess the tail call program can do the redirect) do the
-> > tail call into the "egress" program.
-> > 
-> > From a programming side this would look like,
-> > 
-> > 
-> >   ---> ingress xdp bpf                BPF_MAP_TYPE_PROG_ARRAY
-> >          redirect(ifindex)            +---------+
-> >          tail_call(ifindex)           |         |
-> >                       |               +---------+
-> >                       +-------------> | ifindex | 
-> >                                       +---------+
-> >                                       |         |
-> >                                       +---------+
-> > 
-> > 
-> >          return XDP_REDIRECT
-> >                         |
-> >                         +-------------> xdp_xmit
-> > 
-> > 
-> > The controller would then update the BPF_MAP_TYPE_PROG_ARRAY instead of
-> > attaching to egress interface itself as in the series here. I think it
-> > would only require that tail call program return XDP_REDIRECT so the
-> > driver knows to follow through with the redirect. OTOH the egress program
-> > can decide to DROP or PASS as well. The DROP case is straight forward,
-> > packet gets dropped. The PASS case is interesting because it will cause
-> > the packet to go to the stack. Which may or may not be expected I guess.
-> > We could always lint the programs or force the programs to return only
-> > XDP_REDIRECT/XDP_PASS from libbpf side.
-> > 
-> > Would there be any differences from my example and your series from the
-> > datapath side? I think from the BPF program side the only difference
-> > would be return codes XDP_REDIRECT vs XDP_PASS. The control plane is
-> > different however. I don't have a good sense of one being better than
-> > the other. Do you happen to see some reason to prefer native xdp egress
-> > program types over prog array usage?
-> 
-> host ingress to VM is one use case; VM to VM on the same host is another.
 
-But host ingress to VM would still work with tail calls because the XDP
-packet came from another XDP program. At least that is how I understand
-it.
+--=-43UfY+HhXmvvNo9Nz2cj
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-VM to VM case, again using tail calls on the sending VM ingress hook
-would work also.
+On Mon, 2020-05-18 at 16:47 +0000, Saeed Mahameed wrote:
+> On Sun, 2020-05-17 at 18:20 +0100, Ben Hutchings wrote:
+> > mlx4_en_get_module_eeprom() returns 0 even if it fails.  This results
+> > in copying an uninitialised (or partly initialised) buffer back to
+> > user-space.
+[...]
+> I am not sure i see the issue in here, and why we need the partial
+> memset ?
+> first thing in this function we do:
+> memset(data, 0, ee->len);
+>=20
+> and then mlx4_get_module_info() will only copy valid data only on
+> success.
 
-> 
-> > 
-> > From performance side I suspect they will be more or less equivalant.
-> > 
-> > On the positive side using a PROG_ARRAY doesn't require a new attach
-> > point. A con might be right-sizing the PROG_ARRAY to map to interfaces?
-> > Do you have 1000's of interfaces here? Or some unknown number of
-> 
-> 1000ish is probably the right ballpark - up to 500 VM's on a host each
-> with a public and private network connection. From there each interface
-> can have their own firewall (ingress and egress; most likely VM unique
-> data, but to be flexible potentially different programs e.g., blacklist
-> vs whitelist). Each VM will definitely have its own network data - mac
-> and network addresses, and since VMs are untrusted packet validation in
-> both directions is a requirement.
+Wow, sorry, I don't know how I missed that.  So this is not the bug I
+was looking for.
 
-Understood and makes sense.
+>=20
+> > -		if (!ret) /* Done reading */
+> > +		if (!ret) {
+> > +			/* DOM was not readable after all */
+>=20
+> actually if mlx4_get_module_info()  returns any non-negative value it
+> means how much data was read, so if it returns 0, it means that this
+> was the last iteration and we are done reading the eeprom..=20
+>=20
+> so i would remove the above comment and the memset below is redundant
+> since we already memset the whole buffer before the while loop.
 
-> 
-> With respect to lifecycle management of the programs and the data,
-> putting VM specific programs and maps on VM specific taps simplifies
-> management. VM terminates, taps are deleted, programs and maps
-> disappear. So no validator thread needed to handle stray data / programs
-> from the inevitable cleanup problems when everything is lumped into 1
-> program / map or even array of programs and maps.
+Right.
 
-OK. Also presumably you already have a hook into this event to insert
-the tc filter programs so its probably a natural hook for mgmt.
+> > +			memset(data + i, 0, ee->len - i);
+> >  			return 0;
+> > +		}
+> > =20
+> >  		if (ret < 0) {
+> >  			en_err(priv,
+> >  			       "mlx4_get_module_info i(%d) offset(%d)
+> > bytes_to_read(%d) - FAILED (0x%x)\n",
+> >  			       i, offset, ee->len - i, ret);
+> > -			return 0;
+> > +			return ret;
+>=20
+> I think returning error in here was the actual solution for your
+> problem. you can verify by looking in the kernel log and verify you see
+> the log message.
 
-> 
-> To me the distributed approach is the simplest and best. The program on
-> the host nics can be stupid simple; no packet parsing beyond the
-> ethernet header. It's job is just a traffic demuxer very much like a
-> switch. All VM logic and data is local to the VM's interfaces.
+The original bug report (https://bugs.debian.org/960702) says that
+ethtool reports different values depending on whether its output is
+redirected.  Although returning all-zeroes for the unreadable part
+might be wrong, it doesn't explain that behaviour.
 
-IMO it seems more natural and efficient to use a tail call. But, I
-can see how if the ingress program is a l2/l3 switch and the VM hook
-is a l2/l3 filter it feels more like a switch+firewall layout we
-would normally use on a "real" (v)switch. Also I think the above point
-where cleanup is free because of the tap tear down is a win.
+Perhaps if the timing of the I=C2=B2C reads is marginal, varying numbers of
+bytes of DOM information might be readable?  But I don't see how
+redirection of ethtool's output would affect that.  It uses a single
+ioctl to read everything, and the kernel controls timing within that.
 
-> 
-> 
-> > interfaces? I've had building resizable hash/array maps for awhile
-> > on my todo list so could add that for other use cases as well if that
-> > was the only problem.
-> > 
-> > Sorry for the late reply it took me a bit of time to mull over the
-> > patches.
-> > 
-> > Thanks,
-> > John
-> > 
+So I am mystified about what is going on here.  Maybe there is a bug in
+ethtool, but I'm not seeing it.
 
-Pulling in below because I think it was for me.
+Ben.
 
-> I am trying to understand the resistance here. There are ingress/egress
-> hooks for most of the layers - tc, netfilter, and even within bpf APIs.
-> Clearly there is a need for this kind of symmetry across the APIs, so
-> why the resistance or hesitation for XDP?
+> >  		}
+> > =20
+> >  		i +=3D ret;
+--=20
+Ben Hutchings
+The two most common things in the universe are hydrogen and stupidity.
 
-Because I don't see it as necessary and it adds another xdp interface. I
-also didn't fully understand why it would be useful.
 
-> 
-> Stacking programs on the Rx side into the host was brought up 9
-> revisions ago when the first patches went out. It makes for an
-> unnecessarily complicated design and is antithetical to the whole
-> Unix/Linux philosophy of small focused programs linked together to
-> provide a solution.
+--=-43UfY+HhXmvvNo9Nz2cj
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 
-I know it was brought up earlier and at the time the hook was also being
-used for skbs. This sort of convinced me it was different from the tail
-call example. Once skbs usage become impractical it seems like the
-same datapath can be implemented with xdp+prog_array. As I understand
-it this is still the case. The datapath could be implemented as a set
-of xdp+prog_array hooks but the mgmt life-cycle is different and also
-the mental model is a bit different. At least the mental model of the
-BPF developer has to be different.
+-----BEGIN PGP SIGNATURE-----
 
-> Can you elaborate on your concerns?
+iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAl7C0PYACgkQ57/I7JWG
+EQmdiA/8D+wNpcgKm7rW2aSkoc1uS+Um7dRsUCVvEcB9XvlJ3GQp5QHDUcSwhC7t
+BrtjCWnFC9kucuJB8HzOe13Z4h2NPDAa8KOudYf2mtOYAA1XL+WFApB1EqbZsiu0
+feyhzLK6023rlky8aJg20OT5tmXR5Fi13p+JwNA55MOVFwDS2Y2sFZgNlg+qFxiA
+6ywGGQdI1gm3LHVfMCoWc3Y5XgDD+7L8jwJxP5UNTtX0/HIUIb1png5FiVIw/Rhf
+VWNZ9fILgeG283sQj6RgWKuJI0JcV7py2oSWs9TtO1YGGWheomtVqHipjdmwSb3u
+aKue6xZB6K3sAo7k0CuK20yVwPydk5NzrNZw1tbA+RGOXM/QquJNINWFBy98etu/
+6pDce8PSCCbPkArRsbTR5Alt67v1A6eq/2J7m2ZsgjN8GBw5TcGPHUmKTPJ3jsy6
+c1eyLoRhjQG7ESsXtb6QTNW5EOBZIoH8uDeBof60UGKVhNAUTCyA2VCrJVSniDJw
+/2M71WKzoqv3ZMY6OvivnWSSrXQFq0TiynRcSvkjWaN8TONK60k1EykPMezLUqYs
+SAdignvY+miHj/IeYbLyUUV3b/jlZ2EQ/Bz937xxlYGzLJfuc4KsVdr6yW1nD9vA
+IauyguRzon/krrYZLivbIULVZE5uQ9nyX1/w0UtPI3laXLJS8yU=
+=sRq4
+-----END PGP SIGNATURE-----
 
-Just understanding the use case.
-
-My summary is the series gives us a few nice things (a) allows control
-plane to be simpler because programs will not need to be explicitly
-garbage collected, (b) we don't have to guess a right-size for a
-program array map because we don't have to manage a map at all, and
-(c) helps bpf programmers mental model by using separate attach points
-for each function.
-
-I can see how (a) and (b) will be useful so no objections from my
-side to merge the series.
+--=-43UfY+HhXmvvNo9Nz2cj--
