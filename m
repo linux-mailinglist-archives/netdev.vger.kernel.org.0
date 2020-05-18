@@ -2,166 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B2C1D7C43
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 17:03:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01ABB1D7C47
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 17:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728261AbgERPDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 11:03:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        id S1728286AbgERPD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 11:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726998AbgERPDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 11:03:30 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D92C061A0C;
-        Mon, 18 May 2020 08:03:30 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id q8so3271936pfu.5;
-        Mon, 18 May 2020 08:03:30 -0700 (PDT)
+        with ESMTP id S1728279AbgERPD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 11:03:56 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF86DC061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 08:03:56 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id d7so10898612ioq.5
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 08:03:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=89NAWHbMqaWrTmR4XBFd6RaaE9tXY8/qNz7kfdyAHpo=;
-        b=gJ+nmeTEhiidK4lcg/MEpTINIRc47wPb8Rfa82RqD2giHWu25sQf8b1uyzm70ybDDz
-         D16A2NhBINLmkvt+H2fL9ckfqyfdEzm7/a880R8ae0F5HGxM1lYxurNkoxBhLQ4+NGj6
-         nFI4R1oZhQi5Z4mUOc36TPqvVUfUa33nNYmkfeLewhRNnCCztapf8QXYmD24t8Ioguz3
-         AfsIaNVSJF0rs3kAcLuc6EtcGdUf4haM33cvWDys7Ilyt8gdUF6QZfdBQCqWif/r+vdA
-         rQsFdzEMrU+LZhXeBDoBJ0Omqf7eEYYDZxZYKbgoNkR/vKlD+FKmmgplCg3oxAbe/6yI
-         WMaQ==
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zhBCLV6Pq+PIRNumJDFC+hT6dCYyurG69WuSPlFC+DE=;
+        b=SW4u/tpYmJKb5hF00ZiUK7OHKeHyg8BR91taO3uS78PK3g2ArFVd9a62KZv6xuy8ox
+         /kg1mA67VfJUMDPBwmNigfm8eIhITbGuopGqaY1CWn85xlwmQVq71zmFMKFTU6s06wDW
+         ycU30OfwVZ0ye2/wpGID46Ev86K9JMmJHXpTE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=89NAWHbMqaWrTmR4XBFd6RaaE9tXY8/qNz7kfdyAHpo=;
-        b=MpQ0Rsn8hgK40PruVFqrm6Rb1NiEI+mAapKR4tchM7jcACIi4rHmTwSavXoC1DmCSy
-         xE0FFEvFV3Gk+e4ip7kv/9KPxvc8DZcd+lV8J6UzoeEOFDh1oazY4qnBUvPFowPht0YZ
-         NbmrcSNn8u3gBHSaa2fUO/fK7hqkFlO27hsrPyPgYn98Isv5R+8rZrFxNrsa4f+kXxtI
-         qYsBi9eExw/3s5lwB6WS4LAe3CXE+YffgXPrhy1r3oqgmgiQmpjh+3IxK7mT5QGRR3J4
-         iyiNhEdFzWs0gGMoPWhLh5SG/z4aLv8U2Yb1kIi5dQ7TSFgguJHNsau1QtuVaTDzITGG
-         xDMg==
-X-Gm-Message-State: AOAM530U11YLikhr4JPzw1Uj9OwnW4DZNvsG+emonala+ILlexPSczZh
-        CBCVKy2wRNDFJ4HqcAT8AV92UHKHyIPK8Q==
-X-Google-Smtp-Source: ABdhPJxgAK2EsPrRzqc+FBc+sNQH5pRWNatd9DrBmJGIAgTAN3kwU45TEYHMqpRVgfECekigyuJ5FQ==
-X-Received: by 2002:a63:e70b:: with SMTP id b11mr2270409pgi.88.1589814209675;
-        Mon, 18 May 2020 08:03:29 -0700 (PDT)
-Received: from varodek.iballbatonwifi.com ([103.105.152.209])
-        by smtp.gmail.com with ESMTPSA id k1sm7963142pgh.78.2020.05.18.08.03.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2020 08:03:29 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        netdev@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, rjw@rjwysocki.net,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, skhan@linuxfoundation.org
-Subject: [PATCH net-next v3 2/2] realtek/8139cp: use generic power management
-Date:   Mon, 18 May 2020 20:32:14 +0530
-Message-Id: <20200518150214.100491-3-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200518150214.100491-1-vaibhavgupta40@gmail.com>
-References: <20200518150214.100491-1-vaibhavgupta40@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zhBCLV6Pq+PIRNumJDFC+hT6dCYyurG69WuSPlFC+DE=;
+        b=eg8hUG78BMcEjiTCn3K71zyhJxUP401wfmtGQok0NgJkXi5yzigUACBQ/SQVn3UTPn
+         FDySqdLlGitGGQ95sTh90ptYxML70dmHvD+Vh8rGTnQ6YCZ5dIDP/L2iAeiz5MKLRMwi
+         uin8O8kQcsZIVVHBEt/eAnb/+K+RX28b26wybA0PmsEszIqUCy5fkBWhL6O2MjqG8cL9
+         Z6oVR2kfYOIxGuFmcAKueIdORzolrAJQ7UDzRqTpvvjc4fjOCjbVLQr08hzrBeCd4fe1
+         0eHEyYgJ+8WB44BrTNRxil2Hfido6bwhSrEZek5NkEWW6nA9hZ2EUjPGtjlE1oo48wHZ
+         5XQQ==
+X-Gm-Message-State: AOAM531TtHBiQLqt61tofwHrGBnhzJc2mVl4kqgqdFBSwQ30hCHcfL7X
+        Gt53KLV6ue/SmAWV2uV+CEL5ww==
+X-Google-Smtp-Source: ABdhPJxXUsQQZxuy+jef26vC22p6/tcVRbzM2T2as9hfXdqTCjcvfVhSyuoK9CHzA97x4Kv81uabHg==
+X-Received: by 2002:a02:a895:: with SMTP id l21mr15553885jam.82.1589814234911;
+        Mon, 18 May 2020 08:03:54 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id q4sm4383395ilk.12.2020.05.18.08.03.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 May 2020 08:03:54 -0700 (PDT)
+Subject: Re: [PATCH] drivers: ipa: use devm_kzalloc for simplicity
+To:     David Miller <davem@davemloft.net>, kuba@kernel.org
+Cc:     wenhu.wang@vivo.com, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@vivo.com
+References: <20200514035520.2162-1-wenhu.wang@vivo.com>
+ <20200514101516.0b2ccda2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200514.124700.630104670938763588.davem@davemloft.net>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <a13b6985-98d6-5996-1ef7-6d64cdd75c15@ieee.org>
+Date:   Mon, 18 May 2020 10:03:52 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200514.124700.630104670938763588.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-compile-tested only
+On 5/14/20 2:47 PM, David Miller wrote:
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Thu, 14 May 2020 10:15:16 -0700
+> 
+>> On Wed, 13 May 2020 20:55:20 -0700 Wang Wenhu wrote:
+>>> Make a substitution of kzalloc with devm_kzalloc to simplify the
+>>> ipa_probe() process.
+>>>
+>>> Signed-off-by: Wang Wenhu <wenhu.wang@vivo.com>
+>>
+>> The code is perfectly fine as is. What problem are you trying to solve?
+> 
+> I agree, these kinds of transformations are kind of excessive.
 
-With legacy PM hooks, it was the responsibility
-of a driver to manage PCI states and also
-device's power state. The generic approach is
-to let PCI core handle the work.
+I have considered using the devm_*() functions, but if I were to
+make such a switch it would be done comprehensively, throughout
+the driver.  It is not something I plan to do in the near term
+though.
 
-The suspend callback enables/disables PCI wake
-on the basis of "cp->wol_enabled" variable
-which is unknown to PCI core. To utilise its
-need, call device_set_wakeup_enable().
-
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/ethernet/realtek/8139cp.c | 25 ++++++++-----------------
- 1 file changed, 8 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/8139cp.c b/drivers/net/ethernet/realtek/8139cp.c
-index 60d342f82fb3..e291e6ac40cb 100644
---- a/drivers/net/ethernet/realtek/8139cp.c
-+++ b/drivers/net/ethernet/realtek/8139cp.c
-@@ -2054,10 +2054,9 @@ static void cp_remove_one (struct pci_dev *pdev)
- 	free_netdev(dev);
- }
- 
--#ifdef CONFIG_PM
--static int cp_suspend (struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused cp_suspend(struct device *device)
- {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct cp_private *cp = netdev_priv(dev);
- 	unsigned long flags;
- 
-@@ -2075,16 +2074,14 @@ static int cp_suspend (struct pci_dev *pdev, pm_message_t state)
- 
- 	spin_unlock_irqrestore (&cp->lock, flags);
- 
--	pci_save_state(pdev);
--	pci_enable_wake(pdev, pci_choose_state(pdev, state), cp->wol_enabled);
--	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-+	device_set_wakeup_enable(device, cp->wol_enabled);
- 
- 	return 0;
- }
- 
--static int cp_resume (struct pci_dev *pdev)
-+static int __maybe_unused cp_resume(struct device *device)
- {
--	struct net_device *dev = pci_get_drvdata (pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct cp_private *cp = netdev_priv(dev);
- 	unsigned long flags;
- 
-@@ -2093,10 +2090,6 @@ static int cp_resume (struct pci_dev *pdev)
- 
- 	netif_device_attach (dev);
- 
--	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
--	pci_enable_wake(pdev, PCI_D0, 0);
--
- 	/* FIXME: sh*t may happen if the Rx ring buffer is depleted */
- 	cp_init_rings_index (cp);
- 	cp_init_hw (cp);
-@@ -2111,7 +2104,6 @@ static int cp_resume (struct pci_dev *pdev)
- 
- 	return 0;
- }
--#endif /* CONFIG_PM */
- 
- static const struct pci_device_id cp_pci_tbl[] = {
-         { PCI_DEVICE(PCI_VENDOR_ID_REALTEK,     PCI_DEVICE_ID_REALTEK_8139), },
-@@ -2120,15 +2112,14 @@ static const struct pci_device_id cp_pci_tbl[] = {
- };
- MODULE_DEVICE_TABLE(pci, cp_pci_tbl);
- 
-+static SIMPLE_DEV_PM_OPS(cp_pm_ops, cp_suspend, cp_resume);
-+
- static struct pci_driver cp_driver = {
- 	.name         = DRV_NAME,
- 	.id_table     = cp_pci_tbl,
- 	.probe        =	cp_init_one,
- 	.remove       = cp_remove_one,
--#ifdef CONFIG_PM
--	.resume       = cp_resume,
--	.suspend      = cp_suspend,
--#endif
-+	.driver.pm    = &cp_pm_ops,
- };
- 
- module_pci_driver(cp_driver);
--- 
-2.26.2
-
+					-Alex
