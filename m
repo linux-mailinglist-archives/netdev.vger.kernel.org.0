@@ -2,84 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 145701D7FAB
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 19:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF7391D7FB4
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 19:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728322AbgERRIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 13:08:10 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:37781 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726958AbgERRIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 13:08:10 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 49Qlp00LWgz1qrfg;
-        Mon, 18 May 2020 19:08:08 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 49Qlnz6zBnz1qrhp;
-        Mon, 18 May 2020 19:08:07 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id 0sBR0ZX5XnW7; Mon, 18 May 2020 19:08:06 +0200 (CEST)
-X-Auth-Info: C8Y2qSw4cFlzqmHkvxHhSlUHWIqjF91M5wKa2d1ckzc=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Mon, 18 May 2020 19:08:06 +0200 (CEST)
-Subject: Re: [PATCH V6 20/20] net: ks8851: Drop define debug and pr_fmt()
-To:     Joe Perches <joe@perches.com>, netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-References: <20200517003354.233373-1-marex@denx.de>
- <20200517003354.233373-21-marex@denx.de>
- <bd3a3e31d17146965c5a0ff7228cb00ec46f4edb.camel@perches.com>
- <7447d18e-cd81-b98e-a0d9-1059b60a3cf0@denx.de>
- <a27c9079fb257b90382f3af7e071078ab5948eb2.camel@perches.com>
- <125652bf-45e6-f380-2754-628075526109@denx.de>
- <11c77ba05a8951d0c269c7f3a7b7e2695f59ebc4.camel@perches.com>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <d8dcad60-2953-fa52-268d-60a0cc9a58fa@denx.de>
-Date:   Mon, 18 May 2020 19:07:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1728366AbgERRJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 13:09:37 -0400
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:54600 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727006AbgERRJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 13:09:37 -0400
+Received: by mail-pj1-f68.google.com with SMTP id s69so113222pjb.4;
+        Mon, 18 May 2020 10:09:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BpdZFKBxjPy5g9XACLYMs2Py89NvcD1b96UVdrU1huk=;
+        b=HCmPyiD5Axpm3EtzAktC9koUaqP2TxLMd8CW25vWjEsX86kUSjUUcVw4mtX+7GK9qp
+         7fDhZYpy2+o+Ces1qabEXeH5XOdUWTsf2OQIJhtNBBuWi/mANCamqDP45SlkeWWldMb4
+         NfdcAYlCAJox1Wt7FXqxN0peRarsNVcB34NqTF937OphOk3UtLR+pND8yvxo8OSnZpCt
+         OH4rQIM9ZcBXtiYsuFhGc6EDcCWte8/ecOCmpOy8KO1FbMQjjlhDIj4wDwMXFjNO965b
+         BTvtSn9a88lv1dTIWclLTT4eszSo4WeCeook6PQbUE85piQHiAbVsGMLA6siOMZAY/XW
+         BZOg==
+X-Gm-Message-State: AOAM531FYBxHDwk8lK9Jitt1g4aaw4gwwjDA3XaSZWwhaLgKwj094xex
+        6mBYhx9bS/XhGeQKgZyYGPQ=
+X-Google-Smtp-Source: ABdhPJw35pB+pM+AMb3AfYK730hICV8dwuHZ+BlWJw6Xe+cZu5OTn9VjdyZ0zAS4Kzq+3W/z+TyFsQ==
+X-Received: by 2002:a17:902:8a8d:: with SMTP id p13mr16933969plo.32.1589821776222;
+        Mon, 18 May 2020 10:09:36 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id q4sm4572021pfu.42.2020.05.18.10.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2020 10:09:35 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id 73E02404B0; Mon, 18 May 2020 17:09:34 +0000 (UTC)
+Date:   Mon, 18 May 2020 17:09:34 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Ben Greear <greearb@candelatech.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>, jeyu@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com, tiwai@suse.de,
+        schlad@suse.de, andriy.shevchenko@linux.intel.com,
+        keescook@chromium.org, daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ath10k@lists.infradead.org
+Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
+Message-ID: <20200518170934.GJ11244@42.do-not-panic.com>
+References: <20200515212846.1347-1-mcgrof@kernel.org>
+ <20200515212846.1347-13-mcgrof@kernel.org>
+ <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
+ <20200518165154.GH11244@42.do-not-panic.com>
+ <4ad0668d-2de9-11d7-c3a1-ad2aedd0c02d@candelatech.com>
 MIME-Version: 1.0
-In-Reply-To: <11c77ba05a8951d0c269c7f3a7b7e2695f59ebc4.camel@perches.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4ad0668d-2de9-11d7-c3a1-ad2aedd0c02d@candelatech.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/17/20 4:55 AM, Joe Perches wrote:
-> On Sun, 2020-05-17 at 04:47 +0200, Marek Vasut wrote:
->> On 5/17/20 4:37 AM, Joe Perches wrote:
->>> On Sun, 2020-05-17 at 04:28 +0200, Marek Vasut wrote:
->>>> On 5/17/20 4:01 AM, Joe Perches wrote:
->>>>> On Sun, 2020-05-17 at 02:33 +0200, Marek Vasut wrote:
->>>>>> Drop those debug statements from both drivers. They were there since
->>>>>> at least 2011 and enabled by default, but that's likely wrong.
->>>>> []
->>>>>> diff --git a/drivers/net/ethernet/micrel/ks8851_par.c b/drivers/net/ethernet/micrel/ks8851_par.c
->>>>> []
->>>>>> -#define DEBUG
->>>>>
->>>>> Dropping the #define DEBUG lines will cause a behavior
->>>>> change for the netdev/netif_dbg uses as these messages
->>>>> will no longer be output by default.
->>>>
->>>> Is that a problem ?
->>>
->>> Dunno.  I don't use nor debug these drivers.
->>>
->>
->> I don't use those debug messages either, so it's not a problem for me.
+On Mon, May 18, 2020 at 09:58:53AM -0700, Ben Greear wrote:
 > 
-> Just mention it in the changelog please.
+> 
+> On 05/18/2020 09:51 AM, Luis Chamberlain wrote:
+> > On Sat, May 16, 2020 at 03:24:01PM +0200, Johannes Berg wrote:
+> > > On Fri, 2020-05-15 at 21:28 +0000, Luis Chamberlain wrote:> module_firmware_crashed
+> > > 
+> > > You didn't CC me or the wireless list on the rest of the patches, so I'm
+> > > replying to a random one, but ...
+> > > 
+> > > What is the point here?
+> > > 
+> > > This should in no way affect the integrity of the system/kernel, for
+> > > most devices anyway.
+> > 
+> > Keyword you used here is "most device". And in the worst case, *who*
+> > knows what other odd things may happen afterwards.
+> > 
+> > > So what if ath10k's firmware crashes? If there's a driver bug it will
+> > > not handle it right (and probably crash, WARN_ON, or something else),
+> > > but if the driver is working right then that will not affect the kernel
+> > > at all.
+> > 
+> > Sometimes the device can go into a state which requires driver removal
+> > and addition to get things back up.
+> 
+> It would be lovely to be able to detect this case in the driver/system
+> somehow!  I haven't seen any such cases recently,
 
-Or let's just drop this patch for now.
+I assure you that I have run into it. Once it does again I'll report
+the crash, but the problem with some of this is that unless you scrape
+the log you won't know. Eventually, a uevent would indeed tell inform
+me.
 
-I am still waiting for a clear direction on the indirect accessors.
+> but in case there is
+> some common case you see, maybe we can think of a way to detect it?
+
+ath10k is just one case, this patch series addresses a simple way to
+annotate this tree-wide.
+
+> > > So maybe I can understand that maybe you want an easy way to discover -
+> > > per device - that the firmware crashed, but that still doesn't warrant a
+> > > complete kernel taint.
+> > 
+> > That is one reason, another is that a taint helps support cases *fast*
+> > easily detect if the issue was a firmware crash, instead of scraping
+> > logs for driver specific ways to say the firmware has crashed.
+> 
+> You can listen for udev events (I think that is the right term),
+> and find crashes that way.  You get the actual crash info as well.
+
+My follow up to this was to add uevent to add_taint() as well, this way
+these could generically be processed by userspace.
+
+  Luis
