@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74CC11D77ED
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:53:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B47431D77F7
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727884AbgERLxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 07:53:17 -0400
-Received: from mail-oo1-f66.google.com ([209.85.161.66]:35728 "EHLO
-        mail-oo1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726362AbgERLxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:53:17 -0400
-Received: by mail-oo1-f66.google.com with SMTP id c187so1964198ooc.2;
-        Mon, 18 May 2020 04:53:16 -0700 (PDT)
+        id S1728054AbgERLxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 07:53:43 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:46306 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726362AbgERLxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:53:42 -0400
+Received: by mail-ot1-f67.google.com with SMTP id g25so2027413otp.13;
+        Mon, 18 May 2020 04:53:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6tmiQrSrN1NKyct3FGv9e5Q1QdErRlRCkFiMU/GAHic=;
-        b=dbU7iI1vccHSwpmxI9rbRAZafUVJVrg4lLVlqh/QFbyWBXWjva3mJoDK/wva3MoHMw
-         uVKCo1VxqMtskeHFIBlj4LH7fD5esSBRCtVN2llpgQyrtNrs56MT9gCgNXSNtcOkTYEQ
-         azNNcs3RkQ114CgGD7y5dmVt2xsnbJ+pfBv7oS77DQ2utFhzT38Mky60xCxRFORswGF4
-         LoNTr/zOvaMNXIYr26eN+BMKvZSliVkZX9Gb8JsZ72tgBJkTu+kzUegiSZnYglz3wXMP
-         GmHtG1VJGWjDIV8GxvEY2x6263g+4q7cSIER7lQhcabyWOzJwLCewyjOdHpkZ9rBFx3s
-         4diw==
-X-Gm-Message-State: AOAM532l4S4bZL+WJi+m76qUhQgv1N1qneCaDNcLxiBQzuchUO3B9wRp
-        D1dQKjdqMf0NP7RS5X+Ni9wObHbVTODxEMdj/+Q=
-X-Google-Smtp-Source: ABdhPJyXF6RctyH8v633tPbaM/fskt0cVGt4kWfaWsTK4qAeP+mAbZ+GUE55kK+iUkrrF6Wim4t4fUubepqCOJrc6PI=
-X-Received: by 2002:a4a:e0d1:: with SMTP id e17mr12502300oot.1.1589802796022;
- Mon, 18 May 2020 04:53:16 -0700 (PDT)
+        bh=gLeuUEV87rLj5u4SmWtflP3ainpFoOPWlk4LXLyZJY0=;
+        b=nu7bFe/1bGAq5QRQwLPZXJ7glu7LWMz2S/Nm2R3c9xLb6mmpZWiULxMuJDUxsKZhoZ
+         dsSON4pSEOHN/hezBuYGjzqWufCbn7hkFqIE5KQrVr3z6nXA+jACIcJNLN2Lsg6BIlv0
+         SuxeMgXElbK0cPWrjWNwIin/HYnzYh1Z+hCWCNMOGiN8kN4BFxhm9Tsj6/wIPD3sNJZr
+         8jsnHny+yGKq1XZ1bH8WRXEgM0YOsQT/rcNyosnYm0+g5/T6M0u/aOZOP9/SLaOKFNby
+         YLzQKaQiirTmJr0h8maxVHoSoyz+C2cMC+ApkTB5h/K2kygBOEu2CtTKLX9//Ti8N5i+
+         G/1A==
+X-Gm-Message-State: AOAM533UfAJofK4i1y3wuQzT+JovC5Vj+4QF7KSWQbG32WzztpF12Bpe
+        UfuWTlqg4k/oGxe/qZaWR3EvJwaW4pQaMpOmWa4=
+X-Google-Smtp-Source: ABdhPJy2SY7W6jVbtUNnzZ1VzMYJ0FdYvJiXsIT0cAmbcLSkFh2gCqjZ0r6X8r4D785kvRbXEN2EAeyemHuzGc01nfo=
+X-Received: by 2002:a9d:564:: with SMTP id 91mr12000493otw.250.1589802821424;
+ Mon, 18 May 2020 04:53:41 -0700 (PDT)
 MIME-Version: 1.0
 References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1589555337-5498-13-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1589555337-5498-13-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1589555337-5498-14-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1589555337-5498-14-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 18 May 2020 13:53:04 +0200
-Message-ID: <CAMuHMdWEaWs97tSqdpDUbmmyuSyshXypZghWF1oRYoJcjHGEpQ@mail.gmail.com>
-Subject: Re: [PATCH 12/17] ARM: dts: r8a7742: Add Ethernet AVB support
+Date:   Mon, 18 May 2020 13:53:30 +0200
+Message-ID: <CAMuHMdW-Z20Ve2zkBBXBpMn-VF5TmXv7H6PMv2vbJf8havanwg@mail.gmail.com>
+Subject: Re: [PATCH 13/17] ARM: dts: r8a7742: Add Ether support
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>,
@@ -62,7 +62,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, May 15, 2020 at 5:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add Ethernet AVB support for R8A7742 SoC.
+> Define the generic R8A7742 part of the Ether device node.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
