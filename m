@@ -2,110 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D5681D7B4E
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 16:32:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC93D1D7B64
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 16:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727973AbgEROcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 10:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726940AbgEROcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 10:32:39 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2636C061A0C;
-        Mon, 18 May 2020 07:32:37 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id 18so1081738iln.9;
-        Mon, 18 May 2020 07:32:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gTFX1DQNwBeEvhDCNe+w/mdg1eQLrgIFr7Wfxdb54bo=;
-        b=gybNCSr8wur5riIJiDtO9j7Zaq5DCHwnjR7x7kpUwmWCv3nRjCQ2ztoLUMoKWaFdl9
-         dbxsZ56cl+vgTpoXhifhjlu6ef+U0U3fR8/LHo/6Kcv4aEKq9cKi6hcDr3bE0XvP1Y/u
-         tAti+H04McSI+3r6FgcEq5Qe2/7q/zgTs3/Mp0aCkT43lFfITPgo30ps3huDbSIqIXEe
-         F0sxPAfkTI8hJgtHcA+jBVbaYzVvPCTUa1/au3PdYCUL+rVp0km/nMTa7mSa7BvsIchZ
-         jvQMGCGLHvS1g59DxMr8WV1uYMN3GW2l8reIZjajxIuL+9UI0HJYwEswGdU7oB0gM2l4
-         rGpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gTFX1DQNwBeEvhDCNe+w/mdg1eQLrgIFr7Wfxdb54bo=;
-        b=qe1Rm6h9JhRVjTi/qVwoBex8YD69ZFOewoWvvmTINOIjWDhr8Epb1C4MLwNlO/cvq3
-         HjXB35ja91Tbiw2QX4JaT9prdtdrjP6PR4qNNcQ6w1yqY1uIAuwwlyawqzEpU2P6FSWQ
-         +3YEeeX/TwytrLix8kzN3IamLG8rdMRKBpy/rLsxYBfY/9bbgOLpeZHodlwEG7AesDaa
-         HVS1/9HKknR6DSDCjWvTDgglYcZxgxu5Q6t8BX+ZtEx9YZ9+WpSHtD+ZfN7vxyz8A3UT
-         KGdKJ8AJMt+MfjbIP0fyE5oynpZ5Pv7Fi3xWhhSFVrAUK++gOx44vxrDX7fLSo7gJ4kl
-         32rg==
-X-Gm-Message-State: AOAM533aEyF9tI3n0d3TTld6MrFNE+3LzD0fAjF2gh5W44YW8zmlCUYF
-        DmhBNP4+kTOcMDGZWinxxgI=
-X-Google-Smtp-Source: ABdhPJzP+N6VAlMslLBJq9/URUv1mJX/In/Rz7/h1fi5yhqxLZBwn8EhFBm7pL5xHxo0RFFw2Y70gw==
-X-Received: by 2002:a92:8946:: with SMTP id n67mr14129948ild.215.1589812357310;
-        Mon, 18 May 2020 07:32:37 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:f866:b23:9405:7c31? ([2601:282:803:7700:f866:b23:9405:7c31])
-        by smtp.googlemail.com with ESMTPSA id j2sm3962464ioo.8.2020.05.18.07.32.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2020 07:32:36 -0700 (PDT)
-Subject: Re: "Forwarding" from TC classifier
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Martynas Pumputis <m@lambda.lt>,
-        kernel-team <kernel-team@cloudflare.com>
-References: <CACAyw9_4Uzh0GqAR16BfEHQ0ZWHKGUKacOQwwhwsfhdCTMtsNQ@mail.gmail.com>
- <b93b4ad2-0cf0-81e0-b2b0-664248b3630f@gmail.com>
- <CACAyw9-95He2yq0qoxuWFy3wqQt1kAtAQcRw2UTrqse2hUq1tA@mail.gmail.com>
- <5cca7bce-0052-d854-5ead-b09d43cb9eb9@gmail.com>
- <CACAyw9-TEDHdcjykuQZ8P0Q6QngEZU0z7PXgqtZRQq4Jh1_ojw@mail.gmail.com>
- <b212a92c-7684-8c47-1b63-75762c326a24@gmail.com>
- <CACAyw9_cGqTs5JW2QyqnTm-M3khieMa7XwD3vqNiXWxRepmqMg@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a2a496b1-59a7-87ce-75f4-c9b43e23ff6a@gmail.com>
-Date:   Mon, 18 May 2020 08:32:35 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1727844AbgEROiq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 18 May 2020 10:38:46 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:49683 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726989AbgEROiq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 10:38:46 -0400
+Received: from mail-qk1-f176.google.com ([209.85.222.176]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1Ma0HM-1jXTMN436K-00W1bi; Mon, 18 May 2020 16:38:44 +0200
+Received: by mail-qk1-f176.google.com with SMTP id n14so10262052qke.8;
+        Mon, 18 May 2020 07:38:43 -0700 (PDT)
+X-Gm-Message-State: AOAM532gtYvic9MEdHYNR0Qc4moQduEJ+oK/yQsQt9DVOKy9z9UiZ1Kz
+        QKgfp5UJmt7BNvCV1RTs1VLuXeVxj8j/xLXlIaA=
+X-Google-Smtp-Source: ABdhPJxzhsnxVhq8ZSNDtJoBCI07uV5rPB2Xy6wBijq3wixD3dVCpTMzBq7wTOe/KdpPc4bGdgY7xrXJK4eQYms1WB8=
+X-Received: by 2002:a37:aa82:: with SMTP id t124mr15128415qke.3.1589812722617;
+ Mon, 18 May 2020 07:38:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CACAyw9_cGqTs5JW2QyqnTm-M3khieMa7XwD3vqNiXWxRepmqMg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200514075942.10136-1-brgl@bgdev.pl> <20200514075942.10136-11-brgl@bgdev.pl>
+ <CAK8P3a0XgJtZNKePZUUpzADO25-JZKyDiVHFS_yuHRXTjvjDwg@mail.gmail.com> <CAMRc=MeVyNzTWw_hk=J9kX1NE9reCE_O4P3wrNpMMc9z4xA_DA@mail.gmail.com>
+In-Reply-To: <CAMRc=MeVyNzTWw_hk=J9kX1NE9reCE_O4P3wrNpMMc9z4xA_DA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 18 May 2020 16:38:25 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1xaWE0gNx-PnJz08XzUkPW6YB7U6NfFS+Y1VXwG+VR+w@mail.gmail.com>
+Message-ID: <CAK8P3a1xaWE0gNx-PnJz08XzUkPW6YB7U6NfFS+Y1VXwG+VR+w@mail.gmail.com>
+Subject: Re: [PATCH v3 10/15] net: ethernet: mtk-eth-mac: new driver
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabien Parent <fparent@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        DTML <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Stephane Le Provost <stephane.leprovost@mediatek.com>,
+        Pedro Tsai <pedro.tsai@mediatek.com>,
+        Andrew Perepech <andrew.perepech@mediatek.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:OB6VzK2054ZHQfz3CTgEBDfpQ26ehY5iVTYbtEgywu+eoe059Ia
+ 155h7+afzU9IY+xpKJNhOOLCYvG+CVCVONbhge2PqpV/n60X2eLhfQhAZBVBHEL/+1R+1nH
+ bkHyXDZArv+FJ2Mpb4xmr+JeC+E3em4yPC+eZXrv/hHpQtslM+EM5i1INXSMt3IWXUG7q4G
+ CmzKbMVFQg56UvK6vbNHA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:vxLiJ7JDE0g=:Up6ARmLIWMk+ak4wsEctGO
+ rhiErvnlmZs6qhQQPDdfVywOzmJX7Mptu/6SGVVLaqdaZgtvqCNYjbQi2f4tTXASpL9hz5Arq
+ EjfB0c9JxG0/BSAIHQWYto8dP+6fUmMCdGKRBYOS8RjGyTOrbcZN2wKbQxDJs9o4sgDfr/XYV
+ byoDT4koyV0n2eYzFUoEVWDXi0s0hHd8htLVXjhybemtTQJosg8ZGke53TKCT0GfwHknHXzV5
+ v/XQYMp7KOifvsdCG6DlXQ0o1azXT+QrzWAEIgedTlQq6c+oLQo7AAa+wsatiLz/NJEPOAggz
+ GlbHPa6Xf1joz3dWalT7TE55mJRFvdzko0aabkIjts6ejiXIdyq5f0C0RgIlRKJR2HDEimDHu
+ nR+FrNmnQV1bmd1IaFCLBlCS9mgkLBy7w3bwMxkOzg0Lu6OF7ubj/gmL1t5CJ5hcrE5pYeUL7
+ bwBehMEyVplOBYbGDMn9v0ABdTji3YcYPKLe3nZeiET3FsYgGlsuuzPBnDcMZXdXhA3Ab+oYp
+ wUctgNbumAXwoHwazZblpYReqHgMajU54iL5OSr19TlP9j6QUKk4zBkRE1KTx3YIxbkDfOAjC
+ ks86QV6Sd6y+OLyrn/r5EA7Ghs05F+dGley2Vb6hskJmDtph+nYnAKbA9Jub0La7nKlE/xi+R
+ Xw77Aih4WsE7WxOJOnp7rupPlNn39dwFEs+/ahTkDm3B/YafV6wwekr7ZUVLoKxHquc5kk5WI
+ B1SH58SmfbDZkbaMmuVhoNHb//VPRj66Zyjm1MSAWb3bnLk4eIOK2b4VIYCHYhOHUFeD0W40g
+ jX11DAu8ta1FlVRrDSBJhl3b1heQbBlno2h0SMSRBngQ3hA2ms=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/20 3:38 AM, Lorenz Bauer wrote:
-> On Fri, 15 May 2020 at 15:24, David Ahern <dsahern@gmail.com> wrote:
->>
->> On 5/15/20 3:59 AM, Lorenz Bauer wrote:
->>>
->>> Yes, but that doesn't play well with changing the source address to
->>> the local machine's, since the upper part of the stack will drop the
->>> packet due to accept_local=0.
->>
->> Can you defer the source address swap to the Tx path? Let the packet go
->> up the stack and do the fib lookup again as an skb. neighbor entry does
->> not exist, so the packet is stashed, neighbor resolution done, once
->> resolved the packet goes out. tc program on the egress device can flip
->> the source address, and then subsequent packets take the XDP fast path.
-> 
-> Hm, that's an interesting idea! I guess this means I have to mark the packet
-> somehow, to make sure I can identify it on the TX path. Plus, in theory
-> the packet could exit via any interface, so I'd have to attach classifiers to
-> a bunch of places if I want to be on the safe side.
+On Mon, May 18, 2020 at 4:07 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> pt., 15 maj 2020 o 15:32 Arnd Bergmann <arnd@arndb.de> napisał(a):
 
-Shared blocks might save you some overhead. Create a filter block that
-is shared across devices.
+> > I would get rid of the 'count' here, as it duplicates the information
+> > that is already known from the difference between head and tail, and you
+> > can't update it atomically without holding a lock around the access to
+> > the ring. The way I'd do this is to have the head and tail pointers
+> > in separate cache lines, and then use READ_ONCE/WRITE_ONCE
+> > and smp barriers to access them, with each one updated on one
+> > thread but read by the other.
+> >
+>
+> Your previous solution seems much more reliable though. For instance
+> in the above: when we're doing the TX cleanup (we got the TX ready
+> irq, we're iterating over descriptors until we know there are no more
+> packets scheduled (count == 0) or we encounter one that's still owned
+> by DMA), a parallel TX path can schedule new packets to be sent and I
+> don't see how we can atomically check the count (understood as a
+> difference between tail and head) and run a new iteration (where we'd
+> modify the head or tail) without risking the other path getting in the
+> way. We'd have to always check the descriptor.
 
-> 
-> Upside: this seems doable in current kernels. Downside: seems more fragile
-> than I'd like.
-> 
-> Thanks for the thought, I'll play around with it :)
-> 
->>
->> If the next host is on the same LAN I believe the stack will want to
->> generate an ICMP redirect, but that can be squashed.
-> 
+It should be enough to read both pointers once at the start of each
+side, then do whatever work you want to do (cleaning, sending,
+receiving, refilling) and finally updating the one pointer that changed.
+If both sides do that, you minimize the cache line bouncing and
+always do a useful amount of work that guarantees forward progress
+and does not interfere with the other side.
 
+> I experimented a bit with this and couldn't come up with anything that
+> would pass any stress test.
+>
+> On the other hand: spin_lock_bh() works fine and I like your approach
+> from the previous e-mail - except for the work for updating stats as
+> we could potentially lose some stats when we're updating in process
+> context with RX/TX paths running in parallel in napi context but that
+> would be rare enough to overlook it.
+>
+> I hope v4 will be good enough even with spinlocks. :)
+
+Yes, it should be fine. Avoiding all the locks is mainly an optimization
+for the number of CPU cycles spent per packet, the other points
+are more important to get right, in particular the flow control.
+
+      Arnd
