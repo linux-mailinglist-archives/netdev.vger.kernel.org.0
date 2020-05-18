@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 877EE1D765C
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 295701D7676
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:14:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727832AbgERLNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 07:13:20 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:38528 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726424AbgERLNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:13:19 -0400
-Received: by mail-ot1-f68.google.com with SMTP id w22so7683895otp.5;
-        Mon, 18 May 2020 04:13:18 -0700 (PDT)
+        id S1727912AbgERLOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 07:14:37 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:44064 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726895AbgERLOe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:14:34 -0400
+Received: by mail-oi1-f195.google.com with SMTP id y85so3827343oie.11;
+        Mon, 18 May 2020 04:14:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pR1cgKO8rpCf/7AlmTREELkczgYUosKtpXfrAtbkObM=;
-        b=YqG56V49Bv69ICEnhFwSBTFUMFjqPl97uPbIc5FBHA3YykwgzKEfTtzOw3qXHjj+lH
-         EeTe7Y+WZAMDx3tMYWdmRTpH0CoXxXOr0pEnyKOOziVH5hbZZISTNf2vipREkyTM71ev
-         HuTosVuCcEiz0mMYiSDdjqHX8YWo0BRqzWTYko+SNnU0LxHezabwDKmVtg7DNd5GSJj7
-         i//Gadedd15SKaH3IeJmCRcLLPi4Ip+AY3gvh+LwK8v8V1P045xFGsRI72NOPWgz9/bN
-         uoZ8qQdNBwCUsDcueUla5UJ0fmsZtaUQHmcjjZhrVWTQMv6lCQaz/ytSZCIq5RENkorG
-         ruEw==
-X-Gm-Message-State: AOAM5314/I/v+1TQMANxnDrKXs2FUtZ1dVuuF3vSRYSAmSy5OYn3TrZY
-        jGaEY4DZ7+GoshKJb4ra355GcRlyG0nGQwk00QM=
-X-Google-Smtp-Source: ABdhPJwRrYq4SFa2PkXCkouuudLXM04hVkXibjgJLxfqq5xK2wIlnVt4nFW4BOiciwsS6hKoNryVVo1hafLabc2sBmU=
-X-Received: by 2002:a9d:7e92:: with SMTP id m18mr11590288otp.145.1589800398609;
- Mon, 18 May 2020 04:13:18 -0700 (PDT)
+        bh=2knah10lYJPRFPQUQWZ2BsD37uk3fKBevsfxNnl6fDY=;
+        b=piK8VM8t8dw4XW3AMpzVu0auvO/zE8l5DySfPisZX2/nvLcVHk29PBDY1ifJza7ziX
+         LDZjH6jIrfL4IxiaX0Abyh5ELVp+E91gZ9LoXUtDW5NQZ1i2n3g/7ATaiBaAZIkegt2Q
+         9pOQmmZcDf41P1aI+M1argEfhJO8prrBgd1rkn5PO4ueGPeCWBGeGPcskAaw5snF2el9
+         Ljb2HpiHrD/hD2VbqEv63BnOSBGYgji2b9iRh/Z9OkALIJ/Tf2GUddRoB6HdvaOot0G4
+         LFF7kjSyVUh2Nc2C8zy12v/PXue+4rEf7C++SepLF9Z+dr6+PC3d19DfddQtONkZe2QX
+         8Hxg==
+X-Gm-Message-State: AOAM532qi/ViJojGF6siTpmgQ0S1UXPgDtiOGGta3NphYLds0nJKYNlc
+        fvRyJm1FaEW1w70OU7BJ9ZjkfwEagzXMHuAYNtclA7tx
+X-Google-Smtp-Source: ABdhPJxTl7wxYO87S/H74nH9O3VknwoXw0cOySOVUtaGVLXJssZ+fXYYTP2kPG/6e1LdI00CWSd71Y9hbdw1kZ2v1ig=
+X-Received: by 2002:aca:cd93:: with SMTP id d141mr10013869oig.148.1589800473025;
+ Mon, 18 May 2020 04:14:33 -0700 (PDT)
 MIME-Version: 1.0
 References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1589555337-5498-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1589555337-5498-9-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1589555337-5498-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1589555337-5498-11-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 18 May 2020 13:13:07 +0200
-Message-ID: <CAMuHMdUTnVyOY5=cA1U_bVrQGrfcMxpoVxy-t1xFqya5mV6KKA@mail.gmail.com>
-Subject: Re: [PATCH 08/17] dt-bindings: ata: renesas,rcar-sata: Add r8a7742 support
+Date:   Mon, 18 May 2020 13:14:21 +0200
+Message-ID: <CAMuHMdWdrnHYCooKeU_NpM-+R6=ZKawaqMoTnQ0zxLw+xbKFxQ@mail.gmail.com>
+Subject: Re: [PATCH 10/17] dt-bindings: net: renesas,ravb: Add support for
+ r8a7742 SoC
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>,
@@ -62,8 +63,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, May 15, 2020 at 5:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document SATA support for the RZ/G1H, which is compatible with
-> R-Car Gen2 SoC family.
+> Document RZ/G1H (R8A7742) SoC bindings.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
