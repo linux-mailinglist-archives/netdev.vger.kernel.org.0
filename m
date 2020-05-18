@@ -2,26 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 357551D73FC
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 11:26:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 953871D7400
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 11:28:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbgERJ0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 05:26:09 -0400
-Received: from www.zeus03.de ([194.117.254.33]:58850 "EHLO mail.zeus03.de"
+        id S1726545AbgERJ2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 05:28:32 -0400
+Received: from sauhun.de ([88.99.104.3]:39068 "EHLO pokefinder.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726270AbgERJ0I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 05:26:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=A/gIwIbzzT3voFbwbkkGYk2914xt
-        750bCNgjeYYwG4U=; b=DCLJDuGd6Lj3/JoYClXSkMfsnu44ooFH2veTmmfv58wE
-        Si1yB4o9j576NoXHeOMDvheD6Dr1yNYrnlSL+R3Lmh3UeMWIMMFRo5bEnSwsXfXg
-        WqcDVFPiSnoAfAzBzHAPQPIt0iYnusl46GnymUdlLqyVApFvd3skUS+/Johvh5E=
-Received: (qmail 947633 invoked from network); 18 May 2020 11:26:05 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 May 2020 11:26:05 +0200
-X-UD-Smtp-Session: l3s3148p1@WxWOwOilRKEgAwDPXwfCAIWBZdj99x2z
-Date:   Mon, 18 May 2020 11:26:01 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+        id S1726358AbgERJ2c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 May 2020 05:28:32 -0400
+Received: from localhost (p5486cdc1.dip0.t-ipconnect.de [84.134.205.193])
+        by pokefinder.org (Postfix) with ESMTPSA id C706E2C1FDC;
+        Mon, 18 May 2020 11:28:28 +0200 (CEST)
+Date:   Mon, 18 May 2020 11:28:28 +0200
+From:   Wolfram Sang <wsa@the-dreams.de>
 To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
 Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
@@ -38,17 +32,17 @@ Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         netdev <netdev@vger.kernel.org>,
         Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
         linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH 03/17] ARM: dts: r8a7742: Add I2C and IIC support
-Message-ID: <20200518092601.GA3268@ninjato>
+Subject: Re: [PATCH 17/17] ARM: dts: r8a7742: Add RWDT node
+Message-ID: <20200518092827.GB3268@ninjato>
 References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1589555337-5498-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20200515171031.GB19423@ninjato>
- <CA+V-a8t6rPs4s8uMCpBQEAUvwsVn7Cte-vX3z2atWRhy_RFLQw@mail.gmail.com>
+ <1589555337-5498-18-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200517210837.GL1370@kunai>
+ <CA+V-a8t1yJF=2+N+g=doVgFpZmtiRaZX-d_1=KGuWa3zYv9uPw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2oS5YaxWCcQjTEyO"
+        protocol="application/pgp-signature"; boundary="LpQ9ahxlCli8rRTG"
 Content-Disposition: inline
-In-Reply-To: <CA+V-a8t6rPs4s8uMCpBQEAUvwsVn7Cte-vX3z2atWRhy_RFLQw@mail.gmail.com>
+In-Reply-To: <CA+V-a8t1yJF=2+N+g=doVgFpZmtiRaZX-d_1=KGuWa3zYv9uPw@mail.gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -56,48 +50,39 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---2oS5YaxWCcQjTEyO
+--LpQ9ahxlCli8rRTG
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
 
-> > However, both versions (with and without automatic transmission) are
-> > described with the same "renesas,iic-r8a7742" compatible. Is it possible
-> > to detect the reduced variant at runtime somehow?
-> >
-> I couldn't find anything the manual that would be useful to detect at run=
-time.
->=20
-> > My concern is that the peculiarity of this SoC might be forgotten if we
-> > describe it like this and ever add "automatic transmissions" somewhen.
-> >
-> Agreed.
+> Its similar to as seen on Rcar-H2 where just the A15 cores are up and
+> A7 cores fail to boot. Attached is the boot log where reboot works as
+> expected with all A15 core up. Although I have tested the internal
+> release based on 3.10 where all the cores are up which used bootarg
+> apmu=multicluster (https://patchwork.kernel.org/patch/3948791/). So
+> there is some work involved to get all the A7's up and running.
 
-Well, I guess reading from a register which is supposed to not be there
-on the modified IP core is too hackish.
-
-Leaves us with a seperate compatible entry for it?
+Sounds good enough to me. Thanks for the heads up!
 
 
---2oS5YaxWCcQjTEyO
+--LpQ9ahxlCli8rRTG
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl7CVKUACgkQFA3kzBSg
-KbYDCA//fNp372/9fj/gtObfrZa0TxllW2uISdUH112lOK1XJS+XSvLkHbsTH9Gt
-x29LZpIF2R6xhl3wAQsARCEvWQ+ln6mhtYwIR6NBgmH/FrJ64ck0J1TW/MIBBP9/
-ljAi8HjzIwg5lS/u8iw7qJQBehFNjk7PMTye7G09CjQTq9VRn2fZoAdlu3jqQci9
-0KUneHGduxQA1r7hK2wl5xPH423IyaUGqhXvPSRyzfZu0fUaINAE/LIfstX41YiU
-Wj9lcT8gDQeNGwhRPhvokRqv2q9sFJZ4oT3mrpbtKjICEGQxRVqZbSw7XqjE+ntl
-Lkgi68z1RFja7drjGHXqRR7P7R+AT2vuD+S411fObxpl81GIhUTHKhcK7GC7fs5N
-QrSWGqP+gFSgoU54062r33GLSjH9jNl2xjQlNwafJHzkHisIEH6DYA/3QDf6CdPB
-OWqn8VNfeZKf+RTsJ+0pHuq4CLhBLDLLllhx1htpb/h1WUM8j8Y7OM3k1ltoJs4Y
-3HOpjHGVBWln/xYbGQwqQbZm/IhEDRIgOvU1IeaHQIXLJSj022gTD8DDEr5DQMd9
-hi7sPPL1StfvLKyJPeSTl3pfxumunmztsbFNCKpYpF7B4hbEyOL266sguAUoc+GZ
-qD4du02x1/QSMlilqkZaLWYWuExQToKLu/u1TTDVLDzpXr0WNNM=
-=+frY
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl7CVTsACgkQFA3kzBSg
+KbYlIA/7BQNmIQ5iN7qAg4OoKehScI839eWqzjWfVJJjVyzhmGs5YNz6jUGOwvyK
+SOin9h74J0oihkHaI8y5H3iGKNZwI/9h7BfxLyC4bjWa57n98flAWXyhFCl0zSjD
+0UdNW6fTA9M6CxrE6FKrNbX6lJ5QIngcodP94l6UEweMEmFVVWM5hhAcE5px57Th
+SR51V+lCc3tk2L10CHQQ3YUql07NNB/DCH5wTm/pAr2WqgXBtnLIfyuCSRqwDRvS
+T+KH3DmA6wddeaFLu0TV5SutjN4Xb/Fe9/x2qHr5PKDjLlaIFv/mb4t5M90kRR0T
+GpoO+dLK445whLcNWLO+Q6wD3MPGrNwdSCtl8G1g0wS0ChuUBNgk3joT3dOPx7Lz
+0/rJ2xyE/zREnb11j3lXo4llQnBm/nnuzbyUqb74Dl0QUGbMUsxyCaqxkHhMf0y/
+nngPExvkJ+r0AEwZ5LHcvANS6sMia2+awGcxM9gOvJDNdy1Wy/8k2NAyXqti78/l
+XLKXuGY7yLek/K0qH52T7DrBnYTCNRl6DRvaArQh7XycZcYVn2aGopxq8wwCEvhw
+/dvnxWkXBtLHl0Wogh1bzUS4hyPIaX66RqERFAhp71fhGSZBLJGGdGMt2oO0Va9V
+eNa4h+50ew64uBoGEWPEgcCpc1jxIAiYgF/Otj7pbRtwwV2dz08=
+=SuFA
 -----END PGP SIGNATURE-----
 
---2oS5YaxWCcQjTEyO--
+--LpQ9ahxlCli8rRTG--
