@@ -2,102 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3F31D8914
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 22:26:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D9A1D8924
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 22:28:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726504AbgERUWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 16:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726349AbgERUWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 16:22:25 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0545EC061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 13:22:24 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id h17so13319183wrc.8
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 13:22:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=N5fj+6WnQjALg/MListk7E4v5qcQEXyRBDCOGUUogNc=;
-        b=Jjjo9XEobITCraYba+IWfvbwcW67uOZmAs4ruGi3ulx51yY1HXdBKtixadw1xZ03ll
-         OIwEDSOWj16cz42lZmNVTDY5HyM3ftB29zZvidLJdx/A5iAbpnbzVAPH1/t3mmo7dKcM
-         zghOffJPZ6aGSUxQRps8MLOSUwOsZkXzXHPjf1xLijUcX9J6SW3FVs11p1FeLbWhK5bi
-         E8B09IxE7DCgvgOrktyfp5duJa/B8m9ov5y9VCO9D8t08xAW7eOjHrniGOh4MROol/o8
-         6K3RjT/GeoZwBcYE0wIZOughg7t4ZM/+zZB8Q3rbieylZZpX9hP6rdn6ifzYFqaJJVZ3
-         WzlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=N5fj+6WnQjALg/MListk7E4v5qcQEXyRBDCOGUUogNc=;
-        b=BuHBOSNRYXcgciVVUhpSwR/QMrZJd+KT1gJRo0retgsFiRuzmmcujotGM6wZ0Y1tnu
-         catyj6QAYY6ElcC4/rZhiT/xHrMPnQZqcOu10MftcHAflmlWY1jrikuwNGeIyT5L2S8R
-         D0vXv9+kB7IFY+9EbBWfiZ7ewkF3/YvMbzesoyYOsHuKCGvjUpaQBDOBQZukBqh8zhm7
-         ITUL5hlCBUkwnYQQFf7A20E8ba+AAJ2sc4ZPnx9maesE7XoHBU8+oP7zSBPSeQHpJT9h
-         Bf37sZuxOuB/OyeTyHut1JznC9+gQeLcaBzD2/vXsAA/H1vdFXdQNrk9zCdPzfcDZQOr
-         3G5Q==
-X-Gm-Message-State: AOAM531OePJiHfe4vW4Y41/OqQJPvjhcbWEyxE9cK4oujmvr1O95fZw0
-        BZKyKaFjhXvAHyF0o+cKnWjzV+nW
-X-Google-Smtp-Source: ABdhPJyAgWbVs8//zGF6VtGxf4I0vuNrg+ulNx4Scn4hn9gp0AoBayDM5O2r3zwFycqKD0Hcq3BI3g==
-X-Received: by 2002:adf:82b6:: with SMTP id 51mr21773409wrc.102.1589833343402;
-        Mon, 18 May 2020 13:22:23 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f28:5200:9de0:f30c:fd06:315c? (p200300ea8f2852009de0f30cfd06315c.dip0.t-ipconnect.de. [2003:ea:8f28:5200:9de0:f30c:fd06:315c])
-        by smtp.googlemail.com with ESMTPSA id f127sm881399wmf.17.2020.05.18.13.22.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2020 13:22:22 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: improve rtl8169_mark_to_asic
-Message-ID: <25184433-dca6-f43f-ccc5-daf0ed0f17ee@gmail.com>
-Date:   Mon, 18 May 2020 22:22:09 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+        id S1726714AbgERU2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 16:28:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53706 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726227AbgERU2d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 May 2020 16:28:33 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E620620643;
+        Mon, 18 May 2020 20:28:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589833713;
+        bh=SCI58Ehuhb/dq++jUy3yXw6n3N3jm3m5ZOFoUuWjP1s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=2YnI6fPN174NzUWIqK6Rfr4gXiGLwfbfXYDkqqPIkt3MdQgiAFGFknueo07/DgiPW
+         egTdf+xMzKGiDST81aiZlS7W+bXrfyx+HIBEGOPyJy705hOQdXqJkarhB/lqAs99ve
+         MXJLUSYJwCPlXfUHeoQf13kiLhMd83yAXMlyU3lM=
+Date:   Mon, 18 May 2020 13:28:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
+        Steve deRosier <derosier@gmail.com>,
+        Ben Greear <greearb@candelatech.com>, jeyu@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com,
+        Takashi Iwai <tiwai@suse.de>, schlad@suse.de,
+        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
+        daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        ath10k@lists.infradead.org
+Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
+Message-ID: <20200518132828.553159d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e3d978c8fa6a4075f12e843548d41e2c8ab537d1.camel@sipsolutions.net>
+References: <20200515212846.1347-1-mcgrof@kernel.org>
+        <20200515212846.1347-13-mcgrof@kernel.org>
+        <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
+        <20200518165154.GH11244@42.do-not-panic.com>
+        <4ad0668d-2de9-11d7-c3a1-ad2aedd0c02d@candelatech.com>
+        <20200518170934.GJ11244@42.do-not-panic.com>
+        <abf22ef3-93cb-61a4-0af2-43feac6d7930@candelatech.com>
+        <20200518171801.GL11244@42.do-not-panic.com>
+        <CALLGbR+ht2V3m5f-aUbdwEMOvbsX8ebmzdWgX4jyWTbpHrXZ0Q@mail.gmail.com>
+        <20200518190930.GO11244@42.do-not-panic.com>
+        <e3d978c8fa6a4075f12e843548d41e2c8ab537d1.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let the compiler decide about inlining, and as confirmed by Eric it's
-better to use WRITE_ONCE here to ensure that the descriptor ownership
-is transferred to NIC immediately.
+On Mon, 18 May 2020 21:25:09 +0200 Johannes Berg wrote:
+> It's pretty clear, but even then, first of all I doubt this is the case
+> for many of the places that you've sprinkled the annotation on, and
+> secondly it actually hides useful information.
+> 
+> Regardless of the support issue, I think this hiding of information is
+> also problematic.
+> 
+> I really think we'd all be better off if you just made a sysfs file (I
+> mistyped debugfs in some other email, sorry, apparently you didn't see
+> the correction in time) that listed which device(s) crashed and how many
+> times. That would actually be useful. Because honestly, if a random
+> device crashed for some random reason, that's pretty much a non-event.
+> If it keeps happening, then we might even want to know about it.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index e887ee1e3..23f150092 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -3824,15 +3824,14 @@ static int rtl8169_change_mtu(struct net_device *dev, int new_mtu)
- 	return 0;
- }
- 
--static inline void rtl8169_mark_to_asic(struct RxDesc *desc)
-+static void rtl8169_mark_to_asic(struct RxDesc *desc)
- {
- 	u32 eor = le32_to_cpu(desc->opts1) & RingEnd;
- 
- 	desc->opts2 = 0;
- 	/* Force memory writes to complete before releasing descriptor */
- 	dma_wmb();
--
--	desc->opts1 = cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE);
-+	WRITE_ONCE(desc->opts1, cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE));
- }
- 
- static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
--- 
-2.26.2
-
+Johannes - have you seen devlink health? I think we should just use
+that interface, since it supports all the things you're requesting,
+rather than duplicate it in sysfs.
