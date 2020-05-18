@@ -2,141 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3182C1D851D
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:17:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8EE51D85F8
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387562AbgERSQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 14:16:33 -0400
-Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:49932 "EHLO
-        shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731888AbgERSQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:16:31 -0400
-Received: from [192.168.4.242] (helo=deadeye)
-        by shadbolt.decadent.org.uk with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <ben@decadent.org.uk>)
-        id 1jakJP-000528-N7; Mon, 18 May 2020 19:16:27 +0100
-Received: from ben by deadeye with local (Exim 4.93)
-        (envelope-from <ben@decadent.org.uk>)
-        id 1jakJP-003feU-BU; Mon, 18 May 2020 19:16:27 +0100
-Message-ID: <9364a11c93d09de54aea70ab6098f2a654447bd2.camel@decadent.org.uk>
-Subject: Re: [PATCH net] mlx4: Fix information leak on failure to read
- module EEPROM
-From:   Ben Hutchings <ben@decadent.org.uk>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Cc:     "960702@bugs.debian.org" <960702@bugs.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Date:   Mon, 18 May 2020 19:16:22 +0100
-In-Reply-To: <40aaf07aa7463c0fc6ca89aab36c622bfb789ba4.camel@mellanox.com>
-References: <20200517172053.GA734488@decadent.org.uk>
-         <40aaf07aa7463c0fc6ca89aab36c622bfb789ba4.camel@mellanox.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-43UfY+HhXmvvNo9Nz2cj"
-User-Agent: Evolution 3.36.2-1 
+        id S1731281AbgERSWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 14:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728659AbgERSWS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:22:18 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F35DBC061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:22:17 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id x22so5339030otq.4
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:22:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=SmaNRsXuZLiI1Rl2g1Im8DQQvPBZC2W11ib76z3KxaQ=;
+        b=fkDqpe+EcCKr1Waj9I38uaPkMF1EeaJYBwn96rRbqcxj9YPhNJMbKsXuo7oEs0hKP1
+         KNrMofZj5BMw07wVDI5NfflncEmGguKpvQRPiUqus1rLeaSxrCP9GXp8paJNJ6WmSVw7
+         Vzpqf7aYFaGIzQ9CgLlvxlibXMtNRuRkW+fb8S9R4f7a4g5/pN33ZUUr4eTLO6Mu+bUj
+         NrAFXg5yv4h8uhY67CZ4QMPPpwDXLpoPF81yNyMYhCQG7AHCT5CLTv397adOm03QvQJV
+         HC48VEQCbOZ/cwXfAehgOM+w7XF3ThF0pqC++FJYE60kxx5HQ/rYU34gDL/VNf499nTt
+         BD+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SmaNRsXuZLiI1Rl2g1Im8DQQvPBZC2W11ib76z3KxaQ=;
+        b=U3ITxzFjBy+DDEvQRsYVVihnH1aw2nkWbEjMjSKqFcF/KnGBzk15HQdTwfhxqATzxi
+         Y9WuTE+G8Uo6d7FUkubXWuiUQM0HkZE+FcUqTSa+CAfBsPJM4nOaGZgZEmTQC5M+uoKT
+         kIIIRvQEPqQyQhqwtdZ09G9OBKuRhJOUkFo26mFHz8iO+5MhiaZ8Ar3sCUksDshLZwce
+         CyTARUP3MsGqcl+TrvDAb39gZnQhjHmjctaWAGW4WqsmSkPnqOj/xvJH+xjy0xaXhACW
+         TAwLEktmYxnUhEHmdRdo53dp3RWhRZtj15rg0wDrtYsQ9+/un+n0/24IvBDUynx7aN4q
+         +PRw==
+X-Gm-Message-State: AOAM533Lw2xBOkCY5rUrBLdgVjdygmIAQrQI3OtP//nzVZ/fq15Q+mQR
+        1cxAXG6HMu97jOMCnrDf/66HtcrZbZIvVbckzIpgoc+NLHM=
+X-Google-Smtp-Source: ABdhPJxmXHFuOb1I315Ti5U1F4k57YHjIG7BmEzU8PzZq2lAS9md86ybnmNUWgbJpyxTzM39cmXPNv3fLP3+9Q7BocI=
+X-Received: by 2002:a9d:d0a:: with SMTP id 10mr12962364oti.189.1589826137281;
+ Mon, 18 May 2020 11:22:17 -0700 (PDT)
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 192.168.4.242
-X-SA-Exim-Mail-From: ben@decadent.org.uk
-X-SA-Exim-Scanned: No (on shadbolt.decadent.org.uk); SAEximRunCond expanded to false
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+ <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+ <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
+ <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
+ <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+ <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
+ <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
+ <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
+ <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
+ <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
+ <CANxWus8YFkWPELmau=tbTXYa8ezyMsC5M+vLrNPoqbOcrLo0Cg@mail.gmail.com>
+ <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
+ <CAM_iQpV-0f=yX3P=ZD7_-mBvZZn57MGmFxrHqT3U3g+p_mKyJQ@mail.gmail.com>
+ <CANxWus8P8KdcZE8L1-ZLOWLxyp4OOWNY82Xw+S2qAomanViWQA@mail.gmail.com>
+ <CAM_iQpU3uhQewuAtv38xfgWesVEqpazXs3QqFHBBRF4i1qLdXw@mail.gmail.com>
+ <CANxWus9xn=Z=rZ6BBZBMHNj6ocWU5dZi3PkOsQtAdgjyUdJ2zg@mail.gmail.com>
+ <CAM_iQpWPmu71XYvoshZ3aAr0JmXTg+Y9s0Gvpq77XWbokv1AgQ@mail.gmail.com>
+ <CANxWus9vSe=WtggXveB+YW_29fD8_qb-7A1pCgMUHz7SFfKhTA@mail.gmail.com>
+ <CANxWus8=CZ8Y1GvqKFJHhdxun9gB8v1SP0XNZ7SMk4oDvkmEww@mail.gmail.com>
+ <CAM_iQpXjsrraZpU3xhTvQ=owwzSTjAVdx-Aszz-yLitFzE5GsA@mail.gmail.com>
+ <CAM_iQpV_ebQjZuwhxhHSatcjNXzGBgz0JDC+H-nO-dXRkPKKUQ@mail.gmail.com>
+ <CANxWus-9gjCvMw7ctG7idERsZd7WtObRs4iuTUp_=AaJtHbSgg@mail.gmail.com>
+ <CAM_iQpW-p0+0o8Vks6AOHVt3ndqh+fj+UXGP8wtfi9-Pz-TToQ@mail.gmail.com>
+ <CANxWus9RgiVP1X4zK5mVG4ELQmL2ckk4AYMvTdKse6j5WtHNHg@mail.gmail.com>
+ <CAM_iQpXR+MQHaR-ou6rR_NAz-4XhAWiLuSEYvvpVXyWqHBnc-w@mail.gmail.com> <CANxWus8AqCM4Dk87TTXB3xxtQPqPYjs-KmzVv8hjZwaAqg2AYQ@mail.gmail.com>
+In-Reply-To: <CANxWus8AqCM4Dk87TTXB3xxtQPqPYjs-KmzVv8hjZwaAqg2AYQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 18 May 2020 11:22:06 -0700
+Message-ID: <CAM_iQpWbjgT0rEkzd53aJ_z-WwErs3NWHeQZic+Vqn3TvFpA0A@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, May 18, 2020 at 7:16 AM V=C3=A1clav Zindulka
+<vaclav.zindulka@tlapnet.cz> wrote:
+>
+> On Sun, May 17, 2020 at 9:35 PM Cong Wang <xiyou.wangcong@gmail.com> wrot=
+e:
+> >
+> > On Fri, May 8, 2020 at 6:59 AM V=C3=A1clav Zindulka
+> > <vaclav.zindulka@tlapnet.cz> wrote:
+> > > > > >
+> > > > > > I tried to emulate your test case in my VM, here is the script =
+I use:
+> > > > > >
+> > > > > > =3D=3D=3D=3D
+> > > > > > ip li set dev dummy0 up
+> > > > > > tc qd add dev dummy0 root handle 1: htb default 1
+> > > > > > for i in `seq 1 1000`
+> > > > > > do
+> > > > > >   tc class add dev dummy0 parent 1:0 classid 1:$i htb rate 1mbi=
+t ceil 1.5mbit
+> > > > > >   tc qd add dev dummy0 parent 1:$i fq_codel
+> > > > > > done
+> > > > > >
+> > > > > > time tc qd del dev dummy0 root
+> > > > > > =3D=3D=3D=3D
+> > > > > >
+> > > > > > And this is the result:
+> > > > > >
+> > > > > >     Before my patch:
+> > > > > >      real   0m0.488s
+> > > > > >      user   0m0.000s
+> > > > > >      sys    0m0.325s
+> > > > > >
+> > > > > >     After my patch:
+> > > > > >      real   0m0.180s
+> > > > > >      user   0m0.000s
+> > > > > >      sys    0m0.132s
+> > > > >
+> > > > > My results with your test script.
+> > > > >
+> > > > > before patch:
+> > > > > /usr/bin/time -p tc qdisc del dev enp1s0f0 root
+> > > > > real 1.63
+> > > > > user 0.00
+> > > > > sys 1.63
+> > > > >
+> > > > > after patch:
+> > > > > /usr/bin/time -p tc qdisc del dev enp1s0f0 root
+> > > > > real 1.55
+> > > > > user 0.00
+> > > > > sys 1.54
+> > > > >
+> > > > > > This is an obvious improvement, so I have no idea why you didn'=
+t
+> > > > > > catch any difference.
+> > > > >
+> > > > > We use hfsc instead of htb. I don't know whether it may cause any
+> > > > > difference. I can provide you with my test scripts if necessary.
+> > > >
+> > > > Yeah, you can try to replace the htb with hfsc in my script,
+> > > > I didn't spend time to figure out hfsc parameters.
+> > >
+> > > class add dev dummy0 parent 1:0 classid 1:$i hfsc ls m1 0 d 0 m2
+> > > 13107200 ul m1 0 d 0 m2 13107200
+> > >
+> > > but it behaves the same as htb...
+> > >
+> > > > My point here is, if I can see the difference with merely 1000
+> > > > tc classes, you should see a bigger difference with hundreds
+> > > > of thousands classes in your setup. So, I don't know why you
+> > > > saw a relatively smaller difference.
+> > >
+> > > I saw a relatively big difference. It was about 1.5s faster on my hug=
+e
+> > > setup which is a lot. Yet maybe the problem is caused by something
+> >
+> > What percentage? IIUC, without patch it took you about 11s, so
+> > 1.5s faster means 13% improvement for you?
+>
+> My whole setup needs 22.17 seconds to delete with an unpatched kernel.
+> With your patches applied it is 21.08. So it varies between 1 - 1.5s.
+> Improvement is about 5 - 6%.
 
---=-43UfY+HhXmvvNo9Nz2cj
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Good to know.
 
-On Mon, 2020-05-18 at 16:47 +0000, Saeed Mahameed wrote:
-> On Sun, 2020-05-17 at 18:20 +0100, Ben Hutchings wrote:
-> > mlx4_en_get_module_eeprom() returns 0 even if it fails.  This results
-> > in copying an uninitialised (or partly initialised) buffer back to
-> > user-space.
+>
+> > > else? I thought about tx/rx queues. RJ45 ports have up to 4 tx and rx
+> > > queues. SFP+ interfaces have much higher limits. 8 or even 64 possibl=
+e
+> > > queues. I've tried to increase the number of queues using ethtool fro=
+m
+> > > 4 to 8 and decreased to 2. But there was no difference. It was about
+> > > 1.62 - 1.63 with an unpatched kernel and about 1.55 - 1.58 with your
+> > > patches applied. I've tried it for ifb and RJ45 interfaces where it
+> > > took about 0.02 - 0.03 with an unpatched kernel and 0.05 with your
+> > > patches applied, which is strange, but it may be caused by the fact i=
+t
+> > > was very fast even before.
+> >
+> > That is odd. In fact, this is highly related to number of TX queues,
+> > because the existing code resets the qdisc's once for each TX
+> > queue, so the more TX queues you have, the more resets kernel
+> > will do, that is the more time it will take.
+>
+> Can't the problem be caused that reset is done on active and inactive
+> queues every time? It would explain why it had no effect in decreasing
+> and increasing the number of active queues. Yet it doesn't explain why
+> Intel card (82599ES) with 64 possible queues has exactly the same
+> problem as Mellanox (ConnectX-4 LX) with 8 possible queues.
+
+Regardless of these queues, the qdisc's should be only reset once,
+because all of these queues point to the same instance of root
+qdisc in your case.
+
 [...]
-> I am not sure i see the issue in here, and why we need the partial
-> memset ?
-> first thing in this function we do:
-> memset(data, 0, ee->len);
->=20
-> and then mlx4_get_module_info() will only copy valid data only on
-> success.
+> With the attached patch I'm down to 1.7 seconds - more than 90%
+> improvement :-) Can you please check it and pass it to proper places?
+> According to debugging printk messages it empties only active queues.
 
-Wow, sorry, I don't know how I missed that.  So this is not the bug I
-was looking for.
+You can't change netdev_for_each_tx_queue(), it would certainly at least
+break netif_alloc_netdev_queues().
 
->=20
-> > -		if (!ret) /* Done reading */
-> > +		if (!ret) {
-> > +			/* DOM was not readable after all */
->=20
-> actually if mlx4_get_module_info()  returns any non-negative value it
-> means how much data was read, so if it returns 0, it means that this
-> was the last iteration and we are done reading the eeprom..=20
->=20
-> so i would remove the above comment and the memset below is redundant
-> since we already memset the whole buffer before the while loop.
+Let me think how to fix this properly, I have some ideas and will provide
+you some patch(es) to test soon.
 
-Right.
-
-> > +			memset(data + i, 0, ee->len - i);
-> >  			return 0;
-> > +		}
-> > =20
-> >  		if (ret < 0) {
-> >  			en_err(priv,
-> >  			       "mlx4_get_module_info i(%d) offset(%d)
-> > bytes_to_read(%d) - FAILED (0x%x)\n",
-> >  			       i, offset, ee->len - i, ret);
-> > -			return 0;
-> > +			return ret;
->=20
-> I think returning error in here was the actual solution for your
-> problem. you can verify by looking in the kernel log and verify you see
-> the log message.
-
-The original bug report (https://bugs.debian.org/960702) says that
-ethtool reports different values depending on whether its output is
-redirected.  Although returning all-zeroes for the unreadable part
-might be wrong, it doesn't explain that behaviour.
-
-Perhaps if the timing of the I=C2=B2C reads is marginal, varying numbers of
-bytes of DOM information might be readable?  But I don't see how
-redirection of ethtool's output would affect that.  It uses a single
-ioctl to read everything, and the kernel controls timing within that.
-
-So I am mystified about what is going on here.  Maybe there is a bug in
-ethtool, but I'm not seeing it.
-
-Ben.
-
-> >  		}
-> > =20
-> >  		i +=3D ret;
---=20
-Ben Hutchings
-The two most common things in the universe are hydrogen and stupidity.
-
-
---=-43UfY+HhXmvvNo9Nz2cj
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAl7C0PYACgkQ57/I7JWG
-EQmdiA/8D+wNpcgKm7rW2aSkoc1uS+Um7dRsUCVvEcB9XvlJ3GQp5QHDUcSwhC7t
-BrtjCWnFC9kucuJB8HzOe13Z4h2NPDAa8KOudYf2mtOYAA1XL+WFApB1EqbZsiu0
-feyhzLK6023rlky8aJg20OT5tmXR5Fi13p+JwNA55MOVFwDS2Y2sFZgNlg+qFxiA
-6ywGGQdI1gm3LHVfMCoWc3Y5XgDD+7L8jwJxP5UNTtX0/HIUIb1png5FiVIw/Rhf
-VWNZ9fILgeG283sQj6RgWKuJI0JcV7py2oSWs9TtO1YGGWheomtVqHipjdmwSb3u
-aKue6xZB6K3sAo7k0CuK20yVwPydk5NzrNZw1tbA+RGOXM/QquJNINWFBy98etu/
-6pDce8PSCCbPkArRsbTR5Alt67v1A6eq/2J7m2ZsgjN8GBw5TcGPHUmKTPJ3jsy6
-c1eyLoRhjQG7ESsXtb6QTNW5EOBZIoH8uDeBof60UGKVhNAUTCyA2VCrJVSniDJw
-/2M71WKzoqv3ZMY6OvivnWSSrXQFq0TiynRcSvkjWaN8TONK60k1EykPMezLUqYs
-SAdignvY+miHj/IeYbLyUUV3b/jlZ2EQ/Bz937xxlYGzLJfuc4KsVdr6yW1nD9vA
-IauyguRzon/krrYZLivbIULVZE5uQ9nyX1/w0UtPI3laXLJS8yU=
-=sRq4
------END PGP SIGNATURE-----
-
---=-43UfY+HhXmvvNo9Nz2cj--
+Thanks!
