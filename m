@@ -2,89 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F7F31D89C4
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 23:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B05F1D89F5
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 23:18:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727873AbgERVGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 17:06:52 -0400
-Received: from www62.your-server.de ([213.133.104.62]:46322 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbgERVGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 17:06:52 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jamy4-0007Qs-LP; Mon, 18 May 2020 23:06:37 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jamy4-000VMY-6O; Mon, 18 May 2020 23:06:36 +0200
-Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress path
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, brouer@redhat.com,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-References: <20200513014607.40418-1-dsahern@kernel.org>
- <87sgg4t8ro.fsf@toke.dk> <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com>
- <87lflppq38.fsf@toke.dk> <76e2e842-19c0-fd9a-3afa-07e2793dedcd@gmail.com>
- <87h7wdnmwi.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <dcdfe5ab-138f-bf10-4c69-9dee1c863cb8@iogearbox.net>
-Date:   Mon, 18 May 2020 23:06:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728179AbgERVSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 17:18:14 -0400
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:33762 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726367AbgERVSO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 17:18:14 -0400
+Received: by mail-pj1-f66.google.com with SMTP id z15so384161pjb.0;
+        Mon, 18 May 2020 14:18:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=l7e4wKCO02j4byrVDyWhWctfhv6l8FZHk8XSWR2z0vo=;
+        b=plDKgRHdhpJsjGO96kdVpRhRsZbAKwq6HGHt+vC3gnFYc8cMu1SPqJUq+W9Nk0KZax
+         XkDnQ4974LyMrf5moA+JAtHJZKR8oRc5kxx2KmAmZcnJ4N36wszwUVyqZ9mVij1yaKMj
+         slYroe6+f/4DhtZvpIXfFCsIZjflus06/uXGEY2fSVzhM1xYQOlyB7qcvorQhe8FekB4
+         /3S8+Z7peksiFQMV+CGXfypWt/CabMxT9N6llsePLkI4GJ4JF8e16juUNJAAnw4+Tct7
+         qBdCx36X7j8cJ2Ys7MeJfZWc/spsZnBqkMfZIEXN6Nyr7sAEG8WqFkG2OpG4nLr7fKdY
+         z4FQ==
+X-Gm-Message-State: AOAM53342i2Haulktxw4//Yf8b3yFapQYhWE4a6SuWmpDLM3qrpPZeBm
+        62LYcs9cLiA7IMx1lvQV3N8=
+X-Google-Smtp-Source: ABdhPJzkdRsgH22dj2g8Hm1MTTSw8RzHY7IB5l/iNmXwB4OiLU+K1Uzi5CZ4z9dHoULajnN+bWOrAg==
+X-Received: by 2002:a17:902:5a8c:: with SMTP id r12mr15373937pli.51.1589836691939;
+        Mon, 18 May 2020 14:18:11 -0700 (PDT)
+Received: from 42.do-not-panic.com (42.do-not-panic.com. [157.230.128.187])
+        by smtp.gmail.com with ESMTPSA id o15sm371753pjq.28.2020.05.18.14.18.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2020 14:18:10 -0700 (PDT)
+Received: by 42.do-not-panic.com (Postfix, from userid 1000)
+        id 4F1A4404B0; Mon, 18 May 2020 21:18:09 +0000 (UTC)
+Date:   Mon, 18 May 2020 21:18:09 +0000
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Steve deRosier <derosier@gmail.com>,
+        Ben Greear <greearb@candelatech.com>, jeyu@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com,
+        Takashi Iwai <tiwai@suse.de>, schlad@suse.de,
+        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
+        daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        ath10k@lists.infradead.org
+Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
+Message-ID: <20200518211809.GQ11244@42.do-not-panic.com>
+References: <20200518165154.GH11244@42.do-not-panic.com>
+ <4ad0668d-2de9-11d7-c3a1-ad2aedd0c02d@candelatech.com>
+ <20200518170934.GJ11244@42.do-not-panic.com>
+ <abf22ef3-93cb-61a4-0af2-43feac6d7930@candelatech.com>
+ <20200518171801.GL11244@42.do-not-panic.com>
+ <CALLGbR+ht2V3m5f-aUbdwEMOvbsX8ebmzdWgX4jyWTbpHrXZ0Q@mail.gmail.com>
+ <20200518190930.GO11244@42.do-not-panic.com>
+ <e3d978c8fa6a4075f12e843548d41e2c8ab537d1.camel@sipsolutions.net>
+ <20200518195950.GP11244@42.do-not-panic.com>
+ <bb0b9a2da99c16a28c1dbee93d08abfa2aecdc8b.camel@sipsolutions.net>
 MIME-Version: 1.0
-In-Reply-To: <87h7wdnmwi.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25816/Mon May 18 14:17:08 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bb0b9a2da99c16a28c1dbee93d08abfa2aecdc8b.camel@sipsolutions.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/20 8:00 PM, Toke Høiland-Jørgensen wrote:
-> David Ahern <dsahern@gmail.com> writes:
->> On 5/18/20 3:08 AM, Toke Høiland-Jørgensen wrote:
-[...]
->> Less powerful how? There are only so many operations you can do to a
->> packet. What do you want to do and what can't be done with this proposed
->> change? Why must it be done as XDP vs proper synergy between the 2 paths.
+On Mon, May 18, 2020 at 10:07:49PM +0200, Johannes Berg wrote:
+> On Mon, 2020-05-18 at 19:59 +0000, Luis Chamberlain wrote:
 > 
-> I meant 'less powerful' in the obvious sense: it only sees a subset of
-> the packets going out of the interface. And so I worry that it will (a)
-> make an already hard to use set of APIs even more confusing, and (b)
-> turn out to not be enough so we'll end up needing a "real" egress hook.
+> > > Err, no. Those two are most definitely related. Have you looked at (most
+> > > or some or whatever) staging drivers recently? Those contain all kinds
+> > > of garbage that might do whatever with your kernel.
+> > 
+> > No, I stay away :)
 > 
-> As I said in my previous email, a post-REDIRECT hook may or may not be
-> useful in its own right. I'm kinda on the fence about that, but am
-> actually leaning towards it being useful; however, I am concerned that
-> it'll end up being redundant if we do get a full egress hook.
+> :)
+> 
+> > > That's all fine, I just don't think it's appropriate to pretend that
+> > > your kernel is now 'tainted' (think about the meaning of that word) when
+> > > the firmware of some random device crashed.
+> > 
+> > If the firmware crash *does* require driver remove / addition again,
+> > or a reboot, would you think that this is a situation that merits a taint?
+> 
+> Not really. In my experience, that's more likely a hardware issue (card
+> not properly seated, for example) that a bus reset happens to "fix".
+> 
+> > > It's pretty clear, but even then, first of all I doubt this is the case
+> > > for many of the places that you've sprinkled the annotation on,
+> > 
+> > We can remove it, for this driver I can vouch for its location as it did
+> > reach a state where I required a reboot. And its not the first time this
+> > has happened. This got me thinking about the bigger picture of the lack
+> > of proper way to address these cases in the kernel, and how the user is
+> > left dumbfounded.
+> 
+> Fair, so the driver is still broken wrt. recovery here. I still don't
+> think that's a situation where e.g. the system should say "hey you have
+> a taint here, if your graphics go bad now you should not report that
+> bug" (which is effectively what the single taint bit does).
 
-I tend to agree with this. From a user point of view, say, one that has used
-the ingress XDP path before, the expectation would very likely be that an XDP
-"egress hook" would see all the traffic similarly as on the ingress side, but
-since the skb path has been dropped in this revision - I agree with you, David,
-that it makes sense to do so - calling it XDP "egress" then feels a bit misleading
-wrt expectations. I'd assume we'd see a lot of confused users on this very list
-asking why their BPF program doesn't trigger.
+But again, let's think about the generic type of issue, and the
+unexpected type of state that can be reached. The circumstance here
+*does* lead to a case which is not recoverable. Now, consider how
+many cases in the kernel where similar situations can happen and leave
+the device or driver in a non-functional state.
 
-So given we neither call this hook on the skb path, nor XDP_TX nor AF_XDP's TX
-path, I was wondering also wrt the discussion with John if it makes sense to
-make this hook a property of the devmap _itself_, for example, to have a default
-BPF prog upon devmap creation or a dev-specific override that is passed on map
-update along with the dev. At least this would make it very clear where this is
-logically tied to and triggered from, and if needed (?) would provide potentially
-more flexibility on specifiying BPF progs to be called while also solving your
-use-case.
+> > > and secondly it actually hides useful information.
+> > 
+> > What is it hiding?
+> 
+> Most importantly, which device crashed. Secondarily I'd say how many
+> times (*).
 
-Thanks,
-Daniel
+The device is implied by the module, the taint is applied to both.
+If you had multiple devices, however, yes, it would not be possible
+to distinguish from the taint which exact device it happened on.
+
+So the only thing *generic* which would be left out is count.
+
+> The information "firmware crashed" is really only useful in relation to
+> the device.
+
+If you have to reboot to get a functional network again then the device
+is quite useless for many people, regardless of which device that
+happened on.
+
+But from a support perspective a sysfs interface which provides a tiny
+bit more generic information indeed provides more value than a taint.
+
+  Luis
