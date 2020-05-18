@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D86571D6E1F
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 01:50:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 828201D6E3F
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 02:24:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbgEQXug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 19:50:36 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36466 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726656AbgEQXug (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 May 2020 19:50:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=LLTzz3YzvyMyBPk+Kolqx1Uu8fddMZ1ye55MJSgzQRA=; b=RjUwc6azwrY5RW4MhmjFAjsr0D
-        1J0L/dBUzDvf1yDZzamdb3Ob8HfeWJWqAFZR3PtWxFbpetrN2DHYTFXkLBYjd/WuwAVi8Qbs1ECTp
-        xjAYyJOUm8rLY4XIUBYO+fXGvRBF1u+qS4iWeNM90jkIuon6PrhgFLzqHDtk6yfbZ2ho=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jaT34-002ZTa-Tb; Mon, 18 May 2020 01:50:26 +0200
-Date:   Mon, 18 May 2020 01:50:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Roelof Berg <rberg@berg-solutions.de>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] lan743x: Added fixed link support
-Message-ID: <20200517235026.GD610998@lunn.ch>
-References: <20200516192402.4201-1-rberg@berg-solutions.de>
- <20200517183710.GC606317@lunn.ch>
- <6E144634-8E2F-48F7-A0A4-6073164F2B70@berg-solutions.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6E144634-8E2F-48F7-A0A4-6073164F2B70@berg-solutions.de>
+        id S1726727AbgERAXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 20:23:37 -0400
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:48004 "EHLO
+        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726246AbgERAXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 20:23:37 -0400
+Received: by kvm5.telegraphics.com.au (Postfix, from userid 502)
+        id 168F1283BD; Sun, 17 May 2020 20:23:35 -0400 (EDT)
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     "Paul Mackerras" <paulus@samba.org>, "Jeremy Kerr" <jk@ozlabs.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <769e9041942802d0e9ff272c12ee359a04b84a90.1589761211.git.fthain@telegraphics.com.au>
+From:   Finn Thain <fthain@telegraphics.com.au>
+Subject: [PATCH] net: bmac: Fix stack corruption panic in bmac_probe()
+Date:   Mon, 18 May 2020 10:20:11 +1000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> +			/* Configure MAC to fixed link parameters */
-> >> +			data = lan743x_csr_read(adapter, MAC_CR);
-> >> +			/* Disable auto negotiation */
-> >> +			data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
-> > 
-> > Why does the MAC care about autoneg? In general, all the MAC needs to
-> > know is the speed and duplex.
-> > 
-> 
+This fixes an old bug recently revealed by CONFIG_STACKPROTECTOR.
 
-> My assumption is, that in fixed-link mode we should switch off the
-> autonegotiation between MAC and remote peer (e.g. a switch). I
-> didn’t test, if it would also wun with the hardware doing
-> auto-negotiation, however it feels cleaner to me to prevent the
-> hardware from initiating any auto-negotiation in fixed-link mode.
+[   25.707616] scsi host0: MESH
+[   28.488852] eth0: BMAC at 00:05:02:07:5a:a6
+[   28.488859]
+[   28.505397] Kernel panic - not syncing: stack-protector: Kernel stack is corrupted in: bmac_probe+0x540/0x618
+[   28.535152] CPU: 0 PID: 1 Comm: swapper Not tainted 5.6.13 #1
+[   28.552399] Call Trace:
+[   28.559754] [e101dc88] [c0031fe4] panic+0x138/0x314 (unreliable)
+[   28.577764] [e101dce8] [c0031c2c] print_tainted+0x0/0xcc
+[   28.593711] [e101dcf8] [c03a6bf8] bmac_probe+0x540/0x618
+[   28.609667] [e101dd38] [c035e8a8] macio_device_probe+0x60/0x114
+[   28.627457] [e101dd58] [c033ec1c] really_probe+0x100/0x3a0
+[   28.643908] [e101dd88] [c033f098] driver_probe_device+0x68/0x410
+[   28.661948] [e101dda8] [c033f708] device_driver_attach+0xb4/0xe4
+[   28.679986] [e101ddc8] [c033f7a0] __driver_attach+0x68/0x10c
+[   28.696978] [e101dde8] [c033c8c0] bus_for_each_dev+0x88/0xf0
+[   28.713973] [e101de18] [c033ded8] bus_add_driver+0x1c0/0x228
+[   28.730966] [e101de48] [c033ff48] driver_register+0x88/0x15c
+[   28.747966] [e101de68] [c00044a0] do_one_initcall+0x7c/0x218
+[   28.764976] [e101ded8] [c0640480] kernel_init_freeable+0x168/0x230
+[   28.783512] [e101df18] [c000486c] kernel_init+0x14/0x104
+[   28.799473] [e101df38] [c0012234] ret_from_kernel_thread+0x14/0x1c
+[   28.818031] Rebooting in 180 seconds..
 
-The MAC is not involved in autoneg. autoneg is between two PHYs. They
-talk with each other, and then phylibs sees the results and tells the
-MAC the results of the negotiation. That happens via this call
-back. So i have no idea what this is doing in general in the MAC. And
-in your setup, you don't have any PHYs at all. So there is no
-auto-neg. You should read the datasheet and understand what this is
-controlling. It might need to be disabled in general.
+The bmac_probe() stack frame was apparently corrupted by an array bounds
+overrun in bmac_get_station_address().
 
-> Using get_phy_mode() in all cases is not possible on a PC as it
-> returns SGMII on a standard PC.
+This patch is the simplest way to resolve the issue given possible
+side effects (?) from hardware accesses in bmac_get_station_address().
 
-Why do you think that?
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Jeremy Kerr <jk@ozlabs.org>
+Fixes: 1a2509c946bf ("[POWERPC] netdevices: Constify & voidify get_property()")
+Reported-and-tested-by: Stan Johnson <userm57@yahoo.com>
+Signed-off-by: Finn Thain <fthain@telegraphics.com.au>
+---
+This choice of 'Fixes' tag is (of course) debatable. Other possible
+choices might be 1da177e4c3f4 ("Linux-2.6.12-rc2"),
+c3ff2a5193fa ("powerpc/32: add stack protector support") and so on.
+---
+ drivers/net/ethernet/apple/bmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > I don't understand this comment.
-> > 
-> 
-> See above the lengthy section. On a PC SGMII is returned when I call of_get_phy_mode(phynode, &phyifc);
+diff --git a/drivers/net/ethernet/apple/bmac.c b/drivers/net/ethernet/apple/bmac.c
+index a58185b1d8bf..4d9deed3409c 100644
+--- a/drivers/net/ethernet/apple/bmac.c
++++ b/drivers/net/ethernet/apple/bmac.c
+@@ -1239,7 +1239,7 @@ static int bmac_probe(struct macio_dev *mdev, const struct of_device_id *match)
+ 	int j, rev, ret;
+ 	struct bmac_data *bp;
+ 	const unsigned char *prop_addr;
+-	unsigned char addr[6];
++	unsigned char addr[12];
+ 	struct net_device *dev;
+ 	int is_bmac_plus = ((int)match->data) != 0;
+ 
+-- 
+2.26.2
 
-There are two things possible here:
-
-A PC has no OF support, so you are using:
-
-https://elixir.bootlin.com/linux/latest/source/include/linux/of_net.h#L19
-
-So you get the error code -ENODEV, and phyifc is not changed.
-
-Or you are using:
-
-https://elixir.bootlin.com/linux/latest/source/drivers/of/of_net.c#L25
-
-There is unlikely to be a device node, so phyifc is set to
-PHY_INTERFACE_MODE_NA and -ENODEV is returned.
-
-So if of_get_phy_mode() returns an error, use RMII. Otherwise use what
-value it set phyifc to.
-
-      Andrew
