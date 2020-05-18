@@ -2,105 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E87701D7E60
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 18:25:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFAA31D7E78
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 18:29:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728420AbgERQZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 12:25:52 -0400
-Received: from mail-eopbgr70041.outbound.protection.outlook.com ([40.107.7.41]:6083
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728209AbgERQZw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 12:25:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YdpO86mMYWbT/mX8zz0i7kE3g9bTjLRbwHXMJI2lxhu5CJAff4n/YkGDmNdvWkkp/KfWDQG6fuGDZxTLuNlCT+vN6EftEpH/cKyRrzS08SBqz3BmHlUWd4EKqv67FaNT7S68nUOjqF3A/olvOSd7AfAxPXZbYXSOGG9d6pJVaO8EHzYL4vM61F4W8oyNpZm70tma9GNrW3THJTkccXS1DDOGC04LKK/oyWMN81UIHrj8tJBVQMjSlAkNSvrJ2r+FdfU8YyLE0x9j28ZUFmEiq/A8xd/qEzn+xSAg/43F2KRxN5w1vgBoF0mtQ2tTIY0/jzTvHDYHVjo2LKX/pQVXAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jb8drt9yrcm6vN++z8r7eKlWcxSzx8T4T+thIJJMH9E=;
- b=DeMP5EBVvNS8SVivxvjbqEbG6rM5/llaxqXyxfWcU/T2JIjMO7cEuYAcjpQ9zdlRlCgbnHcYUuDHyZj4jb+uHYRn9THtq2HjquODGT+L+mntNZGvwfntObkzF0jNb/2NgfvqWF8IxkhCz8tbNFFZupr8t376TJZt+/kbFRPMNCzMuJVOFIvSpU5w2nhX/MhF6gwgR/ujJ3l9/f3DE8NUF0fXQUXqBr1uk7ZLMUM9TxYn046oiVfD/JDEqzLxG94Zeazj5xwygLkEC2T8GHcNYZXIWmTgU9vdaqA7PCUWxeRiv8f6AM1Ql6mHhm0VyOUQfhvVv0/A3QI+SzM8rEFURg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jb8drt9yrcm6vN++z8r7eKlWcxSzx8T4T+thIJJMH9E=;
- b=U4v+NFubzZQNUCH8zeGd4JX8cwhtQu0jxRBI/evudhx1vw/w0413NmlLBmeqh3rdOpHBvqMvz/Fk4evNJFefdL2q7HUrcGTBRQE+Gz6oLScYApk3MIn0PxibORl/LqI7SSXNBhl5QUgZoldlwZFW5DNDCMHI92CRTo5YLVqai+I=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB4608.eurprd05.prod.outlook.com (2603:10a6:802:5f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.31; Mon, 18 May
- 2020 16:25:47 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::2405:4594:97a:13c%2]) with mapi id 15.20.3000.034; Mon, 18 May 2020
- 16:25:47 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "tangbin@cmss.chinamobile.com" <tangbin@cmss.chinamobile.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "leon@kernel.org" <leon@kernel.org>
-CC:     Leon Romanovsky <leonro@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "zhangshengju@cmss.chinamobile.com" 
-        <zhangshengju@cmss.chinamobile.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] net/mlx5e: Use IS_ERR() to check and simplify code
-Thread-Topic: [PATCH v2] net/mlx5e: Use IS_ERR() to check and simplify code
-Thread-Index: AQHWKw1vt3qLm47COkubT/zbZ86R9aiuC9uA
-Date:   Mon, 18 May 2020 16:25:47 +0000
-Message-ID: <bffa9aeea3d70ba6ecc93bdddad952970d88e5af.camel@mellanox.com>
-References: <20200515230633.2832-1-tangbin@cmss.chinamobile.com>
-In-Reply-To: <20200515230633.2832-1-tangbin@cmss.chinamobile.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: cmss.chinamobile.com; dkim=none (message not signed)
- header.d=none;cmss.chinamobile.com; dmarc=none action=none
- header.from=mellanox.com;
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 784753d1-7a90-4617-292e-08d7fb481f5a
-x-ms-traffictypediagnostic: VI1PR05MB4608:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB4608B60D9A4F77C0BEA29B14BEB80@VI1PR05MB4608.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:459;
-x-forefront-prvs: 04073E895A
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 66BB0VQtuJUUdd8/ZqKjLeuclg0btyeOyBb8HIVUvPeeiYtGWAgK5VA8AP2zdwVK+p9pezvUEQvK3d2QuosYu00AzsK/MuyGG1sLb1fvAFAFURLyB7OSrnEtLvuyADF9V0bnnr/1JGellCAlcE3E6gWEnBbXZwnQnrQQ+d6N2EoVEyTjUsfW/19aVoPzdNqurw+44ijYasZIK5eQTI8BmpTFyB3wZQzKZg3zwYuVwLBTl4vUVrYXNHE442cK9+hJNp6Rp0qT2K7gEB8fQFeFt2xLFPKbcuz7tfVfIzsKy80xPYF8chyGYMBVBU8yrNROEn8rBHqS4HzQZJmvQk2Hknum8mny4hVqzXUdYs5Zj7J8JBgqrqvIVq0aBN8B3eYdqO2OyzSG0V/lcYrrQ6LtRNK/ZAEncm1czQjx7flHxcdwLlkbyizj/xuFc0dsAEN8
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(39860400002)(366004)(136003)(396003)(4744005)(8936002)(2906002)(8676002)(36756003)(4326008)(76116006)(6512007)(91956017)(66946007)(66446008)(66556008)(66476007)(64756008)(478600001)(71200400001)(6486002)(2616005)(5660300002)(6506007)(26005)(86362001)(186003)(316002)(54906003)(110136005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: NFLY/SebuCwsjqTKbCkC46PYwe6DvlG0GIq5J4OrCtqX96aC4FZO52VzmlWKpG4V4bpM1k7IO8q2fl1faQdkwPydhpiRVwmy3Rw366z4hh0wcBS5aZqkd1Dci1Hhr6sMv4szJ+ESDXd2XamxwisemgojCYbknMS9eSYUiOIZI7LbupvEPZuL88FWzRz/dkvbu/cCNAzNqST6JIMGFsjqCMB9aUKVq9feKutOxSZFU8q6hWKXd72recf+06XW7h4qG/e5zVLlxtYJnd7+52VhV6aBY9+erwArf5nWIok23lnEoF+vZZN6qRW0+BqYvzYt4mv42hon2SYJxIJdu5YE/S7awfbsceZuxOELjnkINSfWCDlBXTRULEEnvGJGaGlUwm3rZMC6aKRiD3KMRMGPzLFOvyzW6Ov9Y1EKwQ2IX4eAFvaY/1fnNzX+i2ntc8cgX20bea7iPQ60k32TD47C1Ik3RX630coaP7Q80vT2D1s=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1EFF41507CA78E48AF51E9CEE67C324B@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728198AbgERQ3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 12:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728078AbgERQ3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 12:29:19 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7EDC061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 09:29:19 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id o5so11213970iow.8
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 09:29:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TmNo324ewiqBrOzyFgGIajOz2Fxu5S4md+RR2eoMBH0=;
+        b=cR6cpj4L3VfEX9LUwmpRrf5NaiDdEHQkdowyBqBDeP9M+RN+2PDUK9GqoycTwAHDkz
+         v1kLKq+JDAbgGiNdDihildBwccSJeTyzjQl9UKfkXpQ9vNqRRkcWCErz0HmKI4hifSBY
+         d+uumoTs1E8WCj8oA4lOOmAv+ZnAizTpJiETY5X+seRwXvJZ00cQWJXbrBIJFcVP7yCj
+         gxEc9sgee310IqVllejFcBrMITelb35V5SI6azfkxzd2lv3TBqfKwDRq9Q8XFAJD41bg
+         yO3/yfvFY1kq5xP74oW7hSdtWwD1jEBZqJm/mFWU9DOy0ggV+8k8/IdM9hN5lcU7qonu
+         v0Rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TmNo324ewiqBrOzyFgGIajOz2Fxu5S4md+RR2eoMBH0=;
+        b=gwCVflN9tDPqNsDFkUz2qHLWSKOOYuhrdgAPEc5vPgg0AH0hXh/reX0egiSReI40K3
+         8asr5MMi61FTkQEu/XQNzT+jPL6Lf+CX+UE/EQ0mQleX/KSnAz2QJ6dhIMhq4+iFCCC1
+         2W7JqvhNrZqJ0XW1Oj7XpnG43VtQ2In6MWJvwI+d3a8Ium2BQcF73h9Ciba1pVyu0mUh
+         0z6G2KyEsKuMz85PyjAuIs2uMTIK7Rl+uw1iTT4pxOCUhaYbRiplO7wr1HmZx1/56piA
+         zdHDO2Frfy3BNu/MIvLhZ/8LZbe7ha5C+NCESgGl+0EJrjP++HY3x6jxAvtczhZR2FKF
+         wWoA==
+X-Gm-Message-State: AOAM533SSKvU3gJDY9RdaKCvlVlSeSrGCHhvogvPNK+CYtkWcEBBDOAS
+        dl7RK6cAsS5Gi8ubCF4kBsA630/+Cg70OqR0bMRxQw==
+X-Google-Smtp-Source: ABdhPJwfkal/ogCvbE1YiVUSr2oHNZPX1BV5tAJ5ccooYPRJnI4ec3PTfIwWNWbZ0WgPcK7m/mubWCdkilY0URhDGgE=
+X-Received: by 2002:a02:cf17:: with SMTP id q23mr16428337jar.39.1589819358215;
+ Mon, 18 May 2020 09:29:18 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 784753d1-7a90-4617-292e-08d7fb481f5a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2020 16:25:47.7264
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: D8sKvYVSNhEtvKelaZ1s/W3Xbm6JBvCGx+kWJZt3jAmSEAr1HpgkIcAdoV9MUUqjMsG0K9wsSisv+LOahdVg5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4608
+References: <20200515221732.44078-1-irogers@google.com> <20200515221732.44078-8-irogers@google.com>
+ <20200518154505.GE24211@kernel.org> <CAP-5=fWZwuSLaFX+-pgeE_H92Mtp7+_NrwBeRFTqyfPjVRkbWg@mail.gmail.com>
+ <20200518160648.GI24211@kernel.org> <20200518161137.GK24211@kernel.org>
+In-Reply-To: <20200518161137.GK24211@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Mon, 18 May 2020 09:29:06 -0700
+Message-ID: <CAP-5=fWzb5XxcFishFErRtdc-Gvv-7DkVpd6HSiy2_RswfjeDg@mail.gmail.com>
+Subject: Re: [PATCH v3 7/7] perf expr: Migrate expr ids table to a hashmap
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCAyMDIwLTA1LTE2IGF0IDA3OjA2ICswODAwLCBUYW5nIEJpbiB3cm90ZToNCj4gVXNl
-IElTX0VSUigpIGFuZCBQVFJfRVJSKCkgaW5zdGVhZCBvZiBQVFJfRVJSX09SX1pFUk8oKSB0bw0K
-PiBzaW1wbGlmeSBjb2RlLCBhdm9pZCByZWR1bmRhbnQganVkZ2VtZW50cy4NCj4gDQo+IFNpZ25l
-ZC1vZmYtYnk6IFpoYW5nIFNoZW5nanUgPHpoYW5nc2hlbmdqdUBjbXNzLmNoaW5hbW9iaWxlLmNv
-bT4NCj4gU2lnbmVkLW9mZi1ieTogVGFuZyBCaW4gPHRhbmdiaW5AY21zcy5jaGluYW1vYmlsZS5j
-b20+DQo+IFJldmlld2VkLWJ5OiBMZW9uIFJvbWFub3Zza3kgPGxlb25yb0BtZWxsYW5veC5jb20+
-DQo+IC0tLQ0KPiBDaGFuZ2VzIGZyb20gdjENCj4gIC0gZml4IHRoZSBjb21taXQgbWVzc2FnZSBm
-b3IgdHlwby4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2Nv
-cmUvZW4vdGNfdHVuLmMgfCA1ICsrLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25z
-KCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCg0KQXBwbGllZCB0byBuZXQtbmV4dC1tbHg1IA0KDQpU
-aGFua3MsDQpTYWVlZC4NCg0K
+On Mon, May 18, 2020 at 9:11 AM Arnaldo Carvalho de Melo
+<arnaldo.melo@gmail.com> wrote:
+>
+> Em Mon, May 18, 2020 at 01:06:48PM -0300, Arnaldo Carvalho de Melo escreveu:
+> > Em Mon, May 18, 2020 at 09:03:45AM -0700, Ian Rogers escreveu:
+> > > On Mon, May 18, 2020 at 8:45 AM Arnaldo Carvalho de Melo wrote:
+> > > this build issue sounds like this patch is missing:
+> > > https://lore.kernel.org/lkml/20200515221732.44078-3-irogers@google.com/
+> > > The commit message there could have explicitly said having this
+> > > #include causes the conflicting definitions between perf's debug.h and
+> > > libbpf_internal.h's definitions of pr_info, etc.
+> >
+> > yeah, understood, but I'm not processing patches for tools/lib/bpf/,
+> > Daniel is, I'll only get that one later, then we can go back to the way
+> > you structured it. Just an extra bit of confusion in this process ;-)
+>
+> So, thiis is failing on all alpine Linux containers:
+>
+>   CC       /tmp/build/perf/util/metricgroup.o
+>   CC       /tmp/build/perf/util/header.o
+> In file included from util/metricgroup.c:25:0:
+> /git/linux/tools/lib/api/fs/fs.h:16:0: error: "FS" redefined [-Werror]
+>  #define FS(name)    \
+>  ^
+> In file included from /git/linux/tools/perf/util/hashmap.h:16:0,
+>                  from util/expr.h:11,
+>                  from util/metricgroup.c:14:
+> /usr/include/bits/reg.h:28:0: note: this is the location of the previous definition
+>  #define FS     25
+>  ^
+>   CC       /tmp/build/perf/util/callchain.o
+>   CC       /tmp/build/perf/util/values.o
+>   CC       /tmp/build/perf/util/debug.o
+>   CC       /tmp/build/perf/util/fncache.o
+> cc1: all warnings being treated as errors
+> mv: can't rename '/tmp/build/perf/util/.metricgroup.o.tmp': No such file or directory
+> /git/linux/tools/build/Makefile.build:96: recipe for target '/tmp/build/perf/util/metricgroup.o' failed
+>
+>
+> I'll check that soon,
+>
+> - Arnaldo
+
+I had some issues here too:
+https://lore.kernel.org/lkml/CAEf4BzYxTTND7T7X0dLr2CbkEvUuKtarOeoJYYROefij+qds0w@mail.gmail.com/
+The only reason for the bits/reg.h inclusion is for __WORDSIZE for the
+hash_bits operation. As shown below:
+
+#ifdef __GLIBC__
+#include <bits/wordsize.h>
+#else
+#include <bits/reg.h>
+#endif
+static inline size_t hash_bits(size_t h, int bits)
+{
+/* shuffle bits and return requested number of upper bits */
+return (h * 11400714819323198485llu) >> (__WORDSIZE - bits);
+}
+
+It'd be possible to change the definition of hash_bits and remove the
+#includes by:
+
+static inline size_t hash_bits(size_t h, int bits)
+{
+/* shuffle bits and return requested number of upper bits */
+#ifdef __LP64__
+  int shift = 64 - bits;
+#else
+  int shift = 32 - bits;
+#endif
+return (h * 11400714819323198485llu) >> shift;
+}
+
+Others may have a prefered more portable solution. A separate issue
+with this same function is undefined behavior getting flagged
+(unnecessarily) by sanitizers:
+https://lore.kernel.org/lkml/20200508063954.256593-1-irogers@google.com/
+
+I was planning to come back to that once we got these changes landed.
+
+Thanks!
+Ian
