@@ -2,132 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B53861D882F
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 21:25:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45DAA1D8835
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 21:28:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728101AbgERTYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 15:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47722 "EHLO
+        id S1728135AbgERT0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 15:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728083AbgERTYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 15:24:46 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B13CC061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 12:24:46 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id u7so3066113vsp.7
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 12:24:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8uiCxZtkzkGr7WZ+iPgFdPescQSjCrMQZRNNCDufNnc=;
-        b=MRxltl0J8aVtgfT0JM0hwghme8n9ii5KsiIHtdLqdtuS9rEt+rotP0c1XrlD+P19BC
-         ImL2dWayDJwm7R5aOFG0KUgv1InTk/WuJfjulJ3iPKJ3TXZmIfPIm+u7x5HSxKRq4VEK
-         DiqyqEYGbmHIxaZ4qMEteC8edmu/XROFw/xzWo21AGsIHPA42X5NEVDkctwW4PJcfGfx
-         Gkadxk18b3LT/xd0B1vTYfI/JxV1cBkPXxob0QjB5TBaABWX1UnbTpUiJnFoyW0aOPxA
-         NxalsdLqJYtVMwX5WCws2p15mC9an6P0fMlTs8e9wHP/lbYeOaOgvJqP7Ck4t2V1oVon
-         cxAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8uiCxZtkzkGr7WZ+iPgFdPescQSjCrMQZRNNCDufNnc=;
-        b=OXmQBATE0jYgBEPm7D4chIiVcfK97LdT05Vpaq3SjWRtIqMAY4Okd8ku8d8v8xJYdB
-         +nN+Ow84xeBjQQ8odlch1Yv66kCeLRu+vpqXxGQ6PwxD4jlXQs+1MzZ41ny151XIZQcp
-         wlK9q4hpauIKOJ/XawznYIofb92fyx8bFcBRjvptJo1hp8o6uRBDlbtbIKde9i1WQr8X
-         XIc195MkHgKOplSJhSEGmhXR/KGLy5fOp2udk9GnBm9BqXbLKlGrDDCpFGWo7K2+khxu
-         yLIMg4WmW+QWDPPYmPqtjDBETQU8mLRhE73el53cGGzFKqfLeoihzi3x/kPq+X4G2ZaY
-         GDmA==
-X-Gm-Message-State: AOAM530+UNM9QiwbKRqJquO4hPS77pVFyh4WW1VAyJpbcuyZcgzYotJD
-        balFMp1wdYg2fARIrLArpxIIpwuc8+mKex6JNxe05g==
-X-Google-Smtp-Source: ABdhPJxVu2fS5s4IiGMyAvrir4jnYnkIGQ58i79JVocolUPFTtPQKzk3xisdDZdfn+yqG22dcEB1yhz14Cay7MsEwoE=
-X-Received: by 2002:a67:ef43:: with SMTP id k3mr4860940vsr.213.1589829885173;
- Mon, 18 May 2020 12:24:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200518191242.GA27634@oc3272150783.ibm.com> <20200518192051.GE11620@krava>
-In-Reply-To: <20200518192051.GE11620@krava>
-From:   Stephane Eranian <eranian@google.com>
-Date:   Mon, 18 May 2020 12:24:34 -0700
-Message-ID: <CABPqkBQc-T_wJpxOQXS8O7kM=81-XJZ7L0uT5C-HDANqTeEy8A@mail.gmail.com>
-Subject: Re: metric expressions including metrics?
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     "Paul A. Clarke" <pc@us.ibm.com>, Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>
+        with ESMTP id S1727987AbgERT0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 15:26:39 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C924C061A0C;
+        Mon, 18 May 2020 12:26:39 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1jalNw-00Fhxr-7e; Mon, 18 May 2020 21:25:14 +0200
+Message-ID: <e3d978c8fa6a4075f12e843548d41e2c8ab537d1.camel@sipsolutions.net>
+Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        Steve deRosier <derosier@gmail.com>
+Cc:     Ben Greear <greearb@candelatech.com>, jeyu@kernel.org,
+        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
+        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
+        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        gpiccoli@canonical.com, pmladek@suse.com,
+        Takashi Iwai <tiwai@suse.de>, schlad@suse.de,
+        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
+        daniel.vetter@ffwll.ch, will@kernel.org,
+        mchehab+samsung@kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        ath10k@lists.infradead.org
+Date:   Mon, 18 May 2020 21:25:09 +0200
+In-Reply-To: <20200518190930.GO11244@42.do-not-panic.com> (sfid-20200518_210935_354047_0199DB8F)
+References: <20200515212846.1347-1-mcgrof@kernel.org>
+         <20200515212846.1347-13-mcgrof@kernel.org>
+         <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
+         <20200518165154.GH11244@42.do-not-panic.com>
+         <4ad0668d-2de9-11d7-c3a1-ad2aedd0c02d@candelatech.com>
+         <20200518170934.GJ11244@42.do-not-panic.com>
+         <abf22ef3-93cb-61a4-0af2-43feac6d7930@candelatech.com>
+         <20200518171801.GL11244@42.do-not-panic.com>
+         <CALLGbR+ht2V3m5f-aUbdwEMOvbsX8ebmzdWgX4jyWTbpHrXZ0Q@mail.gmail.com>
+         <20200518190930.GO11244@42.do-not-panic.com>
+         (sfid-20200518_210935_354047_0199DB8F)
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.2 (3.36.2-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 18, 2020 at 12:21 PM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Mon, May 18, 2020 at 02:12:42PM -0500, Paul A. Clarke wrote:
-> > I'm curious how hard it would be to define metrics using other metrics,
-> > in the metrics definition files.
-> >
-> > Currently, to my understanding, every metric definition must be an
-> > expresssion based solely on arithmetic combinations of hardware events.
-> >
-> > Some metrics are hierarchical in nature such that a higher-level metric
-> > can be defined as an arithmetic expression of two other metrics, e.g.
-> >
-> > cache_miss_cycles_per_instruction =
-> >   data_cache_miss_cycles_per_instruction +
-> >   instruction_cache_miss_cycles_per_instruction
-> >
-> > This would need to be defined something like:
-> > dcache_miss_cpi = "dcache_miss_cycles / instructions"
-> > icache_miss_cpi = "icache_miss_cycles / instructions"
-> > cache_miss_cpi = "(dcache_miss_cycles + icache_miss_cycles) / instructions"
-> >
-> > Could the latter definition be simplified to:
-> > cache_miss_cpi = "dcache_miss_cpi + icache_miss_cpi"
-> >
-> > With multi-level caches and NUMA hierarchies, some of these higher-level
-> > metrics can involve a lot of hardware events.
-> >
-> > Given the recent activity in this area, I'm curious if this has been
-> > considered and already on a wish/to-do list, or found onerous.
->
-> hi,
-> actually we were discussing this with Ian and Stephane and I plan on
-> checking on that.. should be doable, I'll keep you in the loop
->
-Yes, this is needed to minimize the number of events needed to compute
-metrics groups.
-Then across all metrics groups, event duplicates must be eliminated
-whenever possible, except when explicit event grouping is required.
+On Mon, 2020-05-18 at 19:09 +0000, Luis Chamberlain wrote:
 
->
-> jirk
->
-> a
->
-> >
-> > Regards,
-> > Paul Clarke
-> >
->
+> > Unfortunately a "taint" is interpreted by many users as: "your kernel
+> > is really F#*D up, you better do something about it right now."
+> > Assuming they're paying attention at all in the first place of course.
+> 
+> Taint historically has been used and still is today to help rule out
+> whether or not you get support, or how you get support.
+> 
+> For instance, a staging driver is not supported by some upstream
+> developers, but it will be by those who help staging and Greg. TAINT_CRAP
+> cannot be even more clear.
+> 
+> So, no, it is not just about "hey your kernel is messed up", there are
+> clear support boundaries being drawn.
+
+Err, no. Those two are most definitely related. Have you looked at (most
+or some or whatever) staging drivers recently? Those contain all kinds
+of garbage that might do whatever with your kernel.
+
+Of course that's not a completely clear boundary, maybe you can find a
+driver in staging that's perfect code just not written to kernel style?
+But I find that hard to believe, in most cases.
+
+So no, it's really not about "[a] staging driver is not supported" vs.
+"your kernel is messed up". The very fact that you loaded one of those
+things might very well have messed up your kernel entirely.
+
+> These days though, I think we all admit, that firmware crashes can use
+> a better generic infrastructure for ensuring that clearly affecting-user
+> experience issues. This patch is about that *when and if these happen*,
+> we annotate it in the kernel for support pursposes.
+
+That's all fine, I just don't think it's appropriate to pretend that
+your kernel is now 'tainted' (think about the meaning of that word) when
+the firmware of some random device crashed. Heck, that could have been a
+USB device that was since unplugged. Unless the driver is complete
+garbage (hello staging again?) that really should have no lasting effect
+on the system itself.
+
+> Recovery without affecting user experience would be great, the taint is
+> *not* for those cases. The taint definition has:
+> 
+> + 18) ``Q`` used by device drivers to annotate that the device driver's firmware
+> +     has crashed and the device's operation has been severely affected. The    
+> +     device may be left in a crippled state, requiring full driver removal /   
+> +     addition, system reboot, or it is unclear how long recovery will take.
+> 
+> Let me know if this is not clear.
+
+It's pretty clear, but even then, first of all I doubt this is the case
+for many of the places that you've sprinkled the annotation on, and
+secondly it actually hides useful information.
+
+Regardless of the support issue, I think this hiding of information is
+also problematic.
+
+I really think we'd all be better off if you just made a sysfs file (I
+mistyped debugfs in some other email, sorry, apparently you didn't see
+the correction in time) that listed which device(s) crashed and how many
+times. That would actually be useful. Because honestly, if a random
+device crashed for some random reason, that's pretty much a non-event.
+If it keeps happening, then we might even want to know about it.
+
+You can obviously save the contents of this file into your bug reports
+automatically and act accordingly, but I think you'll find that this is
+far more useful than saying "TAINT_FIRMWARE_CRASHED" so I'll ignore this
+report. Yeah, that might be reasonable thing if the bug report is about
+slow wifi *and* you see that ath10k firmware crashed every 10 seconds,
+but if it just crashed once a few days earlier it's of no importance to
+the system anymore ... And certainly a reasonable driver (which I
+believe ath10k to be) would _not_ randomly start corrupting memory
+because its firmware crashed. Which really is what tainting the kernel
+is about.
+
+So no, even with all that, I still really believe you're solving the
+wrong problem. Having information about firmware crashes, preferably
+with some kind of frequency information attached, and *clearly* with
+information about which device attached would be _great_. Munging it all
+into one bit is actively harmful, IMO.
+
+johannes
+
