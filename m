@@ -2,131 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C3B1D7057
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 07:24:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCD991D705C
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 07:28:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726378AbgERFYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 01:24:32 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:30862 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726040AbgERFYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 01:24:32 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04I5Nkmp023622;
-        Sun, 17 May 2020 22:24:19 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=6O2tVz9Vlpr6V6jL+mTZ/sZ3nxUA4A7bM22rW4av/HQ=;
- b=PoS8JaQZ1Xr0mDFIHKnmCf8u94U9kIOFm9EMSD6ZN//EwU2GVtiymQwV90+0nyEpBwFb
- qUpP5AE1pyXOFNAzr+2zaPyPgJJThvNFKe5QWk4JWV9kEOme+eJgBWvrQcCzf09tnaik
- S88ptjHumRgmR9tHsYLyWNReAHbXgagT5a0= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 31305rg4u1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sun, 17 May 2020 22:24:19 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Sun, 17 May 2020 22:24:18 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IwqobRkjgbrqeIzqbB/0//DCZsqWlUTYlnQVqTh8vqId4vAQw5jE4+A1flcxyRkwL0Xc74kvEVGWe3YtP3UqE0zolhx6dUGxL7fB5A9IhYCEL15HC50vpxhNyJrQwdC/cz7ZADSOJzn/DjjbSsBq6Du94X01IXzFzETemxQuz0JABtJ/Shf+HT03CWE/zEW9eM8V3IoLaL265x4Tqv7znQnCe4egVzkR01Lq4G4FyxayligA6VPSSc1CjC760OaCU3aJTrpTd/bx+S+AU7angN516II8Eikrnsgnlouv9U3LMjlOnmxFRVvJjW7syoTh3mIWGOILlsttHUqUFWnGyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6O2tVz9Vlpr6V6jL+mTZ/sZ3nxUA4A7bM22rW4av/HQ=;
- b=SJIbndZGa7hQqkIlMnwK3QKmjRMFy8imwzU4VIRXx5W7iFXZaq2muNtAvWLj7JXiQS38EPvXSFXSIS0dizX4u6VT911CX4dw9A1ZPLnffkbSVD3tvMgbkYymfIrz3RlFJ17rl4ZbMLYU5wWRu/UPZsHmQRPs9QYuRcZbNTGrmWGRkE6k1BQh2At2FucdxjpfbqM+oTvONP2hT/y6of+bRbRfirseCGIsfIsFVZnMR2d1JcLrkQ78DgsTYdTRlySNww2qvCqo24iigxywQ74o8NoooERIl5HjAldajsUKORNW1EfaoBvbkkcOJVhV9NcJZqHddn8JlOnQn72Dfd30Eg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6O2tVz9Vlpr6V6jL+mTZ/sZ3nxUA4A7bM22rW4av/HQ=;
- b=AtMO0Qa73tePQsmJo2vUJjvth8uckjcnb3TIQ+4G+a58IQkZhFYSRYd+8Ykn0e5WVUUqu4WBQBm1w7hr7HfMmPmthpab3OYz9fVJyZYUx2wSjla3jgRfYsodBu1GaFmwsZMHv5p5LWawvYlv7T3BgbC3jH6b1YgDcgaF+cxq2Pg=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB3350.namprd15.prod.outlook.com (2603:10b6:a03:109::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.27; Mon, 18 May
- 2020 05:24:17 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::4922:9927:5d6c:5301%7]) with mapi id 15.20.3000.033; Mon, 18 May 2020
- 05:24:17 +0000
-Subject: Re: [bpf-next PATCH v2 3/5] bpf: sk_msg add get socket storage
- helpers
-To:     John Fastabend <john.fastabend@gmail.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>
-CC:     <lmb@cloudflare.com>, <bpf@vger.kernel.org>,
-        <jakub@cloudflare.com>, <netdev@vger.kernel.org>
-References: <158958022865.12532.5430684453474460041.stgit@john-Precision-5820-Tower>
- <158958039839.12532.8701091377815048145.stgit@john-Precision-5820-Tower>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <5fe5a7d7-047a-aac0-b26b-a73806819cd5@fb.com>
-Date:   Sun, 17 May 2020 22:24:15 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
-In-Reply-To: <158958039839.12532.8701091377815048145.stgit@john-Precision-5820-Tower>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR03CA0027.namprd03.prod.outlook.com
- (2603:10b6:a03:1e0::37) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:39c9) by BY5PR03CA0027.namprd03.prod.outlook.com (2603:10b6:a03:1e0::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.25 via Frontend Transport; Mon, 18 May 2020 05:24:16 +0000
-X-Originating-IP: [2620:10d:c090:400::5:39c9]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0c8077c3-1fad-4602-bbac-08d7faebb5b8
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3350:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB3350BA913A8FE913F5E17B8DD3B80@BYAPR15MB3350.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
-X-Forefront-PRVS: 04073E895A
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WkUgTKi3CYA2tNxSc0kUj7AhsGKTqJKGY9BjveBKx3DzlCPsMCf2TGp8DYcIlPfyT9hF5P1BGSMUZ3V9bcAxgTpBguWdnxRNU09INhWTyOSGVFyyb7S1mIA8eHJ7neWGekX5j4+olKV7JY5xAhrRPkasIS1zp/NoqPfrdcEQvhkDv5EVVjZRq2DXxFI3GbZndWg8YdZGVD9OvU+mahbGKboSrnLZ+HcUBPoCzuzKvQuZDEhMl+Vzug8zSc4/7EOt+I60pdjWdBYemdotj2fYkby8SHhvsC3/za111MU9oRplluvwyDyMsqR9KE2IYWWa2AghLeageddc0m46RcldxJUNO7irLjjoOQaSbDSlEW63ijnsQ6BdrJkbgg49CSFbIQnnQz+2wWCMxemV5/XyFej1PmcKQ1MCgI6pCejl890kByEuFLG7DYBCjmZ5sQKgSpo5X6LRvXw8LuF3SXkFB9Jgqnamj8xv92kPUa0ZI4cSExPXDHVBLBNBA7K0TuVS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(39860400002)(376002)(136003)(366004)(396003)(346002)(6512007)(31696002)(52116002)(8676002)(5660300002)(8936002)(4744005)(478600001)(86362001)(36756003)(2906002)(31686004)(4326008)(6486002)(53546011)(316002)(6506007)(16526019)(186003)(2616005)(66946007)(66556008)(66476007)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: M1BQcYnZrSjC8iCDicUUs3EtmyGieGF8REeyvc34nViSl5bm/NdTHWaX/EvGSFj894lTqkktBIez6KH26at+giQLwcBFypYPvME9nw6kU7v7CQQie/pCSJFLnDeJyL12G9uSWBvq1it+cwRA+H0yDf0iRMrKBeBjZco5KpU4JzR+gqsa/ZDHIT5VATio52d2nLX/O2smfKwflCxGKhAUSvEf/nc3k+UZsOr+Me8p8NG8//M/+AvPqRwaaDalrF2s8Ikmj3a1+grro4mNCE5+PJTzmklBVbGmaz8WMJ2RtAotd7V8FgZPxPAQCMssXh6rlDp8QOS4nYB1w/k+w3WB8RCofFW11F5wE+mW8bC5yllurCqdGjVvb4j0I64Vh4INP3UiYXPwlGkj42GTWCpiSAN5e5mt71NkEcj3GAJHqAHZliP+yN/yLkNlFy17UG1UHdaredF1rblXEfCT0H49kZHlLbIyA+x9NNeOocpk9+towrRxamVUlQj2uSx+tx4i58Ae6YiPc1mFEaqCtFuhOg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c8077c3-1fad-4602-bbac-08d7faebb5b8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2020 05:24:17.0894
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BxyUTVx+xjZsRViZDznVNOWVNFq8JW9xJ2UZDenTN5WcWbyXjN57xc+6kK7+EYJX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3350
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-18_01:2020-05-15,2020-05-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- bulkscore=0 impostorscore=0 spamscore=0 phishscore=0 malwarescore=0
- mlxlogscore=999 priorityscore=1501 adultscore=0 clxscore=1015
- cotscore=-2147483648 mlxscore=0 lowpriorityscore=0 classifier=spam
- adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2005180049
-X-FB-Internal: deliver
+        id S1726474AbgERF2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 01:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726040AbgERF2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 01:28:21 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D72C061A0C;
+        Sun, 17 May 2020 22:28:21 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id g11so3765551plp.1;
+        Sun, 17 May 2020 22:28:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=WBVBIzp2b7Pg1EPe8d8y6PumURqXzl8cvQXQg0AQNAA=;
+        b=hj4YsfGYUb2YNgN2rYV/J1a6AVHr2yrndux2dSdQ3RTe+fM27+8IuY9ZsoSVS/+VDm
+         LYZm3dti8aaUt085/HPWSnE3Qe44JtqkpAjH819QZUU2vwW5ptsjI0ReocF+a5vkc/kN
+         GNq12gLNiOltbgqIDevqFJnXWZzOSNxGvDYlxtTgLB587i+eL9z4yDq7/If8tEx5eLrA
+         tiRpCaCmlctzEo31p/c+bb++kSNtePaqJIaGVhlQgCQURE/Qpwx9QWeDIyvm011P6pyY
+         uEePHDtdrlPCdbebkGvGIS0Y/wK9ZmHkUBzDBV+OWHN2jJC+YdMIeTLwiy/iXJWzPtwt
+         jooQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WBVBIzp2b7Pg1EPe8d8y6PumURqXzl8cvQXQg0AQNAA=;
+        b=rx+kXlP3RwMbXnPrIZoAvJbFoEaoR9QXKy8Gj+A1tkky1uRXZ2r3vbmONywVypcB3A
+         NAj5VNWnxLsGr49CTSpMzQti7w+3j5p4usET+6t1K2CgJEnsAW/bqUYvo2dV6dt9OfP0
+         ny40GN/ijW77cjUH+iZcjqrMQGHW1K4o/gNgmM4WtCZCb8DFHhbY2DiAb+PADr4avWqI
+         0V09ggLPf+eiObtpYGBbezezq3ClnmeAzTZu6P4JE5mHHmIx2on7Red7646Qn0l+Xt+U
+         P6XKoPlZsEYFDB+1Xq75ZXqheS49valstDxtJ2ML5LurKNcxStIhRIO9jwMiIHck8kuP
+         J8Rg==
+X-Gm-Message-State: AOAM5335SoMfYy851Ecdm9n0DrWAujw/9xYXbVPwLkMzYjasIm6FNyyA
+        zmQfERvBQP4EREg5tlkXP8o9rmF6LoU=
+X-Google-Smtp-Source: ABdhPJxmuetqrkkLnesTvgOybSfcegJ2cC2tdvVo0nHqY6DkBKjxLhQVEr05YSe+jrZzRgNA0btnew==
+X-Received: by 2002:a17:902:930c:: with SMTP id bc12mr14855642plb.255.1589779701248;
+        Sun, 17 May 2020 22:28:21 -0700 (PDT)
+Received: from DESKTOP-9405E5V.localdomain (h128-22-148-223.ablenetvps.ne.jp. [128.22.148.223])
+        by smtp.gmail.com with ESMTPSA id d124sm7572835pfa.98.2020.05.17.22.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 May 2020 22:28:20 -0700 (PDT)
+From:   Huang Qijun <dknightjun@gmail.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, ap420073@gmail.com, tglx@linutronix.de,
+        gregkh@linuxfoundation.org, allison@lohutok.net,
+        dknightjun@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] vlan: fix the bug that cannot create vlan4095
+Date:   Mon, 18 May 2020 13:27:55 +0800
+Message-Id: <20200518052755.27467-1-dknightjun@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+According to the 8021q standard, the VLAN id range is 1 to 4095.
+But in the register_vlan_device function, the range is 1 to 4094,
+because ">= VLAN_VID_MASK" is used to determine whether the id
+is illegal. This will prevent the creation of the vlan4095 interface:
+    $ vconfig add sit0 4095
+    vconfig: ioctl error for add: Numerical result out of range
 
+To fix this error, this patch uses ">= VLAN_N_VID" instead to
+determine if the id is illegal.
 
-On 5/15/20 3:06 PM, John Fastabend wrote:
-> Add helpers to use local socket storage.
-> 
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
->   include/uapi/linux/bpf.h |    2 ++
->   net/core/filter.c        |   15 +++++++++++++++
->   2 files changed, 17 insertions(+)
+Signed-off-by: Huang Qijun <dknightjun@gmail.com>
+---
+ net/8021q/vlan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Maybe put tools/include/uapi/linux/bpf.h change also in this patch
-to make cross-check easier?
+diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
+index d4bcfd8f95bf..5de7861ddf64 100644
+--- a/net/8021q/vlan.c
++++ b/net/8021q/vlan.c
+@@ -219,7 +219,7 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
+ 	char name[IFNAMSIZ];
+ 	int err;
+ 
+-	if (vlan_id >= VLAN_VID_MASK)
++	if (vlan_id >= VLAN_N_VID)
+ 		return -ERANGE;
+ 
+ 	err = vlan_check_real_dev(real_dev, htons(ETH_P_8021Q), vlan_id,
+-- 
+2.17.1
 
-Other than the above,
-Acked-by: Yonghong Song <yhs@fb.com>
