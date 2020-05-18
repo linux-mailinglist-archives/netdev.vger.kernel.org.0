@@ -2,101 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2758C1D8024
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 19:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24E1B1D8022
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 19:29:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728468AbgERR3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 13:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727006AbgERR3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 13:29:51 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A59C061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 10:29:50 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id v4so8788638qte.3
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 10:29:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=yDRkuXITvwbZsLP121Qgr9+BCBh5t6FBBOLxutHPm1M=;
-        b=fUO47CGQCzu0JRAJjRhzBu4XcsAsZ6PaOV3zT+/rY7reE41Icx1PSu1wOf28PO/Gok
-         S90PYoSx7sY0omIopomKhd8vhZ63NxKduTZezxZtg1uWHhTkx4edDJT6vO7BzeExC5p9
-         ZfZtWK2scRND3V7XEjH/vIdktGuCwtaOTQxo2YsolV64rUKjGltykuqcuTDP8OC8yYbq
-         YsFo6Vzz4do4lFQdzxYQwluq+IQeo2XuDgez7DDGiuXW6BIW4IMEuaBA7dtjpHdhsJ4l
-         KLIncWc9FOZfwIULaBFG1K0R2+f2m/Fge6Hs0bXREEACu+O9NYX8AmYfFry+edBQ3kk1
-         lXlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=yDRkuXITvwbZsLP121Qgr9+BCBh5t6FBBOLxutHPm1M=;
-        b=lGA7scC9mO4aR0XFex6b3ubwLjMmAgogXl5e93tEfxfZDk4UzGCBxEJEkSqs3wVgZb
-         gaLpHXtJA9zOMB0L4cpp/4bqgTJ+QAHFqUCraCOCjYwBdP5iKaXiD2NunXjmhoLJ/Swe
-         aN3zpZC+zJrbK/aZjFYXUZs1/r6rUVwRpO/PAnfY1gpArDmHSiCLwbWaQ516WMnGA5UM
-         GUFpM149xEjdziZQ5tfXKr06VpnB0pfb2n40fQruNH7GIf0KvUFh2DCH30+/AShaXW27
-         mZf4HBQiXSaW911ScyxOvPFz9kKcYdKbEX5TSZuHibLv0yIfSZWshxdERJlzwc1akT/X
-         d7/Q==
-X-Gm-Message-State: AOAM531kjHyZ+UysByhoAqAgvFmIczSJqnljADoWBKhHfyZ9wk4mvY2S
-        vwYh/Y56JCxg5Lov/YZqCXkh6BhU1OaWgQ==
-X-Google-Smtp-Source: ABdhPJwGJ29oLUWaaP8Ik7E5FAf0h5vBeD2jeqPRzQAlf8OX8Iu/eoAagylSWSPlRzGsbSZTH5r3Pg==
-X-Received: by 2002:ac8:7587:: with SMTP id s7mr16927129qtq.116.1589822990166;
-        Mon, 18 May 2020 10:29:50 -0700 (PDT)
-Received: from mojatatu.com ([74.127.203.199])
-        by smtp.gmail.com with ESMTPSA id g19sm7450806qke.32.2020.05.18.10.29.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 May 2020 10:29:49 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     stephen@networkplumber.org
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org, kernel@mojatatu.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>, Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH iproute2 1/1] tc: action: fix time values output in JSON format
-Date:   Mon, 18 May 2020 13:29:18 -0400
-Message-Id: <1589822958-30545-1-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728376AbgERR3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 13:29:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57624 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726958AbgERR3p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 May 2020 13:29:45 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 35A6E20715;
+        Mon, 18 May 2020 17:29:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589822984;
+        bh=GbXVQnZpxLekbr4Sys/mEjkMWI6UHS1T656yS2bb/X0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mftvPHjdu02ZEoh0elInaEV+MZn8AWq6UqwXtOCCN9GDBWYEcNN3Ukr5HegRQomBs
+         4Io8aZAeFvrx8INCKRzKMhizd1JCNRXv7u+kqHeood9e1SWdemVNKDaMzYuZcAYFP3
+         Ernsfy58FoZX+ZJnF8DLU5mRWSEdL4YGAQIvVn0g=
+Date:   Mon, 18 May 2020 10:29:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH V6 16/20] net: ks8851: Implement register, FIFO, lock
+ accessor callbacks
+Message-ID: <20200518102942.0d368e70@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <ecd84056-ef96-423e-7f14-1dc89fa378a4@denx.de>
+References: <20200517003354.233373-1-marex@denx.de>
+        <20200517003354.233373-17-marex@denx.de>
+        <20200518093422.38a52ca7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <ecd84056-ef96-423e-7f14-1dc89fa378a4@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report tcf_t values in seconds, not jiffies, in JSON format as it is now
-for stdout.
+On Mon, 18 May 2020 19:06:45 +0200 Marek Vasut wrote:
+> On 5/18/20 6:34 PM, Jakub Kicinski wrote:
+> > On Sun, 17 May 2020 02:33:50 +0200 Marek Vasut wrote:  
+> >> The register and FIFO accessors are bus specific, so is locking.
+> >> Implement callbacks so that each variant of the KS8851 can implement
+> >> matching accessors and locking, and use the rest of the common code.
+> >>
+> >> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> >> Signed-off-by: Marek Vasut <marex@denx.de>
+> >> Cc: David S. Miller <davem@davemloft.net>
+> >> Cc: Lukas Wunner <lukas@wunner.de>
+> >> Cc: Petr Stetiar <ynezz@true.cz>
+> >> Cc: YueHaibing <yuehaibing@huawei.com>  
+> > 
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member '____cacheline_aligned' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'tx_space' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'lock' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'unlock' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'rdreg16' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'wrreg16' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'rdfifo' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'wrfifo' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'start_xmit' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'rx_skb' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:138: warning: Function parameter or member 'flush_tx_work' not described in 'ks8851_net'
+> > drivers/net/ethernet/micrel/ks8851.c:163: warning: Function parameter or member 'spi_xfer1' not described in 'ks8851_net_spi'
+> > drivers/net/ethernet/micrel/ks8851.c:163: warning: Function parameter or member 'spi_xfer2' not described in 'ks8851_net_spi'
+> > drivers/net/ethernet/micrel/ks8851.c:561: warning: Function parameter or member 'ks' not described in 'ks8851_rx_skb_spi'
+> > drivers/net/ethernet/micrel/ks8851.c:570: warning: Function parameter or member 'ks' not described in 'ks8851_rx_skb'  
+> 
+> A lot of those were there already before this series 
 
-Fixes: 2704bd625583 ("tc: jsonify actions core")
-Cc: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
----
- tc/tc_util.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+I know, 4 out of the 15 above.
 
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index 12f865cc71bf..118e19da35bb 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -751,17 +751,20 @@ void print_tm(FILE *f, const struct tcf_t *tm)
- 	int hz = get_user_hz();
- 
- 	if (tm->install != 0) {
--		print_uint(PRINT_JSON, "installed", NULL, tm->install);
-+		print_uint(PRINT_JSON, "installed", NULL,
-+			   (unsigned int)(tm->install/hz));
- 		print_uint(PRINT_FP, NULL, " installed %u sec",
- 			   (unsigned int)(tm->install/hz));
- 	}
- 	if (tm->lastuse != 0) {
--		print_uint(PRINT_JSON, "last_used", NULL, tm->lastuse);
-+		print_uint(PRINT_JSON, "last_used", NULL,
-+			   (unsigned int)(tm->lastuse/hz));
- 		print_uint(PRINT_FP, NULL, " used %u sec",
- 			   (unsigned int)(tm->lastuse/hz));
- 	}
- 	if (tm->expires != 0) {
--		print_uint(PRINT_JSON, "expires", NULL, tm->expires);
-+		print_uint(PRINT_JSON, "expires", NULL,
-+			   (unsigned int)(tm->expires/hz));
- 		print_uint(PRINT_FP, NULL, " expires %u sec",
- 			   (unsigned int)(tm->expires/hz));
- 	}
--- 
-2.7.4
+> they are in fact fixed by this series. The result builds clean with W=1 .
 
+Excellent, fixing things is appreciated! It'd be great if new
+warnings did not intermittently exist mid-series.
