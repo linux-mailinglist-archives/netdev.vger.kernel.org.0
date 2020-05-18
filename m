@@ -2,180 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA631D83F8
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:09:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B254E1D8442
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:11:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733256AbgERSHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 14:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
+        id S1733047AbgERSK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 14:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733245AbgERSHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:07:05 -0400
-Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77217C061A0C;
-        Mon, 18 May 2020 11:07:05 -0700 (PDT)
-Received: by mail-qv1-xf42.google.com with SMTP id ee19so5162244qvb.11;
-        Mon, 18 May 2020 11:07:05 -0700 (PDT)
+        with ESMTP id S1732979AbgERSKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:10:55 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E71DC05BD09
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:10:55 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id f4so11618308iov.11
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:10:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FGe0cYU7QRQrBub6kPg7LS2mMokuizGPeM+/vsZpJ0c=;
-        b=DDZsqjev9pPgykILD6UPID2QV3+WLOgbGPXNX7VGKiD5foIMBD6Ig3QA44tRzLmGib
-         1mKKZilQ5ETaljO5EYgpRnJptRjnAUOLxPH4gdu5+sMzcEgSRjVuhvaeSTM9YoycCwCk
-         2A+TY4cjxjhxNxZiLYT2ruZPcxJNu7umH6Vu9aSZIYrrv9XJn+MInwstXFCAlIHw1WUb
-         sCqyfCtYVo5dQrNv3xg086881Zd5saQlxNJu53IiQDzlfrTSmR2Y3bav8kaCWopJzt5B
-         qVeDKeGSnlwZcimXa9kVFJ6abIibigsiCpI3x/x/V3LmORYeovnqdMuYBqB3p76Djc/9
-         VAsg==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=w3PcIuoE+UYdqtbKWOyNWqo5WYCCkMtjBoB3uATICjA=;
+        b=UdKlxDEljHFk2reIZ/PtTXpjvTWiS42HlYkH2paVgxTR3HVwOSMUseIaT2V3s8CFFw
+         ziEX8aUeYTnF4p+TX8KUqEYZ/XJvr44PcFzAmDWsR1jzK0PcF23Cf9PVfwkVTE3sPO/k
+         zF8csa5FbYAX655izKwjaL8KBMIQIKhXrUeYpxSklf5/tC4i00g9rqI0Y1W8s4h+FlOB
+         f/1i8vPFrSz2OeRJkP6QMpWqZ8FJGG8yFe0YiPx/nCMRxky3KN6f72lhFjocYFQa5zMM
+         CgUUKZPA+ZDKlDN22B3Sq3Qo1D1OQOuUE+O6U2GMU+ETWY+gdiMWDSs51wYdU1hRP4mJ
+         QUqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FGe0cYU7QRQrBub6kPg7LS2mMokuizGPeM+/vsZpJ0c=;
-        b=N8n9cidacfPNCPKXAuQxcgxY9bNR2V9T+GfNzusWJseoq/sQSZxLxUBH7V86HL46uI
-         SmxLrTQTeTQ8ZBAS3UeboP3um3h7wQBhfViNQISIS4MP/ZxAYDsDBSEGdPETyFYTe+jW
-         g5Zzx/scUnjlb/cg6tn6gcCTYpD7RRMwFjFT2LWxzz731CgkOi6z07KMyrPLUNLjItYm
-         M+//i5ijhClVuAVsOXVTAQUA2xczG6un++lNHpUYrpgA/BFSFCS5WMMrygqWxQpCORrI
-         CfsgXhNHjdobSU1/D6e0zXM0+mLm4sxcBvaneSl8P/uqiOkoOTUeLhkykIDOJ670Ffl2
-         CbJA==
-X-Gm-Message-State: AOAM531q3REZQiPyl2pYxkGVno1EMfmkSh6baP/rN/Q7xMsu85LRoAsK
-        J9IRKwC2q8NWD6LYqYbY1HiEkGoOjJUawOc2AAo=
-X-Google-Smtp-Source: ABdhPJx7gFJZCHG8pAYfJs0PbDVHs9Ww5BXdE3nVr2Ovp/YWIgWIKSJgkqjadmT/fF2jdRU64gjBY21G4Xm8cOd52zo=
-X-Received: by 2002:a0c:e48f:: with SMTP id n15mr15724904qvl.73.1589825224064;
- Mon, 18 May 2020 11:07:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200515212846.1347-1-mcgrof@kernel.org> <20200515212846.1347-13-mcgrof@kernel.org>
- <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
- <20200518165154.GH11244@42.do-not-panic.com> <4ad0668d-2de9-11d7-c3a1-ad2aedd0c02d@candelatech.com>
- <20200518170934.GJ11244@42.do-not-panic.com> <abf22ef3-93cb-61a4-0af2-43feac6d7930@candelatech.com>
- <20200518171801.GL11244@42.do-not-panic.com>
-In-Reply-To: <20200518171801.GL11244@42.do-not-panic.com>
-From:   Steve deRosier <derosier@gmail.com>
-Date:   Mon, 18 May 2020 11:06:27 -0700
-Message-ID: <CALLGbR+ht2V3m5f-aUbdwEMOvbsX8ebmzdWgX4jyWTbpHrXZ0Q@mail.gmail.com>
-Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Ben Greear <greearb@candelatech.com>,
-        Johannes Berg <johannes@sipsolutions.net>, jeyu@kernel.org,
-        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com,
-        Takashi Iwai <tiwai@suse.de>, schlad@suse.de,
-        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
-        daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        ath10k@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=w3PcIuoE+UYdqtbKWOyNWqo5WYCCkMtjBoB3uATICjA=;
+        b=eSNOKWuyNqUX7FHO35UuAGUeae8vlcnqjPGt/R5oy7SqpUjTJywKGKKzNgPrKDc3cp
+         Q+bDtY4A73gVHDeHGHmlsUS8s8UW+WMM0VMMvbnXKlRrvyozO2fQd4keHe7Dl+e0OEVz
+         TitH/C3Mfbr60M3Xu5I17l2nYU5AA1T75/LG0nLFQXa2HkAUKiCJTRR2xIw0fGUFH84l
+         lfHLKTvtNkztWzNDvBmkaSKxq17HuYi3NrIt3JrmPDzE8S5MLLVhriuwA65T1HNmj9g5
+         e9j/6paxnhH7i9nNbp+P8HGV2sQVNMVKRjJC1Nx9ovDWpG+Rm0PsBAMj1fm+WV2jRFjg
+         RGvg==
+X-Gm-Message-State: AOAM531OqOwK/sgKTgJDXyZr9I6IV/9jcP/nJ7ezLFbxNGnfV++Q48aW
+        sWJqYpfzlqirH+KGpIfPr2M=
+X-Google-Smtp-Source: ABdhPJwUg8d+BY6rrFxK62tC3+ITkwUiqP9+KKMYA4sP4+UnccYRyw7jPiaka0LNf8YelJZJzswHfg==
+X-Received: by 2002:a02:58c3:: with SMTP id f186mr17363954jab.120.1589825454381;
+        Mon, 18 May 2020 11:10:54 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id b18sm628203ilh.77.2020.05.18.11.10.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 May 2020 11:10:53 -0700 (PDT)
+Date:   Mon, 18 May 2020 11:10:44 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     David Ahern <dsahern@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, brouer@redhat.com,
+        daniel@iogearbox.net, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
+Message-ID: <5ec2cfa49a8d7_1c562afa67bea5b47c@john-XPS-13-9370.notmuch>
+In-Reply-To: <2148cc16-4988-5866-cb64-0a4f3d290a23@gmail.com>
+References: <20200513014607.40418-1-dsahern@kernel.org>
+ <87sgg4t8ro.fsf@toke.dk>
+ <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com>
+ <5ebf1d9cdc146_141a2acf80de25b892@john-XPS-13-9370.notmuch>
+ <2148cc16-4988-5866-cb64-0a4f3d290a23@gmail.com>
+Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress path
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 18, 2020 at 10:19 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> On Mon, May 18, 2020 at 10:15:45AM -0700, Ben Greear wrote:
-> >
-> >
-> > On 05/18/2020 10:09 AM, Luis Chamberlain wrote:
-> > > On Mon, May 18, 2020 at 09:58:53AM -0700, Ben Greear wrote:
-> > > >
-> > > >
-> > > > On 05/18/2020 09:51 AM, Luis Chamberlain wrote:
-> > > > > On Sat, May 16, 2020 at 03:24:01PM +0200, Johannes Berg wrote:
-> > > > > > On Fri, 2020-05-15 at 21:28 +0000, Luis Chamberlain wrote:> module_firmware_crashed
-> > > > > >
-> > > > > > You didn't CC me or the wireless list on the rest of the patches, so I'm
-> > > > > > replying to a random one, but ...
-> > > > > >
-> > > > > > What is the point here?
-> > > > > >
-> > > > > > This should in no way affect the integrity of the system/kernel, for
-> > > > > > most devices anyway.
-> > > > >
-> > > > > Keyword you used here is "most device". And in the worst case, *who*
-> > > > > knows what other odd things may happen afterwards.
-> > > > >
-> > > > > > So what if ath10k's firmware crashes? If there's a driver bug it will
-> > > > > > not handle it right (and probably crash, WARN_ON, or something else),
-> > > > > > but if the driver is working right then that will not affect the kernel
-> > > > > > at all.
-> > > > >
-> > > > > Sometimes the device can go into a state which requires driver removal
-> > > > > and addition to get things back up.
-> > > >
-> > > > It would be lovely to be able to detect this case in the driver/system
-> > > > somehow!  I haven't seen any such cases recently,
-> > >
-> > > I assure you that I have run into it. Once it does again I'll report
-> > > the crash, but the problem with some of this is that unless you scrape
-> > > the log you won't know. Eventually, a uevent would indeed tell inform
-> > > me.
-> > >
-> > > > but in case there is
-> > > > some common case you see, maybe we can think of a way to detect it?
-> > >
-> > > ath10k is just one case, this patch series addresses a simple way to
-> > > annotate this tree-wide.
-> > >
-> > > > > > So maybe I can understand that maybe you want an easy way to discover -
-> > > > > > per device - that the firmware crashed, but that still doesn't warrant a
-> > > > > > complete kernel taint.
-> > > > >
-> > > > > That is one reason, another is that a taint helps support cases *fast*
-> > > > > easily detect if the issue was a firmware crash, instead of scraping
-> > > > > logs for driver specific ways to say the firmware has crashed.
-> > > >
-> > > > You can listen for udev events (I think that is the right term),
-> > > > and find crashes that way.  You get the actual crash info as well.
-> > >
-> > > My follow up to this was to add uevent to add_taint() as well, this way
-> > > these could generically be processed by userspace.
-> >
-> > I'm not opposed to the taint, though I have not thought much on it.
-> >
-> > But, if you can already get the crash info from uevent, and it automatically
-> > comes without polling or scraping logs, then what benefit beyond that does
-> > the taint give you?
->
-> From a support perspective it is a *crystal* clear sign that the device
-> and / or device driver may be in a very bad state, in a generic way.
->
+David Ahern wrote:
+> On 5/15/20 4:54 PM, John Fastabend wrote:
+> > Hi David,
+> > 
+> > Another way to set up egress programs that I had been thinking about is to
+> > build a prog_array map with a slot per interface then after doing the
+> > redirect (or I guess the tail call program can do the redirect) do the
+> > tail call into the "egress" program.
+> > 
+> > From a programming side this would look like,
+> > 
+> > 
+> >   ---> ingress xdp bpf                BPF_MAP_TYPE_PROG_ARRAY
+> >          redirect(ifindex)            +---------+
+> >          tail_call(ifindex)           |         |
+> >                       |               +---------+
+> >                       +-------------> | ifindex | 
+> >                                       +---------+
+> >                                       |         |
+> >                                       +---------+
+> > 
+> > 
+> >          return XDP_REDIRECT
+> >                         |
+> >                         +-------------> xdp_xmit
+> > 
+> > 
+> > The controller would then update the BPF_MAP_TYPE_PROG_ARRAY instead of
+> > attaching to egress interface itself as in the series here. I think it
+> > would only require that tail call program return XDP_REDIRECT so the
+> > driver knows to follow through with the redirect. OTOH the egress program
+> > can decide to DROP or PASS as well. The DROP case is straight forward,
+> > packet gets dropped. The PASS case is interesting because it will cause
+> > the packet to go to the stack. Which may or may not be expected I guess.
+> > We could always lint the programs or force the programs to return only
+> > XDP_REDIRECT/XDP_PASS from libbpf side.
+> > 
+> > Would there be any differences from my example and your series from the
+> > datapath side? I think from the BPF program side the only difference
+> > would be return codes XDP_REDIRECT vs XDP_PASS. The control plane is
+> > different however. I don't have a good sense of one being better than
+> > the other. Do you happen to see some reason to prefer native xdp egress
+> > program types over prog array usage?
+> 
+> host ingress to VM is one use case; VM to VM on the same host is another.
 
-Unfortunately a "taint" is interpreted by many users as: "your kernel
-is really F#*D up, you better do something about it right now."
-Assuming they're paying attention at all in the first place of course.
+But host ingress to VM would still work with tail calls because the XDP
+packet came from another XDP program. At least that is how I understand
+it.
 
-The fact is, WiFi chip firmware crashes, and in most cases the driver
-is able to recover seamlessly. At least that is the case with most QCA
-chipsets I work with. And the users or our ability to do anything
-about it is minimal to none as we don't have access to firmware
-source. It's too bad and I wish it weren't the case, but we have
-embraced reality and most drivers have a recovery mechanism built in
-for this case. In short, it's a non-event. I fear that elevating this
-to a kernel taint will significantly increase "support" requests that
-really are nothing but noise; similar to how the firmware load failure
-messages (fail to load fw-2.bin, fail to load fw-1.bin, yay loaded
-fw-0.bin) cause a lot of noise.
+VM to VM case, again using tail calls on the sending VM ingress hook
+would work also.
 
-Not specifically opposed, but I wonder what it really accomplishes in
-a world where the firmware crashing is pretty much a normal
-occurrence.
+> 
+> > 
+> > From performance side I suspect they will be more or less equivalant.
+> > 
+> > On the positive side using a PROG_ARRAY doesn't require a new attach
+> > point. A con might be right-sizing the PROG_ARRAY to map to interfaces?
+> > Do you have 1000's of interfaces here? Or some unknown number of
+> 
+> 1000ish is probably the right ballpark - up to 500 VM's on a host each
+> with a public and private network connection. From there each interface
+> can have their own firewall (ingress and egress; most likely VM unique
+> data, but to be flexible potentially different programs e.g., blacklist
+> vs whitelist). Each VM will definitely have its own network data - mac
+> and network addresses, and since VMs are untrusted packet validation in
+> both directions is a requirement.
 
-If it goes in, I think that the drivers shouldn't trigger the taint if
-they're able to recover normally. Only trigger on failure to come back
-up.  In other words, the ideal place in the ath10k driver isn't where
-you have proposed as at that point operation is normal and we're doing
-a routine recovery.
+Understood and makes sense.
 
-- Steve
+> 
+> With respect to lifecycle management of the programs and the data,
+> putting VM specific programs and maps on VM specific taps simplifies
+> management. VM terminates, taps are deleted, programs and maps
+> disappear. So no validator thread needed to handle stray data / programs
+> from the inevitable cleanup problems when everything is lumped into 1
+> program / map or even array of programs and maps.
 
+OK. Also presumably you already have a hook into this event to insert
+the tc filter programs so its probably a natural hook for mgmt.
 
+> 
+> To me the distributed approach is the simplest and best. The program on
+> the host nics can be stupid simple; no packet parsing beyond the
+> ethernet header. It's job is just a traffic demuxer very much like a
+> switch. All VM logic and data is local to the VM's interfaces.
 
+IMO it seems more natural and efficient to use a tail call. But, I
+can see how if the ingress program is a l2/l3 switch and the VM hook
+is a l2/l3 filter it feels more like a switch+firewall layout we
+would normally use on a "real" (v)switch. Also I think the above point
+where cleanup is free because of the tap tear down is a win.
 
+> 
+> 
+> > interfaces? I've had building resizable hash/array maps for awhile
+> > on my todo list so could add that for other use cases as well if that
+> > was the only problem.
+> > 
+> > Sorry for the late reply it took me a bit of time to mull over the
+> > patches.
+> > 
+> > Thanks,
+> > John
+> > 
 
->   Luis
+Pulling in below because I think it was for me.
+
+> I am trying to understand the resistance here. There are ingress/egress
+> hooks for most of the layers - tc, netfilter, and even within bpf APIs.
+> Clearly there is a need for this kind of symmetry across the APIs, so
+> why the resistance or hesitation for XDP?
+
+Because I don't see it as necessary and it adds another xdp interface. I
+also didn't fully understand why it would be useful.
+
+> 
+> Stacking programs on the Rx side into the host was brought up 9
+> revisions ago when the first patches went out. It makes for an
+> unnecessarily complicated design and is antithetical to the whole
+> Unix/Linux philosophy of small focused programs linked together to
+> provide a solution.
+
+I know it was brought up earlier and at the time the hook was also being
+used for skbs. This sort of convinced me it was different from the tail
+call example. Once skbs usage become impractical it seems like the
+same datapath can be implemented with xdp+prog_array. As I understand
+it this is still the case. The datapath could be implemented as a set
+of xdp+prog_array hooks but the mgmt life-cycle is different and also
+the mental model is a bit different. At least the mental model of the
+BPF developer has to be different.
+
+> Can you elaborate on your concerns?
+
+Just understanding the use case.
+
+My summary is the series gives us a few nice things (a) allows control
+plane to be simpler because programs will not need to be explicitly
+garbage collected, (b) we don't have to guess a right-size for a
+program array map because we don't have to manage a map at all, and
+(c) helps bpf programmers mental model by using separate attach points
+for each function.
+
+I can see how (a) and (b) will be useful so no objections from my
+side to merge the series.
