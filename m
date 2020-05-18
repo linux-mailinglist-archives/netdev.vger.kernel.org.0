@@ -2,239 +2,363 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6BF81D7ADC
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 16:16:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED1311D7B14
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 16:23:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727942AbgEROQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 10:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726998AbgEROQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 10:16:51 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E943C061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 07:16:50 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id c24so8145911qtw.7
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 07:16:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tlapnet.cz; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QEufxHro/U0BeUthE5FzPld1eQ9zNAA+DMVMxeZKT+8=;
-        b=ZGeiG5OJ2Bz/lnrJnqTZ7H+2FU2FksP92iADpiCmM6/FKAJuukpt4f9B8C5hqVkFdn
-         ZQm9rNtRdYLWIHB/kQHkBhuQMwNtSquaBnSfmxgfoOODy/PgwlD+dVq8OQa5MbjtlJ/v
-         w4SVrBX0TKEfV+IyZNl3fy+1+jmGUgq21ezG1xV/zfX87SZ7y60wjBZSklPWota6pVHt
-         uYDnZIhIMdK3rofT7A/7SMHRWV8FDC9ll+9YkQpLntoLT7wnYa6JTMYQyzjbc8XNPWgq
-         xbMo6p+QpOvwJPKiXMXjbtP1RYMkQMptmY0Zw20W81zxdh8CFHpQ7DzWYygCBD50rsTs
-         +FJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QEufxHro/U0BeUthE5FzPld1eQ9zNAA+DMVMxeZKT+8=;
-        b=juR8TJWs5eQcx5P6YMxWNME9v/URblxIcTTqe8GjQp7gSIXbcaUnyK7NLlEVLJ+gbu
-         02rXmeXRcktbKEj9v7bxthP8XH0IGt7Om+lYUnbErEhppsrOZ8A3O8OEQjC3DDF4N/qL
-         L1w5k6gq31eQ15DN9H4BKNLyomUUJPcl9LPzodTXH+1dSkvP2gmIwrzgjdk2l1vACZM8
-         kCcAw6G4wswHGUbxv4QjSkw6gh2drLHnYveL2WqOOtBZD6+m4C9tkOuzt4iJ48qbsH3y
-         FGlnFox8G+vMxSdLgPiNrXPaC6NfmIdL9I58UK50d3kWY88WJ0DvqUh3I3FhdcArP5W4
-         kruQ==
-X-Gm-Message-State: AOAM533DTgADlivqmW1swnrfMnjM1SbsYU/HaeMDWdTHK3iHbxyiYgmn
-        UT7zpHj4zPSjoMOLwx3FZjv5IvInJhT8ZdEyROymTQ==
-X-Google-Smtp-Source: ABdhPJzlj6OCKsSAy1/MX/895X24MRMD2MLKifWr01ftuHySS4iuJqlPSgakW43HeAtwxlSK+kERYbSurAlhkJoVNuk=
-X-Received: by 2002:ac8:4987:: with SMTP id f7mr16195065qtq.160.1589811409609;
- Mon, 18 May 2020 07:16:49 -0700 (PDT)
+        id S1728093AbgEROXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 10:23:01 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:49916 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728053AbgEROW4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 10:22:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589811773;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=5T0wa0ZGQ5Gm8HF1P0Qio2NduZZ/K3dFSYEyCYcEGkM=;
+        b=FOEGsKknFgv1M3mQCXFTjPW4/AGObt/Wrif2IMZAeAJSiwgFOFwr6K8YhXzzpakFOVlFFj
+        S/caH45/ScfIu/h2XQVp1GLvDG+hv4VEu6s2hbyeV3AmTUN6eyqstFeWogsQAtrA5Ok6lP
+        sjOyd1LZInojGyWurvXAd5fSsGDgyxY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-406-bdbyJvCaPf6jVxSy4smGWg-1; Mon, 18 May 2020 10:22:49 -0400
+X-MC-Unique: bdbyJvCaPf6jVxSy4smGWg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48D37835B40;
+        Mon, 18 May 2020 14:22:48 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-95.rdu2.redhat.com [10.10.112.95])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A544E60BF3;
+        Mon, 18 May 2020 14:22:46 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH] dns: Apply a default TTL to records obtained from
+ getaddrinfo()
+From:   David Howells <dhowells@redhat.com>
+To:     linux-nfs@vger.kernel.org, linux-cifs@vger.kernel.org,
+        linux-afs@lists.infradead.org, ceph-devel@vger.kernel.org
+Cc:     dhowells@redhat.com, keyrings@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        fweimer@redhat.com
+Date:   Mon, 18 May 2020 15:22:45 +0100
+Message-ID: <158981176590.872823.11683683537698750702.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
- <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
- <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
- <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
- <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
- <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
- <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
- <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
- <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
- <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
- <CANxWus8YFkWPELmau=tbTXYa8ezyMsC5M+vLrNPoqbOcrLo0Cg@mail.gmail.com>
- <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
- <CAM_iQpV-0f=yX3P=ZD7_-mBvZZn57MGmFxrHqT3U3g+p_mKyJQ@mail.gmail.com>
- <CANxWus8P8KdcZE8L1-ZLOWLxyp4OOWNY82Xw+S2qAomanViWQA@mail.gmail.com>
- <CAM_iQpU3uhQewuAtv38xfgWesVEqpazXs3QqFHBBRF4i1qLdXw@mail.gmail.com>
- <CANxWus9xn=Z=rZ6BBZBMHNj6ocWU5dZi3PkOsQtAdgjyUdJ2zg@mail.gmail.com>
- <CAM_iQpWPmu71XYvoshZ3aAr0JmXTg+Y9s0Gvpq77XWbokv1AgQ@mail.gmail.com>
- <CANxWus9vSe=WtggXveB+YW_29fD8_qb-7A1pCgMUHz7SFfKhTA@mail.gmail.com>
- <CANxWus8=CZ8Y1GvqKFJHhdxun9gB8v1SP0XNZ7SMk4oDvkmEww@mail.gmail.com>
- <CAM_iQpXjsrraZpU3xhTvQ=owwzSTjAVdx-Aszz-yLitFzE5GsA@mail.gmail.com>
- <CAM_iQpV_ebQjZuwhxhHSatcjNXzGBgz0JDC+H-nO-dXRkPKKUQ@mail.gmail.com>
- <CANxWus-9gjCvMw7ctG7idERsZd7WtObRs4iuTUp_=AaJtHbSgg@mail.gmail.com>
- <CAM_iQpW-p0+0o8Vks6AOHVt3ndqh+fj+UXGP8wtfi9-Pz-TToQ@mail.gmail.com>
- <CANxWus9RgiVP1X4zK5mVG4ELQmL2ckk4AYMvTdKse6j5WtHNHg@mail.gmail.com> <CAM_iQpXR+MQHaR-ou6rR_NAz-4XhAWiLuSEYvvpVXyWqHBnc-w@mail.gmail.com>
-In-Reply-To: <CAM_iQpXR+MQHaR-ou6rR_NAz-4XhAWiLuSEYvvpVXyWqHBnc-w@mail.gmail.com>
-From:   =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
-Date:   Mon, 18 May 2020 16:16:38 +0200
-Message-ID: <CANxWus8AqCM4Dk87TTXB3xxtQPqPYjs-KmzVv8hjZwaAqg2AYQ@mail.gmail.com>
-Subject: Re: iproute2: tc deletion freezes whole server
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="00000000000054a02205a5ecd058"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000054a02205a5ecd058
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Address records obtained from getaddrinfo() don't come with any TTL
+information, even if they're obtained from the DNS, with the result that
+key.dns_resolver upcall program doesn't set an expiry time on dns_resolver
+records unless they include a component obtained directly from the DNS,
+such as an SRV or AFSDB record.
 
-On Sun, May 17, 2020 at 9:35 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Fri, May 8, 2020 at 6:59 AM V=C3=A1clav Zindulka
-> <vaclav.zindulka@tlapnet.cz> wrote:
-> > > > >
-> > > > > I tried to emulate your test case in my VM, here is the script I =
-use:
-> > > > >
-> > > > > =3D=3D=3D=3D
-> > > > > ip li set dev dummy0 up
-> > > > > tc qd add dev dummy0 root handle 1: htb default 1
-> > > > > for i in `seq 1 1000`
-> > > > > do
-> > > > >   tc class add dev dummy0 parent 1:0 classid 1:$i htb rate 1mbit =
-ceil 1.5mbit
-> > > > >   tc qd add dev dummy0 parent 1:$i fq_codel
-> > > > > done
-> > > > >
-> > > > > time tc qd del dev dummy0 root
-> > > > > =3D=3D=3D=3D
-> > > > >
-> > > > > And this is the result:
-> > > > >
-> > > > >     Before my patch:
-> > > > >      real   0m0.488s
-> > > > >      user   0m0.000s
-> > > > >      sys    0m0.325s
-> > > > >
-> > > > >     After my patch:
-> > > > >      real   0m0.180s
-> > > > >      user   0m0.000s
-> > > > >      sys    0m0.132s
-> > > >
-> > > > My results with your test script.
-> > > >
-> > > > before patch:
-> > > > /usr/bin/time -p tc qdisc del dev enp1s0f0 root
-> > > > real 1.63
-> > > > user 0.00
-> > > > sys 1.63
-> > > >
-> > > > after patch:
-> > > > /usr/bin/time -p tc qdisc del dev enp1s0f0 root
-> > > > real 1.55
-> > > > user 0.00
-> > > > sys 1.54
-> > > >
-> > > > > This is an obvious improvement, so I have no idea why you didn't
-> > > > > catch any difference.
-> > > >
-> > > > We use hfsc instead of htb. I don't know whether it may cause any
-> > > > difference. I can provide you with my test scripts if necessary.
-> > >
-> > > Yeah, you can try to replace the htb with hfsc in my script,
-> > > I didn't spend time to figure out hfsc parameters.
-> >
-> > class add dev dummy0 parent 1:0 classid 1:$i hfsc ls m1 0 d 0 m2
-> > 13107200 ul m1 0 d 0 m2 13107200
-> >
-> > but it behaves the same as htb...
-> >
-> > > My point here is, if I can see the difference with merely 1000
-> > > tc classes, you should see a bigger difference with hundreds
-> > > of thousands classes in your setup. So, I don't know why you
-> > > saw a relatively smaller difference.
-> >
-> > I saw a relatively big difference. It was about 1.5s faster on my huge
-> > setup which is a lot. Yet maybe the problem is caused by something
->
-> What percentage? IIUC, without patch it took you about 11s, so
-> 1.5s faster means 13% improvement for you?
+Fix this to apply a default TTL of 10mins in the event that we haven't got
+one.  This can be configured in /etc/keyutils/key.dns_resolver.conf by
+adding the line:
 
-My whole setup needs 22.17 seconds to delete with an unpatched kernel.
-With your patches applied it is 21.08. So it varies between 1 - 1.5s.
-Improvement is about 5 - 6%.
+	default_ttl: <number-of-seconds>
 
-> > else? I thought about tx/rx queues. RJ45 ports have up to 4 tx and rx
-> > queues. SFP+ interfaces have much higher limits. 8 or even 64 possible
-> > queues. I've tried to increase the number of queues using ethtool from
-> > 4 to 8 and decreased to 2. But there was no difference. It was about
-> > 1.62 - 1.63 with an unpatched kernel and about 1.55 - 1.58 with your
-> > patches applied. I've tried it for ifb and RJ45 interfaces where it
-> > took about 0.02 - 0.03 with an unpatched kernel and 0.05 with your
-> > patches applied, which is strange, but it may be caused by the fact it
-> > was very fast even before.
->
-> That is odd. In fact, this is highly related to number of TX queues,
-> because the existing code resets the qdisc's once for each TX
-> queue, so the more TX queues you have, the more resets kernel
-> will do, that is the more time it will take.
+to the file.
 
-Can't the problem be caused that reset is done on active and inactive
-queues every time? It would explain why it had no effect in decreasing
-and increasing the number of active queues. Yet it doesn't explain why
-Intel card (82599ES) with 64 possible queues has exactly the same
-problem as Mellanox (ConnectX-4 LX) with 8 possible queues.
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
 
-I've been playing with this problem today. Every deleted fq_codel
-qdisc, root and non root, requires a network adapter to empty all
-possible queues. But not just the active ones, but it cleared all
-possible queues. Event those the adapter can't even use. For every
-SFP+ I have tested it calls fq_codel_reset() and would call any other
-reset function. 64 times for egress qdisc and 64 times for ingress
-qdisc. Even when ingress is not defined. Solution to this whole
-problem would be to let reset only activated queues. On the RJ45
-interface I've tested there are 8 possible queues. So the reset is
-done 8 times for every deleted qdisc. 16 in total, since ingress and
-egress are processed all the time.
+ Makefile               |    1 +
+ dns.afsdb.c            |   16 ++++------
+ key.dns.h              |    2 +
+ key.dns_resolver.c     |   76 +++++++++++++++++++++++++++++++++++++++++++++---
+ man/key.dns_resolver.8 |   19 +++++++++++-
+ 5 files changed, 100 insertions(+), 14 deletions(-)
 
-So a little bit of calculation. My initial setup contained 13706 qdisc
-rules. For ifb it means 13706 for egress and 13706 for ingress. 27412
-reset calls because there can be only one transmit queue for the ifb
-interface. Average time spent between fq_codel_reset() according to my
-initial perf reports is somewhat between 7 - 16 micro seconds. 27412 *
-0.000008 =3D 0.219296 s. For RJ45 interface it does 8 calls for every
-qdisc. 13706 * 8 * 2 =3D 219296 resets. 219296 * 0.000008 =3D 1.754368 s.
-It is still ok. For SFP+ interface it is 64 resets per qdisc rule.
-13706 * 64 * 2 =3D 1754368. So we are very close to the huge number I
-noticed initially using printk. And now 1754368 * 0.000008 =3D
-14.034944s. In case of slowest calls 1754368 * 0.000016 =3D 28.069888.
-Woala. Gotcha. So my final judgement is - don't empty something we
-don't use anyway. For Intel it may be reasonable, it can have all 64
-queues defined. Mellanox has its limit at 8. But it still is being
-reset 64 times. We mostly decrease the number of queues to 4.
-Sometimes 2 according to the CPU used. Yet every CPU had to handle 64
-resets.
+diff --git a/Makefile b/Makefile
+index 6f79446b..4d055701 100644
+--- a/Makefile
++++ b/Makefile
+@@ -202,6 +202,7 @@ endif
+ 	$(INSTALL) -D key.dns_resolver $(DESTDIR)$(SBINDIR)/key.dns_resolver
+ 	$(INSTALL) -D -m 0644 request-key.conf $(DESTDIR)$(ETCDIR)/request-key.conf
+ 	mkdir -p $(DESTDIR)$(ETCDIR)/request-key.d
++	mkdir -p $(DESTDIR)$(ETCDIR)/keyutils
+ 	mkdir -p $(DESTDIR)$(MAN1)
+ 	$(INSTALL) -m 0644 $(wildcard man/*.1) $(DESTDIR)$(MAN1)
+ 	mkdir -p $(DESTDIR)$(MAN3)
+diff --git a/dns.afsdb.c b/dns.afsdb.c
+index fa60e04f..986c0f38 100644
+--- a/dns.afsdb.c
++++ b/dns.afsdb.c
+@@ -37,8 +37,6 @@
+  */
+ #include "key.dns.h"
+ 
+-static unsigned long afs_ttl = ULONG_MAX;
+-
+ /*
+  *
+  */
+@@ -114,8 +112,8 @@ static void afsdb_hosts_to_addrs(ns_msg handle, ns_sect section)
+ 		}
+ 	}
+ 
+-	afs_ttl = ttl;
+-	info("ttl: %u", ttl);
++	key_expiry = ttl;
++	info("ttl: %u", key_expiry);
+ }
+ 
+ /*
+@@ -203,8 +201,8 @@ static void srv_hosts_to_addrs(ns_msg handle, ns_sect section)
+ 		}
+ 	}
+ 
+-	afs_ttl = ttl;
+-	info("ttl: %u", ttl);
++	key_expiry = ttl;
++	info("ttl: %u", key_expiry);
+ }
+ 
+ /*
+@@ -240,7 +238,7 @@ static int dns_query_AFSDB(const char *cell)
+ 	/* look up the hostnames we've obtained to get the actual addresses */
+ 	afsdb_hosts_to_addrs(handle, ns_s_an);
+ 
+-	info("DNS query AFSDB RR results:%u ttl:%lu", payload_index, afs_ttl);
++	info("DNS query AFSDB RR results:%u ttl:%u", payload_index, key_expiry);
+ 	return 0;
+ }
+ 
+@@ -279,7 +277,7 @@ static int dns_query_VL_SRV(const char *cell)
+ 	/* look up the hostnames we've obtained to get the actual addresses */
+ 	srv_hosts_to_addrs(handle, ns_s_an);
+ 
+-	info("DNS query VL SRV RR results:%u ttl:%lu", payload_index, afs_ttl);
++	info("DNS query VL SRV RR results:%u ttl:%u", payload_index, key_expiry);
+ 	return 0;
+ }
+ 
+@@ -293,7 +291,7 @@ void afs_instantiate(const char *cell)
+ 
+ 	/* set the key's expiry time from the minimum TTL encountered */
+ 	if (!debug_mode) {
+-		ret = keyctl_set_timeout(key, afs_ttl);
++		ret = keyctl_set_timeout(key, key_expiry);
+ 		if (ret == -1)
+ 			error("%s: keyctl_set_timeout: %m", __func__);
+ 	}
+diff --git a/key.dns.h b/key.dns.h
+index b143f4a4..e884cc4a 100644
+--- a/key.dns.h
++++ b/key.dns.h
+@@ -29,6 +29,7 @@
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include <time.h>
++#include <ctype.h>
+ 
+ #define	MAX_VLS			15	/* Max Volume Location Servers Per-Cell */
+ #define	INET_IP4_ONLY		0x1
+@@ -42,6 +43,7 @@
+ extern key_serial_t key;
+ extern int debug_mode;
+ extern unsigned mask;
++extern unsigned int key_expiry;
+ 
+ #define N_PAYLOAD 256
+ extern struct iovec payload[N_PAYLOAD];
+diff --git a/key.dns_resolver.c b/key.dns_resolver.c
+index 4ac27d30..df35493d 100644
+--- a/key.dns_resolver.c
++++ b/key.dns_resolver.c
+@@ -46,10 +46,13 @@ static const char key_type[] = "dns_resolver";
+ static const char a_query_type[] = "a";
+ static const char aaaa_query_type[] = "aaaa";
+ static const char afsdb_query_type[] = "afsdb";
++static const char *config_file = "/etc/keyutils/key.dns_resolver.conf";
++static bool config_specified = false;
+ key_serial_t key;
+ static int verbose;
+ int debug_mode;
+ unsigned mask = INET_ALL;
++unsigned int key_expiry = 10 * 60;
+ 
+ 
+ /*
+@@ -272,6 +275,7 @@ void dump_payload(void)
+ 	}
+ 
+ 	info("The key instantiation data is '%s'", buf);
++	info("The expiry time is %us", key_expiry);
+ 	free(buf);
+ }
+ 
+@@ -412,6 +416,9 @@ int dns_query_a_or_aaaa(const char *hostname, char *options)
+ 
+ 	/* load the key with data key */
+ 	if (!debug_mode) {
++		ret = keyctl_set_timeout(key, key_expiry);
++		if (ret == -1)
++			error("%s: keyctl_set_timeout: %m", __func__);
+ 		ret = keyctl_instantiate_iov(key, payload, payload_index, 0);
+ 		if (ret == -1)
+ 			error("%s: keyctl_instantiate: %m", __func__);
+@@ -420,6 +427,61 @@ int dns_query_a_or_aaaa(const char *hostname, char *options)
+ 	exit(0);
+ }
+ 
++/*
++ * Read the config file.
++ */
++static void read_config(void)
++{
++	FILE *f;
++	char buf[4096], *p;
++	unsigned int line = 0, u;
++	int n;
++
++	printf("READ CONFIG %s\n", config_file);
++
++	f = fopen(config_file, "r");
++	if (!f) {
++		if (errno == ENOENT && !config_specified) {
++			debug("%s: %m", config_file);
++			return;
++		}
++		error("%s: %m", config_file);
++	}
++
++	while (fgets(buf, sizeof(buf) - 1, f)) {
++		line++;
++		if (buf[0] == '#')
++			continue;
++		p = strchr(buf, '\n');
++		if (!p)
++			error("%s:%u: line missing newline or too long", config_file, line);
++		while (p > buf && isspace(p[-1]))
++			p--;
++		*p = 0;
++
++		if (strncmp(buf, "default_ttl:", 12) == 0) {
++			p = buf + 12;
++			while (isspace(*p))
++				p++;
++			if (sscanf(p, "%u%n", &u, &n) != 1)
++				error("%s:%u: default_ttl: Bad value",
++				      config_file, line);
++			if (p[n])
++				error("%s:%u: default_ttl: Extra data supplied",
++				      config_file, line);
++			if (u < 1 || u > INT_MAX)
++				error("%s:%u: default_ttl: Out of range",
++				      config_file, line);
++			key_expiry = u;
++		} else {
++			error("%s:%u: Unknown option", config_file, line);
++		}
++	}
++
++	if (ferror(f) || fclose(f) == EOF)
++		error("%s: %m", config_file);
++}
++
+ /*
+  * Print usage details,
+  */
+@@ -428,18 +490,19 @@ void usage(void)
+ {
+ 	if (isatty(2)) {
+ 		fprintf(stderr,
+-			"Usage: %s [-vv] key_serial\n",
++			"Usage: %s [-vv] [-c config] key_serial\n",
+ 			prog);
+ 		fprintf(stderr,
+-			"Usage: %s -D [-vv] <desc> <calloutinfo>\n",
++			"Usage: %s -D [-vv] [-c config] <desc> <calloutinfo>\n",
+ 			prog);
+ 	} else {
+-		info("Usage: %s [-vv] key_serial", prog);
++		info("Usage: %s [-vv] [-c config] key_serial", prog);
+ 	}
+ 	exit(2);
+ }
+ 
+ const struct option long_options[] = {
++	{ "config",	0, NULL, 'c' },
+ 	{ "debug",	0, NULL, 'D' },
+ 	{ "verbose",	0, NULL, 'v' },
+ 	{ "version",	0, NULL, 'V' },
+@@ -460,6 +523,10 @@ int main(int argc, char *argv[])
+ 
+ 	while ((ret = getopt_long(argc, argv, "vDV", long_options, NULL)) != -1) {
+ 		switch (ret) {
++		case 'c':
++			config_file = optarg;
++			config_specified = true;
++			continue;
+ 		case 'D':
+ 			debug_mode = 1;
+ 			continue;
+@@ -481,6 +548,7 @@ int main(int argc, char *argv[])
+ 
+ 	argc -= optind;
+ 	argv += optind;
++	read_config();
+ 
+ 	if (!debug_mode) {
+ 		if (argc != 1)
+@@ -542,7 +610,7 @@ int main(int argc, char *argv[])
+ 	name++;
+ 
+ 	info("Query type: '%*.*s'", qtlen, qtlen, keyend);
+-	
++
+ 	if ((qtlen == sizeof(a_query_type) - 1 &&
+ 	     memcmp(keyend, a_query_type, sizeof(a_query_type) - 1) == 0) ||
+ 	    (qtlen == sizeof(aaaa_query_type) - 1 &&
+diff --git a/man/key.dns_resolver.8 b/man/key.dns_resolver.8
+index e1882e06..f7c44300 100644
+--- a/man/key.dns_resolver.8
++++ b/man/key.dns_resolver.8
+@@ -13,7 +13,9 @@ key.dns_resolver \- upcall for request\-key to handle dns_resolver keys
+ .SH SYNOPSIS
+ \fB/sbin/key.dns_resolver \fR<key>
+ .br
+-\fB/sbin/key.dns_resolver \fR\-D [\-v] [\-v] <keydesc> <calloutinfo>
++\fB/sbin/key.dns_resolver \fR\-D [\-v] [\-v] [\-c <configfile>] <keydesc>
++.br
++<calloutinfo>
+ .SH DESCRIPTION
+ This program is invoked by request\-key on behalf of the kernel when kernel
+ services (such as NFS, CIFS and AFS) want to perform a hostname lookup and the
+@@ -24,6 +26,21 @@ It can be called in debugging mode to test its functionality by passing a
+ \fB\-D\fR flag on the command line.  For this to work, the key description and
+ the callout information must be supplied.  Verbosity can be increased by
+ supplying one or more \fB\-v\fR flags.
++.P
++A configuration file can be supplied to adjust various parameters.  The file
++is looked for at:
++.IP
++/etc/keyutils/key.dns_resolver.conf
++.P
++unless otherwise specified with the \fB\-c\fR flag.
++.P
++Configuration options include:
++.TP
++.B default_ttl: <number>
++The number of seconds to set as the expiration on a cached record.  This will
++be overridden if the program manages to retrieve TTL information along with
++the addresses (if, for example, it accesses the DNS directly).  The default is
++600 seconds.
+ .SH ERRORS
+ All errors will be logged to the syslog.
+ .SH SEE ALSO
 
-With the attached patch I'm down to 1.7 seconds - more than 90%
-improvement :-) Can you please check it and pass it to proper places?
-According to debugging printk messages it empties only active queues.
 
-Thank you for all your help and effort.
-
-
->
-> I plan to address this later on top of the existing patches.
->
-> Thanks.
-
---00000000000054a02205a5ecd058
-Content-Type: text/x-patch; charset="US-ASCII"; name="netdevice_num_tx_queues.patch"
-Content-Disposition: attachment; filename="netdevice_num_tx_queues.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_kacjv5cn0>
-X-Attachment-Id: f_kacjv5cn0
-
-ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvbmV0ZGV2aWNlLmggYi9pbmNsdWRlL2xpbnV4L25l
-dGRldmljZS5oCi0tLSBhL2luY2x1ZGUvbGludXgvbmV0ZGV2aWNlLmgKKysrIGIvaW5jbHVkZS9s
-aW51eC9uZXRkZXZpY2UuaApAQCAtMjEzNSw3ICsyMTM1LDcgQEAKIHsKIAl1bnNpZ25lZCBpbnQg
-aTsKIAotCWZvciAoaSA9IDA7IGkgPCBkZXYtPm51bV90eF9xdWV1ZXM7IGkrKykKKwlmb3IgKGkg
-PSAwOyBpIDwgZGV2LT5yZWFsX251bV90eF9xdWV1ZXM7IGkrKykKIAkJZihkZXYsICZkZXYtPl90
-eFtpXSwgYXJnKTsKIH0K
---00000000000054a02205a5ecd058--
