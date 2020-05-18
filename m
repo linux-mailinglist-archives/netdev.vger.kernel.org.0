@@ -2,87 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3401D6E6F
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 03:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E1E1D6EAA
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 03:50:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbgERBKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 May 2020 21:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726695AbgERBKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 May 2020 21:10:38 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED34DC061A0C
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 18:10:36 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id d7so6808233qtn.11
-        for <netdev@vger.kernel.org>; Sun, 17 May 2020 18:10:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=+an3oPGmouqmxdjWxODoJ0P7yGRva780mi9DZnk5Z9s=;
-        b=gjlWNcQrdCuWM43qeMi+V4QKXL/aKhrbIRPll+QFxszv6qeT0yt1ZqeI8igBFYS+AL
-         ymgfCQksdKME74IuUHXRdDBv6ZChOEnFoPxMINHk7xxSGFpFwHru08cGNX7DE6LQ9D+O
-         O2g/xxmV+924nH+bngRMzr/JBsJcHG8NRTgskVqkoxXnWWJIzZqFRz3U78F/4Zes9rSN
-         Kn09fuOEHRyeTscgd8whIBzf/VkSb6atAciuPigMKwVHlvIYQ9op+UKv5cMZiEZbdFez
-         rMWnMx8y8vyO4NkU52eGowx0wFnVgyv+wOoxVrXT8SnPBfjrGbAxGyQp8jVzA9vzJmtg
-         xAJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=+an3oPGmouqmxdjWxODoJ0P7yGRva780mi9DZnk5Z9s=;
-        b=I13L7uEblV18Dq4h6XMpYWa2h4mDA1+2SiGhcP7MbIVQjjt228p+4HNQ/yPCmWZhkN
-         lec6CeI/0vggP6xZ8GAcnRoIhkCfsQEGe13jLsScGaNKtKvwBOEwMqLNStX8qBOmjzJT
-         pk85pBvbEM3W18qjv1ZTBt7Iy+CasJauDtW0/9l+SP39Kz2Ny5Z1z2aMTnj+ltsDAyXk
-         ZoOsLtL6Hagj3l9iBd+curu2j/krJrnj3jkjLO/PvauLOQDPgzRxE4SE3FCJg8H0n7Vc
-         cpU492sAc7V7nmxx9oSCohnR5eqY/M7fUuiEGDJET4qWRy3ydbgSsalsNZ2Wwd5P2F6Z
-         p1Aw==
-X-Gm-Message-State: AOAM530eO3ZGgMIjmIEsJ8qSovvKkFdfNTUPTaCqFUe6s22xJxX4FHpo
-        2wGj7shDVnqJDE6wkwXwBH32vjL4YZB79A==
-X-Google-Smtp-Source: ABdhPJyo6tuxHSanqQO0qbMcMFjQiDoMfR8M+1LekOsbx2DPMftx0yZeKSaRSNruR5rktbIQx1XpPg==
-X-Received: by 2002:aed:24a6:: with SMTP id t35mr13994390qtc.72.1589764236027;
-        Sun, 17 May 2020 18:10:36 -0700 (PDT)
-Received: from sevai ([74.127.203.199])
-        by smtp.gmail.com with ESMTPSA id o18sm8331920qtb.7.2020.05.17.18.10.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 17 May 2020 18:10:35 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        kernel@mojatatu.com, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH net 1/1] net sched: fix reporting the first-time use timestamp
-References: <1589719591-32491-1-git-send-email-mrv@mojatatu.com>
-        <CAM_iQpXx-yBm2jQ57L+vkiU+hR4VExgzFrntw3R2HmOFpzF5Ug@mail.gmail.com>
-Date:   Sun, 17 May 2020 21:10:17 -0400
-In-Reply-To: <CAM_iQpXx-yBm2jQ57L+vkiU+hR4VExgzFrntw3R2HmOFpzF5Ug@mail.gmail.com>
-        (Cong Wang's message of "Sun, 17 May 2020 11:47:18 -0700")
-Message-ID: <85y2pqm4jq.fsf@mojatatu.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726803AbgERBuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 May 2020 21:50:08 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:58074 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726730AbgERBuI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 May 2020 21:50:08 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 35ED3310FD138A30BCB2;
+        Mon, 18 May 2020 09:50:05 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Mon, 18 May 2020
+ 09:49:59 +0800
+Subject: Re: [PATCH net-next] net: phy: realtek: add loopback support for
+ RTL8211F
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Yufeng Mo <moyufeng@huawei.com>,
+        Jian Shen <shenjian15@huawei.com>
+References: <1589358344-14009-1-git-send-email-tanhuazhong@huawei.com>
+ <20200513131226.GA499265@lunn.ch>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <cb82153d-e14e-8e97-b3b8-210135fbdee6@huawei.com>
+Date:   Mon, 18 May 2020 09:49:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200513131226.GA499265@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang <xiyou.wangcong@gmail.com> writes:
 
-> On Sun, May 17, 2020 at 5:47 AM Roman Mashak <mrv@mojatatu.com> wrote:
+
+On 2020/5/13 21:12, Andrew Lunn wrote:
+> On Wed, May 13, 2020 at 04:25:44PM +0800, Huazhong Tan wrote:
+>> From: Yufeng Mo <moyufeng@huawei.com>
 >>
->> When a new action is installed, firstuse field of 'tcf_t' is explicitly set
->> to 0. Value of zero means "new action, not yet used"; as a packet hits the
->> action, 'firstuse' is stamped with the current jiffies value.
+>> PHY loopback is already supported by genphy driver. This patch
+>> adds the set_loopback interface to RTL8211F PHY driver, so the PHY
+>> selftest can run properly on it.
 >>
->> tcf_tm_dump() should return 0 for firstuse if action has not yet been hit.
->
-> Your patch makes sense to me.
->
-> Just one more thing, how about 'lastuse'? It is initialized with jiffies,
-> not 0, it seems we should initialize it to 0 too, as it is not yet used?
+>> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+>> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> 
+> It took three people to write a 1 line patch?
+> 
+>> ---
+>>   drivers/net/phy/realtek.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+>> index c7229d0..6c5918c 100644
+>> --- a/drivers/net/phy/realtek.c
+>> +++ b/drivers/net/phy/realtek.c
+>> @@ -615,6 +615,7 @@ static struct phy_driver realtek_drvs[] = {
+>>   		.resume		= genphy_resume,
+>>   		.read_page	= rtl821x_read_page,
+>>   		.write_page	= rtl821x_write_page,
+>> +		.set_loopback   = genphy_loopback,
+>>   	}, {
+>>   		.name		= "Generic FE-GE Realtek PHY",
+>>   		.match_phy_device = rtlgen_match_phy_device,
+> 
+> Do you have access to the data sheets? Can you check if the other PHYs
+> supported by this driver also support loopback in the standard way?
+> They probably do.
+> 
+> 	  Andrew
+> 
 
-Yes, exactly. I was planning to send a separate patch for this.
+Hi, Andrew.
 
-Thanks for review, Cong.
+There are two type of phys we are using, rtl8211f and "Marvell 88E1512".
+"Marvell 88E1512" has already supported loopback
+(f0f9b4ed2338 ("net: phy: Add phy loopback support in net phy framework")).
+So now we adds loopback support to the rtl8211f.
+ From the data sheet other phys should support this loopback as well, but
+we have no way to verify it. What's your suggestion?
+
+Thanks:)
+
+> .
+> 
+
