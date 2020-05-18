@@ -2,189 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF6221D8ABD
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 00:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E1A1D8AEC
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 00:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728396AbgERWYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 18:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728061AbgERWYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 18:24:31 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B50C061A0C;
-        Mon, 18 May 2020 15:24:29 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id a5so469614pjh.2;
-        Mon, 18 May 2020 15:24:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=SUpX7LOtT8qVPRv32tcbyWPkW2QMH3nqgiPbBsuq44A=;
-        b=UZl73Uph8yOVkais49jw+Nq2D5YvYYGWrD6uIFWyo6GBl24/D004NdRse5eWjizF1J
-         QDb6ey3Uw5n+I7iwaMwiUeYv+Qau+6DPCFXBBgJpRUzBqR1wKp7x9vFfjtdBRDS3b2QO
-         0JaAPXd67uf2z61kcOfDe3nrR/XIKncFhl6jMaiTtbA1HtS0vNrYxXt6ok1tYO3xvT6a
-         JqAUJCSSRP52eDxDc9YdKWlTksMA5p+9v8/mwZWwKQQN67kJm5vnXhUZ9VFRwzFAFem7
-         dDSqGaQ4W6Z/sWOsb5Y+rw3JWWUSx/V/GiLwUpJ3Pi8MLCZhiAPmO+DbNJUVO2qf5k8m
-         KxaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=SUpX7LOtT8qVPRv32tcbyWPkW2QMH3nqgiPbBsuq44A=;
-        b=caE+fGyA8PLsrjgY2Qsa1yzOPe+K4ULc7xv95pAO2YnPMwcHgHqb0zzM9FFIVPK1fZ
-         3Uhyg3A7qJuq6rMKZ78ZiU1qztAoJNWlFPMA1qCkRpULfxONJ6AjB77cz3oQERV/ZQ/J
-         7WEtPN5Vu3C027rP4WZZUsp+Gu4Q3F0xIWWd2B982Xg0tVZv6JVhSROPRYCRzHzXDUxP
-         fK5L1Yw2F1DMVN4JJWy1wfiSE5B2doLqXg5aAWQfKbhqinB/Pnq4S/1sdl+E3i2sNtFG
-         vJaQFomPIurqopBCecSSMd1eufia48GX8btZC05CS0PcstgGGaFVUJPaKJ1sD5lBc7Y9
-         2KYQ==
-X-Gm-Message-State: AOAM532d6TQ04nepl+iUpwG5c8zWF2JqtIMCmq4Z4sI0WVuHOq638AeI
-        GNogyGgt1wmE3s28Bpniu2kTscWR
-X-Google-Smtp-Source: ABdhPJxhBEouMty1ELdMK3bBnrYPG7USEfr3XojqI61IcwORmFGbsKWhVedHwUNjAjMOMgLC4thIcQ==
-X-Received: by 2002:a17:90b:888:: with SMTP id bj8mr1684834pjb.148.1589840669382;
-        Mon, 18 May 2020 15:24:29 -0700 (PDT)
-Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w73sm9583175pfd.113.2020.05.18.15.24.27
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 May 2020 15:24:28 -0700 (PDT)
-From:   Doug Berger <opendmb@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
-Subject: [PATCH net-next] net: phy: simplify phy_link_change arguments
-Date:   Mon, 18 May 2020 15:23:59 -0700
-Message-Id: <1589840639-34074-1-git-send-email-opendmb@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728371AbgERW3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 18:29:46 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55940 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726640AbgERW3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 18:29:46 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jaoGU-0007b4-CW; Tue, 19 May 2020 00:29:42 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jaoGU-000Ee7-4f; Tue, 19 May 2020 00:29:42 +0200
+Subject: Re: [PATCH bpf-next 4/4] bpf, testing: add get{peer,sock}name
+ selftests to test_progs
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        sdf@google.com
+References: <cover.1589813738.git.daniel@iogearbox.net>
+ <1b9869b34027bc0722f4217a0b04f1cccccc5c33.1589813738.git.daniel@iogearbox.net>
+ <20200518221728.GA49655@rdna-mbp.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e6f2dc5e-3491-8ace-a902-975ab42002f0@iogearbox.net>
+Date:   Tue, 19 May 2020 00:29:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20200518221728.GA49655@rdna-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25816/Mon May 18 14:17:08 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This function was introduced to allow for different handling of
-link up and link down events particularly with regard to the
-netif_carrier. The third argument do_carrier allowed the flag to
-be left unchanged.
+On 5/19/20 12:17 AM, Andrey Ignatov wrote:
+> Daniel Borkmann <daniel@iogearbox.net> [Mon, 2020-05-18 08:35 -0700]:
+>> Extend the existing connect_force_port test to assert get{peer,sock}name programs
+>> as well. The workflow for e.g. IPv4 is as follows: i) server binds to concrete
+>> port, ii) client calls getsockname() on server fd which exposes 1.2.3.4:60000 to
+>> client, iii) client connects to service address 1.2.3.4:60000 binds to concrete
+>> local address (127.0.0.1:22222) and remaps service address to a concrete backend
+>> address (127.0.0.1:60123), iv) client then calls getsockname() on its own fd to
+>> verify local address (127.0.0.1:22222) and getpeername() on its own fd which then
+>> publishes service address (1.2.3.4:60000) instead of actual backend. Same workflow
+>> is done for IPv6 just with different address/port tuples.
+>>
+>>    # ./test_progs -t connect_force_port
+>>    #14 connect_force_port:OK
+>>    Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+>>
+>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+>> Cc: Andrey Ignatov <rdna@fb.com>
+>> ---
+> 
+>> --- a/tools/testing/selftests/bpf/network_helpers.c
+>> +++ b/tools/testing/selftests/bpf/network_helpers.c
+>> @@ -5,6 +5,8 @@
+>>   #include <string.h>
+>>   #include <unistd.h>
+>>   
+>> +#include <arpa/inet.h>
+>> +
+>>   #include <sys/epoll.h>
+>>   
+>>   #include <linux/err.h>
+>> @@ -35,7 +37,7 @@ struct ipv6_packet pkt_v6 = {
+>>   	.tcp.doff = 5,
+>>   };
+>>   
+>> -int start_server(int family, int type)
+>> +int start_server_with_port(int family, int type, int port)
+> 
+> Nit: IMO it's worth to start using __u16 for ports in new places,
+> especially since this network helper can be adopted by many tests in the
+> future. I know 4-byte int-s are used for ports even in UAPI, but IMO it
+> just adds confusion and complicates implementation in both kernel and
+> user BPF programs.
 
-Since then the phylink has introduced an implementation that
-completely ignores the third parameter since it never wants to
-change the flag and the phylib always sets the third parameter
-to true so the flag is always changed.
+Ok, makes sense, I'll change the signature to __u16 port in a v2.
 
-Therefore the third argument (i.e. do_carrier) is no longer
-necessary and can be removed. This also means that the phylib
-phy_link_down() function no longer needs its second argument.
-
-Signed-off-by: Doug Berger <opendmb@gmail.com>
----
- drivers/net/phy/phy.c        | 12 ++++++------
- drivers/net/phy/phy_device.c | 12 +++++-------
- drivers/net/phy/phylink.c    |  3 +--
- include/linux/phy.h          |  2 +-
- 4 files changed, 13 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index d4bbf79dab6c..d584701187db 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -58,13 +58,13 @@ static const char *phy_state_to_str(enum phy_state st)
- 
- static void phy_link_up(struct phy_device *phydev)
- {
--	phydev->phy_link_change(phydev, true, true);
-+	phydev->phy_link_change(phydev, true);
- 	phy_led_trigger_change_speed(phydev);
- }
- 
--static void phy_link_down(struct phy_device *phydev, bool do_carrier)
-+static void phy_link_down(struct phy_device *phydev)
- {
--	phydev->phy_link_change(phydev, false, do_carrier);
-+	phydev->phy_link_change(phydev, false);
- 	phy_led_trigger_change_speed(phydev);
- }
- 
-@@ -524,7 +524,7 @@ int phy_start_cable_test(struct phy_device *phydev,
- 		goto out;
- 
- 	/* Mark the carrier down until the test is complete */
--	phy_link_down(phydev, true);
-+	phy_link_down(phydev);
- 
- 	netif_testing_on(dev);
- 	err = phydev->drv->cable_test_start(phydev);
-@@ -595,7 +595,7 @@ static int phy_check_link_status(struct phy_device *phydev)
- 		phy_link_up(phydev);
- 	} else if (!phydev->link && phydev->state != PHY_NOLINK) {
- 		phydev->state = PHY_NOLINK;
--		phy_link_down(phydev, true);
-+		phy_link_down(phydev);
- 	}
- 
- 	return 0;
-@@ -999,7 +999,7 @@ void phy_state_machine(struct work_struct *work)
- 	case PHY_HALTED:
- 		if (phydev->link) {
- 			phydev->link = 0;
--			phy_link_down(phydev, true);
-+			phy_link_down(phydev);
- 		}
- 		do_suspend = true;
- 		break;
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index c3a107cf578e..7481135d27ab 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -916,16 +916,14 @@ struct phy_device *phy_find_first(struct mii_bus *bus)
- }
- EXPORT_SYMBOL(phy_find_first);
- 
--static void phy_link_change(struct phy_device *phydev, bool up, bool do_carrier)
-+static void phy_link_change(struct phy_device *phydev, bool up)
- {
- 	struct net_device *netdev = phydev->attached_dev;
- 
--	if (do_carrier) {
--		if (up)
--			netif_carrier_on(netdev);
--		else
--			netif_carrier_off(netdev);
--	}
-+	if (up)
-+		netif_carrier_on(netdev);
-+	else
-+		netif_carrier_off(netdev);
- 	phydev->adjust_link(netdev);
- 	if (phydev->mii_ts && phydev->mii_ts->link_state)
- 		phydev->mii_ts->link_state(phydev->mii_ts, phydev);
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 0f23bec431c1..b6b1f77bba58 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -803,8 +803,7 @@ void phylink_destroy(struct phylink *pl)
- }
- EXPORT_SYMBOL_GPL(phylink_destroy);
- 
--static void phylink_phy_change(struct phy_device *phydev, bool up,
--			       bool do_carrier)
-+static void phylink_phy_change(struct phy_device *phydev, bool up)
- {
- 	struct phylink *pl = phydev->phylink;
- 	bool tx_pause, rx_pause;
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 5d8ff5428010..467aa8bf9f64 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -543,7 +543,7 @@ struct phy_device {
- 	u8 mdix;
- 	u8 mdix_ctrl;
- 
--	void (*phy_link_change)(struct phy_device *, bool up, bool do_carrier);
-+	void (*phy_link_change)(struct phy_device *phydev, bool up);
- 	void (*adjust_link)(struct net_device *dev);
- 
- #if IS_ENABLED(CONFIG_MACSEC)
--- 
-2.7.4
-
+Thanks,
+Daniel
