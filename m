@@ -2,131 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5819C1D7DB5
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 18:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F5FC1D7DBB
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 18:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728210AbgERQDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 12:03:09 -0400
-Received: from mail-eopbgr50084.outbound.protection.outlook.com ([40.107.5.84]:37767
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727007AbgERQDI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 12:03:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vopq1Sggv2mPT00sfIbwnpvhli9yNG9ew3z66kOADaEcLgw4aNoK83IEGd8rA403w1BQNYM6SCTvX2UT3dPzFYf0EJdrp/Kt9+pLYVdiBfKRteM+o+Le5gdfuFAoL+Sb/IVL1sHLN5rpcJKV7mc3rFMJUV3wvpB6RyP0qkFy8/aLGj7DkNCzzsmhKt1/zJxddDdDIN99BjitG4j9op/WtnrTFXxUuVyisE6+79q+3GQuLryuYHoy15Ud1R5mGI7BfWSLm3CJymqmXGYVCF0UH2MUy9EmtFVXCa9YeXpG1vuWEr9p5G/2IVhXk2BCm3UPTOXKTWY6ey6y7lOctyMJ8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f/dth0ntCFArUf8PXfmJ6OSvJ3SC401QyMreKiHxvp8=;
- b=ctaM+mUIfqk1F7lW8AQyWNyUx+psHGSnesUvFBwMRNE2Hd3ujT+FDnHLlm+KDNxeAM0zqmxFpUGD5AqqCAMj4T4p/Ir48fyh1K5QEwEecMbJGGnRcl+GdkqJLd+1mrESqhIqCRo7b3Tkzxw+/6QhYFFirUzhf7Rwj01vXS5Q3HH0sHg57hmMJ8G7+CApMKSogLhdDmVyBNBjt8ImXtZFMASm7/YgXNVl6JXHrRb5wpZexztr8a6B0TQZ5w2Pye/G3d1XGmr3sLt6DDJ8/DCHU93p/q6QCnKK+Rkn8IjnRc/C5plUfQ5cCu5K3ruHTbmI4h6+n4Wk0njybPBkn7r1JQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f/dth0ntCFArUf8PXfmJ6OSvJ3SC401QyMreKiHxvp8=;
- b=tr1PoD0cTo8xpZIFTa5Tyq9TsXa31/CULDCQ2mfOcfNxq69p3XHqpqYDay6ERtUEcsqXoWW32NNq/7grHD5EOrymSZkdGk9Ycg5n6CumiIkwE9sQPFFOviU/ovDzQwrdbrIx7kjce9ACW90E9gXu88Fp2iPBplnYxQPhZRwgHFI=
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
-Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (2603:10a6:20b:11::14)
- by AM6PR05MB6358.eurprd05.prod.outlook.com (2603:10a6:20b:bd::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.27; Mon, 18 May
- 2020 16:03:04 +0000
-Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
- ([fe80::f5bd:86c3:6c50:6718]) by AM6PR05MB5096.eurprd05.prod.outlook.com
- ([fe80::f5bd:86c3:6c50:6718%7]) with mapi id 15.20.3000.034; Mon, 18 May 2020
- 16:03:04 +0000
-Subject: Re: [PATCH iproute2/net-next] man: tc-ct.8: Add manual page for ct tc
- action
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, Jiri Pirko <jiri@mellanox.com>
-Cc:     ozsh@mellanox.com, roid@mellanox.com
-References: <1589465420-12119-1-git-send-email-paulb@mellanox.com>
- <0c5f8a4b-2d09-6cda-9228-dd83c4d97ff1@gmail.com>
-From:   Paul Blakey <paulb@mellanox.com>
-Message-ID: <942b3402-f5c8-2d32-8a5e-4f1ae0ad6ab4@mellanox.com>
-Date:   Mon, 18 May 2020 19:02:59 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-In-Reply-To: <0c5f8a4b-2d09-6cda-9228-dd83c4d97ff1@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-ClientProxiedBy: PR0P264CA0219.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1e::15) To AM6PR05MB5096.eurprd05.prod.outlook.com
- (2603:10a6:20b:11::14)
+        id S1728237AbgERQD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 12:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727007AbgERQD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 12:03:59 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56D2C061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 09:03:58 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id o8so5514776ybc.11
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 09:03:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wC6Al5//OLghdL5M5WT7D3yvk/6R//cCeiiqEjQaDTs=;
+        b=BzPjM+6ebMCc28zoKiEL73mEspk5sX9NbICtCmYmgQk9eJeWE9jmnaOHS4Q+duidzu
+         1E/H/4MHNP4DYOTR6Dr9xZBVFW+kUD2yG/sAByDJhVm034/xiFjJ9xNvwNnpbHF8ZHR2
+         rQsh3/bPDQ+ouNzHK9cUHH8E4WjThxy5Z2cwnZwuVUFFvi/IF10B07KQN3LF1mIOuVv6
+         42fATnMY9fhzIr+MAyNCODKrK+h1vn+1uL/tzErrF4KDRhVDmCM1Cek1qKtDPY5bEpWO
+         dGknlsXCc0MmgMPOaNxNREdMd527VDWczNlWq2kNpqDEqL9O5WFh49DRdvJqHRmX8OkR
+         33xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wC6Al5//OLghdL5M5WT7D3yvk/6R//cCeiiqEjQaDTs=;
+        b=r6r/V/MUCPceEXr+w7MIfDrxcOlnZaILq+YW2iiBGjyHhGx1vMTTjWWpkTFIgTjDkd
+         FsFfDFrJuJ50GkhGmAaPjPWXHYQvvB6sPvVD+V6dEUwT44w9VMAPdB8CQpQyAjj4Zxb1
+         MI6ZU8p6yUlrmChKOHcct4WJBws5TNWfKtpCe4OGrppv9mUCs/oGZ1l1l5LlH/x1L0S7
+         SGNQBXIU07Yp4u607N2MNNYZ+PHluQI17TEgcAkAKZQeBXLVMPUrHcgZBFyPFJMCbsDN
+         f313NNpZsI7APMM9Q3wWTZ5iAasmZNyWbQ52WJHmQitiYobaaD+Snq2STkYvo/U4Amwe
+         y4ig==
+X-Gm-Message-State: AOAM533WJrPp6Z8wP3v8UuyULFkN6YFB2yGmZyLUnIb1mW40wE0Ycj3+
+        VVhM3aF8vPPwHaxqwI/z9PxsP4l8XtoqHnddyctwNA==
+X-Google-Smtp-Source: ABdhPJzFYLd/aLEk6sn35nDhblrHA7edN0rQqww9iySxXnjwYSCvGBXfkU7ecGC3j/vBijAtsHeQ1eURtfBdpWtSeCA=
+X-Received: by 2002:a25:bb42:: with SMTP id b2mr25735216ybk.383.1589817837533;
+ Mon, 18 May 2020 09:03:57 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.50.105] (5.29.240.93) by PR0P264CA0219.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1e::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.24 via Frontend Transport; Mon, 18 May 2020 16:03:02 +0000
-X-Originating-IP: [5.29.240.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 9c69728d-5149-46d3-4e5e-08d7fb44f256
-X-MS-TrafficTypeDiagnostic: AM6PR05MB6358:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6PR05MB6358EE7C0AB0F28946E574EECFB80@AM6PR05MB6358.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:53;
-X-Forefront-PRVS: 04073E895A
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YxhxaD/5V8IVJgV23ArUS/fbekAiHgIagy1v1bFtmBL1BYI9Irut8VIjd17DtlrAmSbY7R9pjRKmksvNCU8qdgYWjD6btibp8epk5TGKLM/TCeH8eE001bEmOgmGtaIIHCDWI+k3XoHq8DWZ0StkM5pVsEG1VztUqc+TohEw+PHPV781f/WNEeyInqidkNiKFhAFKadhWOmBdyRr9/XoEaVETA22TTC5BhRWtbxm3plEM+6AdG2kElPuQlMoQpsY73MTOFETF6BRcdqmDyNJCjEk4RGmn3dxmzsC/b1MAdkwOYZAIoPgnFj177UIn2TjiVqqox8ljv2qQXEOka8In1+glbkRqk965mdhpgtP/au+6xwEgr+2di/BCo4n1JRFneWkzi76tWlaSM6WJXTtfxtz3ButW0gYbs/CNVXvYXlSzxr8nZzfXlQyIh9zQ2MgJlCNhK7BJ6j3BiZJp6XrOQNNH13X5RpUocqkY272AoGglpzsZZ/rhoYSBTwTC9P+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB5096.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(376002)(396003)(346002)(366004)(39860400002)(136003)(8936002)(5660300002)(4326008)(8676002)(478600001)(186003)(107886003)(6486002)(2906002)(6636002)(36756003)(6666004)(956004)(2616005)(316002)(110136005)(86362001)(16526019)(31696002)(31686004)(16576012)(26005)(52116002)(66556008)(66946007)(66476007)(53546011)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 8ApfnYPSasBK+nQfvfekw6Ifdng8P/OwscRXknGO6mMiGQ9Mgs2Ux9fCqBvs5e2NiQcGXa0NXPJYl1MABF8U8okg8wtoNbG5WXq30s1sd4PJV4ivzsJibthUpny/GxAs683lAe/lPNXG74CdqyCC5/Uj+E5YZ0HfzDn/ptvIRJkLJrhwoetenGhUxMDKEVhymP/bHstn/RbN5HxWG9zvn7PcSL/5x4CgOqIu1BPuT6zRn1E/gdKGBfwjhn/KHE2iTLN4iKPH+q3Xm3pSbAAEfOMxyFGkzFgGFFsg19Im7x3jaFknsRpNWMGw4gq8X0yvlcP0n3ILZd9IhyV8raj44eUDSBwabK9UhWD/eh92k0ySD7vOMeao1COypXIZIK+p3kYrwoVT6tJdGdl9VZFkAxLyNGkm4hLGXT8+WOZX882Q7BwVFAv62FasULI1l/oGamJY2RPnuA59e4zVZwvvwnbrAZkkXymGsr/xGPDJDHQ=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c69728d-5149-46d3-4e5e-08d7fb44f256
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2020 16:03:04.0663
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dxayy+Uvk8l69jaOEuqeW3hVjVYFtpFVbiZagFdQPeUdPPrDsF5+WsYyl65JKIxG/re4TQqVvGuGvYHt/1/72A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6358
+References: <20200515221732.44078-1-irogers@google.com> <20200515221732.44078-8-irogers@google.com>
+ <20200518154505.GE24211@kernel.org>
+In-Reply-To: <20200518154505.GE24211@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Mon, 18 May 2020 09:03:45 -0700
+Message-ID: <CAP-5=fWZwuSLaFX+-pgeE_H92Mtp7+_NrwBeRFTqyfPjVRkbWg@mail.gmail.com>
+Subject: Re: [PATCH v3 7/7] perf expr: Migrate expr ids table to a hashmap
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, May 18, 2020 at 8:45 AM Arnaldo Carvalho de Melo
+<arnaldo.melo@gmail.com> wrote:
+>
+> Em Fri, May 15, 2020 at 03:17:32PM -0700, Ian Rogers escreveu:
+> > Use a hashmap between a char* string and a double* value. While bpf's
+> > hashmap entries are size_t in size, we can't guarantee sizeof(size_t) >=
+> > sizeof(double). Avoid a memory allocation when gathering ids by making 0.0
+> > a special value encoded as NULL.
+> >
+> > Original map suggestion by Andi Kleen:
+> > https://lore.kernel.org/lkml/20200224210308.GQ160988@tassilo.jf.intel.com/
+> > and seconded by Jiri Olsa:
+> > https://lore.kernel.org/lkml/20200423112915.GH1136647@krava/
+>
+> I'm having trouble here when building it with:
+>
+> make -C tools/perf O=/tmp/build/perf
+>
+>     CC       /tmp/build/perf/tests/expr.o
+>     INSTALL  trace_plugins
+>     CC       /tmp/build/perf/util/metricgroup.o
+>   In file included from /home/acme/git/perf/tools/lib/bpf/hashmap.h:18,
+>                    from /home/acme/git/perf/tools/perf/util/expr.h:6,
+>                    from tests/expr.c:3:
+>   /home/acme/git/perf/tools/lib/bpf/libbpf_internal.h:63: error: "pr_info" redefined [-Werror]
+>      63 | #define pr_info(fmt, ...) __pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
+>         |
+>   In file included from tests/expr.c:2:
+>   /home/acme/git/perf/tools/perf/util/debug.h:24: note: this is the location of the previous definition
+>
+> It looks like libbpf's hashmap.h is being used instead of the one in
+> tools/perf/util/, yeah, as intended, but then since I don't have the
+> fixes you added to the BPF tree, the build fails, if I instead
+> unconditionally use
+>
+> #include "util/hashmap.h"
+>
+> It works. Please ack.
+>
+> I.e. with the patch below, further tests:
+>
+> [acme@five perf]$ perf -vv | grep -i bpf
+>                    bpf: [ on  ]  # HAVE_LIBBPF_SUPPORT
+> [acme@five perf]$ nm ~/bin/perf | grep -i libbpf_ | wc -l
+> 39
+> [acme@five perf]$ nm ~/bin/perf | grep -i hashmap_ | wc -l
+> 17
+> [acme@five perf]$
+>
+> Explicitely building without LIBBPF:
+>
+> [acme@five perf]$ perf -vv | grep -i bpf
+>                    bpf: [ OFF ]  # HAVE_LIBBPF_SUPPORT
+> [acme@five perf]$
+> [acme@five perf]$ nm ~/bin/perf | grep -i libbpf_ | wc -l
+> 0
+> [acme@five perf]$ nm ~/bin/perf | grep -i hashmap_ | wc -l
+> 9
+> [acme@five perf]$
+>
+> Works,
+>
+> - Arnaldo
 
-On 18/05/2020 17:56, David Ahern wrote:
-> On 5/14/20 8:10 AM, Paul Blakey wrote:
->> Signed-off-by: Paul Blakey <paulb@mellanox.com>
->> ---
->>  man/man8/tc-ct.8     | 107 +++++++++++++++++++++++++++++++++++++++++++++++++++
->>  man/man8/tc-flower.8 |   6 +++
->>  2 files changed, 113 insertions(+)
->>  create mode 100644 man/man8/tc-ct.8
->>
->> diff --git a/man/man8/tc-ct.8 b/man/man8/tc-ct.8
->> new file mode 100644
->> index 0000000..45d2932
->> --- /dev/null
->> +++ b/man/man8/tc-ct.8
->> @@ -0,0 +1,107 @@
->> +.TH "ct action in tc" 8 "14 May 2020" "iproute2" "Linux"
->> +.SH NAME
->> +ct \- tc connection tracking action
->> +.SH SYNOPSIS
->> +.in +8
->> +.ti -8
->> +.BR "tc ... action ct commit [ force ] [ zone "
->> +.IR ZONE
->> +.BR "] [ mark "
->> +.IR MASKED_MARK
->> +.BR "] [ label "
->> +.IR MASKED_LABEL
->> +.BR "] [ nat "
->> +.IR NAT_SPEC
->> +.BR "]"
->> +
->> +.ti -8
->> +.BR "tc ... action ct [ nat ] [ zone "
->> +.IR ZONE
->> +.BR "]"
->> +
->> +.ti -8
->> +.BR "tc ... action ct clear"
-> seems like you are documenting existing capabilities vs something new to
-> 5.8. correct?
-Yes
+Hi Arnaldo,
+
+this build issue sounds like this patch is missing:
+https://lore.kernel.org/lkml/20200515221732.44078-3-irogers@google.com/
+The commit message there could have explicitly said having this
+#include causes the conflicting definitions between perf's debug.h and
+libbpf_internal.h's definitions of pr_info, etc.
+
+Let me know how else to help and sorry for the confusion. Thanks,
+Ian
+
+
+> diff --git a/tools/perf/util/expr.h b/tools/perf/util/expr.h
+> index d60a8feaf50b..8a2c1074f90f 100644
+> --- a/tools/perf/util/expr.h
+> +++ b/tools/perf/util/expr.h
+> @@ -2,11 +2,14 @@
+>  #ifndef PARSE_CTX_H
+>  #define PARSE_CTX_H 1
+>
+> -#ifdef HAVE_LIBBPF_SUPPORT
+> -#include <bpf/hashmap.h>
+> -#else
+> -#include "hashmap.h"
+> -#endif
+> +// There are fixes that need to land upstream before we can use libbpf's headers,
+> +// for now use our copy unconditionally, since the data structures at this point
+> +// are exactly the same, no problem.
+> +//#ifdef HAVE_LIBBPF_SUPPORT
+> +//#include <bpf/hashmap.h>
+> +//#else
+> +#include "util/hashmap.h"
+> +//#endif
+>
+>  struct expr_parse_ctx {
+>         struct hashmap ids;
