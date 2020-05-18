@@ -2,51 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A54931DC2FA
-	for <lists+netdev@lfdr.de>; Thu, 21 May 2020 01:33:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65DFE1D7A10
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 15:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728583AbgETXdu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 20 May 2020 19:33:50 -0400
-Received: from mail3.sumicity.com.br ([189.113.72.105]:40748 "EHLO
-        mail3.sumicity.com.br" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726688AbgETXdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 May 2020 19:33:50 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail3.sumicity.com.br (Postfix) with ESMTP id 1103B99A68B;
-        Mon, 18 May 2020 15:29:22 -0300 (-03)
-Received: from mail3.sumicity.com.br ([127.0.0.1])
-        by localhost (mail3.sumicity.com.br [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id VlJxbnj_kRC6; Mon, 18 May 2020 15:29:21 -0300 (-03)
-Received: from localhost (localhost [127.0.0.1])
-        by mail3.sumicity.com.br (Postfix) with ESMTP id BA53798DA1E;
-        Mon, 18 May 2020 11:03:10 -0300 (-03)
-X-Virus-Scanned: amavisd-new at sumicity.com.br
-Received: from mail3.sumicity.com.br ([127.0.0.1])
-        by localhost (mail3.sumicity.com.br [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id l-ZkVdjJfWY0; Mon, 18 May 2020 11:03:10 -0300 (-03)
-Received: from [192.168.0.199] (unknown [106.210.57.205])
-        by mail3.sumicity.com.br (Postfix) with ESMTPSA id 3EE9A986DB1;
-        Mon, 18 May 2020 10:30:55 -0300 (-03)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1727918AbgERNgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 09:36:54 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:52406 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726918AbgERNgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 09:36:53 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04IDahY6089771;
+        Mon, 18 May 2020 08:36:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1589809003;
+        bh=gKUJRSdjNQnlN2s5eKUQq+ubvPAIsEetXhJ0LY3JnRs=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=JxJEvVRg6rhpU1e8wZ1P2Wkjnk36DLCS8NEhoL+sj+4Uh21dymHODRk87ZNsUhQVR
+         6NXNEqnxBSwigmpSvxwMFYzbx4N27KzgtxylS4Bl7GV5sb3LSJn84HHvw4g8Pzcwoi
+         ShkQS/XMMy0Jo8UPF4vHbUisCG0cHif5SiVC0YpQ=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04IDahmv112525;
+        Mon, 18 May 2020 08:36:43 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 18
+ May 2020 08:36:42 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 18 May 2020 08:36:42 -0500
+Received: from [10.250.74.234] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04IDagxD025637;
+        Mon, 18 May 2020 08:36:42 -0500
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+To:     Michael Walle <michael@walle.cc>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     <jeffrey.t.kirsher@intel.com>, <netdev@vger.kernel.org>,
+        <vladimir.oltean@nxp.com>, <po.liu@nxp.com>,
+        <Jose.Abreu@synopsys.com>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+ <20200517170601.31832446@apollo>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <6e26814b-242e-b60b-a9b5-6ed6608d0fce@ti.com>
+Date:   Mon, 18 May 2020 09:36:42 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Dear Friend
-To:     Recipients <pinheiromodas@sumicity.com.br>
-From:   "Mr Saeed Ahmed" <pinheiromodas@sumicity.com.br>
-Date:   Mon, 18 May 2020 19:00:45 +0530
-Reply-To: saeedasutanahmed0@gmail.com
-Message-Id: <20200518133057.3EE9A986DB1@mail3.sumicity.com.br>
+In-Reply-To: <20200517170601.31832446@apollo>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Hi,
 
-I want you to be honest and truthful with me that you will help me with all your effort and time for just seven to fourteen workings of your time
+On 5/17/20 11:06 AM, Michael Walle wrote:
+> What about the Qbu handshake state? And some NICs support overriding
+> this. I.e. enable frame preemption even if the handshake wasn't
+> successful.
 
-Please kindly reply to my most confidential email if you are really interested in helping me please: saeedasutanahmed0@gmail.com
-                                 
-God be with you
-Mr Saeed Ahmed
+You are talking about Verify procedure to hand shake with peer to
+know if remote support IET fragmentation and re-assembly? If yes,
+this manual mode of provisioning is required as well. So one
+optional parameter needed is enable-verify. If that is not enabled
+then device assumes the remote is capable of fragmentation and
+re-assembly.
+
+-- 
+Murali Karicheri
+Texas Instruments
