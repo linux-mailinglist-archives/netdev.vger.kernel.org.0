@@ -2,113 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C71B1D8BA9
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 01:38:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40BA01D90E9
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 09:22:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726532AbgERXhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 19:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbgERXhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 19:37:10 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220D1C061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 16:37:09 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id a23so3978058qto.1
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 16:37:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AUH5TuFZU4S3hFHGKE9NhVyMrqV+rM5PHKsx58nbAfQ=;
-        b=s+oK8GIi8KaabDzvjlCEbMZqXAJrk2eO1vRG9nYfT1C+YZDU8hChvCLtWqOceml2IX
-         AZwDw57+hh6mBxooR+R3kKLjHZIDNF1vFOnEQqU1H7nytVsjaQGZmzAPFo7piqmhh7wH
-         +9b52xjFrjKEVBr+F+HqzbiESijtKYGpHbYHVmMXo6Ku+kWbYC2uznXLVrok/SgbQ7cc
-         yQXDUxRKzJv1KCNScE+EmjDZjGlkFXmkbkWpNjnlSSZZlEEWWubDKjNPw9KInkY4dfaV
-         ah9O9NRPp+Xjn0psfy8sGguWPcPLyFtAoyp8hvfQ3pwrUcyi6HwJY8gRUsC896WM/FqV
-         5wAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AUH5TuFZU4S3hFHGKE9NhVyMrqV+rM5PHKsx58nbAfQ=;
-        b=B3x/dLcrQdj7zqZVm4VGLBvHNETXGBDojgqHAr90yI1B1grOw6w+KmqJK4kMnmxtPv
-         vltpz556oqfvwbK2elqZIIOVIADnjXwuoBqQb+U2pBfi7TxujH30SlBtFAr5OcRvwCy/
-         Joxx2ZreQXnnsfSqUPgCbMHkKIxYWHN5uu83tlmyNGzjltYH5MzoTOSR5jOd1P8SzMlR
-         UOD8Cz081w4Qow6/Iaee52f0lmw4l9RDTFvclD8h0S/S04VQjf/L4cYKX7X3cETiWf+P
-         kcoo6SB6i7ef1Pubx0n/B1ylzya+47Nnn2d9UdjZRmYCSNOQei7WyQahlDEzcammbp1N
-         RF4w==
-X-Gm-Message-State: AOAM533Wua80+v1KeLv9L6imFkpybBzT2ZXO6NPAGdojj8FQYWD5y2BG
-        mUnsLEPeulTIbJVmhbIrswU=
-X-Google-Smtp-Source: ABdhPJzUnq9e5b//QCq+7tWh/DLrERyOav8emU1XFXKNRjXRj0ulh6WbU2Wb3eWf81P/k9EBlFLhoA==
-X-Received: by 2002:ac8:3968:: with SMTP id t37mr19001987qtb.174.1589845027302;
-        Mon, 18 May 2020 16:37:07 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c5f3:7fed:e95c:6b74? ([2601:282:803:7700:c5f3:7fed:e95c:6b74])
-        by smtp.googlemail.com with ESMTPSA id p42sm9122698qtk.94.2020.05.18.16.37.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2020 16:37:06 -0700 (PDT)
-Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress path
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, brouer@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com
-References: <20200513014607.40418-1-dsahern@kernel.org>
- <87sgg4t8ro.fsf@toke.dk> <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com>
- <87lflppq38.fsf@toke.dk> <76e2e842-19c0-fd9a-3afa-07e2793dedcd@gmail.com>
- <87h7wdnmwi.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b4ff6a2b-1478-89f8-ea9f-added498c59f@gmail.com>
-Date:   Mon, 18 May 2020 17:37:04 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1728407AbgESHVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 May 2020 03:21:41 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:51366 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728027AbgESHVl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 May 2020 03:21:41 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id AA6755BE553CD87A54C;
+        Tue, 19 May 2020 15:21:27 +0800 (CST)
+Received: from localhost.localdomain (10.175.118.36) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 19 May 2020 15:21:17 +0800
+From:   Luo bin <luobin9@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoxianjun@huawei.com>, <luobin9@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
+Subject: [PATCH net-next v1] hinic: add support to set and get pause param
+Date:   Mon, 18 May 2020 23:38:48 +0000
+Message-ID: <20200518233848.29536-1-luobin9@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <87h7wdnmwi.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.118.36]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/20 12:00 PM, Toke Høiland-Jørgensen wrote:
-> I meant 'less powerful' in the obvious sense: it only sees a subset of
-> the packets going out of the interface. And so I worry that it will (a)
-> make an already hard to use set of APIs even more confusing, and (b)
-> turn out to not be enough so we'll end up needing a "real" egress hook.
-> 
-> As I said in my previous email, a post-REDIRECT hook may or may not be
-> useful in its own right. I'm kinda on the fence about that, but am
-> actually leaning towards it being useful; however, I am concerned that
-> it'll end up being redundant if we do get a full egress hook.
-> 
+add support to set pause param with ethtool -A and get pause
+param with ethtool -a. Also remove set_link_ksettings ops for VF.
 
-I made the changes to mlx5 to run programs in the driver back in early
-March. I have looked at both i40e and mlx5 xmit functions all the way to
-h/w handoff to get 2 vendor perspectives. With xdp I can push any header
-I want - e.g., mpls - and as soon as I do the markers are wrong. Take a
-look at mlx5e_sq_xmit and how it gets the transport header offset. Or
-i40e_tso. Those markers are necessary for the offloads so there is no
-'post skb' location to run a bpf program in the driver and have the
-result be sane for hardware handoff.
+Signed-off-by: Luo bin <luobin9@huawei.com>
+---
+ .../net/ethernet/huawei/hinic/hinic_ethtool.c | 100 +++++++++++++++++-
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.c  |   2 +
+ .../net/ethernet/huawei/hinic/hinic_hw_io.h   |  10 ++
+ .../net/ethernet/huawei/hinic/hinic_main.c    |  27 ++++-
+ .../net/ethernet/huawei/hinic/hinic_port.c    |   5 +
+ 5 files changed, 141 insertions(+), 3 deletions(-)
 
-[ as an aside, a co-worker just happened to hit something like this
-today (unrelated to xdp). He called dev_queue_xmit with a large,
-manually crafted packet and no skb markers. Both the boxes (connected
-back to back) had to be rebooted.]
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+index 9796c1fbe132..62e44edd8151 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+@@ -613,6 +613,78 @@ static int hinic_set_ringparam(struct net_device *netdev,
+ 
+ 	return 0;
+ }
++
++static void hinic_get_pauseparam(struct net_device *netdev,
++				 struct ethtool_pauseparam *pause)
++{
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++	struct hinic_pause_config pause_info = {0};
++	struct hinic_nic_cfg *nic_cfg;
++	int err;
++
++	nic_cfg = &nic_dev->hwdev->func_to_io.nic_cfg;
++
++	err = hinic_get_hw_pause_info(nic_dev->hwdev, &pause_info);
++	if (err) {
++		netif_err(nic_dev, drv, netdev,
++			  "Failed to get pauseparam from hw\n");
++	} else {
++		pause->autoneg = pause_info.auto_neg;
++		if (nic_cfg->pause_set) {
++			pause->rx_pause = nic_cfg->rx_pause;
++			pause->tx_pause = nic_cfg->tx_pause;
++		} else {
++			pause->rx_pause = pause_info.rx_pause;
++			pause->tx_pause = pause_info.tx_pause;
++		}
++	}
++}
++
++static int hinic_set_pauseparam(struct net_device *netdev,
++				struct ethtool_pauseparam *pause)
++{
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++	struct hinic_pause_config pause_info = {0};
++	struct hinic_port_cap port_cap = {0};
++	int err;
++
++	err = hinic_port_get_cap(nic_dev, &port_cap);
++	if (err) {
++		netif_err(nic_dev, drv, netdev,
++			  "Failed to get port capability\n");
++		return -EIO;
++	}
++
++	if (pause->autoneg != port_cap.autoneg_state) {
++		netif_err(nic_dev, drv, netdev,
++			  "To change autoneg please use: ethtool -s <dev> autoneg <on|off>\n");
++		return -EOPNOTSUPP;
++	}
++
++	pause_info.auto_neg = pause->autoneg;
++	pause_info.rx_pause = pause->rx_pause;
++	pause_info.tx_pause = pause->tx_pause;
++
++	mutex_lock(&nic_dev->hwdev->func_to_io.nic_cfg.cfg_mutex);
++	err = hinic_set_hw_pause_info(nic_dev->hwdev, &pause_info);
++	if (err) {
++		netif_err(nic_dev, drv, netdev, "Failed to set pauseparam\n");
++		mutex_unlock(&nic_dev->hwdev->func_to_io.nic_cfg.cfg_mutex);
++		return err;
++	}
++	nic_dev->hwdev->func_to_io.nic_cfg.pause_set = true;
++	nic_dev->hwdev->func_to_io.nic_cfg.auto_neg = pause->autoneg;
++	nic_dev->hwdev->func_to_io.nic_cfg.rx_pause = pause->rx_pause;
++	nic_dev->hwdev->func_to_io.nic_cfg.tx_pause = pause->tx_pause;
++	mutex_unlock(&nic_dev->hwdev->func_to_io.nic_cfg.cfg_mutex);
++
++	netif_dbg(nic_dev, drv, netdev, "Set pause options, tx: %s, rx: %s\n",
++		  pause->tx_pause ? "on" : "off",
++		  pause->rx_pause ? "on" : "off");
++
++	return 0;
++}
++
+ static void hinic_get_channels(struct net_device *netdev,
+ 			       struct ethtool_channels *channels)
+ {
+@@ -1247,6 +1319,27 @@ static const struct ethtool_ops hinic_ethtool_ops = {
+ 	.get_link = ethtool_op_get_link,
+ 	.get_ringparam = hinic_get_ringparam,
+ 	.set_ringparam = hinic_set_ringparam,
++	.get_pauseparam = hinic_get_pauseparam,
++	.set_pauseparam = hinic_set_pauseparam,
++	.get_channels = hinic_get_channels,
++	.set_channels = hinic_set_channels,
++	.get_rxnfc = hinic_get_rxnfc,
++	.set_rxnfc = hinic_set_rxnfc,
++	.get_rxfh_key_size = hinic_get_rxfh_key_size,
++	.get_rxfh_indir_size = hinic_get_rxfh_indir_size,
++	.get_rxfh = hinic_get_rxfh,
++	.set_rxfh = hinic_set_rxfh,
++	.get_sset_count = hinic_get_sset_count,
++	.get_ethtool_stats = hinic_get_ethtool_stats,
++	.get_strings = hinic_get_strings,
++};
++
++static const struct ethtool_ops hinicvf_ethtool_ops = {
++	.get_link_ksettings = hinic_get_link_ksettings,
++	.get_drvinfo = hinic_get_drvinfo,
++	.get_link = ethtool_op_get_link,
++	.get_ringparam = hinic_get_ringparam,
++	.set_ringparam = hinic_set_ringparam,
+ 	.get_channels = hinic_get_channels,
+ 	.set_channels = hinic_set_channels,
+ 	.get_rxnfc = hinic_get_rxnfc,
+@@ -1262,5 +1355,10 @@ static const struct ethtool_ops hinic_ethtool_ops = {
+ 
+ void hinic_set_ethtool_ops(struct net_device *netdev)
+ {
+-	netdev->ethtool_ops = &hinic_ethtool_ops;
++	struct hinic_dev *nic_dev = netdev_priv(netdev);
++
++	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
++		netdev->ethtool_ops = &hinic_ethtool_ops;
++	else
++		netdev->ethtool_ops = &hinicvf_ethtool_ops;
+ }
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+index 0245da02efbb..747d50b841ba 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+@@ -777,6 +777,8 @@ struct hinic_hwdev *hinic_init_hwdev(struct pci_dev *pdev)
+ 		goto err_dev_cap;
+ 	}
+ 
++	mutex_init(&hwdev->func_to_io.nic_cfg.cfg_mutex);
++
+ 	err = hinic_vf_func_init(hwdev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "Failed to init nic mbox\n");
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_io.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_io.h
+index 214f162f7579..ee6d60762d84 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_io.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_io.h
+@@ -47,6 +47,15 @@ struct hinic_free_db_area {
+ 	struct semaphore        idx_lock;
+ };
+ 
++struct hinic_nic_cfg {
++	/* lock for getting nic cfg */
++	struct mutex		cfg_mutex;
++	bool			pause_set;
++	u32			auto_neg;
++	u32			rx_pause;
++	u32			tx_pause;
++};
++
+ struct hinic_func_to_io {
+ 	struct hinic_hwif       *hwif;
+ 	struct hinic_hwdev      *hwdev;
+@@ -78,6 +87,7 @@ struct hinic_func_to_io {
+ 	u16			max_vfs;
+ 	struct vf_data_storage	*vf_infos;
+ 	u8			link_status;
++	struct hinic_nic_cfg	nic_cfg;
+ };
+ 
+ struct hinic_wq_page_size {
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+index 2c07b03bf6e5..66e2bafa8615 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
+@@ -899,6 +899,26 @@ static void netdev_features_init(struct net_device *netdev)
+ 	netdev->features = netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
+ }
+ 
++static void hinic_refresh_nic_cfg(struct hinic_dev *nic_dev)
++{
++	struct hinic_nic_cfg *nic_cfg = &nic_dev->hwdev->func_to_io.nic_cfg;
++	struct hinic_pause_config pause_info = {0};
++	struct hinic_port_cap port_cap = {0};
++
++	if (hinic_port_get_cap(nic_dev, &port_cap))
++		return;
++
++	mutex_lock(&nic_cfg->cfg_mutex);
++	if (nic_cfg->pause_set) {
++		nic_cfg->auto_neg = port_cap.autoneg_state;
++		pause_info.auto_neg = nic_cfg->auto_neg;
++		pause_info.rx_pause = nic_cfg->rx_pause;
++		pause_info.tx_pause = nic_cfg->tx_pause;
++		hinic_set_hw_pause_info(nic_dev->hwdev, &pause_info);
++	}
++	mutex_unlock(&nic_cfg->cfg_mutex);
++}
++
+ /**
+  * link_status_event_handler - link event handler
+  * @handle: nic device for the handler
+@@ -930,6 +950,9 @@ static void link_status_event_handler(void *handle, void *buf_in, u16 in_size,
+ 
+ 		up(&nic_dev->mgmt_lock);
+ 
++		if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
++			hinic_refresh_nic_cfg(nic_dev);
++
+ 		netif_info(nic_dev, drv, nic_dev->netdev, "HINIC_Link is UP\n");
+ 	} else {
+ 		down(&nic_dev->mgmt_lock);
+@@ -1020,8 +1043,6 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 		goto err_alloc_etherdev;
+ 	}
+ 
+-	hinic_set_ethtool_ops(netdev);
+-
+ 	if (!HINIC_IS_VF(hwdev->hwif))
+ 		netdev->netdev_ops = &hinic_netdev_ops;
+ 	else
+@@ -1044,6 +1065,8 @@ static int nic_dev_init(struct pci_dev *pdev)
+ 	nic_dev->sriov_info.pdev = pdev;
+ 	nic_dev->max_qps = num_qps;
+ 
++	hinic_set_ethtool_ops(netdev);
++
+ 	sema_init(&nic_dev->mgmt_lock, 1);
+ 
+ 	tx_stats = &nic_dev->tx_stats;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+index 175c0ee00038..4b51121b3021 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+@@ -1082,6 +1082,7 @@ int hinic_get_link_mode(struct hinic_hwdev *hwdev,
+ 	if (!hwdev || !link_mode)
+ 		return -EINVAL;
+ 
++	link_mode->func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
+ 	out_size = sizeof(*link_mode);
+ 
+ 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_GET_LINK_MODE,
+@@ -1172,6 +1173,8 @@ int hinic_get_hw_pause_info(struct hinic_hwdev *hwdev,
+ 	u16 out_size = sizeof(*pause_info);
+ 	int err;
+ 
++	pause_info->func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
++
+ 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_GET_PAUSE_INFO,
+ 				 pause_info, sizeof(*pause_info),
+ 				 pause_info, &out_size);
+@@ -1190,6 +1193,8 @@ int hinic_set_hw_pause_info(struct hinic_hwdev *hwdev,
+ 	u16 out_size = sizeof(*pause_info);
+ 	int err;
+ 
++	pause_info->func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
++
+ 	err = hinic_port_msg_cmd(hwdev, HINIC_PORT_CMD_SET_PAUSE_INFO,
+ 				 pause_info, sizeof(*pause_info),
+ 				 pause_info, &out_size);
+-- 
+2.17.1
 
-From what I can see there are 3 ways to run an XDP program on skbs in
-the Tx path:
-1. disable hardware offloads (which is nonsense - you don't disable H/W
-acceleration for S/W acceleration),
-
-2. neuter XDP egress and not allow bpf_xdp_adjust_head (that is a key
-feature of XDP), or
-
-3. walk the skb afterwards and reset the markers (performance killer).
-
-I have stared at this code for months; I would love for someone to prove
-me wrong.
