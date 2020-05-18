@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABEF31D7CFF
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 17:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EA071D7D0A
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 17:38:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728210AbgERPgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 11:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727050AbgERPgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 11:36:18 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6539EC061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 08:36:18 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id 4so8422055qtb.4
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 08:36:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=f+cowRSytC77qO03IZyReqXLFbkjI+SYF/4QoQDj+38=;
-        b=johSNXu8HepGwfz5qB/FhHpkEaFnqvRtzT8ROxYEX6iGk40e+7VM4OWj3PWdJgcl/C
-         mPo9lDqn3o0raR/aziSaWRP5SIr6qcIHVNx0p4Tvfg6JpDPjxUddXvjJN2/9DnQ6v8L2
-         POFrS8Caju8BHP81MxPyFlKd3cn9g+P57FoUACQqgO6QPAr3yAwshLk3mnTbnfF+Qd1e
-         Ac6bJtgNnqEMl/jOdOrkUwihmZfyTGkTjoMRCKByNDg2WnJKHO4hUMseMlP0p5TRMjgC
-         OdA5meP4Rdvtb+hgPBDMgU37chKG2taNifFl3tebasg40SwheHCK4IcY/2AWUQP6WMXe
-         jBbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=f+cowRSytC77qO03IZyReqXLFbkjI+SYF/4QoQDj+38=;
-        b=e1xBDTVKOved07NOulC2nkobUZnik6upnDrVMS0ySnIuWveFEinfm2kaqndznv0CHH
-         4V1vL7NaVBZxb5MdRk48WcEb4Vuch38Cxvx3pQEp8GDZz18rv9oIuKq5KR4/5fpY4PHQ
-         Fk0Y234ivgXuqmfWv16yFcTBlLPUPw+Xxgot6UZsDP8s1dMujhhBt35Fa2x7rgqQFlB1
-         qOx2XqfEqVStUPVydo/FWfvxoIhrI2ydzJaLhwb9iYGzJRZhaNFfgpuqzU3nClQblGY4
-         FWtxXDoblBmKxbJtadlIn6N6svsBLme4sLBUrFcdHEj3etKET+PARi2qfO5jZBnUMCID
-         w28Q==
-X-Gm-Message-State: AOAM532EEk9HbKMDfNZgJ4vC5XWLasacQqHuXBWHzOvzKmX2dYQZoa/b
-        Wz1WXmLcuJsuUAHpU4SXoVScN7y9
-X-Google-Smtp-Source: ABdhPJzoAujRpzxMm3559RIywflOv1uUKGz9aXLoQXHL5afyB8sioG+F3NZCkBkspIORQPE1TSunMA==
-X-Received: by 2002:ac8:39a2:: with SMTP id v31mr15260296qte.33.1589816177650;
-        Mon, 18 May 2020 08:36:17 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:f866:b23:9405:7c31? ([2601:282:803:7700:f866:b23:9405:7c31])
-        by smtp.googlemail.com with ESMTPSA id t21sm9669327qtb.0.2020.05.18.08.36.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 May 2020 08:36:17 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 1/1] tc: report time an action was first
- used
-To:     Roman Mashak <mrv@mojatatu.com>
-Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
-        kernel@mojatatu.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us
-References: <1589722125-21710-1-git-send-email-mrv@mojatatu.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8f9898bf-3396-a8c4-b8a1-a0d72d5ebc2c@gmail.com>
-Date:   Mon, 18 May 2020 09:36:15 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.8.0
+        id S1728326AbgERPiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 11:38:09 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:60592 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726958AbgERPiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 11:38:09 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id AFE8A200FE;
+        Mon, 18 May 2020 15:38:08 +0000 (UTC)
+Received: from us4-mdac16-54.at1.mdlocal (unknown [10.110.50.14])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id AE508800A4;
+        Mon, 18 May 2020 15:38:08 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.106])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 40E044006F;
+        Mon, 18 May 2020 15:38:08 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E6D38B40082;
+        Mon, 18 May 2020 15:38:07 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 18 May
+ 2020 16:38:02 +0100
+Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump
+ mode
+To:     Vlad Buslov <vladbu@mellanox.com>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <dcaratti@redhat.com>, <marcelo.leitner@gmail.com>,
+        <kuba@kernel.org>
+References: <20200515114014.3135-1-vladbu@mellanox.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <649b2756-1ddf-2b3e-cd13-1c577c50eaa2@solarflare.com>
+Date:   Mon, 18 May 2020 16:37:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <1589722125-21710-1-git-send-email-mrv@mojatatu.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200515114014.3135-1-vladbu@mellanox.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25426.003
+X-TM-AS-Result: No-5.621500-8.000000-10
+X-TMASE-MatchedRID: QW5G6BKkLTrmLzc6AOD8DfHkpkyUphL9R8lmSfB6K5IOUs4CTUgKy3v6
+        cG7t9uXqIv4TIHHMcmIDyKSw4EF1FziULkq/3BRulAhSvvpqeTCYTIcrNzjYvFAoBBK61Bhcit/
+        /Acuj+KgdsIE/Zo8flAf4uaoYK0nQQu/XDiW47J43xCYZDydSGg73P4/aDCIFERgtK1vKtV2w0F
+        FGdeCd9r4xBnZH9Ovq2Via0E1bchtj3cEXcFAPHm6HurDH4PpPDmTV5r5yWnpKDy5+nmfdPpgM2
+        5fIhnOfEZ65ChiuPzxftuJwrFEhTRMQLQ/0+9hG3QfwsVk0UbuGrPnef/I+enyKOFVW9o0DJMgm
+        r34iVYY/qGC9nYwmyrGmrXJZXuKzC8XKjsVbJjU=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.621500-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25426.003
+X-MDID: 1589816288-em3IXvjIA8ua
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/17/20 7:28 AM, Roman Mashak wrote:
-> Have print_tm() dump firstuse value along with install, lastuse
-> and expires.
-> 
-> Signed-off-by: Roman Mashak <mrv@mojatatu.com>
-> ---
->  tc/tc_util.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/tc/tc_util.c b/tc/tc_util.c
-> index 12f865cc71bf..f6aa2ed552a9 100644
-> --- a/tc/tc_util.c
-> +++ b/tc/tc_util.c
-> @@ -760,6 +760,11 @@ void print_tm(FILE *f, const struct tcf_t *tm)
->  		print_uint(PRINT_FP, NULL, " used %u sec",
->  			   (unsigned int)(tm->lastuse/hz));
->  	}
-> +	if (tm->firstuse != 0) {
-> +		print_uint(PRINT_JSON, "first_used", NULL, tm->firstuse);
-> +		print_uint(PRINT_FP, NULL, " firstused %u sec",
-> +			   (unsigned int)(tm->firstuse/hz));
-> +	}
->  	if (tm->expires != 0) {
->  		print_uint(PRINT_JSON, "expires", NULL, tm->expires);
->  		print_uint(PRINT_FP, NULL, " expires %u sec",
-> 
+On 15/05/2020 12:40, Vlad Buslov wrote:
+> In order to
+> significantly improve filter dump rate this patch sets implement new
+> mode of TC filter dump operation named "terse dump" mode. In this mode
+> only parameters necessary to identify the filter (handle, action cookie,
+> etc.) and data that can change during filter lifecycle (filter flags,
+> action stats, etc.) are preserved in dump output while everything else
+> is omitted.
+I realise I'm a bit late, but isn't this the kind of policy that shouldn't
+ be hard-coded in the kernel?  I.e. if next year it turns out that some
+ user needs one parameter that's been omitted here, but not the whole dump,
+ are they going to want to add another mode to the uapi?
+Should this not instead have been done as a set of flags to specify which
+ pieces of information the caller wanted in the dump, rather than a mode
+ flag selecting a pre-defined set?
 
-why does this function print different values for json and stdout?
+-ed
