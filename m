@@ -2,143 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45DAA1D8835
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 21:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00A141D883D
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 21:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728135AbgERT0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 15:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
+        id S1728194AbgERTbG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 18 May 2020 15:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727987AbgERT0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 15:26:39 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C924C061A0C;
-        Mon, 18 May 2020 12:26:39 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jalNw-00Fhxr-7e; Mon, 18 May 2020 21:25:14 +0200
-Message-ID: <e3d978c8fa6a4075f12e843548d41e2c8ab537d1.camel@sipsolutions.net>
-Subject: Re: [PATCH v2 12/15] ath10k: use new module_firmware_crashed()
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        Steve deRosier <derosier@gmail.com>
-Cc:     Ben Greear <greearb@candelatech.com>, jeyu@kernel.org,
-        akpm@linux-foundation.org, arnd@arndb.de, rostedt@goodmis.org,
-        mingo@redhat.com, aquini@redhat.com, cai@lca.pw, dyoung@redhat.com,
-        bhe@redhat.com, peterz@infradead.org, tglx@linutronix.de,
-        gpiccoli@canonical.com, pmladek@suse.com,
-        Takashi Iwai <tiwai@suse.de>, schlad@suse.de,
-        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
-        daniel.vetter@ffwll.ch, will@kernel.org,
-        mchehab+samsung@kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        ath10k@lists.infradead.org
-Date:   Mon, 18 May 2020 21:25:09 +0200
-In-Reply-To: <20200518190930.GO11244@42.do-not-panic.com> (sfid-20200518_210935_354047_0199DB8F)
-References: <20200515212846.1347-1-mcgrof@kernel.org>
-         <20200515212846.1347-13-mcgrof@kernel.org>
-         <2b74a35c726e451b2fab2b5d0d301e80d1f4cdc7.camel@sipsolutions.net>
-         <20200518165154.GH11244@42.do-not-panic.com>
-         <4ad0668d-2de9-11d7-c3a1-ad2aedd0c02d@candelatech.com>
-         <20200518170934.GJ11244@42.do-not-panic.com>
-         <abf22ef3-93cb-61a4-0af2-43feac6d7930@candelatech.com>
-         <20200518171801.GL11244@42.do-not-panic.com>
-         <CALLGbR+ht2V3m5f-aUbdwEMOvbsX8ebmzdWgX4jyWTbpHrXZ0Q@mail.gmail.com>
-         <20200518190930.GO11244@42.do-not-panic.com>
-         (sfid-20200518_210935_354047_0199DB8F)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.2 (3.36.2-1.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S1728101AbgERTbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 15:31:06 -0400
+Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F32C061A0C;
+        Mon, 18 May 2020 12:31:06 -0700 (PDT)
+Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=roelofs-mbp.fritz.box); authenticated
+        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1jalTY-0005X0-Ml; Mon, 18 May 2020 21:31:00 +0200
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH] lan743x: Added fixed link support
+From:   Roelof Berg <rberg@berg-solutions.de>
+In-Reply-To: <20200517235026.GD610998@lunn.ch>
+Date:   Mon, 18 May 2020 21:31:00 +0200
+Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <EB9FB222-D08A-464F-93C0-5885C010D582@berg-solutions.de>
+References: <20200516192402.4201-1-rberg@berg-solutions.de>
+ <20200517183710.GC606317@lunn.ch>
+ <6E144634-8E2F-48F7-A0A4-6073164F2B70@berg-solutions.de>
+ <20200517235026.GD610998@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1589830266;97f21411;
+X-HE-SMSGID: 1jalTY-0005X0-Ml
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-05-18 at 19:09 +0000, Luis Chamberlain wrote:
+Hi,
 
-> > Unfortunately a "taint" is interpreted by many users as: "your kernel
-> > is really F#*D up, you better do something about it right now."
-> > Assuming they're paying attention at all in the first place of course.
+thanks a lot for going into detail. I also want to make sure that everything will be right.
+
+> Am 18.05.2020 um 01:50 schrieb Andrew Lunn <andrew@lunn.ch>:
 > 
-> Taint historically has been used and still is today to help rule out
-> whether or not you get support, or how you get support.
+>>>> +			/* Configure MAC to fixed link parameters */
+>>>> +			data = lan743x_csr_read(adapter, MAC_CR);
+>>>> +			/* Disable auto negotiation */
+>>>> +			data &= ~(MAC_CR_ADD_ | MAC_CR_ASD_);
+>>> 
+>>> Why does the MAC care about autoneg? In general, all the MAC needs to
+>>> know is the speed and duplex.
+>>> 
+>> 
 > 
-> For instance, a staging driver is not supported by some upstream
-> developers, but it will be by those who help staging and Greg. TAINT_CRAP
-> cannot be even more clear.
+>> My assumption is, that in fixed-link mode we should switch off the
+>> autonegotiation between MAC and remote peer (e.g. a switch). I
+>> didn’t test, if it would also wun with the hardware doing
+>> auto-negotiation, however it feels cleaner to me to prevent the
+>> hardware from initiating any auto-negotiation in fixed-link mode.
 > 
-> So, no, it is not just about "hey your kernel is messed up", there are
-> clear support boundaries being drawn.
+> The MAC is not involved in autoneg. autoneg is between two PHYs. They
+> talk with each other, and then phylibs sees the results and tells the
+> MAC the results of the negotiation. That happens via this call
+> back. So i have no idea what this is doing in general in the MAC. And
+> in your setup, you don't have any PHYs at all. So there is no
+> auto-neg. You should read the datasheet and understand what this is
+> controlling. It might need to be disabled in general.
 
-Err, no. Those two are most definitely related. Have you looked at (most
-or some or whatever) staging drivers recently? Those contain all kinds
-of garbage that might do whatever with your kernel.
+Thanks for making sure we’re doing things right.
 
-Of course that's not a completely clear boundary, maybe you can find a
-driver in staging that's perfect code just not written to kernel style?
-But I find that hard to believe, in most cases.
+I double checked the vendor documentation and according to the data sheet in this device the MAC detects speed and duplex mode. It uses PINs, traces clocks … Also according to an application note of the vendor duplex and speed detection should be enabled in the MAC registers. The current driver version (which is not fixed-link capable) does this. However, in a fixed-link scenario I don’t think that the autodetection, that the vendor recommends to turn on, of speed and duplex would solve problems, it rather likely introduces problems when the auto-detection from the MAC (yes, the MAC) yields different results than configured in the device tree.
 
-So no, it's really not about "[a] staging driver is not supported" vs.
-"your kernel is messed up". The very fact that you loaded one of those
-things might very well have messed up your kernel entirely.
+So I think we should:
+a) Keep the behavior to activate auto detection in the MAC in normal cases, as recommended by the data sheet. (And ensure backwards compatibility this way as well.)
+b) But add the behavior to deactivate this kind of MAC auto detection in fixed link cases.
 
-> These days though, I think we all admit, that firmware crashes can use
-> a better generic infrastructure for ensuring that clearly affecting-user
-> experience issues. This patch is about that *when and if these happen*,
-> we annotate it in the kernel for support pursposes.
+I found no documentation for fixed link operation in the data sheets, so a statement from the Vendor could give us higher confidence here. Unfortunately I have no access to the Vendor’s specialists (also not via the Microchip customer support for some reasons), but I think the vendor is on CC on this thread ;)
 
-That's all fine, I just don't think it's appropriate to pretend that
-your kernel is now 'tainted' (think about the meaning of that word) when
-the firmware of some random device crashed. Heck, that could have been a
-USB device that was since unplugged. Unless the driver is complete
-garbage (hello staging again?) that really should have no lasting effect
-on the system itself.
-
-> Recovery without affecting user experience would be great, the taint is
-> *not* for those cases. The taint definition has:
 > 
-> + 18) ``Q`` used by device drivers to annotate that the device driver's firmware
-> +     has crashed and the device's operation has been severely affected. The    
-> +     device may be left in a crippled state, requiring full driver removal /   
-> +     addition, system reboot, or it is unclear how long recovery will take.
+>> Using get_phy_mode() in all cases is not possible on a PC as it
+>> returns SGMII on a standard PC.
 > 
-> Let me know if this is not clear.
+> Why do you think that?
 
-It's pretty clear, but even then, first of all I doubt this is the case
-for many of the places that you've sprinkled the annotation on, and
-secondly it actually hides useful information.
+printk made me think so :) But I printk’ed without checking the error return value, so that was maybe just invalid or even random data.
 
-Regardless of the support issue, I think this hiding of information is
-also problematic.
+> 
+>>> I don't understand this comment.
+>>> 
+>> 
+>> See above the lengthy section. On a PC SGMII is returned when I call of_get_phy_mode(phynode, &phyifc);
+> 
+> There are two things possible here:
+> 
+> A PC has no OF support, so you are using:
+> 
+> https://elixir.bootlin.com/linux/latest/source/include/linux/of_net.h#L19
+> 
+> So you get the error code -ENODEV, and phyifc is not changed.
+> 
+> Or you are using:
+> 
+> https://elixir.bootlin.com/linux/latest/source/drivers/of/of_net.c#L25
+> 
+> There is unlikely to be a device node, so phyifc is set to
+> PHY_INTERFACE_MODE_NA and -ENODEV is returned.
+> 
+> So if of_get_phy_mode() returns an error, use RMII. Otherwise use what
+> value it set phyifc to.
+> 
+>      Andrew
+> 
 
-I really think we'd all be better off if you just made a sysfs file (I
-mistyped debugfs in some other email, sorry, apparently you didn't see
-the correction in time) that listed which device(s) crashed and how many
-times. That would actually be useful. Because honestly, if a random
-device crashed for some random reason, that's pretty much a non-event.
-If it keeps happening, then we might even want to know about it.
-
-You can obviously save the contents of this file into your bug reports
-automatically and act accordingly, but I think you'll find that this is
-far more useful than saying "TAINT_FIRMWARE_CRASHED" so I'll ignore this
-report. Yeah, that might be reasonable thing if the bug report is about
-slow wifi *and* you see that ath10k firmware crashed every 10 seconds,
-but if it just crashed once a few days earlier it's of no importance to
-the system anymore ... And certainly a reasonable driver (which I
-believe ath10k to be) would _not_ randomly start corrupting memory
-because its firmware crashed. Which really is what tainting the kernel
-is about.
-
-So no, even with all that, I still really believe you're solving the
-wrong problem. Having information about firmware crashes, preferably
-with some kind of frequency information attached, and *clearly* with
-information about which device attached would be _great_. Munging it all
-into one bit is actively harmful, IMO.
-
-johannes
+Ok, consider it done, thanks :)
 
