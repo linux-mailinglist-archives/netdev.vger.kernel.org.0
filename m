@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F5F31D77CD
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:51:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BFBC1D77D6
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727955AbgERLvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 07:51:50 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:42741 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726828AbgERLvt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:51:49 -0400
-Received: by mail-oi1-f196.google.com with SMTP id l6so2819201oic.9;
-        Mon, 18 May 2020 04:51:48 -0700 (PDT)
+        id S1727975AbgERLwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 07:52:13 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:40786 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726590AbgERLwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:52:13 -0400
+Received: by mail-ot1-f67.google.com with SMTP id d26so7753963otc.7;
+        Mon, 18 May 2020 04:52:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=wY/drxDltfg0qmuAfUHX6Sgk6MzClUGXI5sT1yEj9jk=;
-        b=ZHBw0RjL+R7lXVW7Y6F6Bu35gVW2PKwO2mhtRUjRQr//Q8RmasrerPnUgGw3KcsH0W
-         mXgDS9LIZG9J9Y99cSbv/dNzzFcALgAPZ4rhJWCH0J8FeigeQy18/ncLe0BUc70NZdRm
-         Hn0yq7Ca1iJRKb8reapEZLHR1WD413XNSSBOljt5jdLcarG7bZeMLwmJcwzk+LUeEYxG
-         jDrVIkl2kF31I+wE41cCBUIDgfgME0t0BuPIGdPgC7gNSH+nmBI612wcJ1Z9fI/hS/fK
-         NIT6NMPz6FNSMZLFhQeaJ056K+LEKg0PTSxgyKmFlgnHrnW63C55KxTl6gtrM3MAMZH2
-         /esA==
-X-Gm-Message-State: AOAM533zLGrJLZA4neUZsLK5xYJwPdCXoQIKCVle8fBRfInAeQandiOT
-        qKXzaRBNFzGXY5LxrAwldF5Btry3YHYL9no4x+Q=
-X-Google-Smtp-Source: ABdhPJyKfkl0BYyXn4kFtQpjLO3inMmyFkCAoPtuUDMN20SMjegRhY8TN78g4kafTLxOUT994Q+yRWULPw9El6LNYus=
-X-Received: by 2002:aca:895:: with SMTP id 143mr10154801oii.153.1589802708356;
- Mon, 18 May 2020 04:51:48 -0700 (PDT)
+        bh=zzu6Qk2CYFHzrje39/m1tYbYK6+1LqlCKbB/tGUZS8E=;
+        b=gr/EmuWwbooJ9kdHNrzdO4DC4o6yUkgBVv2ZYmLmyXhByaVSJru53LlRF+olfy8wuI
+         0gxzu37vzjy7wwHMhGtq5DcPFbbJH0Fc9yHUbxe4bEUk6+PdjVF5ip2a6OJc+D60qZB5
+         wwW7XhqfZ3MwAOBDe9xpMP3PPjudAh0VgFDh/895tuQPEZJKj8V1DFznbg1AbmgazJPf
+         SV8X62WKYrX/+70P/5DtxDl43qtX5GQGQbMGDBX7GmCV5PDbM28tLz+pnmzLgr8dBn6f
+         nJSzYGPYhy8OxrZna7pF2ueC5BgADKskx610QQ4mUXLtL17zG1EBRVLICKHY0r2ghaB+
+         5NAw==
+X-Gm-Message-State: AOAM533tWvkWRtTV3aG9MRRKLh4+SGYef6mVCg9BjDdN0Ulc8QjhhS4y
+        kPa0DMWqnHRwN86gFWmTE26KFGlX0jkcxhefG+M=
+X-Google-Smtp-Source: ABdhPJypiGguIQfhFqENHUpAWkG0WkHCg7Icvqyktxlx4dZxcpVwt16bAkLG0RK2kztBZxOeqO2V9x5GzCv/4kWKUik=
+X-Received: by 2002:a05:6830:18d9:: with SMTP id v25mr7960917ote.107.1589802732029;
+ Mon, 18 May 2020 04:52:12 -0700 (PDT)
 MIME-Version: 1.0
 References: <1589555337-5498-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1589555337-5498-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1589555337-5498-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1589555337-5498-8-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1589555337-5498-8-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 18 May 2020 13:51:36 +0200
-Message-ID: <CAMuHMdWA_x1Sb2PitvLoX=b1+_tFEtPnAPNQdb50GUdBwme+Cw@mail.gmail.com>
-Subject: Re: [PATCH 06/17] ARM: dts: r8a7742: Add SDHI nodes
+Date:   Mon, 18 May 2020 13:52:00 +0200
+Message-ID: <CAMuHMdWB=DGQG9ydwGmSuGXMUz9JOm8=+hggGwRgQWRMsw9Mqw@mail.gmail.com>
+Subject: Re: [PATCH 07/17] ARM: dts: r8a7742: Add MMC0 node
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>,
@@ -60,9 +60,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 15, 2020 at 5:09 PM Lad Prabhakar
+On Fri, May 15, 2020 at 5:10 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add the SDHI devices nodes to the R8A7742 device tree.
+> Describe MMC0 device node in the R8A7742 device tree.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
