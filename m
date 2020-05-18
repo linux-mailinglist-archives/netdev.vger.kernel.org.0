@@ -2,93 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F84E1D7797
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F0B1D77BC
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 13:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726758AbgERLpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 07:45:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
+        id S1728148AbgERLsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 07:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726557AbgERLpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:45:04 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D0BCC061A0C
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 04:45:04 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id dh1so624561qvb.13
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 04:45:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=EWncX+N49z8/LJ3Toy75hPTrlF0kg1hkIZWrB6qH04g=;
-        b=eIPW0vpZXCuixDSZ8IcgsQWoNONOAIeAhHahbXH6Bk+kw2Fa+OT1BapBVluLnGnNKC
-         Fyqy3vuBl7E/N8xGv4tydSisvuNBSFCEO3MnLjgqzEGXyRRWuKVodAp5yTaxDWJ8XHBT
-         5KFVOhSqXph/emRcqa7QNSdUhO+iE8zxUi19Z+E9d80/KTkMVyYCmHWY5WOuXiWIVIV2
-         23XzUqNC1DSPJy93fN44CHvD8S0Alpr1TszToArfVxvy8acFNdWrDXvIupdFh6125NU2
-         JubVC439QoDfqOoHQ1eWDJJXyLLzwUINKo2BG299TV5T1og67Q0+b0oVOgmpQrTBGXhX
-         eIXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=EWncX+N49z8/LJ3Toy75hPTrlF0kg1hkIZWrB6qH04g=;
-        b=Yf/4vSfOEuZKLig7HzDmeSbYqQH5Jx/zBosDVtkUiTQyqgyYG9Gc5lCEdmAYwZaIvO
-         4mHtXXB0Ypoas7PjjLe/9bMt0lVRXcHpkirKqojQ0PsOe6CcCtn4i1hrbTTDd2gN2zrR
-         y8DcsaOvvZ8yccOGgn6nzhXbABmjsQc8jH3aw4Z4smqKmek9BExso15CUhBDDVD3olPW
-         +ySPxEjq+DeRJvb1X57D223bxgj7HKMg/8TrxtXnYakWi979xD/VwOTpfdsX+cutr8Jj
-         m61FOjNSHz0jjnie8+wVoorKYZERdnGZho2hArH56SGDzlO0PNn4ohd55ewpFsPsTNKP
-         rj/g==
-X-Gm-Message-State: AOAM530uQ3AiXGjxpK/nuLONh80WsueEu5diWckcjK6WFW3jyCuoyT5k
-        pvCH1m5Bn9GeoZ5wC9hde5BgBUEAtZ/bxNfbIik=
-X-Google-Smtp-Source: ABdhPJwHsQ7cE85R2RiklcgJBCr5vDIT8A2nt8/PThRDadNmV+pBdg2OYu5eUbQjpKEQJWTvuCJ+OBecXZ5Xkrc2P6I=
-X-Received: by 2002:a0c:b5c4:: with SMTP id o4mr14943586qvf.229.1589802303597;
- Mon, 18 May 2020 04:45:03 -0700 (PDT)
+        with ESMTP id S1726362AbgERLrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 07:47:16 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA95C061A0C;
+        Mon, 18 May 2020 04:47:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=y+NOERPGxSMEwqlbJod6h8RjHirscgQzvQWuQ1avJsk=; b=UOVq7zit6XfF5sFUiRGylQrzgd
+        vgP09r82JXnrFsdeqD4O6wO0mxQmCYN6EG3mhgM9C85WyhmwaoAZsvS5CP/lne5GGs4o/Jl1fUgK/
+        khMajTYoIvIHqbVVnfvgPVX3qfjO/JlskJ8BmDCKJvizfG8rG4xp07IQme17ct2zI52syVQY7JBww
+        4h+pB/JGZ44cmk7Z0UCnbOZfpYM426jFu8QAps1VKV5QbstpYZuVoptJtJ8PSIBFSA9Ap8vFWH0rW
+        sRZvp1rMsJJSbqmom9bpqJIE+l3owStFvhol3ZRNVrU+t0JNqICyKeqWVNJPiaJCpx5pD6vMYocH9
+        uW53/UZw==;
+Received: from [2001:4bb8:188:1506:c70:4a89:bc61:2] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jaeEU-0004N9-Cr; Mon, 18 May 2020 11:46:58 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: add a new ->ndo_tunnel_ctl method to avoid a few set_fs calls
+Date:   Mon, 18 May 2020 13:46:46 +0200
+Message-Id: <20200518114655.987760-1-hch@lst.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Received: by 2002:ad4:4b73:0:0:0:0:0 with HTTP; Mon, 18 May 2020 04:45:03
- -0700 (PDT)
-Reply-To: mrs.monicmartinez@gmail.com
-From:   "Mrs.MARTINEZ MONICA" <akona.chokoma@gmail.com>
-Date:   Mon, 18 May 2020 11:45:03 +0000
-Message-ID: <CAL2e-WbsFHZAmS4SJfDnLnLgtnOGOqeoV8gaRRUKP5UKxFan9g@mail.gmail.com>
-Subject: AN OPPORTUNITY FOR YOU
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Good Day,
+Hi Dave,
 
-I know that this mail might be a surprise to you, but i plead that you
-take a little time to read this it,  if it is something you can
-handle, then you reply me.
+both the ipv4 and ipv6 code have an ioctl each that can be used to create
+a tunnel using code that doesn't live in the core kernel or ipv6 module.
+Currently they call ioctls on the tunnel devices to create these, for
+which the code needs to override the address limit, which is a "feature"
+I plan to get rid of.
 
-I work with one of the leading banks in my country, and i have worked
-with this bank for more than 11yrs, There is an abandoned sums of
-money in an account belonging to one of our customers, i tried to
-investigate to know why the account is dormant for years without any
-finacial operation with the account, then i found out that the owner
-of the said account was involved in a motor accident which claimed his
-life and the life of his wife and two children leaving no one to claim
-the fund as next of kin, this make the account open to any one that
-can come with a vitel information to claim the fund.
-
-I know much about the existence of this fund and the secrets
-urrounding this money. But before I disclose the full details to you,I
-will like to know your interest and willingness to assist me in
-claiming this fund, if you are willing then revert back to me with
-your:
-
-Private Email ID............
-Age.........
-Private Phone no..........
-
-for further confidential details about the said fund. Thanks and hope
-to hear from you soon, note that this is risky free, trouble free and
-problem free.
-
-Reply me with my private email id for onward process
-(mrs.monicmartinez@gmail.com)
-
-Mrs.MARTINEZ MONICA
+Instead this patchset adds a new ->ndo_tunnel_ctl that can be used for
+the tunnel configuration using struct ip_tunnel_parm.  The method is
+either invoked from a helper that does the uaccess and can be wired up
+as ndo_do_ioctl method, or directly from the magic IPV4/6 ioctls that
+create tunnels with kernel space arguments.
