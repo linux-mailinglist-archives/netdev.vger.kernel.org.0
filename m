@@ -2,108 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 819221D737B
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 11:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4B021D738A
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 11:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbgERJJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 05:09:07 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:43935 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726040AbgERJJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 05:09:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589792945;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3J2pCTUPD3tt4DsSK1qBiZ+rkPmSwGQCaRcnti/iTrc=;
-        b=UKzl69ADOhtqvxKz53qgaYeGgu3sO5nM8JtusM0YAXfWYkM76fYQQXE3ZOiMkbAnyAQGAW
-        sD3jkGjOpDYtDpVTXzQoB6KXMtuI4Hh+sUonxzQL0qXY5NybF91c4TPIQa+kICQQdxt9Gl
-        7+4qtHrXr3+BUe0sGsY4E8NwcS9hdVY=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-462-AUF4rsY_PC2utQxc9EwHfg-1; Mon, 18 May 2020 05:09:04 -0400
-X-MC-Unique: AUF4rsY_PC2utQxc9EwHfg-1
-Received: by mail-lj1-f199.google.com with SMTP id g26so473791ljn.12
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 02:09:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=3J2pCTUPD3tt4DsSK1qBiZ+rkPmSwGQCaRcnti/iTrc=;
-        b=N5y7BsUGuIgxnWmvGN0vFy1vvluj7yqxjjXm1PNpt5voYvRV36ej1qlN48gmklBECj
-         uHSu6Gwc/D8pN4RbBbbqLoWv2iu9bhxxSH89qIZU/f0lOdSGXiM9O3lMIrrR48oIJd0M
-         gDEIXAjNtSxdMZSeJsYdGfKkLGyJG4RUeNP/7/hAgc5L/aFBhECNK+JjaPS9M+OXHosa
-         dwausEq4y+h8Ppp5mJeLPpQWlOWPR2Vj6Fc4tuMw6WD6ZR2bG/9IadAE8YTlI8GQaYji
-         hs1qRH+o0IWDUFsbPvm1sVv5j9bDDaykiquIN5wv2scpbADtb/3sRJ1isZAs/mjRdKPn
-         lEMA==
-X-Gm-Message-State: AOAM531uqbCD1/y/4xhUUWKDiOKcDR09RDAbaXHjeWTYBcQ/okM2HPBO
-        J1sz3OzeiCZZTbM+ELgT4NkZ6oMEOdClvODvVgR/kONW11zUYjoYJkQ/7yrL24dsdsW2S9L42rC
-        mkOjMmPsSbB4XNVEp
-X-Received: by 2002:a19:6e48:: with SMTP id q8mr10991942lfk.185.1589792942417;
-        Mon, 18 May 2020 02:09:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzdcwmLPiKyolljenINhGVrBQnrVPEZoQE0Cn6Q19gzwg+5oz1K/AwezuteRw8QmBD9RI7UQg==
-X-Received: by 2002:a19:6e48:: with SMTP id q8mr10991923lfk.185.1589792942134;
-        Mon, 18 May 2020 02:09:02 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id q125sm5354759ljb.34.2020.05.18.02.09.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2020 02:09:00 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D8F6B181510; Mon, 18 May 2020 11:08:59 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        id S1726872AbgERJLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 05:11:21 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:60028 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726505AbgERJLU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 05:11:20 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04I93ATR173287;
+        Mon, 18 May 2020 09:10:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2020-01-29;
+ bh=Rvkso+0xj+PaZPCgO7NcqlP3hcldz8TuQZ/t643+Io8=;
+ b=mqABSTJEenM30vsxFxjbAMut5oKHKCuD7bKCGWQ42NqBm0nm++F+hoWtMwoK4wBeWK94
+ T6twSyP80Unnh+6nQQX27JJjxLeQ54BqYzNTtvM45pG71Rk7fdme6UwZrZ1PyXRXaXgM
+ 5+tZGQwj/nSq51Ie8gR7Ki99ikUtPX9f/ZTeRpZ7XgIiBn2fE51RcDYPu3xNcy9ClBBW
+ 31cnpS00srfEXmwSqVChOFdXI+S0DdBXOchqTNTY8wX3h0Xqx7cap9JtdtcIEUACFUVX
+ HuKms+yjaw2OX/Mp8+j3RlAzN5Xpu/qF3893fuXBXl8I8GVwfSrFh19UrgKxgz4iWBDX qA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 3127kqwn1x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 18 May 2020 09:10:59 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 04I94KsA115300;
+        Mon, 18 May 2020 09:10:58 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3030.oracle.com with ESMTP id 312t3v7w3e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 18 May 2020 09:10:58 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 04I9Ar6c001535;
+        Mon, 18 May 2020 09:10:53 GMT
+Received: from dhcp-10-175-184-176.vpn.oracle.com (/10.175.184.176)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 18 May 2020 02:10:52 -0700
+Date:   Mon, 18 May 2020 10:10:44 +0100 (BST)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@localhost
+To:     Yonghong Song <yhs@fb.com>
+cc:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
+        daniel@iogearbox.net, bpf@vger.kernel.org, joe@perches.com,
+        linux@rasmusvillemoes.dk, arnaldo.melo@gmail.com, kafai@fb.com,
+        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, brouer@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress path
-In-Reply-To: <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com>
-References: <20200513014607.40418-1-dsahern@kernel.org> <87sgg4t8ro.fsf@toke.dk> <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 18 May 2020 11:08:59 +0200
-Message-ID: <87lflppq38.fsf@toke.dk>
+Subject: Re: [PATCH v2 bpf-next 6/7] bpf: add support for %pT format specifier
+ for bpf_trace_printk() helper
+In-Reply-To: <040b71a1-9bbf-9a55-6f1a-e7b8c36f8c6e@fb.com>
+Message-ID: <alpine.LRH.2.21.2005181000520.893@localhost>
+References: <1589263005-7887-1-git-send-email-alan.maguire@oracle.com> <1589263005-7887-7-git-send-email-alan.maguire@oracle.com> <040b71a1-9bbf-9a55-6f1a-e7b8c36f8c6e@fb.com>
+User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9624 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0
+ phishscore=0 bulkscore=0 suspectscore=3 mlxscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005180081
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9624 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0 spamscore=0
+ bulkscore=0 clxscore=1015 priorityscore=1501 mlxscore=0 impostorscore=0
+ suspectscore=3 mlxlogscore=999 malwarescore=0 cotscore=-2147483648
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2004280000 definitions=main-2005180081
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
+On Wed, 13 May 2020, Yonghong Song wrote:
 
-> On 5/13/20 4:43 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> I don't like this. I makes the egress hook asymmetrical with the ingress
->> hook (ingress hook sees all traffic, egress only some of it). If the
->> performance hit of disabling GSO is the concern, maybe it's better to
->> wait until we figure out how to deal with that (presumably by
->> multi-buffer XDP)?
->
-> XDP is for accelerated networking. Disabling a h/w offload feature to
-> use a s/w feature is just wrong. But it is more than just disabling GSO,
-> and multi-buffer support for XDP is still not going to solve the
-> problem. XDP is free form allowing any packet modifications - pushing
-> and popping headers - and, for example, that blows up all of the skb
-> markers for mac, network, transport and their inner versions. Walking
-> the skb after an XDP program has run to reset the markers does not make
-> sense. Combine this with the generic xdp overhead (e.g., handling skb
-> clone and linearize), and the whole thing just does not make sense.
+> 
+> > +				while (isbtffmt(fmt[i]))
+> > +					i++;
+> 
+> The pointer passed to the helper may not be valid pointer. I think you
+> need to do a probe_read_kernel() here. Do an atomic memory allocation
+> here should be okay as this is mostly for debugging only.
+> 
 
-I can see your point that fixing up the whole skb after the program has
-run is not a good idea. But to me that just indicates that the hook is
-in the wrong place: that it really should be in the driver, executed at
-a point where the skb data structure is no longer necessary (similar to
-how the ingress hook is before the skb is generated).
+Are there other examples of doing allocations in program execution
+context? I'd hate to be the first to introduce one if not. I was hoping
+I could get away with some per-CPU scratch space. Most data structures
+will fit within a small per-CPU buffer, but if multiple copies
+are required, performance isn't the key concern. It will make traversing
+the buffer during display a bit more complex but I think avoiding 
+allocation might make that complexity worth it. The other thought I had 
+was we could carry out an allocation associated with the attach, 
+but that's messy as it's possible run-time might determine the type for
+display (and thus the amount of the buffer we need to copy safely).
 
-Otherwise, what you're proposing is not an egress hook, but rather a
-'post-REDIRECT hook', which is strictly less powerful. This may or may
-not be useful in its own right, but let's not pretend it's a full egress
-hook. Personally I feel that the egress hook is what we should be going
-for, not this partial thing.
+Great news about LLVM support for __builtin_btf_type_id()!
 
--Toke
+Thanks!
 
+Alan
