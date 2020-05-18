@@ -2,72 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CA981D8B6A
-	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 01:06:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51BD21D8B7A
+	for <lists+netdev@lfdr.de>; Tue, 19 May 2020 01:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728575AbgERXFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 19:05:42 -0400
-Received: from novek.ru ([213.148.174.62]:50826 "EHLO novek.ru"
+        id S1727802AbgERXJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 19:09:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727067AbgERXFm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 19:05:42 -0400
-Received: from [10.0.1.119] (unknown [62.76.204.32])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726481AbgERXJJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 May 2020 19:09:09 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id C0A6B5020BC;
-        Tue, 19 May 2020 02:05:34 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru C0A6B5020BC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1589843139; bh=sXrnJoqGvZtS/u8svJdsytuRkL+f1Auteww9XkOUGBw=;
-        h=Subject:To:References:Cc:From:Date:In-Reply-To:From;
-        b=qSW0lwskB2bYRHL66PbrmhLhxfbx99jxp550JRfBQFedoV1K6Cw/EZUiPayii9K8M
-         mBphfVNBmbmxej/txx/3JP4tMGa1QNqlTFCaiHo8xBcHGomIDWW1KgVsf1nBQdmyxJ
-         WjA4TvLJoDUA5FaeVjcUY4xFPtftHSCxic0YV9wg=
-Subject: Re: [PATCH] net/tls: fix encryption error checking
-To:     Jakub Kicinski <kuba@kernel.org>
-References: <20200517014451.954F05026DE@novek.ru>
- <20200518153005.577dfe99@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANN+EMpn2ZkquAdK5WFC-bmioSoAbAtNvovXtgTyTHW+-eDPhw@mail.gmail.com>
-Cc:     Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <e26b157f-edc4-4a04-11ac-21485ed52f8a@novek.ru>
-Date:   Tue, 19 May 2020 02:05:29 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 599CF2067D;
+        Mon, 18 May 2020 23:09:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589843348;
+        bh=3j68PdDORD9YdAbdIH/wOvS4Z7wO8SbbhsU3OnBBgEU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ojMswvruxf2Akvl2VqhCySOKmSK21bnI5qo4iJrCf7BTvyXFiznj5wmcZy2wTvoog
+         YVHUeTkpZAFB9aNldoWY36uGMOlsOz7hRSz0HHzRYClrvhMropHK8DFGVVtbKDnT6z
+         v4aVIj3j5PN2O4pYGkrfqRH0mUImm/1z+QtgMYNA=
+Date:   Mon, 18 May 2020 16:09:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     David Miller <davem@davemloft.net>, olteanv@gmail.com,
+        intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com,
+        netdev@vger.kernel.org, vladimir.oltean@nxp.com, po.liu@nxp.com,
+        m-karicheri2@ti.com, Jose.Abreu@synopsys.com
+Subject: Re: [next-queue RFC 0/4] ethtool: Add support for frame preemption
+Message-ID: <20200518160906.40e9d8bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87blmkq1y3.fsf@intel.com>
+References: <20200516012948.3173993-1-vinicius.gomes@intel.com>
+        <20200516.133739.285740119627243211.davem@davemloft.net>
+        <CA+h21hoNW_++QHRob+NbWC2k7y7sFec3kotSjTL6s8eZGGT+2Q@mail.gmail.com>
+        <20200516.151932.575795129235955389.davem@davemloft.net>
+        <87wo59oyhr.fsf@intel.com>
+        <20200518135613.379f6a63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87h7wcq4nx.fsf@intel.com>
+        <20200518152259.29d2e3c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87blmkq1y3.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <CANN+EMpn2ZkquAdK5WFC-bmioSoAbAtNvovXtgTyTHW+-eDPhw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Spam-Status: No, score=2.2 required=5.0 tests=RDNS_NONE,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.1
-X-Spam-Level: **
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 19.05.2020 01:30, Jakub Kicinski wrote:
-> > tls_push_record can return -EAGAIN because of tcp layer. In that
-> > case open_rec is already in the tx_record list and should not be
-> > freed.
-> > Also the record size can be more than the size requested to write
-> > in tls_sw_do_sendpage(). That leads to overflow of copied variable
-> > and wrong return code.
+On Mon, 18 May 2020 16:05:08 -0700 Vinicius Costa Gomes wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> >> That was the (only?) strong argument in favor of having frame preemption
+> >> in the TC side when this was last discussed.
+> >> 
+> >> We can have a hybrid solution, we can move the express/preemptible per
+> >> queue map to mqprio/taprio/whatever. And have the more specific
+> >> configuration knobs, minimum fragment size, etc, in ethtool.
+> >> 
+> >> What do you think?  
 > >
-> > Fixes: d10523d0b3d7 ("net/tls: free the record on encryption error")
-> > Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
->
-> Doesn't this return -EAGAIN back to user space? Meaning even tho we
-> queued the user space will try to send it again?
-Before patch it was sending negative value back to user space.
-After patch it sends the amount of data encrypted in last call. It is checked
-by:
-  return (copied > 0) ? copied : ret;
-and returns -EAGAIN only if data is not sent to open record.
+> > Does the standard specify minimum fragment size as a global MAC setting?  
+> 
+> Yes, it's a per-MAC setting, not per-queue. 
+
+If standard defines it as per-MAC and we can reasonably expect vendors
+won't try to "add value" and make it per queue (unlikely here AFAIU),
+then for this part ethtool configuration seems okay to me.
