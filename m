@@ -2,127 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41D391D8780
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AEE81D8772
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:46:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729333AbgERSsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 14:48:10 -0400
-Received: from mga17.intel.com ([192.55.52.151]:25110 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728954AbgERSsJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 14:48:09 -0400
-IronPort-SDR: 9w171sGsPnXirNoSx2AUB3WNFcAG++UvT/G8tNU0+0tavcta3Q3Wz1OP5TbCqUCqQHg8PmNM2w
- nGMqcGKqYVNA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2020 11:48:09 -0700
-IronPort-SDR: mgWApbAGJRj9w0REMKEw6KCfhSIfuskQOQLzs/P57nbv/sxZwkmU+NY36C2Ft9lPuIDn8zANQd
- 4mihNWmNYG6Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,407,1583222400"; 
-   d="scan'208";a="264053954"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga003.jf.intel.com with ESMTP; 18 May 2020 11:48:06 -0700
-Date:   Mon, 18 May 2020 20:44:58 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, lmb@cloudflare.com,
-        john.fastabend@gmail.com
-Subject: Re: getting bpf_tail_call to work with bpf function calls. Was: [RFC
- PATCH bpf-next 0/1] bpf, x64: optimize JIT prologue/epilogue generation
-Message-ID: <20200518184458.GC6472@ranger.igk.intel.com>
-References: <20200511143912.34086-1-maciej.fijalkowski@intel.com>
- <2e3c6be0-e482-d856-7cc1-b1d03a26428e@iogearbox.net>
- <20200512000153.hfdeh653v533qbe6@ast-mbp.dhcp.thefacebook.com>
- <20200513115855.GA3574@ranger.igk.intel.com>
- <20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com>
+        id S1729037AbgERSqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 14:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727938AbgERSqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:46:33 -0400
+Received: from mail-oo1-xc44.google.com (mail-oo1-xc44.google.com [IPv6:2607:f8b0:4864:20::c44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71580C061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:46:33 -0700 (PDT)
+Received: by mail-oo1-xc44.google.com with SMTP id i9so2278763ool.5
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:46:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lqKtfXK5GrdN7bjIh6Yjghx4pPP5xkRWFQGHVW/WpDg=;
+        b=Oa2jWGpfwJvzrQqbnv+jqJUvXxn/mO+CVyO7Ou4u+NxbNA5sgWtj5VnZl9tFsGiWBc
+         h3zC24RbnUm+0rMhBe/t32ecpyao+gZ6+KoCxCYktlktvCs0JTjFjLHXl6JG3HWL6ZDv
+         Ra26dISwC5FG231x8jslL+cdRsHVMNcCtR5+ncomm2q+UbDS1j0ffVhDAALdyNcxtgWQ
+         pydgyzjl8KnTvbSKto0Alz4Zivo+JaCI9foEmLR+dz7WIyOVX7BVf2esl8B0sZxOvrPM
+         Cr+4J96CRXTnhxosRDxoEMNE75HXVYsbyDBfseHzcIIN7hWIuQPXk9gLewFjnmy1Mv8Z
+         A62A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lqKtfXK5GrdN7bjIh6Yjghx4pPP5xkRWFQGHVW/WpDg=;
+        b=lwMSb6XzDh6/KxXzhewBkUTFLG7R6gdEQrt2Kvo5MrNTxnkRFxp9meBVGL3BIY1fy0
+         nGLO/A7sHa6PKpn0L1qMKhVIupJk5osTyQX7mt6Iwi/jZ2lQY0dogS5FD+B9L8993eTK
+         EGPVul7gowpvuwt4T4KvOcP3R6TtNUIPP+hoF9T+yIzlov5JojvkbBKFv6xeUaeBMKCO
+         Oj2Xh21VKr6yyXft4jDQur042P1Zo46YL0/sCnCMHlzbF5J4mbsu0kg/PMwlf2f710s2
+         HDZxaegKgylSo0+mC/BEp7KmO6JdcAtAGOPQ1MXL+2/JAwx5fPJYHIBBJaE8RTkaew0V
+         9Z5Q==
+X-Gm-Message-State: AOAM533LN6yUOf3RHuKOHzd10PFQXq5PHBOSqLWUU4NEcoEOehop5wxK
+        V26Q5njF40L1CcomsRI+/mgijQrt59e5cGAPj9Y=
+X-Google-Smtp-Source: ABdhPJyAepEMzEeDvyw5puu1vthGjIK3MCkm665dZoM/twTUi1qTIvU1akYC+JydAafVapd0RmoBKD6BP0CSMlRMb3Y=
+X-Received: by 2002:a4a:5147:: with SMTP id s68mr13955477ooa.86.1589827592731;
+ Mon, 18 May 2020 11:46:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200517043227.2gpq22ifoq37ogst@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20200515114014.3135-1-vladbu@mellanox.com> <CAM_iQpXtqZ-Uy=x_UzTh0N0_LRYGp-bFKyOwTUMNLaiVs=7XKQ@mail.gmail.com>
+ <vbf4ksdpwsu.fsf@mellanox.com>
+In-Reply-To: <vbf4ksdpwsu.fsf@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 18 May 2020 11:46:21 -0700
+Message-ID: <CAM_iQpXdyFqBO=AkmLqVW=dZxQ3SfjKp71BxsKRuyhaoVuMEfg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/4] Implement classifier-action terse dump mode
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 16, 2020 at 09:32:27PM -0700, Alexei Starovoitov wrote:
-> On Wed, May 13, 2020 at 01:58:55PM +0200, Maciej Fijalkowski wrote:
-> > 
-> > So to me, if we would like to get rid of maxing out stack space, then we
-> > would have to do some dancing for preserving the tail call counter - keep
-> > it in some unused register? Or epilogue would pop it from stack to some
-> > register and target program's prologue would push it to stack from that
-> > register (I am making this up probably). And rbp/rsp would need to be
-> > created/destroyed during the program-to-program transition that happens
-> > via tailcall. That would mean also more instructions.
-> 
-> How about the following:
-> The prologue will look like:
-> nop5
-> xor eax,eax  // two new bytes if bpf_tail_call() is used in this function
-> push rbp
-> mov rbp, rsp
-> sub rsp, rounded_stack_depth
-> push rax // zero init tail_call counter
-> variable number of push rbx,r13,r14,r15
-> 
-> Then bpf_tail_call will pop variable number rbx,..
-> and final 'pop rax'
-> Then 'add rsp, size_of_current_stack_frame'
-> jmp to next function and skip over 'nop5; xor eax,eax; push rpb; mov rbp, rsp'
-> 
-> This way new function will set its own stack size and will init tail call
-> counter with whatever value the parent had.
-> 
-> If next function doesn't use bpf_tail_call it won't have 'xor eax,eax'.
-> Instead it would need to have 'nop2' in there.
-> That's the only downside I see.
-> Any other ideas?
+On Sun, May 17, 2020 at 11:44 PM Vlad Buslov <vladbu@mellanox.com> wrote:
+>
+>
+> On Sun 17 May 2020 at 22:13, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > On Fri, May 15, 2020 at 4:40 AM Vlad Buslov <vladbu@mellanox.com> wrote:
+> >>
+> >> Output rate of current upstream kernel TC filter dump implementation if
+> >> relatively low (~100k rules/sec depending on configuration). This
+> >> constraint impacts performance of software switch implementation that
+> >> rely on TC for their datapath implementation and periodically call TC
+> >> filter dump to update rules stats. Moreover, TC filter dump output a lot
+> >> of static data that don't change during the filter lifecycle (filter
+> >> key, specific action details, etc.) which constitutes significant
+> >> portion of payload on resulting netlink packets and increases amount of
+> >> syscalls necessary to dump all filters on particular Qdisc. In order to
+> >> significantly improve filter dump rate this patch sets implement new
+> >> mode of TC filter dump operation named "terse dump" mode. In this mode
+> >> only parameters necessary to identify the filter (handle, action cookie,
+> >> etc.) and data that can change during filter lifecycle (filter flags,
+> >> action stats, etc.) are preserved in dump output while everything else
+> >> is omitted.
+> >>
+> >> Userspace API is implemented using new TCA_DUMP_FLAGS tlv with only
+> >> available flag value TCA_DUMP_FLAGS_TERSE. Internally, new API requires
+> >> individual classifier support (new tcf_proto_ops->terse_dump()
+> >> callback). Support for action terse dump is implemented in act API and
+> >> don't require changing individual action implementations.
+> >
+> > Sorry for being late.
+> >
+> > Why terse dump needs a new ops if it only dumps a subset of the
+> > regular dump? That is, why not just pass a boolean flag to regular
+> > ->dump() implementation?
+> >
+> > I guess that might break user-space ABI? At least some netlink
+> > attributes are not always dumped anyway, so it does not look like
+> > a problem?
+> >
+> > Thanks.
+>
+> Hi Cong,
+>
+> I considered adding a flag to ->dump() callback but decided against it
+> for following reasons:
+>
+> - It complicates fl_dump() code by adding additional conditionals. Not a
+>   big problem but it seemed better for me to have a standalone callback
+>   because with combined implementation it is even hard to deduce what
+>   does terse dump actually output.
 
-Not really - had a thought with Bjorn about using one callee-saved
-register that is yet unused by x64 JIT (%r12) and i was also thinking
-about some freaky usage of SSE register as a general purpose one. However,
-your idea is pretty neat - I gave it already a shot and with a single
-tweak I managed to got it working, e.g. selftests are fine as well as two
-samples that utilize tail calls. Note also that I got rid of the stack
-clamp being done in fixup_bpf_calls.
+This is not a problem, at least you can add a big if in fl_dump(),
+something like:
 
-About a tweak:
-- RETPOLINE_RAX_BPF_JIT used for indirect tail calls needed to become a
-  RETPOLINE_RCX_BPF_JIT, so that we preserve the content of %rax across
-  jumping between programs via tail calls. I looked up GCC commit that
-  Daniel quoted on a patch that implements RETPOLINE_RAX_BPF_JIT and it
-  said that for register that is holding the address of function that we
-  will be jumping onto, we are free to use most of GP registers. I picked
-  %rcx.
+if (terse) {
+  // do terse dump
+  return 0;
+}
+// normal dump
 
-I was also thinking about a minor optimization where we would replace the
-add/sub %rsp, $off32 with a nop7 if stack depth is 0.
+>
+> - My initial implementation just called regular dump for classifiers
+>   that don't support terse dump, but in internal review Jiri insisted
+>   that cls API should fail if it can't satisfy user's request and having
+>   dedicated callback allows implementation to return an error if
+>   classifier doesn't define ->terse_dump(). With flag approach it would
+>   be not trivial to determine if implementation actually uses the flag.
 
-About a way forward - I reached out to Bjorn to co-operate on providing
-the benchmark for measuring the impact of new tail call handling as well
-as providing a proof in a form of selftests that bpf2bpf is working
-together with tail calls.
+Hmm? For those not support terse dump, we can just do:
 
-About a benchmark, we think that having tests for best and worst cases
-would tell us what is going on. So:
-- have a main program that is not using any of callee registers that will
-  be tailcalling onto another program that is also not using any of R6-R9.
-- have the same flow but both programs will be using R6, R7, R8, R9; main
-  program needs to use them because we will be popping these registers
-  before the tail call and target program will be doing pushes.
+if (terse)
+  return -EOPNOTSUPP;
+// normal dump goes here
 
-Daniel, John, is there some Cilium benchmark that we could incorporate? I
-don't think we be able to come up with a program that would mimic what you
-have previously described, e.g. 6 static jumps where every program would
-be utilizing every callee-saved register. Any help/pointers on how should
-we approach it would be very appreciated.
+You just have to pass 'terse' flag to all implementations and let them
+to decide whether to support it or not.
 
-Does that sound like a plan, overall?
 
-Thank you,
-Maciej
+>   I guess I could have added new tcf_proto_ops->flags value to designate
+>   terse dump support, but checking for dedicated callback existence
+>   seemed like obvious approach.
+
+This does not look necessary, as long as we can just pass the flag
+down to each ->dump().
+
+Thanks.
