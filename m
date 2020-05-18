@@ -2,65 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0C621D7BD6
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 16:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EB7C1D7BEF
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 16:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728034AbgEROuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 10:50:55 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37228 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726918AbgEROuz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 May 2020 10:50:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=g/tUXb4ly8xE4Vp3fNrWElVjFfmCixuKmriyRVpDO58=; b=Dg9vVUjdtMK1CDdz60T2BkGs2s
-        +Cio0LxX9eTLHhU6dIUIxajJSHd4x2QUYvm4NUwlJzZiomu7JnkSark9Flube+92vtx86die1Bf0f
-        lAcMlNM33JuaeaghBm5S+XAbrzHf1jGQ/kPoNVqRkDPzbjc6klBoTNTKGPu7CxpWbubg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jah6F-002cQU-Eu; Mon, 18 May 2020 16:50:39 +0200
-Date:   Mon, 18 May 2020 16:50:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     tanhuazhong <tanhuazhong@huawei.com>
-Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@huawei.com, kuba@kernel.org,
-        Yufeng Mo <moyufeng@huawei.com>,
-        Jian Shen <shenjian15@huawei.com>
-Subject: Re: [PATCH net-next] net: phy: realtek: add loopback support for
- RTL8211F
-Message-ID: <20200518145039.GA624248@lunn.ch>
-References: <1589358344-14009-1-git-send-email-tanhuazhong@huawei.com>
- <20200513131226.GA499265@lunn.ch>
- <cb82153d-e14e-8e97-b3b8-210135fbdee6@huawei.com>
+        id S1727803AbgERO4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 10:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726940AbgERO4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 10:56:38 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7F7C061A0C
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 07:56:38 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id dh1so948825qvb.13
+        for <netdev@vger.kernel.org>; Mon, 18 May 2020 07:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=n77vtA/+ktvMTt9TwyFVHXMip0nepN2de34bSGL1QR8=;
+        b=Fm9PF8VAsGs5oSV58hvxtXGEFTJMJrVzuZuXcqO9XiBnlURiuTN8KqEI5etF3Fb5US
+         zmRzmoUBunmd8Ty7+hhlAlOM703bsQZYHanCk5oyWvU+IsZhzQ8uwzl5mO4+tCit9EHH
+         FAXBCt8m6EZzd9FT2ZUt1+gzy4ukji2sUlRo5WfeGNxhmMWcKmSGNBuHT8gQNdm7yiuZ
+         BUy1ksAgHvLpWMNS2Q7iHejKNG9dGguIWknazYV2B+kSzbqlj1zT2BY8u8gIdIltKLEG
+         ifQaeo4SGXAUM7Q1GlSrQ5vjNMeZ3W+6a8TOawP+uHUBoa3PTMbiRLxQ/JdTeYeod7k2
+         IL1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=n77vtA/+ktvMTt9TwyFVHXMip0nepN2de34bSGL1QR8=;
+        b=bSCzQuZWIbSad1tHGYaw0NNRikcAHV16h40/AmNJ6zurwnCXrsuVn2fsVybecm693W
+         JHny2YNlHBsU0MiFM8MchAWtV0pNVJYWlcwrwc47nTHDL6meixInJTvx0lqDktPrzBLn
+         7+KTDEQiE2EljwRRNRyiR+rpqrHaNSLbgnqY6718vJ+wswC3F7sO8decTqeVd7qaZYj7
+         FyWayTLfp3QRrUiVM2aXazYGCrx/ktlnDHem/ynmMSmpzNWwosuEmN29okrkCtsJHLC9
+         gW5nb+nMc33c5VshaTe7B6g0RldTRnaTIYXtDrqNi1VszQPGVAlAKyXKocnq9OxpyFw3
+         G1Gw==
+X-Gm-Message-State: AOAM530QIeR2IiNPBNdBHLjg5zsJbOyze5RMYQKt6nYvjK/w2IyktCIo
+        rngRK72mMzzQKPTCZKFUaGA=
+X-Google-Smtp-Source: ABdhPJxOvzBZTKbSfRFtxPwRTVXq73R/IuYBsuDBpcLV4SLzhKhjLipLObzVan3zMvuj4VguFS4gZA==
+X-Received: by 2002:a0c:a284:: with SMTP id g4mr1189304qva.243.1589813797674;
+        Mon, 18 May 2020 07:56:37 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:f866:b23:9405:7c31? ([2601:282:803:7700:f866:b23:9405:7c31])
+        by smtp.googlemail.com with ESMTPSA id r128sm8466330qke.109.2020.05.18.07.56.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 May 2020 07:56:37 -0700 (PDT)
+Subject: Re: [PATCH iproute2/net-next] man: tc-ct.8: Add manual page for ct tc
+ action
+To:     Paul Blakey <paulb@mellanox.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, Jiri Pirko <jiri@mellanox.com>
+Cc:     ozsh@mellanox.com, roid@mellanox.com
+References: <1589465420-12119-1-git-send-email-paulb@mellanox.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <0c5f8a4b-2d09-6cda-9228-dd83c4d97ff1@gmail.com>
+Date:   Mon, 18 May 2020 08:56:35 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cb82153d-e14e-8e97-b3b8-210135fbdee6@huawei.com>
+In-Reply-To: <1589465420-12119-1-git-send-email-paulb@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi, Andrew.
+On 5/14/20 8:10 AM, Paul Blakey wrote:
+> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> ---
+>  man/man8/tc-ct.8     | 107 +++++++++++++++++++++++++++++++++++++++++++++++++++
+>  man/man8/tc-flower.8 |   6 +++
+>  2 files changed, 113 insertions(+)
+>  create mode 100644 man/man8/tc-ct.8
 > 
-> There are two type of phys we are using, rtl8211f and "Marvell 88E1512".
-> "Marvell 88E1512" has already supported loopback
-> (f0f9b4ed2338 ("net: phy: Add phy loopback support in net phy framework")).
+> diff --git a/man/man8/tc-ct.8 b/man/man8/tc-ct.8
+> new file mode 100644
+> index 0000000..45d2932
+> --- /dev/null
+> +++ b/man/man8/tc-ct.8
+> @@ -0,0 +1,107 @@
+> +.TH "ct action in tc" 8 "14 May 2020" "iproute2" "Linux"
+> +.SH NAME
+> +ct \- tc connection tracking action
+> +.SH SYNOPSIS
+> +.in +8
+> +.ti -8
+> +.BR "tc ... action ct commit [ force ] [ zone "
+> +.IR ZONE
+> +.BR "] [ mark "
+> +.IR MASKED_MARK
+> +.BR "] [ label "
+> +.IR MASKED_LABEL
+> +.BR "] [ nat "
+> +.IR NAT_SPEC
+> +.BR "]"
+> +
+> +.ti -8
+> +.BR "tc ... action ct [ nat ] [ zone "
+> +.IR ZONE
+> +.BR "]"
+> +
+> +.ti -8
+> +.BR "tc ... action ct clear"
 
-> So now we adds loopback support to the rtl8211f.
-> From the data sheet other phys should support this loopback as well, but
-> we have no way to verify it. What's your suggestion?
-
-So you checked the datasheets for the RTL8201CP, RTL8201F, RTL8208,
-RTL8211B, RTL8211DN, etc?
-
-For all those you have datasheets for, please also add loopback
-support. I'm just trying to avoid one PHY from twelve in that driver
-having loopback support, when they all probably can.
-
-       Andrew
+seems like you are documenting existing capabilities vs something new to
+5.8. correct?
