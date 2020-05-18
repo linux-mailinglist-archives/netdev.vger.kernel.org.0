@@ -2,121 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B970B1D82F7
-	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:01:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2105B1D8499
+	for <lists+netdev@lfdr.de>; Mon, 18 May 2020 20:14:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729612AbgERSAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 May 2020 14:00:54 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20873 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732327AbgERSAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:00:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589824851;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N1n0SR1PzeyLNd/iLZvoOiXdjg2LI5YRkH1aM1h/zGE=;
-        b=co9SgQUouvK+SseMUimBhDZ89w7Ke6NKjTHIJoBqs4DxH0eslrdrUiOhYACjBVByttGv7a
-        F4UvZpCk+7GPkpMc0SBOPhbDelBJPyEi2adEVZDtprl88nYblnDWNyaZaCK+JlhgDDKGEh
-        fki4IEF8UnJ1vtzyLmXhtvI/27pQ8Us=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-441-oGd3P6MmOfC3jUUi9rEl6w-1; Mon, 18 May 2020 14:00:49 -0400
-X-MC-Unique: oGd3P6MmOfC3jUUi9rEl6w-1
-Received: by mail-lf1-f69.google.com with SMTP id j12so4220015lfe.7
-        for <netdev@vger.kernel.org>; Mon, 18 May 2020 11:00:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=N1n0SR1PzeyLNd/iLZvoOiXdjg2LI5YRkH1aM1h/zGE=;
-        b=KPCMrLkuSioJHvDhHrCZNdDfMR0WmbByrbDnDT5y/vyJ7p4lilVJaRs+hgvDZQp14c
-         307kHAXfYYDZInHYrLweCUU1xKt3spJhZq1FiYvjTCmNvIiRNBBCI0h4SFjJVVq0cNK7
-         aTQkErg6JbbnbEjH4bpW/Xw9YPvzb3KbGSboZQ29ceHYXLWgtbwI5MY2sLs9pWnyymZq
-         4iFZ4JIE8K+sT3lY9OzrnkXhP51VVkCKtP6nCZdicw8DhTpTqaDjTZs3CkzQkmbX36ZL
-         4WoQSRgnAuGtVVcwTGDjs+xE8CjzhUPyfVFZaQuNu4vFpReDt7K0EOwDKoIIPQsp2rfS
-         5K3Q==
-X-Gm-Message-State: AOAM531CfrBwOecFdJ/vJ8iBzQBocq256E9Y5EuQSpzg8mZ5zmIBUjq7
-        idAr6r7Xsb7bJ2DAiwCeNw+1QORzGfwaT2Avnq3uY2NbrGZuwUwEIjRytUZEWa2zGCUkbw74Dyy
-        HJOI04r7glr1nlhuZ
-X-Received: by 2002:ac2:599e:: with SMTP id w30mr12262381lfn.188.1589824847894;
-        Mon, 18 May 2020 11:00:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxghbYyl6e2GD4YPbP+bvgDAPhaMss7cjkYsRMGEokg9r5ciI4MzjWu7kbpdCI7didJzco4JQ==
-X-Received: by 2002:ac2:599e:: with SMTP id w30mr12262362lfn.188.1589824847598;
-        Mon, 18 May 2020 11:00:47 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id n2sm7355128lfl.53.2020.05.18.11.00.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2020 11:00:46 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 09314181510; Mon, 18 May 2020 20:00:46 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, brouer@redhat.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH v5 bpf-next 00/11] net: Add support for XDP in egress path
-In-Reply-To: <76e2e842-19c0-fd9a-3afa-07e2793dedcd@gmail.com>
-References: <20200513014607.40418-1-dsahern@kernel.org> <87sgg4t8ro.fsf@toke.dk> <54fc70be-fce9-5fd2-79f3-b88317527c6b@gmail.com> <87lflppq38.fsf@toke.dk> <76e2e842-19c0-fd9a-3afa-07e2793dedcd@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 18 May 2020 20:00:45 +0200
-Message-ID: <87h7wdnmwi.fsf@toke.dk>
+        id S2387599AbgERSMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 May 2020 14:12:35 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:40470 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732631AbgERSDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 May 2020 14:03:17 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 408D06011E;
+        Mon, 18 May 2020 18:03:16 +0000 (UTC)
+Received: from us4-mdac16-27.ut7.mdlocal (unknown [10.7.66.59])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3D5E4800A3;
+        Mon, 18 May 2020 18:03:16 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.36])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9C91B28006D;
+        Mon, 18 May 2020 18:03:15 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4AF2BB40071;
+        Mon, 18 May 2020 18:03:13 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 18 May
+ 2020 19:02:54 +0100
+Subject: Re: [PATCH net-next 0/3] net/sched: act_ct: Add support for
+ specifying tuple offload policy
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     Paul Blakey <paulb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "Oz Shlomo" <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1589464110-7571-1-git-send-email-paulb@mellanox.com>
+ <3d780eae-3d53-77bb-c3b9-775bf50477bf@solarflare.com>
+ <20200514144938.GD2676@nanopsycho>
+ <9f68872f-fe3f-e86a-4c74-8b33cd9ee433@solarflare.com>
+ <f7236849-420d-558f-8e66-2501e221ca1b@mellanox.com>
+ <64db5b99-2c67-750c-e5bd-79c7e426aaa2@solarflare.com>
+ <20200518172542.GE2193@nanopsycho>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <d5be2555-faf3-7ca0-0c23-f2bf92873621@solarflare.com>
+Date:   Mon, 18 May 2020 19:02:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200518172542.GE2193@nanopsycho>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25426.003
+X-TM-AS-Result: No-8.779100-8.000000-10
+X-TMASE-MatchedRID: Jm7Yxmmj9OnmLzc6AOD8DfHkpkyUphL9TLZB6U/YaPpiRkyBrHIiymYV
+        eS0LJeRGOOIn5zbTcyzSey6M+8j1yl5XsfiaoQFVoxjrap5AGQv2hUAowGKip2KuDy0kKGx09yF
+        Is9Jg08kbt2DuXNOb3latCKdBmErhoqn18XUssBXVNj9wuvGJUCFceJVsZ+5jabJxhiIFjJkBSr
+        A72lIhPXz5FqjLfl+Y2lYDQthBn6m/yjNcwjTwjPChiQolft/yL1eX+z9B1QyPiMW+3Yzkgj7Fn
+        CrEJ7NN0+YqjDkWLxmbRn5szxtcYONg7rwk6R23NDrSVZCgbSv5qGeseGYAlEdmDSBYfnJRjVNs
+        paGN/MHSe7fNpJWzjake5xdln/JmPXdZx1sZHpC84C/3iwAgxEloPruIq9jTAwAObkR2opYESlQ
+        F95uWdkd/bWHoAHqS2fOkLykeRy9qEf6Xr7r2WIeMWfCwoMwMqyb8uklAH9WCm0ktRXpIXbnxKz
+        FEGfLiHXM6uLE8K2vMDeiFaS4qhfcP4R8hkkRzngIgpj8eDcByZ8zcONpAscRB0bsfrpPIx1FPl
+        NAAmcCiM5ey8XbXD0rFr5v7hqyOPGuHv6hAxJmFhMbaxTsCDp6oP1a0mRIj
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.779100-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25426.003
+X-MDID: 1589824996-sAszKG1Bq-Up
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
+On 18/05/2020 18:25, Jiri Pirko wrote:
+> Is it worth to have an object just for this particular purpose? In the
+> past I was trying to push a tc block object that could be added/removed
+> and being used to insert filters w/o being attached to any qdisc. This
+> was frowned upon and refused because the existence of block does not
+> have any meaning w/o being attached.
+A tc action doesn't have any meaning either until it is attached to a
+ filter.  Is the consensus that the 'tc action' API/command set was a
+ mistake, or am I misunderstanding the objection?
 
-> On 5/18/20 3:08 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> I can see your point that fixing up the whole skb after the program has
->> run is not a good idea. But to me that just indicates that the hook is
->> in the wrong place: that it really should be in the driver, executed at
->> a point where the skb data structure is no longer necessary (similar to
->> how the ingress hook is before the skb is generated).
->
-> Have you created a cls_bpf program to modify skbs? Have you looked at
-> the helpers, the restrictions and the tight management of skb changes?
-> Have you followed the skb from create to device handoff through the
-> drivers? Have you looked at the history of encapsulations, gso handling,
-> offloads, ...?
+> What you suggest with zone sounds quite similar. More to that, it is
+> related only to act_ct. Is it a good idea to have a common object in TC
+> which is actually used as internal part of act_ct only?
+Well, really it's related as much to flower ct_stateas to act_ct: the
+ policy numbers control when a conntrack rule (from the zone) gets
+ offloaded into drivers, thus determining whether a packet (which has
+ been through an act_ct to make it +trk) is ±est.
+It's because it has a scope broader than a single ct action that I'm
+ resistant to hanging it off act_ct in this way.
 
-Have you tried re-reading the first sentence of the paragraph you're
-replying to? You know, the one that started with "I can see your point
-that..."
+Also it still somewhat bothers me that this policy isn't scoped to the
+ device; I realise that the current implementation of a single flow
+ table shared by all offloading devices is what forces that, but it
+ just doesn't seem semantically right that the policy on when to
+ offload a connection is global across devices with potentially
+ differing capabilities (e.g. size of their conntrack tables) that
+ might want different policies.
+(And a 'tc ct add dev eth0 zone 1 policy_blah...' would conveniently
+ give a hook point for callback (1) from my offtopic ramble, that the
+ driver could use to register for connections in the zone and start
+ offloading them to hardware, rather than doing it the first time it
+ sees that zone show up in an act_ct it's offloading.  You don't
+ really want to do the same in the non-device-qualified case because
+ that could use up HW table space for connections in a zone you're
+ not offloading any rules for.)
 
->> Otherwise, what you're proposing is not an egress hook, but rather a
->> 'post-REDIRECT hook', which is strictly less powerful. This may or may
->> not be useful in its own right, but let's not pretend it's a full egress
->> hook. Personally I feel that the egress hook is what we should be going
->> for, not this partial thing.
->
-> You are hand waving. Be specific, with details.
+Basically I'm just dreaming of a world where TC does a lot more with
+ explicit objects that it creates and then references, rather than
+ drivers having to implicitly create HW objects for things the first
+ time a rule tries to reference them.
+"Is it worth" all these extra objects?  Really that depends on how
+ much simpler the drivers can become as a result; this is the control
+ path, so programmer time is worth more than machine time, and space
+ in the programmer's head is worth more than machine RAM ;-)
 
-Are you deliberately trying to antagonise me or something? It's a really
-odd way to try to make your case...
-
-> Less powerful how? There are only so many operations you can do to a
-> packet. What do you want to do and what can't be done with this proposed
-> change? Why must it be done as XDP vs proper synergy between the 2 paths.
-
-I meant 'less powerful' in the obvious sense: it only sees a subset of
-the packets going out of the interface. And so I worry that it will (a)
-make an already hard to use set of APIs even more confusing, and (b)
-turn out to not be enough so we'll end up needing a "real" egress hook.
-
-As I said in my previous email, a post-REDIRECT hook may or may not be
-useful in its own right. I'm kinda on the fence about that, but am
-actually leaning towards it being useful; however, I am concerned that
-it'll end up being redundant if we do get a full egress hook.
-
--Toke
-
+-ed
